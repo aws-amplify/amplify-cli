@@ -1,5 +1,5 @@
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
-import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
+import { GraphQLTransform, validateModelSchema } from '@aws-amplify/graphql-transformer-core';
 import { FeatureFlagProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { InputObjectTypeDefinitionNode, InputValueDefinitionNode, NamedTypeNode, parse } from 'graphql';
 import { getBaseType } from 'graphql-transformer-common';
@@ -41,7 +41,7 @@ describe('ModelTransformer: ', () => {
     const out = transformer.transform(validSchema);
     expect(out).toBeDefined();
 
-    parse(out.schema);
+    validateModelSchema(parse(out.schema));
   });
 
   it('should support custom query overrides', () => {
@@ -65,6 +65,7 @@ describe('ModelTransformer: ', () => {
     expect(definition).toBeDefined();
 
     const parsed = parse(definition);
+    validateModelSchema(parsed);
     const createPostInput = getInputType(parsed, 'CreatePostInput');
     expect(createPostInput).toBeDefined();
 
@@ -106,6 +107,7 @@ describe('ModelTransformer: ', () => {
     const definition = out.schema;
     expect(definition).toBeDefined();
     const parsedDefinition = parse(definition);
+    validateModelSchema(parsedDefinition);
     const mutationType = getObjectType(parsedDefinition, 'Mutation');
     expect(mutationType).toBeDefined();
     expectFields(mutationType!, ['customCreatePost', 'customUpdatePost', 'customDeletePost']);
@@ -128,6 +130,7 @@ describe('ModelTransformer: ', () => {
     const definition = out.schema;
     expect(definition).toBeDefined();
     const parsed = parse(definition);
+    validateModelSchema(parsed);
     const mutationType = getObjectType(parsed, 'Mutation');
     expect(mutationType).not.toBeDefined();
   });
@@ -150,6 +153,7 @@ describe('ModelTransformer: ', () => {
     const definition = out.schema;
     expect(definition).toBeDefined();
     const parsed = parse(definition);
+    validateModelSchema(parsed);
     const mutationType = getObjectType(parsed, 'Mutation');
     expect(mutationType).toBeDefined();
     const queryType = getObjectType(parsed, 'Query');
@@ -173,6 +177,7 @@ describe('ModelTransformer: ', () => {
     const definition = out.schema;
     expect(definition).toBeDefined();
     const parsed = parse(definition);
+    validateModelSchema(parsed);
     const mutationType = getObjectType(parsed, 'Mutation');
     expect(mutationType).toBeDefined();
     const queryType = getObjectType(parsed, 'Query');
@@ -198,6 +203,7 @@ describe('ModelTransformer: ', () => {
     const definition = out.schema;
     expect(definition).toBeDefined();
     const parsed = parse(definition);
+    validateModelSchema(parsed);
     const mutationType = getObjectType(parsed, 'Mutation');
     expect(mutationType).not.toBeDefined();
     const queryType = getObjectType(parsed, 'Query');
@@ -232,6 +238,7 @@ describe('ModelTransformer: ', () => {
     const definition = out.schema;
     expect(definition).toBeDefined();
     const parsed = parse(definition);
+    validateModelSchema(parsed);
     const createPostInput = getInputType(parsed, 'CreatePostInput');
     expectFieldsOnInputType(createPostInput!, ['different']);
     const updatePostInput = getInputType(parsed, 'UpdatePostInput');
@@ -267,41 +274,13 @@ describe('ModelTransformer: ', () => {
     const definition = out.schema;
     expect(definition).toBeDefined();
     const parsed = parse(definition);
+    validateModelSchema(parsed);
     const createPostInput = getInputType(parsed, 'CreatePostInput');
     expectFieldsOnInputType(createPostInput!, ['different']);
     const updatePostInput = getInputType(parsed, 'UpdatePostInput');
     expectFieldsOnInputType(updatePostInput!, ['different2']);
     const deletePostInput = getInputType(parsed, 'DeletePostInput');
     expectFieldsOnInputType(deletePostInput!, ['different3']);
-  });
-
-  it('should support non model objects contain id as a type for fields', () => {
-    const validSchema = `
-      type Post @model {
-        id: ID!
-        comments: [Comment]
-      }
-      type Comment {
-        id: String!
-        text: String!
-      }
-    `;
-    const transformer = new GraphQLTransform({
-      transformers: [new ModelTransformer()],
-      featureFlags,
-    });
-    const out = transformer.transform(validSchema);
-    expect(out).toBeDefined();
-    const definition = out.schema;
-    expect(definition).toBeDefined();
-    const parsed = parse(definition);
-    const commentInput = getInputType(parsed, 'CommentInput');
-    expectFieldsOnInputType(commentInput!, ['id', 'text']);
-    const commentObject = getObjectType(parsed, 'Comment');
-    const commentInputObject = getInputType(parsed, 'CommentInput');
-    const commentObjectIDField = getFieldOnObjectType(commentObject!, 'id');
-    const commentInputIDField = getFieldOnInputType(commentInputObject!, 'id');
-    verifyMatchingTypes(commentObjectIDField.type, commentInputIDField.type);
   });
 
   it('should add default primary key when not defined', () => {
@@ -318,6 +297,7 @@ describe('ModelTransformer: ', () => {
     expect(result).toBeDefined();
     expect(result.schema).toBeDefined();
     const schema = parse(result.schema);
+    validateModelSchema(schema);
 
     const createPostInput: InputObjectTypeDefinitionNode = schema.definitions.find(
       d => d.kind === 'InputObjectTypeDefinition' && d.name.value === 'CreatePostInput',
@@ -350,6 +330,7 @@ describe('ModelTransformer: ', () => {
     const out = transformer.transform(validSchema);
     expect(out).toBeDefined();
     const parsed = parse(out.schema);
+    validateModelSchema(parsed);
     const subscriptionType = getObjectType(parsed, 'Subscription');
     expect(subscriptionType).toBeDefined();
     expectFields(subscriptionType!, ['onCreatePost', 'onUpdatePost', 'onDeletePost']);
@@ -374,6 +355,7 @@ describe('ModelTransformer: ', () => {
     const out = transformer.transform(schema);
     expect(out).toBeDefined();
     const parsed = parse(out.schema);
+    validateModelSchema(parsed);
     const subscriptionType = getObjectType(parsed, 'Subscription');
     expect(subscriptionType).toBeDefined();
   });

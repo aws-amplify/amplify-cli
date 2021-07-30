@@ -1,5 +1,5 @@
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
-import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
+import { GraphQLTransform, validateModelSchema } from '@aws-amplify/graphql-transformer-core';
 import { parse } from 'graphql';
 import { getFieldOnObjectType, getObjectType } from './test-utils/helpers';
 
@@ -23,6 +23,7 @@ describe('createdAt field tests', () => {
     expect(definition).toBeDefined();
 
     const parsed = parse(definition);
+    validateModelSchema(parsed);
     const postModelObject = getObjectType(parsed, 'Post');
     const postModelField = getFieldOnObjectType(postModelObject!, 'createdAt');
 
@@ -47,6 +48,7 @@ describe('createdAt field tests', () => {
     expect(definition).toBeDefined();
 
     const parsed = parse(definition);
+    validateModelSchema(parsed);
     const postModelObject = getObjectType(parsed, 'Post');
     const postModelField = getFieldOnObjectType(postModelObject!, 'createdAt');
 
@@ -71,6 +73,7 @@ describe('createdAt field tests', () => {
     expect(definition).toBeDefined();
 
     const parsed = parse(definition);
+    validateModelSchema(parsed);
     const postModelObject = getObjectType(parsed, 'Post');
     const postModelField = getFieldOnObjectType(postModelObject!, 'createdAt');
 
@@ -95,6 +98,7 @@ describe('createdAt field tests', () => {
     expect(definition).toBeDefined();
 
     const parsed = parse(definition);
+    validateModelSchema(parsed);
     const postModelObject = getObjectType(parsed, 'Post');
     const postModelField = getFieldOnObjectType(postModelObject!, 'createdOn');
 
@@ -119,6 +123,7 @@ describe('createdAt field tests', () => {
     expect(definition).toBeDefined();
 
     const parsed = parse(definition);
+    validateModelSchema(parsed);
     const postModelObject = getObjectType(parsed, 'Post');
     const postModelField = getFieldOnObjectType(postModelObject!, 'createdAt');
 
@@ -146,6 +151,7 @@ describe('updatedAt field tests', () => {
     expect(definition).toBeDefined();
 
     const parsed = parse(definition);
+    validateModelSchema(parsed);
     const postModelObject = getObjectType(parsed, 'Post');
     const postModelField = getFieldOnObjectType(postModelObject!, 'updatedAt');
 
@@ -171,6 +177,7 @@ describe('updatedAt field tests', () => {
     expect(definition).toBeDefined();
 
     const parsed = parse(definition);
+    validateModelSchema(parsed);
     const postModelObject = getObjectType(parsed, 'Post');
     const postModelField = getFieldOnObjectType(postModelObject!, 'updatedAt');
 
@@ -195,6 +202,7 @@ describe('updatedAt field tests', () => {
     expect(definition).toBeDefined();
 
     const parsed = parse(definition);
+    validateModelSchema(parsed);
     const postModelObject = getObjectType(parsed, 'Post');
     const postModelField = getFieldOnObjectType(postModelObject!, 'updatedAt');
 
@@ -219,6 +227,7 @@ describe('updatedAt field tests', () => {
     expect(definition).toBeDefined();
 
     const parsed = parse(definition);
+    validateModelSchema(parsed);
     const postModelObject = getObjectType(parsed, 'Post');
     const postModelField = getFieldOnObjectType(postModelObject!, 'updatedOn');
 
@@ -243,6 +252,7 @@ describe('updatedAt field tests', () => {
     expect(definition).toBeDefined();
 
     const parsed = parse(definition);
+    validateModelSchema(parsed);
     const postModelObject = getObjectType(parsed, 'Post');
     const postModelField = getFieldOnObjectType(postModelObject!, 'updatedAt');
 
