@@ -37,6 +37,7 @@ describe('ModelTransformer: ', () => {
     expect(out).toBeDefined();
 
     validateModelSchema(parse(out.schema));
+    parse(out.schema);
   });
 
   it('should support custom query overrides', () => {
