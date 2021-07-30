@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.5.15](https://github.com/aws-amplify/amplify-cli/compare/graphql-predictions-transformer@2.5.14...graphql-predictions-transformer@2.5.15) (2021-07-30)
+
+**Note:** Version bump only for package graphql-predictions-transformer
+
+
+
+
+
 ## [2.5.14](https://github.com/aws-amplify/amplify-cli/compare/graphql-predictions-transformer@2.5.13...graphql-predictions-transformer@2.5.14) (2021-07-27)
 
 **Note:** Version bump only for package graphql-predictions-transformer
