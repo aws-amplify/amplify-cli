@@ -1,6 +1,6 @@
 'use strict';
 import { anything, countResources, expect as cdkExpect, haveResourceLike } from '@aws-cdk/assert';
-import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
+import { GraphQLTransform, validateModelSchema } from '@aws-amplify/graphql-transformer-core';
 import { parse } from 'graphql';
 import { PredictionsTransformer } from '..';
 
@@ -14,6 +14,7 @@ test('does not generate any resources if @predictions is unused', () => {
   });
 
   const out = transformer.transform(schema);
+  validateModelSchema(parse(out.schema));
   expect(out).toBeDefined();
   expect(out.stacks).toBeDefined();
   expect(out.stacks.PredictionsDirectiveStack).toEqual(undefined);
@@ -31,7 +32,7 @@ test('lambda function is added to pipeline when lambda dependent action is added
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
   expect(out.stacks).toBeDefined();
-  parse(out.schema);
+  validateModelSchema(parse(out.schema));
   expect(out.schema).toMatchSnapshot();
   const stack = out.stacks.PredictionsDirectiveStack;
   expect(stack).toBeDefined();
@@ -157,7 +158,7 @@ test('return type is a list based on the action', () => {
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
   expect(out.stacks).toBeDefined();
-  parse(out.schema);
+  validateModelSchema(parse(out.schema));
   expect(out.schema).toMatchSnapshot();
   const stack = out.stacks.PredictionsDirectiveStack;
   expect(stack).toBeDefined();
@@ -186,7 +187,7 @@ test('can use actions individually and in supported sequences', () => {
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
   expect(out.stacks).toBeDefined();
-  parse(out.schema);
+  validateModelSchema(parse(out.schema));
   expect(out.schema).toMatchSnapshot();
   const stack = out.stacks.PredictionsDirectiveStack;
   expect(stack).toBeDefined();
