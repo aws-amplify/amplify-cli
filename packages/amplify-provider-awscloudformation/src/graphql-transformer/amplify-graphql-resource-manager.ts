@@ -21,8 +21,6 @@ import { loadConfiguration } from '../configuration-manager';
 import fs from 'fs-extra';
 import path from 'path';
 
-const environmentWorkflowStage = () => 'DEVELOPMENT';
-
 export type GQLResourceManagerProps = {
   cfnClient: CloudFormation;
   resourceMeta?: ResourceMeta;
@@ -239,13 +237,6 @@ export class GraphQLResourceManager {
       const stackName = gsiChange.stackName;
       const tableName = gsiChange.tableName;
       const changeSteps = getGSIDiffs(gsiChange.currentTable, gsiChange.nextTable);
-      if (environmentWorkflowStage() === 'DEVELOPMENT' && changeSteps.length > 1) {
-        const ddbResource = this.getStack(stackName, currentState);
-        this.dropTable(tableName, ddbResource);
-        this.templateState.add(stackName, JSONUtilities.stringify(ddbResource));
-        this.templateState.add(stackName, JSONUtilities.stringify(this.getStack(stackName, nextState)));
-        continue;
-      }
       for (const changeStep of changeSteps) {
         const ddbResource = this.templateState.getLatest(stackName) || this.getStack(stackName, currentState);
         let gsiRecord;
@@ -279,7 +270,7 @@ export class GraphQLResourceManager {
   private tableRecreationManagement = (diffs: DiffChanges<DiffableProject>, currentState: DiffableProject, nextState: DiffableProject) => {
     const tablesToRecreate = _.uniq(
       diffs
-        .filter(diff => diff.path.includes('KeySchema')) // filter diffs with KeySchema changes
+        .filter(diff => diff.path.includes('KeySchema') || diff.path.includes('LocalSecondaryIndexes')) // filter diffs with changes that require replacement
         .map(diff => ({
           // extract table name and stack name from diff path
           tableName: diff.path?.[3] as string,
@@ -317,6 +308,7 @@ export class GraphQLResourceManager {
 
   private dropTable = (tableName: string, template: Template): void => {
     template.Resources[tableName] = undefined;
+    template.Outputs = _.omitBy(template.Outputs, (_, key) => key.includes(tableName));
   };
 
   private clearTemplateState = (stackName: string) => {

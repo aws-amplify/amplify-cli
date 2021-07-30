@@ -727,20 +727,22 @@ function getOrDefault(o: any, k: string, d: any) {
   return o[k] || d;
 }
 
-export function getSanityCheckRules(isNewAppSyncAPI: boolean, ff: FeatureFlagProvider) {
+export function getSanityCheckRules(isNewAppSyncAPI: boolean, ff: FeatureFlagProvider, allowDestructiveUpdates: boolean = false) {
   let diffRules: DiffRule[] = [];
   let projectRules: ProjectRule[] = [];
   // If we have iterative GSI upgrades enabled it means we only do sanity check on LSIs
   // as the other checks will be carried out as series of updates.
   if (!isNewAppSyncAPI) {
     if (ff.getBoolean('enableIterativeGSIUpdates')) {
-      diffRules.push(
-        // LSI
-        cantEditKeySchemaRule,
-        cantAddLSILaterRule,
-        cantRemoveLSILater,
-        cantEditLSIKeySchemaRule,
-      );
+      if (!allowDestructiveUpdates) {
+        diffRules.push(
+          // LSI
+          cantEditKeySchemaRule,
+          cantAddLSILaterRule,
+          cantRemoveLSILater,
+          cantEditLSIKeySchemaRule,
+        );
+      }
 
       // Project level rules
       projectRules.push(cantHaveMoreThan500ResourcesRule);
