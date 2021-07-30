@@ -14,6 +14,7 @@ export {
   UserPoolConfig,
 } from './transformation';
 export { DeploymentResources } from './transformation/types';
+export { validateModelSchema } from './transformation/validation';
 export {
   ConflictDetectionType,
   ConflictHandlerType,
