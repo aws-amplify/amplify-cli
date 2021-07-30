@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.2.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@5.2.0...@aws-amplify/cli@5.2.1) (2021-07-30)
+
+
+### Bug Fixes
+
+* [#7696](https://github.com/aws-amplify/amplify-cli/issues/7696) - support production package install for function category ([#7812](https://github.com/aws-amplify/amplify-cli/issues/7812)) ([b39141e](https://github.com/aws-amplify/amplify-cli/commit/b39141e9d00bf0dc23318dcc476ed92ab031e88b))
+
+
+
+
+
 # [5.2.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@5.1.2...@aws-amplify/cli@5.2.0) (2021-07-27)
 
 
