@@ -172,7 +172,7 @@ function getAWSExportsObject(resources) {
         geoConfig.maps = getMapConfig(serviceResourceMapping[service]);
         break;
       case 'PlaceIndex':
-        geoConfig.place_indexes = getPlaceIndexConfig(serviceResourceMapping[service]);
+        geoConfig.search_indices = getPlaceIndexConfig(serviceResourceMapping[service]);
         break;
       default:
         break;
