@@ -93,7 +93,7 @@ export const placeIndexAdvancedWalkthrough = async (context: $TSContext, paramet
 
         // get the place index data storage option if the pricing plan is RequestBasedUsage
         if (parameters.pricingPlan === PricingPlan.RequestBasedUsage) {
-          parameters = merge(parameters, await placeIndexDataStorageWalkthrough(parameters));
+          parameters = merge(parameters, await placeIndexDataStorageWalkthrough(context, parameters));
         }
         else {
           parameters.dataSourceIntendedUse = DataSourceIntendedUse.SingleUse;
@@ -108,15 +108,13 @@ export const placeIndexAdvancedWalkthrough = async (context: $TSContext, paramet
     return parameters;
 };
 
-export const placeIndexDataStorageWalkthrough = async (parameters: Partial<PlaceIndexParameters>): Promise<Partial<PlaceIndexParameters>> => {
-  const dataSourceUsagePrompt = {
-      type: 'list',
-      name: 'dataSourceIntendedUse',
-      message: `Specify the data storage option for requesting Places. Refer ${apiDocs.dataSourceUsage}:`,
-      choices: Object.keys(DataSourceIntendedUse),
-      default: parameters.dataSourceIntendedUse ? parameters.dataSourceIntendedUse : 'SingleUse'
-  };
-  return { dataSourceIntendedUse: (await inquirer.prompt([dataSourceUsagePrompt])).dataSourceIntendedUse as DataSourceIntendedUse };
+export const placeIndexDataStorageWalkthrough = async (context:$TSContext, parameters: Partial<PlaceIndexParameters>): Promise<Partial<PlaceIndexParameters>> => {
+  const areResultsStored = await context.amplify.confirmPrompt(
+    `Do you want to cache or store the results of search operations? Refer ${apiDocs.dataSourceUsage}`,
+    parameters.dataSourceIntendedUse === DataSourceIntendedUse.Storage
+  );
+  const intendedUse = areResultsStored ? DataSourceIntendedUse.Storage : DataSourceIntendedUse.SingleUse;
+  return { dataSourceIntendedUse: intendedUse };
 };
 
 /**

@@ -4,7 +4,7 @@ import _ from 'lodash';
 import { parametersFileName, provider, ServiceName } from './constants';
 import { category } from '../constants';
 import { MapStack } from '../service-stacks/mapStack';
-import { updateParametersFile, getGeoServiceMeta, generateTemplateFile, updateDefaultResource, readResourceMetaParameters, updateGeoPricingPlan } from './resourceUtils';
+import { updateParametersFile, getGeoServiceMeta, generateTemplateFile, updateDefaultResource, readResourceMetaParameters } from './resourceUtils';
 import { App } from '@aws-cdk/core';
 
 export const createMapResource = async (context: $TSContext, parameters: MapParameters) => {
