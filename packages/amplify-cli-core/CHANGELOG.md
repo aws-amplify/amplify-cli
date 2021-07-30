@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.25.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@1.25.0...amplify-cli-core@1.25.1) (2021-07-30)
+
+
+### Bug Fixes
+
+* **amplify-cli-core:** new-line escape sequence made os-specific ([#7814](https://github.com/aws-amplify/amplify-cli/issues/7814)) ([70cd7df](https://github.com/aws-amplify/amplify-cli/commit/70cd7dfe2a7882c1c2d2f2ff7230a0f81e8e8be9))
+
+
+
+
+
 # [1.25.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@1.24.1...amplify-cli-core@1.25.0) (2021-07-27)
 
 

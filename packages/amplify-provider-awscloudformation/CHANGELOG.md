@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.56.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.55.2...amplify-provider-awscloudformation@4.56.0) (2021-07-30)
+
+
+### Bug Fixes
+
+* lambda timeout should be an integer type ([#7699](https://github.com/aws-amplify/amplify-cli/issues/7699)) ([cbacf4d](https://github.com/aws-amplify/amplify-cli/commit/cbacf4d3e497421855c09825970e025550aacfd7))
+
+
+### Features
+
+* add [@primary](https://github.com/primary)Key directive to Transformer v2 ([#7797](https://github.com/aws-amplify/amplify-cli/issues/7797)) ([c11b7dd](https://github.com/aws-amplify/amplify-cli/commit/c11b7dd33152eced2ba23089ef08f5696c73b5f2))
+
+
+
+
+
 ## [4.55.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.55.1...amplify-provider-awscloudformation@4.55.2) (2021-07-27)
 
 

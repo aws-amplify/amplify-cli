@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.12.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-storage@2.12.2...amplify-category-storage@2.12.3) (2021-07-30)
+
+
+### Bug Fixes
+
+* lambda timeout should be an integer type ([#7699](https://github.com/aws-amplify/amplify-cli/issues/7699)) ([cbacf4d](https://github.com/aws-amplify/amplify-cli/commit/cbacf4d3e497421855c09825970e025550aacfd7))
+
+
+
+
+
 ## [2.12.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-storage@2.12.1...amplify-category-storage@2.12.2) (2021-07-27)
 
 **Note:** Version bump only for package amplify-category-storage

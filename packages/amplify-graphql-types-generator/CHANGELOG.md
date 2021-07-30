@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.8.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-graphql-types-generator@2.8.3...amplify-graphql-types-generator@2.8.4) (2021-07-30)
+
+
+### Bug Fixes
+
+* **amplify-graphql-types-generator:** path-format to match snapshot ([#7800](https://github.com/aws-amplify/amplify-cli/issues/7800)) ([61ad221](https://github.com/aws-amplify/amplify-cli/commit/61ad2213a59d61da9ea14d858da57471f257d9f4))
+
+
+
+
+
 ## [2.8.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-graphql-types-generator@2.8.1...amplify-graphql-types-generator@2.8.3) (2021-05-03)
 
 
