@@ -1,10 +1,12 @@
 import { AmplifyPrinter } from '../printer';
+import os from 'os';
 import * as flags from '../flags';
 const writeStream_stub = ({
   write: jest.fn(),
 } as unknown) as jest.Mocked<NodeJS.WritableStream>;
 
 jest.mock('../flags');
+jest.mock('os');
 
 type Writeable<T> = { -readonly [P in keyof T]: T[P] };
 
@@ -13,6 +15,10 @@ const flags_mock = flags as jest.Mocked<Writeable<typeof flags>>;
 const testInput = 'this is a test line';
 
 const printer = new AmplifyPrinter(writeStream_stub);
+
+const os_mock = os as jest.Mocked<Writeable<typeof os>>;
+
+os_mock.EOL = '\n';
 
 beforeEach(() => {
   jest.clearAllMocks();

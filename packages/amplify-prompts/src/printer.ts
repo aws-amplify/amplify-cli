@@ -1,4 +1,5 @@
 import chalk from 'chalk';
+import os from 'os';
 import { isDebug, isSilent } from './flags';
 
 /**
@@ -40,7 +41,7 @@ export class AmplifyPrinter implements Printer {
   };
 
   private writeLine = (line: string = ''): void => {
-    this.outputStream.write(`${line}\n`);
+    this.outputStream.write(`${line}${os.EOL}`);
   };
 }
 
