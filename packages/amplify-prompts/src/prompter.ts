@@ -52,40 +52,64 @@ class AmplifyPrompter implements Prompter {
    * Prompt for an input.
    * By default the input is a string, but can be any type.
    * If the type is not a string, the transform function is required to map the prompt response (which is always a string) to the expected return type
+   *
+   * If a ReturnSize of 'many' is specified, then the input is treated as a comma-delimited list and returned as an array.
+   * The validate and transform functions will be applied to each element in the list individually
+   *
+   * If the yes flag is set, the initial value is returned. If no initial value is specified, an error is thrown
    * @param message The prompt message
    * @param options Prompt options. options.transform is required if T !== string
    * @returns The prompt response
    */
-  input = async <T = string>(message: string, ...options: T extends string ? [InputOptions<T>?] : [InputOptions<T>]) => {
-    if (isYes) {
-      throw new Error(`Cannot prompt for [${message}] when '--yes' flag is set`);
-    }
+  input = async <RS extends ReturnSize = 'one', T = string>(message: string, ...options: MaybeOptionalInputOptions<RS, T>) => {
     const opts = options?.[0];
-    const { result } = await this.prompter<{ result: string }>({
-      type: opts?.hidden ? 'invisible' : 'input',
+    if (isYes) {
+      if (opts?.initial) {
+        return opts.initial as PromptReturn<RS, T>;
+      } else {
+        throw new Error(`Cannot prompt for [${message}] when '--yes' flag is set`);
+      }
+    }
+
+    const validator = (opts?.returnSize === 'many' ? validateEachWith(opts?.validate) : opts?.validate) as ValidatorCast;
+
+    const { result } = await this.prompter<{ result: RS extends 'many' ? string[] : string }>({
+      type: (opts as any)?.hidden ? 'invisible' : opts?.returnSize === 'many' ? 'list' : 'input',
       name: 'result',
       message,
-      validate: opts?.validate as ValidatorCast,
+      validate: validator,
       initial: opts?.initial,
+      // footer is not part of the TS interface but it's part of the JS API
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      footer: opts?.returnSize === 'many' ? 'Enter a comma-delimited list of values' : undefined,
     });
-    return typeof opts?.transform === 'function' ? ((await opts.transform(result)) as T) : ((result as unknown) as T); // this type assertion is safe because transform must be defined unless T is string
+
+    if (typeof opts?.transform === 'function') {
+      if (Array.isArray(result)) {
+        return (await Promise.all(result.map(async part => (opts.transform as Function)(part) as T))) as PromptReturn<RS, T>;
+      }
+      return (opts.transform(result as string) as unknown) as PromptReturn<RS, T>;
+    } else {
+      return (result as unknown) as PromptReturn<RS, T>;
+    }
   };
 
   /**
    * Pick item(s) from a selection set.
+   *
+   * If only one choice is provided in the choices list, that choice is returned without a prompt
+   * If the yes flag is set, the initial selection is returned. If no initial selection is specified, an error is thrown
    * @param message The prompt message
    * @param choices The selection set to choose from
    * @param options Control prompt settings. options.multiSelect = true is required if PickType = 'many'
    * @returns The item(s) selected. If PickType = 'one' this is a single value. If PickType = 'many', this is an array
    */
-  pick = async <M extends PickType, T = string>(
+  pick = async <RS extends ReturnSize = 'one', T = string>(
     message: string,
     choices: Choices<T>,
-    ...options: M extends 'one' ? [PickOptions<M>?] : [PickOptions<M>]
-  ): Promise<PickReturn<M, T>> => {
-    if (isYes) {
-      throw new Error(`Cannot prompt for [${message}] when '--yes' flag is set`);
-    }
+    ...options: MaybeOptionalPickOptions<RS>
+  ): Promise<PromptReturn<RS, T>> => {
     // some choices must be provided
     if (choices?.length === 0) {
       throw new Error(`No choices provided for prompt [${message}]`);
@@ -102,19 +126,28 @@ class AmplifyPrompter implements Prompter {
     // enquirer requires all choice values be strings, so set up a mapping of string => T
     // and format choices to conform to enquirer's interface
     const choiceValueMap = new Map<string, T>();
-    const enquirerChoices = genericChoices.map((choice, idx) => {
+    const enquirerChoices = genericChoices.map(choice => {
       choiceValueMap.set(choice.name, choice.value);
       return { name: choice.name, disabled: choice.disabled, hint: choice.hint };
     });
 
     actions.ctrl.a = 'a';
 
-    let result = typeof choices[0] === 'string' ? choices[0] : ((choices[0] as GenericChoice<T>).name as string | string[]);
+    let result = genericChoices[0].name as string | string[];
 
     if (choices?.length === 1) {
-      this.print.info(`Only one option for ${message}. Selecting ${result} by default.`);
+      this.print.info(`Only one option for [${message}]. Selecting [${result}].`);
+    } else if (isYes) {
+      if (opts?.initial === undefined || (Array.isArray(opts?.initial) && opts?.initial.length === 0)) {
+        throw new Error(`Cannot prompt for [${message}] when '--yes' flag is set`);
+      }
+      if (typeof opts?.initial === 'number') {
+        result = genericChoices[opts?.initial].name;
+      } else {
+        result = opts?.initial.map(idx => genericChoices[idx].name);
+      }
     } else {
-      ({ result } = await this.prompter<{ result: M extends 'many' ? string[] : string }>({
+      ({ result } = await this.prompter<{ result: RS extends 'many' ? string[] : string }>({
         // actions is not part of the TS interface but it's part of the JS API
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
@@ -122,7 +155,7 @@ class AmplifyPrompter implements Prompter {
         // footer is not part of the TS interface but it's part of the JS API
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
-        footer: opts?.multiSelect ? '(Use <space> to select, <ctrl + a> to toggle all)' : undefined,
+        footer: opts?.returnSize === 'many' ? '(Use <space> to select, <ctrl + a> to toggle all)' : undefined,
         type: 'autocomplete',
         name: 'result',
         message,
@@ -130,43 +163,61 @@ class AmplifyPrompter implements Prompter {
         // there is a typo in the .d.ts file for this field -- muliple -> multiple
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
-        multiple: opts?.multiSelect,
+        multiple: opts?.returnSize === 'many',
         choices: enquirerChoices,
       }));
     }
 
     if (Array.isArray(result)) {
-      return result.map(item => choiceValueMap.get(item) as T) as PickReturn<M, T>;
+      return result.map(item => choiceValueMap.get(item) as T) as PromptReturn<RS, T>;
     } else {
       // result is a string
-      return choiceValueMap.get(result as string) as PickReturn<M, T>;
+      return choiceValueMap.get(result as string) as PromptReturn<RS, T>;
     }
   };
 }
 
 export const prompter: Prompter = new AmplifyPrompter();
 
+const validateEachWith = (validator?: Validator) => async (input: string[]) => {
+  if (!validator) {
+    return true;
+  }
+  const validationList = await Promise.all(input.map(part => part.trim()).map(async part => ({ part, result: await validator(part) })));
+  const firstInvalid = validationList.find(v => typeof v.result === 'string');
+  if (firstInvalid) {
+    return `${firstInvalid.part} did not satisfy requirement ${firstInvalid.result}`;
+  }
+  return true;
+};
+
 type Prompter = {
   confirmContinue: (message?: string) => Promise<boolean>;
   yesOrNo: (message: string, initial?: boolean) => Promise<boolean>;
-  // options is typed using spread because it's the only way to make it optional if T is a string but required otherwise
-  input: <T = string>(message: string, ...options: T extends string ? [InputOptions<T>?] : [InputOptions<T>]) => Promise<T>;
-  pick: <M extends PickType, T = string>(
+  // options is typed using spread because it's the only way to make it optional if RS is 'one' and T is a string but required otherwise
+  input: <RS extends ReturnSize = 'one', T = string>(
+    message: string,
+    ...options: MaybeOptionalInputOptions<RS, T>
+  ) => Promise<PromptReturn<RS, T>>;
+  pick: <RS extends ReturnSize = 'one', T = string>(
     message: string,
     choices: Choices<T>,
-    // options is typed using spread because it's the only way to make it required if M is 'many' but optional if M is 'one'
-    ...options: M extends 'one' ? [PickOptions<M>?] : [PickOptions<M>]
-  ) => Promise<PickReturn<M, T>>;
+    // options is typed using spread because it's the only way to make it required if RS is 'many' but optional if RS is 'one'
+    ...options: MaybeOptionalPickOptions<RS>
+  ) => Promise<PromptReturn<RS, T>>;
 };
 
 // the following types are the building blocks of the method input types
 
-type HiddenInputOption = {
-  hidden?: boolean;
-};
+// Hidden cannot be specified if ReturnSize is 'many'
+type MaybeAvailableHiddenInputOption<RS extends ReturnSize> = RS extends 'many'
+  ? {}
+  : {
+      hidden?: boolean;
+    };
 
-type InitialSelectionOption<M extends PickType> = {
-  initial?: M extends 'one' ? number : number[];
+type InitialSelectionOption<RS extends ReturnSize> = {
+  initial?: RS extends 'one' ? number : number[];
 };
 
 type InitialValueOption<T> = {
@@ -177,20 +228,20 @@ type ValidateValueOption = {
   validate?: Validator;
 };
 
-type ValidatorCast = (input: string) => string | true | Promise<string> | Promise<true>;
+type ValidatorCast = (input: string | string[]) => string | true | Promise<string> | Promise<true>;
 
 type TransformOption<T> = {
   transform: (value: string) => T | Promise<T>;
 };
 
-type MaybeTransformOption<T> = T extends string ? Partial<TransformOption<T>> : TransformOption<T>;
+type MaybeOptionalTransformOption<T> = T extends string ? Partial<TransformOption<T>> : TransformOption<T>;
 
-type MultiSelectOption<M extends PickType> = M extends 'many'
+type ReturnSizeOption<RS extends ReturnSize> = RS extends 'many'
   ? {
-      multiSelect: true;
+      returnSize: 'many';
     }
   : {
-      multiSelect?: false;
+      returnSize?: 'one';
     };
 
 type Choices<T> = T extends string ? GenericChoice<T>[] | string[] : GenericChoice<T>[];
@@ -202,11 +253,23 @@ type GenericChoice<T> = {
   disabled?: boolean;
 };
 
-type PickType = 'many' | 'one';
+type ReturnSize = 'many' | 'one';
 
-type PickReturn<M extends PickType, T> = M extends 'many' ? T[] : T;
+type MaybeOptionalInputOptions<RS extends ReturnSize, T> = RS extends 'many'
+  ? [InputOptions<RS, T>]
+  : T extends string
+  ? [InputOptions<RS, T>?]
+  : [InputOptions<RS, T>];
+
+type MaybeOptionalPickOptions<RS extends ReturnSize> = RS extends 'many' ? [PickOptions<RS>] : [PickOptions<RS>?];
+
+type PromptReturn<RS extends ReturnSize, T> = RS extends 'many' ? T[] : T;
 
 // the following types are the method input types
-type PickOptions<M extends PickType> = MultiSelectOption<M> & InitialSelectionOption<M>;
+type PickOptions<RS extends ReturnSize> = ReturnSizeOption<RS> & InitialSelectionOption<RS>;
 
-type InputOptions<T> = ValidateValueOption & InitialValueOption<T> & MaybeTransformOption<T> & HiddenInputOption;
+type InputOptions<RS extends ReturnSize, T> = ReturnSizeOption<RS> &
+  ValidateValueOption &
+  InitialValueOption<T> &
+  MaybeOptionalTransformOption<T> &
+  MaybeAvailableHiddenInputOption<RS>;

@@ -10,6 +10,12 @@ const printTypeofResult = (result: any) => console.log(`Response type was [${typ
  * Run `yarn demo` to see it in action
  */
 const demo = async () => {
+  printResult(await prompter.input('this is a prompt', { initial: 'that has an initial value' }));
+  printResult(await prompter.pick('these options have a default selected', ['opt1', 'opt2', 'opt3'], { initial: 1 }));
+  printResult(
+    await prompter.pick<'many'>('this is a multiselect with a default', ['opt1', 'opt2', 'opt3'], { initial: [1, 2], returnSize: 'many' }),
+  );
+  printResult(await prompter.pick('theres only one option here', ['opt1']));
   // confirmContinue
   printer.info(
     'confirmContine is intended to be used anywhere the CLI is doing a potentially dangerous or destructive action and we want the customer to confirm their understanding.',
@@ -24,7 +30,7 @@ const demo = async () => {
     'yesOrNo is similar to confirmContinue but it should be used when we simply want to know whether or not to perform an optional task.',
   );
   printer.info('A message must be specified for this prompt');
-  printResult(await prompter.yesOrNo('Do you want to wait for GME to go to the moon?'));
+  printResult(await prompter.yesOrNo('Do you want to wait for GME to go to the moon?', false));
 
   printer.warn(
     'The main difference between yesOrNo and confirmContinue is confirmContinue will always return true when the --yes flag is set but yesOrNo will return the default value',
@@ -32,7 +38,7 @@ const demo = async () => {
 
   // input
   printer.blankLine();
-  printer.info('To collect free-formm input fromm the customer, use prompter.input');
+  printer.info('To collect free-form input fromm the customer, use prompter.input');
   printer.info('The simplest case is asking for a string input');
   printResult(await prompter.input("What's your favorite color of Skittle?"));
 
@@ -45,7 +51,7 @@ const demo = async () => {
   printer.info('A validate function can accomplish this');
   printer.info('Try entering a value that is not a number this time');
   printResult(
-    await prompter.input<number>('How many Skittles do you want', {
+    await prompter.input<'one', number>('How many Skittles do you want', {
       transform: input => Number.parseInt(input, 10),
       validate: integer(),
     }),
@@ -65,6 +71,14 @@ const demo = async () => {
   printer.info('To enter passwords and other sensitive information, text can be hidden');
   printResult(await prompter.input('Enter your super secret value', { hidden: true }));
   printer.info("Note that the result is printed for demo purposes only. Don't ever actually print sensitive info to the console");
+
+  printer.info('To enter a list of values and have it returned as an array of values, specify a returnSize of "many"');
+  const resultInputMany = await prompter.input<'many'>('Enter a list of names for each bag of Skittles', { returnSize: 'many' });
+  printResult(resultInputMany);
+  printTypeofResult(resultInputMany);
+  printer.info(
+    'Note that when using a "many" input, the transform and validate functions will be applied to each part of the input, rather than the whole input',
+  );
 
   // pick
   printer.blankLine();
@@ -110,14 +124,14 @@ const demo = async () => {
   printer.info('Multiple choices can be selected by specifying multiSelect true');
   printer.info('When multiSelect is on, an array of initial indexes can be specified');
   printResult(
-    await prompter.pick<'many', number>('Pick your favorite colors', choices2, { multiSelect: true, initial: [1, 2] }),
+    await prompter.pick<'many', number>('Pick your favorite colors', choices2, { returnSize: 'many', initial: [1, 2] }),
   );
 
   printer.info('Individual choices can be disabled or have hint text next to them');
   (choices2[1] as any).hint = 'definitely the best';
   (choices2[2] as any).disabled = true;
   printResult(
-    await prompter.pick<'many', number>('Pick your favorite Skittle color', choices2, { multiSelect: true }),
+    await prompter.pick<'many', number>('Pick your favorite Skittle color', choices2, { returnSize: 'many' }),
   );
 };
 

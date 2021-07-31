@@ -49,11 +49,17 @@ describe('yesOrNo', () => {
 });
 
 describe('input', () => {
-  it('throws if yes flag set', async () => {
+  it('throws if yes flag set and no initial value', async () => {
     flags_mock.isYes = true;
     expect(() => prompter.input('test message')).rejects.toThrowErrorMatchingInlineSnapshot(
       `"Cannot prompt for [test message] when '--yes' flag is set"`,
     );
+  });
+
+  it('returns initial value without prompt if yes flag set', async () => {
+    flags_mock.isYes = true;
+    expect(await prompter.input('test message', { initial: 'initial value' })).toEqual('initial value');
+    expect(prompt_mock.mock.calls.length).toBe(0);
   });
 
   it('returns prompt response if no transformer present', async () => {
@@ -68,14 +74,34 @@ describe('input', () => {
     prompt_mock.mockResolvedValueOnce({ result: promptResponse });
     expect(await prompter.input('test message', { transform: input => transformedValue })).toEqual(transformedValue);
   });
+
+  it('transforms each input part separately when "many" specified', async () => {
+    prompt_mock.mockResolvedValueOnce({ result: ['10', '20'] });
+    expect(
+      await prompter.input<'many'>('test message', { returnSize: 'many', transform: input => `${input}suffix` }),
+    ).toEqual(['10suffix', '20suffix']);
+  });
 });
 
 describe('pick', () => {
-  it('throws if yes flag set', async () => {
+  it('throws if yes flag set and multiple options provided', async () => {
     flags_mock.isYes = true;
-    expect(() => prompter.pick('test message', ['opt1'])).rejects.toThrowErrorMatchingInlineSnapshot(
+    expect(() => prompter.pick('test message', ['opt1', 'opt2'])).rejects.toThrowErrorMatchingInlineSnapshot(
       `"Cannot prompt for [test message] when '--yes' flag is set"`,
     );
+  });
+
+  it('returns single option when yes flag set if only one option is provided', async () => {
+    flags_mock.isYes = true;
+    expect(await prompter.pick('test message', ['opt1'])).toEqual('opt1');
+    expect(prompt_mock.mock.calls.length).toBe(0);
+  });
+
+  it('returns initial selection if specified when yes flag is set', async () => {
+    flags_mock.isYes = true;
+    const result = await prompter.pick<'many'>('test message', ['opt1', 'opt2', 'opt3'], { returnSize: 'many', initial: [1, 2] });
+    expect(result).toEqual(['opt2', 'opt3']);
+    expect(prompt_mock.mock.calls.length).toBe(0);
   });
 
   it('throws if no choices provided', async () => {
@@ -98,7 +124,7 @@ describe('pick', () => {
     const mockResult = ['val1', 'val3'];
     prompt_mock.mockResolvedValueOnce({ result: mockResult });
     expect(
-      await prompter.pick<'many'>('test message', ['val1', 'val2', 'val3'], { multiSelect: true }),
+      await prompter.pick<'many'>('test message', ['val1', 'val2', 'val3'], { returnSize: 'many' }),
     ).toEqual(mockResult);
   });
 });
