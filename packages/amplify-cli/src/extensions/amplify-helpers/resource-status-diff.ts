@@ -13,13 +13,13 @@ const CategoryProviders = {
     CLOUDFORMATION : "cloudformation",
 }
 
-interface StackMutationInfo {
+export interface StackMutationInfo {
   label : String;
   consoleStyle : chalk.Chalk;
   icon : String;
 }
 //helper for summary styling
-interface StackMutationType {
+export interface StackMutationType {
   CREATE : StackMutationInfo,
   UPDATE : StackMutationInfo,
   DELETE : StackMutationInfo,
@@ -65,7 +65,7 @@ export const stackMutationType :  StackMutationType = {
 }
 
 //helper to capitalize string
-export function capitalize(str) {
+export function capitalize(str: string) : string {
   return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
 }
 
@@ -110,7 +110,7 @@ export class ResourceDiff {
     cloudTemplate : Template;
     mutationInfo : StackMutationInfo;
 
-    constructor( category, resourceName, provider, mutationInfo ){
+    constructor( category: string, resourceName : string, provider : string, mutationInfo: StackMutationInfo ){
         this.localBackendDir = pathManager.getBackendDirPath();
         this.cloudBackendDir = pathManager.getCurrentCloudBackendDirPath();
         this.resourceName = resourceName;
@@ -149,7 +149,7 @@ export class ResourceDiff {
       const resourceTemplatePaths = await this.getCfnResourceFilePaths();
       //set the member template objects
       this.localTemplate = await this.safeReadCFNTemplate(resourceTemplatePaths.localTemplatePath);
-      this.cloudTemplate  = await this.safeReadCFNTemplate(resourceTemplatePaths.cloudTemplatePath);
+      this.cloudTemplate = await this.safeReadCFNTemplate(resourceTemplatePaths.cloudTemplatePath);
 
       //Note!! :- special handling to support multi-env. Currently in multi-env, when new env is created,
       //we do *Not* delete the cloud-backend folder. Hence this logic will always give no diff for new resources.
@@ -163,9 +163,8 @@ export class ResourceDiff {
       return diff;
     }
 
-
-     //helper: wrapper around readCFNTemplate type to handle expressions.
-     private safeReadCFNTemplate = async(filePath : string ) => {
+    //helper: wrapper around readCFNTemplate type to handle expressions.
+    private safeReadCFNTemplate = async(filePath : string ) => {
       try {
         const templateResult = await readCFNTemplate(filePath);
         return templateResult.cfnTemplate;
