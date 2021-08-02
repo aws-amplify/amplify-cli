@@ -6,7 +6,8 @@ REACTCONFIG="{\
 \"SourceDir\":\"src\",\
 \"DistributionDir\":\"build\",\
 \"BuildCommand\":\"npm run-script build\",\
-\"StartCommand\":\"npm run-script start\"\
+\"StartCommand\":\"npm run-script start\",\
+\"ServerlessContainers\":false\
 }"
 AWSCLOUDFORMATIONCONFIG="{\
 \"configLevel\":\"project\",\
@@ -33,3 +34,4 @@ amplify configure project \
 --amplify $AMPLIFY \
 --frontend $FRONTEND \
 --providers $PROVIDERS \
+--yes
