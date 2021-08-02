@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.9.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-headless-interface@1.8.0...amplify-headless-interface@1.9.0) (2021-07-27)
+
+
+### Features
+
+* **amplify-category-auth:** enable alternative signup/signin options ([#7461](https://github.com/aws-amplify/amplify-cli/issues/7461)) ([56a0c35](https://github.com/aws-amplify/amplify-cli/commit/56a0c35d2cef0fbff27c80f78dba57516ef18afb)), closes [#1546](https://github.com/aws-amplify/amplify-cli/issues/1546)
+
+
+
+
+
 # [1.8.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-headless-interface@1.7.0...amplify-headless-interface@1.8.0) (2021-07-12)
 
 

@@ -162,7 +162,7 @@ export class TransformerResolver implements TransformerResolverProvider {
     // substitue template name values
     [this.requestMappingTemplate, this.requestMappingTemplate].map(template => this.substitueSlotInfo(template, 'main', 0));
 
-    const dataSourceProviderFn = api.addAppSyncFunction(
+    const dataSourceProviderFn = api.host.addAppSyncFunction(
       toPascalCase([this.typeName, this.fieldName, 'DataResolverFn']),
       this.requestMappingTemplate,
       this.responseMappingTemplate,
@@ -213,7 +213,7 @@ export class TransformerResolver implements TransformerResolverProvider {
           throw new Error('Unknow DataSource type');
       }
     }
-    api.addResolver(
+    api.host.addResolver(
       this.typeName,
       this.fieldName,
       MappingTemplate.inlineTemplateFromString(
@@ -249,7 +249,7 @@ export class TransformerResolver implements TransformerResolverProvider {
           this.substitueSlotInfo(requestMappingTemplate, slotName, index);
           // eslint-disable-next-line no-unused-expressions
           responseMappingTemplate && this.substitueSlotInfo(responseMappingTemplate, slotName, index);
-          const fn = api.addAppSyncFunction(
+          const fn = api.host.addAppSyncFunction(
             name,
             requestMappingTemplate,
             responseMappingTemplate || MappingTemplate.inlineTemplateFromString('$util.toJson({})'),
@@ -270,8 +270,8 @@ export class TransformerResolver implements TransformerResolverProvider {
   }
 
   private ensureNoneDataSource(api: GraphQLAPIProvider) {
-    if (!api.hasDataSource(NONE_DATA_SOURCE_NAME)) {
-      api.addNoneDataSource(NONE_DATA_SOURCE_NAME, {
+    if (!api.host.hasDataSource(NONE_DATA_SOURCE_NAME)) {
+      api.host.addNoneDataSource(NONE_DATA_SOURCE_NAME, {
         name: NONE_DATA_SOURCE_NAME,
         description: 'None Data Source for Pipeline functions',
       });

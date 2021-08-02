@@ -3,6 +3,33 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.9.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-predictions@2.9.5...amplify-category-predictions@2.9.6) (2021-07-30)
+
+
+### Bug Fixes
+
+* lambda timeout should be an integer type ([#7699](https://github.com/aws-amplify/amplify-cli/issues/7699)) ([cbacf4d](https://github.com/aws-amplify/amplify-cli/commit/cbacf4d3e497421855c09825970e025550aacfd7))
+
+
+
+
+
+## [2.9.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-predictions@2.9.4...amplify-category-predictions@2.9.5) (2021-07-27)
+
+
+### Bug Fixes
+
+* upgrade node default runtime to 14 ([#7700](https://github.com/aws-amplify/amplify-cli/issues/7700)) ([47968cc](https://github.com/aws-amplify/amplify-cli/commit/47968cc9c704ac1cffcbd0dbe40d164b1b1d48d6))
+
+
+### Reverts
+
+* Revert "fix: upgrade node default runtime to 14 (#7700)" (#7763) ([3ab8769](https://github.com/aws-amplify/amplify-cli/commit/3ab87694203584cdfa208bf75e648e0e944f5e18)), closes [#7700](https://github.com/aws-amplify/amplify-cli/issues/7700) [#7763](https://github.com/aws-amplify/amplify-cli/issues/7763)
+
+
+
+
+
 ## [2.9.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-predictions@2.9.3...amplify-category-predictions@2.9.4) (2021-07-16)
 
 **Note:** Version bump only for package amplify-category-predictions
