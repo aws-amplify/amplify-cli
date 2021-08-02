@@ -14,10 +14,12 @@ const context_stub = ({
   },
   // Mock construction of exeInfo
   exeInfo: { projectConfig: { frontend, [frontend]: { config: {} } } },
+  parameters: { options: { yes: false } },
 } as unknown) as jest.Mocked<$TSContext>;
 
-describe('frontend configuration', () => {
-  it('should prompt for a ServerlessContainers value if no option or default is present', async () => {
+describe('enableServerlessContainers', () => {
+  it('should prompt for a ServerlessContainers value when `--yes` is NOT present', async () => {
+    context_stub.parameters.options.yes = false;
     let prompt = enableServerlessContainers(context_stub);
     // Mock user response
     process.stdin.push('y\n');
@@ -26,8 +28,18 @@ describe('frontend configuration', () => {
     expect(context_stub.exeInfo.projectConfig[frontend].config.ServerlessContainers).toEqual(true);
   });
 
-  it('should use passed or default ServerlessContainers option instead of prompting', async () => {
+  it('should use passed or default ServerlessContainers option when `--yes` is present.', async () => {
+    context_stub.parameters.options.yes = true;
     context_stub.exeInfo.projectConfig[frontend].config.ServerlessContainers = false;
+
+    await enableServerlessContainers(context_stub);
+
+    expect(context_stub.exeInfo.projectConfig[frontend].config.ServerlessContainers).toEqual(false);
+  });
+
+  it('should set ServerlessContainers to `false` by default when `--yes` is present, but there is no passed/default value', async () => {
+    context_stub.parameters.options.yes = true;
+    context_stub.exeInfo.projectConfig[frontend].config = {};
 
     await enableServerlessContainers(context_stub);
 
