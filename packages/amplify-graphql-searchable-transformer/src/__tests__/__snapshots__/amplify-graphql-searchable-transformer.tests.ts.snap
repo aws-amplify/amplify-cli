@@ -233,7 +233,7 @@ input CreateEmployeeInput {
   id: ID
   firstName: String!
   lastName: String!
-  type: EmploymentType!
+  type: EmploymentTypeInput!
 }
 
 type Mutation {
@@ -246,7 +246,7 @@ input UpdateEmployeeInput {
   id: ID!
   firstName: String
   lastName: String
-  type: EmploymentType
+  type: EmploymentTypeInput
 }
 
 input DeleteEmployeeInput {
