@@ -255,13 +255,13 @@ export class DefaultTransformHost implements TransformHostProvider {
   }
 
   /**
-   * add a new elasticsearch data source to this API
+   * add a new searchable data source to this API
    *
    * @param id The data source's id
-   * @param endpoint The elasticsearch endpoint
-   * @param region The elasticsearch datasource region
+   * @param endpoint The searchable endpoint
+   * @param region The searchable datasource region
    * @param options The optional configuration for this data source
-   * @param stack Stack to which the elasticsearch datasource needs to be created in
+   * @param stack Stack to which the searchable datasource needs to be created in
    */
   protected doAddSearchableDataSource(
     id: string,
