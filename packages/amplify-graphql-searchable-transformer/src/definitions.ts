@@ -9,7 +9,16 @@ import {
   EnumTypeDefinitionNode,
   EnumValueDefinitionNode,
 } from 'graphql';
-import { graphqlName, makeNamedType, isScalar, isEnum, makeListType, makeNonNullType, getBaseType, SearchableResourceIDs } from 'graphql-transformer-common';
+import {
+  graphqlName,
+  makeNamedType,
+  isScalar,
+  isEnum,
+  makeListType,
+  makeNonNullType,
+  getBaseType,
+  SearchableResourceIDs,
+} from 'graphql-transformer-common';
 
 const ID_CONDITIONS = [
   'ne',
@@ -228,12 +237,11 @@ export function makeSearchableXSortInputObject(obj: ObjectTypeDefinitionNode): I
 
 export function makeSearchableAggregateTypeEnumObject(): EnumTypeDefinitionNode {
   const name = graphqlName('SearchableAggregateType');
-  const values: EnumValueDefinitionNode[] = ['terms', 'avg', 'min', 'max', 'sum']
-    .map((type: string) => ({
-      kind: Kind.ENUM_VALUE_DEFINITION,
-      name: { kind: 'Name', value: type },
-      directives: [],
-    }));
+  const values: EnumValueDefinitionNode[] = ['terms', 'avg', 'min', 'max', 'sum'].map((type: string) => ({
+    kind: Kind.ENUM_VALUE_DEFINITION,
+    name: { kind: 'Name', value: type },
+    directives: [],
+  }));
 
   return {
     kind: Kind.ENUM_TYPE_DEFINITION,

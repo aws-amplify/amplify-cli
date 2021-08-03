@@ -84,9 +84,7 @@ beforeAll(async () => {
     `;
   const transformer = new GraphQLTransform({
     featureFlags,
-    transformers: [
-      new ModelTransformer(), new SearchableModelTransformer(),
-    ],
+    transformers: [new ModelTransformer(), new SearchableModelTransformer()],
   });
   try {
     await awsS3Client.createBucket({ Bucket: BUCKET_NAME }).promise();
@@ -121,7 +119,7 @@ beforeAll(async () => {
     await createEntries();
   } catch (e) {
     console.error(e);
-    throw(e);
+    throw e;
   }
 });
 

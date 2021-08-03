@@ -266,7 +266,7 @@ export function defineUnionType(name: string, types: NamedTypeNode[] = []): Unio
     kind: Kind.UNION_TYPE_DEFINITION,
     name: {
       kind: 'Name',
-      value: name
+      value: name,
     },
     types: types,
   };
