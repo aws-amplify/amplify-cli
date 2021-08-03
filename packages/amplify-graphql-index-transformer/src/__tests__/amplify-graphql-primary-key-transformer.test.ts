@@ -592,3 +592,23 @@ test('key with complex fields updates the input objects', () => {
   expect(deleteInput.fields.find((f: any) => f.name.value === 'email' && f.type.kind === Kind.NON_NULL_TYPE)).toBeDefined();
   expect(deleteInput.fields.find((f: any) => f.name.value === 'nonNullListInputOfNonNullStrings')).toBeUndefined();
 });
+
+test('list queries use correct pluralization', () => {
+  const inputSchema = `
+    type Boss @model {
+      id: ID! @primaryKey
+    }`;
+  const transformer = new GraphQLTransform({
+    transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
+  });
+  const out = transformer.transform(inputSchema);
+  const schema = parse(out.schema);
+  const query: any = schema.definitions.find((d: any) => d.kind === Kind.OBJECT_TYPE_DEFINITION && d.name.value === 'Query');
+  expect(query).toBeDefined();
+
+  const listQuery = query.fields.find((f: any) => f.name.value === 'listBosses');
+  expect(listQuery).toBeDefined();
+
+  expect(out.pipelineFunctions['Query.listBosses.req.vtl']).toBeDefined();
+  expect(out.pipelineFunctions['Query.listBosses.res.vtl']).toBeDefined();
+});

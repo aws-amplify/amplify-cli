@@ -26,7 +26,7 @@ import { generateConditionSlot } from './common';
  * @param modelName Name of the model
  */
 export const generateUpdateRequestTemplate = (modelName: string): string => {
-  const objectKeyVariable = 'ctx.stash.metadata.modelObjetKey';
+  const objectKeyVariable = 'ctx.stash.metadata.modelObjectKey';
   const keyFields: StringNode[] = [str('id')];
   const statements: Expression[] = [
     comment('Set the default values to put request'),
@@ -34,7 +34,7 @@ export const generateUpdateRequestTemplate = (modelName: string): string => {
     comment('copy the values from input'),
     qref(methodCall(ref('mergedValues.putAll'), methodCall(ref('util.defaultIfNull'), ref('ctx.args.input'), obj({})))),
     comment('set the typename'),
-    // Initlaize object as placeholder for expressions
+    // Initialize object as placeholder for expressions
     comment('Initialize the vars for creating ddb expression'),
     set(ref('expNames'), obj({})),
     set(ref('expValues'), obj({})),
@@ -44,13 +44,16 @@ export const generateUpdateRequestTemplate = (modelName: string): string => {
 
     ifElse(
       ref(objectKeyVariable),
-      set(ref('Key'), methodCall(ref('util.dynamodb.toDynamoDB'), ref(objectKeyVariable))),
+      set(ref('Key'), ref(objectKeyVariable)),
       set(ref('Key'), obj({ id: methodCall(ref('util.dynamodb.toDynamoDB'), ref('ctx.args.input.id')) })),
     ),
     comment('Model key'),
     ifElse(
       ref(objectKeyVariable),
-      compoundExpression([forEach(ref('entry'), ref(`${objectKeyVariable}.entrySet()`), [qref('$keyFields.add("$entry.key")')])]),
+      compoundExpression([
+        set(ref('keyFields'), list([])),
+        forEach(ref('entry'), ref(`${objectKeyVariable}.entrySet()`), [qref('$keyFields.add("$entry.key")')]),
+      ]),
       set(ref('keyFields'), list(keyFields)),
     ),
 
@@ -102,19 +105,7 @@ export const generateUpdateRequestTemplate = (modelName: string): string => {
     iff(raw('!$expValues.isEmpty()'), qref('$update.put("expressionValues", $expValues)')),
     // add conditions
     // set key the condition
-    comment('Begin - key condition'),
-    ifElse(
-      ref('ctx.stash.metadata.modelObjectKey'),
-      compoundExpression([
-        set(ref('keyConditionExpr'), obj({})),
-        forEach(ref('entry'), ref(`ctx.stash.metadata.modelObjectKey.entrySet()`), [
-          qref(methodCall(ref('keyConditionExpr.put'), str('$entry.key'), obj({ attributeExists: bool(true) }))),
-        ]),
-        qref(methodCall(ref('ctx.stash.conditions.add'), ref('keyConditionExpr'))),
-      ]),
-      compoundExpression([qref(methodCall(ref('ctx.stash.conditions.add'), obj({ id: obj({ attributeExists: bool(true) }) })))]),
-    ),
-    comment('End - key condition'),
+    ...generateKeyConditionTemplate(true),
     iff(ref('context.args.condition'), qref(methodCall(ref('ctx.stash.conditions.add'), ref('context.args.condition')))),
     // Generate conditions
     generateConditionSlot('ctx.stash.conditions', 'Conditions'),
@@ -127,7 +118,13 @@ export const generateUpdateRequestTemplate = (modelName: string): string => {
         update: ref('update'),
       }),
     ),
-    iff(ref('Conditions'), qref(methodCall(ref('UpdateItem.put'), str('condition'), ref('Conditions')))),
+    iff(
+      ref('Conditions'),
+      compoundExpression([
+        iff(ref('keyConditionExprNames'), qref(methodCall(ref('Conditions.expressionNames.putAll'), ref('keyConditionExprNames')))),
+        qref(methodCall(ref('UpdateItem.put'), str('condition'), ref('Conditions'))),
+      ]),
+    ),
     toJson(ref('UpdateItem')),
   ];
   return printBlock(`${modelName} Update resolver`)(compoundExpression(statements));
@@ -140,19 +137,7 @@ export const generateUpdateRequestTemplate = (modelName: string): string => {
 export const generateCreateRequestTemplate = (modelName: string): string => {
   const statements: Expression[] = [
     // set key the condition
-    comment('Begin - KeyCondition'),
-    ifElse(
-      ref('ctx.stash.metadata.modelObjectKey'),
-      compoundExpression([
-        set(ref('keyConditionExpr'), obj({})),
-        forEach(ref('entry'), ref(`ctx.stash.metadata.modelObjectKey.entrySet()`), [
-          qref(methodCall(ref('keyConditionExpr.add'), str('$entry.key'), obj({ attributeExists: bool(true) }))),
-        ]),
-        qref(methodCall(ref('ctx.stash.conditions.add'), ref('keyConditionExpr'))),
-      ]),
-      compoundExpression([qref(methodCall(ref('ctx.stash.conditions.add'), obj({ id: obj({ attributeExists: bool(false) }) })))]),
-    ),
-    comment('End - KeyCondition'),
+    ...generateKeyConditionTemplate(false),
     // Generate conditions
     comment('Set the default values to put request'),
     set(ref('mergedValues'), methodCall(ref('util.defaultIfNull'), ref('ctx.stash.defaultValues'), obj({}))),
@@ -176,25 +161,19 @@ export const generateCreateRequestTemplate = (modelName: string): string => {
 
     iff(ref('context.args.condition'), qref(methodCall(ref('ctx.stash.conditions.add'), ref('context.args.condition')))),
     // key conditions
-    comment('Begin - KeyCondition'),
-    ifElse(
-      ref('ctx.stash.metadata.modelObjectKey'),
-      compoundExpression([
-        set(ref('keyConditionExpr'), obj({})),
-        forEach(ref('entry'), ref(`ctx.stash.metadata.modelObjectKey.entrySet()`), [
-          qref(methodCall(ref('keyConditionExpr.put'), str('$entry.key'), obj({ attributeExists: bool(false) }))),
-        ]),
-        qref(methodCall(ref('ctx.stash.conditions.add'), ref('keyConditionExpr'))),
-      ]),
-      compoundExpression([qref(methodCall(ref('ctx.stash.conditions.add'), obj({ id: obj({ attributeExists: bool(false) }) })))]),
-    ),
-    comment('End - KeyCondition'),
+    ...generateKeyConditionTemplate(false),
     // Generate conditions
     generateConditionSlot('ctx.stash.conditions', 'Conditions'),
-    iff(ref('Conditions'), qref(methodCall(ref('PutObject.put'), str('condition'), ref('Conditions')))),
+    iff(
+      ref('Conditions'),
+      compoundExpression([
+        iff(ref('keyConditionExprNames'), qref(methodCall(ref('Conditions.expressionNames.putAll'), ref('keyConditionExprNames')))),
+        qref(methodCall(ref('PutObject.put'), str('condition'), ref('Conditions'))),
+      ]),
+    ),
     ifElse(
-      ref('ctx.stash.metadata.modelObject'),
-      methodCall(ref('PutObject.put'), str('id'), ref('ctx.stash.metadata.modelObject')),
+      ref('ctx.stash.metadata.modelObjectKey'),
+      qref(methodCall(ref('PutObject.put'), str('key'), ref('ctx.stash.metadata.modelObjectKey'))),
       compoundExpression([
         set(
           ref('Key'),
@@ -266,23 +245,17 @@ export const generateDeleteRequestTemplate = (): string => {
       set(ref('Key'), obj({ id: methodCall(ref('util.dynamodb.toDynamoDB'), ref('ctx.args.input.id')) })),
     ),
     qref(methodCall(ref('DeleteRequest.put'), str('key'), ref('Key'))),
-    comment('Begin - key condition'),
-    ifElse(
-      ref('ctx.stash.metadata.modelObjectKey'),
-      compoundExpression([
-        set(ref('keyConditionExpr'), obj({})),
-        forEach(ref('entry'), ref(`ctx.stash.metadata.modelObjectKey.entrySet()`), [
-          qref(methodCall(ref('keyConditionExpr.put'), str('$entry.key'), obj({ attributeExists: bool(true) }))),
-        ]),
-        qref(methodCall(ref('ctx.stash.conditions.add'), ref('keyConditionExpr'))),
-      ]),
-      compoundExpression([qref(methodCall(ref('ctx.stash.conditions.add'), obj({ id: obj({ attributeExists: bool(true) }) })))]),
-    ),
-    comment('End - key condition'),
+    ...generateKeyConditionTemplate(true),
     iff(ref('context.args.condition'), qref(methodCall(ref('ctx.stash.conditions.add'), ref('context.args.condition')))),
     // Generate conditions
     generateConditionSlot('ctx.stash.conditions', 'Conditions'),
-    iff(ref('Conditions'), qref(methodCall(ref('DeleteRequest.put'), str('condition'), ref('Conditions')))),
+    iff(
+      ref('Conditions'),
+      compoundExpression([
+        iff(ref('keyConditionExprNames'), qref(methodCall(ref('Conditions.expressionNames.putAll'), ref('keyConditionExprNames')))),
+        qref(methodCall(ref('DeleteRequest.put'), str('condition'), ref('Conditions'))),
+      ]),
+    ),
     toJson(ref('DeleteRequest')),
   ];
 
@@ -321,3 +294,40 @@ export const generateUpdateInitSlotTemplate = (modelName: string, modelConfig: M
   );
   return printBlock('Initialization default values')(compoundExpression(statements));
 };
+
+export function generateApplyDefaultsToInputTemplate(target: string): Expression {
+  return compoundExpression([
+    set(ref(target), methodCall(ref('util.defaultIfNull'), ref('ctx.stash.defaultValues'), obj({}))),
+    qref(methodCall(ref(`${target}.putAll`), methodCall(ref('util.defaultIfNull'), ref('ctx.args.input'), obj({})))),
+  ]);
+}
+
+function generateKeyConditionTemplate(attributeExistsValue: boolean): Expression[] {
+  const statements: Expression[] = [
+    comment('Begin - key condition'),
+    ifElse(
+      ref('ctx.stash.metadata.modelObjectKey'),
+      compoundExpression([
+        set(ref('keyConditionExpr'), obj({})),
+        set(ref('keyConditionExprNames'), obj({})),
+        forEach(ref('entry'), ref('ctx.stash.metadata.modelObjectKey.entrySet()'), [
+          qref(
+            methodCall(
+              ref('keyConditionExpr.put'),
+              str('keyCondition$velocityCount'),
+              obj({ attributeExists: bool(attributeExistsValue) }),
+            ),
+          ),
+          qref(methodCall(ref('keyConditionExprNames.put'), str('#keyCondition$velocityCount'), str('$entry.key'))),
+        ]),
+        qref(methodCall(ref('ctx.stash.conditions.add'), ref('keyConditionExpr'))),
+      ]),
+      compoundExpression([
+        qref(methodCall(ref('ctx.stash.conditions.add'), obj({ id: obj({ attributeExists: bool(attributeExistsValue) }) }))),
+      ]),
+    ),
+    comment('End - key condition'),
+  ];
+
+  return statements;
+}

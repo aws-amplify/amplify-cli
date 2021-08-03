@@ -101,14 +101,49 @@ input SearchableEmployeeSortInput {
   direction: SearchableSortDirection
 }
 
+input SearchableEmployeeAggregationInput {
+  name: String!
+  type: SearchableAggregateType!
+  field: String!
+}
+
+enum SearchableAggregateType {
+  terms
+  avg
+  min
+  max
+  sum
+}
+
 type SearchableEmployeeConnection {
   items: [Employee]
   nextToken: String
   total: Int
+  aggregateItems: [SearchableAggregateResult]
 }
 
+type SearchableAggregateResult {
+  name: String!
+  result: SearchableAggregateGenericResult
+}
+
+type SearchableAggregateScalarResult {
+  value: Float!
+}
+
+type SearchableAggregateBucketResult {
+  buckets: [SearchableAggregateBucketResultItem]
+}
+
+type SearchableAggregateBucketResultItem {
+  key: String!
+  doc_count: Int!
+}
+
+union SearchableAggregateGenericResult = SearchableAggregateScalarResult | SearchableAggregateBucketResult
+
 type Query {
-  searchEmployees(filter: SearchableEmployeeFilterInput, sort: [SearchableEmployeeSortInput], limit: Int, nextToken: String, from: Int): SearchableEmployeeConnection
+  searchEmployees(filter: SearchableEmployeeFilterInput, sort: [SearchableEmployeeSortInput], limit: Int, nextToken: String, from: Int, aggregates: [SearchableEmployeeAggregationInput]): SearchableEmployeeConnection
   getEmployee(id: ID!): Employee
   listEmployees(filter: ModelEmployeeFilterInput, limit: Int, nextToken: String): ModelEmployeeConnection
 }
@@ -357,14 +392,49 @@ input SearchablePostSortInput {
   direction: SearchableSortDirection
 }
 
+input SearchablePostAggregationInput {
+  name: String!
+  type: SearchableAggregateType!
+  field: String!
+}
+
+enum SearchableAggregateType {
+  terms
+  avg
+  min
+  max
+  sum
+}
+
 type SearchablePostConnection {
   items: [Post]
   nextToken: String
   total: Int
+  aggregateItems: [SearchableAggregateResult]
 }
 
+type SearchableAggregateResult {
+  name: String!
+  result: SearchableAggregateGenericResult
+}
+
+type SearchableAggregateScalarResult {
+  value: Float!
+}
+
+type SearchableAggregateBucketResult {
+  buckets: [SearchableAggregateBucketResultItem]
+}
+
+type SearchableAggregateBucketResultItem {
+  key: String!
+  doc_count: Int!
+}
+
+union SearchableAggregateGenericResult = SearchableAggregateScalarResult | SearchableAggregateBucketResult
+
 type Query {
-  searchPosts(filter: SearchablePostFilterInput, sort: [SearchablePostSortInput], limit: Int, nextToken: String, from: Int): SearchablePostConnection
+  searchPosts(filter: SearchablePostFilterInput, sort: [SearchablePostSortInput], limit: Int, nextToken: String, from: Int, aggregates: [SearchablePostAggregationInput]): SearchablePostConnection
   getPost(id: ID!): Post
   listPosts(filter: ModelPostFilterInput, limit: Int, nextToken: String): ModelPostConnection
 }
@@ -527,13 +597,15 @@ $util.toJson({
 })
 ## [End] Initialization default values. **",
   "Mutation.createPost.req.vtl": "## [Start] Create Request template. **
-## Begin - KeyCondition **
+## Begin - key condition **
 #if( $ctx.stash.metadata.modelObjectKey )
   #set( $keyConditionExpr = {} )
+  #set( $keyConditionExprNames = {} )
   #foreach( $entry in $ctx.stash.metadata.modelObjectKey.entrySet() )
-    $util.qr($keyConditionExpr.add(\\"$entry.key\\", {
-  \\"attributeExists\\": true
+    $util.qr($keyConditionExpr.put(\\"keyCondition$velocityCount\\", {
+  \\"attributeExists\\": false
 }))
+    $util.qr($keyConditionExprNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
   #end
   $util.qr($ctx.stash.conditions.add($keyConditionExpr))
 #else
@@ -543,7 +615,7 @@ $util.toJson({
   }
 }))
 #end
-## End - KeyCondition **
+## End - key condition **
 ## Set the default values to put request **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
 ## copy the values from input **
@@ -559,13 +631,15 @@ $util.qr($mergedValues.put(\\"__typename\\", \\"Post\\"))
 #if( $context.args.condition )
   $util.qr($ctx.stash.conditions.add($context.args.condition))
 #end
-## Begin - KeyCondition **
+## Begin - key condition **
 #if( $ctx.stash.metadata.modelObjectKey )
   #set( $keyConditionExpr = {} )
+  #set( $keyConditionExprNames = {} )
   #foreach( $entry in $ctx.stash.metadata.modelObjectKey.entrySet() )
-    $util.qr($keyConditionExpr.put(\\"$entry.key\\", {
+    $util.qr($keyConditionExpr.put(\\"keyCondition$velocityCount\\", {
   \\"attributeExists\\": false
 }))
+    $util.qr($keyConditionExprNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
   #end
   $util.qr($ctx.stash.conditions.add($keyConditionExpr))
 #else
@@ -575,7 +649,7 @@ $util.qr($mergedValues.put(\\"__typename\\", \\"Post\\"))
   }
 }))
 #end
-## End - KeyCondition **
+## End - key condition **
 ## Start condition block **
 #if( $ctx.stash.conditions && $ctx.stash.conditions.size() != 0 )
   #set( $mergedConditions = {
@@ -591,10 +665,13 @@ $util.qr($mergedValues.put(\\"__typename\\", \\"Post\\"))
   ## End condition block **
 #end
 #if( $Conditions )
+  #if( $keyConditionExprNames )
+    $util.qr($Conditions.expressionNames.putAll($keyConditionExprNames))
+  #end
   $util.qr($PutObject.put(\\"condition\\", $Conditions))
 #end
-#if( $ctx.stash.metadata.modelObject )
-  $PutObject.put(\\"id\\", $ctx.stash.metadata.modelObject)
+#if( $ctx.stash.metadata.modelObjectKey )
+  $util.qr($PutObject.put(\\"key\\", $ctx.stash.metadata.modelObjectKey))
 #else
   #set( $Key = {
   \\"id\\":   $util.dynamodb.toDynamoDB($mergedValues.id)
@@ -626,10 +703,12 @@ $util.qr($DeleteRequest.put(\\"key\\", $Key))
 ## Begin - key condition **
 #if( $ctx.stash.metadata.modelObjectKey )
   #set( $keyConditionExpr = {} )
+  #set( $keyConditionExprNames = {} )
   #foreach( $entry in $ctx.stash.metadata.modelObjectKey.entrySet() )
-    $util.qr($keyConditionExpr.put(\\"$entry.key\\", {
+    $util.qr($keyConditionExpr.put(\\"keyCondition$velocityCount\\", {
   \\"attributeExists\\": true
 }))
+    $util.qr($keyConditionExprNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
   #end
   $util.qr($ctx.stash.conditions.add($keyConditionExpr))
 #else
@@ -658,6 +737,9 @@ $util.qr($DeleteRequest.put(\\"key\\", $Key))
   ## End condition block **
 #end
 #if( $Conditions )
+  #if( $keyConditionExprNames )
+    $util.qr($Conditions.expressionNames.putAll($keyConditionExprNames))
+  #end
   $util.qr($DeleteRequest.put(\\"condition\\", $Conditions))
 #end
 $util.toJson($DeleteRequest)
@@ -690,16 +772,17 @@ $util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
 #set( $expSet = {} )
 #set( $expAdd = {} )
 #set( $expRemove = [] )
-#if( $ctx.stash.metadata.modelObjetKey )
-  #set( $Key = $util.dynamodb.toDynamoDB($ctx.stash.metadata.modelObjetKey) )
+#if( $ctx.stash.metadata.modelObjectKey )
+  #set( $Key = $ctx.stash.metadata.modelObjectKey )
 #else
   #set( $Key = {
   \\"id\\":   $util.dynamodb.toDynamoDB($ctx.args.input.id)
 } )
 #end
 ## Model key **
-#if( $ctx.stash.metadata.modelObjetKey )
-  #foreach( $entry in $ctx.stash.metadata.modelObjetKey.entrySet() )
+#if( $ctx.stash.metadata.modelObjectKey )
+  #set( $keyFields = [] )
+  #foreach( $entry in $ctx.stash.metadata.modelObjectKey.entrySet() )
     $util.qr($keyFields.add(\\"$entry.key\\"))
   #end
 #else
@@ -754,10 +837,12 @@ $util.qr($update.put(\\"expression\\", \\"$expression\\"))
 ## Begin - key condition **
 #if( $ctx.stash.metadata.modelObjectKey )
   #set( $keyConditionExpr = {} )
+  #set( $keyConditionExprNames = {} )
   #foreach( $entry in $ctx.stash.metadata.modelObjectKey.entrySet() )
-    $util.qr($keyConditionExpr.put(\\"$entry.key\\", {
+    $util.qr($keyConditionExpr.put(\\"keyCondition$velocityCount\\", {
   \\"attributeExists\\": true
 }))
+    $util.qr($keyConditionExprNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
   #end
   $util.qr($ctx.stash.conditions.add($keyConditionExpr))
 #else
@@ -792,6 +877,9 @@ $util.qr($update.put(\\"expression\\", \\"$expression\\"))
   \\"update\\": $update
 } )
 #if( $Conditions )
+  #if( $keyConditionExprNames )
+    $util.qr($Conditions.expressionNames.putAll($keyConditionExprNames))
+  #end
   $util.qr($UpdateItem.put(\\"condition\\", $Conditions))
 #end
 $util.toJson($UpdateItem)
@@ -808,8 +896,8 @@ $util.toJson($UpdateItem)
   \\"version\\": \\"2018-05-29\\",
   \\"operation\\": \\"GetItem\\"
 } )
-#if( $ctx.stash.metadata.modelKeyObject )
-  #set( $Key = $ctx.stash.metadata.modelKeyObject )
+#if( $ctx.stash.metadata.modelObjectKey )
+  #set( $key = $ctx.stash.metadata.modelObjectKey )
 #else
   #set( $key = {
   \\"id\\":   $util.dynamodb.toDynamoDB($ctx.args.id)
@@ -843,8 +931,8 @@ $util.toJson($GetRequest)
     #set( $ListRequest.filter = $filterExpression )
   #end
 #end
-#if( !$util.isNull($ctx.stash.modelQuery) )
-  #set( $Query = $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.modelQuery)) )
+#if( !$util.isNull($ctx.stash.modelQueryExpression) )
+  #set( $Query = $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.modelQueryExpression)) )
   $util.qr($ListRequest.put(\\"operation\\", \\"Query\\"))
   $util.qr($ListRequest.put(\\"query\\", $Query))
   #if( !$util.isNull($ctx.args.sortDirection) && $ctx.args.sortDirection == \\"DESC\\" )
@@ -870,6 +958,7 @@ $util.toJson($ListRequest)
   "Query.searchPosts.req.vtl": "#set( $indexPath = \\"/post/doc/_search\\" )
 #set( $nonKeywordFields = [] )
 #set( $sortValues = [] )
+#set( $aggregateValues = {} )
 #set( $primaryKey = \\"id\\" )
 #if( $util.isNullOrEmpty($context.args.sort) )
   #if( $nonKeywordFields.contains($primaryKey) )
@@ -898,6 +987,13 @@ $util.toJson($ListRequest)
     $util.qr($sortValues.add(\\"{$sortField: $sortDirection}\\"))
   #end
 #end
+#foreach( $aggItem in $context.args.aggregates )
+  #if( $nonKeywordFields.contains($aggItem.field) )
+    $util.qr($aggregateValues.put(\\"$aggItem.name\\", {\\"$aggItem.type\\": {\\"field\\": \\"$aggItem.field\\"}}))
+  #else
+    $util.qr($aggregateValues.put(\\"$aggItem.name\\", {\\"$aggItem.type\\": {\\"field\\": \\"\${aggItem.field}.keyword\\"}}))
+  #end
+#end
 {
   \\"version\\": \\"2018-05-29\\",
   \\"operation\\": \\"GET\\",
@@ -915,21 +1011,41 @@ $util.transform.toElasticsearchQueryDSL($ctx.args.filter)
 {
       \\"match_all\\": {}
   }
-#end
+#end,
+                \\"aggs\\": $util.toJson($aggregateValues)
                 }
   }
 }",
   "Query.searchPosts.res.vtl": "#set( $es_items = [] )
+#set( $aggregateValues = [] )
 #foreach( $entry in $context.result.hits.hits )
   #if( !$foreach.hasNext )
     #set( $nextToken = $util.base64Encode($util.toJson($entry.sort)) )
   #end
   $util.qr($es_items.add($entry.get(\\"_source\\")))
 #end
+#foreach( $aggItem in $context.result.aggregations.keySet() )
+  #set( $aggResult = {} )
+  #set( $aggResultValue = {} )
+  $util.qr($aggResult.put(\\"name\\", $aggItem))
+  #if( !$util.isNullOrEmpty($context.result.aggregations) )
+    #if( !$util.isNullOrEmpty($context.result.aggregations.get($aggItem).buckets) )
+      $util.qr($aggResultValue.put(\\"__typename\\", \\"SearchableAggregateBucketResult\\"))
+      $util.qr($aggResultValue.put(\\"buckets\\", $context.result.aggregations.get($aggItem).buckets))
+    #end
+    #if( !$util.isNullOrEmpty($context.result.aggregations.get($aggItem).value) )
+      $util.qr($aggResultValue.put(\\"__typename\\", \\"SearchableAggregateScalarResult\\"))
+      $util.qr($aggResultValue.put(\\"value\\", $context.result.aggregations.get($aggItem).value))
+    #end
+  #end
+  $util.qr($aggResult.put(\\"result\\", $aggResultValue))
+  $util.qr($aggregateValues.add($aggResult))
+#end
 $util.toJson({
   \\"items\\": $es_items,
-  \\"total\\": $ctx.result.hits.total,
-  \\"nextToken\\": $nextToken
+  \\"total\\": $ctx.result.hits.total.value,
+  \\"nextToken\\": $nextToken,
+  \\"aggregateItems\\": $aggregateValues
 })",
   "Subscription.onCreatePost.req.vtl": "## [Start] Subscription Request template. **
 $util.toJson({
@@ -1063,15 +1179,50 @@ input SearchablePostSortInput {
   direction: SearchableSortDirection
 }
 
+input SearchablePostAggregationInput {
+  name: String!
+  type: SearchableAggregateType!
+  field: String!
+}
+
+enum SearchableAggregateType {
+  terms
+  avg
+  min
+  max
+  sum
+}
+
 type SearchablePostConnection {
   items: [Post]
   nextToken: String
   total: Int
+  aggregateItems: [SearchableAggregateResult]
 }
 
+type SearchableAggregateResult {
+  name: String!
+  result: SearchableAggregateGenericResult
+}
+
+type SearchableAggregateScalarResult {
+  value: Float!
+}
+
+type SearchableAggregateBucketResult {
+  buckets: [SearchableAggregateBucketResultItem]
+}
+
+type SearchableAggregateBucketResultItem {
+  key: String!
+  doc_count: Int!
+}
+
+union SearchableAggregateGenericResult = SearchableAggregateScalarResult | SearchableAggregateBucketResult
+
 type Query {
-  searchPosts(filter: SearchablePostFilterInput, sort: [SearchablePostSortInput], limit: Int, nextToken: String, from: Int): SearchablePostConnection
-  searchUsers(filter: SearchableUserFilterInput, sort: [SearchableUserSortInput], limit: Int, nextToken: String, from: Int): SearchableUserConnection
+  searchPosts(filter: SearchablePostFilterInput, sort: [SearchablePostSortInput], limit: Int, nextToken: String, from: Int, aggregates: [SearchablePostAggregationInput]): SearchablePostConnection
+  searchUsers(filter: SearchableUserFilterInput, sort: [SearchableUserSortInput], limit: Int, nextToken: String, from: Int, aggregates: [SearchableUserAggregationInput]): SearchableUserConnection
   getPost(id: ID!): Post
   listPosts(filter: ModelPostFilterInput, limit: Int, nextToken: String): ModelPostConnection
   getUser(id: ID!): User
@@ -1096,10 +1247,17 @@ input SearchableUserSortInput {
   direction: SearchableSortDirection
 }
 
+input SearchableUserAggregationInput {
+  name: String!
+  type: SearchableAggregateType!
+  field: String!
+}
+
 type SearchableUserConnection {
   items: [User]
   nextToken: String
   total: Int
+  aggregateItems: [SearchableAggregateResult]
 }
 
 input ModelStringInput {
@@ -1382,14 +1540,49 @@ input SearchablePostSortInput {
   direction: SearchableSortDirection
 }
 
+input SearchablePostAggregationInput {
+  name: String!
+  type: SearchableAggregateType!
+  field: String!
+}
+
+enum SearchableAggregateType {
+  terms
+  avg
+  min
+  max
+  sum
+}
+
 type SearchablePostConnection {
   items: [Post]
   nextToken: String
   total: Int
+  aggregateItems: [SearchableAggregateResult]
 }
 
+type SearchableAggregateResult {
+  name: String!
+  result: SearchableAggregateGenericResult
+}
+
+type SearchableAggregateScalarResult {
+  value: Float!
+}
+
+type SearchableAggregateBucketResult {
+  buckets: [SearchableAggregateBucketResultItem]
+}
+
+type SearchableAggregateBucketResultItem {
+  key: String!
+  doc_count: Int!
+}
+
+union SearchableAggregateGenericResult = SearchableAggregateScalarResult | SearchableAggregateBucketResult
+
 type Query {
-  searchPosts(filter: SearchablePostFilterInput, sort: [SearchablePostSortInput], limit: Int, nextToken: String, from: Int): SearchablePostConnection
+  searchPosts(filter: SearchablePostFilterInput, sort: [SearchablePostSortInput], limit: Int, nextToken: String, from: Int, aggregates: [SearchablePostAggregationInput]): SearchablePostConnection
   getPost(id: ID!): Post
   listPosts(filter: ModelPostFilterInput, limit: Int, nextToken: String): ModelPostConnection
 }
@@ -1633,14 +1826,49 @@ input SearchablePostSortInput {
   direction: SearchableSortDirection
 }
 
+input SearchablePostAggregationInput {
+  name: String!
+  type: SearchableAggregateType!
+  field: String!
+}
+
+enum SearchableAggregateType {
+  terms
+  avg
+  min
+  max
+  sum
+}
+
 type SearchablePostConnection {
   items: [Post]
   nextToken: String
   total: Int
+  aggregateItems: [SearchableAggregateResult]
 }
 
+type SearchableAggregateResult {
+  name: String!
+  result: SearchableAggregateGenericResult
+}
+
+type SearchableAggregateScalarResult {
+  value: Float!
+}
+
+type SearchableAggregateBucketResult {
+  buckets: [SearchableAggregateBucketResultItem]
+}
+
+type SearchableAggregateBucketResultItem {
+  key: String!
+  doc_count: Int!
+}
+
+union SearchableAggregateGenericResult = SearchableAggregateScalarResult | SearchableAggregateBucketResult
+
 type Query {
-  customSearchPost(filter: SearchablePostFilterInput, sort: [SearchablePostSortInput], limit: Int, nextToken: String, from: Int): SearchablePostConnection
+  customSearchPost(filter: SearchablePostFilterInput, sort: [SearchablePostSortInput], limit: Int, nextToken: String, from: Int, aggregates: [SearchablePostAggregationInput]): SearchablePostConnection
   getPost(id: ID!): Post
   listPosts(filter: ModelPostFilterInput, limit: Int, nextToken: String): ModelPostConnection
 }
@@ -1884,14 +2112,49 @@ input SearchablePostSortInput {
   direction: SearchableSortDirection
 }
 
+input SearchablePostAggregationInput {
+  name: String!
+  type: SearchableAggregateType!
+  field: String!
+}
+
+enum SearchableAggregateType {
+  terms
+  avg
+  min
+  max
+  sum
+}
+
 type SearchablePostConnection {
   items: [Post]
   nextToken: String
   total: Int
+  aggregateItems: [SearchableAggregateResult]
 }
 
+type SearchableAggregateResult {
+  name: String!
+  result: SearchableAggregateGenericResult
+}
+
+type SearchableAggregateScalarResult {
+  value: Float!
+}
+
+type SearchableAggregateBucketResult {
+  buckets: [SearchableAggregateBucketResultItem]
+}
+
+type SearchableAggregateBucketResultItem {
+  key: String!
+  doc_count: Int!
+}
+
+union SearchableAggregateGenericResult = SearchableAggregateScalarResult | SearchableAggregateBucketResult
+
 type Query {
-  searchPosts(filter: SearchablePostFilterInput, sort: [SearchablePostSortInput], limit: Int, nextToken: String, from: Int): SearchablePostConnection
+  searchPosts(filter: SearchablePostFilterInput, sort: [SearchablePostSortInput], limit: Int, nextToken: String, from: Int, aggregates: [SearchablePostAggregationInput]): SearchablePostConnection
   getPost(id: ID!): Post
   listPosts(filter: ModelPostFilterInput, limit: Int, nextToken: String): ModelPostConnection
 }
