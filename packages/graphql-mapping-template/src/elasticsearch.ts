@@ -74,7 +74,7 @@ export class ElasticsearchMappingTemplate {
    * @param query the query
    * @param aggs aggregate the query results
    */
-   public static searchTemplate({
+  public static searchTemplate({
     query,
     size,
     search_after,

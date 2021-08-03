@@ -56,7 +56,7 @@ import {
   DirectiveWrapper,
   FieldWrapper,
   InputObjectDefinitionWrapper,
-  ObjectDefinationWrapper,
+  ObjectDefinitionWrapper,
 } from './wrappers/object-definition-wrapper';
 
 export type Nullable<T> = T | null;
@@ -223,7 +223,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
         if (mutation) {
           return mutation.fieldName;
         }
-        throw new Error('Unknow Subscription type');
+        throw new Error('Unknown Subscription type');
       };
 
       const subscriptionsFields = this.getSubscriptionFieldNames(ctx, def!);
@@ -865,7 +865,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
     if (!typeObj) {
       throw new Error(`Type ${name} is missing in outputs`);
     }
-    const typeWrapper = new ObjectDefinationWrapper(typeObj);
+    const typeWrapper = new ObjectDefinitionWrapper(typeObj);
     if (!typeWrapper.hasField('id')) {
       const idField = FieldWrapper.create('id', 'ID');
       typeWrapper.addField(idField);
@@ -876,7 +876,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
           if (typeWrapper.hasField(fieldName)) {
             const createdAtField = typeWrapper.getField(fieldName);
             if (!['String', 'AWSDateTime'].includes(createdAtField.getTypeName())) {
-              console.warn(`type ${name}.${fieldName} is not of String or AWSDateTime. Autopoupulation is not supported`);
+              console.warn(`type ${name}.${fieldName} is not of String or AWSDateTime. Auto population is not supported`);
             }
           } else {
             const createdAtField = FieldWrapper.create(fieldName, 'AWSDateTime');

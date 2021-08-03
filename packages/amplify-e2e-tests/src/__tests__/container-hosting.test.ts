@@ -1,4 +1,4 @@
-import { 
+import {
   addDevContainerHosting,
   createNewProjectDir,
   deleteProject,
@@ -6,12 +6,11 @@ import {
   enableContainerHosting,
   getBackendAmplifyMeta,
   initJSProjectWithProfile,
-  removeHosting
+  removeHosting,
 } from 'amplify-e2e-core';
 
 import * as fs from 'fs-extra';
 import * as path from 'path';
-
 
 describe('amplify add hosting - container', () => {
   let projRoot: string;

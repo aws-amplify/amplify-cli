@@ -339,24 +339,33 @@ describe('ModelTransformer: ', () => {
     expectFields(mutationType!, ['createPost', 'updatePost', 'deletePost']);
   });
 
-  it('should not validate reserved type names when validateTypeNameReservedWords is off', () => {
-    const schema = `
-    type Subscription @model{
-      id: Int
-      str: String
-    }
+  it('should support non model objects contain id as a type for fields', () => {
+    const validSchema = `
+      type Post @model {
+        id: ID!
+        comments: [Comment]
+      }
+      type Comment {
+        id: String!
+        text: String!
+      }
     `;
     const transformer = new GraphQLTransform({
       transformers: [new ModelTransformer()],
-      featureFlags: ({
-        getBoolean: jest.fn().mockImplementation(name => (name === 'validateTypeNameReservedWords' ? false : undefined)),
-      } as unknown) as FeatureFlagProvider,
+      featureFlags,
     });
-    const out = transformer.transform(schema);
+    const out = transformer.transform(validSchema);
     expect(out).toBeDefined();
-    const parsed = parse(out.schema);
+    const definition = out.schema;
+    expect(definition).toBeDefined();
+    const parsed = parse(definition);
     validateModelSchema(parsed);
-    const subscriptionType = getObjectType(parsed, 'Subscription');
-    expect(subscriptionType).toBeDefined();
+    const commentInput = getInputType(parsed, 'CommentInput');
+    expectFieldsOnInputType(commentInput!, ['id', 'text']);
+    const commentObject = getObjectType(parsed, 'Comment');
+    const commentInputObject = getInputType(parsed, 'CommentInput');
+    const commentObjectIDField = getFieldOnObjectType(commentObject!, 'id');
+    const commentInputIDField = getFieldOnInputType(commentInputObject!, 'id');
+    verifyMatchingTypes(commentObjectIDField.type, commentInputIDField.type);
   });
 });

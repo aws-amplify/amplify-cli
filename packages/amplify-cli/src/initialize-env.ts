@@ -122,8 +122,7 @@ function populateCategoriesMeta(
   category: string,
   serviceName: string,
 ) {
-  if (amplifyMeta[category]?.[serviceName] &&
-      teamProviderInfo[CATEGORIES]?.[category]?.[serviceName]) {
+  if (amplifyMeta[category]?.[serviceName] && teamProviderInfo[CATEGORIES]?.[category]?.[serviceName]) {
     Object.assign(amplifyMeta[category][serviceName], teamProviderInfo[CATEGORIES][category][serviceName]);
     stateManager.setMeta(projectPath, amplifyMeta);
   }

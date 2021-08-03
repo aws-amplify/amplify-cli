@@ -31,9 +31,9 @@ import {
 } from '../definitions';
 import {
   EnumWrapper,
-  InputFieldWraper,
+  InputFieldWrapper,
   InputObjectDefinitionWrapper,
-  ObjectDefinationWrapper,
+  ObjectDefinitionWrapper,
 } from '../wrappers/object-definition-wrapper';
 
 /**
@@ -48,7 +48,7 @@ export const makeConditionFilterInput = (
   object: ObjectTypeDefinitionNode,
 ): InputObjectDefinitionWrapper => {
   const input = InputObjectDefinitionWrapper.create(name);
-  const wrappedObject = new ObjectDefinationWrapper(object);
+  const wrappedObject = new ObjectDefinitionWrapper(object);
   for (let field of wrappedObject.fields) {
     const fieldType = ctx.output.getType(field.getTypeName());
     const isEnumType = fieldType && fieldType.kind === 'EnumTypeDefinition';
@@ -56,19 +56,19 @@ export const makeConditionFilterInput = (
       const fieldTypeName = field.getTypeName();
       const nameOverride = DEFAULT_SCALARS[fieldTypeName] || fieldTypeName;
       const conditionTypeName = isEnumType && field.isList() ? `Model${nameOverride}ListInput` : `Model${nameOverride}Input`;
-      const inputField = InputFieldWraper.create(field.name, conditionTypeName, true);
+      const inputField = InputFieldWrapper.create(field.name, conditionTypeName, true);
       input.addField(inputField);
     }
   }
 
   // additional conditions of list type
   for (let additionalField of ['and', 'or']) {
-    const inputField = InputFieldWraper.create(additionalField, name, true, true);
+    const inputField = InputFieldWrapper.create(additionalField, name, true, true);
     input.addField(inputField);
   }
   // additional conditions of non-list type
   for (let additionalField of ['not']) {
-    const inputField = InputFieldWraper.create(additionalField, name, true, false);
+    const inputField = InputFieldWrapper.create(additionalField, name, true, false);
     input.addField(inputField);
   }
   return input;
@@ -105,7 +105,7 @@ export const createEnumModelFilters = (
   type: ObjectTypeDefinitionNode,
 ): InputObjectTypeDefinitionNode[] => {
   // add enum type if present
-  const typeWrapper = new ObjectDefinationWrapper(type);
+  const typeWrapper = new ObjectDefinitionWrapper(type);
   const enumFields = typeWrapper.fields.filter(field => {
     const typeName = field.getTypeName();
     const typeObj = ctx.output.getType(typeName);
@@ -133,7 +133,7 @@ export function makeModelScalarFilterInputObject(type: string, supportsCondition
       default:
         typeName = type;
     }
-    const field = InputFieldWraper.create(condition, typeName, true);
+    const field = InputFieldWrapper.create(condition, typeName, true);
     if (condition === 'between') {
       field.wrapListType();
     }
@@ -177,20 +177,20 @@ function getFunctionListForType(typeName: string): Set<string> {
   }
 }
 
-function makeFunctionInputFields(typeName: string): InputFieldWraper[] {
+function makeFunctionInputFields(typeName: string): InputFieldWrapper[] {
   const functions = getFunctionListForType(typeName);
-  const fields = new Array<InputFieldWraper>();
+  const fields = new Array<InputFieldWrapper>();
 
   if (functions.has('attributeExists')) {
-    fields.push(InputFieldWraper.create('attributeExists', 'Boolean', true));
+    fields.push(InputFieldWrapper.create('attributeExists', 'Boolean', true));
   }
 
   if (functions.has('attributeType')) {
-    fields.push(InputFieldWraper.create('attributeType', 'ModelAttributeTypes', true));
+    fields.push(InputFieldWrapper.create('attributeType', 'ModelAttributeTypes', true));
   }
 
   if (functions.has('size')) {
-    fields.push(InputFieldWraper.create('size', 'ModelSizeInput', true));
+    fields.push(InputFieldWrapper.create('size', 'ModelSizeInput', true));
   }
 
   return fields;
@@ -211,7 +211,7 @@ export function makeSizeInputType(): InputObjectTypeDefinitionNode {
   const input = InputObjectDefinitionWrapper.create(name);
 
   for (let condition of SIZE_CONDITIONS) {
-    const field = InputFieldWraper.create(condition, 'Int', true);
+    const field = InputFieldWrapper.create(condition, 'Int', true);
     if (condition === 'between') field.wrapListType();
     input.addField(field);
   }
@@ -222,7 +222,7 @@ export function makeEnumFilterInput(name: string): InputObjectTypeDefinitionNode
   const inputName = toPascalCase(['Model', name, 'Input']);
   const input = InputObjectDefinitionWrapper.create(inputName);
   ['eq', 'ne'].forEach(fieldName => {
-    const field = InputFieldWraper.create(fieldName, name, true);
+    const field = InputFieldWrapper.create(fieldName, name, true);
     input.addField(field);
   });
   return input.serialize();

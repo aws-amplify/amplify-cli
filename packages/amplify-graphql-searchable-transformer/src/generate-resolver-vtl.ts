@@ -39,39 +39,31 @@ export function requestTemplate(primaryKey: string, nonKeywordFields: Expression
           set(ref('sortDirection'), ref('util.toJson({"order": "desc"})')),
           qref('$sortValues.add("{$sortField: $sortDirection}")'),
         ]),
-        forEach(
-          ref('sortItem'),
-          ref('context.args.sort'),
-          [
-            ifElse(
-              ref('util.isNullOrEmpty($sortItem.field)'),
-              ifElse(
-                ref('nonKeywordFields.contains($primaryKey)'),
-                set(ref('sortField'), ref('util.toJson($primaryKey)')),
-                set(ref('sortField'), ref('util.toJson("${primaryKey}.keyword")')),
-              ),
-              ifElse(
-                ref('nonKeywordFields.contains($sortItem.field)'),
-                set(ref('sortField'), ref('util.toJson($sortItem.field)')),
-                set(ref('sortField'), ref('util.toJson("${sortItem.field}.keyword")')),
-              ),
-            ),
-            set(ref('sortDirection'), ref('util.toJson({"order": $sortItem.direction})')),
-            qref('$sortValues.add("{$sortField: $sortDirection}")'),
-          ],
-        ),
-      ),
-      forEach(
-        ref('aggItem'),
-        ref('context.args.aggregates'),
-        [
+        forEach(ref('sortItem'), ref('context.args.sort'), [
           ifElse(
-            ref('nonKeywordFields.contains($aggItem.field)'),
-            qref('$aggregateValues.put("$aggItem.name", {"$aggItem.type": {"field": "$aggItem.field"}})'),
-            qref('$aggregateValues.put("$aggItem.name", {"$aggItem.type": {"field": "${aggItem.field}.keyword"}})'),
+            ref('util.isNullOrEmpty($sortItem.field)'),
+            ifElse(
+              ref('nonKeywordFields.contains($primaryKey)'),
+              set(ref('sortField'), ref('util.toJson($primaryKey)')),
+              set(ref('sortField'), ref('util.toJson("${primaryKey}.keyword")')),
+            ),
+            ifElse(
+              ref('nonKeywordFields.contains($sortItem.field)'),
+              set(ref('sortField'), ref('util.toJson($sortItem.field)')),
+              set(ref('sortField'), ref('util.toJson("${sortItem.field}.keyword")')),
+            ),
           ),
-        ],
+          set(ref('sortDirection'), ref('util.toJson({"order": $sortItem.direction})')),
+          qref('$sortValues.add("{$sortField: $sortDirection}")'),
+        ]),
       ),
+      forEach(ref('aggItem'), ref('context.args.aggregates'), [
+        ifElse(
+          ref('nonKeywordFields.contains($aggItem.field)'),
+          qref('$aggregateValues.put("$aggItem.name", {"$aggItem.type": {"field": "$aggItem.field"}})'),
+          qref('$aggregateValues.put("$aggItem.name", {"$aggItem.type": {"field": "${aggItem.field}.keyword"}})'),
+        ),
+      ]),
       ElasticsearchMappingTemplate.searchTemplate({
         path: str('$indexPath'),
         size: ifElse(ref('context.args.limit'), ref('context.args.limit'), int(ResourceConstants.DEFAULT_SEARCHABLE_PAGE_LIMIT), true),
