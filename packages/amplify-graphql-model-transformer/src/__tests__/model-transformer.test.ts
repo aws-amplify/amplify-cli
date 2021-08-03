@@ -339,27 +339,6 @@ describe('ModelTransformer: ', () => {
     expectFields(mutationType!, ['createPost', 'updatePost', 'deletePost']);
   });
 
-  it('should not validate reserved type names when validateTypeNameReservedWords is off', () => {
-    const schema = `
-    type Subscription @model{
-      id: Int
-      str: String
-    }
-    `;
-    const transformer = new GraphQLTransform({
-      transformers: [new ModelTransformer()],
-      featureFlags: ({
-        getBoolean: jest.fn().mockImplementation(name => (name === 'validateTypeNameReservedWords' ? false : undefined)),
-      } as unknown) as FeatureFlagProvider,
-    });
-    const out = transformer.transform(schema);
-    expect(out).toBeDefined();
-    const parsed = parse(out.schema);
-    validateModelSchema(parsed);
-    const subscriptionType = getObjectType(parsed, 'Subscription');
-    expect(subscriptionType).toBeDefined();
-  });
-
   it('should support non model objects contain id as a type for fields', () => {
     const validSchema = `
       type Post @model {
