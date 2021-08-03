@@ -13,9 +13,6 @@ export async function pullBackend(context: $TSContext, inputParams: $TSAny) {
   context.exeInfo.forcePush = false;
   context.exeInfo.restoreBackend = !context.exeInfo.inputParams.amplify.noOverride;
 
-  context.print.info(`Continuing will automatically override the hooks directory.`);
-  context.print.info(``);
-
   if (hasChanges && context.exeInfo.restoreBackend) {
     context.print.warning('Local changes detected.');
     context.print.warning('Pulling changes from the cloud will override your local changes.');
