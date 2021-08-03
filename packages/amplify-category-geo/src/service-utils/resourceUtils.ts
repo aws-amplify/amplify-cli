@@ -4,8 +4,8 @@ import path from 'path';
 import _ from 'lodash';
 import { BaseStack } from '../service-stacks/baseStack';
 import { parametersFileName, ServiceName } from './constants';
-import { PricingPlan } from './resourceParams';
-
+import { PricingPlan, ResourceParameters, AccessType } from './resourceParams';
+import os from 'os';
 
 // Merges other with existing in a non-destructive way.
 // Specifically, scalar values will not be overwritten
@@ -133,5 +133,48 @@ export const updateGeoPricingPlan = async (context: $TSContext, pricingPlan: Pri
         parametersFileName
       );
     });
+  }
+}
+
+/**
+ * Check and ensure if unauth access needs to be enabled for identity pool
+ */
+export const checkAuthConfig = async (context: $TSContext, parameters: Pick<ResourceParameters, 'name' | 'accessType'>, service: ServiceName) => {
+  if (parameters.accessType === AccessType.AuthorizedAndGuestUsers) {
+    const authRequirements = { authSelections: 'identityPoolOnly', allowUnauthenticatedIdentities: true };
+
+    const checkResult: $TSObject = await context.amplify.invokePluginMethod(context, 'auth', null, 'checkRequirements', [
+      authRequirements,
+      context,
+      category,
+      parameters.name,
+    ]);
+
+    // If auth is imported and configured, we have to throw the error instead of printing since there is no way to adjust the auth
+    // configuration.
+    if (checkResult.authImported === true && checkResult.errors && checkResult.errors.length > 0) {
+      throw new Error(checkResult.errors.join(os.EOL));
+    }
+
+    if (checkResult.errors && checkResult.errors.length > 0) {
+      context.print.warning(checkResult.errors.join(os.EOL));
+    }
+
+    // If auth is not imported and there were errors, adjust or enable auth configuration
+    if (!checkResult.authEnabled || !checkResult.requirementsMet) {
+      context.print.warning(`Adding ${service} to your project requires the Auth category for managing authentication rules.`);
+
+      try {
+        await context.amplify.invokePluginMethod(context, 'auth', null, 'externalAuthEnable', [
+          context,
+          category,
+          service,
+          authRequirements
+        ]);
+      } catch (error) {
+        context.print.error(error);
+        throw error;
+      }
+    }
   }
 }

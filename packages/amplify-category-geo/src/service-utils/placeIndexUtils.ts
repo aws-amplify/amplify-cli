@@ -4,10 +4,13 @@ import _ from 'lodash';
 import { parametersFileName, provider, ServiceName } from './constants';
 import { category } from '../constants';
 import { PlaceIndexStack } from '../service-stacks/placeIndexStack';
-import { updateParametersFile, generateTemplateFile, updateDefaultResource, readResourceMetaParameters } from './resourceUtils';
+import { updateParametersFile, generateTemplateFile, updateDefaultResource, readResourceMetaParameters, checkAuthConfig } from './resourceUtils';
 import { App } from '@aws-cdk/core';
 
 export const createPlaceIndexResource = async (context: $TSContext, parameters: PlaceIndexParameters) => {
+  // allow unauth access for identity pool if guest access is enabled
+  await checkAuthConfig(context, parameters, ServiceName.PlaceIndex);
+
   // generate CFN files
   const placeIndexStack = new PlaceIndexStack(new App(), 'PlaceIndexStack', parameters);
   generateTemplateFile(placeIndexStack, parameters.name);
@@ -35,6 +38,9 @@ export const modifyPlaceIndexResource = async (
   context: $TSContext,
   parameters: Pick<PlaceIndexParameters, 'accessType' | 'name' | 'isDefault'>
   ) => {
+  // allow unauth access for identity pool if guest access is enabled
+  await checkAuthConfig(context, parameters, ServiceName.PlaceIndex);
+
   // generate CFN files
   const placeIndexStack = new PlaceIndexStack(new App(), 'PlaceIndexStack', parameters);
   generateTemplateFile(placeIndexStack, parameters.name);
