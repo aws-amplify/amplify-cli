@@ -1,0 +1,35 @@
+{
+  "name": "amplify-prompts",
+  "version": "1.0.0",
+  "description": "Utility functions for Amplify CLI terminal I/O",
+  "main": "lib/index.js",
+  "scripts": {
+    "build": "tsc",
+    "clean": "rimraf lib tsconfig.tsbuildinfo",
+    "demo": "yarn build && node lib/demo/demo.js",
+    "test": "jest",
+    "watch": "tsc -w"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aws-amplify/amplify-cli.git"
+  },
+  "keywords": [
+    "amplify",
+    "cli",
+    "prompts"
+  ],
+  "author": "Amazon Web Services",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/aws-amplify/amplify-cli/issues"
+  },
+  "homepage": "https://github.com/aws-amplify/amplify-cli#readme",
+  "dependencies": {
+    "chalk": "^4.1.1",
+    "enquirer": "^2.3.6"
+  },
+  "devDependencies": {
+    "rimraf": "^3.0.2"
+  }
+}
