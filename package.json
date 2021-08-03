@@ -66,7 +66,7 @@
   "author": "Amazon Web Services",
   "license": "Apache-2.0",
   "dependencies": {
-    "lerna": "^3.16.4"
+    "lerna": "^4.0.0"
   },
   "workspaces": {
     "packages": [
