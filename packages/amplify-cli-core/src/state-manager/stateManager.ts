@@ -1,10 +1,10 @@
 import * as fs from 'fs-extra';
-import { pathManager } from './pathManager';
-import { $TSMeta, $TSTeamProviderInfo, $TSAny, DeploymentSecrets } from '..';
-import { JSONUtilities } from '../jsonUtilities';
 import _ from 'lodash';
+import { $TSAny, $TSMeta, $TSTeamProviderInfo, DeploymentSecrets } from '..';
 import { SecretFileMode } from '../cliConstants';
-import { Tag, ReadTags, HydrateTags } from '../tags';
+import { JSONUtilities } from '../jsonUtilities';
+import { HydrateTags, ReadTags, Tag } from '../tags';
+import { pathManager } from './pathManager';
 
 export type GetOptions<T> = {
   throwIfNotExist?: boolean;
