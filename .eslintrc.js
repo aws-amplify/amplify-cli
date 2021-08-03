@@ -308,6 +308,7 @@ module.exports = {
     '/packages/amplify-graphql-types-generator/lib',
     '/packages/amplify-headless-interface/lib',
     '/packages/amplify-migration-tests/lib',
+    '/packages/amplify-prompts/lib',
     '/packages/amplify-provider-awscloudformation/lib',
     '/packages/amplify-storage-simulator/lib',
     '/packages/amplify-ui-tests/lib',
