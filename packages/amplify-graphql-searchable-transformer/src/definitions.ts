@@ -9,7 +9,7 @@ import {
   EnumTypeDefinitionNode,
   EnumValueDefinitionNode,
 } from 'graphql';
-import { graphqlName, makeNamedType, isScalar, isEnum, makeListType, getBaseType, SearchableResourceIDs } from 'graphql-transformer-common';
+import { graphqlName, makeNamedType, isScalar, isEnum, makeListType, makeNonNullType, getBaseType, SearchableResourceIDs } from 'graphql-transformer-common';
 
 const ID_CONDITIONS = [
   'ne',
@@ -219,6 +219,58 @@ export function makeSearchableXSortInputObject(obj: ObjectTypeDefinitionNode): I
         //     kind: 'StringValue',
         //     value: `The id of the ${obj.name.value} to delete.`
         // },
+        directives: [],
+      },
+    ],
+    directives: [],
+  };
+}
+
+export function makeSearchableAggregateTypeEnumObject(): EnumTypeDefinitionNode {
+  const name = graphqlName('SearchableAggregateType');
+  const values: EnumValueDefinitionNode[] = ['terms', 'avg', 'min', 'max', 'sum']
+    .map((type: string) => ({
+      kind: Kind.ENUM_VALUE_DEFINITION,
+      name: { kind: 'Name', value: type },
+      directives: [],
+    }));
+
+  return {
+    kind: Kind.ENUM_TYPE_DEFINITION,
+    name: {
+      kind: 'Name',
+      value: name,
+    },
+    values,
+    directives: [],
+  };
+}
+
+export function makeSearchableXAggregationInputObject(obj: ObjectTypeDefinitionNode): InputObjectTypeDefinitionNode {
+  const name = graphqlName(`Searchable${obj.name.value}AggregationInput`);
+  return {
+    kind: Kind.INPUT_OBJECT_TYPE_DEFINITION,
+    name: {
+      kind: 'Name',
+      value: name,
+    },
+    fields: [
+      {
+        kind: Kind.INPUT_VALUE_DEFINITION,
+        name: { kind: 'Name', value: 'name' },
+        type: makeNonNullType(makeNamedType('String')),
+        directives: [],
+      },
+      {
+        kind: Kind.INPUT_VALUE_DEFINITION,
+        name: { kind: 'Name', value: 'type' },
+        type: makeNonNullType(makeNamedType('SearchableAggregateType')),
+        directives: [],
+      },
+      {
+        kind: Kind.INPUT_VALUE_DEFINITION,
+        name: { kind: 'Name', value: 'field' },
+        type: makeNonNullType(makeNamedType('String')),
         directives: [],
       },
     ],
