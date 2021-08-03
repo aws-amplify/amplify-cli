@@ -237,6 +237,18 @@ export class TransformerOutput implements TransformerContextOutputProvider {
   }
 
   /**
+   * Add an union type definition node to the context. If the type already
+   * exists an error will be thrown.
+   * @param obj The union type definition node to add.
+   */
+  public addUnion(obj: UnionTypeDefinitionNode) {
+    if (this.nodeMap[obj.name.value]) {
+      throw new Error(`Conflicting union '${obj.name.value}' found.`);
+    }
+    this.nodeMap[obj.name.value] = obj;
+  }
+
+  /**
    * Extends the context query object with additional fields.
    * If the customer uses a name other than 'Query' this will proxy to the
    * correct type.
