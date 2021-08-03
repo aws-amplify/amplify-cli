@@ -1,5 +1,7 @@
 import { join } from 'path';
 import { homedir } from 'os';
+import { HooksExtensions } from './hooksTypes';
+
 export const suppportedEvents: { [key: string]: Set<string> } = {
   add: new Set([
     'notifications',
@@ -60,9 +62,9 @@ export const suppportedEvents: { [key: string]: Set<string> } = {
 
 export const supportedEnvEvents: Set<string> = new Set(['add', 'update', 'remove', 'pull', 'checkout', 'list', 'get', 'import']);
 
-export const defaultSupportedExt = { js: { runtime: 'node' }, sh: { runtime: 'bash' } };
+export const defaultSupportedExt: HooksExtensions = { js: { runtime: 'node' }, sh: { runtime: 'bash' } };
 
-export const skipHooksFileName = 'AMIPLIFY-HOOKS-SKIP';
+export const skipHooksFileName: string = 'AMIPLIFY-HOOKS-SKIP';
 // dont have access in root directory
 // export const skipHooksFilePath = path.join(path.parse(process.cwd()).root, 'opt', 'amazon');
-export const skipHooksFilePath = join(homedir(), 'opt', 'amazon');
+export const skipHooksFilePath: string = join(homedir(), 'opt', 'amazon');

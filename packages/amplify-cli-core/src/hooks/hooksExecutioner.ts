@@ -1,6 +1,6 @@
 import { $TSAny } from '..';
 import { pathManager, stateManager } from '../state-manager';
-import { HooksConfig, FileObj, EventPrefix, HooksEvent, DataParameter, ErrorParameter } from './hooksTypes';
+import { HooksConfig, HooksExtensions, FileObj, EventPrefix, HooksEvent, DataParameter, ErrorParameter } from './hooksTypes';
 import { defaultSupportedExt } from './hooksConstants';
 import { skipHooks } from './skipHooks';
 import * as which from 'which';
@@ -9,6 +9,9 @@ import * as path from 'path';
 import execa from 'execa';
 import { HooksHandler } from './hooksHandler';
 import _ from 'lodash';
+import { getLogger } from '../logger/index';
+
+const logger = getLogger('amplify-cli-core', 'hooks/hooksExecutioner.ts');
 
 export async function executeHooks(
   context?: { input?: { command?: string; plugin?: string; subCommands?: string[]; argv?: string[] }; amplify?: $TSAny },
@@ -73,9 +76,10 @@ async function exec(
   const projectRoot = pathManager.findProjectRoot() ?? process.cwd();
   if (!projectRoot) return;
 
-  console.log(`\n----- ${execFileObj.baseName} execution start -----`);
+  console.log(`\n----- 🪝 ${execFileObj.baseName} execution start -----`);
 
   try {
+    logger.info(`hooks file: ${execFileObj.fileName} execution started`);
     const childProcess = execa(runtime, [execFileObj.filePath], {
       cwd: projectRoot,
       env: { PATH: process.env.PATH },
@@ -87,15 +91,17 @@ async function exec(
     });
     childProcess?.stdout?.pipe(process.stdout);
     await childProcess;
+    logger.info(`hooks file: ${execFileObj.fileName} execution ended`);
   } catch (err) {
+    logger.info(`hooks file: ${execFileObj.fileName} execution error - ${JSON.stringify(err)}`);
     if (err?.stderr?.length > 0) console.error(err.stderr);
     if (err?.exitCode) console.log(`\n${execFileObj.baseName} hook script exited with exit code ${err.exitCode}`);
     console.log('exiting Amplify process...\n');
-    // TODO: add logger
+    logger.error('hook script exited with error code', err);
     process.exit(1);
   }
 
-  console.log(`----- ${execFileObj.baseName} execution end -----\n`);
+  console.log(`----- 🪝 ${execFileObj.baseName} execution end -----\n`);
 }
 
 function getHooksFileObjs(
@@ -109,7 +115,7 @@ function getHooksFileObjs(
     .readdirSync(hooksDirPath)
     .filter(relFilePath => fs.lstatSync(path.join(hooksDirPath, relFilePath)).isFile())
     .map(relFilePath => splitFileName(relFilePath))
-    .filter(fileObj => extensionsSupported.hasOwnProperty(fileObj.extension))
+    .filter(fileObj => fileObj.extension && extensionsSupported.hasOwnProperty(fileObj.extension))
     .map(fileObj => ({ ...fileObj, filePath: path.join(hooksDirPath, String(fileObj.fileName)) }));
 
   const commandType = hooksEvent.eventPrefix ? [hooksEvent.eventPrefix, hooksEvent.command].join(hooksEvent.seperator) : hooksEvent.command;
@@ -153,18 +159,23 @@ function getRuntime(fileObj: FileObj, hooksConfig: HooksConfig): string | undefi
   const { extension } = fileObj;
   if (!extension) return;
   const isWin = process.platform === 'win32' || process.env.OSTYPE === 'cygwin' || process.env.OSTYPE === 'msys';
-  const extensionObj = getSupportedExtensions(hooksConfig)[extension];
-  const runtime = isWin ? extensionObj.windows?.runtime : extensionObj.runtime;
+  const extensionObj = getSupportedExtensions(hooksConfig);
+
+  let runtime: string | undefined;
+  if (isWin) runtime = extensionObj?.[extension]?.runtime_windows;
+  runtime = runtime ?? extensionObj?.[extension]?.runtime;
   if (!runtime) return;
+
   const executablePath = which.sync(runtime, {
     nothrow: true,
   });
   if (!executablePath) {
     throw new Error(String('hooks runtime not found: ' + runtime));
   }
+
   return executablePath;
 }
 
-function getSupportedExtensions(hooksConfig: HooksConfig): $TSAny {
-  return { ...defaultSupportedExt, ...hooksConfig?.extension };
+function getSupportedExtensions(hooksConfig: HooksConfig): HooksExtensions {
+  return { ...defaultSupportedExt, ...hooksConfig?.extensions };
 }
