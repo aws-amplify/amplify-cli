@@ -1,5 +1,4 @@
 import { AmplifyPrinter } from '../printer';
-import os from 'os';
 import * as flags from '../flags';
 const writeStream_stub = ({
   write: jest.fn(),
@@ -16,10 +15,6 @@ const testInput = 'this is a test line';
 
 const printer = new AmplifyPrinter(writeStream_stub);
 
-const os_mock = os as jest.Mocked<Writeable<typeof os>>;
-
-os_mock.EOL = '\n';
-
 beforeEach(() => {
   jest.clearAllMocks();
   flags_mock.isDebug = false;
@@ -30,10 +25,7 @@ beforeEach(() => {
 it('prints debug lines when debug flag is set', () => {
   flags_mock.isDebug = true;
   printer.debug(testInput);
-  expect(writeStream_stub.write.mock.calls[0][0]).toMatchInlineSnapshot(`
-    "this is a test line
-    "
-  `);
+  expect(writeStream_stub.write.mock.calls[0][0].trim()).toMatchInlineSnapshot(`"this is a test line"`);
 });
 
 it('does not print debug lines by default', () => {
@@ -43,18 +35,12 @@ it('does not print debug lines by default', () => {
 
 it('prints info line by default', () => {
   printer.info(testInput);
-  expect(writeStream_stub.write.mock.calls[0][0]).toMatchInlineSnapshot(`
-    "[0mthis is a test line[0m
-    "
-  `);
+  expect(writeStream_stub.write.mock.calls[0][0].trim()).toMatchInlineSnapshot(`"[0mthis is a test line[0m"`);
 });
 
 it('prints info line in specified color', () => {
   printer.info(testInput, 'blue');
-  expect(writeStream_stub.write.mock.calls[0][0]).toMatchInlineSnapshot(`
-    "[34mthis is a test line[39m
-    "
-  `);
+  expect(writeStream_stub.write.mock.calls[0][0].trim()).toMatchInlineSnapshot(`"[34mthis is a test line[39m"`);
 });
 
 it('does not print info line when silent flag is set', () => {
@@ -65,10 +51,7 @@ it('does not print info line when silent flag is set', () => {
 
 it('prints success line by default', () => {
   printer.success(testInput);
-  expect(writeStream_stub.write.mock.calls[0][0]).toMatchInlineSnapshot(`
-    "✅ [32mthis is a test line[39m
-    "
-  `);
+  expect(writeStream_stub.write.mock.calls[0][0].trim()).toMatchInlineSnapshot(`"✅ [32mthis is a test line[39m"`);
 });
 
 it('does not print success line when silent flag is set', () => {
@@ -79,34 +62,22 @@ it('does not print success line when silent flag is set', () => {
 
 it('prints warn line by default', () => {
   printer.warn(testInput);
-  expect(writeStream_stub.write.mock.calls[0][0]).toMatchInlineSnapshot(`
-    "⚠️ [33mthis is a test line[39m
-    "
-  `);
+  expect(writeStream_stub.write.mock.calls[0][0].trim()).toMatchInlineSnapshot(`"⚠️ [33mthis is a test line[39m"`);
 });
 
 it('prints warn line when silent flag is set', () => {
   flags_mock.isSilent = true;
   printer.warn(testInput);
-  expect(writeStream_stub.write.mock.calls[0][0]).toMatchInlineSnapshot(`
-    "⚠️ [33mthis is a test line[39m
-    "
-  `);
+  expect(writeStream_stub.write.mock.calls[0][0].trim()).toMatchInlineSnapshot(`"⚠️ [33mthis is a test line[39m"`);
 });
 
 it('prints error line by default', () => {
   printer.error(testInput);
-  expect(writeStream_stub.write.mock.calls[0][0]).toMatchInlineSnapshot(`
-    "🛑 [31mthis is a test line[39m
-    "
-  `);
+  expect(writeStream_stub.write.mock.calls[0][0].trim()).toMatchInlineSnapshot(`"🛑 [31mthis is a test line[39m"`);
 });
 
 it('prints error line when silent flag is set', () => {
   flags_mock.isSilent = true;
   printer.error(testInput);
-  expect(writeStream_stub.write.mock.calls[0][0]).toMatchInlineSnapshot(`
-    "🛑 [31mthis is a test line[39m
-    "
-  `);
+  expect(writeStream_stub.write.mock.calls[0][0].trim()).toMatchInlineSnapshot(`"🛑 [31mthis is a test line[39m"`);
 });
