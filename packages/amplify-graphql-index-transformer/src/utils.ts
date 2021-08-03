@@ -1,4 +1,5 @@
 import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { plurality } from 'graphql-transformer-common';
 import { PrimaryKeyDirectiveConfiguration } from './types';
 
 export function lookupResolverName(config: PrimaryKeyDirectiveConfiguration, ctx: TransformerContextProvider, op: string): string | null {
@@ -26,7 +27,11 @@ export function lookupResolverName(config: PrimaryKeyDirectiveConfiguration, ctx
   }
 
   if (!resolverName) {
-    resolverName = `${op}${object.name.value}${op === 'list' ? 's' : ''}`;
+    if (op === 'list') {
+      resolverName = `${op}${plurality(object.name.value, true)}`;
+    } else {
+      resolverName = `${op}${object.name.value}`;
+    }
   }
 
   return resolverName;
