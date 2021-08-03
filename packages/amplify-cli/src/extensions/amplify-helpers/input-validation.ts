@@ -1,4 +1,5 @@
 /**
+ * @deprecated Use validators from amplify-prompts or add a new validator to that module
  * question is either of the legacy form:
  * {
  *    validation: {
