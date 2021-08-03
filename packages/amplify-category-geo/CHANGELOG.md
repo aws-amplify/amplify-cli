@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.0.5-geo.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-geo@0.0.5-geo.0...amplify-category-geo@0.0.5-geo.1) (2021-08-03)
+
+
+### Bug Fixes
+
+* **amplify-category-geo:** enable unauth access for identity pool ([#7858](https://github.com/aws-amplify/amplify-cli/issues/7858))  ([afd774d](https://github.com/aws-amplify/amplify-cli/commit/afd774ded6e1683e9262f124ec61c48cf70b8aa6))
+
+
+
+
+
 ## 0.0.5-geo.0 (2021-07-30)
 
 
