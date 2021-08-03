@@ -23,7 +23,9 @@
     "scripts": {
         "build": "tsc",
         "watch": "tsc -w",
-        "clean": "rimraf ./lib"
+        "clean": "rimraf ./lib",
+        "test": "jest",
+        "test-watch": "jest --watch"
     },
     "dependencies": {
         "@aws-amplify/graphql-transformer-core": "0.8.0",
@@ -67,7 +69,7 @@
             "^.+\\.tsx?$": "ts-jest"
         },
         "testURL": "http://localhost",
-        "testRegex": "(src/__tests__/.*|(\\.|/)(test|spec))\\.(jsx?|tsx?)$",
+        "testRegex": "(src/__tests__/.*\\.(test|spec))\\.(jsx?|tsx?)$",
         "moduleFileExtensions": [
             "ts",
             "tsx",
