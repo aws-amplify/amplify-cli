@@ -10,9 +10,13 @@ import {
   getTeamProviderInfo,
   initJSProjectWithProfile,
   setTeamProviderInfo,
+  functionBuild,
+  getBackendAmplifyMeta,
+  amplifyPushForce,
 } from 'amplify-e2e-core';
 import _ from 'lodash';
 import { addEnvironmentYes } from '../environment/env';
+import { v4 as uuid } from 'uuid';
 
 describe('function environment variables', () => {
   let projRoot: string;
@@ -105,5 +109,28 @@ describe('function environment variables', () => {
     // value should be copied to new env
     const tpi = getTeamProviderInfo(projRoot);
     expect((Object.values(tpi.testtest.categories.function)[0] as any).fooBar).toEqual('fooBar');
+  });
+
+  it('function force push with no change', async () => {
+    const projectName = `functionNoChange`;
+    const [shortId] = uuid().split('-');
+    const functionName = `testfunction${shortId}`;
+    await initJSProjectWithProfile(projRoot, { name: projectName });
+    await addFunction(
+      projRoot,
+      {
+        functionTemplate: 'Hello World',
+        name: functionName,
+      },
+      'nodejs',
+    );
+    await functionBuild(projRoot, {});
+    await amplifyPushAuth(projRoot);
+    let meta = getBackendAmplifyMeta(projRoot);
+    const { lastPushDirHash: beforeDirHash } = meta.function[functionName];
+    await amplifyPushForce(projRoot);
+    meta = getBackendAmplifyMeta(projRoot);
+    const { lastPushDirHash: afterDirHash } = meta.function[functionName];
+    expect(beforeDirHash).toBe(afterDirHash);
   });
 });

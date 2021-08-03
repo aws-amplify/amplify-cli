@@ -19,8 +19,9 @@ import {
   getAmplifyIOSConfig,
   amplifyPushWithoutCodegen,
   addFunction,
-  getTable,
+  getBackendAmplifyMeta,
   amplifyPushUpdateForDependentModel,
+  amplifyPushForce,
 } from 'amplify-e2e-core';
 import path from 'path';
 import { existsSync } from 'fs';
@@ -88,7 +89,7 @@ describe('amplify add api (GraphQL)', () => {
     await amplifyPushUpdate(projRoot);
 
     meta = getProjectMeta(projRoot);
-    expect(meta.api.simplemodle).toBeUndefined();
+    expect(meta.api.simplemodel).toBeUndefined();
     const awsConfig: any = getAwsIOSConfig(projRoot);
     expect('AppSync' in awsConfig).toBe(false);
     const amplifyConfig: any = getAmplifyIOSConfig(projRoot);
@@ -258,5 +259,18 @@ describe('amplify add api (GraphQL)', () => {
     }
     expect(error).toBeDefined();
     expect(error.message).toContain(`${tableName} not found`);
+  });
+
+  it('api force push with no changes', async () => {
+    const projectName = `apiNoChange`;
+    await initJSProjectWithProfile(projRoot, { name: projectName });
+    await addApiWithSchema(projRoot, 'two-model-schema.graphql');
+    await amplifyPush(projRoot);
+    let meta = getBackendAmplifyMeta(projRoot);
+    const { lastPushDirHash: beforeDirHash } = meta.api[projectName];
+    await amplifyPushForce(projRoot);
+    meta = getBackendAmplifyMeta(projRoot);
+    const { lastPushDirHash: afterDirHash } = meta.api[projectName];
+    expect(beforeDirHash).toBe(afterDirHash);
   });
 });
