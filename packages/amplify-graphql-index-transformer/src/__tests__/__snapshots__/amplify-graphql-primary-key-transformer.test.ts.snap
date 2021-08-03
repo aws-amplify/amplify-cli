@@ -28,13 +28,15 @@ $util.toJson({
 #end
 $util.qr($ctx.args.input.put(\\"kind#other\\",\\"\${ctx.args.input.kind}#\${ctx.args.input.other}\\"))
 ## [Start] Create Request template. **
-## Begin - KeyCondition **
+## Begin - key condition **
 #if( $ctx.stash.metadata.modelObjectKey )
   #set( $keyConditionExpr = {} )
+  #set( $keyConditionExprNames = {} )
   #foreach( $entry in $ctx.stash.metadata.modelObjectKey.entrySet() )
-    $util.qr($keyConditionExpr.add(\\"$entry.key\\", {
-  \\"attributeExists\\": true
+    $util.qr($keyConditionExpr.put(\\"keyCondition$velocityCount\\", {
+  \\"attributeExists\\": false
 }))
+    $util.qr($keyConditionExprNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
   #end
   $util.qr($ctx.stash.conditions.add($keyConditionExpr))
 #else
@@ -44,7 +46,7 @@ $util.qr($ctx.args.input.put(\\"kind#other\\",\\"\${ctx.args.input.kind}#\${ctx.
   }
 }))
 #end
-## End - KeyCondition **
+## End - key condition **
 ## Set the default values to put request **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
 ## copy the values from input **
@@ -60,13 +62,15 @@ $util.qr($mergedValues.put(\\"__typename\\", \\"Test\\"))
 #if( $context.args.condition )
   $util.qr($ctx.stash.conditions.add($context.args.condition))
 #end
-## Begin - KeyCondition **
+## Begin - key condition **
 #if( $ctx.stash.metadata.modelObjectKey )
   #set( $keyConditionExpr = {} )
+  #set( $keyConditionExprNames = {} )
   #foreach( $entry in $ctx.stash.metadata.modelObjectKey.entrySet() )
-    $util.qr($keyConditionExpr.put(\\"$entry.key\\", {
+    $util.qr($keyConditionExpr.put(\\"keyCondition$velocityCount\\", {
   \\"attributeExists\\": false
 }))
+    $util.qr($keyConditionExprNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
   #end
   $util.qr($ctx.stash.conditions.add($keyConditionExpr))
 #else
@@ -76,7 +80,7 @@ $util.qr($mergedValues.put(\\"__typename\\", \\"Test\\"))
   }
 }))
 #end
-## End - KeyCondition **
+## End - key condition **
 ## Start condition block **
 #if( $ctx.stash.conditions && $ctx.stash.conditions.size() != 0 )
   #set( $mergedConditions = {
@@ -92,10 +96,13 @@ $util.qr($mergedValues.put(\\"__typename\\", \\"Test\\"))
   ## End condition block **
 #end
 #if( $Conditions )
+  #if( $keyConditionExprNames )
+    $util.qr($Conditions.expressionNames.putAll($keyConditionExprNames))
+  #end
   $util.qr($PutObject.put(\\"condition\\", $Conditions))
 #end
-#if( $ctx.stash.metadata.modelObject )
-  $PutObject.put(\\"id\\", $ctx.stash.metadata.modelObject)
+#if( $ctx.stash.metadata.modelObjectKey )
+  $util.qr($PutObject.put(\\"key\\", $ctx.stash.metadata.modelObjectKey))
 #else
   #set( $Key = {
   \\"id\\":   $util.dynamodb.toDynamoDB($mergedValues.id)
@@ -133,10 +140,12 @@ $util.qr($DeleteRequest.put(\\"key\\", $Key))
 ## Begin - key condition **
 #if( $ctx.stash.metadata.modelObjectKey )
   #set( $keyConditionExpr = {} )
+  #set( $keyConditionExprNames = {} )
   #foreach( $entry in $ctx.stash.metadata.modelObjectKey.entrySet() )
-    $util.qr($keyConditionExpr.put(\\"$entry.key\\", {
+    $util.qr($keyConditionExpr.put(\\"keyCondition$velocityCount\\", {
   \\"attributeExists\\": true
 }))
+    $util.qr($keyConditionExprNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
   #end
   $util.qr($ctx.stash.conditions.add($keyConditionExpr))
 #else
@@ -165,6 +174,9 @@ $util.qr($DeleteRequest.put(\\"key\\", $Key))
   ## End condition block **
 #end
 #if( $Conditions )
+  #if( $keyConditionExprNames )
+    $util.qr($Conditions.expressionNames.putAll($keyConditionExprNames))
+  #end
   $util.qr($DeleteRequest.put(\\"condition\\", $Conditions))
 #end
 $util.toJson($DeleteRequest)
@@ -211,16 +223,17 @@ $util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
 #set( $expSet = {} )
 #set( $expAdd = {} )
 #set( $expRemove = [] )
-#if( $ctx.stash.metadata.modelObjetKey )
-  #set( $Key = $util.dynamodb.toDynamoDB($ctx.stash.metadata.modelObjetKey) )
+#if( $ctx.stash.metadata.modelObjectKey )
+  #set( $Key = $ctx.stash.metadata.modelObjectKey )
 #else
   #set( $Key = {
   \\"id\\":   $util.dynamodb.toDynamoDB($ctx.args.input.id)
 } )
 #end
 ## Model key **
-#if( $ctx.stash.metadata.modelObjetKey )
-  #foreach( $entry in $ctx.stash.metadata.modelObjetKey.entrySet() )
+#if( $ctx.stash.metadata.modelObjectKey )
+  #set( $keyFields = [] )
+  #foreach( $entry in $ctx.stash.metadata.modelObjectKey.entrySet() )
     $util.qr($keyFields.add(\\"$entry.key\\"))
   #end
 #else
@@ -275,10 +288,12 @@ $util.qr($update.put(\\"expression\\", \\"$expression\\"))
 ## Begin - key condition **
 #if( $ctx.stash.metadata.modelObjectKey )
   #set( $keyConditionExpr = {} )
+  #set( $keyConditionExprNames = {} )
   #foreach( $entry in $ctx.stash.metadata.modelObjectKey.entrySet() )
-    $util.qr($keyConditionExpr.put(\\"$entry.key\\", {
+    $util.qr($keyConditionExpr.put(\\"keyCondition$velocityCount\\", {
   \\"attributeExists\\": true
 }))
+    $util.qr($keyConditionExprNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
   #end
   $util.qr($ctx.stash.conditions.add($keyConditionExpr))
 #else
@@ -313,6 +328,9 @@ $util.qr($update.put(\\"expression\\", \\"$expression\\"))
   \\"update\\": $update
 } )
 #if( $Conditions )
+  #if( $keyConditionExprNames )
+    $util.qr($Conditions.expressionNames.putAll($keyConditionExprNames))
+  #end
   $util.qr($UpdateItem.put(\\"condition\\", $Conditions))
 #end
 $util.toJson($UpdateItem)
@@ -335,8 +353,8 @@ $util.toJson($UpdateItem)
   \\"version\\": \\"2018-05-29\\",
   \\"operation\\": \\"GetItem\\"
 } )
-#if( $ctx.stash.metadata.modelKeyObject )
-  #set( $Key = $ctx.stash.metadata.modelKeyObject )
+#if( $ctx.stash.metadata.modelObjectKey )
+  #set( $key = $ctx.stash.metadata.modelObjectKey )
 #else
   #set( $key = {
   \\"id\\":   $util.dynamodb.toDynamoDB($ctx.args.id)
@@ -476,8 +494,8 @@ $util.toJson($GetRequest)
     #set( $ListRequest.filter = $filterExpression )
   #end
 #end
-#if( !$util.isNull($ctx.stash.modelQuery) )
-  #set( $Query = $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.modelQuery)) )
+#if( !$util.isNull($ctx.stash.modelQueryExpression) )
+  #set( $Query = $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.modelQueryExpression)) )
   $util.qr($ListRequest.put(\\"operation\\", \\"Query\\"))
   $util.qr($ListRequest.put(\\"query\\", $Query))
   #if( !$util.isNull($ctx.args.sortDirection) && $ctx.args.sortDirection == \\"DESC\\" )
@@ -551,13 +569,15 @@ $util.toJson({
 ## [End] Set the primary key. **
 
 ## [Start] Create Request template. **
-## Begin - KeyCondition **
+## Begin - key condition **
 #if( $ctx.stash.metadata.modelObjectKey )
   #set( $keyConditionExpr = {} )
+  #set( $keyConditionExprNames = {} )
   #foreach( $entry in $ctx.stash.metadata.modelObjectKey.entrySet() )
-    $util.qr($keyConditionExpr.add(\\"$entry.key\\", {
-  \\"attributeExists\\": true
+    $util.qr($keyConditionExpr.put(\\"keyCondition$velocityCount\\", {
+  \\"attributeExists\\": false
 }))
+    $util.qr($keyConditionExprNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
   #end
   $util.qr($ctx.stash.conditions.add($keyConditionExpr))
 #else
@@ -567,7 +587,7 @@ $util.toJson({
   }
 }))
 #end
-## End - KeyCondition **
+## End - key condition **
 ## Set the default values to put request **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
 ## copy the values from input **
@@ -583,13 +603,15 @@ $util.qr($mergedValues.put(\\"__typename\\", \\"Test\\"))
 #if( $context.args.condition )
   $util.qr($ctx.stash.conditions.add($context.args.condition))
 #end
-## Begin - KeyCondition **
+## Begin - key condition **
 #if( $ctx.stash.metadata.modelObjectKey )
   #set( $keyConditionExpr = {} )
+  #set( $keyConditionExprNames = {} )
   #foreach( $entry in $ctx.stash.metadata.modelObjectKey.entrySet() )
-    $util.qr($keyConditionExpr.put(\\"$entry.key\\", {
+    $util.qr($keyConditionExpr.put(\\"keyCondition$velocityCount\\", {
   \\"attributeExists\\": false
 }))
+    $util.qr($keyConditionExprNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
   #end
   $util.qr($ctx.stash.conditions.add($keyConditionExpr))
 #else
@@ -599,7 +621,7 @@ $util.qr($mergedValues.put(\\"__typename\\", \\"Test\\"))
   }
 }))
 #end
-## End - KeyCondition **
+## End - key condition **
 ## Start condition block **
 #if( $ctx.stash.conditions && $ctx.stash.conditions.size() != 0 )
   #set( $mergedConditions = {
@@ -615,10 +637,13 @@ $util.qr($mergedValues.put(\\"__typename\\", \\"Test\\"))
   ## End condition block **
 #end
 #if( $Conditions )
+  #if( $keyConditionExprNames )
+    $util.qr($Conditions.expressionNames.putAll($keyConditionExprNames))
+  #end
   $util.qr($PutObject.put(\\"condition\\", $Conditions))
 #end
-#if( $ctx.stash.metadata.modelObject )
-  $PutObject.put(\\"id\\", $ctx.stash.metadata.modelObject)
+#if( $ctx.stash.metadata.modelObjectKey )
+  $util.qr($PutObject.put(\\"key\\", $ctx.stash.metadata.modelObjectKey))
 #else
   #set( $Key = {
   \\"id\\":   $util.dynamodb.toDynamoDB($mergedValues.id)
@@ -656,10 +681,12 @@ $util.qr($DeleteRequest.put(\\"key\\", $Key))
 ## Begin - key condition **
 #if( $ctx.stash.metadata.modelObjectKey )
   #set( $keyConditionExpr = {} )
+  #set( $keyConditionExprNames = {} )
   #foreach( $entry in $ctx.stash.metadata.modelObjectKey.entrySet() )
-    $util.qr($keyConditionExpr.put(\\"$entry.key\\", {
+    $util.qr($keyConditionExpr.put(\\"keyCondition$velocityCount\\", {
   \\"attributeExists\\": true
 }))
+    $util.qr($keyConditionExprNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
   #end
   $util.qr($ctx.stash.conditions.add($keyConditionExpr))
 #else
@@ -688,6 +715,9 @@ $util.qr($DeleteRequest.put(\\"key\\", $Key))
   ## End condition block **
 #end
 #if( $Conditions )
+  #if( $keyConditionExprNames )
+    $util.qr($Conditions.expressionNames.putAll($keyConditionExprNames))
+  #end
   $util.qr($DeleteRequest.put(\\"condition\\", $Conditions))
 #end
 $util.toJson($DeleteRequest)
@@ -727,16 +757,17 @@ $util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
 #set( $expSet = {} )
 #set( $expAdd = {} )
 #set( $expRemove = [] )
-#if( $ctx.stash.metadata.modelObjetKey )
-  #set( $Key = $util.dynamodb.toDynamoDB($ctx.stash.metadata.modelObjetKey) )
+#if( $ctx.stash.metadata.modelObjectKey )
+  #set( $Key = $ctx.stash.metadata.modelObjectKey )
 #else
   #set( $Key = {
   \\"id\\":   $util.dynamodb.toDynamoDB($ctx.args.input.id)
 } )
 #end
 ## Model key **
-#if( $ctx.stash.metadata.modelObjetKey )
-  #foreach( $entry in $ctx.stash.metadata.modelObjetKey.entrySet() )
+#if( $ctx.stash.metadata.modelObjectKey )
+  #set( $keyFields = [] )
+  #foreach( $entry in $ctx.stash.metadata.modelObjectKey.entrySet() )
     $util.qr($keyFields.add(\\"$entry.key\\"))
   #end
 #else
@@ -791,10 +822,12 @@ $util.qr($update.put(\\"expression\\", \\"$expression\\"))
 ## Begin - key condition **
 #if( $ctx.stash.metadata.modelObjectKey )
   #set( $keyConditionExpr = {} )
+  #set( $keyConditionExprNames = {} )
   #foreach( $entry in $ctx.stash.metadata.modelObjectKey.entrySet() )
-    $util.qr($keyConditionExpr.put(\\"$entry.key\\", {
+    $util.qr($keyConditionExpr.put(\\"keyCondition$velocityCount\\", {
   \\"attributeExists\\": true
 }))
+    $util.qr($keyConditionExprNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
   #end
   $util.qr($ctx.stash.conditions.add($keyConditionExpr))
 #else
@@ -829,6 +862,9 @@ $util.qr($update.put(\\"expression\\", \\"$expression\\"))
   \\"update\\": $update
 } )
 #if( $Conditions )
+  #if( $keyConditionExprNames )
+    $util.qr($Conditions.expressionNames.putAll($keyConditionExprNames))
+  #end
   $util.qr($UpdateItem.put(\\"condition\\", $Conditions))
 #end
 $util.toJson($UpdateItem)
@@ -851,8 +887,8 @@ $util.toJson($UpdateItem)
   \\"version\\": \\"2018-05-29\\",
   \\"operation\\": \\"GetItem\\"
 } )
-#if( $ctx.stash.metadata.modelKeyObject )
-  #set( $Key = $ctx.stash.metadata.modelKeyObject )
+#if( $ctx.stash.metadata.modelObjectKey )
+  #set( $key = $ctx.stash.metadata.modelObjectKey )
 #else
   #set( $key = {
   \\"id\\":   $util.dynamodb.toDynamoDB($ctx.args.id)
@@ -946,8 +982,8 @@ $util.toJson($GetRequest)
     #set( $ListRequest.filter = $filterExpression )
   #end
 #end
-#if( !$util.isNull($ctx.stash.modelQuery) )
-  #set( $Query = $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.modelQuery)) )
+#if( !$util.isNull($ctx.stash.modelQueryExpression) )
+  #set( $Query = $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.modelQueryExpression)) )
   $util.qr($ListRequest.put(\\"operation\\", \\"Query\\"))
   $util.qr($ListRequest.put(\\"query\\", $Query))
   #if( !$util.isNull($ctx.args.sortDirection) && $ctx.args.sortDirection == \\"DESC\\" )
@@ -1020,13 +1056,15 @@ $util.toJson({
 ## [End] Set the primary key. **
 
 ## [Start] Create Request template. **
-## Begin - KeyCondition **
+## Begin - key condition **
 #if( $ctx.stash.metadata.modelObjectKey )
   #set( $keyConditionExpr = {} )
+  #set( $keyConditionExprNames = {} )
   #foreach( $entry in $ctx.stash.metadata.modelObjectKey.entrySet() )
-    $util.qr($keyConditionExpr.add(\\"$entry.key\\", {
-  \\"attributeExists\\": true
+    $util.qr($keyConditionExpr.put(\\"keyCondition$velocityCount\\", {
+  \\"attributeExists\\": false
 }))
+    $util.qr($keyConditionExprNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
   #end
   $util.qr($ctx.stash.conditions.add($keyConditionExpr))
 #else
@@ -1036,7 +1074,7 @@ $util.toJson({
   }
 }))
 #end
-## End - KeyCondition **
+## End - key condition **
 ## Set the default values to put request **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
 ## copy the values from input **
@@ -1052,13 +1090,15 @@ $util.qr($mergedValues.put(\\"__typename\\", \\"Test\\"))
 #if( $context.args.condition )
   $util.qr($ctx.stash.conditions.add($context.args.condition))
 #end
-## Begin - KeyCondition **
+## Begin - key condition **
 #if( $ctx.stash.metadata.modelObjectKey )
   #set( $keyConditionExpr = {} )
+  #set( $keyConditionExprNames = {} )
   #foreach( $entry in $ctx.stash.metadata.modelObjectKey.entrySet() )
-    $util.qr($keyConditionExpr.put(\\"$entry.key\\", {
+    $util.qr($keyConditionExpr.put(\\"keyCondition$velocityCount\\", {
   \\"attributeExists\\": false
 }))
+    $util.qr($keyConditionExprNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
   #end
   $util.qr($ctx.stash.conditions.add($keyConditionExpr))
 #else
@@ -1068,7 +1108,7 @@ $util.qr($mergedValues.put(\\"__typename\\", \\"Test\\"))
   }
 }))
 #end
-## End - KeyCondition **
+## End - key condition **
 ## Start condition block **
 #if( $ctx.stash.conditions && $ctx.stash.conditions.size() != 0 )
   #set( $mergedConditions = {
@@ -1084,10 +1124,13 @@ $util.qr($mergedValues.put(\\"__typename\\", \\"Test\\"))
   ## End condition block **
 #end
 #if( $Conditions )
+  #if( $keyConditionExprNames )
+    $util.qr($Conditions.expressionNames.putAll($keyConditionExprNames))
+  #end
   $util.qr($PutObject.put(\\"condition\\", $Conditions))
 #end
-#if( $ctx.stash.metadata.modelObject )
-  $PutObject.put(\\"id\\", $ctx.stash.metadata.modelObject)
+#if( $ctx.stash.metadata.modelObjectKey )
+  $util.qr($PutObject.put(\\"key\\", $ctx.stash.metadata.modelObjectKey))
 #else
   #set( $Key = {
   \\"id\\":   $util.dynamodb.toDynamoDB($mergedValues.id)
@@ -1124,10 +1167,12 @@ $util.qr($DeleteRequest.put(\\"key\\", $Key))
 ## Begin - key condition **
 #if( $ctx.stash.metadata.modelObjectKey )
   #set( $keyConditionExpr = {} )
+  #set( $keyConditionExprNames = {} )
   #foreach( $entry in $ctx.stash.metadata.modelObjectKey.entrySet() )
-    $util.qr($keyConditionExpr.put(\\"$entry.key\\", {
+    $util.qr($keyConditionExpr.put(\\"keyCondition$velocityCount\\", {
   \\"attributeExists\\": true
 }))
+    $util.qr($keyConditionExprNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
   #end
   $util.qr($ctx.stash.conditions.add($keyConditionExpr))
 #else
@@ -1156,6 +1201,9 @@ $util.qr($DeleteRequest.put(\\"key\\", $Key))
   ## End condition block **
 #end
 #if( $Conditions )
+  #if( $keyConditionExprNames )
+    $util.qr($Conditions.expressionNames.putAll($keyConditionExprNames))
+  #end
   $util.qr($DeleteRequest.put(\\"condition\\", $Conditions))
 #end
 $util.toJson($DeleteRequest)
@@ -1194,16 +1242,17 @@ $util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
 #set( $expSet = {} )
 #set( $expAdd = {} )
 #set( $expRemove = [] )
-#if( $ctx.stash.metadata.modelObjetKey )
-  #set( $Key = $util.dynamodb.toDynamoDB($ctx.stash.metadata.modelObjetKey) )
+#if( $ctx.stash.metadata.modelObjectKey )
+  #set( $Key = $ctx.stash.metadata.modelObjectKey )
 #else
   #set( $Key = {
   \\"id\\":   $util.dynamodb.toDynamoDB($ctx.args.input.id)
 } )
 #end
 ## Model key **
-#if( $ctx.stash.metadata.modelObjetKey )
-  #foreach( $entry in $ctx.stash.metadata.modelObjetKey.entrySet() )
+#if( $ctx.stash.metadata.modelObjectKey )
+  #set( $keyFields = [] )
+  #foreach( $entry in $ctx.stash.metadata.modelObjectKey.entrySet() )
     $util.qr($keyFields.add(\\"$entry.key\\"))
   #end
 #else
@@ -1258,10 +1307,12 @@ $util.qr($update.put(\\"expression\\", \\"$expression\\"))
 ## Begin - key condition **
 #if( $ctx.stash.metadata.modelObjectKey )
   #set( $keyConditionExpr = {} )
+  #set( $keyConditionExprNames = {} )
   #foreach( $entry in $ctx.stash.metadata.modelObjectKey.entrySet() )
-    $util.qr($keyConditionExpr.put(\\"$entry.key\\", {
+    $util.qr($keyConditionExpr.put(\\"keyCondition$velocityCount\\", {
   \\"attributeExists\\": true
 }))
+    $util.qr($keyConditionExprNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
   #end
   $util.qr($ctx.stash.conditions.add($keyConditionExpr))
 #else
@@ -1296,6 +1347,9 @@ $util.qr($update.put(\\"expression\\", \\"$expression\\"))
   \\"update\\": $update
 } )
 #if( $Conditions )
+  #if( $keyConditionExprNames )
+    $util.qr($Conditions.expressionNames.putAll($keyConditionExprNames))
+  #end
   $util.qr($UpdateItem.put(\\"condition\\", $Conditions))
 #end
 $util.toJson($UpdateItem)
@@ -1317,8 +1371,8 @@ $util.toJson($UpdateItem)
   \\"version\\": \\"2018-05-29\\",
   \\"operation\\": \\"GetItem\\"
 } )
-#if( $ctx.stash.metadata.modelKeyObject )
-  #set( $Key = $ctx.stash.metadata.modelKeyObject )
+#if( $ctx.stash.metadata.modelObjectKey )
+  #set( $key = $ctx.stash.metadata.modelObjectKey )
 #else
   #set( $key = {
   \\"id\\":   $util.dynamodb.toDynamoDB($ctx.args.id)
@@ -1369,8 +1423,8 @@ $util.toJson($GetRequest)
     #set( $ListRequest.filter = $filterExpression )
   #end
 #end
-#if( !$util.isNull($ctx.stash.modelQuery) )
-  #set( $Query = $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.modelQuery)) )
+#if( !$util.isNull($ctx.stash.modelQueryExpression) )
+  #set( $Query = $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.modelQueryExpression)) )
   $util.qr($ListRequest.put(\\"operation\\", \\"Query\\"))
   $util.qr($ListRequest.put(\\"query\\", $Query))
   #if( !$util.isNull($ctx.args.sortDirection) && $ctx.args.sortDirection == \\"DESC\\" )
@@ -1444,13 +1498,15 @@ $util.toJson({
 ## [End] Set the primary key. **
 
 ## [Start] Create Request template. **
-## Begin - KeyCondition **
+## Begin - key condition **
 #if( $ctx.stash.metadata.modelObjectKey )
   #set( $keyConditionExpr = {} )
+  #set( $keyConditionExprNames = {} )
   #foreach( $entry in $ctx.stash.metadata.modelObjectKey.entrySet() )
-    $util.qr($keyConditionExpr.add(\\"$entry.key\\", {
-  \\"attributeExists\\": true
+    $util.qr($keyConditionExpr.put(\\"keyCondition$velocityCount\\", {
+  \\"attributeExists\\": false
 }))
+    $util.qr($keyConditionExprNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
   #end
   $util.qr($ctx.stash.conditions.add($keyConditionExpr))
 #else
@@ -1460,7 +1516,7 @@ $util.toJson({
   }
 }))
 #end
-## End - KeyCondition **
+## End - key condition **
 ## Set the default values to put request **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
 ## copy the values from input **
@@ -1476,13 +1532,15 @@ $util.qr($mergedValues.put(\\"__typename\\", \\"Test\\"))
 #if( $context.args.condition )
   $util.qr($ctx.stash.conditions.add($context.args.condition))
 #end
-## Begin - KeyCondition **
+## Begin - key condition **
 #if( $ctx.stash.metadata.modelObjectKey )
   #set( $keyConditionExpr = {} )
+  #set( $keyConditionExprNames = {} )
   #foreach( $entry in $ctx.stash.metadata.modelObjectKey.entrySet() )
-    $util.qr($keyConditionExpr.put(\\"$entry.key\\", {
+    $util.qr($keyConditionExpr.put(\\"keyCondition$velocityCount\\", {
   \\"attributeExists\\": false
 }))
+    $util.qr($keyConditionExprNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
   #end
   $util.qr($ctx.stash.conditions.add($keyConditionExpr))
 #else
@@ -1492,7 +1550,7 @@ $util.qr($mergedValues.put(\\"__typename\\", \\"Test\\"))
   }
 }))
 #end
-## End - KeyCondition **
+## End - key condition **
 ## Start condition block **
 #if( $ctx.stash.conditions && $ctx.stash.conditions.size() != 0 )
   #set( $mergedConditions = {
@@ -1508,10 +1566,13 @@ $util.qr($mergedValues.put(\\"__typename\\", \\"Test\\"))
   ## End condition block **
 #end
 #if( $Conditions )
+  #if( $keyConditionExprNames )
+    $util.qr($Conditions.expressionNames.putAll($keyConditionExprNames))
+  #end
   $util.qr($PutObject.put(\\"condition\\", $Conditions))
 #end
-#if( $ctx.stash.metadata.modelObject )
-  $PutObject.put(\\"id\\", $ctx.stash.metadata.modelObject)
+#if( $ctx.stash.metadata.modelObjectKey )
+  $util.qr($PutObject.put(\\"key\\", $ctx.stash.metadata.modelObjectKey))
 #else
   #set( $Key = {
   \\"id\\":   $util.dynamodb.toDynamoDB($mergedValues.id)
@@ -1549,10 +1610,12 @@ $util.qr($DeleteRequest.put(\\"key\\", $Key))
 ## Begin - key condition **
 #if( $ctx.stash.metadata.modelObjectKey )
   #set( $keyConditionExpr = {} )
+  #set( $keyConditionExprNames = {} )
   #foreach( $entry in $ctx.stash.metadata.modelObjectKey.entrySet() )
-    $util.qr($keyConditionExpr.put(\\"$entry.key\\", {
+    $util.qr($keyConditionExpr.put(\\"keyCondition$velocityCount\\", {
   \\"attributeExists\\": true
 }))
+    $util.qr($keyConditionExprNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
   #end
   $util.qr($ctx.stash.conditions.add($keyConditionExpr))
 #else
@@ -1581,6 +1644,9 @@ $util.qr($DeleteRequest.put(\\"key\\", $Key))
   ## End condition block **
 #end
 #if( $Conditions )
+  #if( $keyConditionExprNames )
+    $util.qr($Conditions.expressionNames.putAll($keyConditionExprNames))
+  #end
   $util.qr($DeleteRequest.put(\\"condition\\", $Conditions))
 #end
 $util.toJson($DeleteRequest)
@@ -1620,16 +1686,17 @@ $util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
 #set( $expSet = {} )
 #set( $expAdd = {} )
 #set( $expRemove = [] )
-#if( $ctx.stash.metadata.modelObjetKey )
-  #set( $Key = $util.dynamodb.toDynamoDB($ctx.stash.metadata.modelObjetKey) )
+#if( $ctx.stash.metadata.modelObjectKey )
+  #set( $Key = $ctx.stash.metadata.modelObjectKey )
 #else
   #set( $Key = {
   \\"id\\":   $util.dynamodb.toDynamoDB($ctx.args.input.id)
 } )
 #end
 ## Model key **
-#if( $ctx.stash.metadata.modelObjetKey )
-  #foreach( $entry in $ctx.stash.metadata.modelObjetKey.entrySet() )
+#if( $ctx.stash.metadata.modelObjectKey )
+  #set( $keyFields = [] )
+  #foreach( $entry in $ctx.stash.metadata.modelObjectKey.entrySet() )
     $util.qr($keyFields.add(\\"$entry.key\\"))
   #end
 #else
@@ -1684,10 +1751,12 @@ $util.qr($update.put(\\"expression\\", \\"$expression\\"))
 ## Begin - key condition **
 #if( $ctx.stash.metadata.modelObjectKey )
   #set( $keyConditionExpr = {} )
+  #set( $keyConditionExprNames = {} )
   #foreach( $entry in $ctx.stash.metadata.modelObjectKey.entrySet() )
-    $util.qr($keyConditionExpr.put(\\"$entry.key\\", {
+    $util.qr($keyConditionExpr.put(\\"keyCondition$velocityCount\\", {
   \\"attributeExists\\": true
 }))
+    $util.qr($keyConditionExprNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
   #end
   $util.qr($ctx.stash.conditions.add($keyConditionExpr))
 #else
@@ -1722,6 +1791,9 @@ $util.qr($update.put(\\"expression\\", \\"$expression\\"))
   \\"update\\": $update
 } )
 #if( $Conditions )
+  #if( $keyConditionExprNames )
+    $util.qr($Conditions.expressionNames.putAll($keyConditionExprNames))
+  #end
   $util.qr($UpdateItem.put(\\"condition\\", $Conditions))
 #end
 $util.toJson($UpdateItem)
@@ -1744,8 +1816,8 @@ $util.toJson($UpdateItem)
   \\"version\\": \\"2018-05-29\\",
   \\"operation\\": \\"GetItem\\"
 } )
-#if( $ctx.stash.metadata.modelKeyObject )
-  #set( $Key = $ctx.stash.metadata.modelKeyObject )
+#if( $ctx.stash.metadata.modelObjectKey )
+  #set( $key = $ctx.stash.metadata.modelObjectKey )
 #else
   #set( $key = {
   \\"id\\":   $util.dynamodb.toDynamoDB($ctx.args.id)
@@ -1839,8 +1911,8 @@ $util.toJson($GetRequest)
     #set( $ListRequest.filter = $filterExpression )
   #end
 #end
-#if( !$util.isNull($ctx.stash.modelQuery) )
-  #set( $Query = $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.modelQuery)) )
+#if( !$util.isNull($ctx.stash.modelQueryExpression) )
+  #set( $Query = $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.modelQueryExpression)) )
   $util.qr($ListRequest.put(\\"operation\\", \\"Query\\"))
   $util.qr($ListRequest.put(\\"query\\", $Query))
   #if( !$util.isNull($ctx.args.sortDirection) && $ctx.args.sortDirection == \\"DESC\\" )
@@ -1914,13 +1986,15 @@ $util.toJson({
 ## [End] Set the primary key. **
 
 ## [Start] Create Request template. **
-## Begin - KeyCondition **
+## Begin - key condition **
 #if( $ctx.stash.metadata.modelObjectKey )
   #set( $keyConditionExpr = {} )
+  #set( $keyConditionExprNames = {} )
   #foreach( $entry in $ctx.stash.metadata.modelObjectKey.entrySet() )
-    $util.qr($keyConditionExpr.add(\\"$entry.key\\", {
-  \\"attributeExists\\": true
+    $util.qr($keyConditionExpr.put(\\"keyCondition$velocityCount\\", {
+  \\"attributeExists\\": false
 }))
+    $util.qr($keyConditionExprNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
   #end
   $util.qr($ctx.stash.conditions.add($keyConditionExpr))
 #else
@@ -1930,7 +2004,7 @@ $util.toJson({
   }
 }))
 #end
-## End - KeyCondition **
+## End - key condition **
 ## Set the default values to put request **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
 ## copy the values from input **
@@ -1946,13 +2020,15 @@ $util.qr($mergedValues.put(\\"__typename\\", \\"Test\\"))
 #if( $context.args.condition )
   $util.qr($ctx.stash.conditions.add($context.args.condition))
 #end
-## Begin - KeyCondition **
+## Begin - key condition **
 #if( $ctx.stash.metadata.modelObjectKey )
   #set( $keyConditionExpr = {} )
+  #set( $keyConditionExprNames = {} )
   #foreach( $entry in $ctx.stash.metadata.modelObjectKey.entrySet() )
-    $util.qr($keyConditionExpr.put(\\"$entry.key\\", {
+    $util.qr($keyConditionExpr.put(\\"keyCondition$velocityCount\\", {
   \\"attributeExists\\": false
 }))
+    $util.qr($keyConditionExprNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
   #end
   $util.qr($ctx.stash.conditions.add($keyConditionExpr))
 #else
@@ -1962,7 +2038,7 @@ $util.qr($mergedValues.put(\\"__typename\\", \\"Test\\"))
   }
 }))
 #end
-## End - KeyCondition **
+## End - key condition **
 ## Start condition block **
 #if( $ctx.stash.conditions && $ctx.stash.conditions.size() != 0 )
   #set( $mergedConditions = {
@@ -1978,10 +2054,13 @@ $util.qr($mergedValues.put(\\"__typename\\", \\"Test\\"))
   ## End condition block **
 #end
 #if( $Conditions )
+  #if( $keyConditionExprNames )
+    $util.qr($Conditions.expressionNames.putAll($keyConditionExprNames))
+  #end
   $util.qr($PutObject.put(\\"condition\\", $Conditions))
 #end
-#if( $ctx.stash.metadata.modelObject )
-  $PutObject.put(\\"id\\", $ctx.stash.metadata.modelObject)
+#if( $ctx.stash.metadata.modelObjectKey )
+  $util.qr($PutObject.put(\\"key\\", $ctx.stash.metadata.modelObjectKey))
 #else
   #set( $Key = {
   \\"id\\":   $util.dynamodb.toDynamoDB($mergedValues.id)
@@ -2019,10 +2098,12 @@ $util.qr($DeleteRequest.put(\\"key\\", $Key))
 ## Begin - key condition **
 #if( $ctx.stash.metadata.modelObjectKey )
   #set( $keyConditionExpr = {} )
+  #set( $keyConditionExprNames = {} )
   #foreach( $entry in $ctx.stash.metadata.modelObjectKey.entrySet() )
-    $util.qr($keyConditionExpr.put(\\"$entry.key\\", {
+    $util.qr($keyConditionExpr.put(\\"keyCondition$velocityCount\\", {
   \\"attributeExists\\": true
 }))
+    $util.qr($keyConditionExprNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
   #end
   $util.qr($ctx.stash.conditions.add($keyConditionExpr))
 #else
@@ -2051,6 +2132,9 @@ $util.qr($DeleteRequest.put(\\"key\\", $Key))
   ## End condition block **
 #end
 #if( $Conditions )
+  #if( $keyConditionExprNames )
+    $util.qr($Conditions.expressionNames.putAll($keyConditionExprNames))
+  #end
   $util.qr($DeleteRequest.put(\\"condition\\", $Conditions))
 #end
 $util.toJson($DeleteRequest)
@@ -2081,13 +2165,15 @@ $util.toJson({
 ## [End] Set the primary key. **
 
 ## [Start] Create Request template. **
-## Begin - KeyCondition **
+## Begin - key condition **
 #if( $ctx.stash.metadata.modelObjectKey )
   #set( $keyConditionExpr = {} )
+  #set( $keyConditionExprNames = {} )
   #foreach( $entry in $ctx.stash.metadata.modelObjectKey.entrySet() )
-    $util.qr($keyConditionExpr.add(\\"$entry.key\\", {
-  \\"attributeExists\\": true
+    $util.qr($keyConditionExpr.put(\\"keyCondition$velocityCount\\", {
+  \\"attributeExists\\": false
 }))
+    $util.qr($keyConditionExprNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
   #end
   $util.qr($ctx.stash.conditions.add($keyConditionExpr))
 #else
@@ -2097,7 +2183,7 @@ $util.toJson({
   }
 }))
 #end
-## End - KeyCondition **
+## End - key condition **
 ## Set the default values to put request **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
 ## copy the values from input **
@@ -2113,13 +2199,15 @@ $util.qr($mergedValues.put(\\"__typename\\", \\"Test\\"))
 #if( $context.args.condition )
   $util.qr($ctx.stash.conditions.add($context.args.condition))
 #end
-## Begin - KeyCondition **
+## Begin - key condition **
 #if( $ctx.stash.metadata.modelObjectKey )
   #set( $keyConditionExpr = {} )
+  #set( $keyConditionExprNames = {} )
   #foreach( $entry in $ctx.stash.metadata.modelObjectKey.entrySet() )
-    $util.qr($keyConditionExpr.put(\\"$entry.key\\", {
+    $util.qr($keyConditionExpr.put(\\"keyCondition$velocityCount\\", {
   \\"attributeExists\\": false
 }))
+    $util.qr($keyConditionExprNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
   #end
   $util.qr($ctx.stash.conditions.add($keyConditionExpr))
 #else
@@ -2129,7 +2217,7 @@ $util.qr($mergedValues.put(\\"__typename\\", \\"Test\\"))
   }
 }))
 #end
-## End - KeyCondition **
+## End - key condition **
 ## Start condition block **
 #if( $ctx.stash.conditions && $ctx.stash.conditions.size() != 0 )
   #set( $mergedConditions = {
@@ -2145,10 +2233,13 @@ $util.qr($mergedValues.put(\\"__typename\\", \\"Test\\"))
   ## End condition block **
 #end
 #if( $Conditions )
+  #if( $keyConditionExprNames )
+    $util.qr($Conditions.expressionNames.putAll($keyConditionExprNames))
+  #end
   $util.qr($PutObject.put(\\"condition\\", $Conditions))
 #end
-#if( $ctx.stash.metadata.modelObject )
-  $PutObject.put(\\"id\\", $ctx.stash.metadata.modelObject)
+#if( $ctx.stash.metadata.modelObjectKey )
+  $util.qr($PutObject.put(\\"key\\", $ctx.stash.metadata.modelObjectKey))
 #else
   #set( $Key = {
   \\"id\\":   $util.dynamodb.toDynamoDB($mergedValues.id)
@@ -2186,10 +2277,12 @@ $util.qr($DeleteRequest.put(\\"key\\", $Key))
 ## Begin - key condition **
 #if( $ctx.stash.metadata.modelObjectKey )
   #set( $keyConditionExpr = {} )
+  #set( $keyConditionExprNames = {} )
   #foreach( $entry in $ctx.stash.metadata.modelObjectKey.entrySet() )
-    $util.qr($keyConditionExpr.put(\\"$entry.key\\", {
+    $util.qr($keyConditionExpr.put(\\"keyCondition$velocityCount\\", {
   \\"attributeExists\\": true
 }))
+    $util.qr($keyConditionExprNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
   #end
   $util.qr($ctx.stash.conditions.add($keyConditionExpr))
 #else
@@ -2218,6 +2311,9 @@ $util.qr($DeleteRequest.put(\\"key\\", $Key))
   ## End condition block **
 #end
 #if( $Conditions )
+  #if( $keyConditionExprNames )
+    $util.qr($Conditions.expressionNames.putAll($keyConditionExprNames))
+  #end
   $util.qr($DeleteRequest.put(\\"condition\\", $Conditions))
 #end
 $util.toJson($DeleteRequest)
@@ -2257,16 +2353,17 @@ $util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
 #set( $expSet = {} )
 #set( $expAdd = {} )
 #set( $expRemove = [] )
-#if( $ctx.stash.metadata.modelObjetKey )
-  #set( $Key = $util.dynamodb.toDynamoDB($ctx.stash.metadata.modelObjetKey) )
+#if( $ctx.stash.metadata.modelObjectKey )
+  #set( $Key = $ctx.stash.metadata.modelObjectKey )
 #else
   #set( $Key = {
   \\"id\\":   $util.dynamodb.toDynamoDB($ctx.args.input.id)
 } )
 #end
 ## Model key **
-#if( $ctx.stash.metadata.modelObjetKey )
-  #foreach( $entry in $ctx.stash.metadata.modelObjetKey.entrySet() )
+#if( $ctx.stash.metadata.modelObjectKey )
+  #set( $keyFields = [] )
+  #foreach( $entry in $ctx.stash.metadata.modelObjectKey.entrySet() )
     $util.qr($keyFields.add(\\"$entry.key\\"))
   #end
 #else
@@ -2321,10 +2418,12 @@ $util.qr($update.put(\\"expression\\", \\"$expression\\"))
 ## Begin - key condition **
 #if( $ctx.stash.metadata.modelObjectKey )
   #set( $keyConditionExpr = {} )
+  #set( $keyConditionExprNames = {} )
   #foreach( $entry in $ctx.stash.metadata.modelObjectKey.entrySet() )
-    $util.qr($keyConditionExpr.put(\\"$entry.key\\", {
+    $util.qr($keyConditionExpr.put(\\"keyCondition$velocityCount\\", {
   \\"attributeExists\\": true
 }))
+    $util.qr($keyConditionExprNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
   #end
   $util.qr($ctx.stash.conditions.add($keyConditionExpr))
 #else
@@ -2359,6 +2458,9 @@ $util.qr($update.put(\\"expression\\", \\"$expression\\"))
   \\"update\\": $update
 } )
 #if( $Conditions )
+  #if( $keyConditionExprNames )
+    $util.qr($Conditions.expressionNames.putAll($keyConditionExprNames))
+  #end
   $util.qr($UpdateItem.put(\\"condition\\", $Conditions))
 #end
 $util.toJson($UpdateItem)
@@ -2398,16 +2500,17 @@ $util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
 #set( $expSet = {} )
 #set( $expAdd = {} )
 #set( $expRemove = [] )
-#if( $ctx.stash.metadata.modelObjetKey )
-  #set( $Key = $util.dynamodb.toDynamoDB($ctx.stash.metadata.modelObjetKey) )
+#if( $ctx.stash.metadata.modelObjectKey )
+  #set( $Key = $ctx.stash.metadata.modelObjectKey )
 #else
   #set( $Key = {
   \\"id\\":   $util.dynamodb.toDynamoDB($ctx.args.input.id)
 } )
 #end
 ## Model key **
-#if( $ctx.stash.metadata.modelObjetKey )
-  #foreach( $entry in $ctx.stash.metadata.modelObjetKey.entrySet() )
+#if( $ctx.stash.metadata.modelObjectKey )
+  #set( $keyFields = [] )
+  #foreach( $entry in $ctx.stash.metadata.modelObjectKey.entrySet() )
     $util.qr($keyFields.add(\\"$entry.key\\"))
   #end
 #else
@@ -2462,10 +2565,12 @@ $util.qr($update.put(\\"expression\\", \\"$expression\\"))
 ## Begin - key condition **
 #if( $ctx.stash.metadata.modelObjectKey )
   #set( $keyConditionExpr = {} )
+  #set( $keyConditionExprNames = {} )
   #foreach( $entry in $ctx.stash.metadata.modelObjectKey.entrySet() )
-    $util.qr($keyConditionExpr.put(\\"$entry.key\\", {
+    $util.qr($keyConditionExpr.put(\\"keyCondition$velocityCount\\", {
   \\"attributeExists\\": true
 }))
+    $util.qr($keyConditionExprNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
   #end
   $util.qr($ctx.stash.conditions.add($keyConditionExpr))
 #else
@@ -2500,6 +2605,9 @@ $util.qr($update.put(\\"expression\\", \\"$expression\\"))
   \\"update\\": $update
 } )
 #if( $Conditions )
+  #if( $keyConditionExprNames )
+    $util.qr($Conditions.expressionNames.putAll($keyConditionExprNames))
+  #end
   $util.qr($UpdateItem.put(\\"condition\\", $Conditions))
 #end
 $util.toJson($UpdateItem)
@@ -2521,8 +2629,8 @@ $util.toJson($UpdateItem)
   \\"version\\": \\"2018-05-29\\",
   \\"operation\\": \\"GetItem\\"
 } )
-#if( $ctx.stash.metadata.modelKeyObject )
-  #set( $Key = $ctx.stash.metadata.modelKeyObject )
+#if( $ctx.stash.metadata.modelObjectKey )
+  #set( $key = $ctx.stash.metadata.modelObjectKey )
 #else
   #set( $key = {
   \\"id\\":   $util.dynamodb.toDynamoDB($ctx.args.id)
@@ -2573,8 +2681,8 @@ $util.toJson($GetRequest)
     #set( $ListRequest.filter = $filterExpression )
   #end
 #end
-#if( !$util.isNull($ctx.stash.modelQuery) )
-  #set( $Query = $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.modelQuery)) )
+#if( !$util.isNull($ctx.stash.modelQueryExpression) )
+  #set( $Query = $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.modelQueryExpression)) )
   $util.qr($ListRequest.put(\\"operation\\", \\"Query\\"))
   $util.qr($ListRequest.put(\\"query\\", $Query))
   #if( !$util.isNull($ctx.args.sortDirection) && $ctx.args.sortDirection == \\"DESC\\" )
@@ -2608,8 +2716,8 @@ $util.toJson($ListRequest)
   \\"version\\": \\"2018-05-29\\",
   \\"operation\\": \\"GetItem\\"
 } )
-#if( $ctx.stash.metadata.modelKeyObject )
-  #set( $Key = $ctx.stash.metadata.modelKeyObject )
+#if( $ctx.stash.metadata.modelObjectKey )
+  #set( $key = $ctx.stash.metadata.modelObjectKey )
 #else
   #set( $key = {
   \\"id\\":   $util.dynamodb.toDynamoDB($ctx.args.id)
@@ -2703,8 +2811,8 @@ $util.toJson($GetRequest)
     #set( $ListRequest.filter = $filterExpression )
   #end
 #end
-#if( !$util.isNull($ctx.stash.modelQuery) )
-  #set( $Query = $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.modelQuery)) )
+#if( !$util.isNull($ctx.stash.modelQueryExpression) )
+  #set( $Query = $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.modelQueryExpression)) )
   $util.qr($ListRequest.put(\\"operation\\", \\"Query\\"))
   $util.qr($ListRequest.put(\\"query\\", $Query))
   #if( !$util.isNull($ctx.args.sortDirection) && $ctx.args.sortDirection == \\"DESC\\" )
@@ -2777,13 +2885,15 @@ $util.toJson({
 ## [End] Set the primary key. **
 
 ## [Start] Create Request template. **
-## Begin - KeyCondition **
+## Begin - key condition **
 #if( $ctx.stash.metadata.modelObjectKey )
   #set( $keyConditionExpr = {} )
+  #set( $keyConditionExprNames = {} )
   #foreach( $entry in $ctx.stash.metadata.modelObjectKey.entrySet() )
-    $util.qr($keyConditionExpr.add(\\"$entry.key\\", {
-  \\"attributeExists\\": true
+    $util.qr($keyConditionExpr.put(\\"keyCondition$velocityCount\\", {
+  \\"attributeExists\\": false
 }))
+    $util.qr($keyConditionExprNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
   #end
   $util.qr($ctx.stash.conditions.add($keyConditionExpr))
 #else
@@ -2793,7 +2903,7 @@ $util.toJson({
   }
 }))
 #end
-## End - KeyCondition **
+## End - key condition **
 ## Set the default values to put request **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
 ## copy the values from input **
@@ -2809,13 +2919,15 @@ $util.qr($mergedValues.put(\\"__typename\\", \\"Test\\"))
 #if( $context.args.condition )
   $util.qr($ctx.stash.conditions.add($context.args.condition))
 #end
-## Begin - KeyCondition **
+## Begin - key condition **
 #if( $ctx.stash.metadata.modelObjectKey )
   #set( $keyConditionExpr = {} )
+  #set( $keyConditionExprNames = {} )
   #foreach( $entry in $ctx.stash.metadata.modelObjectKey.entrySet() )
-    $util.qr($keyConditionExpr.put(\\"$entry.key\\", {
+    $util.qr($keyConditionExpr.put(\\"keyCondition$velocityCount\\", {
   \\"attributeExists\\": false
 }))
+    $util.qr($keyConditionExprNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
   #end
   $util.qr($ctx.stash.conditions.add($keyConditionExpr))
 #else
@@ -2825,7 +2937,7 @@ $util.qr($mergedValues.put(\\"__typename\\", \\"Test\\"))
   }
 }))
 #end
-## End - KeyCondition **
+## End - key condition **
 ## Start condition block **
 #if( $ctx.stash.conditions && $ctx.stash.conditions.size() != 0 )
   #set( $mergedConditions = {
@@ -2841,10 +2953,13 @@ $util.qr($mergedValues.put(\\"__typename\\", \\"Test\\"))
   ## End condition block **
 #end
 #if( $Conditions )
+  #if( $keyConditionExprNames )
+    $util.qr($Conditions.expressionNames.putAll($keyConditionExprNames))
+  #end
   $util.qr($PutObject.put(\\"condition\\", $Conditions))
 #end
-#if( $ctx.stash.metadata.modelObject )
-  $PutObject.put(\\"id\\", $ctx.stash.metadata.modelObject)
+#if( $ctx.stash.metadata.modelObjectKey )
+  $util.qr($PutObject.put(\\"key\\", $ctx.stash.metadata.modelObjectKey))
 #else
   #set( $Key = {
   \\"id\\":   $util.dynamodb.toDynamoDB($mergedValues.id)
@@ -2881,10 +2996,12 @@ $util.qr($DeleteRequest.put(\\"key\\", $Key))
 ## Begin - key condition **
 #if( $ctx.stash.metadata.modelObjectKey )
   #set( $keyConditionExpr = {} )
+  #set( $keyConditionExprNames = {} )
   #foreach( $entry in $ctx.stash.metadata.modelObjectKey.entrySet() )
-    $util.qr($keyConditionExpr.put(\\"$entry.key\\", {
+    $util.qr($keyConditionExpr.put(\\"keyCondition$velocityCount\\", {
   \\"attributeExists\\": true
 }))
+    $util.qr($keyConditionExprNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
   #end
   $util.qr($ctx.stash.conditions.add($keyConditionExpr))
 #else
@@ -2913,6 +3030,9 @@ $util.qr($DeleteRequest.put(\\"key\\", $Key))
   ## End condition block **
 #end
 #if( $Conditions )
+  #if( $keyConditionExprNames )
+    $util.qr($Conditions.expressionNames.putAll($keyConditionExprNames))
+  #end
   $util.qr($DeleteRequest.put(\\"condition\\", $Conditions))
 #end
 $util.toJson($DeleteRequest)
@@ -2943,13 +3063,15 @@ $util.toJson({
 ## [End] Set the primary key. **
 
 ## [Start] Create Request template. **
-## Begin - KeyCondition **
+## Begin - key condition **
 #if( $ctx.stash.metadata.modelObjectKey )
   #set( $keyConditionExpr = {} )
+  #set( $keyConditionExprNames = {} )
   #foreach( $entry in $ctx.stash.metadata.modelObjectKey.entrySet() )
-    $util.qr($keyConditionExpr.add(\\"$entry.key\\", {
-  \\"attributeExists\\": true
+    $util.qr($keyConditionExpr.put(\\"keyCondition$velocityCount\\", {
+  \\"attributeExists\\": false
 }))
+    $util.qr($keyConditionExprNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
   #end
   $util.qr($ctx.stash.conditions.add($keyConditionExpr))
 #else
@@ -2959,7 +3081,7 @@ $util.toJson({
   }
 }))
 #end
-## End - KeyCondition **
+## End - key condition **
 ## Set the default values to put request **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
 ## copy the values from input **
@@ -2975,13 +3097,15 @@ $util.qr($mergedValues.put(\\"__typename\\", \\"Test\\"))
 #if( $context.args.condition )
   $util.qr($ctx.stash.conditions.add($context.args.condition))
 #end
-## Begin - KeyCondition **
+## Begin - key condition **
 #if( $ctx.stash.metadata.modelObjectKey )
   #set( $keyConditionExpr = {} )
+  #set( $keyConditionExprNames = {} )
   #foreach( $entry in $ctx.stash.metadata.modelObjectKey.entrySet() )
-    $util.qr($keyConditionExpr.put(\\"$entry.key\\", {
+    $util.qr($keyConditionExpr.put(\\"keyCondition$velocityCount\\", {
   \\"attributeExists\\": false
 }))
+    $util.qr($keyConditionExprNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
   #end
   $util.qr($ctx.stash.conditions.add($keyConditionExpr))
 #else
@@ -2991,7 +3115,7 @@ $util.qr($mergedValues.put(\\"__typename\\", \\"Test\\"))
   }
 }))
 #end
-## End - KeyCondition **
+## End - key condition **
 ## Start condition block **
 #if( $ctx.stash.conditions && $ctx.stash.conditions.size() != 0 )
   #set( $mergedConditions = {
@@ -3007,10 +3131,13 @@ $util.qr($mergedValues.put(\\"__typename\\", \\"Test\\"))
   ## End condition block **
 #end
 #if( $Conditions )
+  #if( $keyConditionExprNames )
+    $util.qr($Conditions.expressionNames.putAll($keyConditionExprNames))
+  #end
   $util.qr($PutObject.put(\\"condition\\", $Conditions))
 #end
-#if( $ctx.stash.metadata.modelObject )
-  $PutObject.put(\\"id\\", $ctx.stash.metadata.modelObject)
+#if( $ctx.stash.metadata.modelObjectKey )
+  $util.qr($PutObject.put(\\"key\\", $ctx.stash.metadata.modelObjectKey))
 #else
   #set( $Key = {
   \\"id\\":   $util.dynamodb.toDynamoDB($mergedValues.id)
@@ -3048,10 +3175,12 @@ $util.qr($DeleteRequest.put(\\"key\\", $Key))
 ## Begin - key condition **
 #if( $ctx.stash.metadata.modelObjectKey )
   #set( $keyConditionExpr = {} )
+  #set( $keyConditionExprNames = {} )
   #foreach( $entry in $ctx.stash.metadata.modelObjectKey.entrySet() )
-    $util.qr($keyConditionExpr.put(\\"$entry.key\\", {
+    $util.qr($keyConditionExpr.put(\\"keyCondition$velocityCount\\", {
   \\"attributeExists\\": true
 }))
+    $util.qr($keyConditionExprNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
   #end
   $util.qr($ctx.stash.conditions.add($keyConditionExpr))
 #else
@@ -3080,6 +3209,9 @@ $util.qr($DeleteRequest.put(\\"key\\", $Key))
   ## End condition block **
 #end
 #if( $Conditions )
+  #if( $keyConditionExprNames )
+    $util.qr($Conditions.expressionNames.putAll($keyConditionExprNames))
+  #end
   $util.qr($DeleteRequest.put(\\"condition\\", $Conditions))
 #end
 $util.toJson($DeleteRequest)
@@ -3119,16 +3251,17 @@ $util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
 #set( $expSet = {} )
 #set( $expAdd = {} )
 #set( $expRemove = [] )
-#if( $ctx.stash.metadata.modelObjetKey )
-  #set( $Key = $util.dynamodb.toDynamoDB($ctx.stash.metadata.modelObjetKey) )
+#if( $ctx.stash.metadata.modelObjectKey )
+  #set( $Key = $ctx.stash.metadata.modelObjectKey )
 #else
   #set( $Key = {
   \\"id\\":   $util.dynamodb.toDynamoDB($ctx.args.input.id)
 } )
 #end
 ## Model key **
-#if( $ctx.stash.metadata.modelObjetKey )
-  #foreach( $entry in $ctx.stash.metadata.modelObjetKey.entrySet() )
+#if( $ctx.stash.metadata.modelObjectKey )
+  #set( $keyFields = [] )
+  #foreach( $entry in $ctx.stash.metadata.modelObjectKey.entrySet() )
     $util.qr($keyFields.add(\\"$entry.key\\"))
   #end
 #else
@@ -3183,10 +3316,12 @@ $util.qr($update.put(\\"expression\\", \\"$expression\\"))
 ## Begin - key condition **
 #if( $ctx.stash.metadata.modelObjectKey )
   #set( $keyConditionExpr = {} )
+  #set( $keyConditionExprNames = {} )
   #foreach( $entry in $ctx.stash.metadata.modelObjectKey.entrySet() )
-    $util.qr($keyConditionExpr.put(\\"$entry.key\\", {
+    $util.qr($keyConditionExpr.put(\\"keyCondition$velocityCount\\", {
   \\"attributeExists\\": true
 }))
+    $util.qr($keyConditionExprNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
   #end
   $util.qr($ctx.stash.conditions.add($keyConditionExpr))
 #else
@@ -3221,6 +3356,9 @@ $util.qr($update.put(\\"expression\\", \\"$expression\\"))
   \\"update\\": $update
 } )
 #if( $Conditions )
+  #if( $keyConditionExprNames )
+    $util.qr($Conditions.expressionNames.putAll($keyConditionExprNames))
+  #end
   $util.qr($UpdateItem.put(\\"condition\\", $Conditions))
 #end
 $util.toJson($UpdateItem)
@@ -3259,16 +3397,17 @@ $util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
 #set( $expSet = {} )
 #set( $expAdd = {} )
 #set( $expRemove = [] )
-#if( $ctx.stash.metadata.modelObjetKey )
-  #set( $Key = $util.dynamodb.toDynamoDB($ctx.stash.metadata.modelObjetKey) )
+#if( $ctx.stash.metadata.modelObjectKey )
+  #set( $Key = $ctx.stash.metadata.modelObjectKey )
 #else
   #set( $Key = {
   \\"id\\":   $util.dynamodb.toDynamoDB($ctx.args.input.id)
 } )
 #end
 ## Model key **
-#if( $ctx.stash.metadata.modelObjetKey )
-  #foreach( $entry in $ctx.stash.metadata.modelObjetKey.entrySet() )
+#if( $ctx.stash.metadata.modelObjectKey )
+  #set( $keyFields = [] )
+  #foreach( $entry in $ctx.stash.metadata.modelObjectKey.entrySet() )
     $util.qr($keyFields.add(\\"$entry.key\\"))
   #end
 #else
@@ -3323,10 +3462,12 @@ $util.qr($update.put(\\"expression\\", \\"$expression\\"))
 ## Begin - key condition **
 #if( $ctx.stash.metadata.modelObjectKey )
   #set( $keyConditionExpr = {} )
+  #set( $keyConditionExprNames = {} )
   #foreach( $entry in $ctx.stash.metadata.modelObjectKey.entrySet() )
-    $util.qr($keyConditionExpr.put(\\"$entry.key\\", {
+    $util.qr($keyConditionExpr.put(\\"keyCondition$velocityCount\\", {
   \\"attributeExists\\": true
 }))
+    $util.qr($keyConditionExprNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
   #end
   $util.qr($ctx.stash.conditions.add($keyConditionExpr))
 #else
@@ -3361,6 +3502,9 @@ $util.qr($update.put(\\"expression\\", \\"$expression\\"))
   \\"update\\": $update
 } )
 #if( $Conditions )
+  #if( $keyConditionExprNames )
+    $util.qr($Conditions.expressionNames.putAll($keyConditionExprNames))
+  #end
   $util.qr($UpdateItem.put(\\"condition\\", $Conditions))
 #end
 $util.toJson($UpdateItem)
@@ -3382,8 +3526,8 @@ $util.toJson($UpdateItem)
   \\"version\\": \\"2018-05-29\\",
   \\"operation\\": \\"GetItem\\"
 } )
-#if( $ctx.stash.metadata.modelKeyObject )
-  #set( $Key = $ctx.stash.metadata.modelKeyObject )
+#if( $ctx.stash.metadata.modelObjectKey )
+  #set( $key = $ctx.stash.metadata.modelObjectKey )
 #else
   #set( $key = {
   \\"id\\":   $util.dynamodb.toDynamoDB($ctx.args.id)
@@ -3434,8 +3578,8 @@ $util.toJson($GetRequest)
     #set( $ListRequest.filter = $filterExpression )
   #end
 #end
-#if( !$util.isNull($ctx.stash.modelQuery) )
-  #set( $Query = $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.modelQuery)) )
+#if( !$util.isNull($ctx.stash.modelQueryExpression) )
+  #set( $Query = $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.modelQueryExpression)) )
   $util.qr($ListRequest.put(\\"operation\\", \\"Query\\"))
   $util.qr($ListRequest.put(\\"query\\", $Query))
   #if( !$util.isNull($ctx.args.sortDirection) && $ctx.args.sortDirection == \\"DESC\\" )
@@ -3469,8 +3613,8 @@ $util.toJson($ListRequest)
   \\"version\\": \\"2018-05-29\\",
   \\"operation\\": \\"GetItem\\"
 } )
-#if( $ctx.stash.metadata.modelKeyObject )
-  #set( $Key = $ctx.stash.metadata.modelKeyObject )
+#if( $ctx.stash.metadata.modelObjectKey )
+  #set( $key = $ctx.stash.metadata.modelObjectKey )
 #else
   #set( $key = {
   \\"id\\":   $util.dynamodb.toDynamoDB($ctx.args.id)
@@ -3564,8 +3708,8 @@ $util.toJson($GetRequest)
     #set( $ListRequest.filter = $filterExpression )
   #end
 #end
-#if( !$util.isNull($ctx.stash.modelQuery) )
-  #set( $Query = $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.modelQuery)) )
+#if( !$util.isNull($ctx.stash.modelQueryExpression) )
+  #set( $Query = $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.modelQueryExpression)) )
   $util.qr($ListRequest.put(\\"operation\\", \\"Query\\"))
   $util.qr($ListRequest.put(\\"query\\", $Query))
   #if( !$util.isNull($ctx.args.sortDirection) && $ctx.args.sortDirection == \\"DESC\\" )
