@@ -1,6 +1,6 @@
 # This is a sample script created by Amplify CLI.
 # To start using this script please change the filename:
-# post-add.sh.sample  ->  post-add.sh
+# post-push.sh.sample  ->  post-push.sh
 #
 # exiting with a non zero status will result in Amplify CLI process to exit.
 if [ -z "$(which jq)" ]; then

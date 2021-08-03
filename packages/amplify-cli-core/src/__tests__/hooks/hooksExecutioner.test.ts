@@ -113,13 +113,15 @@ describe('hooksExecutioner tests', () => {
   });
 
   test('should determine runtime from hooks-config', async () => {
-    stateManager_mock.getHooksConfigJson.mockReturnValueOnce({ extension: { py: { runtime: 'python3' } } });
+    stateManager_mock.getHooksConfigJson.mockReturnValueOnce({ extensions: { py: { runtime: 'python3' } } });
     await executeHooks({ input: { command: 'pull', plugin: 'core' } }, 'pre');
     expect(execa).toHaveBeenCalledWith(pathToPython3Runtime, expect.anything(), expect.anything());
   });
 
   test('should determine windows runtime from hooks-config', async () => {
-    stateManager_mock.getHooksConfigJson.mockReturnValueOnce({ extension: { py: { runtime: 'python3', windows: { runtime: 'python' } } } });
+    stateManager_mock.getHooksConfigJson.mockReturnValueOnce({
+      extensions: { py: { runtime: 'python3', windows: { runtime: 'python' } } },
+    });
     Object.defineProperty(process, 'platform', { value: 'win32' });
     await executeHooks({ input: { command: 'pull', plugin: 'core' } }, 'pre');
     expect(execa).toHaveBeenCalledWith(pathToPythonRuntime, expect.anything(), expect.anything());
@@ -133,7 +135,7 @@ describe('hooksExecutioner tests', () => {
   test('should throw error if duplicate hook scripts are present', async () => {
     const duplicateErrorThrown = 'found duplicate hook scripts: ' + preStatusNodeFileName + ', ' + preStatusPythonFileName;
     stateManager_mock.getHooksConfigJson.mockReturnValueOnce({
-      extension: { py: { runtime: 'python3' } },
+      extensions: { py: { runtime: 'python3' } },
     });
     await expect(executeHooks({ input: { command: 'status', plugin: 'core' } }, 'pre')).rejects.toThrow(duplicateErrorThrown);
   });

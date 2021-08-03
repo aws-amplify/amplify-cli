@@ -1,4 +1,4 @@
-import { $TSAny, BannerMessage, pathManager, stateManager } from 'amplify-cli-core';
+import { $TSAny, BannerMessage, pathManager, stateManager, skipHooks } from 'amplify-cli-core';
 import { isCI } from 'ci-info';
 import { print } from './context-extensions';
 import { Input } from './domain/input';
@@ -9,6 +9,7 @@ export async function displayBannerMessages(input: Input) {
     return;
   }
   await displayLayerMigrationMessage();
+  if (skipHooks()) console.log('⚠️ Warning: hooks are skipped because execution environment does not permit Amplify CLI runtime hooks.');
 }
 
 async function displayLayerMigrationMessage() {

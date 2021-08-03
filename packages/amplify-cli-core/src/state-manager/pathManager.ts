@@ -33,8 +33,6 @@ export const PathConstants = {
   ReadMeFileName: 'README.md',
 
   HooksConfigFileName: 'hooks-config.json',
-  SampleBashHookFileName: 'pre-add.js.sample',
-  SampleJSHookFileName: 'post-add.sh.sample',
 
   LocalEnvFileName: 'local-env-info.json',
   LocalAWSInfoFileName: 'local-aws-info.json',
@@ -166,12 +164,6 @@ export class PathManager {
 
   getHooksConfigFilePath = (projectPath?: string): string =>
     this.constructPath(projectPath, [PathConstants.AmplifyDirName, PathConstants.HooksDirName, PathConstants.HooksConfigFileName]);
-
-  getSampleBashHookFilePath = (projectPath?: string): string =>
-    this.constructPath(projectPath, [PathConstants.AmplifyDirName, PathConstants.HooksDirName, PathConstants.SampleBashHookFileName]);
-
-  getSampleNodeHookFilePath = (projectPath?: string): string =>
-    this.constructPath(projectPath, [PathConstants.AmplifyDirName, PathConstants.HooksDirName, PathConstants.SampleJSHookFileName]);
 
   private constructPath = (projectPath?: string, segments: string[] = []): string => {
     if (!projectPath) {

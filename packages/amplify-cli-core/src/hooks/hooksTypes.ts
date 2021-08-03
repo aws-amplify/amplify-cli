@@ -1,12 +1,12 @@
-export type HooksExtension = {
+export type HooksExtensions = {
   [key: string]: {
     runtime?: string;
-    windows?: { runtime?: string };
+    runtime_windows?: string;
   };
 };
 
 export type HooksConfig = {
-  extension?: HooksExtension;
+  extensions?: HooksExtensions;
   ignore?: string[];
 };
 

@@ -8,6 +8,8 @@ import * as fs from 'fs-extra';
 import { sync } from 'glob';
 import { ProviderName } from '../constants';
 export const S3_HOOKS_DIRECTORY = 'hooks/';
+import { fileLogger } from '../utils/aws-logger';
+const logger = fileLogger('hooks-manager');
 
 export async function uploadHooksDirectory(context: $TSContext): Promise<void> {
   /**
@@ -73,7 +75,7 @@ export async function downloadHooks(
   const projectPath = process.cwd();
   const hooksDirPath = pathManager.getHooksDirPath(projectPath);
 
-  const s3Client = new aws.S3(awsConfigInfo);
+  const s3 = new aws.S3(awsConfigInfo);
   const deploymentBucketName = backendEnv.deploymentArtifacts;
 
   const params = {
@@ -81,14 +83,13 @@ export async function downloadHooks(
     Bucket: deploymentBucketName,
   };
 
-  // TODO: logs
-  //   const log = logger("downloadHooks.s3.listObjects", [params]);
+  const log = logger('downloadHooks.s3.listObjects', [params]);
   let listHookObjects;
   try {
-    // log();
-    listHookObjects = await s3Client.listObjects(params).promise();
+    log();
+    listHookObjects = await s3.listObjects(params).promise();
   } catch (ex) {
-    // log(ex);
+    log(ex);
     throw ex;
   }
 
@@ -98,14 +99,14 @@ export async function downloadHooks(
       Key: listHookObject.Key,
       Bucket: deploymentBucketName,
     };
-    // TODO: logs
-    // const log = logger('downloadHooks.s3.getObject', [params]);
+
+    const log = logger('downloadHooks.s3.getObject', [params]);
     let hooksFileObject = null;
     try {
-      // log();
-      hooksFileObject = await s3Client.getObject(params).promise();
+      log();
+      hooksFileObject = await s3.getObject(params).promise();
     } catch (ex) {
-      // log(ex);
+      log(ex);
       throw ex;
     }
     const hooksFilePath = getHooksFilePathFromS3Key(hooksDirPath, listHookObject.Key);
