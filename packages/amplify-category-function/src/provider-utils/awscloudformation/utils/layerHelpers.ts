@@ -271,17 +271,6 @@ export function loadPreviousLayerHash(layerName: string): string | undefined {
   return previousHash;
 }
 
-export function validFilesize(context: $TSContext, zipPath: string, maxSize = 250) {
-  try {
-    const { size } = fs.statSync(zipPath);
-    const fileSize = Math.round(size / 1024 ** 2);
-    return fileSize < maxSize;
-  } catch (error) {
-    context.print.error(error);
-    return new Error(`Calculating file size failed: ${zipPath}`);
-  }
-}
-
 // hashes all of the layer contents as well as the files in the layer path (CFN, parameters, etc)
 export const hashLayerResource = async (layerPath: string, resourceName: string): Promise<string> => {
   return await hashLayerVersion(layerPath, resourceName, true);
