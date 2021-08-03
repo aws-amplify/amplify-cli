@@ -26,6 +26,7 @@ export function requestTemplate(primaryKey: string, nonKeywordFields: Expression
       set(ref('indexPath'), str(`/${type.toLowerCase()}/doc/_search`)),
       set(ref('nonKeywordFields'), list(nonKeywordFields)),
       set(ref('sortValues'), list([])),
+      set(ref('aggregateValues'), obj({})),
       set(ref('primaryKey'), str(primaryKey)),
       ifElse(
         ref('util.isNullOrEmpty($context.args.sort)'),
@@ -60,7 +61,18 @@ export function requestTemplate(primaryKey: string, nonKeywordFields: Expression
           ],
         ),
       ),
-      ElasticsearchMappingTemplate.searchItem({
+      forEach(
+        ref('aggItem'),
+        ref('context.args.aggregates'),
+        [
+          ifElse(
+            ref('nonKeywordFields.contains($aggItem.field)'),
+            qref('$aggregateValues.put("$aggItem.name", {"$aggItem.type": {"field": "$aggItem.field"}})'),
+            qref('$aggregateValues.put("$aggItem.name", {"$aggItem.type": {"field": "${aggItem.field}.keyword"}})'),
+          ),
+        ],
+      ),
+      ElasticsearchMappingTemplate.searchTemplate({
         path: str('$indexPath'),
         size: ifElse(ref('context.args.limit'), ref('context.args.limit'), int(ResourceConstants.DEFAULT_SEARCHABLE_PAGE_LIMIT), true),
         search_after: ref('util.base64Decode($context.args.nextToken)'),
@@ -74,6 +86,7 @@ export function requestTemplate(primaryKey: string, nonKeywordFields: Expression
           }),
         ),
         sort: ref('sortValues'),
+        aggs: ref('util.toJson($aggregateValues)'),
       }),
     ]),
   );
@@ -83,15 +96,43 @@ export function responseTemplate(includeVersion = false) {
   return print(
     compoundExpression([
       set(ref('es_items'), list([])),
+      set(ref('aggregateValues'), list([])),
       forEach(ref('entry'), ref('context.result.hits.hits'), [
         iff(raw('!$foreach.hasNext'), set(ref('nextToken'), ref('util.base64Encode($util.toJson($entry.sort))'))),
         ...getSourceMapper(includeVersion),
       ]),
+      forEach(ref('aggItem'), ref('context.result.aggregations.keySet()'), [
+        set(ref('aggResult'), obj({})),
+        set(ref('aggResultValue'), obj({})),
+        qref('$aggResult.put("name", $aggItem)'),
+        iff(
+          raw('!$util.isNullOrEmpty($context.result.aggregations)'),
+          compoundExpression([
+            iff(
+              raw('!$util.isNullOrEmpty($context.result.aggregations.get($aggItem).buckets)'),
+              compoundExpression([
+                qref('$aggResultValue.put("__typename", "SearchableAggregateBucketResult")'),
+                qref('$aggResultValue.put("buckets", $context.result.aggregations.get($aggItem).buckets)'),
+              ]),
+            ),
+            iff(
+              raw('!$util.isNullOrEmpty($context.result.aggregations.get($aggItem).value)'),
+              compoundExpression([
+                qref('$aggResultValue.put("__typename", "SearchableAggregateScalarResult")'),
+                qref('$aggResultValue.put("value", $context.result.aggregations.get($aggItem).value)'),
+              ]),
+            ),
+          ]),
+        ),
+        qref('$aggResult.put("result", $aggResultValue)'),
+        qref('$aggregateValues.add($aggResult)'),
+      ]),
       toJson(
         obj({
           items: ref('es_items'),
-          total: ref('ctx.result.hits.total'),
+          total: ref('ctx.result.hits.total.value'),
           nextToken: ref('nextToken'),
+          aggregateItems: ref('aggregateValues'),
         }),
       ),
     ]),
