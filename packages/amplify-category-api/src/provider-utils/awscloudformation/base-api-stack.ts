@@ -133,6 +133,12 @@ export abstract class ContainersStack extends cdk.Stack {
         // Unused in this stack, but required by the root stack
         new cdk.CfnParameter(this, 'env', { type: 'String' });
 
+        const paramDomain = new cdk.CfnParameter(this, 'domain', { type: 'String' });
+        const paramRestrictAccess = new cdk.CfnParameter(this, 'restrictAccess', {
+            type: 'String',
+            allowedValues: ['true', 'false'],
+        });
+
         const paramZipPath = new cdk.CfnParameter(this, 'ParamZipPath', {
             type: 'String',
             // Required only for FULLY_MANAGED
@@ -142,6 +148,8 @@ export abstract class ContainersStack extends cdk.Stack {
         const parameters: Map<string, cdk.CfnParameter> = new Map();
 
         parameters.set('ParamZipPath', paramZipPath);
+        parameters.set('domain', paramDomain);
+        parameters.set('restrictAccess', paramRestrictAccess);
 
         const authParams: {
             UserPoolId?: cdk.CfnParameter;

@@ -29,6 +29,44 @@ export function addDEVHosting(cwd: string): Promise<void> {
   });
 }
 
+export function enableContainerHosting(cwd: string): Promise<void> {
+  return new Promise((resolve, reject) => {
+    spawn(getCLIPath(), ['configure', 'project'], { cwd, stripColors: true })
+      .wait('Which setting do you want to configure?')
+      .sendKeyDown(2)
+      .sendCarriageReturn()
+      .wait('Do you want to enable container-based deployments?')
+      .sendConfirmYes()
+      .run((err: Error) => {
+        if (!err) {
+          resolve();
+        } else {
+          reject(err);
+        }
+      });
+  });
+}
+
+export function addDevContainerHosting(cwd: string): Promise<void> {
+  return new Promise((resolve, reject) => {
+    spawn(getCLIPath(), ['add', 'hosting'], { cwd, stripColors: true })
+      .wait('Select the plugin module to execute')
+      .sendKeyDown(2)
+      .sendCarriageReturn()
+      .wait('Provide your web app endpoint (e.g. app.example.com or www.example.com):')
+      .sendLine('www.test-amplify-app.com')
+      .wait('Do you want to automatically protect your web app using Amazon Cognito Hosted UI')
+      .sendConfirmNo()
+      .run((err: Error) => {
+        if (!err) {
+          resolve();
+        } else {
+          reject(err);
+        }
+      });
+  });
+}
+
 export function addPRODHosting(cwd: string): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['add', 'hosting'], { cwd, stripColors: true })
