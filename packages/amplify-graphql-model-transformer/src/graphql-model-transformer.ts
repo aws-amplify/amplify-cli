@@ -26,6 +26,7 @@ import {
   makeNamedType,
   makeNonNullType,
   makeValueNode,
+  plurality,
   ResourceConstants,
   toCamelCase,
   toPascalCase,
@@ -153,7 +154,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
     const options = directiveWrapped.getArguments({
       queries: {
         get: toCamelCase(['get', typeName]),
-        list: toCamelCase(['list', `${typeName}s`]), // Existing implementation suffixes `s` at the end
+        list: toCamelCase(['list', plurality(typeName, true)]),
       },
       mutations: {
         create: toCamelCase(['create', typeName]),
