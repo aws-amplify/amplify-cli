@@ -538,7 +538,7 @@ function validateCfnTemplates(context: $TSContext, resourcesToBeUpdated: $TSAny[
       try {
         validateFile(filePath);
       } catch (err) {
-        context.print.error(`Invalid CloudFormation template: ${filePath}${EOL}${err.message}`);
+        context.print.warning(`Invalid CloudFormation template: ${filePath}${EOL}${err.message}`);
       }
     }
   }
