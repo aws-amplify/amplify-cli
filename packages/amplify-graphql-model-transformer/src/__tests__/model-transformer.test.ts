@@ -591,6 +591,7 @@ describe('ModelTransformer: ', () => {
       transformers: [new ModelTransformer()],
       featureFlags,
     });
+
     const out = transformer.transform(validSchema);
     expect(out).toBeDefined();
 
