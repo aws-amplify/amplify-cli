@@ -777,6 +777,7 @@ describe('ModelTransformer: ', () => {
       transformers: [new ModelTransformer()],
       featureFlags,
     });
+
     const out = transformer.transform(validSchema);
     expect(out).toBeDefined();
 
@@ -784,7 +785,7 @@ describe('ModelTransformer: ', () => {
     expect(definition).toBeDefined();
     const parsed = parse(definition);
     validateModelSchema(parsed);
-    
+
     const queryType = getObjectType(parsed, 'Query');
     expect(queryType).toBeDefined();
     expectFields(queryType!, ['listPosts']);
