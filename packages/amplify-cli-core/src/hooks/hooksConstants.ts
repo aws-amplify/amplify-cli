@@ -1,8 +1,10 @@
 import { join } from 'path';
 import { homedir } from 'os';
-import { HooksExtensions } from './hooksTypes';
+import { HooksExtensions, HooksNoun, HooksVerb } from './hooksTypes';
 
-export const suppportedEvents: { [key: string]: Set<string> } = {
+export const hooksFileSeperator = '-';
+
+export const suppportedEvents: Record<HooksVerb, Set<HooksNoun>> = {
   add: new Set([
     'notifications',
     'analytics',
@@ -60,11 +62,9 @@ export const suppportedEvents: { [key: string]: Set<string> } = {
   types: new Set(['codegen']),
 };
 
-export const supportedEnvEvents: Set<string> = new Set(['add', 'update', 'remove', 'pull', 'checkout', 'list', 'get', 'import']);
+export const supportedEnvEvents: Set<HooksVerb> = new Set(['add', 'update', 'remove', 'pull', 'checkout', 'list', 'get', 'import']);
 
 export const defaultSupportedExt: HooksExtensions = { js: { runtime: 'node' }, sh: { runtime: 'bash' } };
 
 export const skipHooksFileName: string = 'AMIPLIFY-HOOKS-SKIP';
-// dont have access in root directory
-// export const skipHooksFilePath = path.join(path.parse(process.cwd()).root, 'opt', 'amazon');
 export const skipHooksFilePath: string = join(homedir(), 'opt', 'amazon');

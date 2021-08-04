@@ -33,6 +33,7 @@ import { ensureMobileHubCommandCompatibility } from './utils/mobilehub-support';
 import { migrateTeamProviderInfo } from './utils/team-provider-migrate';
 import { deleteOldVersion } from './utils/win-utils';
 import { notify } from './version-notifier';
+import { getAmplifyVersion } from './extensions/amplify-helpers/get-amplify-version';
 
 
 // Adjust defaultMaxListeners to make sure Inquirer will not fail under Windows because of the multiple subscriptions
@@ -160,14 +161,11 @@ export async function run() {
     rewireDeprecatedCommands(input);
     logInput(input);
     const hooksHandler = HooksHandler.initialize();
+    hooksHandler.setAmplifyVersion(getAmplifyVersion());
     hooksHandler.setHooksEventFromInput(input);
     const context = constructContext(pluginPlatform, input);
 
-    try {
-      hooksHandler.dataParameter.amplify.environment = context.amplify.getEnvInfo()?.envName;
-    } catch (err) {
-      // do nothing
-    }
+    hooksHandler.setEnvironmentName(context.amplify.getEnvInfo()?.envName);
 
     // Initialize feature flags
     const contextEnvironmentProvider = new CLIContextEnvironmentProvider({

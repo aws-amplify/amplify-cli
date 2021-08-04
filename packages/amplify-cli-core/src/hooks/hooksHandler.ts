@@ -1,16 +1,15 @@
-import { HooksEvent, DataParameter, EventPrefix } from './hooksTypes';
+import { HooksEvent, DataParameter, EventPrefix, HooksVerb, HooksNoun } from './hooksTypes';
 import { suppportedEvents, supportedEnvEvents } from './hooksConstants';
 import { stateManager } from '../state-manager';
+import { $TSContext } from '..';
+import _ from 'lodash';
 
 export class HooksHandler {
   private static instance?: HooksHandler;
   public hooksEvent: HooksEvent;
   public dataParameter: DataParameter;
 
-  public static initialize = (
-    hooksEvent: HooksEvent = { seperator: '-' },
-    dataParameter: DataParameter = { amplify: { version: stateManager.getAmplifyVersion() } },
-  ): HooksHandler => {
+  public static initialize = (hooksEvent: HooksEvent = {}, dataParameter: DataParameter = { amplify: {} }): HooksHandler => {
     if (!HooksHandler.instance) {
       HooksHandler.instance = new HooksHandler(hooksEvent, dataParameter);
     }
@@ -23,37 +22,44 @@ export class HooksHandler {
     this.dataParameter = dataParameter;
   }
 
-  public getHooksEvent(): HooksEvent | undefined {
-    return this.hooksEvent;
-  }
-
-  public setHooksEvent(event: HooksEvent): void {
-    this.hooksEvent = event;
-  }
-
   public getDataParameter(): DataParameter | undefined {
-    this.dataParameter.amplify.command = this.dataParameter.amplify.command ?? this.hooksEvent.command;
-    this.dataParameter.amplify.subCommand = this.dataParameter.amplify.subCommand ?? this.hooksEvent.subCommand;
-    this.dataParameter.amplify.argv = this.dataParameter.amplify.argv ?? this.hooksEvent.argv;
     return this.dataParameter;
   }
 
-  public setDataParameter(dataParameter: DataParameter): void {
-    this.dataParameter = dataParameter;
+  public getHooksEvent(): HooksEvent {
+    return this.hooksEvent;
+  }
+
+  public setEnvironmentName(envName?: string): void {
+    this.dataParameter.amplify.environment = envName;
+  }
+
+  public setAmplifyVersion(amplifyVersion: string): void {
+    this.dataParameter.amplify.version = amplifyVersion;
+  }
+
+  public setEventCommand(command: string): void {
+    this.hooksEvent.command = command;
+  }
+
+  public setEventPrefix(prefix?: string): void {
+    this.hooksEvent.eventPrefix = prefix as EventPrefix;
+  }
+
+  public mergeDataParameter(newDataParameter: DataParameter): void {
+    this.dataParameter = _.merge(this.dataParameter, newDataParameter);
   }
 
   public setHooksEventFromInput(
     input?: { command?: string; plugin?: string; subCommands?: string[]; argv?: string[] },
     eventPrefix?: EventPrefix,
   ): void {
-    /**
-     * sets hooksEvent from input object
-     *
-     * @param {{ command?: string; plugin?: string; subCommands?: string[]; argv?: string[] }} input
-     * @returns {void}
-     */
-
-    if (!input) return;
+    if (!input) {
+      return;
+    }
+    if (this.hooksEvent.command) {
+      return;
+    }
 
     let command: string = input.command ?? '';
     let subCommand: string = input.plugin ?? '';
@@ -61,11 +67,15 @@ export class HooksHandler {
     switch (command) {
       case 'env':
         subCommand = 'env';
-        if (!input.subCommands || input.subCommands.length < 0 || !supportedEnvEvents.has(input.subCommands[0])) return;
+        if (!input.subCommands || input.subCommands.length < 0 || !supportedEnvEvents.has(input.subCommands[0] as HooksVerb)) {
+          return;
+        }
         command = input.subCommands[0];
         break;
       case 'configure':
-        if (input.plugin === 'notifications' || input.plugin === 'hosting') command = 'update';
+        if (input.plugin === 'notifications' || input.plugin === 'hosting') {
+          command = 'update';
+        }
         break;
       case 'gql-compile':
         command = 'gqlcompile';
@@ -82,7 +92,7 @@ export class HooksHandler {
 
     if (suppportedEvents.hasOwnProperty(command)) {
       this.hooksEvent.command = command;
-      if (suppportedEvents?.[command]?.has(subCommand)) {
+      if (suppportedEvents?.[command as HooksVerb]?.has(subCommand as HooksNoun)) {
         this.hooksEvent.subCommand = subCommand;
       }
     }
