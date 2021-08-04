@@ -3,10 +3,10 @@ import {
   createNewProjectDir,
   deleteProject,
   deleteProjectDir,
+  enableContainerHosting,
   getBackendAmplifyMeta,
   initJSProjectWithProfile,
   removeHosting,
-  amplifyConfigureProject,
 } from 'amplify-e2e-core';
 
 import * as fs from 'fs-extra';
