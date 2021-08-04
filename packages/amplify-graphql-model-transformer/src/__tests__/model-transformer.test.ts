@@ -380,7 +380,7 @@ describe('ModelTransformer: ', () => {
       transformers: [new ModelTransformer()],
     });
     expect(() => transformer.transform(invalidSchema)).toThrowError(
-      "Subscription' is a reserved type name and currently in use within the default schema element.",
+      "'Subscription' is a reserved type name and currently in use within the default schema element.",
     );
   });
 
