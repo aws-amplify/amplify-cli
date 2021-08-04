@@ -13,7 +13,7 @@ import { zipPackage } from './zipResource';
  * Packages lambda source code and artifacts into a lambda-compatible .zip file
  */
 export const packageFunction: Packager = async (context, resource) => {
-  const resourcePath = pathManager.getResourceDirectoryPath(undefined, categoryName, resource.resourceName);
+  const resourcePath = pathManager.getResourceDirectoryPath(undefined, resource.category, resource.resourceName);
   const runtimeManager = await getRuntimeManager(context, resource.resourceName);
   const distDirPath = path.join(resourcePath, 'dist');
   fs.ensureDirSync(distDirPath);
