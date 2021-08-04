@@ -534,6 +534,7 @@ describe('ModelTransformer: ', () => {
       type User @model {
           id: ID!
           name: String!
+
       }
     `;
     const transformer = new GraphQLTransform({
