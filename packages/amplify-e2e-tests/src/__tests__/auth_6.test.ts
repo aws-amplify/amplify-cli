@@ -34,7 +34,7 @@ describe('zero config auth ', () => {
 
     expect(authMeta.frontendAuthConfig).toMatchInlineSnapshot(`
       Object {
-        "loginMechanism": Array [
+        "loginMechanisms": Array [
           "EMAIL",
           "FACEBOOK",
           "GOOGLE",
