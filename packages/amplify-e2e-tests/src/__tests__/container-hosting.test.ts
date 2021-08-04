@@ -33,11 +33,11 @@ describe('amplify add hosting - container', () => {
     deleteProjectDir(projRoot);
   });
 
-  it('add container hosting works', async () => {
+  it.skip('add container hosting works', async () => {
     // TODO: This needs attention. Need to force circle ci to run this test in us-east-1
-    // expect(fs.existsSync(path.join(projRoot, 'amplify', 'backend', 'hosting', 'ElasticContainer'))).toBe(true);
-    // const projectMeta = getBackendAmplifyMeta(projRoot);
-    // expect(projectMeta.hosting).toBeDefined();
-    // expect(projectMeta.hosting.ElasticContainer).toBeDefined();
+    expect(fs.existsSync(path.join(projRoot, 'amplify', 'backend', 'hosting', 'ElasticContainer'))).toBe(true);
+    const projectMeta = getBackendAmplifyMeta(projRoot);
+    expect(projectMeta.hosting).toBeDefined();
+    expect(projectMeta.hosting.ElasticContainer).toBeDefined();
   });
 });
