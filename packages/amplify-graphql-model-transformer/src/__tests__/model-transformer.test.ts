@@ -14,12 +14,7 @@ import {
 } from './test-utils/helpers';
 
 const featureFlags = {
-  getBoolean: jest.fn().mockImplementation((name, defaultValue) => {
-    if (name === 'validateTypeNameReservedWords') {
-      return false;
-    }
-    return;
-  }),
+  getBoolean: jest.fn(),
   getNumber: jest.fn(),
   getObject: jest.fn(),
   getString: jest.fn(),
@@ -275,12 +270,42 @@ describe('ModelTransformer: ', () => {
     expect(definition).toBeDefined();
     const parsed = parse(definition);
     validateModelSchema(parsed);
+
     const createPostInput = getInputType(parsed, 'CreatePostInput');
     expectFieldsOnInputType(createPostInput!, ['different']);
     const updatePostInput = getInputType(parsed, 'UpdatePostInput');
     expectFieldsOnInputType(updatePostInput!, ['different2']);
     const deletePostInput = getInputType(parsed, 'DeletePostInput');
     expectFieldsOnInputType(deletePostInput!, ['different3']);
+  });
+
+  it('should support non model objects contain id as a type for fields', () => {
+    const validSchema = `
+      type Post @model {
+        id: ID!
+        comments: [Comment]
+      }
+      type Comment {
+        id: String!
+        text: String!
+      }
+    `;
+    const transformer = new GraphQLTransform({
+      transformers: [new ModelTransformer()],
+      featureFlags,
+    });
+    const out = transformer.transform(validSchema);
+    expect(out).toBeDefined();
+    const definition = out.schema;
+    expect(definition).toBeDefined();
+    const parsed = parse(definition);
+    const commentInput = getInputType(parsed, 'CommentInput');
+    expectFieldsOnInputType(commentInput!, ['id', 'text']);
+    const commentObject = getObjectType(parsed, 'Comment');
+    const commentInputObject = getInputType(parsed, 'CommentInput');
+    const commentObjectIDField = getFieldOnObjectType(commentObject!, 'id');
+    const commentInputIDField = getFieldOnInputType(commentInputObject!, 'id');
+    verifyMatchingTypes(commentObjectIDField.type, commentInputIDField.type);
   });
 
   it('should add default primary key when not defined', () => {
@@ -331,6 +356,7 @@ describe('ModelTransformer: ', () => {
     expect(out).toBeDefined();
     const parsed = parse(out.schema);
     validateModelSchema(parsed);
+
     const subscriptionType = getObjectType(parsed, 'Subscription');
     expect(subscriptionType).toBeDefined();
     expectFields(subscriptionType!, ['onCreatePost', 'onUpdatePost', 'onDeletePost']);
