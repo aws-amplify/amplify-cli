@@ -938,12 +938,10 @@ describe('ModelTransformer: ', () => {
           name: String!
       }
     `;
-
     const transformer = new GraphQLTransform({
       transformers: [new ModelTransformer()],
       featureFlags,
     });
-
     const out = transformer.transform(validSchema);
     expect(out).toBeDefined();
 
