@@ -262,7 +262,7 @@ describe('amplify add api (GraphQL)', () => {
   });
 
   it('api force push with no changes', async () => {
-    const projectName = `apiNoChange`;
+    const projectName = `apinochange`;
     await initJSProjectWithProfile(projRoot, { name: projectName });
     await addApiWithSchema(projRoot, 'two-model-schema.graphql');
     await amplifyPush(projRoot);
