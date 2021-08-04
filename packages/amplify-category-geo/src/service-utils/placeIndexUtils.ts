@@ -62,7 +62,7 @@ export const modifyPlaceIndexResource = async (
 };
 
 function saveCFNParameters(
-  parameters: Pick<PlaceIndexParameters, 'name'  | 'dataProvider' | 'dataSourceIntendedUse' | 'pricingPlan'>
+  parameters: Pick<PlaceIndexParameters, 'name'  | 'dataProvider' | 'dataSourceIntendedUse' | 'pricingPlan' | 'isDefault'>
 ) {
     const params = {
       authRoleName: {
@@ -74,7 +74,8 @@ function saveCFNParameters(
       indexName: parameters.name,
       dataProvider: parameters.dataProvider,
       dataSourceIntendedUse: parameters.dataSourceIntendedUse,
-      pricingPlan: parameters.pricingPlan
+      pricingPlan: parameters.pricingPlan,
+      isDefault: parameters.isDefault
     };
     updateParametersFile(params, parameters.name, parametersFileName);
 }

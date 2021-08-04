@@ -62,7 +62,7 @@ export const modifyMapResource = async (
 };
 
 function saveCFNParameters(
-  parameters: Pick<MapParameters, 'name' | 'mapStyleType' | 'dataProvider' | 'pricingPlan'>
+  parameters: Pick<MapParameters, 'name' | 'mapStyleType' | 'dataProvider' | 'pricingPlan' | 'isDefault'>
 ) {
     const params = {
       authRoleName: {
@@ -73,7 +73,8 @@ function saveCFNParameters(
       },
       mapName: parameters.name,
       mapStyle: getGeoMapStyle(parameters.dataProvider, parameters.mapStyleType),
-      pricingPlan: parameters.pricingPlan
+      pricingPlan: parameters.pricingPlan,
+      isDefault: parameters.isDefault
     };
     updateParametersFile(params, parameters.name, parametersFileName);
 }

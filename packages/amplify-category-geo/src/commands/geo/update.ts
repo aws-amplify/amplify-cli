@@ -20,8 +20,9 @@ export const run = async(context: $TSContext) => {
     return await updateResource(context, result.service);
 
   } catch (error) {
+    error.message ? context.print.error(error.message) : '';
     context.print.info('');
-    context.print.info(error.stack);
+    error.stack ? context.print.info(error.stack) : '';
     context.print.error('There was an error updating the geo resource');
     context.usageData.emitError(error);
     process.exitCode = 1;

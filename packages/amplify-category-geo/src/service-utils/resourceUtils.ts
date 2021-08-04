@@ -84,6 +84,12 @@ export const updateDefaultResource = async (
       'isDefault',
       (defaultResource === resource)
     );
+
+    updateParametersFile(
+      { isDefault: (defaultResource === resource) },
+      resource,
+      parametersFileName
+    );
   });
 };
 
@@ -116,7 +122,7 @@ export const getGeoPricingPlan = async (): Promise<PricingPlan> => {
  */
 export const updateGeoPricingPlan = async (context: $TSContext, pricingPlan: PricingPlan) => {
   const geoMeta = stateManager.getMeta()?.[category];
-  if (geoMeta) {
+  if (geoMeta !== undefined) {
     Object.keys(geoMeta).forEach(resource => {
       // update pricing plan in meta for all Geo resources
       context.amplify.updateamplifyMetaAfterResourceUpdate(
@@ -177,4 +183,12 @@ export const checkAuthConfig = async (context: $TSContext, parameters: Pick<Reso
       }
     }
   }
+}
+
+/**
+ * Check if the Geo resource already exists
+ */
+export const checkGeoResourceExists = async (resourceName: string): Promise<boolean> => {
+  const geoMeta = stateManager.getMeta()?.[category];
+  return geoMeta && Object.keys(geoMeta) && Object.keys(geoMeta).includes(resourceName);
 }
