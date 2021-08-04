@@ -35,6 +35,7 @@ export { loadConfigurationForEnv } from './configuration-manager';
 import { updateEnv } from './update-env';
 export const rootStackFileName = 'root-cloudformation-stack.json';
 export { storeRootStackTemplate } from './initializer';
+export { Template } from './root-stack-builder/types';
 
 function init(context) {
   return initializer.run(context);

@@ -14,7 +14,7 @@ export interface AmplifyRootStackTemplate {
   addCfnResource(props: cdk.CfnResourceProps, logicalId: string): void;
 }
 
-export interface Template {
+export type Template = {
   AWSTemplateFormatVersion?: string;
   Description?: string;
   Metadata?: Record<string, any>;
@@ -28,4 +28,4 @@ export interface Template {
   Transform?: any;
   Resources?: Record<string, any>;
   Outputs?: Record<string, any>;
-}
+};

@@ -15,8 +15,7 @@ export async function transformCfnWithOverrides(context): Promise<Template> {
     return;
   }
 
-  const rootStack = await transformRootStack(CommandType.PUSH);
-  return rootStack;
+  return transformRootStack(CommandType.PUSH);
   // can enable other CFN Transfomer here and also make a registry of which categories supports overrides Transfomer
 }
 

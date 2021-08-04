@@ -1,4 +1,5 @@
-import { HeadlessInputValidator } from './HeadlessInputValidator';
+import { HeadlessInputValidator, VersionedSchemaSupplier } from './HeadlessInputValidator';
+export { HeadlessInputValidator, VersionedSchemaSupplier, VersionUpgradePipeline } from './HeadlessInputValidator';
 import {
   addStorageRequestSchemaSupplier,
   addApiRequestSchemaSupplier,
@@ -8,7 +9,14 @@ import {
   importAuthRequestSchemaSupplier,
 } from './schemaSuppliers';
 import { noopUpgradePipeline } from './upgradePipelines';
-import { AddStorageRequest, AddApiRequest, AddAuthRequest, UpdateAuthRequest, ImportAuthRequest, UpdateApiRequest } from 'amplify-headless-interface';
+import {
+  AddStorageRequest,
+  AddApiRequest,
+  AddAuthRequest,
+  UpdateAuthRequest,
+  ImportAuthRequest,
+  UpdateApiRequest,
+} from 'amplify-headless-interface';
 
 export const validateAddStorageRequest = (raw: string) => {
   return new HeadlessInputValidator(addStorageRequestSchemaSupplier, noopUpgradePipeline).validate<AddStorageRequest>(raw);

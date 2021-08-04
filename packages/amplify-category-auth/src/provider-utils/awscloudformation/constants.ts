@@ -1,5 +1,8 @@
 import * as path from 'path';
 
+// category
+export const category = 'auth';
+
 // path constants
 export const resourcesRoot = path.normalize(path.join(__dirname, '../../../resources'));
 export const adminAuthAssetRoot = path.join(resourcesRoot, 'adminAuth');

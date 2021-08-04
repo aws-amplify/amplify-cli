@@ -20,7 +20,8 @@
     "watch": "tsc -w",
     "clean": "rimraf lib tsconfig.tsbuildinfo",
     "test": "jest",
-    "test-watch": "jest --watch"
+    "test-watch": "jest --watch",
+    "generateSchemas": "ts-node ./resources/generateAuthSchemas.ts"
   },
   "dependencies": {
     "amplify-cli-core": "1.24.0",
