@@ -3,7 +3,6 @@ import {
   createNewProjectDir,
   deleteProject,
   deleteProjectDir,
-  enableContainerHosting,
   getBackendAmplifyMeta,
   initJSProjectWithProfile,
   removeHosting,
@@ -23,8 +22,7 @@ describe('amplify add hosting - container', () => {
       cwd: projRoot,
       enableContainers: true
     });
-    // TODO: This needs attention. Need to force circle ci to run this test in us-east-1
-    // await addDevContainerHosting(projRoot);
+    await addDevContainerHosting(projRoot);
   });
 
   afterAll(async () => {
