@@ -1,6 +1,5 @@
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { GraphQLTransform, validateModelSchema } from '@aws-amplify/graphql-transformer-core';
-import { FeatureFlagProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { InputObjectTypeDefinitionNode, InputValueDefinitionNode, NamedTypeNode, parse } from 'graphql';
 import { getBaseType } from 'graphql-transformer-common';
 import {
@@ -15,12 +14,7 @@ import {
 } from './test-utils/helpers';
 
 const featureFlags = {
-  getBoolean: jest.fn().mockImplementation((name, defaultValue) => {
-    if (name === 'validateTypeNameReservedWords') {
-      return false;
-    }
-    return;
-  }),
+  getBoolean: jest.fn(),
   getNumber: jest.fn(),
   getObject: jest.fn(),
   getString: jest.fn(),
@@ -452,5 +446,58 @@ describe('ModelTransformer: ', () => {
 
     expect(verifyInputCount(parsed, 'PostMetadataInput', 1)).toBeTruthy();
     expect(verifyInputCount(parsed, 'TagInput', 1)).toBeTruthy();
+  });
+
+  it('support schema with multiple model directives', () => {
+    const validSchema = `
+      type Post @model {
+          id: ID!
+          title: String!
+          createdAt: String
+          updatedAt: String
+      }
+  
+      type User @model {
+          id: ID!
+          name: String!
+      }
+    `;
+    const transformer = new GraphQLTransform({
+      transformers: [new ModelTransformer()],
+      featureFlags,
+    });
+    const out = transformer.transform(validSchema);
+    expect(out).toBeDefined();
+
+    const definition = out.schema;
+    expect(definition).toBeDefined();
+    const parsed = parse(definition);
+    const queryType = getObjectType(parsed, 'Query');
+    expect(queryType).toBeDefined();
+    expectFields(queryType!, ['listPosts']);
+    expectFields(queryType!, ['listUsers']);
+
+    const stringInputType = getInputType(parsed, 'ModelStringFilterInput');
+    expect(stringInputType).toBeDefined();
+    const booleanInputType = getInputType(parsed, 'ModelBooleanFilterInput');
+    expect(booleanInputType).toBeDefined();
+    const intInputType = getInputType(parsed, 'ModelIntFilterInput');
+    expect(intInputType).toBeDefined();
+    const floatInputType = getInputType(parsed, 'ModelFloatFilterInput');
+    expect(floatInputType).toBeDefined();
+    const idInputType = getInputType(parsed, 'ModelIDFilterInput');
+    expect(idInputType).toBeDefined();
+    const postInputType = getInputType(parsed, 'ModelPostFilterInput');
+    expect(postInputType).toBeDefined();
+    const userInputType = getInputType(parsed, 'ModelUserFilterInput');
+    expect(userInputType).toBeDefined();
+
+    expect(verifyInputCount(parsed, 'ModelStringFilterInput', 1)).toBeTruthy();
+    expect(verifyInputCount(parsed, 'ModelBooleanFilterInput', 1)).toBeTruthy();
+    expect(verifyInputCount(parsed, 'ModelIntFilterInput', 1)).toBeTruthy();
+    expect(verifyInputCount(parsed, 'ModelFloatFilterInput', 1)).toBeTruthy();
+    expect(verifyInputCount(parsed, 'ModelIDFilterInput', 1)).toBeTruthy();
+    expect(verifyInputCount(parsed, 'ModelPostFilterInput', 1)).toBeTruthy();
+    expect(verifyInputCount(parsed, 'ModelUserFilterInput', 1)).toBeTruthy();
   });
 });
