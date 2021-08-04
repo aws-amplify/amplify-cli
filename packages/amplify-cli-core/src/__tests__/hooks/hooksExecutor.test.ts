@@ -14,14 +14,26 @@ const preAddFileName = 'pre-add.js';
 const preAddAuthFileName = 'pre-add-auth.js';
 const postAddFileName = 'post-add.js';
 const postAddAuthFileName = 'post-add-auth.js';
-const testProjectRootPath = path.join(__dirname, '..', 'testFiles', 'hooks-test-project');
-const testProjectHooksDirPath = path.join(testProjectRootPath, 'amplify', 'hooks');
+const testProjectRootPath = 'testProjectRootPath';
+const testProjectHooksDirPath = 'testProjectHooksDirPath';
+
+const testProjectHooksFiles = [
+  preStatusNodeFileName,
+  preStatusPythonFileName,
+  preAddFileName,
+  preAddAuthFileName,
+  postAddFileName,
+  postAddAuthFileName,
+  'pre-pull.py',
+  'pre-push.py',
+];
 
 const stateManager_mock = stateManager as jest.Mocked<typeof stateManager>;
 const pathManager_mock = pathManager as jest.Mocked<typeof pathManager>;
 
 pathManager_mock.findProjectRoot.mockReturnValue(testProjectRootPath);
 pathManager_mock.getHooksDirPath.mockReturnValue(testProjectHooksDirPath);
+stateManager_mock.getHooksConfigJson.mockReturnValueOnce({ extensions: { py: { runtime: 'python3' } } });
 
 jest.mock('execa');
 jest.mock('process');
@@ -33,6 +45,27 @@ jest.mock('which', () => ({
     else if (runtimeName == 'node') return pathToNodeRuntime;
   }),
 }));
+jest.mock('fs-extra', () => {
+  const actualFs = jest.requireActual('fs-extra');
+  return {
+    ...Object.assign({}, actualFs),
+    readdirSync: jest.fn().mockImplementation((path, options) => {
+      if (path === testProjectHooksDirPath) {
+        return testProjectHooksFiles;
+      }
+      return actualFs.readdirSync(path, options);
+    }),
+    lstatSync: jest.fn().mockImplementation(pathStr => {
+      if (testProjectHooksFiles.includes(path.relative(testProjectHooksDirPath, pathStr)))
+        return { isFile: jest.fn().mockReturnValue(true) };
+      return actualFs.lstatSync(pathStr);
+    }),
+    existsSync: jest.fn().mockImplementation(path => {
+      if (path === testProjectHooksDirPath) return true;
+      return actualFs.existsSync(path);
+    }),
+  };
+});
 
 const mockSkipHooks = jest.spyOn(skipHooksModule, 'skipHooks');
 
@@ -46,7 +79,7 @@ describe('hooksExecutioner tests', () => {
     HooksHandler.releaseInstance();
   });
 
-  test('test skipHooks', async () => {
+  test('skip Hooks test', async () => {
     mockSkipHooks.mockRestore();
 
     const orgSkipHooksExist = fs.existsSync(skipHooksFilePath);
@@ -70,7 +103,7 @@ describe('hooksExecutioner tests', () => {
     await executeHooks();
     expect(execa).toHaveBeenCalledTimes(0);
     const hooksHandler = HooksHandler.initialize();
-    hooksHandler.hooksEvent = { seperator: '-', command: 'add' };
+    hooksHandler.setEventCommand('add');
     await executeHooks(undefined, 'pre');
     expect(execa).toHaveBeenCalledTimes(1);
   });
@@ -103,13 +136,13 @@ describe('hooksExecutioner tests', () => {
     );
 
     await executeHooks({ input: { command: 'add', plugin: 'auth' } }, 'post');
+    expect(execa).toHaveBeenNthCalledWith(3, pathToNodeRuntime, [path.join(testProjectHooksDirPath, postAddFileName)], expect.anything());
     expect(execa).toHaveBeenNthCalledWith(
-      3,
+      4,
       pathToNodeRuntime,
       [path.join(testProjectHooksDirPath, postAddAuthFileName)],
       expect.anything(),
     );
-    expect(execa).toHaveBeenNthCalledWith(4, pathToNodeRuntime, [path.join(testProjectHooksDirPath, postAddFileName)], expect.anything());
   });
 
   test('should determine runtime from hooks-config', async () => {
@@ -120,7 +153,7 @@ describe('hooksExecutioner tests', () => {
 
   test('should determine windows runtime from hooks-config', async () => {
     stateManager_mock.getHooksConfigJson.mockReturnValueOnce({
-      extensions: { py: { runtime: 'python3', windows: { runtime: 'python' } } },
+      extensions: { py: { runtime: 'python3', runtime_windows: 'python' } },
     });
     Object.defineProperty(process, 'platform', { value: 'win32' });
     await executeHooks({ input: { command: 'pull', plugin: 'core' } }, 'pre');
