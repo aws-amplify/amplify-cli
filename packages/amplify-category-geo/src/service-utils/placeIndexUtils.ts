@@ -116,3 +116,56 @@ export const getCurrentPlaceIndexParameters = async (indexName: string): Promise
     isDefault: currentIndexMetaParameters.isDefault
   };
 };
+
+export const getPlaceIndexIamPolicies = (
+  resourceName: string,
+  crudOptions: string[]
+): { policy: $TSObject[], attributes: string[] } => {
+  const policy = [];
+  const actions = new Set<string>();
+
+  crudOptions.forEach(crudOption => {
+    switch (crudOption) {
+      case 'create':
+        actions.add('geo:CreatePlaceIndex');
+        break;
+      case 'read':
+        actions.add('geo:DescribePlaceIndex');
+        actions.add('geo:SearchPlaceIndexForPosition');
+        actions.add('geo:SearchPlaceIndexForText');
+        break;
+      case 'delete':
+        actions.add('geo:DeletePlaceIndex');
+        break;
+      default:
+        console.log(`${crudOption} not supported`);
+        return [];
+    }
+  });
+
+  let placeIndexPolicy = {
+    Effect: 'Allow',
+    Action: Array.from(actions),
+    Resource: [
+      {
+        'Fn::Join': [
+          '',
+          [
+            'arn:aws:geo:',
+            { Ref: 'AWS::Region' },
+            ':',
+            { Ref: 'AWS::AccountId' },
+            ':place-index/',
+            {
+              Ref: `${category}${resourceName}Name`,
+            }
+          ],
+        ],
+      },
+    ],
+  };
+  policy.push(placeIndexPolicy);
+  const attributes = ['Name'];
+
+  return { policy, attributes };
+}
