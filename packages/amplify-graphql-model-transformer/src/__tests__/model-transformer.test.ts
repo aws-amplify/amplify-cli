@@ -1,6 +1,6 @@
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { GraphQLTransform, validateModelSchema } from '@aws-amplify/graphql-transformer-core';
-import { InputObjectTypeDefinitionNode, InputValueDefinitionNode, ListValueNode, NamedTypeNode, parse } from 'graphql';
+import { InputObjectTypeDefinitionNode, InputValueDefinitionNode, NamedTypeNode, parse } from 'graphql';
 import { getBaseType } from 'graphql-transformer-common';
 import {
   doNotExpectFields,
@@ -369,34 +369,19 @@ describe('ModelTransformer: ', () => {
     expect(subscriptionType).toBeDefined();
   });
 
-  it('should support non model objects contain id as a type for fields', () => {
-    const validSchema = `
-      type Post @model {
-        id: ID!
-        comments: [Comment]
-      }
-      type Comment {
-        id: String!
-        text: String!
+  it('should throw for reserved type name usage', () => {
+    const invalidSchema = `
+      type Subscription @model{
+        id: Int
+        str: String
       }
     `;
     const transformer = new GraphQLTransform({
       transformers: [new ModelTransformer()],
-      featureFlags,
     });
-    const out = transformer.transform(validSchema);
-    expect(out).toBeDefined();
-    const definition = out.schema;
-    expect(definition).toBeDefined();
-    const parsed = parse(definition);
-    validateModelSchema(parsed);
-    const commentInput = getInputType(parsed, 'CommentInput');
-    expectFieldsOnInputType(commentInput!, ['id', 'text']);
-    const commentObject = getObjectType(parsed, 'Comment');
-    const commentInputObject = getInputType(parsed, 'CommentInput');
-    const commentObjectIDField = getFieldOnObjectType(commentObject!, 'id');
-    const commentInputIDField = getFieldOnInputType(commentInputObject!, 'id');
-    verifyMatchingTypes(commentObjectIDField.type, commentInputIDField.type);
+    expect(() => transformer.transform(invalidSchema)).toThrowError(
+      "Subscription' is a reserved type name and currently in use within the default schema element.",
+    );
   });
 
   it('should not add default primary key when ID is defined', () => {

@@ -2,13 +2,15 @@
 
 exports[`ModelTransformer:  should not add default primary key when ID is defined 1`] = `
 "## [Start] Create Request template. **
-## Begin - KeyCondition **
+## Begin - key condition **
 #if( $ctx.stash.metadata.modelObjectKey )
   #set( $keyConditionExpr = {} )
+  #set( $keyConditionExprNames = {} )
   #foreach( $entry in $ctx.stash.metadata.modelObjectKey.entrySet() )
-    $util.qr($keyConditionExpr.add(\\"$entry.key\\", {
-  \\"attributeExists\\": true
+    $util.qr($keyConditionExpr.put(\\"keyCondition$velocityCount\\", {
+  \\"attributeExists\\": false
 }))
+    $util.qr($keyConditionExprNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
   #end
   $util.qr($ctx.stash.conditions.add($keyConditionExpr))
 #else
@@ -18,7 +20,7 @@ exports[`ModelTransformer:  should not add default primary key when ID is define
   }
 }))
 #end
-## End - KeyCondition **
+## End - key condition **
 ## Set the default values to put request **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
 ## copy the values from input **
@@ -34,13 +36,15 @@ $util.qr($mergedValues.put(\\"__typename\\", \\"Post\\"))
 #if( $context.args.condition )
   $util.qr($ctx.stash.conditions.add($context.args.condition))
 #end
-## Begin - KeyCondition **
+## Begin - key condition **
 #if( $ctx.stash.metadata.modelObjectKey )
   #set( $keyConditionExpr = {} )
+  #set( $keyConditionExprNames = {} )
   #foreach( $entry in $ctx.stash.metadata.modelObjectKey.entrySet() )
-    $util.qr($keyConditionExpr.put(\\"$entry.key\\", {
+    $util.qr($keyConditionExpr.put(\\"keyCondition$velocityCount\\", {
   \\"attributeExists\\": false
 }))
+    $util.qr($keyConditionExprNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
   #end
   $util.qr($ctx.stash.conditions.add($keyConditionExpr))
 #else
@@ -50,7 +54,7 @@ $util.qr($mergedValues.put(\\"__typename\\", \\"Post\\"))
   }
 }))
 #end
-## End - KeyCondition **
+## End - key condition **
 ## Start condition block **
 #if( $ctx.stash.conditions && $ctx.stash.conditions.size() != 0 )
   #set( $mergedConditions = {
@@ -66,10 +70,13 @@ $util.qr($mergedValues.put(\\"__typename\\", \\"Post\\"))
   ## End condition block **
 #end
 #if( $Conditions )
+  #if( $keyConditionExprNames )
+    $util.qr($Conditions.expressionNames.putAll($keyConditionExprNames))
+  #end
   $util.qr($PutObject.put(\\"condition\\", $Conditions))
 #end
-#if( $ctx.stash.metadata.modelObject )
-  $PutObject.put(\\"id\\", $ctx.stash.metadata.modelObject)
+#if( $ctx.stash.metadata.modelObjectKey )
+  $util.qr($PutObject.put(\\"key\\", $ctx.stash.metadata.modelObjectKey))
 #else
   #set( $Key = {
   \\"id\\":   $util.dynamodb.toDynamoDB($mergedValues.id)
