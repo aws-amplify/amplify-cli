@@ -703,4 +703,59 @@ describe('ModelTransformer: ', () => {
     expect(verifyInputCount(parsed, 'ModelPostFilterInput', 1)).toBeTruthy();
     expect(verifyInputCount(parsed, 'ModelUserFilterInput', 1)).toBeTruthy();
   });
+
+  it('should support non-model types and enums', () => {
+    const validSchema = `
+      type Post @model {
+          id: ID!
+          title: String!
+          createdAt: String
+          updatedAt: String
+          metadata: [PostMetadata!]!
+          appearsIn: [Episode]!
+      }
+      type PostMetadata {
+          tags: Tag
+      }
+      type Tag {
+          published: Boolean
+          metadata: PostMetadata
+      }
+      enum Episode {
+          NEWHOPE
+          EMPIRE
+          JEDI
+      }
+    `;
+    const transformer = new GraphQLTransform({
+      transformers: [new ModelTransformer()],
+      featureFlags,
+    });
+    const out = transformer.transform(validSchema);
+    expect(out).toBeDefined();
+
+    const definition = out.schema;
+    expect(definition).toBeDefined();
+    const parsed = parse(definition);
+
+    const postMetaDataInputType = getInputType(parsed, 'PostMetadataInput');
+    expect(postMetaDataInputType).toBeDefined();
+    const tagInputType = getInputType(parsed, 'TagInput');
+    expect(tagInputType).toBeDefined();
+    expectFieldsOnInputType(tagInputType!, ['metadata']);
+    const createPostInputType = getInputType(parsed, 'CreatePostInput');
+    expectFieldsOnInputType(createPostInputType!, ['metadata', 'appearsIn']);
+    const updatePostInputType = getInputType(parsed, 'UpdatePostInput');
+    expectFieldsOnInputType(updatePostInputType!, ['metadata', 'appearsIn']);
+
+    const postModelObject = getObjectType(parsed, 'Post');
+    const postMetaDataInputField = getFieldOnInputType(createPostInputType!, 'metadata');
+    const postMetaDataField = getFieldOnObjectType(postModelObject!, 'metadata');
+    // this checks that the non-model type was properly "unwrapped", renamed, and "rewrapped"
+    // in the generated CreatePostInput type - its types should be the same as in the Post @model type
+    verifyMatchingTypes(postMetaDataInputField.type, postMetaDataField.type);
+
+    expect(verifyInputCount(parsed, 'PostMetadataInput', 1)).toBeTruthy();
+    expect(verifyInputCount(parsed, 'TagInput', 1)).toBeTruthy();
+  });
 });
