@@ -45,6 +45,7 @@ describe('test SIGINT with execute', () => {
       HooksHandler: {
         initialize: jest.fn().mockReturnValue({
           setHooksEventFromInput: jest.fn(),
+          setEnvironmentName: jest.fn(),
           dataParameter: { amplify: {} },
         }),
       },

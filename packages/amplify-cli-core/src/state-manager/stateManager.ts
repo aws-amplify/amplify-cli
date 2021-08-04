@@ -21,11 +21,6 @@ export type ResourceEntry = {
 export class StateManager {
   metaFileExists = (projectPath?: string): boolean => this.doesExist(pathManager.getAmplifyMetaFilePath, projectPath);
 
-  getAmplifyVersion = (): string | undefined => {
-    const pkg = JSONUtilities.readJson<$TSAny>(path.join(__dirname, '..', '..', '..', 'amplify-cli', 'package.json'));
-    return pkg.version;
-  };
-
   getMeta = (projectPath?: string, options?: GetOptions<$TSMeta>): $TSMeta => {
     const filePath = pathManager.getAmplifyMetaFilePath(projectPath);
     const mergedOptions = {
@@ -242,14 +237,13 @@ export class StateManager {
     JSONUtilities.writeJson(filePath, meta);
   };
 
-  getHooksConfigJson = (projectPath: string | undefined): HooksConfig | undefined => {
+  getHooksConfigJson = (projectPath?: string): HooksConfig => {
     const filePath = pathManager.getHooksConfigFilePath(projectPath);
     const mergedOptions = {
       throwIfNotExist: false,
-      default: {},
     };
 
-    return this.getData<HooksConfig>(filePath, mergedOptions);
+    return this.getData<HooksConfig>(filePath, mergedOptions) ?? {};
   };
 
   setSampleHooksDir = (projectPath: string | undefined, sourceDirPath: string): void => {

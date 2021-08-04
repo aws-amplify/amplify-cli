@@ -163,7 +163,7 @@ export class PathManager {
     this.constructPath(projectPath, [PathConstants.AmplifyDirName, PathConstants.HooksDirName]);
 
   getHooksConfigFilePath = (projectPath?: string): string =>
-    this.constructPath(projectPath, [PathConstants.AmplifyDirName, PathConstants.HooksDirName, PathConstants.HooksConfigFileName]);
+    path.join(this.getHooksDirPath(projectPath), PathConstants.HooksConfigFileName);
 
   private constructPath = (projectPath?: string, segments: string[] = []): string => {
     if (!projectPath) {

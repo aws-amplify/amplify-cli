@@ -1,16 +1,11 @@
-export type HooksExtensions = {
-  [key: string]: {
-    runtime?: string;
-    runtime_windows?: string;
-  };
-};
+export type HooksExtensions = Record<string, { runtime?: string; runtime_windows?: string }>;
 
 export type HooksConfig = {
   extensions?: HooksExtensions;
   ignore?: string[];
 };
 
-export type FileObj = {
+export type HooksFileMeta = {
   baseName?: string;
   extension?: string;
   filePath?: string;
@@ -23,7 +18,6 @@ export type HooksEvent = {
   command?: string;
   subCommand?: string;
   argv?: string[];
-  seperator: '-' | string;
   eventPrefix?: EventPrefix;
 };
 
@@ -38,3 +32,37 @@ export type DataParameter = {
 };
 
 export type ErrorParameter = { message: string; stack: string };
+
+export type HooksVerb =
+  | 'add'
+  | 'update'
+  | 'remove'
+  | 'push'
+  | 'pull'
+  | 'publish'
+  | 'delete'
+  | 'checkout'
+  | 'list'
+  | 'get'
+  | 'mock'
+  | 'build'
+  | 'status'
+  | 'import'
+  | 'gqlcompile'
+  | 'addgraphqldatasource'
+  | 'statements'
+  | 'types';
+
+export type HooksNoun =
+  | 'notifications'
+  | 'analytics'
+  | 'api'
+  | 'auth'
+  | 'function'
+  | 'hosting'
+  | 'interactions'
+  | 'predictions'
+  | 'storage'
+  | 'xr'
+  | 'codegen'
+  | 'env';
