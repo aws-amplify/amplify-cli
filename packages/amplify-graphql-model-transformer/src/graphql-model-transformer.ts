@@ -842,6 +842,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
           if (!ctx.output.getType(name)) {
             const inputObj = InputObjectDefinitionWrapper.fromObject(name, def);
             ctx.output.addInput(inputObj.serialize());
+            this.createNonModelInputs(ctx, def);
           }
         }
       }
