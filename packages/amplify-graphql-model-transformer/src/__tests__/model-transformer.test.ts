@@ -791,4 +791,31 @@ describe('ModelTransformer: ', () => {
     const updateTestInput = getInputType(schema, 'UpdateTestInput');
     expect(getFieldOnInputType(updateTestInput!, 'email')).toBeUndefined();
   });
+
+  it('should support enum as a field', () => {
+    const validSchema = `
+      enum Status { DELIVERED IN_TRANSIT PENDING UNKNOWN }
+      type Test @model {
+        status: Status!
+        lastStatus: Status!
+      }
+    `;
+    const transformer = new GraphQLTransform({
+      transformers: [new ModelTransformer()],
+      featureFlags,
+    });
+
+    const out = transformer.transform(validSchema);
+    expect(out).toBeDefined();
+    const definition = out.schema;
+    expect(definition).toBeDefined();
+    const parsed = parse(definition);
+    validateModelSchema(parsed);
+
+    const createTestInput = getInputType(parsed, 'CreateTestInput');
+    expectFieldsOnInputType(createTestInput!, ['status', 'lastStatus']);
+
+    const updateTestInput = getInputType(parsed, 'CreateTestInput');
+    expectFieldsOnInputType(updateTestInput!, ['status', 'lastStatus']);
+  });
 });
