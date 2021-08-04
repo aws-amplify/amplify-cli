@@ -370,29 +370,57 @@ describe('ModelTransformer: ', () => {
     verifyMatchingTypes(commentObjectIDField.type, commentInputIDField.type);
   });
 
+  it('should support enum as a field', () => {
+    const validSchema = `
+    enum Status { DELIVERED IN_TRANSIT PENDING UNKNOWN }
+    type Test @model {
+      status: Status!
+      lastStatus: Status!
+    }
+    `;
+    const transformer = new GraphQLTransform({
+      transformers: [new ModelTransformer()],
+      featureFlags,
+    });
+
+    const out = transformer.transform(validSchema);
+    expect(out).toBeDefined();
+
+    const definition = out.schema;
+    expect(definition).toBeDefined();
+    const parsed = parse(definition);
+    validateModelSchema(parsed);
+
+    const createTestInput = getInputType(parsed, 'CreateTestInput');
+    expectFieldsOnInputType(createTestInput!, ['status', 'lastStatus']);
+
+    const updateTestInput = getInputType(parsed, 'CreateTestInput');
+    expectFieldsOnInputType(updateTestInput!, ['status', 'lastStatus']);
+  });
+
   it('should support non-model types and enums', () => {
     const validSchema = `
-      type Post @model {
-          id: ID!
-          title: String!
-          createdAt: String
-          updatedAt: String
-          metadata: [PostMetadata!]!
-          appearsIn: [Episode]!
-      }
-      type PostMetadata {
-          tags: Tag
-      }
-      type Tag {
-          published: Boolean
-          metadata: PostMetadata
-      }
-      enum Episode {
-          NEWHOPE
-          EMPIRE
-          JEDI
-      }
-    `;
+    type Post @model {
+        id: ID!
+        title: String!
+        createdAt: String
+        updatedAt: String
+        metadata: [PostMetadata!]!
+        appearsIn: [Episode]!
+    }
+    type PostMetadata {
+        tags: Tag
+    }
+    type Tag {
+        published: Boolean
+        metadata: PostMetadata
+    }
+    enum Episode {
+        NEWHOPE
+        EMPIRE
+        JEDI
+    }
+  `;
     const transformer = new GraphQLTransform({
       transformers: [new ModelTransformer()],
       featureFlags,
@@ -403,6 +431,7 @@ describe('ModelTransformer: ', () => {
     const definition = out.schema;
     expect(definition).toBeDefined();
     const parsed = parse(definition);
+    validateModelSchema(parsed);
 
     const postMetaDataInputType = getInputType(parsed, 'PostMetadataInput');
     expect(postMetaDataInputType).toBeDefined();
