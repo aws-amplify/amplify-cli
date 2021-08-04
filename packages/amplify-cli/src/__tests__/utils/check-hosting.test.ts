@@ -1,6 +1,6 @@
 import { hasCdBranches } from '../../utils/check-hosting';
 
-let mockBranches = { branches: [{ some_branch_obj: 'main' }] };
+let mockBranches = {};
 
 jest.mock('../../extensions/amplify-helpers/get-plugin-instance', () => {
   return {
@@ -24,12 +24,13 @@ describe('hasCdBranches', () => {
   let mockContext = { exeInfo: { amplifyMeta: { providers: { awscloudformation: { AmplifyAppId: 'id' } } } } };
 
   it('should return true if CD branches are present', async () => {
+    mockBranches = { branches: [{ some_branch_obj: 'main' }] };
     const result = await hasCdBranches(mockContext);
     expect(result).toBe(true);
   });
 
   it('should return false if no CD branches are present', async () => {
-    mockBranches.branches.pop();
+    mockBranches = { branches: [] };
     const result = await hasCdBranches(mockContext);
     expect(result).toBe(false);
   });
