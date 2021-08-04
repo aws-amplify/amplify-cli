@@ -53,13 +53,14 @@ export const makeConditionFilterInput = (
   for (let field of wrappedObject.fields) {
     const fieldType = ctx.output.getType(field.getTypeName());
     const isEnumType = fieldType && fieldType.kind === 'EnumTypeDefinition';
-    if (field.isScalar() || field.isList() || isEnumType) {
+    if (field.isScalar() || field.isList()) {
       const conditionTypeName = field.isList()
         ? ModelResourceIDs.ModelFilterListInputTypeName(field.getTypeName(), true)
-        : field.isScalar()
-        ? ModelResourceIDs.ModelFilterScalarInputTypeName(field.getTypeName(), true)
-        : field.getTypeName();
+        : ModelResourceIDs.ModelFilterScalarInputTypeName(field.getTypeName(), true);
       const inputField = InputFieldWrapper.create(field.name, conditionTypeName, true, field.isList());
+      input.addField(inputField);
+    } else if (isEnumType) {
+      const inputField = InputFieldWrapper.create(field.name, field.getTypeName(), true, field.isList());
       input.addField(inputField);
     }
   }
