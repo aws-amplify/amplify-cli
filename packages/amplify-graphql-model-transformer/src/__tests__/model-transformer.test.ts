@@ -598,7 +598,6 @@ describe('ModelTransformer: ', () => {
     expect(definition).toBeDefined();
     const parsed = parse(definition);
     validateModelSchema(parsed);
-
     const queryType = getObjectType(parsed, 'Query');
     expect(queryType).toBeDefined();
     expectFields(queryType!, ['listPosts']);
