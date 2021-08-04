@@ -14,7 +14,6 @@ import {
   blankObjectExtension,
   extensionWithFields,
   getBaseType,
-  graphqlName,
   isListType,
   isScalar,
   makeCompositeKeyConditionInputForKey,
@@ -318,7 +317,6 @@ function replaceDeleteInput(config: PrimaryKeyDirectiveConfiguration, input: Inp
 
 export function ensureQueryField(config: IndexDirectiveConfiguration, ctx: TransformerContextProvider): void {
   const { object, queryField, sortKey } = config;
-  let query = ctx.output.getQuery();
 
   if (!queryField) {
     return;

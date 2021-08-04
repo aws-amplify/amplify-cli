@@ -305,7 +305,6 @@ export function appendSecondaryIndex(config: IndexDirectiveConfiguration, ctx: T
   const keySchema = getDdbKeySchema(config);
   const attrDefs = attributeDefinitions(config, ctx);
   const primaryKeyPartitionKeyName = primaryKeyField?.name?.value ?? 'id';
-  const primaryKeyPartitionKeyType = attrDefs.find(attr => attr.attributeName === primaryKeyPartitionKeyName)?.attributeType ?? 'S';
   const partitionKeyName = keySchema[0]?.attributeName;
   const sortKeyName = keySchema?.[1]?.attributeName;
   const partitionKeyType = attrDefs.find(attr => attr.attributeName === partitionKeyName)?.attributeType ?? 'S';

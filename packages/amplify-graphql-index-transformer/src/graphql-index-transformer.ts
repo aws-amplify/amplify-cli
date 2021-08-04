@@ -12,7 +12,7 @@ import {
   Kind,
   ObjectTypeDefinitionNode,
 } from 'graphql';
-import { isNonNullType, isScalarOrEnum } from 'graphql-transformer-common';
+import { isScalarOrEnum } from 'graphql-transformer-common';
 import { appendSecondaryIndex, updateResolversForIndex } from './resolvers';
 import { addKeyConditionInputs, ensureQueryField, updateMutationConditionInput } from './schema';
 import { IndexDirectiveConfiguration } from './types';
