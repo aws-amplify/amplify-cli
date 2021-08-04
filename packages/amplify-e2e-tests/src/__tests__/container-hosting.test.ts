@@ -3,10 +3,10 @@ import {
   createNewProjectDir,
   deleteProject,
   deleteProjectDir,
+  enableContainerHosting,
   getBackendAmplifyMeta,
   initJSProjectWithProfile,
   removeHosting,
-  amplifyConfigureProject,
 } from 'amplify-e2e-core';
 
 import * as fs from 'fs-extra';
@@ -18,10 +18,7 @@ describe('amplify add hosting - container', () => {
   beforeAll(async () => {
     projRoot = await createNewProjectDir('container-hosting');
     await initJSProjectWithProfile(projRoot, {});
-    await amplifyConfigureProject({
-      cwd: projRoot,
-      enableContainers: true
-    });
+    await enableContainerHosting(projRoot);
     await addDevContainerHosting(projRoot);
   });
 
