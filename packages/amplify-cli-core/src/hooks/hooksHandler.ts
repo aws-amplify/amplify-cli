@@ -41,6 +41,9 @@ export class HooksHandler {
   public setEventCommand(command: string): void {
     this.hooksEvent.command = command;
   }
+  public setEventSubCommand(subCommand?: string): void {
+    this.hooksEvent.subCommand = subCommand;
+  }
 
   public setEventPrefix(prefix?: string): void {
     this.hooksEvent.eventPrefix = prefix as EventPrefix;
