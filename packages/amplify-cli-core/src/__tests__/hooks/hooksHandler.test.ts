@@ -18,16 +18,16 @@ describe('HooksHandler tests', () => {
   });
 
   test('should identify configure as update for notification and hosting', () => {
-    let input = { command: 'configure', plugin: 'notifications' };
-    const hooksHandler = HooksHandler.initialize();
-    hooksHandler.setHooksEventFromInput(input);
+    let hooksHandler = HooksHandler.initialize();
 
+    hooksHandler.setHooksEventFromInput({ command: 'configure', plugin: 'notifications' });
     expect(hooksHandler.hooksEvent?.command).toEqual('update');
     expect(hooksHandler.hooksEvent?.subCommand).toEqual('notifications');
 
-    input = { command: 'configure', plugin: 'hosting' };
-    hooksHandler.setHooksEventFromInput(input);
+    HooksHandler.releaseInstance();
+    hooksHandler = HooksHandler.initialize();
 
+    hooksHandler.setHooksEventFromInput({ command: 'configure', plugin: 'hosting' });
     expect(hooksHandler.hooksEvent?.command).toEqual('update');
     expect(hooksHandler.hooksEvent?.subCommand).toEqual('hosting');
   });
