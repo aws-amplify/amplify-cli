@@ -5,6 +5,8 @@ import { buildClientSchema, Source, concatAST, parse, DocumentNode, GraphQLSchem
 import { ToolError } from './errors';
 import { extname, join, normalize, relative } from 'path';
 
+const originalPlatform = process.platform;
+
 export function loadSchema(schemaPath: string): GraphQLSchema {
   if (extname(schemaPath) === '.json') {
     return loadIntrospectionSchema(schemaPath);
@@ -46,7 +48,7 @@ function extractDocumentFromJavascript(content: string, tagName: string = 'gql')
 }
 
 export function loadAndMergeQueryDocuments(inputPaths: string[], tagName: string = 'gql'): DocumentNode {
-  const sources = inputPaths
+  var sources = inputPaths
     .map(inputPath => {
       const body = fs.readFileSync(inputPath, 'utf8');
       if (!body) {
@@ -61,6 +63,13 @@ export function loadAndMergeQueryDocuments(inputPaths: string[], tagName: string
       return new Source(body, inputPath);
     })
     .filter((source): source is Source => Boolean(source));
+
+    if (originalPlatform === 'win32') {
+      sources = sources.map(source => {
+        source.body = source.body.replace(/\r\n/g, '\n');
+        return new Source(source.body, source.name);
+      });
+    }
 
   const parsedSources = sources.map(source => {
     try {
