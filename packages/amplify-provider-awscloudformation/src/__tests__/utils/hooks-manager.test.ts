@@ -1,40 +1,70 @@
 jest.mock('process');
 jest.mock('amplify-cli-core', () => ({ ...Object.assign({}, jest.requireActual('amplify-cli-core')) }));
-jest.mock('fs-extra');
-const S3ListObjectsMockReturn = { Contents: [{ Key: 'hooks/file1' }, { Key: 'hooks/file2' }, { Key: 'hooks/file3' }] };
-
-const mockS3Instance = {
-  listObjects: jest.fn().mockReturnValue({
-    promise: jest.fn().mockResolvedValue(S3ListObjectsMockReturn),
-  }),
-  getObject: jest.fn().mockReturnValue({
-    promise: jest.fn().mockResolvedValue({ Body: 'test data' }),
-  }),
-  promise: jest.fn().mockReturnThis(),
-  catch: jest.fn(),
-};
-
+jest.mock('glob', () => {
+  const actualGlob = jest.requireActual('glob');
+  return {
+    ...Object.assign({}, actualGlob),
+    sync: jest.fn().mockImplementation((pattern, options) => {
+      if (testProjectHooksDirPath + '/**/*' === pattern) {
+        return testProjectHooksFiles.map(filename => path.join(testProjectHooksDirPath, filename));
+      }
+      return actualGlob.sync(pattern, options);
+    }),
+  };
+});
+jest.mock('fs-extra', () => {
+  const actualFs = jest.requireActual('fs-extra');
+  return {
+    ...Object.assign({}, actualFs),
+    existsSync: jest.fn().mockImplementation(pathStr => {
+      if (istestProjectSubPath(pathStr)) {
+        return true;
+      }
+      return actualFs.existsSync(pathStr);
+    }),
+    lstatSync: jest.fn().mockImplementation(pathStr => {
+      if (testProjectHooksFiles.includes(path.relative(testProjectHooksDirPath, pathStr)))
+        return { isFile: jest.fn().mockReturnValue(true) };
+      return actualFs.lstatSync(path);
+    }),
+    createReadStream: jest.fn().mockImplementation((pathStr, options) => {
+      if (testProjectHooksFiles.includes(path.relative(testProjectHooksDirPath, pathStr))) {
+        return 'testdata';
+      }
+      return actualFs.createReadStream(path, options);
+    }),
+    writeFileSync: jest.fn(),
+    ensureFileSync: jest.fn(),
+  };
+});
 jest.mock('aws-sdk', () => {
   return { S3: jest.fn(() => mockS3Instance) };
 });
 
 import { uploadHooksDirectory, downloadHooks, pullHooks, S3_HOOKS_DIRECTORY } from '../../utils/hooks-manager';
-import { pathManager, stateManager, $TSContext, skipHooksFileName, skipHooksFilePath } from 'amplify-cli-core';
+import { pathManager, stateManager, $TSContext, skipHooksFilePath } from 'amplify-cli-core';
 import amplifyCliCore from 'amplify-cli-core';
 import * as path from 'path';
 import fsExt from 'fs-extra';
 import { S3 } from '../../aws-utils/aws-s3';
 import * as aws from 'aws-sdk';
 
-const testProjectRootPath = path.join(__dirname, '..', 'testFiles', 'hooks-test-project');
-const testProjectHooksDirPath = path.join(testProjectRootPath, 'amplify', 'hooks');
-const testProjectHooksConfigPath = path.join(testProjectHooksDirPath, 'hooks-config.json');
+const testProjectRootPath = path.join('testProjectRootPath');
+const testProjectHooksDirPath = path.join(testProjectRootPath, 'testProjectHooksDirPath');
+const testProjectHooksFiles = ['dir1/file1-1', 'dir2/file2-1', 'file1', 'file2', 'hooks-config.json'];
+
+pathManager.findProjectRoot = jest.fn().mockReturnValue(testProjectRootPath);
+pathManager.getHooksDirPath = jest.fn().mockReturnValue(testProjectHooksDirPath);
+stateManager.getHooksConfigJson = jest.fn().mockReturnValue({ ignore: ['dir2/', 'file2'] });
 
 const bucketName = 'test-bucket';
+const S3ListObjectsMockReturn = { Contents: [{ Key: 'hooks/file1' }, { Key: 'hooks/file2' }, { Key: 'hooks/file3' }] };
+
 const awsCredentials = {
   accessKeyId: 'TestAmplifyContextAccessKeyId',
   secretAccessKey: 'TestAmplifyContextsSecretAccessKey',
 };
+
 const mockContext = ({
   exeInfo: {
     localEnvInfo: { projectPath: testProjectRootPath },
@@ -56,10 +86,22 @@ const mockContext = ({
 
 let S3_mock_instance: S3;
 
-pathManager.findProjectRoot = jest.fn().mockReturnValue(testProjectRootPath);
-pathManager.getHooksDirPath = jest.fn().mockReturnValue(testProjectHooksDirPath);
-pathManager.getHooksConfigFilePath = jest.fn().mockReturnValue(testProjectHooksConfigPath);
-stateManager.getHooksConfigJson = jest.requireActual('amplify-cli-core').stateManager.getHooksConfigJson;
+const mockS3Instance = {
+  listObjects: jest.fn().mockReturnValue({
+    promise: jest.fn().mockResolvedValue(S3ListObjectsMockReturn),
+  }),
+  getObject: jest.fn().mockReturnValue({
+    promise: jest.fn().mockResolvedValue({ Body: 'test data' }),
+  }),
+  promise: jest.fn().mockReturnThis(),
+  catch: jest.fn(),
+};
+
+const istestProjectSubPath = childPath => {
+  const relativePath = path.relative(testProjectRootPath, childPath);
+  return relativePath && !relativePath.startsWith('..') && !path.isAbsolute(relativePath);
+};
+
 const skipHooksMock = jest.spyOn(amplifyCliCore, 'skipHooks');
 skipHooksMock.mockImplementation((): boolean => {
   return false;
@@ -98,13 +140,6 @@ describe('test hooks-manager ', () => {
     const file11Name = 'file1-1';
     const dir1Name = 'dir1';
 
-    // restoring some moked fs-extra functions
-    const orgFsExt = jest.requireActual('fs-extra');
-    fsExt.existsSync = orgFsExt.existsSync;
-    fsExt.readFileSync = orgFsExt.readFileSync;
-    fsExt.lstatSync = orgFsExt.lstatSync;
-    fsExt.createReadStream = orgFsExt.createReadStream;
-
     await uploadHooksDirectory(mockContext);
     expect(S3_mock_instance.deleteDirectory).toHaveBeenCalledTimes(1);
     expect(S3_mock_instance.deleteDirectory).toHaveBeenCalledWith(bucketName, S3_HOOKS_DIRECTORY);
@@ -138,13 +173,6 @@ describe('test hooks-manager ', () => {
   });
 
   test('pullHooks test', async () => {
-    // restoring some moked fs-extra functions
-    const orgFsExt = jest.requireActual('fs-extra');
-    fsExt.existsSync = orgFsExt.existsSync;
-    fsExt.readFileSync = orgFsExt.readFileSync;
-    fsExt.lstatSync = orgFsExt.lstatSync;
-    fsExt.createReadStream = orgFsExt.createReadStream;
-
     await pullHooks(mockContext);
 
     expect(S3_mock_instance.getAllObjectVersions).toHaveBeenCalledTimes(1);
@@ -158,13 +186,8 @@ describe('test hooks-manager ', () => {
 
   test('skiphooks test', async () => {
     skipHooksMock.mockRestore();
-    // restoring some moked fs-extra functions
-    const orgFsExt = jest.requireActual('fs-extra');
-    fsExt.existsSync = orgFsExt.existsSync;
-    fsExt.readFileSync = orgFsExt.readFileSync;
-    fsExt.lstatSync = orgFsExt.lstatSync;
-    fsExt.createReadStream = orgFsExt.createReadStream;
 
+    const orgFsExt = jest.requireActual('fs-extra');
     const mockawsS3 = new aws.S3();
 
     const orgSkipHooksExist = orgFsExt.existsSync(skipHooksFilePath);

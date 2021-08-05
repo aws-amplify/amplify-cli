@@ -44,11 +44,13 @@ describe('test SIGINT with execute', () => {
       executeHooks: jest.fn(),
       HooksHandler: {
         initialize: jest.fn().mockReturnValue({
+          setAmplifyVersion: jest.fn(),
           setHooksEventFromInput: jest.fn(),
           setEnvironmentName: jest.fn(),
           dataParameter: { amplify: {} },
         }),
       },
+      skipHooks: jest.fn(),
     });
     jest.setMock('../plugin-manager', {
       getPluginPlatform: jest.fn(),
