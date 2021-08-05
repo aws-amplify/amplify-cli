@@ -13,23 +13,23 @@ describe('HooksHandler tests', () => {
     const hooksHandler = HooksHandler.initialize();
     hooksHandler.setHooksEventFromInput(input);
 
-    expect(hooksHandler.hooksEvent?.command).toEqual('add');
-    expect(hooksHandler.hooksEvent?.subCommand).toEqual('env');
+    expect(hooksHandler.getHooksEvent()?.command).toEqual('add');
+    expect(hooksHandler.getHooksEvent()?.subCommand).toEqual('env');
   });
 
   test('should identify configure as update for notification and hosting', () => {
     let hooksHandler = HooksHandler.initialize();
 
     hooksHandler.setHooksEventFromInput({ command: 'configure', plugin: 'notifications' });
-    expect(hooksHandler.hooksEvent?.command).toEqual('update');
-    expect(hooksHandler.hooksEvent?.subCommand).toEqual('notifications');
+    expect(hooksHandler.getHooksEvent()?.command).toEqual('update');
+    expect(hooksHandler.getHooksEvent()?.subCommand).toEqual('notifications');
 
     HooksHandler.releaseInstance();
     hooksHandler = HooksHandler.initialize();
 
     hooksHandler.setHooksEventFromInput({ command: 'configure', plugin: 'hosting' });
-    expect(hooksHandler.hooksEvent?.command).toEqual('update');
-    expect(hooksHandler.hooksEvent?.subCommand).toEqual('hosting');
+    expect(hooksHandler.getHooksEvent()?.command).toEqual('update');
+    expect(hooksHandler.getHooksEvent()?.subCommand).toEqual('hosting');
   });
 
   test('should idenfity mock commands', () => {
@@ -37,8 +37,8 @@ describe('HooksHandler tests', () => {
     const hooksHandler = HooksHandler.initialize();
     hooksHandler.setHooksEventFromInput(input);
 
-    expect(hooksHandler.hooksEvent?.command).toEqual('mock');
-    expect(hooksHandler.hooksEvent?.subCommand).toEqual('api');
+    expect(hooksHandler.getHooksEvent()?.command).toEqual('mock');
+    expect(hooksHandler.getHooksEvent()?.subCommand).toEqual('api');
   });
 
   test('should not set the command and subcommand on unknown/unsupported events', () => {
@@ -46,7 +46,7 @@ describe('HooksHandler tests', () => {
     const hooksHandler = HooksHandler.initialize();
     hooksHandler.setHooksEventFromInput(input);
 
-    expect(hooksHandler.hooksEvent?.command).toEqual(undefined);
-    expect(hooksHandler.hooksEvent?.subCommand).toEqual(undefined);
+    expect(hooksHandler.getHooksEvent()?.command).toEqual(undefined);
+    expect(hooksHandler.getHooksEvent()?.subCommand).toEqual(undefined);
   });
 });
