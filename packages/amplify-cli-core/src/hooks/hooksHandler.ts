@@ -6,8 +6,8 @@ import _ from 'lodash';
 
 export class HooksHandler {
   private static instance?: HooksHandler;
-  public hooksEvent: HooksEvent;
-  public dataParameter: DataParameter;
+  private hooksEvent: HooksEvent;
+  private dataParameter: DataParameter;
 
   public static initialize = (hooksEvent: HooksEvent = {}, dataParameter: DataParameter = { amplify: {} }): HooksHandler => {
     if (!HooksHandler.instance) {

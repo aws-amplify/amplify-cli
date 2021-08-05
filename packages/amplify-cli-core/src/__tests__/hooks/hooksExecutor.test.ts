@@ -1,8 +1,8 @@
+import * as path from 'path';
 import { executeHooks, HooksHandler, skipHooksFilePath } from '../../hooks';
 import * as skipHooksModule from '../../hooks/skipHooks';
 import * as execa from 'execa';
 import { pathManager, stateManager } from '../../state-manager';
-import * as path from 'path';
 import * as fs from 'fs-extra';
 
 const pathToPython3Runtime = 'path/to/python3/runtime';
@@ -66,8 +66,12 @@ jest.mock('fs-extra', () => {
     }),
   };
 });
+jest.mock('../../hooks/hooksConstants', () => {
+  const orgConstants = jest.requireActual('../../hooks/hooksConstants');
+  return { ...Object.assign({}, orgConstants), skipHooksFilePath: path.join(__dirname, '..', 'testFiles', 'skiphooktestfile') };
+});
 
-const mockSkipHooks = jest.spyOn(skipHooksModule, 'skipHooks');
+let mockSkipHooks = jest.spyOn(skipHooksModule, 'skipHooks');
 
 describe('hooksExecutioner tests', () => {
   beforeEach(async () => {
@@ -97,6 +101,7 @@ describe('hooksExecutioner tests', () => {
     // resoring the original state of skip hooks file
     if (!orgSkipHooksExist) fs.removeSync(skipHooksFilePath);
     else fs.ensureFileSync(skipHooksFilePath);
+    mockSkipHooks = jest.spyOn(skipHooksModule, 'skipHooks');
   });
 
   test('executeHooks with no context', async () => {

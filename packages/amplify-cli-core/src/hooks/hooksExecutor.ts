@@ -25,7 +25,7 @@ export const executeHooks = async (
   const hooksHandler = HooksHandler.initialize();
 
   // if input is passed and command is not defined
-  if (context?.input && !hooksHandler.hooksEvent.command) {
+  if (context?.input) {
     hooksHandler.setHooksEventFromInput(context.input);
   }
 
@@ -58,7 +58,7 @@ export const executeHooks = async (
     },
   });
 
-  for (let execFileMeta of executionQueue) {
+  for (const execFileMeta of executionQueue) {
     if (execFileMeta) {
       const runtime = getRuntime(execFileMeta, hooksConfig);
       if (runtime) {

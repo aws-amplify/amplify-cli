@@ -1,50 +1,7 @@
-jest.mock('process');
-jest.mock('amplify-cli-core', () => ({ ...Object.assign({}, jest.requireActual('amplify-cli-core')) }));
-jest.mock('glob', () => {
-  const actualGlob = jest.requireActual('glob');
-  return {
-    ...Object.assign({}, actualGlob),
-    sync: jest.fn().mockImplementation((pattern, options) => {
-      if (testProjectHooksDirPath + '/**/*' === pattern) {
-        return testProjectHooksFiles.map(filename => path.join(testProjectHooksDirPath, filename));
-      }
-      return actualGlob.sync(pattern, options);
-    }),
-  };
-});
-jest.mock('fs-extra', () => {
-  const actualFs = jest.requireActual('fs-extra');
-  return {
-    ...Object.assign({}, actualFs),
-    existsSync: jest.fn().mockImplementation(pathStr => {
-      if (istestProjectSubPath(pathStr)) {
-        return true;
-      }
-      return actualFs.existsSync(pathStr);
-    }),
-    lstatSync: jest.fn().mockImplementation(pathStr => {
-      if (testProjectHooksFiles.includes(path.relative(testProjectHooksDirPath, pathStr)))
-        return { isFile: jest.fn().mockReturnValue(true) };
-      return actualFs.lstatSync(path);
-    }),
-    createReadStream: jest.fn().mockImplementation((pathStr, options) => {
-      if (testProjectHooksFiles.includes(path.relative(testProjectHooksDirPath, pathStr))) {
-        return 'testdata';
-      }
-      return actualFs.createReadStream(path, options);
-    }),
-    writeFileSync: jest.fn(),
-    ensureFileSync: jest.fn(),
-  };
-});
-jest.mock('aws-sdk', () => {
-  return { S3: jest.fn(() => mockS3Instance) };
-});
-
+import * as path from 'path';
 import { uploadHooksDirectory, downloadHooks, pullHooks, S3_HOOKS_DIRECTORY } from '../../utils/hooks-manager';
 import { pathManager, stateManager, $TSContext, skipHooksFilePath } from 'amplify-cli-core';
 import amplifyCliCore from 'amplify-cli-core';
-import * as path from 'path';
 import fsExt from 'fs-extra';
 import { S3 } from '../../aws-utils/aws-s3';
 import * as aws from 'aws-sdk';
@@ -102,8 +59,50 @@ const istestProjectSubPath = childPath => {
   return relativePath && !relativePath.startsWith('..') && !path.isAbsolute(relativePath);
 };
 
-const skipHooksMock = jest.spyOn(amplifyCliCore, 'skipHooks');
-skipHooksMock.mockImplementation((): boolean => {
+jest.mock('process');
+jest.mock('amplify-cli-core', () => ({ ...Object.assign({}, jest.requireActual('amplify-cli-core')) }));
+jest.mock('glob', () => {
+  const actualGlob = jest.requireActual('glob');
+  return {
+    ...Object.assign({}, actualGlob),
+    sync: jest.fn().mockImplementation((pattern, options) => {
+      if (testProjectHooksDirPath + '/**/*' === pattern) {
+        return testProjectHooksFiles.map(filename => path.join(testProjectHooksDirPath, filename));
+      }
+      return actualGlob.sync(pattern, options);
+    }),
+  };
+});
+jest.mock('fs-extra', () => {
+  const actualFs = jest.requireActual('fs-extra');
+  return {
+    ...Object.assign({}, actualFs),
+    existsSync: jest.fn().mockImplementation(pathStr => {
+      if (istestProjectSubPath(pathStr)) {
+        return true;
+      }
+      return actualFs.existsSync(pathStr);
+    }),
+    lstatSync: jest.fn().mockImplementation(pathStr => {
+      if (testProjectHooksFiles.includes(path.relative(testProjectHooksDirPath, pathStr)))
+        return { isFile: jest.fn().mockReturnValue(true) };
+      return actualFs.lstatSync(path);
+    }),
+    createReadStream: jest.fn().mockImplementation((pathStr, options) => {
+      if (testProjectHooksFiles.includes(path.relative(testProjectHooksDirPath, pathStr))) {
+        return 'testdata';
+      }
+      return actualFs.createReadStream(path, options);
+    }),
+    writeFileSync: jest.fn(),
+    ensureFileSync: jest.fn(),
+  };
+});
+jest.mock('aws-sdk', () => {
+  return { S3: jest.fn(() => mockS3Instance) };
+});
+let mockSkipHooks = jest.spyOn(amplifyCliCore, 'skipHooks');
+mockSkipHooks.mockImplementation((): boolean => {
   return false;
 });
 
@@ -182,45 +181,5 @@ describe('test hooks-manager ', () => {
     expect(fsExt.writeFileSync).toHaveBeenNthCalledWith(1, path.join(testProjectHooksDirPath, 'file1'), expect.anything());
     expect(fsExt.writeFileSync).toHaveBeenNthCalledWith(2, path.join(testProjectHooksDirPath, 'file2'), expect.anything());
     expect(fsExt.writeFileSync).toHaveBeenNthCalledWith(3, path.join(testProjectHooksDirPath, 'file3'), expect.anything());
-  });
-
-  test('skiphooks test', async () => {
-    skipHooksMock.mockRestore();
-
-    const orgFsExt = jest.requireActual('fs-extra');
-    const mockawsS3 = new aws.S3();
-
-    const orgSkipHooksExist = orgFsExt.existsSync(skipHooksFilePath);
-
-    orgFsExt.ensureFileSync(skipHooksFilePath);
-    // skip hooks file exists so no S3 calls relative to hooks should be made
-    await pullHooks(mockContext);
-    expect(S3_mock_instance.getAllObjectVersions).toHaveBeenCalledTimes(0);
-    expect(S3_mock_instance.getFile).toHaveBeenCalledTimes(0);
-    expect(fsExt.writeFileSync).toHaveBeenCalledTimes(0);
-
-    await downloadHooks(mockContext, { deploymentArtifacts: bucketName }, { credentials: awsCredentials });
-    expect(mockawsS3.listObjects).toHaveBeenCalledTimes(0);
-    expect(fsExt.writeFileSync).toHaveBeenCalledTimes(0);
-
-    await uploadHooksDirectory(mockContext);
-    expect(S3_mock_instance.deleteDirectory).toHaveBeenCalledTimes(0);
-    expect(S3_mock_instance.uploadFile).toHaveBeenCalledTimes(0);
-
-    orgFsExt.removeSync(skipHooksFilePath);
-    // skip hooks file does not exists so S3 calls relative to hooks should be made
-
-    await pullHooks(mockContext);
-    expect(S3_mock_instance.getAllObjectVersions).not.toHaveBeenCalledTimes(0);
-
-    await downloadHooks(mockContext, { deploymentArtifacts: bucketName }, { credentials: awsCredentials });
-    expect(mockawsS3.listObjects).not.toHaveBeenCalledTimes(0);
-
-    await uploadHooksDirectory(mockContext);
-    expect(S3_mock_instance.deleteDirectory).not.toHaveBeenCalledTimes(0);
-
-    // resoring the original state of skip hooks file
-    if (!orgSkipHooksExist) orgFsExt.removeSync(skipHooksFilePath);
-    else orgFsExt.ensureFileSync(skipHooksFilePath);
   });
 });
