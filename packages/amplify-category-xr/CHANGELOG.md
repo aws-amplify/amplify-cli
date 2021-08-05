@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.8.16-siwa-update.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-xr@2.8.15...amplify-category-xr@2.8.16-siwa-update.0) (2021-08-05)
+
+**Note:** Version bump only for package amplify-category-xr
+
+
+
+
+
 ## [2.8.15](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-xr@2.8.14...amplify-category-xr@2.8.15) (2021-07-30)
 
 **Note:** Version bump only for package amplify-category-xr
