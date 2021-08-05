@@ -14,7 +14,10 @@ import { getLogger } from '../logger/index';
 const logger = getLogger('amplify-cli-core', 'hooks/hooksExecutioner.ts');
 
 export const executeHooks = async (
-  context?: { input?: { command?: string; plugin?: string; subCommands?: string[]; argv?: string[] }; amplify?: $TSAny },
+  context?: {
+    input?: { command?: string; plugin?: string; subCommands?: string[]; options?: { forcePush?: boolean }; argv?: string[] };
+    amplify?: $TSAny;
+  },
   eventPrefix?: EventPrefix,
   errorParameter?: ErrorParameter,
 ): Promise<void> => {
@@ -27,11 +30,6 @@ export const executeHooks = async (
   // if input is passed and command is not defined
   if (context?.input) {
     hooksHandler.setHooksEventFromInput(context.input);
-  }
-
-  // to check if any suppported events were recognised
-  if (!hooksHandler.getHooksEvent().command) {
-    return;
   }
 
   hooksHandler.setEventPrefix(eventPrefix);
@@ -47,6 +45,14 @@ export const executeHooks = async (
   const { commandHooksFileMeta, subCommandHooksFileMeta } = getHooksFileMetas(hooksDirPath, hooksHandler.getHooksEvent(), hooksConfig);
 
   let executionQueue = [commandHooksFileMeta, subCommandHooksFileMeta];
+
+  if (context?.input?.options?.forcePush && hooksHandler.getHooksEvent().command !== 'push') {
+    // we want to run push related hoooks when forcePush flag is enabled
+    hooksHandler.setEventCommand('push');
+    hooksHandler.setEventSubCommand(undefined);
+    const { commandHooksFileMeta } = getHooksFileMetas(hooksDirPath, hooksHandler.getHooksEvent(), hooksConfig);
+    executionQueue.push(commandHooksFileMeta);
+  }
 
   // merging because we want to remoe as many undeifined values as possible
   hooksHandler.mergeDataParameter({
@@ -119,6 +125,9 @@ const getHooksFileMetas = (
   hooksEvent: HooksEvent,
   hooksConfig: HooksConfig,
 ): { commandHooksFileMeta?: HooksFileMeta; subCommandHooksFileMeta?: HooksFileMeta } => {
+  if (!hooksEvent.command) {
+    return {};
+  }
   const extensionsSupported = getSupportedExtensions(hooksConfig);
 
   const allFiles = fs
