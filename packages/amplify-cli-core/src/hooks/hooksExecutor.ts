@@ -53,11 +53,18 @@ export const executeHooks = async (
     const { commandHooksFileMeta } = getHooksFileMetas(hooksDirPath, hooksHandler.getHooksEvent(), hooksConfig);
     executionQueue.push(commandHooksFileMeta);
   }
+  let currentEnv;
+  try {
+    // throws error on fresh init
+    currentEnv = context?.amplify?.getEnvInfo()?.envName;
+  } catch (err) {
+    // do nothing
+  }
 
   // merging because we want to remoe as many undeifined values as possible
   hooksHandler.mergeDataParameter({
     amplify: {
-      environment: context?.amplify?.getEnvInfo()?.envName ?? undefined,
+      environment: currentEnv,
       command: hooksHandler.getHooksEvent().command,
       subCommand: hooksHandler.getHooksEvent().subCommand,
       argv: hooksHandler.getHooksEvent().argv,
