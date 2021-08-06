@@ -24,8 +24,6 @@ async function isBackendDirModifiedSinceLastPush(resourceName, category, lastPus
     return false;
   }
 
-  const localDirHash = await hashFunction(localBackendDir, resourceName);
-  const cloudDirHash = await hashFunction(cloudBackendDir, resourceName);
 
   return localDirHash !== cloudDirHash;
 }
@@ -104,80 +102,54 @@ function getAllResources(amplifyMeta, category, resourceName, filteredResources)
 
 function getResourcesToBeCreated(amplifyMeta, currentAmplifyMeta, category, resourceName, filteredResources) {
   let resources: any[] = [];
+import { print } from './print';
+import { CLOUD_INITIALIZED,  getCloudInitStatus } from './get-cloud-init-status';
+import { ViewResourceTableParams } from "amplify-cli-core";
+import { viewSummaryTable, viewEnvInfo, viewResourceDiffs } from './resource-status-view';
+import { getMultiCategoryStatus, getResourceStatus, getHashForResourceDir } from './resource-status-data';
+import { getEnvInfo } from './get-env-info';
+import chalk from 'chalk';
 
-  Object.keys(amplifyMeta).forEach(categoryName => {
-    const categoryItem = amplifyMeta[categoryName];
-    Object.keys(categoryItem).forEach(resource => {
-      if (
-        (!amplifyMeta[categoryName][resource].lastPushTimeStamp ||
-          !currentAmplifyMeta[categoryName] ||
-          !currentAmplifyMeta[categoryName][resource]) &&
-        categoryName !== 'providers' &&
-        amplifyMeta[categoryName][resource].serviceType !== 'imported'
-      ) {
-        amplifyMeta[categoryName][resource].resourceName = resource;
-        amplifyMeta[categoryName][resource].category = categoryName;
-        resources.push(amplifyMeta[categoryName][resource]);
+export { getResourceStatus, getHashForResourceDir }
+
+export async function showStatusTable( tableViewFilter : ViewResourceTableParams ){
+      const amplifyProjectInitStatus = getCloudInitStatus();
+      const {
+        resourcesToBeCreated,
+        resourcesToBeUpdated,
+        resourcesToBeDeleted,
+        resourcesToBeSynced,
+        allResources,
+        tagsUpdated,
+      } = await getMultiCategoryStatus(tableViewFilter);
+
+      //1. Display Environment Info
+      if (amplifyProjectInitStatus === CLOUD_INITIALIZED) {
+        viewEnvInfo();
       }
-    });
-  });
-
-  resources = filterResources(resources, filteredResources);
-
-  if (category !== undefined && resourceName !== undefined) {
-    // Create only specified resource in the cloud
-    resources = resources.filter(resource => resource.category === category && resource.resourceName === resourceName);
-  }
-
-  if (category !== undefined && !resourceName) {
-    // Create all the resources for the specified category in the cloud
-    resources = resources.filter(resource => resource.category === category);
-  }
-
-  // Check for dependencies and add them
-
-  for (let i = 0; i < resources.length; ++i) {
-    if (resources[i].dependsOn && resources[i].dependsOn.length > 0) {
-      for (let j = 0; j < resources[i].dependsOn.length; ++j) {
-        const dependsOnCategory = resources[i].dependsOn[j].category;
-        const dependsOnResourcename = resources[i].dependsOn[j].resourceName;
-        if (
-          amplifyMeta[dependsOnCategory] &&
-          (!amplifyMeta[dependsOnCategory][dependsOnResourcename].lastPushTimeStamp ||
-            !currentAmplifyMeta[dependsOnCategory] ||
-            !currentAmplifyMeta[dependsOnCategory][dependsOnResourcename]) &&
-          amplifyMeta[dependsOnCategory][dependsOnResourcename].serviceType !== 'imported'
-        ) {
-          resources.push(amplifyMeta[dependsOnCategory][dependsOnResourcename]);
-        }
+      //2. Display Summary Table
+      viewSummaryTable({  resourcesToBeUpdated,
+                          resourcesToBeCreated,
+                          resourcesToBeDeleted,
+                          resourcesToBeSynced,
+                          allResources
+                      });
+      //3. Display Tags Status
+      if (tagsUpdated) {
+        print.info('\nTag Changes Detected');
       }
-    }
-  }
 
-  return _.uniqWith(resources, _.isEqual);
-}
-
-function getResourcesToBeDeleted(amplifyMeta, currentAmplifyMeta, category, resourceName, filteredResources) {
-  let resources: any[] = [];
-
-  Object.keys(currentAmplifyMeta).forEach(categoryName => {
-    const categoryItem = currentAmplifyMeta[categoryName];
-    Object.keys(categoryItem).forEach(resource => {
-      if ((!amplifyMeta[categoryName] || !amplifyMeta[categoryName][resource]) && categoryItem[resource].serviceType !== 'imported') {
-        currentAmplifyMeta[categoryName][resource].resourceName = resource;
-        currentAmplifyMeta[categoryName][resource].category = categoryName;
-
-        resources.push(currentAmplifyMeta[categoryName][resource]);
+      //4. Display Detailed Diffs (Cfn/NonCfn)
+      if ( tableViewFilter.verbose ) {
+          await viewResourceDiffs( {  resourcesToBeUpdated,
+                                      resourcesToBeDeleted,
+                                      resourcesToBeCreated } );
       }
-    });
-  });
 
-  resources = filterResources(resources, filteredResources);
-
-  if (category !== undefined && resourceName !== undefined) {
-    // Deletes only specified resource in the cloud
-    resources = resources.filter(resource => resource.category === category && resource.resourceName === resourceName);
-  }
+      const resourceChanged = resourcesToBeCreated.length +
+                              resourcesToBeUpdated.length +
+                              resourcesToBeSynced.length +
+                              resourcesToBeDeleted.length > 0 || tagsUpdated;
 
   if (category !== undefined && !resourceName) {
     // Deletes all the resources for the specified category in the cloud
@@ -413,6 +385,7 @@ export async function getResourceStatus(category?, resourceName?, providerName?,
     allResources,
     rootStackUpdated,
   };
+      return resourceChanged;
 }
 
 export async function showResourceTable(category?, resourceName?, filteredResources?) {
@@ -426,6 +399,7 @@ export async function showResourceTable(category?, resourceName?, filteredResour
     print.info('');
   }
 
+  //Prepare state for view
   const {
     resourcesToBeCreated,
     resourcesToBeUpdated,
@@ -436,88 +410,22 @@ export async function showResourceTable(category?, resourceName?, filteredResour
     rootStackUpdated,
   } = await getResourceStatus(category, resourceName, undefined, filteredResources);
 
-  let noChangeResources = _.differenceWith(
-    allResources,
-    resourcesToBeCreated.concat(resourcesToBeUpdated).concat(resourcesToBeSynced),
-    _.isEqual,
-  );
-  noChangeResources = noChangeResources.filter(resource => resource.category !== 'providers');
-
-  const createOperationLabel = 'Create';
-  const updateOperationLabel = 'Update';
-  const deleteOperationLabel = 'Delete';
-  const importOperationLabel = 'Import';
-  const unlinkOperationLabel = 'Unlink';
-  const noOperationLabel = 'No Change';
-  const tableOptions = [['Category', 'Resource name', 'Operation', 'Provider plugin']];
-
-  for (let i = 0; i < resourcesToBeCreated.length; ++i) {
-    tableOptions.push([
-      capitalize(resourcesToBeCreated[i].category),
-      resourcesToBeCreated[i].resourceName,
-      createOperationLabel,
-      resourcesToBeCreated[i].providerPlugin,
-    ]);
+  //1. Display Environment Info
+  if (amplifyProjectInitStatus === CLOUD_INITIALIZED) {
+    viewEnvInfo();
   }
-
-  for (let i = 0; i < resourcesToBeUpdated.length; ++i) {
-    tableOptions.push([
-      capitalize(resourcesToBeUpdated[i].category),
-      resourcesToBeUpdated[i].resourceName,
-      updateOperationLabel,
-      resourcesToBeUpdated[i].providerPlugin,
-    ]);
-  }
-
-  for (let i = 0; i < resourcesToBeSynced.length; ++i) {
-    let operation;
-
-    switch (resourcesToBeSynced[i].sync) {
-      case 'import':
-        operation = importOperationLabel;
-        break;
-      case 'unlink':
-        operation = unlinkOperationLabel;
-        break;
-      default:
-        // including refresh
-        operation = noOperationLabel;
-        break;
-    }
-
-    tableOptions.push([
-      capitalize(resourcesToBeSynced[i].category),
-      resourcesToBeSynced[i].resourceName,
-      operation /*syncOperationLabel*/,
-      resourcesToBeSynced[i].providerPlugin,
-    ]);
-  }
-
-  for (let i = 0; i < resourcesToBeDeleted.length; ++i) {
-    tableOptions.push([
-      capitalize(resourcesToBeDeleted[i].category),
-      resourcesToBeDeleted[i].resourceName,
-      deleteOperationLabel,
-      resourcesToBeDeleted[i].providerPlugin,
-    ]);
-  }
-
-  for (let i = 0; i < noChangeResources.length; ++i) {
-    tableOptions.push([
-      capitalize(noChangeResources[i].category),
-      noChangeResources[i].resourceName,
-      noOperationLabel,
-      noChangeResources[i].providerPlugin,
-    ]);
-  }
-
-  const { table } = print;
-
-  table(tableOptions, { format: 'markdown' });
-
+  //2. Display Summary Table
+  viewSummaryTable({  resourcesToBeUpdated,
+                      resourcesToBeCreated,
+                      resourcesToBeDeleted,
+                      resourcesToBeSynced,
+                      allResources
+                  });
+  //3. Display Tags Status
   if (tagsUpdated) {
     print.info('\nTag Changes Detected');
   }
+  print.info(`\n${chalk.blueBright("Note: ")}Please use 'amplify status ${ chalk.greenBright("-v")}' to view detailed status and cloudformation-diff.\n`);
 
   if (rootStackUpdated) {
     print.info('\n RootStack Changes Detected');
