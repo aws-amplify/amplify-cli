@@ -34,7 +34,7 @@ export function getCLIPath(testingWithLatestCodebase = false) {
 }
 
 export function getScriptRunnerPath() {
-  return process.platform === 'win32' ? path.join('C:', 'Program Files', 'nodejs', 'node.exe') : '/Users/xss/.nvm/versions/node/v12.20.1/bin/node';
+  return process.execPath;
 }
 
 export function isCI(): boolean {

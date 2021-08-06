@@ -10,8 +10,8 @@ import { getCloudWatchLogs, putKinesisRecords, invokeFunction, getEventSourceMap
 import { retry } from 'amplify-e2e-core';
 import _ from 'lodash';
 
-describe.only('nodejs', () => {
-  describe.only('amplify add function', () => {
+describe('nodejs', () => {
+  describe('amplify add function', () => {
     let projRoot: string;
 
     beforeEach(async () => {
@@ -23,7 +23,7 @@ describe.only('nodejs', () => {
       deleteProjectDir(projRoot);
     });
 
-    it.only('init a project and add simple function and uncomment cors header', async () => {
+    it('init a project and add simple function and uncomment cors header', async () => {
       await initJSProjectWithProfile(projRoot, {});
       const random = Math.floor(Math.random() * 10000);
       const functionName = `testcorsfunction${random}`;
