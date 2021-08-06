@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.34.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@2.34.1...amplify-category-function@2.34.2) (2021-08-06)
+
+
+### Bug Fixes
+
+* **amplify-category-function:** Storage env vars not added to lambda function ([#7785](https://github.com/aws-amplify/amplify-cli/issues/7785)) ([cb4daaa](https://github.com/aws-amplify/amplify-cli/commit/cb4daaa6edfbf8dd2f7cab71abbda0ef450b16c3))
+* fiux e2e tests by passing categoryName for the resource ([#7886](https://github.com/aws-amplify/amplify-cli/issues/7886)) ([e420c6a](https://github.com/aws-amplify/amplify-cli/commit/e420c6ad11467dc8d1f52c8e65009794bf783944))
+* improve size checks before packaging Lambda resources ([#7756](https://github.com/aws-amplify/amplify-cli/issues/7756)) ([5952f6a](https://github.com/aws-amplify/amplify-cli/commit/5952f6aa6c1a6bbf3693a465ab61c46b7ab5c37b))
+
+
+
+
+
 ## [2.34.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@2.34.0...amplify-category-function@2.34.1) (2021-07-30)
 
 

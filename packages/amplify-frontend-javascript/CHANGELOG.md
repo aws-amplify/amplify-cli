@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.23.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-javascript@2.23.3...amplify-frontend-javascript@2.23.4) (2021-08-06)
+
+
+### Bug Fixes
+
+* **amplify-category-auth:** add auth user selections to aws-exports/amplifyconfiguration files ([#7807](https://github.com/aws-amplify/amplify-cli/issues/7807)) ([3deae39](https://github.com/aws-amplify/amplify-cli/commit/3deae3969740562c8fe1a82d2659e0efffccb49d))
+
+
+
+
+
 ## [2.23.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-javascript@2.23.2...amplify-frontend-javascript@2.23.3) (2021-07-30)
 
 **Note:** Version bump only for package amplify-frontend-javascript

@@ -3,6 +3,20 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.5.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-model-transformer@0.5.0...@aws-amplify/graphql-model-transformer@0.5.1) (2021-08-06)
+
+
+### Bug Fixes
+
+* add DDB params to model v2 ([#7827](https://github.com/aws-amplify/amplify-cli/issues/7827)) ([f43002e](https://github.com/aws-amplify/amplify-cli/commit/f43002ed46d0ee42a64cec3d12322d4ae552a70b))
+* **graphql-model-transformer:** model input fields transform ([#7857](https://github.com/aws-amplify/amplify-cli/issues/7857)) ([12ff663](https://github.com/aws-amplify/amplify-cli/commit/12ff663a94a4896bd9eacef3847be15b7631d8df))
+* misc [@model](https://github.com/model) v2 VTL cleanup ([#7856](https://github.com/aws-amplify/amplify-cli/issues/7856)) ([98d81d8](https://github.com/aws-amplify/amplify-cli/commit/98d81d8e2e13fc1525389ba21e6ad4b372e671fb))
+* use improved pluralization in graphql transformer v2 ([#7817](https://github.com/aws-amplify/amplify-cli/issues/7817)) ([38e2599](https://github.com/aws-amplify/amplify-cli/commit/38e25996ee00479031c88714af3b9d40ef9e079c))
+
+
+
+
+
 # [0.5.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-model-transformer@0.4.6...@aws-amplify/graphql-model-transformer@0.5.0) (2021-07-30)
 
 
