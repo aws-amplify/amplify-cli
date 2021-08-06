@@ -40,8 +40,8 @@ import {
 } from './definitions';
 import assert from 'assert';
 import { setMappings } from './cdk/create-layer-cfnMapping';
-import { createEsDomain, createEsDomainRole } from './cdk/create-es-domain';
-import { createEsDataSource } from './cdk/create-es-datasource';
+import { createSearchableDomain, createSearchableDomainRole } from './cdk/create-searchable-domain';
+import { createSearchableDataSource } from './cdk/create-searchable-datasource';
 import { createEventSourceMapping, createLambda, createLambdaRole } from './cdk/create-streaming-lambda';
 import { createStackOutputs } from './cdk/create-cfnOutput';
 
@@ -84,17 +84,17 @@ export class SearchableModelTransformer extends TransformerPluginBase {
 
     const parameterMap = createParametersInStack(stack);
 
-    const domain = createEsDomain(stack, parameterMap, context.api.apiId);
+    const domain = createSearchableDomain(stack, parameterMap, context.api.apiId);
 
-    const elasticsearchRole = createEsDomainRole(stack, parameterMap, context.api.apiId, envParam);
+    const openSearchRole = createSearchableDomainRole(stack, parameterMap, context.api.apiId, envParam);
 
-    domain.grantReadWrite(elasticsearchRole);
+    domain.grantReadWrite(openSearchRole);
 
-    const datasource = createEsDataSource(
+    const datasource = createSearchableDataSource(
       stack,
       context.api,
       domain.domainEndpoint,
-      elasticsearchRole,
+      openSearchRole,
       stack.parseArn(domain.domainArn).region,
     );
 
