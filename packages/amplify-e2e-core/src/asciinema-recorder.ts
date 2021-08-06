@@ -1,3 +1,4 @@
+//import * as pty from 'node-pty-prebuilt-multiarch';
 import * as pty from 'node-pty';
 import chalk from 'chalk';
 
@@ -59,7 +60,7 @@ export class Recorder {
       rows: this.rows,
       cwd: this.cwd,
       ...this.options,
-      useConpty: process.platform === 'win32' ? true : false,
+      useConpty: false,//process.platform === 'win32' ? true : false,
       env: {
         NODE_OPTIONS: '--max_old_space_size=4096',
         ...this.options.env,
