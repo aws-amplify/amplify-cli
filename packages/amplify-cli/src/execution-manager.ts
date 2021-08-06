@@ -276,6 +276,7 @@ async function raisePreCodegenModelsEvent(context: Context) {
 async function raisePostEvent(context: Context) {
   const { command, plugin } = context.input;
   if (!plugin || !EVENT_EMITTING_PLUGINS.has(plugin)) {
+    await executeHooks(context, 'post');
     return;
   }
   switch (command) {
