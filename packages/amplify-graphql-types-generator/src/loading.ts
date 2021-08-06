@@ -5,7 +5,6 @@ import { buildClientSchema, Source, concatAST, parse, DocumentNode, GraphQLSchem
 import { ToolError } from './errors';
 import { extname, join, normalize, relative } from 'path';
 
-
 export function loadSchema(schemaPath: string): GraphQLSchema {
   if (extname(schemaPath) === '.json') {
     return loadIntrospectionSchema(schemaPath);
