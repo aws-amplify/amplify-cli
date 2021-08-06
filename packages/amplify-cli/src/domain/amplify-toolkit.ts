@@ -41,6 +41,7 @@ export class AmplifyToolkit {
   private _showHelp: any;
   private _showHelpfulProviderLinks: any;
   private _showResourceTable: any;
+  private _showStatusTable: any;
   private _serviceSelectionPrompt: any;
   private _updateProjectConfig: any;
   private _updateamplifyMetaAfterResourceUpdate: any;
@@ -258,6 +259,13 @@ export class AmplifyToolkit {
       this._showResourceTable || require(path.join(this._amplifyHelpersDirPath, 'resource-status')).showResourceTable;
     return this._showResourceTable;
   }
+
+  get showStatusTable(): any {
+    this._showStatusTable =
+    this._showStatusTable || require(path.join(this._amplifyHelpersDirPath, 'resource-status')).showStatusTable;
+    return this._showStatusTable;
+  }
+
   get serviceSelectionPrompt(): any {
     this._serviceSelectionPrompt =
       this._serviceSelectionPrompt || require(path.join(this._amplifyHelpersDirPath, 'service-select-prompt')).serviceSelectionPrompt;
