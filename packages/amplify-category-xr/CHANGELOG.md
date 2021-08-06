@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.8.16-runtime-hooks.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-xr@2.8.16-runtime-hooks.0...amplify-category-xr@2.8.16-runtime-hooks.1) (2021-08-06)
+
+**Note:** Version bump only for package amplify-category-xr
+
+
+
+
+
 ## [2.8.16-runtime-hooks.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-xr@2.8.15...amplify-category-xr@2.8.16-runtime-hooks.0) (2021-08-06)
 
 **Note:** Version bump only for package amplify-category-xr

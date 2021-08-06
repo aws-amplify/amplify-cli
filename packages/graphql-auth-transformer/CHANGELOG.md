@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.24.17-runtime-hooks.1](https://github.com/aws-amplify/amplify-cli/compare/graphql-auth-transformer@6.24.17-runtime-hooks.0...graphql-auth-transformer@6.24.17-runtime-hooks.1) (2021-08-06)
+
+**Note:** Version bump only for package graphql-auth-transformer
+
+
+
+
+
 ## [6.24.17-runtime-hooks.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-auth-transformer@6.24.16...graphql-auth-transformer@6.24.17-runtime-hooks.0) (2021-08-06)
 
 

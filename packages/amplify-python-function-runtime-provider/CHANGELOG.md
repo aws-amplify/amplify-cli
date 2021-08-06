@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.9.6-runtime-hooks.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-python-function-runtime-provider@1.9.6-runtime-hooks.0...amplify-python-function-runtime-provider@1.9.6-runtime-hooks.1) (2021-08-06)
+
+**Note:** Version bump only for package amplify-python-function-runtime-provider
+
+
+
+
+
 ## [1.9.6-runtime-hooks.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-python-function-runtime-provider@1.9.5...amplify-python-function-runtime-provider@1.9.6-runtime-hooks.0) (2021-08-06)
 
 **Note:** Version bump only for package amplify-python-function-runtime-provider

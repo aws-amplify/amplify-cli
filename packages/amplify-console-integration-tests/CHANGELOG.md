@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.8.4-runtime-hooks.1](https://github.com/aws-amplify/amplify-console-integration-tests/compare/amplify-console-integration-tests@1.8.4-runtime-hooks.0...amplify-console-integration-tests@1.8.4-runtime-hooks.1) (2021-08-06)
+
+**Note:** Version bump only for package amplify-console-integration-tests
+
+
+
+
+
 ## [1.8.4-runtime-hooks.0](https://github.com/aws-amplify/amplify-console-integration-tests/compare/amplify-console-integration-tests@1.8.3...amplify-console-integration-tests@1.8.4-runtime-hooks.0) (2021-08-06)
 
 **Note:** Version bump only for package amplify-console-integration-tests

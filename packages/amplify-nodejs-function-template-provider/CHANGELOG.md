@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.6.16-runtime-hooks.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-nodejs-function-template-provider@1.6.16-runtime-hooks.0...amplify-nodejs-function-template-provider@1.6.16-runtime-hooks.1) (2021-08-06)
+
+**Note:** Version bump only for package amplify-nodejs-function-template-provider
+
+
+
+
+
 ## [1.6.16-runtime-hooks.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-nodejs-function-template-provider@1.6.15...amplify-nodejs-function-template-provider@1.6.16-runtime-hooks.0) (2021-08-06)
 
 
