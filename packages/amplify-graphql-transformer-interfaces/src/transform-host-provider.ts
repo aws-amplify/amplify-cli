@@ -6,18 +6,17 @@ import {
   GraphqlApiBase,
   HttpDataSource,
   LambdaDataSource,
-  NoneDataSource
+  NoneDataSource,
 } from '@aws-cdk/aws-appsync';
 import { ITable } from '@aws-cdk/aws-dynamodb';
 import { IFunction, ILayerVersion, Runtime } from '@aws-cdk/aws-lambda';
 import {
   AppSyncFunctionConfigurationProvider,
   DataSourceOptions,
-  ElasticSearchDataSourceOptions,
-  MappingTemplateProvider
+  SearchableDataSourceOptions,
+  MappingTemplateProvider,
 } from './graphql-api-provider';
 import { IRole } from '@aws-cdk/aws-iam';
-
 
 export interface TransformHostProvider {
   setAPI(api: GraphqlApiBase): void;
@@ -26,11 +25,11 @@ export interface TransformHostProvider {
   addDynamoDbDataSource(name: string, table: ITable, options?: DataSourceOptions, stack?: Stack): DynamoDbDataSource;
   addNoneDataSource(name: string, options?: DataSourceOptions, stack?: Stack): NoneDataSource;
   addLambdaDataSource(name: string, lambdaFunction: IFunction, options?: DataSourceOptions, stack?: Stack): LambdaDataSource;
-  addElasticSearchDataSource(
+  addSearchableDataSource(
     name: string,
     endpoint: string,
     region: string,
-    options?: ElasticSearchDataSourceOptions,
+    options?: SearchableDataSourceOptions,
     stack?: Stack,
   ): BaseDataSource;
 

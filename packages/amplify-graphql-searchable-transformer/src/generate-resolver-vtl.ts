@@ -1,5 +1,5 @@
 import {
-  ElasticsearchMappingTemplate,
+  SearchableMappingTemplate,
   print,
   str,
   ref,
@@ -64,7 +64,7 @@ export function requestTemplate(primaryKey: string, nonKeywordFields: Expression
           qref('$aggregateValues.put("$aggItem.name", {"$aggItem.type": {"field": "${aggItem.field}.keyword"}})'),
         ),
       ]),
-      ElasticsearchMappingTemplate.searchTemplate({
+      SearchableMappingTemplate.searchTemplate({
         path: str('$indexPath'),
         size: ifElse(ref('context.args.limit'), ref('context.args.limit'), int(ResourceConstants.DEFAULT_SEARCHABLE_PAGE_LIMIT), true),
         search_after: ref('util.base64Decode($context.args.nextToken)'),

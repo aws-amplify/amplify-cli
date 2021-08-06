@@ -7,7 +7,7 @@
 Object types that are annotated with `@model` are top level entities in the
 generated API. Objects annotated with `@model` are stored in DynamoDB and are
 capable of being protected via `@auth`, related to other objects via `@connection`,
-and streamed into Elasticsearch via `@searchable`.
+and streamed via `@searchable`.
 
 #### Definition
 
@@ -298,13 +298,13 @@ your queries efficient but this also comes with additional cost.
 
 ### @searchable
 
-The `@searchable` directive handles streaming the data of an `@model` object type to
-Elasticsearch and configures search resolvers that search that information.
+The `@searchable` directive handles streaming the data of an `@model` object type
+and configures search resolvers that search that information.
 
 #### Definition
 
 ```graphql
-# Streams data from dynamodb into elasticsearch and exposes search capabilities.
+# Streams data from dynamodb into opensearch and exposes search capabilities.
 directive @searchable(queries: SearchableQueryMap) on OBJECT
 input SearchableQueryMap {
   search: String
@@ -339,19 +339,19 @@ type Comment @model {
 }
 ```
 
-And then pass the schema to an instance of the `GraphQLTransform` class with the DynamoDB, Elasticsearch, and Connection transformers enabled:
+And then pass the schema to an instance of the `GraphQLTransform` class with the DynamoDB, `@searchable`, and Connection transformers enabled:
 
 ```javascript
 import GraphQLTransform from 'graphql-transformer-core';
 import AppSyncDynamoDBTransformer from 'graphql-dynamodb-transformer';
-import AppSyncElasticsearchTransformer from 'graphql-elasticsearch-transformer';
+import SearchableModelTransformer from 'amplify-graphql-searchable-transformer';
 import AppSyncConnectionTransformer from 'graphql-connection-transformer';
 import AppSyncAuthTransformer from 'graphql-auth-transformer';
 
 const transformer = new GraphQLTransform({
   transformers: [
     new AppSyncDynamoDBTransformer(),
-    new AppSyncElasticsearchTransformer(),
+    new SearchableModelTransformer(),
     new AppSyncAuthTransformer(),
     new AppSyncConnectionTransformer(),
   ],
@@ -363,7 +363,7 @@ console.log('Application creation successfully started. It may take a few minute
 
 The `GraphQLTransform` class implements a single `transform()` function that when invoked parses the document, walks the AST, and when a directive such as **@model** is found invokes any relevant transformers.
 In this case the transformers were defined for you but the code is structured to make writing custom transformers as simple as possible.
-The output of the above code is a full CloudFormation document that defines DynamoDB tables, an Elasticsearch cluster, a lambda function to stream from DynamoDB -> Elasticsearch,
+The output of the above code is a full CloudFormation document that defines DynamoDB tables, an OpenSearch cluster, a lambda function to stream from DynamoDB -> OpenSearch,
 an AppSync API, AppSync data sources, CRUD resolvers (create, update, delete, get, list, search), resolvers that implement connections between types stored in different DynamoDB tables,
 a number of minimally scoped IAM roles,
 
@@ -379,9 +379,9 @@ The package contains the core of the library and acts as the entry point to the 
 
 This package implements a number of directives that deal with DynamoDB. Out of the box, this implements the **@model** and **connection** directives.
 
-**graphql-elasticsearch-transformer**
+**amplify-graphql-searchable-transformer**
 
-This package implements any directives that deal with Elasticsearch. Out of the box, this implements the **@searchable** directive.
+This package implements any directives that deal with a searchable data source. Out of the box, this implements the **@searchable** directive.
 
 **graphql-auth-transformer**
 

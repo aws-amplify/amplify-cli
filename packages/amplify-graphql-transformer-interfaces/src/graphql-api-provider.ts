@@ -21,9 +21,9 @@ export interface DataSourceOptions {
   readonly description?: string;
 }
 
-export interface ElasticSearchDataSourceOptions extends DataSourceOptions {
+export interface SearchableDataSourceOptions extends DataSourceOptions {
   /**
-   * ServiceRole for the Amazon Elasticsearch
+   * ServiceRole for the Amazon OpenSearch
    */
   readonly serviceRole: IRole;
 }
