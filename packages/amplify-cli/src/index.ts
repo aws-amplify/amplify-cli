@@ -165,7 +165,12 @@ export async function run() {
     hooksHandler.setHooksEventFromInput(input);
     const context = constructContext(pluginPlatform, input);
 
-    hooksHandler.setEnvironmentName(context.amplify.getEnvInfo()?.envName);
+    try {
+      // throws error on fresh init
+      hooksHandler.setEnvironmentName(context.amplify.getEnvInfo()?.envName);
+    } catch (err) {
+      // do nothing
+    }
 
     // Initialize feature flags
     const contextEnvironmentProvider = new CLIContextEnvironmentProvider({
