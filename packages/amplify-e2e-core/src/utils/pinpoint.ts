@@ -1,6 +1,6 @@
 import { Pinpoint } from 'aws-sdk';
-import { getCLIPath, nspawn as spawn, singleSelect, amplifyRegions, addCircleCITags, KEY_DOWN_ARROW } from '..';
 import { getCredentials } from '../utils'
+import { getCLIPath, getScriptRunnerPath, nspawn as spawn, singleSelect, amplifyRegions, addCircleCITags, KEY_DOWN_ARROW } from '..';
 import _ from 'lodash';
 
 let settings: any = {
@@ -76,7 +76,7 @@ export function initProjectForPinpoint(cwd: string): Promise<void> {
   getCredentials();
   settings = {...settings, ...getCredentials()};
   return new Promise((resolve, reject) => {
-    let chain = spawn(getCLIPath(), ['init'], {
+    let chain = spawn(getScriptRunnerPath(), [getCLIPath(), 'init'], {
       cwd,
       stripColors: true,
       env: {
@@ -129,7 +129,7 @@ export function initProjectForPinpoint(cwd: string): Promise<void> {
 
 export function addPinpointAnalytics(cwd: string): Promise<string> {
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['add', 'analytics'], { cwd, stripColors: true })
+    spawn(getScriptRunnerPath(), [getCLIPath(), 'add', 'analytics'], { cwd, stripColors: true })
       .wait('Select an Analytics provider')
       .sendCarriageReturn()
       .wait('Provide your pinpoint resource name:')
@@ -150,7 +150,7 @@ export function addPinpointAnalytics(cwd: string): Promise<string> {
 
 export function pushToCloud(cwd: string): Promise<void> {
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['push'], { cwd, stripColors: true })
+    spawn(getScriptRunnerPath(), [getCLIPath(), 'push'], { cwd, stripColors: true })
       .wait('Are you sure you want to continue')
       .sendCarriageReturn()
       .wait('All resources are updated in the cloud')
@@ -167,7 +167,7 @@ export function pushToCloud(cwd: string): Promise<void> {
 
 export function amplifyDelete(cwd: string): Promise<void> {
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['delete'], { cwd, stripColors: true })
+    spawn(getScriptRunnerPath(), [getCLIPath(), 'delete'], { cwd, stripColors: true })
       .wait('Are you sure you want to continue?')
       .sendLine('Y')
       .wait('Project deleted in the cloud')

@@ -25,9 +25,16 @@ declare global {
 const amplifyTestsDir = 'amplify-e2e-tests';
 
 export function getCLIPath(testingWithLatestCodebase = false) {
-  return testingWithLatestCodebase
-    ? path.join(__dirname, '..', '..', 'amplify-cli', 'bin', 'amplify')
-    : process.env.AMPLIFY_PATH || 'amplify';
+  if (testingWithLatestCodebase) {
+    return process.env.AMPLIFY_PATH || (process.platform === 'win32' ? 'amplify.exe' : 'amplify');
+  }
+
+  const amplifyScriptPath = path.join(__dirname, '..', '..', 'amplify-cli', 'bin', 'amplify');
+  return amplifyScriptPath;
+}
+
+export function getScriptRunnerPath() {
+  return process.platform === 'win32' ? path.join('C:', 'Program Files', 'nodejs', 'node.exe') : '/Users/xss/.nvm/versions/node/v12.20.1/bin/node';
 }
 
 export function isCI(): boolean {

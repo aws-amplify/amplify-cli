@@ -3,7 +3,7 @@ import * as fs from 'fs-extra';
 import _ from 'lodash';
 import {
   nspawn as spawn,
-  getCLIPath,
+  getCLIPath, getScriptRunnerPath,
   addFunction,
   initJSProjectWithProfile,
   deleteProject,
@@ -89,7 +89,7 @@ describe('nodejs version migration tests', () => {
 
   function amplifyNodeMigrationAndPush(cwd: string) {
     return new Promise((resolve, reject) => {
-      spawn(getCLIPath(), ['push'], { cwd, stripColors: true, disableCIDetection: true })
+      spawn(getScriptRunnerPath(), [getCLIPath(), 'push'], { cwd, stripColors: true, disableCIDetection: true })
         .wait('Confirm to update the Node.js runtime version to nodejs')
         .sendConfirmYes()
         .wait('Node.js runtime version successfully updated')

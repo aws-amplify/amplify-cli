@@ -1,5 +1,5 @@
 import path from 'path';
-import { nspawn as spawn, getCLIPath, singleSelect, amplifyRegions, addCircleCITags, KEY_DOWN_ARROW, getCredentials } from 'amplify-e2e-core';
+import { nspawn as spawn, getCLIPath, getScriptRunnerPath, singleSelect, amplifyRegions, addCircleCITags, KEY_DOWN_ARROW, getCredentials } from 'amplify-e2e-core';
 import fs from 'fs-extra';
 import os from 'os';
 
@@ -48,7 +48,7 @@ async function initWorkflow(cwd: string, settings: { accessKeyId: string; secret
   getCredentials();
 
   return new Promise((resolve, reject) => {
-    let chain = spawn(getCLIPath(), ['init'], {
+    let chain = spawn(getScriptRunnerPath(), [getCLIPath(), 'init'], {
       cwd,
       stripColors: true,
       env: {

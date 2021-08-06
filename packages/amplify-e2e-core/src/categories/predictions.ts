@@ -1,10 +1,10 @@
-import { nspawn as spawn, KEY_DOWN_ARROW, getCLIPath } from '..';
+import { nspawn as spawn, KEY_DOWN_ARROW, getCLIPath, getScriptRunnerPath, } from '..';
 
 // add convert resource
 export function addConvert(cwd: string, settings: any): Promise<void> {
   const resourceName = 'convertTest1';
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['predictions', 'add'], { cwd, stripColors: true })
+    spawn(getScriptRunnerPath(), [getCLIPath(), 'predictions', 'add'], { cwd, stripColors: true })
       .wait('Please select from one of the categories below')
       .sendLine(KEY_DOWN_ARROW)
       .sendCarriageReturn()
@@ -34,7 +34,7 @@ export function addConvert(cwd: string, settings: any): Promise<void> {
 export function addIdentifyCollection(cwd: string, settings: any): Promise<void> {
   const resourceName = 'identifyCollectionTest1';
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['predictions', 'add'], { cwd, stripColors: true })
+    spawn(getScriptRunnerPath(), [getCLIPath(), 'predictions', 'add'], { cwd, stripColors: true })
       .wait('Please select from one of the categories below')
       .sendCarriageReturn()
       .wait('What would you like to identify?')
@@ -72,7 +72,7 @@ export function addIdentifyCollection(cwd: string, settings: any): Promise<void>
 export function addInterpret(cwd: string, settings: any): Promise<void> {
   const resourceName = 'interpretTest1';
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['add', 'predictions'], { cwd, stripColors: true })
+    spawn(getScriptRunnerPath(), [getCLIPath(), 'add', 'predictions'], { cwd, stripColors: true })
       .wait('Please select from one of the categories below')
       .sendLine(`${KEY_DOWN_ARROW}${KEY_DOWN_ARROW}`)
       .wait('What would you like to interpret?')

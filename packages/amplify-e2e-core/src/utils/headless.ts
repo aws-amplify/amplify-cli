@@ -1,6 +1,6 @@
 import { AddApiRequest, AddAuthRequest, ImportAuthRequest, UpdateApiRequest, UpdateAuthRequest } from 'amplify-headless-interface';
 import execa from 'execa';
-import { getCLIPath } from '..';
+import { getCLIPath, getScriptRunnerPath } from '..';
 
 export const addHeadlessApi = async (cwd: string, request: AddApiRequest) => {
   await executeHeadlessCommand(cwd, 'api', 'add', request);
