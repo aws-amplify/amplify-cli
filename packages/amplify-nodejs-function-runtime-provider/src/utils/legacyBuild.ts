@@ -59,7 +59,7 @@ function runPackageManager(cwd: string, buildType?: BuildType, scriptName?: stri
     });
   } catch (error) {
     if ((error as any).code === 'ENOENT') {
-      throw new Error(`Packaging lambda function failed. Could not find ${packageManager} executable in the PATH.`);
+      throw new Error(`Packaging lambda function failed. Could not find ${packageManager.executable} executable in the PATH.`);
     } else {
       throw new Error(`Packaging lambda function failed with the error \n${error.message}`);
     }

@@ -12,12 +12,12 @@ executors:
     working_directory: ~/repo
   build_img: &ref_2
     docker:
-      - image: ${AWS_ECR_ACCOUNT_URL}/amplify-cli-e2e-base-image-repo-public:latest
+      - image: public.ecr.aws/a6e6w2n0/amplify-cli-e2e-base-image-repo-public:latest
     working_directory: ~/repo
     resource_class: large
   linux: &ref_1
     docker:
-      - image: ${AWS_ECR_ACCOUNT_URL}/amplify-cli-e2e-base-image-repo-public:latest
+      - image: public.ecr.aws/a6e6w2n0/amplify-cli-e2e-base-image-repo-public:latest
     working_directory: ~/repo
     resource_class: large
     environment:
@@ -26,12 +26,12 @@ executors:
 node12:
   working_directory: ~/repo
   docker: &ref_3
-    - image: ${AWS_ECR_ACCOUNT_URL}/amplify-cli-e2e-base-image-repo-public:latest
+    - image: public.ecr.aws/a6e6w2n0/amplify-cli-e2e-base-image-repo-public:latest
   resource_class: large
 defaults:
   working_directory: ~/repo
   docker: &ref_4
-    - image: ${AWS_ECR_ACCOUNT_URL}/amplify-cli-e2e-base-image-repo-public:latest
+    - image: public.ecr.aws/a6e6w2n0/amplify-cli-e2e-base-image-repo-public:latest
   resource_class: large
 clean_e2e_resources: &ref_11
   name: Cleanup resources
@@ -648,7 +648,7 @@ jobs:
     working_directory: ~/repo
     resource_class: large
     docker:
-      - image: ${AWS_ECR_ACCOUNT_URL}/amplify-cli-e2e-base-image-repo-public:latest
+      - image: public.ecr.aws/a6e6w2n0/amplify-cli-e2e-base-image-repo-public:latest
     steps:
       - attach_workspace:
           at: ./

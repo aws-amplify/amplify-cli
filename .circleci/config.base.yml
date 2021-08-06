@@ -23,7 +23,7 @@ executors:
 
   linux: &e2e-executor
     docker:
-      - image: ${AWS_ECR_ACCOUNT_URL}/amplify-cli-e2e-base-image-repo-public:latest
+      - image: public.ecr.aws/a6e6w2n0/amplify-cli-e2e-base-image-repo-public:latest
     working_directory: ~/repo
     resource_class: large
     environment:
@@ -42,7 +42,7 @@ node12: &node12
 defaults: &defaults
   working_directory: ~/repo
   docker:
-    - image: ${AWS_ECR_ACCOUNT_URL}/amplify-cli-e2e-base-image-repo-public:latest
+    - image: public.ecr.aws/a6e6w2n0/amplify-cli-e2e-base-image-repo-public:latest
   resource_class: large
 
 clean_e2e_resources: &clean_e2e_resources
