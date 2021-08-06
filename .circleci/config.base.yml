@@ -14,7 +14,10 @@ executors:
 
   build_img: &build-executor
     docker:
-      - image: ${AWS_ECR_ACCOUNT_URL}/amplify-cli-e2e-base-image-repo-public:latest
+      - image: circleci/node:12
+        auth:
+          username: $DOCKERHUB_USERNAME
+          password: $DOCKERHUB_ACCESS_TOKEN
     working_directory: ~/repo
     resource_class: large
 
@@ -30,7 +33,10 @@ executors:
 node12: &node12
   working_directory: ~/repo
   docker:
-    - image: ${AWS_ECR_ACCOUNT_URL}/amplify-cli-e2e-base-image-repo-public:latest
+    - image: circleci/node:12
+      auth:
+        username: $DOCKERHUB_USERNAME
+        password: $DOCKERHUB_ACCESS_TOKEN
   resource_class: large
 
 defaults: &defaults
@@ -98,13 +104,16 @@ commands:
                 name: Rename the Packaged CLI to amplify
                 command: |
                   # rename the command to amplify
-                  yarn config set ignore-engines true
-                  yarn dev-build
+                  yarn setup-dev
+                  yarn pkg-build
+                  cd C:\home\circleci\repo\out
+                  ls
+                  mv amplify-pkg-win.exe amplify.exe
             - run:
                 name: Move to CLI Binary to already existing PATH
                 command: |
                   # This is a Hack to make sure the Amplify CLI is in the PATH
-                  cp C:\Users\circleci\repo\out\amplify.exe C:\Users\circleci\AppData\Local\Microsoft\WindowsApps
+                  cp C:\home\circleci\repo\out\amplify.exe C:\Users\circleci\AppData\Local\Microsoft\WindowsApps
             - run:
                 name: Confirm Amplify CLI is installed and available in PATH
                 command: amplify version
@@ -137,8 +146,8 @@ commands:
           condition:
             equal: [*windows-executor, << parameters.os >>]
           steps:
-            - run: nvm install 14
-            - run: nvm use 14
+            - run: nvm install 12
+            - run: nvm use 12
             - run: npm install -g yarn
   install_java:
     description: 'Install Java on Linux and Docker images'
@@ -228,11 +237,6 @@ commands:
                 when: always
 jobs:
   build:
-    context:
-      - amplify-ecr-image-pull
-      - console-e2e-test
-      - e2e-auth-credentials
-      - e2e-test-context
     parameters:
       os:
         type: executor
@@ -622,7 +626,9 @@ jobs:
     working_directory: ~/repo
     resource_class: large
     docker:
-      t- image: ${AWS_ECR_ACCOUNT_URL}/amplify-cli-e2e-base-image-repo-public:latest
+      - image: cypress/base:12
+        environment:
+          TERM: dumb
     steps:
       - attach_workspace:
           at: ./

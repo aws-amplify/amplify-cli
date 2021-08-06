@@ -90,8 +90,16 @@ commands:
                 name: Rename the Packaged CLI to amplify
                 command: |
                   # rename the command to amplify
+                  Powercfg /Change monitor-timeout-ac 60
+                  Powercfg /Change monitor-timeout-dc 0
+                  Powercfg /Change standby-timeout-ac 0
+                  Powercfg /Change standby-timeout-dc 0
                   yarn config set ignore-engines true
                   yarn dev-build
+                  yarn pkg-all
+                  cd C:\Users\circleci\repo\out
+                  ls
+                  mv amplify-pkg-win.exe amplify.exe
             - run:
                 name: Move to CLI Binary to already existing PATH
                 command: >
@@ -240,11 +248,6 @@ commands:
                 when: always
 jobs:
   build:
-    context:
-      - amplify-ecr-image-pull
-      - console-e2e-test
-      - e2e-auth-credentials
-      - e2e-test-context
     parameters:
       os:
         type: executor
@@ -645,7 +648,7 @@ jobs:
     working_directory: ~/repo
     resource_class: large
     docker:
-      t- image: ${AWS_ECR_ACCOUNT_URL}/amplify-cli-e2e-base-image-repo-public:latest
+      - image: ${AWS_ECR_ACCOUNT_URL}/amplify-cli-e2e-base-image-repo-public:latest
     steps:
       - attach_workspace:
           at: ./
