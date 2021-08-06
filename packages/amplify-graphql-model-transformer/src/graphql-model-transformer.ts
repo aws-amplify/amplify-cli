@@ -1,4 +1,4 @@
-import { MappingTemplate, TransformerModelBase } from '@aws-amplify/graphql-transformer-core';
+import { InvalidDirectiveError, MappingTemplate, TransformerModelBase } from '@aws-amplify/graphql-transformer-core';
 import {
   AppSyncDataSourceType,
   DataSourceInstance,
@@ -11,6 +11,7 @@ import {
   TransformerModelProvider,
   TransformerPrepareStepContextProvider,
   TransformerResolverProvider,
+  TransformerSchemaVisitStepContextProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { AttributeType, CfnTable, ITable, StreamViewType, Table, TableEncryption } from '@aws-cdk/aws-dynamodb';
 import * as cdk from '@aws-cdk/core';
@@ -135,7 +136,18 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
     super('amplify-model-transformer', directiveDefinition);
   }
 
-  object = (definition: ObjectTypeDefinitionNode, directive: DirectiveNode): void => {
+  object = (definition: ObjectTypeDefinitionNode, directive: DirectiveNode, ctx: TransformerSchemaVisitStepContextProvider): void => {
+    const isTypeNameReserved =
+      definition.name.value === ctx.output.getQueryTypeName() ||
+      definition.name.value === ctx.output.getMutationTypeName() ||
+      definition.name.value === ctx.output.getSubscriptionTypeName();
+
+    if (isTypeNameReserved) {
+      throw new InvalidDirectiveError(
+        `'${definition.name.value}' is a reserved type name and currently in use within the default schema element.`,
+      );
+    }
+
     // todo: get model configuration with default values and store it in the map
     const typeName = definition.name.value;
     const directiveWrapped: DirectiveWrapper = new DirectiveWrapper(directive);

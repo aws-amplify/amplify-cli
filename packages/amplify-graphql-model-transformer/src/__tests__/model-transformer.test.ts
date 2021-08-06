@@ -1,9 +1,9 @@
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { GraphQLTransform, validateModelSchema } from '@aws-amplify/graphql-transformer-core';
-import { FeatureFlagProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { InputObjectTypeDefinitionNode, InputValueDefinitionNode, NamedTypeNode, parse } from 'graphql';
 import { getBaseType } from 'graphql-transformer-common';
 import {
+  doNotExpectFields,
   expectFields,
   expectFieldsOnInputType,
   getFieldOnInputType,
@@ -14,12 +14,7 @@ import {
 } from './test-utils/helpers';
 
 const featureFlags = {
-  getBoolean: jest.fn().mockImplementation((name, defaultValue) => {
-    if (name === 'validateTypeNameReservedWords') {
-      return false;
-    }
-    return;
-  }),
+  getBoolean: jest.fn(),
   getNumber: jest.fn(),
   getObject: jest.fn(),
   getString: jest.fn(),
@@ -42,6 +37,7 @@ describe('ModelTransformer: ', () => {
     expect(out).toBeDefined();
 
     validateModelSchema(parse(out.schema));
+    parse(out.schema);
   });
 
   it('should support custom query overrides', () => {
@@ -275,6 +271,7 @@ describe('ModelTransformer: ', () => {
     expect(definition).toBeDefined();
     const parsed = parse(definition);
     validateModelSchema(parsed);
+
     const createPostInput = getInputType(parsed, 'CreatePostInput');
     expectFieldsOnInputType(createPostInput!, ['different']);
     const updatePostInput = getInputType(parsed, 'UpdatePostInput');
@@ -331,6 +328,7 @@ describe('ModelTransformer: ', () => {
     expect(out).toBeDefined();
     const parsed = parse(out.schema);
     validateModelSchema(parsed);
+
     const subscriptionType = getObjectType(parsed, 'Subscription');
     expect(subscriptionType).toBeDefined();
     expectFields(subscriptionType!, ['onCreatePost', 'onUpdatePost', 'onDeletePost']);
@@ -367,6 +365,51 @@ describe('ModelTransformer: ', () => {
     const commentObjectIDField = getFieldOnObjectType(commentObject!, 'id');
     const commentInputIDField = getFieldOnInputType(commentInputObject!, 'id');
     verifyMatchingTypes(commentObjectIDField.type, commentInputIDField.type);
+    const subscriptionType = getObjectType(parsed, 'Subscription');
+    expect(subscriptionType).toBeDefined();
+  });
+
+  it('should throw for reserved type name usage', () => {
+    const invalidSchema = `
+      type Subscription @model{
+        id: Int
+        str: String
+      }
+    `;
+    const transformer = new GraphQLTransform({
+      transformers: [new ModelTransformer()],
+    });
+    expect(() => transformer.transform(invalidSchema)).toThrowError(
+      "'Subscription' is a reserved type name and currently in use within the default schema element.",
+    );
+  });
+
+  it('should not add default primary key when ID is defined', () => {
+    const validSchema = `
+      type Post @model{
+        id: Int
+        str: String
+      }
+    `;
+    const transformer = new GraphQLTransform({
+      transformers: [new ModelTransformer()],
+      featureFlags,
+    });
+    const result = transformer.transform(validSchema);
+    expect(result).toBeDefined();
+    expect(result.schema).toBeDefined();
+    const schema = parse(result.schema);
+    validateModelSchema(schema);
+
+    const createPostInput: InputObjectTypeDefinitionNode = schema.definitions.find(
+      d => d.kind === 'InputObjectTypeDefinition' && d.name.value === 'CreatePostInput',
+    )! as InputObjectTypeDefinitionNode;
+    expect(createPostInput).toBeDefined();
+    const defaultIdField: InputValueDefinitionNode = createPostInput.fields!.find(f => f.name.value === 'id')!;
+    expect(defaultIdField).toBeDefined();
+    expect(getBaseType(defaultIdField.type)).toEqual('Int');
+    // It should not add default value for ctx.arg.id as id is of type Int
+    expect(result.pipelineFunctions['Mutation.createPost.req.vtl']).toMatchSnapshot();
   });
 
   it('should support enum as a field', () => {
