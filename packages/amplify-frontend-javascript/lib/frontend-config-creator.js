@@ -291,7 +291,7 @@ function getCognitoConfig(cognitoResources, projectRegion) {
 
   const frontendAuthConfig = {};
   if (cognitoResource.frontendAuthConfig) {
-    frontendAuthConfig.aws_cognito_login_mechanism = cognitoResource.frontendAuthConfig.loginMechanism;
+    frontendAuthConfig.aws_cognito_login_mechanisms = cognitoResource.frontendAuthConfig.loginMechanisms;
     frontendAuthConfig.aws_cognito_signup_attributes = cognitoResource.frontendAuthConfig.signupAttributes;
     frontendAuthConfig.aws_cognito_mfa_configuration = cognitoResource.frontendAuthConfig.mfaConfiguration;
     frontendAuthConfig.aws_cognito_mfa_types = cognitoResource.frontendAuthConfig.mfaTypes;
