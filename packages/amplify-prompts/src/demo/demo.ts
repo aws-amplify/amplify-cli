@@ -10,12 +10,6 @@ const printTypeofResult = (result: any) => console.log(`Response type was [${typ
  * Run `yarn demo` to see it in action
  */
 const demo = async () => {
-  printResult(await prompter.input('this is a prompt', { initial: 'that has an initial value' }));
-  printResult(await prompter.pick('these options have a default selected', ['opt1', 'opt2', 'opt3'], { initial: 1 }));
-  printResult(
-    await prompter.pick<'many'>('this is a multiselect with a default', ['opt1', 'opt2', 'opt3'], { initial: [1, 2], returnSize: 'many' }),
-  );
-  printResult(await prompter.pick('theres only one option here', ['opt1']));
   // confirmContinue
   printer.info(
     'confirmContine is intended to be used anywhere the CLI is doing a potentially dangerous or destructive action and we want the customer to confirm their understanding.',
