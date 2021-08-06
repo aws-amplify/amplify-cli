@@ -3,6 +3,30 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.46.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.46.1...amplify-e2e-tests@2.46.2) (2021-08-06)
+
+
+
+# 5.3.0 (2021-08-04)
+
+
+### Bug Fixes
+
+* **amplify-category-auth:** add auth user selections to aws-exports/amplifyconfiguration files ([#7807](https://github.com/aws-amplify/amplify-cli/issues/7807)) ([3deae39](https://github.com/aws-amplify/amplify-cli/commit/3deae3969740562c8fe1a82d2659e0efffccb49d))
+* **container-hosting:** e2e test fix ([#7889](https://github.com/aws-amplify/amplify-cli/issues/7889)) ([f9d7983](https://github.com/aws-amplify/amplify-cli/commit/f9d79837e14591e373d7815e99f146e74a14041c))
+* **container-hosting:** ignore test cases ([#7895](https://github.com/aws-amplify/amplify-cli/issues/7895)) ([f051445](https://github.com/aws-amplify/amplify-cli/commit/f05144510311fd38f188fd2d86a9fb0c74219269))
+* **graphql-model-transformer:** model input fields transform ([#7857](https://github.com/aws-amplify/amplify-cli/issues/7857)) ([12ff663](https://github.com/aws-amplify/amplify-cli/commit/12ff663a94a4896bd9eacef3847be15b7631d8df))
+* multi-env container hosting ([#7009](https://github.com/aws-amplify/amplify-cli/issues/7009)) ([#7346](https://github.com/aws-amplify/amplify-cli/issues/7346)) ([6c33215](https://github.com/aws-amplify/amplify-cli/commit/6c33215d064029add6b93bb10cad96bb63f40101))
+
+
+### Reverts
+
+* Revert "fix(container-hosting): e2e test fix (#7889)" (#7894) ([33ad93a](https://github.com/aws-amplify/amplify-cli/commit/33ad93a83a16989405f7de670f8579abcb8b6369)), closes [#7889](https://github.com/aws-amplify/amplify-cli/issues/7889) [#7894](https://github.com/aws-amplify/amplify-cli/issues/7894)
+
+
+
+
+
 ## [2.46.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.46.0...amplify-e2e-tests@2.46.1) (2021-07-30)
 
 

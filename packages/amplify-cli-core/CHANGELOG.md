@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.26.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@1.25.1...amplify-cli-core@1.26.0) (2021-08-06)
+
+
+### Bug Fixes
+
+* improve size checks before packaging Lambda resources ([#7756](https://github.com/aws-amplify/amplify-cli/issues/7756)) ([5952f6a](https://github.com/aws-amplify/amplify-cli/commit/5952f6aa6c1a6bbf3693a465ab61c46b7ab5c37b))
+
+
+### Features
+
+* create new amplify-prompts package to handle all terminal interactions ([#7774](https://github.com/aws-amplify/amplify-cli/issues/7774)) ([39b3262](https://github.com/aws-amplify/amplify-cli/commit/39b326202283f402f82d7e38a830acdc3845a8d7))
+
+
+
+
+
 ## [1.25.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@1.25.0...amplify-cli-core@1.25.1) (2021-07-30)
 
 

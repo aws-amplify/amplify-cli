@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.34.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@3.33.7...amplify-util-mock@3.34.0) (2021-08-06)
+
+
+### Features
+
+* **amplify-util-mock:** support pseudo parameters in environment variables when running `amplify mock function` ([#7804](https://github.com/aws-amplify/amplify-cli/issues/7804)) ([3d714b7](https://github.com/aws-amplify/amplify-cli/commit/3d714b7f522dd151f57d98d9bf48f161f7e75add))
+
+
+
+
+
 ## [3.33.7](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@3.33.6...amplify-util-mock@3.33.7) (2021-07-30)
 
 **Note:** Version bump only for package amplify-util-mock
