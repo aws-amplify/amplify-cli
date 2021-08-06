@@ -28,7 +28,7 @@ export class TransformerSchema {
 
   private addAsset = (): FileAsset => {
     if (!this.api) {
-      throw new Error('Shcema not bound');
+      throw new Error('Schema not bound');
     }
     if (!this.asset) {
       this.asset = new FileAsset(this.api, 'schema', { fileName: 'schema.graphql', fileContent: this.definition });
