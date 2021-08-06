@@ -48,7 +48,7 @@ function extractDocumentFromJavascript(content: string, tagName: string = 'gql')
 }
 
 export function loadAndMergeQueryDocuments(inputPaths: string[], tagName: string = 'gql'): DocumentNode {
-  var sources = inputPaths
+  let sources = inputPaths
     .map(inputPath => {
       const body = fs.readFileSync(inputPath, 'utf8');
       if (!body) {
