@@ -70,14 +70,13 @@ export const generateListRequestTemplate = (): string => {
       ]),
     ),
     ifElse(
-      not(methodCall(ref('util.isNull'), ref(modelQueryObj))),
+      and([
+        not(methodCall(ref('util.isNull'), ref(modelQueryObj))),
+        not(methodCall(ref('util.isNullOrEmpty'), ref(`${modelQueryObj}.expression`))),
+      ]),
       compoundExpression([
-        set(
-          ref('Query'),
-          methodCall(ref('util.parseJson'), methodCall(ref('util.transform.toDynamoDBFilterExpression'), ref(modelQueryObj))),
-        ),
         qref(methodCall(ref(`${requestVariable}.put`), str('operation'), str('Query'))),
-        qref(methodCall(ref(`${requestVariable}.put`), str('query'), ref('Query'))),
+        qref(methodCall(ref(`${requestVariable}.put`), str('query'), ref(modelQueryObj))),
         ifElse(
           and([not(methodCall(ref('util.isNull'), ref('ctx.args.sortDirection'))), equals(ref('ctx.args.sortDirection'), str('DESC'))]),
           set(ref(`${requestVariable}.scanIndexForward`), bool(false)),

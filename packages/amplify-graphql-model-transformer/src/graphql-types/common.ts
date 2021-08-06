@@ -230,5 +230,5 @@ export function makeEnumFilterInput(name: string): InputObjectTypeDefinitionNode
 
 export function makeModelSortDirectionEnumObject(): EnumTypeDefinitionNode {
   const name = 'ModelSortDirection';
-  return EnumWrapper.create(name, ['ASC', 'DSC']).serialize();
+  return EnumWrapper.create(name, ['ASC', 'DESC']).serialize();
 }

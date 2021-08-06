@@ -17,8 +17,17 @@ import {
   NamedTypeNode,
   EnumTypeDefinitionNode,
   Kind,
+  DocumentNode,
 } from 'graphql';
-import { DEFAULT_SCALARS, getBaseType, isScalar, ModelResourceIDs, unwrapNonNull, withNamedNodeNamed } from 'graphql-transformer-common';
+import {
+  DEFAULT_SCALARS,
+  getBaseType,
+  isEnum,
+  isScalar,
+  ModelResourceIDs,
+  unwrapNonNull,
+  withNamedNodeNamed,
+} from 'graphql-transformer-common';
 
 import { merge } from 'lodash';
 // Todo: to be moved to core later. context.output.getObject would return wrapper type so its easier to manipulate
@@ -181,7 +190,7 @@ export class InputFieldWrapper extends GenericFieldWrapper {
     };
   };
 
-  static fromField = (name: string, field: FieldDefinitionNode): InputFieldWrapper => {
+  static fromField = (name: string, field: FieldDefinitionNode, document: DocumentNode): InputFieldWrapper => {
     const autoGeneratableFieldsWithType: Record<string, string[]> = {
       id: ['ID'],
       createdAt: ['AWSDateTime', 'String'],
@@ -199,7 +208,7 @@ export class InputFieldWrapper extends GenericFieldWrapper {
       type = unwrapNonNull(field.type);
     } else {
       type =
-        isScalar(field.type) || getBaseType(field.type) === Kind.ENUM_TYPE_DEFINITION
+        isScalar(field.type) || isEnum(field.type, document)
           ? field.type
           : withNamedNodeNamed(field.type, ModelResourceIDs.NonModelInputObjectName(getBaseType(field.type)));
     }
@@ -415,7 +424,7 @@ export class InputObjectDefinitionWrapper {
     return wrappedObj;
   };
 
-  static fromObject = (name: string, def: ObjectTypeDefinitionNode): InputObjectDefinitionWrapper => {
+  static fromObject = (name: string, def: ObjectTypeDefinitionNode, document: DocumentNode): InputObjectDefinitionWrapper => {
     const inputObj: InputObjectTypeDefinitionNode = {
       kind: 'InputObjectTypeDefinition',
       name: { kind: 'Name', value: name },
@@ -425,7 +434,7 @@ export class InputObjectDefinitionWrapper {
 
     const wrappedInput = new InputObjectDefinitionWrapper(inputObj);
     for (let f of def.fields || []) {
-      const wrappedField = InputFieldWrapper.fromField(f.name.value, f);
+      const wrappedField = InputFieldWrapper.fromField(f.name.value, f, document);
       wrappedInput.fields.push(wrappedField);
     }
     return wrappedInput;

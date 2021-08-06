@@ -14,7 +14,7 @@ import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { FunctionTransformer } from '@aws-amplify/graphql-function-transformer';
 import { HttpTransformer } from '@aws-amplify/graphql-http-transformer';
 import { PredictionsTransformer } from '@aws-amplify/graphql-predictions-transformer';
-import { PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
+import { IndexTransformer, PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
 import { SearchableModelTransformer } from '@aws-amplify/graphql-searchable-transformer';
 import { ProviderName as providerName } from '../constants';
 import { hashDirectory } from '../upload-appsync-files';
@@ -54,6 +54,7 @@ function getTransformerFactory(context, resourceDir) {
       new HttpTransformer(),
       new PredictionsTransformer(options?.storageConfig),
       new PrimaryKeyTransformer(),
+      new IndexTransformer(),
       // TODO: initialize transformer plugins
     ];
 

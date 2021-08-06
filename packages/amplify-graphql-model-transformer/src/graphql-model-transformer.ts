@@ -722,10 +722,10 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
     const knownModels = this.typesWithModelDirective;
     let conditionInput: InputObjectTypeDefinitionNode;
     if ([MutationFieldType.CREATE, MutationFieldType.DELETE, MutationFieldType.UPDATE].includes(operation.type as MutationFieldType)) {
-      const condtionTypeName = toPascalCase(['Model', type.name.value, 'ConditionInput']);
+      const conditionTypeName = toPascalCase(['Model', type.name.value, 'ConditionInput']);
 
       const filterInputs = createEnumModelFilters(ctx, type);
-      conditionInput = makeMutationConditionInput(ctx, condtionTypeName, type);
+      conditionInput = makeMutationConditionInput(ctx, conditionTypeName, type);
       filterInputs.push(conditionInput);
       for (let input of filterInputs) {
         const conditionInputName = input.name.value;
@@ -756,7 +756,12 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
         return [];
 
       case MutationFieldType.CREATE:
-        const createInputField = makeCreateInputField(type, this.modelDirectiveConfig.get(type.name.value)!, knownModels);
+        const createInputField = makeCreateInputField(
+          type,
+          this.modelDirectiveConfig.get(type.name.value)!,
+          knownModels,
+          ctx.inputDocument,
+        );
         const createInputTypeName = createInputField.name.value;
         if (!ctx.output.getType(createInputField.name.value)) {
           ctx.output.addInput(createInputField);
@@ -778,7 +783,12 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
         ];
 
       case MutationFieldType.UPDATE:
-        const updateInputField = makeUpdateInputField(type, this.modelDirectiveConfig.get(type.name.value)!, knownModels);
+        const updateInputField = makeUpdateInputField(
+          type,
+          this.modelDirectiveConfig.get(type.name.value)!,
+          knownModels,
+          ctx.inputDocument,
+        );
         const updateInputTypeName = updateInputField.name.value;
         if (!ctx.output.getType(updateInputField.name.value)) {
           ctx.output.addInput(updateInputField);
@@ -795,7 +805,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
         break;
 
       default:
-        throw new Error('Unkown operation type');
+        throw new Error('Unknown operation type');
     }
     return [];
   };
@@ -840,7 +850,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
         if (def && def.kind == 'ObjectTypeDefinition' && !this.isModelField(def.name.value)) {
           const name = this.getNonModelInputObjectName(def.name.value);
           if (!ctx.output.getType(name)) {
-            const inputObj = InputObjectDefinitionWrapper.fromObject(name, def);
+            const inputObj = InputObjectDefinitionWrapper.fromObject(name, def, ctx.inputDocument);
             ctx.output.addInput(inputObj.serialize());
           }
         }

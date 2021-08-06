@@ -1,34 +1,49 @@
 import assert from 'assert';
+import { makeModelSortDirectionEnumObject } from '@aws-amplify/graphql-model-transformer';
 import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import {
   EnumTypeDefinitionNode,
   FieldDefinitionNode,
   InputObjectTypeDefinitionNode,
   InputValueDefinitionNode,
+  Kind,
   ObjectTypeDefinitionNode,
 } from 'graphql';
 import {
+  blankObject,
+  blankObjectExtension,
+  extensionWithFields,
   getBaseType,
+  isListType,
+  isScalar,
   makeCompositeKeyConditionInputForKey,
   makeCompositeKeyInputForKey,
+  makeConnectionField,
+  makeField,
   makeInputValueDefinition,
+  makeListType,
   makeNamedType,
   makeNonNullType,
   makeScalarKeyConditionForType,
   ModelResourceIDs,
   toCamelCase,
+  toUpper,
   unwrapNonNull,
   withNamedNodeNamed,
   wrapNonNull,
 } from 'graphql-transformer-common';
-import { PrimaryKeyDirectiveConfiguration } from './types';
+import { IndexDirectiveConfiguration, PrimaryKeyDirectiveConfiguration } from './types';
 import { lookupResolverName } from './utils';
 
-export function addKeyConditionInputs(config: PrimaryKeyDirectiveConfiguration, ctx: TransformerContextProvider): void {
+export function addKeyConditionInputs(
+  config: PrimaryKeyDirectiveConfiguration | IndexDirectiveConfiguration,
+  ctx: TransformerContextProvider,
+): void {
   const { object, sortKey } = config;
 
   if (sortKey.length > 1) {
-    const keyName = 'Primary';
+    const indexKeyName = (config as IndexDirectiveConfiguration).name;
+    const keyName = toUpper(indexKeyName ?? 'Primary');
     const keyConditionInput = makeCompositeKeyConditionInputForKey(object.name.value, keyName, sortKey);
 
     if (!ctx.output.getType(keyConditionInput.name.value)) {
@@ -127,6 +142,7 @@ export function updateListField(config: PrimaryKeyDirectiveConfiguration, ctx: T
   }
 
   args.push(makeInputValueDefinition('sortDirection', makeNamedType('ModelSortDirection')));
+  ensureModelSortDirectionEnum(ctx);
 
   listField = { ...listField, arguments: args };
   query = {
@@ -148,17 +164,23 @@ export function updateInputObjects(config: PrimaryKeyDirectiveConfiguration, ctx
   for (const argument of modelDirective.arguments!) {
     const arg = argument as any;
 
-    if (arg.name.value === 'mutations' && Array.isArray(arg.value.fields)) {
-      for (const argField of arg.value.fields) {
-        const op = argField.name.value;
-        const val = !!argField.value.value;
+    if (arg.name.value === 'mutations') {
+      if (arg.value.kind === Kind.NULL) {
+        shouldMakeCreate = false;
+        shouldMakeUpdate = false;
+        shouldMakeDelete = false;
+      } else if (Array.isArray(arg.value.fields)) {
+        for (const argField of arg.value.fields) {
+          const op = argField.name.value;
+          const val = !!argField.value.value;
 
-        if (op === 'create') {
-          shouldMakeCreate = val;
-        } else if (op === 'update') {
-          shouldMakeUpdate = val;
-        } else if (op === 'delete') {
-          shouldMakeDelete = val;
+          if (op === 'create') {
+            shouldMakeCreate = val;
+          } else if (op === 'update') {
+            shouldMakeUpdate = val;
+          } else if (op === 'delete') {
+            shouldMakeDelete = val;
+          }
         }
       }
 
@@ -189,7 +211,10 @@ export function updateInputObjects(config: PrimaryKeyDirectiveConfiguration, ctx
   }
 }
 
-export function updateMutationConditionInput(config: PrimaryKeyDirectiveConfiguration, ctx: TransformerContextProvider): void {
+export function updateMutationConditionInput(
+  config: PrimaryKeyDirectiveConfiguration | IndexDirectiveConfiguration,
+  ctx: TransformerContextProvider,
+): void {
   const { field, sortKeyFields, object } = config;
   const tableXMutationConditionInputName = ModelResourceIDs.ModelConditionInputTypeName(object.name.value);
   const tableXMutationConditionInput = ctx.output.getType(tableXMutationConditionInputName) as InputObjectTypeDefinitionNode;
@@ -198,7 +223,8 @@ export function updateMutationConditionInput(config: PrimaryKeyDirectiveConfigur
     return;
   }
 
-  const fieldNames = new Set(['id', field.name.value, ...sortKeyFields]);
+  const indexName = (config as IndexDirectiveConfiguration).name;
+  const fieldNames = new Set(indexName ? ['id'] : ['id', field.name.value, ...sortKeyFields]);
   const updatedInput = {
     ...tableXMutationConditionInput,
     fields: tableXMutationConditionInput.fields!.filter(field => {
@@ -209,13 +235,16 @@ export function updateMutationConditionInput(config: PrimaryKeyDirectiveConfigur
   ctx.output.putType(updatedInput);
 }
 
-function createHashField(config: PrimaryKeyDirectiveConfiguration): InputValueDefinitionNode {
+function createHashField(config: PrimaryKeyDirectiveConfiguration | IndexDirectiveConfiguration): InputValueDefinitionNode {
   const { field } = config;
 
   return makeInputValueDefinition(field.name.value, makeNamedType(getBaseType(field.type)));
 }
 
-function createSimpleSortField(config: PrimaryKeyDirectiveConfiguration, ctx: TransformerContextProvider): InputValueDefinitionNode {
+function createSimpleSortField(
+  config: PrimaryKeyDirectiveConfiguration | IndexDirectiveConfiguration,
+  ctx: TransformerContextProvider,
+): InputValueDefinitionNode {
   const { sortKey } = config;
   assert(sortKey.length === 1);
   const key = sortKey[0];
@@ -226,14 +255,19 @@ function createSimpleSortField(config: PrimaryKeyDirectiveConfiguration, ctx: Tr
   return makeInputValueDefinition(key.name.value, makeNamedType(ModelResourceIDs.ModelKeyConditionInputTypeName(resolvedType)));
 }
 
-function createCompositeSortField(config: PrimaryKeyDirectiveConfiguration, ctx: TransformerContextProvider): InputValueDefinitionNode {
+function createCompositeSortField(
+  config: PrimaryKeyDirectiveConfiguration | IndexDirectiveConfiguration,
+  ctx: TransformerContextProvider,
+): InputValueDefinitionNode {
   const { object, sortKeyFields } = config;
   assert(sortKeyFields.length > 1);
   const compositeSortKeyName = toCamelCase(sortKeyFields);
+  const indexKeyName = (config as IndexDirectiveConfiguration).name;
+  const keyName = toUpper(indexKeyName ?? 'Primary');
 
   return makeInputValueDefinition(
     compositeSortKeyName,
-    makeNamedType(ModelResourceIDs.ModelCompositeKeyConditionInputTypeName(object.name.value, 'Primary')),
+    makeNamedType(ModelResourceIDs.ModelCompositeKeyConditionInputTypeName(object.name.value, keyName)),
   );
 }
 
@@ -279,4 +313,135 @@ function replaceDeleteInput(config: PrimaryKeyDirectiveConfiguration, input: Inp
   );
 
   return { ...input, fields: [...primaryKeyFields, ...existingFields] };
+}
+
+export function ensureQueryField(config: IndexDirectiveConfiguration, ctx: TransformerContextProvider): void {
+  const { object, queryField, sortKey } = config;
+
+  if (!queryField) {
+    return;
+  }
+
+  const args = [createHashField(config)];
+
+  if (sortKey.length === 1) {
+    args.push(createSimpleSortField(config, ctx));
+  } else if (sortKey.length > 1) {
+    args.push(createCompositeSortField(config, ctx));
+  }
+
+  args.push(makeInputValueDefinition('sortDirection', makeNamedType('ModelSortDirection')));
+
+  const queryFieldObj = makeConnectionField(queryField, object.name.value, args);
+
+  ctx.output.addQueryFields([queryFieldObj]);
+  ensureModelSortDirectionEnum(ctx);
+  generateFilterInputs(config, ctx);
+  generateModelXConnectionType(config, ctx);
+}
+
+function generateModelXConnectionType(config: IndexDirectiveConfiguration, ctx: TransformerContextProvider): void {
+  const { object } = config;
+  const tableXConnectionName = ModelResourceIDs.ModelConnectionTypeName(object.name.value);
+
+  if (ctx.output.hasType(tableXConnectionName)) {
+    return;
+  }
+
+  const connectionType = blankObject(tableXConnectionName);
+  let connectionTypeExtension = blankObjectExtension(tableXConnectionName);
+
+  connectionTypeExtension = extensionWithFields(connectionTypeExtension, [
+    makeField('items', [], makeListType(makeNamedType(tableXConnectionName))),
+  ]);
+  connectionTypeExtension = extensionWithFields(connectionTypeExtension, [makeField('nextToken', [], makeNamedType('String'))]);
+
+  ctx.output.addObject(connectionType);
+  ctx.output.addObjectExtension(connectionTypeExtension);
+}
+
+function ensureModelSortDirectionEnum(ctx: TransformerContextProvider): void {
+  if (!ctx.output.hasType('ModelSortDirection')) {
+    const modelSortDirection = makeModelSortDirectionEnumObject();
+
+    ctx.output.addEnum(modelSortDirection);
+  }
+}
+
+function generateFilterInputs(config: IndexDirectiveConfiguration, ctx: TransformerContextProvider): void {
+  // Create the ModelXFilterInput
+  const tableXQueryFilterInput = makeModelXFilterInputObject(config, ctx);
+
+  if (!ctx.output.hasType(tableXQueryFilterInput.name.value)) {
+    ctx.output.addInput(tableXQueryFilterInput);
+  }
+}
+
+function makeModelXFilterInputObject(config: IndexDirectiveConfiguration, ctx: TransformerContextProvider): InputObjectTypeDefinitionNode {
+  const { object } = config;
+  const name = ModelResourceIDs.ModelFilterInputTypeName(object.name.value);
+  const supportsConditions = true;
+  const fields = object
+    .fields!.filter((field: FieldDefinitionNode) => {
+      const fieldType = ctx.output.getType(getBaseType(field.type));
+
+      return isScalar(field.type) || (fieldType && fieldType.kind === Kind.ENUM_TYPE_DEFINITION);
+    })
+    .map((field: FieldDefinitionNode) => {
+      const baseType = getBaseType(field.type);
+      const fieldType = ctx.output.getType(baseType);
+      const isList = isListType(field.type);
+      const isEnumType = fieldType && fieldType.kind === Kind.ENUM_TYPE_DEFINITION;
+      const filterTypeName =
+        isEnumType && isList
+          ? ModelResourceIDs.ModelFilterListInputTypeName(baseType, !supportsConditions)
+          : ModelResourceIDs.ModelScalarFilterInputTypeName(baseType, !supportsConditions);
+
+      return {
+        kind: Kind.INPUT_VALUE_DEFINITION,
+        name: field.name,
+        type: makeNamedType(filterTypeName),
+        directives: [],
+      };
+    });
+
+  fields.push(
+    {
+      kind: Kind.INPUT_VALUE_DEFINITION,
+      name: {
+        kind: 'Name',
+        value: 'and',
+      },
+      type: makeListType(makeNamedType(name)) as any,
+      directives: [],
+    },
+    {
+      kind: Kind.INPUT_VALUE_DEFINITION,
+      name: {
+        kind: 'Name',
+        value: 'or',
+      },
+      type: makeListType(makeNamedType(name)) as any,
+      directives: [],
+    },
+    {
+      kind: Kind.INPUT_VALUE_DEFINITION,
+      name: {
+        kind: 'Name',
+        value: 'not',
+      },
+      type: makeNamedType(name),
+      directives: [],
+    },
+  );
+
+  return {
+    kind: 'InputObjectTypeDefinition',
+    name: {
+      kind: 'Name',
+      value: name,
+    },
+    fields,
+    directives: [],
+  };
 }
