@@ -268,7 +268,7 @@ input CreateEmployeeInput {
   id: ID
   firstName: String!
   lastName: String!
-  type: EmploymentTypeInput!
+  type: EmploymentType!
 }
 
 type Mutation {
@@ -281,7 +281,7 @@ input UpdateEmployeeInput {
   id: ID!
   firstName: String
   lastName: String
-  type: EmploymentTypeInput
+  type: EmploymentType
 }
 
 input DeleteEmployeeInput {
@@ -789,13 +789,18 @@ $util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
   #set( $keyFields = [\\"id\\"] )
 #end
 #foreach( $entry in $util.map.copyAndRemoveAllKeys($mergedValues, $keyFields).entrySet() )
-  #if( $util.isNull($entry.value) )
-    #set( $discard = $expRemove.add(\\"#$entry.key\\") )
-    $util.qr($expNames.put(\\"#$entry.key\\", \\"$entry.key\\"))
+  #if( !$util.isNull($ctx.stash.metadata.dynamodbNameOverrideMap) && $ctx.stash.metadata.dynamodbNameOverrideMap.containsKey(\\"$entry.key\\") )
+    #set( $entryKeyAttributeName = $ctx.stash.metadata.dynamodbNameOverrideMap.get(\\"$entry.key\\") )
   #else
-    $util.qr($expSet.put(\\"#$entry.key\\", \\":$entry.key\\"))
-    $util.qr($expNames.put(\\"#$entry.key\\", \\"$entry.key\\"))
-    $util.qr($expValues.put(\\":$entry.key\\", $util.dynamodb.toDynamoDB($entry.value)))
+    #set( $entryKeyAttributeName = $entry.key )
+  #end
+  #if( $util.isNull($entry.value) )
+    #set( $discard = $expRemove.add(\\"#$entryKeyAttributeName\\") )
+    $util.qr($expNames.put(\\"#$entryKeyAttributeName\\", \\"$entry.key\\"))
+  #else
+    $util.qr($expSet.put(\\"#$entryKeyAttributeName\\", \\":$entryKeyAttributeName\\"))
+    $util.qr($expNames.put(\\"#$entryKeyAttributeName\\", \\"$entry.key\\"))
+    $util.qr($expValues.put(\\":$entryKeyAttributeName\\", $util.dynamodb.toDynamoDB($entry.value)))
   #end
 #end
 #set( $expression = \\"\\" )
@@ -931,10 +936,9 @@ $util.toJson($GetRequest)
     #set( $ListRequest.filter = $filterExpression )
   #end
 #end
-#if( !$util.isNull($ctx.stash.modelQueryExpression) )
-  #set( $Query = $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.modelQueryExpression)) )
+#if( !$util.isNull($ctx.stash.modelQueryExpression) && !$util.isNullOrEmpty($ctx.stash.modelQueryExpression.expression) )
   $util.qr($ListRequest.put(\\"operation\\", \\"Query\\"))
-  $util.qr($ListRequest.put(\\"query\\", $Query))
+  $util.qr($ListRequest.put(\\"query\\", $ctx.stash.modelQueryExpression))
   #if( !$util.isNull($ctx.args.sortDirection) && $ctx.args.sortDirection == \\"DESC\\" )
     #set( $ListRequest.scanIndexForward = false )
   #else
