@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.24.7](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformers-e2e-tests@6.24.6...graphql-transformers-e2e-tests@6.24.7) (2021-08-06)
+
+
+### Bug Fixes
+
+* **graphql-model-transformer:** model input fields transform ([#7857](https://github.com/aws-amplify/amplify-cli/issues/7857)) ([12ff663](https://github.com/aws-amplify/amplify-cli/commit/12ff663a94a4896bd9eacef3847be15b7631d8df))
+
+
+
+
+
 ## [6.24.6](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformers-e2e-tests@6.24.5...graphql-transformers-e2e-tests@6.24.6) (2021-07-30)
 
 **Note:** Version bump only for package graphql-transformers-e2e-tests

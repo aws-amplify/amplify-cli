@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.3.18](https://github.com/aws-amplify/amplify-cli/compare/amplify-container-hosting@1.3.17...amplify-container-hosting@1.3.18) (2021-08-06)
+
+
+### Bug Fixes
+
+* multi-env container hosting ([#7009](https://github.com/aws-amplify/amplify-cli/issues/7009)) ([#7346](https://github.com/aws-amplify/amplify-cli/issues/7346)) ([6c33215](https://github.com/aws-amplify/amplify-cli/commit/6c33215d064029add6b93bb10cad96bb63f40101))
+
+
+
+
+
 ## [1.3.17](https://github.com/aws-amplify/amplify-cli/compare/amplify-container-hosting@1.3.16...amplify-container-hosting@1.3.17) (2021-07-30)
 
 **Note:** Version bump only for package amplify-container-hosting
