@@ -63,7 +63,7 @@ export function loadAndMergeQueryDocuments(inputPaths: string[], tagName: string
     })
     .filter((source): source is Source => Boolean(source));
 
-    if (originalPlatform === 'win32') {
+    if (process.platform === 'win32') {
       sources = sources.map(source => {
         source.body = source.body.replace(/\r\n/g, '\n');
         return new Source(source.body, source.name);
