@@ -10,6 +10,8 @@ import {
   pathManager,
   stateManager,
   TeamProviderInfoMigrateError,
+  executeHooks,
+  HooksHandler,
 } from 'amplify-cli-core';
 import { isCI } from 'ci-info';
 import { EventEmitter } from 'events';
@@ -31,6 +33,7 @@ import { ensureMobileHubCommandCompatibility } from './utils/mobilehub-support';
 import { migrateTeamProviderInfo } from './utils/team-provider-migrate';
 import { deleteOldVersion } from './utils/win-utils';
 import { notify } from './version-notifier';
+import { getAmplifyVersion } from './extensions/amplify-helpers/get-amplify-version';
 
 // Adjust defaultMaxListeners to make sure Inquirer will not fail under Windows because of the multiple subscriptions
 // https://github.com/SBoudrias/Inquirer.js/issues/887
@@ -107,7 +110,17 @@ export async function run() {
 
     rewireDeprecatedCommands(input);
     logInput(input);
+    const hooksHandler = HooksHandler.initialize();
+    hooksHandler.setAmplifyVersion(getAmplifyVersion());
+    hooksHandler.setHooksEventFromInput(input);
     const context = constructContext(pluginPlatform, input);
+
+    try {
+      // throws error on fresh init
+      hooksHandler.setEnvironmentName(context.amplify.getEnvInfo()?.envName);
+    } catch (err) {
+      // do nothing
+    }
 
     // Initialize feature flags
     const contextEnvironmentProvider = new CLIContextEnvironmentProvider({
@@ -219,6 +232,10 @@ export async function run() {
         print.info(error.stack);
       }
     }
+    await executeHooks(undefined, 'post', {
+      message: error.message ?? 'undefined error in Amplify process',
+      stack: error.stack ?? 'undefined error stack',
+    });
     exitOnNextTick(1);
   }
 }

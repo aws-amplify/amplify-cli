@@ -61,6 +61,16 @@ export class S3 {
     };
   }
 
+  private attatchBucketToParams(s3Params: $TSAny, envName?: string) {
+    if (!s3Params.hasOwnProperty('Bucket')) {
+      const projectDetails = this.context.amplify.getProjectDetails();
+      if (!envName) envName = this.context.amplify.getEnvInfo().envName;
+      const projectBucket = projectDetails.teamProviderInfo[envName][providerName].DeploymentBucketName;
+      s3Params.Bucket = projectBucket;
+    }
+    return s3Params;
+  }
+
   async uploadFile(s3Params: $TSAny, showSpinner: boolean = true) {
     // envName and bucket does not change during execution, cache them into a class level
     // field.
@@ -100,10 +110,8 @@ export class S3 {
     }
   }
 
-  async getFile(s3Params: $TSAny, envName: string = this.context.amplify.getEnvInfo().envName) {
-    const projectDetails = this.context.amplify.getProjectDetails();
-    const projectBucket = projectDetails.teamProviderInfo[envName][providerName].DeploymentBucketName;
-    s3Params.Bucket = projectBucket;
+  async getFile(s3Params: $TSAny, envName?: string) {
+    s3Params = this.attatchBucketToParams(s3Params, envName);
     const log = logger('s3.getFile', [s3Params]);
     try {
       log();
@@ -140,7 +148,7 @@ export class S3 {
   async getAllObjectVersions(
     bucketName: string,
     options: OptionalExceptFor<ListObjectVersionsOutput, 'KeyMarker' | 'VersionIdMarker'> = null,
-  ) {
+  ): Promise<Required<ObjectIdentifier>[]> {
     const result = await pagedAWSCall<ListObjectVersionsOutput, Required<ObjectIdentifier>, typeof options, ListObjectVersionsRequest>(
       async (param, nextToken?) => {
         const parmaWithNextToken = nextToken ? { ...param, ...nextToken } : param;

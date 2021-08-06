@@ -19,6 +19,7 @@ const { fileLogger } = require('./utils/aws-logger');
 const { prePushCfnTemplateModifier } = require('./pre-push-cfn-processor/pre-push-cfn-modifier');
 const logger = fileLogger('attach-backend');
 const { configurePermissionsBoundaryForInit } = require('./permissions-boundary/permissions-boundary');
+const { uploadHooksDirectory } = require('./utils/hooks-manager');
 
 export async function run(context) {
   await configurationManager.init(context);
@@ -166,6 +167,7 @@ export async function onInitSuccessful(context) {
   if (context.exeInfo.isNewEnv) {
     context = await storeCurrentCloudBackend(context);
     await storeArtifactsForAmplifyService(context);
+    await uploadHooksDirectory(context);
   }
   return context;
 }
