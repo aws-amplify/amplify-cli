@@ -15,7 +15,8 @@
     "build": "tsc",
     "test": "jest",
     "clean": "rimraf lib tsconfig.tsbuildinfo",
-    "watch": "tsc -w"
+    "watch": "tsc -w",
+    "generateSchemas": "ts-node ./resources/generateStorageSchemas.ts"
   },
   "keywords": [
     "amplify",
