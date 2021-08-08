@@ -248,7 +248,7 @@ const deleteEnvironmentVariable = (resourceName: string, targetedKey: string): v
     return item.cloudFormationParameterName !== cameledKey && item.environmentVariableName !== targetedKey;
   });
   _.unset(newReferences, targetedKey);
-  _.unset(newParameters, targetedKey);
+  _.unset(newParameters, cameledKey);
   _.unset(newKeyValue, cameledKey);
 
   setStoredList(resourceName, newList);
