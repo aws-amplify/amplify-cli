@@ -7,9 +7,9 @@ jest.mock('amplify-cli-core', () => ({
   },
 }));
 
-let emulators;
-const dbPath = `${__dirname}/dynamodb-data/${process.pid}`;
-// taken from dynamodb examples.
+describe('emulator operations', () => {
+  const dbPath = `${__dirname}/dynamodb-data/${process.pid}`;
+  // taken from dynamodb examples.
   const dbParams = {
     AttributeDefinitions: [
       {
@@ -37,21 +37,22 @@ const dbPath = `${__dirname}/dynamodb-data/${process.pid}`;
     },
   };
 
-describe('emulator operations', () => {
   const ensureNoDbPath = () => {
     if (fs.existsSync(dbPath)) {
       fs.removeSync(dbPath);
     }
   };
 
-  beforeEach(ensureNoDbPath);
-  afterEach(ensureNoDbPath);
-
+  let emulators;
   beforeEach(() => {
+    ensureNoDbPath();
     emulators = [];
     jest.setTimeout(40 * 1000);
   });
-  afterEach(async () => await Promise.all(emulators.map(emu => emu.terminate())));
+
+  afterEach(async () => {
+    await Promise.all(emulators.map(emu => emu.terminate()));
+  });
 
   it('should support in memory operations', async () => {
     const emu = await ddbSimulator.launch();
@@ -73,7 +74,6 @@ describe('emulator operations', () => {
     expect.assertions(1);
     await expect(ddbSimulator.launch({ dbPath: 'dynamodb-data' })).rejects.toThrow('invalid directory for database creation');
   });
-});
 
   it('should preserve state between restarts with dbPath', async () => {
     const emuOne = await ddbSimulator.launch({ dbPath });
@@ -86,7 +86,7 @@ describe('emulator operations', () => {
       })
       .promise();
     await emuOne.terminate();
-
+    emulators = [];
     const emuTwo = await ddbSimulator.launch({ dbPath });
     emulators.push(emuTwo);
     const dynamoTwo = await ddbSimulator.getClient(emuTwo);
@@ -94,5 +94,5 @@ describe('emulator operations', () => {
     expect(t).toEqual({
       TableNames: ['foo'],
     });
-    emuTwo.terminate();
   });
+});
