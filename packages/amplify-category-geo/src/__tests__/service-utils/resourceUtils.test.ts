@@ -1,12 +1,11 @@
 import { EsriMapStyleType, MapParameters } from '../../service-utils/mapParams';
 import { merge, updateDefaultResource, readResourceMetaParameters } from '../../service-utils/resourceUtils';
-import { stateManager, $TSContext } from 'amplify-cli-core';
+import { stateManager, $TSContext, pathManager, JSONUtilities } from 'amplify-cli-core';
 import { provider, ServiceName } from '../../service-utils/constants';
 import { MapStyle } from '../../service-utils/mapParams';
 import { DataSourceIntendedUse } from '../../service-utils/placeIndexParams';
 import { AccessType, DataProvider, PricingPlan } from '../../service-utils/resourceParams';
 import { category } from '../../constants';
-
 
 describe('parameter merge utility function works as expected', () => {
     it('merge utility function retains existing value', () => {
@@ -88,6 +87,9 @@ describe('Test updating the default resource', () => {
                 placeIndex2: placeIndex2Params
             }
         });
+        pathManager.getBackendDirPath = jest.fn().mockReturnValue('');
+        JSONUtilities.readJson = jest.fn().mockReturnValue({});
+        JSONUtilities.writeJson = jest.fn().mockReturnValue('');
     });
 
     it('updates given map as default in amplify meta', async() => {
@@ -98,6 +100,9 @@ describe('Test updating the default resource', () => {
             category, 'map1', 'isDefault', true);
         expect(mockContext.amplify.updateamplifyMetaAfterResourceUpdate).toBeCalledWith(
             category, 'map2', 'isDefault', false);
+        expect(JSONUtilities.writeJson).toBeCalledTimes(2);
+        expect(JSONUtilities.writeJson).toBeCalledWith("geo/map1/parameters.json", {"isDefault": true});
+        expect(JSONUtilities.writeJson).toBeCalledWith("geo/map2/parameters.json", {"isDefault": false});
     });
 
     it('removes current default map if none is specified', async() => {
@@ -118,6 +123,9 @@ describe('Test updating the default resource', () => {
             category, 'placeIndex1', 'isDefault', true);
         expect(mockContext.amplify.updateamplifyMetaAfterResourceUpdate).toBeCalledWith(
             category, 'placeIndex2', 'isDefault', false);
+        expect(JSONUtilities.writeJson).toBeCalledTimes(2);
+        expect(JSONUtilities.writeJson).toBeCalledWith("geo/placeIndex1/parameters.json", {"isDefault": true});
+        expect(JSONUtilities.writeJson).toBeCalledWith("geo/placeIndex2/parameters.json", {"isDefault": false});
     });
 
     it('removes current default place index if none is specified', async() => {

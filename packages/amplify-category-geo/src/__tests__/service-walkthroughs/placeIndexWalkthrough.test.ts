@@ -1,4 +1,4 @@
-import { $TSContext, $TSObject, stateManager } from 'amplify-cli-core';
+import { $TSContext, $TSObject, stateManager, pathManager, JSONUtilities } from 'amplify-cli-core';
 import { DataSourceIntendedUse, PlaceIndexParameters } from '../../service-utils/placeIndexParams';
 import { AccessType, DataProvider, PricingPlan } from '../../service-utils/resourceParams';
 import { provider, ServiceName } from '../../service-utils/constants';
@@ -108,6 +108,10 @@ describe('Search walkthrough works as expected', () => {
                 });
             });
         });
+        pathManager.getBackendDirPath = jest.fn().mockReturnValue('');
+        JSONUtilities.readJson = jest.fn().mockReturnValue({});
+        JSONUtilities.writeJson = jest.fn().mockReturnValue('');
+        stateManager.getMeta = jest.fn().mockReturnValue(mockAmplifyMeta);
     });
 
     it('sets parameters based on user input for update place index walkthrough', async() => {
@@ -159,6 +163,11 @@ describe('Search walkthrough works as expected', () => {
     });
 
     it('sets parameters based on user input for adding subsequent place index walkthrough', async() => {
+        mockAmplifyMeta.geo = {};
+        mockAmplifyMeta.geo[secondaryPlaceIndexName] = { ...mockPlaceIndexParameters, ...secondaryPlaceIndexResource, isDefault: true };
+        mockAmplifyMeta.geo[mockMapResource.resourceName] = mockMapResource;
+        stateManager.getMeta = jest.fn().mockReturnValue(mockAmplifyMeta);
+
         let indexParams: Partial<PlaceIndexParameters> = {
             providerContext: mockPlaceIndexParameters.providerContext
         };
@@ -174,6 +183,7 @@ describe('Search walkthrough works as expected', () => {
             providerContext: mockPlaceIndexParameters.providerContext
         };
         mockAmplifyMeta.geo = {};
+        stateManager.getMeta = jest.fn().mockReturnValue(mockAmplifyMeta);
 
         const createPlaceIndexWalkthrough = require('../../service-walkthroughs/placeIndexWalkthrough').createPlaceIndexWalkthrough;
         indexParams = await createPlaceIndexWalkthrough(mockContext, indexParams);
