@@ -530,7 +530,7 @@ describe('ModelTransformer: ', () => {
           createdAt: String
           updatedAt: String
       }
-  
+
       type User @model {
           id: ID!
           name: String!
