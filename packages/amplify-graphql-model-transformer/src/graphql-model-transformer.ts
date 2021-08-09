@@ -80,17 +80,17 @@ export type ModelDirectiveConfiguration = {
     get: OptionalAndNullable<string>;
     list: OptionalAndNullable<string>;
   }>;
-  mutations: {
+  mutations: OptionalAndNullable<{
     create: OptionalAndNullable<string>;
     update: OptionalAndNullable<string>;
     delete: OptionalAndNullable<string>;
-  } | null;
-  subscriptions: {
+  }>;
+  subscriptions: OptionalAndNullable<{
     onCreate: OptionalAndNullable<string>[];
     onUpdate: OptionalAndNullable<string>[];
     onDelete: OptionalAndNullable<string>[];
     level: Partial<SubscriptionLevel>;
-  } | null;
+  }>;
   timestamps: OptionalAndNullable<{
     createdAt: OptionalAndNullable<string>;
     updatedAt: OptionalAndNullable<string>;

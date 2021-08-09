@@ -1,4 +1,4 @@
-import { ObjectTypeDefinitionNode, DirectiveDefinitionNode, InputValueDefinitionNode } from 'graphql';
+import { ObjectTypeDefinitionNode, FieldDefinitionNode, DirectiveDefinitionNode, InputValueDefinitionNode } from 'graphql';
 import { TransformerPluginProvider } from './transformer-plugin-provider';
 import { TransformerResolverProvider, TransformerContextProvider, AppSyncDataSourceType, DataSourceInstance } from './transformer-context';
 
@@ -127,6 +127,78 @@ export interface TransformerModelProvider extends TransformerPluginProvider {
       type: QueryFieldType | MutationFieldType | SubscriptionFieldType;
     },
   ) => ObjectTypeDefinitionNode;
+}
+
+export interface TransformerAuthProvider extends TransformerPluginProvider {
+  protectGetResolver: <AuthRule, ModelConfiguration>(
+    ctx: TransformerContextProvider,
+    resolverResourceID: string,
+    type: ObjectTypeDefinitionNode,
+    authRules: Array<AuthRule>,
+    modelConfiguration: ModelConfiguration,
+  ) => TransformerResolverProvider;
+  protectListResolver: <AuthRule, ModelConfiguration>(
+    ctx: TransformerContextProvider,
+    resolverResourceID: string,
+    type: ObjectTypeDefinitionNode,
+    authRules: Array<AuthRule>,
+    modelConfiguration: ModelConfiguration,
+  ) => TransformerResolverProvider;
+  protectCreateResolver: <AuthRule, ModelConfiguration>(
+    ctx: TransformerContextProvider,
+    resolverResourceID: string,
+    type: ObjectTypeDefinitionNode,
+    authRules: Array<AuthRule>,
+    modelConfiguration: ModelConfiguration,
+  ) => TransformerResolverProvider;
+  protectUpdateResolver: <AuthRule, ModelConfiguration>(
+    ctx: TransformerContextProvider,
+    resolverResourceID: string,
+    type: ObjectTypeDefinitionNode,
+    authRules: Array<AuthRule>,
+    modelConfiguration: ModelConfiguration,
+  ) => TransformerResolverProvider;
+  protectDeleteResolver: <AuthRule, ModelConfiguration>(
+    ctx: TransformerContextProvider,
+    resolverResourceID: string,
+    type: ObjectTypeDefinitionNode,
+    authRules: Array<AuthRule>,
+    modelConfiguration: ModelConfiguration,
+  ) => TransformerResolverProvider;
+  protectOnCreateResolver?: <AuthRule, ModelConfiguration>(
+    ctx: TransformerContextProvider,
+    resolverResourceID: string,
+    type: ObjectTypeDefinitionNode,
+    authRules: Array<AuthRule>,
+    modelConfiguration: ModelConfiguration,
+  ) => TransformerResolverProvider;
+  protectOnUpdateResolver?: <AuthRule, ModelConfiguration>(
+    ctx: TransformerContextProvider,
+    resolverResourceID: string,
+    type: ObjectTypeDefinitionNode,
+    authRules: Array<AuthRule>,
+    modelConfiguration: ModelConfiguration,
+  ) => TransformerResolverProvider;
+  protectOnDeleteResolver?: <AuthRule, ModelConfiguration>(
+    ctx: TransformerContextProvider,
+    resolverResourceID: string,
+    type: ObjectTypeDefinitionNode,
+    authRules: Array<AuthRule>,
+    modelConfiguration: ModelConfiguration,
+  ) => TransformerResolverProvider;
+  protectSyncResolver?: <AuthRule, ModelConfiguration>(
+    ctx: TransformerContextProvider,
+    resolverResourceID: string,
+    type: ObjectTypeDefinitionNode,
+    authRules: Array<AuthRule>,
+    modelConfiguration: ModelConfiguration,
+  ) => TransformerResolverProvider;
+  protectFieldResolver?: (
+    ctx: TransformerContextProvider,
+    field: FieldDefinitionNode,
+    typeName: string,
+    fieldName: string,
+  ) => TransformerResolverProvider;
 }
 
 export interface TransformerModelEnhancementProvider extends Partial<TransformerModelProvider> {}

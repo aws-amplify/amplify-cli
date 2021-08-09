@@ -10,6 +10,7 @@ import {
   DataSourceInstance,
   TransformerPluginProvider,
   TransformerModelEnhancementProvider,
+  TransformerAuthProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
 
 import {
@@ -18,6 +19,7 @@ import {
   DocumentNode,
   Kind,
   ObjectTypeDefinitionNode,
+  FieldDefinitionNode,
   parse,
   InputValueDefinitionNode,
 } from 'graphql';
@@ -175,4 +177,79 @@ export abstract class TransformerModelEnhancerBase extends TransformerModelBase 
   constructor(name: string, doc: DocumentNode | string, type: TransformerPluginType = TransformerPluginType.DATA_SOURCE_ENHANCER) {
     super(name, doc, type);
   }
+}
+
+export abstract class TransformerAuthBase extends TransformerPluginBase implements TransformerAuthProvider {
+  constructor(name: string, doc: DocumentNode | string, type: TransformerPluginType = TransformerPluginType.AUTH) {
+    super(name, doc, type);
+  }
+  abstract protectGetResolver: <AuthRule, ModelConfiguration>(
+    ctx: TransformerContextProvider,
+    resolverResourceID: string,
+    type: ObjectTypeDefinitionNode,
+    authRules: Array<AuthRule>,
+    modelConfiguration: ModelConfiguration,
+  ) => TransformerResolverProvider;
+  abstract protectListResolver: <AuthRule, ModelConfiguration>(
+    ctx: TransformerContextProvider,
+    resolverResourceID: string,
+    type: ObjectTypeDefinitionNode,
+    authRules: Array<AuthRule>,
+    modelConfiguration: ModelConfiguration,
+  ) => TransformerResolverProvider;
+  abstract protectCreateResolver: <AuthRule, ModelConfiguration>(
+    ctx: TransformerContextProvider,
+    resolverResourceID: string,
+    type: ObjectTypeDefinitionNode,
+    authRules: Array<AuthRule>,
+    modelConfiguration: ModelConfiguration,
+  ) => TransformerResolverProvider;
+  abstract protectUpdateResolver: <AuthRule, ModelConfiguration>(
+    ctx: TransformerContextProvider,
+    resolverResourceID: string,
+    type: ObjectTypeDefinitionNode,
+    authRules: Array<AuthRule>,
+    modelConfiguration: ModelConfiguration,
+  ) => TransformerResolverProvider;
+  abstract protectDeleteResolver: <AuthRule, ModelConfiguration>(
+    ctx: TransformerContextProvider,
+    resolverResourceID: string,
+    type: ObjectTypeDefinitionNode,
+    authRules: Array<AuthRule>,
+    modelConfiguration: ModelConfiguration,
+  ) => TransformerResolverProvider;
+  abstract protectOnCreateResolver?: <AuthRule, ModelConfiguration>(
+    ctx: TransformerContextProvider,
+    resolverResourceID: string,
+    type: ObjectTypeDefinitionNode,
+    authRules: Array<AuthRule>,
+    modelConfiguration: ModelConfiguration,
+  ) => TransformerResolverProvider;
+  abstract protectOnUpdateResolver?: <AuthRule, ModelConfiguration>(
+    ctx: TransformerContextProvider,
+    resolverResourceID: string,
+    type: ObjectTypeDefinitionNode,
+    authRules: Array<AuthRule>,
+    modelConfiguration: ModelConfiguration,
+  ) => TransformerResolverProvider;
+  abstract protectOnDeleteResolver?: <AuthRule, ModelConfiguration>(
+    ctx: TransformerContextProvider,
+    resolverResourceID: string,
+    type: ObjectTypeDefinitionNode,
+    authRules: Array<AuthRule>,
+    modelConfiguration: ModelConfiguration,
+  ) => TransformerResolverProvider;
+  abstract protectSyncResolver?: <AuthRule, ModelConfiguration>(
+    ctx: TransformerContextProvider,
+    resolverResourceID: string,
+    type: ObjectTypeDefinitionNode,
+    authRules: Array<AuthRule>,
+    modelConfiguration: ModelConfiguration,
+  ) => TransformerResolverProvider;
+  abstract protectFieldResolver?: (
+    ctx: TransformerContextProvider,
+    field: FieldDefinitionNode,
+    typeName: string,
+    fieldName: string,
+  ) => TransformerResolverProvider;
 }
