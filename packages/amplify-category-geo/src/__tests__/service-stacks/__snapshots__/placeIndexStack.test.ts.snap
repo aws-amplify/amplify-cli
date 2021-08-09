@@ -25,6 +25,9 @@ Object {
     "indexName": Object {
       "Type": "String",
     },
+    "isDefault": Object {
+      "Type": "String",
+    },
     "pricingPlan": Object {
       "Type": "String",
     },
@@ -134,6 +137,9 @@ Object {
       "Type": "String",
     },
     "indexName": Object {
+      "Type": "String",
+    },
+    "isDefault": Object {
       "Type": "String",
     },
     "pricingPlan": Object {

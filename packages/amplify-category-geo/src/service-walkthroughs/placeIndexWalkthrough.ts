@@ -6,7 +6,7 @@ import { DataSourceIntendedUse, PlaceIndexParameters } from '../service-utils/pl
 import { apiDocs, ServiceName } from '../service-utils/constants';
 import { $TSContext } from 'amplify-cli-core';
 import { getCurrentPlaceIndexParameters } from '../service-utils/placeIndexUtils';
-import { getGeoServiceMeta, updateDefaultResource, geoServiceExists, getGeoPricingPlan } from '../service-utils/resourceUtils';
+import { getGeoServiceMeta, updateDefaultResource, geoServiceExists, getGeoPricingPlan, checkGeoResourceExists } from '../service-utils/resourceUtils';
 import { resourceAccessWalkthrough, pricingPlanWalkthrough, dataProviderWalkthrough } from './resourceWalkthrough';
 import { DataProvider, PricingPlan } from '../service-utils/resourceParams';
 
@@ -49,22 +49,30 @@ export const createPlaceIndexWalkthrough = async (
 };
 
 export const placeIndexNameWalkthrough = async (context: any): Promise<Partial<PlaceIndexParameters>> => {
-    const indexNamePrompt = {
-        type: 'input',
-        name: 'name',
-        message: 'Provide a name for the location search index (place index):',
-        validate: context.amplify.inputValidation({
-            operator: 'regex',
-            value: '^[a-zA-Z0-9]+$',
-            onErrorMsg: 'You can use the following characters: a-z A-Z 0-9',
-            required: true,
-        }),
-        default: () => {
-            const [shortId] = uuid().split('-');
-            return `placeindex${shortId}`;
-        },
-    };
-    return { name: (await inquirer.prompt([indexNamePrompt])).name as string };
+    let indexName;
+    while(!indexName) {
+        const indexNamePrompt = {
+            type: 'input',
+            name: 'name',
+            message: 'Provide a name for the location search index (place index):',
+            validate: context.amplify.inputValidation({
+                operator: 'regex',
+                value: '^[a-zA-Z0-9]+$',
+                onErrorMsg: 'You can use the following characters: a-z A-Z 0-9',
+                required: true,
+            }),
+            default: () => {
+                const [shortId] = uuid().split('-');
+                return `placeindex${shortId}`;
+            },
+        };
+        const indexNameInput = (await inquirer.prompt([indexNamePrompt])).name as string;
+        if (await checkGeoResourceExists(indexNameInput)) {
+            context.print.info(`Location search index ${indexNameInput} already exists. Choose another name.`);
+        }
+        else indexName = indexNameInput;
+    }
+    return { name: indexName };
 };
 
 export const placeIndexAdvancedWalkthrough = async (context: $TSContext, parameters: Partial<PlaceIndexParameters>): Promise<Partial<PlaceIndexParameters>> => {

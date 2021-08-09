@@ -6,7 +6,7 @@ import { MapParameters, getGeoMapStyle, MapStyle, getMapStyleComponents, EsriMap
 import { apiDocs, ServiceName } from '../service-utils/constants';
 import { $TSContext } from 'amplify-cli-core';
 import { getCurrentMapParameters, getMapFriendlyNames } from '../service-utils/mapUtils';
-import { getGeoServiceMeta, updateDefaultResource, geoServiceExists, getGeoPricingPlan} from '../service-utils/resourceUtils';
+import { getGeoServiceMeta, updateDefaultResource, geoServiceExists, getGeoPricingPlan, checkGeoResourceExists} from '../service-utils/resourceUtils';
 import { resourceAccessWalkthrough, pricingPlanWalkthrough } from './resourceWalkthrough';
 import { DataProvider } from '../service-utils/resourceParams';
 
@@ -49,22 +49,30 @@ export const createMapWalkthrough = async (
 };
 
 export const mapNameWalkthrough = async (context: any): Promise<Partial<MapParameters>> => {
-    const mapNamePrompt = {
-        type: 'input',
-        name: 'name',
-        message: 'Provide a name for the Map:',
-        validate: context.amplify.inputValidation({
-            operator: 'regex',
-            value: '^[a-zA-Z0-9]+$',
-            onErrorMsg: 'You can use the following characters: a-z A-Z 0-9',
-            required: true,
-        }),
-        default: () => {
-            const [shortId] = uuid().split('-');
-            return `map${shortId}`;
-        },
-    };
-    return { name: (await inquirer.prompt([mapNamePrompt])).name as string };
+    let mapName;
+    while(!mapName) {
+        const mapNamePrompt = {
+            type: 'input',
+            name: 'name',
+            message: 'Provide a name for the Map:',
+            validate: context.amplify.inputValidation({
+                operator: 'regex',
+                value: '^[a-zA-Z0-9]+$',
+                onErrorMsg: 'You can use the following characters: a-z A-Z 0-9',
+                required: true,
+            }),
+            default: () => {
+                const [shortId] = uuid().split('-');
+                return `map${shortId}`;
+            },
+        };
+        const mapNameInput = (await inquirer.prompt([mapNamePrompt])).name as string;
+        if (await checkGeoResourceExists(mapNameInput)) {
+            context.print.info(`Map ${mapNameInput} already exists. Choose another name.`);
+        }
+        else mapName = mapNameInput;
+    }
+    return { name: mapName };
 };
 
 export const mapAdvancedWalkthrough = async (context: $TSContext, parameters: Partial<MapParameters>): Promise<Partial<MapParameters>> => {
