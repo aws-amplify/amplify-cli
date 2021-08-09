@@ -48,7 +48,7 @@ export class CustomResourceAuthStack extends cdk.Stack {
       config.lambdaFunctionArn = fnArn.valueAsString;
     });
 
-    createCustomResource(this, props.authTriggerConnections, userpoolId);
+    createCustomResource(this, props.authTriggerConnections, userpoolId, userpoolArn);
   }
 
   toCloudFormation() {
@@ -84,7 +84,12 @@ async function createCustomResourceforAuthTrigger(context: any, authTriggerConne
   return cfn;
 }
 
-function createCustomResource(stack: cdk.Stack, authTriggerConnections: AuthTriggerConnection[], userpoolId: cdk.CfnParameter) {
+function createCustomResource(
+  stack: cdk.Stack,
+  authTriggerConnections: AuthTriggerConnection[],
+  userpoolId: cdk.CfnParameter,
+  userpoolArn: cdk.CfnParameter,
+) {
   const triggerCode = fs.readFileSync(authTriggerAssetFilePath, 'utf-8');
   const authTriggerFn = new lambda.Function(stack, 'authTriggerFn', {
     runtime: lambda.Runtime.NODEJS_12_X,
@@ -97,8 +102,8 @@ function createCustomResource(stack: cdk.Stack, authTriggerConnections: AuthTrig
     authTriggerFn.role.addToPrincipalPolicy(
       new iam.PolicyStatement({
         effect: iam.Effect.ALLOW,
-        actions: ['cognito-idp:DescribeUserPoolClient', 'cognito-idp:UpdateUserPool', 'cognito-idp:DescribeUserPool', 'iam:PassRole'],
-        resources: ['*'],
+        actions: ['cognito-idp:DescribeUserPool', 'cognito-idp:DescribeUserPoolClient', 'cognito-idp:UpdateUserPool', 'iam:PassRole'],
+        resources: [userpoolArn.valueAsString],
       }),
     );
   }
