@@ -1,37 +1,86 @@
+export interface TransformMigrationConfig {
+  V1?: {
+    Resources: string[];
+  };
+}
+
+// Auth Config
+export type AppSyncAuthMode = 'API_KEY' | 'AMAZON_COGNITO_USER_POOLS' | 'AWS_IAM' | 'OPENID_CONNECT';
+export type AppSyncAuthConfiguration = {
+  defaultAuthentication: AppSyncAuthConfigurationEntry;
+  additionalAuthenticationProviders: Array<AppSyncAuthConfigurationEntry>;
+};
+
+export type AppSyncAuthConfigurationEntry =
+  | AppSyncAuthConfigurationUserPoolEntry
+  | AppSyncAuthConfigurationAPIKeyEntry
+  | AppSyncAuthConfigurationIAMEntry
+  | AppSyncAuthConfigurationOIDCEntry;
+export type AppSyncAuthConfigurationAPIKeyEntry = {
+  authenticationType: 'API_KEY';
+  apiKeyConfig: ApiKeyConfig;
+};
+export type AppSyncAuthConfigurationUserPoolEntry = {
+  authenticationType: 'AMAZON_COGNITO_USER_POOLS';
+  userPoolConfig: UserPoolConfig;
+};
+export type AppSyncAuthConfigurationIAMEntry = {
+  authenticationType: 'AWS_IAM';
+};
+
+export type AppSyncAuthConfigurationOIDCEntry = {
+  authenticationType: 'OPENID_CONNECT';
+  openIDConnectConfig: OpenIDConnectConfig;
+};
+
+export type ApiKeyConfig = {
+  description?: string;
+  apiKeyExpirationDays: number;
+};
+export type UserPoolConfig = {
+  userPoolId: string;
+};
+export type OpenIDConnectConfig = {
+  name: string;
+  issuerUrl: string;
+  clientId?: string;
+  iatTTL?: number;
+  authTTL?: number;
+};
+
 // Sync Config
 export const enum ConflictHandlerType {
-  Optimistic = 'OPTIMISTIC_CONCURRENCY',
-  Automerge = 'AUTOMERGE',
-  Lambda = 'LAMBDA',
+  OPTIMISTIC = 'OPTIMISTIC_CONCURRENCY',
+  AUTOMERGE = 'AUTOMERGE',
+  LAMBDA = 'LAMBDA',
 }
+
 export type ConflictDetectionType = 'VERSION' | 'NONE';
-export type SyncConfigOptimistic = {
+export type SyncConfigOPTIMISTIC = {
   ConflictDetection: ConflictDetectionType;
-  ConflictHandler: ConflictHandlerType.Optimistic;
+  ConflictHandler: ConflictHandlerType.OPTIMISTIC;
 };
-export type SyncConfigServer = {
+export type SyncConfigSERVER = {
   ConflictDetection: ConflictDetectionType;
-  ConflictHandler: ConflictHandlerType.Automerge;
+  ConflictHandler: ConflictHandlerType.AUTOMERGE;
 };
-export type SyncConfigLambda = {
+export type SyncConfigLAMBDA = {
   ConflictDetection: ConflictDetectionType;
-  ConflictHandler: ConflictHandlerType.Lambda;
+  ConflictHandler: ConflictHandlerType.LAMBDA;
   LambdaConflictHandler: {
     name: string;
     region?: string;
     lambdaArn?: any;
   };
 };
-export type SyncConfig = SyncConfigOptimistic | SyncConfigServer | SyncConfigLambda;
+export type SyncConfig = SyncConfigOPTIMISTIC | SyncConfigSERVER | SyncConfigLAMBDA;
 
 export type ResolverConfig = {
   project?: SyncConfig;
-  models?: Record<string,SyncConfig>;
+  models?: {
+    [key: string]: SyncConfig;
+  };
 };
-/**
- * The transform config is specified in transform.conf.json within an Amplify
- * API project directory.
- */
 export interface TransformConfig {
   /**
    * The transform library uses a "StackMapping" to determine which stack
@@ -44,7 +93,9 @@ export interface TransformConfig {
    * overrides to get specific behavior out of the transformer. Users may
    * override the default stack mapping to customize behavior.
    */
-  StackMapping?: Record<string, string>;
+  StackMapping?: {
+    [resourceId: string]: string;
+  };
 
   /**
    * Provide build time options to GraphQL Transformer constructor functions.
@@ -52,9 +103,10 @@ export interface TransformConfig {
    * need to be set at build time. E.G. DeletionPolicies cannot depend on parameters.
    */
   TransformerOptions?: {
-    [transformer: string]: Record<string, any>;
+    [transformer: string]: {
+      [option: string]: any;
+    };
   };
-
   /**
    * Object which states info about a resolver's configuration
    * Such as sync configuration for appsync local support
