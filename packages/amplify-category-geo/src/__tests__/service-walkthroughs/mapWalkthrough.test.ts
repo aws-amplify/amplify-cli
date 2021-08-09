@@ -1,4 +1,4 @@
-import { $TSContext, $TSObject, stateManager } from 'amplify-cli-core';
+import { $TSContext, $TSObject, stateManager, pathManager, JSONUtilities } from 'amplify-cli-core';
 import { EsriMapStyleType, getGeoMapStyle, MapParameters, MapStyle } from '../../service-utils/mapParams';
 import { AccessType, DataProvider, PricingPlan } from '../../service-utils/resourceParams';
 import { provider, ServiceName } from '../../service-utils/constants';
@@ -112,6 +112,10 @@ describe('Map walkthrough works as expected', () => {
                 });
             });
         });
+        pathManager.getBackendDirPath = jest.fn().mockReturnValue('');
+        JSONUtilities.readJson = jest.fn().mockReturnValue({});
+        JSONUtilities.writeJson = jest.fn().mockReturnValue('');
+        stateManager.getMeta = jest.fn().mockReturnValue(mockAmplifyMeta);
     });
 
     it('sets parameters based on user input for update map walkthrough', async() => {
@@ -163,6 +167,11 @@ describe('Map walkthrough works as expected', () => {
     });
 
     it('sets parameters based on user input for adding subsequent map walkthrough', async() => {
+        mockAmplifyMeta.geo = {};
+        mockAmplifyMeta.geo[secondaryMapName] = { ...mockMapParameters, ...secondaryMapResource, isDefault: true };
+        mockAmplifyMeta.geo[mockPlaceIndexResource.resourceName] = mockPlaceIndexResource;
+        stateManager.getMeta = jest.fn().mockReturnValue(mockAmplifyMeta);
+
         let mapParams: Partial<MapParameters> = {
             providerContext: mockMapParameters.providerContext
         };
@@ -178,6 +187,7 @@ describe('Map walkthrough works as expected', () => {
             providerContext: mockMapParameters.providerContext
         };
         mockAmplifyMeta.geo = {};
+        stateManager.getMeta = jest.fn().mockReturnValue(mockAmplifyMeta);
 
         const createMapWalkthrough = require('../../service-walkthroughs/mapWalkthrough').createMapWalkthrough;
         mapParams = await createMapWalkthrough(mockContext, mapParams);

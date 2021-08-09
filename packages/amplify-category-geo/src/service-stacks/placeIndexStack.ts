@@ -21,7 +21,8 @@ export class PlaceIndexStack extends BaseStack {
       'dataProvider',
       'dataSourceIntendedUse',
       'pricingPlan',
-      'env'
+      'env',
+      'isDefault'
     ]);
     this.resources = this.constructResources();
 

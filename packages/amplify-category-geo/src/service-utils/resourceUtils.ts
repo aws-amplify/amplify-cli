@@ -6,6 +6,8 @@ import { BaseStack } from '../service-stacks/baseStack';
 import { parametersFileName, ServiceName } from './constants';
 import { PricingPlan, ResourceParameters, AccessType } from './resourceParams';
 import os from 'os';
+import { getMapIamPolicies } from './mapUtils';
+import { getPlaceIndexIamPolicies } from './placeIndexUtils';
 
 // Merges other with existing in a non-destructive way.
 // Specifically, scalar values will not be overwritten
@@ -84,6 +86,12 @@ export const updateDefaultResource = async (
       'isDefault',
       (defaultResource === resource)
     );
+
+    updateParametersFile(
+      { isDefault: (defaultResource === resource) },
+      resource,
+      parametersFileName
+    );
   });
 };
 
@@ -116,7 +124,7 @@ export const getGeoPricingPlan = async (): Promise<PricingPlan> => {
  */
 export const updateGeoPricingPlan = async (context: $TSContext, pricingPlan: PricingPlan) => {
   const geoMeta = stateManager.getMeta()?.[category];
-  if (geoMeta) {
+  if (geoMeta !== undefined) {
     Object.keys(geoMeta).forEach(resource => {
       // update pricing plan in meta for all Geo resources
       context.amplify.updateamplifyMetaAfterResourceUpdate(
@@ -177,4 +185,32 @@ export const checkAuthConfig = async (context: $TSContext, parameters: Pick<Reso
       }
     }
   }
+}
+
+/**
+ * Check if the Geo resource already exists
+ */
+export const checkGeoResourceExists = async (resourceName: string): Promise<boolean> => {
+  const geoMeta = stateManager.getMeta()?.[category];
+  return geoMeta && Object.keys(geoMeta) && Object.keys(geoMeta).includes(resourceName);
+}
+
+/**
+ * Get permission policies for Geo supported services
+ */
+export const getServicePermissionPolicies = (
+  context: $TSContext,
+  service: ServiceName,
+  resourceName: string,
+  crudOptions: string[]
+): { policy:$TSObject[], attributes: string[] } => {
+  switch (service) {
+    case ServiceName.Map:
+      return getMapIamPolicies(resourceName, crudOptions);
+    case ServiceName.PlaceIndex:
+      return getPlaceIndexIamPolicies(resourceName, crudOptions);
+    default:
+      console.log(`${service} not supported in category ${category}`);
+  }
+  return {policy: [], attributes: []};
 }

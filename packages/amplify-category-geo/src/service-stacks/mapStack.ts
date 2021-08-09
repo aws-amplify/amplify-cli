@@ -20,7 +20,8 @@ export class MapStack extends BaseStack {
             'mapName',
             'mapStyle',
             'pricingPlan',
-            'env'
+            'env',
+            'isDefault'
         ]);
 
         this.resources = this.constructResources();
