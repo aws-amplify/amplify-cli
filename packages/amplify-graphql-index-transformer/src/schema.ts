@@ -389,13 +389,14 @@ function makeModelXFilterInputObject(config: IndexDirectiveConfiguration, ctx: T
     })
     .map((field: FieldDefinitionNode) => {
       const baseType = getBaseType(field.type);
-      const fieldType = ctx.output.getType(baseType);
       const isList = isListType(field.type);
-      const isEnumType = fieldType && fieldType.kind === Kind.ENUM_TYPE_DEFINITION;
-      const filterTypeName =
-        isEnumType && isList
+      let filterTypeName = baseType;
+
+      if (isScalar(field.type) || isList) {
+        filterTypeName = isList
           ? ModelResourceIDs.ModelFilterListInputTypeName(baseType, !supportsConditions)
           : ModelResourceIDs.ModelScalarFilterInputTypeName(baseType, !supportsConditions);
+      }
 
       return {
         kind: Kind.INPUT_VALUE_DEFINITION,
