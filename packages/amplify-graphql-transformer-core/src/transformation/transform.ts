@@ -1,5 +1,10 @@
 /* eslint-disable no-new */
-import { FeatureFlagProvider, GraphQLAPIProvider, TransformerPluginProvider, TransformHostProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import {
+  FeatureFlagProvider,
+  GraphQLAPIProvider,
+  TransformerPluginProvider,
+  TransformHostProvider,
+} from '@aws-amplify/graphql-transformer-interfaces';
 import { AuthorizationMode, AuthorizationType } from '@aws-cdk/aws-appsync';
 import { App, Aws, CfnOutput, Fn } from '@aws-cdk/core';
 import assert from 'assert';
@@ -24,7 +29,7 @@ import { TransformerContext } from '../transformer-context';
 import { TransformerOutput } from '../transformer-context/output';
 import { StackManager } from '../transformer-context/stack-manager';
 import { adoptAuthModes } from '../utils/authType';
-import { AppSyncAuthConfiguration, TransformConfig } from './transformer-config';
+import { TransformConfig, AppSyncAuthConfiguration } from '../config';
 import Template, { DeploymentResources } from './types';
 import {
   makeSeenTransformationKey,
@@ -35,7 +40,7 @@ import {
   matchInputFieldDirective,
   sortTransformerPlugins,
 } from './utils';
-import { validateModelSchema } from './validation';
+import { validateModelSchema, validateAuthModes } from './validation';
 
 // eslint-disable-next-line @typescript-eslint/ban-types
 function isFunction(obj: any): obj is Function {
@@ -94,6 +99,8 @@ export class GraphQLTransform {
       },
       additionalAuthenticationProviders: [],
     };
+
+    validateAuthModes(this.authConfig);
 
     this.buildParameters = options.buildParameters || {};
     this.stackMappingOverrides = options.stackMapping || {};
@@ -205,16 +212,14 @@ export class GraphQLTransform {
       }
     }
 
-    // generate resolvers
-
-    // Syth the API and make it available to allow transformer plugins to manipulate the API
+    // Synth the API and make it available to allow transformer plugins to manipulate the API
 
     const stackManager = context.stackManager as StackManager;
     const output: TransformerOutput = context.output as TransformerOutput;
-
     const api = this.generateGraphQlApi(stackManager, output);
-
     (context as TransformerContext).bind(api);
+
+    // generate resolvers
     for (const transformer of this.transformers) {
       if (isFunction(transformer.generateResolvers)) {
         transformer.generateResolvers(context);
@@ -247,7 +252,7 @@ export class GraphQLTransform {
     const api = new GraphQLApi(rootStack, 'GraphQLAPI', {
       name: `${apiName}-${envName.valueAsString}`,
       authorizationConfig,
-      host: this.options.host
+      host: this.options.host,
     });
     const authModes = [authorizationConfig.defaultAuthorization, ...(authorizationConfig.additionalAuthorizationModes || [])].map(
       mode => mode?.authorizationType,

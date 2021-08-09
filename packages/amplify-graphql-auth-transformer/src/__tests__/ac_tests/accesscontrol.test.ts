@@ -1,0 +1,71 @@
+import { AccessControlMatrix } from '../../accesscontrol';
+import { MODEL_OPERATIONS } from '../../utils';
+
+test('test access control', () => {
+  /*
+  given the following schema
+  type Student
+  @model
+  @auth(rules: [
+  { allow: groups, groups: ["admin"] }
+  { allow: groups, groups: ["student"], operations: [read] }
+  ]) {
+  studentID: ID
+  name: String
+  #acm protect email only studentID can update their own email
+  email: AWSEmail @auth(rules: [
+    { allow: owner, ownerField: "studentID", operations: [update] }
+    { allow: groups, groups: ["admin"] }
+  ])
+  # only allowed to student and admin
+  ssn: String @auth(rules: [
+    { allow: owner, ownerField: "studentID", operations: [read] }
+    { allow: groups, groups: ["admin"] }
+  ])
+  }
+  */
+  // create an acm for the student type
+  const adminRole = 'userPools:staticGroup:admin';
+  const studentGroupRole = 'userPools:staticGroup:student';
+  const studentOwnerRole = 'userPools:owner:studentID';
+  const studentTypeFields = ['studentID', 'name', 'email', 'ssn'];
+  const acm = new AccessControlMatrix({
+    resources: studentTypeFields,
+    operations: MODEL_OPERATIONS,
+  });
+  // add OBJECT rules first
+  // add admin role which has full access on all CRUD operations for all fields
+  acm.setRole({
+    role: adminRole,
+    operations: MODEL_OPERATIONS,
+  });
+  // add the student static group rule which only has read access
+  acm.setRole({
+    role: studentGroupRole,
+    operations: ['read'],
+  });
+
+  studentTypeFields.forEach(field => {
+    // check that admin has CRUD access on all fields
+    expect(acm.isAllowed(adminRole, field, 'create')).toBe(true);
+    expect(acm.isAllowed(adminRole, field, 'read')).toBe(true);
+    expect(acm.isAllowed(adminRole, field, 'update')).toBe(true);
+    expect(acm.isAllowed(adminRole, field, 'delete')).toBe(true);
+    // check that studentGroupRole has access to read only
+    expect(acm.isAllowed(studentGroupRole, field, 'read')).toBe(true);
+    expect(acm.isAllowed(studentGroupRole, field, 'create')).toBe(false);
+    expect(acm.isAllowed(studentGroupRole, field, 'update')).toBe(false);
+    expect(acm.isAllowed(studentGroupRole, field, 'delete')).toBe(false);
+  });
+  // when adding a field rule on email we need to overwrite it
+  acm.resetAccessForResource('email');
+
+  expect(acm.isAllowed(studentGroupRole, 'email', 'read')).toBe(false);
+  acm.setRole({
+    role: studentOwnerRole,
+    operations: ['update'],
+    resource: 'email',
+  });
+  expect(acm.isAllowed(adminRole, 'email', 'update')).toBe(false);
+  expect(acm.isAllowed(studentOwnerRole, 'email', 'update')).toBe(true);
+});

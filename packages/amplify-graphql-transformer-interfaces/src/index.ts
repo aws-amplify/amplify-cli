@@ -21,8 +21,9 @@ export {
   MutationFieldType,
   QueryFieldType,
   SubscriptionFieldType,
-  TransformerModelEnhancementProvider,
   TransformerModelProvider,
+  TransformerModelEnhancementProvider,
+  TransformerAuthProvider,
 } from './transformer-model-provider';
 export { FeatureFlagProvider } from './feature-flag-provider';
 
@@ -38,6 +39,4 @@ export {
   TemplateType as MappingTemplateType,
 } from './graphql-api-provider';
 
-export {
-  TransformHostProvider
-} from './transform-host-provider';
+export { TransformHostProvider } from './transform-host-provider';
