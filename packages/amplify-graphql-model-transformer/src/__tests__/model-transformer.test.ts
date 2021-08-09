@@ -1098,6 +1098,7 @@ describe('ModelTransformer: ', () => {
     const definition = out.schema;
     expect(definition).toBeDefined();
     const parsed = parse(definition);
+    validateModelSchema(parsed);
 
     const postMetaDataInputType = getInputType(parsed, 'PostMetadataInput');
     expect(postMetaDataInputType).toBeDefined();
