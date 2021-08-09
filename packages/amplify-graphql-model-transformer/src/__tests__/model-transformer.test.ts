@@ -440,87 +440,6 @@ describe('ModelTransformer: ', () => {
     expectFieldsOnInputType(updateTestInput!, ['status', 'lastStatus']);
   });
 
-  it('should support enum as a field', () => {
-    const validSchema = `
-      enum Status { DELIVERED IN_TRANSIT PENDING UNKNOWN }
-      type Test @model {
-        status: Status!
-        lastStatus: Status!
-      }
-    `;
-    const transformer = new GraphQLTransform({
-      transformers: [new ModelTransformer()],
-      featureFlags,
-    });
-
-    const out = transformer.transform(validSchema);
-    expect(out).toBeDefined();
-    const definition = out.schema;
-    expect(definition).toBeDefined();
-    const parsed = parse(definition);
-    validateModelSchema(parsed);
-
-    const createTestInput = getInputType(parsed, 'CreateTestInput');
-    expectFieldsOnInputType(createTestInput!, ['status', 'lastStatus']);
-
-    const updateTestInput = getInputType(parsed, 'CreateTestInput');
-    expectFieldsOnInputType(updateTestInput!, ['status', 'lastStatus']);
-  });
-
-  it('should support enum as a field', () => {
-    const validSchema = `
-      enum Status { DELIVERED IN_TRANSIT PENDING UNKNOWN }
-      type Test @model {
-        status: Status!
-        lastStatus: Status!
-      }
-    `;
-    const transformer = new GraphQLTransform({
-      transformers: [new ModelTransformer()],
-      featureFlags,
-    });
-
-    const out = transformer.transform(validSchema);
-    expect(out).toBeDefined();
-    const definition = out.schema;
-    expect(definition).toBeDefined();
-    const parsed = parse(definition);
-    validateModelSchema(parsed);
-
-    const createTestInput = getInputType(parsed, 'CreateTestInput');
-    expectFieldsOnInputType(createTestInput!, ['status', 'lastStatus']);
-
-    const updateTestInput = getInputType(parsed, 'CreateTestInput');
-    expectFieldsOnInputType(updateTestInput!, ['status', 'lastStatus']);
-  });
-
-  it('should support enum as a field', () => {
-    const validSchema = `
-      enum Status { DELIVERED IN_TRANSIT PENDING UNKNOWN }
-      type Test @model {
-        status: Status!
-        lastStatus: Status!
-      }
-    `;
-    const transformer = new GraphQLTransform({
-      transformers: [new ModelTransformer()],
-      featureFlags,
-    });
-
-    const out = transformer.transform(validSchema);
-    expect(out).toBeDefined();
-    const definition = out.schema;
-    expect(definition).toBeDefined();
-    const parsed = parse(definition);
-    validateModelSchema(parsed);
-
-    const createTestInput = getInputType(parsed, 'CreateTestInput');
-    expectFieldsOnInputType(createTestInput!, ['status', 'lastStatus']);
-
-    const updateTestInput = getInputType(parsed, 'CreateTestInput');
-    expectFieldsOnInputType(updateTestInput!, ['status', 'lastStatus']);
-  });
-
   it('should support non-model types and enums', () => {
     const validSchema = `
       type Post @model {
@@ -575,32 +494,5 @@ describe('ModelTransformer: ', () => {
 
     expect(verifyInputCount(parsed, 'PostMetadataInput', 1)).toBeTruthy();
     expect(verifyInputCount(parsed, 'TagInput', 1)).toBeTruthy();
-  });
-
-  it('should support enum as a field', () => {
-    const validSchema = `
-      enum Status { DELIVERED IN_TRANSIT PENDING UNKNOWN }
-      type Test @model {
-        status: Status!
-        lastStatus: Status!
-      }
-    `;
-    const transformer = new GraphQLTransform({
-      transformers: [new ModelTransformer()],
-      featureFlags,
-    });
-
-    const out = transformer.transform(validSchema);
-    expect(out).toBeDefined();
-    const definition = out.schema;
-    expect(definition).toBeDefined();
-    const parsed = parse(definition);
-    validateModelSchema(parsed);
-
-    const createTestInput = getInputType(parsed, 'CreateTestInput');
-    expectFieldsOnInputType(createTestInput!, ['status', 'lastStatus']);
-
-    const updateTestInput = getInputType(parsed, 'CreateTestInput');
-    expectFieldsOnInputType(updateTestInput!, ['status', 'lastStatus']);
   });
 });
