@@ -11,11 +11,11 @@ import {
   TransformerPrepareStepContextProvider,
   TransformerResolverProvider,
   TransformerSchemaVisitStepContextProvider,
-  TransformerTransformSchemaStepContextProvider,
   TransformerValidationStepContextProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { AttributeType, CfnTable, ITable, StreamViewType, Table, TableEncryption } from '@aws-cdk/aws-dynamodb';
 import * as cdk from '@aws-cdk/core';
+import { Stack } from '@aws-cdk/core';
 import {
   DirectiveNode,
   FieldDefinitionNode,
@@ -951,12 +951,4 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
 
     return subscriptionToMutationsMap;
   };
-
-  private ensureModelSortDirectionEnum(ctx: TransformerValidationStepContextProvider): void {
-    if (!ctx.output.hasType('ModelSortDirection')) {
-      const modelSortDirection = makeModelSortDirectionEnumObject();
-
-      ctx.output.addEnum(modelSortDirection);
-    }
-  }
 }

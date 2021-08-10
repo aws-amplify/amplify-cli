@@ -56,8 +56,8 @@ export const makeConditionFilterInput = (
     const isEnumType = fieldType && fieldType.kind === 'EnumTypeDefinition';
     if (field.isScalar() || field.isList()) {
       const conditionTypeName = field.isList()
-        ? ModelResourceIDs.ModelFilterListInputTypeName(field.getTypeName(), !supportsConditions)
-        : ModelResourceIDs.ModelFilterScalarInputTypeName(field.getTypeName(), !supportsConditions);
+        ? ModelResourceIDs.ModelFilterListInputTypeName(field.getTypeName(), true)
+        : ModelResourceIDs.ModelFilterScalarInputTypeName(field.getTypeName(), true);
       const inputField = InputFieldWrapper.create(field.name, conditionTypeName, true, field.isList());
       input.addField(inputField);
     } else if (isEnumType) {
@@ -81,7 +81,7 @@ export const makeConditionFilterInput = (
 
 export const addModelConditionInputs = (ctx: TransformerTransformSchemaStepContextProvider): void => {
   const conditionsInput: TypeDefinitionNode[] = ['String', 'Int', 'Float', 'Boolean', 'ID'].map(scalarName =>
-    makeModelScalarFilterInputObject(scalarName, true),
+    makeModelScalarFilterInputObject(scalarName, false),
   );
   conditionsInput.push(makeAttributeTypeEnum());
   conditionsInput.push(makeSizeInputType());

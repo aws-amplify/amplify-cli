@@ -394,8 +394,8 @@ function makeModelXFilterInputObject(config: IndexDirectiveConfiguration, ctx: T
 
       if (isScalar(field.type) || isList) {
         filterTypeName = isList
-          ? ModelResourceIDs.ModelFilterListInputTypeName(baseType, !supportsConditions)
-          : ModelResourceIDs.ModelScalarFilterInputTypeName(baseType, !supportsConditions);
+          ? ModelResourceIDs.ModelFilterListInputTypeName(baseType, true)
+          : ModelResourceIDs.ModelScalarFilterInputTypeName(baseType, true);
       }
 
       return {
