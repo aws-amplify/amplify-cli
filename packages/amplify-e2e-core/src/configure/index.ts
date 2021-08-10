@@ -63,7 +63,6 @@ export function amplifyConfigure(settings: AmplifyConfiguration): Promise<void> 
       .resumeRecording()
       .wait('Profile Name:')
       .sendLine(s.profileName)
-      .wait('Successfully set up the new user.')
       .run((err: Error) => {
         if (!err) {
           resolve();

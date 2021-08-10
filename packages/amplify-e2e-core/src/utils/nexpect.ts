@@ -270,6 +270,10 @@ function chain(context: Context): ExecutionContext {
       return chain(context);
     },
     sendEof: function (): ExecutionContext {
+      // No-op on windows - this causes an unexpected crash and the tests pass without it.
+      if (process.platform === 'win32') {
+        return chain(context);
+      }
       var _sendEof: ExecutionStep = {
         fn: () => {
           context.process.write('');
