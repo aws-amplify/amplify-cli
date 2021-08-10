@@ -279,7 +279,7 @@ const setAppIdForFunctionInTeamProvider = (functionName: string) => {
     _.set(tpi, [env, 'categories', categoryName, functionName], {});
     funcTpi = tpi[env].categories[categoryName][functionName];
   }
-  _.assign(tpi[env].categories[categoryName][functionName], { [secretsPathAmplifyAppIdKey]: getAppId() });
+  _.assign(funcTpi, { [secretsPathAmplifyAppIdKey]: getAppId() });
   stateManager.setTeamProviderInfo(undefined, tpi);
 };
 

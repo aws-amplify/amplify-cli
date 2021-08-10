@@ -4,7 +4,6 @@ import Policy from 'cloudform-types/types/iam/policy';
 import Lambda from 'cloudform-types/types/lambda';
 import Template from 'cloudform-types/types/template';
 import _ from 'lodash';
-import { getLocalFunctionSecretNames } from './functionSecretsStateManager';
 import { hasExistingSecrets } from './secretDeltaUtilities';
 import { getFunctionSecretCfnName, getFunctionSecretCfnPrefix, secretsPathAmplifyAppIdKey } from './secretName';
 
