@@ -994,4 +994,116 @@ describe('ModelTransformer: ', () => {
     expect(mutList).toContain('updatePost');
     expect(mutList).toContain('deletePost');
   });
+
+  it('should not generate superfluous input and filter types', () => {
+    const validSchema = `
+    type Entity @model(mutations: null, subscriptions: null, queries: {get: "getEntity"}) {
+      id: ID!
+      str: String
+    }
+    `;
+    const transformer = new GraphQLTransform({
+      transformers: [new ModelTransformer()],
+      featureFlags,
+    });
+    const result = transformer.transform(validSchema);
+    expect(result).toBeDefined();
+    expect(result.schema).toBeDefined();
+    expect(result.schema).toMatchSnapshot();
+    const schema = parse(result.schema);
+    validateModelSchema(schema);
+  });
+
+  it('should support timestamp parameters when generating pipelineFunctions and output schema', () => {
+    const validSchema = `
+    type Post @model(timestamps: { createdAt: "createdOn", updatedAt: "updatedOn"}) {
+      id: ID!
+      str: String
+    }
+    `;
+    const transformer = new GraphQLTransform({
+      transformers: [new ModelTransformer()],
+      featureFlags,
+    });
+    const result = transformer.transform(validSchema);
+    expect(result).toBeDefined();
+    expect(result.schema).toBeDefined();
+    expect(result.schema).toMatchSnapshot();
+    const schema = parse(result.schema);
+    validateModelSchema(schema);
+
+    expect(result.pipelineFunctions['Mutation.createPost.req.vtl']).toMatchSnapshot();
+    expect(result.pipelineFunctions['Mutation.updatePost.req.vtl']).toMatchSnapshot();
+  });
+
+  it('should not to auto generate createdAt and updatedAt when the type in schema is not AWSDateTime', () => {
+    const validSchema = `
+  type Post @model {
+    id: ID!
+    str: String
+    createdAt: AWSTimestamp
+    updatedAt: AWSTimestamp
+  }
+  `;
+    const transformer = new GraphQLTransform({
+      transformers: [new ModelTransformer()],
+      featureFlags,
+    });
+    const result = transformer.transform(validSchema);
+    expect(result).toBeDefined();
+    expect(result.schema).toBeDefined();
+    expect(result.schema).toMatchSnapshot();
+    const schema = parse(result.schema);
+    validateModelSchema(schema);
+
+    expect(result.pipelineFunctions['Mutation.createPost.req.vtl']).toMatchSnapshot();
+    expect(result.pipelineFunctions['Mutation.updatePost.req.vtl']).toMatchSnapshot();
+  });
+
+  it('should have timestamps as nullable fields when the type makes it non-nullable', () => {
+    const validSchema = `
+      type Post @model {
+        id: ID!
+        str: String
+        createdAt: AWSDateTime!
+        updatedAt: AWSDateTime!
+      }
+    `;
+    const transformer = new GraphQLTransform({
+      transformers: [new ModelTransformer()],
+      featureFlags,
+    });
+
+    const result = transformer.transform(validSchema);
+    expect(result).toBeDefined();
+    expect(result.schema).toBeDefined();
+    expect(result.schema).toMatchSnapshot();
+    const schema = parse(result.schema);
+    validateModelSchema(schema);
+
+    expect(result.pipelineFunctions['Mutation.createPost.req.vtl']).toMatchSnapshot();
+    expect(result.pipelineFunctions['Mutation.updatePost.req.vtl']).toMatchSnapshot();
+  });
+
+  it('should not to include createdAt and updatedAt field when timestamps is set to null', () => {
+    const validSchema = `
+    type Post @model(timestamps: null) {
+      id: ID!
+      str: String
+    }
+    `;
+    const transformer = new GraphQLTransform({
+      transformers: [new ModelTransformer()],
+      featureFlags,
+    });
+    const result = transformer.transform(validSchema);
+    expect(result).toBeDefined();
+    expect(result.schema).toBeDefined();
+    expect(result.schema).toMatchSnapshot();
+    const schema = parse(result.schema);
+    validateModelSchema(schema);
+
+    expect(result.pipelineFunctions['Mutation.createPost.req.vtl']).toMatchSnapshot();
+    expect(result.pipelineFunctions['Mutation.updatePost.req.vtl']).toMatchSnapshot();
+  });
 });
