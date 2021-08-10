@@ -9,7 +9,7 @@ type Post {
   updatedAt: AWSDateTime!
 }
 
-input ModelStringInput {
+input ModelStringFilterInput {
   ne: String
   eq: String
   le: String
@@ -25,7 +25,7 @@ input ModelStringInput {
   size: ModelSizeInput
 }
 
-input ModelIntInput {
+input ModelIntFilterInput {
   ne: Int
   eq: Int
   le: Int
@@ -37,7 +37,7 @@ input ModelIntInput {
   attributeType: ModelAttributeTypes
 }
 
-input ModelFloatInput {
+input ModelFloatFilterInput {
   ne: Float
   eq: Float
   le: Float
@@ -49,14 +49,14 @@ input ModelFloatInput {
   attributeType: ModelAttributeTypes
 }
 
-input ModelBooleanInput {
+input ModelBooleanFilterInput {
   ne: Boolean
   eq: Boolean
   attributeExists: Boolean
   attributeType: ModelAttributeTypes
 }
 
-input ModelIDInput {
+input ModelIDFilterInput {
   ne: ID
   eq: ID
   le: ID
@@ -111,20 +111,20 @@ type ModelPostConnection {
 }
 
 input ModelPostFilterInput {
-  id: ModelIDInput
-  str: ModelStringInput
-  createdAt: ModelStringInput
-  updatedAt: ModelStringInput
+  id: ModelIDFilterInput
+  str: ModelStringFilterInput
+  createdAt: ModelStringFilterInput
+  updatedAt: ModelStringFilterInput
   and: [ModelPostFilterInput]
   or: [ModelPostFilterInput]
   not: ModelPostFilterInput
 }
 
 input ModelPostConditionInput {
-  id: ModelIDInput
-  str: ModelStringInput
-  createdAt: ModelStringInput
-  updatedAt: ModelStringInput
+  id: ModelIDFilterInput
+  str: ModelStringFilterInput
+  createdAt: ModelStringFilterInput
+  updatedAt: ModelStringFilterInput
   and: [ModelPostConditionInput]
   or: [ModelPostConditionInput]
   not: ModelPostConditionInput
@@ -469,6 +469,93 @@ $util.toJson($PutObject)
 ## [End] Create Request template. **"
 `;
 
+exports[`ModelTransformer:  should not add default primary key when ID is defined 2`] = `
+"## [Start] Create Request template. **
+## Begin - key condition **
+#if( $ctx.stash.metadata.modelObjectKey )
+  #set( $keyConditionExpr = {} )
+  #set( $keyConditionExprNames = {} )
+  #foreach( $entry in $ctx.stash.metadata.modelObjectKey.entrySet() )
+    $util.qr($keyConditionExpr.put(\\"keyCondition$velocityCount\\", {
+  \\"attributeExists\\": false
+}))
+    $util.qr($keyConditionExprNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
+  #end
+  $util.qr($ctx.stash.conditions.add($keyConditionExpr))
+#else
+  $util.qr($ctx.stash.conditions.add({
+  \\"id\\": {
+      \\"attributeExists\\": false
+  }
+}))
+#end
+## End - key condition **
+## Set the default values to put request **
+#set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
+## copy the values from input **
+$util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
+## set the typename **
+$util.qr($mergedValues.put(\\"__typename\\", \\"Post\\"))
+#set( $PutObject = {
+  \\"version\\": \\"2018-05-29\\",
+  \\"operation\\": \\"PutItem\\",
+  \\"attributeValues\\":   $util.dynamodb.toMapValues($mergedValues),
+  \\"condition\\": $condition
+} )
+#if( $context.args.condition )
+  $util.qr($ctx.stash.conditions.add($context.args.condition))
+#end
+## Begin - key condition **
+#if( $ctx.stash.metadata.modelObjectKey )
+  #set( $keyConditionExpr = {} )
+  #set( $keyConditionExprNames = {} )
+  #foreach( $entry in $ctx.stash.metadata.modelObjectKey.entrySet() )
+    $util.qr($keyConditionExpr.put(\\"keyCondition$velocityCount\\", {
+  \\"attributeExists\\": false
+}))
+    $util.qr($keyConditionExprNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
+  #end
+  $util.qr($ctx.stash.conditions.add($keyConditionExpr))
+#else
+  $util.qr($ctx.stash.conditions.add({
+  \\"id\\": {
+      \\"attributeExists\\": false
+  }
+}))
+#end
+## End - key condition **
+## Start condition block **
+#if( $ctx.stash.conditions && $ctx.stash.conditions.size() != 0 )
+  #set( $mergedConditions = {
+  \\"and\\": $ctx.stash.conditions
+} )
+  #set( $Conditions = $util.parseJson($util.transform.toDynamoDBConditionExpression($mergedConditions)) )
+  #if( $Conditions.expressionValues && $Conditions.expressionValues.size() == 0 )
+    #set( $Conditions = {
+  \\"expression\\": $Conditions.expression,
+  \\"expressionNames\\": $Conditions.expressionNames
+} )
+  #end
+  ## End condition block **
+#end
+#if( $Conditions )
+  #if( $keyConditionExprNames )
+    $util.qr($Conditions.expressionNames.putAll($keyConditionExprNames))
+  #end
+  $util.qr($PutObject.put(\\"condition\\", $Conditions))
+#end
+#if( $ctx.stash.metadata.modelObjectKey )
+  $util.qr($PutObject.put(\\"key\\", $ctx.stash.metadata.modelObjectKey))
+#else
+  #set( $Key = {
+  \\"id\\":   $util.dynamodb.toDynamoDB($mergedValues.id)
+} )
+  $util.qr($PutObject.put(\\"key\\", $Key))
+#end
+$util.toJson($PutObject)
+## [End] Create Request template. **"
+`;
+
 exports[`ModelTransformer:  should not generate superfluous input and filter types 1`] = `
 "
 type Entity {
@@ -478,7 +565,7 @@ type Entity {
   updatedAt: AWSDateTime!
 }
 
-input ModelStringInput {
+input ModelStringFilterInput {
   ne: String
   eq: String
   le: String
@@ -494,7 +581,7 @@ input ModelStringInput {
   size: ModelSizeInput
 }
 
-input ModelIntInput {
+input ModelIntFilterInput {
   ne: Int
   eq: Int
   le: Int
@@ -506,7 +593,7 @@ input ModelIntInput {
   attributeType: ModelAttributeTypes
 }
 
-input ModelFloatInput {
+input ModelFloatFilterInput {
   ne: Float
   eq: Float
   le: Float
@@ -518,14 +605,14 @@ input ModelFloatInput {
   attributeType: ModelAttributeTypes
 }
 
-input ModelBooleanInput {
+input ModelBooleanFilterInput {
   ne: Boolean
   eq: Boolean
   attributeExists: Boolean
   attributeType: ModelAttributeTypes
 }
 
-input ModelIDInput {
+input ModelIDFilterInput {
   ne: ID
   eq: ID
   le: ID
@@ -585,7 +672,7 @@ type Post {
   updatedAt: AWSTimestamp
 }
 
-input ModelStringInput {
+input ModelStringFilterInput {
   ne: String
   eq: String
   le: String
@@ -601,7 +688,7 @@ input ModelStringInput {
   size: ModelSizeInput
 }
 
-input ModelIntInput {
+input ModelIntFilterInput {
   ne: Int
   eq: Int
   le: Int
@@ -613,7 +700,7 @@ input ModelIntInput {
   attributeType: ModelAttributeTypes
 }
 
-input ModelFloatInput {
+input ModelFloatFilterInput {
   ne: Float
   eq: Float
   le: Float
@@ -625,14 +712,14 @@ input ModelFloatInput {
   attributeType: ModelAttributeTypes
 }
 
-input ModelBooleanInput {
+input ModelBooleanFilterInput {
   ne: Boolean
   eq: Boolean
   attributeExists: Boolean
   attributeType: ModelAttributeTypes
 }
 
-input ModelIDInput {
+input ModelIDFilterInput {
   ne: ID
   eq: ID
   le: ID
@@ -687,20 +774,20 @@ type ModelPostConnection {
 }
 
 input ModelPostFilterInput {
-  id: ModelIDInput
-  str: ModelStringInput
-  createdAt: ModelIntInput
-  updatedAt: ModelIntInput
+  id: ModelIDFilterInput
+  str: ModelStringFilterInput
+  createdAt: ModelIntFilterInput
+  updatedAt: ModelIntFilterInput
   and: [ModelPostFilterInput]
   or: [ModelPostFilterInput]
   not: ModelPostFilterInput
 }
 
 input ModelPostConditionInput {
-  id: ModelIDInput
-  str: ModelStringInput
-  createdAt: ModelIntInput
-  updatedAt: ModelIntInput
+  id: ModelIDFilterInput
+  str: ModelStringFilterInput
+  createdAt: ModelIntFilterInput
+  updatedAt: ModelIntFilterInput
   and: [ModelPostConditionInput]
   or: [ModelPostConditionInput]
   not: ModelPostConditionInput
@@ -965,7 +1052,7 @@ type Post {
   str: String
 }
 
-input ModelStringInput {
+input ModelStringFilterInput {
   ne: String
   eq: String
   le: String
@@ -981,7 +1068,7 @@ input ModelStringInput {
   size: ModelSizeInput
 }
 
-input ModelIntInput {
+input ModelIntFilterInput {
   ne: Int
   eq: Int
   le: Int
@@ -993,7 +1080,7 @@ input ModelIntInput {
   attributeType: ModelAttributeTypes
 }
 
-input ModelFloatInput {
+input ModelFloatFilterInput {
   ne: Float
   eq: Float
   le: Float
@@ -1005,14 +1092,14 @@ input ModelFloatInput {
   attributeType: ModelAttributeTypes
 }
 
-input ModelBooleanInput {
+input ModelBooleanFilterInput {
   ne: Boolean
   eq: Boolean
   attributeExists: Boolean
   attributeType: ModelAttributeTypes
 }
 
-input ModelIDInput {
+input ModelIDFilterInput {
   ne: ID
   eq: ID
   le: ID
@@ -1067,16 +1154,16 @@ type ModelPostConnection {
 }
 
 input ModelPostFilterInput {
-  id: ModelIDInput
-  str: ModelStringInput
+  id: ModelIDFilterInput
+  str: ModelStringFilterInput
   and: [ModelPostFilterInput]
   or: [ModelPostFilterInput]
   not: ModelPostFilterInput
 }
 
 input ModelPostConditionInput {
-  id: ModelIDInput
-  str: ModelStringInput
+  id: ModelIDFilterInput
+  str: ModelStringFilterInput
   and: [ModelPostConditionInput]
   or: [ModelPostConditionInput]
   not: ModelPostConditionInput
@@ -1339,7 +1426,7 @@ type Post {
   updatedOn: AWSDateTime!
 }
 
-input ModelStringInput {
+input ModelStringFilterInput {
   ne: String
   eq: String
   le: String
@@ -1355,7 +1442,7 @@ input ModelStringInput {
   size: ModelSizeInput
 }
 
-input ModelIntInput {
+input ModelIntFilterInput {
   ne: Int
   eq: Int
   le: Int
@@ -1367,7 +1454,7 @@ input ModelIntInput {
   attributeType: ModelAttributeTypes
 }
 
-input ModelFloatInput {
+input ModelFloatFilterInput {
   ne: Float
   eq: Float
   le: Float
@@ -1379,14 +1466,14 @@ input ModelFloatInput {
   attributeType: ModelAttributeTypes
 }
 
-input ModelBooleanInput {
+input ModelBooleanFilterInput {
   ne: Boolean
   eq: Boolean
   attributeExists: Boolean
   attributeType: ModelAttributeTypes
 }
 
-input ModelIDInput {
+input ModelIDFilterInput {
   ne: ID
   eq: ID
   le: ID
@@ -1441,16 +1528,16 @@ type ModelPostConnection {
 }
 
 input ModelPostFilterInput {
-  id: ModelIDInput
-  str: ModelStringInput
+  id: ModelIDFilterInput
+  str: ModelStringFilterInput
   and: [ModelPostFilterInput]
   or: [ModelPostFilterInput]
   not: ModelPostFilterInput
 }
 
 input ModelPostConditionInput {
-  id: ModelIDInput
-  str: ModelStringInput
+  id: ModelIDFilterInput
+  str: ModelStringFilterInput
   and: [ModelPostConditionInput]
   or: [ModelPostConditionInput]
   not: ModelPostConditionInput
