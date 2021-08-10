@@ -518,7 +518,7 @@ describe('ModelTransformer: ', () => {
     const createTestInput = getInputType(parsed, 'CreateTestInput');
     expectFieldsOnInputType(createTestInput!, ['status', 'lastStatus']);
 
-    const updateTestInput = getInputType(parsed, 'CreateTestInput');
+    const updateTestInput = getInputType(parsed, 'UpdateTestInput');
     expectFieldsOnInputType(updateTestInput!, ['status', 'lastStatus']);
   });
 
@@ -630,6 +630,7 @@ describe('ModelTransformer: ', () => {
       transformers: [new ModelTransformer()],
       featureFlags,
     });
+    
     const out = transformer.transform(validSchema);
     expect(out).toBeDefined();
     const definition = out.schema;
@@ -649,5 +650,34 @@ describe('ModelTransformer: ', () => {
     expect(mutList).toContain('createPost');
     expect(mutList).toContain('updatePost');
     expect(mutList).toContain('deletePost');
+
+  it('should filter known input types from create and update input fields', () => {
+    const validSchema = `
+      type Test @model {
+        id: ID!
+        email: Email
+      }
+      
+      type Email @model {
+        id: ID!
+      }
+    `;
+    const transformer = new GraphQLTransform({
+      transformers: [new ModelTransformer()],
+      featureFlags,
+    });
+    
+    const result = transformer.transform(validSchema);
+    expect(result).toBeDefined();
+    expect(result.schema).toBeDefined();
+    expect(result.schema).toMatchSnapshot();
+    const schema = parse(result.schema);
+    validateModelSchema(schema);
+
+    const createTestInput = getInputType(schema, 'CreateTestInput');
+    expect(getFieldOnInputType(createTestInput!, 'email')).toBeUndefined();
+
+    const updateTestInput = getInputType(schema, 'UpdateTestInput');
+    expect(getFieldOnInputType(updateTestInput!, 'email')).toBeUndefined();
   });
 });
