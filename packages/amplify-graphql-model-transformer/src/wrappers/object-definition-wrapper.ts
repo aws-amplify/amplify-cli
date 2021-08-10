@@ -73,7 +73,7 @@ export class DirectiveWrapper {
       }),
       {},
     );
-    return merge(defaultValue, argValues);
+    return Object.assign(defaultValue, argValues);
   };
 }
 

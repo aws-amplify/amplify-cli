@@ -13,6 +13,7 @@ import {
   makeField,
   makeNamedType,
   makeValueNode,
+  ModelResourceIDs,
   toPascalCase,
 } from 'graphql-transformer-common';
 import {
@@ -52,11 +53,14 @@ export const makeConditionFilterInput = (
   for (let field of wrappedObject.fields) {
     const fieldType = ctx.output.getType(field.getTypeName());
     const isEnumType = fieldType && fieldType.kind === 'EnumTypeDefinition';
-    if (field.isScalar() || isEnumType) {
-      const fieldTypeName = field.getTypeName();
-      const nameOverride = DEFAULT_SCALARS[fieldTypeName] || fieldTypeName;
-      const conditionTypeName = isEnumType && field.isList() ? `Model${nameOverride}ListInput` : `Model${nameOverride}Input`;
-      const inputField = InputFieldWrapper.create(field.name, conditionTypeName, true);
+    if (field.isScalar() || field.isList()) {
+      const conditionTypeName = field.isList()
+        ? ModelResourceIDs.ModelFilterListInputTypeName(field.getTypeName(), true)
+        : ModelResourceIDs.ModelFilterScalarInputTypeName(field.getTypeName(), true);
+      const inputField = InputFieldWrapper.create(field.name, conditionTypeName, true, field.isList());
+      input.addField(inputField);
+    } else if (isEnumType) {
+      const inputField = InputFieldWrapper.create(field.name, field.getTypeName(), true, field.isList());
       input.addField(inputField);
     }
   }
@@ -76,7 +80,7 @@ export const makeConditionFilterInput = (
 
 export const addModelConditionInputs = (ctx: TransformerTransformSchemaStepContextProvider): void => {
   const conditionsInput: TypeDefinitionNode[] = ['String', 'Int', 'Float', 'Boolean', 'ID'].map(scalarName =>
-    makeModelScalarFilterInputObject(scalarName, true),
+    makeModelScalarFilterInputObject(scalarName, false),
   );
   conditionsInput.push(makeAttributeTypeEnum());
   conditionsInput.push(makeSizeInputType());
@@ -90,7 +94,7 @@ export const addModelConditionInputs = (ctx: TransformerTransformSchemaStepConte
 
 /**
  *
- * @param typeName Name of the scarlar type
+ * @param typeName Name of the scalar type
  * @param includeFilter add filter suffix to input
  */
 export function generateModelScalarFilterInputName(typeName: string, includeFilter: boolean): string {
@@ -100,6 +104,7 @@ export function generateModelScalarFilterInputName(typeName: string, includeFilt
   }
   return `Model${typeName}${includeFilter ? 'Filter' : ''}Input`;
 }
+
 export const createEnumModelFilters = (
   ctx: TransformerTransformSchemaStepContextProvider,
   type: ObjectTypeDefinitionNode,
