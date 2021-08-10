@@ -6,17 +6,16 @@ import {
   MutationFieldType,
   QueryFieldType,
   SubscriptionFieldType,
-  TransformerTransformSchemaStepContextProvider,
   TransformerContextProvider,
   TransformerModelProvider,
   TransformerPrepareStepContextProvider,
   TransformerResolverProvider,
   TransformerSchemaVisitStepContextProvider,
+  TransformerTransformSchemaStepContextProvider,
   TransformerValidationStepContextProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { AttributeType, CfnTable, ITable, StreamViewType, Table, TableEncryption } from '@aws-cdk/aws-dynamodb';
 import * as cdk from '@aws-cdk/core';
-import { Stack } from '@aws-cdk/core';
 import {
   DirectiveNode,
   FieldDefinitionNode,
@@ -46,6 +45,7 @@ import {
   makeDeleteInputField,
   makeListQueryFilterInput,
   makeListQueryModel,
+  makeModelSortDirectionEnumObject,
   makeMutationConditionInput,
   makeUpdateInputField,
 } from './graphql-types';
@@ -198,6 +198,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
     // add the model input conditions
     addModelConditionInputs(ctx);
 
+    this.ensureModelSortDirectionEnum(ctx);
     for (const type of this.typesWithModelDirective) {
       const def = ctx.output.getObject(type)!;
       // add Non Model type inputs
@@ -952,4 +953,12 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
 
     return subscriptionToMutationsMap;
   };
+
+  private ensureModelSortDirectionEnum(ctx: TransformerValidationStepContextProvider): void {
+    if (!ctx.output.hasType('ModelSortDirection')) {
+      const modelSortDirection = makeModelSortDirectionEnumObject();
+
+      ctx.output.addEnum(modelSortDirection);
+    }
+  }
 }
