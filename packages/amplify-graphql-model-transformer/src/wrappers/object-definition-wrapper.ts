@@ -18,14 +18,6 @@ import {
   TypeNode,
   valueFromASTUntyped,
   ValueNode,
-  Location,
-  NonNullTypeNode,
-  ListTypeNode,
-  InputObjectTypeDefinitionNode,
-  NamedTypeNode,
-  EnumTypeDefinitionNode,
-  Kind,
-  DocumentNode,
 } from 'graphql';
 import {
   DEFAULT_SCALARS,
