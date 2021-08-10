@@ -143,8 +143,8 @@ commands:
               - *ref_0
               - << parameters.os >>
           steps:
-            - run: nvm install 14
-            - run: nvm use 14
+            - run: nvm install 14.14.0
+            - run: nvm use 14.14.0
             - run: npm install -g yarn
   install_java:
     description: Install Java on Linux and Docker images

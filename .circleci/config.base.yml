@@ -146,8 +146,8 @@ commands:
           condition:
             equal: [*windows-executor, << parameters.os >>]
           steps:
-            - run: nvm install 12
-            - run: nvm use 12
+            - run: nvm install 14.14.0
+            - run: nvm use 14.14.0
             - run: npm install -g yarn
   install_java:
     description: 'Install Java on Linux and Docker images'
