@@ -80,7 +80,7 @@ export const makeConditionFilterInput = (
 
 export const addModelConditionInputs = (ctx: TransformerTransformSchemaStepContextProvider): void => {
   const conditionsInput: TypeDefinitionNode[] = ['String', 'Int', 'Float', 'Boolean', 'ID'].map(scalarName =>
-    makeModelScalarFilterInputObject(scalarName, true),
+    makeModelScalarFilterInputObject(scalarName, false),
   );
   conditionsInput.push(makeAttributeTypeEnum());
   conditionsInput.push(makeSizeInputType());
