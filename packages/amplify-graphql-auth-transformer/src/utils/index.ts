@@ -33,7 +33,8 @@ export const ensureAuthRuleDefaults = (rules: AuthRule[]) => {
           break;
       }
     }
-    if (rule.provider === 'iam') {
+    // by default we generate an IAM policy for every rule
+    if (rule.provider === 'iam' && !rule.generateIAMPolicy) {
       rule.generateIAMPolicy = true;
     }
   }

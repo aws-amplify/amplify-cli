@@ -63,6 +63,10 @@ export class AccessControlMatrix {
     return this.roles.includes(role);
   }
 
+  public getResources(): Array<string> {
+    return this.resources;
+  }
+
   public isAllowed(role: string, resource: string, operation: string): boolean {
     this.validate({ role, resource, operations: [operation] });
     const roleIndex = this.roles.indexOf(role);
@@ -77,6 +81,25 @@ export class AccessControlMatrix {
     for (let i = 0; i < this.roles.length; i++) {
       this.matrix[i][resourceIndex] = new Array(this.operations.length).fill(false);
     }
+  }
+
+  /**
+   * @returns a map of role and their access
+   * this object can then be used in console.table()
+   */
+  public getAcmPerRole(): Map<string, Object> {
+    const acmPerRole: Map<string, Object> = new Map();
+    for (let i = 0; i < this.matrix.length; i++) {
+      let tableObj: any = {};
+      for (let y = 0; y < this.matrix[i].length; y++) {
+        tableObj[this.resources[y]] = this.matrix[i][y].reduce((prev: any, resource: boolean, index: number) => {
+          prev[this.operations[index]] = resource;
+          return prev;
+        }, {});
+      }
+      acmPerRole.set(this.roles[i], tableObj);
+    }
+    return acmPerRole;
   }
 
   /**

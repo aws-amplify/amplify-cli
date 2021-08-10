@@ -74,20 +74,22 @@ export class AuthTransformer extends TransformerAuthBase {
     }
     const typeName = def.name.value;
     const authDir = new DirectiveWrapper(directive);
-    const authRules: AuthRule[] = this.extendAuthRulesForAdminUI(authDir.getArguments<AuthRule[]>([]));
-    ensureAuthRuleDefaults(authRules);
+    const rules: AuthRule[] = this.extendAuthRulesForAdminUI(authDir.getArguments<AuthRule[]>([]));
+    ensureAuthRuleDefaults(rules);
     // validate rules
-    validateRules(authRules, this.configuredAuthProviders);
+    validateRules(rules, this.configuredAuthProviders);
     // create access control for object
     const acm = new AccessControlMatrix({
       operations: MODEL_OPERATIONS,
       resources: collectFieldNames(def),
     });
     // Check the rules to see if we should generate Auth/Unauth Policies
-    this.setAuthPolicyFlag(authRules);
-    this.setUnauthPolicyFlag(authRules);
+    this.setAuthPolicyFlag(rules);
+    this.setUnauthPolicyFlag(rules);
+    // add object into policy
+    this.addTypeToResourceReferences(def.name.value, rules);
     // turn rules into roles and add into acm and roleMap
-    this.convertModelRulesToRoles(acm, authRules);
+    this.convertModelRulesToRoles(acm, rules);
     this.modelConfig.set(typeName, getModelConfig(modelDirective, typeName));
     this.authModelConfig.set(typeName, acm);
   };
@@ -120,9 +122,15 @@ Static group authorization should perform as expected.`,
     const typeName = parent.name.value;
     const fieldName = field.name.value;
     const authDir = new DirectiveWrapper(directive);
-    const authRules: AuthRule[] = authDir.getArguments<AuthRule[]>([]);
-    ensureAuthRuleDefaults(authRules);
-    validateFieldRules(authRules, isParentTypeBuiltinType, modelDirective !== undefined, this.configuredAuthProviders);
+    const rules: AuthRule[] = authDir.getArguments<AuthRule[]>([]);
+    ensureAuthRuleDefaults(rules);
+    validateFieldRules(rules, isParentTypeBuiltinType, modelDirective !== undefined, this.configuredAuthProviders);
+
+    // regardless if a model directive is used we generate the policy for iam auth
+    this.setAuthPolicyFlag(rules);
+    this.setUnauthPolicyFlag(rules);
+    this.addFieldToResourceReferences(parent.name.value, field.name.value, rules);
+
     if (modelDirective) {
       // auth on models
       let acm: AccessControlMatrix;
@@ -136,12 +144,12 @@ Static group authorization should perform as expected.`,
       } else {
         acm = this.authModelConfig.get(typeName) as AccessControlMatrix;
       }
-      this.convertModelRulesToRoles(acm, authRules, fieldName);
+      this.convertModelRulesToRoles(acm, rules, fieldName);
     } else {
-      // if @auth is used without @model only generate static group rules
+      // if @auth is used without @model only generate static group rules in the resolver
       // since we only protect the field for non models we store the typeName + fieldName
       // in the authNonModelTypes map
-      const staticGroupRules = authRules.filter((rule: AuthRule) => rule.groups);
+      const staticGroupRules = rules.filter((rule: AuthRule) => rule.groups);
       const typeFieldName = `${typeName}:${fieldName}`;
       const acm = new AccessControlMatrix({
         operations: ['read'],
@@ -371,6 +379,32 @@ Static group authorization should perform as expected.`,
         this.generateIAMPolicyforUnauthRole = true;
         return;
       }
+    }
+  }
+
+  private addTypeToResourceReferences(typeName: string, rules: AuthRule[]): void {
+    const iamPublicRules = rules.filter(r => r.allow === 'public' && r.provider === 'iam' && r.generateIAMPolicy);
+    const iamPrivateRules = rules.filter(r => r.allow === 'private' && r.provider === 'iam' && r.generateIAMPolicy);
+
+    if (iamPublicRules.length > 0) {
+      this.unauthPolicyResources.add(`${typeName}/null`);
+      this.authPolicyResources.add(`${typeName}/null`);
+    }
+    if (iamPrivateRules.length > 0) {
+      this.authPolicyResources.add(`${typeName}/null`);
+    }
+  }
+
+  private addFieldToResourceReferences(typeName: string, fieldName: string, rules: AuthRule[]): void {
+    const iamPublicRules = rules.filter(r => r.allow === 'public' && r.provider === 'iam' && r.generateIAMPolicy);
+    const iamPrivateRules = rules.filter(r => r.allow === 'private' && r.provider === 'iam' && r.generateIAMPolicy);
+
+    if (iamPublicRules.length > 0) {
+      this.unauthPolicyResources.add(`${typeName}/${fieldName}`);
+      this.authPolicyResources.add(`${typeName}/${fieldName}`);
+    }
+    if (iamPrivateRules.length > 0) {
+      this.authPolicyResources.add(`${typeName}/${fieldName}`);
     }
   }
 }
