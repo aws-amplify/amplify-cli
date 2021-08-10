@@ -234,6 +234,11 @@ input ModelSizeInput {
   between: [Int]
 }
 
+enum ModelSortDirection {
+  ASC
+  DESC
+}
+
 type ModelEmployeeConnection {
   items: [Employee]
   nextToken: String
@@ -523,6 +528,11 @@ input ModelSizeInput {
   ge: Int
   gt: Int
   between: [Int]
+}
+
+enum ModelSortDirection {
+  ASC
+  DESC
 }
 
 type ModelPostConnection {
@@ -1323,6 +1333,11 @@ input ModelSizeInput {
   between: [Int]
 }
 
+enum ModelSortDirection {
+  ASC
+  DESC
+}
+
 type ModelPostConnection {
   items: [Post]
   nextToken: String
@@ -1650,6 +1665,11 @@ input ModelSizeInput {
   between: [Int]
 }
 
+enum ModelSortDirection {
+  ASC
+  DESC
+}
+
 type ModelPostConnection {
   items: [Post]
   nextToken: String
@@ -1919,6 +1939,11 @@ input ModelSizeInput {
   ge: Int
   gt: Int
   between: [Int]
+}
+
+enum ModelSortDirection {
+  ASC
+  DESC
 }
 
 type ModelPostConnection {
@@ -2205,6 +2230,11 @@ input ModelSizeInput {
   ge: Int
   gt: Int
   between: [Int]
+}
+
+enum ModelSortDirection {
+  ASC
+  DESC
 }
 
 type ModelPostConnection {
