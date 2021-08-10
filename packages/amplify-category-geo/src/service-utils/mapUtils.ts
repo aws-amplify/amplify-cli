@@ -62,7 +62,7 @@ export const modifyMapResource = async (
 };
 
 function saveCFNParameters(
-  parameters: Pick<MapParameters, 'name' | 'mapStyleType' | 'dataProvider' | 'pricingPlan'>
+  parameters: Pick<MapParameters, 'name' | 'mapStyleType' | 'dataProvider' | 'pricingPlan' | 'isDefault'>
 ) {
     const params = {
       authRoleName: {
@@ -73,7 +73,8 @@ function saveCFNParameters(
       },
       mapName: parameters.name,
       mapStyle: getGeoMapStyle(parameters.dataProvider, parameters.mapStyleType),
-      pricingPlan: parameters.pricingPlan
+      pricingPlan: parameters.pricingPlan,
+      isDefault: parameters.isDefault
     };
     updateParametersFile(params, parameters.name, parametersFileName);
 }
@@ -125,3 +126,58 @@ export const getMapFriendlyNames = async (mapNames: string[]): Promise<string[]>
     return !!mapStyle ? `${mapName} (${mapStyle})` : mapName;
   });
 };
+
+export const getMapIamPolicies = (
+  resourceName: string,
+  crudOptions: string[]
+): { policy: $TSObject[], attributes: string[] } => {
+  const policy = [];
+  const actions = new Set<string>();
+
+  crudOptions.forEach(crudOption => {
+    switch (crudOption) {
+      case 'create':
+        actions.add('geo:CreateMap');
+        break;
+      case 'read':
+        actions.add('geo:DescribeMap');
+        actions.add('geo:GetMapGlyphs');
+        actions.add('geo:GetMapSprites');
+        actions.add('geo:GetMapStyleDescriptor');
+        actions.add('geo:GetMapTile');
+        break;
+      case 'delete':
+        actions.add('geo:DeleteMap');
+        break;
+      default:
+        console.log(`${crudOption} not supported`);
+        return [];
+    }
+  });
+
+  let mapPolicy = {
+    Effect: 'Allow',
+    Action: Array.from(actions),
+    Resource: [
+      {
+        'Fn::Join': [
+          '',
+          [
+            'arn:aws:geo:',
+            { Ref: 'AWS::Region' },
+            ':',
+            { Ref: 'AWS::AccountId' },
+            ':map/',
+            {
+              Ref: `${category}${resourceName}Name`,
+            }
+          ],
+        ],
+      },
+    ],
+  };
+  policy.push(mapPolicy);
+  const attributes = ['Name'];
+
+  return { policy, attributes };
+}
