@@ -38,7 +38,7 @@ clean_e2e_resources: &ref_11
   command: |
     pwd
     cd packages/amplify-e2e-tests
-    yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
+    yarn clean-e2e-resources job $ENV:CIRCLE_BUILD_NUM
   working_directory: ~/repo
 scan_e2e_test_artifacts: &ref_7
   name: Scan And Cleanup E2E Test Artifacts
