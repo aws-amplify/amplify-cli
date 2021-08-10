@@ -72,14 +72,6 @@ found '${rule.provider}' assigned.`,
 export const validateRules = (rules: AuthRule[], configuredAuthProviders: ConfiguredAuthProviders) => {
   for (const rule of rules) {
     validateRuleAuthStrategy(rule, configuredAuthProviders);
-
-    const { queries, mutations, operations } = rule;
-    if (mutations && operations) {
-      console.warn(`It is not recommended to use 'mutations' and 'operations'. The 'operations' argument will be used.`);
-    }
-    if (queries && operations) {
-      console.warn(`It is not recommended to use 'queries' and 'operations'. The 'operations' argument will be used.`);
-    }
     commonRuleValidation(rule);
   }
 };
@@ -92,14 +84,6 @@ export const validateFieldRules = (
 ) => {
   for (const rule of rules) {
     validateRuleAuthStrategy(rule, authProviderConfig);
-
-    const { queries, mutations } = rule;
-    if (queries || mutations) {
-      throw new InvalidDirectiveError(
-        `@auth directives used on field definitions may not specify the 'queries' or 'mutations' arguments. \
-All @auth directives used on field definitions are performed when the field is resolved and can be thought of as 'read' operations.`,
-      );
-    }
 
     if (isParentTypeBuiltinType && rule.operations && rule.operations.length > 0) {
       throw new InvalidDirectiveError(

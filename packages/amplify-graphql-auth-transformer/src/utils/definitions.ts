@@ -1,7 +1,4 @@
 import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-core';
-import { ModelDirectiveConfiguration } from '@aws-amplify/graphql-model-transformer';
-import { AccessControlMatrix } from '../accesscontrol';
-
 export type AuthStrategy = 'owner' | 'groups' | 'public' | 'private';
 export type AuthProvider = 'apiKey' | 'iam' | 'oidc' | 'userPools' | null;
 export type ModelQuery = 'get' | 'list';
@@ -17,8 +14,6 @@ export interface AuthRule {
   groupClaim?: string;
   groups?: string[];
   operations?: ModelOperation[];
-  queries?: ModelQuery[];
-  mutations?: ModelMutation[];
   // Used only for IAM provider to decide if an IAM policy needs to be generated. IAM auth with AdminUI does not need IAM policies
   generateIAMPolicy?: boolean;
 }
