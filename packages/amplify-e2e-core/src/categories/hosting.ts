@@ -164,8 +164,11 @@ export async function createReactTestProject(): Promise<string> {
   const projectName = path.basename(projRoot);
   const projectDir = path.dirname(projRoot);
 
-  spawnSync('npx', ['create-react-app', projectName], { cwd: projectDir });
-
+  let npxPath = 'npx';
+  if (process.platform === 'win32') {
+    npxPath = getScriptRunnerPath().replace('node.exe', 'npx.cmd');
+  }
+  spawnSync(npxPath, ['create-react-app', projectName], { cwd: projectDir });
   return projRoot;
 }
 
