@@ -12,12 +12,10 @@ export type LayerPushSettings = {
 export function amplifyPush(cwd: string, testingWithLatestCodebase: boolean = false): Promise<void> {
   return new Promise((resolve, reject) => {
     //Test detailed status
-    spawn(getCLIPath(testingWithLatestCodebase), ['status -v'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
+    spawn(getCLIPath(testingWithLatestCodebase), ['status', '-v'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
       .wait(/.*/)
       .run((err: Error) => {
-        if (!err) {
-          resolve();
-        } else {
+        if ( err ){
           reject(err);
         }
       });
