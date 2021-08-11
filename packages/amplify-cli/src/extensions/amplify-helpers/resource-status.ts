@@ -391,14 +391,6 @@ export async function getResourceStatus(category?, resourceName?, providerName?,
 export async function showResourceTable(category?, resourceName?, filteredResources?) {
   const amplifyProjectInitStatus = getCloudInitStatus();
 
-  if (amplifyProjectInitStatus === CLOUD_INITIALIZED) {
-    const { envName } = getEnvInfo();
-
-    print.info('');
-    print.info(`${chalk.green('Current Environment')}: ${envName}`);
-    print.info('');
-  }
-
   //Prepare state for view
   const {
     resourcesToBeCreated,
@@ -425,7 +417,6 @@ export async function showResourceTable(category?, resourceName?, filteredResour
   if (tagsUpdated) {
     print.info('\nTag Changes Detected');
   }
-  print.info(`\n${chalk.blueBright("Note: ")}Please use 'amplify status ${ chalk.greenBright("-v")}' to view detailed status and cloudformation-diff.\n`);
 
   if (rootStackUpdated) {
     print.info('\n RootStack Changes Detected');
