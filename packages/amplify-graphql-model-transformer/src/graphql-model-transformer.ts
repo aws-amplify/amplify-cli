@@ -193,8 +193,6 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
   };
 
   transformSchema = (ctx: TransformerTransformSchemaStepContextProvider): void => {
-    // Create Non Model input types
-
     // add the model input conditions
     addModelConditionInputs(ctx);
 
