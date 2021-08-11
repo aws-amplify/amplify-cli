@@ -384,8 +384,9 @@ function waitForLayerSuccessPrintout(
 
     const runtimes = settings.layerName && settings.projName ? settings.runtimes : [];
     for (const runtime of runtimes) {
-      const { displayName, path } = getLayerRuntimeInfo(runtime);
-      const layerRuntimeDir = `[${displayName}]: amplify/backend/function/${settings.projName + settings.layerName}/${path}`;
+      const { displayName, path: runtimePath } = getLayerRuntimeInfo(runtime);
+      const dirPath = path.join('amplify', 'backend', 'function', settings.projName + settings.layerName, runtimePath);
+      const layerRuntimeDir = `[${displayName}]: ${dirPath}`;
       chain.wait(layerRuntimeDir);
     }
   }
