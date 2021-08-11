@@ -379,6 +379,7 @@ function generateFilterInputs(config: IndexDirectiveConfiguration, ctx: Transfor
 }
 
 function makeModelXFilterInputObject(config: IndexDirectiveConfiguration, ctx: TransformerContextProvider): InputObjectTypeDefinitionNode {
+  const supportsConditions = true;
   const { object } = config;
   const name = ModelResourceIDs.ModelFilterInputTypeName(object.name.value);
   const fields = object
@@ -394,8 +395,8 @@ function makeModelXFilterInputObject(config: IndexDirectiveConfiguration, ctx: T
 
       if (isScalar(field.type) || isList) {
         filterTypeName = isList
-          ? ModelResourceIDs.ModelFilterListInputTypeName(baseType, true)
-          : ModelResourceIDs.ModelScalarFilterInputTypeName(baseType, true);
+          ? ModelResourceIDs.ModelFilterListInputTypeName(baseType, !supportsConditions)
+          : ModelResourceIDs.ModelScalarFilterInputTypeName(baseType, !supportsConditions);
       }
 
       return {
