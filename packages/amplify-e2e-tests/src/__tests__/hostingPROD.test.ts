@@ -1,5 +1,5 @@
 import { CloudFront } from 'aws-sdk';
-import { amplifyPublishWithoutUpdate, createReactTestProject, resetBuildCommand } from 'amplify-e2e-core';
+import { amplifyPublishWithoutUpdate, createReactTestProject, getCredentials, resetBuildCommand } from 'amplify-e2e-core';
 
 import { initJSProjectWithProfile, deleteProject, deleteS3Bucket } from 'amplify-e2e-core';
 import { addPRODHosting, removePRODCloudFront, removeHosting, amplifyPushWithoutCodegen } from 'amplify-e2e-core';
@@ -81,7 +81,7 @@ describe('amplify add hosting', () => {
 });
 
 async function getCloudFrontDistribution(cloudFrontDistributionID: string) {
-  const cloudFrontClient = new CloudFront();
+  const cloudFrontClient = new CloudFront(getCredentials());
   const getDistributionResult = await cloudFrontClient
     .getDistribution({
       Id: cloudFrontDistributionID,

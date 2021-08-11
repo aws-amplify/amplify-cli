@@ -1,5 +1,5 @@
 import { nspawn as spawn, getCLIPath, singleSelect, addCircleCITags } from '..';
-import { KEY_DOWN_ARROW } from '../utils';
+import { getCredentials, KEY_DOWN_ARROW } from '../utils';
 import { amplifyRegions } from '../configure';
 
 const defaultSettings = {
@@ -25,6 +25,7 @@ const defaultSettings = {
 export function initJSProjectWithProfile(cwd: string, settings?: Partial<typeof defaultSettings>): Promise<void> {
   const s = { ...defaultSettings, ...settings };
   let env;
+  getCredentials();
 
   if (s.disableAmplifyAppCreation === true) {
     env = {
@@ -88,7 +89,7 @@ export function initJSProjectWithProfile(cwd: string, settings?: Partial<typeof 
 
 export function initAndroidProjectWithProfile(cwd: string, settings: Object): Promise<void> {
   const s = { ...defaultSettings, ...settings };
-
+  getCredentials();
   addCircleCITags(cwd);
 
   return new Promise((resolve, reject) => {
@@ -131,7 +132,7 @@ export function initAndroidProjectWithProfile(cwd: string, settings: Object): Pr
 
 export function initIosProjectWithProfile(cwd: string, settings: Object): Promise<void> {
   const s = { ...defaultSettings, ...settings };
-
+  getCredentials();
   addCircleCITags(cwd);
 
   return new Promise((resolve, reject) => {
@@ -172,6 +173,7 @@ export function initIosProjectWithProfile(cwd: string, settings: Object): Promis
 
 export function initFlutterProjectWithProfile(cwd: string, settings: Object): Promise<void> {
   const s = { ...defaultSettings, ...settings };
+  getCredentials();
 
   addCircleCITags(cwd);
 
@@ -270,6 +272,7 @@ export function initProjectWithAccessKey(
 
 export function initNewEnvWithAccessKey(cwd: string, s: { envName: string; accessKeyId: string; secretAccessKey: string }): Promise<void> {
   addCircleCITags(cwd);
+  getCredentials();
 
   return new Promise((resolve, reject) => {
     let chain = spawn(getCLIPath(), ['init'], {
@@ -309,6 +312,7 @@ export function initNewEnvWithAccessKey(cwd: string, s: { envName: string; acces
 
 export function initNewEnvWithProfile(cwd: string, s: { envName: string }): Promise<void> {
   addCircleCITags(cwd);
+  getCredentials();
 
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['init'], {
@@ -339,6 +343,7 @@ export function initNewEnvWithProfile(cwd: string, s: { envName: string }): Prom
 }
 
 export function amplifyInitSandbox(cwd: string, settings: {}): Promise<void> {
+  getCredentials();
   const s = { ...defaultSettings, ...settings };
   let env;
 
@@ -373,6 +378,7 @@ export function amplifyInitSandbox(cwd: string, settings: {}): Promise<void> {
 }
 
 export function amplifyInitYes(cwd: string): Promise<void> {
+  getCredentials();
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['init', '--yes'], {
       cwd,

@@ -1,7 +1,8 @@
 import { S3 } from 'aws-sdk';
+import { getCredentials } from 'amplify-e2e-core';
 
 export const toBeAS3Bucket = async (bucketName: string) => {
-  const s3 = new S3();
+  const s3 = new S3(getCredentials());
   let pass: boolean;
   try {
     await s3.headBucket({ Bucket: bucketName }).promise();

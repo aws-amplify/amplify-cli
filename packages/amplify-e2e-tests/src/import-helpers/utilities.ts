@@ -9,6 +9,7 @@ import {
   addAuthUserPoolOnlyWithOAuth,
   amplifyPushAuth,
   getBackendAmplifyMeta,
+  getCredentials,
   getProjectMeta,
   getTeamProviderInfo
 } from 'amplify-e2e-core';
@@ -287,7 +288,7 @@ const addAppClient = async (
   const creds = new aws.SharedIniFileCredentials({ profile: profileName });
   aws.config.credentials = creds;
 
-  const cognitoClient = new aws.CognitoIdentityServiceProvider({ region: projectDetails.providers.awscloudformation.Region });
+  const cognitoClient = new aws.CognitoIdentityServiceProvider({ region: projectDetails.providers.awscloudformation.Region, ...getCredentials() });
   const response = await cognitoClient
     .createUserPoolClient({
       ClientName: clientName,
@@ -323,7 +324,7 @@ export const deleteAppClient = async (profileName: string, projectRoot: string, 
   const creds = new aws.SharedIniFileCredentials({ profile: profileName });
   aws.config.credentials = creds;
 
-  const cognitoClient = new aws.CognitoIdentityServiceProvider({ region: projectDetails.providers.awscloudformation.Region });
+  const cognitoClient = new aws.CognitoIdentityServiceProvider({ region: projectDetails.providers.awscloudformation.Region, ...getCredentials() });
   await cognitoClient.deleteUserPoolClient({ ClientId: clientId, UserPoolId: authDetails.meta.UserPoolId }).promise();
 };
 

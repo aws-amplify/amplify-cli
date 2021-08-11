@@ -1,8 +1,9 @@
 import { Pinpoint } from 'aws-sdk';
 import { getCLIPath, nspawn as spawn, singleSelect, amplifyRegions, addCircleCITags, KEY_DOWN_ARROW } from '..';
+import { getCredentials } from '../utils'
 import _ from 'lodash';
 
-const settings = {
+let settings: any = {
   name: '\r',
   envName: 'test',
   editor: '\r',
@@ -12,9 +13,6 @@ const settings = {
   distDir: '\r',
   buildCmd: '\r',
   startCmd: '\r',
-  accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-  sessionToken: process.env.AWS_SESSION_TOKEN,
   region: process.env.CLI_REGION,
   pinpointResourceName: 'testpinpoint',
 };
@@ -43,6 +41,8 @@ const serviceRegionMap = {
 
 export async function pinpointAppExist(pinpointProjectId: string): Promise<boolean> {
   let result = false;
+
+  settings = {...settings, ...getCredentials()};
 
   const pinpointClient = new Pinpoint({
     accessKeyId: settings.accessKeyId,
@@ -73,7 +73,8 @@ export async function pinpointAppExist(pinpointProjectId: string): Promise<boole
 
 export function initProjectForPinpoint(cwd: string): Promise<void> {
   addCircleCITags(cwd);
-
+  getCredentials();
+  settings = {...settings, ...getCredentials()};
   return new Promise((resolve, reject) => {
     let chain = spawn(getCLIPath(), ['init'], {
       cwd,

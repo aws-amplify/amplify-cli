@@ -1,8 +1,9 @@
-import { nspawn as spawn, getCLIPath } from 'amplify-e2e-core';
+import { nspawn as spawn, getCLIPath, getCredentials } from 'amplify-e2e-core';
 
 export async function newPlugin(cwd: string): Promise<string> {
   const pluginPackageDirName = 'newpluginpackage';
 
+  getCredentials();
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['plugin', 'init'], { cwd, stripColors: true })
       .wait('What should be the name of the plugin')
