@@ -124,7 +124,7 @@ function generateNonRuntimeFiles(context: $TSContext) {
   generateTeamProviderInfoFile(context);
   generateGitIgnoreFile(context);
   generateReadMeFile(context);
-  generateHooksSampleFiles(context);
+  generateHooksSampleDirectory(context);
 }
 
 function generateProjectConfigFile(context: $TSContext) {
@@ -179,9 +179,9 @@ function generateReadMeFile(context: $TSContext) {
   writeReadMeFile(readMeFilePath);
 }
 
-function generateHooksSampleFiles(context: $TSContext) {
+function generateHooksSampleDirectory(context: $TSContext) {
   const { projectPath } = context.exeInfo.localEnvInfo;
-  const sampleHookScriptsDirPath = join(__dirname, '..', '..', 'resources', 'sampleHookScripts');
+  const sampleHookScriptsDirPath = join(__dirname, '..', '..', 'resources', 'sampleHooksDirectory');
 
   stateManager.setSampleHooksDir(projectPath, sampleHookScriptsDirPath);
 }

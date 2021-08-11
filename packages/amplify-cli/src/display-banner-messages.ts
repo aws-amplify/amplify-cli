@@ -9,7 +9,10 @@ export async function displayBannerMessages(input: Input) {
     return;
   }
   await displayLayerMigrationMessage();
-  if (skipHooks()) console.log('⚠️ Warning: hooks are skipped because execution environment does not permit Amplify CLI runtime hooks.');
+  if (skipHooks()) {
+    console.log('⚠️ Warning: Amplify runtime hooks are disabled in the current execution environment.');
+    console.log('⚠️ Please refer https://docs.amplify.aws/cli/usage/runtime-hooks for more information.');
+  }
 }
 
 async function displayLayerMigrationMessage() {
