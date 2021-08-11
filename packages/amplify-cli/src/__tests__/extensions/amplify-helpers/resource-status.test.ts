@@ -802,11 +802,9 @@ describe('resource-status', () => {
 
       const hasChanges = await showResourceTable();
       expect(hasChanges).toBe(true);
-
-      expect(print.info).toBeCalledWith('');
-      expect(print.info).toBeCalledWith('Current Environment: test');
-      expect(print.info).toBeCalledWith('');
-
+      expect(print.info).toBeCalledWith(`
+    Current Environment: test
+    `);
       expect(print.table).toBeCalledWith(
         [
           ['Category', 'Resource name', 'Operation', 'Provider plugin'],
