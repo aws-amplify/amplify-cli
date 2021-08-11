@@ -260,7 +260,6 @@ const setLocalFunctionSecretState = (functionName: string, secretDeltas: SecretD
 
   // checking for existance of the file because in the case of function deletion we don't want to create the file again
   if (fs.existsSync(parametersFilePath)) {
-    const params = JSONUtilities.readJson<{ secretNames?: string[] }>(parametersFilePath, { throwIfNotExist: false }) || {};
     createParametersFile(secretsParametersContent, functionName, functionParametersFileName);
   }
 
