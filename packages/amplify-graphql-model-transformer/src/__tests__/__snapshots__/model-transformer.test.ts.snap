@@ -9,7 +9,7 @@ type Post {
   updatedAt: AWSDateTime!
 }
 
-input ModelStringFilterInput {
+input ModelStringInput {
   ne: String
   eq: String
   le: String
@@ -25,7 +25,7 @@ input ModelStringFilterInput {
   size: ModelSizeInput
 }
 
-input ModelIntFilterInput {
+input ModelIntInput {
   ne: Int
   eq: Int
   le: Int
@@ -37,7 +37,7 @@ input ModelIntFilterInput {
   attributeType: ModelAttributeTypes
 }
 
-input ModelFloatFilterInput {
+input ModelFloatInput {
   ne: Float
   eq: Float
   le: Float
@@ -49,14 +49,14 @@ input ModelFloatFilterInput {
   attributeType: ModelAttributeTypes
 }
 
-input ModelBooleanFilterInput {
+input ModelBooleanInput {
   ne: Boolean
   eq: Boolean
   attributeExists: Boolean
   attributeType: ModelAttributeTypes
 }
 
-input ModelIDFilterInput {
+input ModelIDInput {
   ne: ID
   eq: ID
   le: ID
@@ -111,20 +111,20 @@ type ModelPostConnection {
 }
 
 input ModelPostFilterInput {
-  id: ModelIDFilterInput
-  str: ModelStringFilterInput
-  createdAt: ModelStringFilterInput
-  updatedAt: ModelStringFilterInput
+  id: ModelIDInput
+  str: ModelStringInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
   and: [ModelPostFilterInput]
   or: [ModelPostFilterInput]
   not: ModelPostFilterInput
 }
 
 input ModelPostConditionInput {
-  id: ModelIDFilterInput
-  str: ModelStringFilterInput
-  createdAt: ModelStringFilterInput
-  updatedAt: ModelStringFilterInput
+  id: ModelIDInput
+  str: ModelStringInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
   and: [ModelPostConditionInput]
   or: [ModelPostConditionInput]
   not: ModelPostConditionInput
@@ -478,7 +478,7 @@ type Entity {
   updatedAt: AWSDateTime!
 }
 
-input ModelStringFilterInput {
+input ModelStringInput {
   ne: String
   eq: String
   le: String
@@ -494,7 +494,7 @@ input ModelStringFilterInput {
   size: ModelSizeInput
 }
 
-input ModelIntFilterInput {
+input ModelIntInput {
   ne: Int
   eq: Int
   le: Int
@@ -506,7 +506,7 @@ input ModelIntFilterInput {
   attributeType: ModelAttributeTypes
 }
 
-input ModelFloatFilterInput {
+input ModelFloatInput {
   ne: Float
   eq: Float
   le: Float
@@ -518,14 +518,14 @@ input ModelFloatFilterInput {
   attributeType: ModelAttributeTypes
 }
 
-input ModelBooleanFilterInput {
+input ModelBooleanInput {
   ne: Boolean
   eq: Boolean
   attributeExists: Boolean
   attributeType: ModelAttributeTypes
 }
 
-input ModelIDFilterInput {
+input ModelIDInput {
   ne: ID
   eq: ID
   le: ID
@@ -585,7 +585,7 @@ type Post {
   updatedAt: AWSTimestamp
 }
 
-input ModelStringFilterInput {
+input ModelStringInput {
   ne: String
   eq: String
   le: String
@@ -601,7 +601,7 @@ input ModelStringFilterInput {
   size: ModelSizeInput
 }
 
-input ModelIntFilterInput {
+input ModelIntInput {
   ne: Int
   eq: Int
   le: Int
@@ -613,7 +613,7 @@ input ModelIntFilterInput {
   attributeType: ModelAttributeTypes
 }
 
-input ModelFloatFilterInput {
+input ModelFloatInput {
   ne: Float
   eq: Float
   le: Float
@@ -625,14 +625,14 @@ input ModelFloatFilterInput {
   attributeType: ModelAttributeTypes
 }
 
-input ModelBooleanFilterInput {
+input ModelBooleanInput {
   ne: Boolean
   eq: Boolean
   attributeExists: Boolean
   attributeType: ModelAttributeTypes
 }
 
-input ModelIDFilterInput {
+input ModelIDInput {
   ne: ID
   eq: ID
   le: ID
@@ -687,20 +687,20 @@ type ModelPostConnection {
 }
 
 input ModelPostFilterInput {
-  id: ModelIDFilterInput
-  str: ModelStringFilterInput
-  createdAt: ModelIntFilterInput
-  updatedAt: ModelIntFilterInput
+  id: ModelIDInput
+  str: ModelStringInput
+  createdAt: ModelIntInput
+  updatedAt: ModelIntInput
   and: [ModelPostFilterInput]
   or: [ModelPostFilterInput]
   not: ModelPostFilterInput
 }
 
 input ModelPostConditionInput {
-  id: ModelIDFilterInput
-  str: ModelStringFilterInput
-  createdAt: ModelIntFilterInput
-  updatedAt: ModelIntFilterInput
+  id: ModelIDInput
+  str: ModelStringInput
+  createdAt: ModelIntInput
+  updatedAt: ModelIntInput
   and: [ModelPostConditionInput]
   or: [ModelPostConditionInput]
   not: ModelPostConditionInput
@@ -965,7 +965,7 @@ type Post {
   str: String
 }
 
-input ModelStringFilterInput {
+input ModelStringInput {
   ne: String
   eq: String
   le: String
@@ -981,7 +981,7 @@ input ModelStringFilterInput {
   size: ModelSizeInput
 }
 
-input ModelIntFilterInput {
+input ModelIntInput {
   ne: Int
   eq: Int
   le: Int
@@ -993,7 +993,7 @@ input ModelIntFilterInput {
   attributeType: ModelAttributeTypes
 }
 
-input ModelFloatFilterInput {
+input ModelFloatInput {
   ne: Float
   eq: Float
   le: Float
@@ -1005,14 +1005,14 @@ input ModelFloatFilterInput {
   attributeType: ModelAttributeTypes
 }
 
-input ModelBooleanFilterInput {
+input ModelBooleanInput {
   ne: Boolean
   eq: Boolean
   attributeExists: Boolean
   attributeType: ModelAttributeTypes
 }
 
-input ModelIDFilterInput {
+input ModelIDInput {
   ne: ID
   eq: ID
   le: ID
@@ -1067,16 +1067,16 @@ type ModelPostConnection {
 }
 
 input ModelPostFilterInput {
-  id: ModelIDFilterInput
-  str: ModelStringFilterInput
+  id: ModelIDInput
+  str: ModelStringInput
   and: [ModelPostFilterInput]
   or: [ModelPostFilterInput]
   not: ModelPostFilterInput
 }
 
 input ModelPostConditionInput {
-  id: ModelIDFilterInput
-  str: ModelStringFilterInput
+  id: ModelIDInput
+  str: ModelStringInput
   and: [ModelPostConditionInput]
   or: [ModelPostConditionInput]
   not: ModelPostConditionInput
@@ -1339,7 +1339,7 @@ type Post {
   updatedOn: AWSDateTime!
 }
 
-input ModelStringFilterInput {
+input ModelStringInput {
   ne: String
   eq: String
   le: String
@@ -1355,7 +1355,7 @@ input ModelStringFilterInput {
   size: ModelSizeInput
 }
 
-input ModelIntFilterInput {
+input ModelIntInput {
   ne: Int
   eq: Int
   le: Int
@@ -1367,7 +1367,7 @@ input ModelIntFilterInput {
   attributeType: ModelAttributeTypes
 }
 
-input ModelFloatFilterInput {
+input ModelFloatInput {
   ne: Float
   eq: Float
   le: Float
@@ -1379,14 +1379,14 @@ input ModelFloatFilterInput {
   attributeType: ModelAttributeTypes
 }
 
-input ModelBooleanFilterInput {
+input ModelBooleanInput {
   ne: Boolean
   eq: Boolean
   attributeExists: Boolean
   attributeType: ModelAttributeTypes
 }
 
-input ModelIDFilterInput {
+input ModelIDInput {
   ne: ID
   eq: ID
   le: ID
@@ -1441,16 +1441,16 @@ type ModelPostConnection {
 }
 
 input ModelPostFilterInput {
-  id: ModelIDFilterInput
-  str: ModelStringFilterInput
+  id: ModelIDInput
+  str: ModelStringInput
   and: [ModelPostFilterInput]
   or: [ModelPostFilterInput]
   not: ModelPostFilterInput
 }
 
 input ModelPostConditionInput {
-  id: ModelIDFilterInput
-  str: ModelStringFilterInput
+  id: ModelIDInput
+  str: ModelStringInput
   and: [ModelPostConditionInput]
   or: [ModelPostConditionInput]
   not: ModelPostConditionInput
