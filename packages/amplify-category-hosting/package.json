@@ -36,6 +36,16 @@
     "collectCoverageFrom": [
       "lib/**/*.js",
       "index.js"
+    ],
+    "testURL": "http://localhost",
+    "testRegex": "((\\.|/)(test|spec))\\.(jsx?|tsx?)$",
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "jsx",
+      "json",
+      "node"
     ]
   }
 }
