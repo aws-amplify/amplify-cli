@@ -26,6 +26,13 @@ jest.mock('folder-hash', () => ({
 
 jest.mock('chalk', () => ({
   green: jest.fn().mockImplementation(input => input),
+  yellow: jest.fn().mockImplementation(input => input),
+  red: jest.fn().mockImplementation(input => input),
+  blue: jest.fn().mockImplementation(input => input),
+  gray: jest.fn().mockImplementation(input => input),
+  bgRgb: jest.fn().mockImplementation(input => input),
+  blueBright: jest.fn().mockImplementation(input => input),
+  greenBright: jest.fn().mockImplementation(input => input),
 }));
 
 jest.mock('../../../extensions/amplify-helpers/print', () => ({
@@ -719,10 +726,10 @@ describe('resource-status', () => {
     it('returns false and print empty markdown table format when no changed resources exists', async () => {
       const hasChanges = await showResourceTable();
       expect(hasChanges).toBe(false);
-      expect(print.table).toBeCalledWith([['Category', 'Resource name', 'Operation', 'Provider plugin']], { format: 'markdown' });
+      expect(print.table).toBeCalledWith([['Category', 'Resource name', 'Operation', 'Provider plugin']], { format: 'lean' });
     });
 
-    it('returns true and print resources as markdown table format when any changed resources exists', async () => {
+    it('returns true and print resources as lean table format when any changed resources exists', async () => {
       stateManagerMock.getMeta.mockReturnValue({
         providers: {
           awscloudformation: {},
@@ -810,7 +817,7 @@ describe('resource-status', () => {
           ['Storage', 'testTable', 'Unlink', 'awscloudformation'],
           ['Function', 'lambda3', 'Delete', 'awscloudformation'],
         ],
-        { format: 'markdown' },
+        { format: 'lean' },
       );
     });
   });

@@ -25,8 +25,8 @@ export const generateGetRequestTemplate = (): string => {
   const statements: Expression[] = [
     set(ref('GetRequest'), obj({ version: str('2018-05-29'), operation: str('GetItem') })),
     ifElse(
-      ref('ctx.stash.metadata.modelKeyObject'),
-      set(ref('Key'), ref('ctx.stash.metadata.modelKeyObject')),
+      ref('ctx.stash.metadata.modelObjectKey'),
+      set(ref('key'), ref('ctx.stash.metadata.modelObjectKey')),
       compoundExpression([set(ref('key'), obj({ id: methodCall(ref('util.dynamodb.toDynamoDB'), ref('ctx.args.id')) }))]),
     ),
     qref(methodCall(ref('GetRequest.put'), str('key'), ref('key'))),
@@ -38,7 +38,7 @@ export const generateGetRequestTemplate = (): string => {
 
 export const generateListRequestTemplate = (): string => {
   const requestVariable = 'ListRequest';
-  const modelQueryObj = 'ctx.stash.modelQuery';
+  const modelQueryObj = 'ctx.stash.modelQueryExpression';
   const indexNameVariable = 'ctx.stash.metadata.index';
   const expression = compoundExpression([
     set(ref('limit'), methodCall(ref(`util.defaultIfNull`), ref('context.args.limit'), int(100))),
@@ -70,14 +70,13 @@ export const generateListRequestTemplate = (): string => {
       ]),
     ),
     ifElse(
-      not(methodCall(ref('util.isNull'), ref(modelQueryObj))),
+      and([
+        not(methodCall(ref('util.isNull'), ref(modelQueryObj))),
+        not(methodCall(ref('util.isNullOrEmpty'), ref(`${modelQueryObj}.expression`))),
+      ]),
       compoundExpression([
-        set(
-          ref('Query'),
-          methodCall(ref('util.parseJson'), methodCall(ref('util.transform.toDynamoDBFilterExpression'), ref(modelQueryObj))),
-        ),
         qref(methodCall(ref(`${requestVariable}.put`), str('operation'), str('Query'))),
-        qref(methodCall(ref(`${requestVariable}.put`), str('query'), ref('Query'))),
+        qref(methodCall(ref(`${requestVariable}.put`), str('query'), ref(modelQueryObj))),
         ifElse(
           and([not(methodCall(ref('util.isNull'), ref('ctx.args.sortDirection'))), equals(ref('ctx.args.sortDirection'), str('DESC'))]),
           set(ref(`${requestVariable}.scanIndexForward`), bool(false)),

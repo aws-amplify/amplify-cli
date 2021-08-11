@@ -1,18 +1,16 @@
 import { TransformHostProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import {
-  ElasticSearchDataSourceOptions,
-  MappingTemplateProvider
-} from '@aws-amplify/graphql-transformer-interfaces/lib/graphql-api-provider';
+import { SearchableDataSourceOptions, MappingTemplateProvider } from '@aws-amplify/graphql-transformer-interfaces/lib/graphql-api-provider';
 import { Duration, Stack, Token } from '@aws-cdk/core';
-import { ElasticsearchDataSource } from './cdk-compat/elasticsearch-datasource';
+import { SearchableDataSource } from './cdk-compat/searchable-datasource';
 import {
-  BaseDataSource, CfnResolver,
+  BaseDataSource,
+  CfnResolver,
   DataSourceOptions,
   DynamoDbDataSource,
   HttpDataSource,
   HttpDataSourceOptions,
   LambdaDataSource,
-  NoneDataSource
+  NoneDataSource,
 } from '@aws-cdk/aws-appsync';
 import { ITable } from '@aws-cdk/aws-dynamodb';
 import { CfnFunction, Code, Function, IFunction, ILayerVersion, Runtime } from '@aws-cdk/aws-lambda';
@@ -22,14 +20,12 @@ import { InlineTemplate, S3MappingFunctionCode } from './cdk-compat/template-ass
 import { toCamelCase } from 'graphql-transformer-common';
 import { GraphQLApi } from './graphql-api';
 
-
 export interface DefaultTransformHostOptions {
   readonly api: GraphQLApi;
 }
 
-
 export class DefaultTransformHost implements TransformHostProvider {
-  private dataSources: Map<string, BaseDataSource> = new Map()
+  private dataSources: Map<string, BaseDataSource> = new Map();
   private api: GraphQLApi;
 
   public constructor(options: DefaultTransformHostOptions) {
@@ -49,17 +45,17 @@ export class DefaultTransformHost implements TransformHostProvider {
     }
   };
 
-  addElasticSearchDataSource(
+  addSearchableDataSource(
     name: string,
     awsRegion: string,
     endpoint: string,
-    options?: ElasticSearchDataSourceOptions,
+    options?: SearchableDataSourceOptions,
     stack?: Stack,
-  ): ElasticsearchDataSource {
+  ): SearchableDataSource {
     if (this.dataSources.has(name)) {
       throw new Error(`DataSource ${name} already exists in the API`);
     }
-    const data = this.doAddElasticSearchDataSource(name, endpoint, awsRegion, options, stack);
+    const data = this.doAddSearchableDataSource(name, endpoint, awsRegion, options, stack);
     this.dataSources.set(options?.name || name, data);
     return data;
   }
@@ -259,22 +255,22 @@ export class DefaultTransformHost implements TransformHostProvider {
   }
 
   /**
-   * add a new elasticsearch data source to this API
+   * add a new searchable data source to this API
    *
    * @param id The data source's id
-   * @param endpoint The elasticsearch endpoint
-   * @param region The elasticsearch datasource region
+   * @param endpoint The searchable endpoint
+   * @param region The searchable datasource region
    * @param options The optional configuration for this data source
-   * @param stack Stack to which the elasticsearch datasource needs to be created in
+   * @param stack Stack to which the searchable datasource needs to be created in
    */
-  protected doAddElasticSearchDataSource(
+  protected doAddSearchableDataSource(
     id: string,
     endpoint: string,
     region: string,
-    options?: ElasticSearchDataSourceOptions,
+    options?: SearchableDataSourceOptions,
     stack?: Stack,
-  ): ElasticsearchDataSource {
-    return new ElasticsearchDataSource(stack ?? this.api, id, {
+  ): SearchableDataSource {
+    return new SearchableDataSource(stack ?? this.api, id, {
       api: this.api,
       name: options?.name,
       endpoint,
