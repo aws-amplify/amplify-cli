@@ -146,6 +146,8 @@ commands:
             - run: nvm install 14.14.0
             - run: nvm use 14.14.0
             - run: npm install -g yarn
+            - run: npm install -g amplify-app
+            - run: npm install -g @aws-amplify/cli
   install_java:
     description: Install Java on Linux and Docker images
     parameters:
@@ -874,7 +876,7 @@ jobs:
           name: Run cleanup script
           command: |
             cd packages/amplify-e2e-tests
-            yarn clean-e2e-resources workflow ${CIRCLE_WORKFLOW_ID}
+            yarn clean-e2e-resources workflow $ENV:CIRCLE_WORKFLOW_ID
           no_output_timeout: 90m
       - run: *ref_7
       - store_artifacts:

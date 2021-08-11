@@ -149,6 +149,8 @@ commands:
             - run: nvm install 14.14.0
             - run: nvm use 14.14.0
             - run: npm install -g yarn
+            - run: npm install -g amplify-app
+            - run: npm install -g @aws-amplify/cli
   install_java:
     description: 'Install Java on Linux and Docker images'
     parameters:
