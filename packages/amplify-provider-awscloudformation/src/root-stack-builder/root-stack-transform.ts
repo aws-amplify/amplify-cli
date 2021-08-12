@@ -4,7 +4,7 @@ import { AmplifyRootStack, AmplifyRootStackOutputs } from './root-stack-builder'
 import { RootStackSythesizer } from './stackSynthesizer';
 import { App } from '@aws-cdk/core';
 import * as cdk from '@aws-cdk/core';
-import { buildOverrideDir } from '../utils/override-skeleton-generator';
+import { buildOverrideDir } from 'amplify-cli-core';
 
 export enum CommandType {
   'PUSH',

@@ -2,7 +2,6 @@
     entry code for amplify override root
 */
 
-//import { generateOverrideSkeleton } from '../../utils/override-skeleton-generator';
 import path from 'path';
 import { generateOverrideSkeleton } from 'amplify-cli-core';
 
