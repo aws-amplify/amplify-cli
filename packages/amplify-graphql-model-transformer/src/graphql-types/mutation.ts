@@ -140,7 +140,7 @@ export const makeMutationConditionInput = (
   object: ObjectTypeDefinitionNode,
 ): InputObjectTypeDefinitionNode => {
   const input = makeConditionFilterInput(ctx, name, object);
-  const idField = input.fields.find(f => f.name === 'id' && f.getTypeName() === 'ID');
+  const idField = input.fields.find(f => f.name === 'id' && f.getTypeName() === 'ModelIDInput');
   if (idField) {
     input.removeField(idField);
   }
