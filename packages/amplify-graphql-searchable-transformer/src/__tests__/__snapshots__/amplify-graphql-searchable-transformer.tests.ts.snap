@@ -253,7 +253,7 @@ input ModelEmployeeFilterInput {
   id: ModelIDInput
   firstName: ModelStringInput
   lastName: ModelStringInput
-  type: EmploymentType
+  type: ModelEmploymentTypeInput
   and: [ModelEmployeeFilterInput]
   or: [ModelEmployeeFilterInput]
   not: ModelEmployeeFilterInput
@@ -273,12 +273,6 @@ input CreateEmployeeInput {
   firstName: String!
   lastName: String!
   type: EmploymentType!
-}
-
-type Mutation {
-  createEmployee(input: CreateEmployeeInput!, condition: ModelEmployeeConditionInput): Employee
-  updateEmployee(input: UpdateEmployeeInput!, condition: ModelEmployeeConditionInput): Employee
-  deleteEmployee(input: DeleteEmployeeInput!, condition: ModelEmployeeConditionInput): Employee
 }
 
 input UpdateEmployeeInput {
