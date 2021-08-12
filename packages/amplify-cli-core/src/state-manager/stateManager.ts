@@ -1,11 +1,18 @@
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import _ from 'lodash';
+<<<<<<< HEAD
 import { $TSAny, $TSMeta, $TSTeamProviderInfo, DeploymentSecrets, HooksConfig, PathConstants } from '..';
 import { SecretFileMode } from '../cliConstants';
 import { JSONUtilities } from '../jsonUtilities';
 import { HydrateTags, ReadTags, Tag } from '../tags';
+=======
+>>>>>>> d36fae7f6 (Custom policy implementation)
 import { pathManager } from './pathManager';
+import { $TSMeta, $TSTeamProviderInfo, $TSCustomPolicies, $TSAny, DeploymentSecrets } from '..';
+import { JSONUtilities } from '../jsonUtilities';
+import _ from 'lodash';
+import { SecretFileMode } from '../cliConstants';
 
 export type GetOptions<T> = {
   throwIfNotExist?: boolean;
@@ -74,6 +81,16 @@ export class StateManager {
     };
 
     return this.getData<$TSTeamProviderInfo>(filePath, mergedOptions);
+  };
+
+  getCustomPolicies = (projectPath: string): $TSCustomPolicies => {
+    const filePath = pathManager.getCustomPoliciesPath(projectPath);
+
+    if (!fs.existsSync(filePath) || !fs.statSync(filePath).isFile) {
+      return undefined;
+    }
+    const data = JSONUtilities.readJson<$TSCustomPolicies>(filePath);
+    return data;
   };
 
   localEnvInfoExists = (projectPath?: string): boolean => this.doesExist(pathManager.getLocalEnvFilePath, projectPath);

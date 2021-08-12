@@ -24,6 +24,7 @@ export * from './cliGetCategories';
 export * from './cliRemoveResourcePrompt';
 export * from './cliViewAPI';
 export * from './hooks';
+export * from './customPoliciesType'
 
 // Temporary types until we can finish full type definition across the whole CLI
 
@@ -178,6 +179,9 @@ export type $TSMeta = any;
 
 // Use it for all file content read from team-provider-info.json
 export type $TSTeamProviderInfo = any;
+
+//Use it for all file content read from custom-policies.json
+export type $TSCustomPolicies = any;
 
 // Use it for all object initializer usages: {}
 export type $TSObject = Record<string, $TSAny>;

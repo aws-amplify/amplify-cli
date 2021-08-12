@@ -1,3 +1,4 @@
+import { JSONUtilities, pathManager } from 'amplify-cli-core';
 import fs from 'fs-extra';
 import path from 'path';
 import uuid from 'uuid';
@@ -96,6 +97,8 @@ export const addResource = async (
 
   }
 
+  await addCustomPoliciesFileForContainer(category, resourceName);
+
   context.print.success(`Successfully added resource ${resourceName} locally.`);
   context.print.info('');
   context.print.success('Next steps:');
@@ -115,6 +118,25 @@ export const addResource = async (
 
   return resourceName;
 };
+
+export async function addCustomPoliciesFileForContainer(categoryName, resourceName)
+{
+  const destDir = pathManager.getBackendDirPath();
+  const fileName = "custom-iam-policy-documents.json";
+  const addCustomPoliciesPath = path.join(
+    destDir,
+    categoryName,
+    resourceName,
+    fileName
+  )
+  const defaultCustomPolicies = {
+      "policies": [
+          {
+          }
+      ]
+  }
+  JSONUtilities.writeJson(addCustomPoliciesPath, defaultCustomPolicies);
+}
 
 const getResourceDependencies = async ({
   restrictAccess,
