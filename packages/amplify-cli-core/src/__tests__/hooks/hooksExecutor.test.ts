@@ -118,18 +118,6 @@ describe('hooksExecutioner tests', () => {
     expect(execa).toHaveBeenCalledTimes(0);
   });
 
-  //   TODO: complete the following test:
-  // test('should exit with exit code 1 if execa process exit with non zero exit', async () => {
-  //   jest.clearAllMocks();
-  //   const mockExit = jest.spyOn(process, 'exit').mockImplementation(() => {
-  //     return undefined as never;
-  //   });
-  //   await executeHooks({ input: { command: 'push', plugin: 'core' } }, 'pre');
-  //   expect(execa).toHaveBeenCalledTimes(1);
-  //   expect(process.exit).toHaveBeenCalledTimes(1);
-  //   expect(mockExit).toBeCalledWith(1);
-  // });
-
   test('should execute in specificity execution order', async () => {
     await executeHooks({ input: { command: 'add', plugin: 'auth' } }, 'pre');
     expect(execa).toHaveBeenNthCalledWith(1, pathToNodeRuntime, [path.join(testProjectHooksDirPath, preAddFileName)], expect.anything());

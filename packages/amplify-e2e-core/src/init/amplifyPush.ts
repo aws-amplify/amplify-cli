@@ -246,3 +246,17 @@ export function amplifyPushMissingFuncSecret(cwd: string, newSecretValue: string
       .run(err => (err ? reject(err) : resolve()));
   });
 }
+
+export function amplifyPushWithNoChanges(cwd: string, testingWithLatestCodebase: boolean = false): Promise<void> {
+  return new Promise((resolve, reject) => {
+    spawn(getCLIPath(testingWithLatestCodebase), ['push'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
+      .wait('No changes detected')
+      .run((err: Error) => {
+        if (!err) {
+          resolve();
+        } else {
+          reject(err);
+        }
+      });
+  });
+}

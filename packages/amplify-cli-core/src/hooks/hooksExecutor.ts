@@ -10,7 +10,7 @@ import execa from 'execa';
 import { HooksHandler } from './hooksHandler';
 import _ from 'lodash';
 import { getLogger } from '../logger/index';
-
+import { EOL } from 'os';
 const logger = getLogger('amplify-cli-core', 'hooks/hooksExecutioner.ts');
 
 export const executeHooks = async (
@@ -107,9 +107,13 @@ const exec = async (
         data: dataParameter,
         error: errorParameter,
       }),
+      stripFinalNewline: false,
     });
     childProcess?.stdout?.pipe(process.stdout);
-    await childProcess;
+    const childProcessResult = await childProcess;
+    if (!childProcessResult?.stdout?.endsWith(EOL)) {
+      console.log();
+    }
     logger.info(`hooks file: ${execFileMeta.fileName} execution ended`);
   } catch (err) {
     logger.info(`hooks file: ${execFileMeta.fileName} execution error - ${JSON.stringify(err)}`);
@@ -119,8 +123,8 @@ const exec = async (
     if (err?.exitCode) {
       console.log(`\n${execFileMeta.baseName} hook script exited with exit code ${err.exitCode}`);
     }
-    console.log('exiting Amplify process...\n');
-    logger.error('hook script exited with error code', err);
+    console.log('\nexiting Amplify process...\n');
+    logger.error('hook script exited with error', err);
     process.exit(1);
   }
 

@@ -10,7 +10,7 @@ if [ -z "$(which jq)" ]; then
 fi
 
 parameters=`cat`
-error=$(jq -r '.error' <<< "$parameters")
+error=$(jq -r '.error // empty' <<< "$parameters")
 data=$(jq -r '.data' <<< "$parameters")
 
 # 
