@@ -43,7 +43,7 @@ import { fileLogger } from './utils/aws-logger';
 import { APIGW_AUTH_STACK_LOGICAL_ID, loadApiWithPrivacyParams } from './utils/consolidate-apigw-policies';
 import { createEnvLevelConstructs } from './utils/env-level-constructs';
 import { NETWORK_STACK_LOGICAL_ID } from './network/stack';
-import { preProcessCFNTemplate } from './pre-push-cfn-processor/cfn-pre-processor';
+import { preProcessCFNTemplate, writeCustomPoliciesToCFNTemplate } from './pre-push-cfn-processor/cfn-pre-processor';
 import { AUTH_TRIGGER_STACK, AUTH_TRIGGER_TEMPLATE } from './utils/upload-auth-trigger-template';
 import { ensureValidFunctionModelDependencies } from './utils/remove-dependent-function';
 import { legacyLayerMigration, postPushLambdaLayerCleanup, prePushLambdaLayerPrompt } from './lambdaLayerInvocations';
@@ -759,6 +759,7 @@ async function updateS3Templates(context: $TSContext, resourcesToBeUpdated: $TSA
     const { resourceDir, cfnFiles } = getCfnFiles(category, resourceName);
 
     for (const cfnFile of cfnFiles) {
+      await writeCustomPoliciesToCFNTemplate(resourceDir, cfnFile, category, path.join(resourceDir, cfnFile));
       const transformedCFNPath = await preProcessCFNTemplate(path.join(resourceDir, cfnFile));
       promises.push(uploadTemplateToS3(context, transformedCFNPath, category, resourceName, amplifyMeta));
     }
