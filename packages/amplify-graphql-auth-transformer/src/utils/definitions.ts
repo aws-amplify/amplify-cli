@@ -1,9 +1,18 @@
 import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-core';
 export type AuthStrategy = 'owner' | 'groups' | 'public' | 'private';
-export type AuthProvider = 'apiKey' | 'iam' | 'oidc' | 'userPools' | null;
+export type AuthProvider = 'apiKey' | 'iam' | 'oidc' | 'userPools';
 export type ModelQuery = 'get' | 'list';
 export type ModelMutation = 'create' | 'update' | 'delete';
 export type ModelOperation = 'create' | 'update' | 'delete' | 'read';
+
+export interface RolesByProvider {
+  cognitoStaticGroupRoles: Array<RoleDefinition>;
+  cognitoDynamicRoles: Array<RoleDefinition>;
+  oidcStaticGroupRoles: Array<RoleDefinition>;
+  oidcDynamicRoles: Array<RoleDefinition>;
+  iamRoles?: Array<RoleDefinition>;
+  apiKeyRoles: Array<RoleDefinition>;
+}
 
 export interface AuthRule {
   allow: AuthStrategy;
@@ -16,6 +25,14 @@ export interface AuthRule {
   operations?: ModelOperation[];
   // Used only for IAM provider to decide if an IAM policy needs to be generated. IAM auth with AdminUI does not need IAM policies
   generateIAMPolicy?: boolean;
+}
+
+export interface RoleDefinition {
+  provider: AuthProvider;
+  strategy: AuthStrategy;
+  static: boolean;
+  claim?: string;
+  entity?: string;
 }
 
 export interface AuthDirective {

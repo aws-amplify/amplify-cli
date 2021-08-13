@@ -63,7 +63,11 @@ export class AccessControlMatrix {
     return this.roles.includes(role);
   }
 
-  public getResources(): Array<string> {
+  public getRoles(): Array<string> {
+    return this.roles;
+  }
+
+  public getResources(): Readonly<Array<string>> {
     return this.resources;
   }
 
@@ -81,6 +85,33 @@ export class AccessControlMatrix {
     for (let i = 0; i < this.roles.length; i++) {
       this.matrix[i][resourceIndex] = new Array(this.operations.length).fill(false);
     }
+  }
+
+  /**
+   * Given an operation returns the roles which have access to at least one resource
+   * If fullAccess is true then it returns roles which have operation access on all resources
+   * @param operation string
+   * @param fullAccess boolean
+   * @returns array of roles
+   */
+  public getRolesPerOperation(operation: string, fullAccess: boolean = false): Array<string> {
+    this.validate({ operations: [operation] });
+    const operationIndex = this.operations.indexOf(operation);
+    const roles = new Array<string>();
+    for (let x = 0; x < this.roles.length; x++) {
+      let hasOperation: boolean = false;
+      if (fullAccess) {
+        hasOperation = this.resources.every((resource, idx) => {
+          return this.matrix[x][idx][operationIndex];
+        });
+      } else {
+        hasOperation = this.resources.some((resource, idx) => {
+          return this.matrix[x][idx][operationIndex];
+        });
+      }
+      if (hasOperation) roles.push(this.roles[x]);
+    }
+    return roles;
   }
 
   /**
