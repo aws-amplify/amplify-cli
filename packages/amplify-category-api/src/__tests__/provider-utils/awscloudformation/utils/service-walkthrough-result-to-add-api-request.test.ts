@@ -21,6 +21,10 @@ describe('walkthrough result to AddApiRequest conversion', () => {
           additionalAuthenticationProviders: ['otherAuth'],
         },
       },
+      logConfig: {
+        excludeVerboseContent: true,
+        fieldLogLevel: 'ERROR',
+      },
     };
     const result = serviceWalkthroughResultToAddApiRequest(walkthroughResultStub);
     expect(result).toMatchSnapshot();

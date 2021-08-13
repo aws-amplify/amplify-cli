@@ -14,5 +14,6 @@ export const serviceWalkthroughResultToAddApiRequest = (result): AddApiRequest =
     defaultAuthType: authConfigToAppSyncAuthType(result.output.authConfig.defaultAuthentication),
     additionalAuthTypes: (result.output.authConfig.additionalAuthenticationProviders || []).map(authConfigToAppSyncAuthType),
     conflictResolution: resolverConfigToConflictResolution(result.resolverConfig),
+    logConfig: result.logConfig,
   },
 });

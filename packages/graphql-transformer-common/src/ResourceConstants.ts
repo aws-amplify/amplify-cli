@@ -12,6 +12,7 @@ export class ResourceConstants {
     APIKeyLogicalID: 'GraphQLAPIKey',
     AuthRolePolicy: 'AuthRolePolicy',
     UnauthRolePolicy: 'UnauthRolePolicy',
+    GraphQLAPIApiLogsRoleLogicalID: 'GraphQLAPIApiLogsRole',
 
     // Elasticsearch
     ElasticsearchAccessIAMRoleLogicalID: 'ElasticSearchAccessIAMRole',

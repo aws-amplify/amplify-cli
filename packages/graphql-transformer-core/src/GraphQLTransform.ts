@@ -23,8 +23,10 @@ import { ITransformer } from './ITransformer';
 import { validateModelSchema } from './validation';
 import { TransformFormatter } from './TransformFormatter';
 import { TransformConfig, SyncUtils } from './util';
-import { SyncResourceIDs } from 'graphql-transformer-common';
+import { ResourceConstants, SyncResourceIDs } from 'graphql-transformer-common';
 import { FeatureFlagProvider, NoopFeatureFlagProvider } from './FeatureFlags';
+import { AppSync, Fn, IAM } from 'cloudform-types';
+import Resource from 'cloudform-types/types/resource';
 
 function isFunction(obj: any) {
   return obj && typeof obj === 'function';
@@ -193,13 +195,19 @@ export interface GraphQLTransformOptions {
   // transform config which can change the behavior of the transformer
   transformConfig?: TransformConfig;
   featureFlags?: FeatureFlagProvider;
+  logConfig?: LogConfig;
 }
 export type StackMapping = { [resourceId: string]: string };
+export type LogConfig = {
+  excludeVerboseContent: boolean;
+  fieldLogLevel: 'NONE' | 'ERROR' | 'ALL';
+};
 export class GraphQLTransform {
   private transformers: ITransformer[];
   private stackMappingOverrides: StackMapping;
   private transformConfig: TransformConfig;
   private featureFlags: FeatureFlagProvider;
+  private logConfig: LogConfig;
 
   // A map from `${directive}.${typename}.${fieldName?}`: true
   // that specifies we have run already run a directive at a given location.
@@ -215,6 +223,7 @@ export class GraphQLTransform {
     this.transformConfig = options.transformConfig || {};
     // check if this is an sync enabled project
     this.featureFlags = options.featureFlags || new NoopFeatureFlagProvider();
+    this.logConfig = options.logConfig;
   }
 
   /**
@@ -308,6 +317,10 @@ export class GraphQLTransform {
     }
     // Format the context into many stacks.
     this.updateContextForStackMappingOverrides(context);
+    // Setup log config
+    if (this.logConfig) {
+      this.createLogConfig(context);
+    }
     const formatter = new TransformFormatter();
     return formatter.format(context);
   }
@@ -323,6 +336,45 @@ export class GraphQLTransform {
       [SyncResourceIDs.syncDataSourceID]: SyncUtils.createSyncTable(),
     };
     context.mergeResources(syncResources);
+  }
+
+  private createLogConfig(context: TransformerContext) {
+    const graphqlApi = context.getResource(ResourceConstants.RESOURCES.GraphQLAPILogicalID) as AppSync.GraphQLApi;
+    let properties = {
+      ...graphqlApi.Properties,
+      LogConfig: this.makeLogConfig(this.logConfig),
+    };
+    const updated = new AppSync.GraphQLApi(properties);
+    const resources: Record<string, Resource> = {
+      [ResourceConstants.RESOURCES.GraphQLAPIApiLogsRoleLogicalID]: this.makeLogRole(),
+    };
+    context.mergeResources(resources);
+    context.setResource(ResourceConstants.RESOURCES.GraphQLAPILogicalID, updated);
+  }
+
+  private makeLogConfig(logConfig: LogConfig) {
+    return new AppSync.GraphQLApi.LogConfig({
+      FieldLogLevel: logConfig.fieldLogLevel,
+      CloudWatchLogsRoleArn: Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPIApiLogsRoleLogicalID, 'Arn'),
+    });
+  }
+
+  private makeLogRole() {
+    return new IAM.Role({
+      AssumeRolePolicyDocument: {
+        Version: '2012-10-17',
+        Statement: [
+          {
+            Effect: 'Allow',
+            Principal: {
+              Service: 'appsync.amazonaws.com',
+            },
+            Action: 'sts:AssumeRole',
+          },
+        ],
+      },
+      ManagedPolicyArns: [Fn.Join('', ['arn:', Fn.Ref('AWS::Partition'), ':iam::aws:policy/service-role/AWSAppSyncPushToCloudWatchLogs'])],
+    });
   }
 
   private transformObject(

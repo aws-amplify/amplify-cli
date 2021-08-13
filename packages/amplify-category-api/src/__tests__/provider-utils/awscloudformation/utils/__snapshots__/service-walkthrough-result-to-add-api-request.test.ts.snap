@@ -13,6 +13,10 @@ Object {
     "defaultAuthType": Object {
       "mode": "AWS_IAM",
     },
+    "logConfig": Object {
+      "excludeVerboseContent": true,
+      "fieldLogLevel": "ERROR",
+    },
     "serviceName": "AppSync",
     "transformSchema": "mySchemaContent",
   },

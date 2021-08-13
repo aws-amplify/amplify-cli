@@ -26,8 +26,21 @@ export type SyncConfig = SyncConfigOptimistic | SyncConfigServer | SyncConfigLam
 
 export type ResolverConfig = {
   project?: SyncConfig;
-  models?: Record<string,SyncConfig>;
+  models?: Record<string, SyncConfig>;
 };
+
+// Log Config
+export type LogConfig = {
+  readonly excludeVerboseContent?: boolean;
+  readonly fieldLogLevel?: FieldLogLevel;
+};
+
+export enum FieldLogLevel {
+  NONE = 'NONE',
+  ERROR = 'ERROR',
+  ALL = 'ALL',
+}
+
 /**
  * The transform config is specified in transform.conf.json within an Amplify
  * API project directory.
@@ -62,4 +75,6 @@ export interface TransformConfig {
   ResolverConfig?: ResolverConfig;
 
   schema: string;
+
+  logConfig?: LogConfig;
 }

@@ -12,6 +12,7 @@ export {
   AppSyncAuthConfigurationUserPoolEntry,
   AppSyncAuthMode,
   UserPoolConfig,
+  LogConfig,
 } from './transformation';
 export { DeploymentResources } from './transformation/types';
 export {

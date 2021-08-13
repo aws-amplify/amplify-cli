@@ -3,7 +3,7 @@ import * as path from 'path';
 import glob from 'glob';
 import { CloudFormation, Fn, Template } from 'cloudform-types';
 import { DeploymentResources } from '../DeploymentResources';
-import { GraphQLTransform, StackMapping } from '../GraphQLTransform';
+import { GraphQLTransform, LogConfig, StackMapping } from '../GraphQLTransform';
 import { ResourceConstants } from 'graphql-transformer-common';
 import { readFromPath, writeToPath, throwIfNotJSONExt, emptyDirectory, handleFile, FileHandler } from './fileUtils';
 import { writeConfig, TransformConfig, TransformMigrationConfig, loadProject, readSchema, loadConfig } from './transformConfig';
@@ -39,6 +39,7 @@ export interface ProjectOptions {
   minify?: boolean;
   featureFlags: FeatureFlagProvider;
   sanityCheckRules: SanityCheckRules;
+  logConfig?: LogConfig;
 }
 
 export interface SanityCheckRules {
@@ -87,6 +88,7 @@ async function _buildProject(opts: ProjectOptions) {
     stackMapping,
     transformConfig: userProjectConfig.config,
     featureFlags: opts.featureFlags,
+    logConfig: opts.logConfig,
   });
   let transformOutput = transform.transform(userProjectConfig.schema.toString());
   if (userProjectConfig.config && userProjectConfig.config.Migration) {

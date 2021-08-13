@@ -42,6 +42,14 @@ export const getAppSyncAuthConfig = projectMeta => {
   }
 };
 
+export const getAppSyncLogConfig = projectMeta => {
+  const entry = getAppSyncAmplifyMetaEntry(projectMeta);
+  if (entry) {
+    const value = entry[1] as any;
+    return value && value.output ? value.output.logConfig : {};
+  }
+};
+
 export const getAppSyncResourceName = (projectMeta: any): string | undefined => {
   const entry = getAppSyncAmplifyMetaEntry(projectMeta);
   if (entry) {

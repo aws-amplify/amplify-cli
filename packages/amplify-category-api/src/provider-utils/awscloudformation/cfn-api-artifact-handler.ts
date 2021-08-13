@@ -84,13 +84,16 @@ class CfnApiArtifactHandler implements ApiArtifactHandler {
 
     const authConfig = this.extractAuthConfig(serviceConfig);
 
+    const logConfig = serviceConfig.logConfig;
+
     await this.context.amplify.executeProviderUtils(this.context, 'awscloudformation', 'compileSchema', {
       resourceDir,
       parameters: this.getCfnParameters(serviceConfig.apiName, authConfig, resourceDir),
       authConfig,
+      logConfig,
     });
 
-    this.context.amplify.updateamplifyMetaAfterResourceAdd(category, serviceConfig.apiName, this.createAmplifyMeta(authConfig));
+    this.context.amplify.updateamplifyMetaAfterResourceAdd(category, serviceConfig.apiName, this.createAmplifyMeta(authConfig, logConfig));
     return serviceConfig.apiName;
   };
 
@@ -118,14 +121,16 @@ class CfnApiArtifactHandler implements ApiArtifactHandler {
     if (updates.additionalAuthTypes) {
       authConfig.additionalAuthenticationProviders = updates.additionalAuthTypes.map(appSyncAuthTypeToAuthConfig);
     }
+    const logConfig = updates.logConfig;
     await this.context.amplify.executeProviderUtils(this.context, 'awscloudformation', 'compileSchema', {
       resourceDir,
       parameters: this.getCfnParameters(apiName, authConfig, resourceDir),
       authConfig,
+      logConfig,
     });
 
-    this.context.amplify.updateamplifyMetaAfterResourceUpdate(category, apiName, 'output', { authConfig });
-    this.context.amplify.updateBackendConfigAfterResourceUpdate(category, apiName, 'output', { authConfig });
+    this.context.amplify.updateamplifyMetaAfterResourceUpdate(category, apiName, 'output', { authConfig, logConfig });
+    this.context.amplify.updateBackendConfigAfterResourceUpdate(category, apiName, 'output', { authConfig, logConfig });
     printApiKeyWarnings(this.context, oldConfigHadApiKey, authConfigHasApiKey(authConfig));
   };
 
@@ -135,11 +140,12 @@ class CfnApiArtifactHandler implements ApiArtifactHandler {
 
   private getResourceDir = (apiName: string) => path.join(this.context.amplify.pathManager.getBackendDirPath(), category, apiName);
 
-  private createAmplifyMeta = authConfig => ({
+  private createAmplifyMeta = (authConfig, logConfig) => ({
     service: 'AppSync',
     providerPlugin: provider,
     output: {
       authConfig,
+      logConfig,
     },
   });
 

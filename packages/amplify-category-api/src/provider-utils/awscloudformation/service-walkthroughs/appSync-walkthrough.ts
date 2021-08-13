@@ -10,7 +10,7 @@ import { UpdateApiRequest } from '../../../../../amplify-headless-interface/lib/
 import { authConfigToAppSyncAuthType } from '../utils/auth-config-to-app-sync-auth-type-bi-di-mapper';
 import { resolverConfigToConflictResolution } from '../utils/resolver-config-to-conflict-resolution-bi-di-mapper';
 import _ from 'lodash';
-import { getAppSyncAuthConfig, checkIfAuthExists, authConfigHasApiKey } from '../utils/amplify-meta-utils';
+import { getAppSyncAuthConfig, checkIfAuthExists, authConfigHasApiKey, getAppSyncLogConfig } from '../utils/amplify-meta-utils';
 import {
   ResourceAlreadyExistsError,
   ResourceDoesNotExistError,
@@ -141,6 +141,7 @@ export const serviceWalkthrough = async (context: $TSContext, defaultValuesFilen
   let authConfig;
   let defaultAuthType;
   let resolverConfig;
+  let logConfig;
 
   if (resourceName) {
     const errMessage =
@@ -177,7 +178,7 @@ export const serviceWalkthrough = async (context: $TSContext, defaultValuesFilen
   // Ask additonal questions
 
   ({ authConfig, defaultAuthType } = await askDefaultAuthQuestion(context));
-  ({ authConfig, resolverConfig } = await askAdditionalQuestions(context, authConfig, defaultAuthType));
+  ({ authConfig, logConfig, resolverConfig } = await askAdditionalQuestions(context, authConfig, defaultAuthType));
 
   // Ask schema file question
 
@@ -231,6 +232,7 @@ export const serviceWalkthrough = async (context: $TSContext, defaultValuesFilen
     resolverConfig,
     schemaContent,
     askToEdit,
+    logConfig,
   };
 };
 
@@ -240,6 +242,7 @@ export const updateWalkthrough = async (context): Promise<UpdateApiRequest> => {
   let resourceName;
   let authConfig;
   let defaultAuthType;
+  let logConfig = getAppSyncLogConfig(context.amplify.getProjectMeta());
   const resources = allResources.filter(resource => resource.service === 'AppSync');
 
   // There can only be one appsync resource
@@ -313,7 +316,7 @@ export const updateWalkthrough = async (context): Promise<UpdateApiRequest> => {
     authConfig = await askAdditionalAuthQuestions(context, authConfig, defaultAuthType);
   } else if (updateOption === 'all') {
     ({ authConfig, defaultAuthType } = await askDefaultAuthQuestion(context));
-    ({ authConfig, resolverConfig } = await askAdditionalQuestions(context, authConfig, defaultAuthType, modelTypes));
+    ({ authConfig, logConfig, resolverConfig } = await askAdditionalQuestions(context, authConfig, defaultAuthType, modelTypes, logConfig));
   }
 
   return {
@@ -326,13 +329,13 @@ export const updateWalkthrough = async (context): Promise<UpdateApiRequest> => {
           ? authConfig.additionalAuthenticationProviders.map(authConfigToAppSyncAuthType)
           : undefined,
       conflictResolution: resolverConfigToConflictResolution(resolverConfig),
+      logConfig,
     },
   };
 };
 
-async function askAdditionalQuestions(context, authConfig, defaultAuthType, modelTypes?) {
+async function askAdditionalQuestions(context: $TSContext, authConfig, defaultAuthType, modelTypes?, logConfig?) {
   let resolverConfig;
-
   const advancedSettingsQuestion = {
     type: 'list',
     name: 'advancedSettings',
@@ -353,10 +356,62 @@ async function askAdditionalQuestions(context, authConfig, defaultAuthType, mode
 
   if (advancedSettingsAnswer.advancedSettings) {
     authConfig = await askAdditionalAuthQuestions(context, authConfig, defaultAuthType);
+    logConfig = await askLoggingQuestions(context, logConfig);
     resolverConfig = await askResolverConflictQuestion(context, modelTypes);
   }
 
-  return { authConfig, resolverConfig };
+  return { authConfig, logConfig, resolverConfig };
+}
+
+async function askLoggingQuestions(context: $TSContext, logConfig?) {
+  if (await context.prompt.confirm('Configure log config?')) {
+    const fieldLogLevelQuestion = {
+      type: 'list',
+      name: 'fieldLogLevel',
+      message: 'Choose The field logging level.',
+      choices: [
+        {
+          name: 'NONE',
+          value: 'NONE',
+        },
+        {
+          name: 'ERROR',
+          value: 'ERROR',
+        },
+        {
+          name: 'ALL',
+          value: 'ALL',
+        },
+      ],
+      default: logConfig && logConfig.fieldLogLevel,
+    };
+    const { fieldLogLevel } = await inquirer.prompt([fieldLogLevelQuestion]);
+
+    const excludeVerboseContentQuestion = {
+      type: 'list',
+      name: 'excludeVerboseContent',
+      message:
+        'Choose to exclude sections that contain information such as headers, context, and evaluated mapping templates, regardless of logging level.',
+      choices: [
+        {
+          name: 'Include',
+          value: false,
+        },
+        {
+          name: 'Exclude',
+          value: true,
+        },
+      ],
+      default: logConfig && logConfig.excludeVerboseContent,
+    };
+
+    const { excludeVerboseContent } = await inquirer.prompt([excludeVerboseContentQuestion]);
+    return {
+      excludeVerboseContent,
+      fieldLogLevel,
+    };
+  }
+  return logConfig;
 }
 
 async function askResolverConflictQuestion(context, modelTypes?) {
@@ -779,8 +834,8 @@ const buildPolicyResource = (resourceName: string, path: string | null) => {
         {
           Ref: `${category}${resourceName}GraphQLAPIIdOutput`,
         },
-        ...(path ? [path] : [])
-      ]
+        ...(path ? [path] : []),
+      ],
     ],
   };
 };

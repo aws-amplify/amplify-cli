@@ -40,6 +40,24 @@ export interface AppSyncServiceConfiguration {
    * The strategy for resolving API write conflicts.
    */
   conflictResolution?: ConflictResolution;
+  /**
+   * The logging configuration for AppSync
+   */
+  logConfig?: AppSyncLogConfig;
+}
+
+/**
+ * Defines a logging configration for AppSync.
+ */
+export interface AppSyncLogConfig {
+  /**
+   * Set to true to exclude sections that contain information such as headers, context, and evaluated mapping templates, regardless of logging level.
+   */
+  excludeVerboseContent: boolean;
+  /**
+   * The field logging level
+   */
+  fieldLogLevel: 'NONE' | 'ERROR' | 'ALL';
 }
 
 /**

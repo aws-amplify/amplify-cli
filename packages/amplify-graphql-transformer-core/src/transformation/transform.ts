@@ -1,6 +1,11 @@
 /* eslint-disable no-new */
-import { FeatureFlagProvider, GraphQLAPIProvider, TransformerPluginProvider, TransformHostProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import { AuthorizationMode, AuthorizationType } from '@aws-cdk/aws-appsync';
+import {
+  FeatureFlagProvider,
+  GraphQLAPIProvider,
+  TransformerPluginProvider,
+  TransformHostProvider,
+} from '@aws-amplify/graphql-transformer-interfaces';
+import { AuthorizationMode, AuthorizationType, LogConfig } from '@aws-cdk/aws-appsync';
 import { App, Aws, CfnOutput, Fn } from '@aws-cdk/core';
 import assert from 'assert';
 import {
@@ -59,6 +64,7 @@ export interface GraphQLTransformOptions {
   // transform config which can change the behavior of the transformer
   readonly transformConfig?: TransformConfig;
   readonly authConfig?: AppSyncAuthConfiguration;
+  readonly logConfig?: LogConfig;
   readonly buildParameters?: Record<string, any>;
   readonly stacks?: Record<string, Template>;
   readonly featureFlags?: FeatureFlagProvider;
@@ -70,6 +76,7 @@ export class GraphQLTransform {
   private stackMappingOverrides: StackMapping;
   private app: App | undefined;
   private readonly authConfig: AppSyncAuthConfiguration;
+  private readonly logConfig?: LogConfig;
   private readonly buildParameters: Record<string, any>;
 
   // A map from `${directive}.${typename}.${fieldName?}`: true
@@ -94,6 +101,8 @@ export class GraphQLTransform {
       },
       additionalAuthenticationProviders: [],
     };
+
+    this.logConfig = options.logConfig;
 
     this.buildParameters = options.buildParameters || {};
     this.stackMappingOverrides = options.stackMapping || {};
@@ -247,7 +256,8 @@ export class GraphQLTransform {
     const api = new GraphQLApi(rootStack, 'GraphQLAPI', {
       name: `${apiName}-${envName.valueAsString}`,
       authorizationConfig,
-      host: this.options.host
+      host: this.options.host,
+      logConfig: this.logConfig,
     });
     const authModes = [authorizationConfig.defaultAuthorization, ...(authorizationConfig.additionalAuthorizationModes || [])].map(
       mode => mode?.authorizationType,

@@ -21,7 +21,7 @@ import { hashDirectory } from '../upload-appsync-files';
 import { writeDeploymentToDisk } from './utils';
 import { loadProject as readTransformerConfiguration } from './transform-config';
 import { loadProject } from 'graphql-transformer-core';
-import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-core';
+import { AppSyncAuthConfiguration, LogConfig } from '@aws-amplify/graphql-transformer-core';
 import { Template } from '@aws-amplify/graphql-transformer-core/lib/config/project-config';
 import { AmplifyCLIFeatureFlagAdapter } from '../utils/amplify-cli-feature-flag-adapter';
 import { JSONUtilities } from 'amplify-cli-core';
@@ -228,6 +228,8 @@ export async function transformGraphQLSchema(context, options) {
     }
   }
 
+  let { logConfig = resources[0].output.logConfig } = options;
+
   // for the predictions directive get storage config
   const s3Resource = s3ResourceAlreadyExists(context);
   const storageConfig = s3Resource ? getBucketName(context, s3Resource, backEndDir) : undefined;
@@ -283,6 +285,7 @@ export async function transformGraphQLSchema(context, options) {
     projectConfig: project,
     lastDeployedProjectConfig,
     authConfig,
+    logConfig,
   };
   const transformerOutput = await buildAPIProject(buildConfig);
 
@@ -383,6 +386,7 @@ export type ProjectOptions<T> = {
   projectConfig: TransformerProjectConfig;
   dryRun?: boolean;
   authConfig?: AppSyncAuthConfiguration;
+  logConfig?: LogConfig;
   stacks: Record<string, Template>;
 };
 
@@ -415,6 +419,7 @@ async function _buildProject(opts: ProjectOptions<TransformerFactoryArgs>) {
     stackMapping,
     transformConfig: userProjectConfig.config,
     authConfig: opts.authConfig,
+    logConfig: opts.logConfig,
     buildParameters: opts.buildParameters,
     stacks: opts.projectConfig.stacks || {},
     featureFlags: new AmplifyCLIFeatureFlagAdapter(),

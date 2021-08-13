@@ -11,7 +11,11 @@ export type AppSyncAuthConfiguration = {
   additionalAuthenticationProviders: Array<AppSyncAuthConfigurationEntry>;
 };
 
-export type AppSyncAuthConfigurationEntry = AppSyncAuthConfigurationUserPoolEntry | AppSyncAuthConfigurationAPIKeyEntry | AppSyncAuthConfigurationIAMEntry | AppSyncAuthConfigurationOIDCEntry;
+export type AppSyncAuthConfigurationEntry =
+  | AppSyncAuthConfigurationUserPoolEntry
+  | AppSyncAuthConfigurationAPIKeyEntry
+  | AppSyncAuthConfigurationIAMEntry
+  | AppSyncAuthConfigurationOIDCEntry;
 export type AppSyncAuthConfigurationAPIKeyEntry = {
   authenticationType: 'API_KEY';
   apiKeyConfig: ApiKeyConfig;
@@ -43,6 +47,18 @@ export type OpenIDConnectConfig = {
   iatTTL?: number;
   authTTL?: number;
 };
+
+// Log Config
+export type LogConfig = {
+  readonly excludeVerboseContent?: boolean;
+  readonly fieldLogLevel?: FieldLogLevel;
+};
+
+export enum FieldLogLevel {
+  NONE = 'NONE',
+  ERROR = 'ERROR',
+  ALL = 'ALL',
+}
 
 // Sync Config
 export const enum ConflictHandlerType {

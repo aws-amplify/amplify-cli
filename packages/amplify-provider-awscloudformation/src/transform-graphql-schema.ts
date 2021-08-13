@@ -430,6 +430,8 @@ export async function transformGraphQLSchema(context, options) {
     }
   }
 
+  let { logConfig = resources[0].output.logConfig } = options;
+
   // for the predictions directive get storage config
   const s3Resource = s3ResourceAlreadyExists(context);
   const storageConfig = s3Resource ? getBucketName(context, s3Resource, backEndDir) : undefined;
@@ -487,6 +489,7 @@ export async function transformGraphQLSchema(context, options) {
     minify: options.minify,
     featureFlags: ff,
     sanityCheckRules: sanityCheckRulesList,
+    logConfig,
   };
   const transformerOutput = await buildAPIProject(buildConfig);
   context.print.success(`\nGraphQL schema compiled successfully.\n\nEdit your schema at ${schemaFilePath} or \
