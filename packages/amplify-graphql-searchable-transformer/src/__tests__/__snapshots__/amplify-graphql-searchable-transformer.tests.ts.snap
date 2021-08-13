@@ -899,25 +899,44 @@ $util.toJson($UpdateItem)
   "Query.getPost.req.vtl": "## [Start] Get Request template. **
 #set( $GetRequest = {
   \\"version\\": \\"2018-05-29\\",
-  \\"operation\\": \\"GetItem\\"
+  \\"operation\\": \\"Query\\"
 } )
 #if( $ctx.stash.metadata.modelObjectKey )
-  #set( $key = $ctx.stash.metadata.modelObjectKey )
+  #set( $expression = \\"\\" )
+  #set( $expressionValues = {} )
+  #foreach( $item in $ctx.stash.metadata.modelObjectKey.entrySet() )
+    #set( $expression = \\"$expression$item.key = :$item.key AND \\" )
+    $util.qr($expressionValues.put(\\":$item.key\\", $item.value))
+  #end
+  #set( $expression = $expression.replaceAll(\\"AND $\\", \\"\\") )
+  #set( $query = {
+  \\"expression\\": $expression,
+  \\"expressionValues\\": $expressionValues
+} )
 #else
-  #set( $key = {
-  \\"id\\":   $util.dynamodb.toDynamoDB($ctx.args.id)
+  #set( $query = {
+  \\"expression\\": \\"id = :id\\",
+  \\"expressionValues\\": {
+      \\":id\\":     $util.dynamodb.toDynamoDBJson($ctx.args.id)
+  }
 } )
 #end
-$util.qr($GetRequest.put(\\"key\\", $key))
+$util.qr($GetRequest.put(\\"query\\", $query))
+#if( !$util.isNullOrEmpty($ctx.stash.get(\\"authFilter\\")) )
+  $util.qr($GetRequest.put(\\"filter\\", $ctx.stash.get(\\"authFilter\\")))
+#end
 $util.toJson($GetRequest)
 ## [End] Get Request template. **",
-  "Query.getPost.res.vtl": "## [Start] Get ResponseTemplate. **
-#if( $ctx.error )
-  $util.error($ctx.error.message, $ctx.error.type)
+  "Query.getPost.res.vtl": "## [Start] Get Response template. **
+#if( !$$ctx.result.items.isEmpty() && $ctx.result.scannedCount == 1 )
+  $util.toJson($ctx.result.items[0])
 #else
-  $util.toJson($ctx.result)
+  #if( $$ctx.result.items.isEmpty() && $ctx.result.scannedCount == 1 )
+$util.unauthorized
+  #end
+  $util.toJson(null)
 #end
-## [End] Get ResponseTemplate. **",
+## [End] Get Response template. **",
   "Query.listPosts.req.vtl": "## [Start] List Request. **
 #set( $limit = $util.defaultIfNull($context.args.limit, 100) )
 #set( $ListRequest = {
@@ -927,8 +946,20 @@ $util.toJson($GetRequest)
 #if( $context.args.nextToken )
   #set( $ListRequest.nextToken = $context.args.nextToken )
 #end
-#if( $context.args.filter )
-  #set( $filterExpression = $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.args.filter)) )
+#if( !$util.isNullOrEmpty($ctx.stash.get(\\"authFilter\\")) )
+  #set( $filter = $ctx.stash.get(\\"authFilter\\") )
+  #if( !$util.isNullOrEmpty($ctx.args.filter) )
+    #set( $filter = [{
+  \\"and\\":   [$filter, $ctx.args.filter]
+}] )
+  #end
+#else
+  #if( !$util.isNullOrEmpty($ctx.args.filter) )
+    #set( $filter = $ctx.args.filter )
+  #end
+#end
+#if( !$util.isNullOrEmpty($filter) )
+  #set( $filterExpression = $util.parseJson($util.transform.toDynamoDBFilterExpression($filter)) )
   #if( !$util.isNullOrBlank($filterExpression.expression) )
     #if( $filterEpression.expressionValues.size() == 0 )
       $util.qr($filterEpression.remove(\\"expressionValues\\"))

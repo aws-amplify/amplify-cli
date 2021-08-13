@@ -293,7 +293,7 @@ function setQuerySnippet(config: PrimaryKeyDirectiveConfiguration, ctx: Transfor
 
   expressions.push(
     set(ref(ResourceConstants.SNIPPETS.ModelQueryExpression), obj({})),
-    applyKeyExpressionForCompositeKey(keyNames, keyTypes, ResourceConstants.SNIPPETS.ModelQueryExpression),
+    applyKeyExpressionForCompositeKey(keyNames, keyTypes, ResourceConstants.SNIPPETS.ModelQueryExpression)!,
   );
 
   return block(`Set query expression for key`, expressions);
