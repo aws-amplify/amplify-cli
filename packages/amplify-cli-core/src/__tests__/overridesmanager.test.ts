@@ -2,8 +2,8 @@ const path = require('path');
 const fs = require('fs-extra');
 const execa = require('execa');
 
-import { $TSContext } from 'amplify-cli-core';
-import { generateOverrideSkeleton } from '../../utils/override-skeleton-generator';
+import { $TSContext } from '../index';
+import { generateOverrideSkeleton } from '../overrides-manager';
 
 const mockProjectPath = 'mockProjectPath';
 const context_stub = ({
@@ -24,7 +24,7 @@ jest.mock('fs-extra', () => ({
   existsSync: jest.fn(),
 }));
 
-jest.mock('amplify-cli-core', () => ({
+jest.mock('../index', () => ({
   getPackageManager: () => ({
     executable: 'npm',
   }),
@@ -32,9 +32,9 @@ jest.mock('amplify-cli-core', () => ({
 
 describe('run override command for root stack', () => {
   test('generate override skeleton package and build with npm as package manager ', async () => {
-    await generateOverrideSkeleton(context_stub);
+    const overridesDirPath = path.join(mockProjectPath, 'amplify', 'backend', 'category', 'resourcename', 'overrides');
+    await generateOverrideSkeleton(context_stub, 'mocksrcpath', overridesDirPath);
 
-    const overridesDirPath = path.join(mockProjectPath, 'amplify', 'backend', 'awscloudformation', 'overrides');
     expect(fs.ensureDirSync).toBeCalledWith(overridesDirPath);
 
     expect(execa.sync).toBeCalledWith('npm', ['install'], {
