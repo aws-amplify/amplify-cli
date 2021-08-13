@@ -3,13 +3,14 @@
   "serviceConfiguration": {
     "serviceName": "s3",
     "permissions": {
-      "auth": ["READ", "CREATE", "UPDATE"],
+      "auth": ["READ", "CREATE_AND_UPDATE"],
       "guest": ["READ"],
       "groups": {
-        "myUserGroup": ["CREATE", "UPDATE"]
+        "myUserGroup": ["CREATE_AND_UPDATE"]
       }
     },
     "bucketName": "something",
+    "resourceName": "something",
     "lambdaTrigger": {
       "mode": "new",
       "name": "triggerName"
