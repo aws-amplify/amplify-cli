@@ -59,7 +59,7 @@ import {
   generateUpdateInitSlotTemplate,
   generateUpdateRequestTemplate,
 } from './resolvers';
-import { generateGetRequestTemplate, generateListRequestTemplate } from './resolvers/query';
+import { generateGetRequestTemplate, generateGetResponseTemplate, generateListRequestTemplate } from './resolvers/query';
 import {
   DirectiveWrapper,
   FieldWrapper,
@@ -89,7 +89,7 @@ export type ModelDirectiveConfiguration = {
     onCreate: OptionalAndNullable<string>[];
     onUpdate: OptionalAndNullable<string>[];
     onDelete: OptionalAndNullable<string>[];
-    level: Partial<SubscriptionLevel>;
+    level: SubscriptionLevel;
   }>;
   timestamps: OptionalAndNullable<{
     createdAt: OptionalAndNullable<string>;
@@ -389,7 +389,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
         fieldName,
         dataSource,
         MappingTemplate.s3MappingTemplateFromString(generateGetRequestTemplate(), `${typeName}.${fieldName}.req.vtl`),
-        MappingTemplate.s3MappingTemplateFromString(generateDefaultResponseMappingTemplate(), `${typeName}.${fieldName}.res.vtl`),
+        MappingTemplate.s3MappingTemplateFromString(generateGetResponseTemplate(), `${typeName}.${fieldName}.res.vtl`),
       );
     }
     return this.resolverMap[resolverKey];

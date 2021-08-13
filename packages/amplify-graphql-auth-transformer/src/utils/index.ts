@@ -1,12 +1,14 @@
 import { ModelDirectiveConfiguration, SubscriptionLevel } from '@aws-amplify/graphql-model-transformer';
 import { AppSyncAuthConfiguration, AppSyncAuthMode, DirectiveWrapper } from '@aws-amplify/graphql-transformer-core';
-import { ObjectTypeDefinitionNode, FieldDefinitionNode, DirectiveNode } from 'graphql';
+import { DirectiveNode } from 'graphql';
 import { toCamelCase, plurality } from 'graphql-transformer-common';
 import { AuthProvider, AuthRule } from './definitions';
 
 export * from './constants';
 export * from './definitions';
 export * from './validations';
+export * from './schema';
+export * from './iam';
 
 /**
  * Ensure the following defaults
@@ -29,8 +31,7 @@ export const ensureAuthRuleDefaults = (rules: AuthRule[]) => {
           rule.provider = 'apiKey';
           break;
         default:
-          rule.provider = null;
-          break;
+          throw new Error(`Need to specify an allow to assigned a provider: ${rule}`);
       }
     }
     // by default we generate an IAM policy for every rule
@@ -54,9 +55,9 @@ export const getModelConfig = (directive: DirectiveNode, typeName: string): Mode
     },
     subscriptions: {
       level: SubscriptionLevel.public,
-      onCreate: toCamelCase(['onCreate', typeName]),
-      onDelete: toCamelCase(['onDelete', typeName]),
-      onUpdate: toCamelCase(['onUpdate', typeName]),
+      onCreate: [toCamelCase(['onCreate', typeName])],
+      onDelete: [toCamelCase(['onDelete', typeName])],
+      onUpdate: [toCamelCase(['onUpdate', typeName])],
     },
     timestamps: {
       createdAt: 'createdAt',
@@ -92,8 +93,4 @@ export const getConfiguredAuthProviders = (authConfig: AppSyncAuthConfiguration)
     hasOIDC: providers.some(p => p === 'OPENID_CONNECT'),
     hasIAM: providers.some(p => p === 'AWS_IAM'),
   };
-};
-
-export const collectFieldNames = (object: ObjectTypeDefinitionNode): string[] => {
-  return object.fields!.map((field: FieldDefinitionNode) => field.name.value);
 };

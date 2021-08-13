@@ -24,6 +24,7 @@
     "watch": "tsc --watch"
   },
   "dependencies": {
+    "@aws-amplify/graphql-auth-transformer": "0.1.0",
     "@aws-amplify/graphql-function-transformer": "0.4.1",
     "@aws-amplify/graphql-http-transformer": "0.5.1",
     "@aws-amplify/graphql-index-transformer": "0.2.1",

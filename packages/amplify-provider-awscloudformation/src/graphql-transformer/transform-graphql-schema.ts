@@ -11,6 +11,7 @@ import {
   TransformerProjectConfig,
 } from '@aws-amplify/graphql-transformer-core';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
+import { AuthTransformer } from '@aws-amplify/graphql-auth-transformer';
 import { FunctionTransformer } from '@aws-amplify/graphql-function-transformer';
 import { HttpTransformer } from '@aws-amplify/graphql-http-transformer';
 import { PredictionsTransformer } from '@aws-amplify/graphql-predictions-transformer';
@@ -24,7 +25,8 @@ import { loadProject } from 'graphql-transformer-core';
 import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-core';
 import { Template } from '@aws-amplify/graphql-transformer-core/lib/config/project-config';
 import { AmplifyCLIFeatureFlagAdapter } from '../utils/amplify-cli-feature-flag-adapter';
-import { JSONUtilities } from 'amplify-cli-core';
+import { isAmplifyAdminApp } from '../utils/admin-helpers';
+import { JSONUtilities, stateManager, $TSContext } from 'amplify-cli-core';
 
 const API_CATEGORY = 'api';
 const STORAGE_CATEGORY = 'storage';
@@ -46,7 +48,10 @@ function warnOnAuth(context, map) {
   }
 }
 
-function getTransformerFactory(context, resourceDir) {
+function getTransformerFactory(
+  context: $TSContext,
+  resourceDir: string,
+): (options: TransformerFactoryArgs) => Promise<TransformerPluginProvider[]> {
   return async (options?: TransformerFactoryArgs) => {
     const transformerList: TransformerPluginProvider[] = [
       new ModelTransformer(),
@@ -131,7 +136,17 @@ function getTransformerFactory(context, resourceDir) {
 
     // TODO: Build dependency mechanism into transformers. Auth runs last
     // so any resolvers that need to be protected will already be created.
-    // transformerList.push(new ModelAuthTransformer({ authConfig }));
+
+    let amplifyAdminEnabled: boolean = false;
+    try {
+      const amplifyMeta = stateManager.getMeta();
+      const appId = amplifyMeta?.providers?.[providerName]?.AmplifyAppId;
+      const res = await isAmplifyAdminApp(appId);
+      amplifyAdminEnabled = res.isAdminApp;
+    } catch (err) {
+      console.info('App not deployed yet.');
+    }
+    transformerList.push(new AuthTransformer({ authConfig: options?.authConfig, addAwsIamAuthInOutputSchema: false }));
 
     return transformerList;
   };
@@ -208,7 +223,7 @@ export async function transformGraphQLSchema(context, options) {
     }
   }
 
-  let { authConfig } = options;
+  let { authConfig }: { authConfig: AppSyncAuthConfiguration } = options;
 
   //
   // If we don't have an authConfig from the caller, use it from the
@@ -277,7 +292,7 @@ export async function transformGraphQLSchema(context, options) {
     buildParameters,
     projectDirectory: resourceDir,
     transformersFactory: transformerListFactory,
-    transformersFactoryArgs: { addSearchableTransformer: searchableTransformerFlag, storageConfig },
+    transformersFactoryArgs: { addSearchableTransformer: searchableTransformerFlag, storageConfig, authConfig },
     rootStackFileName: 'cloudformation-template.json',
     currentCloudBackendDirectory: previouslyDeployedBackendDir,
     minify: options.minify,
@@ -319,8 +334,8 @@ async function getPreviousDeploymentRootKey(previouslyDeployedBackendDir) {
   }
 }
 
-export async function getDirectiveDefinitions(context, resourceDir) {
-  const transformList = await getTransformerFactory(context, resourceDir)({ addSearchableTransformer: true });
+export async function getDirectiveDefinitions(context: $TSContext, resourceDir: string) {
+  const transformList = await getTransformerFactory(context, resourceDir)({ addSearchableTransformer: true, authConfig: {} });
   const appSynDirectives = getAppSyncServiceExtraDirectives();
   const transformDirectives = transformList
     .map(transformPluginInst => [transformPluginInst.directive, ...transformPluginInst.typeDefinitions].map(node => print(node)).join('\n'))
@@ -367,6 +382,7 @@ function getBucketName(context, s3ResourceName, backEndDir) {
 
 type TransformerFactoryArgs = {
   addSearchableTransformer: boolean;
+  authConfig: any;
   storageConfig?: any;
 };
 export type ProjectOptions<T> = {
@@ -375,7 +391,7 @@ export type ProjectOptions<T> = {
     S3DeploymentRootKey: string;
   };
   projectDirectory?: string;
-  transformersFactory: (options: T) => TransformerPluginProvider[];
+  transformersFactory: (options: T) => Promise<TransformerPluginProvider[]>;
   transformersFactoryArgs: T;
   rootStackFileName: 'cloudformation-template.json';
   currentCloudBackendDirectory: string;
