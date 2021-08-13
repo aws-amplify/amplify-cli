@@ -353,10 +353,12 @@ export class GraphQLTransform {
   }
 
   private makeLogConfig(logConfig: LogConfig) {
-    return new AppSync.GraphQLApi.LogConfig({
+    const properties = {
       FieldLogLevel: logConfig.fieldLogLevel,
+      ExcludeVerboseContent: logConfig.excludeVerboseContent,
       CloudWatchLogsRoleArn: Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPIApiLogsRoleLogicalID, 'Arn'),
-    });
+    };
+    return new AppSync.GraphQLApi.LogConfig(properties);
   }
 
   private makeLogRole() {
