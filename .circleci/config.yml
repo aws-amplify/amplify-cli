@@ -8,7 +8,7 @@ executors:
     machine:
       image: windows-server-2019-vs2019:stable
       resource_class: windows.medium
-      shell: powershell.exe
+      shell: bash.exe
     working_directory: ~/repo
   build_img:
     docker:
@@ -20,10 +20,7 @@ executors:
     resource_class: large
   linux:
     docker:
-      - image: ${AWS_ECR_ACCOUNT_URL}/amplify-cli-e2e-base-image-repo:latest
-        aws_auth:
-          aws_access_key_id: $ECR_ACCESS_KEY
-          aws_secret_access_key: $ECR_SECRET_ACCESS_KEY
+      - image: public.ecr.aws/a6e6w2n0/amplify-cli-e2e-base-image-repo-public:latest
     working_directory: ~/repo
     resource_class: large
     environment:
@@ -97,7 +94,7 @@ commands:
               - machine:
                   image: windows-server-2019-vs2019:stable
                   resource_class: windows.medium
-                  shell: powershell.exe
+                  shell: bash.exe
                 working_directory: ~/repo
               - << parameters.os >>
           steps:
@@ -123,10 +120,7 @@ commands:
               - equal:
                   - docker:
                       - image: >-
-                          ${AWS_ECR_ACCOUNT_URL}/amplify-cli-e2e-base-image-repo:latest
-                        aws_auth:
-                          aws_access_key_id: $ECR_ACCESS_KEY
-                          aws_secret_access_key: $ECR_SECRET_ACCESS_KEY
+                          public.ecr.aws/a6e6w2n0/amplify-cli-e2e-base-image-repo-public:latest
                     working_directory: ~/repo
                     resource_class: large
                     environment:
@@ -166,7 +160,7 @@ commands:
               - machine:
                   image: windows-server-2019-vs2019:stable
                   resource_class: windows.medium
-                  shell: powershell.exe
+                  shell: bash.exe
                 working_directory: ~/repo
               - << parameters.os >>
           steps:
@@ -186,10 +180,7 @@ commands:
               - equal:
                   - docker:
                       - image: >-
-                          ${AWS_ECR_ACCOUNT_URL}/amplify-cli-e2e-base-image-repo:latest
-                        aws_auth:
-                          aws_access_key_id: $ECR_ACCESS_KEY
-                          aws_secret_access_key: $ECR_SECRET_ACCESS_KEY
+                          public.ecr.aws/a6e6w2n0/amplify-cli-e2e-base-image-repo-public:latest
                     working_directory: ~/repo
                     resource_class: large
                     environment:
@@ -223,7 +214,7 @@ commands:
               - machine:
                   image: windows-server-2019-vs2019:stable
                   resource_class: windows.medium
-                  shell: powershell.exe
+                  shell: bash.exe
                 working_directory: ~/repo
               - << parameters.os >>
           steps:
@@ -239,10 +230,7 @@ commands:
               - equal:
                   - docker:
                       - image: >-
-                          ${AWS_ECR_ACCOUNT_URL}/amplify-cli-e2e-base-image-repo:latest
-                        aws_auth:
-                          aws_access_key_id: $ECR_ACCESS_KEY
-                          aws_secret_access_key: $ECR_SECRET_ACCESS_KEY
+                          public.ecr.aws/a6e6w2n0/amplify-cli-e2e-base-image-repo-public:latest
                     working_directory: ~/repo
                     resource_class: large
                     environment:
@@ -280,7 +268,7 @@ commands:
               - machine:
                   image: windows-server-2019-vs2019:stable
                   resource_class: windows.medium
-                  shell: powershell.exe
+                  shell: bash.exe
                 working_directory: ~/repo
               - << parameters.os >>
           steps:
@@ -300,10 +288,7 @@ commands:
               - equal:
                   - docker:
                       - image: >-
-                          ${AWS_ECR_ACCOUNT_URL}/amplify-cli-e2e-base-image-repo:latest
-                        aws_auth:
-                          aws_access_key_id: $ECR_ACCESS_KEY
-                          aws_secret_access_key: $ECR_SECRET_ACCESS_KEY
+                          public.ecr.aws/a6e6w2n0/amplify-cli-e2e-base-image-repo-public:latest
                     working_directory: ~/repo
                     resource_class: large
                     environment:
@@ -7560,8 +7545,8 @@ workflows:
           matrix:
             parameters:
               os:
-                - windows
                 - linux
+                - windows
       - publish_to_local_registry:
           requires:
             - build
@@ -7608,7 +7593,7 @@ workflows:
               os:
                 - build_img
           requires:
-            - build-build_img
+            - build
       - mock_e2e_tests:
           matrix:
             parameters:
@@ -7627,7 +7612,7 @@ workflows:
                 - func-env-vars-secrets
                 - iterative-update
           requires:
-            - build-build_img
+            - build
             - mock_e2e_tests
       - integration_test:
           context:
@@ -7640,7 +7625,7 @@ workflows:
                 - func-env-vars-secrets
                 - beta
           requires:
-            - build-build_img
+            - build
             - mock_e2e_tests
       - publish_to_local_registry:
           filters:
@@ -7655,7 +7640,7 @@ workflows:
                 - release
                 - compute-functions
           requires:
-            - build-build_img
+            - build
       - build_pkg_binaries:
           requires:
             - publish_to_local_registry
@@ -8160,7 +8145,6 @@ workflows:
             parameters:
               os:
                 - linux
-                - windows
           context:
             - amplify-ecr-image-pull
             - clean_e2e_resources
@@ -8639,7 +8623,6 @@ workflows:
             parameters:
               os:
                 - linux
-                - windows
           context:
             - amplify-ecr-image-pull
             - clean_e2e_resources
@@ -8749,7 +8732,6 @@ workflows:
             parameters:
               os:
                 - linux
-                - windows
           context:
             - amplify-ecr-image-pull
             - clean_e2e_resources
@@ -8948,7 +8930,6 @@ workflows:
             parameters:
               os:
                 - linux
-                - windows
           context:
             - amplify-ecr-image-pull
             - clean_e2e_resources
@@ -9058,7 +9039,6 @@ workflows:
             parameters:
               os:
                 - linux
-                - windows
           context:
             - amplify-ecr-image-pull
             - clean_e2e_resources
@@ -9310,7 +9290,6 @@ workflows:
             parameters:
               os:
                 - linux
-                - windows
           context:
             - amplify-ecr-image-pull
             - clean_e2e_resources
@@ -9365,7 +9344,6 @@ workflows:
             parameters:
               os:
                 - linux
-                - windows
           context:
             - amplify-ecr-image-pull
             - clean_e2e_resources
@@ -9393,7 +9371,6 @@ workflows:
             parameters:
               os:
                 - linux
-                - windows
           context:
             - amplify-ecr-image-pull
             - clean_e2e_resources
@@ -9647,7 +9624,6 @@ workflows:
             parameters:
               os:
                 - linux
-                - windows
           context:
             - amplify-ecr-image-pull
             - clean_e2e_resources
@@ -9703,7 +9679,6 @@ workflows:
             parameters:
               os:
                 - linux
-                - windows
           context:
             - amplify-ecr-image-pull
             - clean_e2e_resources

@@ -906,7 +906,7 @@ workflows:
             parameters:
               os: [build_img]
           requires:
-            - build-build_img
+            - build
       - mock_e2e_tests:
           matrix:
             parameters:
@@ -924,7 +924,7 @@ workflows:
                 - func-env-vars-secrets
                 - iterative-update
           requires:
-            - build-build_img
+            - build
             - mock_e2e_tests
       - integration_test:
           context:
@@ -937,7 +937,7 @@ workflows:
                 - func-env-vars-secrets
                 - beta
           requires:
-            - build-build_img
+            - build
             - mock_e2e_tests
       - publish_to_local_registry:
           filters:
@@ -952,7 +952,7 @@ workflows:
                 - release
                 - compute-functions
           requires:
-            - build-build_img
+            - build
       - build_pkg_binaries:
           requires:
             - publish_to_local_registry
