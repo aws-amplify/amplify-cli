@@ -1,4 +1,4 @@
-import { MappingTemplate, TransformerModelBase } from '@aws-amplify/graphql-transformer-core';
+import { InvalidDirectiveError, MappingTemplate, TransformerModelBase } from '@aws-amplify/graphql-transformer-core';
 import {
   AppSyncDataSourceType,
   DataSourceInstance,
@@ -11,9 +11,10 @@ import {
   TransformerModelProvider,
   TransformerPrepareStepContextProvider,
   TransformerResolverProvider,
+  TransformerSchemaVisitStepContextProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
-import { AttributeType, ITable, StreamViewType, Table, TableEncryption } from '@aws-cdk/aws-dynamodb';
-import { RemovalPolicy } from '@aws-cdk/core';
+import { AttributeType, CfnTable, ITable, StreamViewType, Table, TableEncryption } from '@aws-cdk/aws-dynamodb';
+import * as cdk from '@aws-cdk/core';
 import { DirectiveNode, InputObjectTypeDefinitionNode, InputValueDefinitionNode, ObjectTypeDefinitionNode } from 'graphql';
 import {
   getBaseType,
@@ -25,6 +26,8 @@ import {
   makeNamedType,
   makeNonNullType,
   makeValueNode,
+  plurality,
+  ResourceConstants,
   toCamelCase,
   toPascalCase,
 } from 'graphql-transformer-common';
@@ -54,7 +57,7 @@ import {
   DirectiveWrapper,
   FieldWrapper,
   InputObjectDefinitionWrapper,
-  ObjectDefinationWrapper,
+  ObjectDefinitionWrapper,
 } from './wrappers/object-definition-wrapper';
 
 export type Nullable<T> = T | null;
@@ -133,14 +136,25 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
     super('amplify-model-transformer', directiveDefinition);
   }
 
-  object = (definition: ObjectTypeDefinitionNode, directive: DirectiveNode): void => {
+  object = (definition: ObjectTypeDefinitionNode, directive: DirectiveNode, ctx: TransformerSchemaVisitStepContextProvider): void => {
+    const isTypeNameReserved =
+      definition.name.value === ctx.output.getQueryTypeName() ||
+      definition.name.value === ctx.output.getMutationTypeName() ||
+      definition.name.value === ctx.output.getSubscriptionTypeName();
+
+    if (isTypeNameReserved) {
+      throw new InvalidDirectiveError(
+        `'${definition.name.value}' is a reserved type name and currently in use within the default schema element.`,
+      );
+    }
+
     // todo: get model configuration with default values and store it in the map
     const typeName = definition.name.value;
     const directiveWrapped: DirectiveWrapper = new DirectiveWrapper(directive);
     const options = directiveWrapped.getArguments({
       queries: {
         get: toCamelCase(['get', typeName]),
-        list: toCamelCase(['list', `${typeName}s`]), // Existing implementation suffixes `s` at the end
+        list: toCamelCase(['list', plurality(typeName, true)]),
       },
       mutations: {
         create: toCamelCase(['create', typeName]),
@@ -221,7 +235,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
         if (mutation) {
           return mutation.fieldName;
         }
-        throw new Error('Unknow Subscription type');
+        throw new Error('Unknown Subscription type');
       };
 
       const subscriptionsFields = this.getSubscriptionFieldNames(ctx, def!);
@@ -250,6 +264,53 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
       const tableLogicalName = `${def!.name.value}Table`;
       const tableName = context.resourceHelper.generateResourceName(def!.name.value);
       const stack = context.stackManager.getStackFor(tableLogicalName, def!.name.value);
+
+      // Add parameters.
+      const env = context.stackManager.getParameter(ResourceConstants.PARAMETERS.Env) as cdk.CfnParameter;
+      const readIops = new cdk.CfnParameter(stack, ResourceConstants.PARAMETERS.DynamoDBModelTableReadIOPS, {
+        description: 'The number of read IOPS the table should support.',
+        type: 'Number',
+        default: 5,
+      }).valueAsString;
+      const writeIops = new cdk.CfnParameter(stack, ResourceConstants.PARAMETERS.DynamoDBModelTableWriteIOPS, {
+        description: 'The number of write IOPS the table should support.',
+        type: 'Number',
+        default: 5,
+      }).valueAsString;
+      const billingMode = new cdk.CfnParameter(stack, ResourceConstants.PARAMETERS.DynamoDBBillingMode, {
+        description: 'Configure @model types to create DynamoDB tables with PAY_PER_REQUEST or PROVISIONED billing modes.',
+        type: 'String',
+        default: 'PAY_PER_REQUEST',
+        allowedValues: ['PAY_PER_REQUEST', 'PROVISIONED'],
+      }).valueAsString;
+      const pointInTimeRecovery = new cdk.CfnParameter(stack, ResourceConstants.PARAMETERS.DynamoDBEnablePointInTimeRecovery, {
+        description: 'Whether to enable Point in Time Recovery on the table.',
+        type: 'String',
+        default: 'false',
+        allowedValues: ['true', 'false'],
+      }).valueAsString;
+      const enableSSE = new cdk.CfnParameter(stack, ResourceConstants.PARAMETERS.DynamoDBEnableServerSideEncryption, {
+        description: 'Enable server side encryption powered by KMS.',
+        type: 'String',
+        default: 'true',
+        allowedValues: ['true', 'false'],
+      }).valueAsString;
+
+      // Add conditions.
+      // eslint-disable-next-line no-new
+      new cdk.CfnCondition(stack, ResourceConstants.CONDITIONS.HasEnvironmentParameter, {
+        expression: cdk.Fn.conditionNot(cdk.Fn.conditionEquals(env, ResourceConstants.NONE)),
+      });
+      const useSSE = new cdk.CfnCondition(stack, ResourceConstants.CONDITIONS.ShouldUseServerSideEncryption, {
+        expression: cdk.Fn.conditionEquals(enableSSE, 'true'),
+      });
+      const usePayPerRequestBilling = new cdk.CfnCondition(stack, ResourceConstants.CONDITIONS.ShouldUsePayPerRequestBilling, {
+        expression: cdk.Fn.conditionEquals(billingMode, 'PAY_PER_REQUEST'),
+      });
+      const usePointInTimeRecovery = new cdk.CfnCondition(stack, ResourceConstants.CONDITIONS.ShouldUsePointInTimeRecovery, {
+        expression: cdk.Fn.conditionEquals(pointInTimeRecovery, 'true'),
+      });
+
       // Expose a way in context to allow proper resource naming
       const table = new Table(stack, tableLogicalName, {
         tableName,
@@ -259,8 +320,28 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
         },
         stream: StreamViewType.NEW_AND_OLD_IMAGES,
         encryption: TableEncryption.DEFAULT,
-        removalPolicy: RemovalPolicy.DESTROY,
+        removalPolicy: cdk.RemovalPolicy.DESTROY,
       });
+      const cfnTable = table.node.defaultChild as CfnTable;
+
+      cfnTable.provisionedThroughput = cdk.Fn.conditionIf(usePayPerRequestBilling.logicalId, cdk.Fn.ref('AWS::NoValue'), {
+        ReadCapacityUnits: readIops,
+        WriteCapacityUnits: writeIops,
+      });
+      cfnTable.pointInTimeRecoverySpecification = cdk.Fn.conditionIf(
+        usePointInTimeRecovery.logicalId,
+        { PointInTimeRecoveryEnabled: true },
+        cdk.Fn.ref('AWS::NoValue'),
+      );
+      cfnTable.billingMode = cdk.Fn.conditionIf(
+        usePayPerRequestBilling.logicalId,
+        'PAY_PER_REQUEST',
+        cdk.Fn.ref('AWS::NoValue'),
+      ).toString();
+      cfnTable.sseSpecification = {
+        sseEnabled: cdk.Fn.conditionIf(useSSE.logicalId, true, false),
+      };
+
       // Expose a better API to select what stack this belongs to
       const dataSource = context.api.host.addDynamoDbDataSource(
         `${def!.name.value}DS`,
@@ -653,10 +734,10 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
     const knownModels = this.typesWithModelDirective;
     let conditionInput: InputObjectTypeDefinitionNode;
     if ([MutationFieldType.CREATE, MutationFieldType.DELETE, MutationFieldType.UPDATE].includes(operation.type as MutationFieldType)) {
-      const condtionTypeName = toPascalCase(['Model', type.name.value, 'ConditionInput']);
+      const conditionTypeName = toPascalCase(['Model', type.name.value, 'ConditionInput']);
 
       const filterInputs = createEnumModelFilters(ctx, type);
-      conditionInput = makeMutationConditionInput(ctx, condtionTypeName, type);
+      conditionInput = makeMutationConditionInput(ctx, conditionTypeName, type);
       filterInputs.push(conditionInput);
       for (let input of filterInputs) {
         const conditionInputName = input.name.value;
@@ -687,7 +768,12 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
         return [];
 
       case MutationFieldType.CREATE:
-        const createInputField = makeCreateInputField(type, this.modelDirectiveConfig.get(type.name.value)!, knownModels);
+        const createInputField = makeCreateInputField(
+          type,
+          this.modelDirectiveConfig.get(type.name.value)!,
+          knownModels,
+          ctx.inputDocument,
+        );
         const createInputTypeName = createInputField.name.value;
         if (!ctx.output.getType(createInputField.name.value)) {
           ctx.output.addInput(createInputField);
@@ -709,7 +795,12 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
         ];
 
       case MutationFieldType.UPDATE:
-        const updateInputField = makeUpdateInputField(type, this.modelDirectiveConfig.get(type.name.value)!, knownModels);
+        const updateInputField = makeUpdateInputField(
+          type,
+          this.modelDirectiveConfig.get(type.name.value)!,
+          knownModels,
+          ctx.inputDocument,
+        );
         const updateInputTypeName = updateInputField.name.value;
         if (!ctx.output.getType(updateInputField.name.value)) {
           ctx.output.addInput(updateInputField);
@@ -726,7 +817,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
         break;
 
       default:
-        throw new Error('Unkown operation type');
+        throw new Error('Unknown operation type');
     }
     return [];
   };
@@ -771,7 +862,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
         if (def && def.kind == 'ObjectTypeDefinition' && !this.isModelField(def.name.value)) {
           const name = this.getNonModelInputObjectName(def.name.value);
           if (!ctx.output.getType(name)) {
-            const inputObj = InputObjectDefinitionWrapper.fromObject(name, def);
+            const inputObj = InputObjectDefinitionWrapper.fromObject(name, def, ctx.inputDocument);
             ctx.output.addInput(inputObj.serialize());
           }
         }
@@ -796,7 +887,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
     if (!typeObj) {
       throw new Error(`Type ${name} is missing in outputs`);
     }
-    const typeWrapper = new ObjectDefinationWrapper(typeObj);
+    const typeWrapper = new ObjectDefinitionWrapper(typeObj);
     if (!typeWrapper.hasField('id')) {
       const idField = FieldWrapper.create('id', 'ID');
       typeWrapper.addField(idField);
@@ -807,7 +898,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
           if (typeWrapper.hasField(fieldName)) {
             const createdAtField = typeWrapper.getField(fieldName);
             if (!['String', 'AWSDateTime'].includes(createdAtField.getTypeName())) {
-              console.warn(`type ${name}.${fieldName} is not of String or AWSDateTime. Autopoupulation is not supported`);
+              console.warn(`type ${name}.${fieldName} is not of String or AWSDateTime. Auto population is not supported`);
             }
           } else {
             const createdAtField = FieldWrapper.create(fieldName, 'AWSDateTime');

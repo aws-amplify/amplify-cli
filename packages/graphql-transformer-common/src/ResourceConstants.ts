@@ -21,6 +21,13 @@ export class ResourceConstants {
     ElasticsearchStreamingLambdaFunctionLogicalID: 'ElasticSearchStreamingLambdaFunction',
     ElasticsearchDataSourceLogicalID: 'ElasticSearchDataSource',
 
+    // OpenSearch
+    OpenSearchAccessIAMRoleLogicalID: 'OpenSearchAccessIAMRole',
+    OpenSearchDomainLogicalID: 'OpenSearchDomain',
+    OpenSearchStreamingLambdaIAMRoleLogicalID: 'OpenSearchStreamingLambdaIAMRole',
+    OpenSearchStreamingLambdaFunctionLogicalID: 'OpenSearchStreamingLambdaFunction',
+    OpenSearchDataSourceLogicalID: 'OpenSearchDataSource',
+
     // Local. Try not to collide with model data sources.
     NoneDataSource: 'NoneDataSource',
 
@@ -63,6 +70,19 @@ export class ResourceConstants {
     ElasticsearchStreamingLambdaHandlerName: 'ElasticSearchStreamingLambdaHandlerName',
     ElasticsearchStreamingLambdaRuntime: 'ElasticSearchStreamingLambdaRuntime',
 
+    // OpenSearch
+    OpenSearchAccessIAMRoleName: 'OpenSearchAccessIAMRoleName',
+    OpenSearchDebugStreamingLambda: 'OpenSearchDebugStreamingLambda',
+    OpenSearchStreamingIAMRoleName: 'OpenSearchStreamingIAMRoleName',
+    OpenSearchStreamingFunctionName: 'OpenSearchStreamingFunctionName',
+    OpenSearchStreamBatchSize: 'OpenSearchStreamBatchSize',
+    OpenSearchStreamMaximumBatchingWindowInSeconds: 'OpenSearchStreamMaximumBatchingWindowInSeconds',
+    OpenSearchInstanceCount: 'OpenSearchInstanceCount',
+    OpenSearchInstanceType: 'OpenSearchInstanceType',
+    OpenSearchEBSVolumeGB: 'OpenSearchEBSVolumeGB',
+    OpenSearchStreamingLambdaHandlerName: 'OpenSearchStreamingLambdaHandlerName',
+    OpenSearchStreamingLambdaRuntime: 'OpenSearchStreamingLambdaRuntime',
+
     // Auth
     AuthCognitoUserPoolId: 'AuthCognitoUserPoolId',
   };
@@ -91,6 +111,12 @@ export class ResourceConstants {
     ElasticsearchAccessIAMRoleArn: 'ElasticsearchAccessIAMRoleArn',
     ElasticsearchDomainArn: 'ElasticsearchDomainArn',
     ElasticsearchDomainEndpoint: 'ElasticsearchDomainEndpoint',
+
+    // OpenSearch
+    OpenSearchStreamingLambdaIAMRoleArn: 'OpenSearchStreamingLambdaIAMRoleArn',
+    OpenSearchAccessIAMRoleArn: 'OpenSearchAccessIAMRoleArn',
+    OpenSearchDomainArn: 'OpenSearchDomainArn',
+    OpenSearchDomainEndpoint: 'OpenSearchDomainEndpoint',
 
     // Auth
     AuthCognitoUserPoolIdOutput: 'AuthCognitoUserPoolIdOutput',

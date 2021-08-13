@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.19.7](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-common@4.19.6...graphql-transformer-common@4.19.7) (2021-08-06)
+
+
+### Bug Fixes
+
+* **graphql-model-transformer:** model input fields transform ([#7857](https://github.com/aws-amplify/amplify-cli/issues/7857)) ([12ff663](https://github.com/aws-amplify/amplify-cli/commit/12ff663a94a4896bd9eacef3847be15b7631d8df))
+
+
+
+
+
 ## [4.19.6](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-common@4.19.5...graphql-transformer-common@4.19.6) (2021-07-27)
 
 **Note:** Version bump only for package graphql-transformer-common

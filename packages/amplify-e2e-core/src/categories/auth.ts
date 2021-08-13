@@ -1131,21 +1131,13 @@ export function addAuthWithMaxOptions(cwd: string, settings: any): Promise<void>
       .sendCarriageReturn()
       .wait('Do you want to edit your custom function now')
       .sendConfirmNo()
+      .wait('Successfully')
       .wait('Do you want to edit your custom function now')
       .sendConfirmNo()
+      .wait('Successfully')
       .wait('Do you want to edit your custom function now')
       .sendConfirmNo()
-      .wait('Do you want to edit your custom function now')
-      .sendConfirmNo()
-      .wait('Do you want to edit your custom function now')
-      .sendConfirmNo()
-      .wait('Do you want to edit your custom function now')
-      .sendConfirmNo()
-      .wait('Do you want to edit your custom function now')
-      .sendConfirmNo()
-      .wait('Do you want to edit your custom function now')
-      .sendConfirmNo()
-      .sendEof()
+      .wait('Successfully')
       .run((err: Error) => {
         if (!err) {
           resolve();
@@ -1290,7 +1282,7 @@ export function addAuthUserPoolOnlyWithOAuth(cwd: string, settings: AddAuthUserP
       .wait('Do you want to add another redirect signout URI')
       .sendConfirmNo()
       .wait('Select the OAuth flows enabled for this project')
-      .sendCarriageReturn() // Authorication Grant
+      .sendCarriageReturn() // Authorization Grant
       .wait('Select the OAuth scopes enabled for this project')
       .sendCarriageReturn() // All
       .wait('Select the social providers you want to configure for your user pool')
@@ -1414,7 +1406,7 @@ export function addAuthIdentityPoolAndUserPoolWithOAuth(
       .wait('Do you want to add another redirect signout URI')
       .sendConfirmNo()
       .wait('Select the OAuth flows enabled for this project')
-      .sendCarriageReturn() // Authorication Grant
+      .sendCarriageReturn() // Authorization Grant
       .wait('Select the OAuth scopes enabled for this project')
       .sendCarriageReturn() // All
       .wait('Select the social providers you want to configure for your user pool')

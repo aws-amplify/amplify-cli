@@ -139,7 +139,6 @@
                 }
             },
             "required": [
-                "cognitoUserPoolId",
                 "mode"
             ]
         },

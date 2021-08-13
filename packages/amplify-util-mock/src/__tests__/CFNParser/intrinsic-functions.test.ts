@@ -227,6 +227,10 @@ describe('intrinsic-functions', () => {
       const node = ['bar', 'foo value', 'bar value'];
       expect(cfnIf(node, cfnContext, parseValue)).toEqual('bar value');
     });
+    it('should return `undefined` when the returned value section is a `AWS::NoValue` Ref', () => {
+      const node = ['foo', { Ref: 'AWS::NoValue' }, 'bar value'];
+      expect(cfnIf(node, cfnContext, parseValue)).toBeUndefined();
+    });
   });
 
   describe('cfnEquals', () => {
