@@ -34,10 +34,13 @@ export function dynamoDBResourceHandler(resourceName, resource, cfnContext: Clou
 
 export type AppSyncDataSourceProcessedResource = CloudFormationProcessedResourceResult & {
   name: string;
-  type: 'AMAZON_DYNAMODB' | 'AWS_LAMBDA' | 'NONE';
+  type: 'AMAZON_DYNAMODB' | 'AWS_LAMBDA' | 'HTTP' | 'NONE';
   LambdaFunctionArn?: string;
   config?: {
     tableName: string;
+  };
+  httpConfig?: {
+    endpoint?: string;
   };
 };
 export function appSyncDataSourceHandler(
@@ -76,6 +79,17 @@ export function appSyncDataSourceHandler(
       type: 'AWS_LAMBDA',
       name: resource.Properties.Name,
       LambdaFunctionArn: lambdaArn,
+    };
+  }
+
+  if (typeName === 'HTTP') {
+    return {
+      ...commonProps,
+      type: 'HTTP',
+      name: resource.Properties.Name,
+      httpConfig: {
+        endpoint: parseValue(resource.Properties.HttpConfig.Endpoint, cfnContext),
+      },
     };
   }
 

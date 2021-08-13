@@ -66,10 +66,17 @@ export interface AppSyncSimulatorDataSourceLambdaConfig extends AppSyncSimulator
   type: 'AWS_LAMBDA';
   invoke: Function;
 }
+export interface AppSyncSimulatorDataSourceHttpConfig extends AppSyncSimulatorDataSourceBaseConfig {
+  type: 'HTTP';
+  httpConfig: {
+    endpoint: string;
+  };
+}
 export type AppSyncSimulatorDataSourceConfig =
   | AppSyncSimulatorDataSourceDDBConfig
   | AppSyncSimulatorDataSourceNoneConfig
-  | AppSyncSimulatorDataSourceLambdaConfig;
+  | AppSyncSimulatorDataSourceLambdaConfig
+  | AppSyncSimulatorDataSourceHttpConfig;
 
 export type AppSyncSimulatorSchemaConfig = AppSyncMockFile;
 
