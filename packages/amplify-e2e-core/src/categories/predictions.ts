@@ -1,4 +1,4 @@
-import { nspawn as spawn, KEY_DOWN_ARROW, getCLIPath, getScriptRunnerPath, } from '..';
+import { nspawn as spawn, KEY_DOWN_ARROW, getCLIPath, getScriptRunnerPath } from '..';
 import os from 'os';
 
 // add convert resource
@@ -56,7 +56,7 @@ export function addIdentifyCollection(cwd: string, settings: any): Promise<void>
       .sendConfirmYes()
       .wait('Who should have access?')
       .sendKeyDown()
-      .sendCarriageReturn()  
+      .sendCarriageReturn()
       .wait('The CLI would be provisioning an S3 bucket')
       .sendCarriageReturn()
       .sendEof()

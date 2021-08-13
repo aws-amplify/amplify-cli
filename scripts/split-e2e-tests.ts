@@ -256,7 +256,7 @@ function splitTests(
                 matrix: {
                   parameters: {
                     os:
-                      WINDOWS_TEST_FAILURES.some(failingJob => failingJob.includes(newJobName)) || newJobName.endsWith('_pkg')
+                      WINDOWS_TEST_FAILURES.some(failingJob => failingJob.includes(newJobName)) || newJobName.endsWith('_pkg_linux')
                         ? ['linux']
                         : ['linux', 'windows'],
                   },
@@ -367,7 +367,7 @@ function main(): void {
   );
   const splitPkgTests = splitTests(
     splitNodeTests,
-    'amplify_e2e_tests_pkg',
+    'amplify_e2e_tests_pkg_linux',
     'build_test_deploy',
     join(process.cwd(), 'packages', 'amplify-e2e-tests'),
     CONCURRENCY,
