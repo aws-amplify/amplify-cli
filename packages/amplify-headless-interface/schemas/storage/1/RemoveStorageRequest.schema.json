@@ -1,0 +1,84 @@
+{
+  "description": "Headless mode for remove storage is not yet implemented.\nThis interface is subject to change and should not be used.",
+  "type": "object",
+  "properties": {
+      "version": {
+          "type": "number",
+          "enum": [
+              1
+          ]
+      },
+      "serviceConfiguration": {
+          "$ref": "#/definitions/S3ServiceConfiguration"
+      }
+  },
+  "required": [
+      "serviceConfiguration",
+      "version"
+  ],
+  "definitions": {
+      "S3ServiceConfiguration": {
+          "description": "Service configuration for AWS S3 through Amplify",
+          "type": "object",
+          "properties": {
+              "serviceName": {
+                  "description": "Descriminant used to determine the service config type",
+                  "type": "string",
+                  "enum": [
+                      "s3"
+                  ]
+              },
+              "bucketName": {
+                  "description": "Globally unique bucket name",
+                  "type": "string"
+              },
+              "resourceName": {
+                  "description": "Amplify resource name",
+                  "type": "string"
+              }
+          },
+          "required": [
+              "permissions",
+              "serviceName"
+          ]
+      },
+      "S3Permissions": {
+          "description": "Permissions that should be applied to the bucket",
+          "type": "object",
+          "properties": {
+              "auth": {
+                  "description": "Permissions for authenticated users",
+                  "type": "array",
+                  "items": {
+                      "enum": [
+                          "CREATE_AND_UPDATE",
+                          "DELETE",
+                          "READ"
+                      ],
+                      "type": "string"
+                  }
+              },
+              "guest": {
+                  "description": "Permissions for unauthenticated users",
+                  "type": "array",
+                  "items": {
+                      "enum": [
+                          "CREATE_AND_UPDATE",
+                          "DELETE",
+                          "READ"
+                      ],
+                      "type": "string"
+                  }
+              },
+              "groups": {
+                  "$ref": "#/definitions/PermissionGroups",
+                  "description": "Permissions for Cognito user groups"
+              }
+          },
+          "required": [
+              "auth"
+          ]
+      }
+  },
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}

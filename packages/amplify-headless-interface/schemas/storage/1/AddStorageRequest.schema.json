@@ -36,6 +36,10 @@
                     "description": "Globally unique bucket name",
                     "type": "string"
                 },
+                "resourceName": {
+                    "description": "Amplify resource name",
+                    "type": "string"
+                },
                 "lambdaTrigger": {
                     "$ref": "#/definitions/LambdaTriggerConfig",
                     "description": "Optional parameter specifying a lambda that should run when the bucket is modified"
@@ -56,10 +60,9 @@
                     "type": "array",
                     "items": {
                         "enum": [
-                            "CREATE",
+                            "CREATE_AND_UPDATE",
                             "DELETE",
-                            "READ",
-                            "UPDATE"
+                            "READ"
                         ],
                         "type": "string"
                     }
@@ -69,10 +72,9 @@
                     "type": "array",
                     "items": {
                         "enum": [
-                            "CREATE",
+                            "CREATE_AND_UPDATE",
                             "DELETE",
-                            "READ",
-                            "UPDATE"
+                            "READ"
                         ],
                         "type": "string"
                     }
@@ -93,10 +95,9 @@
                 "type": "array",
                 "items": {
                     "enum": [
-                        "CREATE",
+                        "CREATE_AND_UPDATE",
                         "DELETE",
-                        "READ",
-                        "UPDATE"
+                        "READ"
                     ],
                     "type": "string"
                 }
