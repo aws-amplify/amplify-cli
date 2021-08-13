@@ -7,16 +7,12 @@ export const generateOverrideSkeleton = async (context: $TSContext, srcResourceD
   // 1. Create skeleton package
   const backendDir = context.amplify.pathManager.getBackendDirPath();
 
-  // const overrideDirPath = path.normalize(path.join(backendDir, 'awscloudformation', 'overrides'));
-
   if (fs.existsSync(destDirPath)) {
     context.print.warning(`Overrides folder already exists. Please make your changes in ${destDirPath} directory`);
     return;
   }
 
   fs.ensureDirSync(destDirPath);
-
-  // const overrideResourceDir = path.normalize(path.join(__dirname, '..', '..', 'resources', 'overrides-resource'));
 
   fs.copySync(srcResourceDirPath, destDirPath);
 

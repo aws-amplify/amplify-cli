@@ -3,18 +3,17 @@
 */
 
 import path from 'path';
-import { generateOverrideSkeleton } from 'amplify-cli-core';
+import { generateOverrideSkeleton, $TSContext } from 'amplify-cli-core';
 
 const subcommand = 'override';
 
-module.exports = {
-  name: subcommand,
-  run: async context => {
-    const backendDir = context.amplify.pathManager.getBackendDirPath();
+export const name = 'overrides';
 
-    const destPath = path.normalize(path.join(backendDir, 'awscloudformation', 'overrides'));
-    const srcPath = path.normalize(path.join(__dirname, '..', '..', '..', 'resources', 'overrides-resource'));
+export const run = async (context: $TSContext) => {
+  const backendDir = context.amplify.pathManager.getBackendDirPath();
 
-    await generateOverrideSkeleton(context, srcPath, destPath);
-  },
+  const destPath = path.normalize(path.join(backendDir, 'awscloudformation', 'overrides'));
+  const srcPath = path.normalize(path.join(__dirname, '..', '..', '..', 'resources', 'overrides-resource'));
+
+  await generateOverrideSkeleton(context, srcPath, destPath);
 };
