@@ -15,7 +15,7 @@ export * from './tags';
 export * from './errors';
 export * from './exitOnNextTick';
 export * from './isPackaged';
-export * from './cliConstants';
+
 export * from './deploymentSecretsHelper';
 export * from './deploymentState';
 export * from './utils';
@@ -23,6 +23,8 @@ export * from './banner-message';
 export * from './cliGetCategories';
 export * from './cliRemoveResourcePrompt';
 export * from "./cliViewAPI";
+export {TypeDef, CLIInputSchemaGenerator, CLIInputSchemaValidator} from "./categoryBaseGenSchema";
+export {AmplifyCategories, AmplifySupportedService, CLISubCommands, SecretFileMode} from './cliConstants';
 
 // Temporary types until we can finish full type definition across the whole CLI
 

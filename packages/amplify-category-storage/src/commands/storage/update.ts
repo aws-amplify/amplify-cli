@@ -1,16 +1,15 @@
-const subcommand = 'update';
-const category = 'storage';
+import { AmplifyCategories, CLISubCommands } from 'amplify-cli-core';
 
 module.exports = {
-  name: subcommand,
+  name: CLISubCommands.UPDATE,
   alias: ['configure'],
-  run: async context => {
+  run: async (context: any) => {
     const { amplify } = context;
     const serviceMetadata = require('../../provider-utils/supported-services').supportedServices;
 
     return amplify
-      .serviceSelectionPrompt(context, category, serviceMetadata)
-      .then(result => {
+      .serviceSelectionPrompt(context, AmplifyCategories.STORAGE, serviceMetadata)
+      .then((result: any) => {
         const providerController = require(`../../provider-utils/${result.providerName}`);
 
         if (!providerController) {
@@ -18,14 +17,14 @@ module.exports = {
           return;
         }
 
-        return providerController.updateResource(context, category, result.service);
+        return providerController.updateResource(context, AmplifyCategories.STORAGE, result.service);
       })
-      .then(result => {
+      .then((result: any) => {
         if (result) {
           context.print.success('Successfully updated resource');
         }
       })
-      .catch(err => {
+      .catch((err: any) => {
         context.print.info(err.stack);
         context.print.error('An error occurred when updating the storage resource');
 

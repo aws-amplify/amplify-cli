@@ -1,4 +1,34 @@
-export const supportedServices = {
+
+//Parameters used to validate CLI parameters provided by user
+type ResourceInputValidationParams = {
+   operator: string,
+   value: string,
+   onErrorMsg: string,
+}
+
+//CLI input parameters specific to the resource-provider (aws service).
+type ResourceServiceInputType = {
+  key: string,
+  type?: string,
+  question: string,
+  validation?: ResourceInputValidationParams,
+  required?: boolean,
+}
+
+//Resource provider service runtime info
+interface IResourceServiceInfo {
+   inputs : ResourceServiceInputType[],
+   alias: string,
+   defaultValuesFilename: string,
+   serviceWalkthroughFilename: string,
+   cfnFilename: string,
+   provider: string,
+}
+
+//Map from AWS Service name to Resource Service Info
+type ResourceServiceServiceInputType = Record<string, IResourceServiceInfo>;
+
+export const supportedServices : ResourceServiceServiceInputType = {
   S3: {
     inputs: [
       {

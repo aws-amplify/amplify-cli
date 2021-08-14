@@ -5,42 +5,43 @@ const {
   getExistingTableColumnNames,
 } = require('../cfn-template-utils');
 const inquirer = require('inquirer');
-const path = require('path');
-const fs = require('fs-extra');
-const uuid = require('uuid');
+import * as path from 'path';
+import * as fs from 'fs-extra';
+import uuid from 'uuid';
 const { ResourceDoesNotExistError, exitOnNextTick } = require('amplify-cli-core');
-const { category } = require('../../..');
+import { AmplifyCategories } from '../../../../../amplify-cli-core/lib';
 
-// keep in sync with ServiceName in amplify-category-function, but probably it will not change
+// keep in sync with ServiceName in amplify-AmplifyCategories.STORAGE-function, but probably it will not change
 const FunctionServiceNameLambdaFunction = 'Lambda';
-
 const parametersFileName = 'parameters.json';
 const storageParamsFileName = 'storage-params.json';
 const serviceName = 'DynamoDB';
 const templateFileName = 'dynamoDb-cloudformation-template.json.ejs';
 
-async function addWalkthrough(context, defaultValuesFilename, serviceMetadata) {
+async function addWalkthrough(context: any, defaultValuesFilename: any, serviceMetadata: any) {
+  // @ts-expect-error ts-migrate(2554) FIXME: Expected 4 arguments, but got 3.
   return configure(context, defaultValuesFilename, serviceMetadata);
 }
 
-async function updateWalkthrough(context, defaultValuesFilename, serviceMetadata) {
+async function updateWalkthrough(context: any, defaultValuesFilename: any, serviceMetadata: any) {
   // const resourceName = resourceAlreadyExists(context);
   const { amplify } = context;
   const { amplifyMeta } = amplify.getProjectDetails();
 
   const dynamoDbResources = {};
 
-  Object.keys(amplifyMeta[category]).forEach(resourceName => {
+  Object.keys(amplifyMeta[AmplifyCategories.STORAGE]).forEach(resourceName => {
     if (
-      amplifyMeta[category][resourceName].service === serviceName &&
-      amplifyMeta[category][resourceName].mobileHubMigrated !== true &&
-      amplifyMeta[category][resourceName].serviceType !== 'imported'
+      amplifyMeta[AmplifyCategories.STORAGE][resourceName].service === serviceName &&
+      amplifyMeta[AmplifyCategories.STORAGE][resourceName].mobileHubMigrated !== true &&
+      amplifyMeta[AmplifyCategories.STORAGE][resourceName].serviceType !== 'imported'
     ) {
-      dynamoDbResources[resourceName] = amplifyMeta[category][resourceName];
+      // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
+      dynamoDbResources[resourceName] = amplifyMeta[AmplifyCategories.STORAGE][resourceName];
     }
   });
 
-  if (!amplifyMeta[category] || Object.keys(dynamoDbResources).length === 0) {
+  if (!amplifyMeta[AmplifyCategories.STORAGE] || Object.keys(dynamoDbResources).length === 0) {
     const errMessage = 'No resources to update. You need to add a resource.';
 
     context.print.error(errMessage);
@@ -64,7 +65,7 @@ async function updateWalkthrough(context, defaultValuesFilename, serviceMetadata
   return await configure(context, defaultValuesFilename, serviceMetadata, answer.resourceName);
 }
 
-async function configure(context, defaultValuesFilename, serviceMetadata, resourceName) {
+async function configure(context: any, defaultValuesFilename: any, serviceMetadata: any, resourceName: any) {
   const { amplify, print } = context;
   const { inputs } = serviceMetadata;
   const defaultValuesSrc = path.join(__dirname, '..', 'default-values', defaultValuesFilename);
@@ -89,7 +90,7 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
   let storageParams = {};
 
   if (resourceName) {
-    const resourceDirPath = path.join(projectBackendDirPath, category, resourceName);
+    const resourceDirPath = path.join(projectBackendDirPath, AmplifyCategories.STORAGE, resourceName);
     const parametersFilePath = path.join(resourceDirPath, parametersFileName);
     let parameters;
 
@@ -129,7 +130,7 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
       name: inputs[1].key,
       message: inputs[1].question,
       validate: amplify.inputValidation(inputs[1]),
-      default: answers => {
+      default: (answers: any) => {
         const defaultValue = defaultValues[inputs[1].key];
         return answers.resourceName || defaultValue;
       },
@@ -198,9 +199,11 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
 
     attributeAnswers.push({
       AttributeName: attributeAnswer[inputs[2].key],
+      // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
       AttributeType: attributeTypes[attributeAnswer[inputs[3].key]].code,
     });
 
+    // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
     if (attributeTypes[attributeAnswer[inputs[3].key]].indexable) {
       indexableAttributeList.push(attributeAnswer[inputs[2].key]);
     }
@@ -208,7 +211,7 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
     continueAttributeQuestion = await amplify.confirmPrompt('Would you like to add another column?');
   }
 
-  answers.AttributeDefinitions = attributeAnswers;
+  (answers as any).AttributeDefinitions = attributeAnswers;
 
   print.info('');
   print.info(
@@ -221,9 +224,8 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
   );
   print.info('');
   // Ask for primary key
-
-  answers.KeySchema = [];
-  let partitionKeyName;
+(answers as any).KeySchema = [];
+  let partitionKeyName: any;
   let partitionKeyType;
 
   if (resourceName) {
@@ -243,50 +245,49 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
     partitionKeyName = partitionKeyAnswer[inputs[4].key];
   }
 
-  answers.KeySchema.push({
+  (answers as any).KeySchema.push({
     AttributeName: partitionKeyName,
     KeyType: 'HASH',
-  });
+});
 
   // Get the type for primary index
+const primaryAttrTypeIndex = (answers as any).AttributeDefinitions.findIndex((attr: any) => attr.AttributeName === partitionKeyName);
 
-  const primaryAttrTypeIndex = answers.AttributeDefinitions.findIndex(attr => attr.AttributeName === partitionKeyName);
-
-  partitionKeyType = answers.AttributeDefinitions[primaryAttrTypeIndex].AttributeType;
+  partitionKeyType = (answers as any).AttributeDefinitions[primaryAttrTypeIndex].AttributeType;
 
   usedAttributeDefinitions.add(partitionKeyName);
 
-  let sortKeyName;
+  let sortKeyName: any;
   let sortKeyType;
 
   if (resourceName) {
     ({ sortKeyName } = defaultValues);
 
     if (sortKeyName) {
-      answers.KeySchema.push({
-        AttributeName: sortKeyName,
-        KeyType: 'RANGE',
-      });
+      (answers as any).KeySchema.push({
+    AttributeName: sortKeyName,
+    KeyType: 'RANGE',
+});
 
       usedAttributeDefinitions.add(sortKeyName);
     }
   } else if (await amplify.confirmPrompt('Do you want to add a sort key to your table?')) {
     // Ask for sort key
-    if (answers.AttributeDefinitions.length > 1) {
+    if ((answers as any).AttributeDefinitions.length > 1) {
       const sortKeyQuestion = {
         type: inputs[5].type,
         name: inputs[5].key,
         message: inputs[5].question,
-        choices: indexableAttributeList.filter(att => att !== partitionKeyName),
+        choices: indexableAttributeList.filter((att: any) => att !== partitionKeyName),
       };
       const sortKeyAnswer = await inquirer.prompt([sortKeyQuestion]);
 
       sortKeyName = sortKeyAnswer[inputs[5].key];
 
-      answers.KeySchema.push({
-        AttributeName: sortKeyName,
-        KeyType: 'RANGE',
-      });
+      (answers as any).KeySchema.push({
+    AttributeName: sortKeyName,
+    KeyType: 'RANGE',
+});
 
       usedAttributeDefinitions.add(sortKeyName);
     } else {
@@ -296,11 +297,11 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
 
   if (sortKeyName) {
     // Get the type for primary index
-    const sortKeyAttrTypeIndex = answers.AttributeDefinitions.findIndex(attr => attr.AttributeName === sortKeyName);
-    sortKeyType = answers.AttributeDefinitions[sortKeyAttrTypeIndex].AttributeType;
+const sortKeyAttrTypeIndex = (answers as any).AttributeDefinitions.findIndex((attr: any) => attr.AttributeName === sortKeyName);
+    sortKeyType = (answers as any).AttributeDefinitions[sortKeyAttrTypeIndex].AttributeType;
   }
 
-  answers.KeySchema = answers.KeySchema;
+  (answers as any).KeySchema = (answers as any).KeySchema;
 
   print.info('');
   print.info(
@@ -358,7 +359,7 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
 
         usedAttributeDefinitions.add(gsiPrimaryKeyName);
 
-        const sortKeyOptions = indexableAttributeList.filter(att => att !== gsiPrimaryKeyName);
+        const sortKeyOptions = indexableAttributeList.filter((att: any) => att !== gsiPrimaryKeyName);
 
         if (sortKeyOptions.length > 0) {
           if (await amplify.confirmPrompt('Do you want to add a sort key to your global secondary index?')) {
@@ -394,52 +395,52 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
       const existingGSIs = await getExistingStorageGSIs(resourceName);
       const existingAttributeDefinitions = await getExistingStorageAttributeDefinitions(resourceName);
       const allAttributeDefinitionsMap = new Map([
-        ...existingAttributeDefinitions.map(r => [r.AttributeName, r]),
-        ...answers.AttributeDefinitions.map(r => [r.AttributeName, r]),
-      ]);
+    ...existingAttributeDefinitions.map((r: any) => [r.AttributeName, r]),
+    ...(answers as any).AttributeDefinitions.map((r: any) => [r.AttributeName, r]),
+]);
 
       if (
         !!existingGSIs.length &&
         (await amplify.confirmPrompt('Do you want to keep existing global seconday indexes created on your table?'))
       ) {
-        existingGSIs.forEach(r => gsiList.push(r));
-        answers.AttributeDefinitions = [...allAttributeDefinitionsMap.values()];
+        existingGSIs.forEach((r: any) => gsiList.push(r));
+        (answers as any).AttributeDefinitions = [...allAttributeDefinitionsMap.values()];
 
-        usedAttributeDefinitions = existingGSIs.reduce((prev, current) => {
-          current.KeySchema.map(r => prev.add(r.AttributeName));
+        usedAttributeDefinitions = existingGSIs.reduce((prev: any, current: any) => {
+          current.KeySchema.map((r: any) => prev.add(r.AttributeName));
           return prev;
         }, usedAttributeDefinitions);
       }
     }
 
     if (gsiList.length > 0) {
-      answers.GlobalSecondaryIndexes = gsiList;
+      (answers as any).GlobalSecondaryIndexes = gsiList;
     }
   }
 
+  // @ts-expect-error ts-migrate(2740) FIXME: Type 'unknown[]' is missing the following properti... Remove this comment to see the full error message
   usedAttributeDefinitions = Array.from(usedAttributeDefinitions);
 
   /* Filter out only attribute
-   * definitions which have been used - cfn errors out otherwise */
-  answers.AttributeDefinitions = answers.AttributeDefinitions.filter(
-    attributeDefinition => usedAttributeDefinitions.indexOf(attributeDefinition.AttributeName) !== -1,
-  );
+ * definitions which have been used - cfn errors out otherwise */
+(answers as any).AttributeDefinitions = (answers as any).AttributeDefinitions.filter((attributeDefinition: any) => (usedAttributeDefinitions as any).indexOf(attributeDefinition.AttributeName) !== -1);
 
   Object.assign(defaultValues, answers);
 
   // Ask Lambda trigger question
-  if (!storageParams || !storageParams.triggerFunctions || storageParams.triggerFunctions.length === 0) {
+  if (!storageParams || !(storageParams as any).triggerFunctions || (storageParams as any).triggerFunctions.length === 0) {
     if (await amplify.confirmPrompt('Do you want to add a Lambda Trigger for your Table?', false)) {
       let triggerName;
 
       try {
+        // @ts-expect-error ts-migrate(2554) FIXME: Expected 3 arguments, but got 2.
         triggerName = await addTrigger(context, defaultValues.resourceName);
 
         if (!storageParams) {
           storageParams = {};
         }
 
-        storageParams.triggerFunctions = [triggerName];
+        (storageParams as any).triggerFunctions = [triggerName];
       } catch (e) {
         context.print.error(e.message);
       }
@@ -460,13 +461,13 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
       switch (triggerOperationAnswer.triggerOperation) {
         case 'Add a Trigger': {
           try {
-            triggerName = await addTrigger(context, defaultValues.resourceName, storageParams.triggerFunctions);
+            triggerName = await addTrigger(context, defaultValues.resourceName, (storageParams as any).triggerFunctions);
             if (!storageParams) {
               storageParams = {};
-            } else if (!storageParams.triggerFunctions) {
-              storageParams.triggerFunctions = [triggerName];
+            } else if (!(storageParams as any).triggerFunctions) {
+              (storageParams as any).triggerFunctions = [triggerName];
             } else {
-              storageParams.triggerFunctions.push(triggerName);
+              (storageParams as any).triggerFunctions.push(triggerName);
             }
 
             continueWithTriggerOperationQuestion = false;
@@ -478,15 +479,15 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
         }
         case 'Remove a trigger': {
           try {
-            if (!storageParams || !storageParams.triggerFunctions || storageParams.triggerFunctions.length === 0) {
+            if (!storageParams || !(storageParams as any).triggerFunctions || (storageParams as any).triggerFunctions.length === 0) {
               throw new Error('No triggers found associated with this table');
             } else {
-              triggerName = await removeTrigger(context, defaultValues.resourceName, storageParams.triggerFunctions);
+              triggerName = await removeTrigger(context, defaultValues.resourceName, (storageParams as any).triggerFunctions);
 
-              const index = storageParams.triggerFunctions.indexOf(triggerName);
+              const index = (storageParams as any).triggerFunctions.indexOf(triggerName);
 
               if (index >= 0) {
-                storageParams.triggerFunctions.splice(index, 1);
+                (storageParams as any).triggerFunctions.splice(index, 1);
                 continueWithTriggerOperationQuestion = false;
               } else {
                 throw new Error('Could not find trigger function');
@@ -510,7 +511,7 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
   }
 
   const resource = defaultValues.resourceName;
-  const resourceDirPath = path.join(projectBackendDirPath, category, resource);
+  const resourceDirPath = path.join(projectBackendDirPath, AmplifyCategories.STORAGE, resource);
 
   delete defaultValues.resourceName;
 
@@ -544,7 +545,7 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
   return resource;
 }
 
-async function removeTrigger(context, resourceName, triggerList) {
+async function removeTrigger(context: any, resourceName: any, triggerList: any) {
   const triggerOptionQuestion = {
     type: 'list',
     name: 'triggerOption',
@@ -573,7 +574,7 @@ async function removeTrigger(context, resourceName, triggerList) {
   return functionName;
 }
 
-async function addTrigger(context, resourceName, triggerList) {
+async function addTrigger(context: any, resourceName: any, triggerList: any) {
   const triggerTypeQuestion = {
     type: 'list',
     name: 'triggerType',
@@ -587,9 +588,9 @@ async function addTrigger(context, resourceName, triggerList) {
     let lambdaResources = await getLambdaFunctions(context);
 
     if (triggerList) {
-      const filteredLambdaResources = [];
+      const filteredLambdaResources: any = [];
 
-      lambdaResources.forEach(lambdaResource => {
+      lambdaResources.forEach((lambdaResource: any) => {
         if (triggerList.indexOf(lambdaResource) === -1) {
           filteredLambdaResources.push(lambdaResource);
         }
@@ -742,7 +743,7 @@ async function addTrigger(context, resourceName, triggerList) {
     const resourceDependsOn = amplifyMeta.function[functionName].dependsOn || [];
     let resourceExists = false;
 
-    resourceDependsOn.forEach(resource => {
+    resourceDependsOn.forEach((resource: any) => {
       if (resource.resourceName === resourceName) {
         resourceExists = true;
         resourceDependsOn.attributes = ['Name', 'Arn', 'StreamArn'];
@@ -751,7 +752,7 @@ async function addTrigger(context, resourceName, triggerList) {
 
     if (!resourceExists) {
       resourceDependsOn.push({
-        category: 'storage',
+        category: AmplifyCategories.STORAGE,
         resourceName,
         attributes: ['Name', 'Arn', 'StreamArn'],
       });
@@ -775,16 +776,16 @@ async function addTrigger(context, resourceName, triggerList) {
   return functionName;
 }
 
-async function getLambdaFunctions(context) {
+async function getLambdaFunctions(context: any) {
   const { allResources } = await context.amplify.getResourceStatus();
   const lambdaResources = allResources
-    .filter(resource => resource.service === FunctionServiceNameLambdaFunction)
-    .map(resource => resource.resourceName);
+    .filter((resource: any) => resource.service === FunctionServiceNameLambdaFunction)
+    .map((resource: any) => resource.resourceName);
 
   return lambdaResources;
 }
 
-function copyCfnTemplate(context, resourceName, options) {
+function copyCfnTemplate(context: any, resourceName: any, options: any) {
   const pluginDir = __dirname;
   const copyJobs = [
     {
@@ -798,12 +799,12 @@ function copyCfnTemplate(context, resourceName, options) {
   return context.amplify.copyBatch(context, copyJobs, options);
 }
 
-function migrate(context, projectPath, resourceName) {
-  const resourceDirPath = path.join(projectPath, 'amplify', 'backend', category, resourceName);
+function migrateCategory(context: any, projectPath: any, resourceName: any) {
+  const resourceDirPath = path.join(projectPath, 'amplify', 'backend', AmplifyCategories.STORAGE, resourceName);
   const cfnFilePath = path.join(resourceDirPath, `${resourceName}-cloudformation-template.json`);
 
   // Removes dangling commas from a JSON
-  const removeDanglingCommas = value => {
+  const removeDanglingCommas = (value: any) => {
     const regex = /,(?!\s*?[{["'\w])/g;
 
     return value.replace(regex, '');
@@ -822,63 +823,62 @@ function migrate(context, projectPath, resourceName) {
   Object.assign(newCfn, oldCfn);
 
   // Add env parameter
-  if (!newCfn.Parameters) {
-    newCfn.Parameters = {};
+  if (!(newCfn as any).Parameters) {
+    (newCfn as any).Parameters = {};
   }
 
-  newCfn.Parameters.env = {
+  (newCfn as any).Parameters.env = {
     Type: 'String',
-  };
+};
 
   // Add conditions block
-  if (!newCfn.Conditions) {
-    newCfn.Conditions = {};
+  if (!(newCfn as any).Conditions) {
+    (newCfn as any).Conditions = {};
   }
 
-  newCfn.Conditions.ShouldNotCreateEnvResources = {
+  (newCfn as any).Conditions.ShouldNotCreateEnvResources = {
     'Fn::Equals': [
-      {
-        Ref: 'env',
-      },
-      'NONE',
+        {
+            Ref: 'env',
+        },
+        'NONE',
     ],
-  };
+};
 
   // Add if condition for resource name change
-
-  newCfn.Resources.DynamoDBTable.Properties.TableName = {
+(newCfn as any).Resources.DynamoDBTable.Properties.TableName = {
     'Fn::If': [
-      'ShouldNotCreateEnvResources',
-      {
-        Ref: 'tableName',
-      },
-      {
-        'Fn::Join': [
-          '',
-          [
-            {
-              Ref: 'tableName',
-            },
-            '-',
-            {
-              Ref: 'env',
-            },
-          ],
-        ],
-      },
+        'ShouldNotCreateEnvResources',
+        {
+            Ref: 'tableName',
+        },
+        {
+            'Fn::Join': [
+                '',
+                [
+                    {
+                        Ref: 'tableName',
+                    },
+                    '-',
+                    {
+                        Ref: 'env',
+                    },
+                ],
+            ],
+        },
     ],
-  };
+};
 
   const jsonString = JSON.stringify(newCfn, null, '\t');
 
   fs.writeFileSync(cfnFilePath, jsonString, 'utf8');
 }
 
-function getIAMPolicies(resourceName, crudOptions) {
+function getIAMPolicies(resourceName: any, crudOptions: any) {
   let policy = {};
-  const actions = [];
+  const actions: any = [];
 
-  crudOptions.forEach(crudOption => {
+  crudOptions.forEach((crudOption: any) => {
     switch (crudOption) {
       case 'create':
         actions.push('dynamodb:Put*', 'dynamodb:Create*', 'dynamodb:BatchWriteItem');
@@ -903,13 +903,13 @@ function getIAMPolicies(resourceName, crudOptions) {
     Resource: crudOptions.customPolicyResource
       ? crudOptions.customPolicyResource
       : [
-          { Ref: `${category}${resourceName}Arn` },
+          { Ref: `${AmplifyCategories.STORAGE}${resourceName}Arn` },
           {
             'Fn::Join': [
               '/',
               [
                 {
-                  Ref: `${category}${resourceName}Arn`,
+                  Ref: `${AmplifyCategories.STORAGE}${resourceName}Arn`,
                 },
                 'index/*',
               ],
@@ -926,6 +926,6 @@ function getIAMPolicies(resourceName, crudOptions) {
 module.exports = {
   addWalkthrough,
   updateWalkthrough,
-  migrate,
+  migrate: migrateCategory,
   getIAMPolicies,
 };

@@ -1,15 +1,15 @@
-const subcommand = 'push';
-const category = 'storage';
+
+import { AmplifyCategories, CLISubCommands } from 'amplify-cli-core';
 
 module.exports = {
-  name: subcommand,
-  run: async context => {
+  name: CLISubCommands.PUSH,
+  run: async (context: any) => {
     const { amplify, parameters } = context;
     const resourceName = parameters.first;
 
     context.amplify.constructExeInfo(context);
 
-    return amplify.pushResources(context, category, resourceName).catch(err => {
+    return amplify.pushResources(context, AmplifyCategories.STORAGE, resourceName).catch((err: any) => {
       context.print.info(err.stack);
       context.print.error('An error occurred when pushing the storage resource');
 

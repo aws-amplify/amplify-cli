@@ -15,7 +15,8 @@
     "build": "tsc",
     "test": "jest",
     "clean": "rimraf lib tsconfig.tsbuildinfo",
-    "watch": "tsc -w"
+    "watch": "tsc -w",
+    "generateSchemas": "ts-node ./resources/genInputSchema.ts"
   },
   "keywords": [
     "amplify",
@@ -33,6 +34,9 @@
     "uuid": "^3.4.0"
   },
   "devDependencies": {
+    "@aws-cdk/aws-s3": "~1.72.0",
+    "@aws-cdk/cloudformation-include": "~1.72.0",
+    "@aws-cdk/core": "~1.72.0",
     "rimraf": "^3.0.2"
   },
   "jest": {

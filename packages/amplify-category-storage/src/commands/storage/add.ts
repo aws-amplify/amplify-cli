@@ -1,16 +1,16 @@
-const subcommand = 'add';
-const category = 'storage';
+
+import { AmplifyCategories, CLISubCommands } from 'amplify-cli-core';
 
 let options;
 
 module.exports = {
-  name: subcommand,
-  run: async context => {
+  name: CLISubCommands.ADD,
+  run: async (context: any) => {
     const { amplify } = context;
     const serviceMetadata = require('../../provider-utils/supported-services').supportedServices;
     return amplify
-      .serviceSelectionPrompt(context, category, serviceMetadata)
-      .then(result => {
+      .serviceSelectionPrompt(context, AmplifyCategories.STORAGE, serviceMetadata)
+      .then((result: any) => {
         options = {
           service: result.service,
           providerPlugin: result.providerName,
@@ -23,9 +23,9 @@ module.exports = {
           return;
         }
 
-        return providerController.addResource(context, category, result.service, options);
+        return providerController.addResource(context, AmplifyCategories.STORAGE, result.service, options);
       })
-      .then(resourceName => {
+      .then((resourceName: any) => {
         if (resourceName) {
           const { print } = context;
 
@@ -42,7 +42,7 @@ module.exports = {
           print.info('');
         }
       })
-      .catch(err => {
+      .catch((err: any) => {
         if (err.message) {
           context.print.error(err.message);
         }

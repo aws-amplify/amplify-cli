@@ -1,13 +1,13 @@
-const subcommand = 'remove';
-const category = 'storage';
+
+import { AmplifyCategories, CLISubCommands } from 'amplify-cli-core';
 
 module.exports = {
-  name: subcommand,
-  run: async context => {
+  name: CLISubCommands.REMOVE,
+  run: async (context: any) => {
     const { amplify, parameters } = context;
     const resourceName = parameters.first;
 
-    return amplify.removeResource(context, category, resourceName).catch(err => {
+    return amplify.removeResource(context, AmplifyCategories.STORAGE, resourceName).catch((err: any) => {
       context.print.info(err.stack);
       context.print.error('An error occurred when removing the storage resource');
 

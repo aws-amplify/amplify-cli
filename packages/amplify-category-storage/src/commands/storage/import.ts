@@ -1,6 +1,5 @@
 import { $TSContext } from 'amplify-cli-core';
-
-const category = 'storage';
+import { AmplifyCategories } from 'amplify-cli-core';
 
 export const run = async (context: $TSContext) => {
   const nameOverrides = {
@@ -10,7 +9,7 @@ export const run = async (context: $TSContext) => {
 
   const servicesMetadata = require('../../provider-utils/supported-services').supportedServices;
 
-  const serviceSelection = await context.amplify.serviceSelectionPrompt(context, category, servicesMetadata, undefined, nameOverrides);
+  const serviceSelection = await context.amplify.serviceSelectionPrompt(context, AmplifyCategories.STORAGE, servicesMetadata, undefined, nameOverrides);
   const providerController = require(`../../provider-utils/${serviceSelection.providerName}`);
 
   if (!providerController) {
@@ -18,5 +17,5 @@ export const run = async (context: $TSContext) => {
     return;
   }
 
-  return providerController.importResource(context, category, serviceSelection);
+  return providerController.importResource(context, AmplifyCategories.STORAGE, serviceSelection);
 };

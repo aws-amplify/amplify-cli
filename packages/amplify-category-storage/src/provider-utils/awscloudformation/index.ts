@@ -4,20 +4,20 @@ import { importS3, importedS3EnvInit } from './import/import-s3';
 import { importDynamoDB, importedDynamoDBEnvInit } from './import/import-dynamodb';
 export { importResource } from './import';
 
-export function addResource(context, category, service, options) {
+export function addResource(context: any, category: any, service: any, options: any) {
   const serviceMetadata = require('../supported-services').supportedServices[service];
   const { defaultValuesFilename, serviceWalkthroughFilename } = serviceMetadata;
   const serviceWalkthroughSrc = `${__dirname}/service-walkthroughs/${serviceWalkthroughFilename}`;
   const { addWalkthrough } = require(serviceWalkthroughSrc);
 
-  return addWalkthrough(context, defaultValuesFilename, serviceMetadata, options).then(async resourceName => {
+  return addWalkthrough(context, defaultValuesFilename, serviceMetadata, options).then(async (resourceName: any) => {
     context.amplify.updateamplifyMetaAfterResourceAdd(category, resourceName, options);
 
     return resourceName;
   });
 }
 
-export function updateResource(context, category, service) {
+export function updateResource(context: any, category: any, service: any) {
   const serviceMetadata = require('../supported-services').supportedServices[service];
   const { defaultValuesFilename, serviceWalkthroughFilename } = serviceMetadata;
   const serviceWalkthroughSrc = `${__dirname}/service-walkthroughs/${serviceWalkthroughFilename}`;
@@ -33,7 +33,7 @@ export function updateResource(context, category, service) {
   return updateWalkthrough(context, defaultValuesFilename, serviceMetadata);
 }
 
-export function migrateResource(context, projectPath, service, resourceName) {
+export function migrateResource(context: any, projectPath: any, service: any, resourceName: any) {
   const serviceMetadata = require('../supported-services').supportedServices[service];
   const { serviceWalkthroughFilename } = serviceMetadata;
   const serviceWalkthroughSrc = `${__dirname}/service-walkthroughs/${serviceWalkthroughFilename}`;
@@ -47,7 +47,7 @@ export function migrateResource(context, projectPath, service, resourceName) {
   return migrate(context, projectPath, resourceName);
 }
 
-export function getPermissionPolicies(context, service, resourceName, crudOptions) {
+export function getPermissionPolicies(context: any, service: any, resourceName: any, crudOptions: any) {
   const serviceMetadata = require('../supported-services').supportedServices[service];
   const { serviceWalkthroughFilename } = serviceMetadata;
   const serviceWalkthroughSrc = `${__dirname}/service-walkthroughs/${serviceWalkthroughFilename}`;
@@ -61,7 +61,7 @@ export function getPermissionPolicies(context, service, resourceName, crudOption
   return getIAMPolicies(resourceName, crudOptions);
 }
 
-export async function updateConfigOnEnvInit(context, category, resourceName, service) {
+export async function updateConfigOnEnvInit(context: any, category: any, resourceName: any, service: any) {
   const serviceMetadata = require('../supported-services').supportedServices[service];
   const { provider } = serviceMetadata;
 
@@ -100,6 +100,7 @@ export async function updateConfigOnEnvInit(context, category, resourceName, ser
         context,
         {
           providerName: provider,
+          // @ts-expect-error ts-migrate(2322) FIXME: Type 'undefined' is not assignable to type 'string... Remove this comment to see the full error message
           provider: undefined, // We don't have the resolved directory of the provider we pass in an instance
           service, // S3 | DynamoDB
         },
@@ -148,11 +149,11 @@ export async function updateConfigOnEnvInit(context, category, resourceName, ser
   }
 }
 
-function isInHeadlessMode(context) {
+function isInHeadlessMode(context: any) {
   return context.exeInfo.inputParams.yes;
 }
 
-function getHeadlessParams(context) {
+function getHeadlessParams(context: any) {
   const { inputParams } = context.exeInfo;
   try {
     // If the input given is a string validate it using JSON parse
