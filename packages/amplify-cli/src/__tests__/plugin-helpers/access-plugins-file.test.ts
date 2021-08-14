@@ -1,9 +1,7 @@
 import { readPluginsJsonFile, writePluginsJsonFile } from '../../plugin-helpers/access-plugins-file';
-import fs from 'fs-extra';
 import { JSONUtilities } from 'amplify-cli-core';
 import { PluginPlatform } from '../../domain/plugin-platform';
 
-const fsMock = fs as jest.Mocked<typeof fs>;
 jest.mock('amplify-cli-core', () => ({
   JSONUtilities: {
     readJson: jest.fn(),
