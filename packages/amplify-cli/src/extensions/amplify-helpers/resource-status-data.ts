@@ -8,20 +8,21 @@ import { hashElement, HashElementOptions } from 'folder-hash';
 import { CLOUD_INITIALIZED, CLOUD_NOT_INITIALIZED, getCloudInitStatus } from './get-cloud-init-status';
 import * as resourceStatus from './resource-status-diff';
 import { IResourceDiffCollection, capitalize } from './resource-status-diff';
+import { rootStackFileName } from 'amplify-provider-awscloudformation';
 
 //API: Filter resource status for the given categories
 export async function getMultiCategoryStatus(inputs: ViewResourceTableParams | undefined) {
-    let resourceStatusResults = await getResourceStatus();
-    if (inputs?.categoryList?.length) {
-      //diffs for only the required categories (amplify -v <category1>...<categoryN>)
-      //TBD: optimize search
-      resourceStatusResults.resourcesToBeCreated = filterResourceCategory(resourceStatusResults.resourcesToBeCreated, inputs.categoryList);
-      resourceStatusResults.resourcesToBeUpdated = filterResourceCategory(resourceStatusResults.resourcesToBeUpdated, inputs.categoryList);
-      resourceStatusResults.resourcesToBeSynced = filterResourceCategory(resourceStatusResults.resourcesToBeSynced, inputs.categoryList);
-      resourceStatusResults.resourcesToBeDeleted = filterResourceCategory(resourceStatusResults.resourcesToBeDeleted, inputs.categoryList);
-      resourceStatusResults.allResources = filterResourceCategory(resourceStatusResults.allResources, inputs.categoryList);
-    }
-    return resourceStatusResults;
+  let resourceStatusResults = await getResourceStatus();
+  if (inputs?.categoryList?.length) {
+    //diffs for only the required categories (amplify -v <category1>...<categoryN>)
+    //TBD: optimize search
+    resourceStatusResults.resourcesToBeCreated = filterResourceCategory(resourceStatusResults.resourcesToBeCreated, inputs.categoryList);
+    resourceStatusResults.resourcesToBeUpdated = filterResourceCategory(resourceStatusResults.resourcesToBeUpdated, inputs.categoryList);
+    resourceStatusResults.resourcesToBeSynced = filterResourceCategory(resourceStatusResults.resourcesToBeSynced, inputs.categoryList);
+    resourceStatusResults.resourcesToBeDeleted = filterResourceCategory(resourceStatusResults.resourcesToBeDeleted, inputs.categoryList);
+    resourceStatusResults.allResources = filterResourceCategory(resourceStatusResults.allResources, inputs.categoryList);
+  }
+  return resourceStatusResults;
 }
 
 export async function getResourceDiffs(resourcesToBeUpdated, resourcesToBeDeleted, resourcesToBeCreated) {
@@ -33,32 +34,27 @@ export async function getResourceDiffs(resourcesToBeUpdated, resourcesToBeDelete
   return result;
 }
 
-function resourceToTableRow( resource, operation ){
-  return [
-    capitalize(resource.category),
-    resource.resourceName,
-    operation /*syncOperationLabel*/,
-    resource.providerPlugin,
-  ]
+function resourceToTableRow(resource, operation) {
+  return [capitalize(resource.category), resource.resourceName, operation /*syncOperationLabel*/, resource.providerPlugin];
 }
 
 const ResourceOperationLabel = {
-  Create : 'Create',
-  Update : 'Update',
-  Delete : 'Delete',
-  Import : 'Import',
-  Unlink : 'Unlink',
-  NoOp : 'No Change',
-}
+  Create: 'Create',
+  Update: 'Update',
+  Delete: 'Delete',
+  Import: 'Import',
+  Unlink: 'Unlink',
+  NoOp: 'No Change',
+};
 
 const TableColumnLabels = {
   Category: 'Category',
   ResourceName: 'Resource name',
   Operation: 'Operation',
-  ProviderPlugin: 'Provider plugin'
-}
+  ProviderPlugin: 'Provider plugin',
+};
 
-function getLabelForResourceSyncOperation( syncOperationType : string ) {
+function getLabelForResourceSyncOperation(syncOperationType: string) {
   switch (syncOperationType) {
     case 'import':
       return ResourceOperationLabel.Import;
@@ -84,30 +80,29 @@ export function getSummaryTableData({
   );
   noChangeResources = noChangeResources.filter(resource => resource.category !== 'providers');
 
-  const tableOptions = [[TableColumnLabels.Category,
-                         TableColumnLabels.ResourceName,
-                         TableColumnLabels.Operation,
-                         TableColumnLabels.ProviderPlugin]];
+  const tableOptions = [
+    [TableColumnLabels.Category, TableColumnLabels.ResourceName, TableColumnLabels.Operation, TableColumnLabels.ProviderPlugin],
+  ];
 
-  for ( const resource of resourcesToBeCreated ) {
-    tableOptions.push( resourceToTableRow(resource, ResourceOperationLabel.Create) );
+  for (const resource of resourcesToBeCreated) {
+    tableOptions.push(resourceToTableRow(resource, ResourceOperationLabel.Create));
   }
 
   for (const resource of resourcesToBeUpdated) {
-    tableOptions.push( resourceToTableRow(resource, ResourceOperationLabel.Update) )
+    tableOptions.push(resourceToTableRow(resource, ResourceOperationLabel.Update));
   }
 
   for (const resource of resourcesToBeSynced) {
     const operation = getLabelForResourceSyncOperation(resource.sync);
-    tableOptions.push( resourceToTableRow( resource, operation  /*syncOperationLabel*/ ) )
+    tableOptions.push(resourceToTableRow(resource, operation /*syncOperationLabel*/));
   }
 
   for (const resource of resourcesToBeDeleted) {
     tableOptions.push(resourceToTableRow(resource, ResourceOperationLabel.Delete));
   }
 
-  for (const resource of noChangeResources ) {
-    tableOptions.push(resourceToTableRow( resource, ResourceOperationLabel.NoOp));
+  for (const resource of noChangeResources) {
+    tableOptions.push(resourceToTableRow(resource, ResourceOperationLabel.NoOp));
   }
   return tableOptions;
 }
@@ -137,11 +132,15 @@ export async function getResourceStatus(
   // if not equal there is a tag update
   const tagsUpdated = !_.isEqual(stateManager.getProjectTags(), stateManager.getCurrentProjectTags());
 
+  // check if there is an update in root stack
+  const rootStackUpdated: boolean = await isRootStackModifiedSinceLastPush(getHashForRootStack);
+
   return {
     resourcesToBeCreated,
     resourcesToBeUpdated,
     resourcesToBeSynced,
     resourcesToBeDeleted,
+    rootStackUpdated,
     tagsUpdated,
     allResources,
   };
@@ -524,3 +523,27 @@ async function asyncForEach(array, callback) {
   }
 }
 
+async function isRootStackModifiedSinceLastPush(hashFunction): Promise<boolean> {
+  try {
+    const projectPath = pathManager.findProjectRoot();
+    const localBackendDir = pathManager.getRootStackDirPath(projectPath!);
+    const cloudBackendDir = pathManager.getCurrentCloudRootStackDirPath(projectPath!);
+
+    const localDirHash = await hashFunction(localBackendDir, [rootStackFileName]);
+    const cloudDirHash = await hashFunction(cloudBackendDir, [rootStackFileName]);
+
+    return localDirHash !== cloudDirHash;
+  } catch (error) {
+    throw new Error('Amplify Project not initialized.');
+  }
+}
+
+export function getHashForRootStack(dirPath, files?: string[]) {
+  const options: HashElementOptions = {
+    folders: { exclude: ['.*', 'node_modules', 'test_coverage', 'dist', 'build'] },
+    files: {
+      include: files,
+    },
+  };
+  return hashElement(dirPath, options).then(result => result.hash);
+}
