@@ -1046,7 +1046,7 @@ async function formNestedStack(
           }
 
           if (parameters.authRoleName) {
-            parameters.authRoleName = authRoleName;
+            parameters.authRoleName = authRoleName || { Ref: 'AuthRoleName' }; // if only a user pool is imported, we ref the root stack AuthRoleName because the child stacks still need this parameter
           }
 
           if (parameters.unauthRoleArn) {
