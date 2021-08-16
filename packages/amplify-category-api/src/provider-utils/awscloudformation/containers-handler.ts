@@ -1,4 +1,3 @@
-import { JSONUtilities, pathManager } from 'amplify-cli-core';
 import fs from 'fs-extra';
 import path from 'path';
 import uuid from 'uuid';
@@ -7,6 +6,7 @@ import { DEPLOYMENT_MECHANISM } from './base-api-stack';
 import { GitHubSourceActionInfo } from './pipeline-with-awaiter';
 import { API_TYPE, IMAGE_SOURCE_TYPE, ResourceDependency, ServiceConfiguration } from './service-walkthroughs/containers-walkthrough';
 import { ApiResource, generateContainersArtifacts } from './utils/containers-artifacts';
+import { stateManager } from 'amplify-cli-core';
 
 export const addResource = async (
   serviceWalkthroughPromise: Promise<ServiceConfiguration>,
@@ -97,7 +97,7 @@ export const addResource = async (
 
   }
 
-  await addCustomPoliciesFileForContainer(category, resourceName);
+  stateManager.addCustomPoliciesFile(category, resourceName);
 
   context.print.success(`Successfully added resource ${resourceName} locally.`);
   context.print.info('');
@@ -118,28 +118,6 @@ export const addResource = async (
 
   return resourceName;
 };
-
-export async function addCustomPoliciesFileForContainer(categoryName, resourceName)
-{
-  const destDir = pathManager.getBackendDirPath();
-  const fileName = "custom-iam-policy-documents.json";
-  const addCustomPoliciesPath = path.join(
-    destDir,
-    categoryName,
-    resourceName,
-    fileName
-  )
-  const defaultCustomPolicies = {
-      "policies": [
-        {
-          "Effect": "Allow",
-          "Action": [],
-          "Resource": []
-        }
-      ]
-  }
-  JSONUtilities.writeJson(addCustomPoliciesPath, defaultCustomPolicies);
-}
 
 const getResourceDependencies = async ({
   restrictAccess,

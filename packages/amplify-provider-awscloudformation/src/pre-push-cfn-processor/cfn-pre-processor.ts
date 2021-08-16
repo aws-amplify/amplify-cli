@@ -1,5 +1,5 @@
 import { stateManager, pathManager, readCFNTemplate, writeCFNTemplate,
-  CustomIAMPolicies, CustomIAMPolicy, CustomPoliciesFormatError } from 'amplify-cli-core';
+  CustomIAMPolicies, CustomIAMPolicy, CustomPoliciesFormatError, $TSContext } from 'amplify-cli-core';
 import * as path from 'path';
 import * as fs from 'fs-extra';
 import { ProviderName as providerName } from '../constants';
@@ -7,6 +7,37 @@ import { prePushCfnTemplateModifier } from './pre-push-cfn-modifier';
 import { Template } from 'cloudform-types';
 
 const buildDir = 'build';
+export const CustomPolicyFileContentConstant = {
+  customExecutionPolicyForFunction : {
+    DependsOn: ['LambdaExecutionRole'],
+    Type: 'AWS::IAM::Policy',
+    Properties: {
+      PolicyName: 'custom-lambda-execution-policy',
+      Roles: [{ Ref: 'LambdaExecutionRole' }],
+      PolicyDocument: {
+        Version: '2012-10-17',
+        Statement: [
+        ]
+      }
+    }
+  },
+  customExecutionPolicyForContainer: (roleName: string) => {
+    `Type: 'AWS::IAM::Policy',
+    Properties: {
+      PolicyDocument: {
+        Statement: [
+        ],
+        Version: '2012-10-17'
+      },
+      PolicyName: 'CustomExecutionPolicyForContainer',
+      Roles: [
+        {
+          Ref: ${roleName}
+        }
+      ]
+    }`
+  }
+};
 
 /**
  * Runs transformations on a CFN template and returns a path to the transformed template
@@ -29,83 +60,53 @@ export async function preProcessCFNTemplate(filePath: string): Promise<string> {
 }
 
 export async function writeCustomPoliciesToCFNTemplate(
-  resourceDir,
-  cfnFile,
-  category,
-  filePath
+  resourceName: string,
+  resourceDir: string,
+  cfnFile: string,
+  category: string,
+  filePath: string
 ) {
+  if(resourceName != 'ElasticContainers' && resourceName != 'Lambda') return;
   const { templateFormat, cfnTemplate } = await readCFNTemplate(path.join(resourceDir, cfnFile));
-  const customPolicies = await stateManager.getCustomPolicies(resourceDir);
-  if (customPolicies === undefined) return;
+  const customPolicies = stateManager.getCustomPolicies(category, resourceName);
+  if (!customPolicies) return;
 
-  if(category === 'function') {
-    await addCustomPoliciesToCFNTemplateForFunction(customPolicies, cfnTemplate, filePath, {templateFormat} );
-  }
-  if(category === 'api') {
-    await addCustomPoliciesToCFNTemplateForContainer(customPolicies, cfnTemplate, filePath, {templateFormat});
-  }
+  await addCustomPoliciesToCFNTemplateForFunction(category, customPolicies, cfnTemplate, filePath, {templateFormat} );
 
 }
 
 export async function addCustomPoliciesToCFNTemplateForFunction(
+  category: string,
   customPolicies: CustomIAMPolicies,
   cfnTemplate: Template,
   filePath: string,
   {templateFormat}
   ) {
-  const customlambdaexecutionpolicy = {
-    "DependsOn": ["LambdaExecutionRole"],
-    "Type": "AWS::IAM::Policy",
-    "Properties": {
-      "PolicyName": "custom-lambda-execution-policy",
-      "Roles": [{ "Ref": "LambdaExecutionRole" }],
-      "PolicyDocument": {
-        "Version": "2012-10-17",
-        "Statement": [
-        ]
-      }
-    }
-  };
-  for (const customPolicy of customPolicies.policies) {
-    await validateRegexForCustomPolicies(customPolicy);
-    customlambdaexecutionpolicy.Properties.PolicyDocument.Statement.push(customPolicy);
+  let customExecutionPolicy = undefined;
+  if(category === 'function') {
+    customExecutionPolicy = CustomPolicyFileContentConstant.customExecutionPolicyForFunction;
   }
-  cfnTemplate.Resources["CustomLambdaExecutionPolicy"] = customlambdaexecutionpolicy;
+  if (category === 'api') {
+    const roleName = cfnTemplate.Resources.TaskDefinition.Properties.ExecutionRoleArn["Fn::GetAtt"][0];
+    customExecutionPolicy = CustomPolicyFileContentConstant.customExecutionPolicyForContainer(roleName);
+  }
+
+  for (const customPolicy of customPolicies.policies) {
+    validateCustomPolicy(customPolicy);
+    customExecutionPolicy.Properties.PolicyDocument.Statement.push(customPolicy);
+  }
+
+  if (category === 'function') {
+    cfnTemplate.Resources.CustomLambdaExecutionPolicy = customExecutionPolicy;
+  }
+  if (category === 'api') {
+    cfnTemplate.Resources.CustomExecutionPolicyForContainer = customExecutionPolicy;
+  }
+
   await writeCFNTemplate(cfnTemplate, filePath, { templateFormat });
 }
 
-export async function addCustomPoliciesToCFNTemplateForContainer(
-  customPolicies: CustomIAMPolicies,
-  cfnTemplate: Template,
-  filePath: string,
-  {templateFormat}
-  ) {
-  const roleName = cfnTemplate.Resources.TaskDefinition.Properties.ExecutionRoleArn["Fn::GetAtt"][0];
-  const customexecutionpolicyforcontainer = {
-    "Type": "AWS::IAM::Policy",
-    "Properties": {
-      "PolicyDocument": {
-        "Statement": [
-        ],
-        "Version": "2012-10-17"
-      },
-      "PolicyName": "CustomExecutionPolicyForContainer",
-      "Roles": [
-        {
-          "Ref": roleName
-        }
-      ]
-    }
-  };
-  for (const customPolicy of customPolicies.policies) {
-    await validateRegexForCustomPolicies(customPolicy);
-    customexecutionpolicyforcontainer.Properties.PolicyDocument.Statement.push(customPolicy);
-  }
-  cfnTemplate.Resources["CustomExecutionPolicyForContainer"] = customexecutionpolicyforcontainer;
-  await writeCFNTemplate(cfnTemplate, filePath, { templateFormat })
-}
-
-export async function validateRegexForCustomPolicies (customPolicy: CustomIAMPolicy) {
+export function validateCustomPolicy (customPolicy: CustomIAMPolicy) {
   const resources = customPolicy.Resource;
   const actions = customPolicy.Action;
   let resourceRegex = new RegExp('arn:(aws[a-zA-Z0-9-]*):([a-zA-Z0-9\\-])+:([a-z]{2}(-gov)?-[a-z]+-\\d{1})?:(\\d{12})?:(.*)');
@@ -126,10 +127,10 @@ export async function validateRegexForCustomPolicies (customPolicy: CustomIAMPol
     }
   }
 
-  if (wrongResourcesRegex.length != 0) {
+  if (wrongResourcesRegex.length > 0) {
     errorMessage += '\nInvalid ARN format:\n' + wrongResourcesRegex.toString() +'\n';
   }
-  if (wrongActionsRegex.length != 0) {
+  if (wrongActionsRegex.length > 0) {
     errorMessage += '\nInvalid actions format:\n' + wrongActionsRegex.toString() +'\n';
   }
 
