@@ -48,7 +48,7 @@ export const PathConstants = {
 
   CfnFileName: (resourceName: string) => `${resourceName}-awscloudformation-template.json`,
 
-  CustomPolicies: 'custom-iam-policy-documents.json',
+  CustomPoliciesFilename: 'custom-iam-policy-documents.json',
 };
 
 export class PathManager {
@@ -150,8 +150,8 @@ export class PathManager {
 
   getDotAWSDirPath = (): string => path.normalize(path.join(homedir(), PathConstants.DotAWSDirName));
 
-  getCustomPoliciesPath  = (projectPath: string): string =>
-  path.join(projectPath, PathConstants.CustomPolicies);
+  getCustomPoliciesPath  = (category: string, resourceName: string): string =>
+  path.join(this.getResourceDirectoryPath(undefined, category, resourceName), PathConstants.CustomPoliciesFilename);
 
   getAWSCredentialsFilePath = (): string => path.normalize(path.join(this.getDotAWSDirPath(), PathConstants.AWSCredentials));
 

@@ -112,7 +112,7 @@ export async function addFunctionResource(
 
   await createFunctionResources(context, completeParams);
 
-  await addCustomPoliciesFileForFunction(context, completeParams);
+  stateManager.addCustomPoliciesFile(category, completeParams.resourceName);
 
   if (!completeParams.skipEdit) {
     await openEditor(context, category, completeParams.resourceName, completeParams.functionTemplate);
@@ -131,28 +131,6 @@ export async function addFunctionResource(
     '"amplify publish" builds all of your local backend and front-end resources (if you added hosting category) and provisions them in the cloud',
   );
   return completeParams.resourceName;
-}
-
-export async function addCustomPoliciesFileForFunction(context: $TSContext, parameters: FunctionParameters | FunctionTriggerParameters)
-{
-  const destDir = pathManager.getBackendDirPath();
-  const fileName = "custom-iam-policy-documents.json";
-  const addCustomPoliciesPath = path.join(
-    destDir,
-    categoryName,
-    parameters.resourceName,
-    fileName
-  )
-  const defaultCustomPolicies = {
-      "policies": [
-        {
-          "Effect": "Allow",
-          "Action": [],
-          "Resource": []
-        }
-      ]
-  }
-  JSONUtilities.writeJson(addCustomPoliciesPath, defaultCustomPolicies);
 }
 
 export async function addLayerResource(

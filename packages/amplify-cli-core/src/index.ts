@@ -180,9 +180,6 @@ export type $TSMeta = any;
 // Use it for all file content read from team-provider-info.json
 export type $TSTeamProviderInfo = any;
 
-//Use it for all file content read from custom-policies.json
-export type $TSCustomPolicies = any;
-
 // Use it for all object initializer usages: {}
 export type $TSObject = Record<string, $TSAny>;
 

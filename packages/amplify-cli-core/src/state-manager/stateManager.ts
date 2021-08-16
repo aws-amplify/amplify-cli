@@ -9,11 +9,12 @@ import { HydrateTags, ReadTags, Tag } from '../tags';
 =======
 >>>>>>> d36fae7f6 (Custom policy implementation)
 import { pathManager } from './pathManager';
-import { $TSMeta, $TSTeamProviderInfo, $TSCustomPolicies, $TSAny, DeploymentSecrets } from '..';
+import { $TSMeta, $TSTeamProviderInfo, $TSAny, DeploymentSecrets } from '..';
 import { JSONUtilities } from '../jsonUtilities';
 import _ from 'lodash';
 import { SecretFileMode } from '../cliConstants';
 import { HydrateTags, ReadTags, Tag } from '../tags';
+import { CustomIAMPolicies } from '../customPoliciesType';
 
 export type GetOptions<T> = {
   throwIfNotExist?: boolean;
@@ -81,38 +82,41 @@ export class StateManager {
       ...options,
     };
 
-    return this.getData<$TSTeamProviderInfo>(filePath, mergedOptions);
+    return this.getData<CustomIAMPolicies>(filePath, mergedOptions);
   };
 
-  getCustomPolicies = (projectPath: string): $TSCustomPolicies => {
-    const filePath = pathManager.getCustomPoliciesPath(projectPath);
-
-    if (!fs.existsSync(filePath) || !fs.statSync(filePath).isFile) {
-      return undefined;
+  getCustomPolicies = (categoryName: string, resourceName: string): any => {
+    const filePath = pathManager.getCustomPoliciesPath(categoryName, resourceName);
+    let customPolicies: CustomIAMPolicies = {
+      policies :  []
     }
-    const data = JSONUtilities.readJson<$TSCustomPolicies>(filePath);
-    // if (data === undefined || data === null || data.length === 0 || data.policies[0] === undefined || data.policies[0].length === 0) {
-    //   return undefined;
-    // }
-    if (data === undefined)
-      {return undefined;}
-    if (data === null)
-      {return undefined;}
-    if (data.length === 0)
-      {return undefined;}
-    if (data.policies[0] === undefined)
-      {return undefined;}
-    if (data.policies[0].length === 0)
+    const data = JSONUtilities.readJson<CustomIAMPolicies>(filePath, {throwIfNotExist : false});
+
+    if (!data || Object.keys(data).length === 0 || !data.policies || data.policies.length === 0)
       {return undefined;}
 
     for (const policy of data.policies) {
-      if (policy === undefined || policy === null || policy.length === 0
-        || policy.Resource === undefined|| Object.keys(policy.Resource).length === 0) {
-        return undefined;
+      if (!policy || Object.keys(policy).length === 0 || !policy.Resource || Object.keys(policy.Resource).length === 0) {
+        continue;
       }
+      customPolicies.policies.push(policy);
     }
-    return data;
+    return customPolicies;
   };
+
+  addCustomPoliciesFile = (categoryName: string, resourceName: string): void => {
+    const customPoliciesPath = pathManager.getCustomPoliciesPath(categoryName, resourceName);
+    const defaultCustomPolicies = {
+        "policies": [
+          {
+            "Effect": "Allow",
+            "Action": [],
+            "Resource": []
+          }
+        ]
+    }
+    JSONUtilities.writeJson(customPoliciesPath, defaultCustomPolicies);
+  }
 
   localEnvInfoExists = (projectPath?: string): boolean => this.doesExist(pathManager.getLocalEnvFilePath, projectPath);
 
