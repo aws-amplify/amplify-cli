@@ -1,23 +1,23 @@
 import {
   ArgumentNode,
   DirectiveNode,
+  DocumentNode,
+  EnumTypeDefinitionNode,
   FieldDefinitionNode,
+  InputObjectTypeDefinitionNode,
   InputValueDefinitionNode,
   isListType,
+  Kind,
+  ListTypeNode,
+  Location,
+  NamedTypeNode,
   NameNode,
+  NonNullTypeNode,
   ObjectTypeDefinitionNode,
   StringValueNode,
   TypeNode,
   valueFromASTUntyped,
   ValueNode,
-  Location,
-  NonNullTypeNode,
-  ListTypeNode,
-  InputObjectTypeDefinitionNode,
-  NamedTypeNode,
-  EnumTypeDefinitionNode,
-  Kind,
-  DocumentNode,
 } from 'graphql';
 import {
   DEFAULT_SCALARS,
@@ -29,7 +29,6 @@ import {
   withNamedNodeNamed,
 } from 'graphql-transformer-common';
 
-import { merge } from 'lodash';
 // Todo: to be moved to core later. context.output.getObject would return wrapper type so its easier to manipulate
 // objects
 
@@ -73,7 +72,7 @@ export class DirectiveWrapper {
       }),
       {},
     );
-    return merge(defaultValue, argValues);
+    return Object.assign(defaultValue, argValues);
   };
 }
 

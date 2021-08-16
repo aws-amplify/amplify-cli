@@ -1,6 +1,6 @@
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { GraphQLTransform, validateModelSchema } from '@aws-amplify/graphql-transformer-core';
-import { InputObjectTypeDefinitionNode, InputValueDefinitionNode, NamedTypeNode, parse } from 'graphql';
+import { InputObjectTypeDefinitionNode, InputValueDefinitionNode, ListValueNode, NamedTypeNode, parse } from 'graphql';
 import { getBaseType } from 'graphql-transformer-common';
 import {
   doNotExpectFields,
@@ -10,6 +10,7 @@ import {
   getFieldOnObjectType,
   getInputType,
   getObjectType,
+  verifyInputCount,
   verifyMatchingTypes,
 } from './test-utils/helpers';
 
@@ -412,6 +413,88 @@ describe('ModelTransformer: ', () => {
     expect(result.pipelineFunctions['Mutation.createPost.req.vtl']).toMatchSnapshot();
   });
 
+  it('should generate only create mutation', () => {
+    const validSchema = `type Post @model(mutations: { create: "customCreatePost" }) {
+        id: ID!
+        title: String!
+        createdAt: String
+        updatedAt: String
+      }
+    `;
+    const transformer = new GraphQLTransform({
+      transformers: [new ModelTransformer()],
+      featureFlags,
+    });
+
+    const out = transformer.transform(validSchema);
+    expect(out).toBeDefined();
+    const definition = out.schema;
+    expect(definition).toBeDefined();
+    const parsed = parse(definition);
+    validateModelSchema(parsed);
+
+    const mutationType = getObjectType(parsed, 'Mutation');
+    expect(mutationType).toBeDefined();
+    expectFields(mutationType!, ['customCreatePost']);
+    doNotExpectFields(mutationType!, ['updatePost']);
+  });
+
+  it('support schema with multiple model directives', () => {
+    const validSchema = `
+      type Post @model {
+          id: ID!
+          title: String!
+          createdAt: String
+          updatedAt: String
+      }
+  
+      type User @model {
+          id: ID!
+          name: String!
+      }
+    `;
+    const transformer = new GraphQLTransform({
+      transformers: [new ModelTransformer()],
+      featureFlags,
+    });
+
+    const out = transformer.transform(validSchema);
+    expect(out).toBeDefined();
+
+    const definition = out.schema;
+    expect(definition).toBeDefined();
+    const parsed = parse(definition);
+    validateModelSchema(parsed);
+
+    const queryType = getObjectType(parsed, 'Query');
+    expect(queryType).toBeDefined();
+    expectFields(queryType!, ['listPosts']);
+    expectFields(queryType!, ['listUsers']);
+
+    const stringInputType = getInputType(parsed, 'ModelStringFilterInput');
+    expect(stringInputType).toBeDefined();
+    const booleanInputType = getInputType(parsed, 'ModelBooleanFilterInput');
+    expect(booleanInputType).toBeDefined();
+    const intInputType = getInputType(parsed, 'ModelIntFilterInput');
+    expect(intInputType).toBeDefined();
+    const floatInputType = getInputType(parsed, 'ModelFloatFilterInput');
+    expect(floatInputType).toBeDefined();
+    const idInputType = getInputType(parsed, 'ModelIDFilterInput');
+    expect(idInputType).toBeDefined();
+    const postInputType = getInputType(parsed, 'ModelPostFilterInput');
+    expect(postInputType).toBeDefined();
+    const userInputType = getInputType(parsed, 'ModelUserFilterInput');
+    expect(userInputType).toBeDefined();
+
+    expect(verifyInputCount(parsed, 'ModelStringFilterInput', 1)).toBeTruthy();
+    expect(verifyInputCount(parsed, 'ModelBooleanFilterInput', 1)).toBeTruthy();
+    expect(verifyInputCount(parsed, 'ModelIntFilterInput', 1)).toBeTruthy();
+    expect(verifyInputCount(parsed, 'ModelFloatFilterInput', 1)).toBeTruthy();
+    expect(verifyInputCount(parsed, 'ModelIDFilterInput', 1)).toBeTruthy();
+    expect(verifyInputCount(parsed, 'ModelPostFilterInput', 1)).toBeTruthy();
+    expect(verifyInputCount(parsed, 'ModelUserFilterInput', 1)).toBeTruthy();
+  });
+
   it('should support enum as a field', () => {
     const validSchema = `
       enum Status { DELIVERED IN_TRANSIT PENDING UNKNOWN }
@@ -437,5 +520,134 @@ describe('ModelTransformer: ', () => {
 
     const updateTestInput = getInputType(parsed, 'CreateTestInput');
     expectFieldsOnInputType(updateTestInput!, ['status', 'lastStatus']);
+  });
+
+  it('should support non-model types and enums', () => {
+    const validSchema = `
+      type Post @model {
+          id: ID!
+          title: String!
+          createdAt: String
+          updatedAt: String
+          metadata: [PostMetadata!]!
+          appearsIn: [Episode]!
+      }
+      type PostMetadata {
+          tags: Tag
+      }
+      type Tag {
+          published: Boolean
+          metadata: PostMetadata
+      }
+      enum Episode {
+          NEWHOPE
+          EMPIRE
+          JEDI
+      }
+    `;
+    const transformer = new GraphQLTransform({
+      transformers: [new ModelTransformer()],
+      featureFlags,
+    });
+    const out = transformer.transform(validSchema);
+    expect(out).toBeDefined();
+
+    const definition = out.schema;
+    expect(definition).toBeDefined();
+    const parsed = parse(definition);
+
+    validateModelSchema(parsed);
+
+    const postMetaDataInputType = getInputType(parsed, 'PostMetadataInput');
+    expect(postMetaDataInputType).toBeDefined();
+    const tagInputType = getInputType(parsed, 'TagInput');
+    expect(tagInputType).toBeDefined();
+    expectFieldsOnInputType(tagInputType!, ['metadata']);
+    const createPostInputType = getInputType(parsed, 'CreatePostInput');
+    expectFieldsOnInputType(createPostInputType!, ['metadata', 'appearsIn']);
+    const updatePostInputType = getInputType(parsed, 'UpdatePostInput');
+    expectFieldsOnInputType(updatePostInputType!, ['metadata', 'appearsIn']);
+
+    const postModelObject = getObjectType(parsed, 'Post');
+    const postMetaDataInputField = getFieldOnInputType(createPostInputType!, 'metadata');
+    const postMetaDataField = getFieldOnObjectType(postModelObject!, 'metadata');
+    // this checks that the non-model type was properly "unwrapped", renamed, and "rewrapped"
+    // in the generated CreatePostInput type - its types should be the same as in the Post @model type
+    verifyMatchingTypes(postMetaDataInputField.type, postMetaDataField.type);
+
+    expect(verifyInputCount(parsed, 'PostMetadataInput', 1)).toBeTruthy();
+    expect(verifyInputCount(parsed, 'TagInput', 1)).toBeTruthy();
+  });
+
+  it('it should generate filter inputs', () => {
+    const validSchema = `
+      type Post @model {
+          id: ID!
+          title: String!
+          createdAt: String
+          updatedAt: String
+      }`;
+    const transformer = new GraphQLTransform({
+      transformers: [new ModelTransformer()],
+      featureFlags,
+    });
+    const out = transformer.transform(validSchema);
+    expect(out).toBeDefined();
+
+    const definition = out.schema;
+    expect(definition).toBeDefined();
+    const parsed = parse(definition);
+    validateModelSchema(parsed);
+
+    const queryType = getObjectType(parsed, 'Query');
+    expect(queryType).toBeDefined();
+    expectFields(queryType!, ['listPosts']);
+
+    const connectionType = getObjectType(parsed, 'ModelPostConnection');
+    expect(connectionType).toBeDefined();
+
+    expect(verifyInputCount(parsed, 'ModelStringFilterInput', 1)).toBeTruthy();
+    expect(verifyInputCount(parsed, 'ModelBooleanFilterInput', 1)).toBeTruthy();
+    expect(verifyInputCount(parsed, 'ModelIntFilterInput', 1)).toBeTruthy();
+    expect(verifyInputCount(parsed, 'ModelFloatFilterInput', 1)).toBeTruthy();
+    expect(verifyInputCount(parsed, 'ModelIDFilterInput', 1)).toBeTruthy();
+    expect(verifyInputCount(parsed, 'ModelPostFilterInput', 1)).toBeTruthy();
+  });
+
+  it('should support advanced subscriptions', () => {
+    const validSchema = `type Post @model(subscriptions: {
+          onCreate: ["onFeedUpdated", "onCreatePost"],
+          onUpdate: ["onFeedUpdated"],
+          onDelete: ["onFeedUpdated"]
+      }) {
+        id: ID!
+        title: String!
+        createdAt: String
+        updatedAt: String
+    }
+    `;
+    const transformer = new GraphQLTransform({
+      transformers: [new ModelTransformer()],
+      featureFlags,
+    });
+    const out = transformer.transform(validSchema);
+    expect(out).toBeDefined();
+    const definition = out.schema;
+    expect(definition).toBeDefined();
+    const parsed = parse(definition);
+    validateModelSchema(parsed);
+
+    const subscriptionType = getObjectType(parsed, 'Subscription');
+    expect(subscriptionType).toBeDefined();
+    expectFields(subscriptionType!, ['onFeedUpdated', 'onCreatePost']);
+    const subField = subscriptionType!.fields!.find(f => f.name.value === 'onFeedUpdated');
+    expect(subField!.directives!.length).toEqual(1);
+    expect(subField!.directives![0].name!.value).toEqual('aws_subscribe');
+    const mutationsList = subField!.directives![0].arguments!.find(a => a.name.value === 'mutations')!.value as ListValueNode;
+    const mutList = mutationsList.values.map((v: any) => v.value);
+    expect(mutList.length).toEqual(3);
+    expect(mutList).toContain('createPost');
+    expect(mutList).toContain('updatePost');
+    expect(mutList).toContain('deletePost');
   });
 });
