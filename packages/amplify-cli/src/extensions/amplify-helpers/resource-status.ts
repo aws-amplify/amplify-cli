@@ -5,7 +5,6 @@ import { viewSummaryTable, viewEnvInfo, viewResourceDiffs } from './resource-sta
 import { getMultiCategoryStatus, getResourceStatus, getHashForResourceDir } from './resource-status-data';
 import { getEnvInfo } from './get-env-info';
 import chalk from 'chalk';
-import { printer } from 'amplify-prompts';
 
 export { getResourceStatus, getHashForResourceDir };
 
@@ -29,12 +28,12 @@ export async function showStatusTable(tableViewFilter: ViewResourceTableParams) 
   viewSummaryTable({ resourcesToBeUpdated, resourcesToBeCreated, resourcesToBeDeleted, resourcesToBeSynced, allResources });
   //3. Display Tags Status
   if (tagsUpdated) {
-    printer.info('\nTag Changes Detected');
+    print.info('\nTag Changes Detected');
   }
 
   //4. Display Tags Status
   if (rootStackUpdated) {
-    printer.info('\nTag Changes Detected');
+    print.info('\nTag Changes Detected');
   }
 
   //5. Display Detailed Diffs (Cfn/NonCfn)
@@ -85,7 +84,7 @@ export async function showResourceTable(category?, resourceName?, filteredResour
       '-v',
     )}' to view detailed status and cloudformation-diff.\n`,
   );
-
+  //3. Display Tags Status
   if (rootStackUpdated) {
     print.info('\n RootStack Changes Detected');
   }

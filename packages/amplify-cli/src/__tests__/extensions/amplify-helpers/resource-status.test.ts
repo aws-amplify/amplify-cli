@@ -12,6 +12,7 @@ import {
 } from '../../../extensions/amplify-helpers/get-cloud-init-status';
 import { stateManager } from 'amplify-cli-core';
 import { hashLayerResource } from 'amplify-category-function';
+import { isRootStackModifiedSinceLastPush } from '../../../extensions/amplify-helpers/root-stack-status-utils';
 
 const sample_hash1 = 'testhash1';
 const sample_hash2 = 'testhash2';
@@ -51,6 +52,10 @@ jest.mock('../../../extensions/amplify-helpers/get-cloud-init-status', () => ({
   getCloudInitStatus: jest.fn(),
 }));
 
+jest.mock('../../../extensions/amplify-helpers/root-stack-status-utils', () => ({
+  isRootStackModifiedSinceLastPush: jest.fn().mockResolvedValue(false),
+}));
+
 const backendDirPathStub = 'backendDirPath';
 const currentBackendDirPathStub = 'currentBackendDirPathStub';
 const projectRootPath = 'projectRootPath';
@@ -69,6 +74,8 @@ jest.mock('amplify-cli-core', () => ({
     getBackendDirPath: jest.fn(() => backendDirPathStub),
     getCurrentCloudBackendDirPath: jest.fn(() => currentBackendDirPathStub),
     findProjectRoot: jest.fn(() => projectRootPath),
+    getAWSCredentialsFilePath: jest.fn(() => 'getAWSCredentialsFilePath'),
+    getAWSConfigFilePath: jest.fn(() => 'getAWSConfigFilePath'),
   },
 }));
 
@@ -111,6 +118,10 @@ describe('resource-status', () => {
     (getCloudInitStatus as jest.MockedFunction<typeof getCloudInitStatus>).mockImplementation(() => CLOUD_INITIALIZED);
     const hashLayerResourceMock = hashLayerResource as jest.MockedFunction<typeof hashLayerResource>;
     hashLayerResourceMock.mockClear();
+    const isRootStackModifiedSinceLastPushMock = (isRootStackModifiedSinceLastPush as jest.MockedFunction<
+      typeof isRootStackModifiedSinceLastPush
+    >).mockResolvedValue(false);
+    isRootStackModifiedSinceLastPushMock.mockClear();
   });
 
   describe('getHashForResourceDir', () => {
@@ -145,6 +156,7 @@ describe('resource-status', () => {
         resourcesToBeDeleted: [],
         resourcesToBeSynced: [],
         resourcesToBeUpdated: [],
+        rootStackUpdated: false,
         tagsUpdated: false,
       });
     });
@@ -183,6 +195,7 @@ describe('resource-status', () => {
         resourcesToBeDeleted: [],
         resourcesToBeSynced: [],
         resourcesToBeUpdated: [],
+        rootStackUpdated: false,
         tagsUpdated: false,
       });
     });
@@ -245,6 +258,7 @@ describe('resource-status', () => {
         resourcesToBeDeleted: [],
         resourcesToBeSynced: [],
         resourcesToBeUpdated: [],
+        rootStackUpdated: false,
         tagsUpdated: false,
       });
     });
@@ -283,6 +297,7 @@ describe('resource-status', () => {
         ],
         resourcesToBeSynced: [],
         resourcesToBeUpdated: [],
+        rootStackUpdated: false,
         tagsUpdated: false,
       });
     });
@@ -335,6 +350,7 @@ describe('resource-status', () => {
           },
         ],
         resourcesToBeUpdated: [],
+        rootStackUpdated: false,
         tagsUpdated: false,
       });
     });
@@ -379,6 +395,7 @@ describe('resource-status', () => {
           },
         ],
         resourcesToBeUpdated: [],
+        rootStackUpdated: false,
         tagsUpdated: false,
       });
     });
@@ -438,6 +455,7 @@ describe('resource-status', () => {
           },
         ],
         resourcesToBeUpdated: [],
+        rootStackUpdated: false,
         tagsUpdated: false,
       });
     });
@@ -501,6 +519,7 @@ describe('resource-status', () => {
             service: 'Lambda',
           },
         ],
+        rootStackUpdated: false,
         tagsUpdated: false,
       });
     });
@@ -558,6 +577,7 @@ describe('resource-status', () => {
             service: 'LambdaLayer',
           },
         ],
+        rootStackUpdated: false,
         tagsUpdated: false,
       });
     });
@@ -613,6 +633,7 @@ describe('resource-status', () => {
             lastPushTimeStamp: '2021-07-12T00:39:17.966Z',
           },
         ],
+        rootStackUpdated: false,
         tagsUpdated: false,
       });
     });
@@ -668,6 +689,7 @@ describe('resource-status', () => {
             providerPlugin: 'awscloudformation',
           },
         ],
+        rootStackUpdated: false,
         tagsUpdated: false,
       });
     });
@@ -698,6 +720,7 @@ describe('resource-status', () => {
         resourcesToBeDeleted: [],
         resourcesToBeSynced: [],
         resourcesToBeUpdated: [],
+        rootStackUpdated: false,
         tagsUpdated: true,
       });
     });
@@ -712,6 +735,7 @@ describe('resource-status', () => {
         resourcesToBeDeleted: [],
         resourcesToBeSynced: [],
         resourcesToBeUpdated: [],
+        rootStackUpdated: false,
         tagsUpdated: false,
       });
     });

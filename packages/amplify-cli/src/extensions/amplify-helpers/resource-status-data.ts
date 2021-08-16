@@ -9,6 +9,7 @@ import { CLOUD_INITIALIZED, CLOUD_NOT_INITIALIZED, getCloudInitStatus } from './
 import * as resourceStatus from './resource-status-diff';
 import { IResourceDiffCollection, capitalize } from './resource-status-diff';
 import { rootStackFileName } from 'amplify-provider-awscloudformation';
+import { getHashForRootStack, isRootStackModifiedSinceLastPush } from './root-stack-status-utils';
 
 //API: Filter resource status for the given categories
 export async function getMultiCategoryStatus(inputs: ViewResourceTableParams | undefined) {
@@ -521,29 +522,4 @@ async function asyncForEach(array, callback) {
   for (let index = 0; index < array.length; ++index) {
     await callback(array[index], index, array);
   }
-}
-
-async function isRootStackModifiedSinceLastPush(hashFunction): Promise<boolean> {
-  try {
-    const projectPath = pathManager.findProjectRoot();
-    const localBackendDir = pathManager.getRootStackDirPath(projectPath!);
-    const cloudBackendDir = pathManager.getCurrentCloudRootStackDirPath(projectPath!);
-
-    const localDirHash = await hashFunction(localBackendDir, [rootStackFileName]);
-    const cloudDirHash = await hashFunction(cloudBackendDir, [rootStackFileName]);
-
-    return localDirHash !== cloudDirHash;
-  } catch (error) {
-    throw new Error('Amplify Project not initialized.');
-  }
-}
-
-export function getHashForRootStack(dirPath, files?: string[]) {
-  const options: HashElementOptions = {
-    folders: { exclude: ['.*', 'node_modules', 'test_coverage', 'dist', 'build'] },
-    files: {
-      include: files,
-    },
-  };
-  return hashElement(dirPath, options).then(result => result.hash);
 }
