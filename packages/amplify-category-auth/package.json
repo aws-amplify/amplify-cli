@@ -1,6 +1,6 @@
 {
   "name": "amplify-category-auth",
-  "version": "2.36.2-siwa-update.1",
+  "version": "2.37.0-siwa-update.0",
   "description": "amplify-cli authentication plugin",
   "repository": {
     "type": "git",

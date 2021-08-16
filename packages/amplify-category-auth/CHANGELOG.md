@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.37.0-siwa-update.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.36.2-siwa-update.1...amplify-category-auth@2.37.0-siwa-update.0) (2021-08-16)
+
+
+### Features
+
+* category auth/siwa update ([#7967](https://github.com/aws-amplify/amplify-cli/issues/7967)) ([b0e04e4](https://github.com/aws-amplify/amplify-cli/commit/b0e04e4986a5d93d360c1d999e2d75e66ff517e5))
+
+
+
+
+
 ## [2.36.2-siwa-update.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.36.2-siwa-update.0...amplify-category-auth@2.36.2-siwa-update.1) (2021-08-16)
 
 **Note:** Version bump only for package amplify-category-auth
