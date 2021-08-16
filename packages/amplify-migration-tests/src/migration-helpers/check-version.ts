@@ -2,7 +2,7 @@ import { getCLIPath, getScriptRunnerPath, nspawn as spawn } from 'amplify-e2e-co
 
 export function versionCheck(cwd: string, testingWithLatestCodebase = false, version: { v?: string } = {}): Promise<void> {
   return new Promise((resolve, reject) => {
-    spawn(getScriptRunnerPath(), [getCLIPath(testingWithLatestCodebase), '-v'], { cwd, stripColors: true })
+    spawn(getScriptRunnerPath(testingWithLatestCodebase), [getCLIPath(testingWithLatestCodebase), '-v'], { cwd, stripColors: true })
       .wait(/\d+\.\d+\.\d+/, v => (version.v = v.trim()))
       .run((err: Error) => {
         if (!err) {

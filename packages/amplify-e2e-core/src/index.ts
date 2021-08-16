@@ -25,7 +25,7 @@ declare global {
 const amplifyTestsDir = 'amplify-e2e-tests';
 
 export function getCLIPath(testingWithLatestCodebase = false) {
-  if (testingWithLatestCodebase) {
+  if (!testingWithLatestCodebase) {
     return process.env.AMPLIFY_PATH || (process.platform === 'win32' ? 'amplify.exe' : 'amplify');
   }
 
@@ -33,7 +33,12 @@ export function getCLIPath(testingWithLatestCodebase = false) {
   return amplifyScriptPath;
 }
 
-export function getScriptRunnerPath() {
+export function getScriptRunnerPath(testingWithLatestCodebase = false) {
+  if (!testingWithLatestCodebase) {
+    return process.platform === 'win32' ? 'C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe' : path.join(__dirname, '..', '..', '..', '.circleci', 'exec');
+  }
+
+  // nodejs executable
   return process.execPath;
 }
 

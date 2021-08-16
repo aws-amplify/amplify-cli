@@ -10,7 +10,7 @@ export function getSchemaPath(schemaName: string): string {
 
 export function apiGqlCompile(cwd: string, testingWithLatestCodebase: boolean = false) {
   return new Promise<void>((resolve, reject) => {
-    spawn(getScriptRunnerPath(), [getCLIPath(testingWithLatestCodebase), 'api', 'gql-compile'], { cwd, stripColors: true })
+    spawn(getScriptRunnerPath(testingWithLatestCodebase), [getCLIPath(testingWithLatestCodebase), 'api', 'gql-compile'], { cwd, stripColors: true })
       .wait('GraphQL schema compiled successfully.')
       .run((err: Error) => {
         if (!err) {
@@ -149,7 +149,7 @@ export function updateApiSchema(cwd: string, projectName: string, schemaName: st
 
 export function updateApiWithMultiAuth(cwd: string, settings: any) {
   return new Promise<void>((resolve, reject) => {
-    spawn(getScriptRunnerPath(), [getCLIPath(settings.testingWithLatestCodebase), 'update', 'api'], { cwd, stripColors: true })
+    spawn(getScriptRunnerPath(settings.testingWithLatestCodebase), [getCLIPath(settings.testingWithLatestCodebase), 'update', 'api'], { cwd, stripColors: true })
       .wait('Please select from one of the below mentioned services:')
       .sendCarriageReturn()
       .wait('Select from the options below')
@@ -200,7 +200,7 @@ export function updateApiWithMultiAuth(cwd: string, settings: any) {
 
 export function apiUpdateToggleDataStore(cwd: string, settings: any) {
   return new Promise<void>((resolve, reject) => {
-    spawn(getScriptRunnerPath(), [getCLIPath(settings.testingWithLatestCodebase), 'update', 'api'], { cwd, stripColors: true })
+    spawn(getScriptRunnerPath(settings.testingWithLatestCodebase), [getCLIPath(settings.testingWithLatestCodebase), 'update', 'api'], { cwd, stripColors: true })
       .wait('Please select from one of the below mentioned services:')
       .sendCarriageReturn()
       .wait('Select from the options below')
@@ -220,7 +220,7 @@ export function apiUpdateToggleDataStore(cwd: string, settings: any) {
 
 export function updateAPIWithResolutionStrategy(cwd: string, settings: any) {
   return new Promise<void>((resolve, reject) => {
-    spawn(getScriptRunnerPath(), [getCLIPath(settings.testingWithLatestCodebase), 'update', 'api'], { cwd, stripColors: true })
+    spawn(getScriptRunnerPath(settings.testingWithLatestCodebase), [getCLIPath(settings.testingWithLatestCodebase), 'update', 'api'], { cwd, stripColors: true })
       .wait('Please select from one of the below mentioned services:')
       .sendCarriageReturn()
       .wait('Select from the options below')

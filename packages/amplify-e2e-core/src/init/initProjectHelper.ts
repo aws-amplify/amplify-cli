@@ -398,7 +398,7 @@ export function amplifyInitYes(cwd: string): Promise<void> {
 
 export function amplifyVersion(cwd: string, expectedVersion: string, testingWithLatestCodebase = false): Promise<void> {
   return new Promise((resolve, reject) => {
-    spawn(getScriptRunnerPath(), [getCLIPath(testingWithLatestCodebase), '--version'], { cwd, stripColors: true })
+    spawn(getScriptRunnerPath(testingWithLatestCodebase), [getCLIPath(testingWithLatestCodebase), '--version'], { cwd, stripColors: true })
       .wait(expectedVersion)
       .run((err: Error) => {
         if (!err) {
@@ -414,7 +414,7 @@ export function amplifyVersion(cwd: string, expectedVersion: string, testingWith
 export function amplifyStatusWithMigrate(cwd: string, expectedStatus: string, testingWithLatestCodebase): Promise<void> {
   return new Promise((resolve, reject) => {
     let regex = new RegExp(`.*${expectedStatus}*`);
-    spawn(getScriptRunnerPath(), [getCLIPath(testingWithLatestCodebase), 'status'], { cwd, stripColors: true })
+    spawn(getScriptRunnerPath(testingWithLatestCodebase), [getCLIPath(testingWithLatestCodebase), 'status'], { cwd, stripColors: true })
       .wait('Amplify has been upgraded to handle secrets more securely by migrating some values')
       .sendConfirmYes()
       .wait(regex)
@@ -432,7 +432,7 @@ export function amplifyStatusWithMigrate(cwd: string, expectedStatus: string, te
 export function amplifyStatus(cwd: string, expectedStatus: string, testingWithLatestCodebase = false): Promise<void> {
   return new Promise((resolve, reject) => {
     let regex = new RegExp(`.*${expectedStatus}*`);
-    spawn(getScriptRunnerPath(), [getCLIPath(testingWithLatestCodebase), 'status'], { cwd, stripColors: true })
+    spawn(getScriptRunnerPath(testingWithLatestCodebase), [getCLIPath(testingWithLatestCodebase), 'status'], { cwd, stripColors: true })
       .wait(regex)
       .sendLine('\r')
       .run((err: Error) => {

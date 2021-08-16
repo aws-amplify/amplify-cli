@@ -256,11 +256,12 @@ function splitTests(
                 matrix: {
                   parameters: {
                     os:
-                      WINDOWS_TEST_FAILURES.some(failingJob => failingJob.includes(newJobName)) || newJobName.endsWith('_pkg_linux')
+                      WINDOWS_TEST_FAILURES.some(failingJob => failingJob.includes(newJobName)) || !newJobName.endsWith('_pkg_linux')
                         ? ['linux']
                         : ['linux', 'windows'],
-                  },
+                    },
                 },
+                
               },
             };
           }

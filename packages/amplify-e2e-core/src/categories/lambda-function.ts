@@ -157,7 +157,7 @@ const coreFunction = (
   functionConfigCallback: FunctionCallback,
 ) => {
   return new Promise((resolve, reject) => {
-    let chain = spawn(getScriptRunnerPath(), [getCLIPath(settings.testingWithLatestCodebase), action === 'update' ? 'update' : 'add', 'function'], {
+    let chain = spawn(getScriptRunnerPath(settings.testingWithLatestCodebase), [getCLIPath(settings.testingWithLatestCodebase), action === 'update' ? 'update' : 'add', 'function'], {
       cwd,
       stripColors: true,
     });
