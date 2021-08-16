@@ -23,6 +23,7 @@ export * from './banner-message';
 export * from './cliGetCategories';
 export * from './cliRemoveResourcePrompt';
 export * from "./cliViewAPI";
+export * from './overrides-manager';
 
 // Temporary types until we can finish full type definition across the whole CLI
 
