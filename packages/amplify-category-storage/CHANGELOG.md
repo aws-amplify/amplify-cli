@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.12.4-siwa-update.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-storage@2.12.4-siwa-update.0...amplify-category-storage@2.12.4-siwa-update.1) (2021-08-16)
+
+**Note:** Version bump only for package amplify-category-storage
+
+
+
+
+
 ## [2.12.4-siwa-update.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-storage@2.12.3...amplify-category-storage@2.12.4-siwa-update.0) (2021-08-05)
 
 **Note:** Version bump only for package amplify-category-storage

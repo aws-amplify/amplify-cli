@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.3.0-siwa-update.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@5.3.0-siwa-update.0...@aws-amplify/cli@5.3.0-siwa-update.1) (2021-08-16)
+
+**Note:** Version bump only for package @aws-amplify/cli
+
+
+
+
+
 # [5.3.0-siwa-update.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@5.2.1...@aws-amplify/cli@5.3.0-siwa-update.0) (2021-08-05)
 
 

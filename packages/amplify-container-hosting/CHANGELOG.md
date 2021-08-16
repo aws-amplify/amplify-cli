@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.3.18-siwa-update.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-container-hosting@1.3.18-siwa-update.0...amplify-container-hosting@1.3.18-siwa-update.1) (2021-08-16)
+
+**Note:** Version bump only for package amplify-container-hosting
+
+
+
+
+
 ## [1.3.18-siwa-update.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-container-hosting@1.3.17...amplify-container-hosting@1.3.18-siwa-update.0) (2021-08-05)
 
 
