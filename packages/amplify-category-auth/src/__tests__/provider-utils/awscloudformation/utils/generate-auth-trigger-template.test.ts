@@ -31,11 +31,11 @@ describe('generate Auth Trigger Template', () => {
     expect(cfn).toMatchSnapshot();
   });
 
-  it('successfully generate auth Trigger Template', async () => {
+  it('successfully generate auth Trigger Template without permissions', async () => {
     const mockAuthTriggerConnections: AuthTriggerConnection[] = [
       {
         lambdaFunctionName: 'randomFn',
-        triggerType: TriggerType.PostConfirmation,
+        triggerType: TriggerType.PreAuthentication,
         lambdaFunctionArn: 'randomArn',
       },
     ];
