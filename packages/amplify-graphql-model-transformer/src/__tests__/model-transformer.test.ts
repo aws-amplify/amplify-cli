@@ -471,26 +471,26 @@ describe('ModelTransformer: ', () => {
     expectFields(queryType!, ['listPosts']);
     expectFields(queryType!, ['listUsers']);
 
-    const stringInputType = getInputType(parsed, 'ModelStringFilterInput');
+    const stringInputType = getInputType(parsed, 'ModelStringInput');
     expect(stringInputType).toBeDefined();
-    const booleanInputType = getInputType(parsed, 'ModelBooleanFilterInput');
+    const booleanInputType = getInputType(parsed, 'ModelBooleanInput');
     expect(booleanInputType).toBeDefined();
-    const intInputType = getInputType(parsed, 'ModelIntFilterInput');
+    const intInputType = getInputType(parsed, 'ModelIntInput');
     expect(intInputType).toBeDefined();
-    const floatInputType = getInputType(parsed, 'ModelFloatFilterInput');
+    const floatInputType = getInputType(parsed, 'ModelFloatInput');
     expect(floatInputType).toBeDefined();
-    const idInputType = getInputType(parsed, 'ModelIDFilterInput');
+    const idInputType = getInputType(parsed, 'ModelIDInput');
     expect(idInputType).toBeDefined();
     const postInputType = getInputType(parsed, 'ModelPostFilterInput');
     expect(postInputType).toBeDefined();
     const userInputType = getInputType(parsed, 'ModelUserFilterInput');
     expect(userInputType).toBeDefined();
 
-    expect(verifyInputCount(parsed, 'ModelStringFilterInput', 1)).toBeTruthy();
-    expect(verifyInputCount(parsed, 'ModelBooleanFilterInput', 1)).toBeTruthy();
-    expect(verifyInputCount(parsed, 'ModelIntFilterInput', 1)).toBeTruthy();
-    expect(verifyInputCount(parsed, 'ModelFloatFilterInput', 1)).toBeTruthy();
-    expect(verifyInputCount(parsed, 'ModelIDFilterInput', 1)).toBeTruthy();
+    expect(verifyInputCount(parsed, 'ModelStringInput', 1)).toBeTruthy();
+    expect(verifyInputCount(parsed, 'ModelBooleanInput', 1)).toBeTruthy();
+    expect(verifyInputCount(parsed, 'ModelIntInput', 1)).toBeTruthy();
+    expect(verifyInputCount(parsed, 'ModelFloatInput', 1)).toBeTruthy();
+    expect(verifyInputCount(parsed, 'ModelIDInput', 1)).toBeTruthy();
     expect(verifyInputCount(parsed, 'ModelPostFilterInput', 1)).toBeTruthy();
     expect(verifyInputCount(parsed, 'ModelUserFilterInput', 1)).toBeTruthy();
   });
@@ -606,11 +606,11 @@ describe('ModelTransformer: ', () => {
     const connectionType = getObjectType(parsed, 'ModelPostConnection');
     expect(connectionType).toBeDefined();
 
-    expect(verifyInputCount(parsed, 'ModelStringFilterInput', 1)).toBeTruthy();
-    expect(verifyInputCount(parsed, 'ModelBooleanFilterInput', 1)).toBeTruthy();
-    expect(verifyInputCount(parsed, 'ModelIntFilterInput', 1)).toBeTruthy();
-    expect(verifyInputCount(parsed, 'ModelFloatFilterInput', 1)).toBeTruthy();
-    expect(verifyInputCount(parsed, 'ModelIDFilterInput', 1)).toBeTruthy();
+    expect(verifyInputCount(parsed, 'ModelStringInput', 1)).toBeTruthy();
+    expect(verifyInputCount(parsed, 'ModelBooleanInput', 1)).toBeTruthy();
+    expect(verifyInputCount(parsed, 'ModelIntInput', 1)).toBeTruthy();
+    expect(verifyInputCount(parsed, 'ModelFloatInput', 1)).toBeTruthy();
+    expect(verifyInputCount(parsed, 'ModelIDInput', 1)).toBeTruthy();
     expect(verifyInputCount(parsed, 'ModelPostFilterInput', 1)).toBeTruthy();
   });
 
