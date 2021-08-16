@@ -82,7 +82,7 @@ beforeAll(async () => {
     transformers: [new ModelTransformer()],
   });
   const out = transformer.transform(validSchema);
-  // fs.writeFileSync('./out.json', JSON.stringify(out, null, 4));
+
   try {
     await awsS3Client
       .createBucket({

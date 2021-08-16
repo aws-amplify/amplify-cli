@@ -132,10 +132,8 @@ export class GenericFieldWrapper {
   private isListType = (type: TypeNode): boolean => {
     if (type.kind === Kind.NON_NULL_TYPE) {
       return isListType(type.type);
-    } else if (type.kind === Kind.LIST_TYPE) {
-      return true;
     } else {
-      return false;
+      return type.kind === Kind.LIST_TYPE;
     }
   };
 
