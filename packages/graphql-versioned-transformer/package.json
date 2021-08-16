@@ -1,6 +1,6 @@
 {
   "name": "graphql-versioned-transformer",
-  "version": "4.17.17-siwa-update.0",
+  "version": "4.17.17-siwa-update.1",
   "description": "A GraphQL transform that enabled object versioning and conflict resolution for a @model type.",
   "repository": {
     "type": "git",
@@ -23,13 +23,13 @@
   },
   "dependencies": {
     "graphql": "^14.5.8",
-    "graphql-mapping-template": "4.18.2-siwa-update.0",
-    "graphql-transformer-common": "4.19.7-siwa-update.0",
-    "graphql-transformer-core": "6.29.2-siwa-update.0"
+    "graphql-mapping-template": "4.18.2-siwa-update.1",
+    "graphql-transformer-common": "4.19.7-siwa-update.1",
+    "graphql-transformer-core": "6.29.2-siwa-update.1"
   },
   "devDependencies": {
     "@types/node": "^12.12.6",
-    "graphql-dynamodb-transformer": "6.22.17-siwa-update.0"
+    "graphql-dynamodb-transformer": "6.22.17-siwa-update.1"
   },
   "jest": {
     "transform": {
