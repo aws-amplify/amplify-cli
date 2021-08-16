@@ -15,7 +15,7 @@ type Email {
   updatedAt: AWSDateTime!
 }
 
-input ModelStringInput {
+input ModelStringFilterInput {
   ne: String
   eq: String
   le: String
@@ -31,7 +31,7 @@ input ModelStringInput {
   size: ModelSizeInput
 }
 
-input ModelIntInput {
+input ModelIntFilterInput {
   ne: Int
   eq: Int
   le: Int
@@ -43,7 +43,7 @@ input ModelIntInput {
   attributeType: ModelAttributeTypes
 }
 
-input ModelFloatInput {
+input ModelFloatFilterInput {
   ne: Float
   eq: Float
   le: Float
@@ -55,14 +55,14 @@ input ModelFloatInput {
   attributeType: ModelAttributeTypes
 }
 
-input ModelBooleanInput {
+input ModelBooleanFilterInput {
   ne: Boolean
   eq: Boolean
   attributeExists: Boolean
   attributeType: ModelAttributeTypes
 }
 
-input ModelIDInput {
+input ModelIDFilterInput {
   ne: ID
   eq: ID
   le: ID
@@ -114,14 +114,14 @@ type ModelTestConnection {
 }
 
 input ModelTestFilterInput {
-  id: ModelIDInput
+  id: ModelIDFilterInput
   and: [ModelTestFilterInput]
   or: [ModelTestFilterInput]
   not: ModelTestFilterInput
 }
 
 input ModelTestConditionInput {
-  id: ModelIDInput
+  id: ModelIDFilterInput
   and: [ModelTestConditionInput]
   or: [ModelTestConditionInput]
   not: ModelTestConditionInput
@@ -163,14 +163,14 @@ type ModelEmailConnection {
 }
 
 input ModelEmailFilterInput {
-  id: ModelIDInput
+  id: ModelIDFilterInput
   and: [ModelEmailFilterInput]
   or: [ModelEmailFilterInput]
   not: ModelEmailFilterInput
 }
 
 input ModelEmailConditionInput {
-  id: ModelIDInput
+  id: ModelIDFilterInput
   and: [ModelEmailConditionInput]
   or: [ModelEmailConditionInput]
   not: ModelEmailConditionInput
