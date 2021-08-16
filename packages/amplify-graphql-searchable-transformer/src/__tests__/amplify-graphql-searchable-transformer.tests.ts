@@ -204,7 +204,7 @@ test('it generates expected resources', () => {
       ApiId: {
         Ref: anything(),
       },
-      Name: 'ElasticSearchDataSource',
+      Name: 'OpenSearchDataSource',
       Type: 'AMAZON_ELASTICSEARCH',
       ElasticsearchConfig: {
         AwsRegion: {
@@ -214,7 +214,7 @@ test('it generates expected resources', () => {
               'Fn::Split': [
                 ':',
                 {
-                  'Fn::GetAtt': ['ElasticSearchDomain', 'Arn'],
+                  'Fn::GetAtt': ['OpenSearchDomain', 'Arn'],
                 },
               ],
             },
@@ -226,14 +226,14 @@ test('it generates expected resources', () => {
             [
               'https://',
               {
-                'Fn::GetAtt': ['ElasticSearchDomain', 'DomainEndpoint'],
+                'Fn::GetAtt': ['OpenSearchDomain', 'DomainEndpoint'],
               },
             ],
           ],
         },
       },
       ServiceRoleArn: {
-        'Fn::GetAtt': ['ElasticSearchAccessIAMRoleAAA3FF0B', 'Arn'],
+        'Fn::GetAtt': ['OpenSearchAccessIAMRole6A1D9CC5', 'Arn'],
       },
     }),
   );
@@ -263,7 +263,7 @@ test('it generates expected resources', () => {
             },
             '"))\n$util.qr($ctx.stash.put("endpoint", "https://',
             {
-              'Fn::GetAtt': ['ElasticSearchDomain', 'DomainEndpoint'],
+              'Fn::GetAtt': ['OpenSearchDomain', 'DomainEndpoint'],
             },
             '"))\n$util.toJson({})',
           ],

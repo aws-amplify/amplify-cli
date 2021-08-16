@@ -35,8 +35,12 @@ export function showAllHelp(context) {
       description: "Executes amplify push, and then executes the project's start command to test run the client-side application locally.",
     },
     {
-      name: 'status',
+      name: 'status [<category> ...]',
       description: 'Shows the state of local resources not yet pushed to the cloud (Create/Update/Delete).',
+    },
+    {
+      name: 'status -v [<category> ...]',
+      description: 'Shows the detailed verbose diff between local and deployed resources, including cloudformation-diff',
     },
     {
       name: 'delete',
