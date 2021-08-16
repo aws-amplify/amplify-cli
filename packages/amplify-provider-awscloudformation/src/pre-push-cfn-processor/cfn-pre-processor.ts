@@ -1,4 +1,5 @@
-import { stateManager, pathManager, readCFNTemplate, writeCFNTemplate, CustomIAMPolicies } from 'amplify-cli-core';
+import { stateManager, pathManager, readCFNTemplate, writeCFNTemplate,
+  CustomIAMPolicies, CustomIAMPolicy, CustomPoliciesFormatError } from 'amplify-cli-core';
 import * as path from 'path';
 import * as fs from 'fs-extra';
 import { ProviderName as providerName } from '../constants';
@@ -35,11 +36,12 @@ export async function writeCustomPoliciesToCFNTemplate(
 ) {
   const { templateFormat, cfnTemplate } = await readCFNTemplate(path.join(resourceDir, cfnFile));
   const customPolicies = await stateManager.getCustomPolicies(resourceDir);
-  const customPath = pathManager.getCustomPoliciesPath(resourceDir);
-  if(category === 'function' && fs.existsSync(customPath)) {
+  if (customPolicies === undefined) return;
+
+  if(category === 'function') {
     await addCustomPoliciesToCFNTemplateForFunction(customPolicies, cfnTemplate, filePath, {templateFormat} );
   }
-  if(category === 'api' && fs.existsSync(customPath)) {
+  if(category === 'api') {
     await addCustomPoliciesToCFNTemplateForContainer(customPolicies, cfnTemplate, filePath, {templateFormat});
   }
 
@@ -51,10 +53,6 @@ export async function addCustomPoliciesToCFNTemplateForFunction(
   filePath: string,
   {templateFormat}
   ) {
-  if(customPolicies.policies === undefined || customPolicies.policies === null
-    || customPolicies.policies.length === 0 || Object.keys(customPolicies.policies[0]).length === 0) {
-    return;
-  }
   const customlambdaexecutionpolicy = {
     "DependsOn": ["LambdaExecutionRole"],
     "Type": "AWS::IAM::Policy",
@@ -69,6 +67,7 @@ export async function addCustomPoliciesToCFNTemplateForFunction(
     }
   };
   for (const customPolicy of customPolicies.policies) {
+    await validateRegexForCustomPolicies(customPolicy);
     customlambdaexecutionpolicy.Properties.PolicyDocument.Statement.push(customPolicy);
   }
   cfnTemplate.Resources["CustomLambdaExecutionPolicy"] = customlambdaexecutionpolicy;
@@ -81,10 +80,6 @@ export async function addCustomPoliciesToCFNTemplateForContainer(
   filePath: string,
   {templateFormat}
   ) {
-  if(customPolicies.policies === undefined || customPolicies.policies === null
-    || customPolicies.policies.length === 0 || Object.keys(customPolicies.policies[0]).length === 0) {
-    return;
-  }
   const roleName = cfnTemplate.Resources.TaskDefinition.Properties.ExecutionRoleArn["Fn::GetAtt"][0];
   const customexecutionpolicyforcontainer = {
     "Type": "AWS::IAM::Policy",
@@ -103,8 +98,44 @@ export async function addCustomPoliciesToCFNTemplateForContainer(
     }
   };
   for (const customPolicy of customPolicies.policies) {
+    await validateRegexForCustomPolicies(customPolicy);
     customexecutionpolicyforcontainer.Properties.PolicyDocument.Statement.push(customPolicy);
   }
   cfnTemplate.Resources["CustomExecutionPolicyForContainer"] = customexecutionpolicyforcontainer;
   await writeCFNTemplate(cfnTemplate, filePath, { templateFormat })
+}
+
+export async function validateRegexForCustomPolicies (customPolicy: CustomIAMPolicy) {
+  const resources = customPolicy.Resource;
+  const actions = customPolicy.Action;
+  let resourceRegex = new RegExp('arn:(aws[a-zA-Z0-9-]*):([a-zA-Z0-9\\-])+:([a-z]{2}(-gov)?-[a-z]+-\\d{1})?:(\\d{12})?:(.*)');
+  let actionRegex = new RegExp('([a-z0-9])*:([a-z|A-Z|0-9|*]+)*');
+  let wrongResourcesRegex = [];
+  let wrongActionsRegex = [];
+  let errorMessage = "";
+
+  for (const resource of resources) {
+    if (!resourceRegex.test(resource)) {
+      wrongResourcesRegex.push(resource);
+    }
+  }
+
+  for (const action of actions) {
+    if (!actionRegex.test(action)) {
+      wrongActionsRegex.push(action);
+    }
+  }
+
+  if (wrongResourcesRegex.length != 0) {
+    errorMessage += '\nInvalid ARN format:\n' + wrongResourcesRegex.toString() +'\n';
+  }
+  if (wrongActionsRegex.length != 0) {
+    errorMessage += '\nInvalid actions format:\n' + wrongActionsRegex.toString() +'\n';
+  }
+
+  if (errorMessage.length > 0) {
+    throw new CustomPoliciesFormatError(errorMessage);
+  }
+
+
 }
