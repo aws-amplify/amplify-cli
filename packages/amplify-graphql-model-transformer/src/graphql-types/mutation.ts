@@ -1,5 +1,5 @@
 import { TransformerTransformSchemaStepContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import { ObjectTypeDefinitionNode, InputObjectTypeDefinitionNode, DocumentNode } from 'graphql';
+import { ObjectTypeDefinitionNode, InputObjectTypeDefinitionNode } from 'graphql';
 import { ModelResourceIDs, toPascalCase } from 'graphql-transformer-common';
 import { ModelDirectiveConfiguration } from '../graphql-model-transformer';
 import { ObjectDefinitionWrapper, InputObjectDefinitionWrapper, InputFieldWrapper } from '../wrappers/object-definition-wrapper';
@@ -15,7 +15,6 @@ export const makeUpdateInputField = (
   obj: ObjectTypeDefinitionNode,
   modelDirectiveConfig: ModelDirectiveConfiguration,
   knownModelTypes: Set<string>,
-  document: DocumentNode,
 ): InputObjectTypeDefinitionNode => {
   // sync related things
   const objectWrapped = new ObjectDefinitionWrapper(obj);
@@ -33,12 +32,10 @@ export const makeUpdateInputField = (
       return field.getTypeName();
     });
 
-  const objectTypeDefinition: ObjectTypeDefinitionNode = {
+  const input = InputObjectDefinitionWrapper.fromObject(name, {
     ...obj,
     fields: obj.fields?.filter(f => !fieldsToRemove.includes(f.name.value)),
-  };
-
-  const input = InputObjectDefinitionWrapper.fromObject(name, objectTypeDefinition, document);
+  });
 
   // make all the fields optional
   input.fields.forEach(f => f.makeNullable());
@@ -87,7 +84,6 @@ export const makeCreateInputField = (
   obj: ObjectTypeDefinitionNode,
   modelDirectiveConfig: ModelDirectiveConfiguration,
   knownModelTypes: Set<string>,
-  document: DocumentNode,
 ): InputObjectTypeDefinitionNode => {
   // sync related things
   const objectWrapped = new ObjectDefinitionWrapper(obj);
@@ -106,12 +102,10 @@ export const makeCreateInputField = (
       return field.getTypeName();
     });
 
-  const objectTypeDefinition: ObjectTypeDefinitionNode = {
+  const input = InputObjectDefinitionWrapper.fromObject(name, {
     ...obj,
     fields: obj.fields?.filter(f => !fieldsToRemove.includes(f.name.value)),
-  };
-
-  const input = InputObjectDefinitionWrapper.fromObject(name, objectTypeDefinition, document);
+  });
 
   // Add id field and make it optional
   if (!hasIdField) {

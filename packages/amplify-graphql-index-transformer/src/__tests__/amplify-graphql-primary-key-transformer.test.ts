@@ -1,5 +1,5 @@
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
-import { GraphQLTransform, validateModelSchema } from '@aws-amplify/graphql-transformer-core';
+import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
 import { expect as cdkExpect, haveResourceLike } from '@aws-cdk/assert';
 import { Kind, parse } from 'graphql';
 import { PrimaryKeyTransformer } from '..';
@@ -141,7 +141,6 @@ test('a primary key with no sort key is properly configured', () => {
   const schema = parse(out.schema);
   const stack = out.stacks.Test;
 
-  validateModelSchema(schema);
   cdkExpect(stack).to(
     haveResourceLike('AWS::DynamoDB::Table', {
       KeySchema: [{ AttributeName: 'email', KeyType: 'HASH' }],
@@ -163,12 +162,6 @@ test('a primary key with no sort key is properly configured', () => {
   expect(createInput).toBeDefined();
   const defaultIdField = createInput.fields.find((f: any) => f.name.value === 'id');
   expect(defaultIdField).toBeUndefined();
-
-  // This field should be created if it does not exist already.
-  const sortDirectionEnum: any = schema.definitions.find((d: any) => {
-    return d.kind === Kind.ENUM_TYPE_DEFINITION && d.name.value === 'ModelSortDirection';
-  });
-  expect(sortDirectionEnum).toBeDefined();
 });
 
 test('a primary key with a single sort key field is properly configured', () => {
@@ -185,7 +178,6 @@ test('a primary key with a single sort key field is properly configured', () => 
   const schema = parse(out.schema);
   const stack = out.stacks.Test;
 
-  validateModelSchema(schema);
   cdkExpect(stack).to(
     haveResourceLike('AWS::DynamoDB::Table', {
       KeySchema: [
@@ -225,7 +217,6 @@ test('a primary key with a composite sort key is properly configured', () => {
   const schema = parse(out.schema);
   const stack = out.stacks.Test;
 
-  validateModelSchema(schema);
   cdkExpect(stack).to(
     haveResourceLike('AWS::DynamoDB::Table', {
       KeySchema: [
@@ -301,7 +292,6 @@ test('enums are supported in keys', () => {
   const schema = parse(out.schema);
   const stack = out.stacks.Test;
 
-  validateModelSchema(schema);
   cdkExpect(stack).to(
     haveResourceLike('AWS::DynamoDB::Table', {
       KeySchema: [
@@ -338,7 +328,6 @@ test('user provided id fields are not removed', () => {
   const schema = parse(out.schema);
   const stack = out.stacks.Test;
 
-  validateModelSchema(schema);
   cdkExpect(stack).to(
     haveResourceLike('AWS::DynamoDB::Table', {
       KeySchema: [{ AttributeName: 'email', KeyType: 'HASH' }],
@@ -365,9 +354,6 @@ test('null resolvers on @model are supported', () => {
   });
   const out = transformer.transform(inputSchema);
   const schema = parse(out.schema);
-
-  validateModelSchema(schema);
-
   const stack = out.stacks.Test;
   const definitions = schema.definitions.filter((d: any) => {
     return (
@@ -403,9 +389,6 @@ test('@model null resolvers can be overridden', () => {
   });
   const out = transformer.transform(inputSchema);
   const schema = parse(out.schema);
-
-  validateModelSchema(schema);
-
   const stack = out.stacks.Test;
   const definitions = schema.definitions
     .filter((d: any) => {
@@ -435,9 +418,6 @@ test('resolvers can be renamed by @model', () => {
   });
   const out = transformer.transform(inputSchema);
   const schema = parse(out.schema);
-
-  validateModelSchema(schema);
-
   const stack = out.stacks.Test;
   const query: any = schema.definitions.find((d: any) => d.kind === Kind.OBJECT_TYPE_DEFINITION && d.name.value === 'Query');
   const mutation: any = schema.definitions.find((d: any) => d.kind === Kind.OBJECT_TYPE_DEFINITION && d.name.value === 'Mutation');
@@ -479,9 +459,6 @@ test('individual resolvers can be made null by @model', () => {
   });
   const out = transformer.transform(inputSchema);
   const schema = parse(out.schema);
-
-  validateModelSchema(schema);
-
   const stack = out.stacks.Test;
   const query: any = schema.definitions.find((d: any) => d.kind === Kind.OBJECT_TYPE_DEFINITION && d.name.value === 'Query');
 
@@ -505,9 +482,6 @@ it('id field should be optional in updateInputObjects when it is not a primary k
   });
   const out = transformer.transform(inputSchema);
   const schema = parse(out.schema);
-
-  validateModelSchema(schema);
-
   const updateReviewInput: any = schema.definitions.find(
     (d: any) => d.kind === Kind.INPUT_OBJECT_TYPE_DEFINITION && d.name.value === 'UpdateReviewInput',
   );
@@ -529,9 +503,6 @@ test('primary key with id as partition key is not required on createInput', () =
   });
   const out = transformer.transform(inputSchema);
   const schema = parse(out.schema);
-
-  validateModelSchema(schema);
-
   const createInput: any = schema.definitions.find((def: any) => def.name && def.name.value === 'CreateTestInput');
   const updateInput: any = schema.definitions.find((def: any) => def.name && def.name.value === 'UpdateTestInput');
   const deleteInput: any = schema.definitions.find((def: any) => def.name && def.name.value === 'DeleteTestInput');
@@ -562,9 +533,6 @@ test('primary key with id and createdAt is not required on createInput', () => {
   });
   const out = transformer.transform(inputSchema);
   const schema = parse(out.schema);
-
-  validateModelSchema(schema);
-
   const createInput: any = schema.definitions.find((def: any) => def.name && def.name.value === 'CreateTestInput');
   const updateInput: any = schema.definitions.find((def: any) => def.name && def.name.value === 'UpdateTestInput');
   const deleteInput: any = schema.definitions.find((def: any) => def.name && def.name.value === 'DeleteTestInput');
@@ -595,9 +563,6 @@ test('key with complex fields updates the input objects', () => {
 
   const out = transformer.transform(inputSchema);
   const schema = parse(out.schema);
-
-  validateModelSchema(schema);
-
   const createInput: any = schema.definitions.find((def: any) => def.name && def.name.value === 'CreateTestInput');
   const updateInput: any = schema.definitions.find((def: any) => def.name && def.name.value === 'UpdateTestInput');
   const deleteInput: any = schema.definitions.find((def: any) => def.name && def.name.value === 'DeleteTestInput');

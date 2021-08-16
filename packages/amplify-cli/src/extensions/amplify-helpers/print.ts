@@ -139,9 +139,6 @@ const CLI_TABLE_MARKDOWN = {
   middle: '|',
 };
 
-/**
- * @deprecated Use printer from amplify-prompts instead
- */
 export const print = {
   info,
   warning,

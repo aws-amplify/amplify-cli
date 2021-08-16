@@ -107,15 +107,15 @@ export const getPostUpdateAuthMetaUpdater = (context: any) => async (resourceNam
 };
 
 function getFrontendConfig(authParameters: AuthParameters) {
-  const loginMechanisms: string[] = [];
-  loginMechanisms.push(...(authParameters?.aliasAttributes || []).map((att: string) => att.toUpperCase()));
+  const loginMechanism: string[] = [];
+  loginMechanism.push(...(authParameters?.aliasAttributes || []).map((att: string) => att.toUpperCase()));
 
   if (authParameters.authProviders) {
     authParameters.authProviders.forEach((provider: string) => {
       let name = authProviderList.find(it => it.value === provider)?.name;
 
       if (name) {
-        loginMechanisms.push(name.toUpperCase());
+        loginMechanism.push(name.toUpperCase());
       }
     });
   }
@@ -139,7 +139,7 @@ function getFrontendConfig(authParameters: AuthParameters) {
   }
 
   return {
-    loginMechanisms: loginMechanisms,
+    loginMechanism: loginMechanism,
     signupAttributes: signupAttributes,
     passwordProtectionSettings: passwordProtectionSettings,
     mfaConfiguration: authParameters?.mfaConfiguration,

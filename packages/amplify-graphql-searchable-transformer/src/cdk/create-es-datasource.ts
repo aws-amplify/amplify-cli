@@ -5,23 +5,23 @@ import { ResourceConstants } from 'graphql-transformer-common';
 import assert from 'assert';
 import { Stack } from '@aws-cdk/core';
 
-export const createSearchableDataSource = (
+export const createEsDataSource = (
   stack: Stack,
   graphqlApiProvider: GraphQLAPIProvider,
   domainEndpoint: string,
   role: IRole,
   region?: string,
 ): BaseDataSource => {
-  const { OpenSearchDataSourceLogicalID } = ResourceConstants.RESOURCES;
+  const { ElasticsearchDataSourceLogicalID } = ResourceConstants.RESOURCES;
   assert(region);
   const dsEndpoint = 'https://' + domainEndpoint;
-  return graphqlApiProvider.host.addSearchableDataSource(
-    OpenSearchDataSourceLogicalID,
+  return graphqlApiProvider.host.addElasticSearchDataSource(
+    ElasticsearchDataSourceLogicalID,
     region,
     dsEndpoint,
     {
       serviceRole: role,
-      name: OpenSearchDataSourceLogicalID,
+      name: ElasticsearchDataSourceLogicalID,
     },
     stack,
   );

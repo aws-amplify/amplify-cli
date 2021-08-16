@@ -3,38 +3,38 @@ import { CfnParameter, Stack } from '@aws-cdk/core';
 
 export function createParametersStack(stack: Stack): Map<string, CfnParameter> {
   const {
-    OpenSearchAccessIAMRoleName,
-    OpenSearchStreamingLambdaHandlerName,
-    OpenSearchStreamingLambdaRuntime,
-    OpenSearchStreamingFunctionName,
-    OpenSearchStreamBatchSize,
-    OpenSearchStreamMaximumBatchingWindowInSeconds,
-    OpenSearchStreamingIAMRoleName,
-    OpenSearchDebugStreamingLambda,
-    OpenSearchInstanceCount,
-    OpenSearchInstanceType,
-    OpenSearchEBSVolumeGB,
+    ElasticsearchAccessIAMRoleName,
+    ElasticsearchStreamingLambdaHandlerName,
+    ElasticsearchStreamingLambdaRuntime,
+    ElasticsearchStreamingFunctionName,
+    ElasticsearchStreamBatchSize,
+    ElasticsearchStreamMaximumBatchingWindowInSeconds,
+    ElasticsearchStreamingIAMRoleName,
+    ElasticsearchDebugStreamingLambda,
+    ElasticsearchInstanceCount,
+    ElasticsearchInstanceType,
+    ElasticsearchEBSVolumeGB,
   } = ResourceConstants.PARAMETERS;
   return new Map<string, CfnParameter>([
     [
-      OpenSearchAccessIAMRoleName,
-      new CfnParameter(stack, OpenSearchAccessIAMRoleName, {
-        description: 'The name of the IAM role assumed by AppSync for OpenSearch.',
-        default: 'AppSyncOpenSearchRole',
+      ElasticsearchAccessIAMRoleName,
+      new CfnParameter(stack, ElasticsearchAccessIAMRoleName, {
+        description: 'The name of the IAM role assumed by AppSync for Elasticsearch.',
+        default: 'AppSyncElasticsearchRole',
       }),
     ],
 
     [
-      OpenSearchStreamingLambdaHandlerName,
-      new CfnParameter(stack, OpenSearchStreamingLambdaHandlerName, {
+      ElasticsearchStreamingLambdaHandlerName,
+      new CfnParameter(stack, ElasticsearchStreamingLambdaHandlerName, {
         description: 'The name of the lambda handler.',
         default: 'python_streaming_function.lambda_handler',
       }),
     ],
 
     [
-      OpenSearchStreamingLambdaRuntime,
-      new CfnParameter(stack, OpenSearchStreamingLambdaRuntime, {
+      ElasticsearchStreamingLambdaRuntime,
+      new CfnParameter(stack, ElasticsearchStreamingLambdaRuntime, {
         description: `The lambda runtime \
                 (https://docs.aws.amazon.com/lambda/latest/dg/API_CreateFunction.html#SSS-CreateFunction-request-Runtime)`,
         default: 'python3.6',
@@ -42,25 +42,25 @@ export function createParametersStack(stack: Stack): Map<string, CfnParameter> {
     ],
 
     [
-      OpenSearchStreamingFunctionName,
-      new CfnParameter(stack, OpenSearchStreamingFunctionName, {
+      ElasticsearchStreamingFunctionName,
+      new CfnParameter(stack, ElasticsearchStreamingFunctionName, {
         description: 'The name of the streaming lambda function.',
         default: 'DdbToEsFn',
       }),
     ],
 
     [
-      OpenSearchStreamBatchSize,
-      new CfnParameter(stack, OpenSearchStreamBatchSize, {
-        description: 'The maximum number of records to stream to OpenSearch per batch.',
+      ElasticsearchStreamBatchSize,
+      new CfnParameter(stack, ElasticsearchStreamBatchSize, {
+        description: 'The maximum number of records to stream to Elasticsearch per batch.',
         type: 'Number',
         default: 100,
       }),
     ],
 
     [
-      OpenSearchStreamMaximumBatchingWindowInSeconds,
-      new CfnParameter(stack, OpenSearchStreamMaximumBatchingWindowInSeconds, {
+      ElasticsearchStreamMaximumBatchingWindowInSeconds,
+      new CfnParameter(stack, ElasticsearchStreamMaximumBatchingWindowInSeconds, {
         description: 'The maximum amount of time in seconds to wait for DynamoDB stream records before sending to streaming lambda.',
         type: 'Number',
         default: 1,
@@ -68,17 +68,17 @@ export function createParametersStack(stack: Stack): Map<string, CfnParameter> {
     ],
 
     [
-      OpenSearchAccessIAMRoleName,
-      new CfnParameter(stack, OpenSearchStreamingIAMRoleName, {
+      ElasticsearchAccessIAMRoleName,
+      new CfnParameter(stack, ElasticsearchStreamingIAMRoleName, {
         description: 'The name of the streaming lambda function IAM role.',
         default: 'SearchableLambdaIAMRole',
       }),
     ],
 
     [
-      OpenSearchDebugStreamingLambda,
-      new CfnParameter(stack, OpenSearchDebugStreamingLambda, {
-        description: 'Enable debug logs for the Dynamo -> OpenSearch streaming lambda.',
+      ElasticsearchDebugStreamingLambda,
+      new CfnParameter(stack, ElasticsearchDebugStreamingLambda, {
+        description: 'Enable debug logs for the Dynamo -> ES streaming lambda.',
         default: 1,
         type: 'Number',
         allowedValues: ['0', '1'],
@@ -86,18 +86,18 @@ export function createParametersStack(stack: Stack): Map<string, CfnParameter> {
     ],
 
     [
-      OpenSearchInstanceCount,
-      new CfnParameter(stack, OpenSearchInstanceCount, {
-        description: 'The number of instances to launch into the OpenSearch domain.',
+      ElasticsearchInstanceCount,
+      new CfnParameter(stack, ElasticsearchInstanceCount, {
+        description: 'The number of instances to launch into the Elasticsearch domain.',
         default: 1,
         type: 'Number',
       }),
     ],
 
     [
-      OpenSearchInstanceType,
-      new CfnParameter(stack, OpenSearchInstanceType, {
-        description: 'The type of instance to launch into the OpenSearch domain.',
+      ElasticsearchInstanceType,
+      new CfnParameter(stack, ElasticsearchInstanceType, {
+        description: 'The type of instance to launch into the Elasticsearch domain.',
         default: 't2.small.elasticsearch',
         allowedValues: [
           't2.small.elasticsearch',
@@ -140,8 +140,8 @@ export function createParametersStack(stack: Stack): Map<string, CfnParameter> {
     ],
 
     [
-      OpenSearchEBSVolumeGB,
-      new CfnParameter(stack, OpenSearchEBSVolumeGB, {
+      ElasticsearchEBSVolumeGB,
+      new CfnParameter(stack, ElasticsearchEBSVolumeGB, {
         description: 'The size in GB of the EBS volumes that contain our data.',
         default: 10,
         type: 'Number',

@@ -16,19 +16,19 @@ export const createLambda = (
   region?: string,
 ): IFunction => {
   assert(region);
-  const { OpenSearchStreamingLambdaFunctionLogicalID } = ResourceConstants.RESOURCES;
-  const { OpenSearchStreamingLambdaHandlerName, OpenSearchDebugStreamingLambda } = ResourceConstants.PARAMETERS;
+  const { ElasticsearchStreamingLambdaFunctionLogicalID } = ResourceConstants.RESOURCES;
+  const { ElasticsearchStreamingLambdaHandlerName, ElasticsearchDebugStreamingLambda } = ResourceConstants.PARAMETERS;
   const enviroment: { [key: string]: string } = {
-    OPENSEARCH_ENDPOINT: 'https://' + endpoint,
-    OPENSEARCH_REGION: region,
-    DEBUG: parameterMap.get(OpenSearchDebugStreamingLambda)!.valueAsString,
-    OPENSEARCH_USE_EXTERNAL_VERSIONING: isProjectUsingDataStore.toString(),
+    ES_ENDPOINT: 'https://' + endpoint,
+    ES_REGION: region,
+    DEBUG: parameterMap.get(ElasticsearchDebugStreamingLambda)!.valueAsString,
+    ES_USE_EXTERNAL_VERSIONING: isProjectUsingDataStore.toString(),
   };
 
   return apiGraphql.host.addLambdaFunction(
-    OpenSearchStreamingLambdaFunctionLogicalID,
-    'functions/' + OpenSearchStreamingLambdaFunctionLogicalID + '.zip',
-    parameterMap.get(OpenSearchStreamingLambdaHandlerName)!.valueAsString,
+    ElasticsearchStreamingLambdaFunctionLogicalID,
+    'functions/' + ElasticsearchStreamingLambdaFunctionLogicalID + '.zip',
+    parameterMap.get(ElasticsearchStreamingLambdaHandlerName)!.valueAsString,
     path.resolve(__dirname, '..', '..', 'lib', 'streaming-lambda.zip'),
     Runtime.PYTHON_3_6,
     [
@@ -46,11 +46,11 @@ export const createLambda = (
 };
 
 export const createLambdaRole = (stack: Construct, parameterMap: Map<string, CfnParameter>): IRole => {
-  const { OpenSearchStreamingLambdaIAMRoleLogicalID } = ResourceConstants.RESOURCES;
-  const { OpenSearchStreamingIAMRoleName } = ResourceConstants.PARAMETERS;
-  const role = new Role(stack, OpenSearchStreamingLambdaIAMRoleLogicalID, {
+  const { ElasticsearchStreamingLambdaIAMRoleLogicalID } = ResourceConstants.RESOURCES;
+  const { ElasticsearchStreamingIAMRoleName } = ResourceConstants.PARAMETERS;
+  const role = new Role(stack, ElasticsearchStreamingLambdaIAMRoleLogicalID, {
     assumedBy: new ServicePrincipal('lambda.amazonaws.com'),
-    roleName: parameterMap.get(OpenSearchStreamingIAMRoleName)?.valueAsString,
+    roleName: parameterMap.get(ElasticsearchStreamingIAMRoleName)?.valueAsString,
   });
   role.attachInlinePolicy(
     new Policy(stack, 'CloudwatchLogsAccess', {
@@ -74,13 +74,13 @@ export const createEventSourceMapping = (
   parameterMap: Map<string, CfnParameter>,
   tableStreamArn?: string,
 ): EventSourceMapping => {
-  const { OpenSearchStreamBatchSize, OpenSearchStreamMaximumBatchingWindowInSeconds } = ResourceConstants.PARAMETERS;
+  const { ElasticsearchStreamBatchSize, ElasticsearchStreamMaximumBatchingWindowInSeconds } = ResourceConstants.PARAMETERS;
   assert(tableStreamArn);
   return new EventSourceMapping(stack, SearchableResourceIDs.SearchableEventSourceMappingID(type), {
     eventSourceArn: tableStreamArn,
     target,
-    batchSize: parameterMap.get(OpenSearchStreamBatchSize)!.valueAsNumber,
-    maxBatchingWindow: Duration.seconds(parameterMap.get(OpenSearchStreamMaximumBatchingWindowInSeconds)!.valueAsNumber),
+    batchSize: parameterMap.get(ElasticsearchStreamBatchSize)!.valueAsNumber,
+    maxBatchingWindow: Duration.seconds(parameterMap.get(ElasticsearchStreamMaximumBatchingWindowInSeconds)!.valueAsNumber),
     enabled: true,
     startingPosition: StartingPosition.LATEST,
   });
