@@ -131,8 +131,11 @@ export async function addCustomPoliciesFileForContainer(categoryName, resourceNa
   )
   const defaultCustomPolicies = {
       "policies": [
-          {
-          }
+        {
+          "Effect": "Allow",
+          "Action": [],
+          "Resource": []
+        }
       ]
   }
   JSONUtilities.writeJson(addCustomPoliciesPath, defaultCustomPolicies);

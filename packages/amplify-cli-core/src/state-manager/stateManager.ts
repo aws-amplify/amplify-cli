@@ -13,6 +13,7 @@ import { $TSMeta, $TSTeamProviderInfo, $TSCustomPolicies, $TSAny, DeploymentSecr
 import { JSONUtilities } from '../jsonUtilities';
 import _ from 'lodash';
 import { SecretFileMode } from '../cliConstants';
+import { HydrateTags, ReadTags, Tag } from '../tags';
 
 export type GetOptions<T> = {
   throwIfNotExist?: boolean;
@@ -90,6 +91,26 @@ export class StateManager {
       return undefined;
     }
     const data = JSONUtilities.readJson<$TSCustomPolicies>(filePath);
+    // if (data === undefined || data === null || data.length === 0 || data.policies[0] === undefined || data.policies[0].length === 0) {
+    //   return undefined;
+    // }
+    if (data === undefined)
+      {return undefined;}
+    if (data === null)
+      {return undefined;}
+    if (data.length === 0)
+      {return undefined;}
+    if (data.policies[0] === undefined)
+      {return undefined;}
+    if (data.policies[0].length === 0)
+      {return undefined;}
+
+    for (const policy of data.policies) {
+      if (policy === undefined || policy === null || policy.length === 0
+        || policy.Resource === undefined|| Object.keys(policy.Resource).length === 0) {
+        return undefined;
+      }
+    }
     return data;
   };
 
