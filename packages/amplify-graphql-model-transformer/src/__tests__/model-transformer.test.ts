@@ -495,78 +495,6 @@ describe('ModelTransformer: ', () => {
     expect(verifyInputCount(parsed, 'ModelUserFilterInput', 1)).toBeTruthy();
   });
 
-  it('it should generate filter inputs', () => {
-    const validSchema = `
-      type Post @model {
-          id: ID!
-          title: String!
-          createdAt: String
-          updatedAt: String
-      }`;
-    const transformer = new GraphQLTransform({
-      transformers: [new ModelTransformer()],
-      featureFlags,
-    });
-
-    const out = transformer.transform(validSchema);
-    expect(out).toBeDefined();
-
-    const definition = out.schema;
-    expect(definition).toBeDefined();
-    const parsed = parse(definition);
-    validateModelSchema(parsed);
-    const queryType = getObjectType(parsed, 'Query');
-    expect(queryType).toBeDefined();
-    expectFields(queryType!, ['listPosts']);
-
-    const connectionType = getObjectType(parsed, 'ModelPostConnection');
-    expect(connectionType).toBeDefined();
-
-    expect(verifyInputCount(parsed, 'ModelStringFilterInput', 1)).toBeTruthy();
-    expect(verifyInputCount(parsed, 'ModelBooleanFilterInput', 1)).toBeTruthy();
-    expect(verifyInputCount(parsed, 'ModelIntFilterInput', 1)).toBeTruthy();
-    expect(verifyInputCount(parsed, 'ModelFloatFilterInput', 1)).toBeTruthy();
-    expect(verifyInputCount(parsed, 'ModelIDFilterInput', 1)).toBeTruthy();
-    expect(verifyInputCount(parsed, 'ModelPostFilterInput', 1)).toBeTruthy();
-  });
-
-  it('should support advanced subscriptions', () => {
-    const validSchema = `type Post @model(subscriptions: {
-          onCreate: ["onFeedUpdated", "onCreatePost"],
-          onUpdate: ["onFeedUpdated"],
-          onDelete: ["onFeedUpdated"]
-      }) {
-        id: ID!
-        title: String!
-        createdAt: String
-        updatedAt: String
-    }
-    `;
-    const transformer = new GraphQLTransform({
-      transformers: [new ModelTransformer()],
-      featureFlags,
-    });
-    const out = transformer.transform(validSchema);
-    expect(out).toBeDefined();
-    const definition = out.schema;
-    expect(definition).toBeDefined();
-    const parsed = parse(definition);
-    validateModelSchema(parsed);
-
-    const subscriptionType = getObjectType(parsed, 'Subscription');
-    expect(subscriptionType).toBeDefined();
-    expectFields(subscriptionType!, ['onFeedUpdated', 'onCreatePost']);
-    const subField = subscriptionType!.fields!.find(f => f.name.value === 'onFeedUpdated');
-    expect(subField!.directives!.length).toEqual(1);
-    expect(subField!.directives![0].name!.value).toEqual('aws_subscribe');
-    const mutationsList = subField!.directives![0].arguments!.find(a => a.name.value === 'mutations')!.value as ListValueNode;
-    const mutList = mutationsList.values.map((v: any) => v.value);
-    expect(mutList.length).toEqual(3);
-    expect(mutList).toContain('createPost');
-    expect(mutList).toContain('updatePost');
-    expect(mutList).toContain('deletePost');
-  });
-
   it('should support enum as a field', () => {
     const validSchema = `
       enum Status { DELIVERED IN_TRANSIT PENDING UNKNOWN }
@@ -627,6 +555,7 @@ describe('ModelTransformer: ', () => {
     const definition = out.schema;
     expect(definition).toBeDefined();
     const parsed = parse(definition);
+
     validateModelSchema(parsed);
 
     const postMetaDataInputType = getInputType(parsed, 'PostMetadataInput');
@@ -648,5 +577,77 @@ describe('ModelTransformer: ', () => {
 
     expect(verifyInputCount(parsed, 'PostMetadataInput', 1)).toBeTruthy();
     expect(verifyInputCount(parsed, 'TagInput', 1)).toBeTruthy();
+  });
+
+  it('it should generate filter inputs', () => {
+    const validSchema = `
+      type Post @model {
+          id: ID!
+          title: String!
+          createdAt: String
+          updatedAt: String
+      }`;
+    const transformer = new GraphQLTransform({
+      transformers: [new ModelTransformer()],
+      featureFlags,
+    });
+    const out = transformer.transform(validSchema);
+    expect(out).toBeDefined();
+
+    const definition = out.schema;
+    expect(definition).toBeDefined();
+    const parsed = parse(definition);
+    validateModelSchema(parsed);
+
+    const queryType = getObjectType(parsed, 'Query');
+    expect(queryType).toBeDefined();
+    expectFields(queryType!, ['listPosts']);
+
+    const connectionType = getObjectType(parsed, 'ModelPostConnection');
+    expect(connectionType).toBeDefined();
+
+    expect(verifyInputCount(parsed, 'ModelStringFilterInput', 1)).toBeTruthy();
+    expect(verifyInputCount(parsed, 'ModelBooleanFilterInput', 1)).toBeTruthy();
+    expect(verifyInputCount(parsed, 'ModelIntFilterInput', 1)).toBeTruthy();
+    expect(verifyInputCount(parsed, 'ModelFloatFilterInput', 1)).toBeTruthy();
+    expect(verifyInputCount(parsed, 'ModelIDFilterInput', 1)).toBeTruthy();
+    expect(verifyInputCount(parsed, 'ModelPostFilterInput', 1)).toBeTruthy();
+  });
+
+  it('should support advanced subscriptions', () => {
+    const validSchema = `type Post @model(subscriptions: {
+          onCreate: ["onFeedUpdated", "onCreatePost"],
+          onUpdate: ["onFeedUpdated"],
+          onDelete: ["onFeedUpdated"]
+      }) {
+        id: ID!
+        title: String!
+        createdAt: String
+        updatedAt: String
+    }
+    `;
+    const transformer = new GraphQLTransform({
+      transformers: [new ModelTransformer()],
+      featureFlags,
+    });
+    const out = transformer.transform(validSchema);
+    expect(out).toBeDefined();
+    const definition = out.schema;
+    expect(definition).toBeDefined();
+    const parsed = parse(definition);
+    validateModelSchema(parsed);
+
+    const subscriptionType = getObjectType(parsed, 'Subscription');
+    expect(subscriptionType).toBeDefined();
+    expectFields(subscriptionType!, ['onFeedUpdated', 'onCreatePost']);
+    const subField = subscriptionType!.fields!.find(f => f.name.value === 'onFeedUpdated');
+    expect(subField!.directives!.length).toEqual(1);
+    expect(subField!.directives![0].name!.value).toEqual('aws_subscribe');
+    const mutationsList = subField!.directives![0].arguments!.find(a => a.name.value === 'mutations')!.value as ListValueNode;
+    const mutList = mutationsList.values.map((v: any) => v.value);
+    expect(mutList.length).toEqual(3);
+    expect(mutList).toContain('createPost');
+    expect(mutList).toContain('updatePost');
+    expect(mutList).toContain('deletePost');
   });
 });
