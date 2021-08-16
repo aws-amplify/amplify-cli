@@ -1,6 +1,6 @@
 import { $TSContext } from 'amplify-cli-core';
-
-const category = 'storage';
+import { printer } from 'amplify-prompts';
+import { categoryName } from '../../constants';
 
 export const run = async (context: $TSContext) => {
   const nameOverrides = {
@@ -10,13 +10,13 @@ export const run = async (context: $TSContext) => {
 
   const servicesMetadata = require('../../provider-utils/supported-services').supportedServices;
 
-  const serviceSelection = await context.amplify.serviceSelectionPrompt(context, category, servicesMetadata, undefined, nameOverrides);
+  const serviceSelection = await context.amplify.serviceSelectionPrompt(context, categoryName, servicesMetadata, undefined, nameOverrides);
   const providerController = require(`../../provider-utils/${serviceSelection.providerName}`);
 
   if (!providerController) {
-    context.print.error('Provider not configured for this category');
+    printer.error('Provider not configured for this category');
     return;
   }
 
-  return providerController.importResource(context, category, serviceSelection);
+  return providerController.importResource(context, categoryName, serviceSelection);
 };

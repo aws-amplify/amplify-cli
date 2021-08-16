@@ -1,23 +1,24 @@
-const _ = require('lodash');
-import { stateManager, NotImplementedError, exitOnNextTick } from 'amplify-cli-core';
-import { importS3, importedS3EnvInit } from './import/import-s3';
+import { $TSAny, $TSContext, exitOnNextTick, NotImplementedError, stateManager } from 'amplify-cli-core';
+import { printer } from 'amplify-prompts';
+import _ from 'lodash';
 import { importDynamoDB, importedDynamoDBEnvInit } from './import/import-dynamodb';
+import { importedS3EnvInit, importS3 } from './import/import-s3';
 export { importResource } from './import';
 
-export function addResource(context, category, service, options) {
+export function addResource(context: $TSContext, category: string, service: string, options: $TSAny) {
   const serviceMetadata = require('../supported-services').supportedServices[service];
   const { defaultValuesFilename, serviceWalkthroughFilename } = serviceMetadata;
   const serviceWalkthroughSrc = `${__dirname}/service-walkthroughs/${serviceWalkthroughFilename}`;
   const { addWalkthrough } = require(serviceWalkthroughSrc);
 
-  return addWalkthrough(context, defaultValuesFilename, serviceMetadata, options).then(async resourceName => {
+  return addWalkthrough(context, defaultValuesFilename, serviceMetadata, options).then(async (resourceName: string) => {
     context.amplify.updateamplifyMetaAfterResourceAdd(category, resourceName, options);
 
     return resourceName;
   });
 }
 
-export function updateResource(context, category, service) {
+export function updateResource(context: $TSContext, category: string, service: string) {
   const serviceMetadata = require('../supported-services').supportedServices[service];
   const { defaultValuesFilename, serviceWalkthroughFilename } = serviceMetadata;
   const serviceWalkthroughSrc = `${__dirname}/service-walkthroughs/${serviceWalkthroughFilename}`;
@@ -25,7 +26,7 @@ export function updateResource(context, category, service) {
 
   if (!updateWalkthrough) {
     const errMessage = 'Update functionality not available for this service';
-    context.print.error(errMessage);
+    printer.error(errMessage);
     context.usageData.emitError(new NotImplementedError(errMessage));
     exitOnNextTick(0);
   }
@@ -33,36 +34,36 @@ export function updateResource(context, category, service) {
   return updateWalkthrough(context, defaultValuesFilename, serviceMetadata);
 }
 
-export function migrateResource(context, projectPath, service, resourceName) {
-  const serviceMetadata = require('../supported-services').supportedServices[service];
+export async function migrateResource(context: $TSContext, projectPath: string, service: string, resourceName: string) {
+  const serviceMetadata = ((await import('../supported-services')) as $TSAny).supportedServices[service];
   const { serviceWalkthroughFilename } = serviceMetadata;
   const serviceWalkthroughSrc = `${__dirname}/service-walkthroughs/${serviceWalkthroughFilename}`;
-  const { migrate } = require(serviceWalkthroughSrc);
+  const { migrate } = await import(serviceWalkthroughSrc);
 
   if (!migrate) {
-    context.print.info(`No migration required for ${resourceName}`);
+    printer.info(`No migration required for ${resourceName}`);
     return;
   }
 
   return migrate(context, projectPath, resourceName);
 }
 
-export function getPermissionPolicies(context, service, resourceName, crudOptions) {
+export function getPermissionPolicies(context: $TSContext, service: string, resourceName: string, crudOptions: $TSAny) {
   const serviceMetadata = require('../supported-services').supportedServices[service];
   const { serviceWalkthroughFilename } = serviceMetadata;
   const serviceWalkthroughSrc = `${__dirname}/service-walkthroughs/${serviceWalkthroughFilename}`;
   const { getIAMPolicies } = require(serviceWalkthroughSrc);
 
   if (!getPermissionPolicies) {
-    context.print.info(`No policies found for ${resourceName}`);
+    printer.info(`No policies found for ${resourceName}`);
     return;
   }
 
   return getIAMPolicies(resourceName, crudOptions);
 }
 
-export async function updateConfigOnEnvInit(context, category, resourceName, service) {
-  const serviceMetadata = require('../supported-services').supportedServices[service];
+export async function updateConfigOnEnvInit(context: $TSContext, category: string, resourceName: string, service: string) {
+  const serviceMetadata = ((await import('../supported-services')) as $TSAny).supportedServices[service];
   const { provider } = serviceMetadata;
 
   const providerPlugin = context.amplify.getPluginInstance(context, provider);
@@ -102,7 +103,7 @@ export async function updateConfigOnEnvInit(context, category, resourceName, ser
           providerName: provider,
           provider: undefined, // We don't have the resolved directory of the provider we pass in an instance
           service, // S3 | DynamoDB
-        },
+        } as $TSAny,
         resourceParams,
         providerPlugin,
         false,
@@ -148,11 +149,11 @@ export async function updateConfigOnEnvInit(context, category, resourceName, ser
   }
 }
 
-function isInHeadlessMode(context) {
+function isInHeadlessMode(context: $TSContext) {
   return context.exeInfo.inputParams.yes;
 }
 
-function getHeadlessParams(context) {
+function getHeadlessParams(context: $TSContext) {
   const { inputParams } = context.exeInfo;
   try {
     // If the input given is a string validate it using JSON parse
