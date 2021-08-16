@@ -238,168 +238,7 @@ exports.handler = async function (event, context) {
 }
 `;
 
-exports[`generate Auth Trigger Template successfully generate auth Trigger Template 1 1`] = `
-Object {
-  "AWSTemplateFormatVersion": "2010-09-09",
-  "Conditions": Object {
-    "ShouldNotCreateEnvResources": Object {
-      "Fn::Equals": Array [
-        Object {
-          "Ref": "env",
-        },
-        "NONE",
-      ],
-    },
-  },
-  "Description": "Custom Resource stack for Auth Trigger created using Amplify CLI",
-  "Parameters": Object {
-    "env": Object {
-      "Type": "String",
-    },
-    "userpoolArn": Object {
-      "Type": "String",
-    },
-    "userpoolId": Object {
-      "Type": "String",
-    },
-  },
-  "Resources": Object {
-    "CustomAuthTriggerResource": Object {
-      "DeletionPolicy": "Delete",
-      "Properties": Object {
-        "ServiceToken": Object {
-          "Fn::GetAtt": Array [
-            "authTriggerFn7FCFA449",
-            "Arn",
-          ],
-        },
-        "lambdaConfig": Array [],
-        "userpoolId": Object {
-          "Ref": "userpoolId",
-        },
-      },
-      "Type": "Custom::CustomAuthTriggerResourceOutputs",
-      "UpdateReplacePolicy": "Delete",
-    },
-    "authTriggerFn7FCFA449": Object {
-      "DependsOn": Array [
-        "authTriggerFnServiceRoleDefaultPolicyEC9285A8",
-        "authTriggerFnServiceRole08093B67",
-      ],
-      "Properties": Object {
-        "Code": Object {
-          "ZipFile": "const response = require('cfn-response');
-const aws = require('aws-sdk');
-
-exports.handler = async function (event, context) {
-  try {
-    const userPoolId = event.ResourceProperties.userpoolId;
-    const lambdaConfig = event.ResourceProperties.lambdaConfig;
-    const config = {};
-    lambdaConfig.forEach(lambda => (config[\`\${lambda.triggerType}\`] = lambda.lambdaFunctionArn));
-    if (event.RequestType == 'Delete') {
-      const authParams = { UserPoolId: userPoolId, LambdaConfig: {} };
-      const cognitoclient = new aws.CognitoIdentityServiceProvider();
-      try {
-        const result = await cognitoclient.updateUserPool(authParams).promise();
-        console.log('delete response data ' + JSON.stringify(result));
-        await response.send(event, context, response.SUCCESS, {});
-      } catch (err) {
-        console.log(err.stack);
-        await response.send(event, context, response.FAILED, { err });
-      }
-    }
-    if (event.RequestType == 'Update' || event.RequestType == 'Create') {
-      const authParams = { UserPoolId: userPoolId, LambdaConfig: config };
-      console.log(authParams);
-      const cognitoclient = new aws.CognitoIdentityServiceProvider();
-      try {
-        const result = await cognitoclient.updateUserPool(authParams).promise();
-        console.log('createOrUpdate response data ' + JSON.stringify(result));
-        await response.send(event, context, response.SUCCESS, { result });
-      } catch (err) {
-        console.log(err.stack);
-        await response.send(event, context, response.FAILED, { err });
-      }
-    }
-  } catch (err) {
-    console.log(err.stack);
-    await response.send(event, context, response.FAILED, { err });
-  }
-};
-",
-        },
-        "Handler": "index.handler",
-        "Role": Object {
-          "Fn::GetAtt": Array [
-            "authTriggerFnServiceRole08093B67",
-            "Arn",
-          ],
-        },
-        "Runtime": "nodejs12.x",
-      },
-      "Type": "AWS::Lambda::Function",
-    },
-    "authTriggerFnServiceRole08093B67": Object {
-      "Properties": Object {
-        "AssumeRolePolicyDocument": Object {
-          "Statement": Array [
-            Object {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Principal": Object {
-                "Service": "lambda.amazonaws.com",
-              },
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "ManagedPolicyArns": Array [
-          Object {
-            "Fn::Join": Array [
-              "",
-              Array [
-                "arn:",
-                Object {
-                  "Ref": "AWS::Partition",
-                },
-                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
-              ],
-            ],
-          },
-        ],
-      },
-      "Type": "AWS::IAM::Role",
-    },
-    "authTriggerFnServiceRoleDefaultPolicyEC9285A8": Object {
-      "Properties": Object {
-        "PolicyDocument": Object {
-          "Statement": Array [
-            Object {
-              "Action": Array [
-                "cognito-idp:DescribeUserPoolClient",
-                "cognito-idp:UpdateUserPool",
-              ],
-              "Effect": "Allow",
-              "Resource": "*",
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "PolicyName": "authTriggerFnServiceRoleDefaultPolicyEC9285A8",
-        "Roles": Array [
-          Object {
-            "Ref": "authTriggerFnServiceRole08093B67",
-          },
-        ],
-      },
-      "Type": "AWS::IAM::Policy",
-    },
-  },
-}
-`;
-
-exports[`generate Auth Trigger Template successfully generate auth Trigger Template 2`] = `
+exports[`generate Auth Trigger Template successfully generate auth Trigger Template without permissions 1`] = `
 Object {
   "AWSTemplateFormatVersion": "2010-09-09",
   "Conditions": Object {
@@ -446,7 +285,7 @@ Object {
               "Ref": "functionrandomFnArn",
             },
             "lambdaFunctionName": "randomFn",
-            "triggerType": "PostConfirmation",
+            "triggerType": "PreAuthentication",
           },
         ],
         "userpoolId": Object {
@@ -456,7 +295,7 @@ Object {
       "Type": "Custom::CustomAuthTriggerResourceOutputs",
       "UpdateReplacePolicy": "Delete",
     },
-    "UserPoolPostConfirmationLambdaInvokePermission": Object {
+    "UserPoolPreAuthenticationLambdaInvokePermission": Object {
       "Properties": Object {
         "Action": "lambda:InvokeFunction",
         "FunctionName": Object {
