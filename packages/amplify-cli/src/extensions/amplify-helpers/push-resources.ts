@@ -4,7 +4,7 @@ import { onCategoryOutputsChange } from './on-category-outputs-change';
 import { initializeEnv } from '../../initialize-env';
 import { getProviderPlugins } from './get-provider-plugins';
 import { getEnvInfo } from './get-env-info';
-import { EnvironmentDoesNotExistError, exitOnNextTick, stateManager, $TSAny, $TSContext, CustomPoliciesFormatError } from 'amplify-cli-core';
+import { EnvironmentDoesNotExistError, exitOnNextTick, stateManager, $TSAny, $TSContext } from 'amplify-cli-core';
 
 export async function pushResources(
   context: $TSContext,
@@ -75,10 +75,8 @@ export async function pushResources(
       await providersPush(context, category, resourceName, filteredResources);
       await onCategoryOutputsChange(context, currentAmplifyMeta);
     } catch (err) {
-      // Handle the errors and print them nicely for the user.
-      if (!(err instanceof CustomPoliciesFormatError)) {
-        context.print.error(`\n${err.message}`);
-      }
+      // Handle the errors and print them nicely for the user.\
+      context.print.error(`\n${err.message}`);
       throw err;
     }
   } else {

@@ -1,20 +1,13 @@
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import _ from 'lodash';
-<<<<<<< HEAD
 import { $TSAny, $TSMeta, $TSTeamProviderInfo, DeploymentSecrets, HooksConfig, PathConstants } from '..';
 import { SecretFileMode } from '../cliConstants';
 import { JSONUtilities } from '../jsonUtilities';
 import { HydrateTags, ReadTags, Tag } from '../tags';
-=======
->>>>>>> d36fae7f6 (Custom policy implementation)
+import Ajv from "ajv";
 import { pathManager } from './pathManager';
-import { $TSMeta, $TSTeamProviderInfo, $TSAny, DeploymentSecrets } from '..';
-import { JSONUtilities } from '../jsonUtilities';
-import _ from 'lodash';
-import { SecretFileMode } from '../cliConstants';
-import { HydrateTags, ReadTags, Tag } from '../tags';
-import { CustomIAMPolicies } from '../customPoliciesType';
+import { CustomIAMPolicies, CustomIAMPolicySchema, CustomIAMPoliciesSchema } from '../customPoliciesType';
 
 export type GetOptions<T> = {
   throwIfNotExist?: boolean;
@@ -91,15 +84,18 @@ export class StateManager {
       policies :  []
     }
     const data = JSONUtilities.readJson<CustomIAMPolicies>(filePath, {throwIfNotExist : false});
+    const ajv = new Ajv();
 
-    if (!data || Object.keys(data).length === 0 || !data.policies || data.policies.length === 0)
+    const validatePolicies = ajv.compile(CustomIAMPoliciesSchema);
+    if (!data || !validatePolicies(data))
       {return undefined;}
 
+    const validatePolicy = ajv.compile(CustomIAMPolicySchema);
     for (const policy of data.policies) {
-      if (!policy || Object.keys(policy).length === 0 || !policy.Resource || Object.keys(policy.Resource).length === 0) {
-        continue;
+      if (validatePolicy(policy)) {
+        if (!policy.Effect) policy.Effect = "Allow";
+        customPolicies.policies.push(policy);
       }
-      customPolicies.policies.push(policy);
     }
     return customPolicies;
   };
