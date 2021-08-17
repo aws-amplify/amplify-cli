@@ -1,5 +1,5 @@
 import * as path from 'path';
-import { executeHooks, HooksHandler, skipHooksFilePath } from '../../hooks';
+import { executeHooks, HooksMeta, skipHooksFilePath } from '../../hooks';
 import * as skipHooksModule from '../../hooks/skipHooks';
 import * as execa from 'execa';
 import { pathManager, stateManager } from '../../state-manager';
@@ -75,12 +75,12 @@ let mockSkipHooks = jest.spyOn(skipHooksModule, 'skipHooks');
 
 describe('hooksExecutioner tests', () => {
   beforeEach(async () => {
-    HooksHandler.initialize();
+    HooksMeta.getInstance();
     mockSkipHooks.mockReturnValue(false);
     jest.clearAllMocks();
   });
   afterEach(() => {
-    HooksHandler.releaseInstance();
+    HooksMeta.releaseInstance();
   });
 
   test('skip Hooks test', async () => {
@@ -90,12 +90,12 @@ describe('hooksExecutioner tests', () => {
 
     fs.ensureFileSync(skipHooksFilePath);
     // skip hooks file exists so no execa calls should be made
-    await executeHooks({ input: { command: 'push', plugin: 'core' } }, 'pre');
+    await executeHooks(HooksMeta.constructHooksMetaObject({ command: 'push', plugin: 'core' }, 'pre'));
     expect(execa).toHaveBeenCalledTimes(0);
 
     fs.removeSync(skipHooksFilePath);
     // skip hooks file does not exists so execa calls should be made
-    await executeHooks({ input: { command: 'push', plugin: 'core' } }, 'pre');
+    await executeHooks(HooksMeta.constructHooksMetaObject({ command: 'push', plugin: 'core' }, 'pre'));
     expect(execa).not.toHaveBeenCalledTimes(0);
 
     // resoring the original state of skip hooks file
@@ -105,21 +105,21 @@ describe('hooksExecutioner tests', () => {
   });
 
   test('executeHooks with no context', async () => {
-    await executeHooks();
+    await executeHooks(HooksMeta.constructHooksMetaObject());
     expect(execa).toHaveBeenCalledTimes(0);
-    const hooksHandler = HooksHandler.initialize();
-    hooksHandler.setEventCommand('add');
-    await executeHooks(undefined, 'pre');
+    const hooksMetaHooksMeta = HooksMeta.getInstance();
+    hooksMetaHooksMeta.setEventCommand('add');
+    await executeHooks(HooksMeta.constructHooksMetaObject(undefined, 'pre'));
     expect(execa).toHaveBeenCalledTimes(1);
   });
 
   test('should not call execa for unrecognised events', async () => {
-    await executeHooks({ input: { command: 'init', plugin: 'core' } }, 'pre');
+    await executeHooks(HooksMeta.constructHooksMetaObject({ command: 'init', plugin: 'core' }, 'pre'));
     expect(execa).toHaveBeenCalledTimes(0);
   });
 
   test('should execute in specificity execution order', async () => {
-    await executeHooks({ input: { command: 'add', plugin: 'auth' } }, 'pre');
+    await executeHooks(HooksMeta.constructHooksMetaObject({ command: 'add', plugin: 'auth' }, 'pre'));
     expect(execa).toHaveBeenNthCalledWith(1, pathToNodeRuntime, [path.join(testProjectHooksDirPath, preAddFileName)], expect.anything());
     expect(execa).toHaveBeenNthCalledWith(
       2,
@@ -128,7 +128,7 @@ describe('hooksExecutioner tests', () => {
       expect.anything(),
     );
 
-    await executeHooks({ input: { command: 'add', plugin: 'auth' } }, 'post');
+    await executeHooks(HooksMeta.constructHooksMetaObject({ command: 'add', plugin: 'auth' }, 'post'));
     expect(execa).toHaveBeenNthCalledWith(3, pathToNodeRuntime, [path.join(testProjectHooksDirPath, postAddFileName)], expect.anything());
     expect(execa).toHaveBeenNthCalledWith(
       4,
@@ -140,7 +140,7 @@ describe('hooksExecutioner tests', () => {
 
   test('should determine runtime from hooks-config', async () => {
     stateManager_mock.getHooksConfigJson.mockReturnValueOnce({ extensions: { py: { runtime: 'python3' } } });
-    await executeHooks({ input: { command: 'pull', plugin: 'core' } }, 'pre');
+    await executeHooks(HooksMeta.constructHooksMetaObject({ command: 'pull', plugin: 'core' }, 'pre'));
     expect(execa).toHaveBeenCalledWith(pathToPython3Runtime, expect.anything(), expect.anything());
   });
 
@@ -149,12 +149,12 @@ describe('hooksExecutioner tests', () => {
       extensions: { py: { runtime: 'python3', runtime_windows: 'python' } },
     });
     Object.defineProperty(process, 'platform', { value: 'win32' });
-    await executeHooks({ input: { command: 'pull', plugin: 'core' } }, 'pre');
+    await executeHooks(HooksMeta.constructHooksMetaObject({ command: 'pull', plugin: 'core' }, 'pre'));
     expect(execa).toHaveBeenCalledWith(pathToPythonRuntime, expect.anything(), expect.anything());
   });
 
   test('should not run the script for undefined extension/runtime', async () => {
-    await executeHooks({ input: { command: 'pull', plugin: 'core' } }, 'pre');
+    await executeHooks(HooksMeta.constructHooksMetaObject({ command: 'pull', plugin: 'core' }, 'pre'));
     expect(execa).toBeCalledTimes(0);
   });
 
@@ -163,6 +163,8 @@ describe('hooksExecutioner tests', () => {
     stateManager_mock.getHooksConfigJson.mockReturnValueOnce({
       extensions: { py: { runtime: 'python3' } },
     });
-    await expect(executeHooks({ input: { command: 'status', plugin: 'core' } }, 'pre')).rejects.toThrow(duplicateErrorThrown);
+    await expect(executeHooks(HooksMeta.constructHooksMetaObject({ command: 'status', plugin: 'core' }, 'pre'))).rejects.toThrow(
+      duplicateErrorThrown,
+    );
   });
 });

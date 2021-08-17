@@ -1,20 +1,51 @@
-import { HooksEvent, DataParameter, EventPrefix, HooksVerb, HooksNoun } from './hooksTypes';
+import { HooksEvent, DataParameter, EventPrefix, HooksVerb, HooksNoun, ErrorParameter } from './hooksTypes';
 import { suppportedEvents, supportedEnvEvents } from './hooksConstants';
 import { stateManager } from '../state-manager';
 import { $TSContext } from '..';
 import _ from 'lodash';
 
-export class HooksHandler {
-  private static instance?: HooksHandler;
+export class HooksMeta {
+  private static instance?: HooksMeta;
   private hooksEvent: HooksEvent;
   private dataParameter: DataParameter;
+  private errorParameter: ErrorParameter | undefined;
 
-  public static initialize = (hooksEvent: HooksEvent = {}, dataParameter: DataParameter = { amplify: {} }): HooksHandler => {
-    if (!HooksHandler.instance) {
-      HooksHandler.instance = new HooksHandler(hooksEvent, dataParameter);
+  public static getInstance = (hooksEvent: HooksEvent = {}, dataParameter: DataParameter = { amplify: {} }): HooksMeta => {
+    if (!HooksMeta.instance) {
+      HooksMeta.instance = new HooksMeta(hooksEvent, dataParameter);
     }
 
-    return HooksHandler.instance;
+    return HooksMeta.instance;
+  };
+
+  public static constructHooksMetaObject = (
+    input?: {
+      command?: string;
+      plugin?: string;
+      subCommands?: string[];
+      options?: { forcePush?: boolean };
+      argv?: string[];
+    },
+    eventPrefix?: EventPrefix,
+    errorParameter?: ErrorParameter,
+  ): HooksMeta => {
+    const hooksMeta = HooksMeta.getInstance();
+    if (input) {
+      hooksMeta.setHooksEventFromInput(input);
+    }
+    hooksMeta.setEventPrefix(eventPrefix);
+    if (stateManager.localEnvInfoExists()) {
+      hooksMeta.setEnvironmentName(stateManager.getLocalEnvInfo());
+    }
+    hooksMeta.mergeDataParameter({
+      amplify: {
+        command: hooksMeta.getHooksEvent().command,
+        subCommand: hooksMeta.getHooksEvent().subCommand,
+        argv: hooksMeta.getHooksEvent().argv,
+      },
+    });
+    hooksMeta.setErrorParameter(errorParameter);
+    return hooksMeta;
   };
 
   private constructor(hooksEvent: HooksEvent, dataParameter: DataParameter) {
@@ -24,6 +55,10 @@ export class HooksHandler {
 
   public getDataParameter(): DataParameter | undefined {
     return this.dataParameter;
+  }
+
+  public getErrorParameter(): ErrorParameter | undefined {
+    return this.errorParameter;
   }
 
   public getHooksEvent(): HooksEvent {
@@ -38,6 +73,10 @@ export class HooksHandler {
     this.dataParameter.amplify.version = amplifyVersion;
   }
 
+  public setErrorParameter(errorParameter?: ErrorParameter): void {
+    this.errorParameter = errorParameter;
+  }
+
   public setEventCommand(command: string): void {
     this.hooksEvent.command = command;
   }
@@ -49,14 +88,21 @@ export class HooksHandler {
     this.hooksEvent.eventPrefix = prefix as EventPrefix;
   }
 
+  public setEventForcePush(forcePush: boolean): void {
+    this.hooksEvent.forcePush = forcePush;
+  }
+
   public mergeDataParameter(newDataParameter: DataParameter): void {
     this.dataParameter = _.merge(this.dataParameter, newDataParameter);
   }
 
-  public setHooksEventFromInput(
-    input?: { command?: string; plugin?: string; subCommands?: string[]; argv?: string[] },
-    eventPrefix?: EventPrefix,
-  ): void {
+  public setHooksEventFromInput(input?: {
+    command?: string;
+    plugin?: string;
+    subCommands?: string[];
+    argv?: string[];
+    options?: { forcePush?: boolean };
+  }): void {
     if (!input) {
       return;
     }
@@ -99,15 +145,16 @@ export class HooksHandler {
         this.hooksEvent.subCommand = subCommand;
       }
     }
-    this.hooksEvent.eventPrefix = eventPrefix;
+    this.hooksEvent.forcePush = (input?.options?.forcePush && this.hooksEvent.command !== 'push') ?? false;
     this.hooksEvent.argv = input.argv;
   }
 
   /**
    * @internal
    * private method used in unit tests to release the instance
+   * TODO: remove this to use jest.resetModules or jest.isolateModules
    */
   public static releaseInstance = (): void => {
-    HooksHandler.instance = undefined;
+    HooksMeta.instance = undefined;
   };
 }

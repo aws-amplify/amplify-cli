@@ -7,33 +7,17 @@ import * as which from 'which';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import execa from 'execa';
-import { HooksHandler } from './hooksHandler';
+import { HooksMeta } from './hooksMeta';
 import _ from 'lodash';
 import { getLogger } from '../logger/index';
 import { EOL } from 'os';
 import { printer } from 'amplify-prompts';
 const logger = getLogger('amplify-cli-core', 'hooks/hooksExecutioner.ts');
 
-export const executeHooks = async (
-  context?: {
-    input?: { command?: string; plugin?: string; subCommands?: string[]; options?: { forcePush?: boolean }; argv?: string[] };
-    amplify?: $TSAny;
-  },
-  eventPrefix?: EventPrefix,
-  errorParameter?: ErrorParameter,
-): Promise<void> => {
+export const executeHooks = async (hooksMeta: HooksMeta): Promise<void> => {
   if (skipHooks()) {
     return;
   }
-
-  const hooksHandler = HooksHandler.initialize();
-
-  // if input is passed and command is not defined
-  if (context?.input) {
-    hooksHandler.setHooksEventFromInput(context.input);
-  }
-
-  hooksHandler.setEventPrefix(eventPrefix);
 
   const projectPath = pathManager.findProjectRoot() ?? process.cwd();
   const hooksDirPath = pathManager.getHooksDirPath(projectPath);
@@ -43,46 +27,29 @@ export const executeHooks = async (
 
   const hooksConfig: HooksConfig = stateManager.getHooksConfigJson(projectPath) ?? {};
 
-  const { commandHooksFileMeta, subCommandHooksFileMeta } = getHooksFileMetas(hooksDirPath, hooksHandler.getHooksEvent(), hooksConfig);
+  const { commandHooksFileMeta, subCommandHooksFileMeta } = getHooksFileMetas(hooksDirPath, hooksMeta.getHooksEvent(), hooksConfig);
 
   let executionQueue = [commandHooksFileMeta, subCommandHooksFileMeta];
 
-  if (context?.input?.options?.forcePush && hooksHandler.getHooksEvent().command !== 'push') {
+  if (hooksMeta.getHooksEvent().forcePush) {
     // we want to run push related hoooks when forcePush flag is enabled
-    hooksHandler.setEventCommand('push');
-    hooksHandler.setEventSubCommand(undefined);
-    const { commandHooksFileMeta } = getHooksFileMetas(hooksDirPath, hooksHandler.getHooksEvent(), hooksConfig);
+    hooksMeta.setEventCommand('push');
+    hooksMeta.setEventSubCommand(undefined);
+    const { commandHooksFileMeta } = getHooksFileMetas(hooksDirPath, hooksMeta.getHooksEvent(), hooksConfig);
     executionQueue.push(commandHooksFileMeta);
   }
-  let currentEnv;
-  try {
-    // throws error on fresh init
-    currentEnv = context?.amplify?.getEnvInfo()?.envName;
-  } catch (err) {
-    // do nothing
-  }
-
-  // merging because we want to remove as many undeifined values as possible
-  hooksHandler.mergeDataParameter({
-    amplify: {
-      environment: currentEnv,
-      command: hooksHandler.getHooksEvent().command,
-      subCommand: hooksHandler.getHooksEvent().subCommand,
-      argv: hooksHandler.getHooksEvent().argv,
-    },
-  });
 
   for (const execFileMeta of executionQueue) {
     if (execFileMeta) {
       const runtime = getRuntime(execFileMeta, hooksConfig);
       if (runtime) {
-        await exec(runtime, execFileMeta, hooksHandler.getDataParameter(), errorParameter);
+        await execHelper(runtime, execFileMeta, hooksMeta.getDataParameter(), hooksMeta.getErrorParameter());
       }
     }
   }
 };
 
-const exec = async (
+const execHelper = async (
   runtime: string,
   execFileMeta?: HooksFileMeta,
   dataParameter?: DataParameter,

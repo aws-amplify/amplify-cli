@@ -1,7 +1,7 @@
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import * as inquirer from 'inquirer';
-import { $TSAny, stateManager, executeHooks } from 'amplify-cli-core';
+import { $TSAny, stateManager, executeHooks, HooksMeta } from 'amplify-cli-core';
 import { twoStringSetsAreEqual, twoStringSetsAreDisjoint } from './utils/set-ops';
 import { Context } from './domain/context';
 import { constants } from './domain/constants';
@@ -236,7 +236,7 @@ const legacyCommandExecutor = async (context: Context, plugin: PluginInfo) => {
 const EVENT_EMITTING_PLUGINS = new Set([constants.CORE, constants.CODEGEN]);
 
 async function raisePreEvent(context: Context) {
-  await executeHooks(context, 'pre');
+  await executeHooks(HooksMeta.constructHooksMetaObject(context.input, 'pre'));
   const { command, plugin } = context.input;
   if (!plugin || !EVENT_EMITTING_PLUGINS.has(plugin)) {
     return;
@@ -276,7 +276,7 @@ async function raisePreCodegenModelsEvent(context: Context) {
 async function raisePostEvent(context: Context) {
   const { command, plugin } = context.input;
   if (!plugin || !EVENT_EMITTING_PLUGINS.has(plugin)) {
-    await executeHooks(context, 'post');
+    await executeHooks(HooksMeta.constructHooksMetaObject(context.input, 'post'));
     return;
   }
   switch (command) {
@@ -293,7 +293,7 @@ async function raisePostEvent(context: Context) {
       await raisePostCodegenModelsEvent(context);
       break;
   }
-  await executeHooks(context, 'post');
+  await executeHooks(HooksMeta.constructHooksMetaObject(context.input, 'post'));
 }
 
 async function raisePostInitEvent(context: Context) {

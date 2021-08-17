@@ -19,6 +19,7 @@ export type HooksEvent = {
   subCommand?: string;
   argv?: string[];
   eventPrefix?: EventPrefix;
+  forcePush?: boolean;
 };
 
 export type DataParameter = {

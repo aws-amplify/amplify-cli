@@ -42,11 +42,7 @@ export const uploadHooksDirectory = async (context: $TSContext): Promise<void> =
         Body: fs.createReadStream(absolutefilePathToUpload),
         Key: getS3Key(relativeFilePathToUpload),
       };
-      try {
-        await s3.uploadFile(s3Params);
-      } catch (ex) {
-        throw ex;
-      }
+      await s3.uploadFile(s3Params);
     }
   }
 };

@@ -1,6 +1,7 @@
 import { Context } from '../domain/context';
+import { printer } from 'amplify-prompts';
 import { getAmplifyVersion } from '../extensions/amplify-helpers/get-amplify-version';
 
 export const run = (context: Context) => {
-  context.print.info(getAmplifyVersion());
+  printer.info(getAmplifyVersion());
 };
