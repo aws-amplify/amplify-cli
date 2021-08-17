@@ -15,12 +15,12 @@ export interface S3Permissions {
   /**
    * Permissions for authenticated users
    */
-  auth: CrudOperations[];
+  auth: CrudOperation[];
 
   /**
    * Permissions for unauthenticated users
    */
-  guest?: CrudOperations[];
+  guest?: CrudOperation[];
 
   /**
    * Permissions for Cognito user groups
@@ -35,7 +35,7 @@ export interface PermissionGroups {
   /**
    * Each key is a Cognito user group name and each value is the CRUD opterations permitted for that group
    */
-  [k: string]: CrudOperations[];
+  [k: string]: CrudOperation[];
 }
 
 /**
@@ -46,7 +46,7 @@ export interface LambdaTriggerConfig {
   name: string;
 }
 
-export enum CrudOperations {
+export enum CrudOperation {
   CREATE_AND_UPDATE = 'CREATE_AND_UPDATE',
   READ = 'READ',
   DELETE = 'DELETE',
