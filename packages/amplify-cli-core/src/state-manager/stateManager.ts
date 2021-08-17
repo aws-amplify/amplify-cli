@@ -237,14 +237,7 @@ export class StateManager {
     JSONUtilities.writeJson(filePath, meta);
   };
 
-  getHooksConfigJson = (projectPath?: string): HooksConfig => {
-    const filePath = pathManager.getHooksConfigFilePath(projectPath);
-    const mergedOptions = {
-      throwIfNotExist: false,
-    };
-
-    return this.getData<HooksConfig>(filePath, mergedOptions) ?? {};
-  };
+  getHooksConfigJson = (projectPath?: string): HooksConfig => this.getData<HooksConfig>(pathManager.getHooksConfigFilePath(projectPath), {throwIfNotExist: false}) ?? {};
 
   setSampleHooksDir = (projectPath: string | undefined, sourceDirPath: string): void => {
     const targetDirPath = pathManager.getHooksDirPath(projectPath);
