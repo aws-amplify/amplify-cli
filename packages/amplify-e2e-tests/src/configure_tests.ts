@@ -31,7 +31,11 @@ async function setupAmplify() {
 }
 
 async function exchangeTemporaryCredentials() {
-  const accs = await orgApi.listAccounts().promise();
+  let accs;
+  try {
+    accs = await orgApi.listAccounts().promise();
+  } catch (e) {}
+
   if (!accs || !accs.Accounts || accs.Accounts.length === 0) {
     console.log('Using parent AWS account.');
     return;
