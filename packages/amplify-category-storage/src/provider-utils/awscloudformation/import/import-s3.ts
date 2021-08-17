@@ -137,7 +137,7 @@ const importServiceWalkthrough = async (
       footer: importMessages.AutoCompleteFooter,
     };
 
-    const { bucketName } = await enquirer.prompt(bucketNameQuestion as any); // any case needed because async validation TS definition is not up to date
+    const { bucketName } = await enquirer.prompt(bucketNameQuestion as $TSAny); // any case needed because async validation TS definition is not up to date
 
     answers.bucketName = bucketName;
   }
