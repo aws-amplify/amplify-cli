@@ -36,7 +36,7 @@ const permissionMap = {
 };
 
 export const addWalkthrough = async (context: $TSContext, defaultValuesFilename: string, serviceMetadata: $TSAny, options: $TSAny) => {
-  while (!checkIfAuthExists(context)) {
+  while (!checkIfAuthExists()) {
     if (
       await context.amplify.confirmPrompt(
         'You need to add auth (Amazon Cognito) to your project in order to add storage for user files. Do you want to add auth now?',
@@ -64,8 +64,7 @@ export const addWalkthrough = async (context: $TSContext, defaultValuesFilename:
 };
 
 export const updateWalkthrough = (context: $TSContext, defaultValuesFilename: string, serviceMetada: $TSAny) => {
-  const { amplify } = context;
-  const { amplifyMeta } = amplify.getProjectDetails();
+  const amplifyMeta = stateManager.getMeta();
 
   const storageResources: $TSObject = {};
 
@@ -111,14 +110,14 @@ async function configure(
 
   const defaultValues = getAllDefaults(amplify.getProjectDetails());
 
-  const projectBackendDirPath = pathManager.getBackendDirPath();
+  const projectRoot = pathManager.findProjectRoot();
 
   let parameters: $TSObject = {};
   let storageParams: $TSObject = {};
 
   if (resourceName) {
     inputs = inputs.filter((input: $TSAny) => input.key !== 'resourceName');
-    const resourceDirPath = path.join(projectBackendDirPath, categoryName, resourceName);
+    const resourceDirPath = pathManager.getResourceDirectoryPath(projectRoot, categoryName, resourceName);
     const storageParamsFilePath = path.join(resourceDirPath, storageParamsFileName);
 
     try {
@@ -470,7 +469,7 @@ async function configure(
   Object.assign(defaultValues, answers);
 
   const resource = defaultValues.resourceName;
-  const resourceDirPath = pathManager.getResourceDirectoryPath(projectBackendDirPath, categoryName, resource);
+  const resourceDirPath = pathManager.getResourceDirectoryPath(projectRoot, categoryName, resource);
 
   fs.ensureDirSync(resourceDirPath);
 
@@ -525,13 +524,13 @@ async function updateCfnTemplateWithGroups(
   const groupsToBeDeleted = _.difference(oldGroupList, newGroupList);
 
   // Update Cloudformtion file
-  const projectBackendDirPath = pathManager.getBackendDirPath();
-  const resourceDirPath = pathManager.getResourceDirectoryPath(projectBackendDirPath, categoryName, s3ResourceName);
+  const projectRoot = pathManager.findProjectRoot();
+  const resourceDirPath = pathManager.getResourceDirectoryPath(projectRoot, categoryName, s3ResourceName);
   const storageCFNFilePath = path.join(resourceDirPath, 's3-cloudformation-template.json');
 
   const { cfnTemplate: storageCFNFile }: { cfnTemplate: $TSAny } = await readCFNTemplate(storageCFNFilePath);
 
-  const amplifyMetaFile = stateManager.getMeta(projectBackendDirPath);
+  const amplifyMetaFile = stateManager.getMeta(projectRoot);
 
   let s3DependsOnResources = amplifyMetaFile.storage[s3ResourceName].dependsOn || [];
 
@@ -641,11 +640,11 @@ async function updateCfnTemplateWithGroups(
 
 async function removeTrigger(context: $TSContext, resourceName: string, triggerFunction: string) {
   // Update Cloudformtion file
-  const projectBackendDirPath = pathManager.getBackendDirPath();
-  const resourceDirPath = pathManager.getResourceDirectoryPath(projectBackendDirPath, categoryName, resourceName);
+  const projectRoot = pathManager.findProjectRoot();
+  const resourceDirPath = pathManager.getResourceDirectoryPath(projectRoot, categoryName, resourceName);
   const storageCFNFilePath = path.join(resourceDirPath, 's3-cloudformation-template.json');
   const storageCFNFile = JSONUtilities.readJson<$TSAny>(storageCFNFilePath);
-  const parametersFilePath = pathManager.getResourceDirectoryPath(projectBackendDirPath, categoryName, resourceName);
+  const parametersFilePath = pathManager.getResourceDirectoryPath(projectRoot, categoryName, resourceName);
   const bucketParameters = JSONUtilities.readJson<$TSAny>(parametersFilePath);
   const adminTrigger = bucketParameters.adminTriggerFunction;
 
@@ -834,7 +833,6 @@ async function addTrigger(
     // Update Cloudformtion file
     const projectBackendDirPath = pathManager.getBackendDirPath();
     const storageCFNFilePath = path.join(projectBackendDirPath, categoryName, resourceName, 's3-cloudformation-template.json');
-    pathManager.getResourceCfnTemplatePath(projectBackendDirPath, categoryName, resourceName);
     const { cfnTemplate: storageCFNFile }: { cfnTemplate: $TSAny } = await readCFNTemplate(storageCFNFilePath);
     const amplifyMetaFile = stateManager.getMeta();
 
@@ -1175,9 +1173,8 @@ export const resourceAlreadyExists = () => {
   return resourceName;
 };
 
-export const checkIfAuthExists = (context: $TSContext) => {
-  const { amplify } = context;
-  const { amplifyMeta } = amplify.getProjectDetails();
+export const checkIfAuthExists = () => {
+  const amplifyMeta = stateManager.getMeta();
   let authExists = false;
   const authServiceName = 'Cognito';
   const authCategory = 'auth';

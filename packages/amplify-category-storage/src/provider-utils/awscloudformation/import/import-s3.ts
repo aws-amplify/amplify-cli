@@ -152,7 +152,7 @@ const importServiceWalkthrough = async (
 };
 
 const ensureAuth = async (context: $TSContext): Promise<void> => {
-  while (!checkIfAuthExists(context)) {
+  while (!checkIfAuthExists()) {
     const addOrImportQuestion = {
       type: 'select',
       name: 'addOrImport',

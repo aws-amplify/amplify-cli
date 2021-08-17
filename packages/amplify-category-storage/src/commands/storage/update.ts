@@ -7,7 +7,7 @@ export const alias = ['configure'];
 
 export async function run(context: $TSContext) {
   const { amplify } = context;
-  const serviceMetadata = require('../../provider-utils/supported-services').supportedServices;
+  const serviceMetadata = (await import('../../provider-utils/supported-services')).supportedServices;
 
   return amplify
     .serviceSelectionPrompt(context, categoryName, serviceMetadata)
