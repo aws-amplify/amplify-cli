@@ -48,16 +48,11 @@ export async function migrateResource(context: $TSContext, projectPath: string, 
   return migrate(context, projectPath, resourceName);
 }
 
-export function getPermissionPolicies(context: $TSContext, service: string, resourceName: string, crudOptions: $TSAny) {
-  const serviceMetadata = require('../supported-services').supportedServices[service];
+export async function getPermissionPolicies(service: string, resourceName: string, crudOptions: $TSAny) {
+  const serviceMetadata = ((await import('../supported-services')) as $TSAny).supportedServices[service];
   const { serviceWalkthroughFilename } = serviceMetadata;
   const serviceWalkthroughSrc = `${__dirname}/service-walkthroughs/${serviceWalkthroughFilename}`;
-  const { getIAMPolicies } = require(serviceWalkthroughSrc);
-
-  if (!getPermissionPolicies) {
-    printer.info(`No policies found for ${resourceName}`);
-    return;
-  }
+  const { getIAMPolicies } = await import(serviceWalkthroughSrc);
 
   return getIAMPolicies(resourceName, crudOptions);
 }

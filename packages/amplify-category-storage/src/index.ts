@@ -57,7 +57,7 @@ export async function getPermissionPolicies(context: $TSContext, resourceOpsMapp
   const permissionPolicies: $TSAny[] = [];
   const resourceAttributes: $TSAny[] = [];
 
-  Object.keys(resourceOpsMapping).forEach(resourceName => {
+  for (const resourceName of Object.keys(resourceOpsMapping)) {
     try {
       const providerPlugin =
         'providerPlugin' in resourceOpsMapping[resourceName]
@@ -69,9 +69,8 @@ export async function getPermissionPolicies(context: $TSContext, resourceOpsMapp
           : amplifyMeta[categoryName][resourceName].service;
 
       if (providerPlugin) {
-        const providerController = require(`./provider-utils/${providerPlugin}`);
-        const { policy, attributes } = providerController.getPermissionPolicies(
-          context,
+        const providerController = await import(`./provider-utils/${providerPlugin}`);
+        const { policy, attributes } = await providerController.getPermissionPolicies(
           service,
           resourceName,
           resourceOpsMapping[resourceName],
@@ -89,7 +88,7 @@ export async function getPermissionPolicies(context: $TSContext, resourceOpsMapp
       printer.warn(`Could not get policies for ${categoryName}: ${resourceName}`);
       throw e;
     }
-  });
+  }
 
   return { permissionPolicies, resourceAttributes };
 }
