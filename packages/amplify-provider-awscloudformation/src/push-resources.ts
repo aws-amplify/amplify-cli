@@ -47,6 +47,7 @@ import { preProcessCFNTemplate } from './pre-push-cfn-processor/cfn-pre-processo
 import { AUTH_TRIGGER_STACK, AUTH_TRIGGER_TEMPLATE } from './utils/upload-auth-trigger-template';
 import { ensureValidFunctionModelDependencies } from './utils/remove-dependent-function';
 import { legacyLayerMigration, postPushLambdaLayerCleanup, prePushLambdaLayerPrompt } from './lambdaLayerInvocations';
+import { buildGetPaths } from './export-build';
 
 const logger = fileLogger('push-resources');
 
@@ -67,6 +68,8 @@ const deploymentInProgressErrorMessage = (context: $TSContext) => {
   context.print.error('"amplify push --force" to re-deploy');
 };
 
+export async function run2(context: $TSContext, resourceDefinition: $TSObject) {}
+
 export async function run(context: $TSContext, resourceDefinition: $TSObject) {
   const deploymentStateManager = await DeploymentStateManager.createDeploymentStateManager(context);
   let iterativeDeploymentWasInvoked = false;
@@ -85,7 +88,6 @@ export async function run(context: $TSContext, resourceDefinition: $TSObject) {
     const {
       parameters: { options },
     } = context;
-
     let resources = !!context?.exeInfo?.forcePush ? allResources : resourcesToBeCreated.concat(resourcesToBeUpdated);
     layerResources = resources.filter(r => r.service === FunctionServiceNameLambdaLayer);
 
@@ -113,6 +115,7 @@ export async function run(context: $TSContext, resourceDefinition: $TSObject) {
         resources = _.uniqBy(resources.concat(functionResourceToBeUpdated), `resourceName`);
       }
     }
+
     validateCfnTemplates(context, resources);
 
     for await (const resource of resources) {
@@ -814,7 +817,7 @@ export async function uploadTemplateToS3(
   }
 }
 
-async function formNestedStack(
+export async function formNestedStack(
   context: $TSContext,
   projectDetails: $TSObject,
   categoryName?: string,
@@ -1104,6 +1107,14 @@ function updateIdPRolesInNestedStack(nestedStack: $TSAny, authResourceName: $TSA
   Object.assign(nestedStack.Resources, idpUpdateRoleCfn);
 }
 
+function isAuthTrigger(dependsOnResource: $TSObject) {
+  return (
+    FeatureFlags.getBoolean('auth.breakCircularDependency') &&
+    dependsOnResource.category === 'function' &&
+    dependsOnResource.triggerProvider === 'Cognito'
+  );
+}
+
 export async function generateAndUploadRootStack(context: $TSContext, destinationPath: string, destinationS3Key: string) {
   const projectDetails = context.amplify.getProjectDetails();
   const nestedStack = await formNestedStack(context, projectDetails);
@@ -1118,14 +1129,6 @@ export async function generateAndUploadRootStack(context: $TSContext, destinatio
   };
 
   await s3Client.uploadFile(s3Params, false);
-}
-
-function isAuthTrigger(dependsOnResource: $TSObject) {
-  return (
-    FeatureFlags.getBoolean('auth.breakCircularDependency') &&
-    dependsOnResource.category === 'function' &&
-    dependsOnResource.triggerProvider === 'Cognito'
-  );
 }
 
 function rollbackLambdaLayers(layerResources: $TSAny[]) {

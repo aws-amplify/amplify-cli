@@ -18,11 +18,11 @@ import { zipPackage } from './zipResource';
 /**
  * Packages lambda layer code and artifacts into a lambda-compatible .zip file
  */
-export const packageLayer: Packager = async (context, resource) => {
+export const packageLayer: Packager = async (context, resource, forceCreateNewPackage?: boolean) => {
   const previousHash = loadPreviousLayerHash(resource.resourceName);
   const currentHash = await ensureLayerVersion(context, resource.resourceName, previousHash);
 
-  if (previousHash === currentHash) {
+  if (!forceCreateNewPackage && previousHash === currentHash) {
     // This happens when a Lambda layer's permissions have been updated, but no new layer version needs to be pushed
     return { newPackageCreated: false, zipFilename: undefined, zipFilePath: undefined };
   }
