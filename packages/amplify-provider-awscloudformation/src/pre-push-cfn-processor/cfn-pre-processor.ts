@@ -1,12 +1,14 @@
 import { stateManager, pathManager, readCFNTemplate, writeCFNTemplate,
-  CustomIAMPolicies, CustomIAMPolicy, CustomPoliciesFormatError, $TSContext } from 'amplify-cli-core';
+  CustomIAMPolicies, CustomIAMPolicy } from 'amplify-cli-core';
 import * as path from 'path';
-import * as fs from 'fs-extra';
 import { ProviderName as providerName } from '../constants';
 import { prePushCfnTemplateModifier } from './pre-push-cfn-modifier';
 import { Template } from 'cloudform-types';
+import { Printer, AmplifyPrinter } from 'amplify-prompts';
+
 
 const buildDir = 'build';
+
 export const CustomPolicyFileContentConstant = {
   customExecutionPolicyForFunction : {
     DependsOn: ['LambdaExecutionRole'],
@@ -21,8 +23,8 @@ export const CustomPolicyFileContentConstant = {
       }
     }
   },
-  customExecutionPolicyForContainer: (roleName: string) => {
-    `Type: 'AWS::IAM::Policy',
+  customExecutionPolicyForContainer : {
+    Type: 'AWS::IAM::Policy',
     Properties: {
       PolicyDocument: {
         Statement: [
@@ -31,11 +33,8 @@ export const CustomPolicyFileContentConstant = {
       },
       PolicyName: 'CustomExecutionPolicyForContainer',
       Roles: [
-        {
-          Ref: ${roleName}
-        }
       ]
-    }`
+    }
   }
 };
 
@@ -66,12 +65,11 @@ export async function writeCustomPoliciesToCFNTemplate(
   category: string,
   filePath: string
 ) {
-  if(resourceName != 'ElasticContainers' && resourceName != 'Lambda') return;
   const { templateFormat, cfnTemplate } = await readCFNTemplate(path.join(resourceDir, cfnFile));
   const customPolicies = stateManager.getCustomPolicies(category, resourceName);
   if (!customPolicies) return;
 
-  await addCustomPoliciesToCFNTemplateForFunction(category, customPolicies, cfnTemplate, filePath, {templateFormat} );
+  await addCustomPoliciesToCFNTemplateForFunction(category, customPolicies, cfnTemplate, filePath, resourceName, {templateFormat} );
 
 }
 
@@ -80,19 +78,24 @@ export async function addCustomPoliciesToCFNTemplateForFunction(
   customPolicies: CustomIAMPolicies,
   cfnTemplate: Template,
   filePath: string,
-  {templateFormat}
+  resourceName: string,
+  {templateFormat}: any
   ) {
-  let customExecutionPolicy = undefined;
+  if (category != 'function' && category != 'api') return;
+  let customExecutionPolicy;
+
   if(category === 'function') {
     customExecutionPolicy = CustomPolicyFileContentConstant.customExecutionPolicyForFunction;
   }
   if (category === 'api') {
     const roleName = cfnTemplate.Resources.TaskDefinition.Properties.ExecutionRoleArn["Fn::GetAtt"][0];
-    customExecutionPolicy = CustomPolicyFileContentConstant.customExecutionPolicyForContainer(roleName);
+    customExecutionPolicy = CustomPolicyFileContentConstant.customExecutionPolicyForContainer;
+    const role = {Ref: `${roleName}`};
+    customExecutionPolicy.Properties.Roles.push(role);
   }
 
   for (const customPolicy of customPolicies.policies) {
-    validateCustomPolicy(customPolicy);
+    validateRegexCustomPolicy(customPolicy, resourceName);
     customExecutionPolicy.Properties.PolicyDocument.Statement.push(customPolicy);
   }
 
@@ -106,18 +109,22 @@ export async function addCustomPoliciesToCFNTemplateForFunction(
   await writeCFNTemplate(cfnTemplate, filePath, { templateFormat });
 }
 
-export function validateCustomPolicy (customPolicy: CustomIAMPolicy) {
+export function validateRegexCustomPolicy (customPolicy: CustomIAMPolicy, resourceName: string) {
   const resources = customPolicy.Resource;
   const actions = customPolicy.Action;
-  let resourceRegex = new RegExp('arn:(aws[a-zA-Z0-9-]*):([a-zA-Z0-9\\-])+:([a-z]{2}(-gov)?-[a-z]+-\\d{1})?:(\\d{12})?:(.*)');
+  let resourceRegex = new RegExp('(arn:(aws[a-zA-Z0-9-]*):([a-zA-Z0-9\\-])+:([a-z]{2}(-gov)?-[a-z]+-\\d{1})?:(\\d{12})?:(.*))*');
   let actionRegex = new RegExp('([a-z0-9])*:([a-z|A-Z|0-9|*]+)*');
   let wrongResourcesRegex = [];
   let wrongActionsRegex = [];
   let errorMessage = "";
+  const printer: Printer = new AmplifyPrinter()
 
   for (const resource of resources) {
     if (!resourceRegex.test(resource)) {
       wrongResourcesRegex.push(resource);
+    }
+    if(resource === '*') {
+      printer.error(`Warning:\nA "*"  will gives access to all your resources in your accounts`)
     }
   }
 
@@ -128,14 +135,14 @@ export function validateCustomPolicy (customPolicy: CustomIAMPolicy) {
   }
 
   if (wrongResourcesRegex.length > 0) {
-    errorMessage += '\nInvalid ARN format:\n' + wrongResourcesRegex.toString() +'\n';
+    errorMessage += `\nInvalid ARN format in ${resourceName}:\n${wrongResourcesRegex.toString()}\n`;
   }
   if (wrongActionsRegex.length > 0) {
-    errorMessage += '\nInvalid actions format:\n' + wrongActionsRegex.toString() +'\n';
+    errorMessage += `\nInvalid actions format in ${resourceName}:\n${wrongActionsRegex.toString()}\n`;
   }
 
   if (errorMessage.length > 0) {
-    throw new CustomPoliciesFormatError(errorMessage);
+    printer.error(errorMessage);
   }
 
 
