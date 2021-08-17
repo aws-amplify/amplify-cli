@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [6.25.0-beta.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformers-e2e-tests@6.24.7...graphql-transformers-e2e-tests@6.25.0-beta.0) (2021-08-17)
+
+
+### Features
+
+* add [@index](https://github.com/index) directive ([#7887](https://github.com/aws-amplify/amplify-cli/issues/7887)) ([e011555](https://github.com/aws-amplify/amplify-cli/commit/e0115557aad893b3286226e92ce8fecbd5636c1a))
+
+
+
+
+
 ## [6.24.7](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformers-e2e-tests@6.24.6...graphql-transformers-e2e-tests@6.24.7) (2021-08-06)
 
 
