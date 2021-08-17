@@ -33,6 +33,7 @@
     "@aws-amplify/graphql-transformer-core": "0.8.1",
     "@aws-amplify/graphql-transformer-interfaces": "1.8.1",
     "@aws-cdk/assets": "~1.72.0",
+    "@aws-cdk/aws-apigatewayv2": "~1.72.0",
     "@aws-cdk/aws-autoscaling": "~1.72.0",
     "@aws-cdk/aws-batch": "~1.72.0",
     "@aws-cdk/aws-cloudformation": "~1.72.0",
