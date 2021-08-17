@@ -8,9 +8,3 @@ export type PrimaryKeyDirectiveConfiguration = {
   sortKey: FieldDefinitionNode[];
   modelDirective: DirectiveNode;
 };
-
-export type IndexDirectiveConfiguration = PrimaryKeyDirectiveConfiguration & {
-  name: string;
-  queryField: string;
-  primaryKeyField: FieldDefinitionNode;
-};

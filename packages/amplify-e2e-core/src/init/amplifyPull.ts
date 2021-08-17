@@ -5,8 +5,9 @@ export function amplifyPull(
   settings: { override?: boolean; emptyDir?: boolean; appId?: string; withRestore?: boolean; noUpdateBackend?: boolean },
 ): Promise<void> {
   return new Promise((resolve, reject) => {
-    //Note:- Table checks have been removed since they are not necessary for push/pull flows and prone to breaking because
-    //of stylistic changes. A simpler content based check will be added in the future.
+    const tableHeaderRegex = /\|\sCategory\s+\|\sResource\sname\s+\|\sOperation\s+\|\sProvider\splugin\s+\|/;
+    const tableSeperator = /\|(\s-+\s\|){4}/;
+
     const args = ['pull'];
 
     if (settings.appId) {
@@ -42,7 +43,7 @@ export function amplifyPull(
         .wait('Do you plan on modifying this backend?')
         .sendLine(settings.noUpdateBackend ? 'n' : 'y');
     } else if (!settings.noUpdateBackend) {
-      chain.wait('Pre-pull status').wait('Current Environment');
+      chain.wait('Pre-pull status').wait('Current Environment').wait(tableHeaderRegex).wait(tableSeperator);
     }
 
     if (settings.override) {
@@ -58,7 +59,7 @@ export function amplifyPull(
     } else if (settings.emptyDir) {
       chain.wait(/Successfully pulled backend environment .+ from the cloud\./).wait("Run 'amplify pull' to sync future upstream changes.");
     } else {
-      chain.wait('Post-pull status').wait('Current Environment');
+      chain.wait('Post-pull status').wait('Current Environment').wait(tableHeaderRegex).wait(tableSeperator);
     }
 
     chain.run((err: Error) => {

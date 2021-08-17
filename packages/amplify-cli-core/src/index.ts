@@ -1,4 +1,3 @@
-import { ViewResourceTableParams } from './cliViewAPI';
 import { ServiceSelection } from './serviceSelection';
 
 export * from './cfnUtilities';
@@ -22,7 +21,6 @@ export * from './utils';
 export * from './banner-message';
 export * from './cliGetCategories';
 export * from './cliRemoveResourcePrompt';
-export * from './cliViewAPI';
 
 // Temporary types until we can finish full type definition across the whole CLI
 
@@ -255,9 +253,8 @@ interface AmplifyToolkit {
   sharedQuestions: () => $TSAny;
   showAllHelp: () => $TSAny;
   showHelp: (header: string, commands: { name: string; description: string }[]) => $TSAny;
-  showHelpfulProviderLinks: (context: $TSContext) => $TSAny;
+  showHelpfulProviderLinks: () => $TSAny;
   showResourceTable: () => $TSAny;
-  showStatusTable: (resourceTableParams: ViewResourceTableParams) => $TSAny; //Enhanced Status with CFN-Diff
   serviceSelectionPrompt: (
     context: $TSContext,
     category: string,

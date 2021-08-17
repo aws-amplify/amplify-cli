@@ -1,6 +1,6 @@
 import { CfnResource, Construct, IAsset, IConstruct } from '@aws-cdk/core';
 import { Grant, IGrantable, IRole } from '@aws-cdk/aws-iam';
-import { TransformHostProvider } from './transform-host-provider';
+import {TransformHostProvider} from './transform-host-provider';
 
 export interface AppSyncFunctionConfigurationProvider extends IConstruct {
   readonly arn: string;
@@ -21,9 +21,9 @@ export interface DataSourceOptions {
   readonly description?: string;
 }
 
-export interface SearchableDataSourceOptions extends DataSourceOptions {
+export interface ElasticSearchDataSourceOptions extends DataSourceOptions {
   /**
-   * ServiceRole for the Amazon OpenSearch
+   * ServiceRole for the Amazon Elasticsearch
    */
   readonly serviceRole: IRole;
 }

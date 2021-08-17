@@ -3,7 +3,6 @@ export const constants = {
   HELP_SHORT: 'h',
   VERSION: 'version',
   VERSION_SHORT: 'v',
-  VERBOSE: 'verbose',
   YES: 'yes',
   YES_SHORT: 'y',
   PLUGIN_DEFAULT_COMMAND: 'PLUGIN_DEFAULT_COMMAND',
