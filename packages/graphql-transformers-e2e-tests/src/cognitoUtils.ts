@@ -15,6 +15,7 @@ import { IAM as cfnIAM, Cognito as cfnCognito } from 'cloudform-types';
 import { default as CognitoClient } from 'aws-sdk/clients/cognitoidentityserviceprovider';
 import TestStorage from './TestStorage';
 import DeploymentResources from 'graphql-transformer-core/lib/DeploymentResources';
+import { getCredentials } from 'amplify-e2e-core';
 
 interface E2Econfiguration {
   STACK_NAME?: string;
@@ -26,7 +27,7 @@ interface E2Econfiguration {
   USER_POOL_ID?: string;
 }
 
-const cognitoClient = new CognitoClient({ apiVersion: '2016-04-19', region: 'us-west-2' });
+const cognitoClient = new CognitoClient({ ...getCredentials(), apiVersion: '2016-04-19', region: 'us-west-2' });
 
 export function configureAmplify(userPoolId: string, userPoolClientId: string, identityPoolId?: string) {
   Amplify.configure({

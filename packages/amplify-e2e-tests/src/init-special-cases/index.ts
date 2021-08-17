@@ -12,11 +12,6 @@ export async function initWithoutCredentialFileAndNoNewUserSetup(projRoot) {
     region: process.env.AWS_REGION || process.env.AWS_DEFAULT_REGION || 'us-west-2',
   };
 
-  delete process.env.AWS_ACCESS_KEY_ID;
-  delete process.env.AWS_SECRET_ACCESS_KEY;
-  delete process.env.AWS_DEFAULT_REGION;
-  delete process.env.AWS_REGION;
-
   const dotAWSDirPath = path.normalize(path.join(os.homedir(), '.aws'));
   const credentialsFilePath = path.join(dotAWSDirPath, 'credentials');
   const configFilePath = path.join(dotAWSDirPath, 'config');

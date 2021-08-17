@@ -22,25 +22,49 @@ import * as ini from 'ini';
 import * as fs from 'fs-extra';
 
 export const getCredentials = () => {
+  if (process.env.CREDENTIALS_OVERWRITTEN || process.env.USE_PARENT_ACCOUNT) {
+    return {
+      accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+      secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+      sessionToken: process.env.AWS_SESSION_TOKEN,
+      region: process.env.CLI_REGION,
+    };
+  }
+
   // We should use configured credentials above environment variables when they exist
   let creds: any = {};
-  const credentialsContents = ini.parse(fs.readFileSync(pathManager.getAWSCredentialsFilePath()).toString());
-  if (credentialsContents['amplify-integ-test-user']) {
-    creds = credentialsContents['amplify-integ-test-user']
-  } else if (credentialsContents['default']) {
-    creds = credentialsContents['default']
+  if (fs.existsSync(pathManager.getAWSCredentialsFilePath())) {
+    const credentialsContents = ini.parse(fs.readFileSync(pathManager.getAWSCredentialsFilePath()).toString());
+    if (credentialsContents['amplify-integ-test-user']) {
+      creds = credentialsContents['amplify-integ-test-user'];
+    } else if (credentialsContents['default']) {
+      creds = credentialsContents['default'];
+    }
+  }
+  let config: any = {};
+  if (fs.existsSync(pathManager.getAWSConfigFilePath())) {
+    const configContents = ini.parse(fs.readFileSync(pathManager.getAWSConfigFilePath()).toString());
+    if (configContents['profile amplify-integ-test-user']) {
+      config = configContents['profile amplify-integ-test-user'];
+    } else if (configContents['default']) {
+      config = configContents['default'];
+    }
   }
 
   const credentials = {
     accessKeyId: creds.aws_access_key_id || process.env.AWS_ACCESS_KEY_ID,
     secretAccessKey: creds.aws_secret_access_key || process.env.AWS_SECRET_ACCESS_KEY,
     sessionToken: creds.aws_session_token || process.env.AWS_SESSION_TOKEN,
-  }
+    region: config.region || process.env.CLI_REGION || 'us-west-2',
+  };
   process.env.AWS_ACCESS_KEY_ID = credentials.accessKeyId;
   process.env.AWS_SECRET_ACCESS_KEY = credentials.secretAccessKey;
   process.env.AWS_SESSION_TOKEN = credentials.sessionToken;
+  process.env.AWS_DEFAULT_REGION = credentials.region;
+  process.env.AWS_REGION = credentials.region;
+  process.env.CREDENTIALS_OVERWRITTEN = '1';
   return credentials;
-}
+};
 
 export const getDDBTable = async (tableName: string, region: string) => {
   const service = new DynamoDB({ region, ...getCredentials() });
@@ -50,7 +74,7 @@ export const getDDBTable = async (tableName: string, region: string) => {
 };
 
 export const checkIfBucketExists = async (bucketName: string, region: string) => {
-  const service = new S3({ region, ...getCredentials() });
+  const service = new S3({ ...getCredentials(), region });
   return await service.headBucket({ Bucket: bucketName }).promise();
 };
 
@@ -238,7 +262,7 @@ export const getCloudWatchLogs = async (region: string, logGroupName: string, lo
 };
 
 export const describeCloudFormationStack = async (stackName: string, region: string, profileConfig?: any) => {
-  const service = profileConfig ? new CloudFormation(profileConfig) : new CloudFormation({ region, ...getCredentials() });
+  const service = profileConfig ? new CloudFormation({...getCredentials(), ...profileConfig}) : new CloudFormation({ region, ...getCredentials() });
   return (await service.describeStacks({ StackName: stackName }).promise()).Stacks.find(
     stack => stack.StackName === stackName || stack.StackId === stackName,
   );

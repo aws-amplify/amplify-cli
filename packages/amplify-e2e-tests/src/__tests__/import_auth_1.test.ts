@@ -22,8 +22,6 @@ import {
   addApi,
   updateApiSchema,
   getCredentials,
-  addApi,
-  updateApiSchema,
 } from 'amplify-e2e-core';
 import {
   AppClientSettings,

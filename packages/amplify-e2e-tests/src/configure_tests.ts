@@ -1,5 +1,6 @@
-import { amplifyConfigure as configure, injectSessionToken, isCI } from 'amplify-e2e-core';
+import { amplifyConfigure as configure, injectRegion, injectSessionToken, isCI } from 'amplify-e2e-core';
 import * as AWS from 'aws-sdk';
+process.env.AWS_DEFAULT_REGION = process.env.CLI_REGION;
 
 const orgApi = new AWS.Organizations({
   apiVersion: '2016-11-28',
@@ -24,6 +25,7 @@ async function setupAmplify() {
     });
     if (process.env.AWS_SESSION_TOKEN) {
       injectSessionToken('amplify-integ-test-user');
+      injectRegion('amplify-integ-test-user');
     }
   } else {
     console.log('AWS Profile is already configured');
@@ -31,13 +33,18 @@ async function setupAmplify() {
 }
 
 async function exchangeTemporaryCredentials() {
+  if (process.env.USE_PARENT_ACCOUNT) {
+    console.log('Environment is configured to use parent AWS account.');
+    return;
+  }
+
   let accs;
   try {
     accs = await orgApi.listAccounts().promise();
   } catch (e) {}
 
   if (!accs || !accs.Accounts || accs.Accounts.length === 0) {
-    console.log('Using parent AWS account.');
+    console.log('No child accounts found. Using parent AWS account.');
     return;
   }
 

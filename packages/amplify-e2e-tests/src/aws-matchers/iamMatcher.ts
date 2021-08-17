@@ -2,7 +2,7 @@ import { getCredentials } from 'amplify-e2e-core';
 import { IAM } from 'aws-sdk';
 
 export const toBeIAMRoleWithArn = async (roleName: string, arn?: string) => {
-  const iam = new IAM();
+  const iam = new IAM(getCredentials());
   let pass: boolean;
   let message: string;
   try {

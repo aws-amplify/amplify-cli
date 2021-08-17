@@ -1,4 +1,5 @@
 import { S3 } from 'aws-sdk';
+import { getCredentials } from 'amplify-e2e-core';
 
 import fs = require('fs');
 
@@ -20,7 +21,7 @@ export class S3Client {
   client: S3;
 
   constructor(public region: string) {
-    this.client = new S3({ region: this.region });
+    this.client = new S3({ ...getCredentials(), region: this.region });
   }
 
   async createBucket(bucketName: string) {

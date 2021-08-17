@@ -9,13 +9,12 @@ executors:
   windows: &windows-executor
     machine:
       image: 'windows-server-2019-vs2019:stable'
-      resource_class: 'windows.medium'
+      resource_class: 'windows.large'
       shell: powershell.exe
     working_directory: ~/repo
     environment:
       AMPLIFY_DIR: /home/circleci/repo/out
       AMPLIFY_PATH: /home/circleci/repo/out/amplify.exe
-
 
   build_img: &build-executor
     docker:
@@ -44,7 +43,6 @@ node12: &node12
         password: $DOCKERHUB_ACCESS_TOKEN
   resource_class: large
 
-
 defaults: &defaults
   working_directory: ~/repo
   parameters:
@@ -53,10 +51,8 @@ defaults: &defaults
       default: linux
   executor: << parameters.os >>
 
-
 clean_e2e_resources: &clean_e2e_resources
   name: Cleanup resources
-  shell: bash.exe
   command: |
     pwd
     cd packages/amplify-e2e-tests
@@ -83,7 +79,7 @@ run_e2e_tests: &run_e2e_tests
     startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
     setNpmRegistryUrlToLocal
     cd packages/amplify-e2e-tests
-    yarn run e2e --maxWorkers=3 $TEST_SUITE
+    yarn run e2e --detectOpenHandles --maxWorkers=3 $TEST_SUITE
     unsetNpmRegistryUrl
   no_output_timeout: 90m
 
@@ -261,22 +257,20 @@ jobs:
   amplify_e2e_tests:
     <<: *defaults
     steps:
-      - run: echo 'Skipping for now'
-      # - attach_workspace:
-      #     at: ./
-      # - restore_cache:
-      #     keys:
-      #       - amplify-build-artifact-{{ .Revision }}-{{ arch }}
-      # - restore_cache:
-      #     key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
-      # - run: *install_cli_from_local_registery
-      # - run: *run_e2e_tests
-      # - run: *scan_e2e_test_artifacts
-      # - store_test_results:
-      #     path: packages/amplify-e2e-tests/
-      # - store_artifacts:
-      #     path: ~/repo/packages/amplify-e2e-tests/amplify-e2e-reports
-
+      - attach_workspace:
+          at: ./
+      - restore_cache:
+          keys:
+            - amplify-build-artifact-{{ .Revision }}-{{ arch }}
+      - restore_cache:
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
+      - run: *install_cli_from_local_registery
+      - run: *run_e2e_tests
+      - run: *scan_e2e_test_artifacts
+      - store_test_results:
+          path: packages/amplify-e2e-tests/
+      - store_artifacts:
+          path: ~/repo/packages/amplify-e2e-tests/amplify-e2e-reports
 
   done_with_node_e2e_tests:
     <<: *node12
@@ -424,6 +418,7 @@ jobs:
       - run:
           name: Run tests migrating from latest CLI
           command: |
+            yarn pkg-all
             source .circleci/local_publish_helpers.sh
             changeNpmGlobalPath
             cd packages/amplify-migration-tests
@@ -681,8 +676,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
-                - win-lin-e2e
     jobs:
       - build
       - publish_to_local_registry:
@@ -705,8 +698,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
-                - win-lin-e2e
     jobs:
       - build
       - cleanup_resources:
@@ -733,8 +724,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
-                - win-lin-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -748,8 +737,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
-                - win-lin-e2e
                 - beta
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
@@ -761,8 +748,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
-                - win-lin-e2e
                 - beta
                 - release
                 - /tagged-release\/.*/
@@ -780,8 +765,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
-                - win-lin-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
       - amplify_e2e_tests:
@@ -790,14 +773,12 @@ workflows:
             - clean_e2e_resources
             - e2e-auth-credentials
             - e2e-test-context
-          # post-steps:
-          #   - run: *clean_e2e_resources
+          post-steps:
+            - run: *clean_e2e_resources
           filters:
             branches:
               only:
                 - master
-                - win-e2e
-                - win-lin-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -815,8 +796,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
-                - win-lin-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -835,8 +814,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
-                - win-lin-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -851,8 +828,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
-                - win-lin-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -867,8 +842,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
-                - win-lin-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -883,8 +856,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
-                - win-lin-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -899,8 +870,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
-                - win-lin-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -970,8 +939,6 @@ workflows:
               only:
                 - release
                 - master
-                - win-e2e
-                - win-lin-e2e
                 - beta
                 - /tagged-release\/.*/
                 - /tagged-release-without-e2e-tests\/.*/
@@ -1077,7 +1044,7 @@ commands:
                 name: Run E2E tests
                 command: |
                   cd packages/amplify-e2e-tests
-                  yarn run e2e --maxWorkers=3 $ENV:TEST_SUITE
+                  yarn run e2e --detectOpenHandles --maxWorkers=3 $ENV:TEST_SUITE
                 no_output_timeout: 90m
       - when:
           condition:
@@ -1091,7 +1058,7 @@ commands:
                   source $BASH_ENV
                   amplify version
                   cd packages/amplify-e2e-tests
-                  yarn run e2e --maxWorkers=3 $TEST_SUITE
+                  yarn run e2e --detectOpenHandles --maxWorkers=3 $TEST_SUITE
                 no_output_timeout: 90m
   scan_e2e_test_artifacts:
     description: 'Scan And Cleanup E2E Test Artifacts'
