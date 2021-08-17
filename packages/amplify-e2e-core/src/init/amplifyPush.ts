@@ -251,12 +251,6 @@ export function amplifyPushWithNoChanges(cwd: string, testingWithLatestCodebase:
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(testingWithLatestCodebase), ['push'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
       .wait('No changes detected')
-      .run((err: Error) => {
-        if (!err) {
-          resolve();
-        } else {
-          reject(err);
-        }
-      });
+      .run((err: Error) => err ? reject(err) : resolve());
   });
 }
