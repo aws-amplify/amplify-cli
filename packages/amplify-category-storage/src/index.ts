@@ -12,7 +12,7 @@ export async function add(context: $TSContext, providerName: string, service: st
     providerPlugin: providerName,
   };
 
-  const providerController = require(`./provider-utils/${providerName}`);
+  const providerController = await import(`./provider-utils/${providerName}`);
 
   if (!providerController) {
     printer.error('Provider not configured for this category');
@@ -102,7 +102,7 @@ export async function executeAmplifyCommand(context: $TSContext) {
     commandPath = path.join(commandPath, categoryName, context.input.command);
   }
 
-  const commandModule = require(commandPath);
+  const commandModule = await import(commandPath);
 
   await commandModule.run(context);
 }
