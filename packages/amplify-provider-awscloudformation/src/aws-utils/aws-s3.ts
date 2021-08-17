@@ -148,7 +148,7 @@ export class S3 {
   async getAllObjectVersions(
     bucketName: string,
     options: OptionalExceptFor<ListObjectVersionsOutput, 'KeyMarker' | 'VersionIdMarker'> = null,
-  ): Promise<Required<ObjectIdentifier>[]> {
+  ) {
     const result = await pagedAWSCall<ListObjectVersionsOutput, Required<ObjectIdentifier>, typeof options, ListObjectVersionsRequest>(
       async (param, nextToken?) => {
         const parmaWithNextToken = nextToken ? { ...param, ...nextToken } : param;

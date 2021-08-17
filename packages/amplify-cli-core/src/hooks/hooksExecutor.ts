@@ -11,6 +11,7 @@ import { HooksHandler } from './hooksHandler';
 import _ from 'lodash';
 import { getLogger } from '../logger/index';
 import { EOL } from 'os';
+import { printer } from 'amplify-prompts';
 const logger = getLogger('amplify-cli-core', 'hooks/hooksExecutioner.ts');
 
 export const executeHooks = async (
@@ -61,7 +62,7 @@ export const executeHooks = async (
     // do nothing
   }
 
-  // merging because we want to remoe as many undeifined values as possible
+  // merging because we want to remove as many undeifined values as possible
   hooksHandler.mergeDataParameter({
     amplify: {
       environment: currentEnv,
@@ -96,7 +97,8 @@ const exec = async (
     return;
   }
 
-  console.log(`\n----- 🪝 ${execFileMeta.baseName} execution start -----`);
+  printer.blankLine();
+  printer.info(`----- 🪝 ${execFileMeta.baseName} execution start -----`);
 
   try {
     logger.info(`hooks file: ${execFileMeta.fileName} execution started`);
@@ -112,23 +114,27 @@ const exec = async (
     childProcess?.stdout?.pipe(process.stdout);
     const childProcessResult = await childProcess;
     if (!childProcessResult?.stdout?.endsWith(EOL)) {
-      console.log();
+      printer.blankLine();
     }
     logger.info(`hooks file: ${execFileMeta.fileName} execution ended`);
   } catch (err) {
     logger.info(`hooks file: ${execFileMeta.fileName} execution error - ${JSON.stringify(err)}`);
     if (err?.stderr?.length > 0) {
-      console.error(err.stderr);
+      printer.error(err.stderr);
     }
     if (err?.exitCode) {
-      console.log(`\n${execFileMeta.baseName} hook script exited with exit code ${err.exitCode}`);
+      printer.blankLine();
+      printer.error(`${execFileMeta.baseName} hook script exited with exit code ${err.exitCode}`);
     }
-    console.log('\nexiting Amplify process...\n');
+    printer.blankLine();
+    printer.error('exiting Amplify process...');
+    printer.blankLine();
     logger.error('hook script exited with error', err);
-    process.exit(1);
+    // exit code is 76 indicating Amplify exited because user hook script exited with a non zero status
+    process.exit(76);
   }
-
-  console.log(`----- 🪝 ${execFileMeta.baseName} execution end -----\n`);
+  printer.info(`----- 🪝 ${execFileMeta.baseName} execution end -----`);
+  printer.blankLine();
 };
 
 const getHooksFileMetas = (
