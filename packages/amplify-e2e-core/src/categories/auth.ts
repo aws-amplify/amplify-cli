@@ -369,6 +369,23 @@ export function updateAuthSignInSignOutUrl(cwd: string, settings: any): Promise<
   });
 }
 
+export function updateAuthToRemoveFederation(cwd: string, settings: any): Promise<void> {
+  return new Promise((resolve, reject) => {
+    spawn(getCLIPath(), ['update', 'auth'], { cwd, stripColors: true })
+      .wait('What do you want to do?')
+      .sendCarriageReturn()
+      .wait('"amplify publish" will build all your local backend and frontend resources')
+      .sendEof()
+      .run((err: Error) => {
+        if (!err) {
+          resolve();
+        } else {
+          reject(err);
+        }
+      });
+  });
+}
+
 export function updateAuthWithoutCustomTrigger(cwd: string, settings: any): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['update', 'auth'], { cwd, stripColors: true })
