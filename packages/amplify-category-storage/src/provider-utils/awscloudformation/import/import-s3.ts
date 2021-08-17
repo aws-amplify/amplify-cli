@@ -31,13 +31,13 @@ export const importS3 = async (
   if (resourceName && !previousResourceParameters) {
     const errMessage = 'Amazon S3 storage was already added to your project.';
     printer.warn(errMessage);
-    context.usageData.emitError(new ResourceAlreadyExistsError(errMessage));
+    await context.usageData.emitError(new ResourceAlreadyExistsError(errMessage));
 
     exitOnNextTick(0);
   }
 
   // Load provider
-  const providerPlugin = providerPluginInstance || require(serviceSelection.provider);
+  const providerPlugin = providerPluginInstance || (await import(serviceSelection.provider));
   const providerUtils = providerPlugin as ProviderUtils;
 
   const importServiceWalkthroughResult = await importServiceWalkthrough(
@@ -59,7 +59,7 @@ export const importS3 = async (
   const { envSpecificParameters } = await updateStateFiles(context, questionParameters, answers, persistEnvParameters);
 
   if (printSuccessMessage) {
-    printSuccess(context, answers.bucketName!);
+    printSuccess(answers.bucketName!);
   }
 
   return {
@@ -67,7 +67,7 @@ export const importS3 = async (
   };
 };
 
-const printSuccess = (context: $TSContext, bucketName: string) => {
+const printSuccess = (bucketName: string) => {
   printer.info('');
   printer.info(`✅ S3 Bucket '${bucketName}' was successfully imported.`);
   printer.info('');
@@ -190,7 +190,7 @@ const ensureAuth = async (context: $TSContext): Promise<void> => {
         }
       } catch (e) {
         printer.error('The Auth plugin is not installed in the CLI. You need to install it to use this feature');
-        context.usageData.emitError(e);
+        await context.usageData.emitError(e);
         exitOnNextTick(1);
       }
     }
@@ -324,8 +324,8 @@ export const importedS3EnvInit = async (
         message: importMessages.ImportPreviousBucket(resourceName, sourceEnvParams.bucketName, context.exeInfo.sourceEnvName),
         footer: importMessages.ImportPreviousResourceFooter,
         initial: true,
-        format: (e: any) => (e ? 'Yes' : 'No'),
-      } as any);
+        format: (e: $TSAny) => (e ? 'Yes' : 'No'),
+      } as $TSAny);
 
       if (!importExisting) {
         return {
