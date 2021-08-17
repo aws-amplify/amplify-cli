@@ -766,9 +766,8 @@ async function addTrigger(
       };
 
       // Update the functions resource
-      const functionCFNString = JSON.stringify(functionCFNFile, null, 4);
 
-      fs.writeFileSync(functionCFNFilePath, functionCFNString, 'utf8');
+      await writeCFNTemplate(functionCFNFile, functionCFNFilePath);
 
       printer.success(`Successfully updated resource ${functionName} locally`);
     }
