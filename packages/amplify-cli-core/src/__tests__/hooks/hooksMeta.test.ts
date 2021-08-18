@@ -49,4 +49,40 @@ describe('HooksMeta tests', () => {
     expect(hooksMeta.getHooksEvent()?.command).toEqual(undefined);
     expect(hooksMeta.getHooksEvent()?.subCommand).toEqual(undefined);
   });
+
+  test('should return correct HooksMeta object - constructHooksMetaObject', () => {
+    let hooksMeta = HooksMeta.constructHooksMetaObject();
+
+    expect(hooksMeta).toBeDefined();
+    expect(hooksMeta.getHooksEvent()).toBeDefined();
+    expect(hooksMeta.getDataParameter()).toBeDefined();
+    expect(hooksMeta.getErrorParameter()).not.toBeDefined();
+
+    HooksMeta.releaseInstance();
+
+    hooksMeta = HooksMeta.constructHooksMetaObject(
+      {
+        command: 'pull',
+        plugin: 'core',
+        subCommands: undefined,
+        options: {
+          forcePush: true,
+        },
+      },
+      'pre',
+    );
+    expect(hooksMeta).toBeDefined();
+    expect(hooksMeta.getHooksEvent().command).toEqual('pull');
+    expect(hooksMeta.getHooksEvent().eventPrefix).toEqual('pre');
+    expect(hooksMeta.getHooksEvent().forcePush).toEqual(true);
+    expect(hooksMeta.getErrorParameter()).not.toBeDefined();
+
+    // if the event was defined and Amplify emits an error, constructHooksMetaObject should attatch the error parameter to the already defined event
+    hooksMeta = HooksMeta.constructHooksMetaObject(undefined, 'post', { message: 'test_message', stack: 'test_stack' });
+    expect(hooksMeta).toBeDefined();
+    expect(hooksMeta.getHooksEvent().command).toEqual('pull');
+    expect(hooksMeta.getHooksEvent().eventPrefix).toEqual('post');
+    expect(hooksMeta.getHooksEvent().forcePush).toEqual(true);
+    expect(hooksMeta.getErrorParameter()).toEqual({ message: 'test_message', stack: 'test_stack' });
+  });
 });
