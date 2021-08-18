@@ -20,6 +20,9 @@ export const Constants = {
   EXPORT_DEPLOYMENT_BUCKET_NAME: 'exportDeploymentBucket',
   AMPLIFY_AUXILIARY_LAMBDAS: 'amplify-auxiliary-files',
   APPSYNC_BUILD_FOLDER: 'build',
+  APPSYNC_STACK_FOLDER: 'stacks',
+  AUTH_ASSETS: 'assets',
+  AMPLIFY_AUTH_ASSETS: 'amplify-auth-assets',
   AMPLIFY_APPSYNC_FILES: 'amplify-appsync-files',
   API_CATEGORY: {
     NAME: 'api',

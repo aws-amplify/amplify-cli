@@ -1,5 +1,11 @@
 import { $TSContext, FeatureFlags, pathManager, stateManager } from 'amplify-cli-core';
-import { PackagedResourceDefinition, ResourceDefinition, ResourceDeployType, TransformedCfnResource, UploadedResourceDefinition } from '.';
+import {
+  PackagedResourceDefinition,
+  ResourceDefinition,
+  ResourceDeployType,
+  TransformedCfnResource,
+  UploadedResourceDefinition,
+} from './Types';
 import { uploadAppSyncFiles } from '../upload-appsync-files';
 import { Constants } from './constants';
 import { ResourceDeployer } from './ResourceDeployer';
@@ -9,36 +15,36 @@ import { S3 } from '../aws-utils/aws-s3';
 import { getNetworkResourceCfn } from '../utils/env-level-constructs';
 import _ from 'lodash';
 import { Template } from 'cloudform-types';
-import { prePushGraphQLCodegen } from '../graphql-codegen';
-import { DeploymentStateManager, runIterativeRollback } from '../iterative-deployment';
+import { postPushGraphQLCodegen, prePushGraphQLCodegen } from '../graphql-codegen';
+import { DeploymentManager, DeploymentStateManager, runIterativeRollback } from '../iterative-deployment';
 
 export class ResourcePush extends ResourceDeployer {
   constructor(context: $TSContext) {
     super(context, ResourceDeployType.Push);
   }
-  /**
-   * inits deployment state manager
-   */
-  async initDeploymentState(): Promise<void> {
-    this.deploymentStateManager = await DeploymentStateManager.createDeploymentStateManager(this.context);
-  }
+  // /**
+  //  * inits deployment state manager
+  //  */
+  // async initDeploymentState(): Promise<void> {
+  //   this.deploymentStateManager = await DeploymentStateManager.createDeploymentStateManager(this.context);
+  // }
 
-  /**
-   * checks for iterative rollback is taking place and return true or false
-   * skips the check if --forcePush or iterativeRollback is false
-   * @returns boolean
-   */
-  async canDeploy(): Promise<boolean> {
-    if (this.deploymentStateManager.isDeploymentInProgress() && !this.deploymentStateManager.isDeploymentFinished()) {
-      if (this.context.exeInfo?.forcePush || this.context.exeInfo?.iterativeRollback) {
-        await runIterativeRollback(this.context, this.amplifyMeta, this.deploymentStateManager);
-        if (this.context.exeInfo?.iterativeRollback) {
-          return false;
-        }
-      }
-    }
-    return true;
-  }
+  // /**
+  //  * checks for iterative rollback is taking place and return true or false
+  //  * skips the check if --forcePush or iterativeRollback is false
+  //  * @returns boolean
+  //  */
+  // async canDeploy(): Promise<boolean> {
+  //   if (this.deploymentStateManager.isDeploymentInProgress() && !this.deploymentStateManager.isDeploymentFinished()) {
+  //     if (this.context.exeInfo?.forcePush || this.context.exeInfo?.iterativeRollback) {
+  //       await runIterativeRollback(this.context, this.amplifyMeta, this.deploymentStateManager);
+  //       if (this.context.exeInfo?.iterativeRollback) {
+  //         return false;
+  //       }
+  //     }
+  //   }
+  //   return true;
+  // }
   /**
    * Uploads all non cloudformation resouces to the deployment bucket
    * @param packagedResources
@@ -185,5 +191,7 @@ export class ResourcePush extends ResourceDeployer {
 
   async push(template: Template) {}
 
-  async postPush() {}
+  async postPush() {
+    await postPushGraphQLCodegen(this.context);
+  }
 }
