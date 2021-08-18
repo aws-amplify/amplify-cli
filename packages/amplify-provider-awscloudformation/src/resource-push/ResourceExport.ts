@@ -7,7 +7,6 @@ import { Constants } from './constants';
 import { ResourceDeployer } from './ResourceDeployer';
 import { getNetworkResourceCfn } from '../utils/env-level-constructs';
 import _ from 'lodash';
-import { preProcessCFNTemplate } from '../pre-push-cfn-processor/cfn-pre-processor';
 export class ResourceExport extends ResourceDeployer {
   exportDirectoryPath: string;
   constructor(context: $TSContext, exportDirectoryPath: string) {
@@ -151,7 +150,6 @@ export class ResourceExport extends ResourceDeployer {
     if (this.resourcesHasContainers(resources)) {
       // create network resouce
       const template = await getNetworkResourceCfn(this.context, stackName);
-      const key = `${AMPLIFY_CFN_TEMPLATES}/${NETWORK_STACK_FILENAME}`;
       JSONUtilities.writeJson(path.join(this.exportDirectoryPath, AMPLIFY_CFN_TEMPLATES, NETWORK_STACK_FILENAME), template);
       _.set(this.amplifyMeta, [PROVIDER, PROVIDER_NAME, NETWORK_STACK_S3_URL], this.createTemplateUrl(bucket, NETWORK_STACK_FILENAME));
 
