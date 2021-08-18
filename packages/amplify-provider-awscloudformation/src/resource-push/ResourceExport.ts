@@ -142,7 +142,7 @@ export class ResourceExport extends ResourceDeployer {
         }
         this.copyResource(cfnFile, destination);
         _.set(this.amplifyMeta, [resource.category, resource.resourceName, PROVIDER_METADATA], {
-          s3TemplateUrl: templateURL,
+          s3TemplateURL: templateURL,
           logicalId: resource.category + resource.resourceName,
         });
       }
