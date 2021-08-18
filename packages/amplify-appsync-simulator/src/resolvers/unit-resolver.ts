@@ -1,6 +1,7 @@
 import { AmplifyAppSyncSimulator } from '..';
 import { AppSyncBaseResolver } from './base-resolver';
 import { AppSyncSimulatorUnitResolverConfig } from '../type-definition';
+import { print } from 'graphql';
 
 export class AppSyncUnitResolver extends AppSyncBaseResolver {
   protected config: AppSyncSimulatorUnitResolverConfig;
@@ -22,6 +23,14 @@ export class AppSyncUnitResolver extends AppSyncBaseResolver {
     const requestMappingTemplate = this.getRequestMappingTemplate();
     const responseMappingTemplate = this.getResponseMappingTemplate();
     const dataLoader = this.simulatorContext.getDataLoader(this.config.dataSourceName);
+
+    try {
+      const query = info.operation?.selectionSet?.selections?.find(set => set.name.value === args.fieldName);
+      if (query) args = { ...args, query: `{${print(query)}}` };
+    } catch (e) {
+      console.error(e);
+    }
+
     const { result: requestPayload, errors: requestTemplateErrors, isReturn, hadException } = requestMappingTemplate.render(
       { source, arguments: args },
       context,

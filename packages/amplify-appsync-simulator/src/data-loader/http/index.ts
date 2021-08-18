@@ -1,7 +1,6 @@
 import axios, { AxiosResponse } from 'axios';
 import { AmplifyAppSyncSimulatorDataLoader } from '..';
 import { AppSyncSimulatorDataSourceHttpConfig } from '../../type-definition';
-import { print } from 'graphql';
 
 export class HttpDataLoader implements AmplifyAppSyncSimulatorDataLoader {
   private endpoint: string;
@@ -11,28 +10,16 @@ export class HttpDataLoader implements AmplifyAppSyncSimulatorDataLoader {
   }
 
   public async load(payload: any, extraData?: any): Promise<any> {
-    // console.log('extraData');
-    // console.log((await import('util')).inspect(extraData, {depth: null}));
-    console.log('payload');
-    console.log(payload);
-    console.log('print');
-    console.log(print(extraData.info.operation.selectionSet));
-
     try {
-      const result: AxiosResponse = await axios({
+      const axiosRes: AxiosResponse = await axios({
         method: payload.method,
-        url: this.endpoint,
+        url: this.endpoint, //.trimRight('/') + payload.resourcePath,
         headers: payload.params.headers,
         data: payload.params.query,
-        params: { query: print(extraData.info.operation.selectionSet) },
+        params: { query: payload.params.query },
       });
-
-      console.log(result.data);
-
-      const transformedResult = JSON.stringify(this.flattenObject(result.data.data));
-      const cfxResult = { body: transformedResult, statusCode: result.status, headers: result.headers };
-
-      console.log(cfxResult);
+      const result = JSON.stringify(this.flattenObject(axiosRes.data.data));
+      const cfxResult = { body: result, statusCode: axiosRes.status, headers: axiosRes.headers };
       return cfxResult;
     } catch (error) {
       console.log('HTTP Data source failed with the following error:');

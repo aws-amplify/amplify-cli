@@ -43,6 +43,7 @@ export function generateResolvers(
       typeObj[resolverConfig.fieldName] = {
         resolve: async (source, args, context, info) => {
           const resolver = simulatorContext.getResolver(resolverConfig.typeName, resolverConfig.fieldName);
+          args = { ...args, fieldName };
           try {
             // Mutation and Query
             if (typeName !== 'Subscription') {
