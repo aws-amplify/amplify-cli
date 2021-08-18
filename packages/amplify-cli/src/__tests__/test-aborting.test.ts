@@ -45,7 +45,7 @@ describe('test SIGINT with execute', () => {
       HooksMeta: {
         getInstance: jest.fn().mockReturnValue({
           setAmplifyVersion: jest.fn(),
-          setHooksEventFromInput: jest.fn(),
+          setHookEventFromInput: jest.fn(),
         }),
         constructHooksMetaObject: jest.fn(),
       },

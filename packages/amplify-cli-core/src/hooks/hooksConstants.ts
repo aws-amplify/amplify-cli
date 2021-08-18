@@ -1,8 +1,8 @@
 import { join } from 'path';
 import { homedir } from 'os';
-import { HooksExtensions, HooksNoun, HooksVerb } from './hooksTypes';
+import { HookExtensions, HooksNoun, HooksVerb } from './hooksTypes';
 
-export const hooksFileSeperator = '-';
+export const hookFileSeperator = '-';
 
 export const suppportedEvents: Record<HooksVerb, HooksNoun[]> = {
   add: [
@@ -40,7 +40,7 @@ export const suppportedEvents: Record<HooksVerb, HooksNoun[]> = {
 
 export const supportedEnvEvents: HooksVerb[] = ['add', 'update', 'remove', 'pull', 'checkout', 'list', 'get', 'import'];
 
-export const defaultSupportedExt: HooksExtensions = { js: { runtime: 'node' }, sh: { runtime: 'bash' } };
+export const defaultSupportedExt: HookExtensions = { js: { runtime: 'node' }, sh: { runtime: 'bash' } };
 
 export const skipHooksFileName: string = 'AMIPLIFY-HOOKS-SKIP';
 export const skipHooksFilePath: string = join(homedir(), 'opt', 'amazon');

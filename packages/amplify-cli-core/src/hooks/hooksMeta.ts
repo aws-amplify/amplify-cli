@@ -1,17 +1,17 @@
-import { HooksEvent, DataParameter, EventPrefix, HooksVerb, HooksNoun, ErrorParameter } from './hooksTypes';
+import { HookEvent, DataParameter, EventPrefix, HooksVerb, HooksNoun, ErrorParameter } from './hooksTypes';
 import { suppportedEvents, supportedEnvEvents } from './hooksConstants';
 import { stateManager } from '../state-manager';
 import _ from 'lodash';
 
 export class HooksMeta {
   private static instance?: HooksMeta;
-  private hooksEvent: Partial<HooksEvent>;
+  private HookEvent: Partial<HookEvent>;
   private dataParameter: DataParameter;
   private errorParameter: ErrorParameter | undefined;
 
-  public static getInstance = (hooksEvent: Partial<HooksEvent> = {}, dataParameter: DataParameter = { amplify: {} }): HooksMeta => {
+  public static getInstance = (HookEvent: Partial<HookEvent> = {}, dataParameter: DataParameter = { amplify: {} }): HooksMeta => {
     if (!HooksMeta.instance) {
-      HooksMeta.instance = new HooksMeta(hooksEvent, dataParameter);
+      HooksMeta.instance = new HooksMeta(HookEvent, dataParameter);
     }
 
     return HooksMeta.instance;
@@ -30,7 +30,7 @@ export class HooksMeta {
   ): HooksMeta => {
     const hooksMeta = HooksMeta.getInstance();
     if (input) {
-      hooksMeta.setHooksEventFromInput(input);
+      hooksMeta.setHookEventFromInput(input);
     }
     hooksMeta.setEventPrefix(eventPrefix);
     if (stateManager.localEnvInfoExists()) {
@@ -38,17 +38,17 @@ export class HooksMeta {
     }
     hooksMeta.mergeDataParameter({
       amplify: {
-        command: hooksMeta.getHooksEvent().command,
-        subCommand: hooksMeta.getHooksEvent().subCommand,
-        argv: hooksMeta.getHooksEvent().argv,
+        command: hooksMeta.getHookEvent().command,
+        subCommand: hooksMeta.getHookEvent().subCommand,
+        argv: hooksMeta.getHookEvent().argv,
       },
     });
     hooksMeta.setErrorParameter(errorParameter);
     return hooksMeta;
   };
 
-  private constructor(hooksEvent: Partial<HooksEvent>, dataParameter: DataParameter) {
-    this.hooksEvent = hooksEvent;
+  private constructor(HookEvent: Partial<HookEvent>, dataParameter: DataParameter) {
+    this.HookEvent = HookEvent;
     this.dataParameter = dataParameter;
   }
 
@@ -60,8 +60,8 @@ export class HooksMeta {
     return this.errorParameter;
   }
 
-  public getHooksEvent(): HooksEvent {
-    return this.hooksEvent as HooksEvent;
+  public getHookEvent(): HookEvent {
+    return this.HookEvent as HookEvent;
   }
 
   public setEnvironmentName(envName?: string): void {
@@ -77,21 +77,21 @@ export class HooksMeta {
   }
 
   public setEventCommand(command: string): void {
-    this.hooksEvent.command = command;
+    this.HookEvent.command = command;
   }
   public setEventSubCommand(subCommand?: string): void {
-    this.hooksEvent.subCommand = subCommand;
+    this.HookEvent.subCommand = subCommand;
   }
 
   public setEventPrefix(prefix?: string): void {
-    this.hooksEvent.eventPrefix = prefix as EventPrefix;
+    this.HookEvent.eventPrefix = prefix as EventPrefix;
   }
 
   public mergeDataParameter(newDataParameter: DataParameter): void {
     this.dataParameter = _.merge(this.dataParameter, newDataParameter);
   }
 
-  public setHooksEventFromInput(input?: {
+  public setHookEventFromInput(input?: {
     command?: string;
     plugin?: string;
     subCommands?: string[];
@@ -101,7 +101,7 @@ export class HooksMeta {
     if (!input) {
       return;
     }
-    if (this.hooksEvent.command) {
+    if (this.HookEvent.command) {
       return;
     }
 
@@ -135,13 +135,13 @@ export class HooksMeta {
     }
 
     if (suppportedEvents.hasOwnProperty(command)) {
-      this.hooksEvent.command = command;
+      this.HookEvent.command = command;
       if (suppportedEvents?.[command as HooksVerb]?.includes(subCommand as HooksNoun)) {
-        this.hooksEvent.subCommand = subCommand;
+        this.HookEvent.subCommand = subCommand;
       }
     }
-    this.hooksEvent.forcePush = (input?.options?.forcePush && this.hooksEvent.command !== 'push') ?? false;
-    this.hooksEvent.argv = input.argv;
+    this.HookEvent.forcePush = (input?.options?.forcePush && this.HookEvent.command !== 'push') ?? false;
+    this.HookEvent.argv = input.argv;
   }
 
   /**

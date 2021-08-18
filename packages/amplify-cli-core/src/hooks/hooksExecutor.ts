@@ -1,6 +1,6 @@
 import { pathManager, stateManager } from '../state-manager';
-import { HooksConfig, HooksExtensions, HooksFileMeta, HooksEvent, DataParameter, ErrorParameter } from './hooksTypes';
-import { defaultSupportedExt, hooksFileSeperator } from './hooksConstants';
+import { HooksConfig, HookExtensions, HookFileMeta, HookEvent, DataParameter, ErrorParameter } from './hooksTypes';
+import { defaultSupportedExt, hookFileSeperator } from './hooksConstants';
 import { skipHooks } from './skipHooks';
 import * as which from 'which';
 import * as fs from 'fs-extra';
@@ -26,16 +26,16 @@ export const executeHooks = async (hooksMeta: HooksMeta): Promise<void> => {
 
   const hooksConfig: HooksConfig = stateManager.getHooksConfigJson(projectPath) ?? {};
 
-  const { commandHooksFileMeta, subCommandHooksFileMeta } = getHooksFileMetas(hooksDirPath, hooksMeta.getHooksEvent(), hooksConfig);
+  const { commandHookFileMeta, subCommandHookFileMeta } = getHookFileMetas(hooksDirPath, hooksMeta.getHookEvent(), hooksConfig);
 
-  let executionQueue = [commandHooksFileMeta, subCommandHooksFileMeta];
+  let executionQueue = [commandHookFileMeta, subCommandHookFileMeta];
 
-  if (hooksMeta.getHooksEvent().forcePush) {
+  if (hooksMeta.getHookEvent().forcePush) {
     // we want to run push related hoooks when forcePush flag is enabled
     hooksMeta.setEventCommand('push');
     hooksMeta.setEventSubCommand(undefined);
-    const { commandHooksFileMeta } = getHooksFileMetas(hooksDirPath, hooksMeta.getHooksEvent(), hooksConfig);
-    executionQueue.push(commandHooksFileMeta);
+    const { commandHookFileMeta } = getHookFileMetas(hooksDirPath, hooksMeta.getHookEvent(), hooksConfig);
+    executionQueue.push(commandHookFileMeta);
   }
 
   for (const execFileMeta of executionQueue) {
@@ -50,7 +50,7 @@ export const executeHooks = async (hooksMeta: HooksMeta): Promise<void> => {
 
 const execHelper = async (
   runtime: string,
-  execFileMeta: HooksFileMeta,
+  execFileMeta: HookFileMeta,
   dataParameter: DataParameter,
   errorParameter?: ErrorParameter,
 ): Promise<void> => {
@@ -103,12 +103,12 @@ const execHelper = async (
   printer.blankLine();
 };
 
-const getHooksFileMetas = (
+const getHookFileMetas = (
   hooksDirPath: string,
-  hooksEvent: HooksEvent,
+  HookEvent: HookEvent,
   hooksConfig: HooksConfig,
-): { commandHooksFileMeta?: HooksFileMeta; subCommandHooksFileMeta?: HooksFileMeta } => {
-  if (!hooksEvent.command) {
+): { commandHookFileMeta?: HookFileMeta; subCommandHookFileMeta?: HookFileMeta } => {
+  if (!HookEvent.command) {
     return {};
   }
   const extensionsSupported = getSupportedExtensions(hooksConfig);
@@ -120,24 +120,24 @@ const getHooksFileMetas = (
     .filter(fileMeta => fileMeta.extension && extensionsSupported.hasOwnProperty(fileMeta.extension))
     .map(fileMeta => ({ ...fileMeta, filePath: path.join(hooksDirPath, String(fileMeta.fileName)) }));
 
-  const commandType = hooksEvent.eventPrefix ? [hooksEvent.eventPrefix, hooksEvent.command].join(hooksFileSeperator) : hooksEvent.command;
+  const commandType = HookEvent.eventPrefix ? [HookEvent.eventPrefix, HookEvent.command].join(hookFileSeperator) : HookEvent.command;
   const commandHooksFiles = allFiles.filter(fileMeta => fileMeta.baseName === commandType);
-  const commandHooksFileMeta = throwOnDuplicateHooksFiles(commandHooksFiles);
+  const commandHookFileMeta = throwOnDuplicateHooksFiles(commandHooksFiles);
 
   let subCommandHooksFiles;
-  let subCommandHooksFileMeta: HooksFileMeta | undefined;
-  if (hooksEvent.subCommand) {
-    const subCommandType = hooksEvent.eventPrefix
-      ? [hooksEvent.eventPrefix, hooksEvent.command, hooksEvent.subCommand].join(hooksFileSeperator)
-      : [hooksEvent.command, hooksEvent.subCommand].join(hooksFileSeperator);
+  let subCommandHookFileMeta: HookFileMeta | undefined;
+  if (HookEvent.subCommand) {
+    const subCommandType = HookEvent.eventPrefix
+      ? [HookEvent.eventPrefix, HookEvent.command, HookEvent.subCommand].join(hookFileSeperator)
+      : [HookEvent.command, HookEvent.subCommand].join(hookFileSeperator);
 
     subCommandHooksFiles = allFiles.filter(fileMeta => fileMeta.baseName === subCommandType);
-    subCommandHooksFileMeta = throwOnDuplicateHooksFiles(subCommandHooksFiles);
+    subCommandHookFileMeta = throwOnDuplicateHooksFiles(subCommandHooksFiles);
   }
-  return { commandHooksFileMeta, subCommandHooksFileMeta };
+  return { commandHookFileMeta, subCommandHookFileMeta };
 };
 
-const throwOnDuplicateHooksFiles = (files: HooksFileMeta[]): HooksFileMeta | undefined => {
+const throwOnDuplicateHooksFiles = (files: HookFileMeta[]): HookFileMeta | undefined => {
   if (files.length > 1) {
     throw new Error(`found duplicate hook scripts: ${files.map(file => file.fileName).join(', ')}`);
   } else if (files.length === 1) {
@@ -145,9 +145,9 @@ const throwOnDuplicateHooksFiles = (files: HooksFileMeta[]): HooksFileMeta | und
   }
 };
 
-const splitFileName = (filename: string): HooksFileMeta => {
+const splitFileName = (filename: string): HookFileMeta => {
   const lastDotIndex = filename.lastIndexOf('.');
-  const fileMeta: HooksFileMeta = { fileName: filename, baseName: filename };
+  const fileMeta: HookFileMeta = { fileName: filename, baseName: filename };
   if (lastDotIndex !== -1) {
     fileMeta.baseName = filename.substring(0, lastDotIndex);
     fileMeta.extension = filename.substring(lastDotIndex + 1);
@@ -155,7 +155,7 @@ const splitFileName = (filename: string): HooksFileMeta => {
   return fileMeta;
 };
 
-const getRuntime = (fileMeta: HooksFileMeta, hooksConfig: HooksConfig): string | undefined => {
+const getRuntime = (fileMeta: HookFileMeta, hooksConfig: HooksConfig): string | undefined => {
   const { extension } = fileMeta;
   if (!extension) {
     return;
@@ -180,6 +180,6 @@ const getRuntime = (fileMeta: HooksFileMeta, hooksConfig: HooksConfig): string |
   return executablePath;
 };
 
-const getSupportedExtensions = (hooksConfig: HooksConfig): HooksExtensions => {
+const getSupportedExtensions = (hooksConfig: HooksConfig): HookExtensions => {
   return { ...defaultSupportedExt, ...hooksConfig?.extensions };
 };

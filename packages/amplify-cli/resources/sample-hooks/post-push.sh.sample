@@ -1,4 +1,4 @@
-# This is a sample hooks script created by Amplify CLI.
+# This is a sample hook script created by Amplify CLI.
 # To start using this post-push hook please change the filename:
 # post-push.sh.sample  ->  post-push.sh
 #

@@ -161,7 +161,7 @@ export async function run() {
     logInput(input);
     const hooksMeta = HooksMeta.getInstance();
     hooksMeta.setAmplifyVersion(getAmplifyVersion());
-    hooksMeta.setHooksEventFromInput(input);
+    hooksMeta.setHookEventFromInput(input);
     const context = constructContext(pluginPlatform, input);
 
     // Initialize feature flags

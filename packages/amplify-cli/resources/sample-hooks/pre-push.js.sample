@@ -1,5 +1,5 @@
 /**
- * This is a sample hooks script created by Amplify CLI.
+ * This is a sample hook script created by Amplify CLI.
  * To start using this pre-push hook please change the filename:
  * pre-push.js.sample  ->  pre-push.js
  *

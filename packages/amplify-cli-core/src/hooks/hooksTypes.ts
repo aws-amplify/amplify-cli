@@ -1,11 +1,11 @@
-export type HooksExtensions = Record<string, { runtime: string; runtime_windows?: string }>;
+export type HookExtensions = Record<string, { runtime: string; runtime_windows?: string }>;
 
 export type HooksConfig = {
-  extensions?: HooksExtensions;
+  extensions?: HookExtensions;
   ignore?: string[];
 };
 
-export type HooksFileMeta = {
+export type HookFileMeta = {
   baseName: string;
   extension?: string;
   filePath?: string;
@@ -14,7 +14,7 @@ export type HooksFileMeta = {
 
 export type EventPrefix = 'pre' | 'post';
 
-export type HooksEvent = {
+export type HookEvent = {
   command: string;
   subCommand?: string;
   argv: string[];
