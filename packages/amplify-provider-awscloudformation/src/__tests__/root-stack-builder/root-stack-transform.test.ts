@@ -4,8 +4,6 @@ import { prePushCfnTemplateModifier } from '../../pre-push-cfn-processor/pre-pus
 
 jest.mock('amplify-cli-core');
 
-jest.mock('../../utils/override-skeleton-generator');
-
 describe('Check RootStack Template', () => {
   it('Generated rootstack template during init', async () => {
     // CFN transform for Root stack
