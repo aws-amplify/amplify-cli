@@ -47,7 +47,6 @@ import { preProcessCFNTemplate, writeCustomPoliciesToCFNTemplate } from './pre-p
 import { AUTH_TRIGGER_STACK, AUTH_TRIGGER_TEMPLATE } from './utils/upload-auth-trigger-template';
 import { ensureValidFunctionModelDependencies } from './utils/remove-dependent-function';
 import { legacyLayerMigration, postPushLambdaLayerCleanup, prePushLambdaLayerPrompt } from './lambdaLayerInvocations';
-import { buildGetPaths } from './export-build';
 
 const logger = fileLogger('push-resources');
 
@@ -67,8 +66,6 @@ const deploymentInProgressErrorMessage = (context: $TSContext) => {
   context.print.error('"amplify push --iterative-rollback" to rollback the prior deployment');
   context.print.error('"amplify push --force" to re-deploy');
 };
-
-export async function run2(context: $TSContext, resourceDefinition: $TSObject) {}
 
 export async function run(context: $TSContext, resourceDefinition: $TSObject) {
   const deploymentStateManager = await DeploymentStateManager.createDeploymentStateManager(context);
