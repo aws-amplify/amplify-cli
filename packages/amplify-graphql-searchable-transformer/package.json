@@ -32,7 +32,7 @@
         "@aws-cdk/aws-appsync": "~1.72.0",
         "@aws-cdk/aws-dynamodb": "~1.72.0",
         "@aws-cdk/aws-ec2": "~1.72.0",
-        "@aws-cdk/aws-elasticsearch": "1.72.0",
+        "@aws-cdk/aws-elasticsearch": "~1.72.0",
         "@aws-cdk/aws-iam": "~1.72.0",
         "@aws-cdk/aws-lambda": "~1.72.0",
         "@aws-cdk/core": "~1.72.0",
