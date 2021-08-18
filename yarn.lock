@@ -1031,27 +1031,12 @@
     "@aws-cdk/core" "1.72.0"
     constructs "^3.2.0"
 
-"@aws-cdk/cfnspec@1.118.0":
-  version "1.118.0"
-  resolved "https://registry.npmjs.org/@aws-cdk/cfnspec/-/cfnspec-1.118.0.tgz#6e038fb3f656ef83d7612889f24ed2c83099bf25"
-  integrity sha512-RdeCtbltfG8hBRCo/lQmsfHEdBbt7gZ9rJaGvaNDr6cu/ATSYGBKLLD0W2If67lji4zAujD/qYP5//tx+fQ/7w==
-  dependencies:
-    md5 "^2.3.0"
-
 "@aws-cdk/cfnspec@1.72.0":
   version "1.72.0"
   resolved "https://registry.yarnpkg.com/@aws-cdk/cfnspec/-/cfnspec-1.72.0.tgz#5f6324477e15d75a5fea73eb1cab8b7b9fc9d197"
   integrity sha512-m8Zs6H0pMlT491Y+HfQLVGpccEcai6Yu9S/QhilD6M8FB+oh3mF0BwpMR2tPl0pnccnW+e+EAIxXiAWQ5ahrKA==
   dependencies:
     md5 "^2.3.0"
-
-"@aws-cdk/cloud-assembly-schema@1.118.0":
-  version "1.118.0"
-  resolved "https://registry.npmjs.org/@aws-cdk/cloud-assembly-schema/-/cloud-assembly-schema-1.118.0.tgz#768fe56a61daace0d360cc548993016f21492b7c"
-  integrity sha512-Bmxftbl/SScafJJio2+hQiNdPqvydouzqGtW9xdtL0/T8m5pi7nmV4PG+wCafPGEJA66A56b5CGk/svL/CSj4g==
-  dependencies:
-    jsonschema "^1.4.0"
-    semver "^7.3.5"
 
 "@aws-cdk/cloud-assembly-schema@1.72.0", "@aws-cdk/cloud-assembly-schema@~1.72.0":
   version "1.72.0"
@@ -1060,19 +1045,6 @@
   dependencies:
     jsonschema "^1.4.0"
     semver "^7.3.2"
-
-"@aws-cdk/cloudformation-diff@1.118.0":
-  version "1.118.0"
-  resolved "https://registry.npmjs.org/@aws-cdk/cloudformation-diff/-/cloudformation-diff-1.118.0.tgz#94edb7b5f424e71ed65ac677b0d8c25c28c75993"
-  integrity sha512-7mO9ktn4bdFPdSTkz4/bXifbBz/tGbnK2aqD7cCaBTqzzxJ8X4pbwRtSmgv95a/4uorVuGA32whPaKIoyDQkYw==
-  dependencies:
-    "@aws-cdk/cfnspec" "1.118.0"
-    "@types/node" "^10.17.60"
-    colors "^1.4.0"
-    diff "^5.0.0"
-    fast-deep-equal "^3.1.3"
-    string-width "^4.2.2"
-    table "^6.7.1"
 
 "@aws-cdk/cloudformation-diff@1.72.0", "@aws-cdk/cloudformation-diff@~1.72.0":
   version "1.72.0"
@@ -1111,14 +1083,6 @@
     "@aws-cdk/core" "1.72.0"
     constructs "^3.2.0"
 
-"@aws-cdk/cx-api@1.118.0":
-  version "1.118.0"
-  resolved "https://registry.npmjs.org/@aws-cdk/cx-api/-/cx-api-1.118.0.tgz#918eaa70cd9c013774aee5616b2b5b79c037b2a4"
-  integrity sha512-pNeuxHPmJjUvLIr89J4uMt8c2JkiuclgZ1JBilot+dFD8GAb0RhxhtfSnA3scOB/Lnnd0Qf4UQhKsd5vqEdqAA==
-  dependencies:
-    "@aws-cdk/cloud-assembly-schema" "1.118.0"
-    semver "^7.3.5"
-
 "@aws-cdk/cx-api@1.72.0", "@aws-cdk/cx-api@~1.72.0":
   version "1.72.0"
   resolved "https://registry.yarnpkg.com/@aws-cdk/cx-api/-/cx-api-1.72.0.tgz#dc4ec9558b96731dfb2120484bb09f7f4c0b9d54"
@@ -1126,11 +1090,6 @@
   dependencies:
     "@aws-cdk/cloud-assembly-schema" "1.72.0"
     semver "^7.3.2"
-
-"@aws-cdk/region-info@1.118.0":
-  version "1.118.0"
-  resolved "https://registry.npmjs.org/@aws-cdk/region-info/-/region-info-1.118.0.tgz#a6e127c3723a7edea85c3df0031a06d132b870e0"
-  integrity sha512-7hudA/zfCsDw0DIDu/Cc4+UJjW6aC0y4Mp7AmxlxkziXIEZi3KvSXwR2IBmKV+pSWMvMZYTiPJIgLLqB+moFgQ==
 
 "@aws-cdk/region-info@1.72.0", "@aws-cdk/region-info@~1.72.0":
   version "1.72.0"
@@ -7111,11 +7070,6 @@
   resolved "https://registry.yarnpkg.com/@types/node/-/node-10.17.59.tgz#03f440ccf746a27f7da6e141e6cbae64681dbd2f"
   integrity sha512-7Uc8IRrL8yZz5ti45RaFxpbU8TxlzdC3HvxV+hOWo1EyLsuKv/w7y0n+TwZzwL3vdx3oZ2k3ubxPq131hNtXyg==
 
-"@types/node@^10.17.60":
-  version "10.17.60"
-  resolved "https://registry.npmjs.org/@types/node/-/node-10.17.60.tgz#35f3d6213daed95da7f0f73e75bcc6980e90597b"
-  integrity sha512-F0KIgDJfy2nA3zMLmWGKxcH2ZVEtCZXHHdOQs2gSaQ27+lNeEfGxzkIw90aXswATX7AZ33tahPbzy6KAfUreVw==
-
 "@types/node@^12.12.6":
   version "12.19.1"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-12.19.1.tgz#303f74c8a2b35644594139e948b2be470ae1186f"
@@ -7843,16 +7797,6 @@ ajv@^7.0.2:
     require-from-string "^2.0.2"
     uri-js "^4.2.2"
 
-ajv@^8.0.1:
-  version "8.6.2"
-  resolved "https://registry.npmjs.org/ajv/-/ajv-8.6.2.tgz#2fb45e0e5fcbc0813326c1c3da535d1881bb0571"
-  integrity sha512-9807RlWAgT564wT+DjeyU5OFMPjmzxVobvDFmNAhY+5zD6A2ly3jDp6sgnfyDtlIQ+7H97oc/DGCzzfu9rjw9w==
-  dependencies:
-    fast-deep-equal "^3.1.1"
-    json-schema-traverse "^1.0.0"
-    require-from-string "^2.0.2"
-    uri-js "^4.2.2"
-
 alphanum-sort@^1.0.0:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/alphanum-sort/-/alphanum-sort-1.0.2.tgz#97a1119649b211ad33691d9f9f486a8ec9fbe0a3"
@@ -8238,19 +8182,6 @@ archiver@^5.0.2:
     readdir-glob "^1.0.0"
     tar-stream "^2.1.4"
     zip-stream "^4.0.0"
-
-archiver@^5.3.0:
-  version "5.3.0"
-  resolved "https://registry.npmjs.org/archiver/-/archiver-5.3.0.tgz#dd3e097624481741df626267564f7dd8640a45ba"
-  integrity sha512-iUw+oDwK0fgNpvveEsdQ0Ase6IIKztBJU2U0E9MzszMfmVVUyv1QJhS2ITW9ZCqx8dktAxVAjWWkKehuZE8OPg==
-  dependencies:
-    archiver-utils "^2.1.0"
-    async "^3.2.0"
-    buffer-crc32 "^0.2.1"
-    readable-stream "^3.6.0"
-    readdir-glob "^1.0.0"
-    tar-stream "^2.2.0"
-    zip-stream "^4.1.0"
 
 are-we-there-yet@~1.1.2:
   version "1.1.5"
@@ -8719,35 +8650,6 @@ aws-appsync@^4.0.3:
     url "^0.11.0"
     uuid "3.x"
 
-aws-cdk@1.118.0:
-  version "1.118.0"
-  resolved "https://registry.npmjs.org/aws-cdk/-/aws-cdk-1.118.0.tgz#0c9a55aee8c32093f0ebc68241fd3fed557a8eda"
-  integrity sha512-5i++NRqh6NelomZrVOYY5U8bzQlp4aCBG0d9gZ1Rz5VVNDxCOeij0kTJEfYZdAZQapp0FWIHqAziOUkvw7Z3PA==
-  dependencies:
-    "@aws-cdk/cloud-assembly-schema" "1.118.0"
-    "@aws-cdk/cloudformation-diff" "1.118.0"
-    "@aws-cdk/cx-api" "1.118.0"
-    "@aws-cdk/region-info" "1.118.0"
-    archiver "^5.3.0"
-    aws-sdk "^2.848.0"
-    camelcase "^6.2.0"
-    cdk-assets "1.118.0"
-    colors "^1.4.0"
-    decamelize "^5.0.0"
-    fs-extra "^9.1.0"
-    glob "^7.1.7"
-    json-diff "^0.5.4"
-    minimatch ">=3.0"
-    promptly "^3.2.0"
-    proxy-agent "^4.0.1"
-    semver "^7.3.5"
-    source-map-support "^0.5.19"
-    table "^6.7.1"
-    uuid "^8.3.2"
-    wrap-ansi "^7.0.0"
-    yaml "1.10.2"
-    yargs "^16.2.0"
-
 aws-cdk@~1.72.0:
   version "1.72.0"
   resolved "https://registry.yarnpkg.com/aws-cdk/-/aws-cdk-1.72.0.tgz#2eb44d01f91d6bc71d2690f2b550a9e463a35470"
@@ -8835,21 +8737,6 @@ aws-sdk@^2.814.0:
   version "2.859.0"
   resolved "https://registry.npmjs.org/aws-sdk/-/aws-sdk-2.859.0.tgz#9cd73484e5535d678b664ac9a2b585f4e09aa691"
   integrity sha512-1OnEpmJ72n6Y1NR+2wMPV2JFovDwM0ARwkjVKq5K1rcs7lkUuCG8N4A7Zy8hz5qwkpvig0FJFDtNmsziM+pwAA==
-  dependencies:
-    buffer "4.9.2"
-    events "1.1.1"
-    ieee754 "1.1.13"
-    jmespath "0.15.0"
-    querystring "0.2.0"
-    sax "1.2.1"
-    url "0.10.3"
-    uuid "3.3.2"
-    xml2js "0.4.19"
-
-aws-sdk@^2.848.0:
-  version "2.970.0"
-  resolved "https://registry.npmjs.org/aws-sdk/-/aws-sdk-2.970.0.tgz#dc258b61b4727dcb5130c494376b598eb19f827b"
-  integrity sha512-9+ktvE5xgpHr3RsFOcq1SrhXLvU+jUji44jbecFZb5C2lzoEEB29aeN39OLJMW0ZuOrR+3TNum8c3f8YVx6A7w==
   dependencies:
     buffer "4.9.2"
     events "1.1.1"
@@ -9953,19 +9840,6 @@ caw@^2.0.0:
     tunnel-agent "^0.6.0"
     url-to-options "^1.0.1"
 
-cdk-assets@1.118.0:
-  version "1.118.0"
-  resolved "https://registry.npmjs.org/cdk-assets/-/cdk-assets-1.118.0.tgz#48a46cc559ef3bd01a2f527e6108d8708bb6067a"
-  integrity sha512-QIOn5Xcb/J/XUkmYFZf1FN/bMQf7nuf+R/YUkJiiKWVSBmqE0csPzVyjG6Qpzy+sOGx3MFeB+4uNOoPJqK1BQw==
-  dependencies:
-    "@aws-cdk/cloud-assembly-schema" "1.118.0"
-    "@aws-cdk/cx-api" "1.118.0"
-    archiver "^5.3.0"
-    aws-sdk "^2.848.0"
-    glob "^7.1.7"
-    mime "^2.5.2"
-    yargs "^16.2.0"
-
 cdk-assets@1.72.0:
   version "1.72.0"
   resolved "https://registry.yarnpkg.com/cdk-assets/-/cdk-assets-1.72.0.tgz#4c78a0d1b93137e7f9a544591e9d840bf9fb54f5"
@@ -10629,16 +10503,6 @@ compress-commons@^4.0.0:
     normalize-path "^3.0.0"
     readable-stream "^3.6.0"
 
-compress-commons@^4.1.0:
-  version "4.1.1"
-  resolved "https://registry.npmjs.org/compress-commons/-/compress-commons-4.1.1.tgz#df2a09a7ed17447642bad10a85cc9a19e5c42a7d"
-  integrity sha512-QLdDLCKNV2dtoTorqgxngQCMA+gWXkM/Nwu7FpeBhk/RdkzimqC3jueb/FDmaZeXh+uby1jkBqE3xArsLBE5wQ==
-  dependencies:
-    buffer-crc32 "^0.2.13"
-    crc32-stream "^4.0.2"
-    normalize-path "^3.0.0"
-    readable-stream "^3.6.0"
-
 compressible@~2.0.16:
   version "2.0.18"
   resolved "https://registry.yarnpkg.com/compressible/-/compressible-2.0.18.tgz#af53cca6b070d4c3c0750fbd77286a6d7cc46fba"
@@ -11065,14 +10929,6 @@ coveralls@~3.0.9:
     minimist "^1.2.5"
     request "^2.88.2"
 
-crc-32@^1.2.0:
-  version "1.2.0"
-  resolved "https://registry.npmjs.org/crc-32/-/crc-32-1.2.0.tgz#cb2db6e29b88508e32d9dd0ec1693e7b41a18208"
-  integrity sha512-1uBwHxF+Y/4yF5G48fwnKq6QsIXheor3ZLPT80yGBV1oEUwpPojlEhQbWKVw1VwcTQyMGHK1/XMmTjmlsmTTGA==
-  dependencies:
-    exit-on-epipe "~1.0.1"
-    printj "~1.1.0"
-
 crc32-stream@^3.0.1:
   version "3.0.1"
   resolved "https://registry.yarnpkg.com/crc32-stream/-/crc32-stream-3.0.1.tgz#cae6eeed003b0e44d739d279de5ae63b171b4e85"
@@ -11087,14 +10943,6 @@ crc32-stream@^4.0.0:
   integrity sha512-tyMw2IeUX6t9jhgXI6um0eKfWq4EIDpfv5m7GX4Jzp7eVelQ360xd8EPXJhp2mHwLQIkqlnMLjzqSZI3a+0wRw==
   dependencies:
     crc "^3.4.4"
-    readable-stream "^3.4.0"
-
-crc32-stream@^4.0.2:
-  version "4.0.2"
-  resolved "https://registry.npmjs.org/crc32-stream/-/crc32-stream-4.0.2.tgz#c922ad22b38395abe9d3870f02fa8134ed709007"
-  integrity sha512-DxFZ/Hk473b/muq1VJ///PMNLj0ZMnzye9thBpmjpJKCc5eMgB95aK8zCGrGfQ90cWo561Te6HK9D+j4KPdM6w==
-  dependencies:
-    crc-32 "^1.2.0"
     readable-stream "^3.4.0"
 
 crc@^3.4.4:
@@ -11614,11 +11462,6 @@ decamelize@^4.0.0:
   resolved "https://registry.yarnpkg.com/decamelize/-/decamelize-4.0.0.tgz#aa472d7bf660eb15f3494efd531cab7f2a709837"
   integrity sha512-9iE1PgSik9HeIIw2JO94IidnE3eBoQrFJ3w7sFuzSX4DpmZ3v5sZpUiV5Swcf6mQEF+Y0ru8Neo+p+nyh2J+hQ==
 
-decamelize@^5.0.0:
-  version "5.0.0"
-  resolved "https://registry.npmjs.org/decamelize/-/decamelize-5.0.0.tgz#88358157b010ef133febfd27c18994bd80c6215b"
-  integrity sha512-U75DcT5hrio3KNtvdULAWnLiAPbFUC4191ldxMmj4FA/mRuBnmDwU0boNfPyFRhnan+Jm+haLeSn3P0afcBn4w==
-
 decimal.js@^10.2.0:
   version "10.2.1"
   resolved "https://registry.yarnpkg.com/decimal.js/-/decimal.js-10.2.1.tgz#238ae7b0f0c793d3e3cea410108b35a2c01426a3"
@@ -11944,11 +11787,6 @@ diff@^3.5.0:
   version "3.5.0"
   resolved "https://registry.yarnpkg.com/diff/-/diff-3.5.0.tgz#800c0dd1e0a8bfbc95835c202ad220fe317e5a12"
   integrity sha512-A46qtFgd+g7pDZinpnwiRJtxbC1hpgf0uzP3iG89scHk0AUC7A1TGxf5OiiOUv/JMZR8GOt8hL900hV0bOy5xA==
-
-diff@^5.0.0:
-  version "5.0.0"
-  resolved "https://registry.npmjs.org/diff/-/diff-5.0.0.tgz#7ed6ad76d859d030787ec35855f5b1daf31d852b"
-  integrity sha512-/VTCrvm5Z0JGty/BWHljh+BAiw3IK+2j87NGMu8Nwc/f48WoDAC395uomO9ZD117ZOBaHmkX1oyLvkVM/aIT3w==
 
 diffie-hellman@^5.0.0:
   version "5.0.3"
@@ -12992,11 +12830,6 @@ exit-hook@^1.0.0:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/exit-hook/-/exit-hook-1.1.1.tgz#f05ca233b48c05d54fff07765df8507e95c02ff8"
   integrity sha1-8FyiM7SMBdVP/wd2XfhQfpXAL/g=
-
-exit-on-epipe@~1.0.1:
-  version "1.0.1"
-  resolved "https://registry.npmjs.org/exit-on-epipe/-/exit-on-epipe-1.0.1.tgz#0bdd92e87d5285d267daa8171d0eb06159689692"
-  integrity sha512-h2z5mrROTxce56S+pnvAV890uu7ls7f1kEvVGJbw1OlFH3/mlJ5bkXu0KRyW94v37zzHPiUd55iLn3DA7TjWpw==
 
 exit@^0.1.2:
   version "0.1.2"
@@ -14148,18 +13981,6 @@ glob@^5.0.15:
     inflight "^1.0.4"
     inherits "2"
     minimatch "2 || 3"
-    once "^1.3.0"
-    path-is-absolute "^1.0.0"
-
-glob@^7.1.7:
-  version "7.1.7"
-  resolved "https://registry.npmjs.org/glob/-/glob-7.1.7.tgz#3b193e9233f01d42d0b3f78294bbeeb418f94a90"
-  integrity sha512-OvD9ENzPLbegENnYP5UUfJIirTg4+XwMWGaQfQTY0JenxNvvIKP3U3/tAQSPIu/lHxXYSZmpXlUHeqAIdKzBLQ==
-  dependencies:
-    fs.realpath "^1.0.0"
-    inflight "^1.0.4"
-    inherits "2"
-    minimatch "^3.0.4"
     once "^1.3.0"
     path-is-absolute "^1.0.0"
 
@@ -17181,11 +17002,6 @@ lodash.bind@^4.1.4:
   resolved "https://registry.yarnpkg.com/lodash.bind/-/lodash.bind-4.2.1.tgz#7ae3017e939622ac31b7d7d7dcb1b34db1690d35"
   integrity sha1-euMBfpOWIqwxt9fX3LGzTbFpDTU=
 
-lodash.clonedeep@^4.5.0:
-  version "4.5.0"
-  resolved "https://registry.npmjs.org/lodash.clonedeep/-/lodash.clonedeep-4.5.0.tgz#e23f3f9c4f8fbdde872529c1071857a086e5ccef"
-  integrity sha1-4j8/nE+Pvd6HJSnBBxhXoIblzO8=
-
 lodash.debounce@^4.0.8:
   version "4.0.8"
   resolved "https://registry.yarnpkg.com/lodash.debounce/-/lodash.debounce-4.0.8.tgz#82d79bff30a67c4005ffd5e2515300ad9ca4d7af"
@@ -17330,11 +17146,6 @@ lodash.toarray@^4.4.0:
   version "4.4.0"
   resolved "https://registry.yarnpkg.com/lodash.toarray/-/lodash.toarray-4.4.0.tgz#24c4bfcd6b2fba38bfd0594db1179d8e9b656561"
   integrity sha1-JMS/zWsvuji/0FlNsRedjptlZWE=
-
-lodash.truncate@^4.4.2:
-  version "4.4.2"
-  resolved "https://registry.npmjs.org/lodash.truncate/-/lodash.truncate-4.4.2.tgz#5a350da0b1113b837ecfffd5812cbe58d6eae193"
-  integrity sha1-WjUNoLERO4N+z//VgSy+WNbq4ZM=
 
 lodash.union@^4.6.0:
   version "4.6.0"
@@ -17882,11 +17693,6 @@ mime@^2.4.4:
   version "2.4.6"
   resolved "https://registry.yarnpkg.com/mime/-/mime-2.4.6.tgz#e5b407c90db442f2beb5b162373d07b69affa4d1"
   integrity sha512-RZKhC3EmpBchfTGBVb8fb+RL2cWyw/32lshnsETttkBAyAUXSGHxbEJWWRXc751DrIxG1q04b8QwMbAwkRPpUA==
-
-mime@^2.5.2:
-  version "2.5.2"
-  resolved "https://registry.npmjs.org/mime/-/mime-2.5.2.tgz#6e3dc6cc2b9510643830e5f19d5cb753da5eeabe"
-  integrity sha512-tqkh47FzKeCPD2PUiPB6pkbMzsCasjxAfC62/Wap5qrUWcb+sFasXUC5I3gYM5iBM8v/Qpn4UK0x+j0iHyFPDg==
 
 mimic-fn@^1.0.0:
   version "1.2.0"
@@ -20595,11 +20401,6 @@ pretty-quick@^3.1.0:
     mri "^1.1.5"
     multimatch "^4.0.0"
 
-printj@~1.1.0:
-  version "1.1.2"
-  resolved "https://registry.npmjs.org/printj/-/printj-1.1.2.tgz#d90deb2975a8b9f600fb3a1c94e3f4c53c78a222"
-  integrity sha512-zA2SmoLaxZyArQTOPj5LXecR+RagfPSU5Kw1qP+jkWeNlrq+eJZyY2oS68SU1Z/7/myXM4lo9716laOFAVStCQ==
-
 process-nextick-args@^2.0.1, process-nextick-args@~2.0.0:
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/process-nextick-args/-/process-nextick-args-2.0.1.tgz#7820d9b16120cc55ca9ae7792680ae7dba6d7fe2"
@@ -20658,7 +20459,7 @@ promise@^8.1.0:
   dependencies:
     asap "~2.0.6"
 
-promptly@^3.1.0, promptly@^3.2.0:
+promptly@^3.1.0:
   version "3.2.0"
   resolved "https://registry.yarnpkg.com/promptly/-/promptly-3.2.0.tgz#a5517fbbf59bd31c1751d4e1d9bef1714f42b9d8"
   integrity sha512-WnR9obtgW+rG4oUV3hSnNGl1pHm3V1H/qD9iJBumGSmVsSC5HpZOLuu8qdMb6yCItGfT7dcRszejr/5P3i9Pug==
@@ -22847,15 +22648,6 @@ string-width@^4.0.0, string-width@^4.1.0, string-width@^4.2.0:
     is-fullwidth-code-point "^3.0.0"
     strip-ansi "^6.0.0"
 
-string-width@^4.2.2:
-  version "4.2.2"
-  resolved "https://registry.npmjs.org/string-width/-/string-width-4.2.2.tgz#dafd4f9559a7585cfba529c6a0a4f73488ebd4c5"
-  integrity sha512-XBJbT3N4JhVumXE0eoLU9DCjcaF92KLNqTmFCnG1pf8duUxFGwtP6AD6nkjw9a3IdiRtL3E2w3JDiE/xi3vOeA==
-  dependencies:
-    emoji-regex "^8.0.0"
-    is-fullwidth-code-point "^3.0.0"
-    strip-ansi "^6.0.0"
-
 string.prototype.matchall@^4.0.2:
   version "4.0.2"
   resolved "https://registry.yarnpkg.com/string.prototype.matchall/-/string.prototype.matchall-4.0.2.tgz#48bb510326fb9fdeb6a33ceaa81a6ea04ef7648e"
@@ -23167,18 +22959,6 @@ table@^6.0.4:
     slice-ansi "^4.0.0"
     string-width "^4.2.0"
 
-table@^6.7.1:
-  version "6.7.1"
-  resolved "https://registry.npmjs.org/table/-/table-6.7.1.tgz#ee05592b7143831a8c94f3cee6aae4c1ccef33e2"
-  integrity sha512-ZGum47Yi6KOOFDE8m223td53ath2enHcYLgOCjGr5ngu8bdIARQk6mN/wRMv4yMRcHnCSnHbCEha4sobQx5yWg==
-  dependencies:
-    ajv "^8.0.1"
-    lodash.clonedeep "^4.5.0"
-    lodash.truncate "^4.4.2"
-    slice-ansi "^4.0.0"
-    string-width "^4.2.0"
-    strip-ansi "^6.0.0"
-
 tapable@^1.0.0, tapable@^1.1.3:
   version "1.1.3"
   resolved "https://registry.yarnpkg.com/tapable/-/tapable-1.1.3.tgz#a1fccc06b58db61fd7a45da2da44f5f3a3e67ba2"
@@ -23221,17 +23001,6 @@ tar-stream@^2.0.0, tar-stream@^2.1.0, tar-stream@^2.1.2, tar-stream@^2.1.4:
   version "2.1.4"
   resolved "https://registry.yarnpkg.com/tar-stream/-/tar-stream-2.1.4.tgz#c4fb1a11eb0da29b893a5b25476397ba2d053bfa"
   integrity sha512-o3pS2zlG4gxr67GmFYBLlq+dM8gyRGUOvsrHclSkvtVtQbjV0s/+ZE8OpICbaj8clrX3tjeHngYGP7rweaBnuw==
-  dependencies:
-    bl "^4.0.3"
-    end-of-stream "^1.4.1"
-    fs-constants "^1.0.0"
-    inherits "^2.0.3"
-    readable-stream "^3.1.1"
-
-tar-stream@^2.2.0:
-  version "2.2.0"
-  resolved "https://registry.npmjs.org/tar-stream/-/tar-stream-2.2.0.tgz#acad84c284136b060dc3faa64474aa9aebd77287"
-  integrity sha512-ujeqbceABgwMZxEJnk2HDY2DlnUZ+9oEcb1KzTVfYHio0UE6dG71n60d8D2I4qNvleWrrXpmjpt7vZeF1LnMZQ==
   dependencies:
     bl "^4.0.3"
     end-of-stream "^1.4.1"
@@ -24209,7 +23978,7 @@ uuid@^8.3.0:
   resolved "https://registry.npmjs.org/uuid/-/uuid-8.3.1.tgz#2ba2e6ca000da60fce5a196954ab241131e05a31"
   integrity sha512-FOmRr+FmWEIG8uhZv6C2bTgEVXsHk08kE7mPlrBbEe+c3r9pjceVPgupIfNIhc4yx55H69OXANrUaSuu9eInKg==
 
-uuid@^8.3.1, uuid@^8.3.2:
+uuid@^8.3.1:
   version "8.3.2"
   resolved "https://registry.yarnpkg.com/uuid/-/uuid-8.3.2.tgz#80d5b5ced271bb9af6c445f21a1a04c606cefbe2"
   integrity sha512-+NYs2QeMWy+GWFOEm9xnn6HCDp0l7QBD7ml8zLUmJ+93Q5NF0NocErnwkTkXVFNiX3/fpC6afS8Dhb/gz7R7eg==
@@ -25076,11 +24845,6 @@ yaml@1.10.0, yaml@^1.10.0, yaml@^1.7.2:
   resolved "https://registry.yarnpkg.com/yaml/-/yaml-1.10.0.tgz#3b593add944876077d4d683fee01081bd9fff31e"
   integrity sha512-yr2icI4glYaNG+KWONODapy2/jDdMSDnrONSjblABjD9B4Z5LgiircSt8m8sRZFNi08kG9Sm0uSHtEmP3zaEGg==
 
-yaml@1.10.2:
-  version "1.10.2"
-  resolved "https://registry.npmjs.org/yaml/-/yaml-1.10.2.tgz#2301c5ffbf12b467de8da2333a459e29e7920e4b"
-  integrity sha512-r3vXyErRCYJ7wg28yvBY5VSoAF8ZvlcW9/BwUzEtUsjvX/DKs24dIkuwjtuprwJJHsbyUbLApepYTR1BN4uHrg==
-
 yargs-parser@13.1.2, yargs-parser@^13.1.2:
   version "13.1.2"
   resolved "https://registry.yarnpkg.com/yargs-parser/-/yargs-parser-13.1.2.tgz#130f09702ebaeef2650d54ce6e3e5706f7a4fb38"
@@ -25265,13 +25029,4 @@ zip-stream@^4.0.0:
   dependencies:
     archiver-utils "^2.1.0"
     compress-commons "^4.0.0"
-    readable-stream "^3.6.0"
-
-zip-stream@^4.1.0:
-  version "4.1.0"
-  resolved "https://registry.npmjs.org/zip-stream/-/zip-stream-4.1.0.tgz#51dd326571544e36aa3f756430b313576dc8fc79"
-  integrity sha512-zshzwQW7gG7hjpBlgeQP9RuyPGNxvJdzR8SUM3QhxCnLjWN2E7j3dOvpeDcQoETfHx0urRS7EtmVToql7YpU4A==
-  dependencies:
-    archiver-utils "^2.1.0"
-    compress-commons "^4.1.0"
     readable-stream "^3.6.0"
