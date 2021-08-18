@@ -10,7 +10,7 @@
  * @param data { { amplify: { environment: string, command: string, subCommand: string, argv: string[] } } }
  * @param error { { message: string, stack: string } }
  */
-const hookHandler = async (error, data) => {
+const hookHandler = async (data, error) => {
   // TODO write your hook handler here
 };
 
@@ -20,7 +20,7 @@ const getParameters = async () => {
 };
 
 getParameters()
-  .then((event) => hookHandler(event.error, event.data))
+  .then((event) => hookHandler(event.data, event.error))
   .catch((err) => {
     console.error(err);
     process.exitCode = 1;

@@ -1,6 +1,5 @@
-import { $TSAny } from '..';
 import { pathManager, stateManager } from '../state-manager';
-import { HooksConfig, HooksExtensions, HooksFileMeta, EventPrefix, HooksEvent, DataParameter, ErrorParameter } from './hooksTypes';
+import { HooksConfig, HooksExtensions, HooksFileMeta, HooksEvent, DataParameter, ErrorParameter } from './hooksTypes';
 import { defaultSupportedExt, hooksFileSeperator } from './hooksConstants';
 import { skipHooks } from './skipHooks';
 import * as which from 'which';
@@ -51,11 +50,11 @@ export const executeHooks = async (hooksMeta: HooksMeta): Promise<void> => {
 
 const execHelper = async (
   runtime: string,
-  execFileMeta?: HooksFileMeta,
-  dataParameter?: DataParameter,
+  execFileMeta: HooksFileMeta,
+  dataParameter: DataParameter,
   errorParameter?: ErrorParameter,
 ): Promise<void> => {
-  if (!execFileMeta?.filePath || !runtime) {
+  if (!execFileMeta?.filePath) {
     return;
   }
 
@@ -148,10 +147,8 @@ const throwOnDuplicateHooksFiles = (files: HooksFileMeta[]): HooksFileMeta | und
 
 const splitFileName = (filename: string): HooksFileMeta => {
   const lastDotIndex = filename.lastIndexOf('.');
-  const fileMeta: HooksFileMeta = { fileName: filename };
-  if (lastDotIndex === -1) {
-    fileMeta.baseName = filename;
-  } else {
+  const fileMeta: HooksFileMeta = { fileName: filename, baseName: filename };
+  if (lastDotIndex !== -1) {
     fileMeta.baseName = filename.substring(0, lastDotIndex);
     fileMeta.extension = filename.substring(lastDotIndex + 1);
   }

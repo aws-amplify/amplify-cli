@@ -181,7 +181,7 @@ function generateReadMeFile(context: $TSContext) {
 
 function generateHooksSampleDirectory(context: $TSContext) {
   const { projectPath } = context.exeInfo.localEnvInfo;
-  const sampleHookScriptsDirPath = join(__dirname, '..', '..', 'resources', 'sampleHooksDirectory');
+  const sampleHookScriptsDirPath = join(__dirname, '..', '..', 'resources', 'sample-hooks');
 
   stateManager.setSampleHooksDir(projectPath, sampleHookScriptsDirPath);
 }

@@ -1,16 +1,15 @@
 import { HooksEvent, DataParameter, EventPrefix, HooksVerb, HooksNoun, ErrorParameter } from './hooksTypes';
 import { suppportedEvents, supportedEnvEvents } from './hooksConstants';
 import { stateManager } from '../state-manager';
-import { $TSContext } from '..';
 import _ from 'lodash';
 
 export class HooksMeta {
   private static instance?: HooksMeta;
-  private hooksEvent: HooksEvent;
+  private hooksEvent: Partial<HooksEvent>;
   private dataParameter: DataParameter;
   private errorParameter: ErrorParameter | undefined;
 
-  public static getInstance = (hooksEvent: HooksEvent = {}, dataParameter: DataParameter = { amplify: {} }): HooksMeta => {
+  public static getInstance = (hooksEvent: Partial<HooksEvent> = {}, dataParameter: DataParameter = { amplify: {} }): HooksMeta => {
     if (!HooksMeta.instance) {
       HooksMeta.instance = new HooksMeta(hooksEvent, dataParameter);
     }
@@ -48,12 +47,12 @@ export class HooksMeta {
     return hooksMeta;
   };
 
-  private constructor(hooksEvent: HooksEvent, dataParameter: DataParameter) {
+  private constructor(hooksEvent: Partial<HooksEvent>, dataParameter: DataParameter) {
     this.hooksEvent = hooksEvent;
     this.dataParameter = dataParameter;
   }
 
-  public getDataParameter(): DataParameter | undefined {
+  public getDataParameter(): DataParameter {
     return this.dataParameter;
   }
 
@@ -62,7 +61,7 @@ export class HooksMeta {
   }
 
   public getHooksEvent(): HooksEvent {
-    return this.hooksEvent;
+    return this.hooksEvent as HooksEvent;
   }
 
   public setEnvironmentName(envName?: string): void {
@@ -86,10 +85,6 @@ export class HooksMeta {
 
   public setEventPrefix(prefix?: string): void {
     this.hooksEvent.eventPrefix = prefix as EventPrefix;
-  }
-
-  public setEventForcePush(forcePush: boolean): void {
-    this.hooksEvent.forcePush = forcePush;
   }
 
   public mergeDataParameter(newDataParameter: DataParameter): void {
@@ -116,7 +111,7 @@ export class HooksMeta {
     switch (command) {
       case 'env':
         subCommand = 'env';
-        if (!input.subCommands || input.subCommands.length < 0 || !supportedEnvEvents.has(input.subCommands[0] as HooksVerb)) {
+        if (!input.subCommands || input.subCommands.length < 0 || !supportedEnvEvents.includes(input.subCommands[0] as HooksVerb)) {
           return;
         }
         command = input.subCommands[0];
@@ -141,7 +136,7 @@ export class HooksMeta {
 
     if (suppportedEvents.hasOwnProperty(command)) {
       this.hooksEvent.command = command;
-      if (suppportedEvents?.[command as HooksVerb]?.has(subCommand as HooksNoun)) {
+      if (suppportedEvents?.[command as HooksVerb]?.includes(subCommand as HooksNoun)) {
         this.hooksEvent.subCommand = subCommand;
       }
     }

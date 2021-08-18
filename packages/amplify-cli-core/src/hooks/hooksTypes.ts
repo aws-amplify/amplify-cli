@@ -1,4 +1,4 @@
-export type HooksExtensions = Record<string, { runtime?: string; runtime_windows?: string }>;
+export type HooksExtensions = Record<string, { runtime: string; runtime_windows?: string }>;
 
 export type HooksConfig = {
   extensions?: HooksExtensions;
@@ -6,20 +6,20 @@ export type HooksConfig = {
 };
 
 export type HooksFileMeta = {
-  baseName?: string;
+  baseName: string;
   extension?: string;
   filePath?: string;
-  fileName?: string;
+  fileName: string;
 };
 
 export type EventPrefix = 'pre' | 'post';
 
 export type HooksEvent = {
-  command?: string;
+  command: string;
   subCommand?: string;
-  argv?: string[];
+  argv: string[];
   eventPrefix?: EventPrefix;
-  forcePush?: boolean;
+  forcePush: boolean;
 };
 
 export type DataParameter = {

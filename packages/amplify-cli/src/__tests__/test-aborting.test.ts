@@ -43,6 +43,10 @@ describe('test SIGINT with execute', () => {
       CLIContextEnvironmentProvider: jest.fn(),
       executeHooks: jest.fn(),
       HooksMeta: {
+        getInstance: jest.fn().mockReturnValue({
+          setAmplifyVersion: jest.fn(),
+          setHooksEventFromInput: jest.fn(),
+        }),
         constructHooksMetaObject: jest.fn(),
       },
       skipHooks: jest.fn(),

@@ -4,8 +4,8 @@ import { HooksExtensions, HooksNoun, HooksVerb } from './hooksTypes';
 
 export const hooksFileSeperator = '-';
 
-export const suppportedEvents: Record<HooksVerb, Set<HooksNoun>> = {
-  add: new Set([
+export const suppportedEvents: Record<HooksVerb, HooksNoun[]> = {
+  add: [
     'notifications',
     'analytics',
     'api',
@@ -18,51 +18,27 @@ export const suppportedEvents: Record<HooksVerb, Set<HooksNoun>> = {
     'xr',
     'codegen',
     'env',
-  ]),
-  update: new Set([
-    'notifications',
-    'analytics',
-    'api',
-    'auth',
-    'function',
-    'hosting',
-    'interactions',
-    'predictions',
-    'storage',
-    'xr',
-    'env',
-  ]),
-  remove: new Set([
-    'notifications',
-    'analytics',
-    'api',
-    'auth',
-    'function',
-    'hosting',
-    'interactions',
-    'predictions',
-    'storage',
-    'xr',
-    'env',
-  ]),
-  push: new Set(['analytics', 'api', 'auth', 'function', 'hosting', 'interactions', 'storage', 'xr']),
-  pull: new Set(['env']),
-  publish: new Set([]),
-  delete: new Set([]),
-  checkout: new Set(['env']),
-  list: new Set(['env']),
-  get: new Set(['env']),
-  mock: new Set(['api', 'storage', 'function']),
-  build: new Set(['function']),
-  status: new Set(['notifications']),
-  import: new Set(['auth', 'storage', 'env']),
-  gqlcompile: new Set(['api']),
-  addgraphqldatasource: new Set(['api']),
-  statements: new Set(['codegen']),
-  types: new Set(['codegen']),
+  ],
+  update: ['notifications', 'analytics', 'api', 'auth', 'function', 'hosting', 'interactions', 'predictions', 'storage', 'xr', 'env'],
+  remove: ['notifications', 'analytics', 'api', 'auth', 'function', 'hosting', 'interactions', 'predictions', 'storage', 'xr', 'env'],
+  push: ['analytics', 'api', 'auth', 'function', 'hosting', 'interactions', 'storage', 'xr'],
+  pull: ['env'],
+  publish: [],
+  delete: [],
+  checkout: ['env'],
+  list: ['env'],
+  get: ['env'],
+  mock: ['api', 'storage', 'function'],
+  build: ['function'],
+  status: ['notifications'],
+  import: ['auth', 'storage', 'env'],
+  gqlcompile: ['api'],
+  addgraphqldatasource: ['api'],
+  statements: ['codegen'],
+  types: ['codegen'],
 };
 
-export const supportedEnvEvents: Set<HooksVerb> = new Set(['add', 'update', 'remove', 'pull', 'checkout', 'list', 'get', 'import']);
+export const supportedEnvEvents: HooksVerb[] = ['add', 'update', 'remove', 'pull', 'checkout', 'list', 'get', 'import'];
 
 export const defaultSupportedExt: HooksExtensions = { js: { runtime: 'node' }, sh: { runtime: 'bash' } };
 
