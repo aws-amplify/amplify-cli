@@ -10,9 +10,9 @@ export async function run(context: $TSContext) {
 
   context.amplify.constructExeInfo(context);
 
-  return amplify.pushResources(context, categoryName, resourceName).catch((err: Error) => {
+  return amplify.pushResources(context, categoryName, resourceName).catch(async (err: Error) => {
     printer.error(`An error occurred when pushing the storage resource: ${err?.message || err}`);
-    context.usageData.emitError(err);
+    await context.usageData.emitError(err);
     process.exitCode = 1;
   });
 }

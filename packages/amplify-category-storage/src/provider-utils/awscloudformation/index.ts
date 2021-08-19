@@ -1,15 +1,15 @@
-import { $TSAny, $TSContext, exitOnNextTick, NotImplementedError, stateManager } from 'amplify-cli-core';
+import { $TSAny, $TSContext, exitOnNextTick, JSONUtilities, NotImplementedError, stateManager } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import _ from 'lodash';
 import { importDynamoDB, importedDynamoDBEnvInit } from './import/import-dynamodb';
 import { importedS3EnvInit, importS3 } from './import/import-s3';
 export { importResource } from './import';
 
-export function addResource(context: $TSContext, category: string, service: string, options: $TSAny) {
-  const serviceMetadata = require('../supported-services').supportedServices[service];
+export async function addResource(context: $TSContext, category: string, service: string, options: $TSAny) {
+  const serviceMetadata = ((await import('../supported-services')) as $TSAny).supportedServices[service];
   const { defaultValuesFilename, serviceWalkthroughFilename } = serviceMetadata;
   const serviceWalkthroughSrc = `${__dirname}/service-walkthroughs/${serviceWalkthroughFilename}`;
-  const { addWalkthrough } = require(serviceWalkthroughSrc);
+  const { addWalkthrough } = await import(serviceWalkthroughSrc);
 
   return addWalkthrough(context, defaultValuesFilename, serviceMetadata, options).then(async (resourceName: string) => {
     context.amplify.updateamplifyMetaAfterResourceAdd(category, resourceName, options);
@@ -18,16 +18,16 @@ export function addResource(context: $TSContext, category: string, service: stri
   });
 }
 
-export function updateResource(context: $TSContext, category: string, service: string) {
-  const serviceMetadata = require('../supported-services').supportedServices[service];
+export async function updateResource(context: $TSContext, category: string, service: string) {
+  const serviceMetadata = ((await import('../supported-services')) as $TSAny).supportedServices[service];
   const { defaultValuesFilename, serviceWalkthroughFilename } = serviceMetadata;
   const serviceWalkthroughSrc = `${__dirname}/service-walkthroughs/${serviceWalkthroughFilename}`;
-  const { updateWalkthrough } = require(serviceWalkthroughSrc);
+  const { updateWalkthrough } = await import(serviceWalkthroughSrc);
 
   if (!updateWalkthrough) {
     const errMessage = 'Update functionality not available for this service';
     printer.error(errMessage);
-    context.usageData.emitError(new NotImplementedError(errMessage));
+    await context.usageData.emitError(new NotImplementedError(errMessage));
     exitOnNextTick(0);
   }
 
@@ -152,7 +152,7 @@ function getHeadlessParams(context: $TSContext) {
   const { inputParams } = context.exeInfo;
   try {
     // If the input given is a string validate it using JSON parse
-    const { categories = {} } = typeof inputParams === 'string' ? JSON.parse(inputParams) : inputParams;
+    const { categories = {} } = typeof inputParams === 'string' ? JSONUtilities.parse(inputParams) : inputParams;
     return categories.storage || {};
   } catch (err) {
     throw new Error(`Failed to parse storage headless parameters: ${err}`);

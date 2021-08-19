@@ -11,8 +11,8 @@ export async function run(context: $TSContext) {
 
   return amplify
     .serviceSelectionPrompt(context, categoryName, serviceMetadata)
-    .then(result => {
-      const providerController = require(`../../provider-utils/${result.providerName}`);
+    .then(async result => {
+      const providerController = await import(`../../provider-utils/${result.providerName}`);
 
       if (!providerController) {
         printer.error('Provider not configured for this category');
@@ -26,11 +26,11 @@ export async function run(context: $TSContext) {
         printer.success('Successfully updated resource');
       }
     })
-    .catch(err => {
+    .catch(async err => {
       printer.info(err.stack);
       printer.error('An error occurred when updating the storage resource');
 
-      context.usageData.emitError(err);
+      await context.usageData.emitError(err);
 
       process.exitCode = 1;
     });

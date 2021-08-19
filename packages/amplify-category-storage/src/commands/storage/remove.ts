@@ -8,11 +8,11 @@ export async function run(context: $TSContext) {
   const { amplify, parameters } = context;
   const resourceName = parameters.first;
 
-  return amplify.removeResource(context, categoryName, resourceName).catch((err: $TSAny) => {
+  return amplify.removeResource(context, categoryName, resourceName).catch(async (err: $TSAny) => {
     printer.info(err.stack);
     printer.error('An error occurred when removing the storage resource');
 
-    context.usageData.emitError(err);
+    await context.usageData.emitError(err);
 
     process.exitCode = 1;
   });

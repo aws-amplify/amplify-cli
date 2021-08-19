@@ -11,13 +11,13 @@ export async function run(context: $TSContext) {
   const serviceMetadata = (await import('../../provider-utils/supported-services')).supportedServices;
   return amplify
     .serviceSelectionPrompt(context, categoryName, serviceMetadata)
-    .then(result => {
+    .then(async result => {
       options = {
         service: result.service,
         providerPlugin: result.providerName,
       };
 
-      const providerController = require(`../../provider-utils/${result.providerName}`);
+      const providerController = await import(`../../provider-utils/${result.providerName}`);
 
       if (!providerController) {
         printer.error('Provider not configured for this category');
@@ -41,7 +41,7 @@ export async function run(context: $TSContext) {
         printer.info('');
       }
     })
-    .catch(err => {
+    .catch(async err => {
       if (err.message) {
         printer.error(err.message);
       }
@@ -52,7 +52,7 @@ export async function run(context: $TSContext) {
         printer.info(err.stack);
       }
 
-      context.usageData.emitError(err);
+      await context.usageData.emitError(err);
 
       process.exitCode = 1;
     });
