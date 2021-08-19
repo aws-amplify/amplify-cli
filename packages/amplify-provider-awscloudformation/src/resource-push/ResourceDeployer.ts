@@ -12,14 +12,13 @@ import _ from 'lodash';
 import * as path from 'path';
 import * as fs from 'fs-extra';
 import { legacyLayerMigration, prePushLambdaLayerPrompt } from '../lambdaLayerInvocations';
-import { formNestedStack, updateStackForAPIMigration } from '../push-resources';
+import { formNestedStack, getCfnFiles, updateStackForAPIMigration } from '../push-resources';
 import { transformGraphQLSchema } from '../transform-graphql-schema';
 import { ensureValidFunctionModelDependencies } from '../utils/remove-dependent-function';
 import { Constants } from './constants';
 import { consolidateApiGatewayPolicies } from '../utils/consolidate-apigw-policies';
 import { prePushAuthTransform } from '../auth-transform';
 import { printer } from 'amplify-prompts';
-import glob from 'glob';
 import { Fn, Template } from 'cloudform-types';
 import { preProcessCFNTemplate } from '../pre-push-cfn-processor/cfn-pre-processor';
 import {
@@ -319,28 +318,7 @@ export abstract class ResourceDeployer {
   }
 
   private getCfnTemplatePathsForResource(resource: ResourceDefinition): string[] {
-    const { PARAMETERS_JSON_FILE, CFN_TEMPLATE_GLOB_PATTERN, API_CATEGORY, APPSYNC_BUILD_FOLDER, APPSYNC_STACK_FOLDER } = Constants;
-    const projectRoot = pathManager.findProjectRoot();
-    const resourceDir = pathManager.getResourceDirectoryPath(projectRoot, resource.category, resource.resourceName);
-
-    if (resource.category === API_CATEGORY.NAME && resource.service === API_CATEGORY.SERVICE.APP_SYNC) {
-      const buildFolder = path.join(resourceDir, APPSYNC_BUILD_FOLDER);
-      const cfnFiles = glob.sync(CFN_TEMPLATE_GLOB_PATTERN, {
-        cwd: buildFolder,
-        ignore: [PARAMETERS_JSON_FILE],
-        absolute: true,
-      });
-      const buildStacksFolder = path.join(buildFolder, APPSYNC_STACK_FOLDER);
-      const stackCfnFiles = [];
-      if (fs.existsSync(buildStacksFolder)) {
-        const files = fs.readdirSync(buildStacksFolder).map(file => path.join(buildStacksFolder, file));
-        stackCfnFiles.push(...files);
-      }
-      return [...cfnFiles, ...stackCfnFiles];
-    }
-    const cfnFiles = glob.sync(CFN_TEMPLATE_GLOB_PATTERN, {
-      cwd: resourceDir,
-      ignore: [PARAMETERS_JSON_FILE],
+    const { cfnFiles } = getCfnFiles(resource.category, resource.resourceName, {
       absolute: true,
     });
     return cfnFiles;
@@ -355,11 +333,4 @@ export abstract class ResourceDeployer {
 
   private filterResourceByCategoryService = (resources: ResourceDefinition[], category: string, service?: string) =>
     resources.filter(resource => resource.category === category && (service ? resource.service === service : true));
-
-  protected createTemplateUrl(bucket: string, fileName: string, category?: string): string {
-    if (category) {
-      return `https://s3.amazonaws.com/${bucket}/${Constants.AMPLIFY_CFN_TEMPLATES}/${category}/${fileName}`;
-    }
-    return `https://s3.amazonaws.com/${bucket}/${Constants.AMPLIFY_CFN_TEMPLATES}/${fileName}`;
-  }
 }
