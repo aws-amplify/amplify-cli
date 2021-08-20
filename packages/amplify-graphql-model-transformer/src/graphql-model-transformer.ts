@@ -154,7 +154,6 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
         `'${definition.name.value}' is a reserved type name and currently in use within the default schema element.`,
       );
     }
-
     // todo: get model configuration with default values and store it in the map
     const typeName = definition.name.value;
     const directiveWrapped: DirectiveWrapper = new DirectiveWrapper(directive);
@@ -169,7 +168,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
         delete: toCamelCase(['delete', typeName]),
       },
       subscriptions: {
-        level: SubscriptionLevel.public,
+        level: SubscriptionLevel.on,
         onCreate: [toCamelCase(['onCreate', typeName])],
         onDelete: [toCamelCase(['onDelete', typeName])],
         onUpdate: [toCamelCase(['onUpdate', typeName])],
@@ -235,7 +234,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
 
   generateResolvers = (context: TransformerContextProvider): void => {
     for (let type of this.typesWithModelDirective) {
-      const def = context.output.getObject(type);
+      const def = context.output.getObject(type)!;
       // add the table
       const tableLogicalName = `${def!.name.value}Table`;
       const tableName = context.resourceHelper.generateResourceName(def!.name.value);
@@ -372,6 +371,30 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
         resolver.mapToStack(stack);
         context.resolvers.addResolver(mutation.typeName, mutation.fieldName, resolver);
       }
+
+      const subscriptionLevel = this.modelDirectiveConfig.get(def.name.value)?.subscriptions?.level;
+      // in order to create subscription resolvers the level needs to be on
+      if (subscriptionLevel === SubscriptionLevel.on) {
+        const subscriptionFields = this.getSubscriptionFieldNames(context, def!);
+        for (let subscription of subscriptionFields.values()) {
+          let resolver;
+          switch (subscription.type) {
+            case SubscriptionFieldType.ON_CREATE:
+              resolver = this.generateOnCreateResolver(context, def, subscription.typeName, subscription.fieldName);
+              break;
+            case SubscriptionFieldType.ON_UPDATE:
+              resolver = this.generateOnUpdateResolver(context, def, subscription.typeName, subscription.fieldName);
+              break;
+            case SubscriptionFieldType.ON_DELETE:
+              resolver = this.generateOnDeleteResolver(context, def, subscription.typeName, subscription.fieldName);
+              break;
+            default:
+              throw new Error('Unkown subscription field type');
+          }
+          resolver.mapToStack(stack);
+          context.resolvers.addResolver(subscription.typeName, subscription.fieldName, resolver);
+        }
+      }
     }
   };
 
@@ -429,7 +452,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
         fieldName,
         dataSource,
         MappingTemplate.s3MappingTemplateFromString(generateUpdateRequestTemplate(typeName), `${typeName}.${fieldName}.req.vtl`),
-        MappingTemplate.s3MappingTemplateFromString(generateDefaultResponseMappingTemplate(), `${typeName}.${fieldName}.res.vtl`),
+        MappingTemplate.s3MappingTemplateFromString(generateDefaultResponseMappingTemplate(true), `${typeName}.${fieldName}.res.vtl`),
       );
       // Todo: get the slot index from the resolver to keep the name unique and show the order of functions
       resolver.addToSlot(
@@ -457,7 +480,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
         fieldName,
         dataSource,
         MappingTemplate.s3MappingTemplateFromString(generateDeleteRequestTemplate(), `${typeName}.${fieldName}.req.vtl`),
-        MappingTemplate.s3MappingTemplateFromString(generateDefaultResponseMappingTemplate(), `${typeName}.${fieldName}.res.vtl`),
+        MappingTemplate.s3MappingTemplateFromString(generateDefaultResponseMappingTemplate(true), `${typeName}.${fieldName}.res.vtl`),
       );
     }
     return this.resolverMap[resolverKey];
@@ -722,7 +745,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
         fieldName,
         dataSource,
         MappingTemplate.s3MappingTemplateFromString(generateCreateRequestTemplate(type.name.value), `${typeName}.${fieldName}.req.vtl`),
-        MappingTemplate.s3MappingTemplateFromString(generateDefaultResponseMappingTemplate(), `${typeName}.${fieldName}.res.vtl`),
+        MappingTemplate.s3MappingTemplateFromString(generateDefaultResponseMappingTemplate(true), `${typeName}.${fieldName}.res.vtl`),
       );
       this.resolverMap[resolverKey] = resolver;
       resolver.addToSlot(

@@ -684,6 +684,7 @@ $util.toJson($PutObject)
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
+  $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
   $util.toJson($ctx.result)
 #end
 ## [End] Get ResponseTemplate. **",
@@ -748,6 +749,7 @@ $util.toJson($DeleteRequest)
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
+  $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
   $util.toJson($ctx.result)
 #end
 ## [End] Get ResponseTemplate. **",
@@ -893,6 +895,7 @@ $util.toJson($UpdateItem)
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
+  $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
   $util.toJson($ctx.result)
 #end
 ## [End] Get ResponseTemplate. **",
@@ -928,11 +931,11 @@ $util.qr($GetRequest.put(\\"query\\", $query))
 $util.toJson($GetRequest)
 ## [End] Get Request template. **",
   "Query.getPost.res.vtl": "## [Start] Get Response template. **
-#if( !$$ctx.result.items.isEmpty() && $ctx.result.scannedCount == 1 )
+#if( !$ctx.result.items.isEmpty() && $ctx.result.scannedCount == 1 )
   $util.toJson($ctx.result.items[0])
 #else
-  #if( $$ctx.result.items.isEmpty() && $ctx.result.scannedCount == 1 )
-$util.unauthorized
+  #if( $ctx.result.items.isEmpty() && $ctx.result.scannedCount == 1 )
+$util.unauthorized()
   #end
   $util.toJson(null)
 #end
@@ -1082,6 +1085,33 @@ $util.toJson({
   \\"nextToken\\": $nextToken,
   \\"aggregateItems\\": $aggregateValues
 })",
+  "Subscription.onCreatePost.req.vtl": "## [Start] Subscription Request template. **
+$util.toJson({
+  \\"version\\": \\"2018-05-29\\",
+  \\"payload\\": {}
+})
+## [End] Subscription Request template. **",
+  "Subscription.onCreatePost.res.vtl": "## [Start] Subscription Resonse template. **
+$util.toJson(null)
+## [End] Subscription Resonse template. **",
+  "Subscription.onDeletePost.req.vtl": "## [Start] Subscription Request template. **
+$util.toJson({
+  \\"version\\": \\"2018-05-29\\",
+  \\"payload\\": {}
+})
+## [End] Subscription Request template. **",
+  "Subscription.onDeletePost.res.vtl": "## [Start] Subscription Resonse template. **
+$util.toJson(null)
+## [End] Subscription Resonse template. **",
+  "Subscription.onUpdatePost.req.vtl": "## [Start] Subscription Request template. **
+$util.toJson({
+  \\"version\\": \\"2018-05-29\\",
+  \\"payload\\": {}
+})
+## [End] Subscription Request template. **",
+  "Subscription.onUpdatePost.res.vtl": "## [Start] Subscription Resonse template. **
+$util.toJson(null)
+## [End] Subscription Resonse template. **",
 }
 `;
 

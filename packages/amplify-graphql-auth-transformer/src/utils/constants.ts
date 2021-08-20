@@ -21,6 +21,14 @@ export const COGNITO_AUTH_TYPE = 'User Pool Authorization';
 export const OIDC_AUTH_TYPE = 'Open ID Connect Authorization';
 export const IAM_AUTH_TYPE = 'IAM Authorization';
 export const API_KEY_AUTH_TYPE = 'API Key Authorization';
+// resolver refs
+export const IS_AUTHORIZED_FLAG = 'isAuthorized';
+export const ALLOWED_FIELDS = 'allowedFields';
+export const NULL_ALLOWED_FIELDS = 'nullAllowedFields';
+export const DENIED_FIELDS = 'deniedFields';
 // iam parameter names
 export const IAM_AUTH_ROLE_PARAMETER = 'authRoleName';
 export const IAM_UNAUTH_ROLE_PARAMETER = 'unauthRoleName';
+// Admin Roles
+export const ADMIN_ROLE = '_Full-access/CognitoIdentityCredentials';
+export const MANAGE_ROLE = '_Manage-only/CognitoIdentityCredentials';

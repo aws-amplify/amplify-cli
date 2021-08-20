@@ -10,7 +10,7 @@ export interface RolesByProvider {
   cognitoDynamicRoles: Array<RoleDefinition>;
   oidcStaticGroupRoles: Array<RoleDefinition>;
   oidcDynamicRoles: Array<RoleDefinition>;
-  iamRoles?: Array<RoleDefinition>;
+  iamRoles: Array<RoleDefinition>;
   apiKeyRoles: Array<RoleDefinition>;
 }
 
@@ -33,6 +33,9 @@ export interface RoleDefinition {
   static: boolean;
   claim?: string;
   entity?: string;
+  // specific to mutations
+  allowedFields?: Array<string>;
+  nullAllowedFields?: Array<string>;
 }
 
 export interface AuthDirective {
@@ -46,6 +49,7 @@ export interface ConfiguredAuthProviders {
   hasUserPools: boolean;
   hasOIDC: boolean;
   hasIAM: boolean;
+  hasAdminUIEnabled: boolean;
 }
 
 export interface AuthTransformerConfig {

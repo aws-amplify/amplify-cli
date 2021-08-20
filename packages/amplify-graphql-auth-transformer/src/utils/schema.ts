@@ -1,9 +1,24 @@
-import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { ModelDirectiveConfiguration, SubscriptionLevel } from '@aws-amplify/graphql-model-transformer';
+import { QueryFieldType, MutationFieldType, TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { ObjectTypeDefinitionNode, FieldDefinitionNode, DirectiveNode, NamedTypeNode } from 'graphql';
-import { blankObjectExtension, extendFieldWithDirectives, extensionWithDirectives } from 'graphql-transformer-common';
+import {
+  blankObjectExtension,
+  extendFieldWithDirectives,
+  extensionWithDirectives,
+  isListType,
+  makeInputValueDefinition,
+  makeNamedType,
+  plurality,
+  toCamelCase,
+} from 'graphql-transformer-common';
+import { RoleDefinition } from './definitions';
 
 export const collectFieldNames = (object: ObjectTypeDefinitionNode): Array<string> => {
   return object.fields!.map((field: FieldDefinitionNode) => field.name.value);
+};
+
+export const fieldIsList = (fields: ReadonlyArray<FieldDefinitionNode>, fieldName: string) => {
+  return fields.some(field => field.name.value === fieldName && isListType(field.type));
 };
 
 export const extendTypeWithDirectives = (ctx: TransformerContextProvider, typeName: string, directives: Array<DirectiveNode>): void => {
@@ -34,6 +49,27 @@ export const addDirectivesToField = (
   }
 };
 
+export const addSubscriptionArguments = (
+  ctx: TransformerContextProvider,
+  operationName: string,
+  subscriptionRoles: Array<RoleDefinition>,
+) => {
+  let subscription = ctx.output.getSubscription()!;
+  let createField: FieldDefinitionNode = subscription!.fields!.find(field => field.name.value === operationName) as FieldDefinitionNode;
+  const subcriptionArgumentList = subscriptionRoles.map(role => {
+    return makeInputValueDefinition(role.entity!, makeNamedType('String'));
+  });
+  createField = {
+    ...createField,
+    arguments: subcriptionArgumentList,
+  };
+  subscription = {
+    ...subscription,
+    fields: subscription!.fields!.map(field => (field.name.value === operationName ? createField : field)),
+  };
+  ctx.output.putType(subscription);
+};
+
 export const addDirectivesToOperation = (
   ctx: TransformerContextProvider,
   typeName: string,
@@ -58,4 +94,106 @@ export const addDirectivesToOperation = (
       }
     }
   }
+};
+
+export const getQueryFieldNames = (
+  modelDirectiveConfig: ModelDirectiveConfiguration,
+): Set<{ fieldName: string; typeName: string; type: QueryFieldType }> => {
+  const fields: Set<{ fieldName: string; typeName: string; type: QueryFieldType }> = new Set();
+  if (modelDirectiveConfig?.queries?.get) {
+    fields.add({
+      typeName: 'Query',
+      fieldName: modelDirectiveConfig.queries.get,
+      type: QueryFieldType.GET,
+    });
+  }
+
+  if (modelDirectiveConfig?.queries?.list) {
+    fields.add({
+      typeName: 'Query',
+      fieldName: modelDirectiveConfig.queries.list,
+      type: QueryFieldType.LIST,
+    });
+  }
+  // check if this API is sync enabled and then if the model is sync enabled
+  // fields.add({
+  //   typeName: 'Query',
+  //   fieldName: camelCase(`sync ${typeName}`),
+  //   type: QueryFieldType.SYNC,
+  // });
+  return fields;
+};
+
+export const getMutationFieldNames = (
+  modelDirectiveConfig: ModelDirectiveConfiguration,
+): Set<{ fieldName: string; typeName: string; type: MutationFieldType }> => {
+  // Todo: get fields names from the directives
+  const getMutationType = (type: string): MutationFieldType => {
+    switch (type) {
+      case 'create':
+        return MutationFieldType.CREATE;
+      case 'update':
+        return MutationFieldType.UPDATE;
+      case 'delete':
+        return MutationFieldType.DELETE;
+      default:
+        throw new Error('Unknown mutation type');
+    }
+  };
+
+  const fieldNames: Set<{ fieldName: string; typeName: string; type: MutationFieldType }> = new Set();
+  for (let [mutationType, mutationName] of Object.entries(modelDirectiveConfig?.mutations || {})) {
+    if (mutationName) {
+      fieldNames.add({
+        typeName: 'Mutation',
+        fieldName: mutationName,
+        type: getMutationType(mutationType),
+      });
+    }
+  }
+
+  return fieldNames;
+};
+
+export const getSubscriptionFieldNames = (
+  modelDirectiveConfig: ModelDirectiveConfiguration,
+): Set<{
+  fieldName: string;
+  typeName: string;
+}> => {
+  const fields: Set<{
+    fieldName: string;
+    typeName: string;
+  }> = new Set();
+
+  if (modelDirectiveConfig?.subscriptions?.level === SubscriptionLevel.on) {
+    if (modelDirectiveConfig?.subscriptions?.onCreate && modelDirectiveConfig.mutations?.create) {
+      for (const fieldName of modelDirectiveConfig.subscriptions.onCreate) {
+        fields.add({
+          typeName: 'Subscription',
+          fieldName: fieldName,
+        });
+      }
+    }
+
+    if (modelDirectiveConfig?.subscriptions?.onUpdate && modelDirectiveConfig.mutations?.update) {
+      for (const fieldName of modelDirectiveConfig.subscriptions.onUpdate) {
+        fields.add({
+          typeName: 'Subscription',
+          fieldName: fieldName,
+        });
+      }
+    }
+
+    if (modelDirectiveConfig?.subscriptions?.onDelete && modelDirectiveConfig.mutations?.delete) {
+      for (const fieldName of modelDirectiveConfig.subscriptions.onDelete) {
+        fields.add({
+          typeName: 'Subscription',
+          fieldName: fieldName,
+        });
+      }
+    }
+  }
+
+  return fields;
 };

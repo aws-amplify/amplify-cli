@@ -6,6 +6,8 @@ import {
   MappingTemplate,
 } from '@aws-amplify/graphql-transformer-core';
 import {
+  DataSourceProvider,
+  MutationFieldType,
   QueryFieldType,
   TransformerContextProvider,
   TransformerResolverProvider,
@@ -36,8 +38,12 @@ import {
   createPolicyDocumentForManagedPolicy,
   IAM_AUTH_ROLE_PARAMETER,
   IAM_UNAUTH_ROLE_PARAMETER,
+  getQueryFieldNames,
+  getMutationFieldNames,
+  addSubscriptionArguments,
+  fieldIsList,
+  getSubscriptionFieldNames,
 } from './utils';
-import { generateAuthExpressionForField, generateAuthExpressionForQueries, generateFieldAuthResponse } from './resolvers';
 import {
   DirectiveNode,
   FieldDefinitionNode,
@@ -48,17 +54,18 @@ import {
 } from 'graphql';
 import { SubscriptionLevel, ModelDirectiveConfiguration } from '@aws-amplify/graphql-model-transformer';
 import { AccessControlMatrix } from './accesscontrol';
-import {
-  getBaseType,
-  makeDirective,
-  makeField,
-  makeInputValueDefinition,
-  makeNamedType,
-  ResourceConstants,
-  toCamelCase,
-} from 'graphql-transformer-common';
+import { getBaseType, makeDirective, makeField, makeNamedType, ResourceConstants } from 'graphql-transformer-common';
 import * as iam from '@aws-cdk/aws-iam';
-import * as cdk from '@aws-cdk/core';
+import {
+  generateAuthExpressionForCreate,
+  generateAuthExpressionForUpdate,
+  generateAuthRequestExpression,
+  geneateAuthExpressionForDelete,
+  generateAuthExpressionForField,
+  generateFieldAuthResponse,
+  generateAuthExpressionForQueries,
+  generateAuthExpressionForSubscriptions,
+} from './resolvers';
 
 // @ auth
 // changing the schema
@@ -74,11 +81,15 @@ import * as cdk from '@aws-cdk/core';
 export class AuthTransformer extends TransformerAuthBase {
   private config: AuthTransformerConfig;
   private configuredAuthProviders: ConfiguredAuthProviders;
+  // access control
   private roleMap: Map<string, RoleDefinition>;
   private authModelConfig: Map<string, AccessControlMatrix>;
   private authNonModelConfig: Map<string, AccessControlMatrix>;
+  // model config
   private modelDirectiveConfig: Map<string, ModelDirectiveConfiguration>;
+  // schema generation
   private seenNonModelTypes: Map<string, Set<string>>;
+  // iam policy generation
   private generateIAMPolicyforUnauthRole: boolean;
   private generateIAMPolicyforAuthRole: boolean;
   private authPolicyResources = new Set<string>();
@@ -87,7 +98,7 @@ export class AuthTransformer extends TransformerAuthBase {
   constructor(config: AuthTransformerConfig) {
     super('amplify-auth-transformer', authDirectiveDefinition);
     this.config = config;
-    this.configuredAuthProviders = getConfiguredAuthProviders(this.config.authConfig);
+    this.configuredAuthProviders = getConfiguredAuthProviders(this.config);
     this.modelDirectiveConfig = new Map();
     this.seenNonModelTypes = new Map();
     this.authModelConfig = new Map();
@@ -104,9 +115,7 @@ export class AuthTransformer extends TransformerAuthBase {
     }
     const typeName = def.name.value;
     const authDir = new DirectiveWrapper(directive);
-    const rules: AuthRule[] = this.extendAuthRulesForAdminUI(
-      authDir.getArguments<{ rules: Array<AuthRule> }>({ rules: [] }).rules,
-    );
+    const rules: AuthRule[] = authDir.getArguments<{ rules: Array<AuthRule> }>({ rules: [] }).rules;
     ensureAuthRuleDefaults(rules);
     // validate rules
     validateRules(rules, this.configuredAuthProviders);
@@ -154,7 +163,7 @@ Static group authorization should perform as expected.`,
     const typeName = parent.name.value;
     const fieldName = field.name.value;
     const authDir = new DirectiveWrapper(directive);
-    const rules: AuthRule[] = authDir.getArguments<AuthRule[]>([]);
+    const rules: AuthRule[] = authDir.getArguments<{ rules: Array<AuthRule> }>({ rules: [] }).rules;
     ensureAuthRuleDefaults(rules);
     validateFieldRules(rules, isParentTypeBuiltinType, modelDirective !== undefined, this.configuredAuthProviders);
 
@@ -167,7 +176,7 @@ Static group authorization should perform as expected.`,
       // auth on models
       let acm: AccessControlMatrix;
       // check if the parent is already in the model config if not add it
-      if (!(typeName in this.modelDirectiveConfig)) {
+      if (!this.modelDirectiveConfig.has(typeName)) {
         this.modelDirectiveConfig.set(typeName, getModelConfig(modelDirective, typeName));
         acm = new AccessControlMatrix({
           operations: MODEL_OPERATIONS,
@@ -175,6 +184,7 @@ Static group authorization should perform as expected.`,
         });
       } else {
         acm = this.authModelConfig.get(typeName) as AccessControlMatrix;
+        acm.resetAccessForResource(fieldName);
       }
       this.convertModelRulesToRoles(acm, rules, fieldName);
     } else {
@@ -193,19 +203,24 @@ Static group authorization should perform as expected.`,
   };
 
   transformSchema = (ctx: TransformerContextProvider): void => {
+    const getOwnerFields = (acm: AccessControlMatrix) => {
+      return acm.getRoles().reduce((prev: string[], role: string) => {
+        if (this.roleMap.get(role)!.strategy === 'owner') prev.push(this.roleMap.get(role)!.entity!);
+        return prev;
+      }, []);
+    };
     // generate schema changes
     for (let [modelName, acm] of this.authModelConfig) {
-      const modelDirectiveConfig = this.modelDirectiveConfig.get(modelName)!;
-      // collect ownerFields
-      // add the owner fields for the model
-      this.addOwnerFieldsToObject(ctx, modelName, this.getOwnerFields(acm));
+      const def = ctx.output.getObject(modelName)!;
+      // collect ownerFields and them in the model
+      this.addFieldsToObject(ctx, modelName, getOwnerFields(acm));
       // Get the directives we need to add to the GraphQL nodes
-      let providers = this.getAuthProvidersPerModel(modelName);
-      let directives = this.getServiceDirectives(providers, providers.length === 0 ? this.shouldAddDefaultServiceDirective() : false);
+      const providers = this.getAuthProvidersPerModel(modelName);
+      const directives = this.getServiceDirectives(providers, providers.length === 0 ? this.shouldAddDefaultServiceDirective() : false);
       if (directives.length > 0) {
         extendTypeWithDirectives(ctx, modelName, directives);
       }
-      this.protectSchemaOperations(ctx, acm, providers, modelDirectiveConfig);
+      this.protectSchemaOperations(ctx, def, acm, providers);
       this.propagateAuthDirectivesToNestedTypes(ctx, ctx.output.getObject(modelName)!, providers);
     }
   };
@@ -217,8 +232,7 @@ Static group authorization should perform as expected.`,
     for (let [modelName, acm] of this.authModelConfig) {
       const def = ctx.output.getObject(modelName)!;
       // queries
-      const queryFields = this.getQueryFieldNames(ctx, def!);
-      const readRoles = acm.getRolesPerOperation('read');
+      const queryFields = getQueryFieldNames(this.modelDirectiveConfig.get(modelName)!);
       for (let query of queryFields.values()) {
         switch (query.type) {
           case QueryFieldType.GET:
@@ -228,11 +242,12 @@ Static group authorization should perform as expected.`,
             this.protectListResolver(ctx, def, query.typeName, query.fieldName, acm);
             break;
           default:
-            throw new Error('Unkown query field type');
+            throw new TransformerContractError('Unkown query field type');
         }
       }
       // get fields specified in the schema
       // if there is a role that does not have read access on the field then we create a field resolver
+      const readRoles = acm.getRolesPerOperation('read');
       const modelFields = def.fields?.filter(f => acm.getResources().includes(f.name.value)) ?? [];
       for (let field of modelFields) {
         const allowedRoles = readRoles.filter(r => acm.isAllowed(r, field.name.value, 'read'));
@@ -241,18 +256,42 @@ Static group authorization should perform as expected.`,
             throw new InvalidDirectiveError(`\nPer-field auth on the required field ${field.name.value} is not supported with subscriptions.
   Either make the field optional, set auth on the object and not the field, or disable subscriptions for the object (setting level to off or public)\n`);
           }
-          this.protectFieldResolver(ctx, modelName, field.name.value, allowedRoles);
+          // TODO: check if a function resolver is created here
+          this.protectFieldResolver(ctx, def, modelName, field.name.value, allowedRoles);
         }
+      }
+      const mutationFields = getMutationFieldNames(this.modelDirectiveConfig.get(modelName)!);
+      for (let mutation of mutationFields.values()) {
+        switch (mutation.type) {
+          case MutationFieldType.CREATE:
+            this.protectCreateResolver(ctx, def, mutation.typeName, mutation.fieldName, acm);
+            break;
+          case MutationFieldType.UPDATE:
+            this.protectUpdateResolver(ctx, def, mutation.typeName, mutation.fieldName, acm);
+            break;
+          case MutationFieldType.DELETE:
+            this.protectDeleteResolver(ctx, def, mutation.typeName, mutation.fieldName, acm);
+            break;
+          default:
+            throw new TransformerContractError('Unkown Mutation field type');
+        }
+      }
+
+      const subscriptionFieldNames = getSubscriptionFieldNames(this.modelDirectiveConfig.get(modelName)!);
+      const subscriptionRoles = this.getSubscriptionRoles(def.fields ?? [], acm);
+      for (let subscription of subscriptionFieldNames) {
+        this.protectSubscriptionResolver(ctx, subscription.typeName, subscription.fieldName, subscriptionRoles);
       }
     }
   };
 
   protectSchemaOperations = (
     ctx: TransformerContextProvider,
+    def: ObjectTypeDefinitionNode,
     acm: AccessControlMatrix,
     providers: Array<AuthProvider>,
-    modelConfig: ModelDirectiveConfiguration,
   ): void => {
+    const modelConfig = this.modelDirectiveConfig.get(def.name.value)!;
     const addServiceDirective = (operation: ModelOperation, operationName: string | null = null) => {
       if (operationName) {
         let includeDefault = this.doesTypeHaveRulesForOperation(acm, operation);
@@ -270,26 +309,24 @@ Static group authorization should perform as expected.`,
     addServiceDirective('delete', modelConfig?.mutations?.delete);
     // TODO: protect sync queries once supported
 
-    // subscriptions
     const subscriptions = modelConfig?.subscriptions;
     if (subscriptions && subscriptions.level === SubscriptionLevel.on) {
-      const ownerFields = this.getOwnerFields(acm) ?? [];
-      for (let onCreateSub of subscriptions.onCreate ?? []) {
+      const subscriptionArguments = this.getSubscriptionRoles(def.fields ?? [], acm);
+      for (let onCreateSub of (subscriptions.onCreate && modelConfig?.mutations?.create) ?? []) {
         addServiceDirective('read', onCreateSub);
-        this.addSubscriptionOwnerArguments(ctx, onCreateSub, ownerFields);
+        addSubscriptionArguments(ctx, onCreateSub, subscriptionArguments);
       }
-      for (let onUpdateSub of subscriptions.onUpdate ?? []) {
+      for (let onUpdateSub of (subscriptions.onUpdate && modelConfig?.mutations?.update) ?? []) {
         addServiceDirective('read', onUpdateSub);
-        this.addSubscriptionOwnerArguments(ctx, onUpdateSub, ownerFields);
+        addSubscriptionArguments(ctx, onUpdateSub, subscriptionArguments);
       }
-      for (let onDeleteSub of subscriptions.onDelete ?? []) {
+      for (let onDeleteSub of (subscriptions.onDelete && modelConfig?.mutations?.delete) ?? []) {
         addServiceDirective('read', onDeleteSub);
-        this.addSubscriptionOwnerArguments(ctx, onDeleteSub, ownerFields);
+        addSubscriptionArguments(ctx, onDeleteSub, subscriptionArguments);
       }
     }
   };
 
-  // Queries
   protectGetResolver = (
     ctx: TransformerContextProvider,
     def: ObjectTypeDefinitionNode,
@@ -299,7 +336,7 @@ Static group authorization should perform as expected.`,
   ): void => {
     const resolver = ctx.resolvers.getResolver(typeName, fieldName) as TransformerResolverProvider;
     const roleDefinitions = acm.getRolesPerOperation('read').map(r => this.roleMap.get(r)!);
-    const authExpression = generateAuthExpressionForQueries(roleDefinitions, def.fields ?? []);
+    const authExpression = generateAuthExpressionForQueries(this.configuredAuthProviders, roleDefinitions, def.fields ?? []);
     resolver.addToSlot(
       'auth',
       MappingTemplate.s3MappingTemplateFromString(authExpression, `${typeName}.${fieldName}.{slotName}.{slotIndex}.req.vtl`),
@@ -314,57 +351,122 @@ Static group authorization should perform as expected.`,
   ): void => {
     const resolver = ctx.resolvers.getResolver(typeName, fieldName) as TransformerResolverProvider;
     const roleDefinitions = acm.getRolesPerOperation('read').map(r => this.roleMap.get(r)!);
-    const authExpression = generateAuthExpressionForQueries(roleDefinitions, def.fields ?? []);
+    const authExpression = generateAuthExpressionForQueries(this.configuredAuthProviders, roleDefinitions, def.fields ?? []);
     resolver.addToSlot(
       'auth',
       MappingTemplate.s3MappingTemplateFromString(authExpression, `${typeName}.${fieldName}.{slotName}.{slotIndex}.req.vtl`),
     );
   };
-  protectFieldResolver = (ctx: TransformerContextProvider, typeName: string, fieldName: string, roles: Array<string>): void => {
+  protectFieldResolver = (
+    ctx: TransformerContextProvider,
+    def: ObjectTypeDefinitionNode,
+    typeName: string,
+    fieldName: string,
+    roles: Array<string>,
+  ): void => {
     const roleDefinitions = roles.map(r => this.roleMap.get(r)!);
-    const fieldAuthExpression = generateAuthExpressionForField(roleDefinitions);
+    const fieldAuthExpression = generateAuthExpressionForField(this.configuredAuthProviders, roleDefinitions, def.fields ?? []);
     const subsEnabled = this.modelDirectiveConfig.get(typeName)!.subscriptions.level === 'on';
-    const fieldResponse = generateFieldAuthResponse(ctx.output.getMutationTypeName()!, fieldName, subsEnabled);
-    // TODO: check if a function resolver is created here
+    const fieldResponse = generateFieldAuthResponse('Mutation', fieldName, subsEnabled);
+    if (!ctx.api.host.hasDataSource('NONE')) {
+      ctx.api.host.addNoneDataSource('NONE');
+    }
     ctx.api.host.addResolver(
       typeName,
       fieldName,
-      MappingTemplate.s3MappingTemplateFromString(fieldAuthExpression, `${typeName}.${fieldName}.req.vtl`),
-      MappingTemplate.s3MappingTemplateFromString(fieldResponse, `${typeName}.${fieldName}.req.vtl`),
+      MappingTemplate.s3MappingTemplateFromString(fieldAuthExpression, `${typeName}.${fieldName}.req.vtl`, 'resolver'),
+      MappingTemplate.s3MappingTemplateFromString(fieldResponse, `${typeName}.${fieldName}.res.vtl`, 'resolver'),
+      'NONE',
+    );
+  };
+  protectCreateResolver = (
+    ctx: TransformerContextProvider,
+    def: ObjectTypeDefinitionNode,
+    typeName: string,
+    fieldName: string,
+    acm: AccessControlMatrix,
+  ): void => {
+    const resolver = ctx.resolvers.getResolver(typeName, fieldName) as TransformerResolverProvider;
+    const fields = acm.getResources();
+    const createRoles = acm.getRolesPerOperation('create').map(role => {
+      const allowedFields = fields.filter(resource => acm.isAllowed(role, resource, 'create'));
+      const roleDefinition = this.roleMap.get(role)!;
+      roleDefinition.allowedFields = allowedFields.length === fields.length ? [] : allowedFields;
+      return roleDefinition;
+    });
+    const authExpression = generateAuthExpressionForCreate(this.configuredAuthProviders, createRoles, def.fields ?? []);
+    resolver.addToSlot(
+      'auth',
+      MappingTemplate.s3MappingTemplateFromString(authExpression, `${typeName}.${fieldName}.{slotName}.{slotIndex}.req.vtl`),
+    );
+  };
+  protectUpdateResolver = (
+    ctx: TransformerContextProvider,
+    def: ObjectTypeDefinitionNode,
+    typeName: string,
+    fieldName: string,
+    acm: AccessControlMatrix,
+  ): void => {
+    const resolver = ctx.resolvers.getResolver(typeName, fieldName) as TransformerResolverProvider;
+    const fields = acm.getResources();
+    const updateDeleteRoles = [...new Set([...acm.getRolesPerOperation('update'), ...acm.getRolesPerOperation('delete')])];
+    const totalRoles = updateDeleteRoles.map(role => {
+      const allowedFields = fields.filter(resource => acm.isAllowed(role, resource, 'update'));
+      const nullAllowedFileds = fields.filter(resource => acm.isAllowed(role, resource, 'delete'));
+      const roleDefinition = this.roleMap.get(role)!;
+      roleDefinition.allowedFields = allowedFields.length === fields.length ? [] : allowedFields;
+      roleDefinition.nullAllowedFields = nullAllowedFileds.length === fields.length ? [] : nullAllowedFileds;
+      return roleDefinition;
+    });
+    const datasource = ctx.api.host.getDataSource(`${def!.name.value}DS`) as DataSourceProvider;
+    const requestExpression = generateAuthRequestExpression();
+    const authExpression = generateAuthExpressionForUpdate(this.configuredAuthProviders, totalRoles, def.fields ?? []);
+    resolver.addToSlot(
+      'auth',
+      MappingTemplate.s3MappingTemplateFromString(requestExpression, `${typeName}.${fieldName}.{slotName}.{slotIndex}.req.vtl`),
+      MappingTemplate.s3MappingTemplateFromString(authExpression, `${typeName}.${fieldName}.{slotName}.{slotIndex}.res.vtl`),
+      datasource,
     );
   };
 
-  getQueryFieldNames = (
+  protectDeleteResolver = (
     ctx: TransformerContextProvider,
-    type: ObjectTypeDefinitionNode,
-  ): Set<{ fieldName: string; typeName: string; type: QueryFieldType }> => {
-    const typeName = type.name.value;
-    const fields: Set<{ fieldName: string; typeName: string; type: QueryFieldType }> = new Set();
-    const modelDirectiveConfig = this.modelDirectiveConfig.get(type.name.value);
-    if (modelDirectiveConfig?.queries?.get) {
-      fields.add({
-        typeName: 'Query',
-        fieldName: modelDirectiveConfig.queries.get || toCamelCase(['get', typeName]),
-        type: QueryFieldType.GET,
-      });
-    }
-
-    if (modelDirectiveConfig?.queries?.list) {
-      fields.add({
-        typeName: 'Query',
-        fieldName: modelDirectiveConfig.queries.list || toCamelCase(['list', typeName]),
-        type: QueryFieldType.LIST,
-      });
-    }
-    // check if this API is sync enabled and then if the model is sync enabled
-    // fields.add({
-    //   typeName: 'Query',
-    //   fieldName: camelCase(`sync ${typeName}`),
-    //   type: QueryFieldType.SYNC,
-    // });
-    return fields;
+    def: ObjectTypeDefinitionNode,
+    typeName: string,
+    fieldName: string,
+    acm: AccessControlMatrix,
+  ): void => {
+    const resolver = ctx.resolvers.getResolver(typeName, fieldName) as TransformerResolverProvider;
+    // only roles with full delete on every field can delete
+    const deleteRoles = acm.getRolesPerOperation('delete', true).map(role => this.roleMap.get(role)!);
+    const datasource = ctx.api.host.getDataSource(`${def!.name.value}DS`) as DataSourceProvider;
+    const requestExpression = generateAuthRequestExpression();
+    const authExpression = geneateAuthExpressionForDelete(this.configuredAuthProviders, deleteRoles, def.fields ?? []);
+    resolver.addToSlot(
+      'auth',
+      MappingTemplate.s3MappingTemplateFromString(requestExpression, `${typeName}.${fieldName}.{slotName}.{slotIndex}.req.vtl`),
+      MappingTemplate.s3MappingTemplateFromString(authExpression, `${typeName}.${fieldName}.{slotName}.{slotIndex}.res.vtl`),
+      datasource,
+    );
   };
 
+  protectSubscriptionResolver = (
+    ctx: TransformerContextProvider,
+    typeName: string,
+    fieldName: string,
+    subscriptionRoles: Array<RoleDefinition>,
+  ): void => {
+    const resolver = ctx.resolvers.getResolver(typeName, fieldName) as TransformerResolverProvider;
+    const authExpression = generateAuthExpressionForSubscriptions(this.configuredAuthProviders, subscriptionRoles);
+    resolver.addToSlot(
+      'auth',
+      MappingTemplate.s3MappingTemplateFromString(authExpression, `${typeName}.${fieldName}.{slotName}.{slotIndex}.req.vtl`),
+    );
+  };
+
+  /*
+  Role Helpers
+  */
   private convertNonModelRulesToRoles(acm: AccessControlMatrix, authRules: AuthRule[], field?: string) {
     for (let rule of authRules) {
       rule.groups!.forEach(group => {
@@ -453,9 +555,7 @@ Static group authorization should perform as expected.`,
       }
     }
   }
-  /*
-  Role Helpers
-  */
+
   private doesTypeHaveRulesForOperation(acm: AccessControlMatrix, operation: ModelOperation) {
     const rolesHasDefaultProvider = (roles: Array<string>) => {
       return roles.some(r => this.roleMap.get(r)!.provider! === this.configuredAuthProviders.default);
@@ -470,18 +570,24 @@ Static group authorization should perform as expected.`,
     for (let role of roles) {
       providers.add(this.roleMap.get(role)!.provider);
     }
+    if (this.configuredAuthProviders.hasAdminUIEnabled) {
+      providers.add('iam');
+    }
     return Array.from(providers);
   }
-  private getOwnerFields(acm: AccessControlMatrix): Array<string> {
-    return acm.getRoles().reduce((prev: string[], role: string) => {
-      if (this.roleMap.get(role)!.strategy === 'owner') prev.push(this.roleMap.get(role)!.entity!);
-      return prev;
-    }, []);
-  }
+
+  // Remove all the owner roles where the entity is a list
+  private getSubscriptionRoles = (fields: ReadonlyArray<FieldDefinitionNode>, acm: AccessControlMatrix) => {
+    return acm
+      .getRoles()
+      .map(role => this.roleMap.get(role)!)
+      .filter(roleDef => roleDef.strategy === 'owner' && !fieldIsList(fields, roleDef.entity!));
+  };
+
   /*
   Schema Generation Helpers
   */
-  private addOwnerFieldsToObject(ctx: TransformerContextProvider, modelName: string, ownerFields: Array<string>) {
+  private addFieldsToObject(ctx: TransformerContextProvider, modelName: string, ownerFields: Array<string>) {
     const modelObject = ctx.output.getObject(modelName)!;
     const existingFields = collectFieldNames(modelObject);
     const ownerFieldsToAdd = ownerFields.filter(field => !existingFields.includes(field));
@@ -490,34 +596,22 @@ Static group authorization should perform as expected.`,
     }
     ctx.output.putType(modelObject);
   }
-  private addSubscriptionOwnerArguments(ctx: TransformerContextProvider, operationName: string, ownerFields: Array<string>) {
-    let subscription = ctx.output.getSubscription()!;
-    let createField: FieldDefinitionNode = subscription!.fields!.find(field => field.name.value === operationName) as FieldDefinitionNode;
-    const ownerArgumentList = ownerFields.map(role => {
-      return makeInputValueDefinition(role, makeNamedType('String'));
-    });
-    createField = {
-      ...createField,
-      arguments: ownerArgumentList,
-    };
-    subscription = {
-      ...subscription,
-      fields: subscription!.fields!.map(field => (field.name.value === operationName ? createField : field)),
-    };
-    ctx.output.putType(subscription);
-  }
   private propagateAuthDirectivesToNestedTypes(
     ctx: TransformerContextProvider,
-    type: ObjectTypeDefinitionNode,
+    def: ObjectTypeDefinitionNode,
     providers: Array<AuthProvider>,
   ) {
-    const getDirectivesToAdd = (nonModelName: string): { current: DirectiveNode[]; old?: Set<string> } => {
+    const getDirectivesToAdd = (nonModelName: string): Array<DirectiveNode> => {
       const directives = this.getServiceDirectives(providers, true);
       if (this.seenNonModelTypes.has(nonModelName)) {
-        const nonModelDirectives: Set<string> = this.seenNonModelTypes.get(nonModelName)!;
-        return { current: directives.filter(directive => !nonModelDirectives.has(directive.name.value)), old: nonModelDirectives };
+        const currentDirectives: Set<string> = this.seenNonModelTypes.get(nonModelName)!;
+        const newDirectives = directives.filter(dir => !currentDirectives.has(dir.name.value));
+        // merge back the newly added auth directives with what already exists in the set
+        this.seenNonModelTypes.set(nonModelName, new Set<string>([...newDirectives.map(dir => dir.name.value), ...currentDirectives]));
+        return newDirectives;
       }
-      return { current: directives };
+      this.seenNonModelTypes.set(nonModelName, new Set<string>([...directives.map(dir => dir.name.value)]));
+      return directives;
     };
 
     const nonModelTypePredicate = (fieldType: TypeDefinitionNode): TypeDefinitionNode | undefined => {
@@ -530,21 +624,14 @@ Static group authorization should perform as expected.`,
       }
       return fieldType;
     };
-    const nonModelFieldTypes = type
+    const nonModelFieldTypes = def
       .fields!.map(f => ctx.output.getType(getBaseType(f.type)) as TypeDefinitionNode)
       .filter(nonModelTypePredicate);
     for (const nonModelFieldType of nonModelFieldTypes) {
       const directives = getDirectivesToAdd(nonModelFieldType.name.value);
-      if (directives.current.length > 0) {
-        // merge back the newly added auth directives with what already exists in the set
-        const totalDirectives = new Set<string>([
-          ...directives.current.map(dir => dir.name.value),
-          ...(directives.old ? directives.old : []),
-        ]);
-        this.seenNonModelTypes.set(nonModelFieldType.name.value, totalDirectives);
-        extendTypeWithDirectives(ctx, nonModelFieldType.name.value, directives.current);
-        const hasIAM =
-          directives.current.filter(directive => directive.name.value === 'aws_iam') || this.configuredAuthProviders.default === 'iam';
+      if (directives.length > 0) {
+        extendTypeWithDirectives(ctx, nonModelFieldType.name.value, directives);
+        const hasIAM = directives.some(dir => dir.name.value === 'aws_iam') || this.configuredAuthProviders.default === 'iam';
         if (hasIAM) {
           this.unauthPolicyResources.add(`${nonModelFieldType.name.value}/null`);
           this.authPolicyResources.add(`${nonModelFieldType.name.value}/null`);
@@ -587,28 +674,13 @@ Static group authorization should perform as expected.`,
       cannot add @aws_api_key to other operations since their is no rule granted access to it
     */
     if (
-      Boolean(providers.find(p => p === this.configuredAuthProviders.default)) &&
-      Boolean(
-        providers.find(p => p !== this.configuredAuthProviders.default) &&
-          !Boolean(directives.find(d => d.name.value === AUTH_PROVIDER_DIRECTIVE_MAP.get(this.configuredAuthProviders.default))),
-      )
+      providers.some(p => p === this.configuredAuthProviders.default) &&
+      providers.some(p => p !== this.configuredAuthProviders.default) &&
+      !directives.some(d => d.name.value === AUTH_PROVIDER_DIRECTIVE_MAP.get(this.configuredAuthProviders.default))
     ) {
       directives.push(makeDirective(AUTH_PROVIDER_DIRECTIVE_MAP.get(this.configuredAuthProviders.default) as string, []));
     }
     return directives;
-  }
-  /*
-  Admin UI Helpers
-  */
-  private isAdminUIEnabled(): boolean {
-    return this.configuredAuthProviders.hasIAM && this.config.addAwsIamAuthInOutputSchema;
-  }
-  private extendAuthRulesForAdminUI(rules: AuthRule[]): AuthRule[] {
-    // Check for Amplify Admin
-    if (this.isAdminUIEnabled()) {
-      return [...rules, { allow: 'private', provider: 'iam', generateIAMPolicy: false }];
-    }
-    return rules;
   }
   /**
    * When AdminUI is enabled, all the types and operations get IAM auth. If the default auth mode is
@@ -618,7 +690,7 @@ Static group authorization should perform as expected.`,
    * @returns boolean
    */
   private shouldAddDefaultServiceDirective(): boolean {
-    return this.isAdminUIEnabled() && this.config.authConfig.defaultAuthentication.authenticationType !== 'AWS_IAM';
+    return this.configuredAuthProviders.hasAdminUIEnabled && this.config.authConfig.defaultAuthentication.authenticationType !== 'AWS_IAM';
   }
   /*
   IAM Helpers
@@ -629,7 +701,7 @@ Static group authorization should perform as expected.`,
       // Sanity check to make sure we're not generating invalid policies, where no resources are defined.
       if (this.authPolicyResources.size === 0) {
         // When AdminUI is enabled, IAM auth is added but it does not need any policies to be generated
-        if (!this.isAdminUIEnabled()) {
+        if (!this.configuredAuthProviders.hasAdminUIEnabled) {
           throw new TransformerContractError('AuthRole policies should be generated, but no resources were added.');
         }
       } else {
