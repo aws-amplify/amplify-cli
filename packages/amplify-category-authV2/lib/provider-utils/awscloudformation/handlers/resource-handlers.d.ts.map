@@ -1,0 +1,1 @@
+{"version":3,"file":"resource-handlers.d.ts","sourceRoot":"","sources":["../../../../src/provider-utils/awscloudformation/handlers/resource-handlers.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,sBAAsB,EAAE,MAAM,8BAA8B,CAAC;AAgBtE,eAAO,MAAM,iBAAiB,YAAa,GAAG,eAAqB,sBAAsB,oBA6CxF,CAAC;AAEF,eAAO,MAAM,oBAAoB,YAAa,GAAG,eAAqB,sBAAsB,oBAkB3F,CAAC"}

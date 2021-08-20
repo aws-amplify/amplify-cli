@@ -49,6 +49,7 @@ export type $TSContext = {
   newUserInfo?: $TSAny;
   filesystem: IContextFilesystem;
   template: IContextTemplate;
+  updatingAuth?: $TSAny;
 };
 
 export type CategoryName = string;
