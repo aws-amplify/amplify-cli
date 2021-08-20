@@ -20,7 +20,7 @@ import { IRole } from '@aws-cdk/aws-iam';
 
 export interface DynamoDbDataSourceOptions extends DataSourceOptions {
   /**
-   * ServiceRole for the Amazon DynamoDb
+   * ServiceRole for the Amazon OpenSearch
    */
   readonly serviceRole: IRole;
 }

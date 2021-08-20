@@ -19,6 +19,7 @@ import { IRole } from '@aws-cdk/aws-iam';
 import { InlineTemplate, S3MappingFunctionCode } from './cdk-compat/template-asset';
 import { toCamelCase } from 'graphql-transformer-common';
 import { GraphQLApi } from './graphql-api';
+import { DynamoDbDataSourceOptions } from '@aws-amplify/graphql-transformer-interfaces/src/transform-host-provider';
 
 export interface DefaultTransformHostOptions {
   readonly api: GraphQLApi;

@@ -407,7 +407,8 @@ export function updateResolversForIndex(config: IndexDirectiveConfiguration, ctx
 
 function makeQueryResolver(config: IndexDirectiveConfiguration, ctx: TransformerContextProvider) {
   const { name, object, queryField } = config;
-  const dataSource = ctx.api.host.getDataSource(`${object.name.value}Table`);
+  const dataSourceName = ModelResourceIDs.ModelTableDataSourceID(object.name.value);
+  const dataSource = ctx.api.host.getDataSource(dataSourceName);
   const queryTypeName = ctx.output.getQueryTypeName() as string;
   const table = getTable(ctx, object);
   const requestVariable = 'QueryRequest';

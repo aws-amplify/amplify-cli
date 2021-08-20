@@ -151,6 +151,11 @@ export class GraphQLTransform {
       throw new SchemaValidationError(errors);
     }
 
+    // check if the project is sync enabled
+    if (this.transformConfig.ResolverConfig) {
+      context.resolvers.setResolverConfig(this.transformConfig.ResolverConfig);
+    }
+
     for (const transformer of this.transformers) {
       if (isFunction(transformer.before)) {
         transformer.before(context);
