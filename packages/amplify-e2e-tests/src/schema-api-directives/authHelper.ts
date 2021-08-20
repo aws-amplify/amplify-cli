@@ -21,15 +21,6 @@ export async function setupUser(userPoolId: string, username: string, password: 
     })
     .promise();
 
-  //   await cognitoClient
-  //     .adminSetUserPassword({
-  //       UserPoolId: userPoolId,
-  //       Username: username,
-  //       Password: password,
-  //       Permanent: true,
-  //     })
-  //     .promise();
-
   await authenticateUser(username, tempPassword, password);
 
   if (groupName) {
