@@ -880,7 +880,7 @@ describe('ModelTransformer: ', () => {
     validateModelSchema(parse(out.schema));
   });
 
-  it('should generate sync resolver with ConflictHandlerType.AUTOMERGE', () => {
+  it('should generate sync resolver with ConflictHandlerType.Automerge', () => {
     const validSchema = `
       type Post @model {
           id: ID!
@@ -890,7 +890,7 @@ describe('ModelTransformer: ', () => {
 
     const config: SyncConfig = {
       ConflictDetection: 'VERSION',
-      ConflictHandler: ConflictHandlerType.AUTOMERGE,
+      ConflictHandler: ConflictHandlerType.Automerge,
     };
 
     const transformer = new GraphQLTransform({
@@ -908,11 +908,9 @@ describe('ModelTransformer: ', () => {
     const definition = out.schema;
     expect(definition).toBeDefined();
     expect(out.pipelineFunctions).toMatchSnapshot();
-
-    validateModelSchema(parse(definition));
   });
 
-  it('should generate sync resolver with ConflictHandlerType.LAMBDA', () => {
+  it('should generate sync resolver with ConflictHandlerType.Lambda', () => {
     const validSchema = `
       type Post @model {
           id: ID!
@@ -924,7 +922,7 @@ describe('ModelTransformer: ', () => {
 
     const config: SyncConfig = {
       ConflictDetection: 'VERSION',
-      ConflictHandler: ConflictHandlerType.LAMBDA,
+      ConflictHandler: ConflictHandlerType.Lambda,
       LambdaConflictHandler: {
         name: 'myLambdaConflictHandler',
       },
@@ -945,11 +943,9 @@ describe('ModelTransformer: ', () => {
     const definition = out.schema;
     expect(definition).toBeDefined();
     expect(out.pipelineFunctions).toMatchSnapshot();
-
-    validateModelSchema(parse(definition));
   });
 
-  it('should generate sync resolver with ConflictHandlerType.OPTIMISTIC', () => {
+  it('should generate sync resolver with ConflictHandlerType.Optimistic', () => {
     const validSchema = `
       type Post @model {
           id: ID!
@@ -961,7 +957,7 @@ describe('ModelTransformer: ', () => {
 
     const config: SyncConfig = {
       ConflictDetection: 'VERSION',
-      ConflictHandler: ConflictHandlerType.OPTIMISTIC,
+      ConflictHandler: ConflictHandlerType.Optimistic,
     };
 
     const transformer = new GraphQLTransform({
@@ -979,7 +975,5 @@ describe('ModelTransformer: ', () => {
     const definition = out.schema;
     expect(definition).toBeDefined();
     expect(out.pipelineFunctions).toMatchSnapshot();
-
-    validateModelSchema(parse(definition));
   });
 });

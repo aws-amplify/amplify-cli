@@ -1,4 +1,11 @@
-import { InvalidDirectiveError, MappingTemplate, SyncConfig, SyncUtils, TransformerModelBase } from '@aws-amplify/graphql-transformer-core';
+import {
+  InvalidDirectiveError,
+  MappingTemplate,
+  ResolverConfig,
+  SyncConfig,
+  SyncUtils,
+  TransformerModelBase,
+} from '@aws-amplify/graphql-transformer-core';
 import {
   AppSyncDataSourceType,
   DataSourceInstance,
@@ -177,7 +184,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
       queries: {
         get: toCamelCase(['get', typeName]),
         list: toCamelCase(['list', plurality(typeName, true)]),
-        ...(ctx.isProjectUsingDataStore() ? { sync: toCamelCase(['sync', plurality(typeName, true)]) } : undefined),
+        ...(ctx.resolvers.isProjectUsingDataStore() ? { sync: toCamelCase(['sync', plurality(typeName, true)]) } : {}),
       },
       mutations: {
         create: toCamelCase(['create', typeName]),
@@ -214,6 +221,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
     this.ensureModelSortDirectionEnum(ctx);
     for (const type of this.typesWithModelDirective) {
       const def = ctx.output.getObject(type)!;
+      this.options.SyncConfig = SyncUtils.getSyncConfig(ctx, def!.name.value);
 
       // add Non Model type inputs
       this.createNonModelInputs(ctx, def);
@@ -230,7 +238,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
       // Update the field with auto generatable Fields
       this.addAutoGeneratableFields(ctx, type);
 
-      if (ctx.isProjectUsingDataStore()) {
+      if (this.options.SyncConfig) {
         this.addModelSyncFields(ctx, type);
       }
     }
@@ -295,7 +303,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
     typeName: string,
     fieldName: string,
   ): TransformerResolverProvider => {
-    const isSyncEnabled = ctx.isProjectUsingDataStore();
+    const isSyncEnabled = !!this.options.SyncConfig;
     const dataSource = this.datasourceMap[type.name.value];
     const resolverKey = `Get${generateResolverKey(typeName, fieldName)}`;
     if (!this.resolverMap[resolverKey]) {
@@ -319,7 +327,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
     typeName: string,
     fieldName: string,
   ): TransformerResolverProvider => {
-    const isSyncEnabled = ctx.isProjectUsingDataStore();
+    const isSyncEnabled = !!this.options.SyncConfig;
     const dataSource = this.datasourceMap[type.name.value];
     const resolverKey = `List${generateResolverKey(typeName, fieldName)}`;
     if (!this.resolverMap[resolverKey]) {
@@ -343,7 +351,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
     typeName: string,
     fieldName: string,
   ): TransformerResolverProvider => {
-    const isSyncEnabled = ctx.isProjectUsingDataStore();
+    const isSyncEnabled = !!this.options.SyncConfig;
     const dataSource = this.datasourceMap[type.name.value];
     const resolverKey = `Update${generateResolverKey(typeName, fieldName)}`;
     if (!this.resolverMap[resolverKey]) {
@@ -378,7 +386,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
     typeName: string,
     fieldName: string,
   ): TransformerResolverProvider => {
-    const isSyncEnabled = ctx.isProjectUsingDataStore();
+    const isSyncEnabled = !!this.options.SyncConfig;
     const dataSource = this.datasourceMap[type.name.value];
     const resolverKey = `delete${generateResolverKey(typeName, fieldName)}`;
     if (!this.resolverMap[resolverKey]) {
@@ -453,7 +461,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
     typeName: string,
     fieldName: string,
   ): TransformerResolverProvider => {
-    const isSyncEnabled = ctx.isProjectUsingDataStore();
+    const isSyncEnabled = !!this.options.SyncConfig;
     const dataSource = this.datasourceMap[type.name.value];
     const resolverKey = `Sync${generateResolverKey(typeName, fieldName)}`;
     if (!this.resolverMap[resolverKey]) {
@@ -688,7 +696,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
     typeName: string,
     fieldName: string,
   ): TransformerResolverProvider => {
-    const isSyncEnabled = ctx.isProjectUsingDataStore();
+    const isSyncEnabled = !!this.options.SyncConfig;
     const dataSource = this.datasourceMap[type.name.value];
     const resolverKey = `Create${generateResolverKey(typeName, fieldName)}`;
     if (!this.resolverMap[resolverKey]) {
@@ -723,7 +731,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
       type: QueryFieldType | MutationFieldType | SubscriptionFieldType;
     },
   ): InputValueDefinitionNode[] => {
-    const isSyncEnabled = ctx.isProjectUsingDataStore();
+    const isSyncEnabled = this.options.SyncConfig ? true : false;
 
     const knownModels = this.typesWithModelDirective;
     let conditionInput: InputObjectTypeDefinitionNode;
@@ -763,9 +771,11 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
       case QueryFieldType.SYNC:
         const syncFilterInputName = toPascalCase(['Model', type.name.value, 'FilterInput']);
         const syncFilterInputs = makeListQueryFilterInput(ctx, syncFilterInputName, type);
-        const conditionInputName = syncFilterInputs.name.value;
-        if (!ctx.output.getType(conditionInputName)) {
-          ctx.output.addInput(syncFilterInputs);
+        for (let input of [syncFilterInputs]) {
+          const conditionInputName = input.name.value;
+          if (!ctx.output.getType(conditionInputName)) {
+            ctx.output.addInput(input);
+          }
         }
         return [
           makeInputValueDefinition('filter', makeNamedType(syncFilterInputName)),
@@ -853,7 +863,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
         break;
       case QueryFieldType.SYNC:
       case QueryFieldType.LIST:
-        const isSyncEnabled = ctx.isProjectUsingDataStore();
+        const isSyncEnabled = this.options.SyncConfig ? true : false;
         const connectionFieldName = toPascalCase(['Model', type.name.value, 'Connection']);
         outputType = makeListQueryModel(type, connectionFieldName, isSyncEnabled);
         break;
@@ -1025,7 +1035,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
       stream: StreamViewType.NEW_AND_OLD_IMAGES,
       encryption: TableEncryption.DEFAULT,
       removalPolicy: removalPolicy,
-      ...(context.isProjectUsingDataStore() ? { timeToLiveAttribute: '_ttl' } : undefined),
+      ...(this.options.SyncConfig ? { timeToLiveAttribute: '_ttl' } : {}),
     });
     const cfnTable = table.node.defaultChild as CfnTable;
 
@@ -1070,19 +1080,18 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
     stack: cdk.Stack,
     role: iam.Role,
   ) {
-    const tableLogicalName = `${def!.name.value}Table`;
     const datasourceRoleLogicalID = ModelResourceIDs.ModelTableDataSourceID(def!.name.value);
     const dataSource = context.api.host.addDynamoDbDataSource(
       datasourceRoleLogicalID,
       table,
-      { name: tableLogicalName, serviceRole: role },
+      { name: datasourceRoleLogicalID, serviceRole: role },
       stack,
     );
 
     const cfnDataSource = dataSource.node.defaultChild as CfnDataSource;
     cfnDataSource.addDependsOn(role.node.defaultChild as CfnRole);
 
-    if (context.isProjectUsingDataStore()) {
+    if (this.options.SyncConfig) {
       const datasourceDynamoDb = cfnDataSource.dynamoDbConfig as any;
       datasourceDynamoDb.deltaSyncConfig = {
         deltaSyncTableName: context.resourceHelper.generateResourceName(SyncResourceIDs.syncTableName),
@@ -1137,7 +1146,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
               cdk.Fn.sub('arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tablename}/*', {
                 tablename: tableName,
               }),
-              ...(context.isProjectUsingDataStore()
+              ...(this.options.SyncConfig
                 ? [
                     // eslint-disable-next-line no-template-curly-in-string
                     cdk.Fn.sub('arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tablename}', {
@@ -1155,13 +1164,15 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
       }),
     );
 
-    const syncConfig = SyncUtils.getSyncConfig(context, def!.name.value);
-    if (syncConfig && SyncUtils.isLambdaSyncConfig(syncConfig)) {
+    if (this.options.SyncConfig && SyncUtils.isLambdaSyncConfig(this.options.SyncConfig)) {
       role.attachInlinePolicy(
-        SyncUtils.createSyncLambdaIAMPolicy(stack, syncConfig.LambdaConflictHandler.name, syncConfig.LambdaConflictHandler.region),
+        SyncUtils.createSyncLambdaIAMPolicy(
+          stack,
+          this.options.SyncConfig.LambdaConflictHandler.name,
+          this.options.SyncConfig.LambdaConflictHandler.region,
+        ),
       );
     }
-
     return role;
   }
 
@@ -1174,9 +1185,32 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
   }
 
   private getOptions = (options: ModelTransformerOptions): ModelTransformerOptions => {
-    return {
+    const defaultOpts = {
       EnableDeletionProtection: false,
+    };
+    return {
+      ...defaultOpts,
       ...options,
     };
+  };
+
+  private setSyncConfig = (ctx: TransformerTransformSchemaStepContextProvider, typeName: string): void => {
+    let syncConfig: SyncConfig | undefined;
+
+    const resolverConfig = ctx.resolvers.getResolverConfig<ResolverConfig>();
+    if (resolverConfig && resolverConfig.project) {
+      syncConfig = resolverConfig.project;
+    }
+
+    if (resolverConfig && resolverConfig.models && resolverConfig.models[typeName]) {
+      const typeResolverConfig = resolverConfig.models[typeName];
+      if (typeResolverConfig.ConflictDetection && typeResolverConfig.ConflictHandler) {
+        syncConfig = typeResolverConfig;
+      } else {
+        console.warn(`Invalid resolverConfig for type ${typeName}. Using the project resolverConfig instead.`);
+      }
+    }
+
+    this.options.SyncConfig = syncConfig;
   };
 }

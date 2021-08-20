@@ -583,7 +583,7 @@ input DeleteCommentInput {
 "
 `;
 
-exports[`ModelTransformer:  should generate sync resolver with ConflictHandlerType.AUTOMERGE 1`] = `
+exports[`ModelTransformer:  should generate sync resolver with ConflictHandlerType.Automerge 1`] = `
 Object {
   "Mutation.createAuthor.init.1.req.vtl": "## [Start] Initialization default values. **
 $util.qr($ctx.stash.put(\\"defaultValues\\", $util.defaultIfNull($ctx.stash.defaultValues, {})))
@@ -3625,7 +3625,7 @@ null
 }
 `;
 
-exports[`ModelTransformer:  should generate sync resolver with ConflictHandlerType.LAMBDA 1`] = `
+exports[`ModelTransformer:  should generate sync resolver with ConflictHandlerType.Lambda 1`] = `
 Object {
   "Mutation.createAuthor.init.1.req.vtl": "## [Start] Initialization default values. **
 $util.qr($ctx.stash.put(\\"defaultValues\\", $util.defaultIfNull($ctx.stash.defaultValues, {})))
@@ -6667,7 +6667,7 @@ null
 }
 `;
 
-exports[`ModelTransformer:  should generate sync resolver with ConflictHandlerType.OPTIMISTIC 1`] = `
+exports[`ModelTransformer:  should generate sync resolver with ConflictHandlerType.Optimistic 1`] = `
 Object {
   "Mutation.createAuthor.init.1.req.vtl": "## [Start] Initialization default values. **
 $util.qr($ctx.stash.put(\\"defaultValues\\", $util.defaultIfNull($ctx.stash.defaultValues, {})))
