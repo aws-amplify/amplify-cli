@@ -1,10 +1,10 @@
+import { TransformerContextProvider, TransformerTransformSchemaStepContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { AttributeType, BillingMode, StreamViewType, Table, TableEncryption } from '@aws-cdk/aws-dynamodb';
 import * as cdk from '@aws-cdk/core';
 import * as iam from '@aws-cdk/aws-iam';
 import { ResourceConstants, SyncResourceIDs } from 'graphql-transformer-common';
 import { TransformerContext } from '../transformer-context';
 import { ResolverConfig, SyncConfig, SyncConfigLambda } from '../config/transformer-config';
-import { TransformerTransformSchemaStepContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 
 type DeltaSyncConfig = {
   DeltaSyncTableName: any;
@@ -36,7 +36,7 @@ export function createSyncTable(context: TransformerContext) {
   createSyncIAMRole(context, stack, tableName);
 }
 
-function createSyncIAMRole(context: TransformerContext, stack: cdk.Stack, tableName: string) {
+function createSyncIAMRole(context: TransformerContextProvider, stack: cdk.Stack, tableName: string) {
   const role = new iam.Role(stack, SyncResourceIDs.syncIAMRoleName, {
     roleName: context.resourceHelper.generateResourceName(SyncResourceIDs.syncIAMRoleName),
     assumedBy: new iam.ServicePrincipal('appsync.amazonaws.com'),
@@ -87,14 +87,18 @@ export function syncDataSourceConfig(): DeltaSyncConfig {
 export function getSyncConfig(ctx: TransformerTransformSchemaStepContextProvider, typeName: string): SyncConfig | undefined {
   let syncConfig: SyncConfig | undefined;
 
-  const resolverConfig = ctx.getResolverConfig<ResolverConfig>();
-  syncConfig = resolverConfig?.project;
+  const resolverConfig = ctx.resolvers.getResolverConfig<ResolverConfig>();
+  if (resolverConfig && resolverConfig.project) {
+    syncConfig = resolverConfig.project;
+  }
 
-  const typeResolverConfig = resolverConfig?.models?.[typeName];
-  if (typeResolverConfig && typeResolverConfig.ConflictDetection && typeResolverConfig.ConflictHandler) {
-    syncConfig = typeResolverConfig;
-  } else {
-    console.warn(`Invalid resolverConfig for type ${typeName}. Using the project resolverConfig instead.`);
+  if (resolverConfig && resolverConfig.models && resolverConfig.models[typeName]) {
+    const typeResolverConfig = resolverConfig.models[typeName];
+    if (typeResolverConfig.ConflictDetection && typeResolverConfig.ConflictHandler) {
+      syncConfig = typeResolverConfig;
+    } else {
+      console.warn(`Invalid resolverConfig for type ${typeName}. Using the project resolverConfig instead.`);
+    }
   }
 
   return syncConfig;

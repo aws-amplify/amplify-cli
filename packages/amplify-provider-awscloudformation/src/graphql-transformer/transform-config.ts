@@ -25,7 +25,7 @@ export const TRANSFORM_CONFIG_FILE_NAME = `transform.conf.json`;
 
 export async function loadConfig(projectDir: string): Promise<TransformConfig> {
   // Initialize the config always with the latest version, other members are optional for now.
-  let config: TransformConfig = {};
+  let config: TransformConfig;
   try {
     const configPath = path.join(projectDir, TRANSFORM_CONFIG_FILE_NAME);
     const configExists = fs.existsSync(configPath);

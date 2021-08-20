@@ -27,11 +27,11 @@ export interface TransformerContextProvider {
 export type TransformerBeforeStepContextProvider = Pick<TransformerContextProvider, 'inputDocument' | 'featureFlags'>;
 export type TransformerSchemaVisitStepContextProvider = Pick<
   TransformerContextProvider,
-  'inputDocument' | 'output' | 'providerRegistry' | 'featureFlags' | 'isProjectUsingDataStore' | 'getResolverConfig'
+  'inputDocument' | 'output' | 'providerRegistry' | 'featureFlags' | 'resolvers'
 >;
 export type TransformerValidationStepContextProvider = Pick<
   TransformerContextProvider,
-  'inputDocument' | 'output' | 'providerRegistry' | 'dataSources' | 'featureFlags' | 'isProjectUsingDataStore' | 'getResolverConfig'
+  'inputDocument' | 'output' | 'providerRegistry' | 'dataSources' | 'featureFlags' | 'resolvers'
 >;
 export type TransformerPrepareStepContextProvider = TransformerValidationStepContextProvider;
 export type TransformerTransformSchemaStepContextProvider = TransformerValidationStepContextProvider;

@@ -65,7 +65,7 @@ export type SyncConfigServer = {
 };
 export type SyncConfigLambda = {
   ConflictDetection: ConflictDetectionType;
-  ConflictHandler: ConflictHandlerType.LAMBDA;
+  ConflictHandler: ConflictHandlerType.Lambda;
   LambdaConflictHandler: LambdaConflictHandler;
 };
 export type LambdaConflictHandler = {
