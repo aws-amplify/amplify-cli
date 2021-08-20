@@ -15,23 +15,22 @@ export class HttpDataLoader implements AmplifyAppSyncSimulatorDataLoader {
         method: payload.method,
         url: this.endpoint + payload.resourcePath,
         headers: payload.params.headers,
-        data: payload.params.query,
+        data: { query: payload.params.query },
         params: { query: payload.params.query },
       });
       const result = this.parseResponse(axiosRes);
-      console.log(axiosRes);
       const cfxResult = { body: result, statusCode: axiosRes.status, headers: axiosRes.headers };
       return cfxResult;
     } catch (error) {
       console.log('HTTP Data source failed with the following error:');
-      console.error(error);
+      if (error.response.status === 400) console.error(error.response.data);
+      else console.error(error);
       throw error;
     }
   }
 
   private parseResponse = (response: AxiosResponse) => {
     let result = response.data?.data;
-    console.log(result);
     if (!result) {
       throw new Error('Missing result in response (response.data.data is undefined.)');
     }

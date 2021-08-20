@@ -8,6 +8,7 @@ import { time } from './time';
 import { rds } from './rds';
 import { str } from './str';
 import { math } from './math';
+import { httpUtils } from './http';
 import { GraphQLResolveInfo } from 'graphql';
 export function create(errors = [], now: Date = new Date(), info: GraphQLResolveInfo) {
   return {
@@ -23,5 +24,6 @@ export function create(errors = [], now: Date = new Date(), info: GraphQLResolve
     str,
     math,
     rds,
+    http: httpUtils,
   };
 }
