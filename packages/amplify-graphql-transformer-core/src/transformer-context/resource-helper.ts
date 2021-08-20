@@ -21,11 +21,11 @@ export class TransformerResourceHelper implements TransformerResourceHelperProvi
   }
 
   private ensureEnv = (): void => {
-    if(!this.stackManager.getParameter('env')) {
+    if (!this.stackManager.getParameter('env')) {
       this.stackManager.addParameter('env', {
         type: 'String',
         default: 'NONE',
       });
     }
-  }
+  };
 }
