@@ -117,6 +117,7 @@ describe('amplify function migration', () => {
         layerOptions: {
           select: [projName + layerName],
           expectedListOptions: [projName + layerName],
+          layerAndFunctionExist: true,
         },
         name: function1,
         testingWithLatestCodebase: true,

@@ -40,7 +40,11 @@ class DDBTypesEncoder(json.JSONEncoder):
 # Subclass of boto's TypeDeserializer for DynamoDB to adjust for DynamoDB Stream format.
 class StreamTypeDeserializer(TypeDeserializer):
     def _deserialize_n(self, value):
-        return float(value)
+        val = float(value)
+        if (val.is_integer()):
+            return int(value)
+        else:
+            return val
 
     def _deserialize_b(self, value):
         return value  # Already in Base64

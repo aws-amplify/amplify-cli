@@ -14,19 +14,19 @@ from botocore.session import Session
 from boto3.dynamodb.types import TypeDeserializer
 
 
-# The following parameters are required to configure the ES cluster
-ES_ENDPOINT = os.environ['ES_ENDPOINT']
-ES_REGION = os.environ['ES_REGION']
+# The following parameters are required to configure the OpenSearch cluster
+OPENSEARCH_ENDPOINT = os.environ['OPENSEARCH_ENDPOINT']
+OPENSEARCH_REGION = os.environ['OPENSEARCH_REGION']
 DEBUG = True if os.environ['DEBUG'] == "1" else False
-ES_USE_EXTERNAL_VERSIONING = True if os.environ['ES_USE_EXTERNAL_VERSIONING'] == "true" else False
+OPENSEARCH_USE_EXTERNAL_VERSIONING = True if os.environ['OPENSEARCH_USE_EXTERNAL_VERSIONING'] == "true" else False
 
-# ElasticSearch 6 deprecated having multiple mapping types in an index. Default to doc.
+# Multiple mapping types in an index is deprecated. Default to doc.
 DOC_TYPE = 'doc'
-ES_MAX_RETRIES = 3              # Max number of retries for exponential backoff
+OPENSEARCH_MAX_RETRIES = 3 # Max number of retries for exponential backoff
 
 logger = logging.getLogger()
 logger.setLevel(logging.DEBUG if DEBUG else logging.INFO)
-logger.info("Streaming to ElasticSearch")
+logger.info("Streaming to OpenSearch")
 
 # custom encoder changes
 # - sets to lists
@@ -39,13 +39,17 @@ class DDBTypesEncoder(json.JSONEncoder):
 # Subclass of boto's TypeDeserializer for DynamoDB to adjust for DynamoDB Stream format.
 class StreamTypeDeserializer(TypeDeserializer):
     def _deserialize_n(self, value):
-        return float(value)
+        val = float(value)
+        if (val.is_integer()):
+            return int(value)
+        else:
+            return val
 
     def _deserialize_b(self, value):
         return value  # Already in Base64
 
 
-class ES_Exception(Exception):
+class Searchable_Exception(Exception):
     '''Capture status_code from request'''
     status_code = 0
     payload = ''
@@ -54,62 +58,63 @@ class ES_Exception(Exception):
         self.status_code = status_code
         self.payload = payload
         Exception.__init__(
-            self, 'ES_Exception: status_code={}, payload={}'.format(status_code, payload))
+            self, 'Searchable_Exception: status_code={}, payload={}'.format(status_code, payload))
 
 
-# Low-level POST data to Amazon Elasticsearch Service generating a Sigv4 signed request
-def post_data_to_es(payload, region, creds, host, path, method='POST', proto='https://'):
-    '''Post data to ES endpoint with SigV4 signed http headers'''
+# Low-level POST data to Amazon OpenSearch Service generating a Sigv4 signed request
+def post_data_to_opensearch(payload, region, creds, host, path, method='POST', proto='https://'):
+    '''Post data to OpenSearch endpoint with SigV4 signed http headers'''
     req = AWSRequest(method=method, url=proto + host +
                     quote(path), data=payload, headers={'Host': host, 'Content-Type': 'application/json'})
+    # SigV4Auth may be expecting 'es' but need to swap with 'os' or 'OpenSearch'
     SigV4Auth(creds, 'es', region).add_auth(req)
     http_session = BotocoreHTTPSession()
     res = http_session.send(req.prepare())
     if res.status_code >= 200 and res.status_code <= 299:
         return res._content
     else:
-        raise ES_Exception(res.status_code, res._content)
+        raise Searchable_Exception(res.status_code, res._content)
 
 
-# High-level POST data to Amazon Elasticsearch Service with exponential backoff
+# High-level POST data to Amazon OpenSearch Service with exponential backoff
 # according to suggested algorithm: http://docs.aws.amazon.com/general/latest/gr/api-retries.html
-def post_to_es(payload):
-    '''Post data to ES cluster with exponential backoff'''
+def post_to_opensearch(payload):
+    '''Post data to OpenSearch cluster with exponential backoff'''
 
-    # Get aws_region and credentials to post signed URL to ES
-    es_region = ES_REGION or os.environ['AWS_REGION']
-    session = Session({'region': es_region})
+    # Get aws_region and credentials to post signed URL to OpenSearch
+    opensearch_region = OPENSEARCH_REGION or os.environ['AWS_REGION']
+    session = Session({'region': opensearch_region})
     creds = get_credentials(session)
-    es_url = urlparse(ES_ENDPOINT)
-    # Extract the domain name in ES_ENDPOINT
-    es_endpoint = es_url.netloc or es_url.path
+    opensearch_url = urlparse(OPENSEARCH_ENDPOINT)
+    # Extract the domain name in OPENSEARCH_ENDPOINT
+    opensearch_endpoint = opensearch_url.netloc or opensearch_url.path
 
     # Post data with exponential backoff
     retries = 0
-    while retries < ES_MAX_RETRIES:
+    while retries < OPENSEARCH_MAX_RETRIES:
         if retries > 0:
             seconds = (2 ** retries) * .1
             logger.debug('Waiting for %.1f seconds', seconds)
             time.sleep(seconds)
 
         try:
-            es_ret_str = post_data_to_es(
-                payload, es_region, creds, es_endpoint, '/_bulk')
-            logger.debug('Return from ES: %s', es_ret_str)
-            es_ret = json.loads(es_ret_str)
+            opensearch_ret_str = post_data_to_opensearch(
+                payload, opensearch_region, creds, opensearch_endpoint, '/_bulk')
+            logger.debug('Return from OpenSearch: %s', opensearch_ret_str)
+            opensearch_ret = json.loads(opensearch_ret_str)
 
-            if es_ret['errors']:
+            if opensearch_ret['errors']:
                 logger.error(
-                    'ES post unsuccessful, errors present, took=%sms', es_ret['took'])
+                    'OpenSearch post unsuccessful, errors present, took=%sms', opensearch_ret['took'])
                 # Filter errors
-                es_errors = [item for item in es_ret['items']
+                opensearch_errors = [item for item in opensearch_ret['items']
                             if item.get('index', {}).get('error')]
                 logger.error('List of items with errors: %s',
-                            json.dumps(es_errors))
+                            json.dumps(opensearch_errors))
             else:
-                logger.info('ES post successful, took=%sms', es_ret['took'])
-            break  # Sending to ES was ok, break retry loop
-        except ES_Exception as e:
+                logger.info('OpenSearch post successful, took=%sms', opensearch_ret['took'])
+            break  # Sending to OpenSearch was ok, break retry loop
+        except Searchable_Exception as e:
             if (e.status_code >= 500) and (e.status_code <= 599):
                 retries += 1  # Candidate for retry
             else:
@@ -138,7 +143,7 @@ def _lambda_handler(event, context):
     records = event['Records']
 
     ddb_deserializer = StreamTypeDeserializer()
-    es_actions = []  # Items to be added/updated/removed from ES - for bulk API
+    opensearch_actions = []  # Items to be added/updated/removed from OpenSearch - for bulk API
     cnt_insert = cnt_modify = cnt_remove = 0
 
     for record in records:
@@ -161,7 +166,7 @@ def _lambda_handler(event, context):
         doc_table = ddb_table_name.lower()
         doc_type = DOC_TYPE
         doc_table_parts = doc_table.split('-')
-        doc_es_index_name = doc_table_parts[0] if len(doc_table_parts) > 0  else doc_table
+        doc_opensearch_index_name = doc_table_parts[0] if len(doc_table_parts) > 0  else doc_table
 
         # Dispatch according to event TYPE
         event_name = record['eventName'].upper()  # INSERT, MODIFY, REMOVE
@@ -184,8 +189,8 @@ def _lambda_handler(event, context):
         # Deserialize DynamoDB type to Python types
         doc_fields = ddb_deserializer.deserialize({'M': ddb[image_name]})
         
-        # Sync enabled APIs do soft delete. We need to delete the record in ES if _deleted field is set
-        if ES_USE_EXTERNAL_VERSIONING and event_name == 'MODIFY' and '_deleted' in  doc_fields and doc_fields['_deleted']:
+        # Sync enabled APIs do soft delete. We need to delete the record in OpenSearch if _deleted field is set
+        if OPENSEARCH_USE_EXTERNAL_VERSIONING and event_name == 'MODIFY' and '_deleted' in  doc_fields and doc_fields['_deleted']:
             is_ddb_insert_or_update = False
             is_ddb_delete = True
             
@@ -206,47 +211,47 @@ def _lambda_handler(event, context):
         else:
             logger.error('Cannot find keys in ddb record')
 
-        # If DynamoDB INSERT or MODIFY, send 'index' to ES
+        # If DynamoDB INSERT or MODIFY, send 'index' to OpenSearch
         if is_ddb_insert_or_update:
-            # Generate ES payload for item
-            action = {'index': {'_index': doc_es_index_name,
+            # Generate OpenSearch payload for item
+            action = {'index': {'_index': doc_opensearch_index_name,
                                 '_type': doc_type,
                                 '_id': doc_id}}
             # Add external versioning if necessary
-            if ES_USE_EXTERNAL_VERSIONING and '_version' in doc_fields:
+            if OPENSEARCH_USE_EXTERNAL_VERSIONING and '_version' in doc_fields:
                 action['index'].update([
                     ('version_type', 'external'),
                     ('_version', doc_fields['_version'])
                 ])
                 doc_fields.pop('_ttl', None)
                 doc_fields.pop('_version', None)
-            # Append ES Action line with 'index' directive
-            es_actions.append(json.dumps(action))
+            # Append OpenSearch Action line with 'index' directive
+            opensearch_actions.append(json.dumps(action))
             # Append JSON payload
-            es_actions.append(json.dumps(doc_fields, cls=DDBTypesEncoder))
+            opensearch_actions.append(json.dumps(doc_fields, cls=DDBTypesEncoder))
             # migration step remove old key if it exists
             if ('id' in doc_fields) and (event_name == 'MODIFY') :
-                action = {'delete': {'_index': doc_es_index_name, '_type': doc_type,
+                action = {'delete': {'_index': doc_opensearch_index_name, '_type': doc_type,
                     '_id': compute_doc_index(ddb['Keys'], ddb_deserializer, True)}}
-                es_actions.append(json.dumps(action))
-        # If DynamoDB REMOVE, send 'delete' to ES
+                opensearch_actions.append(json.dumps(action))
+        # If DynamoDB REMOVE, send 'delete' to OpenSearch
         elif is_ddb_delete:
-            action = {'delete': {'_index': doc_es_index_name,
+            action = {'delete': {'_index': doc_opensearch_index_name,
                                 '_type': doc_type, '_id': doc_id}}
-            if ES_USE_EXTERNAL_VERSIONING and '_version' in doc_fields:
+            if OPENSEARCH_USE_EXTERNAL_VERSIONING and '_version' in doc_fields:
                 action['delete'].update([
                     ('version_type', 'external'),
                     ('_version', doc_fields['_version'])
                 ])
             # Action line with 'delete' directive
-            es_actions.append(json.dumps(action))
+            opensearch_actions.append(json.dumps(action))
 
     # Prepare bulk payload
-    es_actions.append('')  # Add one empty line to force final \n
-    es_payload = '\n'.join(es_actions)
-    logger.info('Posting to ES: inserts=%s updates=%s deletes=%s, total_lines=%s, bytes_total=%s',
-                cnt_insert, cnt_modify, cnt_remove, len(es_actions) - 1, len(es_payload))
-    post_to_es(es_payload)  # Post to ES with exponential backoff
+    opensearch_actions.append('')  # Add one empty line to force final \n
+    opensearch_payload = '\n'.join(opensearch_actions)
+    logger.info('Posting to OpenSearch: inserts=%s updates=%s deletes=%s, total_lines=%s, bytes_total=%s',
+                cnt_insert, cnt_modify, cnt_remove, len(opensearch_actions) - 1, len(opensearch_payload))
+    post_to_opensearch(opensearch_payload)  # Post to OpenSearch with exponential backoff
 
 
 # Global lambda handler - catches all exceptions to avoid dead letter in the DynamoDB Stream

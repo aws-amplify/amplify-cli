@@ -3,6 +3,41 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.6.16](https://github.com/aws-amplify/amplify-cli/compare/amplify-nodejs-function-template-provider@1.6.15...amplify-nodejs-function-template-provider@1.6.16) (2021-08-06)
+
+
+### Bug Fixes
+
+* **amplify-category-function:** Storage env vars not added to lambda function ([#7785](https://github.com/aws-amplify/amplify-cli/issues/7785)) ([cb4daaa](https://github.com/aws-amplify/amplify-cli/commit/cb4daaa6edfbf8dd2f7cab71abbda0ef450b16c3))
+
+
+
+
+
+## [1.6.15](https://github.com/aws-amplify/amplify-cli/compare/amplify-nodejs-function-template-provider@1.6.14...amplify-nodejs-function-template-provider@1.6.15) (2021-07-30)
+
+**Note:** Version bump only for package amplify-nodejs-function-template-provider
+
+
+
+
+
+## [1.6.14](https://github.com/aws-amplify/amplify-cli/compare/amplify-nodejs-function-template-provider@1.6.13...amplify-nodejs-function-template-provider@1.6.14) (2021-07-27)
+
+**Note:** Version bump only for package amplify-nodejs-function-template-provider
+
+
+
+
+
+## [1.6.13](https://github.com/aws-amplify/amplify-cli/compare/amplify-nodejs-function-template-provider@1.6.12...amplify-nodejs-function-template-provider@1.6.13) (2021-07-16)
+
+**Note:** Version bump only for package amplify-nodejs-function-template-provider
+
+
+
+
+
 ## [1.6.12](https://github.com/aws-amplify/amplify-cli/compare/amplify-nodejs-function-template-provider@1.6.11...amplify-nodejs-function-template-provider@1.6.12) (2021-06-30)
 
 **Note:** Version bump only for package amplify-nodejs-function-template-provider

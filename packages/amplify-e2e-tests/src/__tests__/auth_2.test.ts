@@ -16,6 +16,7 @@ import {
   getUserPoolClients,
   isDeploymentSecretForEnvExists,
   getLambdaFunction,
+  removeAuthWithDefault,
 } from 'amplify-e2e-core';
 
 const defaultsSettings = {
@@ -52,6 +53,14 @@ describe('amplify add auth...', () => {
     expect(clients[0].UserPoolClient.CallbackURLs[0]).toEqual('https://www.google.com/');
     expect(clients[0].UserPoolClient.LogoutURLs[0]).toEqual('https://www.nytimes.com/');
     expect(clients[0].UserPoolClient.SupportedIdentityProviders).toHaveLength(5);
+  });
+
+  it('...should init a project and add auth with defaultSocial and then remove federation', async () => {
+    await initJSProjectWithProfile(projRoot, defaultsSettings);
+    await addAuthWithDefaultSocial(projRoot, {});
+    await amplifyPushAuth(projRoot);
+    await removeAuthWithDefault(projRoot);
+    await amplifyPushAuth(projRoot);
   });
 
   it('...should init a project and add auth a PostConfirmation: add-to-group trigger', async () => {

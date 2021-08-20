@@ -19,6 +19,8 @@ import {
   getTeamProviderInfo,
   initJSProjectWithProfile,
   initProjectWithAccessKey,
+  addApi,
+  updateApiSchema,
 } from 'amplify-e2e-core';
 import {
   AppClientSettings,
@@ -232,6 +234,17 @@ describe('auth import userpool only', () => {
     );
   });
 
+  it('imported user pool only should allow iam auth in graphql api', async () => {
+    await initJSProjectWithProfile(projectRoot, projectSettings);
+    await importUserPoolOnly(projectRoot, ogSettings.userPoolName, { native: '_app_client ', web: '_app_clientWeb' });
+    await addApi(projectRoot, {
+      IAM: {},
+    });
+    await updateApiSchema(projectRoot, projectPrefix, 'model_with_iam_auth.graphql');
+    await amplifyPush(projectRoot);
+    // successful push indicates iam auth works when only importing user pool
+  });
+
   it('imported auth, push, pull to empty directory, files should match', async () => {
     await initJSProjectWithProfile(projectRoot, {
       ...projectSettings,
@@ -324,9 +337,9 @@ describe('auth import userpool only', () => {
     // Set it to make sure deleteProject error will be ignored
     ignoreProjectDeleteErrors = true;
 
-    const { ACCESS_KEY_ID, SECRET_ACCESS_KEY } = getEnvVars();
-    if (!ACCESS_KEY_ID || !SECRET_ACCESS_KEY) {
-      throw new Error('Set AWS_ACCESS_KEY_ID and SECRET_ACCESS_KEY either in .env file or as Environment variable');
+    const { AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY } = getEnvVars();
+    if (!AWS_ACCESS_KEY_ID || !AWS_SECRET_ACCESS_KEY) {
+      throw new Error('Set AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY either in .env file or as Environment variable');
     }
 
     const newProjectRegion = process.env.CLI_REGION === 'us-west-2' ? 'us-east-2' : 'us-west-2';
@@ -334,8 +347,8 @@ describe('auth import userpool only', () => {
     await initProjectWithAccessKey(projectRoot, {
       ...projectSettings,
       envName: 'integtest',
-      accessKeyId: ACCESS_KEY_ID,
-      secretAccessKey: SECRET_ACCESS_KEY,
+      accessKeyId: AWS_ACCESS_KEY_ID,
+      secretAccessKey: AWS_SECRET_ACCESS_KEY,
       region: newProjectRegion,
     } as any);
 

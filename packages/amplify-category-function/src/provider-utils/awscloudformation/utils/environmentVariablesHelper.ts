@@ -159,7 +159,7 @@ export const askEnvironmentVariableCarryOut = async (
 };
 
 export const ensureEnvironmentVariableValues = async (context: $TSContext) => {
-  const yesFlagSet = context?.exeInfo?.inputParams?.yes;
+  const yesFlagSet = context?.exeInfo?.inputParams?.yes || context?.input?.options?.yes;
   const currentEnvName = stateManager.getLocalEnvInfo()?.envName;
   const teamProviderInfo = stateManager.getTeamProviderInfo(undefined, {
     throwIfNotExist: false,
@@ -248,7 +248,7 @@ const deleteEnvironmentVariable = (resourceName: string, targetedKey: string): v
     return item.cloudFormationParameterName !== cameledKey && item.environmentVariableName !== targetedKey;
   });
   _.unset(newReferences, targetedKey);
-  _.unset(newParameters, targetedKey);
+  _.unset(newParameters, cameledKey);
   _.unset(newKeyValue, cameledKey);
 
   setStoredList(resourceName, newList);

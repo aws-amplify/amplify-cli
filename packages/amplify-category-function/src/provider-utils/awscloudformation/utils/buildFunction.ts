@@ -1,13 +1,11 @@
 import { $TSContext, pathManager } from 'amplify-cli-core';
-import { FunctionRuntimeLifecycleManager, BuildRequest, BuildType } from 'amplify-function-plugin-interface';
-import * as path from 'path';
+import { BuildRequest, BuildType, FunctionRuntimeLifecycleManager } from 'amplify-function-plugin-interface';
 import { categoryName } from '../../../constants';
 
 export const buildFunction = async (
   context: $TSContext,
-  { resourceName, lastBuildTimestamp, buildType = BuildType.PROD }: BuildRequestMeta,
+  { resourceName, lastBuildTimestamp, lastBuildType, buildType = BuildType.PROD }: BuildRequestMeta,
 ) => {
-  const resourcePath = path.join(pathManager.getBackendDirPath(), categoryName, resourceName);
   const breadcrumbs = context.amplify.readBreadcrumbs(categoryName, resourceName);
 
   const runtimePlugin: FunctionRuntimeLifecycleManager = (await context.amplify.loadRuntimePlugin(
@@ -31,13 +29,14 @@ export const buildFunction = async (
   } else {
     const buildRequest: BuildRequest = {
       buildType,
-      srcRoot: resourcePath,
+      srcRoot: pathManager.getResourceDirectoryPath(undefined, categoryName, resourceName),
       runtime: breadcrumbs.functionRuntime,
       legacyBuildHookParams: {
         projectRoot: pathManager.findProjectRoot(),
-        resourceName: resourceName,
+        resourceName,
       },
       lastBuildTimeStamp: prevBuildTime,
+      lastBuildType,
     };
     rebuilt = (await runtimePlugin.build(buildRequest)).rebuilt;
   }
@@ -52,6 +51,7 @@ export const buildFunction = async (
 export interface BuildRequestMeta {
   resourceName: string;
   lastBuildTimestamp?: string;
+  lastBuildType?: BuildType;
   buildType?: BuildType;
 }
 

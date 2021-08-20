@@ -3,7 +3,55 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-# [0.3.0-ext.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-searchable-transformer@0.2.3...@aws-amplify/graphql-searchable-transformer@0.3.0-ext.0) (2021-07-14)
+## [0.4.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-searchable-transformer@0.4.0...@aws-amplify/graphql-searchable-transformer@0.4.1) (2021-08-06)
+
+
+### Bug Fixes
+
+* **graphql-model-transformer:** model input fields transform ([#7857](https://github.com/aws-amplify/amplify-cli/issues/7857)) ([12ff663](https://github.com/aws-amplify/amplify-cli/commit/12ff663a94a4896bd9eacef3847be15b7631d8df))
+* misc [@model](https://github.com/model) v2 VTL cleanup ([#7856](https://github.com/aws-amplify/amplify-cli/issues/7856)) ([98d81d8](https://github.com/aws-amplify/amplify-cli/commit/98d81d8e2e13fc1525389ba21e6ad4b372e671fb))
+* use improved pluralization in graphql transformer v2 ([#7817](https://github.com/aws-amplify/amplify-cli/issues/7817)) ([38e2599](https://github.com/aws-amplify/amplify-cli/commit/38e25996ee00479031c88714af3b9d40ef9e079c))
+
+
+
+
+
+# [0.4.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-searchable-transformer@0.3.2...@aws-amplify/graphql-searchable-transformer@0.4.0) (2021-07-30)
+
+
+### Bug Fixes
+
+* lambda timeout should be an integer type ([#7699](https://github.com/aws-amplify/amplify-cli/issues/7699)) ([cbacf4d](https://github.com/aws-amplify/amplify-cli/commit/cbacf4d3e497421855c09825970e025550aacfd7))
+
+
+### Features
+
+* capability injection for the vNext GraphQL Transformer ([#7735](https://github.com/aws-amplify/amplify-cli/issues/7735)) ([f3eae13](https://github.com/aws-amplify/amplify-cli/commit/f3eae13ab2848df398e26429abf985b756abcff2))
+
+
+
+
+
+## [0.3.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-searchable-transformer@0.3.1...@aws-amplify/graphql-searchable-transformer@0.3.2) (2021-07-27)
+
+
+### Bug Fixes
+
+* **graphql-searchable-transformer:** fix for awstimestamp issues with elastic search ([#7534](https://github.com/aws-amplify/amplify-cli/issues/7534)) ([dd955d0](https://github.com/aws-amplify/amplify-cli/commit/dd955d0a0d237885aaa7b6ab918d98853845d0e4))
+
+
+
+
+
+## [0.3.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-searchable-transformer@0.3.0...@aws-amplify/graphql-searchable-transformer@0.3.1) (2021-07-16)
+
+**Note:** Version bump only for package @aws-amplify/graphql-searchable-transformer
+
+
+
+
+
+# [0.3.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-searchable-transformer@0.2.3...@aws-amplify/graphql-searchable-transformer@0.3.0) (2021-07-12)
 
 
 ### Bug Fixes

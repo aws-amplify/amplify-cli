@@ -3,6 +3,45 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.24.7](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformers-e2e-tests@6.24.6...graphql-transformers-e2e-tests@6.24.7) (2021-08-06)
+
+
+### Bug Fixes
+
+* **graphql-model-transformer:** model input fields transform ([#7857](https://github.com/aws-amplify/amplify-cli/issues/7857)) ([12ff663](https://github.com/aws-amplify/amplify-cli/commit/12ff663a94a4896bd9eacef3847be15b7631d8df))
+
+
+
+
+
+## [6.24.6](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformers-e2e-tests@6.24.5...graphql-transformers-e2e-tests@6.24.6) (2021-07-30)
+
+**Note:** Version bump only for package graphql-transformers-e2e-tests
+
+
+
+
+
+## [6.24.5](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformers-e2e-tests@6.24.4...graphql-transformers-e2e-tests@6.24.5) (2021-07-27)
+
+
+### Reverts
+
+* Revert "Revert "ci: add support for e2e token rotation (#7665)" (#7759)" (#7762) ([9ea4c8e](https://github.com/aws-amplify/amplify-cli/commit/9ea4c8e115ae62d7c348c3f0d82c89d795eebf46)), closes [#7665](https://github.com/aws-amplify/amplify-cli/issues/7665) [#7759](https://github.com/aws-amplify/amplify-cli/issues/7759) [#7762](https://github.com/aws-amplify/amplify-cli/issues/7762)
+* Revert "ci: add support for e2e token rotation (#7665)" (#7759) ([aadc915](https://github.com/aws-amplify/amplify-cli/commit/aadc9155f5c25478c7f317aec77f51290c6b9cfe)), closes [#7665](https://github.com/aws-amplify/amplify-cli/issues/7665) [#7759](https://github.com/aws-amplify/amplify-cli/issues/7759)
+
+
+
+
+
+## [6.24.4](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformers-e2e-tests@6.24.3...graphql-transformers-e2e-tests@6.24.4) (2021-07-16)
+
+**Note:** Version bump only for package graphql-transformers-e2e-tests
+
+
+
+
+
 ## [6.24.3](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformers-e2e-tests@6.24.2...graphql-transformers-e2e-tests@6.24.3) (2021-06-30)
 
 **Note:** Version bump only for package graphql-transformers-e2e-tests

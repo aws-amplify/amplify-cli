@@ -17,6 +17,8 @@ export const ephemeralField = 'ephemeral';
 export const versionHash = 'latestPushedVersionHash';
 export const cfnTemplateSuffix = '-awscloudformation-template.json';
 
+export const lambdaPackageLimitInMB = 250;
+
 export const enum LayerCfnLogicalNamePrefix {
   LambdaLayerVersion = 'LambdaLayerVersion',
   LambdaLayerVersionPermission = 'LambdaLayerPermission',

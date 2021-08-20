@@ -3,6 +3,65 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.26.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@1.25.1...amplify-cli-core@1.26.0) (2021-08-06)
+
+
+### Bug Fixes
+
+* improve size checks before packaging Lambda resources ([#7756](https://github.com/aws-amplify/amplify-cli/issues/7756)) ([5952f6a](https://github.com/aws-amplify/amplify-cli/commit/5952f6aa6c1a6bbf3693a465ab61c46b7ab5c37b))
+
+
+### Features
+
+* create new amplify-prompts package to handle all terminal interactions ([#7774](https://github.com/aws-amplify/amplify-cli/issues/7774)) ([39b3262](https://github.com/aws-amplify/amplify-cli/commit/39b326202283f402f82d7e38a830acdc3845a8d7))
+
+
+
+
+
+## [1.25.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@1.25.0...amplify-cli-core@1.25.1) (2021-07-30)
+
+
+### Bug Fixes
+
+* **amplify-cli-core:** new-line escape sequence made os-specific ([#7814](https://github.com/aws-amplify/amplify-cli/issues/7814)) ([70cd7df](https://github.com/aws-amplify/amplify-cli/commit/70cd7dfe2a7882c1c2d2f2ff7230a0f81e8e8be9))
+
+
+
+
+
+# [1.25.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@1.24.1...amplify-cli-core@1.25.0) (2021-07-27)
+
+
+### Bug Fixes
+
+* **cli:** prevent re-prompt of info on `amplify pull` ([#7730](https://github.com/aws-amplify/amplify-cli/issues/7730)) ([1919558](https://github.com/aws-amplify/amplify-cli/commit/19195589ab2d8b7382cac100c888bdbb62b9ba59))
+
+
+### Features
+
+* **amplify-category-auth:** use EnabledMFAs to only configure TOTP ([#7779](https://github.com/aws-amplify/amplify-cli/issues/7779)) ([c2102c5](https://github.com/aws-amplify/amplify-cli/commit/c2102c53fd2ca974fb95c4468ad7a87fefe14ab0))
+
+
+### Reverts
+
+* Revert "feat(amplify-category-auth): use EnabledMFAs to only configure TOTP (#7779)" (#7790) ([fa172c4](https://github.com/aws-amplify/amplify-cli/commit/fa172c4caf6f15de56925bd1ff4f8ee743788b52)), closes [#7779](https://github.com/aws-amplify/amplify-cli/issues/7779) [#7790](https://github.com/aws-amplify/amplify-cli/issues/7790)
+
+
+
+
+
+## [1.24.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@1.24.0...amplify-cli-core@1.24.1) (2021-07-16)
+
+
+### Bug Fixes
+
+* checkout into existing env with new LL ([#7687](https://github.com/aws-amplify/amplify-cli/issues/7687)) ([3e2e630](https://github.com/aws-amplify/amplify-cli/commit/3e2e6305b5a74db2a282dc33b0cc5d24f1c8eaaf))
+
+
+
+
+
 # [1.24.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@1.23.1...amplify-cli-core@1.24.0) (2021-06-30)
 
 

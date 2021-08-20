@@ -3,6 +3,66 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.34.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@2.34.1...amplify-category-function@2.34.2) (2021-08-06)
+
+
+### Bug Fixes
+
+* **amplify-category-function:** Storage env vars not added to lambda function ([#7785](https://github.com/aws-amplify/amplify-cli/issues/7785)) ([cb4daaa](https://github.com/aws-amplify/amplify-cli/commit/cb4daaa6edfbf8dd2f7cab71abbda0ef450b16c3))
+* fiux e2e tests by passing categoryName for the resource ([#7886](https://github.com/aws-amplify/amplify-cli/issues/7886)) ([e420c6a](https://github.com/aws-amplify/amplify-cli/commit/e420c6ad11467dc8d1f52c8e65009794bf783944))
+* improve size checks before packaging Lambda resources ([#7756](https://github.com/aws-amplify/amplify-cli/issues/7756)) ([5952f6a](https://github.com/aws-amplify/amplify-cli/commit/5952f6aa6c1a6bbf3693a465ab61c46b7ab5c37b))
+
+
+
+
+
+## [2.34.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@2.34.0...amplify-category-function@2.34.1) (2021-07-30)
+
+
+
+## 5.2.1 (2021-07-29)
+
+
+### Bug Fixes
+
+* [#7696](https://github.com/aws-amplify/amplify-cli/issues/7696) - support production package install for function category ([#7812](https://github.com/aws-amplify/amplify-cli/issues/7812)) ([b39141e](https://github.com/aws-amplify/amplify-cli/commit/b39141e9d00bf0dc23318dcc476ed92ab031e88b))
+* correct behavior of --yes on push when missing env var ([#7826](https://github.com/aws-amplify/amplify-cli/issues/7826)) ([36b807b](https://github.com/aws-amplify/amplify-cli/commit/36b807bafa07c040eb66a1555bf95f17938aa93c))
+* lambda timeout should be an integer type ([#7699](https://github.com/aws-amplify/amplify-cli/issues/7699)) ([cbacf4d](https://github.com/aws-amplify/amplify-cli/commit/cbacf4d3e497421855c09825970e025550aacfd7))
+
+
+
+
+
+# [2.34.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@2.33.1...amplify-category-function@2.34.0) (2021-07-27)
+
+
+### Bug Fixes
+
+* disable layer version removal if fn depends on pinned version ([#7627](https://github.com/aws-amplify/amplify-cli/issues/7627)) ([a086789](https://github.com/aws-amplify/amplify-cli/commit/a086789661df95735679214a65a3808c8a5497e5))
+
+
+### Features
+
+* **amplify-category-function:** skip unnecessary prompt for 'amplify update function' ([12872a4](https://github.com/aws-amplify/amplify-cli/commit/12872a40d178f829cab3666037ebefde5eda02c2))
+
+
+
+
+
+## [2.33.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@2.33.0...amplify-category-function@2.33.1) (2021-07-16)
+
+
+### Bug Fixes
+
+* [#7441](https://github.com/aws-amplify/amplify-cli/issues/7441) - init from git prompts for credentials twice ([#7682](https://github.com/aws-amplify/amplify-cli/issues/7682)) ([7471c5f](https://github.com/aws-amplify/amplify-cli/commit/7471c5fcc86af0e17a967066a388f67891f93355))
+* add/update function when some LL are not yet migrated ([#7674](https://github.com/aws-amplify/amplify-cli/issues/7674)) ([9688681](https://github.com/aws-amplify/amplify-cli/commit/968868103744edcfbed6b082b3d9a92867180f73))
+* check for undefined permissions when removing dependent permissions ([#7594](https://github.com/aws-amplify/amplify-cli/issues/7594)) ([b1b6291](https://github.com/aws-amplify/amplify-cli/commit/b1b6291ac79b18b55723f9463aa93005ab75be88))
+* checkout into existing env with new LL ([#7687](https://github.com/aws-amplify/amplify-cli/issues/7687)) ([3e2e630](https://github.com/aws-amplify/amplify-cli/commit/3e2e6305b5a74db2a282dc33b0cc5d24f1c8eaaf))
+
+
+
+
+
 # [2.33.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@2.32.2...amplify-category-function@2.33.0) (2021-06-30)
 
 

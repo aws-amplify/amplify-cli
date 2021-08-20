@@ -196,7 +196,7 @@ export function removeLayer(cwd: string, versionsToRemove: number[], allVersions
 
 export function removeLayerVersion(
   cwd: string,
-  settings: { removeLegacyOnly?: boolean },
+  settings: { removeLegacyOnly?: boolean; removeNoLayerVersions?: boolean },
   versionsToRemove: number[],
   allVersions: number[],
   testingWithLatestCodebase = false,
@@ -215,7 +215,9 @@ export function removeLayerVersion(
       chain.wait(/Warning: By continuing, these layer versions \[.+\] will be immediately deleted./);
     }
 
-    chain.wait('All new layer versions created with the Amplify CLI will only be deleted on amplify push.');
+    if (!settings.removeNoLayerVersions) {
+      chain.wait('All new layer versions created with the Amplify CLI will only be deleted on amplify push.');
+    }
 
     if (settings.removeLegacyOnly) {
       chain.wait('✔ Layers deleted');
@@ -249,9 +251,6 @@ export function updateLayer(
 ): Promise<void> {
   return new Promise((resolve, reject) => {
     const chain: ExecutionContext = spawn(getCLIPath(testingWithLatestCodebase), ['update', 'function'], { cwd, stripColors: true })
-      .wait('Select which capability you want to update:')
-      .sendKeyDown()
-      .sendCarriageReturn(); // Layer
     if (settings.numLayers > 1) {
       chain.wait('Select the Lambda layer to update:').sendCarriageReturn();
     }
@@ -379,7 +378,7 @@ function waitForLayerSuccessPrintout(
 
   if (settings?.runtimes?.length > 0) {
     chain
-      .wait(path.join('amplify', 'backend', 'function', settings.projName + settings.layerName))
+      .wait(path.join('amplify', 'backend', 'function', (settings.projName || '') + settings.layerName))
       .wait('Next steps:')
       .wait('Move your libraries to the following folder:');
 
