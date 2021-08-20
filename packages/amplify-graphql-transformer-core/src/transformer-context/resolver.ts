@@ -1,19 +1,21 @@
 import {
-  TransformerResolverProvider,
-  DataSourceProvider,
-  TransformerContextProvider,
-  TransformerResolversManagerProvider,
   AppSyncFunctionConfigurationProvider,
-  MappingTemplateProvider,
+  DataSourceProvider,
   GraphQLAPIProvider,
+  MappingTemplateProvider,
+  TransformerContextProvider,
+  TransformerResolverProvider,
+  TransformerResolversManagerProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
-import { Stack, isResolvableObject } from '@aws-cdk/core';
-
-import { MappingTemplate, S3MappingTemplate } from '../cdk-compat';
-import { StackManager } from './stack-manager';
+import { CfnFunctionConfiguration } from '@aws-cdk/aws-appsync';
+import { isResolvableObject, Stack } from '@aws-cdk/core';
 import assert from 'assert';
 import { toPascalCase } from 'graphql-transformer-common';
 import { dedent } from 'ts-dedent';
+import { MappingTemplate, S3MappingTemplate } from '../cdk-compat';
+import { ResolverConfig } from '../config/transformer-config';
+import * as SyncUtils from '../transformation/sync-utils';
+import { StackManager } from './stack-manager';
 
 type Slot = {
   requestMappingTemplate: MappingTemplateProvider;
@@ -26,6 +28,8 @@ const NONE_DATA_SOURCE_NAME = 'NONE_DS';
 
 export class ResolverManager implements TransformerResolversManagerProvider {
   private resolvers: Map<string, TransformerResolverProvider> = new Map();
+  private resolverConfig: any;
+
   generateQueryResolver = (
     typeName: string,
     fieldName: string,
@@ -106,6 +110,24 @@ export class ResolverManager implements TransformerResolversManagerProvider {
   collectResolvers = (): Map<string, TransformerResolverProvider> => {
     return new Map(this.resolvers.entries());
   };
+
+  /**
+   * Setter and getter the sync config
+   */
+  public setResolverConfig = (resolverConfig: ResolverConfig) => {
+    if (this.resolverConfig) {
+      throw new Error(`Resolver Configuration has already been added to the context`);
+    }
+    this.resolverConfig = resolverConfig;
+  };
+
+  public getResolverConfig = <ResolverConfig>(): ResolverConfig => {
+    return this.resolverConfig;
+  };
+
+  public isProjectUsingDataStore(): boolean {
+    return !!this.resolverConfig && (typeof this.resolverConfig.project !== undefined || typeof this.resolverConfig.models !== undefined);
+  }
 }
 export class TransformerResolver implements TransformerResolverProvider {
   private readonly slotMap: Map<string, Slot[]> = new Map();
@@ -180,6 +202,28 @@ export class TransformerResolver implements TransformerResolverProvider {
             const tableName = this.datasource.ds.dynamoDbConfig?.tableName;
             dataSource = `$util.qr($ctx.stash.put("tableName", "${tableName}"))`;
           }
+
+          const syncConfig = SyncUtils.getSyncConfig(context, this.typeName);
+          if (syncConfig) {
+            const funcConf = dataSourceProviderFn.node.children.find(
+              (it: any) => it.cfnResourceType === 'AWS::AppSync::FunctionConfiguration',
+            ) as CfnFunctionConfiguration;
+
+            if (funcConf) {
+              funcConf.syncConfig = {
+                conflictDetection: syncConfig.ConflictDetection,
+                conflictHandler: syncConfig.ConflictHandler,
+                ...(SyncUtils.isLambdaSyncConfig(syncConfig)
+                  ? {
+                      lambdaConflictHandlerConfig: {
+                        lambdaConflictHandlerArn: syncConfig.LambdaConflictHandler.lambdaArn,
+                      },
+                    }
+                  : {}),
+              };
+            }
+          }
+
           break;
         case 'AMAZON_ELASTICSEARCH':
           if (this.datasource.ds.elasticsearchConfig && !isResolvableObject(this.datasource.ds.elasticsearchConfig)) {

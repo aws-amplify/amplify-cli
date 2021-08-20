@@ -1,5 +1,5 @@
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
-import { GraphQLTransform, validateModelSchema } from '@aws-amplify/graphql-transformer-core';
+import { ConflictHandlerType, GraphQLTransform, SyncConfig, validateModelSchema } from '@aws-amplify/graphql-transformer-core';
 import { InputObjectTypeDefinitionNode, InputValueDefinitionNode, ListValueNode, NamedTypeNode, parse } from 'graphql';
 import { getBaseType } from 'graphql-transformer-common';
 import {
@@ -878,5 +878,102 @@ describe('ModelTransformer: ', () => {
     const out = transformer.transform(validSchema);
     expect(out).toBeDefined();
     validateModelSchema(parse(out.schema));
+  });
+  
+  it('should generate sync resolver with ConflictHandlerType.Automerge', () => {
+    const validSchema = `
+      type Post @model {
+          id: ID!
+          title: String!
+      }
+    `;
+
+    const config: SyncConfig = {
+      ConflictDetection: 'VERSION',
+      ConflictHandler: ConflictHandlerType.Automerge,
+    };
+
+    const transformer = new GraphQLTransform({
+      transformers: [new ModelTransformer()],
+      featureFlags,
+      transformConfig: {
+        ResolverConfig: {
+          project: config,
+        },
+      },
+    });
+    const out = transformer.transform(validSchema);
+    expect(out).toBeDefined();
+
+    const definition = out.schema;
+    expect(definition).toBeDefined();
+    expect(out.pipelineFunctions).toMatchSnapshot();
+  });
+
+  it('should generate sync resolver with ConflictHandlerType.Lambda', () => {
+    const validSchema = `
+      type Post @model {
+          id: ID!
+          title: String!
+          createdAt: String
+          updatedAt: String
+      }
+    `;
+
+    const config: SyncConfig = {
+      ConflictDetection: 'VERSION',
+      ConflictHandler: ConflictHandlerType.Lambda,
+      LambdaConflictHandler: {
+        name: 'myLambdaConflictHandler',
+      },
+    };
+
+    const transformer = new GraphQLTransform({
+      transformers: [new ModelTransformer()],
+      featureFlags,
+      transformConfig: {
+        ResolverConfig: {
+          project: config,
+        },
+      },
+    });
+    const out = transformer.transform(validSchema);
+    expect(out).toBeDefined();
+
+    const definition = out.schema;
+    expect(definition).toBeDefined();
+    expect(out.pipelineFunctions).toMatchSnapshot();
+  });
+
+  it('should generate sync resolver with ConflictHandlerType.Optimistic', () => {
+    const validSchema = `
+      type Post @model {
+          id: ID!
+          title: String!
+          createdAt: String
+          updatedAt: String
+      }
+    `;
+
+    const config: SyncConfig = {
+      ConflictDetection: 'VERSION',
+      ConflictHandler: ConflictHandlerType.Optimistic,
+    };
+
+    const transformer = new GraphQLTransform({
+      transformers: [new ModelTransformer()],
+      featureFlags,
+      transformConfig: {
+        ResolverConfig: {
+          project: config,
+        },
+      },
+    });
+    const out = transformer.transform(validSchema);
+    expect(out).toBeDefined();
+
+    const definition = out.schema;
+    expect(definition).toBeDefined();
+    expect(out.pipelineFunctions).toMatchSnapshot();
   });
 });

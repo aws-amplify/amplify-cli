@@ -1,3 +1,53 @@
+export interface TransformMigrationConfig {
+  V1?: {
+    Resources: string[];
+  };
+}
+
+// Auth Config
+export type AppSyncAuthMode = 'API_KEY' | 'AMAZON_COGNITO_USER_POOLS' | 'AWS_IAM' | 'OPENID_CONNECT';
+export type AppSyncAuthConfiguration = {
+  defaultAuthentication: AppSyncAuthConfigurationEntry;
+  additionalAuthenticationProviders: Array<AppSyncAuthConfigurationEntry>;
+};
+
+export type AppSyncAuthConfigurationEntry =
+  | AppSyncAuthConfigurationUserPoolEntry
+  | AppSyncAuthConfigurationAPIKeyEntry
+  | AppSyncAuthConfigurationIAMEntry
+  | AppSyncAuthConfigurationOIDCEntry;
+export type AppSyncAuthConfigurationAPIKeyEntry = {
+  authenticationType: 'API_KEY';
+  apiKeyConfig: ApiKeyConfig;
+};
+export type AppSyncAuthConfigurationUserPoolEntry = {
+  authenticationType: 'AMAZON_COGNITO_USER_POOLS';
+  userPoolConfig: UserPoolConfig;
+};
+export type AppSyncAuthConfigurationIAMEntry = {
+  authenticationType: 'AWS_IAM';
+};
+
+export type AppSyncAuthConfigurationOIDCEntry = {
+  authenticationType: 'OPENID_CONNECT';
+  openIDConnectConfig: OpenIDConnectConfig;
+};
+
+export type ApiKeyConfig = {
+  description?: string;
+  apiKeyExpirationDays: number;
+};
+export type UserPoolConfig = {
+  userPoolId: string;
+};
+export type OpenIDConnectConfig = {
+  name: string;
+  issuerUrl: string;
+  clientId?: string;
+  iatTTL?: number;
+  authTTL?: number;
+};
+
 // Sync Config
 export const enum ConflictHandlerType {
   Optimistic = 'OPTIMISTIC_CONCURRENCY',
@@ -16,17 +66,18 @@ export type SyncConfigServer = {
 export type SyncConfigLambda = {
   ConflictDetection: ConflictDetectionType;
   ConflictHandler: ConflictHandlerType.Lambda;
-  LambdaConflictHandler: {
-    name: string;
-    region?: string;
-    lambdaArn?: any;
-  };
+  LambdaConflictHandler: LambdaConflictHandler;
+};
+export type LambdaConflictHandler = {
+  name: string;
+  region?: string;
+  lambdaArn?: any;
 };
 export type SyncConfig = SyncConfigOptimistic | SyncConfigServer | SyncConfigLambda;
 
 export type ResolverConfig = {
   project?: SyncConfig;
-  models?: Record<string,SyncConfig>;
+  models?: Record<string, SyncConfig>;
 };
 /**
  * The transform config is specified in transform.conf.json within an Amplify
@@ -60,6 +111,4 @@ export interface TransformConfig {
    * Such as sync configuration for appsync local support
    */
   ResolverConfig?: ResolverConfig;
-
-  schema: string;
 }
