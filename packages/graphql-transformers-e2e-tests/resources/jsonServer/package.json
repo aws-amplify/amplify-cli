@@ -3,13 +3,13 @@
   "private": true,
   "version": "1.0.0",
   "devDependencies": {
-    "aws-cdk": "~1.72.0",
+    "aws-cdk": "~1.119.0",
     "@types/node": "^12.12.6",
     "typescript": "^3.8.3"
   },
   "dependencies": {
-    "@aws-cdk/aws-lambda": "~1.72.0",
-    "@aws-cdk/aws-apigateway": "~1.72.0",
-    "@aws-cdk/core": "~1.72.0"
+    "@aws-cdk/aws-lambda": "~1.119.0",
+    "@aws-cdk/aws-apigateway": "~1.119.0",
+    "@aws-cdk/core": "~1.119.0"
   }
 }

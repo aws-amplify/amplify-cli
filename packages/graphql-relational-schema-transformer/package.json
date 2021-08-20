@@ -31,7 +31,7 @@
   },
   "devDependencies": {
     "@types/fs-extra": "^8.0.1",
-    "aws-sdk": "^2.919.0"
+    "aws-sdk": "^2.963.0"
   },
   "jest": {
     "collectCoverage": true,

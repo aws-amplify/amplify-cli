@@ -251,7 +251,7 @@ export class PipelineWithAwaiter extends cdk.Construct {
                 clusterName: service.cluster,
                 env: {},
               } as ecs.ICluster;
-              serviceArn = cdk.Fn.ref(service.serviceArn);
+              serviceArn = cdk.Fn.ref(service.attrServiceArn);
               serviceName = service.serviceName;
               stack = cdk.Stack.of(this);
               env = {} as any;
