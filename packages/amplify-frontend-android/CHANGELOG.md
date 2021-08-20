@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.15.5-ext.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-android@2.15.3...amplify-frontend-android@2.15.5-ext.0) (2021-08-20)
+
+**Note:** Version bump only for package amplify-frontend-android
+
+
+
+
+
 ## [2.15.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-android@2.15.3...amplify-frontend-android@2.15.4) (2021-08-06)
 
 

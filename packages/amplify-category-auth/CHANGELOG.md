@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.37.0-ext.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.35.0-ext.0...amplify-category-auth@2.37.0-ext.0) (2021-08-20)
+
+
+### Features
+
+* add override command for auth ([#7943](https://github.com/aws-amplify/amplify-cli/issues/7943)) ([9202e3b](https://github.com/aws-amplify/amplify-cli/commit/9202e3bea1e4015db7eaeb358ee5dac6e5838309))
+
+
+
+
+
 ## [2.36.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.36.1...amplify-category-auth@2.36.2) (2021-08-06)
 
 

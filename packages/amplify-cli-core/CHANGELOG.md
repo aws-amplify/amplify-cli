@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.27.0-ext.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@1.24.0...amplify-cli-core@1.27.0-ext.0) (2021-08-20)
+
+
+### Features
+
+* add override command for auth ([#7943](https://github.com/aws-amplify/amplify-cli/issues/7943)) ([9202e3b](https://github.com/aws-amplify/amplify-cli/commit/9202e3bea1e4015db7eaeb358ee5dac6e5838309))
+* Override functionality enabled for Root stack ([#7702](https://github.com/aws-amplify/amplify-cli/issues/7702)) ([a509b8e](https://github.com/aws-amplify/amplify-cli/commit/a509b8eeb057be51f303b47e4e5618b4985bfc9d))
+
+
+
+
+
 # [1.26.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@1.25.1...amplify-cli-core@1.26.0) (2021-08-06)
 
 

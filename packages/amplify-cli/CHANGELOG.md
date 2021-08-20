@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.4.0-ext.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@5.1.1-ext.0...@aws-amplify/cli@5.4.0-ext.0) (2021-08-20)
+
+
+### Features
+
+* Override functionality enabled for Root stack ([#7702](https://github.com/aws-amplify/amplify-cli/issues/7702)) ([a509b8e](https://github.com/aws-amplify/amplify-cli/commit/a509b8eeb057be51f303b47e4e5618b4985bfc9d))
+
+
+
+
+
 # [5.3.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@5.2.1...@aws-amplify/cli@5.3.0) (2021-08-06)
 
 
