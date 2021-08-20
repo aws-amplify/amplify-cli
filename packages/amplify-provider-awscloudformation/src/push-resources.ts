@@ -757,7 +757,6 @@ async function updateS3Templates(context: $TSContext, resourcesToBeUpdated: $TSA
 
   for (const { category, resourceName } of resourcesToBeUpdated) {
     const { resourceDir, cfnFiles } = getCfnFiles(category, resourceName);
-
     for (const cfnFile of cfnFiles) {
       await writeCustomPoliciesToCFNTemplate(resourceName, resourceDir, cfnFile, category, path.join(resourceDir, cfnFile));
       const transformedCFNPath = await preProcessCFNTemplate(path.join(resourceDir, cfnFile));
