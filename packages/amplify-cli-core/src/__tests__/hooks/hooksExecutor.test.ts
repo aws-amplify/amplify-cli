@@ -107,8 +107,8 @@ describe('hooksExecutioner tests', () => {
   test('executeHooks with no context', async () => {
     await executeHooks(HooksMeta.getInstance());
     expect(execa).toHaveBeenCalledTimes(0);
-    const hooksMetaHooksMeta = HooksMeta.getInstance();
-    hooksMetaHooksMeta.setEventCommand('add');
+    const hooksMeta = HooksMeta.getInstance();
+    hooksMeta.setEventCommand('add');
     await executeHooks(HooksMeta.getInstance(undefined, 'pre'));
     expect(execa).toHaveBeenCalledTimes(1);
   });
