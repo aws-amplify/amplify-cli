@@ -9,7 +9,7 @@ export type CustomIAMPolicies = {
 }
 
 export const CustomIAMPoliciesSchema = {
-    type : "object",
+    type: "object",
     properties: {
         policies: {type: "array", minItems: 1, items: {type: "object"}}
     },

@@ -1,5 +1,5 @@
 import { stateManager, pathManager, readCFNTemplate, writeCFNTemplate,
-  CustomIAMPolicies, CustomIAMPolicy } from 'amplify-cli-core';
+  CustomIAMPolicies, CustomIAMPolicy, $TSContext } from 'amplify-cli-core';
 import * as path from 'path';
 import { ProviderName as providerName } from '../constants';
 import { prePushCfnTemplateModifier } from './pre-push-cfn-modifier';
@@ -58,6 +58,8 @@ export async function preProcessCFNTemplate(filePath: string): Promise<string> {
   return newPath;
 }
 
+//get data from custom polcies file and write custom policies to CFN template
+
 export async function writeCustomPoliciesToCFNTemplate(
   resourceName: string,
   resourceDir: string,
@@ -69,11 +71,13 @@ export async function writeCustomPoliciesToCFNTemplate(
   const customPolicies = stateManager.getCustomPolicies(category, resourceName);
   if (!customPolicies) return;
 
-  await addCustomPoliciesToCFNTemplateForFunction(category, customPolicies, cfnTemplate, filePath, resourceName, {templateFormat} );
+  await addCustomPoliciesToCFNTemplate(category, customPolicies, cfnTemplate, filePath, resourceName, {templateFormat} );
 
 }
 
-export async function addCustomPoliciesToCFNTemplateForFunction(
+//merge the custom IAM polciies to CFN template for lambda and API container
+
+export async function addCustomPoliciesToCFNTemplate(
   category: string,
   customPolicies: CustomIAMPolicies,
   cfnTemplate: Template,
@@ -81,7 +85,6 @@ export async function addCustomPoliciesToCFNTemplateForFunction(
   resourceName: string,
   {templateFormat}: any
   ) {
-  if (category != 'function' && category != 'api') return;
   let customExecutionPolicy;
 
   if(category === 'function') {
@@ -109,6 +112,8 @@ export async function addCustomPoliciesToCFNTemplateForFunction(
   await writeCFNTemplate(cfnTemplate, filePath, { templateFormat });
 }
 
+//validate the format of actions and ARNs for custom IAM policies
+
 export function validateRegexCustomPolicy (customPolicy: CustomIAMPolicy, resourceName: string) {
   const resources = customPolicy.Resource;
   const actions = customPolicy.Action;
@@ -124,7 +129,8 @@ export function validateRegexCustomPolicy (customPolicy: CustomIAMPolicy, resour
       wrongResourcesRegex.push(resource);
     }
     if(resource === '*') {
-      printer.error(`Warning:\nA "*"  will gives access to all your resources in your accounts`)
+      printer.warn(`Warning: You've specified "*" as a custom IAM policy for your ${resourceName}. 
+      This will give your ${resourceName} access to ALL resources in the AWS Account.`)
     }
   }
 
@@ -135,10 +141,10 @@ export function validateRegexCustomPolicy (customPolicy: CustomIAMPolicy, resour
   }
 
   if (wrongResourcesRegex.length > 0) {
-    errorMessage += `\nInvalid ARN format in ${resourceName}:\n${wrongResourcesRegex.toString()}\n`;
+    errorMessage += `\nInvalid ARN format for custom IAM policies in ${resourceName}:\n${wrongResourcesRegex.toString()}\n`;
   }
   if (wrongActionsRegex.length > 0) {
-    errorMessage += `\nInvalid actions format in ${resourceName}:\n${wrongActionsRegex.toString()}\n`;
+    errorMessage += `\nInvalid actions format for custom IAM policies in ${resourceName}:\n${wrongActionsRegex.toString()}\n`;
   }
 
   if (errorMessage.length > 0) {

@@ -2,7 +2,7 @@ import sequential from 'promise-sequential';
 import { initializeEnv } from '../../initialize-env';
 import { getProviderPlugins } from '../../extensions/amplify-helpers/get-provider-plugins';
 import { getEnvInfo } from '../../extensions/amplify-helpers/get-env-info';
-import { stateManager } from 'amplify-cli-core';
+import { CustomIAMPolicies, JSONUtilities, pathManager, stateManager } from 'amplify-cli-core';
 
 export const run = async context => {
   const envName = context.parameters.first;
@@ -20,6 +20,9 @@ export const run = async context => {
   const localEnvInfo = getEnvInfo();
   localEnvInfo.envName = envName;
   stateManager.setLocalEnvInfo(undefined, localEnvInfo);
+
+  //replace env name in the resource of custom IAM policies
+  stateManager.replaceEnvForCustomPoliciesBetweenEnv(envName);
 
   // Setup exeinfo
 

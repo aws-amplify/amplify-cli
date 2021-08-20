@@ -2,12 +2,13 @@ import * as fs from 'fs-extra';
 import * as path from 'path';
 import _ from 'lodash';
 import { $TSAny, $TSMeta, $TSTeamProviderInfo, DeploymentSecrets, HooksConfig, PathConstants } from '..';
-import { SecretFileMode } from '../cliConstants';
-import { JSONUtilities } from '../jsonUtilities';
-import { HydrateTags, ReadTags, Tag } from '../tags';
 import Ajv from "ajv";
 import { pathManager } from './pathManager';
-import { CustomIAMPolicies, CustomIAMPolicySchema, CustomIAMPoliciesSchema } from '../customPoliciesType';
+import { JSONUtilities } from '../jsonUtilities';
+import { SecretFileMode } from '../cliConstants';
+import { HydrateTags, ReadTags, Tag } from '../tags';
+import { CustomIAMPolicies, CustomIAMPolicySchema, CustomIAMPoliciesSchema, CustomIAMPolicy } from '../customPoliciesType';
+import { printer } from "amplify-prompts";
 
 export type GetOptions<T> = {
   throwIfNotExist?: boolean;
@@ -85,33 +86,117 @@ export class StateManager {
     }
     const data = JSONUtilities.readJson<CustomIAMPolicies>(filePath, {throwIfNotExist : false});
     const ajv = new Ajv();
+    const { envName } = this.getLocalEnvInfo()
 
+    //validate if the policies match the custom IAM policies schema, if not, then not write into the CFN template
     const validatePolicies = ajv.compile(CustomIAMPoliciesSchema);
-    if (!data || !validatePolicies(data))
-      {return undefined;}
-
+    if (!data || !validatePolicies(data)) {
+      printer.warn(`The format of custom IAM policies in the ${categoryName} ${resourceName} is not valid`);
+      return undefined;
+    }
     const validatePolicy = ajv.compile(CustomIAMPolicySchema);
     for (const policy of data.policies) {
       if (validatePolicy(policy)) {
-        if (!policy.Effect) policy.Effect = "Allow";
-        customPolicies.policies.push(policy);
+        if (!policy.Effect) policy.Effect = 'Allow';
+        const policyWithoutEnv = this.replaceEnvForCustomPolicies(policy, envName);
+        customPolicies.policies.push(policyWithoutEnv);
+      }
+      else {
+        printer.warn(`The format of custom IAM policies in the ${categoryName} ${resourceName} is not valid`);
+        return undefined;
       }
     }
+    //the policies with env will be written to the custom policies file again
+    JSONUtilities.writeJson(filePath, data);
+    //the policies without env will be carried over and merge into the CFN template
     return customPolicies;
   };
+
+  //replace or add env parameter in the front of the resource customers enter to the current env
+  replaceEnvForCustomPolicies = (policy: CustomIAMPolicy, currentEnv: string): CustomIAMPolicy => {
+    let action = policy.Action;
+    let effect = policy.Effect;
+    let resourceWithNoEnv = [];
+    let resourceWithEnv = [];
+
+    for (let resource of policy.Resource){
+      const splitedResource = resource.split('/');
+      //if there is no env in the resource customers entered, then just add the current env to the resource
+      if(splitedResource.length <= 1) {
+        resourceWithEnv.push(`${currentEnv}/${splitedResource[0]}`);
+        resourceWithNoEnv.push(splitedResource[0]);
+        continue;
+      }
+      //In case there is a slash in the env name, check where is the start of the ARN
+      let index = 0;
+      for (index; index < splitedResource.length; index ++) {
+        if (splitedResource[index].substring(0,3) === 'arn') {
+          break;
+        }
+      }
+      //change the env if env exists, or add the env if not exists.
+      if (index >= 1) {
+        let env = '';
+        for (let i = 0; i < index; i++) {
+          env = `${env}${splitedResource[i]}`;
+          if (i < (index - 1)) env = `${env}/`
+        }
+        if (env != currentEnv) env = currentEnv;
+        let combinedResourceWithEnv = env;
+        for (let j = index; j < splitedResource.length; j++) {
+          combinedResourceWithEnv = `${combinedResourceWithEnv}/${splitedResource[j]}`
+        }
+        resourceWithEnv.push(combinedResourceWithEnv);
+        splitedResource[0] = '';
+        resourceWithNoEnv.push(splitedResource.join(''));
+      } else {
+        resourceWithEnv.push(`${currentEnv}/${resource}`);
+        resourceWithNoEnv.push(resource);
+      }
+    }
+    //replace the original resource with the resource that have the current env
+    policy.Resource = resourceWithEnv;
+    const policyWithoutEnv: CustomIAMPolicy = {
+      Action: action,
+      Effect: effect,
+      Resource: resourceWithNoEnv
+    }
+    //return the policies without the env to merge to CFN template
+    return policyWithoutEnv;
+  }
 
   addCustomPoliciesFile = (categoryName: string, resourceName: string): void => {
     const customPoliciesPath = pathManager.getCustomPoliciesPath(categoryName, resourceName);
     const defaultCustomPolicies = {
-        "policies": [
+        policies: [
           {
-            "Effect": "Allow",
-            "Action": [],
-            "Resource": []
+            Effect: 'Allow',
+            Action: [],
+            Resource: []
           }
         ]
     }
     JSONUtilities.writeJson(customPoliciesPath, defaultCustomPolicies);
+  }
+
+  replaceEnvForCustomPoliciesBetweenEnv = (envName: string): void =>{
+    const meta = this.getMeta();
+    const categories = ['api', 'function'];
+    const categoryObjects = [meta.api, meta.function];
+
+    for (let i = 0; i < categories.length; i++) {
+      const currentCategory = Object.keys(categoryObjects[i]);
+      for (let j = 0; j < currentCategory.length; j++) {
+        const resourceName = currentCategory[j];
+        const customPoliciesPath = pathManager.getCustomPoliciesPath(categories[i], resourceName);
+        const data = JSONUtilities.readJson<CustomIAMPolicies>(customPoliciesPath, {throwIfNotExist : false})
+        if (!data) break;
+        for (let policy of data.policies) {
+          this.replaceEnvForCustomPolicies(policy, envName);
+        }
+        JSONUtilities.writeJson(customPoliciesPath, data);
+      }
+    }
   }
 
   localEnvInfoExists = (projectPath?: string): boolean => this.doesExist(pathManager.getLocalEnvFilePath, projectPath);
