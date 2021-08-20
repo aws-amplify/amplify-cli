@@ -236,7 +236,7 @@ const legacyCommandExecutor = async (context: Context, plugin: PluginInfo) => {
 const EVENT_EMITTING_PLUGINS = new Set([constants.CORE, constants.CODEGEN]);
 
 async function raisePreEvent(context: Context) {
-  await executeHooks(HooksMeta.constructHooksMetaObject(context.input, 'pre'));
+  await executeHooks(HooksMeta.getInstance(context.input, 'pre'));
   const { command, plugin } = context.input;
   if (!plugin || !EVENT_EMITTING_PLUGINS.has(plugin)) {
     return;
@@ -276,7 +276,7 @@ async function raisePreCodegenModelsEvent(context: Context) {
 async function raisePostEvent(context: Context) {
   const { command, plugin } = context.input;
   if (!plugin || !EVENT_EMITTING_PLUGINS.has(plugin)) {
-    await executeHooks(HooksMeta.constructHooksMetaObject(context.input, 'post'));
+    await executeHooks(HooksMeta.getInstance(context.input, 'post'));
     return;
   }
   switch (command) {
@@ -293,7 +293,7 @@ async function raisePostEvent(context: Context) {
       await raisePostCodegenModelsEvent(context);
       break;
   }
-  await executeHooks(HooksMeta.constructHooksMetaObject(context.input, 'post'));
+  await executeHooks(HooksMeta.getInstance(context.input, 'post'));
 }
 
 async function raisePostInitEvent(context: Context) {

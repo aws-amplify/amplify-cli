@@ -10,7 +10,7 @@ export async function displayBannerMessages(input: Input) {
   }
   await displayLayerMigrationMessage();
   if (skipHooks()) {
-    printer.warn('Warning: Amplify runtime hooks are disabled in the current execution environment.');
+    printer.warn('Amplify runtime hooks are disabled in the current execution environment.');
     printer.warn('See https://docs.amplify.aws/cli/usage/runtime-hooks for more information.');
   }
 }

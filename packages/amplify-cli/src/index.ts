@@ -159,9 +159,8 @@ export async function run() {
 
     rewireDeprecatedCommands(input);
     logInput(input);
-    const hooksMeta = HooksMeta.getInstance();
+    const hooksMeta = HooksMeta.getInstance(input);
     hooksMeta.setAmplifyVersion(getAmplifyVersion());
-    hooksMeta.setHookEventFromInput(input);
     const context = constructContext(pluginPlatform, input);
 
     // Initialize feature flags
@@ -275,7 +274,7 @@ export async function run() {
       }
     }
     await executeHooks(
-      HooksMeta.constructHooksMetaObject(undefined, 'post', {
+      HooksMeta.getInstance(undefined, 'post', {
         message: error.message ?? 'undefined error in Amplify process',
         stack: error.stack ?? 'undefined error stack',
       }),

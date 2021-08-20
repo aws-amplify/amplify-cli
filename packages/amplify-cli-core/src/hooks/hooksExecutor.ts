@@ -28,7 +28,7 @@ export const executeHooks = async (hooksMeta: HooksMeta): Promise<void> => {
 
   const { commandHookFileMeta, subCommandHookFileMeta } = getHookFileMetas(hooksDirPath, hooksMeta.getHookEvent(), hooksConfig);
 
-  let executionQueue = [commandHookFileMeta, subCommandHookFileMeta];
+  const executionQueue = [commandHookFileMeta, subCommandHookFileMeta];
 
   if (hooksMeta.getHookEvent().forcePush) {
     // we want to run push related hoooks when forcePush flag is enabled
@@ -39,12 +39,14 @@ export const executeHooks = async (hooksMeta: HooksMeta): Promise<void> => {
   }
 
   for (const execFileMeta of executionQueue) {
-    if (execFileMeta) {
-      const runtime = getRuntime(execFileMeta, hooksConfig);
-      if (runtime) {
-        await execHelper(runtime, execFileMeta, hooksMeta.getDataParameter(), hooksMeta.getErrorParameter());
-      }
+    if (!execFileMeta) {
+      continue;
     }
+    const runtime = getRuntime(execFileMeta, hooksConfig);
+    if (!runtime) {
+      continue;
+    }
+    await execHelper(runtime, execFileMeta, hooksMeta.getDataParameter(), hooksMeta.getErrorParameter());
   }
 };
 

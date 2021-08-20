@@ -47,7 +47,6 @@ describe('test SIGINT with execute', () => {
           setAmplifyVersion: jest.fn(),
           setHookEventFromInput: jest.fn(),
         }),
-        constructHooksMetaObject: jest.fn(),
       },
       skipHooks: jest.fn(),
     });
