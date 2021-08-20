@@ -58,10 +58,21 @@ export const generateConditionSlot = (inputConditionObjectName: string, conditio
 /**
  * Generate common response template used by most of the resolvers.
  */
-export const generateDefaultResponseMappingTemplate = (): string => {
-  const statements: Expression[] = [
-    ifElse(ref('ctx.error'), methodCall(ref('util.error'), ref('ctx.error.message'), ref('ctx.error.type')), toJson(ref('ctx.result'))),
-  ];
+export const generateDefaultResponseMappingTemplate = (isSyncEnabled: boolean): string => {
+  const statements: Expression[] = [];
+  if (isSyncEnabled) {
+    statements.push(
+      ifElse(
+        ref('ctx.error'),
+        methodCall(ref('util.error'), ref('ctx.error.message'), ref('ctx.error.type'), ref('ctx.result')),
+        toJson(ref('ctx.result')),
+      ),
+    );
+  } else {
+    statements.push(
+      ifElse(ref('ctx.error'), methodCall(ref('util.error'), ref('ctx.error.message'), ref('ctx.error.type')), toJson(ref('ctx.result'))),
+    );
+  }
 
   return printBlock('Get ResponseTemplate')(compoundExpression(statements));
 };

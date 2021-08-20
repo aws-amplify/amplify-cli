@@ -19,6 +19,7 @@ import { IRole } from '@aws-cdk/aws-iam';
 import { InlineTemplate, S3MappingFunctionCode } from './cdk-compat/template-asset';
 import { toCamelCase } from 'graphql-transformer-common';
 import { GraphQLApi } from './graphql-api';
+import { DynamoDbDataSourceOptions } from '@aws-amplify/graphql-transformer-interfaces/src/transform-host-provider';
 
 export interface DefaultTransformHostOptions {
   readonly api: GraphQLApi;
@@ -69,7 +70,7 @@ export class DefaultTransformHost implements TransformHostProvider {
     return dataSource;
   }
 
-  public addDynamoDbDataSource(name: string, table: ITable, options?: DataSourceOptions, stack?: Stack): DynamoDbDataSource {
+  public addDynamoDbDataSource(name: string, table: ITable, options?: DynamoDbDataSourceOptions, stack?: Stack): DynamoDbDataSource {
     if (this.dataSources.has(name)) {
       throw new Error(`DataSource ${name} already exists in the API`);
     }
@@ -227,12 +228,13 @@ export class DefaultTransformHost implements TransformHostProvider {
    * @param options The optional configuration for this data source
    * @param stack  Stack to which this datasource needs to mapped to
    */
-  protected doAddDynamoDbDataSource(id: string, table: ITable, options?: DataSourceOptions, stack?: Stack): DynamoDbDataSource {
+  protected doAddDynamoDbDataSource(id: string, table: ITable, options?: DynamoDbDataSourceOptions, stack?: Stack): DynamoDbDataSource {
     return new DynamoDbDataSource(stack ?? this.api, id, {
       api: this.api,
       table,
       name: options?.name,
       description: options?.description,
+      serviceRole: options?.serviceRole,
     });
   }
 
