@@ -115,7 +115,7 @@ function printReference(node: ReferenceNode): string {
 }
 
 function printQuietReference(node: QuietReferenceNode, indent: string = ''): string {
-  const val = typeof node.value === 'string' ? node.value : printExpr(node.value)
+  const val = typeof node.value === 'string' ? node.value : printExpr(node.value);
   return `${indent}$util.qr(${val})`;
 }
 

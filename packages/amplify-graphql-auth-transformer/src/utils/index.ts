@@ -1,8 +1,8 @@
 import { ModelDirectiveConfiguration, SubscriptionLevel } from '@aws-amplify/graphql-model-transformer';
-import { AppSyncAuthConfiguration, AppSyncAuthMode, DirectiveWrapper } from '@aws-amplify/graphql-transformer-core';
+import { AppSyncAuthMode, DirectiveWrapper } from '@aws-amplify/graphql-transformer-core';
 import { DirectiveNode } from 'graphql';
 import { toCamelCase, plurality } from 'graphql-transformer-common';
-import { AuthProvider, AuthRule } from './definitions';
+import { AuthProvider, AuthRule, AuthTransformerConfig, ConfiguredAuthProviders, RoleDefinition, RolesByProvider } from './definitions';
 
 export * from './constants';
 export * from './definitions';
@@ -10,6 +10,16 @@ export * from './validations';
 export * from './schema';
 export * from './iam';
 
+export const splitRoles = (roles: Array<RoleDefinition>): RolesByProvider => {
+  return {
+    cognitoStaticGroupRoles: roles.filter(r => r.static && r.provider === 'userPools'),
+    cognitoDynamicRoles: roles.filter(r => !r.static && r.provider === 'userPools'),
+    oidcStaticGroupRoles: roles.filter(r => r.static && r.provider === 'oidc'),
+    oidcDynamicRoles: roles.filter(r => !r.static && r.provider === 'oidc'),
+    iamRoles: roles.filter(r => r.provider === 'iam'),
+    apiKeyRoles: roles.filter(r => r.provider === 'apiKey'),
+  };
+};
 /**
  * Ensure the following defaults
  * - provider
@@ -54,7 +64,7 @@ export const getModelConfig = (directive: DirectiveNode, typeName: string): Mode
       delete: toCamelCase(['delete', typeName]),
     },
     subscriptions: {
-      level: SubscriptionLevel.public,
+      level: SubscriptionLevel.on,
       onCreate: [toCamelCase(['onCreate', typeName])],
       onDelete: [toCamelCase(['onDelete', typeName])],
       onUpdate: [toCamelCase(['onUpdate', typeName])],
@@ -67,10 +77,10 @@ export const getModelConfig = (directive: DirectiveNode, typeName: string): Mode
   return options;
 };
 
-export const getConfiguredAuthProviders = (authConfig: AppSyncAuthConfiguration) => {
+export const getConfiguredAuthProviders = (config: AuthTransformerConfig): ConfiguredAuthProviders => {
   const providers = [
-    authConfig.defaultAuthentication.authenticationType,
-    ...authConfig.additionalAuthenticationProviders.map(p => p.authenticationType),
+    config.authConfig.defaultAuthentication.authenticationType,
+    ...config.authConfig.additionalAuthenticationProviders.map(p => p.authenticationType),
   ];
   const getAuthProvider = (authType: AppSyncAuthMode): AuthProvider => {
     switch (authType) {
@@ -84,13 +94,15 @@ export const getConfiguredAuthProviders = (authConfig: AppSyncAuthConfiguration)
         return 'oidc';
     }
   };
-
-  return {
-    default: getAuthProvider(authConfig.defaultAuthentication.authenticationType),
-    onlyDefaultAuthProviderConfigured: authConfig.additionalAuthenticationProviders.length === 0,
+  const hasIAM = providers.some(p => p === 'AWS_IAM');
+  const configuredProviders: ConfiguredAuthProviders = {
+    default: getAuthProvider(config.authConfig.defaultAuthentication.authenticationType),
+    onlyDefaultAuthProviderConfigured: config.authConfig.additionalAuthenticationProviders.length === 0,
+    hasAdminUIEnabled: hasIAM && config.addAwsIamAuthInOutputSchema,
     hasApiKey: providers.some(p => p === 'API_KEY'),
     hasUserPools: providers.some(p => p === 'AMAZON_COGNITO_USER_POOLS'),
     hasOIDC: providers.some(p => p === 'OPENID_CONNECT'),
-    hasIAM: providers.some(p => p === 'AWS_IAM'),
+    hasIAM,
   };
+  return configuredProviders;
 };

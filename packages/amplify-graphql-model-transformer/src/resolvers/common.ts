@@ -15,7 +15,10 @@ import {
   ifElse,
   printBlock,
   toJson,
+  qref,
+  str,
 } from 'graphql-mapping-template';
+import { OPERATION_KEY } from '../definitions';
 
 /**
  * Helper method to generate code that converts DynamoDB condition object to condition
@@ -57,13 +60,19 @@ export const generateConditionSlot = (inputConditionObjectName: string, conditio
 
 /**
  * Generate common response template used by most of the resolvers.
+ * Append operation if response is coming from a mutation, this is to protect field resolver for subscriptions
  */
-export const generateDefaultResponseMappingTemplate = (): string => {
-  const statements: Expression[] = [
-    ifElse(ref('ctx.error'), methodCall(ref('util.error'), ref('ctx.error.message'), ref('ctx.error.type')), toJson(ref('ctx.result'))),
-  ];
-
-  return printBlock('Get ResponseTemplate')(compoundExpression(statements));
+export const generateDefaultResponseMappingTemplate = (mutation = false): string => {
+  const setOperation = mutation ? [qref(methodCall(ref('ctx.result.put'), str(OPERATION_KEY), str('Mutation')))] : [];
+  return printBlock('Get ResponseTemplate')(
+    compoundExpression([
+      ifElse(
+        ref('ctx.error'),
+        methodCall(ref('util.error'), ref('ctx.error.message'), ref('ctx.error.type')),
+        compoundExpression([...setOperation, toJson(ref('ctx.result'))]),
+      ),
+    ]),
+  );
 };
 
 /**

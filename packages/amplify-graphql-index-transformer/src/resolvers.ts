@@ -505,7 +505,7 @@ function addIndexToResolverSlot(resolver: TransformerResolverProvider, lines: st
   const res = resolver as any;
 
   res.addToSlot(
-    'postAuth',
+    'preAuth',
     MappingTemplate.s3MappingTemplateFromString(
       lines.join('\n') + '\n{}',
       `${res.typeName}.${res.fieldName}.{slotName}.{slotIndex}.req.vtl`,

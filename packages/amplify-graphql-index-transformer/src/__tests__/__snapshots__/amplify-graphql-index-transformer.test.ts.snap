@@ -13,7 +13,7 @@ $util.toJson({
   \\"payload\\": {}
 })
 ## [End] Initialization default values. **",
-  "Mutation.createTest.postAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
+  "Mutation.createTest.preAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
 $util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
 ## [End] Merge default values and inputs. **
@@ -128,10 +128,11 @@ $util.toJson($PutObject)
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
+  $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
   $util.toJson($ctx.result)
 #end
 ## [End] Get ResponseTemplate. **",
-  "Mutation.deleteTest.postAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
+  "Mutation.deleteTest.preAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
 $util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
 ## [End] Merge default values and inputs. **
@@ -205,6 +206,7 @@ $util.toJson($DeleteRequest)
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
+  $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
   $util.toJson($ctx.result)
 #end
 ## [End] Get ResponseTemplate. **",
@@ -217,7 +219,7 @@ $util.toJson({
   \\"payload\\": {}
 })
 ## [End] Initialization default values. **",
-  "Mutation.updateTest.postAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
+  "Mutation.updateTest.preAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
 $util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
 ## [End] Merge default values and inputs. **
@@ -377,6 +379,7 @@ $util.toJson($UpdateItem)
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
+  $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
   $util.toJson($ctx.result)
 #end
 ## [End] Get ResponseTemplate. **",
@@ -412,11 +415,11 @@ $util.qr($GetRequest.put(\\"query\\", $query))
 $util.toJson($GetRequest)
 ## [End] Get Request template. **",
   "Query.getTest.res.vtl": "## [Start] Get Response template. **
-#if( !$$ctx.result.items.isEmpty() && $ctx.result.scannedCount == 1 )
+#if( !$ctx.result.items.isEmpty() && $ctx.result.scannedCount == 1 )
   $util.toJson($ctx.result.items[0])
 #else
-  #if( $$ctx.result.items.isEmpty() && $ctx.result.scannedCount == 1 )
-$util.unauthorized
+  #if( $ctx.result.items.isEmpty() && $ctx.result.scannedCount == 1 )
+$util.unauthorized()
   #end
   $util.toJson(null)
 #end
@@ -676,6 +679,33 @@ $util.toJson($QueryRequest)",
   $util.error($ctx.error.message, $ctx.error.type)
 #end
 $util.toJson($ctx.result)",
+  "Subscription.onCreateTest.req.vtl": "## [Start] Subscription Request template. **
+$util.toJson({
+  \\"version\\": \\"2018-05-29\\",
+  \\"payload\\": {}
+})
+## [End] Subscription Request template. **",
+  "Subscription.onCreateTest.res.vtl": "## [Start] Subscription Resonse template. **
+$util.toJson(null)
+## [End] Subscription Resonse template. **",
+  "Subscription.onDeleteTest.req.vtl": "## [Start] Subscription Request template. **
+$util.toJson({
+  \\"version\\": \\"2018-05-29\\",
+  \\"payload\\": {}
+})
+## [End] Subscription Request template. **",
+  "Subscription.onDeleteTest.res.vtl": "## [Start] Subscription Resonse template. **
+$util.toJson(null)
+## [End] Subscription Resonse template. **",
+  "Subscription.onUpdateTest.req.vtl": "## [Start] Subscription Request template. **
+$util.toJson({
+  \\"version\\": \\"2018-05-29\\",
+  \\"payload\\": {}
+})
+## [End] Subscription Request template. **",
+  "Subscription.onUpdateTest.res.vtl": "## [Start] Subscription Resonse template. **
+$util.toJson(null)
+## [End] Subscription Resonse template. **",
 }
 `;
 
@@ -692,7 +722,7 @@ $util.toJson({
   \\"payload\\": {}
 })
 ## [End] Initialization default values. **",
-  "Mutation.createTest.postAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
+  "Mutation.createTest.preAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
 $util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
 ## [End] Merge default values and inputs. **
@@ -807,10 +837,11 @@ $util.toJson($PutObject)
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
+  $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
   $util.toJson($ctx.result)
 #end
 ## [End] Get ResponseTemplate. **",
-  "Mutation.deleteTest.postAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
+  "Mutation.deleteTest.preAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
 $util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
 ## [End] Merge default values and inputs. **
@@ -884,6 +915,7 @@ $util.toJson($DeleteRequest)
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
+  $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
   $util.toJson($ctx.result)
 #end
 ## [End] Get ResponseTemplate. **",
@@ -896,7 +928,7 @@ $util.toJson({
   \\"payload\\": {}
 })
 ## [End] Initialization default values. **",
-  "Mutation.updateTest.postAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
+  "Mutation.updateTest.preAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
 $util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
 ## [End] Merge default values and inputs. **
@@ -1056,6 +1088,7 @@ $util.toJson($UpdateItem)
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
+  $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
   $util.toJson($ctx.result)
 #end
 ## [End] Get ResponseTemplate. **",
@@ -1091,11 +1124,11 @@ $util.qr($GetRequest.put(\\"query\\", $query))
 $util.toJson($GetRequest)
 ## [End] Get Request template. **",
   "Query.getTest.res.vtl": "## [Start] Get Response template. **
-#if( !$$ctx.result.items.isEmpty() && $ctx.result.scannedCount == 1 )
+#if( !$ctx.result.items.isEmpty() && $ctx.result.scannedCount == 1 )
   $util.toJson($ctx.result.items[0])
 #else
-  #if( $$ctx.result.items.isEmpty() && $ctx.result.scannedCount == 1 )
-$util.unauthorized
+  #if( $ctx.result.items.isEmpty() && $ctx.result.scannedCount == 1 )
+$util.unauthorized()
   #end
   $util.toJson(null)
 #end
@@ -1277,6 +1310,33 @@ $util.toJson($ListRequest)
   $util.toJson($ctx.result)
 #end
 ## [End] Get ResponseTemplate. **",
+  "Subscription.onCreateTest.req.vtl": "## [Start] Subscription Request template. **
+$util.toJson({
+  \\"version\\": \\"2018-05-29\\",
+  \\"payload\\": {}
+})
+## [End] Subscription Request template. **",
+  "Subscription.onCreateTest.res.vtl": "## [Start] Subscription Resonse template. **
+$util.toJson(null)
+## [End] Subscription Resonse template. **",
+  "Subscription.onDeleteTest.req.vtl": "## [Start] Subscription Request template. **
+$util.toJson({
+  \\"version\\": \\"2018-05-29\\",
+  \\"payload\\": {}
+})
+## [End] Subscription Request template. **",
+  "Subscription.onDeleteTest.res.vtl": "## [Start] Subscription Resonse template. **
+$util.toJson(null)
+## [End] Subscription Resonse template. **",
+  "Subscription.onUpdateTest.req.vtl": "## [Start] Subscription Request template. **
+$util.toJson({
+  \\"version\\": \\"2018-05-29\\",
+  \\"payload\\": {}
+})
+## [End] Subscription Request template. **",
+  "Subscription.onUpdateTest.res.vtl": "## [Start] Subscription Resonse template. **
+$util.toJson(null)
+## [End] Subscription Resonse template. **",
 }
 `;
 
@@ -1293,7 +1353,7 @@ $util.toJson({
   \\"payload\\": {}
 })
 ## [End] Initialization default values. **",
-  "Mutation.createTest.postAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
+  "Mutation.createTest.preAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
 $util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
 ## [End] Merge default values and inputs. **
@@ -1408,10 +1468,11 @@ $util.toJson($PutObject)
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
+  $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
   $util.toJson($ctx.result)
 #end
 ## [End] Get ResponseTemplate. **",
-  "Mutation.deleteTest.postAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
+  "Mutation.deleteTest.preAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
 $util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
 ## [End] Merge default values and inputs. **
@@ -1485,6 +1546,7 @@ $util.toJson($DeleteRequest)
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
+  $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
   $util.toJson($ctx.result)
 #end
 ## [End] Get ResponseTemplate. **",
@@ -1497,7 +1559,7 @@ $util.toJson({
   \\"payload\\": {}
 })
 ## [End] Initialization default values. **",
-  "Mutation.updateTest.postAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
+  "Mutation.updateTest.preAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
 $util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
 ## [End] Merge default values and inputs. **
@@ -1657,6 +1719,7 @@ $util.toJson($UpdateItem)
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
+  $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
   $util.toJson($ctx.result)
 #end
 ## [End] Get ResponseTemplate. **",
@@ -1692,11 +1755,11 @@ $util.qr($GetRequest.put(\\"query\\", $query))
 $util.toJson($GetRequest)
 ## [End] Get Request template. **",
   "Query.getTest.res.vtl": "## [Start] Get Response template. **
-#if( !$$ctx.result.items.isEmpty() && $ctx.result.scannedCount == 1 )
+#if( !$ctx.result.items.isEmpty() && $ctx.result.scannedCount == 1 )
   $util.toJson($ctx.result.items[0])
 #else
-  #if( $$ctx.result.items.isEmpty() && $ctx.result.scannedCount == 1 )
-$util.unauthorized
+  #if( $ctx.result.items.isEmpty() && $ctx.result.scannedCount == 1 )
+$util.unauthorized()
   #end
   $util.toJson(null)
 #end
@@ -1994,6 +2057,33 @@ $util.toJson($QueryRequest)",
   $util.error($ctx.error.message, $ctx.error.type)
 #end
 $util.toJson($ctx.result)",
+  "Subscription.onCreateTest.req.vtl": "## [Start] Subscription Request template. **
+$util.toJson({
+  \\"version\\": \\"2018-05-29\\",
+  \\"payload\\": {}
+})
+## [End] Subscription Request template. **",
+  "Subscription.onCreateTest.res.vtl": "## [Start] Subscription Resonse template. **
+$util.toJson(null)
+## [End] Subscription Resonse template. **",
+  "Subscription.onDeleteTest.req.vtl": "## [Start] Subscription Request template. **
+$util.toJson({
+  \\"version\\": \\"2018-05-29\\",
+  \\"payload\\": {}
+})
+## [End] Subscription Request template. **",
+  "Subscription.onDeleteTest.res.vtl": "## [Start] Subscription Resonse template. **
+$util.toJson(null)
+## [End] Subscription Resonse template. **",
+  "Subscription.onUpdateTest.req.vtl": "## [Start] Subscription Request template. **
+$util.toJson({
+  \\"version\\": \\"2018-05-29\\",
+  \\"payload\\": {}
+})
+## [End] Subscription Request template. **",
+  "Subscription.onUpdateTest.res.vtl": "## [Start] Subscription Resonse template. **
+$util.toJson(null)
+## [End] Subscription Resonse template. **",
 }
 `;
 
@@ -2229,7 +2319,7 @@ $util.toJson({
   \\"payload\\": {}
 })
 ## [End] Initialization default values. **",
-  "Mutation.createTest.postAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
+  "Mutation.createTest.preAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
 $util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
 ## [End] Merge default values and inputs. **
@@ -2329,10 +2419,11 @@ $util.toJson($PutObject)
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
+  $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
   $util.toJson($ctx.result)
 #end
 ## [End] Get ResponseTemplate. **",
-  "Mutation.deleteTest.postAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
+  "Mutation.deleteTest.preAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
 $util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
 ## [End] Merge default values and inputs. **
@@ -2404,6 +2495,7 @@ $util.toJson($DeleteRequest)
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
+  $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
   $util.toJson($ctx.result)
 #end
 ## [End] Get ResponseTemplate. **",
@@ -2416,7 +2508,7 @@ $util.toJson({
   \\"payload\\": {}
 })
 ## [End] Initialization default values. **",
-  "Mutation.updateTest.postAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
+  "Mutation.updateTest.preAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
 $util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
 ## [End] Merge default values and inputs. **
@@ -2561,10 +2653,11 @@ $util.toJson($UpdateItem)
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
+  $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
   $util.toJson($ctx.result)
 #end
 ## [End] Get ResponseTemplate. **",
-  "Query.getTest.postAuth.1.req.vtl": "## [Start] Set the primary key. **
+  "Query.getTest.preAuth.1.req.vtl": "## [Start] Set the primary key. **
 $util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
   \\"email\\": $util.dynamodb.toDynamoDB($ctx.args.email),
   \\"createdAt\\": $util.dynamodb.toDynamoDB($ctx.args.createdAt)
@@ -2603,11 +2696,11 @@ $util.qr($GetRequest.put(\\"query\\", $query))
 $util.toJson($GetRequest)
 ## [End] Get Request template. **",
   "Query.getTest.res.vtl": "## [Start] Get Response template. **
-#if( !$$ctx.result.items.isEmpty() && $ctx.result.scannedCount == 1 )
+#if( !$ctx.result.items.isEmpty() && $ctx.result.scannedCount == 1 )
   $util.toJson($ctx.result.items[0])
 #else
-  #if( $$ctx.result.items.isEmpty() && $ctx.result.scannedCount == 1 )
-$util.unauthorized
+  #if( $ctx.result.items.isEmpty() && $ctx.result.scannedCount == 1 )
+$util.unauthorized()
   #end
   $util.toJson(null)
 #end
@@ -2736,7 +2829,7 @@ $util.toJson($QueryRequest)",
   $util.error($ctx.error.message, $ctx.error.type)
 #end
 $util.toJson($ctx.result)",
-  "Query.listTests.postAuth.1.req.vtl": "## [Start] Set query expression for key **
+  "Query.listTests.preAuth.1.req.vtl": "## [Start] Set query expression for key **
 #if( $util.isNull($ctx.args.email) && !$util.isNull($ctx.args.sortDirection) )
   $util.error(\\"When providing argument 'sortDirection' you must also provide argument 'email'.\\", \\"InvalidArgumentsError\\")
 #end
@@ -2967,6 +3060,33 @@ $util.toJson($QueryRequest)",
   $util.error($ctx.error.message, $ctx.error.type)
 #end
 $util.toJson($ctx.result)",
+  "Subscription.onCreateTest.req.vtl": "## [Start] Subscription Request template. **
+$util.toJson({
+  \\"version\\": \\"2018-05-29\\",
+  \\"payload\\": {}
+})
+## [End] Subscription Request template. **",
+  "Subscription.onCreateTest.res.vtl": "## [Start] Subscription Resonse template. **
+$util.toJson(null)
+## [End] Subscription Resonse template. **",
+  "Subscription.onDeleteTest.req.vtl": "## [Start] Subscription Request template. **
+$util.toJson({
+  \\"version\\": \\"2018-05-29\\",
+  \\"payload\\": {}
+})
+## [End] Subscription Request template. **",
+  "Subscription.onDeleteTest.res.vtl": "## [Start] Subscription Resonse template. **
+$util.toJson(null)
+## [End] Subscription Resonse template. **",
+  "Subscription.onUpdateTest.req.vtl": "## [Start] Subscription Request template. **
+$util.toJson({
+  \\"version\\": \\"2018-05-29\\",
+  \\"payload\\": {}
+})
+## [End] Subscription Request template. **",
+  "Subscription.onUpdateTest.res.vtl": "## [Start] Subscription Resonse template. **
+$util.toJson(null)
+## [End] Subscription Resonse template. **",
 }
 `;
 
@@ -2983,7 +3103,7 @@ $util.toJson({
   \\"payload\\": {}
 })
 ## [End] Initialization default values. **",
-  "Mutation.addContentToCategory.postAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
+  "Mutation.addContentToCategory.preAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
 $util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
 ## [End] Merge default values and inputs. **
@@ -3098,6 +3218,7 @@ $util.toJson($PutObject)
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
+  $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
   $util.toJson($ctx.result)
 #end
 ## [End] Get ResponseTemplate. **",
@@ -3200,6 +3321,7 @@ $util.toJson($PutObject)
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
+  $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
   $util.toJson($ctx.result)
 #end
 ## [End] Get ResponseTemplate. **",
@@ -3214,7 +3336,7 @@ $util.toJson({
   \\"payload\\": {}
 })
 ## [End] Initialization default values. **",
-  "Mutation.createItem.postAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
+  "Mutation.createItem.preAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
 $util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
 ## [End] Merge default values and inputs. **
@@ -3321,6 +3443,7 @@ $util.toJson($PutObject)
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
+  $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
   $util.toJson($ctx.result)
 #end
 ## [End] Get ResponseTemplate. **",
@@ -3335,7 +3458,7 @@ $util.toJson({
   \\"payload\\": {}
 })
 ## [End] Initialization default values. **",
-  "Mutation.createTest.postAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
+  "Mutation.createTest.preAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
 $util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
 ## [End] Merge default values and inputs. **
@@ -3435,6 +3558,7 @@ $util.toJson($PutObject)
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
+  $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
   $util.toJson($ctx.result)
 #end
 ## [End] Get ResponseTemplate. **",
@@ -3537,6 +3661,7 @@ $util.toJson($PutObject)
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
+  $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
   $util.toJson($ctx.result)
 #end
 ## [End] Get ResponseTemplate. **",
@@ -3601,10 +3726,11 @@ $util.toJson($DeleteRequest)
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
+  $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
   $util.toJson($ctx.result)
 #end
 ## [End] Get ResponseTemplate. **",
-  "Mutation.deleteContentFromCategory.postAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
+  "Mutation.deleteContentFromCategory.preAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
 $util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
 ## [End] Merge default values and inputs. **
@@ -3678,10 +3804,11 @@ $util.toJson($DeleteRequest)
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
+  $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
   $util.toJson($ctx.result)
 #end
 ## [End] Get ResponseTemplate. **",
-  "Mutation.deleteItem.postAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
+  "Mutation.deleteItem.preAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
 $util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
 ## [End] Merge default values and inputs. **
@@ -3753,10 +3880,11 @@ $util.toJson($DeleteRequest)
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
+  $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
   $util.toJson($ctx.result)
 #end
 ## [End] Get ResponseTemplate. **",
-  "Mutation.deleteTest.postAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
+  "Mutation.deleteTest.preAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
 $util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
 ## [End] Merge default values and inputs. **
@@ -3828,6 +3956,7 @@ $util.toJson($DeleteRequest)
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
+  $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
   $util.toJson($ctx.result)
 #end
 ## [End] Get ResponseTemplate. **",
@@ -3892,6 +4021,7 @@ $util.toJson($DeleteRequest)
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
+  $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
   $util.toJson($ctx.result)
 #end
 ## [End] Get ResponseTemplate. **",
@@ -4037,6 +4167,7 @@ $util.toJson($UpdateItem)
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
+  $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
   $util.toJson($ctx.result)
 #end
 ## [End] Get ResponseTemplate. **",
@@ -4049,7 +4180,7 @@ $util.toJson({
   \\"payload\\": {}
 })
 ## [End] Initialization default values. **",
-  "Mutation.updateItem.postAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
+  "Mutation.updateItem.preAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
 $util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
 ## [End] Merge default values and inputs. **
@@ -4201,6 +4332,7 @@ $util.toJson($UpdateItem)
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
+  $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
   $util.toJson($ctx.result)
 #end
 ## [End] Get ResponseTemplate. **",
@@ -4213,7 +4345,7 @@ $util.toJson({
   \\"payload\\": {}
 })
 ## [End] Initialization default values. **",
-  "Mutation.updateTest.postAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
+  "Mutation.updateTest.preAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
 $util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
 ## [End] Merge default values and inputs. **
@@ -4358,6 +4490,7 @@ $util.toJson($UpdateItem)
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
+  $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
   $util.toJson($ctx.result)
 #end
 ## [End] Get ResponseTemplate. **",
@@ -4503,6 +4636,7 @@ $util.toJson($UpdateItem)
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
+  $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
   $util.toJson($ctx.result)
 #end
 ## [End] Get ResponseTemplate. **",
@@ -4576,16 +4710,16 @@ $util.qr($GetRequest.put(\\"query\\", $query))
 $util.toJson($GetRequest)
 ## [End] Get Request template. **",
   "Query.getBlog.res.vtl": "## [Start] Get Response template. **
-#if( !$$ctx.result.items.isEmpty() && $ctx.result.scannedCount == 1 )
+#if( !$ctx.result.items.isEmpty() && $ctx.result.scannedCount == 1 )
   $util.toJson($ctx.result.items[0])
 #else
-  #if( $$ctx.result.items.isEmpty() && $ctx.result.scannedCount == 1 )
-$util.unauthorized
+  #if( $ctx.result.items.isEmpty() && $ctx.result.scannedCount == 1 )
+$util.unauthorized()
   #end
   $util.toJson(null)
 #end
 ## [End] Get Response template. **",
-  "Query.getItem.postAuth.1.req.vtl": "## [Start] Set the primary key. **
+  "Query.getItem.preAuth.1.req.vtl": "## [Start] Set the primary key. **
 $util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
   \\"orderId\\": $util.dynamodb.toDynamoDB($ctx.args.orderId),
   \\"status#createdAt\\": $util.dynamodb.toDynamoDB(\\"\${ctx.args.status}#\${ctx.args.createdAt}\\")
@@ -4624,16 +4758,16 @@ $util.qr($GetRequest.put(\\"query\\", $query))
 $util.toJson($GetRequest)
 ## [End] Get Request template. **",
   "Query.getItem.res.vtl": "## [Start] Get Response template. **
-#if( !$$ctx.result.items.isEmpty() && $ctx.result.scannedCount == 1 )
+#if( !$ctx.result.items.isEmpty() && $ctx.result.scannedCount == 1 )
   $util.toJson($ctx.result.items[0])
 #else
-  #if( $$ctx.result.items.isEmpty() && $ctx.result.scannedCount == 1 )
-$util.unauthorized
+  #if( $ctx.result.items.isEmpty() && $ctx.result.scannedCount == 1 )
+$util.unauthorized()
   #end
   $util.toJson(null)
 #end
 ## [End] Get Response template. **",
-  "Query.getTest.postAuth.1.req.vtl": "## [Start] Set the primary key. **
+  "Query.getTest.preAuth.1.req.vtl": "## [Start] Set the primary key. **
 $util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
   \\"email\\": $util.dynamodb.toDynamoDB($ctx.args.email),
   \\"createdAt\\": $util.dynamodb.toDynamoDB($ctx.args.createdAt)
@@ -4672,11 +4806,11 @@ $util.qr($GetRequest.put(\\"query\\", $query))
 $util.toJson($GetRequest)
 ## [End] Get Request template. **",
   "Query.getTest.res.vtl": "## [Start] Get Response template. **
-#if( !$$ctx.result.items.isEmpty() && $ctx.result.scannedCount == 1 )
+#if( !$ctx.result.items.isEmpty() && $ctx.result.scannedCount == 1 )
   $util.toJson($ctx.result.items[0])
 #else
-  #if( $$ctx.result.items.isEmpty() && $ctx.result.scannedCount == 1 )
-$util.unauthorized
+  #if( $ctx.result.items.isEmpty() && $ctx.result.scannedCount == 1 )
+$util.unauthorized()
   #end
   $util.toJson(null)
 #end
@@ -4713,11 +4847,11 @@ $util.qr($GetRequest.put(\\"query\\", $query))
 $util.toJson($GetRequest)
 ## [End] Get Request template. **",
   "Query.getTodo.res.vtl": "## [Start] Get Response template. **
-#if( !$$ctx.result.items.isEmpty() && $ctx.result.scannedCount == 1 )
+#if( !$ctx.result.items.isEmpty() && $ctx.result.scannedCount == 1 )
   $util.toJson($ctx.result.items[0])
 #else
-  #if( $$ctx.result.items.isEmpty() && $ctx.result.scannedCount == 1 )
-$util.unauthorized
+  #if( $ctx.result.items.isEmpty() && $ctx.result.scannedCount == 1 )
+$util.unauthorized()
   #end
   $util.toJson(null)
 #end
@@ -5196,7 +5330,7 @@ $util.toJson($QueryRequest)",
   $util.error($ctx.error.message, $ctx.error.type)
 #end
 $util.toJson($ctx.result)",
-  "Query.listItems.postAuth.1.req.vtl": "## [Start] Set query expression for key **
+  "Query.listItems.preAuth.1.req.vtl": "## [Start] Set query expression for key **
 #if( $util.isNull($ctx.args.orderId) && !$util.isNull($ctx.args.sortDirection) )
   $util.error(\\"When providing argument 'sortDirection' you must also provide argument 'orderId'.\\", \\"InvalidArgumentsError\\")
 #end
@@ -5357,7 +5491,7 @@ $util.toJson($ListRequest)
   $util.toJson($ctx.result)
 #end
 ## [End] Get ResponseTemplate. **",
-  "Query.listTests.postAuth.1.req.vtl": "## [Start] Set query expression for key **
+  "Query.listTests.preAuth.1.req.vtl": "## [Start] Set query expression for key **
 #if( $util.isNull($ctx.args.email) && !$util.isNull($ctx.args.sortDirection) )
   $util.error(\\"When providing argument 'sortDirection' you must also provide argument 'email'.\\", \\"InvalidArgumentsError\\")
 #end
@@ -5666,5 +5800,131 @@ $util.toJson($QueryRequest)",
   $util.error($ctx.error.message, $ctx.error.type)
 #end
 $util.toJson($ctx.result)",
+  "Subscription.onCreateBlog.req.vtl": "## [Start] Subscription Request template. **
+$util.toJson({
+  \\"version\\": \\"2018-05-29\\",
+  \\"payload\\": {}
+})
+## [End] Subscription Request template. **",
+  "Subscription.onCreateBlog.res.vtl": "## [Start] Subscription Resonse template. **
+$util.toJson(null)
+## [End] Subscription Resonse template. **",
+  "Subscription.onCreateContentCategory.req.vtl": "## [Start] Subscription Request template. **
+$util.toJson({
+  \\"version\\": \\"2018-05-29\\",
+  \\"payload\\": {}
+})
+## [End] Subscription Request template. **",
+  "Subscription.onCreateContentCategory.res.vtl": "## [Start] Subscription Resonse template. **
+$util.toJson(null)
+## [End] Subscription Resonse template. **",
+  "Subscription.onCreateItem.req.vtl": "## [Start] Subscription Request template. **
+$util.toJson({
+  \\"version\\": \\"2018-05-29\\",
+  \\"payload\\": {}
+})
+## [End] Subscription Request template. **",
+  "Subscription.onCreateItem.res.vtl": "## [Start] Subscription Resonse template. **
+$util.toJson(null)
+## [End] Subscription Resonse template. **",
+  "Subscription.onCreateTest.req.vtl": "## [Start] Subscription Request template. **
+$util.toJson({
+  \\"version\\": \\"2018-05-29\\",
+  \\"payload\\": {}
+})
+## [End] Subscription Request template. **",
+  "Subscription.onCreateTest.res.vtl": "## [Start] Subscription Resonse template. **
+$util.toJson(null)
+## [End] Subscription Resonse template. **",
+  "Subscription.onCreateTodo.req.vtl": "## [Start] Subscription Request template. **
+$util.toJson({
+  \\"version\\": \\"2018-05-29\\",
+  \\"payload\\": {}
+})
+## [End] Subscription Request template. **",
+  "Subscription.onCreateTodo.res.vtl": "## [Start] Subscription Resonse template. **
+$util.toJson(null)
+## [End] Subscription Resonse template. **",
+  "Subscription.onDeleteBlog.req.vtl": "## [Start] Subscription Request template. **
+$util.toJson({
+  \\"version\\": \\"2018-05-29\\",
+  \\"payload\\": {}
+})
+## [End] Subscription Request template. **",
+  "Subscription.onDeleteBlog.res.vtl": "## [Start] Subscription Resonse template. **
+$util.toJson(null)
+## [End] Subscription Resonse template. **",
+  "Subscription.onDeleteContentCategory.req.vtl": "## [Start] Subscription Request template. **
+$util.toJson({
+  \\"version\\": \\"2018-05-29\\",
+  \\"payload\\": {}
+})
+## [End] Subscription Request template. **",
+  "Subscription.onDeleteContentCategory.res.vtl": "## [Start] Subscription Resonse template. **
+$util.toJson(null)
+## [End] Subscription Resonse template. **",
+  "Subscription.onDeleteItem.req.vtl": "## [Start] Subscription Request template. **
+$util.toJson({
+  \\"version\\": \\"2018-05-29\\",
+  \\"payload\\": {}
+})
+## [End] Subscription Request template. **",
+  "Subscription.onDeleteItem.res.vtl": "## [Start] Subscription Resonse template. **
+$util.toJson(null)
+## [End] Subscription Resonse template. **",
+  "Subscription.onDeleteTest.req.vtl": "## [Start] Subscription Request template. **
+$util.toJson({
+  \\"version\\": \\"2018-05-29\\",
+  \\"payload\\": {}
+})
+## [End] Subscription Request template. **",
+  "Subscription.onDeleteTest.res.vtl": "## [Start] Subscription Resonse template. **
+$util.toJson(null)
+## [End] Subscription Resonse template. **",
+  "Subscription.onDeleteTodo.req.vtl": "## [Start] Subscription Request template. **
+$util.toJson({
+  \\"version\\": \\"2018-05-29\\",
+  \\"payload\\": {}
+})
+## [End] Subscription Request template. **",
+  "Subscription.onDeleteTodo.res.vtl": "## [Start] Subscription Resonse template. **
+$util.toJson(null)
+## [End] Subscription Resonse template. **",
+  "Subscription.onUpdateBlog.req.vtl": "## [Start] Subscription Request template. **
+$util.toJson({
+  \\"version\\": \\"2018-05-29\\",
+  \\"payload\\": {}
+})
+## [End] Subscription Request template. **",
+  "Subscription.onUpdateBlog.res.vtl": "## [Start] Subscription Resonse template. **
+$util.toJson(null)
+## [End] Subscription Resonse template. **",
+  "Subscription.onUpdateItem.req.vtl": "## [Start] Subscription Request template. **
+$util.toJson({
+  \\"version\\": \\"2018-05-29\\",
+  \\"payload\\": {}
+})
+## [End] Subscription Request template. **",
+  "Subscription.onUpdateItem.res.vtl": "## [Start] Subscription Resonse template. **
+$util.toJson(null)
+## [End] Subscription Resonse template. **",
+  "Subscription.onUpdateTest.req.vtl": "## [Start] Subscription Request template. **
+$util.toJson({
+  \\"version\\": \\"2018-05-29\\",
+  \\"payload\\": {}
+})
+## [End] Subscription Request template. **",
+  "Subscription.onUpdateTest.res.vtl": "## [Start] Subscription Resonse template. **
+$util.toJson(null)
+## [End] Subscription Resonse template. **",
+  "Subscription.onUpdateTodo.req.vtl": "## [Start] Subscription Request template. **
+$util.toJson({
+  \\"version\\": \\"2018-05-29\\",
+  \\"payload\\": {}
+})
+## [End] Subscription Request template. **",
+  "Subscription.onUpdateTodo.res.vtl": "## [Start] Subscription Resonse template. **
+$util.toJson(null)
+## [End] Subscription Resonse template. **",
 }
 `;
