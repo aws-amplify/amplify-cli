@@ -1,6 +1,6 @@
 {
   "name": "amplify-provider-awscloudformation",
-  "version": "4.57.0-beta.0",
+  "version": "4.57.0-beta.1",
   "description": "AWS CloudFormation Provider",
   "repository": {
     "type": "git",
@@ -29,7 +29,7 @@
     "@aws-amplify/graphql-index-transformer": "0.3.0-beta.0",
     "@aws-amplify/graphql-model-transformer": "0.6.0-beta.0",
     "@aws-amplify/graphql-predictions-transformer": "0.3.2-beta.0",
-    "@aws-amplify/graphql-searchable-transformer": "0.5.0-beta.0",
+    "@aws-amplify/graphql-searchable-transformer": "0.5.0-beta.1",
     "@aws-amplify/graphql-transformer-core": "0.8.2-beta.0",
     "@aws-amplify/graphql-transformer-interfaces": "1.8.2-beta.0",
     "@aws-cdk/assets": "~1.72.0",
