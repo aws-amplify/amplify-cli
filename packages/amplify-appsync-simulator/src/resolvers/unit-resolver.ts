@@ -24,12 +24,9 @@ export class AppSyncUnitResolver extends AppSyncBaseResolver {
     const responseMappingTemplate = this.getResponseMappingTemplate();
     const dataLoader = this.simulatorContext.getDataLoader(this.config.dataSourceName);
 
-    try {
-      const query = info.operation?.selectionSet?.selections?.find(set => set.name.value === args.fieldName);
-      if (query) args = { ...args, query: `{${print(query)}}` };
-    } catch (e) {
-      console.error(e);
-    }
+    // Populate args.query for HTTP data sources.
+    const query = info.operation?.selectionSet?.selections?.find(set => set.name.value === args.fieldName);
+    if (query) args = { ...args, query: `${args.typeName.toLowerCase()}{${print(query)}}` };
 
     const { result: requestPayload, errors: requestTemplateErrors, isReturn, hadException } = requestMappingTemplate.render(
       { source, arguments: args },

@@ -9,16 +9,17 @@ export class HttpDataLoader implements AmplifyAppSyncSimulatorDataLoader {
     this.endpoint = config?.httpConfig?.endpoint;
   }
 
-  public async load(payload: any, extraData?: any): Promise<any> {
+  public async load(payload: any): Promise<any> {
     try {
       const axiosRes: AxiosResponse = await axios({
         method: payload.method,
-        url: this.endpoint, //.trimRight('/') + payload.resourcePath,
+        url: this.endpoint + payload.resourcePath,
         headers: payload.params.headers,
         data: payload.params.query,
         params: { query: payload.params.query },
       });
-      const result = JSON.stringify(this.flattenObject(axiosRes.data.data));
+      const result = this.parseResponse(axiosRes);
+      console.log(axiosRes);
       const cfxResult = { body: result, statusCode: axiosRes.status, headers: axiosRes.headers };
       return cfxResult;
     } catch (error) {
@@ -27,6 +28,20 @@ export class HttpDataLoader implements AmplifyAppSyncSimulatorDataLoader {
       throw error;
     }
   }
+
+  private parseResponse = (response: AxiosResponse) => {
+    let result = response.data?.data;
+    console.log(result);
+    if (!result) {
+      throw new Error('Missing result in response (response.data.data is undefined.)');
+    }
+    let first = Object.keys(result)[0];
+
+    if (Array.isArray(result[first])) result = result[first];
+    else result = this.flattenObject(result);
+
+    return JSON.stringify(result);
+  };
 
   // Source: https://stackoverflow.com/a/55251598/16010441
   private flattenObject = obj => {
