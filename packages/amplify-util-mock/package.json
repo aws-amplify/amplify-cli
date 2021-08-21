@@ -61,9 +61,8 @@
     "graphql-tag": "^2.10.1",
     "graphql-transformer-core": "6.29.2",
     "graphql-versioned-transformer": "4.17.17",
-    "isomorphic-fetch": "^2.2.1",
+    "isomorphic-fetch": "^3.0.0",
     "jsonwebtoken": "^8.5.1",
-    "node-fetch": "^2.6.1",
     "uuid": "^3.4.0",
     "ws": "^7.4.6"
   },
