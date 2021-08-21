@@ -22,7 +22,6 @@
     "build-tests": "yarn tsc --build tsconfig.tests.json"
   },
   "dependencies": {
-    "amazon-cognito-identity-js": "^3.2.2",
     "axios": "^0.21.1",
     "cloudform-types": "^4.2.0",
     "graphql": "^14.5.8",
@@ -36,8 +35,8 @@
     "@aws-amplify/graphql-model-transformer": "0.5.1",
     "@aws-amplify/graphql-transformer-core": "0.8.1",
     "@types/node": "^12.12.6",
-    "aws-amplify": "^2.2.2",
-    "aws-appsync": "^4.0.3",
+    "aws-amplify": "^4.2.4",
+    "aws-appsync": "^4.1.1",
     "aws-cdk": "~1.119.0",
     "aws-sdk": "^2.963.0",
     "execa": "^5.1.1",
@@ -52,7 +51,7 @@
     "graphql-predictions-transformer": "2.5.16",
     "graphql-tag": "^2.10.1",
     "graphql-versioned-transformer": "4.17.17",
-    "isomorphic-fetch": "^2.2.1",
+    "isomorphic-fetch": "^3.0.0",
     "jest-junit": "^12.0.0",
     "node-fetch": "^2.6.1",
     "ws": "^7.4.6"
