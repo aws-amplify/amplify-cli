@@ -10,6 +10,9 @@ import { runFunctionTest } from './functionTester';
 //#error: corrected error in the original content
 //#extra: the content does not exist in the Amplify CLI document, added for the completeness of the testing, such as the mutation needed to test subscriptions
 
+// to deal with subscriptions in node env
+(global as any).WebSocket = require('ws');
+
 export async function testSchema(projectDir: string, directive: string, section: string): Promise<boolean> {
   let testModule;
 
