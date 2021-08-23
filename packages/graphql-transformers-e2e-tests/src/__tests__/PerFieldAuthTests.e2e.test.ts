@@ -223,7 +223,7 @@ beforeAll(async () => {
 
     await signupUser(USER_POOL_ID, USERNAME1, TMP_PASSWORD);
     await signupUser(USER_POOL_ID, USERNAME2, TMP_PASSWORD);
-    await signupUser(USER_POOL_ID, USERNAME2, TMP_PASSWORD);
+    await signupUser(USER_POOL_ID, USERNAME3, TMP_PASSWORD);
     await createGroup(USER_POOL_ID, ADMIN_GROUP_NAME);
     await createGroup(USER_POOL_ID, PARTICIPANT_GROUP_NAME);
     await createGroup(USER_POOL_ID, WATCHER_GROUP_NAME);
