@@ -148,7 +148,7 @@ describe('nodejs', () => {
 
     it('function dependencies should be preserved when not editing permissions during `amplify update function`', async () => {
       await initJSProjectWithProfile(projRoot, {
-        name: 'functiondependenciespermission'
+        name: 'functiondependenciespermission',
       });
       await addApiWithoutSchema(projRoot);
       await updateApiSchema(projRoot, 'functiondependenciespermission', 'two-model-schema.graphql');

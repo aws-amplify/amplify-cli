@@ -65,7 +65,6 @@ export function addApiWithoutSchema(cwd: string, opts: Partial<AddApiOptions & {
 
 export function addApiWithBlankSchema(cwd: string, opts: Partial<AddApiOptions & { apiKeyExpirationDays: number }> = {}) {
   const options = _.assign(defaultOptions, opts);
-  //const schemaPath = getSchemaPath(schemaFile);
   return new Promise<void>((resolve, reject) => {
     spawn(getCLIPath(), ['add', 'api'], { cwd, stripColors: true })
       .wait('Please select from one of the below mentioned services:')
@@ -98,7 +97,6 @@ export function addApiWithBlankSchema(cwd: string, opts: Partial<AddApiOptions &
 }
 
 export function addApiWithBlankSchemaAndConflictDetection(cwd: string) {
-  //const schemaPath = getSchemaPath(schemaFile);
   return new Promise<void>((resolve, reject) => {
     spawn(getCLIPath(), ['add', 'api'], { cwd, stripColors: true })
       .wait('Please select from one of the below mentioned services:')
@@ -230,7 +228,7 @@ export function apiDisableDataStore(cwd: string, settings: any) {
   });
 }
 
-export function updateAPIWithResolutionStrategy(cwd: string, settings: any) {
+export function updateAPIWithResolutionStrategyWithoutModels(cwd: string, settings: any) {
   return new Promise<void>((resolve, reject) => {
     spawn(getCLIPath(settings.testingWithLatestCodebase), ['update', 'api'], { cwd, stripColors: true })
       .wait('Please select from one of the below mentioned services:')
@@ -241,6 +239,31 @@ export function updateAPIWithResolutionStrategy(cwd: string, settings: any) {
       .wait(/.*Select the default resolution strategy.*/)
       .sendKeyDown()
       .sendCarriageReturn()
+      .wait(/.*Successfully updated resource.*/)
+      .sendEof()
+      .run((err: Error) => {
+        if (!err) {
+          resolve();
+        } else {
+          reject(err);
+        }
+      });
+  });
+}
+
+export function updateAPIWithResolutionStrategyWithModels(cwd: string, settings: any) {
+  return new Promise<void>((resolve, reject) => {
+    spawn(getCLIPath(settings.testingWithLatestCodebase), ['update', 'api'], { cwd, stripColors: true })
+      .wait('Please select from one of the below mentioned services:')
+      .sendCarriageReturn()
+      .wait(/.*Select a setting to edit.*/)
+      .sendKeyDown()
+      .sendCarriageReturn()
+      .wait(/.*Select the default resolution strategy.*/)
+      .sendKeyDown()
+      .sendCarriageReturn()
+      .wait(/.*Do you want to override default per model settings?.*/)
+      .sendConfirmNo()
       .wait(/.*Successfully updated resource.*/)
       .sendEof()
       .run((err: Error) => {
