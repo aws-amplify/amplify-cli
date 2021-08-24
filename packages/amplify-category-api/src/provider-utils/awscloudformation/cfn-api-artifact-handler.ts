@@ -120,30 +120,11 @@ class CfnApiArtifactHandler implements ApiArtifactHandler {
       authConfig.additionalAuthenticationProviders = updates.additionalAuthTypes.map(appSyncAuthTypeToAuthConfig);
     }
 
-    let noErrors = true;
-    do {
-      try {
-        await this.context.amplify.executeProviderUtils(this.context, 'awscloudformation', 'compileSchema', {
-          resourceDir,
-          parameters: this.getCfnParameters(apiName, authConfig, resourceDir),
-          authConfig,
-        });
-        noErrors = true;
-      } catch (err) {
-        noErrors = false;
-        if (err.message === `@auth directive with 'iam' provider found, but the project has no IAM authentication provider configured.`) {
-          authConfig.additionalAuthenticationProviders.push(await askAuthQuestions('AWS_IAM', this.context));
-        } else if (err.message === `@auth directive with 'userPools' provider found, but the project has no Cognito User Pools authentication provider configured.`) {
-          authConfig.additionalAuthenticationProviders.push(await askAuthQuestions('AMAZON_COGNITO_USER_POOLS', this.context));
-        } else if (err.message === `@auth directive with 'oidc' provider found, but the project has no OPENID_CONNECT authentication provider configured.`) {
-          authConfig.additionalAuthenticationProviders.push(await askAuthQuestions('OPENID_CONNECT', this.context));
-        } else if (err.message === `@auth directive with 'apiKey' provider found, but the project has no API Key authentication provider configured.`) {
-          authConfig.additionalAuthenticationProviders.push(await askAuthQuestions('API_KEY', this.context));
-        } else {
-          throw err;
-        }
-      }
-    } while(!noErrors)
+    await this.context.amplify.executeProviderUtils(this.context, 'awscloudformation', 'compileSchema', {
+      resourceDir,
+      parameters: this.getCfnParameters(apiName, authConfig, resourceDir),
+      authConfig,
+    });
 
     this.context.amplify.updateamplifyMetaAfterResourceUpdate(category, apiName, 'output', { authConfig });
     this.context.amplify.updateBackendConfigAfterResourceUpdate(category, apiName, 'output', { authConfig });
