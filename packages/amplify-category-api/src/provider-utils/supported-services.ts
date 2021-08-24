@@ -52,6 +52,10 @@ export const supportedServices = {
             name: 'Objects with fine-grained access control (e.g., a project management app with owner-based authorization)',
             value: 'single-object-auth-schema.graphql',
           },
+          {
+            name: 'Blank Schema',
+            value: 'blank-schema.graphql',
+          },
         ],
         required: true,
       },
