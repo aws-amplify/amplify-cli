@@ -15,6 +15,7 @@ const { pagedAWSCall } = require('./aws-utils/paged-call');
 const { fileLogger } = require('./utils/aws-logger');
 const logger = fileLogger('utility-functions');
 const { getAccountId } = require('./amplify-sts');
+const AWS = require('aws-sdk');
 
 module.exports = {
   zipFiles: (context, [srcDir, dstZipFilePath]) => {
