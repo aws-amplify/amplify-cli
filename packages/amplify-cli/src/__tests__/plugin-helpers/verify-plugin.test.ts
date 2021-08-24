@@ -54,7 +54,7 @@ describe('verify-plugin', () => {
 
     it('returns PluginDirPathNotExist error when specify not exist path', async () => {
       fsMock.pathExists.mockImplementation(() => Promise.resolve(false));
-      const result = await verifyPlugin('path/to/plugin');
+      const result = await verifyPlugin('path', 'to', 'plugin');
       expect(result).toEqual(new PluginVerificationResult(false, PluginVerificationError.PluginDirPathNotExist));
     });
 
@@ -234,7 +234,7 @@ describe('verify-plugin', () => {
       // read core package.json
       readJsonMock.mockReturnValueOnce(corePluginJson);
 
-      const result = await verifyPlugin(path.join(__dirname, '../../../__mocks__/invalid-plugin'));
+      const result = await verifyPlugin(path.join(__dirname, '..', '..', '..', '__mocks__', 'invalid-plugin'));
       const expected = new PluginVerificationResult(
         false,
         PluginVerificationError.MissingHandleAmplifyEventMethod,
@@ -277,7 +277,7 @@ describe('verify-plugin', () => {
       // read core package.json
       readJsonMock.mockReturnValueOnce(corePluginJson);
 
-      const result = await verifyPlugin(path.join(__dirname, '../../../__mocks__/valid-plugin'));
+      const result = await verifyPlugin(path.join(__dirname, '..', '..', '..', '__mocks__', 'valid-plugin'));
       const expected = new PluginVerificationResult(true, undefined, undefined, packageJson, amplifyPluginJson);
       expect(result).toEqual(expected);
     });
@@ -314,7 +314,7 @@ describe('verify-plugin', () => {
       // read core package.json
       readJsonMock.mockReturnValueOnce(corePluginJson);
 
-      const result = await verifyPlugin(path.join(__dirname, '../../../__mocks__/non-event-handlers-plugin'));
+      const result = await verifyPlugin(path.join(__dirname, '..', '..', '..', '__mocks__', 'non-event-handlers-plugin'));
       const expected = new PluginVerificationResult(true, undefined, undefined, packageJson, amplifyPluginJson);
       expect(result).toEqual(expected);
     });
