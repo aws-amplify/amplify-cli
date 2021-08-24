@@ -1,5 +1,5 @@
 import {
-  addApiWithSchema,
+  addApiWithoutSchema,
   addFunction,
   addLayer,
   amplifyPush,
@@ -15,6 +15,7 @@ import {
   LayerRuntime,
   loadFunctionTestFile,
   overrideFunctionSrcNode,
+  updateApiSchema,
   updateFunction,
   validateLayerMetadata,
 } from 'amplify-e2e-core';
@@ -34,7 +35,9 @@ describe('amplify function migration', () => {
   });
 
   it('existing lambda updated with additional permissions should be able to scan ddb', async () => {
-    await initJSProjectWithProfile(projRoot, {});
+    await initJSProjectWithProfile(projRoot, {
+      name: 'lambdapermissionscanddb'
+    });
 
     const random = Math.floor(Math.random() * 10000);
     const fnName = `integtestfn${random}`;
@@ -58,7 +61,8 @@ describe('amplify function migration', () => {
     expect(functionName).toBeDefined();
     expect(region).toBeDefined();
 
-    await addApiWithSchema(projRoot, 'simple_model.graphql');
+    await addApiWithoutSchema(projRoot);
+    await updateApiSchema(projRoot, 'lambdapermissionscanddb', 'simple_model.graphql');
     await updateFunction(
       projRoot,
       {

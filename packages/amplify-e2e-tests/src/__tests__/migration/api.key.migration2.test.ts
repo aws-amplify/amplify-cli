@@ -1,5 +1,5 @@
 import { initJSProjectWithProfile, deleteProject, amplifyPush, amplifyPushUpdate, addFeatureFlag } from 'amplify-e2e-core';
-import { addApiWithSchema, updateApiSchema, getProjectMeta } from 'amplify-e2e-core';
+import { addApiWithoutSchema, updateApiSchema, getProjectMeta } from 'amplify-e2e-core';
 import { createNewProjectDir, deleteProjectDir } from 'amplify-e2e-core';
 import { addEnvironment } from '../../environment/env';
 
@@ -19,7 +19,8 @@ describe('amplify add api', () => {
     const initial_schema = 'migrations_key/three_gsi_model_schema.graphql';
     const nextSchema = 'migrations_key/four_gsi_model_schema.graphql';
     await initJSProjectWithProfile(projRoot, { name: projectName });
-    await addApiWithSchema(projRoot, initial_schema);
+    await addApiWithoutSchema(projRoot);
+    await updateApiSchema(projRoot, projectName, initial_schema);
     await amplifyPush(projRoot);
 
     updateApiSchema(projRoot, projectName, nextSchema);
@@ -32,7 +33,8 @@ describe('amplify add api', () => {
     const nextSchema1 = 'migrations_key/cant_change_key_schema.graphql';
 
     await initJSProjectWithProfile(projRoot, { name: projectName });
-    await addApiWithSchema(projRoot, initialSchema);
+    await addApiWithoutSchema(projRoot);
+    await updateApiSchema(projRoot, projectName, initialSchema);
     await amplifyPush(projRoot);
     await addEnvironment(projRoot, { envName: 'test' });
     updateApiSchema(projRoot, projectName, nextSchema1);
@@ -53,7 +55,8 @@ describe('amplify add api', () => {
     await initJSProjectWithProfile(projRoot, { name: projectName });
     addFeatureFlag(projRoot, 'graphqltransformer', 'enableiterativegsiupdates', false);
 
-    await addApiWithSchema(projRoot, initialSchema);
+    await addApiWithoutSchema(projRoot);
+    await updateApiSchema(projRoot, projectName, initialSchema);
     await amplifyPush(projRoot);
 
     updateApiSchema(projRoot, projectName, nextSchema1);
@@ -73,7 +76,8 @@ describe('amplify add api', () => {
     await initJSProjectWithProfile(projRoot, { name: projectName });
     addFeatureFlag(projRoot, 'graphqltransformer', 'enableiterativegsiupdates', false);
 
-    await addApiWithSchema(projRoot, initialSchema);
+    await addApiWithoutSchema(projRoot);
+    await updateApiSchema(projRoot, projectName, initialSchema);
     await amplifyPush(projRoot);
 
     updateApiSchema(projRoot, projectName, nextSchema1);
@@ -93,7 +97,8 @@ describe('amplify add api', () => {
     await initJSProjectWithProfile(projRoot, { name: projectName });
     addFeatureFlag(projRoot, 'graphqltransformer', 'enableiterativegsiupdates', false);
 
-    await addApiWithSchema(projRoot, initialSchema);
+    await addApiWithoutSchema(projRoot);
+    await updateApiSchema(projRoot, projectName, initialSchema);
     await amplifyPush(projRoot);
     updateApiSchema(projRoot, projectName, nextSchema1);
     await expect(
@@ -113,7 +118,8 @@ describe('amplify add api', () => {
     await initJSProjectWithProfile(projRoot, { name: projectName });
     addFeatureFlag(projRoot, 'graphqltransformer', 'enableiterativegsiupdates', false);
 
-    await addApiWithSchema(projRoot, initialSchema);
+    await addApiWithoutSchema(projRoot);
+    await updateApiSchema(projRoot, projectName, initialSchema);
     await amplifyPush(projRoot);
 
     updateApiSchema(projRoot, projectName, nextSchema);
@@ -133,7 +139,8 @@ describe('amplify add api', () => {
     await initJSProjectWithProfile(projRoot, { name: projectName });
     addFeatureFlag(projRoot, 'graphqltransformer', 'enableiterativegsiupdates', false);
 
-    await addApiWithSchema(projRoot, initialSchema);
+    await addApiWithoutSchema(projRoot);
+    await updateApiSchema(projRoot, projectName, initialSchema);
     await amplifyPush(projRoot);
 
     updateApiSchema(projRoot, projectName, nextSchema);
@@ -148,7 +155,8 @@ describe('amplify add api', () => {
     await initJSProjectWithProfile(projRoot, { name: projectName });
     addFeatureFlag(projRoot, 'graphqltransformer', 'enableiterativegsiupdates', false);
 
-    await addApiWithSchema(projRoot, initialSchema);
+    await addApiWithoutSchema(projRoot);
+    await updateApiSchema(projRoot, projectName, initialSchema);
     await amplifyPush(projRoot);
 
     updateApiSchema(projRoot, projectName, nextSchema1);
