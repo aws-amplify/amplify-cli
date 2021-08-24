@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [6.25.0-beta.1](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformers-e2e-tests@6.25.0-beta.0...graphql-transformers-e2e-tests@6.25.0-beta.1) (2021-08-24)
+
+
+### Bug Fixes
+
+* prevent creating duplicate user in test ([#8013](https://github.com/aws-amplify/amplify-cli/issues/8013)) ([b9134f5](https://github.com/aws-amplify/amplify-cli/commit/b9134f506e7f151f6fd5593142ffae2b54f46756))
+* update GQL E2E test to use unique names ([#8014](https://github.com/aws-amplify/amplify-cli/issues/8014)) ([78a98ff](https://github.com/aws-amplify/amplify-cli/commit/78a98ff1d2fc5d0f2b43986897553904a97d8b2b))
+
+
+
+
+
 # [6.25.0-beta.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformers-e2e-tests@6.24.7...graphql-transformers-e2e-tests@6.25.0-beta.0) (2021-08-17)
 
 

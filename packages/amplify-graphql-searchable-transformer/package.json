@@ -1,6 +1,6 @@
 {
     "name": "@aws-amplify/graphql-searchable-transformer",
-    "version": "0.5.0-beta.1",
+    "version": "0.5.0-beta.2",
     "description": "Amplfy GraphQL @searchable transformer",
     "repository": {
         "type": "git",
@@ -27,8 +27,8 @@
         "test": "jest"
     },
     "dependencies": {
-        "@aws-amplify/graphql-transformer-core": "0.8.2-beta.0",
-        "@aws-amplify/graphql-transformer-interfaces": "1.8.2-beta.0",
+        "@aws-amplify/graphql-transformer-core": "0.8.2-beta.1",
+        "@aws-amplify/graphql-transformer-interfaces": "1.8.2-beta.1",
         "@aws-cdk/aws-appsync": "~1.119.0",
         "@aws-cdk/aws-dynamodb": "~1.119.0",
         "@aws-cdk/aws-ec2": "~1.119.0",
