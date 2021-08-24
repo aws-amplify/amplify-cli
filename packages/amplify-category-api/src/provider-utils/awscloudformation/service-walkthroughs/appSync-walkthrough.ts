@@ -1,7 +1,7 @@
 import { ListQuestion, CheckboxQuestion, ListChoiceOptions } from 'inquirer';
 import { dataStoreLearnMore } from '../sync-conflict-handler-assets/syncAssets';
 import inquirer from 'inquirer';
-import fs, { createSymlink } from 'fs-extra';
+import fs from 'fs-extra';
 import path from 'path';
 import { rootAssetDir } from '../aws-constants';
 import { collectDirectivesByTypeNames, readProjectConfiguration, ConflictHandlerType } from 'graphql-transformer-core';
@@ -21,7 +21,7 @@ import {
   $TSContext,
   open,
 } from 'amplify-cli-core';
-import { getAppSyncApiKeys } from '../../../../../amplify-provider-awscloudformation/lib/utility-functions';
+import { getAppSyncApiKeys } from 'amplify-provider-awscloudformation/lib/utility-functions'
 
 const serviceName = 'AppSync';
 const elasticContainerServiceName = 'ElasticContainer';
