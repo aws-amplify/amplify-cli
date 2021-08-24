@@ -21,7 +21,7 @@ import {
   $TSContext,
   open,
 } from 'amplify-cli-core';
-import { getAppSyncApiKeys } from 'amplify-provider-awscloudformation/lib/utility-functions'
+import { getAppSyncApiKeys } from '../../../../../amplify-provider-awscloudformation/lib/utility-functions'
 
 const serviceName = 'AppSync';
 const elasticContainerServiceName = 'ElasticContainer';
