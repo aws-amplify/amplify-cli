@@ -18,7 +18,6 @@ import _ from 'lodash';
 import { getAppSyncResourceName, getAppSyncAuthConfig, checkIfAuthExists, authConfigHasApiKey } from './utils/amplify-meta-utils';
 import { printApiKeyWarnings } from './utils/print-api-key-warnings';
 import { isNameUnique } from './utils/check-case-sensitivity';
-import { askAuthQuestions } from './service-walkthroughs/appSync-walkthrough';
 
 // keep in sync with ServiceName in amplify-category-function, but probably it will not change
 const FunctionServiceNameLambdaFunction = 'Lambda';
@@ -119,7 +118,6 @@ class CfnApiArtifactHandler implements ApiArtifactHandler {
     if (updates.additionalAuthTypes) {
       authConfig.additionalAuthenticationProviders = updates.additionalAuthTypes.map(appSyncAuthTypeToAuthConfig);
     }
-
     await this.context.amplify.executeProviderUtils(this.context, 'awscloudformation', 'compileSchema', {
       resourceDir,
       parameters: this.getCfnParameters(apiName, authConfig, resourceDir),
