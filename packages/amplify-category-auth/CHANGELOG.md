@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.36.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.36.2...amplify-category-auth@2.36.3) (2021-08-24)
+
+
+### Bug Fixes
+
+* **amplify-category-auth:** fixed no parameter when hostedui is not present ([#7914](https://github.com/aws-amplify/amplify-cli/issues/7914)) ([a83c978](https://github.com/aws-amplify/amplify-cli/commit/a83c978bb18c6fc1980343523c7ee560079cefe5))
+
+
+
+
+
 ## [2.36.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.36.1...amplify-category-auth@2.36.2) (2021-08-06)
 
 

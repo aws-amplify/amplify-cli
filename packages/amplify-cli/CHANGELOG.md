@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.3.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@5.3.0...@aws-amplify/cli@5.3.1) (2021-08-24)
+
+
+### Bug Fixes
+
+* added await to init invocation ([#7919](https://github.com/aws-amplify/amplify-cli/issues/7919)) ([d8c7556](https://github.com/aws-amplify/amplify-cli/commit/d8c755685d715400fe84fc7400dd7a06bca4ce5c))
+
+
+
+
+
 # [5.3.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@5.2.1...@aws-amplify/cli@5.3.0) (2021-08-06)
 
 
