@@ -8,24 +8,33 @@ exports.handler = async function (event, context) {
     const config = {};
     const cognitoClient = new aws.CognitoIdentityServiceProvider();
     const userPoolConfig = await cognitoClient.describeUserPool({ UserPoolId: userPoolId }).promise();
-    // convert describe userPool return object to updateUserpool input
     const userPoolParams = userPoolConfig.UserPool;
-    delete userPoolParams.Id;
-    delete userPoolParams.Name;
-    delete userPoolParams.LastModifiedDate;
-    delete userPoolParams.CreationDate;
-    delete userPoolParams.SchemaAttributes;
-    delete userPoolParams.EstimatedNumberOfUsers;
-    delete userPoolParams.UsernameConfiguration;
-    delete userPoolParams.Arn;
-    delete userPoolParams.AdminCreateUserConfig.UnusedAccountValidityDays;
+    // update userPool params
+    const updateUserPoolConfig = {
+      UserPoolId: userPoolParams.Id,
+      policies: userPoolParams.Policies,
+      SmsVerificationMessage: userPoolParams.SmsVerificationMessage,
+      AccountRecoverySetting: userPoolParams.AccountRecoverySetting,
+      AdminCreateUserConfig: userPoolParams.AdminCreateUserConfig,
+      AliasAttributes: userPoolParams.AliasAttributes,
+      Arn: userPoolParams.Arn,
+      AutoVerifiedAttributes: userPoolParams.AutoVerifiedAttributes,
+      EmailConfiguration: userPoolParams.EmailConfiguration,
+      EmailVerificationMessage: userPoolParams.EmailVerificationMessage,
+      EmailVerificationSubject: userPoolParams.EmailVerificationSubject,
+      VerificationMessageTemplate: userPoolParams.VerificationMessageTemplate,
+      SmsAuthenticationMessage: userPoolParams.SmsAuthenticationMessage,
+      MfaConfiguration: userPoolParams.MfaConfiguration,
+      DeviceConfiguration: userPoolParams.DeviceConfiguration,
+      SmsConfiguration: userPoolParams.SmsConfiguration,
+      UserPoolTags: userPoolParams.UserPoolTags,
+      UserPoolAddOns: userPoolParams.UserPoolAddOns,
+    };
     lambdaConfig.forEach(lambda => (config[`${lambda.triggerType}`] = lambda.lambdaFunctionArn));
     if (event.RequestType == 'Delete') {
       try {
-        const authParams = userPoolParams;
-        authParams.UserPoolId = userPoolId;
-        authParams.LambdaConfig = {};
-        const result = await cognitoClient.updateUserPool(authParams).promise();
+        updateUserPoolConfig.LambdaConfig = {};
+        const result = await cognitoClient.updateUserPool(updateUserPoolConfig).promise();
         console.log('delete response data ' + JSON.stringify(result));
         await response.send(event, context, response.SUCCESS, {});
       } catch (err) {
@@ -34,11 +43,10 @@ exports.handler = async function (event, context) {
       }
     }
     if (event.RequestType == 'Update' || event.RequestType == 'Create') {
-      const authParams = userPoolParams;
-      authParams.UserPoolId = userPoolId;
-      authParams.LambdaConfig = config;
+      updateUserPoolConfig.LambdaConfig = config;
+      console.log(updateUserPoolConfig);
       try {
-        const result = await cognitoClient.updateUserPool(authParams).promise();
+        const result = await cognitoClient.updateUserPool(updateUserPoolConfig).promise();
         console.log('createOrUpdate response data ' + JSON.stringify(result));
         await response.send(event, context, response.SUCCESS, { result });
       } catch (err) {
