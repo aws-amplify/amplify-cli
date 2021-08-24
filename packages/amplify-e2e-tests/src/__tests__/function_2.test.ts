@@ -215,7 +215,7 @@ describe('nodejs', () => {
       expect(functionName).toBeDefined();
       expect(region).toBeDefined();
 
-      await addApiWithoutSchema(projRoot,);
+      await addApiWithoutSchema(projRoot);
       await updateApiSchema(projRoot, 'lambdaadditionalpermissions', 'simple_model.graphql');
       await updateFunction(
         projRoot,
