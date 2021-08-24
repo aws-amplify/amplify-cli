@@ -2,30 +2,23 @@ import {
   $TSAny,
   $TSContext,
   $TSObject,
-  writeCFNTemplate,
   exitOnNextTick,
   pathManager,
+  readCFNTemplate,
   ResourceAlreadyExistsError,
   ResourceDoesNotExistError,
   stateManager,
-  JSONUtilities,
-  readCFNTemplate,
+  writeCFNTemplate,
 } from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
+import { printer, prompter } from 'amplify-prompts';
 import * as fs from 'fs-extra';
 import inquirer from 'inquirer';
 import _ from 'lodash';
 import os from 'os';
 import * as path from 'path';
 import uuid from 'uuid';
-import { categoryName } from '../../../constants';
-
-// keep in sync with ServiceName in amplify-category-function, but probably it will not change
-const FunctionServiceNameLambdaFunction = 'Lambda';
-
-const storageParamsFileName = 'storage-params.json';
-const serviceName = 'S3';
-const templateFileName = 's3-cloudformation-template.json.ejs';
+import { categoryName, FunctionServiceNameLambdaFunction, ServiceName, templateFilenameMap } from '../../../constants';
+import { readStorageParamsFileSafe, writeToStorageParamsFile } from '../storage-state-management';
 
 // map of s3 actions corresponding to CRUD verbs
 // 'create/update' have been consolidated since s3 only has put concept
@@ -38,7 +31,7 @@ const permissionMap = {
 export const addWalkthrough = async (context: $TSContext, defaultValuesFilename: string, serviceMetadata: $TSAny, options: $TSAny) => {
   while (!checkIfAuthExists()) {
     if (
-      await context.amplify.confirmPrompt(
+      await prompter.confirmContinue(
         'You need to add auth (Amazon Cognito) to your project in order to add storage for user files. Do you want to add auth now?',
       )
     ) {
@@ -63,14 +56,14 @@ export const addWalkthrough = async (context: $TSContext, defaultValuesFilename:
   }
 };
 
-export const updateWalkthrough = (context: $TSContext, defaultValuesFilename: string, serviceMetada: $TSAny) => {
+export const updateWalkthrough = async (context: $TSContext, defaultValuesFilename: string, serviceMetada: $TSAny) => {
   const amplifyMeta = stateManager.getMeta();
 
   const storageResources: $TSObject = {};
 
   Object.keys(amplifyMeta[categoryName]).forEach(resourceName => {
     if (
-      amplifyMeta[categoryName][resourceName].service === serviceName &&
+      amplifyMeta[categoryName][resourceName].service === ServiceName.S3 &&
       amplifyMeta[categoryName][resourceName].mobileHubMigrated !== true
     ) {
       storageResources[resourceName] = amplifyMeta[categoryName][resourceName];
@@ -80,7 +73,7 @@ export const updateWalkthrough = (context: $TSContext, defaultValuesFilename: st
   if (Object.keys(storageResources).length === 0) {
     const errMessage = 'No resources to update. You need to add a resource.';
     printer.error(errMessage);
-    context.usageData.emitError(new ResourceDoesNotExistError(errMessage));
+    await context.usageData.emitError(new ResourceDoesNotExistError(errMessage));
     exitOnNextTick(0);
     return;
   }
@@ -117,8 +110,6 @@ async function configure(
 
   if (resourceName) {
     inputs = inputs.filter((input: $TSAny) => input.key !== 'resourceName');
-    const resourceDirPath = pathManager.getResourceDirectoryPath(projectRoot, categoryName, resourceName);
-    const storageParamsFilePath = path.join(resourceDirPath, storageParamsFileName);
 
     try {
       parameters = stateManager.getResourceParametersJson(undefined, categoryName, resourceName);
@@ -128,7 +119,7 @@ async function configure(
     parameters.resourceName = resourceName;
     Object.assign(defaultValues, parameters);
 
-    storageParams = JSONUtilities.readJson(storageParamsFilePath, { throwIfNotExist: false }) || {};
+    storageParams = readStorageParamsFileSafe(resourceName);
   }
 
   let answers: $TSObject = {};
@@ -489,10 +480,8 @@ async function configure(
   delete defaultValues.groupList;
   delete defaultValues.authResourceName;
 
-  stateManager.setResourceParametersJson(undefined, categoryName, resourceName || answers.resourceName, defaultValues);
-
-  const storageParamsFilePath = path.join(resourceDirPath, storageParamsFileName);
-  JSONUtilities.writeJson(storageParamsFilePath, storageParams);
+  stateManager.setResourceParametersJson(undefined, categoryName, resourceName || resource, defaultValues);
+  writeToStorageParamsFile(resourceName || resource, storageParams);
 
   return resource;
 }
@@ -504,7 +493,7 @@ async function copyCfnTemplate(context: $TSContext, categoryName: string, resour
   const copyJobs = [
     {
       dir: pluginDir,
-      template: path.join('..', '..', '..', '..', 'resources', 'cloudformation-templates', templateFileName),
+      template: path.join('..', '..', '..', '..', 'resources', 'cloudformation-templates', templateFilenameMap[ServiceName.S3]),
       target: path.join(targetDir, categoryName, resourceName, 's3-cloudformation-template.json'),
     },
   ];
@@ -643,9 +632,8 @@ async function removeTrigger(context: $TSContext, resourceName: string, triggerF
   const projectRoot = pathManager.findProjectRoot();
   const resourceDirPath = pathManager.getResourceDirectoryPath(projectRoot, categoryName, resourceName);
   const storageCFNFilePath = path.join(resourceDirPath, 's3-cloudformation-template.json');
-  const storageCFNFile = JSONUtilities.readJson<$TSAny>(storageCFNFilePath);
-  const parametersFilePath = pathManager.getResourceDirectoryPath(projectRoot, categoryName, resourceName);
-  const bucketParameters = JSONUtilities.readJson<$TSAny>(parametersFilePath);
+  const { cfnTemplate: storageCFNFile }: { cfnTemplate: $TSAny } = await readCFNTemplate(storageCFNFilePath);
+  const bucketParameters = stateManager.getResourceParametersJson(projectRoot, categoryName, resourceName);
   const adminTrigger = bucketParameters.adminTriggerFunction;
 
   delete storageCFNFile.Parameters[`function${triggerFunction}Arn`];
@@ -1163,7 +1151,7 @@ export const resourceAlreadyExists = () => {
     const categoryResources = amplifyMeta[categoryName];
 
     Object.keys(categoryResources).forEach(resource => {
-      if (categoryResources[resource].service === serviceName) {
+      if (categoryResources[resource].service === ServiceName.S3) {
         resourceName = resource;
       }
     });
