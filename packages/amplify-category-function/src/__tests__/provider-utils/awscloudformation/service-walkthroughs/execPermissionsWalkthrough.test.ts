@@ -204,7 +204,7 @@ describe('askExecRolePermissionsQuestions', () => {
         invokePluginMethod: jest.fn().mockResolvedValueOnce({ permissionPolicies, resourceAttributes }),
       },
     };
-    const answers = await askExecRolePermissionsQuestions((contextStub as unknown) as $TSContext, 'lambda3', undefined);
+    const answers = await askExecRolePermissionsQuestions(contextStub as unknown as $TSContext, 'lambda3', undefined);
     expect(answers).toMatchSnapshot();
   });
 
@@ -212,7 +212,6 @@ describe('askExecRolePermissionsQuestions', () => {
     const inquirerMock = inquirer as jest.Mocked<typeof inquirer>;
 
     inquirerMock.prompt.mockResolvedValueOnce({ categories: ['function'] });
-    //inquirerMock.prompt.mockResolvedValueOnce({ resources: ['lambda2'] });
     inquirerMock.prompt.mockResolvedValueOnce({ options: [CRUDOperation.READ] });
 
     const resourceAttributes = [
@@ -248,7 +247,7 @@ describe('askExecRolePermissionsQuestions', () => {
         invokePluginMethod: jest.fn().mockResolvedValueOnce({ permissionPolicies, resourceAttributes }),
       },
     };
-    const answers = await askExecRolePermissionsQuestions((contextStub as unknown) as $TSContext, 'lambda1', undefined);
+    const answers = await askExecRolePermissionsQuestions(contextStub as unknown as $TSContext, 'lambda1', undefined);
     expect(answers).toMatchSnapshot();
   });
 });
