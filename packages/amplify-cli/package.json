@@ -45,7 +45,7 @@
     "amplify-category-predictions": "2.9.7",
     "amplify-category-storage": "2.12.4",
     "amplify-category-xr": "2.8.16",
-    "amplify-category-geo": "0.0.4",
+    "amplify-category-geo": "0.0.5-geo.2",
     "amplify-cli-core": "1.26.0",
     "amplify-cli-logger": "1.1.0",
     "amplify-codegen": "^2.23.1",
