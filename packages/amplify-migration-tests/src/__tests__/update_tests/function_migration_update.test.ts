@@ -36,7 +36,7 @@ describe('amplify function migration', () => {
 
   it('existing lambda updated with additional permissions should be able to scan ddb', async () => {
     await initJSProjectWithProfile(projRoot, {
-      name: 'lambdapermissionscanddb'
+      name: 'lambdapermissionscanddb',
     });
 
     const random = Math.floor(Math.random() * 10000);

@@ -85,7 +85,7 @@ describe('test dependency in root stack', () => {
   it('init a project with api and function and update the @model and add function access to @model ', async () => {
     const projectName = 'mytestapi';
     await initJSProjectWithProfile(projRoot, {
-      name: projectName
+      name: projectName,
     });
     await addApiWithoutSchema(projRoot);
     await updateApiSchema(projRoot, projectName, 'simple_model.graphql');
