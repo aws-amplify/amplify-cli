@@ -349,22 +349,6 @@ export const serviceWalkthrough = async (context: $TSContext, defaultValuesFilen
 
   const { amplify } = context;
   const { inputs } = serviceMetadata;
-  const defaultValuesSrc = `${__dirname}/../default-values/${defaultValuesFilename}`;
-  const { getAllDefaults } = require(defaultValuesSrc);
-  const allDefaultValues = getAllDefaults(amplify.getProjectDetails());
-
-  const resourceQuestions = [
-    {
-      type: inputs[1].type,
-      name: inputs[1].key,
-      message: inputs[1].question,
-      validate: amplify.inputValidation(inputs[1]),
-      default: () => {
-        const defaultValue = allDefaultValues[inputs[1].key];
-        return defaultValue;
-      },
-    },
-  ];
 
   const basicInfoAnswers = await serviceApiInputWalkthrough(context, defaultValuesFilename, serviceMetadata);
   let schemaContent = '';
