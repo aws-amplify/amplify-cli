@@ -159,12 +159,12 @@ export async function processDockerConfig(context: any, resource: ApiResource, s
         try {
           const {
             data: { content, encoding },
-          } = await octokit.repos.getContent({
+          } = (await octokit.repos.getContent({
             owner,
             repo,
             ...(branch ? { ref: branch } : undefined), // only include branch if not undefined
             path: path.join(pathInRepo, fileName),
-          });
+          })) as { data: { content?: string; encoding?: string } };
 
           containerDefinitionFiles[fileName] = Buffer.from(content, <BufferEncoding>encoding).toString('utf8');
         } catch (error) {
