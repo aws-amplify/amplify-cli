@@ -18,6 +18,7 @@ import { authConfigHasApiKey, checkIfAuthExists, getAppSyncAuthConfig, getAppSyn
 import { appSyncAuthTypeToAuthConfig } from './utils/auth-config-to-app-sync-auth-type-bi-di-mapper';
 import { printApiKeyWarnings } from './utils/print-api-key-warnings';
 import { conflictResolutionToResolverConfig } from './utils/resolver-config-to-conflict-resolution-bi-di-mapper';
+import { askAuthQuestions } from './service-walkthroughs/appSync-walkthrough';
 
 // keep in sync with ServiceName in amplify-category-function, but probably it will not change
 const FunctionServiceNameLambdaFunction = 'Lambda';
@@ -118,11 +119,31 @@ class CfnApiArtifactHandler implements ApiArtifactHandler {
     if (updates.additionalAuthTypes) {
       authConfig.additionalAuthenticationProviders = updates.additionalAuthTypes.map(appSyncAuthTypeToAuthConfig);
     }
-    await this.context.amplify.executeProviderUtils(this.context, 'awscloudformation', 'compileSchema', {
-      resourceDir,
-      parameters: this.getCfnParameters(apiName, authConfig, resourceDir),
-      authConfig,
-    });
+
+    let noErrors = true;
+    do {
+      try {
+        await this.context.amplify.executeProviderUtils(this.context, 'awscloudformation', 'compileSchema', {
+          resourceDir,
+          parameters: this.getCfnParameters(apiName, authConfig, resourceDir),
+          authConfig,
+        });
+        noErrors = true;
+      } catch (err) {
+        noErrors = false;
+        if (err.message === `@auth directive with 'iam' provider found, but the project has no IAM authentication provider configured.`) {
+          authConfig.additionalAuthenticationProviders.push(await askAuthQuestions('AWS_IAM', this.context));
+        } else if (err.message === `@auth directive with 'userPools' provider found, but the project has no Cognito User Pools authentication provider configured.`) {
+          authConfig.additionalAuthenticationProviders.push(await askAuthQuestions('AMAZON_COGNITO_USER_POOLS', this.context));
+        } else if (err.message === `@auth directive with 'oidc' provider found, but the project has no OPENID_CONNECT authentication provider configured.`) {
+          authConfig.additionalAuthenticationProviders.push(await askAuthQuestions('OPENID_CONNECT', this.context));
+        } else if (err.message === `@auth directive with 'apiKey' provider found, but the project has no API Key authentication provider configured.`) {
+          authConfig.additionalAuthenticationProviders.push(await askAuthQuestions('API_KEY', this.context));
+        } else {
+          throw err;
+        }
+      }
+    } while(!noErrors)
 
     this.context.amplify.updateamplifyMetaAfterResourceUpdate(category, apiName, 'output', { authConfig });
     this.context.amplify.updateBackendConfigAfterResourceUpdate(category, apiName, 'output', { authConfig });

@@ -1,5 +1,6 @@
 import {
-  addApiWithSchema,
+  addApiWithoutSchema,
+  updateApiSchema,
   addApi,
   addAuthWithDefault,
   addDDBWithTrigger,
@@ -120,14 +121,17 @@ describe('nodejs', () => {
     });
 
     it('lambda with dynamoDB permissions should be able to scan ddb', async () => {
-      await initJSProjectWithProfile(projRoot, {});
+      await initJSProjectWithProfile(projRoot, {
+        name: 'dynamodbscan',
+      });
 
       const random = Math.floor(Math.random() * 10000);
       const fnName = `integtestfn${random}`;
       const ddbName = `integtestddb${random}`;
 
       // test ability to scan both appsync @model-backed and regular ddb tables
-      await addApiWithSchema(projRoot, 'simple_model.graphql');
+      await addApiWithoutSchema(projRoot);
+      await updateApiSchema(projRoot, 'dynamodbscan', 'simple_model.graphql');
       await addSimpleDDB(projRoot, { name: ddbName });
 
       await addFunction(
@@ -185,7 +189,9 @@ describe('nodejs', () => {
     });
 
     it('existing lambda updated with additional permissions should be able to scan ddb', async () => {
-      await initJSProjectWithProfile(projRoot, {});
+      await initJSProjectWithProfile(projRoot, {
+        name: 'lambdaadditionalpermissions',
+      });
 
       const random = Math.floor(Math.random() * 10000);
       const fnName = `integtestfn${random}`;
@@ -209,7 +215,8 @@ describe('nodejs', () => {
       expect(functionName).toBeDefined();
       expect(region).toBeDefined();
 
-      await addApiWithSchema(projRoot, 'simple_model.graphql');
+      await addApiWithoutSchema(projRoot,);
+      await updateApiSchema(projRoot, 'lambdaadditionalpermissions', 'simple_model.graphql');
       await updateFunction(
         projRoot,
         {
@@ -241,8 +248,11 @@ describe('nodejs', () => {
     });
 
     it('@model-backed lambda function should generate envvars TODOTABLE_NAME, TODOTABLE_ARN, GRAPHQLAPIIDOUTPUT', async () => {
-      await initJSProjectWithProfile(projRoot, {});
-      await addApiWithSchema(projRoot, 'simple_model.graphql');
+      await initJSProjectWithProfile(projRoot, {
+        name: 'modelbackedlambda',
+      });
+      await addApiWithoutSchema(projRoot);
+      await updateApiSchema(projRoot, 'modelbackedlambda', 'simple_model.graphql');
 
       const random = Math.floor(Math.random() * 10000);
       const fnName = `integtestfn${random}`;
