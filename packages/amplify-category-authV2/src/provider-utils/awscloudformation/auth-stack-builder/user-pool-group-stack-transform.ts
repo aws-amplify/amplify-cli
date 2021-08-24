@@ -16,15 +16,15 @@ export enum CommandType {
 export const authUserPoolGroupStackFileName: string = 'template.json';
 
 export type UserPoolGroupMetadata = {
-    groupName: string;
-    precedence: number;
-    customPolicies?: any
-}
+  groupName: string;
+  precedence: number;
+  customPolicies?: any;
+};
 
 export type AmplifyUserPoolGroupStackOptions = {
   groups: UserPoolGroupMetadata[];
-  identityPoolName?: string,
-  cognitoResourceName: string
+  identityPoolName?: string;
+  cognitoResourceName: string;
 };
 
 export type ResourceConfig = {
@@ -36,9 +36,8 @@ export type ResourceConfig = {
 export interface AmplifyUserPoolGroupTransformOptions {
   resourceConfig: ResourceConfig;
   deploymentOptions: DeploymentOptions;
-  overrideOptions?: OverrideOptions;
+  overrideOptions: OverrideOptions;
   cfnModifiers?: Function;
-  userPoolGroupStackOptions: AmplifyUserPoolGroupStackOptions;
 }
 
 export interface DeploymentOptions {
@@ -52,15 +51,15 @@ export interface OverrideOptions {
 }
 
 export class AmplifyUserPoolGroupTransform {
-  private app: cdk.App | undefined;
-  private _userPoolGroupTemplateObj: AmplifyUserPoolGroupStack | undefined; // Props to modify Root stack data
+  private app: cdk.App;
   private _resourceConfig: ResourceConfig; // Config about resource to override
-  private _userPoolGroupStackOptions: AmplifyUserPoolGroupStackOptions | undefined; // options to help generate  cfn template
+  private _userPoolGroupTemplateObj: AmplifyUserPoolGroupStack; // Props to modify Root stack data
+  private _userPoolGroupStackOptions: AmplifyUserPoolGroupStackOptions; // options to help generate  cfn template
   private _command: CommandType;
   private _synthesizer: AuthStackSythesizer;
-  private _deploymentOptions: DeploymentOptions | undefined;
-  private _overrideProps: OverrideOptions | undefined;
-  private _cfnModifiers: Function | undefined;
+  private _deploymentOptions: DeploymentOptions;
+  private _overrideProps: OverrideOptions;
+  private _cfnModifiers?: Function;
   private _authInputState: AuthInputState;
 
   constructor(options: AmplifyUserPoolGroupTransformOptions, command: CommandType) {
@@ -109,64 +108,93 @@ export class AmplifyUserPoolGroupTransform {
   /**
    * Generates CFN REsources for Auth
    * @returns CFN Template
-  */
+   */
 
-  generateResources = async() => {
-    this._userPoolGroupTemplateObj = new AmplifyUserPoolGroupStack(this.app!, 'AmplifyUserPoolGroupStack', { synthesizer: this._synthesizer });
+  generateResources = async () => {
+    this._userPoolGroupTemplateObj = new AmplifyUserPoolGroupStack(this.app, 'AmplifyUserPoolGroupStack', {
+      synthesizer: this._synthesizer,
+    });
 
     // add CFN parameters
-    this._userPoolGroupTemplateObj.addCfnParameter({
-      type: 'String',
-    }, 'env');
-
-    this._userPoolGroupTemplateObj.addCfnParameter({
-      type: 'String',
-    }, 'authRoleArn');
-
-    this._userPoolGroupTemplateObj.addCfnParameter({
-      type: 'String',
-    }, 'unauthRoleArn');
-
-    this._userPoolGroupTemplateObj.addCfnParameter({
-      type: 'String',
-    }, `auth${this._userPoolGroupStackOptions?.cognitoResourceName}UserPoolId`);
-
-    if(this._userPoolGroupStackOptions?.identityPoolName){
-      this._userPoolGroupTemplateObj.addCfnParameter({
+    this._userPoolGroupTemplateObj.addCfnParameter(
+      {
         type: 'String',
-      }, `auth${this._userPoolGroupStackOptions?.cognitoResourceName}IdentityPoolId`);
+      },
+      'env',
+    );
+
+    this._userPoolGroupTemplateObj.addCfnParameter(
+      {
+        type: 'String',
+      },
+      'authRoleArn',
+    );
+
+    this._userPoolGroupTemplateObj.addCfnParameter(
+      {
+        type: 'String',
+      },
+      'unauthRoleArn',
+    );
+
+    this._userPoolGroupTemplateObj.addCfnParameter(
+      {
+        type: 'String',
+      },
+      `auth${this._userPoolGroupStackOptions.cognitoResourceName}UserPoolId`,
+    );
+
+    if (this._userPoolGroupStackOptions.identityPoolName) {
+      this._userPoolGroupTemplateObj.addCfnParameter(
+        {
+          type: 'String',
+        },
+        `auth${this._userPoolGroupStackOptions.cognitoResourceName}IdentityPoolId`,
+      );
     }
 
-    this._userPoolGroupTemplateObj.addCfnParameter({
-      type: 'String',
-    }, `auth${this._userPoolGroupStackOptions?.cognitoResourceName}appClientID`);
+    this._userPoolGroupTemplateObj.addCfnParameter(
+      {
+        type: 'String',
+      },
+      `auth${this._userPoolGroupStackOptions.cognitoResourceName}appClientID`,
+    );
 
-    this._userPoolGroupTemplateObj.addCfnParameter({
-      type: 'String',
-    }, `auth${this._userPoolGroupStackOptions?.cognitoResourceName}appClientIDWeb`);
+    this._userPoolGroupTemplateObj.addCfnParameter(
+      {
+        type: 'String',
+      },
+      `auth${this._userPoolGroupStackOptions.cognitoResourceName}appClientIDWeb`,
+    );
 
     // add CFN condition
-    this._userPoolGroupTemplateObj.addCfnCondition({
-      expression:cdk.Fn.conditionEquals(this._userPoolGroupTemplateObj.getCfnParameter('env'),'NONE')
-    },'ShouldNotCreateEnvResources');
+    this._userPoolGroupTemplateObj.addCfnCondition(
+      {
+        expression: cdk.Fn.conditionEquals(this._userPoolGroupTemplateObj.getCfnParameter('env'), 'NONE'),
+      },
+      'ShouldNotCreateEnvResources',
+    );
 
     // generate resources
-    this._userPoolGroupTemplateObj.generateUserPoolGroupResources(this._userPoolGroupStackOptions!);
+    this._userPoolGroupTemplateObj.generateUserPoolGroupResources(this._userPoolGroupStackOptions);
 
     // generate CFN outputs
-    if(this._userPoolGroupStackOptions?.identityPoolName){
+    //TODO: same output params as root stack
+    if (this._userPoolGroupStackOptions.identityPoolName) {
       this._userPoolGroupStackOptions.groups.forEach(group => {
-        this._userPoolGroupTemplateObj!.addCfnOutput({
-          value: cdk.Fn.getAtt(`${group.groupName}GroupRole`,'Arn').toString()
-        },`${group.groupName}GroupRole`);
-      })
+        this._userPoolGroupTemplateObj.addCfnOutput(
+          {
+            value: cdk.Fn.getAtt(`${group.groupName}GroupRole`, 'Arn').toString(),
+          },
+          `${group.groupName}GroupRoleOutput`,
+        );
+      });
     }
-
-  }
+  };
 
   private applyOverride = async () => {
-    if (this._command === CommandType.ADD || this._command === CommandType.UPDATE) {
-      const { overrideProps } = await import(this._overrideProps!.overrideFnPath);
+    if (this._command === CommandType.UPDATE) {
+      const { overrideProps } = await import(this._overrideProps.overrideFnPath);
       if (typeof overrideProps === 'function' && overrideProps) {
         // await buildOverrideDir(this._overrideProps!.overrideDir);
         this._userPoolGroupTemplateObj = overrideProps(this._userPoolGroupTemplateObj as AmplifyUserPoolGroupStackTemplate);
@@ -181,18 +209,15 @@ export class AmplifyUserPoolGroupTransform {
    */
   private getInput = async (): Promise<AmplifyUserPoolGroupStackOptions> => {
     const cliInputs = this._authInputState._authInputPayload!;
-    const resourceDirPath = path.join(pathManager.getBackendDirPath(),
-        'auth',
-        'userPoolGroups',
-        'user-pool-group-precedence.json',
-    );
-    const groups : UserPoolGroupMetadata[] | undefined = JSONUtilities.readJson(resourceDirPath,{throwIfNotExist: true})!;
+    const resourceDirPath = path.join(pathManager.getBackendDirPath(), 'auth', 'userPoolGroups', 'user-pool-group-precedence.json');
+    const groups = JSONUtilities.readJson(resourceDirPath, { throwIfNotExist: true })!;
+
     const identityPoolName = cliInputs.identityPoolName;
     return {
-        groups,
-        identityPoolName ,
-        cognitoResourceName: cliInputs.resourceName!
-    }
+      groups: groups as UserPoolGroupMetadata[],
+      identityPoolName,
+      cognitoResourceName: cliInputs.resourceName!,
+    };
   };
 
   /**
@@ -200,12 +225,12 @@ export class AmplifyUserPoolGroupTransform {
    * @returns return CFN templates sunthesized by app
    */
   private synthesizeTemplates = async (): Promise<Template> => {
-    this.app?.synth();
+    this.app.synth();
     const templates = this._synthesizer.collectStacks();
     return templates.get('AmplifyUserPoolGroupStack')!;
   };
 
   private deployOverrideStacksToDisk = async (props: DeploymentOptions) => {
-      JSONUtilities.writeJson(props.rootFilePath, props.templateStack);
+    JSONUtilities.writeJson(props.rootFilePath, props.templateStack);
   };
 }

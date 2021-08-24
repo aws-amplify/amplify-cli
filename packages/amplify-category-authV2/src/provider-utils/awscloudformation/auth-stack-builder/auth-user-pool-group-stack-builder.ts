@@ -1,15 +1,13 @@
 import * as cdk from '@aws-cdk/core';
 import * as iam from '@aws-cdk/aws-iam';
-import * as lambda from '@aws-cdk/aws-lambda'
-import { CfnUserPoolGroup} from '@aws-cdk/aws-cognito';
-import * as fs from 'fs-extra';
+import * as lambda from '@aws-cdk/aws-lambda';
+import { CfnUserPoolGroup } from '@aws-cdk/aws-cognito';
 import { AmplifyUserPoolGroupStackTemplate } from './types';
 import { AmplifyUserPoolGroupStackOptions } from './user-pool-group-stack-transform';
 
 const CFN_TEMPLATE_FORMAT_VERSION = '2010-09-09';
 const ROOT_CFN_DESCRIPTION = 'Root Stack for AWS Amplify CLI';
 
-const authTriggerAssetFilePath = 'path to lambda file role'
 export type AmplifyAuthCognitoStackProps = {
   synthesizer: cdk.IStackSynthesizer;
 };
@@ -17,11 +15,11 @@ export type AmplifyAuthCognitoStackProps = {
 export class AmplifyUserPoolGroupStack extends cdk.Stack implements AmplifyUserPoolGroupStackTemplate {
   _scope: cdk.Construct;
   private _cfnParameterMap: Map<string, cdk.CfnParameter> = new Map();
-  private _cfnConditionMap: any;
+  private _cfnConditionMap: Map<string, cdk.CfnCondition> = new Map();
   userPoolGroup: Record<string, CfnUserPoolGroup>;
   userPoolGroupRole: Record<string, iam.CfnRole>;
   roleMapCustomResource?: cdk.CustomResource;
-  roleMapLambdaFunction?: lambda.Function
+  roleMapLambdaFunction?: lambda.CfnFunction;
   lambdaExecutionRole?: iam.CfnRole;
 
   constructor(scope: cdk.Construct, id: string, props: AmplifyAuthCognitoStackProps) {
@@ -120,7 +118,6 @@ export class AmplifyUserPoolGroupStack extends cdk.Stack implements AmplifyUserP
     }
   }
 
-
   // add Function for Custom Resource in Root stack
   /**
    *
@@ -131,154 +128,188 @@ export class AmplifyUserPoolGroupStack extends cdk.Stack implements AmplifyUserP
     return JSON.stringify(this._toCloudFormation(), undefined, 2);
   };
 
-  generateUserPoolGroupResources = async(props : AmplifyUserPoolGroupStackOptions) => {
+  generateUserPoolGroupResources = async (props: AmplifyUserPoolGroupStackOptions) => {
     props.groups.forEach(group => {
-      this.userPoolGroup[`${group.groupName}`] = new CfnUserPoolGroup(this,`${group.groupName}Group`,{
-        userPoolId:this.getCfnParameter(getCfnParamslogicalId(props.cognitoResourceName,'UserPoolId'))!.valueAsString,
+      this.userPoolGroup[`${group.groupName}`] = new CfnUserPoolGroup(this, `${group.groupName}Group`, {
+        userPoolId: this.getCfnParameter(getCfnParamslogicalId(props.cognitoResourceName, 'UserPoolId'))!.valueAsString,
         groupName: group.groupName,
         precedence: group.precedence,
-      })
-      if(props.identityPoolName){
-        this.userPoolGroup[`${group.groupName}`].addPropertyOverride('RoleArn',cdk.Fn.getAtt(`${group.groupName}GroupRole`,'Arn'));
-        this.userPoolGroupRole[`${group.groupName}`] = new iam.CfnRole(this,`${group.groupName}GroupRole`,{
-          roleName: cdk.Fn.join("",[this.getCfnParameter(getCfnParamslogicalId(props.cognitoResourceName,'UserPoolId'))!.valueAsString,`${group.groupName}GroupRole`]),
-          assumeRolePolicyDocument:{
-            Version: "2012-10-17",
+      });
+      if (props.identityPoolName) {
+        this.userPoolGroup[`${group.groupName}`].addPropertyOverride('RoleArn', cdk.Fn.getAtt(`${group.groupName}GroupRole`, 'Arn'));
+        this.userPoolGroupRole[`${group.groupName}`] = new iam.CfnRole(this, `${group.groupName}GroupRole`, {
+          roleName: cdk.Fn.join('', [
+            this.getCfnParameter(getCfnParamslogicalId(props.cognitoResourceName, 'UserPoolId'))!.valueAsString,
+            `${group.groupName}GroupRole`,
+          ]),
+          assumeRolePolicyDocument: {
+            Version: '2012-10-17',
             Statement: [
-                {
-                    Sid: "",
-                    Effect: "Allow",
-                    Principal: {
-                        "Federated": "cognito-identity.amazonaws.com"
+              {
+                Sid: '',
+                Effect: 'Allow',
+                Principal: {
+                  Federated: 'cognito-identity.amazonaws.com',
+                },
+                Action: 'sts:AssumeRoleWithWebIdentity',
+                Condition: {
+                  StringEquals: {
+                    'cognito-identity.amazonaws.com:aud': {
+                      Ref: `auth${props.cognitoResourceName}IdentityPoolId}`,
                     },
-                    Action: "sts:AssumeRoleWithWebIdentity",
-                    Condition: {
-                      StringEquals: {
-                        "cognito-identity.amazonaws.com:aud": {
-                          "Ref":"auth<%= props.cognitoResourceName %>IdentityPoolId"
-                        }
-                      },
-                      ForAnyValueStringLike: {"cognito-identity.amazonaws.com:amr": "authenticated"}
-                    }
-                }
-            ]
-          }
-        }) 
-        if(group.customPolicies && group.customPolicies.length > 0){
-          this.userPoolGroupRole[`${group.groupName}`].addPropertyOverride('Policies',JSON.stringify(group.customPolicies, null, 4))
+                  },
+                  ForAnyValueStringLike: { 'cognito-identity.amazonaws.com:amr': 'authenticated' },
+                },
+              },
+            ],
+          },
+        });
+        if (group.customPolicies && group.customPolicies.length > 0) {
+          this.userPoolGroupRole[`${group.groupName}`].addPropertyOverride('Policies', JSON.stringify(group.customPolicies, null, 4));
         }
       }
-    })
+    });
 
-    if(props.identityPoolName){
+    if (props.identityPoolName) {
       this.lambdaExecutionRole = new iam.CfnRole(this, 'LambdaExecutionRole', {
-        roleName: cdk.Fn.conditionIf('ShouldNotCreateEnvResources', props.cognitoResourceName, cdk.Fn.join("",[`${props.cognitoResourceName}-ExecutionRole`,cdk.Fn.ref('env')]).toString()).toString(),
-        assumeRolePolicyDocument:{
-          Version: "2012-10-17",
+        roleName: cdk.Fn.conditionIf(
+          'ShouldNotCreateEnvResources',
+          props.cognitoResourceName,
+          cdk.Fn.join('', [`${props.cognitoResourceName}-ExecutionRole`, cdk.Fn.ref('env')]).toString(),
+        ).toString(),
+        assumeRolePolicyDocument: {
+          Version: '2012-10-17',
           Statement: [
-              {
-                  Effect: "Allow",
-                  Principal: {
-                      Service: [
-                          "lambda.amazonaws.com"
-                      ]
-                  },
-                  Action: [
-                      "sts:AssumeRole"
-                  ]
-              }]
-          },
-          policies:[
             {
-              policyName: "UserGroupLogPolicy",
-              policyDocument: {
-                  Version: "2012-10-17",
-                  Statement: [
-                      {
-                          Effect: "Allow",
-                          Action: [
-                              "logs:CreateLogGroup",
-                              "logs:CreateLogStream",
-                              "logs:PutLogEvents"
-                          ],
-                          Resource: "arn:aws:logs:*:*:*"
-                      }
-                  ]
-              }
+              Effect: 'Allow',
+              Principal: {
+                Service: ['lambda.amazonaws.com'],
+              },
+              Action: ['sts:AssumeRole'],
             },
-            {
-              policyName: "UserGroupExecutionPolicy",
-              policyDocument: {
-                  Version: "2012-10-17",
-                  Statement: [
-                      {
-                          Effect: "Allow",
-                          Action: [
-                              "cognito-identity:SetIdentityPoolRoles",
-                              "cognito-identity:ListIdentityPools",
-                              "cognito-identity:describeIdentityPool"
-
-                          ],
-                          Resource: "*"
-                      }
-                  ]
-              }
+          ],
+        },
+        policies: [
+          {
+            policyName: 'UserGroupLogPolicy',
+            policyDocument: {
+              Version: '2012-10-17',
+              Statement: [
+                {
+                  Effect: 'Allow',
+                  Action: ['logs:CreateLogGroup', 'logs:CreateLogStream', 'logs:PutLogEvents'],
+                  Resource: 'arn:aws:logs:*:*:*',
+                },
+              ],
+            },
           },
           {
-            policyName: "UserGroupPassRolePolicy",
+            policyName: 'UserGroupExecutionPolicy',
             policyDocument: {
-              Version: "2012-10-17",
+              Version: '2012-10-17',
               Statement: [
-                  {
-                    Effect: "Allow",
-                    Action: [
-                        "iam:PassRole"
-                    ],
-                    Resource: [
-                      {
-                        Ref: "AuthRoleArn" 
-                      },
-                      {
-                        Ref: "UnauthRoleArn" 
-                      }
-                    ]
-                  }
-                ]
-            }
-          }
-        ]
-      })
+                {
+                  Effect: 'Allow',
+                  Action: [
+                    'cognito-identity:SetIdentityPoolRoles',
+                    'cognito-identity:ListIdentityPools',
+                    'cognito-identity:describeIdentityPool',
+                  ],
+                  Resource: '*',
+                },
+              ],
+            },
+          },
+          {
+            policyName: 'UserGroupPassRolePolicy',
+            policyDocument: {
+              Version: '2012-10-17',
+              Statement: [
+                {
+                  Effect: 'Allow',
+                  Action: ['iam:PassRole'],
+                  Resource: [
+                    {
+                      Ref: 'AuthRoleArn',
+                    },
+                    {
+                      Ref: 'UnauthRoleArn',
+                    },
+                  ],
+                },
+              ],
+            },
+          },
+        ],
+      });
       // lambda function for RoleMap Custom Resource
-      const triggerCode = fs.readFileSync(authTriggerAssetFilePath, 'utf-8');
-
-      this.roleMapLambdaFunction = new lambda.Function(this,'RoleMapLambdaFunction',{
-        code: lambda.Code.fromInline(triggerCode),
-        handler:'index.handler',
-        runtime: lambda.Runtime.NODEJS_12_X,
-        timeout: cdk.Duration.seconds(300),
-        role: 
-      })
-
+      this.roleMapLambdaFunction = new lambda.CfnFunction(this, 'RoleMapLambdaFunction', {
+        code: {
+          zipFile: cdk.Fn.join('\n', [
+            "const response = require('cfn-response');",
+            "const AWS = require('aws-sdk');",
+            'exports.handler = (event, context) => {',
+            "if (event.RequestType == 'Delete') {",
+            "    response.send(event, context, response.SUCCESS, {message: 'Request type delete'})",
+            '};',
+            "if (event.RequestType == 'Create' || event.RequestType == 'Update') {",
+            '    let { identityPoolId, appClientID, appClientIDWeb, userPoolId, region }  = event.ResourceProperties;',
+            '    try {',
+            '       const cognitoidentity = new AWS.CognitoIdentity();',
+            '       let params = {',
+            '           IdentityPoolId: identityPoolId,',
+            '           Roles: {',
+            "               'authenticated': event.ResourceProperties.AuthRoleArn,",
+            "               'unauthenticated': event.ResourceProperties.UnauthRoleArn,",
+            '           },',
+            '           RoleMappings: {}',
+            '       };',
+            '       if (appClientIDWeb) {',
+            '           params.RoleMappings[`cognito-idp.${region}.amazonaws.com/${userPoolId}:${appClientIDWeb}`] = {',
+            "               Type: 'Token',",
+            "               AmbiguousRoleResolution: 'AuthenticatedRole',",
+            '           }',
+            '       }',
+            '       if (appClientID) {',
+            '           params.RoleMappings[`cognito-idp.${region}.amazonaws.com/${userPoolId}:${appClientID}`] = {',
+            "               Type: 'Token',",
+            "               AmbiguousRoleResolution: 'AuthenticatedRole',",
+            '           }',
+            '       }',
+            '    cognitoidentity.setIdentityPoolRoles(params).promise();',
+            "    response.send(event, context, response.SUCCESS, {message: 'Successfully updated identity pool.'})",
+            '    } catch(err) {',
+            "        response.send(event, context, response.FAILED, {message: 'Error updating identity pool'});",
+            '    }',
+            '   };',
+            '};',
+          ]),
+        },
+        handler: 'index.handler',
+        runtime: 'nodejs12.x',
+        timeout: 300,
+        role: cdk.Fn.getAtt('LambdaExecutionRole', 'Arn').toString(),
+      });
 
       // adding custom trigger roleMap function
       this.roleMapCustomResource = new cdk.CustomResource(this, 'RoleMapFunctionInput', {
-        serviceToken: this.roleMapLambdaFunction.functionArn,
+        serviceToken: this.roleMapLambdaFunction.attrArn,
         resourceType: 'Custom::LambdaCallout',
-        properties:{
+        properties: {
           AuthRoleArn: cdk.Fn.ref('AuthRoleArn'),
           UnauthRoleArn: cdk.Fn.ref('UnauthRoleArn'),
-          identityPoolId: cdk.Fn.ref(getCfnParamslogicalId(props.cognitoResourceName,'IdentityPoolId')),
-          userPoolId: cdk.Fn.ref(getCfnParamslogicalId(props.cognitoResourceName,'UserPoolId')),
-          appClientIDWeb: cdk.Fn.ref(getCfnParamslogicalId(props.cognitoResourceName,'appClientIDWeb')),
-          appClientID: cdk.Fn.ref(getCfnParamslogicalId(props.cognitoResourceName,'appClientID')),
+          identityPoolId: cdk.Fn.ref(getCfnParamslogicalId(props.cognitoResourceName, 'IdentityPoolId')),
+          userPoolId: cdk.Fn.ref(getCfnParamslogicalId(props.cognitoResourceName, 'UserPoolId')),
+          appClientIDWeb: cdk.Fn.ref(getCfnParamslogicalId(props.cognitoResourceName, 'appClientIDWeb')),
+          appClientID: cdk.Fn.ref(getCfnParamslogicalId(props.cognitoResourceName, 'appClientID')),
           region: cdk.Fn.ref('AWS::Region'),
           env: cdk.Fn.ref('env'),
-        }
-      })
+        },
+      });
     }
-  }
+  };
 }
 
 export const getCfnParamslogicalId = (cognitoResourceName: string, cfnParamName: string): string => {
-  return `auth${cognitoResourceName}${cfnParamName}`
-}
+  return `auth${cognitoResourceName}${cfnParamName}`;
+};

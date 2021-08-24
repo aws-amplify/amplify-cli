@@ -30,12 +30,11 @@ export const getResourceSynthesizer = (context: any, cfnFilename: string, provid
   await createUserPoolGroups(context, request.resourceName!, request.userPoolGroupList);
   // transformation handled in api and functions.
   await addAdminAuth(context, request.resourceName!, 'add', request.adminQueryGroup);
-  await generateUserPoolGroupStackTemplate(request.resourceName!);
-  await generateAuthStackTemplate(request.resourceName!);
+  await generateAuthStackTemplate(context, request.resourceName!);
   await generateNestedAuthTriggerTemplate(category, request);
   // save parameters.json
   saveResourceParameters(context, provider, category, request.resourceName!, request, ENV_SPECIFIC_PARAMS);
-  // copy custom-message trigger files in toS3
+  // copy custom-message trigger files in to S3
   await copyS3Assets(request);
   return request;
 };
@@ -99,7 +98,7 @@ export const getResourceUpdater = (context: any, cfnFilename: string, provider: 
     await generateNestedAuthTriggerTemplate(category, request);
     saveResourceParameters(context, provider, category, request.resourceName!, request, ENV_SPECIFIC_PARAMS);
   }
-  if(request.updateFlow === 'updateUserPoolGroups'){
+  if (request.updateFlow === 'updateUserPoolGroups') {
     await transformUserPoolGroupSchema(context);
   }
   await copyS3Assets(request);
@@ -253,6 +252,8 @@ const createUserPoolGroups = async (context: any, resourceName: string, userPool
         },
       ],
     });
+    // create CFN
+    await generateUserPoolGroupStackTemplate(resourceName);
   }
 };
 
@@ -287,6 +288,9 @@ const updateUserPoolGroups = async (context: any, resourceName: string, userPool
         },
       ],
     });
+
+    // generate template
+    await generateUserPoolGroupStackTemplate(resourceName);
   }
 };
 

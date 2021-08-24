@@ -6,10 +6,10 @@ import {
   CommandType,
 } from '../auth-stack-builder/auth-stack-transform';
 import * as path from 'path';
-import { pathManager } from 'amplify-cli-core';
+import { $TSContext, pathManager } from 'amplify-cli-core';
 import { category } from '../constants';
 
-export const generateAuthStackTemplate = async (resourceName: string): Promise<Template> => {
+export const generateAuthStackTemplate = async (context: $TSContext, resourceName: string): Promise<Template> => {
   try {
     const projectPath = pathManager.findProjectRoot();
     const cfnFilePath = path.join(pathManager.getBackendDirPath(projectPath), category, resourceName, 'build', authCognitoStackFileName);
@@ -32,7 +32,7 @@ export const generateAuthStackTemplate = async (resourceName: string): Promise<T
     };
     // generate , override and deploy stacks to disk
     const authTransform = new AmplifyAuthTransform(props, CommandType.ADD);
-    return await authTransform.transform();
+    return await authTransform.transform(context);
   } catch (e) {
     throw new Error(e);
   }

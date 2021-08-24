@@ -3,7 +3,8 @@
   "compilerOptions": {
     "outDir": "lib",
     "rootDir": "src",
-    "allowJs": true
+    "allowJs": true,
+    "strictPropertyInitialization": false
   },
   "exclude": [
     "coverage",

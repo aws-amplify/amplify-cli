@@ -56,7 +56,6 @@ export class AuthInputState {
   }
 
   public saveCliInputPayload(): void {
-    const backend = pathManager.getBackendDirPath();
     fs.ensureDirSync(path.join(pathManager.getBackendDirPath(), this._category, this._resourceName));
     try {
       JSONUtilities.writeJson(this._filePath, this._authInputPayload);

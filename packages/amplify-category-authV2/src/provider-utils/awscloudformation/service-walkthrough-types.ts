@@ -1,14 +1,27 @@
 // Some convenience types for the existing service walkthrough logic
 
-import { $TSObject } from "amplify-cli-core";
+import { $TSObject } from 'amplify-cli-core';
+import { FunctionDependency } from 'amplify-function-plugin-interface';
 
-export type AuthStackOptions = ServiceQuestionsResult & AuthStackMetadata
+export type AuthTriggerPermissions = {
+  policyName: string;
+  trigger: string;
+  effect: string;
+  actions: string[];
+  resource: {
+    paramType: string;
+    keys: string | string[];
+  };
+};
 
-type AuthStackMetadata  = {
-  dependsOn? : [], 
-  parentStack?:  any,
-  breakCircularDependency?: boolean,
-}
+export type AuthStackOptions = ServiceQuestionsResult & AuthStackMetadata;
+
+type AuthStackMetadata = {
+  dependsOn?: FunctionDependency[];
+  parentStack?: string;
+  breakCircularDependency?: boolean;
+  permissions?: AuthTriggerPermissions[];
+};
 
 export type ServiceQuestionsResult = ServiceQuestionsBaseResult &
   OAuthResult &
@@ -26,7 +39,7 @@ export interface ServiceQuestionsBaseResult {
   useDefault: 'default' | 'defaultSocial' | 'manual';
   updateFlow?: 'default' | 'defaultSocial' | 'manual' | 'callbacks' | 'providers' | 'updateUserPoolGroups' | 'updateAdminQueries';
   requiredAttributes: string[];
-  authSelections: 'userPoolOnly' | 'identityPoolAndUserPool';
+  authSelections: 'userPoolOnly' | 'identityPoolAndUserPool' | 'identityPoolOnly';
   userPoolName?: string;
   usernameAttributes?: UsernameAttributes[];
   userPoolGroups: boolean;
@@ -34,8 +47,12 @@ export interface ServiceQuestionsBaseResult {
   userpoolClientRefreshTokenValidity?: number;
   userpoolClientReadAttributes: string[];
   userpoolClientWriteAttributes: string[];
+  userpoolClientSetAttributes?: boolean;
   usernameCaseSensitive?: boolean;
   authTriggerConnections?: string;
+  verificationBucketName?: string;
+  resourceNameTruncated?: string;
+  sharedId?: string;
 }
 
 export interface OAuthResult {

@@ -1,1 +1,0 @@
-{"version":3,"file":"generate-auth-stack-template.d.ts","sourceRoot":"","sources":["../../../../src/provider-utils/awscloudformation/utils/generate-auth-stack-template.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,QAAQ,EAAE,MAAM,iBAAiB,CAAC;AAU3C,eAAO,MAAM,yBAAyB,aAAoB,MAAM,YAAY,MAAM,gBAAgB,MAAM,KAAG,QAAQ,QAAQ,CA2B1H,CAAC"}

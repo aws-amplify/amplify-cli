@@ -4,10 +4,13 @@ import { AmplifyAuthCognitoStack } from './auth-cognito-stack-builder';
 import { AuthStackSythesizer } from './stack-synthesizer';
 import * as cdk from '@aws-cdk/core';
 import { AuthInputState } from '../auth-inputs-manager/auth-input-state';
-import { ServiceQuestionsResult } from '../service-walkthrough-types';
+import { AuthStackOptions, ServiceQuestionsResult } from '../service-walkthrough-types';
 import { AmplifyAuthCognitoStackTemplate } from './types';
 import { generateNestedAuthTriggerTemplate } from '../utils/generate-auth-trigger-template';
 import { category } from '../constants';
+import { pathManager, FeatureFlags, $TSContext } from 'amplify-cli-core';
+import _ from 'lodash';
+import * as path from 'path';
 
 export enum CommandType {
   'ADD',
@@ -20,12 +23,8 @@ export const authCognitoStackFileName: string = 'auth-template.yml';
 type AmplifyAuthStackOptions = {
   authStackFileName: string;
   event: CommandType;
-  authStackInputPayload: ServiceQuestionsResult;
+  authStackInputPayload: AuthStackOptions;
   overrideDir?: string;
-};
-
-export type AmplifyAuthStackConfig = {
-  stackFileName: string;
 };
 
 export type ResourceConfig = {
@@ -37,7 +36,7 @@ export type ResourceConfig = {
 export interface AmplifyAuthTransformOptions {
   resourceConfig: ResourceConfig;
   deploymentOptions: DeploymentOptions;
-  overrideOptions?: OverrideOptions;
+  overrideOptions: OverrideOptions;
   cfnModifiers?: Function;
 }
 
@@ -52,14 +51,14 @@ export interface OverrideOptions {
 }
 
 export class AmplifyAuthTransform {
-  private app: cdk.App | undefined;
-  private _authTemplateObj: AmplifyAuthCognitoStack | undefined; // Props to modify Root stack data
+  private app: cdk.App;
+  private _authTemplateObj: AmplifyAuthCognitoStack; // Props to modify Root stack data
   private _resourceConfig: ResourceConfig; // Config about resource to override
-  private _authStackOptions: AmplifyAuthStackOptions | undefined; // options to help generate  cfn template
+  private _authStackOptions: AmplifyAuthStackOptions; // options to help generate  cfn template
   private _command: CommandType;
   private _synthesizer: AuthStackSythesizer;
-  private _deploymentOptions: DeploymentOptions | undefined;
-  private _overrideProps: OverrideOptions | undefined;
+  private _deploymentOptions: DeploymentOptions;
+  private _overrideProps: OverrideOptions;
   private _cfnModifiers: Function | undefined;
   private _authInputState: AuthInputState;
 
@@ -78,9 +77,9 @@ export class AmplifyAuthTransform {
     });
   }
 
-  public async transform(): Promise<Template> {
+  public async transform(context: $TSContext): Promise<Template> {
     // parse Input data
-    this._authStackOptions = await this.getInput();
+    this._authStackOptions = await this.getInput(context);
 
     // generate cfn Constructs and AmplifyRootStackTemplate object to get overridden
     await this.generateResources();
@@ -134,17 +133,98 @@ export class AmplifyAuthTransform {
       'unauthRoleArn',
     );
 
-    if (this._authInputState._authInputPayload?.triggers) {
-      // get Transform for functions
-      generateNestedAuthTriggerTemplate(category, this._authInputState._authInputPayload);
-      //generateStacksForAuthTriggers(this._authInputState._authInputPayload);
+    const props = this._authStackOptions?.authStackInputPayload!;
+
+    if (!_.isEmpty(props.dependsOn)) {
+      const dependsOn = props.dependsOn;
+      dependsOn?.forEach(param => {
+        param.attributes.forEach(attribute => {
+          this._authTemplateObj!.addCfnParameter(
+            {
+              type: 'String',
+              default: `${param.category}${param.resourceName}${attribute}`,
+            },
+            `${param.category}${param.resourceName}${attribute}`,
+          );
+        });
+      });
     }
-    if (this._authInputState._authInputPayload?.userPoolGroupList) {
-      //generateStackforUserPoolGroups(this._authInputState._authInputPayload);
+
+    for (var i = 0; i < Object.keys(props).length; i++) {
+      if (typeof Object.values(props)[i] === 'string' || (Object.values(props)[i] && Object.values(props)[i].value)) {
+        this._authTemplateObj.addCfnParameter(
+          {
+            type: 'String',
+          },
+          `${Object.keys(props)[i]}`,
+        );
+      }
+
+      if (typeof Object.values(props)[i] === 'boolean') {
+        this._authTemplateObj.addCfnParameter(
+          {
+            type: 'String',
+          },
+          `${Object.keys(props)[i]}`,
+        );
+      }
+      if (typeof Object.values(props)[i] === 'number') {
+        this._authTemplateObj.addCfnParameter(
+          {
+            type: 'String',
+          },
+          `${Object.keys(props)[i]}`,
+        );
+      }
+      if (Object.keys(props)[i] === 'parentStack') {
+        this._authTemplateObj.addCfnParameter(
+          {
+            type: 'String',
+          },
+          `${Object.keys(props)[i]}`,
+        );
+      }
+      if (Array.isArray(Object.values(props)[i])) {
+        this._authTemplateObj.addCfnParameter(
+          {
+            type: 'CommaDelimitedList',
+          },
+          `${Object.keys(props)[i]}`,
+        );
+      }
     }
-    if (this._authInputState._authInputPayload?.adminQueries) {
-      //generateStackForAdminQueries(this._authInputState._authInputPayload);
+
+    if (Object.keys(props).includes('hostedUIProviderMeta') && !Object.keys(props).includes('hostedUIProviderCreds')) {
+      this._authTemplateObj.addCfnParameter(
+        {
+          type: 'String',
+          default: [],
+        },
+        'hostedUIProviderCreds',
+      );
     }
+
+    // add CFN condition
+    this._authTemplateObj.addCfnCondition(
+      {
+        expression: cdk.Fn.conditionEquals(cdk.Fn.ref('env'), 'NONE'),
+      },
+      'ShouldNotCreateEnvResources',
+    );
+
+    if (props.authSelections !== 'identityPoolOnly') {
+      this._authTemplateObj.addCfnCondition(
+        {
+          expression: cdk.Fn.conditionEquals(cdk.Fn.ref('userpoolClientGenerateSecret'), true),
+        },
+        'ShouldOutputAppClientSecrets',
+      );
+    }
+    // generate Resources
+
+    this._authTemplateObj.generateCognitoStackResources(props);
+
+    //generate Output
   };
 
   private applyOverride = async () => {
@@ -162,10 +242,42 @@ export class AmplifyAuthTransform {
    *
    * @returns Object required to generate Stack using cdk
    */
-  private getInput = async (): Promise<AmplifyAuthStackOptions> => {
+  private getInput = async (context: $TSContext): Promise<AmplifyAuthStackOptions> => {
+    // get the parameters necessary to complete
+    // handle dependsOn data
+
+    // determine permissions needed for each trigger module
+    if (!_.isEmpty(this._authInputState._authInputPayload!.triggers)) {
+      const permissions = await context.amplify.getTriggerPermissions(
+        context,
+        this._authInputState._authInputPayload?.triggers,
+        'auth',
+        this._authInputState._authInputPayload!.resourceName!,
+      );
+
+      // handle dependsOn data
+      const dependsOnKeys = Object.keys(this._authInputState._authInputPayload?.triggers).map(
+        i => `${this._authInputState._authInputPayload!.resourceName}${i}`,
+      );
+      const dependsOn = context.amplify.dependsOnBlock(context, dependsOnKeys, 'Cognito');
+      return {
+        authStackFileName: this._resourceConfig.stackFileName,
+        authStackInputPayload: {
+          breakCircularDependency: FeatureFlags.getBoolean('auth.breakcirculardependency'),
+          permissions: permissions,
+          dependsOn: dependsOn,
+          ...this._authInputState.getCliInputPayload(),
+        },
+        event: CommandType.ADD,
+      };
+    }
+
     return {
       authStackFileName: this._resourceConfig.stackFileName,
-      authStackInputPayload: this._authInputState.getCliInputPayload(),
+      authStackInputPayload: {
+        breakCircularDependency: FeatureFlags.getBoolean('auth.breakcirculardependency'),
+        ...this._authInputState.getCliInputPayload(),
+      },
       event: CommandType.ADD,
     };
   };
