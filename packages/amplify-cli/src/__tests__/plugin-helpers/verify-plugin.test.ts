@@ -54,7 +54,7 @@ describe('verify-plugin', () => {
 
     it('returns PluginDirPathNotExist error when specify not exist path', async () => {
       fsMock.pathExists.mockImplementation(() => Promise.resolve(false));
-      const result = await verifyPlugin('path', 'to', 'plugin');
+      const result = await verifyPlugin(path.join('path', 'to', 'plugin'));
       expect(result).toEqual(new PluginVerificationResult(false, PluginVerificationError.PluginDirPathNotExist));
     });
 
@@ -64,7 +64,7 @@ describe('verify-plugin', () => {
         isDirectory: jest.fn().mockReturnValue(false),
       };
       fsMock.stat.mockResolvedValue(stat as any);
-      const result = await verifyPlugin('path/to/plugin');
+      const result = await verifyPlugin(path.join('path', 'to', 'plugin'));
       expect(result).toEqual(new PluginVerificationResult(false, PluginVerificationError.PluginDirPathNotExist));
     });
 
@@ -82,7 +82,7 @@ describe('verify-plugin', () => {
         throw error;
       });
 
-      const result = await verifyPlugin('path/to/plugin');
+      const result = await verifyPlugin(path.join('path', 'to', 'plugin'));
       expect(result).toEqual(new PluginVerificationResult(false, PluginVerificationError.InvalidNodePackage, error));
     });
 
@@ -102,7 +102,7 @@ describe('verify-plugin', () => {
       // stat amplify-plugin.json
       fsMock.pathExists.mockImplementationOnce(() => Promise.resolve(false));
 
-      const result = await verifyPlugin('path/to/plugin');
+      const result = await verifyPlugin(path.join('path', 'to', 'plugin'));
       const expected = new PluginVerificationResult(false, PluginVerificationError.MissingManifest, undefined, packageJson);
       expect(result).toEqual(expected);
     });
@@ -127,7 +127,7 @@ describe('verify-plugin', () => {
       };
       fsMock.stat.mockResolvedValueOnce(statManifest as any);
 
-      const result = await verifyPlugin('path/to/plugin');
+      const result = await verifyPlugin(path.join('path', 'to', 'plugin'));
       const expected = new PluginVerificationResult(false, PluginVerificationError.MissingManifest, undefined, packageJson);
       expect(result).toEqual(expected);
     });
@@ -158,7 +158,7 @@ describe('verify-plugin', () => {
         throw error;
       });
 
-      const result = await verifyPlugin('path/to/plugin');
+      const result = await verifyPlugin(path.join('path', 'to', 'plugin'));
       const expected = new PluginVerificationResult(false, PluginVerificationError.InvalidManifest, error, packageJson);
       expect(result).toEqual(expected);
     });
@@ -192,7 +192,7 @@ describe('verify-plugin', () => {
       // read core package.json
       readJsonMock.mockReturnValueOnce(corePluginJson);
 
-      const result = await verifyPlugin('path/to/plugin');
+      const result = await verifyPlugin(path.join('path', 'to', 'plugin'));
       const expected = new PluginVerificationResult(
         false,
         PluginVerificationError.InvalidManifest,
