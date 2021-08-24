@@ -8,7 +8,8 @@ import {
   updateHeadlessApi,
   getProjectSchema,
   removeHeadlessApi,
-  addApiWithSchema,
+  addApiWithoutSchema,
+  updateApiSchema,
   createNewProjectDir,
   deleteProjectDir,
   getAppSyncApi,
@@ -39,8 +40,8 @@ describe('amplify add api (GraphQL)', () => {
   it('init a project and add the simple_model api, change transformer version to base version and push', async () => {
     const name = `simplemodelv${TRANSFORM_BASE_VERSION}`;
     await initJSProjectWithProfile(projRoot, { name });
-    await addApiWithSchema(projRoot, 'simple_model.graphql');
-
+    await addApiWithoutSchema(projRoot);
+    await updateApiSchema(projRoot, name, 'simple_model.graphql');
     const transformConfig = getTransformConfig(projRoot, name);
     expect(transformConfig).toBeDefined();
     expect(transformConfig.Version).toBeDefined();

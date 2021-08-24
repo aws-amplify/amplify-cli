@@ -4,7 +4,7 @@ import {
   initJSProjectWithProfile,
   deleteProject,
   deleteProjectDir,
-  addApiWithSchema,
+  addApiWithoutSchema,
   addFeatureFlag,
   amplifyPush,
   updateApiSchema,
@@ -16,7 +16,9 @@ describe('Schema iterative update - rename @key', () => {
 
   beforeAll(async () => {
     projectDir = await createNewProjectDir('schemaIterative');
-    await initJSProjectWithProfile(projectDir, {});
+    await initJSProjectWithProfile(projectDir, {
+      name: 'schemaiterativeupdate',
+    });
 
     addFeatureFlag(projectDir, 'graphqltransformer', 'enableiterativegsiupdates', true);
   });
@@ -25,10 +27,11 @@ describe('Schema iterative update - rename @key', () => {
     deleteProjectDir(projectDir);
   });
   it('should support changing gsi name', async () => {
-    const apiName = 'renamekey';
+    const apiName = 'schemaiterativeupdate';
 
     const initialSchema = path.join('iterative-push', 'change-model-name', 'initial-schema.graphql');
-    await addApiWithSchema(projectDir, initialSchema, { apiName, apiKeyExpirationDays: 7 });
+    await addApiWithoutSchema(projectDir, { apiKeyExpirationDays: 7 });
+    await updateApiSchema(projectDir, apiName, initialSchema);
     await amplifyPush(projectDir);
 
     const finalSchema = path.join('iterative-push', 'change-model-name', 'final-schema.graphql');

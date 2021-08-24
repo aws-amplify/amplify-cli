@@ -1,5 +1,6 @@
 import {
-  addApiWithSchema,
+  addApiWithoutSchema,
+  updateApiSchema,
   amplifyPush,
   createNewProjectDir,
   deleteProject,
@@ -31,7 +32,8 @@ describe('multi-key GSI behavior', () => {
   beforeEach(async () => {
     projRoot = await createNewProjectDir(projName);
     await initJSProjectWithProfile(projRoot, { name: projName });
-    await addApiWithSchema(projRoot, 'multi-gsi.graphql');
+    await addApiWithoutSchema(projRoot);
+    await updateApiSchema(projRoot, projName, 'multi-gsi.graphql');
     await amplifyPush(projRoot);
 
     appSyncClient = getAppSyncClientFromProj(projRoot);

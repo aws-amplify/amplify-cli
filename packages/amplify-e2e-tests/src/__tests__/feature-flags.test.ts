@@ -1,5 +1,5 @@
 import * as fs from 'fs-extra';
-import { initJSProjectWithProfile, deleteProject, addApiWithSchema, amplifyPush, amplifyPull, getAppId } from 'amplify-e2e-core';
+import { initJSProjectWithProfile, deleteProject, addApiWithoutSchema, updateApiSchema, amplifyPush, amplifyPull, getAppId } from 'amplify-e2e-core';
 import { createNewProjectDir, deleteProjectDir } from 'amplify-e2e-core';
 import { pathManager } from 'amplify-cli-core';
 import { addEnvironment } from '../environment/env';
@@ -24,9 +24,11 @@ describe('feature flags', () => {
 
   it('push and pull with multiple config files for environments', async () => {
     await initJSProjectWithProfile(projRoot, {
+      name: 'apifeatureflag',
       disableAmplifyAppCreation: false,
     });
-    await addApiWithSchema(projRoot, 'simple_model.graphql');
+    await addApiWithoutSchema(projRoot);
+    await updateApiSchema(projRoot, 'apifeatureflag', 'simple_model.graphql');
 
     const envName = 'test';
     const cliJSONPath = pathManager.getCLIJSONFilePath(projRoot);

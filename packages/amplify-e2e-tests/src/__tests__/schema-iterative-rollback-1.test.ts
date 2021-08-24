@@ -7,7 +7,7 @@ import {
   amplifyPushIterativeRollback,
   getDDBTable,
   getBackendAmplifyMeta,
-  addApiWithSchema,
+  addApiWithoutSchema,
   addFeatureFlag,
   amplifyPush,
   updateApiSchema,
@@ -22,7 +22,9 @@ describe('Iterative Rollback - add 2 @keys ', () => {
 
   beforeAll(async () => {
     projectDir = await createNewProjectDir('iterativeRollback');
-    await initJSProjectWithProfile(projectDir, {});
+    await initJSProjectWithProfile(projectDir, {
+      name: 'iterativerollbackaddkeys',
+    });
     addFeatureFlag(projectDir, 'graphqltransformer', 'enableiterativegsiupdates', true);
   });
   afterAll(async () => {
@@ -30,9 +32,10 @@ describe('Iterative Rollback - add 2 @keys ', () => {
     deleteProjectDir(projectDir);
   });
   it('should support rolling back from the 2nd deployment on adding gsis', async () => {
-    const apiName = 'renamekey';
+    const apiName = 'iterativerollbackaddkeys';
     const initialSchema = path.join('iterative-push', 'two-key-add', 'initial-schema.graphql');
-    await addApiWithSchema(projectDir, initialSchema, { apiName, apiKeyExpirationDays: 7 });
+    await addApiWithoutSchema(projectDir, { apiKeyExpirationDays: 7 });
+    await updateApiSchema(projectDir, apiName, initialSchema);
     await amplifyPush(projectDir);
 
     // get info on table

@@ -3,7 +3,7 @@ import { addFunction, functionBuild, addLambdaTrigger } from 'amplify-e2e-core';
 import { addSimpleDDB } from 'amplify-e2e-core';
 import { addKinesis } from 'amplify-e2e-core';
 import { createNewProjectDir, deleteProjectDir, getProjectMeta, getFunction } from 'amplify-e2e-core';
-import { addApiWithSchema } from 'amplify-e2e-core';
+import { addApiWithoutSchema, updateApiSchema } from 'amplify-e2e-core';
 
 import { appsyncGraphQLRequest } from 'amplify-e2e-core';
 import { getCloudWatchLogs, putKinesisRecords, invokeFunction, getEventSourceMappings } from 'amplify-e2e-core';
@@ -60,8 +60,11 @@ describe('nodejs', () => {
     });
 
     it('graphql mutation should result in trigger called in minimal AppSync + trigger infra', async () => {
-      await initJSProjectWithProfile(projRoot, {});
-      await addApiWithSchema(projRoot, 'simple_model.graphql');
+      await initJSProjectWithProfile(projRoot, {
+        name: 'graphqltriggerinfra',
+      });
+      await addApiWithoutSchema(projRoot);
+      await updateApiSchema(projRoot, 'graphqltriggerinfra', 'simple_model.graphql');
       await addFunction(projRoot, { functionTemplate: 'Lambda trigger', triggerType: 'DynamoDB' }, 'nodejs', addLambdaTrigger);
 
       await functionBuild(projRoot, {});

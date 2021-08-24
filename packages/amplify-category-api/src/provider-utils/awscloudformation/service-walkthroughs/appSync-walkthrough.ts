@@ -1,7 +1,7 @@
 import { ListQuestion, CheckboxQuestion, ListChoiceOptions } from 'inquirer';
 import { dataStoreLearnMore } from '../sync-conflict-handler-assets/syncAssets';
 import inquirer from 'inquirer';
-import fs from 'fs-extra';
+import fs, { createSymlink } from 'fs-extra';
 import path from 'path';
 import { rootAssetDir } from '../aws-constants';
 import { collectDirectivesByTypeNames, readProjectConfiguration, ConflictHandlerType } from 'graphql-transformer-core';
@@ -21,6 +21,7 @@ import {
   $TSContext,
   open,
 } from 'amplify-cli-core';
+import { getAppSyncApiKeys } from '../../../../../amplify-provider-awscloudformation/lib/utility-functions';
 
 const serviceName = 'AppSync';
 const elasticContainerServiceName = 'ElasticContainer';
@@ -43,6 +44,25 @@ const authProviderChoices = [
   {
     name: 'OpenID Connect',
     value: 'OPENID_CONNECT',
+  },
+];
+
+const conflictResolutionHanlderChoices = [
+  {
+    name: 'Auto Merge',
+    value: 'AUTOMERGE',
+  },
+  {
+    name: 'Optimistic Concurrency',
+    value: 'OPTIMISTIC_CONCURRENCY',
+  },
+  {
+    name: 'Custom Lambda',
+    value: 'LAMBDA',
+  },
+  {
+    name: 'Learn More',
+    value: 'Learn More',
   },
 ];
 
@@ -136,11 +156,188 @@ export const openConsole = async (context: $TSContext) => {
   }
 };
 
-export const serviceWalkthrough = async (context: $TSContext, defaultValuesFilename, serviceMetadata) => {
-  const resourceName = resourceAlreadyExists(context);
+const serviceApiInputWalkthrough = async (context: $TSContext, defaultValuesFilename, serviceMetadata) => {
+  let continuePrompt = false;
   let authConfig;
   let defaultAuthType;
   let resolverConfig;
+  const { amplify } = context;
+  const { inputs } = serviceMetadata;
+  const defaultValuesSrc = `${__dirname}/../default-values/${defaultValuesFilename}`;
+  const { getAllDefaults } = require(defaultValuesSrc);
+  const allDefaultValues = getAllDefaults(amplify.getProjectDetails());
+
+  let resourceAnswers = {};
+  resourceAnswers[inputs[1].key] = allDefaultValues[inputs[1].key];
+  resourceAnswers[inputs[0].key] = resourceAnswers[inputs[1].key];
+
+  //
+  // Default authConfig - API Key (expires in 7 days)
+  //
+  authConfig = {
+    defaultAuthentication: {
+      apiKeyConfig: {
+        apiKeyExpirationDays: 7
+      },
+      authenticationType: 'API_KEY',
+    },
+    additionalAuthenticationProviders: [],
+  };
+
+  //
+  // Repeat prompt until user selects Continue
+  //
+  while(!continuePrompt) {
+
+    const getAuthModeChoice = () => {
+      if (authConfig.defaultAuthentication.authenticationType === 'API_KEY') {
+        return `${authProviderChoices.find(choice => choice.value === authConfig.defaultAuthentication.authenticationType).name} (Expiration time: ${authConfig.defaultAuthentication.apiKeyConfig.apiKeyExpirationDays} days from now)`;
+      }
+      return authProviderChoices.find(choice => choice.value === authConfig.defaultAuthentication.authenticationType).name;
+    };
+
+    const basicInfoQuestionChoices = [];
+
+    basicInfoQuestionChoices.push({
+      name: `Name: ${resourceAnswers[inputs[1].key]}`,
+      value: 'API_NAME',
+    });
+
+    basicInfoQuestionChoices.push({
+      name: `Authorization modes: ${getAuthModeChoice()}`,
+      value: 'API_AUTH_MODE',
+    });
+
+    basicInfoQuestionChoices.push({
+      name: `Conflict detection (required for DataStore): ${resolverConfig?.project ? 'Enabled' : 'Disabled'}`,
+      value: 'CONFLICT_DETECTION',
+    });
+
+    if(resolverConfig?.project) {
+      basicInfoQuestionChoices.push({
+        name: `Conflict resolution strategy: ${conflictResolutionHanlderChoices.find(x => x.value === resolverConfig.project.ConflictHandler).name}`,
+        value: 'CONFLICT_STRATEGY',
+      });
+    }
+
+    basicInfoQuestionChoices.push({
+      name: 'Continue',
+      value: 'CONTINUE',
+    });
+
+    const basicInfoQuestion = {
+      type: 'list',
+      name: 'basicApiSettings',
+      message: 'Here is the GraphQL API that we will create. Select a setting to edit or continue',
+      default: 'CONTINUE',
+      choices: basicInfoQuestionChoices,
+    };
+
+    let { basicApiSettings } = await inquirer.prompt([basicInfoQuestion]);
+
+    switch(basicApiSettings) {
+      case 'API_NAME':
+        const resourceQuestions = [
+          {
+            type: inputs[1].type,
+            name: inputs[1].key,
+            message: inputs[1].question,
+            validate: amplify.inputValidation(inputs[1]),
+            default: () => {
+              const defaultValue = allDefaultValues[inputs[1].key];
+              return defaultValue;
+            },
+          },
+        ];
+        // API name question
+        resourceAnswers = await inquirer.prompt(resourceQuestions);
+        resourceAnswers[inputs[0].key] = resourceAnswers[inputs[1].key];
+        break;
+      case 'API_AUTH_MODE':
+        // Ask additonal questions
+        ({ authConfig, defaultAuthType } = await askDefaultAuthQuestion(context));
+        ({ authConfig } = await askAdditionalQuestions(context, authConfig, defaultAuthType));
+        break;
+      case 'CONFLICT_DETECTION':
+        resolverConfig = await askResolverConflictQuestion(context, defaultAuthType);
+        break;
+      case 'CONFLICT_STRATEGY':
+        resolverConfig = await askResolverConflictHandlerQuestion(context, defaultAuthType);
+        break;
+      case 'CONTINUE':
+        continuePrompt = true;
+        break;
+    }
+  }
+
+  return {
+    answers: resourceAnswers,
+    output: {
+      authConfig,
+    },
+    resolverConfig,
+  };
+
+};
+
+const updateApiInputWalkthrough = async (context, project, resolverConfig, modelTypes) => {
+  let authConfig;
+  let defaultAuthType;
+  const updateChoices = [
+    {
+      name: 'Authorization modes',
+      value: 'AUTH_MODE',
+    },
+  ];
+  // check if DataStore is enabled for the entire API
+  if (project.config && !_.isEmpty(project.config.ResolverConfig)) {
+    updateChoices.push({
+      name: 'Conflict resolution strategy',
+      value: 'CONFLICT_STRATEGY',
+    });
+    updateChoices.push({
+      name: 'Disable conflict detection',
+      value: 'DISABLE_CONFLICT',
+    });
+  } else {
+    updateChoices.push({
+      name: 'Enable conflict detection',
+      value: 'ENABLE_CONFLICT',
+    });
+  }
+
+  const updateOptionQuestion = {
+    type: 'list',
+    name: 'updateOption',
+    message: 'Select a setting to edit',
+    choices: updateChoices,
+  };
+
+  const { updateOption } = await inquirer.prompt([updateOptionQuestion]);
+
+  if (updateOption === 'ENABLE_CONFLICT') {
+    // resolverConfig = {
+    //   project: { ConflictHandler: ConflictHandlerType.AUTOMERGE, ConflictDetection: 'VERSION' },
+    // };
+    resolverConfig = await askResolverConflictHandlerQuestion(context, modelTypes);
+  } else if (updateOption === 'DISABLE_CONFLICT') {
+    resolverConfig = {};
+  } else if (updateOption === 'AUTH_MODE') {
+    ({ authConfig, defaultAuthType } = await askDefaultAuthQuestion(context));
+    authConfig = await askAdditionalAuthQuestions(context, authConfig, defaultAuthType);
+  } else if (updateOption === 'CONFLICT_STRATEGY') {
+    resolverConfig = await askResolverConflictHandlerQuestion(context, defaultAuthType);
+  }
+
+  return {
+    authConfig,
+    resolverConfig,
+  };
+
+};
+
+export const serviceWalkthrough = async (context: $TSContext, defaultValuesFilename, serviceMetadata) => {
+  const resourceName = resourceAlreadyExists(context);
 
   if (resourceName) {
     const errMessage =
@@ -169,66 +366,26 @@ export const serviceWalkthrough = async (context: $TSContext, defaultValuesFilen
     },
   ];
 
-  // API name question
-
-  const resourceAnswers = await inquirer.prompt(resourceQuestions);
-  resourceAnswers[inputs[0].key] = resourceAnswers[inputs[1].key];
-
-  // Ask additonal questions
-
-  ({ authConfig, defaultAuthType } = await askDefaultAuthQuestion(context));
-  ({ authConfig, resolverConfig } = await askAdditionalQuestions(context, authConfig, defaultAuthType));
-
-  // Ask schema file question
-
-  const schemaFileQuestion = {
-    type: inputs[2].type,
-    name: inputs[2].key,
-    message: inputs[2].question,
-    validate: amplify.inputValidation(inputs[2]),
-    default: () => {
-      const defaultValue = allDefaultValues[inputs[2].key];
-      return defaultValue;
-    },
-  };
-
-  const schemaFileAnswer = await inquirer.prompt(schemaFileQuestion);
-
+  const basicInfoAnswers = await serviceApiInputWalkthrough(context, defaultValuesFilename, serviceMetadata);
   let schemaContent = '';
   let askToEdit = true;
-  if (schemaFileAnswer[inputs[2].key]) {
-    // User has an annotated schema file
-    const filePathQuestion = {
-      type: inputs[3].type,
-      name: inputs[3].key,
-      message: inputs[3].question,
-      validate: amplify.inputValidation(inputs[3]),
-    };
-    const { schemaFilePath } = await inquirer.prompt(filePathQuestion);
-    schemaContent = fs.readFileSync(schemaFilePath, 'utf8');
-    askToEdit = false;
-  } else {
-    // Schema template selection
-    const templateSelectionQuestion = {
-      type: inputs[4].type,
-      name: inputs[4].key,
-      message: inputs[4].question,
-      choices: inputs[4].options.filter(templateSchemaFilter(authConfig)),
-      validate: amplify.inputValidation(inputs[4]),
-    };
 
-    const { templateSelection } = await inquirer.prompt(templateSelectionQuestion);
-    const schemaFilePath = path.join(graphqlSchemaDir, templateSelection);
-    schemaContent = fs.readFileSync(schemaFilePath, 'utf8');
-  }
+  // Schema template selection
+  const templateSelectionQuestion = {
+    type: inputs[4].type,
+    name: inputs[4].key,
+    message: inputs[4].question,
+    choices: inputs[4].options.filter(templateSchemaFilter(basicInfoAnswers.output.authConfig)),
+    validate: amplify.inputValidation(inputs[4]),
+  };
+
+  const { templateSelection } = await inquirer.prompt(templateSelectionQuestion);
+  const schemaFilePath = path.join(graphqlSchemaDir, templateSelection);
+  schemaContent = fs.readFileSync(schemaFilePath, 'utf8');
 
   return {
-    answers: resourceAnswers,
-    output: {
-      authConfig,
-    },
+    ...basicInfoAnswers,
     noCfnFile: true,
-    resolverConfig,
     schemaContent,
     askToEdit,
   };
@@ -238,13 +395,13 @@ export const updateWalkthrough = async (context): Promise<UpdateApiRequest> => {
   const { allResources } = await context.amplify.getResourceStatus();
   let resourceDir;
   let resourceName;
+  let resource;
   let authConfig;
-  let defaultAuthType;
   const resources = allResources.filter(resource => resource.service === 'AppSync');
 
   // There can only be one appsync resource
   if (resources.length > 0) {
-    const resource = resources[0];
+    resource = resources[0];
     if (resource.providerPlugin !== providerName) {
       // TODO: Move message string to seperate file
       throw new Error(
@@ -265,6 +422,8 @@ export const updateWalkthrough = async (context): Promise<UpdateApiRequest> => {
   const project = await readProjectConfiguration(resourceDir);
   let resolverConfig = project.config.ResolverConfig;
 
+  await displayApiInformation(context, resource, project);
+
   // Check for common errors
   const directiveMap = collectDirectivesByTypeNames(project.schema);
   let modelTypes = [];
@@ -276,45 +435,8 @@ export const updateWalkthrough = async (context): Promise<UpdateApiRequest> => {
       }
     });
   }
-  const updateChoices = [
-    {
-      name: 'Walkthrough all configurations',
-      value: 'all',
-    },
-    {
-      name: 'Update auth settings',
-      value: 'authUpdate',
-    },
-  ];
-  // check if DataStore is enabled for the entire API
-  if (project.config && !_.isEmpty(project.config.ResolverConfig)) {
-    updateChoices.push({ name: 'Disable DataStore for entire API', value: 'disableDatastore' });
-  } else {
-    updateChoices.push({ name: 'Enable DataStore for entire API', value: 'enableDatastore' });
-  }
 
-  const updateOptionQuestion = {
-    type: 'list',
-    name: 'updateOption',
-    message: 'Select from the options below',
-    choices: updateChoices,
-  };
-
-  const { updateOption } = await inquirer.prompt([updateOptionQuestion]);
-
-  if (updateOption === 'enableDatastore') {
-    resolverConfig = {
-      project: { ConflictHandler: ConflictHandlerType.AUTOMERGE, ConflictDetection: 'VERSION' },
-    };
-  } else if (updateOption === 'disableDatastore') {
-    resolverConfig = {};
-  } else if (updateOption === 'authUpdate') {
-    ({ authConfig, defaultAuthType } = await askDefaultAuthQuestion(context));
-    authConfig = await askAdditionalAuthQuestions(context, authConfig, defaultAuthType);
-  } else if (updateOption === 'all') {
-    ({ authConfig, defaultAuthType } = await askDefaultAuthQuestion(context));
-    ({ authConfig, resolverConfig } = await askAdditionalQuestions(context, authConfig, defaultAuthType, modelTypes));
-  }
+  ({ authConfig, resolverConfig } = await updateApiInputWalkthrough(context, project, resolverConfig, modelTypes));
 
   return {
     version: 1,
@@ -330,111 +452,115 @@ export const updateWalkthrough = async (context): Promise<UpdateApiRequest> => {
   };
 };
 
-async function askAdditionalQuestions(context, authConfig, defaultAuthType, modelTypes?) {
-  let resolverConfig;
+async function displayApiInformation(context, resource, project) {
+  context.print.info('');
 
-  const advancedSettingsQuestion = {
-    type: 'list',
-    name: 'advancedSettings',
-    message: 'Do you want to configure advanced settings for the GraphQL API',
-    choices: [
-      {
-        name: 'No, I am done.',
-        value: false,
-      },
-      {
-        name: 'Yes, I want to make some additional changes.',
-        value: true,
-      },
-    ],
-  };
+  context.print.success('General information');
+  context.print.info('- Name: '.concat(resource.resourceName));
+  context.print.info('- API endpoint: '.concat(resource?.output?.GraphQLAPIEndpointOutput ? resource?.output?.GraphQLAPIEndpointOutput : 'Not available'));
+  context.print.info('');
 
-  const advancedSettingsAnswer = await inquirer.prompt([advancedSettingsQuestion]);
+  context.print.success('Authorization modes');
+  context.print.info(`- Default: ${await displayAuthMode(context, resource, resource.output.authConfig.defaultAuthentication.authenticationType)}`);
+  await resource.output.authConfig.additionalAuthenticationProviders.map(async (authMode) => {
+    context.print.info(`- ${await displayAuthMode(context, resource, authMode.authenticationType)}`);
+  });
+  context.print.info('');
 
-  if (advancedSettingsAnswer.advancedSettings) {
-    authConfig = await askAdditionalAuthQuestions(context, authConfig, defaultAuthType);
-    resolverConfig = await askResolverConflictQuestion(context, modelTypes);
+  context.print.success('Conflict detection');
+  if (project.config && !_.isEmpty(project.config.ResolverConfig)) {
+    context.print.info(`- Conflict resolution strategy: ${conflictResolutionHanlderChoices.find(choice => choice.value === project.config.ResolverConfig.project.ConflictHandler).name}`);
+  } else {
+    context.print.info('- Not configured');
   }
 
-  return { authConfig, resolverConfig };
+  context.print.info('');
+}
+
+async function displayAuthMode(context, resource, authMode) {
+  if(authMode == 'API_KEY' && resource.output.GraphQLAPIKeyOutput) {
+    let { apiKeys } = await getAppSyncApiKeys(context, {apiId: resource.output.GraphQLAPIIdOutput});
+    let apiKeyExpires = apiKeys.find(key => key.id == resource.output.GraphQLAPIKeyOutput)?.expires;
+    if(!apiKeyExpires) {
+      return authProviderChoices.find(choice => choice.value === authMode).name;
+    }
+    let apiKeyExpiresDate = new Date(apiKeyExpires * 1000);
+    return `${authProviderChoices.find(choice => choice.value === authMode).name} expiring ${apiKeyExpiresDate}: ${resource.output.GraphQLAPIKeyOutput}`;
+  }
+  return authProviderChoices.find(choice => choice.value === authMode).name;
+}
+
+async function askAdditionalQuestions(context, authConfig, defaultAuthType, modelTypes?) {
+  authConfig = await askAdditionalAuthQuestions(context, authConfig, defaultAuthType);
+  return { authConfig };
 }
 
 async function askResolverConflictQuestion(context, modelTypes?) {
   let resolverConfig: any = {};
 
   if (await context.prompt.confirm('Enable conflict detection?')) {
-    const askConflictResolutionStrategy = async msg => {
-      let conflictResolutionStrategy;
+    resolverConfig = await askResolverConflictHandlerQuestion(context, modelTypes);
+  }
 
-      do {
-        const conflictResolutionQuestion: ListQuestion = {
-          type: 'list',
-          name: 'conflictResolutionStrategy',
-          message: msg,
-          default: 'AUTOMERGE',
-          choices: [
-            {
-              name: 'Auto Merge',
-              value: 'AUTOMERGE',
-            },
-            {
-              name: 'Optimistic Concurrency',
-              value: 'OPTIMISTIC_CONCURRENCY',
-            },
-            {
-              name: 'Custom Lambda',
-              value: 'LAMBDA',
-            },
-            {
-              name: 'Learn More',
-              value: 'Learn More',
-            },
-          ],
-        };
-        if (conflictResolutionStrategy === 'Learn More') {
-          conflictResolutionQuestion.prefix = dataStoreLearnMore;
-        }
-        ({ conflictResolutionStrategy } = await inquirer.prompt([conflictResolutionQuestion]));
-      } while (conflictResolutionStrategy === 'Learn More');
+  return resolverConfig;
+}
 
-      let syncConfig: any = {
-        ConflictHandler: conflictResolutionStrategy,
-        ConflictDetection: 'VERSION',
+async function askResolverConflictHandlerQuestion(context, modelTypes?) {
+  let resolverConfig: any = {};
+  const askConflictResolutionStrategy = async msg => {
+    let conflictResolutionStrategy;
+
+    do {
+      const conflictResolutionQuestion: ListQuestion = {
+        type: 'list',
+        name: 'conflictResolutionStrategy',
+        message: msg,
+        default: 'AUTOMERGE',
+        choices: conflictResolutionHanlderChoices,
       };
-
-      if (conflictResolutionStrategy === 'LAMBDA') {
-        const { newFunction, lambdaFunctionName } = await askSyncFunctionQuestion(context);
-        syncConfig.LambdaConflictHandler = {
-          name: lambdaFunctionName,
-          new: newFunction,
-        };
+      if (conflictResolutionStrategy === 'Learn More') {
+        conflictResolutionQuestion.prefix = dataStoreLearnMore;
       }
+      ({ conflictResolutionStrategy } = await inquirer.prompt([conflictResolutionQuestion]));
+    } while (conflictResolutionStrategy === 'Learn More');
 
-      return syncConfig;
+    let syncConfig: any = {
+      ConflictHandler: conflictResolutionStrategy,
+      ConflictDetection: 'VERSION',
     };
 
-    resolverConfig.project = await askConflictResolutionStrategy('Select the default resolution strategy');
+    if (conflictResolutionStrategy === 'LAMBDA') {
+      const { newFunction, lambdaFunctionName } = await askSyncFunctionQuestion(context);
+      syncConfig.LambdaConflictHandler = {
+        name: lambdaFunctionName,
+        new: newFunction,
+      };
+    }
 
-    // Ask for per-model resolver override setting
+    return syncConfig;
+  };
 
-    if (modelTypes && modelTypes.length > 0) {
-      if (await context.prompt.confirm('Do you want to override default per model settings?', false)) {
-        const modelTypeQuestion = {
-          type: 'checkbox',
-          name: 'selectedModelTypes',
-          message: 'Select the models from below:',
-          choices: modelTypes,
-        };
+  resolverConfig.project = await askConflictResolutionStrategy('Select the default resolution strategy');
 
-        const { selectedModelTypes } = await inquirer.prompt([modelTypeQuestion]);
+  // Ask for per-model resolver override setting
 
-        if (selectedModelTypes.length > 0) {
-          resolverConfig.models = {};
-          for (let i = 0; i < selectedModelTypes.length; i += 1) {
-            resolverConfig.models[selectedModelTypes[i]] = await askConflictResolutionStrategy(
-              `Select the resolution strategy for ${selectedModelTypes[i]} model`,
-            );
-          }
+  if (modelTypes && modelTypes.length > 0) {
+    if (await context.prompt.confirm('Do you want to override default per model settings?', false)) {
+      const modelTypeQuestion = {
+        type: 'checkbox',
+        name: 'selectedModelTypes',
+        message: 'Select the models from below:',
+        choices: modelTypes,
+      };
+
+      const { selectedModelTypes } = await inquirer.prompt([modelTypeQuestion]);
+
+      if (selectedModelTypes.length > 0) {
+        resolverConfig.models = {};
+        for (let i = 0; i < selectedModelTypes.length; i += 1) {
+          resolverConfig.models[selectedModelTypes[i]] = await askConflictResolutionStrategy(
+            `Select the resolution strategy for ${selectedModelTypes[i]} model`,
+          );
         }
       }
     }
@@ -537,7 +663,12 @@ export async function askAdditionalAuthQuestions(context, authConfig, defaultAut
   return authConfig;
 }
 
-async function askAuthQuestions(authType, context, printLeadText = false) {
+export async function addAdditionalAuthMode(context, authType) {
+  const currentAuthConfig = getAppSyncAuthConfig(context.amplify.getProjectMeta());
+  currentAuthConfig.additionalAuthenticationProviders.push(askAuthQuestions(authType, context));
+}
+
+export async function askAuthQuestions(authType, context, printLeadText = false) {
   if (authType === 'AMAZON_COGNITO_USER_POOLS') {
     if (printLeadText) {
       context.print.info('Cognito UserPool configuration');
