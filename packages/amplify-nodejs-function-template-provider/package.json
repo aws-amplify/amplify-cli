@@ -1,6 +1,6 @@
 {
   "name": "amplify-nodejs-function-template-provider",
-  "version": "1.6.16",
+  "version": "1.6.17",
   "description": "Node JS templates supplied by the Amplify Team",
   "repository": {
     "type": "git",
@@ -21,9 +21,9 @@
     "clean": "rimraf lib tsconfig.tsbuildinfo"
   },
   "dependencies": {
-    "amplify-cli-core": "1.26.0",
+    "amplify-cli-core": "1.26.1",
     "amplify-function-plugin-interface": "1.9.1",
-    "graphql-transformer-core": "6.29.2",
+    "graphql-transformer-core": "6.29.3",
     "lodash": "^4.17.21"
   },
   "devDependencies": {
