@@ -82,7 +82,7 @@ export const askExecRolePermissionsQuestions = async (
       // but serviceName argument was no passed in
       if (serviceName === ServiceName.LambdaFunction || selectedCategory === categoryName) {
         const selectedResource = _.get(amplifyMeta, [categoryName, resourceNameToUpdate]);
-        // A new function resource is not exsits in amplifyMeta yet
+        // A new function resource does not exist in amplifyMeta yet
         const isNewFunctionResource = !selectedResource;
         resourcesList = resourcesList.filter(
           resourceName =>
