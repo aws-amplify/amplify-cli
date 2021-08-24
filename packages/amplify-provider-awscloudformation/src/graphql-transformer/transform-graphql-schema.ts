@@ -32,8 +32,8 @@ import { loadProject as readTransformerConfiguration } from './transform-config'
 import { loadProject } from 'graphql-transformer-core';
 import { Template } from '@aws-amplify/graphql-transformer-core/lib/config/project-config';
 import { AmplifyCLIFeatureFlagAdapter } from '../utils/amplify-cli-feature-flag-adapter';
-import { isAmplifyAdminApp } from '../utils/admin-helpers';
 import { JSONUtilities, stateManager, $TSContext } from 'amplify-cli-core';
+import { isAmplifyAdminApp } from '../utils/admin-helpers';
 import {
   showSandboxModePrompts,
   getSandboxModeEnvNameFromDirectiveSet,
@@ -372,6 +372,7 @@ export async function transformGraphQLSchema(context, options) {
       }
     }
   } while (authSchemaErrors);
+
   context.print.success(`GraphQL schema compiled successfully.\n\nEdit your schema at ${schemaFilePath} or \
 place .graphql files in a directory at ${schemaDirPath}`);
 

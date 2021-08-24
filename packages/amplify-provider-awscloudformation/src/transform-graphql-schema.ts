@@ -508,6 +508,7 @@ export async function transformGraphQLSchema(context, options) {
     featureFlags: ff,
     sanityCheckRules: sanityCheckRulesList,
   };
+
   let transformerOutput;
   let authSchemaErrors = false;
   do {

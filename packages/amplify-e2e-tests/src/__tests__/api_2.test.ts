@@ -1,27 +1,27 @@
 import {
-  addApiWithBlankSchemaAndConflictDetection, 
-  addApiWithoutSchema, 
-  addFunction, 
-  addRestApi, 
-  addSimpleDDB, 
+  addApiWithBlankSchemaAndConflictDetection,
+  addApiWithoutSchema,
+  addFunction,
+  addRestApi,
+  addSimpleDDB,
   amplifyPush,
-  amplifyPushUpdate, 
-  apiDisableDataStore, 
-  apiEnableDataStore, 
+  amplifyPushUpdate,
+  apiDisableDataStore,
+  apiEnableDataStore,
   checkIfBucketExists,
-  createNewProjectDir, 
-  deleteProject, 
-  deleteProjectDir, 
-  enableAdminUI, 
-  getAppSyncApi, 
-  getLocalEnvInfo, 
-  getProjectMeta, 
-  getTransformConfig, 
+  createNewProjectDir,
+  deleteProject,
+  deleteProjectDir,
+  enableAdminUI,
+  getAppSyncApi,
+  getLocalEnvInfo,
+  getProjectMeta,
+  getTransformConfig,
   initJSProjectWithProfile,
   listAttachedRolePolicies,
   listRolePolicies,
-  updateApiSchema, 
-  updateAPIWithResolutionStrategy, 
+  updateApiSchema,
+  updateAPIWithResolutionStrategyWithModels,
   updateAuthAddAdminQueries,
 } from 'amplify-e2e-core';
 import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
@@ -31,7 +31,6 @@ import { TRANSFORM_CURRENT_VERSION } from 'graphql-transformer-core';
 import _ from 'lodash';
 import * as path from 'path';
 const providerName = 'awscloudformation';
-
 
 // to deal with bug in cognito-identity-js
 (global as any).fetch = require('node-fetch');
@@ -222,7 +221,7 @@ describe('amplify add api (GraphQL)', () => {
     expect(transformConfig.ResolverConfig.project.ConflictDetection).toEqual('VERSION');
     expect(transformConfig.ResolverConfig.project.ConflictHandler).toEqual('AUTOMERGE');
 
-    await updateAPIWithResolutionStrategy(projRoot, {});
+    await updateAPIWithResolutionStrategyWithModels(projRoot, {});
 
     transformConfig = getTransformConfig(projRoot, name);
     expect(transformConfig).toBeDefined();
@@ -338,15 +337,8 @@ describe('amplify add api (REST)', () => {
     expect(meta.function).toBeDefined();
     let seenAtLeastOneFunc = false;
     for (let key of Object.keys(meta.function)) {
-      const {
-        service,
-        build,
-        lastBuildTimeStamp,
-        lastPackageTimeStamp,
-        distZipFilename,
-        lastPushTimeStamp,
-        lastPushDirHash,
-      } = meta.function[key];
+      const { service, build, lastBuildTimeStamp, lastPackageTimeStamp, distZipFilename, lastPushTimeStamp, lastPushDirHash } =
+        meta.function[key];
       expect(service).toBe('Lambda');
       expect(build).toBeTruthy();
       expect(lastBuildTimeStamp).toBeDefined();

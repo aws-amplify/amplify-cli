@@ -53,9 +53,12 @@ export function makeGetItemConnectionWithKeyResolver(config: HasOneDirectiveConf
   const { keySchema } = table as any;
   const dataSource = ctx.api.host.getDataSource(`${relatedType.name.value}Table`);
   const partitionKeyName = keySchema[0].attributeName;
-  let totalExpressions = [`${partitionKeyName} = :${partitionKeyName}`];
+  let totalExpressions = [`#partitionKey = :partitionValue`];
+  let totalExpressionNames: Record<string, Expression> = {
+    [`#partitionKey`]: str(partitionKeyName),
+  };
   let totalExpressionValues: Record<string, Expression> = {
-    [`:${partitionKeyName}`]: ref(
+    [`:partitionValue`]: ref(
       `util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($ctx.source.${localFields[0]}, "${NONE_VALUE}")))`,
     ),
   };
@@ -66,14 +69,16 @@ export function makeGetItemConnectionWithKeyResolver(config: HasOneDirectiveConf
     const sortKeyName = keySchema[1].attributeName;
     const condensedSortKeyValue = condenseRangeKey(rangeKeyFields.map(keyField => `\${ctx.source.${keyField}}`));
 
-    totalExpressions.push(`${sortKeyName} = :${sortKeyName}`);
-    totalExpressionValues[`:${sortKeyName}`] = ref(
+    totalExpressions.push(`#sortKeyName = :sortKeyName`);
+    totalExpressionNames['#sortKeyName'] = str(sortKeyName);
+    totalExpressionValues[':sortKeyName'] = ref(
       `util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank("${condensedSortKeyValue}", "${NONE_VALUE}")))`,
     );
   } else if (relatedTypeIndex.length === 2) {
     const sortKeyName = keySchema[1].attributeName;
-    totalExpressions.push(`${sortKeyName} = :${sortKeyName}`);
-    totalExpressionValues[`:${sortKeyName}`] = ref(
+    totalExpressions.push(`#sortKeyName = :sortKeyName`);
+    totalExpressionNames['#sortKeyName'] = str(sortKeyName);
+    totalExpressionValues[':sortKeyName'] = ref(
       `util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($ctx.source.${localFields[1]}, "${NONE_VALUE}")))`,
     );
   }
@@ -95,6 +100,7 @@ export function makeGetItemConnectionWithKeyResolver(config: HasOneDirectiveConf
                 str('query'),
                 obj({
                   expression: str(totalExpressions.join(' AND ')),
+                  expressionNames: obj(totalExpressionNames),
                   expressionValues: obj(totalExpressionValues),
                 }),
               ),

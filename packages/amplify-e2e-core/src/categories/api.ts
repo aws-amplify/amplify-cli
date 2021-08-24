@@ -420,7 +420,7 @@ export function addApi(projectDir: string, settings?: any) {
       if (authTypesToAdd.length > 1) {
         authTypesToAdd.shift();
 
-        chain.wait('Configure additional auth types?').sendLine('y');
+        chain.wait('Configure additional auth types?').sendConfirmYes();
 
         authTypesToSelectFrom = authTypesToSelectFrom.filter(x => x !== defaultType);
 

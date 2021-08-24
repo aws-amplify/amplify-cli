@@ -11,7 +11,7 @@ import {
   getTransformConfig,
   updateApiSchema,
   updateApiWithMultiAuth,
-  updateAPIWithResolutionStrategy,
+  updateAPIWithResolutionStrategyWithModels,
 } from 'amplify-e2e-core';
 import { existsSync } from 'fs';
 import { TRANSFORM_CURRENT_VERSION } from 'graphql-transformer-core';
@@ -111,7 +111,7 @@ describe('api migration update test', () => {
     expect(transformConfig.ResolverConfig.project.ConflictHandler).toEqual('AUTOMERGE');
 
     //update and push with codebase
-    await updateAPIWithResolutionStrategy(projRoot, { testingWithLatestCodebase: true });
+    await updateAPIWithResolutionStrategyWithModels(projRoot, { testingWithLatestCodebase: true });
 
     transformConfig = getTransformConfig(projRoot, name);
     expect(transformConfig).toBeDefined();

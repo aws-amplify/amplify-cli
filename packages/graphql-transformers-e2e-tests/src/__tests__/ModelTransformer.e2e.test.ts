@@ -80,6 +80,7 @@ beforeAll(async () => {
   `;
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer()],
+    sandboxModeEnabled: true,
   });
   const out = transformer.transform(validSchema);
 
@@ -188,7 +189,7 @@ test('Test updateComment mutation with null and empty', async () => {
   const notRequiredFieldValue = 'thisisnotrequired';
   const response = await GRAPHQL_CLIENT.query(
     /* GraphQL */ `
-      mutation($input: CreateRequireInput!) {
+      mutation ($input: CreateRequireInput!) {
         createRequire(input: $input) {
           id
           requiredField
@@ -207,7 +208,7 @@ test('Test updateComment mutation with null and empty', async () => {
   const id = response.data.createRequire.id;
   const updateResponse = await GRAPHQL_CLIENT.query(
     /* GraphQL */ `
-      mutation($input: UpdateRequireInput!) {
+      mutation ($input: UpdateRequireInput!) {
         updateRequire(input: $input) {
           id
           requiredField
@@ -225,7 +226,7 @@ test('Test updateComment mutation with null and empty', async () => {
   expect(updateResponse.data.updateRequire.notRequiredField).toEqual(notRequiredFieldValue);
   const update2Response = await GRAPHQL_CLIENT.query(
     /* GraphQL */ `
-      mutation($input: UpdateRequireInput!) {
+      mutation ($input: UpdateRequireInput!) {
         updateRequire(input: $input) {
           id
           requiredField
