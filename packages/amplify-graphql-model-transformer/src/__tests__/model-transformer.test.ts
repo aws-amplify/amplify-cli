@@ -791,4 +791,92 @@ describe('ModelTransformer: ', () => {
     const updateTestInput = getInputType(schema, 'UpdateTestInput');
     expect(getFieldOnInputType(updateTestInput!, 'email')).toBeUndefined();
   });
+
+  it('should generate enum input objects', () => {
+    const validSchema = /* GraphQL */ `
+      type Post @model {
+        id: ID!
+        title: String!
+        createdAt: AWSDateTime
+        updatedAt: AWSDateTime
+        metadata: PostMetadata
+        entityMetadata: EntityMetadata
+        appearsIn: [Episode!]
+        episode: Episode
+      }
+      type Author @model {
+        id: ID!
+        name: String!
+        postMetadata: PostMetadata
+        entityMetadata: EntityMetadata
+      }
+      type EntityMetadata {
+        isActive: Boolean
+      }
+      type PostMetadata {
+        tags: Tag
+      }
+      type Tag {
+        published: Boolean
+        metadata: PostMetadata
+      }
+      enum Episode {
+        NEWHOPE
+        EMPIRE
+        JEDI
+      }
+      type Require @model {
+        id: ID!
+        requiredField: String!
+        notRequiredField: String
+      }
+      type Comment @model(timestamps: { createdAt: "createdOn", updatedAt: "updatedOn" }) {
+        id: ID!
+        title: String!
+        content: String
+        updatedOn: Int # No automatic generation of timestamp if its not AWSDateTime
+      }
+    `;
+
+    const transformer = new GraphQLTransform({
+      transformers: [new ModelTransformer()],
+      featureFlags,
+    });
+    const result = transformer.transform(validSchema);
+    expect(result).toBeDefined();
+    expect(result.schema).toBeDefined();
+    const schema = parse(result.schema);
+    validateModelSchema(schema);
+    expect(result.schema).toMatchSnapshot();
+    expect(verifyInputCount(schema, 'ModelEpisodeInput', 1)).toBeTruthy();
+  });
+
+  it('should support support scalar list', () => {
+    const validSchema = /* GraphQL */ `
+      type Post @model {
+        id: ID!
+        author: String!
+        title: String
+        content: String
+        url: String
+        ups: Int
+        downs: Int
+        version: Int
+        postedAt: String
+        createdAt: AWSDateTime
+        comments: [String!]
+        ratings: [Int!]
+        percentageUp: Float
+        isPublished: Boolean
+        jsonField: AWSJSON
+      }
+    `;
+    const transformer = new GraphQLTransform({
+      transformers: [new ModelTransformer()],
+      featureFlags,
+    });
+    const out = transformer.transform(validSchema);
+    expect(out).toBeDefined();
+    validateModelSchema(parse(out.schema));
+  });
 });
