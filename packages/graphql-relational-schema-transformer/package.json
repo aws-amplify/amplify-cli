@@ -35,10 +35,6 @@
   },
   "jest": {
     "collectCoverage": true,
-    "coverageReporters": [
-      "json",
-      "html"
-    ],
     "transform": {
       "^.+\\.tsx?$": "ts-jest"
     },
