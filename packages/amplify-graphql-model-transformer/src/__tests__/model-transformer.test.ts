@@ -555,7 +555,6 @@ describe('ModelTransformer: ', () => {
     const definition = out.schema;
     expect(definition).toBeDefined();
     const parsed = parse(definition);
-
     validateModelSchema(parsed);
 
     const postMetaDataInputType = getInputType(parsed, 'PostMetadataInput');
@@ -606,11 +605,11 @@ describe('ModelTransformer: ', () => {
     const connectionType = getObjectType(parsed, 'ModelPostConnection');
     expect(connectionType).toBeDefined();
 
-    expect(verifyInputCount(parsed, 'ModelStringFilterInput', 1)).toBeTruthy();
-    expect(verifyInputCount(parsed, 'ModelBooleanFilterInput', 1)).toBeTruthy();
-    expect(verifyInputCount(parsed, 'ModelIntFilterInput', 1)).toBeTruthy();
-    expect(verifyInputCount(parsed, 'ModelFloatFilterInput', 1)).toBeTruthy();
-    expect(verifyInputCount(parsed, 'ModelIDFilterInput', 1)).toBeTruthy();
+    expect(verifyInputCount(parsed, 'ModelStringInput', 1)).toBeTruthy();
+    expect(verifyInputCount(parsed, 'ModelBooleanInput', 1)).toBeTruthy();
+    expect(verifyInputCount(parsed, 'ModelIntInput', 1)).toBeTruthy();
+    expect(verifyInputCount(parsed, 'ModelFloatInput', 1)).toBeTruthy();
+    expect(verifyInputCount(parsed, 'ModelIDInput', 1)).toBeTruthy();
     expect(verifyInputCount(parsed, 'ModelPostFilterInput', 1)).toBeTruthy();
   });
 
