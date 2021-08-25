@@ -70,6 +70,8 @@ export interface AppSyncSimulatorDataSourceHttpConfig extends AppSyncSimulatorDa
   type: 'HTTP';
   httpConfig: {
     endpoint: string;
+    env: string;
+    region: string;
   };
 }
 export type AppSyncSimulatorDataSourceConfig =

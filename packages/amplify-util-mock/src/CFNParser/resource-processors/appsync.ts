@@ -41,6 +41,8 @@ export type AppSyncDataSourceProcessedResource = CloudFormationProcessedResource
   };
   httpConfig?: {
     endpoint?: string;
+    env: string;
+    region: string;
   };
 };
 export function appSyncDataSourceHandler(
@@ -89,6 +91,8 @@ export function appSyncDataSourceHandler(
       name: resource.Properties.Name,
       httpConfig: {
         endpoint: parseValue(resource.Properties.HttpConfig.Endpoint, cfnContext),
+        env: cfnContext.params.env,
+        region: cfnContext.params['AWS::Region'],
       },
     };
   }

@@ -4,16 +4,21 @@ import { AppSyncSimulatorDataSourceHttpConfig } from '../../type-definition';
 
 export class HttpDataLoader implements AmplifyAppSyncSimulatorDataLoader {
   private endpoint: string;
+  private env: string;
+  private region: string;
 
   constructor(config: AppSyncSimulatorDataSourceHttpConfig) {
     this.endpoint = config?.httpConfig?.endpoint;
+    this.env = config?.httpConfig?.env === '${env}' ? 'NONE' : config?.httpConfig?.env;
+    this.region = config?.httpConfig?.region;
   }
 
   public async load(payload: any): Promise<any> {
+    const reqEndpoint = this.endpoint + this.parseUrl(payload.resourcePath, this.env, this.region);
     try {
       const axiosRes: AxiosResponse = await axios({
         method: payload.method,
-        url: this.endpoint + payload.resourcePath,
+        url: reqEndpoint,
         headers: payload.params.headers,
         data: { query: payload.params.query },
         params: { query: payload.params.query },
@@ -23,8 +28,8 @@ export class HttpDataLoader implements AmplifyAppSyncSimulatorDataLoader {
       return cfxResult;
     } catch (error) {
       console.log('HTTP Data source failed with the following error:');
+      console.error(error);
       if (error.response.status === 400) console.error(error.response.data);
-      else console.error(error);
       throw error;
     }
   }
@@ -56,4 +61,10 @@ export class HttpDataLoader implements AmplifyAppSyncSimulatorDataLoader {
 
     return flattened;
   };
+
+  private parseUrl(resourcePath: string, env: string, region: string): string {
+    let newPath = resourcePath.replace(/(\${env})/, env).replace(/(\${aws_region})/, region);
+
+    return newPath;
+  }
 }
