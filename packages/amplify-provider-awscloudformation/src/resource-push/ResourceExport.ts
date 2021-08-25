@@ -5,9 +5,10 @@ import {
   JSONUtilities,
   pathManager,
   readCFNTemplate,
+  stateManager,
   writeCFNTemplate,
 } from 'amplify-cli-core';
-import { Template, StringParameter, Fn } from 'cloudform-types';
+import { Template, Fn } from 'cloudform-types';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import {
@@ -23,11 +24,40 @@ import { ResourceDeployer } from './ResourceDeployer';
 import { getNetworkResourceCfn } from '../utils/env-level-constructs';
 import _ from 'lodash';
 import { AUTH_TRIGGER_STACK } from '../utils/upload-auth-trigger-template';
+import { downloadZip } from '../zip-util';
+import { S3 } from '../aws-utils/aws-s3';
+const {
+  API_CATEGORY,
+  AUTH_CATEGORY,
+  FUNCTION_CATEGORY,
+  AMPLIFY_CFN_TEMPLATES,
+  AMPLIFY_APPSYNC_FILES,
+  PROVIDER_METADATA,
+  NETWORK_STACK_S3_URL,
+  AUTH_TRIGGER_TEMPLATE_FILE,
+  AUTH_TRIGGER_TEMPLATE_URL,
+  API_GATEWAY_AUTH_URL,
+  APIGW_AUTH_STACK_FILE_NAME,
+  APPSYNC_STACK_FOLDER,
+  APPSYNC_BUILD_FOLDER,
+  NETWORK_STACK_FILENAME,
+  PROVIDER_NAME,
+  PROVIDER,
+  AMPLIFY_BUILDS,
+  AUTH_ASSETS,
+  AMPLIFY_AUXILIARY_LAMBDAS,
+  AWS_CLOUDFORMATION_STACK_TYPE,
+  AMPLIFY_AUTH_ASSETS,
+  NETWORK_STACK_LOGICAL_ID,
+  APIGW_AUTH_STACK_LOGICAL_ID,
+} = Constants;
 export class ResourceExport extends ResourceDeployer {
   exportDirectoryPath: string;
+  parametersToKeepInCfn: string[];
   constructor(context: $TSContext, exportDirectoryPath: string) {
     super(context, ResourceDeployType.Export);
     this.exportDirectoryPath = exportDirectoryPath;
+    this.parametersToKeepInCfn = ['authRoleArn', 'unauthRoleArn'];
   }
 
   async packageBuildWriteResources(deploymentResources: DeploymentResources): Promise<PackagedResourceDefinition[]> {
@@ -46,22 +76,55 @@ export class ResourceExport extends ResourceDeployer {
     await this.generateCategoryCloudFormation(packagedResources);
     const transformedCfnResources = await this.postGenerateCategoryCloudFormation(packagedResources);
     const stackParameters = await this.writeCategoryCloudFormation(transformedCfnResources);
-
     return { transformedResources: transformedCfnResources, stackParameters };
   }
 
+  /**
+   * The parameters are going to need to be read from the parameters json since the types are fixed there
+   * @param transformedCfnResources
+   * @param stackParameters
+   * @returns
+   */
+  fixNestedStackParameters(transformedCfnResources: TransformedCfnResource[], stackParameters: StackParameters): StackParameters {
+    const projectPath = pathManager.findProjectRoot();
+    const { StackName: rootstackName } = this.amplifyMeta[PROVIDER][PROVIDER_NAME];
+    const nestedStack = stackParameters[rootstackName].nestedStacks;
+    for (const resource of transformedCfnResources) {
+      const fileParameters = stateManager.getResourceParametersJson(projectPath, resource.category, resource.resourceName, {
+        default: {},
+        throwIfNotExist: false,
+      });
+      const nestedStackName = resource.category + resource.resourceName;
+      const usedParameters = nestedStack[nestedStackName].parameters;
+      Object.keys(usedParameters).forEach(paramKey => {
+        if (paramKey in fileParameters) {
+          usedParameters[paramKey] = fileParameters[paramKey];
+        }
+      });
+    }
+    return stackParameters;
+  }
+
   async generateAndWriteRootStack(stackParameters: StackParameters): Promise<StackParameters> {
-    const { StackName: stackName } = this.amplifyMeta[Constants.PROVIDER][Constants.PROVIDER_NAME];
+    const { StackName: stackName, AuthRoleName, UnauthRoleName, DeploymentBucketName } = this.amplifyMeta[PROVIDER][PROVIDER_NAME];
     const template = await this.generateRootStack();
     const parameters = this.extractParametersFromTemplateNestedStack(template);
-    const modifiedTemplate = this.modifyRootStack(template);
+    const modifiedTemplate = this.modifyRootStack(template, true);
     this.writeRootStackToPath(modifiedTemplate);
     stackParameters[stackName].destination = path.join(this.exportDirectoryPath, 'root-stack-template.json');
+
     [...parameters.keys()].forEach((key: string) => {
       if (stackParameters[stackName].nestedStacks && stackParameters[stackName].nestedStacks[key]) {
         stackParameters[stackName].nestedStacks[key].parameters = parameters.get(key);
       }
     });
+
+    stackParameters[stackName].parameters = {
+      AuthRoleName,
+      UnauthRoleName,
+      DeploymentBucketName,
+    };
+
     return stackParameters;
   }
 
@@ -73,44 +136,44 @@ export class ResourceExport extends ResourceDeployer {
    */
   private async writeResourcesToDestination(resources: PackagedResourceDefinition[]): Promise<void> {
     for (const resource of resources) {
-      if (resource.packagerParams) {
+      if (resource.packagerParams && resource.packagerParams.newPackageCreated) {
         const destinationDir = path.join(
           this.exportDirectoryPath,
           resource.category,
           resource.resourceName,
-          Constants.AMPLIFY_BUILDS,
+          AMPLIFY_BUILDS,
           resource.packagerParams.zipFilename,
         );
         const destinationPath = path.join(destinationDir);
         await this.copyResource(resource.packagerParams.zipFilePath, destinationPath);
+      } else {
+        if (resource.category === FUNCTION_CATEGORY.NAME && resource.service === FUNCTION_CATEGORY.SERVICE.LAMBDA_LAYER) {
+          const s3instance = await S3.getInstance(this.context);
+          await downloadZip();
+        }
       }
       // copy build directory for appsync
-      if (resource.category === Constants.API_CATEGORY.NAME && resource.service === Constants.API_CATEGORY.SERVICE.APP_SYNC) {
+      if (resource.category === API_CATEGORY.NAME && resource.service === API_CATEGORY.SERVICE.APP_SYNC) {
         const backendFolder = pathManager.getBackendDirPath();
         const foldersToCopy = ['functions', 'pipelineFunctions', 'resolvers', 'stacks', 'schema.graphql'];
         for (const folder of foldersToCopy) {
-          const sourceFolder = path.join(backendFolder, resource.category, resource.resourceName, Constants.APPSYNC_BUILD_FOLDER, folder);
+          const sourceFolder = path.join(backendFolder, resource.category, resource.resourceName, APPSYNC_BUILD_FOLDER, folder);
           const destinationFolder = path.join(
             this.exportDirectoryPath,
             resource.category,
             resource.resourceName,
-            Constants.AMPLIFY_APPSYNC_FILES,
+            AMPLIFY_APPSYNC_FILES,
             folder,
           );
           await this.copyResource(sourceFolder, destinationFolder);
         }
       }
 
-      if (resource.category === Constants.AUTH_CATEGORY.NAME && resource.service === Constants.AUTH_CATEGORY.SERVICE.COGNITO) {
+      if (resource.category === AUTH_CATEGORY.NAME && resource.service === AUTH_CATEGORY.SERVICE.COGNITO) {
         const authResourceBackend = path.join(pathManager.getBackendDirPath(), resource.category, resource.resourceName);
-        const authResourceAssets = path.join(authResourceBackend, Constants.AUTH_ASSETS);
+        const authResourceAssets = path.join(authResourceBackend, AUTH_ASSETS);
         if (fs.existsSync(authResourceAssets)) {
-          const destinationPath = path.join(
-            this.exportDirectoryPath,
-            resource.category,
-            resource.resourceName,
-            Constants.AMPLIFY_AUTH_ASSETS,
-          );
+          const destinationPath = path.join(this.exportDirectoryPath, resource.category, resource.resourceName, AMPLIFY_AUTH_ASSETS);
           await this.copyResource(authResourceAssets, destinationPath);
         }
       }
@@ -118,21 +181,26 @@ export class ResourceExport extends ResourceDeployer {
     // write the pipeline awaiter and
     if (this.resourcesHasContainers(resources)) {
       for (const zipFile of this.elasticContainerZipFiles) {
-        const destinationPath = path.join(this.exportDirectoryPath, Constants.AMPLIFY_AUXILIARY_LAMBDAS, zipFile);
+        const destinationPath = path.join(this.exportDirectoryPath, AMPLIFY_AUXILIARY_LAMBDAS, zipFile);
         const sourceFile = path.join(__dirname, '../..', 'resources', zipFile);
         await this.copyResource(sourceFile, destinationPath);
       }
     }
   }
 
-  private async processAndWriteCfn(cfnFile: string, destinationPath: string) {
+  private async processAndWriteCfn(cfnFile: string, destinationPath: string, deleteParameters: boolean = true) {
     const { cfnTemplate, templateFormat } = await readCFNTemplate(cfnFile);
-    return await this.processAndWriteCfnTemplate(cfnTemplate, destinationPath, templateFormat);
+    return await this.processAndWriteCfnTemplate(cfnTemplate, destinationPath, templateFormat, deleteParameters);
   }
 
-  private async processAndWriteCfnTemplate(cfnTemplate: Template, destinationPath: string, templateFormat: CFNTemplateFormat) {
+  private async processAndWriteCfnTemplate(
+    cfnTemplate: Template,
+    destinationPath: string,
+    templateFormat: CFNTemplateFormat,
+    deleteParameters: boolean,
+  ) {
     const parameters = this.extractParametersFromTemplateNestedStack(cfnTemplate);
-    const template = this.modifyRootStack(cfnTemplate);
+    const template = this.modifyRootStack(cfnTemplate, deleteParameters);
     await writeCFNTemplate(template, destinationPath, { templateFormat });
     return parameters;
   }
@@ -150,24 +218,6 @@ export class ResourceExport extends ResourceDeployer {
   }
 
   private async writeCategoryCloudFormation(resources: TransformedCfnResource[]): Promise<StackParameters> {
-    const {
-      API_CATEGORY,
-      AUTH_CATEGORY,
-      AMPLIFY_CFN_TEMPLATES,
-      AMPLIFY_APPSYNC_FILES,
-      PROVIDER_METADATA,
-      NETWORK_STACK_S3_URL,
-      AUTH_TRIGGER_TEMPLATE_FILE,
-      AUTH_TRIGGER_TEMPLATE_URL,
-      API_GATEWAY_AUTH_URL,
-      APIGW_AUTH_STACK_FILE_NAME,
-      APPSYNC_STACK_FOLDER,
-      NETWORK_STACK_FILENAME,
-      PROVIDER_NAME,
-      PROVIDER,
-      NETWORK_STACK_LOGICAL_ID,
-      APIGW_AUTH_STACK_LOGICAL_ID,
-    } = Constants;
     const { StackName: stackName } = this.amplifyMeta[PROVIDER][PROVIDER_NAME];
     const bucket = 'externalDeploymentBucketName';
     const stackParameters: StackParameters = {};
@@ -188,7 +238,7 @@ export class ResourceExport extends ResourceDeployer {
         };
         // only expose nested stack for GraphQL API
         if (resource.category === API_CATEGORY.NAME && resource.service === API_CATEGORY.SERVICE.APP_SYNC) {
-          const parameters = await this.processAndWriteCfn(cfnFile, destination);
+          const parameters = await this.processAndWriteCfn(cfnFile, destination, false);
 
           [...parameters.keys()].forEach(key => {
             const nestedStackPath = path.join(
@@ -197,12 +247,11 @@ export class ResourceExport extends ResourceDeployer {
               resource.resourceName,
               AMPLIFY_APPSYNC_FILES,
               APPSYNC_STACK_FOLDER,
-              `${key}.json`,
+              key === 'CustomResourcesjson' ? 'CustomResources.json' : `${key}.json`,
             );
 
             nestedStack.nestedStacks[key] = {
               destination: nestedStackPath,
-              parameters: parameters.get(key),
               nestedStacks: {},
             };
           });
@@ -266,33 +315,57 @@ export class ResourceExport extends ResourceDeployer {
   private extractParametersFromTemplateNestedStack(template: Template): Map<string, { [key: string]: any } | undefined> {
     const map = Object.keys(template.Resources).reduce((map, resourceKey) => {
       const resource = template.Resources[resourceKey];
-      if (resource.Type === Constants.AWS_CLOUDFORMATION_STACK_TYPE) {
-        map.set(resourceKey, resource.Properties.Parameters);
+      if (resource.Type === AWS_CLOUDFORMATION_STACK_TYPE) {
+        const parameters = resource.Properties.Parameters || {};
+        if (parameters) {
+          const otherParameters = this.extractParameters(parameters, true);
+          map.set(resourceKey, otherParameters);
+        } else {
+          map.set(resourceKey, parameters);
+        }
       }
       return map;
     }, new Map<string, { [key: string]: any } | undefined>());
     return map;
   }
 
+  private extractParameters(parameters: any, excludeObjectType: boolean) {
+    return Object.keys(parameters).reduce((obj, key) => {
+      const addParameter = excludeObjectType ? !(parameters[key] instanceof Object) : parameters[key] instanceof Object;
+      if (addParameter) {
+        obj[key] = parameters[key];
+      }
+      return obj;
+    }, {});
+  }
+
   /**
-   * Modifies the template to modify the template URL to accept the  and delete the parameters
+   * Modifies the template to remove some parameters and template url
    * @param template {Template}
    * @returns {Template}
    */
-  private modifyRootStack(template: Template): Template {
-    const { PROVIDER, PROVIDER_NAME } = Constants;
-    const { DeploymentBucketName } = this.amplifyMeta[PROVIDER][PROVIDER_NAME];
+  private modifyRootStack(template: Template, deleteParameters: boolean): Template {
     Object.keys(template.Resources).map(resourceKey => {
       const resource = template.Resources[resourceKey];
-      if (resource.Type === Constants.AWS_CLOUDFORMATION_STACK_TYPE) {
+      if (resource.Type === AWS_CLOUDFORMATION_STACK_TYPE) {
         // remove url parameters will set it in the construct
-        const { Parameters, ...others } = template.Resources[resourceKey].Properties;
-        resource.Properties = { ...others };
+        // remove template URL the stack, CDK will update the URL
+        if (deleteParameters) {
+          const { Parameters, TemplateURL, ...others } = template.Resources[resourceKey].Properties;
+          if (Parameters) {
+            const params = this.extractParameters(Parameters, false);
+            resource.Properties = {
+              ...others,
+              Parameters: params,
+            };
+          } else {
+            resource.Properties = others;
+          }
+        } else {
+          const { TemplateURL, ...others } = template.Resources[resourceKey].Properties;
+          resource.Properties = others;
+        }
       }
-    });
-    template.Parameters['externalDeploymentBucketName'] = new StringParameter({
-      Default: DeploymentBucketName,
-      Description: 'Bucket used when export is called',
     });
     return template;
   }
@@ -302,7 +375,7 @@ export class ResourceExport extends ResourceDeployer {
   }
 
   private createTemplateUrl(bucketName: string, fileName: string, categoryName?: string): { [x: string]: any } {
-    const values = ['https://s3.amazonaws.com', Fn.Ref(bucketName).toJSON(), Constants.AMPLIFY_CFN_TEMPLATES];
+    const values = ['https://s3.amazonaws.com', Fn.Ref(bucketName).toJSON(), AMPLIFY_CFN_TEMPLATES];
     if (categoryName) {
       values.push(categoryName);
     }

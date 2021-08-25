@@ -42,12 +42,15 @@ export abstract class ResourceDeployer {
   protected amplifyMeta: $TSMeta;
   private amplifyTeamProviderInfo: $TSTeamProviderInfo;
   private envInfo: { envName: string };
+  deployType: ResourceDeployType;
   private getResourcesToBeDeployed = ({
     allResources,
     resourcesToBeCreated,
     resourcesToBeUpdated,
   }: DeploymentResources): ResourceDefinition[] =>
-    !!this.context?.exeInfo?.forcePush ? allResources : resourcesToBeCreated.concat(resourcesToBeUpdated);
+    !!this.context?.exeInfo?.forcePush || this.deployType === ResourceDeployType.Export
+      ? allResources
+      : resourcesToBeCreated.concat(resourcesToBeUpdated);
 
   constructor(context: $TSContext, deployType: ResourceDeployType) {
     this.context = context;
@@ -56,6 +59,7 @@ export abstract class ResourceDeployer {
     this.amplifyMeta = stateManager.getMeta(projectPath);
     this.amplifyTeamProviderInfo = stateManager.getTeamProviderInfo(projectPath);
     this.envInfo = stateManager.getLocalEnvInfo(projectPath);
+    this.deployType = deployType;
   }
 
   /**
@@ -157,7 +161,7 @@ export abstract class ResourceDeployer {
           FUNCTION_CATEGORY.NAME,
           resource.service,
           'packageResource',
-          [this.context, resource],
+          [this.context, resource, true],
         );
         return {
           ...resource,
