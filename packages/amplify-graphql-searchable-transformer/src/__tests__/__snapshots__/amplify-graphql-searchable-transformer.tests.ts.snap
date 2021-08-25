@@ -148,7 +148,7 @@ type Query {
   listEmployees(filter: ModelEmployeeFilterInput, limit: Int, nextToken: String): ModelEmployeeConnection
 }
 
-input ModelStringFilterInput {
+input ModelStringInput {
   ne: String
   eq: String
   le: String
@@ -164,7 +164,7 @@ input ModelStringFilterInput {
   size: ModelSizeInput
 }
 
-input ModelIntFilterInput {
+input ModelIntInput {
   ne: Int
   eq: Int
   le: Int
@@ -176,7 +176,7 @@ input ModelIntFilterInput {
   attributeType: ModelAttributeTypes
 }
 
-input ModelFloatFilterInput {
+input ModelFloatInput {
   ne: Float
   eq: Float
   le: Float
@@ -188,14 +188,14 @@ input ModelFloatFilterInput {
   attributeType: ModelAttributeTypes
 }
 
-input ModelBooleanFilterInput {
+input ModelBooleanInput {
   ne: Boolean
   eq: Boolean
   attributeExists: Boolean
   attributeType: ModelAttributeTypes
 }
 
-input ModelIDFilterInput {
+input ModelIDInput {
   ne: ID
   eq: ID
   le: ID
@@ -234,15 +234,20 @@ input ModelSizeInput {
   between: [Int]
 }
 
+enum ModelSortDirection {
+  ASC
+  DESC
+}
+
 type ModelEmployeeConnection {
   items: [Employee]
   nextToken: String
 }
 
 input ModelEmployeeFilterInput {
-  id: ModelIDFilterInput
-  firstName: ModelStringFilterInput
-  lastName: ModelStringFilterInput
+  id: ModelIDInput
+  firstName: ModelStringInput
+  lastName: ModelStringInput
   type: EmploymentType
   and: [ModelEmployeeFilterInput]
   or: [ModelEmployeeFilterInput]
@@ -255,9 +260,9 @@ input ModelEmploymentTypeInput {
 }
 
 input ModelEmployeeConditionInput {
-  id: ModelIDFilterInput
-  firstName: ModelStringFilterInput
-  lastName: ModelStringFilterInput
+  id: ModelIDInput
+  firstName: ModelStringInput
+  lastName: ModelStringInput
   type: EmploymentType
   and: [ModelEmployeeConditionInput]
   or: [ModelEmployeeConditionInput]
@@ -439,7 +444,7 @@ type Query {
   listPosts(filter: ModelPostFilterInput, limit: Int, nextToken: String): ModelPostConnection
 }
 
-input ModelStringFilterInput {
+input ModelStringInput {
   ne: String
   eq: String
   le: String
@@ -455,7 +460,7 @@ input ModelStringFilterInput {
   size: ModelSizeInput
 }
 
-input ModelIntFilterInput {
+input ModelIntInput {
   ne: Int
   eq: Int
   le: Int
@@ -467,7 +472,7 @@ input ModelIntFilterInput {
   attributeType: ModelAttributeTypes
 }
 
-input ModelFloatFilterInput {
+input ModelFloatInput {
   ne: Float
   eq: Float
   le: Float
@@ -479,14 +484,14 @@ input ModelFloatFilterInput {
   attributeType: ModelAttributeTypes
 }
 
-input ModelBooleanFilterInput {
+input ModelBooleanInput {
   ne: Boolean
   eq: Boolean
   attributeExists: Boolean
   attributeType: ModelAttributeTypes
 }
 
-input ModelIDFilterInput {
+input ModelIDInput {
   ne: ID
   eq: ID
   le: ID
@@ -525,26 +530,31 @@ input ModelSizeInput {
   between: [Int]
 }
 
+enum ModelSortDirection {
+  ASC
+  DESC
+}
+
 type ModelPostConnection {
   items: [Post]
   nextToken: String
 }
 
 input ModelPostFilterInput {
-  id: ModelIDFilterInput
-  title: ModelStringFilterInput
-  createdAt: ModelStringFilterInput
-  updatedAt: ModelStringFilterInput
+  id: ModelIDInput
+  title: ModelStringInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
   and: [ModelPostFilterInput]
   or: [ModelPostFilterInput]
   not: ModelPostFilterInput
 }
 
 input ModelPostConditionInput {
-  id: ModelIDFilterInput
-  title: ModelStringFilterInput
-  createdAt: ModelStringFilterInput
-  updatedAt: ModelStringFilterInput
+  id: ModelIDInput
+  title: ModelStringInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
   and: [ModelPostConditionInput]
   or: [ModelPostConditionInput]
   not: ModelPostConditionInput
@@ -1237,7 +1247,7 @@ type SearchableUserConnection {
   aggregateItems: [SearchableAggregateResult]
 }
 
-input ModelStringFilterInput {
+input ModelStringInput {
   ne: String
   eq: String
   le: String
@@ -1253,7 +1263,7 @@ input ModelStringFilterInput {
   size: ModelSizeInput
 }
 
-input ModelIntFilterInput {
+input ModelIntInput {
   ne: Int
   eq: Int
   le: Int
@@ -1265,7 +1275,7 @@ input ModelIntFilterInput {
   attributeType: ModelAttributeTypes
 }
 
-input ModelFloatFilterInput {
+input ModelFloatInput {
   ne: Float
   eq: Float
   le: Float
@@ -1277,14 +1287,14 @@ input ModelFloatFilterInput {
   attributeType: ModelAttributeTypes
 }
 
-input ModelBooleanFilterInput {
+input ModelBooleanInput {
   ne: Boolean
   eq: Boolean
   attributeExists: Boolean
   attributeType: ModelAttributeTypes
 }
 
-input ModelIDFilterInput {
+input ModelIDInput {
   ne: ID
   eq: ID
   le: ID
@@ -1323,26 +1333,31 @@ input ModelSizeInput {
   between: [Int]
 }
 
+enum ModelSortDirection {
+  ASC
+  DESC
+}
+
 type ModelPostConnection {
   items: [Post]
   nextToken: String
 }
 
 input ModelPostFilterInput {
-  id: ModelIDFilterInput
-  title: ModelStringFilterInput
-  createdAt: ModelStringFilterInput
-  updatedAt: ModelStringFilterInput
+  id: ModelIDInput
+  title: ModelStringInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
   and: [ModelPostFilterInput]
   or: [ModelPostFilterInput]
   not: ModelPostFilterInput
 }
 
 input ModelPostConditionInput {
-  id: ModelIDFilterInput
-  title: ModelStringFilterInput
-  createdAt: ModelStringFilterInput
-  updatedAt: ModelStringFilterInput
+  id: ModelIDInput
+  title: ModelStringInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
   and: [ModelPostConditionInput]
   or: [ModelPostConditionInput]
   not: ModelPostConditionInput
@@ -1390,16 +1405,16 @@ type ModelUserConnection {
 }
 
 input ModelUserFilterInput {
-  id: ModelIDFilterInput
-  name: ModelStringFilterInput
+  id: ModelIDInput
+  name: ModelStringInput
   and: [ModelUserFilterInput]
   or: [ModelUserFilterInput]
   not: ModelUserFilterInput
 }
 
 input ModelUserConditionInput {
-  id: ModelIDFilterInput
-  name: ModelStringFilterInput
+  id: ModelIDInput
+  name: ModelStringInput
   and: [ModelUserConditionInput]
   or: [ModelUserConditionInput]
   not: ModelUserConditionInput
@@ -1564,7 +1579,7 @@ type Query {
   listPosts(filter: ModelPostFilterInput, limit: Int, nextToken: String): ModelPostConnection
 }
 
-input ModelStringFilterInput {
+input ModelStringInput {
   ne: String
   eq: String
   le: String
@@ -1580,7 +1595,7 @@ input ModelStringFilterInput {
   size: ModelSizeInput
 }
 
-input ModelIntFilterInput {
+input ModelIntInput {
   ne: Int
   eq: Int
   le: Int
@@ -1592,7 +1607,7 @@ input ModelIntFilterInput {
   attributeType: ModelAttributeTypes
 }
 
-input ModelFloatFilterInput {
+input ModelFloatInput {
   ne: Float
   eq: Float
   le: Float
@@ -1604,14 +1619,14 @@ input ModelFloatFilterInput {
   attributeType: ModelAttributeTypes
 }
 
-input ModelBooleanFilterInput {
+input ModelBooleanInput {
   ne: Boolean
   eq: Boolean
   attributeExists: Boolean
   attributeType: ModelAttributeTypes
 }
 
-input ModelIDFilterInput {
+input ModelIDInput {
   ne: ID
   eq: ID
   le: ID
@@ -1650,26 +1665,31 @@ input ModelSizeInput {
   between: [Int]
 }
 
+enum ModelSortDirection {
+  ASC
+  DESC
+}
+
 type ModelPostConnection {
   items: [Post]
   nextToken: String
 }
 
 input ModelPostFilterInput {
-  id: ModelIDFilterInput
-  title: ModelStringFilterInput
-  createdAt: ModelStringFilterInput
-  updatedAt: ModelStringFilterInput
+  id: ModelIDInput
+  title: ModelStringInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
   and: [ModelPostFilterInput]
   or: [ModelPostFilterInput]
   not: ModelPostFilterInput
 }
 
 input ModelPostConditionInput {
-  id: ModelIDFilterInput
-  title: ModelStringFilterInput
-  createdAt: ModelStringFilterInput
-  updatedAt: ModelStringFilterInput
+  id: ModelIDInput
+  title: ModelStringInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
   and: [ModelPostConditionInput]
   or: [ModelPostConditionInput]
   not: ModelPostConditionInput
@@ -1835,7 +1855,7 @@ type Query {
   listPosts(filter: ModelPostFilterInput, limit: Int, nextToken: String): ModelPostConnection
 }
 
-input ModelStringFilterInput {
+input ModelStringInput {
   ne: String
   eq: String
   le: String
@@ -1851,7 +1871,7 @@ input ModelStringFilterInput {
   size: ModelSizeInput
 }
 
-input ModelIntFilterInput {
+input ModelIntInput {
   ne: Int
   eq: Int
   le: Int
@@ -1863,7 +1883,7 @@ input ModelIntFilterInput {
   attributeType: ModelAttributeTypes
 }
 
-input ModelFloatFilterInput {
+input ModelFloatInput {
   ne: Float
   eq: Float
   le: Float
@@ -1875,14 +1895,14 @@ input ModelFloatFilterInput {
   attributeType: ModelAttributeTypes
 }
 
-input ModelBooleanFilterInput {
+input ModelBooleanInput {
   ne: Boolean
   eq: Boolean
   attributeExists: Boolean
   attributeType: ModelAttributeTypes
 }
 
-input ModelIDFilterInput {
+input ModelIDInput {
   ne: ID
   eq: ID
   le: ID
@@ -1921,26 +1941,31 @@ input ModelSizeInput {
   between: [Int]
 }
 
+enum ModelSortDirection {
+  ASC
+  DESC
+}
+
 type ModelPostConnection {
   items: [Post]
   nextToken: String
 }
 
 input ModelPostFilterInput {
-  id: ModelIDFilterInput
-  title: ModelStringFilterInput
-  createdAt: ModelStringFilterInput
-  updatedAt: ModelStringFilterInput
+  id: ModelIDInput
+  title: ModelStringInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
   and: [ModelPostFilterInput]
   or: [ModelPostFilterInput]
   not: ModelPostFilterInput
 }
 
 input ModelPostConditionInput {
-  id: ModelIDFilterInput
-  title: ModelStringFilterInput
-  createdAt: ModelStringFilterInput
-  updatedAt: ModelStringFilterInput
+  id: ModelIDInput
+  title: ModelStringInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
   and: [ModelPostConditionInput]
   or: [ModelPostConditionInput]
   not: ModelPostConditionInput
@@ -2121,7 +2146,7 @@ type Query {
   listPosts(filter: ModelPostFilterInput, limit: Int, nextToken: String): ModelPostConnection
 }
 
-input ModelStringFilterInput {
+input ModelStringInput {
   ne: String
   eq: String
   le: String
@@ -2137,7 +2162,7 @@ input ModelStringFilterInput {
   size: ModelSizeInput
 }
 
-input ModelIntFilterInput {
+input ModelIntInput {
   ne: Int
   eq: Int
   le: Int
@@ -2149,7 +2174,7 @@ input ModelIntFilterInput {
   attributeType: ModelAttributeTypes
 }
 
-input ModelFloatFilterInput {
+input ModelFloatInput {
   ne: Float
   eq: Float
   le: Float
@@ -2161,14 +2186,14 @@ input ModelFloatFilterInput {
   attributeType: ModelAttributeTypes
 }
 
-input ModelBooleanFilterInput {
+input ModelBooleanInput {
   ne: Boolean
   eq: Boolean
   attributeExists: Boolean
   attributeType: ModelAttributeTypes
 }
 
-input ModelIDFilterInput {
+input ModelIDInput {
   ne: ID
   eq: ID
   le: ID
@@ -2207,26 +2232,31 @@ input ModelSizeInput {
   between: [Int]
 }
 
+enum ModelSortDirection {
+  ASC
+  DESC
+}
+
 type ModelPostConnection {
   items: [Post]
   nextToken: String
 }
 
 input ModelPostFilterInput {
-  id: ModelIDFilterInput
-  title: ModelStringFilterInput
-  createdAt: ModelStringFilterInput
-  updatedAt: ModelStringFilterInput
+  id: ModelIDInput
+  title: ModelStringInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
   and: [ModelPostFilterInput]
   or: [ModelPostFilterInput]
   not: ModelPostFilterInput
 }
 
 input ModelPostConditionInput {
-  id: ModelIDFilterInput
-  title: ModelStringFilterInput
-  createdAt: ModelStringFilterInput
-  updatedAt: ModelStringFilterInput
+  id: ModelIDInput
+  title: ModelStringInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
   and: [ModelPostConditionInput]
   or: [ModelPostConditionInput]
   not: ModelPostConditionInput
