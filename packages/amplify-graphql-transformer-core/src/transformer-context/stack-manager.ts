@@ -26,6 +26,10 @@ export class StackManager implements StackManagerProvider {
     return newStack;
   };
 
+  hasStack = (stackName: string): boolean => {
+    return this.stacks.has(stackName);
+  };
+
   getStackFor = (resourceId: string, defaultStackName?: string): Stack => {
     const stackName = this.resourceToStackMap.has(resourceId) ? this.resourceToStackMap.get(resourceId) : defaultStackName;
     if (stackName) {
