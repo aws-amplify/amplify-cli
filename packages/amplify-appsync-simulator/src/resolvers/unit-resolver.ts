@@ -25,7 +25,7 @@ export class AppSyncUnitResolver extends AppSyncBaseResolver {
     const dataLoader = this.simulatorContext.getDataLoader(this.config.dataSourceName);
 
     // Populate args.query for HTTP data sources.
-    const query = info.operation?.selectionSet?.selections?.find(set => set.name.value === args.fieldName);
+    const query = this.getSelectionSet(info.operation?.selectionSet?.selections, args.fieldName);
     if (query) args = { ...args, query: `${args.typeName.toLowerCase()}{${print(query)}}` };
 
     const { result: requestPayload, errors: requestTemplateErrors, isReturn, hadException } = requestMappingTemplate.render(
@@ -62,5 +62,16 @@ export class AppSyncUnitResolver extends AppSyncBaseResolver {
     context.appsyncErrors = [...context.appsyncErrors, ...responseTemplateErrors];
 
     return responseTemplateResult;
+  }
+
+  // Returns the AST of a particular field.
+  getSelectionSet(selections, fieldName) {
+    if (!selections) return null;
+    for (const selection of selections) {
+      if (selection.kind === 'Field' && selection.name?.value === fieldName) return selection;
+
+      const subSearch = this.getSelectionSet(selection.selectionSet?.selections, fieldName);
+      if (subSearch) return subSearch;
+    }
   }
 }

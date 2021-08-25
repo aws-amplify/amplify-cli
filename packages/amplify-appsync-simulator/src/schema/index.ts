@@ -43,7 +43,12 @@ export function generateResolvers(
       typeObj[resolverConfig.fieldName] = {
         resolve: async (source, args, context, info) => {
           const resolver = simulatorContext.getResolver(resolverConfig.typeName, resolverConfig.fieldName);
-          args = { ...args, fieldName, typeName };
+          args = {
+            ...args,
+            fieldName,
+            // Default to 'Query' when typeName is not a valid selection type (i.e. 'Post').
+            typeName: ['Query', 'Mutation', 'Subscription'].includes(typeName) ? typeName : 'Query',
+          };
           try {
             // Mutation and Query
             if (typeName !== 'Subscription') {
