@@ -8043,9 +8043,7 @@ Object {
       \\"#partitionKey\\": \\"childID\\"
   },
   \\"expressionValues\\": {
-      \\":partitionKey\\": {
-          \\"S\\": \\"$context.source.id\\"
-    }
+      \\":partitionKey\\": $util.dynamodb.toDynamoDB($context.source.id)
   }
 } )
   ## [Start] Applying Key Condition **
@@ -8134,9 +8132,7 @@ $util.error($ctx.error.message, $ctx.error.type)
       \\"#partitionKey\\": \\"id\\"
   },
   \\"expressionValues\\": {
-      \\":partitionKey\\": {
-          \\"S\\": \\"$context.source.friendID\\"
-    }
+      \\":partitionKey\\": $util.dynamodb.toDynamoDB($context.source.friendID)
   }
 } )
   ## [Start] Applying Key Condition **
@@ -12279,9 +12275,7 @@ $util.toJson($ctx.result)
       \\"#partitionKey\\": \\"id\\"
   },
   \\"expressionValues\\": {
-      \\":partitionKey\\": {
-          \\"S\\": \\"$context.source.authorID\\"
-    }
+      \\":partitionKey\\": $util.dynamodb.toDynamoDB($context.source.authorID)
   }
 } )
   ## [Start] Applying Key Condition **
@@ -12392,9 +12386,7 @@ $util.error($ctx.error.message, $ctx.error.type)
       \\"#partitionKey\\": \\"postCommentsId\\"
   },
   \\"expressionValues\\": {
-      \\":partitionKey\\": {
-          \\"S\\": \\"$context.source.id\\"
-    }
+      \\":partitionKey\\": $util.dynamodb.toDynamoDB($context.source.id)
   }
 } )
 {
@@ -12445,9 +12437,7 @@ $util.error($ctx.error.message, $ctx.error.type)
       \\"#partitionKey\\": \\"postID\\"
   },
   \\"expressionValues\\": {
-      \\":partitionKey\\": {
-          \\"S\\": \\"$context.source.id\\"
-    }
+      \\":partitionKey\\": $util.dynamodb.toDynamoDB($context.source.id)
   }
 } )
   ## [Start] Applying Key Condition **
@@ -12585,12 +12575,8 @@ $util.toJson($ctx.result)
       \\"#sortKey\\": \\"name#surname\\"
   },
   \\"expressionValues\\": {
-      \\":partitionKey\\": {
-          \\"S\\": \\"$context.source.authorID\\"
-    },
-      \\":sortKey\\": {
-          \\"S\\": \\"\${context.source.authorName}#\${context.source.authorSurname}\\"
-    }
+      \\":partitionKey\\": $util.dynamodb.toDynamoDB($context.source.authorID),
+      \\":sortKey\\": $util.dynamodb.toDynamoDB(\\"\${context.source.authorName}#\${context.source.authorSurname}\\")
   }
 } )
 {
@@ -13744,9 +13730,7 @@ $util.toJson($ListRequest)
       \\"#partitionKey\\": \\"id\\"
   },
   \\"expressionValues\\": {
-      \\":partitionKey\\": {
-          \\"S\\": \\"$context.source.id\\"
-    }
+      \\":partitionKey\\": $util.dynamodb.toDynamoDB($context.source.id)
   }
 } )
   ## [Start] Applying Key Condition **
@@ -13857,9 +13841,7 @@ $util.error($ctx.error.message, $ctx.error.type)
       \\"#partitionKey\\": \\"id\\"
   },
   \\"expressionValues\\": {
-      \\":partitionKey\\": {
-          \\"S\\": \\"$context.source.id\\"
-    }
+      \\":partitionKey\\": $util.dynamodb.toDynamoDB($context.source.id)
   }
 } )
   ## [Start] Applying Key Condition **
@@ -13971,9 +13953,7 @@ $util.error($ctx.error.message, $ctx.error.type)
       \\"#partitionKey\\": \\"userID\\"
   },
   \\"expressionValues\\": {
-      \\":partitionKey\\": {
-          \\"S\\": \\"$context.source.id\\"
-    }
+      \\":partitionKey\\": $util.dynamodb.toDynamoDB($context.source.id)
   }
 } )
   ## [Start] Applying Key Condition **
@@ -14062,9 +14042,7 @@ $util.error($ctx.error.message, $ctx.error.type)
       \\"#partitionKey\\": \\"editorID\\"
   },
   \\"expressionValues\\": {
-      \\":partitionKey\\": {
-          \\"S\\": \\"$context.source.id\\"
-    }
+      \\":partitionKey\\": $util.dynamodb.toDynamoDB($context.source.id)
   }
 } )
   ## [Start] Applying Key Condition **
@@ -14153,9 +14131,7 @@ $util.error($ctx.error.message, $ctx.error.type)
       \\"#partitionKey\\": \\"authorID\\"
   },
   \\"expressionValues\\": {
-      \\":partitionKey\\": {
-          \\"S\\": \\"$context.source.id\\"
-    }
+      \\":partitionKey\\": $util.dynamodb.toDynamoDB($context.source.id)
   }
 } )
   ## [Start] Applying Key Condition **

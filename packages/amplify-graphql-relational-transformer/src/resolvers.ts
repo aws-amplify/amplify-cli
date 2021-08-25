@@ -181,12 +181,12 @@ function makeExpression(keySchema: any[], connectionAttributes: string[]): Objec
         '#sortKey': str(keySchema[1].attributeName),
       }),
       expressionValues: obj({
-        ':partitionKey': obj({
-          S: str(`$context.source.${connectionAttributes[0]}`),
-        }),
-        ':sortKey': obj({
-          S: str(condensedSortKeyValue || `$context.source.${connectionAttributes[1]}`),
-        }),
+        ':partitionKey': ref(`util.dynamodb.toDynamoDB($context.source.${connectionAttributes[0]})`),
+        ':sortKey': ref(
+          `util.dynamodb.toDynamoDB(${
+            condensedSortKeyValue ? `"${condensedSortKeyValue}"` : `$context.source.${connectionAttributes[1]}`
+          })`,
+        ),
       }),
     });
   }
@@ -197,9 +197,7 @@ function makeExpression(keySchema: any[], connectionAttributes: string[]): Objec
       '#partitionKey': str(keySchema[0].attributeName),
     }),
     expressionValues: obj({
-      ':partitionKey': obj({
-        S: str(`$context.source.${connectionAttributes[0]}`),
-      }),
+      ':partitionKey': ref(`util.dynamodb.toDynamoDB($context.source.${connectionAttributes[0]})`),
     }),
   });
 }
