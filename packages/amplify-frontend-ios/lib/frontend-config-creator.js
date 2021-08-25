@@ -81,7 +81,6 @@ function getAWSConfigObject(amplifyResources) {
       Default: {},
     },
   };
-  const geoConfig = {};
   const projectRegion = amplifyResources.metadata.Region;
 
   Object.keys(serviceResourceMapping).forEach(service => {
@@ -107,29 +106,10 @@ function getAWSConfigObject(amplifyResources) {
       case 'Sumerian':
         Object.assign(configOutput, getSumerianConfig(serviceResourceMapping[service], projectRegion));
         break;
-      case 'Map':
-        geoConfig.maps = getMapConfig(serviceResourceMapping[service]);
-        break;
-      case 'PlaceIndex':
-        geoConfig.search_indices = getPlaceIndexConfig(serviceResourceMapping[service]);
-        break;
       default:
         break;
     }
   });
-
-  // add geo config if geo resources exist
-  if (Object.entries(geoConfig).length > 0) {
-    geoConfig.region = projectRegion;
-    Object.assign(
-      configOutput,
-      {
-        geo: {
-          amazon_location_services: geoConfig
-        }
-      }
-    );
-  }
 
   return configOutput;
 }
@@ -391,40 +371,6 @@ function getSumerianConfig(sumerianResources) {
   return {
     Sumerian: config,
   };
-}
-
-function getMapConfig(mapResources) {
-  let defaultMap = "";
-  const mapConfig = {
-    items: {}
-  };
-  mapResources.forEach(mapResource => {
-    const mapName = mapResource.output.Name;
-    mapConfig.items[mapName] = {
-      style: mapResource.output.Style
-    }
-    if(mapResource.isDefault) {
-      defaultMap = mapName;
-    }
-  });
-  mapConfig.default = defaultMap;
-  return mapConfig;
-}
-
-function getPlaceIndexConfig(placeIndexResources) {
-  let defaultPlaceIndex = "";
-  const placeIndexConfig = {
-    items: []
-  };
-  placeIndexResources.forEach(placeIndexResource => {
-    const placeIndexName = placeIndexResource.output.Name;
-    placeIndexConfig.items.push(placeIndexName);
-    if(placeIndexResource.isDefault) {
-      defaultPlaceIndex = placeIndexName;
-    }
-  });
-  placeIndexConfig.default = defaultPlaceIndex;
-  return placeIndexConfig;
 }
 
 module.exports = { createAWSConfig, createAmplifyConfig, deleteAmplifyConfig };
