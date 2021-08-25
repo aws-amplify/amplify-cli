@@ -1,8 +1,10 @@
-import { $TSContext, exitOnNextTick, ResourceAlreadyExistsError, ServiceSelection, stateManager } from 'amplify-cli-core';
+import { $TSAny, $TSContext, exitOnNextTick, ResourceAlreadyExistsError, ServiceSelection, stateManager } from 'amplify-cli-core';
+import { printer } from 'amplify-prompts';
+import { IS3Service } from 'amplify-util-import';
+import { Bucket } from 'aws-sdk/clients/s3';
 import Enquirer from 'enquirer';
 import _ from 'lodash';
 import uuid from 'uuid';
-import { Bucket } from 'aws-sdk/clients/s3';
 import { checkIfAuthExists, resourceAlreadyExists } from '../service-walkthroughs/s3-walkthrough';
 import { importMessages } from './messages';
 import {
@@ -16,7 +18,6 @@ import {
   S3MetaOutput,
   S3ResourceParameters,
 } from './types';
-import { IS3Service } from 'amplify-util-import';
 
 export const importS3 = async (
   context: $TSContext,
@@ -25,18 +26,18 @@ export const importS3 = async (
   providerPluginInstance?: ProviderUtils,
   printSuccessMessage: boolean = true,
 ): Promise<{ envSpecificParameters: S3EnvSpecificResourceParameters } | undefined> => {
-  let resourceName: string | undefined = resourceAlreadyExists(context);
+  let resourceName: string | undefined = resourceAlreadyExists();
 
   if (resourceName && !previousResourceParameters) {
     const errMessage = 'Amazon S3 storage was already added to your project.';
-    context.print.warning(errMessage);
-    context.usageData.emitError(new ResourceAlreadyExistsError(errMessage));
+    printer.warn(errMessage);
+    await context.usageData.emitError(new ResourceAlreadyExistsError(errMessage));
 
     exitOnNextTick(0);
   }
 
   // Load provider
-  const providerPlugin = providerPluginInstance || require(serviceSelection.provider);
+  const providerPlugin = providerPluginInstance || (await import(serviceSelection.provider));
   const providerUtils = providerPlugin as ProviderUtils;
 
   const importServiceWalkthroughResult = await importServiceWalkthrough(
@@ -58,7 +59,7 @@ export const importS3 = async (
   const { envSpecificParameters } = await updateStateFiles(context, questionParameters, answers, persistEnvParameters);
 
   if (printSuccessMessage) {
-    printSuccess(context, answers.bucketName!);
+    printSuccess(answers.bucketName!);
   }
 
   return {
@@ -66,16 +67,16 @@ export const importS3 = async (
   };
 };
 
-const printSuccess = (context: $TSContext, bucketName: string) => {
-  context.print.info('');
-  context.print.info(`✅ S3 Bucket '${bucketName}' was successfully imported.`);
-  context.print.info('');
-  context.print.info('Next steps:');
-  context.print.info(`- This resource can now be accessed from REST APIs (‘amplify add api’) and Functions (‘amplify add function’)`);
-  context.print.info('- Use Amplify Libraries to add, upload, and download objects to your frontend app');
-  context.print.info('  - iOS: https://docs.amplify.aws/lib/storage/getting-started/q/platform/ios');
-  context.print.info('  - Android: https://docs.amplify.aws/lib/storage/getting-started/q/platform/android');
-  context.print.info('  - JavaScript: https://docs.amplify.aws/lib/storage/getting-started/q/platform/js');
+const printSuccess = (bucketName: string) => {
+  printer.info('');
+  printer.info(`✅ S3 Bucket '${bucketName}' was successfully imported.`);
+  printer.info('');
+  printer.info('Next steps:');
+  printer.info(`- This resource can now be accessed from REST APIs (‘amplify add api’) and Functions (‘amplify add function’)`);
+  printer.info('- Use Amplify Libraries to add, upload, and download objects to your frontend app');
+  printer.info('  - iOS: https://docs.amplify.aws/lib/storage/getting-started/q/platform/ios');
+  printer.info('  - Android: https://docs.amplify.aws/lib/storage/getting-started/q/platform/android');
+  printer.info('  - JavaScript: https://docs.amplify.aws/lib/storage/getting-started/q/platform/js');
 };
 
 const importServiceWalkthrough = async (
@@ -101,7 +102,7 @@ const importServiceWalkthrough = async (
 
   // Return it no userpools found in the project's region
   if (_.isEmpty(bucketList)) {
-    context.print.info(importMessages.NoS3BucketsToImport);
+    printer.info(importMessages.NoS3BucketsToImport);
     return;
   }
 
@@ -122,7 +123,7 @@ const importServiceWalkthrough = async (
   if (bucketList.length === 1) {
     answers.bucketName = bucketList[0].Name!;
 
-    context.print.info(importMessages.OneBucket(answers.bucketName));
+    printer.info(importMessages.OneBucket(answers.bucketName));
   } else {
     const bucketNameList = bucketList.map(b => b.Name!);
 
@@ -136,7 +137,7 @@ const importServiceWalkthrough = async (
       footer: importMessages.AutoCompleteFooter,
     };
 
-    const { bucketName } = await enquirer.prompt(bucketNameQuestion as any); // any case needed because async validation TS definition is not up to date
+    const { bucketName } = await enquirer.prompt(bucketNameQuestion as $TSAny); // any case needed because async validation TS definition is not up to date
 
     answers.bucketName = bucketName;
   }
@@ -151,7 +152,7 @@ const importServiceWalkthrough = async (
 };
 
 const ensureAuth = async (context: $TSContext): Promise<void> => {
-  while (!checkIfAuthExists(context)) {
+  while (!checkIfAuthExists()) {
     const addOrImportQuestion = {
       type: 'select',
       name: 'addOrImport',
@@ -174,22 +175,22 @@ const ensureAuth = async (context: $TSContext): Promise<void> => {
       header: 'You need to add auth (Amazon Cognito) to your project in order to add storage for user files.',
     };
 
-    const addOrImportAnswer: { addOrImport: 'add' | 'import' | 'cancel' } = await Enquirer.prompt(addOrImportQuestion as any); // any case needed because async validation TS definition is not up to date
+    const addOrImportAnswer: { addOrImport: 'add' | 'import' | 'cancel' } = await Enquirer.prompt(addOrImportQuestion as $TSAny); // any case needed because async validation TS definition is not up to date
 
     if (addOrImportAnswer.addOrImport === 'cancel') {
-      context.print.info('');
-      context.usageData.emitSuccess();
+      printer.info('');
+      await context.usageData.emitSuccess();
       exitOnNextTick(0);
     } else {
       try {
         if (addOrImportAnswer.addOrImport === 'add') {
-          await context.amplify.invokePluginMethod(context, 'auth', null, 'add', [context]);
+          await context.amplify.invokePluginMethod(context, 'auth', undefined, 'add', [context]);
         } else {
-          await context.amplify.invokePluginMethod(context, 'auth', null, 'importAuth', [context]);
+          await context.amplify.invokePluginMethod(context, 'auth', undefined, 'importAuth', [context]);
         }
       } catch (e) {
-        context.print.error('The Auth plugin is not installed in the CLI. You need to install it to use this feature');
-        context.usageData.emitError(e);
+        printer.error('The Auth plugin is not installed in the CLI. You need to install it to use this feature');
+        await context.usageData.emitError(e);
         exitOnNextTick(1);
       }
     }
@@ -323,8 +324,8 @@ export const importedS3EnvInit = async (
         message: importMessages.ImportPreviousBucket(resourceName, sourceEnvParams.bucketName, context.exeInfo.sourceEnvName),
         footer: importMessages.ImportPreviousResourceFooter,
         initial: true,
-        format: (e: any) => (e ? 'Yes' : 'No'),
-      } as any);
+        format: (e: $TSAny) => (e ? 'Yes' : 'No'),
+      } as $TSAny);
 
       if (!importExisting) {
         return {
@@ -340,7 +341,7 @@ export const importedS3EnvInit = async (
 
   // If there are no current parameters a service walkthrough is required, it can happen when pulling to an empty directory.
   if (!(currentEnvSpecificParameters.bucketName && currentEnvSpecificParameters.region)) {
-    context.print.info(importMessages.ImportNewResourceRequired(resourceName));
+    printer.info(importMessages.ImportNewResourceRequired(resourceName));
 
     return {
       doServiceWalkthrough: true,
@@ -361,7 +362,7 @@ export const importedS3EnvInit = async (
   const bucketExists = await s3.bucketExists(currentEnvSpecificParameters.bucketName);
 
   if (!bucketExists) {
-    context.print.error(importMessages.BucketNotFound(currentEnvSpecificParameters.bucketName));
+    printer.error(importMessages.BucketNotFound(currentEnvSpecificParameters.bucketName));
 
     return {
       succeeded: false,
