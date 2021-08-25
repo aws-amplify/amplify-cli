@@ -10,6 +10,7 @@ const spinner = ora('');
 // to push his local developments
 async function syncCurrentCloudBackend(context: $TSContext) {
   context.exeInfo.restoreBackend = false;
+  context.exeInfo.spinner = spinner;
 
   const currentEnv = context.exeInfo.localEnvInfo.envName;
 
