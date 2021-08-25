@@ -848,8 +848,6 @@ describe('ModelTransformer: ', () => {
     const schema = parse(result.schema);
     validateModelSchema(schema);
     expect(result.schema).toMatchSnapshot();
-
-    expect(verifyInputCount(schema, 'ModelEpisodeListInput', 1)).toBeTruthy();
     expect(verifyInputCount(schema, 'ModelEpisodeInput', 1)).toBeTruthy();
   });
 
