@@ -192,11 +192,11 @@ function constructGeo(metadata, amplifyConfig) {
   const categoryName = 'geo';
   const pluginName = 'awsLocationGeoPlugin';
   if (metadata[categoryName] && Object.keys(metadata[categoryName]).length > 0) {
-    let defaultMap = "";
+    let defaultMap = '';
     const mapConfig = {
       items: {}
     };
-    let defaultPlaceIndex = "";
+    let defaultPlaceIndex = '';
     const placeIndexConfig = {
       items: []
     };
@@ -209,14 +209,14 @@ function constructGeo(metadata, amplifyConfig) {
           mapConfig.items[mapName] = {
             style: resourceMeta.output.Style
           }
-          if(resourceMeta.isDefault) {
+          if(resourceMeta.isDefault === true) {
             defaultMap = mapName;
           }
         }
         else if (resourceMeta.service === 'PlaceIndex') {
           const placeIndexName = resourceMeta.output.Name;
           placeIndexConfig.items.push(placeIndexName);
-          if(resourceMeta.isDefault) {
+          if(resourceMeta.isDefault === true) {
             defaultPlaceIndex = placeIndexName;
           }
         }
