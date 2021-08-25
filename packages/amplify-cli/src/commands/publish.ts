@@ -1,12 +1,22 @@
 import { run as push } from './push';
 import { FrontendBuildError } from 'amplify-cli-core';
+import { hasCdBranches } from '../utils/check-hosting';
 
 export const run = async context => {
   context.amplify.constructExeInfo(context);
   const { amplifyMeta } = context.exeInfo;
   const isHostingAdded = amplifyMeta.hosting && Object.keys(amplifyMeta.hosting).length > 0;
 
-  if (!isHostingAdded) {
+  // Stop if the user has Continuous Deployment set up in the Amplify Console.
+  if (await hasCdBranches(context)) {
+    context.print.info('');
+    context.print.error(
+      'You have already connected branches to your Amplify Console app. Please visit the Amplify Console to manage your branches.',
+    );
+    context.print.info('');
+    return;
+    // Otherwise, stop if the user has not added the hosting category.
+  } else if (!isHostingAdded) {
     context.print.info('');
     context.print.error('Please add hosting to your project before publishing your project');
     context.print.info('Command: amplify hosting add');
