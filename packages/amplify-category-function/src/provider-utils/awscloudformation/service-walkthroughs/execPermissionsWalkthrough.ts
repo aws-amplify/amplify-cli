@@ -80,12 +80,14 @@ export const askExecRolePermissionsQuestions = async (
       // A Lambda function cannot depend on itself
       // Lambda layer dependencies are handled seperately, also apply the filter if the selected resource is within the function category
       // but serviceName argument was no passed in
-      const selectedResource = _.get(amplifyMeta, [categoryName, resourceNameToUpdate]);
-
       if (serviceName === ServiceName.LambdaFunction || selectedCategory === categoryName) {
+        const selectedResource = _.get(amplifyMeta, [categoryName, resourceNameToUpdate]);
+        // A new function resource does not exist in amplifyMeta yet
+        const isNewFunctionResource = !selectedResource;
         resourcesList = resourcesList.filter(
           resourceName =>
-            resourceName !== resourceNameToUpdate && amplifyMeta[selectedCategory][resourceName].service === selectedResource.service,
+            resourceName !== resourceNameToUpdate &&
+            (isNewFunctionResource || amplifyMeta[selectedCategory][resourceName].service === selectedResource.service),
         );
       } else {
         resourcesList = resourcesList.filter(

@@ -1,5 +1,129 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`askExecRolePermissionsQuestions returns permissions for exists function 1`] = `
+Object {
+  "categoryPolicies": Array [
+    Object {
+      "Action": Array [
+        "lambda:Get*",
+        "lambda:List*",
+        "lambda:Invoke*",
+      ],
+      "Effect": "Allow",
+      "Resource": Array [
+        Object {
+          "Fn::Join": Array [
+            "",
+            Array [
+              "arn:aws:lambda:",
+              Object {
+                "Ref": "AWS::Region",
+              },
+              ":",
+              Object {
+                "Ref": "AWS::AccountId",
+              },
+              ":function:",
+              Object {
+                "Ref": "functionlambda2Name",
+              },
+            ],
+          ],
+        },
+      ],
+    },
+  ],
+  "dependsOn": Array [
+    Object {
+      "attributes": Array [
+        "Name",
+      ],
+      "category": "function",
+      "resourceName": "lambda2",
+    },
+  ],
+  "environmentMap": Object {
+    "FUNCTION_LAMBDA2_NAME": Object {
+      "Ref": "functionlambda2Name",
+    },
+  },
+  "mutableParametersState": Object {
+    "permissions": Object {
+      "function": Object {
+        "lambda2": Array [
+          "read",
+        ],
+      },
+    },
+  },
+  "topLevelComment": "/* Amplify Params - DO NOT EDIT
+	FUNCTION_LAMBDA2_NAME
+Amplify Params - DO NOT EDIT */",
+}
+`;
+
+exports[`askExecRolePermissionsQuestions returns permissions for function that be about to add right 1`] = `
+Object {
+  "categoryPolicies": Array [
+    Object {
+      "Action": Array [
+        "lambda:Get*",
+        "lambda:List*",
+        "lambda:Invoke*",
+      ],
+      "Effect": "Allow",
+      "Resource": Array [
+        Object {
+          "Fn::Join": Array [
+            "",
+            Array [
+              "arn:aws:lambda:",
+              Object {
+                "Ref": "AWS::Region",
+              },
+              ":",
+              Object {
+                "Ref": "AWS::AccountId",
+              },
+              ":function:",
+              Object {
+                "Ref": "functionlambda2Name",
+              },
+            ],
+          ],
+        },
+      ],
+    },
+  ],
+  "dependsOn": Array [
+    Object {
+      "attributes": Array [
+        "Name",
+      ],
+      "category": "function",
+      "resourceName": "lambda2",
+    },
+  ],
+  "environmentMap": Object {
+    "FUNCTION_LAMBDA2_NAME": Object {
+      "Ref": "functionlambda2Name",
+    },
+  },
+  "mutableParametersState": Object {
+    "permissions": Object {
+      "function": Object {
+        "lambda2": Array [
+          "read",
+        ],
+      },
+    },
+  },
+  "topLevelComment": "/* Amplify Params - DO NOT EDIT
+	FUNCTION_LAMBDA2_NAME
+Amplify Params - DO NOT EDIT */",
+}
+`;
+
 exports[`check CFN resources 1`] = `
 Object {
   "cfnResources": Array [

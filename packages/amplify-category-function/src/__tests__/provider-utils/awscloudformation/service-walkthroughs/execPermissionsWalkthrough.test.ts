@@ -1,13 +1,38 @@
+import { $TSContext } from 'amplify-cli-core';
 import {
   getResourcesForCfn,
   generateEnvVariablesForCfn,
+  askExecRolePermissionsQuestions,
 } from '../../../../provider-utils/awscloudformation/service-walkthroughs/execPermissionsWalkthrough';
 import {
   constructCFModelTableNameComponent,
   constructCFModelTableArnComponent,
 } from '../../../../provider-utils/awscloudformation/utils/cloudformationHelpers';
+import { stateManager } from 'amplify-cli-core';
+import { CRUDOperation } from '../../../../constants';
+import inquirer from 'inquirer';
+
+const backendDirPathStub = 'backendDirPath';
 
 jest.mock('../../../../provider-utils/awscloudformation/utils/cloudformationHelpers');
+
+jest.mock('amplify-cli-core', () => ({
+  stateManager: {
+    getMeta: jest.fn(),
+  },
+  FeatureFlags: {
+    getBoolean: jest.fn().mockReturnValue(false),
+  },
+  pathManager: {
+    getBackendDirPath: jest.fn(() => backendDirPathStub),
+  },
+}));
+
+jest.mock('inquirer', () => {
+  return {
+    prompt: jest.fn(),
+  };
+});
 
 export const appsyncTableSuffix = '@model(appsync)';
 
@@ -102,4 +127,127 @@ test('env resources for CFN for auth and storage for api', async () => {
     },
   ];
   expect(await generateEnvVariablesForCfn(contextStub, resources, {})).toMatchSnapshot();
+});
+
+describe('askExecRolePermissionsQuestions', () => {
+  beforeEach(() => {
+    const stateManagerMock = stateManager as jest.Mocked<typeof stateManager>;
+    stateManagerMock.getMeta.mockReturnValue({
+      providers: {
+        awscloudformation: {},
+      },
+      function: {
+        lambda1: {
+          service: 'Lambda',
+          providerPlugin: 'awscloudformation',
+        },
+        lambda2: {
+          service: 'Lambda',
+          providerPlugin: 'awscloudformation',
+          lastPushTimeStamp: '2021-07-12T00:41:17.966Z',
+        },
+      },
+      auth: {
+        authResourceName: {
+          service: 'Cognito',
+          serviceType: 'imported',
+          providerPlugin: 'awscloudformation',
+        },
+      },
+      storage: {
+        s3Bucket: {
+          service: 'S3',
+          serviceType: 'imported',
+          providerPlugin: 'awscloudformation',
+        },
+      },
+    });
+  });
+
+  it('returns permissions for function that be about to add right', async () => {
+    const inquirerMock = inquirer as jest.Mocked<typeof inquirer>;
+
+    inquirerMock.prompt.mockResolvedValueOnce({ categories: ['function'] });
+    inquirerMock.prompt.mockResolvedValueOnce({ resources: ['lambda2'] });
+    inquirerMock.prompt.mockResolvedValueOnce({ options: [CRUDOperation.READ] });
+
+    const resourceAttributes = [
+      {
+        attributes: ['Name'],
+        category: 'function',
+        resourceName: 'lambda2',
+      },
+    ];
+    const permissionPolicies = [
+      {
+        Action: ['lambda:Get*', 'lambda:List*', 'lambda:Invoke*'],
+        Effect: 'Allow',
+        Resource: [
+          {
+            'Fn::Join': [
+              '',
+              ['arn:aws:lambda:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':function:', { Ref: 'functionlambda2Name' }],
+            ],
+          },
+        ],
+      },
+    ];
+    const contextStub = {
+      print: {
+        warning: jest.fn(),
+        info: jest.fn(),
+      },
+      usageData: {
+        emitError: jest.fn(),
+      },
+      amplify: {
+        invokePluginMethod: jest.fn().mockResolvedValueOnce({ permissionPolicies, resourceAttributes }),
+      },
+    };
+    const answers = await askExecRolePermissionsQuestions(contextStub as unknown as $TSContext, 'lambda3', undefined);
+    expect(answers).toMatchSnapshot();
+  });
+
+  it('returns permissions for exists function', async () => {
+    const inquirerMock = inquirer as jest.Mocked<typeof inquirer>;
+
+    inquirerMock.prompt.mockResolvedValueOnce({ categories: ['function'] });
+    inquirerMock.prompt.mockResolvedValueOnce({ options: [CRUDOperation.READ] });
+
+    const resourceAttributes = [
+      {
+        attributes: ['Name'],
+        category: 'function',
+        resourceName: 'lambda2',
+      },
+    ];
+    const permissionPolicies = [
+      {
+        Action: ['lambda:Get*', 'lambda:List*', 'lambda:Invoke*'],
+        Effect: 'Allow',
+        Resource: [
+          {
+            'Fn::Join': [
+              '',
+              ['arn:aws:lambda:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':function:', { Ref: 'functionlambda2Name' }],
+            ],
+          },
+        ],
+      },
+    ];
+    const contextStub = {
+      print: {
+        warning: jest.fn(),
+        info: jest.fn(),
+      },
+      usageData: {
+        emitError: jest.fn(),
+      },
+      amplify: {
+        invokePluginMethod: jest.fn().mockResolvedValueOnce({ permissionPolicies, resourceAttributes }),
+      },
+    };
+    const answers = await askExecRolePermissionsQuestions(contextStub as unknown as $TSContext, 'lambda1', undefined);
+    expect(answers).toMatchSnapshot();
+  });
 });
