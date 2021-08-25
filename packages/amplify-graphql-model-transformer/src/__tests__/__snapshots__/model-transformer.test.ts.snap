@@ -1,5 +1,201 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`ModelTransformer:  should filter known input types from create and update input fields 1`] = `
+"
+type Test {
+  id: ID!
+  email: Email
+  createdAt: AWSDateTime!
+  updatedAt: AWSDateTime!
+}
+
+type Email {
+  id: ID!
+  createdAt: AWSDateTime!
+  updatedAt: AWSDateTime!
+}
+
+input ModelStringInput {
+  ne: String
+  eq: String
+  le: String
+  lt: String
+  ge: String
+  gt: String
+  contains: String
+  notContains: String
+  between: [String]
+  beginsWith: String
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+  size: ModelSizeInput
+}
+
+input ModelIntInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+}
+
+input ModelFloatInput {
+  ne: Float
+  eq: Float
+  le: Float
+  lt: Float
+  ge: Float
+  gt: Float
+  between: [Float]
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+}
+
+input ModelBooleanInput {
+  ne: Boolean
+  eq: Boolean
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+}
+
+input ModelIDInput {
+  ne: ID
+  eq: ID
+  le: ID
+  lt: ID
+  ge: ID
+  gt: ID
+  contains: ID
+  notContains: ID
+  between: [ID]
+  beginsWith: ID
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+  size: ModelSizeInput
+}
+
+enum ModelAttributeTypes {
+  binary
+  binarySet
+  bool
+  list
+  map
+  number
+  numberSet
+  string
+  stringSet
+  _null
+}
+
+input ModelSizeInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+}
+
+enum ModelSortDirection {
+  ASC
+  DESC
+}
+
+type Query {
+  getTest(id: ID!): Test
+  listTests(filter: ModelTestFilterInput, limit: Int, nextToken: String): ModelTestConnection
+  getEmail(id: ID!): Email
+  listEmails(filter: ModelEmailFilterInput, limit: Int, nextToken: String): ModelEmailConnection
+}
+
+type ModelTestConnection {
+  items: [Test]
+  nextToken: String
+}
+
+input ModelTestFilterInput {
+  id: ModelIDInput
+  and: [ModelTestFilterInput]
+  or: [ModelTestFilterInput]
+  not: ModelTestFilterInput
+}
+
+input ModelTestConditionInput {
+  id: ModelIDInput
+  and: [ModelTestConditionInput]
+  or: [ModelTestConditionInput]
+  not: ModelTestConditionInput
+}
+
+input CreateTestInput {
+  id: ID
+}
+
+type Mutation {
+  createTest(input: CreateTestInput!, condition: ModelTestConditionInput): Test
+  updateTest(input: UpdateTestInput!, condition: ModelTestConditionInput): Test
+  deleteTest(input: DeleteTestInput!, condition: ModelTestConditionInput): Test
+  createEmail(input: CreateEmailInput!, condition: ModelEmailConditionInput): Email
+  updateEmail(input: UpdateEmailInput!, condition: ModelEmailConditionInput): Email
+  deleteEmail(input: DeleteEmailInput!, condition: ModelEmailConditionInput): Email
+}
+
+input UpdateTestInput {
+  id: ID!
+}
+
+input DeleteTestInput {
+  id: ID!
+}
+
+type Subscription {
+  onCreateTest: Test @aws_subscribe(mutations: [\\"createTest\\"])
+  onUpdateTest: Test @aws_subscribe(mutations: [\\"updateTest\\"])
+  onDeleteTest: Test @aws_subscribe(mutations: [\\"deleteTest\\"])
+  onCreateEmail: Email @aws_subscribe(mutations: [\\"createEmail\\"])
+  onUpdateEmail: Email @aws_subscribe(mutations: [\\"updateEmail\\"])
+  onDeleteEmail: Email @aws_subscribe(mutations: [\\"deleteEmail\\"])
+}
+
+type ModelEmailConnection {
+  items: [Email]
+  nextToken: String
+}
+
+input ModelEmailFilterInput {
+  id: ModelIDInput
+  and: [ModelEmailFilterInput]
+  or: [ModelEmailFilterInput]
+  not: ModelEmailFilterInput
+}
+
+input ModelEmailConditionInput {
+  id: ModelIDInput
+  and: [ModelEmailConditionInput]
+  or: [ModelEmailConditionInput]
+  not: ModelEmailConditionInput
+}
+
+input CreateEmailInput {
+  id: ID
+}
+
+input UpdateEmailInput {
+  id: ID!
+}
+
+input DeleteEmailInput {
+  id: ID!
+}
+
+"
+`;
+
 exports[`ModelTransformer:  should have timestamps as nullable fields when the type makes it non-nullable 1`] = `
 "
 type Post {
