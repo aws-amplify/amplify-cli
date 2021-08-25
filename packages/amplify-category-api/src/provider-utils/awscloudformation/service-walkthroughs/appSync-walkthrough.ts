@@ -21,7 +21,6 @@ import {
   $TSContext,
   open,
 } from 'amplify-cli-core';
-import { getAppSyncApiKeys } from '../../../../../amplify-provider-awscloudformation/lib/utility-functions'
 
 const serviceName = 'AppSync';
 const elasticContainerServiceName = 'ElasticContainer';
@@ -476,6 +475,12 @@ export const updateWalkthrough = async (context): Promise<UpdateApiRequest> => {
 };
 
 async function displayApiInformation(context, resource, project) {
+  let authModes: string[] = [];
+  authModes.push(`- Default: ${await displayAuthMode(context, resource, resource.output.authConfig.defaultAuthentication.authenticationType)}`);
+  await resource.output.authConfig.additionalAuthenticationProviders.map(async (authMode) => {
+    authModes.push(`- ${await displayAuthMode(context, resource, authMode.authenticationType)}`);
+  });
+
   context.print.info('');
 
   context.print.success('General information');
@@ -484,10 +489,7 @@ async function displayApiInformation(context, resource, project) {
   context.print.info('');
 
   context.print.success('Authorization modes');
-  context.print.info(`- Default: ${await displayAuthMode(context, resource, resource.output.authConfig.defaultAuthentication.authenticationType)}`);
-  await resource.output.authConfig.additionalAuthenticationProviders.map(async (authMode) => {
-    context.print.info(`- ${await displayAuthMode(context, resource, authMode.authenticationType)}`);
-  });
+  authModes.forEach(authMode => context.print.info(authMode));
   context.print.info('');
 
   context.print.success('Conflict detection');
@@ -502,7 +504,9 @@ async function displayApiInformation(context, resource, project) {
 
 async function displayAuthMode(context, resource, authMode) {
   if(authMode == 'API_KEY' && resource.output.GraphQLAPIKeyOutput) {
-    let { apiKeys } = await getAppSyncApiKeys(context, {apiId: resource.output.GraphQLAPIIdOutput});
+    let { apiKeys } = await context.amplify.executeProviderUtils(context, 'awscloudformation', 'getAppSyncApiKeys', {
+      apiId: resource.output.GraphQLAPIIdOutput,
+    });
     let apiKeyExpires = apiKeys.find(key => key.id == resource.output.GraphQLAPIKeyOutput)?.expires;
     if(!apiKeyExpires) {
       return authProviderChoices.find(choice => choice.value === authMode).name;
