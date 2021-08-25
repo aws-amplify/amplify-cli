@@ -64,7 +64,6 @@
     "@graphql-tools/merge": "^6.0.18",
     "amplify-cli-core": "1.26.0",
     "amplify-util-headless-input": "1.5.3",
-    "amplify-provider-awscloudformation": "4.56.1",
     "chalk": "^4.1.1",
     "constructs": "^3.2.0",
     "fs-extra": "^8.1.0",
