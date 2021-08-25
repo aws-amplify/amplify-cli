@@ -56,9 +56,11 @@ const {
 } = Constants;
 export class ResourceExport extends ResourceDeployer {
   exportDirectoryPath: string;
+  parametersToKeepInCfn: string[];
   constructor(context: $TSContext, exportDirectoryPath: string) {
     super(context, ResourceDeployType.Export);
     this.exportDirectoryPath = exportDirectoryPath;
+    this.parametersToKeepInCfn = ['authRoleArn', 'unauthRoleArn'];
   }
 
   async packageBuildWriteResources(deploymentResources: DeploymentResources): Promise<PackagedResourceDefinition[]> {
@@ -157,6 +159,11 @@ export class ResourceExport extends ResourceDeployer {
           resource.packagerParams.zipFilename,
         );
         await this.copyResource(resource.packagerParams.zipFilePath, destinationPath);
+      } else {
+        if (resource.category === FUNCTION_CATEGORY.NAME && resource.service === FUNCTION_CATEGORY.SERVICE.LAMBDA_LAYER) {
+          const s3instance = await S3.getInstance(this.context);
+          await downloadZip();
+        }
       }
       if (resource.category === FUNCTION_CATEGORY.NAME && resource.service === FUNCTION_CATEGORY.SERVICE.LAMBDA_LAYER) {
         await this.downloadLambdaLayerContent(resource);
