@@ -355,6 +355,35 @@ input EntityMetadataInput {
   isActive: Boolean
 }
 
+type ModelPostConnection {
+  items: [Post]
+  nextToken: String
+}
+
+input ModelEpisodeListInput {
+  eq: [Episode]
+  ne: [Episode]
+  contains: Episode
+  notContains: Episode
+}
+
+input ModelEpisodeInput {
+  eq: Episode
+  ne: Episode
+}
+
+input ModelPostFilterInput {
+  id: ModelIDInput
+  title: ModelStringInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
+  appearsIn: ModelEpisodeListInput
+  episode: ModelEpisodeInput
+  and: [ModelPostFilterInput]
+  or: [ModelPostFilterInput]
+  not: ModelPostFilterInput
+}
+
 type Query {
   getPost(id: ID!): Post
   listPosts(filter: ModelPostFilterInput, limit: Int, nextToken: String): ModelPostConnection
@@ -366,35 +395,12 @@ type Query {
   listComments(filter: ModelCommentFilterInput, limit: Int, nextToken: String): ModelCommentConnection
 }
 
-type ModelPostConnection {
-  items: [Post]
-  nextToken: String
-}
-
-input ModelPostFilterInput {
-  id: ModelIDInput
-  title: ModelStringInput
-  createdAt: ModelStringInput
-  updatedAt: ModelStringInput
-  appearsIn: Episode
-  episode: Episode
-  and: [ModelPostFilterInput]
-  or: [ModelPostFilterInput]
-  not: ModelPostFilterInput
-}
-
-input ModelEpisodeInput {
-  eq: Episode
-  ne: Episode
-}
-
 input ModelPostConditionInput {
-  id: ModelIDInput
   title: ModelStringInput
   createdAt: ModelStringInput
   updatedAt: ModelStringInput
-  appearsIn: Episode
-  episode: Episode
+  appearsIn: ModelEpisodeListInput
+  episode: ModelEpisodeInput
   and: [ModelPostConditionInput]
   or: [ModelPostConditionInput]
   not: ModelPostConditionInput
@@ -411,21 +417,6 @@ input CreatePostInput {
   episode: Episode
 }
 
-type Mutation {
-  createPost(input: CreatePostInput!, condition: ModelPostConditionInput): Post
-  updatePost(input: UpdatePostInput!, condition: ModelPostConditionInput): Post
-  deletePost(input: DeletePostInput!, condition: ModelPostConditionInput): Post
-  createAuthor(input: CreateAuthorInput!, condition: ModelAuthorConditionInput): Author
-  updateAuthor(input: UpdateAuthorInput!, condition: ModelAuthorConditionInput): Author
-  deleteAuthor(input: DeleteAuthorInput!, condition: ModelAuthorConditionInput): Author
-  createRequire(input: CreateRequireInput!, condition: ModelRequireConditionInput): Require
-  updateRequire(input: UpdateRequireInput!, condition: ModelRequireConditionInput): Require
-  deleteRequire(input: DeleteRequireInput!, condition: ModelRequireConditionInput): Require
-  createComment(input: CreateCommentInput!, condition: ModelCommentConditionInput): Comment
-  updateComment(input: UpdateCommentInput!, condition: ModelCommentConditionInput): Comment
-  deleteComment(input: DeleteCommentInput!, condition: ModelCommentConditionInput): Comment
-}
-
 input UpdatePostInput {
   id: ID!
   title: String
@@ -439,6 +430,21 @@ input UpdatePostInput {
 
 input DeletePostInput {
   id: ID!
+}
+
+type Mutation {
+  createPost(input: CreatePostInput!, condition: ModelPostConditionInput): Post
+  updatePost(input: UpdatePostInput!, condition: ModelPostConditionInput): Post
+  deletePost(input: DeletePostInput!, condition: ModelPostConditionInput): Post
+  createAuthor(input: CreateAuthorInput!, condition: ModelAuthorConditionInput): Author
+  updateAuthor(input: UpdateAuthorInput!, condition: ModelAuthorConditionInput): Author
+  deleteAuthor(input: DeleteAuthorInput!, condition: ModelAuthorConditionInput): Author
+  createRequire(input: CreateRequireInput!, condition: ModelRequireConditionInput): Require
+  updateRequire(input: UpdateRequireInput!, condition: ModelRequireConditionInput): Require
+  deleteRequire(input: DeleteRequireInput!, condition: ModelRequireConditionInput): Require
+  createComment(input: CreateCommentInput!, condition: ModelCommentConditionInput): Comment
+  updateComment(input: UpdateCommentInput!, condition: ModelCommentConditionInput): Comment
+  deleteComment(input: DeleteCommentInput!, condition: ModelCommentConditionInput): Comment
 }
 
 type Subscription {
@@ -470,7 +476,6 @@ input ModelAuthorFilterInput {
 }
 
 input ModelAuthorConditionInput {
-  id: ModelIDInput
   name: ModelStringInput
   and: [ModelAuthorConditionInput]
   or: [ModelAuthorConditionInput]
@@ -510,7 +515,6 @@ input ModelRequireFilterInput {
 }
 
 input ModelRequireConditionInput {
-  id: ModelIDInput
   requiredField: ModelStringInput
   notRequiredField: ModelStringInput
   and: [ModelRequireConditionInput]
@@ -550,7 +554,6 @@ input ModelCommentFilterInput {
 }
 
 input ModelCommentConditionInput {
-  id: ModelIDInput
   title: ModelStringInput
   content: ModelStringInput
   updatedOn: ModelIntInput
@@ -680,11 +683,6 @@ enum ModelSortDirection {
   DESC
 }
 
-type Query {
-  getPost(id: ID!): Post
-  listPosts(filter: ModelPostFilterInput, limit: Int, nextToken: String): ModelPostConnection
-}
-
 type ModelPostConnection {
   items: [Post]
   nextToken: String
@@ -700,8 +698,12 @@ input ModelPostFilterInput {
   not: ModelPostFilterInput
 }
 
+type Query {
+  getPost(id: ID!): Post
+  listPosts(filter: ModelPostFilterInput, limit: Int, nextToken: String): ModelPostConnection
+}
+
 input ModelPostConditionInput {
-  id: ModelIDInput
   str: ModelStringInput
   createdAt: ModelStringInput
   updatedAt: ModelStringInput
@@ -717,12 +719,6 @@ input CreatePostInput {
   updatedAt: AWSDateTime
 }
 
-type Mutation {
-  createPost(input: CreatePostInput!, condition: ModelPostConditionInput): Post
-  updatePost(input: UpdatePostInput!, condition: ModelPostConditionInput): Post
-  deletePost(input: DeletePostInput!, condition: ModelPostConditionInput): Post
-}
-
 input UpdatePostInput {
   id: ID!
   str: String
@@ -732,6 +728,12 @@ input UpdatePostInput {
 
 input DeletePostInput {
   id: ID!
+}
+
+type Mutation {
+  createPost(input: CreatePostInput!, condition: ModelPostConditionInput): Post
+  updatePost(input: UpdatePostInput!, condition: ModelPostConditionInput): Post
+  deletePost(input: DeletePostInput!, condition: ModelPostConditionInput): Post
 }
 
 type Subscription {
@@ -1256,11 +1258,6 @@ enum ModelSortDirection {
   DESC
 }
 
-type Query {
-  getPost(id: ID!): Post
-  listPosts(filter: ModelPostFilterInput, limit: Int, nextToken: String): ModelPostConnection
-}
-
 type ModelPostConnection {
   items: [Post]
   nextToken: String
@@ -1276,8 +1273,12 @@ input ModelPostFilterInput {
   not: ModelPostFilterInput
 }
 
+type Query {
+  getPost(id: ID!): Post
+  listPosts(filter: ModelPostFilterInput, limit: Int, nextToken: String): ModelPostConnection
+}
+
 input ModelPostConditionInput {
-  id: ModelIDInput
   str: ModelStringInput
   createdAt: ModelIntInput
   updatedAt: ModelIntInput
@@ -1293,12 +1294,6 @@ input CreatePostInput {
   updatedAt: AWSTimestamp
 }
 
-type Mutation {
-  createPost(input: CreatePostInput!, condition: ModelPostConditionInput): Post
-  updatePost(input: UpdatePostInput!, condition: ModelPostConditionInput): Post
-  deletePost(input: DeletePostInput!, condition: ModelPostConditionInput): Post
-}
-
 input UpdatePostInput {
   id: ID!
   str: String
@@ -1308,6 +1303,12 @@ input UpdatePostInput {
 
 input DeletePostInput {
   id: ID!
+}
+
+type Mutation {
+  createPost(input: CreatePostInput!, condition: ModelPostConditionInput): Post
+  updatePost(input: UpdatePostInput!, condition: ModelPostConditionInput): Post
+  deletePost(input: DeletePostInput!, condition: ModelPostConditionInput): Post
 }
 
 type Subscription {
@@ -1636,11 +1637,6 @@ enum ModelSortDirection {
   DESC
 }
 
-type Query {
-  getPost(id: ID!): Post
-  listPosts(filter: ModelPostFilterInput, limit: Int, nextToken: String): ModelPostConnection
-}
-
 type ModelPostConnection {
   items: [Post]
   nextToken: String
@@ -1654,8 +1650,12 @@ input ModelPostFilterInput {
   not: ModelPostFilterInput
 }
 
+type Query {
+  getPost(id: ID!): Post
+  listPosts(filter: ModelPostFilterInput, limit: Int, nextToken: String): ModelPostConnection
+}
+
 input ModelPostConditionInput {
-  id: ModelIDInput
   str: ModelStringInput
   and: [ModelPostConditionInput]
   or: [ModelPostConditionInput]
@@ -1667,12 +1667,6 @@ input CreatePostInput {
   str: String
 }
 
-type Mutation {
-  createPost(input: CreatePostInput!, condition: ModelPostConditionInput): Post
-  updatePost(input: UpdatePostInput!, condition: ModelPostConditionInput): Post
-  deletePost(input: DeletePostInput!, condition: ModelPostConditionInput): Post
-}
-
 input UpdatePostInput {
   id: ID!
   str: String
@@ -1680,6 +1674,12 @@ input UpdatePostInput {
 
 input DeletePostInput {
   id: ID!
+}
+
+type Mutation {
+  createPost(input: CreatePostInput!, condition: ModelPostConditionInput): Post
+  updatePost(input: UpdatePostInput!, condition: ModelPostConditionInput): Post
+  deletePost(input: DeletePostInput!, condition: ModelPostConditionInput): Post
 }
 
 type Subscription {
@@ -2010,11 +2010,6 @@ enum ModelSortDirection {
   DESC
 }
 
-type Query {
-  getPost(id: ID!): Post
-  listPosts(filter: ModelPostFilterInput, limit: Int, nextToken: String): ModelPostConnection
-}
-
 type ModelPostConnection {
   items: [Post]
   nextToken: String
@@ -2028,8 +2023,12 @@ input ModelPostFilterInput {
   not: ModelPostFilterInput
 }
 
+type Query {
+  getPost(id: ID!): Post
+  listPosts(filter: ModelPostFilterInput, limit: Int, nextToken: String): ModelPostConnection
+}
+
 input ModelPostConditionInput {
-  id: ModelIDInput
   str: ModelStringInput
   and: [ModelPostConditionInput]
   or: [ModelPostConditionInput]
@@ -2041,12 +2040,6 @@ input CreatePostInput {
   str: String
 }
 
-type Mutation {
-  createPost(input: CreatePostInput!, condition: ModelPostConditionInput): Post
-  updatePost(input: UpdatePostInput!, condition: ModelPostConditionInput): Post
-  deletePost(input: DeletePostInput!, condition: ModelPostConditionInput): Post
-}
-
 input UpdatePostInput {
   id: ID!
   str: String
@@ -2054,6 +2047,12 @@ input UpdatePostInput {
 
 input DeletePostInput {
   id: ID!
+}
+
+type Mutation {
+  createPost(input: CreatePostInput!, condition: ModelPostConditionInput): Post
+  updatePost(input: UpdatePostInput!, condition: ModelPostConditionInput): Post
+  deletePost(input: DeletePostInput!, condition: ModelPostConditionInput): Post
 }
 
 type Subscription {
