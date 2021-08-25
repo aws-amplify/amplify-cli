@@ -49,10 +49,6 @@
       "json",
       "node"
     ],
-    "collectCoverage": true,
-    "coverageReporters": [
-      "json",
-      "html"
-    ]
+    "collectCoverage": true
   }
 }

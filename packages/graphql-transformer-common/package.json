@@ -33,6 +33,7 @@
     "@types/node": "^12.12.6"
   },
   "jest": {
+    "collectCoverage": true,
     "transform": {
       "^.+\\.tsx?$": "ts-jest"
     },
