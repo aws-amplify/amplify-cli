@@ -106,13 +106,6 @@ enum ModelSortDirection {
   DESC
 }
 
-type Query {
-  getTest(id: ID!): Test
-  listTests(filter: ModelTestFilterInput, limit: Int, nextToken: String): ModelTestConnection
-  getEmail(id: ID!): Email
-  listEmails(filter: ModelEmailFilterInput, limit: Int, nextToken: String): ModelEmailConnection
-}
-
 type ModelTestConnection {
   items: [Test]
   nextToken: String
@@ -125,8 +118,14 @@ input ModelTestFilterInput {
   not: ModelTestFilterInput
 }
 
+type Query {
+  getTest(id: ID!): Test
+  listTests(filter: ModelTestFilterInput, limit: Int, nextToken: String): ModelTestConnection
+  getEmail(id: ID!): Email
+  listEmails(filter: ModelEmailFilterInput, limit: Int, nextToken: String): ModelEmailConnection
+}
+
 input ModelTestConditionInput {
-  id: ModelIDInput
   and: [ModelTestConditionInput]
   or: [ModelTestConditionInput]
   not: ModelTestConditionInput
@@ -136,6 +135,14 @@ input CreateTestInput {
   id: ID
 }
 
+input UpdateTestInput {
+  id: ID!
+}
+
+input DeleteTestInput {
+  id: ID!
+}
+
 type Mutation {
   createTest(input: CreateTestInput!, condition: ModelTestConditionInput): Test
   updateTest(input: UpdateTestInput!, condition: ModelTestConditionInput): Test
@@ -143,14 +150,6 @@ type Mutation {
   createEmail(input: CreateEmailInput!, condition: ModelEmailConditionInput): Email
   updateEmail(input: UpdateEmailInput!, condition: ModelEmailConditionInput): Email
   deleteEmail(input: DeleteEmailInput!, condition: ModelEmailConditionInput): Email
-}
-
-input UpdateTestInput {
-  id: ID!
-}
-
-input DeleteTestInput {
-  id: ID!
 }
 
 type Subscription {
@@ -175,7 +174,6 @@ input ModelEmailFilterInput {
 }
 
 input ModelEmailConditionInput {
-  id: ModelIDInput
   and: [ModelEmailConditionInput]
   or: [ModelEmailConditionInput]
   not: ModelEmailConditionInput
@@ -196,7 +194,7 @@ input DeleteEmailInput {
 "
 `;
 
-exports[`ModelTransformer:  should have timestamps as nullable fields when the type makes it non-nullable 1`] = `
+exports[`ModelTransformer:  should generate enum input objects 1`] = `
 "
 type Post {
   id: ID!

@@ -379,9 +379,9 @@ function generateFilterInputs(config: IndexDirectiveConfiguration, ctx: Transfor
 }
 
 function makeModelXFilterInputObject(config: IndexDirectiveConfiguration, ctx: TransformerContextProvider): InputObjectTypeDefinitionNode {
+  const supportsConditions = true;
   const { object } = config;
   const name = ModelResourceIDs.ModelFilterInputTypeName(object.name.value);
-  const supportsConditions = true;
   const fields = object
     .fields!.filter((field: FieldDefinitionNode) => {
       const fieldType = ctx.output.getType(getBaseType(field.type));
