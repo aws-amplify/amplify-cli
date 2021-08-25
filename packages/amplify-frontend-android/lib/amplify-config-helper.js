@@ -1,5 +1,3 @@
-import _ from 'lodash';
-
 function generateConfig(context, newAWSConfig) {
   const metadata = context.amplify.getProjectMeta();
   const amplifyConfig = {
