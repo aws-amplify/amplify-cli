@@ -45,6 +45,7 @@ import {
   makeDeleteInputField,
   makeListQueryFilterInput,
   makeListQueryModel,
+  makeModelSortDirectionEnumObject,
   makeMutationConditionInput,
   makeUpdateInputField,
 } from './graphql-types';
@@ -192,11 +193,10 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
   };
 
   transformSchema = (ctx: TransformerTransformSchemaStepContextProvider): void => {
-    // Create Non Model input types
-
     // add the model input conditions
     addModelConditionInputs(ctx);
 
+    this.ensureModelSortDirectionEnum(ctx);
     for (const type of this.typesWithModelDirective) {
       const def = ctx.output.getObject(type)!;
       // add Non Model type inputs
@@ -951,4 +951,12 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
 
     return subscriptionToMutationsMap;
   };
+
+  private ensureModelSortDirectionEnum(ctx: TransformerValidationStepContextProvider): void {
+    if (!ctx.output.hasType('ModelSortDirection')) {
+      const modelSortDirection = makeModelSortDirectionEnumObject();
+
+      ctx.output.addEnum(modelSortDirection);
+    }
+  }
 }
