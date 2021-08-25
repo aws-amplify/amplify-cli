@@ -66,6 +66,44 @@ const conflictResolutionHanlderChoices = [
   },
 ];
 
+const schemaTemplatesV1 = [
+  {
+    name: 'Single object with fields (e.g., “Todo” with ID, name, description)',
+    value: 'single-object-schema.graphql',
+  },
+  {
+    name: 'One-to-many relationship (e.g., “Blogs” with “Posts” and “Comments”)',
+    value: 'many-relationship-schema.graphql',
+  },
+  {
+    name: 'Objects with fine-grained access control (e.g., a project management app with owner-based authorization)',
+    value: 'single-object-auth-schema.graphql',
+  },
+  {
+    name: 'Blank Schema',
+    value: 'blank-schema.graphql',
+  },
+];
+
+const schemaTemplatesV2 = [
+  {
+    name: 'Single object with fields (e.g., “Todo” with ID, name, description)',
+    value: 'single-object-schema-v2.graphql',
+  },
+  {
+    name: 'One-to-many relationship (e.g., “Blogs” with “Posts” and “Comments”)',
+    value: 'many-relationship-schema-v2.graphql',
+  },
+  {
+    name: 'Objects with fine-grained access control (e.g., a project management app with owner-based authorization)',
+    value: 'single-object-auth-schema-v2.graphql',
+  },
+  {
+    name: 'Blank Schema',
+    value: 'blank-schema.graphql',
+  },
+];
+
 export const openConsole = async (context: $TSContext) => {
   const amplifyMeta = stateManager.getMeta();
   const categoryAmplifyMeta = amplifyMeta[category];
@@ -355,11 +393,12 @@ export const serviceWalkthrough = async (context: $TSContext, defaultValuesFilen
   let askToEdit = true;
 
   // Schema template selection
+  const schemaTemplateOptions = FeatureFlags.getBoolean('graphQLTransformer.useExperimentalPipelinedTransformer') ? schemaTemplatesV2 : schemaTemplatesV1;
   const templateSelectionQuestion = {
     type: inputs[4].type,
     name: inputs[4].key,
     message: inputs[4].question,
-    choices: inputs[4].options.filter(templateSchemaFilter(basicInfoAnswers.output.authConfig)),
+    choices: schemaTemplateOptions.filter(templateSchemaFilter(basicInfoAnswers.output.authConfig)),
     validate: amplify.inputValidation(inputs[4]),
   };
 
@@ -903,7 +942,7 @@ const buildPolicyResource = (resourceName: string, path: string | null) => {
 const templateSchemaFilter = authConfig => {
   const authIncludesCognito = getAuthTypes(authConfig).includes('AMAZON_COGNITO_USER_POOLS');
   return (templateOption: ListChoiceOptions): boolean =>
-    authIncludesCognito || templateOption.value !== 'single-object-auth-schema.graphql';
+    authIncludesCognito || templateOption.name !== 'Objects with fine-grained access control (e.g., a project management app with owner-based authorization)';
 };
 
 const getAuthTypes = authConfig => {
