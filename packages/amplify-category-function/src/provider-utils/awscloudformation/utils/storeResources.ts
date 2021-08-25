@@ -16,6 +16,7 @@ import { createLayerConfiguration, loadLayerParametersJson, saveLayerPermissions
 import { LayerParameters, LayerRuntime, LayerVersionMetadata } from './layerParams';
 import { removeLayerFromTeamProviderInfo } from './layerMigrationUtils';
 import { saveEnvironmentVariables } from './environmentVariablesHelper';
+import { Template } from 'cloudform-types';
 
 // handling both FunctionParameters and FunctionTriggerParameters here is a hack
 // ideally we refactor the auth trigger flows to use FunctionParameters directly and get rid of FunctionTriggerParameters altogether
@@ -368,6 +369,12 @@ function saveCFNFileWithLayerVersion(
   JSONUtilities.writeJson(path.join(layerDirPath, getCfnTemplateFileName(parameters.layerName)), cfnTemplate);
 
   return cfnTemplate;
+}
+
+export function getLayerTemplate(resourceName: string): Template {
+  const backendDir = pathManager.getBackendDirPath();
+  const layerPath = path.join(backendDir, categoryName, resourceName, getCfnTemplateFileName(resourceName));
+  return JSONUtilities.readJson<Template>(layerPath);
 }
 
 const getCfnTemplateFileName = (layerName: string) => `${layerName}${cfnTemplateSuffix}`;
