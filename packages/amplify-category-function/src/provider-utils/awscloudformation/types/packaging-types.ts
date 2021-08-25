@@ -12,4 +12,5 @@ export type PackageRequestMeta = ResourceTuple & {
 export type Packager = (
   context: $TSContext,
   resource: PackageRequestMeta,
+  isExport?: boolean,
 ) => Promise<{ newPackageCreated: boolean; zipFilename: string; zipFilePath: string }>;
