@@ -80,7 +80,7 @@ export async function getPermissionPolicies(context: $TSContext, resourceOpsMapp
         } else {
           permissionPolicies.push(policy);
         }
-        resourceAttributes.push({ resourceName, attributes, categoryName });
+        resourceAttributes.push({ resourceName, attributes, category: categoryName });
       } else {
         printer.error(`Provider not configured for ${categoryName}: ${resourceName}`);
       }
