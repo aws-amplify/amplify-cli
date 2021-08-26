@@ -10,14 +10,13 @@ exports.handler = async function (event, context) {
     const userPoolConfig = await cognitoClient.describeUserPool({ UserPoolId: userPoolId }).promise();
     const userPoolParams = userPoolConfig.UserPool;
     // update userPool params
+
     const updateUserPoolConfig = {
       UserPoolId: userPoolParams.Id,
-      policies: userPoolParams.Policies,
+      Policies: userPoolParams.Policies,
       SmsVerificationMessage: userPoolParams.SmsVerificationMessage,
       AccountRecoverySetting: userPoolParams.AccountRecoverySetting,
       AdminCreateUserConfig: userPoolParams.AdminCreateUserConfig,
-      AliasAttributes: userPoolParams.AliasAttributes,
-      Arn: userPoolParams.Arn,
       AutoVerifiedAttributes: userPoolParams.AutoVerifiedAttributes,
       EmailConfiguration: userPoolParams.EmailConfiguration,
       EmailVerificationMessage: userPoolParams.EmailVerificationMessage,
@@ -30,6 +29,15 @@ exports.handler = async function (event, context) {
       UserPoolTags: userPoolParams.UserPoolTags,
       UserPoolAddOns: userPoolParams.UserPoolAddOns,
     };
+
+    // removing undefined keys
+    Object.keys(updateUserPoolConfig).forEach(key => updateUserPoolConfig[key] === undefined && delete updateUserPoolConfig[key]);
+
+    /*removing UnusedAccountValidityDays as deprecated
+    InvalidParameterException: Please use TemporaryPasswordValidityDays in PasswordPolicy instead of UnusedAccountValidityDays
+    */
+    delete userPoolParams.AdminCreateUserConfig.UnusedAccountValidityDays;
+
     lambdaConfig.forEach(lambda => (config[`${lambda.triggerType}`] = lambda.lambdaFunctionArn));
     if (event.RequestType == 'Delete') {
       try {

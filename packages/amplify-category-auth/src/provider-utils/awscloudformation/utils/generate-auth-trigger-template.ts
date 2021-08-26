@@ -103,7 +103,7 @@ function createCustomResource(
       new iam.PolicyStatement({
         effect: iam.Effect.ALLOW,
         actions: ['cognito-idp:DescribeUserPool', 'cognito-idp:DescribeUserPoolClient', 'cognito-idp:UpdateUserPool', 'iam:PassRole'],
-        resources: [userpoolArn.valueAsString],
+        resources: ['*'],
       }),
     );
   }
