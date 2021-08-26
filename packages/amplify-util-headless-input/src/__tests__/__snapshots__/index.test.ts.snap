@@ -23,7 +23,7 @@ Object {
       ],
     },
     "resourceName": "something",
-    "serviceName": "s3",
+    "serviceName": "S3",
   },
   "version": 1,
 }

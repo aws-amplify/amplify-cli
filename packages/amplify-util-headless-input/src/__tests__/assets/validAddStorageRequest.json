@@ -1,7 +1,7 @@
 {
   "version": 1,
   "serviceConfiguration": {
-    "serviceName": "s3",
+    "serviceName": "S3",
     "permissions": {
       "auth": ["READ", "CREATE_AND_UPDATE"],
       "guest": ["READ"],

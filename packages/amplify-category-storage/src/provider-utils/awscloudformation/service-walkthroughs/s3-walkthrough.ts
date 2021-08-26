@@ -167,9 +167,7 @@ async function configure(
     }
 
     answers = await inquirer.prompt(questions);
-  }
-
-  if (parameters.resourceName) {
+  } else {
     if (parameters.selectedGuestPermissions && parameters.selectedGuestPermissions.length !== 0) {
       Object.assign(defaultValues, { storageAccess: 'authAndGuest' });
     }
