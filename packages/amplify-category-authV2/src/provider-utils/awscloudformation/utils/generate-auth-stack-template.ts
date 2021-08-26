@@ -21,6 +21,7 @@ export const generateAuthStackTemplate = async (context: $TSContext, resourceNam
         categoryName: category,
         resourceName,
         stackFileName: authCognitoStackFileName,
+        serviceName: 'cognito',
       },
       deploymentOptions: {
         rootFilePath: cfnFilePath,

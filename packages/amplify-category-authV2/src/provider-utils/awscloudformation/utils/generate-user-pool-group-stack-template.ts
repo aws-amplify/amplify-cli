@@ -1,15 +1,24 @@
-import { pathManager } from "amplify-cli-core";
+import { pathManager } from 'amplify-cli-core';
 import * as path from 'path';
 import { Template } from 'cloudform-types';
-import { AmplifyUserPoolGroupTransform, AmplifyUserPoolGroupTransformOptions, authUserPoolGroupStackFileName, CommandType } from "../auth-stack-builder/user-pool-group-stack-transform";
-import { category } from "../constants";
-
+import {
+  AmplifyUserPoolGroupTransform,
+  AmplifyUserPoolGroupTransformOptions,
+  authUserPoolGroupStackFileName,
+  CommandType,
+} from '../auth-stack-builder/user-pool-group-stack-transform';
+import { category } from '../constants';
 
 export const generateUserPoolGroupStackTemplate = async (resourceName: string): Promise<Template> => {
   try {
-
     const projectPath = pathManager.findProjectRoot();
-    const cfnFilePath = path.join(pathManager.getBackendDirPath(projectPath), category, resourceName, 'build', authUserPoolGroupStackFileName);
+    const cfnFilePath = path.join(
+      pathManager.getBackendDirPath(projectPath),
+      category,
+      resourceName,
+      'build',
+      authUserPoolGroupStackFileName,
+    );
     const overrideFnPath = path.join(pathManager.getOverrideDirPath(projectPath!, category, resourceName), 'build', 'override.js');
     const overrideDir = pathManager.getRootOverrideDirPath(projectPath!);
 
@@ -18,6 +27,7 @@ export const generateUserPoolGroupStackTemplate = async (resourceName: string): 
         categoryName: category,
         resourceName,
         stackFileName: authUserPoolGroupStackFileName,
+        serviceName: 'cognito',
       },
       deploymentOptions: {
         rootFilePath: cfnFilePath,

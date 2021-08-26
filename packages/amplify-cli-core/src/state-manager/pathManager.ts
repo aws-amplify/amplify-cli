@@ -47,6 +47,7 @@ export const PathConstants = {
   CLIJsonWithEnvironmentFileName: (env: string) => `cli.${env}.json`,
 
   CfnFileName: (resourceName: string) => `${resourceName}-awscloudformation-template.json`,
+  cliInputsFileName: 'cli-inputs.json',
 };
 
 export class PathManager {
@@ -82,6 +83,16 @@ export class PathManager {
 
   getBackendDirPath = (projectPath?: string): string =>
     this.constructPath(projectPath, [PathConstants.AmplifyDirName, PathConstants.BackendDirName]);
+
+  getCliInputsPath = (projectPath: string, category: string, resourceName: string): string => {
+    return this.constructPath(projectPath, [
+      PathConstants.AmplifyDirName,
+      PathConstants.BackendDirName,
+      category,
+      resourceName,
+      PathConstants.cliInputsFileName,
+    ]);
+  };
 
   getOverrideDirPath = (projectPath: string, category: string, resourceName: string): string => {
     return this.constructPath(projectPath, [

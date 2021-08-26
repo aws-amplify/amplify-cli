@@ -36,6 +36,7 @@ export const getAddAuthHandler = (context: any) => async (request: ServiceQuesti
     resourceName: requestWithDefaults.resourceName!,
     fileName: cliInputsPath,
     inputAuthPayload: requestWithDefaults,
+    service: 'cognito',
   });
 
   cliState.saveCliInputPayload();

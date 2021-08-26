@@ -1,27 +1,29 @@
-import { JSONUtilities, pathManager } from 'amplify-cli-core';
-import { HeadlessInputValidator, VersionedSchemaSupplier, VersionUpgradePipeline } from 'amplify-util-headless-input';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import { ServiceQuestionsResult } from '../service-walkthrough-types';
-
-export const noopUpgradePipeline: VersionUpgradePipeline = () => [];
+import { AmplifyCategories, AmplifySupportedService } from 'amplify-cli-core';
+import { JSONUtilities, pathManager } from 'amplify-cli-core';
+import { CLIInputSchemaValidator } from 'amplify-cli-core';
 
 export type AuthInputStateOptions = {
   fileName: string;
   inputAuthPayload?: ServiceQuestionsResult;
   category: string;
+  service: string;
   resourceName: string;
 };
 
 export class AuthInputState {
   static authInputState: AuthInputState;
+  _service: string;
   _filePath: string;
   _resourceName: string;
   _category: string;
-  _authInputPayload: ServiceQuestionsResult | undefined;
+  _authInputPayload?: ServiceQuestionsResult;
 
   constructor(props: AuthInputStateOptions) {
-    this._category = props.category;
+    this._category = AmplifyCategories.AUTH;
+    this._service = AmplifySupportedService.COGNITO;
     this._filePath = props.fileName;
     this._resourceName = props.resourceName;
 
@@ -34,9 +36,9 @@ export class AuthInputState {
 
     // validate cli-inputs.json
 
-    new HeadlessInputValidator(authCliInputsSchemaSupplier, noopUpgradePipeline).validate<ServiceQuestionsResult>(
-      JSON.stringify(this._authInputPayload!),
-    );
+    // validate cli-inputs.json
+    const schemaValidator = new CLIInputSchemaValidator(this._service, this._category, 'S3UserInputs');
+    schemaValidator.validateInput(JSON.stringify(this._authInputPayload!));
   }
 
   public static getInstance(props: AuthInputStateOptions): AuthInputState {
@@ -64,17 +66,3 @@ export class AuthInputState {
     }
   }
 }
-
-const authCliInputsSchemaSupplier: VersionedSchemaSupplier = (version: number) => {
-  return getSchema('ServiceQuestionsResult', 'cognito', version);
-};
-
-const getSchema = async (type: string, service: string, version: number) => {
-  try {
-    return {
-      rootSchema: await import(`amplify-category-auth/resources/schemas/${service}/${version}/${type}.schema.json`),
-    };
-  } catch (ex) {
-    return; // resolve the promise with void if the schema does not exist
-  }
-};

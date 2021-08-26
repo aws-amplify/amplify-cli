@@ -64,7 +64,7 @@ module.exports = {
   },
 
   buildOverrides: async (context, category, options) => {
-    return transformCfnWithOverrides(context, category, options);
+    return context, category, options;
   },
 
   newSecret: async (context, options) => {

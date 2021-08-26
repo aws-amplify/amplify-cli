@@ -31,6 +31,7 @@ export type ResourceConfig = {
   resourceName: string;
   categoryName: string;
   stackFileName: string;
+  serviceName: string;
 };
 
 export interface AmplifyAuthTransformOptions {
@@ -74,6 +75,7 @@ export class AmplifyAuthTransform {
       category: this._resourceConfig.categoryName,
       resourceName: this._resourceConfig.resourceName,
       fileName: this._resourceConfig.stackFileName,
+      service: this._resourceConfig.serviceName,
     });
   }
 
