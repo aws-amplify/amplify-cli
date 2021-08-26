@@ -2,7 +2,7 @@ import sequential from 'promise-sequential';
 import { initializeEnv } from '../../initialize-env';
 import { getProviderPlugins } from '../../extensions/amplify-helpers/get-provider-plugins';
 import { getEnvInfo } from '../../extensions/amplify-helpers/get-env-info';
-import { CustomIAMPolicies, JSONUtilities, pathManager, stateManager } from 'amplify-cli-core';
+import { stateManager } from 'amplify-cli-core';
 
 export const run = async context => {
   const envName = context.parameters.first;

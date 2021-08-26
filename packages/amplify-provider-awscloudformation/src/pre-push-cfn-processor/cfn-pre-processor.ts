@@ -1,42 +1,12 @@
-import { stateManager, pathManager, readCFNTemplate, writeCFNTemplate,
-  CustomIAMPolicies, CustomIAMPolicy, $TSContext } from 'amplify-cli-core';
+import { stateManager, pathManager, readCFNTemplate, writeCFNTemplate, CustomIAMPolicy, CustomPolicyFileContentConstant } from 'amplify-cli-core';
 import * as path from 'path';
 import { ProviderName as providerName } from '../constants';
 import { prePushCfnTemplateModifier } from './pre-push-cfn-modifier';
-import { Template } from 'cloudform-types';
+import { Fn, Template } from 'cloudform-types';
 import { Printer, AmplifyPrinter } from 'amplify-prompts';
 
 
 const buildDir = 'build';
-
-export const CustomPolicyFileContentConstant = {
-  customExecutionPolicyForFunction : {
-    DependsOn: ['LambdaExecutionRole'],
-    Type: 'AWS::IAM::Policy',
-    Properties: {
-      PolicyName: 'custom-lambda-execution-policy',
-      Roles: [{ Ref: 'LambdaExecutionRole' }],
-      PolicyDocument: {
-        Version: '2012-10-17',
-        Statement: [
-        ]
-      }
-    }
-  },
-  customExecutionPolicyForContainer : {
-    Type: 'AWS::IAM::Policy',
-    Properties: {
-      PolicyDocument: {
-        Statement: [
-        ],
-        Version: '2012-10-17'
-      },
-      PolicyName: 'CustomExecutionPolicyForContainer',
-      Roles: [
-      ]
-    }
-  }
-};
 
 /**
  * Runs transformations on a CFN template and returns a path to the transformed template
@@ -62,24 +32,25 @@ export async function preProcessCFNTemplate(filePath: string): Promise<string> {
 
 export async function writeCustomPoliciesToCFNTemplate(
   resourceName: string,
+  service: string,
   resourceDir: string,
   cfnFile: string,
   category: string,
   filePath: string
 ) {
   const { templateFormat, cfnTemplate } = await readCFNTemplate(path.join(resourceDir, cfnFile));
-  const customPolicies = stateManager.getCustomPolicies(category, resourceName);
+  const customPolicies = stateManager.getCustomPolicies(service, category, resourceName);
   if (!customPolicies) return;
 
-  await addCustomPoliciesToCFNTemplate(category, customPolicies, cfnTemplate, filePath, resourceName, {templateFormat} );
+  await addCustomPoliciesToCFNTemplate(service, customPolicies, cfnTemplate, filePath, resourceName, {templateFormat} );
 
 }
 
 //merge the custom IAM polciies to CFN template for lambda and API container
 
 export async function addCustomPoliciesToCFNTemplate(
-  category: string,
-  customPolicies: CustomIAMPolicies,
+  service: string,
+  customPolicies: CustomIAMPolicy[],
   cfnTemplate: Template,
   filePath: string,
   resourceName: string,
@@ -87,25 +58,25 @@ export async function addCustomPoliciesToCFNTemplate(
   ) {
   let customExecutionPolicy;
 
-  if(category === 'function') {
+  if(service === 'Lambda') {
     customExecutionPolicy = CustomPolicyFileContentConstant.customExecutionPolicyForFunction;
   }
-  if (category === 'api') {
+  if (service === 'ElasticContainer') {
     const roleName = cfnTemplate.Resources.TaskDefinition.Properties.ExecutionRoleArn["Fn::GetAtt"][0];
     customExecutionPolicy = CustomPolicyFileContentConstant.customExecutionPolicyForContainer;
-    const role = {Ref: `${roleName}`};
+    const role = Fn.Ref(roleName);
     customExecutionPolicy.Properties.Roles.push(role);
   }
 
-  for (const customPolicy of customPolicies.policies) {
+  for (const customPolicy of customPolicies) {
     validateRegexCustomPolicy(customPolicy, resourceName);
     customExecutionPolicy.Properties.PolicyDocument.Statement.push(customPolicy);
   }
 
-  if (category === 'function') {
+  if (service === 'Lambda') {
     cfnTemplate.Resources.CustomLambdaExecutionPolicy = customExecutionPolicy;
   }
-  if (category === 'api') {
+  if (service === 'ElasticContainer') {
     cfnTemplate.Resources.CustomExecutionPolicyForContainer = customExecutionPolicy;
   }
 
@@ -128,7 +99,7 @@ export function validateRegexCustomPolicy (customPolicy: CustomIAMPolicy, resour
     if (!resourceRegex.test(resource)) {
       wrongResourcesRegex.push(resource);
     }
-    if(resource === '*') {
+    if(resource.includes('*')) {
       printer.warn(`Warning: You've specified "*" as a custom IAM policy for your ${resourceName}. 
       This will give your ${resourceName} access to ALL resources in the AWS Account.`)
     }
