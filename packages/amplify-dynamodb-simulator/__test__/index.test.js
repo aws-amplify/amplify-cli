@@ -39,12 +39,17 @@ describe('emulator operations', () => {
 
   const ensureNoDbPath = () => {
     if (fs.existsSync(dbPath)) {
-      fs.removeSync(dbPath);
+      try {
+        fs.removeSync(dbPath);
+      }
+      catch(err) {
+        console.log(err);
+      }
     }
   };
 
   let emulators;
-  beforeEach(() => {
+  beforeEach(async () => {
     ensureNoDbPath();
     emulators = [];
     jest.setTimeout(40 * 1000);
@@ -52,6 +57,7 @@ describe('emulator operations', () => {
 
   afterEach(async () => {
     await Promise.all(emulators.map(emu => emu.terminate()));
+    ensureNoDbPath();
   });
 
   it('should support in memory operations', async () => {
@@ -61,18 +67,6 @@ describe('emulator operations', () => {
 
     const tables = await dynamo.listTables().promise();
     expect(tables).toEqual({ TableNames: [] });
-  });
-
-  it('should start on specific port', async () => {
-    const port = await require('portfinder').getPortPromise();
-    const emu = await ddbSimulator.launch({ port });
-    emulators.push(emu);
-    expect(emu.port).toBe(port);
-  });
-
-  it('reports on invalid dbPath values', async () => {
-    expect.assertions(1);
-    await expect(ddbSimulator.launch({ dbPath: 'dynamodb-data' })).rejects.toThrow('invalid directory for database creation');
   });
 
   it('should preserve state between restarts with dbPath', async () => {
@@ -94,5 +88,17 @@ describe('emulator operations', () => {
     expect(t).toEqual({
       TableNames: ['foo'],
     });
+  });
+
+  it('should start on specific port', async () => {
+    const port = await require('portfinder').getPortPromise();
+    const emu = await ddbSimulator.launch({ port });
+    emulators.push(emu);
+    expect(emu.port).toBe(port);
+  });
+
+  it('reports on invalid dbPath values', async () => {
+    expect.assertions(1);
+    await expect(ddbSimulator.launch({ dbPath: 'dynamodb-data' })).rejects.toThrow('invalid directory for database creation');
   });
 });
