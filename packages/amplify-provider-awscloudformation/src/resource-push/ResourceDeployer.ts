@@ -9,8 +9,6 @@ import {
   writeCFNTemplate,
 } from 'amplify-cli-core';
 import _ from 'lodash';
-import * as path from 'path';
-import * as fs from 'fs-extra';
 import { legacyLayerMigration, prePushLambdaLayerPrompt } from '../lambdaLayerInvocations';
 import { formNestedStack, getCfnFiles, updateStackForAPIMigration } from '../push-resources';
 import { transformGraphQLSchema } from '../transform-graphql-schema';
@@ -41,7 +39,7 @@ export abstract class ResourceDeployer {
   protected context: $TSContext;
   protected amplifyMeta: $TSMeta;
   private amplifyTeamProviderInfo: $TSTeamProviderInfo;
-  private envInfo: { envName: string };
+  protected envInfo: { envName: string };
   deployType: ResourceDeployType;
   private getResourcesToBeDeployed = ({
     allResources,
