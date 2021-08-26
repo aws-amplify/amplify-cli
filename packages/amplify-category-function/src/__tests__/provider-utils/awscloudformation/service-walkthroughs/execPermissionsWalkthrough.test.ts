@@ -105,7 +105,7 @@ test('env resources for CFN for DDB table and api', async () => {
       resourceName: 'mock_api',
     },
   ];
-  expect(await generateEnvVariablesForCfn(contextStub, resources, {})).toMatchSnapshot();
+  expect(await generateEnvVariablesForCfn(contextStub as unknown as $TSContext, resources, {})).toMatchSnapshot();
 });
 
 test('env resources for CFN for auth and storage for api', async () => {
@@ -126,7 +126,7 @@ test('env resources for CFN for auth and storage for api', async () => {
       resourceName: 'mock_api',
     },
   ];
-  expect(await generateEnvVariablesForCfn(contextStub, resources, {})).toMatchSnapshot();
+  expect(await generateEnvVariablesForCfn(contextStub as unknown as $TSContext, resources, {})).toMatchSnapshot();
 });
 
 describe('askExecRolePermissionsQuestions', () => {
