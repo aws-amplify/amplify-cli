@@ -11,21 +11,15 @@ import {
 import { Template, Fn } from 'cloudform-types';
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import {
-  DeploymentResources,
-  PackagedResourceDefinition,
-  ResourceDeployType,
-  StackParameters,
-  TransformedCfnResource,
-  WrittenCfnResource,
-} from './Types';
+import { DeploymentResources, PackagedResourceDefinition, ResourceDeployType, StackParameters, TransformedCfnResource } from './Types';
 import { Constants } from './constants';
 import { ResourceDeployer } from './ResourceDeployer';
 import { getNetworkResourceCfn } from '../utils/env-level-constructs';
 import _ from 'lodash';
 import { AUTH_TRIGGER_STACK } from '../utils/upload-auth-trigger-template';
-import { downloadZip } from '../zip-util';
 import { S3 } from '../aws-utils/aws-s3';
+import { downloadZip } from '../zip-util';
+import { Ref } from 'cloudform-types/types/functions';
 const {
   API_CATEGORY,
   AUTH_CATEGORY,
@@ -146,11 +140,9 @@ export class ResourceExport extends ResourceDeployer {
         );
         const destinationPath = path.join(destinationDir);
         await this.copyResource(resource.packagerParams.zipFilePath, destinationPath);
-      } else {
-        if (resource.category === FUNCTION_CATEGORY.NAME && resource.service === FUNCTION_CATEGORY.SERVICE.LAMBDA_LAYER) {
-          const s3instance = await S3.getInstance(this.context);
-          await downloadZip();
-        }
+      }
+      if (resource.category === FUNCTION_CATEGORY.NAME && resource.service === FUNCTION_CATEGORY.SERVICE.LAMBDA_LAYER) {
+        await this.downloadLambdaLayerContent(resource);
       }
       // copy build directory for appsync
       if (resource.category === API_CATEGORY.NAME && resource.service === API_CATEGORY.SERVICE.APP_SYNC) {
@@ -184,6 +176,41 @@ export class ResourceExport extends ResourceDeployer {
         const destinationPath = path.join(this.exportDirectoryPath, AMPLIFY_AUXILIARY_LAMBDAS, zipFile);
         const sourceFile = path.join(__dirname, '../..', 'resources', zipFile);
         await this.copyResource(sourceFile, destinationPath);
+      }
+    }
+  }
+  /**
+   * Download content for past layer versions
+   * @param resource
+   */
+  private async downloadLambdaLayerContent(resource: PackagedResourceDefinition) {
+    const backendDir = pathManager.getBackendDirPath();
+    const cfnFilePath = path.join(
+      backendDir,
+      resource.category,
+      resource.resourceName,
+      `${resource.resourceName}-awscloudformation-template.json`,
+    );
+    const template = JSONUtilities.readJson<Template>(cfnFilePath);
+    const layerVersions = Object.keys(template.Resources).reduce((array, resourceKey) => {
+      const layerVersionResource = template.Resources[resourceKey];
+      if (layerVersionResource.Type === 'AWS::Lambda::LayerVersion') {
+        const path = _.get(layerVersionResource.Properties, ['Content', 'S3Key']);
+        if (path && typeof path === 'string') {
+          array.push({
+            logicalNamme: resourceKey,
+            contentPath: path,
+          });
+        }
+      }
+      return array;
+    }, []);
+    if (layerVersions.length > 0) {
+      const s3instance = await S3.getInstance(this.context);
+      for await (const lambdaLayer of layerVersions) {
+        const exportPath = path.join(this.exportDirectoryPath, resource.category, resource.resourceName);
+        await downloadZip(s3instance, exportPath, lambdaLayer.contentPath, this.envInfo.envName);
+        //await downloadZip(s3instance, exportPath, );
       }
     }
   }
@@ -255,6 +282,20 @@ export class ResourceExport extends ResourceDeployer {
               nestedStacks: {},
             };
           });
+        } else if (resource.category === FUNCTION_CATEGORY.NAME && resource.service === FUNCTION_CATEGORY.SERVICE.LAMBDA_LAYER) {
+          const { cfnTemplate, templateFormat } = await readCFNTemplate(cfnFile);
+          Object.keys(cfnTemplate.Resources)
+            .filter(key => cfnTemplate.Resources[key].Type === 'AWS::Lambda::LayerVersion')
+            .forEach(layerVersionResourceKey => {
+              const layerVersionResource = cfnTemplate.Resources[layerVersionResourceKey];
+              const s3Key = _.get(layerVersionResource.Properties, ['Content', 'S3Key']);
+
+              layerVersionResource.Properties['Content']['S3Key'] = Fn.Join('/', [
+                Ref('s3Key'),
+                typeof s3Key === 'string' ? path.basename(s3Key) : resource.packagerParams.zipFilename,
+              ]);
+            });
+          await this.processAndWriteCfnTemplate(cfnTemplate, destination, templateFormat, false);
         } else {
           this.copyResource(cfnFile, destination);
         }
