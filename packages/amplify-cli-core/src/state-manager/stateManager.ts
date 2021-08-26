@@ -1,14 +1,14 @@
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import _ from 'lodash';
-import { $TSAny, $TSMeta, $TSTeamProviderInfo, DeploymentSecrets, HooksConfig, PathConstants } from '..';
+import { $TSAny, $TSMeta, $TSTeamProviderInfo, DeploymentSecrets, HooksConfig, writeCFNTemplate, readCFNTemplate } from '..';
 import Ajv from "ajv";
-import { pathManager } from './pathManager';
+import { PathConstants, PathManager, pathManager } from './pathManager';
 import { JSONUtilities } from '../jsonUtilities';
 import { SecretFileMode } from '../cliConstants';
 import { HydrateTags, ReadTags, Tag } from '../tags';
-import { CustomIAMPolicies, CustomIAMPolicySchema, CustomIAMPoliciesSchema, CustomIAMPolicy } from '../customPoliciesType';
-import { printer } from "amplify-prompts";
+import { CustomIAMPolicySchema, CustomIAMPolicy } from '../customPoliciesType';
+import { printer } from 'amplify-prompts';
 
 export type GetOptions<T> = {
   throwIfNotExist?: boolean;
@@ -19,6 +19,35 @@ export type GetOptions<T> = {
 export type ResourceEntry = {
   resourceName: string;
   resource: Record<string, object>;
+};
+
+export const CustomPolicyFileContentConstant = {
+  customExecutionPolicyForFunction : {
+    DependsOn: ['LambdaExecutionRole'],
+    Type: 'AWS::IAM::Policy',
+    Properties: {
+      PolicyName: 'custom-lambda-execution-policy',
+      Roles: [{ Ref: 'LambdaExecutionRole' }],
+      PolicyDocument: {
+        Version: '2012-10-17',
+        Statement: [
+        ]
+      }
+    }
+  },
+  customExecutionPolicyForContainer : {
+    Type: 'AWS::IAM::Policy',
+    Properties: {
+      PolicyDocument: {
+        Statement: [
+        ],
+        Version: '2012-10-17'
+      },
+      PolicyName: 'CustomExecutionPolicyForContainer',
+      Roles: [
+      ]
+    }
+  }
 };
 
 export class StateManager {
@@ -76,93 +105,50 @@ export class StateManager {
       ...options,
     };
 
-    return this.getData<CustomIAMPolicies>(filePath, mergedOptions);
+    return this.getData<CustomIAMPolicy[]>(filePath, mergedOptions);
   };
 
-  getCustomPolicies = (categoryName: string, resourceName: string): any => {
+  getCustomPolicies = (service: string, categoryName: string, resourceName: string): any => {
+    if (service != 'Lambda' && service != 'ElasticContainer') return undefined;
     const filePath = pathManager.getCustomPoliciesPath(categoryName, resourceName);
-    let customPolicies: CustomIAMPolicies = {
-      policies :  []
-    }
-    const data = JSONUtilities.readJson<CustomIAMPolicies>(filePath, {throwIfNotExist : false});
+    if (!filePath) return undefined;
+    let customPolicies: CustomIAMPolicy[] = [];
+    const data = JSONUtilities.readJson<any>(filePath, {throwIfNotExist : false});
     const ajv = new Ajv();
     const { envName } = this.getLocalEnvInfo()
 
     //validate if the policies match the custom IAM policies schema, if not, then not write into the CFN template
-    const validatePolicies = ajv.compile(CustomIAMPoliciesSchema);
-    if (!data || !validatePolicies(data)) {
-      printer.warn(`The format of custom IAM policies in the ${categoryName} ${resourceName} is not valid`);
-      return undefined;
-    }
     const validatePolicy = ajv.compile(CustomIAMPolicySchema);
     for (const policy of data.policies) {
       if (validatePolicy(policy)) {
         if (!policy.Effect) policy.Effect = 'Allow';
-        const policyWithoutEnv = this.replaceEnvForCustomPolicies(policy, envName);
-        customPolicies.policies.push(policyWithoutEnv);
+        const policyWithEnv = this.replaceEnvForCustomPolicies(policy, envName);
+        customPolicies.push(policyWithEnv);
       }
       else {
         printer.warn(`The format of custom IAM policies in the ${categoryName} ${resourceName} is not valid`);
         return undefined;
       }
     }
-    //the policies with env will be written to the custom policies file again
-    JSONUtilities.writeJson(filePath, data);
     //the policies without env will be carried over and merge into the CFN template
     return customPolicies;
   };
 
   //replace or add env parameter in the front of the resource customers enter to the current env
   replaceEnvForCustomPolicies = (policy: CustomIAMPolicy, currentEnv: string): CustomIAMPolicy => {
+    let resourceWithEnv = [];
     let action = policy.Action;
     let effect = policy.Effect;
-    let resourceWithNoEnv = [];
-    let resourceWithEnv = [];
-
-    for (let resource of policy.Resource){
-      const splitedResource = resource.split('/');
-      //if there is no env in the resource customers entered, then just add the current env to the resource
-      if(splitedResource.length <= 1) {
-        resourceWithEnv.push(`${currentEnv}/${splitedResource[0]}`);
-        resourceWithNoEnv.push(splitedResource[0]);
-        continue;
-      }
-      //In case there is a slash in the env name, check where is the start of the ARN
-      let index = 0;
-      for (index; index < splitedResource.length; index ++) {
-        if (splitedResource[index].substring(0,3) === 'arn') {
-          break;
-        }
-      }
-      //change the env if env exists, or add the env if not exists.
-      if (index >= 1) {
-        let env = '';
-        for (let i = 0; i < index; i++) {
-          env = `${env}${splitedResource[i]}`;
-          if (i < (index - 1)) env = `${env}/`
-        }
-        if (env != currentEnv) env = currentEnv;
-        let combinedResourceWithEnv = env;
-        for (let j = index; j < splitedResource.length; j++) {
-          combinedResourceWithEnv = `${combinedResourceWithEnv}/${splitedResource[j]}`
-        }
-        resourceWithEnv.push(combinedResourceWithEnv);
-        splitedResource[0] = '';
-        resourceWithNoEnv.push(splitedResource.join(''));
-      } else {
-        resourceWithEnv.push(`${currentEnv}/${resource}`);
-        resourceWithNoEnv.push(resource);
-      }
-    }
-    //replace the original resource with the resource that have the current env
-    policy.Resource = resourceWithEnv;
-    const policyWithoutEnv: CustomIAMPolicy = {
+    let customIAMpolicies: CustomIAMPolicy = {
       Action: action,
       Effect: effect,
-      Resource: resourceWithNoEnv
+      Resource: []
     }
-    //return the policies without the env to merge to CFN template
-    return policyWithoutEnv;
+    for (let resource of policy.Resource){
+      resourceWithEnv.push(resource.replace( '{env}', currentEnv));
+    }
+    customIAMpolicies.Resource = resourceWithEnv;
+    return customIAMpolicies;
   }
 
   addCustomPoliciesFile = (categoryName: string, resourceName: string): void => {
@@ -179,22 +165,50 @@ export class StateManager {
     JSONUtilities.writeJson(customPoliciesPath, defaultCustomPolicies);
   }
 
-  replaceEnvForCustomPoliciesBetweenEnv = (envName: string): void =>{
+  replaceEnvForCustomPoliciesBetweenEnv = async (envName: string): Promise<void> =>{
     const meta = this.getMeta();
     const categories = ['api', 'function'];
     const categoryObjects = [meta.api, meta.function];
+    let customIAMpolicy: CustomIAMPolicy = {
+      Action: [],
+      Effect: '',
+      Resource: []
+    }
 
     for (let i = 0; i < categories.length; i++) {
-      const currentCategory = Object.keys(categoryObjects[i]);
-      for (let j = 0; j < currentCategory.length; j++) {
-        const resourceName = currentCategory[j];
+      if(!categoryObjects[i]) continue;
+      const currentCategory = categories[i];
+      const resourceList = Object.keys(categoryObjects[i]);
+      for (let j = 0; j < resourceList.length; j++) {
+        const resourceName = resourceList[j];
         const customPoliciesPath = pathManager.getCustomPoliciesPath(categories[i], resourceName);
-        const data = JSONUtilities.readJson<CustomIAMPolicies>(customPoliciesPath, {throwIfNotExist : false})
-        if (!data) break;
-        for (let policy of data.policies) {
-          this.replaceEnvForCustomPolicies(policy, envName);
+        if (!customPoliciesPath) continue;
+        const data = JSONUtilities.readJson<any>(customPoliciesPath, {throwIfNotExist : false})
+        if(!data) continue;
+        const ajv = new Ajv();
+        const validatePolicy = ajv.compile(CustomIAMPolicySchema);
+
+        const cfnFile = `${resourceName}-cloudformation-template.json`;
+        const cfnFilePath = path.join(pathManager.getResourceDirectoryPath(undefined, currentCategory, resourceName), cfnFile);
+        const { templateFormat, cfnTemplate } = await readCFNTemplate(cfnFilePath);
+        if (cfnTemplate.Resources?.CustomLambdaExecutionPolicy) {
+          cfnTemplate.Resources.CustomLambdaExecutionPolicy = CustomPolicyFileContentConstant.customExecutionPolicyForFunction;
+        } else if (cfnTemplate.Resources?.CustomExecutionPolicyForContainer) {
+          cfnTemplate.Resources.CustomExecutionPolicyForContainer = CustomPolicyFileContentConstant.customExecutionPolicyForContainer;
         }
-        JSONUtilities.writeJson(customPoliciesPath, data);
+        for (let policy of data.policies) {
+          if (!validatePolicy(policy)) continue;
+          customIAMpolicy = this.replaceEnvForCustomPolicies(policy, envName);
+        }
+        if (cfnTemplate.Resources?.CustomLambdaExecutionPolicy) {
+          cfnTemplate.Resources.CustomLambdaExecutionPolicy.Properties?.PolicyDocument.Statement.push(customIAMpolicy);
+          await writeCFNTemplate(cfnTemplate, path.join(cfnFilePath), { templateFormat });
+        } else if (cfnTemplate.Resources?.CustomExecutionPolicyForContainer) {
+          cfnTemplate.Resources.CustomExecutionPolicyForContainer.Properties?.PolicyDocument.Statement.push(customIAMpolicy);
+          await writeCFNTemplate(cfnTemplate, path.join(cfnFilePath), { templateFormat });
+        } else {
+          continue;
+        }
       }
     }
   }
@@ -491,3 +505,8 @@ export class StateManager {
 }
 
 export const stateManager = new StateManager();
+function getCfnFiles(currentCategory: string[], resourceName: string): { resourceDir: any; cfnFiles: any; } {
+  throw new Error('Function not implemented.');
+}
+
+

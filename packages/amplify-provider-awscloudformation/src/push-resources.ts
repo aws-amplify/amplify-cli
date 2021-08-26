@@ -755,10 +755,10 @@ function getCfnFiles(category: string, resourceName: string) {
 async function updateS3Templates(context: $TSContext, resourcesToBeUpdated: $TSAny, amplifyMeta: $TSMeta) {
   const promises = [];
 
-  for (const { category, resourceName } of resourcesToBeUpdated) {
+  for (const { category, resourceName, service } of resourcesToBeUpdated) {
     const { resourceDir, cfnFiles } = getCfnFiles(category, resourceName);
     for (const cfnFile of cfnFiles) {
-      await writeCustomPoliciesToCFNTemplate(resourceName, resourceDir, cfnFile, category, path.join(resourceDir, cfnFile));
+      await writeCustomPoliciesToCFNTemplate(resourceName, service, resourceDir, cfnFile, category, path.join(resourceDir, cfnFile));
       const transformedCFNPath = await preProcessCFNTemplate(path.join(resourceDir, cfnFile));
       promises.push(uploadTemplateToS3(context, transformedCFNPath, category, resourceName, amplifyMeta));
     }

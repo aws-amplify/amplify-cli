@@ -28,6 +28,9 @@ function getProjectMeta(projectRoot: string) {
   const metaFilePath: string = path.join(projectRoot, 'amplify', '#current-cloud-backend', 'amplify-meta.json');
   return JSON.parse(fs.readFileSync(metaFilePath, 'utf8'));
 }
+function getCustomPoliciesPath(projectRoot: string, category: string, resourceName: string): string {
+  return path.join(projectRoot, 'amplify', 'backend', category, resourceName, 'custom-iam-policy-documents.json');
+}
 
 function getProjectTags(projectRoot: string) {
   const projectTagsFilePath: string = path.join(projectRoot, 'amplify', '#current-cloud-backend', 'tags.json');
@@ -167,4 +170,5 @@ export {
   getCloudBackendConfig,
   setTeamProviderInfo,
   getLocalEnvInfo,
+  getCustomPoliciesPath,
 };
