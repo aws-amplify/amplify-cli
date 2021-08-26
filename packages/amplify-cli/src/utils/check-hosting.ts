@@ -2,6 +2,11 @@ import { getPluginInstance } from '../extensions/amplify-helpers/get-plugin-inst
 
 export async function hasCdBranches(context) {
   const appId = context.exeInfo.amplifyMeta.providers.awscloudformation.AmplifyAppId;
+
+  if (!appId) {
+    return false;
+  }
+
   const awsCloudPlugin = getPluginInstance(context, 'awscloudformation');
   const amplifyClient = await awsCloudPlugin.getConfiguredAmplifyClient(context, {});
   const result = await amplifyClient.listBranches({ appId }).promise();
