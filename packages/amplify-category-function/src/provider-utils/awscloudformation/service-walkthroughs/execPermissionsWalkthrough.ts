@@ -1,4 +1,4 @@
-import { $TSContext, FeatureFlags, pathManager, stateManager } from 'amplify-cli-core';
+import { $TSAny, $TSContext, FeatureFlags, pathManager, stateManager } from 'amplify-cli-core';
 import { FunctionDependency, FunctionParameters } from 'amplify-function-plugin-interface';
 import * as TransformPackage from 'graphql-transformer-core';
 import inquirer, { CheckboxQuestion, DistinctChoice } from 'inquirer';
@@ -258,7 +258,7 @@ export async function getResourcesForCfn(context, resourceName, resourcePolicy, 
   return { permissionPolicies, cfnResources };
 }
 
-export async function generateEnvVariablesForCfn(context, resources, currentEnvMap) {
+export async function generateEnvVariablesForCfn(context: $TSContext, resources: $TSAny[], currentEnvMap: $TSAny) {
   const environmentMap = {};
   const envVars = new Set<string>();
   const dependsOn: FunctionDependency[] = [];
