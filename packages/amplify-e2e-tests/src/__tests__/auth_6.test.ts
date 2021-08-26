@@ -58,6 +58,9 @@ describe('zero config auth ', () => {
         "signupAttributes": Array [
           "EMAIL",
         ],
+        "verificationMechanisms": Array [
+          "EMAIL",
+        ],
       }
     `);
   });
