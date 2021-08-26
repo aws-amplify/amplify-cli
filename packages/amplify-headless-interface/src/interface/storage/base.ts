@@ -5,7 +5,7 @@ export interface S3ServiceConfigurationBase {
   /**
    * Descriminant used to determine the service config type
    */
-  serviceName: 's3';
+  serviceName: 'S3';
 }
 
 /**

@@ -25,7 +25,7 @@
                   "description": "Descriminant used to determine the service config type",
                   "type": "string",
                   "enum": [
-                      "s3"
+                      "S3"
                   ]
               },
               "bucketName": {
