@@ -4,7 +4,6 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as cognito from '@aws-cdk/aws-cognito';
 import * as lambda from '@aws-cdk/aws-lambda';
 import { AmplifyAuthCognitoStackTemplate } from './types';
-import { CfnUserPool, CfnUserPoolClient, CfnIdentityPool, CfnIdentityPoolRoleAttachment } from '@aws-cdk/aws-cognito';
 import { AuthStackOptions } from '../service-walkthrough-types';
 import _ from 'lodash';
 
@@ -40,11 +39,11 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
   private _cfnConditionMap: Map<string, cdk.CfnCondition> = new Map();
   customMessageConfirmationBucket?: s3.CfnBucket;
   snsRole: iam.CfnRole | undefined;
-  userPool: CfnUserPool | undefined;
-  userPoolClientWeb: CfnUserPoolClient | undefined;
-  userPoolClient: CfnUserPoolClient | undefined;
-  identityPool: CfnIdentityPool | undefined;
-  identityPoolRoleMap: CfnIdentityPoolRoleAttachment | undefined;
+  userPool: cognito.CfnUserPool | undefined;
+  userPoolClientWeb: cognito.CfnUserPoolClient | undefined;
+  userPoolClient: cognito.CfnUserPoolClient | undefined;
+  identityPool: cognito.CfnIdentityPool | undefined;
+  identityPoolRoleMap: cognito.CfnIdentityPoolRoleAttachment | undefined;
   lambdaConfigPermissions?: Record<string, lambda.CfnPermission>;
   lambdaTriggerPermissions?: Record<string, iam.CfnPolicy>;
   // customresources userPoolClient
@@ -402,7 +401,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
 
       // UserPool Lambda Resources
 
-      // this.createUserPoolClientCustomResource(props);
+      this.createUserPoolClientCustomResource(props);
       // this.createHostedUICustomResource();
       // this.createOAuthCustomResource();
       // if(props.mfaConfiguration != 'OFF'){
@@ -413,7 +412,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
     if (props.authSelections === 'identityPoolAndUserPool' || props.authSelections === 'identityPoolOnly') {
       //this.createOpenIdLambdaCustomResource();
 
-      this.identityPool = new CfnIdentityPool(this, 'IdentityPool', {
+      this.identityPool = new cognito.CfnIdentityPool(this, 'IdentityPool', {
         identityPoolName: cdk.Fn.conditionIf(
           'ShouldNotCreateEnvResources',
           props.identityPoolName,

@@ -642,8 +642,8 @@ export class FeatureFlags {
         name: 'enableDartNullSafety',
         type: 'boolean',
         defaultValueForExistingProjects: false,
-        defaultValueForNewProjects: true
-      }
+        defaultValueForNewProjects: true,
+      },
     ]);
 
     this.registerFlag('appSync', [
@@ -652,6 +652,14 @@ export class FeatureFlags {
         type: 'boolean',
         defaultValueForExistingProjects: false,
         defaultValueForNewProjects: true,
+      },
+    ]);
+    this.registerFlag('category', [
+      {
+        name: 'enableOverrdies',
+        type: 'boolean',
+        defaultValueForExistingProjects: false,
+        defaultValueForNewProjects: false,
       },
     ]);
   };
