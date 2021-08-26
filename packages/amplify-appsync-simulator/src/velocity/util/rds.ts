@@ -25,7 +25,7 @@ export const rds = {
     try {
       const rdsObject = JSON.parse(rdsString);
       return serializeRdsObject(rdsObject);
-    } catch (ex) {
+    } catch {
       return '';
     }
   },
