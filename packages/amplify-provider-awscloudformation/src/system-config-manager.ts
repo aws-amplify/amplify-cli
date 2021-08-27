@@ -123,7 +123,7 @@ async function getRoleCredentials(context: $TSContext, profileName: string, prof
       context.print.info(`  ${profileConfig.role_arn}`);
       context.print.info('It requires MFA authentication. The MFA device is');
       context.print.info(`  ${profileConfig.mfa_serial}`);
-      mfaTokenCode = await getMfaTokenCode(context);
+      mfaTokenCode = await getMfaTokenCode();
     }
     logger('getRoleCredentials.aws.STS', [sourceProfileAwsConfig])();
     const sts = new aws.STS(sourceProfileAwsConfig);
@@ -156,11 +156,7 @@ async function getRoleCredentials(context: $TSContext, profileName: string, prof
   return roleCredentials;
 }
 
-async function getMfaTokenCode(context) {
-  let spinner;
-  if (context.exeInfo.spinner && context.exeInfo.spinner.isSpinning) {
-    spinner = context.exeInfo.spinner.stopAndPersist();
-  }
+async function getMfaTokenCode() {
   const inputMfaTokenCode = {
     type: 'input',
     name: 'tokenCode',
@@ -178,7 +174,6 @@ async function getMfaTokenCode(context) {
     },
   };
   const answer = await inquirer.prompt(inputMfaTokenCode);
-  if (spinner) spinner.start();
   return answer.tokenCode;
 }
 
