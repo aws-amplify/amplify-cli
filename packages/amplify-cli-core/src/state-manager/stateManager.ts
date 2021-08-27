@@ -7,8 +7,8 @@ import { PathConstants, PathManager, pathManager } from './pathManager';
 import { JSONUtilities } from '../jsonUtilities';
 import { SecretFileMode } from '../cliConstants';
 import { HydrateTags, ReadTags, Tag } from '../tags';
-import { CustomIAMPolicySchema, CustomIAMPolicy } from '../customPoliciesUtils';
-import { AmplifyPrinter, Printer, printer } from 'amplify-prompts';
+import { CustomIAMPolicy, CustomIAMPolicies } from '../customPoliciesUtils';
+import { Fn, IAM } from 'cloudform-types';
 
 export type GetOptions<T> = {
   throwIfNotExist?: boolean;
@@ -21,34 +21,27 @@ export type ResourceEntry = {
   resource: Record<string, object>;
 };
 
-export const CustomPolicyFileContentConstant = {
-  customExecutionPolicyForFunction : {
-    DependsOn: ['LambdaExecutionRole'],
-    Type: 'AWS::IAM::Policy',
-    Properties: {
-      PolicyName: 'custom-lambda-execution-policy',
-      Roles: [{ Ref: 'LambdaExecutionRole' }],
-      PolicyDocument: {
-        Version: '2012-10-17',
-        Statement: [
-        ]
-      }
+ export const customExecutionPolicyForFunction = new IAM.Policy({
+    PolicyName: 'custom-lambda-execution-policy',
+    Roles: [
+      Fn.Ref('LambdaExecutionRole')
+    ],
+    PolicyDocument: {
+      Version: '2012-10-17',
+      Statement: []
     }
-  },
-  customExecutionPolicyForContainer : {
-    Type: 'AWS::IAM::Policy',
-    Properties: {
-      PolicyDocument: {
-        Statement: [
-        ],
-        Version: '2012-10-17'
-      },
-      PolicyName: 'CustomExecutionPolicyForContainer',
-      Roles: [
-      ]
-    }
-  }
-};
+}).dependsOn(['LambdaExecutionRole']);
+
+export const customExecutionPolicyForContainer = new IAM.Policy({
+    PolicyDocument: {
+      Statement: [
+      ],
+      Version: '2012-10-17'
+    },
+    PolicyName: 'CustomExecutionPolicyForContainer',
+    Roles: [
+    ]
+});
 
 export class StateManager {
   metaFileExists = (projectPath?: string): boolean => this.doesExist(pathManager.getAmplifyMetaFilePath, projectPath);
@@ -105,93 +98,21 @@ export class StateManager {
       ...options,
     };
 
-    return this.getData<CustomIAMPolicy[]>(filePath, mergedOptions);
+    return this.getData<$TSTeamProviderInfo>(filePath, mergedOptions);
   };
 
   getCustomPolicies = (service: string, categoryName: string, resourceName: string): any => {
     if (service != 'Lambda' && service != 'ElasticContainer') return undefined;
     const filePath = pathManager.getCustomPoliciesPath(categoryName, resourceName);
-    if (!filePath) return undefined;
-    let customPolicies: CustomIAMPolicy[] = [];
-    const data = JSONUtilities.readJson<any>(filePath, {throwIfNotExist : false});
-    const ajv = new Ajv();
-    const { envName } = this.getLocalEnvInfo()
-
-    //validate if the policies match the custom IAM policies schema, if not, then not write into the CFN template
-    const validatePolicy = ajv.compile(CustomIAMPolicySchema);
-    for (const policy of data.policies) {
-      if (validatePolicy(policy)) {
-        this.validateRegexCustomPolicy(policy, resourceName);
-        if (!policy.Effect) policy.Effect = 'Allow';
-        const policyWithEnv = this.replaceEnvForCustomPolicies(policy, envName);
-        customPolicies.push(policyWithEnv);
-      }
-      else {
-        printer.warn(`The format of custom IAM policies in the ${categoryName} ${resourceName} is not valid`);
-        return undefined;
-      }
+    if (!filePath) {
+      return undefined;
     }
-    //the policies without env will be carried over and merge into the CFN template
-    return customPolicies;
+    const data = JSONUtilities.readJson<CustomIAMPolicies>(filePath, {throwIfNotExist : false});
+    if(!data) {
+      return undefined;
+    }
+    return data;
   };
-
-  //validate the format of actions and ARNs for custom IAM policies
-  validateRegexCustomPolicy = (customPolicy: CustomIAMPolicy, resourceName: string) : void => {
-    const resources = customPolicy.Resource;
-    const actions = customPolicy.Action;
-    let resourceRegex = new RegExp('(arn:(aws[a-zA-Z0-9-]*):([a-zA-Z0-9\\-])+:([a-z]{2}(-gov)?-[a-z]+-\\d{1})?:(\\d{12})?:(.*))*');
-    let actionRegex = new RegExp('([a-z0-9])*:([a-z|A-Z|0-9|*]+)*');
-    let wrongResourcesRegex = [];
-    let wrongActionsRegex = [];
-    let errorMessage = "";
-    const printer: Printer = new AmplifyPrinter()
-
-    for (const resource of resources) {
-      if (!resourceRegex.test(resource)) {
-        wrongResourcesRegex.push(resource);
-      }
-    }
-
-    if(resources.includes('*')) {
-      printer.warn(`Warning: You've specified "*" as a custom IAM policy for your ${resourceName}. 
-      This will give your ${resourceName} access to ALL resources in the AWS Account.`)
-    }
-
-    for (const action of actions) {
-      if (!actionRegex.test(action)) {
-        wrongActionsRegex.push(action);
-      }
-    }
-
-    if (wrongResourcesRegex.length > 0) {
-      errorMessage += `\nInvalid ARN format for custom IAM policies in ${resourceName}:\n${wrongResourcesRegex.toString()}\n`;
-    }
-    if (wrongActionsRegex.length > 0) {
-      errorMessage += `\nInvalid actions format for custom IAM policies in ${resourceName}:\n${wrongActionsRegex.toString()}\n`;
-    }
-
-    if (errorMessage.length > 0) {
-      printer.error(errorMessage);
-    }
-  }
-
-
-  //replace or add env parameter in the front of the resource customers enter to the current env
-  replaceEnvForCustomPolicies = (policy: CustomIAMPolicy, currentEnv: string): CustomIAMPolicy => {
-    let resourceWithEnv = [];
-    let action = policy.Action;
-    let effect = policy.Effect;
-    let customIAMpolicies: CustomIAMPolicy = {
-      Action: action,
-      Effect: effect,
-      Resource: []
-    }
-    for (let resource of policy.Resource){
-      resourceWithEnv.push(resource.replace( '{env}', currentEnv));
-    }
-    customIAMpolicies.Resource = resourceWithEnv;
-    return customIAMpolicies;
-  }
 
   addCustomPoliciesFile = (categoryName: string, resourceName: string): void => {
     const customPoliciesPath = pathManager.getCustomPoliciesPath(categoryName, resourceName);

@@ -46,7 +46,7 @@ import {
             deleteProjectDir(projRoot);
           });
   
-          it(`should init and deploy a api container, attach custom policies to the Lambda`, async () => {
+          it(`should init and deploy a api container, attach custom policies to the Fargate task`, async () => {
             const envName = 'devtest';
             const containerName = 'container';
             const name = 'containertest';

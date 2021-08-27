@@ -75,7 +75,7 @@ export async function pushResources(
       await providersPush(context, category, resourceName, filteredResources);
       await onCategoryOutputsChange(context, currentAmplifyMeta);
     } catch (err) {
-      // Handle the errors and print them nicely for the user.\
+      // Handle the errors and print them nicely for the user.
       context.print.error(`\n${err.message}`);
       throw err;
     }
