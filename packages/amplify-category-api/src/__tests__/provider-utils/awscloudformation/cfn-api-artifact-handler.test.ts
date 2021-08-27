@@ -245,3 +245,64 @@ describe('update artifacts', () => {
     expect(context_stub.print.warning.mock.calls.length).toBe(3);
   });
 });
+
+describe('update artifacts without graphql compile', () => {
+  let cfnApiArtifactHandler: ApiArtifactHandler;
+  let updateRequestStub: UpdateApiRequest;
+  const updateRequestStubBase: UpdateApiRequest = {
+    version: 1,
+    serviceModification: {
+      serviceName: 'AppSync',
+    },
+  };
+
+  beforeAll(() => {
+    getAppSyncResourceName_mock.mockImplementation(() => testApiName);
+    getAppSyncAuthConfig_mock.mockImplementation(() => ({
+      defaultAuthentication: {
+        authenticationType: 'AMAZON_COGNITO_USER_POOLS',
+        userPoolConfig: {
+          userPoolId: 'myUserPoolId',
+        },
+      },
+      additionalAuthenticationProviders: [],
+    }));
+  });
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+    updateRequestStub = _.cloneDeep(updateRequestStubBase);
+    cfnApiArtifactHandler = getCfnApiArtifactHandler(context_stub);
+  });
+
+  it('throws error if no GQL API in project', () => {
+    getAppSyncResourceName_mock.mockImplementationOnce(() => undefined);
+    return expect(cfnApiArtifactHandler.updateArtifactsWithoutCompile(updateRequestStub)).rejects.toMatchInlineSnapshot(
+      `[Error: No AppSync API configured in the project. Use 'amplify add api' to create an API.]`,
+    );
+  });
+
+  it('writes new schema if specified', async () => {
+    const newSchemaContents = 'a new schema';
+    updateRequestStub.serviceModification.transformSchema = newSchemaContents;
+    await cfnApiArtifactHandler.updateArtifactsWithoutCompile(updateRequestStub);
+    expect(fs_mock.writeFileSync.mock.calls.length).toBe(1);
+    expect(fs_mock.writeFileSync.mock.calls[0][1]).toBe(newSchemaContents);
+  });
+
+  it('updates resolver config if not empty', async () => {
+    updateRequestStub.serviceModification.conflictResolution = {
+      defaultResolutionStrategy: {
+        type: 'OPTIMISTIC_CONCURRENCY',
+      },
+    };
+    await cfnApiArtifactHandler.updateArtifactsWithoutCompile(updateRequestStub);
+    expect(writeTransformerConfiguration_mock.mock.calls.length).toBe(1);
+  });
+
+  it('updates meta files after update', async () => {
+    await cfnApiArtifactHandler.updateArtifactsWithoutCompile(updateRequestStub);
+    expect(context_stub.amplify.updateamplifyMetaAfterResourceUpdate.mock.calls.length).toBe(1);
+    expect(context_stub.amplify.updateBackendConfigAfterResourceUpdate.mock.calls.length).toBe(1);
+  });
+});
