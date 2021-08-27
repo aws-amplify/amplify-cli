@@ -21,9 +21,6 @@ export const run = async context => {
   localEnvInfo.envName = envName;
   stateManager.setLocalEnvInfo(undefined, localEnvInfo);
 
-  //replace env name in the resource of custom IAM policies
-  stateManager.replaceEnvForCustomPoliciesBetweenEnv(envName);
-
   // Setup exeinfo
 
   context.amplify.constructExeInfo(context);
