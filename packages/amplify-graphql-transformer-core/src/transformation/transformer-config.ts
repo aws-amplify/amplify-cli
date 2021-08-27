@@ -11,7 +11,11 @@ export type AppSyncAuthConfiguration = {
   additionalAuthenticationProviders: Array<AppSyncAuthConfigurationEntry>;
 };
 
-export type AppSyncAuthConfigurationEntry = AppSyncAuthConfigurationUserPoolEntry | AppSyncAuthConfigurationAPIKeyEntry | AppSyncAuthConfigurationIAMEntry | AppSyncAuthConfigurationOIDCEntry;
+export type AppSyncAuthConfigurationEntry =
+  | AppSyncAuthConfigurationUserPoolEntry
+  | AppSyncAuthConfigurationAPIKeyEntry
+  | AppSyncAuthConfigurationIAMEntry
+  | AppSyncAuthConfigurationOIDCEntry;
 export type AppSyncAuthConfigurationAPIKeyEntry = {
   authenticationType: 'API_KEY';
   apiKeyConfig: ApiKeyConfig;
@@ -32,6 +36,7 @@ export type AppSyncAuthConfigurationOIDCEntry = {
 export type ApiKeyConfig = {
   description?: string;
   apiKeyExpirationDays: number;
+  apiKeyExpirationDate?: Date;
 };
 export type UserPoolConfig = {
   userPoolId: string;

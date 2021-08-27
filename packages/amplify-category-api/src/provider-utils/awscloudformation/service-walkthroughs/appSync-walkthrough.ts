@@ -624,6 +624,8 @@ async function askApiKeyQuestions() {
   ];
 
   const apiKeyConfig = await inquirer.prompt(apiKeyQuestions);
+  const apiKeyExpirationDaysNum = Number(apiKeyConfig.apiKeyExpirationDays);
+  apiKeyConfig.apiKeyExpirationDate = Expiration.after(Duration.days(apiKeyExpirationDaysNum)).date;
 
   return {
     authenticationType: 'API_KEY',
