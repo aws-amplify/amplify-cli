@@ -15,3 +15,7 @@ export const CustomIAMPolicySchema = {
         required: ["Resource", "Action"],
         additionalProperties: false
 }
+
+
+
+

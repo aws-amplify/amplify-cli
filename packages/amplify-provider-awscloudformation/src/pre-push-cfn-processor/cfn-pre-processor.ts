@@ -69,7 +69,6 @@ export async function addCustomPoliciesToCFNTemplate(
   }
 
   for (const customPolicy of customPolicies) {
-    validateRegexCustomPolicy(customPolicy, resourceName);
     customExecutionPolicy.Properties.PolicyDocument.Statement.push(customPolicy);
   }
 
@@ -81,46 +80,4 @@ export async function addCustomPoliciesToCFNTemplate(
   }
 
   await writeCFNTemplate(cfnTemplate, filePath, { templateFormat });
-}
-
-//validate the format of actions and ARNs for custom IAM policies
-
-export function validateRegexCustomPolicy (customPolicy: CustomIAMPolicy, resourceName: string) {
-  const resources = customPolicy.Resource;
-  const actions = customPolicy.Action;
-  let resourceRegex = new RegExp('(arn:(aws[a-zA-Z0-9-]*):([a-zA-Z0-9\\-])+:([a-z]{2}(-gov)?-[a-z]+-\\d{1})?:(\\d{12})?:(.*))*');
-  let actionRegex = new RegExp('([a-z0-9])*:([a-z|A-Z|0-9|*]+)*');
-  let wrongResourcesRegex = [];
-  let wrongActionsRegex = [];
-  let errorMessage = "";
-  const printer: Printer = new AmplifyPrinter()
-
-  for (const resource of resources) {
-    if (!resourceRegex.test(resource)) {
-      wrongResourcesRegex.push(resource);
-    }
-    if(resource.includes('*')) {
-      printer.warn(`Warning: You've specified "*" as a custom IAM policy for your ${resourceName}. 
-      This will give your ${resourceName} access to ALL resources in the AWS Account.`)
-    }
-  }
-
-  for (const action of actions) {
-    if (!actionRegex.test(action)) {
-      wrongActionsRegex.push(action);
-    }
-  }
-
-  if (wrongResourcesRegex.length > 0) {
-    errorMessage += `\nInvalid ARN format for custom IAM policies in ${resourceName}:\n${wrongResourcesRegex.toString()}\n`;
-  }
-  if (wrongActionsRegex.length > 0) {
-    errorMessage += `\nInvalid actions format for custom IAM policies in ${resourceName}:\n${wrongActionsRegex.toString()}\n`;
-  }
-
-  if (errorMessage.length > 0) {
-    printer.error(errorMessage);
-  }
-
-
 }

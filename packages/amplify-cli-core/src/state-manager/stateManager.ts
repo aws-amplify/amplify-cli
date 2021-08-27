@@ -7,8 +7,8 @@ import { PathConstants, PathManager, pathManager } from './pathManager';
 import { JSONUtilities } from '../jsonUtilities';
 import { SecretFileMode } from '../cliConstants';
 import { HydrateTags, ReadTags, Tag } from '../tags';
-import { CustomIAMPolicySchema, CustomIAMPolicy } from '../customPoliciesType';
-import { printer } from 'amplify-prompts';
+import { CustomIAMPolicySchema, CustomIAMPolicy } from '../customPoliciesUtils';
+import { AmplifyPrinter, Printer, printer } from 'amplify-prompts';
 
 export type GetOptions<T> = {
   throwIfNotExist?: boolean;
@@ -121,6 +121,7 @@ export class StateManager {
     const validatePolicy = ajv.compile(CustomIAMPolicySchema);
     for (const policy of data.policies) {
       if (validatePolicy(policy)) {
+        this.validateRegexCustomPolicy(policy, resourceName);
         if (!policy.Effect) policy.Effect = 'Allow';
         const policyWithEnv = this.replaceEnvForCustomPolicies(policy, envName);
         customPolicies.push(policyWithEnv);
@@ -133,6 +134,47 @@ export class StateManager {
     //the policies without env will be carried over and merge into the CFN template
     return customPolicies;
   };
+
+  //validate the format of actions and ARNs for custom IAM policies
+  validateRegexCustomPolicy = (customPolicy: CustomIAMPolicy, resourceName: string) : void => {
+    const resources = customPolicy.Resource;
+    const actions = customPolicy.Action;
+    let resourceRegex = new RegExp('(arn:(aws[a-zA-Z0-9-]*):([a-zA-Z0-9\\-])+:([a-z]{2}(-gov)?-[a-z]+-\\d{1})?:(\\d{12})?:(.*))*');
+    let actionRegex = new RegExp('([a-z0-9])*:([a-z|A-Z|0-9|*]+)*');
+    let wrongResourcesRegex = [];
+    let wrongActionsRegex = [];
+    let errorMessage = "";
+    const printer: Printer = new AmplifyPrinter()
+
+    for (const resource of resources) {
+      if (!resourceRegex.test(resource)) {
+        wrongResourcesRegex.push(resource);
+      }
+    }
+
+    if(resources.includes('*')) {
+      printer.warn(`Warning: You've specified "*" as a custom IAM policy for your ${resourceName}. 
+      This will give your ${resourceName} access to ALL resources in the AWS Account.`)
+    }
+
+    for (const action of actions) {
+      if (!actionRegex.test(action)) {
+        wrongActionsRegex.push(action);
+      }
+    }
+
+    if (wrongResourcesRegex.length > 0) {
+      errorMessage += `\nInvalid ARN format for custom IAM policies in ${resourceName}:\n${wrongResourcesRegex.toString()}\n`;
+    }
+    if (wrongActionsRegex.length > 0) {
+      errorMessage += `\nInvalid actions format for custom IAM policies in ${resourceName}:\n${wrongActionsRegex.toString()}\n`;
+    }
+
+    if (errorMessage.length > 0) {
+      printer.error(errorMessage);
+    }
+  }
+
 
   //replace or add env parameter in the front of the resource customers enter to the current env
   replaceEnvForCustomPolicies = (policy: CustomIAMPolicy, currentEnv: string): CustomIAMPolicy => {
