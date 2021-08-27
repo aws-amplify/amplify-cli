@@ -210,7 +210,7 @@ export class TransformerResolver implements TransformerResolverProvider {
           }
           break;
         default:
-          throw new Error('Unknow DataSource type');
+          throw new Error('Unknown DataSource type');
       }
     }
     api.host.addResolver(

@@ -121,10 +121,15 @@ export class GraphQLTransform {
         aws_iam: true,
         aws_oidc: true,
         aws_cognito_user_pools: true,
+        allow_public_data_access_with_api_key: true,
         deprecated: true,
       },
     );
     let allModelDefinitions = [...context.inputDocument.definitions];
+
+    const ampGlobalIdx = allModelDefinitions.findIndex(el => el.kind === 'ObjectTypeDefinition' && el.name.value === 'AMPLIFY_GLOBAL');
+    if (ampGlobalIdx > -1) allModelDefinitions.splice(ampGlobalIdx, 1);
+
     for (const transformer of this.transformers) {
       allModelDefinitions = allModelDefinitions.concat(...transformer.typeDefinitions, transformer.directive);
     }

@@ -18,6 +18,7 @@ import _ from 'lodash';
 import { getAppSyncResourceName, getAppSyncAuthConfig, checkIfAuthExists, authConfigHasApiKey } from './utils/amplify-meta-utils';
 import { printApiKeyWarnings } from './utils/print-api-key-warnings';
 import { isNameUnique } from './utils/check-case-sensitivity';
+import { FeatureFlags } from 'amplify-cli-core';
 
 // keep in sync with ServiceName in amplify-category-function, but probably it will not change
 const FunctionServiceNameLambdaFunction = 'Lambda';
@@ -90,7 +91,20 @@ class CfnApiArtifactHandler implements ApiArtifactHandler {
       authConfig,
     });
 
-    this.context.amplify.updateamplifyMetaAfterResourceAdd(category, serviceConfig.apiName, this.createAmplifyMeta(authConfig));
+    const useExperimentalPipelineTransformer = FeatureFlags.getBoolean('graphQLTransformer.useExperimentalPipelinedTransformer');
+    let globalSandboxModeConfig;
+
+    if (useExperimentalPipelineTransformer) {
+      const envName = this.context.amplify.getEnvInfo().envName;
+      globalSandboxModeConfig = {};
+      globalSandboxModeConfig[envName] = { enabled: true };
+    }
+
+    this.context.amplify.updateamplifyMetaAfterResourceAdd(
+      category,
+      serviceConfig.apiName,
+      this.createAmplifyMeta(authConfig, globalSandboxModeConfig),
+    );
     return serviceConfig.apiName;
   };
 
@@ -129,17 +143,42 @@ class CfnApiArtifactHandler implements ApiArtifactHandler {
     printApiKeyWarnings(this.context, oldConfigHadApiKey, authConfigHasApiKey(authConfig));
   };
 
+  updateArtifactsWithoutCompile = async (request: UpdateApiRequest): Promise<void> => {
+    const updates = request.serviceModification;
+    const apiName = getAppSyncResourceName(this.context.amplify.getProjectMeta());
+    if (!apiName) {
+      throw new Error(`No AppSync API configured in the project. Use 'amplify add api' to create an API.`);
+    }
+    const resourceDir = this.getResourceDir(apiName);
+    if (updates.transformSchema) {
+      this.writeSchema(resourceDir, updates.transformSchema);
+    }
+    if (updates.conflictResolution) {
+      updates.conflictResolution = await this.createResolverResources(updates.conflictResolution);
+      await writeResolverConfig(updates.conflictResolution, resourceDir);
+    }
+    const authConfig = getAppSyncAuthConfig(this.context.amplify.getProjectMeta());
+
+    if (updates.defaultAuthType) authConfig.defaultAuthentication = appSyncAuthTypeToAuthConfig(updates.defaultAuthType);
+    if (updates.additionalAuthTypes)
+      authConfig.additionalAuthenticationProviders = updates.additionalAuthTypes.map(appSyncAuthTypeToAuthConfig);
+
+    this.context.amplify.updateamplifyMetaAfterResourceUpdate(category, apiName, 'output', { authConfig });
+    this.context.amplify.updateBackendConfigAfterResourceUpdate(category, apiName, 'output', { authConfig });
+  };
+
   private writeSchema = (resourceDir: string, schema: string) => {
     fs.writeFileSync(path.join(resourceDir, gqlSchemaFilename), schema);
   };
 
   private getResourceDir = (apiName: string) => path.join(this.context.amplify.pathManager.getBackendDirPath(), category, apiName);
 
-  private createAmplifyMeta = authConfig => ({
+  private createAmplifyMeta = (authConfig, globalSandboxModeConfig) => ({
     service: 'AppSync',
     providerPlugin: provider,
     output: {
       authConfig,
+      globalSandboxModeConfig,
     },
   });
 
