@@ -207,54 +207,6 @@ export class StateManager {
     JSONUtilities.writeJson(customPoliciesPath, defaultCustomPolicies);
   }
 
-  replaceEnvForCustomPoliciesBetweenEnv = async (envName: string): Promise<void> =>{
-    const meta = this.getMeta();
-    const categories = ['api', 'function'];
-    const categoryObjects = [meta.api, meta.function];
-    let customIAMpolicy: CustomIAMPolicy = {
-      Action: [],
-      Effect: '',
-      Resource: []
-    }
-
-    for (let i = 0; i < categories.length; i++) {
-      if(!categoryObjects[i]) continue;
-      const currentCategory = categories[i];
-      const resourceList = Object.keys(categoryObjects[i]);
-      for (let j = 0; j < resourceList.length; j++) {
-        const resourceName = resourceList[j];
-        const customPoliciesPath = pathManager.getCustomPoliciesPath(categories[i], resourceName);
-        if (!customPoliciesPath) continue;
-        const data = JSONUtilities.readJson<any>(customPoliciesPath, {throwIfNotExist : false})
-        if(!data) continue;
-        const ajv = new Ajv();
-        const validatePolicy = ajv.compile(CustomIAMPolicySchema);
-
-        const cfnFile = `${resourceName}-cloudformation-template.json`;
-        const cfnFilePath = path.join(pathManager.getResourceDirectoryPath(undefined, currentCategory, resourceName), cfnFile);
-        const { templateFormat, cfnTemplate } = await readCFNTemplate(cfnFilePath);
-        if (cfnTemplate.Resources?.CustomLambdaExecutionPolicy) {
-          cfnTemplate.Resources.CustomLambdaExecutionPolicy = CustomPolicyFileContentConstant.customExecutionPolicyForFunction;
-        } else if (cfnTemplate.Resources?.CustomExecutionPolicyForContainer) {
-          cfnTemplate.Resources.CustomExecutionPolicyForContainer = CustomPolicyFileContentConstant.customExecutionPolicyForContainer;
-        }
-        for (let policy of data.policies) {
-          if (!validatePolicy(policy)) continue;
-          customIAMpolicy = this.replaceEnvForCustomPolicies(policy, envName);
-        }
-        if (cfnTemplate.Resources?.CustomLambdaExecutionPolicy) {
-          cfnTemplate.Resources.CustomLambdaExecutionPolicy.Properties?.PolicyDocument.Statement.push(customIAMpolicy);
-          await writeCFNTemplate(cfnTemplate, path.join(cfnFilePath), { templateFormat });
-        } else if (cfnTemplate.Resources?.CustomExecutionPolicyForContainer) {
-          cfnTemplate.Resources.CustomExecutionPolicyForContainer.Properties?.PolicyDocument.Statement.push(customIAMpolicy);
-          await writeCFNTemplate(cfnTemplate, path.join(cfnFilePath), { templateFormat });
-        } else {
-          continue;
-        }
-      }
-    }
-  }
-
   localEnvInfoExists = (projectPath?: string): boolean => this.doesExist(pathManager.getLocalEnvFilePath, projectPath);
 
   getLocalEnvInfo = (projectPath?: string, options?: GetOptions<$TSAny>): $TSAny => {
