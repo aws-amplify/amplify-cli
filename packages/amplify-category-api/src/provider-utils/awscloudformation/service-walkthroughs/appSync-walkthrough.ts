@@ -21,6 +21,8 @@ import {
   $TSContext,
   open,
 } from 'amplify-cli-core';
+import { defineGlobalSandboxMode } from '../utils/global-sandbox-mode';
+import { Duration, Expiration } from '@aws-cdk/core';
 
 const serviceName = 'AppSync';
 const elasticContainerServiceName = 'ElasticContainer';
@@ -208,6 +210,9 @@ export const serviceWalkthrough = async (context: $TSContext, defaultValuesFilen
     schemaContent = fs.readFileSync(schemaFilePath, 'utf8');
     askToEdit = false;
   } else {
+    const useExperimentalPipelineTransformer = FeatureFlags.getBoolean('graphQLTransformer.useExperimentalPipelinedTransformer');
+    schemaContent += useExperimentalPipelineTransformer ? defineGlobalSandboxMode(context) : '';
+
     // Schema template selection
     const templateSelectionQuestion = {
       type: inputs[4].type,
@@ -219,7 +224,7 @@ export const serviceWalkthrough = async (context: $TSContext, defaultValuesFilen
 
     const { templateSelection } = await inquirer.prompt(templateSelectionQuestion);
     const schemaFilePath = path.join(graphqlSchemaDir, templateSelection);
-    schemaContent = fs.readFileSync(schemaFilePath, 'utf8');
+    schemaContent += fs.readFileSync(schemaFilePath, 'utf8');
   }
 
   return {

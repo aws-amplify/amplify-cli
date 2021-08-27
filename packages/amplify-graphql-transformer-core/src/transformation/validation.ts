@@ -112,6 +112,7 @@ directive @aws_api_key on FIELD_DEFINITION | OBJECT
 directive @aws_iam on FIELD_DEFINITION | OBJECT
 directive @aws_oidc on FIELD_DEFINITION | OBJECT
 directive @aws_cognito_user_pools(cognito_groups: [String!]) on FIELD_DEFINITION | OBJECT
+directive @allow_public_data_access_with_api_key(env: [String!]) on OBJECT
 
 # Allows transformer libraries to deprecate directive arguments.
 directive @deprecated(reason: String) on FIELD_DEFINITION | INPUT_FIELD_DEFINITION | ENUM | ENUM_VALUE
