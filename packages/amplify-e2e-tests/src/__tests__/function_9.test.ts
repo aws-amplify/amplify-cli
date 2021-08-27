@@ -359,5 +359,50 @@ describe('nodejs', () => {
       expect(apiResponse.graphqlApi).toBeDefined();
       expect(apiResponse.graphqlApi.name).toContain(apiName);
     });
+
+    it('allows granting of API access then revoking it', async () => {
+      const appName = createRandomName();
+
+      await initJSProjectWithProfile(projRoot, { name: appName });
+      await addApiWithoutSchema(projRoot);
+      await updateApiSchema(projRoot, appName, 'simple_model.graphql');
+
+      const random = Math.floor(Math.random() * 10000);
+      const fnName = `integtestfn${random}`;
+
+      await addFunction(
+        projRoot,
+        {
+          name: fnName,
+          functionTemplate: 'Hello World',
+          additionalPermissions: {
+            permissions: ['api'],
+            choices: ['api'],
+            resources: [appName],
+            operations: ['Mutation'],
+          },
+        },
+        'nodejs',
+      );
+
+      let lambdaCFN = readJsonFile(path.join(projRoot, 'amplify', 'backend', 'function', fnName, `${fnName}-cloudformation-template.json`));
+
+      expect(lambdaCFN.Resources.AmplifyResourcesPolicy.Properties.PolicyDocument.Statement.length).toBe(1);
+
+      await updateFunction(
+        projRoot,
+        {
+          additionalPermissions: {
+            permissions: ['api'], // unselects 'api'
+            choices: ['api'],
+          },
+        },
+        'nodejs',
+      );
+
+      lambdaCFN = readJsonFile(path.join(projRoot, 'amplify', 'backend', 'function', fnName, `${fnName}-cloudformation-template.json`));
+
+      expect(lambdaCFN?.Resources?.AmplifyResourcesPolicy?.Properties?.PolicyDocument?.Statement?.length).toBeUndefined();
+    });
   });
 });
