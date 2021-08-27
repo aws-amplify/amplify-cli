@@ -605,7 +605,7 @@ async function askUserPoolQuestions(context) {
   };
 }
 
-async function askApiKeyQuestions() {
+export async function askApiKeyQuestions() {
   const apiKeyQuestions = [
     {
       type: 'input',

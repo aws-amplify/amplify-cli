@@ -15,6 +15,7 @@ export {
   processDockerConfig,
 } from './provider-utils/awscloudformation/utils/containers-artifacts';
 export { getContainers } from './provider-utils/awscloudformation/docker-compose';
+export { promptToAddApiKey } from './provider-utils/awscloudformation/utils/service-walkthrough-to-add-api-key';
 
 const category = 'api';
 

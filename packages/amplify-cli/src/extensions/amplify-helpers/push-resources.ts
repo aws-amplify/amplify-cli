@@ -7,6 +7,7 @@ import { getEnvInfo } from './get-env-info';
 import { globalSandboxModeEnabled, showGlobalSandboxModeWarning } from './show-global-sandbox-mode-warning';
 import { apiKeyIsActive, hasApiKey } from './api-key';
 import { EnvironmentDoesNotExistError, exitOnNextTick, stateManager, $TSAny, $TSContext } from 'amplify-cli-core';
+import { promptToAddApiKey } from 'amplify-category-api';
 
 export async function pushResources(
   context: $TSContext,
@@ -67,6 +68,11 @@ export async function pushResources(
       context.print.info('The CLI will rollback the last known iterative deployment.');
     }
     continueToPush = await context.amplify.confirmPrompt('Are you sure you want to continue?');
+  }
+
+  if (globalSandboxModeEnabled(context)) {
+    if (!apiKeyIsActive() || !hasApiKey()) await promptToAddApiKey(context);
+    else showGlobalSandboxModeWarning(context);
   }
 
   if (continueToPush) {
