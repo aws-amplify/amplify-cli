@@ -7,6 +7,7 @@ const regionMappings = {
   'us-west-2': 'US West (Oregon)',
   'eu-west-1': 'EU (Ireland)',
   'eu-west-2': 'EU (London)',
+  'eu-west-3': 'EU (Paris)',
   'eu-central-1': 'EU (Frankfurt)',
   'ap-northeast-1': 'Asia Pacific (Tokyo)',
   'ap-northeast-2': 'Asia Pacific (Seoul)',
