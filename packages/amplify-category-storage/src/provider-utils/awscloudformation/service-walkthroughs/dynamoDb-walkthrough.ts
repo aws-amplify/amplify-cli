@@ -1,34 +1,62 @@
-const {
-  getCloudFormationTemplatePath,
-  getExistingStorageAttributeDefinitions,
-  getExistingStorageGSIs,
-  getExistingTableColumnNames,
-} = require('../cfn-template-utils');
-const inquirer = require('inquirer');
+
 import * as path from 'path';
 import * as fs from 'fs-extra';
 import uuid from 'uuid';
-const { ResourceDoesNotExistError, exitOnNextTick } = require('amplify-cli-core');
-import { AmplifyCategories } from '../../../../../amplify-cli-core/lib';
-
+import { printer } from  'amplify-prompts';
+import { $TSContext, AmplifyCategories, pathManager, ResourceDoesNotExistError, exitOnNextTick  } from 'amplify-cli-core';
+import {DynamoDBInputState} from './dynamoDB-input-state'
+import {DynamoDBAttributeDefType, DynamoDBCLIInputs, DynamoDBCLIInputsGSIType, DynamoDBCLIInputsKeyType} from '../service-walkthrough-types/dynamoDB-user-input-types'
+import {DDBStackTransform} from '../cdk-stack-builder/ddb-stack-transform';
+const inquirer = require('inquirer');
 // keep in sync with ServiceName in amplify-AmplifyCategories.STORAGE-function, but probably it will not change
 const FunctionServiceNameLambdaFunction = 'Lambda';
-const parametersFileName = 'parameters.json';
-const storageParamsFileName = 'storage-params.json';
 const serviceName = 'DynamoDB';
-const templateFileName = 'dynamoDb-cloudformation-template.json.ejs';
 
-async function addWalkthrough(context: any, defaultValuesFilename: any, serviceMetadata: any) {
-  // @ts-expect-error ts-migrate(2554) FIXME: Expected 4 arguments, but got 3.
-  return configure(context, defaultValuesFilename, serviceMetadata);
+async function addWalkthrough(context: $TSContext, defaultValuesFilename: string) {
+
+  printer.info ('');
+  printer.info('Welcome to the NoSQL DynamoDB database wizard');
+  printer.info('This wizard asks you a series of questions to help determine how to set up your NoSQL database table.');
+  printer.info('');
+  
+  const defaultValuesSrc = path.join(__dirname, '..', 'default-values', defaultValuesFilename);
+  const { getAllDefaults } = require(defaultValuesSrc);
+  const {amplify} = context;
+  const defaultValues = getAllDefaults(amplify.getProjectDetails());
+
+  const resourceName = await askResourceNameQuestion(context, defaultValues); // Cannot be changed once added
+  const tableName = await askTableNameQuestion(context, defaultValues, resourceName); // Cannot be changed once added
+
+  const { attributeAnswers , indexableAttributeList } = await askAttributeListQuestion(context); 
+
+
+  const partitionKey = await askPrimaryKeyQuestion(indexableAttributeList, attributeAnswers); // Cannot be changed once added
+
+  let cliInputs: DynamoDBCLIInputs = {
+    resourceName,
+    tableName,
+    partitionKey
+  };
+
+  cliInputs.sortKey = await askSortKeyQuestion(context, indexableAttributeList, attributeAnswers, cliInputs.partitionKey.fieldName);
+
+  cliInputs.gsi = await askGSIQuestion(context, indexableAttributeList, attributeAnswers);
+
+  cliInputs.triggerFunctions = await askTriggersQuestion(context, cliInputs.resourceName);
+
+  const cliInputsState = new DynamoDBInputState(cliInputs.resourceName);
+  cliInputsState.saveCliInputPayload(cliInputs);
+
+  return cliInputs;
+
 }
 
-async function updateWalkthrough(context: any, defaultValuesFilename: any, serviceMetadata: any) {
+async function updateWalkthrough(context: $TSContext) {
   // const resourceName = resourceAlreadyExists(context);
   const { amplify } = context;
   const { amplifyMeta } = amplify.getProjectDetails();
 
-  const dynamoDbResources = {};
+  const dynamoDbResources: any = {};
 
   Object.keys(amplifyMeta[AmplifyCategories.STORAGE]).forEach(resourceName => {
     if (
@@ -36,7 +64,7 @@ async function updateWalkthrough(context: any, defaultValuesFilename: any, servi
       amplifyMeta[AmplifyCategories.STORAGE][resourceName].mobileHubMigrated !== true &&
       amplifyMeta[AmplifyCategories.STORAGE][resourceName].serviceType !== 'imported'
     ) {
-      // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
+      
       dynamoDbResources[resourceName] = amplifyMeta[AmplifyCategories.STORAGE][resourceName];
     }
   });
@@ -44,7 +72,7 @@ async function updateWalkthrough(context: any, defaultValuesFilename: any, servi
   if (!amplifyMeta[AmplifyCategories.STORAGE] || Object.keys(dynamoDbResources).length === 0) {
     const errMessage = 'No resources to update. You need to add a resource.';
 
-    context.print.error(errMessage);
+    printer.error(errMessage);
     context.usageData.emitError(new ResourceDoesNotExistError(errMessage));
     exitOnNextTick(0);
     return;
@@ -62,387 +90,60 @@ async function updateWalkthrough(context: any, defaultValuesFilename: any, servi
 
   const answer = await inquirer.prompt(question);
 
-  return await configure(context, defaultValuesFilename, serviceMetadata, answer.resourceName);
+  const cliInputsState = new DynamoDBInputState(answer.resourceName);
+
+  const cliInputs = cliInputsState.getCliInputPayload();
+
+  let existingAttributeDefinitions: DynamoDBCLIInputsKeyType[] = [];
+
+  if(cliInputs.partitionKey) {
+    existingAttributeDefinitions.push(cliInputs.partitionKey);
+  }
+  if(cliInputs.sortKey) {
+    existingAttributeDefinitions.push(cliInputs.sortKey);
+  }
+  if(cliInputs.gsi && cliInputs.gsi.length > 0) {
+    cliInputs.gsi.forEach((gsi:DynamoDBCLIInputsGSIType) => {
+      if(gsi.partitionKey) {
+        existingAttributeDefinitions.push(gsi.partitionKey)
+      }
+      if(gsi.sortKey) {
+        existingAttributeDefinitions.push(gsi.sortKey)
+      }
+    })
+  }
+
+  if(!cliInputs.resourceName) {
+    throw new Error('resourceName not found in cli-inputs');
+  }
+
+  const { attributeAnswers, indexableAttributeList } = await askAttributeListQuestion(context, existingAttributeDefinitions); 
+
+  cliInputs.gsi = await askGSIQuestion(context, indexableAttributeList, attributeAnswers, cliInputs.gsi);
+  cliInputs.triggerFunctions = await askTriggersQuestion(context, cliInputs.resourceName, cliInputs.triggerFunctions);
+
+  cliInputsState.saveCliInputPayload(cliInputs);
+
+  const stackGenerator = new DDBStackTransform(cliInputs.resourceName);
+  stackGenerator.transform();
+
+  return cliInputs;
+
 }
 
-async function configure(context: any, defaultValuesFilename: any, serviceMetadata: any, resourceName: any) {
-  const { amplify, print } = context;
-  const { inputs } = serviceMetadata;
-  const defaultValuesSrc = path.join(__dirname, '..', 'default-values', defaultValuesFilename);
-  const { getAllDefaults } = require(defaultValuesSrc);
-
-  const defaultValues = getAllDefaults(amplify.getProjectDetails());
-  const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
-
-  const attributeTypes = {
-    string: { code: 'S', indexable: true },
-    number: { code: 'N', indexable: true },
-    binary: { code: 'B', indexable: true },
-    boolean: { code: 'BOOL', indexable: false },
-    list: { code: 'L', indexable: false },
-    map: { code: 'M', indexable: false },
-    null: { code: 'NULL', indexable: false },
-    'string set': { code: 'SS', indexable: false },
-    'number set': { code: 'NS', indexable: false },
-    'binary set': { code: 'BS', indexable: false },
-  };
-  let usedAttributeDefinitions = new Set();
-  let storageParams = {};
-
-  if (resourceName) {
-    const resourceDirPath = path.join(projectBackendDirPath, AmplifyCategories.STORAGE, resourceName);
-    const parametersFilePath = path.join(resourceDirPath, parametersFileName);
-    let parameters;
-
-    try {
-      parameters = context.amplify.readJsonFile(parametersFilePath);
-    } catch (e) {
-      parameters = {};
-    }
-
-    parameters.resourceName = resourceName;
-
-    Object.assign(defaultValues, parameters);
-
-    // Get storage question params
-    const storageParamsFilePath = path.join(resourceDirPath, storageParamsFileName);
-
-    try {
-      storageParams = context.amplify.readJsonFile(storageParamsFilePath);
-    } catch (e) {
-      storageParams = {};
-    }
-  }
-
-  const resourceQuestions = [
-    {
-      type: inputs[0].type,
-      name: inputs[0].key,
-      message: inputs[0].question,
-      validate: amplify.inputValidation(inputs[0]),
-      default: () => {
-        const defaultValue = defaultValues[inputs[0].key];
-        return defaultValue;
-      },
-    },
-    {
-      type: inputs[1].type,
-      name: inputs[1].key,
-      message: inputs[1].question,
-      validate: amplify.inputValidation(inputs[1]),
-      default: (answers: any) => {
-        const defaultValue = defaultValues[inputs[1].key];
-        return answers.resourceName || defaultValue;
-      },
-    },
-  ];
-
-  print.info('');
-  print.info('Welcome to the NoSQL DynamoDB database wizard');
-  print.info('This wizard asks you a series of questions to help determine how to set up your NoSQL database table.');
-  print.info('');
-
-  // Ask resource and table name question
-
-  let answers = {};
-
-  if (!resourceName) {
-    answers = await inquirer.prompt(resourceQuestions);
-  }
-
-  print.info('');
-  print.info('You can now add columns to the table.');
-  print.info('');
-
-  // Ask attribute questions
-
-  const attributeQuestion = {
-    type: inputs[2].type,
-    name: inputs[2].key,
-    message: inputs[2].question,
-    validate: amplify.inputValidation(inputs[2]),
-  };
-  const attributeTypeQuestion = {
-    type: inputs[3].type,
-    name: inputs[3].key,
-    message: inputs[3].question,
-    choices: Object.keys(attributeTypes),
-  };
-
-  let continueAttributeQuestion = true;
-  const attributeAnswers = [];
-
-  if (resourceName) {
-    attributeAnswers.push(
-      {
-        AttributeName: defaultValues.partitionKeyName,
-        AttributeType: defaultValues.partitionKeyType,
-      },
-      {
-        AttributeName: defaultValues.sortKeyName,
-        AttributeType: defaultValues.sortKeyType,
-      },
-    );
-
-    continueAttributeQuestion = await amplify.confirmPrompt('Would you like to add another column?');
-  }
-
-  const indexableAttributeList = await getExistingTableColumnNames(resourceName);
-
-  while (continueAttributeQuestion) {
-    const attributeAnswer = await inquirer.prompt([attributeQuestion, attributeTypeQuestion]);
-
-    if (attributeAnswers.findIndex(attribute => attribute.AttributeName === attributeAnswer[inputs[2].key]) !== -1) {
-      continueAttributeQuestion = await amplify.confirmPrompt('This attribute was already added. Do you want to add another attribute?');
-      continue;
-    }
-
-    attributeAnswers.push({
-      AttributeName: attributeAnswer[inputs[2].key],
-      // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-      AttributeType: attributeTypes[attributeAnswer[inputs[3].key]].code,
-    });
-
-    // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-    if (attributeTypes[attributeAnswer[inputs[3].key]].indexable) {
-      indexableAttributeList.push(attributeAnswer[inputs[2].key]);
-    }
-
-    continueAttributeQuestion = await amplify.confirmPrompt('Would you like to add another column?');
-  }
-
-  (answers as any).AttributeDefinitions = attributeAnswers;
-
-  print.info('');
-  print.info(
-    'Before you create the database, you must specify how items in your table are uniquely organized. You do this by specifying a primary key. The primary key uniquely identifies each item in the table so that no two items can have the same key. This can be an individual column, or a combination that includes a primary key and a sort key.',
-  );
-  print.info('');
-  print.info('To learn more about primary keys, see:');
-  print.info(
-    'https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.CoreComponents.html#HowItWorks.CoreComponents.PrimaryKey',
-  );
-  print.info('');
-  // Ask for primary key
-(answers as any).KeySchema = [];
-  let partitionKeyName: any;
-  let partitionKeyType;
-
-  if (resourceName) {
-    ({ partitionKeyName } = defaultValues);
-    ({ partitionKeyType } = defaultValues);
-  } else {
-    const primaryKeyQuestion = {
-      type: inputs[4].type,
-      name: inputs[4].key,
-      message: inputs[4].question,
-      validate: amplify.inputValidation(inputs[3]),
-      choices: indexableAttributeList,
-    };
-
-    const partitionKeyAnswer = await inquirer.prompt([primaryKeyQuestion]);
-
-    partitionKeyName = partitionKeyAnswer[inputs[4].key];
-  }
-
-  (answers as any).KeySchema.push({
-    AttributeName: partitionKeyName,
-    KeyType: 'HASH',
-});
-
-  // Get the type for primary index
-const primaryAttrTypeIndex = (answers as any).AttributeDefinitions.findIndex((attr: any) => attr.AttributeName === partitionKeyName);
-
-  partitionKeyType = (answers as any).AttributeDefinitions[primaryAttrTypeIndex].AttributeType;
-
-  usedAttributeDefinitions.add(partitionKeyName);
-
-  let sortKeyName: any;
-  let sortKeyType;
-
-  if (resourceName) {
-    ({ sortKeyName } = defaultValues);
-
-    if (sortKeyName) {
-      (answers as any).KeySchema.push({
-    AttributeName: sortKeyName,
-    KeyType: 'RANGE',
-});
-
-      usedAttributeDefinitions.add(sortKeyName);
-    }
-  } else if (await amplify.confirmPrompt('Do you want to add a sort key to your table?')) {
-    // Ask for sort key
-    if ((answers as any).AttributeDefinitions.length > 1) {
-      const sortKeyQuestion = {
-        type: inputs[5].type,
-        name: inputs[5].key,
-        message: inputs[5].question,
-        choices: indexableAttributeList.filter((att: any) => att !== partitionKeyName),
-      };
-      const sortKeyAnswer = await inquirer.prompt([sortKeyQuestion]);
-
-      sortKeyName = sortKeyAnswer[inputs[5].key];
-
-      (answers as any).KeySchema.push({
-    AttributeName: sortKeyName,
-    KeyType: 'RANGE',
-});
-
-      usedAttributeDefinitions.add(sortKeyName);
-    } else {
-      context.print.error('You must add additional keys in order to select a sort key.');
-    }
-  }
-
-  if (sortKeyName) {
-    // Get the type for primary index
-const sortKeyAttrTypeIndex = (answers as any).AttributeDefinitions.findIndex((attr: any) => attr.AttributeName === sortKeyName);
-    sortKeyType = (answers as any).AttributeDefinitions[sortKeyAttrTypeIndex].AttributeType;
-  }
-
-  (answers as any).KeySchema = (answers as any).KeySchema;
-
-  print.info('');
-  print.info(
-    'You can optionally add global secondary indexes for this table. These are useful when you run queries defined in a different column than the primary key.',
-  );
-  print.info('To learn more about indexes, see:');
-  print.info(
-    'https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.CoreComponents.html#HowItWorks.CoreComponents.SecondaryIndexes',
-  );
-  print.info('');
-
-  // Ask for GSI's
-
-  if (await amplify.confirmPrompt('Do you want to add global secondary indexes to your table?')) {
-    let continuewithGSIQuestions = true;
-    const gsiList = [];
-
-    while (continuewithGSIQuestions) {
-      if (indexableAttributeList.length > 0) {
-        const gsiAttributeQuestion = {
-          type: inputs[6].type,
-          name: inputs[6].key,
-          message: inputs[6].question,
-        };
-        const gsiPrimaryKeyQuestion = {
-          type: inputs[7].type,
-          name: inputs[7].key,
-          message: inputs[7].question,
-          validate: amplify.inputValidation(inputs[3]),
-          choices: indexableAttributeList,
-        };
-
-        /*eslint-disable*/
-        const gsiPrimaryAnswer = await inquirer.prompt([gsiAttributeQuestion, gsiPrimaryKeyQuestion]);
-
-        const gsiPrimaryKeyName = gsiPrimaryAnswer[inputs[7].key];
-
-        /* eslint-enable */
-        const gsiItem = {
-          ProvisionedThroughput: {
-            ReadCapacityUnits: '5',
-            WriteCapacityUnits: '5',
-          },
-          Projection: {
-            ProjectionType: 'ALL',
-          },
-          IndexName: gsiPrimaryAnswer[inputs[6].key],
-          KeySchema: [
-            {
-              AttributeName: gsiPrimaryKeyName,
-              KeyType: 'HASH',
-            },
-          ],
-        };
-
-        usedAttributeDefinitions.add(gsiPrimaryKeyName);
-
-        const sortKeyOptions = indexableAttributeList.filter((att: any) => att !== gsiPrimaryKeyName);
-
-        if (sortKeyOptions.length > 0) {
-          if (await amplify.confirmPrompt('Do you want to add a sort key to your global secondary index?')) {
-            const sortKeyQuestion = {
-              type: inputs[8].type,
-              name: inputs[8].key,
-              message: inputs[8].question,
-              choices: sortKeyOptions,
-            };
-
-            const sortKeyAnswer = await inquirer.prompt([sortKeyQuestion]);
-
-            gsiItem.KeySchema.push({
-              AttributeName: sortKeyAnswer[inputs[8].key],
-              KeyType: 'RANGE',
-            });
-
-            usedAttributeDefinitions.add(sortKeyAnswer[inputs[8].key]);
-          }
-        }
-
-        gsiList.push(gsiItem);
-
-        continuewithGSIQuestions = await amplify.confirmPrompt('Do you want to add more global secondary indexes to your table?');
-      } else {
-        context.print.error('You do not have any other attributes remaining to configure');
-        break;
-      }
-    }
-
-    // if resource name is undefined then it's an 'add storage' we want to check on an update
-    if (resourceName) {
-      const existingGSIs = await getExistingStorageGSIs(resourceName);
-      const existingAttributeDefinitions = await getExistingStorageAttributeDefinitions(resourceName);
-      const allAttributeDefinitionsMap = new Map([
-    ...existingAttributeDefinitions.map((r: any) => [r.AttributeName, r]),
-    ...(answers as any).AttributeDefinitions.map((r: any) => [r.AttributeName, r]),
-]);
-
-      if (
-        !!existingGSIs.length &&
-        (await amplify.confirmPrompt('Do you want to keep existing global seconday indexes created on your table?'))
-      ) {
-        existingGSIs.forEach((r: any) => gsiList.push(r));
-        (answers as any).AttributeDefinitions = [...allAttributeDefinitionsMap.values()];
-
-        usedAttributeDefinitions = existingGSIs.reduce((prev: any, current: any) => {
-          current.KeySchema.map((r: any) => prev.add(r.AttributeName));
-          return prev;
-        }, usedAttributeDefinitions);
-      }
-    }
-
-    if (gsiList.length > 0) {
-      (answers as any).GlobalSecondaryIndexes = gsiList;
-    }
-  }
-
-  // @ts-expect-error ts-migrate(2740) FIXME: Type 'unknown[]' is missing the following properti... Remove this comment to see the full error message
-  usedAttributeDefinitions = Array.from(usedAttributeDefinitions);
-
-  /* Filter out only attribute
- * definitions which have been used - cfn errors out otherwise */
-(answers as any).AttributeDefinitions = (answers as any).AttributeDefinitions.filter((attributeDefinition: any) => (usedAttributeDefinitions as any).indexOf(attributeDefinition.AttributeName) !== -1);
-
-  Object.assign(defaultValues, answers);
-
-  // Ask Lambda trigger question
-  if (!storageParams || !(storageParams as any).triggerFunctions || (storageParams as any).triggerFunctions.length === 0) {
+async function askTriggersQuestion(context: $TSContext, resourceName: string, existingTriggerFunctions?: string[]): Promise<string[]>  {
+  const {amplify} = context;
+  let triggerFunctions: string[] = existingTriggerFunctions || [];
+
+  if(!existingTriggerFunctions || existingTriggerFunctions.length === 0) {
     if (await amplify.confirmPrompt('Do you want to add a Lambda Trigger for your Table?', false)) {
       let triggerName;
-
       try {
         // @ts-expect-error ts-migrate(2554) FIXME: Expected 3 arguments, but got 2.
-        triggerName = await addTrigger(context, defaultValues.resourceName);
-
-        if (!storageParams) {
-          storageParams = {};
-        }
-
-        (storageParams as any).triggerFunctions = [triggerName];
+        triggerName = await addTrigger(context, resourceName);
+        return [triggerName];
       } catch (e) {
-        context.print.error(e.message);
+        printer.error(e.message);
       }
     }
   } else {
@@ -461,40 +162,33 @@ const sortKeyAttrTypeIndex = (answers as any).AttributeDefinitions.findIndex((at
       switch (triggerOperationAnswer.triggerOperation) {
         case 'Add a Trigger': {
           try {
-            triggerName = await addTrigger(context, defaultValues.resourceName, (storageParams as any).triggerFunctions);
-            if (!storageParams) {
-              storageParams = {};
-            } else if (!(storageParams as any).triggerFunctions) {
-              (storageParams as any).triggerFunctions = [triggerName];
-            } else {
-              (storageParams as any).triggerFunctions.push(triggerName);
-            }
-
+            triggerName = await addTrigger(context, resourceName, triggerFunctions);
+            triggerFunctions.push(triggerName);
             continueWithTriggerOperationQuestion = false;
           } catch (e) {
-            context.print.error(e.message);
+            printer.error(e.message);
             continueWithTriggerOperationQuestion = true;
           }
           break;
         }
         case 'Remove a trigger': {
           try {
-            if (!storageParams || !(storageParams as any).triggerFunctions || (storageParams as any).triggerFunctions.length === 0) {
+            if (triggerFunctions.length === 0) {
               throw new Error('No triggers found associated with this table');
             } else {
-              triggerName = await removeTrigger(context, defaultValues.resourceName, (storageParams as any).triggerFunctions);
+              triggerName = await removeTrigger(context, resourceName, triggerFunctions);
 
-              const index = (storageParams as any).triggerFunctions.indexOf(triggerName);
+              const index = triggerFunctions.indexOf(triggerName);
 
               if (index >= 0) {
-                (storageParams as any).triggerFunctions.splice(index, 1);
+                triggerFunctions.splice(index, 1);
                 continueWithTriggerOperationQuestion = false;
               } else {
                 throw new Error('Could not find trigger function');
               }
             }
           } catch (e) {
-            context.print.error(e.message);
+            printer.error(e.message);
             continueWithTriggerOperationQuestion = true;
           }
 
@@ -505,47 +199,319 @@ const sortKeyAttrTypeIndex = (answers as any).AttributeDefinitions.findIndex((at
           break;
         }
         default:
-          context.print.error(`${triggerOperationAnswer.triggerOperation} not supported`);
+          printer.error(`${triggerOperationAnswer.triggerOperation} not supported`);
       }
     }
   }
-
-  const resource = defaultValues.resourceName;
-  const resourceDirPath = path.join(projectBackendDirPath, AmplifyCategories.STORAGE, resource);
-
-  delete defaultValues.resourceName;
-
-  fs.ensureDirSync(resourceDirPath);
-
-  const parametersFilePath = path.join(resourceDirPath, parametersFileName);
-
-  // Copy just the table name as parameters
-  const parameters = {
-    tableName: defaultValues.tableName,
-    partitionKeyName,
-    partitionKeyType,
-  };
-
-  if (sortKeyName) {
-    Object.assign(parameters, { sortKeyName, sortKeyType });
-  }
-
-  let jsonString = JSON.stringify(parameters, null, 4);
-
-  fs.writeFileSync(parametersFilePath, jsonString, 'utf8');
-
-  const storageParamsFilePath = path.join(resourceDirPath, storageParamsFileName);
-
-  jsonString = JSON.stringify(storageParams, null, 4);
-
-  fs.writeFileSync(storageParamsFilePath, jsonString, 'utf8');
-
-  await copyCfnTemplate(context, resource, defaultValues);
-
-  return resource;
+  return triggerFunctions;
 }
 
-async function removeTrigger(context: any, resourceName: any, triggerList: any) {
+async function askGSIQuestion(context: $TSContext, indexableAttributeList: string[], attributeDefinitions: DynamoDBAttributeDefType[], existingGSIList?: DynamoDBCLIInputsGSIType[])  {
+
+  printer.info('');
+  printer.info(
+    'You can optionally add global secondary indexes for this table. These are useful when you run queries defined in a different column than the primary key.',
+  );
+  printer.info('To learn more about indexes, see:');
+  printer.info(
+    'https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.CoreComponents.html#HowItWorks.CoreComponents.SecondaryIndexes',
+  );
+  printer.info('');
+
+  const {amplify} = context;
+  let gsiList: DynamoDBCLIInputsGSIType[] = [];
+
+  if (
+    existingGSIList && !!existingGSIList.length &&
+    (await amplify.confirmPrompt('Do you want to keep existing global seconday indexes created on your table?'))
+  ) {
+   gsiList = existingGSIList;
+  }
+
+
+  if (await amplify.confirmPrompt('Do you want to add global secondary indexes to your table?')) {
+    let continuewithGSIQuestions = true;
+
+    while (continuewithGSIQuestions) {
+      if (indexableAttributeList.length > 0) {
+        const gsiAttributeQuestion = {
+          type: 'input',
+          name: 'gsiName',
+          message: 'Please provide the GSI name:',
+          validate: amplify.inputValidation({
+            validation: {
+              operator: 'regex',
+              value: '^[a-zA-Z0-9_-]+$',
+              onErrorMsg: 'You can use the following characters: a-z A-Z 0-9 - _',
+            }
+          }),
+        };
+        const gsiPrimaryKeyQuestion = {
+          type: 'list',
+          name: 'gsiPartitionKey',
+          message: 'Please choose partition key for the GSI:',
+          choices: [...new Set(indexableAttributeList)],
+        };
+
+        /*eslint-disable*/
+        const gsiPrimaryAnswer = await inquirer.prompt([gsiAttributeQuestion, gsiPrimaryKeyQuestion]);
+
+        const gsiPrimaryKeyName = gsiPrimaryAnswer['gsiPartitionKey'];
+        const gsiPrimaryKeyIndex = attributeDefinitions.findIndex((attr: DynamoDBAttributeDefType) => attr.AttributeName === gsiPrimaryKeyName);
+
+        /* eslint-enable */
+        let gsiItem: DynamoDBCLIInputsGSIType = {
+          name: gsiPrimaryAnswer['gsiName'],
+          partitionKey: {
+              fieldName: gsiPrimaryKeyName,
+              fieldType: attributeDefinitions[gsiPrimaryKeyIndex].AttributeType,
+            }
+        };
+
+        const sortKeyOptions = indexableAttributeList.filter((att: string) => att !== gsiPrimaryKeyName);
+
+        if (sortKeyOptions.length > 0) {
+          if (await amplify.confirmPrompt('Do you want to add a sort key to your global secondary index?')) {
+            const sortKeyQuestion = {
+              type: 'list',
+              name: 'gsiSortKey',
+              message: 'Please choose sort key for the GSI:',
+              choices: [...new Set(sortKeyOptions)],
+            };
+
+            const sortKeyAnswer = await inquirer.prompt([sortKeyQuestion]);
+
+            const gsiSortKeyName = sortKeyAnswer['gsiSortKey'];
+            const gsiSortKeyIndex = attributeDefinitions.findIndex((attr: DynamoDBAttributeDefType) => attr.AttributeName === gsiSortKeyName);
+
+            gsiItem.sortKey = {
+              fieldName: sortKeyAnswer['gsiSortKey'],
+              fieldType: attributeDefinitions[ gsiSortKeyIndex].AttributeType,
+            };
+
+          }
+        }
+
+        gsiList.push(gsiItem);
+        continuewithGSIQuestions = await amplify.confirmPrompt('Do you want to add more global secondary indexes to your table?');
+      } else {
+        printer.error('You do not have any other attributes remaining to configure');
+        break;
+      }
+    }
+  }
+  return gsiList;
+}
+
+async function askSortKeyQuestion(context: $TSContext, indexableAttributeList: string[], attributeDefinitions: DynamoDBAttributeDefType[], partitionKeyFieldName: string): Promise<undefined | DynamoDBCLIInputsKeyType> {
+
+  const {amplify} = context;
+
+  if (await amplify.confirmPrompt('Do you want to add a sort key to your table?')) {
+    // Ask for sort key
+    if (attributeDefinitions.length > 1) {
+      const sortKeyQuestion = {
+        type: 'list',
+        name: 'sortKey',
+        message: 'Please choose sort key for the table:',
+        choices: indexableAttributeList.filter((att: string) => att !== partitionKeyFieldName),
+      };
+
+      const sortKeyAnswer = await inquirer.prompt([sortKeyQuestion]);
+
+      const sortKeyName = sortKeyAnswer['sortKey'];
+      const sortKeyAttrTypeIndex = attributeDefinitions.findIndex((attr: DynamoDBAttributeDefType) => attr.AttributeName === sortKeyName);
+
+      return {
+        fieldName: sortKeyName,
+        fieldType: attributeDefinitions[sortKeyAttrTypeIndex].AttributeType
+      }
+
+    } else {
+      printer.error('You must add additional keys in order to select a sort key.');
+    }
+  }
+  return;
+}
+
+async function askPrimaryKeyQuestion(indexableAttributeList: string[], attributeDefinitions: DynamoDBAttributeDefType[])  {
+
+  printer.info('');
+  printer.info(
+    'Before you create the database, you must specify how items in your table are uniquely organized. You do this by specifying a primary key. The primary key uniquely identifies each item in the table so that no two items can have the same key. This can be an individual column, or a combination that includes a primary key and a sort key.',
+  );
+  printer.info('');
+  printer.info('To learn more about primary keys, see:');
+  printer.info(
+    'https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.CoreComponents.html#HowItWorks.CoreComponents.PrimaryKey',
+  );
+  printer.info('');
+
+
+  const primaryKeyQuestion = {
+    type: 'list',
+    name: 'partitionKey',
+    message: 'Please choose partition key for the table:',
+    choices: indexableAttributeList,
+  };
+
+  const partitionKeyAnswer = await inquirer.prompt([primaryKeyQuestion]);
+
+  const partitionKeyName = partitionKeyAnswer['partitionKey'];
+  const primaryAttrTypeIndex = attributeDefinitions.findIndex((attr: DynamoDBAttributeDefType) => attr.AttributeName === partitionKeyName);
+
+  return {
+    fieldName: partitionKeyName,
+    fieldType: attributeDefinitions[primaryAttrTypeIndex].AttributeType
+  }
+
+
+}
+
+async function askAttributeListQuestion(context: $TSContext, existingAttributeDefinitions?: DynamoDBCLIInputsKeyType[])  {
+
+  const attributeTypes = {
+    string: { code: 'string', indexable: true },
+    number: { code: 'number', indexable: true },
+    binary: { code: 'binary', indexable: true },
+    boolean: { code: 'boolean', indexable: false },
+    list: { code: 'list', indexable: false },
+    map: { code: 'map', indexable: false },
+    null: { code: 'null', indexable: false },
+    'string-set': { code: 'string-set', indexable: false },
+    'number-set': { code: 'number-set', indexable: false },
+    'binary-set': { code: 'binary-set', indexable: false },
+  };
+
+  printer.info('');
+  printer.info('You can now add columns to the table.');
+  printer.info('');
+
+  const QUESTION_KEY = 'attribute';
+  const {amplify} = context;
+
+  const attributeQuestion = {
+    type: 'input',
+    name: QUESTION_KEY,
+    message: 'What would you like to name this column:',
+    validate: amplify.inputValidation({
+      validation: {
+        operator: 'regex',
+        value: '^[a-zA-Z0-9_-]+$',
+        onErrorMsg: "'You can use the following characters: a-z A-Z 0-9 - _'",
+      }
+    })
+  };
+
+  const attributeTypeQuestion = {
+    type: 'list',
+    name: 'attributeType',
+    message: 'Please choose the data type:',
+    choices: Object.keys(attributeTypes),
+  };
+
+  let continueAttributeQuestion = true;
+  let attributeAnswers: DynamoDBAttributeDefType[] = [];
+  let indexableAttributeList: string[] = [];
+  let existingAttributes: DynamoDBAttributeDefType[] = [];
+
+  if(existingAttributeDefinitions) {
+    existingAttributes = existingAttributeDefinitions.map( (attr:DynamoDBCLIInputsKeyType) => {
+      return {
+        AttributeName: attr.fieldName,
+        AttributeType: attr.fieldType
+      }
+    });
+  }
+
+  if (existingAttributes.length > 0) {
+    attributeAnswers = existingAttributes;
+    indexableAttributeList = attributeAnswers.map((attr:DynamoDBAttributeDefType) => attr.AttributeName);
+    continueAttributeQuestion = await amplify.confirmPrompt('Would you like to add another column?');
+  }
+
+    while (continueAttributeQuestion) {
+      const attributeAnswer = await inquirer.prompt([attributeQuestion, attributeTypeQuestion]);
+  
+      if (attributeAnswers.findIndex((attribute:DynamoDBAttributeDefType) => attribute.AttributeName === attributeAnswer[QUESTION_KEY]) !== -1) {
+        continueAttributeQuestion = await amplify.confirmPrompt('This attribute was already added. Do you want to add another attribute?');
+        continue;
+      }
+  
+      attributeAnswers.push({
+        AttributeName: attributeAnswer[QUESTION_KEY],
+        // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
+        AttributeType: attributeTypes[attributeAnswer['attributeType']].code,
+      });
+  
+      // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
+      if (attributeTypes[attributeAnswer['attributeType']].indexable) {
+        indexableAttributeList.push(attributeAnswer[QUESTION_KEY]);
+      }
+  
+      continueAttributeQuestion = await amplify.confirmPrompt('Would you like to add another column?');
+    }
+
+
+    return { attributeAnswers, indexableAttributeList};
+
+}
+
+async function askTableNameQuestion(context: $TSContext, defaultValues: any, resourceName: string)  {
+
+  const {amplify} = context;
+
+  const question = [
+    {
+      type: 'input',
+      name: 'tableName',
+      message: 'Please provide table name:',
+      validate: amplify.inputValidation( {
+        validation: {
+        operator: 'regex',
+        value: '^[a-zA-Z0-9._-]+$',
+        onErrorMsg: 'You can use the following characters: a-z A-Z 0-9 . - _',
+      }}),
+      default: (answers: any) => {
+        const defaultValue = defaultValues['tableName'];
+        return resourceName || defaultValue;
+      },
+    },
+  ];
+
+  const answer = await inquirer.prompt(question);
+
+  return answer.tableName;
+
+}
+
+async function askResourceNameQuestion(context: $TSContext, defaultValues: any): Promise<string>  {
+
+  const {amplify} = context;
+
+  const question = [
+    {
+      type: 'input',
+      name: 'resourceName',
+      message: 'Please provide a friendly name for your resource that will be used to label this category in the project:',
+      validate: amplify.inputValidation( {
+        validation: {
+        operator: 'regex',
+        value: '^[a-zA-Z0-9]+$',
+        onErrorMsg: 'Resource name should be alphanumeric',
+      }}),
+      default: () => {
+        const defaultValue = defaultValues['resourceName'];
+        return defaultValue;
+      },
+    }
+  ];
+  const answer = await inquirer.prompt(question);
+  return answer.resourceName;
+
+}
+
+async function removeTrigger(context: any, resourceName: string, triggerList: string[]) {
   const triggerOptionQuestion = {
     type: 'list',
     name: 'triggerOption',
@@ -574,7 +540,7 @@ async function removeTrigger(context: any, resourceName: any, triggerList: any) 
   return functionName;
 }
 
-async function addTrigger(context: any, resourceName: any, triggerList: any) {
+async function addTrigger(context: any, resourceName: string, triggerList: string[]) {
   const triggerTypeQuestion = {
     type: 'list',
     name: 'triggerType',
@@ -588,9 +554,9 @@ async function addTrigger(context: any, resourceName: any, triggerList: any) {
     let lambdaResources = await getLambdaFunctions(context);
 
     if (triggerList) {
-      const filteredLambdaResources: any = [];
+      const filteredLambdaResources: string[] = [];
 
-      lambdaResources.forEach((lambdaResource: any) => {
+      lambdaResources.forEach((lambdaResource: string) => {
         if (triggerList.indexOf(lambdaResource) === -1) {
           filteredLambdaResources.push(lambdaResource);
         }
@@ -664,7 +630,7 @@ async function addTrigger(context: any, resourceName: any, triggerList: any) {
 
     context.amplify.updateamplifyMetaAfterResourceAdd('function', functionName, backendConfigs);
 
-    context.print.success(`Successfully added resource ${functionName} locally`);
+    printer.success(`Successfully added resource ${functionName} locally`);
   }
 
   const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
@@ -764,7 +730,7 @@ async function addTrigger(context: any, resourceName: any, triggerList: any) {
     fs.writeFileSync(functionCFNFilePath, functionCFNString, 'utf8');
 
     context.amplify.updateamplifyMetaAfterResourceUpdate('function', functionName, 'dependsOn', resourceDependsOn);
-    context.print.success(`Successfully updated resource ${functionName} locally`);
+    printer.success(`Successfully updated resource ${functionName} locally`);
 
     if (await context.amplify.confirmPrompt(`Do you want to edit the local ${functionName} lambda function now?`)) {
       await context.amplify.openEditor(context, `${projectBackendDirPath}/function/${functionName}/src/index.js`);
@@ -785,19 +751,6 @@ async function getLambdaFunctions(context: any) {
   return lambdaResources;
 }
 
-function copyCfnTemplate(context: any, resourceName: any, options: any) {
-  const pluginDir = __dirname;
-  const copyJobs = [
-    {
-      dir: pluginDir,
-      template: path.join('..', '..', '..', '..', 'resources', 'cloudformation-templates', templateFileName),
-      target: getCloudFormationTemplatePath(resourceName),
-    },
-  ];
-
-  // copy over the files
-  return context.amplify.copyBatch(context, copyJobs, options);
-}
 
 function migrateCategory(context: any, projectPath: any, resourceName: any) {
   const resourceDirPath = path.join(projectPath, 'amplify', 'backend', AmplifyCategories.STORAGE, resourceName);

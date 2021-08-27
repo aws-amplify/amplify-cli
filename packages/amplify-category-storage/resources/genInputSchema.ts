@@ -1,10 +1,10 @@
 import {TypeDef, CLIInputSchemaGenerator} from "amplify-cli-core";
 
 //ResourceProvider TypeDefs
-// const DDBStorageTypeDef : TypeDef = {
-//   typeName: 'DynamoDBUserInputs',
-//   service: 'dynamoDB'
-// }
+const DDBStorageTypeDef : TypeDef = {
+  typeName: 'DynamoDBCLIInputs',
+  service: 'dynamoDB'
+}
 const S3StorageTypeDef : TypeDef = {
   typeName: 'S3UserInputs',
   service: 's3'
@@ -12,7 +12,8 @@ const S3StorageTypeDef : TypeDef = {
 
 // Defines the type names and the paths to the TS files that define them
 const storageCategoryTypeDefs: TypeDef[] = [
-  S3StorageTypeDef
+  S3StorageTypeDef,
+  DDBStorageTypeDef
 ];
 
 const schemaGenerator = new CLIInputSchemaGenerator(storageCategoryTypeDefs);
