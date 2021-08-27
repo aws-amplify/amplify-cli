@@ -102,7 +102,6 @@ export class SSMClientWrapper {
 
 const getSSMClient = async (context: $TSContext) => {
   const spinner = ora('Initializing SSM Client');
-  context.exeInfo.spinner = spinner;
   try {
     spinner.start();
 
