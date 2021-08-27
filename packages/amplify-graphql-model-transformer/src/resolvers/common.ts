@@ -15,6 +15,7 @@ import {
   ifElse,
   printBlock,
   toJson,
+  str,
 } from 'graphql-mapping-template';
 
 /**
@@ -67,10 +68,20 @@ export const generateDefaultResponseMappingTemplate = (): string => {
 };
 
 /**
- * Util function to gernate resolver key used to keep track of all the resolvers in memory
+ * Util function to generate resolver key used to keep track of all the resolvers in memory
  * @param typeName Name of the type
  * @param fieldName Name of the field
  */
 export const generateResolverKey = (typeName: string, fieldName: string): string => {
   return `${typeName}.${fieldName}`;
+};
+
+/**
+ * Util function to generate sandbox mode expression
+ * @param inputCondition boolean to enable sandbox mode
+ */
+export const generateSandboxMode = (ctx: any): Expression => {
+  if (ctx.resourceHelper.api.globalSandboxModeEnabled)
+    return iff(notEquals(methodCall(ref('util.authType')), str('API_KEY')), methodCall(ref('util.unauthorized')));
+  else return methodCall(ref('util.unauthorized'));
 };

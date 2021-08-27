@@ -58,6 +58,7 @@ $util.qr($ctx.args.input.put(\\"kind#other\\",\\"\${mergedValues.kind}#\${merged
 $util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
 ## set the typename **
 $util.qr($mergedValues.put(\\"__typename\\", \\"Test\\"))
+$util.unauthorized()
 #set( $PutObject = {
   \\"version\\": \\"2018-05-29\\",
   \\"operation\\": \\"PutItem\\",
@@ -139,6 +140,7 @@ $util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
   \\"version\\": \\"2018-05-29\\",
   \\"operation\\": \\"DeleteItem\\"
 } )
+$util.unauthorized()
 #if( $ctx.stash.metadata.modelObjectKey )
   #set( $Key = $ctx.stash.metadata.modelObjectKey )
 #else
@@ -238,6 +240,7 @@ $util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
 #set( $expSet = {} )
 #set( $expAdd = {} )
 #set( $expRemove = [] )
+$util.unauthorized()
 #if( $ctx.stash.metadata.modelObjectKey )
   #set( $Key = $ctx.stash.metadata.modelObjectKey )
 #else
@@ -374,6 +377,7 @@ $util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
   \\"version\\": \\"2018-05-29\\",
   \\"operation\\": \\"GetItem\\"
 } )
+$util.unauthorized()
 #if( $ctx.stash.metadata.modelObjectKey )
   #set( $key = $ctx.stash.metadata.modelObjectKey )
 #else
@@ -505,6 +509,7 @@ $util.qr($ctx.stash.put(\\"modelQueryExpression\\", $modelQueryExpression))
   \\"version\\": \\"2018-05-29\\",
   \\"limit\\": $limit
 } )
+$util.unauthorized()
 #if( $context.args.nextToken )
   #set( $ListRequest.nextToken = $context.args.nextToken )
 #end
@@ -594,6 +599,7 @@ $util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
 $util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
 ## set the typename **
 $util.qr($mergedValues.put(\\"__typename\\", \\"Test\\"))
+$util.unauthorized()
 #set( $PutObject = {
   \\"version\\": \\"2018-05-29\\",
   \\"operation\\": \\"PutItem\\",
@@ -675,6 +681,7 @@ $util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
   \\"version\\": \\"2018-05-29\\",
   \\"operation\\": \\"DeleteItem\\"
 } )
+$util.unauthorized()
 #if( $ctx.stash.metadata.modelObjectKey )
   #set( $Key = $ctx.stash.metadata.modelObjectKey )
 #else
@@ -767,6 +774,7 @@ $util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
 #set( $expSet = {} )
 #set( $expAdd = {} )
 #set( $expRemove = [] )
+$util.unauthorized()
 #if( $ctx.stash.metadata.modelObjectKey )
   #set( $Key = $ctx.stash.metadata.modelObjectKey )
 #else
@@ -903,6 +911,7 @@ $util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
   \\"version\\": \\"2018-05-29\\",
   \\"operation\\": \\"GetItem\\"
 } )
+$util.unauthorized()
 #if( $ctx.stash.metadata.modelObjectKey )
   #set( $key = $ctx.stash.metadata.modelObjectKey )
 #else
@@ -988,6 +997,7 @@ $util.qr($ctx.stash.put(\\"modelQueryExpression\\", $modelQueryExpression))
   \\"version\\": \\"2018-05-29\\",
   \\"limit\\": $limit
 } )
+$util.unauthorized()
 #if( $context.args.nextToken )
   #set( $ListRequest.nextToken = $context.args.nextToken )
 #end
@@ -1076,6 +1086,7 @@ $util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
 $util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
 ## set the typename **
 $util.qr($mergedValues.put(\\"__typename\\", \\"Test\\"))
+$util.unauthorized()
 #set( $PutObject = {
   \\"version\\": \\"2018-05-29\\",
   \\"operation\\": \\"PutItem\\",
@@ -1156,6 +1167,7 @@ $util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
   \\"version\\": \\"2018-05-29\\",
   \\"operation\\": \\"DeleteItem\\"
 } )
+$util.unauthorized()
 #if( $ctx.stash.metadata.modelObjectKey )
   #set( $Key = $ctx.stash.metadata.modelObjectKey )
 #else
@@ -1247,6 +1259,7 @@ $util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
 #set( $expSet = {} )
 #set( $expAdd = {} )
 #set( $expRemove = [] )
+$util.unauthorized()
 #if( $ctx.stash.metadata.modelObjectKey )
   #set( $Key = $ctx.stash.metadata.modelObjectKey )
 #else
@@ -1382,6 +1395,7 @@ $util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
   \\"version\\": \\"2018-05-29\\",
   \\"operation\\": \\"GetItem\\"
 } )
+$util.unauthorized()
 #if( $ctx.stash.metadata.modelObjectKey )
   #set( $key = $ctx.stash.metadata.modelObjectKey )
 #else
@@ -1424,6 +1438,7 @@ $util.qr($ctx.stash.put(\\"modelQueryExpression\\", $modelQueryExpression))
   \\"version\\": \\"2018-05-29\\",
   \\"limit\\": $limit
 } )
+$util.unauthorized()
 #if( $context.args.nextToken )
   #set( $ListRequest.nextToken = $context.args.nextToken )
 #end
@@ -1513,6 +1528,7 @@ $util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
 $util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
 ## set the typename **
 $util.qr($mergedValues.put(\\"__typename\\", \\"Test\\"))
+$util.unauthorized()
 #set( $PutObject = {
   \\"version\\": \\"2018-05-29\\",
   \\"operation\\": \\"PutItem\\",
@@ -1594,6 +1610,7 @@ $util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
   \\"version\\": \\"2018-05-29\\",
   \\"operation\\": \\"DeleteItem\\"
 } )
+$util.unauthorized()
 #if( $ctx.stash.metadata.modelObjectKey )
   #set( $Key = $ctx.stash.metadata.modelObjectKey )
 #else
@@ -1686,6 +1703,7 @@ $util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
 #set( $expSet = {} )
 #set( $expAdd = {} )
 #set( $expRemove = [] )
+$util.unauthorized()
 #if( $ctx.stash.metadata.modelObjectKey )
   #set( $Key = $ctx.stash.metadata.modelObjectKey )
 #else
@@ -1822,6 +1840,7 @@ $util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
   \\"version\\": \\"2018-05-29\\",
   \\"operation\\": \\"GetItem\\"
 } )
+$util.unauthorized()
 #if( $ctx.stash.metadata.modelObjectKey )
   #set( $key = $ctx.stash.metadata.modelObjectKey )
 #else
@@ -1907,6 +1926,7 @@ $util.qr($ctx.stash.put(\\"modelQueryExpression\\", $modelQueryExpression))
   \\"version\\": \\"2018-05-29\\",
   \\"limit\\": $limit
 } )
+$util.unauthorized()
 #if( $context.args.nextToken )
   #set( $ListRequest.nextToken = $context.args.nextToken )
 #end
@@ -1996,6 +2016,7 @@ $util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
 $util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
 ## set the typename **
 $util.qr($mergedValues.put(\\"__typename\\", \\"Test\\"))
+$util.unauthorized()
 #set( $PutObject = {
   \\"version\\": \\"2018-05-29\\",
   \\"operation\\": \\"PutItem\\",
@@ -2077,6 +2098,7 @@ $util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
   \\"version\\": \\"2018-05-29\\",
   \\"operation\\": \\"DeleteItem\\"
 } )
+$util.unauthorized()
 #if( $ctx.stash.metadata.modelObjectKey )
   #set( $Key = $ctx.stash.metadata.modelObjectKey )
 #else
@@ -2185,6 +2207,7 @@ $util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
 $util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
 ## set the typename **
 $util.qr($mergedValues.put(\\"__typename\\", \\"Test\\"))
+$util.unauthorized()
 #set( $PutObject = {
   \\"version\\": \\"2018-05-29\\",
   \\"operation\\": \\"PutItem\\",
@@ -2266,6 +2289,7 @@ $util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
   \\"version\\": \\"2018-05-29\\",
   \\"operation\\": \\"DeleteItem\\"
 } )
+$util.unauthorized()
 #if( $ctx.stash.metadata.modelObjectKey )
   #set( $Key = $ctx.stash.metadata.modelObjectKey )
 #else
@@ -2358,6 +2382,7 @@ $util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
 #set( $expSet = {} )
 #set( $expAdd = {} )
 #set( $expRemove = [] )
+$util.unauthorized()
 #if( $ctx.stash.metadata.modelObjectKey )
   #set( $Key = $ctx.stash.metadata.modelObjectKey )
 #else
@@ -2515,6 +2540,7 @@ $util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
 #set( $expSet = {} )
 #set( $expAdd = {} )
 #set( $expRemove = [] )
+$util.unauthorized()
 #if( $ctx.stash.metadata.modelObjectKey )
   #set( $Key = $ctx.stash.metadata.modelObjectKey )
 #else
@@ -2650,6 +2676,7 @@ $util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
   \\"version\\": \\"2018-05-29\\",
   \\"operation\\": \\"GetItem\\"
 } )
+$util.unauthorized()
 #if( $ctx.stash.metadata.modelObjectKey )
   #set( $key = $ctx.stash.metadata.modelObjectKey )
 #else
@@ -2692,6 +2719,7 @@ $util.qr($ctx.stash.put(\\"modelQueryExpression\\", $modelQueryExpression))
   \\"version\\": \\"2018-05-29\\",
   \\"limit\\": $limit
 } )
+$util.unauthorized()
 #if( $context.args.nextToken )
   #set( $ListRequest.nextToken = $context.args.nextToken )
 #end
@@ -2739,6 +2767,7 @@ $util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
   \\"version\\": \\"2018-05-29\\",
   \\"operation\\": \\"GetItem\\"
 } )
+$util.unauthorized()
 #if( $ctx.stash.metadata.modelObjectKey )
   #set( $key = $ctx.stash.metadata.modelObjectKey )
 #else
@@ -2824,6 +2853,7 @@ $util.qr($ctx.stash.put(\\"modelQueryExpression\\", $modelQueryExpression))
   \\"version\\": \\"2018-05-29\\",
   \\"limit\\": $limit
 } )
+$util.unauthorized()
 #if( $context.args.nextToken )
   #set( $ListRequest.nextToken = $context.args.nextToken )
 #end
@@ -2912,6 +2942,7 @@ $util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
 $util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
 ## set the typename **
 $util.qr($mergedValues.put(\\"__typename\\", \\"Test\\"))
+$util.unauthorized()
 #set( $PutObject = {
   \\"version\\": \\"2018-05-29\\",
   \\"operation\\": \\"PutItem\\",
@@ -2992,6 +3023,7 @@ $util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
   \\"version\\": \\"2018-05-29\\",
   \\"operation\\": \\"DeleteItem\\"
 } )
+$util.unauthorized()
 #if( $ctx.stash.metadata.modelObjectKey )
   #set( $Key = $ctx.stash.metadata.modelObjectKey )
 #else
@@ -3100,6 +3132,7 @@ $util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
 $util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
 ## set the typename **
 $util.qr($mergedValues.put(\\"__typename\\", \\"Test\\"))
+$util.unauthorized()
 #set( $PutObject = {
   \\"version\\": \\"2018-05-29\\",
   \\"operation\\": \\"PutItem\\",
@@ -3181,6 +3214,7 @@ $util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
   \\"version\\": \\"2018-05-29\\",
   \\"operation\\": \\"DeleteItem\\"
 } )
+$util.unauthorized()
 #if( $ctx.stash.metadata.modelObjectKey )
   #set( $Key = $ctx.stash.metadata.modelObjectKey )
 #else
@@ -3273,6 +3307,7 @@ $util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
 #set( $expSet = {} )
 #set( $expAdd = {} )
 #set( $expRemove = [] )
+$util.unauthorized()
 #if( $ctx.stash.metadata.modelObjectKey )
   #set( $Key = $ctx.stash.metadata.modelObjectKey )
 #else
@@ -3429,6 +3464,7 @@ $util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
 #set( $expSet = {} )
 #set( $expAdd = {} )
 #set( $expRemove = [] )
+$util.unauthorized()
 #if( $ctx.stash.metadata.modelObjectKey )
   #set( $Key = $ctx.stash.metadata.modelObjectKey )
 #else
@@ -3564,6 +3600,7 @@ $util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
   \\"version\\": \\"2018-05-29\\",
   \\"operation\\": \\"GetItem\\"
 } )
+$util.unauthorized()
 #if( $ctx.stash.metadata.modelObjectKey )
   #set( $key = $ctx.stash.metadata.modelObjectKey )
 #else
@@ -3606,6 +3643,7 @@ $util.qr($ctx.stash.put(\\"modelQueryExpression\\", $modelQueryExpression))
   \\"version\\": \\"2018-05-29\\",
   \\"limit\\": $limit
 } )
+$util.unauthorized()
 #if( $context.args.nextToken )
   #set( $ListRequest.nextToken = $context.args.nextToken )
 #end
@@ -3653,6 +3691,7 @@ $util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
   \\"version\\": \\"2018-05-29\\",
   \\"operation\\": \\"GetItem\\"
 } )
+$util.unauthorized()
 #if( $ctx.stash.metadata.modelObjectKey )
   #set( $key = $ctx.stash.metadata.modelObjectKey )
 #else
@@ -3738,6 +3777,7 @@ $util.qr($ctx.stash.put(\\"modelQueryExpression\\", $modelQueryExpression))
   \\"version\\": \\"2018-05-29\\",
   \\"limit\\": $limit
 } )
+$util.unauthorized()
 #if( $context.args.nextToken )
   #set( $ListRequest.nextToken = $context.args.nextToken )
 #end

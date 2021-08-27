@@ -19,13 +19,13 @@ import {
   printBlock,
 } from 'graphql-mapping-template';
 import { ModelDirectiveConfiguration } from '../graphql-model-transformer';
-import { generateConditionSlot } from './common';
+import { generateConditionSlot, generateSandboxMode } from './common';
 
 /**
  * Generates VTL template in update mutation
  * @param modelName Name of the model
  */
-export const generateUpdateRequestTemplate = (modelName: string): string => {
+export const generateUpdateRequestTemplate = (modelName: string, ctx: any): string => {
   const objectKeyVariable = 'ctx.stash.metadata.modelObjectKey';
   const keyFields: StringNode[] = [str('id')];
   const statements: Expression[] = [
@@ -41,6 +41,8 @@ export const generateUpdateRequestTemplate = (modelName: string): string => {
     set(ref('expSet'), obj({})),
     set(ref('expAdd'), obj({})),
     set(ref('expRemove'), list([])),
+
+    generateSandboxMode(ctx),
 
     ifElse(
       ref(objectKeyVariable),
@@ -144,7 +146,7 @@ export const generateUpdateRequestTemplate = (modelName: string): string => {
  * Generates VTL template in create mutation
  * @param modelName Name of the model
  */
-export const generateCreateRequestTemplate = (modelName: string): string => {
+export const generateCreateRequestTemplate = (modelName: string, ctx: any): string => {
   const statements: Expression[] = [
     // set key the condition
     ...generateKeyConditionTemplate(false),
@@ -155,6 +157,8 @@ export const generateCreateRequestTemplate = (modelName: string): string => {
     qref(methodCall(ref('mergedValues.putAll'), methodCall(ref('util.defaultIfNull'), ref('ctx.args.input'), obj({})))),
     comment('set the typename'),
     qref(methodCall(ref('mergedValues.put'), str('__typename'), str(modelName))),
+
+    generateSandboxMode(ctx),
 
     // Set PutObject
     set(
@@ -240,7 +244,7 @@ export const generateCreateInitSlotTemplate = (name: string, modelConfig: ModelD
  * Generates VTL template in delete mutation
  *
  */
-export const generateDeleteRequestTemplate = (): string => {
+export const generateDeleteRequestTemplate = (ctx: any): string => {
   const statements: Expression[] = [
     set(
       ref('DeleteRequest'),
@@ -249,6 +253,7 @@ export const generateDeleteRequestTemplate = (): string => {
         operation: str('DeleteItem'),
       }),
     ),
+    generateSandboxMode(ctx),
     ifElse(
       ref('ctx.stash.metadata.modelObjectKey'),
       set(ref('Key'), ref('ctx.stash.metadata.modelObjectKey')),

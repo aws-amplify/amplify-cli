@@ -772,6 +772,7 @@ exports[`ModelTransformer:  should have timestamps as nullable fields when the t
 $util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
 ## set the typename **
 $util.qr($mergedValues.put(\\"__typename\\", \\"Post\\"))
+$util.unauthorized()
 #set( $PutObject = {
   \\"version\\": \\"2018-05-29\\",
   \\"operation\\": \\"PutItem\\",
@@ -845,6 +846,7 @@ $util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
 #set( $expSet = {} )
 #set( $expAdd = {} )
 #set( $expRemove = [] )
+$util.unauthorized()
 #if( $ctx.stash.metadata.modelObjectKey )
   #set( $Key = $ctx.stash.metadata.modelObjectKey )
 #else
@@ -991,6 +993,7 @@ exports[`ModelTransformer:  should not add default primary key when ID is define
 $util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
 ## set the typename **
 $util.qr($mergedValues.put(\\"__typename\\", \\"Post\\"))
+$util.unauthorized()
 #set( $PutObject = {
   \\"version\\": \\"2018-05-29\\",
   \\"operation\\": \\"PutItem\\",
@@ -1347,6 +1350,7 @@ exports[`ModelTransformer:  should not to auto generate createdAt and updatedAt 
 $util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
 ## set the typename **
 $util.qr($mergedValues.put(\\"__typename\\", \\"Post\\"))
+$util.unauthorized()
 #set( $PutObject = {
   \\"version\\": \\"2018-05-29\\",
   \\"operation\\": \\"PutItem\\",
@@ -1420,6 +1424,7 @@ $util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
 #set( $expSet = {} )
 #set( $expAdd = {} )
 #set( $expRemove = [] )
+$util.unauthorized()
 #if( $ctx.stash.metadata.modelObjectKey )
   #set( $Key = $ctx.stash.metadata.modelObjectKey )
 #else
@@ -1718,6 +1723,7 @@ exports[`ModelTransformer:  should not to include createdAt and updatedAt field 
 $util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
 ## set the typename **
 $util.qr($mergedValues.put(\\"__typename\\", \\"Post\\"))
+$util.unauthorized()
 #set( $PutObject = {
   \\"version\\": \\"2018-05-29\\",
   \\"operation\\": \\"PutItem\\",
@@ -1791,6 +1797,7 @@ $util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
 #set( $expSet = {} )
 #set( $expAdd = {} )
 #set( $expRemove = [] )
+$util.unauthorized()
 #if( $ctx.stash.metadata.modelObjectKey )
   #set( $Key = $ctx.stash.metadata.modelObjectKey )
 #else
@@ -2091,6 +2098,7 @@ exports[`ModelTransformer:  should support timestamp parameters when generating 
 $util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
 ## set the typename **
 $util.qr($mergedValues.put(\\"__typename\\", \\"Post\\"))
+$util.unauthorized()
 #set( $PutObject = {
   \\"version\\": \\"2018-05-29\\",
   \\"operation\\": \\"PutItem\\",
@@ -2164,6 +2172,7 @@ $util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
 #set( $expSet = {} )
 #set( $expAdd = {} )
 #set( $expRemove = [] )
+$util.unauthorized()
 #if( $ctx.stash.metadata.modelObjectKey )
   #set( $Key = $ctx.stash.metadata.modelObjectKey )
 #else

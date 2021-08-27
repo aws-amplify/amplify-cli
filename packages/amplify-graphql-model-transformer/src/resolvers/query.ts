@@ -17,13 +17,15 @@ import {
   bool,
   and,
 } from 'graphql-mapping-template';
+import { generateSandboxMode } from './common';
 
 /**
  * Generate get query resolver template
  */
-export const generateGetRequestTemplate = (): string => {
+export const generateGetRequestTemplate = (ctx: any): string => {
   const statements: Expression[] = [
     set(ref('GetRequest'), obj({ version: str('2018-05-29'), operation: str('GetItem') })),
+    generateSandboxMode(ctx),
     ifElse(
       ref('ctx.stash.metadata.modelObjectKey'),
       set(ref('key'), ref('ctx.stash.metadata.modelObjectKey')),
@@ -36,7 +38,7 @@ export const generateGetRequestTemplate = (): string => {
   return printBlock('Get Request template')(compoundExpression(statements));
 };
 
-export const generateListRequestTemplate = (): string => {
+export const generateListRequestTemplate = (ctx: any): string => {
   const requestVariable = 'ListRequest';
   const modelQueryObj = 'ctx.stash.modelQueryExpression';
   const indexNameVariable = 'ctx.stash.metadata.index';
@@ -49,6 +51,7 @@ export const generateListRequestTemplate = (): string => {
         limit: ref('limit'),
       }),
     ),
+    generateSandboxMode(ctx),
     iff(ref('context.args.nextToken'), set(ref(`${requestVariable}.nextToken`), ref('context.args.nextToken'))),
     iff(
       ref('context.args.filter'),
