@@ -630,6 +630,7 @@ $util.toJson({
 $util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
 ## set the typename **
 $util.qr($mergedValues.put(\\"__typename\\", \\"Post\\"))
+$util.unauthorized()
 #set( $PutObject = {
   \\"version\\": \\"2018-05-29\\",
   \\"operation\\": \\"PutItem\\",
@@ -700,6 +701,7 @@ $util.toJson($PutObject)
   \\"version\\": \\"2018-05-29\\",
   \\"operation\\": \\"DeleteItem\\"
 } )
+$util.unauthorized()
 #if( $ctx.stash.metadata.modelObjectKey )
   #set( $Key = $ctx.stash.metadata.modelObjectKey )
 #else
@@ -780,6 +782,7 @@ $util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
 #set( $expSet = {} )
 #set( $expAdd = {} )
 #set( $expRemove = [] )
+$util.unauthorized()
 #if( $ctx.stash.metadata.modelObjectKey )
   #set( $Key = $ctx.stash.metadata.modelObjectKey )
 #else
@@ -909,6 +912,7 @@ $util.toJson($UpdateItem)
   \\"version\\": \\"2018-05-29\\",
   \\"operation\\": \\"GetItem\\"
 } )
+$util.unauthorized()
 #if( $ctx.stash.metadata.modelObjectKey )
   #set( $key = $ctx.stash.metadata.modelObjectKey )
 #else
@@ -932,6 +936,7 @@ $util.toJson($GetRequest)
   \\"version\\": \\"2018-05-29\\",
   \\"limit\\": $limit
 } )
+$util.unauthorized()
 #if( $context.args.nextToken )
   #set( $ListRequest.nextToken = $context.args.nextToken )
 #end

@@ -371,7 +371,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
         typeName,
         fieldName,
         dataSource,
-        MappingTemplate.s3MappingTemplateFromString(generateGetRequestTemplate(), `${typeName}.${fieldName}.req.vtl`),
+        MappingTemplate.s3MappingTemplateFromString(generateGetRequestTemplate(ctx), `${typeName}.${fieldName}.req.vtl`),
         MappingTemplate.s3MappingTemplateFromString(generateDefaultResponseMappingTemplate(), `${typeName}.${fieldName}.res.vtl`),
       );
     }
@@ -391,7 +391,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
         typeName,
         fieldName,
         dataSource,
-        MappingTemplate.s3MappingTemplateFromString(generateListRequestTemplate(), `${typeName}.${fieldName}.req.vtl`),
+        MappingTemplate.s3MappingTemplateFromString(generateListRequestTemplate(ctx), `${typeName}.${fieldName}.req.vtl`),
         MappingTemplate.s3MappingTemplateFromString(generateDefaultResponseMappingTemplate(), `${typeName}.${fieldName}.res.vtl`),
       );
     }
@@ -411,7 +411,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
         typeName,
         fieldName,
         dataSource,
-        MappingTemplate.s3MappingTemplateFromString(generateUpdateRequestTemplate(typeName), `${typeName}.${fieldName}.req.vtl`),
+        MappingTemplate.s3MappingTemplateFromString(generateUpdateRequestTemplate(typeName, ctx), `${typeName}.${fieldName}.req.vtl`),
         MappingTemplate.s3MappingTemplateFromString(generateDefaultResponseMappingTemplate(), `${typeName}.${fieldName}.res.vtl`),
       );
       // Todo: get the slot index from the resolver to keep the name unique and show the order of functions
@@ -439,7 +439,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
         typeName,
         fieldName,
         dataSource,
-        MappingTemplate.s3MappingTemplateFromString(generateDeleteRequestTemplate(), `${typeName}.${fieldName}.req.vtl`),
+        MappingTemplate.s3MappingTemplateFromString(generateDeleteRequestTemplate(ctx), `${typeName}.${fieldName}.req.vtl`),
         MappingTemplate.s3MappingTemplateFromString(generateDefaultResponseMappingTemplate(), `${typeName}.${fieldName}.res.vtl`),
       );
     }
@@ -738,7 +738,10 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
         typeName,
         fieldName,
         dataSource,
-        MappingTemplate.s3MappingTemplateFromString(generateCreateRequestTemplate(type.name.value), `${typeName}.${fieldName}.req.vtl`),
+        MappingTemplate.s3MappingTemplateFromString(
+          generateCreateRequestTemplate(type.name.value, ctx),
+          `${typeName}.${fieldName}.req.vtl`,
+        ),
         MappingTemplate.s3MappingTemplateFromString(generateDefaultResponseMappingTemplate(), `${typeName}.${fieldName}.res.vtl`),
       );
       this.resolverMap[resolverKey] = resolver;

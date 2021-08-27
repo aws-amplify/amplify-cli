@@ -17,6 +17,7 @@ import { Grant, IGrantable, ManagedPolicy, Role, ServicePrincipal } from '@aws-c
 import { CfnResource, Construct, Duration, Stack } from '@aws-cdk/core';
 import { TransformerSchema } from './cdk-compat/schema-asset';
 import { DefaultTransformHost } from './transform-host';
+import { stateManager } from 'amplify-cli-core';
 
 export interface GraphqlApiProps {
   /**
@@ -125,7 +126,7 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
    * The TransformHost object provides resource creation utilities in AWS
    * such as a LambdaDataSource or a DynamoDBDataSource
    */
-  public readonly host: TransformHostProvider
+  public readonly host: TransformHostProvider;
 
   /**
    * the ARN of the API
@@ -160,6 +161,11 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
    * @default - no api key
    */
   public readonly apiKey?: string;
+
+  /**
+   * Global Sandbox Mode for GraphQL API
+   */
+  public readonly globalSandboxModeEnabled?: boolean;
 
   private schemaResource: CfnGraphQLSchema;
   private api: CfnGraphQLApi;
@@ -207,13 +213,28 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
       this.apiKey = this.apiKeyResource.attrApiKey;
     }
 
+    const hasApiKey = modes.some(mode => mode.authorizationType === AuthorizationType.API_KEY);
+    const hasMetaFile = stateManager.metaFileExists();
+
+    if (hasApiKey && hasMetaFile) {
+      const apiConfig = stateManager.getMeta()?.api;
+      const { envName } = stateManager.getLocalEnvInfo();
+      let appSyncApi: any;
+
+      Object.keys(apiConfig).forEach(k => {
+        if (apiConfig[k]['service'] === 'AppSync') appSyncApi = apiConfig[k];
+      });
+      const { globalSandboxModeConfig } = appSyncApi?.output || {};
+
+      this.globalSandboxModeEnabled = globalSandboxModeConfig && globalSandboxModeConfig[envName]?.enabled;
+    }
+
     if (props.host) {
       this.host = props.host;
       this.host.setAPI(this);
-    }
-    else {
+    } else {
       this.host = new DefaultTransformHost({
-        api: this
+        api: this,
       });
     }
   }
