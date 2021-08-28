@@ -1,0 +1,64 @@
+{
+  "type": "object",
+  "properties": {
+    "resourceName": {
+      "type": "string"
+    },
+    "tableName": {
+      "type": "string"
+    },
+    "partitionKey": {
+      "$ref": "#/definitions/DynamoDBCLIInputsKeyType"
+    },
+    "sortKey": {
+      "$ref": "#/definitions/DynamoDBCLIInputsKeyType"
+    },
+    "gsi": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/DynamoDBCLIInputsGSIType"
+      }
+    },
+    "triggerFunctions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "required": ["partitionKey", "resourceName", "tableName"],
+  "definitions": {
+    "DynamoDBCLIInputsKeyType": {
+      "type": "object",
+      "properties": {
+        "fieldName": {
+          "type": "string"
+        },
+        "fieldType": {
+          "$ref": "#/definitions/FieldType"
+        }
+      },
+      "required": ["fieldName", "fieldType"]
+    },
+    "FieldType": {
+      "enum": ["binary", "boolean", "list", "map", "null", "number", "string"],
+      "type": "string"
+    },
+    "DynamoDBCLIInputsGSIType": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "partitionKey": {
+          "$ref": "#/definitions/DynamoDBCLIInputsKeyType"
+        },
+        "sortKey": {
+          "$ref": "#/definitions/DynamoDBCLIInputsKeyType"
+        }
+      },
+      "required": ["name", "partitionKey"]
+    }
+  },
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
