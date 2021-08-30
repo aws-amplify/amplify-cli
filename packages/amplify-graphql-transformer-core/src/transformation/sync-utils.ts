@@ -3,7 +3,8 @@ import * as cdk from '@aws-cdk/core';
 import * as iam from '@aws-cdk/aws-iam';
 import { ResourceConstants, SyncResourceIDs } from 'graphql-transformer-common';
 import { TransformerContext } from '../transformer-context';
-import { SyncConfig, SyncConfigLambda } from '../config/transformer-config';
+import { ResolverConfig, SyncConfig, SyncConfigLambda } from '../config/transformer-config';
+import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 
 type DeltaSyncConfig = {
   DeltaSyncTableName: any;
@@ -83,10 +84,10 @@ export function syncDataSourceConfig(): DeltaSyncConfig {
   };
 }
 
-export function getSyncConfig(ctx: TransformerContext, typeName: string): SyncConfig | undefined {
+export function getSyncConfig(ctx: TransformerContextProvider, typeName: string): SyncConfig | undefined {
   let syncConfig: SyncConfig | undefined;
 
-  const resolverConfig = ctx.getResolverConfig();
+  const resolverConfig = ctx.getResolverConfig<ResolverConfig>();
   syncConfig = resolverConfig?.project;
 
   const typeResolverConfig = resolverConfig?.models?.[typeName];

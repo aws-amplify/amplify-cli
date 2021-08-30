@@ -19,6 +19,9 @@ export interface TransformerContextProvider {
   api: GraphQLAPIProvider;
   resourceHelper: TransformerResourceProvider;
   featureFlags: FeatureFlagProvider;
+
+  isProjectUsingDataStore(): boolean;
+  getResolverConfig<ResolverConfig>(): ResolverConfig | undefined;
 }
 
 export type TransformerBeforeStepContextProvider = Pick<TransformerContextProvider, 'inputDocument' | 'featureFlags'>;
