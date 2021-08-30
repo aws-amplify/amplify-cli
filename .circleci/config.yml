@@ -2330,7 +2330,6 @@ workflows:
                 - beta
                 - /tagged-release\/.*/
                 - /tagged-release-without-e2e-tests\/.*/
-                - ext
       - github_release:
           context: github-publish
           requires:
