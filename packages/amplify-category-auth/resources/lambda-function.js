@@ -36,7 +36,9 @@ exports.handler = async function (event, context) {
     /*removing UnusedAccountValidityDays as deprecated
     InvalidParameterException: Please use TemporaryPasswordValidityDays in PasswordPolicy instead of UnusedAccountValidityDays
     */
-    delete userPoolParams.AdminCreateUserConfig.UnusedAccountValidityDays;
+    if (updateUserPoolConfig.AdminCreateUserConfig && updateUserPoolConfig.AdminCreateUserConfig.UnusedAccountValidityDays) {
+      delete updateUserPoolConfig.AdminCreateUserConfig.UnusedAccountValidityDays;
+    }
 
     lambdaConfig.forEach(lambda => (config[`${lambda.triggerType}`] = lambda.lambdaFunctionArn));
     if (event.RequestType == 'Delete') {
