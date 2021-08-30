@@ -296,6 +296,7 @@ module.exports = {
     '/packages/amplify-appsync-simulator/lib',
     '/packages/amplify-category-api/lib',
     '/packages/amplify-category-auth/lib',
+    '/packages/amplify-category-authV2/lib',
     '/packages/amplify-category-function/lib',
     '/packages/amplify-category-storage/lib',
     '/packages/amplify-cli-core/lib',
