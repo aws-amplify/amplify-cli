@@ -862,7 +862,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
         break;
       case QueryFieldType.SYNC:
       case QueryFieldType.LIST:
-        const isSyncEnabled = this.options.SyncConfig ? true : false;
+        const isSyncEnabled = !!this.options.SyncConfig;
         const connectionFieldName = toPascalCase(['Model', type.name.value, 'Connection']);
         outputType = makeListQueryModel(type, connectionFieldName, isSyncEnabled);
         break;
