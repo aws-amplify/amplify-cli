@@ -6,7 +6,6 @@ import {
   InputValueDefinitionNode,
   Kind,
   ObjectTypeDefinitionNode,
-  parse,
   TypeNode,
 } from 'graphql';
 
