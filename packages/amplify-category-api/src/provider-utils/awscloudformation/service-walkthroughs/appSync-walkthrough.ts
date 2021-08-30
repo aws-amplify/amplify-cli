@@ -224,7 +224,7 @@ const serviceApiInputWalkthrough = async (context: $TSContext, defaultValuesFile
   //
   // Repeat prompt until user selects Continue
   //
-  while(!continuePrompt) {
+  while (!continuePrompt) {
 
     const getAuthModeChoice = () => {
       if (authConfig.defaultAuthentication.authenticationType === 'API_KEY') {
@@ -250,7 +250,7 @@ const serviceApiInputWalkthrough = async (context: $TSContext, defaultValuesFile
       value: 'CONFLICT_DETECTION',
     });
 
-    if(resolverConfig?.project) {
+    if (resolverConfig?.project) {
       basicInfoQuestionChoices.push({
         name: `Conflict resolution strategy: ${conflictResolutionHanlderChoices.find(x => x.value === resolverConfig.project.ConflictHandler).name}`,
         value: 'CONFLICT_STRATEGY',
@@ -353,9 +353,6 @@ const updateApiInputWalkthrough = async (context, project, resolverConfig, model
   const { updateOption } = await inquirer.prompt([updateOptionQuestion]);
 
   if (updateOption === 'ENABLE_CONFLICT') {
-    // resolverConfig = {
-    //   project: { ConflictHandler: ConflictHandlerType.AUTOMERGE, ConflictDetection: 'VERSION' },
-    // };
     resolverConfig = await askResolverConflictHandlerQuestion(context, modelTypes);
   } else if (updateOption === 'DISABLE_CONFLICT') {
     resolverConfig = {};
@@ -370,7 +367,6 @@ const updateApiInputWalkthrough = async (context, project, resolverConfig, model
     authConfig,
     resolverConfig,
   };
-
 };
 
 export const serviceWalkthrough = async (context: $TSContext, defaultValuesFilename, serviceMetadata) => {
@@ -503,12 +499,12 @@ async function displayApiInformation(context, resource, project) {
 }
 
 async function displayAuthMode(context, resource, authMode) {
-  if(authMode == 'API_KEY' && resource.output.GraphQLAPIKeyOutput) {
+  if (authMode == 'API_KEY' && resource.output.GraphQLAPIKeyOutput) {
     let { apiKeys } = await context.amplify.executeProviderUtils(context, 'awscloudformation', 'getAppSyncApiKeys', {
       apiId: resource.output.GraphQLAPIIdOutput,
     });
     let apiKeyExpires = apiKeys.find(key => key.id == resource.output.GraphQLAPIKeyOutput)?.expires;
-    if(!apiKeyExpires) {
+    if (!apiKeyExpires) {
       return authProviderChoices.find(choice => choice.value === authMode).name;
     }
     let apiKeyExpiresDate = new Date(apiKeyExpires * 1000);
