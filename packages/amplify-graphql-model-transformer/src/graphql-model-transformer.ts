@@ -72,7 +72,6 @@ import {
   ObjectDefinitionWrapper,
 } from './wrappers/object-definition-wrapper';
 import { CfnRole } from '@aws-cdk/aws-iam';
-import { TransformerContext } from '@aws-amplify/graphql-transformer-core/lib/transformer-context';
 
 export type Nullable<T> = T | null;
 export type OptionalAndNullable<T> = Partial<T>;
@@ -178,7 +177,9 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
       queries: {
         get: toCamelCase(['get', typeName]),
         list: toCamelCase(['list', plurality(typeName, true)]),
-        ...((ctx as TransformerContext).isProjectUsingDataStore() ? { sync: toCamelCase(['sync', plurality(typeName, true)]) } : undefined),
+        ...((ctx as TransformerContextProvider).isProjectUsingDataStore()
+          ? { sync: toCamelCase(['sync', plurality(typeName, true)]) }
+          : undefined),
       },
       mutations: {
         create: toCamelCase(['create', typeName]),
@@ -215,7 +216,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
     this.ensureModelSortDirectionEnum(ctx);
     for (const type of this.typesWithModelDirective) {
       const def = ctx.output.getObject(type)!;
-      this.options.SyncConfig = SyncUtils.getSyncConfig(ctx as TransformerContext, def!.name.value);
+      this.options.SyncConfig = SyncUtils.getSyncConfig(ctx as TransformerContextProvider, def!.name.value);
 
       // add Non Model type inputs
       this.createNonModelInputs(ctx, def);
