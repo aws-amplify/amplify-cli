@@ -5,7 +5,7 @@ import { initializeEnv } from '../../initialize-env';
 import { getProviderPlugins } from './get-provider-plugins';
 import { getEnvInfo } from './get-env-info';
 import { globalSandboxModeEnabled, showGlobalSandboxModeWarning } from './show-global-sandbox-mode-warning';
-import { apiKeyIsActive, hasApiKey } from './api-key';
+import { apiKeyIsActive, hasApiKey } from './get-api-key-config';
 import { EnvironmentDoesNotExistError, exitOnNextTick, stateManager, $TSAny, $TSContext } from 'amplify-cli-core';
 import { promptToAddApiKey } from 'amplify-category-api';
 

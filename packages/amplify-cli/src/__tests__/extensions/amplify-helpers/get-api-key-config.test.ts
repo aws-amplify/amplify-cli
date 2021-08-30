@@ -1,5 +1,5 @@
 import fs from 'fs';
-import { getAppSyncApiConfig, getApiKeyConfig, apiKeyIsActive, hasApiKey } from '../../../extensions/amplify-helpers/api-key';
+import { getAppSyncApiConfig, getApiKeyConfig, apiKeyIsActive, hasApiKey } from '../../../extensions/amplify-helpers/get-api-key-config';
 import { stateManager } from 'amplify-cli-core';
 
 jest.mock('amplify-cli-core', () => {

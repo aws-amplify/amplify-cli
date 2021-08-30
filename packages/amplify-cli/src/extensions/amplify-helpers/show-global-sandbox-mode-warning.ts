@@ -1,6 +1,6 @@
 import chalk from 'chalk';
 import { $TSContext } from 'amplify-cli-core';
-import { getAppSyncApiConfig, getApiKeyConfig } from './api-key';
+import { getAppSyncApiConfig, getApiKeyConfig } from './get-api-key-config';
 
 export function globalSandboxModeEnabled(context: $TSContext): boolean {
   const appSyncApi = getAppSyncApiConfig();
