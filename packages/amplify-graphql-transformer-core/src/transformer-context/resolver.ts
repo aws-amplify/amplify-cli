@@ -12,7 +12,6 @@ import { isResolvableObject, Stack } from '@aws-cdk/core';
 import assert from 'assert';
 import { toPascalCase } from 'graphql-transformer-common';
 import { dedent } from 'ts-dedent';
-import { TransformerContext } from '.';
 import { MappingTemplate, S3MappingTemplate } from '../cdk-compat';
 import * as SyncUtils from '../transformation/sync-utils';
 import { StackManager } from './stack-manager';
@@ -184,7 +183,7 @@ export class TransformerResolver implements TransformerResolverProvider {
             dataSource = `$util.qr($ctx.stash.put("tableName", "${tableName}"))`;
           }
 
-          const syncConfig = SyncUtils.getSyncConfig(context as TransformerContext, this.typeName);
+          const syncConfig = SyncUtils.getSyncConfig(context, this.typeName);
           if (syncConfig) {
             const funcConf = dataSourceProviderFn.node.children.find(
               (it: any) => it.cfnResourceType === 'AWS::AppSync::FunctionConfiguration',
