@@ -6,7 +6,7 @@ machine:
     PATH: '${PATH}:${HOME}/${CIRCLE_PROJECT_REPONAME}/node_modules/.bin'
 
 executors:
-  windows: &windows-executor
+  windows: &windows-e2e-executor
     machine:
       image: 'windows-server-2019-vs2019:stable'
       resource_class: 'windows.large'
@@ -25,7 +25,7 @@ executors:
     working_directory: ~/repo
     resource_class: large
 
-  linux: &e2e-executor
+  linux: &linux-e2e-executor
     docker:
       - image: public.ecr.aws/a6e6w2n0/amplify-cli-e2e-base-image-repo-public:latest
     working_directory: ~/repo
@@ -957,23 +957,23 @@ commands:
     parameters:
       os:
         type: executor
-        default: e2e-executor
+        default: linux-e2e-executor
     steps:
       - when:
           condition:
-            equal: [*windows-executor, << parameters.os >>]
+            equal: [*windows-e2e-executor, << parameters.os >>]
           steps:
             - run:
                 name: Rename the Packaged CLI to amplify
                 command: |
                   # rename the command to amplify
-                  cd C:\home\circleci\repo\out
+                  cd  $env:homedrive\$env:homepath\repo\out
                   mv amplify-pkg-win.exe amplify.exe
             - run:
                 name: Move to CLI Binary to already existing PATH
                 command: |
                   # This is a Hack to make sure the Amplify CLI is in the PATH
-                  cp C:\home\circleci\repo\out\amplify.exe C:\Users\circleci\AppData\Local\Microsoft\WindowsApps
+                  cp  $env:homedrive\$env:homepath\repo\out\amplify.exe $env:homedrive\$env:homepath\AppData\Local\Microsoft\WindowsApps
             - run:
                 name: Confirm Amplify CLI is installed and available in PATH
                 command: amplify version
@@ -981,7 +981,7 @@ commands:
       - when:
           condition:
             or:
-              - equal: [*e2e-executor, << parameters.os >>]
+              - equal: [*linux-e2e-executor, << parameters.os >>]
               - equal: [*build-executor, << parameters.os >>]
           steps:
             - run:
@@ -1000,11 +1000,11 @@ commands:
     parameters:
       os:
         type: executor
-        default: e2e-executor
+        default: linux-e2e-executor
     steps:
       - when:
           condition:
-            equal: [*windows-executor, << parameters.os >>]
+            equal: [*windows-e2e-executor, << parameters.os >>]
           steps:
             - run: nvm install 12.22.5
             - run: nvm use 12.22.5
@@ -1016,12 +1016,12 @@ commands:
     parameters:
       os:
         type: executor
-        default: e2e-executor
+        default: linux-e2e-executor
     steps:
       - when:
           condition:
             or:
-              - equal: [*e2e-executor, << parameters.os >>]
+              - equal: [*linux-e2e-executor, << parameters.os >>]
               - equal: [*build-executor, << parameters.os >>]
           steps:
             - run:
@@ -1034,11 +1034,11 @@ commands:
     parameters:
       os:
         type: executor
-        default: e2e-executor
+        default: linux-e2e-executor
     steps:
       - when:
           condition:
-            equal: [*windows-executor, << parameters.os >>]
+            equal: [*windows-e2e-executor, << parameters.os >>]
           steps:
             - run:
                 name: Run E2E tests
@@ -1049,7 +1049,7 @@ commands:
       - when:
           condition:
             or:
-              - equal: [*e2e-executor, << parameters.os >>]
+              - equal: [*linux-e2e-executor, << parameters.os >>]
               - equal: [*build-executor, << parameters.os >>]
           steps:
             - run:
@@ -1065,11 +1065,11 @@ commands:
     parameters:
       os:
         type: executor
-        default: e2e-executor
+        default: linux-e2e-executor
     steps:
       - when:
           condition:
-            equal: [*windows-executor, << parameters.os >>]
+            equal: [*windows-e2e-executor, << parameters.os >>]
           steps:
             - run:
                 name: Scan E2E artifacts
@@ -1085,7 +1085,7 @@ commands:
       - when:
           condition:
             or:
-              - equal: [*e2e-executor, << parameters.os >>]
+              - equal: [*linux-e2e-executor, << parameters.os >>]
               - equal: [*build-executor, << parameters.os >>]
           steps:
             - run:
@@ -1102,11 +1102,11 @@ commands:
     parameters:
       os:
         type: executor
-        default: e2e-executor
+        default: linux-e2e-executor
     steps:
       - when:
           condition:
-            equal: [*windows-executor, << parameters.os >>]
+            equal: [*windows-e2e-executor, << parameters.os >>]
           steps:
             - run:
                 name: Scan E2E artifacts
@@ -1120,7 +1120,7 @@ commands:
       - when:
           condition:
             or:
-              - equal: [*e2e-executor, << parameters.os >>]
+              - equal: [*linux-e2e-executor, << parameters.os >>]
               - equal: [*build-executor, << parameters.os >>]
           steps:
             - run:

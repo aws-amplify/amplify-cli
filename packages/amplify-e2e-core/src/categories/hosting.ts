@@ -1,6 +1,6 @@
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import { nspawn as spawn, getCLIPath, getScriptRunnerPath, createNewProjectDir, KEY_DOWN_ARROW, readJsonFile } from '..';
+import { nspawn as spawn, getCLIPath, getNpxPath, getScriptRunnerPath, createNewProjectDir, KEY_DOWN_ARROW, readJsonFile } from '..';
 import _ from 'lodash';
 import { spawnSync } from 'child_process';
 import { getBackendAmplifyMeta } from '../utils';
@@ -164,11 +164,7 @@ export async function createReactTestProject(): Promise<string> {
   const projectName = path.basename(projRoot);
   const projectDir = path.dirname(projRoot);
 
-  let npxPath = 'npx';
-  if (process.platform === 'win32') {
-    npxPath = getScriptRunnerPath().replace('node.exe', 'npx.cmd');
-  }
-  spawnSync(npxPath, ['create-react-app', projectName], { cwd: projectDir });
+  spawnSync(getNpxPath(), ['create-react-app', projectName], { cwd: projectDir });
   return projRoot;
 }
 

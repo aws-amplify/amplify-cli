@@ -44,6 +44,14 @@ export function getScriptRunnerPath(testingWithLatestCodebase = false) {
   return process.execPath;
 }
 
+export function getNpxPath() {
+  let npxPath = 'npx';
+  if (process.platform === 'win32') {
+    npxPath = getScriptRunnerPath().replace('node.exe', 'npx.cmd');
+  }
+  return npxPath;
+}
+
 export function isCI(): boolean {
   return process.env.CI && process.env.CIRCLECI ? true : false;
 }

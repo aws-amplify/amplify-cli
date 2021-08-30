@@ -12117,7 +12117,7 @@ commands:
     parameters:
       os:
         type: executor
-        default: e2e-executor
+        default: linux-e2e-executor
     steps:
       - when:
           condition:
@@ -12136,15 +12136,15 @@ commands:
                 name: Rename the Packaged CLI to amplify
                 command: |
                   # rename the command to amplify
-                  cd C:\home\circleci\repo\out
+                  cd  $env:homedrive\$env:homepath\repo\out
                   mv amplify-pkg-win.exe amplify.exe
             - run:
                 name: Move to CLI Binary to already existing PATH
                 command: >
                   # This is a Hack to make sure the Amplify CLI is in the PATH
 
-                  cp C:\home\circleci\repo\out\amplify.exe
-                  C:\Users\circleci\AppData\Local\Microsoft\WindowsApps
+                  cp  $env:homedrive\$env:homepath\repo\out\amplify.exe
+                  $env:homedrive\$env:homepath\AppData\Local\Microsoft\WindowsApps
             - run:
                 name: Confirm Amplify CLI is installed and available in PATH
                 command: amplify version
@@ -12186,7 +12186,7 @@ commands:
     parameters:
       os:
         type: executor
-        default: e2e-executor
+        default: linux-e2e-executor
     steps:
       - when:
           condition:
@@ -12211,7 +12211,7 @@ commands:
     parameters:
       os:
         type: executor
-        default: e2e-executor
+        default: linux-e2e-executor
     steps:
       - when:
           condition:
@@ -12245,7 +12245,7 @@ commands:
     parameters:
       os:
         type: executor
-        default: e2e-executor
+        default: linux-e2e-executor
     steps:
       - when:
           condition:
@@ -12304,7 +12304,7 @@ commands:
     parameters:
       os:
         type: executor
-        default: e2e-executor
+        default: linux-e2e-executor
     steps:
       - when:
           condition:
@@ -12366,7 +12366,7 @@ commands:
     parameters:
       os:
         type: executor
-        default: e2e-executor
+        default: linux-e2e-executor
     steps:
       - when:
           condition:

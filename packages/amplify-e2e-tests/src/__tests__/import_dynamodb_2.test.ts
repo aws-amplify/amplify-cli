@@ -41,8 +41,8 @@ import {
 const profileName = 'amplify-integ-test-user';
 
 describe('dynamodb import', () => {
-  const projectPrefix = 'ddbimp';
-  const ogProjectPrefix = 'ogddbimp';
+  const projectPrefix = 'ddbimpid';
+  const ogProjectPrefix = 'ogddbimpid';
 
   const projectSettings = {
     name: projectPrefix,

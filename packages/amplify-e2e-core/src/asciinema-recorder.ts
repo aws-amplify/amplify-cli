@@ -1,4 +1,4 @@
-import * as pty from 'node-pty';
+import * as pty from 'node-pty-prebuilt-multiarch';
 import chalk from 'chalk';
 
 export type RecordingHeader = {
@@ -30,7 +30,7 @@ export class Recorder {
     private args: string[],
     private options: any,
     cwd?: string,
-    private cols: number = 200,
+    private cols: number = 120,
     private rows: number = 30,
   ) {
     this.exitCode = undefined;
