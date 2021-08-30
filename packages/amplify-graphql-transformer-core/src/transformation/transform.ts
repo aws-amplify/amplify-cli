@@ -120,7 +120,13 @@ export class GraphQLTransform {
     this.seenTransformations = {};
     const parsedDocument = parse(schema);
     this.app = new App();
-    const context = new TransformerContext(this.app, parsedDocument, this.stackMappingOverrides, this.options.featureFlags);
+    const context = new TransformerContext(
+      this.app,
+      parsedDocument,
+      this.stackMappingOverrides,
+      this.options.featureFlags,
+      this.transformConfig.ResolverConfig,
+    );
     const validDirectiveNameMap = this.transformers.reduce(
       (acc: any, t: TransformerPluginProvider) => ({ ...acc, [t.directive.name.value]: true }),
       {
@@ -143,11 +149,6 @@ export class GraphQLTransform {
     });
     if (errors && errors.length) {
       throw new SchemaValidationError(errors);
-    }
-
-    // check if the project is sync enabled
-    if (this.transformConfig.ResolverConfig) {
-      context.resolvers.setResolverConfig(this.transformConfig.ResolverConfig);
     }
 
     for (const transformer of this.transformers) {
