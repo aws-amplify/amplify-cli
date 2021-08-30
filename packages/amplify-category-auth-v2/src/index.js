@@ -250,13 +250,8 @@ async function checkRequirements(requirements, context, category, targetResource
 
 async function initEnv(context) {
   const { amplify } = context;
-  const {
-    resourcesToBeCreated,
-    resourcesToBeUpdated,
-    resourcesToBeSynced,
-    resourcesToBeDeleted,
-    allResources,
-  } = await amplify.getResourceStatus('auth');
+  const { resourcesToBeCreated, resourcesToBeUpdated, resourcesToBeSynced, resourcesToBeDeleted, allResources } =
+    await amplify.getResourceStatus('auth');
   const isPulling = context.input.command === 'pull' || (context.input.command === 'env' && context.input.subCommands[0] === 'pull');
   let toBeCreated = [];
   let toBeUpdated = [];

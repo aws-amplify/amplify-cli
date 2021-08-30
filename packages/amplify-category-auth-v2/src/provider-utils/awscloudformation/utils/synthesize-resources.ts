@@ -20,18 +20,17 @@ const FunctionServiceNameLambdaFunction = 'Lambda';
  * @param cfnFilename The template CFN filename
  * @param provider The cloud provider name
  */
-export const getResourceSynthesizer = (context: any, cfnFilename: string, provider: string) => async (
-  request: Readonly<ServiceQuestionsResult>,
-) => {
-  await lambdaTriggers(request, context, null);
-  await createUserPoolGroups(context, request.resourceName!, request.userPoolGroupList);
-  await addAdminAuth(context, request.resourceName!, 'add', request.adminQueryGroup);
-  await copyCfnTemplate(context, category, request, cfnFilename);
-  await generateNestedAuthTriggerTemplate(context, category, request);
-  saveResourceParameters(context, provider, category, request.resourceName!, request, ENV_SPECIFIC_PARAMS);
-  await copyS3Assets(request);
-  return request;
-};
+export const getResourceSynthesizer =
+  (context: any, cfnFilename: string, provider: string) => async (request: Readonly<ServiceQuestionsResult>) => {
+    await lambdaTriggers(request, context, null);
+    await createUserPoolGroups(context, request.resourceName!, request.userPoolGroupList);
+    await addAdminAuth(context, request.resourceName!, 'add', request.adminQueryGroup);
+    await copyCfnTemplate(context, category, request, cfnFilename);
+    await generateNestedAuthTriggerTemplate(context, category, request);
+    saveResourceParameters(context, provider, category, request.resourceName!, request, ENV_SPECIFIC_PARAMS);
+    await copyS3Assets(request);
+    return request;
+  };
 
 /**
  * Factory function that returns a function that updates the auth resource based on a ServiceQuestionsResult request.
