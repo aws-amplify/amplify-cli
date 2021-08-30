@@ -18,6 +18,7 @@ export class AngularConfigNotFoundError extends Error {}
 export class AppIdMismatchError extends Error {}
 export class UnrecognizedFrameworkError extends Error {}
 export class ConfigurationError extends Error {}
+export class CustomPoliciesFormatError extends Error {}
 
 export class NotInitializedError extends Error {
   public constructor() {
