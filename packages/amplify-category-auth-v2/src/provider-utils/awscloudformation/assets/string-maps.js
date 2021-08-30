@@ -116,7 +116,8 @@ const emailRegistration = [
 
 const authSelectionMap = [
   {
-    name: 'User Sign-Up, Sign-In, connected with AWS IAM controls (Enables per-user Storage features for images or other content, Analytics, and more)',
+    name:
+      'User Sign-Up, Sign-In, connected with AWS IAM controls (Enables per-user Storage features for images or other content, Analytics, and more)',
     value: 'identityPoolAndUserPool',
   },
   {
@@ -390,6 +391,22 @@ const coreAttributes = [
   },
 ];
 
+const aliasAttributes = [
+  {
+    name: 'Email',
+    value: 'email',
+    checked: true,
+  },
+  {
+    name: 'Username',
+    value: 'preferred_username',
+  },
+  {
+    name: 'Phone number',
+    value: 'phone_number',
+  },
+];
+
 const appClientReadAttributes = [
   ...coreAttributes,
   {
@@ -600,6 +617,7 @@ const getAllMaps = edit => {
     disableOptionsOnEdit();
   }
   return {
+    aliasAttributes,
     coreAttributes,
     authSelectionMap,
     appClientReadAttributes,
@@ -623,6 +641,7 @@ const getAllMaps = edit => {
 };
 
 module.exports = {
+  aliasAttributes,
   coreAttributes,
   appClientReadAttributes,
   authSelectionMap,
