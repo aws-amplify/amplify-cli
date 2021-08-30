@@ -305,7 +305,7 @@
     "@aws-cdk/core" "1.119.0"
     constructs "^3.3.69"
 
-"@aws-cdk/aws-appsync@^1.119.0", "@aws-cdk/aws-appsync@~1.119.0":
+"@aws-cdk/aws-appsync@~1.119.0":
   version "1.119.0"
   resolved "https://registry.yarnpkg.com/@aws-cdk/aws-appsync/-/aws-appsync-1.119.0.tgz#72598416473d485e03e2cc5f62ef3b2d2533a4b4"
   integrity sha512-/nxRjHLve5CO9/DD1ToVK+f/6Mwbf8AN7Efb52PhBKGR0ORm/DAcnsjXUtPK9wr7CvnRLS24jOSRQEvqSof5PA==

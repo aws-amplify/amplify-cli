@@ -908,6 +908,8 @@ describe('ModelTransformer: ', () => {
     const definition = out.schema;
     expect(definition).toBeDefined();
     expect(out.pipelineFunctions).toMatchSnapshot();
+
+    validateModelSchema(parse(definition));
   });
 
   it('should generate sync resolver with ConflictHandlerType.Lambda', () => {
@@ -943,6 +945,8 @@ describe('ModelTransformer: ', () => {
     const definition = out.schema;
     expect(definition).toBeDefined();
     expect(out.pipelineFunctions).toMatchSnapshot();
+
+    validateModelSchema(parse(definition));
   });
 
   it('should generate sync resolver with ConflictHandlerType.Optimistic', () => {
@@ -975,5 +979,7 @@ describe('ModelTransformer: ', () => {
     const definition = out.schema;
     expect(definition).toBeDefined();
     expect(out.pipelineFunctions).toMatchSnapshot();
+
+    validateModelSchema(parse(definition));
   });
 });
