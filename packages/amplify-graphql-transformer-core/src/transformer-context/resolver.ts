@@ -12,8 +12,8 @@ import { isResolvableObject, Stack } from '@aws-cdk/core';
 import assert from 'assert';
 import { toPascalCase } from 'graphql-transformer-common';
 import { dedent } from 'ts-dedent';
+import { TransformerContext } from '.';
 import { MappingTemplate, S3MappingTemplate } from '../cdk-compat';
-import { ResolverConfig } from '../config/transformer-config';
 import * as SyncUtils from '../transformation/sync-utils';
 import { StackManager } from './stack-manager';
 
@@ -28,7 +28,6 @@ const NONE_DATA_SOURCE_NAME = 'NONE_DS';
 
 export class ResolverManager implements TransformerResolversManagerProvider {
   private resolvers: Map<string, TransformerResolverProvider> = new Map();
-  private resolverConfig: any;
 
   generateQueryResolver = (
     typeName: string,
@@ -110,24 +109,6 @@ export class ResolverManager implements TransformerResolversManagerProvider {
   collectResolvers = (): Map<string, TransformerResolverProvider> => {
     return new Map(this.resolvers.entries());
   };
-
-  /**
-   * Setter and getter the sync config
-   */
-  public setResolverConfig = (resolverConfig: ResolverConfig) => {
-    if (this.resolverConfig) {
-      throw new Error(`Resolver Configuration has already been added to the context`);
-    }
-    this.resolverConfig = resolverConfig;
-  };
-
-  public getResolverConfig = <ResolverConfig>(): ResolverConfig => {
-    return this.resolverConfig;
-  };
-
-  public isProjectUsingDataStore(): boolean {
-    return !!this.resolverConfig && (typeof this.resolverConfig.project !== undefined || typeof this.resolverConfig.models !== undefined);
-  }
 }
 export class TransformerResolver implements TransformerResolverProvider {
   private readonly slotMap: Map<string, Slot[]> = new Map();
@@ -203,7 +184,7 @@ export class TransformerResolver implements TransformerResolverProvider {
             dataSource = `$util.qr($ctx.stash.put("tableName", "${tableName}"))`;
           }
 
-          const syncConfig = SyncUtils.getSyncConfig(context, this.typeName);
+          const syncConfig = SyncUtils.getSyncConfig(context as TransformerContext, this.typeName);
           if (syncConfig) {
             const funcConf = dataSourceProviderFn.node.children.find(
               (it: any) => it.cfnResourceType === 'AWS::AppSync::FunctionConfiguration',

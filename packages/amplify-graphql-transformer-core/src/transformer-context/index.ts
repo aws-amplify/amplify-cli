@@ -63,8 +63,8 @@ export class TransformerContext implements TransformerContextProvider {
     return this._api!;
   }
 
-  public getResolverConfig = <ResolverConfig>(): ResolverConfig | undefined => {
-    return this.resolverConfig as ResolverConfig;
+  public getResolverConfig = (): ResolverConfig | undefined => {
+    return this.resolverConfig;
   };
 
   public isProjectUsingDataStore(): boolean {
