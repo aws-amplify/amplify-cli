@@ -1,9 +1,6 @@
 import * as path from 'path';
-import { JSONUtilities, pathManager } from 'amplify-cli-core';
+import { JSONUtilities, $TSAny, pathManager } from 'amplify-cli-core';
 import { transformUserPoolGroupSchema } from './transform-user-pool-group';
-import { authProviders as authProviderList } from '../assets/string-maps';
-import { AuthParameters } from '../import/types';
-
 /**
  * Factory function that returns a function that updates Amplify meta files after adding auth resource assets
  *
@@ -19,7 +16,7 @@ export const getPostAddAuthMetaUpdater =
       providerPlugin: resultMetadata.providerName,
     };
     const parametersJSONPath = path.join(context.amplify.pathManager.getBackendDirPath(), 'auth', resourceName, 'parameters.json');
-    const authParameters = JSONUtilities.readJson<AuthParameters>(parametersJSONPath)!;
+    const authParameters = JSONUtilities.readJson<{ dependsOn: any[]; triggers: string; identityPoolName: string }>(parametersJSONPath)!;
 
     if (authParameters.dependsOn) {
       options.dependsOn = authParameters.dependsOn;
@@ -39,7 +36,6 @@ export const getPostAddAuthMetaUpdater =
     }
 
     options.customAuth = customAuthConfigured;
-    options.frontendAuthConfig = getFrontendConfig(authParameters);
 
     context.amplify.updateamplifyMetaAfterResourceAdd('auth', resourceName, options);
 
@@ -66,7 +62,7 @@ export const getPostAddAuthMetaUpdater =
  */
 export const getPostUpdateAuthMetaUpdater = (context: any) => async (resourceName: string) => {
   const resourceDirPath = path.join(pathManager.getBackendDirPath(), 'auth', resourceName, 'parameters.json');
-  const authParameters = JSONUtilities.readJson<AuthParameters>(resourceDirPath)!;
+  const authParameters = JSONUtilities.readJson<$TSAny>(resourceDirPath);
   if (authParameters.dependsOn) {
     context.amplify.updateamplifyMetaAfterResourceUpdate('auth', resourceName, 'dependsOn', authParameters.dependsOn);
   }
@@ -83,7 +79,6 @@ export const getPostUpdateAuthMetaUpdater = (context: any) => async (resourceNam
       triggers.VerifyAuthChallengeResponse.length > 0;
   }
   context.amplify.updateamplifyMetaAfterResourceUpdate('auth', resourceName, 'customAuth', customAuthConfigured);
-  context.amplify.updateamplifyMetaAfterResourceUpdate('auth', resourceName, 'frontendAuthConfig', getFrontendConfig(authParameters));
 
   // Update Identity Pool dependency attributes on userpool groups
   const allResources = context.amplify.getProjectMeta();
@@ -101,48 +96,6 @@ export const getPostUpdateAuthMetaUpdater = (context: any) => async (resourceNam
     ];
 
     context.amplify.updateamplifyMetaAfterResourceUpdate('auth', 'userPoolGroups', 'dependsOn', userPoolGroupDependsOn);
-    await transformUserPoolGroupSchema(context);
   }
   return resourceName;
 };
-
-function getFrontendConfig(authParameters: AuthParameters) {
-  const loginMechanisms: string[] = [];
-  loginMechanisms.push(...(authParameters?.aliasAttributes || []).map((att: string) => att.toUpperCase()));
-
-  if (authParameters.authProviders) {
-    authParameters.authProviders.forEach((provider: string) => {
-      let name = authProviderList.find(it => it.value === provider)?.name;
-
-      if (name) {
-        loginMechanisms.push(name.toUpperCase());
-      }
-    });
-  }
-
-  const signupAttributes = (authParameters?.requiredAttributes || []).map((att: string) => att.toUpperCase());
-
-  const passwordProtectionSettings = {
-    passwordPolicyMinLength: authParameters?.passwordPolicyMinLength,
-    passwordPolicyCharacters: (authParameters?.passwordPolicyCharacters || []).map((i: string) => i.replace(/ /g, '_').toUpperCase()),
-  };
-
-  const mfaTypes: string[] = [];
-  if (authParameters.mfaTypes) {
-    if (authParameters.mfaTypes.includes('SMS Text Message')) {
-      mfaTypes.push('SMS');
-    }
-
-    if (authParameters.mfaTypes.includes('TOTP')) {
-      mfaTypes.push('TOTP');
-    }
-  }
-
-  return {
-    loginMechanisms: loginMechanisms,
-    signupAttributes: signupAttributes,
-    passwordProtectionSettings: passwordProtectionSettings,
-    mfaConfiguration: authParameters?.mfaConfiguration,
-    mfaTypes: mfaTypes,
-  };
-}

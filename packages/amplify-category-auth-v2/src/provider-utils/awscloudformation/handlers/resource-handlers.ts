@@ -5,6 +5,9 @@ import { getPostAddAuthMetaUpdater, getPostUpdateAuthMetaUpdater } from '../util
 import { getPostAddAuthMessagePrinter, getPostUpdateAuthMessagePrinter, printSMSSandboxWarning } from '../utils/message-printer';
 import { supportedServices } from '../../supported-services';
 import { doesConfigurationIncludeSMS } from '../utils/auth-sms-workflow-helper';
+import { AuthInputState } from '../auth-inputs-manager/auth-input-state';
+import { pathManager } from 'amplify-cli-core';
+import { category } from '../constants';
 
 /**
  * Factory function that returns a ServiceQuestionsResult consumer that handles all of the resource generation logic.
@@ -21,12 +24,31 @@ export const getAddAuthHandler = (context: any) => async (request: ServiceQuesti
 
   const requestWithDefaults = await getAddAuthDefaultsApplier(context, defaultValuesFilename, projectName)(request);
 
+  /**
+   * 1) add cli-inputs manager (get cli-inputs , save cli-inputs)
+   * 2) Save service question Result to cli-inputs.json
+   */
+
+  const projectPath = pathManager.findProjectRoot();
+  const cliInputsPath = pathManager.getCliInputsPath(projectPath!, category, requestWithDefaults.resourceName!);
+  const cliState = await AuthInputState.getInstance({
+    category: category,
+    resourceName: requestWithDefaults.resourceName!,
+    fileName: cliInputsPath,
+    inputAuthPayload: requestWithDefaults,
+    service: 'cognito',
+  });
+
+  cliState.saveCliInputPayload();
+
   try {
+    // cdk transformation in this function
+    // start auth transform here
     await getResourceSynthesizer(context, cfnFilename, provider)(requestWithDefaults);
-    await getPostAddAuthMetaUpdater(context, { service: requestWithDefaults.serviceName, providerName: provider })(
+    getPostAddAuthMetaUpdater(context, { service: requestWithDefaults.serviceName, providerName: provider })(
       requestWithDefaults.resourceName!,
     );
-    await getPostAddAuthMessagePrinter(context.print)(requestWithDefaults.resourceName!);
+    getPostAddAuthMessagePrinter(context.print)(requestWithDefaults.resourceName!);
 
     if (doesConfigurationIncludeSMS(request)) {
       await printSMSSandboxWarning(context.print);
@@ -43,6 +65,23 @@ export const getAddAuthHandler = (context: any) => async (request: ServiceQuesti
 export const getUpdateAuthHandler = (context: any) => async (request: ServiceQuestionsResult) => {
   const { cfnFilename, defaultValuesFilename, provider } = supportedServices[request.serviceName];
   const requestWithDefaults = await getUpdateAuthDefaultsApplier(context, defaultValuesFilename, context.updatingAuth)(request);
+  // saving updated request here
+  /**
+   * 1) update cli-inputs manager
+   * 2) Save service question Result to cli-inputs.json
+   */
+
+  const projectPath = pathManager.findProjectRoot();
+  const cliInputsPath = pathManager.getCliInputsPath(projectPath!, category, requestWithDefaults.resourceName!);
+  const cliState = await AuthInputState.getInstance({
+    category: category,
+    resourceName: requestWithDefaults.resourceName!,
+    fileName: cliInputsPath,
+    inputAuthPayload: requestWithDefaults,
+    service: 'cognito',
+  });
+
+  cliState.saveCliInputPayload();
   try {
     await getResourceUpdater(context, cfnFilename, provider)(requestWithDefaults);
     await getPostUpdateAuthMetaUpdater(context)(requestWithDefaults.resourceName!);

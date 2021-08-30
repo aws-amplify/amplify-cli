@@ -1,4 +1,4 @@
-exports.handler = async event => {
+exports.handler = (event, context, callback) => {
   // Define the URL that you want the user to be directed to after verification is complete
   if (event.triggerSource === 'CustomMessage_SignUp') {
     const { codeParameter } = event.request;
@@ -35,7 +35,8 @@ exports.handler = async event => {
     event.response.emailSubject = process.env.EMAILSUBJECT;
     event.response.emailMessage = message;
     console.log('event.response', event.response);
+    callback(null, event);
+  } else {
+    callback(null, event);
   }
-
-  return event;
 };

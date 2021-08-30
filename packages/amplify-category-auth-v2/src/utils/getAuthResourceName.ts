@@ -1,8 +1,8 @@
-import { $TSContext } from "amplify-cli-core";
+import { $TSContext } from 'amplify-cli-core';
 
-export const getAuthResourceName = async (context: $TSContext) =>{
+export const getAuthResourceName = async (context: $TSContext) => {
   const { allResources } = await context.amplify.getResourceStatus();
-  const authResource = allResources.filter((resource: { service: string; }) => resource.service === 'Cognito');
+  const authResource = allResources.filter((resource: { service: string }) => resource.service === 'Cognito');
   let authResourceName;
 
   if (authResource.length > 0) {
@@ -12,4 +12,4 @@ export const getAuthResourceName = async (context: $TSContext) =>{
     throw new Error('Cognito UserPool does not exists');
   }
   return authResourceName;
-}
+};

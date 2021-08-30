@@ -7,6 +7,9 @@ import { pathManager, JSONUtilities, FeatureFlags } from 'amplify-cli-core';
 import { get } from 'lodash';
 import { authProviders } from '../assets/string-maps';
 import { generateNestedAuthTriggerTemplate } from './generate-auth-trigger-template';
+import { generateAuthStackTemplate } from './generate-auth-stack-template';
+import { transformUserPoolGroupSchema } from './transform-user-pool-group';
+import { generateUserPoolGroupStackTemplate } from './generate-user-pool-group-stack-template';
 
 const category = 'auth';
 
@@ -24,10 +27,13 @@ export const getResourceSynthesizer =
   (context: any, cfnFilename: string, provider: string) => async (request: Readonly<ServiceQuestionsResult>) => {
     await lambdaTriggers(request, context, null);
     await createUserPoolGroups(context, request.resourceName!, request.userPoolGroupList);
+    // transformation handled in api and functions.
     await addAdminAuth(context, request.resourceName!, 'add', request.adminQueryGroup);
-    await copyCfnTemplate(context, category, request, cfnFilename);
-    await generateNestedAuthTriggerTemplate(context, category, request);
+    await generateAuthStackTemplate(context, request.resourceName!);
+    await generateNestedAuthTriggerTemplate(category, request);
+    // save parameters.json
     saveResourceParameters(context, provider, category, request.resourceName!, request, ENV_SPECIFIC_PARAMS);
+    // copy custom-message trigger files in to S3
     await copyS3Assets(request);
     return request;
   };
@@ -88,8 +94,11 @@ export const getResourceUpdater = (context: any, cfnFilename: string, provider: 
 
   if (request.updateFlow !== 'updateUserPoolGroups' && request.updateFlow !== 'updateAdminQueries') {
     await copyCfnTemplate(context, category, request, cfnFilename);
-    await generateNestedAuthTriggerTemplate(context, category, request);
+    await generateNestedAuthTriggerTemplate(category, request);
     saveResourceParameters(context, provider, category, request.resourceName!, request, ENV_SPECIFIC_PARAMS);
+  }
+  if (request.updateFlow === 'updateUserPoolGroups') {
+    await transformUserPoolGroupSchema(context);
   }
   await copyS3Assets(request);
   return request;
@@ -242,6 +251,8 @@ const createUserPoolGroups = async (context: any, resourceName: string, userPool
         },
       ],
     });
+    // create CFN
+    await generateUserPoolGroupStackTemplate(context, resourceName);
   }
 };
 
@@ -276,6 +287,9 @@ const updateUserPoolGroups = async (context: any, resourceName: string, userPool
         },
       ],
     });
+
+    // generate template
+    await generateUserPoolGroupStackTemplate(context, resourceName);
   }
 };
 

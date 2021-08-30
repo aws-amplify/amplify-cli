@@ -1,6 +1,7 @@
 const path = require('path');
 const fs = require('fs');
 const { cfnTemplateRoot } = require('../constants');
+const { generateUserPoolGroupStackTemplate } = require('./generate-user-pool-group-stack-template');
 
 async function transformUserPoolGroupSchema(context) {
   const resourceDirPath = path.join(
@@ -57,7 +58,9 @@ async function transformUserPoolGroupSchema(context) {
     identityPoolName: authResourceParameters.identityPoolName,
   };
 
-  await context.amplify.copyBatch(context, copyJobs, props, true);
+  await generateUserPoolGroupStackTemplate(props);
+
+  //await context.amplify.copyBatch(context, copyJobs, props, true);
 }
 
 function loadResourceParameters(context, authResourceName) {

@@ -132,10 +132,6 @@ async function serviceWalkthrough(context, defaultValuesFilename, stringMapsFile
         if (answer.useDefault === 'defaultSocial') {
           coreAnswers.hostedUI = true;
         }
-
-        if (answer.useDefault === 'default') {
-          coreAnswers.hostedUI = false;
-        }
         delete answer.updateFlow;
       }
       coreAnswers = { ...coreAnswers, ...answer };

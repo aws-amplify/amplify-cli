@@ -1,6 +1,5 @@
 import { printSMSSandboxWarning } from '../../../../provider-utils/awscloudformation/utils/message-printer';
 import { BannerMessage } from 'amplify-cli-core';
-import os from 'os';
 jest.mock('amplify-cli-core');
 const printMock = {
   warning: jest.fn(),
@@ -17,7 +16,7 @@ describe('printSMSSandboxWarning', () => {
     const message = 'BannerMessage';
     mockedGetMessage.mockResolvedValueOnce(message);
     await printSMSSandboxWarning(printMock);
-    expect(printMock.warning).toHaveBeenCalledWith(`${message}${os.EOL}`);
+    expect(printMock.warning).toHaveBeenCalledWith(`${message}\n`);
     expect(mockedGetMessage).toHaveBeenCalledWith('COGNITO_SMS_SANDBOX_CATEGORY_AUTH_ADD_OR_UPDATE_INFO');
   });
 

@@ -1,4 +1,4 @@
-exports.handler = async event => {
+exports.handler = (event, context, callback) => {
   // allowed domains
   const ald = process.env.DOMAINALLOWLIST.split(',').map(d => d.trim());
 
@@ -6,8 +6,8 @@ exports.handler = async event => {
   const domain = email.substring(email.indexOf('@') + 1);
 
   if (!ald.includes(domain)) {
-    throw new Error(`Invalid email domain: ${domain}`);
+    callback(new Error(`Invalid email domain: ${domain}`), event);
+  } else {
+    callback(null, event);
   }
-
-  return event;
 };

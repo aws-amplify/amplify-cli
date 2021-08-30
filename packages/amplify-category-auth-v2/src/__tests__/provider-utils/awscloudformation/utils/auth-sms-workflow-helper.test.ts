@@ -1,4 +1,4 @@
-import { ServiceQuestionsResult, AttributeType } from '../../../../provider-utils/awscloudformation/service-walkthrough-types';
+import { ServiceQuestionsResult } from '../../../../provider-utils/awscloudformation/service-walkthrough-types';
 import { doesConfigurationIncludeSMS } from '../../../../provider-utils/awscloudformation/utils/auth-sms-workflow-helper';
 
 describe('doesConfigurationIncludeSMS', () => {
@@ -47,17 +47,17 @@ describe('doesConfigurationIncludeSMS', () => {
   });
 
   it('should return true when userNameAttribute contains phone number', () => {
-    request.usernameAttributes = [AttributeType.PHONE_NUMBER];
+    request.usernameAttributes = ['phone_number'];
     expect(doesConfigurationIncludeSMS(request)).toBeTruthy();
   });
 
   it('should return true when userNameAttribute contains phone number', () => {
-    request.usernameAttributes = [AttributeType.EMAIL, AttributeType.PHONE_NUMBER] as any;
+    request.usernameAttributes = ['email, phone_number'] as any;
     expect(doesConfigurationIncludeSMS(request)).toBeTruthy();
   });
 
   it('should return false when username attribute does not contain phone number', () => {
-    request.usernameAttributes = [AttributeType.EMAIL] as any;
+    request.usernameAttributes = ['email'] as any;
     expect(doesConfigurationIncludeSMS(request)).toBeFalsy();
   });
 });

@@ -23,6 +23,8 @@ const { projectHasAuth } = require('./provider-utils/awscloudformation/utils/pro
 const { attachPrevParamsToContext } = require('./provider-utils/awscloudformation/utils/attach-prev-params-to-context');
 const { stateManager } = require('amplify-cli-core');
 const { headlessImport } = require('./provider-utils/awscloudformation/import');
+const { generateAuthStackTemplate } = require('./provider-utils/awscloudformation/utils/generate-auth-stack-template');
+const { AmplifyAuthTransform } = require('./provider-utils/awscloudformation/auth-stack-builder');
 
 const {
   doesConfigurationIncludeSMS,
@@ -126,6 +128,7 @@ async function externalAuthEnable(context, externalCategory, resourceName, requi
 
   try {
     authProps = await removeDeprecatedProps(authProps);
+    //TODO: call transform function here
     await copyCfnTemplate(context, category, authProps, cfnFilename);
     await saveResourceParameters(context, provider, category, authProps.resourceName, authProps, ENV_SPECIFIC_PARAMS);
     const resourceDirPath = path.join(amplify.pathManager.getBackendDirPath(), 'auth', authProps.resourceName, 'parameters.json');
@@ -477,4 +480,6 @@ module.exports = {
   category,
   importAuth,
   isSMSWorkflowEnabled,
+  generateAuthStackTemplate,
+  AmplifyAuthTransform,
 };

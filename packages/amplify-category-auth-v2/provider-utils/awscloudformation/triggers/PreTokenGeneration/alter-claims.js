@@ -1,4 +1,4 @@
-exports.handler = async event => {
+exports.handler = async (event, context, callback) => {
   event.response = {
     claimsOverrideDetails: {
       claimsToAddOrOverride: {
@@ -9,5 +9,5 @@ exports.handler = async event => {
     },
   };
   // Return to Amazon Cognito
-  return event;
+  callback(null, event);
 };
