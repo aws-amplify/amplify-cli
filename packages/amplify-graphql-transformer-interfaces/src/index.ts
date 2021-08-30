@@ -38,6 +38,4 @@ export {
   TemplateType as MappingTemplateType,
 } from './graphql-api-provider';
 
-export {
-  TransformHostProvider
-} from './transform-host-provider';
+export { TransformHostProvider, DynamoDbDataSourceOptions } from './transform-host-provider';
