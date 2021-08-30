@@ -14,7 +14,7 @@ export class HttpDataLoader implements AmplifyAppSyncSimulatorDataLoader {
   }
 
   public async load(payload: any): Promise<any> {
-    const reqEndpoint = this.endpoint + this.parseUrl(payload.resourcePath, this.env, this.region);
+    const reqEndpoint = this.parseUrl(this.endpoint + payload.resourcePath, this.env, this.region);
     try {
       const axiosRes: AxiosResponse = await axios({
         method: payload.method,
@@ -29,7 +29,9 @@ export class HttpDataLoader implements AmplifyAppSyncSimulatorDataLoader {
     } catch (error) {
       console.log('HTTP Data source failed with the following error:');
       console.error(error);
-      if (error.response.status === 400) console.error(error.response.data);
+      if (error.response.status === 400) {
+        console.error(error.response?.data);
+      }
       throw error;
     }
   }
@@ -39,10 +41,15 @@ export class HttpDataLoader implements AmplifyAppSyncSimulatorDataLoader {
     if (!result) {
       throw new Error('Missing result in response (response.data.data is undefined.)');
     }
-    let first = Object.keys(result)[0];
 
-    if (Array.isArray(result[first])) result = result[first];
-    else result = this.flattenObject(result);
+    // The unit resolver expects a one-level deep object to be returned, so flatten the result to be
+    // an object with selected fields (or an array of such objects.)
+    let first = Object.keys(result)[0];
+    if (Array.isArray(result[first])) {
+      result = result[first];
+    } else {
+      result = this.flattenObject(result);
+    }
 
     return JSON.stringify(result);
   };
@@ -63,7 +70,7 @@ export class HttpDataLoader implements AmplifyAppSyncSimulatorDataLoader {
   };
 
   private parseUrl(resourcePath: string, env: string, region: string): string {
-    let newPath = resourcePath.replace(/(\${env})/, env).replace(/(\${aws_region})/, region);
+    let newPath = resourcePath.replace(/(\${env})/g, env).replace(/(\${aws_region})/g, region);
 
     return newPath;
   }

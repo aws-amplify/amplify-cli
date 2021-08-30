@@ -25,8 +25,10 @@ export class AppSyncUnitResolver extends AppSyncBaseResolver {
     const dataLoader = this.simulatorContext.getDataLoader(this.config.dataSourceName);
 
     // Populate args.query for HTTP data sources.
-    const query = this.getSelectionSet(info.operation?.selectionSet?.selections, args.fieldName);
-    if (query) args = { ...args, query: `${args.typeName.toLowerCase()}{${print(query)}}` };
+    const query = this.getSelectionSet(info.operation?.selectionSet?.selections, info.fieldName);
+    if (query) {
+      args = { ...args, query: `${info.operation.operation.toLowerCase()}{${print(query)}}` };
+    }
 
     const { result: requestPayload, errors: requestTemplateErrors, isReturn, hadException } = requestMappingTemplate.render(
       { source, arguments: args },
@@ -66,12 +68,18 @@ export class AppSyncUnitResolver extends AppSyncBaseResolver {
 
   // Returns the AST of a particular field.
   getSelectionSet(selections, fieldName) {
-    if (!selections) return null;
+    if (!selections) {
+      return null;
+    }
     for (const selection of selections) {
-      if (selection.kind === 'Field' && selection.name?.value === fieldName) return selection;
+      if (selection.kind === 'Field' && selection.name?.value === fieldName) {
+        return selection;
+      }
 
       const subSearch = this.getSelectionSet(selection.selectionSet?.selections, fieldName);
-      if (subSearch) return subSearch;
+      if (subSearch) {
+        return subSearch;
+      }
     }
   }
 }

@@ -62,7 +62,6 @@ export class APITest {
       context.print.info(`AppSync Mock endpoint is running at ${this.appSyncSimulator.url}`);
     } catch (e) {
       context.print.error(`Failed to start API Mock endpoint ${e}`);
-      console.error(e);
     }
   }
 
