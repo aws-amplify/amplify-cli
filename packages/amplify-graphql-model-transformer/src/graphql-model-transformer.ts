@@ -1,11 +1,4 @@
-import {
-  InvalidDirectiveError,
-  MappingTemplate,
-  ResolverConfig,
-  SyncConfig,
-  SyncUtils,
-  TransformerModelBase,
-} from '@aws-amplify/graphql-transformer-core';
+import { InvalidDirectiveError, MappingTemplate, SyncConfig, SyncUtils, TransformerModelBase } from '@aws-amplify/graphql-transformer-core';
 import {
   AppSyncDataSourceType,
   DataSourceInstance,
@@ -79,6 +72,7 @@ import {
   ObjectDefinitionWrapper,
 } from './wrappers/object-definition-wrapper';
 import { CfnRole } from '@aws-cdk/aws-iam';
+import { TransformerContext } from '@aws-amplify/graphql-transformer-core/lib/transformer-context';
 
 export type Nullable<T> = T | null;
 export type OptionalAndNullable<T> = Partial<T>;
@@ -183,7 +177,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
       queries: {
         get: toCamelCase(['get', typeName]),
         list: toCamelCase(['list', plurality(typeName, true)]),
-        ...(ctx.resolvers.isProjectUsingDataStore() ? { sync: toCamelCase(['sync', plurality(typeName, true)]) } : {}),
+        ...((ctx as TransformerContext).isProjectUsingDataStore() ? { sync: toCamelCase(['sync', plurality(typeName, true)]) } : undefined),
       },
       mutations: {
         create: toCamelCase(['create', typeName]),
@@ -220,7 +214,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
     this.ensureModelSortDirectionEnum(ctx);
     for (const type of this.typesWithModelDirective) {
       const def = ctx.output.getObject(type)!;
-      this.options.SyncConfig = SyncUtils.getSyncConfig(ctx, def!.name.value);
+      this.options.SyncConfig = SyncUtils.getSyncConfig(ctx as TransformerContext, def!.name.value);
 
       // add Non Model type inputs
       this.createNonModelInputs(ctx, def);
@@ -730,7 +724,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
       type: QueryFieldType | MutationFieldType | SubscriptionFieldType;
     },
   ): InputValueDefinitionNode[] => {
-    const isSyncEnabled = this.options.SyncConfig ? true : false;
+    const isSyncEnabled = !!this.options.SyncConfig;
 
     const knownModels = this.typesWithModelDirective;
     let conditionInput: InputObjectTypeDefinitionNode;
@@ -770,11 +764,9 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
       case QueryFieldType.SYNC:
         const syncFilterInputName = toPascalCase(['Model', type.name.value, 'FilterInput']);
         const syncFilterInputs = makeListQueryFilterInput(ctx, syncFilterInputName, type);
-        for (let input of [syncFilterInputs]) {
-          const conditionInputName = input.name.value;
-          if (!ctx.output.getType(conditionInputName)) {
-            ctx.output.addInput(input);
-          }
+        const conditionInputName = syncFilterInputs.name.value;
+        if (!ctx.output.getType(conditionInputName)) {
+          ctx.output.addInput(syncFilterInputs);
         }
         return [
           makeInputValueDefinition('filter', makeNamedType(syncFilterInputName)),
@@ -1034,7 +1026,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
       stream: StreamViewType.NEW_AND_OLD_IMAGES,
       encryption: TableEncryption.DEFAULT,
       removalPolicy: removalPolicy,
-      ...(this.options.SyncConfig ? { timeToLiveAttribute: '_ttl' } : {}),
+      ...(this.options.SyncConfig ? { timeToLiveAttribute: '_ttl' } : undefined),
     });
     const cfnTable = table.node.defaultChild as CfnTable;
 
@@ -1079,11 +1071,12 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
     stack: cdk.Stack,
     role: iam.Role,
   ) {
+    const tableLogicalName = `${def!.name.value}Table`;
     const datasourceRoleLogicalID = ModelResourceIDs.ModelTableDataSourceID(def!.name.value);
     const dataSource = context.api.host.addDynamoDbDataSource(
       datasourceRoleLogicalID,
       table,
-      { name: datasourceRoleLogicalID, serviceRole: role },
+      { name: tableLogicalName, serviceRole: role },
       stack,
     );
 
@@ -1184,32 +1177,9 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
   }
 
   private getOptions = (options: ModelTransformerOptions): ModelTransformerOptions => {
-    const defaultOpts = {
-      EnableDeletionProtection: false,
-    };
     return {
-      ...defaultOpts,
+      EnableDeletionProtection: false,
       ...options,
     };
-  };
-
-  private setSyncConfig = (ctx: TransformerTransformSchemaStepContextProvider, typeName: string): void => {
-    let syncConfig: SyncConfig | undefined;
-
-    const resolverConfig = ctx.resolvers.getResolverConfig<ResolverConfig>();
-    if (resolverConfig && resolverConfig.project) {
-      syncConfig = resolverConfig.project;
-    }
-
-    if (resolverConfig && resolverConfig.models && resolverConfig.models[typeName]) {
-      const typeResolverConfig = resolverConfig.models[typeName];
-      if (typeResolverConfig.ConflictDetection && typeResolverConfig.ConflictHandler) {
-        syncConfig = typeResolverConfig;
-      } else {
-        console.warn(`Invalid resolverConfig for type ${typeName}. Using the project resolverConfig instead.`);
-      }
-    }
-
-    this.options.SyncConfig = syncConfig;
   };
 }

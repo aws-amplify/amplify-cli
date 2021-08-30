@@ -312,11 +312,11 @@ describe('ModelTransformer: ', () => {
       id: Int
       str: String
     }
-  
+
     type Query {
       Custom: String
     }
-  
+
     schema {
       query: Query
     }
@@ -447,7 +447,7 @@ describe('ModelTransformer: ', () => {
           createdAt: String
           updatedAt: String
       }
-  
+
       type User @model {
           id: ID!
           name: String!
@@ -768,7 +768,7 @@ describe('ModelTransformer: ', () => {
         id: ID!
         email: Email
       }
-      
+
       type Email @model {
         id: ID!
       }
@@ -879,7 +879,7 @@ describe('ModelTransformer: ', () => {
     expect(out).toBeDefined();
     validateModelSchema(parse(out.schema));
   });
-  
+
   it('should generate sync resolver with ConflictHandlerType.Automerge', () => {
     const validSchema = `
       type Post @model {
@@ -908,6 +908,8 @@ describe('ModelTransformer: ', () => {
     const definition = out.schema;
     expect(definition).toBeDefined();
     expect(out.pipelineFunctions).toMatchSnapshot();
+
+    validateModelSchema(parse(definition));
   });
 
   it('should generate sync resolver with ConflictHandlerType.Lambda', () => {
@@ -943,6 +945,8 @@ describe('ModelTransformer: ', () => {
     const definition = out.schema;
     expect(definition).toBeDefined();
     expect(out.pipelineFunctions).toMatchSnapshot();
+
+    validateModelSchema(parse(definition));
   });
 
   it('should generate sync resolver with ConflictHandlerType.Optimistic', () => {
@@ -975,5 +979,7 @@ describe('ModelTransformer: ', () => {
     const definition = out.schema;
     expect(definition).toBeDefined();
     expect(out.pipelineFunctions).toMatchSnapshot();
+
+    validateModelSchema(parse(definition));
   });
 });
