@@ -1,38 +1,10 @@
 import { Template } from 'cloudform-types';
-import {
-  AmplifyAuthTransform,
-  AmplifyAuthTransformOptions,
-  authCognitoStackFileName,
-  CommandType,
-} from '../auth-stack-builder/auth-stack-transform';
-import * as path from 'path';
-import { $TSContext, pathManager } from 'amplify-cli-core';
-import { category } from '../constants';
+import { AmplifyAuthTransform } from '../auth-stack-builder/auth-stack-transform';
+import { $TSContext } from 'amplify-cli-core';
 
 export const generateAuthStackTemplate = async (context: $TSContext, resourceName: string): Promise<Template> => {
   try {
-    const projectPath = pathManager.findProjectRoot();
-    const cfnFilePath = path.join(pathManager.getBackendDirPath(projectPath), category, resourceName, 'build', authCognitoStackFileName);
-    const overrideFnPath = path.join(pathManager.getOverrideDirPath(projectPath!, category, resourceName), 'build', 'override.js');
-    const overrideDir = pathManager.getRootOverrideDirPath(projectPath!);
-
-    const props: AmplifyAuthTransformOptions = {
-      resourceConfig: {
-        categoryName: category,
-        resourceName,
-        stackFileName: authCognitoStackFileName,
-        serviceName: 'cognito',
-      },
-      deploymentOptions: {
-        rootFilePath: cfnFilePath,
-      },
-      overrideOptions: {
-        overrideFnPath,
-        overrideDir,
-      },
-    };
-    // generate , override and deploy stacks to disk
-    const authTransform = new AmplifyAuthTransform(props, CommandType.ADD);
+    const authTransform = new AmplifyAuthTransform(resourceName, context.input.command);
     return await authTransform.transform(context);
   } catch (e) {
     throw new Error(e);

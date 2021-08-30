@@ -50,7 +50,7 @@ import { legacyLayerMigration, postPushLambdaLayerCleanup, prePushLambdaLayerPro
 import { CommandType } from './root-stack-builder';
 import { rootStackFileName } from '.';
 import { storeRootStackTemplate } from './initializer';
-import { transformRootStack } from './overrideManager';
+import { transformRootStack } from './override-manager/overrideManager';
 import { Template } from './root-stack-builder/types';
 
 const logger = fileLogger('push-resources');

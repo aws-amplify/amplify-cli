@@ -656,7 +656,7 @@ export class FeatureFlags {
     ]);
     this.registerFlag('category', [
       {
-        name: 'enableOverrdies',
+        name: 'enableOverrides',
         type: 'boolean',
         defaultValueForExistingProjects: false,
         defaultValueForNewProjects: false,

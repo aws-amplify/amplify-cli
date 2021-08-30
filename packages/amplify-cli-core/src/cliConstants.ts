@@ -25,3 +25,10 @@ export const AmplifySupportedService = {
   DYNAMODB: 'DynamoDB',
   COGNITO: 'Cognito',
 };
+
+export const overriddenCategories = [AmplifyCategories.AUTH];
+
+export type IAmplifyResource = {
+  category: string;
+  resourceName: string;
+};

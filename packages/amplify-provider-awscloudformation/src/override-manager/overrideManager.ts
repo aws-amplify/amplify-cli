@@ -1,23 +1,28 @@
-import { AmplifyRootStackTransform, CommandType, RootStackTransformOptions } from './root-stack-builder';
-import { rootStackFileName } from '.';
-import { prePushCfnTemplateModifier } from './pre-push-cfn-processor/pre-push-cfn-modifier';
+import { AmplifyRootStackTransform, CommandType, RootStackTransformOptions } from '../root-stack-builder';
+import { rootStackFileName } from '..';
+import { prePushCfnTemplateModifier } from '../pre-push-cfn-processor/pre-push-cfn-modifier';
 import * as path from 'path';
-import { pathManager } from 'amplify-cli-core';
+import { $TSContext, pathManager } from 'amplify-cli-core';
 import { Template } from 'cloudform-types';
+import { AmplifyCategoryTransformFactory } from './amplify-factory-transform';
 /**
  *
  * @param context
  * @returns
  */
-export async function transformCfnWithOverrides(context): Promise<Template> {
+export async function transformCfnWithOverrides(context: $TSContext, category: string, resourceName: string) {
   const flags = context.parameters.options;
   if (flags['no-override']) {
     return;
   }
+  await AmplifyCategoryTransformFactory.getCategoryTransformInstance({
+    category,
+    resourceName,
+  }).forEach(categoryTransform => {
+    categoryTransform.transform(context);
+  });
 
-  const rootStack = await transformRootStack(CommandType.PUSH);
-  return rootStack;
-  // can enable other CFN Transfomer here and also make a registry of which categories supports overrides Transfomer
+  // await transformRootStack(CommandType.PUSH);
 }
 
 export const transformRootStack = async (commandType: CommandType): Promise<Template> => {

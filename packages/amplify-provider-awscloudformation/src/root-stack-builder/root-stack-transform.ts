@@ -12,7 +12,7 @@ export enum CommandType {
   'ON_INIT',
 }
 
-type RootStackOptions = {
+export type RootStackOptions = {
   rootStackFileName: string;
   event: CommandType;
   overrideDir?: string;

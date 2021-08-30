@@ -253,7 +253,7 @@ const createUserPoolGroups = async (context: any, resourceName: string, userPool
       ],
     });
     // create CFN
-    await generateUserPoolGroupStackTemplate(resourceName);
+    await generateUserPoolGroupStackTemplate(context, resourceName);
   }
 };
 
@@ -290,7 +290,7 @@ const updateUserPoolGroups = async (context: any, resourceName: string, userPool
     });
 
     // generate template
-    await generateUserPoolGroupStackTemplate(resourceName);
+    await generateUserPoolGroupStackTemplate(context, resourceName);
   }
 };
 

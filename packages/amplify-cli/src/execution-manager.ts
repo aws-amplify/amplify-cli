@@ -45,7 +45,7 @@ async function selectPluginForExecution(context: Context, pluginCandidates: Plug
   pluginCandidates.forEach(plugin => {
     pluginCandidatesCategorySet.add(plugin.manifest.name);
   });
-  if (pluginCandidatesCategorySet.size == 1 && overidedcategories.includes(pluginCandidatesCategorySet.entries()[0])) {
+  if (pluginCandidatesCategorySet.size == 1 && overidedcategories.includes(pluginCandidatesCategorySet.values().next().value)) {
     if (FeatureFlags.getBoolean('category.enableoverrides') && pluginCandidates[0].packageName.includes('@aws-amplify')) {
       return pluginCandidates[0];
     } else {

@@ -24,8 +24,7 @@ export * from './cliGetCategories';
 export * from './cliRemoveResourcePrompt';
 export * from './cliViewAPI';
 export * from './overrides-manager';
-export { TypeDef, CLIInputSchemaGenerator, CLIInputSchemaValidator } from './categoryBaseGenSchema';
-export { AmplifyCategories, AmplifySupportedService, CLISubCommands, SecretFileMode } from './cliConstants';
+export * from './cliConstants';
 
 // Temporary types until we can finish full type definition across the whole CLI
 

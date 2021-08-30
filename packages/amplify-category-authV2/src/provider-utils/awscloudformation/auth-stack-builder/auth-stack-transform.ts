@@ -1,90 +1,59 @@
-import { Template } from 'cloudform-types';
-import { JSONUtilities } from 'amplify-cli-core';
+import {
+  AmplifyCategories,
+  AmplifySupportedService,
+  pathManager,
+  FeatureFlags,
+  $TSContext,
+  writeCFNTemplate,
+  CFNTemplateFormat,
+  buildOverrideDir,
+  CLISubCommands,
+  JSONUtilities,
+} from 'amplify-cli-core';
 import { AmplifyAuthCognitoStack } from './auth-cognito-stack-builder';
 import { AuthStackSythesizer } from './stack-synthesizer';
 import * as cdk from '@aws-cdk/core';
 import { AuthInputState } from '../auth-inputs-manager/auth-input-state';
-import { AuthStackOptions, ServiceQuestionsResult } from '../service-walkthrough-types';
+import { CognitoStackOptions } from '../service-walkthrough-types';
 import { AmplifyAuthCognitoStackTemplate } from './types';
-import { generateNestedAuthTriggerTemplate } from '../utils/generate-auth-trigger-template';
 import { category } from '../constants';
-import { pathManager, FeatureFlags, $TSContext } from 'amplify-cli-core';
 import _ from 'lodash';
+import { Template, AmplifyStackTemplate, AmplifyCategoryTransform } from 'amplify-category-plugin-interface';
 import * as path from 'path';
+import * as fs from 'fs-extra';
+import * as vm from 'vm';
+import * as amplifyPrinter from 'amplify-prompts';
 
-export enum CommandType {
-  'ADD',
-  'UPDATE',
-  'REMOVE',
-}
+export class AmplifyAuthTransform extends AmplifyCategoryTransform {
+  _app: cdk.App;
+  _category: string;
+  _service: string;
+  _resourceName: string;
+  _authTemplateObj: AmplifyAuthCognitoStack; // Props to modify Root stack data
+  _command: string;
+  _synthesizer: AuthStackSythesizer;
 
-export const authCognitoStackFileName: string = 'auth-template.yml';
-
-type AmplifyAuthStackOptions = {
-  authStackFileName: string;
-  event: CommandType;
-  authStackInputPayload: AuthStackOptions;
-  overrideDir?: string;
-};
-
-export type ResourceConfig = {
-  resourceName: string;
-  categoryName: string;
-  stackFileName: string;
-  serviceName: string;
-};
-
-export interface AmplifyAuthTransformOptions {
-  resourceConfig: ResourceConfig;
-  deploymentOptions: DeploymentOptions;
-  overrideOptions: OverrideOptions;
-  cfnModifiers?: Function;
-}
-
-export interface DeploymentOptions {
-  templateStack?: Template;
-  rootFilePath: string;
-}
-
-export interface OverrideOptions {
-  overrideFnPath: string;
-  overrideDir: string;
-}
-
-export class AmplifyAuthTransform {
-  private app: cdk.App;
-  private _authTemplateObj: AmplifyAuthCognitoStack; // Props to modify Root stack data
-  private _resourceConfig: ResourceConfig; // Config about resource to override
-  private _authStackOptions: AmplifyAuthStackOptions; // options to help generate  cfn template
-  private _command: CommandType;
-  private _synthesizer: AuthStackSythesizer;
-  private _deploymentOptions: DeploymentOptions;
-  private _overrideProps: OverrideOptions;
-  private _cfnModifiers: Function | undefined;
-  private _authInputState: AuthInputState;
-
-  constructor(options: AmplifyAuthTransformOptions, command: CommandType) {
-    this._resourceConfig = options.resourceConfig;
-    this._command = command;
+  constructor(resourceName: string, command: string) {
+    super(resourceName);
+    this._resourceName = resourceName;
     this._synthesizer = new AuthStackSythesizer();
-    this.app = new cdk.App();
-    this._deploymentOptions = options.deploymentOptions;
-    this._overrideProps = options.overrideOptions;
-    this._cfnModifiers = options.cfnModifiers;
-    this._authInputState = AuthInputState.getInstance({
-      category: this._resourceConfig.categoryName,
-      resourceName: this._resourceConfig.resourceName,
-      fileName: this._resourceConfig.stackFileName,
-      service: this._resourceConfig.serviceName,
-    });
+    this._app = new cdk.App();
+    this._category = AmplifyCategories.AUTH;
+    this._service = AmplifySupportedService.COGNITO;
+    try {
+      if (command === CLISubCommands.ADD || command === CLISubCommands.UPDATE) {
+        this._command = command === CLISubCommands.ADD ? CLISubCommands.ADD : CLISubCommands.UPDATE;
+      }
+    } catch (error) {
+      throw new Error(error);
+    }
   }
 
   public async transform(context: $TSContext): Promise<Template> {
     // parse Input data
-    this._authStackOptions = await this.getInput(context);
-
+    const cognitoStackProps = await this.generateStackProps(context);
     // generate cfn Constructs and AmplifyRootStackTemplate object to get overridden
-    await this.generateResources();
+    await this.generateStackResources(cognitoStackProps);
 
     // apply override on Amplify Object having CDK Constructs for Root Stack
     await this.applyOverride();
@@ -92,18 +61,8 @@ export class AmplifyAuthTransform {
     // generate CFN template
     const template: Template = await this.synthesizeTemplates();
 
-    // check if the cfnModifiers are defined for the Auth Stack
-    if (this._cfnModifiers) {
-      this._cfnModifiers(template);
-    }
-
     // save stack
-    if (this._command === CommandType.ADD || this._command === CommandType.UPDATE) {
-      await this.deployOverrideStacksToDisk({
-        templateStack: template,
-        rootFilePath: this._deploymentOptions!.rootFilePath,
-      });
-    }
+    await this.saveBuildFiles(template);
     return template;
   }
 
@@ -112,8 +71,8 @@ export class AmplifyAuthTransform {
    * @returns CFN Template
    */
 
-  generateResources = async () => {
-    this._authTemplateObj = new AmplifyAuthCognitoStack(this.app!, 'AmplifyAuthCongitoStack', { synthesizer: this._synthesizer });
+  public async generateStackResources(props: CognitoStackOptions) {
+    this._authTemplateObj = new AmplifyAuthCognitoStack(this._app, 'AmplifyAuthCongitoStack', { synthesizer: this._synthesizer });
     this._authTemplateObj.addCfnParameter(
       {
         type: 'String',
@@ -135,13 +94,11 @@ export class AmplifyAuthTransform {
       'unauthRoleArn',
     );
 
-    const props = this._authStackOptions?.authStackInputPayload!;
-
     if (!_.isEmpty(props.dependsOn)) {
       const dependsOn = props.dependsOn;
       dependsOn?.forEach(param => {
         param.attributes.forEach(attribute => {
-          this._authTemplateObj!.addCfnParameter(
+          this._authTemplateObj.addCfnParameter(
             {
               type: 'String',
               default: `${param.category}${param.resourceName}${attribute}`,
@@ -227,16 +184,192 @@ export class AmplifyAuthTransform {
     this._authTemplateObj.generateCognitoStackResources(props);
 
     //generate Output
-  };
+    if (props.authSelections === 'identityPoolAndUserPool' || props.authSelections == 'identityPoolOnly') {
+      this._authTemplateObj.addCfnOutput(
+        {
+          value: cdk.Fn.ref('IdentityPool'),
+          description: 'Id for the identity pool',
+        },
+        'IdentityPoolId',
+      );
 
-  private applyOverride = async () => {
-    if (this._command === CommandType.ADD || this._command === CommandType.UPDATE) {
-      const { overrideProps } = await import(this._overrideProps!.overrideFnPath);
+      this._authTemplateObj.addCfnOutput(
+        {
+          value: cdk.Fn.getAtt('IdenityId', 'Arn').toString(),
+          description: 'Id for the identity pool',
+        },
+        'IdentityPoolName',
+      );
+    }
+
+    if (props.hostedUIDomainName) {
+      this._authTemplateObj.addCfnOutput(
+        {
+          value: cdk.Fn.conditionIf(
+            'ShouldNotCreateEnvResources',
+            cdk.Fn.ref('hostedUIDomainName'),
+            cdk.Fn.join('-', [cdk.Fn.ref('hostedUIDomainName'), cdk.Fn.ref('env')]),
+          ).toString(),
+        },
+        'HostedUIDomain',
+      );
+    }
+
+    if (props.oAuthMetadata) {
+      this._authTemplateObj.addCfnOutput(
+        {
+          value: cdk.Fn.ref('oAuthMetadata'),
+        },
+        'OAuthMetadata',
+      );
+    }
+
+    if (props.authSelections !== 'identityPoolOnly') {
+      this._authTemplateObj.addCfnOutput(
+        {
+          value: cdk.Fn.ref('UserPool'),
+          description: 'Id for the user pool',
+        },
+        'UserPoolId',
+      );
+
+      this._authTemplateObj.addCfnOutput(
+        {
+          value: cdk.Fn.getAtt('UserPool', 'Arn').toString(),
+          description: 'Arn for the user pool',
+        },
+        'UserPoolArn',
+      );
+
+      this._authTemplateObj.addCfnOutput(
+        {
+          value: cdk.Fn.ref('userPoolName'),
+        },
+        'UserPoolName',
+      );
+
+      this._authTemplateObj.addCfnOutput(
+        {
+          value: cdk.Fn.ref('UserPoolClientWeb'),
+          description: 'The user pool app client id for web',
+        },
+        'AppClientIDWeb',
+      );
+
+      this._authTemplateObj.addCfnOutput(
+        {
+          value: cdk.Fn.ref('UserPoolClient'),
+          description: 'The user pool app client id',
+        },
+        'AppClientID',
+      );
+
+      this._authTemplateObj.addCfnOutput(
+        {
+          value: cdk.Fn.getAtt('UserPoolClientInputs', 'appSecret').toString(),
+          condition: this._authTemplateObj.getCfnCondition('ShouldOutputAppClientSecrets'),
+        },
+        'AppClientSecret',
+      );
+
+      if (props.mfaConfiguration != 'OFF') {
+        this._authTemplateObj.addCfnOutput(
+          {
+            value: cdk.Fn.getAtt('SNSRole', 'Arn').toString(),
+            description: 'role arn',
+          },
+          'CreatedSNSRole',
+        );
+      }
+
+      if (props.googleClientId) {
+        this._authTemplateObj.addCfnOutput(
+          {
+            value: cdk.Fn.ref('googleClientId'),
+          },
+          'GoogleWebClient',
+        );
+      }
+
+      if (props.googleIos) {
+        this._authTemplateObj.addCfnOutput(
+          {
+            value: cdk.Fn.ref('googleIos'),
+          },
+          'GoogleIOSClient',
+        );
+      }
+
+      if (props.googleAndroid) {
+        this._authTemplateObj.addCfnOutput(
+          {
+            value: cdk.Fn.ref('googleAndroid'),
+          },
+          'GoogleAndroidClient',
+        );
+      }
+
+      if (props.facebookAppId) {
+        this._authTemplateObj.addCfnOutput(
+          {
+            value: cdk.Fn.ref('facebookAppId'),
+          },
+          'FacebookWebClient',
+        );
+      }
+
+      if (props.amazonAppId) {
+        this._authTemplateObj.addCfnOutput(
+          {
+            value: cdk.Fn.ref('amazonAppId'),
+          },
+          'AmazonWebClient',
+        );
+      }
+
+      if (props.appleAppId) {
+        this._authTemplateObj.addCfnOutput(
+          {
+            value: cdk.Fn.ref('appleAppId'),
+          },
+          'AppleWebClient',
+        );
+      }
+    }
+  }
+
+  public applyOverride = async () => {
+    if (this._command === CLISubCommands.UPDATE) {
+      const projectRoot = pathManager.findProjectRoot();
+      const overrideDir = pathManager.getOverrideDirPath(projectRoot!, this._category, this._resourceName);
+      await buildOverrideDir(overrideDir).catch(error => {
+        amplifyPrinter.printer.warn(`Skipping build as ${error.message}`);
+        return null;
+      });
+      const { overrideProps } = await import(path.join(overrideDir, 'build', 'override.js')).catch(error => {
+        amplifyPrinter.formatter.list([
+          'No override File Found',
+          `To override ${this._resourceName} run amplify override auth ${this._resourceName} `,
+        ]);
+        return undefined;
+      });
+      // const overrideCode : string = await fs.readFile(path.join(overrideDir,'build','override.js'),'utf-8').catch( ()  =>{
+      //   amplifyPrinter.formatter.list(['No override File Found',`To override ${this._resourceName} run amplify override auth ${this._resourceName} `]);
+      //   return '';
+      // });
+      const cognitoStackTemplateObj = this._authTemplateObj as AmplifyAuthCognitoStackTemplate & AmplifyStackTemplate;
+      //TODO: Check Script Options
       if (typeof overrideProps === 'function' && overrideProps) {
-        // await buildOverrideDir(this._overrideProps!.overrideDir);
-        this._authTemplateObj = overrideProps(this._authTemplateObj as AmplifyAuthCognitoStackTemplate);
-      } else {
-        console.log('There is no override setup yet for Root Stack. To enable override : Run amplify override root');
+        try {
+          this._authTemplateObj = overrideProps(cognitoStackTemplateObj);
+
+          //The vm module enables compiling and running code within V8 Virtual Machine contexts. The vm module is not a security mechanism. Do not use it to run untrusted code.
+          // const script = new vm.Script(overrideCode);
+          // script.runInContext(vm.createContext(cognitoStackTemplateObj));
+          return;
+        } catch (error) {
+          throw new Error(error);
+        }
       }
     }
   };
@@ -244,43 +377,43 @@ export class AmplifyAuthTransform {
    *
    * @returns Object required to generate Stack using cdk
    */
-  private getInput = async (context: $TSContext): Promise<AmplifyAuthStackOptions> => {
+  public generateStackProps = async (context: $TSContext): Promise<CognitoStackOptions> => {
     // get the parameters necessary to complete
-    // handle dependsOn data
+
+    const projectPath = pathManager.findProjectRoot();
+    const cliInputsPath = pathManager.getCliInputsPath(projectPath!, category, this._resourceName);
+    const authCliState = await AuthInputState.getInstance({
+      category: category,
+      resourceName: this._resourceName,
+      fileName: cliInputsPath,
+      service: AmplifySupportedService.COGNITO,
+    });
 
     // determine permissions needed for each trigger module
-    if (!_.isEmpty(this._authInputState._authInputPayload!.triggers)) {
+    if (!_.isEmpty(authCliState._authInputPayload!.triggers)) {
       const permissions = await context.amplify.getTriggerPermissions(
         context,
-        this._authInputState._authInputPayload?.triggers,
-        'auth',
-        this._authInputState._authInputPayload!.resourceName!,
+        authCliState._authInputPayload!.triggers,
+        AmplifyCategories.AUTH,
+        authCliState._authInputPayload!.resourceName!,
       );
+      const triggerPermissions = permissions.map((i: string) => JSON.parse(i));
 
       // handle dependsOn data
-      const dependsOnKeys = Object.keys(this._authInputState._authInputPayload?.triggers).map(
-        i => `${this._authInputState._authInputPayload!.resourceName}${i}`,
+      const dependsOnKeys = Object.keys(authCliState._authInputPayload!.triggers).map(
+        i => `${authCliState._authInputPayload!.resourceName}${i}`,
       );
       const dependsOn = context.amplify.dependsOnBlock(context, dependsOnKeys, 'Cognito');
       return {
-        authStackFileName: this._resourceConfig.stackFileName,
-        authStackInputPayload: {
-          breakCircularDependency: FeatureFlags.getBoolean('auth.breakcirculardependency'),
-          permissions: permissions,
-          dependsOn: dependsOn,
-          ...this._authInputState.getCliInputPayload(),
-        },
-        event: CommandType.ADD,
+        breakCircularDependency: FeatureFlags.getBoolean('auth.breakcirculardependency'),
+        permissions: triggerPermissions,
+        dependsOn,
+        ...authCliState.getCliInputPayload(),
       };
     }
-
     return {
-      authStackFileName: this._resourceConfig.stackFileName,
-      authStackInputPayload: {
-        breakCircularDependency: FeatureFlags.getBoolean('auth.breakcirculardependency'),
-        ...this._authInputState.getCliInputPayload(),
-      },
-      event: CommandType.ADD,
+      breakCircularDependency: FeatureFlags.getBoolean('auth.breakcirculardependency'),
+      ...authCliState.getCliInputPayload(),
     };
   };
 
@@ -288,15 +421,23 @@ export class AmplifyAuthTransform {
    *
    * @returns return CFN templates sunthesized by app
    */
-  private synthesizeTemplates = async (): Promise<Template> => {
-    this.app?.synth();
+  public synthesizeTemplates = async (): Promise<Template> => {
+    this._app.synth();
     const templates = this._synthesizer.collectStacks();
-    return templates.get('AmplifyAuthCognitoStack')!;
+    return templates.get('AmplifyAuthCongitoStack')!;
   };
 
-  private deployOverrideStacksToDisk = async (props: DeploymentOptions) => {
-    if (this._authStackOptions!.event === CommandType.ADD || this._authStackOptions!.event === CommandType.UPDATE) {
-      JSONUtilities.writeJson(props.rootFilePath, props.templateStack);
-    }
+  public saveBuildFiles = async (template: Template): Promise<void> => {
+    const cognitoStackFileName = `${this._resourceName}-cloudformation-template.yml`;
+    const cognitostackFilePath = path.join(
+      pathManager.getBackendDirPath(),
+      this._category,
+      this._resourceName,
+      'build',
+      cognitoStackFileName,
+    );
+    writeCFNTemplate(template, cognitostackFilePath, {
+      templateFormat: CFNTemplateFormat.YAML,
+    });
   };
 }

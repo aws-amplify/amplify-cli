@@ -4,6 +4,7 @@ import * as lambda from '@aws-cdk/aws-lambda';
 import { CfnUserPoolGroup } from '@aws-cdk/aws-cognito';
 import { AmplifyUserPoolGroupStackTemplate } from './types';
 import { AmplifyUserPoolGroupStackOptions } from './user-pool-group-stack-transform';
+import { AmplifyStackTemplate } from 'amplify-category-plugin-interface';
 
 const CFN_TEMPLATE_FORMAT_VERSION = '2010-09-09';
 const ROOT_CFN_DESCRIPTION = 'Root Stack for AWS Amplify CLI';
@@ -12,7 +13,7 @@ export type AmplifyAuthCognitoStackProps = {
   synthesizer: cdk.IStackSynthesizer;
 };
 
-export class AmplifyUserPoolGroupStack extends cdk.Stack implements AmplifyUserPoolGroupStackTemplate {
+export class AmplifyUserPoolGroupStack extends cdk.Stack implements AmplifyUserPoolGroupStackTemplate, AmplifyStackTemplate {
   _scope: cdk.Construct;
   private _cfnParameterMap: Map<string, cdk.CfnParameter> = new Map();
   private _cfnConditionMap: Map<string, cdk.CfnCondition> = new Map();
@@ -29,6 +30,12 @@ export class AmplifyUserPoolGroupStack extends cdk.Stack implements AmplifyUserP
     this.templateOptions.description = ROOT_CFN_DESCRIPTION;
     this.userPoolGroup = {};
     this.userPoolGroupRole = {};
+  }
+  getCfnOutput(logicalId: string): cdk.CfnOutput {
+    throw new Error('Method not implemented.');
+  }
+  getCfnMapping(logicalId: string): cdk.CfnMapping {
+    throw new Error('Method not implemented.');
   }
 
   /**
@@ -102,17 +109,17 @@ export class AmplifyUserPoolGroupStack extends cdk.Stack implements AmplifyUserP
     }
   }
 
-  getCfnParameter(logicalId: string): cdk.CfnParameter | undefined {
+  getCfnParameter(logicalId: string): cdk.CfnParameter {
     if (this._cfnParameterMap.has(logicalId)) {
-      return this._cfnParameterMap.get(logicalId);
+      return this._cfnParameterMap.get(logicalId)!;
     } else {
       throw new Error(`Cfn Parameter with LogicalId ${logicalId} doesnt exist`);
     }
   }
 
-  getCfnCondition(logicalId: string): cdk.CfnCondition | undefined {
+  getCfnCondition(logicalId: string): cdk.CfnCondition {
     if (this._cfnConditionMap.has(logicalId)) {
-      return this._cfnConditionMap.get(logicalId);
+      return this._cfnConditionMap.get(logicalId)!;
     } else {
       throw new Error(`Cfn Parameter with LogicalId ${logicalId} doesnt exist`);
     }
@@ -136,7 +143,10 @@ export class AmplifyUserPoolGroupStack extends cdk.Stack implements AmplifyUserP
         precedence: group.precedence,
       });
       if (props.identityPoolName) {
-        this.userPoolGroup[`${group.groupName}`].addPropertyOverride('RoleArn', cdk.Fn.getAtt(`${group.groupName}GroupRole`, 'Arn'));
+        this.userPoolGroup[`${group.groupName}`].addPropertyOverride(
+          'RoleArn',
+          cdk.Fn.getAtt(`${group.groupName}GroupRole`, 'Arn').toString(),
+        );
         this.userPoolGroupRole[`${group.groupName}`] = new iam.CfnRole(this, `${group.groupName}GroupRole`, {
           roleName: cdk.Fn.join('', [
             this.getCfnParameter(getCfnParamslogicalId(props.cognitoResourceName, 'UserPoolId'))!.valueAsString,

@@ -19,41 +19,35 @@ export interface AmplifyAuthCognitoStackTemplate {
   userPoolClientRole?: iam.CfnRole;
   userPoolClientLambdaPolicy?: iam.CfnPolicy;
   userPoolClientLogPolicy?: iam.CfnPolicy;
-  userPoolClientInputs?: cdk.CfnCustomResource;
+  userPoolClientInputs?: cdk.CustomResource;
   // customresources HostedUI
   hostedUICustomResource?: lambda.CfnFunction;
   hostedUICustomResourcePolicy?: iam.CfnPolicy;
   hostedUICustomResourceLogPolicy?: iam.CfnPolicy;
-  hostedUICustomResourceInputs?: cdk.CfnCustomResource;
+  hostedUICustomResourceInputs?: cdk.CustomResource;
   // custom resource HostedUI Provider
   hostedUIProvidersCustomResource?: lambda.CfnFunction;
-  HostedUIProvidersCustomResourcePolicy?: iam.CfnPolicy;
-  HostedUIProvidersCustomResourceLogPolicy?: iam.CfnPolicy;
-  HostedUIProvidersCustomResourceInputs?: cdk.CfnCustomResource;
+  hostedUIProvidersCustomResourcePolicy?: iam.CfnPolicy;
+  hostedUIProvidersCustomResourceLogPolicy?: iam.CfnPolicy;
+  hostedUIProvidersCustomResourceInputs?: cdk.CustomResource;
   // custom resource OAUTH Provider
-  OAuthCustomResource?: lambda.CfnFunction;
-  OAuthCustomResourcePolicy?: iam.CfnPolicy;
-  OAuthCustomResourceLogPolicy?: iam.CfnPolicy;
-  OAuthCustomResourceInputs?: cdk.CfnCustomResource;
+  oAuthCustomResource?: lambda.CfnFunction;
+  oAuthCustomResourcePolicy?: iam.CfnPolicy;
+  oAuthCustomResourceLogPolicy?: iam.CfnPolicy;
+  oAuthCustomResourceInputs?: cdk.CustomResource;
   //custom resource MFA
-  MFALambda?: lambda.CfnFunction;
-  MFALogPolicy?: iam.CfnPolicy;
-  MFALambdaPolicy?: iam.CfnPolicy;
-  MFALambdaInputs?: cdk.CfnCustomResource;
-  MFALambdaRole?: iam.CfnRole;
+  mfaLambda?: lambda.CfnFunction;
+  mfaLogPolicy?: iam.CfnPolicy;
+  mfaLambdaPolicy?: iam.CfnPolicy;
+  mfaLambdaInputs?: cdk.CustomResource;
+  mfaLambdaRole?: iam.CfnRole;
 
   //custom resource identity pool - OPenId Lambda Role
-  OpenIdLambda?: lambda.CfnFunction;
-  OpenIdLogPolicy?: iam.CfnPolicy;
-  OpenIdLambdaIAMPolicy?: iam.CfnPolicy;
-  OpenIdLambdaInputs?: cdk.CfnCustomResource;
-  OpenIdLambdaRole?: iam.CfnRole;
-
-  addCfnParameter(props: cdk.CfnParameterProps, logicalId: string): void;
-  addCfnOutput(props: cdk.CfnOutputProps, logicalId: string): void;
-  addCfnMapping(props: cdk.CfnMappingProps, logicalId: string): void;
-  addCfnCondition(props: cdk.CfnConditionProps, logicalId: string): void;
-  addCfnResource(props: cdk.CfnResourceProps, logicalId: string): void;
+  openIdLambda?: lambda.CfnFunction;
+  openIdLogPolicy?: iam.CfnPolicy;
+  openIdLambdaIAMPolicy?: iam.CfnPolicy;
+  openIdLambdaInputs?: cdk.CustomResource;
+  openIdLambdaRole?: iam.CfnRole;
 }
 
 export interface AmplifyUserPoolGroupStackTemplate {
@@ -62,10 +56,4 @@ export interface AmplifyUserPoolGroupStackTemplate {
   roleMapCustomResource?: cdk.CustomResource;
   lambdaExecutionRole?: iam.CfnRole;
   roleMapLambdaFunction?: lambda.CfnFunction;
-
-  addCfnParameter(props: cdk.CfnParameterProps, logicalId: string): void;
-  addCfnOutput(props: cdk.CfnOutputProps, logicalId: string): void;
-  addCfnMapping(props: cdk.CfnMappingProps, logicalId: string): void;
-  addCfnCondition(props: cdk.CfnConditionProps, logicalId: string): void;
-  addCfnResource(props: cdk.CfnResourceProps, logicalId: string): void;
 }

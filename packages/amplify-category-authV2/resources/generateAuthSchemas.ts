@@ -1,17 +1,12 @@
 import { TypeDef, CLIInputSchemaGenerator } from 'amplify-cli-core';
 
-//ResourceProvider TypeDefs
-// const DDBStorageTypeDef : TypeDef = {
-//   typeName: 'DynamoDBUserInputs',
-//   service: 'dynamoDB'
-// }
-const S3StorageTypeDef: TypeDef = {
+const CognitoAuthTypeDef: TypeDef = {
   typeName: 'ServiceQuestionsResult',
   service: 'cognito',
 };
 
 // Defines the type names and the paths to the TS files that define them
-const storageCategoryTypeDefs: TypeDef[] = [S3StorageTypeDef];
+const authCategoryTypeDefs: TypeDef[] = [CognitoAuthTypeDef];
 
-const schemaGenerator = new CLIInputSchemaGenerator(storageCategoryTypeDefs);
+const schemaGenerator = new CLIInputSchemaGenerator(authCategoryTypeDefs);
 schemaGenerator.generateJSONSchemas(); //convert CLI input data into json schemas.

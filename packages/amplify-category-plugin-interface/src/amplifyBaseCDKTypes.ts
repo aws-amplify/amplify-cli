@@ -1,7 +1,5 @@
 //Define all common classes and interfaces required to generate cloudformation using CDK.
 import * as cdk from '@aws-cdk/core';
-import * as s3 from '@aws-cdk/aws-s3';
-import * as iam from '@aws-cdk/aws-iam';
 
 //Base template
 //Customer can use these params to mutate the Cloudformation for the resource
@@ -10,9 +8,16 @@ export interface AmplifyStackTemplate {
   addCfnOutput(props: cdk.CfnOutputProps, logicalId: string): void;
   addCfnMapping(props: cdk.CfnMappingProps, logicalId: string): void;
   addCfnCondition(props: cdk.CfnConditionProps, logicalId: string): void;
-  addCfnResource(props: cdk.CfnResourceProps, logicalId: string): void;
+
+  getCfnParameter(logicalId: string): cdk.CfnParameter;
+  getCfnOutput(logicalId: string): cdk.CfnOutput;
+  getCfnMapping(logicalId: string): cdk.CfnMapping;
+  getCfnCondition(logicalId: string): cdk.CfnCondition;
 }
 
+/**
+ * Temporary type for generated CFN Template
+ */
 export interface Template {
   AWSTemplateFormatVersion?: string;
   Description?: string;
