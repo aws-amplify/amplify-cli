@@ -1,3 +1,5 @@
+import { Fn, IAM } from "cloudform-types";
+
 export type CustomIAMPolicies = {
     policies:  CustomIAMPolicy[];
 }
@@ -29,7 +31,27 @@ export const CustomIAMPolicySchema = {
     }
 }
 
+export const customExecutionPolicyForFunction = new IAM.Policy({
+    PolicyName: 'custom-lambda-execution-policy',
+    Roles: [
+      Fn.Ref('LambdaExecutionRole')
+    ],
+    PolicyDocument: {
+      Version: '2012-10-17',
+      Statement: []
+    }
+  }).dependsOn(['LambdaExecutionRole']);
 
+export const customExecutionPolicyForContainer = new IAM.Policy({
+    PolicyDocument: {
+        Statement: [
+        ],
+        Version: '2012-10-17'
+    },
+    PolicyName: 'CustomExecutionPolicyForContainer',
+    Roles: [
+    ]
+  });
 
 
 

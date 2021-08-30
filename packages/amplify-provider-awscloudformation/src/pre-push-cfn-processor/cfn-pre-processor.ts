@@ -1,4 +1,12 @@
-import { stateManager, pathManager, readCFNTemplate, writeCFNTemplate, CustomIAMPolicy, CustomIAMPolicySchema, CustomIAMPolicies, customExecutionPolicyForFunction, customExecutionPolicyForContainer } from 'amplify-cli-core';
+import { stateManager,
+  pathManager,
+  readCFNTemplate,
+  writeCFNTemplate,
+  CustomIAMPolicy,
+  CustomIAMPolicySchema,
+  CustomIAMPolicies,
+  customExecutionPolicyForFunction,
+  customExecutionPolicyForContainer } from 'amplify-cli-core';
 import * as path from 'path';
 import { ProviderName as providerName } from '../constants';
 import { prePushCfnTemplateModifier } from './pre-push-cfn-modifier';
@@ -30,7 +38,6 @@ export async function preProcessCFNTemplate(filePath: string): Promise<string> {
 }
 
 //get data from custom polcies file and write custom policies to CFN template
-
 export async function writeCustomPoliciesToCFNTemplate(
   resourceName: string,
   service: string,
@@ -41,7 +48,9 @@ export async function writeCustomPoliciesToCFNTemplate(
 ) {
   const { templateFormat, cfnTemplate } = await readCFNTemplate(path.join(resourceDir, cfnFile));
   const customPolicies = stateManager.getCustomPolicies(service, category, resourceName);
-  if (!customPolicies || !this.validateCustomPolicies(customPolicies)) return;
+  if (!customPolicies || !this.validateCustomPolicies(customPolicies)) {
+    return;
+  }
 
   await addCustomPoliciesToCFNTemplate(service, customPolicies.policies, cfnTemplate, filePath, resourceName, {templateFormat} );
 
@@ -90,8 +99,8 @@ export async function addCustomPoliciesToCFNTemplate(
 export async function validateRegexCustomPolicy(customPolicy: CustomIAMPolicy, resourceName: string) : Promise<void> {
   const resources = customPolicy.Resource;
   const actions = customPolicy.Action;
-  let resourceRegex = new RegExp('(arn:(aws[a-zA-Z0-9-]*):([a-zA-Z0-9\\-])+:([a-z]{2}(-gov)?-[a-z]+-\\d{1})?:(\\d{12})?:(.*))*');
-  let actionRegex = new RegExp('([a-z0-9])*:([a-z|A-Z|0-9|*]+)*');
+  let resourceRegex = new RegExp('arn:(aws[a-zA-Z0-9-]*):([a-zA-Z0-9\\-])+:([a-z]{2}(-gov)?-[a-z]+-\\d{1})?:(\\d{12})?:(.*)');
+  let actionRegex = new RegExp('[a-z0-9]*:([a-z|A-Z|0-9|*]+)*');
   let wrongResourcesRegex = [];
   let wrongActionsRegex = [];
   let errorMessage = "";

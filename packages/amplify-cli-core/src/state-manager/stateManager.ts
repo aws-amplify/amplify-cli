@@ -5,8 +5,7 @@ import { JSONUtilities } from '../jsonUtilities';
 import _ from 'lodash';
 import { SecretFileMode } from '../cliConstants';
 import { HydrateTags, ReadTags, Tag } from '../tags';
-import { CustomIAMPolicy, CustomIAMPolicies } from '../customPoliciesUtils';
-import { Fn, IAM } from 'cloudform-types';
+import { CustomIAMPolicies } from '../customPoliciesUtils';
 
 export type GetOptions<T> = {
   throwIfNotExist?: boolean;
@@ -18,28 +17,6 @@ export type ResourceEntry = {
   resourceName: string;
   resource: Record<string, object>;
 };
-
- export const customExecutionPolicyForFunction = new IAM.Policy({
-    PolicyName: 'custom-lambda-execution-policy',
-    Roles: [
-      Fn.Ref('LambdaExecutionRole')
-    ],
-    PolicyDocument: {
-      Version: '2012-10-17',
-      Statement: []
-    }
-}).dependsOn(['LambdaExecutionRole']);
-
-export const customExecutionPolicyForContainer = new IAM.Policy({
-    PolicyDocument: {
-      Statement: [
-      ],
-      Version: '2012-10-17'
-    },
-    PolicyName: 'CustomExecutionPolicyForContainer',
-    Roles: [
-    ]
-});
 
 export class StateManager {
   metaFileExists = (projectPath?: string): boolean => this.doesExist(pathManager.getAmplifyMetaFilePath, projectPath);
@@ -100,7 +77,9 @@ export class StateManager {
   };
 
   getCustomPolicies = (service: string, categoryName: string, resourceName: string): any => {
-    if (service != 'Lambda' && service != 'ElasticContainer') return undefined;
+    if (service != 'Lambda' && service != 'ElasticContainer') {
+      return undefined;
+    }
     const filePath = pathManager.getCustomPoliciesPath(categoryName, resourceName);
     if (!filePath) {
       return undefined;
@@ -398,8 +377,5 @@ export class StateManager {
 }
 
 export const stateManager = new StateManager();
-function getCfnFiles(currentCategory: string[], resourceName: string): { resourceDir: any; cfnFiles: any; } {
-  throw new Error('Function not implemented.');
-}
 
 
