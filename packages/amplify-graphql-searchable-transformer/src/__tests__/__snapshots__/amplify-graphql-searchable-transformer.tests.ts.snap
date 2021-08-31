@@ -234,9 +234,19 @@ input ModelSizeInput {
   between: [Int]
 }
 
+enum ModelSortDirection {
+  ASC
+  DESC
+}
+
 type ModelEmployeeConnection {
   items: [Employee]
   nextToken: String
+}
+
+input ModelEmploymentTypeInput {
+  eq: EmploymentType
+  ne: EmploymentType
 }
 
 input ModelEmployeeFilterInput {
@@ -249,13 +259,7 @@ input ModelEmployeeFilterInput {
   not: ModelEmployeeFilterInput
 }
 
-input ModelEmploymentTypeInput {
-  eq: EmploymentType
-  ne: EmploymentType
-}
-
 input ModelEmployeeConditionInput {
-  id: ModelIDInput
   firstName: ModelStringInput
   lastName: ModelStringInput
   type: ModelEmploymentTypeInput
@@ -271,12 +275,6 @@ input CreateEmployeeInput {
   type: EmploymentType!
 }
 
-type Mutation {
-  createEmployee(input: CreateEmployeeInput!, condition: ModelEmployeeConditionInput): Employee
-  updateEmployee(input: UpdateEmployeeInput!, condition: ModelEmployeeConditionInput): Employee
-  deleteEmployee(input: DeleteEmployeeInput!, condition: ModelEmployeeConditionInput): Employee
-}
-
 input UpdateEmployeeInput {
   id: ID!
   firstName: String
@@ -286,6 +284,12 @@ input UpdateEmployeeInput {
 
 input DeleteEmployeeInput {
   id: ID!
+}
+
+type Mutation {
+  createEmployee(input: CreateEmployeeInput!, condition: ModelEmployeeConditionInput): Employee
+  updateEmployee(input: UpdateEmployeeInput!, condition: ModelEmployeeConditionInput): Employee
+  deleteEmployee(input: DeleteEmployeeInput!, condition: ModelEmployeeConditionInput): Employee
 }
 
 type Subscription {
@@ -525,6 +529,11 @@ input ModelSizeInput {
   between: [Int]
 }
 
+enum ModelSortDirection {
+  ASC
+  DESC
+}
+
 type ModelPostConnection {
   items: [Post]
   nextToken: String
@@ -541,7 +550,6 @@ input ModelPostFilterInput {
 }
 
 input ModelPostConditionInput {
-  id: ModelIDInput
   title: ModelStringInput
   createdAt: ModelStringInput
   updatedAt: ModelStringInput
@@ -557,12 +565,6 @@ input CreatePostInput {
   updatedAt: String
 }
 
-type Mutation {
-  createPost(input: CreatePostInput!, condition: ModelPostConditionInput): Post
-  updatePost(input: UpdatePostInput!, condition: ModelPostConditionInput): Post
-  deletePost(input: DeletePostInput!, condition: ModelPostConditionInput): Post
-}
-
 input UpdatePostInput {
   id: ID!
   title: String
@@ -572,6 +574,12 @@ input UpdatePostInput {
 
 input DeletePostInput {
   id: ID!
+}
+
+type Mutation {
+  createPost(input: CreatePostInput!, condition: ModelPostConditionInput): Post
+  updatePost(input: UpdatePostInput!, condition: ModelPostConditionInput): Post
+  deletePost(input: DeletePostInput!, condition: ModelPostConditionInput): Post
 }
 
 type Subscription {
@@ -1051,33 +1059,6 @@ $util.toJson({
   \\"nextToken\\": $nextToken,
   \\"aggregateItems\\": $aggregateValues
 })",
-  "Subscription.onCreatePost.req.vtl": "## [Start] Subscription Request template. **
-$util.toJson({
-  \\"version\\": \\"2018-05-29\\",
-  \\"payload\\": {}
-})
-## [End] Subscription Request template. **",
-  "Subscription.onCreatePost.res.vtl": "## [Start] Subscription Resonse template. **
-$util.toJson(null)
-## [End] Subscription Resonse template. **",
-  "Subscription.onDeletePost.req.vtl": "## [Start] Subscription Request template. **
-$util.toJson({
-  \\"version\\": \\"2018-05-29\\",
-  \\"payload\\": {}
-})
-## [End] Subscription Request template. **",
-  "Subscription.onDeletePost.res.vtl": "## [Start] Subscription Resonse template. **
-$util.toJson(null)
-## [End] Subscription Resonse template. **",
-  "Subscription.onUpdatePost.req.vtl": "## [Start] Subscription Request template. **
-$util.toJson({
-  \\"version\\": \\"2018-05-29\\",
-  \\"payload\\": {}
-})
-## [End] Subscription Request template. **",
-  "Subscription.onUpdatePost.res.vtl": "## [Start] Subscription Resonse template. **
-$util.toJson(null)
-## [End] Subscription Resonse template. **",
 }
 `;
 
@@ -1350,6 +1331,11 @@ input ModelSizeInput {
   between: [Int]
 }
 
+enum ModelSortDirection {
+  ASC
+  DESC
+}
+
 type ModelPostConnection {
   items: [Post]
   nextToken: String
@@ -1366,7 +1352,6 @@ input ModelPostFilterInput {
 }
 
 input ModelPostConditionInput {
-  id: ModelIDInput
   title: ModelStringInput
   createdAt: ModelStringInput
   updatedAt: ModelStringInput
@@ -1382,15 +1367,6 @@ input CreatePostInput {
   updatedAt: String
 }
 
-type Mutation {
-  createPost(input: CreatePostInput!, condition: ModelPostConditionInput): Post
-  updatePost(input: UpdatePostInput!, condition: ModelPostConditionInput): Post
-  deletePost(input: DeletePostInput!, condition: ModelPostConditionInput): Post
-  createUser(input: CreateUserInput!, condition: ModelUserConditionInput): User
-  updateUser(input: UpdateUserInput!, condition: ModelUserConditionInput): User
-  deleteUser(input: DeleteUserInput!, condition: ModelUserConditionInput): User
-}
-
 input UpdatePostInput {
   id: ID!
   title: String
@@ -1400,6 +1376,15 @@ input UpdatePostInput {
 
 input DeletePostInput {
   id: ID!
+}
+
+type Mutation {
+  createPost(input: CreatePostInput!, condition: ModelPostConditionInput): Post
+  updatePost(input: UpdatePostInput!, condition: ModelPostConditionInput): Post
+  deletePost(input: DeletePostInput!, condition: ModelPostConditionInput): Post
+  createUser(input: CreateUserInput!, condition: ModelUserConditionInput): User
+  updateUser(input: UpdateUserInput!, condition: ModelUserConditionInput): User
+  deleteUser(input: DeleteUserInput!, condition: ModelUserConditionInput): User
 }
 
 type Subscription {
@@ -1425,7 +1410,6 @@ input ModelUserFilterInput {
 }
 
 input ModelUserConditionInput {
-  id: ModelIDInput
   name: ModelStringInput
   and: [ModelUserConditionInput]
   or: [ModelUserConditionInput]
@@ -1677,6 +1661,11 @@ input ModelSizeInput {
   between: [Int]
 }
 
+enum ModelSortDirection {
+  ASC
+  DESC
+}
+
 type ModelPostConnection {
   items: [Post]
   nextToken: String
@@ -1693,7 +1682,6 @@ input ModelPostFilterInput {
 }
 
 input ModelPostConditionInput {
-  id: ModelIDInput
   title: ModelStringInput
   createdAt: ModelStringInput
   updatedAt: ModelStringInput
@@ -1711,25 +1699,10 @@ input CreatePostInput {
 
 type Mutation {
   customCreatePost(input: CreatePostInput!, condition: ModelPostConditionInput): Post
-  updatePost(input: UpdatePostInput!, condition: ModelPostConditionInput): Post
-  deletePost(input: DeletePostInput!, condition: ModelPostConditionInput): Post
-}
-
-input UpdatePostInput {
-  id: ID!
-  title: String
-  createdAt: String
-  updatedAt: String
-}
-
-input DeletePostInput {
-  id: ID!
 }
 
 type Subscription {
   onCreatePost: Post @aws_subscribe(mutations: [\\"customCreatePost\\"])
-  onUpdatePost: Post @aws_subscribe(mutations: [\\"updatePost\\"])
-  onDeletePost: Post @aws_subscribe(mutations: [\\"deletePost\\"])
 }
 
 "
@@ -1963,6 +1936,11 @@ input ModelSizeInput {
   between: [Int]
 }
 
+enum ModelSortDirection {
+  ASC
+  DESC
+}
+
 type ModelPostConnection {
   items: [Post]
   nextToken: String
@@ -1979,7 +1957,6 @@ input ModelPostFilterInput {
 }
 
 input ModelPostConditionInput {
-  id: ModelIDInput
   title: ModelStringInput
   createdAt: ModelStringInput
   updatedAt: ModelStringInput
@@ -1995,12 +1972,6 @@ input CreatePostInput {
   updatedAt: String
 }
 
-type Mutation {
-  createPost(input: CreatePostInput!, condition: ModelPostConditionInput): Post
-  updatePost(input: UpdatePostInput!, condition: ModelPostConditionInput): Post
-  deletePost(input: DeletePostInput!, condition: ModelPostConditionInput): Post
-}
-
 input UpdatePostInput {
   id: ID!
   title: String
@@ -2010,6 +1981,12 @@ input UpdatePostInput {
 
 input DeletePostInput {
   id: ID!
+}
+
+type Mutation {
+  createPost(input: CreatePostInput!, condition: ModelPostConditionInput): Post
+  updatePost(input: UpdatePostInput!, condition: ModelPostConditionInput): Post
+  deletePost(input: DeletePostInput!, condition: ModelPostConditionInput): Post
 }
 
 type Subscription {
@@ -2249,6 +2226,11 @@ input ModelSizeInput {
   between: [Int]
 }
 
+enum ModelSortDirection {
+  ASC
+  DESC
+}
+
 type ModelPostConnection {
   items: [Post]
   nextToken: String
@@ -2265,7 +2247,6 @@ input ModelPostFilterInput {
 }
 
 input ModelPostConditionInput {
-  id: ModelIDInput
   title: ModelStringInput
   createdAt: ModelStringInput
   updatedAt: ModelStringInput
@@ -2281,12 +2262,6 @@ input CreatePostInput {
   updatedAt: String
 }
 
-type Mutation {
-  createPost(input: CreatePostInput!, condition: ModelPostConditionInput): Post
-  updatePost(input: UpdatePostInput!, condition: ModelPostConditionInput): Post
-  deletePost(input: DeletePostInput!, condition: ModelPostConditionInput): Post
-}
-
 input UpdatePostInput {
   id: ID!
   title: String
@@ -2296,6 +2271,12 @@ input UpdatePostInput {
 
 input DeletePostInput {
   id: ID!
+}
+
+type Mutation {
+  createPost(input: CreatePostInput!, condition: ModelPostConditionInput): Post
+  updatePost(input: UpdatePostInput!, condition: ModelPostConditionInput): Post
+  deletePost(input: DeletePostInput!, condition: ModelPostConditionInput): Post
 }
 
 type Subscription {

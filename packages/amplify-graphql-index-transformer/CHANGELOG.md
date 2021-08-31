@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.3.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-index-transformer@0.2.1...@aws-amplify/graphql-index-transformer@0.3.0) (2021-08-24)
+
+
+### Features
+
+* add [@index](https://github.com/index) directive ([#7887](https://github.com/aws-amplify/amplify-cli/issues/7887)) ([e011555](https://github.com/aws-amplify/amplify-cli/commit/e0115557aad893b3286226e92ce8fecbd5636c1a))
+* model transformer advanced subscriptions ([#7927](https://github.com/aws-amplify/amplify-cli/issues/7927)) ([1725630](https://github.com/aws-amplify/amplify-cli/commit/1725630c61c40923e8dfa3c697ea5472df2e5de1))
+
+
+
+
+
 ## [0.2.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-index-transformer@0.2.0...@aws-amplify/graphql-index-transformer@0.2.1) (2021-08-06)
 
 

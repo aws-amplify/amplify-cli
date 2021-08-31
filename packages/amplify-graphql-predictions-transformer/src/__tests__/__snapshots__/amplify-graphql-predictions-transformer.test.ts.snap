@@ -448,6 +448,9 @@ $util.toJson($ctx.result.url)",
       "Type": "AWS::IAM::Policy",
     },
     "identifyLabelsFunctionidentifyLabelsFunctionAppSyncFunction7C2A1E61": Object {
+      "DependsOn": Array [
+        "RekognitionDataSourceC6790FED",
+      ],
       "Properties": Object {
         "ApiId": Object {
           "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
@@ -523,6 +526,9 @@ $util.error($ctx.result.body)
       "Type": "AWS::IAM::Policy",
     },
     "identifyTextFunctionidentifyTextFunctionAppSyncFunction7877885A": Object {
+      "DependsOn": Array [
+        "RekognitionDataSourceC6790FED",
+      ],
       "Properties": Object {
         "ApiId": Object {
           "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
@@ -1371,6 +1377,9 @@ $utils.error($ctx.result.body)
       "Type": "AWS::IAM::Policy",
     },
     "translateTextFunctiontranslateTextFunctionAppSyncFunction77C9D7A9": Object {
+      "DependsOn": Array [
+        "TranslateDataSource2C33F90C",
+      ],
       "Properties": Object {
         "ApiId": Object {
           "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",

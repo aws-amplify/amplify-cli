@@ -3,7 +3,7 @@ import { Template } from 'cloudform-types';
 import Table, { AttributeDefinition, GlobalSecondaryIndex } from 'cloudform-types/types/dynamoDb/table';
 import _ from 'lodash';
 import * as path from 'path';
-import { category } from '../..';
+const category = 'storage';
 
 export const getCloudFormationTemplatePath = (resourceName: string) => {
   return path.join(pathManager.getBackendDirPath(), category, resourceName, `${resourceName}-cloudformation-template.json`);

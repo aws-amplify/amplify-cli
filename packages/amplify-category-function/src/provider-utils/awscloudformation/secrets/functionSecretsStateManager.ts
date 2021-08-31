@@ -1,4 +1,4 @@
-import { $TSContext, JSONUtilities, pathManager, ResourceName } from 'amplify-cli-core';
+import { $TSContext, JSONUtilities, pathManager, ResourceName, stateManager } from 'amplify-cli-core';
 import { removeSecret, retainSecret, SecretDeltas, SecretName, setSecret } from 'amplify-function-plugin-interface';
 import * as path from 'path';
 import * as fs from 'fs-extra';
@@ -10,9 +10,16 @@ import { isFunctionPushed } from '../utils/funcionStateUtils';
 import { createParametersFile } from '../utils/storeResources';
 import { tryPrependSecretsUsageExample } from '../utils/updateTopLevelComment';
 import { getExistingSecrets, hasExistingSecrets, secretNamesToSecretDeltas } from './secretDeltaUtilities';
-import { getEnvSecretPrefix, getFullyQualifiedSecretName, getFunctionSecretPrefix } from './secretName';
+import {
+  getAppId,
+  getEnvSecretPrefix,
+  getFullyQualifiedSecretName,
+  getFunctionSecretPrefix,
+  secretsPathAmplifyAppIdKey,
+} from './secretName';
 import { updateSecretsInCfnTemplate } from './secretsCfnModifier';
 import { SSMClientWrapper } from './ssmClientWrapper';
+import _ from 'lodash';
 
 let secretsPendingRemoval: Record<ResourceName, SecretName[]> = {};
 
@@ -117,7 +124,13 @@ export class FunctionSecretsStateManager {
   syncSecretsPendingRemoval = async () => {
     await Promise.all(
       Object.entries(secretsPendingRemoval).map(([functionName, secretNames]) =>
-        this.syncSecretDeltas(secretNamesToSecretDeltas(secretNames, removeSecret), functionName),
+        this.syncSecretDeltas(
+          {
+            ...secretNamesToSecretDeltas(getLocalFunctionSecretNames(functionName)),
+            ...secretNamesToSecretDeltas(secretNames, removeSecret),
+          },
+          functionName,
+        ),
       ),
     );
     secretsPendingRemoval = {};
@@ -244,10 +257,36 @@ const setLocalFunctionSecretState = (functionName: string, secretDeltas: SecretD
     secretNames: existingSecrets,
   };
   const parametersFilePath = path.join(pathManager.getBackendDirPath(), categoryName, functionName, functionParametersFileName);
+
   // checking for existance of the file because in the case of function deletion we don't want to create the file again
   if (fs.existsSync(parametersFilePath)) {
     createParametersFile(secretsParametersContent, functionName, functionParametersFileName);
   }
+
+  if (hasExistingSecrets(secretDeltas)) {
+    setAppIdForFunctionInTeamProvider(functionName);
+  } else {
+    removeAppIdForFunctionInTeamProvider(functionName);
+  }
+};
+
+const setAppIdForFunctionInTeamProvider = (functionName: string) => {
+  const tpi = stateManager.getTeamProviderInfo(undefined, { throwIfNotExist: false, default: {} });
+  const env = stateManager.getLocalEnvInfo()?.envName as string;
+  let funcTpi = tpi?.[env]?.categories?.[categoryName]?.[functionName];
+  if (!funcTpi) {
+    _.set(tpi, [env, 'categories', categoryName, functionName], {});
+    funcTpi = tpi[env].categories[categoryName][functionName];
+  }
+  _.assign(funcTpi, { [secretsPathAmplifyAppIdKey]: getAppId() });
+  stateManager.setTeamProviderInfo(undefined, tpi);
+};
+
+const removeAppIdForFunctionInTeamProvider = (functionName: string) => {
+  const tpi = stateManager.getTeamProviderInfo(undefined, { throwIfNotExist: false, default: {} });
+  const env = stateManager.getLocalEnvInfo()?.envName as string;
+  _.unset(tpi, [env, 'categories', categoryName, functionName, secretsPathAmplifyAppIdKey]);
+  stateManager.setTeamProviderInfo(undefined, tpi);
 };
 
 /**

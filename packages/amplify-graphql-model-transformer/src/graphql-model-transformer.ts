@@ -6,16 +6,23 @@ import {
   MutationFieldType,
   QueryFieldType,
   SubscriptionFieldType,
-  TransformerTransformSchemaStepContextProvider,
   TransformerContextProvider,
   TransformerModelProvider,
   TransformerPrepareStepContextProvider,
   TransformerResolverProvider,
   TransformerSchemaVisitStepContextProvider,
+  TransformerTransformSchemaStepContextProvider,
+  TransformerValidationStepContextProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { AttributeType, CfnTable, ITable, StreamViewType, Table, TableEncryption } from '@aws-cdk/aws-dynamodb';
 import * as cdk from '@aws-cdk/core';
-import { DirectiveNode, InputObjectTypeDefinitionNode, InputValueDefinitionNode, ObjectTypeDefinitionNode } from 'graphql';
+import {
+  DirectiveNode,
+  FieldDefinitionNode,
+  InputObjectTypeDefinitionNode,
+  InputValueDefinitionNode,
+  ObjectTypeDefinitionNode,
+} from 'graphql';
 import {
   getBaseType,
   isScalar,
@@ -38,6 +45,7 @@ import {
   makeDeleteInputField,
   makeListQueryFilterInput,
   makeListQueryModel,
+  makeModelSortDirectionEnumObject,
   makeMutationConditionInput,
   makeUpdateInputField,
 } from './graphql-types';
@@ -79,9 +87,9 @@ export type ModelDirectiveConfiguration = {
     delete: OptionalAndNullable<string>;
   } | null;
   subscriptions: {
-    onCreate: OptionalAndNullable<string>;
-    onUpdate: OptionalAndNullable<string>;
-    onDelete: OptionalAndNullable<string>;
+    onCreate: OptionalAndNullable<string>[];
+    onUpdate: OptionalAndNullable<string>[];
+    onDelete: OptionalAndNullable<string>[];
     level: Partial<SubscriptionLevel>;
   } | null;
   timestamps: OptionalAndNullable<{
@@ -163,9 +171,9 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
       },
       subscriptions: {
         level: SubscriptionLevel.public,
-        onCreate: toCamelCase(['onCreate', typeName]),
-        onDelete: toCamelCase(['onDelete', typeName]),
-        onUpdate: toCamelCase(['onUpdate', typeName]),
+        onCreate: [toCamelCase(['onCreate', typeName])],
+        onDelete: [toCamelCase(['onDelete', typeName])],
+        onUpdate: [toCamelCase(['onUpdate', typeName])],
       },
       timestamps: {
         createdAt: 'createdAt',
@@ -185,72 +193,23 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
   };
 
   transformSchema = (ctx: TransformerTransformSchemaStepContextProvider): void => {
-    // Create Non Model input types
-
     // add the model input conditions
     addModelConditionInputs(ctx);
 
+    this.ensureModelSortDirectionEnum(ctx);
     for (const type of this.typesWithModelDirective) {
       const def = ctx.output.getObject(type)!;
       // add Non Model type inputs
       this.createNonModelInputs(ctx, def);
-      const queryFields = this.getQueryFieldNames(ctx, def!);
-      for (const queryField of queryFields.values()) {
-        const outputType = this.getOutputType(ctx, def, queryField);
-        const args = this.getInputs(ctx, def!, {
-          fieldName: queryField.fieldName,
-          typeName: queryField.typeName,
-          type: queryField.type,
-        });
-        const getField = makeField(queryField.fieldName, args, makeNamedType(outputType.name.value));
-        ctx.output.addQueryFields([getField]);
-      }
 
-      const mutationFields = this.getMutationFieldNames(ctx, def!);
-      for (const mutationField of mutationFields) {
-        const args = this.getInputs(ctx, def!, {
-          fieldName: mutationField.fieldName,
-          typeName: mutationField.typeName,
-          type: mutationField.type,
-        });
+      const queryFields = this.createQueryFields(ctx, def);
+      ctx.output.addQueryFields(queryFields);
 
-        const field = makeField(mutationField.fieldName, args, makeNamedType(def!.name.value));
-        ctx.output.addMutationFields([field]);
-      }
+      const mutationFields = this.createMutationFields(ctx, def);
+      ctx.output.addMutationFields(mutationFields);
 
-      const getMutationName = (
-        subscriptionType: SubscriptionFieldType,
-        mutationMap: Set<{
-          fieldName: string;
-          typeName: string;
-          type: MutationFieldType;
-        }>,
-      ): string => {
-        const mutationToSubscriptionTypeMap = {
-          [SubscriptionFieldType.ON_CREATE]: MutationFieldType.CREATE,
-          [SubscriptionFieldType.ON_UPDATE]: MutationFieldType.UPDATE,
-          [SubscriptionFieldType.ON_DELETE]: MutationFieldType.DELETE,
-        };
-        const mutation = Array.from(mutationMap).find(m => m.type == mutationToSubscriptionTypeMap[subscriptionType]);
-        if (mutation) {
-          return mutation.fieldName;
-        }
-        throw new Error('Unknown Subscription type');
-      };
-
-      const subscriptionsFields = this.getSubscriptionFieldNames(ctx, def!);
-      for (const subscriptionsField of subscriptionsFields) {
-        const args = this.getInputs(ctx, def!, {
-          fieldName: subscriptionsField.fieldName,
-          typeName: subscriptionsField.typeName,
-          type: subscriptionsField.type,
-        });
-        const mutationName = getMutationName(subscriptionsField.type, mutationFields);
-        // Todo use directive wrapper to build the directrive node
-        const directive = makeDirective('aws_subscribe', [makeArgument('mutations', makeValueNode([mutationName]))]);
-        const field = makeField(subscriptionsField.fieldName, args, makeNamedType(def!.name.value), [directive]);
-        ctx.output.addSubscriptionFields([field]);
-      }
+      const subscriptionsFields = this.createSubscriptionFields(ctx, def!);
+      ctx.output.addSubscriptionFields(subscriptionsFields);
 
       // Update the field with auto generatable Fields
       this.addAutoGeneratableFields(ctx, type);
@@ -370,7 +329,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
             resolver = this.generateSyncResolver(context, def!, query.typeName, query.fieldName);
             break;
           default:
-            throw new Error('Unkown query field type');
+            throw new Error('Unknown query field type');
         }
 
         resolver.mapToStack(stack);
@@ -391,30 +350,10 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
             resolver = this.generateUpdateResolver(context, def!, mutation.typeName, mutation.fieldName);
             break;
           default:
-            throw new Error('Unkown query field type');
+            throw new Error('Unknown query field type');
         }
         resolver.mapToStack(stack);
         context.resolvers.addResolver(mutation.typeName, mutation.fieldName, resolver);
-      }
-
-      const subscriptionsFields = this.getSubscriptionFieldNames(context, def!);
-      for (let subscription of subscriptionsFields.values()) {
-        let resolver;
-        switch (subscription.type) {
-          case SubscriptionFieldType.ON_CREATE:
-            resolver = this.generateOnCreateResolver(context, def!, subscription.typeName, subscription.fieldName);
-            break;
-          case SubscriptionFieldType.ON_DELETE:
-            resolver = this.generateOnDeleteResolver(context, def!, subscription.typeName, subscription.fieldName);
-            break;
-          case SubscriptionFieldType.ON_UPDATE:
-            resolver = this.generateOnUpdateResolver(context, def!, subscription.typeName, subscription.fieldName);
-            break;
-          default:
-            throw new Error('Unkown query field type');
-        }
-        resolver.mapToStack(stack);
-        context.resolvers.addResolver(subscription.typeName, subscription.fieldName, resolver);
       }
     }
   };
@@ -616,7 +555,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
     // Todo: get fields names from the directives
     const typeName = type.name.value;
     const modelDirectiveConfig = this.modelDirectiveConfig.get(typeName);
-    const getMuationType = (type: string): MutationFieldType => {
+    const getMutationType = (type: string): MutationFieldType => {
       switch (type) {
         case 'create':
           return MutationFieldType.CREATE;
@@ -625,7 +564,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
         case 'delete':
           return MutationFieldType.DELETE;
         default:
-          throw new Error('Unknow mutation type');
+          throw new Error('Unknown mutation type');
       }
     };
 
@@ -635,12 +574,96 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
         fieldNames.add({
           typeName: 'Mutation',
           fieldName: mutationName,
-          type: getMuationType(mutationType),
+          type: getMutationType(mutationType),
         });
       }
     }
 
     return fieldNames;
+  };
+
+  getMutationName = (
+    subscriptionType: SubscriptionFieldType,
+    mutationMap: Set<{
+      fieldName: string;
+      typeName: string;
+      type: MutationFieldType;
+    }>,
+  ): string => {
+    const mutationToSubscriptionTypeMap = {
+      [SubscriptionFieldType.ON_CREATE]: MutationFieldType.CREATE,
+      [SubscriptionFieldType.ON_UPDATE]: MutationFieldType.UPDATE,
+      [SubscriptionFieldType.ON_DELETE]: MutationFieldType.DELETE,
+    };
+    const mutation = Array.from(mutationMap).find(m => m.type == mutationToSubscriptionTypeMap[subscriptionType]);
+    if (mutation) {
+      return mutation.fieldName;
+    }
+    throw new Error('Unknown Subscription type');
+  };
+
+  private createQueryFields = (ctx: TransformerValidationStepContextProvider, def: ObjectTypeDefinitionNode): FieldDefinitionNode[] => {
+    const queryFields: FieldDefinitionNode[] = [];
+    const queryFieldNames = this.getQueryFieldNames(ctx, def!);
+    for (const queryField of queryFieldNames.values()) {
+      const outputType = this.getOutputType(ctx, def, queryField);
+      const args = this.getInputs(ctx, def!, {
+        fieldName: queryField.fieldName,
+        typeName: queryField.typeName,
+        type: queryField.type,
+      });
+      queryFields.push(makeField(queryField.fieldName, args, makeNamedType(outputType.name.value)));
+    }
+
+    return queryFields;
+  };
+
+  private createMutationFields = (ctx: TransformerValidationStepContextProvider, def: ObjectTypeDefinitionNode): FieldDefinitionNode[] => {
+    const mutationFields: FieldDefinitionNode[] = [];
+    const mutationFieldNames = this.getMutationFieldNames(ctx, def!);
+    for (const mutationField of mutationFieldNames) {
+      const args = this.getInputs(ctx, def!, {
+        fieldName: mutationField.fieldName,
+        typeName: mutationField.typeName,
+        type: mutationField.type,
+      });
+
+      mutationFields.push(makeField(mutationField.fieldName, args, makeNamedType(def!.name.value)));
+    }
+    return mutationFields;
+  };
+
+  private createSubscriptionFields = (
+    ctx: TransformerTransformSchemaStepContextProvider,
+    def: ObjectTypeDefinitionNode,
+  ): FieldDefinitionNode[] => {
+    const subscriptionToMutationsMap = this.getSubscriptionToMutationsReverseMap(ctx, def);
+    const mutationFields = this.getMutationFieldNames(ctx, def!);
+
+    const subscriptionFields: FieldDefinitionNode[] = [];
+    for (const subscriptionFieldName of Object.keys(subscriptionToMutationsMap)) {
+      const maps = subscriptionToMutationsMap[subscriptionFieldName];
+
+      const args: InputValueDefinitionNode[] = [];
+      maps.map(it =>
+        args.concat(
+          this.getInputs(ctx, def!, {
+            fieldName: it.fieldName,
+            typeName: it.typeName,
+            type: it.type,
+          }),
+        ),
+      );
+
+      const mutationNames = maps.map(it => this.getMutationName(it.type, mutationFields));
+
+      // Todo use directive wrapper to build the directive node
+      const directive = makeDirective('aws_subscribe', [makeArgument('mutations', makeValueNode(mutationNames))]);
+      const field = makeField(subscriptionFieldName, args, makeNamedType(def!.name.value), [directive]);
+      subscriptionFields.push(field);
+    }
+
+    return subscriptionFields;
   };
 
   getSubscriptionFieldNames = (
@@ -660,28 +683,36 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
     const modelDirectiveConfig = this.modelDirectiveConfig.get(type.name.value);
     if (modelDirectiveConfig?.subscriptions?.level !== SubscriptionLevel.off) {
       if (modelDirectiveConfig?.subscriptions?.onCreate && modelDirectiveConfig.mutations?.create) {
-        fields.add({
-          typeName: 'Subscription',
-          fieldName: modelDirectiveConfig.subscriptions.onCreate!,
-          type: SubscriptionFieldType.ON_CREATE,
-        });
+        for (const fieldName of modelDirectiveConfig.subscriptions.onCreate) {
+          fields.add({
+            typeName: 'Subscription',
+            fieldName: fieldName,
+            type: SubscriptionFieldType.ON_CREATE,
+          });
+        }
       }
+
       if (modelDirectiveConfig?.subscriptions?.onUpdate && modelDirectiveConfig.mutations?.update) {
-        fields.add({
-          typeName: 'Subscription',
-          fieldName: modelDirectiveConfig.subscriptions.onUpdate!,
-          type: SubscriptionFieldType.ON_UPDATE,
-        });
+        for (const fieldName of modelDirectiveConfig.subscriptions.onUpdate) {
+          fields.add({
+            typeName: 'Subscription',
+            fieldName: fieldName,
+            type: SubscriptionFieldType.ON_UPDATE,
+          });
+        }
       }
 
       if (modelDirectiveConfig?.subscriptions?.onDelete && modelDirectiveConfig.mutations?.delete) {
-        fields.add({
-          typeName: 'Subscription',
-          fieldName: modelDirectiveConfig.subscriptions.onDelete!,
-          type: SubscriptionFieldType.ON_DELETE,
-        });
+        for (const fieldName of modelDirectiveConfig.subscriptions.onDelete) {
+          fields.add({
+            typeName: 'Subscription',
+            fieldName: fieldName,
+            type: SubscriptionFieldType.ON_DELETE,
+          });
+        }
       }
     }
+
     return fields;
   };
 
@@ -752,13 +783,15 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
 
       case QueryFieldType.LIST:
         const filterInputName = toPascalCase(['Model', type.name.value, 'FilterInput']);
-        const filterInputs = makeListQueryFilterInput(ctx, filterInputName, type);
-        for (let input of [filterInputs]) {
+        const filterInputs = createEnumModelFilters(ctx, type);
+        filterInputs.push(makeListQueryFilterInput(ctx, filterInputName, type));
+        for (let input of filterInputs) {
           const conditionInputName = input.name.value;
           if (!ctx.output.getType(conditionInputName)) {
             ctx.output.addInput(input);
           }
         }
+
         return [
           makeInputValueDefinition('filter', makeNamedType(filterInputName)),
           makeInputValueDefinition('limit', makeNamedType('Int')),
@@ -864,6 +897,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
           if (!ctx.output.getType(name)) {
             const inputObj = InputObjectDefinitionWrapper.fromObject(name, def, ctx.inputDocument);
             ctx.output.addInput(inputObj.serialize());
+            this.createNonModelInputs(ctx, def);
           }
         }
       }
@@ -892,20 +926,56 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
       const idField = FieldWrapper.create('id', 'ID');
       typeWrapper.addField(idField);
     }
+
+    const timestamps = [];
+
     if (modelDirectiveConfig?.timestamps) {
-      for (let [, fieldName] of Object.entries(modelDirectiveConfig?.timestamps))
-        if (fieldName) {
-          if (typeWrapper.hasField(fieldName)) {
-            const createdAtField = typeWrapper.getField(fieldName);
-            if (!['String', 'AWSDateTime'].includes(createdAtField.getTypeName())) {
-              console.warn(`type ${name}.${fieldName} is not of String or AWSDateTime. Auto population is not supported`);
-            }
-          } else {
-            const createdAtField = FieldWrapper.create(fieldName, 'AWSDateTime');
-            typeWrapper.addField(createdAtField);
-          }
-        }
+      if (modelDirectiveConfig.timestamps.createdAt !== null) {
+        timestamps.push(modelDirectiveConfig.timestamps.createdAt ?? 'createdAt');
+      }
+
+      if (modelDirectiveConfig.timestamps.updatedAt !== null) {
+        timestamps.push(modelDirectiveConfig.timestamps.updatedAt ?? 'updatedAt');
+      }
     }
+
+    for (let fieldName of timestamps) {
+      if (typeWrapper.hasField(fieldName)) {
+        const field = typeWrapper.getField(fieldName);
+        if (!['String', 'AWSDateTime'].includes(field.getTypeName())) {
+          console.warn(`type ${name}.${fieldName} is not of String or AWSDateTime. Auto population is not supported`);
+        }
+      } else {
+        const field = FieldWrapper.create(fieldName, 'AWSDateTime');
+        typeWrapper.addField(field);
+      }
+    }
+
     ctx.output.updateObject(typeWrapper.serialize());
   };
+
+  private getSubscriptionToMutationsReverseMap = (
+    ctx: TransformerValidationStepContextProvider,
+    def: ObjectTypeDefinitionNode,
+  ): { [subField: string]: { fieldName: string; typeName: string; type: SubscriptionFieldType }[] } => {
+    const subscriptionToMutationsMap: { [subField: string]: { fieldName: string; typeName: string; type: SubscriptionFieldType }[] } = {};
+    const subscriptionFieldNames = this.getSubscriptionFieldNames(ctx, def);
+
+    for (const subscriptionFieldName of subscriptionFieldNames) {
+      if (!subscriptionToMutationsMap[subscriptionFieldName.fieldName]) {
+        subscriptionToMutationsMap[subscriptionFieldName.fieldName] = [];
+      }
+      subscriptionToMutationsMap[subscriptionFieldName.fieldName].push(subscriptionFieldName);
+    }
+
+    return subscriptionToMutationsMap;
+  };
+
+  private ensureModelSortDirectionEnum(ctx: TransformerValidationStepContextProvider): void {
+    if (!ctx.output.hasType('ModelSortDirection')) {
+      const modelSortDirection = makeModelSortDirectionEnumObject();
+
+      ctx.output.addEnum(modelSortDirection);
+    }
+  }
 }

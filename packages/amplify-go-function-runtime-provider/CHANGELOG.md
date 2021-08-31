@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.9.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-go-function-runtime-provider@1.8.10...amplify-go-function-runtime-provider@1.9.0) (2021-08-24)
+
+
+### Features
+
+* **amplify-go-function-runtime-provider:** add support for go1.16, install deps before build ([#7617](https://github.com/aws-amplify/amplify-cli/issues/7617)) ([4dce75f](https://github.com/aws-amplify/amplify-cli/commit/4dce75fea43b69ce9c2526b1cd171cadd0e2a333))
+
+
+
+
+
 ## [1.8.10](https://github.com/aws-amplify/amplify-cli/compare/amplify-go-function-runtime-provider@1.8.9...amplify-go-function-runtime-provider@1.8.10) (2021-08-06)
 
 **Note:** Version bump only for package amplify-go-function-runtime-provider

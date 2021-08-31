@@ -1,7 +1,6 @@
 import { CognitoIdentityServiceProvider } from 'aws-sdk';
 import { getProjectMeta, getBackendAmplifyMeta } from 'amplify-e2e-core';
 import Amplify, { Auth } from 'aws-amplify';
-import { AuthenticationDetails } from 'amazon-cognito-identity-js';
 import fs from 'fs-extra';
 import path from 'path';
 import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
@@ -22,21 +21,7 @@ export async function setupUser(userPoolId: string, username: string, password: 
     })
     .promise();
 
-  //   await cognitoClient
-  //     .adminSetUserPassword({
-  //       UserPoolId: userPoolId,
-  //       Username: username,
-  //       Password: password,
-  //       Permanent: true,
-  //     })
-  //     .promise();
-
-  const authDetails = new AuthenticationDetails({
-    Username: username,
-    Password: tempPassword,
-  });
-  const user = Amplify.Auth.createCognitoUser(username);
-  await authenticateUser(user, authDetails, password);
+  await authenticateUser(username, tempPassword, password);
 
   if (groupName) {
     await cognitoClient
@@ -173,30 +158,12 @@ export function getApiKey(projectDir: string): string {
   return appsyncResource.output.GraphQLAPIKeyOutput;
 }
 
-export async function signInUser2(username: string, realPw: string) {
-  const authDetails = new AuthenticationDetails({
-    Username: username,
-    Password: realPw,
-  });
-  const user = Amplify.Auth.createCognitoUser(username);
-  const authRes: any = await authenticateUser(user, authDetails, realPw);
-  return user;
-}
-
-export async function authenticateUser(user: any, details: any, realPw: string) {
-  return new Promise((res, rej) => {
-    user.authenticateUser(details, {
-      onSuccess: function (result: any) {
-        res(result);
-      },
-      onFailure: function (err: any) {
-        rej(err);
-      },
-      newPasswordRequired: function (userAttributes: any, requiredAttributes: any) {
-        user.completeNewPasswordChallenge(realPw, user.Attributes, this);
-      },
-    });
-  });
+export async function authenticateUser(username: string, tempPassword: string, password: string) {
+  const signinResult = await Auth.signIn(username, tempPassword);
+  if (signinResult.challengeName === 'NEW_PASSWORD_REQUIRED') {
+    const { requiredAttributes } = signinResult.challengeParam; // the array of required attributes, e.g [‘email’, ‘phone_number’]
+    await Auth.completeNewPassword(signinResult, password, requiredAttributes);
+  }
 }
 
 export function getUserPoolIssUrl(projectDir: string) {

@@ -99,22 +99,23 @@ export function updateGetField(config: PrimaryKeyDirectiveConfiguration, ctx: Tr
 
   const { field, sortKey } = config;
   let resolverField = query.fields!.find((field: FieldDefinitionNode) => field.name.value === resolverName) as FieldDefinitionNode;
-  assert(resolverField);
-  const args = [
-    makeInputValueDefinition(field.name.value, makeNonNullType(makeNamedType(getBaseType(field.type)))),
-    ...sortKey.map(keyField => {
-      return makeInputValueDefinition(keyField.name.value, makeNonNullType(makeNamedType(getBaseType(keyField.type))));
-    }),
-  ];
+  if (resolverField) {
+    const args = [
+      makeInputValueDefinition(field.name.value, makeNonNullType(makeNamedType(getBaseType(field.type)))),
+      ...sortKey.map(keyField => {
+        return makeInputValueDefinition(keyField.name.value, makeNonNullType(makeNamedType(getBaseType(keyField.type))));
+      }),
+    ];
 
-  resolverField = { ...resolverField, arguments: args };
-  query = {
-    ...query,
-    fields: query.fields!.map((field: FieldDefinitionNode) => {
-      return field.name.value === resolverField.name.value ? resolverField : field;
-    }),
-  };
-  ctx.output.updateObject(query);
+    resolverField = { ...resolverField, arguments: args };
+    query = {
+      ...query,
+      fields: query.fields!.map((field: FieldDefinitionNode) => {
+        return field.name.value === resolverField.name.value ? resolverField : field;
+      }),
+    };
+    ctx.output.updateObject(query);
+  }
 }
 
 export function updateListField(config: PrimaryKeyDirectiveConfiguration, ctx: TransformerContextProvider): void {
@@ -127,31 +128,31 @@ export function updateListField(config: PrimaryKeyDirectiveConfiguration, ctx: T
 
   const { sortKey } = config;
   let listField = query.fields!.find((field: FieldDefinitionNode) => field.name.value === resolverName) as FieldDefinitionNode;
-  assert(listField);
+  if (listField) {
+    const args = [createHashField(config)];
 
-  const args = [createHashField(config)];
+    if (sortKey.length === 1) {
+      args.push(createSimpleSortField(config, ctx));
+    } else if (sortKey.length > 1) {
+      args.push(createCompositeSortField(config, ctx));
+    }
 
-  if (sortKey.length === 1) {
-    args.push(createSimpleSortField(config, ctx));
-  } else if (sortKey.length > 1) {
-    args.push(createCompositeSortField(config, ctx));
+    if (Array.isArray(listField.arguments)) {
+      args.push(...listField.arguments);
+    }
+
+    args.push(makeInputValueDefinition('sortDirection', makeNamedType('ModelSortDirection')));
+    ensureModelSortDirectionEnum(ctx);
+
+    listField = { ...listField, arguments: args };
+    query = {
+      ...query,
+      fields: query.fields!.map((field: FieldDefinitionNode) => {
+        return field.name.value === listField.name.value ? listField : field;
+      }),
+    };
+    ctx.output.updateObject(query);
   }
-
-  if (Array.isArray(listField.arguments)) {
-    args.push(...listField.arguments);
-  }
-
-  args.push(makeInputValueDefinition('sortDirection', makeNamedType('ModelSortDirection')));
-  ensureModelSortDirectionEnum(ctx);
-
-  listField = { ...listField, arguments: args };
-  query = {
-    ...query,
-    fields: query.fields!.map((field: FieldDefinitionNode) => {
-      return field.name.value === listField.name.value ? listField : field;
-    }),
-  };
-  ctx.output.updateObject(query);
 }
 
 export function updateInputObjects(config: PrimaryKeyDirectiveConfiguration, ctx: TransformerContextProvider): void {
@@ -378,9 +379,9 @@ function generateFilterInputs(config: IndexDirectiveConfiguration, ctx: Transfor
 }
 
 function makeModelXFilterInputObject(config: IndexDirectiveConfiguration, ctx: TransformerContextProvider): InputObjectTypeDefinitionNode {
+  const supportsConditions = true;
   const { object } = config;
   const name = ModelResourceIDs.ModelFilterInputTypeName(object.name.value);
-  const supportsConditions = true;
   const fields = object
     .fields!.filter((field: FieldDefinitionNode) => {
       const fieldType = ctx.output.getType(getBaseType(field.type));
