@@ -132,7 +132,6 @@ export class GraphQLTransform {
         aws_cognito_user_pools: true,
         allow_public_data_access_with_api_key: true,
         deprecated: true,
-        allow_public_data_access_with_api_key: true,
       },
     );
     let allModelDefinitions = [...context.inputDocument.definitions];

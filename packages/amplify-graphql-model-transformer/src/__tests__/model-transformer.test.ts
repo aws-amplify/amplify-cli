@@ -879,24 +879,4 @@ describe('ModelTransformer: ', () => {
     expect(out).toBeDefined();
     validateModelSchema(parse(out.schema));
   });
-
-  it('should support global sandbox mode', () => {
-    const validSchema = `
-      type AMPLIFY_GLOBAL @allow_public_data_access_with_api_key(in: \"dev\")
-
-      type Post @model {
-        id: ID!
-        title: String!
-      }
-    `;
-
-    const transformer = new GraphQLTransform({
-      transformers: [new ModelTransformer()],
-      featureFlags,
-    });
-    const out = transformer.transform(validSchema);
-    expect(out).toBeDefined();
-
-    parse(out.schema);
-  });
 });
