@@ -60,7 +60,6 @@ export class ResourceExport extends ResourceDeployer {
   constructor(context: $TSContext, exportDirectoryPath: string) {
     super(context, ResourceDeployType.Export);
     this.exportDirectoryPath = exportDirectoryPath;
-    this.parametersToKeepInCfn = ['authRoleArn', 'unauthRoleArn'];
   }
 
   async packageBuildWriteResources(deploymentResources: DeploymentResources): Promise<PackagedResourceDefinition[]> {
