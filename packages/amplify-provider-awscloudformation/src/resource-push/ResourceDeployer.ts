@@ -16,7 +16,6 @@ import { ensureValidFunctionModelDependencies } from '../utils/remove-dependent-
 import { Constants } from './constants';
 import { consolidateApiGatewayPolicies } from '../utils/consolidate-apigw-policies';
 import { prePushAuthTransform } from '../auth-transform';
-import { printer } from 'amplify-prompts';
 import { Fn, Template } from 'cloudform-types';
 import { preProcessCFNTemplate } from '../pre-push-cfn-processor/cfn-pre-processor';
 import {
@@ -47,7 +46,7 @@ export abstract class ResourceDeployer {
     resourcesToBeUpdated,
   }: DeploymentResources): ResourceDefinition[] =>
     !!this.context?.exeInfo?.forcePush || this.deployType === ResourceDeployType.Export
-      ? allResources
+      ? allResources.filter(resource => resource.category !== 'providers')
       : resourcesToBeCreated.concat(resourcesToBeUpdated);
 
   constructor(context: $TSContext, deployType: ResourceDeployType) {
@@ -240,21 +239,14 @@ export abstract class ResourceDeployer {
     switch (resource.category) {
       case API_CATEGORY.NAME:
         if (resource.service === API_CATEGORY.SERVICE.ELASTIC_CONTAINER) {
-          const {
-            exposedContainer,
-            pipelineInfo: { consoleUrl },
-          } = await this.context.amplify.invokePluginMethod(this.context, 'api', undefined, 'generateContainersArtifacts', [
+          const { exposedContainer } = await this.context.amplify.invokePluginMethod(
             this.context,
-            resource,
-          ]);
-          _.set(this.amplifyMeta, [resource.category, resource.resourceName, EXPOSED_CONTAINER], exposedContainer);
-          printer.info(`\nIn a few moments, you can check image build status for ${resource.resourceName} at the following URL:`);
-
-          printer.info(`${consoleUrl}\n`);
-
-          printer.info(
-            `It may take a few moments for this to appear. If you have trouble with first time deployments, please try refreshing this page after a few moments and watch the CodeBuild Details for debugging information.`,
+            'api',
+            undefined,
+            'generateContainersArtifacts',
+            [this.context, resource],
           );
+          _.set(this.amplifyMeta, [resource.category, resource.resourceName, EXPOSED_CONTAINER], exposedContainer);
         }
         break;
 

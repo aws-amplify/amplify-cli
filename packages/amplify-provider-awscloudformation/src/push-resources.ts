@@ -717,7 +717,7 @@ function getAllUniqueCategories(resources: $TSObject[]): $TSObject[] {
   return [...categories];
 }
 
-function getCfnFiles(category: string, resourceName: string) {
+export function getCfnFiles(category: string, resourceName: string, options?: glob.IOptions) {
   const backEndDir = pathManager.getBackendDirPath();
   const resourceDir = path.normalize(path.join(backEndDir, category, resourceName));
   const resourceBuildDir = path.join(resourceDir, optionalBuildDirectoryName);
@@ -731,6 +731,7 @@ function getCfnFiles(category: string, resourceName: string) {
     const cfnFiles = glob.sync(cfnTemplateGlobPattern, {
       cwd: resourceBuildDir,
       ignore: [parametersJson],
+      ...options,
     });
 
     if (cfnFiles.length > 0) {
@@ -744,6 +745,7 @@ function getCfnFiles(category: string, resourceName: string) {
   const cfnFiles = glob.sync(cfnTemplateGlobPattern, {
     cwd: resourceDir,
     ignore: [parametersJson, AUTH_TRIGGER_TEMPLATE],
+    ...options,
   });
 
   return {
