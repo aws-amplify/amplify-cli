@@ -78,19 +78,15 @@ export class StateManager {
     return this.getData<$TSTeamProviderInfo>(filePath, mergedOptions);
   };
 
-  getCustomPolicies = (service: string, categoryName: string, resourceName: string): any => {
-    if (service != 'Lambda' && service != 'ElasticContainer') {
+  getCustomPolicies = (service: string, categoryName: string, resourceName: string): CustomIAMPolicies | undefined => {
+    if (!(service === 'Lambda' || service === 'ElasticContainer')) {
       return undefined;
     }
     const filePath = pathManager.getCustomPoliciesPath(categoryName, resourceName);
     if (!filePath) {
       return undefined;
     }
-    const data = JSONUtilities.readJson<CustomIAMPolicies>(filePath, {throwIfNotExist : false});
-    if(!data) {
-      return undefined;
-    }
-    return data;
+    return JSONUtilities.readJson<CustomIAMPolicies>(filePath, {throwIfNotExist : false});
   };
 
   addCustomPoliciesFile = (categoryName: string, resourceName: string): void => {

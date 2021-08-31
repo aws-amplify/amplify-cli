@@ -7,7 +7,9 @@ import { stateManager,
   CustomIAMPolicies,
   customExecutionPolicyForFunction,
   customExecutionPolicyForContainer,
-  CustomPoliciesFormatError} from 'amplify-cli-core';
+  CustomPoliciesFormatError,
+  CustomIAMPoliciesSchema,
+  validate} from 'amplify-cli-core';
 import * as path from 'path';
 import { ProviderName as providerName } from '../constants';
 import { prePushCfnTemplateModifier } from './pre-push-cfn-modifier';
@@ -49,9 +51,10 @@ export async function writeCustomPoliciesToCFNTemplate(
 ) {
   const { templateFormat, cfnTemplate } = await readCFNTemplate(path.join(resourceDir, cfnFile));
   const customPolicies = stateManager.getCustomPolicies(service, category, resourceName);
-  if (!customPolicies || !this.validateCustomPoliciesSchema(customPolicies)) {
+  if (!validateExistCustomPolicies(customPolicies)) {
     return;
   }
+  await validateCustomPoliciesSchema(customPolicies, category, resourceName);
 
   await addCustomPoliciesToCFNTemplate(service, customPolicies.policies, cfnTemplate, filePath, resourceName, {templateFormat} );
 
@@ -59,7 +62,7 @@ export async function writeCustomPoliciesToCFNTemplate(
 
 //merge the custom IAM polciies to CFN template for lambda and API container
 
-export async function addCustomPoliciesToCFNTemplate(
+async function addCustomPoliciesToCFNTemplate(
   service: string,
   customPolicies: CustomIAMPolicy[],
   cfnTemplate: Template,
@@ -79,11 +82,12 @@ export async function addCustomPoliciesToCFNTemplate(
     customExecutionPolicy.Properties.Roles.push(role);
   }
 
-  warnWildCatCustomPolicies(customPolicies, resourceName);
+  warnWildcardCustomPolicies(customPolicies, resourceName);
 
   for (const customPolicy of customPolicies) {
-    const policyWithEnv = await replaceEnvForCustomPolicies(customPolicy, envName);
     validateCustomPolicy(customPolicy, resourceName);
+    const policyWithEnv = await replaceEnvForCustomPolicies(customPolicy, envName);
+    if (!policyWithEnv.Effect) policyWithEnv.Effect = 'Allow';
     customExecutionPolicy.Properties.PolicyDocument.Statement.push(policyWithEnv);
   }
 
@@ -99,7 +103,7 @@ export async function addCustomPoliciesToCFNTemplate(
 
 
 //validate the format of actions and ARNs for custom IAM policies
-export function validateCustomPolicy(customPolicy: CustomIAMPolicy, resourceName: string) {
+function validateCustomPolicy(customPolicy: CustomIAMPolicy, resourceName: string) {
   const resources = customPolicy.Resource;
   const actions = customPolicy.Action;
   let resourceRegex = new RegExp('arn:(aws[a-zA-Z0-9-]*):([a-zA-Z0-9\\-])+:([a-z]{2}(-gov)?-[a-z]+-\\d{1})?:(\\d{12})?:(.*)');
@@ -109,7 +113,7 @@ export function validateCustomPolicy(customPolicy: CustomIAMPolicy, resourceName
   let errorMessage = "";
 
   for (const resource of resources) {
-    if (!resourceRegex.test(resource)) {
+    if (!resourceRegex.test(resource) && !(resource === '*')) {
       wrongResourcesRegex.push(resource);
     }
   }
@@ -132,9 +136,20 @@ export function validateCustomPolicy(customPolicy: CustomIAMPolicy, resourceName
   }
 }
 
+function validateExistCustomPolicies(customPolicies: CustomIAMPolicies) : Boolean {
+  const ajv = new Ajv();
+  const validatePolicies = ajv.compile(CustomIAMPoliciesSchema);
+
+
+  if(!validatePolicies(customPolicies)) {
+    return false;
+  }
+
+  return true;
+}
 
 //replace or add env parameter in the front of the resource customers enter to the current env
-export async function replaceEnvForCustomPolicies(policy: CustomIAMPolicy, currentEnv: string) : Promise<CustomIAMPolicy> {
+async function replaceEnvForCustomPolicies(policy: CustomIAMPolicy, currentEnv: string) : Promise<CustomIAMPolicy> {
   let resourceWithEnv = [];
   let action = policy.Action;
   let effect = policy.Effect;
@@ -151,26 +166,33 @@ export async function replaceEnvForCustomPolicies(policy: CustomIAMPolicy, curre
 }
 
 
-export async function validateCustomPoliciesSchema(data: CustomIAMPolicies, categoryName: string, resourceName: string) : Promise<Boolean> {
+async function validateCustomPoliciesSchema(data: CustomIAMPolicies, categoryName: string, resourceName: string) {
   const ajv = new Ajv();
   //validate if the policies match the custom IAM policies schema, if not, then not write into the CFN template
   const validatePolicy = ajv.compile(CustomIAMPolicySchema);
-  if(!validatePolicy(data)) {
-    printer.warn(`The format of custom IAM policies in the ${categoryName} ${resourceName} is not valid`);
-    return false;
+
+  for(const policy of data.policies) {
+    if(!validatePolicy(policy)) {
+      let errorMessage = `The format of custom IAM policies in the ${categoryName} ${resourceName} is not valid\n`;
+      validatePolicy.errors.forEach(error => errorMessage += error.message + "\n");
+      throw new CustomPoliciesFormatError(errorMessage);
+    }
   }
-  //the policies without env will be carried over and merge into the CFN template
-  return true;
 }
 
-export function warnWildCatCustomPolicies(customPolicies: CustomIAMPolicy[], resourceName: string,) {
+function warnWildcardCustomPolicies(customPolicies: CustomIAMPolicy[], resourceName: string) {
   for (const policy of customPolicies) {
     const resources = policy.Resource;
     for (const resource of resources) {
-      if(resource.includes('*')) {
-        printer.warn(`Warning: You've specified "*" as a custom IAM policy for your ${resourceName}.\n This will give your ${resourceName} access to ALL resources in the AWS Account.`)
+      if(resource === '*') {
+        printer.warn(`Warning: You've specified "*" as the resource in a custom IAM policy for ${resourceName}.\n This will give ${resourceName} access to ALL resources in the AWS Account.`)
         return;
       }
     }
   }
+  const resources = customPolicies
+  .map(policy => policy.Resource)
+    .forEach(resources => resources
+      .filter(resource => resource === '*')
+    .forEach( wildcardResources =>printer.warn(`Warning: You've specified "*" as the resource in a custom IAM policy for ${resourceName}.\n This will give ${resourceName} access to ALL resources in the AWS Account.`)))
 }
