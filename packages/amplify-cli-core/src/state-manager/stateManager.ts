@@ -1,10 +1,11 @@
 import * as fs from 'fs-extra';
-import _ from 'lodash';
-import { $TSAny, $TSMeta, $TSTeamProviderInfo, DeploymentSecrets } from '..';
-import { SecretFileMode } from '../cliConstants';
-import { JSONUtilities } from '../jsonUtilities';
-import { HydrateTags, ReadTags, Tag } from '../tags';
 import { pathManager } from './pathManager';
+import { $TSMeta, $TSTeamProviderInfo, $TSAny, DeploymentSecrets } from '..';
+import { JSONUtilities } from '../jsonUtilities';
+import _ from 'lodash';
+import { SecretFileMode } from '../cliConstants';
+import { HydrateTags, ReadTags, Tag } from '../tags';
+import { CustomIAMPolicies } from '../customPoliciesUtils';
 
 export type GetOptions<T> = {
   throwIfNotExist?: boolean;
@@ -74,6 +75,31 @@ export class StateManager {
 
     return this.getData<$TSTeamProviderInfo>(filePath, mergedOptions);
   };
+
+  getCustomPolicies = (service: string, categoryName: string, resourceName: string): CustomIAMPolicies | undefined => {
+    if (!(service === 'Lambda' || service === 'ElasticContainer')) {
+      return undefined;
+    }
+    const filePath = pathManager.getCustomPoliciesPath(categoryName, resourceName);
+    if (!filePath) {
+      return undefined;
+    }
+    return JSONUtilities.readJson<CustomIAMPolicies>(filePath, {throwIfNotExist : false});
+  };
+
+  addCustomPoliciesFile = (categoryName: string, resourceName: string): void => {
+    const customPoliciesPath = pathManager.getCustomPoliciesPath(categoryName, resourceName);
+    const defaultCustomPolicies = {
+        policies: [
+          {
+            Effect: 'Allow',
+            Action: [],
+            Resource: []
+          }
+        ]
+    }
+    JSONUtilities.writeJson(customPoliciesPath, defaultCustomPolicies);
+  }
 
   localEnvInfoExists = (projectPath?: string): boolean => this.doesExist(pathManager.getLocalEnvFilePath, projectPath);
 
@@ -347,3 +373,5 @@ export class StateManager {
 }
 
 export const stateManager = new StateManager();
+
+

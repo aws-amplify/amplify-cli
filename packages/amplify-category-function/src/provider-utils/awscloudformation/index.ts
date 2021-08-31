@@ -112,6 +112,8 @@ export async function addFunctionResource(
 
   await createFunctionResources(context, completeParams);
 
+  stateManager.addCustomPoliciesFile(category, completeParams.resourceName);
+
   if (!completeParams.skipEdit) {
     await openEditor(context, category, completeParams.resourceName, completeParams.functionTemplate);
   }
