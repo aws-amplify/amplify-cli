@@ -135,7 +135,7 @@ export const isMinimumVersionSatisfied = async (context: $TSContext): Promise<bo
   const cloudFormation: { cfn: CloudFormation } = await context.amplify.invokePluginMethod(
     context,
     'awscloudformation',
-    null,
+    undefined,
     'getCloudFormationSdk',
     [context],
   );
