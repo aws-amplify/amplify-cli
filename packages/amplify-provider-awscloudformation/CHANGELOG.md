@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.58.0-custom-iam-policies.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.57.0...amplify-provider-awscloudformation@4.58.0-custom-iam-policies.0) (2021-08-31)
+
+
+### Bug Fixes
+
+* **amplify-provider-awscloudformation:** display mfa prompt ([#7866](https://github.com/aws-amplify/amplify-cli/issues/7866)) ([8947b18](https://github.com/aws-amplify/amplify-cli/commit/8947b187bf7a7ff6c998488a9931839ca3169d02))
+
+
+### Features
+
+* add new relational modeling directives ([#7997](https://github.com/aws-amplify/amplify-cli/issues/7997)) ([e9cdb7a](https://github.com/aws-amplify/amplify-cli/commit/e9cdb7a1a45b8f16546952a469ab2d45f82e855c))
+* Custom policies IAM policies for Lambda and Container APIs ([#7965](https://github.com/aws-amplify/amplify-cli/issues/7965)) ([8ff1756](https://github.com/aws-amplify/amplify-cli/commit/8ff1756f83fa6315b24610dd77d8b89057716513))
+
+
+### Reverts
+
+* Revert "fix(amplify-provider-awscloudformation): display mfa prompt (#7866)" (#8054) ([7b5de7b](https://github.com/aws-amplify/amplify-cli/commit/7b5de7b553e189a47c88e2902a0f21744a16dc10)), closes [#7866](https://github.com/aws-amplify/amplify-cli/issues/7866) [#8054](https://github.com/aws-amplify/amplify-cli/issues/8054)
+
+
+
+
+
 # [4.57.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.56.1...amplify-provider-awscloudformation@4.57.0) (2021-08-24)
 
 

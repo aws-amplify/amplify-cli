@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.27.0-custom-iam-policies.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@1.26.1...amplify-cli-core@1.27.0-custom-iam-policies.0) (2021-08-31)
+
+
+### Bug Fixes
+
+* **amplify-cli-core:** extend js-yaml.JSON_SCHEMA to inherit json type conversions when parsing .yml cfn templates ([#7909](https://github.com/aws-amplify/amplify-cli/issues/7909)) ([fe5c1ec](https://github.com/aws-amplify/amplify-cli/commit/fe5c1ec63846d531f6828fae98e86464f32a58e4)), closes [#7819](https://github.com/aws-amplify/amplify-cli/issues/7819)
+
+
+### Features
+
+* Custom policies IAM policies for Lambda and Container APIs ([#7965](https://github.com/aws-amplify/amplify-cli/issues/7965)) ([8ff1756](https://github.com/aws-amplify/amplify-cli/commit/8ff1756f83fa6315b24610dd77d8b89057716513))
+
+
+
+
+
 ## [1.26.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@1.26.0...amplify-cli-core@1.26.1) (2021-08-24)
 
 **Note:** Version bump only for package amplify-cli-core

@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.21.19-custom-iam-policies.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-connection-transformer@4.21.18...graphql-connection-transformer@4.21.19-custom-iam-policies.0) (2021-08-31)
+
+**Note:** Version bump only for package graphql-connection-transformer
+
+
+
+
+
 ## [4.21.18](https://github.com/aws-amplify/amplify-cli/compare/graphql-connection-transformer@4.21.17...graphql-connection-transformer@4.21.18) (2021-08-24)
 
 **Note:** Version bump only for package graphql-connection-transformer
