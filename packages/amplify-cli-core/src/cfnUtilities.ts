@@ -66,7 +66,7 @@ export async function writeCFNTemplate(template: object, filePath: string, optio
 
 // Register custom tags for yaml parser
 // Order and definition based on docs: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference.html
-const CF_SCHEMA = new yaml.Schema([
+const CF_SCHEMA = yaml.JSON_SCHEMA.extend([
   new yaml.Type('!Base64', {
     kind: 'scalar',
     construct: function (data) {

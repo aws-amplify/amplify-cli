@@ -3,6 +3,41 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.26.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@1.26.0...amplify-cli-core@1.26.1) (2021-08-24)
+
+**Note:** Version bump only for package amplify-cli-core
+
+
+
+
+
+# [1.26.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@1.25.1...amplify-cli-core@1.26.0) (2021-08-06)
+
+
+### Bug Fixes
+
+* improve size checks before packaging Lambda resources ([#7756](https://github.com/aws-amplify/amplify-cli/issues/7756)) ([5952f6a](https://github.com/aws-amplify/amplify-cli/commit/5952f6aa6c1a6bbf3693a465ab61c46b7ab5c37b))
+
+
+### Features
+
+* create new amplify-prompts package to handle all terminal interactions ([#7774](https://github.com/aws-amplify/amplify-cli/issues/7774)) ([39b3262](https://github.com/aws-amplify/amplify-cli/commit/39b326202283f402f82d7e38a830acdc3845a8d7))
+
+
+
+
+
+## [1.25.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@1.25.0...amplify-cli-core@1.25.1) (2021-07-30)
+
+
+### Bug Fixes
+
+* **amplify-cli-core:** new-line escape sequence made os-specific ([#7814](https://github.com/aws-amplify/amplify-cli/issues/7814)) ([70cd7df](https://github.com/aws-amplify/amplify-cli/commit/70cd7dfe2a7882c1c2d2f2ff7230a0f81e8e8be9))
+
+
+
+
+
 # [1.25.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@1.24.1...amplify-cli-core@1.25.0) (2021-07-27)
 
 

@@ -3,6 +3,33 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.8.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-transformer-interfaces@1.8.1...@aws-amplify/graphql-transformer-interfaces@1.8.2) (2021-08-24)
+
+**Note:** Version bump only for package @aws-amplify/graphql-transformer-interfaces
+
+
+
+
+
+## [1.8.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-transformer-interfaces@1.8.0...@aws-amplify/graphql-transformer-interfaces@1.8.1) (2021-08-06)
+
+**Note:** Version bump only for package @aws-amplify/graphql-transformer-interfaces
+
+
+
+
+
+# [1.8.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-transformer-interfaces@1.7.0...@aws-amplify/graphql-transformer-interfaces@1.8.0) (2021-07-30)
+
+
+### Features
+
+* capability injection for the vNext GraphQL Transformer ([#7735](https://github.com/aws-amplify/amplify-cli/issues/7735)) ([f3eae13](https://github.com/aws-amplify/amplify-cli/commit/f3eae13ab2848df398e26429abf985b756abcff2))
+
+
+
+
+
 # [1.7.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-transformer-interfaces@1.6.1...@aws-amplify/graphql-transformer-interfaces@1.7.0) (2021-07-12)
 
 

@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.10.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-headless-interface@1.9.0...amplify-headless-interface@1.10.0) (2021-08-06)
+
+
+### Features
+
+* make cognito userpool id optional for headless mode ([#7820](https://github.com/aws-amplify/amplify-cli/issues/7820)) ([3746f91](https://github.com/aws-amplify/amplify-cli/commit/3746f91f531b4897e30eaa73ca26943f30a6bc38))
+
+
+
+
+
 # [1.9.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-headless-interface@1.8.0...amplify-headless-interface@1.9.0) (2021-07-27)
 
 

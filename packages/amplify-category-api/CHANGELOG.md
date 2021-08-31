@@ -3,6 +3,42 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.31.19](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@2.31.18...amplify-category-api@2.31.19) (2021-08-24)
+
+**Note:** Version bump only for package amplify-category-api
+
+
+
+
+
+## [2.31.18](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@2.31.17...amplify-category-api@2.31.18) (2021-08-06)
+
+
+
+# 5.3.0 (2021-08-04)
+
+
+### Bug Fixes
+
+* **container-hosting:** ignore test cases ([#7895](https://github.com/aws-amplify/amplify-cli/issues/7895)) ([f051445](https://github.com/aws-amplify/amplify-cli/commit/f05144510311fd38f188fd2d86a9fb0c74219269))
+* **graphql-model-transformer:** model input fields transform ([#7857](https://github.com/aws-amplify/amplify-cli/issues/7857)) ([12ff663](https://github.com/aws-amplify/amplify-cli/commit/12ff663a94a4896bd9eacef3847be15b7631d8df))
+* multi-env container hosting ([#7009](https://github.com/aws-amplify/amplify-cli/issues/7009)) ([#7346](https://github.com/aws-amplify/amplify-cli/issues/7346)) ([6c33215](https://github.com/aws-amplify/amplify-cli/commit/6c33215d064029add6b93bb10cad96bb63f40101))
+
+
+
+
+
+## [2.31.17](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@2.31.16...amplify-category-api@2.31.17) (2021-07-30)
+
+
+### Bug Fixes
+
+* lambda timeout should be an integer type ([#7699](https://github.com/aws-amplify/amplify-cli/issues/7699)) ([cbacf4d](https://github.com/aws-amplify/amplify-cli/commit/cbacf4d3e497421855c09825970e025550aacfd7))
+
+
+
+
+
 ## [2.31.16](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@2.31.15...amplify-category-api@2.31.16) (2021-07-27)
 
 **Note:** Version bump only for package amplify-category-api

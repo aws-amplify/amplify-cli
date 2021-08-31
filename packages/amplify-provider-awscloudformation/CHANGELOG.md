@@ -3,6 +3,47 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.57.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.56.1...amplify-provider-awscloudformation@4.57.0) (2021-08-24)
+
+
+### Bug Fixes
+
+* remove side effect from getConfigForEnv ([#7990](https://github.com/aws-amplify/amplify-cli/issues/7990)) ([02b6f84](https://github.com/aws-amplify/amplify-cli/commit/02b6f84b1312b1859626d4f29853b4a11de41c57))
+* specify default auth role name on import auth ([#7921](https://github.com/aws-amplify/amplify-cli/issues/7921)) ([148c994](https://github.com/aws-amplify/amplify-cli/commit/148c9947b010ae21d426f71f7d89d5ebe278dd19))
+
+
+### Features
+
+* add [@index](https://github.com/index) directive ([#7887](https://github.com/aws-amplify/amplify-cli/issues/7887)) ([e011555](https://github.com/aws-amplify/amplify-cli/commit/e0115557aad893b3286226e92ce8fecbd5636c1a))
+
+
+
+
+
+## [4.56.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.56.0...amplify-provider-awscloudformation@4.56.1) (2021-08-06)
+
+**Note:** Version bump only for package amplify-provider-awscloudformation
+
+
+
+
+
+# [4.56.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.55.2...amplify-provider-awscloudformation@4.56.0) (2021-07-30)
+
+
+### Bug Fixes
+
+* lambda timeout should be an integer type ([#7699](https://github.com/aws-amplify/amplify-cli/issues/7699)) ([cbacf4d](https://github.com/aws-amplify/amplify-cli/commit/cbacf4d3e497421855c09825970e025550aacfd7))
+
+
+### Features
+
+* add [@primary](https://github.com/primary)Key directive to Transformer v2 ([#7797](https://github.com/aws-amplify/amplify-cli/issues/7797)) ([c11b7dd](https://github.com/aws-amplify/amplify-cli/commit/c11b7dd33152eced2ba23089ef08f5696c73b5f2))
+
+
+
+
+
 ## [4.55.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.55.1...amplify-provider-awscloudformation@4.55.2) (2021-07-27)
 
 

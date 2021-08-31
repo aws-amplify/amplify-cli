@@ -3,6 +3,40 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.24.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@1.24.2...amplify-e2e-core@1.24.3) (2021-08-24)
+
+
+### Bug Fixes
+
+* **amplify-category-auth:** fixed no parameter when hostedui is not present ([#7914](https://github.com/aws-amplify/amplify-cli/issues/7914)) ([a83c978](https://github.com/aws-amplify/amplify-cli/commit/a83c978bb18c6fc1980343523c7ee560079cefe5))
+
+
+
+
+
+## [1.24.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@1.24.1...amplify-e2e-core@1.24.2) (2021-08-06)
+
+
+### Bug Fixes
+
+* **amplify-category-auth:** add auth user selections to aws-exports/amplifyconfiguration files ([#7807](https://github.com/aws-amplify/amplify-cli/issues/7807)) ([3deae39](https://github.com/aws-amplify/amplify-cli/commit/3deae3969740562c8fe1a82d2659e0efffccb49d))
+* multi-env container hosting ([#7009](https://github.com/aws-amplify/amplify-cli/issues/7009)) ([#7346](https://github.com/aws-amplify/amplify-cli/issues/7346)) ([6c33215](https://github.com/aws-amplify/amplify-cli/commit/6c33215d064029add6b93bb10cad96bb63f40101))
+
+
+
+
+
+## [1.24.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@1.24.0...amplify-e2e-core@1.24.1) (2021-07-30)
+
+
+### Bug Fixes
+
+* [#7696](https://github.com/aws-amplify/amplify-cli/issues/7696) - support production package install for function category ([#7812](https://github.com/aws-amplify/amplify-cli/issues/7812)) ([b39141e](https://github.com/aws-amplify/amplify-cli/commit/b39141e9d00bf0dc23318dcc476ed92ab031e88b))
+
+
+
+
+
 # [1.24.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@1.23.1...amplify-e2e-core@1.24.0) (2021-07-27)
 
 

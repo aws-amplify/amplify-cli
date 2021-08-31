@@ -1,25 +1,34 @@
 import {
   ArgumentNode,
   DirectiveNode,
+  DocumentNode,
+  EnumTypeDefinitionNode,
   FieldDefinitionNode,
+  InputObjectTypeDefinitionNode,
   InputValueDefinitionNode,
   isListType,
+  Kind,
+  ListTypeNode,
+  Location,
+  NamedTypeNode,
   NameNode,
+  NonNullTypeNode,
   ObjectTypeDefinitionNode,
   StringValueNode,
   TypeNode,
   valueFromASTUntyped,
   ValueNode,
-  Location,
-  NonNullTypeNode,
-  ListTypeNode,
-  InputObjectTypeDefinitionNode,
-  NamedTypeNode,
-  EnumTypeDefinitionNode,
 } from 'graphql';
-import { DEFAULT_SCALARS } from 'graphql-transformer-common';
+import {
+  DEFAULT_SCALARS,
+  getBaseType,
+  isEnum,
+  isScalar,
+  ModelResourceIDs,
+  unwrapNonNull,
+  withNamedNodeNamed,
+} from 'graphql-transformer-common';
 
-import { merge } from 'lodash';
 // Todo: to be moved to core later. context.output.getObject would return wrapper type so its easier to manipulate
 // objects
 
@@ -63,7 +72,7 @@ export class DirectiveWrapper {
       }),
       {},
     );
-    return merge(defaultValue, argValues);
+    return Object.assign(defaultValue, argValues);
   };
 }
 
@@ -79,7 +88,7 @@ export class GenericFieldWrapper {
     this.directives = (field.directives || []).map(d => new DirectiveWrapper(d));
   }
   isList = (): boolean => {
-    return isListType(this.type);
+    return this.isListType(this.type);
   };
 
   isNonNullable = (): boolean => {
@@ -119,9 +128,18 @@ export class GenericFieldWrapper {
     }
     return false;
   };
+
+  private isListType = (type: TypeNode): boolean => {
+    if (type.kind === Kind.NON_NULL_TYPE) {
+      return isListType(type.type);
+    } else {
+      return type.kind === Kind.LIST_TYPE;
+    }
+  };
+
   public getBaseType = (): NamedTypeNode => {
     let node = this.type;
-    while (node.kind === 'ListType' || node.kind === 'NonNullType') {
+    while (node.kind === Kind.LIST_TYPE || node.kind === Kind.NON_NULL_TYPE) {
       node = node.type;
     }
     return node;
@@ -156,7 +174,7 @@ export class GenericFieldWrapper {
 //          };
 //  }
 
-export class InputFieldWraper extends GenericFieldWrapper {
+export class InputFieldWrapper extends GenericFieldWrapper {
   public readonly argumenets?: InputValueDefinitionNode[];
   public readonly description?: StringValueNode;
   public type: TypeNode;
@@ -179,15 +197,39 @@ export class InputFieldWraper extends GenericFieldWrapper {
       directives: this.directives?.map(d => d.serialize()),
     };
   };
-  static fromField = (name: string, field: FieldDefinitionNode): InputFieldWraper => {
-    return new InputFieldWraper({
+
+  static fromField = (name: string, field: FieldDefinitionNode, document: DocumentNode): InputFieldWrapper => {
+    const autoGeneratableFieldsWithType: Record<string, string[]> = {
+      id: ['ID'],
+      createdAt: ['AWSDateTime', 'String'],
+      updatedAt: ['AWSDateTime', 'String'],
+    };
+
+    let type: TypeNode;
+
+    if (
+      Object.keys(autoGeneratableFieldsWithType).indexOf(name) !== -1 &&
+      autoGeneratableFieldsWithType[name].indexOf(unwrapNonNull(field.type).name.value) !== -1
+    ) {
+      // ids are always optional. when provided the value is used.
+      // when not provided the value is not used.
+      type = unwrapNonNull(field.type);
+    } else {
+      type =
+        isScalar(field.type) || isEnum(field.type, document)
+          ? field.type
+          : withNamedNodeNamed(field.type, ModelResourceIDs.NonModelInputObjectName(getBaseType(field.type)));
+    }
+
+    return new InputFieldWrapper({
       kind: 'InputValueDefinition',
       name: { kind: 'Name', value: name },
-      type: field.type,
+      type,
     });
   };
-  static create = (name: string, type: string, isNullable = false, isList = false): InputFieldWraper => {
-    const field = new InputFieldWraper({
+
+  static create = (name: string, type: string, isNullable = false, isList = false): InputFieldWrapper => {
+    const field = new InputFieldWrapper({
       kind: 'InputValueDefinition',
       name: {
         kind: 'Name',
@@ -259,7 +301,7 @@ export class FieldWrapper extends GenericFieldWrapper {
   };
 }
 
-export class ObjectDefinationWrapper {
+export class ObjectDefinitionWrapper {
   public readonly directives?: DirectiveWrapper[];
   public readonly fields: FieldWrapper[];
   public readonly name: string;
@@ -310,8 +352,8 @@ export class ObjectDefinationWrapper {
     this.fields.splice(index, 1);
   };
 
-  static create = (name: string, fields: FieldDefinitionNode[] = [], directives: DirectiveNode[] = []): ObjectDefinationWrapper => {
-    return new ObjectDefinationWrapper({
+  static create = (name: string, fields: FieldDefinitionNode[] = [], directives: DirectiveNode[] = []): ObjectDefinitionWrapper => {
+    return new ObjectDefinitionWrapper({
       kind: 'ObjectTypeDefinition',
       name: {
         kind: 'Name',
@@ -325,11 +367,11 @@ export class ObjectDefinationWrapper {
 
 export class InputObjectDefinitionWrapper {
   public readonly directives?: DirectiveWrapper[];
-  public readonly fields: InputFieldWraper[];
+  public readonly fields: InputFieldWrapper[];
   public readonly name: string;
   constructor(private node: InputObjectTypeDefinitionNode) {
     this.directives = (node.directives || []).map(d => new DirectiveWrapper(d));
-    this.fields = (node.fields || []).map(f => new InputFieldWraper(f));
+    this.fields = (node.fields || []).map(f => new InputFieldWrapper(f));
     this.name = node.name.value;
   }
 
@@ -345,7 +387,7 @@ export class InputObjectDefinitionWrapper {
     return field ? true : false;
   };
 
-  getField = (name: string): InputFieldWraper => {
+  getField = (name: string): InputFieldWrapper => {
     const field = this.fields.find(f => f.name === name);
     if (!field) {
       throw new Error(`Field ${name} missing in type ${this.name}`);
@@ -353,15 +395,15 @@ export class InputObjectDefinitionWrapper {
     return field;
   };
 
-  addField = (field: InputFieldWraper): void => {
+  addField = (field: InputFieldWrapper): void => {
     if (this.hasField(field.name)) {
       throw new Error(`type ${this.name} has already a field with name ${field.name}`);
     }
     this.fields.push(field);
   };
 
-  removeField = (field: InputFieldWraper): void => {
-    if (this.hasField(field.name)) {
+  removeField = (field: InputFieldWrapper): void => {
+    if (!this.hasField(field.name)) {
       throw new Error(`type ${this.name} does not have the field with name ${field.name}`);
     }
     const index = this.fields.indexOf(field);
@@ -384,27 +426,23 @@ export class InputObjectDefinitionWrapper {
       directives: directives,
     });
     for (let field of fields) {
-      const fieldWrapper = new InputFieldWraper(field);
+      const fieldWrapper = new InputFieldWrapper(field);
       wrappedObj.addField(fieldWrapper);
     }
     return wrappedObj;
   };
 
-  static fromObject = (name: string, def: ObjectTypeDefinitionNode): InputObjectDefinitionWrapper => {
+  static fromObject = (name: string, def: ObjectTypeDefinitionNode, document: DocumentNode): InputObjectDefinitionWrapper => {
     const inputObj: InputObjectTypeDefinitionNode = {
       kind: 'InputObjectTypeDefinition',
       name: { kind: 'Name', value: name },
       fields: [],
       directives: [],
     };
+
     const wrappedInput = new InputObjectDefinitionWrapper(inputObj);
     for (let f of def.fields || []) {
-      const wrappedField = new InputFieldWraper({
-        kind: 'InputValueDefinition',
-        name: f.name,
-        type: f.type,
-        directives: [],
-      });
+      const wrappedField = InputFieldWrapper.fromField(f.name.value, f, document);
       wrappedInput.fields.push(wrappedField);
     }
     return wrappedInput;

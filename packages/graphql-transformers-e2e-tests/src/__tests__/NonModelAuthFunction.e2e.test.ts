@@ -13,25 +13,18 @@ import { LambdaHelper } from '../LambdaHelper';
 import { IAMHelper } from '../IAMHelper';
 import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
 import AWS from 'aws-sdk';
-import 'isomorphic-fetch';
-import {
-  createUserPool,
-  createUserPoolClient,
-  configureAmplify,
-  signupAndAuthenticateUser,
-  deleteUserPool,
-  authenticateUser,
-} from '../cognitoUtils';
+import { createUserPool, createUserPoolClient, configureAmplify, signupUser, authenticateUser } from '../cognitoUtils';
 import { default as CognitoClient } from 'aws-sdk/clients/cognitoidentityserviceprovider';
 import Role from 'cloudform-types/types/iam/role';
 import UserPoolClient from 'cloudform-types/types/cognito/userPoolClient';
 import IdentityPool from 'cloudform-types/types/cognito/identityPool';
 import IdentityPoolRoleAttachment from 'cloudform-types/types/cognito/identityPoolRoleAttachment';
-import Amplify, { Auth } from 'aws-amplify';
-import { AuthenticationDetails } from 'amazon-cognito-identity-js';
+import { Auth } from 'aws-amplify';
+import 'isomorphic-fetch';
 
 // to deal with bug in cognito-identity-js
 (global as any).fetch = require('node-fetch');
+
 const featureFlags = {
   getBoolean: jest.fn().mockImplementation((name, defaultValue) => {
     if (name === 'improvePluralization') {
@@ -259,7 +252,7 @@ beforeAll(async () => {
   });
 
   const identityPoolRoleMap = new IdentityPoolRoleAttachment({
-    IdentityPoolId: ({ Ref: 'IdentityPool' } as unknown) as string,
+    IdentityPoolId: { Ref: 'IdentityPool' } as unknown as string,
     Roles: {
       unauthenticated: { 'Fn::GetAtt': ['UnauthRole', 'Arn'] },
       authenticated: { 'Fn::GetAtt': ['AuthRole', 'Arn'] },
@@ -382,12 +375,6 @@ beforeAll(async () => {
   expect(USER_POOL_ID).toBeTruthy();
   expect(userPoolClientId).toBeTruthy();
 
-  // const USER_POOL_ID = 's-west-2_lDi8tU0ke';
-  // const endpoint = 'https://nyz34fvjk5dk7ozjb4jzko7yue.appsync-api.us-west-2.amazonaws.com/graphql';
-  // //const IDENTITY_POOL_NAME = 'NonModelAuthFunctionTest_20200304191252_identity_pool';
-  // const identityPoolId = 'us-west-2:1fb11c4f-9c71-478c-aba5-782f4fb1719a';
-  // const userPoolClientId = '4echgp8e5ffitjgl8dfmgmvo5c';
-
   // Configure Amplify, create users, and sign in.
   configureAmplify(USER_POOL_ID, userPoolClientId, identityPoolId);
 
@@ -410,7 +397,8 @@ beforeAll(async () => {
     disableOffline: true,
   });
 
-  const authRes = await signupAndAuthenticateUser(USER_POOL_ID, USERNAME1, TMP_PASSWORD, REAL_PASSWORD);
+  await signupUser(USER_POOL_ID, USERNAME1, TMP_PASSWORD);
+  const authRes = await authenticateUser(USERNAME1, TMP_PASSWORD, REAL_PASSWORD);
   const idToken = authRes.getIdToken().getJwtToken();
 
   USER_POOL_AUTH_CLIENT = new AWSAppSyncClient({

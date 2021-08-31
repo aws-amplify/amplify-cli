@@ -1,8 +1,8 @@
 import { TransformerTransformSchemaStepContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import { ObjectTypeDefinitionNode, InputObjectTypeDefinitionNode } from 'graphql';
-import { toPascalCase } from 'graphql-transformer-common';
+import { DocumentNode, InputObjectTypeDefinitionNode, ObjectTypeDefinitionNode } from 'graphql';
+import { ModelResourceIDs, toPascalCase } from 'graphql-transformer-common';
 import { ModelDirectiveConfiguration } from '../graphql-model-transformer';
-import { ObjectDefinationWrapper, InputObjectDefinitionWrapper, InputFieldWraper } from '../wrappers/object-definition-wrapper';
+import { InputFieldWrapper, InputObjectDefinitionWrapper, ObjectDefinitionWrapper } from '../wrappers/object-definition-wrapper';
 import { makeConditionFilterInput } from './common';
 
 /**
@@ -15,9 +15,10 @@ export const makeUpdateInputField = (
   obj: ObjectTypeDefinitionNode,
   modelDirectiveConfig: ModelDirectiveConfiguration,
   knownModelTypes: Set<string>,
+  document: DocumentNode,
 ): InputObjectTypeDefinitionNode => {
   // sync related things
-  const objectWrapped = new ObjectDefinationWrapper(obj);
+  const objectWrapped = new ObjectDefinitionWrapper(obj);
   const typeName = objectWrapped.name;
   const name = toPascalCase([`Update`, typeName, 'Input']);
   const hasIdField = objectWrapped.hasField('id');
@@ -29,20 +30,22 @@ export const makeUpdateInputField = (
       return false;
     })
     .map(field => {
-      return field.getTypeName();
+      return field.name;
     });
 
-  const input = InputObjectDefinitionWrapper.fromObject(name, {
+  const objectTypeDefinition: ObjectTypeDefinitionNode = {
     ...obj,
     fields: obj.fields?.filter(f => !fieldsToRemove.includes(f.name.value)),
-  });
+  };
+
+  const input = InputObjectDefinitionWrapper.fromObject(name, objectTypeDefinition, document);
 
   // make all the fields optional
   input.fields.forEach(f => f.makeNullable());
 
   // Add id field and make it optional
   if (!hasIdField) {
-    input.addField(InputFieldWraper.create('id', 'ID', false));
+    input.addField(InputFieldWrapper.create('id', 'ID', false));
   } else {
     const idField = input.fields.find(f => f.name === 'id');
     if (idField) {
@@ -69,7 +72,7 @@ export const makeUpdateInputField = (
 export const makeDeleteInputField = (type: ObjectTypeDefinitionNode): InputObjectTypeDefinitionNode => {
   const name = toPascalCase(['Delete', type.name.value, 'input']);
   const inputField = InputObjectDefinitionWrapper.create(name);
-  const idField = InputFieldWraper.create('id', 'ID', false, false);
+  const idField = InputFieldWrapper.create('id', 'ID', false, false);
   inputField.addField(idField);
   return inputField.serialize();
 };
@@ -84,11 +87,13 @@ export const makeCreateInputField = (
   obj: ObjectTypeDefinitionNode,
   modelDirectiveConfig: ModelDirectiveConfiguration,
   knownModelTypes: Set<string>,
+  document: DocumentNode,
 ): InputObjectTypeDefinitionNode => {
   // sync related things
-  const objectWrapped = new ObjectDefinationWrapper(obj);
+  const objectWrapped = new ObjectDefinitionWrapper(obj);
   const typeName = objectWrapped.name;
-  const name = toPascalCase([`Create`, typeName, 'Input']);
+  const name = ModelResourceIDs.ModelCreateInputObjectName(typeName);
+
   const hasIdField = objectWrapped.hasField('id');
   const fieldsToRemove = objectWrapped
     .fields!.filter(field => {
@@ -98,17 +103,19 @@ export const makeCreateInputField = (
       return false;
     })
     .map(field => {
-      return field.getTypeName();
+      return field.name;
     });
 
-  const input = InputObjectDefinitionWrapper.fromObject(name, {
+  const objectTypeDefinition: ObjectTypeDefinitionNode = {
     ...obj,
     fields: obj.fields?.filter(f => !fieldsToRemove.includes(f.name.value)),
-  });
+  };
+
+  const input = InputObjectDefinitionWrapper.fromObject(name, objectTypeDefinition, document);
 
   // Add id field and make it optional
   if (!hasIdField) {
-    input.addField(InputFieldWraper.create('id', 'ID'));
+    input.addField(InputFieldWrapper.create('id', 'ID'));
   } else {
     const idField = input.fields.find(f => f.name === 'id');
     if (idField) {
@@ -133,7 +140,7 @@ export const makeMutationConditionInput = (
   object: ObjectTypeDefinitionNode,
 ): InputObjectTypeDefinitionNode => {
   const input = makeConditionFilterInput(ctx, name, object);
-  const idField = input.fields.find(f => f.name === 'id' && f.getTypeName() === 'ID');
+  const idField = input.fields.find(f => f.name === 'id' && f.getTypeName() === 'ModelIDInput');
   if (idField) {
     input.removeField(idField);
   }

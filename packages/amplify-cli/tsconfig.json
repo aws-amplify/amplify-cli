@@ -12,8 +12,9 @@
   "references": [
     { "path": "../amplify-category-function" },
     { "path": "../amplify-cli-core" },
+    { "path": "../amplify-prompts" },
     { "path": "../amplify-provider-awscloudformation" },
     { "path": "../amplify-util-import" },
-    { "path": "../graphql-transformer-core"}
+    { "path": "../graphql-transformer-core" }
   ]
 }

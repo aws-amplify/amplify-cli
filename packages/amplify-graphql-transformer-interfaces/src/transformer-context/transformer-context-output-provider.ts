@@ -11,6 +11,7 @@ import {
   EnumTypeExtensionNode,
   InputObjectTypeDefinitionNode,
   EnumTypeDefinitionNode,
+  UnionTypeDefinitionNode,
 } from 'graphql';
 
 export interface TransformerContextOutputProvider {
@@ -70,6 +71,13 @@ export interface TransformerContextOutputProvider {
   updateObject(obj: ObjectTypeDefinitionNode): void;
 
   getObject(name: string): ObjectTypeDefinitionNode | undefined;
+
+  /**
+   * Add an union type definition node to the context. If the type already
+   * exists an error will be thrown.
+   * @param obj The union type definition node to add.
+   */
+  addUnion(obj: UnionTypeDefinitionNode): void;
 
   /**
    * Extends the context query object with additional fields.

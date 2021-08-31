@@ -3,6 +3,33 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.21.17](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-analytics@2.21.16...amplify-category-analytics@2.21.17) (2021-08-24)
+
+**Note:** Version bump only for package amplify-category-analytics
+
+
+
+
+
+## [2.21.16](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-analytics@2.21.15...amplify-category-analytics@2.21.16) (2021-08-06)
+
+**Note:** Version bump only for package amplify-category-analytics
+
+
+
+
+
+## [2.21.15](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-analytics@2.21.14...amplify-category-analytics@2.21.15) (2021-07-30)
+
+
+### Bug Fixes
+
+* lambda timeout should be an integer type ([#7699](https://github.com/aws-amplify/amplify-cli/issues/7699)) ([cbacf4d](https://github.com/aws-amplify/amplify-cli/commit/cbacf4d3e497421855c09825970e025550aacfd7))
+
+
+
+
+
 ## [2.21.14](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-analytics@2.21.13...amplify-category-analytics@2.21.14) (2021-07-27)
 
 

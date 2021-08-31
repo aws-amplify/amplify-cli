@@ -3,6 +3,45 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.3.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@5.3.0...@aws-amplify/cli@5.3.1) (2021-08-24)
+
+
+### Bug Fixes
+
+* added await to init invocation ([#7919](https://github.com/aws-amplify/amplify-cli/issues/7919)) ([d8c7556](https://github.com/aws-amplify/amplify-cli/commit/d8c755685d715400fe84fc7400dd7a06bca4ce5c))
+
+
+
+
+
+# [5.3.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@5.2.1...@aws-amplify/cli@5.3.0) (2021-08-06)
+
+
+### Bug Fixes
+
+* **graphql-model-transformer:** model input fields transform ([#7857](https://github.com/aws-amplify/amplify-cli/issues/7857)) ([12ff663](https://github.com/aws-amplify/amplify-cli/commit/12ff663a94a4896bd9eacef3847be15b7631d8df))
+* multi-env container hosting ([#7009](https://github.com/aws-amplify/amplify-cli/issues/7009)) ([#7346](https://github.com/aws-amplify/amplify-cli/issues/7346)) ([6c33215](https://github.com/aws-amplify/amplify-cli/commit/6c33215d064029add6b93bb10cad96bb63f40101))
+
+
+### Features
+
+* create new amplify-prompts package to handle all terminal interactions ([#7774](https://github.com/aws-amplify/amplify-cli/issues/7774)) ([39b3262](https://github.com/aws-amplify/amplify-cli/commit/39b326202283f402f82d7e38a830acdc3845a8d7))
+
+
+
+
+
+## [5.2.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@5.2.0...@aws-amplify/cli@5.2.1) (2021-07-30)
+
+
+### Bug Fixes
+
+* [#7696](https://github.com/aws-amplify/amplify-cli/issues/7696) - support production package install for function category ([#7812](https://github.com/aws-amplify/amplify-cli/issues/7812)) ([b39141e](https://github.com/aws-amplify/amplify-cli/commit/b39141e9d00bf0dc23318dcc476ed92ab031e88b))
+
+
+
+
+
 # [5.2.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@5.1.2...@aws-amplify/cli@5.2.0) (2021-07-27)
 
 
