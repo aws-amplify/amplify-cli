@@ -589,12 +589,6 @@ export function addRestContainerApiForCustomPolicies(projectDir: string) {
       .wait('Select which container is the entrypoint')
       .sendCarriageReturn()
       .wait('"amplify publish" will build all your local backend and frontend resources')
-      .run((err: Error) => {
-        if (!err) {
-          resolve();
-        } else {
-          reject(err);
-        }
-      });
+      .run((err: Error) => err ? reject(err) : resolve());
   });
 }

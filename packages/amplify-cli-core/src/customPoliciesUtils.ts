@@ -11,24 +11,24 @@ export type CustomIAMPolicy = {
 }
 
 
-export const CustomIAMPolicySchema = {
-    type: "object",
+export const CustomIAMPoliciesSchema = {
+    type : "object",
     properties: {
-        policies: {
-            type: "array",
-            minItems: 1,
-            items: {
-                type: "object",
-                properties: {
-                    "Action": { type: "array", items: { type: "string" }, minItems: 1, nullable: false },
-                    "Effect": { type: "string",  nullable: false, default: "Allow" },
-                    "Resource": { type: "array", items: { type: "string" }, minItems: 1, nullable: false },
-                },
-                required: ["Resource", "Action"],
-                additionalProperties: false
-            },
-        }
-    }
+        policies: {type: "array", minItems: 1, items: {type: "object"}}
+    },
+    required: ["policies"],
+    additionalProperties: false
+}
+
+export const CustomIAMPolicySchema = {
+        type: "object",
+        properties: {
+            Action: {type: "array", items: {type: "string"}, nullable: false},
+            Effect: {type: "string", items: {type: "string"}, nullable: true, default: "Allow"},
+            Resource: {type: "array", items: {type: "string"}, minItems: 1, nullable: false},
+        },
+        required: ["Resource", "Action"],
+        additionalProperties: false
 }
 
 export const customExecutionPolicyForFunction = new IAM.Policy({
