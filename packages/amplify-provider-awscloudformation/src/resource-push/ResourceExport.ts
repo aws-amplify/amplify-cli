@@ -11,7 +11,14 @@ import {
 import { Template, Fn } from 'cloudform-types';
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import { DeploymentResources, PackagedResourceDefinition, ResourceDeployType, StackParameters, TransformedCfnResource } from './Types';
+import {
+  DeploymentResources,
+  PackagedResourceDefinition,
+  ResourceDefinition,
+  ResourceDeployType,
+  StackParameters,
+  TransformedCfnResource,
+} from './Types';
 import { Constants } from './constants';
 import { ResourceDeployer } from './ResourceDeployer';
 import { getNetworkResourceCfn } from '../utils/env-level-constructs';
@@ -51,7 +58,6 @@ export class ResourceExport extends ResourceDeployer {
   constructor(context: $TSContext, exportDirectoryPath: string) {
     super(context, ResourceDeployType.Export);
     this.exportDirectoryPath = exportDirectoryPath;
-    this.parametersToKeepInCfn = ['authRoleArn', 'unauthRoleArn'];
   }
 
   async packageBuildWriteResources(deploymentResources: DeploymentResources): Promise<PackagedResourceDefinition[]> {
@@ -60,7 +66,6 @@ export class ResourceExport extends ResourceDeployer {
     const builtResources = await this.buildResources(preBuiltResources);
     const packagedResources = await this.packageResources(builtResources);
     const postPackageResources = await this.postPackageResource(packagedResources);
-    await this.writeResourcesToDestination(postPackageResources);
     return postPackageResources;
   }
 
@@ -128,7 +133,7 @@ export class ResourceExport extends ResourceDeployer {
    *
    * @param resources {PackagedResourceDefinition[]}
    */
-  private async writeResourcesToDestination(resources: PackagedResourceDefinition[]): Promise<void> {
+  async writeResourcesToDestination(resources: PackagedResourceDefinition[]): Promise<void> {
     for (const resource of resources) {
       if (resource.packagerParams && resource.packagerParams.newPackageCreated) {
         const destinationDir = path.join(
@@ -307,6 +312,7 @@ export class ResourceExport extends ResourceDeployer {
         });
       }
     }
+
     if (this.resourcesHasContainers(resources)) {
       // create network resouce
       const template = (await getNetworkResourceCfn(this.context, stackName)) as Template;
@@ -331,8 +337,17 @@ export class ResourceExport extends ResourceDeployer {
           this.createTemplateUrl(bucket, APIGW_AUTH_STACK_FILE_NAME, API_CATEGORY.NAME),
         );
       }
-      const pathToTriggerFile = path.join(pathManager.getBackendDirPath(), AUTH_CATEGORY.NAME, AUTH_CATEGORY.SERVICE.COGNITO);
-      if (FeatureFlags.getBoolean('auth.breakCircularDependency') && fs.existsSync(pathToTriggerFile)) {
+    }
+
+    const authResource = this.getAuthCognitoResource(resources);
+    if (FeatureFlags.getBoolean('auth.breakCircularDependency') && authResource) {
+      const pathToTriggerFile = path.join(
+        pathManager.getBackendDirPath(),
+        AUTH_CATEGORY.NAME,
+        authResource.resourceName,
+        AUTH_TRIGGER_TEMPLATE_FILE,
+      );
+      if (fs.existsSync(pathToTriggerFile)) {
         const destination = path.join(this.exportDirectoryPath, AUTH_CATEGORY.NAME, AUTH_TRIGGER_TEMPLATE_FILE);
         stackParameters[stackName].nestedStacks[AUTH_TRIGGER_STACK] = {
           destination: destination,
@@ -409,6 +424,10 @@ export class ResourceExport extends ResourceDeployer {
       }
     });
     return template;
+  }
+
+  private getAuthCognitoResource(resources: ResourceDefinition[]): ResourceDefinition | undefined {
+    return resources.find(resource => resource.category === AUTH_CATEGORY.NAME && resource.service === AUTH_CATEGORY.SERVICE.COGNITO);
   }
 
   private writeRootStackToPath(template: Template) {
