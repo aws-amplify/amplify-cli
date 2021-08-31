@@ -8,8 +8,7 @@ import { stateManager,
   customExecutionPolicyForFunction,
   customExecutionPolicyForContainer,
   CustomPoliciesFormatError,
-  CustomIAMPoliciesSchema,
-  validate} from 'amplify-cli-core';
+  CustomIAMPoliciesSchema,} from 'amplify-cli-core';
 import * as path from 'path';
 import { ProviderName as providerName } from '../constants';
 import { prePushCfnTemplateModifier } from './pre-push-cfn-modifier';
