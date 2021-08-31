@@ -1,4 +1,4 @@
-import { AuthTriggerConfig, AuthTriggerConnection, ServiceQuestionsResult } from '../service-walkthrough-types';
+import { AuthTriggerConfig, AuthTriggerConnection, CognitoCLIInputs } from '../service-walkthrough-types/cognito-user-input-types';
 import * as path from 'path';
 import { existsSync, copySync, outputFileSync } from 'fs-extra';
 import uuid from 'uuid';
@@ -17,29 +17,30 @@ const category = 'auth';
 const FunctionServiceNameLambdaFunction = 'Lambda';
 
 /**
- * Factory function that returns a function that synthesizes all resources based on a ServiceQuestionsResult request.
+ * Factory function that returns a function that synthesizes all resources based on a CognitoCLIInputs request.
  * The function returns the request unchanged to enable .then() chaining
  * @param context The amplify context
  * @param cfnFilename The template CFN filename
  * @param provider The cloud provider name
  */
-export const getResourceSynthesizer =
-  (context: any, cfnFilename: string, provider: string) => async (request: Readonly<ServiceQuestionsResult>) => {
-    await lambdaTriggers(request, context, null);
-    await createUserPoolGroups(context, request.resourceName!, request.userPoolGroupList);
-    // transformation handled in api and functions.
-    await addAdminAuth(context, request.resourceName!, 'add', request.adminQueryGroup);
-    await generateAuthStackTemplate(context, request.resourceName!);
-    await generateNestedAuthTriggerTemplate(category, request);
-    // save parameters.json
-    saveResourceParameters(context, provider, category, request.resourceName!, request, ENV_SPECIFIC_PARAMS);
-    // copy custom-message trigger files in to S3
-    await copyS3Assets(request);
-    return request;
-  };
+export const getResourceSynthesizer = (context: any, cfnFilename: string, provider: string) => async (
+  request: Readonly<CognitoCLIInputs>,
+) => {
+  await lambdaTriggers(request, context, null);
+  await createUserPoolGroups(context, request.resourceName!, request.userPoolGroupList);
+  // transformation handled in api and functions.
+  await addAdminAuth(context, request.resourceName!, 'add', request.adminQueryGroup);
+  await generateAuthStackTemplate(context, request.resourceName!);
+  await generateNestedAuthTriggerTemplate(category, request);
+  // save parameters.json
+  saveResourceParameters(context, provider, category, request.resourceName!, request, ENV_SPECIFIC_PARAMS);
+  // copy custom-message trigger files in to S3
+  await copyS3Assets(request);
+  return request;
+};
 
 /**
- * Factory function that returns a function that updates the auth resource based on a ServiceQuestionsResult request.
+ * Factory function that returns a function that updates the auth resource based on a CognitoCLIInputs request.
  * The function returns the request unchanged to enable .then() chaining
  *
  * The code is more-or-less refactored as-is from the existing update logic
@@ -47,7 +48,7 @@ export const getResourceSynthesizer =
  * @param cfnFilename The template CFN filename
  * @param provider The cloud provider name
  */
-export const getResourceUpdater = (context: any, cfnFilename: string, provider: string) => async (request: ServiceQuestionsResult) => {
+export const getResourceUpdater = (context: any, cfnFilename: string, provider: string) => async (request: CognitoCLIInputs) => {
   const resources = context.amplify.getProjectMeta();
   if (resources.auth.userPoolGroups) {
     await updateUserPoolGroups(context, request.resourceName!, request.userPoolGroupList);
@@ -443,7 +444,7 @@ const createAdminAuthAPI = async (context: any, authResourceName: string, functi
   }
 };
 
-const copyS3Assets = async (request: ServiceQuestionsResult) => {
+const copyS3Assets = async (request: CognitoCLIInputs) => {
   const targetDir = path.join(pathManager.getBackendDirPath(), 'auth', request.resourceName!, 'assets');
   const triggers = request.triggers ? JSONUtilities.parse<any>(request.triggers) : null;
   const confirmationFileNeeded = request.triggers && triggers.CustomMessage && triggers.CustomMessage.includes('verification-link');

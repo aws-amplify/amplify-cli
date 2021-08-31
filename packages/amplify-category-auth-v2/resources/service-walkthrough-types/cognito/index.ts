@@ -1,4 +1,4 @@
-export type ServiceQuestionsResult = ServiceQuestionsBaseResult &
+export type CognitoCLIInputs = ServiceQuestionsBaseResult &
   OAuthResult &
   SocialProviderResult &
   IdentityPoolResult &

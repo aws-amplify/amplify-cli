@@ -1,4 +1,4 @@
-import { ServiceQuestionsResult } from '../../../../provider-utils/awscloudformation/service-walkthrough-types';
+import { CognitoCLIInputs } from '../../../../provider-utils/awscloudformation/service-walkthrough-types/cognito-user-input-types';
 import { structureOAuthMetadata } from '../../../../provider-utils/awscloudformation/service-walkthroughs/auth-questions';
 import {
   getAddAuthDefaultsApplier,
@@ -39,9 +39,9 @@ describe('update auth defaults applier', () => {
     const stubResult = {
       useDefault: 'manual',
       authSelections: 'userPoolOnly',
-    } as ServiceQuestionsResult;
+    } as CognitoCLIInputs;
 
-    const result = await getUpdateAuthDefaultsApplier({}, 'cognito-defaults.js', {} as ServiceQuestionsResult)(stubResult);
+    const result = await getUpdateAuthDefaultsApplier({}, 'cognito-defaults.js', {} as CognitoCLIInputs)(stubResult);
     expect(result).toMatchSnapshot();
     expect(structureOAuthMetadata_mock.mock.calls.length).toBe(1);
   });
@@ -51,20 +51,20 @@ describe('update auth defaults applier', () => {
       useDefault: 'manual',
       authSelections: 'userPoolOnly',
       requiredAttributes: [] as string[],
-    } as ServiceQuestionsResult;
+    } as CognitoCLIInputs;
 
-    const result = await getUpdateAuthDefaultsApplier({}, 'cognito-defaults.js', {} as ServiceQuestionsResult)(stubResult);
+    const result = await getUpdateAuthDefaultsApplier({}, 'cognito-defaults.js', {} as CognitoCLIInputs)(stubResult);
     expect(result.requiredAttributes).toEqual([]);
   });
 });
 
 describe('add auth defaults applier', () => {
   it('overwrites default parameters', async () => {
-    const stubResult: ServiceQuestionsResult = {
+    const stubResult: CognitoCLIInputs = {
       useDefault: 'manual',
       authSelections: 'userPoolOnly',
       requiredAttributes: [] as string[],
-    } as ServiceQuestionsResult;
+    } as CognitoCLIInputs;
 
     const result = await getAddAuthDefaultsApplier({}, 'cognito-defaults.js', 'testProjectName')(stubResult);
     expect(result.requiredAttributes).toEqual([]);

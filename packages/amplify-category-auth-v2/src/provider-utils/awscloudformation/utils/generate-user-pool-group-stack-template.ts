@@ -4,7 +4,7 @@ import { AmplifyUserPoolGroupTransform } from '../auth-stack-builder/user-pool-g
 
 export const generateUserPoolGroupStackTemplate = async (context: $TSContext, resourceName: string): Promise<Template> => {
   try {
-    const userPoolTransform = new AmplifyUserPoolGroupTransform(resourceName, context.input.command);
+    const userPoolTransform = new AmplifyUserPoolGroupTransform(resourceName);
     return await userPoolTransform.transform(context);
   } catch (e) {
     throw new Error(e);

@@ -18,7 +18,8 @@ import * as fs from 'fs-extra';
 import * as vm from 'vm';
 import * as amplifyPrinter from 'amplify-prompts';
 import { AmplifyUserPoolGroupStackTemplate } from './types';
-import { Template, AmplifyStackTemplate, AmplifyCategoryTransform } from 'amplify-category-plugin-interface';
+import { Template, AmplifyStackTemplate, AmplifyCategoryTransform } from 'amplify-cli-core';
+import { CognitoCLIInputs } from '../service-walkthrough-types/cognito-user-input-types';
 
 export type UserPoolGroupMetadata = {
   groupName: string;
@@ -40,9 +41,9 @@ export class AmplifyUserPoolGroupTransform extends AmplifyCategoryTransform {
   _category: string;
   _service: string;
   _resourceName: string;
-  _command: string;
+  _cliInputs: CognitoCLIInputs;
 
-  constructor(resourceName: string, command: string) {
+  constructor(resourceName: string) {
     super(resourceName);
     this._resourceName = resourceName;
     this._synthesizer = new AuthStackSythesizer();
@@ -50,9 +51,10 @@ export class AmplifyUserPoolGroupTransform extends AmplifyCategoryTransform {
     this._category = AmplifyCategories.AUTH;
     this._service = AmplifySupportedService.COGNITO;
     try {
-      if (command === CLISubCommands.ADD || command === CLISubCommands.UPDATE) {
-        this._command = command === CLISubCommands.ADD ? CLISubCommands.ADD : CLISubCommands.UPDATE;
-      }
+      // validating cli-inputs
+      const cliState = new AuthInputState(resourceName);
+      this._cliInputs = cliState.getCliInputPayload();
+      cliState.isCLIInputsValid(this._cliInputs);
     } catch (error) {
       throw new Error(error);
     }
@@ -81,7 +83,7 @@ export class AmplifyUserPoolGroupTransform extends AmplifyCategoryTransform {
    * @returns CFN Template
    */
 
-  public generateStackResources = async (props: AmplifyUserPoolGroupStackOptions) => {
+  private generateStackResources = async (props: AmplifyUserPoolGroupStackOptions) => {
     this._userPoolGroupTemplateObj = new AmplifyUserPoolGroupStack(this._app, 'AmplifyUserPoolGroupStack', {
       synthesizer: this._synthesizer,
     });
@@ -164,34 +166,32 @@ export class AmplifyUserPoolGroupTransform extends AmplifyCategoryTransform {
   };
 
   public applyOverride = async () => {
-    if (this._command === CLISubCommands.UPDATE) {
-      const projectRoot = pathManager.findProjectRoot();
-      const overrideDir = pathManager.getOverrideDirPath(projectRoot!, this._category, this._resourceName);
-      await buildOverrideDir(overrideDir).catch(error => {
-        amplifyPrinter.printer.warn(`Skipping build as ${error.message}`);
-        return null;
-      });
-      const { overrideProps } = await import(path.join(overrideDir, 'build', 'override.js')).catch(error => {
-        amplifyPrinter.formatter.list([
-          'No override File Found',
-          `To override ${this._resourceName} run amplify override auth ${this._resourceName} `,
-        ]);
-        return undefined;
-      });
+    const projectRoot = pathManager.findProjectRoot();
+    const overrideDir = pathManager.getOverrideDirPath(projectRoot!, this._category, this._resourceName);
+    await buildOverrideDir(overrideDir).catch(error => {
+      amplifyPrinter.printer.warn(`Skipping build as ${error.message}`);
+      return null;
+    });
+    const { overrideProps } = await import(path.join(overrideDir, 'build', 'override.js')).catch(error => {
+      amplifyPrinter.formatter.list([
+        'No override File Found',
+        `To override ${this._resourceName} run amplify override auth ${this._resourceName} `,
+      ]);
+      return undefined;
+    });
 
-      const cognitoStackTemplateObj = this._userPoolGroupTemplateObj as AmplifyUserPoolGroupStackTemplate & AmplifyStackTemplate;
-      //TODO: Check Script Options
-      if (typeof overrideProps === 'function' && overrideProps) {
-        try {
-          this._userPoolGroupTemplateObj = overrideProps(cognitoStackTemplateObj);
+    const cognitoStackTemplateObj = this._userPoolGroupTemplateObj as AmplifyUserPoolGroupStackTemplate & AmplifyStackTemplate;
+    //TODO: Check Script Options
+    if (typeof overrideProps === 'function' && overrideProps) {
+      try {
+        this._userPoolGroupTemplateObj = overrideProps(cognitoStackTemplateObj);
 
-          //The vm module enables compiling and running code within V8 Virtual Machine contexts. The vm module is not a security mechanism. Do not use it to run untrusted code.
-          // const script = new vm.Script(overrideCode);
-          // script.runInContext(vm.createContext(cognitoStackTemplateObj));
-          return;
-        } catch (error) {
-          throw new Error(error);
-        }
+        //The vm module enables compiling and running code within V8 Virtual Machine contexts. The vm module is not a security mechanism. Do not use it to run untrusted code.
+        // const script = new vm.Script(overrideCode);
+        // script.runInContext(vm.createContext(cognitoStackTemplateObj));
+        return;
+      } catch (error) {
+        throw new Error(error);
       }
     }
   };
@@ -199,19 +199,11 @@ export class AmplifyUserPoolGroupTransform extends AmplifyCategoryTransform {
    *
    * @returns Object required to generate Stack using cdk
    */
-  public generateStackProps = async (context: $TSContext): Promise<AmplifyUserPoolGroupStackOptions> => {
-    const projectPath = pathManager.findProjectRoot();
-    const userPoolGroupCliInputsPath = pathManager.getCliInputsPath(projectPath!, this._category, 'userPoolGroups');
-    const userPoolGroupCliState = await AuthInputState.getInstance({
-      category: this._category,
-      resourceName: this._resourceName,
-      fileName: userPoolGroupCliInputsPath,
-      service: AmplifySupportedService.COGNITO,
-    });
+  private generateStackProps = async (context: $TSContext): Promise<AmplifyUserPoolGroupStackOptions> => {
     const resourceDirPath = path.join(pathManager.getBackendDirPath(), 'auth', 'userPoolGroups', 'user-pool-group-precedence.json');
     const groups = JSONUtilities.readJson(resourceDirPath, { throwIfNotExist: true })!;
 
-    const identityPoolName = userPoolGroupCliState._authInputPayload!.identityPoolName;
+    const identityPoolName = this._cliInputs.identityPoolName;
     return {
       groups: groups as UserPoolGroupMetadata[],
       identityPoolName,

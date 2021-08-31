@@ -4,7 +4,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as cognito from '@aws-cdk/aws-cognito';
 import * as lambda from '@aws-cdk/aws-lambda';
 import { AmplifyAuthCognitoStackTemplate } from './types';
-import { CognitoStackOptions } from '../service-walkthrough-types';
+import { CognitoStackOptions } from '../service-walkthrough-types/cognito-user-input-types';
 import _ from 'lodash';
 import {
   hostedUILambdaFilePath,
@@ -15,7 +15,7 @@ import {
   userPoolClientLambdaFilePath,
 } from '../constants';
 import * as fs from 'fs-extra';
-import { AmplifyStackTemplate } from 'amplify-category-plugin-interface';
+import { AmplifyStackTemplate } from 'amplify-cli-core';
 
 const CFN_TEMPLATE_FORMAT_VERSION = '2010-09-09';
 const ROOT_CFN_DESCRIPTION = 'Root Stack for AWS Amplify CLI';
@@ -258,7 +258,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
         ).toString(),
         policies: {
           passwordPolicy: {
-            minimumLength: cdk.Fn.ref('passwordPolicyMinLength') as unknown as number,
+            minimumLength: (cdk.Fn.ref('passwordPolicyMinLength') as unknown) as number,
             requireLowercase: props.passwordPolicyCharacters!.includes('Requires Lowercase'),
             requireNumbers: props.passwordPolicyCharacters!.includes('Requires Numbers'),
             requireSymbols: props.passwordPolicyCharacters!.includes('Requires Symbols'),
@@ -396,7 +396,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
         this.userPoolClientWeb.readAttributes = this._cfnParameterMap.get('userpoolClientReadAttributes')?.valueAsList;
         this.userPoolClientWeb.writeAttributes = this._cfnParameterMap.get('userpoolClientWriteAttributes')?.valueAsList;
       }
-      this.userPoolClientWeb.refreshTokenValidity = cdk.Fn.ref('userpoolClientRefreshTokenValidity') as unknown as number;
+      this.userPoolClientWeb.refreshTokenValidity = (cdk.Fn.ref('userpoolClientRefreshTokenValidity') as unknown) as number;
       this.userPoolClientWeb.addDependsOn(this.userPool);
 
       this.userPoolClient = new cognito.CfnUserPoolClient(this, 'UserPoolClient', {
@@ -407,8 +407,8 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
         this.userPoolClient.readAttributes = this._cfnParameterMap.get('userpoolClientReadAttributes')?.valueAsList;
         this.userPoolClient.writeAttributes = this._cfnParameterMap.get('userpoolClientWriteAttributes')?.valueAsList;
       }
-      this.userPoolClient.refreshTokenValidity = cdk.Fn.ref('userpoolClientRefreshTokenValidity') as unknown as number;
-      this.userPoolClient.generateSecret = cdk.Fn.ref('userpoolClientGenerateSecret') as unknown as boolean;
+      this.userPoolClient.refreshTokenValidity = (cdk.Fn.ref('userpoolClientRefreshTokenValidity') as unknown) as number;
+      this.userPoolClient.generateSecret = (cdk.Fn.ref('userpoolClientGenerateSecret') as unknown) as boolean;
       this.userPoolClient.userPoolId = cdk.Fn.getAtt('UserPool', 'Arn').toString();
       this.userPoolClient.addDependsOn(this.userPool);
 
@@ -436,7 +436,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
           props.identityPoolName,
           cdk.Fn.join('', [`${props.identityPoolName}_openid_lambda_role`, '-', cdk.Fn.ref('env')]),
         ).toString(),
-        allowUnauthenticatedIdentities: cdk.Fn.ref('allowUnauthenticatedIdentities') as unknown as boolean,
+        allowUnauthenticatedIdentities: (cdk.Fn.ref('allowUnauthenticatedIdentities') as unknown) as boolean,
       });
       if (props.authSelections !== 'identityPoolOnly') {
         this.identityPool.cognitoIdentityProviders = [

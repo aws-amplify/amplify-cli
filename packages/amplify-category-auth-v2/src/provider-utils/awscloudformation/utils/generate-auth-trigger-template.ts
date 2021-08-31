@@ -5,7 +5,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
 import { prepareApp } from '@aws-cdk/core/lib/private/prepare-app';
-import { AuthTriggerConnection, ServiceQuestionsResult } from '../service-walkthrough-types';
+import { AuthTriggerConnection, CognitoCLIInputs } from '../service-walkthrough-types/cognito-user-input-types';
 import { CustomResource } from '@aws-cdk/core';
 import { authTriggerAssetFilePath } from '../constants';
 
@@ -57,7 +57,7 @@ export class CustomResourceAuthStack extends cdk.Stack {
   }
 }
 
-export async function generateNestedAuthTriggerTemplate(category: string, request: ServiceQuestionsResult) {
+export async function generateNestedAuthTriggerTemplate(category: string, request: CognitoCLIInputs) {
   const cfnFileName = 'auth-trigger-cloudformation-template.json';
   const targetDir = path.join(pathManager.getBackendDirPath(), category, request.resourceName!);
   const authTriggerCfnFilePath = path.join(targetDir, cfnFileName);

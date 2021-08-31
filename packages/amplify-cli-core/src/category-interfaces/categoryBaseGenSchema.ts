@@ -60,6 +60,7 @@ export class CLIInputSchemaGenerator {
     for (const typeDef of this.serviceTypeDefs) {
       //get absolute file path to the user-input types for the given service
       const svcAbsoluteFilePath = this.getSvcFileAbsolutePath(typeDef.service);
+      console.log(svcAbsoluteFilePath);
       //generate json-schema from the input-types
       const typeSchema = buildGenerator(getProgramFromFiles([svcAbsoluteFilePath]), settings)!.getSchemaForSymbol(typeDef.typeName);
       //save json-schema file for the input-types. (used to validate cli-inputs.json)

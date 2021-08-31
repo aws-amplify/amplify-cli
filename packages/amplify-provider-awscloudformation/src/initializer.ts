@@ -1,10 +1,9 @@
-import { $TSContext } from 'amplify-cli-core';
+import { $TSContext, pathManager, PathConstants, stateManager, JSONUtilities } from 'amplify-cli-core';
 import _ from 'lodash';
 import { CommandType } from './root-stack-builder';
 import { rootStackFileName } from '.';
-import { pathManager, PathConstants, stateManager, JSONUtilities } from 'amplify-cli-core';
 import { Template } from './root-stack-builder/types';
-import { transformRootStack } from './override-manager/overrideManager';
+import { transformRootStack } from './override-manager/transform-cfn';
 
 const moment = require('moment');
 const path = require('path');

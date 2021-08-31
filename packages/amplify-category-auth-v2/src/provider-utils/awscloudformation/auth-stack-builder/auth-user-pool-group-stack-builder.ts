@@ -4,7 +4,7 @@ import * as lambda from '@aws-cdk/aws-lambda';
 import { CfnUserPoolGroup } from '@aws-cdk/aws-cognito';
 import { AmplifyUserPoolGroupStackTemplate } from './types';
 import { AmplifyUserPoolGroupStackOptions } from './user-pool-group-stack-transform';
-import { AmplifyStackTemplate } from 'amplify-category-plugin-interface';
+import { AmplifyStackTemplate } from 'amplify-cli-core';
 
 const CFN_TEMPLATE_FORMAT_VERSION = '2010-09-09';
 const ROOT_CFN_DESCRIPTION = 'Root Stack for AWS Amplify CLI';

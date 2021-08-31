@@ -1,17 +1,13 @@
-import { AmplifyCategories, CLISubCommands, IAmplifyResource } from 'amplify-cli-core';
-import { AmplifyAuthTransform } from '@aws-amplify/amplify-category-auth';
-import { AmplifyCategoryTransform } from 'amplify-category-plugin-interface';
-import { AmplifyUserPoolGroupTransform } from '@aws-amplify/amplify-category-auth/lib/provider-utils/awscloudformation/auth-stack-builder';
+import { IAmplifyResource, AmplifyCategoryTransform } from 'amplify-cli-core';
+import { AmplifyAuthTransform, AmplifyUserPoolGroupTransform } from '@aws-amplify/amplify-category-auth';
+
+const categoryCfnTransformMap = (resource: IAmplifyResource) => ({
+  auth: [new AmplifyUserPoolGroupTransform(resource.resourceName), new AmplifyAuthTransform(resource.resourceName)],
+  // add factories here
+});
 
 export class AmplifyCategoryTransformFactory {
   public static getCategoryTransformInstance(resource: IAmplifyResource): AmplifyCategoryTransform[] {
-    if (resource.category === AmplifyCategories.AUTH) {
-      return [
-        new AmplifyUserPoolGroupTransform(resource.resourceName, CLISubCommands.UPDATE),
-        new AmplifyAuthTransform(resource.resourceName, CLISubCommands.UPDATE),
-      ];
-    } else if (resource.category === AmplifyCategories.STORAGE) {
-      throw new Error('Not yet implemented');
-    }
+    return categoryCfnTransformMap[resource.category];
   }
 }

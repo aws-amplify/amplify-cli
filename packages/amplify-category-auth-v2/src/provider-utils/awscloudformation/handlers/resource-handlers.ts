@@ -1,4 +1,4 @@
-import { ServiceQuestionsResult } from '../service-walkthrough-types';
+import { CognitoCLIInputs } from '../service-walkthrough-types/cognito-user-input-types';
 import { getAddAuthDefaultsApplier, getUpdateAuthDefaultsApplier } from '../utils/auth-defaults-appliers';
 import { getResourceSynthesizer, getResourceUpdater } from '../utils/synthesize-resources';
 import { getPostAddAuthMetaUpdater, getPostUpdateAuthMetaUpdater } from '../utils/amplify-meta-updaters';
@@ -10,11 +10,11 @@ import { pathManager } from 'amplify-cli-core';
 import { category } from '../constants';
 
 /**
- * Factory function that returns a ServiceQuestionsResult consumer that handles all of the resource generation logic.
+ * Factory function that returns a CognitoCLIInputs consumer that handles all of the resource generation logic.
  * The consumer returns the resourceName of the generated resource.
  * @param context The amplify context
  */
-export const getAddAuthHandler = (context: any) => async (request: ServiceQuestionsResult) => {
+export const getAddAuthHandler = (context: any) => async (request: CognitoCLIInputs) => {
   const serviceMetadata = supportedServices[request.serviceName];
   const { cfnFilename, defaultValuesFilename, provider } = serviceMetadata;
 
@@ -28,18 +28,8 @@ export const getAddAuthHandler = (context: any) => async (request: ServiceQuesti
    * 1) add cli-inputs manager (get cli-inputs , save cli-inputs)
    * 2) Save service question Result to cli-inputs.json
    */
-
-  const projectPath = pathManager.findProjectRoot();
-  const cliInputsPath = pathManager.getCliInputsPath(projectPath!, category, requestWithDefaults.resourceName!);
-  const cliState = await AuthInputState.getInstance({
-    category: category,
-    resourceName: requestWithDefaults.resourceName!,
-    fileName: cliInputsPath,
-    inputAuthPayload: requestWithDefaults,
-    service: 'cognito',
-  });
-
-  cliState.saveCliInputPayload();
+  const cliState = new AuthInputState(requestWithDefaults.resourceName!);
+  cliState.saveCliInputPayload(requestWithDefaults);
 
   try {
     // cdk transformation in this function
@@ -62,26 +52,16 @@ export const getAddAuthHandler = (context: any) => async (request: ServiceQuesti
   return requestWithDefaults.resourceName!;
 };
 
-export const getUpdateAuthHandler = (context: any) => async (request: ServiceQuestionsResult) => {
+export const getUpdateAuthHandler = (context: any) => async (request: CognitoCLIInputs) => {
   const { cfnFilename, defaultValuesFilename, provider } = supportedServices[request.serviceName];
   const requestWithDefaults = await getUpdateAuthDefaultsApplier(context, defaultValuesFilename, context.updatingAuth)(request);
   // saving updated request here
   /**
-   * 1) update cli-inputs manager
+   * 1) update cli-inputs manager (get cli-inputs , save cli-inputs)
    * 2) Save service question Result to cli-inputs.json
    */
-
-  const projectPath = pathManager.findProjectRoot();
-  const cliInputsPath = pathManager.getCliInputsPath(projectPath!, category, requestWithDefaults.resourceName!);
-  const cliState = await AuthInputState.getInstance({
-    category: category,
-    resourceName: requestWithDefaults.resourceName!,
-    fileName: cliInputsPath,
-    inputAuthPayload: requestWithDefaults,
-    service: 'cognito',
-  });
-
-  cliState.saveCliInputPayload();
+  const cliState = new AuthInputState(requestWithDefaults.resourceName!);
+  cliState.saveCliInputPayload(requestWithDefaults);
   try {
     await getResourceUpdater(context, cfnFilename, provider)(requestWithDefaults);
     await getPostUpdateAuthMetaUpdater(context)(requestWithDefaults.resourceName!);

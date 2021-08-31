@@ -1,2 +1,2 @@
 export * from './amplify-factory-transform';
-export * from './overrideManager';
+export * from './transform-cfn';

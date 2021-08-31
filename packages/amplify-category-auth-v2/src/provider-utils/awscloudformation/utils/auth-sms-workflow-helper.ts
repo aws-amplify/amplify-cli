@@ -1,7 +1,7 @@
 import { $TSContext } from 'amplify-cli-core';
 import { ProviderUtils } from '../import/types';
 
-import { ServiceQuestionsResult } from '../service-walkthrough-types';
+import { CognitoCLIInputs } from '../service-walkthrough-types/cognito-user-input-types';
 import { supportedServices } from '../../supported-services';
 
 export type UserPoolMessageConfiguration = {
@@ -10,7 +10,7 @@ export type UserPoolMessageConfiguration = {
   usernameAttributes?: string[];
 };
 
-export const doesConfigurationIncludeSMS = (request: ServiceQuestionsResult): boolean => {
+export const doesConfigurationIncludeSMS = (request: CognitoCLIInputs): boolean => {
   if ((request.mfaConfiguration === 'OPTIONAL' || request.mfaConfiguration === 'ON') && request.mfaTypes?.includes('SMS Text Message')) {
     return true;
   }
@@ -33,7 +33,7 @@ const getProviderPlugin = (context: $TSContext): ProviderUtils => {
 };
 export const loadResourceParameters = (context: $TSContext, resourceName: string): UserPoolMessageConfiguration => {
   const providerPlugin = getProviderPlugin(context);
-  return providerPlugin.loadResourceParameters(context, 'auth', resourceName) as ServiceQuestionsResult;
+  return providerPlugin.loadResourceParameters(context, 'auth', resourceName) as CognitoCLIInputs;
 };
 
 export const loadImportedAuthParameters = async (context: $TSContext, userPoolName: string): Promise<UserPoolMessageConfiguration> => {

@@ -1,7 +1,7 @@
 import { TypeDef, CLIInputSchemaGenerator } from 'amplify-cli-core';
 
 const CognitoAuthTypeDef: TypeDef = {
-  typeName: 'ServiceQuestionsResult',
+  typeName: 'CognitoCLIInputs',
   service: 'cognito',
 };
 

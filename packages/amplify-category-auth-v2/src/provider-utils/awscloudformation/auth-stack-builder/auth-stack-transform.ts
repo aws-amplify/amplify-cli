@@ -7,18 +7,15 @@ import {
   writeCFNTemplate,
   CFNTemplateFormat,
   buildOverrideDir,
-  CLISubCommands,
-  JSONUtilities,
 } from 'amplify-cli-core';
 import { AmplifyAuthCognitoStack } from './auth-cognito-stack-builder';
 import { AuthStackSythesizer } from './stack-synthesizer';
 import * as cdk from '@aws-cdk/core';
 import { AuthInputState } from '../auth-inputs-manager/auth-input-state';
-import { CognitoStackOptions } from '../service-walkthrough-types';
+import { CognitoStackOptions, CognitoCLIInputs } from '../service-walkthrough-types/cognito-user-input-types';
 import { AmplifyAuthCognitoStackTemplate } from './types';
-import { category } from '../constants';
 import _ from 'lodash';
-import { Template, AmplifyStackTemplate, AmplifyCategoryTransform } from 'amplify-category-plugin-interface';
+import { Template, AmplifyStackTemplate, AmplifyCategoryTransform } from 'amplify-cli-core';
 import * as path from 'path';
 import * as fs from 'fs-extra';
 import * as vm from 'vm';
@@ -30,10 +27,10 @@ export class AmplifyAuthTransform extends AmplifyCategoryTransform {
   _service: string;
   _resourceName: string;
   _authTemplateObj: AmplifyAuthCognitoStack; // Props to modify Root stack data
-  _command: string;
   _synthesizer: AuthStackSythesizer;
+  _cliInputs: CognitoCLIInputs;
 
-  constructor(resourceName: string, command: string) {
+  constructor(resourceName: string) {
     super(resourceName);
     this._resourceName = resourceName;
     this._synthesizer = new AuthStackSythesizer();
@@ -41,9 +38,10 @@ export class AmplifyAuthTransform extends AmplifyCategoryTransform {
     this._category = AmplifyCategories.AUTH;
     this._service = AmplifySupportedService.COGNITO;
     try {
-      if (command === CLISubCommands.ADD || command === CLISubCommands.UPDATE) {
-        this._command = command === CLISubCommands.ADD ? CLISubCommands.ADD : CLISubCommands.UPDATE;
-      }
+      // validating cli-inputs
+      const cliState = new AuthInputState(resourceName);
+      this._cliInputs = cliState.getCliInputPayload();
+      cliState.isCLIInputsValid(this._cliInputs);
     } catch (error) {
       throw new Error(error);
     }
@@ -71,7 +69,7 @@ export class AmplifyAuthTransform extends AmplifyCategoryTransform {
    * @returns CFN Template
    */
 
-  public async generateStackResources(props: CognitoStackOptions) {
+  private async generateStackResources(props: CognitoStackOptions) {
     this._authTemplateObj = new AmplifyAuthCognitoStack(this._app, 'AmplifyAuthCongitoStack', { synthesizer: this._synthesizer });
     this._authTemplateObj.addCfnParameter(
       {
@@ -339,37 +337,35 @@ export class AmplifyAuthTransform extends AmplifyCategoryTransform {
   }
 
   public applyOverride = async () => {
-    if (this._command === CLISubCommands.UPDATE) {
-      const projectRoot = pathManager.findProjectRoot();
-      const overrideDir = pathManager.getOverrideDirPath(projectRoot!, this._category, this._resourceName);
-      await buildOverrideDir(overrideDir).catch(error => {
-        amplifyPrinter.printer.warn(`Skipping build as ${error.message}`);
-        return null;
-      });
-      const { overrideProps } = await import(path.join(overrideDir, 'build', 'override.js')).catch(error => {
-        amplifyPrinter.formatter.list([
-          'No override File Found',
-          `To override ${this._resourceName} run amplify override auth ${this._resourceName} `,
-        ]);
-        return undefined;
-      });
-      // const overrideCode : string = await fs.readFile(path.join(overrideDir,'build','override.js'),'utf-8').catch( ()  =>{
-      //   amplifyPrinter.formatter.list(['No override File Found',`To override ${this._resourceName} run amplify override auth ${this._resourceName} `]);
-      //   return '';
-      // });
-      const cognitoStackTemplateObj = this._authTemplateObj as AmplifyAuthCognitoStackTemplate & AmplifyStackTemplate;
-      //TODO: Check Script Options
-      if (typeof overrideProps === 'function' && overrideProps) {
-        try {
-          this._authTemplateObj = overrideProps(cognitoStackTemplateObj);
+    const projectRoot = pathManager.findProjectRoot();
+    const overrideDir = pathManager.getOverrideDirPath(projectRoot!, this._category, this._resourceName);
+    await buildOverrideDir(overrideDir).catch(error => {
+      amplifyPrinter.printer.warn(`Skipping build as ${error.message}`);
+      return null;
+    });
+    const { overrideProps } = await import(path.join(overrideDir, 'build', 'override.js')).catch(error => {
+      amplifyPrinter.formatter.list([
+        'No override File Found',
+        `To override ${this._resourceName} run amplify override auth ${this._resourceName} `,
+      ]);
+      return undefined;
+    });
+    // const overrideCode : string = await fs.readFile(path.join(overrideDir,'build','override.js'),'utf-8').catch( ()  =>{
+    //   amplifyPrinter.formatter.list(['No override File Found',`To override ${this._resourceName} run amplify override auth ${this._resourceName} `]);
+    //   return '';
+    // });
+    const cognitoStackTemplateObj = this._authTemplateObj as AmplifyAuthCognitoStackTemplate & AmplifyStackTemplate;
+    //TODO: Check Script Options
+    if (typeof overrideProps === 'function' && overrideProps) {
+      try {
+        this._authTemplateObj = overrideProps(cognitoStackTemplateObj);
 
-          //The vm module enables compiling and running code within V8 Virtual Machine contexts. The vm module is not a security mechanism. Do not use it to run untrusted code.
-          // const script = new vm.Script(overrideCode);
-          // script.runInContext(vm.createContext(cognitoStackTemplateObj));
-          return;
-        } catch (error) {
-          throw new Error(error);
-        }
+        //The vm module enables compiling and running code within V8 Virtual Machine contexts. The vm module is not a security mechanism. Do not use it to run untrusted code.
+        // const script = new vm.Script(overrideCode);
+        // script.runInContext(vm.createContext(cognitoStackTemplateObj));
+        return;
+      } catch (error) {
+        throw new Error(error);
       }
     }
   };
@@ -377,43 +373,30 @@ export class AmplifyAuthTransform extends AmplifyCategoryTransform {
    *
    * @returns Object required to generate Stack using cdk
    */
-  public generateStackProps = async (context: $TSContext): Promise<CognitoStackOptions> => {
-    // get the parameters necessary to complete
-
-    const projectPath = pathManager.findProjectRoot();
-    const cliInputsPath = pathManager.getCliInputsPath(projectPath!, category, this._resourceName);
-    const authCliState = await AuthInputState.getInstance({
-      category: category,
-      resourceName: this._resourceName,
-      fileName: cliInputsPath,
-      service: AmplifySupportedService.COGNITO,
-    });
-
+  private generateStackProps = async (context: $TSContext): Promise<CognitoStackOptions> => {
     // determine permissions needed for each trigger module
-    if (!_.isEmpty(authCliState._authInputPayload!.triggers)) {
+    if (!_.isEmpty(this._cliInputs.triggers)) {
       const permissions = await context.amplify.getTriggerPermissions(
         context,
-        authCliState._authInputPayload!.triggers,
+        this._cliInputs.triggers,
         AmplifyCategories.AUTH,
-        authCliState._authInputPayload!.resourceName!,
+        this._cliInputs.resourceName!,
       );
       const triggerPermissions = permissions.map((i: string) => JSON.parse(i));
 
       // handle dependsOn data
-      const dependsOnKeys = Object.keys(authCliState._authInputPayload!.triggers).map(
-        i => `${authCliState._authInputPayload!.resourceName}${i}`,
-      );
+      const dependsOnKeys = Object.keys(this._cliInputs.triggers).map(i => `${this._cliInputs.resourceName}${i}`);
       const dependsOn = context.amplify.dependsOnBlock(context, dependsOnKeys, 'Cognito');
       return {
         breakCircularDependency: FeatureFlags.getBoolean('auth.breakcirculardependency'),
         permissions: triggerPermissions,
         dependsOn,
-        ...authCliState.getCliInputPayload(),
+        ...this._cliInputs,
       };
     }
     return {
       breakCircularDependency: FeatureFlags.getBoolean('auth.breakcirculardependency'),
-      ...authCliState.getCliInputPayload(),
+      ...this._cliInputs,
     };
   };
 
@@ -421,7 +404,7 @@ export class AmplifyAuthTransform extends AmplifyCategoryTransform {
    *
    * @returns return CFN templates sunthesized by app
    */
-  public synthesizeTemplates = async (): Promise<Template> => {
+  private synthesizeTemplates = async (): Promise<Template> => {
     this._app.synth();
     const templates = this._synthesizer.collectStacks();
     return templates.get('AmplifyAuthCongitoStack')!;

@@ -1,8 +1,11 @@
-import { ServiceQuestionsResult, AttributeType } from '../../../../provider-utils/awscloudformation/service-walkthrough-types';
+import {
+  CognitoCLIInputs,
+  AttributeType,
+} from '../../../../provider-utils/awscloudformation/service-walkthrough-types/cognito-user-input-types';
 import { doesConfigurationIncludeSMS } from '../../../../provider-utils/awscloudformation/utils/auth-sms-workflow-helper';
 
 describe('doesConfigurationIncludeSMS', () => {
-  let request: ServiceQuestionsResult;
+  let request: CognitoCLIInputs;
 
   beforeEach(() => {
     request = {

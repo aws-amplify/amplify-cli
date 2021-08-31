@@ -1,67 +1,57 @@
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import { ServiceQuestionsResult } from '../service-walkthrough-types';
-import { AmplifyCategories, AmplifySupportedService } from 'amplify-cli-core';
-import { JSONUtilities, pathManager } from 'amplify-cli-core';
-import { CLIInputSchemaValidator } from 'amplify-category-plugin-interface';
+import { CognitoCLIInputs } from '../service-walkthrough-types/cognito-user-input-types';
+import { AmplifyCategories, AmplifySupportedService, JSONUtilities, pathManager } from 'amplify-cli-core';
+import { CLIInputSchemaValidator, CategoryInputState } from 'amplify-cli-core';
 
-export type AuthInputStateOptions = {
-  fileName: string;
-  inputAuthPayload?: ServiceQuestionsResult;
-  category: string;
-  service: string;
-  resourceName: string;
-};
+export class AuthInputState extends CategoryInputState {
+  _cliInputsFilePath: string; //cli-inputs.json (output) filepath
+  _resourceName: string; //user friendly name provided by user
+  _category: string; //category of the resource
+  _service: string; //AWS service for the resource
+  _buildFilePath: string;
 
-export class AuthInputState {
-  static authInputState: AuthInputState;
-  _service: string;
-  _filePath: string;
-  _resourceName: string;
-  _category: string;
-  _authInputPayload?: ServiceQuestionsResult;
-
-  constructor(props: AuthInputStateOptions) {
+  constructor(resourceName: string) {
+    super(resourceName);
     this._category = AmplifyCategories.AUTH;
     this._service = AmplifySupportedService.COGNITO;
-    this._filePath = props.fileName;
-    this._resourceName = props.resourceName;
+    this._resourceName = resourceName;
 
+    const projectBackendDirPath = pathManager.getBackendDirPath();
+    this._cliInputsFilePath = path.resolve(path.join(projectBackendDirPath, AmplifyCategories.AUTH, resourceName, 'cli-inputs.json'));
+    this._buildFilePath = path.resolve(path.join(projectBackendDirPath, AmplifyCategories.AUTH, resourceName, 'build'));
+  }
+
+  public isCLIInputsValid(cliInputs?: CognitoCLIInputs) {
+    if (!cliInputs) {
+      cliInputs = this.getCliInputPayload();
+    }
     try {
-      this._authInputPayload = props.inputAuthPayload ?? JSONUtilities.readJson(props.fileName, { throwIfNotExist: true });
+      const schemaValidator = new CLIInputSchemaValidator(this._service, this._category, 'CognitoCLIInputs');
+      schemaValidator.validateInput(JSON.stringify(cliInputs));
     } catch (e) {
+      throw new Error(e);
+    }
+  }
+
+  public getCliInputPayload(): CognitoCLIInputs {
+    let cliInputs: CognitoCLIInputs;
+    // Read cliInputs file if exists
+    try {
+      cliInputs = JSONUtilities.readJson(this._cliInputsFilePath, { throwIfNotExist: true }) as CognitoCLIInputs;
+    } catch (error) {
       throw new Error('migrate project with command : amplify migrate <to be decided>');
     }
+
+    return cliInputs;
   }
 
-  public static async getInstance(props: AuthInputStateOptions): Promise<AuthInputState> {
-    if (!AuthInputState.authInputState) {
-      AuthInputState.authInputState = new AuthInputState(props);
-    }
+  public saveCliInputPayload(cliInputs: CognitoCLIInputs): void {
+    this.isCLIInputsValid(cliInputs);
 
-    await AuthInputState.authInputState.validateCliInput();
-    return AuthInputState.authInputState;
-  }
-
-  async validateCliInput() {
-    const schemaValidator = new CLIInputSchemaValidator(this._service, this._category, 'ServiceQuestionsResult');
-    await schemaValidator.validateInput(JSON.stringify(this._authInputPayload!)).catch((err: string | undefined) => {
-      throw new Error(err);
-    });
-  }
-
-  public getCliInputPayload(): ServiceQuestionsResult {
-    if (this._authInputPayload) {
-      return this._authInputPayload;
-    } else {
-      throw new Error('cli-inputs not present. Either add category or migrate project to support extensibility');
-    }
-  }
-
-  public saveCliInputPayload(): void {
+    fs.ensureDirSync(path.join(pathManager.getBackendDirPath(), this._category, this._resourceName));
     try {
-      fs.ensureDirSync(path.join(pathManager.getBackendDirPath(), this._category, this._resourceName));
-      JSONUtilities.writeJson(this._filePath, this._authInputPayload);
+      JSONUtilities.writeJson(this._cliInputsFilePath, cliInputs);
     } catch (e) {
       throw new Error(e);
     }

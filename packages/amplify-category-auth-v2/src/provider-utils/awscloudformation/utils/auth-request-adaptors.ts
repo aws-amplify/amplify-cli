@@ -19,7 +19,7 @@ import { identityPoolProviders, userPoolProviders } from '../service-walkthrough
 import { isEmpty, merge } from 'lodash';
 import { authProviders as authProviderList } from '../assets/string-maps';
 import {
-  ServiceQuestionsResult,
+  CognitoCLIInputs,
   OAuthResult,
   SocialProviderResult,
   IdentityPoolResult,
@@ -31,20 +31,20 @@ import {
   UsernameAttributes,
   AliasAttributes,
   AttributeType,
-} from '../service-walkthrough-types';
+} from '../service-walkthrough-types/cognito-user-input-types';
 import { pascalCase } from 'change-case';
 
 export type AddAuthRequestAdaptorFactory = (projectType: string) => AddAuthRequestAdaptor;
 
-export type AddAuthRequestAdaptor = (request: AddAuthRequest) => ServiceQuestionsResult;
+export type AddAuthRequestAdaptor = (request: AddAuthRequest) => CognitoCLIInputs;
 /**
- * Factory function that returns a function to convert an AddAuthRequest into the existing ServiceQuestionsResult output format
+ * Factory function that returns a function to convert an AddAuthRequest into the existing CognitoCLIInputs output format
  * @param projectType The project type (such as 'javascript', 'ios', 'android')
  */
 export const getAddAuthRequestAdaptor: AddAuthRequestAdaptorFactory = projectType => ({
   serviceConfiguration: cognitoConfig,
   resourceName,
-}): ServiceQuestionsResult => {
+}): CognitoCLIInputs => {
   const userPoolConfig = cognitoConfig.userPoolConfiguration;
   const identityPoolConfig = cognitoConfig.includeIdentityPool ? cognitoConfig.identityPoolConfiguration : undefined;
   const requiredAttributes = userPoolConfig.requiredSignupAttributes.map(att => att.toLowerCase());
@@ -59,7 +59,7 @@ export const getAddAuthRequestAdaptor: AddAuthRequestAdaptorFactory = projectTyp
 
 export const getUpdateAuthRequestAdaptor = (projectType: string, requiredAttributes: string[]) => ({
   serviceModification,
-}: UpdateAuthRequest): ServiceQuestionsResult => {
+}: UpdateAuthRequest): CognitoCLIInputs => {
   const idPoolModification = serviceModification.includeIdentityPool ? serviceModification.identityPoolModification : undefined;
   return {
     serviceName: serviceModification.serviceName,

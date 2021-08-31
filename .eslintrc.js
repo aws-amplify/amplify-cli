@@ -306,7 +306,6 @@ module.exports = {
     '/packages/amplify-codegen-appsync-model-plugin/lib',
     '/packages/amplify-e2e-core/lib',
     '/packages/amplify-function-plugin-interface/lib',
-    '/packages/amplify-category-plugin-interface/lib',
     '/packages/amplify-graphql-docs-generator/lib',
     '/packages/amplify-graphql-types-generator/lib',
     '/packages/amplify-headless-interface/lib',
