@@ -140,9 +140,15 @@ function validateExistCustomPolicies(customPolicies: CustomIAMPolicies) : Boolea
   const validatePolicies = ajv.compile(CustomIAMPoliciesSchema);
 
 
-  if(!validatePolicies(customPolicies)) {
+  if (!validatePolicies(customPolicies)) {
     return false;
   }
+
+  if (customPolicies.policies.length === 1
+    && customPolicies.policies[0].Action?.length === 0
+    && customPolicies.policies[0].Resource?.length === 0) {
+      return false;
+    }
 
   return true;
 }
