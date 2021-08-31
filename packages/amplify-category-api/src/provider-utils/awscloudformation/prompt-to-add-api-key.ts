@@ -15,7 +15,7 @@ sandbox mode disabled in '${context.amplify.getEnvInfo().envName}', do not creat
     const apiKeyConfig = await askApiKeyQuestions();
     const authConfig = [apiKeyConfig];
 
-    getCfnApiArtifactHandler(context).updateArtifactsWithoutCompile({
+    await getCfnApiArtifactHandler(context).updateArtifactsWithoutCompile({
       version: 1,
       serviceModification: {
         serviceName: 'AppSync',
