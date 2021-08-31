@@ -24,6 +24,7 @@
   "dependencies": {
     "amplify-cli-core": "1.26.1",
     "amplify-util-import": "1.5.8",
+    "amplify-prompts": "1.1.1",
     "cloudform-types": "^4.2.0",
     "enquirer": "^2.3.6",
     "fs-extra": "^8.1.0",
