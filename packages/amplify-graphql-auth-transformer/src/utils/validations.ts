@@ -10,6 +10,9 @@ export const validateRuleAuthStrategy = (rule: AuthRule, configuredAuthProviders
       `@auth directive with 'groups' strategy only supports 'userPools' and 'oidc' providers, but found '${rule.provider}' assigned.`,
     );
   }
+  if (rule.allow === 'groups' && !rule.groups && !rule.groupsField) {
+    throw new InvalidDirectiveError(`@auth directive with 'groups' should have a defined groups list or a groupsField.`);
+  }
 
   //
   // Owner

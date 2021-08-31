@@ -1,5 +1,5 @@
-import { AccessControlMatrix } from '../../accesscontrol';
-import { MODEL_OPERATIONS } from '../../utils';
+import { AccessControlMatrix } from '../accesscontrol';
+import { MODEL_OPERATIONS } from '../utils';
 
 test('test access control', () => {
   /*

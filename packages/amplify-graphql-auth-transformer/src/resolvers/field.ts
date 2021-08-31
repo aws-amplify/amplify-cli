@@ -10,7 +10,7 @@ import {
   compoundExpression,
   printBlock,
   toJson,
-  obj,
+  comment,
   set,
   methodCall,
   nul,
@@ -28,7 +28,7 @@ import {
   fieldIsList,
   IS_AUTHORIZED_FLAG,
 } from '../utils';
-import { getOwnerClaim, staticGroupRoleExpression, apiKeyExpression, iamExpression } from './helpers';
+import { getOwnerClaim, generateStaticRoleExpression, apiKeyExpression, iamExpression, emptyPayload } from './helpers';
 
 // Field Read VTL Functions
 const generateDynamicAuthReadExpression = (roles: Array<RoleDefinition>, fields: ReadonlyArray<FieldDefinitionNode>) => {
@@ -52,7 +52,7 @@ const generateDynamicAuthReadExpression = (roles: Array<RoleDefinition>, fields:
                     ),
                   ]),
                 ]
-              : [iff(equals(ref('ownerEntity'), ref(`ownerClaim${idx}`)), set(ref(IS_AUTHORIZED_FLAG), bool(true)))]),
+              : [iff(equals(ref(`ownerEntity${idx}`), ref(`ownerClaim${idx}`)), set(ref(IS_AUTHORIZED_FLAG), bool(true)))]),
           ]),
         ),
       );
@@ -77,7 +77,7 @@ const generateDynamicAuthReadExpression = (roles: Array<RoleDefinition>, fields:
       );
     }
   });
-  return [...(ownerExpressions.length > 0 ? ownerExpressions : []), ...(dynamicGroupExpressions.length > 0 ? dynamicGroupExpressions : [])];
+  return [...(ownerExpressions.length > 0 || dynamicGroupExpressions.length > 0 ? [...ownerExpressions, ...dynamicGroupExpressions] : [])];
 };
 
 export const generateAuthExpressionForField = (
@@ -85,7 +85,7 @@ export const generateAuthExpressionForField = (
   roles: Array<RoleDefinition>,
   fields: ReadonlyArray<FieldDefinitionNode>,
 ): string => {
-  const { cognitoStaticGroupRoles, cognitoDynamicRoles, oidcStaticGroupRoles, oidcDynamicRoles, iamRoles, apiKeyRoles } = splitRoles(roles);
+  const { cogntoStaticRoles, cognitoDynamicRoles, oidcStaticRoles, oidcDynamicRoles, iamRoles, apiKeyRoles } = splitRoles(roles);
   const totalAuthExpressions: Array<Expression> = [set(ref(IS_AUTHORIZED_FLAG), bool(false))];
   if (provider.hasApiKey) {
     totalAuthExpressions.push(apiKeyExpression(apiKeyRoles));
@@ -98,7 +98,7 @@ export const generateAuthExpressionForField = (
       iff(
         equals(ref('util.authType()'), str(COGNITO_AUTH_TYPE)),
         compoundExpression([
-          ...staticGroupRoleExpression(cognitoStaticGroupRoles),
+          ...generateStaticRoleExpression(cogntoStaticRoles),
           ...generateDynamicAuthReadExpression(cognitoDynamicRoles, fields),
         ]),
       ),
@@ -109,14 +109,14 @@ export const generateAuthExpressionForField = (
       iff(
         equals(ref('util.authType()'), str(OIDC_AUTH_TYPE)),
         compoundExpression([
-          ...staticGroupRoleExpression(oidcStaticGroupRoles),
+          ...generateStaticRoleExpression(oidcStaticRoles),
           ...generateDynamicAuthReadExpression(oidcDynamicRoles, fields),
         ]),
       ),
     );
   }
   totalAuthExpressions.push(iff(not(ref(IS_AUTHORIZED_FLAG)), ref('util.unauthorized()')));
-  return printBlock('Field Authorization Steps')(compoundExpression([...totalAuthExpressions, toJson(obj({}))]));
+  return printBlock('Field Authorization Steps')(compoundExpression([...totalAuthExpressions, emptyPayload]));
 };
 
 /**

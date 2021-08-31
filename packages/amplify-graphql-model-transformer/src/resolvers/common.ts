@@ -62,7 +62,7 @@ export const generateConditionSlot = (inputConditionObjectName: string, conditio
  * Generate common response template used by most of the resolvers.
  * Append operation if response is coming from a mutation, this is to protect field resolver for subscriptions
  */
-export const generateDefaultResponseMappingTemplate = (isSyncEnabled: boolean, mutation: boolean = false): string => {
+export const generateDefaultResponseMappingTemplate = (isSyncEnabled: boolean, mutation = false): string => {
   const statements: Expression[] = [];
   if (mutation) statements.push(qref(methodCall(ref('ctx.result.put'), str(OPERATION_KEY), str('Mutation'))));
   if (isSyncEnabled) {

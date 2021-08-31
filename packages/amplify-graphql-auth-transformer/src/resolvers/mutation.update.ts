@@ -38,7 +38,7 @@ import {
   NULL_ALLOWED_FIELDS,
   DENIED_FIELDS,
 } from '../utils';
-import { getIdentityClaimExp, responseCheckForErrors, getOwnerClaim, getInputFields } from './helpers';
+import { getIdentityClaimExp, responseCheckForErrors, getOwnerClaim, getInputFields, emptyPayload } from './helpers';
 
 /**
  * There is only one role for ApiKey we can use the first index
@@ -94,47 +94,67 @@ const iamExpression = (roles: Array<RoleDefinition>, hasAdminUIEnabled: boolean 
       }
     }
   } else {
-    expression.push(set(ref(IS_AUTHORIZED_FLAG), bool(false)));
+    expression.push(ref('util.unauthorized()'));
   }
   return iff(equals(ref('util.authType()'), str(IAM_AUTH_TYPE)), compoundExpression(expression));
 };
 
-const staticRoleExpression = (roles: Array<RoleDefinition>) => {
-  return roles.length > 0
-    ? [
-        set(
-          ref('staticGroupRoles'),
-          raw(
-            JSON.stringify(
-              roles.map(r => ({
-                claim: r.claim,
-                entity: r.entity,
-                allowedFields: r.allowedFields,
-                nullAllowedFields: r.nullAllowedFields,
-              })),
+const generateStaticRoleExpression = (roles: Array<RoleDefinition>) => {
+  const staticRoleExpression: Array<Expression> = new Array();
+  const privateRoleIdx = roles.findIndex(r => r.strategy === 'private');
+  if (privateRoleIdx > -1) {
+    const privateRole = roles[privateRoleIdx];
+    if (privateRole.allowedFields!.length > 0 || privateRole.nullAllowedFields!.length > 0) {
+      staticRoleExpression.push(
+        methodCall(ref(`${ALLOWED_FIELDS}.addAll`), raw(JSON.stringify(privateRole.allowedFields))),
+        methodCall(ref(`${NULL_ALLOWED_FIELDS}.addAll`), raw(JSON.stringify(privateRole.nullAllowedFields))),
+      );
+    } else {
+      staticRoleExpression.push(set(ref(IS_AUTHORIZED_FLAG), bool(true)));
+    }
+    roles.splice(privateRoleIdx, 1);
+  }
+  if (roles.length > 0) {
+    staticRoleExpression.push(
+      iff(
+        not(ref(IS_AUTHORIZED_FLAG)),
+        compoundExpression([
+          set(
+            ref('staticGroupRoles'),
+            raw(
+              JSON.stringify(
+                roles.map(r => ({
+                  claim: r.claim,
+                  entity: r.entity,
+                  allowedFields: r.allowedFields,
+                  nullAllowedFields: r.nullAllowedFields,
+                })),
+              ),
             ),
           ),
-        ),
-        forEach(/** for */ ref('groupRole'), /** in */ ref('staticGroupRoles'), [
-          set(ref('groupsInToken'), getIdentityClaimExp(ref('groupRole.claim'), list([]))),
-          iff(
-            methodCall(ref('groupsInToken.contains'), ref('groupRole.entity')),
-            compoundExpression([
-              // if we find that it's not fully allowed on update (update/delete) we add the field conditions
-              // otherwise we set to true and break
-              ifElse(
-                or([not(ref(`groupRole.allowedFields.isEmpty()`)), not(ref('groupRole.nullAllowedFields.isEmpty()'))]),
-                compoundExpression([
-                  qref(methodCall(ref(`${ALLOWED_FIELDS}.addAll`), ref('groupRole.allowedFields'))),
-                  qref(methodCall(ref(`${NULL_ALLOWED_FIELDS}.addAll`), ref('groupRole.nullAllowedFields'))),
-                ]),
-                compoundExpression([set(ref(IS_AUTHORIZED_FLAG), bool(true)), raw('#break')]),
-              ),
-            ]),
-          ),
+          forEach(/** for */ ref('groupRole'), /** in */ ref('staticGroupRoles'), [
+            set(ref('groupsInToken'), getIdentityClaimExp(ref('groupRole.claim'), list([]))),
+            iff(
+              methodCall(ref('groupsInToken.contains'), ref('groupRole.entity')),
+              compoundExpression([
+                // if we find that it's not fully allowed on update (update/delete) we add the field conditions
+                // otherwise we set to true and break
+                ifElse(
+                  or([not(ref(`groupRole.allowedFields.isEmpty()`)), not(ref('groupRole.nullAllowedFields.isEmpty()'))]),
+                  compoundExpression([
+                    qref(methodCall(ref(`${ALLOWED_FIELDS}.addAll`), ref('groupRole.allowedFields'))),
+                    qref(methodCall(ref(`${NULL_ALLOWED_FIELDS}.addAll`), ref('groupRole.nullAllowedFields'))),
+                  ]),
+                  compoundExpression([set(ref(IS_AUTHORIZED_FLAG), bool(true)), raw('#break')]),
+                ),
+              ]),
+            ),
+          ]),
         ]),
-      ]
-    : [];
+      ),
+    );
+  }
+  return staticRoleExpression;
 };
 const dynamicGroupRoleExpression = (roles: Array<RoleDefinition>, fields: ReadonlyArray<FieldDefinitionNode>): Array<Expression> => {
   const ownerExpression = new Array<Expression>();
@@ -171,7 +191,7 @@ const dynamicGroupRoleExpression = (roles: Array<RoleDefinition>, fields: Readon
                 ]
               : [
                   iff(
-                    equals(ref('ownerEntity'), ref(`ownerClaim${idx}`)),
+                    equals(ref(`ownerEntity${idx}`), ref(`ownerClaim${idx}`)),
                     ifElse(
                       or([not(ref(`ownerAllowedFields${idx}.isEmpty()`)), not(ref(`ownerNullAllowedFields${idx}.isEmpty()`))]),
                       compoundExpression([
@@ -236,7 +256,7 @@ export const generateAuthExpressionForUpdate = (
   roles: Array<RoleDefinition>,
   fields: ReadonlyArray<FieldDefinitionNode>,
 ) => {
-  const { cognitoStaticGroupRoles, cognitoDynamicRoles, oidcStaticGroupRoles, oidcDynamicRoles, apiKeyRoles, iamRoles } = splitRoles(roles);
+  const { cogntoStaticRoles, cognitoDynamicRoles, oidcStaticRoles, oidcDynamicRoles, apiKeyRoles, iamRoles } = splitRoles(roles);
   const totalAuthExpressions: Array<Expression> = [
     responseCheckForErrors(),
     getInputFields(),
@@ -255,7 +275,10 @@ export const generateAuthExpressionForUpdate = (
     totalAuthExpressions.push(
       iff(
         equals(ref('util.authType()'), str(COGNITO_AUTH_TYPE)),
-        compoundExpression([...staticRoleExpression(cognitoStaticGroupRoles), ...dynamicGroupRoleExpression(cognitoDynamicRoles, fields)]),
+        compoundExpression([
+          ...generateStaticRoleExpression(cogntoStaticRoles),
+          ...dynamicGroupRoleExpression(cognitoDynamicRoles, fields),
+        ]),
       ),
     );
   }
@@ -263,7 +286,7 @@ export const generateAuthExpressionForUpdate = (
     totalAuthExpressions.push(
       iff(
         equals(ref('util.authType()'), str(OIDC_AUTH_TYPE)),
-        compoundExpression([...staticRoleExpression(oidcStaticGroupRoles), ...dynamicGroupRoleExpression(oidcDynamicRoles, fields)]),
+        compoundExpression([...generateStaticRoleExpression(oidcStaticRoles), ...dynamicGroupRoleExpression(oidcDynamicRoles, fields)]),
       ),
     );
   }
@@ -272,19 +295,19 @@ export const generateAuthExpressionForUpdate = (
       and([not(ref(IS_AUTHORIZED_FLAG)), ref(`${ALLOWED_FIELDS}.isEmpty()`), ref(`${NULL_ALLOWED_FIELDS}.isEmpty()`)]),
       ref('util.unauthorized()'),
     ),
+    // if not authorized we check the field conditions
     iff(
       not(ref(IS_AUTHORIZED_FLAG)),
-      forEach(ref('entry'), ref('inputFields'), [
-        iff(
-          and([methodCall(ref('util.isNull'), ref('entry.value')), not(ref(`${NULL_ALLOWED_FIELDS}.contains($entry.value)`))]),
-          qref(methodCall(ref(`${DENIED_FIELDS}.put`), ref('entry.key'), str(''))),
-        ),
-      ]),
-    ),
-    iff(
-      not(ref(IS_AUTHORIZED_FLAG)),
-      forEach(ref('deniedField'), ref(`$util.list.copyAndRemoveAll($inputFields, \$${ALLOWED_FIELDS})`), [
-        qref(methodCall(ref(`${DENIED_FIELDS}.add`), ref('deniedField'), str(''))),
+      compoundExpression([
+        forEach(ref('entry'), ref('util.map.copyAndRetainAllKeys($ctx.args.input, $inputFields).entrySet()'), [
+          iff(
+            and([methodCall(ref('util.isNull'), ref('entry.value')), not(ref(`${NULL_ALLOWED_FIELDS}.contains($entry.value)`))]),
+            qref(methodCall(ref(`${DENIED_FIELDS}.put`), ref('entry.key'), str(''))),
+          ),
+        ]),
+        forEach(ref('deniedField'), ref(`util.list.copyAndRemoveAll($inputFields, \$${ALLOWED_FIELDS})`), [
+          qref(methodCall(ref(`${DENIED_FIELDS}.put`), ref('deniedField'), str(''))),
+        ]),
       ]),
     ),
     iff(
@@ -292,5 +315,5 @@ export const generateAuthExpressionForUpdate = (
       methodCall(ref('util.error'), str(`Unauthorized on \${${DENIED_FIELDS}.keySet()}`), str('Unauthorized')),
     ),
   );
-  return printBlock('Update Authorization Steps')(compoundExpression([...totalAuthExpressions, toJson(obj({}))]));
+  return printBlock('Authorization Steps')(compoundExpression([...totalAuthExpressions, toJson(obj({}))]));
 };

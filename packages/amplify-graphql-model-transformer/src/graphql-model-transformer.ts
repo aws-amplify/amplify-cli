@@ -324,7 +324,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
     typeName: string,
     fieldName: string,
   ): TransformerResolverProvider => {
-    const isSyncEnabled = !!this.options.SyncConfig;
+    const isSyncEnabled = ctx.isProjectUsingDataStore();
     const dataSource = this.datasourceMap[type.name.value];
     const resolverKey = `Get${generateResolverKey(typeName, fieldName)}`;
     if (!this.resolverMap[resolverKey]) {
@@ -345,7 +345,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
     typeName: string,
     fieldName: string,
   ): TransformerResolverProvider => {
-    const isSyncEnabled = !!this.options.SyncConfig;
+    const isSyncEnabled = ctx.isProjectUsingDataStore();
     const dataSource = this.datasourceMap[type.name.value];
     const resolverKey = `List${generateResolverKey(typeName, fieldName)}`;
     if (!this.resolverMap[resolverKey]) {
@@ -369,7 +369,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
     typeName: string,
     fieldName: string,
   ): TransformerResolverProvider => {
-    const isSyncEnabled = !!this.options.SyncConfig;
+    const isSyncEnabled = ctx.isProjectUsingDataStore();
     const dataSource = this.datasourceMap[type.name.value];
     const resolverKey = `Update${generateResolverKey(typeName, fieldName)}`;
     if (!this.resolverMap[resolverKey]) {
@@ -404,7 +404,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
     typeName: string,
     fieldName: string,
   ): TransformerResolverProvider => {
-    const isSyncEnabled = !!this.options.SyncConfig;
+    const isSyncEnabled = ctx.isProjectUsingDataStore();
     const dataSource = this.datasourceMap[type.name.value];
     const resolverKey = `delete${generateResolverKey(typeName, fieldName)}`;
     if (!this.resolverMap[resolverKey]) {
@@ -479,7 +479,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
     typeName: string,
     fieldName: string,
   ): TransformerResolverProvider => {
-    const isSyncEnabled = !!this.options.SyncConfig;
+    const isSyncEnabled = ctx.isProjectUsingDataStore();
     const dataSource = this.datasourceMap[type.name.value];
     const resolverKey = `Sync${generateResolverKey(typeName, fieldName)}`;
     if (!this.resolverMap[resolverKey]) {
@@ -714,7 +714,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
     typeName: string,
     fieldName: string,
   ): TransformerResolverProvider => {
-    const isSyncEnabled = !!this.options.SyncConfig;
+    const isSyncEnabled = ctx.isProjectUsingDataStore();
     const dataSource = this.datasourceMap[type.name.value];
     const resolverKey = `Create${generateResolverKey(typeName, fieldName)}`;
     if (!this.resolverMap[resolverKey]) {
@@ -749,7 +749,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
       type: QueryFieldType | MutationFieldType | SubscriptionFieldType;
     },
   ): InputValueDefinitionNode[] => {
-    const isSyncEnabled = !!this.options.SyncConfig;
+    const isSyncEnabled = ctx.isProjectUsingDataStore();
 
     const knownModels = this.typesWithModelDirective;
     let conditionInput: InputObjectTypeDefinitionNode;
@@ -879,7 +879,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
         break;
       case QueryFieldType.SYNC:
       case QueryFieldType.LIST:
-        const isSyncEnabled = !!this.options.SyncConfig;
+        const isSyncEnabled = ctx.isProjectUsingDataStore();
         const connectionFieldName = toPascalCase(['Model', type.name.value, 'Connection']);
         outputType = makeListQueryModel(type, connectionFieldName, isSyncEnabled);
         break;

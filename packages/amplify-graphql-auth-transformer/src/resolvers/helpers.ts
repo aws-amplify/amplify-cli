@@ -18,6 +18,7 @@ import {
   list,
   equals,
   or,
+  comment,
 } from 'graphql-mapping-template';
 import { NONE_VALUE } from 'graphql-transformer-common';
 import {
@@ -32,26 +33,22 @@ import {
 } from '../utils';
 
 // since the keySet returns a set we can convert it to a list by converting to json and parsing back as a list
-export const getInputFields = () =>
-  compoundExpression([
-    set(ref('inputFields'), methodCall(ref('util.parseJson'), methodCall(ref('util.toJson'), ref('ctx.args.input.keySet()')))),
-    iff(
-      ref('ctx.stash.metadata.modelObjectKey'),
-      forEach(ref('entry'), ref('ctx.stash.metadata.modelObjectKey.keySet()'), [qref(methodCall(ref('inputFields.remove'), ref('entry')))]),
-    ),
-  ]);
+export const getInputFields = (): Expression => {
+  return set(ref('inputFields'), methodCall(ref('util.parseJson'), methodCall(ref('util.toJson'), ref('ctx.args.input.keySet()'))));
+};
 
-export const getIdentityClaimExp = (value: Expression, defaultValueExp: Expression) => {
+export const getIdentityClaimExp = (value: Expression, defaultValueExp: Expression): Expression => {
   return methodCall(ref('util.defaultIfNull'), methodCall(ref('ctx.identity.claims.get'), value), defaultValueExp);
 };
 
 // for create mutations and subscriptions
-export const addAllowedFieldsIfElse = (fieldKey: string, breakLoop: boolean = false) =>
-  ifElse(
+export const addAllowedFieldsIfElse = (fieldKey: string, breakLoop: boolean = false): Expression => {
+  return ifElse(
     not(ref(`${fieldKey}.isEmpty()`)),
     qref(methodCall(ref(`${ALLOWED_FIELDS}.addAll`), ref(fieldKey))),
     compoundExpression([set(ref(IS_AUTHORIZED_FLAG), bool(true)), ...(breakLoop ? [raw('#break')] : [])]),
   );
+};
 
 /**
  * Behavior of auth v1
@@ -77,28 +74,37 @@ export const responseCheckForErrors = () =>
 
 // Common Expressions
 
-export const staticGroupRoleExpression = (roles: Array<RoleDefinition>): Array<Expression> => {
-  return roles.length > 0
-    ? [
-        set(ref('staticGroupRoles'), raw(JSON.stringify(roles.map(r => ({ claim: r.claim, entity: r.entity }))))),
-        forEach(ref('groupRole'), ref('staticGroupRoles'), [
-          set(ref('groupsInToken'), getIdentityClaimExp(ref('groupRole.claim'), list([]))),
-          iff(
-            methodCall(ref('groupsInToken.contains'), ref('groupRole.entity')),
-            compoundExpression([set(ref(IS_AUTHORIZED_FLAG), bool(true)), raw(`#break`)]),
-          ),
+export const generateStaticRoleExpression = (roles: Array<RoleDefinition>): Array<Expression> => {
+  const staticRoleExpression: Array<Expression> = new Array();
+  const privateRoleIdx = roles.findIndex(r => r.strategy === 'private');
+  if (privateRoleIdx > -1) {
+    staticRoleExpression.push(set(ref(IS_AUTHORIZED_FLAG), bool(true)));
+    roles.splice(privateRoleIdx, 1);
+  }
+  if (roles.length > 0) {
+    staticRoleExpression.push(
+      iff(
+        not(ref(IS_AUTHORIZED_FLAG)),
+        compoundExpression([
+          set(ref('staticGroupRoles'), raw(JSON.stringify(roles.map(r => ({ claim: r.claim, entity: r.entity }))))),
+          forEach(ref('groupRole'), ref('staticGroupRoles'), [
+            set(ref('groupsInToken'), getIdentityClaimExp(ref('groupRole.claim'), list([]))),
+            iff(
+              methodCall(ref('groupsInToken.contains'), ref('groupRole.entity')),
+              compoundExpression([set(ref(IS_AUTHORIZED_FLAG), bool(true)), raw(`#break`)]),
+            ),
+          ]),
         ]),
-      ]
-    : [];
+      ),
+    );
+  }
+  return staticRoleExpression;
 };
 
 export const apiKeyExpression = (roles: Array<RoleDefinition>) =>
   iff(
     equals(ref('util.authType()'), str(API_KEY_AUTH_TYPE)),
-    compoundExpression([
-      ...(roles.length > 0 ? [set(ref(IS_AUTHORIZED_FLAG), bool(true))] : []),
-      iff(not(ref(IS_AUTHORIZED_FLAG)), methodCall(ref('util.unauthorized'))),
-    ]),
+    compoundExpression([...(roles.length > 0 ? [set(ref(IS_AUTHORIZED_FLAG), bool(true))] : [])]),
   );
 
 export const iamExpression = (roles: Array<RoleDefinition>, adminuiEnabled: boolean = false) => {
@@ -122,7 +128,6 @@ export const iamExpression = (roles: Array<RoleDefinition>, adminuiEnabled: bool
       expression.push(iff(not(ref(IS_AUTHORIZED_FLAG)), iamCheck(role.claim!, set(ref(IS_AUTHORIZED_FLAG), bool(true)))));
     }
   }
-  expression.push(iff(not(ref(IS_AUTHORIZED_FLAG)), methodCall(ref('util.unauthorized'))));
   return iff(equals(ref('util.authType()'), str(IAM_AUTH_TYPE)), compoundExpression(expression));
 };
 
@@ -140,3 +145,5 @@ export const generateAuthRequestExpression = () => {
   ];
   return printBlock('Get Request template')(compoundExpression(statements));
 };
+
+export const emptyPayload = toJson(raw(JSON.stringify({ version: '2018-05-29', payload: {} })));

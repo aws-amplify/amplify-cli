@@ -12,9 +12,9 @@ export * from './iam';
 
 export const splitRoles = (roles: Array<RoleDefinition>): RolesByProvider => {
   return {
-    cognitoStaticGroupRoles: roles.filter(r => r.static && r.provider === 'userPools'),
+    cogntoStaticRoles: roles.filter(r => r.static && r.provider === 'userPools'),
     cognitoDynamicRoles: roles.filter(r => !r.static && r.provider === 'userPools'),
-    oidcStaticGroupRoles: roles.filter(r => r.static && r.provider === 'oidc'),
+    oidcStaticRoles: roles.filter(r => r.static && r.provider === 'oidc'),
     oidcDynamicRoles: roles.filter(r => !r.static && r.provider === 'oidc'),
     iamRoles: roles.filter(r => r.provider === 'iam'),
     apiKeyRoles: roles.filter(r => r.provider === 'apiKey'),

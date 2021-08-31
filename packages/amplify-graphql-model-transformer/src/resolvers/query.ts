@@ -46,12 +46,23 @@ export const generateGetRequestTemplate = (): string => {
         ref('query'),
         obj({
           expression: str('id = :id'),
-          expressionValues: obj({ ':id': methodCall(ref('util.dynamodb.toDynamoDBJson'), ref('ctx.args.id')) }),
+          expressionValues: obj({
+            ':id': methodCall(ref('util.parseJson'), methodCall(ref('util.dynamodb.toDynamoDBJson'), ref('ctx.args.id'))),
+          }),
         }),
       ),
     ),
     qref(methodCall(ref('GetRequest.put'), str('query'), ref('query'))),
-    iff(not(isNullOrEmpty(authFilter)), qref(methodCall(ref('GetRequest.put'), str('filter'), authFilter))),
+    iff(
+      not(isNullOrEmpty(authFilter)),
+      qref(
+        methodCall(
+          ref('GetRequest.put'),
+          str('filter'),
+          methodCall(ref('util.parseJson'), methodCall(ref('util.transform.toDynamoDBFilterExpression'), authFilter)),
+        ),
+      ),
+    ),
     toJson(ref('GetRequest')),
   ];
 
@@ -59,16 +70,27 @@ export const generateGetRequestTemplate = (): string => {
 };
 
 export const generateGetResponseTemplate = (isSyncEnabled: boolean): string => {
-  const statements: Expression[] = [
-    ifElse(
-      and([not(ref('ctx.result.items.isEmpty()')), equals(ref('ctx.result.scannedCount'), int(1))]),
-      toJson(ref('ctx.result.items[0]')),
-      compoundExpression([
-        iff(and([ref('ctx.result.items.isEmpty()'), equals(ref('ctx.result.scannedCount'), int(1))]), ref('util.unauthorized()')),
-        toJson(nul()),
-      ]),
-    ),
-  ];
+  const statements = new Array<Expression>();
+  if (isSyncEnabled) {
+    statements.push(
+      iff(
+        ref('ctx.error'),
+        methodCall(ref('util.error'), ref('ctx.error.message'), ref('ctx.error.type'), ref('ctx.result'))
+      ),
+    );
+  } else {
+    statements.push(
+      iff(ref('ctx.error'), methodCall(ref('util.error'), ref('ctx.error.message'), ref('ctx.error.type'))),
+    );
+  }
+  statements.push(ifElse(
+    and([not(ref('ctx.result.items.isEmpty()')), equals(ref('ctx.result.scannedCount'), int(1))]),
+    toJson(ref('ctx.result.items[0]')),
+    compoundExpression([
+      iff(and([ref('ctx.result.items.isEmpty()'), equals(ref('ctx.result.scannedCount'), int(1))]), ref('util.unauthorized()')),
+      toJson(nul()),
+    ]),
+  ));
   return printBlock('Get Response template')(compoundExpression(statements));
 };
 

@@ -17,12 +17,10 @@ import {
   forEach,
   equals,
   str,
-  obj,
   or,
   printBlock,
-  toJson,
 } from 'graphql-mapping-template';
-import { getOwnerClaim, getIdentityClaimExp, getInputFields, addAllowedFieldsIfElse } from './helpers';
+import { getOwnerClaim, getIdentityClaimExp, getInputFields, addAllowedFieldsIfElse, emptyPayload } from './helpers';
 import {
   ADMIN_ROLE,
   API_KEY_AUTH_TYPE,
@@ -80,33 +78,53 @@ const iamExpression = (roles: Array<RoleDefinition>, hasAdminUIEnabled: boolean 
   }
   if (roles.length > 0) {
     for (let role of roles) {
-      if (role.allowedFields!.length > 0 || role.nullAllowedFields!.length > 0) {
+      if (role.allowedFields!.length > 0) {
         expression.push(
           iamCheck(role.claim!, compoundExpression([set(ref(`${ALLOWED_FIELDS}`), raw(JSON.stringify(role.allowedFields)))])),
         );
       } else {
-        iamCheck(role.claim!, set(ref(IS_AUTHORIZED_FLAG), bool(true)));
+        expression.push(iamCheck(role.claim!, set(ref(IS_AUTHORIZED_FLAG), bool(true))));
       }
     }
   } else {
-    expression.push(set(ref(IS_AUTHORIZED_FLAG), bool(false)));
+    expression.push(ref('util.unauthorized()'));
   }
   return iff(equals(ref('util.authType()'), str(IAM_AUTH_TYPE)), compoundExpression(expression));
 };
 
-const staticRoleExpression = (roles: Array<RoleDefinition>): Array<Expression> => {
-  return roles.length > 0
-    ? [
-        set(
-          ref('staticGroupRoles'),
-          raw(JSON.stringify(roles.map(r => ({ claim: r.claim, entity: r.entity, allowedFields: r.allowedFields ?? [] })))),
-        ),
-        forEach(/** for */ ref('groupRole'), /** in */ ref('staticGroupRoles'), [
-          set(ref('groupsInToken'), getIdentityClaimExp(ref('groupRole.claim'), list([]))),
-          iff(methodCall(ref('groupsInToken.contains'), ref('groupRole.entity')), addAllowedFieldsIfElse('groupRole.allowedFields', true)),
+const generateStaticRoleExpression = (roles: Array<RoleDefinition>): Array<Expression> => {
+  const staticRoleExpression: Array<Expression> = new Array();
+  const privateRoleIdx = roles.findIndex(r => r.strategy === 'private');
+  if (privateRoleIdx > -1) {
+    const privateRole = roles[privateRoleIdx];
+    if (privateRole.allowedFields!.length > 0) {
+      staticRoleExpression.push(methodCall(ref(`${ALLOWED_FIELDS}.addAll`), raw(JSON.stringify(privateRole.allowedFields))));
+    } else {
+      staticRoleExpression.push(set(ref(IS_AUTHORIZED_FLAG), bool(true)));
+    }
+    roles.splice(privateRoleIdx, 1);
+  }
+  if (roles.length > 0) {
+    staticRoleExpression.push(
+      iff(
+        not(ref(IS_AUTHORIZED_FLAG)),
+        compoundExpression([
+          set(
+            ref('staticGroupRoles'),
+            raw(JSON.stringify(roles.map(r => ({ claim: r.claim, entity: r.entity, allowedFields: r.allowedFields ?? [] })))),
+          ),
+          forEach(/** for */ ref('groupRole'), /** in */ ref('staticGroupRoles'), [
+            set(ref('groupsInToken'), getIdentityClaimExp(ref('groupRole.claim'), list([]))),
+            iff(
+              methodCall(ref('groupsInToken.contains'), ref('groupRole.entity')),
+              addAllowedFieldsIfElse('groupRole.allowedFields', true),
+            ),
+          ]),
         ]),
-      ]
-    : [];
+      ),
+    );
+  }
+  return staticRoleExpression;
 };
 
 const dynamicGroupRoleExpression = (roles: Array<RoleDefinition>, fields: ReadonlyArray<FieldDefinitionNode>): Array<Expression> => {
@@ -191,7 +209,14 @@ export const generateAuthExpressionForCreate = (
   roles: Array<RoleDefinition>,
   fields: ReadonlyArray<FieldDefinitionNode>,
 ): string => {
-  const { cognitoStaticGroupRoles, cognitoDynamicRoles, oidcStaticGroupRoles, oidcDynamicRoles, apiKeyRoles, iamRoles } = splitRoles(roles);
+  const {
+    cogntoStaticRoles: cognitoStaticGroupRoles,
+    cognitoDynamicRoles,
+    oidcStaticRoles: oidcStaticGroupRoles,
+    oidcDynamicRoles,
+    apiKeyRoles,
+    iamRoles,
+  } = splitRoles(roles);
   const totalAuthExpressions: Array<Expression> = [
     getInputFields(),
     set(ref(IS_AUTHORIZED_FLAG), bool(false)),
@@ -201,13 +226,16 @@ export const generateAuthExpressionForCreate = (
     totalAuthExpressions.push(apiKeyExpression(apiKeyRoles));
   }
   if (providers.hasIAM) {
-    totalAuthExpressions.push(iamExpression(iamRoles));
+    totalAuthExpressions.push(iamExpression(iamRoles, providers.hasAdminUIEnabled));
   }
   if (providers.hasUserPools) {
     totalAuthExpressions.push(
       iff(
         equals(ref('util.authType()'), str(COGNITO_AUTH_TYPE)),
-        compoundExpression([...staticRoleExpression(cognitoStaticGroupRoles), ...dynamicGroupRoleExpression(cognitoDynamicRoles, fields)]),
+        compoundExpression([
+          ...generateStaticRoleExpression(cognitoStaticGroupRoles),
+          ...dynamicGroupRoleExpression(cognitoDynamicRoles, fields),
+        ]),
       ),
     );
   }
@@ -215,7 +243,10 @@ export const generateAuthExpressionForCreate = (
     totalAuthExpressions.push(
       iff(
         equals(ref('util.authType()'), str(OIDC_AUTH_TYPE)),
-        compoundExpression([...staticRoleExpression(oidcStaticGroupRoles), ...dynamicGroupRoleExpression(oidcDynamicRoles, fields)]),
+        compoundExpression([
+          ...generateStaticRoleExpression(oidcStaticGroupRoles),
+          ...dynamicGroupRoleExpression(oidcDynamicRoles, fields),
+        ]),
       ),
     );
   }
@@ -232,5 +263,5 @@ export const generateAuthExpressionForCreate = (
       ]),
     ),
   );
-  return printBlock('Create Authorization Steps')(compoundExpression([...totalAuthExpressions, toJson(obj({}))]));
+  return printBlock('Authorization Steps')(compoundExpression([...totalAuthExpressions, emptyPayload]));
 };

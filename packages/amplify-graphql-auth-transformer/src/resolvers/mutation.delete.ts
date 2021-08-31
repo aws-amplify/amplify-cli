@@ -3,8 +3,6 @@ import {
   Expression,
   printBlock,
   compoundExpression,
-  toJson,
-  obj,
   bool,
   equals,
   iff,
@@ -19,7 +17,7 @@ import {
   not,
   nul,
 } from 'graphql-mapping-template';
-import { getIdentityClaimExp, getOwnerClaim } from './helpers';
+import { emptyPayload, getIdentityClaimExp, getOwnerClaim } from './helpers';
 import {
   ADMIN_ROLE,
   API_KEY_AUTH_TYPE,
@@ -75,24 +73,36 @@ const iamExpression = (roles: Array<RoleDefinition>, hasAdminUIEnabled: boolean 
       iamCheck(role.claim!, set(ref(IS_AUTHORIZED_FLAG), bool(true)));
     }
   } else {
-    expression.push(set(ref(IS_AUTHORIZED_FLAG), bool(false)));
+    expression.push(ref('util.unauthorized()'));
   }
   return iff(equals(ref('util.authType()'), str(IAM_AUTH_TYPE)), compoundExpression(expression));
 };
 
-const staticRoleExpression = (roles: Array<RoleDefinition>): Array<Expression> => {
-  return roles.length > 0
-    ? [
-        set(ref('staticGroupRoles'), raw(JSON.stringify(roles.map(r => ({ claim: r.claim, entity: r.entity }))))),
-        forEach(/** for */ ref('groupRole'), /** in */ ref('staticGroupRoles'), [
-          set(ref('groupsInToken'), getIdentityClaimExp(ref('groupRole.claim'), list([]))),
-          iff(
-            methodCall(ref('groupsInToken.contains'), ref('groupRole.entity')),
-            compoundExpression([set(ref(IS_AUTHORIZED_FLAG), bool(true)), raw('#break')]),
-          ),
+const generateStaticRoleExpression = (roles: Array<RoleDefinition>): Array<Expression> => {
+  const staticRoleExpression: Array<Expression> = new Array();
+  const privateRoleIdx = roles.findIndex(r => r.strategy === 'private');
+  if (privateRoleIdx > -1) {
+    staticRoleExpression.push(set(ref(IS_AUTHORIZED_FLAG), bool(true)));
+    roles.splice(privateRoleIdx, -1);
+  }
+  if (roles.length > 0) {
+    staticRoleExpression.push(
+      iff(
+        not(ref(IS_AUTHORIZED_FLAG)),
+        compoundExpression([
+          set(ref('staticGroupRoles'), raw(JSON.stringify(roles.map(r => ({ claim: r.claim, entity: r.entity }))))),
+          forEach(/** for */ ref('groupRole'), /** in */ ref('staticGroupRoles'), [
+            set(ref('groupsInToken'), getIdentityClaimExp(ref('groupRole.claim'), list([]))),
+            iff(
+              methodCall(ref('groupsInToken.contains'), ref('groupRole.entity')),
+              compoundExpression([set(ref(IS_AUTHORIZED_FLAG), bool(true)), raw('#break')]),
+            ),
+          ]),
         ]),
-      ]
-    : [];
+      ),
+    );
+  }
+  return staticRoleExpression;
 };
 
 const dynamicGroupRoleExpression = (roles: Array<RoleDefinition>, fields: ReadonlyArray<FieldDefinitionNode>) => {
@@ -113,7 +123,7 @@ const dynamicGroupRoleExpression = (roles: Array<RoleDefinition>, fields: Readon
                     iff(equals(ref('allowedOwner'), ref(`ownerClaim${idx}`)), set(ref(IS_AUTHORIZED_FLAG), bool(true))),
                   ]),
                 ]
-              : [iff(equals(ref('ownerEntity'), ref(`ownerClaim${idx}`)), set(ref(IS_AUTHORIZED_FLAG), bool(true)))]),
+              : [iff(equals(ref(`ownerEntity${idx}`), ref(`ownerClaim${idx}`)), set(ref(IS_AUTHORIZED_FLAG), bool(true)))]),
           ]),
         ),
       );
@@ -149,19 +159,22 @@ export const geneateAuthExpressionForDelete = (
   roles: Array<RoleDefinition>,
   fields: ReadonlyArray<FieldDefinitionNode>,
 ) => {
-  const { cognitoStaticGroupRoles, cognitoDynamicRoles, oidcStaticGroupRoles, oidcDynamicRoles, apiKeyRoles, iamRoles } = splitRoles(roles);
+  const { cogntoStaticRoles, cognitoDynamicRoles, oidcStaticRoles, oidcDynamicRoles, apiKeyRoles, iamRoles } = splitRoles(roles);
   const totalAuthExpressions: Array<Expression> = [set(ref(IS_AUTHORIZED_FLAG), bool(false))];
   if (providers.hasApiKey) {
     totalAuthExpressions.push(apiKeyExpression(apiKeyRoles));
   }
   if (providers.hasIAM) {
-    totalAuthExpressions.push(iamExpression(iamRoles));
+    totalAuthExpressions.push(iamExpression(iamRoles, providers.hasAdminUIEnabled));
   }
   if (providers.hasUserPools) {
     totalAuthExpressions.push(
       iff(
         equals(ref('util.authType()'), str(COGNITO_AUTH_TYPE)),
-        compoundExpression([...staticRoleExpression(cognitoStaticGroupRoles), ...dynamicGroupRoleExpression(cognitoDynamicRoles, fields)]),
+        compoundExpression([
+          ...generateStaticRoleExpression(cogntoStaticRoles),
+          ...dynamicGroupRoleExpression(cognitoDynamicRoles, fields),
+        ]),
       ),
     );
   }
@@ -169,10 +182,10 @@ export const geneateAuthExpressionForDelete = (
     totalAuthExpressions.push(
       iff(
         equals(ref('util.authType()'), str(OIDC_AUTH_TYPE)),
-        compoundExpression([...staticRoleExpression(oidcStaticGroupRoles), ...dynamicGroupRoleExpression(oidcDynamicRoles, fields)]),
+        compoundExpression([...generateStaticRoleExpression(oidcStaticRoles), ...dynamicGroupRoleExpression(oidcDynamicRoles, fields)]),
       ),
     );
   }
   totalAuthExpressions.push(iff(not(ref(IS_AUTHORIZED_FLAG)), ref('util.unauthorized()')));
-  return printBlock('Authorization Steps')(compoundExpression([...totalAuthExpressions, toJson(obj({}))]));
+  return printBlock('Authorization Steps')(compoundExpression([...totalAuthExpressions, emptyPayload]));
 };
