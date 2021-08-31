@@ -30,7 +30,6 @@ import {
   InputObjectTypeExtensionNode,
   InputValueDefinitionNode,
 } from 'graphql/language/ast';
-import { _Kind } from 'graphql/language/kinds';
 import { ResolverConfig } from './util';
 import { makeOperationType } from 'graphql-transformer-common';
 import { FeatureFlagProvider } from './FeatureFlags';

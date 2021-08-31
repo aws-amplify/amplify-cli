@@ -8,7 +8,7 @@ import { typeCaseForSelectionSet } from './visitors/typeCase';
 import { collectAndMergeFields } from './visitors/collectAndMergeFields';
 
 import '../utilities/array';
-import Maybe from 'graphql/tsutils/Maybe';
+import { Maybe } from '../typescript/types';
 
 export interface CompilerOptions {
   addTypename?: boolean;
@@ -91,7 +91,7 @@ export interface Argument {
 export function compileToLegacyIR(
   schema: GraphQLSchema,
   document: DocumentNode,
-  options: CompilerOptions = { mergeInFieldsFromFragmentSpreads: true }
+  options: CompilerOptions = { mergeInFieldsFromFragmentSpreads: true },
 ): LegacyCompilerContext {
   const context = compileToIR(schema, document, options);
   const transformer = new LegacyIRTransformer(context, options);
@@ -164,7 +164,7 @@ class LegacyIRTransformer {
         return undefined;
 
       const fragmentSpreads: string[] = this.collectFragmentSpreads(selectionSet, variant.possibleTypes).map(
-        (fragmentSpread: FragmentSpread) => fragmentSpread.fragmentName
+        (fragmentSpread: FragmentSpread) => fragmentSpread.fragmentName,
       );
       return variant.possibleTypes.map(possibleType => {
         return {
@@ -181,7 +181,7 @@ class LegacyIRTransformer {
     }
 
     const fragmentSpreads: string[] = this.collectFragmentSpreads(selectionSet).map(
-      (fragmentSpread: FragmentSpread) => fragmentSpread.fragmentName
+      (fragmentSpread: FragmentSpread) => fragmentSpread.fragmentName,
     );
 
     return {

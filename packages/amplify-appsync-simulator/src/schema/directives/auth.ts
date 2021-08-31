@@ -1,5 +1,7 @@
+import { makeExecutableSchema } from '@graphql-tools/schema';
+import { forEachField } from '@graphql-tools/utils';
+import { buildSchema } from 'graphql';
 import { defaultFieldResolver, DirectiveNode, GraphQLObjectType, GraphQLSchema, valueFromASTUntyped, GraphQLResolveInfo } from 'graphql';
-import { buildSchemaFromTypeDefinitions, forEachField } from 'graphql-tools';
 import { AmplifyAppSyncSimulator } from '../..';
 import { AmplifyAppSyncSimulatorAuthenticationType, AmplifyAppSyncSimulatorRequestContext } from '../../type-definition';
 import { Unauthorized } from '../../velocity/util';
@@ -28,8 +30,6 @@ export class AwsAuth extends AppSyncSimulatorDirectiveBase {
   static typeDefinitions: string = Object.values(AUTH_DIRECTIVES)
     .map(d => d)
     .join('\n');
-
-  visitFieldDefinition() {}
 
   visitObject(object: GraphQLObjectType) {}
 }
@@ -88,8 +88,8 @@ function getDirectiveArgumentValues(directives: DirectiveNode, argName: string) 
     .reduce((acc, arg) => [...acc, ...valueFromASTUntyped(arg.value)], []);
 }
 
-export function protectResolversWithAuthRules(typeDef, existingResolvers, simulator: AmplifyAppSyncSimulator) {
-  const schema = buildSchemaFromTypeDefinitions(typeDef);
+export function protectResolversWithAuthRules(typeDefs, existingResolvers, simulator: AmplifyAppSyncSimulator) {
+  const schema = makeExecutableSchema({ typeDefs });
   const newResolverMap = {};
   forEachField(schema, (field, typeName, fieldName) => {
     const fieldResolver = getResolver(existingResolvers, typeName, fieldName);

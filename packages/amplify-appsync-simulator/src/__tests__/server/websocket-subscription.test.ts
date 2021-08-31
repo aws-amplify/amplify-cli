@@ -1,6 +1,6 @@
 import { AppSyncSimulatorSubscriptionServer } from '../../server/websocket-subscription';
 
-import { makeExecutableSchema } from 'graphql-tools';
+import { makeExecutableSchema } from '@graphql-tools/schema';
 import { parse } from 'graphql';
 import { IncomingMessage, Server, createServer } from 'http';
 import * as WebSocket from 'ws';

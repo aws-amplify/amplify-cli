@@ -71,7 +71,7 @@ test('Test graphql transformer validation. Unknown directive.', () => {
   try {
     transformer.transform(invalidSchema);
   } catch (e) {
-    expect(e.message).toEqual('Unknown directive "UnknownDirective".');
+    expect(e.message).toEqual('Unknown directive "@UnknownDirective".');
   }
 });
 

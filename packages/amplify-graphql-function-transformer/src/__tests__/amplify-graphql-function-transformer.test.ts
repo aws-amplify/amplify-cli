@@ -193,5 +193,5 @@ test('@function directive applied to Object should throw Error', () => {
   });
   expect(() => {
     transformer.transform(invalidSchema);
-  }).toThrow('Directive "function" may not be used on OBJECT.');
+  }).toThrow('Directive "@function" may not be used on OBJECT.');
 });

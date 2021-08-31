@@ -28,7 +28,7 @@ export function typeNameFromGraphQLType(
   context: LegacyCompilerContext,
   type: GraphQLType,
   bareTypeName?: string | null,
-  nullable = true
+  nullable = true,
 ): string {
   if (isNonNullType(type)) {
     return typeNameFromGraphQLType(context, type.ofType, bareTypeName, false);
@@ -48,3 +48,5 @@ export function typeNameFromGraphQLType(
 
   return nullable ? typeName + ' | null' : typeName;
 }
+
+export type Maybe<T> = null | undefined | T;

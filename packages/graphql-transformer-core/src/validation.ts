@@ -3,56 +3,56 @@ import { validate, ValidationRule } from 'graphql/validation';
 import { buildASTSchema } from 'graphql/utilities/buildASTSchema';
 
 // Spec Section: "Subscriptions with Single Root Field"
-import { SingleFieldSubscriptions } from 'graphql/validation/rules/SingleFieldSubscriptions';
+import { SingleFieldSubscriptionsRule } from 'graphql/validation/rules/SingleFieldSubscriptionsRule';
 
 // Spec Section: "Fragment Spread Type Existence"
-import { KnownTypeNames } from 'graphql/validation/rules/KnownTypeNames';
+import { KnownTypeNamesRule } from 'graphql/validation/rules/KnownTypeNamesRule';
 
 // Spec Section: "Fragments on Composite Types"
-import { FragmentsOnCompositeTypes } from 'graphql/validation/rules/FragmentsOnCompositeTypes';
+import { FragmentsOnCompositeTypesRule } from 'graphql/validation/rules/FragmentsOnCompositeTypesRule';
 
 // Spec Section: "Variables are Input Types"
-import { VariablesAreInputTypes } from 'graphql/validation/rules/VariablesAreInputTypes';
+import { VariablesAreInputTypesRule } from 'graphql/validation/rules/VariablesAreInputTypesRule';
 
 // Spec Section: "Leaf Field Selections"
-import { ScalarLeafs } from 'graphql/validation/rules/ScalarLeafs';
+import { ScalarLeafsRule } from 'graphql/validation/rules/ScalarLeafsRule';
 
 // Spec Section: "Field Selections on Objects, Interfaces, and Unions Types"
-import { FieldsOnCorrectType } from 'graphql/validation/rules/FieldsOnCorrectType';
+import { FieldsOnCorrectTypeRule } from 'graphql/validation/rules/FieldsOnCorrectTypeRule';
 
 // Spec Section: "Directives Are Defined"
-import { KnownDirectives } from 'graphql/validation/rules/KnownDirectives';
+import { KnownDirectivesRule } from 'graphql/validation/rules/KnownDirectivesRule';
 
 // Spec Section: "Argument Names"
-import { KnownArgumentNames } from 'graphql/validation/rules/KnownArgumentNames';
+import { KnownArgumentNamesRule } from 'graphql/validation/rules/KnownArgumentNamesRule';
 
 // Spec Section: "Argument Uniqueness"
-import { UniqueArgumentNames } from 'graphql/validation/rules/UniqueArgumentNames';
+import { UniqueArgumentNamesRule } from 'graphql/validation/rules/UniqueArgumentNamesRule';
 
 // Spec Section: "Value Type Correctness"
-import { ValuesOfCorrectType } from 'graphql/validation/rules/ValuesOfCorrectType';
+import { ValuesOfCorrectTypeRule } from 'graphql/validation/rules/ValuesOfCorrectTypeRule';
 
 // Spec Section: "All Variable Usages Are Allowed"
-import { VariablesInAllowedPosition } from 'graphql/validation/rules/VariablesInAllowedPosition';
+import { VariablesInAllowedPositionRule } from 'graphql/validation/rules/VariablesInAllowedPositionRule';
 
 // Spec Section: "Field Selection Merging"
-import { OverlappingFieldsCanBeMerged } from 'graphql/validation/rules/OverlappingFieldsCanBeMerged';
+import { OverlappingFieldsCanBeMergedRule } from 'graphql/validation/rules/OverlappingFieldsCanBeMergedRule';
 
 // Spec Section: "Input Object Field Uniqueness"
-import { UniqueInputFieldNames } from 'graphql/validation/rules/UniqueInputFieldNames';
+import { UniqueInputFieldNamesRule } from 'graphql/validation/rules/UniqueInputFieldNamesRule';
 
-import { ProvidedRequiredArguments } from 'graphql/validation/rules/ProvidedRequiredArguments';
-import { UniqueOperationNames } from 'graphql/validation/rules/UniqueOperationNames';
-import { LoneAnonymousOperation } from 'graphql/validation/rules/LoneAnonymousOperation';
-import { UniqueFragmentNames } from 'graphql/validation/rules/UniqueFragmentNames';
-import { KnownFragmentNames } from 'graphql/validation/rules/KnownFragmentNames';
-import { NoUnusedFragments } from 'graphql/validation/rules/NoUnusedFragments';
-import { PossibleFragmentSpreads } from 'graphql/validation/rules/PossibleFragmentSpreads';
-import { NoFragmentCycles } from 'graphql/validation/rules/NoFragmentCycles';
-import { UniqueVariableNames } from 'graphql/validation/rules/UniqueVariableNames';
-import { NoUndefinedVariables } from 'graphql/validation/rules/NoUndefinedVariables';
-import { NoUnusedVariables } from 'graphql/validation/rules/NoUnusedVariables';
-import { UniqueDirectivesPerLocation } from 'graphql/validation/rules/UniqueDirectivesPerLocation';
+import { ProvidedRequiredArgumentsRule } from 'graphql/validation/rules/ProvidedRequiredArgumentsRule';
+import { UniqueOperationNamesRule } from 'graphql/validation/rules/UniqueOperationNamesRule';
+import { LoneAnonymousOperationRule } from 'graphql/validation/rules/LoneAnonymousOperationRule';
+import { UniqueFragmentNamesRule } from 'graphql/validation/rules/UniqueFragmentNamesRule';
+import { KnownFragmentNamesRule } from 'graphql/validation/rules/KnownFragmentNamesRule';
+import { NoUnusedFragmentsRule } from 'graphql/validation/rules/NoUnusedFragmentsRule';
+import { PossibleFragmentSpreadsRule } from 'graphql/validation/rules/PossibleFragmentSpreadsRule';
+import { NoFragmentCyclesRule } from 'graphql/validation/rules/NoFragmentCyclesRule';
+import { UniqueVariableNamesRule } from 'graphql/validation/rules/UniqueVariableNamesRule';
+import { NoUndefinedVariablesRule } from 'graphql/validation/rules/NoUndefinedVariablesRule';
+import { NoUnusedVariablesRule } from 'graphql/validation/rules/NoUnusedVariablesRule';
+import { UniqueDirectivesPerLocationRule } from 'graphql/validation/rules/UniqueDirectivesPerLocationRule';
 
 /**
  * This set includes all validation rules defined by the GraphQL spec.
@@ -61,31 +61,31 @@ import { UniqueDirectivesPerLocation } from 'graphql/validation/rules/UniqueDire
  * most clear output when encountering multiple validation errors.
  */
 export const specifiedRules: Readonly<ValidationRule[]> = [
-  UniqueOperationNames,
-  LoneAnonymousOperation,
-  SingleFieldSubscriptions,
-  KnownTypeNames,
-  FragmentsOnCompositeTypes,
-  VariablesAreInputTypes,
-  ScalarLeafs,
-  FieldsOnCorrectType,
-  UniqueFragmentNames,
-  KnownFragmentNames,
-  NoUnusedFragments,
-  PossibleFragmentSpreads,
-  NoFragmentCycles,
-  UniqueVariableNames,
-  NoUndefinedVariables,
-  NoUnusedVariables,
-  KnownDirectives,
-  UniqueDirectivesPerLocation,
-  KnownArgumentNames,
-  UniqueArgumentNames,
-  ValuesOfCorrectType,
-  ProvidedRequiredArguments,
-  VariablesInAllowedPosition,
-  OverlappingFieldsCanBeMerged,
-  UniqueInputFieldNames,
+  UniqueOperationNamesRule,
+  LoneAnonymousOperationRule,
+  SingleFieldSubscriptionsRule,
+  KnownTypeNamesRule,
+  FragmentsOnCompositeTypesRule,
+  VariablesAreInputTypesRule,
+  ScalarLeafsRule,
+  FieldsOnCorrectTypeRule,
+  UniqueFragmentNamesRule,
+  KnownFragmentNamesRule,
+  NoUnusedFragmentsRule,
+  PossibleFragmentSpreadsRule,
+  NoFragmentCyclesRule,
+  UniqueVariableNamesRule,
+  NoUndefinedVariablesRule,
+  NoUnusedVariablesRule,
+  KnownDirectivesRule,
+  UniqueDirectivesPerLocationRule,
+  KnownArgumentNamesRule,
+  UniqueArgumentNamesRule,
+  ValuesOfCorrectTypeRule,
+  ProvidedRequiredArgumentsRule,
+  VariablesInAllowedPositionRule,
+  OverlappingFieldsCanBeMergedRule,
+  UniqueInputFieldNamesRule,
 ];
 
 const EXTRA_SCALARS_DOCUMENT = parse(`

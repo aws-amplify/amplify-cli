@@ -1,7 +1,6 @@
-import { SchemaDirectiveVisitor } from 'graphql-tools';
 import { AmplifyAppSyncSimulator } from '../..';
 
-export abstract class AppSyncSimulatorDirectiveBase extends SchemaDirectiveVisitor {
+export abstract class AppSyncSimulatorDirectiveBase {
   name: string;
   static typeDefinitions: string;
   static simulatorContext: AmplifyAppSyncSimulator;

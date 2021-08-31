@@ -1,11 +1,10 @@
 import { LegacyInlineFragment } from '../compiler/legacyIR';
 
 import { pickedPropertyDeclarations } from './codeGeneration';
-import { typeNameFromGraphQLType } from './types';
+import { Maybe, typeNameFromGraphQLType } from './types';
 
 import { CodeGenerator } from '../utilities/CodeGenerator';
 import { GraphQLType } from 'graphql';
-import Maybe from 'graphql/tsutils/Maybe';
 
 export interface Property {
   fieldName?: string;

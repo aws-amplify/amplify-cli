@@ -2,7 +2,7 @@ import { GraphQLError, GraphQLSchema, parse } from 'graphql';
 
 import { AmplifyAppSyncSimulatorAuthenticationType } from '../../../type-definition';
 import { AppSyncGraphQLExecutionContext } from '../../../utils/graphql-runner';
-import { makeExecutableSchema } from 'graphql-tools';
+import { makeExecutableSchema } from '@graphql-tools/schema';
 import { runQueryOrMutation } from '../../../utils/graphql-runner/query-and-mutation';
 
 describe('runQueryAndMutation', () => {

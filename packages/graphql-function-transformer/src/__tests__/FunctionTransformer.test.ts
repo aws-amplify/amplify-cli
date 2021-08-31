@@ -79,14 +79,14 @@ test('two @function directives for the same field should be valid', () => {
   expect(resolverResource.Properties.PipelineConfig.Functions.length).toEqual(2);
   const otherFunctionIamResource = out.stacks.FunctionDirectiveStack.Resources.OtherfunctionLambdaDataSourceRole;
   expect(otherFunctionIamResource.Properties.Policies[0].PolicyDocument.Statement[0].Resource['Fn::If'][1]['Fn::Sub'][0]).toEqual(
-    'arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:otherfunction'
+    'arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:otherfunction',
   );
   const echoFunctionIamResource = out.stacks.FunctionDirectiveStack.Resources.EchofunctionLambdaDataSourceRole;
   expect(echoFunctionIamResource.Properties.Policies[0].PolicyDocument.Statement[0].Resource['Fn::If'][1]['Fn::Sub'][0]).toEqual(
-    'arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:echofunction-${env}'
+    'arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:echofunction-${env}',
   );
   expect(echoFunctionIamResource.Properties.Policies[0].PolicyDocument.Statement[0].Resource['Fn::If'][1]['Fn::Sub'][1].env.Ref).toEqual(
-    'env'
+    'env',
   );
 });
 
@@ -104,6 +104,6 @@ test('@function directive applied to Object should throw Error', () => {
     transformer.transform(invalidSchema);
     fail('Error is expected to be thrown');
   } catch (error) {
-    expect(error.message).toEqual('Directive "function" may not be used on OBJECT.');
+    expect(error.message).toEqual('Directive "@function" may not be used on OBJECT.');
   }
 });

@@ -25,8 +25,7 @@ import { CodeGenerator } from '../utilities/CodeGenerator';
 
 import { interfaceDeclaration, propertyDeclaration, pickedPropertySetsDeclaration, Property } from './language';
 
-import { typeNameFromGraphQLType } from './types';
-import Maybe from 'graphql/tsutils/Maybe';
+import { Maybe, typeNameFromGraphQLType } from './types';
 
 export function generateSource(context: LegacyCompilerContext) {
   const generator = new CodeGenerator<LegacyCompilerContext>(context);

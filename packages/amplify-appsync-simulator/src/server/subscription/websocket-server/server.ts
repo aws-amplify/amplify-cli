@@ -1,5 +1,5 @@
 import { DocumentNode, parse } from 'graphql';
-import { ExecutionResult, ExecutionResultDataDefault } from 'graphql/execution/execute';
+import { ExecutionResult } from 'graphql/execution/execute';
 import { IncomingMessage } from 'http';
 import * as WebSocket from 'ws';
 import { Server as WebSocketServer, ServerOptions } from 'ws';
@@ -42,7 +42,7 @@ export type WebsocketSubscriptionServerOptions = {
     variable: Record<string, any>,
     headers: Record<string, any>,
     request: IncomingMessage,
-  ) => Promise<AsyncIterableIterator<ExecutionResult<ExecutionResultDataDefault>> | ExecutionResult<ExecutionResultDataDefault>>;
+  ) => Promise<AsyncIterableIterator<ExecutionResult<ExecutionResult>> | ExecutionResult<ExecutionResult>>;
   keepAlive?: number;
   connectionTimeoutDuration?: number;
 };

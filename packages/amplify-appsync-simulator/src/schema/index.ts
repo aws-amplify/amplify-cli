@@ -1,10 +1,11 @@
 import { buildASTSchema, concatAST, DocumentNode, GraphQLObjectType, parse, Source } from 'graphql';
-import { makeExecutableSchema } from 'graphql-tools';
+import { makeExecutableSchema } from '@graphql-tools/schema';
 import { AmplifyAppSyncSimulator } from '..';
 import { AppSyncSimulatorPipelineResolverConfig, AppSyncSimulatorUnitResolverConfig } from '../type-definition';
 import { scalars } from './appsync-scalars';
 import { AwsAuth, AwsSubscribe, protectResolversWithAuthRules } from './directives';
 import { AppSyncSimulatorDirectiveBase } from './directives/directive-base';
+import { attachDirectiveResolvers } from './directives/directive-resolvers';
 const KNOWN_DIRECTIVES: {
   name: string;
   visitor: typeof AppSyncSimulatorDirectiveBase;
@@ -79,6 +80,7 @@ export function generateResolvers(
     { Subscription: {} },
   );
   const defaultSubscriptions = generateDefaultSubscriptions(doc, resolversConfig, simulatorContext);
+  // eslint-disable-next-line
   const schemaDirectives = KNOWN_DIRECTIVES.reduce((sum, d) => {
     d.visitor.simulatorContext = simulatorContext;
     return { ...sum, [d.name]: d.visitor };
@@ -96,14 +98,15 @@ export function generateResolvers(
 
   const resolverMapWithAuth = protectResolversWithAuthRules(doc, resolvers, simulatorContext);
 
-  return makeExecutableSchema({
+  const executableSchema = makeExecutableSchema({
     typeDefs: doc,
     resolvers: {
       ...resolverMapWithAuth,
       ...scalars,
     },
-    schemaDirectives,
   });
+
+  return attachDirectiveResolvers(executableSchema, schemaDirectives);
 }
 
 function generateDefaultSubscriptions(

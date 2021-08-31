@@ -24,7 +24,7 @@
   "dependencies": {
     "axios": "^0.21.1",
     "cloudform-types": "^4.2.0",
-    "graphql": "^14.5.8",
+    "graphql": "^15.5.2",
     "graphql-transformer-common": "4.19.8",
     "graphql-transformer-core": "6.29.3",
     "moment": "^2.24.0"
