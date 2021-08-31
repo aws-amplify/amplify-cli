@@ -107,7 +107,7 @@ export type DeploymentSecrets = {
 
 export type CLIVersionInfo = {
   currentCLIVersion: string;
-  minimumCLIVersion: string;
+  minimumCompatibleCLIVersion: string;
 };
 
 /**

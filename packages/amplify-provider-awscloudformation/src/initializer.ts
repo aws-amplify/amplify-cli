@@ -58,7 +58,7 @@ export async function run(context) {
     rootStack.Metadata = {
       AmplifyCLI: {
         DeployedByCLIVersion: context.versionInfo.currentCLIVersion,
-        MinimumCompatibleCLIVersion: context.versionInfo.minimumCLIVersion,
+        MinimumCompatibleCLIVersion: context.versionInfo.minimumCompatibleCLIVersion,
       },
     };
 

@@ -31,7 +31,7 @@ describe('version gating', () => {
   let cliPath: string;
   let packageJsonPath: string;
   let originalPackageJsonContent: string;
-  let packageJson: { version: string; amplifyCLIConfiguration: { minimumCLIVersion: string } };
+  let packageJson: { version: string; 'amplify-cli': { configuration: { minimumCompatibleCLIVersion: string } } };
 
   const profileName = isCI() ? 'amplify-integ-test-user' : 'default';
 
@@ -49,7 +49,7 @@ describe('version gating', () => {
       cliPath = resolveRealCLIPath();
       packageJsonPath = path.resolve(cliPath, '..', '..', '..', 'amplify-cli', 'package.json');
       originalPackageJsonContent = fs.readFileSync(packageJsonPath, 'utf8').toString();
-      packageJson = JSONUtilities.parse<{ version: string; amplifyCLIConfiguration: { minimumCLIVersion: string } }>(
+      packageJson = JSONUtilities.parse<{ version: string; 'amplify-cli': { configuration: { minimumCompatibleCLIVersion: string } } }>(
         originalPackageJsonContent,
       );
     }
@@ -60,7 +60,7 @@ describe('version gating', () => {
     deleteProjectDir(projRoot);
   });
 
-  it('a', async () => {
+  it('test version gating on projects', async () => {
     // We cannot execute this test for packaged CLI as we are modifying the package.json file to
     // simulate multiple versions
     if (isPackagedAmplifyInPath()) {
@@ -130,17 +130,17 @@ describe('version gating', () => {
     await amplifyPushForceWithVersionGatingOutput(projRoot);
   };
 
-  const updateVersionInPackageJson = (cliVersion: string | undefined, minimumCLIVersion: string | undefined) => {
+  const updateVersionInPackageJson = (cliVersion: string | undefined, minimumCompatibleCLIVersion: string | undefined) => {
     if (cliVersion) {
       packageJson.version = cliVersion;
     } else {
       packageJson.version = baseCLIVersion;
     }
 
-    if (minimumCLIVersion) {
-      packageJson.amplifyCLIConfiguration.minimumCLIVersion = minimumCLIVersion;
+    if (minimumCompatibleCLIVersion) {
+      packageJson['amplify-cli'].configuration.minimumCompatibleCLIVersion = minimumCompatibleCLIVersion;
     } else {
-      packageJson.amplifyCLIConfiguration.minimumCLIVersion = baseMinimumCLIVersion;
+      packageJson['amplify-cli'].configuration.minimumCompatibleCLIVersion = baseMinimumCLIVersion;
     }
 
     fs.writeFileSync(packageJsonPath, JSONUtilities.stringify(packageJson));

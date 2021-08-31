@@ -67,14 +67,40 @@ export const getCurrentCLIVersion = (): string => {
   return version;
 };
 
-export const getMinimumCLIVersion = (): string => {
-  const { amplifyCLIConfiguration } = readCLIPackageJson<{ amplifyCLIConfiguration: { minimumCLIVersion: string } }>();
+export const getMinimumCompatibleCLIVersion = (): string => {
+  const { 'amplify-cli': amplifyCLI } = readCLIPackageJson<{ 'amplify-cli': { configuration: { minimumCompatibleCLIVersion: string } } }>();
 
   // This data always exists in package.json
-  return amplifyCLIConfiguration.minimumCLIVersion;
+  return amplifyCLI.configuration.minimumCompatibleCLIVersion;
 };
 
-export const isVersionGatingPassed = async (context: $TSContext): Promise<boolean> => {
+/*
+
+Summary for the version gating logic:
+
+Inputs:
+- M: Metadata in root stack
+- CV: Currently running CLI verison
+- CMin: Minimum version value defined in currently running CLI's package.json
+- DV: Version of the CLI the root stack was deployed with last time
+- DMin: Minimum required CLI version for deployment
+
+Checks:
+- M == null or no version info present => pass (Current CLI is newer always)
+- CV >= DMin => pass (CV >= CMin always so no need to check)
+- In all other cases => fail (for example: DMin > CV)
+
+Notes:
+- DV: It is possible that this information will change from 5.1.0 to 5.0.2 and 5.1.3 with pushes as long as DMin is 5.0.0.
+- DV: is not used for any checks, just persisted for diagnostic purposes.
+
+Cases we cannot handle:
+- If a CLI version is used which does not have version gating, will always can run against a newer stack, which will nuke out
+  the metadata we added.
+
+*/
+
+export const isMinimumVersionSatisfied = async (context: $TSContext): Promise<boolean> => {
   // Check if version gating is disabled via the environment variable
   if (!!process.env[disableVersionGatingEnvVarName]) {
     return true;
@@ -114,32 +140,6 @@ export const isVersionGatingPassed = async (context: $TSContext): Promise<boolea
     [context],
   );
 
-  /*
-
-  Summary for the version gating logic:
-
-  Inputs:
-  - M: Metadata in root stack
-  - CV: Currently running CLI verison
-  - CMin: Minimum version value defined in currently running CLI's package.json
-  - DV: Version of the CLI the root stack was deployed with last time
-  - DMin: Minimum required CLI version for deployment
-
-  Checks:
-  - M == null or no version info present => pass (Current CLI is newer always)
-  - CV >= DMin => pass (CV >= CMin always so no need to check)
-  - In all other cases => fail (for example: DMin > CV)
-
-  Notes:
-  - DV: It is possible that this information will change from 5.1.0 to 5.0.2 and 5.1.3 with pushes as long as DMin is 5.0.0.
-  - DV: is not used for any checks, just persisted for diagnostic purposes.
-
-  Cases we cannot handle:
-  - If a CLI version is used which does not have version gating, will always can run against a newer stack, which will nuke out
-    the metadata we added.
-
-  */
-
   const cfnClient: CloudFormation = cloudFormation.cfn as CloudFormation;
 
   const templateSummary = await cfnClient
@@ -166,9 +166,9 @@ export const isVersionGatingPassed = async (context: $TSContext): Promise<boolea
   const stackMinimumCompatibleCLIVersion = semver.coerce(versionGatingMetadata.MinimumCompatibleCLIVersion)!;
 
   // Pick the greater minimum version
-  const minimumCompatibleCLIVersion = semver.gt(stackMinimumCompatibleCLIVersion, context.versionInfo.minimumCLIVersion)
+  const minimumCompatibleCLIVersion = semver.gt(stackMinimumCompatibleCLIVersion, context.versionInfo.minimumCompatibleCLIVersion)
     ? stackMinimumCompatibleCLIVersion
-    : semver.coerce(context.versionInfo.minimumCLIVersion)!;
+    : semver.coerce(context.versionInfo.minimumCompatibleCLIVersion)!;
 
   // If current version is greater than
   if (semver.gte(context.versionInfo.currentCLIVersion, minimumCompatibleCLIVersion)) {

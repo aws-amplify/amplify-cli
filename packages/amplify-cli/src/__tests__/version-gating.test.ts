@@ -93,22 +93,22 @@ describe('version gating', () => {
 
   const versionInfo_520_500 = {
     currentCLIVersion: '5.2.0',
-    minimumCLIVersion: '5.0.0',
+    minimumCompatibleCLIVersion: '5.0.0',
   };
 
   const versionInfo_520_510 = {
     currentCLIVersion: '5.2.0',
-    minimumCLIVersion: '5.1.0',
+    minimumCompatibleCLIVersion: '5.1.0',
   };
 
   const versionInfo_520_540 = {
     currentCLIVersion: '5.2.0',
-    minimumCLIVersion: '5.4.0',
+    minimumCompatibleCLIVersion: '5.4.0',
   };
 
   const versionInfo_532_530 = {
     currentCLIVersion: '5.3.2',
-    minimumCLIVersion: '5.3.0',
+    minimumCompatibleCLIVersion: '5.3.0',
   };
 
   const context_stub = ({
@@ -161,7 +161,7 @@ describe('version gating', () => {
 
     const isCommandInMatchesMock = jest.spyOn(versionGating, 'isCommandInMatches');
 
-    await expect(versionGating.isVersionGatingPassed(context_stub)).resolves.toBe(true);
+    await expect(versionGating.isMinimumVersionSatisfied(context_stub)).resolves.toBe(true);
 
     expect(isCommandInMatchesMock).toHaveBeenCalledTimes(0);
   });
@@ -176,7 +176,7 @@ describe('version gating', () => {
     const isCommandInMatchesMock = jest.spyOn(versionGating, 'isCommandInMatches');
     const stateManagerMock = jest.spyOn(stateManager, 'getMeta').mockImplementation(() => undefined);
 
-    await expect(versionGating.isVersionGatingPassed(context_stub)).resolves.toBe(true);
+    await expect(versionGating.isMinimumVersionSatisfied(context_stub)).resolves.toBe(true);
 
     expect(isCommandInMatchesMock).toHaveBeenCalledTimes(1);
     expect(stateManagerMock).toHaveBeenCalledTimes(0);
@@ -188,7 +188,7 @@ describe('version gating', () => {
 
     const stateManagerMock = jest.spyOn(stateManager, 'getMeta').mockImplementation(() => undefined);
 
-    await expect(versionGating.isVersionGatingPassed(context_stub)).resolves.toBe(true);
+    await expect(versionGating.isMinimumVersionSatisfied(context_stub)).resolves.toBe(true);
 
     expect(stateManagerMock).toHaveBeenCalledTimes(1);
     expect(context_stub.amplify.invokePluginMethod).toHaveBeenCalledTimes(0);
@@ -200,7 +200,7 @@ describe('version gating', () => {
 
     const stateManagerMock = jest.spyOn(stateManager, 'getMeta').mockImplementation(() => meta_stub);
 
-    await expect(versionGating.isVersionGatingPassed(context_stub)).resolves.toBe(true);
+    await expect(versionGating.isMinimumVersionSatisfied(context_stub)).resolves.toBe(true);
 
     expect(stateManagerMock).toHaveBeenCalledTimes(1);
     expect(context_stub.amplify.invokePluginMethod).toHaveBeenCalledTimes(1);
@@ -214,7 +214,7 @@ describe('version gating', () => {
 
     const stateManagerMock = jest.spyOn(stateManager, 'getMeta').mockImplementation(() => meta_stub);
 
-    await expect(versionGating.isVersionGatingPassed(context_stub)).resolves.toBe(true);
+    await expect(versionGating.isMinimumVersionSatisfied(context_stub)).resolves.toBe(true);
   });
 
   test('version gating should pass, meta: 5.2.0, metamin: 5.0.0, current: 5.2.0, min: 5.1.0', async () => {
@@ -226,7 +226,7 @@ describe('version gating', () => {
 
     const stateManagerMock = jest.spyOn(stateManager, 'getMeta').mockImplementation(() => meta_stub);
 
-    await expect(versionGating.isVersionGatingPassed(context_stub)).resolves.toBe(true);
+    await expect(versionGating.isMinimumVersionSatisfied(context_stub)).resolves.toBe(true);
   });
 
   test('version gating should pass, meta: 5.3.0, metamin: 5.3.1, current: 5.3.2, min: 5.3.0', async () => {
@@ -238,7 +238,7 @@ describe('version gating', () => {
 
     const stateManagerMock = jest.spyOn(stateManager, 'getMeta').mockImplementation(() => meta_stub);
 
-    await expect(versionGating.isVersionGatingPassed(context_stub)).resolves.toBe(true);
+    await expect(versionGating.isMinimumVersionSatisfied(context_stub)).resolves.toBe(true);
   });
 
   test('version gating should fail, meta: 5.2.0, metamin: 5.3.0, current: 5.2.0, min: 5.0.0', async () => {
@@ -249,7 +249,7 @@ describe('version gating', () => {
 
     const stateManagerMock = jest.spyOn(stateManager, 'getMeta').mockImplementation(() => meta_stub);
 
-    expect(versionGating.isVersionGatingPassed(context_stub)).resolves.toEqual(false);
+    expect(versionGating.isMinimumVersionSatisfied(context_stub)).resolves.toEqual(false);
   });
 
   test('version gating should fail, meta: 5.2.0, metamin: 5.3.0, current: 5.2.0, min: 5.4.0', async () => {
@@ -261,6 +261,6 @@ describe('version gating', () => {
 
     const stateManagerMock = jest.spyOn(stateManager, 'getMeta').mockImplementation(() => meta_stub);
 
-    expect(versionGating.isVersionGatingPassed(context_stub)).resolves.toEqual(false);
+    expect(versionGating.isMinimumVersionSatisfied(context_stub)).resolves.toEqual(false);
   });
 });

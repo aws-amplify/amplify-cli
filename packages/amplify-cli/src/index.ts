@@ -29,7 +29,7 @@ import { rewireDeprecatedCommands } from './rewireDeprecatedCommands';
 import { ensureMobileHubCommandCompatibility } from './utils/mobilehub-support';
 import { migrateTeamProviderInfo } from './utils/team-provider-migrate';
 import { deleteOldVersion } from './utils/win-utils';
-import { getCurrentCLIVersion, isVersionGatingPassed } from './version-gating';
+import { getCurrentCLIVersion, isMinimumVersionSatisfied } from './version-gating';
 import { notify } from './version-notifier';
 
 // Adjust defaultMaxListeners to make sure Inquirer will not fail under Windows because of the multiple subscriptions
@@ -130,7 +130,7 @@ export async function run() {
 
     process.on('SIGINT', sigIntHandler.bind(context));
 
-    if ((await isVersionGatingPassed((context as unknown) as $TSContext)) === false) {
+    if ((await isMinimumVersionSatisfied((context as unknown) as $TSContext)) === false) {
       context.usageData.emitError(new Error('Version gating requirements were not passed.'));
 
       return 1;

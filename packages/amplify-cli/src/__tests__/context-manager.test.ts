@@ -25,7 +25,7 @@ jest.mock('../app-config');
 
 jest.mock('../version-gating', () => ({
   getCurrentCLIVersion: jest.fn().mockReturnValue(() => '5.2.0'),
-  getMinimumCLIVersion: jest.fn().mockReturnValue(() => '5.0.0'),
+  getMinimumCompatibleCLIVersion: jest.fn().mockReturnValue(() => '5.0.0'),
 }));
 
 describe('test attachUsageData', () => {
@@ -39,7 +39,7 @@ describe('test attachUsageData', () => {
   ]);
   mockContext.versionInfo = {
     currentCLIVersion: '5.2.0',
-    minimumCLIVersion: '5.0.0',
+    minimumCompatibleCLIVersion: '5.0.0',
   };
   mockContext.pluginPlatform = new PluginPlatform();
   mockContext.pluginPlatform.plugins['core'] = [new PluginInfo('', version, '', new PluginManifest('', ''))];

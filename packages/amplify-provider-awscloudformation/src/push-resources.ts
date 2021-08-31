@@ -841,7 +841,7 @@ async function formNestedStack(
   Object.assign(metadata, {
     AmplifyCLI: {
       DeployedByCLIVersion: context.versionInfo.currentCLIVersion,
-      MinimumCompatibleCLIVersion: context.versionInfo.minimumCLIVersion,
+      MinimumCompatibleCLIVersion: context.versionInfo.minimumCompatibleCLIVersion,
     },
   });
 

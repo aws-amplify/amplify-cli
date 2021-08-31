@@ -33,7 +33,7 @@ describe('run', () => {
       },
       versionInfo: {
         currentCLIVersion: '5.2.0',
-        minimumCLIVersion: '5.0.0',
+        minimumCompatibleCLIVersion: '5.0.0',
       },
       amplify: {
         getTags: jest.fn().mockImplementation(() => []),

@@ -3,7 +3,7 @@ import { AmplifyToolkit } from './amplify-toolkit';
 import { PluginPlatform } from './plugin-platform';
 import { IUsageData } from './amplify-usageData';
 import { CLIVersionInfo } from 'amplify-cli-core';
-import { getCurrentCLIVersion, getMinimumCLIVersion } from '../version-gating';
+import { getCurrentCLIVersion, getMinimumCompatibleCLIVersion } from '../version-gating';
 
 export class Context {
   amplify: AmplifyToolkit;
@@ -15,7 +15,7 @@ export class Context {
 
     this.versionInfo = {
       currentCLIVersion: getCurrentCLIVersion(),
-      minimumCLIVersion: getMinimumCLIVersion(),
+      minimumCompatibleCLIVersion: getMinimumCompatibleCLIVersion(),
     };
   }
 
