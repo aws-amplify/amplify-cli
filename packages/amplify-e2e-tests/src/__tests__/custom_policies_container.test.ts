@@ -17,7 +17,7 @@ import { amplifyConfigureProject } from 'amplify-e2e-core';
 const customIAMPolicy: CustomIAMPolicy = {
             Effect: 'Allow',
             Action: [
-              'ssm:GetParameters'
+              'ssm:GetParameter'
             ],
             Resource: []
 };

@@ -180,16 +180,7 @@ async function validateCustomPoliciesSchema(data: CustomIAMPolicies, categoryNam
 }
 
 function warnWildcardCustomPolicies(customPolicies: CustomIAMPolicy[], resourceName: string) {
-  for (const policy of customPolicies) {
-    const resources = policy.Resource;
-    for (const resource of resources) {
-      if(resource === '*') {
-        printer.warn(`Warning: You've specified "*" as the resource in a custom IAM policy for ${resourceName}.\n This will give ${resourceName} access to ALL resources in the AWS Account.`)
-        return;
-      }
-    }
-  }
-  const resources = customPolicies
+  customPolicies
   .map(policy => policy.Resource)
     .forEach(resources => resources
       .filter(resource => resource === '*')
