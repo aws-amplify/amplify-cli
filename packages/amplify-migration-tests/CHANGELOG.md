@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.1.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@3.1.4...amplify-migration-tests@3.1.5) (2021-08-24)
+
+**Note:** Version bump only for package amplify-migration-tests
+
+
+
+
+
 ## [3.1.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@3.1.3...amplify-migration-tests@3.1.4) (2021-08-06)
 
 **Note:** Version bump only for package amplify-migration-tests

@@ -35,9 +35,8 @@ jest.mock('amplify-cli-core', () => ({
 }));
 
 describe('getUserPoolGroupList', () => {
-  const mock_context = {};
   it('should return array of groupNames', () => {
-    const userPoolGroupList = getUserPoolGroupList(mock_context);
+    const userPoolGroupList = getUserPoolGroupList();
     expect(userPoolGroupList).toStrictEqual(['Admins', 'Editors']);
   });
 });

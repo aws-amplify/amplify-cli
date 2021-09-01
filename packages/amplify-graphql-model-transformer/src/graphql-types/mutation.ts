@@ -1,8 +1,8 @@
 import { TransformerTransformSchemaStepContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import { ObjectTypeDefinitionNode, InputObjectTypeDefinitionNode, DocumentNode } from 'graphql';
+import { DocumentNode, InputObjectTypeDefinitionNode, ObjectTypeDefinitionNode } from 'graphql';
 import { ModelResourceIDs, toPascalCase } from 'graphql-transformer-common';
 import { ModelDirectiveConfiguration } from '../graphql-model-transformer';
-import { ObjectDefinitionWrapper, InputObjectDefinitionWrapper, InputFieldWrapper } from '../wrappers/object-definition-wrapper';
+import { InputFieldWrapper, InputObjectDefinitionWrapper, ObjectDefinitionWrapper } from '../wrappers/object-definition-wrapper';
 import { makeConditionFilterInput } from './common';
 
 /**
@@ -30,7 +30,7 @@ export const makeUpdateInputField = (
       return false;
     })
     .map(field => {
-      return field.getTypeName();
+      return field.name;
     });
 
   const objectTypeDefinition: ObjectTypeDefinitionNode = {
@@ -103,7 +103,7 @@ export const makeCreateInputField = (
       return false;
     })
     .map(field => {
-      return field.getTypeName();
+      return field.name;
     });
 
   const objectTypeDefinition: ObjectTypeDefinitionNode = {
@@ -140,7 +140,7 @@ export const makeMutationConditionInput = (
   object: ObjectTypeDefinitionNode,
 ): InputObjectTypeDefinitionNode => {
   const input = makeConditionFilterInput(ctx, name, object);
-  const idField = input.fields.find(f => f.name === 'id' && f.getTypeName() === 'ID');
+  const idField = input.fields.find(f => f.name === 'id' && f.getTypeName() === 'ModelIDInput');
   if (idField) {
     input.removeField(idField);
   }

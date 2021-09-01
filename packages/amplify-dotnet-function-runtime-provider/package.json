@@ -1,6 +1,6 @@
 {
   "name": "amplify-dotnet-function-runtime-provider",
-  "version": "1.6.2",
+  "version": "1.6.3",
   "description": "Provides functionality related to functions in .NET Core on AWS",
   "repository": {
     "type": "git",

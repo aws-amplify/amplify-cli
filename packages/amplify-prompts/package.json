@@ -1,6 +1,6 @@
 {
   "name": "amplify-prompts",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Utility functions for Amplify CLI terminal I/O",
   "main": "lib/index.js",
   "scripts": {
@@ -31,5 +31,21 @@
   },
   "devDependencies": {
     "rimraf": "^3.0.2"
+  },
+  "jest": {
+    "collectCoverage": true,
+    "transform": {
+      "^.+\\.tsx?$": "ts-jest"
+    },
+    "testURL": "http://localhost",
+    "testRegex": "((\\.|/)(test|spec))\\.(jsx?|tsx?)$",
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "jsx",
+      "json",
+      "node"
+    ]
   }
 }
