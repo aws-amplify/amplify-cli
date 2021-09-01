@@ -3,7 +3,7 @@ const serializeRdsObject = rdsObject => {
     (statement?.records ?? []).map(record => {
       const result = {};
       record.forEach((row, index) => {
-        result[statement?.columnMetadata?.[index]?.name] = Object.values(row)?.[0];
+        result[statement?.columnMetadata?.[index]?.name] = row['isNull'] || row['null'] ? null : Object.values(row)?.[0];
       });
       return result;
     }),
