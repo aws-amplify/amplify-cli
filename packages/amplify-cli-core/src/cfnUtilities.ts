@@ -231,7 +231,7 @@ const CF_SCHEMA = yaml.JSON_SCHEMA.extend([
   }),
 ]);
 
-function isJsonFileContent(fileContent: string): boolean {
+export function isJsonFileContent(fileContent: string): boolean {
   // We use the first character to determine if the content is json or yaml because historically the CLI could
   // have emitted JSON with YML extension, so we can't rely on filename extension.
   return fileContent?.trim()[0] === '{'; // CFN templates are always objects, never arrays

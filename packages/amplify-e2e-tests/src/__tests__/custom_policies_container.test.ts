@@ -5,14 +5,15 @@ import {
   getCustomPoliciesPath, 
   amplifyPushWithoutCodegen,
   readJsonFile,
-  addRestContainerApiForCustomPolicies
+  addRestContainerApiForCustomPolicies,
+  amplifyConfigureProject,
+  createNewProjectDir,
+  deleteProjectDir 
 } from 'amplify-e2e-core';
-import { createNewProjectDir, deleteProjectDir } from 'amplify-e2e-core';
 import _ from 'lodash';
 import { JSONUtilities } from 'amplify-cli-core';
 import AWS from 'aws-sdk';
 import path from 'path';
-import { amplifyConfigureProject } from 'amplify-e2e-core';
 
 const customIAMPolicy: CustomIAMPolicy = {
             Effect: 'Allow',
@@ -55,7 +56,7 @@ it(`should init and deploy a api container, attach custom policies to the Fargat
   const { Region: region } = meta?.providers?.awscloudformation;
 
   // Put SSM parameter
-  let ssmClient = new AWS.SSM({ region });
+  const ssmClient = new AWS.SSM({ region });
   await ssmClient.putParameter({
     Name: 'testCustomPolicies',
     Value: 'testCustomPoliciesValue',

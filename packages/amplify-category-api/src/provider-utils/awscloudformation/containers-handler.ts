@@ -6,7 +6,7 @@ import { DEPLOYMENT_MECHANISM } from './base-api-stack';
 import { GitHubSourceActionInfo } from './pipeline-with-awaiter';
 import { API_TYPE, IMAGE_SOURCE_TYPE, ResourceDependency, ServiceConfiguration } from './service-walkthroughs/containers-walkthrough';
 import { ApiResource, generateContainersArtifacts } from './utils/containers-artifacts';
-import { stateManager } from 'amplify-cli-core';
+import {addCustomPoliciesFile} from "amplify-cli-core";
 
 export const addResource = async (
   serviceWalkthroughPromise: Promise<ServiceConfiguration>,
@@ -97,7 +97,7 @@ export const addResource = async (
 
   }
 
-  stateManager.addCustomPoliciesFile(category, resourceName);
+  addCustomPoliciesFile(category, resourceName);
 
   context.print.success(`Successfully added resource ${resourceName} locally.`);
   context.print.info('');

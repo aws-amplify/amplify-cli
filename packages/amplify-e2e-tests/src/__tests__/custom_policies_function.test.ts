@@ -5,11 +5,13 @@ import {
   getProjectMeta, 
   getCustomPoliciesPath, 
   overrideFunctionCodeNode ,
-  invokeFunction
+  invokeFunction,
+  addFunction,
+  addLambdaTrigger,
+  addSimpleDDB,
+  createNewProjectDir,
+  deleteProjectDir
 } from 'amplify-e2e-core';
-import { addFunction, addLambdaTrigger } from 'amplify-e2e-core';
-import { addSimpleDDB } from 'amplify-e2e-core';
-import { createNewProjectDir, deleteProjectDir } from 'amplify-e2e-core';
 import _ from 'lodash';
 import { JSONUtilities } from 'amplify-cli-core';
 import AWS from 'aws-sdk';
@@ -58,7 +60,7 @@ it(`should init and deploy storage DynamoDB + Lambda trigger, attach custom poli
   const { Region: region } = meta?.providers?.awscloudformation;
   
   // Put SSM parameter
-  let ssmClient = new AWS.SSM({ region });
+  const ssmClient = new AWS.SSM({ region });
   await ssmClient.putParameter({
     Name: 'testCustomPolicies',
     Value: 'testCustomPoliciesValue',

@@ -30,6 +30,7 @@ import {
   saveMutableState,
   updateLayerArtifacts,
 } from './utils/storeResources';
+import {addCustomPoliciesFile} from "amplify-cli-core";
 
 /**
  * Entry point for creating a new function
@@ -112,7 +113,7 @@ export async function addFunctionResource(
 
   await createFunctionResources(context, completeParams);
 
-  stateManager.addCustomPoliciesFile(category, completeParams.resourceName);
+  addCustomPoliciesFile(category, completeParams.resourceName);
 
   if (!completeParams.skipEdit) {
     await openEditor(context, category, completeParams.resourceName, completeParams.functionTemplate);

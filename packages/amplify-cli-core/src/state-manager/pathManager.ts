@@ -48,7 +48,7 @@ export const PathConstants = {
 
   CfnFileName: (resourceName: string) => `${resourceName}-awscloudformation-template.json`,
 
-  CustomPoliciesFilename: 'custom-iam-policy-documents.json',
+  CustomPoliciesFilename: 'custom-policies.json',
 };
 
 export class PathManager {

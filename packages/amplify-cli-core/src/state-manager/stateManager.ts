@@ -8,6 +8,7 @@ import { JSONUtilities } from '../jsonUtilities';
 import { SecretFileMode } from '../cliConstants';
 import { HydrateTags, ReadTags, Tag } from '../tags';
 import { CustomIAMPolicies } from '../customPoliciesUtils';
+import { isJsonFileContent} from '../cfnUtilities'
 
 export type GetOptions<T> = {
   throwIfNotExist?: boolean;
@@ -78,30 +79,13 @@ export class StateManager {
     return this.getData<$TSTeamProviderInfo>(filePath, mergedOptions);
   };
 
-  getCustomPolicies = (service: string, categoryName: string, resourceName: string): CustomIAMPolicies | undefined => {
-    if (!(service === 'Lambda' || service === 'ElasticContainer')) {
-      return undefined;
-    }
+  getCustomPolicies = (categoryName: string, resourceName: string): CustomIAMPolicies | undefined => {
     const filePath = pathManager.getCustomPoliciesPath(categoryName, resourceName);
-    if (!filePath) {
+    if (!(fs.existsSync(filePath)) || !isJsonFileContent(fs.readFileSync(filePath, 'utf8'))) {
       return undefined;
     }
-    return JSONUtilities.readJson<CustomIAMPolicies>(filePath, {throwIfNotExist : false});
+    return JSONUtilities.readJson<CustomIAMPolicies>(filePath);
   };
-
-  addCustomPoliciesFile = (categoryName: string, resourceName: string): void => {
-    const customPoliciesPath = pathManager.getCustomPoliciesPath(categoryName, resourceName);
-    const defaultCustomPolicies = {
-        policies: [
-          {
-            Effect: 'Allow',
-            Action: [],
-            Resource: []
-          }
-        ]
-    }
-    JSONUtilities.writeJson(customPoliciesPath, defaultCustomPolicies);
-  }
 
   localEnvInfoExists = (projectPath?: string): boolean => this.doesExist(pathManager.getLocalEnvFilePath, projectPath);
 
