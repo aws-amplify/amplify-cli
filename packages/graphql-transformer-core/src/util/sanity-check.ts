@@ -1,11 +1,11 @@
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import _ from 'lodash';
-import { Template } from 'cloudform-types';
+import { Template, ResourceBase } from 'cloudform-types';
 import { JSONUtilities } from 'amplify-cli-core';
 import { diff as getDiffs, Diff as DeepDiff } from 'deep-diff';
 import { readFromPath } from './fileUtils';
-import { InvalidMigrationError, InvalidGSIMigrationError } from '../errors';
+import { InvalidMigrationError, InvalidGSIMigrationError, DestructiveMigrationError } from '../errors';
 import { TRANSFORM_CONFIG_FILE_NAME } from '..';
 
 type Diff = DeepDiff<DiffableProject, DiffableProject>;
@@ -73,11 +73,19 @@ export const sanityCheckDiffs = (
  * @param currentBuild The last deployed build.
  * @param nextBuild The next build.
  */
-export const cantEditKeySchemaRule = (diff: Diff): void => {
+export const cantEditKeySchemaRule = (iterativeUpdatesEnabled: boolean = false) => (diff: Diff): void => {
   if (diff.kind === 'E' && diff.path.length === 8 && diff.path[5] === 'KeySchema') {
     // diff.path = [ "stacks", "Todo.json", "Resources", "TodoTable", "Properties", "KeySchema", 0, "AttributeName"]
     const stackName = path.basename(diff.path[1], '.json');
     const tableName = diff.path[3];
+
+    if (iterativeUpdatesEnabled) {
+      throw new DestructiveMigrationError(
+        'Editing the primary key of a model requires replacement of the underlying DynamoDB table.',
+        [],
+        [tableName],
+      );
+    }
 
     throw new InvalidMigrationError(
       `Attempting to edit the key schema of the ${tableName} table in the ${stackName} stack. `,
@@ -94,7 +102,7 @@ export const cantEditKeySchemaRule = (diff: Diff): void => {
  * @param currentBuild The last deployed build.
  * @param nextBuild The next build.
  */
-export const cantAddLSILaterRule = (diff: Diff): void => {
+export const cantAddLSILaterRule = (iterativeUpdatesEnabled: boolean = false) => (diff: Diff): void => {
   if (
     // When adding a LSI to a table that has 0 LSIs.
     (diff.kind === 'N' && diff.path.length === 6 && diff.path[5] === 'LocalSecondaryIndexes') ||
@@ -104,6 +112,14 @@ export const cantAddLSILaterRule = (diff: Diff): void => {
     // diff.path = [ "stacks", "Todo.json", "Resources", "TodoTable", "Properties", "LocalSecondaryIndexes" ]
     const stackName = path.basename(diff.path[1], '.json');
     const tableName = diff.path[3];
+
+    if (iterativeUpdatesEnabled) {
+      throw new DestructiveMigrationError(
+        'Adding an LSI to a model requires replacement of the underlying DynamoDB table.',
+        [],
+        [tableName],
+      );
+    }
 
     throw new InvalidMigrationError(
       `Attempting to add a local secondary index to the ${tableName} table in the ${stackName} stack. ` +
@@ -295,7 +311,11 @@ export const cantMutateMultipleGSIAtUpdateTimeRule = (diffs: Diff[], currentBuil
  * @param currentBuild The last deployed build.
  * @param nextBuild The next build.
  */
-export const cantEditLSIKeySchemaRule = (diff: Diff, currentBuild: DiffableProject, nextBuild: DiffableProject): void => {
+export const cantEditLSIKeySchemaRule = (iterativeUpdatesEnabled: boolean = false) => (
+  diff: Diff,
+  currentBuild: DiffableProject,
+  nextBuild: DiffableProject,
+): void => {
   if (
     // ["stacks","Todo.json","Resources","TodoTable","Properties","LocalSecondaryIndexes",0,"KeySchema",0,"AttributeName"]
     diff.kind === 'E' &&
@@ -322,6 +342,10 @@ export const cantEditLSIKeySchemaRule = (diff: Diff, currentBuild: DiffableProje
         const stackName = path.basename(diff.path[1], '.json');
         const tableName = diff.path[3];
 
+        if (iterativeUpdatesEnabled) {
+          throw new DestructiveMigrationError('Editing an LSI requires replacement of the underlying DynamoDB table.', [], [tableName]);
+        }
+
         throw new InvalidMigrationError(
           `Attempting to edit the local secondary index ${indexName} on the ${tableName} table in the ${stackName} stack. `,
           'The key schema of a local secondary index cannot be changed after being deployed.',
@@ -333,8 +357,15 @@ export const cantEditLSIKeySchemaRule = (diff: Diff, currentBuild: DiffableProje
   }
 };
 
-export function cantRemoveLSILater(diff: Diff, currentBuild: DiffableProject, nextBuild: DiffableProject) {
+export const cantRemoveLSILater = (iterativeUpdatesEnabled: boolean = false) => (
+  diff: Diff,
+  currentBuild: DiffableProject,
+  nextBuild: DiffableProject,
+) => {
   const throwError = (stackName: string, tableName: string): void => {
+    if (iterativeUpdatesEnabled) {
+      throw new DestructiveMigrationError('Removing an LSI requires replacement of the underlying DynamoDB table.', [], [tableName]);
+    }
     throw new InvalidMigrationError(
       `Attempting to remove a local secondary index on the ${tableName} table in the ${stackName} stack.`,
       'A local secondary index cannot be removed after deployment.',
@@ -353,7 +384,7 @@ export function cantRemoveLSILater(diff: Diff, currentBuild: DiffableProject, ne
     const stackName = path.basename(diff.path[1], '.json');
     throwError(stackName, tableName);
   }
-}
+};
 
 export const cantHaveMoreThan500ResourcesRule = (diffs: Diff[], currentBuild: DiffableProject, nextBuild: DiffableProject): void => {
   const stackKeys = Object.keys(nextBuild.stacks);
@@ -370,6 +401,23 @@ export const cantHaveMoreThan500ResourcesRule = (diffs: Diff[], currentBuild: Di
           `${TRANSFORM_CONFIG_FILE_NAME} to fine tune how resources are assigned to stacks.`,
       );
     }
+  }
+};
+
+export const cantRemoveTableAfterCreation = (_: Diff, currentBuild: DiffableProject, nextBuild: DiffableProject): void => {
+  const getNestedStackLogicalIds = (proj: DiffableProject) =>
+    Object.entries(proj.root.Resources || [])
+      .filter(([_, meta]) => meta.Type === 'AWS::CloudFormation::Stack')
+      .map(([name]) => name);
+  const currentModels = getNestedStackLogicalIds(currentBuild);
+  const nextModels = getNestedStackLogicalIds(nextBuild);
+  const removedModels = currentModels.filter(currModel => !nextModels.includes(currModel));
+  if (removedModels.length > 0) {
+    throw new DestructiveMigrationError(
+      'Removing a model from the GraphQL schema will also remove the underlying DynamoDB table.',
+      removedModels,
+      [],
+    );
   }
 };
 

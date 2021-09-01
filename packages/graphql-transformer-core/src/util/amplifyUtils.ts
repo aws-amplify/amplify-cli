@@ -20,6 +20,7 @@ import {
   sanityCheckProject,
   ProjectRule,
   cantMutateMultipleGSIAtUpdateTimeRule,
+  cantRemoveTableAfterCreation,
 } from './sanity-check';
 
 export const CLOUDFORMATION_FILE_NAME = 'cloudformation-template.json';
@@ -733,30 +734,42 @@ export function getSanityCheckRules(isNewAppSyncAPI: boolean, ff: FeatureFlagPro
   // If we have iterative GSI upgrades enabled it means we only do sanity check on LSIs
   // as the other checks will be carried out as series of updates.
   if (!isNewAppSyncAPI) {
-    if (ff.getBoolean('enableIterativeGSIUpdates')) {
+    const iterativeUpdatesEnabled = ff.getBoolean('enableIterativeGSIUpdates');
+    if (iterativeUpdatesEnabled) {
       if (!allowDestructiveUpdates) {
         diffRules.push(
-          // LSI
-          cantEditKeySchemaRule,
-          cantAddLSILaterRule,
-          cantRemoveLSILater,
-          cantEditLSIKeySchemaRule,
+          // primary key rule
+          cantEditKeySchemaRule(iterativeUpdatesEnabled),
+
+          // LSI rules
+          cantAddLSILaterRule(iterativeUpdatesEnabled),
+          cantRemoveLSILater(iterativeUpdatesEnabled),
+          cantEditLSIKeySchemaRule(iterativeUpdatesEnabled),
+
+          // remove table rules
+          cantRemoveTableAfterCreation,
         );
       }
 
-      // Project level rules
+      // Project level rule
       projectRules.push(cantHaveMoreThan500ResourcesRule);
     } else {
       diffRules.push(
-        // LSI
-        cantEditKeySchemaRule,
-        cantAddLSILaterRule,
-        cantRemoveLSILater,
-        cantEditLSIKeySchemaRule,
-        // GSI
+        // primary key rule
+        cantEditKeySchemaRule(),
+
+        // LSI rules
+        cantAddLSILaterRule(),
+        cantRemoveLSILater(),
+        cantEditLSIKeySchemaRule(),
+
+        // GSI rules
         cantEditGSIKeySchemaRule,
         cantAddAndRemoveGSIAtSameTimeRule,
       );
+      if (!allowDestructiveUpdates) {
+        diffRules.push(cantRemoveTableAfterCreation);
+      }
 
       projectRules.push(cantHaveMoreThan500ResourcesRule, cantMutateMultipleGSIAtUpdateTimeRule);
     }
