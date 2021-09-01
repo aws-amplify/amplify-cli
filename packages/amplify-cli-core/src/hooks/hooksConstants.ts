@@ -42,5 +42,4 @@ export const supportedEnvEvents: HooksVerb[] = ['add', 'update', 'remove', 'pull
 
 export const defaultSupportedExt: HookExtensions = { js: { runtime: 'node' }, sh: { runtime: 'bash' } };
 
-export const skipHooksFileName: string = 'AMIPLIFY-HOOKS-SKIP';
-export const skipHooksFilePath: string = join(homedir(), 'opt', 'amazon');
+export const skipHooksFilePath: string = '/opt/amazon';

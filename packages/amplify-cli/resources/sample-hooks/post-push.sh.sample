@@ -2,7 +2,7 @@
 # To start using this post-push hook please change the filename:
 # post-push.sh.sample  ->  post-push.sh
 #
-# learn more: https://docs.amplify.aws/cli/usage/runtime-hooks
+# learn more: https://docs.amplify.aws/cli/usage/command-hooks
 
 if [ -z "$(which jq)" ]; then
     echo "Please install jq to run the sample script."
