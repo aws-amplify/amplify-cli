@@ -11,6 +11,7 @@ export async function pushResources(
   category?: string,
   resourceName?: string,
   filteredResources?: { category: string; resourceName: string }[],
+  rebuild: boolean = false,
 ) {
   if (context.parameters.options['iterative-rollback']) {
     // validate --iterative-rollback with --force
@@ -52,7 +53,7 @@ export async function pushResources(
   const hasChanges = await showResourceTable(category, resourceName, filteredResources);
 
   // no changes detected
-  if (!hasChanges && !context.exeInfo.forcePush) {
+  if (!hasChanges && !context.exeInfo.forcePush && !rebuild) {
     context.print.info('\nNo changes detected');
 
     return context;
@@ -68,18 +69,11 @@ export async function pushResources(
   }
 
   if (continueToPush) {
-    try {
-      // Get current-cloud-backend's amplify-meta
-      const currentAmplifyMeta = stateManager.getCurrentMeta();
+    // Get current-cloud-backend's amplify-meta
+    const currentAmplifyMeta = stateManager.getCurrentMeta();
 
-      await providersPush(context, category, resourceName, filteredResources);
-      await onCategoryOutputsChange(context, currentAmplifyMeta);
-    } catch (err) {
-      // Handle the errors and print them nicely for the user.
-      context.print.error(`\n${err.message}`);
-
-      throw err;
-    }
+    await providersPush(context, rebuild, category, resourceName, filteredResources);
+    await onCategoryOutputsChange(context, currentAmplifyMeta);
   } else {
     // there's currently no other mechanism to stop the execution of the postPush workflow in this case, so exiting here
     exitOnNextTick(1);
@@ -88,7 +82,13 @@ export async function pushResources(
   return continueToPush;
 }
 
-async function providersPush(context: $TSContext, category, resourceName, filteredResources) {
+async function providersPush(
+  context: $TSContext,
+  rebuild: boolean = false,
+  category?: string,
+  resourceName?: string,
+  filteredResources?: { category: string; resourceName: string }[],
+) {
   const { providers } = getProjectConfig();
   const providerPlugins = getProviderPlugins(context);
   const providerPromises: (() => Promise<$TSAny>)[] = [];
@@ -96,7 +96,7 @@ async function providersPush(context: $TSContext, category, resourceName, filter
   for (const provider of providers) {
     const providerModule = require(providerPlugins[provider]);
     const resourceDefiniton = await context.amplify.getResourceStatus(category, resourceName, provider, filteredResources);
-    providerPromises.push(providerModule.pushResources(context, resourceDefiniton));
+    providerPromises.push(providerModule.pushResources(context, resourceDefiniton, rebuild));
   }
 
   await Promise.all(providerPromises);

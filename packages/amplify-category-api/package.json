@@ -63,6 +63,7 @@
     "@aws-cdk/region-info": "~1.119.0",
     "@graphql-tools/merge": "^6.0.18",
     "amplify-cli-core": "1.27.0",
+    "amplify-prompts": "1.1.2",
     "amplify-util-headless-input": "1.5.3",
     "chalk": "^4.1.1",
     "constructs": "^3.3.125",

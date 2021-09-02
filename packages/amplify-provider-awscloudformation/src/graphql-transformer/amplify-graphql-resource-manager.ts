@@ -26,6 +26,7 @@ export type GQLResourceManagerProps = {
   resourceMeta?: ResourceMeta;
   backendDir: string;
   cloudBackendDir: string;
+  rebuildAllTables?: boolean;
 };
 
 export type ResourceMeta = {
@@ -52,8 +53,9 @@ export class GraphQLResourceManager {
   private cloudBackendApiProjectRoot: string;
   private backendApiProjectRoot: string;
   private templateState: TemplateState;
+  private rebuildAllTables: boolean = false; // indicates that all underlying model tables should be rebuilt
 
-  public static createInstance = async (context: $TSContext, gqlResource: any, StackId: string) => {
+  public static createInstance = async (context: $TSContext, gqlResource: any, StackId: string, rebuildAllTables: boolean = false) => {
     try {
       const cred = await loadConfiguration(context);
       const cfn = new CloudFormation(cred);
@@ -65,6 +67,7 @@ export class GraphQLResourceManager {
         resourceMeta: { ...gqlResource, stackId: apiStack.StackResources[0].PhysicalResourceId },
         backendDir: pathManager.getBackendDirPath(),
         cloudBackendDir: pathManager.getCurrentCloudBackendDirPath(),
+        rebuildAllTables,
       });
     } catch (err) {
       throw err;
@@ -82,6 +85,7 @@ export class GraphQLResourceManager {
     this.backendApiProjectRoot = path.join(props.backendDir, GraphQLResourceManager.categoryName, this.resourceMeta.resourceName);
     this.cloudBackendApiProjectRoot = path.join(props.cloudBackendDir, GraphQLResourceManager.categoryName, this.resourceMeta.resourceName);
     this.templateState = new TemplateState();
+    this.rebuildAllTables = props.rebuildAllTables || false;
   }
 
   run = async (): Promise<DeploymentStep[]> => {
@@ -268,15 +272,26 @@ export class GraphQLResourceManager {
   };
 
   private tableRecreationManagement = (diffs: DiffChanges<DiffableProject>, currentState: DiffableProject, nextState: DiffableProject) => {
-    const tablesToRecreate = _.uniq(
-      diffs
-        .filter(diff => diff.path.includes('KeySchema') || diff.path.includes('LocalSecondaryIndexes')) // filter diffs with changes that require replacement
-        .map(diff => ({
-          // extract table name and stack name from diff path
-          tableName: diff.path?.[3] as string,
-          stackName: diff.path[1].split('.')[0] as string,
-        })),
-    );
+    const getTablesRequiringReplacement = () =>
+      _.uniq(
+        diffs
+          .filter(diff => diff.path.includes('KeySchema') || diff.path.includes('LocalSecondaryIndexes')) // filter diffs with changes that require replacement
+          .map(diff => ({
+            // extract table name and stack name from diff path
+            tableName: diff.path?.[3] as string,
+            stackName: diff.path[1].split('.')[0] as string,
+          })),
+      );
+
+    const getAllTables = () =>
+      Object.entries(currentState.stacks)
+        .map(([name, template]) => ({
+          tableName: this.getTableNameFromTemplate(template),
+          stackName: path.basename(name, '.json'),
+        }))
+        .filter(meta => !!meta.tableName);
+
+    const tablesToRecreate = this.rebuildAllTables ? getAllTables() : getTablesRequiringReplacement();
 
     tablesToRecreate.forEach(tableMeta => {
       const ddbResource = this.getStack(tableMeta.stackName, currentState);
@@ -316,6 +331,9 @@ export class GraphQLResourceManager {
       this.templateState.pop(stackName);
     }
   };
+
+  private getTableNameFromTemplate = (template: Template): string | undefined =>
+    Object.entries(template?.Resources || {}).find(([_, resource]) => resource.Type === 'AWS::DynamoDB::Table')?.[0];
 }
 
 // https://stackoverflow.com/questions/39419170/how-do-i-check-that-a-switch-block-is-exhaustive-in-typescript
