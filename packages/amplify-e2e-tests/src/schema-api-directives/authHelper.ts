@@ -1,5 +1,5 @@
 import { CognitoIdentityServiceProvider } from 'aws-sdk';
-import { getProjectMeta, getBackendAmplifyMeta, getCredentials } from 'amplify-e2e-core';
+import { getProjectMeta, getBackendAmplifyMeta } from 'amplify-e2e-core';
 import Amplify, { Auth } from 'aws-amplify';
 import fs from 'fs-extra';
 import path from 'path';
@@ -50,10 +50,12 @@ export async function addUserToGroup(
 }
 
 export function getConfiguredCognitoClient(): CognitoIdentityServiceProvider {
-  const cognitoClient = new CognitoIdentityServiceProvider({ apiVersion: '2016-04-19', region: process.env.CLI_REGION, ...getCredentials() });
+  const cognitoClient = new CognitoIdentityServiceProvider({ apiVersion: '2016-04-19', region: process.env.CLI_REGION });
 
   const awsconfig = {
-    ...getCredentials(),
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+    sessionToken: process.env.AWS_SESSION_TOKEN,
     region: process.env.CLI_REGION,
   };
 

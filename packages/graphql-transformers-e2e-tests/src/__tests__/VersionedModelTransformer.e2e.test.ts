@@ -10,7 +10,6 @@ import { default as moment } from 'moment';
 import { default as S3 } from 'aws-sdk/clients/s3';
 import { S3Client } from '../S3Client';
 import { cleanupStackAfterTest, deploy } from '../deployNestedStacks';
-import { getCredentials } from '../../../amplify-e2e-core/lib';
 
 jest.setTimeout(2000000);
 
@@ -35,7 +34,7 @@ const S3_ROOT_DIR_KEY = 'deployments';
 let GRAPHQL_CLIENT = undefined;
 
 const customS3Client = new S3Client('us-west-2');
-const awsS3Client = new S3({ ...getCredentials(), region: 'us-west-2' });
+const awsS3Client = new S3({ region: 'us-west-2' });
 
 function outputValueSelector(key: string) {
   return (outputs: Output[]) => {

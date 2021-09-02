@@ -25,31 +25,9 @@ declare global {
 const amplifyTestsDir = 'amplify-e2e-tests';
 
 export function getCLIPath(testingWithLatestCodebase = false) {
-  if (!testingWithLatestCodebase) {
-    return process.env.AMPLIFY_PATH || (process.platform === 'win32' ? 'amplify.exe' : 'amplify');
-  }
-
-  const amplifyScriptPath = path.join(__dirname, '..', '..', 'amplify-cli', 'bin', 'amplify');
-  return amplifyScriptPath;
-}
-
-export function getScriptRunnerPath(testingWithLatestCodebase = false) {
-  if (!testingWithLatestCodebase) {
-    return process.platform === 'win32'
-      ? 'C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe'
-      : path.join(__dirname, '..', '..', '..', '.circleci', 'exec');
-  }
-
-  // nodejs executable
-  return process.execPath;
-}
-
-export function getNpxPath() {
-  let npxPath = 'npx';
-  if (process.platform === 'win32') {
-    npxPath = getScriptRunnerPath().replace('node.exe', 'npx.cmd');
-  }
-  return npxPath;
+  return testingWithLatestCodebase
+    ? path.join(__dirname, '..', '..', 'amplify-cli', 'bin', 'amplify')
+    : process.env.AMPLIFY_PATH || 'amplify';
 }
 
 export function isCI(): boolean {
@@ -63,13 +41,6 @@ export function injectSessionToken(profileName: string) {
   fs.writeFileSync(pathManager.getAWSCredentialsFilePath(), ini.stringify(credentialsContents));
 }
 
-export function injectRegion(profileName: string) {
-  const credentialsContents = ini.parse(fs.readFileSync(pathManager.getAWSConfigFilePath()).toString());
-  credentialsContents[`profile ${profileName}`] = credentialsContents[`profile ${profileName}`] || {};
-  credentialsContents[`profile ${profileName}`].region = process.env.CLI_REGION;
-  fs.writeFileSync(pathManager.getAWSConfigFilePath(), ini.stringify(credentialsContents));
-}
-
 export function npmInstall(cwd: string) {
   spawnSync('npm', ['install'], { cwd });
 }
@@ -80,7 +51,6 @@ export async function installAmplifyCLI(version: string = 'latest') {
     env: process.env,
     stdio: 'inherit',
   });
-  process.env.AMPLIFY_PATH = path.join(os.homedir(), '.npm-global', 'bin', 'amplify');
 }
 
 export async function createNewProjectDir(

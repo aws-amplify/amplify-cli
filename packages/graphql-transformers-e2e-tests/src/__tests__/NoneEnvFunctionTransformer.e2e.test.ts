@@ -12,13 +12,12 @@ import { S3Client } from '../S3Client';
 import { default as S3 } from 'aws-sdk/clients/s3';
 import { LambdaHelper } from '../LambdaHelper';
 import { IAMHelper } from '../IAMHelper';
-import { getCredentials } from '../../../amplify-e2e-core/lib';
 
 jest.setTimeout(2000000);
 
 const cf = new CloudFormationClient('us-west-2');
 const customS3Client = new S3Client('us-west-2');
-const awsS3Client = new S3({ ...getCredentials(), region: 'us-west-2' });
+const awsS3Client = new S3({ region: 'us-west-2' });
 const featureFlags = {
   getBoolean: jest.fn().mockImplementation((name, defaultValue) => {
     if (name === 'improvePluralization') {

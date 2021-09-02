@@ -13,7 +13,6 @@ import {
   amplifyPull,
   getProjectMeta,
   sleep,
-  getCredentials,
 } from 'amplify-e2e-core';
 import S3 from 'aws-sdk/clients/s3';
 import { DeploymentState, DeploymentStatus, JSONUtilities } from 'amplify-cli-core';
@@ -69,7 +68,6 @@ describe('Schema iterative update - locking', () => {
     const deploymentBucketName = meta.providers.awscloudformation.DeploymentBucketName;
 
     const s3 = new S3({
-      ...getCredentials(),
       region: projectRegion,
     });
 

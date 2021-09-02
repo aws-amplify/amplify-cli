@@ -1,8 +1,8 @@
-import { nspawn as spawn, getCLIPath, getScriptRunnerPath, } from '..';
+import { nspawn as spawn, getCLIPath } from '..';
 
 export function addSampleInteraction(cwd: string, settings: any): Promise<void> {
   return new Promise((resolve, reject) => {
-    spawn(getScriptRunnerPath(), [getCLIPath(), 'add', 'interactions'], { cwd, stripColors: true })
+    spawn(getCLIPath(), ['add', 'interactions'], { cwd, stripColors: true })
       .wait('Provide a friendly resource name that will be used to label this category')
       .sendCarriageReturn()
       .wait('Would you like to start with a sample chatbot')

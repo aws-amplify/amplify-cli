@@ -1,12 +1,11 @@
 import { Lambda } from 'aws-sdk';
 import * as fs from 'fs';
 import * as path from 'path';
-import { getCredentials } from 'amplify-e2e-core';
+
 export class LambdaHelper {
   client: Lambda;
   constructor(region: string = 'us-west-2') {
     this.client = new Lambda({
-      ...getCredentials(),
       region,
     });
   }

@@ -1,4 +1,4 @@
-import { nspawn as spawn, getCLIPath, getScriptRunnerPath, singleSelect, createNewProjectDir, deleteProjectDir } from 'amplify-e2e-core';
+import { nspawn as spawn, getCLIPath, singleSelect, createNewProjectDir, deleteProjectDir } from 'amplify-e2e-core';
 
 describe('amplify configure', () => {
   let projRoot: string;
@@ -30,7 +30,7 @@ function testAmplifyConfigureValidation(): Promise<void> {
   const defaultAWSSecretAccessKey = '<YOUR_SECRET_ACCESS_KEY>';
 
   return new Promise((resolve, reject) => {
-    spawn(getScriptRunnerPath(), [getCLIPath(), 'configure'], { stripColors: true })
+    spawn(getCLIPath(), ['configure'], { stripColors: true })
       .wait('Sign in to your AWS administrator account:')
       .wait('Press Enter to continue')
       .sendCarriageReturn()
