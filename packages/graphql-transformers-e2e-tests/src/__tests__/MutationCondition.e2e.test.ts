@@ -1,6 +1,7 @@
 import { GraphQLTransform, TRANSFORM_CURRENT_VERSION, TRANSFORM_BASE_VERSION } from 'graphql-transformer-core';
 import { KeyTransformer } from 'graphql-key-transformer';
 import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
+import { getCredentials } from 'amplify-e2e-core';
 import { parse } from 'graphql/language/parser';
 import {
   DocumentNode,
@@ -118,6 +119,7 @@ const doNotExpectFieldsOnInputType = (type: InputObjectTypeDefinitionNode, field
 
 describe(`Local Mutation Condition tests`, () => {
   it('Type without directives', () => {
+    getCredentials()
     const validSchema = `
             type Post
             @model
@@ -580,9 +582,9 @@ describe(`Deployed Mutation Condition tests`, () => {
   const TMP_PASSWORD = 'Password123!';
   const REAL_PASSWORD = 'Password1234!';
 
-  const cognitoClient = new CognitoClient({ apiVersion: '2016-04-19', region: REGION });
+  const cognitoClient = new CognitoClient({ ...getCredentials(), apiVersion: '2016-04-19', region: REGION });
   const customS3Client = new S3Client(REGION);
-  const awsS3Client = new S3({ region: REGION });
+  const awsS3Client = new S3({ ...getCredentials(), region: REGION });
 
   const conditionRegexMatch =
     /GraphQL error: The conditional request failed \(Service: \w*DynamoD\w*\,?\;? Status Code: 400\,?\;? [a-zA-Z0-9:;, ]*\)/gm;

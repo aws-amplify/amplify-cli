@@ -1,6 +1,6 @@
 import * as fs from 'fs-extra';
 
-export { getCLIPath, isCI, npmInstall, createNewProjectDir } from 'amplify-e2e-core';
+export { getCLIPath, getScriptRunnerPath, isCI, npmInstall, createNewProjectDir } from 'amplify-e2e-core';
 
 export function deleteProjectDir(projectDirpath: string) {
   return fs.removeSync(projectDirpath);

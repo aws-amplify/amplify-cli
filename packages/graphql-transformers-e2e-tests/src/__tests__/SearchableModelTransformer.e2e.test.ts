@@ -12,13 +12,14 @@ import { cleanupStackAfterTest, deploy } from '../deployNestedStacks';
 import { default as moment } from 'moment';
 import { default as S3 } from 'aws-sdk/clients/s3';
 import addStringSets from '../stringSetMutations';
+import { getCredentials } from '../../../amplify-e2e-core/lib';
 
 // tslint:disable: no-magic-numbers
 jest.setTimeout(60000 * 60);
 
 const cf = new CloudFormationClient('us-west-2');
 const customS3Client = new S3Client('us-west-2');
-const awsS3Client = new S3({ region: 'us-west-2' });
+const awsS3Client = new S3({ ...getCredentials(), region: 'us-west-2' });
 let GRAPHQL_CLIENT: GraphQLClient = undefined;
 const featureFlags = {
   getBoolean: jest.fn().mockImplementation((name, defaultValue) => {

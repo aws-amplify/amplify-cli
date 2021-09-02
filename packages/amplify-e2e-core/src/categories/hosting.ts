@@ -1,13 +1,13 @@
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import { nspawn as spawn, getCLIPath, createNewProjectDir, KEY_DOWN_ARROW, readJsonFile } from '..';
+import { nspawn as spawn, getCLIPath, getNpxPath, getScriptRunnerPath, createNewProjectDir, KEY_DOWN_ARROW, readJsonFile } from '..';
 import _ from 'lodash';
 import { spawnSync } from 'child_process';
 import { getBackendAmplifyMeta } from '../utils';
 
 export function addDEVHosting(cwd: string): Promise<void> {
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['add', 'hosting'], { cwd, stripColors: true })
+    spawn(getScriptRunnerPath(), [getCLIPath(), 'add', 'hosting'], { cwd, stripColors: true })
       .wait('Select the plugin module to execute')
       .send(KEY_DOWN_ARROW)
       .sendCarriageReturn()
@@ -31,7 +31,7 @@ export function addDEVHosting(cwd: string): Promise<void> {
 
 export function enableContainerHosting(cwd: string): Promise<void> {
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['configure', 'project'], { cwd, stripColors: true })
+    spawn(getScriptRunnerPath(), [getCLIPath(), 'configure', 'project'], { cwd, stripColors: true })
       .wait('Which setting do you want to configure?')
       .sendKeyDown(2)
       .sendCarriageReturn()
@@ -49,7 +49,7 @@ export function enableContainerHosting(cwd: string): Promise<void> {
 
 export function addDevContainerHosting(cwd: string): Promise<void> {
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['add', 'hosting'], { cwd, stripColors: true })
+    spawn(getScriptRunnerPath(), [getCLIPath(), 'add', 'hosting'], { cwd, stripColors: true })
       .wait('Select the plugin module to execute')
       .sendKeyDown(2)
       .sendCarriageReturn()
@@ -69,7 +69,7 @@ export function addDevContainerHosting(cwd: string): Promise<void> {
 
 export function addPRODHosting(cwd: string): Promise<void> {
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['add', 'hosting'], { cwd, stripColors: true })
+    spawn(getScriptRunnerPath(), [getCLIPath(), 'add', 'hosting'], { cwd, stripColors: true })
       .wait('Select the plugin module to execute')
       .send(KEY_DOWN_ARROW)
       .sendCarriageReturn()
@@ -90,7 +90,7 @@ export function addPRODHosting(cwd: string): Promise<void> {
 
 export function removePRODCloudFront(cwd: string): Promise<void> {
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['update', 'hosting'], { cwd, stripColors: true })
+    spawn(getScriptRunnerPath(), [getCLIPath(), 'update', 'hosting'], { cwd, stripColors: true })
       .wait('Specify the section to configure')
       .send(KEY_DOWN_ARROW)
       .sendCarriageReturn()
@@ -116,7 +116,7 @@ export function removePRODCloudFront(cwd: string): Promise<void> {
 
 export function amplifyPushWithUpdate(cwd: string): Promise<void> {
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['push'], { cwd, stripColors: true })
+    spawn(getScriptRunnerPath(), [getCLIPath(), 'push'], { cwd, stripColors: true })
       .wait('Are you sure you want to continue?')
       .sendCarriageReturn()
       .run((err: Error) => {
@@ -131,7 +131,7 @@ export function amplifyPushWithUpdate(cwd: string): Promise<void> {
 
 export function amplifyPublishWithoutUpdate(cwd: string): Promise<void> {
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['publish'], { cwd, stripColors: true }).run((err: Error) => {
+    spawn(getScriptRunnerPath(), [getCLIPath(), 'publish'], { cwd, stripColors: true }).run((err: Error) => {
       if (!err) {
         resolve();
       } else {
@@ -143,7 +143,7 @@ export function amplifyPublishWithoutUpdate(cwd: string): Promise<void> {
 
 export function removeHosting(cwd: string): Promise<void> {
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['remove', 'hosting'], { cwd, stripColors: true })
+    spawn(getScriptRunnerPath(), [getCLIPath(), 'remove', 'hosting'], { cwd, stripColors: true })
       .wait('Choose the resource you would want to remove')
       .sendCarriageReturn()
       .wait('Are you sure you want to delete the resource?')
@@ -164,8 +164,7 @@ export async function createReactTestProject(): Promise<string> {
   const projectName = path.basename(projRoot);
   const projectDir = path.dirname(projRoot);
 
-  spawnSync('npx', ['create-react-app', projectName], { cwd: projectDir });
-
+  spawnSync(getNpxPath(), ['create-react-app', projectName], { cwd: projectDir });
   return projRoot;
 }
 

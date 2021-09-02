@@ -1,4 +1,4 @@
-import { getCLIPath, nspawn as spawn } from '..';
+import { getCLIPath, getScriptRunnerPath, nspawn as spawn } from '..';
 
 const pushTimeoutMS = 1000 * 60 * 20; // 20 minutes;
 
@@ -12,7 +12,7 @@ export type LayerPushSettings = {
 export function amplifyPush(cwd: string, testingWithLatestCodebase: boolean = false): Promise<void> {
   return new Promise((resolve, reject) => {
     //Test detailed status
-    spawn(getCLIPath(testingWithLatestCodebase), ['status', '-v'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
+    spawn(getScriptRunnerPath(testingWithLatestCodebase), [getCLIPath(testingWithLatestCodebase), 'status', '-v'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
       .wait(/.*/)
       .run((err: Error) => {
         if ( err ){
@@ -20,7 +20,7 @@ export function amplifyPush(cwd: string, testingWithLatestCodebase: boolean = fa
         }
       });
     //Test amplify push
-    spawn(getCLIPath(testingWithLatestCodebase), ['push'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
+    spawn(getScriptRunnerPath(testingWithLatestCodebase), [getCLIPath(testingWithLatestCodebase), 'push'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
       .wait('Are you sure you want to continue?')
       .sendConfirmYes()
       .wait('Do you want to generate code for your newly created GraphQL API')
@@ -38,7 +38,7 @@ export function amplifyPush(cwd: string, testingWithLatestCodebase: boolean = fa
 
 export function amplifyPushForce(cwd: string, testingWithLatestCodebase: boolean = false): Promise<void> {
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(testingWithLatestCodebase), ['push', '--force'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
+    spawn(getScriptRunnerPath(testingWithLatestCodebase), [getCLIPath(testingWithLatestCodebase), 'push', '--force'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
       .wait('Are you sure you want to continue?')
       .sendConfirmYes()
       .wait(/.*/)
@@ -67,7 +67,7 @@ export function cancelIterativeAmplifyPush(
   testingWithLatestCodebase: boolean = false,
 ): Promise<void> {
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(testingWithLatestCodebase), ['push'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
+    spawn(getScriptRunnerPath(testingWithLatestCodebase), [getCLIPath(testingWithLatestCodebase), 'push'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
       .wait('Are you sure you want to continue?')
       .sendConfirmYes()
       .wait(`Deploying (${idx.current} of ${idx.max})`)
@@ -85,7 +85,7 @@ export function cancelIterativeAmplifyPush(
 
 export function amplifyPushWithoutCodegen(cwd: string, testingWithLatestCodebase: boolean = false): Promise<void> {
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(testingWithLatestCodebase), ['push'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
+    spawn(getScriptRunnerPath(testingWithLatestCodebase), [getCLIPath(testingWithLatestCodebase), 'push'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
       .wait('Are you sure you want to continue?')
       .sendCarriageReturn()
       .run((err: Error) => {
@@ -100,7 +100,7 @@ export function amplifyPushWithoutCodegen(cwd: string, testingWithLatestCodebase
 
 export function amplifyPushUpdate(cwd: string, waitForText?: RegExp, testingWithLatestCodebase: boolean = false): Promise<void> {
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(testingWithLatestCodebase), ['push'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
+    spawn(getScriptRunnerPath(testingWithLatestCodebase), [getCLIPath(testingWithLatestCodebase), 'push'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
       .wait('Are you sure you want to continue?')
       .sendConfirmYes()
       .wait(waitForText || /.*/)
@@ -116,7 +116,7 @@ export function amplifyPushUpdate(cwd: string, waitForText?: RegExp, testingWith
 
 export function amplifyPushAuth(cwd: string, testingWithLatestCodebase: boolean = false): Promise<void> {
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(testingWithLatestCodebase), ['push'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
+    spawn(getScriptRunnerPath(testingWithLatestCodebase), [getCLIPath(testingWithLatestCodebase), 'push'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
       .wait('Are you sure you want to continue?')
       .sendConfirmYes()
       .wait(/.*/)
@@ -132,7 +132,7 @@ export function amplifyPushAuth(cwd: string, testingWithLatestCodebase: boolean 
 
 export function amplifyPushUpdateForDependentModel(cwd: string, testingWithLatestCodebase: boolean = false): Promise<void> {
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(testingWithLatestCodebase), ['push'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
+    spawn(getScriptRunnerPath(testingWithLatestCodebase), [getCLIPath(testingWithLatestCodebase), 'push'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
       .wait('Are you sure you want to continue?')
       .sendConfirmYes()
       .wait(/.*/)
@@ -163,7 +163,7 @@ export function amplifyPushLayer(cwd: string, settings: LayerPushSettings, testi
   };
 
   return new Promise((resolve, reject) => {
-    const chain = spawn(getCLIPath(testingWithLatestCodebase), ['push'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
+    const chain = spawn(getScriptRunnerPath(testingWithLatestCodebase), [getCLIPath(testingWithLatestCodebase), 'push'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
       .wait('Are you sure you want to continue?')
       .sendConfirmYes();
 
@@ -212,7 +212,7 @@ export function amplifyPushLayer(cwd: string, settings: LayerPushSettings, testi
 
 export function amplifyPushIterativeRollback(cwd: string, testingWithLatestCodebase: boolean = false) {
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(testingWithLatestCodebase), ['push', '--iterative-rollback'], { cwd, stripColors: true })
+    spawn(getScriptRunnerPath(testingWithLatestCodebase), [getCLIPath(testingWithLatestCodebase), 'push', '--iterative-rollback'], { cwd, stripColors: true })
       .wait('Are you sure you want to continue?')
       .sendConfirmYes()
       .run((err: Error) => {
@@ -227,7 +227,7 @@ export function amplifyPushIterativeRollback(cwd: string, testingWithLatestCodeb
 
 export function amplifyPushMissingEnvVar(cwd: string, newEnvVarValue: string) {
   return new Promise<void>((resolve, reject) => {
-    spawn(getCLIPath(), ['push'], { cwd, stripColors: true })
+    spawn(getScriptRunnerPath(), [getCLIPath(), 'push'], { cwd, stripColors: true })
       .wait('Enter the missing environment variable value of')
       .sendLine(newEnvVarValue)
       .wait('Are you sure you want to continue?')
@@ -238,7 +238,7 @@ export function amplifyPushMissingEnvVar(cwd: string, newEnvVarValue: string) {
 
 export function amplifyPushMissingFuncSecret(cwd: string, newSecretValue: string) {
   return new Promise<void>((resolve, reject) => {
-    spawn(getCLIPath(), ['push'], { cwd, stripColors: true })
+    spawn(getScriptRunnerPath(), [getCLIPath(), 'push'], { cwd, stripColors: true })
       .wait('does not have a value in this environment. Specify one now:')
       .sendLine(newSecretValue)
       .wait('Are you sure you want to continue?')

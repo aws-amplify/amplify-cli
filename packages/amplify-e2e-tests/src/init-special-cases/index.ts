@@ -1,20 +1,16 @@
 import path from 'path';
-import { nspawn as spawn, getCLIPath, singleSelect, amplifyRegions, addCircleCITags, KEY_DOWN_ARROW } from 'amplify-e2e-core';
+import { nspawn as spawn, getCLIPath, getScriptRunnerPath, singleSelect, amplifyRegions, addCircleCITags, KEY_DOWN_ARROW, getCredentials } from 'amplify-e2e-core';
 import fs from 'fs-extra';
 import os from 'os';
 
 export async function initWithoutCredentialFileAndNoNewUserSetup(projRoot) {
+  getCredentials();
   const settings = {
     accessKeyId: process.env.AWS_ACCESS_KEY_ID,
     secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
     sessionToken: process.env.AWS_SESSION_TOKEN,
     region: process.env.AWS_REGION || process.env.AWS_DEFAULT_REGION || 'us-west-2',
   };
-
-  delete process.env.AWS_ACCESS_KEY_ID;
-  delete process.env.AWS_SECRET_ACCESS_KEY;
-  delete process.env.AWS_DEFAULT_REGION;
-  delete process.env.AWS_REGION;
 
   const dotAWSDirPath = path.normalize(path.join(os.homedir(), '.aws'));
   const credentialsFilePath = path.join(dotAWSDirPath, 'credentials');
@@ -44,9 +40,10 @@ export async function initWithoutCredentialFileAndNoNewUserSetup(projRoot) {
 
 async function initWorkflow(cwd: string, settings: { accessKeyId: string; secretAccessKey: string; region: string }): Promise<void> {
   addCircleCITags(cwd);
+  getCredentials();
 
   return new Promise((resolve, reject) => {
-    let chain = spawn(getCLIPath(), ['init'], {
+    let chain = spawn(getScriptRunnerPath(), [getCLIPath(), 'init'], {
       cwd,
       stripColors: true,
       env: {

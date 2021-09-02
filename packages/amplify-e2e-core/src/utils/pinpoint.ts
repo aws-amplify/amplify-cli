@@ -1,8 +1,9 @@
 import { Pinpoint } from 'aws-sdk';
-import { getCLIPath, nspawn as spawn, singleSelect, amplifyRegions, addCircleCITags, KEY_DOWN_ARROW } from '..';
+import { getCredentials } from '../utils'
+import { getCLIPath, getScriptRunnerPath, nspawn as spawn, singleSelect, amplifyRegions, addCircleCITags, KEY_DOWN_ARROW } from '..';
 import _ from 'lodash';
 
-const settings = {
+let settings: any = {
   name: '\r',
   envName: 'test',
   editor: '\r',
@@ -12,9 +13,6 @@ const settings = {
   distDir: '\r',
   buildCmd: '\r',
   startCmd: '\r',
-  accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-  sessionToken: process.env.AWS_SESSION_TOKEN,
   region: process.env.CLI_REGION,
   pinpointResourceName: 'testpinpoint',
 };
@@ -43,6 +41,8 @@ const serviceRegionMap = {
 
 export async function pinpointAppExist(pinpointProjectId: string): Promise<boolean> {
   let result = false;
+
+  settings = {...settings, ...getCredentials()};
 
   const pinpointClient = new Pinpoint({
     accessKeyId: settings.accessKeyId,
@@ -73,9 +73,10 @@ export async function pinpointAppExist(pinpointProjectId: string): Promise<boole
 
 export function initProjectForPinpoint(cwd: string): Promise<void> {
   addCircleCITags(cwd);
-
+  getCredentials();
+  settings = {...settings, ...getCredentials()};
   return new Promise((resolve, reject) => {
-    let chain = spawn(getCLIPath(), ['init'], {
+    let chain = spawn(getScriptRunnerPath(), [getCLIPath(), 'init'], {
       cwd,
       stripColors: true,
       env: {
@@ -128,7 +129,7 @@ export function initProjectForPinpoint(cwd: string): Promise<void> {
 
 export function addPinpointAnalytics(cwd: string): Promise<string> {
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['add', 'analytics'], { cwd, stripColors: true })
+    spawn(getScriptRunnerPath(), [getCLIPath(), 'add', 'analytics'], { cwd, stripColors: true })
       .wait('Select an Analytics provider')
       .sendCarriageReturn()
       .wait('Provide your pinpoint resource name:')
@@ -149,7 +150,7 @@ export function addPinpointAnalytics(cwd: string): Promise<string> {
 
 export function pushToCloud(cwd: string): Promise<void> {
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['push'], { cwd, stripColors: true })
+    spawn(getScriptRunnerPath(), [getCLIPath(), 'push'], { cwd, stripColors: true })
       .wait('Are you sure you want to continue')
       .sendCarriageReturn()
       .wait('All resources are updated in the cloud')
@@ -166,7 +167,7 @@ export function pushToCloud(cwd: string): Promise<void> {
 
 export function amplifyDelete(cwd: string): Promise<void> {
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['delete'], { cwd, stripColors: true })
+    spawn(getScriptRunnerPath(), [getCLIPath(), 'delete'], { cwd, stripColors: true })
       .wait('Are you sure you want to continue?')
       .sendLine('Y')
       .wait('Project deleted in the cloud')

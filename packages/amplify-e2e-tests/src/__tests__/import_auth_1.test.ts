@@ -21,6 +21,7 @@ import {
   initProjectWithAccessKey,
   addApi,
   updateApiSchema,
+  getCredentials,
 } from 'amplify-e2e-core';
 import {
   AppClientSettings,
@@ -336,6 +337,7 @@ describe('auth import userpool only', () => {
   it.skip('init project in different region, import auth, should fail with error', async () => {
     // Set it to make sure deleteProject error will be ignored
     ignoreProjectDeleteErrors = true;
+    getCredentials();
 
     const { AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY } = getEnvVars();
     if (!AWS_ACCESS_KEY_ID || !AWS_SECRET_ACCESS_KEY) {

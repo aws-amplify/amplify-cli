@@ -23,6 +23,7 @@ import {
   authenticateUser,
 } from '../cognitoUtils';
 import 'isomorphic-fetch';
+import { getCredentials } from '../../../amplify-e2e-core/lib';
 
 // to deal with bug in cognito-identity-js
 (global as any).fetch = require('node-fetch');
@@ -78,9 +79,9 @@ const DEVS_GROUP_NAME = 'Devs';
 const PARTICIPANT_GROUP_NAME = 'Participant';
 const WATCHER_GROUP_NAME = 'Watcher';
 
-const cognitoClient = new CognitoClient({ apiVersion: '2016-04-19', region: 'us-west-2' });
+const cognitoClient = new CognitoClient({ ...getCredentials(), apiVersion: '2016-04-19', region: 'us-west-2' });
 const customS3Client = new S3Client('us-west-2');
-const awsS3Client = new S3({ region: 'us-west-2' });
+const awsS3Client = new S3({ ...getCredentials(), region: 'us-west-2' });
 
 function outputValueSelector(key: string) {
   return (outputs: Output[]) => {

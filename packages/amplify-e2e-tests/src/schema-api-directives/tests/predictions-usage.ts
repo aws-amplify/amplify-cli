@@ -4,7 +4,7 @@ import path from 'path';
 import fs from 'fs-extra';
 import aws from 'aws-sdk';
 import gql from 'graphql-tag';
-import { addAuthWithDefault, addS3Storage, getBackendAmplifyMeta, addApi, amplifyPush } from 'amplify-e2e-core';
+import { addAuthWithDefault, addS3Storage, getBackendAmplifyMeta, addApi, amplifyPush, getCredentials } from 'amplify-e2e-core';
 
 import { getApiKey, configureAmplify, getConfiguredAppsyncClientAPIKeyAuth } from '../authHelper';
 import { updateSchemaInTestProject } from '../common';
@@ -43,9 +43,7 @@ export async function runTest(projectDir: string, testModule: any) {
 async function uploadImageFile(projectDir: string) {
   const imageFilePath = path.join(__dirname, 'predictions-usage-image.jpg');
   const s3Client = new aws.S3({
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-    sessionToken: process.env.AWS_SESSION_TOKEN,
+    ...getCredentials(),
     region: process.env.AWS_DEFAULT_REGION,
   });
 

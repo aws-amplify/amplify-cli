@@ -1,7 +1,8 @@
+import { getCredentials } from 'amplify-e2e-core';
 import { IAM } from 'aws-sdk';
 
 export const toBeIAMRoleWithArn = async (roleName: string, arn?: string) => {
-  const iam = new IAM();
+  const iam = new IAM(getCredentials());
   let pass: boolean;
   let message: string;
   try {
@@ -33,11 +34,7 @@ export const toHaveValidPolicyConditionMatchingIdpId = async (roleName: string, 
   let message: string = '';
 
   try {
-    const iam = new IAM({
-      accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-      secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-      sessionToken: process.env.AWS_SESSION_TOKEN,
-    });
+    const iam = new IAM(getCredentials());
 
     const { Role: role } = await iam.getRole({ RoleName: roleName }).promise();
     const assumeRolePolicyDocument = JSON.parse(decodeURIComponent(role.AssumeRolePolicyDocument));
