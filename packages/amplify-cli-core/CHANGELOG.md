@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.26.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@1.26.1...amplify-cli-core@1.26.2) (2021-09-02)
+
+
+### Bug Fixes
+
+* **amplify-cli-core:** extend js-yaml.JSON_SCHEMA to inherit json type conversions when parsing .yml cfn templates ([#7909](https://github.com/aws-amplify/amplify-cli/issues/7909)) ([fe5c1ec](https://github.com/aws-amplify/amplify-cli/commit/fe5c1ec63846d531f6828fae98e86464f32a58e4)), closes [#7819](https://github.com/aws-amplify/amplify-cli/issues/7819)
+
+
+
+
+
 ## [1.26.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@1.26.0...amplify-cli-core@1.26.1) (2021-08-24)
 
 **Note:** Version bump only for package amplify-cli-core
