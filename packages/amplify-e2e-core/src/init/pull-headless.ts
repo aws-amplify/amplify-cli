@@ -1,4 +1,4 @@
-import { nspawn as spawn, getCLIPath, getScriptRunnerPath, } from '..';
+import { nspawn as spawn, getCLIPath } from '..';
 
 const defaultSettings = {
   name: '\r',
@@ -18,7 +18,7 @@ const defaultSettings = {
 export function pullProject(cwd: string, settings: Object): Promise<void> {
   const s = { ...defaultSettings, ...settings };
   return new Promise((resolve, reject) => {
-    spawn(getScriptRunnerPath(), [getCLIPath(), 'pull', '--appId', s.appId, '--envName', s.envName], { cwd, stripColors: true })
+    spawn(getCLIPath(), ['pull', '--appId', s.appId, '--envName', s.envName], { cwd, stripColors: true })
       .wait('Select the authentication method you want to use:')
       .sendLine(s.useProfile)
       .wait('Please choose the profile you want to use')

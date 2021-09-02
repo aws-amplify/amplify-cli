@@ -1,7 +1,6 @@
 import { CloudFormation } from 'aws-sdk';
 import { DescribeStacksOutput, StackStatus } from 'aws-sdk/clients/cloudformation';
 import { ResourceConstants } from 'graphql-transformer-common';
-import { getCredentials } from 'amplify-e2e-core';
 
 async function promisify<I, O>(fun: (arg: I, cb: (e: Error, d: O) => void) => void, args: I, that: any): Promise<O> {
   return await new Promise<O>((resolve, reject) => {
@@ -21,7 +20,7 @@ export class CloudFormationClient {
   client: CloudFormation;
 
   constructor(public region: string) {
-    this.client = new CloudFormation({ ...getCredentials(), apiVersion: '2010-05-15', region: this.region });
+    this.client = new CloudFormation({ apiVersion: '2010-05-15', region: this.region });
   }
 
   async createStack(template: any, name: string, defParams: any = {}, addAppSyncApiName: boolean = true) {

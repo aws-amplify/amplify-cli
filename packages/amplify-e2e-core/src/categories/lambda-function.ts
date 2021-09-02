@@ -1,4 +1,4 @@
-import { nspawn as spawn, ExecutionContext, KEY_DOWN_ARROW, getCLIPath, getScriptRunnerPath, getProjectMeta, getBackendAmplifyMeta, invokeFunction } from '..';
+import { nspawn as spawn, ExecutionContext, KEY_DOWN_ARROW, getCLIPath, getProjectMeta, getBackendAmplifyMeta, invokeFunction } from '..';
 import { Lambda } from 'aws-sdk';
 import { singleSelect, multiSelect, moveUp, moveDown } from '../utils/selectors';
 import * as glob from 'glob';
@@ -157,7 +157,7 @@ const coreFunction = (
   functionConfigCallback: FunctionCallback,
 ) => {
   return new Promise((resolve, reject) => {
-    let chain = spawn(getScriptRunnerPath(settings.testingWithLatestCodebase), [getCLIPath(settings.testingWithLatestCodebase), action === 'update' ? 'update' : 'add', 'function'], {
+    let chain = spawn(getCLIPath(settings.testingWithLatestCodebase), [action === 'update' ? 'update' : 'add', 'function'], {
       cwd,
       stripColors: true,
     });
@@ -320,7 +320,7 @@ export const addLambdaTrigger = (chain: ExecutionContext, cwd: string, settings:
 
 export const functionBuild = (cwd: string, settings: any): Promise<void> => {
   return new Promise((resolve, reject) => {
-    spawn(getScriptRunnerPath(), [getCLIPath(), 'function', 'build'], { cwd, stripColors: true })
+    spawn(getCLIPath(), ['function', 'build'], { cwd, stripColors: true })
       .wait('Are you sure you want to continue building the resources?')
       .sendConfirmYes()
       .sendEof()
@@ -356,7 +356,7 @@ export const selectTemplate = (chain: ExecutionContext, functionTemplate: string
 
 export const removeFunction = (cwd: string, funcName: string) =>
   new Promise<void>((resolve, reject) => {
-    spawn(getScriptRunnerPath(), [getCLIPath(), 'remove', 'function', funcName, '--yes'], { cwd, stripColors: true }).run(err => (err ? reject(err) : resolve()));
+    spawn(getCLIPath(), ['remove', 'function', funcName, '--yes'], { cwd, stripColors: true }).run(err => (err ? reject(err) : resolve()));
   });
 
 export interface LayerOptions {
@@ -547,10 +547,10 @@ export const functionMockAssert = (
   settings: { funcName: string; successString: string; eventFile: string; timeout?: number },
 ) => {
   return new Promise<void>((resolve, reject) => {
-    const cliArgs = [getCLIPath(), 'mock', 'function', settings.funcName, '--event', settings.eventFile].concat(
+    const cliArgs = ['mock', 'function', settings.funcName, '--event', settings.eventFile].concat(
       settings.timeout ? ['--timeout', settings.timeout.toString()] : [],
     );
-    spawn(getScriptRunnerPath(), cliArgs, { cwd, stripColors: true })
+    spawn(getCLIPath(), cliArgs, { cwd, stripColors: true })
       .wait('Result:')
       .wait(settings.successString)
       .wait('Finished execution.')
