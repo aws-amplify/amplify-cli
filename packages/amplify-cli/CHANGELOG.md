@@ -3,6 +3,30 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.4.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@5.3.1...@aws-amplify/cli@5.4.0) (2021-09-02)
+
+
+### Bug Fixes
+
+* add amplify-prompts dependency to package.json's ([7f313ab](https://github.com/aws-amplify/amplify-cli/commit/7f313ab4534f75afc32e37b9b548e4a0003b5232))
+* **amplify-provider-awscloudformation:** display mfa prompt ([#7866](https://github.com/aws-amplify/amplify-cli/issues/7866)) ([8947b18](https://github.com/aws-amplify/amplify-cli/commit/8947b187bf7a7ff6c998488a9931839ca3169d02))
+* **cli:** better error message when trying to publish with CD configured in Amplify Console ([#7874](https://github.com/aws-amplify/amplify-cli/issues/7874)) ([4f03859](https://github.com/aws-amplify/amplify-cli/commit/4f03859c3a7c092c025c3047e1c5fa581a62a05a)), closes [#7486](https://github.com/aws-amplify/amplify-cli/issues/7486)
+* handle case where there is no appId ([#8049](https://github.com/aws-amplify/amplify-cli/issues/8049)) ([f7e62df](https://github.com/aws-amplify/amplify-cli/commit/f7e62dfcb31f7ba132a2a7a1391ad8cabebeb3ea))
+
+
+### Features
+
+* **cli:** add consistent support for verb / noun swapping ([#7675](https://github.com/aws-amplify/amplify-cli/issues/7675)) ([4319875](https://github.com/aws-amplify/amplify-cli/commit/43198750aeebea064c152e9c65c972fcae634e54)), closes [#7630](https://github.com/aws-amplify/amplify-cli/issues/7630)
+
+
+### Reverts
+
+* Revert "fix(amplify-provider-awscloudformation): display mfa prompt (#7866)" (#8054) ([7b5de7b](https://github.com/aws-amplify/amplify-cli/commit/7b5de7b553e189a47c88e2902a0f21744a16dc10)), closes [#7866](https://github.com/aws-amplify/amplify-cli/issues/7866) [#8054](https://github.com/aws-amplify/amplify-cli/issues/8054)
+
+
+
+
+
 ## [5.3.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@5.3.0...@aws-amplify/cli@5.3.1) (2021-08-24)
 
 

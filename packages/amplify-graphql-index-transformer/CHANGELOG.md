@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.3.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-index-transformer@0.3.0...@aws-amplify/graphql-index-transformer@0.3.1) (2021-09-02)
+
+
+### Bug Fixes
+
+* add model transformer v2 e2e tests ([#7946](https://github.com/aws-amplify/amplify-cli/issues/7946)) ([351a8bc](https://github.com/aws-amplify/amplify-cli/commit/351a8bce6069398535878fd62886e0ee5c402329))
+* model transformer support condition ([#7935](https://github.com/aws-amplify/amplify-cli/issues/7935)) ([fc93dba](https://github.com/aws-amplify/amplify-cli/commit/fc93dbabb38427607ef6abb6f1d7fb2f357a284b))
+
+
+
+
+
 # [0.3.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-index-transformer@0.2.1...@aws-amplify/graphql-index-transformer@0.3.0) (2021-08-24)
 
 

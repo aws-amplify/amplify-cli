@@ -3,6 +3,26 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [6.26.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformers-e2e-tests@6.25.0...graphql-transformers-e2e-tests@6.26.0) (2021-09-02)
+
+
+
+# 5.4.0 (2021-09-02)
+
+
+### Bug Fixes
+
+* add model transformer v2 e2e tests ([#7946](https://github.com/aws-amplify/amplify-cli/issues/7946)) ([351a8bc](https://github.com/aws-amplify/amplify-cli/commit/351a8bce6069398535878fd62886e0ee5c402329))
+
+
+### Features
+
+* add new relational modeling directives ([#7997](https://github.com/aws-amplify/amplify-cli/issues/7997)) ([e9cdb7a](https://github.com/aws-amplify/amplify-cli/commit/e9cdb7a1a45b8f16546952a469ab2d45f82e855c))
+
+
+
+
+
 # [6.25.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformers-e2e-tests@6.24.7...graphql-transformers-e2e-tests@6.25.0) (2021-08-24)
 
 

@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.6.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-model-transformer@0.6.0...@aws-amplify/graphql-model-transformer@0.6.1) (2021-09-02)
+
+
+### Bug Fixes
+
+* add model transformer v2 e2e tests ([#7946](https://github.com/aws-amplify/amplify-cli/issues/7946)) ([351a8bc](https://github.com/aws-amplify/amplify-cli/commit/351a8bce6069398535878fd62886e0ee5c402329))
+* model transformer support condition ([#7935](https://github.com/aws-amplify/amplify-cli/issues/7935)) ([fc93dba](https://github.com/aws-amplify/amplify-cli/commit/fc93dbabb38427607ef6abb6f1d7fb2f357a284b))
+* update and create input field type known model types filtering ([#7929](https://github.com/aws-amplify/amplify-cli/issues/7929)) ([16334f7](https://github.com/aws-amplify/amplify-cli/commit/16334f7217f0ac751a642d82512240aedec17721))
+
+
+
+
+
 # [0.6.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-model-transformer@0.5.1...@aws-amplify/graphql-model-transformer@0.6.0) (2021-08-24)
 
 
