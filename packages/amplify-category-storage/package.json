@@ -23,6 +23,7 @@
   ],
   "dependencies": {
     "amplify-cli-core": "1.26.1",
+    "amplify-headless-interface": "1.10.0",
     "amplify-util-import": "1.5.8",
     "amplify-prompts": "1.1.1",
     "cloudform-types": "^4.2.0",
@@ -31,7 +32,7 @@
     "inquirer": "^7.3.3",
     "lodash": "^4.17.21",
     "promise-sequential": "^1.1.1",
-    "uuid": "^3.4.0"
+    "uuid": "^8.3.2"
   },
   "devDependencies": {
     "rimraf": "^3.0.2"

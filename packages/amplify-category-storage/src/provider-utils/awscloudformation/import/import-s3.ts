@@ -4,7 +4,7 @@ import { IS3Service } from 'amplify-util-import';
 import { Bucket } from 'aws-sdk/clients/s3';
 import Enquirer from 'enquirer';
 import _ from 'lodash';
-import uuid from 'uuid';
+import { v4 as uuid } from 'uuid';
 import { checkIfAuthExists, resourceAlreadyExists } from '../service-walkthroughs/s3-walkthrough';
 import { importMessages } from './messages';
 import {
