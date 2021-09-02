@@ -1,6 +1,6 @@
-import { $TSAny, BannerMessage, pathManager, stateManager } from 'amplify-cli-core';
+import { $TSAny, BannerMessage, pathManager, stateManager, skipHooks } from 'amplify-cli-core';
 import { isCI } from 'ci-info';
-import { print } from './context-extensions';
+import { printer } from 'amplify-prompts';
 import { Input } from './domain/input';
 
 export async function displayBannerMessages(input: Input) {
@@ -9,6 +9,10 @@ export async function displayBannerMessages(input: Input) {
     return;
   }
   await displayLayerMigrationMessage();
+  if (skipHooks()) {
+    printer.warn('Amplify command hooks are disabled in the current execution environment.');
+    printer.warn('See https://docs.amplify.aws/cli/usage/runtime-hooks for more information.');
+  }
 }
 
 async function displayLayerMigrationMessage() {
@@ -28,8 +32,8 @@ async function displayLayerMigrationMessage() {
     ).length > 0;
 
   if (hasDeprecatedLayerResources && layerMigrationBannerMessage) {
-    print.info('');
-    print.warning(layerMigrationBannerMessage);
-    print.info('');
+    printer.blankLine();
+    printer.warn(layerMigrationBannerMessage);
+    printer.blankLine();
   }
 }

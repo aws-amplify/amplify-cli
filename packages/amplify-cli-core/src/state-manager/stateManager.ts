@@ -1,6 +1,7 @@
 import * as fs from 'fs-extra';
+import * as path from 'path';
 import _ from 'lodash';
-import { $TSAny, $TSMeta, $TSTeamProviderInfo, DeploymentSecrets } from '..';
+import { $TSAny, $TSMeta, $TSTeamProviderInfo, DeploymentSecrets, HooksConfig } from '..';
 import { SecretFileMode } from '../cliConstants';
 import { JSONUtilities } from '../jsonUtilities';
 import { HydrateTags, ReadTags, Tag } from '../tags';
@@ -234,6 +235,14 @@ export class StateManager {
     const filePath = pathManager.getCurrentAmplifyMetaFilePath(projectPath);
 
     JSONUtilities.writeJson(filePath, meta);
+  };
+
+  getHooksConfigJson = (projectPath?: string): HooksConfig => this.getData<HooksConfig>(pathManager.getHooksConfigFilePath(projectPath), {throwIfNotExist: false}) ?? {};
+
+  setSampleHooksDir = (projectPath: string | undefined, sourceDirPath: string): void => {
+    const targetDirPath = pathManager.getHooksDirPath(projectPath);
+    // only create the hooks directory with sample hooks if the directory doesnt already exists
+    if (!fs.existsSync(targetDirPath)) fs.copySync(sourceDirPath, targetDirPath);
   };
 
   setResourceParametersJson = (projectPath: string | undefined, category: string, resourceName: string, parameters: $TSAny): void => {
