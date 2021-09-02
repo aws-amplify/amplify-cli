@@ -53,12 +53,21 @@ export class Recorder {
     if (this.exitCode !== undefined) {
       throw new Error('Already executed. Please start a new instance');
     }
+
+    this.options.env = {
+      ...process.env,
+      NODE_OPTIONS: '--max_old_space_size=4096',
+      ...this.options.env,
+    }
+
     this.childProcess = pty.spawn(this.cmd, this.args, {
       name: 'xterm-color',
       cols: this.cols,
       rows: this.rows,
       cwd: this.cwd,
       ...this.options,
+      useConpty: false,
+      env: this.options.env,
     });
     this.addFrame(this.renderPrompt(this.cwd, this.cmd, this.args));
     this.childProcess.onData(this.onData.bind(this));

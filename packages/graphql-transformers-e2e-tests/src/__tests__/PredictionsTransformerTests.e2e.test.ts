@@ -10,6 +10,7 @@ import { default as moment } from 'moment';
 import { cleanupStackAfterTest, deploy } from '../deployNestedStacks';
 import { S3Client } from '../S3Client';
 import { default as S3 } from 'aws-sdk/clients/s3';
+import { getCredentials } from '../../../amplify-e2e-core/lib';
 
 // tslint:disable: no-magic-numbers
 jest.setTimeout(2000000);
@@ -17,7 +18,7 @@ jest.setTimeout(2000000);
 const AWS_REGION = 'us-east-2';
 const cf = new CloudFormationClient(AWS_REGION);
 const customS3Client = new S3Client(AWS_REGION);
-const awsS3Client = new S3({ region: AWS_REGION });
+const awsS3Client = new S3({ ...getCredentials(), region: AWS_REGION });
 const featureFlags = {
   getBoolean: jest.fn().mockImplementation((name, defaultValue) => {
     if (name === 'improvePluralization') {

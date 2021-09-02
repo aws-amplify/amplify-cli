@@ -19,8 +19,9 @@ import Role from 'cloudform-types/types/iam/role';
 import UserPoolClient from 'cloudform-types/types/cognito/userPoolClient';
 import IdentityPool from 'cloudform-types/types/cognito/identityPool';
 import IdentityPoolRoleAttachment from 'cloudform-types/types/cognito/identityPoolRoleAttachment';
-import { Auth } from 'aws-amplify';
 import 'isomorphic-fetch';
+import { Auth } from 'aws-amplify';
+import { getCredentials } from '../../../amplify-e2e-core/lib';
 
 // to deal with bug in cognito-identity-js
 (global as any).fetch = require('node-fetch');
@@ -48,7 +49,7 @@ jest.setTimeout(2000000);
 const REGION = 'us-west-2';
 const cf = new CloudFormationClient(REGION);
 const customS3Client = new S3Client(REGION);
-const awsS3Client = new S3({ region: REGION });
+const awsS3Client = new S3({ ...getCredentials(), region: REGION });
 
 const BUILD_TIMESTAMP = moment().format('YYYYMMDDHHmmss');
 const STACK_NAME = `FunctionTransformerTests-${BUILD_TIMESTAMP}`;
@@ -75,7 +76,7 @@ const USERNAME1 = 'user1@test.com';
 const TMP_PASSWORD = 'Password123!';
 const REAL_PASSWORD = 'Password1234!';
 
-const cognitoClient = new CognitoClient({ apiVersion: '2016-04-19', region: REGION });
+const cognitoClient = new CognitoClient({ ...getCredentials(), apiVersion: '2016-04-19', region: REGION });
 
 const LAMBDA_HELPER = new LambdaHelper();
 const IAM_HELPER = new IAMHelper();

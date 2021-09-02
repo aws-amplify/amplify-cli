@@ -1,4 +1,4 @@
-import { getCLIPath, updateSchema, nspawn as spawn, KEY_DOWN_ARROW } from '..';
+import { getCLIPath, getScriptRunnerPath, updateSchema, nspawn as spawn, KEY_DOWN_ARROW } from '..';
 import * as fs from 'fs-extra';
 import { selectRuntime, selectTemplate } from './lambda-function';
 import { singleSelect, multiSelect } from '../utils/selectors';
@@ -10,7 +10,7 @@ export function getSchemaPath(schemaName: string): string {
 
 export function apiGqlCompile(cwd: string, testingWithLatestCodebase: boolean = false) {
   return new Promise<void>((resolve, reject) => {
-    spawn(getCLIPath(testingWithLatestCodebase), ['api', 'gql-compile'], { cwd, stripColors: true })
+    spawn(getScriptRunnerPath(testingWithLatestCodebase), [getCLIPath(testingWithLatestCodebase), 'api', 'gql-compile'], { cwd, stripColors: true })
       .wait('GraphQL schema compiled successfully.')
       .run((err: Error) => {
         if (!err) {
@@ -33,7 +33,7 @@ const defaultOptions: AddApiOptions = {
 export function addApiWithoutSchema(cwd: string, opts: Partial<AddApiOptions> = {}) {
   const options = _.assign(defaultOptions, opts);
   return new Promise<void>((resolve, reject) => {
-    spawn(getCLIPath(), ['add', 'api'], { cwd, stripColors: true })
+    spawn(getScriptRunnerPath(), [getCLIPath(), 'add', 'api'], { cwd, stripColors: true })
       .wait('Please select from one of the below mentioned services:')
       .sendCarriageReturn()
       .wait('Provide API name:')
@@ -69,7 +69,7 @@ export function addApiWithSchema(cwd: string, schemaFile: string, opts: Partial<
   const options = _.assign(defaultOptions, opts);
   const schemaPath = getSchemaPath(schemaFile);
   return new Promise<void>((resolve, reject) => {
-    spawn(getCLIPath(), ['add', 'api'], { cwd, stripColors: true })
+    spawn(getScriptRunnerPath(), [getCLIPath(), 'add', 'api'], { cwd, stripColors: true })
       .wait('Please select from one of the below mentioned services:')
       .sendCarriageReturn()
       .wait('Provide API name:')
@@ -102,7 +102,7 @@ export function addApiWithSchema(cwd: string, schemaFile: string, opts: Partial<
 export function addApiWithSchemaAndConflictDetection(cwd: string, schemaFile: string) {
   const schemaPath = getSchemaPath(schemaFile);
   return new Promise<void>((resolve, reject) => {
-    spawn(getCLIPath(), ['add', 'api'], { cwd, stripColors: true })
+    spawn(getScriptRunnerPath(), [getCLIPath(), 'add', 'api'], { cwd, stripColors: true })
       .wait('Please select from one of the below mentioned services:')
       .sendCarriageReturn()
       .wait('Provide API name:')
@@ -149,7 +149,7 @@ export function updateApiSchema(cwd: string, projectName: string, schemaName: st
 
 export function updateApiWithMultiAuth(cwd: string, settings: any) {
   return new Promise<void>((resolve, reject) => {
-    spawn(getCLIPath(settings.testingWithLatestCodebase), ['update', 'api'], { cwd, stripColors: true })
+    spawn(getScriptRunnerPath(settings.testingWithLatestCodebase), [getCLIPath(settings.testingWithLatestCodebase), 'update', 'api'], { cwd, stripColors: true })
       .wait('Please select from one of the below mentioned services:')
       .sendCarriageReturn()
       .wait('Select from the options below')
@@ -200,7 +200,7 @@ export function updateApiWithMultiAuth(cwd: string, settings: any) {
 
 export function apiUpdateToggleDataStore(cwd: string, settings: any) {
   return new Promise<void>((resolve, reject) => {
-    spawn(getCLIPath(settings.testingWithLatestCodebase), ['update', 'api'], { cwd, stripColors: true })
+    spawn(getScriptRunnerPath(settings.testingWithLatestCodebase), [getCLIPath(settings.testingWithLatestCodebase), 'update', 'api'], { cwd, stripColors: true })
       .wait('Please select from one of the below mentioned services:')
       .sendCarriageReturn()
       .wait('Select from the options below')
@@ -220,7 +220,7 @@ export function apiUpdateToggleDataStore(cwd: string, settings: any) {
 
 export function updateAPIWithResolutionStrategy(cwd: string, settings: any) {
   return new Promise<void>((resolve, reject) => {
-    spawn(getCLIPath(settings.testingWithLatestCodebase), ['update', 'api'], { cwd, stripColors: true })
+    spawn(getScriptRunnerPath(settings.testingWithLatestCodebase), [getCLIPath(settings.testingWithLatestCodebase), 'update', 'api'], { cwd, stripColors: true })
       .wait('Please select from one of the below mentioned services:')
       .sendCarriageReturn()
       .wait('Select from the options below')
@@ -260,7 +260,7 @@ export function addRestApi(cwd: string, settings: any) {
       reject(new Error('Missing property in settings object in addRestApi()'));
     } else {
       const isFirstRestApi = settings.isFirstRestApi ?? true;
-      let chain = spawn(getCLIPath(), ['add', 'api'], { cwd, stripColors: true })
+      let chain = spawn(getScriptRunnerPath(), [getCLIPath(), 'add', 'api'], { cwd, stripColors: true })
         .wait('Please select from one of the below mentioned services')
         .send(KEY_DOWN_ARROW)
         .sendCarriageReturn(); // REST
@@ -382,7 +382,7 @@ const allAuthTypes = ['API key', 'Amazon Cognito User Pool', 'IAM', 'OpenID Conn
 export function addApi(projectDir: string, settings?: any) {
   let authTypesToSelectFrom = allAuthTypes.slice();
   return new Promise<void>((resolve, reject) => {
-    let chain = spawn(getCLIPath(), ['add', 'api'], { cwd: projectDir, stripColors: true })
+    let chain = spawn(getScriptRunnerPath(), [getCLIPath(), 'add', 'api'], { cwd: projectDir, stripColors: true })
       .wait('Please select from one of the below mentioned services:')
       .sendCarriageReturn()
       .wait('Provide API name:')
@@ -509,7 +509,7 @@ function setupOIDC(chain: any, settings?: any) {
 
 export function addApiWithCognitoUserPoolAuthTypeWhenAuthExists(projectDir: string) {
   return new Promise<void>((resolve, reject) => {
-    spawn(getCLIPath(), ['add', 'api'], { cwd: projectDir, stripColors: true })
+    spawn(getScriptRunnerPath(), [getCLIPath(), 'add', 'api'], { cwd: projectDir, stripColors: true })
       .wait('Please select from one of the below mentioned services:')
       .sendCarriageReturn()
       .wait('Provide API name:')
@@ -538,7 +538,7 @@ export function addApiWithCognitoUserPoolAuthTypeWhenAuthExists(projectDir: stri
 
 export function addRestContainerApi(projectDir: string) {
   return new Promise<void>((resolve, reject) => {
-    spawn(getCLIPath(), ['add', 'api'], { cwd: projectDir, stripColors: true })
+    spawn(getScriptRunnerPath(), [getCLIPath(), 'add', 'api'], { cwd: projectDir, stripColors: true })
       .wait('Please select from one of the below mentioned services:')
       .sendKeyDown()
       .sendCarriageReturn()

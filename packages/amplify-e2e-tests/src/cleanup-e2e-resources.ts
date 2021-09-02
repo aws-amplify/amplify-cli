@@ -5,7 +5,7 @@ import * as aws from 'aws-sdk';
 import _ from 'lodash';
 import fs from 'fs-extra';
 import path from 'path';
-import { deleteS3Bucket } from 'amplify-e2e-core';
+import { deleteS3Bucket, getCredentials } from 'amplify-e2e-core';
 
 // Ensure to update scripts/split-e2e-tests.ts is also updated this gets updated
 const AWS_REGIONS_TO_RUN_TESTS = [
@@ -93,7 +93,7 @@ const configureAws = (): void => {
  * @returns Promise<AmplifyAppInfo[]> a list of Amplify Apps in the region with build info
  */
 const getAmplifyApps = async (region: string): Promise<AmplifyAppInfo[]> => {
-  const amplifyClient = new aws.Amplify({ region });
+  const amplifyClient = new aws.Amplify({ region, ...getCredentials() });
   const amplifyApps = await amplifyClient.listApps({ maxResults: 50 }).promise(); // keeping it to 50 as max supported is 50
   const result: AmplifyAppInfo[] = [];
   for (const app of amplifyApps.apps) {
@@ -139,7 +139,7 @@ export const getJobId = (tags: aws.CloudFormation.Tags = []): number | undefined
  * @returns stack details
  */
 const getStackDetails = async (stackName: string, region: string): Promise<StackInfo | void> => {
-  const cfnClient = new aws.CloudFormation({ region });
+  const cfnClient = new aws.CloudFormation({ region, ...getCredentials() });
   const stack = await cfnClient.describeStacks({ StackName: stackName }).promise();
   const tags = stack.Stacks.length && stack.Stacks[0].Tags;
   const stackStatus = stack.Stacks[0].StackStatus;
@@ -163,7 +163,7 @@ const getStackDetails = async (stackName: string, region: string): Promise<Stack
 };
 
 const getStacks = async (region: string): Promise<StackInfo[]> => {
-  const cfnClient = new aws.CloudFormation({ region });
+  const cfnClient = new aws.CloudFormation({ region, ...getCredentials() });
   const stacks = await cfnClient
     .listStacks({
       StackStatusFilter: [
@@ -226,7 +226,7 @@ export const getJobCircleCIDetails = async (jobId: number): Promise<CircleCIJobD
 };
 
 export const getS3Buckets = async (): Promise<S3BucketInfo[]> => {
-  const s3Client = new aws.S3();
+  const s3Client = new aws.S3(getCredentials());
   const buckets = await s3Client.listBuckets().promise();
   const result: S3BucketInfo[] = [];
   for (const bucket of buckets.Buckets) {
@@ -350,7 +350,7 @@ export const deleteAmplifyApps = async (apps: AmplifyAppInfo[]): Promise<void> =
 };
 
 export const deleteAmplifyApp = async (appId: string, region: string): Promise<void> => {
-  const amplifyClient = new aws.Amplify({ region });
+  const amplifyClient = new aws.Amplify({ region, ...getCredentials() });
   try {
     await amplifyClient.deleteApp({ appId: appId }).promise();
   } catch (e) {
@@ -385,7 +385,7 @@ export const deleteCfnStacks = async (stacks: StackInfo[]): Promise<void> => {
 };
 
 export const deleteCfnStack = async (stackName: string, region: string, resourceToRetain?: string[]): Promise<void> => {
-  const cfnClient = new aws.CloudFormation({ region });
+  const cfnClient = new aws.CloudFormation({ region, ...getCredentials() });
   await cfnClient.deleteStack({ StackName: stackName, RetainResources: resourceToRetain }).promise();
   await cfnClient.waitFor('stackDeleteComplete', { StackName: stackName }).promise();
 };

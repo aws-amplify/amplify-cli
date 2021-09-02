@@ -1,4 +1,4 @@
-import { nspawn as spawn, KEY_DOWN_ARROW, getCLIPath } from '..';
+import { nspawn as spawn, KEY_DOWN_ARROW, getCLIPath, getScriptRunnerPath, } from '..';
 import { singleSelect, multiSelect } from '../utils/selectors';
 
 export type AddStorageSettings = {
@@ -14,7 +14,7 @@ export type AddDynamoDBSettings = {
 
 export function addSimpleDDB(cwd: string, settings: any): Promise<void> {
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['add', 'storage'], { cwd, stripColors: true })
+    spawn(getScriptRunnerPath(), [getCLIPath(), 'add', 'storage'], { cwd, stripColors: true })
       .wait('Please select from one of the below mentioned services')
       .sendLine(KEY_DOWN_ARROW)
       .wait('Please provide a friendly name for your resource')
@@ -48,7 +48,7 @@ export function addSimpleDDB(cwd: string, settings: any): Promise<void> {
 
 export function addDDBWithTrigger(cwd: string, settings: { ddbResourceName?: string }): Promise<void> {
   return new Promise((resolve, reject) => {
-    const chain = spawn(getCLIPath(), ['add', 'storage'], { cwd, stripColors: true })
+    const chain = spawn(getScriptRunnerPath(), [getCLIPath(), 'add', 'storage'], { cwd, stripColors: true })
       .wait('Please select from one of the below mentioned services')
       .sendLine(KEY_DOWN_ARROW)
       .wait('Please provide a friendly name for your resource');
@@ -92,7 +92,7 @@ export function addDDBWithTrigger(cwd: string, settings: { ddbResourceName?: str
 
 export function updateDDBWithTrigger(cwd: string, settings: any): Promise<void> {
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['update', 'storage'], { cwd, stripColors: true })
+    spawn(getScriptRunnerPath(), [getCLIPath(), 'update', 'storage'], { cwd, stripColors: true })
       .wait('Please select from one of the below mentioned services')
       .sendLine(KEY_DOWN_ARROW)
       .wait('Specify the resource that you would want to update')
@@ -122,7 +122,7 @@ export function updateDDBWithTrigger(cwd: string, settings: any): Promise<void> 
 
 export function updateSimpleDDBwithGSI(cwd: string, settings: any): Promise<void> {
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['update', 'storage'], { cwd, stripColors: true })
+    spawn(getScriptRunnerPath(), [getCLIPath(), 'update', 'storage'], { cwd, stripColors: true })
       .wait('Please select from one of the below mentioned services')
       .send(KEY_DOWN_ARROW)
       .sendCarriageReturn()
@@ -167,7 +167,7 @@ export function updateSimpleDDBwithGSI(cwd: string, settings: any): Promise<void
 
 export function addSimpleDDBwithGSI(cwd: string, settings: any): Promise<void> {
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['add', 'storage'], { cwd, stripColors: true })
+    spawn(getScriptRunnerPath(), [getCLIPath(), 'add', 'storage'], { cwd, stripColors: true })
       .wait('Please select from one of the below mentioned services')
       .send(KEY_DOWN_ARROW)
       .sendCarriageReturn()
@@ -217,7 +217,7 @@ export function addSimpleDDBwithGSI(cwd: string, settings: any): Promise<void> {
 
 export function addS3(cwd: string, settings: any): Promise<void> {
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['add', 'storage'], { cwd, stripColors: true })
+    spawn(getScriptRunnerPath(), [getCLIPath(), 'add', 'storage'], { cwd, stripColors: true })
       .wait('Please select from one of the below mentioned services')
       .sendCarriageReturn()
       .wait('Please provide a friendly name')
@@ -244,7 +244,7 @@ export function addS3(cwd: string, settings: any): Promise<void> {
 // Adds auth and S3 to test case where user adds storage without adding auth first
 export function addS3AndAuthWithAuthOnlyAccess(cwd: string, settings: any): Promise<void> {
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['add', 'storage'], { cwd, stripColors: true })
+    spawn(getScriptRunnerPath(), [getCLIPath(), 'add', 'storage'], { cwd, stripColors: true })
       .wait('Please select from one of the below mentioned services')
       .sendCarriageReturn() // Content
       .wait('You need to add auth (Amazon Cognito) to your project in order to add storage')
@@ -279,7 +279,7 @@ export function addS3AndAuthWithAuthOnlyAccess(cwd: string, settings: any): Prom
 
 export function addS3WithGuestAccess(cwd: string, settings: any): Promise<void> {
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['add', 'storage'], { cwd, stripColors: true })
+    spawn(getScriptRunnerPath(), [getCLIPath(), 'add', 'storage'], { cwd, stripColors: true })
       .wait('Please select from one of the below mentioned services')
       .sendCarriageReturn() // Content
       .wait('Please provide a friendly name for your resource')
@@ -312,7 +312,7 @@ export function addS3WithGuestAccess(cwd: string, settings: any): Promise<void> 
 // Expects 2 existing user pool groups
 export function addS3WithGroupAccess(cwd: string, settings: any): Promise<void> {
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['add', 'storage'], { cwd, stripColors: true })
+    spawn(getScriptRunnerPath(), [getCLIPath(), 'add', 'storage'], { cwd, stripColors: true })
       .wait('Please select from one of the below mentioned services')
       .sendCarriageReturn() // Content
       .wait('Please provide a friendly name for your resource')
@@ -348,7 +348,7 @@ export function addS3WithGroupAccess(cwd: string, settings: any): Promise<void> 
 
 export function addS3WithTrigger(cwd: string, settings: any): Promise<void> {
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['add', 'storage'], { cwd, stripColors: true })
+    spawn(getScriptRunnerPath(), [getCLIPath(), 'add', 'storage'], { cwd, stripColors: true })
       .wait('Please select from one of the below mentioned services')
       .sendCarriageReturn()
       .wait('Please provide a friendly name')
@@ -381,7 +381,7 @@ export function addS3WithTrigger(cwd: string, settings: any): Promise<void> {
 
 export function updateS3AddTrigger(cwd: string, settings: any): Promise<void> {
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['update', 'storage'], { cwd, stripColors: true })
+    spawn(getScriptRunnerPath(), [getCLIPath(), 'update', 'storage'], { cwd, stripColors: true })
       .wait('Please select from one of the below mentioned services')
       .sendCarriageReturn() // Content
       .wait('Restrict access by')
@@ -414,7 +414,7 @@ export function updateS3AddTrigger(cwd: string, settings: any): Promise<void> {
 
 export function addS3Storage(projectDir: string): Promise<void> {
   return new Promise((resolve, reject) => {
-    let chain = spawn(getCLIPath(), ['add', 'storage'], { cwd: projectDir, stripColors: true });
+    let chain = spawn(getScriptRunnerPath(), [getCLIPath(), 'add', 'storage'], { cwd: projectDir, stripColors: true });
 
     singleSelect(chain.wait('Please select from one of the below mentioned services:'), 'Content (Images, audio, video, etc.)', [
       'Content (Images, audio, video, etc.)',
@@ -455,7 +455,7 @@ export function addS3Storage(projectDir: string): Promise<void> {
 
 export function addS3StorageWithSettings(projectDir: string, settings: AddStorageSettings): Promise<void> {
   return new Promise((resolve, reject) => {
-    let chain = spawn(getCLIPath(), ['add', 'storage'], { cwd: projectDir, stripColors: true });
+    let chain = spawn(getScriptRunnerPath(), [getCLIPath(), 'add', 'storage'], { cwd: projectDir, stripColors: true });
 
     singleSelect(chain.wait('Please select from one of the below mentioned services:'), 'Content (Images, audio, video, etc.)', [
       'Content (Images, audio, video, etc.)',
@@ -496,7 +496,7 @@ export function addS3StorageWithSettings(projectDir: string, settings: AddStorag
 
 export function addDynamoDBWithGSIWithSettings(projectDir: string, settings: AddDynamoDBSettings): Promise<void> {
   return new Promise((resolve, reject) => {
-    let chain = spawn(getCLIPath(), ['add', 'storage'], { cwd: projectDir, stripColors: true });
+    let chain = spawn(getScriptRunnerPath(), [getCLIPath(), 'add', 'storage'], { cwd: projectDir, stripColors: true });
 
     singleSelect(chain.wait('Please select from one of the below mentioned services:'), 'NoSQL Database', [
       'Content (Images, audio, video, etc.)',

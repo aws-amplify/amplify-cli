@@ -11,6 +11,7 @@ import {
   amplifyPushWithoutCodegen,
   addFunction,
   initProjectWithAccessKey,
+  getCredentials,
 } from 'amplify-e2e-core';
 
 import { getApiKey, configureAmplify, getConfiguredAppsyncClientAPIKeyAuth } from '../authHelper';
@@ -45,6 +46,7 @@ export async function runTest(projectDir: string, testModule: any) {
 }
 
 async function setupFunction(functionProjectDirPath: string, functionRegion: string): Promise<string> {
+  getCredentials();
   fs.ensureDirSync(functionProjectDirPath);
   await initProjectWithAccessKey(functionProjectDirPath, {
     accessKeyId: process.env.AWS_ACCESS_KEY_ID,

@@ -1,9 +1,11 @@
 import { IAM } from 'aws-sdk';
+import { getCredentials } from 'amplify-e2e-core';
 
 export class IAMHelper {
   client: IAM;
   constructor(region: string = 'us-west-2') {
     this.client = new IAM({
+      ...getCredentials(),
       region,
     });
   }

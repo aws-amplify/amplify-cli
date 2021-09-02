@@ -1,5 +1,6 @@
 import { ResourceConstants } from 'graphql-transformer-common';
 import { GraphQLTransform } from 'graphql-transformer-core';
+import { getCredentials } from 'amplify-e2e-core';
 import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
 import { ModelAuthTransformer } from 'graphql-auth-transformer';
 import { ModelConnectionTransformer } from 'graphql-connection-transformer';
@@ -101,9 +102,9 @@ const REAL_PASSWORD = 'Password1234!';
 const WRITER_GROUP_NAME = 'writer';
 const ADMIN_GROUP_NAME = 'admin';
 
-const cognitoClient = new CognitoClient({ apiVersion: '2016-04-19', region: AWS_REGION });
+const cognitoClient = new CognitoClient({ ...getCredentials(), apiVersion: '2016-04-19', region: AWS_REGION });
 const customS3Client = new S3Client(AWS_REGION);
-const awsS3Client = new S3({ region: AWS_REGION });
+const awsS3Client = new S3({ ...getCredentials(), region: AWS_REGION });
 
 function outputValueSelector(key: string) {
   return (outputs: Output[]) => {

@@ -1,8 +1,8 @@
-import { nspawn as spawn, KEY_DOWN_ARROW, getCLIPath } from '..';
+import { nspawn as spawn, KEY_DOWN_ARROW, getCLIPath, getScriptRunnerPath, } from '..';
 
 export function addPinpoint(cwd: string, settings: any): Promise<void> {
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['add', 'analytics'], { cwd, stripColors: true })
+    spawn(getScriptRunnerPath(), [getCLIPath(), 'add', 'analytics'], { cwd, stripColors: true })
       .wait('Select an Analytics provider')
       .sendCarriageReturn()
       .wait('Provide your pinpoint resource name:')
@@ -27,7 +27,7 @@ export function addPinpoint(cwd: string, settings: any): Promise<void> {
 
 export function addKinesis(cwd: string, settings: any): Promise<void> {
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['add', 'analytics'], { cwd, stripColors: true })
+    spawn(getScriptRunnerPath(), [getCLIPath(), 'add', 'analytics'], { cwd, stripColors: true })
       .wait('Select an Analytics provider')
       .send(KEY_DOWN_ARROW)
       .sendCarriageReturn()
@@ -55,7 +55,7 @@ export function addKinesis(cwd: string, settings: any): Promise<void> {
 
 export function removeAnalytics(cwd: string, settings: any): Promise<void> {
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['remove', 'analytics'], { cwd, stripColors: true })
+    spawn(getScriptRunnerPath(), [getCLIPath(), 'remove', 'analytics'], { cwd, stripColors: true })
       .wait('Choose the resource you would want to remove')
       .send('j')
       .sendCarriageReturn()

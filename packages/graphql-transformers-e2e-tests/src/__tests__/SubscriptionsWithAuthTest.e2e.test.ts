@@ -30,6 +30,7 @@ import { API } from 'aws-amplify';
 import { GRAPHQL_AUTH_MODE } from '@aws-amplify/api';
 import { withTimeOut } from '../promiseWithTimeout';
 import * as Observable from 'zen-observable';
+import { getCredentials } from '../../../amplify-e2e-core/lib';
 
 // tslint:disable: no-use-before-declare
 
@@ -117,9 +118,9 @@ const INSTRUCTOR_GROUP_NAME = 'Instructor';
 const MEMBER_GROUP_NAME = 'Member';
 const ADMIN_GROUP_NAME = 'Admin';
 
-const cognitoClient = new CognitoClient({ apiVersion: '2016-04-19', region: AWS_REGION });
+const cognitoClient = new CognitoClient({ ...getCredentials(), apiVersion: '2016-04-19', region: AWS_REGION });
 const customS3Client = new S3Client(AWS_REGION);
-const awsS3Client = new S3({ region: AWS_REGION });
+const awsS3Client = new S3({ ...getCredentials(), region: AWS_REGION });
 
 // interface inputs
 interface MemberInput {

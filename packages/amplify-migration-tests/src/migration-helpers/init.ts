@@ -1,4 +1,4 @@
-import { addCircleCITags, getCLIPath, nspawn as spawn } from 'amplify-e2e-core';
+import { addCircleCITags, getCLIPath, getScriptRunnerPath, nspawn as spawn } from 'amplify-e2e-core';
 
 const defaultSettings = {
   name: '\r',
@@ -30,7 +30,7 @@ export function initJSProjectWithProfileOldDX(cwd: string, settings: Object, tes
   addCircleCITags(cwd);
 
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(testingWithLatestCodebase), ['init'], { cwd, stripColors: true, env })
+    spawn(getScriptRunnerPath(testingWithLatestCodebase), [getCLIPath(testingWithLatestCodebase), 'init'], { cwd, stripColors: true, env })
       .wait('Enter a name for the project')
       .sendLine(s.name)
       .wait('Enter a name for the environment')
@@ -78,7 +78,7 @@ export function initJSProjectWithProfile(cwd: string, settings: Object, testingW
   addCircleCITags(cwd);
 
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(testingWithLatestCodebase), ['init'], { cwd, stripColors: true, env })
+    spawn(getScriptRunnerPath(testingWithLatestCodebase), [getCLIPath(testingWithLatestCodebase), 'init'], { cwd, stripColors: true, env })
       .wait('Enter a name for the project')
       .sendLine(s.name)
       .wait('Initialize the project with the above configuration?')

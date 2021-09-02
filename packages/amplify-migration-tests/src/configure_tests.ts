@@ -1,4 +1,4 @@
-import { amplifyConfigure as configure, isCI, installAmplifyCLI, injectSessionToken } from 'amplify-e2e-core';
+import { amplifyConfigure as configure, isCI, installAmplifyCLI, injectSessionToken, injectRegion } from 'amplify-e2e-core';
 
 /*
  *  Migration tests must be run without publishing to local registry
@@ -23,6 +23,7 @@ async function setupAmplify(version: string = 'latest') {
     });
     if (process.env.AWS_SESSION_TOKEN) {
       injectSessionToken('amplify-integ-test-user');
+      injectRegion('amplify-integ-test-user');
     }
   } else {
     console.log('AWS Profile is already configured');

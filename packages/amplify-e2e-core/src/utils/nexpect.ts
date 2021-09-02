@@ -272,7 +272,7 @@ function chain(context: Context): ExecutionContext {
     sendEof: function (): ExecutionContext {
       var _sendEof: ExecutionStep = {
         fn: () => {
-          context.process.write('');
+          context.process.sendEof();
           return true;
         },
         shift: true,

@@ -1,8 +1,8 @@
-import { nspawn as spawn, getCLIPath } from 'amplify-e2e-core';
+import { nspawn as spawn, getCLIPath, getScriptRunnerPath, } from 'amplify-e2e-core';
 
 export function addCodegen(cwd: string, settings: any): Promise<void> {
   return new Promise((resolve, reject) => {
-    const run = spawn(getCLIPath(), ['codegen', 'add'], { cwd, stripColors: true });
+    const run = spawn(getScriptRunnerPath(), [getCLIPath(), 'codegen', 'add'], { cwd, stripColors: true });
     if (!(settings.ios || settings.android)) {
       run.wait('Choose the code generation language target').sendCarriageReturn();
     }

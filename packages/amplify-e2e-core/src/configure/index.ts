@@ -1,4 +1,4 @@
-import { nspawn as spawn, getCLIPath, singleSelect } from '..';
+import { nspawn as spawn, getCLIPath, getScriptRunnerPath, singleSelect } from '..';
 
 type AmplifyConfiguration = {
   accessKeyId: string;
@@ -42,7 +42,7 @@ export function amplifyConfigure(settings: AmplifyConfiguration): Promise<void> 
   }
 
   return new Promise((resolve, reject) => {
-    const chain = spawn(getCLIPath(), ['configure'], { stripColors: true })
+    const chain = spawn(getScriptRunnerPath(), [getCLIPath(), 'configure'], { stripColors: true })
       .wait('Sign in to your AWS administrator account:')
       .wait('Press Enter to continue')
       .sendCarriageReturn()
@@ -63,7 +63,6 @@ export function amplifyConfigure(settings: AmplifyConfiguration): Promise<void> 
       .resumeRecording()
       .wait('Profile Name:')
       .sendLine(s.profileName)
-      .wait('Successfully set up the new user.')
       .run((err: Error) => {
         if (!err) {
           resolve();
@@ -93,7 +92,7 @@ export function amplifyConfigureProject(settings: {
   } = settings;
 
   return new Promise((resolve, reject) => {
-    const chain = spawn(getCLIPath(), ['configure', 'project'], { cwd, stripColors: true }).wait('Which setting do you want to configure?');
+    const chain = spawn(getScriptRunnerPath(), [getCLIPath(), 'configure', 'project'], { cwd, stripColors: true }).wait('Which setting do you want to configure?');
 
     if (enableContainers) {
       singleSelect(chain, configurationOptions[2], configurationOptions);

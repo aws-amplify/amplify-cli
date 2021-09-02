@@ -1,10 +1,11 @@
-import { nspawn as spawn, KEY_DOWN_ARROW, getCLIPath } from '..';
+import { nspawn as spawn, KEY_DOWN_ARROW, getCLIPath, getScriptRunnerPath } from '..';
+import os from 'os';
 
 // add convert resource
 export function addConvert(cwd: string, settings: any): Promise<void> {
   const resourceName = 'convertTest1';
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['predictions', 'add'], { cwd, stripColors: true })
+    spawn(getScriptRunnerPath(), [getCLIPath(), 'predictions', 'add'], { cwd, stripColors: true })
       .wait('Please select from one of the categories below')
       .sendLine(KEY_DOWN_ARROW)
       .sendCarriageReturn()
@@ -34,27 +35,28 @@ export function addConvert(cwd: string, settings: any): Promise<void> {
 export function addIdentifyCollection(cwd: string, settings: any): Promise<void> {
   const resourceName = 'identifyCollectionTest1';
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['predictions', 'add'], { cwd, stripColors: true })
+    spawn(getScriptRunnerPath(), [getCLIPath(), 'predictions', 'add'], { cwd, stripColors: true })
       .wait('Please select from one of the categories below')
       .sendCarriageReturn()
       .wait('What would you like to identify?')
-      .sendLine(KEY_DOWN_ARROW)
+      .sendKeyDown()
       .sendCarriageReturn()
       .wait('Provide a friendly name for your resource')
-      .sendLine(`${resourceName}\r`)
+      .sendLine(resourceName)
       .wait('Would you like use the default configuration?')
-      .sendLine(KEY_DOWN_ARROW)
+      .sendKeyDown()
       .sendCarriageReturn()
       .wait('Would you like to enable celebrity detection?')
-      .sendLine('y')
+      .sendConfirmYes()
       .wait('Would you like to identify entities from a collection of images?')
-      .sendLine('y')
+      .sendConfirmYes()
       .wait('How many entities would you like to identify?')
       .sendCarriageReturn()
       .wait('Would you like to allow users to add images to this collection?')
-      .sendLine('y')
+      .sendConfirmYes()
       .wait('Who should have access?')
-      .sendLine(KEY_DOWN_ARROW)
+      .sendKeyDown()
+      .sendCarriageReturn()
       .wait('The CLI would be provisioning an S3 bucket')
       .sendCarriageReturn()
       .sendEof()
@@ -72,13 +74,14 @@ export function addIdentifyCollection(cwd: string, settings: any): Promise<void>
 export function addInterpret(cwd: string, settings: any): Promise<void> {
   const resourceName = 'interpretTest1';
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['add', 'predictions'], { cwd, stripColors: true })
+    spawn(getScriptRunnerPath(), [getCLIPath(), 'add', 'predictions'], { cwd, stripColors: true })
       .wait('Please select from one of the categories below')
-      .sendLine(`${KEY_DOWN_ARROW}${KEY_DOWN_ARROW}`)
+      .sendKeyDown(2)
+      .sendCarriageReturn()
       .wait('What would you like to interpret?')
       .sendCarriageReturn()
       .wait('Provide a friendly name for your resource')
-      .sendLine(`${resourceName}\r`)
+      .sendLine(resourceName)
       .wait('What kind of interpretation would you like?')
       .sendLine('k')
       .wait('Who should have access?')
