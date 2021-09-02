@@ -1,8 +1,8 @@
-import { nspawn as spawn, getCLIPath, getScriptRunnerPath, getSocialProviders, isCI } from 'amplify-e2e-core';
+import { nspawn as spawn, getCLIPath, getSocialProviders, isCI } from 'amplify-e2e-core';
 
 export function addEnvironment(cwd: string, settings: { envName: string; numLayers?: number }): Promise<void> {
   return new Promise((resolve, reject) => {
-    const chain = spawn(getScriptRunnerPath(), [getCLIPath(), 'env', 'add'], { cwd, stripColors: true })
+    const chain = spawn(getCLIPath(), ['env', 'add'], { cwd, stripColors: true })
       .wait('Enter a name for the environment')
       .sendLine(settings.envName)
       .wait('Select the authentication method you want to use:')
@@ -22,7 +22,7 @@ export function addEnvironment(cwd: string, settings: { envName: string; numLaye
 
 export function updateEnvironment(cwd: string, settings: { permissionsBoundaryArn: string }) {
   return new Promise<void>((resolve, reject) => {
-    spawn(getScriptRunnerPath(), [getCLIPath(), 'env', 'update'], { cwd, stripColors: true })
+    spawn(getCLIPath(), ['env', 'update'], { cwd, stripColors: true })
       .wait('Specify an IAM Policy ARN to use as a permissions boundary for all Amplify-generated IAM Roles')
       .sendLine(settings.permissionsBoundaryArn)
       .run((err: Error) => (!!err ? reject(err) : resolve()));
@@ -45,7 +45,7 @@ export function addEnvironmentYes(cwd: string, settings: { envName: string; disa
     },
   };
   return new Promise((resolve, reject) => {
-    spawn(getScriptRunnerPath(), [getCLIPath(), 'env', 'add', '--yes', '--envName', settings.envName, '--providers', JSON.stringify(providerConfig)], {
+    spawn(getCLIPath(), ['env', 'add', '--yes', '--envName', settings.envName, '--providers', JSON.stringify(providerConfig)], {
       cwd,
       stripColors: true,
       env,
@@ -55,7 +55,7 @@ export function addEnvironmentYes(cwd: string, settings: { envName: string; disa
 
 export function addEnvironmentWithImportedAuth(cwd: string, settings: { envName: string; currentEnvName: string }): Promise<void> {
   return new Promise((resolve, reject) => {
-    spawn(getScriptRunnerPath(), [getCLIPath(), 'env', 'add'], { cwd, stripColors: true })
+    spawn(getCLIPath(), ['env', 'add'], { cwd, stripColors: true })
       .wait('Enter a name for the environment')
       .sendLine(settings.envName)
       .wait('Select the authentication method you want to use:')
@@ -77,7 +77,7 @@ export function addEnvironmentWithImportedAuth(cwd: string, settings: { envName:
 
 export function checkoutEnvironment(cwd: string, settings: { envName: string }): Promise<void> {
   return new Promise((resolve, reject) => {
-    spawn(getScriptRunnerPath(), [getCLIPath(), 'env', 'checkout', settings.envName], { cwd, stripColors: true })
+    spawn(getCLIPath(), ['env', 'checkout', settings.envName], { cwd, stripColors: true })
       .wait('Initialized your environment successfully.')
       .run((err: Error) => {
         if (!err) {
@@ -94,7 +94,7 @@ export function listEnvironment(cwd: string, settings: { numEnv?: number }): Pro
   return new Promise((resolve, reject) => {
     let numEnv = settings.numEnv || 1;
     let regex = /\|\s\*?[a-z]{2,10}\s+\|/;
-    const chain = spawn(getScriptRunnerPath(), [getCLIPath(), 'env', 'list'], { cwd, stripColors: true }).wait('| Environments |').wait('| ------------ |');
+    const chain = spawn(getCLIPath(), ['env', 'list'], { cwd, stripColors: true }).wait('| Environments |').wait('| ------------ |');
 
     for (let i = 0; i < numEnv; ++i) {
       chain.wait(regex);
@@ -118,7 +118,7 @@ export function getEnvironment(cwd: string, settings: { envName: string }): Prom
     envData[key.trim()] = value.trim();
   };
   return new Promise((resolve, reject) => {
-    spawn(getScriptRunnerPath(), [getCLIPath(), 'env', 'get', '--name', settings.envName], { cwd, stripColors: true })
+    spawn(getCLIPath(), ['env', 'get', '--name', settings.envName], { cwd, stripColors: true })
       .wait(settings.envName)
       .wait('--------------')
       .wait('Provider')
@@ -149,7 +149,7 @@ export function getEnvironment(cwd: string, settings: { envName: string }): Prom
 */
 export function pullEnvironment(cwd: string): Promise<void> {
   return new Promise((resolve, reject) => {
-    spawn(getScriptRunnerPath(), [getCLIPath(), 'env', 'pull'], { cwd, stripColors: true }).run((err: Error) => {
+    spawn(getCLIPath(), ['env', 'pull'], { cwd, stripColors: true }).run((err: Error) => {
       if (!err) {
         resolve();
       } else {
@@ -173,7 +173,7 @@ export function addEnvironmentHostedUI(cwd: string, settings: { envName: string 
     APPLE_PRIVATE_KEY,
   } = getSocialProviders();
   return new Promise((resolve, reject) => {
-    spawn(getScriptRunnerPath(), [getCLIPath(), 'env', 'add'], { cwd, stripColors: true })
+    spawn(getCLIPath(), ['env', 'add'], { cwd, stripColors: true })
       .wait('Enter a name for the environment')
       .sendLine(settings.envName)
       .wait('Select the authentication method you want to use:')
@@ -213,7 +213,6 @@ export function addEnvironmentHostedUI(cwd: string, settings: { envName: string 
 
 export function importEnvironment(cwd: string, settings: { envName: string; providerConfig: string }): Promise<void> {
   const cmd_array = [
-    getCLIPath(),
     'env',
     'import',
     '--name',
@@ -224,7 +223,7 @@ export function importEnvironment(cwd: string, settings: { envName: string; prov
   ];
 
   return new Promise((resolve, reject) => {
-    spawn(getScriptRunnerPath(), cmd_array, { cwd, stripColors: true })
+    spawn(getCLIPath(), cmd_array, { cwd, stripColors: true })
       .wait('Successfully added environment from your project')
       .sendEof()
       .run((err: Error) => {
@@ -240,7 +239,7 @@ export function importEnvironment(cwd: string, settings: { envName: string; prov
 
 export function removeEnvironment(cwd: string, settings: { envName: string }): Promise<void> {
   return new Promise((resolve, reject) => {
-    spawn(getScriptRunnerPath(), [getCLIPath(), 'env', 'remove', settings.envName], { cwd, stripColors: true })
+    spawn(getCLIPath(), ['env', 'remove', settings.envName], { cwd, stripColors: true })
       .wait(`Are you sure you want to continue?`)
       .sendLine('y')
       .wait('Successfully removed environment from your project locally')

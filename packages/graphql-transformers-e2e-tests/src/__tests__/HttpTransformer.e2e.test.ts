@@ -1,6 +1,5 @@
 import { ResourceConstants } from 'graphql-transformer-common';
 import { GraphQLTransform } from 'graphql-transformer-core';
-import { getCredentials } from 'amplify-e2e-core';
 import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
 import { ModelAuthTransformer } from 'graphql-auth-transformer';
 import { HttpTransformer } from '../../../graphql-http-transformer';
@@ -17,7 +16,7 @@ jest.setTimeout(2000000);
 
 const cf = new CloudFormationClient('us-west-2');
 const customS3Client = new S3Client('us-west-2');
-const awsS3Client = new S3({ ...getCredentials(), region: 'us-west-2' });
+const awsS3Client = new S3({ region: 'us-west-2' });
 const featureFlags = {
   getBoolean: jest.fn().mockImplementation((name, defaultValue) => {
     if (name === 'improvePluralization') {

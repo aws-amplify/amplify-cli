@@ -1,8 +1,8 @@
-import { getCLIPath, getScriptRunnerPath, nspawn as spawn } from 'amplify-e2e-core';
+import { getCLIPath, nspawn as spawn } from 'amplify-e2e-core';
 
 export const importUserPoolOnly = (cwd: string, autoCompletePrefix: string, clientNames?: { web?: string; native?: string }) => {
   return new Promise((resolve, reject) => {
-    const chain = spawn(getScriptRunnerPath(), [getCLIPath(), 'auth', 'import'], { cwd, stripColors: true })
+    const chain = spawn(getCLIPath(), ['auth', 'import'], { cwd, stripColors: true })
       .wait('What type of auth resource do you want to import')
       .sendKeyDown()
       .sendCarriageReturn()
@@ -42,7 +42,7 @@ export const importUserPoolOnly = (cwd: string, autoCompletePrefix: string, clie
 
 export const importIdentityPoolAndUserPool = (cwd: string, autoCompletePrefix: string, clientNames?: { web?: string; native?: string }) => {
   return new Promise((resolve, reject) => {
-    const chain = spawn(getScriptRunnerPath(), [getCLIPath(), 'auth', 'import'], { cwd, stripColors: true })
+    const chain = spawn(getCLIPath(), ['auth', 'import'], { cwd, stripColors: true })
       .wait('What type of auth resource do you want to import')
       .sendCarriageReturn()
       .wait('Select the User Pool you want to import')
@@ -83,7 +83,7 @@ export const importIdentityPoolAndUserPool = (cwd: string, autoCompletePrefix: s
 
 export const removeImportedAuthWithDefault = (cwd: string) => {
   return new Promise((resolve, reject) => {
-    spawn(getScriptRunnerPath(), [getCLIPath(), 'auth', 'remove'], { cwd, stripColors: true })
+    spawn(getCLIPath(), ['auth', 'remove'], { cwd, stripColors: true })
       .wait('Choose the resource you would want to remove')
       .sendCarriageReturn()
       .wait('Are you sure you want to unlink this imported resource')
@@ -101,7 +101,7 @@ export const removeImportedAuthWithDefault = (cwd: string) => {
 
 export const addS3WithAuthConfigurationMismatchErrorExit = (cwd: string, settings: any) => {
   return new Promise((resolve, reject) => {
-    spawn(getScriptRunnerPath(), [getCLIPath(), 'add', 'storage'], { cwd, stripColors: true })
+    spawn(getCLIPath(), ['add', 'storage'], { cwd, stripColors: true })
       .wait('Please select from one of the below mentioned services')
       .sendCarriageReturn()
       .wait('Please provide a friendly name')
@@ -135,7 +135,6 @@ export const headlessPullExpectError = (
   frontendParameter?: Object,
 ): Promise<void> => {
   const pullCommand: string[] = [
-    getCLIPath(),
     'pull',
     '--amplify',
     JSON.stringify(amplifyParameters),
@@ -154,7 +153,7 @@ export const headlessPullExpectError = (
   }
 
   return new Promise((resolve, reject) => {
-    spawn(getScriptRunnerPath(), pullCommand, { cwd: projectRoot, stripColors: true })
+    spawn(getCLIPath(), pullCommand, { cwd: projectRoot, stripColors: true })
       .wait(errorMessage)
       .run((err: Error) => {
         if (!err) {
@@ -174,7 +173,6 @@ export const headlessPull = (
   frontendParameter?: Object,
 ): Promise<void> => {
   const pullCommand: string[] = [
-    getCLIPath(),
     'pull',
     '--amplify',
     JSON.stringify(amplifyParameters),
@@ -193,7 +191,7 @@ export const headlessPull = (
   }
 
   return new Promise((resolve, reject) => {
-    spawn(getScriptRunnerPath(), pullCommand, { cwd: projectRoot, stripColors: true }).run((err: Error) => {
+    spawn(getCLIPath(), pullCommand, { cwd: projectRoot, stripColors: true }).run((err: Error) => {
       if (!err) {
         resolve();
       } else {
@@ -205,7 +203,7 @@ export const headlessPull = (
 
 export const importS3 = (cwd: string, autoCompletePrefix: string): Promise<void> => {
   return new Promise((resolve, reject) => {
-    spawn(getScriptRunnerPath(), [getCLIPath(), 'storage', 'import'], { cwd, stripColors: true })
+    spawn(getCLIPath(), ['storage', 'import'], { cwd, stripColors: true })
       .wait('Please select from one of the below mentioned services')
       .sendCarriageReturn()
       .wait('Select the S3 Bucket you want to import')
@@ -226,7 +224,7 @@ export const importS3 = (cwd: string, autoCompletePrefix: string): Promise<void>
 
 export const removeImportedS3WithDefault = (cwd: string): Promise<void> => {
   return new Promise((resolve, reject) => {
-    spawn(getScriptRunnerPath(), [getCLIPath(), 'storage', 'remove'], { cwd, stripColors: true })
+    spawn(getCLIPath(), ['storage', 'remove'], { cwd, stripColors: true })
       .wait('Choose the resource you would want to remove')
       .sendCarriageReturn()
       .wait('Are you sure you want to unlink this imported resource')
@@ -244,7 +242,7 @@ export const removeImportedS3WithDefault = (cwd: string): Promise<void> => {
 
 export const importDynamoDBTable = (cwd: string, autoCompletePrefix: string): Promise<void> => {
   return new Promise((resolve, reject) => {
-    spawn(getScriptRunnerPath(), [getCLIPath(), 'storage', 'import'], { cwd, stripColors: true })
+    spawn(getCLIPath(), ['storage', 'import'], { cwd, stripColors: true })
       .wait('Please select from one of the below mentioned services')
       .sendKeyDown()
       .sendCarriageReturn()
@@ -268,7 +266,7 @@ export const importDynamoDBTable = (cwd: string, autoCompletePrefix: string): Pr
 // of these.
 export const removeImportedDynamoDBWithDefault = (cwd: string): Promise<void> => {
   return new Promise((resolve, reject) => {
-    spawn(getScriptRunnerPath(), [getCLIPath(), 'storage', 'remove'], { cwd, stripColors: true })
+    spawn(getCLIPath(), ['storage', 'remove'], { cwd, stripColors: true })
       .wait('Choose the resource you would want to remove')
       .sendCarriageReturn()
       .wait('Are you sure you want to unlink this imported resource')

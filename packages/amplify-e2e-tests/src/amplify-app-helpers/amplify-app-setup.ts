@@ -1,18 +1,14 @@
-import { nspawn as spawn, KEY_DOWN_ARROW, isCI, getScriptRunnerPath } from 'amplify-e2e-core';
+import { nspawn as spawn, KEY_DOWN_ARROW, isCI } from 'amplify-e2e-core';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 
-let npm = 'npm';
-if (process.platform === 'win32') {
-  npm = getScriptRunnerPath().replace('node.exe', 'npm.cmd');
-}
-
+const npm = /^win/.test(process.platform) ? 'npm.cmd' : 'npm';
 const amplifyAppBinPath = path.join(__dirname, '..', '..', '..', 'amplify-app', 'bin', 'amplify-app');
 const spawnCommand = isCI() ? 'amplify-app' : amplifyAppBinPath;
 
 function amplifyAppAndroid(projRoot: string): Promise<void> {
   return new Promise((resolve, reject) => {
-    spawn(getScriptRunnerPath(), [spawnCommand, '--platform', 'android'], { cwd: projRoot, stripColors: true })
+    spawn(spawnCommand, ['--platform', 'android'], { cwd: projRoot, stripColors: true })
       .wait('Successfully created base Amplify Project')
       .wait('Amplify setup completed successfully')
       .run(function (err) {
@@ -27,7 +23,7 @@ function amplifyAppAndroid(projRoot: string): Promise<void> {
 
 function amplifyAppIos(projRoot: string): Promise<void> {
   return new Promise((resolve, reject) => {
-    spawn(getScriptRunnerPath(), [spawnCommand, '--platform', 'ios'], { cwd: projRoot, stripColors: true })
+    spawn(spawnCommand, ['--platform', 'ios'], { cwd: projRoot, stripColors: true })
       .wait('Amplify setup completed successfully')
       .wait('Successfully created base Amplify Project')
       .run(function (err) {
@@ -42,7 +38,7 @@ function amplifyAppIos(projRoot: string): Promise<void> {
 
 function amplifyAppAngular(projRoot: string): Promise<void> {
   return new Promise((resolve, reject) => {
-    spawn(getScriptRunnerPath(), [spawnCommand], { cwd: projRoot, stripColors: true })
+    spawn(spawnCommand, [], { cwd: projRoot, stripColors: true })
       .wait('What type of app are you building')
       .sendCarriageReturn()
       .wait('What javascript framework are you using')
@@ -59,7 +55,7 @@ function amplifyAppAngular(projRoot: string): Promise<void> {
 
 function amplifyAppReact(projRoot: string): Promise<void> {
   return new Promise((resolve, reject) => {
-    spawn(getScriptRunnerPath(), [spawnCommand], { cwd: projRoot, stripColors: true })
+    spawn(spawnCommand, [], { cwd: projRoot, stripColors: true })
       .wait('What type of app are you building')
       .sendCarriageReturn()
       .wait('What javascript framework are you using')

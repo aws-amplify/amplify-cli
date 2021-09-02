@@ -1,4 +1,4 @@
-import { nspawn as spawn, getCLIPath, getScriptRunnerPath, singleSelect } from '..';
+import { nspawn as spawn, getCLIPath, singleSelect } from '..';
 
 export type NotificationSettings = {
   resourceName: string;
@@ -6,7 +6,7 @@ export type NotificationSettings = {
 
 export const addSMSNotification = async (cwd: string, settings: NotificationSettings): Promise<void> => {
   return new Promise((resolve, reject) => {
-    let chain = spawn(getScriptRunnerPath(), [getCLIPath(), 'add', 'notification'], { cwd, stripColors: true });
+    let chain = spawn(getCLIPath(), ['add', 'notification'], { cwd, stripColors: true });
 
     singleSelect(chain.wait('Choose the push notification channel to enable'), 'SMS', ['APNS', 'FCM', 'Email', 'SMS']);
 

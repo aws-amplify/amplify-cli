@@ -1,6 +1,5 @@
 import { Auth } from 'aws-amplify';
 import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
-import { getCredentials } from 'amplify-e2e-core';
 import gql from 'graphql-tag';
 import { ResourceConstants } from 'graphql-transformer-common';
 import { GraphQLTransform } from 'graphql-transformer-core';
@@ -74,9 +73,9 @@ const USERNAME1 = 'user1@test.com';
 const TMP_PASSWORD = 'Password123!';
 const REAL_PASSWORD = 'Password1234!';
 
-const cognitoClient = new CognitoClient({ ...getCredentials(), apiVersion: '2016-04-19', region: REGION });
+const cognitoClient = new CognitoClient({ apiVersion: '2016-04-19', region: REGION });
 const customS3Client = new S3Client(REGION);
-const awsS3Client = new S3({ ...getCredentials, region: REGION });
+const awsS3Client = new S3({ region: REGION });
 
 function outputValueSelector(key: string) {
   return (outputs: Output[]) => {

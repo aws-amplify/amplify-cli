@@ -12,7 +12,6 @@ import {
   amplifyInitSandbox,
   getProjectSchema,
   amplifyPush,
-  getCredentials,
 } from 'amplify-e2e-core';
 import { createNewProjectDir, deleteProjectDir, getEnvVars, getProjectMeta } from 'amplify-e2e-core';
 import { JSONUtilities } from 'amplify-cli-core';
@@ -84,7 +83,6 @@ describe('amplify init', () => {
   });
 
   it('should init project without profile', async () => {
-    getCredentials();
     const { AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY } = getEnvVars();
     if (!AWS_ACCESS_KEY_ID || !AWS_SECRET_ACCESS_KEY) {
       throw new Error('Set AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY either in .env file or as Environment variable');

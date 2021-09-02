@@ -1,4 +1,4 @@
-import { getCLIPath, getScriptRunnerPath, nspawn as spawn } from '..';
+import { getCLIPath, nspawn as spawn } from '..';
 
 export function amplifyPull(
   cwd: string,
@@ -7,7 +7,7 @@ export function amplifyPull(
   return new Promise((resolve, reject) => {
     //Note:- Table checks have been removed since they are not necessary for push/pull flows and prone to breaking because
     //of stylistic changes. A simpler content based check will be added in the future.
-    const args = [getCLIPath(), 'pull'];
+    const args = ['pull'];
 
     if (settings.appId) {
       args.push('--appId', settings.appId);
@@ -17,7 +17,7 @@ export function amplifyPull(
       args.push('--restore');
     }
 
-    const chain = spawn(getScriptRunnerPath(), args, { cwd, stripColors: true });
+    const chain = spawn(getCLIPath(), args, { cwd, stripColors: true });
 
     if (settings.emptyDir) {
       chain
@@ -74,9 +74,9 @@ export function amplifyPull(
 
 export function amplifyPullSandbox(cwd: string, settings: { sandboxId: string; appType: string; framework: string }) {
   return new Promise((resolve, reject) => {
-    const args = [getCLIPath(), 'pull', '--sandboxId', settings.sandboxId];
+    const args = ['pull', '--sandboxId', settings.sandboxId];
 
-    spawn(getScriptRunnerPath(), args, { cwd, stripColors: true })
+    spawn(getCLIPath(), args, { cwd, stripColors: true })
       .wait('What type of app are you building')
       .sendKeyUp()
       .sendLine(settings.appType)

@@ -2,7 +2,6 @@ import { pathManager } from 'amplify-cli-core';
 import {
   ExecutionContext,
   getCLIPath,
-  getScriptRunnerPath,
   getRuntimeDisplayNames,
   LayerPermissionChoice,
   LayerRuntime,
@@ -29,7 +28,7 @@ export function legacyAddLayer(
   };
   settings = { ...defaultSettings, ...settings };
   return new Promise((resolve, reject) => {
-    const chain: ExecutionContext = spawn(getScriptRunnerPath(false), [getCLIPath(false), 'add', 'function'], { cwd, stripColors: true })
+    const chain: ExecutionContext = spawn(getCLIPath(false), ['add', 'function'], { cwd, stripColors: true })
       .wait('Select which capability you want to add:')
       .sendKeyDown()
       .sendCarriageReturn() // Layer

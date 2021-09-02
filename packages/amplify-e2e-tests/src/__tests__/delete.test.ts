@@ -23,7 +23,6 @@ import {
   getS3StorageBucketName,
   pinpointAppExist,
   pushToCloud,
-  getCredentials,
 } from 'amplify-e2e-core';
 import { addEnvironment, checkoutEnvironment, removeEnvironment } from '../environment/env';
 import { addCodegen } from '../codegen/add';
@@ -115,12 +114,10 @@ async function testDeletion(projRoot: string, settings: { ios?: Boolean; android
   await addEnvironment(projRoot, { envName: 'test' });
   await addApiWithoutSchema(projRoot);
   await addCodegen(projRoot, settings);
-
   const deploymentBucketName2 = getProjectMeta(projRoot).providers.awscloudformation.DeploymentBucketName;
   expect(await bucketExists(deploymentBucketName1)).toBe(true);
   expect(await bucketExists(deploymentBucketName2)).toBe(true);
   if (meta.AmplifyAppId) expect(await appExists(meta.AmplifyAppId, meta.Region)).toBe(true);
-
   await deleteProject(projRoot);
   if (meta.AmplifyAppId) expect(await appExists(meta.AmplifyAppId, meta.Region)).toBe(false);
   expect(await bucketNotExists(deploymentBucketName1)).toBe(true);
@@ -140,7 +137,7 @@ async function testDeletion(projRoot: string, settings: { ios?: Boolean; android
 }
 
 async function putFiles(bucket: string, count = 1001) {
-  const s3 = new S3(getCredentials());
+  const s3 = new S3();
   const s3Params = [...Array(count)].map((_, num) => {
     return {
       Bucket: bucket,
@@ -152,7 +149,7 @@ async function putFiles(bucket: string, count = 1001) {
 }
 
 async function bucketExists(bucket: string) {
-  const s3 = new S3(getCredentials());
+  const s3 = new S3();
   const params = {
     Bucket: bucket,
   };
@@ -168,7 +165,7 @@ async function bucketExists(bucket: string) {
 }
 
 async function appExists(appId: string, region: string) {
-  const amplify = new Amplify({ region, ...getCredentials() });
+  const amplify = new Amplify({ region });
   try {
     await amplify.getApp({ appId }).promise();
     return true;
