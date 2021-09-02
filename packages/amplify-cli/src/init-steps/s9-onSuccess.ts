@@ -1,4 +1,5 @@
 import * as fs from 'fs-extra';
+import { join } from 'path';
 import sequential from 'promise-sequential';
 import { CLIContextEnvironmentProvider, FeatureFlags, pathManager, stateManager, $TSContext } from 'amplify-cli-core';
 import { getFrontendPlugins } from '../extensions/amplify-helpers/get-frontend-plugins';
@@ -123,6 +124,7 @@ function generateNonRuntimeFiles(context: $TSContext) {
   generateTeamProviderInfoFile(context);
   generateGitIgnoreFile(context);
   generateReadMeFile(context);
+  generateHooksSampleDirectory(context);
 }
 
 function generateProjectConfigFile(context: $TSContext) {
@@ -175,6 +177,13 @@ function generateReadMeFile(context: $TSContext) {
   const { projectPath } = context.exeInfo.localEnvInfo;
   const readMeFilePath = pathManager.getReadMeFilePath(projectPath);
   writeReadMeFile(readMeFilePath);
+}
+
+function generateHooksSampleDirectory(context: $TSContext) {
+  const { projectPath } = context.exeInfo.localEnvInfo;
+  const sampleHookScriptsDirPath = join(__dirname, '..', '..', 'resources', 'sample-hooks');
+
+  stateManager.setSampleHooksDir(projectPath, sampleHookScriptsDirPath);
 }
 
 function printWelcomeMessage(context: $TSContext) {
