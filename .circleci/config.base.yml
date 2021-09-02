@@ -104,6 +104,19 @@ jobs:
     steps:
       - checkout
       - run: yarn run production-build
+      - run:
+          name: Start verdaccio and package CLI
+          command: |
+            source .circleci/local_publish_helpers.sh
+            startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
+            setNpmRegistryUrlToLocal
+            changeNpmGlobalPath
+            yarn pkg-all
+            unsetNpmRegistryUrl
+      - save_cache:
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
+          paths:
+            - ~/repo/out
       - save_cache:
           key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
           paths:
@@ -240,6 +253,8 @@ jobs:
           at: ./
       - restore_cache:
           key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
+      - restore_cache:
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
           name: Update OS Packages
           command: sudo apt-get update
@@ -264,6 +279,8 @@ jobs:
             - amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
           key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
+      - restore_cache:
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run: *install_cli_from_local_registery
       - run: *run_e2e_tests
       - run: *scan_e2e_test_artifacts

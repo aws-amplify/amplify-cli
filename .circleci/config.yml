@@ -95,6 +95,19 @@ jobs:
     steps:
       - checkout
       - run: yarn run production-build
+      - run:
+          name: Start verdaccio and package CLI
+          command: |
+            source .circleci/local_publish_helpers.sh
+            startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
+            setNpmRegistryUrlToLocal
+            changeNpmGlobalPath
+            yarn pkg-all
+            unsetNpmRegistryUrl
+      - save_cache:
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
+          paths:
+            - ~/repo/out
       - save_cache:
           key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
           paths:
@@ -262,6 +275,8 @@ jobs:
           at: ./
       - restore_cache:
           key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
+      - restore_cache:
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
           name: Update OS Packages
           command: sudo apt-get update
@@ -290,6 +305,8 @@ jobs:
             - amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
           key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
+      - restore_cache:
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
           name: Start verdaccio, install node CLI and amplify-app
           command: |
@@ -900,6 +917,8 @@ jobs:
             - amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
           key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
+      - restore_cache:
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
           name: Start verdaccio, install node CLI and amplify-app
           command: |
@@ -954,6 +973,8 @@ jobs:
             - amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
           key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
+      - restore_cache:
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
           name: Start verdaccio, install node CLI and amplify-app
           command: |
@@ -1009,6 +1030,8 @@ jobs:
             - amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
           key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
+      - restore_cache:
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
           name: Start verdaccio, install node CLI and amplify-app
           command: |
@@ -1063,6 +1086,8 @@ jobs:
             - amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
           key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
+      - restore_cache:
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
           name: Start verdaccio, install node CLI and amplify-app
           command: |
@@ -1117,6 +1142,8 @@ jobs:
             - amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
           key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
+      - restore_cache:
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
           name: Start verdaccio, install node CLI and amplify-app
           command: |
@@ -1171,6 +1198,8 @@ jobs:
             - amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
           key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
+      - restore_cache:
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
           name: Start verdaccio, install node CLI and amplify-app
           command: |
@@ -1225,6 +1254,8 @@ jobs:
             - amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
           key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
+      - restore_cache:
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
           name: Start verdaccio, install node CLI and amplify-app
           command: |
@@ -1279,6 +1310,8 @@ jobs:
             - amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
           key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
+      - restore_cache:
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
           name: Start verdaccio, install node CLI and amplify-app
           command: |
@@ -1333,6 +1366,8 @@ jobs:
             - amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
           key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
+      - restore_cache:
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
           name: Start verdaccio, install node CLI and amplify-app
           command: |
@@ -1387,6 +1422,8 @@ jobs:
             - amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
           key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
+      - restore_cache:
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
           name: Start verdaccio, install node CLI and amplify-app
           command: |
@@ -1441,6 +1478,8 @@ jobs:
             - amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
           key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
+      - restore_cache:
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
           name: Start verdaccio, install node CLI and amplify-app
           command: |
@@ -1495,6 +1534,8 @@ jobs:
             - amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
           key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
+      - restore_cache:
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
           name: Start verdaccio, install node CLI and amplify-app
           command: |
@@ -1549,6 +1590,8 @@ jobs:
             - amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
           key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
+      - restore_cache:
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
           name: Start verdaccio, install node CLI and amplify-app
           command: |
@@ -1604,6 +1647,8 @@ jobs:
             - amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
           key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
+      - restore_cache:
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
           name: Start verdaccio, install node CLI and amplify-app
           command: |
@@ -1658,6 +1703,8 @@ jobs:
             - amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
           key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
+      - restore_cache:
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
           name: Start verdaccio, install node CLI and amplify-app
           command: |
@@ -1712,6 +1759,8 @@ jobs:
             - amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
           key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
+      - restore_cache:
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
           name: Start verdaccio, install node CLI and amplify-app
           command: |
@@ -1767,6 +1816,8 @@ jobs:
             - amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
           key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
+      - restore_cache:
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
           name: Start verdaccio, install node CLI and amplify-app
           command: |
@@ -1821,6 +1872,8 @@ jobs:
             - amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
           key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
+      - restore_cache:
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
           name: Start verdaccio, install node CLI and amplify-app
           command: |
@@ -1875,6 +1928,8 @@ jobs:
             - amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
           key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
+      - restore_cache:
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
           name: Start verdaccio, install node CLI and amplify-app
           command: |
@@ -1929,6 +1984,8 @@ jobs:
             - amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
           key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
+      - restore_cache:
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
           name: Start verdaccio, install node CLI and amplify-app
           command: |
@@ -1983,6 +2040,8 @@ jobs:
             - amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
           key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
+      - restore_cache:
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
           name: Start verdaccio, install node CLI and amplify-app
           command: |
@@ -2037,6 +2096,8 @@ jobs:
             - amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
           key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
+      - restore_cache:
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
           name: Start verdaccio, install node CLI and amplify-app
           command: |
@@ -2091,6 +2152,8 @@ jobs:
             - amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
           key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
+      - restore_cache:
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
           name: Start verdaccio, install node CLI and amplify-app
           command: |
@@ -2145,6 +2208,8 @@ jobs:
             - amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
           key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
+      - restore_cache:
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
           name: Start verdaccio, install node CLI and amplify-app
           command: |
@@ -2199,6 +2264,8 @@ jobs:
             - amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
           key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
+      - restore_cache:
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
           name: Start verdaccio, install node CLI and amplify-app
           command: |
@@ -2253,6 +2320,8 @@ jobs:
             - amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
           key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
+      - restore_cache:
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
           name: Start verdaccio, install node CLI and amplify-app
           command: |
@@ -2307,6 +2376,8 @@ jobs:
             - amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
           key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
+      - restore_cache:
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
           name: Start verdaccio, install node CLI and amplify-app
           command: |
@@ -2361,6 +2432,8 @@ jobs:
             - amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
           key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
+      - restore_cache:
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
           name: Start verdaccio, install node CLI and amplify-app
           command: |
@@ -2415,6 +2488,8 @@ jobs:
             - amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
           key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
+      - restore_cache:
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
           name: Start verdaccio, install node CLI and amplify-app
           command: |
@@ -2469,6 +2544,8 @@ jobs:
             - amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
           key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
+      - restore_cache:
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
           name: Start verdaccio, install node CLI and amplify-app
           command: |
@@ -2523,6 +2600,8 @@ jobs:
             - amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
           key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
+      - restore_cache:
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
           name: Start verdaccio, install node CLI and amplify-app
           command: |
@@ -2577,6 +2656,8 @@ jobs:
             - amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
           key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
+      - restore_cache:
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
           name: Start verdaccio, install node CLI and amplify-app
           command: |
@@ -2631,6 +2712,8 @@ jobs:
             - amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
           key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
+      - restore_cache:
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
           name: Start verdaccio, install node CLI and amplify-app
           command: |
@@ -2685,6 +2768,8 @@ jobs:
             - amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
           key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
+      - restore_cache:
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
           name: Start verdaccio, install node CLI and amplify-app
           command: |
@@ -2739,6 +2824,8 @@ jobs:
             - amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
           key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
+      - restore_cache:
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
           name: Start verdaccio, install node CLI and amplify-app
           command: |
@@ -2793,6 +2880,8 @@ jobs:
             - amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
           key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
+      - restore_cache:
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
           name: Start verdaccio, install node CLI and amplify-app
           command: |
@@ -2847,6 +2936,8 @@ jobs:
             - amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
           key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
+      - restore_cache:
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
           name: Start verdaccio, install node CLI and amplify-app
           command: |
@@ -2901,6 +2992,8 @@ jobs:
             - amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
           key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
+      - restore_cache:
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
           name: Start verdaccio, install node CLI and amplify-app
           command: |
@@ -2955,6 +3048,8 @@ jobs:
             - amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
           key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
+      - restore_cache:
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
           name: Start verdaccio, install node CLI and amplify-app
           command: |
@@ -3009,6 +3104,8 @@ jobs:
             - amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
           key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
+      - restore_cache:
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
           name: Start verdaccio, install node CLI and amplify-app
           command: |
@@ -3063,6 +3160,8 @@ jobs:
             - amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
           key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
+      - restore_cache:
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
           name: Start verdaccio, install node CLI and amplify-app
           command: |
@@ -3117,6 +3216,8 @@ jobs:
             - amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
           key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
+      - restore_cache:
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
           name: Start verdaccio, install node CLI and amplify-app
           command: |
@@ -3172,6 +3273,8 @@ jobs:
             - amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
           key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
+      - restore_cache:
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
           name: Start verdaccio, install node CLI and amplify-app
           command: |
@@ -3226,6 +3329,8 @@ jobs:
             - amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
           key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
+      - restore_cache:
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
           name: Start verdaccio, install node CLI and amplify-app
           command: |
@@ -3280,6 +3385,8 @@ jobs:
             - amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
           key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
+      - restore_cache:
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
           name: Start verdaccio, install node CLI and amplify-app
           command: |
@@ -3334,6 +3441,8 @@ jobs:
             - amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
           key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
+      - restore_cache:
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
           name: Start verdaccio, install node CLI and amplify-app
           command: |
@@ -3388,6 +3497,8 @@ jobs:
             - amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
           key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
+      - restore_cache:
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
           name: Start verdaccio, install node CLI and amplify-app
           command: |
@@ -3442,6 +3553,8 @@ jobs:
             - amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
           key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
+      - restore_cache:
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
           name: Start verdaccio, install node CLI and amplify-app
           command: |
@@ -3497,6 +3610,8 @@ jobs:
             - amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
           key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
+      - restore_cache:
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
           name: Start verdaccio, install node CLI and amplify-app
           command: |
@@ -3551,6 +3666,8 @@ jobs:
             - amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
           key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
+      - restore_cache:
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
           name: Start verdaccio, install node CLI and amplify-app
           command: |
@@ -3605,6 +3722,8 @@ jobs:
             - amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
           key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
+      - restore_cache:
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
           name: Start verdaccio, install node CLI and amplify-app
           command: |
@@ -3659,6 +3778,8 @@ jobs:
             - amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
           key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
+      - restore_cache:
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
           name: Start verdaccio, install node CLI and amplify-app
           command: |
@@ -3713,6 +3834,8 @@ jobs:
             - amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
           key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
+      - restore_cache:
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
           name: Start verdaccio, install node CLI and amplify-app
           command: |
@@ -3767,6 +3890,8 @@ jobs:
             - amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
           key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
+      - restore_cache:
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
           name: Start verdaccio, install node CLI and amplify-app
           command: |
@@ -3821,6 +3946,8 @@ jobs:
             - amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
           key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
+      - restore_cache:
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
           name: Start verdaccio, install node CLI and amplify-app
           command: |
@@ -3875,6 +4002,8 @@ jobs:
             - amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
           key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
+      - restore_cache:
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
           name: Start verdaccio, install node CLI and amplify-app
           command: |
@@ -3929,6 +4058,8 @@ jobs:
             - amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
           key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
+      - restore_cache:
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
           name: Start verdaccio, install node CLI and amplify-app
           command: |
@@ -3983,6 +4114,8 @@ jobs:
             - amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
           key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
+      - restore_cache:
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
           name: Start verdaccio, install node CLI and amplify-app
           command: |
@@ -4037,6 +4170,8 @@ jobs:
             - amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
           key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
+      - restore_cache:
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
           name: Start verdaccio, install node CLI and amplify-app
           command: |
@@ -4091,6 +4226,8 @@ jobs:
             - amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
           key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
+      - restore_cache:
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
           name: Start verdaccio, install node CLI and amplify-app
           command: |
@@ -4145,6 +4282,8 @@ jobs:
             - amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
           key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
+      - restore_cache:
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
           name: Start verdaccio, install node CLI and amplify-app
           command: |
@@ -4199,6 +4338,8 @@ jobs:
             - amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
           key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
+      - restore_cache:
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
           name: Start verdaccio, install node CLI and amplify-app
           command: |
@@ -4253,6 +4394,8 @@ jobs:
             - amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
           key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
+      - restore_cache:
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
           name: Start verdaccio, install node CLI and amplify-app
           command: |
@@ -4307,6 +4450,8 @@ jobs:
             - amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
           key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
+      - restore_cache:
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
           name: Start verdaccio, install node CLI and amplify-app
           command: |
@@ -4362,6 +4507,8 @@ jobs:
             - amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
           key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
+      - restore_cache:
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
           name: Start verdaccio, install node CLI and amplify-app
           command: |
@@ -4416,6 +4563,8 @@ jobs:
             - amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
           key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
+      - restore_cache:
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
           name: Start verdaccio, install node CLI and amplify-app
           command: |
@@ -4470,6 +4619,8 @@ jobs:
             - amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
           key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
+      - restore_cache:
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
           name: Start verdaccio, install node CLI and amplify-app
           command: |
@@ -4524,6 +4675,8 @@ jobs:
             - amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
           key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
+      - restore_cache:
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
           name: Start verdaccio, install node CLI and amplify-app
           command: |
@@ -4578,6 +4731,8 @@ jobs:
             - amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
           key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
+      - restore_cache:
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
           name: Start verdaccio, install node CLI and amplify-app
           command: |
@@ -4632,6 +4787,8 @@ jobs:
             - amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
           key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
+      - restore_cache:
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
           name: Start verdaccio, install node CLI and amplify-app
           command: |
@@ -4686,6 +4843,8 @@ jobs:
             - amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
           key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
+      - restore_cache:
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
           name: Start verdaccio, install node CLI and amplify-app
           command: |
@@ -4740,6 +4899,8 @@ jobs:
             - amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
           key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
+      - restore_cache:
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
           name: Start verdaccio, install node CLI and amplify-app
           command: |
@@ -4795,6 +4956,8 @@ jobs:
             - amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
           key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
+      - restore_cache:
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
           name: Start verdaccio, install node CLI and amplify-app
           command: |
@@ -4849,6 +5012,8 @@ jobs:
             - amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
           key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
+      - restore_cache:
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
           name: Start verdaccio, install node CLI and amplify-app
           command: |
@@ -4903,6 +5068,8 @@ jobs:
             - amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
           key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
+      - restore_cache:
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
           name: Start verdaccio, install node CLI and amplify-app
           command: |
@@ -4957,6 +5124,8 @@ jobs:
             - amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
           key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
+      - restore_cache:
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
           name: Start verdaccio, install node CLI and amplify-app
           command: |
@@ -5011,6 +5180,8 @@ jobs:
             - amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
           key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
+      - restore_cache:
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
           name: Start verdaccio, install node CLI and amplify-app
           command: |
@@ -5065,6 +5236,8 @@ jobs:
             - amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
           key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
+      - restore_cache:
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
           name: Start verdaccio, install node CLI and amplify-app
           command: |
@@ -5119,6 +5292,8 @@ jobs:
             - amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
           key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
+      - restore_cache:
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
           name: Start verdaccio, install node CLI and amplify-app
           command: |
@@ -5173,6 +5348,8 @@ jobs:
             - amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
           key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
+      - restore_cache:
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
           name: Start verdaccio, install node CLI and amplify-app
           command: |
@@ -5227,6 +5404,8 @@ jobs:
             - amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
           key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
+      - restore_cache:
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
           name: Start verdaccio, install node CLI and amplify-app
           command: |
@@ -5281,6 +5460,8 @@ jobs:
             - amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
           key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
+      - restore_cache:
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
           name: Start verdaccio, install node CLI and amplify-app
           command: |
@@ -5335,6 +5516,8 @@ jobs:
             - amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
           key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
+      - restore_cache:
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
           name: Start verdaccio, install node CLI and amplify-app
           command: |
@@ -5389,6 +5572,8 @@ jobs:
             - amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
           key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
+      - restore_cache:
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
           name: Start verdaccio, install node CLI and amplify-app
           command: |
