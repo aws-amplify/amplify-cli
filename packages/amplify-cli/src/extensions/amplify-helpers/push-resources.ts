@@ -50,7 +50,11 @@ export async function pushResources(
     }
   }
 
-  const hasChanges = await showResourceTable(category, resourceName, filteredResources);
+  let hasChanges = false;
+  if (!rebuild) {
+    // status table does not have a way to show resource in "rebuild" state so skipping it to avoid confusion
+    hasChanges = await showResourceTable(category, resourceName, filteredResources);
+  }
 
   // no changes detected
   if (!hasChanges && !context.exeInfo.forcePush && !rebuild) {
@@ -59,7 +63,8 @@ export async function pushResources(
     return context;
   }
 
-  let continueToPush = context.exeInfo && context.exeInfo.inputParams && context.exeInfo.inputParams.yes;
+  // rebuild has an upstream confirmation prompt so no need to prompt again here
+  let continueToPush = (context.exeInfo && context.exeInfo.inputParams && context.exeInfo.inputParams.yes) || rebuild;
 
   if (!continueToPush) {
     if (context.exeInfo.iterativeRollback) {
