@@ -1,4 +1,4 @@
-import { $TSAny, $TSContext, convertNumBytes, getFolderSize, pathManager, stateManager } from 'amplify-cli-core';
+import { $TSAny, $TSContext, convertNumBytes, getFolderSize, pathManager } from 'amplify-cli-core';
 import { FunctionRuntimeLifecycleManager, ZipEntry } from 'amplify-function-plugin-interface';
 import chalk from 'chalk';
 import * as fs from 'fs-extra';
@@ -7,7 +7,7 @@ import { EOL } from 'os';
 import * as path from 'path';
 import { lambdaLayerNewVersionWalkthrough } from '../service-walkthroughs/lambdaLayerWalkthrough';
 import { Packager } from '../types/packaging-types';
-import { accessPermissions, cfnTemplateSuffix, description, lambdaPackageLimitInMB, ServiceName, versionHash } from './constants';
+import { accessPermissions, description, lambdaPackageLimitInMB, ServiceName, versionHash } from './constants';
 import { LayerCloudState } from './layerCloudState';
 import { loadLayerConfigurationFile } from './layerConfiguration';
 import { ensureLayerVersion, getChangedResources, loadPreviousLayerHash, loadStoredLayerParameters } from './layerHelpers';
