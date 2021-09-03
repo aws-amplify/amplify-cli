@@ -12,7 +12,7 @@ import { LayerCloudState } from './layerCloudState';
 import { loadLayerConfigurationFile } from './layerConfiguration';
 import { ensureLayerVersion, getChangedResources, loadPreviousLayerHash, loadStoredLayerParameters } from './layerHelpers';
 import { defaultLayerPermission } from './layerParams';
-import { getLayerTemplate, updateLayerArtifacts } from './storeResources';
+import { updateLayerArtifacts } from './storeResources';
 import { zipPackage } from './zipResource';
 
 /**

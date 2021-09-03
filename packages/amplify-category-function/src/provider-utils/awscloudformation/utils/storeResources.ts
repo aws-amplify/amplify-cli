@@ -1,4 +1,4 @@
-import { $TSAny, $TSContext, $TSObject, JSONUtilities, pathManager, stateManager } from 'amplify-cli-core';
+import { $TSAny, $TSContext, $TSObject, JSONUtilities, pathManager, readCFNTemplate, stateManager } from 'amplify-cli-core';
 import { FunctionBreadcrumbs, FunctionParameters, FunctionTriggerParameters } from 'amplify-function-plugin-interface';
 import * as fs from 'fs-extra';
 import _ from 'lodash';
@@ -369,12 +369,6 @@ function saveCFNFileWithLayerVersion(
   JSONUtilities.writeJson(path.join(layerDirPath, getCfnTemplateFileName(parameters.layerName)), cfnTemplate);
 
   return cfnTemplate;
-}
-
-export function getLayerTemplate(resourceName: string): Template {
-  const backendDir = pathManager.getBackendDirPath();
-  const layerPath = path.join(backendDir, categoryName, resourceName, getCfnTemplateFileName(resourceName));
-  return JSONUtilities.readJson<Template>(layerPath);
 }
 
 const getCfnTemplateFileName = (layerName: string) => `${layerName}${cfnTemplateSuffix}`;
