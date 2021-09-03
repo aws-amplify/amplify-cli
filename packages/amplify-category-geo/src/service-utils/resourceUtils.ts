@@ -151,7 +151,7 @@ export const checkAuthConfig = async (context: $TSContext, parameters: Pick<Reso
   if (parameters.accessType === AccessType.AuthorizedAndGuestUsers) {
     const authRequirements = { authSelections: 'identityPoolOnly', allowUnauthenticatedIdentities: true };
 
-    const checkResult: $TSObject = await context.amplify.invokePluginMethod(context, 'auth', null, 'checkRequirements', [
+    const checkResult: $TSObject = await context.amplify.invokePluginMethod(context, 'auth', undefined, 'checkRequirements', [
       authRequirements,
       context,
       category,
@@ -173,7 +173,7 @@ export const checkAuthConfig = async (context: $TSContext, parameters: Pick<Reso
       context.print.warning(`Adding ${service} to your project requires the Auth category for managing authentication rules.`);
 
       try {
-        await context.amplify.invokePluginMethod(context, 'auth', null, 'externalAuthEnable', [
+        await context.amplify.invokePluginMethod(context, 'auth', undefined, 'externalAuthEnable', [
           context,
           category,
           service,
