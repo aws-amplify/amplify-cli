@@ -1,14 +1,13 @@
 import * as fs from 'fs-extra';
-import * as path from 'path';
 import _ from 'lodash';
-import { $TSAny, $TSMeta, $TSTeamProviderInfo, DeploymentSecrets, HooksConfig, writeCFNTemplate, readCFNTemplate } from '..';
-import Ajv from "ajv";
 import { PathConstants, PathManager, pathManager } from './pathManager';
+import { $TSMeta, $TSTeamProviderInfo, $TSAny, DeploymentSecrets, HooksConfig } from '..';
 import { JSONUtilities } from '../jsonUtilities';
 import { SecretFileMode } from '../cliConstants';
 import { HydrateTags, ReadTags, Tag } from '../tags';
 import { CustomIAMPolicies } from '../customPoliciesUtils';
 import { isJsonFileContent} from '../cfnUtilities'
+import path from 'path';
 
 export type GetOptions<T> = {
   throwIfNotExist?: boolean;
