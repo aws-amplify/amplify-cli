@@ -238,9 +238,9 @@ export class GraphQLResourceManager {
     });
 
     for (const gsiChange of tableWithGSIChanges) {
+      const changeSteps = getGSIDiffs(gsiChange.currentTable, gsiChange.nextTable);
       const stackName = gsiChange.stackName;
       const tableName = gsiChange.tableName;
-      const changeSteps = getGSIDiffs(gsiChange.currentTable, gsiChange.nextTable);
       for (const changeStep of changeSteps) {
         const ddbResource = this.templateState.getLatest(stackName) || this.getStack(stackName, currentState);
         let gsiRecord;

@@ -10,7 +10,7 @@ const rebuild = true;
 
 export const run = async (context: $TSContext) => {
   if (!FeatureFlags.getBoolean('graphqlTransformer.enableIterativeGSIUpdates')) {
-    printer.error('Iterative GSI Updates must be enabled to rebuild the API. See https://docs.amplify.aws/cli/reference/feature-flags/');
+    printer.error('Iterative GSI Updates must be enabled to rebuild an API. See https://docs.amplify.aws/cli/reference/feature-flags/');
     return;
   }
   const apiNames = Object.entries(stateManager.getMeta()?.api || {})
@@ -25,6 +25,7 @@ export const run = async (context: $TSContext) => {
     printer.error(
       'You have multiple GraphQL APIs in the project. Only one GraphQL API is allowed per project. Run `amplify remove api` to remove an API.',
     );
+    return;
   }
   const apiName = apiNames[0];
   printer.warn(`This will recreate all tables backing models in your GraphQL API ${apiName}.`);

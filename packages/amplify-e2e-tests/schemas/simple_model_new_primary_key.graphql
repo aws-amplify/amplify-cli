@@ -1,0 +1,4 @@
+type Todo @model @key(fields: ["content"]) {
+  id: ID!
+  content: String!
+}

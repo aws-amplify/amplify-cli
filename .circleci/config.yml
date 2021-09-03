@@ -1274,6 +1274,17 @@ jobs:
     steps: *ref_5
     environment:
       TEST_SUITE: src/__tests__/auth_6.test.ts
+<<<<<<< HEAD
+=======
+      CLI_REGION: ap-southeast-1
+  api_5-amplify_e2e_tests:
+    working_directory: ~/repo
+    docker: *ref_1
+    resource_class: large
+    steps: *ref_5
+    environment:
+      TEST_SUITE: src/__tests__/api_5.test.ts
+>>>>>>> test: adding unit and e2e tests
       CLI_REGION: ap-southeast-2
   api_4-amplify_e2e_tests:
     working_directory: ~/repo
@@ -2053,6 +2064,16 @@ jobs:
       TEST_SUITE: src/__tests__/auth_6.test.ts
       CLI_REGION: ap-southeast-2
     steps: *ref_6
+  api_5-amplify_e2e_tests_pkg_linux:
+    working_directory: ~/repo
+    docker: *ref_1
+    resource_class: large
+    environment:
+      AMPLIFY_DIR: /home/circleci/repo/out
+      AMPLIFY_PATH: /home/circleci/repo/out/amplify-pkg-linux
+      TEST_SUITE: src/__tests__/api_5.test.ts
+      CLI_REGION: ap-southeast-2
+    steps: *ref_6
   api_4-amplify_e2e_tests_pkg_linux:
     working_directory: ~/repo
     docker: *ref_1
@@ -2167,7 +2188,11 @@ workflows:
           requires:
             - notifications-amplify_e2e_tests
             - schema-iterative-update-locking-amplify_e2e_tests
+<<<<<<< HEAD
             - function_7-amplify_e2e_tests
+=======
+            - function_6-amplify_e2e_tests
+>>>>>>> test: adding unit and e2e tests
             - api_4-amplify_e2e_tests
             - hosting-amplify_e2e_tests
             - tags-amplify_e2e_tests
@@ -2191,13 +2216,22 @@ workflows:
             - configure-project-amplify_e2e_tests
             - schema-versioned-amplify_e2e_tests
             - plugin-amplify_e2e_tests
+<<<<<<< HEAD
             - hooks-amplify_e2e_tests
             - auth_6-amplify_e2e_tests
+=======
+            - function_7-amplify_e2e_tests
+            - api_5-amplify_e2e_tests
+>>>>>>> test: adding unit and e2e tests
       - done_with_pkg_linux_e2e_tests:
           requires:
             - notifications-amplify_e2e_tests_pkg_linux
             - schema-iterative-update-locking-amplify_e2e_tests_pkg_linux
+<<<<<<< HEAD
             - function_7-amplify_e2e_tests_pkg_linux
+=======
+            - function_6-amplify_e2e_tests_pkg_linux
+>>>>>>> test: adding unit and e2e tests
             - api_4-amplify_e2e_tests_pkg_linux
             - hosting-amplify_e2e_tests_pkg_linux
             - tags-amplify_e2e_tests_pkg_linux
@@ -2221,8 +2255,13 @@ workflows:
             - configure-project-amplify_e2e_tests_pkg_linux
             - schema-versioned-amplify_e2e_tests_pkg_linux
             - plugin-amplify_e2e_tests_pkg_linux
+<<<<<<< HEAD
             - hooks-amplify_e2e_tests_pkg_linux
             - auth_6-amplify_e2e_tests_pkg_linux
+=======
+            - function_7-amplify_e2e_tests_pkg_linux
+            - api_5-amplify_e2e_tests_pkg_linux
+>>>>>>> test: adding unit and e2e tests
       - amplify_migration_tests_latest:
           context:
             - amplify-ecr-image-pull
@@ -2840,7 +2879,11 @@ workflows:
           filters: *ref_10
           requires:
             - auth_1-amplify_e2e_tests
+<<<<<<< HEAD
       - auth_6-amplify_e2e_tests:
+=======
+      - api_5-amplify_e2e_tests:
+>>>>>>> test: adding unit and e2e tests
           context: *ref_8
           post-steps: *ref_9
           filters: *ref_10
@@ -3346,7 +3389,11 @@ workflows:
           filters: *ref_13
           requires:
             - auth_1-amplify_e2e_tests_pkg_linux
+<<<<<<< HEAD
       - auth_6-amplify_e2e_tests_pkg_linux:
+=======
+      - api_5-amplify_e2e_tests_pkg_linux:
+>>>>>>> test: adding unit and e2e tests
           context: *ref_11
           post-steps: *ref_12
           filters: *ref_13
