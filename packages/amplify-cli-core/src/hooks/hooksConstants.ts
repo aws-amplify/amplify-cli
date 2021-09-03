@@ -1,5 +1,3 @@
-import { join } from 'path';
-import { homedir } from 'os';
 import { HookExtensions, HooksNoun, HooksVerb } from './hooksTypes';
 
 export const hookFileSeperator = '-';
