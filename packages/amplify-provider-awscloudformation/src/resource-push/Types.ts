@@ -1,7 +1,7 @@
 export type ResourceDefinition = {
   category: string;
   service: string;
-  build: string;
+  build?: boolean;
   resourceName: string;
 };
 
@@ -35,7 +35,7 @@ export type DeploymentResources = {
   resourcesToBeCreated: ResourceDefinition[];
   resourcesToBeSynced: ResourceDefinition[];
   resourcesToBeUpdated: ResourceDefinition[];
-  resourceToBeDeleted: ResourceDefinition[];
+  resourcesToBeDeleted: ResourceDefinition[];
   tagsUpdated: boolean;
   allResources: ResourceDefinition[];
 };

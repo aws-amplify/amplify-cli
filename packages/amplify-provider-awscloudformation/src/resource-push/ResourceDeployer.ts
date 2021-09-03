@@ -116,28 +116,26 @@ export abstract class ResourceDeployer {
   protected async buildResources(resources: ResourceDefinition[]): Promise<BuiltResourceDefinition[]> {
     const { FUNCTION_CATEGORY, API_CATEGORY } = Constants;
     return await Promise.all(
-      resources.map(
-        async (resource): Promise<BuiltResourceDefinition> => {
-          if (!resource.build) {
-            return resource;
-          }
-          if (resource.category === API_CATEGORY.NAME && resource.service === API_CATEGORY.SERVICE.ELASTIC_CONTAINER) {
-            (resource as any).lastPackageTimeStamp = undefined;
-          }
+      resources.map(async (resource): Promise<BuiltResourceDefinition> => {
+        if (!resource.build) {
+          return resource;
+        }
+        if (resource.category === API_CATEGORY.NAME && resource.service === API_CATEGORY.SERVICE.ELASTIC_CONTAINER) {
+          (resource as any).lastPackageTimeStamp = undefined;
+        }
 
-          const lastBuildTimeStamp: string | Date = await this.context.amplify.invokePluginMethod(
-            this.context,
-            FUNCTION_CATEGORY.NAME,
-            resource.service,
-            'buildResource',
-            [this.context, resource],
-          );
-          return {
-            ...resource,
-            lastBuildTimeStamp,
-          };
-        },
-      ),
+        const lastBuildTimeStamp: string | Date = await this.context.amplify.invokePluginMethod(
+          this.context,
+          FUNCTION_CATEGORY.NAME,
+          resource.service,
+          'buildResource',
+          [this.context, resource],
+        );
+        return {
+          ...resource,
+          lastBuildTimeStamp,
+        };
+      }),
     );
   }
 
@@ -222,7 +220,8 @@ export abstract class ResourceDeployer {
    */
   protected async generateCategoryCloudFormation(resources: UploadedResourceDefinition[] | PackagedResourceDefinition[]) {
     if (this.resourcesHasContainers(resources)) {
-      const { StackName: stackName } = this.amplifyMeta;
+      const { PROVIDER, PROVIDER_NAME } = Constants;
+      const { StackName: stackName } = this.amplifyMeta[PROVIDER][PROVIDER_NAME];
       consolidateApiGatewayPolicies(this.context, stackName);
     }
     await prePushAuthTransform(this.context, resources);
