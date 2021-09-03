@@ -54,7 +54,6 @@ const {
 } = Constants;
 export class ResourceExport extends ResourceDeployer {
   exportDirectoryPath: string;
-  parametersToKeepInCfn: string[];
   constructor(context: $TSContext, exportDirectoryPath: string) {
     super(context, ResourceDeployType.Export);
     this.exportDirectoryPath = exportDirectoryPath;
@@ -136,14 +135,13 @@ export class ResourceExport extends ResourceDeployer {
   async writeResourcesToDestination(resources: PackagedResourceDefinition[]): Promise<void> {
     for (const resource of resources) {
       if (resource.packagerParams && resource.packagerParams.newPackageCreated) {
-        const destinationDir = path.join(
+        const destinationPath = path.join(
           this.exportDirectoryPath,
           resource.category,
           resource.resourceName,
           AMPLIFY_BUILDS,
           resource.packagerParams.zipFilename,
         );
-        const destinationPath = path.join(destinationDir);
         await this.copyResource(resource.packagerParams.zipFilePath, destinationPath);
       }
       if (resource.category === FUNCTION_CATEGORY.NAME && resource.service === FUNCTION_CATEGORY.SERVICE.LAMBDA_LAYER) {
@@ -203,7 +201,7 @@ export class ResourceExport extends ResourceDeployer {
         const path = _.get(layerVersionResource.Properties, ['Content', 'S3Key']);
         if (path && typeof path === 'string') {
           array.push({
-            logicalNamme: resourceKey,
+            logicalName: resourceKey,
             contentPath: path,
           });
         }
@@ -240,7 +238,7 @@ export class ResourceExport extends ResourceDeployer {
   private async copyResource(sourcePath: string, destinationPath: string) {
     let dir = destinationPath;
     // if there is an extension then get the dir path
-    // extension points to the fact that
+    // extension points to the fact that it's a file
     if (path.extname(destinationPath)) {
       dir = path.dirname(destinationPath);
     }

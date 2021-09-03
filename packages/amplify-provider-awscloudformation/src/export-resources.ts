@@ -7,6 +7,7 @@ import * as fs from 'fs-extra';
 import Ora from 'ora';
 const backup = 'backup';
 import _ from 'lodash';
+import { Fn } from 'cloudform-types';
 // don't change file names ever ever
 const AMPLIFY_EXPORT_MANIFEST_JSON_FILE = 'amplify-export-manifest.json';
 const AMPLIFY_EXPORT_TAGS_JSON_FILE = 'export-tags.json';
@@ -53,7 +54,11 @@ export async function run(context: $TSContext, resourceDefinition: $TSAny[], exp
     spinner.succeed('Done Exporting');
     printer.blankLine();
     printer.success('Successfully exported');
-    printer.info('Next steps:');
+    printer.info('Some Next steps:');
+    printer.info('You can now integrate your Amplify Backend into your CDK App');
+    printer.info('By installing the Amplify Backend Export Construct by running npm i @aws-amplify/amplify-export-backend');
+    printer.info('For more information: docs.amplify.aws/cli/export');
+    printer.blankLine();
 
     removeBackup(amplifyExportFolder);
   } catch (ex) {
