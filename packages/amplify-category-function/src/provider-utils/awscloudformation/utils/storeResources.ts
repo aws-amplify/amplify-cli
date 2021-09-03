@@ -1,4 +1,4 @@
-import { $TSAny, $TSContext, $TSObject, JSONUtilities, pathManager, readCFNTemplate, stateManager } from 'amplify-cli-core';
+import { $TSAny, $TSContext, $TSObject, JSONUtilities, pathManager, stateManager } from 'amplify-cli-core';
 import { FunctionBreadcrumbs, FunctionParameters, FunctionTriggerParameters } from 'amplify-function-plugin-interface';
 import * as fs from 'fs-extra';
 import _ from 'lodash';
@@ -16,7 +16,6 @@ import { createLayerConfiguration, loadLayerParametersJson, saveLayerPermissions
 import { LayerParameters, LayerRuntime, LayerVersionMetadata } from './layerParams';
 import { removeLayerFromTeamProviderInfo } from './layerMigrationUtils';
 import { saveEnvironmentVariables } from './environmentVariablesHelper';
-import { Template } from 'cloudform-types';
 
 // handling both FunctionParameters and FunctionTriggerParameters here is a hack
 // ideally we refactor the auth trigger flows to use FunctionParameters directly and get rid of FunctionTriggerParameters altogether
