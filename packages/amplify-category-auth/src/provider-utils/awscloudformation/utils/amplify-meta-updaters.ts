@@ -106,18 +106,32 @@ export const getPostUpdateAuthMetaUpdater = (context: any) => async (resourceNam
   return resourceName;
 };
 
-function getFrontendConfig(authParameters: AuthParameters) {
-  const loginMechanisms: string[] = [];
-  loginMechanisms.push(...(authParameters?.aliasAttributes || []).map((att: string) => att.toUpperCase()));
+export function getFrontendConfig(authParameters: AuthParameters) {
+  const loginMechanisms: Set<string> = new Set<string>();
+  (authParameters?.aliasAttributes || []).forEach(it => loginMechanisms.add(it.toUpperCase()));
+
+  // backwards compatibility
+  if (authParameters?.usernameAttributes && authParameters?.usernameAttributes.length) {
+    const usernameAttributes = authParameters?.usernameAttributes[0];
+    if (usernameAttributes.includes(',')) {
+      usernameAttributes.split(',').forEach(it => loginMechanisms.add(it.trim().toUpperCase()));
+    } else {
+      loginMechanisms.add(usernameAttributes.toUpperCase());
+    }
+  }
 
   if (authParameters.authProviders) {
     authParameters.authProviders.forEach((provider: string) => {
       let name = authProviderList.find(it => it.value === provider)?.name;
 
       if (name) {
-        loginMechanisms.push(name.toUpperCase());
+        loginMechanisms.add(name.toUpperCase());
       }
     });
+  }
+
+  if (loginMechanisms.size == 0) {
+    loginMechanisms.add('PREFERRED_USERNAME');
   }
 
   const signupAttributes = (authParameters?.requiredAttributes || []).map((att: string) => att.toUpperCase());
@@ -139,7 +153,7 @@ function getFrontendConfig(authParameters: AuthParameters) {
   }
 
   return {
-    loginMechanisms: loginMechanisms,
+    loginMechanisms: Array.from(loginMechanisms.values()),
     signupAttributes: signupAttributes,
     passwordProtectionSettings: passwordProtectionSettings,
     mfaConfiguration: authParameters?.mfaConfiguration,
