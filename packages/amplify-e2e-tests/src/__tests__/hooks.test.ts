@@ -1,10 +1,19 @@
+import {
+  addFunction,
+  amplifyPull,
+  amplifyPushWithNoChanges,
+  createNewProjectDir,
+  deleteProject,
+  deleteProjectDir,
+  getAppId,
+  getBucketKeys,
+  getHooksDirPath,
+  getProjectMeta,
+  initJSProjectWithProfile,
+  removeFunction,
+} from 'amplify-e2e-core';
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import { initJSProjectWithProfile, deleteProject, createNewProjectDir, deleteProjectDir } from 'amplify-e2e-core';
-import { getProjectMeta, getBucketKeys, getHooksDirPath, getAppId } from 'amplify-e2e-core';
-import { amplifyPull } from 'amplify-e2e-core';
-import { amplifyPushWithNoChanges } from 'amplify-e2e-core';
-import { addFunction, removeFunction } from 'amplify-e2e-core';
 import { addEnvironment, checkoutEnvironment } from '../environment/env';
 
 const checkForFiles = (toCheckFiles: string[], inFiles: string[], prefix?: string): void => {
@@ -25,8 +34,8 @@ describe('runtime hooks', () => {
   });
 
   it('test hooks manager and execution', async () => {
-    const initFiles = ['Readme.md', 'pre-push.js.sample', 'post-push.sh.sample'];
-    const defaultHookFiles = ['Readme.md', 'hooks-config.json', 'post-add-function.js', 'post-add.js'];
+    const initFiles = ['README.md', 'pre-push.js.sample', 'post-push.sh.sample'];
+    const defaultHookFiles = ['README.md', 'hooks-config.json', 'post-add-function.js', 'post-add.js'];
     const ignoredFileName = 'ignoredFile';
     const newFileName = 'newFile';
 
