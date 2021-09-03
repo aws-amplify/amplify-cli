@@ -125,7 +125,7 @@ function validateCustomPolicy(customPolicy: CustomIAMPolicy, category: string, r
   let errorMessage = "";
 
   for (const resource of resources) {
-    if (!(resourceRegex.test(resource) && resource === '*')) {
+    if (!(resourceRegex.test(resource) || resource === '*')) {
       wrongResourcesRegex.push(resource);
     }
   }
@@ -179,7 +179,12 @@ async function replaceEnvForCustomPolicies(policy: CustomIAMPolicy, currentEnv: 
     Resource: []
   }
   for (let resource of policy.Resource){
-    resourceWithEnv.push(resource.replace( '{env}', currentEnv));
+    if (resource.includes('{env}')) {
+      resourceWithEnv.push(Fn.Sub(resource, {'env': Fn.Ref('env')}));
+    }
+    else {
+      resourceWithEnv.push(resource);
+    }
   }
   customIAMpolicy.Resource = resourceWithEnv;
   return customIAMpolicy;
