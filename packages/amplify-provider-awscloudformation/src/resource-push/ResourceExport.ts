@@ -56,7 +56,6 @@ const {
 } = Constants;
 export class ResourceExport extends ResourceDeployer {
   exportDirectoryPath: string;
-  parametersToKeepInCfn: string[];
   constructor(context: $TSContext, exportDirectoryPath: string) {
     super(context, ResourceDeployType.Export);
     this.exportDirectoryPath = exportDirectoryPath;
