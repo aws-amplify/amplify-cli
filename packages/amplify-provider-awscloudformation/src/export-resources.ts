@@ -7,7 +7,6 @@ import * as fs from 'fs-extra';
 import Ora from 'ora';
 const backup = 'backup';
 import _ from 'lodash';
-import { Fn } from 'cloudform-types';
 // don't change file names ever ever
 const AMPLIFY_EXPORT_MANIFEST_JSON_FILE = 'amplify-export-manifest.json';
 const AMPLIFY_EXPORT_TAGS_JSON_FILE = 'export-tags.json';
