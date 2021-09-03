@@ -33,6 +33,9 @@ export const PathConstants = {
   ReadMeFileName: 'README.md',
 
   HooksConfigFileName: 'hooks-config.json',
+  HooksShellSampleFileName: 'post-push.sh.sample',
+  HooksJsSampleFileName: 'pre-push.js.sample',
+  HooksReadmeFileName: 'hooks-readme.md',
 
   LocalEnvFileName: 'local-env-info.json',
   LocalAWSInfoFileName: 'local-aws-info.json',

@@ -1,7 +1,7 @@
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import _ from 'lodash';
-import { $TSAny, $TSMeta, $TSTeamProviderInfo, DeploymentSecrets, HooksConfig } from '..';
+import { $TSAny, $TSMeta, $TSTeamProviderInfo, DeploymentSecrets, HooksConfig, PathConstants } from '..';
 import { SecretFileMode } from '../cliConstants';
 import { JSONUtilities } from '../jsonUtilities';
 import { HydrateTags, ReadTags, Tag } from '../tags';
@@ -237,12 +237,24 @@ export class StateManager {
     JSONUtilities.writeJson(filePath, meta);
   };
 
-  getHooksConfigJson = (projectPath?: string): HooksConfig => this.getData<HooksConfig>(pathManager.getHooksConfigFilePath(projectPath), {throwIfNotExist: false}) ?? {};
+  getHooksConfigJson = (projectPath?: string): HooksConfig =>
+    this.getData<HooksConfig>(pathManager.getHooksConfigFilePath(projectPath), { throwIfNotExist: false }) ?? {};
 
   setSampleHooksDir = (projectPath: string | undefined, sourceDirPath: string): void => {
     const targetDirPath = pathManager.getHooksDirPath(projectPath);
-    // only create the hooks directory with sample hooks if the directory doesnt already exists
-    if (!fs.existsSync(targetDirPath)) fs.copySync(sourceDirPath, targetDirPath);
+    // only create the hooks directory with sample hooks if the directory doesn't already exist
+    if (!fs.existsSync(targetDirPath)) {
+      fs.ensureDirSync(targetDirPath);
+      fs.copySync(
+        path.join(sourceDirPath, PathConstants.HooksShellSampleFileName),
+        path.join(targetDirPath, PathConstants.HooksShellSampleFileName),
+      );
+      fs.copySync(
+        path.join(sourceDirPath, PathConstants.HooksJsSampleFileName),
+        path.join(targetDirPath, PathConstants.HooksJsSampleFileName),
+      );
+      fs.copySync(path.join(sourceDirPath, PathConstants.HooksReadmeFileName), path.join(targetDirPath, PathConstants.ReadMeFileName));
+    }
   };
 
   setResourceParametersJson = (projectPath: string | undefined, category: string, resourceName: string, parameters: $TSAny): void => {
