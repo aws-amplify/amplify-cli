@@ -245,7 +245,7 @@ export function getLambdaFunctionsDependentOnLayerFromMeta(layerName: string, me
   return Object.entries(meta[categoryName]).filter(
     ([_, lambdaFunction]: [string, $TSObject]) =>
       lambdaFunction.service === ServiceName.LambdaFunction &&
-      lambdaFunction?.dependsOn.filter(dependency => dependency.resourceName === layerName).length > 0,
+      lambdaFunction?.dependsOn?.filter(dependency => dependency.resourceName === layerName).length > 0,
   );
 }
 
