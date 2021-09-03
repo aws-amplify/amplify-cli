@@ -20,7 +20,7 @@ export const addResource = async (
         'You need to add auth (Amazon Cognito) to your project in order to add geo resources. Do you want to add auth now?',
       )
     ){
-      await context.amplify.invokePluginMethod(context, 'auth', null, 'add', [context]);
+      await context.amplify.invokePluginMethod(context, 'auth', undefined, 'add', [context]);
     }
     else {
       context.print.info('Please add auth (Amazon Cognito) to your project using "amplify add auth"');
