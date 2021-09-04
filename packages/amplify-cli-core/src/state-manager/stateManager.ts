@@ -1,6 +1,6 @@
 import * as fs from 'fs-extra';
 import _ from 'lodash';
-import { PathConstants, PathManager, pathManager } from './pathManager';
+import { PathConstants, pathManager } from './pathManager';
 import { $TSMeta, $TSTeamProviderInfo, $TSAny, DeploymentSecrets, HooksConfig } from '..';
 import { JSONUtilities } from '../jsonUtilities';
 import { SecretFileMode } from '../cliConstants';
