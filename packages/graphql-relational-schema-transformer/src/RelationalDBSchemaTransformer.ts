@@ -12,7 +12,7 @@ import {
 } from './RelationalDBSchemaTransformerUtils';
 import { RelationalDBParsingException } from './RelationalDBParsingException';
 import { IRelationalDBReader } from './IRelationalDBReader';
-import { toUpper } from 'graphql-transformer-common';
+import { plurality, toUpper } from 'graphql-transformer-common';
 
 /**
  * This class is used to transition all of the columns and key metadata from a table for use
@@ -84,10 +84,12 @@ export class TemplateContext {
 export class RelationalDBSchemaTransformer {
   dbReader: IRelationalDBReader;
   database: string;
+  improvePluralization: boolean;
 
-  constructor(dbReader: IRelationalDBReader, database: string) {
+  constructor(dbReader: IRelationalDBReader, database: string, improvePluralization: boolean) {
     this.dbReader = dbReader;
     this.database = database;
+    this.improvePluralization = improvePluralization;
   }
 
   public introspectDatabaseSchema = async (): Promise<TemplateContext> => {
@@ -251,7 +253,7 @@ export class RelationalDBSchemaTransformer {
       );
       // use list type node to match the ast of current schema built by graphql.parse
       const nameListType = getSingletonListTypeNode(type.name.value);
-      fields.push(getOperationFieldDefinition(`list${formattedTypeValue}s`, [], nameListType, null));
+      fields.push(getOperationFieldDefinition(`list${plurality(formattedTypeValue, this.improvePluralization)}`, [], nameListType, null));
     }
     return getTypeDefinition(fields, 'Query');
   }

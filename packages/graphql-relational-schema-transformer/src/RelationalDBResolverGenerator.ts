@@ -436,7 +436,7 @@ export class RelationalDBResolverGenerator {
     if (this.isPrimaryKeyAStringType(type)) {
       return `UPDATE ${type} SET $update WHERE ${primaryKey}=\'$ctx.args.update${tableName}Input.${primaryKey}\'`;
     }
-    return `UPDATE ${type} SET $update WHERE ${primaryKey}=$ctx.args.update${tableName}Input.${primaryKey}}`;
+    return `UPDATE ${type} SET $update WHERE ${primaryKey}=$ctx.args.update${tableName}Input.${primaryKey}`;
   }
 
   /**
