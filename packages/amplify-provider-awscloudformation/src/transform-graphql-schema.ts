@@ -5,6 +5,7 @@ import inquirer from 'inquirer';
 import importGlobal from 'import-global';
 import importFrom from 'import-from';
 import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
+import { DynamoDBRelayModelTransformer, ModelRelayConnectionTransformer } from 'graphql-relay-transformer';
 import { ModelAuthTransformer } from 'graphql-auth-transformer';
 import { ModelConnectionTransformer } from 'graphql-connection-transformer';
 import { SearchableModelTransformer } from 'graphql-elasticsearch-transformer';
@@ -62,11 +63,13 @@ function getTransformerFactory(context, resourceDir, authConfig?) {
     const transformerList: ITransformer[] = [
       // TODO: Removing until further discussion. `getTransformerOptions(project, '@model')`
       new DynamoDBModelTransformer(),
+      new DynamoDBRelayModelTransformer(),
       new VersionedModelTransformer(),
       new FunctionTransformer(),
       new HttpTransformer(),
       new KeyTransformer(),
       new ModelConnectionTransformer(),
+      new ModelRelayConnectionTransformer(),
       new PredictionsTransformer(storageConfig),
     ];
 
@@ -75,9 +78,8 @@ function getTransformerFactory(context, resourceDir, authConfig?) {
     }
 
     const customTransformersConfig: TransformConfig = await readTransformerConfiguration(resourceDir);
-    const customTransformers = (customTransformersConfig && customTransformersConfig.transformers
-      ? customTransformersConfig.transformers
-      : []
+    const customTransformers = (
+      customTransformersConfig && customTransformersConfig.transformers ? customTransformersConfig.transformers : []
     )
       .map(transformer => {
         const fileUrlMatch = /^file:\/\/(.*)\s*$/m.exec(transformer);
