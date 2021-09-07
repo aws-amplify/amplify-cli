@@ -80,7 +80,13 @@ function createTagsFile(exportPath: string) {
     }
     return hydratedTag;
   });
-  JSONUtilities.writeJson(path.join(exportPath, AMPLIFY_EXPORT_TAGS_JSON_FILE), tagsWithEnv);
+  JSONUtilities.writeJson(
+    path.join(exportPath, AMPLIFY_EXPORT_TAGS_JSON_FILE),
+    tagsWithEnv.map(tag => ({
+      key: tag.Key,
+      value: tag.Value,
+    })),
+  );
 }
 
 /**
