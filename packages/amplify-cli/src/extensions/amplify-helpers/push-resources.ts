@@ -49,6 +49,9 @@ export async function pushResources(
     }
   }
 
+  // building all CFN stacks here to get the resource Changes
+  context.amplify.executeProviderUtils(context, 'awscloudformation', 'buildOverrides', { forceCompile: true });
+
   const hasChanges = await showResourceTable(category, resourceName, filteredResources);
 
   // no changes detected

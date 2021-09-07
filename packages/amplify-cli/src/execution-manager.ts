@@ -1,7 +1,7 @@
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import * as inquirer from 'inquirer';
-import { $TSAny, stateManager, executeHooks, HooksMeta } from 'amplify-cli-core';
+import { FeatureFlags, stateManager, executeHooks, HooksMeta } from 'amplify-cli-core';
 import { twoStringSetsAreEqual, twoStringSetsAreDisjoint } from './utils/set-ops';
 import { Context } from './domain/context';
 import { constants } from './domain/constants';
@@ -39,6 +39,23 @@ export function isContainersEnabled(context) {
 }
 
 async function selectPluginForExecution(context: Context, pluginCandidates: PluginInfo[]): Promise<PluginInfo> {
+  const pluginCandidatesCategorySet = new Set<string>();
+  const overidedcategories = ['auth', 'storage', 'function'];
+
+  pluginCandidates.forEach(plugin => {
+    pluginCandidatesCategorySet.add(plugin.manifest.name);
+  });
+
+  // overrided package : @aws-amplify/amplify-category-<catgoryName>
+  if (pluginCandidatesCategorySet.size == 1 && overidedcategories.includes(pluginCandidatesCategorySet.values().next().value)) {
+    const pluginName = pluginCandidatesCategorySet.values().next().value;
+    if (pluginCandidates[0].packageName.includes('@aws-amplify') && FeatureFlags.getBoolean(`overrides.${pluginName}`)) {
+      return pluginCandidates[0];
+    } else {
+      return pluginCandidates[1];
+    }
+  }
+
   let result = pluginCandidates[0];
 
   let promptForSelection = true;
