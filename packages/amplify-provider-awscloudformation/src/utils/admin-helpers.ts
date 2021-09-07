@@ -176,8 +176,8 @@ export const adminBackendMap: {
     appStateUrl: 'https://1en4kjhdm6.execute-api.eu-west-3.amazonaws.com/wave5Prod',
   },
   'me-south-1': {
-    amplifyAdminUrl: 'XXXXXXXXXXXX',
-    appStateUrl: 'XXXXXXXXXXXX',
+    amplifyAdminUrl: 'https://me-south-1.admin.amplifyapp.com',
+    appStateUrl: 'https://40mq9z67ij.execute-api.me-south-1.amazonaws.com/wave5Prod',
   },
   'sa-east-1': {
     amplifyAdminUrl: 'https://sa-east-1.admin.amplifyapp.com',

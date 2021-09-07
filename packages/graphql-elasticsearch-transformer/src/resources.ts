@@ -219,7 +219,7 @@ export class ResourceFactory {
           layerRegion: 'arn:aws-us-gov:lambda:us-gov-east-1:138526772879:layer:AWSLambda-Python-AWS-SDK:1',
         },
         'me-south-1': {
-          layerRegion: 'arn:aws:lambda:me-south-1:XXXXXXXXXXXX:layer:AWSLambda-Python-AWS-SDK:1',
+          layerRegion: 'arn:aws:lambda:me-south-1:507411403535:layer:AWSLambda-Python-AWS-SDK:1',
         },
       },
     };
