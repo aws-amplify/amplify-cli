@@ -241,10 +241,7 @@ const attributeProviderMap = {
       attr: 'name',
       scope: 'profile',
     },
-    signinwithapple: {
-      attr: 'name',
-      scope: 'name',
-    },
+    signinwithapple: {},
   },
   nickname: {
     facebook: {},
