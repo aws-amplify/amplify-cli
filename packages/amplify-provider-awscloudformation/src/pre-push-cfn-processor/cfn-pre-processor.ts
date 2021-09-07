@@ -179,7 +179,7 @@ async function replaceEnvForCustomPolicies(policy: CustomIAMPolicy, currentEnv: 
     Resource: []
   }
   for (let resource of policy.Resource){
-    if (resource.includes('{env}')) {
+    if (resource.includes('${env}')) {
       resourceWithEnv.push(Fn.Sub(resource, {'env': Fn.Ref('env')}));
     }
     else {
