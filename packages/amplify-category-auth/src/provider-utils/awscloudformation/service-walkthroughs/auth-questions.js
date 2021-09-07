@@ -425,7 +425,7 @@ function userPoolProviders(oAuthProviders, coreAnswers, prevAnswers) {
     res.hostedUIProviderMeta = JSON.stringify(
       oAuthProviders.map(el => {
         const lowerCaseEl = el.toLowerCase();
-        const delimmiter = el === 'Facebook' ? ',' : ' ';
+        const delimmiter = el === 'Facebook' || el === 'SignInWithApple' ? ',' : ' ';
         const scopes = [];
         const maps = {};
         attributesForMapping.forEach(a => {
