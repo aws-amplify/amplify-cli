@@ -7,8 +7,6 @@ import {
   InterfaceTypeDefinitionNode,
   InputObjectTypeDefinitionNode,
   EnumTypeDefinitionNode,
-  ObjectTypeExtensionNode,
-  getNamedType,
 } from 'graphql';
 import { ResourceFactory } from './resources';
 import {
