@@ -6,7 +6,7 @@ const { Lex } = require('./aws-utils/aws-lex');
 const Polly = require('./aws-utils/aws-polly');
 const SageMaker = require('./aws-utils/aws-sagemaker');
 const { transformGraphQLSchema, getDirectiveDefinitions } = require('./transform-graphql-schema');
-const { transformCfnWithOverrides } = require('./overrideManager');
+const { transformCfnWithOverrides } = require('./override-manager');
 
 const { updateStackForAPIMigration } = require('./push-resources');
 const SecretsManager = require('./aws-utils/aws-secretsmanager');
@@ -63,8 +63,8 @@ module.exports = {
     return transformGraphQLSchema(context, optionsWithUpdateHandler);
   },
 
-  buildOverrides: async (context, category, options) => {
-    return transformCfnWithOverrides(context, category, options);
+  buildOverrides: async context => {
+    return transformCfnWithOverrides(context);
   },
 
   newSecret: async (context, options) => {

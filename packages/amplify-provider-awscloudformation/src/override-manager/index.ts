@@ -1,24 +1,11 @@
-import { AmplifyRootStackTransform, CommandType, RootStackTransformOptions } from './root-stack-builder';
-import { rootStackFileName } from '.';
-import { prePushCfnTemplateModifier } from './pre-push-cfn-processor/pre-push-cfn-modifier';
+import { pathManager, Template } from 'amplify-cli-core';
+import { rootStackFileName } from '..';
+import { prePushCfnTemplateModifier } from '../pre-push-cfn-processor/pre-push-cfn-modifier';
+import { AmplifyRootStackTransform, CommandType, RootStackTransformOptions } from '../root-stack-builder';
 import * as path from 'path';
-import { pathManager } from 'amplify-cli-core';
-import { Template } from 'cloudform-types';
-/**
- *
- * @param context
- * @returns
- */
-export async function transformCfnWithOverrides(context): Promise<Template> {
-  const flags = context.parameters.options;
-  if (flags['no-override']) {
-    return;
-  }
 
-  const rootStack = await transformRootStack(CommandType.PUSH);
-  return rootStack;
-  // can enable other CFN Transfomer here and also make a registry of which categories supports overrides Transfomer
-}
+export * from './amplify-factory-transform';
+export * from './transform-cfn';
 
 export const transformRootStack = async (commandType: CommandType): Promise<Template> => {
   try {
@@ -36,7 +23,6 @@ export const transformRootStack = async (commandType: CommandType): Promise<Temp
       const rootFilePath = path.join(pathManager.getRootStackDirPath(projectPath), rootStackFileName);
       const overrideFnPath = path.join(pathManager.getRootOverrideDirPath(projectPath), 'build', 'override.js');
       const overrideDir = pathManager.getRootOverrideDirPath(projectPath);
-
       props = {
         resourceConfig: {
           stackFileName: rootStackFileName,

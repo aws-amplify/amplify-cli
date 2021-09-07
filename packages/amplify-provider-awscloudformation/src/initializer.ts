@@ -4,7 +4,7 @@ import { CommandType } from './root-stack-builder';
 import { rootStackFileName } from '.';
 import { pathManager, PathConstants, stateManager, JSONUtilities } from 'amplify-cli-core';
 import { Template } from './root-stack-builder/types';
-import { transformRootStack } from './overrideManager';
+import { transformRootStack } from './override-manager';
 
 const moment = require('moment');
 const path = require('path');

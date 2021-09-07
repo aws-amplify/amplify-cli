@@ -1,27 +1,52 @@
+import { $TSContext, IAmplifyResource } from 'amplify-cli-core';
+import { printer } from 'amplify-prompts';
+import { transformCfnWithOverrides } from 'amplify-provider-awscloudformation';
+
 /**
  * Command to transform CFN with overrides
  */
 const subcommand = 'build-overrides';
 
-module.exports = {
-  name: subcommand,
-  run: async context => {
-    try {
-      const {
-        parameters: { options },
-      } = context;
-      await context.amplify.executeProviderUtils(context, 'awscloudformation', 'buildOverrides', {
-        forceCompile: true,
-      });
-    } catch (error) {
-      context.print.error(error.message);
-
-      if (error.stack) {
-        context.print.info(error.stack);
-      }
-
-      context.usageData.emitError(error);
-      process.exitCode = 1;
+export const run = async (context: $TSContext) => {
+  const resourceName = context?.input?.subCommands?.[0];
+  const categoryName = context?.input?.subCommands?.[1];
+  const confirmContinue =
+    !!resourceName ||
+    context.input?.options?.yes ||
+    (await context.amplify.confirmPrompt('Are you sure you want to continue building the resources?', false));
+  if (!confirmContinue) {
+    return;
+  }
+  try {
+    const resourcesToBuild: IAmplifyResource[] = await getResources(context);
+    for (const resource of resourcesToBuild) {
+      await transformCfnWithOverrides(context, resource);
     }
-  },
+  } catch (err) {
+    printer.error(err.stack);
+    printer.error('There was an error building the resource');
+    context.usageData.emitError(err);
+    process.exitCode = 1;
+  }
+};
+
+const getResources = async (context: $TSContext): Promise<IAmplifyResource[]> => {
+  const resources: IAmplifyResource[] = [];
+  const { resourcesToBeCreated, resourcesToBeUpdated } = await context.amplify.getResourceStatus();
+  resourcesToBeCreated.forEach(resourceCreated => {
+    resources.push({
+      service: resourceCreated.service as string,
+      category: resourceCreated.category as string,
+      resourceName: resourceCreated.resourceName as string,
+    });
+  });
+
+  resourcesToBeUpdated.forEach(resourceUpdated => {
+    resources.push({
+      service: resourceUpdated.service as string,
+      category: resourceUpdated.category as string,
+      resourceName: resourceUpdated.resourceName as string,
+    });
+  });
+  return resources;
 };
