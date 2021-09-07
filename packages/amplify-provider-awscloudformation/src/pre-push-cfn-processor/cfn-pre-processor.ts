@@ -59,7 +59,7 @@ export async function writeCustomPoliciesToCFNTemplate(
       delete cfnTemplate.Resources.CustomLambdaExecutionPolicy;
       await writeCFNTemplate(cfnTemplate, filePath, { templateFormat });
     }
-    if (cfnTemplate.Resources.CustomLambdaExecutionPolicy) {
+    if (cfnTemplate.Resources.CustomExecutionPolicyForContainer) {
       delete cfnTemplate.Resources.CustomExecutionPolicyForContainer;
       await writeCFNTemplate(cfnTemplate, filePath, { templateFormat });
     }
