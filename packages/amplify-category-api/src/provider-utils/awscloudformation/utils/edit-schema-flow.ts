@@ -8,7 +8,7 @@ export const editSchemaFlow = async (context: any, apiName: string) => {
     type: 'confirm',
     name: 'editNow',
     message: 'Do you want to edit the schema now?',
-    default: false,
+    default: true,
   };
 
   if (!(await inquirer.prompt(prompt)).editNow) return;
