@@ -90,11 +90,11 @@ describe('amplify geo update', () => {
     await updateSecondMapAsDefault(projRoot);
     await amplifyPushWithoutCodegen(projRoot);
 
-    // //check amplify meta file
+    //check amplify meta file
     const meta = getProjectMeta(projRoot);
     expect(meta.geo[map1Id].isDefault).toBe(false);
     expect(meta.geo[map2Id].isDefault).toBe(true);
-    // //check if resource is provisioned in cloud
+    //check if resource is provisioned in cloud
     const region = meta.providers.awscloudformation.Region;
     const map1Name = meta.geo[map1Id].output.Name;
     const map2Name = meta.geo[map2Id].output.Name;
@@ -102,7 +102,7 @@ describe('amplify geo update', () => {
     const map2 = await getMap(map2Name, region);
     expect(map1.MapName).toBeDefined();
     expect(map2.MapName).toBeDefined();
-    // //check aws export file
+    //check aws export file
     const awsExport: any = getAWSExports(projRoot).default;
     expect(awsExport.geo.amazon_location_services.maps.items[map1Name]).toBeDefined();
     expect(awsExport.geo.amazon_location_services.maps.items[map2Name]).toBeDefined();
@@ -119,19 +119,19 @@ describe('amplify geo update', () => {
     await updateSecondPlaceIndexAsDefault(projRoot);
     await amplifyPushWithoutCodegen(projRoot);
 
-    // //check amplify meta file
+    //check amplify meta file
     const meta = getProjectMeta(projRoot);
     expect(meta.geo[index1Id].isDefault).toBe(false);
     expect(meta.geo[index2Id].isDefault).toBe(true);
-    // //check if resource is provisioned in cloud
+    //check if resource is provisioned in cloud
     const region = meta.providers.awscloudformation.Region;
     const index1Name = meta.geo[index1Id].output.Name;
     const index2Name = meta.geo[index2Id].output.Name;
-    const map1 = await getPlaceIndex(index1Name, region);
-    const map2 = await getPlaceIndex(index2Name, region);
-    expect(map1.IndexName).toBeDefined();
-    expect(map2.IndexName).toBeDefined();
-    // //check aws export file
+    const index1 = await getPlaceIndex(index1Name, region);
+    const index2 = await getPlaceIndex(index2Name, region);
+    expect(index1.IndexName).toBeDefined();
+    expect(index2.IndexName).toBeDefined();
+    //check aws export file
     const awsExport: any = getAWSExports(projRoot).default;
     expect(awsExport.geo.amazon_location_services.search_indices.items).toContain(index1Name);
     expect(awsExport.geo.amazon_location_services.search_indices.items).toContain(index2Name);
