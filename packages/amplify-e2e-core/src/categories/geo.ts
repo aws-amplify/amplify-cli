@@ -1,5 +1,4 @@
 import { getCLIPath, nspawn as spawn, KEY_DOWN_ARROW } from '..';
-import { v4 as uuid } from 'uuid';
 
 export type GeoConfig = {
   isFirstGeoResource?: boolean
@@ -296,12 +295,4 @@ export function addPlaceIndexWithDefault(cwd: string, settings: GeoConfig = {}):
         }
       })
   });
-}
-
-/**
- * Generate random resource name
- * @returns generated resource name
- */
-export function generateRandomShortId(): string {
-  return uuid().split('-')[0];
 }
