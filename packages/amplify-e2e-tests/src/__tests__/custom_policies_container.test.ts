@@ -22,9 +22,7 @@ const customIAMPolicy: CustomIAMPolicy = {
             ],
             Resource: []
 };
-const customIAMPolicies = {
-  policies: []
-}
+const customIAMPolicies: CustomIAMPolicy[] = [];
 
 async function setupAmplifyProject(cwd: string) {
   await amplifyConfigureProject({
@@ -71,7 +69,7 @@ it(`should init and deploy a api container, attach custom policies to the Fargat
 
   customIAMPolicy.Resource.push(ssmParameterArn);
   const customPoliciesPath = getCustomPoliciesPath(projRoot, 'api', name);
-  customIAMPolicies.policies.push(customIAMPolicy);
+  customIAMPolicies.push(customIAMPolicy);
   JSONUtilities.writeJson(customPoliciesPath, customIAMPolicies);
 
   await amplifyPushWithoutCodegen(projRoot);
@@ -80,7 +78,7 @@ it(`should init and deploy a api container, attach custom policies to the Fargat
   );
 
   expect(containerCFN.Resources.CustomExecutionPolicyForContainer.Properties.PolicyDocument.Statement[0])
-  .toEqual(customIAMPolicies.policies[0]);
+  .toEqual(customIAMPolicies[0]);
 });
   
 type CustomIAMPolicy = {

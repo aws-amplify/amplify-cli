@@ -1,10 +1,9 @@
 import { Fn, IAM } from "cloudform-types";
 import * as iam from '@aws-cdk/aws-iam';
 import { JSONUtilities, pathManager } from ".";
+import * as fs from 'fs-extra';
 
-export type CustomIAMPolicies = {
-    policies:  CustomIAMPolicy[];
-}
+export type CustomIAMPolicies = CustomIAMPolicy[];
 
 export type CustomIAMPolicy = {
     Action: string[];
@@ -14,11 +13,9 @@ export type CustomIAMPolicy = {
 
 
 export const CustomIAMPoliciesSchema = {
-    type : "object",
-    properties: {
-        policies: {type: "array", minItems: 1, items: {type: "object"}}
-    },
-    required: ["policies"],
+    type : "array",
+    minItems: 1,
+    items: {type: "object"},
     additionalProperties: false
 }
 
@@ -57,15 +54,23 @@ export const customExecutionPolicyForContainer = new IAM.Policy({
 
 export function addCustomPoliciesFile(categoryName: string, resourceName: string) {
   const customPoliciesPath = pathManager.getCustomPoliciesPath(categoryName, resourceName);
-  const defaultCustomPolicies = {
-      policies: [
-        {
-          Action: [],
-          Resource: []
-        }
-      ]
-  }
+  const defaultCustomPolicies = [
+    {
+      Action: [],
+      Resource: []
+    }
+  ]
   JSONUtilities.writeJson(customPoliciesPath, defaultCustomPolicies);
+}
+
+export function isCustomPoliciesFile(filePath: string) {
+  try{
+    const fileString = fs.readFileSync(filePath, 'utf-8');
+    JSON.parse(fileString);
+    return true;
+  } catch(err) {
+  return false;
+  }
 }
 
 

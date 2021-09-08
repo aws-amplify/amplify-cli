@@ -20,14 +20,12 @@ describe('Custom policies util test', () => {
       
         const data = JSONUtilities.readJson(expectedFilePath);
       
-        expect(data).toMatchObject({
-            policies: [
+        expect(data).toMatchObject([
             {
                 Action: [],
                 Resource: []
             }
-            ]
-        });
+        ]);
 
     })
 })

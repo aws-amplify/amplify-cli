@@ -67,7 +67,7 @@ export async function writeCustomPoliciesToCFNTemplate(
   }
   await validateCustomPoliciesSchema(customPolicies, category, resourceName);
 
-  await addCustomPoliciesToCFNTemplate(service, category, customPolicies.policies, cfnTemplate, filePath, resourceName, {templateFormat} );
+  await addCustomPoliciesToCFNTemplate(service, category, customPolicies, cfnTemplate, filePath, resourceName, {templateFormat} );
 
 }
 
@@ -76,7 +76,7 @@ export async function writeCustomPoliciesToCFNTemplate(
 async function addCustomPoliciesToCFNTemplate(
   service: string,
   category: string,
-  customPolicies: CustomIAMPolicy[],
+  customPolicies: CustomIAMPolicies,
   cfnTemplate: Template,
   filePath: string,
   resourceName: string,
@@ -159,9 +159,9 @@ function validateExistCustomPolicies(customPolicies: CustomIAMPolicies) : Boolea
     return false;
   }
 
-  if (customPolicies.policies.length === 1
-    && customPolicies.policies[0].Action?.length === 0
-    && customPolicies.policies[0].Resource?.length === 0) {
+  if (customPolicies.length === 1
+    && customPolicies[0].Action?.length === 0
+    && customPolicies[0].Resource?.length === 0) {
       return false;
     }
 
@@ -196,7 +196,7 @@ async function validateCustomPoliciesSchema(data: CustomIAMPolicies, categoryNam
   //validate if the policies match the custom IAM policies schema, if not, then not write into the CFN template
   const validatePolicy = ajv.compile(CustomIAMPolicySchema);
 
-  for(const policy of data.policies) {
+  for(const policy of data) {
     if(!validatePolicy(policy)) {
       let errorMessage = `Invalid custom IAM policies in the ${resourceName} ${categoryName} is invalid.\n
       Edit <project-dir>/amplify/backend/function/socialmediademoea2a770a/custom-policies.json to fix

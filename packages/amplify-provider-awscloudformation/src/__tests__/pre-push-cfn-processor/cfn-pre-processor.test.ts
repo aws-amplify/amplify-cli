@@ -18,13 +18,13 @@ const cfnTemplate = ({
 } as unknown) as Template;
 const templateFormat = CFNTemplateFormat.JSON;
 
-const customPolicies = {
-  policies : [{
+const customPolicies: CustomIAMPolicies = [
+  {
     Action : ['test:test'],
     Effect : 'Allow',
     Resource : ['arn:aws:s3:us-east-2:012345678910:testResource']
-  }]
- } as CustomIAMPolicies;
+  }
+];
 
 readCFNTemplate_mock.mockResolvedValue({
   templateFormat,

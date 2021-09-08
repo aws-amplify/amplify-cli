@@ -5,8 +5,7 @@ import { $TSMeta, $TSTeamProviderInfo, $TSAny, DeploymentSecrets, HooksConfig } 
 import { JSONUtilities } from '../jsonUtilities';
 import { SecretFileMode } from '../cliConstants';
 import { HydrateTags, ReadTags, Tag } from '../tags';
-import { CustomIAMPolicies } from '../customPoliciesUtils';
-import { isJsonFileContent} from '../cfnUtilities'
+import { CustomIAMPolicies, isCustomPoliciesFile } from '../customPoliciesUtils';
 import path from 'path';
 
 export type GetOptions<T> = {
@@ -80,7 +79,7 @@ export class StateManager {
 
   getCustomPolicies = (categoryName: string, resourceName: string): CustomIAMPolicies | undefined => {
     const filePath = pathManager.getCustomPoliciesPath(categoryName, resourceName);
-    if (!(fs.existsSync(filePath)) || !isJsonFileContent(fs.readFileSync(filePath, 'utf8'))) {
+    if (!(fs.existsSync(filePath)) || !isCustomPoliciesFile(filePath)) {
       return undefined;
     }
     return JSONUtilities.readJson<CustomIAMPolicies>(filePath);

@@ -23,9 +23,7 @@ const customIAMPolicy: CustomIAMPolicy = {
   ],
   Resource: []
 };
-const customIAMPolicies = {
-  policies: []
-}
+const customIAMPolicies: CustomIAMPolicy[] = [];
 
 let projRoot: string;
 
@@ -75,7 +73,7 @@ it(`should init and deploy storage DynamoDB + Lambda trigger, attach custom poli
 
   customIAMPolicy.Resource.push(ssmParameterArn);
   const customPoliciesPath = getCustomPoliciesPath(projRoot, 'function', funcName);
-  customIAMPolicies.policies.push(customIAMPolicy);
+  customIAMPolicies.push(customIAMPolicy);
   JSONUtilities.writeJson(customPoliciesPath, customIAMPolicies);
 
   overrideFunctionCodeNode(projRoot, funcName, 'get-ssm-parameter.js');
