@@ -5,9 +5,12 @@ import { BannerMessage } from 'amplify-cli-core';
  * A factory function that returns a function that prints the "success message" after adding auth
  * @param print The amplify print object
  */
-export const getPostAddAuthMessagePrinter = (print: any) => (resourceName: string) => {
+export const getPostAddAuthMessagePrinter = (print: any) => (resourceName: string, skipNextSteps: boolean = false) => {
   print.success(`Successfully added auth resource ${resourceName} locally`);
-  printCommonText(print);
+
+  if (!skipNextSteps) {
+    printCommonText(print);
+  }
 };
 
 /**
