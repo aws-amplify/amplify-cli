@@ -10,6 +10,7 @@ import { UpdateApiRequest } from '../../../../../amplify-headless-interface/lib/
 import { authConfigToAppSyncAuthType } from '../utils/auth-config-to-app-sync-auth-type-bi-di-mapper';
 import { resolverConfigToConflictResolution } from '../utils/resolver-config-to-conflict-resolution-bi-di-mapper';
 import _ from 'lodash';
+import chalk from 'chalk';
 import { getAppSyncAuthConfig, checkIfAuthExists, authConfigHasApiKey } from '../utils/amplify-meta-utils';
 import {
   ResourceAlreadyExistsError,
@@ -226,33 +227,41 @@ const serviceApiInputWalkthrough = async (context: $TSContext, defaultValuesFile
   //
   while (!continuePrompt) {
 
-    const getAuthModeChoice = () => {
+    const getAuthModeChoice = async () => {
       if (authConfig.defaultAuthentication.authenticationType === 'API_KEY') {
-        return `${authProviderChoices.find(choice => choice.value === authConfig.defaultAuthentication.authenticationType).name} (Expiration time: ${authConfig.defaultAuthentication.apiKeyConfig.apiKeyExpirationDays} days from now)`;
+        return `${authProviderChoices.find(choice => choice.value === authConfig.defaultAuthentication.authenticationType).name} (default, expiration time: ${authConfig.defaultAuthentication.apiKeyConfig.apiKeyExpirationDays} days from now)`;
       }
-      return authProviderChoices.find(choice => choice.value === authConfig.defaultAuthentication.authenticationType).name;
+      return `${authProviderChoices.find(choice => choice.value === authConfig.defaultAuthentication.authenticationType).name} (default)`;
     };
+
+    const getAdditionalAuthModeChoices = async () => {
+      let additionalAuthModesText = '';
+      authConfig.additionalAuthenticationProviders.map(async (authMode) => {
+        additionalAuthModesText += `, ${authProviderChoices.find(choice => choice.value === authMode.authenticationType).name}`
+      });
+      return additionalAuthModesText;
+    }
 
     const basicInfoQuestionChoices = [];
 
     basicInfoQuestionChoices.push({
-      name: `Name: ${resourceAnswers[inputs[1].key]}`,
+      name: chalk`{bold Name:} ${resourceAnswers[inputs[1].key]}`,
       value: 'API_NAME',
     });
 
     basicInfoQuestionChoices.push({
-      name: `Authorization modes: ${getAuthModeChoice()}`,
+      name: chalk`{bold Authorization modes:} ${await getAuthModeChoice()}${await getAdditionalAuthModeChoices()}`,
       value: 'API_AUTH_MODE',
     });
 
     basicInfoQuestionChoices.push({
-      name: `Conflict detection (required for DataStore): ${resolverConfig?.project ? 'Enabled' : 'Disabled'}`,
+      name: chalk`{bold Conflict detection (required for DataStore):} ${resolverConfig?.project ? 'Enabled' : 'Disabled'}`,
       value: 'CONFLICT_DETECTION',
     });
 
     if (resolverConfig?.project) {
       basicInfoQuestionChoices.push({
-        name: `Conflict resolution strategy: ${conflictResolutionHanlderChoices.find(x => x.value === resolverConfig.project.ConflictHandler).name}`,
+        name: chalk`{bold Conflict resolution strategy:} ${conflictResolutionHanlderChoices.find(x => x.value === resolverConfig.project.ConflictHandler).name}`,
         value: 'CONFLICT_STRATEGY',
       });
     }
@@ -296,7 +305,7 @@ const serviceApiInputWalkthrough = async (context: $TSContext, defaultValuesFile
         ({ authConfig } = await askAdditionalQuestions(context, authConfig, defaultAuthType));
         break;
       case 'CONFLICT_DETECTION':
-        resolverConfig = await askResolverConflictQuestion(context, defaultAuthType);
+        resolverConfig = await askResolverConflictQuestion(context, resolverConfig, defaultAuthType);
         break;
       case 'CONFLICT_STRATEGY':
         resolverConfig = await askResolverConflictHandlerQuestion(context, defaultAuthType);
@@ -481,7 +490,9 @@ async function displayApiInformation(context, resource, project) {
 
   context.print.success('General information');
   context.print.info('- Name: '.concat(resource.resourceName));
-  context.print.info('- API endpoint: '.concat(resource?.output?.GraphQLAPIEndpointOutput ? resource?.output?.GraphQLAPIEndpointOutput : 'Not available'));
+  if (resource?.output?.GraphQLAPIEndpointOutput) {
+    context.print.info(`- API endpoint: ${resource?.output?.GraphQLAPIEndpointOutput}`);
+  }
   context.print.info('');
 
   context.print.success('Authorization modes');
@@ -492,7 +503,7 @@ async function displayApiInformation(context, resource, project) {
   if (project.config && !_.isEmpty(project.config.ResolverConfig)) {
     context.print.info(`- Conflict resolution strategy: ${conflictResolutionHanlderChoices.find(choice => choice.value === project.config.ResolverConfig.project.ConflictHandler).name}`);
   } else {
-    context.print.info('- Not configured');
+    context.print.info('- Disabled');
   }
 
   context.print.info('');
@@ -518,14 +529,14 @@ async function askAdditionalQuestions(context, authConfig, defaultAuthType, mode
   return { authConfig };
 }
 
-async function askResolverConflictQuestion(context, modelTypes?) {
-  let resolverConfig: any = {};
+async function askResolverConflictQuestion(context, resolverConfig, modelTypes?) {
+  let resolverConfigResponse: any = {};
 
-  if (await context.prompt.confirm('Enable conflict detection?')) {
-    resolverConfig = await askResolverConflictHandlerQuestion(context, modelTypes);
+  if (await context.prompt.confirm('Enable conflict detection?', !resolverConfig?.project)) {
+    resolverConfigResponse = await askResolverConflictHandlerQuestion(context, modelTypes);
   }
 
-  return resolverConfig;
+  return resolverConfigResponse;
 }
 
 async function askResolverConflictHandlerQuestion(context, modelTypes?) {
@@ -641,7 +652,7 @@ async function askDefaultAuthQuestion(context) {
   const { defaultAuthType } = await inquirer.prompt([defaultAuthTypeQuestion]);
 
   // Get default auth configured
-  const defaultAuth = await askAuthQuestions(defaultAuthType, context);
+  const defaultAuth = await askAuthQuestions(defaultAuthType, context, false, currentAuthConfig?.defaultAuthentication);
 
   return {
     authConfig: {
@@ -674,7 +685,7 @@ export async function askAdditionalAuthQuestions(context, authConfig, defaultAut
     for (let i = 0; i < additionalProvidersAnswer.authType.length; i += 1) {
       const authProvider = additionalProvidersAnswer.authType[i];
 
-      const config = await askAuthQuestions(authProvider, context, true);
+      const config = await askAuthQuestions(authProvider, context, true, currentAuthConfig?.additionalAuthenticationProviders?.find(authSetting => authSetting.authenticationType == authProvider));
 
       authConfig.additionalAuthenticationProviders.push(config);
     }
@@ -686,12 +697,7 @@ export async function askAdditionalAuthQuestions(context, authConfig, defaultAut
   return authConfig;
 }
 
-export async function addAdditionalAuthMode(context, authType) {
-  const currentAuthConfig = getAppSyncAuthConfig(context.amplify.getProjectMeta());
-  currentAuthConfig.additionalAuthenticationProviders.push(askAuthQuestions(authType, context));
-}
-
-export async function askAuthQuestions(authType, context, printLeadText = false) {
+export async function askAuthQuestions(authType, context, printLeadText = false, authSettings) {
   if (authType === 'AMAZON_COGNITO_USER_POOLS') {
     if (printLeadText) {
       context.print.info('Cognito UserPool configuration');
@@ -707,7 +713,7 @@ export async function askAuthQuestions(authType, context, printLeadText = false)
       context.print.info('API key configuration');
     }
 
-    const apiKeyConfig = await askApiKeyQuestions();
+    const apiKeyConfig = await askApiKeyQuestions(authSettings);
 
     return apiKeyConfig;
   }
@@ -723,7 +729,7 @@ export async function askAuthQuestions(authType, context, printLeadText = false)
       context.print.info('OpenID Connect configuration');
     }
 
-    const openIDConnectConfig = await askOpenIDConnectQuestions();
+    const openIDConnectConfig = await askOpenIDConnectQuestions(authSettings);
 
     return openIDConnectConfig;
   }
@@ -736,9 +742,8 @@ export async function askAuthQuestions(authType, context, printLeadText = false)
 
 async function askUserPoolQuestions(context) {
   let authResourceName = checkIfAuthExists(context);
-
   if (!authResourceName) {
-    authResourceName = await context.amplify.invokePluginMethod(context, 'auth', undefined, 'add', [context]);
+    authResourceName = await context.amplify.invokePluginMethod(context, 'auth', undefined, 'add', [context, true]);
   } else {
     context.print.info('Use a Cognito user pool configured as a part of this project.');
   }
@@ -754,18 +759,25 @@ async function askUserPoolQuestions(context) {
   };
 }
 
-async function askApiKeyQuestions() {
+async function askApiKeyQuestions(authSettings) {
+  let defaultValues = {
+    apiKeyExpirationDays: 7,
+    description: undefined,
+  };
+  Object.assign(defaultValues, authSettings?.apiKeyConfig);
+
   const apiKeyQuestions = [
     {
       type: 'input',
       name: 'description',
       message: 'Enter a description for the API key:',
+      default: defaultValues.description,
     },
     {
       type: 'input',
       name: 'apiKeyExpirationDays',
       message: 'After how many days from now the API key should expire (1-365):',
-      default: 7,
+      default: defaultValues.apiKeyExpirationDays,
       validate: validateDays,
       // adding filter to ensure parsing input as int -> https://github.com/SBoudrias/Inquirer.js/issues/866
       filter: value => (isNaN(parseInt(value, 10)) ? value : parseInt(value, 10)),
@@ -780,35 +792,49 @@ async function askApiKeyQuestions() {
   };
 }
 
-async function askOpenIDConnectQuestions() {
+async function askOpenIDConnectQuestions(authSettings) {
+  let defaultValues = {
+    authTTL: undefined,
+    clientId: undefined,
+    iatTTL: undefined,
+    issuerUrl: undefined,
+    name: undefined,
+  };
+  Object.assign(defaultValues, authSettings?.openIDConnectConfig);
+
   const openIDConnectQuestions = [
     {
       type: 'input',
       name: 'name',
       message: 'Enter a name for the OpenID Connect provider:',
+      default: defaultValues.name,
     },
     {
       type: 'input',
       name: 'issuerUrl',
       message: 'Enter the OpenID Connect provider domain (Issuer URL):',
       validate: validateIssuerUrl,
+      default: defaultValues.issuerUrl,
     },
     {
       type: 'input',
       name: 'clientId',
       message: 'Enter the Client Id from your OpenID Client Connect application (optional):',
+      default: defaultValues.clientId,
     },
     {
       type: 'input',
       name: 'iatTTL',
       message: 'Enter the number of milliseconds a token is valid after being issued to a user:',
       validate: validateTTL,
+      default: defaultValues.iatTTL,
     },
     {
       type: 'input',
       name: 'authTTL',
       message: 'Enter the number of milliseconds a token is valid after being authenticated:',
       validate: validateTTL,
+      default: defaultValues.authTTL,
     },
   ];
 

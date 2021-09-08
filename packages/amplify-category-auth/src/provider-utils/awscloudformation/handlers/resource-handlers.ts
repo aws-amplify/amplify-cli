@@ -11,7 +11,7 @@ import { doesConfigurationIncludeSMS } from '../utils/auth-sms-workflow-helper';
  * The consumer returns the resourceName of the generated resource.
  * @param context The amplify context
  */
-export const getAddAuthHandler = (context: any) => async (request: ServiceQuestionsResult) => {
+export const getAddAuthHandler = (context: any, skipNextSteps: boolean = false) => async (request: ServiceQuestionsResult) => {
   const serviceMetadata = getSupportedServices()[request.serviceName];
   const { cfnFilename, defaultValuesFilename, provider } = serviceMetadata;
 
@@ -26,7 +26,7 @@ export const getAddAuthHandler = (context: any) => async (request: ServiceQuesti
     await getPostAddAuthMetaUpdater(context, { service: requestWithDefaults.serviceName, providerName: provider })(
       requestWithDefaults.resourceName!,
     );
-    await getPostAddAuthMessagePrinter(context.print)(requestWithDefaults.resourceName!);
+    await getPostAddAuthMessagePrinter(context.print)(requestWithDefaults.resourceName!, skipNextSteps);
 
     if (doesConfigurationIncludeSMS(request)) {
       await printSMSSandboxWarning(context.print);
