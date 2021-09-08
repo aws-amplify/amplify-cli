@@ -18,6 +18,7 @@ import _ from 'lodash';
 import { getAppSyncResourceName, getAppSyncAuthConfig, checkIfAuthExists, authConfigHasApiKey } from './utils/amplify-meta-utils';
 import { printApiKeyWarnings } from './utils/print-api-key-warnings';
 import { isNameUnique } from './utils/check-case-sensitivity';
+import { FeatureFlags } from 'amplify-cli-core';
 
 // keep in sync with ServiceName in amplify-category-function, but probably it will not change
 const FunctionServiceNameLambdaFunction = 'Lambda';
@@ -90,7 +91,20 @@ class CfnApiArtifactHandler implements ApiArtifactHandler {
       authConfig,
     });
 
-    this.context.amplify.updateamplifyMetaAfterResourceAdd(category, serviceConfig.apiName, this.createAmplifyMeta(authConfig));
+    const useExperimentalPipelineTransformer = FeatureFlags.getBoolean('graphQLTransformer.useExperimentalPipelinedTransformer');
+    let globalSandboxModeConfig;
+
+    if (useExperimentalPipelineTransformer) {
+      const envName = this.context.amplify.getEnvInfo().envName;
+      globalSandboxModeConfig = {};
+      globalSandboxModeConfig[envName] = { enabled: true };
+    }
+
+    this.context.amplify.updateamplifyMetaAfterResourceAdd(
+      category,
+      serviceConfig.apiName,
+      this.createAmplifyMeta(authConfig, globalSandboxModeConfig),
+    );
     return serviceConfig.apiName;
   };
 
@@ -135,11 +149,12 @@ class CfnApiArtifactHandler implements ApiArtifactHandler {
 
   private getResourceDir = (apiName: string) => path.join(this.context.amplify.pathManager.getBackendDirPath(), category, apiName);
 
-  private createAmplifyMeta = authConfig => ({
+  private createAmplifyMeta = (authConfig, globalSandboxModeConfig) => ({
     service: 'AppSync',
     providerPlugin: provider,
     output: {
       authConfig,
+      globalSandboxModeConfig,
     },
   });
 
