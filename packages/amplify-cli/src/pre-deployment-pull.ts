@@ -7,8 +7,9 @@ import * as path from 'path';
 
 export async function preDeployPullBackend(context: $TSContext, sandboxId: string) {
   const providerPlugin = await import(context.amplify.getProviderPlugins(context).awscloudformation);
-
-  const url = `${providerPlugin.adminBackendMap['us-east-1'].appStateUrl}/AppState/${sandboxId}`;
+  // environment variable APPSTATE_BASE_URL useful for development against beta/gamma appstate endpoints
+  const appStateBaseUrl = process.env.APPSTATE_BASE_URL ?? providerPlugin.adminBackendMap['us-east-1'].appStateUrl;
+  const url = `${appStateBaseUrl}/AppState/${sandboxId}`;
 
   // Fetch schema
   const res = await fetch(`${url}`);
