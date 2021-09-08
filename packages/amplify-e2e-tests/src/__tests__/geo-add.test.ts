@@ -9,16 +9,12 @@ import {
   getProjectMeta,
   amplifyPushWithoutCodegen,
   getMap,
-  getPlaceIndex
+  getPlaceIndex,
+  generateRandomShortId
 } from 'amplify-e2e-core';
-import uuid from 'uuid';
 import { existsSync } from 'fs';
 import path from 'path';
 import { getAWSExports } from '../aws-exports/awsExports';
-
-function generateRandomShortId(): string {
-  return uuid().split('-')[0];
-}
 
 describe('amplify geo add', () => {
   let projRoot: string;
@@ -37,30 +33,39 @@ describe('amplify geo add', () => {
   it('init a project with default auth config and add the map resource', async () => {
     await initJSProjectWithProfile(projRoot, {});
     await addAuthWithDefault(projRoot);
-    await addMapWithDefault(projRoot);
+    await addMapWithDefault(projRoot, { isFirstGeoResource: true });
     await amplifyPushWithoutCodegen(projRoot);
 
     const meta = getProjectMeta(projRoot);
+    expect(meta.geo).toBeDefined();
     const mapId = Object.keys(meta.geo).filter(key => meta.geo[key].service === 'Map')[0];
+    const mapName = meta.geo[mapId].output.Name;
     const region = meta.providers.awscloudformation.Region;
-    const map = await getMap(mapId, region);
+    const map = await getMap(mapName, region);
     const awsExport: any = getAWSExports(projRoot).default;
     expect(map.MapName).toBeDefined();
-    expect(awsExport.geo.maps.items).toBeDefined();
+    expect(awsExport.geo.amazon_location_services.maps.items[mapName]).toBeDefined();
+    expect(awsExport.geo.amazon_location_services.maps.default).toEqual(mapName);
+    expect(awsExport.geo.amazon_location_services.region).toEqual(region);
   });
 
   it('init a project with default auth config and add the place index resource', async () => {
     await initJSProjectWithProfile(projRoot, {});
     await addAuthWithDefault(projRoot);
-    await addPlaceIndexWithDefault(projRoot);
+    await addPlaceIndexWithDefault(projRoot, { isFirstGeoResource: true });
     await amplifyPushWithoutCodegen(projRoot);
 
     const meta = getProjectMeta(projRoot);
+    expect(meta.geo).toBeDefined();
     const placeIndexId = Object.keys(meta.geo).filter(key => meta.geo[key].service === 'PlaceIndex')[0];
+    const indexName = meta.geo[placeIndexId].output.Name;
     const region = meta.providers.awscloudformation.Region;
-    const placeIndex = await getPlaceIndex(placeIndexId, region);
+    const placeIndex = await getPlaceIndex(indexName, region);
     const awsExport: any = getAWSExports(projRoot).default;
     expect(placeIndex.IndexName).toBeDefined();
+    expect(awsExport.geo.amazon_location_services.search_indices.items).toContain(indexName);
+    expect(awsExport.geo.amazon_location_services.search_indices.default).toEqual(indexName);
+    expect(awsExport.geo.amazon_location_services.region).toEqual(region);
   });
 
   it('init a project with default auth config and add two map resources with the second set to default', async () => {
@@ -68,25 +73,28 @@ describe('amplify geo add', () => {
     const map2Id = `map${generateRandomShortId()}`;
     await initJSProjectWithProfile(projRoot, {});
     await addAuthWithDefault(projRoot);
-    await addMapWithDefault(projRoot, { resourceName: map1Id });
+    await addMapWithDefault(projRoot, { resourceName: map1Id, isFirstGeoResource: true });
     await addMapWithDefault(projRoot, { resourceName: map2Id, isAdditional: true });
     await amplifyPushWithoutCodegen(projRoot);
 
-    // //check amplify meta file
+    // check amplify meta file
     const meta = getProjectMeta(projRoot);
     expect(meta.geo[map1Id].isDefault).toBe(false);
     expect(meta.geo[map2Id].isDefault).toBe(true);
-    // //check if resource is provisioned in cloud
+    // check if resource is provisioned in cloud
     const region = meta.providers.awscloudformation.Region;
-    const map1 = await getMap(map1Id, region);
-    const map2 = await getMap(map2Id, region);
+    const map1Name = meta.geo[map1Id].output.Name;
+    const map2Name = meta.geo[map2Id].output.Name;
+    const map1 = await getMap(map1Name, region);
+    const map2 = await getMap(map2Name, region);
     expect(map1.MapName).toBeDefined();
     expect(map2.MapName).toBeDefined();
-    // //check aws export file
+    // check aws export file
     const awsExport: any = getAWSExports(projRoot).default;
-    expect(awsExport.geo.maps.items[map1Id]).toBeDefined();
-    expect(awsExport.geo.maps.items[map2Id]).toBeDefined();
-    expect(awsExport.geo.maps.default).toEqual(map2Id);
+    expect(awsExport.geo.amazon_location_services.maps.items[map1Name]).toBeDefined();
+    expect(awsExport.geo.amazon_location_services.maps.items[map2Name]).toBeDefined();
+    expect(awsExport.geo.amazon_location_services.maps.default).toEqual(map2Name);
+    expect(awsExport.geo.amazon_location_services.region).toEqual(region);
   });
 
   it('init a project with default auth config and add two place index resources with the second set to default', async () => {
@@ -94,23 +102,27 @@ describe('amplify geo add', () => {
     const index2Id = `placeindex${generateRandomShortId()}`;
     await initJSProjectWithProfile(projRoot, {});
     await addAuthWithDefault(projRoot);
-    await addPlaceIndexWithDefault(projRoot, { resourceName: index1Id });
+    await addPlaceIndexWithDefault(projRoot, { resourceName: index1Id, isFirstGeoResource: true });
     await addPlaceIndexWithDefault(projRoot, { resourceName: index2Id, isAdditional: true });
     await amplifyPushWithoutCodegen(projRoot);
 
-    // //check amplify meta file
+    // check amplify meta file
     const meta = getProjectMeta(projRoot);
     expect(meta.geo[index1Id].isDefault).toBe(false);
     expect(meta.geo[index2Id].isDefault).toBe(true);
-    // //check if resource is provisioned in cloud
+    // check if resource is provisioned in cloud
     const region = meta.providers.awscloudformation.Region;
-    const index1 = await getPlaceIndex(index1Id, region);
-    const index2 = await getPlaceIndex(index2Id, region);
+    const index1Name = meta.geo[index1Id].output.Name;
+    const index2Name = meta.geo[index2Id].output.Name;
+    const index1 = await getPlaceIndex(index1Name, region);
+    const index2 = await getPlaceIndex(index2Name, region);
     expect(index1.IndexName).toBeDefined();
     expect(index2.IndexName).toBeDefined();
-    // //check aws export file
+    // check aws export file
     const awsExport: any = getAWSExports(projRoot).default;
-    expect(awsExport.geo.place_indexes.items).toBeDefined();
-    expect(awsExport.geo.place_indexes.default).toEqual(index2Id);
+    expect(awsExport.geo.amazon_location_services.search_indices.items).toContain(index1Name);
+    expect(awsExport.geo.amazon_location_services.search_indices.items).toContain(index2Name);
+    expect(awsExport.geo.amazon_location_services.search_indices.default).toEqual(index2Name);
+    expect(awsExport.geo.amazon_location_services.region).toEqual(region);
   });
 })
