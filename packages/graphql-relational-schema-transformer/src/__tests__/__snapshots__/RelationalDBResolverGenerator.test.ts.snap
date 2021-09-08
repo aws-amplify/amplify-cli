@@ -162,7 +162,7 @@ exports[`verify generated templates using a Int primary key 10`] = `
 #set( $update = $updateList.toString().replace(\\"{\\",\\"\\").replace(\\"}\\",\\"\\") )
 {
   \\"version\\": \\"2018-05-29\\",
-  \\"statements\\":   [\\"UPDATE Apples SET $update WHERE Id=$ctx.args.updateApplesInput.Id}\\", \\"SELECT * FROM Apples WHERE Id=$ctx.args.updateApplesInput.Id\\"]
+  \\"statements\\":   [\\"UPDATE Apples SET $update WHERE Id=$ctx.args.updateApplesInput.Id\\", \\"SELECT * FROM Apples WHERE Id=$ctx.args.updateApplesInput.Id\\"]
 }"
 `;
 
@@ -270,7 +270,7 @@ exports[`verify generated templates with old pluralization 10`] = `
 #set( $update = $updateList.toString().replace(\\"{\\",\\"\\").replace(\\"}\\",\\"\\") )
 {
   \\"version\\": \\"2018-05-29\\",
-  \\"statements\\":   [\\"UPDATE Apples SET $update WHERE Id=$ctx.args.updateApplesInput.Id}\\", \\"SELECT * FROM Apples WHERE Id=$ctx.args.updateApplesInput.Id\\"]
+  \\"statements\\":   [\\"UPDATE Apples SET $update WHERE Id=$ctx.args.updateApplesInput.Id\\", \\"SELECT * FROM Apples WHERE Id=$ctx.args.updateApplesInput.Id\\"]
 }"
 `;
 
