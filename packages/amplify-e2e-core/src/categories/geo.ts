@@ -1,12 +1,14 @@
 import { getCLIPath, nspawn as spawn, KEY_DOWN_ARROW } from '..';
 
 export type GeoConfig = {
+  isFirstGeoResource?: boolean
   isAdditional?: boolean
   isDefault?: boolean
   resourceName?: string
 }
 
 const defaultGeoConfig: GeoConfig = {
+  isFirstGeoResource: false,
   isAdditional: false,
   isDefault: true,
   resourceName: '\r'
@@ -25,12 +27,19 @@ export function addMapWithDefault(cwd: string, settings: GeoConfig = {}): Promis
       .wait('Provide a name for the Map:')
       .sendLine(config.resourceName)
       .wait('Who can access this Map?')
-      .sendCarriageReturn()
-      .wait('Do you want to configure advanced settings?')
+      .sendCarriageReturn();
+
+    if (config.isFirstGeoResource === true) {
+      chain.wait('Are you tracking commercial assets for your business in your app?')
       .sendConfirmNo();
-    if (config.isAdditional) {
+      chain.wait('Successfully set RequestBasedUsage pricing plan for your Geo resources.');
+    }
+
+    chain.wait('Do you want to configure advanced settings?').sendConfirmNo();
+
+    if (config.isAdditional === true) {
       chain.wait('Do you want to set this map as default?')
-      if (config.isDefault) {
+      if (config.isDefault === true) {
         chain.sendConfirmYes();
       } else {
         chain.sendConfirmNo();
@@ -60,12 +69,19 @@ export function addPlaceIndexWithDefault(cwd: string, settings: GeoConfig = {}):
       .wait('Provide a name for the location search index (place index):')
       .sendLine(config.resourceName)
       .wait('Who can access this Search Index?')
-      .sendCarriageReturn()
-      .wait('Do you want to configure advanced settings?')
+      .sendCarriageReturn();
+
+    if (config.isFirstGeoResource === true) {
+      chain.wait('Are you tracking commercial assets for your business in your app?')
       .sendConfirmNo();
-      if (config.isAdditional) {
+      chain.wait('Successfully set RequestBasedUsage pricing plan for your Geo resources.');
+    }
+
+    chain.wait('Do you want to configure advanced settings?')
+      .sendConfirmNo();
+      if (config.isAdditional === true) {
         chain.wait('Do you want to set this search index as default?');
-        if (config.isDefault) {
+        if (config.isDefault === true) {
           chain.sendConfirmYes();
         } else {
           chain.sendConfirmNo();
@@ -82,7 +98,7 @@ export function addPlaceIndexWithDefault(cwd: string, settings: GeoConfig = {}):
 }
 
 /**
- * Update an existing map with default values. Assume auth is already configured
+ * Update an existing map with given settings. Assume auth is already configured
  * @param cwd command directory
  */
  export function updateMapWithDefault(cwd: string): Promise<void> {
