@@ -22,7 +22,6 @@ import {
   open,
 } from 'amplify-cli-core';
 import { defineGlobalSandboxMode } from '../utils/global-sandbox-mode';
-import { Duration, Expiration } from '@aws-cdk/core';
 
 const serviceName = 'AppSync';
 const elasticContainerServiceName = 'ElasticContainer';
@@ -513,9 +512,11 @@ export async function askAdditionalAuthQuestions(context, authConfig, defaultAut
   if (await context.prompt.confirm('Configure additional auth types?')) {
     // Get additional auth configured
     const remainingAuthProviderChoices = authProviderChoices.filter(p => p.value !== defaultAuthType);
-    const currentAdditionalAuth = ((currentAuthConfig && currentAuthConfig.additionalAuthenticationProviders
-      ? currentAuthConfig.additionalAuthenticationProviders
-      : []) as any[]).map(authProvider => authProvider.authenticationType);
+    const currentAdditionalAuth = (
+      (currentAuthConfig && currentAuthConfig.additionalAuthenticationProviders
+        ? currentAuthConfig.additionalAuthenticationProviders
+        : []) as any[]
+    ).map(authProvider => authProvider.authenticationType);
 
     const additionalProvidersQuestion: CheckboxQuestion = {
       type: 'checkbox',
@@ -682,9 +683,10 @@ function validateDays(input) {
 }
 
 function validateIssuerUrl(input) {
-  const isValid = /^(((?!http:\/\/(?!localhost))([a-zA-Z0-9.]{1,}):\/\/([a-zA-Z0-9-._~:?#@!$&'()*+,;=/]{1,})\/)|(?!http)(?!https)([a-zA-Z0-9.]{1,}):\/\/)$/.test(
-    input,
-  );
+  const isValid =
+    /^(((?!http:\/\/(?!localhost))([a-zA-Z0-9.]{1,}):\/\/([a-zA-Z0-9-._~:?#@!$&'()*+,;=/]{1,})\/)|(?!http)(?!https)([a-zA-Z0-9.]{1,}):\/\/)$/.test(
+      input,
+    );
 
   if (!isValid) {
     return 'The value must be a valid URI with a trailing forward slash. HTTPS must be used instead of HTTP unless you are using localhost.';
@@ -784,8 +786,8 @@ const buildPolicyResource = (resourceName: string, path: string | null) => {
         {
           Ref: `${category}${resourceName}GraphQLAPIIdOutput`,
         },
-        ...(path ? [path] : [])
-      ]
+        ...(path ? [path] : []),
+      ],
     ],
   };
 };
