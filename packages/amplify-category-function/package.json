@@ -24,6 +24,7 @@
   "dependencies": {
     "amplify-cli-core": "1.27.0",
     "amplify-function-plugin-interface": "1.9.1",
+    "archiver": "^5.3.0",
     "aws-sdk": "^2.963.0",
     "chalk": "^4.1.1",
     "cloudform-types": "^4.2.0",
@@ -37,6 +38,7 @@
     "jstreemap": "^1.28.2",
     "lodash": "^4.17.21",
     "mime-types": "^2.1.26",
+    "ora": "^4.0.3",
     "promise-sequential": "^1.1.1",
     "uuid": "^3.4.0"
   },

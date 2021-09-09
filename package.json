@@ -66,8 +66,8 @@
   "author": "Amazon Web Services",
   "license": "Apache-2.0",
   "dependencies": {
-    "strip-ansi": "^6.0.0",
-    "lerna": "^4.0.0"
+    "lerna": "^4.0.0",
+    "strip-ansi": "^6.0.0"
   },
   "workspaces": {
     "packages": [

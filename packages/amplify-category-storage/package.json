@@ -25,6 +25,7 @@
     "amplify-cli-core": "1.27.0",
     "amplify-prompts": "1.1.2",
     "amplify-util-import": "1.5.10",
+    "chalk": "^4.1.1",
     "cloudform-types": "^4.2.0",
     "enquirer": "^2.3.6",
     "fs-extra": "^8.1.0",
@@ -34,6 +35,7 @@
     "uuid": "^3.4.0"
   },
   "devDependencies": {
+    "aws-sdk": "^2.963.0",
     "rimraf": "^3.0.2"
   },
   "jest": {

@@ -61,8 +61,10 @@
     "@aws-cdk/custom-resources": "~1.119.0",
     "@aws-cdk/cx-api": "~1.119.0",
     "@aws-cdk/region-info": "~1.119.0",
+    "@octokit/rest": "^18.0.9",
     "@graphql-tools/merge": "^6.0.18",
     "amplify-cli-core": "1.27.0",
+    "amplify-headless-interface": "1.10.0",
     "amplify-util-headless-input": "1.5.3",
     "chalk": "^4.1.1",
     "constructs": "^3.3.125",
@@ -72,6 +74,7 @@
     "graphql-transformer-core": "6.29.5",
     "inquirer": "^7.3.3",
     "js-yaml": "^4.0.0",
+    "lodash": "^4.17.21",
     "ora": "^4.0.3",
     "uuid": "^3.4.0"
   },
