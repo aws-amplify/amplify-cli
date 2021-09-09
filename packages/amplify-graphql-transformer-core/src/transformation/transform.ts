@@ -6,7 +6,7 @@ import {
   TransformHostProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { AuthorizationMode, AuthorizationType } from '@aws-cdk/aws-appsync';
-import { App, Aws, CfnOutput, Fn } from '@aws-cdk/core';
+import { App, Aws, CfnOutput, Fn, Duration, Expiration } from '@aws-cdk/core';
 import assert from 'assert';
 import {
   EnumTypeDefinitionNode,
@@ -88,12 +88,14 @@ export class GraphQLTransform {
     }
     const sortedTransformers = sortTransformerPlugins(options.transformers);
     this.transformers = sortedTransformers;
+    const apiKeyExpirationDate = Expiration.after(Duration.days(7)).date;
 
     this.authConfig = options.authConfig || {
       defaultAuthentication: {
         authenticationType: 'API_KEY',
         apiKeyConfig: {
           apiKeyExpirationDays: 7,
+          apiKeyExpirationDate,
           description: 'Default API Key',
         },
       },
