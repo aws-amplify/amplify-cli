@@ -1,6 +1,6 @@
-import {createDefaultCustomPoliciesFile} from "../customPoliciesUtils"
-import { JSONUtilities } from "..";
-import { pathManager, PathConstants } from "../state-manager";
+import {createDefaultCustomPoliciesFile} from '../customPoliciesUtils'
+import { JSONUtilities } from '..';
+import { pathManager, PathConstants } from '../state-manager';
 import path from 'path';
 
 describe('Custom policies util test', () => {

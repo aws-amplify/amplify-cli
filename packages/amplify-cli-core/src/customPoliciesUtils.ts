@@ -1,5 +1,4 @@
 import { Fn, IAM } from 'cloudform-types';
-import * as iam from '@aws-cdk/aws-iam';
 import { JSONUtilities, pathManager } from '.';
 
 export type CustomIAMPolicies = CustomIAMPolicy[];
@@ -17,7 +16,7 @@ export const CustomIAMPoliciesSchema = {
     type: 'object',
     properties: {
       Action: { type: 'array', items: { type: 'string' }, minItems: 1, nullable: false },
-      Effect: {type: 'string', nullable: true, default: iam.Effect.ALLOW},
+      Effect: {enum:['Allow', 'Deny'], nullable: true, default: 'Allow'},
       Resource: { type: 'array', items: { type: 'string' }, minItems: 1, nullable: false},
     },
     required: ['Resource', 'Action'],

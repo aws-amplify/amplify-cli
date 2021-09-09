@@ -6,7 +6,7 @@ import { DEPLOYMENT_MECHANISM } from './base-api-stack';
 import { GitHubSourceActionInfo } from './pipeline-with-awaiter';
 import { API_TYPE, IMAGE_SOURCE_TYPE, ResourceDependency, ServiceConfiguration } from './service-walkthroughs/containers-walkthrough';
 import { ApiResource, generateContainersArtifacts } from './utils/containers-artifacts';
-import { createDefaultCustomPoliciesFile, pathManager } from "amplify-cli-core";
+import { createDefaultCustomPoliciesFile, pathManager } from 'amplify-cli-core';
 
 export const addResource = async (
   serviceWalkthroughPromise: Promise<ServiceConfiguration>,

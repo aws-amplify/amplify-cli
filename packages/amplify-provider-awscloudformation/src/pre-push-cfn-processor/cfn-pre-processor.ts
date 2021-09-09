@@ -15,7 +15,6 @@ import { prePushCfnTemplateModifier } from './pre-push-cfn-modifier';
 import { Fn, Template } from 'cloudform-types';
 import { printer } from 'amplify-prompts';
 import Ajv from 'ajv';
-import * as iam from '@aws-cdk/aws-iam';
 
 
 const buildDir = 'build';
@@ -84,11 +83,11 @@ async function addCustomPoliciesToCFNTemplate(
   resourceName: string
   ) {
   let customExecutionPolicy;
-  if(service === 'Lambda') {
+  if (service === 'Lambda') {
     customExecutionPolicy = customExecutionPolicyForFunction;
   }
   if (service === 'ElasticContainer') {
-    const roleName = cfnTemplate.Resources.TaskDefinition.Properties.ExecutionRoleArn["Fn::GetAtt"][0];
+    const roleName = cfnTemplate.Resources.TaskDefinition.Properties.ExecutionRoleArn['Fn::GetAtt'][0];
     customExecutionPolicy = customExecutionPolicyForContainer;
     const role = Fn.Ref(roleName);
     customExecutionPolicy.Properties.Roles.push(role);
@@ -99,7 +98,7 @@ async function addCustomPoliciesToCFNTemplate(
   for (const customPolicy of customPolicies) {
     validateCustomPolicy(customPolicy, category, resourceName);
     const policyWithEnv = replaceEnvForCustomPolicies(customPolicy);
-    if (!policyWithEnv.Effect) policyWithEnv.Effect = iam.Effect.ALLOW;
+    if (!policyWithEnv.Effect) policyWithEnv.Effect = 'Allow';
     customExecutionPolicy.Properties.PolicyDocument.Statement.push(policyWithEnv);
   }
 

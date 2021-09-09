@@ -24,7 +24,7 @@ export * from './cliGetCategories';
 export * from './cliRemoveResourcePrompt';
 export * from './cliViewAPI';
 export * from './hooks';
-export * from "./cliViewAPI";
+export * from './cliViewAPI';
 export * from './customPoliciesUtils'
 
 // Temporary types until we can finish full type definition across the whole CLI

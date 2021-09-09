@@ -121,7 +121,6 @@ export async function addFunctionResource(
 
   const { print } = context;
 
-
   const customPoliciesPath = pathManager.getCustomPoliciesPath(category, completeParams.resourceName);
 
   print.success(`Successfully added resource ${completeParams.resourceName} locally.`);

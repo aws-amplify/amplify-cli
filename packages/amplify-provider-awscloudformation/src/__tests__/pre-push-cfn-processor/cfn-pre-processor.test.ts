@@ -68,8 +68,8 @@ describe('preProcessCFNTemplate', () => {
   it('writes valid custom policies to cfn template', async () => {
     const cfnTemplate = ({
       Resources: {
-        "LambdaExecutionRole": {
-          "Type": "AWS::IAM::Role"
+        LambdaExecutionRole: {
+          Type: 'AWS::IAM::Role'
         }
       },
     } as unknown) as Template;
