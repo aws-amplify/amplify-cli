@@ -30,7 +30,7 @@ jest.mock('../../../provider-utils/awscloudformation/utils/amplify-meta-utils', 
 
 jest.mock('amplify-cli-core');
 
-const fs_mock = (fs as unknown) as jest.Mocked<typeof fs>;
+const fs_mock = fs as unknown as jest.Mocked<typeof fs>;
 const writeTransformerConfiguration_mock = writeTransformerConfiguration as jest.MockedFunction<typeof writeTransformerConfiguration>;
 const getAppSyncResourceName_mock = getAppSyncResourceName as jest.MockedFunction<typeof getAppSyncResourceName>;
 const getAppSyncAuthConfig_mock = getAppSyncAuthConfig as jest.MockedFunction<typeof getAppSyncAuthConfig>;
