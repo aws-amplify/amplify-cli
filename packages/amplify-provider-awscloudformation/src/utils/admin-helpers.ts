@@ -6,7 +6,7 @@ import { adminLoginFlow } from '../admin-login';
 import { AdminAuthConfig, AwsSdkConfig, CognitoAccessToken, CognitoIdToken } from './auth-types';
 
 export const adminVerifyUrl = (appId: string, envName: string, region: string): string => {
-  const baseUrl = adminBackendMap[region].amplifyAdminUrl;
+  const baseUrl = process.env.AMPLIFY_CLI_ADMINUI_BASE_URL ?? adminBackendMap[region]?.amplifyAdminUrl;
   return `${baseUrl}/admin/${appId}/${envName}/verify/`;
 };
 
@@ -45,7 +45,9 @@ export async function getTempCredsWithAdminTokens(context: $TSContext, appId: st
 }
 
 async function getAdminAppState(appId: string, region: string) {
-  const res = await fetch(`${adminBackendMap[region].appStateUrl}/AppState/?appId=${appId}`);
+  // environment variable AMPLIFY_CLI_APPSTATE_BASE_URL useful for development against beta/gamma appstate endpoints
+  const appStateBaseUrl = process.env.AMPLIFY_CLI_APPSTATE_BASE_URL ?? adminBackendMap[region].appStateUrl;
+  const res = await fetch(`${appStateBaseUrl}/AppState/?appId=${appId}`);
   return res.json();
 }
 
