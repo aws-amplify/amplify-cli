@@ -11,8 +11,14 @@ import _ from 'lodash';
 const AMPLIFY_EXPORT_MANIFEST_JSON_FILE = 'amplify-export-manifest.json';
 const AMPLIFY_EXPORT_TAGS_JSON_FILE = 'export-tags.json';
 const AMPLIFY_EXPORT_CATEGORY_STACK_MAPPING_FILE = 'category-stack-mapping.json';
-
-export async function run(context: $TSContext, resourceDefinition: $TSAny[], exportType: string) {
+/**
+ * Walks through
+ * @param context
+ * @param resourceDefinition
+ * @param _exportType is left in posterity
+ *
+ */
+export async function run(context: $TSContext, resourceDefinition: $TSAny[], _exportType: string) {
   const exportPath = context.input.options['out'];
   const { projectName } = stateManager.getProjectConfig();
   const amplifyExportFolder = path.join(path.resolve(exportPath), `amplify-export-${projectName}`);
@@ -68,7 +74,11 @@ export async function run(context: $TSContext, resourceDefinition: $TSAny[], exp
     spinner.stop();
   }
 }
-
+/**
+ * Gets the tags from the tags.json file and transforms them into Pascal case
+ * leaves the project-env var in for the CDK construct to apply
+ * @param exportPath
+ */
 function createTagsFile(exportPath: string) {
   const tags = stateManager.getProjectTags();
   const hydratedTags = stateManager.getHydratedTags();
@@ -160,7 +170,12 @@ async function revertToBackup(amplifyExportFolder: string) {
 async function createBackup(amplifyExportFolder: string) {
   await fs.copy(amplifyExportFolder, `${amplifyExportFolder}-${backup}`);
 }
-
+/**
+ * Transforms the stackparameters file path to convert into the export manifest file
+ * @param stackParameters
+ * @param exportPath
+ * @param amplifyExportFolder
+ */
 function writeExportManifest(stackParameters: StackParameters, exportPath: string, amplifyExportFolder: string) {
   const rootStackParametersKey = _.first(Object.keys(stackParameters));
   const manifestJson = {
