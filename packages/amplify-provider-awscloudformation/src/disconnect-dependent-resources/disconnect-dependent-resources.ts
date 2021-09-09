@@ -1,4 +1,4 @@
-import { $TSAny, $TSContext, JSONUtilities, pathManager, readCFNTemplate, writeCFNTemplate } from 'amplify-cli-core';
+import { $TSAny, $TSContext, JSONUtilities, pathManager, readCFNTemplate, stateManager, writeCFNTemplate } from 'amplify-cli-core';
 import * as path from 'path';
 import * as fs from 'fs-extra';
 import { S3 } from '../aws-utils/aws-s3';
@@ -67,7 +67,11 @@ export const uploadTempFuncTemplates = async (s3Client: S3, funcNames: string[])
   }
 };
 
-export const generateIterativeFuncDeploymentSteps = async (cfnClient: CloudFormation, rootStackId: string, functionNames: string[]) => {
+export const generateIterativeFuncDeploymentSteps = async (
+  cfnClient: CloudFormation,
+  rootStackId: string,
+  functionNames: string[],
+): Promise<{ deploymentSteps: DeploymentStep[]; lastMetaKey: string }> => {
   let rollback: DeploymentOp;
   let previousMetaKey: string;
   const steps: DeploymentStep[] = [];
@@ -81,7 +85,7 @@ export const generateIterativeFuncDeploymentSteps = async (cfnClient: CloudForma
     rollback = deploymentOp;
     previousMetaKey = getTempFuncMetaS3Key(funcName);
   }
-  return steps;
+  return { deploymentSteps: steps, lastMetaKey: previousMetaKey };
 };
 
 const generateIterativeFuncDeploymentOp = async (cfnClient: CloudFormation, rootStackId: string, functionName: string) => {
@@ -90,9 +94,17 @@ const generateIterativeFuncDeploymentOp = async (cfnClient: CloudFormation, root
     .promise();
   const funcStackId = funcStack.StackResources[0].PhysicalResourceId;
   const { parameters, capabilities } = await getPreviousDeploymentRecord(cfnClient, funcStackId);
+  const funcCfnParams = stateManager.getResourceParametersJson(undefined, 'function', functionName, {
+    throwIfNotExist: false,
+    default: {},
+  });
+  const tpi = stateManager.getTeamProviderInfo(undefined, { throwIfNotExist: false, default: {} });
+  const env = stateManager.getLocalEnvInfo().envName;
+  const tpiCfnParams = tpi?.[env]?.categories?.function?.[functionName] || {};
+  const params = { ...parameters, ...funcCfnParams, ...tpiCfnParams };
   const deploymentStep: DeploymentOp = {
     stackTemplatePathOrUrl: getTempFuncTemplateS3Key(functionName),
-    parameters,
+    parameters: params,
     stackName: funcStackId,
     capabilities,
     tableNames: [],
@@ -102,12 +114,14 @@ const generateIterativeFuncDeploymentOp = async (cfnClient: CloudFormation, root
   return deploymentStep;
 };
 
-export const prependDeploymentSteps = (beforeSteps: DeploymentStep[], afterSteps: DeploymentStep[]) => {
+export const prependDeploymentSteps = (beforeSteps: DeploymentStep[], afterSteps: DeploymentStep[], beforeStepsLastMetaKey: string) => {
   if (beforeSteps.length === 0) {
     return afterSteps;
   }
   beforeSteps[0].rollback = _.cloneDeep(afterSteps[0].rollback);
+  beforeSteps[0].deployment.previousMetaKey = afterSteps[0].deployment.previousMetaKey;
   afterSteps[0].rollback = _.cloneDeep(beforeSteps[beforeSteps.length - 1].deployment);
+  afterSteps[0].deployment.previousMetaKey = beforeStepsLastMetaKey;
   return beforeSteps.concat(afterSteps);
 };
 

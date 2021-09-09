@@ -173,7 +173,7 @@ export async function run(context: $TSContext, resourceDefinition: $TSObject, re
 
     // Check if iterative updates are enabled or not and generate the required deployment steps if needed.
     if (FeatureFlags.getBoolean('graphQLTransformer.enableIterativeGSIUpdates')) {
-      const gqlResource = getGqlUpdatedResource(resources);
+      const gqlResource = getGqlUpdatedResource(rebuild ? resources : resourcesToBeUpdated);
 
       if (gqlResource) {
         const gqlManager = await GraphQLResourceManager.createInstance(context, gqlResource, cloudformationMeta.StackId, rebuild);
@@ -191,12 +191,12 @@ export async function run(context: $TSContext, resourceDefinition: $TSObject, re
           allFunctionNames,
           getFunctionParamsSupplier(context),
         );
-        const decoupleFuncSteps = await generateIterativeFuncDeploymentSteps(
+        const { deploymentSteps: decoupleFuncSteps, lastMetaKey } = await generateIterativeFuncDeploymentSteps(
           new CloudFormation(await loadConfiguration(context)),
           cloudformationMeta.StackId,
           functionsDependentOnReplacedModelTables,
         );
-        deploymentSteps = prependDeploymentSteps(decoupleFuncSteps, deploymentSteps);
+        deploymentSteps = prependDeploymentSteps(decoupleFuncSteps, deploymentSteps, lastMetaKey);
         if (deploymentSteps.length > 1) {
           iterativeDeploymentWasInvoked = true;
 
