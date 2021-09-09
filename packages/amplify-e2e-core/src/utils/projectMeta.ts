@@ -29,7 +29,7 @@ function getProjectMeta(projectRoot: string) {
   return JSON.parse(fs.readFileSync(metaFilePath, 'utf8'));
 }
 function getCustomPoliciesPath(projectRoot: string, category: string, resourceName: string): string {
-  return path.join(projectRoot, 'amplify', 'backend', category, resourceName, 'custom-iam-policy-documents.json');
+  return path.join(projectRoot, 'amplify', 'backend', category, resourceName, 'custom-policies.json');
 }
 
 function getProjectTags(projectRoot: string) {

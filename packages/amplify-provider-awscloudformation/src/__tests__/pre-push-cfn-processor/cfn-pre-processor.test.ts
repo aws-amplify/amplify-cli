@@ -23,8 +23,7 @@ const customPolicies: CustomIAMPolicies = [
     Action : ['test:test'],
     Effect : 'Allow',
     Resource : ['arn:aws:s3:us-east-2:012345678910:testResource']
-  }
-];
+  }];
 
 readCFNTemplate_mock.mockResolvedValue({
   templateFormat,
@@ -39,6 +38,7 @@ const backendPath = '/project/amplify/backend';
 const resourcePath = 'api/resourceName/cfn-template-name.json';
 
 pathManager_mock.getBackendDirPath.mockReturnValue(backendPath);
+pathManager_mock.getResourceDirectoryPath.mockReturnValue(backendPath);
 stateManager_mock.getCustomPolicies.mockReturnValue(customPolicies);
 stateManager_mock.getLocalEnvInfo.mockReturnValue({envName:'test'});
 
@@ -79,7 +79,7 @@ describe('preProcessCFNTemplate', () => {
       cfnTemplate,
     });
     
-    await writeCustomPoliciesToCFNTemplate('test', 'Lambda', backendPath, 'cfn-template.json', 'test', path.join(backendPath, resourcePath));
+    await writeCustomPoliciesToCFNTemplate('test', 'Lambda', 'cfn-template.json', 'test');
     
     const templateWithCustomPolicies = writeCFNTemplate_mock.mock.calls[0][0] as any;
 

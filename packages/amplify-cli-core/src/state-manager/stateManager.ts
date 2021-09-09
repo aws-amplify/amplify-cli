@@ -1,12 +1,12 @@
 import * as fs from 'fs-extra';
+import * as path from 'path';
 import _ from 'lodash';
 import { PathConstants, pathManager } from './pathManager';
 import { $TSMeta, $TSTeamProviderInfo, $TSAny, DeploymentSecrets, HooksConfig } from '..';
 import { JSONUtilities } from '../jsonUtilities';
 import { SecretFileMode } from '../cliConstants';
 import { HydrateTags, ReadTags, Tag } from '../tags';
-import { CustomIAMPolicies, isCustomPoliciesFile } from '../customPoliciesUtils';
-import path from 'path';
+import { CustomIAMPolicies } from '../customPoliciesUtils';
 
 export type GetOptions<T> = {
   throwIfNotExist?: boolean;
@@ -79,10 +79,11 @@ export class StateManager {
 
   getCustomPolicies = (categoryName: string, resourceName: string): CustomIAMPolicies | undefined => {
     const filePath = pathManager.getCustomPoliciesPath(categoryName, resourceName);
-    if (!(fs.existsSync(filePath)) || !isCustomPoliciesFile(filePath)) {
+    try{
+      return JSONUtilities.readJson<CustomIAMPolicies>(filePath);
+    } catch(err) {
       return undefined;
     }
-    return JSONUtilities.readJson<CustomIAMPolicies>(filePath);
   };
 
   localEnvInfoExists = (projectPath?: string): boolean => this.doesExist(pathManager.getLocalEnvFilePath, projectPath);

@@ -1,20 +1,20 @@
-import { stateManager,
+import {
+  stateManager,
   pathManager,
   readCFNTemplate,
   writeCFNTemplate,
   CustomIAMPolicy,
-  CustomIAMPolicySchema,
   CustomIAMPolicies,
   customExecutionPolicyForFunction,
   customExecutionPolicyForContainer,
   CustomPoliciesFormatError,
-  CustomIAMPoliciesSchema,} from 'amplify-cli-core';
+  CustomIAMPoliciesSchema} from 'amplify-cli-core';
 import * as path from 'path';
 import { ProviderName as providerName } from '../constants';
 import { prePushCfnTemplateModifier } from './pre-push-cfn-modifier';
 import { Fn, Template } from 'cloudform-types';
 import { printer } from 'amplify-prompts';
-import Ajv from "ajv";
+import Ajv from 'ajv';
 import * as iam from '@aws-cdk/aws-iam';
 
 
@@ -44,30 +44,33 @@ export async function preProcessCFNTemplate(filePath: string): Promise<string> {
 export async function writeCustomPoliciesToCFNTemplate(
   resourceName: string,
   service: string,
-  resourceDir: string,
   cfnFile: string,
-  category: string,
-  filePath: string
+  category: string
 ) {
-  if (!(service === 'Lambda' || service === 'ElasticContainer')) {
+  const customPolicySupportedServices = ['Lambda', 'ElasticContainer'];
+  if (!customPolicySupportedServices.includes(service)) {
     return;
   }
-  const { templateFormat, cfnTemplate } = await readCFNTemplate(path.join(resourceDir, cfnFile));
+  const resourceDir = pathManager.getResourceDirectoryPath(undefined, category, resourceName);
+  const cfnPath = path.join(resourceDir, cfnFile);
+  const { templateFormat, cfnTemplate } = await readCFNTemplate(cfnPath);
   const customPolicies = stateManager.getCustomPolicies(category, resourceName);
-  if (!validateExistCustomPolicies(customPolicies)) {
+  if (!doCustomPoliciesExist(customPolicies)) {
     if (cfnTemplate.Resources.CustomLambdaExecutionPolicy) {
       delete cfnTemplate.Resources.CustomLambdaExecutionPolicy;
-      await writeCFNTemplate(cfnTemplate, filePath, { templateFormat });
+      await writeCFNTemplate(cfnTemplate, cfnPath, { templateFormat });
     }
     if (cfnTemplate.Resources.CustomExecutionPolicyForContainer) {
       delete cfnTemplate.Resources.CustomExecutionPolicyForContainer;
-      await writeCFNTemplate(cfnTemplate, filePath, { templateFormat });
+      await writeCFNTemplate(cfnTemplate, cfnPath, { templateFormat });
     }
     return;
   }
   await validateCustomPoliciesSchema(customPolicies, category, resourceName);
 
-  await addCustomPoliciesToCFNTemplate(service, category, customPolicies, cfnTemplate, filePath, resourceName, {templateFormat} );
+  const newCfnTemplate = await addCustomPoliciesToCFNTemplate(service, category, customPolicies, cfnTemplate, resourceName );
+
+  await writeCFNTemplate(newCfnTemplate, cfnPath, { templateFormat });
 
 }
 
@@ -78,12 +81,9 @@ async function addCustomPoliciesToCFNTemplate(
   category: string,
   customPolicies: CustomIAMPolicies,
   cfnTemplate: Template,
-  filePath: string,
-  resourceName: string,
-  {templateFormat}: any
+  resourceName: string
   ) {
   let customExecutionPolicy;
-  const { envName } = stateManager.getLocalEnvInfo();
   if(service === 'Lambda') {
     customExecutionPolicy = customExecutionPolicyForFunction;
   }
@@ -98,7 +98,7 @@ async function addCustomPoliciesToCFNTemplate(
 
   for (const customPolicy of customPolicies) {
     validateCustomPolicy(customPolicy, category, resourceName);
-    const policyWithEnv = await replaceEnvForCustomPolicies(customPolicy, envName);
+    const policyWithEnv = replaceEnvForCustomPolicies(customPolicy);
     if (!policyWithEnv.Effect) policyWithEnv.Effect = iam.Effect.ALLOW;
     customExecutionPolicy.Properties.PolicyDocument.Statement.push(policyWithEnv);
   }
@@ -110,7 +110,7 @@ async function addCustomPoliciesToCFNTemplate(
     cfnTemplate.Resources.CustomExecutionPolicyForContainer = customExecutionPolicy;
   }
 
-  await writeCFNTemplate(cfnTemplate, filePath, { templateFormat });
+  return cfnTemplate;
 }
 
 
@@ -122,7 +122,7 @@ function validateCustomPolicy(customPolicy: CustomIAMPolicy, category: string, r
   const actionRegex = new RegExp('[a-zA-Z0-9]+:[a-z|A-Z|0-9|*]+');
   const wrongResourcesRegex = [];
   const wrongActionsRegex = [];
-  let errorMessage = "";
+  let errorMessage = '';
 
   for (const resource of resources) {
     if (!(resourceRegex.test(resource) || resource === '*')) {
@@ -139,10 +139,10 @@ function validateCustomPolicy(customPolicy: CustomIAMPolicy, category: string, r
   const customPoliciesPath = pathManager.getCustomPoliciesPath(category, resourceName);
 
   if (wrongResourcesRegex.length > 0) {
-    errorMessage += `Invalid custom IAM policy for {function name}. Incorrect "Resource": ${wrongResourcesRegex.toString()}\n Edit ${customPoliciesPath} to fix`;
+    errorMessage += `Invalid custom IAM policy for ${resourceName}. Incorrect "Resource": ${wrongResourcesRegex.toString()}\n Edit ${customPoliciesPath} to fix`;
   }
   if (wrongActionsRegex.length > 0) {
-    errorMessage += `Invalid custom IAM policy for {function name}. Incorrect "Action": ${wrongActionsRegex.toString()}\n Edit ${customPoliciesPath} to fix`;
+    errorMessage += `Invalid custom IAM policy for ${resourceName}. Incorrect "Action": ${wrongActionsRegex.toString()}\n Edit ${customPoliciesPath} to fix`;
   }
 
   if (errorMessage.length > 0) {
@@ -150,12 +150,8 @@ function validateCustomPolicy(customPolicy: CustomIAMPolicy, category: string, r
   }
 }
 
-function validateExistCustomPolicies(customPolicies: CustomIAMPolicies) : Boolean {
-  const ajv = new Ajv();
-  const validatePolicies = ajv.compile(CustomIAMPoliciesSchema);
-
-
-  if (!validatePolicies(customPolicies)) {
+function doCustomPoliciesExist(customPolicies: CustomIAMPolicies) : Boolean | PromiseLike<any> {
+  if (!customPolicies || customPolicies.length === 0) {
     return false;
   }
 
@@ -169,46 +165,29 @@ function validateExistCustomPolicies(customPolicies: CustomIAMPolicies) : Boolea
 }
 
 //replace or add env parameter in the front of the resource customers enter to the current env
-async function replaceEnvForCustomPolicies(policy: CustomIAMPolicy, currentEnv: string) : Promise<CustomIAMPolicy> {
-  const resourceWithEnv = [];
-  const action = policy.Action;
-  const effect = policy.Effect;
-  const customIAMpolicy: CustomIAMPolicy = {
-    Action: action,
-    Effect: effect,
-    Resource: []
-  }
-  for (let resource of policy.Resource){
-    if (resource.includes('${env}')) {
-      resourceWithEnv.push(Fn.Sub(resource, {'env': Fn.Ref('env')}));
-    }
-    else {
-      resourceWithEnv.push(resource);
-    }
-  }
-  customIAMpolicy.Resource = resourceWithEnv;
-  return customIAMpolicy;
+function replaceEnvForCustomPolicies(policy: CustomIAMPolicy) : CustomIAMPolicy {
+  const resource = policy.Resource.map(resource => resource.includes('${env}') ? Fn.Sub(resource, {'env': Fn.Ref('env')}) : resource) as any[];
+  policy.Resource = resource;
+  return policy;
 }
 
 
 async function validateCustomPoliciesSchema(data: CustomIAMPolicies, categoryName: string, resourceName: string) {
   const ajv = new Ajv();
   //validate if the policies match the custom IAM policies schema, if not, then not write into the CFN template
-  const validatePolicy = ajv.compile(CustomIAMPolicySchema);
+  const validatePolicy = ajv.compile(CustomIAMPoliciesSchema);
 
-  for(const policy of data) {
-    if(!validatePolicy(policy)) {
-      let errorMessage = `Invalid custom IAM policies in the ${resourceName} ${categoryName} is invalid.\n
-      Edit <project-dir>/amplify/backend/function/socialmediademoea2a770a/custom-policies.json to fix
-      Learn more about custom IAM policies for ${categoryName}: https://docs.amplify.aws/function/custom-policies`;
-      validatePolicy.errors.forEach(error => errorMessage += error.message + "\n");
-      throw new CustomPoliciesFormatError(errorMessage);
-    }
+  if(!validatePolicy(data)) {
+    let errorMessage = `Invalid custom IAM policies in the ${resourceName} ${categoryName}.\n
+    Edit <project-dir>/amplify/backend/function/${resourceName}/custom-policies.json to fix
+    Learn more about custom IAM policies for ${categoryName}: https://docs.amplify.aws/function/custom-policies\n`;
+    validatePolicy.errors.forEach(error => errorMessage += `error.message\n`);
+    throw new CustomPoliciesFormatError(errorMessage);
   }
 }
 
 function warnWildcardCustomPolicies(customPolicies: CustomIAMPolicy[], resourceName: string) {
   customPolicies
-    .filter(policy => policy.Resource.includes("*"))
-    .forEach( policy =>printer.warn(`Warning: You've specified "*" as the "Resource" in ${resourceName}'s custom IAM policy.\n This will grant ${resourceName} the ability to perform ${policy.Action} on ALL resources in this AWS Account.`))
+    .filter(policy => policy.Resource.includes('*'))
+    .forEach(policy =>printer.warn(`Warning: You've specified "*" as the "Resource" in ${resourceName}'s custom IAM policy.\n This will grant ${resourceName} the ability to perform ${policy.Action} on ALL resources in this AWS Account.`))
 }

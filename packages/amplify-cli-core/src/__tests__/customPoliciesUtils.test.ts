@@ -1,7 +1,7 @@
-import {addCustomPoliciesFile} from "../customPoliciesUtils"
+import {createDefaultCustomPoliciesFile} from "../customPoliciesUtils"
 import { JSONUtilities } from "..";
 import { pathManager, PathConstants } from "../state-manager";
-import * as path from 'path';
+import path from 'path';
 
 describe('Custom policies util test', () => {
 
@@ -16,7 +16,7 @@ describe('Custom policies util test', () => {
 
     test('Write default custom policy file to the specified resource name', () => {
 
-        addCustomPoliciesFile(testCategoryName, testResourceName);
+        createDefaultCustomPoliciesFile(testCategoryName, testResourceName);
       
         const data = JSONUtilities.readJson(expectedFilePath);
       

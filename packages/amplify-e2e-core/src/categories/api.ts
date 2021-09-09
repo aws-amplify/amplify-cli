@@ -567,7 +567,7 @@ export function addRestContainerApi(projectDir: string) {
   });
 }
 
-export function addRestContainerApiForCustomPolicies(projectDir: string) {
+export function addRestContainerApiForCustomPolicies(projectDir: string, settings: { name: string }) {
   return new Promise<void>((resolve, reject) => {
     spawn(getCLIPath(), ['add', 'api'], { cwd: projectDir, stripColors: true })
       .wait('Please select from one of the below mentioned services:')
@@ -577,7 +577,7 @@ export function addRestContainerApiForCustomPolicies(projectDir: string) {
       .sendKeyDown()
       .sendCarriageReturn()
       .wait('Provide a friendly name for your resource to be used as a label for this category in the project:')
-      .send('containertest')
+      .send(settings.name)
       .sendCarriageReturn()
       .wait('What image would you like to use')
       .sendKeyDown()

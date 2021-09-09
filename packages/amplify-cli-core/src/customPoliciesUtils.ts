@@ -1,7 +1,6 @@
-import { Fn, IAM } from "cloudform-types";
+import { Fn, IAM } from 'cloudform-types';
 import * as iam from '@aws-cdk/aws-iam';
-import { JSONUtilities, pathManager } from ".";
-import * as fs from 'fs-extra';
+import { JSONUtilities, pathManager } from '.';
 
 export type CustomIAMPolicies = CustomIAMPolicy[];
 
@@ -11,23 +10,20 @@ export type CustomIAMPolicy = {
     Resource: string[];
 }
 
-
 export const CustomIAMPoliciesSchema = {
-    type : "array",
-    minItems: 1,
-    items: {type: "object"},
+  type : 'array',
+  minItems: 1,
+  items: {
+    type: 'object',
+    properties: {
+      Action: { type: 'array', items: { type: 'string' }, minItems: 1, nullable: false },
+      Effect: {type: 'string', nullable: true, default: iam.Effect.ALLOW},
+      Resource: { type: 'array', items: { type: 'string' }, minItems: 1, nullable: false},
+    },
+    required: ['Resource', 'Action'],
     additionalProperties: false
-}
-
-export const CustomIAMPolicySchema = {
-        type: "object",
-        properties: {
-            Action: {type: "array", items: {type: "string"}, minItems: 1, nullable: false},
-            Effect: {type: "string", nullable: true, default: iam.Effect.ALLOW},
-            Resource: {type: "array", items: {type: "string"}, minItems: 1, nullable: false},
-        },
-        required: ["Resource", "Action"],
-        additionalProperties: false
+  },
+  additionalProperties: false
 }
 
 export const customExecutionPolicyForFunction = new IAM.Policy({
@@ -52,7 +48,7 @@ export const customExecutionPolicyForContainer = new IAM.Policy({
     ]
   });
 
-export function addCustomPoliciesFile(categoryName: string, resourceName: string) {
+export function createDefaultCustomPoliciesFile(categoryName: string, resourceName: string) {
   const customPoliciesPath = pathManager.getCustomPoliciesPath(categoryName, resourceName);
   const defaultCustomPolicies = [
     {
@@ -61,16 +57,6 @@ export function addCustomPoliciesFile(categoryName: string, resourceName: string
     }
   ]
   JSONUtilities.writeJson(customPoliciesPath, defaultCustomPolicies);
-}
-
-export function isCustomPoliciesFile(filePath: string) {
-  try{
-    const fileString = fs.readFileSync(filePath, 'utf-8');
-    JSON.parse(fileString);
-    return true;
-  } catch(err) {
-  return false;
-  }
 }
 
 

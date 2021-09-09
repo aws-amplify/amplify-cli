@@ -48,7 +48,7 @@ it(`should init and deploy a api container, attach custom policies to the Fargat
   const name = 'containertest';
   await initJSProjectWithProfile(projRoot, { name: containerName, envName });
   await setupAmplifyProject(projRoot);
-  await addRestContainerApiForCustomPolicies(projRoot);
+  await addRestContainerApiForCustomPolicies(projRoot, { name: name });
 
   const meta = getProjectMeta(projRoot);
   const { Region: region } = meta?.providers?.awscloudformation;
