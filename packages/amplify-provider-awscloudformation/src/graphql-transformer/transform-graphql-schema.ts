@@ -299,7 +299,7 @@ export async function transformGraphQLSchema(context, options) {
   };
   const transformerOutput = await buildAPIProject(buildConfig);
 
-  context.print.success(`\nGraphQL schema compiled successfully.\n\nEdit your schema at ${schemaFilePath} or \
+  context.print.success(`GraphQL schema compiled successfully.\n\nEdit your schema at ${schemaFilePath} or \
 place .graphql files in a directory at ${schemaDirPath}`);
 
   if (!options.dryRun) {
