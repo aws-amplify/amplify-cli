@@ -169,7 +169,7 @@ function getTransformerFactory(context, resourceDir, authConfig?) {
       const res = await isAmplifyAdminApp(appId);
       amplifyAdminEnabled = res.isAdminApp;
     } catch (err) {
-      console.info('App not deployed yet.');
+      // if it is not an AmplifyAdmin app, do nothing
     }
 
     transformerList.push(new ModelAuthTransformer({ authConfig, addAwsIamAuthInOutputSchema: amplifyAdminEnabled }));

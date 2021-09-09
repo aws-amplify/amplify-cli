@@ -833,7 +833,7 @@ async function formNestedStack(
       nestedStack.Description = 'Root Stack for AWS Amplify Console';
     }
   } catch (err) {
-    console.info('App not deployed yet.');
+    // if it is not an AmplifyAdmin app, do nothing
   }
 
   const { amplifyMeta } = projectDetails;
