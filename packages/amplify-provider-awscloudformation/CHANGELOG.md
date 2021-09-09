@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.59.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.58.0...amplify-provider-awscloudformation@4.59.0) (2021-09-09)
+
+
+### Features
+
+* Amplify Command Hooks ([#7633](https://github.com/aws-amplify/amplify-cli/issues/7633)) ([4cacaad](https://github.com/aws-amplify/amplify-cli/commit/4cacaadcb87d377a37890b0092bf66c6e7b65b0b))
+
+
+
+
+
 # [4.58.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.57.0...amplify-provider-awscloudformation@4.58.0) (2021-09-02)
 
 

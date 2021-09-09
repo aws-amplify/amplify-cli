@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.6.9](https://github.com/aws-amplify/amplify-cli/compare/amplify-nodejs-function-runtime-provider@1.6.8...amplify-nodejs-function-runtime-provider@1.6.9) (2021-09-09)
+
+
+### Reverts
+
+* Revert "ci: add windows e2e test coverage" ([0560b0f](https://github.com/aws-amplify/amplify-cli/commit/0560b0f4a16ce8ce0b7efebb2494c7e2eb8601c8))
+
+
+
+
+
 ## [1.6.8](https://github.com/aws-amplify/amplify-cli/compare/amplify-nodejs-function-runtime-provider@1.6.7...amplify-nodejs-function-runtime-provider@1.6.8) (2021-09-02)
 
 

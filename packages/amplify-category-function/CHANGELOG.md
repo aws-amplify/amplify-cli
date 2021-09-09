@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.34.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@2.34.4...amplify-category-function@2.34.5) (2021-09-09)
+
+
+### Bug Fixes
+
+* 'filter' of undefined when removing layers ([#8057](https://github.com/aws-amplify/amplify-cli/issues/8057)) ([b524870](https://github.com/aws-amplify/amplify-cli/commit/b524870200d56901482af5d6b18993ae1f6af6ec))
+
+
+
+
+
 ## [2.34.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@2.34.3...amplify-category-function@2.34.4) (2021-09-02)
 
 

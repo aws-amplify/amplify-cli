@@ -1,6 +1,6 @@
 {
   "name": "amplify-cli-core",
-  "version": "1.26.2",
+  "version": "1.27.0",
   "description": "Amplify CLI Core",
   "repository": {
     "type": "git",
