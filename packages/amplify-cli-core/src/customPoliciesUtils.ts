@@ -16,11 +16,13 @@ export const CustomIAMPoliciesSchema = {
     type: 'object',
     properties: {
       Action: { type: 'array', items: { type: 'string' }, minItems: 1, nullable: false },
-      Effect: {enum:['Allow', 'Deny'], nullable: true, default: 'Allow'},
-      Resource: { type: 'array', items: { type: 'string' }, minItems: 1, nullable: false},
+      Resource: { type: 'array', items: { type: 'string' }, minItems: 1, nullable: false }
+    },
+    optionalProperties: {
+      Effect: { type: 'string', enum:['Allow', 'Deny'], default: 'Allow' },
     },
     required: ['Resource', 'Action'],
-    additionalProperties: false
+    additionalProperties: true
   },
   additionalProperties: false
 }
