@@ -100,6 +100,8 @@ describe('amplify add auth...', () => {
 
     const lambdaFunction = await getLambdaFunction(functionName, meta.providers.awscloudformation.Region);
     expect(userPool.UserPool).toBeDefined();
+    expect(userPool.UserPool.AliasAttributes).toBeDefined();
+    expect(userPool.UserPool.AliasAttributes).toContain('email');
     validateNodeModulesDirRemoval(projRoot);
     expect(clients).toHaveLength(2);
     expect(lambdaFunction).toBeDefined();
