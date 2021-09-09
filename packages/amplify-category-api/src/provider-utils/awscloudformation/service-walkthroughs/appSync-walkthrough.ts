@@ -305,10 +305,10 @@ const serviceApiInputWalkthrough = async (context: $TSContext, defaultValuesFile
         ({ authConfig } = await askAdditionalQuestions(context, authConfig, defaultAuthType));
         break;
       case 'CONFLICT_DETECTION':
-        resolverConfig = await askResolverConflictQuestion(context, resolverConfig, defaultAuthType);
+        resolverConfig = await askResolverConflictQuestion(context, resolverConfig);
         break;
       case 'CONFLICT_STRATEGY':
-        resolverConfig = await askResolverConflictHandlerQuestion(context, defaultAuthType);
+        resolverConfig = await askResolverConflictHandlerQuestion(context);
         break;
       case 'CONTINUE':
         continuePrompt = true;
@@ -369,7 +369,7 @@ const updateApiInputWalkthrough = async (context, project, resolverConfig, model
     ({ authConfig, defaultAuthType } = await askDefaultAuthQuestion(context));
     authConfig = await askAdditionalAuthQuestions(context, authConfig, defaultAuthType);
   } else if (updateOption === 'CONFLICT_STRATEGY') {
-    resolverConfig = await askResolverConflictHandlerQuestion(context, defaultAuthType);
+    resolverConfig = await askResolverConflictHandlerQuestion(context, modelTypes);
   }
 
   return {
@@ -499,7 +499,7 @@ async function displayApiInformation(context, resource, project) {
   authModes.forEach(authMode => context.print.info(authMode));
   context.print.info('');
 
-  context.print.success('Conflict detection');
+  context.print.success('Conflict detection (required for DataStore)');
   if (project.config && !_.isEmpty(project.config.ResolverConfig)) {
     context.print.info(`- Conflict resolution strategy: ${conflictResolutionHanlderChoices.find(choice => choice.value === project.config.ResolverConfig.project.ConflictHandler).name}`);
   } else {
