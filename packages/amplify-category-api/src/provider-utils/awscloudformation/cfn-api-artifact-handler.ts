@@ -143,30 +143,6 @@ class CfnApiArtifactHandler implements ApiArtifactHandler {
     printApiKeyWarnings(this.context, oldConfigHadApiKey, authConfigHasApiKey(authConfig));
   };
 
-  updateArtifactsWithoutCompile = async (request: UpdateApiRequest): Promise<void> => {
-    const updates = request.serviceModification;
-    const apiName = getAppSyncResourceName(this.context.amplify.getProjectMeta());
-    if (!apiName) {
-      throw new Error(`No AppSync API configured in the project. Use 'amplify add api' to create an API.`);
-    }
-    const resourceDir = this.getResourceDir(apiName);
-    if (updates.transformSchema) {
-      this.writeSchema(resourceDir, updates.transformSchema);
-    }
-    if (updates.conflictResolution) {
-      updates.conflictResolution = await this.createResolverResources(updates.conflictResolution);
-      await writeResolverConfig(updates.conflictResolution, resourceDir);
-    }
-    const authConfig = getAppSyncAuthConfig(this.context.amplify.getProjectMeta());
-
-    if (updates.defaultAuthType) authConfig.defaultAuthentication = appSyncAuthTypeToAuthConfig(updates.defaultAuthType);
-    if (updates.additionalAuthTypes)
-      authConfig.additionalAuthenticationProviders = updates.additionalAuthTypes.map(appSyncAuthTypeToAuthConfig);
-
-    this.context.amplify.updateamplifyMetaAfterResourceUpdate(category, apiName, 'output', { authConfig });
-    this.context.amplify.updateBackendConfigAfterResourceUpdate(category, apiName, 'output', { authConfig });
-  };
-
   private writeSchema = (resourceDir: string, schema: string) => {
     fs.writeFileSync(path.join(resourceDir, gqlSchemaFilename), schema);
   };

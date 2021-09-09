@@ -9,7 +9,7 @@ export async function promptToAddApiKey(context: $TSContext): Promise<void> {
     const apiKeyConfig = await askApiKeyQuestions();
     const authConfig = [apiKeyConfig];
 
-    await getCfnApiArtifactHandler(context).updateArtifactsWithoutCompile({
+    await getCfnApiArtifactHandler(context).updateArtifacts({
       version: 1,
       serviceModification: {
         serviceName: 'AppSync',
