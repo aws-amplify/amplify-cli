@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.26.1](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformers-e2e-tests@6.26.0...graphql-transformers-e2e-tests@6.26.1) (2021-09-09)
+
+
+### Reverts
+
+* Revert "ci: add windows e2e test coverage" ([0560b0f](https://github.com/aws-amplify/amplify-cli/commit/0560b0f4a16ce8ce0b7efebb2494c7e2eb8601c8))
+
+
+
+
+
 # [6.26.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformers-e2e-tests@6.25.0...graphql-transformers-e2e-tests@6.26.0) (2021-09-02)
 
 
