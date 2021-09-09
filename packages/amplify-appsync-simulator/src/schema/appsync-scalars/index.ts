@@ -54,7 +54,7 @@ const AWSDate = new GraphQLScalarType({
   name: 'AWSDate',
   description: GraphQLDate.description,
   serialize(value) {
-    return GraphQLDate.serialize(value);
+    return GraphQLDate.serialize(value.substring(0, 10));
   },
   parseValue(value) {
     return GraphQLDate.parseValue(value) ? value : undefined;
