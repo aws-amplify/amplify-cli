@@ -28,7 +28,10 @@ export class LayerCloudState {
       const layerVersionList = await lambdaClient.listLayerVersions(isMultiEnvLayer(layerName) ? `${layerName}-${envName}` : layerName);
       const cfnClient = await providerPlugin.getCloudFormationSdk(context);
       const stackList = await cfnClient.listStackResources();
-      const layerStacks = stackList?.StackResourceSummaries?.filter(stack => stack.LogicalResourceId.includes(layerName));
+      const layerStacks = stackList?.StackResourceSummaries?.filter(
+        // do this because cdk does some rearranging of resources
+        stack => stack.LogicalResourceId.includes(layerName) && stack.ResourceType === 'AWS::CloudFormation::Stack',
+      );
       let detailedLayerStack;
 
       if (layerStacks?.length > 0) {

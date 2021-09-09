@@ -328,7 +328,7 @@ class CloudFormation {
           'UpdateRolesWithIDPFunction',
           'UpdateRolesWithIDPFunctionOutputs',
           'UpdateRolesWithIDPFunctionRole',
-        ].includes(resource.LogicalResourceId),
+        ].includes(resource.LogicalResourceId) && resource.ResourceType === 'AWS::CloudFormation::Stack',
     );
 
     if (resources.length > 0) {

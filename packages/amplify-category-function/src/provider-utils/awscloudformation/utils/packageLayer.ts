@@ -18,11 +18,11 @@ import { zipPackage } from './zipResource';
 /**
  * Packages lambda layer code and artifacts into a lambda-compatible .zip file
  */
-export const packageLayer: Packager = async (context, resource) => {
+export const packageLayer: Packager = async (context, resource, isExport) => {
   const previousHash = loadPreviousLayerHash(resource.resourceName);
   const currentHash = await ensureLayerVersion(context, resource.resourceName, previousHash);
 
-  if (previousHash === currentHash) {
+  if (!isExport && previousHash === currentHash) {
     // This happens when a Lambda layer's permissions have been updated, but no new layer version needs to be pushed
     return { newPackageCreated: false, zipFilename: undefined, zipFilePath: undefined };
   }
@@ -84,7 +84,10 @@ export const packageLayer: Packager = async (context, resource) => {
   }
 
   const zipFilename = createLayerZipFilename(resource.resourceName, layerCloudState.latestVersionLogicalId);
-  context.amplify.updateAmplifyMetaAfterPackage(resource, zipFilename, { resourceKey: versionHash, hashValue: currentHash });
+  if (!isExport) {
+    // don't  apply an update to Amplify meta on export
+    context.amplify.updateAmplifyMetaAfterPackage(resource, zipFilename, { resourceKey: versionHash, hashValue: currentHash });
+  }
   return { newPackageCreated: true, zipFilename, zipFilePath: destination };
 };
 
