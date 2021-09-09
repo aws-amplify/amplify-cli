@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.59.0-amplify-export.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.59.0-amplify-export.0...amplify-provider-awscloudformation@4.59.0-amplify-export.1) (2021-09-09)
+
+
+### Features
+
+* write assets and cfn to external path ([#7981](https://github.com/aws-amplify/amplify-cli/issues/7981)) ([39b70a7](https://github.com/aws-amplify/amplify-cli/commit/39b70a7f4aca3604b6f97a750614dc2c4bb7a099))
+
+
+
+
+
 # [4.59.0-amplify-export.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.58.0...amplify-provider-awscloudformation@4.59.0-amplify-export.0) (2021-09-03)
 
 
