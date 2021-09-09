@@ -107,7 +107,7 @@ export class GraphQLResourceManager {
       }
     }
     this.gsiManagement(gqlDiff.diff, gqlDiff.current, gqlDiff.next);
-    this.tableRecreationManagement(gqlDiff.diff, gqlDiff.current, gqlDiff.next);
+    this.tableRecreationManagement(gqlDiff.current, gqlDiff.next);
     return await this.getDeploymentSteps();
   };
 
@@ -271,7 +271,20 @@ export class GraphQLResourceManager {
     }
   };
 
-  private tableRecreationManagement = (diffs: DiffChanges<DiffableProject>, currentState: DiffableProject, nextState: DiffableProject) => {
+  private tableRecreationManagement = (currentState: DiffableProject, nextState: DiffableProject) => {
+    this.getTablesToRecreate().forEach(tableMeta => {
+      const ddbResource = this.getStack(tableMeta.stackName, currentState);
+      this.dropTable(tableMeta.tableName, ddbResource);
+      // clear any other states created by GSI updates as dropping and recreating supercedes those changes
+      this.clearTemplateState(tableMeta.stackName);
+      this.templateState.add(tableMeta.stackName, JSONUtilities.stringify(ddbResource));
+      this.templateState.add(tableMeta.stackName, JSONUtilities.stringify(this.getStack(tableMeta.stackName, nextState)));
+    });
+  };
+
+  getTablesToRecreate = () => {
+    const gqlDiff = getGQLDiff(this.backendApiProjectRoot, this.cloudBackendApiProjectRoot);
+    const [diffs, currentState] = [gqlDiff.diff, gqlDiff.current];
     const getTablesRequiringReplacement = () =>
       _.uniq(
         diffs
@@ -281,7 +294,7 @@ export class GraphQLResourceManager {
             tableName: diff.path?.[3] as string,
             stackName: diff.path[1].split('.')[0] as string,
           })),
-      );
+      ) as { tableName: string; stackName: string }[];
 
     const getAllTables = () =>
       Object.entries(currentState.stacks)
@@ -290,17 +303,7 @@ export class GraphQLResourceManager {
           stackName: path.basename(name, '.json'),
         }))
         .filter(meta => !!meta.tableName);
-
-    const tablesToRecreate = this.rebuildAllTables ? getAllTables() : getTablesRequiringReplacement();
-
-    tablesToRecreate.forEach(tableMeta => {
-      const ddbResource = this.getStack(tableMeta.stackName, currentState);
-      this.dropTable(tableMeta.tableName, ddbResource);
-      // clear any other states created by GSI updates as dropping and recreating supercedes those changes
-      this.clearTemplateState(tableMeta.stackName);
-      this.templateState.add(tableMeta.stackName, JSONUtilities.stringify(ddbResource));
-      this.templateState.add(tableMeta.stackName, JSONUtilities.stringify(this.getStack(tableMeta.stackName, nextState)));
-    });
+    return this.rebuildAllTables ? getAllTables() : getTablesRequiringReplacement();
   };
 
   private getTable = (gsiChange: Diff<any, any>, proj: DiffableProject): DynamoDB.Table => {
@@ -322,8 +325,15 @@ export class GraphQLResourceManager {
   };
 
   private dropTable = (tableName: string, template: Template): void => {
+    // remove table and all output refs to it
     template.Resources[tableName] = undefined;
     template.Outputs = _.omitBy(template.Outputs, (_, key) => key.includes(tableName));
+
+    // rename table and don't remove refs
+    // template.Resources[tableName].Properties.TableName = undefined;
+
+    // // set output refs to placeholder value
+    // Object.entries(template.Outputs || {}).filter(([key]) => key.includes(tableName)).forEach(([key]) => template.Outputs[key].Value = 'placeholderDuringReplacement')
   };
 
   private clearTemplateState = (stackName: string) => {

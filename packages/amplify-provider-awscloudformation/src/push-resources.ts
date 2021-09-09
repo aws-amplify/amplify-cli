@@ -47,6 +47,16 @@ import { preProcessCFNTemplate } from './pre-push-cfn-processor/cfn-pre-processo
 import { AUTH_TRIGGER_STACK, AUTH_TRIGGER_TEMPLATE } from './utils/upload-auth-trigger-template';
 import { ensureValidFunctionModelDependencies } from './utils/remove-dependent-function';
 import { legacyLayerMigration, postPushLambdaLayerCleanup, prePushLambdaLayerPrompt } from './lambdaLayerInvocations';
+import {
+  generateIterativeFuncDeploymentSteps,
+  generateTempTemplates,
+  getDependentFunctions,
+  getFunctionParamsSupplier,
+  prependDeploymentSteps,
+  uploadTempFuncTemplates,
+} from './disconnect-dependent-resources/disconnect-dependent-resources';
+import { CloudFormation } from 'aws-sdk';
+import { loadConfiguration } from './configuration-manager';
 
 const logger = fileLogger('push-resources');
 
@@ -109,7 +119,7 @@ export async function run(context: $TSContext, resourceDefinition: $TSObject, re
     }
     validateCfnTemplates(context, resources);
 
-    for await (const resource of resources) {
+    for (const resource of resources) {
       if (resource.service === ApiServiceNameElasticContainer && resource.category === 'api') {
         const {
           exposedContainer,
@@ -136,9 +146,7 @@ export async function run(context: $TSContext, resourceDefinition: $TSObject, re
       }
     }
 
-    for await (const resource of resources.filter(
-      r => r.category === FunctionCategoryName && r.service === FunctionServiceNameLambdaLayer,
-    )) {
+    for (const resource of resources.filter(r => r.category === FunctionCategoryName && r.service === FunctionServiceNameLambdaLayer)) {
       await legacyLayerMigration(context, resource.resourceName);
     }
 
@@ -158,6 +166,7 @@ export async function run(context: $TSContext, resourceDefinition: $TSObject, re
     }
 
     let deploymentSteps: DeploymentStep[] = [];
+    let functionsDependentOnReplacedModelTables: string[] = [];
 
     // location where the intermediate deployment steps are stored
     let stateFolder: { local?: string; cloud?: string } = {};
@@ -169,6 +178,25 @@ export async function run(context: $TSContext, resourceDefinition: $TSObject, re
       if (gqlResource) {
         const gqlManager = await GraphQLResourceManager.createInstance(context, gqlResource, cloudformationMeta.StackId, rebuild);
         deploymentSteps = await gqlManager.run();
+
+        // if any models are being replaced, we need to determine if any functions have a dependency on the replaced models
+        // if so, we prepend steps to the iterative deployment to remove the references to the replaced table
+        // then the last step of the iterative deployment adds the references back
+        const modelsToReplace = gqlManager.getTablesToRecreate().map(meta => meta.stackName); // stackName is the same as the model name
+        const allFunctionNames = allResources
+          .filter(meta => meta.category === 'function' && meta.service === 'Lambda')
+          .map(meta => meta.resourceName);
+        functionsDependentOnReplacedModelTables = await getDependentFunctions(
+          modelsToReplace,
+          allFunctionNames,
+          getFunctionParamsSupplier(context),
+        );
+        const decoupleFuncSteps = await generateIterativeFuncDeploymentSteps(
+          new CloudFormation(await loadConfiguration(context)),
+          cloudformationMeta.StackId,
+          functionsDependentOnReplacedModelTables,
+        );
+        deploymentSteps = prependDeploymentSteps(decoupleFuncSteps, deploymentSteps);
         if (deploymentSteps.length > 1) {
           iterativeDeploymentWasInvoked = true;
 
@@ -195,6 +223,8 @@ export async function run(context: $TSContext, resourceDefinition: $TSObject, re
     await prePushAuthTransform(context, resources);
     await prePushGraphQLCodegen(context, resourcesToBeCreated, resourcesToBeUpdated);
     const projectDetails = context.amplify.getProjectDetails();
+    await generateTempTemplates(functionsDependentOnReplacedModelTables);
+    await uploadTempFuncTemplates(await S3.getInstance(context), functionsDependentOnReplacedModelTables);
     await updateS3Templates(context, resources, projectDetails.amplifyMeta);
 
     // We do not need CloudFormation update if only syncable resources are the changes.
@@ -221,6 +251,7 @@ export async function run(context: $TSContext, resourceDefinition: $TSObject, re
         await generateAndUploadRootStack(context, nestedStackFilepath, nestedStackFileName);
 
         // Use state manager to do the final deployment. The final deployment include not just API change but the whole Amplify Project
+        // TODO check that this step will also reinstate the original function template
         const finalStep: DeploymentOp = {
           stackTemplatePathOrUrl: nestedStackFileName,
           tableNames: [],
