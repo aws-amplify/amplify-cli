@@ -29,8 +29,9 @@
     "amplify-prompts": "1.1.2",
     "ci-info": "^2.0.0",
     "cloudform-types": "^4.2.0",
+    "chalk": "^4.1.1",
     "dotenv": "^8.2.0",
-    "folder-hash": "^4.0.1",
+    "execa": "^5.1.1",
     "fs-extra": "^8.1.0",
     "globby": "^11.0.3",
     "hjson": "^3.2.1",
@@ -43,7 +44,6 @@
     "which": "^2.0.2"
   },
   "devDependencies": {
-    "@types/folder-hash": "^4.0.0",
     "@types/fs-extra": "^8.0.1",
     "@types/hjson": "^2.4.2",
     "@types/json-schema": "^7.0.5",
@@ -53,7 +53,9 @@
     "@types/uuid": "^8.0.0",
     "amplify-function-plugin-interface": "1.9.1",
     "nock": "^13.0.11",
-    "rimraf": "^3.0.0"
+    "rimraf": "^3.0.0",
+    "strip-ansi": "^6.0.0",
+    "uuid": "^8.3.2"
   },
   "jest": {
     "transform": {
