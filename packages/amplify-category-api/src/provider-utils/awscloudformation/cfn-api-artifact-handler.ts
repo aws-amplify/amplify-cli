@@ -1,23 +1,23 @@
-import { ApiArtifactHandler } from '../api-artifact-handler';
+import { isResourceNameUnique } from 'amplify-cli-core';
 import {
   AddApiRequest,
-  ConflictResolution,
   AppSyncServiceConfiguration,
+  ConflictResolution,
   ResolutionStrategy,
   UpdateApiRequest,
 } from 'amplify-headless-interface';
-import path from 'path';
-import fs from 'fs-extra';
-import { category } from '../../category-constants';
-import { rootAssetDir, provider, gqlSchemaFilename, cfnParametersFilename } from './aws-constants';
+import * as fs from 'fs-extra';
 import { readTransformerConfiguration, TRANSFORM_CURRENT_VERSION, writeTransformerConfiguration } from 'graphql-transformer-core';
-import { conflictResolutionToResolverConfig } from './utils/resolver-config-to-conflict-resolution-bi-di-mapper';
-import { appSyncAuthTypeToAuthConfig } from './utils/auth-config-to-app-sync-auth-type-bi-di-mapper';
-import uuid from 'uuid';
 import _ from 'lodash';
-import { getAppSyncResourceName, getAppSyncAuthConfig, checkIfAuthExists, authConfigHasApiKey } from './utils/amplify-meta-utils';
+import * as path from 'path';
+import uuid from 'uuid';
+import { category } from '../../category-constants';
+import { ApiArtifactHandler } from '../api-artifact-handler';
+import { cfnParametersFilename, gqlSchemaFilename, provider, rootAssetDir } from './aws-constants';
+import { authConfigHasApiKey, checkIfAuthExists, getAppSyncAuthConfig, getAppSyncResourceName } from './utils/amplify-meta-utils';
+import { appSyncAuthTypeToAuthConfig } from './utils/auth-config-to-app-sync-auth-type-bi-di-mapper';
 import { printApiKeyWarnings } from './utils/print-api-key-warnings';
-import { isNameUnique } from './utils/check-case-sensitivity';
+import { conflictResolutionToResolverConfig } from './utils/resolver-config-to-conflict-resolution-bi-di-mapper';
 
 // keep in sync with ServiceName in amplify-category-function, but probably it will not change
 const FunctionServiceNameLambdaFunction = 'Lambda';
@@ -50,7 +50,7 @@ class CfnApiArtifactHandler implements ApiArtifactHandler {
     }
     const serviceConfig = request.serviceConfiguration;
 
-    isNameUnique('api', serviceConfig.apiName);
+    isResourceNameUnique('api', serviceConfig.apiName);
 
     const resourceDir = this.getResourceDir(serviceConfig.apiName);
 

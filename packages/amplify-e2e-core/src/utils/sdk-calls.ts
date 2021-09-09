@@ -60,6 +60,17 @@ export const getBucketEncryption = async (bucket: string) => {
   }
 };
 
+export const getBucketKeys = async (params: S3.ListObjectsRequest) => {
+  const s3 = new S3();
+
+  try {
+    const result = await s3.listObjects(params).promise();
+    return result.Contents.map(contentObj => contentObj.Key);
+  } catch (err) {
+    throw new Error(`Error fetching keys for bucket ${params.Bucket}. Underlying error was [${err.message}]`);
+  }
+};
+
 export const deleteS3Bucket = async (bucket: string) => {
   const s3 = new S3();
   let continuationToken: Required<Pick<S3.ListObjectVersionsOutput, 'KeyMarker' | 'VersionIdMarker'>> = undefined;

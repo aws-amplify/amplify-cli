@@ -1,5 +1,6 @@
+import { printer } from 'amplify-prompts';
 import { Context } from '../domain/context';
 
 export const run = (context: Context) => {
-  context.print.info(context.versionInfo.currentCLIVersion);
+  printer.info(context.versionInfo.currentCLIVersion);
 };

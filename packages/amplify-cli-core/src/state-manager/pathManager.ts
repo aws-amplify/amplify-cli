@@ -19,6 +19,7 @@ export const PathConstants = {
   DotConfigDirName: '.config',
   BackendDirName: 'backend',
   CurrentCloudBackendDirName: '#current-cloud-backend',
+  HooksDirName: 'hooks',
 
   // FileNames
   AmplifyAdminConfigFileName: 'config.json',
@@ -30,6 +31,11 @@ export const PathConstants = {
   TagsFileName: 'tags.json',
   ParametersJsonFileName: 'parameters.json',
   ReadMeFileName: 'README.md',
+
+  HooksConfigFileName: 'hooks-config.json',
+  HooksShellSampleFileName: 'post-push.sh.sample',
+  HooksJsSampleFileName: 'pre-push.js.sample',
+  HooksReadmeFileName: 'hooks-readme.md',
 
   LocalEnvFileName: 'local-env-info.json',
   LocalAWSInfoFileName: 'local-aws-info.json',
@@ -155,6 +161,12 @@ export class PathManager {
   getDotAWSAmplifyDirPath = (): string => path.normalize(path.join(homedir(), PathConstants.DotAWSDirName, PathConstants.AmplifyDirName));
 
   getDeploymentSecrets = (): string => path.normalize(path.join(this.getDotAWSAmplifyDirPath(), PathConstants.DeploymentSecretsFileName));
+
+  getHooksDirPath = (projectPath?: string): string =>
+    this.constructPath(projectPath, [PathConstants.AmplifyDirName, PathConstants.HooksDirName]);
+
+  getHooksConfigFilePath = (projectPath?: string): string =>
+    path.join(this.getHooksDirPath(projectPath), PathConstants.HooksConfigFileName);
 
   private constructPath = (projectPath?: string, segments: string[] = []): string => {
     if (!projectPath) {
