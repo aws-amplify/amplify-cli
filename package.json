@@ -98,7 +98,6 @@
     "codecov": "^3.7.0",
     "commitizen": "^4.2.4",
     "copyfiles": "^2.2.0",
-    "depcheck": "^1.4.2",
     "eslint": "^7.19.0",
     "eslint-config-airbnb": "^18.0.1",
     "eslint-config-prettier": "^7.2.0",
