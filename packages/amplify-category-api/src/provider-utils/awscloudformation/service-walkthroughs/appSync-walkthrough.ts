@@ -347,7 +347,7 @@ const updateApiInputWalkthrough = async (context, project, resolverConfig, model
     });
   } else {
     updateChoices.push({
-      name: 'Enable conflict detection',
+      name: 'Enable conflict detection (required for DataStore)',
       value: 'ENABLE_CONFLICT',
     });
   }
