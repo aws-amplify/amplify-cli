@@ -106,6 +106,9 @@ export const prependDeploymentSteps = (beforeSteps: DeploymentStep[], afterSteps
   beforeSteps[0].deployment.previousMetaKey = afterSteps[0].deployment.previousMetaKey;
   afterSteps[0].rollback = _.cloneDeep(beforeSteps[beforeSteps.length - 1].deployment);
   afterSteps[0].deployment.previousMetaKey = beforeStepsLastMetaKey;
+  if (afterSteps.length > 1) {
+    afterSteps[1].rollback.previousMetaKey = beforeStepsLastMetaKey;
+  }
   return beforeSteps.concat(afterSteps);
 };
 

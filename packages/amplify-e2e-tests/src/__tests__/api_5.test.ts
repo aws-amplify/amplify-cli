@@ -11,6 +11,7 @@ import {
   getProjectMeta,
   updateApiSchema,
   amplifyPushDestructiveApiUpdate,
+  addFunction,
 } from 'amplify-e2e-core';
 
 const projName = 'apitest';
@@ -55,6 +56,28 @@ describe('destructive updates flag', () => {
   it('allows destructive updates when flag present', async () => {
     updateApiSchema(projRoot, projName, 'simple_model_new_primary_key.graphql');
     await amplifyPushDestructiveApiUpdate(projRoot, true);
+    // success indicates that the push completed
+  });
+
+  it('disconnects and reconnects functions dependent on replaced table', async () => {
+    const functionName = 'funcTableDep';
+    await addFunction(
+      projRoot,
+      {
+        name: functionName,
+        functionTemplate: 'Hello World',
+        additionalPermissions: {
+          permissions: ['storage'],
+          choices: ['api', 'storage'],
+          resources: ['apitest'],
+          operations: ['create', 'read', 'update', 'delete'],
+        },
+      },
+      'nodejs',
+    );
+    await amplifyPush(projRoot);
+    updateApiSchema(projRoot, projName, 'simple_model_new_primary_key.graphql');
+    await amplifyPushDestructiveApiUpdate(projRoot, false);
     // success indicates that the push completed
   });
 });
