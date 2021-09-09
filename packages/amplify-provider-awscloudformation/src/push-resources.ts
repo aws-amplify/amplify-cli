@@ -47,16 +47,7 @@ import { preProcessCFNTemplate } from './pre-push-cfn-processor/cfn-pre-processo
 import { AUTH_TRIGGER_STACK, AUTH_TRIGGER_TEMPLATE } from './utils/upload-auth-trigger-template';
 import { ensureValidFunctionModelDependencies } from './utils/remove-dependent-function';
 import { legacyLayerMigration, postPushLambdaLayerCleanup, prePushLambdaLayerPrompt } from './lambdaLayerInvocations';
-import {
-  generateIterativeFuncDeploymentSteps,
-  generateTempTemplates,
-  getDependentFunctions,
-  getFunctionParamsSupplier,
-  prependDeploymentSteps,
-  uploadTempFuncTemplates,
-} from './disconnect-dependent-resources/disconnect-dependent-resources';
-import { CloudFormation } from 'aws-sdk';
-import { loadConfiguration } from './configuration-manager';
+import { prependDeploymentStepsToDisconnectFunctionsFromReplacedModelTables } from './disconnect-dependent-resources';
 
 const logger = fileLogger('push-resources');
 
@@ -179,24 +170,13 @@ export async function run(context: $TSContext, resourceDefinition: $TSObject, re
         const gqlManager = await GraphQLResourceManager.createInstance(context, gqlResource, cloudformationMeta.StackId, rebuild);
         deploymentSteps = await gqlManager.run();
 
-        // if any models are being replaced, we need to determine if any functions have a dependency on the replaced models
-        // if so, we prepend steps to the iterative deployment to remove the references to the replaced table
-        // then the last step of the iterative deployment adds the references back
-        const modelsToReplace = gqlManager.getTablesToRecreate().map(meta => meta.stackName); // stackName is the same as the model name
-        const allFunctionNames = allResources
-          .filter(meta => meta.category === 'function' && meta.service === 'Lambda')
-          .map(meta => meta.resourceName);
-        functionsDependentOnReplacedModelTables = await getDependentFunctions(
-          modelsToReplace,
-          allFunctionNames,
-          getFunctionParamsSupplier(context),
+        // If any models are being replaced, we prepend steps to the iterative deployment to remove references to the replaced table in functions that have a dependeny on the tables
+        const modelsBeingReplaced = gqlManager.getTablesBeingReplaced().map(meta => meta.stackName); // stackName is the same as the model name
+        deploymentSteps = await prependDeploymentStepsToDisconnectFunctionsFromReplacedModelTables(
+          context,
+          modelsBeingReplaced,
+          deploymentSteps,
         );
-        const { deploymentSteps: decoupleFuncSteps, lastMetaKey } = await generateIterativeFuncDeploymentSteps(
-          new CloudFormation(await loadConfiguration(context)),
-          cloudformationMeta.StackId,
-          functionsDependentOnReplacedModelTables,
-        );
-        deploymentSteps = prependDeploymentSteps(decoupleFuncSteps, deploymentSteps, lastMetaKey);
         if (deploymentSteps.length > 1) {
           iterativeDeploymentWasInvoked = true;
 
@@ -223,8 +203,6 @@ export async function run(context: $TSContext, resourceDefinition: $TSObject, re
     await prePushAuthTransform(context, resources);
     await prePushGraphQLCodegen(context, resourcesToBeCreated, resourcesToBeUpdated);
     const projectDetails = context.amplify.getProjectDetails();
-    await generateTempTemplates(functionsDependentOnReplacedModelTables);
-    await uploadTempFuncTemplates(await S3.getInstance(context), functionsDependentOnReplacedModelTables);
     await updateS3Templates(context, resources, projectDetails.amplifyMeta);
 
     // We do not need CloudFormation update if only syncable resources are the changes.

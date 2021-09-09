@@ -272,7 +272,7 @@ export class GraphQLResourceManager {
   };
 
   private tableRecreationManagement = (currentState: DiffableProject, nextState: DiffableProject) => {
-    this.getTablesToRecreate().forEach(tableMeta => {
+    this.getTablesBeingReplaced().forEach(tableMeta => {
       const ddbResource = this.getStack(tableMeta.stackName, currentState);
       this.dropTable(tableMeta.tableName, ddbResource);
       // clear any other states created by GSI updates as dropping and recreating supercedes those changes
@@ -282,7 +282,7 @@ export class GraphQLResourceManager {
     });
   };
 
-  getTablesToRecreate = () => {
+  getTablesBeingReplaced = () => {
     const gqlDiff = getGQLDiff(this.backendApiProjectRoot, this.cloudBackendApiProjectRoot);
     const [diffs, currentState] = [gqlDiff.diff, gqlDiff.current];
     const getTablesRequiringReplacement = () =>
