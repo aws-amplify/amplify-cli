@@ -10,7 +10,6 @@ import {
   compoundExpression,
   printBlock,
   toJson,
-  comment,
   set,
   methodCall,
   nul,

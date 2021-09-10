@@ -116,14 +116,14 @@ $util.qr($mergedValues.put(\\"__typename\\", \\"Test\\"))
 #end
 $util.toJson($PutObject)
 ## [End] Create Request template. **",
-  "Mutation.createTest.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Mutation.createTest.res.vtl": "## [Start] ResponseTemplate. **
+$util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
-  $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
+## [End] ResponseTemplate. **",
   "Mutation.deleteTest.preAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
 $util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
@@ -192,14 +192,14 @@ $util.qr($DeleteRequest.put(\\"key\\", $Key))
 #end
 $util.toJson($DeleteRequest)
 ## [End] Delete Request template. **",
-  "Mutation.deleteTest.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Mutation.deleteTest.res.vtl": "## [Start] ResponseTemplate. **
+$util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
-  $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
+## [End] ResponseTemplate. **",
   "Mutation.updateTest.init.1.req.vtl": "## [Start] Initialization default values. **
 $util.qr($ctx.stash.put(\\"defaultValues\\", $util.defaultIfNull($ctx.stash.defaultValues, {})))
 #set( $updatedAt = $util.time.nowISO8601() )
@@ -357,14 +357,14 @@ $util.qr($update.put(\\"expression\\", \\"$expression\\"))
 #end
 $util.toJson($UpdateItem)
 ## [End] Mutation Update resolver. **",
-  "Mutation.updateTest.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Mutation.updateTest.res.vtl": "## [Start] ResponseTemplate. **
+$util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
-  $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
+## [End] ResponseTemplate. **",
   "Query.getTest.preAuth.1.req.vtl": "## [Start] Set the primary key. **
 $util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
   \\"email\\": $util.dynamodb.toDynamoDB($ctx.args.email),
@@ -393,17 +393,20 @@ $util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
   #set( $query = {
   \\"expression\\": \\"id = :id\\",
   \\"expressionValues\\": {
-      \\":id\\":     $util.dynamodb.toDynamoDBJson($ctx.args.id)
+      \\":id\\":     $util.parseJson($util.dynamodb.toDynamoDBJson($ctx.args.id))
   }
 } )
 #end
 $util.qr($GetRequest.put(\\"query\\", $query))
-#if( !$util.isNullOrEmpty($ctx.stash.get(\\"authFilter\\")) )
-  $util.qr($GetRequest.put(\\"filter\\", $ctx.stash.get(\\"authFilter\\")))
+#if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
+  $util.qr($GetRequest.put(\\"filter\\", $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.authFilter))))
 #end
 $util.toJson($GetRequest)
 ## [End] Get Request template. **",
   "Query.getTest.res.vtl": "## [Start] Get Response template. **
+#if( $ctx.error )
+  $util.error($ctx.error.message, $ctx.error.type)
+#end
 #if( !$ctx.result.items.isEmpty() && $ctx.result.scannedCount == 1 )
   $util.toJson($ctx.result.items[0])
 #else
@@ -530,8 +533,8 @@ $util.qr($ctx.stash.put(\\"modelQueryExpression\\", $modelQueryExpression))
 #if( $context.args.nextToken )
   #set( $ListRequest.nextToken = $context.args.nextToken )
 #end
-#if( !$util.isNullOrEmpty($ctx.stash.get(\\"authFilter\\")) )
-  #set( $filter = $ctx.stash.get(\\"authFilter\\") )
+#if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
+  #set( $filter = $ctx.stash.authFilter )
   #if( !$util.isNullOrEmpty($ctx.args.filter) )
     #set( $filter = [{
   \\"and\\":   [$filter, $ctx.args.filter]
@@ -567,13 +570,13 @@ $util.qr($ctx.stash.put(\\"modelQueryExpression\\", $modelQueryExpression))
 #end
 $util.toJson($ListRequest)
 ## [End] List Request. **",
-  "Query.listTests.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Query.listTests.res.vtl": "## [Start] ResponseTemplate. **
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
+## [End] ResponseTemplate. **",
   "Subscription.onCreateTest.req.vtl": "## [Start] Subscription Request template. **
 $util.toJson({
   \\"version\\": \\"2018-05-29\\",
@@ -713,14 +716,14 @@ $util.qr($mergedValues.put(\\"__typename\\", \\"Test\\"))
 #end
 $util.toJson($PutObject)
 ## [End] Create Request template. **",
-  "Mutation.createTest.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Mutation.createTest.res.vtl": "## [Start] ResponseTemplate. **
+$util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
-  $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
+## [End] ResponseTemplate. **",
   "Mutation.deleteTest.preAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
 $util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
@@ -789,14 +792,14 @@ $util.qr($DeleteRequest.put(\\"key\\", $Key))
 #end
 $util.toJson($DeleteRequest)
 ## [End] Delete Request template. **",
-  "Mutation.deleteTest.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Mutation.deleteTest.res.vtl": "## [Start] ResponseTemplate. **
+$util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
-  $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
+## [End] ResponseTemplate. **",
   "Mutation.updateTest.init.1.req.vtl": "## [Start] Initialization default values. **
 $util.qr($ctx.stash.put(\\"defaultValues\\", $util.defaultIfNull($ctx.stash.defaultValues, {})))
 #set( $updatedAt = $util.time.nowISO8601() )
@@ -947,14 +950,14 @@ $util.qr($update.put(\\"expression\\", \\"$expression\\"))
 #end
 $util.toJson($UpdateItem)
 ## [End] Mutation Update resolver. **",
-  "Mutation.updateTest.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Mutation.updateTest.res.vtl": "## [Start] ResponseTemplate. **
+$util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
-  $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
+## [End] ResponseTemplate. **",
   "Query.getTest.preAuth.1.req.vtl": "## [Start] Set the primary key. **
 $util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
   \\"email\\": $util.dynamodb.toDynamoDB($ctx.args.email),
@@ -983,17 +986,20 @@ $util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
   #set( $query = {
   \\"expression\\": \\"id = :id\\",
   \\"expressionValues\\": {
-      \\":id\\":     $util.dynamodb.toDynamoDBJson($ctx.args.id)
+      \\":id\\":     $util.parseJson($util.dynamodb.toDynamoDBJson($ctx.args.id))
   }
 } )
 #end
 $util.qr($GetRequest.put(\\"query\\", $query))
-#if( !$util.isNullOrEmpty($ctx.stash.get(\\"authFilter\\")) )
-  $util.qr($GetRequest.put(\\"filter\\", $ctx.stash.get(\\"authFilter\\")))
+#if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
+  $util.qr($GetRequest.put(\\"filter\\", $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.authFilter))))
 #end
 $util.toJson($GetRequest)
 ## [End] Get Request template. **",
   "Query.getTest.res.vtl": "## [Start] Get Response template. **
+#if( $ctx.error )
+  $util.error($ctx.error.message, $ctx.error.type)
+#end
 #if( !$ctx.result.items.isEmpty() && $ctx.result.scannedCount == 1 )
   $util.toJson($ctx.result.items[0])
 #else
@@ -1074,8 +1080,8 @@ $util.qr($ctx.stash.put(\\"modelQueryExpression\\", $modelQueryExpression))
 #if( $context.args.nextToken )
   #set( $ListRequest.nextToken = $context.args.nextToken )
 #end
-#if( !$util.isNullOrEmpty($ctx.stash.get(\\"authFilter\\")) )
-  #set( $filter = $ctx.stash.get(\\"authFilter\\") )
+#if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
+  #set( $filter = $ctx.stash.authFilter )
   #if( !$util.isNullOrEmpty($ctx.args.filter) )
     #set( $filter = [{
   \\"and\\":   [$filter, $ctx.args.filter]
@@ -1111,13 +1117,13 @@ $util.qr($ctx.stash.put(\\"modelQueryExpression\\", $modelQueryExpression))
 #end
 $util.toJson($ListRequest)
 ## [End] List Request. **",
-  "Query.listTests.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Query.listTests.res.vtl": "## [Start] ResponseTemplate. **
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
+## [End] ResponseTemplate. **",
   "Subscription.onCreateTest.req.vtl": "## [Start] Subscription Request template. **
 $util.toJson({
   \\"version\\": \\"2018-05-29\\",
@@ -1256,14 +1262,14 @@ $util.qr($mergedValues.put(\\"__typename\\", \\"Test\\"))
 #end
 $util.toJson($PutObject)
 ## [End] Create Request template. **",
-  "Mutation.createTest.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Mutation.createTest.res.vtl": "## [Start] ResponseTemplate. **
+$util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
-  $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
+## [End] ResponseTemplate. **",
   "Mutation.deleteTest.preAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
 $util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
@@ -1331,14 +1337,14 @@ $util.qr($DeleteRequest.put(\\"key\\", $Key))
 #end
 $util.toJson($DeleteRequest)
 ## [End] Delete Request template. **",
-  "Mutation.deleteTest.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Mutation.deleteTest.res.vtl": "## [Start] ResponseTemplate. **
+$util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
-  $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
+## [End] ResponseTemplate. **",
   "Mutation.updateTest.init.1.req.vtl": "## [Start] Initialization default values. **
 $util.qr($ctx.stash.put(\\"defaultValues\\", $util.defaultIfNull($ctx.stash.defaultValues, {})))
 #set( $updatedAt = $util.time.nowISO8601() )
@@ -1488,14 +1494,14 @@ $util.qr($update.put(\\"expression\\", \\"$expression\\"))
 #end
 $util.toJson($UpdateItem)
 ## [End] Mutation Update resolver. **",
-  "Mutation.updateTest.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Mutation.updateTest.res.vtl": "## [Start] ResponseTemplate. **
+$util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
-  $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
+## [End] ResponseTemplate. **",
   "Query.getTest.preAuth.1.req.vtl": "## [Start] Set the primary key. **
 $util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
   \\"email\\": $util.dynamodb.toDynamoDB($ctx.args.email)
@@ -1523,17 +1529,20 @@ $util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
   #set( $query = {
   \\"expression\\": \\"id = :id\\",
   \\"expressionValues\\": {
-      \\":id\\":     $util.dynamodb.toDynamoDBJson($ctx.args.id)
+      \\":id\\":     $util.parseJson($util.dynamodb.toDynamoDBJson($ctx.args.id))
   }
 } )
 #end
 $util.qr($GetRequest.put(\\"query\\", $query))
-#if( !$util.isNullOrEmpty($ctx.stash.get(\\"authFilter\\")) )
-  $util.qr($GetRequest.put(\\"filter\\", $ctx.stash.get(\\"authFilter\\")))
+#if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
+  $util.qr($GetRequest.put(\\"filter\\", $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.authFilter))))
 #end
 $util.toJson($GetRequest)
 ## [End] Get Request template. **",
   "Query.getTest.res.vtl": "## [Start] Get Response template. **
+#if( $ctx.error )
+  $util.error($ctx.error.message, $ctx.error.type)
+#end
 #if( !$ctx.result.items.isEmpty() && $ctx.result.scannedCount == 1 )
   $util.toJson($ctx.result.items[0])
 #else
@@ -1571,8 +1580,8 @@ $util.qr($ctx.stash.put(\\"modelQueryExpression\\", $modelQueryExpression))
 #if( $context.args.nextToken )
   #set( $ListRequest.nextToken = $context.args.nextToken )
 #end
-#if( !$util.isNullOrEmpty($ctx.stash.get(\\"authFilter\\")) )
-  #set( $filter = $ctx.stash.get(\\"authFilter\\") )
+#if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
+  #set( $filter = $ctx.stash.authFilter )
   #if( !$util.isNullOrEmpty($ctx.args.filter) )
     #set( $filter = [{
   \\"and\\":   [$filter, $ctx.args.filter]
@@ -1608,13 +1617,13 @@ $util.qr($ctx.stash.put(\\"modelQueryExpression\\", $modelQueryExpression))
 #end
 $util.toJson($ListRequest)
 ## [End] List Request. **",
-  "Query.listTests.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Query.listTests.res.vtl": "## [Start] ResponseTemplate. **
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
+## [End] ResponseTemplate. **",
   "Subscription.onCreateTest.req.vtl": "## [Start] Subscription Request template. **
 $util.toJson({
   \\"version\\": \\"2018-05-29\\",
@@ -1754,14 +1763,14 @@ $util.qr($mergedValues.put(\\"__typename\\", \\"Test\\"))
 #end
 $util.toJson($PutObject)
 ## [End] Create Request template. **",
-  "Mutation.createTest.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Mutation.createTest.res.vtl": "## [Start] ResponseTemplate. **
+$util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
-  $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
+## [End] ResponseTemplate. **",
   "Mutation.deleteTest.preAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
 $util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
@@ -1830,14 +1839,14 @@ $util.qr($DeleteRequest.put(\\"key\\", $Key))
 #end
 $util.toJson($DeleteRequest)
 ## [End] Delete Request template. **",
-  "Mutation.deleteTest.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Mutation.deleteTest.res.vtl": "## [Start] ResponseTemplate. **
+$util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
-  $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
+## [End] ResponseTemplate. **",
   "Mutation.updateTest.init.1.req.vtl": "## [Start] Initialization default values. **
 $util.qr($ctx.stash.put(\\"defaultValues\\", $util.defaultIfNull($ctx.stash.defaultValues, {})))
 #set( $updatedAt = $util.time.nowISO8601() )
@@ -1988,14 +1997,14 @@ $util.qr($update.put(\\"expression\\", \\"$expression\\"))
 #end
 $util.toJson($UpdateItem)
 ## [End] Mutation Update resolver. **",
-  "Mutation.updateTest.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Mutation.updateTest.res.vtl": "## [Start] ResponseTemplate. **
+$util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
-  $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
+## [End] ResponseTemplate. **",
   "Query.getTest.preAuth.1.req.vtl": "## [Start] Set the primary key. **
 $util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
   \\"status\\": $util.dynamodb.toDynamoDB($ctx.args.status),
@@ -2024,17 +2033,20 @@ $util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
   #set( $query = {
   \\"expression\\": \\"id = :id\\",
   \\"expressionValues\\": {
-      \\":id\\":     $util.dynamodb.toDynamoDBJson($ctx.args.id)
+      \\":id\\":     $util.parseJson($util.dynamodb.toDynamoDBJson($ctx.args.id))
   }
 } )
 #end
 $util.qr($GetRequest.put(\\"query\\", $query))
-#if( !$util.isNullOrEmpty($ctx.stash.get(\\"authFilter\\")) )
-  $util.qr($GetRequest.put(\\"filter\\", $ctx.stash.get(\\"authFilter\\")))
+#if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
+  $util.qr($GetRequest.put(\\"filter\\", $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.authFilter))))
 #end
 $util.toJson($GetRequest)
 ## [End] Get Request template. **",
   "Query.getTest.res.vtl": "## [Start] Get Response template. **
+#if( $ctx.error )
+  $util.error($ctx.error.message, $ctx.error.type)
+#end
 #if( !$ctx.result.items.isEmpty() && $ctx.result.scannedCount == 1 )
   $util.toJson($ctx.result.items[0])
 #else
@@ -2115,8 +2127,8 @@ $util.qr($ctx.stash.put(\\"modelQueryExpression\\", $modelQueryExpression))
 #if( $context.args.nextToken )
   #set( $ListRequest.nextToken = $context.args.nextToken )
 #end
-#if( !$util.isNullOrEmpty($ctx.stash.get(\\"authFilter\\")) )
-  #set( $filter = $ctx.stash.get(\\"authFilter\\") )
+#if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
+  #set( $filter = $ctx.stash.authFilter )
   #if( !$util.isNullOrEmpty($ctx.args.filter) )
     #set( $filter = [{
   \\"and\\":   [$filter, $ctx.args.filter]
@@ -2152,13 +2164,13 @@ $util.qr($ctx.stash.put(\\"modelQueryExpression\\", $modelQueryExpression))
 #end
 $util.toJson($ListRequest)
 ## [End] List Request. **",
-  "Query.listTests.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Query.listTests.res.vtl": "## [Start] ResponseTemplate. **
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
+## [End] ResponseTemplate. **",
   "Subscription.onCreateTest.req.vtl": "## [Start] Subscription Request template. **
 $util.toJson({
   \\"version\\": \\"2018-05-29\\",
@@ -2298,14 +2310,14 @@ $util.qr($mergedValues.put(\\"__typename\\", \\"Test\\"))
 #end
 $util.toJson($PutObject)
 ## [End] Create Request template. **",
-  "Mutation.createTest.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Mutation.createTest.res.vtl": "## [Start] ResponseTemplate. **
+$util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
-  $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
+## [End] ResponseTemplate. **",
   "Mutation.deleteTest.preAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
 $util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
@@ -2374,14 +2386,14 @@ $util.qr($DeleteRequest.put(\\"key\\", $Key))
 #end
 $util.toJson($DeleteRequest)
 ## [End] Delete Request template. **",
-  "Mutation.deleteTest.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Mutation.deleteTest.res.vtl": "## [Start] ResponseTemplate. **
+$util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
-  $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
+## [End] ResponseTemplate. **",
   "Mutation.testCreate.init.1.req.vtl": "## [Start] Initialization default values. **
 $util.qr($ctx.stash.put(\\"defaultValues\\", $util.defaultIfNull($ctx.stash.defaultValues, {})))
 #set( $createdAt = $util.time.nowISO8601() )
@@ -2489,14 +2501,14 @@ $util.qr($mergedValues.put(\\"__typename\\", \\"Test\\"))
 #end
 $util.toJson($PutObject)
 ## [End] Create Request template. **",
-  "Mutation.testCreate.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Mutation.testCreate.res.vtl": "## [Start] ResponseTemplate. **
+$util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
-  $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
+## [End] ResponseTemplate. **",
   "Mutation.testDelete.preAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
 $util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
@@ -2565,14 +2577,14 @@ $util.qr($DeleteRequest.put(\\"key\\", $Key))
 #end
 $util.toJson($DeleteRequest)
 ## [End] Delete Request template. **",
-  "Mutation.testDelete.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Mutation.testDelete.res.vtl": "## [Start] ResponseTemplate. **
+$util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
-  $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
+## [End] ResponseTemplate. **",
   "Mutation.testUpdate.init.1.req.vtl": "## [Start] Initialization default values. **
 $util.qr($ctx.stash.put(\\"defaultValues\\", $util.defaultIfNull($ctx.stash.defaultValues, {})))
 #set( $updatedAt = $util.time.nowISO8601() )
@@ -2723,14 +2735,14 @@ $util.qr($update.put(\\"expression\\", \\"$expression\\"))
 #end
 $util.toJson($UpdateItem)
 ## [End] Mutation Update resolver. **",
-  "Mutation.testUpdate.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Mutation.testUpdate.res.vtl": "## [Start] ResponseTemplate. **
+$util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
-  $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
+## [End] ResponseTemplate. **",
   "Mutation.updateTest.init.1.req.vtl": "## [Start] Initialization default values. **
 $util.qr($ctx.stash.put(\\"defaultValues\\", $util.defaultIfNull($ctx.stash.defaultValues, {})))
 #set( $updatedAt = $util.time.nowISO8601() )
@@ -2881,14 +2893,14 @@ $util.qr($update.put(\\"expression\\", \\"$expression\\"))
 #end
 $util.toJson($UpdateItem)
 ## [End] Mutation Update resolver. **",
-  "Mutation.updateTest.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Mutation.updateTest.res.vtl": "## [Start] ResponseTemplate. **
+$util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
-  $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
+## [End] ResponseTemplate. **",
   "Query.getTest.preAuth.1.req.vtl": "## [Start] Set the primary key. **
 $util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
   \\"email\\": $util.dynamodb.toDynamoDB($ctx.args.email)
@@ -2916,17 +2928,20 @@ $util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
   #set( $query = {
   \\"expression\\": \\"id = :id\\",
   \\"expressionValues\\": {
-      \\":id\\":     $util.dynamodb.toDynamoDBJson($ctx.args.id)
+      \\":id\\":     $util.parseJson($util.dynamodb.toDynamoDBJson($ctx.args.id))
   }
 } )
 #end
 $util.qr($GetRequest.put(\\"query\\", $query))
-#if( !$util.isNullOrEmpty($ctx.stash.get(\\"authFilter\\")) )
-  $util.qr($GetRequest.put(\\"filter\\", $ctx.stash.get(\\"authFilter\\")))
+#if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
+  $util.qr($GetRequest.put(\\"filter\\", $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.authFilter))))
 #end
 $util.toJson($GetRequest)
 ## [End] Get Request template. **",
   "Query.getTest.res.vtl": "## [Start] Get Response template. **
+#if( $ctx.error )
+  $util.error($ctx.error.message, $ctx.error.type)
+#end
 #if( !$ctx.result.items.isEmpty() && $ctx.result.scannedCount == 1 )
   $util.toJson($ctx.result.items[0])
 #else
@@ -2964,8 +2979,8 @@ $util.qr($ctx.stash.put(\\"modelQueryExpression\\", $modelQueryExpression))
 #if( $context.args.nextToken )
   #set( $ListRequest.nextToken = $context.args.nextToken )
 #end
-#if( !$util.isNullOrEmpty($ctx.stash.get(\\"authFilter\\")) )
-  #set( $filter = $ctx.stash.get(\\"authFilter\\") )
+#if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
+  #set( $filter = $ctx.stash.authFilter )
   #if( !$util.isNullOrEmpty($ctx.args.filter) )
     #set( $filter = [{
   \\"and\\":   [$filter, $ctx.args.filter]
@@ -3001,13 +3016,13 @@ $util.qr($ctx.stash.put(\\"modelQueryExpression\\", $modelQueryExpression))
 #end
 $util.toJson($ListRequest)
 ## [End] List Request. **",
-  "Query.listTests.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Query.listTests.res.vtl": "## [Start] ResponseTemplate. **
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
+## [End] ResponseTemplate. **",
   "Query.testGet.preAuth.1.req.vtl": "## [Start] Set the primary key. **
 $util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
   \\"id\\": $util.dynamodb.toDynamoDB($ctx.args.id),
@@ -3036,17 +3051,20 @@ $util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
   #set( $query = {
   \\"expression\\": \\"id = :id\\",
   \\"expressionValues\\": {
-      \\":id\\":     $util.dynamodb.toDynamoDBJson($ctx.args.id)
+      \\":id\\":     $util.parseJson($util.dynamodb.toDynamoDBJson($ctx.args.id))
   }
 } )
 #end
 $util.qr($GetRequest.put(\\"query\\", $query))
-#if( !$util.isNullOrEmpty($ctx.stash.get(\\"authFilter\\")) )
-  $util.qr($GetRequest.put(\\"filter\\", $ctx.stash.get(\\"authFilter\\")))
+#if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
+  $util.qr($GetRequest.put(\\"filter\\", $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.authFilter))))
 #end
 $util.toJson($GetRequest)
 ## [End] Get Request template. **",
   "Query.testGet.res.vtl": "## [Start] Get Response template. **
+#if( $ctx.error )
+  $util.error($ctx.error.message, $ctx.error.type)
+#end
 #if( !$ctx.result.items.isEmpty() && $ctx.result.scannedCount == 1 )
   $util.toJson($ctx.result.items[0])
 #else
@@ -3127,8 +3145,8 @@ $util.qr($ctx.stash.put(\\"modelQueryExpression\\", $modelQueryExpression))
 #if( $context.args.nextToken )
   #set( $ListRequest.nextToken = $context.args.nextToken )
 #end
-#if( !$util.isNullOrEmpty($ctx.stash.get(\\"authFilter\\")) )
-  #set( $filter = $ctx.stash.get(\\"authFilter\\") )
+#if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
+  #set( $filter = $ctx.stash.authFilter )
   #if( !$util.isNullOrEmpty($ctx.args.filter) )
     #set( $filter = [{
   \\"and\\":   [$filter, $ctx.args.filter]
@@ -3164,13 +3182,13 @@ $util.qr($ctx.stash.put(\\"modelQueryExpression\\", $modelQueryExpression))
 #end
 $util.toJson($ListRequest)
 ## [End] List Request. **",
-  "Query.testList.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Query.testList.res.vtl": "## [Start] ResponseTemplate. **
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
+## [End] ResponseTemplate. **",
   "Subscription.onCreateTest.req.vtl": "## [Start] Subscription Request template. **
 $util.toJson({
   \\"version\\": \\"2018-05-29\\",
@@ -3309,14 +3327,14 @@ $util.qr($mergedValues.put(\\"__typename\\", \\"Test\\"))
 #end
 $util.toJson($PutObject)
 ## [End] Create Request template. **",
-  "Mutation.createTest.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Mutation.createTest.res.vtl": "## [Start] ResponseTemplate. **
+$util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
-  $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
+## [End] ResponseTemplate. **",
   "Mutation.deleteTest.preAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
 $util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
@@ -3384,14 +3402,14 @@ $util.qr($DeleteRequest.put(\\"key\\", $Key))
 #end
 $util.toJson($DeleteRequest)
 ## [End] Delete Request template. **",
-  "Mutation.deleteTest.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Mutation.deleteTest.res.vtl": "## [Start] ResponseTemplate. **
+$util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
-  $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
+## [End] ResponseTemplate. **",
   "Mutation.testCreate.init.1.req.vtl": "## [Start] Initialization default values. **
 $util.qr($ctx.stash.put(\\"defaultValues\\", $util.defaultIfNull($ctx.stash.defaultValues, {})))
 #set( $createdAt = $util.time.nowISO8601() )
@@ -3499,14 +3517,14 @@ $util.qr($mergedValues.put(\\"__typename\\", \\"Test\\"))
 #end
 $util.toJson($PutObject)
 ## [End] Create Request template. **",
-  "Mutation.testCreate.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Mutation.testCreate.res.vtl": "## [Start] ResponseTemplate. **
+$util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
-  $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
+## [End] ResponseTemplate. **",
   "Mutation.testDelete.preAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
 $util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
@@ -3575,14 +3593,14 @@ $util.qr($DeleteRequest.put(\\"key\\", $Key))
 #end
 $util.toJson($DeleteRequest)
 ## [End] Delete Request template. **",
-  "Mutation.testDelete.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Mutation.testDelete.res.vtl": "## [Start] ResponseTemplate. **
+$util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
-  $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
+## [End] ResponseTemplate. **",
   "Mutation.testUpdate.init.1.req.vtl": "## [Start] Initialization default values. **
 $util.qr($ctx.stash.put(\\"defaultValues\\", $util.defaultIfNull($ctx.stash.defaultValues, {})))
 #set( $updatedAt = $util.time.nowISO8601() )
@@ -3733,14 +3751,14 @@ $util.qr($update.put(\\"expression\\", \\"$expression\\"))
 #end
 $util.toJson($UpdateItem)
 ## [End] Mutation Update resolver. **",
-  "Mutation.testUpdate.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Mutation.testUpdate.res.vtl": "## [Start] ResponseTemplate. **
+$util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
-  $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
+## [End] ResponseTemplate. **",
   "Mutation.updateTest.init.1.req.vtl": "## [Start] Initialization default values. **
 $util.qr($ctx.stash.put(\\"defaultValues\\", $util.defaultIfNull($ctx.stash.defaultValues, {})))
 #set( $updatedAt = $util.time.nowISO8601() )
@@ -3890,14 +3908,14 @@ $util.qr($update.put(\\"expression\\", \\"$expression\\"))
 #end
 $util.toJson($UpdateItem)
 ## [End] Mutation Update resolver. **",
-  "Mutation.updateTest.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Mutation.updateTest.res.vtl": "## [Start] ResponseTemplate. **
+$util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
-  $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
+## [End] ResponseTemplate. **",
   "Query.getTest.preAuth.1.req.vtl": "## [Start] Set the primary key. **
 $util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
   \\"email\\": $util.dynamodb.toDynamoDB($ctx.args.email)
@@ -3925,17 +3943,20 @@ $util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
   #set( $query = {
   \\"expression\\": \\"id = :id\\",
   \\"expressionValues\\": {
-      \\":id\\":     $util.dynamodb.toDynamoDBJson($ctx.args.id)
+      \\":id\\":     $util.parseJson($util.dynamodb.toDynamoDBJson($ctx.args.id))
   }
 } )
 #end
 $util.qr($GetRequest.put(\\"query\\", $query))
-#if( !$util.isNullOrEmpty($ctx.stash.get(\\"authFilter\\")) )
-  $util.qr($GetRequest.put(\\"filter\\", $ctx.stash.get(\\"authFilter\\")))
+#if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
+  $util.qr($GetRequest.put(\\"filter\\", $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.authFilter))))
 #end
 $util.toJson($GetRequest)
 ## [End] Get Request template. **",
   "Query.getTest.res.vtl": "## [Start] Get Response template. **
+#if( $ctx.error )
+  $util.error($ctx.error.message, $ctx.error.type)
+#end
 #if( !$ctx.result.items.isEmpty() && $ctx.result.scannedCount == 1 )
   $util.toJson($ctx.result.items[0])
 #else
@@ -3973,8 +3994,8 @@ $util.qr($ctx.stash.put(\\"modelQueryExpression\\", $modelQueryExpression))
 #if( $context.args.nextToken )
   #set( $ListRequest.nextToken = $context.args.nextToken )
 #end
-#if( !$util.isNullOrEmpty($ctx.stash.get(\\"authFilter\\")) )
-  #set( $filter = $ctx.stash.get(\\"authFilter\\") )
+#if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
+  #set( $filter = $ctx.stash.authFilter )
   #if( !$util.isNullOrEmpty($ctx.args.filter) )
     #set( $filter = [{
   \\"and\\":   [$filter, $ctx.args.filter]
@@ -4010,13 +4031,13 @@ $util.qr($ctx.stash.put(\\"modelQueryExpression\\", $modelQueryExpression))
 #end
 $util.toJson($ListRequest)
 ## [End] List Request. **",
-  "Query.listTests.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Query.listTests.res.vtl": "## [Start] ResponseTemplate. **
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
+## [End] ResponseTemplate. **",
   "Query.testGet.preAuth.1.req.vtl": "## [Start] Set the primary key. **
 $util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
   \\"id\\": $util.dynamodb.toDynamoDB($ctx.args.id),
@@ -4045,17 +4066,20 @@ $util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
   #set( $query = {
   \\"expression\\": \\"id = :id\\",
   \\"expressionValues\\": {
-      \\":id\\":     $util.dynamodb.toDynamoDBJson($ctx.args.id)
+      \\":id\\":     $util.parseJson($util.dynamodb.toDynamoDBJson($ctx.args.id))
   }
 } )
 #end
 $util.qr($GetRequest.put(\\"query\\", $query))
-#if( !$util.isNullOrEmpty($ctx.stash.get(\\"authFilter\\")) )
-  $util.qr($GetRequest.put(\\"filter\\", $ctx.stash.get(\\"authFilter\\")))
+#if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
+  $util.qr($GetRequest.put(\\"filter\\", $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.authFilter))))
 #end
 $util.toJson($GetRequest)
 ## [End] Get Request template. **",
   "Query.testGet.res.vtl": "## [Start] Get Response template. **
+#if( $ctx.error )
+  $util.error($ctx.error.message, $ctx.error.type)
+#end
 #if( !$ctx.result.items.isEmpty() && $ctx.result.scannedCount == 1 )
   $util.toJson($ctx.result.items[0])
 #else
@@ -4136,8 +4160,8 @@ $util.qr($ctx.stash.put(\\"modelQueryExpression\\", $modelQueryExpression))
 #if( $context.args.nextToken )
   #set( $ListRequest.nextToken = $context.args.nextToken )
 #end
-#if( !$util.isNullOrEmpty($ctx.stash.get(\\"authFilter\\")) )
-  #set( $filter = $ctx.stash.get(\\"authFilter\\") )
+#if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
+  #set( $filter = $ctx.stash.authFilter )
   #if( !$util.isNullOrEmpty($ctx.args.filter) )
     #set( $filter = [{
   \\"and\\":   [$filter, $ctx.args.filter]
@@ -4173,13 +4197,13 @@ $util.qr($ctx.stash.put(\\"modelQueryExpression\\", $modelQueryExpression))
 #end
 $util.toJson($ListRequest)
 ## [End] List Request. **",
-  "Query.testList.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Query.testList.res.vtl": "## [Start] ResponseTemplate. **
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
+## [End] ResponseTemplate. **",
   "Subscription.onCreateTest.req.vtl": "## [Start] Subscription Request template. **
 $util.toJson({
   \\"version\\": \\"2018-05-29\\",

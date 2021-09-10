@@ -56,7 +56,6 @@ import {
   InterfaceTypeDefinitionNode,
   Kind,
   TypeDefinitionNode,
-  OperationTypeDefinitionNode,
 } from 'graphql';
 import { SubscriptionLevel, ModelDirectiveConfiguration } from '@aws-amplify/graphql-model-transformer';
 import { AccessControlMatrix } from './accesscontrol';

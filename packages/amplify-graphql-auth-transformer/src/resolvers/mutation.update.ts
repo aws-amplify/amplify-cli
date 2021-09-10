@@ -38,7 +38,7 @@ import {
   NULL_ALLOWED_FIELDS,
   DENIED_FIELDS,
 } from '../utils';
-import { getIdentityClaimExp, responseCheckForErrors, getOwnerClaim, getInputFields, emptyPayload } from './helpers';
+import { getIdentityClaimExp, responseCheckForErrors, getOwnerClaim, getInputFields } from './helpers';
 
 /**
  * There is only one role for ApiKey we can use the first index

@@ -79,7 +79,7 @@ export const generateDefaultResponseMappingTemplate = (isSyncEnabled: boolean, m
     );
   }
 
-  return printBlock('Get ResponseTemplate')(compoundExpression(statements));
+  return printBlock('ResponseTemplate')(compoundExpression(statements));
 };
 
 /**

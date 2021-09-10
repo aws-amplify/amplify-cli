@@ -22,7 +22,7 @@ import {
   nul,
 } from 'graphql-mapping-template';
 import { ResourceConstants } from 'graphql-transformer-common';
-const authFilter = methodCall(ref('ctx.stash.get'), str('authFilter'));
+const authFilter = ref('ctx.stash.authFilter');
 
 /**
  * Generate get query resolver template
@@ -73,24 +73,21 @@ export const generateGetResponseTemplate = (isSyncEnabled: boolean): string => {
   const statements = new Array<Expression>();
   if (isSyncEnabled) {
     statements.push(
-      iff(
-        ref('ctx.error'),
-        methodCall(ref('util.error'), ref('ctx.error.message'), ref('ctx.error.type'), ref('ctx.result'))
-      ),
+      iff(ref('ctx.error'), methodCall(ref('util.error'), ref('ctx.error.message'), ref('ctx.error.type'), ref('ctx.result'))),
     );
   } else {
-    statements.push(
-      iff(ref('ctx.error'), methodCall(ref('util.error'), ref('ctx.error.message'), ref('ctx.error.type'))),
-    );
+    statements.push(iff(ref('ctx.error'), methodCall(ref('util.error'), ref('ctx.error.message'), ref('ctx.error.type'))));
   }
-  statements.push(ifElse(
-    and([not(ref('ctx.result.items.isEmpty()')), equals(ref('ctx.result.scannedCount'), int(1))]),
-    toJson(ref('ctx.result.items[0]')),
-    compoundExpression([
-      iff(and([ref('ctx.result.items.isEmpty()'), equals(ref('ctx.result.scannedCount'), int(1))]), ref('util.unauthorized()')),
-      toJson(nul()),
-    ]),
-  ));
+  statements.push(
+    ifElse(
+      and([not(ref('ctx.result.items.isEmpty()')), equals(ref('ctx.result.scannedCount'), int(1))]),
+      toJson(ref('ctx.result.items[0]')),
+      compoundExpression([
+        iff(and([ref('ctx.result.items.isEmpty()'), equals(ref('ctx.result.scannedCount'), int(1))]), ref('util.unauthorized()')),
+        toJson(nul()),
+      ]),
+    ),
+  );
   return printBlock('Get Response template')(compoundExpression(statements));
 };
 

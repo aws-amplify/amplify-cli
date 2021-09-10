@@ -14,11 +14,9 @@ import {
   bool,
   forEach,
   list,
-  ObjectNode,
   qref,
   raw,
   set,
-  print,
 } from 'graphql-mapping-template';
 import { getIdentityClaimExp, getOwnerClaim, apiKeyExpression, iamExpression, emptyPayload } from './helpers';
 import {

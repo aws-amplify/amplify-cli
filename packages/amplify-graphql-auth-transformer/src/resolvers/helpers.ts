@@ -18,7 +18,6 @@ import {
   list,
   equals,
   or,
-  comment,
 } from 'graphql-mapping-template';
 import { NONE_VALUE } from 'graphql-transformer-common';
 import {
