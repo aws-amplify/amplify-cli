@@ -11,7 +11,7 @@ export async function displayBannerMessages(input: Input) {
   await displayLayerMigrationMessage();
   if (skipHooks()) {
     printer.warn('Amplify command hooks are disabled in the current execution environment.');
-    printer.warn('See https://docs.amplify.aws/cli/usage/runtime-hooks for more information.');
+    printer.warn('See https://docs.amplify.aws/cli/usage/command-hooks/ for more information.');
   }
 }
 
