@@ -150,8 +150,8 @@ const getTempFuncMetaS3Key = (funcName: string): string => path.posix.join(s3Pre
 
 const tempTemplateFilename = (funcName: string) => `temp-${funcName}-cloudformation-template.json`;
 const tempMetaFilename = (funcName: string) => `temp-${funcName}-deployment-meta.json`;
-const s3Prefix = 'amplify-cfn-templates/function/temp';
-const localPrefix = funcName => path.join(pathManager.getResourceDirectoryPath(undefined, 'function', funcName), 'temp');
+export const s3Prefix = 'amplify-cfn-templates/function/temp';
+export const localPrefix = funcName => path.join(pathManager.getResourceDirectoryPath(undefined, 'function', funcName), 'temp');
 
 /**
  * Recursively searches for 'Fn::ImportValue' nodes in a CFN template object and replaces them with a placeholder value
