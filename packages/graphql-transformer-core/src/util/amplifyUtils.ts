@@ -10,11 +10,11 @@ import { writeConfig, TransformConfig, TransformMigrationConfig, loadProject, re
 import { FeatureFlagProvider } from '../FeatureFlags';
 import {
   cantAddAndRemoveGSIAtSameTimeRule,
-  cantAddLSILaterRule,
-  cantRemoveLSILater,
+  getCantAddLSILaterRule,
+  getCantRemoveLSILater,
   cantEditGSIKeySchemaRule,
-  cantEditKeySchemaRule,
-  cantEditLSIKeySchemaRule,
+  getCantEditKeySchemaRule,
+  getCantEditLSIKeySchemaRule,
   cantHaveMoreThan500ResourcesRule,
   DiffRule,
   sanityCheckProject,
@@ -739,12 +739,12 @@ export function getSanityCheckRules(isNewAppSyncAPI: boolean, ff: FeatureFlagPro
       if (!allowDestructiveUpdates) {
         diffRules.push(
           // primary key rule
-          cantEditKeySchemaRule(iterativeUpdatesEnabled),
+          getCantEditKeySchemaRule(iterativeUpdatesEnabled),
 
           // LSI rules
-          cantAddLSILaterRule(iterativeUpdatesEnabled),
-          cantRemoveLSILater(iterativeUpdatesEnabled),
-          cantEditLSIKeySchemaRule(iterativeUpdatesEnabled),
+          getCantAddLSILaterRule(iterativeUpdatesEnabled),
+          getCantRemoveLSILater(iterativeUpdatesEnabled),
+          getCantEditLSIKeySchemaRule(iterativeUpdatesEnabled),
 
           // remove table rules
           cantRemoveTableAfterCreation,
@@ -756,12 +756,12 @@ export function getSanityCheckRules(isNewAppSyncAPI: boolean, ff: FeatureFlagPro
     } else {
       diffRules.push(
         // primary key rule
-        cantEditKeySchemaRule(),
+        getCantEditKeySchemaRule(),
 
         // LSI rules
-        cantAddLSILaterRule(),
-        cantRemoveLSILater(),
-        cantEditLSIKeySchemaRule(),
+        getCantAddLSILaterRule(),
+        getCantRemoveLSILater(),
+        getCantEditLSIKeySchemaRule(),
 
         // GSI rules
         cantEditGSIKeySchemaRule,
