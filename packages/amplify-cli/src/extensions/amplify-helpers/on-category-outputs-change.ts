@@ -2,9 +2,7 @@ import * as fs from 'fs-extra';
 import * as path from 'path';
 import { getResourceOutputs } from './get-resource-outputs';
 import sequential from 'promise-sequential';
-import { JSONUtilities, stateManager } from 'amplify-cli-core';
-import { AuthParameters } from 'amplify-category-auth';
-import { getFrontendConfig } from 'amplify-category-auth';
+import { stateManager } from 'amplify-cli-core';
 
 export async function onCategoryOutputsChange(context, cloudAmplifyMeta?, localMeta?) {
   if (!cloudAmplifyMeta) {
@@ -15,8 +13,8 @@ export async function onCategoryOutputsChange(context, cloudAmplifyMeta?, localM
   }
 
   const projectConfig = stateManager.getProjectConfig();
+
   if (projectConfig.frontend) {
-    ensureAmplifyMetaFrontendConfig(context, localMeta);
     const frontendPlugins = context.amplify.getFrontendPlugins(context);
     const frontendHandlerModule = require(frontendPlugins[projectConfig.frontend]);
     await frontendHandlerModule.createFrontendConfigs(context, getResourceOutputs(localMeta), getResourceOutputs(cloudAmplifyMeta));
@@ -64,34 +62,4 @@ function attachContextExtensions(context, packageLocation) {
       });
     }
   }
-}
-
-// projects created before 5.2.0 didn't populate frontend config in amplify-meta.json
-// this method ensures frontend config settings are added to amplify meta on pull as they exist in parameters.json
-// https://app.asana.com/0/1200585422384147/1200740448709567/f
-export function ensureAmplifyMetaFrontendConfig(context, amplifyMeta?) {
-  if (!amplifyMeta) {
-    amplifyMeta = stateManager.getMeta();
-  }
-
-  if (!amplifyMeta.auth) return;
-
-  const authResourceName = Object.keys(amplifyMeta.auth).find((key: any) => {
-    return amplifyMeta.auth[key].service === 'Cognito';
-  });
-
-  if (!authResourceName) return;
-
-  const authParameters: AuthParameters = stateManager.getResourceParametersJson(undefined, 'auth', authResourceName);
-  const frontendAuthConfig = getFrontendConfig(authParameters);
-
-  amplifyMeta.auth[authResourceName].frontendAuthConfig = amplifyMeta.auth[authResourceName].frontendAuthConfig ?? {};
-  const metaFrontendAuthConfig = amplifyMeta.auth[authResourceName].frontendAuthConfig;
-  Object.keys(frontendAuthConfig).forEach(key => {
-    if (!metaFrontendAuthConfig.hasOwnProperty(key)) {
-      metaFrontendAuthConfig[key] = frontendAuthConfig[key];
-    }
-  });
-
-  JSONUtilities.writeJson(context.amplify.pathManager.getAmplifyMetaFilePath(), amplifyMeta);
 }

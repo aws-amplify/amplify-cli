@@ -21,10 +21,8 @@ const { getAddAuthRequestAdaptor, getUpdateAuthRequestAdaptor } = require('./pro
 const { getAddAuthHandler, getUpdateAuthHandler } = require('./provider-utils/awscloudformation/handlers/resource-handlers');
 const { projectHasAuth } = require('./provider-utils/awscloudformation/utils/project-has-auth');
 const { attachPrevParamsToContext } = require('./provider-utils/awscloudformation/utils/attach-prev-params-to-context');
-const { getFrontendConfig } = require('./provider-utils/awscloudformation/utils/amplify-meta-updaters');
 const { stateManager } = require('amplify-cli-core');
 const { headlessImport } = require('./provider-utils/awscloudformation/import');
-const { AuthParameters } = require('./provider-utils/awscloudformation/import/types');
 
 const {
   doesConfigurationIncludeSMS,
@@ -252,8 +250,13 @@ async function checkRequirements(requirements, context, category, targetResource
 
 async function initEnv(context) {
   const { amplify } = context;
-  const { resourcesToBeCreated, resourcesToBeUpdated, resourcesToBeSynced, resourcesToBeDeleted, allResources } =
-    await amplify.getResourceStatus('auth');
+  const {
+    resourcesToBeCreated,
+    resourcesToBeUpdated,
+    resourcesToBeSynced,
+    resourcesToBeDeleted,
+    allResources,
+  } = await amplify.getResourceStatus('auth');
   const isPulling = context.input.command === 'pull' || (context.input.command === 'env' && context.input.subCommands[0] === 'pull');
   let toBeCreated = [];
   let toBeUpdated = [];
@@ -407,7 +410,12 @@ const executeAmplifyHeadlessCommand = async (context, headlessPayload) => {
       const cognito = await providerPlugin.createCognitoUserPoolService(context);
       const identity = await providerPlugin.createIdentityPoolService(context);
       const { JSONUtilities } = require('amplify-cli-core/lib/jsonUtilities');
-      const { userPoolId, identityPoolId, nativeClientId, webClientId } = JSONUtilities.parse(headlessPayload);
+      const {
+        userPoolId,
+        identityPoolId,
+        nativeClientId,
+        webClientId,
+      } = JSONUtilities.parse(headlessPayload);
       const projectConfig = context.amplify.getProjectConfig();
       const resourceName = projectConfig.projectName.toLowerCase().replace(/[^A-Za-z0-9_]+/g, '_');
       const resourceParams = {
@@ -479,6 +487,4 @@ module.exports = {
   category,
   importAuth,
   isSMSWorkflowEnabled,
-  AuthParameters,
-  getFrontendConfig,
 };
