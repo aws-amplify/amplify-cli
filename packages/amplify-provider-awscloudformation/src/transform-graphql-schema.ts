@@ -508,7 +508,33 @@ export async function transformGraphQLSchema(context, options) {
     featureFlags: ff,
     sanityCheckRules: sanityCheckRulesList,
   };
-  const transformerOutput = await buildAPIProject(buildConfig);
+  let transformerOutput;
+  let authSchemaErrors = false;
+  do {
+    try {
+      transformerOutput = await buildAPIProject(buildConfig);
+      authSchemaErrors = false;
+    } catch (err) {
+      authSchemaErrors = true;
+      if (err.message === `@auth directive with 'iam' provider found, but the project has no IAM authentication provider configured.`) {
+        authConfig.additionalAuthenticationProviders.push(await addGraphQLAuthRequirement(context, 'AWS_IAM'));
+      } else if (!context?.parameters?.options?.yes) {
+        if (err.message === `@auth directive with 'userPools' provider found, but the project has no Cognito User Pools authentication provider configured.`) {
+          authConfig.additionalAuthenticationProviders.push(await addGraphQLAuthRequirement(context, 'AMAZON_COGNITO_USER_POOLS'));
+        } else if (err.message === `@auth directive with 'oidc' provider found, but the project has no OPENID_CONNECT authentication provider configured.`) {
+          authConfig.additionalAuthenticationProviders.push(await addGraphQLAuthRequirement(context, 'OPENID_CONNECT'));
+        } else if (err.message === `@auth directive with 'apiKey' provider found, but the project has no API Key authentication provider configured.`) {
+          authConfig.additionalAuthenticationProviders.push(await addGraphQLAuthRequirement(context, 'AWS_KEY'));
+        } else {
+          throw err;
+        }
+      } else {
+        throw err;
+      }
+      buildConfig.transformersFactory = getTransformerFactory(context, resourceDir, authConfig);
+    }
+  } while (authSchemaErrors);
+
   context.print.success(`GraphQL schema compiled successfully.\n\nEdit your schema at ${schemaFilePath} or \
 place .graphql files in a directory at ${schemaDirPath}`);
 
@@ -517,6 +543,17 @@ place .graphql files in a directory at ${schemaDirPath}`);
   }
 
   return transformerOutput;
+}
+
+async function addGraphQLAuthRequirement(context, authType) {
+  return await context.amplify.invokePluginMethod(context, 'api', undefined, 'addGraphQLAuthorizationMode', [
+    context,
+    {
+      authType: authType,
+      printLeadText: true,
+      authSettings: undefined,
+    },
+  ]);
 }
 
 function getProjectBucket(context) {
