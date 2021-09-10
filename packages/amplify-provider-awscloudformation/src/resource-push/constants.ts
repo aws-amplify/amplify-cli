@@ -26,6 +26,9 @@ export const Constants = {
   AUTH_ASSETS: 'assets',
   AMPLIFY_AUTH_ASSETS: 'amplify-auth-assets',
   AMPLIFY_APPSYNC_FILES: 'amplify-appsync-files',
+  NOTIFICATIONS_CATEGORY: {
+    NAME: 'notifications',
+  },
   API_CATEGORY: {
     NAME: 'api',
     SERVICE: {
