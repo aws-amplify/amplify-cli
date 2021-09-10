@@ -23,6 +23,7 @@ import { Constants } from './constants';
 import { ResourceDeployer } from './ResourceDeployer';
 import { getNetworkResourceCfn } from '../utils/env-level-constructs';
 import _ from 'lodash';
+import { printer } from 'amplify-prompts';
 import { AUTH_TRIGGER_STACK } from '../utils/upload-auth-trigger-template';
 import { S3 } from '../aws-utils/aws-s3';
 import { downloadZip } from '../zip-util';
@@ -31,6 +32,7 @@ const {
   API_CATEGORY,
   AUTH_CATEGORY,
   FUNCTION_CATEGORY,
+  NOTIFICATIONS_CATEGORY,
   AMPLIFY_CFN_TEMPLATES,
   AMPLIFY_APPSYNC_FILES,
   PROVIDER_METADATA,
@@ -61,6 +63,7 @@ export class ResourceExport extends ResourceDeployer {
 
   async packageBuildWriteResources(deploymentResources: DeploymentResources): Promise<PackagedResourceDefinition[]> {
     const resources = await this.filterResourcesToBeDeployed(deploymentResources);
+    this.warnForNonExportable(resources);
     const preBuiltResources = await this.preBuildResources(resources);
     const builtResources = await this.buildResources(preBuiltResources);
     const packagedResources = await this.packageResources(builtResources);
@@ -124,6 +127,17 @@ export class ResourceExport extends ResourceDeployer {
     };
 
     return stackParameters;
+  }
+  /**
+   * warns for non exportable resources
+   * @param resources
+   */
+  warnForNonExportable(resources: ResourceDefinition[]) {
+    const notificationsResources = this.filterResourceByCategoryService(resources, NOTIFICATIONS_CATEGORY.NAME);
+    if (notificationsResources.length > 0) {
+      printer.warn(`The ${notificationsResources.map(r => r.resourceName).join(', ')} cannot be Exported since it is managed using SDK`);
+      printer.warn(`Please refer to documentation to reference the resource here manually <add doc link>`);
+    }
   }
 
   /**
