@@ -31,7 +31,7 @@ export function addMapWithDefault(cwd: string, settings: GeoConfig = {}): Promis
 
     if (config.isFirstGeoResource === true) {
       chain.wait('Are you tracking commercial assets for your business in your app?')
-      .sendConfirmNo();
+      .sendCarriageReturn();
       chain.wait('Successfully set RequestBasedUsage pricing plan for your Geo resources.');
     }
 
@@ -101,7 +101,7 @@ export function addPlaceIndexWithDefault(cwd: string, settings: GeoConfig = {}):
  * Update an existing map with given settings. Assume auth is already configured
  * @param cwd command directory
  */
- export function updateMapWithDefault(cwd: string): Promise<void> {
+export function updateMapWithDefault(cwd: string): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['geo', 'update'], { cwd, stripColors: true })
       .wait('Select which capability you want to update:')
@@ -125,7 +125,7 @@ export function addPlaceIndexWithDefault(cwd: string, settings: GeoConfig = {}):
  * Update the second map as default. Assume auth is already configured and two maps added with first default
  * @param cwd command directory
  */
- export function updateSecondMapAsDefault(cwd: string): Promise<void> {
+export function updateSecondMapAsDefault(cwd: string): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['geo', 'update'], { cwd, stripColors: true })
       .wait('Select which capability you want to update:')
@@ -151,7 +151,7 @@ export function addPlaceIndexWithDefault(cwd: string, settings: GeoConfig = {}):
  * Update an existing place index with default values. Assume auth is already configured
  * @param cwd command directory
  */
- export function updatePlaceIndexWithDefault(cwd: string): Promise<void> {
+export function updatePlaceIndexWithDefault(cwd: string): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['geo', 'update'], { cwd, stripColors: true })
       .wait('Select which capability you want to update:')
@@ -176,7 +176,7 @@ export function addPlaceIndexWithDefault(cwd: string, settings: GeoConfig = {}):
  * Update the second place index as default. Assume auth is already configured and two indexes added with first default
  * @param cwd command directory
  */
- export function updateSecondPlaceIndexAsDefault(cwd: string): Promise<void> {
+export function updateSecondPlaceIndexAsDefault(cwd: string): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['geo', 'update'], { cwd, stripColors: true })
       .wait('Select which capability you want to update:')
@@ -203,7 +203,7 @@ export function addPlaceIndexWithDefault(cwd: string, settings: GeoConfig = {}):
  * Remove an existing map. Assume auth is already configured
  * @param cwd command directory
  */
- export function removeMap(cwd: string): Promise<void> {
+export function removeMap(cwd: string): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['geo', 'remove'], { cwd, stripColors: true })
       .wait('Select which capability you want to remove:')
@@ -226,7 +226,7 @@ export function addPlaceIndexWithDefault(cwd: string, settings: GeoConfig = {}):
  * Remove an existing default map. Assume auth is already configured and two maps added with first default
  * @param cwd command directory
  */
- export function removeFirstDefaultMap(cwd: string): Promise<void> {
+export function removeFirstDefaultMap(cwd: string): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['geo', 'remove'], { cwd, stripColors: true })
       .wait('Select which capability you want to remove:')
@@ -251,7 +251,7 @@ export function addPlaceIndexWithDefault(cwd: string, settings: GeoConfig = {}):
  * Remove an existing place index. Assume auth is already configured
  * @param cwd command directory
  */
- export function removePlaceIndex(cwd: string): Promise<void> {
+export function removePlaceIndex(cwd: string): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['geo', 'remove'], { cwd, stripColors: true })
       .wait('Select which capability you want to remove:')
@@ -275,7 +275,7 @@ export function addPlaceIndexWithDefault(cwd: string, settings: GeoConfig = {}):
  * Remove an existing default index. Assume auth is already configured and two indexes added with first default
  * @param cwd command directory
  */
- export function removeFirstDefaultPlaceIndex(cwd: string): Promise<void> {
+export function removeFirstDefaultPlaceIndex(cwd: string): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['geo', 'remove'], { cwd, stripColors: true })
       .wait('Select which capability you want to remove:')
@@ -295,4 +295,11 @@ export function addPlaceIndexWithDefault(cwd: string, settings: GeoConfig = {}):
         }
       })
   });
+}
+
+/**
+ * Get Geo configuration from aws-exports
+ */
+export function getGeoJSConfiguration(awsExports: any): any {
+  return awsExports.geo.amazon_location_service;
 }
