@@ -99,10 +99,7 @@ export function getOfficialPlugins(): { [key: string]: PluginDescription | Array
   const dependencies: { [key: string]: string } = packageJson.dependencies;
 
   Object.keys(officialPlugins).forEach((plugin: string) => {
-    let plugins = officialPlugins[plugin];
-    if (!Array.isArray(plugins)) {
-      plugins = [plugins];
-    }
+    const plugins = Array.isArray(officialPlugins[plugin]) ? officialPlugins[plugin] : [officialPlugins[plugin]];
     plugins.forEach(officialPlugin => {
       const { packageName } = officialPlugin;
       if (dependencies[packageName]) {
