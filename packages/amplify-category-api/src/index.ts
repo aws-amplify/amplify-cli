@@ -3,6 +3,8 @@ import fs from 'fs-extra';
 import path from 'path';
 import { run } from './commands/api/console';
 import { getCfnApiArtifactHandler } from './provider-utils/awscloudformation/cfn-api-artifact-handler';
+import { askAuthQuestions } from './provider-utils/awscloudformation/service-walkthroughs/appSync-walkthrough';
+import { getAppSyncResourceName, getAppSyncAuthConfig } from './provider-utils/awscloudformation//utils/amplify-meta-utils';
 
 export { NETWORK_STACK_LOGICAL_ID } from './category-constants';
 export { DEPLOYMENT_MECHANISM } from './provider-utils/awscloudformation/base-api-stack';
@@ -216,4 +218,20 @@ export const executeAmplifyHeadlessCommand = async (context, headlessPayload: st
 export async function handleAmplifyEvent(context, args) {
   context.print.info(`${category} handleAmplifyEvent to be implemented`);
   context.print.info(`Received event args ${args}`);
+}
+
+export async function addGraphQLAuthorizationMode(context, args) {
+  const { authType, printLeadText, authSettings } = args;
+  const apiName = getAppSyncResourceName(context.amplify.getProjectMeta());
+  if (!apiName) {
+    return;
+  }
+
+  const authConfig = getAppSyncAuthConfig(context.amplify.getProjectMeta());
+  const addAuthConfig = await askAuthQuestions(authType, context, printLeadText, authSettings);
+  authConfig.additionalAuthenticationProviders.push(addAuthConfig);
+  context.amplify.updateamplifyMetaAfterResourceUpdate(category, apiName, 'output', { authConfig });
+  context.amplify.updateBackendConfigAfterResourceUpdate(category, apiName, 'output', { authConfig });
+
+  return addAuthConfig;
 }
