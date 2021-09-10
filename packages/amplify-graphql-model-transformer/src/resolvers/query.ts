@@ -21,7 +21,7 @@ import {
   forEach,
   nul,
 } from 'graphql-mapping-template';
-
+import { ResourceConstants } from 'graphql-transformer-common';
 const authFilter = methodCall(ref('ctx.stash.get'), str('authFilter'));
 
 /**
@@ -58,7 +58,7 @@ export const generateGetRequestTemplate = (): string => {
   return printBlock('Get Request template')(compoundExpression(statements));
 };
 
-export const generateGetResponseTemplate = (): string => {
+export const generateGetResponseTemplate = (isSyncEnabled: boolean): string => {
   const statements: Expression[] = [
     ifElse(
       and([not(ref('ctx.result.items.isEmpty()')), equals(ref('ctx.result.scannedCount'), int(1))]),
@@ -136,4 +136,19 @@ export const generateListRequestTemplate = (): string => {
     toJson(ref(requestVariable)),
   ]);
   return printBlock('List Request')(expression);
+};
+
+export const generateSyncRequestTemplate = (): string => {
+  return printBlock('Sync Request template')(
+    compoundExpression([
+      obj({
+        version: str('2018-05-29'),
+        operation: str('Sync'),
+        filter: ifElse(ref('context.args.filter'), ref('util.transform.toDynamoDBFilterExpression($ctx.args.filter)'), nul()),
+        limit: ref(`util.defaultIfNull($ctx.args.limit, ${ResourceConstants.DEFAULT_SYNC_QUERY_PAGE_LIMIT})`),
+        lastSync: ref('util.toJson($util.defaultIfNull($ctx.args.lastSync, null))'),
+        nextToken: ref('util.toJson($util.defaultIfNull($ctx.args.nextToken, null))'),
+      }),
+    ]),
+  );
 };

@@ -1,6 +1,6 @@
 import { print } from 'graphql';
 import { EXTRA_DIRECTIVES_DOCUMENT } from './transformation/validation';
-export { GraphQLTransform, GraphQLTransformOptions } from './transformation';
+export { GraphQLTransform, GraphQLTransformOptions, SyncUtils } from './transformation';
 export { DeploymentResources } from './transformation/types';
 export { validateModelSchema } from './transformation/validation';
 export {
@@ -8,9 +8,9 @@ export {
   ConflictHandlerType,
   ResolverConfig,
   SyncConfig,
-  SyncConfigLAMBDA,
-  SyncConfigOPTIMISTIC,
-  SyncConfigSERVER,
+  SyncConfigOptimistic,
+  SyncConfigServer,
+  SyncConfigLambda,
   TransformConfig,
   TransformerProjectConfig,
   AppSyncAuthConfiguration,

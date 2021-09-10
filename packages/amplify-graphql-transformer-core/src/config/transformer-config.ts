@@ -57,15 +57,15 @@ export const enum ConflictHandlerType {
 }
 
 export type ConflictDetectionType = 'VERSION' | 'NONE';
-export type SyncConfigOPTIMISTIC = {
+export type SyncConfigOptimistic = {
   ConflictDetection: ConflictDetectionType;
   ConflictHandler: ConflictHandlerType.OPTIMISTIC;
 };
-export type SyncConfigSERVER = {
+export type SyncConfigServer = {
   ConflictDetection: ConflictDetectionType;
   ConflictHandler: ConflictHandlerType.AUTOMERGE;
 };
-export type SyncConfigLAMBDA = {
+export type SyncConfigLambda = {
   ConflictDetection: ConflictDetectionType;
   ConflictHandler: ConflictHandlerType.LAMBDA;
   LambdaConflictHandler: {
@@ -74,13 +74,11 @@ export type SyncConfigLAMBDA = {
     lambdaArn?: any;
   };
 };
-export type SyncConfig = SyncConfigOPTIMISTIC | SyncConfigSERVER | SyncConfigLAMBDA;
+export type SyncConfig = SyncConfigOptimistic | SyncConfigServer | SyncConfigLambda;
 
 export type ResolverConfig = {
   project?: SyncConfig;
-  models?: {
-    [key: string]: SyncConfig;
-  };
+  models?: Record<string, SyncConfig>;
 };
 export interface TransformConfig {
   /**
@@ -113,6 +111,4 @@ export interface TransformConfig {
    * Such as sync configuration for appsync local support
    */
   ResolverConfig?: ResolverConfig;
-
-  schema: string;
 }

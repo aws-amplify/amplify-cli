@@ -8,6 +8,7 @@ import {
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { App } from '@aws-cdk/core';
 import { DocumentNode } from 'graphql';
+import { ResolverConfig } from '../config/transformer-config';
 import { GraphQLApi } from '../graphql-api';
 import { TransformerDataSourceManager } from './datasource';
 import { NoopFeatureFlagProvider } from './noop-feature-flag';
@@ -26,11 +27,14 @@ export class TransformerContext implements TransformerContextProvider {
   public readonly resourceHelper: TransformerResourceHelper;
   public readonly featureFlags: FeatureFlagProvider;
   public _api?: GraphQLAPIProvider;
+  private resolverConfig: ResolverConfig | undefined;
+
   constructor(
     app: App,
     public readonly inputDocument: DocumentNode,
     stackMapping: Record<string, string>,
     featureFlags?: FeatureFlagProvider,
+    resolverConfig?: ResolverConfig,
   ) {
     this.output = new TransformerOutput(inputDocument);
     this.resolvers = new ResolverManager();
@@ -40,6 +44,7 @@ export class TransformerContext implements TransformerContextProvider {
     this.stackManager = stackManager;
     this.resourceHelper = new TransformerResourceHelper(stackManager);
     this.featureFlags = featureFlags ?? new NoopFeatureFlagProvider();
+    this.resolverConfig = resolverConfig;
   }
 
   /**
@@ -56,5 +61,13 @@ export class TransformerContext implements TransformerContextProvider {
       throw new Error('API is not initialized till generateResolver step');
     }
     return this._api!;
+  }
+
+  public getResolverConfig = <ResolverConfig>(): ResolverConfig | undefined => {
+    return this.resolverConfig as ResolverConfig;
+  };
+
+  public isProjectUsingDataStore(): boolean {
+    return !!this.resolverConfig?.project || !!this.resolverConfig?.models;
   }
 }

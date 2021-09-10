@@ -62,17 +62,24 @@ export const generateConditionSlot = (inputConditionObjectName: string, conditio
  * Generate common response template used by most of the resolvers.
  * Append operation if response is coming from a mutation, this is to protect field resolver for subscriptions
  */
-export const generateDefaultResponseMappingTemplate = (mutation = false): string => {
-  const setOperation = mutation ? [qref(methodCall(ref('ctx.result.put'), str(OPERATION_KEY), str('Mutation')))] : [];
-  return printBlock('Get ResponseTemplate')(
-    compoundExpression([
+export const generateDefaultResponseMappingTemplate = (isSyncEnabled: boolean, mutation: boolean = false): string => {
+  const statements: Expression[] = [];
+  if (mutation) statements.push(qref(methodCall(ref('ctx.result.put'), str(OPERATION_KEY), str('Mutation'))));
+  if (isSyncEnabled) {
+    statements.push(
       ifElse(
         ref('ctx.error'),
-        methodCall(ref('util.error'), ref('ctx.error.message'), ref('ctx.error.type')),
-        compoundExpression([...setOperation, toJson(ref('ctx.result'))]),
+        methodCall(ref('util.error'), ref('ctx.error.message'), ref('ctx.error.type'), ref('ctx.result')),
+        toJson(ref('ctx.result')),
       ),
-    ]),
-  );
+    );
+  } else {
+    statements.push(
+      ifElse(ref('ctx.error'), methodCall(ref('util.error'), ref('ctx.error.message'), ref('ctx.error.type')), toJson(ref('ctx.result'))),
+    );
+  }
+
+  return printBlock('Get ResponseTemplate')(compoundExpression(statements));
 };
 
 /**

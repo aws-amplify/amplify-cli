@@ -689,10 +689,10 @@ $util.qr($mergedValues.put(\\"__typename\\", \\"Post\\"))
 $util.toJson($PutObject)
 ## [End] Create Request template. **",
   "Mutation.createPost.res.vtl": "## [Start] Get ResponseTemplate. **
+$util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
-  $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
   $util.toJson($ctx.result)
 #end
 ## [End] Get ResponseTemplate. **",
@@ -754,10 +754,10 @@ $util.qr($DeleteRequest.put(\\"key\\", $Key))
 $util.toJson($DeleteRequest)
 ## [End] Delete Request template. **",
   "Mutation.deletePost.res.vtl": "## [Start] Get ResponseTemplate. **
+$util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
-  $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
   $util.toJson($ctx.result)
 #end
 ## [End] Get ResponseTemplate. **",
@@ -900,10 +900,10 @@ $util.qr($update.put(\\"expression\\", \\"$expression\\"))
 $util.toJson($UpdateItem)
 ## [End] Mutation Update resolver. **",
   "Mutation.updatePost.res.vtl": "## [Start] Get ResponseTemplate. **
+$util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
-  $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
   $util.toJson($ctx.result)
 #end
 ## [End] Get ResponseTemplate. **",

@@ -30,6 +30,8 @@ import { TransformerOutput } from '../transformer-context/output';
 import { StackManager } from '../transformer-context/stack-manager';
 import { adoptAuthModes } from '../utils/authType';
 import { TransformConfig, AppSyncAuthConfiguration } from '../config';
+import * as SyncUtils from './sync-utils';
+
 import Template, { DeploymentResources } from './types';
 import {
   makeSeenTransformationKey,
@@ -74,6 +76,7 @@ export class GraphQLTransform {
   private transformers: TransformerPluginProvider[];
   private stackMappingOverrides: StackMapping;
   private app: App | undefined;
+  private transformConfig: TransformConfig;
   private readonly authConfig: AppSyncAuthConfiguration;
   private readonly buildParameters: Record<string, any>;
 
@@ -106,6 +109,7 @@ export class GraphQLTransform {
 
     this.buildParameters = options.buildParameters || {};
     this.stackMappingOverrides = options.stackMapping || {};
+    this.transformConfig = options.transformConfig || {};
   }
 
   /**
@@ -120,7 +124,13 @@ export class GraphQLTransform {
     this.seenTransformations = {};
     const parsedDocument = parse(schema);
     this.app = new App();
-    const context = new TransformerContext(this.app, parsedDocument, this.stackMappingOverrides, this.options.featureFlags);
+    const context = new TransformerContext(
+      this.app,
+      parsedDocument,
+      this.stackMappingOverrides,
+      this.options.featureFlags,
+      this.transformConfig.ResolverConfig,
+    );
     const validDirectiveNameMap = this.transformers.reduce(
       (acc: any, t: TransformerPluginProvider) => ({ ...acc, [t.directive.name.value]: true }),
       {
@@ -149,15 +159,6 @@ export class GraphQLTransform {
     if (errors && errors.length) {
       throw new SchemaValidationError(errors);
     }
-
-    // // check if the project is sync enabled
-    // if (this.transformConfig.ResolverConfig) {
-    //   this.createResourcesForSyncEnabledProject(context);
-    //   context.setResolverConfig(this.transformConfig.ResolverConfig);
-    // }
-
-    // // Transformer version is populated, store it in the transformer context, to make it accessible to transformers
-    // context.setTransformerVersion(this.transformConfig.Version!);
 
     for (const transformer of this.transformers) {
       if (isFunction(transformer.before)) {
@@ -220,13 +221,15 @@ export class GraphQLTransform {
     }
 
     // Synth the API and make it available to allow transformer plugins to manipulate the API
-
     const stackManager = context.stackManager as StackManager;
     const output: TransformerOutput = context.output as TransformerOutput;
     const api = this.generateGraphQlApi(stackManager, output);
-    (context as TransformerContext).bind(api);
 
     // generate resolvers
+    (context as TransformerContext).bind(api);
+    if (this.transformConfig.ResolverConfig) {
+      SyncUtils.createSyncTable(context);
+    }
     for (const transformer of this.transformers) {
       if (isFunction(transformer.generateResolvers)) {
         transformer.generateResolvers(context);
