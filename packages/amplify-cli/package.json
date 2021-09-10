@@ -32,6 +32,11 @@
   "engines": {
     "node": ">=12.0.0"
   },
+  "amplify-cli": {
+    "configuration": {
+      "minimumCompatibleCLIVersion": "5.2.0"
+    }
+  },
   "dependencies": {
     "@aws-cdk/cloudformation-diff": "~1.119.0",
     "amplify-app": "3.0.10",

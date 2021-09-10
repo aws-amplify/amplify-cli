@@ -683,7 +683,7 @@ async function updateCloudFormationNestedStack(
   const log = logger('updateCloudFormationNestedStack', [providerDirectory, transformedStackPath]);
   try {
     log();
-    await cfnItem.updateResourceStack(transformedStackPath);
+    await cfnItem.updateResourceStack(context, transformedStackPath);
   } catch (error) {
     log(error);
     throw error;
@@ -842,6 +842,18 @@ async function formNestedStack(
 
   const { amplifyMeta } = projectDetails;
   let authResourceName: string;
+
+  // Add CLI versioning information to the root stack's metadata
+  const metadata = nestedStack.Metadata || {};
+
+  Object.assign(metadata, {
+    AmplifyCLI: {
+      DeployedByCLIVersion: context.versionInfo.currentCLIVersion,
+      MinimumCompatibleCLIVersion: context.versionInfo.minimumCompatibleCLIVersion,
+    },
+  });
+
+  nestedStack.Metadata = metadata;
 
   const { APIGatewayAuthURL, NetworkStackS3Url, AuthTriggerTemplateURL } = amplifyMeta.providers[constants.ProviderName];
 

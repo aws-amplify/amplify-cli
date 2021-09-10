@@ -1,12 +1,11 @@
+import { $TSContext, exitOnNextTick, isResourceNameUnique, open, ResourceDoesNotExistError, stateManager } from 'amplify-cli-core';
+import * as fs from 'fs-extra';
 import inquirer from 'inquirer';
-import path from 'path';
-import fs from 'fs-extra';
 import os from 'os';
+import * as path from 'path';
 import uuid from 'uuid';
 import { rootAssetDir } from '../aws-constants';
-import { checkForPathOverlap, validatePathName, formatCFNPathParamsForExpressJs } from '../utils/rest-api-path-utils';
-import { ResourceDoesNotExistError, exitOnNextTick, $TSContext, stateManager, open } from 'amplify-cli-core';
-import { isNameUnique } from '../utils/check-case-sensitivity';
+import { checkForPathOverlap, formatCFNPathParamsForExpressJs, validatePathName } from '../utils/rest-api-path-utils';
 
 // keep in sync with ServiceName in amplify-category-function, but probably it will not change
 const FunctionServiceNameLambdaFunction = 'Lambda';
@@ -193,9 +192,16 @@ async function askApiNames(context, defaults) {
       },
       required: true,
     })(input);
-    const uniqueCheck = isNameUnique(category, input, false);
-    return typeof amplifyValidatorOutput === 'string' ? amplifyValidatorOutput : typeof uniqueCheck === 'string' ? uniqueCheck : true;
+
+    let uniqueCheck = false;
+    try {
+      uniqueCheck = isResourceNameUnique(category, input);
+    } catch (e) {
+      return e.message || e;
+    }
+    return typeof amplifyValidatorOutput === 'string' ? amplifyValidatorOutput : uniqueCheck;
   };
+
   const answer: { apiName?: string; resourceName: string } = await inquirer.prompt([
     {
       name: 'resourceName',

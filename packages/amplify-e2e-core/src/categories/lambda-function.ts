@@ -176,7 +176,7 @@ const coreFunction = (
       }
     } else {
       if (settings.layerOptions && settings.layerOptions.layerAndFunctionExist) {
-        chain.wait('Select which capability you want to update:').sendCarriageReturn() // lambda function
+        chain.wait('Select which capability you want to update:').sendCarriageReturn(); // lambda function
       }
       chain.wait('Select the Lambda function you want to update').sendCarriageReturn(); // assumes only one function configured in the project
     }
@@ -494,7 +494,7 @@ const addWeekly = (chain: ExecutionContext) => {
   chain
     .wait('Select the day to invoke the function:')
     .sendCarriageReturn()
-    .wait('Select the start time (use arrow keys):')
+    .wait('Select the start time in UTC (use arrow keys):')
     .sendCarriageReturn();
   return chain;
 };
@@ -520,7 +520,7 @@ const addCron = (chain: ExecutionContext, settings: any) => {
       addhourly(moveDown(chain, 1).sendCarriageReturn());
       break;
     case 'Daily':
-      moveDown(chain, 2).sendCarriageReturn().wait('Select the start time (use arrow keys):').sendCarriageReturn();
+      moveDown(chain, 2).sendCarriageReturn().wait('Select the start time in UTC (use arrow keys):').sendCarriageReturn();
       break;
     case 'Weekly':
       addWeekly(moveDown(chain, 3).sendCarriageReturn());

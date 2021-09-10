@@ -25,10 +25,10 @@
   "dependencies": {
     "amplify-cli-core": "1.27.0",
     "amplify-e2e-core": "1.25.0",
-    "aws-amplify": "^4.2.4",
+    "aws-amplify": "^4.2.8",
     "aws-appsync": "^4.1.1",
     "aws-sdk": "^2.963.0",
-    "circleci-api": "^4.1.3",
+    "circleci-api": "^4.1.4",
     "dotenv": "^8.2.0",
     "esm": "^3.2.25",
     "execa": "^5.1.1",
@@ -41,6 +41,7 @@
     "promise-sequential": "^1.1.1",
     "rimraf": "^3.0.0",
     "uuid": "^3.4.0",
+    "which": "^2.0.2",
     "yargs": "^15.1.0"
   },
   "devDependencies": {

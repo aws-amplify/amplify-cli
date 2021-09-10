@@ -1,9 +1,8 @@
-import { JSONUtilities } from 'amplify-cli-core';
+import { isResourceNameUnique, JSONUtilities } from 'amplify-cli-core';
+import * as fs from 'fs-extra';
+import * as path from 'path';
+import { cfnParametersFilename, parametersFileName, rootAssetDir } from './aws-constants';
 import { serviceMetadataFor } from './utils/dynamic-imports';
-import { isNameUnique } from './utils/check-case-sensitivity';
-import fs from 'fs-extra';
-import path from 'path';
-import { parametersFileName, cfnParametersFilename, rootAssetDir } from './aws-constants';
 
 // this is the old logic for generating resources in the project directory
 // it is still used for adding REST APIs
@@ -33,7 +32,7 @@ export const legacyAddResource = async (serviceWalkthroughPromise: Promise<any>,
     const parameters = { ...answers };
     const resourceDirPath = path.join(projectBackendDirPath, category, parameters.resourceName);
 
-    isNameUnique(category, parameters.resourceName);
+    isResourceNameUnique(category, parameters.resourceName);
 
     fs.ensureDirSync(resourceDirPath);
 
