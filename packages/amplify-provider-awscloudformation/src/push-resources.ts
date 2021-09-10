@@ -47,7 +47,10 @@ import { preProcessCFNTemplate } from './pre-push-cfn-processor/cfn-pre-processo
 import { AUTH_TRIGGER_STACK, AUTH_TRIGGER_TEMPLATE } from './utils/upload-auth-trigger-template';
 import { ensureValidFunctionModelDependencies } from './utils/remove-dependent-function';
 import { legacyLayerMigration, postPushLambdaLayerCleanup, prePushLambdaLayerPrompt } from './lambdaLayerInvocations';
-import { prependDeploymentStepsToDisconnectFunctionsFromReplacedModelTables } from './disconnect-dependent-resources';
+import {
+  postDeploymentCleanup,
+  prependDeploymentStepsToDisconnectFunctionsFromReplacedModelTables,
+} from './disconnect-dependent-resources';
 
 const logger = fileLogger('push-resources');
 
@@ -258,10 +261,11 @@ export async function run(context: $TSContext, resourceDefinition: $TSObject, re
             context.print.error(`Could not delete state directory locally: ${err}`);
           }
         }
+        const s3 = await S3.getInstance(context);
         if (stateFolder.cloud) {
-          const s3 = await S3.getInstance(context);
           await s3.deleteDirectory(cloudformationMeta.DeploymentBucketName, stateFolder.cloud);
         }
+        postDeploymentCleanup(s3, cloudformationMeta.DeploymentBucketName);
       } else {
         // Non iterative update
         spinner.start();

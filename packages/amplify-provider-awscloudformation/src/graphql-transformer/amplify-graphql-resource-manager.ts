@@ -328,12 +328,6 @@ export class GraphQLResourceManager {
     // remove table and all output refs to it
     template.Resources[tableName] = undefined;
     template.Outputs = _.omitBy(template.Outputs, (_, key) => key.includes(tableName));
-
-    // rename table and don't remove refs
-    // template.Resources[tableName].Properties.TableName = undefined;
-
-    // // set output refs to placeholder value
-    // Object.entries(template.Outputs || {}).filter(([key]) => key.includes(tableName)).forEach(([key]) => template.Outputs[key].Value = 'placeholderDuringReplacement')
   };
 
   private clearTemplateState = (stackName: string) => {

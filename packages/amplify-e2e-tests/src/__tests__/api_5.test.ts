@@ -12,6 +12,7 @@ import {
   updateApiSchema,
   amplifyPushDestructiveApiUpdate,
   addFunction,
+  amplifyPushAuth,
 } from 'amplify-e2e-core';
 
 const projName = 'apitest';
@@ -69,13 +70,13 @@ describe('destructive updates flag', () => {
         additionalPermissions: {
           permissions: ['storage'],
           choices: ['api', 'storage'],
-          resources: ['apitest'],
+          resources: ['Todo:@model(appsync)'],
           operations: ['create', 'read', 'update', 'delete'],
         },
       },
       'nodejs',
     );
-    await amplifyPush(projRoot);
+    await amplifyPushAuth(projRoot);
     updateApiSchema(projRoot, projName, 'simple_model_new_primary_key.graphql');
     await amplifyPushDestructiveApiUpdate(projRoot, false);
     // success indicates that the push completed

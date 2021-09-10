@@ -1,5 +1,5 @@
 import { $TSContext, FeatureFlags, stateManager } from 'amplify-cli-core';
-import { printer, prompter } from 'amplify-prompts';
+import { printer, prompter, exact } from 'amplify-prompts';
 
 const subcommand = 'rebuild';
 const category = 'api';
@@ -31,7 +31,7 @@ export const run = async (context: $TSContext) => {
   printer.warn(`This will recreate all tables backing models in your GraphQL API ${apiName}.`);
   printer.warn('ALL EXISTING DATA IN THESE TABLES WILL BE LOST.');
   await prompter.input('Type the name of the API to confirm you want to continue', {
-    validate: input => (input === apiName ? true : 'Input does not match API name'),
+    validate: exact(apiName, 'Input does not match the GraphQL API name'),
   });
   const { amplify, parameters } = context;
   const resourceName = parameters.first;
