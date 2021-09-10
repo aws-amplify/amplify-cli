@@ -37,31 +37,33 @@ export async function run(context: $TSContext, resourceDefinition: $TSAny[], _ex
     spinner.text = 'Building and packaging resources';
     const packagedResources = await resourceExport.packageBuildWriteResources(resourceDefinition as any);
 
-    spinner.text = `Writing resources to ${amplifyExportFolder}`;
+    spinner.text = `Writing resources`;
     await resourceExport.writeResourcesToDestination(packagedResources);
 
-    spinner.text = `Writing Cloudformation files ${amplifyExportFolder}`;
+    spinner.text = `Writing Cloudformation`;
     const { stackParameters, transformedResources } = await resourceExport.generateAndTransformCfnResources(packagedResources);
 
-    spinner.text = `Generating and writing root stack to ${amplifyExportFolder}`;
+    spinner.text = `Generating and writing root stack`;
     const extractedParameters = await resourceExport.generateAndWriteRootStack(stackParameters);
     const parameters = resourceExport.fixNestedStackParameters(transformedResources, extractedParameters);
 
-    spinner.text = `Generating export manifest ${amplifyExportFolder}`;
+    spinner.text = `Generating export manifest`;
     writeExportManifest(parameters, exportPath, amplifyExportFolder);
 
     spinner.text = `Generating category stack mappings`;
     createCategoryStackMapping(transformedResources, amplifyExportFolder);
 
-    spinner.text = 'Generating export tag files';
+    spinner.text = 'Generating export tag file';
     createTagsFile(amplifyExportFolder);
 
+    spinner.text = 'Setting permissions';
+    await setPermissions(amplifyExportFolder);
     spinner.succeed('Done Exporting');
     printer.blankLine();
     printer.success('Successfully exported');
     printer.info('Some Next steps:');
     printer.info('You can now integrate your Amplify Backend into your CDK App');
-    printer.info('By installing the Amplify Backend Export Construct by running npm i @aws-amplify/amplify-export-backend');
+    printer.info('By installing the Amplify Backend Export Construct by running npm i @aws-amplify/amplify-export-backend in your CDK app');
     printer.info('For more information: docs.amplify.aws/cli/export');
     printer.blankLine();
 
@@ -73,6 +75,14 @@ export async function run(context: $TSContext, resourceDefinition: $TSAny[], _ex
   } finally {
     spinner.stop();
   }
+}
+
+/**
+ * setting permissions rwx for user
+ * @param amplifyExportFolder
+ */
+async function setPermissions(amplifyExportFolder: string): Promise<void> {
+  await fs.chmod(amplifyExportFolder, 0o700);
 }
 /**
  * Gets the tags from the tags.json file and transforms them into Pascal case

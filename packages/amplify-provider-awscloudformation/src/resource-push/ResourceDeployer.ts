@@ -324,6 +324,6 @@ export abstract class ResourceDeployer {
   private resourcesHasCategoryService = (resources: ResourceDefinition[], category: string, service?: string): boolean =>
     resources.some(resource => resource.category === category && (service ? resource.service === service : true));
 
-  private filterResourceByCategoryService = (resources: ResourceDefinition[], category: string, service?: string) =>
+  protected filterResourceByCategoryService = (resources: ResourceDefinition[], category: string, service?: string) =>
     resources.filter(resource => resource.category === category && (service ? resource.service === service : true));
 }
