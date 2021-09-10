@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.36.6-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.36.5...amplify-category-auth@2.36.6-beta.0) (2021-09-10)
+
+
+### Bug Fixes
+
+* remove overwrite of email-only verification when triggers are added ([#7671](https://github.com/aws-amplify/amplify-cli/issues/7671)) ([704295b](https://github.com/aws-amplify/amplify-cli/commit/704295b918701eb81fdaabb786417463672fa02c))
+* verification-link variable with small typo ([#8073](https://github.com/aws-amplify/amplify-cli/issues/8073)) ([d9afc20](https://github.com/aws-amplify/amplify-cli/commit/d9afc20864cbfcc1eadc3e5c262888187624a5ad))
+
+
+
+
+
 ## [2.36.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.36.4...amplify-category-auth@2.36.5) (2021-09-09)
 
 
