@@ -118,9 +118,8 @@ export class ResourceFactory {
         [ResourceConstants.RESOURCES.ElasticsearchDataSourceLogicalID]: this.makeElasticsearchDataSource(),
         [ResourceConstants.RESOURCES.ElasticsearchDomainLogicalID]: this.makeElasticsearchDomain(),
         [ResourceConstants.RESOURCES.ElasticsearchStreamingLambdaIAMRoleLogicalID]: this.makeStreamingLambdaIAMRole(),
-        [ResourceConstants.RESOURCES.ElasticsearchStreamingLambdaFunctionLogicalID]: this.makeDynamoDBStreamingFunction(
-          isProjectUsingDataStore,
-        ),
+        [ResourceConstants.RESOURCES.ElasticsearchStreamingLambdaFunctionLogicalID]:
+          this.makeDynamoDBStreamingFunction(isProjectUsingDataStore),
       },
       Mappings: this.getLayerMapping(),
       Outputs: {
@@ -218,6 +217,9 @@ export class ResourceFactory {
         },
         'us-gov-east-1': {
           layerRegion: 'arn:aws-us-gov:lambda:us-gov-east-1:138526772879:layer:AWSLambda-Python-AWS-SDK:1',
+        },
+        'me-south-1': {
+          layerRegion: 'arn:aws:lambda:me-south-1:507411403535:layer:AWSLambda-Python-AWS-SDK:1',
         },
       },
     };
