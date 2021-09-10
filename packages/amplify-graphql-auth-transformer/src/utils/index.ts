@@ -1,8 +1,18 @@
 import { ModelDirectiveConfiguration, SubscriptionLevel } from '@aws-amplify/graphql-model-transformer';
 import { AppSyncAuthMode, DirectiveWrapper } from '@aws-amplify/graphql-transformer-core';
-import { DirectiveNode } from 'graphql';
-import { toCamelCase, plurality } from 'graphql-transformer-common';
-import { AuthProvider, AuthRule, AuthTransformerConfig, ConfiguredAuthProviders, RoleDefinition, RolesByProvider } from './definitions';
+import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { Stack } from '@aws-cdk/core';
+import { DirectiveNode, ObjectTypeDefinitionNode } from 'graphql';
+import { toCamelCase, plurality, graphqlName, toUpper } from 'graphql-transformer-common';
+import {
+  AuthProvider,
+  AuthRule,
+  AuthTransformerConfig,
+  ConfiguredAuthProviders,
+  RoleDefinition,
+  RolesByProvider,
+  SearchableConfig,
+} from './definitions';
 
 export * from './constants';
 export * from './definitions';
@@ -75,6 +85,37 @@ export const getModelConfig = (directive: DirectiveNode, typeName: string): Mode
     },
   });
   return options;
+};
+
+export const getSearchableConfig = (directive: DirectiveNode, typeName: string): SearchableConfig | null => {
+  const directiveWrapped: DirectiveWrapper = new DirectiveWrapper(directive);
+  const options = directiveWrapped.getArguments<SearchableConfig>({
+    queries: {
+      search: graphqlName(`search${plurality(toUpper(typeName), true)}`),
+    },
+  });
+  return options;
+};
+/**
+ * gets stack name if the field is paired with function, predictions, or by itself
+ */
+export const getStackForField = (
+  ctx: TransformerContextProvider,
+  obj: ObjectTypeDefinitionNode,
+  fieldName: string,
+  hasModelDirective: boolean,
+): Stack => {
+  const fieldNode = obj.fields.find(f => f.name.value === fieldName);
+  const fieldDirectives = fieldNode.directives.map(d => d.name.value);
+  if (fieldDirectives.includes('function')) {
+    return ctx.stackManager.getStack('FunctionDirectiveStack');
+  } else if (fieldDirectives.includes('predictions')) {
+    return ctx.stackManager.getStack('PredictionsDirectiveStack');
+  } else if (hasModelDirective) {
+    return ctx.stackManager.getStack(obj.name.value);
+  } else {
+    return ctx.stackManager.rootStack;
+  }
 };
 
 export const getConfiguredAuthProviders = (config: AuthTransformerConfig): ConfiguredAuthProviders => {

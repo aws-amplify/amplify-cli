@@ -5,6 +5,13 @@ export type ModelQuery = 'get' | 'list';
 export type ModelMutation = 'create' | 'update' | 'delete';
 export type ModelOperation = 'create' | 'update' | 'delete' | 'read';
 
+export type QuerySource = 'dynamodb' | 'opensearch';
+export interface SearchableConfig {
+  queries: {
+    search: string;
+  };
+}
+
 export interface RolesByProvider {
   cogntoStaticRoles: Array<RoleDefinition>;
   cognitoDynamicRoles: Array<RoleDefinition>;

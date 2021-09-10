@@ -45,6 +45,9 @@ import {
   addSubscriptionArguments,
   fieldIsList,
   getSubscriptionFieldNames,
+  addDirectivesToField,
+  getSearchableConfig,
+  getStackForField,
 } from './utils';
 import {
   DirectiveNode,
@@ -53,6 +56,7 @@ import {
   InterfaceTypeDefinitionNode,
   Kind,
   TypeDefinitionNode,
+  OperationTypeDefinitionNode,
 } from 'graphql';
 import { SubscriptionLevel, ModelDirectiveConfiguration } from '@aws-amplify/graphql-model-transformer';
 import { AccessControlMatrix } from './accesscontrol';
@@ -68,6 +72,7 @@ import {
   generateAuthExpressionForQueries,
   generateAuthExpressionForSubscriptions,
 } from './resolvers';
+import { toUpper } from 'graphql-transformer-common';
 
 // @ auth
 // changing the schema
@@ -132,7 +137,7 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
     // add object into policy
     this.addTypeToResourceReferences(def.name.value, rules);
     // turn rules into roles and add into acm and roleMap
-    this.convertModelRulesToRoles(acm, rules);
+    this.convertRulesToRoles(acm, rules);
     this.modelDirectiveConfig.set(typeName, getModelConfig(modelDirective, typeName));
     this.authModelConfig.set(typeName, acm);
   };
@@ -191,19 +196,19 @@ Static group authorization should perform as expected.`,
         acm = this.authModelConfig.get(typeName) as AccessControlMatrix;
         acm.resetAccessForResource(fieldName);
       }
-      this.convertModelRulesToRoles(acm, rules, fieldName);
+      this.convertRulesToRoles(acm, rules, fieldName);
       this.authModelConfig.set(typeName, acm);
     } else {
       // if @auth is used without @model only generate static group rules in the resolver
       // since we only protect the field for non models we store the typeName + fieldName
       // in the authNonModelTypes map
-      const staticGroupRules = rules.filter((rule: AuthRule) => rule.groups);
+      const staticRules = rules.filter((rule: AuthRule) => rule.allow !== 'owner' && !rule.groupsField);
       const typeFieldName = `${typeName}:${fieldName}`;
       const acm = new AccessControlMatrix({
         operations: ['read'],
         resources: [typeFieldName],
       });
-      this.convertNonModelRulesToRoles(acm, staticGroupRules, typeFieldName);
+      this.convertRulesToRoles(acm, staticRules, typeFieldName, ['read']);
       this.authNonModelConfig.set(typeFieldName, acm);
     }
   };
@@ -215,19 +220,27 @@ Static group authorization should perform as expected.`,
         return prev;
       }, []);
     };
-    // generate schema changes
     for (let [modelName, acm] of this.authModelConfig) {
       const def = context.output.getObject(modelName)!;
       // collect ownerFields and them in the model
       this.addFieldsToObject(context, modelName, getOwnerFields(acm));
       // Get the directives we need to add to the GraphQL nodes
-      const providers = this.getAuthProvidersPerModel(acm.getRoles());
+      const providers = this.getAuthProviders(acm.getRoles());
       const directives = this.getServiceDirectives(providers, providers.length === 0 ? this.shouldAddDefaultServiceDirective() : false);
       if (directives.length > 0) {
         extendTypeWithDirectives(context, modelName, directives);
       }
       this.protectSchemaOperations(context, def, acm);
       this.propagateAuthDirectivesToNestedTypes(context, context.output.getObject(modelName)!, providers);
+    }
+    for (let [typeFieldName, acm] of this.authNonModelConfig) {
+      // protect the non model field
+      const [typeName, fieldName] = typeFieldName.split(':');
+      const providers = this.getAuthProviders(acm.getRoles());
+      const directives = this.getServiceDirectives(providers, false);
+      if (directives.length > 0) {
+        addDirectivesToField(context, typeName, fieldName, directives);
+      }
     }
   };
 
@@ -238,7 +251,7 @@ Static group authorization should perform as expected.`,
     for (let [modelName, acm] of this.authModelConfig) {
       const indexKeyName = `${modelName}:indicies`;
       const def = context.output.getObject(modelName)!;
-      const modelDirective = def.directives?.find(dir => dir.name.value === 'model');
+      const searchableDirective = def.directives.find(dir => dir.name.value === 'searchable');
       // queries
       const queryFields = getQueryFieldNames(this.modelDirectiveConfig.get(modelName)!);
       for (let query of queryFields.values()) {
@@ -260,6 +273,11 @@ Static group authorization should perform as expected.`,
         }
       }
       // check if searchable if included in the typeName
+      if (searchableDirective) {
+        // protect search query
+        const config = getSearchableConfig(searchableDirective, modelName);
+        this.protectSearchResolver(context, def, context.output.getQueryTypeName()!, config.queries.search, acm);
+      }
       // get fields specified in the schema
       // if there is a role that does not have read access on the field then we create a field resolver
       const readRoles = acm.getRolesPerOperation('read');
@@ -271,7 +289,6 @@ Static group authorization should perform as expected.`,
             throw new InvalidDirectiveError(`\nPer-field auth on the required field ${field.name.value} is not supported with subscriptions.
   Either make the field optional, set auth on the object and not the field, or disable subscriptions for the object (setting level to off or public)\n`);
           }
-          // TODO: check if a function resolver is created here
           this.protectFieldResolver(context, def, modelName, field.name.value, allowedRoles);
         }
       }
@@ -302,6 +319,13 @@ Static group authorization should perform as expected.`,
         this.protectSubscriptionResolver(context, subscription.typeName, subscription.fieldName, subscriptionRoles);
       }
     }
+
+    for (let [typeFieldName, acm] of this.authNonModelConfig) {
+      // field resolvers
+      const [typeName, fieldName] = typeFieldName.split(':');
+      const def = context.output.getObject(typeName);
+      this.protectFieldResolver(context, def, typeName, fieldName, acm.getRoles());
+    }
   };
 
   protectSchemaOperations = (
@@ -310,10 +334,12 @@ Static group authorization should perform as expected.`,
     acm: AccessControlMatrix,
   ): void => {
     const modelConfig = this.modelDirectiveConfig.get(def.name.value)!;
+    const indexKeyName = `${def.name.value}:indicies`;
+    const searchableDirective = def.directives.find(dir => dir.name.value === 'searchable');
     const addServiceDirective = (typeName: string, operation: ModelOperation, operationName: string | null = null) => {
       if (operationName) {
         const includeDefault = this.doesTypeHaveRulesForOperation(acm, operation);
-        const providers = this.getAuthProvidersPerModel(acm.getRolesPerOperation(operation, operation === 'delete'));
+        const providers = this.getAuthProviders(acm.getRolesPerOperation(operation, operation === 'delete'));
         const operationDirectives = this.getServiceDirectives(providers, includeDefault);
         if (operationDirectives.length > 0) {
           addDirectivesToOperation(ctx, typeName, operationName, operationDirectives);
@@ -321,12 +347,23 @@ Static group authorization should perform as expected.`,
         this.addOperationToResourceReferences(typeName, operationName, acm.getRoles());
       }
     };
+    // default model operations TODO: protect sync queries once supported
     addServiceDirective(ctx.output.getQueryTypeName()!, 'read', modelConfig?.queries?.get);
     addServiceDirective(ctx.output.getQueryTypeName()!, 'read', modelConfig?.queries?.list);
     addServiceDirective(ctx.output.getMutationTypeName()!, 'create', modelConfig?.mutations?.create);
     addServiceDirective(ctx.output.getMutationTypeName()!, 'update', modelConfig?.mutations?.update);
     addServiceDirective(ctx.output.getMutationTypeName()!, 'delete', modelConfig?.mutations?.delete);
-    // TODO: protect sync queries once supported
+    // @index queries
+    if (ctx.metadata.has(indexKeyName)) {
+      for (let index of ctx.metadata.get<Set<string>>(indexKeyName)!.values()) {
+        addServiceDirective(ctx.output.getQueryTypeName(), 'read', index);
+      }
+    }
+    // @searchable
+    if (searchableDirective) {
+      const config = getSearchableConfig(searchableDirective, def.name.value);
+      addServiceDirective(ctx.output.getQueryTypeName(), 'read', config.queries.search);
+    }
 
     const subscriptions = modelConfig?.subscriptions;
     if (subscriptions.level === SubscriptionLevel.on) {
@@ -385,6 +422,21 @@ Static group authorization should perform as expected.`,
       MappingTemplate.s3MappingTemplateFromString(authExpression, `${typeName}.${fieldName}.{slotName}.{slotIndex}.req.vtl`),
     );
   };
+  protectSearchResolver = (
+    ctx: TransformerContextProvider,
+    def: ObjectTypeDefinitionNode,
+    typeName: string,
+    fieldName: string,
+    acm: AccessControlMatrix,
+  ): void => {
+    const resolver = ctx.resolvers.getResolver(typeName, fieldName) as TransformerResolverProvider;
+    const roleDefinitions = acm.getRolesPerOperation('read').map(r => this.roleMap.get(r)!);
+    const authExpression = generateAuthExpressionForQueries(this.configuredAuthProviders, roleDefinitions, def.fields ?? [], 'opensearch');
+    resolver.addToSlot(
+      'auth',
+      MappingTemplate.s3MappingTemplateFromString(authExpression, `${typeName}.${fieldName}.{slotName}.{slotIndex}.req.vtl`),
+    );
+  };
   protectFieldResolver = (
     ctx: TransformerContextProvider,
     def: ObjectTypeDefinitionNode,
@@ -393,22 +445,48 @@ Static group authorization should perform as expected.`,
     roles: Array<string>,
   ): void => {
     const roleDefinitions = roles.map(r => this.roleMap.get(r)!);
-    const fieldAuthExpression = generateAuthExpressionForField(this.configuredAuthProviders, roleDefinitions, def.fields ?? []);
-    const subsEnabled = this.modelDirectiveConfig.get(typeName)!.subscriptions.level === 'on';
-    const fieldResponse = generateFieldAuthResponse('Mutation', fieldName, subsEnabled);
-    const stack = ctx.stackManager.getStack(def.name.value);
-    if (!ctx.api.host.hasDataSource('NONE')) {
-      ctx.api.host.addNoneDataSource('NONE');
+    const hasModelDirective = def.directives.some(dir => dir.name.value === 'model');
+    const stack = getStackForField(ctx, def, fieldName, hasModelDirective);
+    if (ctx.api.host.hasResolver(typeName, fieldName)) {
+      // TODO: move pipeline resolvers created in the api host to the resolver manager
+      const fieldResolver = ctx.api.host.getResolver(typeName, fieldName) as any;
+      const fieldAuthExpression = generateAuthExpressionForField(this.configuredAuthProviders, roleDefinitions, []);
+      if (!ctx.api.host.hasDataSource('NONE')) {
+        ctx.api.host.addNoneDataSource('NONE');
+      }
+      const authFunction = ctx.api.host.addAppSyncFunction(
+        `${toUpper(typeName)}${toUpper(fieldName)}AuthFN`,
+        MappingTemplate.s3MappingTemplateFromString(fieldAuthExpression, `${typeName}.${fieldName}.auth.req.vtl`),
+        MappingTemplate.inlineTemplateFromString('$util.toJson({})'),
+        'NONE',
+        stack,
+      );
+      (fieldResolver.pipelineConfig.functions as string[]).unshift(authFunction.functionId);
+    } else if (ctx.resolvers.hasResolver(typeName, fieldName)) {
+      // if there a resolver in the resolver manager we can append to the auth slot
+      const fieldResolver = ctx.resolvers.getResolver(typeName, fieldName) as TransformerResolverProvider;
+      const authExpression = generateAuthExpressionForQueries(this.configuredAuthProviders, roleDefinitions, def.fields ?? []);
+      fieldResolver.addToSlot(
+        'auth',
+        MappingTemplate.s3MappingTemplateFromString(authExpression, `${typeName}.${fieldName}.{slotName}.{slotIndex}.req.vtl`),
+      );
+    } else {
+      const fieldAuthExpression = generateAuthExpressionForField(this.configuredAuthProviders, roleDefinitions, def.fields ?? []);
+      const subsEnabled = this.modelDirectiveConfig.get(typeName)!.subscriptions.level === 'on';
+      const fieldResponse = generateFieldAuthResponse('Mutation', fieldName, hasModelDirective ? subsEnabled : false);
+      if (!ctx.api.host.hasDataSource('NONE')) {
+        ctx.api.host.addNoneDataSource('NONE');
+      }
+      ctx.api.host.addResolver(
+        typeName,
+        fieldName,
+        MappingTemplate.s3MappingTemplateFromString(fieldAuthExpression, `${typeName}.${fieldName}.req.vtl`, 'resolver'),
+        MappingTemplate.s3MappingTemplateFromString(fieldResponse, `${typeName}.${fieldName}.res.vtl`, 'resolver'),
+        'NONE',
+        undefined,
+        stack,
+      );
     }
-    ctx.api.host.addResolver(
-      typeName,
-      fieldName,
-      MappingTemplate.s3MappingTemplateFromString(fieldAuthExpression, `${typeName}.${fieldName}.req.vtl`, 'resolver'),
-      MappingTemplate.s3MappingTemplateFromString(fieldResponse, `${typeName}.${fieldName}.res.vtl`, 'resolver'),
-      'NONE',
-      undefined,
-      stack,
-    );
   };
   protectCreateResolver = (
     ctx: TransformerContextProvider,
@@ -499,27 +577,9 @@ Static group authorization should perform as expected.`,
   /*
   Role Helpers
   */
-  private convertNonModelRulesToRoles(acm: AccessControlMatrix, authRules: AuthRule[], field?: string) {
+  private convertRulesToRoles(acm: AccessControlMatrix, authRules: AuthRule[], field?: string, overideOperations?: ModelOperation[]) {
     for (let rule of authRules) {
-      rule.groups!.forEach(group => {
-        let roleName = `${rule.provider}:staticGroup:${group}`;
-        if (!(roleName in this.roleMap)) {
-          this.roleMap.set(roleName, {
-            provider: rule.provider!,
-            strategy: rule.allow,
-            static: true,
-            claim: rule.groupClaim || DEFAULT_GROUP_CLAIM,
-            entity: group,
-          });
-        }
-        acm.setRole({ role: roleName, resource: field, operations: ['read'] });
-      });
-    }
-  }
-
-  private convertModelRulesToRoles(acm: AccessControlMatrix, authRules: AuthRule[], field?: string) {
-    for (let rule of authRules) {
-      let operations: ModelOperation[] = rule.operations || MODEL_OPERATIONS;
+      let operations: ModelOperation[] = overideOperations ? overideOperations : rule.operations || MODEL_OPERATIONS;
       if (rule.groups && !rule.groupsField) {
         rule.groups.forEach(group => {
           let roleName = `${rule.provider}:staticGroup:${group}`;
@@ -602,7 +662,7 @@ Static group authorization should perform as expected.`,
     const roles = acm.getRolesPerOperation(operation, operation === 'delete');
     return rolesHasDefaultProvider(roles) || (roles.length === 0 && this.shouldAddDefaultServiceDirective());
   }
-  private getAuthProvidersPerModel(roles: Array<string>): Array<AuthProvider> {
+  private getAuthProviders(roles: Array<string>): Array<AuthProvider> {
     const providers: Set<AuthProvider> = new Set();
     // get the roles created for type
     for (let role of roles) {
