@@ -1,6 +1,5 @@
 import fs from 'fs';
 import { getAppSyncApiConfig, getApiKeyConfig, apiKeyIsActive, hasApiKey } from '../../../extensions/amplify-helpers/get-api-key-config';
-import { stateManager } from 'amplify-cli-core';
 
 let amplifyMeta;
 
@@ -10,12 +9,10 @@ jest.mock('amplify-cli-core', () => {
     ...original,
     stateManager: {
       metaFileExists: jest.fn(),
-      getMeta: jest.fn().mockImplementation(() => JSON.parse(amplifyMeta.toString())),
+      getCurrentMeta: jest.fn().mockImplementation(() => JSON.parse(amplifyMeta.toString())),
     },
   };
 });
-
-const stateManager_mock = stateManager as jest.Mocked<typeof stateManager>;
 
 describe('getAppSyncApiConfig', () => {
   beforeAll(() => {
@@ -45,9 +42,7 @@ describe('getAppSyncApiConfig', () => {
           ],
         },
         globalSandboxModeConfig: {
-          dev: {
-            enabled: true,
-          },
+          env: 'dev',
         },
       },
     });

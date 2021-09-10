@@ -23,7 +23,13 @@ export {
   AppSyncAuthMode,
   UserPoolConfig,
 } from './config/index';
-export { collectDirectives, collectDirectivesByTypeNames, DirectiveWrapper } from './utils';
+export {
+  collectDirectives,
+  collectDirectivesByTypeNames,
+  DirectiveWrapper,
+  getSandboxModeEnvNameFromDirectiveSet,
+  getSandboxModeEnvNameFromNodeMap,
+} from './utils';
 export * from './errors';
 export {
   TransformerModelBase,

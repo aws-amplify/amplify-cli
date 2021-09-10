@@ -20,6 +20,8 @@ import {
 } from 'graphql-mapping-template';
 import { OPERATION_KEY } from '../definitions';
 
+const API_KEY = 'API Key Authorization';
+
 /**
  * Helper method to generate code that converts DynamoDB condition object to condition
  * expression
@@ -83,10 +85,30 @@ export const generateDefaultResponseMappingTemplate = (isSyncEnabled: boolean, m
 };
 
 /**
- * Util function to gernate resolver key used to keep track of all the resolvers in memory
+ * Util function to generate resolver key used to keep track of all the resolvers in memory
  * @param typeName Name of the type
  * @param fieldName Name of the field
  */
 export const generateResolverKey = (typeName: string, fieldName: string): string => {
   return `${typeName}.${fieldName}`;
+};
+
+/**
+ * Util function to generate sandbox mode expression
+ * @param inputCondition boolean to enable sandbox mode
+ */
+export const generateAuthExpressionForSandboxMode = (ctx: any): string => {
+  let enabled = ctx.resourceHelper.api.globalSandboxModeEnabled;
+  let exp;
+
+  if (enabled) {
+    exp = iff(
+      notEquals(ref('ctx.stash.get("hasAuth")'), str('true')),
+      iff(notEquals(methodCall(ref('util.authType')), str(API_KEY)), methodCall(ref('util.unauthorized'))),
+    );
+  } else {
+    exp = methodCall(ref('util.unauthorized'));
+  }
+
+  return printBlock(`Sandbox Mode ${enabled ? 'Enabled' : 'Disabled'}`)(compoundExpression([exp]));
 };

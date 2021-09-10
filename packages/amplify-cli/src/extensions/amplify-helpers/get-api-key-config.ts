@@ -2,7 +2,7 @@ import { stateManager } from 'amplify-cli-core';
 import { ApiKeyConfig } from '@aws-amplify/graphql-transformer-core';
 
 export function getAppSyncApiConfig(): any {
-  const apiConfig = stateManager.getMeta()?.api;
+  const apiConfig = stateManager.getCurrentMeta()?.api;
   let appSyncApi;
 
   Object.keys(apiConfig).forEach(k => {

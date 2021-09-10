@@ -8,7 +8,9 @@ import {
   getAppSyncServiceExtraDirectives,
   GraphQLTransform,
   collectDirectivesByTypeNames,
+  collectDirectives,
   TransformerProjectConfig,
+  getSandboxModeEnvNameFromDirectiveSet,
 } from '@aws-amplify/graphql-transformer-core';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { AuthTransformer } from '@aws-amplify/graphql-auth-transformer';
@@ -285,6 +287,8 @@ export async function transformGraphQLSchema(context, options) {
 
   const transformerListFactory = getTransformerFactory(context, resourceDir);
 
+  const sandboxModeEnv = getSandboxModeEnvNameFromDirectiveSet(collectDirectives(project.schema));
+
   let searchableTransformerFlag = false;
 
   if (directiveMap.directives.includes('searchable')) {
@@ -303,6 +307,7 @@ export async function transformGraphQLSchema(context, options) {
     projectConfig: project,
     lastDeployedProjectConfig,
     authConfig,
+    sandboxModeEnv,
   };
   const transformerOutput = await buildAPIProject(buildConfig);
 
@@ -405,6 +410,7 @@ export type ProjectOptions<T> = {
   dryRun?: boolean;
   authConfig?: AppSyncAuthConfiguration;
   stacks: Record<string, Template>;
+  sandboxModeEnv?: string;
 };
 
 export async function buildAPIProject(opts: ProjectOptions<TransformerFactoryArgs>) {
@@ -421,6 +427,7 @@ export async function buildAPIProject(opts: ProjectOptions<TransformerFactoryArg
     // Todo: Move sanity check to its own package. Run sanity check
     // await Sanity.check(lastBuildPath, thisBuildPath, opts.rootStackFileName);
   }
+  await _updateCurrentMeta(opts);
 
   return builtProject;
 }
@@ -441,4 +448,12 @@ async function _buildProject(opts: ProjectOptions<TransformerFactoryArgs>) {
     featureFlags: new AmplifyCLIFeatureFlagAdapter(),
   });
   return transform.transform(userProjectConfig.schema.toString());
+}
+
+async function _updateCurrentMeta(opts: ProjectOptions<TransformerFactoryArgs>) {
+  const currentMeta = stateManager.getCurrentMeta();
+  const buildParams: any = opts.buildParameters;
+  const apiName = buildParams.AppSyncApiName;
+  currentMeta.api[apiName].output.globalSandboxModeConfig = { env: opts.sandboxModeEnv };
+  stateManager.setCurrentMeta(undefined, currentMeta);
 }

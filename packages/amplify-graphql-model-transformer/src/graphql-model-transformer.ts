@@ -54,6 +54,7 @@ import {
   makeUpdateInputField,
 } from './graphql-types';
 import {
+  generateAuthExpressionForSandboxMode,
   generateCreateInitSlotTemplate,
   generateCreateRequestTemplate,
   generateDefaultResponseMappingTemplate,
@@ -267,7 +268,13 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
           default:
             throw new Error('Unknown query field type');
         }
-
+        resolver.addToSlot(
+          'postAuth',
+          MappingTemplate.s3MappingTemplateFromString(
+            generateAuthExpressionForSandboxMode(context),
+            `${query.typeName}.${query.fieldName}.{slotName}.{slotIndex}.req.vtl`,
+          ),
+        );
         resolver.mapToStack(stack);
         context.resolvers.addResolver(query.typeName, query.fieldName, resolver);
       }
@@ -286,8 +293,15 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
             resolver = this.generateUpdateResolver(context, def!, mutation.typeName, mutation.fieldName);
             break;
           default:
-            throw new Error('Unknown query field type');
+            throw new Error('Unknown mutation field type');
         }
+        resolver.addToSlot(
+          'postAuth',
+          MappingTemplate.s3MappingTemplateFromString(
+            generateAuthExpressionForSandboxMode(context),
+            `${mutation.typeName}.${mutation.fieldName}.{slotName}.{slotIndex}.req.vtl`,
+          ),
+        );
         resolver.mapToStack(stack);
         context.resolvers.addResolver(mutation.typeName, mutation.fieldName, resolver);
       }
@@ -309,8 +323,15 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
               resolver = this.generateOnDeleteResolver(context, def, subscription.typeName, subscription.fieldName);
               break;
             default:
-              throw new Error('Unkown subscription field type');
+              throw new Error('Unknown subscription field type');
           }
+          resolver.addToSlot(
+            'postAuth',
+            MappingTemplate.s3MappingTemplateFromString(
+              generateAuthExpressionForSandboxMode(context),
+              `${subscription.typeName}.${subscription.fieldName}.{slotName}.{slotIndex}.req.vtl`,
+            ),
+          );
           resolver.mapToStack(stack);
           context.resolvers.addResolver(subscription.typeName, subscription.fieldName, resolver);
         }
