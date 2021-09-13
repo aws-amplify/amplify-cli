@@ -77,7 +77,7 @@ export class SearchableModelTransformer extends TransformerPluginBase {
       expression: Fn.conditionNot(Fn.conditionEquals(envParam, ResourceConstants.NONE)),
     });
 
-    const isProjectUsingDataStore = false;
+    const isProjectUsingDataStore = context.isProjectUsingDataStore();
 
     stack.templateOptions.description = 'An auto-generated nested stack for searchable.';
     stack.templateOptions.templateFormatVersion = '2010-09-09';
