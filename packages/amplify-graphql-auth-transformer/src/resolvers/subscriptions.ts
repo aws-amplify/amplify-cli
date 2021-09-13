@@ -44,7 +44,7 @@ export const generateAuthExpressionForSubscriptions = (providers: ConfiguredAuth
     totalAuthExpressions.push(apiKeyExpression(apiKeyRoles));
   }
   if (providers.hasIAM) {
-    totalAuthExpressions.push(iamExpression(iamRoles, providers.hasAdminUIEnabled));
+    totalAuthExpressions.push(iamExpression(iamRoles, providers.hasAdminUIEnabled, providers.adminUserPoolID));
   }
   if (providers.hasUserPools)
     totalAuthExpressions.push(

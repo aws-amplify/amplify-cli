@@ -61,7 +61,7 @@ const apiKeyExpression = (roles: Array<RoleDefinition>) => {
   return iff(equals(ref('util.authType()'), str(API_KEY_AUTH_TYPE)), compoundExpression(expression));
 };
 
-const iamExpression = (roles: Array<RoleDefinition>, hasAdminUIEnabled: boolean = false) => {
+const iamExpression = (roles: Array<RoleDefinition>, hasAdminUIEnabled: boolean = false, adminUserPoolID?: string) => {
   const iamCheck = (claim: string, exp: Expression) =>
     iff(equals(methodCall(ref('ctx.identity.get'), str('cognitoIdentityAuthType')), str(claim)), exp);
   const expression = new Array<Expression>();
@@ -70,8 +70,8 @@ const iamExpression = (roles: Array<RoleDefinition>, hasAdminUIEnabled: boolean 
     expression.push(
       iff(
         or([
-          methodCall(ref('ctx.identity.userArn.contains'), str(ADMIN_ROLE)),
-          methodCall(ref('ctx.identity.userArn.contains'), str(MANAGE_ROLE)),
+          methodCall(ref('ctx.identity.userArn.contains'), str(`${adminUserPoolID}${ADMIN_ROLE}`)),
+          methodCall(ref('ctx.identity.userArn.contains'), str(`${adminUserPoolID}${MANAGE_ROLE}`)),
         ]),
         raw('#return($util.toJson({})'),
       ),
@@ -269,7 +269,7 @@ export const generateAuthExpressionForUpdate = (
     totalAuthExpressions.push(apiKeyExpression(apiKeyRoles));
   }
   if (providers.hasIAM) {
-    totalAuthExpressions.push(iamExpression(iamRoles, providers.hasAdminUIEnabled));
+    totalAuthExpressions.push(iamExpression(iamRoles, providers.hasAdminUIEnabled, providers.adminUserPoolID));
   }
   if (providers.hasUserPools) {
     totalAuthExpressions.push(

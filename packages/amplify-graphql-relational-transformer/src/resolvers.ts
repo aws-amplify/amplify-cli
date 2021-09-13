@@ -206,7 +206,7 @@ export function makeQueryConnectionWithKeyResolver(config: HasManyDirectiveConfi
       ifElse(equals(ref('context.args.sortDirection'), str('ASC')), bool(true), bool(false)),
       bool(true),
     ),
-    filter: ifElse(ref('filter'), ref('util.toJson(util.transform.toDynamoDBFilterExpression($ctx.args.filter))'), nul()),
+    filter: ifElse(ref('filter'), ref('util.toJson($filter)'), nul()),
     limit: ref('limit'),
     nextToken: ifElse(ref('context.args.nextToken'), ref('util.toJson($context.args.nextToken)'), nul()),
   } as any;

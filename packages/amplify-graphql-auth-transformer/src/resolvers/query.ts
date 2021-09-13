@@ -138,20 +138,20 @@ const generateAuthFilter = (
 };
 
 export const generateAuthExpressionForQueries = (
-  provider: ConfiguredAuthProviders,
+  providers: ConfiguredAuthProviders,
   roles: Array<RoleDefinition>,
   fields: ReadonlyArray<FieldDefinitionNode>,
   querySource: QuerySource = 'dynamodb',
 ): string => {
   const { cogntoStaticRoles, cognitoDynamicRoles, oidcStaticRoles, oidcDynamicRoles, apiKeyRoles, iamRoles } = splitRoles(roles);
   const totalAuthExpressions: Array<Expression> = [set(ref(IS_AUTHORIZED_FLAG), bool(false))];
-  if (provider.hasApiKey) {
+  if (providers.hasApiKey) {
     totalAuthExpressions.push(apiKeyExpression(apiKeyRoles));
   }
-  if (provider.hasIAM) {
-    iamExpression(iamRoles, provider.hasAdminUIEnabled);
+  if (providers.hasIAM) {
+    iamExpression(iamRoles, providers.hasAdminUIEnabled, providers.adminUserPoolID);
   }
-  if (provider.hasUserPools) {
+  if (providers.hasUserPools) {
     totalAuthExpressions.push(
       iff(
         equals(ref('util.authType()'), str(COGNITO_AUTH_TYPE)),
@@ -162,7 +162,7 @@ export const generateAuthExpressionForQueries = (
       ),
     );
   }
-  if (provider.hasOIDC) {
+  if (providers.hasOIDC) {
     totalAuthExpressions.push(
       iff(
         equals(ref('util.authType()'), str(OIDC_AUTH_TYPE)),

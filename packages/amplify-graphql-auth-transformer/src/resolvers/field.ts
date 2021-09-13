@@ -90,7 +90,7 @@ export const generateAuthExpressionForField = (
     totalAuthExpressions.push(apiKeyExpression(apiKeyRoles));
   }
   if (provider.hasIAM) {
-    totalAuthExpressions.push(iamExpression(iamRoles, provider.hasAdminUIEnabled));
+    totalAuthExpressions.push(iamExpression(iamRoles, provider.hasAdminUIEnabled, provider.adminUserPoolID));
   }
   if (provider.hasUserPools) {
     totalAuthExpressions.push(
