@@ -183,8 +183,8 @@ export class TransformerResolver implements TransformerResolverProvider {
             dataSource = `$util.qr($ctx.stash.put("tableName", "${tableName}"))`;
           }
 
-          const syncConfig = SyncUtils.getSyncConfig(context, this.typeName);
-          if (syncConfig) {
+          if (context.isProjectUsingDataStore()) {
+            const syncConfig = SyncUtils.getSyncConfig(context, this.typeName)!;
             const funcConf = dataSourceProviderFn.node.children.find(
               (it: any) => it.cfnResourceType === 'AWS::AppSync::FunctionConfiguration',
             ) as CfnFunctionConfiguration;
