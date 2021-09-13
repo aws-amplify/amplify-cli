@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.24.0-geo.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-javascript@2.23.7...amplify-frontend-javascript@2.24.0-geo.0) (2021-09-13)
+
+
+### Bug Fixes
+
+* **amplify-category-geo:** make resource names env specific ([963f25a](https://github.com/aws-amplify/amplify-cli/commit/963f25ae9f2818c77c843d6f9ee5be85a74ca011))
+* **amplify-category-geo:** minor changes to place index walkthrough ([1ad35d0](https://github.com/aws-amplify/amplify-cli/commit/1ad35d0c171d0aaf546437a5f7986e1452a07a50))
+* **amplify-category-geo:** modify the pricing plan walkthrough ([1fd346d](https://github.com/aws-amplify/amplify-cli/commit/1fd346d51b8219d2a056b8da05270c4a484bef1c))
+* **amplify-category-geo:** pricing plan, data provider,  JS plugin name updates ([#8155](https://github.com/aws-amplify/amplify-cli/issues/8155)) ([3fd5c78](https://github.com/aws-amplify/amplify-cli/commit/3fd5c78278b8c2e4b0f2d724859c28ff3f7d2479))
+
+
+### Features
+
+* **amplify-category-auth:** add auth verification mechanisms to frontend config ([#8037](https://github.com/aws-amplify/amplify-cli/issues/8037)) ([88494b3](https://github.com/aws-amplify/amplify-cli/commit/88494b3f12a9989273aa3ae3e68c629f4c4cdff9))
+
+
+
+
+
 ## [2.23.7](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-javascript@2.23.6...amplify-frontend-javascript@2.23.7) (2021-09-09)
 
 **Note:** Version bump only for package amplify-frontend-javascript
