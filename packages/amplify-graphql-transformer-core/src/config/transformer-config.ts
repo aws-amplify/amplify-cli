@@ -18,11 +18,11 @@ export type AppSyncAuthConfigurationEntry =
   | AppSyncAuthConfigurationOIDCEntry;
 export type AppSyncAuthConfigurationAPIKeyEntry = {
   authenticationType: 'API_KEY';
-  apiKeyConfig: ApiKeyConfig;
+  apiKeyConfig?: ApiKeyConfig;
 };
 export type AppSyncAuthConfigurationUserPoolEntry = {
   authenticationType: 'AMAZON_COGNITO_USER_POOLS';
-  userPoolConfig: UserPoolConfig;
+  userPoolConfig?: UserPoolConfig;
 };
 export type AppSyncAuthConfigurationIAMEntry = {
   authenticationType: 'AWS_IAM';
@@ -30,7 +30,7 @@ export type AppSyncAuthConfigurationIAMEntry = {
 
 export type AppSyncAuthConfigurationOIDCEntry = {
   authenticationType: 'OPENID_CONNECT';
-  openIDConnectConfig: OpenIDConnectConfig;
+  openIDConnectConfig?: OpenIDConnectConfig;
 };
 
 export type ApiKeyConfig = {

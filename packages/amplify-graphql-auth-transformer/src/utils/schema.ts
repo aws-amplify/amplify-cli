@@ -1,5 +1,9 @@
 import { ModelDirectiveConfiguration, SubscriptionLevel } from '@aws-amplify/graphql-model-transformer';
-import { QueryFieldType, MutationFieldType, TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import {
+  QueryFieldType,
+  MutationFieldType,
+  TransformerTransformSchemaStepContextProvider,
+} from '@aws-amplify/graphql-transformer-interfaces';
 import { ObjectTypeDefinitionNode, FieldDefinitionNode, DirectiveNode, NamedTypeNode } from 'graphql';
 import {
   blankObjectExtension,
@@ -21,14 +25,18 @@ export const fieldIsList = (fields: ReadonlyArray<FieldDefinitionNode>, fieldNam
   return fields.some(field => field.name.value === fieldName && isListType(field.type));
 };
 
-export const extendTypeWithDirectives = (ctx: TransformerContextProvider, typeName: string, directives: Array<DirectiveNode>): void => {
+export const extendTypeWithDirectives = (
+  ctx: TransformerTransformSchemaStepContextProvider,
+  typeName: string,
+  directives: Array<DirectiveNode>,
+): void => {
   let objectTypeExtension = blankObjectExtension(typeName);
   objectTypeExtension = extensionWithDirectives(objectTypeExtension, directives);
   ctx.output.addObjectExtension(objectTypeExtension);
 };
 
 export const addDirectivesToField = (
-  ctx: TransformerContextProvider,
+  ctx: TransformerTransformSchemaStepContextProvider,
   typeName: string,
   fieldName: string,
   directives: Array<DirectiveNode>,
@@ -50,7 +58,7 @@ export const addDirectivesToField = (
 };
 
 export const addSubscriptionArguments = (
-  ctx: TransformerContextProvider,
+  ctx: TransformerTransformSchemaStepContextProvider,
   operationName: string,
   subscriptionRoles: Array<RoleDefinition>,
 ) => {
@@ -71,7 +79,7 @@ export const addSubscriptionArguments = (
 };
 
 export const addDirectivesToOperation = (
-  ctx: TransformerContextProvider,
+  ctx: TransformerTransformSchemaStepContextProvider,
   typeName: string,
   operationName: string,
   directives: Array<DirectiveNode>,

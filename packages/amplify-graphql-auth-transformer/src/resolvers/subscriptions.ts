@@ -11,12 +11,10 @@ import {
   str,
   list,
   nul,
-  toJson,
-  obj,
   printBlock,
 } from 'graphql-mapping-template';
 import { COGNITO_AUTH_TYPE, ConfiguredAuthProviders, IS_AUTHORIZED_FLAG, OIDC_AUTH_TYPE, RoleDefinition, splitRoles } from '../utils';
-import { staticGroupRoleExpression, getInputFields, getOwnerClaim, apiKeyExpression, iamExpression } from './helpers';
+import { generateStaticRoleExpression, getOwnerClaim, apiKeyExpression, iamExpression, emptyPayload } from './helpers';
 
 const dynamicRoleExpression = (roles: Array<RoleDefinition>): Array<Expression> => {
   const ownerExpression = new Array<Expression>();
@@ -29,7 +27,7 @@ const dynamicRoleExpression = (roles: Array<RoleDefinition>): Array<Expression> 
           compoundExpression([
             set(ref(`ownerEntity${idx}`), methodCall(ref('util.defaultIfNull'), ref(`ctx.args.${role.entity!}`), nul())),
             set(ref(`ownerClaim${idx}`), getOwnerClaim(role.claim!)),
-            iff(equals(ref(`ownerClaim${idx}`), ref(`ownerClaim${idx}`)), set(ref(IS_AUTHORIZED_FLAG), bool(true))),
+            iff(equals(ref(`ownerEntity${idx}`), ref(`ownerClaim${idx}`)), set(ref(IS_AUTHORIZED_FLAG), bool(true))),
           ]),
         ),
       );
@@ -40,12 +38,8 @@ const dynamicRoleExpression = (roles: Array<RoleDefinition>): Array<Expression> 
 };
 
 export const generateAuthExpressionForSubscriptions = (providers: ConfiguredAuthProviders, roles: Array<RoleDefinition>): string => {
-  const { cognitoStaticGroupRoles, cognitoDynamicRoles, oidcStaticGroupRoles, oidcDynamicRoles, iamRoles, apiKeyRoles } = splitRoles(roles);
-  const totalAuthExpressions: Array<Expression> = [
-    getInputFields(),
-    set(ref(IS_AUTHORIZED_FLAG), bool(false)),
-    set(ref('allowedFields'), list([])),
-  ];
+  const { cogntoStaticRoles, cognitoDynamicRoles, oidcStaticRoles, oidcDynamicRoles, iamRoles, apiKeyRoles } = splitRoles(roles);
+  const totalAuthExpressions: Array<Expression> = [set(ref(IS_AUTHORIZED_FLAG), bool(false)), set(ref('allowedFields'), list([]))];
   if (providers.hasApiKey) {
     totalAuthExpressions.push(apiKeyExpression(apiKeyRoles));
   }
@@ -56,16 +50,16 @@ export const generateAuthExpressionForSubscriptions = (providers: ConfiguredAuth
     totalAuthExpressions.push(
       iff(
         equals(ref('util.authType()'), str(COGNITO_AUTH_TYPE)),
-        compoundExpression([...staticGroupRoleExpression(cognitoStaticGroupRoles), ...dynamicRoleExpression(cognitoDynamicRoles)]),
+        compoundExpression([...generateStaticRoleExpression(cogntoStaticRoles), ...dynamicRoleExpression(cognitoDynamicRoles)]),
       ),
     );
   if (providers.hasOIDC)
     totalAuthExpressions.push(
       iff(
         equals(ref('util.authType()'), str(OIDC_AUTH_TYPE)),
-        compoundExpression([...staticGroupRoleExpression(oidcStaticGroupRoles), ...dynamicRoleExpression(oidcDynamicRoles)]),
+        compoundExpression([...generateStaticRoleExpression(oidcStaticRoles), ...dynamicRoleExpression(oidcDynamicRoles)]),
       ),
     );
   totalAuthExpressions.push(iff(not(ref(IS_AUTHORIZED_FLAG)), ref('util.unauthorized()')));
-  return printBlock('Create Authorization Steps')(compoundExpression([...totalAuthExpressions, toJson(obj({}))]));
+  return printBlock('Authorization Steps')(compoundExpression([...totalAuthExpressions, emptyPayload]));
 };

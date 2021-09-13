@@ -2,7 +2,7 @@ import { DirectiveWrapper, MappingTemplate, TransformerPluginBase } from '@aws-a
 import { TransformerContextProvider, TransformerSchemaVisitStepContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
-import { obj, str, ref, printBlock, compoundExpression, qref, raw, iff } from 'graphql-mapping-template';
+import { obj, str, toJson, ref, printBlock, compoundExpression, qref, raw, iff } from 'graphql-mapping-template';
 import { FunctionResourceIDs, ResolverResourceIDs, ResourceConstants } from 'graphql-transformer-common';
 import { DirectiveNode, ObjectTypeDefinitionNode, InterfaceTypeDefinitionNode, FieldDefinitionNode } from 'graphql';
 
@@ -88,19 +88,21 @@ export class FunctionTransformer extends TransformerPluginBase {
             functionId,
             MappingTemplate.s3MappingTemplateFromString(
               printBlock(`Invoke AWS Lambda data source: ${dataSourceId}`)(
-                obj({
-                  version: str('2018-05-29'),
-                  operation: str('Invoke'),
-                  payload: obj({
-                    typeName: ref('ctx.stash.get("typeName")'),
-                    fieldName: ref('ctx.stash.get("fieldName")'),
-                    arguments: ref('util.toJson($ctx.arguments)'),
-                    identity: ref('util.toJson($ctx.identity)'),
-                    source: ref('util.toJson($ctx.source)'),
-                    request: ref('util.toJson($ctx.request)'),
-                    prev: ref('util.toJson($ctx.prev)'),
+                toJson(
+                  obj({
+                    version: str('2018-05-29'),
+                    operation: str('Invoke'),
+                    payload: obj({
+                      typeName: ref('ctx.stash.get("typeName")'),
+                      fieldName: ref('ctx.stash.get("fieldName")'),
+                      arguments: ref('util.toJson($ctx.arguments)'),
+                      identity: ref('util.toJson($ctx.identity)'),
+                      source: ref('util.toJson($ctx.source)'),
+                      request: ref('util.toJson($ctx.request)'),
+                      prev: ref('util.toJson($ctx.prev)'),
+                    }),
                   }),
-                }),
+                ),
               ),
               `${functionId}.req.vtl`,
             ),
@@ -159,7 +161,7 @@ export class FunctionTransformer extends TransformerPluginBase {
 function lambdaArnResource(env: cdk.CfnParameter, name: string, region?: string): string {
   const substitutions: { [key: string]: string } = {};
   if (name.includes('${env}')) {
-    substitutions.env = (env as unknown) as string;
+    substitutions.env = env as unknown as string;
   }
   return cdk.Fn.conditionIf(
     ResourceConstants.CONDITIONS.HasEnvironmentParameter,

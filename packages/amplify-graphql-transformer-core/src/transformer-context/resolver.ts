@@ -96,6 +96,11 @@ export class ResolverManager implements TransformerResolversManagerProvider {
     }
   };
 
+  hasResolver = (typeName: string, fieldName: string): boolean => {
+    const key = `${typeName}.${fieldName}`;
+    return this.resolvers.has(key);
+  };
+
   removeResolver = (typeName: string, fieldName: string): TransformerResolverProvider => {
     const key = `${typeName}.${fieldName}`;
     if (this.resolvers.has(key)) {

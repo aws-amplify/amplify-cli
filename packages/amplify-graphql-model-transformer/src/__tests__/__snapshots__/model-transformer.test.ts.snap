@@ -680,14 +680,14 @@ $util.qr($mergedValues.put(\\"__typename\\", \\"Author\\"))
 #end
 $util.toJson($PutObject)
 ## [End] Create Request template. **",
-  "Mutation.createAuthor.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Mutation.createAuthor.res.vtl": "## [Start] ResponseTemplate. **
 $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
+## [End] ResponseTemplate. **",
   "Mutation.createComment.init.1.req.vtl": "## [Start] Initialization default values. **
 $util.qr($ctx.stash.put(\\"defaultValues\\", $util.defaultIfNull($ctx.stash.defaultValues, {})))
 #set( $createdAt = $util.time.nowISO8601() )
@@ -783,14 +783,14 @@ $util.qr($mergedValues.put(\\"__typename\\", \\"Comment\\"))
 #end
 $util.toJson($PutObject)
 ## [End] Create Request template. **",
-  "Mutation.createComment.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Mutation.createComment.res.vtl": "## [Start] ResponseTemplate. **
 $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
+## [End] ResponseTemplate. **",
   "Mutation.createEmail.init.1.req.vtl": "## [Start] Initialization default values. **
 $util.qr($ctx.stash.put(\\"defaultValues\\", $util.defaultIfNull($ctx.stash.defaultValues, {})))
 #set( $createdAt = $util.time.nowISO8601() )
@@ -886,14 +886,14 @@ $util.qr($mergedValues.put(\\"__typename\\", \\"Email\\"))
 #end
 $util.toJson($PutObject)
 ## [End] Create Request template. **",
-  "Mutation.createEmail.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Mutation.createEmail.res.vtl": "## [Start] ResponseTemplate. **
 $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
+## [End] ResponseTemplate. **",
   "Mutation.createPost.init.1.req.vtl": "## [Start] Initialization default values. **
 $util.qr($ctx.stash.put(\\"defaultValues\\", $util.defaultIfNull($ctx.stash.defaultValues, {})))
 #set( $createdAt = $util.time.nowISO8601() )
@@ -989,14 +989,14 @@ $util.qr($mergedValues.put(\\"__typename\\", \\"Post\\"))
 #end
 $util.toJson($PutObject)
 ## [End] Create Request template. **",
-  "Mutation.createPost.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Mutation.createPost.res.vtl": "## [Start] ResponseTemplate. **
 $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type, $ctx.result)
 #else
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
+## [End] ResponseTemplate. **",
   "Mutation.createRequire.init.1.req.vtl": "## [Start] Initialization default values. **
 $util.qr($ctx.stash.put(\\"defaultValues\\", $util.defaultIfNull($ctx.stash.defaultValues, {})))
 #set( $createdAt = $util.time.nowISO8601() )
@@ -1092,14 +1092,14 @@ $util.qr($mergedValues.put(\\"__typename\\", \\"Require\\"))
 #end
 $util.toJson($PutObject)
 ## [End] Create Request template. **",
-  "Mutation.createRequire.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Mutation.createRequire.res.vtl": "## [Start] ResponseTemplate. **
 $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
+## [End] ResponseTemplate. **",
   "Mutation.createTest.init.1.req.vtl": "## [Start] Initialization default values. **
 $util.qr($ctx.stash.put(\\"defaultValues\\", $util.defaultIfNull($ctx.stash.defaultValues, {})))
 #set( $createdAt = $util.time.nowISO8601() )
@@ -1195,14 +1195,14 @@ $util.qr($mergedValues.put(\\"__typename\\", \\"Test\\"))
 #end
 $util.toJson($PutObject)
 ## [End] Create Request template. **",
-  "Mutation.createTest.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Mutation.createTest.res.vtl": "## [Start] ResponseTemplate. **
 $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
+## [End] ResponseTemplate. **",
   "Mutation.createUser.init.1.req.vtl": "## [Start] Initialization default values. **
 $util.qr($ctx.stash.put(\\"defaultValues\\", $util.defaultIfNull($ctx.stash.defaultValues, {})))
 #set( $createdAt = $util.time.nowISO8601() )
@@ -1298,14 +1298,14 @@ $util.qr($mergedValues.put(\\"__typename\\", \\"User\\"))
 #end
 $util.toJson($PutObject)
 ## [End] Create Request template. **",
-  "Mutation.createUser.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Mutation.createUser.res.vtl": "## [Start] ResponseTemplate. **
 $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
+## [End] ResponseTemplate. **",
   "Mutation.customCreatePost.init.1.req.vtl": "## [Start] Initialization default values. **
 $util.qr($ctx.stash.put(\\"defaultValues\\", $util.defaultIfNull($ctx.stash.defaultValues, {})))
 #set( $createdAt = $util.time.nowISO8601() )
@@ -1401,14 +1401,14 @@ $util.qr($mergedValues.put(\\"__typename\\", \\"Post\\"))
 #end
 $util.toJson($PutObject)
 ## [End] Create Request template. **",
-  "Mutation.customCreatePost.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Mutation.customCreatePost.res.vtl": "## [Start] ResponseTemplate. **
 $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
+## [End] ResponseTemplate. **",
   "Mutation.customDeletePost.req.vtl": "## [Start] Delete Request template. **
 #set( $DeleteRequest = {
   \\"version\\": \\"2018-05-29\\",
@@ -1466,14 +1466,14 @@ $util.qr($DeleteRequest.put(\\"key\\", $Key))
 #end
 $util.toJson($DeleteRequest)
 ## [End] Delete Request template. **",
-  "Mutation.customDeletePost.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Mutation.customDeletePost.res.vtl": "## [Start] ResponseTemplate. **
 $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
+## [End] ResponseTemplate. **",
   "Mutation.customUpdatePost.init.1.req.vtl": "## [Start] Initialization default values. **
 $util.qr($ctx.stash.put(\\"defaultValues\\", $util.defaultIfNull($ctx.stash.defaultValues, {})))
 #set( $updatedAt = $util.time.nowISO8601() )
@@ -1612,14 +1612,14 @@ $util.qr($update.put(\\"expression\\", \\"$expression\\"))
 #end
 $util.toJson($UpdateItem)
 ## [End] Mutation Update resolver. **",
-  "Mutation.customUpdatePost.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Mutation.customUpdatePost.res.vtl": "## [Start] ResponseTemplate. **
 $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
+## [End] ResponseTemplate. **",
   "Mutation.deleteAuthor.req.vtl": "## [Start] Delete Request template. **
 #set( $DeleteRequest = {
   \\"version\\": \\"2018-05-29\\",
@@ -1677,14 +1677,14 @@ $util.qr($DeleteRequest.put(\\"key\\", $Key))
 #end
 $util.toJson($DeleteRequest)
 ## [End] Delete Request template. **",
-  "Mutation.deleteAuthor.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Mutation.deleteAuthor.res.vtl": "## [Start] ResponseTemplate. **
 $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
+## [End] ResponseTemplate. **",
   "Mutation.deleteComment.req.vtl": "## [Start] Delete Request template. **
 #set( $DeleteRequest = {
   \\"version\\": \\"2018-05-29\\",
@@ -1742,14 +1742,14 @@ $util.qr($DeleteRequest.put(\\"key\\", $Key))
 #end
 $util.toJson($DeleteRequest)
 ## [End] Delete Request template. **",
-  "Mutation.deleteComment.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Mutation.deleteComment.res.vtl": "## [Start] ResponseTemplate. **
 $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
+## [End] ResponseTemplate. **",
   "Mutation.deleteEmail.req.vtl": "## [Start] Delete Request template. **
 #set( $DeleteRequest = {
   \\"version\\": \\"2018-05-29\\",
@@ -1807,14 +1807,14 @@ $util.qr($DeleteRequest.put(\\"key\\", $Key))
 #end
 $util.toJson($DeleteRequest)
 ## [End] Delete Request template. **",
-  "Mutation.deleteEmail.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Mutation.deleteEmail.res.vtl": "## [Start] ResponseTemplate. **
 $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
+## [End] ResponseTemplate. **",
   "Mutation.deletePost.req.vtl": "## [Start] Delete Request template. **
 #set( $DeleteRequest = {
   \\"version\\": \\"2018-05-29\\",
@@ -1873,14 +1873,14 @@ $util.qr($DeleteRequest.put(\\"key\\", $Key))
 $util.qr($DeleteRequest.put(\\"_version\\", $util.defaultIfNull($ctx.args.input[\\"_version\\"], \\"0\\")))
 $util.toJson($DeleteRequest)
 ## [End] Delete Request template. **",
-  "Mutation.deletePost.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Mutation.deletePost.res.vtl": "## [Start] ResponseTemplate. **
 $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type, $ctx.result)
 #else
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
+## [End] ResponseTemplate. **",
   "Mutation.deleteRequire.req.vtl": "## [Start] Delete Request template. **
 #set( $DeleteRequest = {
   \\"version\\": \\"2018-05-29\\",
@@ -1938,14 +1938,14 @@ $util.qr($DeleteRequest.put(\\"key\\", $Key))
 #end
 $util.toJson($DeleteRequest)
 ## [End] Delete Request template. **",
-  "Mutation.deleteRequire.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Mutation.deleteRequire.res.vtl": "## [Start] ResponseTemplate. **
 $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
+## [End] ResponseTemplate. **",
   "Mutation.deleteTest.req.vtl": "## [Start] Delete Request template. **
 #set( $DeleteRequest = {
   \\"version\\": \\"2018-05-29\\",
@@ -2003,14 +2003,14 @@ $util.qr($DeleteRequest.put(\\"key\\", $Key))
 #end
 $util.toJson($DeleteRequest)
 ## [End] Delete Request template. **",
-  "Mutation.deleteTest.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Mutation.deleteTest.res.vtl": "## [Start] ResponseTemplate. **
 $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
+## [End] ResponseTemplate. **",
   "Mutation.deleteUser.req.vtl": "## [Start] Delete Request template. **
 #set( $DeleteRequest = {
   \\"version\\": \\"2018-05-29\\",
@@ -2068,14 +2068,14 @@ $util.qr($DeleteRequest.put(\\"key\\", $Key))
 #end
 $util.toJson($DeleteRequest)
 ## [End] Delete Request template. **",
-  "Mutation.deleteUser.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Mutation.deleteUser.res.vtl": "## [Start] ResponseTemplate. **
 $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
+## [End] ResponseTemplate. **",
   "Mutation.updateAuthor.init.1.req.vtl": "## [Start] Initialization default values. **
 $util.qr($ctx.stash.put(\\"defaultValues\\", $util.defaultIfNull($ctx.stash.defaultValues, {})))
 #set( $updatedAt = $util.time.nowISO8601() )
@@ -2214,14 +2214,14 @@ $util.qr($update.put(\\"expression\\", \\"$expression\\"))
 #end
 $util.toJson($UpdateItem)
 ## [End] Mutation Update resolver. **",
-  "Mutation.updateAuthor.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Mutation.updateAuthor.res.vtl": "## [Start] ResponseTemplate. **
 $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
+## [End] ResponseTemplate. **",
   "Mutation.updateComment.init.1.req.vtl": "## [Start] Initialization default values. **
 $util.qr($ctx.stash.put(\\"defaultValues\\", $util.defaultIfNull($ctx.stash.defaultValues, {})))
 #set( $updatedAt = $util.time.nowISO8601() )
@@ -2360,14 +2360,14 @@ $util.qr($update.put(\\"expression\\", \\"$expression\\"))
 #end
 $util.toJson($UpdateItem)
 ## [End] Mutation Update resolver. **",
-  "Mutation.updateComment.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Mutation.updateComment.res.vtl": "## [Start] ResponseTemplate. **
 $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
+## [End] ResponseTemplate. **",
   "Mutation.updateEmail.init.1.req.vtl": "## [Start] Initialization default values. **
 $util.qr($ctx.stash.put(\\"defaultValues\\", $util.defaultIfNull($ctx.stash.defaultValues, {})))
 #set( $updatedAt = $util.time.nowISO8601() )
@@ -2506,14 +2506,14 @@ $util.qr($update.put(\\"expression\\", \\"$expression\\"))
 #end
 $util.toJson($UpdateItem)
 ## [End] Mutation Update resolver. **",
-  "Mutation.updateEmail.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Mutation.updateEmail.res.vtl": "## [Start] ResponseTemplate. **
 $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
+## [End] ResponseTemplate. **",
   "Mutation.updatePost.init.1.req.vtl": "## [Start] Initialization default values. **
 $util.qr($ctx.stash.put(\\"defaultValues\\", $util.defaultIfNull($ctx.stash.defaultValues, {})))
 #set( $updatedAt = $util.time.nowISO8601() )
@@ -2653,14 +2653,14 @@ $util.qr($update.put(\\"expression\\", \\"$expression\\"))
 #end
 $util.toJson($UpdateItem)
 ## [End] Mutation Update resolver. **",
-  "Mutation.updatePost.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Mutation.updatePost.res.vtl": "## [Start] ResponseTemplate. **
 $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type, $ctx.result)
 #else
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
+## [End] ResponseTemplate. **",
   "Mutation.updateRequire.init.1.req.vtl": "## [Start] Initialization default values. **
 $util.qr($ctx.stash.put(\\"defaultValues\\", $util.defaultIfNull($ctx.stash.defaultValues, {})))
 #set( $updatedAt = $util.time.nowISO8601() )
@@ -2799,14 +2799,14 @@ $util.qr($update.put(\\"expression\\", \\"$expression\\"))
 #end
 $util.toJson($UpdateItem)
 ## [End] Mutation Update resolver. **",
-  "Mutation.updateRequire.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Mutation.updateRequire.res.vtl": "## [Start] ResponseTemplate. **
 $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
+## [End] ResponseTemplate. **",
   "Mutation.updateTest.init.1.req.vtl": "## [Start] Initialization default values. **
 $util.qr($ctx.stash.put(\\"defaultValues\\", $util.defaultIfNull($ctx.stash.defaultValues, {})))
 #set( $updatedAt = $util.time.nowISO8601() )
@@ -2945,14 +2945,14 @@ $util.qr($update.put(\\"expression\\", \\"$expression\\"))
 #end
 $util.toJson($UpdateItem)
 ## [End] Mutation Update resolver. **",
-  "Mutation.updateTest.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Mutation.updateTest.res.vtl": "## [Start] ResponseTemplate. **
 $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
+## [End] ResponseTemplate. **",
   "Mutation.updateUser.init.1.req.vtl": "## [Start] Initialization default values. **
 $util.qr($ctx.stash.put(\\"defaultValues\\", $util.defaultIfNull($ctx.stash.defaultValues, {})))
 #set( $updatedAt = $util.time.nowISO8601() )
@@ -3091,14 +3091,14 @@ $util.qr($update.put(\\"expression\\", \\"$expression\\"))
 #end
 $util.toJson($UpdateItem)
 ## [End] Mutation Update resolver. **",
-  "Mutation.updateUser.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Mutation.updateUser.res.vtl": "## [Start] ResponseTemplate. **
 $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
+## [End] ResponseTemplate. **",
   "Query.customGetPost.req.vtl": "## [Start] Get Request template. **
 #set( $GetRequest = {
   \\"version\\": \\"2018-05-29\\",
@@ -3120,17 +3120,20 @@ $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
   #set( $query = {
   \\"expression\\": \\"id = :id\\",
   \\"expressionValues\\": {
-      \\":id\\":     $util.dynamodb.toDynamoDBJson($ctx.args.id)
+      \\":id\\":     $util.parseJson($util.dynamodb.toDynamoDBJson($ctx.args.id))
   }
 } )
 #end
 $util.qr($GetRequest.put(\\"query\\", $query))
-#if( !$util.isNullOrEmpty($ctx.stash.get(\\"authFilter\\")) )
-  $util.qr($GetRequest.put(\\"filter\\", $ctx.stash.get(\\"authFilter\\")))
+#if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
+  $util.qr($GetRequest.put(\\"filter\\", $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.authFilter))))
 #end
 $util.toJson($GetRequest)
 ## [End] Get Request template. **",
   "Query.customGetPost.res.vtl": "## [Start] Get Response template. **
+#if( $ctx.error )
+  $util.error($ctx.error.message, $ctx.error.type)
+#end
 #if( !$ctx.result.items.isEmpty() && $ctx.result.scannedCount == 1 )
   $util.toJson($ctx.result.items[0])
 #else
@@ -3149,8 +3152,8 @@ $util.unauthorized()
 #if( $context.args.nextToken )
   #set( $ListRequest.nextToken = $context.args.nextToken )
 #end
-#if( !$util.isNullOrEmpty($ctx.stash.get(\\"authFilter\\")) )
-  #set( $filter = $ctx.stash.get(\\"authFilter\\") )
+#if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
+  #set( $filter = $ctx.stash.authFilter )
   #if( !$util.isNullOrEmpty($ctx.args.filter) )
     #set( $filter = [{
   \\"and\\":   [$filter, $ctx.args.filter]
@@ -3186,13 +3189,13 @@ $util.unauthorized()
 #end
 $util.toJson($ListRequest)
 ## [End] List Request. **",
-  "Query.customListPost.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Query.customListPost.res.vtl": "## [Start] ResponseTemplate. **
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
+## [End] ResponseTemplate. **",
   "Query.getAuthor.req.vtl": "## [Start] Get Request template. **
 #set( $GetRequest = {
   \\"version\\": \\"2018-05-29\\",
@@ -3214,17 +3217,20 @@ $util.toJson($ListRequest)
   #set( $query = {
   \\"expression\\": \\"id = :id\\",
   \\"expressionValues\\": {
-      \\":id\\":     $util.dynamodb.toDynamoDBJson($ctx.args.id)
+      \\":id\\":     $util.parseJson($util.dynamodb.toDynamoDBJson($ctx.args.id))
   }
 } )
 #end
 $util.qr($GetRequest.put(\\"query\\", $query))
-#if( !$util.isNullOrEmpty($ctx.stash.get(\\"authFilter\\")) )
-  $util.qr($GetRequest.put(\\"filter\\", $ctx.stash.get(\\"authFilter\\")))
+#if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
+  $util.qr($GetRequest.put(\\"filter\\", $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.authFilter))))
 #end
 $util.toJson($GetRequest)
 ## [End] Get Request template. **",
   "Query.getAuthor.res.vtl": "## [Start] Get Response template. **
+#if( $ctx.error )
+  $util.error($ctx.error.message, $ctx.error.type)
+#end
 #if( !$ctx.result.items.isEmpty() && $ctx.result.scannedCount == 1 )
   $util.toJson($ctx.result.items[0])
 #else
@@ -3255,17 +3261,20 @@ $util.unauthorized()
   #set( $query = {
   \\"expression\\": \\"id = :id\\",
   \\"expressionValues\\": {
-      \\":id\\":     $util.dynamodb.toDynamoDBJson($ctx.args.id)
+      \\":id\\":     $util.parseJson($util.dynamodb.toDynamoDBJson($ctx.args.id))
   }
 } )
 #end
 $util.qr($GetRequest.put(\\"query\\", $query))
-#if( !$util.isNullOrEmpty($ctx.stash.get(\\"authFilter\\")) )
-  $util.qr($GetRequest.put(\\"filter\\", $ctx.stash.get(\\"authFilter\\")))
+#if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
+  $util.qr($GetRequest.put(\\"filter\\", $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.authFilter))))
 #end
 $util.toJson($GetRequest)
 ## [End] Get Request template. **",
   "Query.getComment.res.vtl": "## [Start] Get Response template. **
+#if( $ctx.error )
+  $util.error($ctx.error.message, $ctx.error.type)
+#end
 #if( !$ctx.result.items.isEmpty() && $ctx.result.scannedCount == 1 )
   $util.toJson($ctx.result.items[0])
 #else
@@ -3296,17 +3305,20 @@ $util.unauthorized()
   #set( $query = {
   \\"expression\\": \\"id = :id\\",
   \\"expressionValues\\": {
-      \\":id\\":     $util.dynamodb.toDynamoDBJson($ctx.args.id)
+      \\":id\\":     $util.parseJson($util.dynamodb.toDynamoDBJson($ctx.args.id))
   }
 } )
 #end
 $util.qr($GetRequest.put(\\"query\\", $query))
-#if( !$util.isNullOrEmpty($ctx.stash.get(\\"authFilter\\")) )
-  $util.qr($GetRequest.put(\\"filter\\", $ctx.stash.get(\\"authFilter\\")))
+#if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
+  $util.qr($GetRequest.put(\\"filter\\", $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.authFilter))))
 #end
 $util.toJson($GetRequest)
 ## [End] Get Request template. **",
   "Query.getEmail.res.vtl": "## [Start] Get Response template. **
+#if( $ctx.error )
+  $util.error($ctx.error.message, $ctx.error.type)
+#end
 #if( !$ctx.result.items.isEmpty() && $ctx.result.scannedCount == 1 )
   $util.toJson($ctx.result.items[0])
 #else
@@ -3337,17 +3349,20 @@ $util.unauthorized()
   #set( $query = {
   \\"expression\\": \\"id = :id\\",
   \\"expressionValues\\": {
-      \\":id\\":     $util.dynamodb.toDynamoDBJson($ctx.args.id)
+      \\":id\\":     $util.parseJson($util.dynamodb.toDynamoDBJson($ctx.args.id))
   }
 } )
 #end
 $util.qr($GetRequest.put(\\"query\\", $query))
-#if( !$util.isNullOrEmpty($ctx.stash.get(\\"authFilter\\")) )
-  $util.qr($GetRequest.put(\\"filter\\", $ctx.stash.get(\\"authFilter\\")))
+#if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
+  $util.qr($GetRequest.put(\\"filter\\", $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.authFilter))))
 #end
 $util.toJson($GetRequest)
 ## [End] Get Request template. **",
   "Query.getEntity.res.vtl": "## [Start] Get Response template. **
+#if( $ctx.error )
+  $util.error($ctx.error.message, $ctx.error.type)
+#end
 #if( !$ctx.result.items.isEmpty() && $ctx.result.scannedCount == 1 )
   $util.toJson($ctx.result.items[0])
 #else
@@ -3378,17 +3393,20 @@ $util.unauthorized()
   #set( $query = {
   \\"expression\\": \\"id = :id\\",
   \\"expressionValues\\": {
-      \\":id\\":     $util.dynamodb.toDynamoDBJson($ctx.args.id)
+      \\":id\\":     $util.parseJson($util.dynamodb.toDynamoDBJson($ctx.args.id))
   }
 } )
 #end
 $util.qr($GetRequest.put(\\"query\\", $query))
-#if( !$util.isNullOrEmpty($ctx.stash.get(\\"authFilter\\")) )
-  $util.qr($GetRequest.put(\\"filter\\", $ctx.stash.get(\\"authFilter\\")))
+#if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
+  $util.qr($GetRequest.put(\\"filter\\", $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.authFilter))))
 #end
 $util.toJson($GetRequest)
 ## [End] Get Request template. **",
   "Query.getPost.res.vtl": "## [Start] Get Response template. **
+#if( $ctx.error )
+  $util.error($ctx.error.message, $ctx.error.type, $ctx.result)
+#end
 #if( !$ctx.result.items.isEmpty() && $ctx.result.scannedCount == 1 )
   $util.toJson($ctx.result.items[0])
 #else
@@ -3419,17 +3437,20 @@ $util.unauthorized()
   #set( $query = {
   \\"expression\\": \\"id = :id\\",
   \\"expressionValues\\": {
-      \\":id\\":     $util.dynamodb.toDynamoDBJson($ctx.args.id)
+      \\":id\\":     $util.parseJson($util.dynamodb.toDynamoDBJson($ctx.args.id))
   }
 } )
 #end
 $util.qr($GetRequest.put(\\"query\\", $query))
-#if( !$util.isNullOrEmpty($ctx.stash.get(\\"authFilter\\")) )
-  $util.qr($GetRequest.put(\\"filter\\", $ctx.stash.get(\\"authFilter\\")))
+#if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
+  $util.qr($GetRequest.put(\\"filter\\", $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.authFilter))))
 #end
 $util.toJson($GetRequest)
 ## [End] Get Request template. **",
   "Query.getRequire.res.vtl": "## [Start] Get Response template. **
+#if( $ctx.error )
+  $util.error($ctx.error.message, $ctx.error.type)
+#end
 #if( !$ctx.result.items.isEmpty() && $ctx.result.scannedCount == 1 )
   $util.toJson($ctx.result.items[0])
 #else
@@ -3460,17 +3481,20 @@ $util.unauthorized()
   #set( $query = {
   \\"expression\\": \\"id = :id\\",
   \\"expressionValues\\": {
-      \\":id\\":     $util.dynamodb.toDynamoDBJson($ctx.args.id)
+      \\":id\\":     $util.parseJson($util.dynamodb.toDynamoDBJson($ctx.args.id))
   }
 } )
 #end
 $util.qr($GetRequest.put(\\"query\\", $query))
-#if( !$util.isNullOrEmpty($ctx.stash.get(\\"authFilter\\")) )
-  $util.qr($GetRequest.put(\\"filter\\", $ctx.stash.get(\\"authFilter\\")))
+#if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
+  $util.qr($GetRequest.put(\\"filter\\", $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.authFilter))))
 #end
 $util.toJson($GetRequest)
 ## [End] Get Request template. **",
   "Query.getTest.res.vtl": "## [Start] Get Response template. **
+#if( $ctx.error )
+  $util.error($ctx.error.message, $ctx.error.type)
+#end
 #if( !$ctx.result.items.isEmpty() && $ctx.result.scannedCount == 1 )
   $util.toJson($ctx.result.items[0])
 #else
@@ -3501,17 +3525,20 @@ $util.unauthorized()
   #set( $query = {
   \\"expression\\": \\"id = :id\\",
   \\"expressionValues\\": {
-      \\":id\\":     $util.dynamodb.toDynamoDBJson($ctx.args.id)
+      \\":id\\":     $util.parseJson($util.dynamodb.toDynamoDBJson($ctx.args.id))
   }
 } )
 #end
 $util.qr($GetRequest.put(\\"query\\", $query))
-#if( !$util.isNullOrEmpty($ctx.stash.get(\\"authFilter\\")) )
-  $util.qr($GetRequest.put(\\"filter\\", $ctx.stash.get(\\"authFilter\\")))
+#if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
+  $util.qr($GetRequest.put(\\"filter\\", $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.authFilter))))
 #end
 $util.toJson($GetRequest)
 ## [End] Get Request template. **",
   "Query.getUser.res.vtl": "## [Start] Get Response template. **
+#if( $ctx.error )
+  $util.error($ctx.error.message, $ctx.error.type)
+#end
 #if( !$ctx.result.items.isEmpty() && $ctx.result.scannedCount == 1 )
   $util.toJson($ctx.result.items[0])
 #else
@@ -3530,8 +3557,8 @@ $util.unauthorized()
 #if( $context.args.nextToken )
   #set( $ListRequest.nextToken = $context.args.nextToken )
 #end
-#if( !$util.isNullOrEmpty($ctx.stash.get(\\"authFilter\\")) )
-  #set( $filter = $ctx.stash.get(\\"authFilter\\") )
+#if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
+  #set( $filter = $ctx.stash.authFilter )
   #if( !$util.isNullOrEmpty($ctx.args.filter) )
     #set( $filter = [{
   \\"and\\":   [$filter, $ctx.args.filter]
@@ -3567,13 +3594,13 @@ $util.unauthorized()
 #end
 $util.toJson($ListRequest)
 ## [End] List Request. **",
-  "Query.listAuthors.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Query.listAuthors.res.vtl": "## [Start] ResponseTemplate. **
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
+## [End] ResponseTemplate. **",
   "Query.listComments.req.vtl": "## [Start] List Request. **
 #set( $limit = $util.defaultIfNull($context.args.limit, 100) )
 #set( $ListRequest = {
@@ -3583,8 +3610,8 @@ $util.toJson($ListRequest)
 #if( $context.args.nextToken )
   #set( $ListRequest.nextToken = $context.args.nextToken )
 #end
-#if( !$util.isNullOrEmpty($ctx.stash.get(\\"authFilter\\")) )
-  #set( $filter = $ctx.stash.get(\\"authFilter\\") )
+#if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
+  #set( $filter = $ctx.stash.authFilter )
   #if( !$util.isNullOrEmpty($ctx.args.filter) )
     #set( $filter = [{
   \\"and\\":   [$filter, $ctx.args.filter]
@@ -3620,13 +3647,13 @@ $util.toJson($ListRequest)
 #end
 $util.toJson($ListRequest)
 ## [End] List Request. **",
-  "Query.listComments.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Query.listComments.res.vtl": "## [Start] ResponseTemplate. **
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
+## [End] ResponseTemplate. **",
   "Query.listEmails.req.vtl": "## [Start] List Request. **
 #set( $limit = $util.defaultIfNull($context.args.limit, 100) )
 #set( $ListRequest = {
@@ -3636,8 +3663,8 @@ $util.toJson($ListRequest)
 #if( $context.args.nextToken )
   #set( $ListRequest.nextToken = $context.args.nextToken )
 #end
-#if( !$util.isNullOrEmpty($ctx.stash.get(\\"authFilter\\")) )
-  #set( $filter = $ctx.stash.get(\\"authFilter\\") )
+#if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
+  #set( $filter = $ctx.stash.authFilter )
   #if( !$util.isNullOrEmpty($ctx.args.filter) )
     #set( $filter = [{
   \\"and\\":   [$filter, $ctx.args.filter]
@@ -3673,13 +3700,13 @@ $util.toJson($ListRequest)
 #end
 $util.toJson($ListRequest)
 ## [End] List Request. **",
-  "Query.listEmails.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Query.listEmails.res.vtl": "## [Start] ResponseTemplate. **
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
+## [End] ResponseTemplate. **",
   "Query.listPosts.req.vtl": "## [Start] List Request. **
 #set( $limit = $util.defaultIfNull($context.args.limit, 100) )
 #set( $ListRequest = {
@@ -3689,8 +3716,8 @@ $util.toJson($ListRequest)
 #if( $context.args.nextToken )
   #set( $ListRequest.nextToken = $context.args.nextToken )
 #end
-#if( !$util.isNullOrEmpty($ctx.stash.get(\\"authFilter\\")) )
-  #set( $filter = $ctx.stash.get(\\"authFilter\\") )
+#if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
+  #set( $filter = $ctx.stash.authFilter )
   #if( !$util.isNullOrEmpty($ctx.args.filter) )
     #set( $filter = [{
   \\"and\\":   [$filter, $ctx.args.filter]
@@ -3726,13 +3753,13 @@ $util.toJson($ListRequest)
 #end
 $util.toJson($ListRequest)
 ## [End] List Request. **",
-  "Query.listPosts.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Query.listPosts.res.vtl": "## [Start] ResponseTemplate. **
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type, $ctx.result)
 #else
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
+## [End] ResponseTemplate. **",
   "Query.listRequires.req.vtl": "## [Start] List Request. **
 #set( $limit = $util.defaultIfNull($context.args.limit, 100) )
 #set( $ListRequest = {
@@ -3742,8 +3769,8 @@ $util.toJson($ListRequest)
 #if( $context.args.nextToken )
   #set( $ListRequest.nextToken = $context.args.nextToken )
 #end
-#if( !$util.isNullOrEmpty($ctx.stash.get(\\"authFilter\\")) )
-  #set( $filter = $ctx.stash.get(\\"authFilter\\") )
+#if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
+  #set( $filter = $ctx.stash.authFilter )
   #if( !$util.isNullOrEmpty($ctx.args.filter) )
     #set( $filter = [{
   \\"and\\":   [$filter, $ctx.args.filter]
@@ -3779,13 +3806,13 @@ $util.toJson($ListRequest)
 #end
 $util.toJson($ListRequest)
 ## [End] List Request. **",
-  "Query.listRequires.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Query.listRequires.res.vtl": "## [Start] ResponseTemplate. **
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
+## [End] ResponseTemplate. **",
   "Query.listTests.req.vtl": "## [Start] List Request. **
 #set( $limit = $util.defaultIfNull($context.args.limit, 100) )
 #set( $ListRequest = {
@@ -3795,8 +3822,8 @@ $util.toJson($ListRequest)
 #if( $context.args.nextToken )
   #set( $ListRequest.nextToken = $context.args.nextToken )
 #end
-#if( !$util.isNullOrEmpty($ctx.stash.get(\\"authFilter\\")) )
-  #set( $filter = $ctx.stash.get(\\"authFilter\\") )
+#if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
+  #set( $filter = $ctx.stash.authFilter )
   #if( !$util.isNullOrEmpty($ctx.args.filter) )
     #set( $filter = [{
   \\"and\\":   [$filter, $ctx.args.filter]
@@ -3832,13 +3859,13 @@ $util.toJson($ListRequest)
 #end
 $util.toJson($ListRequest)
 ## [End] List Request. **",
-  "Query.listTests.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Query.listTests.res.vtl": "## [Start] ResponseTemplate. **
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
+## [End] ResponseTemplate. **",
   "Query.listUsers.req.vtl": "## [Start] List Request. **
 #set( $limit = $util.defaultIfNull($context.args.limit, 100) )
 #set( $ListRequest = {
@@ -3848,8 +3875,8 @@ $util.toJson($ListRequest)
 #if( $context.args.nextToken )
   #set( $ListRequest.nextToken = $context.args.nextToken )
 #end
-#if( !$util.isNullOrEmpty($ctx.stash.get(\\"authFilter\\")) )
-  #set( $filter = $ctx.stash.get(\\"authFilter\\") )
+#if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
+  #set( $filter = $ctx.stash.authFilter )
   #if( !$util.isNullOrEmpty($ctx.args.filter) )
     #set( $filter = [{
   \\"and\\":   [$filter, $ctx.args.filter]
@@ -3885,13 +3912,13 @@ $util.toJson($ListRequest)
 #end
 $util.toJson($ListRequest)
 ## [End] List Request. **",
-  "Query.listUsers.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Query.listUsers.res.vtl": "## [Start] ResponseTemplate. **
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
+## [End] ResponseTemplate. **",
   "Query.syncPosts.req.vtl": "## [Start] Sync Request template. **
 {
   \\"version\\": \\"2018-05-29\\",
@@ -3906,13 +3933,13 @@ null
   \\"nextToken\\": $util.toJson($util.defaultIfNull($ctx.args.nextToken, null))
 }
 ## [End] Sync Request template. **",
-  "Query.syncPosts.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Query.syncPosts.res.vtl": "## [Start] ResponseTemplate. **
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type, $ctx.result)
 #else
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
+## [End] ResponseTemplate. **",
   "Subscription.onCreateAuthor.req.vtl": "## [Start] Subscription Request template. **
 $util.toJson({
   \\"version\\": \\"2018-05-29\\",
@@ -4202,14 +4229,14 @@ $util.qr($mergedValues.put(\\"__typename\\", \\"Author\\"))
 #end
 $util.toJson($PutObject)
 ## [End] Create Request template. **",
-  "Mutation.createAuthor.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Mutation.createAuthor.res.vtl": "## [Start] ResponseTemplate. **
 $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
+## [End] ResponseTemplate. **",
   "Mutation.createComment.init.1.req.vtl": "## [Start] Initialization default values. **
 $util.qr($ctx.stash.put(\\"defaultValues\\", $util.defaultIfNull($ctx.stash.defaultValues, {})))
 #set( $createdAt = $util.time.nowISO8601() )
@@ -4305,14 +4332,14 @@ $util.qr($mergedValues.put(\\"__typename\\", \\"Comment\\"))
 #end
 $util.toJson($PutObject)
 ## [End] Create Request template. **",
-  "Mutation.createComment.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Mutation.createComment.res.vtl": "## [Start] ResponseTemplate. **
 $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
+## [End] ResponseTemplate. **",
   "Mutation.createEmail.init.1.req.vtl": "## [Start] Initialization default values. **
 $util.qr($ctx.stash.put(\\"defaultValues\\", $util.defaultIfNull($ctx.stash.defaultValues, {})))
 #set( $createdAt = $util.time.nowISO8601() )
@@ -4408,14 +4435,14 @@ $util.qr($mergedValues.put(\\"__typename\\", \\"Email\\"))
 #end
 $util.toJson($PutObject)
 ## [End] Create Request template. **",
-  "Mutation.createEmail.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Mutation.createEmail.res.vtl": "## [Start] ResponseTemplate. **
 $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
+## [End] ResponseTemplate. **",
   "Mutation.createPost.init.1.req.vtl": "## [Start] Initialization default values. **
 $util.qr($ctx.stash.put(\\"defaultValues\\", $util.defaultIfNull($ctx.stash.defaultValues, {})))
 #set( $createdAt = $util.time.nowISO8601() )
@@ -4511,14 +4538,14 @@ $util.qr($mergedValues.put(\\"__typename\\", \\"Post\\"))
 #end
 $util.toJson($PutObject)
 ## [End] Create Request template. **",
-  "Mutation.createPost.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Mutation.createPost.res.vtl": "## [Start] ResponseTemplate. **
 $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type, $ctx.result)
 #else
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
+## [End] ResponseTemplate. **",
   "Mutation.createRequire.init.1.req.vtl": "## [Start] Initialization default values. **
 $util.qr($ctx.stash.put(\\"defaultValues\\", $util.defaultIfNull($ctx.stash.defaultValues, {})))
 #set( $createdAt = $util.time.nowISO8601() )
@@ -4614,14 +4641,14 @@ $util.qr($mergedValues.put(\\"__typename\\", \\"Require\\"))
 #end
 $util.toJson($PutObject)
 ## [End] Create Request template. **",
-  "Mutation.createRequire.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Mutation.createRequire.res.vtl": "## [Start] ResponseTemplate. **
 $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
+## [End] ResponseTemplate. **",
   "Mutation.createTest.init.1.req.vtl": "## [Start] Initialization default values. **
 $util.qr($ctx.stash.put(\\"defaultValues\\", $util.defaultIfNull($ctx.stash.defaultValues, {})))
 #set( $createdAt = $util.time.nowISO8601() )
@@ -4717,14 +4744,14 @@ $util.qr($mergedValues.put(\\"__typename\\", \\"Test\\"))
 #end
 $util.toJson($PutObject)
 ## [End] Create Request template. **",
-  "Mutation.createTest.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Mutation.createTest.res.vtl": "## [Start] ResponseTemplate. **
 $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
+## [End] ResponseTemplate. **",
   "Mutation.createUser.init.1.req.vtl": "## [Start] Initialization default values. **
 $util.qr($ctx.stash.put(\\"defaultValues\\", $util.defaultIfNull($ctx.stash.defaultValues, {})))
 #set( $createdAt = $util.time.nowISO8601() )
@@ -4820,14 +4847,14 @@ $util.qr($mergedValues.put(\\"__typename\\", \\"User\\"))
 #end
 $util.toJson($PutObject)
 ## [End] Create Request template. **",
-  "Mutation.createUser.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Mutation.createUser.res.vtl": "## [Start] ResponseTemplate. **
 $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
+## [End] ResponseTemplate. **",
   "Mutation.customCreatePost.init.1.req.vtl": "## [Start] Initialization default values. **
 $util.qr($ctx.stash.put(\\"defaultValues\\", $util.defaultIfNull($ctx.stash.defaultValues, {})))
 #set( $createdAt = $util.time.nowISO8601() )
@@ -4923,14 +4950,14 @@ $util.qr($mergedValues.put(\\"__typename\\", \\"Post\\"))
 #end
 $util.toJson($PutObject)
 ## [End] Create Request template. **",
-  "Mutation.customCreatePost.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Mutation.customCreatePost.res.vtl": "## [Start] ResponseTemplate. **
 $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
+## [End] ResponseTemplate. **",
   "Mutation.customDeletePost.req.vtl": "## [Start] Delete Request template. **
 #set( $DeleteRequest = {
   \\"version\\": \\"2018-05-29\\",
@@ -4988,14 +5015,14 @@ $util.qr($DeleteRequest.put(\\"key\\", $Key))
 #end
 $util.toJson($DeleteRequest)
 ## [End] Delete Request template. **",
-  "Mutation.customDeletePost.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Mutation.customDeletePost.res.vtl": "## [Start] ResponseTemplate. **
 $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
+## [End] ResponseTemplate. **",
   "Mutation.customUpdatePost.init.1.req.vtl": "## [Start] Initialization default values. **
 $util.qr($ctx.stash.put(\\"defaultValues\\", $util.defaultIfNull($ctx.stash.defaultValues, {})))
 #set( $updatedAt = $util.time.nowISO8601() )
@@ -5134,14 +5161,14 @@ $util.qr($update.put(\\"expression\\", \\"$expression\\"))
 #end
 $util.toJson($UpdateItem)
 ## [End] Mutation Update resolver. **",
-  "Mutation.customUpdatePost.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Mutation.customUpdatePost.res.vtl": "## [Start] ResponseTemplate. **
 $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
+## [End] ResponseTemplate. **",
   "Mutation.deleteAuthor.req.vtl": "## [Start] Delete Request template. **
 #set( $DeleteRequest = {
   \\"version\\": \\"2018-05-29\\",
@@ -5199,14 +5226,14 @@ $util.qr($DeleteRequest.put(\\"key\\", $Key))
 #end
 $util.toJson($DeleteRequest)
 ## [End] Delete Request template. **",
-  "Mutation.deleteAuthor.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Mutation.deleteAuthor.res.vtl": "## [Start] ResponseTemplate. **
 $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
+## [End] ResponseTemplate. **",
   "Mutation.deleteComment.req.vtl": "## [Start] Delete Request template. **
 #set( $DeleteRequest = {
   \\"version\\": \\"2018-05-29\\",
@@ -5264,14 +5291,14 @@ $util.qr($DeleteRequest.put(\\"key\\", $Key))
 #end
 $util.toJson($DeleteRequest)
 ## [End] Delete Request template. **",
-  "Mutation.deleteComment.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Mutation.deleteComment.res.vtl": "## [Start] ResponseTemplate. **
 $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
+## [End] ResponseTemplate. **",
   "Mutation.deleteEmail.req.vtl": "## [Start] Delete Request template. **
 #set( $DeleteRequest = {
   \\"version\\": \\"2018-05-29\\",
@@ -5329,14 +5356,14 @@ $util.qr($DeleteRequest.put(\\"key\\", $Key))
 #end
 $util.toJson($DeleteRequest)
 ## [End] Delete Request template. **",
-  "Mutation.deleteEmail.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Mutation.deleteEmail.res.vtl": "## [Start] ResponseTemplate. **
 $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
+## [End] ResponseTemplate. **",
   "Mutation.deletePost.req.vtl": "## [Start] Delete Request template. **
 #set( $DeleteRequest = {
   \\"version\\": \\"2018-05-29\\",
@@ -5395,14 +5422,14 @@ $util.qr($DeleteRequest.put(\\"key\\", $Key))
 $util.qr($DeleteRequest.put(\\"_version\\", $util.defaultIfNull($ctx.args.input[\\"_version\\"], \\"0\\")))
 $util.toJson($DeleteRequest)
 ## [End] Delete Request template. **",
-  "Mutation.deletePost.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Mutation.deletePost.res.vtl": "## [Start] ResponseTemplate. **
 $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type, $ctx.result)
 #else
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
+## [End] ResponseTemplate. **",
   "Mutation.deleteRequire.req.vtl": "## [Start] Delete Request template. **
 #set( $DeleteRequest = {
   \\"version\\": \\"2018-05-29\\",
@@ -5460,14 +5487,14 @@ $util.qr($DeleteRequest.put(\\"key\\", $Key))
 #end
 $util.toJson($DeleteRequest)
 ## [End] Delete Request template. **",
-  "Mutation.deleteRequire.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Mutation.deleteRequire.res.vtl": "## [Start] ResponseTemplate. **
 $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
+## [End] ResponseTemplate. **",
   "Mutation.deleteTest.req.vtl": "## [Start] Delete Request template. **
 #set( $DeleteRequest = {
   \\"version\\": \\"2018-05-29\\",
@@ -5525,14 +5552,14 @@ $util.qr($DeleteRequest.put(\\"key\\", $Key))
 #end
 $util.toJson($DeleteRequest)
 ## [End] Delete Request template. **",
-  "Mutation.deleteTest.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Mutation.deleteTest.res.vtl": "## [Start] ResponseTemplate. **
 $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
+## [End] ResponseTemplate. **",
   "Mutation.deleteUser.req.vtl": "## [Start] Delete Request template. **
 #set( $DeleteRequest = {
   \\"version\\": \\"2018-05-29\\",
@@ -5590,14 +5617,14 @@ $util.qr($DeleteRequest.put(\\"key\\", $Key))
 #end
 $util.toJson($DeleteRequest)
 ## [End] Delete Request template. **",
-  "Mutation.deleteUser.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Mutation.deleteUser.res.vtl": "## [Start] ResponseTemplate. **
 $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
+## [End] ResponseTemplate. **",
   "Mutation.updateAuthor.init.1.req.vtl": "## [Start] Initialization default values. **
 $util.qr($ctx.stash.put(\\"defaultValues\\", $util.defaultIfNull($ctx.stash.defaultValues, {})))
 #set( $updatedAt = $util.time.nowISO8601() )
@@ -5736,14 +5763,14 @@ $util.qr($update.put(\\"expression\\", \\"$expression\\"))
 #end
 $util.toJson($UpdateItem)
 ## [End] Mutation Update resolver. **",
-  "Mutation.updateAuthor.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Mutation.updateAuthor.res.vtl": "## [Start] ResponseTemplate. **
 $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
+## [End] ResponseTemplate. **",
   "Mutation.updateComment.init.1.req.vtl": "## [Start] Initialization default values. **
 $util.qr($ctx.stash.put(\\"defaultValues\\", $util.defaultIfNull($ctx.stash.defaultValues, {})))
 #set( $updatedAt = $util.time.nowISO8601() )
@@ -5882,14 +5909,14 @@ $util.qr($update.put(\\"expression\\", \\"$expression\\"))
 #end
 $util.toJson($UpdateItem)
 ## [End] Mutation Update resolver. **",
-  "Mutation.updateComment.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Mutation.updateComment.res.vtl": "## [Start] ResponseTemplate. **
 $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
+## [End] ResponseTemplate. **",
   "Mutation.updateEmail.init.1.req.vtl": "## [Start] Initialization default values. **
 $util.qr($ctx.stash.put(\\"defaultValues\\", $util.defaultIfNull($ctx.stash.defaultValues, {})))
 #set( $updatedAt = $util.time.nowISO8601() )
@@ -6028,14 +6055,14 @@ $util.qr($update.put(\\"expression\\", \\"$expression\\"))
 #end
 $util.toJson($UpdateItem)
 ## [End] Mutation Update resolver. **",
-  "Mutation.updateEmail.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Mutation.updateEmail.res.vtl": "## [Start] ResponseTemplate. **
 $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
+## [End] ResponseTemplate. **",
   "Mutation.updatePost.init.1.req.vtl": "## [Start] Initialization default values. **
 $util.qr($ctx.stash.put(\\"defaultValues\\", $util.defaultIfNull($ctx.stash.defaultValues, {})))
 #set( $updatedAt = $util.time.nowISO8601() )
@@ -6175,14 +6202,14 @@ $util.qr($update.put(\\"expression\\", \\"$expression\\"))
 #end
 $util.toJson($UpdateItem)
 ## [End] Mutation Update resolver. **",
-  "Mutation.updatePost.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Mutation.updatePost.res.vtl": "## [Start] ResponseTemplate. **
 $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type, $ctx.result)
 #else
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
+## [End] ResponseTemplate. **",
   "Mutation.updateRequire.init.1.req.vtl": "## [Start] Initialization default values. **
 $util.qr($ctx.stash.put(\\"defaultValues\\", $util.defaultIfNull($ctx.stash.defaultValues, {})))
 #set( $updatedAt = $util.time.nowISO8601() )
@@ -6321,14 +6348,14 @@ $util.qr($update.put(\\"expression\\", \\"$expression\\"))
 #end
 $util.toJson($UpdateItem)
 ## [End] Mutation Update resolver. **",
-  "Mutation.updateRequire.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Mutation.updateRequire.res.vtl": "## [Start] ResponseTemplate. **
 $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
+## [End] ResponseTemplate. **",
   "Mutation.updateTest.init.1.req.vtl": "## [Start] Initialization default values. **
 $util.qr($ctx.stash.put(\\"defaultValues\\", $util.defaultIfNull($ctx.stash.defaultValues, {})))
 #set( $updatedAt = $util.time.nowISO8601() )
@@ -6467,14 +6494,14 @@ $util.qr($update.put(\\"expression\\", \\"$expression\\"))
 #end
 $util.toJson($UpdateItem)
 ## [End] Mutation Update resolver. **",
-  "Mutation.updateTest.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Mutation.updateTest.res.vtl": "## [Start] ResponseTemplate. **
 $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
+## [End] ResponseTemplate. **",
   "Mutation.updateUser.init.1.req.vtl": "## [Start] Initialization default values. **
 $util.qr($ctx.stash.put(\\"defaultValues\\", $util.defaultIfNull($ctx.stash.defaultValues, {})))
 #set( $updatedAt = $util.time.nowISO8601() )
@@ -6613,14 +6640,14 @@ $util.qr($update.put(\\"expression\\", \\"$expression\\"))
 #end
 $util.toJson($UpdateItem)
 ## [End] Mutation Update resolver. **",
-  "Mutation.updateUser.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Mutation.updateUser.res.vtl": "## [Start] ResponseTemplate. **
 $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
+## [End] ResponseTemplate. **",
   "Query.customGetPost.req.vtl": "## [Start] Get Request template. **
 #set( $GetRequest = {
   \\"version\\": \\"2018-05-29\\",
@@ -6642,17 +6669,20 @@ $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
   #set( $query = {
   \\"expression\\": \\"id = :id\\",
   \\"expressionValues\\": {
-      \\":id\\":     $util.dynamodb.toDynamoDBJson($ctx.args.id)
+      \\":id\\":     $util.parseJson($util.dynamodb.toDynamoDBJson($ctx.args.id))
   }
 } )
 #end
 $util.qr($GetRequest.put(\\"query\\", $query))
-#if( !$util.isNullOrEmpty($ctx.stash.get(\\"authFilter\\")) )
-  $util.qr($GetRequest.put(\\"filter\\", $ctx.stash.get(\\"authFilter\\")))
+#if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
+  $util.qr($GetRequest.put(\\"filter\\", $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.authFilter))))
 #end
 $util.toJson($GetRequest)
 ## [End] Get Request template. **",
   "Query.customGetPost.res.vtl": "## [Start] Get Response template. **
+#if( $ctx.error )
+  $util.error($ctx.error.message, $ctx.error.type)
+#end
 #if( !$ctx.result.items.isEmpty() && $ctx.result.scannedCount == 1 )
   $util.toJson($ctx.result.items[0])
 #else
@@ -6671,8 +6701,8 @@ $util.unauthorized()
 #if( $context.args.nextToken )
   #set( $ListRequest.nextToken = $context.args.nextToken )
 #end
-#if( !$util.isNullOrEmpty($ctx.stash.get(\\"authFilter\\")) )
-  #set( $filter = $ctx.stash.get(\\"authFilter\\") )
+#if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
+  #set( $filter = $ctx.stash.authFilter )
   #if( !$util.isNullOrEmpty($ctx.args.filter) )
     #set( $filter = [{
   \\"and\\":   [$filter, $ctx.args.filter]
@@ -6708,13 +6738,13 @@ $util.unauthorized()
 #end
 $util.toJson($ListRequest)
 ## [End] List Request. **",
-  "Query.customListPost.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Query.customListPost.res.vtl": "## [Start] ResponseTemplate. **
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
+## [End] ResponseTemplate. **",
   "Query.getAuthor.req.vtl": "## [Start] Get Request template. **
 #set( $GetRequest = {
   \\"version\\": \\"2018-05-29\\",
@@ -6736,17 +6766,20 @@ $util.toJson($ListRequest)
   #set( $query = {
   \\"expression\\": \\"id = :id\\",
   \\"expressionValues\\": {
-      \\":id\\":     $util.dynamodb.toDynamoDBJson($ctx.args.id)
+      \\":id\\":     $util.parseJson($util.dynamodb.toDynamoDBJson($ctx.args.id))
   }
 } )
 #end
 $util.qr($GetRequest.put(\\"query\\", $query))
-#if( !$util.isNullOrEmpty($ctx.stash.get(\\"authFilter\\")) )
-  $util.qr($GetRequest.put(\\"filter\\", $ctx.stash.get(\\"authFilter\\")))
+#if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
+  $util.qr($GetRequest.put(\\"filter\\", $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.authFilter))))
 #end
 $util.toJson($GetRequest)
 ## [End] Get Request template. **",
   "Query.getAuthor.res.vtl": "## [Start] Get Response template. **
+#if( $ctx.error )
+  $util.error($ctx.error.message, $ctx.error.type)
+#end
 #if( !$ctx.result.items.isEmpty() && $ctx.result.scannedCount == 1 )
   $util.toJson($ctx.result.items[0])
 #else
@@ -6777,17 +6810,20 @@ $util.unauthorized()
   #set( $query = {
   \\"expression\\": \\"id = :id\\",
   \\"expressionValues\\": {
-      \\":id\\":     $util.dynamodb.toDynamoDBJson($ctx.args.id)
+      \\":id\\":     $util.parseJson($util.dynamodb.toDynamoDBJson($ctx.args.id))
   }
 } )
 #end
 $util.qr($GetRequest.put(\\"query\\", $query))
-#if( !$util.isNullOrEmpty($ctx.stash.get(\\"authFilter\\")) )
-  $util.qr($GetRequest.put(\\"filter\\", $ctx.stash.get(\\"authFilter\\")))
+#if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
+  $util.qr($GetRequest.put(\\"filter\\", $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.authFilter))))
 #end
 $util.toJson($GetRequest)
 ## [End] Get Request template. **",
   "Query.getComment.res.vtl": "## [Start] Get Response template. **
+#if( $ctx.error )
+  $util.error($ctx.error.message, $ctx.error.type)
+#end
 #if( !$ctx.result.items.isEmpty() && $ctx.result.scannedCount == 1 )
   $util.toJson($ctx.result.items[0])
 #else
@@ -6818,17 +6854,20 @@ $util.unauthorized()
   #set( $query = {
   \\"expression\\": \\"id = :id\\",
   \\"expressionValues\\": {
-      \\":id\\":     $util.dynamodb.toDynamoDBJson($ctx.args.id)
+      \\":id\\":     $util.parseJson($util.dynamodb.toDynamoDBJson($ctx.args.id))
   }
 } )
 #end
 $util.qr($GetRequest.put(\\"query\\", $query))
-#if( !$util.isNullOrEmpty($ctx.stash.get(\\"authFilter\\")) )
-  $util.qr($GetRequest.put(\\"filter\\", $ctx.stash.get(\\"authFilter\\")))
+#if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
+  $util.qr($GetRequest.put(\\"filter\\", $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.authFilter))))
 #end
 $util.toJson($GetRequest)
 ## [End] Get Request template. **",
   "Query.getEmail.res.vtl": "## [Start] Get Response template. **
+#if( $ctx.error )
+  $util.error($ctx.error.message, $ctx.error.type)
+#end
 #if( !$ctx.result.items.isEmpty() && $ctx.result.scannedCount == 1 )
   $util.toJson($ctx.result.items[0])
 #else
@@ -6859,17 +6898,20 @@ $util.unauthorized()
   #set( $query = {
   \\"expression\\": \\"id = :id\\",
   \\"expressionValues\\": {
-      \\":id\\":     $util.dynamodb.toDynamoDBJson($ctx.args.id)
+      \\":id\\":     $util.parseJson($util.dynamodb.toDynamoDBJson($ctx.args.id))
   }
 } )
 #end
 $util.qr($GetRequest.put(\\"query\\", $query))
-#if( !$util.isNullOrEmpty($ctx.stash.get(\\"authFilter\\")) )
-  $util.qr($GetRequest.put(\\"filter\\", $ctx.stash.get(\\"authFilter\\")))
+#if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
+  $util.qr($GetRequest.put(\\"filter\\", $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.authFilter))))
 #end
 $util.toJson($GetRequest)
 ## [End] Get Request template. **",
   "Query.getEntity.res.vtl": "## [Start] Get Response template. **
+#if( $ctx.error )
+  $util.error($ctx.error.message, $ctx.error.type)
+#end
 #if( !$ctx.result.items.isEmpty() && $ctx.result.scannedCount == 1 )
   $util.toJson($ctx.result.items[0])
 #else
@@ -6900,17 +6942,20 @@ $util.unauthorized()
   #set( $query = {
   \\"expression\\": \\"id = :id\\",
   \\"expressionValues\\": {
-      \\":id\\":     $util.dynamodb.toDynamoDBJson($ctx.args.id)
+      \\":id\\":     $util.parseJson($util.dynamodb.toDynamoDBJson($ctx.args.id))
   }
 } )
 #end
 $util.qr($GetRequest.put(\\"query\\", $query))
-#if( !$util.isNullOrEmpty($ctx.stash.get(\\"authFilter\\")) )
-  $util.qr($GetRequest.put(\\"filter\\", $ctx.stash.get(\\"authFilter\\")))
+#if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
+  $util.qr($GetRequest.put(\\"filter\\", $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.authFilter))))
 #end
 $util.toJson($GetRequest)
 ## [End] Get Request template. **",
   "Query.getPost.res.vtl": "## [Start] Get Response template. **
+#if( $ctx.error )
+  $util.error($ctx.error.message, $ctx.error.type, $ctx.result)
+#end
 #if( !$ctx.result.items.isEmpty() && $ctx.result.scannedCount == 1 )
   $util.toJson($ctx.result.items[0])
 #else
@@ -6941,17 +6986,20 @@ $util.unauthorized()
   #set( $query = {
   \\"expression\\": \\"id = :id\\",
   \\"expressionValues\\": {
-      \\":id\\":     $util.dynamodb.toDynamoDBJson($ctx.args.id)
+      \\":id\\":     $util.parseJson($util.dynamodb.toDynamoDBJson($ctx.args.id))
   }
 } )
 #end
 $util.qr($GetRequest.put(\\"query\\", $query))
-#if( !$util.isNullOrEmpty($ctx.stash.get(\\"authFilter\\")) )
-  $util.qr($GetRequest.put(\\"filter\\", $ctx.stash.get(\\"authFilter\\")))
+#if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
+  $util.qr($GetRequest.put(\\"filter\\", $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.authFilter))))
 #end
 $util.toJson($GetRequest)
 ## [End] Get Request template. **",
   "Query.getRequire.res.vtl": "## [Start] Get Response template. **
+#if( $ctx.error )
+  $util.error($ctx.error.message, $ctx.error.type)
+#end
 #if( !$ctx.result.items.isEmpty() && $ctx.result.scannedCount == 1 )
   $util.toJson($ctx.result.items[0])
 #else
@@ -6982,17 +7030,20 @@ $util.unauthorized()
   #set( $query = {
   \\"expression\\": \\"id = :id\\",
   \\"expressionValues\\": {
-      \\":id\\":     $util.dynamodb.toDynamoDBJson($ctx.args.id)
+      \\":id\\":     $util.parseJson($util.dynamodb.toDynamoDBJson($ctx.args.id))
   }
 } )
 #end
 $util.qr($GetRequest.put(\\"query\\", $query))
-#if( !$util.isNullOrEmpty($ctx.stash.get(\\"authFilter\\")) )
-  $util.qr($GetRequest.put(\\"filter\\", $ctx.stash.get(\\"authFilter\\")))
+#if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
+  $util.qr($GetRequest.put(\\"filter\\", $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.authFilter))))
 #end
 $util.toJson($GetRequest)
 ## [End] Get Request template. **",
   "Query.getTest.res.vtl": "## [Start] Get Response template. **
+#if( $ctx.error )
+  $util.error($ctx.error.message, $ctx.error.type)
+#end
 #if( !$ctx.result.items.isEmpty() && $ctx.result.scannedCount == 1 )
   $util.toJson($ctx.result.items[0])
 #else
@@ -7023,17 +7074,20 @@ $util.unauthorized()
   #set( $query = {
   \\"expression\\": \\"id = :id\\",
   \\"expressionValues\\": {
-      \\":id\\":     $util.dynamodb.toDynamoDBJson($ctx.args.id)
+      \\":id\\":     $util.parseJson($util.dynamodb.toDynamoDBJson($ctx.args.id))
   }
 } )
 #end
 $util.qr($GetRequest.put(\\"query\\", $query))
-#if( !$util.isNullOrEmpty($ctx.stash.get(\\"authFilter\\")) )
-  $util.qr($GetRequest.put(\\"filter\\", $ctx.stash.get(\\"authFilter\\")))
+#if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
+  $util.qr($GetRequest.put(\\"filter\\", $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.authFilter))))
 #end
 $util.toJson($GetRequest)
 ## [End] Get Request template. **",
   "Query.getUser.res.vtl": "## [Start] Get Response template. **
+#if( $ctx.error )
+  $util.error($ctx.error.message, $ctx.error.type)
+#end
 #if( !$ctx.result.items.isEmpty() && $ctx.result.scannedCount == 1 )
   $util.toJson($ctx.result.items[0])
 #else
@@ -7052,8 +7106,8 @@ $util.unauthorized()
 #if( $context.args.nextToken )
   #set( $ListRequest.nextToken = $context.args.nextToken )
 #end
-#if( !$util.isNullOrEmpty($ctx.stash.get(\\"authFilter\\")) )
-  #set( $filter = $ctx.stash.get(\\"authFilter\\") )
+#if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
+  #set( $filter = $ctx.stash.authFilter )
   #if( !$util.isNullOrEmpty($ctx.args.filter) )
     #set( $filter = [{
   \\"and\\":   [$filter, $ctx.args.filter]
@@ -7089,13 +7143,13 @@ $util.unauthorized()
 #end
 $util.toJson($ListRequest)
 ## [End] List Request. **",
-  "Query.listAuthors.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Query.listAuthors.res.vtl": "## [Start] ResponseTemplate. **
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
+## [End] ResponseTemplate. **",
   "Query.listComments.req.vtl": "## [Start] List Request. **
 #set( $limit = $util.defaultIfNull($context.args.limit, 100) )
 #set( $ListRequest = {
@@ -7105,8 +7159,8 @@ $util.toJson($ListRequest)
 #if( $context.args.nextToken )
   #set( $ListRequest.nextToken = $context.args.nextToken )
 #end
-#if( !$util.isNullOrEmpty($ctx.stash.get(\\"authFilter\\")) )
-  #set( $filter = $ctx.stash.get(\\"authFilter\\") )
+#if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
+  #set( $filter = $ctx.stash.authFilter )
   #if( !$util.isNullOrEmpty($ctx.args.filter) )
     #set( $filter = [{
   \\"and\\":   [$filter, $ctx.args.filter]
@@ -7142,13 +7196,13 @@ $util.toJson($ListRequest)
 #end
 $util.toJson($ListRequest)
 ## [End] List Request. **",
-  "Query.listComments.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Query.listComments.res.vtl": "## [Start] ResponseTemplate. **
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
+## [End] ResponseTemplate. **",
   "Query.listEmails.req.vtl": "## [Start] List Request. **
 #set( $limit = $util.defaultIfNull($context.args.limit, 100) )
 #set( $ListRequest = {
@@ -7158,8 +7212,8 @@ $util.toJson($ListRequest)
 #if( $context.args.nextToken )
   #set( $ListRequest.nextToken = $context.args.nextToken )
 #end
-#if( !$util.isNullOrEmpty($ctx.stash.get(\\"authFilter\\")) )
-  #set( $filter = $ctx.stash.get(\\"authFilter\\") )
+#if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
+  #set( $filter = $ctx.stash.authFilter )
   #if( !$util.isNullOrEmpty($ctx.args.filter) )
     #set( $filter = [{
   \\"and\\":   [$filter, $ctx.args.filter]
@@ -7195,13 +7249,13 @@ $util.toJson($ListRequest)
 #end
 $util.toJson($ListRequest)
 ## [End] List Request. **",
-  "Query.listEmails.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Query.listEmails.res.vtl": "## [Start] ResponseTemplate. **
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
+## [End] ResponseTemplate. **",
   "Query.listPosts.req.vtl": "## [Start] List Request. **
 #set( $limit = $util.defaultIfNull($context.args.limit, 100) )
 #set( $ListRequest = {
@@ -7211,8 +7265,8 @@ $util.toJson($ListRequest)
 #if( $context.args.nextToken )
   #set( $ListRequest.nextToken = $context.args.nextToken )
 #end
-#if( !$util.isNullOrEmpty($ctx.stash.get(\\"authFilter\\")) )
-  #set( $filter = $ctx.stash.get(\\"authFilter\\") )
+#if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
+  #set( $filter = $ctx.stash.authFilter )
   #if( !$util.isNullOrEmpty($ctx.args.filter) )
     #set( $filter = [{
   \\"and\\":   [$filter, $ctx.args.filter]
@@ -7248,13 +7302,13 @@ $util.toJson($ListRequest)
 #end
 $util.toJson($ListRequest)
 ## [End] List Request. **",
-  "Query.listPosts.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Query.listPosts.res.vtl": "## [Start] ResponseTemplate. **
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type, $ctx.result)
 #else
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
+## [End] ResponseTemplate. **",
   "Query.listRequires.req.vtl": "## [Start] List Request. **
 #set( $limit = $util.defaultIfNull($context.args.limit, 100) )
 #set( $ListRequest = {
@@ -7264,8 +7318,8 @@ $util.toJson($ListRequest)
 #if( $context.args.nextToken )
   #set( $ListRequest.nextToken = $context.args.nextToken )
 #end
-#if( !$util.isNullOrEmpty($ctx.stash.get(\\"authFilter\\")) )
-  #set( $filter = $ctx.stash.get(\\"authFilter\\") )
+#if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
+  #set( $filter = $ctx.stash.authFilter )
   #if( !$util.isNullOrEmpty($ctx.args.filter) )
     #set( $filter = [{
   \\"and\\":   [$filter, $ctx.args.filter]
@@ -7301,13 +7355,13 @@ $util.toJson($ListRequest)
 #end
 $util.toJson($ListRequest)
 ## [End] List Request. **",
-  "Query.listRequires.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Query.listRequires.res.vtl": "## [Start] ResponseTemplate. **
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
+## [End] ResponseTemplate. **",
   "Query.listTests.req.vtl": "## [Start] List Request. **
 #set( $limit = $util.defaultIfNull($context.args.limit, 100) )
 #set( $ListRequest = {
@@ -7317,8 +7371,8 @@ $util.toJson($ListRequest)
 #if( $context.args.nextToken )
   #set( $ListRequest.nextToken = $context.args.nextToken )
 #end
-#if( !$util.isNullOrEmpty($ctx.stash.get(\\"authFilter\\")) )
-  #set( $filter = $ctx.stash.get(\\"authFilter\\") )
+#if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
+  #set( $filter = $ctx.stash.authFilter )
   #if( !$util.isNullOrEmpty($ctx.args.filter) )
     #set( $filter = [{
   \\"and\\":   [$filter, $ctx.args.filter]
@@ -7354,13 +7408,13 @@ $util.toJson($ListRequest)
 #end
 $util.toJson($ListRequest)
 ## [End] List Request. **",
-  "Query.listTests.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Query.listTests.res.vtl": "## [Start] ResponseTemplate. **
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
+## [End] ResponseTemplate. **",
   "Query.listUsers.req.vtl": "## [Start] List Request. **
 #set( $limit = $util.defaultIfNull($context.args.limit, 100) )
 #set( $ListRequest = {
@@ -7370,8 +7424,8 @@ $util.toJson($ListRequest)
 #if( $context.args.nextToken )
   #set( $ListRequest.nextToken = $context.args.nextToken )
 #end
-#if( !$util.isNullOrEmpty($ctx.stash.get(\\"authFilter\\")) )
-  #set( $filter = $ctx.stash.get(\\"authFilter\\") )
+#if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
+  #set( $filter = $ctx.stash.authFilter )
   #if( !$util.isNullOrEmpty($ctx.args.filter) )
     #set( $filter = [{
   \\"and\\":   [$filter, $ctx.args.filter]
@@ -7407,13 +7461,13 @@ $util.toJson($ListRequest)
 #end
 $util.toJson($ListRequest)
 ## [End] List Request. **",
-  "Query.listUsers.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Query.listUsers.res.vtl": "## [Start] ResponseTemplate. **
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
+## [End] ResponseTemplate. **",
   "Query.syncPosts.req.vtl": "## [Start] Sync Request template. **
 {
   \\"version\\": \\"2018-05-29\\",
@@ -7428,13 +7482,13 @@ null
   \\"nextToken\\": $util.toJson($util.defaultIfNull($ctx.args.nextToken, null))
 }
 ## [End] Sync Request template. **",
-  "Query.syncPosts.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Query.syncPosts.res.vtl": "## [Start] ResponseTemplate. **
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type, $ctx.result)
 #else
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
+## [End] ResponseTemplate. **",
   "Subscription.onCreateAuthor.req.vtl": "## [Start] Subscription Request template. **
 $util.toJson({
   \\"version\\": \\"2018-05-29\\",
@@ -7724,14 +7778,14 @@ $util.qr($mergedValues.put(\\"__typename\\", \\"Author\\"))
 #end
 $util.toJson($PutObject)
 ## [End] Create Request template. **",
-  "Mutation.createAuthor.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Mutation.createAuthor.res.vtl": "## [Start] ResponseTemplate. **
 $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
+## [End] ResponseTemplate. **",
   "Mutation.createComment.init.1.req.vtl": "## [Start] Initialization default values. **
 $util.qr($ctx.stash.put(\\"defaultValues\\", $util.defaultIfNull($ctx.stash.defaultValues, {})))
 #set( $createdAt = $util.time.nowISO8601() )
@@ -7827,14 +7881,14 @@ $util.qr($mergedValues.put(\\"__typename\\", \\"Comment\\"))
 #end
 $util.toJson($PutObject)
 ## [End] Create Request template. **",
-  "Mutation.createComment.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Mutation.createComment.res.vtl": "## [Start] ResponseTemplate. **
 $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
+## [End] ResponseTemplate. **",
   "Mutation.createEmail.init.1.req.vtl": "## [Start] Initialization default values. **
 $util.qr($ctx.stash.put(\\"defaultValues\\", $util.defaultIfNull($ctx.stash.defaultValues, {})))
 #set( $createdAt = $util.time.nowISO8601() )
@@ -7930,14 +7984,14 @@ $util.qr($mergedValues.put(\\"__typename\\", \\"Email\\"))
 #end
 $util.toJson($PutObject)
 ## [End] Create Request template. **",
-  "Mutation.createEmail.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Mutation.createEmail.res.vtl": "## [Start] ResponseTemplate. **
 $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
+## [End] ResponseTemplate. **",
   "Mutation.createPost.init.1.req.vtl": "## [Start] Initialization default values. **
 $util.qr($ctx.stash.put(\\"defaultValues\\", $util.defaultIfNull($ctx.stash.defaultValues, {})))
 #set( $createdAt = $util.time.nowISO8601() )
@@ -8033,14 +8087,14 @@ $util.qr($mergedValues.put(\\"__typename\\", \\"Post\\"))
 #end
 $util.toJson($PutObject)
 ## [End] Create Request template. **",
-  "Mutation.createPost.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Mutation.createPost.res.vtl": "## [Start] ResponseTemplate. **
 $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type, $ctx.result)
 #else
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
+## [End] ResponseTemplate. **",
   "Mutation.createRequire.init.1.req.vtl": "## [Start] Initialization default values. **
 $util.qr($ctx.stash.put(\\"defaultValues\\", $util.defaultIfNull($ctx.stash.defaultValues, {})))
 #set( $createdAt = $util.time.nowISO8601() )
@@ -8136,14 +8190,14 @@ $util.qr($mergedValues.put(\\"__typename\\", \\"Require\\"))
 #end
 $util.toJson($PutObject)
 ## [End] Create Request template. **",
-  "Mutation.createRequire.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Mutation.createRequire.res.vtl": "## [Start] ResponseTemplate. **
 $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
+## [End] ResponseTemplate. **",
   "Mutation.createTest.init.1.req.vtl": "## [Start] Initialization default values. **
 $util.qr($ctx.stash.put(\\"defaultValues\\", $util.defaultIfNull($ctx.stash.defaultValues, {})))
 #set( $createdAt = $util.time.nowISO8601() )
@@ -8239,14 +8293,14 @@ $util.qr($mergedValues.put(\\"__typename\\", \\"Test\\"))
 #end
 $util.toJson($PutObject)
 ## [End] Create Request template. **",
-  "Mutation.createTest.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Mutation.createTest.res.vtl": "## [Start] ResponseTemplate. **
 $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
+## [End] ResponseTemplate. **",
   "Mutation.createUser.init.1.req.vtl": "## [Start] Initialization default values. **
 $util.qr($ctx.stash.put(\\"defaultValues\\", $util.defaultIfNull($ctx.stash.defaultValues, {})))
 #set( $createdAt = $util.time.nowISO8601() )
@@ -8342,14 +8396,14 @@ $util.qr($mergedValues.put(\\"__typename\\", \\"User\\"))
 #end
 $util.toJson($PutObject)
 ## [End] Create Request template. **",
-  "Mutation.createUser.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Mutation.createUser.res.vtl": "## [Start] ResponseTemplate. **
 $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
+## [End] ResponseTemplate. **",
   "Mutation.customCreatePost.init.1.req.vtl": "## [Start] Initialization default values. **
 $util.qr($ctx.stash.put(\\"defaultValues\\", $util.defaultIfNull($ctx.stash.defaultValues, {})))
 #set( $createdAt = $util.time.nowISO8601() )
@@ -8445,14 +8499,14 @@ $util.qr($mergedValues.put(\\"__typename\\", \\"Post\\"))
 #end
 $util.toJson($PutObject)
 ## [End] Create Request template. **",
-  "Mutation.customCreatePost.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Mutation.customCreatePost.res.vtl": "## [Start] ResponseTemplate. **
 $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
+## [End] ResponseTemplate. **",
   "Mutation.customDeletePost.req.vtl": "## [Start] Delete Request template. **
 #set( $DeleteRequest = {
   \\"version\\": \\"2018-05-29\\",
@@ -8510,14 +8564,14 @@ $util.qr($DeleteRequest.put(\\"key\\", $Key))
 #end
 $util.toJson($DeleteRequest)
 ## [End] Delete Request template. **",
-  "Mutation.customDeletePost.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Mutation.customDeletePost.res.vtl": "## [Start] ResponseTemplate. **
 $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
+## [End] ResponseTemplate. **",
   "Mutation.customUpdatePost.init.1.req.vtl": "## [Start] Initialization default values. **
 $util.qr($ctx.stash.put(\\"defaultValues\\", $util.defaultIfNull($ctx.stash.defaultValues, {})))
 #set( $updatedAt = $util.time.nowISO8601() )
@@ -8656,14 +8710,14 @@ $util.qr($update.put(\\"expression\\", \\"$expression\\"))
 #end
 $util.toJson($UpdateItem)
 ## [End] Mutation Update resolver. **",
-  "Mutation.customUpdatePost.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Mutation.customUpdatePost.res.vtl": "## [Start] ResponseTemplate. **
 $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
+## [End] ResponseTemplate. **",
   "Mutation.deleteAuthor.req.vtl": "## [Start] Delete Request template. **
 #set( $DeleteRequest = {
   \\"version\\": \\"2018-05-29\\",
@@ -8721,14 +8775,14 @@ $util.qr($DeleteRequest.put(\\"key\\", $Key))
 #end
 $util.toJson($DeleteRequest)
 ## [End] Delete Request template. **",
-  "Mutation.deleteAuthor.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Mutation.deleteAuthor.res.vtl": "## [Start] ResponseTemplate. **
 $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
+## [End] ResponseTemplate. **",
   "Mutation.deleteComment.req.vtl": "## [Start] Delete Request template. **
 #set( $DeleteRequest = {
   \\"version\\": \\"2018-05-29\\",
@@ -8786,14 +8840,14 @@ $util.qr($DeleteRequest.put(\\"key\\", $Key))
 #end
 $util.toJson($DeleteRequest)
 ## [End] Delete Request template. **",
-  "Mutation.deleteComment.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Mutation.deleteComment.res.vtl": "## [Start] ResponseTemplate. **
 $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
+## [End] ResponseTemplate. **",
   "Mutation.deleteEmail.req.vtl": "## [Start] Delete Request template. **
 #set( $DeleteRequest = {
   \\"version\\": \\"2018-05-29\\",
@@ -8851,14 +8905,14 @@ $util.qr($DeleteRequest.put(\\"key\\", $Key))
 #end
 $util.toJson($DeleteRequest)
 ## [End] Delete Request template. **",
-  "Mutation.deleteEmail.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Mutation.deleteEmail.res.vtl": "## [Start] ResponseTemplate. **
 $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
+## [End] ResponseTemplate. **",
   "Mutation.deletePost.req.vtl": "## [Start] Delete Request template. **
 #set( $DeleteRequest = {
   \\"version\\": \\"2018-05-29\\",
@@ -8917,14 +8971,14 @@ $util.qr($DeleteRequest.put(\\"key\\", $Key))
 $util.qr($DeleteRequest.put(\\"_version\\", $util.defaultIfNull($ctx.args.input[\\"_version\\"], \\"0\\")))
 $util.toJson($DeleteRequest)
 ## [End] Delete Request template. **",
-  "Mutation.deletePost.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Mutation.deletePost.res.vtl": "## [Start] ResponseTemplate. **
 $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type, $ctx.result)
 #else
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
+## [End] ResponseTemplate. **",
   "Mutation.deleteRequire.req.vtl": "## [Start] Delete Request template. **
 #set( $DeleteRequest = {
   \\"version\\": \\"2018-05-29\\",
@@ -8982,14 +9036,14 @@ $util.qr($DeleteRequest.put(\\"key\\", $Key))
 #end
 $util.toJson($DeleteRequest)
 ## [End] Delete Request template. **",
-  "Mutation.deleteRequire.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Mutation.deleteRequire.res.vtl": "## [Start] ResponseTemplate. **
 $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
+## [End] ResponseTemplate. **",
   "Mutation.deleteTest.req.vtl": "## [Start] Delete Request template. **
 #set( $DeleteRequest = {
   \\"version\\": \\"2018-05-29\\",
@@ -9047,14 +9101,14 @@ $util.qr($DeleteRequest.put(\\"key\\", $Key))
 #end
 $util.toJson($DeleteRequest)
 ## [End] Delete Request template. **",
-  "Mutation.deleteTest.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Mutation.deleteTest.res.vtl": "## [Start] ResponseTemplate. **
 $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
+## [End] ResponseTemplate. **",
   "Mutation.deleteUser.req.vtl": "## [Start] Delete Request template. **
 #set( $DeleteRequest = {
   \\"version\\": \\"2018-05-29\\",
@@ -9112,14 +9166,14 @@ $util.qr($DeleteRequest.put(\\"key\\", $Key))
 #end
 $util.toJson($DeleteRequest)
 ## [End] Delete Request template. **",
-  "Mutation.deleteUser.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Mutation.deleteUser.res.vtl": "## [Start] ResponseTemplate. **
 $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
+## [End] ResponseTemplate. **",
   "Mutation.updateAuthor.init.1.req.vtl": "## [Start] Initialization default values. **
 $util.qr($ctx.stash.put(\\"defaultValues\\", $util.defaultIfNull($ctx.stash.defaultValues, {})))
 #set( $updatedAt = $util.time.nowISO8601() )
@@ -9258,14 +9312,14 @@ $util.qr($update.put(\\"expression\\", \\"$expression\\"))
 #end
 $util.toJson($UpdateItem)
 ## [End] Mutation Update resolver. **",
-  "Mutation.updateAuthor.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Mutation.updateAuthor.res.vtl": "## [Start] ResponseTemplate. **
 $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
+## [End] ResponseTemplate. **",
   "Mutation.updateComment.init.1.req.vtl": "## [Start] Initialization default values. **
 $util.qr($ctx.stash.put(\\"defaultValues\\", $util.defaultIfNull($ctx.stash.defaultValues, {})))
 #set( $updatedAt = $util.time.nowISO8601() )
@@ -9404,14 +9458,14 @@ $util.qr($update.put(\\"expression\\", \\"$expression\\"))
 #end
 $util.toJson($UpdateItem)
 ## [End] Mutation Update resolver. **",
-  "Mutation.updateComment.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Mutation.updateComment.res.vtl": "## [Start] ResponseTemplate. **
 $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
+## [End] ResponseTemplate. **",
   "Mutation.updateEmail.init.1.req.vtl": "## [Start] Initialization default values. **
 $util.qr($ctx.stash.put(\\"defaultValues\\", $util.defaultIfNull($ctx.stash.defaultValues, {})))
 #set( $updatedAt = $util.time.nowISO8601() )
@@ -9550,14 +9604,14 @@ $util.qr($update.put(\\"expression\\", \\"$expression\\"))
 #end
 $util.toJson($UpdateItem)
 ## [End] Mutation Update resolver. **",
-  "Mutation.updateEmail.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Mutation.updateEmail.res.vtl": "## [Start] ResponseTemplate. **
 $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
+## [End] ResponseTemplate. **",
   "Mutation.updatePost.init.1.req.vtl": "## [Start] Initialization default values. **
 $util.qr($ctx.stash.put(\\"defaultValues\\", $util.defaultIfNull($ctx.stash.defaultValues, {})))
 #set( $updatedAt = $util.time.nowISO8601() )
@@ -9697,14 +9751,14 @@ $util.qr($update.put(\\"expression\\", \\"$expression\\"))
 #end
 $util.toJson($UpdateItem)
 ## [End] Mutation Update resolver. **",
-  "Mutation.updatePost.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Mutation.updatePost.res.vtl": "## [Start] ResponseTemplate. **
 $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type, $ctx.result)
 #else
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
+## [End] ResponseTemplate. **",
   "Mutation.updateRequire.init.1.req.vtl": "## [Start] Initialization default values. **
 $util.qr($ctx.stash.put(\\"defaultValues\\", $util.defaultIfNull($ctx.stash.defaultValues, {})))
 #set( $updatedAt = $util.time.nowISO8601() )
@@ -9843,14 +9897,14 @@ $util.qr($update.put(\\"expression\\", \\"$expression\\"))
 #end
 $util.toJson($UpdateItem)
 ## [End] Mutation Update resolver. **",
-  "Mutation.updateRequire.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Mutation.updateRequire.res.vtl": "## [Start] ResponseTemplate. **
 $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
+## [End] ResponseTemplate. **",
   "Mutation.updateTest.init.1.req.vtl": "## [Start] Initialization default values. **
 $util.qr($ctx.stash.put(\\"defaultValues\\", $util.defaultIfNull($ctx.stash.defaultValues, {})))
 #set( $updatedAt = $util.time.nowISO8601() )
@@ -9989,14 +10043,14 @@ $util.qr($update.put(\\"expression\\", \\"$expression\\"))
 #end
 $util.toJson($UpdateItem)
 ## [End] Mutation Update resolver. **",
-  "Mutation.updateTest.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Mutation.updateTest.res.vtl": "## [Start] ResponseTemplate. **
 $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
+## [End] ResponseTemplate. **",
   "Mutation.updateUser.init.1.req.vtl": "## [Start] Initialization default values. **
 $util.qr($ctx.stash.put(\\"defaultValues\\", $util.defaultIfNull($ctx.stash.defaultValues, {})))
 #set( $updatedAt = $util.time.nowISO8601() )
@@ -10135,14 +10189,14 @@ $util.qr($update.put(\\"expression\\", \\"$expression\\"))
 #end
 $util.toJson($UpdateItem)
 ## [End] Mutation Update resolver. **",
-  "Mutation.updateUser.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Mutation.updateUser.res.vtl": "## [Start] ResponseTemplate. **
 $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
+## [End] ResponseTemplate. **",
   "Query.customGetPost.req.vtl": "## [Start] Get Request template. **
 #set( $GetRequest = {
   \\"version\\": \\"2018-05-29\\",
@@ -10164,17 +10218,20 @@ $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
   #set( $query = {
   \\"expression\\": \\"id = :id\\",
   \\"expressionValues\\": {
-      \\":id\\":     $util.dynamodb.toDynamoDBJson($ctx.args.id)
+      \\":id\\":     $util.parseJson($util.dynamodb.toDynamoDBJson($ctx.args.id))
   }
 } )
 #end
 $util.qr($GetRequest.put(\\"query\\", $query))
-#if( !$util.isNullOrEmpty($ctx.stash.get(\\"authFilter\\")) )
-  $util.qr($GetRequest.put(\\"filter\\", $ctx.stash.get(\\"authFilter\\")))
+#if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
+  $util.qr($GetRequest.put(\\"filter\\", $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.authFilter))))
 #end
 $util.toJson($GetRequest)
 ## [End] Get Request template. **",
   "Query.customGetPost.res.vtl": "## [Start] Get Response template. **
+#if( $ctx.error )
+  $util.error($ctx.error.message, $ctx.error.type)
+#end
 #if( !$ctx.result.items.isEmpty() && $ctx.result.scannedCount == 1 )
   $util.toJson($ctx.result.items[0])
 #else
@@ -10193,8 +10250,8 @@ $util.unauthorized()
 #if( $context.args.nextToken )
   #set( $ListRequest.nextToken = $context.args.nextToken )
 #end
-#if( !$util.isNullOrEmpty($ctx.stash.get(\\"authFilter\\")) )
-  #set( $filter = $ctx.stash.get(\\"authFilter\\") )
+#if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
+  #set( $filter = $ctx.stash.authFilter )
   #if( !$util.isNullOrEmpty($ctx.args.filter) )
     #set( $filter = [{
   \\"and\\":   [$filter, $ctx.args.filter]
@@ -10230,13 +10287,13 @@ $util.unauthorized()
 #end
 $util.toJson($ListRequest)
 ## [End] List Request. **",
-  "Query.customListPost.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Query.customListPost.res.vtl": "## [Start] ResponseTemplate. **
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
+## [End] ResponseTemplate. **",
   "Query.getAuthor.req.vtl": "## [Start] Get Request template. **
 #set( $GetRequest = {
   \\"version\\": \\"2018-05-29\\",
@@ -10258,17 +10315,20 @@ $util.toJson($ListRequest)
   #set( $query = {
   \\"expression\\": \\"id = :id\\",
   \\"expressionValues\\": {
-      \\":id\\":     $util.dynamodb.toDynamoDBJson($ctx.args.id)
+      \\":id\\":     $util.parseJson($util.dynamodb.toDynamoDBJson($ctx.args.id))
   }
 } )
 #end
 $util.qr($GetRequest.put(\\"query\\", $query))
-#if( !$util.isNullOrEmpty($ctx.stash.get(\\"authFilter\\")) )
-  $util.qr($GetRequest.put(\\"filter\\", $ctx.stash.get(\\"authFilter\\")))
+#if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
+  $util.qr($GetRequest.put(\\"filter\\", $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.authFilter))))
 #end
 $util.toJson($GetRequest)
 ## [End] Get Request template. **",
   "Query.getAuthor.res.vtl": "## [Start] Get Response template. **
+#if( $ctx.error )
+  $util.error($ctx.error.message, $ctx.error.type)
+#end
 #if( !$ctx.result.items.isEmpty() && $ctx.result.scannedCount == 1 )
   $util.toJson($ctx.result.items[0])
 #else
@@ -10299,17 +10359,20 @@ $util.unauthorized()
   #set( $query = {
   \\"expression\\": \\"id = :id\\",
   \\"expressionValues\\": {
-      \\":id\\":     $util.dynamodb.toDynamoDBJson($ctx.args.id)
+      \\":id\\":     $util.parseJson($util.dynamodb.toDynamoDBJson($ctx.args.id))
   }
 } )
 #end
 $util.qr($GetRequest.put(\\"query\\", $query))
-#if( !$util.isNullOrEmpty($ctx.stash.get(\\"authFilter\\")) )
-  $util.qr($GetRequest.put(\\"filter\\", $ctx.stash.get(\\"authFilter\\")))
+#if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
+  $util.qr($GetRequest.put(\\"filter\\", $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.authFilter))))
 #end
 $util.toJson($GetRequest)
 ## [End] Get Request template. **",
   "Query.getComment.res.vtl": "## [Start] Get Response template. **
+#if( $ctx.error )
+  $util.error($ctx.error.message, $ctx.error.type)
+#end
 #if( !$ctx.result.items.isEmpty() && $ctx.result.scannedCount == 1 )
   $util.toJson($ctx.result.items[0])
 #else
@@ -10340,17 +10403,20 @@ $util.unauthorized()
   #set( $query = {
   \\"expression\\": \\"id = :id\\",
   \\"expressionValues\\": {
-      \\":id\\":     $util.dynamodb.toDynamoDBJson($ctx.args.id)
+      \\":id\\":     $util.parseJson($util.dynamodb.toDynamoDBJson($ctx.args.id))
   }
 } )
 #end
 $util.qr($GetRequest.put(\\"query\\", $query))
-#if( !$util.isNullOrEmpty($ctx.stash.get(\\"authFilter\\")) )
-  $util.qr($GetRequest.put(\\"filter\\", $ctx.stash.get(\\"authFilter\\")))
+#if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
+  $util.qr($GetRequest.put(\\"filter\\", $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.authFilter))))
 #end
 $util.toJson($GetRequest)
 ## [End] Get Request template. **",
   "Query.getEmail.res.vtl": "## [Start] Get Response template. **
+#if( $ctx.error )
+  $util.error($ctx.error.message, $ctx.error.type)
+#end
 #if( !$ctx.result.items.isEmpty() && $ctx.result.scannedCount == 1 )
   $util.toJson($ctx.result.items[0])
 #else
@@ -10381,17 +10447,20 @@ $util.unauthorized()
   #set( $query = {
   \\"expression\\": \\"id = :id\\",
   \\"expressionValues\\": {
-      \\":id\\":     $util.dynamodb.toDynamoDBJson($ctx.args.id)
+      \\":id\\":     $util.parseJson($util.dynamodb.toDynamoDBJson($ctx.args.id))
   }
 } )
 #end
 $util.qr($GetRequest.put(\\"query\\", $query))
-#if( !$util.isNullOrEmpty($ctx.stash.get(\\"authFilter\\")) )
-  $util.qr($GetRequest.put(\\"filter\\", $ctx.stash.get(\\"authFilter\\")))
+#if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
+  $util.qr($GetRequest.put(\\"filter\\", $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.authFilter))))
 #end
 $util.toJson($GetRequest)
 ## [End] Get Request template. **",
   "Query.getEntity.res.vtl": "## [Start] Get Response template. **
+#if( $ctx.error )
+  $util.error($ctx.error.message, $ctx.error.type)
+#end
 #if( !$ctx.result.items.isEmpty() && $ctx.result.scannedCount == 1 )
   $util.toJson($ctx.result.items[0])
 #else
@@ -10422,17 +10491,20 @@ $util.unauthorized()
   #set( $query = {
   \\"expression\\": \\"id = :id\\",
   \\"expressionValues\\": {
-      \\":id\\":     $util.dynamodb.toDynamoDBJson($ctx.args.id)
+      \\":id\\":     $util.parseJson($util.dynamodb.toDynamoDBJson($ctx.args.id))
   }
 } )
 #end
 $util.qr($GetRequest.put(\\"query\\", $query))
-#if( !$util.isNullOrEmpty($ctx.stash.get(\\"authFilter\\")) )
-  $util.qr($GetRequest.put(\\"filter\\", $ctx.stash.get(\\"authFilter\\")))
+#if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
+  $util.qr($GetRequest.put(\\"filter\\", $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.authFilter))))
 #end
 $util.toJson($GetRequest)
 ## [End] Get Request template. **",
   "Query.getPost.res.vtl": "## [Start] Get Response template. **
+#if( $ctx.error )
+  $util.error($ctx.error.message, $ctx.error.type, $ctx.result)
+#end
 #if( !$ctx.result.items.isEmpty() && $ctx.result.scannedCount == 1 )
   $util.toJson($ctx.result.items[0])
 #else
@@ -10463,17 +10535,20 @@ $util.unauthorized()
   #set( $query = {
   \\"expression\\": \\"id = :id\\",
   \\"expressionValues\\": {
-      \\":id\\":     $util.dynamodb.toDynamoDBJson($ctx.args.id)
+      \\":id\\":     $util.parseJson($util.dynamodb.toDynamoDBJson($ctx.args.id))
   }
 } )
 #end
 $util.qr($GetRequest.put(\\"query\\", $query))
-#if( !$util.isNullOrEmpty($ctx.stash.get(\\"authFilter\\")) )
-  $util.qr($GetRequest.put(\\"filter\\", $ctx.stash.get(\\"authFilter\\")))
+#if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
+  $util.qr($GetRequest.put(\\"filter\\", $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.authFilter))))
 #end
 $util.toJson($GetRequest)
 ## [End] Get Request template. **",
   "Query.getRequire.res.vtl": "## [Start] Get Response template. **
+#if( $ctx.error )
+  $util.error($ctx.error.message, $ctx.error.type)
+#end
 #if( !$ctx.result.items.isEmpty() && $ctx.result.scannedCount == 1 )
   $util.toJson($ctx.result.items[0])
 #else
@@ -10504,17 +10579,20 @@ $util.unauthorized()
   #set( $query = {
   \\"expression\\": \\"id = :id\\",
   \\"expressionValues\\": {
-      \\":id\\":     $util.dynamodb.toDynamoDBJson($ctx.args.id)
+      \\":id\\":     $util.parseJson($util.dynamodb.toDynamoDBJson($ctx.args.id))
   }
 } )
 #end
 $util.qr($GetRequest.put(\\"query\\", $query))
-#if( !$util.isNullOrEmpty($ctx.stash.get(\\"authFilter\\")) )
-  $util.qr($GetRequest.put(\\"filter\\", $ctx.stash.get(\\"authFilter\\")))
+#if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
+  $util.qr($GetRequest.put(\\"filter\\", $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.authFilter))))
 #end
 $util.toJson($GetRequest)
 ## [End] Get Request template. **",
   "Query.getTest.res.vtl": "## [Start] Get Response template. **
+#if( $ctx.error )
+  $util.error($ctx.error.message, $ctx.error.type)
+#end
 #if( !$ctx.result.items.isEmpty() && $ctx.result.scannedCount == 1 )
   $util.toJson($ctx.result.items[0])
 #else
@@ -10545,17 +10623,20 @@ $util.unauthorized()
   #set( $query = {
   \\"expression\\": \\"id = :id\\",
   \\"expressionValues\\": {
-      \\":id\\":     $util.dynamodb.toDynamoDBJson($ctx.args.id)
+      \\":id\\":     $util.parseJson($util.dynamodb.toDynamoDBJson($ctx.args.id))
   }
 } )
 #end
 $util.qr($GetRequest.put(\\"query\\", $query))
-#if( !$util.isNullOrEmpty($ctx.stash.get(\\"authFilter\\")) )
-  $util.qr($GetRequest.put(\\"filter\\", $ctx.stash.get(\\"authFilter\\")))
+#if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
+  $util.qr($GetRequest.put(\\"filter\\", $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.authFilter))))
 #end
 $util.toJson($GetRequest)
 ## [End] Get Request template. **",
   "Query.getUser.res.vtl": "## [Start] Get Response template. **
+#if( $ctx.error )
+  $util.error($ctx.error.message, $ctx.error.type)
+#end
 #if( !$ctx.result.items.isEmpty() && $ctx.result.scannedCount == 1 )
   $util.toJson($ctx.result.items[0])
 #else
@@ -10574,8 +10655,8 @@ $util.unauthorized()
 #if( $context.args.nextToken )
   #set( $ListRequest.nextToken = $context.args.nextToken )
 #end
-#if( !$util.isNullOrEmpty($ctx.stash.get(\\"authFilter\\")) )
-  #set( $filter = $ctx.stash.get(\\"authFilter\\") )
+#if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
+  #set( $filter = $ctx.stash.authFilter )
   #if( !$util.isNullOrEmpty($ctx.args.filter) )
     #set( $filter = [{
   \\"and\\":   [$filter, $ctx.args.filter]
@@ -10611,13 +10692,13 @@ $util.unauthorized()
 #end
 $util.toJson($ListRequest)
 ## [End] List Request. **",
-  "Query.listAuthors.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Query.listAuthors.res.vtl": "## [Start] ResponseTemplate. **
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
+## [End] ResponseTemplate. **",
   "Query.listComments.req.vtl": "## [Start] List Request. **
 #set( $limit = $util.defaultIfNull($context.args.limit, 100) )
 #set( $ListRequest = {
@@ -10627,8 +10708,8 @@ $util.toJson($ListRequest)
 #if( $context.args.nextToken )
   #set( $ListRequest.nextToken = $context.args.nextToken )
 #end
-#if( !$util.isNullOrEmpty($ctx.stash.get(\\"authFilter\\")) )
-  #set( $filter = $ctx.stash.get(\\"authFilter\\") )
+#if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
+  #set( $filter = $ctx.stash.authFilter )
   #if( !$util.isNullOrEmpty($ctx.args.filter) )
     #set( $filter = [{
   \\"and\\":   [$filter, $ctx.args.filter]
@@ -10664,13 +10745,13 @@ $util.toJson($ListRequest)
 #end
 $util.toJson($ListRequest)
 ## [End] List Request. **",
-  "Query.listComments.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Query.listComments.res.vtl": "## [Start] ResponseTemplate. **
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
+## [End] ResponseTemplate. **",
   "Query.listEmails.req.vtl": "## [Start] List Request. **
 #set( $limit = $util.defaultIfNull($context.args.limit, 100) )
 #set( $ListRequest = {
@@ -10680,8 +10761,8 @@ $util.toJson($ListRequest)
 #if( $context.args.nextToken )
   #set( $ListRequest.nextToken = $context.args.nextToken )
 #end
-#if( !$util.isNullOrEmpty($ctx.stash.get(\\"authFilter\\")) )
-  #set( $filter = $ctx.stash.get(\\"authFilter\\") )
+#if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
+  #set( $filter = $ctx.stash.authFilter )
   #if( !$util.isNullOrEmpty($ctx.args.filter) )
     #set( $filter = [{
   \\"and\\":   [$filter, $ctx.args.filter]
@@ -10717,13 +10798,13 @@ $util.toJson($ListRequest)
 #end
 $util.toJson($ListRequest)
 ## [End] List Request. **",
-  "Query.listEmails.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Query.listEmails.res.vtl": "## [Start] ResponseTemplate. **
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
+## [End] ResponseTemplate. **",
   "Query.listPosts.req.vtl": "## [Start] List Request. **
 #set( $limit = $util.defaultIfNull($context.args.limit, 100) )
 #set( $ListRequest = {
@@ -10733,8 +10814,8 @@ $util.toJson($ListRequest)
 #if( $context.args.nextToken )
   #set( $ListRequest.nextToken = $context.args.nextToken )
 #end
-#if( !$util.isNullOrEmpty($ctx.stash.get(\\"authFilter\\")) )
-  #set( $filter = $ctx.stash.get(\\"authFilter\\") )
+#if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
+  #set( $filter = $ctx.stash.authFilter )
   #if( !$util.isNullOrEmpty($ctx.args.filter) )
     #set( $filter = [{
   \\"and\\":   [$filter, $ctx.args.filter]
@@ -10770,13 +10851,13 @@ $util.toJson($ListRequest)
 #end
 $util.toJson($ListRequest)
 ## [End] List Request. **",
-  "Query.listPosts.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Query.listPosts.res.vtl": "## [Start] ResponseTemplate. **
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type, $ctx.result)
 #else
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
+## [End] ResponseTemplate. **",
   "Query.listRequires.req.vtl": "## [Start] List Request. **
 #set( $limit = $util.defaultIfNull($context.args.limit, 100) )
 #set( $ListRequest = {
@@ -10786,8 +10867,8 @@ $util.toJson($ListRequest)
 #if( $context.args.nextToken )
   #set( $ListRequest.nextToken = $context.args.nextToken )
 #end
-#if( !$util.isNullOrEmpty($ctx.stash.get(\\"authFilter\\")) )
-  #set( $filter = $ctx.stash.get(\\"authFilter\\") )
+#if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
+  #set( $filter = $ctx.stash.authFilter )
   #if( !$util.isNullOrEmpty($ctx.args.filter) )
     #set( $filter = [{
   \\"and\\":   [$filter, $ctx.args.filter]
@@ -10823,13 +10904,13 @@ $util.toJson($ListRequest)
 #end
 $util.toJson($ListRequest)
 ## [End] List Request. **",
-  "Query.listRequires.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Query.listRequires.res.vtl": "## [Start] ResponseTemplate. **
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
+## [End] ResponseTemplate. **",
   "Query.listTests.req.vtl": "## [Start] List Request. **
 #set( $limit = $util.defaultIfNull($context.args.limit, 100) )
 #set( $ListRequest = {
@@ -10839,8 +10920,8 @@ $util.toJson($ListRequest)
 #if( $context.args.nextToken )
   #set( $ListRequest.nextToken = $context.args.nextToken )
 #end
-#if( !$util.isNullOrEmpty($ctx.stash.get(\\"authFilter\\")) )
-  #set( $filter = $ctx.stash.get(\\"authFilter\\") )
+#if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
+  #set( $filter = $ctx.stash.authFilter )
   #if( !$util.isNullOrEmpty($ctx.args.filter) )
     #set( $filter = [{
   \\"and\\":   [$filter, $ctx.args.filter]
@@ -10876,13 +10957,13 @@ $util.toJson($ListRequest)
 #end
 $util.toJson($ListRequest)
 ## [End] List Request. **",
-  "Query.listTests.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Query.listTests.res.vtl": "## [Start] ResponseTemplate. **
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
+## [End] ResponseTemplate. **",
   "Query.listUsers.req.vtl": "## [Start] List Request. **
 #set( $limit = $util.defaultIfNull($context.args.limit, 100) )
 #set( $ListRequest = {
@@ -10892,8 +10973,8 @@ $util.toJson($ListRequest)
 #if( $context.args.nextToken )
   #set( $ListRequest.nextToken = $context.args.nextToken )
 #end
-#if( !$util.isNullOrEmpty($ctx.stash.get(\\"authFilter\\")) )
-  #set( $filter = $ctx.stash.get(\\"authFilter\\") )
+#if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
+  #set( $filter = $ctx.stash.authFilter )
   #if( !$util.isNullOrEmpty($ctx.args.filter) )
     #set( $filter = [{
   \\"and\\":   [$filter, $ctx.args.filter]
@@ -10929,13 +11010,13 @@ $util.toJson($ListRequest)
 #end
 $util.toJson($ListRequest)
 ## [End] List Request. **",
-  "Query.listUsers.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Query.listUsers.res.vtl": "## [Start] ResponseTemplate. **
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
+## [End] ResponseTemplate. **",
   "Query.syncPosts.req.vtl": "## [Start] Sync Request template. **
 {
   \\"version\\": \\"2018-05-29\\",
@@ -10950,13 +11031,13 @@ null
   \\"nextToken\\": $util.toJson($util.defaultIfNull($ctx.args.nextToken, null))
 }
 ## [End] Sync Request template. **",
-  "Query.syncPosts.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Query.syncPosts.res.vtl": "## [Start] ResponseTemplate. **
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type, $ctx.result)
 #else
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
+## [End] ResponseTemplate. **",
   "Subscription.onCreateAuthor.req.vtl": "## [Start] Subscription Request template. **
 $util.toJson({
   \\"version\\": \\"2018-05-29\\",

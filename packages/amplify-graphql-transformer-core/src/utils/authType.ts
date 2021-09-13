@@ -24,8 +24,10 @@ export function adoptAuthMode(stackManager: StackManager, entry: AppSyncAuthConf
       return {
         authorizationType: authType,
         apiKeyConfig: {
-          description: entry.apiKeyConfig.description,
-          expires: Expiration.after(Duration.days(entry.apiKeyConfig.apiKeyExpirationDays)),
+          description: entry.apiKeyConfig?.description,
+          expires: entry.apiKeyConfig?.apiKeyExpirationDays
+            ? Expiration.after(Duration.days(entry.apiKeyConfig.apiKeyExpirationDays))
+            : undefined,
         },
       };
     case AuthorizationType.USER_POOL:

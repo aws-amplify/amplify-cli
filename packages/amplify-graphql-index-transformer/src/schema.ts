@@ -322,6 +322,16 @@ export function ensureQueryField(config: IndexDirectiveConfiguration, ctx: Trans
   if (!queryField) {
     return;
   }
+  // add query field to metadata
+  const keyName = `${object.name.value}:indicies`;
+  let indicies: Set<string>;
+  if (!ctx.metadata.has(keyName)) {
+    indicies = new Set([queryField]);
+  } else {
+    indicies = ctx.metadata.get<Set<string>>(keyName)!;
+    indicies.add(queryField);
+  }
+  ctx.metadata.set(keyName, indicies);
 
   const args = [createHashField(config)];
 

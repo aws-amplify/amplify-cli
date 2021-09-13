@@ -9,9 +9,11 @@ import {
   DataSourceProvider,
   MutationFieldType,
   QueryFieldType,
+  TransformerTransformSchemaStepContextProvider,
   TransformerContextProvider,
   TransformerResolverProvider,
   TransformerSchemaVisitStepContextProvider,
+  TransformerAuthProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import {
   AuthRule,
@@ -43,6 +45,9 @@ import {
   addSubscriptionArguments,
   fieldIsList,
   getSubscriptionFieldNames,
+  addDirectivesToField,
+  getSearchableConfig,
+  getStackForField,
 } from './utils';
 import {
   DirectiveNode,
@@ -66,6 +71,7 @@ import {
   generateAuthExpressionForQueries,
   generateAuthExpressionForSubscriptions,
 } from './resolvers';
+import { toUpper } from 'graphql-transformer-common';
 
 // @ auth
 // changing the schema
@@ -78,7 +84,7 @@ import {
 
 // resolver.ts for auth pipeline slots
 
-export class AuthTransformer extends TransformerAuthBase {
+export class AuthTransformer extends TransformerAuthBase implements TransformerAuthProvider {
   private config: AuthTransformerConfig;
   private configuredAuthProviders: ConfiguredAuthProviders;
   // access control
@@ -108,7 +114,7 @@ export class AuthTransformer extends TransformerAuthBase {
     this.authNonModelConfig = new Map();
   }
 
-  object = (def: ObjectTypeDefinitionNode, directive: DirectiveNode, ctx: TransformerSchemaVisitStepContextProvider): void => {
+  object = (def: ObjectTypeDefinitionNode, directive: DirectiveNode, context: TransformerSchemaVisitStepContextProvider): void => {
     const modelDirective = def.directives?.find(dir => dir.name.value === 'model');
     if (!modelDirective) {
       throw new TransformerContractError('Types annotated with @auth must also be annotated with @model.');
@@ -130,7 +136,7 @@ export class AuthTransformer extends TransformerAuthBase {
     // add object into policy
     this.addTypeToResourceReferences(def.name.value, rules);
     // turn rules into roles and add into acm and roleMap
-    this.convertModelRulesToRoles(acm, rules);
+    this.convertRulesToRoles(acm, rules);
     this.modelDirectiveConfig.set(typeName, getModelConfig(modelDirective, typeName));
     this.authModelConfig.set(typeName, acm);
   };
@@ -139,7 +145,7 @@ export class AuthTransformer extends TransformerAuthBase {
     parent: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode,
     field: FieldDefinitionNode,
     directive: DirectiveNode,
-    ctx: TransformerSchemaVisitStepContextProvider,
+    context: TransformerSchemaVisitStepContextProvider,
   ): void => {
     if (parent.kind === Kind.INTERFACE_TYPE_DEFINITION) {
       throw new InvalidDirectiveError(
@@ -147,9 +153,9 @@ export class AuthTransformer extends TransformerAuthBase {
       );
     }
     const isParentTypeBuiltinType =
-      parent.name.value === ctx.output.getQueryTypeName() ||
-      parent.name.value === ctx.output.getMutationTypeName() ||
-      parent.name.value === ctx.output.getSubscriptionTypeName();
+      parent.name.value === context.output.getQueryTypeName() ||
+      parent.name.value === context.output.getMutationTypeName() ||
+      parent.name.value === context.output.getSubscriptionTypeName();
 
     if (isParentTypeBuiltinType) {
       console.warn(
@@ -158,6 +164,9 @@ object to perform authorization logic and the source will be an empty object for
 Static group authorization should perform as expected.`,
       );
     }
+    // context.api.host.resolver
+    // context.resolver -> resolver manager -> dynamodb, relation directives, searchable
+    // creates field resolver
 
     const modelDirective = parent.directives?.find(dir => dir.name.value === 'model');
     const typeName = parent.name.value;
@@ -186,64 +195,87 @@ Static group authorization should perform as expected.`,
         acm = this.authModelConfig.get(typeName) as AccessControlMatrix;
         acm.resetAccessForResource(fieldName);
       }
-      this.convertModelRulesToRoles(acm, rules, fieldName);
+      this.convertRulesToRoles(acm, rules, fieldName);
+      this.authModelConfig.set(typeName, acm);
     } else {
       // if @auth is used without @model only generate static group rules in the resolver
       // since we only protect the field for non models we store the typeName + fieldName
       // in the authNonModelTypes map
-      const staticGroupRules = rules.filter((rule: AuthRule) => rule.groups);
+      const staticRules = rules.filter((rule: AuthRule) => rule.allow !== 'owner' && !rule.groupsField);
       const typeFieldName = `${typeName}:${fieldName}`;
       const acm = new AccessControlMatrix({
         operations: ['read'],
         resources: [typeFieldName],
       });
-      this.convertNonModelRulesToRoles(acm, staticGroupRules, typeFieldName);
+      this.convertRulesToRoles(acm, staticRules, typeFieldName, ['read']);
       this.authNonModelConfig.set(typeFieldName, acm);
     }
   };
 
-  transformSchema = (ctx: TransformerContextProvider): void => {
+  transformSchema = (context: TransformerTransformSchemaStepContextProvider): void => {
     const getOwnerFields = (acm: AccessControlMatrix) => {
       return acm.getRoles().reduce((prev: string[], role: string) => {
         if (this.roleMap.get(role)!.strategy === 'owner') prev.push(this.roleMap.get(role)!.entity!);
         return prev;
       }, []);
     };
-    // generate schema changes
     for (let [modelName, acm] of this.authModelConfig) {
-      const def = ctx.output.getObject(modelName)!;
+      const def = context.output.getObject(modelName)!;
       // collect ownerFields and them in the model
-      this.addFieldsToObject(ctx, modelName, getOwnerFields(acm));
+      this.addFieldsToObject(context, modelName, getOwnerFields(acm));
       // Get the directives we need to add to the GraphQL nodes
-      const providers = this.getAuthProvidersPerModel(modelName);
+      const providers = this.getAuthProviders(acm.getRoles());
       const directives = this.getServiceDirectives(providers, providers.length === 0 ? this.shouldAddDefaultServiceDirective() : false);
       if (directives.length > 0) {
-        extendTypeWithDirectives(ctx, modelName, directives);
+        extendTypeWithDirectives(context, modelName, directives);
       }
-      this.protectSchemaOperations(ctx, def, acm, providers);
-      this.propagateAuthDirectivesToNestedTypes(ctx, ctx.output.getObject(modelName)!, providers);
+      this.protectSchemaOperations(context, def, acm);
+      this.propagateAuthDirectivesToNestedTypes(context, context.output.getObject(modelName)!, providers);
+    }
+    for (let [typeFieldName, acm] of this.authNonModelConfig) {
+      // protect the non model field
+      const [typeName, fieldName] = typeFieldName.split(':');
+      const providers = this.getAuthProviders(acm.getRoles());
+      const directives = this.getServiceDirectives(providers, false);
+      if (directives.length > 0) {
+        addDirectivesToField(context, typeName, fieldName, directives);
+      }
     }
   };
 
-  generateResolvers = (ctx: TransformerContextProvider): void => {
+  generateResolvers = (context: TransformerContextProvider): void => {
     // generate iam policies
-    this.generateIAMPolicies(ctx);
+    this.generateIAMPolicies(context);
     // generate auth resolver code
     for (let [modelName, acm] of this.authModelConfig) {
-      const def = ctx.output.getObject(modelName)!;
+      const indexKeyName = `${modelName}:indicies`;
+      const def = context.output.getObject(modelName)!;
+      const searchableDirective = def.directives.find(dir => dir.name.value === 'searchable');
       // queries
       const queryFields = getQueryFieldNames(this.modelDirectiveConfig.get(modelName)!);
       for (let query of queryFields.values()) {
         switch (query.type) {
           case QueryFieldType.GET:
-            this.protectGetResolver(ctx, def, query.typeName, query.fieldName, acm);
+            this.protectGetResolver(context, def, query.typeName, query.fieldName, acm);
             break;
           case QueryFieldType.LIST:
-            this.protectListResolver(ctx, def, query.typeName, query.fieldName, acm);
+            this.protectListResolver(context, def, query.typeName, query.fieldName, acm);
             break;
           default:
             throw new TransformerContractError('Unkown query field type');
         }
+      }
+      // protect additional query fields if they exist
+      if (context.metadata.has(indexKeyName)) {
+        for (let index of context.metadata.get<Set<string>>(indexKeyName)!.values()) {
+          this.protectListResolver(context, def, context.output.getQueryTypeName()!, index, acm);
+        }
+      }
+      // check if searchable if included in the typeName
+      if (searchableDirective) {
+        // protect search query
+        const config = getSearchableConfig(searchableDirective, modelName);
+        this.protectSearchResolver(context, def, context.output.getQueryTypeName()!, config.queries.search, acm);
       }
       // get fields specified in the schema
       // if there is a role that does not have read access on the field then we create a field resolver
@@ -256,21 +288,20 @@ Static group authorization should perform as expected.`,
             throw new InvalidDirectiveError(`\nPer-field auth on the required field ${field.name.value} is not supported with subscriptions.
   Either make the field optional, set auth on the object and not the field, or disable subscriptions for the object (setting level to off or public)\n`);
           }
-          // TODO: check if a function resolver is created here
-          this.protectFieldResolver(ctx, def, modelName, field.name.value, allowedRoles);
+          this.protectFieldResolver(context, def, modelName, field.name.value, allowedRoles);
         }
       }
       const mutationFields = getMutationFieldNames(this.modelDirectiveConfig.get(modelName)!);
       for (let mutation of mutationFields.values()) {
         switch (mutation.type) {
           case MutationFieldType.CREATE:
-            this.protectCreateResolver(ctx, def, mutation.typeName, mutation.fieldName, acm);
+            this.protectCreateResolver(context, def, mutation.typeName, mutation.fieldName, acm);
             break;
           case MutationFieldType.UPDATE:
-            this.protectUpdateResolver(ctx, def, mutation.typeName, mutation.fieldName, acm);
+            this.protectUpdateResolver(context, def, mutation.typeName, mutation.fieldName, acm);
             break;
           case MutationFieldType.DELETE:
-            this.protectDeleteResolver(ctx, def, mutation.typeName, mutation.fieldName, acm);
+            this.protectDeleteResolver(context, def, mutation.typeName, mutation.fieldName, acm);
             break;
           default:
             throw new TransformerContractError('Unkown Mutation field type');
@@ -278,51 +309,84 @@ Static group authorization should perform as expected.`,
       }
 
       const subscriptionFieldNames = getSubscriptionFieldNames(this.modelDirectiveConfig.get(modelName)!);
-      const subscriptionRoles = this.getSubscriptionRoles(def.fields ?? [], acm);
+      const subscriptionRoles = acm
+        .getRolesPerOperation('read')
+        .map(role => this.roleMap.get(role)!)
+        // for subscriptions we only use static rules or owner rule where the field is not a list
+        .filter(roleDef => (roleDef.strategy === 'owner' && !fieldIsList(def.fields ?? [], roleDef.entity!)) || roleDef.static);
       for (let subscription of subscriptionFieldNames) {
-        this.protectSubscriptionResolver(ctx, subscription.typeName, subscription.fieldName, subscriptionRoles);
+        this.protectSubscriptionResolver(context, subscription.typeName, subscription.fieldName, subscriptionRoles);
       }
+    }
+
+    for (let [typeFieldName, acm] of this.authNonModelConfig) {
+      // field resolvers
+      const [typeName, fieldName] = typeFieldName.split(':');
+      const def = context.output.getObject(typeName);
+      this.protectFieldResolver(context, def, typeName, fieldName, acm.getRoles());
     }
   };
 
   protectSchemaOperations = (
-    ctx: TransformerContextProvider,
+    ctx: TransformerTransformSchemaStepContextProvider,
     def: ObjectTypeDefinitionNode,
     acm: AccessControlMatrix,
-    providers: Array<AuthProvider>,
   ): void => {
     const modelConfig = this.modelDirectiveConfig.get(def.name.value)!;
-    const addServiceDirective = (operation: ModelOperation, operationName: string | null = null) => {
+    const indexKeyName = `${def.name.value}:indicies`;
+    const searchableDirective = def.directives.find(dir => dir.name.value === 'searchable');
+    const addServiceDirective = (typeName: string, operation: ModelOperation, operationName: string | null = null) => {
       if (operationName) {
-        let includeDefault = this.doesTypeHaveRulesForOperation(acm, operation);
-        let operationDirectives = this.getServiceDirectives(providers, includeDefault);
+        const includeDefault = this.doesTypeHaveRulesForOperation(acm, operation);
+        const providers = this.getAuthProviders(acm.getRolesPerOperation(operation, operation === 'delete'));
+        const operationDirectives = this.getServiceDirectives(providers, includeDefault);
         if (operationDirectives.length > 0) {
-          addDirectivesToOperation(ctx, ctx.output.getQueryTypeName()!, operationName, operationDirectives);
+          addDirectivesToOperation(ctx, typeName, operationName, operationDirectives);
         }
-        this.addOperationToResourceReferences(ctx.output.getQueryTypeName()!, operationName, acm.getRoles());
+        this.addOperationToResourceReferences(typeName, operationName, acm.getRoles());
       }
     };
-    addServiceDirective('read', modelConfig?.queries?.get);
-    addServiceDirective('read', modelConfig?.queries?.list);
-    addServiceDirective('create', modelConfig?.mutations?.create);
-    addServiceDirective('update', modelConfig?.mutations?.update);
-    addServiceDirective('delete', modelConfig?.mutations?.delete);
-    // TODO: protect sync queries once supported
+    // default model operations TODO: protect sync queries once supported
+    addServiceDirective(ctx.output.getQueryTypeName()!, 'read', modelConfig?.queries?.get);
+    addServiceDirective(ctx.output.getQueryTypeName()!, 'read', modelConfig?.queries?.list);
+    addServiceDirective(ctx.output.getMutationTypeName()!, 'create', modelConfig?.mutations?.create);
+    addServiceDirective(ctx.output.getMutationTypeName()!, 'update', modelConfig?.mutations?.update);
+    addServiceDirective(ctx.output.getMutationTypeName()!, 'delete', modelConfig?.mutations?.delete);
+    // @index queries
+    if (ctx.metadata.has(indexKeyName)) {
+      for (let index of ctx.metadata.get<Set<string>>(indexKeyName)!.values()) {
+        addServiceDirective(ctx.output.getQueryTypeName(), 'read', index);
+      }
+    }
+    // @searchable
+    if (searchableDirective) {
+      const config = getSearchableConfig(searchableDirective, def.name.value);
+      addServiceDirective(ctx.output.getQueryTypeName(), 'read', config.queries.search);
+    }
 
     const subscriptions = modelConfig?.subscriptions;
-    if (subscriptions && subscriptions.level === SubscriptionLevel.on) {
-      const subscriptionArguments = this.getSubscriptionRoles(def.fields ?? [], acm);
-      for (let onCreateSub of (subscriptions.onCreate && modelConfig?.mutations?.create) ?? []) {
-        addServiceDirective('read', onCreateSub);
-        addSubscriptionArguments(ctx, onCreateSub, subscriptionArguments);
+    if (subscriptions.level === SubscriptionLevel.on) {
+      const subscriptionArguments = acm
+        .getRolesPerOperation('read')
+        .map(role => this.roleMap.get(role)!)
+        .filter(roleDef => roleDef.strategy === 'owner' && !fieldIsList(def.fields ?? [], roleDef.entity!));
+      if (subscriptions.onCreate && modelConfig?.mutations?.create) {
+        for (let onCreateSub of subscriptions.onCreate) {
+          addServiceDirective(ctx.output.getSubscriptionTypeName()!, 'read', onCreateSub);
+          addSubscriptionArguments(ctx, onCreateSub, subscriptionArguments);
+        }
       }
-      for (let onUpdateSub of (subscriptions.onUpdate && modelConfig?.mutations?.update) ?? []) {
-        addServiceDirective('read', onUpdateSub);
-        addSubscriptionArguments(ctx, onUpdateSub, subscriptionArguments);
+      if (subscriptions.onUpdate && modelConfig?.mutations?.update) {
+        for (let onUpdateSub of subscriptions.onUpdate) {
+          addServiceDirective(ctx.output.getSubscriptionTypeName()!, 'read', onUpdateSub);
+          addSubscriptionArguments(ctx, onUpdateSub, subscriptionArguments);
+        }
       }
-      for (let onDeleteSub of (subscriptions.onDelete && modelConfig?.mutations?.delete) ?? []) {
-        addServiceDirective('read', onDeleteSub);
-        addSubscriptionArguments(ctx, onDeleteSub, subscriptionArguments);
+      if (subscriptions.onDelete && modelConfig?.mutations?.delete) {
+        for (let onDeleteSub of subscriptions.onDelete) {
+          addServiceDirective(ctx.output.getSubscriptionTypeName()!, 'read', onDeleteSub);
+          addSubscriptionArguments(ctx, onDeleteSub, subscriptionArguments);
+        }
       }
     }
   };
@@ -357,6 +421,21 @@ Static group authorization should perform as expected.`,
       MappingTemplate.s3MappingTemplateFromString(authExpression, `${typeName}.${fieldName}.{slotName}.{slotIndex}.req.vtl`),
     );
   };
+  protectSearchResolver = (
+    ctx: TransformerContextProvider,
+    def: ObjectTypeDefinitionNode,
+    typeName: string,
+    fieldName: string,
+    acm: AccessControlMatrix,
+  ): void => {
+    const resolver = ctx.resolvers.getResolver(typeName, fieldName) as TransformerResolverProvider;
+    const roleDefinitions = acm.getRolesPerOperation('read').map(r => this.roleMap.get(r)!);
+    const authExpression = generateAuthExpressionForQueries(this.configuredAuthProviders, roleDefinitions, def.fields ?? [], 'opensearch');
+    resolver.addToSlot(
+      'auth',
+      MappingTemplate.s3MappingTemplateFromString(authExpression, `${typeName}.${fieldName}.{slotName}.{slotIndex}.req.vtl`),
+    );
+  };
   protectFieldResolver = (
     ctx: TransformerContextProvider,
     def: ObjectTypeDefinitionNode,
@@ -365,19 +444,48 @@ Static group authorization should perform as expected.`,
     roles: Array<string>,
   ): void => {
     const roleDefinitions = roles.map(r => this.roleMap.get(r)!);
-    const fieldAuthExpression = generateAuthExpressionForField(this.configuredAuthProviders, roleDefinitions, def.fields ?? []);
-    const subsEnabled = this.modelDirectiveConfig.get(typeName)!.subscriptions.level === 'on';
-    const fieldResponse = generateFieldAuthResponse('Mutation', fieldName, subsEnabled);
-    if (!ctx.api.host.hasDataSource('NONE')) {
-      ctx.api.host.addNoneDataSource('NONE');
+    const hasModelDirective = def.directives.some(dir => dir.name.value === 'model');
+    const stack = getStackForField(ctx, def, fieldName, hasModelDirective);
+    if (ctx.api.host.hasResolver(typeName, fieldName)) {
+      // TODO: move pipeline resolvers created in the api host to the resolver manager
+      const fieldResolver = ctx.api.host.getResolver(typeName, fieldName) as any;
+      const fieldAuthExpression = generateAuthExpressionForField(this.configuredAuthProviders, roleDefinitions, []);
+      if (!ctx.api.host.hasDataSource('NONE')) {
+        ctx.api.host.addNoneDataSource('NONE');
+      }
+      const authFunction = ctx.api.host.addAppSyncFunction(
+        `${toUpper(typeName)}${toUpper(fieldName)}AuthFN`,
+        MappingTemplate.s3MappingTemplateFromString(fieldAuthExpression, `${typeName}.${fieldName}.auth.req.vtl`),
+        MappingTemplate.inlineTemplateFromString('$util.toJson({})'),
+        'NONE',
+        stack,
+      );
+      (fieldResolver.pipelineConfig.functions as string[]).unshift(authFunction.functionId);
+    } else if (ctx.resolvers.hasResolver(typeName, fieldName)) {
+      // if there a resolver in the resolver manager we can append to the auth slot
+      const fieldResolver = ctx.resolvers.getResolver(typeName, fieldName) as TransformerResolverProvider;
+      const authExpression = generateAuthExpressionForQueries(this.configuredAuthProviders, roleDefinitions, def.fields ?? []);
+      fieldResolver.addToSlot(
+        'auth',
+        MappingTemplate.s3MappingTemplateFromString(authExpression, `${typeName}.${fieldName}.{slotName}.{slotIndex}.req.vtl`),
+      );
+    } else {
+      const fieldAuthExpression = generateAuthExpressionForField(this.configuredAuthProviders, roleDefinitions, def.fields ?? []);
+      const subsEnabled = this.modelDirectiveConfig.get(typeName)!.subscriptions.level === 'on';
+      const fieldResponse = generateFieldAuthResponse('Mutation', fieldName, hasModelDirective ? subsEnabled : false);
+      if (!ctx.api.host.hasDataSource('NONE')) {
+        ctx.api.host.addNoneDataSource('NONE');
+      }
+      ctx.api.host.addResolver(
+        typeName,
+        fieldName,
+        MappingTemplate.s3MappingTemplateFromString(fieldAuthExpression, `${typeName}.${fieldName}.req.vtl`, 'resolver'),
+        MappingTemplate.s3MappingTemplateFromString(fieldResponse, `${typeName}.${fieldName}.res.vtl`, 'resolver'),
+        'NONE',
+        undefined,
+        stack,
+      );
     }
-    ctx.api.host.addResolver(
-      typeName,
-      fieldName,
-      MappingTemplate.s3MappingTemplateFromString(fieldAuthExpression, `${typeName}.${fieldName}.req.vtl`, 'resolver'),
-      MappingTemplate.s3MappingTemplateFromString(fieldResponse, `${typeName}.${fieldName}.res.vtl`, 'resolver'),
-      'NONE',
-    );
   };
   protectCreateResolver = (
     ctx: TransformerContextProvider,
@@ -410,6 +518,7 @@ Static group authorization should perform as expected.`,
     const resolver = ctx.resolvers.getResolver(typeName, fieldName) as TransformerResolverProvider;
     const fields = acm.getResources();
     const updateDeleteRoles = [...new Set([...acm.getRolesPerOperation('update'), ...acm.getRolesPerOperation('delete')])];
+    // protect fields to be updated and fields that can't be set to null
     const totalRoles = updateDeleteRoles.map(role => {
       const allowedFields = fields.filter(resource => acm.isAllowed(role, resource, 'update'));
       const nullAllowedFileds = fields.filter(resource => acm.isAllowed(role, resource, 'delete'));
@@ -418,7 +527,7 @@ Static group authorization should perform as expected.`,
       roleDefinition.nullAllowedFields = nullAllowedFileds.length === fields.length ? [] : nullAllowedFileds;
       return roleDefinition;
     });
-    const datasource = ctx.api.host.getDataSource(`${def!.name.value}DS`) as DataSourceProvider;
+    const datasource = ctx.api.host.getDataSource(`${def.name.value}Table`) as DataSourceProvider;
     const requestExpression = generateAuthRequestExpression();
     const authExpression = generateAuthExpressionForUpdate(this.configuredAuthProviders, totalRoles, def.fields ?? []);
     resolver.addToSlot(
@@ -439,7 +548,7 @@ Static group authorization should perform as expected.`,
     const resolver = ctx.resolvers.getResolver(typeName, fieldName) as TransformerResolverProvider;
     // only roles with full delete on every field can delete
     const deleteRoles = acm.getRolesPerOperation('delete', true).map(role => this.roleMap.get(role)!);
-    const datasource = ctx.api.host.getDataSource(`${def!.name.value}DS`) as DataSourceProvider;
+    const datasource = ctx.api.host.getDataSource(`${def.name.value}Table`) as DataSourceProvider;
     const requestExpression = generateAuthRequestExpression();
     const authExpression = geneateAuthExpressionForDelete(this.configuredAuthProviders, deleteRoles, def.fields ?? []);
     resolver.addToSlot(
@@ -467,27 +576,9 @@ Static group authorization should perform as expected.`,
   /*
   Role Helpers
   */
-  private convertNonModelRulesToRoles(acm: AccessControlMatrix, authRules: AuthRule[], field?: string) {
+  private convertRulesToRoles(acm: AccessControlMatrix, authRules: AuthRule[], field?: string, overideOperations?: ModelOperation[]) {
     for (let rule of authRules) {
-      rule.groups!.forEach(group => {
-        let roleName = `${rule.provider}:staticGroup:${group}`;
-        if (!(roleName in this.roleMap)) {
-          this.roleMap.set(roleName, {
-            provider: rule.provider!,
-            strategy: rule.allow,
-            static: true,
-            claim: rule.groupClaim || DEFAULT_GROUP_CLAIM,
-            entity: group,
-          });
-        }
-        acm.setRole({ role: roleName, resource: field, operations: ['read'] });
-      });
-    }
-  }
-
-  private convertModelRulesToRoles(acm: AccessControlMatrix, authRules: AuthRule[], field?: string) {
-    for (let rule of authRules) {
-      let operations: ModelOperation[] = rule.operations || MODEL_OPERATIONS;
+      let operations: ModelOperation[] = overideOperations ? overideOperations : rule.operations || MODEL_OPERATIONS;
       if (rule.groups && !rule.groupsField) {
         rule.groups.forEach(group => {
           let roleName = `${rule.provider}:staticGroup:${group}`;
@@ -541,6 +632,13 @@ Static group authorization should perform as expected.`,
                 claim: rule.identityClaim || DEFAULT_IDENTITY_CLAIM,
                 entity: ownerField,
               };
+            } else if (rule.allow === 'private') {
+              roleName = `${rule.provider}:${rule.allow}`;
+              roleDefinition = {
+                provider: rule.provider,
+                strategy: rule.allow,
+                static: true,
+              };
             } else {
               throw new TransformerContractError(`Could not create a role from ${JSON.stringify(rule)}`);
             }
@@ -563,10 +661,9 @@ Static group authorization should perform as expected.`,
     const roles = acm.getRolesPerOperation(operation, operation === 'delete');
     return rolesHasDefaultProvider(roles) || (roles.length === 0 && this.shouldAddDefaultServiceDirective());
   }
-  private getAuthProvidersPerModel(typeName: string): Array<AuthProvider> {
+  private getAuthProviders(roles: Array<string>): Array<AuthProvider> {
     const providers: Set<AuthProvider> = new Set();
     // get the roles created for type
-    const roles = this.authModelConfig.get(typeName)!.getRoles();
     for (let role of roles) {
       providers.add(this.roleMap.get(role)!.provider);
     }
@@ -576,18 +673,10 @@ Static group authorization should perform as expected.`,
     return Array.from(providers);
   }
 
-  // Remove all the owner roles where the entity is a list
-  private getSubscriptionRoles = (fields: ReadonlyArray<FieldDefinitionNode>, acm: AccessControlMatrix) => {
-    return acm
-      .getRoles()
-      .map(role => this.roleMap.get(role)!)
-      .filter(roleDef => roleDef.strategy === 'owner' && !fieldIsList(fields, roleDef.entity!));
-  };
-
   /*
   Schema Generation Helpers
   */
-  private addFieldsToObject(ctx: TransformerContextProvider, modelName: string, ownerFields: Array<string>) {
+  private addFieldsToObject(ctx: TransformerTransformSchemaStepContextProvider, modelName: string, ownerFields: Array<string>) {
     const modelObject = ctx.output.getObject(modelName)!;
     const existingFields = collectFieldNames(modelObject);
     const ownerFieldsToAdd = ownerFields.filter(field => !existingFields.includes(field));
@@ -597,23 +686,10 @@ Static group authorization should perform as expected.`,
     ctx.output.putType(modelObject);
   }
   private propagateAuthDirectivesToNestedTypes(
-    ctx: TransformerContextProvider,
+    ctx: TransformerTransformSchemaStepContextProvider,
     def: ObjectTypeDefinitionNode,
     providers: Array<AuthProvider>,
   ) {
-    const getDirectivesToAdd = (nonModelName: string): Array<DirectiveNode> => {
-      const directives = this.getServiceDirectives(providers, true);
-      if (this.seenNonModelTypes.has(nonModelName)) {
-        const currentDirectives: Set<string> = this.seenNonModelTypes.get(nonModelName)!;
-        const newDirectives = directives.filter(dir => !currentDirectives.has(dir.name.value));
-        // merge back the newly added auth directives with what already exists in the set
-        this.seenNonModelTypes.set(nonModelName, new Set<string>([...newDirectives.map(dir => dir.name.value), ...currentDirectives]));
-        return newDirectives;
-      }
-      this.seenNonModelTypes.set(nonModelName, new Set<string>([...directives.map(dir => dir.name.value)]));
-      return directives;
-    };
-
     const nonModelTypePredicate = (fieldType: TypeDefinitionNode): TypeDefinitionNode | undefined => {
       if (fieldType) {
         if (fieldType.kind !== 'ObjectTypeDefinition') {
@@ -628,14 +704,25 @@ Static group authorization should perform as expected.`,
       .fields!.map(f => ctx.output.getType(getBaseType(f.type)) as TypeDefinitionNode)
       .filter(nonModelTypePredicate);
     for (const nonModelFieldType of nonModelFieldTypes) {
-      const directives = getDirectivesToAdd(nonModelFieldType.name.value);
-      if (directives.length > 0) {
-        extendTypeWithDirectives(ctx, nonModelFieldType.name.value, directives);
+      const nonModelName = nonModelFieldType.name.value;
+      let directives = this.getServiceDirectives(providers, true);
+      const hasSeenType = this.seenNonModelTypes.has(nonModelFieldType.name.value);
+      if (!hasSeenType) {
+        this.seenNonModelTypes.set(nonModelName, new Set<string>([...directives.map(dir => dir.name.value)]));
+        // since we haven't seen this type before we add it to the iam policy resource sets
         const hasIAM = directives.some(dir => dir.name.value === 'aws_iam') || this.configuredAuthProviders.default === 'iam';
         if (hasIAM) {
           this.unauthPolicyResources.add(`${nonModelFieldType.name.value}/null`);
           this.authPolicyResources.add(`${nonModelFieldType.name.value}/null`);
         }
+      } else {
+        const currentDirectives = this.seenNonModelTypes.get(nonModelName)!;
+        directives = directives.filter(dir => !currentDirectives.has(dir.name.value));
+        this.seenNonModelTypes.set(nonModelName, new Set<string>([...directives.map(dir => dir.name.value), ...currentDirectives]));
+      }
+      // we continue to check the nested types if we find that directives list is not empty or if haven't seen the type before
+      if (directives.length > 0 || !hasSeenType) {
+        extendTypeWithDirectives(ctx, nonModelFieldType.name.value, directives);
         this.propagateAuthDirectivesToNestedTypes(ctx, <ObjectTypeDefinitionNode>nonModelFieldType, providers);
       }
     }
