@@ -6,13 +6,14 @@ import { convertToCompletePlaceIndexParams, PlaceIndexParameters } from '../serv
 import { $TSAny, $TSContext } from 'amplify-cli-core';
 import { printNextStepsSuccessMessage, setProviderContext } from './index';
 import { ServiceName } from '../service-utils/constants';
+import { printer } from 'amplify-prompts';
 
 export const addPlaceIndexResource = async (
   context: $TSContext
 ): Promise<string> => {
   // initialize the Place Index parameters
   let placeIndexParams: Partial<PlaceIndexParameters> = {
-      providerContext: setProviderContext(context, ServiceName.PlaceIndex)
+    providerContext: setProviderContext(context, ServiceName.PlaceIndex)
   };
   // populate the parameters for the resource
   await createPlaceIndexWalkthrough(context, placeIndexParams);
@@ -20,8 +21,7 @@ export const addPlaceIndexResource = async (
 
   await createPlaceIndexResource(context, completeParameters);
 
-  const { print } = context;
-  print.success(`Successfully added resource ${completeParameters.name} locally.`);
+  printer.success(`Successfully added resource ${completeParameters.name} locally.`);
   printNextStepsSuccessMessage(context);
   return completeParameters.name;
 };
@@ -46,8 +46,7 @@ export const updatePlaceIndexResource = async (
     throw new Error('Insufficient information to update Place Index resource.');
   }
 
-  const { print } = context;
-  print.success(`Successfully updated resource ${placeIndexParams.name} locally.`);
+  printer.success(`Successfully updated resource ${placeIndexParams.name} locally.`);
   printNextStepsSuccessMessage(context);
   return placeIndexParams.name;
 };
@@ -69,8 +68,8 @@ export const removePlaceIndexResource = async (
   await amplify.removeResource(context, category, resourceToRemove)
     .catch((err: $TSAny) => {
       if (err.stack) {
-        context.print.info(err.stack);
-        context.print.error(`An error occurred when removing the geo resource ${resourceToRemove}`);
+        printer.error(err.stack);
+        printer.error(`An error occurred when removing the geo resource ${resourceToRemove}`);
       }
 
       context.usageData.emitError(err);

@@ -20,7 +20,7 @@ export enum EsriMapStyleType {
 }
 
 /**
- * The type of Map styles for Here data provider
+ * The type of Map styles for HERE data provider
  */
  export enum HereMapStyleType {
     Berlin = "Berlin"
@@ -60,6 +60,9 @@ export const convertToCompleteMapParams = (partial: Partial<MapParameters>): Map
  * Constructs the Amazon Location Map Style from available map parameters
  */
 export const getGeoMapStyle = (dataProvider: DataProvider, mapStyleType: MapStyleType) => {
+    if (dataProvider === DataProvider.Here && mapStyleType === HereMapStyleType.Berlin) {
+        return MapStyle.VectorHereBerlin;
+    }
     return `Vector${dataProvider}${mapStyleType}`;
 };
 

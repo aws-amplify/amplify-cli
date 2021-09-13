@@ -6,6 +6,7 @@ import { convertToCompleteMapParams, MapParameters } from '../service-utils/mapP
 import { $TSAny, $TSContext } from 'amplify-cli-core';
 import { printNextStepsSuccessMessage, setProviderContext } from './index';
 import { ServiceName } from '../service-utils/constants';
+import { printer } from 'amplify-prompts';
 
 export const addMapResource = async (
   context: $TSContext
@@ -20,8 +21,7 @@ export const addMapResource = async (
 
   await createMapResource(context, completeParameters);
 
-  const { print } = context;
-  print.success(`Successfully added resource ${completeParameters.name} locally.`);
+  printer.success(`Successfully added resource ${completeParameters.name} locally.`);
   printNextStepsSuccessMessage(context);
   return completeParameters.name;
 };
@@ -46,8 +46,7 @@ export const updateMapResource = async (
     throw new Error('Insufficient information to update Map resource.');
   }
 
-  const { print } = context;
-  print.success(`Successfully updated resource ${mapParams.name} locally.`);
+  printer.success(`Successfully updated resource ${mapParams.name} locally.`);
   printNextStepsSuccessMessage(context);
   return mapParams.name;
 };
@@ -69,8 +68,8 @@ export const removeMapResource = async (
   await amplify.removeResource(context, category, resourceToRemove)
     .catch((err: $TSAny) => {
       if (err.stack) {
-        context.print.info(err.stack);
-        context.print.error(`An error occurred when removing the geo resource ${resourceToRemove}`);
+        printer.error(err.stack);
+        printer.error(`An error occurred when removing the geo resource ${resourceToRemove}`);
       }
 
       context.usageData.emitError(err);

@@ -9,6 +9,7 @@ import { getCurrentMapParameters, getMapFriendlyNames } from '../service-utils/m
 import { getGeoServiceMeta, updateDefaultResource, geoServiceExists, getGeoPricingPlan, checkGeoResourceExists} from '../service-utils/resourceUtils';
 import { resourceAccessWalkthrough, pricingPlanWalkthrough } from './resourceWalkthrough';
 import { DataProvider } from '../service-utils/resourceParams';
+import { printer, formatter } from 'amplify-prompts';
 
 /**
  * Starting point for CLI walkthrough that creates a map resource
@@ -68,7 +69,7 @@ export const mapNameWalkthrough = async (context: any): Promise<Partial<MapParam
         };
         const mapNameInput = (await inquirer.prompt([mapNamePrompt])).name as string;
         if (await checkGeoResourceExists(mapNameInput)) {
-            context.print.info(`Map ${mapNameInput} already exists. Choose another name.`);
+            printer.info(`Map ${mapNameInput} already exists. Choose another name.`);
         }
         else mapName = mapNameInput;
     }
@@ -79,12 +80,13 @@ export const mapAdvancedWalkthrough = async (context: $TSContext, parameters: Pa
     // const includePricingPlan = await geoServiceExists(ServiceName.Map) || await geoServiceExists(ServiceName.PlaceIndex);
     const includePricingPlan = false;
     const currentPricingPlan = parameters.pricingPlan ? parameters.pricingPlan : await getGeoPricingPlan();
-    context.print.info('Available advanced settings:');
-    context.print.info('- Map style & Map data provider (default: Streets provided by Esri)');
+    const advancedSettingOptions: string[] = ['Map style & Map data provider (default: Streets provided by Esri)'];
     if (includePricingPlan) {
-        context.print.info(`- Map pricing plan (current: ${currentPricingPlan})`);
+        advancedSettingOptions.push(`Map pricing plan (current: ${currentPricingPlan})`);
     }
-    context.print.info('');
+    printer.info('Available advanced settings:');
+    formatter.list(advancedSettingOptions);
+    printer.blankLine();
 
     if(await context.amplify.confirmPrompt('Do you want to configure advanced settings?', false)) {
         // get the map style parameters
@@ -110,7 +112,7 @@ export const mapAdvancedWalkthrough = async (context: $TSContext, parameters: Pa
 export const mapStyleWalkthrough = async (parameters: Partial<MapParameters>): Promise<Partial<MapParameters>> => {
     const mapStyleChoices = [
         { name: 'Streets (data provided by Esri)', value: MapStyle.VectorEsriStreets },
-        { name: 'Berlin (data provided by Here)', value: MapStyle.VectorHereBerlin },
+        { name: 'Berlin (data provided by HERE)', value: MapStyle.VectorHereBerlin },
         { name: 'Topographic (data provided by Esri)', value: MapStyle.VectorEsriTopographic },
         { name: 'Navigation (data provided by Esri)', value: MapStyle.VectorEsriNavigation },
         { name: 'LightGrayCanvas (data provided by Esri)', value: MapStyle.VectorEsriLightGrayCanvas },
@@ -144,7 +146,7 @@ export const updateMapWalkthrough = async (
     .filter(resource => resource.service === ServiceName.Map)
 
     if (mapResources.length === 0) {
-        context.print.error('No Map resource to update. Use "amplify add geo" to create a new Map.');
+        printer.error('No Map resource to update. Use "amplify add geo" to create a new Map.');
         return parameters;
     }
 
@@ -152,7 +154,7 @@ export const updateMapWalkthrough = async (
 
     if (resourceToUpdate) {
         if (!mapResourceNames.includes(resourceToUpdate)) {
-            context.print.error(`No Map named ${resourceToUpdate} exists in the project.`);
+            printer.error(`No Map named ${resourceToUpdate} exists in the project.`);
             return parameters;
         }
     }

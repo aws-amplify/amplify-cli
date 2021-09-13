@@ -1,6 +1,7 @@
 import { $TSContext } from "amplify-cli-core";
 import inquirer from 'inquirer';
 import { ServiceName } from "../service-utils/constants";
+import { printer } from 'amplify-prompts';
 
 /**
  * CLI walkthrough to select resource to be removed
@@ -9,7 +10,7 @@ export const removeWalkthrough = async (context: $TSContext ,service: ServiceNam
     const resources = await getServiceResources(context, service);
 
     if (resources.length === 0) {
-        context.print.error(`No ${service} type resource exists in the project.`);
+        printer.error(`No ${service} type resource exists in the project.`);
         return;
     }
 
