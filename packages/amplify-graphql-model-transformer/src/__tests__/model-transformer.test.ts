@@ -880,7 +880,7 @@ describe('ModelTransformer: ', () => {
     validateModelSchema(parse(out.schema));
   });
 
-  it('should generate sync resolver with ConflictHandlerType.Automerge', () => {
+  it('should generate sync resolver with ConflictHandlerType.AUTOMERGE', () => {
     const validSchema = `
       type Post @model {
           id: ID!
@@ -890,7 +890,7 @@ describe('ModelTransformer: ', () => {
 
     const config: SyncConfig = {
       ConflictDetection: 'VERSION',
-      ConflictHandler: ConflictHandlerType.Automerge,
+      ConflictHandler: ConflictHandlerType.AUTOMERGE,
     };
 
     const transformer = new GraphQLTransform({
@@ -912,7 +912,7 @@ describe('ModelTransformer: ', () => {
     validateModelSchema(parse(definition));
   });
 
-  it('should generate sync resolver with ConflictHandlerType.Lambda', () => {
+  it('should generate sync resolver with ConflictHandlerType.LAMBDA', () => {
     const validSchema = `
       type Post @model {
           id: ID!
@@ -924,7 +924,7 @@ describe('ModelTransformer: ', () => {
 
     const config: SyncConfig = {
       ConflictDetection: 'VERSION',
-      ConflictHandler: ConflictHandlerType.Lambda,
+      ConflictHandler: ConflictHandlerType.LAMBDA,
       LambdaConflictHandler: {
         name: 'myLambdaConflictHandler',
       },
@@ -949,7 +949,7 @@ describe('ModelTransformer: ', () => {
     validateModelSchema(parse(definition));
   });
 
-  it('should generate sync resolver with ConflictHandlerType.Optimistic', () => {
+  it('should generate sync resolver with ConflictHandlerType.OPTIMISTIC', () => {
     const validSchema = `
       type Post @model {
           id: ID!
@@ -961,7 +961,7 @@ describe('ModelTransformer: ', () => {
 
     const config: SyncConfig = {
       ConflictDetection: 'VERSION',
-      ConflictHandler: ConflictHandlerType.Optimistic,
+      ConflictHandler: ConflictHandlerType.OPTIMISTIC,
     };
 
     const transformer = new GraphQLTransform({
