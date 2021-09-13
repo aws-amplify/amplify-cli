@@ -9,20 +9,6 @@ import {
 } from '@aws-amplify/graphql-transformer-core';
 import { DocumentNode, ObjectTypeDefinitionNode, Kind, FieldDefinitionNode, parse, InputValueDefinitionNode } from 'graphql';
 
-// const noAuthModeDefaultConfig: AppSyncAuthConfiguration = {
-//   defaultAuthentication: {
-//     authenticationType: undefined,
-//   },
-//   additionalAuthenticationProviders: [],
-// };
-
-// const openIdDefaultConfig: AppSyncAuthConfiguration = {
-//   defaultAuthentication: {
-//     authenticationType: 'OPENID_CONNECT',
-//   },
-//   additionalAuthenticationProviders: [],
-// };
-
 const userPoolsDefaultConfig: AppSyncAuthConfiguration = {
   defaultAuthentication: {
     authenticationType: 'AMAZON_COGNITO_USER_POOLS',

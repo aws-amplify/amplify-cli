@@ -262,7 +262,7 @@ Static group authorization should perform as expected.`,
             this.protectListResolver(context, def, query.typeName, query.fieldName, acm);
             break;
           case QueryFieldType.SYNC:
-            // protect sync query
+            this.protectSyncResolver(context, def, query.typeName, query.fieldName, acm);
             break;
           default:
             throw new TransformerContractError('Unkown query field type');

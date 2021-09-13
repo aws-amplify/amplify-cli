@@ -31,6 +31,9 @@ import {
   MANAGE_ROLE,
 } from '../utils';
 
+// note in the resolver that operation is protected by auth
+export const setHasAuthExpression: Expression = qref(methodCall(ref('ctx.stash.put'), ref('hasAuth'), bool(true)));
+
 // since the keySet returns a set we can convert it to a list by converting to json and parsing back as a list
 export const getInputFields = (): Expression => {
   return set(ref('inputFields'), methodCall(ref('util.parseJson'), methodCall(ref('util.toJson'), ref('ctx.args.input.keySet()'))));

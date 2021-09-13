@@ -18,7 +18,7 @@ import {
   raw,
   set,
 } from 'graphql-mapping-template';
-import { getIdentityClaimExp, getOwnerClaim, apiKeyExpression, iamExpression, emptyPayload } from './helpers';
+import { getIdentityClaimExp, getOwnerClaim, apiKeyExpression, iamExpression, emptyPayload, setHasAuthExpression } from './helpers';
 import {
   COGNITO_AUTH_TYPE,
   OIDC_AUTH_TYPE,
@@ -144,7 +144,7 @@ export const generateAuthExpressionForQueries = (
   querySource: QuerySource = 'dynamodb',
 ): string => {
   const { cogntoStaticRoles, cognitoDynamicRoles, oidcStaticRoles, oidcDynamicRoles, apiKeyRoles, iamRoles } = splitRoles(roles);
-  const totalAuthExpressions: Array<Expression> = [set(ref(IS_AUTHORIZED_FLAG), bool(false))];
+  const totalAuthExpressions: Array<Expression> = [setHasAuthExpression, set(ref(IS_AUTHORIZED_FLAG), bool(false))];
   if (providers.hasApiKey) {
     totalAuthExpressions.push(apiKeyExpression(apiKeyRoles));
   }

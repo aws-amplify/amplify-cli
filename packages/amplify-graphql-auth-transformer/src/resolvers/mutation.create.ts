@@ -20,7 +20,7 @@ import {
   or,
   printBlock,
 } from 'graphql-mapping-template';
-import { getOwnerClaim, getIdentityClaimExp, getInputFields, addAllowedFieldsIfElse, emptyPayload } from './helpers';
+import { getOwnerClaim, getIdentityClaimExp, getInputFields, addAllowedFieldsIfElse, emptyPayload, setHasAuthExpression } from './helpers';
 import {
   ADMIN_ROLE,
   API_KEY_AUTH_TYPE,
@@ -218,6 +218,7 @@ export const generateAuthExpressionForCreate = (
     iamRoles,
   } = splitRoles(roles);
   const totalAuthExpressions: Array<Expression> = [
+    setHasAuthExpression,
     getInputFields(),
     set(ref(IS_AUTHORIZED_FLAG), bool(false)),
     set(ref(ALLOWED_FIELDS), list([])),

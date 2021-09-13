@@ -17,7 +17,7 @@ import {
   not,
   nul,
 } from 'graphql-mapping-template';
-import { emptyPayload, getIdentityClaimExp, getOwnerClaim } from './helpers';
+import { emptyPayload, getIdentityClaimExp, getOwnerClaim, setHasAuthExpression } from './helpers';
 import {
   ADMIN_ROLE,
   API_KEY_AUTH_TYPE,
@@ -160,7 +160,7 @@ export const geneateAuthExpressionForDelete = (
   fields: ReadonlyArray<FieldDefinitionNode>,
 ) => {
   const { cogntoStaticRoles, cognitoDynamicRoles, oidcStaticRoles, oidcDynamicRoles, apiKeyRoles, iamRoles } = splitRoles(roles);
-  const totalAuthExpressions: Array<Expression> = [set(ref(IS_AUTHORIZED_FLAG), bool(false))];
+  const totalAuthExpressions: Array<Expression> = [setHasAuthExpression, set(ref(IS_AUTHORIZED_FLAG), bool(false))];
   if (providers.hasApiKey) {
     totalAuthExpressions.push(apiKeyExpression(apiKeyRoles));
   }

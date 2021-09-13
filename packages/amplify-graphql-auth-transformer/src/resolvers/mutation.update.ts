@@ -38,7 +38,7 @@ import {
   NULL_ALLOWED_FIELDS,
   DENIED_FIELDS,
 } from '../utils';
-import { getIdentityClaimExp, responseCheckForErrors, getOwnerClaim, getInputFields } from './helpers';
+import { getIdentityClaimExp, responseCheckForErrors, getOwnerClaim, getInputFields, setHasAuthExpression } from './helpers';
 
 /**
  * There is only one role for ApiKey we can use the first index
@@ -258,6 +258,7 @@ export const generateAuthExpressionForUpdate = (
 ) => {
   const { cogntoStaticRoles, cognitoDynamicRoles, oidcStaticRoles, oidcDynamicRoles, apiKeyRoles, iamRoles } = splitRoles(roles);
   const totalAuthExpressions: Array<Expression> = [
+    setHasAuthExpression,
     responseCheckForErrors(),
     getInputFields(),
     set(ref(IS_AUTHORIZED_FLAG), bool(false)),
