@@ -49,7 +49,6 @@ export type $TSContext = {
   newUserInfo?: $TSAny;
   filesystem: IContextFilesystem;
   template: IContextTemplate;
-  versionInfo: CLIVersionInfo;
 };
 
 export type CategoryName = string;
@@ -142,11 +141,6 @@ export type DeploymentSecrets = {
 
     environments: { [env: string]: { [category: string]: { [resourceName: string]: { [key: string]: string } } } };
   }>;
-};
-
-export type CLIVersionInfo = {
-  currentCLIVersion: string;
-  minimumCompatibleCLIVersion: string;
 };
 
 /**
