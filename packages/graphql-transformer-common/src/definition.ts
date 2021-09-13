@@ -396,7 +396,7 @@ export function makeNonNullType(type: NamedTypeNode | ListTypeNode): NonNullType
   };
 }
 
-export function makeListType(type: TypeNode): TypeNode {
+export function makeListType(type: TypeNode): ListTypeNode {
   return {
     kind: 'ListType',
     type,
