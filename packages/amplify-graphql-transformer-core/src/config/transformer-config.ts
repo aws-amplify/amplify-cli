@@ -50,22 +50,22 @@ export type OpenIDConnectConfig = {
 
 // Sync Config
 export const enum ConflictHandlerType {
-  Optimistic = 'OPTIMISTIC_CONCURRENCY',
-  Automerge = 'AUTOMERGE',
-  Lambda = 'LAMBDA',
+  OPTIMISTIC = 'OPTIMISTIC_CONCURRENCY',
+  AUTOMERGE = 'AUTOMERGE',
+  LAMBDA = 'LAMBDA',
 }
 export type ConflictDetectionType = 'VERSION' | 'NONE';
 export type SyncConfigOptimistic = {
   ConflictDetection: ConflictDetectionType;
-  ConflictHandler: ConflictHandlerType.Optimistic;
+  ConflictHandler: ConflictHandlerType.OPTIMISTIC;
 };
 export type SyncConfigServer = {
   ConflictDetection: ConflictDetectionType;
-  ConflictHandler: ConflictHandlerType.Automerge;
+  ConflictHandler: ConflictHandlerType.AUTOMERGE;
 };
 export type SyncConfigLambda = {
   ConflictDetection: ConflictDetectionType;
-  ConflictHandler: ConflictHandlerType.Lambda;
+  ConflictHandler: ConflictHandlerType.LAMBDA;
   LambdaConflictHandler: LambdaConflictHandler;
 };
 export type LambdaConflictHandler = {
