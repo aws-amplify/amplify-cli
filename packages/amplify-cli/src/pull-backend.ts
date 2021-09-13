@@ -15,7 +15,7 @@ export async function pullBackend(context: $TSContext, inputParams: $TSAny) {
 
   if (hasChanges && context.exeInfo.restoreBackend) {
     context.print.warning('Local changes detected.');
-    context.print.warning('Pulling changes from the cloud will override your local changes.');
+    context.print.warning('Pulling changes from the cloud will override your local changes. This includes local changes to generated files in the \'src\' and \'amplify\' directories.');
     if (!context.exeInfo.inputParams.yes) {
       const confirmOverride = await context.amplify.confirmPrompt('Are you sure you would like to continue?', false);
       if (!confirmOverride) {
