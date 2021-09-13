@@ -9,7 +9,7 @@ import { getCurrentMapParameters, getMapFriendlyNames } from '../service-utils/m
 import { getGeoServiceMeta, updateDefaultResource, geoServiceExists, getGeoPricingPlan, checkGeoResourceExists} from '../service-utils/resourceUtils';
 import { resourceAccessWalkthrough, pricingPlanWalkthrough } from './resourceWalkthrough';
 import { DataProvider } from '../service-utils/resourceParams';
-import { printer } from 'amplify-prompts';
+import { printer, formatter } from 'amplify-prompts';
 
 /**
  * Starting point for CLI walkthrough that creates a map resource
@@ -80,12 +80,13 @@ export const mapAdvancedWalkthrough = async (context: $TSContext, parameters: Pa
     // const includePricingPlan = await geoServiceExists(ServiceName.Map) || await geoServiceExists(ServiceName.PlaceIndex);
     const includePricingPlan = false;
     const currentPricingPlan = parameters.pricingPlan ? parameters.pricingPlan : await getGeoPricingPlan();
-    printer.info('Available advanced settings:');
-    printer.info('- Map style & Map data provider (default: Streets provided by Esri)');
+    const advancedSettingOptions: string[] = ['Map style & Map data provider (default: Streets provided by Esri)'];
     if (includePricingPlan) {
-        printer.info(`- Map pricing plan (current: ${currentPricingPlan})`);
+        advancedSettingOptions.push(`Map pricing plan (current: ${currentPricingPlan})`);
     }
-    printer.info('');
+    printer.info('Available advanced settings:');
+    formatter.list(advancedSettingOptions);
+    printer.blankLine();
 
     if(await context.amplify.confirmPrompt('Do you want to configure advanced settings?', false)) {
         // get the map style parameters

@@ -32,5 +32,5 @@ export const run = async (context: $TSContext) => {
 
   context.amplify.showHelp(header, commands);
 
-  printer.info('');
+  printer.blankLine();
 };

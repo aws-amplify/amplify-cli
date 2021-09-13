@@ -9,7 +9,7 @@ import { getCurrentPlaceIndexParameters } from '../service-utils/placeIndexUtils
 import { getGeoServiceMeta, updateDefaultResource, geoServiceExists, getGeoPricingPlan, checkGeoResourceExists } from '../service-utils/resourceUtils';
 import { resourceAccessWalkthrough, pricingPlanWalkthrough, dataProviderWalkthrough } from './resourceWalkthrough';
 import { DataProvider, PricingPlan } from '../service-utils/resourceParams';
-import { printer } from 'amplify-prompts';
+import { printer, formatter } from 'amplify-prompts';
 
 /**
  * Starting point for CLI walkthrough that creates a place index resource
@@ -80,13 +80,14 @@ export const placeIndexAdvancedWalkthrough = async (context: $TSContext, paramet
     // const includePricingPlan = await geoServiceExists(ServiceName.Map) || await geoServiceExists(ServiceName.PlaceIndex);
     const includePricingPlan = false;
     const currentPricingPlan = parameters.pricingPlan ? parameters.pricingPlan : await getGeoPricingPlan();
-    printer.info('Available advanced settings:');
-    printer.info('- Search data provider (default: Esri)');
-    printer.info('- Search result storage location (default: no result storage)');
+    const advancedSettingOptions: string[] = ['Search data provider (default: Esri)'];
+    advancedSettingOptions.push('Search result storage location (default: no result storage)');
     if (includePricingPlan) {
-        printer.info(`- Map pricing plan (current: ${currentPricingPlan})`);
+        advancedSettingOptions.push(`Search pricing plan (current: ${currentPricingPlan})`);
     }
-    printer.info('');
+    printer.info('Available advanced settings:');
+    formatter.list(advancedSettingOptions);
+    printer.blankLine();
 
     if(await context.amplify.confirmPrompt('Do you want to configure advanced settings?', false)) {
         // get the place index data provider

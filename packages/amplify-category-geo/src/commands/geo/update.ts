@@ -24,7 +24,7 @@ export const run = async(context: $TSContext) => {
     if (error.message) {
       printer.error(error.message);
     }
-    printer.info('');
+    printer.blankLine();
     if (error.stack) {
       printer.info(error.stack);
     }

@@ -68,7 +68,7 @@ export const removeMapResource = async (
   await amplify.removeResource(context, category, resourceToRemove)
     .catch((err: $TSAny) => {
       if (err.stack) {
-        printer.info(err.stack);
+        printer.error(err.stack);
         printer.error(`An error occurred when removing the geo resource ${resourceToRemove}`);
       }
 

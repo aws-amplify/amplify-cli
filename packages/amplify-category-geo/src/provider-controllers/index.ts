@@ -82,7 +82,7 @@ export const projectHasAuth = () => !!Object.values(
 ).find(meta => (meta as $TSObject)?.service === 'Cognito');
 
 export const printNextStepsSuccessMessage = (context: $TSContext) => {
-  printer.info('');
+  printer.blankLine();
   printer.success('Next steps:');
   printer.info('"amplify push" builds all of your local backend resources and provisions them in the cloud');
   printer.info(
