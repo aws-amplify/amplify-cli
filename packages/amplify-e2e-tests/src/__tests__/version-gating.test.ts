@@ -22,7 +22,6 @@ type VersionGatingMetadata = {
 
 describe('version gating', () => {
   let projRoot: string;
-  let projectInitialized = false;
   const projName = 'versiongating';
 
   // Extreme version numbers for testing purposes
@@ -57,10 +56,7 @@ describe('version gating', () => {
   });
 
   afterEach(async () => {
-    if (projectInitialized) {
-      await deleteProject(projRoot);
-    }
-
+    await deleteProject(projRoot);
     deleteProjectDir(projRoot);
   });
 
@@ -76,7 +72,6 @@ describe('version gating', () => {
       updateVersionInPackageJson(baseCLIVersion, baseMinimumCLIVersion);
 
       await initJSProjectWithProfile(projRoot, { name: projName });
-      projectInitialized = true;
 
       const meta = stateManager.getMeta(projRoot);
 
