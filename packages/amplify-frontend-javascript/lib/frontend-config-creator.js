@@ -191,7 +191,7 @@ function getAWSExportsObject(resources) {
       configOutput,
       {
         geo: {
-          amazon_location_services: geoConfig
+          amazon_location_service: geoConfig
         }
       }
     );

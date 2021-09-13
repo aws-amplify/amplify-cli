@@ -1,8 +1,9 @@
 import { AccessType, DataProvider, ResourceParameters } from "../service-utils/resourceParams";
 import inquirer from "inquirer";
-import { ServiceName, choosePricingPlan } from "../service-utils/constants";
+import { ServiceName, choosePricingPlan, apiDocs } from "../service-utils/constants";
 import { PricingPlan } from "../service-utils/resourceParams";
-import { $TSContext } from "amplify-cli-core";
+import { $TSContext, open } from "amplify-cli-core";
+import { printer } from 'amplify-prompts';
 
 export async function resourceAccessWalkthrough<T extends ResourceParameters>(
     parameters: Partial<T>,
@@ -29,22 +30,28 @@ export async function pricingPlanWalkthrough<T extends ResourceParameters>(
 ): Promise<Partial<T>> {
     let pricingPlan: PricingPlan = parameters.pricingPlan ? parameters.pricingPlan : PricingPlan.RequestBasedUsage;
 
-    context.print.info(choosePricingPlan);
+    printer.info(choosePricingPlan);
 
     const pricingPlanBusinessTypeChoices = [
-        { name: 'No, I only need to track consumers personal mobile devices', value: false },
-        { name: 'Yes, I track commercial assets (For example, any mobile object that is tracked by a company in support of its business)', value: true }
+        { name: "No, I do not track devices or I only need to track consumers' personal devices", value: PricingPlan.RequestBasedUsage },
+        { name: 'Yes, I track commercial assets (For example, any mobile object that is tracked by a company in support of its business)', value: 'Unknown' },
+        { name: 'Learn More', value: 'LearnMore'}
     ];
     const pricingPlanBusinessTypePrompt = {
         type: 'list',
         name: 'pricingPlanBusinessType',
         message: 'Are you tracking commercial assets for your business in your app?',
         choices: pricingPlanBusinessTypeChoices,
-        default: pricingPlan === PricingPlan.RequestBasedUsage ? false : true
+        default: pricingPlan === PricingPlan.RequestBasedUsage ? PricingPlan.RequestBasedUsage : 'Unknown'
     };
 
-    const pricingPlanBusinessTypeChoice = ((await inquirer.prompt([pricingPlanBusinessTypePrompt])).pricingPlanBusinessType as boolean);
-    if (pricingPlanBusinessTypeChoice === false) {
+    let pricingPlanBusinessTypeChoice = ((await inquirer.prompt([pricingPlanBusinessTypePrompt])).pricingPlanBusinessType);
+    while (pricingPlanBusinessTypeChoice === 'LearnMore') {
+        open(apiDocs.pricingPlan, { wait: false });
+        pricingPlanBusinessTypeChoice = ((await inquirer.prompt([pricingPlanBusinessTypePrompt])).pricingPlanBusinessType);
+    }
+
+    if (pricingPlanBusinessTypeChoice === PricingPlan.RequestBasedUsage) {
         pricingPlan = PricingPlan.RequestBasedUsage;
     }
     else {
@@ -56,7 +63,7 @@ export async function pricingPlanWalkthrough<T extends ResourceParameters>(
     }
     parameters.pricingPlan = pricingPlan;
 
-    context.print.info(`Successfully set ${pricingPlan} pricing plan for your Geo resources.`);
+    printer.info(`Successfully set ${pricingPlan} pricing plan for your Geo resources.`);
     return parameters;
 };
 
@@ -71,7 +78,11 @@ export async function dataProviderWalkthrough<T extends ResourceParameters>(
         choices: Object.values(DataProvider),
         default: parameters.dataProvider ? parameters.dataProvider : 'Esri'
     };
-    return await inquirer.prompt([dataProviderPrompt]);
+
+    const dataProviderInput = (await inquirer.prompt([dataProviderPrompt])).dataProvider;
+    const provider = (Object.keys(DataProvider).find(key => DataProvider[key as keyof typeof DataProvider] === dataProviderInput)) as DataProvider;
+    parameters.dataProvider = provider;
+    return parameters;
 };
 
 const getServiceFriendlyName = (service: ServiceName): string => {

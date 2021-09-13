@@ -13,7 +13,8 @@ import {
   removePlaceIndex,
   removeFirstDefaultMap,
   removeFirstDefaultPlaceIndex,
-  generateRandomShortId
+  generateRandomShortId,
+  getGeoJSConfiguration
 } from 'amplify-e2e-core';
 import { existsSync } from 'fs';
 import path from 'path';
@@ -88,10 +89,10 @@ describe('amplify geo remove', () => {
     expect(newMeta.geo[map1Id]).toBeUndefined();
     expect(newMeta.geo[map2Id].isDefault).toBe(true);
     const awsExport: any = getAWSExports(projRoot).default;
-    expect(awsExport.geo.amazon_location_services.maps.items[map1Name]).toBeUndefined();
-    expect(awsExport.geo.amazon_location_services.maps.items[map2Name]).toBeDefined();
-    expect(awsExport.geo.amazon_location_services.maps.default).toEqual(map2Name);
-    expect(awsExport.geo.amazon_location_services.region).toEqual(region);
+    expect(getGeoJSConfiguration(awsExport).maps.items[map1Name]).toBeUndefined();
+    expect(getGeoJSConfiguration(awsExport).maps.items[map2Name]).toBeDefined();
+    expect(getGeoJSConfiguration(awsExport).maps.default).toEqual(map2Name);
+    expect(getGeoJSConfiguration(awsExport).region).toEqual(region);
   });
 
   it('init a project with default auth config and two index resources, then remove the default index', async () => {
@@ -114,9 +115,9 @@ describe('amplify geo remove', () => {
     expect(newMeta.geo[index1Id]).toBeUndefined();
     expect(newMeta.geo[index2Id].isDefault).toBe(true);
     const awsExport: any = getAWSExports(projRoot).default;
-    expect(awsExport.geo.amazon_location_services.search_indices.items).toEqual([index2Name]);
-    expect(awsExport.geo.amazon_location_services.search_indices.default).toEqual(index2Name);
-    expect(awsExport.geo.amazon_location_services.region).toEqual(region);
+    expect(getGeoJSConfiguration(awsExport).search_indices.items).toEqual([index2Name]);
+    expect(getGeoJSConfiguration(awsExport).search_indices.default).toEqual(index2Name);
+    expect(getGeoJSConfiguration(awsExport).region).toEqual(region);
   });
 
 })

@@ -3,8 +3,10 @@ import { EsriMapStyleType, getGeoMapStyle, MapParameters, MapStyle } from '../..
 import { AccessType, DataProvider, PricingPlan } from '../../service-utils/resourceParams';
 import { provider, ServiceName } from '../../service-utils/constants';
 import { category } from '../../constants';
+import { printer } from 'amplify-prompts';
 
 jest.mock('amplify-cli-core');
+jest.mock('amplify-prompts');
 
 describe('Map walkthrough works as expected', () => {
     const projectName = 'mockProject';
@@ -53,11 +55,6 @@ describe('Map walkthrough works as expected', () => {
             inputValidation: jest.fn(),
             getProjectMeta: jest.fn(),
             updateamplifyMetaAfterResourceUpdate: jest.fn()
-        },
-        print: {
-            info: jest.fn(),
-            error: jest.fn(),
-            success: jest.fn()
         },
         usageData: { emitError: jest.fn() }
     } as unknown) as $TSContext;
@@ -116,6 +113,10 @@ describe('Map walkthrough works as expected', () => {
         JSONUtilities.readJson = jest.fn().mockReturnValue({});
         JSONUtilities.writeJson = jest.fn().mockReturnValue('');
         stateManager.getMeta = jest.fn().mockReturnValue(mockAmplifyMeta);
+        printer.warn = jest.fn();
+        printer.error = jest.fn();
+        printer.success = jest.fn();
+        printer.info = jest.fn();
     });
 
     it('sets parameters based on user input for update map walkthrough', async() => {
@@ -163,7 +164,7 @@ describe('Map walkthrough works as expected', () => {
         const updateMapWalkthrough = require('../../service-walkthroughs/mapWalkthrough').updateMapWalkthrough;
         await updateMapWalkthrough(mockContext, mapParams, mockMapName);
 
-        expect(mockContext.print.error).toBeCalledWith('No Map resource to update. Use "amplify add geo" to create a new Map.');
+        expect(printer.error).toBeCalledWith('No Map resource to update. Use "amplify add geo" to create a new Map.');
     });
 
     it('sets parameters based on user input for adding subsequent map walkthrough', async() => {
@@ -216,7 +217,7 @@ describe('Map walkthrough works as expected', () => {
         const removeWalkthrough = require('../../service-walkthroughs/removeWalkthrough').removeWalkthrough;
         await removeWalkthrough(mockContext, service);
 
-        expect(mockContext.print.error).toBeCalledWith(`No ${service} type resource exists in the project.`);
+        expect(printer.error).toBeCalledWith(`No ${service} type resource exists in the project.`);
     });
 
     it('updates default map to another map if it is removed', async() => {

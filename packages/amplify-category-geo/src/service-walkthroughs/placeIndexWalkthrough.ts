@@ -9,6 +9,7 @@ import { getCurrentPlaceIndexParameters } from '../service-utils/placeIndexUtils
 import { getGeoServiceMeta, updateDefaultResource, geoServiceExists, getGeoPricingPlan, checkGeoResourceExists } from '../service-utils/resourceUtils';
 import { resourceAccessWalkthrough, pricingPlanWalkthrough, dataProviderWalkthrough } from './resourceWalkthrough';
 import { DataProvider, PricingPlan } from '../service-utils/resourceParams';
+import { printer, formatter } from 'amplify-prompts';
 
 /**
  * Starting point for CLI walkthrough that creates a place index resource
@@ -68,7 +69,7 @@ export const placeIndexNameWalkthrough = async (context: any): Promise<Partial<P
         };
         const indexNameInput = (await inquirer.prompt([indexNamePrompt])).name as string;
         if (await checkGeoResourceExists(indexNameInput)) {
-            context.print.info(`Location search index ${indexNameInput} already exists. Choose another name.`);
+            printer.info(`Location search index ${indexNameInput} already exists. Choose another name.`);
         }
         else indexName = indexNameInput;
     }
@@ -79,13 +80,14 @@ export const placeIndexAdvancedWalkthrough = async (context: $TSContext, paramet
     // const includePricingPlan = await geoServiceExists(ServiceName.Map) || await geoServiceExists(ServiceName.PlaceIndex);
     const includePricingPlan = false;
     const currentPricingPlan = parameters.pricingPlan ? parameters.pricingPlan : await getGeoPricingPlan();
-    context.print.info('Available advanced settings:');
-    context.print.info('- Search data provider (default: Esri)');
-    context.print.info('- Search result storage location (default: no result storage)');
+    const advancedSettingOptions: string[] = ['Search data provider (default: Esri)'];
+    advancedSettingOptions.push('Search result storage location (default: no result storage)');
     if (includePricingPlan) {
-        context.print.info(`- Map pricing plan (current: ${currentPricingPlan})`);
+        advancedSettingOptions.push(`Search pricing plan (current: ${currentPricingPlan})`);
     }
-    context.print.info('');
+    printer.info('Available advanced settings:');
+    formatter.list(advancedSettingOptions);
+    printer.blankLine();
 
     if(await context.amplify.confirmPrompt('Do you want to configure advanced settings?', false)) {
         // get the place index data provider
@@ -140,7 +142,7 @@ export const updatePlaceIndexWalkthrough = async (
     .filter(resource => resource.service === ServiceName.PlaceIndex)
 
     if (indexResources.length === 0) {
-        context.print.error('No search index resource to update. Use "amplify add geo" to create a new search index.');
+        printer.error('No search index resource to update. Use "amplify add geo" to create a new search index.');
         return parameters;
     }
 
@@ -148,7 +150,7 @@ export const updatePlaceIndexWalkthrough = async (
 
     if (resourceToUpdate) {
         if (!indexResourceNames.includes(resourceToUpdate)) {
-            context.print.error(`No search index named ${resourceToUpdate} exists in the project.`);
+            printer.error(`No search index named ${resourceToUpdate} exists in the project.`);
             return parameters;
         }
     }

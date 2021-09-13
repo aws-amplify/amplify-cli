@@ -14,7 +14,8 @@ import {
   updatePlaceIndexWithDefault,
   updateSecondMapAsDefault,
   updateSecondPlaceIndexAsDefault,
-  generateRandomShortId
+  generateRandomShortId,
+  getGeoJSConfiguration
 } from 'amplify-e2e-core';
 import { existsSync } from 'fs';
 import path from 'path';
@@ -56,9 +57,9 @@ describe('amplify geo update', () => {
     expect(map.MapName).toBeDefined();
     expect(geoMeta.accessType).toBe('AuthorizedAndGuestUsers');
     const awsExport: any = getAWSExports(projRoot).default;
-    expect(awsExport.geo.amazon_location_services.maps.items[mapName]).toBeDefined();
-    expect(awsExport.geo.amazon_location_services.maps.default).toEqual(mapName);
-    expect(awsExport.geo.amazon_location_services.region).toEqual(region);
+    expect(getGeoJSConfiguration(awsExport).maps.items[mapName]).toBeDefined();
+    expect(getGeoJSConfiguration(awsExport).maps.default).toEqual(mapName);
+    expect(getGeoJSConfiguration(awsExport).region).toEqual(region);
   });
 
   it('init a project with default auth config, add the place index resource and update the auth config', async () => {
@@ -76,9 +77,9 @@ describe('amplify geo update', () => {
     expect(placeIndex.IndexName).toBeDefined();
     expect(geoMeta.accessType).toBe('AuthorizedAndGuestUsers');
     const awsExport: any = getAWSExports(projRoot).default;
-    expect(awsExport.geo.amazon_location_services.search_indices.items).toContain(placeIndexName);
-    expect(awsExport.geo.amazon_location_services.search_indices.default).toEqual(placeIndexName);
-    expect(awsExport.geo.amazon_location_services.region).toEqual(region);
+    expect(getGeoJSConfiguration(awsExport).search_indices.items).toContain(placeIndexName);
+    expect(getGeoJSConfiguration(awsExport).search_indices.default).toEqual(placeIndexName);
+    expect(getGeoJSConfiguration(awsExport).region).toEqual(region);
   });
 
   it('init a project with default auth config, add multiple map resources and update the default map', async () => {
@@ -104,10 +105,10 @@ describe('amplify geo update', () => {
     expect(map2.MapName).toBeDefined();
     //check aws export file
     const awsExport: any = getAWSExports(projRoot).default;
-    expect(awsExport.geo.amazon_location_services.maps.items[map1Name]).toBeDefined();
-    expect(awsExport.geo.amazon_location_services.maps.items[map2Name]).toBeDefined();
-    expect(awsExport.geo.amazon_location_services.maps.default).toEqual(map2Name);
-    expect(awsExport.geo.amazon_location_services.region).toEqual(region);
+    expect(getGeoJSConfiguration(awsExport).maps.items[map1Name]).toBeDefined();
+    expect(getGeoJSConfiguration(awsExport).maps.items[map2Name]).toBeDefined();
+    expect(getGeoJSConfiguration(awsExport).maps.default).toEqual(map2Name);
+    expect(getGeoJSConfiguration(awsExport).region).toEqual(region);
   });
 
   it('init a project with default auth config, add multiple place index resources and update the default index', async () => {
@@ -133,9 +134,9 @@ describe('amplify geo update', () => {
     expect(index2.IndexName).toBeDefined();
     //check aws export file
     const awsExport: any = getAWSExports(projRoot).default;
-    expect(awsExport.geo.amazon_location_services.search_indices.items).toContain(index1Name);
-    expect(awsExport.geo.amazon_location_services.search_indices.items).toContain(index2Name);
-    expect(awsExport.geo.amazon_location_services.search_indices.default).toEqual(index2Name);
-    expect(awsExport.geo.amazon_location_services.region).toEqual(region);
+    expect(getGeoJSConfiguration(awsExport).search_indices.items).toContain(index1Name);
+    expect(getGeoJSConfiguration(awsExport).search_indices.items).toContain(index2Name);
+    expect(getGeoJSConfiguration(awsExport).search_indices.default).toEqual(index2Name);
+    expect(getGeoJSConfiguration(awsExport).region).toEqual(region);
   });
 })
