@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.49.0-beta.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.48.0...amplify-e2e-tests@2.49.0-beta.1) (2021-09-13)
+
+
+### Bug Fixes
+
+* remove overwrite of email-only verification when triggers are added ([#7671](https://github.com/aws-amplify/amplify-cli/issues/7671)) ([704295b](https://github.com/aws-amplify/amplify-cli/commit/704295b918701eb81fdaabb786417463672fa02c))
+
+
+### Features
+
+* **amplify-category-auth:** add auth verification mechanisms to frontend config ([#8037](https://github.com/aws-amplify/amplify-cli/issues/8037)) ([88494b3](https://github.com/aws-amplify/amplify-cli/commit/88494b3f12a9989273aa3ae3e68c629f4c4cdff9))
+* version blocking for CLI ([#7834](https://github.com/aws-amplify/amplify-cli/issues/7834)) ([045ef3b](https://github.com/aws-amplify/amplify-cli/commit/045ef3b83598c287b7e34bb5d1487bbe026026af))
+
+
+
+
+
 # [2.49.0-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.48.0...amplify-e2e-tests@2.49.0-beta.0) (2021-09-13)
 
 
