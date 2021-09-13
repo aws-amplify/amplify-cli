@@ -4,6 +4,7 @@ import { $TSObject, open, stateManager } from 'amplify-cli-core';
 import { $TSContext } from 'amplify-cli-core';
 import { addPlaceIndexResource, updatePlaceIndexResource, removePlaceIndexResource } from './placeIndex';
 import { addMapResource, updateMapResource, removeMapResource } from './map';
+import { printer } from 'amplify-prompts';
 
 /**
  * Entry point for creating a new Geo resource
@@ -23,7 +24,7 @@ export const addResource = async (
       await context.amplify.invokePluginMethod(context, 'auth', undefined, 'add', [context]);
     }
     else {
-      context.print.info('Please add auth (Amazon Cognito) to your project using "amplify add auth"');
+      printer.info('Please add auth (Amazon Cognito) to your project using "amplify add auth"');
       return;
     }
   }
@@ -81,11 +82,10 @@ export const projectHasAuth = () => !!Object.values(
 ).find(meta => (meta as $TSObject)?.service === 'Cognito');
 
 export const printNextStepsSuccessMessage = (context: $TSContext) => {
-  const { print } = context;
-  print.info('');
-  print.success('Next steps:');
-  print.info('"amplify push" builds all of your local backend resources and provisions them in the cloud');
-  print.info(
+  printer.blankLine();
+  printer.success('Next steps:');
+  printer.info('"amplify push" builds all of your local backend resources and provisions them in the cloud');
+  printer.info(
     '"amplify publish" builds all of your local backend and front-end resources (if you added hosting category) and provisions them in the cloud',
   );
 };

@@ -8,6 +8,7 @@ import { PricingPlan, ResourceParameters, AccessType } from './resourceParams';
 import os from 'os';
 import { getMapIamPolicies } from './mapUtils';
 import { getPlaceIndexIamPolicies } from './placeIndexUtils';
+import { printer } from 'amplify-prompts';
 
 // Merges other with existing in a non-destructive way.
 // Specifically, scalar values will not be overwritten
@@ -165,12 +166,12 @@ export const checkAuthConfig = async (context: $TSContext, parameters: Pick<Reso
     }
 
     if (checkResult.errors && checkResult.errors.length > 0) {
-      context.print.warning(checkResult.errors.join(os.EOL));
+      printer.warn(checkResult.errors.join(os.EOL));
     }
 
     // If auth is not imported and there were errors, adjust or enable auth configuration
     if (!checkResult.authEnabled || !checkResult.requirementsMet) {
-      context.print.warning(`Adding ${service} to your project requires the Auth category for managing authentication rules.`);
+      printer.warn(`Adding ${service} to your project requires the Auth category for managing authentication rules.`);
 
       try {
         await context.amplify.invokePluginMethod(context, 'auth', undefined, 'externalAuthEnable', [
@@ -180,7 +181,7 @@ export const checkAuthConfig = async (context: $TSContext, parameters: Pick<Reso
           authRequirements
         ]);
       } catch (error) {
-        context.print.error(error);
+        printer.error(error);
         throw error;
       }
     }

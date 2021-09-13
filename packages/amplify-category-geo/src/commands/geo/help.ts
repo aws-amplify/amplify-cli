@@ -1,5 +1,6 @@
 import { $TSContext } from 'amplify-cli-core';
 import { category } from '../../constants';
+import { printer } from 'amplify-prompts';
 
 export const name = category;
 
@@ -31,5 +32,5 @@ export const run = async (context: $TSContext) => {
 
   context.amplify.showHelp(header, commands);
 
-  context.print.info('');
+  printer.blankLine();
 };
