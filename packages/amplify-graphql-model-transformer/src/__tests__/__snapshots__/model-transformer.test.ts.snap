@@ -3920,11 +3920,32 @@ $util.toJson($ListRequest)
 #end
 ## [End] ResponseTemplate. **",
   "Query.syncPosts.req.vtl": "## [Start] Sync Request template. **
+#if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
+  #set( $filter = $ctx.stash.authFilter )
+  #if( !$util.isNullOrEmpty($ctx.args.filter) )
+    #set( $filter = [{
+  \\"and\\":   [$filter, $ctx.args.filter]
+}] )
+  #end
+#else
+  #if( !$util.isNullOrEmpty($ctx.args.filter) )
+    #set( $filter = $ctx.args.filter )
+  #end
+#end
+#if( !$util.isNullOrEmpty($filter) )
+  #set( $filterExpression = $util.parseJson($util.transform.toDynamoDBFilterExpression($filter)) )
+  #if( !$util.isNullOrBlank($filterExpression.expression) )
+    #if( $filterEpression.expressionValues.size() == 0 )
+      $util.qr($filterEpression.remove(\\"expressionValues\\"))
+    #end
+    #set( $filter = $filterExpression )
+  #end
+#end
 {
   \\"version\\": \\"2018-05-29\\",
   \\"operation\\": \\"Sync\\",
-  \\"filter\\":   #if( $context.args.filter )
-$util.transform.toDynamoDBFilterExpression($ctx.args.filter)
+  \\"filter\\":   #if( $filter )
+$util.toJson($filter)
   #else
 null
   #end,
@@ -7469,11 +7490,32 @@ $util.toJson($ListRequest)
 #end
 ## [End] ResponseTemplate. **",
   "Query.syncPosts.req.vtl": "## [Start] Sync Request template. **
+#if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
+  #set( $filter = $ctx.stash.authFilter )
+  #if( !$util.isNullOrEmpty($ctx.args.filter) )
+    #set( $filter = [{
+  \\"and\\":   [$filter, $ctx.args.filter]
+}] )
+  #end
+#else
+  #if( !$util.isNullOrEmpty($ctx.args.filter) )
+    #set( $filter = $ctx.args.filter )
+  #end
+#end
+#if( !$util.isNullOrEmpty($filter) )
+  #set( $filterExpression = $util.parseJson($util.transform.toDynamoDBFilterExpression($filter)) )
+  #if( !$util.isNullOrBlank($filterExpression.expression) )
+    #if( $filterEpression.expressionValues.size() == 0 )
+      $util.qr($filterEpression.remove(\\"expressionValues\\"))
+    #end
+    #set( $filter = $filterExpression )
+  #end
+#end
 {
   \\"version\\": \\"2018-05-29\\",
   \\"operation\\": \\"Sync\\",
-  \\"filter\\":   #if( $context.args.filter )
-$util.transform.toDynamoDBFilterExpression($ctx.args.filter)
+  \\"filter\\":   #if( $filter )
+$util.toJson($filter)
   #else
 null
   #end,
@@ -11018,11 +11060,32 @@ $util.toJson($ListRequest)
 #end
 ## [End] ResponseTemplate. **",
   "Query.syncPosts.req.vtl": "## [Start] Sync Request template. **
+#if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
+  #set( $filter = $ctx.stash.authFilter )
+  #if( !$util.isNullOrEmpty($ctx.args.filter) )
+    #set( $filter = [{
+  \\"and\\":   [$filter, $ctx.args.filter]
+}] )
+  #end
+#else
+  #if( !$util.isNullOrEmpty($ctx.args.filter) )
+    #set( $filter = $ctx.args.filter )
+  #end
+#end
+#if( !$util.isNullOrEmpty($filter) )
+  #set( $filterExpression = $util.parseJson($util.transform.toDynamoDBFilterExpression($filter)) )
+  #if( !$util.isNullOrBlank($filterExpression.expression) )
+    #if( $filterEpression.expressionValues.size() == 0 )
+      $util.qr($filterEpression.remove(\\"expressionValues\\"))
+    #end
+    #set( $filter = $filterExpression )
+  #end
+#end
 {
   \\"version\\": \\"2018-05-29\\",
   \\"operation\\": \\"Sync\\",
-  \\"filter\\":   #if( $context.args.filter )
-$util.transform.toDynamoDBFilterExpression($ctx.args.filter)
+  \\"filter\\":   #if( $filter )
+$util.toJson($filter)
   #else
 null
   #end,

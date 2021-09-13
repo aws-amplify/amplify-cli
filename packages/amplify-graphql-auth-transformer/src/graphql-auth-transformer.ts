@@ -261,6 +261,9 @@ Static group authorization should perform as expected.`,
           case QueryFieldType.LIST:
             this.protectListResolver(context, def, query.typeName, query.fieldName, acm);
             break;
+          case QueryFieldType.SYNC:
+            this.protectSyncResolver(context, def, query.typeName, query.fieldName, acm);
+            break;
           default:
             throw new TransformerContractError('Unkown query field type');
         }
@@ -421,6 +424,23 @@ Static group authorization should perform as expected.`,
       MappingTemplate.s3MappingTemplateFromString(authExpression, `${typeName}.${fieldName}.{slotName}.{slotIndex}.req.vtl`),
     );
   };
+  protectSyncResolver = (
+    ctx: TransformerContextProvider,
+    def: ObjectTypeDefinitionNode,
+    typeName: string,
+    fieldName: string,
+    acm: AccessControlMatrix,
+  ): void => {
+    if (ctx.isProjectUsingDataStore()) {
+      const resolver = ctx.resolvers.getResolver(typeName, fieldName) as TransformerResolverProvider;
+      const roleDefinitions = acm.getRolesPerOperation('read').map(r => this.roleMap.get(r)!);
+      const authExpression = generateAuthExpressionForQueries(this.configuredAuthProviders, roleDefinitions, def.fields ?? []);
+      resolver.addToSlot(
+        'auth',
+        MappingTemplate.s3MappingTemplateFromString(authExpression, `${typeName}.${fieldName}.{slotName}.{slotIndex}.req.vtl`),
+      );
+    }
+  };
   protectSearchResolver = (
     ctx: TransformerContextProvider,
     def: ObjectTypeDefinitionNode,
@@ -436,6 +456,17 @@ Static group authorization should perform as expected.`,
       MappingTemplate.s3MappingTemplateFromString(authExpression, `${typeName}.${fieldName}.{slotName}.{slotIndex}.req.vtl`),
     );
   };
+  /*
+  Field Resovler can protect the following
+  - model fields
+  - relational fields (hasOne, hasMany, belongsTo)
+  - fields on an operation (query/mutation)
+  - protection on predictions/function/no directive
+  Order of precendence
+  - resolver in api host (ex. @function, @predictions)
+  - resolver in resolver manager (ex. @hasOne, @hasMany @belongsTo)
+  - no resolver creates a blank non-pipeline resolver will return the source field
+  */
   protectFieldResolver = (
     ctx: TransformerContextProvider,
     def: ObjectTypeDefinitionNode,
@@ -471,8 +502,8 @@ Static group authorization should perform as expected.`,
       );
     } else {
       const fieldAuthExpression = generateAuthExpressionForField(this.configuredAuthProviders, roleDefinitions, def.fields ?? []);
-      const subsEnabled = this.modelDirectiveConfig.get(typeName)!.subscriptions.level === 'on';
-      const fieldResponse = generateFieldAuthResponse('Mutation', fieldName, hasModelDirective ? subsEnabled : false);
+      const subsEnabled = hasModelDirective ? this.modelDirectiveConfig.get(typeName)!.subscriptions.level === 'on' : false;
+      const fieldResponse = generateFieldAuthResponse('Mutation', fieldName, subsEnabled);
       if (!ctx.api.host.hasDataSource('NONE')) {
         ctx.api.host.addNoneDataSource('NONE');
       }
@@ -518,7 +549,7 @@ Static group authorization should perform as expected.`,
     const resolver = ctx.resolvers.getResolver(typeName, fieldName) as TransformerResolverProvider;
     const fields = acm.getResources();
     const updateDeleteRoles = [...new Set([...acm.getRolesPerOperation('update'), ...acm.getRolesPerOperation('delete')])];
-    // protect fields to be updated and fields that can't be set to null
+    // protect fields to be updated and fields that can't be set to null (partial delete on fields)
     const totalRoles = updateDeleteRoles.map(role => {
       const allowedFields = fields.filter(resource => acm.isAllowed(role, resource, 'update'));
       const nullAllowedFileds = fields.filter(resource => acm.isAllowed(role, resource, 'delete'));
@@ -864,7 +895,6 @@ Static group authorization should perform as expected.`,
 
   /**
    * TODO: Change Resource Ref Object/Field Functions to work with roles
-   * Currently we need FieldToResourceRef to have deny by default behavior for IAM Policy
    */
   private addTypeToResourceReferences(typeName: string, rules: AuthRule[]): void {
     const iamPublicRulesExist = rules.some(r => r.allow === 'public' && r.provider === 'iam' && r.generateIAMPolicy);

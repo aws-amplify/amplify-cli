@@ -26,6 +26,7 @@ test('test simple model with public auth rule and amplify admin app is present',
           ],
         },
         addAwsIamAuthInOutputSchema: true,
+        adminUserPoolID: 'us-fake-1_uuid',
       }),
     ],
   });
@@ -86,6 +87,7 @@ test('Test model with public auth rule without all operations and amplify admin 
           ],
         },
         addAwsIamAuthInOutputSchema: true,
+        adminUserPoolID: 'us-fake-1_uuid',
       }),
     ],
   });
@@ -130,6 +132,7 @@ test('Test simple model with private auth rule and amplify admin app is present'
           ],
         },
         addAwsIamAuthInOutputSchema: true,
+        adminUserPoolID: 'us-fake-1_uuid',
       }),
     ],
   });
@@ -194,6 +197,7 @@ test('Test simple model with private auth rule, few operations, and amplify admi
           ],
         },
         addAwsIamAuthInOutputSchema: true,
+        adminUserPoolID: 'us-fake-1_uuid',
       }),
     ],
   });
@@ -283,6 +287,7 @@ test('Test simple model with AdminUI enabled should add IAM policy only for fiel
           ],
         },
         addAwsIamAuthInOutputSchema: true,
+        adminUserPoolID: 'us-fake-1_uuid',
       }),
     ],
   });
@@ -320,7 +325,7 @@ test('Test simple model with AdminUI enabled should add IAM policy only for fiel
   ['Mutation.createPost.auth.1.req.vtl', 'Mutation.updatePost.auth.1.res.vtl', 'Mutation.deletePost.auth.1.res.vtl'].forEach(r => {
     expect(out.pipelineFunctions[r]).toContain(
       '#if( $util.authType() == "IAM Authorization" )\n' +
-        '  #if( $ctx.identity.userArn.contains("_Full-access/CognitoIdentityCredentials") || $ctx.identity.userArn.contains("_Manage-only/CognitoIdentityCredentials") )\n' +
+        '  #if( $ctx.identity.userArn.contains("us-fake-1_uuid_Full-access/CognitoIdentityCredentials") || $ctx.identity.userArn.contains("us-fake-1_uuid_Manage-only/CognitoIdentityCredentials") )\n' +
         '    #return($util.toJson({})\n' +
         '  #end\n' +
         '$util.unauthorized()\n' +

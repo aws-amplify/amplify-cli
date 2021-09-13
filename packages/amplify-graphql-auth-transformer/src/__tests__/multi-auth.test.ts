@@ -6,16 +6,8 @@ import {
   AppSyncAuthConfigurationOIDCEntry,
   AppSyncAuthMode,
   GraphQLTransform,
-  TransformerContractError,
 } from '@aws-amplify/graphql-transformer-core';
 import { DocumentNode, ObjectTypeDefinitionNode, Kind, FieldDefinitionNode, parse, InputValueDefinitionNode } from 'graphql';
-
-const noAuthModeDefaultConfig: AppSyncAuthConfiguration = {
-  defaultAuthentication: {
-    authenticationType: undefined,
-  },
-  additionalAuthenticationProviders: [],
-};
 
 const userPoolsDefaultConfig: AppSyncAuthConfiguration = {
   defaultAuthentication: {
@@ -27,13 +19,6 @@ const userPoolsDefaultConfig: AppSyncAuthConfiguration = {
 const apiKeyDefaultConfig: AppSyncAuthConfiguration = {
   defaultAuthentication: {
     authenticationType: 'API_KEY',
-  },
-  additionalAuthenticationProviders: [],
-};
-
-const openIdDefaultConfig: AppSyncAuthConfiguration = {
-  defaultAuthentication: {
-    authenticationType: 'OPENID_CONNECT',
   },
   additionalAuthenticationProviders: [],
 };
@@ -83,8 +68,8 @@ const privateWithApiKeyAuthDirective = '@auth(rules: [{allow: private, provider:
 const publicAuthDirective = '@auth(rules: [{allow: public}])';
 const publicUserPoolsAuthDirective = '@auth(rules: [{allow: public, provider: userPools}])';
 const privateAndPublicDirective = '@auth(rules: [{allow: private}, {allow: public}])';
-const privateAndPrivateIAMDirective = '@auth(rules: [{allow: private}, {allow: private, provider: iam}])';
 const privateIAMDirective = '@auth(rules: [{allow: private, provider: iam}])';
+// const privateAndPrivateIAMDirective = '@auth(rules: [{allow: private}, {allow: private, provider: iam}])';
 
 const getSchema = (authDirective: string) => {
   return `
@@ -236,90 +221,90 @@ const expectMultiple = (fieldOrType: ObjectTypeDefinitionNode | FieldDefinitionN
 
 const getField = (type, name) => type.fields.find(f => f.name.value === name);
 
-// describe('validation tests', () => {
-//   const validationTest = (authDirective, authConfig, expectedError) => {
-//     const schema = getSchema(authDirective);
-//     const transformer = getTransformer(authConfig);
+describe('validation tests', () => {
+  const validationTest = (authDirective, authConfig, expectedError) => {
+    const schema = getSchema(authDirective);
+    const transformer = getTransformer(authConfig);
 
-//     const t = () => {
-//       const out = transformer.transform(schema);
-//     };
+    const t = () => {
+      const out = transformer.transform(schema);
+    };
 
-//     expect(t).toThrowError(expectedError);
-//   };
+    expect(t).toThrowError(expectedError);
+  };
 
-//   test('AMAZON_COGNITO_USER_POOLS not configured for project', () => {
-//     validationTest(
-//       privateAuthDirective,
-//       apiKeyDefaultConfig,
-//       `@auth directive with 'userPools' provider found, but the project has no Cognito User \
-// Pools authentication provider configured.`,
-//     );
-//   });
+  test('AMAZON_COGNITO_USER_POOLS not configured for project', () => {
+    validationTest(
+      privateAuthDirective,
+      apiKeyDefaultConfig,
+      `@auth directive with 'userPools' provider found, but the project has no Cognito User \
+Pools authentication provider configured.`,
+    );
+  });
 
-//   test('API_KEY not configured for project', () => {
-//     validationTest(
-//       publicAuthDirective,
-//       userPoolsDefaultConfig,
-//       `@auth directive with 'apiKey' provider found, but the project has no API Key \
-// authentication provider configured.`,
-//     );
-//   });
+  test('API_KEY not configured for project', () => {
+    validationTest(
+      publicAuthDirective,
+      userPoolsDefaultConfig,
+      `@auth directive with 'apiKey' provider found, but the project has no API Key \
+authentication provider configured.`,
+    );
+  });
 
-//   test('AWS_IAM not configured for project', () => {
-//     validationTest(
-//       publicIAMAuthDirective,
-//       userPoolsDefaultConfig,
-//       `@auth directive with 'iam' provider found, but the project has no IAM \
-// authentication provider configured.`,
-//     );
-//   });
+  test('AWS_IAM not configured for project', () => {
+    validationTest(
+      publicIAMAuthDirective,
+      userPoolsDefaultConfig,
+      `@auth directive with 'iam' provider found, but the project has no IAM \
+authentication provider configured.`,
+    );
+  });
 
-//   test('OPENID_CONNECT not configured for project', () => {
-//     validationTest(
-//       ownerOpenIdAuthDirective,
-//       userPoolsDefaultConfig,
-//       `@auth directive with 'oidc' provider found, but the project has no OPENID_CONNECT \
-// authentication provider configured.`,
-//     );
-//   });
+  test('OPENID_CONNECT not configured for project', () => {
+    validationTest(
+      ownerOpenIdAuthDirective,
+      userPoolsDefaultConfig,
+      `@auth directive with 'oidc' provider found, but the project has no OPENID_CONNECT \
+authentication provider configured.`,
+    );
+  });
 
-//   test(`'group' cannot have provider`, () => {
-//     validationTest(
-//       groupsWithProviderAuthDirective,
-//       userPoolsDefaultConfig,
-//       `@auth directive with 'groups' strategy only supports 'userPools' and 'oidc' providers, but found \
-// 'iam' assigned`,
-//     );
-//   });
+  test(`'group' cannot have provider`, () => {
+    validationTest(
+      groupsWithProviderAuthDirective,
+      userPoolsDefaultConfig,
+      `@auth directive with 'groups' strategy only supports 'userPools' and 'oidc' providers, but found \
+'iam' assigned`,
+    );
+  });
 
-//   test(`'owner' has invalid IAM provider`, () => {
-//     validationTest(
-//       ownerWithIAMAuthDirective,
-//       userPoolsDefaultConfig,
-//       `@auth directive with 'owner' strategy only supports 'userPools' (default) and \
-// 'oidc' providers, but found 'iam' assigned.`,
-//     );
-//   });
+  test(`'owner' has invalid IAM provider`, () => {
+    validationTest(
+      ownerWithIAMAuthDirective,
+      userPoolsDefaultConfig,
+      `@auth directive with 'owner' strategy only supports 'userPools' (default) and \
+'oidc' providers, but found 'iam' assigned.`,
+    );
+  });
 
-//   test(`'public' has invalid 'userPools' provider`, () => {
-//     validationTest(
-//       publicUserPoolsAuthDirective,
-//       userPoolsDefaultConfig,
-//       `@auth directive with 'public' strategy only supports 'apiKey' (default) and 'iam' providers, but \
-// found 'userPools' assigned.`,
-//     );
-//   });
+  test(`'public' has invalid 'userPools' provider`, () => {
+    validationTest(
+      publicUserPoolsAuthDirective,
+      userPoolsDefaultConfig,
+      `@auth directive with 'public' strategy only supports 'apiKey' (default) and 'iam' providers, but \
+found 'userPools' assigned.`,
+    );
+  });
 
-//   test(`'private' has invalid 'apiKey' provider`, () => {
-//     validationTest(
-//       privateWithApiKeyAuthDirective,
-//       userPoolsDefaultConfig,
-//       `@auth directive with 'private' strategy only supports 'userPools' (default) and 'iam' providers, but \
-// found 'apiKey' assigned.`,
-//     );
-//   });
-// });
+  test(`'private' has invalid 'apiKey' provider`, () => {
+    validationTest(
+      privateWithApiKeyAuthDirective,
+      userPoolsDefaultConfig,
+      `@auth directive with 'private' strategy only supports 'userPools' (default) and 'iam' providers, but \
+found 'apiKey' assigned.`,
+    );
+  });
+});
 
 describe('schema generation directive tests', () => {
   const transformTest = (authDirective, authConfig, expectedDirectiveNames?: string[] | undefined) => {

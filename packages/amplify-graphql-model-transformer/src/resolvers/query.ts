@@ -160,10 +160,40 @@ export const generateListRequestTemplate = (): string => {
 export const generateSyncRequestTemplate = (): string => {
   return printBlock('Sync Request template')(
     compoundExpression([
+      ifElse(
+        not(isNullOrEmpty(authFilter)),
+        compoundExpression([
+          set(ref('filter'), authFilter),
+          iff(
+            not(isNullOrEmpty(ref('ctx.args.filter'))),
+            set(ref('filter'), list([obj({ and: list([ref('filter'), ref('ctx.args.filter')]) })])),
+          ),
+        ]),
+        iff(not(isNullOrEmpty(ref('ctx.args.filter'))), set(ref('filter'), ref('ctx.args.filter'))),
+      ),
+      iff(
+        not(isNullOrEmpty(ref('filter'))),
+        compoundExpression([
+          set(
+            ref(`filterExpression`),
+            methodCall(ref('util.parseJson'), methodCall(ref('util.transform.toDynamoDBFilterExpression'), ref('filter'))),
+          ),
+          iff(
+            not(methodCall(ref('util.isNullOrBlank'), ref('filterExpression.expression'))),
+            compoundExpression([
+              iff(
+                equals(methodCall(ref('filterEpression.expressionValues.size')), int(0)),
+                qref(methodCall(ref('filterEpression.remove'), str('expressionValues'))),
+              ),
+              set(ref('filter'), ref('filterExpression')),
+            ]),
+          ),
+        ]),
+      ),
       obj({
         version: str('2018-05-29'),
         operation: str('Sync'),
-        filter: ifElse(ref('context.args.filter'), ref('util.transform.toDynamoDBFilterExpression($ctx.args.filter)'), nul()),
+        filter: ifElse(ref('filter'), ref('util.toJson($filter)'), nul()),
         limit: ref(`util.defaultIfNull($ctx.args.limit, ${ResourceConstants.DEFAULT_SYNC_QUERY_PAGE_LIMIT})`),
         lastSync: ref('util.toJson($util.defaultIfNull($ctx.args.lastSync, null))'),
         nextToken: ref('util.toJson($util.defaultIfNull($ctx.args.nextToken, null))'),

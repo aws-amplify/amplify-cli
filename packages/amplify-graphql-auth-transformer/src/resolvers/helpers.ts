@@ -31,6 +31,9 @@ import {
   MANAGE_ROLE,
 } from '../utils';
 
+// note in the resolver that operation is protected by auth
+export const setHasAuthExpression: Expression = qref(methodCall(ref('ctx.stash.put'), ref('hasAuth'), bool(true)));
+
 // since the keySet returns a set we can convert it to a list by converting to json and parsing back as a list
 export const getInputFields = (): Expression => {
   return set(ref('inputFields'), methodCall(ref('util.parseJson'), methodCall(ref('util.toJson'), ref('ctx.args.input.keySet()'))));
@@ -106,7 +109,7 @@ export const apiKeyExpression = (roles: Array<RoleDefinition>) =>
     compoundExpression([...(roles.length > 0 ? [set(ref(IS_AUTHORIZED_FLAG), bool(true))] : [])]),
   );
 
-export const iamExpression = (roles: Array<RoleDefinition>, adminuiEnabled: boolean = false) => {
+export const iamExpression = (roles: Array<RoleDefinition>, adminuiEnabled: boolean = false, adminUserPoolID?: string) => {
   const iamCheck = (claim: string, exp: Expression) =>
     iff(equals(methodCall(ref('ctx.identity.get'), str('cognitoIdentityAuthType')), str(claim)), exp);
   const expression = new Array<Expression>();
@@ -115,8 +118,8 @@ export const iamExpression = (roles: Array<RoleDefinition>, adminuiEnabled: bool
     expression.push(
       iff(
         or([
-          methodCall(ref('ctx.identity.userArn.contains'), str(ADMIN_ROLE)),
-          methodCall(ref('ctx.identity.userArn.contains'), str(MANAGE_ROLE)),
+          methodCall(ref('ctx.identity.userArn.contains'), str(`${adminUserPoolID}${ADMIN_ROLE}`)),
+          methodCall(ref('ctx.identity.userArn.contains'), str(`${adminUserPoolID}${MANAGE_ROLE}`)),
         ]),
         raw('#return($util.toJson({})'),
       ),
@@ -124,7 +127,8 @@ export const iamExpression = (roles: Array<RoleDefinition>, adminuiEnabled: bool
   }
   if (roles.length > 0) {
     for (let role of roles) {
-      expression.push(iff(not(ref(IS_AUTHORIZED_FLAG)), iamCheck(role.claim!, set(ref(IS_AUTHORIZED_FLAG), bool(true)))));
+      if (role.claim === '')
+        expression.push(iff(not(ref(IS_AUTHORIZED_FLAG)), iamCheck(role.claim!, set(ref(IS_AUTHORIZED_FLAG), bool(true)))));
     }
   }
   return iff(equals(ref('util.authType()'), str(IAM_AUTH_TYPE)), compoundExpression(expression));

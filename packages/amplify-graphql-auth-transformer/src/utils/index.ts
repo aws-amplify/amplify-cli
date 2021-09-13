@@ -140,6 +140,7 @@ export const getConfiguredAuthProviders = (config: AuthTransformerConfig): Confi
     default: getAuthProvider(config.authConfig.defaultAuthentication.authenticationType),
     onlyDefaultAuthProviderConfigured: config.authConfig.additionalAuthenticationProviders.length === 0,
     hasAdminUIEnabled: hasIAM && config.addAwsIamAuthInOutputSchema,
+    adminUserPoolID: config.adminUserPoolID!,
     hasApiKey: providers.some(p => p === 'API_KEY'),
     hasUserPools: providers.some(p => p === 'AMAZON_COGNITO_USER_POOLS'),
     hasOIDC: providers.some(p => p === 'OPENID_CONNECT'),

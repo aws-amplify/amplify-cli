@@ -8053,7 +8053,7 @@ false
 true
     #end,
       \\"filter\\":     #if( $filter )
-$util.toJson(util.transform.toDynamoDBFilterExpression($ctx.args.filter))
+$util.toJson($filter)
     #else
 null
     #end,
@@ -8186,7 +8186,7 @@ false
 true
     #end,
       \\"filter\\":     #if( $filter )
-$util.toJson(util.transform.toDynamoDBFilterExpression($ctx.args.filter))
+$util.toJson($filter)
     #else
 null
     #end,
@@ -12414,7 +12414,7 @@ false
 true
     #end,
       \\"filter\\":     #if( $filter )
-$util.toJson(util.transform.toDynamoDBFilterExpression($ctx.args.filter))
+$util.toJson($filter)
     #else
 null
     #end,
@@ -12485,7 +12485,7 @@ false
 true
     #end,
       \\"filter\\":     #if( $filter )
-$util.toJson(util.transform.toDynamoDBFilterExpression($ctx.args.filter))
+$util.toJson($filter)
     #else
 null
     #end,
@@ -12595,7 +12595,7 @@ false
 true
     #end,
       \\"filter\\":     #if( $filter )
-$util.toJson(util.transform.toDynamoDBFilterExpression($ctx.args.filter))
+$util.toJson($filter)
     #else
 null
     #end,
@@ -12759,7 +12759,7 @@ false
 true
     #end,
       \\"filter\\":     #if( $filter )
-$util.toJson(util.transform.toDynamoDBFilterExpression($ctx.args.filter))
+$util.toJson($filter)
     #else
 null
     #end,
@@ -14707,7 +14707,7 @@ false
 true
     #end,
       \\"filter\\":     #if( $filter )
-$util.toJson(util.transform.toDynamoDBFilterExpression($ctx.args.filter))
+$util.toJson($filter)
     #else
 null
     #end,
@@ -14839,7 +14839,7 @@ false
 true
     #end,
       \\"filter\\":     #if( $filter )
-$util.toJson(util.transform.toDynamoDBFilterExpression($ctx.args.filter))
+$util.toJson($filter)
     #else
 null
     #end,
@@ -14949,7 +14949,7 @@ false
 true
     #end,
       \\"filter\\":     #if( $filter )
-$util.toJson(util.transform.toDynamoDBFilterExpression($ctx.args.filter))
+$util.toJson($filter)
     #else
 null
     #end,
@@ -15059,7 +15059,7 @@ false
 true
     #end,
       \\"filter\\":     #if( $filter )
-$util.toJson(util.transform.toDynamoDBFilterExpression($ctx.args.filter))
+$util.toJson($filter)
     #else
 null
     #end,
@@ -15169,7 +15169,7 @@ false
 true
     #end,
       \\"filter\\":     #if( $filter )
-$util.toJson(util.transform.toDynamoDBFilterExpression($ctx.args.filter))
+$util.toJson($filter)
     #else
 null
     #end,

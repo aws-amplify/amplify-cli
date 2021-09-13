@@ -17,7 +17,7 @@ import {
   not,
   nul,
 } from 'graphql-mapping-template';
-import { emptyPayload, getIdentityClaimExp, getOwnerClaim } from './helpers';
+import { emptyPayload, getIdentityClaimExp, getOwnerClaim, setHasAuthExpression } from './helpers';
 import {
   ADMIN_ROLE,
   API_KEY_AUTH_TYPE,
@@ -52,7 +52,7 @@ const apiKeyExpression = (roles: Array<RoleDefinition>) => {
  * @param roles
  * @returns
  */
-const iamExpression = (roles: Array<RoleDefinition>, hasAdminUIEnabled: boolean = false) => {
+const iamExpression = (roles: Array<RoleDefinition>, hasAdminUIEnabled: boolean = false, adminUserPoolID?: string) => {
   const iamCheck = (claim: string, exp: Expression) =>
     iff(equals(methodCall(ref('ctx.identity.get'), str('cognitoIdentityAuthType')), str(claim)), exp);
   const expression = new Array<Expression>();
@@ -61,8 +61,8 @@ const iamExpression = (roles: Array<RoleDefinition>, hasAdminUIEnabled: boolean 
     expression.push(
       iff(
         or([
-          methodCall(ref('ctx.identity.userArn.contains'), str(ADMIN_ROLE)),
-          methodCall(ref('ctx.identity.userArn.contains'), str(MANAGE_ROLE)),
+          methodCall(ref('ctx.identity.userArn.contains'), str(`${adminUserPoolID}${ADMIN_ROLE}`)),
+          methodCall(ref('ctx.identity.userArn.contains'), str(`${adminUserPoolID}${MANAGE_ROLE}`)),
         ]),
         raw('#return($util.toJson({})'),
       ),
@@ -160,12 +160,12 @@ export const geneateAuthExpressionForDelete = (
   fields: ReadonlyArray<FieldDefinitionNode>,
 ) => {
   const { cogntoStaticRoles, cognitoDynamicRoles, oidcStaticRoles, oidcDynamicRoles, apiKeyRoles, iamRoles } = splitRoles(roles);
-  const totalAuthExpressions: Array<Expression> = [set(ref(IS_AUTHORIZED_FLAG), bool(false))];
+  const totalAuthExpressions: Array<Expression> = [setHasAuthExpression, set(ref(IS_AUTHORIZED_FLAG), bool(false))];
   if (providers.hasApiKey) {
     totalAuthExpressions.push(apiKeyExpression(apiKeyRoles));
   }
   if (providers.hasIAM) {
-    totalAuthExpressions.push(iamExpression(iamRoles, providers.hasAdminUIEnabled));
+    totalAuthExpressions.push(iamExpression(iamRoles, providers.hasAdminUIEnabled, providers.adminUserPoolID));
   }
   if (providers.hasUserPools) {
     totalAuthExpressions.push(

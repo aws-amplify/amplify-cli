@@ -57,11 +57,13 @@ export interface ConfiguredAuthProviders {
   hasOIDC: boolean;
   hasIAM: boolean;
   hasAdminUIEnabled: boolean;
+  adminUserPoolID?: string;
 }
 
 export interface AuthTransformerConfig {
   authConfig: AppSyncAuthConfiguration;
   addAwsIamAuthInOutputSchema: boolean;
+  adminUserPoolID?: string;
 }
 
 export const authDirectiveDefinition = `

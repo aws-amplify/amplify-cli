@@ -1,6 +1,6 @@
 import { AuthTransformer } from '@aws-amplify/graphql-auth-transformer';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
-import { AppSyncAuthConfiguration, GraphQLTransform, TransformerContractError } from '@aws-amplify/graphql-transformer-core';
+import { AppSyncAuthConfiguration, GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
 import { ResourceConstants } from 'graphql-transformer-common';
 
 test('happy case with static groups', () => {
