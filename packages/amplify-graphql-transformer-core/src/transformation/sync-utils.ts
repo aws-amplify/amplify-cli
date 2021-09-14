@@ -4,7 +4,10 @@ import * as iam from '@aws-cdk/aws-iam';
 import { ResourceConstants, SyncResourceIDs } from 'graphql-transformer-common';
 import { TransformerContext } from '../transformer-context';
 import { ResolverConfig, SyncConfig, SyncConfigLambda } from '../config/transformer-config';
-import { TransformerTransformSchemaStepContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import {
+  TransformerSchemaVisitStepContextProvider,
+  TransformerTransformSchemaStepContextProvider,
+} from '@aws-amplify/graphql-transformer-interfaces';
 
 type DeltaSyncConfig = {
   DeltaSyncTableName: any;
@@ -84,6 +87,14 @@ export function syncDataSourceConfig(): DeltaSyncConfig {
   };
 }
 
+export function validateResolverConfigForType(ctx: TransformerSchemaVisitStepContextProvider, typeName: string): void {
+  const resolverConfig = ctx.getResolverConfig<ResolverConfig>();
+  const typeResolverConfig = resolverConfig?.models?.[typeName];
+  if (!typeResolverConfig || !typeResolverConfig.ConflictDetection || !typeResolverConfig.ConflictHandler) {
+    console.warn(`Invalid resolverConfig for type ${typeName}. Using the project resolverConfig instead.`);
+  }
+}
+
 export function getSyncConfig(ctx: TransformerTransformSchemaStepContextProvider, typeName: string): SyncConfig | undefined {
   let syncConfig: SyncConfig | undefined;
 
@@ -93,8 +104,6 @@ export function getSyncConfig(ctx: TransformerTransformSchemaStepContextProvider
   const typeResolverConfig = resolverConfig?.models?.[typeName];
   if (typeResolverConfig && typeResolverConfig.ConflictDetection && typeResolverConfig.ConflictHandler) {
     syncConfig = typeResolverConfig;
-  } else {
-    console.warn(`Invalid resolverConfig for type ${typeName}. Using the project resolverConfig instead.`);
   }
 
   return syncConfig;

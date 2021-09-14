@@ -171,6 +171,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
 
     // todo: get model configuration with default values and store it in the map
     const typeName = definition.name.value;
+    SyncUtils.validateResolverConfigForType(ctx, typeName);
     const directiveWrapped: DirectiveWrapper = new DirectiveWrapper(directive);
     const options = directiveWrapped.getArguments({
       queries: {
@@ -230,7 +231,6 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
       this.addAutoGeneratableFields(ctx, type);
 
       if (ctx.isProjectUsingDataStore()) {
-        this.options.SyncConfig = SyncUtils.getSyncConfig(ctx, def!.name.value);
         this.addModelSyncFields(ctx, type);
       }
     }
@@ -1155,15 +1155,13 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
       }),
     );
 
-    if (this.options.SyncConfig && SyncUtils.isLambdaSyncConfig(this.options.SyncConfig)) {
+    const syncConfig = SyncUtils.getSyncConfig(context, def!.name.value);
+    if (syncConfig && SyncUtils.isLambdaSyncConfig(syncConfig)) {
       role.attachInlinePolicy(
-        SyncUtils.createSyncLambdaIAMPolicy(
-          stack,
-          this.options.SyncConfig.LambdaConflictHandler.name,
-          this.options.SyncConfig.LambdaConflictHandler.region,
-        ),
+        SyncUtils.createSyncLambdaIAMPolicy(stack, syncConfig.LambdaConflictHandler.name, syncConfig.LambdaConflictHandler.region),
       );
     }
+
     return role;
   }
 
