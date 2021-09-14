@@ -174,7 +174,7 @@ export class AccessControlMatrix {
         if (this.resources.indexOf(resource) === i) {
           fieldAllowVector.push(operationList);
         } else {
-          fieldAllowVector.push(new Array(this.resources.length).fill(false));
+          fieldAllowVector.push(new Array(this.operations.length).fill(false));
         }
       } else {
         fieldAllowVector.push(operationList);
