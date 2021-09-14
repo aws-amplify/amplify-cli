@@ -69,7 +69,7 @@ enum ModelSortDirection {
 }
 
 type ModelPostConnection {
-  items: [Post]
+  items: [Post!]!
   nextToken: String
 }
 
@@ -285,7 +285,7 @@ enum ModelSortDirection {
 }
 
 type ModelPostConnection {
-  items: [Post]
+  items: [Post!]!
   nextToken: String
 }
 
@@ -396,7 +396,7 @@ type Subscription {
 }
 
 type ModelUserConnection {
-  items: [User]
+  items: [User!]!
   nextToken: String
 }
 
@@ -554,7 +554,7 @@ enum ModelSortDirection {
 }
 
 type ModelPostConnection {
-  items: [Post]
+  items: [Post!]!
   nextToken: String
 }
 
@@ -748,7 +748,7 @@ enum ModelSortDirection {
 }
 
 type ModelPostConnection {
-  items: [Post]
+  items: [Post!]!
   nextToken: String
 }
 
@@ -957,7 +957,7 @@ enum ModelSortDirection {
 }
 
 type ModelPostConnection {
-  items: [Post]
+  items: [Post!]!
   nextToken: String
 }
 
