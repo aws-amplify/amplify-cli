@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.6.2-beta.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-model-transformer@0.6.1...@aws-amplify/graphql-model-transformer@0.6.2-beta.2) (2021-09-14)
+
+
+### Bug Fixes
+
+* **graphql-model-transformer:** fix typo in print block ([#8152](https://github.com/aws-amplify/amplify-cli/issues/8152)) ([7377e58](https://github.com/aws-amplify/amplify-cli/commit/7377e58535dd5555d9e11cf3114fb23cdbb1f382))
+
+
+
+
+
 ## [0.6.2-beta.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-model-transformer@0.6.1...@aws-amplify/graphql-model-transformer@0.6.2-beta.1) (2021-09-14)
 
 

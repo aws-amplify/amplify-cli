@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.34.6-beta.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@2.34.5...amplify-category-function@2.34.6-beta.2) (2021-09-14)
+
+
+### Bug Fixes
+
+* **amplify-category-function:** specify UTC tz when selecting start time ([#8053](https://github.com/aws-amplify/amplify-cli/issues/8053)) ([5e3d69a](https://github.com/aws-amplify/amplify-cli/commit/5e3d69aef42d02b661a7ffe878f40de8a3881d5a))
+* remove overwrite of email-only verification when triggers are added ([#7671](https://github.com/aws-amplify/amplify-cli/issues/7671)) ([704295b](https://github.com/aws-amplify/amplify-cli/commit/704295b918701eb81fdaabb786417463672fa02c))
+
+
+
+
+
 ## [2.34.6-beta.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@2.34.5...amplify-category-function@2.34.6-beta.1) (2021-09-14)
 
 
