@@ -31,7 +31,7 @@ describe('api directives @allow_public_data_access_with_api_key', () => {
     const { output } = meta.api.simplemodel;
     const { authConfig, globalSandboxModeConfig, GraphQLAPIIdOutput, GraphQLAPIEndpointOutput, GraphQLAPIKeyOutput } = output;
 
-    expect(globalSandboxModeConfig[envName].enabled).toBe(true);
+    expect(globalSandboxModeConfig.env).toBeDefined();
     expect(authConfig.defaultAuthentication.authenticationType).toBe('API_KEY');
     expect(authConfig.defaultAuthentication.apiKeyConfig.apiKeyExpirationDate).toBeDefined();
 

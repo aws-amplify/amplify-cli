@@ -17,7 +17,6 @@ import { Grant, IGrantable, ManagedPolicy, Role, ServicePrincipal } from '@aws-c
 import { CfnResource, Construct, Duration, Stack } from '@aws-cdk/core';
 import { TransformerSchema } from './cdk-compat/schema-asset';
 import { DefaultTransformHost } from './transform-host';
-import { stateManager } from 'amplify-cli-core';
 
 export interface GraphqlApiProps {
   /**

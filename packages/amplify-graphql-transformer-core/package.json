@@ -52,7 +52,6 @@
         "@aws-cdk/custom-resources": "~1.119.0",
         "@aws-cdk/cx-api": "~1.119.0",
         "@aws-cdk/region-info": "~1.119.0",
-        "amplify-cli-core": "1.26.0",
         "change-case": "^4.1.1",
         "constructs": "^3.3.125",
         "deep-diff": "^1.0.2",

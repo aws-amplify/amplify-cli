@@ -10,7 +10,7 @@ let ctx, amplifyMeta;
 
 jest.mock('amplify-cli-core', () => ({
   stateManager: {
-    getCurrentMeta: jest.fn(() => JSON.parse(amplifyMeta.toString())),
+    getMeta: jest.fn(() => JSON.parse(amplifyMeta.toString())),
   },
 }));
 

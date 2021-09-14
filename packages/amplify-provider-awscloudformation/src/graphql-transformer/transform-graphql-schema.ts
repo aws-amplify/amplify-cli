@@ -74,9 +74,8 @@ function getTransformerFactory(
     }
 
     const customTransformersConfig = await readTransformerConfiguration(resourceDir);
-    const customTransformers = (customTransformersConfig && customTransformersConfig.transformers
-      ? customTransformersConfig.transformers
-      : []
+    const customTransformers = (
+      customTransformersConfig && customTransformersConfig.transformers ? customTransformersConfig.transformers : []
     )
       .map(transformer => {
         const fileUrlMatch = /^file:\/\/(.*)\s*$/m.exec(transformer);
@@ -427,7 +426,9 @@ export async function buildAPIProject(opts: ProjectOptions<TransformerFactoryArg
     // Todo: Move sanity check to its own package. Run sanity check
     // await Sanity.check(lastBuildPath, thisBuildPath, opts.rootStackFileName);
   }
-  await _updateCurrentMeta(opts);
+
+  // TODO: update local env on api compile
+  // await _updateCurrentMeta(opts);
 
   return builtProject;
 }
@@ -448,12 +449,4 @@ async function _buildProject(opts: ProjectOptions<TransformerFactoryArgs>) {
     featureFlags: new AmplifyCLIFeatureFlagAdapter(),
   });
   return transform.transform(userProjectConfig.schema.toString());
-}
-
-async function _updateCurrentMeta(opts: ProjectOptions<TransformerFactoryArgs>) {
-  const currentMeta = stateManager.getCurrentMeta();
-  const buildParams: any = opts.buildParameters;
-  const apiName = buildParams.AppSyncApiName;
-  currentMeta.api[apiName].output.globalSandboxModeConfig = { env: opts.sandboxModeEnv };
-  stateManager.setCurrentMeta(undefined, currentMeta);
 }

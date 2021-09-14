@@ -9,7 +9,7 @@ jest.mock('amplify-cli-core', () => {
     ...original,
     stateManager: {
       metaFileExists: jest.fn(),
-      getCurrentMeta: jest.fn().mockImplementation(() => JSON.parse(amplifyMeta.toString())),
+      getMeta: jest.fn().mockImplementation(() => JSON.parse(amplifyMeta.toString())),
     },
   };
 });
