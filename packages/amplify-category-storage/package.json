@@ -1,6 +1,6 @@
 {
   "name": "amplify-category-storage",
-  "version": "2.12.7-auth-dir-v-next.0",
+  "version": "2.12.7-auth-dir-v-next.1",
   "description": "amplify-cli storage plugin",
   "repository": {
     "type": "git",
@@ -22,9 +22,9 @@
     "aws"
   ],
   "dependencies": {
-    "amplify-cli-core": "1.27.0-auth-dir-v-next.0",
+    "amplify-cli-core": "1.27.0-auth-dir-v-next.1",
     "amplify-prompts": "1.1.2",
-    "amplify-util-import": "1.5.10-auth-dir-v-next.0",
+    "amplify-util-import": "1.5.10-auth-dir-v-next.1",
     "cloudform-types": "^4.2.0",
     "enquirer": "^2.3.6",
     "fs-extra": "^8.1.0",

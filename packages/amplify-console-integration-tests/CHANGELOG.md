@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.8.7-auth-dir-v-next.1](https://github.com/aws-amplify/amplify-console-integration-tests/compare/amplify-console-integration-tests@1.8.6...amplify-console-integration-tests@1.8.7-auth-dir-v-next.1) (2021-09-14)
+
+
+### Reverts
+
+* Revert "ci: add windows e2e test coverage" ([0560b0f](https://github.com/aws-amplify/amplify-console-integration-tests/commit/0560b0f4a16ce8ce0b7efebb2494c7e2eb8601c8))
+
+
+
+
+
 ## [1.8.7-auth-dir-v-next.0](https://github.com/aws-amplify/amplify-console-integration-tests/compare/amplify-console-integration-tests@1.8.6...amplify-console-integration-tests@1.8.7-auth-dir-v-next.0) (2021-09-14)
 
 

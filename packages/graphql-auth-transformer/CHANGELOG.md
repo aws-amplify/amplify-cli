@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [6.25.0-auth-dir-v-next.1](https://github.com/aws-amplify/amplify-cli/compare/graphql-auth-transformer@6.24.19...graphql-auth-transformer@6.25.0-auth-dir-v-next.1) (2021-09-14)
+
+
+### Features
+
+* [@model](https://github.com/model) conflict resolution ([3f93ab1](https://github.com/aws-amplify/amplify-cli/commit/3f93ab1fb349605d57aa976ce9831488db2403a5))
+* **cli:** add sandbox mode warning to amplify status ([#8078](https://github.com/aws-amplify/amplify-cli/issues/8078)) ([e754661](https://github.com/aws-amplify/amplify-cli/commit/e75466103ffc22ddad5f8e9a1a2e0d76cdb0ba49))
+
+
+
+
+
 # [6.25.0-auth-dir-v-next.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-auth-transformer@6.24.19...graphql-auth-transformer@6.25.0-auth-dir-v-next.0) (2021-09-14)
 
 

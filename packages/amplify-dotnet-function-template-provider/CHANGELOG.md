@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.5.19-auth-dir-v-next.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-dotnet-function-template-provider@1.5.18...amplify-dotnet-function-template-provider@1.5.19-auth-dir-v-next.1) (2021-09-14)
+
+**Note:** Version bump only for package amplify-dotnet-function-template-provider
+
+
+
+
+
 ## [1.5.19-auth-dir-v-next.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-dotnet-function-template-provider@1.5.18...amplify-dotnet-function-template-provider@1.5.19-auth-dir-v-next.0) (2021-09-14)
 
 **Note:** Version bump only for package amplify-dotnet-function-template-provider

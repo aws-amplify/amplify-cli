@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.19.0-auth-dir-v-next.1](https://github.com/aws-amplify/amplify-cli/compare/graphql-mapping-template@4.18.3...graphql-mapping-template@4.19.0-auth-dir-v-next.1) (2021-09-14)
+
+
+### Features
+
+* graphql auth v2 add auth on mutation and subscription resolvers ([acaff15](https://github.com/aws-amplify/amplify-cli/commit/acaff150efa7da285330e718aaf3fc36cae465d8))
+
+
+
+
+
 # [4.19.0-auth-dir-v-next.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-mapping-template@4.18.3...graphql-mapping-template@4.19.0-auth-dir-v-next.0) (2021-09-14)
 
 

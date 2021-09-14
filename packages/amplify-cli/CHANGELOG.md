@@ -3,6 +3,30 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.5.0-auth-dir-v-next.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@5.4.0...@aws-amplify/cli@5.5.0-auth-dir-v-next.1) (2021-09-14)
+
+
+### Bug Fixes
+
+* runtime hooks readme getting excluded in pkg CLI ([#8100](https://github.com/aws-amplify/amplify-cli/issues/8100)) ([1f491cf](https://github.com/aws-amplify/amplify-cli/commit/1f491cf6dbab4478bff18c084f0ff5c3a6746246))
+
+
+### Features
+
+* Amplify Command Hooks ([#7633](https://github.com/aws-amplify/amplify-cli/issues/7633)) ([4cacaad](https://github.com/aws-amplify/amplify-cli/commit/4cacaadcb87d377a37890b0092bf66c6e7b65b0b))
+* **amplify-category-api:** prompt api key creation on amplify push ([#8124](https://github.com/aws-amplify/amplify-cli/issues/8124)) ([6b7dbf2](https://github.com/aws-amplify/amplify-cli/commit/6b7dbf2d083adf0747026a094b6a725a2dc23f29))
+* **cli:** add sandbox mode warning to amplify status ([#8078](https://github.com/aws-amplify/amplify-cli/issues/8078)) ([e754661](https://github.com/aws-amplify/amplify-cli/commit/e75466103ffc22ddad5f8e9a1a2e0d76cdb0ba49))
+* **graphql-model-transformer:** set up transformer for sandbox mode directive ([#8138](https://github.com/aws-amplify/amplify-cli/issues/8138)) ([e805311](https://github.com/aws-amplify/amplify-cli/commit/e805311d80393afef7e0bc7ad757b51706e7a3bf))
+
+
+### Reverts
+
+* Revert "fix(cli): better error message when trying to publish with CD configured in Amplify Console (#7874) (#8106) ([61b7fc3](https://github.com/aws-amplify/amplify-cli/commit/61b7fc3b5aed464e879c3b125613e098dd37518d)), closes [#7874](https://github.com/aws-amplify/amplify-cli/issues/7874) [#8106](https://github.com/aws-amplify/amplify-cli/issues/8106) [#8049](https://github.com/aws-amplify/amplify-cli/issues/8049) [#7874](https://github.com/aws-amplify/amplify-cli/issues/7874)
+
+
+
+
+
 # [5.5.0-auth-dir-v-next.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@5.4.0...@aws-amplify/cli@5.5.0-auth-dir-v-next.0) (2021-09-14)
 
 

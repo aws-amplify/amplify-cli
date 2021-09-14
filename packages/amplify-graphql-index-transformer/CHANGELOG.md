@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.4.0-auth-dir-v-next.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-index-transformer@0.3.1...@aws-amplify/graphql-index-transformer@0.4.0-auth-dir-v-next.1) (2021-09-14)
+
+
+### Features
+
+* graphql auth v2 add auth on mutation and subscription resolvers ([acaff15](https://github.com/aws-amplify/amplify-cli/commit/acaff150efa7da285330e718aaf3fc36cae465d8))
+* graphql auth v2 add schemaChanges, iam policy generation, and query/read resolvers ([7ac761b](https://github.com/aws-amplify/amplify-cli/commit/7ac761b422c23f09eea2602f147ebfd6052e5c80))
+* **graphql-model-transformer:** set up transformer for sandbox mode directive ([#8138](https://github.com/aws-amplify/amplify-cli/issues/8138)) ([e805311](https://github.com/aws-amplify/amplify-cli/commit/e805311d80393afef7e0bc7ad757b51706e7a3bf))
+
+
+
+
+
 # [0.4.0-auth-dir-v-next.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-index-transformer@0.3.1...@aws-amplify/graphql-index-transformer@0.4.0-auth-dir-v-next.0) (2021-09-14)
 
 
