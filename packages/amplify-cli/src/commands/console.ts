@@ -1,7 +1,12 @@
 import { prompt } from 'enquirer';
+import * as actions from 'enquirer/lib/combos';
 import { stateManager, open } from 'amplify-cli-core';
 
 const providerName = 'awscloudformation';
+
+// add vim key bindings
+actions.keys.j = 'down';
+actions.keys.k = 'up';
 
 export const run = async context => {
   let consoleUrl = getDefaultURL();
@@ -32,6 +37,10 @@ export const run = async context => {
             { name: 'Admin', message: 'Amplify admin UI' },
             { name: 'Console', message: 'Amplify console' },
           ],
+          // actions is not part of the TS interface but it's part of the JS API
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          actions,
         });
         if (choice === 'Admin') {
           const providerPlugin = await import(context.amplify.getProviderPlugins(context).awscloudformation);
