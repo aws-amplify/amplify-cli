@@ -1,6 +1,6 @@
 {
   "name": "graphql-transformers-e2e-tests",
-  "version": "6.26.1-auth-dir-v-next.1",
+  "version": "6.26.1-auth-dir-v-next.2",
   "description": "End to end functional tests for appsync supported transformers.",
   "private": true,
   "repository": {
@@ -31,8 +31,8 @@
   },
   "devDependencies": {
     "@aws-amplify/core": "^2.1.0",
-    "@aws-amplify/graphql-index-transformer": "0.4.0-auth-dir-v-next.1",
-    "@aws-amplify/graphql-model-transformer": "0.7.0-auth-dir-v-next.1",
+    "@aws-amplify/graphql-index-transformer": "0.4.0-auth-dir-v-next.2",
+    "@aws-amplify/graphql-model-transformer": "0.7.0-auth-dir-v-next.2",
     "@aws-amplify/graphql-transformer-core": "0.10.0-auth-dir-v-next.1",
     "@types/node": "^12.12.6",
     "aws-amplify": "^4.2.4",

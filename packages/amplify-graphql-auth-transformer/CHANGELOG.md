@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.2.0-auth-dir-v-next.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-auth-transformer@0.2.0-auth-dir-v-next.1...@aws-amplify/graphql-auth-transformer@0.2.0-auth-dir-v-next.2) (2021-09-14)
+
+
+### Bug Fixes
+
+* has auth typo and qref on field conditions for private rule ([#8180](https://github.com/aws-amplify/amplify-cli/issues/8180)) ([1034405](https://github.com/aws-amplify/amplify-cli/commit/1034405d096182f2ae73984416fdaddeee762b64))
+
+
+
+
+
 # 0.2.0-auth-dir-v-next.1 (2021-09-14)
 
 

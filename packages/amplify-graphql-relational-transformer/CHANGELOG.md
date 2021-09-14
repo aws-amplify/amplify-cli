@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.3.0-auth-dir-v-next.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-relational-transformer@0.3.0-auth-dir-v-next.1...@aws-amplify/graphql-relational-transformer@0.3.0-auth-dir-v-next.2) (2021-09-14)
+
+
+### Bug Fixes
+
+* **graphql-model-transformer:** use hasAuth flag when sandbox mode is disabled ([#8179](https://github.com/aws-amplify/amplify-cli/issues/8179)) ([727bb6f](https://github.com/aws-amplify/amplify-cli/commit/727bb6ff8c726669f358e5d61fe895229bd7a6a4))
+
+
+
+
+
 # [0.3.0-auth-dir-v-next.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-relational-transformer@0.2.0...@aws-amplify/graphql-relational-transformer@0.3.0-auth-dir-v-next.1) (2021-09-14)
 
 
