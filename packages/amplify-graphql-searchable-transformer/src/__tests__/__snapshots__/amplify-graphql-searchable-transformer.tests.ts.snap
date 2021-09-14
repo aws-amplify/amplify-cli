@@ -605,7 +605,9 @@ $util.toJson({
 })
 ## [End] Initialization default values. **",
   "Mutation.createPost.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
-$util.unauthorized()
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
 ## [End] Sandbox Mode Disabled. **",
   "Mutation.createPost.req.vtl": "## [Start] Create Request template. **
 ## Begin - key condition **
@@ -700,7 +702,9 @@ $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #end
 ## [End] ResponseTemplate. **",
   "Mutation.deletePost.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
-$util.unauthorized()
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
 ## [End] Sandbox Mode Disabled. **",
   "Mutation.deletePost.req.vtl": "## [Start] Delete Request template. **
 #set( $DeleteRequest = {
@@ -777,7 +781,9 @@ $util.toJson({
 })
 ## [End] Initialization default values. **",
   "Mutation.updatePost.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
-$util.unauthorized()
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
 ## [End] Sandbox Mode Disabled. **",
   "Mutation.updatePost.req.vtl": "## [Start] Mutation Update resolver. **
 ## Set the default values to put request **
@@ -917,7 +923,9 @@ $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #end
 ## [End] ResponseTemplate. **",
   "Query.getPost.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
-$util.unauthorized()
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
 ## [End] Sandbox Mode Disabled. **",
   "Query.getPost.req.vtl": "## [Start] Get Request template. **
 #set( $GetRequest = {
@@ -964,7 +972,9 @@ $util.unauthorized()
 #end
 ## [End] Get Response template. **",
   "Query.listPosts.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
-$util.unauthorized()
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
 ## [End] Sandbox Mode Disabled. **",
   "Query.listPosts.req.vtl": "## [Start] List Request. **
 #set( $limit = $util.defaultIfNull($context.args.limit, 100) )
@@ -1125,7 +1135,9 @@ $util.toJson({
   \\"aggregateItems\\": $aggregateValues
 })",
   "Subscription.onCreatePost.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
-$util.unauthorized()
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
 ## [End] Sandbox Mode Disabled. **",
   "Subscription.onCreatePost.req.vtl": "## [Start] Subscription Request template. **
 $util.toJson({
@@ -1137,7 +1149,9 @@ $util.toJson({
 $util.toJson(null)
 ## [End] Subscription Resonse template. **",
   "Subscription.onDeletePost.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
-$util.unauthorized()
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
 ## [End] Sandbox Mode Disabled. **",
   "Subscription.onDeletePost.req.vtl": "## [Start] Subscription Request template. **
 $util.toJson({
@@ -1149,7 +1163,9 @@ $util.toJson({
 $util.toJson(null)
 ## [End] Subscription Resonse template. **",
   "Subscription.onUpdatePost.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
-$util.unauthorized()
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
 ## [End] Sandbox Mode Disabled. **",
   "Subscription.onUpdatePost.req.vtl": "## [Start] Subscription Request template. **
 $util.toJson({
