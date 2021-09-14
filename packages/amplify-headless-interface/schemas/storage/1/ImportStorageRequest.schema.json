@@ -9,7 +9,7 @@
           ]
       },
       "serviceConfiguration": {
-          "$ref": "#/definitions/S3ServiceConfiguration"
+          "$ref": "#/definitions/ImportS3ServiceConfiguration"
       }
   },
   "required": [
@@ -17,7 +17,7 @@
       "version"
   ],
   "definitions": {
-      "S3ServiceConfiguration": {
+      "ImportS3ServiceConfiguration": {
           "description": "Service configuration for AWS S3 through Amplify",
           "type": "object",
           "properties": {

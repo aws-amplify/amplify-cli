@@ -4,7 +4,7 @@ import { validateAddStorageRequest } from 'amplify-util-headless-input';
 import * as path from 'path';
 import sequential from 'promise-sequential';
 import { updateConfigOnEnvInit } from './provider-utils/awscloudformation';
-import { headlessAddStorage } from './provider-utils/awscloudformation/storage-state-management';
+import { headlessAddStorage, headlessUpdateStorage } from './provider-utils/awscloudformation/storage-configuration-helpers';
 import { categoryName } from './constants';
 export { categoryName as category } from './constants';
 
@@ -114,8 +114,9 @@ export const executeAmplifyHeadlessCommand = async (context: $TSContext, headles
     case 'add':
       await headlessAddStorage(context, await validateAddStorageRequest(headlessPayload));
       break;
-    // case 'update':
-    //   break;
+    case 'update':
+      await headlessUpdateStorage(context, await validateAddStorageRequest(headlessPayload));
+      break;
     // case 'remove':
     //   break;
     // case 'import':

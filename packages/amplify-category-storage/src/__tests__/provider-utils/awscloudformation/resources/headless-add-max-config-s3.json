@@ -1,0 +1,14 @@
+{
+  "version": 1,
+  "serviceConfiguration": {
+    "serviceName": "S3",
+    "permissions": {
+      "auth": ["CREATE_AND_UPDATE", "DELETE", "READ"],
+      "guest": ["READ"],
+      "groups": { "alpha": ["CREATE_AND_UPDATE", "DELETE", "READ"], "beta": ["CREATE_AND_UPDATE"], "gamma": ["DELETE"] }
+    },
+    "bucketName": "testing2bucketname",
+    "resourceName": "testing2resourcename",
+    "lambdaTrigger": { "mode": "new", "name": "lambdaTriggerTesting123" }
+  }
+}
