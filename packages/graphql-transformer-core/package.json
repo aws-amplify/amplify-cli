@@ -1,6 +1,6 @@
 {
   "name": "graphql-transformer-core",
-  "version": "6.29.5",
+  "version": "6.29.6-improve-api-workflow.0",
   "description": "A framework to transform from GraphQL SDL to AWS CloudFormation.",
   "repository": {
     "type": "git",

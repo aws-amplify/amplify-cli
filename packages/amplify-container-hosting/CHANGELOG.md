@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.3.22-improve-api-workflow.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-container-hosting@1.3.21...amplify-container-hosting@1.3.22-improve-api-workflow.0) (2021-09-14)
+
+**Note:** Version bump only for package amplify-container-hosting
+
+
+
+
+
 ## [1.3.21](https://github.com/aws-amplify/amplify-cli/compare/amplify-container-hosting@1.3.20...amplify-container-hosting@1.3.21) (2021-09-09)
 
 **Note:** Version bump only for package amplify-container-hosting

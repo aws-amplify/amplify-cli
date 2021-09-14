@@ -1,6 +1,6 @@
 {
   "name": "amplify-category-auth",
-  "version": "2.36.5",
+  "version": "2.36.6-improve-api-workflow.0",
   "description": "amplify-cli authentication plugin",
   "repository": {
     "type": "git",

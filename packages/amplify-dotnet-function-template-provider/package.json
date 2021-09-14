@@ -1,6 +1,6 @@
 {
   "name": "amplify-dotnet-function-template-provider",
-  "version": "1.5.19",
+  "version": "1.5.20-improve-api-workflow.0",
   "description": ".NET Core templates supplied by the Amplify Team",
   "repository": {
     "type": "git",
@@ -24,7 +24,7 @@
   "dependencies": {
     "amplify-cli-core": "1.27.0",
     "amplify-function-plugin-interface": "1.9.1",
-    "graphql-transformer-core": "6.29.5"
+    "graphql-transformer-core": "6.29.6-improve-api-workflow.0"
   },
   "devDependencies": {
     "@types/inquirer": "^6.5.0",
