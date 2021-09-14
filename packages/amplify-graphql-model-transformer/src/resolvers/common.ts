@@ -17,6 +17,7 @@ import {
   toJson,
   qref,
   str,
+  not,
 } from 'graphql-mapping-template';
 import { OPERATION_KEY } from '../definitions';
 
@@ -95,20 +96,16 @@ export const generateResolverKey = (typeName: string, fieldName: string): string
 
 /**
  * Util function to generate sandbox mode expression
- * @param inputCondition boolean to enable sandbox mode
+ * @param ctx context to get sandbox mode
  */
 export const generateAuthExpressionForSandboxMode = (ctx: any): string => {
   let enabled = ctx.resourceHelper.api.globalSandboxModeEnabled;
   let exp;
 
-  if (enabled) {
-    exp = iff(
-      notEquals(ref('ctx.stash.get("hasAuth")'), str('true')),
-      iff(notEquals(methodCall(ref('util.authType')), str(API_KEY)), methodCall(ref('util.unauthorized'))),
-    );
-  } else {
-    exp = methodCall(ref('util.unauthorized'));
-  }
+  if (enabled) exp = iff(notEquals(methodCall(ref('util.authType')), str(API_KEY)), methodCall(ref('util.unauthorized')));
+  else exp = methodCall(ref('util.unauthorized'));
 
-  return printBlock(`Sandbox Mode ${enabled ? 'Enabled' : 'Disabled'}`)(compoundExpression([exp]));
+  return printBlock(`Sandbox Mode ${enabled ? 'Enabled' : 'Disabled'}`)(
+    compoundExpression([iff(not(ref('ctx.stash.get("hasAuth")')), exp)]),
+  );
 };
