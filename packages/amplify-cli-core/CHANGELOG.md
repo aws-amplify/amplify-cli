@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.28.0-beta.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@1.27.0...amplify-cli-core@1.28.0-beta.1) (2021-09-14)
+
+
+### Features
+
+* version blocking for CLI ([#7834](https://github.com/aws-amplify/amplify-cli/issues/7834)) ([045ef3b](https://github.com/aws-amplify/amplify-cli/commit/045ef3b83598c287b7e34bb5d1487bbe026026af))
+
+
+### Reverts
+
+* Revert "feat: version blocking for CLI (#7834)" (#8170) ([f5a92e3](https://github.com/aws-amplify/amplify-cli/commit/f5a92e3fcd288ba8f5eb48db62ccf02f6bb7d03d)), closes [#7834](https://github.com/aws-amplify/amplify-cli/issues/7834) [#8170](https://github.com/aws-amplify/amplify-cli/issues/8170)
+
+
+
+
+
 # [1.28.0-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@1.27.0...amplify-cli-core@1.28.0-beta.0) (2021-09-14)
 
 

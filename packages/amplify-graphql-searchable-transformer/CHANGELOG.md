@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.6.0-beta.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-searchable-transformer@0.5.1...@aws-amplify/graphql-searchable-transformer@0.6.0-beta.1) (2021-09-14)
+
+
+### Features
+
+* support five new regions in CLI ([#8094](https://github.com/aws-amplify/amplify-cli/issues/8094)) ([98e6c56](https://github.com/aws-amplify/amplify-cli/commit/98e6c56b21cc9a7e1145ab658c3d8611474d5c44))
+
+
+
+
+
 # [0.6.0-beta.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-searchable-transformer@0.5.1...@aws-amplify/graphql-searchable-transformer@0.6.0-beta.0) (2021-09-14)
 
 
