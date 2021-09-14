@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.59.0-auth-dir-v-next.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.58.0...amplify-provider-awscloudformation@4.59.0-auth-dir-v-next.0) (2021-09-14)
+
+
+### Bug Fixes
+
+* add command to show access control and field auth evaluation in access control ([#8174](https://github.com/aws-amplify/amplify-cli/issues/8174)) ([c71c8ff](https://github.com/aws-amplify/amplify-cli/commit/c71c8ff4950dd07478d7c16d42a6dc96518fc97d))
+
+
+### Features
+
+* [@model](https://github.com/model) conflict resolution ([3f93ab1](https://github.com/aws-amplify/amplify-cli/commit/3f93ab1fb349605d57aa976ce9831488db2403a5))
+* Amplify Command Hooks ([#7633](https://github.com/aws-amplify/amplify-cli/issues/7633)) ([4cacaad](https://github.com/aws-amplify/amplify-cli/commit/4cacaadcb87d377a37890b0092bf66c6e7b65b0b))
+* graphql auth v2 add schemaChanges, iam policy generation, and query/read resolvers ([7ac761b](https://github.com/aws-amplify/amplify-cli/commit/7ac761b422c23f09eea2602f147ebfd6052e5c80))
+* **graphql-model-transformer:** set up transformer for sandbox mode directive ([#8138](https://github.com/aws-amplify/amplify-cli/issues/8138)) ([e805311](https://github.com/aws-amplify/amplify-cli/commit/e805311d80393afef7e0bc7ad757b51706e7a3bf))
+
+
+
+
+
 # [4.58.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.57.0...amplify-provider-awscloudformation@4.58.0) (2021-09-02)
 
 

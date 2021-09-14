@@ -3,6 +3,20 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.32.0-auth-dir-v-next.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@2.31.20...amplify-category-api@2.32.0-auth-dir-v-next.0) (2021-09-14)
+
+
+### Features
+
+* **amplify-category-api:** add global sandbox mode directive on schema generation ([#8074](https://github.com/aws-amplify/amplify-cli/issues/8074)) ([96c081b](https://github.com/aws-amplify/amplify-cli/commit/96c081b9d5d0d99373c5894bb3906fe67d81fcae))
+* **amplify-category-api:** prompt api key creation on amplify push ([#8124](https://github.com/aws-amplify/amplify-cli/issues/8124)) ([6b7dbf2](https://github.com/aws-amplify/amplify-cli/commit/6b7dbf2d083adf0747026a094b6a725a2dc23f29))
+* **cli:** add sandbox mode warning to amplify status ([#8078](https://github.com/aws-amplify/amplify-cli/issues/8078)) ([e754661](https://github.com/aws-amplify/amplify-cli/commit/e75466103ffc22ddad5f8e9a1a2e0d76cdb0ba49))
+* **graphql-model-transformer:** set up transformer for sandbox mode directive ([#8138](https://github.com/aws-amplify/amplify-cli/issues/8138)) ([e805311](https://github.com/aws-amplify/amplify-cli/commit/e805311d80393afef7e0bc7ad757b51706e7a3bf))
+
+
+
+
+
 ## [2.31.20](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@2.31.19...amplify-category-api@2.31.20) (2021-09-02)
 
 **Note:** Version bump only for package amplify-category-api
