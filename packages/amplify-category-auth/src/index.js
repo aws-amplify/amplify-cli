@@ -31,7 +31,7 @@ const {
 } = require('./provider-utils/awscloudformation/utils/auth-sms-workflow-helper');
 
 // this function is being kept for temporary compatability.
-async function add(context) {
+async function add(context, skipNextSteps = false) {
   const { amplify } = context;
   const servicesMetadata = require('./provider-utils/supported-services').supportedServices;
   const existingAuth = amplify.getProjectDetails().amplifyMeta.auth || {};
@@ -51,7 +51,7 @@ async function add(context) {
         context.print.error('Provider not configured for this category');
         return;
       }
-      return providerController.addResource(context, result.service);
+      return providerController.addResource(context, result.service, skipNextSteps);
     })
     .catch(err => {
       context.print.info(err.stack);
