@@ -3,6 +3,20 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.6.0-auth-dir-v-next.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-searchable-transformer@0.5.1...@aws-amplify/graphql-searchable-transformer@0.6.0-auth-dir-v-next.0) (2021-09-14)
+
+
+### Features
+
+* [@model](https://github.com/model) conflict resolution ([3f93ab1](https://github.com/aws-amplify/amplify-cli/commit/3f93ab1fb349605d57aa976ce9831488db2403a5))
+* graphql auth v2 add auth on mutation and subscription resolvers ([acaff15](https://github.com/aws-amplify/amplify-cli/commit/acaff150efa7da285330e718aaf3fc36cae465d8))
+* graphql auth v2 add schemaChanges, iam policy generation, and query/read resolvers ([7ac761b](https://github.com/aws-amplify/amplify-cli/commit/7ac761b422c23f09eea2602f147ebfd6052e5c80))
+* **graphql-model-transformer:** set up transformer for sandbox mode directive ([#8138](https://github.com/aws-amplify/amplify-cli/issues/8138)) ([e805311](https://github.com/aws-amplify/amplify-cli/commit/e805311d80393afef7e0bc7ad757b51706e7a3bf))
+
+
+
+
+
 ## [0.5.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-searchable-transformer@0.5.0...@aws-amplify/graphql-searchable-transformer@0.5.1) (2021-09-02)
 
 

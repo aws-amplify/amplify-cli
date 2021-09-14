@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.11.0-auth-dir-v-next.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-headless-interface@1.10.0...amplify-headless-interface@1.11.0-auth-dir-v-next.0) (2021-09-14)
+
+
+### Features
+
+* **cli:** add sandbox mode warning to amplify status ([#8078](https://github.com/aws-amplify/amplify-cli/issues/8078)) ([e754661](https://github.com/aws-amplify/amplify-cli/commit/e75466103ffc22ddad5f8e9a1a2e0d76cdb0ba49))
+
+
+
+
+
 # [1.10.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-headless-interface@1.9.0...amplify-headless-interface@1.10.0) (2021-08-06)
 
 
