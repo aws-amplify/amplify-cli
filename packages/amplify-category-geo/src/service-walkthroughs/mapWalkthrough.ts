@@ -1,6 +1,5 @@
 import _ from 'lodash';
 import uuid from 'uuid';
-import inquirer from 'inquirer';
 import { merge } from '../service-utils/resourceUtils';
 import { MapParameters, getGeoMapStyle, MapStyle, getMapStyleComponents, EsriMapStyleType } from '../service-utils/mapParams';
 import { apiDocs, ServiceName } from '../service-utils/constants';
@@ -9,7 +8,7 @@ import { getCurrentMapParameters, getMapFriendlyNames } from '../service-utils/m
 import { getGeoServiceMeta, updateDefaultResource, geoServiceExists, getGeoPricingPlan, checkGeoResourceExists} from '../service-utils/resourceUtils';
 import { resourceAccessWalkthrough, pricingPlanWalkthrough } from './resourceWalkthrough';
 import { DataProvider } from '../service-utils/resourceParams';
-import { printer, formatter } from 'amplify-prompts';
+import { printer, formatter, prompter, alphanumeric } from 'amplify-prompts';
 
 /**
  * Starting point for CLI walkthrough that creates a map resource
@@ -52,22 +51,11 @@ export const createMapWalkthrough = async (
 export const mapNameWalkthrough = async (context: any): Promise<Partial<MapParameters>> => {
     let mapName;
     while(!mapName) {
-        const mapNamePrompt = {
-            type: 'input',
-            name: 'name',
-            message: 'Provide a name for the Map:',
-            validate: context.amplify.inputValidation({
-                operator: 'regex',
-                value: '^[a-zA-Z0-9]+$',
-                onErrorMsg: 'You can use the following characters: a-z A-Z 0-9',
-                required: true,
-            }),
-            default: () => {
-                const [shortId] = uuid().split('-');
-                return `map${shortId}`;
-            },
-        };
-        const mapNameInput = (await inquirer.prompt([mapNamePrompt])).name as string;
+        const [shortId] = uuid().split('-');
+        const mapNameInput = await prompter.input(
+            'Provide a name for the Map:',
+            { validate: alphanumeric(), initial: `map${shortId}` }
+        );
         if (await checkGeoResourceExists(mapNameInput)) {
             printer.info(`Map ${mapNameInput} already exists. Choose another name.`);
         }
@@ -121,14 +109,13 @@ export const mapStyleWalkthrough = async (parameters: Partial<MapParameters>): P
     const mapStyleDefault = parameters.dataProvider && parameters.mapStyleType ?
         getGeoMapStyle(parameters.dataProvider, parameters.mapStyleType) : 'VectorEsriStreets';
 
-    const mapStyleTypePrompt = {
-        type: 'list',
-        name: 'mapStyle',
-        message: `Specify the map style. Refer ${apiDocs.mapStyles}`,
-        choices: mapStyleChoices,
-        default: mapStyleDefault
-    };
-    return getMapStyleComponents((await inquirer.prompt([mapStyleTypePrompt])).mapStyle as MapStyle);
+    const mapStyleDefaultIndex = mapStyleChoices.findIndex(item => item.value === mapStyleDefault);
+    const mapStyleInput = await prompter.pick<'one', string>(
+        `Specify the map style. Refer ${apiDocs.mapStyles}`,
+        mapStyleChoices,
+        { initial: mapStyleDefaultIndex }
+    );
+    return getMapStyleComponents(mapStyleInput as MapStyle);
 };
 
 /**
@@ -159,15 +146,7 @@ export const updateMapWalkthrough = async (
         }
     }
     else {
-        const resourceQuestion = [
-            {
-                name: 'resourceName',
-                message: 'Select the Map you want to update',
-                type: 'list',
-                choices: mapResourceNames,
-            }
-        ];
-        resourceToUpdate = (await inquirer.prompt(resourceQuestion)).resourceName as string;
+        resourceToUpdate = await prompter.pick<'one', string>('Select the Map you want to update', mapResourceNames);
     }
 
     parameters.name = resourceToUpdate;
@@ -213,16 +192,7 @@ export const updateDefaultMapWalkthrough = async (
     if (otherMapResources?.length > 0) {
         const mapFriendlyNames = await getMapFriendlyNames(otherMapResources);
         const mapChoices = mapFriendlyNames.map((friendlyName, index) => ({ name: friendlyName, value: otherMapResources[index] }));
-
-        const defaultMapQuestion = [
-            {
-                name: 'defaultMapName',
-                message: 'Select the Map you want to set as default:',
-                type: 'list',
-                choices: mapChoices
-            }
-        ];
-        const defaultMapName = (await inquirer.prompt(defaultMapQuestion)).defaultMapName as string;
+        const defaultMapName = await prompter.pick<'one', string>('Select the Map you want to set as default:', mapChoices);
         await updateDefaultResource(context, ServiceName.Map, defaultMapName);
     }
     return currentDefault;

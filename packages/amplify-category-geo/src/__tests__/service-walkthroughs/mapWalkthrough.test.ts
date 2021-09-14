@@ -1,16 +1,15 @@
 import { $TSContext, $TSObject, stateManager, pathManager, JSONUtilities } from 'amplify-cli-core';
 import { EsriMapStyleType, getGeoMapStyle, MapParameters, MapStyle } from '../../service-utils/mapParams';
 import { AccessType, DataProvider, PricingPlan } from '../../service-utils/resourceParams';
-import { provider, ServiceName } from '../../service-utils/constants';
+import { provider, ServiceName, apiDocs } from '../../service-utils/constants';
 import { category } from '../../constants';
-import { printer } from 'amplify-prompts';
+import { printer, prompter } from 'amplify-prompts';
 
 jest.mock('amplify-cli-core');
 jest.mock('amplify-prompts');
 
 describe('Map walkthrough works as expected', () => {
     const projectName = 'mockProject';
-    const selectPromptMock = jest.fn();
     const service = ServiceName.Map;
     const mockMapName = 'mockmap12345';
     const secondaryMapName = 'secondarymap12345';
@@ -66,36 +65,6 @@ describe('Map walkthrough works as expected', () => {
     
     beforeEach(() => {
         jest.clearAllMocks();
-        jest.mock('inquirer', () => ({
-            prompt: selectPromptMock
-        }));
-
-        selectPromptMock.mockImplementation((questions: any): Promise<any> => {
-            let mockUserInput: $TSObject = {};
-            if (questions && questions[0] && questions[0].name) {
-                if(questions[0].name === 'accessType') {
-                    mockUserInput['accessType'] = mockMapParameters.accessType;
-                }
-                else if(questions[0].name === 'name') {
-                    mockUserInput['name'] = mockMapParameters.name;
-                }
-                else if(questions[0].name === 'mapStyle') {
-                    mockUserInput['mapStyle'] = getGeoMapStyle(mockMapParameters.dataProvider, mockMapParameters.mapStyleType);
-                }
-                else if(questions[0].name === 'pricingPlanBusinessType') {
-                    mockUserInput['pricingPlanBusinessType'] = true;
-                }
-                else if(questions[0].name === 'resourceName') {
-                    mockUserInput['resourceName'] = mockMapParameters.name;
-                }
-                else if(questions[0].name === 'defaultMapName') {
-                    mockUserInput['defaultMapName'] = secondaryMapName;
-                }
-            }
-            return new Promise<any>((resolve) => {
-                resolve(mockUserInput);
-            });
-        });
 
         mockAmplifyMeta.geo[mockMapName] = { ...mockMapParameters, ...mockMapResource };
         mockAmplifyMeta.geo[secondaryMapName] = { ...mockMapParameters, ...secondaryMapResource };
@@ -117,6 +86,39 @@ describe('Map walkthrough works as expected', () => {
         printer.error = jest.fn();
         printer.success = jest.fn();
         printer.info = jest.fn();
+        prompter.input = jest.fn().mockImplementation((message: string): Promise<any> => {
+            let mockUserInput = 'mock';
+            if (message === 'Provide a name for the Map:') {
+                mockUserInput = mockMapParameters.name
+            }
+            return new Promise<any>((resolve) => {
+                resolve(mockUserInput);
+            });
+        });
+        prompter.pick = jest.fn().mockImplementation((message: string): Promise<any> => {
+            let mockUserInput = 'mock';
+            if (message === `Specify the map style. Refer ${apiDocs.mapStyles}`) {
+                mockUserInput = getGeoMapStyle(mockMapParameters.dataProvider, mockMapParameters.mapStyleType);
+            }
+            else if (message === 'Who can access this Map?') {
+                mockUserInput = mockMapParameters.accessType;
+            }
+            else if (message === 'Are you tracking commercial assets for your business in your app?') {
+                mockUserInput = 'Unknown';
+            }
+            else if (message === 'Select the Map you want to update') {
+                mockUserInput = mockMapParameters.name;
+            }
+            else if (message === 'Select the Map you want to set as default:') {
+                mockUserInput = secondaryMapName;
+            }
+            else if (message === 'Select the Map you want to remove') {
+                mockUserInput = mockMapName;
+            }
+            return new Promise<any>((resolve) => {
+                resolve(mockUserInput);
+            });
+        });
     });
 
     it('sets parameters based on user input for update map walkthrough', async() => {
@@ -189,6 +191,7 @@ describe('Map walkthrough works as expected', () => {
         };
         mockAmplifyMeta.geo = {};
         stateManager.getMeta = jest.fn().mockReturnValue(mockAmplifyMeta);
+        mockContext.amplify.confirmPrompt = jest.fn().mockReturnValue(false);
 
         const createMapWalkthrough = require('../../service-walkthroughs/mapWalkthrough').createMapWalkthrough;
         mapParams = await createMapWalkthrough(mockContext, mapParams);
@@ -241,6 +244,6 @@ describe('Map walkthrough works as expected', () => {
     });
 
     afterEach(() => {
-        selectPromptMock.mockClear();
+        jest.clearAllMocks();
     });
 });
