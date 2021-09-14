@@ -271,7 +271,7 @@ Static group authorization should perform as expected.`,
       // protect additional query fields if they exist
       if (context.metadata.has(indexKeyName)) {
         for (let index of context.metadata.get<Set<string>>(indexKeyName)!.values()) {
-          this.protectListResolver(context, def, context.output.getQueryTypeName()!, index, acm);
+          this.protectListResolver(context, def, def.name.value, index, acm);
         }
       }
       // check if searchable if included in the typeName

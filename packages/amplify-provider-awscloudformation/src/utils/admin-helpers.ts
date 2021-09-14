@@ -25,7 +25,8 @@ export async function isAmplifyAdminApp(appId: string): Promise<{ isAdminApp: bo
   if (appState.appId && appState.region && appState.region !== 'us-east-1') {
     appState = await getAdminAppState(appId, appState.region);
   }
-  return { isAdminApp: !!appState.appId, region: appState.region, userPoolID: JSON.parse(appState.loginAuthConfig).aws_user_pools_id };
+  const userPoolID = appState.loginAuthConfig ? JSON.parse(appState.loginAuthConfig).aws_user_pools_id : '';
+  return { isAdminApp: !!appState.appId, region: appState.region, userPoolID };
 }
 
 export async function getTempCredsWithAdminTokens(context: $TSContext, appId: string): Promise<AwsSdkConfig> {
