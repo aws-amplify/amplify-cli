@@ -1,9 +1,8 @@
 import { AccessType, DataProvider, ResourceParameters } from "../service-utils/resourceParams";
-import inquirer from "inquirer";
 import { ServiceName, choosePricingPlan, apiDocs } from "../service-utils/constants";
 import { PricingPlan } from "../service-utils/resourceParams";
 import { $TSContext, open } from "amplify-cli-core";
-import { printer } from 'amplify-prompts';
+import { printer, prompter } from 'amplify-prompts';
 
 export async function resourceAccessWalkthrough<T extends ResourceParameters>(
     parameters: Partial<T>,
@@ -13,15 +12,17 @@ export async function resourceAccessWalkthrough<T extends ResourceParameters>(
         { name: 'Authorized users only', value: AccessType.AuthorizedUsers },
         { name: 'Authorized and Guest users', value: AccessType.AuthorizedAndGuestUsers }
     ];
+    let accessTypeDefaultIndex = 0;
+    if (parameters.accessType === AccessType.AuthorizedAndGuestUsers) {
+        accessTypeDefaultIndex = 1;
+    }
 
-    const accessPrompt = {
-        type: 'list',
-        name: 'accessType',
-        message: `Who can access this ${getServiceFriendlyName(service)}?`,
-        choices: accessChoices,
-        default: parameters.accessType ? parameters.accessType : AccessType.AuthorizedUsers
-    };
-    return await inquirer.prompt([accessPrompt]);
+    parameters.accessType = await prompter.pick<'one', string>(
+        `Who can access this ${getServiceFriendlyName(service)}?`,
+        accessChoices,
+        { initial: accessTypeDefaultIndex }
+    ) as AccessType;
+    return parameters;
 };
 
 export async function pricingPlanWalkthrough<T extends ResourceParameters>(
@@ -37,18 +38,21 @@ export async function pricingPlanWalkthrough<T extends ResourceParameters>(
         { name: 'Yes, I track commercial assets (For example, any mobile object that is tracked by a company in support of its business)', value: 'Unknown' },
         { name: 'Learn More', value: 'LearnMore'}
     ];
-    const pricingPlanBusinessTypePrompt = {
-        type: 'list',
-        name: 'pricingPlanBusinessType',
-        message: 'Are you tracking commercial assets for your business in your app?',
-        choices: pricingPlanBusinessTypeChoices,
-        default: pricingPlan === PricingPlan.RequestBasedUsage ? PricingPlan.RequestBasedUsage : 'Unknown'
-    };
 
-    let pricingPlanBusinessTypeChoice = ((await inquirer.prompt([pricingPlanBusinessTypePrompt])).pricingPlanBusinessType);
+    const pricingPlanChoiceDefaultIndex = pricingPlan === PricingPlan.RequestBasedUsage ? 0 : 1;
+
+    let pricingPlanBusinessTypeChoice = await prompter.pick<'one', string>(
+        'Are you tracking commercial assets for your business in your app?',
+        pricingPlanBusinessTypeChoices,
+        { initial: pricingPlanChoiceDefaultIndex }
+    );
     while (pricingPlanBusinessTypeChoice === 'LearnMore') {
         open(apiDocs.pricingPlan, { wait: false });
-        pricingPlanBusinessTypeChoice = ((await inquirer.prompt([pricingPlanBusinessTypePrompt])).pricingPlanBusinessType);
+        pricingPlanBusinessTypeChoice = await prompter.pick<'one', string>(
+            'Are you tracking commercial assets for your business in your app?',
+            pricingPlanBusinessTypeChoices,
+            { initial: pricingPlanChoiceDefaultIndex }
+        );
     }
 
     if (pricingPlanBusinessTypeChoice === PricingPlan.RequestBasedUsage) {
@@ -71,24 +75,20 @@ export async function dataProviderWalkthrough<T extends ResourceParameters>(
     parameters: Partial<T>,
     service: ServiceName
 ): Promise<Partial<T>> {
-    const dataProviderPrompt = {
-        type: 'list',
-        name: 'dataProvider',
-        message: `Specify the data provider of geospatial data for this ${getServiceFriendlyName(service)}:`,
-        choices: Object.values(DataProvider),
-        default: parameters.dataProvider ? parameters.dataProvider : 'Esri'
-    };
-
-    const dataProviderInput = (await inquirer.prompt([dataProviderPrompt])).dataProvider;
+    const dataProviderInput = await prompter.pick<'one', string>(
+        `Specify the data provider of geospatial data for this ${getServiceFriendlyName(service)}:`,
+        Object.values(DataProvider),
+        { initial: (parameters.dataProvider === DataProvider.Here) ? 1 : 0 }
+    );
     const provider = (Object.keys(DataProvider).find(key => DataProvider[key as keyof typeof DataProvider] === dataProviderInput)) as DataProvider;
     parameters.dataProvider = provider;
     return parameters;
 };
 
-const getServiceFriendlyName = (service: ServiceName): string => {
+export const getServiceFriendlyName = (service: ServiceName): string => {
     switch(service) {
         case ServiceName.PlaceIndex:
-            return 'Search Index';
+            return 'search index';
         default:
             return service;
     }
