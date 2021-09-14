@@ -31,12 +31,8 @@ describe('run', () => {
         },
         teamProviderInfo: {},
       },
-      versionInfo: {
-        currentCLIVersion: '5.2.0',
-        minimumCompatibleCLIVersion: '5.0.0',
-      },
       amplify: {
-        getTags: jest.fn().mockImplementation(() => []),
+        getTags: jest.fn(),
       },
     };
     CloudFormation_mock.mockImplementation(

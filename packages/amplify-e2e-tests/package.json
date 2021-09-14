@@ -41,7 +41,6 @@
     "promise-sequential": "^1.1.1",
     "rimraf": "^3.0.0",
     "uuid": "^3.4.0",
-    "which": "^2.0.2",
     "yargs": "^15.1.0"
   },
   "devDependencies": {
