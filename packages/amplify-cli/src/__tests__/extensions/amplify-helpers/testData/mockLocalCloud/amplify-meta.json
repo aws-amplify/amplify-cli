@@ -20,9 +20,7 @@
           ]
         },
         "globalSandboxModeConfig": {
-          "dev": {
-            "enabled": true
-          }
+          "env": "dev"
         }
       }
     }

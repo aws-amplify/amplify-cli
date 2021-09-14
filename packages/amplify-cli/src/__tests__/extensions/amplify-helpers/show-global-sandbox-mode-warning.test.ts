@@ -65,11 +65,11 @@ describe('global sandbox mode warning', () => {
         await showGlobalSandboxModeWarning(ctx);
 
         expect(ctx.print.info).toBeCalledWith(`
-⚠️  WARNING: ${chalk.green('"type AMPLIFY_GLOBAL @allow_public_data_access_with_api_key"')} in your GraphQL schema
+${chalk.yellow(`⚠️  WARNING: ${chalk.green('"type AMPLIFY_GLOBAL @allow_public_data_access_with_api_key"')} in your GraphQL schema
 allows public create, read, update, and delete access to all models via API Key. This
 should only be used for testing purposes. API Key expiration date is: 8/20/2021
 
-To configure PRODUCTION-READY authorization rules, review: https://docs.amplify.aws/cli/graphql-transformer/auth
+To configure PRODUCTION-READY authorization rules, review: https://docs.amplify.aws/cli/graphql-transformer/auth`)}
 `);
       });
     });

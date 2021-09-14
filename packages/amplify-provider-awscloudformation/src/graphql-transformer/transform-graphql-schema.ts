@@ -8,7 +8,9 @@ import {
   getAppSyncServiceExtraDirectives,
   GraphQLTransform,
   collectDirectivesByTypeNames,
+  collectDirectives,
   TransformerProjectConfig,
+  getSandboxModeEnvNameFromDirectiveSet,
 } from '@aws-amplify/graphql-transformer-core';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { AuthTransformer } from '@aws-amplify/graphql-auth-transformer';
@@ -72,9 +74,8 @@ function getTransformerFactory(
     }
 
     const customTransformersConfig = await readTransformerConfiguration(resourceDir);
-    const customTransformers = (customTransformersConfig && customTransformersConfig.transformers
-      ? customTransformersConfig.transformers
-      : []
+    const customTransformers = (
+      customTransformersConfig && customTransformersConfig.transformers ? customTransformersConfig.transformers : []
     )
       .map(transformer => {
         const fileUrlMatch = /^file:\/\/(.*)\s*$/m.exec(transformer);
@@ -285,6 +286,8 @@ export async function transformGraphQLSchema(context, options) {
 
   const transformerListFactory = getTransformerFactory(context, resourceDir);
 
+  const sandboxModeEnv = getSandboxModeEnvNameFromDirectiveSet(collectDirectives(project.schema));
+
   let searchableTransformerFlag = false;
 
   if (directiveMap.directives.includes('searchable')) {
@@ -303,6 +306,7 @@ export async function transformGraphQLSchema(context, options) {
     projectConfig: project,
     lastDeployedProjectConfig,
     authConfig,
+    sandboxModeEnv,
   };
   const transformerOutput = await buildAPIProject(buildConfig);
 
@@ -405,6 +409,7 @@ export type ProjectOptions<T> = {
   dryRun?: boolean;
   authConfig?: AppSyncAuthConfiguration;
   stacks: Record<string, Template>;
+  sandboxModeEnv?: string;
 };
 
 export async function buildAPIProject(opts: ProjectOptions<TransformerFactoryArgs>) {
@@ -421,6 +426,9 @@ export async function buildAPIProject(opts: ProjectOptions<TransformerFactoryArg
     // Todo: Move sanity check to its own package. Run sanity check
     // await Sanity.check(lastBuildPath, thisBuildPath, opts.rootStackFileName);
   }
+
+  // TODO: update local env on api compile
+  // await _updateCurrentMeta(opts);
 
   return builtProject;
 }
