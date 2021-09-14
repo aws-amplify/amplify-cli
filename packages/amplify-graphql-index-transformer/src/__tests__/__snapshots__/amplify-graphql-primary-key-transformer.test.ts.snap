@@ -14,7 +14,9 @@ $util.toJson({
 })
 ## [End] Initialization default values. **",
   "Mutation.createTest.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
-$util.unauthorized()
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
 ## [End] Sandbox Mode Disabled. **",
   "Mutation.createTest.preAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
@@ -128,7 +130,9 @@ $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #end
 ## [End] ResponseTemplate. **",
   "Mutation.deleteTest.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
-$util.unauthorized()
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
 ## [End] Sandbox Mode Disabled. **",
   "Mutation.deleteTest.preAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
@@ -216,7 +220,9 @@ $util.toJson({
 })
 ## [End] Initialization default values. **",
   "Mutation.updateTest.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
-$util.unauthorized()
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
 ## [End] Sandbox Mode Disabled. **",
   "Mutation.updateTest.preAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
@@ -375,7 +381,9 @@ $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #end
 ## [End] ResponseTemplate. **",
   "Query.getTest.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
-$util.unauthorized()
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
 ## [End] Sandbox Mode Disabled. **",
   "Query.getTest.preAuth.1.req.vtl": "## [Start] Set the primary key. **
 $util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
@@ -429,7 +437,9 @@ $util.unauthorized()
 #end
 ## [End] Get Response template. **",
   "Query.listTests.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
-$util.unauthorized()
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
 ## [End] Sandbox Mode Disabled. **",
   "Query.listTests.preAuth.1.req.vtl": "## [Start] Set query expression for key **
 #if( $util.isNull($ctx.args.email) && !$util.isNull($ctx.args.sortDirection) )
@@ -593,7 +603,9 @@ $util.toJson($ListRequest)
 #end
 ## [End] ResponseTemplate. **",
   "Subscription.onCreateTest.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
-$util.unauthorized()
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
 ## [End] Sandbox Mode Disabled. **",
   "Subscription.onCreateTest.req.vtl": "## [Start] Subscription Request template. **
 $util.toJson({
@@ -605,7 +617,9 @@ $util.toJson({
 $util.toJson(null)
 ## [End] Subscription Resonse template. **",
   "Subscription.onDeleteTest.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
-$util.unauthorized()
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
 ## [End] Sandbox Mode Disabled. **",
   "Subscription.onDeleteTest.req.vtl": "## [Start] Subscription Request template. **
 $util.toJson({
@@ -617,7 +631,9 @@ $util.toJson({
 $util.toJson(null)
 ## [End] Subscription Resonse template. **",
   "Subscription.onUpdateTest.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
-$util.unauthorized()
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
 ## [End] Sandbox Mode Disabled. **",
   "Subscription.onUpdateTest.req.vtl": "## [Start] Subscription Request template. **
 $util.toJson({
@@ -645,7 +661,9 @@ $util.toJson({
 })
 ## [End] Initialization default values. **",
   "Mutation.createTest.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
-$util.unauthorized()
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
 ## [End] Sandbox Mode Disabled. **",
   "Mutation.createTest.preAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
@@ -752,7 +770,9 @@ $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #end
 ## [End] ResponseTemplate. **",
   "Mutation.deleteTest.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
-$util.unauthorized()
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
 ## [End] Sandbox Mode Disabled. **",
   "Mutation.deleteTest.preAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
@@ -840,7 +860,9 @@ $util.toJson({
 })
 ## [End] Initialization default values. **",
   "Mutation.updateTest.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
-$util.unauthorized()
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
 ## [End] Sandbox Mode Disabled. **",
   "Mutation.updateTest.preAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
@@ -992,7 +1014,9 @@ $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #end
 ## [End] ResponseTemplate. **",
   "Query.getTest.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
-$util.unauthorized()
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
 ## [End] Sandbox Mode Disabled. **",
   "Query.getTest.preAuth.1.req.vtl": "## [Start] Set the primary key. **
 $util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
@@ -1046,7 +1070,9 @@ $util.unauthorized()
 #end
 ## [End] Get Response template. **",
   "Query.listTests.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
-$util.unauthorized()
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
 ## [End] Sandbox Mode Disabled. **",
   "Query.listTests.preAuth.1.req.vtl": "## [Start] Set query expression for key **
 #if( $util.isNull($ctx.args.email) && !$util.isNull($ctx.args.sortDirection) )
@@ -1164,7 +1190,9 @@ $util.toJson($ListRequest)
 #end
 ## [End] ResponseTemplate. **",
   "Subscription.onCreateTest.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
-$util.unauthorized()
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
 ## [End] Sandbox Mode Disabled. **",
   "Subscription.onCreateTest.req.vtl": "## [Start] Subscription Request template. **
 $util.toJson({
@@ -1176,7 +1204,9 @@ $util.toJson({
 $util.toJson(null)
 ## [End] Subscription Resonse template. **",
   "Subscription.onDeleteTest.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
-$util.unauthorized()
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
 ## [End] Sandbox Mode Disabled. **",
   "Subscription.onDeleteTest.req.vtl": "## [Start] Subscription Request template. **
 $util.toJson({
@@ -1188,7 +1218,9 @@ $util.toJson({
 $util.toJson(null)
 ## [End] Subscription Resonse template. **",
   "Subscription.onUpdateTest.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
-$util.unauthorized()
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
 ## [End] Sandbox Mode Disabled. **",
   "Subscription.onUpdateTest.req.vtl": "## [Start] Subscription Request template. **
 $util.toJson({
@@ -1216,7 +1248,9 @@ $util.toJson({
 })
 ## [End] Initialization default values. **",
   "Mutation.createTest.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
-$util.unauthorized()
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
 ## [End] Sandbox Mode Disabled. **",
   "Mutation.createTest.preAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
@@ -1322,7 +1356,9 @@ $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #end
 ## [End] ResponseTemplate. **",
   "Mutation.deleteTest.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
-$util.unauthorized()
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
 ## [End] Sandbox Mode Disabled. **",
   "Mutation.deleteTest.preAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
@@ -1409,7 +1445,9 @@ $util.toJson({
 })
 ## [End] Initialization default values. **",
   "Mutation.updateTest.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
-$util.unauthorized()
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
 ## [End] Sandbox Mode Disabled. **",
   "Mutation.updateTest.preAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
@@ -1560,7 +1598,9 @@ $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #end
 ## [End] ResponseTemplate. **",
   "Query.getTest.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
-$util.unauthorized()
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
 ## [End] Sandbox Mode Disabled. **",
   "Query.getTest.preAuth.1.req.vtl": "## [Start] Set the primary key. **
 $util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
@@ -1613,7 +1653,9 @@ $util.unauthorized()
 #end
 ## [End] Get Response template. **",
   "Query.listTests.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
-$util.unauthorized()
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
 ## [End] Sandbox Mode Disabled. **",
   "Query.listTests.preAuth.1.req.vtl": "## [Start] Set query expression for key **
 #if( !$util.isNull($ctx.args.sortDirection) )
@@ -1688,7 +1730,9 @@ $util.toJson($ListRequest)
 #end
 ## [End] ResponseTemplate. **",
   "Subscription.onCreateTest.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
-$util.unauthorized()
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
 ## [End] Sandbox Mode Disabled. **",
   "Subscription.onCreateTest.req.vtl": "## [Start] Subscription Request template. **
 $util.toJson({
@@ -1700,7 +1744,9 @@ $util.toJson({
 $util.toJson(null)
 ## [End] Subscription Resonse template. **",
   "Subscription.onDeleteTest.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
-$util.unauthorized()
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
 ## [End] Sandbox Mode Disabled. **",
   "Subscription.onDeleteTest.req.vtl": "## [Start] Subscription Request template. **
 $util.toJson({
@@ -1712,7 +1758,9 @@ $util.toJson({
 $util.toJson(null)
 ## [End] Subscription Resonse template. **",
   "Subscription.onUpdateTest.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
-$util.unauthorized()
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
 ## [End] Sandbox Mode Disabled. **",
   "Subscription.onUpdateTest.req.vtl": "## [Start] Subscription Request template. **
 $util.toJson({
@@ -1740,7 +1788,9 @@ $util.toJson({
 })
 ## [End] Initialization default values. **",
   "Mutation.createTest.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
-$util.unauthorized()
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
 ## [End] Sandbox Mode Disabled. **",
   "Mutation.createTest.preAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
@@ -1847,7 +1897,9 @@ $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #end
 ## [End] ResponseTemplate. **",
   "Mutation.deleteTest.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
-$util.unauthorized()
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
 ## [End] Sandbox Mode Disabled. **",
   "Mutation.deleteTest.preAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
@@ -1935,7 +1987,9 @@ $util.toJson({
 })
 ## [End] Initialization default values. **",
   "Mutation.updateTest.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
-$util.unauthorized()
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
 ## [End] Sandbox Mode Disabled. **",
   "Mutation.updateTest.preAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
@@ -2087,7 +2141,9 @@ $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #end
 ## [End] ResponseTemplate. **",
   "Query.getTest.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
-$util.unauthorized()
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
 ## [End] Sandbox Mode Disabled. **",
   "Query.getTest.preAuth.1.req.vtl": "## [Start] Set the primary key. **
 $util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
@@ -2141,7 +2197,9 @@ $util.unauthorized()
 #end
 ## [End] Get Response template. **",
   "Query.listTests.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
-$util.unauthorized()
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
 ## [End] Sandbox Mode Disabled. **",
   "Query.listTests.preAuth.1.req.vtl": "## [Start] Set query expression for key **
 #if( $util.isNull($ctx.args.status) && !$util.isNull($ctx.args.sortDirection) )
@@ -2259,7 +2317,9 @@ $util.toJson($ListRequest)
 #end
 ## [End] ResponseTemplate. **",
   "Subscription.onCreateTest.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
-$util.unauthorized()
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
 ## [End] Sandbox Mode Disabled. **",
   "Subscription.onCreateTest.req.vtl": "## [Start] Subscription Request template. **
 $util.toJson({
@@ -2271,7 +2331,9 @@ $util.toJson({
 $util.toJson(null)
 ## [End] Subscription Resonse template. **",
   "Subscription.onDeleteTest.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
-$util.unauthorized()
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
 ## [End] Sandbox Mode Disabled. **",
   "Subscription.onDeleteTest.req.vtl": "## [Start] Subscription Request template. **
 $util.toJson({
@@ -2283,7 +2345,9 @@ $util.toJson({
 $util.toJson(null)
 ## [End] Subscription Resonse template. **",
   "Subscription.onUpdateTest.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
-$util.unauthorized()
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
 ## [End] Sandbox Mode Disabled. **",
   "Subscription.onUpdateTest.req.vtl": "## [Start] Subscription Request template. **
 $util.toJson({
@@ -2311,7 +2375,9 @@ $util.toJson({
 })
 ## [End] Initialization default values. **",
   "Mutation.createTest.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
-$util.unauthorized()
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
 ## [End] Sandbox Mode Disabled. **",
   "Mutation.createTest.preAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
@@ -2418,7 +2484,9 @@ $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #end
 ## [End] ResponseTemplate. **",
   "Mutation.deleteTest.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
-$util.unauthorized()
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
 ## [End] Sandbox Mode Disabled. **",
   "Mutation.deleteTest.preAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
@@ -2508,7 +2576,9 @@ $util.toJson({
 })
 ## [End] Initialization default values. **",
   "Mutation.testCreate.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
-$util.unauthorized()
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
 ## [End] Sandbox Mode Disabled. **",
   "Mutation.testCreate.preAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
@@ -2615,7 +2685,9 @@ $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #end
 ## [End] ResponseTemplate. **",
   "Mutation.testDelete.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
-$util.unauthorized()
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
 ## [End] Sandbox Mode Disabled. **",
   "Mutation.testDelete.preAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
@@ -2703,7 +2775,9 @@ $util.toJson({
 })
 ## [End] Initialization default values. **",
   "Mutation.testUpdate.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
-$util.unauthorized()
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
 ## [End] Sandbox Mode Disabled. **",
   "Mutation.testUpdate.preAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
@@ -2864,7 +2938,9 @@ $util.toJson({
 })
 ## [End] Initialization default values. **",
   "Mutation.updateTest.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
-$util.unauthorized()
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
 ## [End] Sandbox Mode Disabled. **",
   "Mutation.updateTest.preAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
@@ -3016,7 +3092,9 @@ $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #end
 ## [End] ResponseTemplate. **",
   "Query.getTest.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
-$util.unauthorized()
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
 ## [End] Sandbox Mode Disabled. **",
   "Query.getTest.preAuth.1.req.vtl": "## [Start] Set the primary key. **
 $util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
@@ -3069,7 +3147,9 @@ $util.unauthorized()
 #end
 ## [End] Get Response template. **",
   "Query.listTests.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
-$util.unauthorized()
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
 ## [End] Sandbox Mode Disabled. **",
   "Query.listTests.preAuth.1.req.vtl": "## [Start] Set query expression for key **
 #if( !$util.isNull($ctx.args.sortDirection) )
@@ -3144,7 +3224,9 @@ $util.toJson($ListRequest)
 #end
 ## [End] ResponseTemplate. **",
   "Query.testGet.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
-$util.unauthorized()
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
 ## [End] Sandbox Mode Disabled. **",
   "Query.testGet.preAuth.1.req.vtl": "## [Start] Set the primary key. **
 $util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
@@ -3198,7 +3280,9 @@ $util.unauthorized()
 #end
 ## [End] Get Response template. **",
   "Query.testList.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
-$util.unauthorized()
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
 ## [End] Sandbox Mode Disabled. **",
   "Query.testList.preAuth.1.req.vtl": "## [Start] Set query expression for key **
 #if( $util.isNull($ctx.args.id) && !$util.isNull($ctx.args.sortDirection) )
@@ -3316,7 +3400,9 @@ $util.toJson($ListRequest)
 #end
 ## [End] ResponseTemplate. **",
   "Subscription.onCreateTest.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
-$util.unauthorized()
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
 ## [End] Sandbox Mode Disabled. **",
   "Subscription.onCreateTest.req.vtl": "## [Start] Subscription Request template. **
 $util.toJson({
@@ -3328,7 +3414,9 @@ $util.toJson({
 $util.toJson(null)
 ## [End] Subscription Resonse template. **",
   "Subscription.onDeleteTest.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
-$util.unauthorized()
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
 ## [End] Sandbox Mode Disabled. **",
   "Subscription.onDeleteTest.req.vtl": "## [Start] Subscription Request template. **
 $util.toJson({
@@ -3340,7 +3428,9 @@ $util.toJson({
 $util.toJson(null)
 ## [End] Subscription Resonse template. **",
   "Subscription.onUpdateTest.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
-$util.unauthorized()
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
 ## [End] Sandbox Mode Disabled. **",
   "Subscription.onUpdateTest.req.vtl": "## [Start] Subscription Request template. **
 $util.toJson({
@@ -3368,7 +3458,9 @@ $util.toJson({
 })
 ## [End] Initialization default values. **",
   "Mutation.createTest.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
-$util.unauthorized()
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
 ## [End] Sandbox Mode Disabled. **",
   "Mutation.createTest.preAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
@@ -3474,7 +3566,9 @@ $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #end
 ## [End] ResponseTemplate. **",
   "Mutation.deleteTest.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
-$util.unauthorized()
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
 ## [End] Sandbox Mode Disabled. **",
   "Mutation.deleteTest.preAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
@@ -3563,7 +3657,9 @@ $util.toJson({
 })
 ## [End] Initialization default values. **",
   "Mutation.testCreate.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
-$util.unauthorized()
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
 ## [End] Sandbox Mode Disabled. **",
   "Mutation.testCreate.preAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
@@ -3670,7 +3766,9 @@ $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #end
 ## [End] ResponseTemplate. **",
   "Mutation.testDelete.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
-$util.unauthorized()
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
 ## [End] Sandbox Mode Disabled. **",
   "Mutation.testDelete.preAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
@@ -3758,7 +3856,9 @@ $util.toJson({
 })
 ## [End] Initialization default values. **",
   "Mutation.testUpdate.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
-$util.unauthorized()
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
 ## [End] Sandbox Mode Disabled. **",
   "Mutation.testUpdate.preAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
@@ -3919,7 +4019,9 @@ $util.toJson({
 })
 ## [End] Initialization default values. **",
   "Mutation.updateTest.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
-$util.unauthorized()
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
 ## [End] Sandbox Mode Disabled. **",
   "Mutation.updateTest.preAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
@@ -4070,7 +4172,9 @@ $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #end
 ## [End] ResponseTemplate. **",
   "Query.getTest.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
-$util.unauthorized()
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
 ## [End] Sandbox Mode Disabled. **",
   "Query.getTest.preAuth.1.req.vtl": "## [Start] Set the primary key. **
 $util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
@@ -4123,7 +4227,9 @@ $util.unauthorized()
 #end
 ## [End] Get Response template. **",
   "Query.listTests.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
-$util.unauthorized()
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
 ## [End] Sandbox Mode Disabled. **",
   "Query.listTests.preAuth.1.req.vtl": "## [Start] Set query expression for key **
 #if( !$util.isNull($ctx.args.sortDirection) )
@@ -4198,7 +4304,9 @@ $util.toJson($ListRequest)
 #end
 ## [End] ResponseTemplate. **",
   "Query.testGet.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
-$util.unauthorized()
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
 ## [End] Sandbox Mode Disabled. **",
   "Query.testGet.preAuth.1.req.vtl": "## [Start] Set the primary key. **
 $util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
@@ -4252,7 +4360,9 @@ $util.unauthorized()
 #end
 ## [End] Get Response template. **",
   "Query.testList.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
-$util.unauthorized()
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
 ## [End] Sandbox Mode Disabled. **",
   "Query.testList.preAuth.1.req.vtl": "## [Start] Set query expression for key **
 #if( $util.isNull($ctx.args.id) && !$util.isNull($ctx.args.sortDirection) )
@@ -4370,7 +4480,9 @@ $util.toJson($ListRequest)
 #end
 ## [End] ResponseTemplate. **",
   "Subscription.onCreateTest.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
-$util.unauthorized()
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
 ## [End] Sandbox Mode Disabled. **",
   "Subscription.onCreateTest.req.vtl": "## [Start] Subscription Request template. **
 $util.toJson({
@@ -4382,7 +4494,9 @@ $util.toJson({
 $util.toJson(null)
 ## [End] Subscription Resonse template. **",
   "Subscription.onDeleteTest.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
-$util.unauthorized()
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
 ## [End] Sandbox Mode Disabled. **",
   "Subscription.onDeleteTest.req.vtl": "## [Start] Subscription Request template. **
 $util.toJson({
@@ -4394,7 +4508,9 @@ $util.toJson({
 $util.toJson(null)
 ## [End] Subscription Resonse template. **",
   "Subscription.onUpdateTest.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
-$util.unauthorized()
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
 ## [End] Sandbox Mode Disabled. **",
   "Subscription.onUpdateTest.req.vtl": "## [Start] Subscription Request template. **
 $util.toJson({

@@ -98,7 +98,7 @@ const generateStaticRoleExpression = (roles: Array<RoleDefinition>): Array<Expre
   if (privateRoleIdx > -1) {
     const privateRole = roles[privateRoleIdx];
     if (privateRole.allowedFields!.length > 0) {
-      staticRoleExpression.push(methodCall(ref(`${ALLOWED_FIELDS}.addAll`), raw(JSON.stringify(privateRole.allowedFields))));
+      staticRoleExpression.push(qref(methodCall(ref(`${ALLOWED_FIELDS}.addAll`), raw(JSON.stringify(privateRole.allowedFields)))));
     } else {
       staticRoleExpression.push(set(ref(IS_AUTHORIZED_FLAG), bool(true)));
     }

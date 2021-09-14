@@ -32,7 +32,7 @@ import {
 } from '../utils';
 
 // note in the resolver that operation is protected by auth
-export const setHasAuthExpression: Expression = qref(methodCall(ref('ctx.stash.put'), ref('hasAuth'), bool(true)));
+export const setHasAuthExpression: Expression = qref(methodCall(ref('ctx.stash.put'), str('hasAuth'), bool(true)));
 
 // since the keySet returns a set we can convert it to a list by converting to json and parsing back as a list
 export const getInputFields = (): Expression => {
