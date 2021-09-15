@@ -36,7 +36,7 @@ export const createMapWalkthrough = async (
   // ask if the map should be set as a default. Default to true if it's the only map
   const currentMapResources = await getGeoServiceMeta(ServiceName.Map);
   if (currentMapResources && Object.keys(currentMapResources).length > 0) {
-    parameters.isDefault = await context.amplify.confirmPrompt(
+    parameters.isDefault = await prompter.yesOrNo(
         'Do you want to set this map as default? It will be used in Amplify Map API calls if no explicit reference is provided.',
         true
     );
@@ -76,7 +76,7 @@ export const mapAdvancedWalkthrough = async (context: $TSContext, parameters: Pa
     formatter.list(advancedSettingOptions);
     printer.blankLine();
 
-    if(await context.amplify.confirmPrompt('Do you want to configure advanced settings?', false)) {
+    if(await prompter.yesOrNo('Do you want to configure advanced settings?', false)) {
         // get the map style parameters
         parameters = merge(parameters, await mapStyleWalkthrough(parameters));
 
@@ -158,7 +158,7 @@ export const updateMapWalkthrough = async (
     const otherMapResources = mapResourceNames.filter(mapResourceName => mapResourceName != resourceToUpdate);
     // if this is the only map, default cannot be removed
     if (otherMapResources.length > 0) {
-        const isDefault = await context.amplify.confirmPrompt('Do you want to set this map as default?', true);
+        const isDefault = await prompter.yesOrNo('Do you want to set this map as default?', true);
         // If a default map is updated, ask for new default
         if (parameters.isDefault && !isDefault) {
             await updateDefaultMapWalkthrough(context, resourceToUpdate, otherMapResources);
@@ -192,7 +192,7 @@ export const updateDefaultMapWalkthrough = async (
     if (otherMapResources?.length > 0) {
         const mapFriendlyNames = await getMapFriendlyNames(otherMapResources);
         const mapChoices = mapFriendlyNames.map((friendlyName, index) => ({ name: friendlyName, value: otherMapResources[index] }));
-        const defaultMapName = await prompter.pick<'one', string>('Select the Map you want to set as default:', mapChoices);
+        const defaultMapName = await prompter.pick('Select the Map you want to set as default:', mapChoices);
         await updateDefaultResource(context, ServiceName.Map, defaultMapName);
     }
     return currentDefault;

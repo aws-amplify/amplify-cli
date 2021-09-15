@@ -13,7 +13,7 @@ export const removeWalkthrough = async (context: $TSContext ,service: ServiceNam
         printer.error(`No ${service} type resource exists in the project.`);
         return;
     }
-    return await prompter.pick<'one', string>(`Select the ${getServiceFriendlyName(service)} you want to remove`, resources);
+    return await prompter.pick(`Select the ${getServiceFriendlyName(service)} you want to remove`, resources);
 };
 
 const getServiceResources = async (context: $TSContext, service: string): Promise<string[]> => {

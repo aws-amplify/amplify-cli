@@ -37,7 +37,7 @@ export const createPlaceIndexWalkthrough = async (
   // ask if the place index should be set as a default. Default to true if it's the only place index
   const currentPlaceIndexResources = await getGeoServiceMeta(ServiceName.PlaceIndex);
   if (currentPlaceIndexResources && Object.keys(currentPlaceIndexResources).length > 0) {
-    parameters.isDefault = await context.amplify.confirmPrompt(
+    parameters.isDefault = await prompter.yesOrNo(
         `Do you want to set this ${searchServiceFriendlyName} as default? It will be used in Amplify Search API calls if no explicit reference is provided.`,
         true
     );
@@ -78,7 +78,7 @@ export const placeIndexAdvancedWalkthrough = async (context: $TSContext, paramet
     formatter.list(advancedSettingOptions);
     printer.blankLine();
 
-    if(await context.amplify.confirmPrompt('Do you want to configure advanced settings?', false)) {
+    if(await prompter.yesOrNo('Do you want to configure advanced settings?', false)) {
         // get the place index data provider
         parameters = merge(parameters, await dataProviderWalkthrough(parameters, ServiceName.PlaceIndex));
 
@@ -108,7 +108,7 @@ export const placeIndexAdvancedWalkthrough = async (context: $TSContext, paramet
 };
 
 export const placeIndexDataStorageWalkthrough = async (context:$TSContext, parameters: Partial<PlaceIndexParameters>): Promise<Partial<PlaceIndexParameters>> => {
-  const areResultsStored = await context.amplify.confirmPrompt(
+  const areResultsStored = await prompter.yesOrNo(
     `Do you want to cache or store the results of search operations? Refer ${apiDocs.dataSourceUsage}`,
     parameters.dataSourceIntendedUse === DataSourceIntendedUse.Storage
   );
@@ -156,7 +156,7 @@ export const updatePlaceIndexWalkthrough = async (
     const otherIndexResources = indexResourceNames.filter(indexResourceName => indexResourceName != resourceToUpdate);
     // if this is the only place index, default cannot be removed
     if (otherIndexResources.length > 0) {
-        const isDefault = await context.amplify.confirmPrompt(`Do you want to set this ${searchServiceFriendlyName} as default?`, true);
+        const isDefault = await prompter.yesOrNo(`Do you want to set this ${searchServiceFriendlyName} as default?`, true);
         // If a default place index is updated, ask for new default
         if (parameters.isDefault && !isDefault) {
             await updateDefaultPlaceIndexWalkthrough(context, resourceToUpdate, otherIndexResources);
@@ -188,7 +188,7 @@ export const updateDefaultPlaceIndexWalkthrough = async (
     }
     const otherIndexResources = availablePlaceIndices.filter(indexResourceName => indexResourceName != currentDefault);
     if (otherIndexResources?.length > 0) {
-        const defaultIndexName = await prompter.pick<'one', string>(`Select the ${searchServiceFriendlyName} you want to set as default:`, otherIndexResources);
+        const defaultIndexName = await prompter.pick(`Select the ${searchServiceFriendlyName} you want to set as default:`, otherIndexResources);
         await updateDefaultResource(context, ServiceName.PlaceIndex, defaultIndexName);
     }
     return currentDefault;

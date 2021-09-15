@@ -24,7 +24,7 @@ describe('Search walkthrough works as expected', () => {
     };
     const secondaryPlaceIndexResource = {
         resourceName: secondaryPlaceIndexName,
-        service: service,
+        service: service
     };
     const mockPlaceIndexParameters: PlaceIndexParameters = {
         providerContext: {
@@ -46,7 +46,6 @@ describe('Search walkthrough works as expected', () => {
                 return { service: service, providerName: provider};
             },
             getResourceStatus: jest.fn(),
-            confirmPrompt: jest.fn().mockReturnValue(mockPlaceIndexParameters.isDefault),
             inputValidation: jest.fn(),
             getProjectMeta: jest.fn(),
             updateamplifyMetaAfterResourceUpdate: jest.fn()
@@ -115,6 +114,7 @@ describe('Search walkthrough works as expected', () => {
                 resolve(mockUserInput);
             });
         });
+        prompter.yesOrNo = jest.fn().mockReturnValue(mockPlaceIndexParameters.isDefault);
     });
 
     it('sets parameters based on user input for update place index walkthrough', async() => {
@@ -124,7 +124,7 @@ describe('Search walkthrough works as expected', () => {
         stateManager.getMeta = jest.fn().mockReturnValue(mockAmplifyMeta);
 
         // update the index's default settings to false; should set the secondary index as default
-        mockContext.amplify.confirmPrompt = jest.fn().mockReturnValue(false);
+        prompter.yesOrNo = jest.fn().mockReturnValue(false);
 
         let indexParams: Partial<PlaceIndexParameters> = {
             providerContext: mockPlaceIndexParameters.providerContext
@@ -193,8 +193,8 @@ describe('Search walkthrough works as expected', () => {
 
         expect({ ...mockPlaceIndexParameters, isDefault: true }).toMatchObject(indexParams);
         // place index default setting question is skipped
-        expect(mockContext.amplify.confirmPrompt).toBeCalledTimes(2);
-        expect(mockContext.amplify.confirmPrompt).toBeCalledWith('Do you want to configure advanced settings?', false);
+        expect(prompter.yesOrNo).toBeCalledTimes(2);
+        expect(prompter.yesOrNo).toBeCalledWith('Do you want to configure advanced settings?', false);
     });
 
     it('sets the resource to remove correctly', async() => {
