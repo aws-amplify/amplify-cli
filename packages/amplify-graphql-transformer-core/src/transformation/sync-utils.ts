@@ -91,10 +91,12 @@ export function getSyncConfig(ctx: TransformerContextProvider, typeName: string)
   syncConfig = resolverConfig?.project;
 
   const typeResolverConfig = resolverConfig?.models?.[typeName];
-  if (typeResolverConfig && typeResolverConfig.ConflictDetection && typeResolverConfig.ConflictHandler) {
-    syncConfig = typeResolverConfig;
-  } else {
-    console.warn(`Invalid resolverConfig for type ${typeName}. Using the project resolverConfig instead.`);
+  if (typeResolverConfig) {
+    if (typeResolverConfig.ConflictDetection && typeResolverConfig.ConflictHandler) {
+      syncConfig = typeResolverConfig;
+    } else {
+      console.warn(`Invalid resolverConfig for type ${typeName}. Using the project resolverConfig instead.`);
+    }
   }
 
   return syncConfig;

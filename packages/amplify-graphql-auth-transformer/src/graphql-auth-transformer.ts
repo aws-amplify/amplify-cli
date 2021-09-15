@@ -736,8 +736,8 @@ Static group authorization should perform as expected.`,
       .filter(nonModelTypePredicate);
     for (const nonModelFieldType of nonModelFieldTypes) {
       const nonModelName = nonModelFieldType.name.value;
-      let directives = this.getServiceDirectives(providers, true);
       const hasSeenType = this.seenNonModelTypes.has(nonModelFieldType.name.value);
+      let directives = this.getServiceDirectives(providers, hasSeenType);
       if (!hasSeenType) {
         this.seenNonModelTypes.set(nonModelName, new Set<string>([...directives.map(dir => dir.name.value)]));
         // since we haven't seen this type before we add it to the iam policy resource sets
