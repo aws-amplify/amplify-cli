@@ -5,7 +5,7 @@ const path = require('path');
 const fs = require('fs');
 const { category } = require('../..');
 const { attachPrevParamsToContext } = require('../../provider-utils/awscloudformation/utils/attach-prev-params-to-context');
-const { FeatureFlags, pathManager, PathManager, BannerMessage } = require('amplify-cli-core');
+const { FeatureFlags, pathManager, BannerMessage } = require('amplify-cli-core');
 const { printer } = require('amplify-prompts');
 const { getSupportedServices } = require('../../provider-utils/supported-services');
 
