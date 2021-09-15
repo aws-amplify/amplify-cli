@@ -11,7 +11,7 @@ module.exports = {
       return;
     }
     const { amplify } = context;
-    const servicesMetadata = require('../../provider-utils/supported-services').supportedServices;
+    const servicesMetadata = require('../../provider-utils/supported-services').getSupportedServices();
     return amplify.serviceSelectionPrompt(context, category, servicesMetadata).then(result => {
       const providerController = require(`../../provider-utils/${result.providerName}/index`);
       if (!providerController) {

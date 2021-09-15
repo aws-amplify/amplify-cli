@@ -7,7 +7,7 @@ export const run = async (context: $TSContext) => {
   if (projectHasAuth(context)) {
     return;
   }
-  const servicesMetadata = require('../../provider-utils/supported-services').supportedServices;
+  const servicesMetadata = require('../../provider-utils/supported-services').getSupportedServices();
 
   const serviceSelection = await context.amplify.serviceSelectionPrompt(context, category, servicesMetadata);
   const providerController = require(`../../provider-utils/${serviceSelection.providerName}`);

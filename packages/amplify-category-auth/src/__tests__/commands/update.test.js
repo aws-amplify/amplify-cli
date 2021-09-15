@@ -1,3 +1,5 @@
+const { FeatureFlags } = require('amplify-cli-core');
+FeatureFlags.getBoolean = () => false;
 const fs = require('fs');
 const update = require('../../commands/auth/update');
 const { messages } = require('../../provider-utils/awscloudformation/assets/string-maps');

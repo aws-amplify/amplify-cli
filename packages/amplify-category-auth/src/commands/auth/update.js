@@ -2,9 +2,10 @@ const { messages } = require('../../provider-utils/awscloudformation/assets/stri
 const { getAuthResourceName } = require('../../utils/getAuthResourceName');
 const { transformUserPoolGroupSchema } = require('../../provider-utils/awscloudformation/utils/transform-user-pool-group');
 const path = require('path');
+const fs = require('fs');
 const { category } = require('../..');
 const { attachPrevParamsToContext } = require('../../provider-utils/awscloudformation/utils/attach-prev-params-to-context');
-
+const { FeatureFlags, pathManager, PathManager } = require('amplify-cli-core');
 const subcommand = 'update';
 let options;
 
@@ -13,7 +14,7 @@ module.exports = {
   alias: ['update'],
   run: async context => {
     const { amplify } = context;
-    const servicesMetadata = require('../../provider-utils/supported-services').supportedServices;
+    const servicesMetadata = require('../../provider-utils/supported-services').getSupportedServices();
     const existingAuth = amplify.getProjectDetails().amplifyMeta.auth || {};
 
     if (!Object.keys(existingAuth).length > 0) {
@@ -30,6 +31,15 @@ module.exports = {
         } else if (serviceMeta.service === 'Cognito' && serviceMeta.serviceType === 'imported') {
           context.print.error('Updating of imported Auth resources is not supported.');
           return context;
+        } else if (serviceMeta.service === 'Cognito' && !FeatureFlags.getBoolean('auth.forceAliasAttributes')) {
+          const authAttributes = JSON.parse(
+            fs.readFileSync(pathManager.getResourceParametersFilePath(undefined, 'auth', services[i])).toString(),
+          );
+          if (authAttributes.aliasAttributes.length > 0) {
+            context.print.warning(
+              `You have previously created Cognito auth resources using 'aliasAttributes' (probably by creating auth from a previous version of the CLI). This is no longer supported in the current version of the CLI. If you'd like to continue using aliasAttributes in your configuration, please abort this update process and update your ${pathManager.getCLIJSONFilePath()} file to set the 'auth.forcealiasattributes' key to 'true'. For more info, check out https://docs.amplify.aws/cli/migration/cli-auth-signup-changes`,
+            );
+          }
         }
       }
     }
