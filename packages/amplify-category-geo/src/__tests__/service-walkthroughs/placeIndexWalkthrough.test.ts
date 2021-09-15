@@ -3,14 +3,13 @@ import { DataSourceIntendedUse, PlaceIndexParameters } from '../../service-utils
 import { AccessType, DataProvider, PricingPlan } from '../../service-utils/resourceParams';
 import { provider, ServiceName } from '../../service-utils/constants';
 import { category } from '../../constants';
-import { printer } from 'amplify-prompts';
+import { printer, prompter } from 'amplify-prompts';
 
 jest.mock('amplify-cli-core');
 jest.mock('amplify-prompts');
 
 describe('Search walkthrough works as expected', () => {
     const projectName = 'mockProject';
-    const selectPromptMock = jest.fn();
     const service = ServiceName.PlaceIndex;
     const mockPlaceIndexName = 'mockindex12345';
     const secondaryPlaceIndexName = 'secondaryindex12345';
@@ -25,7 +24,7 @@ describe('Search walkthrough works as expected', () => {
     };
     const secondaryPlaceIndexResource = {
         resourceName: secondaryPlaceIndexName,
-        service: service,
+        service: service
     };
     const mockPlaceIndexParameters: PlaceIndexParameters = {
         providerContext: {
@@ -47,7 +46,6 @@ describe('Search walkthrough works as expected', () => {
                 return { service: service, providerName: provider};
             },
             getResourceStatus: jest.fn(),
-            confirmPrompt: jest.fn().mockReturnValue(mockPlaceIndexParameters.isDefault),
             inputValidation: jest.fn(),
             getProjectMeta: jest.fn(),
             updateamplifyMetaAfterResourceUpdate: jest.fn()
@@ -62,36 +60,6 @@ describe('Search walkthrough works as expected', () => {
     
     beforeEach(() => {
         jest.clearAllMocks();
-        jest.mock('inquirer', () => ({
-            prompt: selectPromptMock
-        }));
-
-        selectPromptMock.mockImplementation((questions: any): Promise<any> => {
-            let mockUserInput: $TSObject = {};
-            if (questions && questions[0] && questions[0].name) {
-                if(questions[0].name === 'accessType') {
-                    mockUserInput['accessType'] = mockPlaceIndexParameters.accessType;
-                }
-                else if(questions[0].name === 'name') {
-                    mockUserInput['name'] = mockPlaceIndexParameters.name;
-                }
-                else if(questions[0].name === 'dataProvider') {
-                    mockUserInput['dataProvider'] = mockPlaceIndexParameters.dataProvider;
-                }
-                else if(questions[0].name === 'pricingPlanBusinessType') {
-                    mockUserInput['pricingPlanBusinessType'] = true;
-                }
-                else if(questions[0].name === 'resourceName') {
-                    mockUserInput['resourceName'] = mockPlaceIndexParameters.name;
-                }
-                else if(questions[0].name === 'defaultIndexName') {
-                    mockUserInput['defaultIndexName'] = secondaryPlaceIndexName;
-                }
-            }
-            return new Promise<any>((resolve) => {
-                resolve(mockUserInput);
-            });
-        });
 
         mockAmplifyMeta.geo[mockPlaceIndexName] = { ...mockPlaceIndexParameters, ...mockPlaceIndexResource };
         mockAmplifyMeta.geo[secondaryPlaceIndexName] = { ...mockPlaceIndexParameters, ...secondaryPlaceIndexResource };
@@ -113,6 +81,40 @@ describe('Search walkthrough works as expected', () => {
         printer.error = jest.fn();
         printer.success = jest.fn();
         printer.info = jest.fn();
+        prompter.input = jest.fn().mockImplementation((message: string): Promise<any> => {
+            let mockUserInput = 'mock';
+            if (message === 'Provide a name for the location search index (place index):') {
+                mockUserInput = mockPlaceIndexParameters.name
+            }
+            return new Promise<any>((resolve) => {
+                resolve(mockUserInput);
+            });
+        });
+        prompter.pick = jest.fn().mockImplementation((message: string): Promise<any> => {
+            let mockUserInput = 'mock';
+            if (message === 'Who can access this search index?') {
+                mockUserInput = mockPlaceIndexParameters.accessType;
+            }
+            else if (message === 'Are you tracking commercial assets for your business in your app?') {
+                mockUserInput = 'Unknown';
+            }
+            else if (message === 'Select the search index you want to update') {
+                mockUserInput = mockPlaceIndexParameters.name;
+            }
+            else if (message === 'Select the search index you want to set as default:') {
+                mockUserInput = secondaryPlaceIndexName;
+            }
+            else if (message === 'Select the search index you want to remove') {
+                mockUserInput = mockPlaceIndexName;
+            }
+            else if (message === 'Specify the data provider of geospatial data for this search index:') {
+                mockUserInput = mockPlaceIndexParameters.dataProvider;
+            }
+            return new Promise<any>((resolve) => {
+                resolve(mockUserInput);
+            });
+        });
+        prompter.yesOrNo = jest.fn().mockReturnValue(mockPlaceIndexParameters.isDefault);
     });
 
     it('sets parameters based on user input for update place index walkthrough', async() => {
@@ -122,7 +124,7 @@ describe('Search walkthrough works as expected', () => {
         stateManager.getMeta = jest.fn().mockReturnValue(mockAmplifyMeta);
 
         // update the index's default settings to false; should set the secondary index as default
-        mockContext.amplify.confirmPrompt = jest.fn().mockReturnValue(false);
+        prompter.yesOrNo = jest.fn().mockReturnValue(false);
 
         let indexParams: Partial<PlaceIndexParameters> = {
             providerContext: mockPlaceIndexParameters.providerContext
@@ -191,8 +193,8 @@ describe('Search walkthrough works as expected', () => {
 
         expect({ ...mockPlaceIndexParameters, isDefault: true }).toMatchObject(indexParams);
         // place index default setting question is skipped
-        expect(mockContext.amplify.confirmPrompt).toBeCalledTimes(2);
-        expect(mockContext.amplify.confirmPrompt).toBeCalledWith('Do you want to configure advanced settings?', false);
+        expect(prompter.yesOrNo).toBeCalledTimes(2);
+        expect(prompter.yesOrNo).toBeCalledWith('Do you want to configure advanced settings?', false);
     });
 
     it('sets the resource to remove correctly', async() => {
@@ -237,6 +239,6 @@ describe('Search walkthrough works as expected', () => {
     });
 
     afterEach(() => {
-        selectPromptMock.mockClear();
+        jest.clearAllMocks();
     });
 });
