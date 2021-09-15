@@ -1,7 +1,7 @@
 import { AccessControlMatrix } from '../accesscontrol';
 import { MODEL_OPERATIONS } from '../utils';
 
-test('test access control', () => {
+test('test access control on object and field', () => {
   /*
   given the following schema
   type Student
@@ -68,4 +68,45 @@ test('test access control', () => {
   });
   expect(acm.isAllowed(adminRole, 'email', 'update')).toBe(false);
   expect(acm.isAllowed(studentOwnerRole, 'email', 'update')).toBe(true);
+});
+
+test('test access control only on field', () => {
+  /*
+  given the following schema
+  type Student
+  @model {
+  studentID: ID
+  name: String
+  # only allows read access on email and ssn for studentID ownerfield can also only update email
+  email: AWSEmail @auth(rules: [
+    { allow: owner, ownerField: "studentID", operations: [read, update] }
+  ])
+  ssn: String @auth(rules: [
+    { allow: owner, ownerField: "studentID", operations: [read] }
+  ])
+  }
+  */
+  // create an acm for the student type
+  const studentOwnerRole = 'userPools:owner:studentID';
+  const studentTypeFields = ['studentID', 'name', 'email', 'ssn'];
+  const acm = new AccessControlMatrix({
+    resources: studentTypeFields,
+    operations: MODEL_OPERATIONS,
+  });
+  // set role for email field
+  acm.setRole({ role: studentOwnerRole, operations: ['read', 'update'], resource: 'email' });
+  // set role for ssn field
+  acm.setRole({ role: studentOwnerRole, operations: ['read'], resource: 'ssn' });
+
+  // expect the correct permissions are assigned for email field
+  expect(acm.isAllowed(studentOwnerRole, 'email', 'update')).toBe(true);
+  expect(acm.isAllowed(studentOwnerRole, 'email', 'read')).toBe(true);
+  expect(acm.isAllowed(studentOwnerRole, 'email', 'delete')).toBe(false);
+  expect(acm.isAllowed(studentOwnerRole, 'email', 'create')).toBe(false);
+
+  // expect the correct permissions are assigned for ssn field
+  expect(acm.isAllowed(studentOwnerRole, 'ssn', 'create')).toBe(false);
+  expect(acm.isAllowed(studentOwnerRole, 'ssn', 'read')).toBe(true);
+  expect(acm.isAllowed(studentOwnerRole, 'ssn', 'update')).toBe(false);
+  expect(acm.isAllowed(studentOwnerRole, 'ssn', 'delete')).toBe(false);
 });

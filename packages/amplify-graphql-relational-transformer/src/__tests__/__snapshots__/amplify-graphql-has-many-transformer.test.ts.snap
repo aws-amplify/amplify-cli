@@ -7639,7 +7639,7 @@ Object {
           "directives": Array [],
           "kind": "FieldDefinition",
           "loc": Object {
-            "end": 5275,
+            "end": 5260,
             "start": 5241,
           },
           "name": Object {
@@ -7653,22 +7653,22 @@ Object {
           "type": Object {
             "kind": "ListType",
             "loc": Object {
-              "end": 5275,
+              "end": 5260,
               "start": 5248,
             },
             "type": Object {
               "kind": "NamedType",
               "loc": Object {
-                "end": 5274,
+                "end": 5259,
                 "start": 5249,
               },
               "name": Object {
                 "kind": "Name",
                 "loc": Object {
-                  "end": 5274,
+                  "end": 5259,
                   "start": 5249,
                 },
-                "value": "ModelPostEditorConnection",
+                "value": "PostEditor",
               },
             },
           },
@@ -7679,28 +7679,28 @@ Object {
           "directives": Array [],
           "kind": "FieldDefinition",
           "loc": Object {
-            "end": 5295,
-            "start": 5278,
+            "end": 5280,
+            "start": 5263,
           },
           "name": Object {
             "kind": "Name",
             "loc": Object {
-              "end": 5287,
-              "start": 5278,
+              "end": 5272,
+              "start": 5263,
             },
             "value": "nextToken",
           },
           "type": Object {
             "kind": "NamedType",
             "loc": Object {
-              "end": 5295,
-              "start": 5289,
+              "end": 5280,
+              "start": 5274,
             },
             "name": Object {
               "kind": "Name",
               "loc": Object {
-                "end": 5295,
-                "start": 5289,
+                "end": 5280,
+                "start": 5274,
               },
               "value": "String",
             },
@@ -7710,7 +7710,7 @@ Object {
       "interfaces": Array [],
       "kind": "ObjectTypeDefinition",
       "loc": Object {
-        "end": 5297,
+        "end": 5282,
         "start": 5206,
       },
       "name": Object {
@@ -7732,28 +7732,28 @@ Object {
           "directives": Array [],
           "kind": "InputValueDefinition",
           "loc": Object {
-            "end": 5352,
-            "start": 5336,
+            "end": 5337,
+            "start": 5321,
           },
           "name": Object {
             "kind": "Name",
             "loc": Object {
-              "end": 5338,
-              "start": 5336,
+              "end": 5323,
+              "start": 5321,
             },
             "value": "id",
           },
           "type": Object {
             "kind": "NamedType",
             "loc": Object {
-              "end": 5352,
-              "start": 5340,
+              "end": 5337,
+              "start": 5325,
             },
             "name": Object {
               "kind": "Name",
               "loc": Object {
-                "end": 5352,
-                "start": 5340,
+                "end": 5337,
+                "start": 5325,
               },
               "value": "ModelIDInput",
             },
@@ -7765,28 +7765,28 @@ Object {
           "directives": Array [],
           "kind": "InputValueDefinition",
           "loc": Object {
-            "end": 5375,
-            "start": 5355,
+            "end": 5360,
+            "start": 5340,
           },
           "name": Object {
             "kind": "Name",
             "loc": Object {
-              "end": 5361,
-              "start": 5355,
+              "end": 5346,
+              "start": 5340,
             },
             "value": "postID",
           },
           "type": Object {
             "kind": "NamedType",
             "loc": Object {
-              "end": 5375,
-              "start": 5363,
+              "end": 5360,
+              "start": 5348,
             },
             "name": Object {
               "kind": "Name",
               "loc": Object {
-                "end": 5375,
-                "start": 5363,
+                "end": 5360,
+                "start": 5348,
               },
               "value": "ModelIDInput",
             },
@@ -7798,28 +7798,28 @@ Object {
           "directives": Array [],
           "kind": "InputValueDefinition",
           "loc": Object {
-            "end": 5400,
-            "start": 5378,
+            "end": 5385,
+            "start": 5363,
           },
           "name": Object {
             "kind": "Name",
             "loc": Object {
-              "end": 5386,
-              "start": 5378,
+              "end": 5371,
+              "start": 5363,
             },
             "value": "editorID",
           },
           "type": Object {
             "kind": "NamedType",
             "loc": Object {
-              "end": 5400,
-              "start": 5388,
+              "end": 5385,
+              "start": 5373,
             },
             "name": Object {
               "kind": "Name",
               "loc": Object {
-                "end": 5400,
-                "start": 5388,
+                "end": 5385,
+                "start": 5373,
               },
               "value": "ModelIDInput",
             },
@@ -7831,34 +7831,34 @@ Object {
           "directives": Array [],
           "kind": "InputValueDefinition",
           "loc": Object {
-            "end": 5436,
-            "start": 5403,
+            "end": 5421,
+            "start": 5388,
           },
           "name": Object {
             "kind": "Name",
             "loc": Object {
-              "end": 5406,
-              "start": 5403,
+              "end": 5391,
+              "start": 5388,
             },
             "value": "and",
           },
           "type": Object {
             "kind": "ListType",
             "loc": Object {
-              "end": 5436,
-              "start": 5408,
+              "end": 5421,
+              "start": 5393,
             },
             "type": Object {
               "kind": "NamedType",
               "loc": Object {
-                "end": 5435,
-                "start": 5409,
+                "end": 5420,
+                "start": 5394,
               },
               "name": Object {
                 "kind": "Name",
                 "loc": Object {
-                  "end": 5435,
-                  "start": 5409,
+                  "end": 5420,
+                  "start": 5394,
                 },
                 "value": "ModelPostEditorFilterInput",
               },
@@ -7871,34 +7871,34 @@ Object {
           "directives": Array [],
           "kind": "InputValueDefinition",
           "loc": Object {
-            "end": 5471,
-            "start": 5439,
+            "end": 5456,
+            "start": 5424,
           },
           "name": Object {
             "kind": "Name",
             "loc": Object {
-              "end": 5441,
-              "start": 5439,
+              "end": 5426,
+              "start": 5424,
             },
             "value": "or",
           },
           "type": Object {
             "kind": "ListType",
             "loc": Object {
-              "end": 5471,
-              "start": 5443,
+              "end": 5456,
+              "start": 5428,
             },
             "type": Object {
               "kind": "NamedType",
               "loc": Object {
-                "end": 5470,
-                "start": 5444,
+                "end": 5455,
+                "start": 5429,
               },
               "name": Object {
                 "kind": "Name",
                 "loc": Object {
-                  "end": 5470,
-                  "start": 5444,
+                  "end": 5455,
+                  "start": 5429,
                 },
                 "value": "ModelPostEditorFilterInput",
               },
@@ -7911,28 +7911,28 @@ Object {
           "directives": Array [],
           "kind": "InputValueDefinition",
           "loc": Object {
-            "end": 5505,
-            "start": 5474,
+            "end": 5490,
+            "start": 5459,
           },
           "name": Object {
             "kind": "Name",
             "loc": Object {
-              "end": 5477,
-              "start": 5474,
+              "end": 5462,
+              "start": 5459,
             },
             "value": "not",
           },
           "type": Object {
             "kind": "NamedType",
             "loc": Object {
-              "end": 5505,
-              "start": 5479,
+              "end": 5490,
+              "start": 5464,
             },
             "name": Object {
               "kind": "Name",
               "loc": Object {
-                "end": 5505,
-                "start": 5479,
+                "end": 5490,
+                "start": 5464,
               },
               "value": "ModelPostEditorFilterInput",
             },
@@ -7941,14 +7941,14 @@ Object {
       ],
       "kind": "InputObjectTypeDefinition",
       "loc": Object {
-        "end": 5507,
-        "start": 5299,
+        "end": 5492,
+        "start": 5284,
       },
       "name": Object {
         "kind": "Name",
         "loc": Object {
-          "end": 5331,
-          "start": 5305,
+          "end": 5316,
+          "start": 5290,
         },
         "value": "ModelPostEditorFilterInput",
       },
@@ -7956,7 +7956,7 @@ Object {
   ],
   "kind": "Document",
   "loc": Object {
-    "end": 5509,
+    "end": 5494,
     "start": 0,
   },
 }
