@@ -2,6 +2,10 @@
   "version": "1.0.0",
   "messages": [
     {
+      "id": "AMPLIFY_UPDATE_AUTH_ALIAS_ATTRIBUTES_WARNING",
+      "message": ""
+    },
+    {
       "id": "COGNITO_SMS_SANDBOX_UPDATE_WARNING",
       "message": "Upgrade to the latest Amplify CLI to enable SMS-based authentication workflows. Run \"amplify upgrade\" or \"npm i -g @aws-amplify/cli\".\r\nStarting June 1, 2021, US telecom carriers require that you register an origination phone number before you can send SMS messages to US phone numbers. The latest version of the Amplify CLI provides a new workflow to accommodate these changes."
     },
