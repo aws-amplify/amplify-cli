@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.6.0-auth-dir-v-next.4](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-searchable-transformer@0.6.0-auth-dir-v-next.3...@aws-amplify/graphql-searchable-transformer@0.6.0-auth-dir-v-next.4) (2021-09-15)
+
+
+### Bug Fixes
+
+* empty payload for sandbox mode check ([0da9ed6](https://github.com/aws-amplify/amplify-cli/commit/0da9ed6afc5263a92fc69ff904df4874829d24e5))
+* snapshot test for [@searchable](https://github.com/searchable) ([a68bffc](https://github.com/aws-amplify/amplify-cli/commit/a68bffc5a7ed1157b576305e2f5d1515e8982c6f))
+
+
+
+
+
 # [0.6.0-auth-dir-v-next.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-searchable-transformer@0.6.0-auth-dir-v-next.2...@aws-amplify/graphql-searchable-transformer@0.6.0-auth-dir-v-next.3) (2021-09-15)
 
 **Note:** Version bump only for package @aws-amplify/graphql-searchable-transformer

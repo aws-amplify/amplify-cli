@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/graphql-auth-transformer",
-  "version": "0.2.0-auth-dir-v-next.3",
+  "version": "0.2.0-auth-dir-v-next.4",
   "description": "Amplify GraphQL @auth Transformer",
   "repository": {
     "type": "git",
@@ -27,8 +27,8 @@
     "watch": "tsc -w"
   },
   "dependencies": {
-    "@aws-amplify/graphql-model-transformer": "0.7.0-auth-dir-v-next.3",
-    "@aws-amplify/graphql-transformer-core": "0.10.0-auth-dir-v-next.2",
+    "@aws-amplify/graphql-model-transformer": "0.7.0-auth-dir-v-next.4",
+    "@aws-amplify/graphql-transformer-core": "0.10.0-auth-dir-v-next.3",
     "@aws-amplify/graphql-transformer-interfaces": "1.10.0-auth-dir-v-next.1",
     "@aws-cdk/aws-appsync": "~1.119.0",
     "@aws-cdk/aws-dynamodb": "~1.119.0",
@@ -41,9 +41,9 @@
     "lodash": "^4.17.21"
   },
   "devDependencies": {
-    "@aws-amplify/graphql-index-transformer": "0.4.0-auth-dir-v-next.3",
-    "@aws-amplify/graphql-relational-transformer": "0.3.0-auth-dir-v-next.3",
-    "@aws-amplify/graphql-searchable-transformer": "0.6.0-auth-dir-v-next.3",
+    "@aws-amplify/graphql-index-transformer": "0.4.0-auth-dir-v-next.4",
+    "@aws-amplify/graphql-relational-transformer": "0.3.0-auth-dir-v-next.4",
+    "@aws-amplify/graphql-searchable-transformer": "0.6.0-auth-dir-v-next.4",
     "@aws-cdk/assert": "~1.72.0",
     "@types/fs-extra": "^8.0.1",
     "@types/node": "^12.12.6"

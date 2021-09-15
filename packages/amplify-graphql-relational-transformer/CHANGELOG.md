@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.3.0-auth-dir-v-next.4](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-relational-transformer@0.3.0-auth-dir-v-next.3...@aws-amplify/graphql-relational-transformer@0.3.0-auth-dir-v-next.4) (2021-09-15)
+
+
+### Bug Fixes
+
+* udpated snapshot for index and relation directives ([e9bc4af](https://github.com/aws-amplify/amplify-cli/commit/e9bc4af9926ec4219c2af12c9ebced04e5ea2574))
+* update hasMany to use join table name, sync config warning, updated unit test ([7863044](https://github.com/aws-amplify/amplify-cli/commit/78630446a7195a4d51ffdf433b173598d70dbaa3))
+
+
+
+
+
 # [0.3.0-auth-dir-v-next.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-relational-transformer@0.3.0-auth-dir-v-next.2...@aws-amplify/graphql-relational-transformer@0.3.0-auth-dir-v-next.3) (2021-09-15)
 
 **Note:** Version bump only for package @aws-amplify/graphql-relational-transformer

@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.7.0-auth-dir-v-next.4](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-model-transformer@0.7.0-auth-dir-v-next.3...@aws-amplify/graphql-model-transformer@0.7.0-auth-dir-v-next.4) (2021-09-15)
+
+
+### Bug Fixes
+
+* add empty payload for sandbox mode ([494e1a8](https://github.com/aws-amplify/amplify-cli/commit/494e1a84450d008d17bdabfd09359bc7e6bd86bf))
+* empty payload for sandbox mode check ([0da9ed6](https://github.com/aws-amplify/amplify-cli/commit/0da9ed6afc5263a92fc69ff904df4874829d24e5))
+
+
+
+
+
 # [0.7.0-auth-dir-v-next.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-model-transformer@0.7.0-auth-dir-v-next.2...@aws-amplify/graphql-model-transformer@0.7.0-auth-dir-v-next.3) (2021-09-15)
 
 **Note:** Version bump only for package @aws-amplify/graphql-model-transformer
