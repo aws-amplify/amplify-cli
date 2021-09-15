@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.49.0-geo.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.49.0-geo.0...amplify-e2e-tests@2.49.0-geo.1) (2021-09-15)
+
+**Note:** Version bump only for package amplify-e2e-tests
+
+
+
+
+
 # [2.49.0-geo.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.48.0...amplify-e2e-tests@2.49.0-geo.0) (2021-09-13)
 
 
