@@ -5,7 +5,7 @@ const path = require('path');
 const fs = require('fs');
 const { category } = require('../..');
 const { attachPrevParamsToContext } = require('../../provider-utils/awscloudformation/utils/attach-prev-params-to-context');
-const { FeatureFlags, pathManager, PathManager } = require('amplify-cli-core');
+const { FeatureFlags, pathManager, PathManager, BannerMessage } = require('amplify-cli-core');
 const { printer } = require('amplify-prompts');
 const { getSupportedServices } = require('../../provider-utils/supported-services');
 
@@ -39,9 +39,8 @@ module.exports = {
             fs.readFileSync(pathManager.getResourceParametersFilePath(undefined, 'auth', services[i])).toString(),
           );
           if (authAttributes.aliasAttributes.length > 0) {
-            printer.warn(
-              `You have previously created Cognito auth resources using 'aliasAttributes' (probably by creating auth from a previous version of the CLI). This is no longer supported in the current version of the CLI. If you'd like to continue using aliasAttributes in your configuration, please abort this update process and update your ${pathManager.getCLIJSONFilePath()} file to set the 'auth.forcealiasattributes' key to 'true'. For more info, check out https://docs.amplify.aws/cli/migration/cli-auth-signup-changes`,
-            );
+            const authUpdateWarning = await BannerMessage.getMessage('AMPLIFY_UPDATE_AUTH_ALIAS_ATTRIBUTES_WARNING');
+            printer.warn(authUpdateWarning);
           }
         }
       }
