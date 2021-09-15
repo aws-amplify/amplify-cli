@@ -24,12 +24,9 @@
   "dependencies": {
     "amplify-cli-core": "1.27.0",
     "amplify-prompts": "1.1.2",
-    "enquirer": "^2.3.6",
     "folder-hash": "^3.3.2",
     "fs-extra": "^8.1.0",
     "globby": "^11.0.1",
-    "inquirer": "^7.3.3",
-    "inquirer-datepicker": "^2.0.0",
     "jstreemap": "^1.28.2",
     "lodash": "^4.17.19",
     "mime-types": "^2.1.26",
