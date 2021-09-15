@@ -106,6 +106,6 @@ export const generateAuthExpressionForSandboxMode = (ctx: any): string => {
   else exp = methodCall(ref('util.unauthorized'));
 
   return printBlock(`Sandbox Mode ${enabled ? 'Enabled' : 'Disabled'}`)(
-    compoundExpression([iff(not(ref('ctx.stash.get("hasAuth")')), exp)]),
+    compoundExpression([iff(not(ref('ctx.stash.get("hasAuth")')), exp), toJson(obj({}))]),
   );
 };
