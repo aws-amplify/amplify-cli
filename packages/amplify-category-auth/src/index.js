@@ -22,8 +22,8 @@ const { getAddAuthHandler, getUpdateAuthHandler } = require('./provider-utils/aw
 const { projectHasAuth } = require('./provider-utils/awscloudformation/utils/project-has-auth');
 const { attachPrevParamsToContext } = require('./provider-utils/awscloudformation/utils/attach-prev-params-to-context');
 const { stateManager } = require('amplify-cli-core');
-const { headlessImport } = require('./provider-utils/awscloudformation/import');
 const { JSONUtilities } = require('amplify-cli-core/lib/jsonUtilities');
+const { headlessImport } = require('./provider-utils/awscloudformation/import');
 const { getSupportedServices } = require('./provider-utils/supported-services');
 const {
   doesConfigurationIncludeSMS,
