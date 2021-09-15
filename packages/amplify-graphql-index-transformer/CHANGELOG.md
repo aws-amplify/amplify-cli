@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.4.0-auth-dir-v-next.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-index-transformer@0.4.0-auth-dir-v-next.2...@aws-amplify/graphql-index-transformer@0.4.0-auth-dir-v-next.3) (2021-09-15)
+
+**Note:** Version bump only for package @aws-amplify/graphql-index-transformer
+
+
+
+
+
 # [0.4.0-auth-dir-v-next.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-index-transformer@0.4.0-auth-dir-v-next.1...@aws-amplify/graphql-index-transformer@0.4.0-auth-dir-v-next.2) (2021-09-14)
 
 
