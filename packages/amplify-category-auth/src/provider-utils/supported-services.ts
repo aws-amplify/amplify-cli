@@ -1260,13 +1260,10 @@ const supportedServices = {
 export const getSupportedServices = (): any => {
   const keyToRemove = FeatureFlags.getBoolean('auth.forceAliasAttributes') ? 'usernameAttributes' : 'aliasAttributes';
   const inputs = supportedServices.Cognito.inputs.filter(input => input.key !== keyToRemove);
-
-  const cfnFilename = FeatureFlags.getBoolean('auth.forceAliasAttributes') ? 'auth-template-force-alias.yml.ejs' : 'auth-template.yml.ejs';
   return {
     Cognito: {
       ...supportedServices.Cognito,
       inputs,
-      cfnFilename,
     },
   };
 };

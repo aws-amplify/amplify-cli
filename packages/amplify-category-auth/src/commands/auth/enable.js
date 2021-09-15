@@ -1,5 +1,5 @@
 const { projectHasAuth } = require('../../provider-utils/awscloudformation/utils/project-has-auth');
-
+const { getSupportedServices } = require('../../provider-utils/supported-services');
 const subcommand = 'enable';
 const category = 'auth';
 
@@ -11,7 +11,7 @@ module.exports = {
       return;
     }
     const { amplify } = context;
-    const servicesMetadata = require('../../provider-utils/supported-services').getSupportedServices();
+    const servicesMetadata = getSupportedServices();
     return amplify.serviceSelectionPrompt(context, category, servicesMetadata).then(result => {
       const providerController = require(`../../provider-utils/${result.providerName}/index`);
       if (!providerController) {
