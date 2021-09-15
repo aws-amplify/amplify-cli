@@ -59,7 +59,7 @@ export async function pricingPlanWalkthrough<T extends ResourceParameters>(
         pricingPlan = PricingPlan.RequestBasedUsage;
     }
     else {
-        const pricingPlanRoutingChoice = await context.amplify.confirmPrompt(
+        const pricingPlanRoutingChoice = await prompter.yesOrNo(
             'Does your app provide routing or route optimization for commercial assets?',
             pricingPlan === PricingPlan.MobileAssetManagement ? true : false
         );
