@@ -241,7 +241,10 @@ export class GraphQLTransform {
 
     const rootStack = stackManager.rootStack;
     const authorizationConfig = adoptAuthModes(stackManager, this.authConfig);
-    const apiName = stackManager.addParameter('AppSyncApiName', { type: 'String' }).valueAsString;
+    const apiName = stackManager.addParameter('AppSyncApiName', {
+      default: 'AppSyncSimpleTransform',
+      type: 'String',
+    }).valueAsString;
     const envName = stackManager.getParameter('env');
     assert(envName);
     const api = new GraphQLApi(rootStack, 'GraphQLAPI', {
