@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.50.0-v6-alpha1.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.49.0...amplify-e2e-tests@2.50.0-v6-alpha1.0) (2021-09-16)
+
+
+### Features
+
+* **amplify-category-auth:** use usernameAttributes by default, FF for aliasAttributes ([3d16df1](https://github.com/aws-amplify/amplify-cli/commit/3d16df1108724e5e08bbb1c3fec2924071e2e5ff))
+
+
+
+
+
 # [2.49.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.48.0...amplify-e2e-tests@2.49.0) (2021-09-14)
 
 

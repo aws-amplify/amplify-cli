@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.29.7-v6-alpha1.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-core@6.29.6...graphql-transformer-core@6.29.7-v6-alpha1.0) (2021-09-16)
+
+**Note:** Version bump only for package graphql-transformer-core
+
+
+
+
+
 ## [6.29.6](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-core@6.29.5...graphql-transformer-core@6.29.6) (2021-09-14)
 
 **Note:** Version bump only for package graphql-transformer-core

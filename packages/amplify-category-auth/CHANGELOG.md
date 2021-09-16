@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.38.0-v6-alpha1.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.37.0...amplify-category-auth@2.38.0-v6-alpha1.0) (2021-09-16)
+
+
+### Features
+
+* **amplify-category-auth:** add warning banner to amplify remove auth ([1586c1e](https://github.com/aws-amplify/amplify-cli/commit/1586c1e9d526ccc9d6f9dc75dfefa54992e357a6))
+* **amplify-category-auth:** use usernameAttributes by default, FF for aliasAttributes ([3d16df1](https://github.com/aws-amplify/amplify-cli/commit/3d16df1108724e5e08bbb1c3fec2924071e2e5ff))
+* **amplify-category-auth:** use usernameAttributes by default, FF for aliasAttributes ([abed59f](https://github.com/aws-amplify/amplify-cli/commit/abed59f96d38fa2a81e5e3ce5b4064778e84db18))
+
+
+
+
+
 # [2.37.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.36.5...amplify-category-auth@2.37.0) (2021-09-14)
 
 
