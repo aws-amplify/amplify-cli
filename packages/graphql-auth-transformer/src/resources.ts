@@ -109,7 +109,7 @@ export class ResourceFactory {
       expirationDays = apiKeyConfig.apiKeyExpirationDays;
     }
     // add delay expiration time is valid upon resource creation
-    let expirationDateInSeconds = 60 /* s */ * 60 /* m */ * 24 /* h */ * expirationDays /* d */;
+    let expirationDateInSeconds = 60 /* s */ * 60 /* m */ * 24 /* h */ * expirationDays; /* d */
     // Add a 2 minute time delay if set to 1 day: https://github.com/aws-amplify/amplify-cli/issues/4460
     if (expirationDays === 1) expirationDateInSeconds += 60 * 2;
     const nowEpochTime = Math.floor(Date.now() / 1000);
@@ -1020,7 +1020,7 @@ identityClaim: "${rule.identityField || rule.identityClaim || DEFAULT_IDENTITY_F
       new IAM.ManagedPolicy({
         Roles: [
           //HACK double casting needed because it cannot except Ref
-          ({ Ref: `${authPiece}RoleName` } as unknown) as Value<string>,
+          { Ref: `${authPiece}RoleName` } as unknown as Value<string>,
         ],
         PolicyDocument: {
           Version: '2012-10-17',

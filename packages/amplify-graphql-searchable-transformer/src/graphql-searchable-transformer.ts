@@ -77,7 +77,7 @@ export class SearchableModelTransformer extends TransformerPluginBase {
       expression: Fn.conditionNot(Fn.conditionEquals(envParam, ResourceConstants.NONE)),
     });
 
-    const isProjectUsingDataStore = false;
+    const isProjectUsingDataStore = context.isProjectUsingDataStore();
 
     stack.templateOptions.description = 'An auto-generated nested stack for searchable.';
     stack.templateOptions.templateFormatVersion = '2010-09-09';
@@ -138,7 +138,7 @@ export class SearchableModelTransformer extends TransformerPluginBase {
         MappingTemplate.s3MappingTemplateFromString(responseTemplate(false), `${typeName}.${def.fieldName}.res.vtl`),
       );
       resolver.mapToStack(stack);
-      context.resolvers.addResolver(type, def.fieldName, resolver);
+      context.resolvers.addResolver(typeName, def.fieldName, resolver);
     }
 
     createStackOutputs(stack, domain.domainEndpoint, context.api.apiId, domain.domainArn);

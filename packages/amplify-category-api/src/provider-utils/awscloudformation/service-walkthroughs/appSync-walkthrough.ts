@@ -21,6 +21,8 @@ import {
   $TSContext,
   open,
 } from 'amplify-cli-core';
+import { Duration, Expiration } from '@aws-cdk/core';
+import { defineGlobalSandboxMode } from '../utils/global-sandbox-mode';
 
 const serviceName = 'AppSync';
 const elasticContainerServiceName = 'ElasticContainer';
@@ -208,6 +210,9 @@ export const serviceWalkthrough = async (context: $TSContext, defaultValuesFilen
     schemaContent = fs.readFileSync(schemaFilePath, 'utf8');
     askToEdit = false;
   } else {
+    const useExperimentalPipelineTransformer = FeatureFlags.getBoolean('graphQLTransformer.useExperimentalPipelinedTransformer');
+    schemaContent += useExperimentalPipelineTransformer ? defineGlobalSandboxMode(context) : '';
+
     // Schema template selection
     const templateSelectionQuestion = {
       type: inputs[4].type,
@@ -219,7 +224,7 @@ export const serviceWalkthrough = async (context: $TSContext, defaultValuesFilen
 
     const { templateSelection } = await inquirer.prompt(templateSelectionQuestion);
     const schemaFilePath = path.join(graphqlSchemaDir, templateSelection);
-    schemaContent = fs.readFileSync(schemaFilePath, 'utf8');
+    schemaContent += fs.readFileSync(schemaFilePath, 'utf8');
   }
 
   return {
@@ -508,9 +513,11 @@ export async function askAdditionalAuthQuestions(context, authConfig, defaultAut
   if (await context.prompt.confirm('Configure additional auth types?')) {
     // Get additional auth configured
     const remainingAuthProviderChoices = authProviderChoices.filter(p => p.value !== defaultAuthType);
-    const currentAdditionalAuth = ((currentAuthConfig && currentAuthConfig.additionalAuthenticationProviders
-      ? currentAuthConfig.additionalAuthenticationProviders
-      : []) as any[]).map(authProvider => authProvider.authenticationType);
+    const currentAdditionalAuth = (
+      (currentAuthConfig && currentAuthConfig.additionalAuthenticationProviders
+        ? currentAuthConfig.additionalAuthenticationProviders
+        : []) as any[]
+    ).map(authProvider => authProvider.authenticationType);
 
     const additionalProvidersQuestion: CheckboxQuestion = {
       type: 'checkbox',
@@ -600,7 +607,7 @@ async function askUserPoolQuestions(context) {
   };
 }
 
-async function askApiKeyQuestions() {
+export async function askApiKeyQuestions() {
   const apiKeyQuestions = [
     {
       type: 'input',
@@ -619,6 +626,8 @@ async function askApiKeyQuestions() {
   ];
 
   const apiKeyConfig = await inquirer.prompt(apiKeyQuestions);
+  const apiKeyExpirationDaysNum = Number(apiKeyConfig.apiKeyExpirationDays);
+  apiKeyConfig.apiKeyExpirationDate = Expiration.after(Duration.days(apiKeyExpirationDaysNum)).date;
 
   return {
     authenticationType: 'API_KEY',
@@ -677,9 +686,10 @@ function validateDays(input) {
 }
 
 function validateIssuerUrl(input) {
-  const isValid = /^(((?!http:\/\/(?!localhost))([a-zA-Z0-9.]{1,}):\/\/([a-zA-Z0-9-._~:?#@!$&'()*+,;=/]{1,})\/)|(?!http)(?!https)([a-zA-Z0-9.]{1,}):\/\/)$/.test(
-    input,
-  );
+  const isValid =
+    /^(((?!http:\/\/(?!localhost))([a-zA-Z0-9.]{1,}):\/\/([a-zA-Z0-9-._~:?#@!$&'()*+,;=/]{1,})\/)|(?!http)(?!https)([a-zA-Z0-9.]{1,}):\/\/)$/.test(
+      input,
+    );
 
   if (!isValid) {
     return 'The value must be a valid URI with a trailing forward slash. HTTPS must be used instead of HTTP unless you are using localhost.';
@@ -779,8 +789,8 @@ const buildPolicyResource = (resourceName: string, path: string | null) => {
         {
           Ref: `${category}${resourceName}GraphQLAPIIdOutput`,
         },
-        ...(path ? [path] : [])
-      ]
+        ...(path ? [path] : []),
+      ],
     ],
   };
 };

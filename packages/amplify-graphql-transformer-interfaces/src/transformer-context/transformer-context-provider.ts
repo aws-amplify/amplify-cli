@@ -8,7 +8,14 @@ import { GraphQLAPIProvider } from '../graphql-api-provider';
 import { TransformerResourceProvider } from './resource-resource-provider';
 import { FeatureFlagProvider } from '../feature-flag-provider';
 
+export interface TransformerContextMetadataProvider {
+  set<T>(key: string, value: T): void;
+  get<T>(key: string): T | undefined;
+  has(key: string): boolean;
+}
+
 export interface TransformerContextProvider {
+  metadata: TransformerContextMetadataProvider;
   resolvers: TransformerResolversManagerProvider;
   dataSources: TransformerDataSourceManagerProvider;
   providerRegistry: TransformerProviderRegistry;
@@ -19,16 +26,22 @@ export interface TransformerContextProvider {
   api: GraphQLAPIProvider;
   resourceHelper: TransformerResourceProvider;
   featureFlags: FeatureFlagProvider;
+
+  isProjectUsingDataStore(): boolean;
+  getResolverConfig<ResolverConfig>(): ResolverConfig | undefined;
 }
 
-export type TransformerBeforeStepContextProvider = Pick<TransformerContextProvider, 'inputDocument' | 'featureFlags'>;
+export type TransformerBeforeStepContextProvider = Pick<
+  TransformerContextProvider,
+  'inputDocument' | 'featureFlags' | 'isProjectUsingDataStore' | 'getResolverConfig'
+>;
 export type TransformerSchemaVisitStepContextProvider = Pick<
   TransformerContextProvider,
-  'inputDocument' | 'output' | 'providerRegistry' | 'featureFlags'
+  'inputDocument' | 'output' | 'providerRegistry' | 'featureFlags' | 'isProjectUsingDataStore' | 'getResolverConfig' | 'metadata'
 >;
 export type TransformerValidationStepContextProvider = Pick<
   TransformerContextProvider,
-  'inputDocument' | 'output' | 'providerRegistry' | 'dataSources' | 'featureFlags'
+  'inputDocument' | 'output' | 'providerRegistry' | 'dataSources' | 'featureFlags' | 'isProjectUsingDataStore' | 'getResolverConfig' | 'metadata'
 >;
 export type TransformerPrepareStepContextProvider = TransformerValidationStepContextProvider;
 export type TransformerTransformSchemaStepContextProvider = TransformerValidationStepContextProvider;
