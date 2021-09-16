@@ -48,6 +48,7 @@ import {
   addDirectivesToField,
   getSearchableConfig,
   getStackForField,
+  NONE_DS,
 } from './utils';
 import {
   DirectiveNode,
@@ -481,14 +482,14 @@ Static group authorization should perform as expected.`,
       // TODO: move pipeline resolvers created in the api host to the resolver manager
       const fieldResolver = ctx.api.host.getResolver(typeName, fieldName) as any;
       const fieldAuthExpression = generateAuthExpressionForField(this.configuredAuthProviders, roleDefinitions, []);
-      if (!ctx.api.host.hasDataSource('NONE')) {
-        ctx.api.host.addNoneDataSource('NONE');
+      if (!ctx.api.host.hasDataSource(NONE_DS)) {
+        ctx.api.host.addNoneDataSource(NONE_DS);
       }
       const authFunction = ctx.api.host.addAppSyncFunction(
         `${toUpper(typeName)}${toUpper(fieldName)}AuthFN`,
         MappingTemplate.s3MappingTemplateFromString(fieldAuthExpression, `${typeName}.${fieldName}.auth.req.vtl`),
         MappingTemplate.inlineTemplateFromString('$util.toJson({})'),
-        'NONE',
+        NONE_DS,
         stack,
       );
       (fieldResolver.pipelineConfig.functions as string[]).unshift(authFunction.functionId);
@@ -504,15 +505,15 @@ Static group authorization should perform as expected.`,
       const fieldAuthExpression = generateAuthExpressionForField(this.configuredAuthProviders, roleDefinitions, def.fields ?? []);
       const subsEnabled = hasModelDirective ? this.modelDirectiveConfig.get(typeName)!.subscriptions.level === 'on' : false;
       const fieldResponse = generateFieldAuthResponse('Mutation', fieldName, subsEnabled);
-      if (!ctx.api.host.hasDataSource('NONE')) {
-        ctx.api.host.addNoneDataSource('NONE');
+      if (!ctx.api.host.hasDataSource(NONE_DS)) {
+        ctx.api.host.addNoneDataSource(NONE_DS);
       }
       ctx.api.host.addResolver(
         typeName,
         fieldName,
         MappingTemplate.s3MappingTemplateFromString(fieldAuthExpression, `${typeName}.${fieldName}.req.vtl`, 'resolver'),
         MappingTemplate.s3MappingTemplateFromString(fieldResponse, `${typeName}.${fieldName}.res.vtl`, 'resolver'),
-        'NONE',
+        NONE_DS,
         undefined,
         stack,
       );
