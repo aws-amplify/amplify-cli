@@ -292,6 +292,7 @@ const supportedServices = {
         type: 'list',
         map: 'signInOptions',
         prefixColor: 'red',
+        prefix: 'Warning: you will not be able to edit these selections.',
         learnMore:
           "Selecting 'Email' and/or 'Phone Number' will allow end users to sign-up using these values.  Selecting 'Username' will require a unique username for users.",
         andConditions: [
