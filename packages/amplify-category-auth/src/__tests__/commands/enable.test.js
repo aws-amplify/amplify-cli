@@ -2,6 +2,8 @@ const fs = require('fs');
 const add = require('../../commands/auth/enable');
 const { messages } = require('../../provider-utils/awscloudformation/assets/string-maps');
 const providerController = require('../../provider-utils/awscloudformation');
+const { FeatureFlags } = require('amplify-cli-core');
+FeatureFlags.getBoolean = () => false;
 
 jest.mock('../../provider-utils/awscloudformation', () => ({
   addResource: jest.fn(),
@@ -10,7 +12,7 @@ jest.mock('../../provider-utils/awscloudformation', () => ({
 describe('auth enable: ', () => {
   const mockExecuteProviderUtils = jest.fn();
   const mockGetProjectDetails = jest.fn();
-  const mockSelectionPrompt = jest.fn(() => Promise.resolve({providerName: 'awscloudformation'}));
+  const mockSelectionPrompt = jest.fn(() => Promise.resolve({ providerName: 'awscloudformation' }));
   const mockProjectPath = '/User/someone/Documents/Project/amplify-test';
   const mockContext = {
     amplify: {

@@ -2,7 +2,7 @@ import { $TSContext } from 'amplify-cli-core';
 import { ProviderUtils } from '../import/types';
 
 import { ServiceQuestionsResult } from '../service-walkthrough-types';
-import { supportedServices } from '../../supported-services';
+import { getSupportedServices } from '../../supported-services';
 
 export type UserPoolMessageConfiguration = {
   mfaConfiguration?: string;
@@ -26,7 +26,7 @@ export const doesConfigurationIncludeSMS = (request: ServiceQuestionsResult): bo
 };
 
 const getProviderPlugin = (context: $TSContext): ProviderUtils => {
-  const serviceMetaData = supportedServices.Cognito;
+  const serviceMetaData = getSupportedServices().Cognito;
   const { provider } = serviceMetaData;
 
   return context.amplify.getPluginInstance(context, provider);
