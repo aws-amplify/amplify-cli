@@ -31,7 +31,7 @@ module.exports = {
           const authAttributes = JSON.parse(
             fs.readFileSync(pathManager.getResourceParametersFilePath(pathManager.findProjectRoot(), 'auth', services[i])).toString(),
           );
-          if (authAttributes.aliasAttributes.length > 0) {
+          if (authAttributes.aliasAttributes && authAttributes.aliasAttributes.length > 0) {
             const authRemoveWarning = await BannerMessage.getMessage('AMPLIFY_REMOVE_AUTH_ALIAS_ATTRIBUTES_WARNING');
             printer.warn(authRemoveWarning);
           }
