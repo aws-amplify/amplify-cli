@@ -1,6 +1,5 @@
 import { DirectiveWrapper, InvalidDirectiveError, TransformerPluginBase } from '@aws-amplify/graphql-transformer-core';
 import {
-  TransformerBeforeStepContextProvider,
   TransformerContextProvider,
   TransformerResolverProvider,
   TransformerSchemaVisitStepContextProvider,

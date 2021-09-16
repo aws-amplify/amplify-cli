@@ -13,33 +13,6 @@ $util.toJson({
   \\"payload\\": {}
 })
 ## [End] Initialization default values. **",
-  "Mutation.createTest.postAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
-#set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
-$util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
-## [End] Merge default values and inputs. **
-## [Start] Validate create mutation for @index 'GSI'. **
-#set( $hasSeenSomeKeyArg = false )
-#set( $keyFieldNames = [\\"kind\\", \\"date\\"] )
-#foreach( $keyFieldName in $keyFieldNames )
-#if( $ctx.args.input.containsKey(\\"$keyFieldName\\") ) #set( $hasSeenSomeKeyArg = true ) #end
-#end
-#foreach( $keyFieldName in $keyFieldNames )
-  #if( $hasSeenSomeKeyArg && !$ctx.args.input.containsKey(\\"$keyFieldName\\") )
-    $util.error(\\"When creating any part of the composite sort key for @index 'GSI', you must provide all fields for the key. Missing key: '$keyFieldName'.\\")
-  #end
-#end
-## [End] Validate create mutation for @index 'GSI'. **
-#if( $util.isNull($ctx.stash.metadata.dynamodbNameOverrideMap) )
-  $util.qr($ctx.stash.metadata.put(\\"dynamodbNameOverrideMap\\", {
-  \\"kind#date\\": \\"kindDate\\"
-}))
-#else
-  $util.qr($ctx.stash.metadata.dynamodbNameOverrideMap.put(\\"kind#date\\", \\"kindDate\\"))
-#end
-#if( $hasSeenSomeKeyArg )
-  $util.qr($ctx.args.input.put(\\"kind#date\\",\\"\${mergedValues.kind}#\${mergedValues.date}\\"))
-#end
-{}",
   "Mutation.createTest.req.vtl": "## [Start] Create Request template. **
 ## Begin - key condition **
 #if( $ctx.stash.metadata.modelObjectKey )
@@ -131,19 +104,6 @@ $util.toJson($PutObject)
   $util.toJson($ctx.result)
 #end
 ## [End] Get ResponseTemplate. **",
-  "Mutation.deleteTest.postAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
-#set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
-$util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
-## [End] Merge default values and inputs. **
-#if( $util.isNull($ctx.stash.metadata.dynamodbNameOverrideMap) )
-  $util.qr($ctx.stash.metadata.put(\\"dynamodbNameOverrideMap\\", {
-  \\"kind#date\\": \\"kindDate\\"
-}))
-#else
-  $util.qr($ctx.stash.metadata.dynamodbNameOverrideMap.put(\\"kind#date\\", \\"kindDate\\"))
-#end
-$util.qr($ctx.args.input.put(\\"kind#date\\",\\"\${mergedValues.kind}#\${mergedValues.date}\\"))
-{}",
   "Mutation.deleteTest.req.vtl": "## [Start] Delete Request template. **
 #set( $DeleteRequest = {
   \\"version\\": \\"2018-05-29\\",
@@ -217,33 +177,6 @@ $util.toJson({
   \\"payload\\": {}
 })
 ## [End] Initialization default values. **",
-  "Mutation.updateTest.postAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
-#set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
-$util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
-## [End] Merge default values and inputs. **
-## [Start] Validate update mutation for @index 'GSI'. **
-#set( $hasSeenSomeKeyArg = false )
-#set( $keyFieldNames = [\\"kind\\", \\"date\\"] )
-#foreach( $keyFieldName in $keyFieldNames )
-#if( $ctx.args.input.containsKey(\\"$keyFieldName\\") ) #set( $hasSeenSomeKeyArg = true ) #end
-#end
-#foreach( $keyFieldName in $keyFieldNames )
-  #if( $hasSeenSomeKeyArg && !$ctx.args.input.containsKey(\\"$keyFieldName\\") )
-    $util.error(\\"When updating any part of the composite sort key for @index 'GSI', you must provide all fields for the key. Missing key: '$keyFieldName'.\\")
-  #end
-#end
-## [End] Validate update mutation for @index 'GSI'. **
-#if( $util.isNull($ctx.stash.metadata.dynamodbNameOverrideMap) )
-  $util.qr($ctx.stash.metadata.put(\\"dynamodbNameOverrideMap\\", {
-  \\"kind#date\\": \\"kindDate\\"
-}))
-#else
-  $util.qr($ctx.stash.metadata.dynamodbNameOverrideMap.put(\\"kind#date\\", \\"kindDate\\"))
-#end
-#if( $hasSeenSomeKeyArg )
-  $util.qr($ctx.args.input.put(\\"kind#date\\",\\"\${mergedValues.kind}#\${mergedValues.date}\\"))
-#end
-{}",
   "Mutation.updateTest.req.vtl": "## [Start] Mutation Update resolver. **
 ## Set the default values to put request **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
@@ -661,33 +594,6 @@ $util.toJson({
   \\"payload\\": {}
 })
 ## [End] Initialization default values. **",
-  "Mutation.createTest.postAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
-#set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
-$util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
-## [End] Merge default values and inputs. **
-## [Start] Validate create mutation for @index 'GSI'. **
-#set( $hasSeenSomeKeyArg = false )
-#set( $keyFieldNames = [\\"kind\\", \\"date\\"] )
-#foreach( $keyFieldName in $keyFieldNames )
-#if( $ctx.args.input.containsKey(\\"$keyFieldName\\") ) #set( $hasSeenSomeKeyArg = true ) #end
-#end
-#foreach( $keyFieldName in $keyFieldNames )
-  #if( $hasSeenSomeKeyArg && !$ctx.args.input.containsKey(\\"$keyFieldName\\") )
-    $util.error(\\"When creating any part of the composite sort key for @index 'GSI', you must provide all fields for the key. Missing key: '$keyFieldName'.\\")
-  #end
-#end
-## [End] Validate create mutation for @index 'GSI'. **
-#if( $util.isNull($ctx.stash.metadata.dynamodbNameOverrideMap) )
-  $util.qr($ctx.stash.metadata.put(\\"dynamodbNameOverrideMap\\", {
-  \\"kind#date\\": \\"kindDate\\"
-}))
-#else
-  $util.qr($ctx.stash.metadata.dynamodbNameOverrideMap.put(\\"kind#date\\", \\"kindDate\\"))
-#end
-#if( $hasSeenSomeKeyArg )
-  $util.qr($ctx.args.input.put(\\"kind#date\\",\\"\${mergedValues.kind}#\${mergedValues.date}\\"))
-#end
-{}",
   "Mutation.createTest.req.vtl": "## [Start] Create Request template. **
 ## Begin - key condition **
 #if( $ctx.stash.metadata.modelObjectKey )
@@ -779,19 +685,6 @@ $util.toJson($PutObject)
   $util.toJson($ctx.result)
 #end
 ## [End] Get ResponseTemplate. **",
-  "Mutation.deleteTest.postAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
-#set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
-$util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
-## [End] Merge default values and inputs. **
-#if( $util.isNull($ctx.stash.metadata.dynamodbNameOverrideMap) )
-  $util.qr($ctx.stash.metadata.put(\\"dynamodbNameOverrideMap\\", {
-  \\"kind#date\\": \\"kindDate\\"
-}))
-#else
-  $util.qr($ctx.stash.metadata.dynamodbNameOverrideMap.put(\\"kind#date\\", \\"kindDate\\"))
-#end
-$util.qr($ctx.args.input.put(\\"kind#date\\",\\"\${mergedValues.kind}#\${mergedValues.date}\\"))
-{}",
   "Mutation.deleteTest.req.vtl": "## [Start] Delete Request template. **
 #set( $DeleteRequest = {
   \\"version\\": \\"2018-05-29\\",
@@ -865,33 +758,6 @@ $util.toJson({
   \\"payload\\": {}
 })
 ## [End] Initialization default values. **",
-  "Mutation.updateTest.postAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
-#set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
-$util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
-## [End] Merge default values and inputs. **
-## [Start] Validate update mutation for @index 'GSI'. **
-#set( $hasSeenSomeKeyArg = false )
-#set( $keyFieldNames = [\\"kind\\", \\"date\\"] )
-#foreach( $keyFieldName in $keyFieldNames )
-#if( $ctx.args.input.containsKey(\\"$keyFieldName\\") ) #set( $hasSeenSomeKeyArg = true ) #end
-#end
-#foreach( $keyFieldName in $keyFieldNames )
-  #if( $hasSeenSomeKeyArg && !$ctx.args.input.containsKey(\\"$keyFieldName\\") )
-    $util.error(\\"When updating any part of the composite sort key for @index 'GSI', you must provide all fields for the key. Missing key: '$keyFieldName'.\\")
-  #end
-#end
-## [End] Validate update mutation for @index 'GSI'. **
-#if( $util.isNull($ctx.stash.metadata.dynamodbNameOverrideMap) )
-  $util.qr($ctx.stash.metadata.put(\\"dynamodbNameOverrideMap\\", {
-  \\"kind#date\\": \\"kindDate\\"
-}))
-#else
-  $util.qr($ctx.stash.metadata.dynamodbNameOverrideMap.put(\\"kind#date\\", \\"kindDate\\"))
-#end
-#if( $hasSeenSomeKeyArg )
-  $util.qr($ctx.args.input.put(\\"kind#date\\",\\"\${mergedValues.kind}#\${mergedValues.date}\\"))
-#end
-{}",
   "Mutation.updateTest.req.vtl": "## [Start] Mutation Update resolver. **
 ## Set the default values to put request **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
@@ -1231,33 +1097,6 @@ $util.toJson({
   \\"payload\\": {}
 })
 ## [End] Initialization default values. **",
-  "Mutation.createTest.postAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
-#set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
-$util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
-## [End] Merge default values and inputs. **
-## [Start] Validate create mutation for @index 'GSI'. **
-#set( $hasSeenSomeKeyArg = false )
-#set( $keyFieldNames = [\\"kind\\", \\"date\\"] )
-#foreach( $keyFieldName in $keyFieldNames )
-#if( $ctx.args.input.containsKey(\\"$keyFieldName\\") ) #set( $hasSeenSomeKeyArg = true ) #end
-#end
-#foreach( $keyFieldName in $keyFieldNames )
-  #if( $hasSeenSomeKeyArg && !$ctx.args.input.containsKey(\\"$keyFieldName\\") )
-    $util.error(\\"When creating any part of the composite sort key for @index 'GSI', you must provide all fields for the key. Missing key: '$keyFieldName'.\\")
-  #end
-#end
-## [End] Validate create mutation for @index 'GSI'. **
-#if( $util.isNull($ctx.stash.metadata.dynamodbNameOverrideMap) )
-  $util.qr($ctx.stash.metadata.put(\\"dynamodbNameOverrideMap\\", {
-  \\"kind#date\\": \\"kindDate\\"
-}))
-#else
-  $util.qr($ctx.stash.metadata.dynamodbNameOverrideMap.put(\\"kind#date\\", \\"kindDate\\"))
-#end
-#if( $hasSeenSomeKeyArg )
-  $util.qr($ctx.args.input.put(\\"kind#date\\",\\"\${mergedValues.kind}#\${mergedValues.date}\\"))
-#end
-{}",
   "Mutation.createTest.req.vtl": "## [Start] Create Request template. **
 ## Begin - key condition **
 #if( $ctx.stash.metadata.modelObjectKey )
@@ -1349,19 +1188,6 @@ $util.toJson($PutObject)
   $util.toJson($ctx.result)
 #end
 ## [End] Get ResponseTemplate. **",
-  "Mutation.deleteTest.postAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
-#set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
-$util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
-## [End] Merge default values and inputs. **
-#if( $util.isNull($ctx.stash.metadata.dynamodbNameOverrideMap) )
-  $util.qr($ctx.stash.metadata.put(\\"dynamodbNameOverrideMap\\", {
-  \\"kind#date\\": \\"kindDate\\"
-}))
-#else
-  $util.qr($ctx.stash.metadata.dynamodbNameOverrideMap.put(\\"kind#date\\", \\"kindDate\\"))
-#end
-$util.qr($ctx.args.input.put(\\"kind#date\\",\\"\${mergedValues.kind}#\${mergedValues.date}\\"))
-{}",
   "Mutation.deleteTest.req.vtl": "## [Start] Delete Request template. **
 #set( $DeleteRequest = {
   \\"version\\": \\"2018-05-29\\",
@@ -1435,33 +1261,6 @@ $util.toJson({
   \\"payload\\": {}
 })
 ## [End] Initialization default values. **",
-  "Mutation.updateTest.postAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
-#set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
-$util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
-## [End] Merge default values and inputs. **
-## [Start] Validate update mutation for @index 'GSI'. **
-#set( $hasSeenSomeKeyArg = false )
-#set( $keyFieldNames = [\\"kind\\", \\"date\\"] )
-#foreach( $keyFieldName in $keyFieldNames )
-#if( $ctx.args.input.containsKey(\\"$keyFieldName\\") ) #set( $hasSeenSomeKeyArg = true ) #end
-#end
-#foreach( $keyFieldName in $keyFieldNames )
-  #if( $hasSeenSomeKeyArg && !$ctx.args.input.containsKey(\\"$keyFieldName\\") )
-    $util.error(\\"When updating any part of the composite sort key for @index 'GSI', you must provide all fields for the key. Missing key: '$keyFieldName'.\\")
-  #end
-#end
-## [End] Validate update mutation for @index 'GSI'. **
-#if( $util.isNull($ctx.stash.metadata.dynamodbNameOverrideMap) )
-  $util.qr($ctx.stash.metadata.put(\\"dynamodbNameOverrideMap\\", {
-  \\"kind#date\\": \\"kindDate\\"
-}))
-#else
-  $util.qr($ctx.stash.metadata.dynamodbNameOverrideMap.put(\\"kind#date\\", \\"kindDate\\"))
-#end
-#if( $hasSeenSomeKeyArg )
-  $util.qr($ctx.args.input.put(\\"kind#date\\",\\"\${mergedValues.kind}#\${mergedValues.date}\\"))
-#end
-{}",
   "Mutation.updateTest.req.vtl": "## [Start] Mutation Update resolver. **
 ## Set the default values to put request **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
@@ -2136,18 +1935,6 @@ $util.toJson({
   \\"payload\\": {}
 })
 ## [End] Initialization default values. **",
-  "Mutation.createTest.postAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
-#set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
-$util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
-## [End] Merge default values and inputs. **
-## [Start] Set the primary key. **
-$util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
-  \\"email\\": $util.dynamodb.toDynamoDB($mergedValues.email),
-  \\"createdAt\\": $util.dynamodb.toDynamoDB($mergedValues.createdAt)
-}))
-## [End] Set the primary key. **
-
-{}",
   "Mutation.createTest.req.vtl": "## [Start] Create Request template. **
 ## Begin - key condition **
 #if( $ctx.stash.metadata.modelObjectKey )
@@ -2239,17 +2026,6 @@ $util.toJson($PutObject)
   $util.toJson($ctx.result)
 #end
 ## [End] Get ResponseTemplate. **",
-  "Mutation.deleteTest.postAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
-#set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
-$util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
-## [End] Merge default values and inputs. **
-## [Start] Set the primary key. **
-$util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
-  \\"email\\": $util.dynamodb.toDynamoDB($mergedValues.email),
-  \\"createdAt\\": $util.dynamodb.toDynamoDB($mergedValues.createdAt)
-}))
-## [End] Set the primary key. **
-{}",
   "Mutation.deleteTest.req.vtl": "## [Start] Delete Request template. **
 #set( $DeleteRequest = {
   \\"version\\": \\"2018-05-29\\",
@@ -2323,18 +2099,6 @@ $util.toJson({
   \\"payload\\": {}
 })
 ## [End] Initialization default values. **",
-  "Mutation.updateTest.postAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
-#set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
-$util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
-## [End] Merge default values and inputs. **
-## [Start] Set the primary key. **
-$util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
-  \\"email\\": $util.dynamodb.toDynamoDB($mergedValues.email),
-  \\"createdAt\\": $util.dynamodb.toDynamoDB($mergedValues.createdAt)
-}))
-## [End] Set the primary key. **
-
-{}",
   "Mutation.updateTest.req.vtl": "## [Start] Mutation Update resolver. **
 ## Set the default values to put request **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
@@ -2859,33 +2623,6 @@ $util.toJson({
   \\"payload\\": {}
 })
 ## [End] Initialization default values. **",
-  "Mutation.addContentToCategory.postAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
-#set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
-$util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
-## [End] Merge default values and inputs. **
-## [Start] Validate create mutation for @index 'ContentByCategory'. **
-#set( $hasSeenSomeKeyArg = false )
-#set( $keyFieldNames = [\\"type\\", \\"language\\", \\"datetime\\"] )
-#foreach( $keyFieldName in $keyFieldNames )
-#if( $ctx.args.input.containsKey(\\"$keyFieldName\\") ) #set( $hasSeenSomeKeyArg = true ) #end
-#end
-#foreach( $keyFieldName in $keyFieldNames )
-  #if( $hasSeenSomeKeyArg && !$ctx.args.input.containsKey(\\"$keyFieldName\\") )
-    $util.error(\\"When creating any part of the composite sort key for @index 'ContentByCategory', you must provide all fields for the key. Missing key: '$keyFieldName'.\\")
-  #end
-#end
-## [End] Validate create mutation for @index 'ContentByCategory'. **
-#if( $util.isNull($ctx.stash.metadata.dynamodbNameOverrideMap) )
-  $util.qr($ctx.stash.metadata.put(\\"dynamodbNameOverrideMap\\", {
-  \\"type#language#datetime\\": \\"typeLanguageDatetime\\"
-}))
-#else
-  $util.qr($ctx.stash.metadata.dynamodbNameOverrideMap.put(\\"type#language#datetime\\", \\"typeLanguageDatetime\\"))
-#end
-#if( $hasSeenSomeKeyArg )
-  $util.qr($ctx.args.input.put(\\"type#language#datetime\\",\\"\${mergedValues.type}#\${mergedValues.language}#\${mergedValues.datetime}\\"))
-#end
-{}",
   "Mutation.addContentToCategory.req.vtl": "## [Start] Create Request template. **
 ## Begin - key condition **
 #if( $ctx.stash.metadata.modelObjectKey )
@@ -3090,18 +2827,6 @@ $util.toJson({
   \\"payload\\": {}
 })
 ## [End] Initialization default values. **",
-  "Mutation.createCall.postAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
-#set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
-$util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
-## [End] Merge default values and inputs. **
-## [Start] Set the primary key. **
-$util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
-  \\"receiverId\\": $util.dynamodb.toDynamoDB($mergedValues.receiverId),
-  \\"senderId\\": $util.dynamodb.toDynamoDB($mergedValues.senderId)
-}))
-## [End] Set the primary key. **
-
-{}",
   "Mutation.createCall.req.vtl": "## [Start] Create Request template. **
 ## Begin - key condition **
 #if( $ctx.stash.metadata.modelObjectKey )
@@ -3204,25 +2929,6 @@ $util.toJson({
   \\"payload\\": {}
 })
 ## [End] Initialization default values. **",
-  "Mutation.createItem.postAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
-#set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
-$util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
-## [End] Merge default values and inputs. **
-## [Start] Set the primary key. **
-$util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
-  \\"orderId\\": $util.dynamodb.toDynamoDB($mergedValues.orderId),
-  \\"status#createdAt\\": $util.dynamodb.toDynamoDB(\\"\${mergedValues.status}#\${mergedValues.createdAt}\\")
-}))
-## [End] Set the primary key. **
-#if( $util.isNull($ctx.stash.metadata.dynamodbNameOverrideMap) )
-  $util.qr($ctx.stash.metadata.put(\\"dynamodbNameOverrideMap\\", {
-  \\"status#createdAt\\": \\"statusCreatedAt\\"
-}))
-#else
-  $util.qr($ctx.stash.metadata.dynamodbNameOverrideMap.put(\\"status#createdAt\\", \\"statusCreatedAt\\"))
-#end
-$util.qr($ctx.args.input.put(\\"status#createdAt\\",\\"\${mergedValues.status}#\${mergedValues.createdAt}\\"))
-{}",
   "Mutation.createItem.req.vtl": "## [Start] Create Request template. **
 ## Begin - key condition **
 #if( $ctx.stash.metadata.modelObjectKey )
@@ -3325,79 +3031,6 @@ $util.toJson({
   \\"payload\\": {}
 })
 ## [End] Initialization default values. **",
-  "Mutation.createPerson.postAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
-#set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
-$util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
-## [End] Merge default values and inputs. **
-## [Start] Set the primary key. **
-$util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
-  \\"id\\": $util.dynamodb.toDynamoDB($mergedValues.id),
-  \\"firstName#lastName\\": $util.dynamodb.toDynamoDB(\\"\${mergedValues.firstName}#\${mergedValues.lastName}\\")
-}))
-## [End] Set the primary key. **
-#if( $util.isNull($ctx.stash.metadata.dynamodbNameOverrideMap) )
-  $util.qr($ctx.stash.metadata.put(\\"dynamodbNameOverrideMap\\", {
-  \\"firstName#lastName\\": \\"firstNameLastName\\"
-}))
-#else
-  $util.qr($ctx.stash.metadata.dynamodbNameOverrideMap.put(\\"firstName#lastName\\", \\"firstNameLastName\\"))
-#end
-$util.qr($ctx.args.input.put(\\"firstName#lastName\\",\\"\${mergedValues.firstName}#\${mergedValues.lastName}\\"))
-{}",
-  "Mutation.createPerson.postAuth.2.req.vtl": "## [Start] Merge default values and inputs. **
-#set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
-$util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
-## [End] Merge default values and inputs. **
-## [Start] Validate create mutation for @index 'byNameAndAge'. **
-#set( $hasSeenSomeKeyArg = false )
-#set( $keyFieldNames = [\\"age\\", \\"birthDate\\"] )
-#foreach( $keyFieldName in $keyFieldNames )
-#if( $ctx.args.input.containsKey(\\"$keyFieldName\\") ) #set( $hasSeenSomeKeyArg = true ) #end
-#end
-#foreach( $keyFieldName in $keyFieldNames )
-  #if( $hasSeenSomeKeyArg && !$ctx.args.input.containsKey(\\"$keyFieldName\\") )
-    $util.error(\\"When creating any part of the composite sort key for @index 'byNameAndAge', you must provide all fields for the key. Missing key: '$keyFieldName'.\\")
-  #end
-#end
-## [End] Validate create mutation for @index 'byNameAndAge'. **
-#if( $util.isNull($ctx.stash.metadata.dynamodbNameOverrideMap) )
-  $util.qr($ctx.stash.metadata.put(\\"dynamodbNameOverrideMap\\", {
-  \\"age#birthDate\\": \\"ageBirthDate\\"
-}))
-#else
-  $util.qr($ctx.stash.metadata.dynamodbNameOverrideMap.put(\\"age#birthDate\\", \\"ageBirthDate\\"))
-#end
-#if( $hasSeenSomeKeyArg )
-  $util.qr($ctx.args.input.put(\\"age#birthDate\\",\\"\${mergedValues.age}#\${mergedValues.birthDate}\\"))
-#end
-{}",
-  "Mutation.createPerson.postAuth.3.req.vtl": "## [Start] Merge default values and inputs. **
-#set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
-$util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
-## [End] Merge default values and inputs. **
-## [Start] Validate create mutation for @index 'byNameAndNickname'. **
-#set( $hasSeenSomeKeyArg = false )
-#set( $keyFieldNames = [\\"lastName\\", \\"nickname\\"] )
-#foreach( $keyFieldName in $keyFieldNames )
-#if( $ctx.args.input.containsKey(\\"$keyFieldName\\") ) #set( $hasSeenSomeKeyArg = true ) #end
-#end
-#foreach( $keyFieldName in $keyFieldNames )
-  #if( $hasSeenSomeKeyArg && !$ctx.args.input.containsKey(\\"$keyFieldName\\") )
-    $util.error(\\"When creating any part of the composite sort key for @index 'byNameAndNickname', you must provide all fields for the key. Missing key: '$keyFieldName'.\\")
-  #end
-#end
-## [End] Validate create mutation for @index 'byNameAndNickname'. **
-#if( $util.isNull($ctx.stash.metadata.dynamodbNameOverrideMap) )
-  $util.qr($ctx.stash.metadata.put(\\"dynamodbNameOverrideMap\\", {
-  \\"lastName#nickname\\": \\"lastNameNickname\\"
-}))
-#else
-  $util.qr($ctx.stash.metadata.dynamodbNameOverrideMap.put(\\"lastName#nickname\\", \\"lastNameNickname\\"))
-#end
-#if( $hasSeenSomeKeyArg )
-  $util.qr($ctx.args.input.put(\\"lastName#nickname\\",\\"\${mergedValues.lastName}#\${mergedValues.nickname}\\"))
-#end
-{}",
   "Mutation.createPerson.req.vtl": "## [Start] Create Request template. **
 ## Begin - key condition **
 #if( $ctx.stash.metadata.modelObjectKey )
@@ -3500,45 +3133,6 @@ $util.toJson({
   \\"payload\\": {}
 })
 ## [End] Initialization default values. **",
-  "Mutation.createReview.postAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
-#set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
-$util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
-## [End] Merge default values and inputs. **
-## [Start] Set the primary key. **
-$util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
-  \\"owner\\": $util.dynamodb.toDynamoDB($mergedValues.owner),
-  \\"serviceId\\": $util.dynamodb.toDynamoDB($mergedValues.serviceId)
-}))
-## [End] Set the primary key. **
-
-{}",
-  "Mutation.createReview.postAuth.2.req.vtl": "## [Start] Merge default values and inputs. **
-#set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
-$util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
-## [End] Merge default values and inputs. **
-## [Start] Validate create mutation for @index 'byStatus'. **
-#set( $hasSeenSomeKeyArg = false )
-#set( $keyFieldNames = [\\"status\\", \\"createdAt\\"] )
-#foreach( $keyFieldName in $keyFieldNames )
-#if( $ctx.args.input.containsKey(\\"$keyFieldName\\") ) #set( $hasSeenSomeKeyArg = true ) #end
-#end
-#foreach( $keyFieldName in $keyFieldNames )
-  #if( $hasSeenSomeKeyArg && !$ctx.args.input.containsKey(\\"$keyFieldName\\") )
-    $util.error(\\"When creating any part of the composite sort key for @index 'byStatus', you must provide all fields for the key. Missing key: '$keyFieldName'.\\")
-  #end
-#end
-## [End] Validate create mutation for @index 'byStatus'. **
-#if( $util.isNull($ctx.stash.metadata.dynamodbNameOverrideMap) )
-  $util.qr($ctx.stash.metadata.put(\\"dynamodbNameOverrideMap\\", {
-  \\"status#createdAt\\": \\"statusCreatedAt\\"
-}))
-#else
-  $util.qr($ctx.stash.metadata.dynamodbNameOverrideMap.put(\\"status#createdAt\\", \\"statusCreatedAt\\"))
-#end
-#if( $hasSeenSomeKeyArg )
-  $util.qr($ctx.args.input.put(\\"status#createdAt\\",\\"\${mergedValues.status}#\${mergedValues.createdAt}\\"))
-#end
-{}",
   "Mutation.createReview.req.vtl": "## [Start] Create Request template. **
 ## Begin - key condition **
 #if( $ctx.stash.metadata.modelObjectKey )
@@ -3641,18 +3235,6 @@ $util.toJson({
   \\"payload\\": {}
 })
 ## [End] Initialization default values. **",
-  "Mutation.createTest.postAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
-#set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
-$util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
-## [End] Merge default values and inputs. **
-## [Start] Set the primary key. **
-$util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
-  \\"email\\": $util.dynamodb.toDynamoDB($mergedValues.email),
-  \\"createdAt\\": $util.dynamodb.toDynamoDB($mergedValues.createdAt)
-}))
-## [End] Set the primary key. **
-
-{}",
   "Mutation.createTest.req.vtl": "## [Start] Create Request template. **
 ## Begin - key condition **
 #if( $ctx.stash.metadata.modelObjectKey )
@@ -3910,17 +3492,6 @@ $util.toJson($DeleteRequest)
   $util.toJson($ctx.result)
 #end
 ## [End] Get ResponseTemplate. **",
-  "Mutation.deleteCall.postAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
-#set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
-$util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
-## [End] Merge default values and inputs. **
-## [Start] Set the primary key. **
-$util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
-  \\"receiverId\\": $util.dynamodb.toDynamoDB($mergedValues.receiverId),
-  \\"senderId\\": $util.dynamodb.toDynamoDB($mergedValues.senderId)
-}))
-## [End] Set the primary key. **
-{}",
   "Mutation.deleteCall.req.vtl": "## [Start] Delete Request template. **
 #set( $DeleteRequest = {
   \\"version\\": \\"2018-05-29\\",
@@ -3985,19 +3556,6 @@ $util.toJson($DeleteRequest)
   $util.toJson($ctx.result)
 #end
 ## [End] Get ResponseTemplate. **",
-  "Mutation.deleteContentFromCategory.postAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
-#set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
-$util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
-## [End] Merge default values and inputs. **
-#if( $util.isNull($ctx.stash.metadata.dynamodbNameOverrideMap) )
-  $util.qr($ctx.stash.metadata.put(\\"dynamodbNameOverrideMap\\", {
-  \\"type#language#datetime\\": \\"typeLanguageDatetime\\"
-}))
-#else
-  $util.qr($ctx.stash.metadata.dynamodbNameOverrideMap.put(\\"type#language#datetime\\", \\"typeLanguageDatetime\\"))
-#end
-$util.qr($ctx.args.input.put(\\"type#language#datetime\\",\\"\${mergedValues.type}#\${mergedValues.language}#\${mergedValues.datetime}\\"))
-{}",
   "Mutation.deleteContentFromCategory.req.vtl": "## [Start] Delete Request template. **
 #set( $DeleteRequest = {
   \\"version\\": \\"2018-05-29\\",
@@ -4062,17 +3620,6 @@ $util.toJson($DeleteRequest)
   $util.toJson($ctx.result)
 #end
 ## [End] Get ResponseTemplate. **",
-  "Mutation.deleteItem.postAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
-#set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
-$util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
-## [End] Merge default values and inputs. **
-## [Start] Set the primary key. **
-$util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
-  \\"orderId\\": $util.dynamodb.toDynamoDB($mergedValues.orderId),
-  \\"status#createdAt\\": $util.dynamodb.toDynamoDB(\\"\${mergedValues.status}#\${mergedValues.createdAt}\\")
-}))
-## [End] Set the primary key. **
-{}",
   "Mutation.deleteItem.req.vtl": "## [Start] Delete Request template. **
 #set( $DeleteRequest = {
   \\"version\\": \\"2018-05-29\\",
@@ -4138,43 +3685,6 @@ $util.toJson($DeleteRequest)
   $util.toJson($ctx.result)
 #end
 ## [End] Get ResponseTemplate. **",
-  "Mutation.deletePerson.postAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
-#set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
-$util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
-## [End] Merge default values and inputs. **
-## [Start] Set the primary key. **
-$util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
-  \\"id\\": $util.dynamodb.toDynamoDB($mergedValues.id),
-  \\"firstName#lastName\\": $util.dynamodb.toDynamoDB(\\"\${mergedValues.firstName}#\${mergedValues.lastName}\\")
-}))
-## [End] Set the primary key. **
-{}",
-  "Mutation.deletePerson.postAuth.2.req.vtl": "## [Start] Merge default values and inputs. **
-#set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
-$util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
-## [End] Merge default values and inputs. **
-#if( $util.isNull($ctx.stash.metadata.dynamodbNameOverrideMap) )
-  $util.qr($ctx.stash.metadata.put(\\"dynamodbNameOverrideMap\\", {
-  \\"age#birthDate\\": \\"ageBirthDate\\"
-}))
-#else
-  $util.qr($ctx.stash.metadata.dynamodbNameOverrideMap.put(\\"age#birthDate\\", \\"ageBirthDate\\"))
-#end
-$util.qr($ctx.args.input.put(\\"age#birthDate\\",\\"\${mergedValues.age}#\${mergedValues.birthDate}\\"))
-{}",
-  "Mutation.deletePerson.postAuth.3.req.vtl": "## [Start] Merge default values and inputs. **
-#set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
-$util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
-## [End] Merge default values and inputs. **
-#if( $util.isNull($ctx.stash.metadata.dynamodbNameOverrideMap) )
-  $util.qr($ctx.stash.metadata.put(\\"dynamodbNameOverrideMap\\", {
-  \\"lastName#nickname\\": \\"lastNameNickname\\"
-}))
-#else
-  $util.qr($ctx.stash.metadata.dynamodbNameOverrideMap.put(\\"lastName#nickname\\", \\"lastNameNickname\\"))
-#end
-$util.qr($ctx.args.input.put(\\"lastName#nickname\\",\\"\${mergedValues.lastName}#\${mergedValues.nickname}\\"))
-{}",
   "Mutation.deletePerson.req.vtl": "## [Start] Delete Request template. **
 #set( $DeleteRequest = {
   \\"version\\": \\"2018-05-29\\",
@@ -4239,30 +3749,6 @@ $util.toJson($DeleteRequest)
   $util.toJson($ctx.result)
 #end
 ## [End] Get ResponseTemplate. **",
-  "Mutation.deleteReview.postAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
-#set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
-$util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
-## [End] Merge default values and inputs. **
-## [Start] Set the primary key. **
-$util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
-  \\"owner\\": $util.dynamodb.toDynamoDB($mergedValues.owner),
-  \\"serviceId\\": $util.dynamodb.toDynamoDB($mergedValues.serviceId)
-}))
-## [End] Set the primary key. **
-{}",
-  "Mutation.deleteReview.postAuth.2.req.vtl": "## [Start] Merge default values and inputs. **
-#set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
-$util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
-## [End] Merge default values and inputs. **
-#if( $util.isNull($ctx.stash.metadata.dynamodbNameOverrideMap) )
-  $util.qr($ctx.stash.metadata.put(\\"dynamodbNameOverrideMap\\", {
-  \\"status#createdAt\\": \\"statusCreatedAt\\"
-}))
-#else
-  $util.qr($ctx.stash.metadata.dynamodbNameOverrideMap.put(\\"status#createdAt\\", \\"statusCreatedAt\\"))
-#end
-$util.qr($ctx.args.input.put(\\"status#createdAt\\",\\"\${mergedValues.status}#\${mergedValues.createdAt}\\"))
-{}",
   "Mutation.deleteReview.req.vtl": "## [Start] Delete Request template. **
 #set( $DeleteRequest = {
   \\"version\\": \\"2018-05-29\\",
@@ -4327,17 +3813,6 @@ $util.toJson($DeleteRequest)
   $util.toJson($ctx.result)
 #end
 ## [End] Get ResponseTemplate. **",
-  "Mutation.deleteTest.postAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
-#set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
-$util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
-## [End] Merge default values and inputs. **
-## [Start] Set the primary key. **
-$util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
-  \\"email\\": $util.dynamodb.toDynamoDB($mergedValues.email),
-  \\"createdAt\\": $util.dynamodb.toDynamoDB($mergedValues.createdAt)
-}))
-## [End] Set the primary key. **
-{}",
   "Mutation.deleteTest.req.vtl": "## [Start] Delete Request template. **
 #set( $DeleteRequest = {
   \\"version\\": \\"2018-05-29\\",
@@ -4466,17 +3941,6 @@ $util.toJson($DeleteRequest)
   $util.toJson($ctx.result)
 #end
 ## [End] Get ResponseTemplate. **",
-  "Mutation.testDelete.postAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
-#set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
-$util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
-## [End] Merge default values and inputs. **
-## [Start] Set the primary key. **
-$util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
-  \\"receiverId\\": $util.dynamodb.toDynamoDB($mergedValues.receiverId),
-  \\"senderId\\": $util.dynamodb.toDynamoDB($mergedValues.senderId)
-}))
-## [End] Set the primary key. **
-{}",
   "Mutation.testDelete.req.vtl": "## [Start] Delete Request template. **
 #set( $DeleteRequest = {
   \\"version\\": \\"2018-05-29\\",
@@ -4695,18 +4159,6 @@ $util.toJson({
   \\"payload\\": {}
 })
 ## [End] Initialization default values. **",
-  "Mutation.updateCall.postAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
-#set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
-$util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
-## [End] Merge default values and inputs. **
-## [Start] Set the primary key. **
-$util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
-  \\"receiverId\\": $util.dynamodb.toDynamoDB($mergedValues.receiverId),
-  \\"senderId\\": $util.dynamodb.toDynamoDB($mergedValues.senderId)
-}))
-## [End] Set the primary key. **
-
-{}",
   "Mutation.updateCall.req.vtl": "## [Start] Mutation Update resolver. **
 ## Set the default values to put request **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
@@ -4852,25 +4304,6 @@ $util.toJson({
   \\"payload\\": {}
 })
 ## [End] Initialization default values. **",
-  "Mutation.updateItem.postAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
-#set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
-$util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
-## [End] Merge default values and inputs. **
-## [Start] Set the primary key. **
-$util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
-  \\"orderId\\": $util.dynamodb.toDynamoDB($mergedValues.orderId),
-  \\"status#createdAt\\": $util.dynamodb.toDynamoDB(\\"\${mergedValues.status}#\${mergedValues.createdAt}\\")
-}))
-## [End] Set the primary key. **
-#if( $util.isNull($ctx.stash.metadata.dynamodbNameOverrideMap) )
-  $util.qr($ctx.stash.metadata.put(\\"dynamodbNameOverrideMap\\", {
-  \\"status#createdAt\\": \\"statusCreatedAt\\"
-}))
-#else
-  $util.qr($ctx.stash.metadata.dynamodbNameOverrideMap.put(\\"status#createdAt\\", \\"statusCreatedAt\\"))
-#end
-$util.qr($ctx.args.input.put(\\"status#createdAt\\",\\"\${mergedValues.status}#\${mergedValues.createdAt}\\"))
-{}",
   "Mutation.updateItem.req.vtl": "## [Start] Mutation Update resolver. **
 ## Set the default values to put request **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
@@ -5017,79 +4450,6 @@ $util.toJson({
   \\"payload\\": {}
 })
 ## [End] Initialization default values. **",
-  "Mutation.updatePerson.postAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
-#set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
-$util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
-## [End] Merge default values and inputs. **
-## [Start] Set the primary key. **
-$util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
-  \\"id\\": $util.dynamodb.toDynamoDB($mergedValues.id),
-  \\"firstName#lastName\\": $util.dynamodb.toDynamoDB(\\"\${mergedValues.firstName}#\${mergedValues.lastName}\\")
-}))
-## [End] Set the primary key. **
-#if( $util.isNull($ctx.stash.metadata.dynamodbNameOverrideMap) )
-  $util.qr($ctx.stash.metadata.put(\\"dynamodbNameOverrideMap\\", {
-  \\"firstName#lastName\\": \\"firstNameLastName\\"
-}))
-#else
-  $util.qr($ctx.stash.metadata.dynamodbNameOverrideMap.put(\\"firstName#lastName\\", \\"firstNameLastName\\"))
-#end
-$util.qr($ctx.args.input.put(\\"firstName#lastName\\",\\"\${mergedValues.firstName}#\${mergedValues.lastName}\\"))
-{}",
-  "Mutation.updatePerson.postAuth.2.req.vtl": "## [Start] Merge default values and inputs. **
-#set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
-$util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
-## [End] Merge default values and inputs. **
-## [Start] Validate update mutation for @index 'byNameAndAge'. **
-#set( $hasSeenSomeKeyArg = false )
-#set( $keyFieldNames = [\\"age\\", \\"birthDate\\"] )
-#foreach( $keyFieldName in $keyFieldNames )
-#if( $ctx.args.input.containsKey(\\"$keyFieldName\\") ) #set( $hasSeenSomeKeyArg = true ) #end
-#end
-#foreach( $keyFieldName in $keyFieldNames )
-  #if( $hasSeenSomeKeyArg && !$ctx.args.input.containsKey(\\"$keyFieldName\\") )
-    $util.error(\\"When updating any part of the composite sort key for @index 'byNameAndAge', you must provide all fields for the key. Missing key: '$keyFieldName'.\\")
-  #end
-#end
-## [End] Validate update mutation for @index 'byNameAndAge'. **
-#if( $util.isNull($ctx.stash.metadata.dynamodbNameOverrideMap) )
-  $util.qr($ctx.stash.metadata.put(\\"dynamodbNameOverrideMap\\", {
-  \\"age#birthDate\\": \\"ageBirthDate\\"
-}))
-#else
-  $util.qr($ctx.stash.metadata.dynamodbNameOverrideMap.put(\\"age#birthDate\\", \\"ageBirthDate\\"))
-#end
-#if( $hasSeenSomeKeyArg )
-  $util.qr($ctx.args.input.put(\\"age#birthDate\\",\\"\${mergedValues.age}#\${mergedValues.birthDate}\\"))
-#end
-{}",
-  "Mutation.updatePerson.postAuth.3.req.vtl": "## [Start] Merge default values and inputs. **
-#set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
-$util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
-## [End] Merge default values and inputs. **
-## [Start] Validate update mutation for @index 'byNameAndNickname'. **
-#set( $hasSeenSomeKeyArg = false )
-#set( $keyFieldNames = [\\"lastName\\", \\"nickname\\"] )
-#foreach( $keyFieldName in $keyFieldNames )
-#if( $ctx.args.input.containsKey(\\"$keyFieldName\\") ) #set( $hasSeenSomeKeyArg = true ) #end
-#end
-#foreach( $keyFieldName in $keyFieldNames )
-  #if( $hasSeenSomeKeyArg && !$ctx.args.input.containsKey(\\"$keyFieldName\\") )
-    $util.error(\\"When updating any part of the composite sort key for @index 'byNameAndNickname', you must provide all fields for the key. Missing key: '$keyFieldName'.\\")
-  #end
-#end
-## [End] Validate update mutation for @index 'byNameAndNickname'. **
-#if( $util.isNull($ctx.stash.metadata.dynamodbNameOverrideMap) )
-  $util.qr($ctx.stash.metadata.put(\\"dynamodbNameOverrideMap\\", {
-  \\"lastName#nickname\\": \\"lastNameNickname\\"
-}))
-#else
-  $util.qr($ctx.stash.metadata.dynamodbNameOverrideMap.put(\\"lastName#nickname\\", \\"lastNameNickname\\"))
-#end
-#if( $hasSeenSomeKeyArg )
-  $util.qr($ctx.args.input.put(\\"lastName#nickname\\",\\"\${mergedValues.lastName}#\${mergedValues.nickname}\\"))
-#end
-{}",
   "Mutation.updatePerson.req.vtl": "## [Start] Mutation Update resolver. **
 ## Set the default values to put request **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
@@ -5235,45 +4595,6 @@ $util.toJson({
   \\"payload\\": {}
 })
 ## [End] Initialization default values. **",
-  "Mutation.updateReview.postAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
-#set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
-$util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
-## [End] Merge default values and inputs. **
-## [Start] Set the primary key. **
-$util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
-  \\"owner\\": $util.dynamodb.toDynamoDB($mergedValues.owner),
-  \\"serviceId\\": $util.dynamodb.toDynamoDB($mergedValues.serviceId)
-}))
-## [End] Set the primary key. **
-
-{}",
-  "Mutation.updateReview.postAuth.2.req.vtl": "## [Start] Merge default values and inputs. **
-#set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
-$util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
-## [End] Merge default values and inputs. **
-## [Start] Validate update mutation for @index 'byStatus'. **
-#set( $hasSeenSomeKeyArg = false )
-#set( $keyFieldNames = [\\"status\\", \\"createdAt\\"] )
-#foreach( $keyFieldName in $keyFieldNames )
-#if( $ctx.args.input.containsKey(\\"$keyFieldName\\") ) #set( $hasSeenSomeKeyArg = true ) #end
-#end
-#foreach( $keyFieldName in $keyFieldNames )
-  #if( $hasSeenSomeKeyArg && !$ctx.args.input.containsKey(\\"$keyFieldName\\") )
-    $util.error(\\"When updating any part of the composite sort key for @index 'byStatus', you must provide all fields for the key. Missing key: '$keyFieldName'.\\")
-  #end
-#end
-## [End] Validate update mutation for @index 'byStatus'. **
-#if( $util.isNull($ctx.stash.metadata.dynamodbNameOverrideMap) )
-  $util.qr($ctx.stash.metadata.put(\\"dynamodbNameOverrideMap\\", {
-  \\"status#createdAt\\": \\"statusCreatedAt\\"
-}))
-#else
-  $util.qr($ctx.stash.metadata.dynamodbNameOverrideMap.put(\\"status#createdAt\\", \\"statusCreatedAt\\"))
-#end
-#if( $hasSeenSomeKeyArg )
-  $util.qr($ctx.args.input.put(\\"status#createdAt\\",\\"\${mergedValues.status}#\${mergedValues.createdAt}\\"))
-#end
-{}",
   "Mutation.updateReview.req.vtl": "## [Start] Mutation Update resolver. **
 ## Set the default values to put request **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
@@ -5419,18 +4740,6 @@ $util.toJson({
   \\"payload\\": {}
 })
 ## [End] Initialization default values. **",
-  "Mutation.updateTest.postAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
-#set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
-$util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
-## [End] Merge default values and inputs. **
-## [Start] Set the primary key. **
-$util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
-  \\"email\\": $util.dynamodb.toDynamoDB($mergedValues.email),
-  \\"createdAt\\": $util.dynamodb.toDynamoDB($mergedValues.createdAt)
-}))
-## [End] Set the primary key. **
-
-{}",
   "Mutation.updateTest.req.vtl": "## [Start] Mutation Update resolver. **
 ## Set the default values to put request **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
@@ -7372,6 +6681,268 @@ $util.toJson($ListRequest)
   $util.toJson($ctx.result)
 #end
 ## [End] Get ResponseTemplate. **",
+  "Query.syncItems.postAuth.1.req.vtl": "## [Start] Set map initialization for @key **
+#set( $index = \\"\\" )
+#set( $scan = true )
+#set( $filterMap = {} )
+#set( $QueryMap = {} )
+#set( $PkMap = {} )
+#set( $filterArgsMap = {} )
+## [End] Set map initialization for @key **
+## [Start] Set query expression for @key **
+$util.qr($QueryMap.put('status+createdAt' , 'ByStatus'))
+$util.qr($PkMap.put('status' , 'ByStatus'))
+## [End] Set query expression for @key **
+## [Start] Set query expression for @key **
+$util.qr($QueryMap.put('createdAt+status' , 'ByCreatedAt'))
+$util.qr($PkMap.put('createdAt' , 'ByCreatedAt'))
+## [End] Set query expression for @key **
+## [Start] Set query expression for @key **
+#set( $filterArgsMap = $ctx.args.filter.get(\\"and\\") )
+#if( !$util.isNullOrEmpty($filterArgsMap) && ($util.isNull($ctx.args.lastSync) || $ctx.args.lastSync == 0) )
+  #set( $json = $filterArgsMap )
+  #foreach( $item in $json )
+    #set( $ind = $foreach.index )
+    #foreach( $entry in $item.entrySet() )
+      #if( $ind == 0 && !$util.isNullOrEmpty($entry.value.eq) && !$util.isNullOrEmpty($PkMap.get($entry.key)) )
+        #set( $pk = $entry.key )
+        #set( $scan = false )
+        $util.qr($ctx.args.put($pk,$entry.value.eq))
+        #set( $index = $PkMap.get($pk) )
+      #end
+      #if( $ind == 1 && !$util.isNullOrEmpty($pk) && !$util.isNullOrEmpty($QueryMap.get(\\"\${pk}+$entry.key\\")) )
+        #set( $sk = $entry.key )
+        $util.qr($ctx.args.put($sk,$entry.value))
+        #set( $index = $QueryMap.get(\\"\${pk}+$sk\\") )
+      #else
+        #if( $ind > 0 )
+          $util.qr($filterMap.put($entry.key,$entry.value))
+        #end
+      #end
+    #end
+  #end
+#else
+  #set( $filterMap = $ctx.args.filter )
+#end
+## [End] Set query expression for @key **
+## [Start] Set Primary Key initialization @key **
+#set( $modelQueryExpression = {} )
+#if( !$util.isNull($pk) )
+  #set( $modelQueryExpression.expression = \\"#pk = :pk\\" )
+  #set( $modelQueryExpression.expressionNames = {
+  \\"#pk\\": \\"$pk\\"
+} )
+  #set( $modelQueryExpression.expressionValues = {
+  \\":pk\\": $util.parseJson($util.dynamodb.toDynamoDBJson($ctx.args.get($pk)))
+} )
+#end
+## [End] Set Primary Key initialization @key **
+## [Start] Applying Key Condition **
+#if( !$util.isNull($ctx.args.get($sk)) && !$util.isNull($ctx.args.get($sk).beginsWith) )
+  #set( $modelQueryExpression.expression = \\"$modelQueryExpression.expression AND begins_with(#sortKey, :sortKey)\\" )
+  $util.qr($modelQueryExpression.expressionNames.put(\\"#sortKey\\", $sk))
+  $util.qr($modelQueryExpression.expressionValues.put(\\":sortKey\\", $util.parseJson($util.dynamodb.toDynamoDBJson($ctx.args.get($sk).beginsWith))))
+#end
+#if( !$util.isNull($ctx.args.get($sk)) && !$util.isNull($ctx.args.get($sk).between) )
+  #set( $modelQueryExpression.expression = \\"$modelQueryExpression.expression AND #sortKey BETWEEN :sortKey0 AND :sortKey1\\" )
+  $util.qr($modelQueryExpression.expressionNames.put(\\"#sortKey\\", $sk))
+  $util.qr($modelQueryExpression.expressionValues.put(\\":sortKey\\", $util.parseJson($util.dynamodb.toDynamoDBJson($ctx.args.get($sk).between[0]))))
+  $util.qr($modelQueryExpression.expressionValues.put(\\":sortKey\\", $util.parseJson($util.dynamodb.toDynamoDBJson($ctx.args.get($sk).between[1]))))
+#end
+#if( !$util.isNull($ctx.args.get($sk)) && !$util.isNull($ctx.args.get($sk).eq) )
+  #set( $modelQueryExpression.expression = \\"$modelQueryExpression.expression AND #sortKey = :sortKey\\" )
+  $util.qr($modelQueryExpression.expressionNames.put(\\"#sortKey\\", $sk))
+  $util.qr($modelQueryExpression.expressionValues.put(\\":sortKey\\", $util.parseJson($util.dynamodb.toDynamoDBJson($ctx.args.get($sk).eq))))
+#end
+#if( !$util.isNull($ctx.args.get($sk)) && !$util.isNull($ctx.args.get($sk).lt) )
+  #set( $modelQueryExpression.expression = \\"$modelQueryExpression.expression AND #sortKey < :sortKey\\" )
+  $util.qr($modelQueryExpression.expressionNames.put(\\"#sortKey\\", $sk))
+  $util.qr($modelQueryExpression.expressionValues.put(\\":sortKey\\", $util.parseJson($util.dynamodb.toDynamoDBJson($ctx.args.get($sk).lt))))
+#end
+#if( !$util.isNull($ctx.args.get($sk)) && !$util.isNull($ctx.args.get($sk).le) )
+  #set( $modelQueryExpression.expression = \\"$modelQueryExpression.expression AND #sortKey <= :sortKey\\" )
+  $util.qr($modelQueryExpression.expressionNames.put(\\"#sortKey\\", $sk))
+  $util.qr($modelQueryExpression.expressionValues.put(\\":sortKey\\", $util.parseJson($util.dynamodb.toDynamoDBJson($ctx.args.get($sk).le))))
+#end
+#if( !$util.isNull($ctx.args.get($sk)) && !$util.isNull($ctx.args.get($sk).gt) )
+  #set( $modelQueryExpression.expression = \\"$modelQueryExpression.expression AND #sortKey > :sortKey\\" )
+  $util.qr($modelQueryExpression.expressionNames.put(\\"#sortKey\\", $sk))
+  $util.qr($modelQueryExpression.expressionValues.put(\\":sortKey\\", $util.parseJson($util.dynamodb.toDynamoDBJson($ctx.args.get($sk).gt))))
+#end
+#if( !$util.isNull($ctx.args.get($sk)) && !$util.isNull($ctx.args.get($sk).ge) )
+  #set( $modelQueryExpression.expression = \\"$modelQueryExpression.expression AND #sortKey >= :sortKey\\" )
+  $util.qr($modelQueryExpression.expressionNames.put(\\"#sortKey\\", $sk))
+  $util.qr($modelQueryExpression.expressionValues.put(\\":sortKey\\", $util.parseJson($util.dynamodb.toDynamoDBJson($ctx.args.get($sk).ge))))
+#end
+## [End] Applying Key Condition **
+## [Start]  Set query expression for @key **
+#if( !$scan )
+  #set( $limit = $util.defaultIfNull($context.args.limit, 100) )
+  #set( $QueryRequest = {
+  \\"version\\": \\"2018-05-29\\",
+  \\"operation\\": \\"Sync\\",
+  \\"limit\\": $limit,
+  \\"query\\": $modelQueryExpression
+} )
+  #if( !$util.isNull($ctx.args.sortDirection)
+                    && $ctx.args.sortDirection == \\"DESC\\" )
+    #set( $QueryRequest.scanIndexForward = false )
+  #else
+    #set( $QueryRequest.scanIndexForward = true )
+  #end
+#if( $context.args.nextToken ) #set( $QueryRequest.nextToken = $context.args.nextToken ) #end
+  #if( !$util.isNullOrEmpty($filterMap) )
+    #set( $QueryRequest.filter = $util.parseJson($util.transform.toDynamoDBFilterExpression($filterMap)) )
+  #end
+  #if( $index != \\"dbTable\\" )
+    #set( $QueryRequest.index = $index )
+  #end
+  $util.toJson($QueryRequest)
+#else
+{
+      \\"version\\": \\"2018-05-29\\",
+      \\"operation\\": \\"Sync\\",
+      \\"limit\\": $util.defaultIfNull($ctx.args.limit, 100),
+      \\"nextToken\\": $util.toJson($util.defaultIfNull($ctx.args.nextToken, null)),
+      \\"lastSync\\": $util.toJson($util.defaultIfNull($ctx.args.lastSync, null)),
+      \\"filter\\":     #if( !$util.isNullOrEmpty($ctx.args.filter) )
+$util.transform.toDynamoDBFilterExpression($ctx.args.filter)
+    #else
+null
+    #end
+  }
+#end
+## [End]  Set query expression for @key **
+{}",
+  "Query.syncItems.postAuth.2.req.vtl": "## [Start] Set map initialization for @key **
+#set( $index = \\"\\" )
+#set( $scan = true )
+#set( $filterMap = {} )
+#set( $QueryMap = {} )
+#set( $PkMap = {} )
+#set( $filterArgsMap = {} )
+## [End] Set map initialization for @key **
+## [Start] Set query expression for @key **
+$util.qr($QueryMap.put('orderId+status+createdAt' , 'dbTable'))
+$util.qr($PkMap.put('orderId' , 'dbTable'))
+## [End] Set query expression for @key **
+## [Start] Set query expression for @key **
+#set( $filterArgsMap = $ctx.args.filter.get(\\"and\\") )
+#if( !$util.isNullOrEmpty($filterArgsMap) && ($util.isNull($ctx.args.lastSync) || $ctx.args.lastSync == 0) )
+  #set( $json = $filterArgsMap )
+  #foreach( $item in $json )
+    #set( $ind = $foreach.index )
+    #foreach( $entry in $item.entrySet() )
+      #if( $ind == 0 && !$util.isNullOrEmpty($entry.value.eq) && !$util.isNullOrEmpty($PkMap.get($entry.key)) )
+        #set( $pk = $entry.key )
+        #set( $scan = false )
+        $util.qr($ctx.args.put($pk,$entry.value.eq))
+        #set( $index = $PkMap.get($pk) )
+      #end
+      #if( $ind == 1 && !$util.isNullOrEmpty($pk) && !$util.isNullOrEmpty($QueryMap.get(\\"\${pk}+$entry.key\\")) )
+        #set( $sk = $entry.key )
+        $util.qr($ctx.args.put($sk,$entry.value))
+        #set( $index = $QueryMap.get(\\"\${pk}+$sk\\") )
+      #else
+        #if( $ind > 0 )
+          $util.qr($filterMap.put($entry.key,$entry.value))
+        #end
+      #end
+    #end
+  #end
+#else
+  #set( $filterMap = $ctx.args.filter )
+#end
+## [End] Set query expression for @key **
+## [Start] Set Primary Key initialization @key **
+#set( $modelQueryExpression = {} )
+#if( !$util.isNull($pk) )
+  #set( $modelQueryExpression.expression = \\"#pk = :pk\\" )
+  #set( $modelQueryExpression.expressionNames = {
+  \\"#pk\\": \\"$pk\\"
+} )
+  #set( $modelQueryExpression.expressionValues = {
+  \\":pk\\": $util.parseJson($util.dynamodb.toDynamoDBJson($ctx.args.get($pk)))
+} )
+#end
+## [End] Set Primary Key initialization @key **
+## [Start] Applying Key Condition **
+#if( !$util.isNull($ctx.args.get($sk)) && !$util.isNull($ctx.args.get($sk).beginsWith) )
+  #set( $modelQueryExpression.expression = \\"$modelQueryExpression.expression AND begins_with(#sortKey, :sortKey)\\" )
+  $util.qr($modelQueryExpression.expressionNames.put(\\"#sortKey\\", $sk))
+  $util.qr($modelQueryExpression.expressionValues.put(\\":sortKey\\", $util.parseJson($util.dynamodb.toDynamoDBJson($ctx.args.get($sk).beginsWith))))
+#end
+#if( !$util.isNull($ctx.args.get($sk)) && !$util.isNull($ctx.args.get($sk).between) )
+  #set( $modelQueryExpression.expression = \\"$modelQueryExpression.expression AND #sortKey BETWEEN :sortKey0 AND :sortKey1\\" )
+  $util.qr($modelQueryExpression.expressionNames.put(\\"#sortKey\\", $sk))
+  $util.qr($modelQueryExpression.expressionValues.put(\\":sortKey\\", $util.parseJson($util.dynamodb.toDynamoDBJson($ctx.args.get($sk).between[0]))))
+  $util.qr($modelQueryExpression.expressionValues.put(\\":sortKey\\", $util.parseJson($util.dynamodb.toDynamoDBJson($ctx.args.get($sk).between[1]))))
+#end
+#if( !$util.isNull($ctx.args.get($sk)) && !$util.isNull($ctx.args.get($sk).eq) )
+  #set( $modelQueryExpression.expression = \\"$modelQueryExpression.expression AND #sortKey = :sortKey\\" )
+  $util.qr($modelQueryExpression.expressionNames.put(\\"#sortKey\\", $sk))
+  $util.qr($modelQueryExpression.expressionValues.put(\\":sortKey\\", $util.parseJson($util.dynamodb.toDynamoDBJson($ctx.args.get($sk).eq))))
+#end
+#if( !$util.isNull($ctx.args.get($sk)) && !$util.isNull($ctx.args.get($sk).lt) )
+  #set( $modelQueryExpression.expression = \\"$modelQueryExpression.expression AND #sortKey < :sortKey\\" )
+  $util.qr($modelQueryExpression.expressionNames.put(\\"#sortKey\\", $sk))
+  $util.qr($modelQueryExpression.expressionValues.put(\\":sortKey\\", $util.parseJson($util.dynamodb.toDynamoDBJson($ctx.args.get($sk).lt))))
+#end
+#if( !$util.isNull($ctx.args.get($sk)) && !$util.isNull($ctx.args.get($sk).le) )
+  #set( $modelQueryExpression.expression = \\"$modelQueryExpression.expression AND #sortKey <= :sortKey\\" )
+  $util.qr($modelQueryExpression.expressionNames.put(\\"#sortKey\\", $sk))
+  $util.qr($modelQueryExpression.expressionValues.put(\\":sortKey\\", $util.parseJson($util.dynamodb.toDynamoDBJson($ctx.args.get($sk).le))))
+#end
+#if( !$util.isNull($ctx.args.get($sk)) && !$util.isNull($ctx.args.get($sk).gt) )
+  #set( $modelQueryExpression.expression = \\"$modelQueryExpression.expression AND #sortKey > :sortKey\\" )
+  $util.qr($modelQueryExpression.expressionNames.put(\\"#sortKey\\", $sk))
+  $util.qr($modelQueryExpression.expressionValues.put(\\":sortKey\\", $util.parseJson($util.dynamodb.toDynamoDBJson($ctx.args.get($sk).gt))))
+#end
+#if( !$util.isNull($ctx.args.get($sk)) && !$util.isNull($ctx.args.get($sk).ge) )
+  #set( $modelQueryExpression.expression = \\"$modelQueryExpression.expression AND #sortKey >= :sortKey\\" )
+  $util.qr($modelQueryExpression.expressionNames.put(\\"#sortKey\\", $sk))
+  $util.qr($modelQueryExpression.expressionValues.put(\\":sortKey\\", $util.parseJson($util.dynamodb.toDynamoDBJson($ctx.args.get($sk).ge))))
+#end
+## [End] Applying Key Condition **
+## [Start]  Set query expression for @key **
+#if( !$scan )
+  #set( $limit = $util.defaultIfNull($context.args.limit, 100) )
+  #set( $QueryRequest = {
+  \\"version\\": \\"2018-05-29\\",
+  \\"operation\\": \\"Sync\\",
+  \\"limit\\": $limit,
+  \\"query\\": $modelQueryExpression
+} )
+  #if( !$util.isNull($ctx.args.sortDirection)
+                    && $ctx.args.sortDirection == \\"DESC\\" )
+    #set( $QueryRequest.scanIndexForward = false )
+  #else
+    #set( $QueryRequest.scanIndexForward = true )
+  #end
+#if( $context.args.nextToken ) #set( $QueryRequest.nextToken = $context.args.nextToken ) #end
+  #if( !$util.isNullOrEmpty($filterMap) )
+    #set( $QueryRequest.filter = $util.parseJson($util.transform.toDynamoDBFilterExpression($filterMap)) )
+  #end
+  #if( $index != \\"dbTable\\" )
+    #set( $QueryRequest.index = $index )
+  #end
+  $util.toJson($QueryRequest)
+#else
+{
+      \\"version\\": \\"2018-05-29\\",
+      \\"operation\\": \\"Sync\\",
+      \\"limit\\": $util.defaultIfNull($ctx.args.limit, 100),
+      \\"nextToken\\": $util.toJson($util.defaultIfNull($ctx.args.nextToken, null)),
+      \\"lastSync\\": $util.toJson($util.defaultIfNull($ctx.args.lastSync, null)),
+      \\"filter\\":     #if( !$util.isNullOrEmpty($ctx.args.filter) )
+$util.transform.toDynamoDBFilterExpression($ctx.args.filter)
+    #else
+null
+    #end
+  }
+#end
+## [End]  Set query expression for @key **
+{}",
   "Query.syncItems.req.vtl": "## [Start] Sync Request template. **
 {
   \\"version\\": \\"2018-05-29\\",
@@ -7603,33 +7174,6 @@ $util.toJson({
   \\"payload\\": {}
 })
 ## [End] Initialization default values. **",
-  "Mutation.addContentToCategory.postAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
-#set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
-$util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
-## [End] Merge default values and inputs. **
-## [Start] Validate create mutation for @index 'ContentByCategory'. **
-#set( $hasSeenSomeKeyArg = false )
-#set( $keyFieldNames = [\\"type\\", \\"language\\", \\"datetime\\"] )
-#foreach( $keyFieldName in $keyFieldNames )
-#if( $ctx.args.input.containsKey(\\"$keyFieldName\\") ) #set( $hasSeenSomeKeyArg = true ) #end
-#end
-#foreach( $keyFieldName in $keyFieldNames )
-  #if( $hasSeenSomeKeyArg && !$ctx.args.input.containsKey(\\"$keyFieldName\\") )
-    $util.error(\\"When creating any part of the composite sort key for @index 'ContentByCategory', you must provide all fields for the key. Missing key: '$keyFieldName'.\\")
-  #end
-#end
-## [End] Validate create mutation for @index 'ContentByCategory'. **
-#if( $util.isNull($ctx.stash.metadata.dynamodbNameOverrideMap) )
-  $util.qr($ctx.stash.metadata.put(\\"dynamodbNameOverrideMap\\", {
-  \\"type#language#datetime\\": \\"typeLanguageDatetime\\"
-}))
-#else
-  $util.qr($ctx.stash.metadata.dynamodbNameOverrideMap.put(\\"type#language#datetime\\", \\"typeLanguageDatetime\\"))
-#end
-#if( $hasSeenSomeKeyArg )
-  $util.qr($ctx.args.input.put(\\"type#language#datetime\\",\\"\${mergedValues.type}#\${mergedValues.language}#\${mergedValues.datetime}\\"))
-#end
-{}",
   "Mutation.addContentToCategory.req.vtl": "## [Start] Create Request template. **
 ## Begin - key condition **
 #if( $ctx.stash.metadata.modelObjectKey )
@@ -7834,25 +7378,6 @@ $util.toJson({
   \\"payload\\": {}
 })
 ## [End] Initialization default values. **",
-  "Mutation.createItem.postAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
-#set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
-$util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
-## [End] Merge default values and inputs. **
-## [Start] Set the primary key. **
-$util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
-  \\"orderId\\": $util.dynamodb.toDynamoDB($mergedValues.orderId),
-  \\"status#createdAt\\": $util.dynamodb.toDynamoDB(\\"\${mergedValues.status}#\${mergedValues.createdAt}\\")
-}))
-## [End] Set the primary key. **
-#if( $util.isNull($ctx.stash.metadata.dynamodbNameOverrideMap) )
-  $util.qr($ctx.stash.metadata.put(\\"dynamodbNameOverrideMap\\", {
-  \\"status#createdAt\\": \\"statusCreatedAt\\"
-}))
-#else
-  $util.qr($ctx.stash.metadata.dynamodbNameOverrideMap.put(\\"status#createdAt\\", \\"statusCreatedAt\\"))
-#end
-$util.qr($ctx.args.input.put(\\"status#createdAt\\",\\"\${mergedValues.status}#\${mergedValues.createdAt}\\"))
-{}",
   "Mutation.createItem.req.vtl": "## [Start] Create Request template. **
 ## Begin - key condition **
 #if( $ctx.stash.metadata.modelObjectKey )
@@ -7955,18 +7480,6 @@ $util.toJson({
   \\"payload\\": {}
 })
 ## [End] Initialization default values. **",
-  "Mutation.createTest.postAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
-#set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
-$util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
-## [End] Merge default values and inputs. **
-## [Start] Set the primary key. **
-$util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
-  \\"email\\": $util.dynamodb.toDynamoDB($mergedValues.email),
-  \\"createdAt\\": $util.dynamodb.toDynamoDB($mergedValues.createdAt)
-}))
-## [End] Set the primary key. **
-
-{}",
   "Mutation.createTest.req.vtl": "## [Start] Create Request template. **
 ## Begin - key condition **
 #if( $ctx.stash.metadata.modelObjectKey )
@@ -8224,19 +7737,6 @@ $util.toJson($DeleteRequest)
   $util.toJson($ctx.result)
 #end
 ## [End] Get ResponseTemplate. **",
-  "Mutation.deleteContentFromCategory.postAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
-#set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
-$util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
-## [End] Merge default values and inputs. **
-#if( $util.isNull($ctx.stash.metadata.dynamodbNameOverrideMap) )
-  $util.qr($ctx.stash.metadata.put(\\"dynamodbNameOverrideMap\\", {
-  \\"type#language#datetime\\": \\"typeLanguageDatetime\\"
-}))
-#else
-  $util.qr($ctx.stash.metadata.dynamodbNameOverrideMap.put(\\"type#language#datetime\\", \\"typeLanguageDatetime\\"))
-#end
-$util.qr($ctx.args.input.put(\\"type#language#datetime\\",\\"\${mergedValues.type}#\${mergedValues.language}#\${mergedValues.datetime}\\"))
-{}",
   "Mutation.deleteContentFromCategory.req.vtl": "## [Start] Delete Request template. **
 #set( $DeleteRequest = {
   \\"version\\": \\"2018-05-29\\",
@@ -8301,17 +7801,6 @@ $util.toJson($DeleteRequest)
   $util.toJson($ctx.result)
 #end
 ## [End] Get ResponseTemplate. **",
-  "Mutation.deleteItem.postAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
-#set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
-$util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
-## [End] Merge default values and inputs. **
-## [Start] Set the primary key. **
-$util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
-  \\"orderId\\": $util.dynamodb.toDynamoDB($mergedValues.orderId),
-  \\"status#createdAt\\": $util.dynamodb.toDynamoDB(\\"\${mergedValues.status}#\${mergedValues.createdAt}\\")
-}))
-## [End] Set the primary key. **
-{}",
   "Mutation.deleteItem.req.vtl": "## [Start] Delete Request template. **
 #set( $DeleteRequest = {
   \\"version\\": \\"2018-05-29\\",
@@ -8376,17 +7865,6 @@ $util.toJson($DeleteRequest)
   $util.toJson($ctx.result)
 #end
 ## [End] Get ResponseTemplate. **",
-  "Mutation.deleteTest.postAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
-#set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
-$util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
-## [End] Merge default values and inputs. **
-## [Start] Set the primary key. **
-$util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
-  \\"email\\": $util.dynamodb.toDynamoDB($mergedValues.email),
-  \\"createdAt\\": $util.dynamodb.toDynamoDB($mergedValues.createdAt)
-}))
-## [End] Set the primary key. **
-{}",
   "Mutation.deleteTest.req.vtl": "## [Start] Delete Request template. **
 #set( $DeleteRequest = {
   \\"version\\": \\"2018-05-29\\",
@@ -8669,25 +8147,6 @@ $util.toJson({
   \\"payload\\": {}
 })
 ## [End] Initialization default values. **",
-  "Mutation.updateItem.postAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
-#set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
-$util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
-## [End] Merge default values and inputs. **
-## [Start] Set the primary key. **
-$util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
-  \\"orderId\\": $util.dynamodb.toDynamoDB($mergedValues.orderId),
-  \\"status#createdAt\\": $util.dynamodb.toDynamoDB(\\"\${mergedValues.status}#\${mergedValues.createdAt}\\")
-}))
-## [End] Set the primary key. **
-#if( $util.isNull($ctx.stash.metadata.dynamodbNameOverrideMap) )
-  $util.qr($ctx.stash.metadata.put(\\"dynamodbNameOverrideMap\\", {
-  \\"status#createdAt\\": \\"statusCreatedAt\\"
-}))
-#else
-  $util.qr($ctx.stash.metadata.dynamodbNameOverrideMap.put(\\"status#createdAt\\", \\"statusCreatedAt\\"))
-#end
-$util.qr($ctx.args.input.put(\\"status#createdAt\\",\\"\${mergedValues.status}#\${mergedValues.createdAt}\\"))
-{}",
   "Mutation.updateItem.req.vtl": "## [Start] Mutation Update resolver. **
 ## Set the default values to put request **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
@@ -8833,18 +8292,6 @@ $util.toJson({
   \\"payload\\": {}
 })
 ## [End] Initialization default values. **",
-  "Mutation.updateTest.postAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
-#set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
-$util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
-## [End] Merge default values and inputs. **
-## [Start] Set the primary key. **
-$util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
-  \\"email\\": $util.dynamodb.toDynamoDB($mergedValues.email),
-  \\"createdAt\\": $util.dynamodb.toDynamoDB($mergedValues.createdAt)
-}))
-## [End] Set the primary key. **
-
-{}",
   "Mutation.updateTest.req.vtl": "## [Start] Mutation Update resolver. **
 ## Set the default values to put request **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
