@@ -31,7 +31,7 @@ const {
 } = require('./provider-utils/awscloudformation/utils/auth-sms-workflow-helper');
 
 // this function is being kept for temporary compatability.
-async function add(context) {
+async function add(context, skipNextSteps = false) {
   const { amplify } = context;
   const servicesMetadata = require('./provider-utils/supported-services').supportedServices;
   const existingAuth = amplify.getProjectDetails().amplifyMeta.auth || {};
@@ -51,7 +51,7 @@ async function add(context) {
         context.print.error('Provider not configured for this category');
         return;
       }
-      return providerController.addResource(context, result.service);
+      return providerController.addResource(context, result.service, skipNextSteps);
     })
     .catch(err => {
       context.print.info(err.stack);
@@ -250,13 +250,8 @@ async function checkRequirements(requirements, context, category, targetResource
 
 async function initEnv(context) {
   const { amplify } = context;
-  const {
-    resourcesToBeCreated,
-    resourcesToBeUpdated,
-    resourcesToBeSynced,
-    resourcesToBeDeleted,
-    allResources,
-  } = await amplify.getResourceStatus('auth');
+  const { resourcesToBeCreated, resourcesToBeUpdated, resourcesToBeSynced, resourcesToBeDeleted, allResources } =
+    await amplify.getResourceStatus('auth');
   const isPulling = context.input.command === 'pull' || (context.input.command === 'env' && context.input.subCommands[0] === 'pull');
   let toBeCreated = [];
   let toBeUpdated = [];
@@ -410,12 +405,7 @@ const executeAmplifyHeadlessCommand = async (context, headlessPayload) => {
       const cognito = await providerPlugin.createCognitoUserPoolService(context);
       const identity = await providerPlugin.createIdentityPoolService(context);
       const { JSONUtilities } = require('amplify-cli-core/lib/jsonUtilities');
-      const {
-        userPoolId,
-        identityPoolId,
-        nativeClientId,
-        webClientId,
-      } = JSONUtilities.parse(headlessPayload);
+      const { userPoolId, identityPoolId, nativeClientId, webClientId } = JSONUtilities.parse(headlessPayload);
       const projectConfig = context.amplify.getProjectConfig();
       const resourceName = projectConfig.projectName.toLowerCase().replace(/[^A-Za-z0-9_]+/g, '_');
       const resourceParams = {

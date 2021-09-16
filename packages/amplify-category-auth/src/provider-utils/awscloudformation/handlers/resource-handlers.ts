@@ -11,34 +11,36 @@ import { doesConfigurationIncludeSMS } from '../utils/auth-sms-workflow-helper';
  * The consumer returns the resourceName of the generated resource.
  * @param context The amplify context
  */
-export const getAddAuthHandler = (context: any) => async (request: ServiceQuestionsResult) => {
-  const serviceMetadata = supportedServices[request.serviceName];
-  const { cfnFilename, defaultValuesFilename, provider } = serviceMetadata;
+export const getAddAuthHandler =
+  (context: any, skipNextSteps: boolean = false) =>
+  async (request: ServiceQuestionsResult) => {
+    const serviceMetadata = supportedServices[request.serviceName];
+    const { cfnFilename, defaultValuesFilename, provider } = serviceMetadata;
 
-  let projectName = context.amplify.getProjectConfig().projectName.toLowerCase();
-  const disallowedChars = /[^A-Za-z0-9]+/g;
-  projectName = projectName.replace(disallowedChars, '');
+    let projectName = context.amplify.getProjectConfig().projectName.toLowerCase();
+    const disallowedChars = /[^A-Za-z0-9]+/g;
+    projectName = projectName.replace(disallowedChars, '');
 
-  const requestWithDefaults = await getAddAuthDefaultsApplier(context, defaultValuesFilename, projectName)(request);
+    const requestWithDefaults = await getAddAuthDefaultsApplier(context, defaultValuesFilename, projectName)(request);
 
-  try {
-    await getResourceSynthesizer(context, cfnFilename, provider)(requestWithDefaults);
-    await getPostAddAuthMetaUpdater(context, { service: requestWithDefaults.serviceName, providerName: provider })(
-      requestWithDefaults.resourceName!,
-    );
-    await getPostAddAuthMessagePrinter(context.print)(requestWithDefaults.resourceName!);
+    try {
+      await getResourceSynthesizer(context, cfnFilename, provider)(requestWithDefaults);
+      await getPostAddAuthMetaUpdater(context, { service: requestWithDefaults.serviceName, providerName: provider })(
+        requestWithDefaults.resourceName!,
+      );
+      await getPostAddAuthMessagePrinter(context.print)(requestWithDefaults.resourceName!, skipNextSteps);
 
-    if (doesConfigurationIncludeSMS(request)) {
-      await printSMSSandboxWarning(context.print);
+      if (doesConfigurationIncludeSMS(request)) {
+        await printSMSSandboxWarning(context.print);
+      }
+    } catch (err) {
+      context.print.info(err.stack);
+      context.print.error('There was an error adding the auth resource');
+      context.usageData.emitError(err);
+      process.exitCode = 1;
     }
-  } catch (err) {
-    context.print.info(err.stack);
-    context.print.error('There was an error adding the auth resource');
-    context.usageData.emitError(err);
-    process.exitCode = 1;
-  }
-  return requestWithDefaults.resourceName!;
-};
+    return requestWithDefaults.resourceName!;
+  };
 
 export const getUpdateAuthHandler = (context: any) => async (request: ServiceQuestionsResult) => {
   const { cfnFilename, defaultValuesFilename, provider } = supportedServices[request.serviceName];

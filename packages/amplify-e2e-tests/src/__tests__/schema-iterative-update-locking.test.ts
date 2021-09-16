@@ -4,7 +4,7 @@ import {
   initJSProjectWithProfile,
   deleteProject,
   deleteProjectDir,
-  addApiWithSchema,
+  addApiWithoutSchema,
   addFeatureFlag,
   amplifyPush,
   updateApiSchema,
@@ -24,6 +24,7 @@ describe('Schema iterative update - locking', () => {
     projectRoot = await createNewProjectDir('schemaIterativeLock');
 
     await initJSProjectWithProfile(projectRoot, {
+      name: 'iterlock',
       disableAmplifyAppCreation: false,
     });
 
@@ -40,7 +41,8 @@ describe('Schema iterative update - locking', () => {
 
     // Create and push project with API
     const initialSchema = path.join('iterative-push', 'change-model-name', 'initial-schema.graphql');
-    await addApiWithSchema(projectRoot, initialSchema, { apiName, apiKeyExpirationDays: 7 });
+    await addApiWithoutSchema(projectRoot, { apiKeyExpirationDays: 7 });
+    await updateApiSchema(projectRoot, apiName, initialSchema);
     await amplifyPush(projectRoot);
 
     // Apply updates to first project
