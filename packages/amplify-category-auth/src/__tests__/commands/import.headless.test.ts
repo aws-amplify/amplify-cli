@@ -1,7 +1,7 @@
 import { executeAmplifyHeadlessCommand } from '../../../lib';
 import { ImportAuthRequest } from 'amplify-headless-interface';
 import { messages } from '../../provider-utils/awscloudformation/assets/string-maps';
-import { stateManager } from 'amplify-cli-core';
+import { stateManager, FeatureFlags } from 'amplify-cli-core';
 
 jest.mock('amplify-cli-core', () => ({
   stateManager: {
@@ -11,6 +11,9 @@ jest.mock('amplify-cli-core', () => ({
         awscloudformation: {},
       },
     }),
+  },
+  FeatureFlags: {
+    getBoolean: () => false,
   },
 }));
 
@@ -127,7 +130,7 @@ describe('import auth headless', () => {
       },
     };
   });
-  
+
   beforeEach(() => {
     jest.clearAllMocks();
   });
