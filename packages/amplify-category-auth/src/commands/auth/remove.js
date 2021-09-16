@@ -28,7 +28,6 @@ module.exports = {
       for (let i = 0; i < services.length; i++) {
         const serviceMeta = existingAuth[services[i]];
         if (serviceMeta.service === 'Cognito' && !FeatureFlags.getBoolean('auth.forceAliasAttributes')) {
-          console.log('JCJc', pathManager.findProjectRoot());
           const authAttributes = JSON.parse(
             fs.readFileSync(pathManager.getResourceParametersFilePath(pathManager.findProjectRoot(), 'auth', services[i])).toString(),
           );
