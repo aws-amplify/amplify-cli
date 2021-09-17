@@ -11,7 +11,7 @@ import {
   stateManager,
   writeCFNTemplate,
 } from 'amplify-cli-core';
-import { AddStorageRequest, CrudOperation, UpdateStorageRequest } from 'amplify-headless-interface';
+import { AddStorageRequest, CrudOperation, LambdaTriggerConfig, S3Permissions, UpdateStorageRequest } from 'amplify-headless-interface';
 import { prompter, printer } from 'amplify-prompts';
 import * as fs from 'fs-extra';
 import _ from 'lodash';
@@ -42,7 +42,7 @@ const headlessCrudOperationToIamPoliciesMap = {
 
 const replaceAndWithSlash = (crudOperation: CrudOperation) => crudOperation.replace('_AND_', '/').toLowerCase();
 
-const convertHeadlessPayloadToParameters = (arr: string[], op: CrudOperation) => arr.concat(headlessCrudOperationToIamPoliciesMap[op]);
+const convertHeadlessPayloadToParameters = (arr: S3IamPolicy[], op: CrudOperation) => arr.concat(headlessCrudOperationToIamPoliciesMap[op]);
 
 export async function headlessAddStorage(context: $TSContext, storageRequest: AddStorageRequest) {
   if (!checkIfAuthExists()) {
@@ -103,6 +103,23 @@ export async function headlessUpdateStorage(context: $TSContext, storageRequest:
   }
 }
 
+function constructParametersJson(parameters: $TSAny, permissions: S3Permissions, lambdaTrigger?: LambdaTriggerConfig) {
+  parameters.triggerFunction = lambdaTrigger?.name ?? 'NONE';
+
+  parameters.selectedAuthenticatedPermissions = permissions.auth.reduce(convertHeadlessPayloadToParameters, []);
+  parameters.selectedGuestPermissions = (permissions.guest || []).reduce(convertHeadlessPayloadToParameters, []);
+
+  const isGuestAllowedAccess = (permissions?.guest?.length || 0) > 0;
+  parameters.storageAccess = isGuestAllowedAccess ? 'authAndGuest' : authCategoryName;
+  createPermissionKeys('Authenticated', parameters, parameters.selectedAuthenticatedPermissions);
+  if (isGuestAllowedAccess) {
+    createPermissionKeys('Guest', parameters, parameters.selectedGuestPermissions);
+  }
+
+  removeNotStoredParameters(parameters);
+  return parameters;
+}
+
 async function createS3StorageArtifacts(context: $TSContext, storageRequest: AddStorageRequest) {
   const {
     serviceConfiguration: { bucketName, permissions, resourceName, lambdaTrigger },
@@ -116,19 +133,8 @@ async function createS3StorageArtifacts(context: $TSContext, storageRequest: Add
     let parameters = getAllDefaults(context.amplify.getProjectDetails());
     parameters.bucketName = bucketName;
     parameters.resourceName = resourceName;
-    parameters.triggerFunction = lambdaTrigger?.name ?? 'NONE';
 
-    parameters.selectedAuthenticatedPermissions = permissions.auth.reduce(convertHeadlessPayloadToParameters, []);
-    parameters.selectedGuestPermissions = (permissions.guest || []).reduce(convertHeadlessPayloadToParameters, []);
-
-    const isGuestAllowedAccess = (permissions?.guest?.length || 0) > 0;
-    parameters.storageAccess = isGuestAllowedAccess ? 'authAndGuest' : authCategoryName;
-    createPermissionKeys('Authenticated', parameters, []);
-    if (isGuestAllowedAccess) {
-      createPermissionKeys('Guest', parameters, []);
-    }
-
-    removeNotStoredParameters(parameters);
+    parameters = constructParametersJson(parameters, permissions, lambdaTrigger);
     stateManager.setResourceParametersJson(undefined, categoryName, resourceName, parameters);
 
     // create storage-params.json
@@ -163,7 +169,7 @@ async function createS3StorageArtifacts(context: $TSContext, storageRequest: Add
     }
 
     // create cfn
-    await copyCfnTemplate(context, categoryName, resourceName, { ...parameters, dependsOn });
+    await copyCfnTemplate(context, categoryName, resourceName, { ...parameters, dependsOn }, true);
 
     // update meta
     context.amplify.updateamplifyMetaAfterResourceAdd(categoryName, resourceName, {
@@ -179,9 +185,57 @@ async function updateS3StorageArtifacts(context: $TSContext, storageRequest: Upd
     serviceConfiguration: { permissions, resourceName, lambdaTrigger },
   } = storageRequest;
 
-  const { dependsOn } = storageResource;
-  // TODO - get trigger name from dependsOn and remove trigger before potentially adding a new one
-  // removeTrigger(context, resourceName, )
+  let { dependsOn } = storageResource;
+
+  // update parameters.json
+  let parameters = stateManager.getResourceParametersJson(undefined, categoryName, resourceName);
+  parameters = constructParametersJson(parameters, permissions, lambdaTrigger);
+  stateManager.setResourceParametersJson(undefined, categoryName, resourceName, parameters);
+
+  // update storage-params.json
+  const storageParamsPermissions: { [k: string]: string[] } = {};
+  Object.entries(permissions.groups || {}).forEach(([cognitoUserGroupName, crudOperations]: [string, CrudOperation[]]) => {
+    storageParamsPermissions[cognitoUserGroupName] = crudOperations.map(replaceAndWithSlash);
+  });
+  writeToStorageParamsFile(resourceName, { groupPermissionMap: storageParamsPermissions });
+
+  const trigger: { category: string; resourceName: string; attributes: $TSAny[] } | undefined = _.first(
+    dependsOn.filter((d: $TSAny) => d.category === functionCategoryName),
+  );
+  if (trigger) {
+    removeTrigger(context, resourceName, trigger.resourceName);
+  }
+
+  // update dependsOn array
+  dependsOn = [];
+  if (storageRequest.serviceConfiguration.permissions.groups) {
+    dependsOn.push({
+      category: authCategoryName,
+      resourceName: await getAuthResourceName(context),
+      attributes: ['UserPoolId'],
+    });
+
+    for (const group of Object.keys(storageRequest.serviceConfiguration.permissions.groups)) {
+      dependsOn.push({
+        category: authCategoryName,
+        resourceName: 'userPoolGroups',
+        attributes: [`${group}GroupRole`],
+      });
+    }
+  }
+
+  if (storageRequest.serviceConfiguration?.lambdaTrigger) {
+    const options = { headlessTrigger: storageRequest.serviceConfiguration.lambdaTrigger, dependsOn };
+    await addTrigger(context, resourceName, lambdaTrigger, undefined, options);
+  }
+
+  // update cfn
+  await copyCfnTemplate(context, categoryName, resourceName, { ...parameters, dependsOn }, true);
+
+  // update meta
+  const meta = stateManager.getMeta();
+  meta[categoryName][resourceName].dependsOn = dependsOn;
+  stateManager.setMeta(undefined, meta);
 }
 
 function doUserPoolGroupsExist(meta: $TSMeta) {
@@ -342,7 +396,7 @@ export function createPermissionKeys(userType: string, parameters: $TSAny, selec
   }
 }
 
-export async function copyCfnTemplate(context: $TSContext, categoryName: string, resourceName: string, options: $TSAny) {
+export async function copyCfnTemplate(context: $TSContext, categoryName: string, resourceName: string, options: $TSAny, headless = false) {
   const targetDir = pathManager.getBackendDirPath();
   const pluginDir = __dirname;
 
@@ -355,7 +409,7 @@ export async function copyCfnTemplate(context: $TSContext, categoryName: string,
   ];
 
   // copy over the files
-  return await context.amplify.copyBatch(context, copyJobs, options);
+  return await context.amplify.copyBatch(context, copyJobs, options, headless);
 }
 
 /*
@@ -457,7 +511,7 @@ export async function addTrigger(
     ];
 
     // copy over the files
-    await context.amplify.copyBatch(context, copyJobs, defaults);
+    await context.amplify.copyBatch(context, copyJobs, defaults, !!options?.headlessTrigger);
 
     // Update amplify-meta and backend-config
 

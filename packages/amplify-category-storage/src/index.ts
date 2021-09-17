@@ -1,6 +1,6 @@
 import { $TSAny, $TSContext, $TSObject, stateManager } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
-import { validateAddStorageRequest } from 'amplify-util-headless-input';
+import { validateAddStorageRequest, validateUpdateStorageRequest } from 'amplify-util-headless-input';
 import * as path from 'path';
 import sequential from 'promise-sequential';
 import { updateConfigOnEnvInit } from './provider-utils/awscloudformation';
@@ -115,7 +115,7 @@ export const executeAmplifyHeadlessCommand = async (context: $TSContext, headles
       await headlessAddStorage(context, await validateAddStorageRequest(headlessPayload));
       break;
     case 'update':
-      await headlessUpdateStorage(context, await validateAddStorageRequest(headlessPayload));
+      await headlessUpdateStorage(context, await validateUpdateStorageRequest(headlessPayload));
       break;
     // case 'remove':
     //   break;
