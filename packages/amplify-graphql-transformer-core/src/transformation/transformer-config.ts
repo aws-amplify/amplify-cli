@@ -5,13 +5,13 @@ export interface TransformMigrationConfig {
 }
 
 // Auth Config
-export type AppSyncAuthMode = 'API_KEY' | 'AMAZON_COGNITO_USER_POOLS' | 'AWS_IAM' | 'OPENID_CONNECT';
+export type AppSyncAuthMode = 'API_KEY' | 'AMAZON_COGNITO_USER_POOLS' | 'AWS_IAM' | 'OPENID_CONNECT' | 'AWS_LAMBDA';
 export type AppSyncAuthConfiguration = {
   defaultAuthentication: AppSyncAuthConfigurationEntry;
   additionalAuthenticationProviders: Array<AppSyncAuthConfigurationEntry>;
 };
 
-export type AppSyncAuthConfigurationEntry = AppSyncAuthConfigurationUserPoolEntry | AppSyncAuthConfigurationAPIKeyEntry | AppSyncAuthConfigurationIAMEntry | AppSyncAuthConfigurationOIDCEntry;
+export type AppSyncAuthConfigurationEntry = AppSyncAuthConfigurationUserPoolEntry | AppSyncAuthConfigurationAPIKeyEntry | AppSyncAuthConfigurationIAMEntry | AppSyncAuthConfigurationOIDCEntry | AppSyncAuthConfigurationLambdaEntry;
 export type AppSyncAuthConfigurationAPIKeyEntry = {
   authenticationType: 'API_KEY';
   apiKeyConfig: ApiKeyConfig;
@@ -29,6 +29,11 @@ export type AppSyncAuthConfigurationOIDCEntry = {
   openIDConnectConfig: OpenIDConnectConfig;
 };
 
+export type AppSyncAuthConfigurationLambdaEntry = {
+  authenticationType: 'AWS_LAMBDA';
+  openIDConnectConfig: LambdaConnectConfig;
+};
+
 export type ApiKeyConfig = {
   description?: string;
   apiKeyExpirationDays: number;
@@ -42,6 +47,10 @@ export type OpenIDConnectConfig = {
   clientId?: string;
   iatTTL?: number;
   authTTL?: number;
+};
+export type LambdaConnectConfig = {
+  lambdaFunction: string;
+  ttlSecond?: number;
 };
 
 // Sync Config

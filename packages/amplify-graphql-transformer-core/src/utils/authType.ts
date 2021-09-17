@@ -9,6 +9,7 @@ const authTypeMap: Record<AppSyncAuthMode, AuthorizationType> = {
   AMAZON_COGNITO_USER_POOLS: AuthorizationType.USER_POOL,
   AWS_IAM: AuthorizationType.IAM,
   OPENID_CONNECT: AuthorizationType.OIDC,
+  AWS_LAMBDA: AuthorizationType.API_KEY,
 };
 export function adoptAuthModes(stack: StackManager, authConfig: AppSyncAuthConfiguration): AuthorizationConfig {
   return {

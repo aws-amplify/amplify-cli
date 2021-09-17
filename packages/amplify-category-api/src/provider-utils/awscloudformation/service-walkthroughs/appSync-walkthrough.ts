@@ -28,6 +28,9 @@ const elasticContainerServiceName = 'ElasticContainer';
 const providerName = 'awscloudformation';
 const graphqlSchemaDir = path.join(rootAssetDir, 'graphql-schemas');
 
+// keep in sync with ServiceName in amplify-category-function, but probably it will not change
+const FunctionServiceNameLambdaFunction = 'Lambda';
+
 const authProviderChoices = [
   {
     name: 'API key',
@@ -44,6 +47,10 @@ const authProviderChoices = [
   {
     name: 'OpenID Connect',
     value: 'OPENID_CONNECT',
+  },
+  {
+    name: 'Lambda',
+    value: 'AWS_LAMBDA',
   },
 ];
 
@@ -734,6 +741,16 @@ export async function askAuthQuestions(authType, context, printLeadText = false,
     return openIDConnectConfig;
   }
 
+  if (authType === 'AWS_LAMBDA') {
+    if (printLeadText) {
+      context.print.info('Lambda Authorizer configuration');
+    }
+
+    const lambdaConfig = await askLambdaQuestion(context);
+
+    return lambdaConfig;
+  }
+
   const errMessage = `Unknown authType: ${authType}`;
   context.print.error(errMessage);
   await context.usageData.emitError(new UnknownResourceTypeError(errMessage));
@@ -980,3 +997,118 @@ const getAuthTypes = authConfig => {
 
   return [...uniqueAuthTypes.keys()];
 };
+
+
+// Chris P - Added for Lambda Authorizer
+
+async function askLambdaQuestion(context) {
+
+  const existingFunctions = functionsExist(context);
+
+  const choices = [
+    {
+      name: 'Create a new Lambda function',
+      value: 'newFunction',
+    },
+  ];
+
+  if (existingFunctions) {
+    choices.push({
+      name: 'Use a Lambda function already added in the current Amplify project',
+      value: 'projectFunction',
+    });
+  }
+
+  let defaultFunctionType = 'newFunction';
+
+  const lambdaAnswer = await inquirer.prompt({
+    name: 'functionType',
+    type: 'list',
+    message: 'Choose a Lambda source',
+    choices,
+    default: defaultFunctionType,
+  });
+
+  const { lambdaFunction } = await askLambdaSource(context, lambdaAnswer.functionType);
+
+  const { ttlSeconds } = await inquirer.prompt({
+    type: 'input',
+    name: 'ttlSeconds',
+    message: 'How long should the authorization response be cached in seconds?',
+    validate: validateTTL,
+    default: 300,
+  });
+
+  const lambdaAuthorizerConfig = {
+    lambdaFunction,
+    ttlSeconds,
+  }
+
+  return {
+    authenticationType: 'AWS_LAMBDA',
+    lambdaAuthorizerConfig,
+  };
+}
+
+function functionsExist(context) {
+  if (!context.amplify.getProjectDetails().amplifyMeta.function) {
+    return false;
+  }
+
+  const functionResources = context.amplify.getProjectDetails().amplifyMeta.function;
+  const lambdaFunctions = [];
+  Object.keys(functionResources).forEach(resourceName => {
+    if (functionResources[resourceName].service === FunctionServiceNameLambdaFunction) {
+      lambdaFunctions.push(resourceName);
+    }
+  });
+
+  if (lambdaFunctions.length === 0) {
+    return false;
+  }
+
+  return true;
+}
+
+async function askLambdaSource(context, functionType) {
+  switch (functionType) {
+    case 'projectFunction':
+      return askLambdaFromProject(context);
+    case 'newFunction':
+      return newLambdaFunction(context);
+    default:
+      throw new Error('Type not supported');
+  }
+}
+
+async function newLambdaFunction(context) {
+  const resourceName = await context.amplify.invokePluginMethod(context, 'function', undefined, 'add', [
+    context,
+    'awscloudformation',
+    FunctionServiceNameLambdaFunction,
+  ]);
+
+  context.print.success('Succesfully added the Lambda function locally');
+
+  return { lambdaFunction: resourceName };
+}
+
+async function askLambdaFromProject(context) {
+  const functionResources = context.amplify.getProjectDetails().amplifyMeta.function;
+  const lambdaFunctions = [];
+  Object.keys(functionResources).forEach(resourceName => {
+    if (functionResources[resourceName].service === FunctionServiceNameLambdaFunction) {
+      lambdaFunctions.push(resourceName);
+    }
+  });
+
+  const answer = await inquirer.prompt({
+    name: 'lambdaFunction',
+    type: 'list',
+    message: 'Choose one of the Lambda function',
+    choices: lambdaFunctions,
+    default: lambdaFunctions[0],
+  });
+
+  return { lambdaFunction: answer.lambdaFunction };
+}
