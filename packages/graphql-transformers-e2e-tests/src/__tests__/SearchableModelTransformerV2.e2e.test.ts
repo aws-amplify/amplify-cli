@@ -128,7 +128,6 @@ afterAll(async () => {
 });
 
 test('query for aggregate scalar results', async () => {
-  const expectedValue = 60;
   const searchResponse = await GRAPHQL_CLIENT.query(
     `query {
       searchPosts(aggregates: [{
@@ -136,6 +135,9 @@ test('query for aggregate scalar results', async () => {
         type: min,
         field: "ups"
       }]) {
+        items {
+          ups
+        }
         aggregateItems {
           name
           result {
@@ -149,6 +151,15 @@ test('query for aggregate scalar results', async () => {
     {},
   );
   expect(searchResponse).toBeDefined();
+
+  let searchPosts = searchResponse.data.searchPosts.items;
+  let expectedValue = searchPosts[0].ups;
+  for(let i = 1; i < searchPosts.length; i++) {
+    if (searchPosts[i].ups < expectedValue) {
+      expectedValue = searchPosts[i].ups;
+    }
+  }
+
   const result = searchResponse.data.searchPosts.aggregateItems[0].result.value;
   expect(result).toEqual(expectedValue);
 });
