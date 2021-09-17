@@ -45,6 +45,7 @@ import {
   makeDeleteInputField,
   makeListQueryFilterInput,
   makeListQueryModel,
+  makeModelSortDirectionEnumObject,
   makeMutationConditionInput,
   makeUpdateInputField,
 } from './graphql-types';
@@ -192,38 +193,20 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
   };
 
   transformSchema = (ctx: TransformerTransformSchemaStepContextProvider): void => {
-    // Create Non Model input types
-
     // add the model input conditions
     addModelConditionInputs(ctx);
 
+    this.ensureModelSortDirectionEnum(ctx);
     for (const type of this.typesWithModelDirective) {
       const def = ctx.output.getObject(type)!;
       // add Non Model type inputs
       this.createNonModelInputs(ctx, def);
-      const queryFields = this.getQueryFieldNames(ctx, def!);
-      for (const queryField of queryFields.values()) {
-        const outputType = this.getOutputType(ctx, def, queryField);
-        const args = this.getInputs(ctx, def!, {
-          fieldName: queryField.fieldName,
-          typeName: queryField.typeName,
-          type: queryField.type,
-        });
-        const getField = makeField(queryField.fieldName, args, makeNamedType(outputType.name.value));
-        ctx.output.addQueryFields([getField]);
-      }
 
-      const mutationFields = this.getMutationFieldNames(ctx, def!);
-      for (const mutationField of mutationFields) {
-        const args = this.getInputs(ctx, def!, {
-          fieldName: mutationField.fieldName,
-          typeName: mutationField.typeName,
-          type: mutationField.type,
-        });
+      const queryFields = this.createQueryFields(ctx, def);
+      ctx.output.addQueryFields(queryFields);
 
-        const field = makeField(mutationField.fieldName, args, makeNamedType(def!.name.value));
-        ctx.output.addMutationFields([field]);
-      }
+      const mutationFields = this.createMutationFields(ctx, def);
+      ctx.output.addMutationFields(mutationFields);
 
       const subscriptionsFields = this.createSubscriptionFields(ctx, def!);
       ctx.output.addSubscriptionFields(subscriptionsFields);
@@ -619,7 +602,41 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
     throw new Error('Unknown Subscription type');
   };
 
-  createSubscriptionFields = (ctx: TransformerTransformSchemaStepContextProvider, def: ObjectTypeDefinitionNode): FieldDefinitionNode[] => {
+  private createQueryFields = (ctx: TransformerValidationStepContextProvider, def: ObjectTypeDefinitionNode): FieldDefinitionNode[] => {
+    const queryFields: FieldDefinitionNode[] = [];
+    const queryFieldNames = this.getQueryFieldNames(ctx, def!);
+    for (const queryField of queryFieldNames.values()) {
+      const outputType = this.getOutputType(ctx, def, queryField);
+      const args = this.getInputs(ctx, def!, {
+        fieldName: queryField.fieldName,
+        typeName: queryField.typeName,
+        type: queryField.type,
+      });
+      queryFields.push(makeField(queryField.fieldName, args, makeNamedType(outputType.name.value)));
+    }
+
+    return queryFields;
+  };
+
+  private createMutationFields = (ctx: TransformerValidationStepContextProvider, def: ObjectTypeDefinitionNode): FieldDefinitionNode[] => {
+    const mutationFields: FieldDefinitionNode[] = [];
+    const mutationFieldNames = this.getMutationFieldNames(ctx, def!);
+    for (const mutationField of mutationFieldNames) {
+      const args = this.getInputs(ctx, def!, {
+        fieldName: mutationField.fieldName,
+        typeName: mutationField.typeName,
+        type: mutationField.type,
+      });
+
+      mutationFields.push(makeField(mutationField.fieldName, args, makeNamedType(def!.name.value)));
+    }
+    return mutationFields;
+  };
+
+  private createSubscriptionFields = (
+    ctx: TransformerTransformSchemaStepContextProvider,
+    def: ObjectTypeDefinitionNode,
+  ): FieldDefinitionNode[] => {
     const subscriptionToMutationsMap = this.getSubscriptionToMutationsReverseMap(ctx, def);
     const mutationFields = this.getMutationFieldNames(ctx, def!);
 
@@ -766,13 +783,15 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
 
       case QueryFieldType.LIST:
         const filterInputName = toPascalCase(['Model', type.name.value, 'FilterInput']);
-        const filterInputs = makeListQueryFilterInput(ctx, filterInputName, type);
-        for (let input of [filterInputs]) {
+        const filterInputs = createEnumModelFilters(ctx, type);
+        filterInputs.push(makeListQueryFilterInput(ctx, filterInputName, type));
+        for (let input of filterInputs) {
           const conditionInputName = input.name.value;
           if (!ctx.output.getType(conditionInputName)) {
             ctx.output.addInput(input);
           }
         }
+
         return [
           makeInputValueDefinition('filter', makeNamedType(filterInputName)),
           makeInputValueDefinition('limit', makeNamedType('Int')),
@@ -951,4 +970,12 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
 
     return subscriptionToMutationsMap;
   };
+
+  private ensureModelSortDirectionEnum(ctx: TransformerValidationStepContextProvider): void {
+    if (!ctx.output.hasType('ModelSortDirection')) {
+      const modelSortDirection = makeModelSortDirectionEnumObject();
+
+      ctx.output.addEnum(modelSortDirection);
+    }
+  }
 }

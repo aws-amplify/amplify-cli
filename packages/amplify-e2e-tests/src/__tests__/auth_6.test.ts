@@ -35,7 +35,6 @@ describe('zero config auth ', () => {
     expect(authMeta.frontendAuthConfig).toMatchInlineSnapshot(`
       Object {
         "loginMechanisms": Array [
-          "EMAIL",
           "FACEBOOK",
           "GOOGLE",
           "AMAZON",
@@ -56,6 +55,9 @@ describe('zero config auth ', () => {
           "passwordPolicyMinLength": 8,
         },
         "signupAttributes": Array [
+          "EMAIL",
+        ],
+        "verificationMechanisms": Array [
           "EMAIL",
         ],
       }

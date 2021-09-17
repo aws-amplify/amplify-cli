@@ -3,6 +3,45 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.8.8](https://github.com/aws-amplify/amplify-console-integration-tests/compare/amplify-console-integration-tests@1.8.7...amplify-console-integration-tests@1.8.8) (2021-09-14)
+
+**Note:** Version bump only for package amplify-console-integration-tests
+
+
+
+
+
+## [1.8.7](https://github.com/aws-amplify/amplify-console-integration-tests/compare/amplify-console-integration-tests@1.8.6...amplify-console-integration-tests@1.8.7) (2021-09-09)
+
+
+### Reverts
+
+* Revert "ci: add windows e2e test coverage" ([0560b0f](https://github.com/aws-amplify/amplify-console-integration-tests/commit/0560b0f4a16ce8ce0b7efebb2494c7e2eb8601c8))
+
+
+
+
+
+## [1.8.6](https://github.com/aws-amplify/amplify-console-integration-tests/compare/amplify-console-integration-tests@1.8.5...amplify-console-integration-tests@1.8.6) (2021-09-02)
+
+
+
+# 5.4.0 (2021-09-02)
+
+**Note:** Version bump only for package amplify-console-integration-tests
+
+
+
+
+
+## [1.8.5](https://github.com/aws-amplify/amplify-console-integration-tests/compare/amplify-console-integration-tests@1.8.4...amplify-console-integration-tests@1.8.5) (2021-08-24)
+
+**Note:** Version bump only for package amplify-console-integration-tests
+
+
+
+
+
 ## [1.8.4](https://github.com/aws-amplify/amplify-console-integration-tests/compare/amplify-console-integration-tests@1.8.3...amplify-console-integration-tests@1.8.4) (2021-08-06)
 
 **Note:** Version bump only for package amplify-console-integration-tests

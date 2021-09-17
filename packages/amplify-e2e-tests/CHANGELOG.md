@@ -3,6 +3,83 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.49.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.48.0...amplify-e2e-tests@2.49.0) (2021-09-14)
+
+
+
+# 5.6.0 (2021-09-14)
+
+
+### Bug Fixes
+
+* remove overwrite of email-only verification when triggers are added ([#7671](https://github.com/aws-amplify/amplify-cli/issues/7671)) ([704295b](https://github.com/aws-amplify/amplify-cli/commit/704295b918701eb81fdaabb786417463672fa02c))
+
+
+### Features
+
+* **amplify-category-auth:** add auth verification mechanisms to frontend config ([#8037](https://github.com/aws-amplify/amplify-cli/issues/8037)) ([88494b3](https://github.com/aws-amplify/amplify-cli/commit/88494b3f12a9989273aa3ae3e68c629f4c4cdff9))
+* version blocking for CLI ([#7834](https://github.com/aws-amplify/amplify-cli/issues/7834)) ([045ef3b](https://github.com/aws-amplify/amplify-cli/commit/045ef3b83598c287b7e34bb5d1487bbe026026af))
+
+
+### Reverts
+
+* Revert "feat: version blocking for CLI (#7834)" (#8170) ([f5a92e3](https://github.com/aws-amplify/amplify-cli/commit/f5a92e3fcd288ba8f5eb48db62ccf02f6bb7d03d)), closes [#7834](https://github.com/aws-amplify/amplify-cli/issues/7834) [#8170](https://github.com/aws-amplify/amplify-cli/issues/8170)
+* Revert "test: fix version gating e2e test deletion (#8156)" (#8169) ([d43836f](https://github.com/aws-amplify/amplify-cli/commit/d43836fba872e741d0cbf621115f3849cd6cd6de)), closes [#8156](https://github.com/aws-amplify/amplify-cli/issues/8156) [#8169](https://github.com/aws-amplify/amplify-cli/issues/8169)
+
+
+
+
+
+# [2.48.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.47.1...amplify-e2e-tests@2.48.0) (2021-09-09)
+
+
+### Bug Fixes
+
+* runtime hooks readme getting excluded in pkg CLI ([#8100](https://github.com/aws-amplify/amplify-cli/issues/8100)) ([1f491cf](https://github.com/aws-amplify/amplify-cli/commit/1f491cf6dbab4478bff18c084f0ff5c3a6746246))
+
+
+### Features
+
+* Amplify Command Hooks ([#7633](https://github.com/aws-amplify/amplify-cli/issues/7633)) ([4cacaad](https://github.com/aws-amplify/amplify-cli/commit/4cacaadcb87d377a37890b0092bf66c6e7b65b0b))
+
+
+### Reverts
+
+* Revert "ci: add windows e2e test coverage" ([0560b0f](https://github.com/aws-amplify/amplify-cli/commit/0560b0f4a16ce8ce0b7efebb2494c7e2eb8601c8))
+
+
+
+
+
+## [2.47.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.47.0...amplify-e2e-tests@2.47.1) (2021-09-02)
+
+
+
+# 5.4.0 (2021-09-02)
+
+**Note:** Version bump only for package amplify-e2e-tests
+
+
+
+
+
+# [2.47.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.46.2...amplify-e2e-tests@2.47.0) (2021-08-24)
+
+
+### Bug Fixes
+
+* **amplify-category-auth:** fixed no parameter when hostedui is not present ([#7914](https://github.com/aws-amplify/amplify-cli/issues/7914)) ([a83c978](https://github.com/aws-amplify/amplify-cli/commit/a83c978bb18c6fc1980343523c7ee560079cefe5))
+* specify default auth role name on import auth ([#7921](https://github.com/aws-amplify/amplify-cli/issues/7921)) ([148c994](https://github.com/aws-amplify/amplify-cli/commit/148c9947b010ae21d426f71f7d89d5ebe278dd19))
+
+
+### Features
+
+* model transformer advanced subscriptions ([#7927](https://github.com/aws-amplify/amplify-cli/issues/7927)) ([1725630](https://github.com/aws-amplify/amplify-cli/commit/1725630c61c40923e8dfa3c697ea5472df2e5de1))
+
+
+
+
+
 ## [2.46.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.46.1...amplify-e2e-tests@2.46.2) (2021-08-06)
 
 

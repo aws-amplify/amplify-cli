@@ -3,6 +3,42 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.12.8](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-storage@2.12.7...amplify-category-storage@2.12.8) (2021-09-14)
+
+**Note:** Version bump only for package amplify-category-storage
+
+
+
+
+
+## [2.12.7](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-storage@2.12.6...amplify-category-storage@2.12.7) (2021-09-09)
+
+**Note:** Version bump only for package amplify-category-storage
+
+
+
+
+
+## [2.12.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-storage@2.12.5...amplify-category-storage@2.12.6) (2021-09-02)
+
+
+### Bug Fixes
+
+* add amplify-prompts dependency to package.json's ([7f313ab](https://github.com/aws-amplify/amplify-cli/commit/7f313ab4534f75afc32e37b9b548e4a0003b5232))
+* resource key should be 'category', not 'categoryName' ([#8041](https://github.com/aws-amplify/amplify-cli/issues/8041)) ([3908d1b](https://github.com/aws-amplify/amplify-cli/commit/3908d1badde29ffe79da3c31274a7c893ee0afc4))
+
+
+
+
+
+## [2.12.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-storage@2.12.4...amplify-category-storage@2.12.5) (2021-08-24)
+
+**Note:** Version bump only for package amplify-category-storage
+
+
+
+
+
 ## [2.12.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-storage@2.12.3...amplify-category-storage@2.12.4) (2021-08-06)
 
 **Note:** Version bump only for package amplify-category-storage

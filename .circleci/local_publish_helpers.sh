@@ -1,7 +1,7 @@
-  #!/bin/bash
+#!/bin/bash
 
 custom_registry_url=http://localhost:4873
-default_verdaccio_package=verdaccio@4.5.1
+default_verdaccio_package=verdaccio@5.1.2
 
 function startLocalRegistry {
   # Start local registry

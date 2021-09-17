@@ -3,6 +3,67 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.37.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.36.5...amplify-category-auth@2.37.0) (2021-09-14)
+
+
+### Bug Fixes
+
+* remove overwrite of email-only verification when triggers are added ([#7671](https://github.com/aws-amplify/amplify-cli/issues/7671)) ([704295b](https://github.com/aws-amplify/amplify-cli/commit/704295b918701eb81fdaabb786417463672fa02c))
+* verification-link variable with small typo ([#8073](https://github.com/aws-amplify/amplify-cli/issues/8073)) ([d9afc20](https://github.com/aws-amplify/amplify-cli/commit/d9afc20864cbfcc1eadc3e5c262888187624a5ad))
+
+
+### Features
+
+* **amplify-category-auth:** add auth verification mechanisms to frontend config ([#8037](https://github.com/aws-amplify/amplify-cli/issues/8037)) ([88494b3](https://github.com/aws-amplify/amplify-cli/commit/88494b3f12a9989273aa3ae3e68c629f4c4cdff9))
+* **amplify-category-auth:** add auth verification mechanisms to frontend config ([#8037](https://github.com/aws-amplify/amplify-cli/issues/8037)) ([#8093](https://github.com/aws-amplify/amplify-cli/issues/8093)) ([b8949b2](https://github.com/aws-amplify/amplify-cli/commit/b8949b2b519f6b6a26bcab3596c051acec51e077))
+
+
+### Reverts
+
+* Revert "feat(amplify-category-auth): add auth verification mechanisms to frontend config (#8037) (#8093)" (#8158) ([50f07ef](https://github.com/aws-amplify/amplify-cli/commit/50f07efcf7c5663b6fd123d300ec473377d03abe)), closes [#8037](https://github.com/aws-amplify/amplify-cli/issues/8037) [#8093](https://github.com/aws-amplify/amplify-cli/issues/8093) [#8158](https://github.com/aws-amplify/amplify-cli/issues/8158)
+
+
+
+
+
+## [2.36.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.36.4...amplify-category-auth@2.36.5) (2021-09-09)
+
+
+### Bug Fixes
+
+* **amplify-category-auth:** update attr mapping... ([#7979](https://github.com/aws-amplify/amplify-cli/issues/7979)) ([94d2491](https://github.com/aws-amplify/amplify-cli/commit/94d2491ca8b41c1673cca0dd7bf96ac1c3f2db69)), closes [#7793](https://github.com/aws-amplify/amplify-cli/issues/7793)
+
+
+### Reverts
+
+* Revert "fix(amplify-category-auth): update attr mapping... (#7979)" (#8115) ([35af7e1](https://github.com/aws-amplify/amplify-cli/commit/35af7e147d817206fe979fe2320e074407204a0a)), closes [#7979](https://github.com/aws-amplify/amplify-cli/issues/7979) [#8115](https://github.com/aws-amplify/amplify-cli/issues/8115)
+
+
+
+
+
+## [2.36.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.36.3...amplify-category-auth@2.36.4) (2021-09-02)
+
+
+### Bug Fixes
+
+* **amplify-category-auth:** fixed walkthrough prompt after choosing same web & native app clients ([#7954](https://github.com/aws-amplify/amplify-cli/issues/7954)) ([49d0e51](https://github.com/aws-amplify/amplify-cli/commit/49d0e51e6cf8b9e986dc309abdb67df930b0da13))
+
+
+
+
+
+## [2.36.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.36.2...amplify-category-auth@2.36.3) (2021-08-24)
+
+
+### Bug Fixes
+
+* **amplify-category-auth:** fixed no parameter when hostedui is not present ([#7914](https://github.com/aws-amplify/amplify-cli/issues/7914)) ([a83c978](https://github.com/aws-amplify/amplify-cli/commit/a83c978bb18c6fc1980343523c7ee560079cefe5))
+
+
+
+
+
 ## [2.36.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.36.1...amplify-category-auth@2.36.2) (2021-08-06)
 
 

@@ -1,5 +1,969 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`ModelTransformer:  should filter known input types from create and update input fields 1`] = `
+"
+type Test {
+  id: ID!
+  email: Email
+  createdAt: AWSDateTime!
+  updatedAt: AWSDateTime!
+}
+
+type Email {
+  id: ID!
+  createdAt: AWSDateTime!
+  updatedAt: AWSDateTime!
+}
+
+input ModelStringInput {
+  ne: String
+  eq: String
+  le: String
+  lt: String
+  ge: String
+  gt: String
+  contains: String
+  notContains: String
+  between: [String]
+  beginsWith: String
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+  size: ModelSizeInput
+}
+
+input ModelIntInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+}
+
+input ModelFloatInput {
+  ne: Float
+  eq: Float
+  le: Float
+  lt: Float
+  ge: Float
+  gt: Float
+  between: [Float]
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+}
+
+input ModelBooleanInput {
+  ne: Boolean
+  eq: Boolean
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+}
+
+input ModelIDInput {
+  ne: ID
+  eq: ID
+  le: ID
+  lt: ID
+  ge: ID
+  gt: ID
+  contains: ID
+  notContains: ID
+  between: [ID]
+  beginsWith: ID
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+  size: ModelSizeInput
+}
+
+enum ModelAttributeTypes {
+  binary
+  binarySet
+  bool
+  list
+  map
+  number
+  numberSet
+  string
+  stringSet
+  _null
+}
+
+input ModelSizeInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+}
+
+enum ModelSortDirection {
+  ASC
+  DESC
+}
+
+type ModelTestConnection {
+  items: [Test]
+  nextToken: String
+}
+
+input ModelTestFilterInput {
+  id: ModelIDInput
+  and: [ModelTestFilterInput]
+  or: [ModelTestFilterInput]
+  not: ModelTestFilterInput
+}
+
+type Query {
+  getTest(id: ID!): Test
+  listTests(filter: ModelTestFilterInput, limit: Int, nextToken: String): ModelTestConnection
+  getEmail(id: ID!): Email
+  listEmails(filter: ModelEmailFilterInput, limit: Int, nextToken: String): ModelEmailConnection
+}
+
+input ModelTestConditionInput {
+  and: [ModelTestConditionInput]
+  or: [ModelTestConditionInput]
+  not: ModelTestConditionInput
+}
+
+input CreateTestInput {
+  id: ID
+}
+
+input UpdateTestInput {
+  id: ID!
+}
+
+input DeleteTestInput {
+  id: ID!
+}
+
+type Mutation {
+  createTest(input: CreateTestInput!, condition: ModelTestConditionInput): Test
+  updateTest(input: UpdateTestInput!, condition: ModelTestConditionInput): Test
+  deleteTest(input: DeleteTestInput!, condition: ModelTestConditionInput): Test
+  createEmail(input: CreateEmailInput!, condition: ModelEmailConditionInput): Email
+  updateEmail(input: UpdateEmailInput!, condition: ModelEmailConditionInput): Email
+  deleteEmail(input: DeleteEmailInput!, condition: ModelEmailConditionInput): Email
+}
+
+type Subscription {
+  onCreateTest: Test @aws_subscribe(mutations: [\\"createTest\\"])
+  onUpdateTest: Test @aws_subscribe(mutations: [\\"updateTest\\"])
+  onDeleteTest: Test @aws_subscribe(mutations: [\\"deleteTest\\"])
+  onCreateEmail: Email @aws_subscribe(mutations: [\\"createEmail\\"])
+  onUpdateEmail: Email @aws_subscribe(mutations: [\\"updateEmail\\"])
+  onDeleteEmail: Email @aws_subscribe(mutations: [\\"deleteEmail\\"])
+}
+
+type ModelEmailConnection {
+  items: [Email]
+  nextToken: String
+}
+
+input ModelEmailFilterInput {
+  id: ModelIDInput
+  and: [ModelEmailFilterInput]
+  or: [ModelEmailFilterInput]
+  not: ModelEmailFilterInput
+}
+
+input ModelEmailConditionInput {
+  and: [ModelEmailConditionInput]
+  or: [ModelEmailConditionInput]
+  not: ModelEmailConditionInput
+}
+
+input CreateEmailInput {
+  id: ID
+}
+
+input UpdateEmailInput {
+  id: ID!
+}
+
+input DeleteEmailInput {
+  id: ID!
+}
+
+"
+`;
+
+exports[`ModelTransformer:  should generate enum input objects 1`] = `
+"
+type Post {
+  id: ID!
+  title: String!
+  createdAt: AWSDateTime
+  updatedAt: AWSDateTime
+  metadata: PostMetadata
+  entityMetadata: EntityMetadata
+  appearsIn: [Episode!]
+  episode: Episode
+}
+
+type Author {
+  id: ID!
+  name: String!
+  postMetadata: PostMetadata
+  entityMetadata: EntityMetadata
+  createdAt: AWSDateTime!
+  updatedAt: AWSDateTime!
+}
+
+type EntityMetadata {
+  isActive: Boolean
+}
+
+type PostMetadata {
+  tags: Tag
+}
+
+type Tag {
+  published: Boolean
+  metadata: PostMetadata
+}
+
+enum Episode {
+  NEWHOPE
+  EMPIRE
+  JEDI
+}
+
+type Require {
+  id: ID!
+  requiredField: String!
+  notRequiredField: String
+  createdAt: AWSDateTime!
+  updatedAt: AWSDateTime!
+}
+
+type Comment {
+  id: ID!
+  title: String!
+  content: String
+  updatedOn: Int
+  createdOn: AWSDateTime!
+}
+
+input ModelStringInput {
+  ne: String
+  eq: String
+  le: String
+  lt: String
+  ge: String
+  gt: String
+  contains: String
+  notContains: String
+  between: [String]
+  beginsWith: String
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+  size: ModelSizeInput
+}
+
+input ModelIntInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+}
+
+input ModelFloatInput {
+  ne: Float
+  eq: Float
+  le: Float
+  lt: Float
+  ge: Float
+  gt: Float
+  between: [Float]
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+}
+
+input ModelBooleanInput {
+  ne: Boolean
+  eq: Boolean
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+}
+
+input ModelIDInput {
+  ne: ID
+  eq: ID
+  le: ID
+  lt: ID
+  ge: ID
+  gt: ID
+  contains: ID
+  notContains: ID
+  between: [ID]
+  beginsWith: ID
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+  size: ModelSizeInput
+}
+
+enum ModelAttributeTypes {
+  binary
+  binarySet
+  bool
+  list
+  map
+  number
+  numberSet
+  string
+  stringSet
+  _null
+}
+
+input ModelSizeInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+}
+
+enum ModelSortDirection {
+  ASC
+  DESC
+}
+
+input PostMetadataInput {
+  tags: TagInput
+}
+
+input TagInput {
+  published: Boolean
+  metadata: PostMetadataInput
+}
+
+input EntityMetadataInput {
+  isActive: Boolean
+}
+
+type ModelPostConnection {
+  items: [Post]
+  nextToken: String
+}
+
+input ModelEpisodeListInput {
+  eq: [Episode]
+  ne: [Episode]
+  contains: Episode
+  notContains: Episode
+}
+
+input ModelEpisodeInput {
+  eq: Episode
+  ne: Episode
+}
+
+input ModelPostFilterInput {
+  id: ModelIDInput
+  title: ModelStringInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
+  appearsIn: ModelEpisodeListInput
+  episode: ModelEpisodeInput
+  and: [ModelPostFilterInput]
+  or: [ModelPostFilterInput]
+  not: ModelPostFilterInput
+}
+
+type Query {
+  getPost(id: ID!): Post
+  listPosts(filter: ModelPostFilterInput, limit: Int, nextToken: String): ModelPostConnection
+  getAuthor(id: ID!): Author
+  listAuthors(filter: ModelAuthorFilterInput, limit: Int, nextToken: String): ModelAuthorConnection
+  getRequire(id: ID!): Require
+  listRequires(filter: ModelRequireFilterInput, limit: Int, nextToken: String): ModelRequireConnection
+  getComment(id: ID!): Comment
+  listComments(filter: ModelCommentFilterInput, limit: Int, nextToken: String): ModelCommentConnection
+}
+
+input ModelPostConditionInput {
+  title: ModelStringInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
+  appearsIn: ModelEpisodeListInput
+  episode: ModelEpisodeInput
+  and: [ModelPostConditionInput]
+  or: [ModelPostConditionInput]
+  not: ModelPostConditionInput
+}
+
+input CreatePostInput {
+  id: ID
+  title: String!
+  createdAt: AWSDateTime
+  updatedAt: AWSDateTime
+  metadata: PostMetadataInput
+  entityMetadata: EntityMetadataInput
+  appearsIn: [Episode!]
+  episode: Episode
+}
+
+input UpdatePostInput {
+  id: ID!
+  title: String
+  createdAt: AWSDateTime
+  updatedAt: AWSDateTime
+  metadata: PostMetadataInput
+  entityMetadata: EntityMetadataInput
+  appearsIn: [Episode!]
+  episode: Episode
+}
+
+input DeletePostInput {
+  id: ID!
+}
+
+type Mutation {
+  createPost(input: CreatePostInput!, condition: ModelPostConditionInput): Post
+  updatePost(input: UpdatePostInput!, condition: ModelPostConditionInput): Post
+  deletePost(input: DeletePostInput!, condition: ModelPostConditionInput): Post
+  createAuthor(input: CreateAuthorInput!, condition: ModelAuthorConditionInput): Author
+  updateAuthor(input: UpdateAuthorInput!, condition: ModelAuthorConditionInput): Author
+  deleteAuthor(input: DeleteAuthorInput!, condition: ModelAuthorConditionInput): Author
+  createRequire(input: CreateRequireInput!, condition: ModelRequireConditionInput): Require
+  updateRequire(input: UpdateRequireInput!, condition: ModelRequireConditionInput): Require
+  deleteRequire(input: DeleteRequireInput!, condition: ModelRequireConditionInput): Require
+  createComment(input: CreateCommentInput!, condition: ModelCommentConditionInput): Comment
+  updateComment(input: UpdateCommentInput!, condition: ModelCommentConditionInput): Comment
+  deleteComment(input: DeleteCommentInput!, condition: ModelCommentConditionInput): Comment
+}
+
+type Subscription {
+  onCreatePost: Post @aws_subscribe(mutations: [\\"createPost\\"])
+  onUpdatePost: Post @aws_subscribe(mutations: [\\"updatePost\\"])
+  onDeletePost: Post @aws_subscribe(mutations: [\\"deletePost\\"])
+  onCreateAuthor: Author @aws_subscribe(mutations: [\\"createAuthor\\"])
+  onUpdateAuthor: Author @aws_subscribe(mutations: [\\"updateAuthor\\"])
+  onDeleteAuthor: Author @aws_subscribe(mutations: [\\"deleteAuthor\\"])
+  onCreateRequire: Require @aws_subscribe(mutations: [\\"createRequire\\"])
+  onUpdateRequire: Require @aws_subscribe(mutations: [\\"updateRequire\\"])
+  onDeleteRequire: Require @aws_subscribe(mutations: [\\"deleteRequire\\"])
+  onCreateComment: Comment @aws_subscribe(mutations: [\\"createComment\\"])
+  onUpdateComment: Comment @aws_subscribe(mutations: [\\"updateComment\\"])
+  onDeleteComment: Comment @aws_subscribe(mutations: [\\"deleteComment\\"])
+}
+
+type ModelAuthorConnection {
+  items: [Author]
+  nextToken: String
+}
+
+input ModelAuthorFilterInput {
+  id: ModelIDInput
+  name: ModelStringInput
+  and: [ModelAuthorFilterInput]
+  or: [ModelAuthorFilterInput]
+  not: ModelAuthorFilterInput
+}
+
+input ModelAuthorConditionInput {
+  name: ModelStringInput
+  and: [ModelAuthorConditionInput]
+  or: [ModelAuthorConditionInput]
+  not: ModelAuthorConditionInput
+}
+
+input CreateAuthorInput {
+  id: ID
+  name: String!
+  postMetadata: PostMetadataInput
+  entityMetadata: EntityMetadataInput
+}
+
+input UpdateAuthorInput {
+  id: ID!
+  name: String
+  postMetadata: PostMetadataInput
+  entityMetadata: EntityMetadataInput
+}
+
+input DeleteAuthorInput {
+  id: ID!
+}
+
+type ModelRequireConnection {
+  items: [Require]
+  nextToken: String
+}
+
+input ModelRequireFilterInput {
+  id: ModelIDInput
+  requiredField: ModelStringInput
+  notRequiredField: ModelStringInput
+  and: [ModelRequireFilterInput]
+  or: [ModelRequireFilterInput]
+  not: ModelRequireFilterInput
+}
+
+input ModelRequireConditionInput {
+  requiredField: ModelStringInput
+  notRequiredField: ModelStringInput
+  and: [ModelRequireConditionInput]
+  or: [ModelRequireConditionInput]
+  not: ModelRequireConditionInput
+}
+
+input CreateRequireInput {
+  id: ID
+  requiredField: String!
+  notRequiredField: String
+}
+
+input UpdateRequireInput {
+  id: ID!
+  requiredField: String
+  notRequiredField: String
+}
+
+input DeleteRequireInput {
+  id: ID!
+}
+
+type ModelCommentConnection {
+  items: [Comment]
+  nextToken: String
+}
+
+input ModelCommentFilterInput {
+  id: ModelIDInput
+  title: ModelStringInput
+  content: ModelStringInput
+  updatedOn: ModelIntInput
+  and: [ModelCommentFilterInput]
+  or: [ModelCommentFilterInput]
+  not: ModelCommentFilterInput
+}
+
+input ModelCommentConditionInput {
+  title: ModelStringInput
+  content: ModelStringInput
+  updatedOn: ModelIntInput
+  and: [ModelCommentConditionInput]
+  or: [ModelCommentConditionInput]
+  not: ModelCommentConditionInput
+}
+
+input CreateCommentInput {
+  id: ID
+  title: String!
+  content: String
+  updatedOn: Int
+}
+
+input UpdateCommentInput {
+  id: ID!
+  title: String
+  content: String
+  updatedOn: Int
+}
+
+input DeleteCommentInput {
+  id: ID!
+}
+
+"
+`;
+
+exports[`ModelTransformer:  should have timestamps as nullable fields when the type makes it non-nullable 1`] = `
+"
+type Post {
+  id: ID!
+  str: String
+  createdAt: AWSDateTime!
+  updatedAt: AWSDateTime!
+}
+
+input ModelStringInput {
+  ne: String
+  eq: String
+  le: String
+  lt: String
+  ge: String
+  gt: String
+  contains: String
+  notContains: String
+  between: [String]
+  beginsWith: String
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+  size: ModelSizeInput
+}
+
+input ModelIntInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+}
+
+input ModelFloatInput {
+  ne: Float
+  eq: Float
+  le: Float
+  lt: Float
+  ge: Float
+  gt: Float
+  between: [Float]
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+}
+
+input ModelBooleanInput {
+  ne: Boolean
+  eq: Boolean
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+}
+
+input ModelIDInput {
+  ne: ID
+  eq: ID
+  le: ID
+  lt: ID
+  ge: ID
+  gt: ID
+  contains: ID
+  notContains: ID
+  between: [ID]
+  beginsWith: ID
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+  size: ModelSizeInput
+}
+
+enum ModelAttributeTypes {
+  binary
+  binarySet
+  bool
+  list
+  map
+  number
+  numberSet
+  string
+  stringSet
+  _null
+}
+
+input ModelSizeInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+}
+
+enum ModelSortDirection {
+  ASC
+  DESC
+}
+
+type ModelPostConnection {
+  items: [Post]
+  nextToken: String
+}
+
+input ModelPostFilterInput {
+  id: ModelIDInput
+  str: ModelStringInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
+  and: [ModelPostFilterInput]
+  or: [ModelPostFilterInput]
+  not: ModelPostFilterInput
+}
+
+type Query {
+  getPost(id: ID!): Post
+  listPosts(filter: ModelPostFilterInput, limit: Int, nextToken: String): ModelPostConnection
+}
+
+input ModelPostConditionInput {
+  str: ModelStringInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
+  and: [ModelPostConditionInput]
+  or: [ModelPostConditionInput]
+  not: ModelPostConditionInput
+}
+
+input CreatePostInput {
+  id: ID
+  str: String
+  createdAt: AWSDateTime
+  updatedAt: AWSDateTime
+}
+
+input UpdatePostInput {
+  id: ID!
+  str: String
+  createdAt: AWSDateTime
+  updatedAt: AWSDateTime
+}
+
+input DeletePostInput {
+  id: ID!
+}
+
+type Mutation {
+  createPost(input: CreatePostInput!, condition: ModelPostConditionInput): Post
+  updatePost(input: UpdatePostInput!, condition: ModelPostConditionInput): Post
+  deletePost(input: DeletePostInput!, condition: ModelPostConditionInput): Post
+}
+
+type Subscription {
+  onCreatePost: Post @aws_subscribe(mutations: [\\"createPost\\"])
+  onUpdatePost: Post @aws_subscribe(mutations: [\\"updatePost\\"])
+  onDeletePost: Post @aws_subscribe(mutations: [\\"deletePost\\"])
+}
+
+"
+`;
+
+exports[`ModelTransformer:  should have timestamps as nullable fields when the type makes it non-nullable 2`] = `
+"## [Start] Create Request template. **
+## Begin - key condition **
+#if( $ctx.stash.metadata.modelObjectKey )
+  #set( $keyConditionExpr = {} )
+  #set( $keyConditionExprNames = {} )
+  #foreach( $entry in $ctx.stash.metadata.modelObjectKey.entrySet() )
+    $util.qr($keyConditionExpr.put(\\"keyCondition$velocityCount\\", {
+  \\"attributeExists\\": false
+}))
+    $util.qr($keyConditionExprNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
+  #end
+  $util.qr($ctx.stash.conditions.add($keyConditionExpr))
+#else
+  $util.qr($ctx.stash.conditions.add({
+  \\"id\\": {
+      \\"attributeExists\\": false
+  }
+}))
+#end
+## End - key condition **
+## Set the default values to put request **
+#set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
+## copy the values from input **
+$util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
+## set the typename **
+$util.qr($mergedValues.put(\\"__typename\\", \\"Post\\"))
+#set( $PutObject = {
+  \\"version\\": \\"2018-05-29\\",
+  \\"operation\\": \\"PutItem\\",
+  \\"attributeValues\\":   $util.dynamodb.toMapValues($mergedValues),
+  \\"condition\\": $condition
+} )
+#if( $context.args.condition )
+  $util.qr($ctx.stash.conditions.add($context.args.condition))
+#end
+## Begin - key condition **
+#if( $ctx.stash.metadata.modelObjectKey )
+  #set( $keyConditionExpr = {} )
+  #set( $keyConditionExprNames = {} )
+  #foreach( $entry in $ctx.stash.metadata.modelObjectKey.entrySet() )
+    $util.qr($keyConditionExpr.put(\\"keyCondition$velocityCount\\", {
+  \\"attributeExists\\": false
+}))
+    $util.qr($keyConditionExprNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
+  #end
+  $util.qr($ctx.stash.conditions.add($keyConditionExpr))
+#else
+  $util.qr($ctx.stash.conditions.add({
+  \\"id\\": {
+      \\"attributeExists\\": false
+  }
+}))
+#end
+## End - key condition **
+## Start condition block **
+#if( $ctx.stash.conditions && $ctx.stash.conditions.size() != 0 )
+  #set( $mergedConditions = {
+  \\"and\\": $ctx.stash.conditions
+} )
+  #set( $Conditions = $util.parseJson($util.transform.toDynamoDBConditionExpression($mergedConditions)) )
+  #if( $Conditions.expressionValues && $Conditions.expressionValues.size() == 0 )
+    #set( $Conditions = {
+  \\"expression\\": $Conditions.expression,
+  \\"expressionNames\\": $Conditions.expressionNames
+} )
+  #end
+  ## End condition block **
+#end
+#if( $Conditions )
+  #if( $keyConditionExprNames )
+    $util.qr($Conditions.expressionNames.putAll($keyConditionExprNames))
+  #end
+  $util.qr($PutObject.put(\\"condition\\", $Conditions))
+#end
+#if( $ctx.stash.metadata.modelObjectKey )
+  $util.qr($PutObject.put(\\"key\\", $ctx.stash.metadata.modelObjectKey))
+#else
+  #set( $Key = {
+  \\"id\\":   $util.dynamodb.toDynamoDB($mergedValues.id)
+} )
+  $util.qr($PutObject.put(\\"key\\", $Key))
+#end
+$util.toJson($PutObject)
+## [End] Create Request template. **"
+`;
+
+exports[`ModelTransformer:  should have timestamps as nullable fields when the type makes it non-nullable 3`] = `
+"## [Start] Mutation Update resolver. **
+## Set the default values to put request **
+#set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
+## copy the values from input **
+$util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
+## set the typename **
+## Initialize the vars for creating ddb expression **
+#set( $expNames = {} )
+#set( $expValues = {} )
+#set( $expSet = {} )
+#set( $expAdd = {} )
+#set( $expRemove = [] )
+#if( $ctx.stash.metadata.modelObjectKey )
+  #set( $Key = $ctx.stash.metadata.modelObjectKey )
+#else
+  #set( $Key = {
+  \\"id\\":   $util.dynamodb.toDynamoDB($ctx.args.input.id)
+} )
+#end
+## Model key **
+#if( $ctx.stash.metadata.modelObjectKey )
+  #set( $keyFields = [] )
+  #foreach( $entry in $ctx.stash.metadata.modelObjectKey.entrySet() )
+    $util.qr($keyFields.add(\\"$entry.key\\"))
+  #end
+#else
+  #set( $keyFields = [\\"id\\"] )
+#end
+#foreach( $entry in $util.map.copyAndRemoveAllKeys($mergedValues, $keyFields).entrySet() )
+  #if( !$util.isNull($ctx.stash.metadata.dynamodbNameOverrideMap) && $ctx.stash.metadata.dynamodbNameOverrideMap.containsKey(\\"$entry.key\\") )
+    #set( $entryKeyAttributeName = $ctx.stash.metadata.dynamodbNameOverrideMap.get(\\"$entry.key\\") )
+  #else
+    #set( $entryKeyAttributeName = $entry.key )
+  #end
+  #if( $util.isNull($entry.value) )
+    #set( $discard = $expRemove.add(\\"#$entryKeyAttributeName\\") )
+    $util.qr($expNames.put(\\"#$entryKeyAttributeName\\", \\"$entry.key\\"))
+  #else
+    $util.qr($expSet.put(\\"#$entryKeyAttributeName\\", \\":$entryKeyAttributeName\\"))
+    $util.qr($expNames.put(\\"#$entryKeyAttributeName\\", \\"$entry.key\\"))
+    $util.qr($expValues.put(\\":$entryKeyAttributeName\\", $util.dynamodb.toDynamoDB($entry.value)))
+  #end
+#end
+#set( $expression = \\"\\" )
+#if( !$expSet.isEmpty() )
+  #set( $expression = \\"SET\\" )
+  #foreach( $entry in $expSet.entrySet() )
+    #set( $expression = \\"$expression $entry.key = $entry.value\\" )
+    #if( $foreach.hasNext() )
+      #set( $expression = \\"$expression,\\" )
+    #end
+  #end
+#end
+#if( !$expAdd.isEmpty() )
+  #set( $expression = \\"$expression ADD\\" )
+  #foreach( $entry in $expAdd.entrySet() )
+    #set( $expression = \\"$expression $entry.key $entry.value\\" )
+    #if( $foreach.hasNext() )
+      #set( $expression = \\"$expression,\\" )
+    #end
+  #end
+#end
+#if( !$expRemove.isEmpty() )
+  #set( $expression = \\"$expression REMOVE\\" )
+  #foreach( $entry in $expRemove )
+    #set( $expression = \\"$expression $entry\\" )
+    #if( $foreach.hasNext() )
+      #set( $expression = \\"$expression,\\" )
+    #end
+  #end
+#end
+#set( $update = {} )
+$util.qr($update.put(\\"expression\\", \\"$expression\\"))
+#if( !$expNames.isEmpty() )
+  $util.qr($update.put(\\"expressionNames\\", $expNames))
+#end
+#if( !$expValues.isEmpty() )
+  $util.qr($update.put(\\"expressionValues\\", $expValues))
+#end
+## Begin - key condition **
+#if( $ctx.stash.metadata.modelObjectKey )
+  #set( $keyConditionExpr = {} )
+  #set( $keyConditionExprNames = {} )
+  #foreach( $entry in $ctx.stash.metadata.modelObjectKey.entrySet() )
+    $util.qr($keyConditionExpr.put(\\"keyCondition$velocityCount\\", {
+  \\"attributeExists\\": true
+}))
+    $util.qr($keyConditionExprNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
+  #end
+  $util.qr($ctx.stash.conditions.add($keyConditionExpr))
+#else
+  $util.qr($ctx.stash.conditions.add({
+  \\"id\\": {
+      \\"attributeExists\\": true
+  }
+}))
+#end
+## End - key condition **
+#if( $context.args.condition )
+  $util.qr($ctx.stash.conditions.add($context.args.condition))
+#end
+## Start condition block **
+#if( $ctx.stash.conditions && $ctx.stash.conditions.size() != 0 )
+  #set( $mergedConditions = {
+  \\"and\\": $ctx.stash.conditions
+} )
+  #set( $Conditions = $util.parseJson($util.transform.toDynamoDBConditionExpression($mergedConditions)) )
+  #if( $Conditions.expressionValues && $Conditions.expressionValues.size() == 0 )
+    #set( $Conditions = {
+  \\"expression\\": $Conditions.expression,
+  \\"expressionNames\\": $Conditions.expressionNames
+} )
+  #end
+  ## End condition block **
+#end
+#set( $UpdateItem = {
+  \\"version\\": \\"2018-05-29\\",
+  \\"operation\\": \\"UpdateItem\\",
+  \\"key\\": $Key,
+  \\"update\\": $update
+} )
+#if( $Conditions )
+  #if( $keyConditionExprNames )
+    $util.qr($Conditions.expressionNames.putAll($keyConditionExprNames))
+  #end
+  $util.qr($UpdateItem.put(\\"condition\\", $Conditions))
+#end
+$util.toJson($UpdateItem)
+## [End] Mutation Update resolver. **"
+`;
+
 exports[`ModelTransformer:  should not add default primary key when ID is defined 1`] = `
 "## [Start] Create Request template. **
 ## Begin - key condition **
@@ -85,4 +1049,1236 @@ $util.qr($mergedValues.put(\\"__typename\\", \\"Post\\"))
 #end
 $util.toJson($PutObject)
 ## [End] Create Request template. **"
+`;
+
+exports[`ModelTransformer:  should not generate superfluous input and filter types 1`] = `
+"
+type Entity {
+  id: ID!
+  str: String
+  createdAt: AWSDateTime!
+  updatedAt: AWSDateTime!
+}
+
+input ModelStringInput {
+  ne: String
+  eq: String
+  le: String
+  lt: String
+  ge: String
+  gt: String
+  contains: String
+  notContains: String
+  between: [String]
+  beginsWith: String
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+  size: ModelSizeInput
+}
+
+input ModelIntInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+}
+
+input ModelFloatInput {
+  ne: Float
+  eq: Float
+  le: Float
+  lt: Float
+  ge: Float
+  gt: Float
+  between: [Float]
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+}
+
+input ModelBooleanInput {
+  ne: Boolean
+  eq: Boolean
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+}
+
+input ModelIDInput {
+  ne: ID
+  eq: ID
+  le: ID
+  lt: ID
+  ge: ID
+  gt: ID
+  contains: ID
+  notContains: ID
+  between: [ID]
+  beginsWith: ID
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+  size: ModelSizeInput
+}
+
+enum ModelAttributeTypes {
+  binary
+  binarySet
+  bool
+  list
+  map
+  number
+  numberSet
+  string
+  stringSet
+  _null
+}
+
+input ModelSizeInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+}
+
+enum ModelSortDirection {
+  ASC
+  DESC
+}
+
+type Query {
+  getEntity(id: ID!): Entity
+}
+
+"
+`;
+
+exports[`ModelTransformer:  should not to auto generate createdAt and updatedAt when the type in schema is not AWSDateTime 1`] = `
+"
+type Post {
+  id: ID!
+  str: String
+  createdAt: AWSTimestamp
+  updatedAt: AWSTimestamp
+}
+
+input ModelStringInput {
+  ne: String
+  eq: String
+  le: String
+  lt: String
+  ge: String
+  gt: String
+  contains: String
+  notContains: String
+  between: [String]
+  beginsWith: String
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+  size: ModelSizeInput
+}
+
+input ModelIntInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+}
+
+input ModelFloatInput {
+  ne: Float
+  eq: Float
+  le: Float
+  lt: Float
+  ge: Float
+  gt: Float
+  between: [Float]
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+}
+
+input ModelBooleanInput {
+  ne: Boolean
+  eq: Boolean
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+}
+
+input ModelIDInput {
+  ne: ID
+  eq: ID
+  le: ID
+  lt: ID
+  ge: ID
+  gt: ID
+  contains: ID
+  notContains: ID
+  between: [ID]
+  beginsWith: ID
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+  size: ModelSizeInput
+}
+
+enum ModelAttributeTypes {
+  binary
+  binarySet
+  bool
+  list
+  map
+  number
+  numberSet
+  string
+  stringSet
+  _null
+}
+
+input ModelSizeInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+}
+
+enum ModelSortDirection {
+  ASC
+  DESC
+}
+
+type ModelPostConnection {
+  items: [Post]
+  nextToken: String
+}
+
+input ModelPostFilterInput {
+  id: ModelIDInput
+  str: ModelStringInput
+  createdAt: ModelIntInput
+  updatedAt: ModelIntInput
+  and: [ModelPostFilterInput]
+  or: [ModelPostFilterInput]
+  not: ModelPostFilterInput
+}
+
+type Query {
+  getPost(id: ID!): Post
+  listPosts(filter: ModelPostFilterInput, limit: Int, nextToken: String): ModelPostConnection
+}
+
+input ModelPostConditionInput {
+  str: ModelStringInput
+  createdAt: ModelIntInput
+  updatedAt: ModelIntInput
+  and: [ModelPostConditionInput]
+  or: [ModelPostConditionInput]
+  not: ModelPostConditionInput
+}
+
+input CreatePostInput {
+  id: ID
+  str: String
+  createdAt: AWSTimestamp
+  updatedAt: AWSTimestamp
+}
+
+input UpdatePostInput {
+  id: ID!
+  str: String
+  createdAt: AWSTimestamp
+  updatedAt: AWSTimestamp
+}
+
+input DeletePostInput {
+  id: ID!
+}
+
+type Mutation {
+  createPost(input: CreatePostInput!, condition: ModelPostConditionInput): Post
+  updatePost(input: UpdatePostInput!, condition: ModelPostConditionInput): Post
+  deletePost(input: DeletePostInput!, condition: ModelPostConditionInput): Post
+}
+
+type Subscription {
+  onCreatePost: Post @aws_subscribe(mutations: [\\"createPost\\"])
+  onUpdatePost: Post @aws_subscribe(mutations: [\\"updatePost\\"])
+  onDeletePost: Post @aws_subscribe(mutations: [\\"deletePost\\"])
+}
+
+"
+`;
+
+exports[`ModelTransformer:  should not to auto generate createdAt and updatedAt when the type in schema is not AWSDateTime 2`] = `
+"## [Start] Create Request template. **
+## Begin - key condition **
+#if( $ctx.stash.metadata.modelObjectKey )
+  #set( $keyConditionExpr = {} )
+  #set( $keyConditionExprNames = {} )
+  #foreach( $entry in $ctx.stash.metadata.modelObjectKey.entrySet() )
+    $util.qr($keyConditionExpr.put(\\"keyCondition$velocityCount\\", {
+  \\"attributeExists\\": false
+}))
+    $util.qr($keyConditionExprNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
+  #end
+  $util.qr($ctx.stash.conditions.add($keyConditionExpr))
+#else
+  $util.qr($ctx.stash.conditions.add({
+  \\"id\\": {
+      \\"attributeExists\\": false
+  }
+}))
+#end
+## End - key condition **
+## Set the default values to put request **
+#set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
+## copy the values from input **
+$util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
+## set the typename **
+$util.qr($mergedValues.put(\\"__typename\\", \\"Post\\"))
+#set( $PutObject = {
+  \\"version\\": \\"2018-05-29\\",
+  \\"operation\\": \\"PutItem\\",
+  \\"attributeValues\\":   $util.dynamodb.toMapValues($mergedValues),
+  \\"condition\\": $condition
+} )
+#if( $context.args.condition )
+  $util.qr($ctx.stash.conditions.add($context.args.condition))
+#end
+## Begin - key condition **
+#if( $ctx.stash.metadata.modelObjectKey )
+  #set( $keyConditionExpr = {} )
+  #set( $keyConditionExprNames = {} )
+  #foreach( $entry in $ctx.stash.metadata.modelObjectKey.entrySet() )
+    $util.qr($keyConditionExpr.put(\\"keyCondition$velocityCount\\", {
+  \\"attributeExists\\": false
+}))
+    $util.qr($keyConditionExprNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
+  #end
+  $util.qr($ctx.stash.conditions.add($keyConditionExpr))
+#else
+  $util.qr($ctx.stash.conditions.add({
+  \\"id\\": {
+      \\"attributeExists\\": false
+  }
+}))
+#end
+## End - key condition **
+## Start condition block **
+#if( $ctx.stash.conditions && $ctx.stash.conditions.size() != 0 )
+  #set( $mergedConditions = {
+  \\"and\\": $ctx.stash.conditions
+} )
+  #set( $Conditions = $util.parseJson($util.transform.toDynamoDBConditionExpression($mergedConditions)) )
+  #if( $Conditions.expressionValues && $Conditions.expressionValues.size() == 0 )
+    #set( $Conditions = {
+  \\"expression\\": $Conditions.expression,
+  \\"expressionNames\\": $Conditions.expressionNames
+} )
+  #end
+  ## End condition block **
+#end
+#if( $Conditions )
+  #if( $keyConditionExprNames )
+    $util.qr($Conditions.expressionNames.putAll($keyConditionExprNames))
+  #end
+  $util.qr($PutObject.put(\\"condition\\", $Conditions))
+#end
+#if( $ctx.stash.metadata.modelObjectKey )
+  $util.qr($PutObject.put(\\"key\\", $ctx.stash.metadata.modelObjectKey))
+#else
+  #set( $Key = {
+  \\"id\\":   $util.dynamodb.toDynamoDB($mergedValues.id)
+} )
+  $util.qr($PutObject.put(\\"key\\", $Key))
+#end
+$util.toJson($PutObject)
+## [End] Create Request template. **"
+`;
+
+exports[`ModelTransformer:  should not to auto generate createdAt and updatedAt when the type in schema is not AWSDateTime 3`] = `
+"## [Start] Mutation Update resolver. **
+## Set the default values to put request **
+#set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
+## copy the values from input **
+$util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
+## set the typename **
+## Initialize the vars for creating ddb expression **
+#set( $expNames = {} )
+#set( $expValues = {} )
+#set( $expSet = {} )
+#set( $expAdd = {} )
+#set( $expRemove = [] )
+#if( $ctx.stash.metadata.modelObjectKey )
+  #set( $Key = $ctx.stash.metadata.modelObjectKey )
+#else
+  #set( $Key = {
+  \\"id\\":   $util.dynamodb.toDynamoDB($ctx.args.input.id)
+} )
+#end
+## Model key **
+#if( $ctx.stash.metadata.modelObjectKey )
+  #set( $keyFields = [] )
+  #foreach( $entry in $ctx.stash.metadata.modelObjectKey.entrySet() )
+    $util.qr($keyFields.add(\\"$entry.key\\"))
+  #end
+#else
+  #set( $keyFields = [\\"id\\"] )
+#end
+#foreach( $entry in $util.map.copyAndRemoveAllKeys($mergedValues, $keyFields).entrySet() )
+  #if( !$util.isNull($ctx.stash.metadata.dynamodbNameOverrideMap) && $ctx.stash.metadata.dynamodbNameOverrideMap.containsKey(\\"$entry.key\\") )
+    #set( $entryKeyAttributeName = $ctx.stash.metadata.dynamodbNameOverrideMap.get(\\"$entry.key\\") )
+  #else
+    #set( $entryKeyAttributeName = $entry.key )
+  #end
+  #if( $util.isNull($entry.value) )
+    #set( $discard = $expRemove.add(\\"#$entryKeyAttributeName\\") )
+    $util.qr($expNames.put(\\"#$entryKeyAttributeName\\", \\"$entry.key\\"))
+  #else
+    $util.qr($expSet.put(\\"#$entryKeyAttributeName\\", \\":$entryKeyAttributeName\\"))
+    $util.qr($expNames.put(\\"#$entryKeyAttributeName\\", \\"$entry.key\\"))
+    $util.qr($expValues.put(\\":$entryKeyAttributeName\\", $util.dynamodb.toDynamoDB($entry.value)))
+  #end
+#end
+#set( $expression = \\"\\" )
+#if( !$expSet.isEmpty() )
+  #set( $expression = \\"SET\\" )
+  #foreach( $entry in $expSet.entrySet() )
+    #set( $expression = \\"$expression $entry.key = $entry.value\\" )
+    #if( $foreach.hasNext() )
+      #set( $expression = \\"$expression,\\" )
+    #end
+  #end
+#end
+#if( !$expAdd.isEmpty() )
+  #set( $expression = \\"$expression ADD\\" )
+  #foreach( $entry in $expAdd.entrySet() )
+    #set( $expression = \\"$expression $entry.key $entry.value\\" )
+    #if( $foreach.hasNext() )
+      #set( $expression = \\"$expression,\\" )
+    #end
+  #end
+#end
+#if( !$expRemove.isEmpty() )
+  #set( $expression = \\"$expression REMOVE\\" )
+  #foreach( $entry in $expRemove )
+    #set( $expression = \\"$expression $entry\\" )
+    #if( $foreach.hasNext() )
+      #set( $expression = \\"$expression,\\" )
+    #end
+  #end
+#end
+#set( $update = {} )
+$util.qr($update.put(\\"expression\\", \\"$expression\\"))
+#if( !$expNames.isEmpty() )
+  $util.qr($update.put(\\"expressionNames\\", $expNames))
+#end
+#if( !$expValues.isEmpty() )
+  $util.qr($update.put(\\"expressionValues\\", $expValues))
+#end
+## Begin - key condition **
+#if( $ctx.stash.metadata.modelObjectKey )
+  #set( $keyConditionExpr = {} )
+  #set( $keyConditionExprNames = {} )
+  #foreach( $entry in $ctx.stash.metadata.modelObjectKey.entrySet() )
+    $util.qr($keyConditionExpr.put(\\"keyCondition$velocityCount\\", {
+  \\"attributeExists\\": true
+}))
+    $util.qr($keyConditionExprNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
+  #end
+  $util.qr($ctx.stash.conditions.add($keyConditionExpr))
+#else
+  $util.qr($ctx.stash.conditions.add({
+  \\"id\\": {
+      \\"attributeExists\\": true
+  }
+}))
+#end
+## End - key condition **
+#if( $context.args.condition )
+  $util.qr($ctx.stash.conditions.add($context.args.condition))
+#end
+## Start condition block **
+#if( $ctx.stash.conditions && $ctx.stash.conditions.size() != 0 )
+  #set( $mergedConditions = {
+  \\"and\\": $ctx.stash.conditions
+} )
+  #set( $Conditions = $util.parseJson($util.transform.toDynamoDBConditionExpression($mergedConditions)) )
+  #if( $Conditions.expressionValues && $Conditions.expressionValues.size() == 0 )
+    #set( $Conditions = {
+  \\"expression\\": $Conditions.expression,
+  \\"expressionNames\\": $Conditions.expressionNames
+} )
+  #end
+  ## End condition block **
+#end
+#set( $UpdateItem = {
+  \\"version\\": \\"2018-05-29\\",
+  \\"operation\\": \\"UpdateItem\\",
+  \\"key\\": $Key,
+  \\"update\\": $update
+} )
+#if( $Conditions )
+  #if( $keyConditionExprNames )
+    $util.qr($Conditions.expressionNames.putAll($keyConditionExprNames))
+  #end
+  $util.qr($UpdateItem.put(\\"condition\\", $Conditions))
+#end
+$util.toJson($UpdateItem)
+## [End] Mutation Update resolver. **"
+`;
+
+exports[`ModelTransformer:  should not to include createdAt and updatedAt field when timestamps is set to null 1`] = `
+"
+type Post {
+  id: ID!
+  str: String
+}
+
+input ModelStringInput {
+  ne: String
+  eq: String
+  le: String
+  lt: String
+  ge: String
+  gt: String
+  contains: String
+  notContains: String
+  between: [String]
+  beginsWith: String
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+  size: ModelSizeInput
+}
+
+input ModelIntInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+}
+
+input ModelFloatInput {
+  ne: Float
+  eq: Float
+  le: Float
+  lt: Float
+  ge: Float
+  gt: Float
+  between: [Float]
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+}
+
+input ModelBooleanInput {
+  ne: Boolean
+  eq: Boolean
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+}
+
+input ModelIDInput {
+  ne: ID
+  eq: ID
+  le: ID
+  lt: ID
+  ge: ID
+  gt: ID
+  contains: ID
+  notContains: ID
+  between: [ID]
+  beginsWith: ID
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+  size: ModelSizeInput
+}
+
+enum ModelAttributeTypes {
+  binary
+  binarySet
+  bool
+  list
+  map
+  number
+  numberSet
+  string
+  stringSet
+  _null
+}
+
+input ModelSizeInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+}
+
+enum ModelSortDirection {
+  ASC
+  DESC
+}
+
+type ModelPostConnection {
+  items: [Post]
+  nextToken: String
+}
+
+input ModelPostFilterInput {
+  id: ModelIDInput
+  str: ModelStringInput
+  and: [ModelPostFilterInput]
+  or: [ModelPostFilterInput]
+  not: ModelPostFilterInput
+}
+
+type Query {
+  getPost(id: ID!): Post
+  listPosts(filter: ModelPostFilterInput, limit: Int, nextToken: String): ModelPostConnection
+}
+
+input ModelPostConditionInput {
+  str: ModelStringInput
+  and: [ModelPostConditionInput]
+  or: [ModelPostConditionInput]
+  not: ModelPostConditionInput
+}
+
+input CreatePostInput {
+  id: ID
+  str: String
+}
+
+input UpdatePostInput {
+  id: ID!
+  str: String
+}
+
+input DeletePostInput {
+  id: ID!
+}
+
+type Mutation {
+  createPost(input: CreatePostInput!, condition: ModelPostConditionInput): Post
+  updatePost(input: UpdatePostInput!, condition: ModelPostConditionInput): Post
+  deletePost(input: DeletePostInput!, condition: ModelPostConditionInput): Post
+}
+
+type Subscription {
+  onCreatePost: Post @aws_subscribe(mutations: [\\"createPost\\"])
+  onUpdatePost: Post @aws_subscribe(mutations: [\\"updatePost\\"])
+  onDeletePost: Post @aws_subscribe(mutations: [\\"deletePost\\"])
+}
+
+"
+`;
+
+exports[`ModelTransformer:  should not to include createdAt and updatedAt field when timestamps is set to null 2`] = `
+"## [Start] Create Request template. **
+## Begin - key condition **
+#if( $ctx.stash.metadata.modelObjectKey )
+  #set( $keyConditionExpr = {} )
+  #set( $keyConditionExprNames = {} )
+  #foreach( $entry in $ctx.stash.metadata.modelObjectKey.entrySet() )
+    $util.qr($keyConditionExpr.put(\\"keyCondition$velocityCount\\", {
+  \\"attributeExists\\": false
+}))
+    $util.qr($keyConditionExprNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
+  #end
+  $util.qr($ctx.stash.conditions.add($keyConditionExpr))
+#else
+  $util.qr($ctx.stash.conditions.add({
+  \\"id\\": {
+      \\"attributeExists\\": false
+  }
+}))
+#end
+## End - key condition **
+## Set the default values to put request **
+#set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
+## copy the values from input **
+$util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
+## set the typename **
+$util.qr($mergedValues.put(\\"__typename\\", \\"Post\\"))
+#set( $PutObject = {
+  \\"version\\": \\"2018-05-29\\",
+  \\"operation\\": \\"PutItem\\",
+  \\"attributeValues\\":   $util.dynamodb.toMapValues($mergedValues),
+  \\"condition\\": $condition
+} )
+#if( $context.args.condition )
+  $util.qr($ctx.stash.conditions.add($context.args.condition))
+#end
+## Begin - key condition **
+#if( $ctx.stash.metadata.modelObjectKey )
+  #set( $keyConditionExpr = {} )
+  #set( $keyConditionExprNames = {} )
+  #foreach( $entry in $ctx.stash.metadata.modelObjectKey.entrySet() )
+    $util.qr($keyConditionExpr.put(\\"keyCondition$velocityCount\\", {
+  \\"attributeExists\\": false
+}))
+    $util.qr($keyConditionExprNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
+  #end
+  $util.qr($ctx.stash.conditions.add($keyConditionExpr))
+#else
+  $util.qr($ctx.stash.conditions.add({
+  \\"id\\": {
+      \\"attributeExists\\": false
+  }
+}))
+#end
+## End - key condition **
+## Start condition block **
+#if( $ctx.stash.conditions && $ctx.stash.conditions.size() != 0 )
+  #set( $mergedConditions = {
+  \\"and\\": $ctx.stash.conditions
+} )
+  #set( $Conditions = $util.parseJson($util.transform.toDynamoDBConditionExpression($mergedConditions)) )
+  #if( $Conditions.expressionValues && $Conditions.expressionValues.size() == 0 )
+    #set( $Conditions = {
+  \\"expression\\": $Conditions.expression,
+  \\"expressionNames\\": $Conditions.expressionNames
+} )
+  #end
+  ## End condition block **
+#end
+#if( $Conditions )
+  #if( $keyConditionExprNames )
+    $util.qr($Conditions.expressionNames.putAll($keyConditionExprNames))
+  #end
+  $util.qr($PutObject.put(\\"condition\\", $Conditions))
+#end
+#if( $ctx.stash.metadata.modelObjectKey )
+  $util.qr($PutObject.put(\\"key\\", $ctx.stash.metadata.modelObjectKey))
+#else
+  #set( $Key = {
+  \\"id\\":   $util.dynamodb.toDynamoDB($mergedValues.id)
+} )
+  $util.qr($PutObject.put(\\"key\\", $Key))
+#end
+$util.toJson($PutObject)
+## [End] Create Request template. **"
+`;
+
+exports[`ModelTransformer:  should not to include createdAt and updatedAt field when timestamps is set to null 3`] = `
+"## [Start] Mutation Update resolver. **
+## Set the default values to put request **
+#set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
+## copy the values from input **
+$util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
+## set the typename **
+## Initialize the vars for creating ddb expression **
+#set( $expNames = {} )
+#set( $expValues = {} )
+#set( $expSet = {} )
+#set( $expAdd = {} )
+#set( $expRemove = [] )
+#if( $ctx.stash.metadata.modelObjectKey )
+  #set( $Key = $ctx.stash.metadata.modelObjectKey )
+#else
+  #set( $Key = {
+  \\"id\\":   $util.dynamodb.toDynamoDB($ctx.args.input.id)
+} )
+#end
+## Model key **
+#if( $ctx.stash.metadata.modelObjectKey )
+  #set( $keyFields = [] )
+  #foreach( $entry in $ctx.stash.metadata.modelObjectKey.entrySet() )
+    $util.qr($keyFields.add(\\"$entry.key\\"))
+  #end
+#else
+  #set( $keyFields = [\\"id\\"] )
+#end
+#foreach( $entry in $util.map.copyAndRemoveAllKeys($mergedValues, $keyFields).entrySet() )
+  #if( !$util.isNull($ctx.stash.metadata.dynamodbNameOverrideMap) && $ctx.stash.metadata.dynamodbNameOverrideMap.containsKey(\\"$entry.key\\") )
+    #set( $entryKeyAttributeName = $ctx.stash.metadata.dynamodbNameOverrideMap.get(\\"$entry.key\\") )
+  #else
+    #set( $entryKeyAttributeName = $entry.key )
+  #end
+  #if( $util.isNull($entry.value) )
+    #set( $discard = $expRemove.add(\\"#$entryKeyAttributeName\\") )
+    $util.qr($expNames.put(\\"#$entryKeyAttributeName\\", \\"$entry.key\\"))
+  #else
+    $util.qr($expSet.put(\\"#$entryKeyAttributeName\\", \\":$entryKeyAttributeName\\"))
+    $util.qr($expNames.put(\\"#$entryKeyAttributeName\\", \\"$entry.key\\"))
+    $util.qr($expValues.put(\\":$entryKeyAttributeName\\", $util.dynamodb.toDynamoDB($entry.value)))
+  #end
+#end
+#set( $expression = \\"\\" )
+#if( !$expSet.isEmpty() )
+  #set( $expression = \\"SET\\" )
+  #foreach( $entry in $expSet.entrySet() )
+    #set( $expression = \\"$expression $entry.key = $entry.value\\" )
+    #if( $foreach.hasNext() )
+      #set( $expression = \\"$expression,\\" )
+    #end
+  #end
+#end
+#if( !$expAdd.isEmpty() )
+  #set( $expression = \\"$expression ADD\\" )
+  #foreach( $entry in $expAdd.entrySet() )
+    #set( $expression = \\"$expression $entry.key $entry.value\\" )
+    #if( $foreach.hasNext() )
+      #set( $expression = \\"$expression,\\" )
+    #end
+  #end
+#end
+#if( !$expRemove.isEmpty() )
+  #set( $expression = \\"$expression REMOVE\\" )
+  #foreach( $entry in $expRemove )
+    #set( $expression = \\"$expression $entry\\" )
+    #if( $foreach.hasNext() )
+      #set( $expression = \\"$expression,\\" )
+    #end
+  #end
+#end
+#set( $update = {} )
+$util.qr($update.put(\\"expression\\", \\"$expression\\"))
+#if( !$expNames.isEmpty() )
+  $util.qr($update.put(\\"expressionNames\\", $expNames))
+#end
+#if( !$expValues.isEmpty() )
+  $util.qr($update.put(\\"expressionValues\\", $expValues))
+#end
+## Begin - key condition **
+#if( $ctx.stash.metadata.modelObjectKey )
+  #set( $keyConditionExpr = {} )
+  #set( $keyConditionExprNames = {} )
+  #foreach( $entry in $ctx.stash.metadata.modelObjectKey.entrySet() )
+    $util.qr($keyConditionExpr.put(\\"keyCondition$velocityCount\\", {
+  \\"attributeExists\\": true
+}))
+    $util.qr($keyConditionExprNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
+  #end
+  $util.qr($ctx.stash.conditions.add($keyConditionExpr))
+#else
+  $util.qr($ctx.stash.conditions.add({
+  \\"id\\": {
+      \\"attributeExists\\": true
+  }
+}))
+#end
+## End - key condition **
+#if( $context.args.condition )
+  $util.qr($ctx.stash.conditions.add($context.args.condition))
+#end
+## Start condition block **
+#if( $ctx.stash.conditions && $ctx.stash.conditions.size() != 0 )
+  #set( $mergedConditions = {
+  \\"and\\": $ctx.stash.conditions
+} )
+  #set( $Conditions = $util.parseJson($util.transform.toDynamoDBConditionExpression($mergedConditions)) )
+  #if( $Conditions.expressionValues && $Conditions.expressionValues.size() == 0 )
+    #set( $Conditions = {
+  \\"expression\\": $Conditions.expression,
+  \\"expressionNames\\": $Conditions.expressionNames
+} )
+  #end
+  ## End condition block **
+#end
+#set( $UpdateItem = {
+  \\"version\\": \\"2018-05-29\\",
+  \\"operation\\": \\"UpdateItem\\",
+  \\"key\\": $Key,
+  \\"update\\": $update
+} )
+#if( $Conditions )
+  #if( $keyConditionExprNames )
+    $util.qr($Conditions.expressionNames.putAll($keyConditionExprNames))
+  #end
+  $util.qr($UpdateItem.put(\\"condition\\", $Conditions))
+#end
+$util.toJson($UpdateItem)
+## [End] Mutation Update resolver. **"
+`;
+
+exports[`ModelTransformer:  should support timestamp parameters when generating pipelineFunctions and output schema 1`] = `
+"
+type Post {
+  id: ID!
+  str: String
+  createdOn: AWSDateTime!
+  updatedOn: AWSDateTime!
+}
+
+input ModelStringInput {
+  ne: String
+  eq: String
+  le: String
+  lt: String
+  ge: String
+  gt: String
+  contains: String
+  notContains: String
+  between: [String]
+  beginsWith: String
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+  size: ModelSizeInput
+}
+
+input ModelIntInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+}
+
+input ModelFloatInput {
+  ne: Float
+  eq: Float
+  le: Float
+  lt: Float
+  ge: Float
+  gt: Float
+  between: [Float]
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+}
+
+input ModelBooleanInput {
+  ne: Boolean
+  eq: Boolean
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+}
+
+input ModelIDInput {
+  ne: ID
+  eq: ID
+  le: ID
+  lt: ID
+  ge: ID
+  gt: ID
+  contains: ID
+  notContains: ID
+  between: [ID]
+  beginsWith: ID
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+  size: ModelSizeInput
+}
+
+enum ModelAttributeTypes {
+  binary
+  binarySet
+  bool
+  list
+  map
+  number
+  numberSet
+  string
+  stringSet
+  _null
+}
+
+input ModelSizeInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+}
+
+enum ModelSortDirection {
+  ASC
+  DESC
+}
+
+type ModelPostConnection {
+  items: [Post]
+  nextToken: String
+}
+
+input ModelPostFilterInput {
+  id: ModelIDInput
+  str: ModelStringInput
+  and: [ModelPostFilterInput]
+  or: [ModelPostFilterInput]
+  not: ModelPostFilterInput
+}
+
+type Query {
+  getPost(id: ID!): Post
+  listPosts(filter: ModelPostFilterInput, limit: Int, nextToken: String): ModelPostConnection
+}
+
+input ModelPostConditionInput {
+  str: ModelStringInput
+  and: [ModelPostConditionInput]
+  or: [ModelPostConditionInput]
+  not: ModelPostConditionInput
+}
+
+input CreatePostInput {
+  id: ID
+  str: String
+}
+
+input UpdatePostInput {
+  id: ID!
+  str: String
+}
+
+input DeletePostInput {
+  id: ID!
+}
+
+type Mutation {
+  createPost(input: CreatePostInput!, condition: ModelPostConditionInput): Post
+  updatePost(input: UpdatePostInput!, condition: ModelPostConditionInput): Post
+  deletePost(input: DeletePostInput!, condition: ModelPostConditionInput): Post
+}
+
+type Subscription {
+  onCreatePost: Post @aws_subscribe(mutations: [\\"createPost\\"])
+  onUpdatePost: Post @aws_subscribe(mutations: [\\"updatePost\\"])
+  onDeletePost: Post @aws_subscribe(mutations: [\\"deletePost\\"])
+}
+
+"
+`;
+
+exports[`ModelTransformer:  should support timestamp parameters when generating pipelineFunctions and output schema 2`] = `
+"## [Start] Create Request template. **
+## Begin - key condition **
+#if( $ctx.stash.metadata.modelObjectKey )
+  #set( $keyConditionExpr = {} )
+  #set( $keyConditionExprNames = {} )
+  #foreach( $entry in $ctx.stash.metadata.modelObjectKey.entrySet() )
+    $util.qr($keyConditionExpr.put(\\"keyCondition$velocityCount\\", {
+  \\"attributeExists\\": false
+}))
+    $util.qr($keyConditionExprNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
+  #end
+  $util.qr($ctx.stash.conditions.add($keyConditionExpr))
+#else
+  $util.qr($ctx.stash.conditions.add({
+  \\"id\\": {
+      \\"attributeExists\\": false
+  }
+}))
+#end
+## End - key condition **
+## Set the default values to put request **
+#set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
+## copy the values from input **
+$util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
+## set the typename **
+$util.qr($mergedValues.put(\\"__typename\\", \\"Post\\"))
+#set( $PutObject = {
+  \\"version\\": \\"2018-05-29\\",
+  \\"operation\\": \\"PutItem\\",
+  \\"attributeValues\\":   $util.dynamodb.toMapValues($mergedValues),
+  \\"condition\\": $condition
+} )
+#if( $context.args.condition )
+  $util.qr($ctx.stash.conditions.add($context.args.condition))
+#end
+## Begin - key condition **
+#if( $ctx.stash.metadata.modelObjectKey )
+  #set( $keyConditionExpr = {} )
+  #set( $keyConditionExprNames = {} )
+  #foreach( $entry in $ctx.stash.metadata.modelObjectKey.entrySet() )
+    $util.qr($keyConditionExpr.put(\\"keyCondition$velocityCount\\", {
+  \\"attributeExists\\": false
+}))
+    $util.qr($keyConditionExprNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
+  #end
+  $util.qr($ctx.stash.conditions.add($keyConditionExpr))
+#else
+  $util.qr($ctx.stash.conditions.add({
+  \\"id\\": {
+      \\"attributeExists\\": false
+  }
+}))
+#end
+## End - key condition **
+## Start condition block **
+#if( $ctx.stash.conditions && $ctx.stash.conditions.size() != 0 )
+  #set( $mergedConditions = {
+  \\"and\\": $ctx.stash.conditions
+} )
+  #set( $Conditions = $util.parseJson($util.transform.toDynamoDBConditionExpression($mergedConditions)) )
+  #if( $Conditions.expressionValues && $Conditions.expressionValues.size() == 0 )
+    #set( $Conditions = {
+  \\"expression\\": $Conditions.expression,
+  \\"expressionNames\\": $Conditions.expressionNames
+} )
+  #end
+  ## End condition block **
+#end
+#if( $Conditions )
+  #if( $keyConditionExprNames )
+    $util.qr($Conditions.expressionNames.putAll($keyConditionExprNames))
+  #end
+  $util.qr($PutObject.put(\\"condition\\", $Conditions))
+#end
+#if( $ctx.stash.metadata.modelObjectKey )
+  $util.qr($PutObject.put(\\"key\\", $ctx.stash.metadata.modelObjectKey))
+#else
+  #set( $Key = {
+  \\"id\\":   $util.dynamodb.toDynamoDB($mergedValues.id)
+} )
+  $util.qr($PutObject.put(\\"key\\", $Key))
+#end
+$util.toJson($PutObject)
+## [End] Create Request template. **"
+`;
+
+exports[`ModelTransformer:  should support timestamp parameters when generating pipelineFunctions and output schema 3`] = `
+"## [Start] Mutation Update resolver. **
+## Set the default values to put request **
+#set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
+## copy the values from input **
+$util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
+## set the typename **
+## Initialize the vars for creating ddb expression **
+#set( $expNames = {} )
+#set( $expValues = {} )
+#set( $expSet = {} )
+#set( $expAdd = {} )
+#set( $expRemove = [] )
+#if( $ctx.stash.metadata.modelObjectKey )
+  #set( $Key = $ctx.stash.metadata.modelObjectKey )
+#else
+  #set( $Key = {
+  \\"id\\":   $util.dynamodb.toDynamoDB($ctx.args.input.id)
+} )
+#end
+## Model key **
+#if( $ctx.stash.metadata.modelObjectKey )
+  #set( $keyFields = [] )
+  #foreach( $entry in $ctx.stash.metadata.modelObjectKey.entrySet() )
+    $util.qr($keyFields.add(\\"$entry.key\\"))
+  #end
+#else
+  #set( $keyFields = [\\"id\\"] )
+#end
+#foreach( $entry in $util.map.copyAndRemoveAllKeys($mergedValues, $keyFields).entrySet() )
+  #if( !$util.isNull($ctx.stash.metadata.dynamodbNameOverrideMap) && $ctx.stash.metadata.dynamodbNameOverrideMap.containsKey(\\"$entry.key\\") )
+    #set( $entryKeyAttributeName = $ctx.stash.metadata.dynamodbNameOverrideMap.get(\\"$entry.key\\") )
+  #else
+    #set( $entryKeyAttributeName = $entry.key )
+  #end
+  #if( $util.isNull($entry.value) )
+    #set( $discard = $expRemove.add(\\"#$entryKeyAttributeName\\") )
+    $util.qr($expNames.put(\\"#$entryKeyAttributeName\\", \\"$entry.key\\"))
+  #else
+    $util.qr($expSet.put(\\"#$entryKeyAttributeName\\", \\":$entryKeyAttributeName\\"))
+    $util.qr($expNames.put(\\"#$entryKeyAttributeName\\", \\"$entry.key\\"))
+    $util.qr($expValues.put(\\":$entryKeyAttributeName\\", $util.dynamodb.toDynamoDB($entry.value)))
+  #end
+#end
+#set( $expression = \\"\\" )
+#if( !$expSet.isEmpty() )
+  #set( $expression = \\"SET\\" )
+  #foreach( $entry in $expSet.entrySet() )
+    #set( $expression = \\"$expression $entry.key = $entry.value\\" )
+    #if( $foreach.hasNext() )
+      #set( $expression = \\"$expression,\\" )
+    #end
+  #end
+#end
+#if( !$expAdd.isEmpty() )
+  #set( $expression = \\"$expression ADD\\" )
+  #foreach( $entry in $expAdd.entrySet() )
+    #set( $expression = \\"$expression $entry.key $entry.value\\" )
+    #if( $foreach.hasNext() )
+      #set( $expression = \\"$expression,\\" )
+    #end
+  #end
+#end
+#if( !$expRemove.isEmpty() )
+  #set( $expression = \\"$expression REMOVE\\" )
+  #foreach( $entry in $expRemove )
+    #set( $expression = \\"$expression $entry\\" )
+    #if( $foreach.hasNext() )
+      #set( $expression = \\"$expression,\\" )
+    #end
+  #end
+#end
+#set( $update = {} )
+$util.qr($update.put(\\"expression\\", \\"$expression\\"))
+#if( !$expNames.isEmpty() )
+  $util.qr($update.put(\\"expressionNames\\", $expNames))
+#end
+#if( !$expValues.isEmpty() )
+  $util.qr($update.put(\\"expressionValues\\", $expValues))
+#end
+## Begin - key condition **
+#if( $ctx.stash.metadata.modelObjectKey )
+  #set( $keyConditionExpr = {} )
+  #set( $keyConditionExprNames = {} )
+  #foreach( $entry in $ctx.stash.metadata.modelObjectKey.entrySet() )
+    $util.qr($keyConditionExpr.put(\\"keyCondition$velocityCount\\", {
+  \\"attributeExists\\": true
+}))
+    $util.qr($keyConditionExprNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
+  #end
+  $util.qr($ctx.stash.conditions.add($keyConditionExpr))
+#else
+  $util.qr($ctx.stash.conditions.add({
+  \\"id\\": {
+      \\"attributeExists\\": true
+  }
+}))
+#end
+## End - key condition **
+#if( $context.args.condition )
+  $util.qr($ctx.stash.conditions.add($context.args.condition))
+#end
+## Start condition block **
+#if( $ctx.stash.conditions && $ctx.stash.conditions.size() != 0 )
+  #set( $mergedConditions = {
+  \\"and\\": $ctx.stash.conditions
+} )
+  #set( $Conditions = $util.parseJson($util.transform.toDynamoDBConditionExpression($mergedConditions)) )
+  #if( $Conditions.expressionValues && $Conditions.expressionValues.size() == 0 )
+    #set( $Conditions = {
+  \\"expression\\": $Conditions.expression,
+  \\"expressionNames\\": $Conditions.expressionNames
+} )
+  #end
+  ## End condition block **
+#end
+#set( $UpdateItem = {
+  \\"version\\": \\"2018-05-29\\",
+  \\"operation\\": \\"UpdateItem\\",
+  \\"key\\": $Key,
+  \\"update\\": $update
+} )
+#if( $Conditions )
+  #if( $keyConditionExprNames )
+    $util.qr($Conditions.expressionNames.putAll($keyConditionExprNames))
+  #end
+  $util.qr($UpdateItem.put(\\"condition\\", $Conditions))
+#end
+$util.toJson($UpdateItem)
+## [End] Mutation Update resolver. **"
 `;

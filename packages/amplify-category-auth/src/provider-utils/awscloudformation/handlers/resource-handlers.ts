@@ -3,7 +3,7 @@ import { getAddAuthDefaultsApplier, getUpdateAuthDefaultsApplier } from '../util
 import { getResourceSynthesizer, getResourceUpdater } from '../utils/synthesize-resources';
 import { getPostAddAuthMetaUpdater, getPostUpdateAuthMetaUpdater } from '../utils/amplify-meta-updaters';
 import { getPostAddAuthMessagePrinter, getPostUpdateAuthMessagePrinter, printSMSSandboxWarning } from '../utils/message-printer';
-import { supportedServices } from '../../supported-services';
+import { getSupportedServices } from '../../supported-services';
 import { doesConfigurationIncludeSMS } from '../utils/auth-sms-workflow-helper';
 
 /**
@@ -12,7 +12,7 @@ import { doesConfigurationIncludeSMS } from '../utils/auth-sms-workflow-helper';
  * @param context The amplify context
  */
 export const getAddAuthHandler = (context: any, skipNextSteps: boolean = false) => async (request: ServiceQuestionsResult) => {
-  const serviceMetadata = supportedServices[request.serviceName];
+  const serviceMetadata = getSupportedServices()[request.serviceName];
   const { cfnFilename, defaultValuesFilename, provider } = serviceMetadata;
 
   let projectName = context.amplify.getProjectConfig().projectName.toLowerCase();
@@ -41,7 +41,7 @@ export const getAddAuthHandler = (context: any, skipNextSteps: boolean = false) 
 };
 
 export const getUpdateAuthHandler = (context: any) => async (request: ServiceQuestionsResult) => {
-  const { cfnFilename, defaultValuesFilename, provider } = supportedServices[request.serviceName];
+  const { cfnFilename, defaultValuesFilename, provider } = getSupportedServices()[request.serviceName];
   const requestWithDefaults = await getUpdateAuthDefaultsApplier(context, defaultValuesFilename, context.updatingAuth)(request);
   try {
     await getResourceUpdater(context, cfnFilename, provider)(requestWithDefaults);

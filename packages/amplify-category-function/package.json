@@ -1,6 +1,6 @@
 {
   "name": "amplify-category-function",
-  "version": "2.34.2",
+  "version": "2.34.6",
   "description": "amplify-cli function plugin",
   "repository": {
     "type": "git",
@@ -22,25 +22,43 @@
     "aws"
   ],
   "dependencies": {
-    "amplify-cli-core": "1.26.0",
+    "amplify-cli-core": "1.28.0",
     "amplify-function-plugin-interface": "1.9.1",
-    "aws-sdk": "^2.930.0",
+    "archiver": "^5.3.0",
+    "aws-sdk": "^2.963.0",
     "chalk": "^4.1.1",
     "cloudform-types": "^4.2.0",
     "enquirer": "^2.3.6",
     "folder-hash": "^4.0.1",
     "fs-extra": "^8.1.0",
     "globby": "^11.0.3",
-    "graphql-transformer-core": "6.29.2",
+    "graphql-transformer-core": "6.29.6",
     "inquirer": "^7.3.3",
     "inquirer-datepicker": "^2.0.0",
     "jstreemap": "^1.28.2",
     "lodash": "^4.17.21",
     "mime-types": "^2.1.26",
+    "ora": "^4.0.3",
     "promise-sequential": "^1.1.1",
     "uuid": "^3.4.0"
   },
   "devDependencies": {
     "@types/folder-hash": "^4.0.0"
+  },
+  "jest": {
+    "collectCoverage": true,
+    "transform": {
+      "^.+\\.tsx?$": "ts-jest"
+    },
+    "testURL": "http://localhost",
+    "testRegex": "((\\.|/)(test|spec))\\.(jsx?|tsx?)$",
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "jsx",
+      "json",
+      "node"
+    ]
   }
 }

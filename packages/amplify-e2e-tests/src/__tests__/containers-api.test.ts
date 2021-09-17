@@ -1,12 +1,19 @@
-import { amplifyConfigureProject, amplifyPushWithoutCodegen, createNewProjectDir, deleteProject, deleteProjectDir, initJSProjectWithProfile, addRestContainerApi } from 'amplify-e2e-core';
+import {
+  addRestContainerApi,
+  amplifyConfigureProject,
+  amplifyPushWithoutCodegen,
+  createNewProjectDir,
+  deleteProject,
+  deleteProjectDir,
+  initJSProjectWithProfile,
+} from 'amplify-e2e-core';
+import fetch from 'node-fetch';
 import { getAWSExports } from '../aws-exports/awsExports';
-
-const fetch = require('node-fetch');
 
 async function setupAmplifyProject(cwd: string) {
   await amplifyConfigureProject({
     cwd,
-    enableContainers: true
+    enableContainers: true,
   });
 }
 
@@ -28,7 +35,9 @@ describe('amplify api add', () => {
     await addRestContainerApi(projRoot);
     await amplifyPushWithoutCodegen(projRoot);
     const awsExports: any = getAWSExports(projRoot).default;
-    const { aws_cloud_logic_custom: [{ name, endpoint }] } = awsExports;
+    const {
+      aws_cloud_logic_custom: [{ name, endpoint }],
+    } = awsExports;
     expect(name).toBeDefined();
     expect(endpoint).toBeDefined();
 

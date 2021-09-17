@@ -3,6 +3,65 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.28.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@1.27.0...amplify-cli-core@1.28.0) (2021-09-14)
+
+
+
+# 5.6.0 (2021-09-14)
+
+
+### Features
+
+* version blocking for CLI ([#7834](https://github.com/aws-amplify/amplify-cli/issues/7834)) ([045ef3b](https://github.com/aws-amplify/amplify-cli/commit/045ef3b83598c287b7e34bb5d1487bbe026026af))
+
+
+### Reverts
+
+* Revert "feat: version blocking for CLI (#7834)" (#8170) ([f5a92e3](https://github.com/aws-amplify/amplify-cli/commit/f5a92e3fcd288ba8f5eb48db62ccf02f6bb7d03d)), closes [#7834](https://github.com/aws-amplify/amplify-cli/issues/7834) [#8170](https://github.com/aws-amplify/amplify-cli/issues/8170)
+
+
+
+
+
+# [1.27.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@1.26.2...amplify-cli-core@1.27.0) (2021-09-09)
+
+
+
+# 5.5.0 (2021-09-07)
+
+
+### Bug Fixes
+
+* runtime hooks readme getting excluded in pkg CLI ([#8100](https://github.com/aws-amplify/amplify-cli/issues/8100)) ([1f491cf](https://github.com/aws-amplify/amplify-cli/commit/1f491cf6dbab4478bff18c084f0ff5c3a6746246))
+
+
+### Features
+
+* Amplify Command Hooks ([#7633](https://github.com/aws-amplify/amplify-cli/issues/7633)) ([4cacaad](https://github.com/aws-amplify/amplify-cli/commit/4cacaadcb87d377a37890b0092bf66c6e7b65b0b))
+
+
+
+
+
+## [1.26.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@1.26.1...amplify-cli-core@1.26.2) (2021-09-02)
+
+
+### Bug Fixes
+
+* **amplify-cli-core:** extend js-yaml.JSON_SCHEMA to inherit json type conversions when parsing .yml cfn templates ([#7909](https://github.com/aws-amplify/amplify-cli/issues/7909)) ([fe5c1ec](https://github.com/aws-amplify/amplify-cli/commit/fe5c1ec63846d531f6828fae98e86464f32a58e4)), closes [#7819](https://github.com/aws-amplify/amplify-cli/issues/7819)
+
+
+
+
+
+## [1.26.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@1.26.0...amplify-cli-core@1.26.1) (2021-08-24)
+
+**Note:** Version bump only for package amplify-cli-core
+
+
+
+
+
 # [1.26.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@1.25.1...amplify-cli-core@1.26.0) (2021-08-06)
 
 

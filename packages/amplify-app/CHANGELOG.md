@@ -3,6 +3,38 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.0.11](https://github.com/aws-amplify/amplify-cli/compare/amplify-app@3.0.10...amplify-app@3.0.11) (2021-09-14)
+
+**Note:** Version bump only for package amplify-app
+
+
+
+
+
+## [3.0.10](https://github.com/aws-amplify/amplify-cli/compare/amplify-app@3.0.9...amplify-app@3.0.10) (2021-09-09)
+
+**Note:** Version bump only for package amplify-app
+
+
+
+
+
+## [3.0.9](https://github.com/aws-amplify/amplify-cli/compare/amplify-app@3.0.8...amplify-app@3.0.9) (2021-09-02)
+
+**Note:** Version bump only for package amplify-app
+
+
+
+
+
+## [3.0.8](https://github.com/aws-amplify/amplify-cli/compare/amplify-app@3.0.7...amplify-app@3.0.8) (2021-08-24)
+
+**Note:** Version bump only for package amplify-app
+
+
+
+
+
 ## [3.0.7](https://github.com/aws-amplify/amplify-cli/compare/amplify-app@3.0.6...amplify-app@3.0.7) (2021-08-06)
 
 **Note:** Version bump only for package amplify-app

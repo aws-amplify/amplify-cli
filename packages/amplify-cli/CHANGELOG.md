@@ -3,6 +3,89 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.6.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@5.5.0...@aws-amplify/cli@5.6.0) (2021-09-14)
+
+
+
+# 5.6.0 (2021-09-14)
+
+
+### Bug Fixes
+
+* incorrect documentation link ([#8148](https://github.com/aws-amplify/amplify-cli/issues/8148)) ([28026e9](https://github.com/aws-amplify/amplify-cli/commit/28026e9a19daf83cde12f04c5e97a909fb18b93c))
+
+
+### Features
+
+* **amplify-category-auth:** add auth verification mechanisms to frontend config ([#8037](https://github.com/aws-amplify/amplify-cli/issues/8037)) ([#8093](https://github.com/aws-amplify/amplify-cli/issues/8093)) ([b8949b2](https://github.com/aws-amplify/amplify-cli/commit/b8949b2b519f6b6a26bcab3596c051acec51e077))
+* version blocking for CLI ([#7834](https://github.com/aws-amplify/amplify-cli/issues/7834)) ([045ef3b](https://github.com/aws-amplify/amplify-cli/commit/045ef3b83598c287b7e34bb5d1487bbe026026af))
+
+
+### Reverts
+
+* Revert "feat: version blocking for CLI (#7834)" (#8170) ([f5a92e3](https://github.com/aws-amplify/amplify-cli/commit/f5a92e3fcd288ba8f5eb48db62ccf02f6bb7d03d)), closes [#7834](https://github.com/aws-amplify/amplify-cli/issues/7834) [#8170](https://github.com/aws-amplify/amplify-cli/issues/8170)
+* Revert "feat(amplify-category-auth): add auth verification mechanisms to frontend config (#8037) (#8093)" (#8158) ([50f07ef](https://github.com/aws-amplify/amplify-cli/commit/50f07efcf7c5663b6fd123d300ec473377d03abe)), closes [#8037](https://github.com/aws-amplify/amplify-cli/issues/8037) [#8093](https://github.com/aws-amplify/amplify-cli/issues/8093) [#8158](https://github.com/aws-amplify/amplify-cli/issues/8158)
+
+
+
+
+
+# [5.5.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@5.4.0...@aws-amplify/cli@5.5.0) (2021-09-09)
+
+
+### Bug Fixes
+
+* runtime hooks readme getting excluded in pkg CLI ([#8100](https://github.com/aws-amplify/amplify-cli/issues/8100)) ([1f491cf](https://github.com/aws-amplify/amplify-cli/commit/1f491cf6dbab4478bff18c084f0ff5c3a6746246))
+
+
+### Features
+
+* Amplify Command Hooks ([#7633](https://github.com/aws-amplify/amplify-cli/issues/7633)) ([4cacaad](https://github.com/aws-amplify/amplify-cli/commit/4cacaadcb87d377a37890b0092bf66c6e7b65b0b))
+
+
+### Reverts
+
+* Revert "fix(cli): better error message when trying to publish with CD configured in Amplify Console (#7874) (#8106) ([61b7fc3](https://github.com/aws-amplify/amplify-cli/commit/61b7fc3b5aed464e879c3b125613e098dd37518d)), closes [#7874](https://github.com/aws-amplify/amplify-cli/issues/7874) [#8106](https://github.com/aws-amplify/amplify-cli/issues/8106) [#8049](https://github.com/aws-amplify/amplify-cli/issues/8049) [#7874](https://github.com/aws-amplify/amplify-cli/issues/7874)
+
+
+
+
+
+# [5.4.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@5.3.1...@aws-amplify/cli@5.4.0) (2021-09-02)
+
+
+### Bug Fixes
+
+* add amplify-prompts dependency to package.json's ([7f313ab](https://github.com/aws-amplify/amplify-cli/commit/7f313ab4534f75afc32e37b9b548e4a0003b5232))
+* **amplify-provider-awscloudformation:** display mfa prompt ([#7866](https://github.com/aws-amplify/amplify-cli/issues/7866)) ([8947b18](https://github.com/aws-amplify/amplify-cli/commit/8947b187bf7a7ff6c998488a9931839ca3169d02))
+* **cli:** better error message when trying to publish with CD configured in Amplify Console ([#7874](https://github.com/aws-amplify/amplify-cli/issues/7874)) ([4f03859](https://github.com/aws-amplify/amplify-cli/commit/4f03859c3a7c092c025c3047e1c5fa581a62a05a)), closes [#7486](https://github.com/aws-amplify/amplify-cli/issues/7486)
+* handle case where there is no appId ([#8049](https://github.com/aws-amplify/amplify-cli/issues/8049)) ([f7e62df](https://github.com/aws-amplify/amplify-cli/commit/f7e62dfcb31f7ba132a2a7a1391ad8cabebeb3ea))
+
+
+### Features
+
+* **cli:** add consistent support for verb / noun swapping ([#7675](https://github.com/aws-amplify/amplify-cli/issues/7675)) ([4319875](https://github.com/aws-amplify/amplify-cli/commit/43198750aeebea064c152e9c65c972fcae634e54)), closes [#7630](https://github.com/aws-amplify/amplify-cli/issues/7630)
+
+
+### Reverts
+
+* Revert "fix(amplify-provider-awscloudformation): display mfa prompt (#7866)" (#8054) ([7b5de7b](https://github.com/aws-amplify/amplify-cli/commit/7b5de7b553e189a47c88e2902a0f21744a16dc10)), closes [#7866](https://github.com/aws-amplify/amplify-cli/issues/7866) [#8054](https://github.com/aws-amplify/amplify-cli/issues/8054)
+
+
+
+
+
+## [5.3.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@5.3.0...@aws-amplify/cli@5.3.1) (2021-08-24)
+
+
+### Bug Fixes
+
+* added await to init invocation ([#7919](https://github.com/aws-amplify/amplify-cli/issues/7919)) ([d8c7556](https://github.com/aws-amplify/amplify-cli/commit/d8c755685d715400fe84fc7400dd7a06bca4ce5c))
+
+
+
+
+
 # [5.3.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@5.2.1...@aws-amplify/cli@5.3.0) (2021-08-06)
 
 

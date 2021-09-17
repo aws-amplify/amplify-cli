@@ -3,6 +3,71 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.26.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@1.25.0...amplify-e2e-core@1.26.0) (2021-09-14)
+
+
+
+# 5.6.0 (2021-09-14)
+
+
+### Bug Fixes
+
+* **amplify-category-function:** specify UTC tz when selecting start time ([#8053](https://github.com/aws-amplify/amplify-cli/issues/8053)) ([5e3d69a](https://github.com/aws-amplify/amplify-cli/commit/5e3d69aef42d02b661a7ffe878f40de8a3881d5a))
+
+
+### Features
+
+* support five new regions in CLI ([#8094](https://github.com/aws-amplify/amplify-cli/issues/8094)) ([98e6c56](https://github.com/aws-amplify/amplify-cli/commit/98e6c56b21cc9a7e1145ab658c3d8611474d5c44))
+* version blocking for CLI ([#7834](https://github.com/aws-amplify/amplify-cli/issues/7834)) ([045ef3b](https://github.com/aws-amplify/amplify-cli/commit/045ef3b83598c287b7e34bb5d1487bbe026026af))
+
+
+### Reverts
+
+* Revert "feat: version blocking for CLI (#7834)" (#8170) ([f5a92e3](https://github.com/aws-amplify/amplify-cli/commit/f5a92e3fcd288ba8f5eb48db62ccf02f6bb7d03d)), closes [#7834](https://github.com/aws-amplify/amplify-cli/issues/7834) [#8170](https://github.com/aws-amplify/amplify-cli/issues/8170)
+
+
+
+
+
+# [1.25.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@1.24.4...amplify-e2e-core@1.25.0) (2021-09-09)
+
+
+### Features
+
+* Amplify Command Hooks ([#7633](https://github.com/aws-amplify/amplify-cli/issues/7633)) ([4cacaad](https://github.com/aws-amplify/amplify-cli/commit/4cacaadcb87d377a37890b0092bf66c6e7b65b0b))
+
+
+### Reverts
+
+* Revert "ci: add windows e2e test coverage" ([0560b0f](https://github.com/aws-amplify/amplify-cli/commit/0560b0f4a16ce8ce0b7efebb2494c7e2eb8601c8))
+
+
+
+
+
+## [1.24.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@1.24.3...amplify-e2e-core@1.24.4) (2021-09-02)
+
+
+
+# 5.4.0 (2021-09-02)
+
+**Note:** Version bump only for package amplify-e2e-core
+
+
+
+
+
+## [1.24.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@1.24.2...amplify-e2e-core@1.24.3) (2021-08-24)
+
+
+### Bug Fixes
+
+* **amplify-category-auth:** fixed no parameter when hostedui is not present ([#7914](https://github.com/aws-amplify/amplify-cli/issues/7914)) ([a83c978](https://github.com/aws-amplify/amplify-cli/commit/a83c978bb18c6fc1980343523c7ee560079cefe5))
+
+
+
+
+
 ## [1.24.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@1.24.1...amplify-e2e-core@1.24.2) (2021-08-06)
 
 

@@ -22,7 +22,8 @@ export * from './utils';
 export * from './banner-message';
 export * from './cliGetCategories';
 export * from './cliRemoveResourcePrompt';
-export * from "./cliViewAPI";
+export * from './cliViewAPI';
+export * from './hooks';
 
 // Temporary types until we can finish full type definition across the whole CLI
 
@@ -202,14 +203,13 @@ export interface AmplifyProjectConfig {
 
 export type $TSCopyJob = any;
 
-
 // Temporary interface until Context refactor
 interface AmplifyToolkit {
   confirmPrompt: (prompt: string, defaultValue?: boolean) => Promise<boolean>;
   constants: $TSAny;
   constructExeInfo: (context: $TSContext) => $TSAny;
   copyBatch: (context: $TSContext, jobs: $TSCopyJob[], props: object, force?: boolean, writeParams?: boolean | object) => $TSAny;
-  crudFlow: () => $TSAny;
+  crudFlow: (role: string, permissionMap?: $TSObject, defaults?: $TSAny[]) => $TSAny;
   deleteProject: () => $TSAny;
   executeProviderUtils: (context: $TSContext, providerName: string, utilName: string, options: $TSAny) => $TSAny;
   getAllEnvs: () => string[];
@@ -256,9 +256,9 @@ interface AmplifyToolkit {
   sharedQuestions: () => $TSAny;
   showAllHelp: () => $TSAny;
   showHelp: (header: string, commands: { name: string; description: string }[]) => $TSAny;
-  showHelpfulProviderLinks: (context : $TSContext) => $TSAny;
+  showHelpfulProviderLinks: (context: $TSContext) => $TSAny;
   showResourceTable: () => $TSAny;
-  showStatusTable:( resourceTableParams : ViewResourceTableParams )=> $TSAny; //Enhanced Status with CFN-Diff
+  showStatusTable: (resourceTableParams: ViewResourceTableParams) => $TSAny; //Enhanced Status with CFN-Diff
   serviceSelectionPrompt: (
     context: $TSContext,
     category: string,
@@ -290,8 +290,8 @@ interface AmplifyToolkit {
   updateBackendConfigAfterResourceUpdate: () => $TSAny;
   updateBackendConfigAfterResourceRemove: () => $TSAny;
   loadEnvResourceParameters: (context: $TSContext, category: string, resourceName: string) => $TSAny;
-  saveEnvResourceParameters: (context: $TSContext, category: string, resourceName: string, envSpecificParams: $TSObject) => $TSAny;
-  removeResourceParameters: () => $TSAny;
+  saveEnvResourceParameters: (context: $TSContext, category: string, resourceName: string, envSpecificParams?: $TSObject) => void;
+  removeResourceParameters: (context: $TSContext, category: string, resource: string) => void;
   triggerFlow: () => $TSAny;
   addTrigger: () => $TSAny;
   updateTrigger: () => $TSAny;
@@ -303,7 +303,7 @@ interface AmplifyToolkit {
   getTriggerPermissions: () => $TSAny;
   getTriggerEnvVariables: () => $TSAny;
   getTriggerEnvInputs: () => $TSAny;
-  getUserPoolGroupList: () => $TSAny;
+  getUserPoolGroupList: () => $TSAny[];
   forceRemoveResource: () => $TSAny;
   writeObjectAsJson: () => $TSAny;
   hashDir: (dir: string, exclude: string[]) => Promise<string>;
@@ -320,5 +320,5 @@ interface AmplifyToolkit {
     unauthRoleArn?: string;
     unauthRoleName?: string;
   };
-  invokePluginMethod: <T>(context: $TSContext, category: string, service: string | null, method: string, args: any[]) => Promise<T>;
+  invokePluginMethod: <T>(context: $TSContext, category: string, service: string | undefined, method: string, args: any[]) => Promise<T>;
 }
