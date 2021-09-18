@@ -3,6 +3,26 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [6.0.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@5.6.0...@aws-amplify/cli@6.0.0) (2021-09-18)
+
+
+
+# 6.0.0 (2021-09-17)
+
+
+### chore
+
+* bump up major version ([#8209](https://github.com/aws-amplify/amplify-cli/issues/8209)) ([53295a2](https://github.com/aws-amplify/amplify-cli/commit/53295a2333dab0e03815db600fdf9bebe39e2e81)), closes [pr#8188](https://github.com/pr/issues/8188)
+
+
+### BREAKING CHANGES
+
+* make usernameAttributes the default behavior for cognito userpools
+
+
+
+
+
 # [5.6.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@5.5.0...@aws-amplify/cli@5.6.0) (2021-09-14)
 
 
