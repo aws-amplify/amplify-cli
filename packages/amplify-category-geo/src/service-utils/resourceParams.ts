@@ -13,17 +13,17 @@ export type ResourceParameters = {
 }
 
 export enum PricingPlan {
-    RequestBasedUsage = "RequestBasedUsage",
-    MobileAssetTracking = "MobileAssetTracking",
-    MobileAssetManagement = "MobileAssetManagement"
+    RequestBasedUsage = 'RequestBasedUsage',
+    MobileAssetTracking = 'MobileAssetTracking',
+    MobileAssetManagement = 'MobileAssetManagement'
 }
 
 export enum AccessType {
-    AuthorizedUsers = "AuthorizedUsers",
-    AuthorizedAndGuestUsers = "AuthorizedAndGuestUsers"
+    AuthorizedUsers = 'AuthorizedUsers',
+    AuthorizedAndGuestUsers = 'AuthorizedAndGuestUsers'
 }
 
 export enum DataProvider {
-    Esri = "Esri",
-    Here = "HERE"
+    Esri = 'Esri',
+    Here = 'HERE'
 }

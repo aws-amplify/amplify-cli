@@ -139,4 +139,4 @@ describe('amplify geo update', () => {
     expect(getGeoJSConfiguration(awsExport).search_indices.default).toEqual(index2Name);
     expect(getGeoJSConfiguration(awsExport).region).toEqual(region);
   });
-})
+});

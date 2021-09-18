@@ -12,7 +12,7 @@ export const choosePricingPlan = `The following choices determine the pricing pl
 export const parametersFileName = 'parameters.json';
 export const provider = 'awscloudformation';
 
-export const enum ServiceName {
+export enum ServiceName {
   Map = "Map",
   PlaceIndex = "PlaceIndex",
   GeofenceCollection = "GeofenceCollection",

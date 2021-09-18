@@ -37,7 +37,7 @@ export const createMapWalkthrough = async (
   const currentMapResources = await getGeoServiceMeta(ServiceName.Map);
   if (currentMapResources && Object.keys(currentMapResources).length > 0) {
     parameters.isDefault = await prompter.yesOrNo(
-        'Do you want to set this map as default? It will be used in Amplify Map API calls if no explicit reference is provided.',
+        'Set this map as the default? It will be used in Amplify Map API calls if no explicit reference is provided.',
         true
     );
   }
