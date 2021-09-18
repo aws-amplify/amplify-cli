@@ -7,7 +7,7 @@
     },
     {
       "id": "AMPLIFY_REMOVE_AUTH_ALIAS_ATTRIBUTES_WARNING",
-      "message": "Attention: The default sign-in configuration for Auth has changed in Amplify CLI version 6 and above. Your current Auth resource was configured with Amplify CLI version 5.2.0 - 5.6.0, inclusive. To retain the previous sign-in configuration upon "amplify add auth", enable the "auth.forceAliasAttributes" feature flag. If you create new auth resources without enabling the feature flag, you may experience breaking and unexpected behavior with your client-side code. Learn more about this change at https://docs.amplify.aws/cli/migration/cli-auth-signup-changes/"
+      "message": "Attention: The default sign-in configuration for Auth has changed in Amplify CLI version 6 and above. Your current Auth resource was configured with Amplify CLI version 5.2.0 - 5.6.0, inclusive. To retain the previous sign-in configuration upon \"amplify add auth\", enable the \"auth.forceAliasAttributes\" feature flag. If you create new auth resources without enabling the feature flag, you may experience breaking and unexpected behavior with your client-side code. Learn more about this change at https://docs.amplify.aws/cli/migration/cli-auth-signup-changes/"
     },
     {
       "id": "COGNITO_SMS_SANDBOX_UPDATE_WARNING",
