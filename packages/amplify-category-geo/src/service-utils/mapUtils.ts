@@ -24,9 +24,6 @@ export const createMapResource = async (context: $TSContext, parameters: MapPara
     await updateDefaultResource(context, ServiceName.Map);
   }
 
-  // update the pricing plan
-  // await updateGeoPricingPlan(context, parameters.pricingPlan);
-
   context.amplify.updateamplifyMetaAfterResourceAdd(
     category,
     parameters.name,
@@ -150,8 +147,7 @@ export const getMapIamPolicies = (
         actions.add('geo:DeleteMap');
         break;
       default:
-        console.log(`${crudOption} not supported`);
-        return [];
+        break;
     }
   });
 

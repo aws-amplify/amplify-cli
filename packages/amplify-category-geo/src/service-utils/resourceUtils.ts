@@ -181,7 +181,7 @@ export const checkAuthConfig = async (context: $TSContext, parameters: Pick<Reso
           authRequirements
         ]);
       } catch (error) {
-        printer.error(error);
+        printer.error(error as string);
         throw error;
       }
     }
@@ -211,7 +211,7 @@ export const getServicePermissionPolicies = (
     case ServiceName.PlaceIndex:
       return getPlaceIndexIamPolicies(resourceName, crudOptions);
     default:
-      console.log(`${service} not supported in category ${category}`);
+      printer.warn(`${service} not supported in category ${category}`);
   }
   return {policy: [], attributes: []};
 }

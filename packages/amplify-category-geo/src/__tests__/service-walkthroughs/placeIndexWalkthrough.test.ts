@@ -237,8 +237,4 @@ describe('Search walkthrough works as expected', () => {
         expect(mockContext.amplify.updateamplifyMetaAfterResourceUpdate)
         .toBeCalledWith(category, secondaryPlaceIndexName, "isDefault", true);
     });
-
-    afterEach(() => {
-        jest.clearAllMocks();
-    });
 });

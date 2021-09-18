@@ -59,7 +59,7 @@ export const getPermissionPolicies = (context: $TSContext, resourceOpsMapping: $
             }
             resourceAttributes.push({ resourceName, attributes, category });
       } catch (e) {
-        printer.warn(`Could not get policies for ${category}: ${resourceName}`);
+        printer.error(`Could not get policies for ${category}: ${resourceName}`);
         throw e;
       }
     });

@@ -38,7 +38,7 @@ export const createPlaceIndexWalkthrough = async (
   const currentPlaceIndexResources = await getGeoServiceMeta(ServiceName.PlaceIndex);
   if (currentPlaceIndexResources && Object.keys(currentPlaceIndexResources).length > 0) {
     parameters.isDefault = await prompter.yesOrNo(
-        `Do you want to set this ${searchServiceFriendlyName} as default? It will be used in Amplify Search API calls if no explicit reference is provided.`,
+        `Set this ${searchServiceFriendlyName} as the default? It will be used in Amplify Search API calls if no explicit reference is provided.`,
         true
     );
   }

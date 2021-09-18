@@ -119,5 +119,4 @@ describe('amplify geo remove', () => {
     expect(getGeoJSConfiguration(awsExport).search_indices.default).toEqual(index2Name);
     expect(getGeoJSConfiguration(awsExport).region).toEqual(region);
   });
-
-})
+});

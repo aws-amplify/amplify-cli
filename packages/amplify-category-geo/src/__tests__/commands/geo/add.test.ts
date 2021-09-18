@@ -4,11 +4,7 @@ import { ServiceName } from '../../../service-utils/constants';
 import { run } from '../../../commands/geo/add';
 
 const mockAddResource = addResource as jest.MockedFunction< typeof addResource >;
-mockAddResource.mockImplementation((context: $TSContext, service: string): Promise<string> => {
-    return new Promise<string>((resolve) => {
-		resolve(service);
-	});
-});
+mockAddResource.mockImplementation(async (_, service: string) => service);
 
 jest.mock('amplify-cli-core');
 jest.mock('../../../provider-controllers/index');

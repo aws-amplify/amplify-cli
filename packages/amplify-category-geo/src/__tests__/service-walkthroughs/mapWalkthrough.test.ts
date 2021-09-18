@@ -242,8 +242,4 @@ describe('Map walkthrough works as expected', () => {
         expect(mockContext.amplify.updateamplifyMetaAfterResourceUpdate)
         .toBeCalledWith(category, secondaryMapName, "isDefault", true);
     });
-
-    afterEach(() => {
-        jest.clearAllMocks();
-    });
 });

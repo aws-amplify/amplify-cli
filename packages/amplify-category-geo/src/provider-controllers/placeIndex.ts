@@ -4,7 +4,7 @@ import { category } from '../constants';
 import { updateDefaultPlaceIndexWalkthrough, createPlaceIndexWalkthrough, updatePlaceIndexWalkthrough } from '../service-walkthroughs/placeIndexWalkthrough';
 import { convertToCompletePlaceIndexParams, PlaceIndexParameters } from '../service-utils/placeIndexParams';
 import { $TSAny, $TSContext } from 'amplify-cli-core';
-import { printNextStepsSuccessMessage, setProviderContext } from './index';
+import { printNextStepsSuccessMessage, setProviderContext, insufficientInfoForUpdateError } from './index';
 import { ServiceName } from '../service-utils/constants';
 import { printer } from 'amplify-prompts';
 
@@ -43,7 +43,7 @@ export const updatePlaceIndexResource = async (
     });
   }
   else {
-    throw new Error('Insufficient information to update Place Index resource.');
+    throw insufficientInfoForUpdateError(ServiceName.PlaceIndex);
   }
 
   printer.success(`Successfully updated resource ${placeIndexParams.name} locally.`);
@@ -65,16 +65,18 @@ export const removePlaceIndexResource = async (
     await updateDefaultPlaceIndexWalkthrough(context, resourceToRemove);
   }
 
-  await amplify.removeResource(context, category, resourceToRemove)
-    .catch((err: $TSAny) => {
-      if (err.stack) {
-        printer.error(err.stack);
-        printer.error(`An error occurred when removing the geo resource ${resourceToRemove}`);
-      }
+  try {
+    await amplify.removeResource(context, category, resourceToRemove);
+  } catch (err: $TSAny) {
+    if (err.stack) {
+      printer.error(err.stack);
+      printer.error(err.message);
+      printer.error(`An error occurred when removing the geo resource ${resourceToRemove}`);
+    }
 
-      context.usageData.emitError(err);
-      process.exitCode = 1;
-  });
+    context.usageData.emitError(err);
+    process.exitCode = 1;
+  }
 
   printNextStepsSuccessMessage(context);
   return resourceToRemove;

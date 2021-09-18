@@ -35,6 +35,7 @@ packages/amplify-category-function/lib
 packages/amplify-category-api/lib
 packages/amplify-category-auth/lib
 packages/amplify-category-storage/lib
+packages/amplify-category-geo/lib/
 packages/amplify-e2e-tests/amplify-e2e-reports
 packages/amplify-console-integration-tests/lib
 packages/amplify-console-integration-tests/console-integration-reports
@@ -66,4 +67,3 @@ packages/**/reports/junit/*
 test.out.log
 *.tsbuildinfo
 packages/amplify-graphiql-explorer/.eslintcache
-packages/amplify-category-geo/lib/

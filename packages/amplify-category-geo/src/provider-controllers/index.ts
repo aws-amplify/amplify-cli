@@ -4,7 +4,8 @@ import { $TSObject, open, stateManager } from 'amplify-cli-core';
 import { $TSContext } from 'amplify-cli-core';
 import { addPlaceIndexResource, updatePlaceIndexResource, removePlaceIndexResource } from './placeIndex';
 import { addMapResource, updateMapResource, removeMapResource } from './map';
-import { printer } from 'amplify-prompts';
+import { printer, prompter } from 'amplify-prompts';
+import { getServiceFriendlyName } from '../service-walkthroughs/resourceWalkthrough';
 
 /**
  * Entry point for creating a new Geo resource
@@ -13,12 +14,10 @@ export const addResource = async (
   context: $TSContext,
   service: string
 ): Promise<string | undefined> => {
-  const BAD_SERVICE_ERR = new Error(`amplify-category-geo is not configured to provide service type ${service}`);
-
   if(!projectHasAuth()) {
     if (
-      await context.amplify.confirmPrompt(
-        'You need to add auth (Amazon Cognito) to your project in order to add geo resources. Do you want to add auth now?',
+      await prompter.yesOrNo(
+        'geo category resources require auth (Amazon Cognito). Do you want to add auth now?',
       )
     ){
       await context.amplify.invokePluginMethod(context, 'auth', undefined, 'add', [context]);
@@ -35,7 +34,7 @@ export const addResource = async (
     case ServiceName.PlaceIndex:
       return addPlaceIndexResource(context);
     default:
-      throw BAD_SERVICE_ERR;
+      throw badServiceError(service);
   }
 };
 
@@ -43,18 +42,16 @@ export const addResource = async (
  * Entry point for updating existing Geo resource
  */
 export const updateResource = async (
-  context: any,
+  context: $TSContext,
   service: string
 ): Promise<string> => {
-  const BAD_SERVICE_ERR = new Error(`amplify-category-geo is not configured to provide service type ${service}`);
-
   switch (service) {
     case ServiceName.Map:
       return updateMapResource(context);
     case ServiceName.PlaceIndex:
       return updatePlaceIndexResource(context);
     default:
-      throw BAD_SERVICE_ERR;
+      throw badServiceError(service);
   }
 };
 
@@ -62,18 +59,16 @@ export const updateResource = async (
  * Entry point for removing existing Geo resource
  */
 export const removeResource = async (
-  context: any,
+  context: $TSContext,
   service: string
 ): Promise<string | undefined> => {
-  const BAD_SERVICE_ERR = new Error(`amplify-category-geo is not configured to provide service type ${service}`);
-
   switch (service) {
     case ServiceName.Map:
       return removeMapResource(context);
     case ServiceName.PlaceIndex:
       return removePlaceIndexResource(context);
     default:
-      throw BAD_SERVICE_ERR;
+      throw badServiceError(service);
   }
 };
 
@@ -118,3 +113,11 @@ export const openConsole = (service: string) => {
   }
   open(url, { wait: false });
 };
+
+const badServiceError = (service: string) => {
+  return new Error(`amplify-category-geo is not configured to provide service type ${service}`);
+}
+
+export const insufficientInfoForUpdateError = (service: ServiceName) => {
+  new Error(`Insufficient information to update ${getServiceFriendlyName(service)}. Please re-try and provide all inputs.`);
+}

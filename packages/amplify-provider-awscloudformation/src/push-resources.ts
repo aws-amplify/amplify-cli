@@ -525,6 +525,10 @@ export async function storeCurrentCloudBackend(context: $TSContext) {
 
 function validateCfnTemplates(context: $TSContext, resourcesToBeUpdated: $TSAny[]) {
   for (const { category, resourceName } of resourcesToBeUpdated) {
+    // Turning off the error log for Geo resources as they're considered invalid by cfn-lint
+    if (category === 'geo') {
+      continue;
+    }
     const backEndDir = pathManager.getBackendDirPath();
     const resourceDir = path.normalize(path.join(backEndDir, category, resourceName));
     const cfnFiles = glob.sync(cfnTemplateGlobPattern, {
@@ -532,8 +536,6 @@ function validateCfnTemplates(context: $TSContext, resourcesToBeUpdated: $TSAny[
       ignore: [parametersJson],
     });
 
-    // Turning off the error log as Geo resources are considered invalid by cfn-lint
-    /*
     for (const cfnFile of cfnFiles) {
       const filePath = path.normalize(path.join(resourceDir, cfnFile));
 
@@ -543,7 +545,6 @@ function validateCfnTemplates(context: $TSContext, resourcesToBeUpdated: $TSAny[
         context.print.warning(`Invalid CloudFormation template: ${filePath}${EOL}${err.message}`);
       }
     }
-    */
   }
 }
 

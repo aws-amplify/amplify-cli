@@ -24,9 +24,6 @@ export const createPlaceIndexResource = async (context: $TSContext, parameters: 
     await updateDefaultResource(context, ServiceName.PlaceIndex);
   }
 
-  // update the pricing plan
-  // await updateGeoPricingPlan(context, parameters.pricingPlan);
-
   context.amplify.updateamplifyMetaAfterResourceAdd(
     category,
     parameters.name,
@@ -138,8 +135,7 @@ export const getPlaceIndexIamPolicies = (
         actions.add('geo:DeletePlaceIndex');
         break;
       default:
-        console.log(`${crudOption} not supported`);
-        return [];
+        break;
     }
   });
 
