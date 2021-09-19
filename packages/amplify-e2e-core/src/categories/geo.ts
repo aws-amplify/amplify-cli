@@ -1,4 +1,4 @@
-import { getCLIPath, nspawn as spawn, KEY_DOWN_ARROW } from '..';
+import { getCLIPath, nspawn as spawn, KEY_DOWN_ARROW, generateRandomShortId } from '..';
 
 export type GeoConfig = {
   isFirstGeoResource?: boolean
@@ -236,10 +236,10 @@ export function removeFirstDefaultMap(cwd: string): Promise<void> {
       .sendCarriageReturn()
       .wait('Select the Map you want to remove')
       .sendCarriageReturn()
-      .wait(defaultMapQuestion)
-      .sendCarriageReturn()
       .wait('Are you sure you want to delete the resource?')
       .sendConfirmYes()
+      .wait('Select the Map you want to set as default:')
+      .sendCarriageReturn()
       .run((err: Error) => {
         if (!err) {
           resolve();
@@ -286,10 +286,10 @@ export function removeFirstDefaultPlaceIndex(cwd: string): Promise<void> {
       .sendCarriageReturn()
       .wait('Select the search index you want to remove')
       .sendCarriageReturn()
-      .wait(defaultSearchIndexQuestion)
-      .sendCarriageReturn()
       .wait('Are you sure you want to delete the resource?')
       .sendConfirmYes()
+      .wait('Select the search index you want to set as default:')
+      .sendCarriageReturn()
       .run((err: Error) => {
         if (!err) {
           resolve();
@@ -305,4 +305,11 @@ export function removeFirstDefaultPlaceIndex(cwd: string): Promise<void> {
  */
 export function getGeoJSConfiguration(awsExports: any): any {
   return awsExports.geo.amazon_location_service;
+}
+
+export function generateTwoResourceIdsInOrder(): string[] {
+  const resourceIdArr: string[] = [];
+  resourceIdArr.push(generateRandomShortId());
+  resourceIdArr.push(generateRandomShortId());
+  return resourceIdArr.sort();
 }

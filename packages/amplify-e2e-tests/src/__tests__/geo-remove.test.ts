@@ -14,6 +14,7 @@ import {
   removeFirstDefaultMap,
   removeFirstDefaultPlaceIndex,
   generateRandomShortId,
+  generateTwoResourceIdsInOrder,
   getGeoJSConfiguration
 } from 'amplify-e2e-core';
 import { existsSync } from 'fs';
@@ -69,8 +70,7 @@ describe('amplify geo remove', () => {
   });
 
   it('init a project with default auth config and two map resources, then remove the default map', async () => {
-    const map1Id = `map${generateRandomShortId()}`;
-    const map2Id = `map${generateRandomShortId()}`;
+    const [map1Id, map2Id] = generateTwoResourceIdsInOrder();
     await initJSProjectWithProfile(projRoot, {});
     await addAuthWithDefault(projRoot);
     await addMapWithDefault(projRoot, { resourceName: map1Id, isFirstGeoResource: true });
@@ -96,8 +96,7 @@ describe('amplify geo remove', () => {
   });
 
   it('init a project with default auth config and two index resources, then remove the default index', async () => {
-    const index1Id = `placeindex${generateRandomShortId()}`;
-    const index2Id = `placeindex${generateRandomShortId()}`;
+    const [index1Id, index2Id] = generateTwoResourceIdsInOrder();
     await initJSProjectWithProfile(projRoot, {});
     await addAuthWithDefault(projRoot);
     await addPlaceIndexWithDefault(projRoot, { resourceName: index1Id, isFirstGeoResource: true });
