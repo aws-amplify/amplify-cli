@@ -14,6 +14,9 @@ const defaultGeoConfig: GeoConfig = {
   resourceName: '\r'
 }
 
+const defaultSearchIndexQuestion = `Set this search index as the default? It will be used in Amplify search index API calls if no explicit reference is provided.`;
+const defaultMapQuestion = `Set this Map as the default? It will be used in Amplify Map API calls if no explicit reference is provided.`;
+
 /**
  * Add map with default values. Assume auth is already configured
  * @param cwd command directory
@@ -38,7 +41,7 @@ export function addMapWithDefault(cwd: string, settings: GeoConfig = {}): Promis
     chain.wait('Do you want to configure advanced settings?').sendConfirmNo();
 
     if (config.isAdditional === true) {
-      chain.wait('Do you want to set this map as default?')
+      chain.wait(defaultMapQuestion)
       if (config.isDefault === true) {
         chain.sendConfirmYes();
       } else {
@@ -80,7 +83,7 @@ export function addPlaceIndexWithDefault(cwd: string, settings: GeoConfig = {}):
     chain.wait('Do you want to configure advanced settings?')
       .sendConfirmNo();
       if (config.isAdditional === true) {
-        chain.wait('Do you want to set this search index as default?');
+        chain.wait(defaultSearchIndexQuestion);
         if (config.isDefault === true) {
           chain.sendConfirmYes();
         } else {
@@ -135,7 +138,7 @@ export function updateSecondMapAsDefault(cwd: string): Promise<void> {
       .sendCarriageReturn()
       .wait('Who can access this Map?')
       .sendCarriageReturn()
-      .wait('Do you want to set this map as default?')
+      .wait(defaultMapQuestion)
       .sendConfirmYes()
       .run((err: Error) => {
         if (!err) {
@@ -187,7 +190,7 @@ export function updateSecondPlaceIndexAsDefault(cwd: string): Promise<void> {
       .sendCarriageReturn()
       .wait('Who can access this Search Index?')
       .sendCarriageReturn()
-      .wait('Do you want to set this search index as default?')
+      .wait(defaultSearchIndexQuestion)
       .sendConfirmYes()
       .run((err: Error) => {
         if (!err) {
@@ -233,7 +236,7 @@ export function removeFirstDefaultMap(cwd: string): Promise<void> {
       .sendCarriageReturn()
       .wait('Select the Map you want to remove')
       .sendCarriageReturn()
-      .wait('Select the Map you want to set as default:')
+      .wait(defaultMapQuestion)
       .sendCarriageReturn()
       .wait('Are you sure you want to delete the resource?')
       .sendConfirmYes()
@@ -283,7 +286,7 @@ export function removeFirstDefaultPlaceIndex(cwd: string): Promise<void> {
       .sendCarriageReturn()
       .wait('Select the search index you want to remove')
       .sendCarriageReturn()
-      .wait('Select the search index you want to set as default:')
+      .wait(defaultSearchIndexQuestion)
       .sendCarriageReturn()
       .wait('Are you sure you want to delete the resource?')
       .sendConfirmYes()

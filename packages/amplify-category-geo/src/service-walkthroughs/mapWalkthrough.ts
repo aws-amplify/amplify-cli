@@ -6,7 +6,7 @@ import { apiDocs, ServiceName } from '../service-utils/constants';
 import { $TSContext } from 'amplify-cli-core';
 import { getCurrentMapParameters, getMapFriendlyNames } from '../service-utils/mapUtils';
 import { getGeoServiceMeta, updateDefaultResource, geoServiceExists, getGeoPricingPlan, checkGeoResourceExists} from '../service-utils/resourceUtils';
-import { resourceAccessWalkthrough, pricingPlanWalkthrough } from './resourceWalkthrough';
+import { resourceAccessWalkthrough, pricingPlanWalkthrough, defaultResourceQuestion } from './resourceWalkthrough';
 import { DataProvider } from '../service-utils/resourceParams';
 import { printer, formatter, prompter, alphanumeric } from 'amplify-prompts';
 
@@ -37,7 +37,7 @@ export const createMapWalkthrough = async (
   const currentMapResources = await getGeoServiceMeta(ServiceName.Map);
   if (currentMapResources && Object.keys(currentMapResources).length > 0) {
     parameters.isDefault = await prompter.yesOrNo(
-        'Set this map as the default? It will be used in Amplify Map API calls if no explicit reference is provided.',
+        defaultResourceQuestion(ServiceName.Map),
         true
     );
   }
@@ -158,7 +158,7 @@ export const updateMapWalkthrough = async (
     const otherMapResources = mapResourceNames.filter(mapResourceName => mapResourceName != resourceToUpdate);
     // if this is the only map, default cannot be removed
     if (otherMapResources.length > 0) {
-        const isDefault = await prompter.yesOrNo('Do you want to set this map as default?', true);
+        const isDefault = await prompter.yesOrNo(defaultResourceQuestion(ServiceName.Map), true);
         // If a default map is updated, ask for new default
         if (parameters.isDefault && !isDefault) {
             await updateDefaultMapWalkthrough(context, resourceToUpdate, otherMapResources);

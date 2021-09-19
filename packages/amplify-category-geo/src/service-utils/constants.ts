@@ -13,8 +13,8 @@ export const parametersFileName = 'parameters.json';
 export const provider = 'awscloudformation';
 
 export enum ServiceName {
-  Map = "Map",
-  PlaceIndex = "PlaceIndex",
-  GeofenceCollection = "GeofenceCollection",
-  Tracker = "Tracker"
+  Map = 'Map',
+  PlaceIndex = 'PlaceIndex',
+  GeofenceCollection = 'GeofenceCollection',
+  Tracker = 'Tracker'
 }

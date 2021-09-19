@@ -1,7 +1,7 @@
-import { chooseServiceMessageRemove, previewBanner, provider } from '../../service-utils/constants';
+import { chooseServiceMessageRemove, provider } from '../../service-utils/constants';
 import { category } from '../../constants';
 import { supportedServices } from '../../supportedServices';
-import { $TSContext } from 'amplify-cli-core';
+import { $TSAny, $TSContext } from 'amplify-cli-core';
 import { removeResource } from '../../provider-controllers';
 import { printer } from 'amplify-prompts';
 
@@ -10,7 +10,6 @@ export const name = 'remove';
 export const run = async(context: $TSContext) => {
   const { amplify } = context;
   try {
-    printer.warn(previewBanner);
     const result: {service: string, providerName: string} = await amplify.serviceSelectionPrompt(context, category, supportedServices, chooseServiceMessageRemove);
 
     if (result.providerName !== provider) {
@@ -20,7 +19,7 @@ export const run = async(context: $TSContext) => {
 
     return await removeResource(context, result.service);
 
-  } catch (error) {
+  } catch (error: $TSAny) {
     if (error.message) {
       printer.error(error.message);
     }

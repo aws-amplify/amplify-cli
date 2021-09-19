@@ -93,3 +93,8 @@ export const getServiceFriendlyName = (service: ServiceName): string => {
             return service;
     }
 };
+
+export const defaultResourceQuestion = (service: ServiceName): string => {
+    const friendlyServiceName = getServiceFriendlyName(service);
+    return `Set this ${friendlyServiceName} as the default? It will be used in Amplify ${friendlyServiceName} API calls if no explicit reference is provided.`;
+}
