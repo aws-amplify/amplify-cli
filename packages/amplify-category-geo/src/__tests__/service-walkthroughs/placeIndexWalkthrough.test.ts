@@ -4,6 +4,7 @@ import { AccessType, DataProvider, PricingPlan } from '../../service-utils/resou
 import { provider, ServiceName } from '../../service-utils/constants';
 import { category } from '../../constants';
 import { printer, prompter } from 'amplify-prompts';
+import { updateDefaultPlaceIndexWalkthrough } from '../../service-walkthroughs/placeIndexWalkthrough';
 
 jest.mock('amplify-cli-core');
 jest.mock('amplify-prompts');
@@ -220,7 +221,9 @@ describe('Search walkthrough works as expected', () => {
 
     it('updates default place index to another place index if it is removed', async() => {
         mockContext.amplify.removeResource = jest.fn().mockReturnValue({
-            catch: jest.fn()
+            then: jest.fn().mockReturnValue(
+                await updateDefaultPlaceIndexWalkthrough(mockContext, mockPlaceIndexName)
+            )
         });
 
         // given the place index to be removed is default

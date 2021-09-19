@@ -60,13 +60,14 @@ export const removeMapResource = async (
 
   const resourceParameters = await getCurrentMapParameters(resourceToRemove);
 
-  // choose another default if removing a default map
-  if (resourceParameters.isDefault) {
-    await updateDefaultMapWalkthrough(context, resourceToRemove);
-  }
-
   try {
-    await amplify.removeResource(context, category, resourceToRemove);
+    await amplify.removeResource(context, category, resourceToRemove)
+    .then(async (resource: { service: string; resourceName: string }) => {
+      if (resource?.service === ServiceName.Map && resourceParameters.isDefault) {
+        // choose another default if removing a default map
+        await updateDefaultMapWalkthrough(context, resource.resourceName);
+      }
+    });
   } catch (err: $TSAny) {
     if (err.stack) {
       printer.error(err.stack);

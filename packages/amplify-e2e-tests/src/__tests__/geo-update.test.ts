@@ -14,19 +14,12 @@ import {
   updatePlaceIndexWithDefault,
   updateSecondMapAsDefault,
   updateSecondPlaceIndexAsDefault,
-  generateRandomShortId,
+  generateTwoResourceIdsInOrder,
   getGeoJSConfiguration
 } from 'amplify-e2e-core';
 import { existsSync } from 'fs';
 import path from 'path';
 import { getAWSExports } from '../aws-exports/awsExports';
-
-export function generateTwoResourceIdsInOrder(): string[] {
-  const resourceIdArr: string[] = [];
-  resourceIdArr.push(generateRandomShortId());
-  resourceIdArr.push(generateRandomShortId());
-  return resourceIdArr.sort();
-}
 
 describe('amplify geo update', () => {
   let projRoot: string;

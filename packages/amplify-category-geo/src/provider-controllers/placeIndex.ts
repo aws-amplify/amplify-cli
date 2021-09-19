@@ -60,13 +60,14 @@ export const removePlaceIndexResource = async (
 
   const resourceParameters = await getCurrentPlaceIndexParameters(resourceToRemove);
 
-  // choose another default if removing a default place index
-  if (resourceParameters.isDefault) {
-    await updateDefaultPlaceIndexWalkthrough(context, resourceToRemove);
-  }
-
   try {
-    await amplify.removeResource(context, category, resourceToRemove);
+    await amplify.removeResource(context, category, resourceToRemove)
+    .then(async (resource: { service: string; resourceName: string }) => {
+      if (resource?.service === ServiceName.PlaceIndex && resourceParameters.isDefault) {
+        // choose another default if removing a default place index
+        await updateDefaultPlaceIndexWalkthrough(context, resource.resourceName);
+      }
+    });
   } catch (err: $TSAny) {
     if (err.stack) {
       printer.error(err.stack);

@@ -4,6 +4,7 @@ import { AccessType, DataProvider, PricingPlan } from '../../service-utils/resou
 import { provider, ServiceName, apiDocs } from '../../service-utils/constants';
 import { category } from '../../constants';
 import { printer, prompter } from 'amplify-prompts';
+import { updateDefaultMapWalkthrough } from '../../service-walkthroughs/mapWalkthrough';
 
 jest.mock('amplify-cli-core');
 jest.mock('amplify-prompts');
@@ -225,7 +226,9 @@ describe('Map walkthrough works as expected', () => {
 
     it('updates default map to another map if it is removed', async() => {
         mockContext.amplify.removeResource = jest.fn().mockReturnValue({
-            catch: jest.fn()
+            then: jest.fn().mockReturnValue(
+                await updateDefaultMapWalkthrough(mockContext, mockMapName)
+            )
         });
 
         // given the map to be removed is default
