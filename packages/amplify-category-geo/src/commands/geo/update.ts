@@ -1,7 +1,7 @@
-import { chooseServiceMessageUpdate, previewBanner, provider } from '../../service-utils/constants';
+import { chooseServiceMessageUpdate, provider } from '../../service-utils/constants';
 import { category } from '../../constants';
 import { supportedServices } from '../../supportedServices';
-import { $TSContext } from 'amplify-cli-core';
+import { $TSAny, $TSContext } from 'amplify-cli-core';
 import { updateResource } from '../../provider-controllers';
 import { printer } from 'amplify-prompts';
 
@@ -10,7 +10,6 @@ export const name = 'update';
 export const run = async(context: $TSContext) => {
   const { amplify } = context;
   try {
-    printer.warn(previewBanner);
     const result: {service: string, providerName: string} = await amplify.serviceSelectionPrompt(context, category, supportedServices, chooseServiceMessageUpdate);
 
     if (result.providerName !== provider) {
@@ -20,7 +19,7 @@ export const run = async(context: $TSContext) => {
 
     return await updateResource(context, result.service);
 
-  } catch (error) {
+  } catch (error:$TSAny) {
     if (error.message) {
       printer.error(error.message);
     }

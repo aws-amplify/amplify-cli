@@ -6,7 +6,7 @@ import { apiDocs, ServiceName } from '../service-utils/constants';
 import { $TSContext } from 'amplify-cli-core';
 import { getCurrentPlaceIndexParameters } from '../service-utils/placeIndexUtils';
 import { getGeoServiceMeta, updateDefaultResource, geoServiceExists, getGeoPricingPlan, checkGeoResourceExists } from '../service-utils/resourceUtils';
-import { resourceAccessWalkthrough, pricingPlanWalkthrough, dataProviderWalkthrough, getServiceFriendlyName } from './resourceWalkthrough';
+import { resourceAccessWalkthrough, pricingPlanWalkthrough, dataProviderWalkthrough, getServiceFriendlyName, defaultResourceQuestion } from './resourceWalkthrough';
 import { DataProvider, PricingPlan } from '../service-utils/resourceParams';
 import { printer, formatter, prompter, alphanumeric } from 'amplify-prompts';
 
@@ -38,7 +38,7 @@ export const createPlaceIndexWalkthrough = async (
   const currentPlaceIndexResources = await getGeoServiceMeta(ServiceName.PlaceIndex);
   if (currentPlaceIndexResources && Object.keys(currentPlaceIndexResources).length > 0) {
     parameters.isDefault = await prompter.yesOrNo(
-        `Set this ${searchServiceFriendlyName} as the default? It will be used in Amplify Search API calls if no explicit reference is provided.`,
+        defaultResourceQuestion(ServiceName.PlaceIndex),
         true
     );
   }
@@ -156,7 +156,7 @@ export const updatePlaceIndexWalkthrough = async (
     const otherIndexResources = indexResourceNames.filter(indexResourceName => indexResourceName != resourceToUpdate);
     // if this is the only place index, default cannot be removed
     if (otherIndexResources.length > 0) {
-        const isDefault = await prompter.yesOrNo(`Do you want to set this ${searchServiceFriendlyName} as default?`, true);
+        const isDefault = await prompter.yesOrNo(defaultResourceQuestion(ServiceName.PlaceIndex), true);
         // If a default place index is updated, ask for new default
         if (parameters.isDefault && !isDefault) {
             await updateDefaultPlaceIndexWalkthrough(context, resourceToUpdate, otherIndexResources);
