@@ -221,7 +221,7 @@ describe('Map walkthrough works as expected', () => {
         const removeWalkthrough = require('../../service-walkthroughs/removeWalkthrough').removeWalkthrough;
         await removeWalkthrough(mockContext, service);
 
-        expect(printer.error).toBeCalledWith(`No ${service} type resource exists in the project.`);
+        expect(printer.error).toBeCalledWith(`No Map exists in the project.`);
     });
 
     it('updates default map to another map if it is removed', async() => {
