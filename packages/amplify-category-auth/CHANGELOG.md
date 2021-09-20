@@ -3,6 +3,21 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.38.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.38.0...amplify-category-auth@2.38.1) (2021-09-20)
+
+
+
+## 6.0.1 (2021-09-20)
+
+
+### Bug Fixes
+
+* **amplify-category-auth:** handle undefined aliasattributes ([#8222](https://github.com/aws-amplify/amplify-cli/issues/8222)) ([c3b89af](https://github.com/aws-amplify/amplify-cli/commit/c3b89afbc410dd5de7964a8002dd4dc459199d00))
+
+
+
+
+
 # [2.38.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.37.0...amplify-category-auth@2.38.0) (2021-09-18)
 
 

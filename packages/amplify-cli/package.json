@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/cli",
-  "version": "6.0.0",
+  "version": "6.0.1",
   "description": "Amplify CLI",
   "repository": {
     "type": "git",
@@ -37,7 +37,7 @@
     "amplify-app": "3.0.12",
     "amplify-category-analytics": "2.21.21",
     "amplify-category-api": "2.31.23",
-    "amplify-category-auth": "2.38.0",
+    "amplify-category-auth": "2.38.1",
     "amplify-category-function": "2.34.7",
     "amplify-category-hosting": "2.7.21",
     "amplify-category-interactions": "2.6.5",
