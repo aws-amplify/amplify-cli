@@ -31,7 +31,7 @@ export type AppSyncAuthConfigurationOIDCEntry = {
 
 export type AppSyncAuthConfigurationLambdaEntry = {
   authenticationType: 'AWS_LAMBDA';
-  openIDConnectConfig: LambdaConnectConfig;
+  lambdaConnectConfig: LambdaConnectConfig;
 };
 
 export type ApiKeyConfig = {

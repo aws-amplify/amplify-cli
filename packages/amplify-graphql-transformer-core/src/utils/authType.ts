@@ -54,6 +54,18 @@ export function adoptAuthMode(stackManager: StackManager, entry: AppSyncAuthConf
           tokenExpiryFromIssue: strToNumber(entry.openIDConnectConfig!.iatTTL),
         },
       };
+    case 'AWS_LAMBDA':
+    // case AuthorizationType.AWS_LAMBDA:
+      // return {
+      //   authorizationType: authType,
+      //   lambdaConnectConfig: {
+      //     lambdaFunction: entry.lambdaConnectConfig!.lambdaFunction,
+      //     ttlSeconds: entry.lambdaConnectConfig!.ttlSeconds,
+      //   },
+      // };
+      return {
+        authorizationType: authType,
+      };
     default:
       throw new Error('Invalid auth config');
   }
