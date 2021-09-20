@@ -1,3 +1,5 @@
+import { FeatureFlags } from 'amplify-cli-core';
+FeatureFlags.getBoolean = () => false;
 import { ServiceQuestionsResult, AttributeType } from '../../../../provider-utils/awscloudformation/service-walkthrough-types';
 import { doesConfigurationIncludeSMS } from '../../../../provider-utils/awscloudformation/utils/auth-sms-workflow-helper';
 

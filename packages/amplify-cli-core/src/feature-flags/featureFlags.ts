@@ -581,6 +581,12 @@ export class FeatureFlags {
         defaultValueForExistingProjects: false,
         defaultValueForNewProjects: true,
       },
+      {
+        name: 'forceAliasAttributes',
+        type: 'boolean',
+        defaultValueForExistingProjects: false,
+        defaultValueForNewProjects: false,
+      },
     ]);
 
     this.registerFlag('codegen', [
@@ -642,8 +648,8 @@ export class FeatureFlags {
         name: 'enableDartNullSafety',
         type: 'boolean',
         defaultValueForExistingProjects: false,
-        defaultValueForNewProjects: true
-      }
+        defaultValueForNewProjects: true,
+      },
     ]);
 
     this.registerFlag('appSync', [
