@@ -5,6 +5,7 @@ import { initializeEnv } from '../../initialize-env';
 import { getProviderPlugins } from './get-provider-plugins';
 import { getEnvInfo } from './get-env-info';
 import { EnvironmentDoesNotExistError, exitOnNextTick, stateManager, $TSAny, $TSContext } from 'amplify-cli-core';
+import { searchablePushChecks } from './searchable-push-checks';
 
 export async function pushResources(
   context: $TSContext,
@@ -64,6 +65,7 @@ export async function pushResources(
     if (context.exeInfo.iterativeRollback) {
       context.print.info('The CLI will rollback the last known iterative deployment.');
     }
+    searchablePushChecks(context);
     continueToPush = await context.amplify.confirmPrompt('Are you sure you want to continue?');
   }
 
