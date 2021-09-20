@@ -38,7 +38,7 @@ module.exports = {
           const authAttributes = JSON.parse(
             fs.readFileSync(pathManager.getResourceParametersFilePath(undefined, 'auth', services[i])).toString(),
           );
-          if (authAttributes.aliasAttributes.length > 0) {
+          if (authAttributes.aliasAttributes && authAttributes.aliasAttributes.length > 0) {
             const authUpdateWarning = await BannerMessage.getMessage('AMPLIFY_UPDATE_AUTH_ALIAS_ATTRIBUTES_WARNING');
             printer.warn(authUpdateWarning);
           }
