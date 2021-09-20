@@ -126,7 +126,7 @@ export function getFrontendConfig(authParameters: AuthParameters) {
     });
   }
 
-  if (loginMechanisms.size == 0) {
+  if (loginMechanisms.size === 0) {
     loginMechanisms.add('PREFERRED_USERNAME');
   }
 
