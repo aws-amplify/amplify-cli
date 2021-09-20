@@ -85,7 +85,7 @@ export function ensureAmplifyMetaFrontendConfig(amplifyMeta?) {
   const authParameters: AuthParameters = stateManager.getResourceParametersJson(undefined, 'auth', authResourceName);
   const frontendAuthConfig = getFrontendConfig(authParameters);
 
-  amplifyMeta.auth[authResourceName].frontendAuthConfig = amplifyMeta.auth[authResourceName].frontendAuthConfig ?? {};
+  amplifyMeta.auth[authResourceName].frontendAuthConfig ??= {};
   const metaFrontendAuthConfig = amplifyMeta.auth[authResourceName].frontendAuthConfig;
   Object.keys(frontendAuthConfig).forEach(key => {
     if (!metaFrontendAuthConfig.hasOwnProperty(key)) {
