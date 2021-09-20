@@ -8,12 +8,13 @@ import { getServiceFriendlyName } from './resourceWalkthrough';
  */
 export const removeWalkthrough = async (context: $TSContext ,service: ServiceName) : Promise<string | undefined> => {
     const resources = await getServiceResources(context, service);
+    const serviceFriendlyName = getServiceFriendlyName(service);
 
     if (resources.length === 0) {
-        printer.error(`No ${service} type resource exists in the project.`);
+        printer.error(`No ${serviceFriendlyName} exists in the project.`);
         return;
     }
-    return await prompter.pick(`Select the ${getServiceFriendlyName(service)} you want to remove`, resources);
+    return await prompter.pick(`Select the ${serviceFriendlyName} you want to remove`, resources);
 };
 
 const getServiceResources = async (context: $TSContext, service: string): Promise<string[]> => {

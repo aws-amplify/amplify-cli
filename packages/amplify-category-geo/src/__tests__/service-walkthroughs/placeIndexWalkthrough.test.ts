@@ -216,7 +216,7 @@ describe('Search walkthrough works as expected', () => {
         const removeWalkthrough = require('../../service-walkthroughs/removeWalkthrough').removeWalkthrough;
         await removeWalkthrough(mockContext, service);
 
-        expect(printer.error).toBeCalledWith(`No ${service} type resource exists in the project.`);
+        expect(printer.error).toBeCalledWith(`No search index exists in the project.`);
     });
 
     it('updates default place index to another place index if it is removed', async() => {
