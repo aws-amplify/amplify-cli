@@ -62,7 +62,7 @@ export class CLIInputSchemaGenerator {
       const svcAbsoluteFilePath = this.getSvcFileAbsolutePath(typeDef.service);
       console.log(svcAbsoluteFilePath);
       //generate json-schema from the input-types
-      const typeSchema = buildGenerator(getProgramFromFiles([svcAbsoluteFilePath]), settings)!.getSchemaForSymbol(typeDef.typeName);
+      const typeSchema = buildGenerator(getProgramFromFiles([svcAbsoluteFilePath]), settings)?.getSchemaForSymbol(typeDef.typeName);
       //save json-schema file for the input-types. (used to validate cli-inputs.json)
       const outputSchemaFilePath = path.resolve(
         path.join(this.SCHEMA_FILES_ROOT, typeDef.service, this.getSchemaFileNameForType(typeDef.typeName)),
@@ -97,18 +97,26 @@ export class CLIInputSchemaValidator {
 
   async getUserInputSchema() {
     try {
-      return await import(`amplify-category-${this._category}/resources/schemas/${this._service}/${this._schemaFileName}.schema.json`);
+      return await import(
+        `@aws-amplify/amplify-category-${this._category}/src/provider-utils/awscloudformation/schemas/${this._service}/${this._schemaFileName}.schema.json`
+      );
     } catch (ex) {
-      return; // resolve the promise with void if the schema does not exist
+      throw new Error(
+        `Schema defination doesnt exist : amplify-category-${this._category}-v2/src/provider-utils/awscloudformation/schemas/${this._service}/${this._schemaFileName}.schema.json`,
+      );
     }
   }
 
-  async validateInput(userInput: string) {
-    try {
-      const userInputSchema = await this.getUserInputSchema();
-      return this._ajv.validate(userInputSchema, userInput);
-    } catch (ex) {
-      return;
+  async validateInput(userInput: string): Promise<boolean> {
+    const userInputSchema = await this.getUserInputSchema();
+    if (userInputSchema.dependencySchemas) {
+      userInputSchema.dependencySchemas.reduce((acc: { addSchema: (arg0: any) => any }, it: any) => acc.addSchema(it), this._ajv);
     }
+    const validate = this._ajv.compile(userInputSchema);
+    const input = JSON.parse(userInput);
+    if (!validate(input) as boolean) {
+      throw new Error(`Data did not validate against the supplied schema. Underlying errors were ${JSON.stringify(validate.errors)}`);
+    }
+    return true;
   }
 }
