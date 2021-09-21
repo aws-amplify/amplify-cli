@@ -39,8 +39,11 @@ import {
 import { print } from 'graphql';
 import { hashDirectory } from './upload-appsync-files';
 import { exitOnNextTick, FeatureFlags } from 'amplify-cli-core';
-import { transformGraphQLSchema as transformGraphQLSchemaV6 } from './graphql-transformer/transform-graphql-schema';
 import { migrateToV2Transformer } from '@aws-amplify/graphql-transformer-core/lib/migration/migrate';
+import {
+  transformGraphQLSchema as transformGraphQLSchemaV6,
+  getDirectiveDefinitions as getDirectiveDefinitionsV6,
+} from './graphql-transformer/transform-graphql-schema';
 
 const apiCategory = 'api';
 const storageCategory = 'storage';
@@ -77,9 +80,8 @@ function getTransformerFactory(context, resourceDir, authConfig?) {
     }
 
     const customTransformersConfig: TransformConfig = await readTransformerConfiguration(resourceDir);
-    const customTransformers = (customTransformersConfig && customTransformersConfig.transformers
-      ? customTransformersConfig.transformers
-      : []
+    const customTransformers = (
+      customTransformersConfig && customTransformersConfig.transformers ? customTransformersConfig.transformers : []
     )
       .map(transformer => {
         const fileUrlMatch = /^file:\/\/(.*)\s*$/m.exec(transformer);
@@ -543,6 +545,11 @@ async function getPreviousDeploymentRootKey(previouslyDeployedBackendDir) {
 // }
 
 export async function getDirectiveDefinitions(context, resourceDir) {
+  const useExperimentalPipelineTransformer = FeatureFlags.getBoolean('graphQLTransformer.useExperimentalPipelinedTransformer');
+  if (useExperimentalPipelineTransformer) {
+    return getDirectiveDefinitionsV6(context, resourceDir);
+  }
+
   const transformList = await getTransformerFactory(context, resourceDir)(true);
   const appSynDirectives = getAppSyncServiceExtraDirectives();
   const transformDirectives = transformList
