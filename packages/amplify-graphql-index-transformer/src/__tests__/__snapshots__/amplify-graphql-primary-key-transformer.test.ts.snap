@@ -13,25 +13,6 @@ $util.toJson({
   \\"payload\\": {}
 })
 ## [End] Initialization default values. **",
-  "Mutation.createTest.postAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
-#set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
-$util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
-## [End] Merge default values and inputs. **
-## [Start] Set the primary key. **
-$util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
-  \\"email\\": $util.dynamodb.toDynamoDB($mergedValues.email),
-  \\"kind#other\\": $util.dynamodb.toDynamoDB(\\"\${mergedValues.kind}#\${mergedValues.other}\\")
-}))
-## [End] Set the primary key. **
-#if( $util.isNull($ctx.stash.metadata.dynamodbNameOverrideMap) )
-  $util.qr($ctx.stash.metadata.put(\\"dynamodbNameOverrideMap\\", {
-  \\"kind#other\\": \\"kindOther\\"
-}))
-#else
-  $util.qr($ctx.stash.metadata.dynamodbNameOverrideMap.put(\\"kind#other\\", \\"kindOther\\"))
-#end
-$util.qr($ctx.args.input.put(\\"kind#other\\",\\"\${mergedValues.kind}#\${mergedValues.other}\\"))
-{}",
   "Mutation.createTest.req.vtl": "## [Start] Create Request template. **
 ## Begin - key condition **
 #if( $ctx.stash.metadata.modelObjectKey )
@@ -123,17 +104,6 @@ $util.toJson($PutObject)
   $util.toJson($ctx.result)
 #end
 ## [End] Get ResponseTemplate. **",
-  "Mutation.deleteTest.postAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
-#set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
-$util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
-## [End] Merge default values and inputs. **
-## [Start] Set the primary key. **
-$util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
-  \\"email\\": $util.dynamodb.toDynamoDB($mergedValues.email),
-  \\"kind#other\\": $util.dynamodb.toDynamoDB(\\"\${mergedValues.kind}#\${mergedValues.other}\\")
-}))
-## [End] Set the primary key. **
-{}",
   "Mutation.deleteTest.req.vtl": "## [Start] Delete Request template. **
 #set( $DeleteRequest = {
   \\"version\\": \\"2018-05-29\\",
@@ -207,25 +177,6 @@ $util.toJson({
   \\"payload\\": {}
 })
 ## [End] Initialization default values. **",
-  "Mutation.updateTest.postAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
-#set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
-$util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
-## [End] Merge default values and inputs. **
-## [Start] Set the primary key. **
-$util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
-  \\"email\\": $util.dynamodb.toDynamoDB($mergedValues.email),
-  \\"kind#other\\": $util.dynamodb.toDynamoDB(\\"\${mergedValues.kind}#\${mergedValues.other}\\")
-}))
-## [End] Set the primary key. **
-#if( $util.isNull($ctx.stash.metadata.dynamodbNameOverrideMap) )
-  $util.qr($ctx.stash.metadata.put(\\"dynamodbNameOverrideMap\\", {
-  \\"kind#other\\": \\"kindOther\\"
-}))
-#else
-  $util.qr($ctx.stash.metadata.dynamodbNameOverrideMap.put(\\"kind#other\\", \\"kindOther\\"))
-#end
-$util.qr($ctx.args.input.put(\\"kind#other\\",\\"\${mergedValues.kind}#\${mergedValues.other}\\"))
-{}",
   "Mutation.updateTest.req.vtl": "## [Start] Mutation Update resolver. **
 ## Set the default values to put request **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
@@ -556,18 +507,6 @@ $util.toJson({
   \\"payload\\": {}
 })
 ## [End] Initialization default values. **",
-  "Mutation.createTest.postAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
-#set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
-$util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
-## [End] Merge default values and inputs. **
-## [Start] Set the primary key. **
-$util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
-  \\"email\\": $util.dynamodb.toDynamoDB($mergedValues.email),
-  \\"kind\\": $util.dynamodb.toDynamoDB($mergedValues.kind)
-}))
-## [End] Set the primary key. **
-
-{}",
   "Mutation.createTest.req.vtl": "## [Start] Create Request template. **
 ## Begin - key condition **
 #if( $ctx.stash.metadata.modelObjectKey )
@@ -659,17 +598,6 @@ $util.toJson($PutObject)
   $util.toJson($ctx.result)
 #end
 ## [End] Get ResponseTemplate. **",
-  "Mutation.deleteTest.postAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
-#set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
-$util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
-## [End] Merge default values and inputs. **
-## [Start] Set the primary key. **
-$util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
-  \\"email\\": $util.dynamodb.toDynamoDB($mergedValues.email),
-  \\"kind\\": $util.dynamodb.toDynamoDB($mergedValues.kind)
-}))
-## [End] Set the primary key. **
-{}",
   "Mutation.deleteTest.req.vtl": "## [Start] Delete Request template. **
 #set( $DeleteRequest = {
   \\"version\\": \\"2018-05-29\\",
@@ -743,18 +671,6 @@ $util.toJson({
   \\"payload\\": {}
 })
 ## [End] Initialization default values. **",
-  "Mutation.updateTest.postAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
-#set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
-$util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
-## [End] Merge default values and inputs. **
-## [Start] Set the primary key. **
-$util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
-  \\"email\\": $util.dynamodb.toDynamoDB($mergedValues.email),
-  \\"kind\\": $util.dynamodb.toDynamoDB($mergedValues.kind)
-}))
-## [End] Set the primary key. **
-
-{}",
   "Mutation.updateTest.req.vtl": "## [Start] Mutation Update resolver. **
 ## Set the default values to put request **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
@@ -1039,17 +955,6 @@ $util.toJson({
   \\"payload\\": {}
 })
 ## [End] Initialization default values. **",
-  "Mutation.createTest.postAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
-#set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
-$util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
-## [End] Merge default values and inputs. **
-## [Start] Set the primary key. **
-$util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
-  \\"email\\": $util.dynamodb.toDynamoDB($mergedValues.email)
-}))
-## [End] Set the primary key. **
-
-{}",
   "Mutation.createTest.req.vtl": "## [Start] Create Request template. **
 ## Begin - key condition **
 #if( $ctx.stash.metadata.modelObjectKey )
@@ -1141,16 +1046,6 @@ $util.toJson($PutObject)
   $util.toJson($ctx.result)
 #end
 ## [End] Get ResponseTemplate. **",
-  "Mutation.deleteTest.postAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
-#set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
-$util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
-## [End] Merge default values and inputs. **
-## [Start] Set the primary key. **
-$util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
-  \\"email\\": $util.dynamodb.toDynamoDB($mergedValues.email)
-}))
-## [End] Set the primary key. **
-{}",
   "Mutation.deleteTest.req.vtl": "## [Start] Delete Request template. **
 #set( $DeleteRequest = {
   \\"version\\": \\"2018-05-29\\",
@@ -1224,17 +1119,6 @@ $util.toJson({
   \\"payload\\": {}
 })
 ## [End] Initialization default values. **",
-  "Mutation.updateTest.postAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
-#set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
-$util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
-## [End] Merge default values and inputs. **
-## [Start] Set the primary key. **
-$util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
-  \\"email\\": $util.dynamodb.toDynamoDB($mergedValues.email)
-}))
-## [End] Set the primary key. **
-
-{}",
   "Mutation.updateTest.req.vtl": "## [Start] Mutation Update resolver. **
 ## Set the default values to put request **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
@@ -1475,18 +1359,6 @@ $util.toJson({
   \\"payload\\": {}
 })
 ## [End] Initialization default values. **",
-  "Mutation.createTest.postAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
-#set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
-$util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
-## [End] Merge default values and inputs. **
-## [Start] Set the primary key. **
-$util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
-  \\"status\\": $util.dynamodb.toDynamoDB($mergedValues.status),
-  \\"lastStatus\\": $util.dynamodb.toDynamoDB($mergedValues.lastStatus)
-}))
-## [End] Set the primary key. **
-
-{}",
   "Mutation.createTest.req.vtl": "## [Start] Create Request template. **
 ## Begin - key condition **
 #if( $ctx.stash.metadata.modelObjectKey )
@@ -1578,17 +1450,6 @@ $util.toJson($PutObject)
   $util.toJson($ctx.result)
 #end
 ## [End] Get ResponseTemplate. **",
-  "Mutation.deleteTest.postAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
-#set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
-$util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
-## [End] Merge default values and inputs. **
-## [Start] Set the primary key. **
-$util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
-  \\"status\\": $util.dynamodb.toDynamoDB($mergedValues.status),
-  \\"lastStatus\\": $util.dynamodb.toDynamoDB($mergedValues.lastStatus)
-}))
-## [End] Set the primary key. **
-{}",
   "Mutation.deleteTest.req.vtl": "## [Start] Delete Request template. **
 #set( $DeleteRequest = {
   \\"version\\": \\"2018-05-29\\",
@@ -1662,18 +1523,6 @@ $util.toJson({
   \\"payload\\": {}
 })
 ## [End] Initialization default values. **",
-  "Mutation.updateTest.postAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
-#set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
-$util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
-## [End] Merge default values and inputs. **
-## [Start] Set the primary key. **
-$util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
-  \\"status\\": $util.dynamodb.toDynamoDB($mergedValues.status),
-  \\"lastStatus\\": $util.dynamodb.toDynamoDB($mergedValues.lastStatus)
-}))
-## [End] Set the primary key. **
-
-{}",
   "Mutation.updateTest.req.vtl": "## [Start] Mutation Update resolver. **
 ## Set the default values to put request **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
@@ -1958,18 +1807,6 @@ $util.toJson({
   \\"payload\\": {}
 })
 ## [End] Initialization default values. **",
-  "Mutation.createTest.postAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
-#set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
-$util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
-## [End] Merge default values and inputs. **
-## [Start] Set the primary key. **
-$util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
-  \\"id\\": $util.dynamodb.toDynamoDB($mergedValues.id),
-  \\"email\\": $util.dynamodb.toDynamoDB($mergedValues.email)
-}))
-## [End] Set the primary key. **
-
-{}",
   "Mutation.createTest.req.vtl": "## [Start] Create Request template. **
 ## Begin - key condition **
 #if( $ctx.stash.metadata.modelObjectKey )
@@ -2061,17 +1898,6 @@ $util.toJson($PutObject)
   $util.toJson($ctx.result)
 #end
 ## [End] Get ResponseTemplate. **",
-  "Mutation.deleteTest.postAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
-#set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
-$util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
-## [End] Merge default values and inputs. **
-## [Start] Set the primary key. **
-$util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
-  \\"id\\": $util.dynamodb.toDynamoDB($mergedValues.id),
-  \\"email\\": $util.dynamodb.toDynamoDB($mergedValues.email)
-}))
-## [End] Set the primary key. **
-{}",
   "Mutation.deleteTest.req.vtl": "## [Start] Delete Request template. **
 #set( $DeleteRequest = {
   \\"version\\": \\"2018-05-29\\",
@@ -2147,18 +1973,6 @@ $util.toJson({
   \\"payload\\": {}
 })
 ## [End] Initialization default values. **",
-  "Mutation.testCreate.postAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
-#set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
-$util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
-## [End] Merge default values and inputs. **
-## [Start] Set the primary key. **
-$util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
-  \\"id\\": $util.dynamodb.toDynamoDB($mergedValues.id),
-  \\"email\\": $util.dynamodb.toDynamoDB($mergedValues.email)
-}))
-## [End] Set the primary key. **
-
-{}",
   "Mutation.testCreate.req.vtl": "## [Start] Create Request template. **
 ## Begin - key condition **
 #if( $ctx.stash.metadata.modelObjectKey )
@@ -2250,17 +2064,6 @@ $util.toJson($PutObject)
   $util.toJson($ctx.result)
 #end
 ## [End] Get ResponseTemplate. **",
-  "Mutation.testDelete.postAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
-#set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
-$util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
-## [End] Merge default values and inputs. **
-## [Start] Set the primary key. **
-$util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
-  \\"id\\": $util.dynamodb.toDynamoDB($mergedValues.id),
-  \\"email\\": $util.dynamodb.toDynamoDB($mergedValues.email)
-}))
-## [End] Set the primary key. **
-{}",
   "Mutation.testDelete.req.vtl": "## [Start] Delete Request template. **
 #set( $DeleteRequest = {
   \\"version\\": \\"2018-05-29\\",
@@ -2334,18 +2137,6 @@ $util.toJson({
   \\"payload\\": {}
 })
 ## [End] Initialization default values. **",
-  "Mutation.testUpdate.postAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
-#set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
-$util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
-## [End] Merge default values and inputs. **
-## [Start] Set the primary key. **
-$util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
-  \\"id\\": $util.dynamodb.toDynamoDB($mergedValues.id),
-  \\"email\\": $util.dynamodb.toDynamoDB($mergedValues.email)
-}))
-## [End] Set the primary key. **
-
-{}",
   "Mutation.testUpdate.req.vtl": "## [Start] Mutation Update resolver. **
 ## Set the default values to put request **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
@@ -2491,18 +2282,6 @@ $util.toJson({
   \\"payload\\": {}
 })
 ## [End] Initialization default values. **",
-  "Mutation.updateTest.postAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
-#set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
-$util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
-## [End] Merge default values and inputs. **
-## [Start] Set the primary key. **
-$util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
-  \\"id\\": $util.dynamodb.toDynamoDB($mergedValues.id),
-  \\"email\\": $util.dynamodb.toDynamoDB($mergedValues.email)
-}))
-## [End] Set the primary key. **
-
-{}",
   "Mutation.updateTest.req.vtl": "## [Start] Mutation Update resolver. **
 ## Set the default values to put request **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
@@ -2875,17 +2654,6 @@ $util.toJson({
   \\"payload\\": {}
 })
 ## [End] Initialization default values. **",
-  "Mutation.createTest.postAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
-#set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
-$util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
-## [End] Merge default values and inputs. **
-## [Start] Set the primary key. **
-$util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
-  \\"email\\": $util.dynamodb.toDynamoDB($mergedValues.email)
-}))
-## [End] Set the primary key. **
-
-{}",
   "Mutation.createTest.req.vtl": "## [Start] Create Request template. **
 ## Begin - key condition **
 #if( $ctx.stash.metadata.modelObjectKey )
@@ -2977,16 +2745,6 @@ $util.toJson($PutObject)
   $util.toJson($ctx.result)
 #end
 ## [End] Get ResponseTemplate. **",
-  "Mutation.deleteTest.postAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
-#set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
-$util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
-## [End] Merge default values and inputs. **
-## [Start] Set the primary key. **
-$util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
-  \\"email\\": $util.dynamodb.toDynamoDB($mergedValues.email)
-}))
-## [End] Set the primary key. **
-{}",
   "Mutation.deleteTest.req.vtl": "## [Start] Delete Request template. **
 #set( $DeleteRequest = {
   \\"version\\": \\"2018-05-29\\",
@@ -3062,18 +2820,6 @@ $util.toJson({
   \\"payload\\": {}
 })
 ## [End] Initialization default values. **",
-  "Mutation.testCreate.postAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
-#set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
-$util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
-## [End] Merge default values and inputs. **
-## [Start] Set the primary key. **
-$util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
-  \\"id\\": $util.dynamodb.toDynamoDB($mergedValues.id),
-  \\"email\\": $util.dynamodb.toDynamoDB($mergedValues.email)
-}))
-## [End] Set the primary key. **
-
-{}",
   "Mutation.testCreate.req.vtl": "## [Start] Create Request template. **
 ## Begin - key condition **
 #if( $ctx.stash.metadata.modelObjectKey )
@@ -3165,17 +2911,6 @@ $util.toJson($PutObject)
   $util.toJson($ctx.result)
 #end
 ## [End] Get ResponseTemplate. **",
-  "Mutation.testDelete.postAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
-#set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
-$util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
-## [End] Merge default values and inputs. **
-## [Start] Set the primary key. **
-$util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
-  \\"id\\": $util.dynamodb.toDynamoDB($mergedValues.id),
-  \\"email\\": $util.dynamodb.toDynamoDB($mergedValues.email)
-}))
-## [End] Set the primary key. **
-{}",
   "Mutation.testDelete.req.vtl": "## [Start] Delete Request template. **
 #set( $DeleteRequest = {
   \\"version\\": \\"2018-05-29\\",
@@ -3249,18 +2984,6 @@ $util.toJson({
   \\"payload\\": {}
 })
 ## [End] Initialization default values. **",
-  "Mutation.testUpdate.postAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
-#set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
-$util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
-## [End] Merge default values and inputs. **
-## [Start] Set the primary key. **
-$util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
-  \\"id\\": $util.dynamodb.toDynamoDB($mergedValues.id),
-  \\"email\\": $util.dynamodb.toDynamoDB($mergedValues.email)
-}))
-## [End] Set the primary key. **
-
-{}",
   "Mutation.testUpdate.req.vtl": "## [Start] Mutation Update resolver. **
 ## Set the default values to put request **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
@@ -3406,17 +3129,6 @@ $util.toJson({
   \\"payload\\": {}
 })
 ## [End] Initialization default values. **",
-  "Mutation.updateTest.postAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
-#set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
-$util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
-## [End] Merge default values and inputs. **
-## [Start] Set the primary key. **
-$util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
-  \\"email\\": $util.dynamodb.toDynamoDB($mergedValues.email)
-}))
-## [End] Set the primary key. **
-
-{}",
   "Mutation.updateTest.req.vtl": "## [Start] Mutation Update resolver. **
 ## Set the default values to put request **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
