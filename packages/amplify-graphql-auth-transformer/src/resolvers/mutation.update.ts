@@ -38,7 +38,7 @@ import {
   NULL_ALLOWED_FIELDS,
   DENIED_FIELDS,
 } from '../utils';
-import { getIdentityClaimExp, responseCheckForErrors, getOwnerClaim, getInputFields, setHasAuthExpression } from './helpers';
+import { getIdentityClaimExp, responseCheckForErrors, getOwnerClaim, getInputFields, setHasAuthExpression, iamCheck } from './helpers';
 
 /**
  * There is only one role for ApiKey we can use the first index
@@ -62,8 +62,6 @@ const apiKeyExpression = (roles: Array<RoleDefinition>) => {
 };
 
 const iamExpression = (roles: Array<RoleDefinition>, hasAdminUIEnabled: boolean = false, adminUserPoolID?: string) => {
-  const iamCheck = (claim: string, exp: Expression) =>
-    iff(equals(methodCall(ref('ctx.identity.get'), str('cognitoIdentityAuthType')), str(claim)), exp);
   const expression = new Array<Expression>();
   // allow if using admin ui
   if (hasAdminUIEnabled) {

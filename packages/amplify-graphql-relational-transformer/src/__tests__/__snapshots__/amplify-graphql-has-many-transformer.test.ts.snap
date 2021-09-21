@@ -12467,8 +12467,8 @@ $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
   $util.qr($GetRequest.put(\\"query\\", {
   \\"expression\\": \\"id = :id AND name = :name\\",
   \\"expressionValues\\": {
-      \\":id\\": $util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($ctx.source.childID, \\"___xamznone____\\")),
-      \\":name\\": $util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($ctx.source.childName, \\"___xamznone____\\"))
+      \\":id\\": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($ctx.source.childID, \\"___xamznone____\\"))),
+      \\":name\\": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($ctx.source.childName, \\"___xamznone____\\")))
   }
 }))
   #if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
@@ -12498,7 +12498,7 @@ $util.unauthorized()
   $util.qr($GetRequest.put(\\"query\\", {
   \\"expression\\": \\"id = :id\\",
   \\"expressionValues\\": {
-      \\":id\\": $util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($ctx.source.owner, \\"___xamznone____\\"))
+      \\":id\\": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($ctx.source.owner, \\"___xamznone____\\")))
   }
 }))
   #if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
@@ -12842,7 +12842,7 @@ $util.error($ctx.error.message, $ctx.error.type)
   $util.qr($GetRequest.put(\\"query\\", {
   \\"expression\\": \\"id = :id\\",
   \\"expressionValues\\": {
-      \\":id\\": $util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($ctx.source.postID, \\"___xamznone____\\"))
+      \\":id\\": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($ctx.source.postID, \\"___xamznone____\\")))
   }
 }))
   #if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
@@ -12872,7 +12872,7 @@ $util.unauthorized()
   $util.qr($GetRequest.put(\\"query\\", {
   \\"expression\\": \\"id = :id\\",
   \\"expressionValues\\": {
-      \\":id\\": $util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($ctx.source.editorID, \\"___xamznone____\\"))
+      \\":id\\": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($ctx.source.editorID, \\"___xamznone____\\")))
   }
 }))
   #if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
@@ -12902,7 +12902,7 @@ $util.unauthorized()
   $util.qr($GetRequest.put(\\"query\\", {
   \\"expression\\": \\"id = :id\\",
   \\"expressionValues\\": {
-      \\":id\\": $util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($ctx.source.postID, \\"___xamznone____\\"))
+      \\":id\\": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($ctx.source.postID, \\"___xamznone____\\")))
   }
 }))
   #if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
@@ -13006,8 +13006,8 @@ $util.error($ctx.error.message, $ctx.error.type)
   $util.qr($GetRequest.put(\\"query\\", {
   \\"expression\\": \\"id = :id AND name#surname = :name#surname\\",
   \\"expressionValues\\": {
-      \\":id\\": $util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($ctx.source.authorID, \\"___xamznone____\\")),
-      \\":name#surname\\": $util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank(\\"\${ctx.source.authorName}#\${ctx.source.authorSurname}\\", \\"___xamznone____\\"))
+      \\":id\\": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($ctx.source.authorID, \\"___xamznone____\\"))),
+      \\":name#surname\\": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank(\\"\${ctx.source.authorName}#\${ctx.source.authorSurname}\\", \\"___xamznone____\\")))
   }
 }))
   #if( !$util.isNullOrEmpty($ctx.stash.authFilter) )

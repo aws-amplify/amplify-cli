@@ -29,6 +29,11 @@ Object {
       ],
       "Version": "2012-10-17",
     },
+    "Roles": Array [
+      Object {
+        "Ref": "authRoleName",
+      },
+    ],
   },
   "Type": "AWS::IAM::ManagedPolicy",
 }
