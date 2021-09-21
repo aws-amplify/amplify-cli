@@ -56,7 +56,7 @@ export function makeGetItemConnectionWithKeyResolver(config: HasOneDirectiveConf
   let totalExpressions = [`${partitionKeyName} = :${partitionKeyName}`];
   let totalExpressionValues: Record<string, Expression> = {
     [`:${partitionKeyName}`]: ref(
-      `util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($ctx.source.${localFields[0]}, "${NONE_VALUE}"))`,
+      `util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($ctx.source.${localFields[0]}, "${NONE_VALUE}")))`,
     ),
   };
 
@@ -68,13 +68,13 @@ export function makeGetItemConnectionWithKeyResolver(config: HasOneDirectiveConf
 
     totalExpressions.push(`${sortKeyName} = :${sortKeyName}`);
     totalExpressionValues[`:${sortKeyName}`] = ref(
-      `util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank("${condensedSortKeyValue}", "${NONE_VALUE}"))`,
+      `util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank("${condensedSortKeyValue}", "${NONE_VALUE}")))`,
     );
   } else if (relatedTypeIndex.length === 2) {
     const sortKeyName = keySchema[1].attributeName;
     totalExpressions.push(`${sortKeyName} = :${sortKeyName}`);
     totalExpressionValues[`:${sortKeyName}`] = ref(
-      `util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($ctx.source.${localFields[1]}, "${NONE_VALUE}"))`,
+      `util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($ctx.source.${localFields[1]}, "${NONE_VALUE}")))`,
     );
   }
 

@@ -52,6 +52,9 @@ export const addAllowedFieldsIfElse = (fieldKey: string, breakLoop: boolean = fa
   );
 };
 
+// iam check
+export const iamCheck = (claim: string, exp: Expression) => iff(equals(ref('ctx.identity.cognitoIdentityAuthType'), str(claim)), exp);
+
 /**
  * Behavior of auth v1
  * Order of how the owner value is retrieved from the jwt
@@ -110,8 +113,6 @@ export const apiKeyExpression = (roles: Array<RoleDefinition>) =>
   );
 
 export const iamExpression = (roles: Array<RoleDefinition>, adminuiEnabled: boolean = false, adminUserPoolID?: string) => {
-  const iamCheck = (claim: string, exp: Expression) =>
-    iff(equals(methodCall(ref('ctx.identity.get'), str('cognitoIdentityAuthType')), str(claim)), exp);
   const expression = new Array<Expression>();
   // allow if using admin ui
   if (adminuiEnabled) {
@@ -127,8 +128,7 @@ export const iamExpression = (roles: Array<RoleDefinition>, adminuiEnabled: bool
   }
   if (roles.length > 0) {
     for (let role of roles) {
-      if (role.claim === '')
-        expression.push(iff(not(ref(IS_AUTHORIZED_FLAG)), iamCheck(role.claim!, set(ref(IS_AUTHORIZED_FLAG), bool(true)))));
+      expression.push(iff(not(ref(IS_AUTHORIZED_FLAG)), iamCheck(role.claim!, set(ref(IS_AUTHORIZED_FLAG), bool(true)))));
     }
   }
   return iff(equals(ref('util.authType()'), str(IAM_AUTH_TYPE)), compoundExpression(expression));

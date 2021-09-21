@@ -17,7 +17,7 @@ import {
   not,
   nul,
 } from 'graphql-mapping-template';
-import { emptyPayload, getIdentityClaimExp, getOwnerClaim, setHasAuthExpression } from './helpers';
+import { emptyPayload, getIdentityClaimExp, getOwnerClaim, iamCheck, setHasAuthExpression } from './helpers';
 import {
   ADMIN_ROLE,
   API_KEY_AUTH_TYPE,
@@ -53,8 +53,6 @@ const apiKeyExpression = (roles: Array<RoleDefinition>) => {
  * @returns
  */
 const iamExpression = (roles: Array<RoleDefinition>, hasAdminUIEnabled: boolean = false, adminUserPoolID?: string) => {
-  const iamCheck = (claim: string, exp: Expression) =>
-    iff(equals(methodCall(ref('ctx.identity.get'), str('cognitoIdentityAuthType')), str(claim)), exp);
   const expression = new Array<Expression>();
   // allow if using admin ui
   if (hasAdminUIEnabled) {
