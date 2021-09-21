@@ -65,7 +65,6 @@ export async function pushResources(
     if (context.exeInfo.iterativeRollback) {
       context.print.info('The CLI will rollback the last known iterative deployment.');
     }
-    searchablePushChecks(context);
     continueToPush = await context.amplify.confirmPrompt('Are you sure you want to continue?');
   }
 

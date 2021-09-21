@@ -16,7 +16,9 @@ import { KeyTransformer } from 'graphql-key-transformer';
 import { ProviderName as providerName } from './constants';
 import { AmplifyCLIFeatureFlagAdapter } from './utils/amplify-cli-feature-flag-adapter';
 import { isAmplifyAdminApp } from './utils/admin-helpers';
-import { JSONUtilities, stateManager } from 'amplify-cli-core';
+import { JSONUtilities, stateManager, $TSContext } from 'amplify-cli-core';
+import { ResourceConstants } from 'graphql-transformer-common';
+import { printer } from 'amplify-prompts';
 
 import {
   collectDirectivesByTypeNames,
@@ -47,6 +49,17 @@ const schemaFileName = 'schema.graphql';
 const schemaDirName = 'schema';
 const ROOT_APPSYNC_S3_KEY = 'amplify-appsync-files';
 const s3ServiceName = 'S3';
+
+export function searchablePushChecks(context): void {
+  const currEnv = context.amplify.getEnvInfo().envName;
+  const teamProviderInfoFilePath = context.amplify.pathManager.getProviderInfoFilePath();
+  const teamProviderInfo = context.amplify.readJsonFile(teamProviderInfoFilePath);
+  const apiCategory = teamProviderInfo[currEnv]?.categories?.api;
+  const instanceType = apiCategory ? apiCategory[ResourceConstants.PARAMETERS.ElasticsearchInstanceType] : null;
+  if (!instanceType || instanceType === 't2.small.elasticsearch') {
+    printer.warn("Your instance type for OpenSearch is t2.small, you may experience performance issues or data loss. Consider reconfiguring with the instructions here https://docs.amplify.aws/cli/graphql-transformer/searchable/")
+  }
+}
 
 function warnOnAuth(context, map) {
   const unAuthModelTypes = Object.keys(map).filter(type => !map[type].includes('auth') && map[type].includes('model'));
@@ -462,6 +475,7 @@ export async function transformGraphQLSchema(context, options) {
   // Check for common errors
   const directiveMap = collectDirectivesByTypeNames(project.schema);
   warnOnAuth(context, directiveMap.types);
+  searchablePushChecks(context);
 
   await transformerVersionCheck(context, resourceDir, previouslyDeployedBackendDir, resourcesToBeUpdated, directiveMap.directives);
 
