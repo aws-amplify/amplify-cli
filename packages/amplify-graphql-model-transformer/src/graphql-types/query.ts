@@ -10,11 +10,15 @@ export const makeListQueryFilterInput = (
   return makeConditionFilterInput(ctx, name, object).serialize();
 };
 
-export const makeListQueryModel = (type: ObjectTypeDefinitionNode, modelName: string): ObjectTypeDefinitionNode => {
+export const makeListQueryModel = (type: ObjectTypeDefinitionNode, modelName: string, isSyncEnabled: boolean): ObjectTypeDefinitionNode => {
   const outputType = ObjectDefinitionWrapper.create(modelName);
 
   outputType.addField(FieldWrapper.create('items', type.name.value, true, true));
   outputType.addField(FieldWrapper.create('nextToken', 'String', true, false));
+
+  if (isSyncEnabled) {
+    outputType.addField(FieldWrapper.create('startedAt', 'AWSTimestamp', true, false));
+  }
 
   return outputType.serialize();
 };
