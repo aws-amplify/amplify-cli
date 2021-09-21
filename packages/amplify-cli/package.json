@@ -33,7 +33,7 @@
     "node": ">=12.0.0"
   },
   "dependencies": {
-    "@aws-cdk/cloudformation-diff": "~1.119.0",
+    "@aws-cdk/cloudformation-diff": "~1.123.0",
     "amplify-app": "3.0.12",
     "amplify-category-analytics": "2.21.21",
     "amplify-category-api": "2.31.23",
