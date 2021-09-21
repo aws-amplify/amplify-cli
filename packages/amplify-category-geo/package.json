@@ -32,9 +32,9 @@
     "mime-types": "^2.1.26",
     "promise-sequential": "^1.1.1",
     "uuid": "^3.4.0",
-    "@aws-cdk/core": "~1.109.0",
-    "@aws-cdk/aws-location": "~1.109.0",
-    "@aws-cdk/aws-iam": "~1.109.0"
+    "@aws-cdk/core": "~1.119.0",
+    "@aws-cdk/aws-location": "~1.119.0",
+    "@aws-cdk/aws-iam": "~1.119.0"
   },
   "jest": {
     "collectCoverage": true,
