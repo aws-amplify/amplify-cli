@@ -149,7 +149,7 @@ export const generateAuthExpressionForQueries = (
     totalAuthExpressions.push(apiKeyExpression(apiKeyRoles));
   }
   if (providers.hasIAM) {
-    iamExpression(iamRoles, providers.hasAdminUIEnabled, providers.adminUserPoolID);
+    totalAuthExpressions.push(iamExpression(iamRoles, providers.hasAdminUIEnabled, providers.adminUserPoolID));
   }
   if (providers.hasUserPools) {
     totalAuthExpressions.push(

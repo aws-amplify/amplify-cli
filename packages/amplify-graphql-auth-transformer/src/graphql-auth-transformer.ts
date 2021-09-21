@@ -62,6 +62,7 @@ import { SubscriptionLevel, ModelDirectiveConfiguration } from '@aws-amplify/gra
 import { AccessControlMatrix } from './accesscontrol';
 import { getBaseType, makeDirective, makeField, makeNamedType, ResourceConstants } from 'graphql-transformer-common';
 import * as iam from '@aws-cdk/aws-iam';
+import * as cdk from '@aws-cdk/core';
 import {
   generateAuthExpressionForCreate,
   generateAuthExpressionForUpdate,
@@ -825,16 +826,22 @@ Static group authorization should perform as expected.`,
         }
       } else {
         const authRoleParameter = ctx.stackManager.addParameter(IAM_AUTH_ROLE_PARAMETER, { type: 'String' });
-        const role = iam.Role.fromRoleArn(ctx.stackManager.rootStack, 'auth-role-name', authRoleParameter.valueAsString);
         const authPolicyDocuments = createPolicyDocumentForManagedPolicy(this.authPolicyResources);
+        const rootStack = ctx.stackManager.rootStack;
         for (let i = 0; i < authPolicyDocuments.length; i++) {
           const paddedIndex = `${i + 1}`.padStart(2, '0');
           const resourceName = `${ResourceConstants.RESOURCES.AuthRolePolicy}${paddedIndex}`;
-          role.addManagedPolicy(
-            new iam.ManagedPolicy(ctx.stackManager.rootStack, resourceName, {
-              document: iam.PolicyDocument.fromJson(authPolicyDocuments[i]),
-            }),
-          );
+          new iam.ManagedPolicy(rootStack, resourceName, {
+            document: iam.PolicyDocument.fromJson(authPolicyDocuments[i]),
+            // we need to add the arn path as this is something cdk is looking for when using imported roles in policies
+            roles: [
+              iam.Role.fromRoleArn(
+                rootStack,
+                'auth-role-name',
+                `arn:aws:iam::${cdk.Stack.of(rootStack).account}:role/${authRoleParameter.valueAsString}`,
+              ),
+            ],
+          });
         }
       }
     }
@@ -843,17 +850,22 @@ Static group authorization should perform as expected.`,
       if (this.unauthPolicyResources.size === 0) {
         throw new TransformerContractError('UnauthRole policies should be generated, but no resources were added');
       }
-      const unauthParameter = ctx.stackManager.addParameter(IAM_UNAUTH_ROLE_PARAMETER, { type: 'String' });
-      const role = iam.Role.fromRoleArn(ctx.stackManager.rootStack, 'unauth-role-name', unauthParameter.valueAsString);
+      const unauthRoleParameter = ctx.stackManager.addParameter(IAM_UNAUTH_ROLE_PARAMETER, { type: 'String' });
       const unauthPolicyDocuments = createPolicyDocumentForManagedPolicy(this.unauthPolicyResources);
+      const rootStack = ctx.stackManager.rootStack;
       for (let i = 0; i < unauthPolicyDocuments.length; i++) {
         const paddedIndex = `${i + 1}`.padStart(2, '0');
         const resourceName = `${ResourceConstants.RESOURCES.UnauthRolePolicy}${paddedIndex}`;
-        role.addManagedPolicy(
-          new iam.ManagedPolicy(ctx.stackManager.rootStack, resourceName, {
-            document: iam.PolicyDocument.fromJson(unauthPolicyDocuments[i]),
-          }),
-        );
+        new iam.ManagedPolicy(ctx.stackManager.rootStack, resourceName, {
+          document: iam.PolicyDocument.fromJson(unauthPolicyDocuments[i]),
+          roles: [
+            iam.Role.fromRoleArn(
+              rootStack,
+              'unauth-role-name',
+              `arn:aws:iam::${cdk.Stack.of(rootStack).account}:role/${unauthRoleParameter.valueAsString}`,
+            ),
+          ],
+        });
       }
     }
   }
