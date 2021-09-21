@@ -39,7 +39,7 @@
     "amplify-category-api": "2.31.23",
     "amplify-category-auth": "2.38.1",
     "amplify-category-function": "2.34.7",
-    "amplify-category-geo": "1.0.0",
+    "amplify-category-geo": "0.0.5-geo.4",
     "amplify-category-hosting": "2.7.21",
     "amplify-category-interactions": "2.6.5",
     "amplify-category-notifications": "2.19.4",
