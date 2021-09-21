@@ -35,6 +35,7 @@
     "@aws-amplify/graphql-model-transformer": "0.7.0-graphql-vnext-dev-preview.0",
     "@aws-amplify/graphql-transformer-core": "0.10.0-graphql-vnext-dev-preview.0",
     "@aws-amplify/graphql-transformer-interfaces": "1.10.0-graphql-vnext-dev-preview.0",
+    "@aws-amplify/graphql-default-value-transformer" : "0.1.0",
     "@types/node": "^12.12.6",
     "aws-amplify": "^4.2.8",
     "aws-appsync": "^4.1.1",
