@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.3.0-auth-dir-v-next.5](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-relational-transformer@0.3.0-auth-dir-v-next.4...@aws-amplify/graphql-relational-transformer@0.3.0-auth-dir-v-next.5) (2021-09-21)
+
+
+### Bug Fixes
+
+* iam resolver check and relational payload ([#8234](https://github.com/aws-amplify/amplify-cli/issues/8234)) ([74ccef0](https://github.com/aws-amplify/amplify-cli/commit/74ccef041a22e92a501f2cedd3bacb4f5bfc1cc6))
+
+
+
+
+
 # [0.3.0-auth-dir-v-next.4](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-relational-transformer@0.3.0-auth-dir-v-next.3...@aws-amplify/graphql-relational-transformer@0.3.0-auth-dir-v-next.4) (2021-09-15)
 
 

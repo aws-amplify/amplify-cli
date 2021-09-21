@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/graphql-relational-transformer",
-  "version": "0.3.0-auth-dir-v-next.4",
+  "version": "0.3.0-auth-dir-v-next.5",
   "description": "Amplify GraphQL relational modeling transformers",
   "repository": {
     "type": "git",

@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.5.0-auth-dir-v-next.5](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@5.5.0-auth-dir-v-next.4...@aws-amplify/cli@5.5.0-auth-dir-v-next.5) (2021-09-21)
+
+**Note:** Version bump only for package @aws-amplify/cli
+
+
+
+
+
 # [5.5.0-auth-dir-v-next.4](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@5.5.0-auth-dir-v-next.3...@aws-amplify/cli@5.5.0-auth-dir-v-next.4) (2021-09-15)
 
 **Note:** Version bump only for package @aws-amplify/cli
