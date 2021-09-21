@@ -26,18 +26,26 @@ const amplifyTestsDir = 'amplify-e2e-tests';
 
 export function getCLIPath(testingWithLatestCodebase = false) {
   if (!testingWithLatestCodebase) {
-    return process.env.AMPLIFY_PATH || (process.platform === 'win32' ? 'amplify.exe' : 'amplify');
+    if (process.env.AMPLIFY_PATH && fs.existsSync(process.env.AMPLIFY_PATH)) {
+      return process.env.AMPLIFY_PATH;
+    }
+
+    return process.platform === 'win32' ? 'amplify.exe' : 'amplify';
   }
 
   const amplifyScriptPath = path.join(__dirname, '..', '..', 'amplify-cli', 'bin', 'amplify');
   return amplifyScriptPath;
 }
 
+export function isTestingWithLatestCodebase(scriptRunnerPath) {
+  return scriptRunnerPath === process.execPath
+}
+
 export function getScriptRunnerPath(testingWithLatestCodebase = false) {
   if (!testingWithLatestCodebase) {
     return process.platform === 'win32'
       ? 'C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe'
-      : path.join(__dirname, '..', '..', '..', '.circleci', 'exec');
+      : 'exec';
   }
 
   // nodejs executable
@@ -80,7 +88,9 @@ export async function installAmplifyCLI(version: string = 'latest') {
     env: process.env,
     stdio: 'inherit',
   });
-  process.env.AMPLIFY_PATH = path.join(os.homedir(), '.npm-global', 'bin', 'amplify');
+  process.env.AMPLIFY_PATH = process.platform === 'win32'
+   ? path.join(os.homedir(), '..', '..', 'Program` Files', 'nodejs', 'node_modules', '@aws-amplify', 'cli', 'bin', 'amplify')
+   : path.join(os.homedir(), '.npm-global', 'bin', 'amplify');
 }
 
 export async function createNewProjectDir(

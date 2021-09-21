@@ -4,7 +4,7 @@ import { join } from 'path';
 import * as fs from 'fs-extra';
 import { supportedRegions } from '../packages/amplify-category-geo/src/constants';
 
-const CONCURRENCY = 4;
+const CONCURRENCY = 12;
 // Some our e2e tests are known to fail when run on windows hosts
 // These are caused by issues with our test harness, not broken cli behavior on windows
 // (examples: sending line endings when we shouldn't, java/gradle not installed on windows host)
@@ -12,17 +12,24 @@ const CONCURRENCY = 4;
 // For now, this list is being used to skip creation of circleci jobs for these tasks
 const WINDOWS_TEST_FAILURES = [
   'amplify-app-amplify_e2e_tests',
+  'api_1-amplify_e2e_tests',
   'api_2-amplify_e2e_tests',
+  'api_3-amplify_e2e_tests',
   'api_4-amplify_e2e_tests',
   'api_5-amplify_e2e_tests',
   'auth_1-amplify_e2e_tests',
   'auth_2-amplify_e2e_tests',
   'auth_3-amplify_e2e_tests',
   'datastore-modelgen-amplify_e2e_tests',
+  'delete-amplify_e2e_tests',
   'env-amplify_e2e_tests',
+  'feature-flags-amplify_e2e_tests',
+  'function_1-amplify_e2e_tests',
+  'function_2-amplify_e2e_tests',
   'function_3-amplify_e2e_tests',
   'function_4-amplify_e2e_tests',
   'function_6-amplify_e2e_tests',
+  'function_5-amplify_e2e_tests',
   'function_7-amplify_e2e_tests',
   'hosting-amplify_e2e_tests',
   'hostingPROD-amplify_e2e_tests',
@@ -38,6 +45,8 @@ const WINDOWS_TEST_FAILURES = [
   'migration-api-key-migration2-amplify_e2e_tests',
   'migration-api-key-migration3-amplify_e2e_tests',
   'migration-node-function-amplify_e2e_tests',
+  'predictions-amplify_e2e_tests',
+  'pull-amplify_e2e_tests',
   'schema-auth-1-amplify_e2e_tests',
   'schema-auth-2-amplify_e2e_tests',
   'schema-auth-3-amplify_e2e_tests',
@@ -58,6 +67,7 @@ const WINDOWS_TEST_FAILURES = [
   'schema-iterative-update-locking-amplify_e2e_tests',
   'schema-iterative-rollback-1-amplify_e2e_tests',
   'schema-iterative-rollback-2-amplify_e2e_tests',
+  'schema-key-amplify_e2e_tests_pkg_linux',
   'schema-model-amplify_e2e_tests',
   'storage-amplify_e2e_tests',
 ];
@@ -86,6 +96,13 @@ const USE_PARENT_ACCOUNT = [
   'migration-node-function-amplify_e2e_tests',
   'schema-function-amplify_e2e_tests',
   'schema-iterative-update-locking-amplify_e2e_tests',
+  'migration-api-key-migration2-amplify_e2e_tests',
+  'api_1-amplify_e2e_tests',
+  'api_2-amplify_e2e_tests',
+  'import_s3_1-amplify_e2e_tests',
+  'import_dynamodb_1-amplify_e2e_tests',
+  'storage-amplify_e2e_tests',
+  'function_2-amplify_e2e_tests',
 ];
 
 // This array needs to be update periodically when new tests suites get added
