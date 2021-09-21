@@ -22,6 +22,7 @@ import retimer = require('retimer');
 import { join, parse } from 'path';
 import * as fs from 'fs-extra';
 import * as os from 'os';
+import { getScriptRunnerPath } from '..';
 
 const DEFAULT_NO_OUTPUT_TIMEOUT = process.env.AMPLIFY_TEST_TIMEOUT_SEC
   ? Number.parseInt(process.env.AMPLIFY_TEST_TIMEOUT_SEC, 10) * 1000
@@ -83,6 +84,7 @@ export type SpawnOptions = {
   stripColors?: boolean;
   ignoreCase?: boolean;
   disableCIDetection?: boolean;
+  useScriptRunner?: boolean;
 };
 
 function chain(context: Context): ExecutionContext {
@@ -619,6 +621,12 @@ export function nspawn(command: string | string[], params: string[] = [], option
     const parsedArgs = parsedPath.base.split(' ');
     command = join(parsedPath.dir, parsedArgs[0]);
     params = params || parsedArgs.slice(1);
+  }
+
+  if (options.useScriptRunner === false) {
+    params.unshift(command);
+    const testingWithLatestCodebase = !(command.endsWith('exec') || command.endsWith('powershell.exe'));
+    command = getScriptRunnerPath(testingWithLatestCodebase);
   }
 
   let childEnv = undefined;
