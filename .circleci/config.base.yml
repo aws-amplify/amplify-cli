@@ -1,5 +1,6 @@
 version: 2.1
-
+orbs:
+  aws-ecr: circleci/aws-ecr@6.15.3
 machine:
   environment:
     PATH: '${PATH}:${HOME}/${CIRCLE_PROJECT_REPONAME}/node_modules/.bin'
@@ -36,7 +37,10 @@ executors:
 node12: &node12
   working_directory: ~/repo
   docker:
-    - image: ${AWS_ECR_ACCOUNT_URL}/amplify-cli-e2e-base-image-repo-public:latest
+    - image: circleci/node:12
+      auth:
+        username: $DOCKERHUB_USERNAME
+        password: $DOCKERHUB_ACCESS_TOKEN
   resource_class: large
 
 defaults: &defaults
@@ -95,15 +99,10 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: build_img
     executor: << parameters.os >>
     steps:
       - checkout
-      - restore_cache:
-          keys:
-            - amplify-build-artifact-{{ .Revision }}-{{ arch }}
-      - install_yarn:
-          os: << parameters.os >>
       - run: yarn run production-build
       - run:
           name: Start verdaccio and package CLI
@@ -119,36 +118,27 @@ jobs:
           paths:
             - ~/repo/out
       - save_cache:
-          key: amplify-cli-yarn-deps-{{ arch }}-{{ checksum "yarn.lock" }}
+          key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
           paths:
-            - ./**/node_modules
-            - ./node_modules
-      - save_cache:
-          key: amplify-build-artifact-{{ .Revision }}-{{ arch }}
-          paths:
-            - .
+            - ~/.cache
       - save_cache:
           key: amplify-cli-ssh-deps-{{ .Branch }}
           paths:
             - ~/.ssh
-      # - persist_to_workspace:
-      #     root: .
-      #     paths: packages
+      - persist_to_workspace:
+          root: .
+          paths: .
 
   test:
-    parameters:
-      os:
-        type: executor
-        default: os.build_img
-    executor: << parameters.os >>
+    <<: *node12
     steps:
       - attach_workspace:
           at: ./
       - restore_cache:
-          keys:
-            - amplify-build-artifact-{{ .Revision }}-{{ arch }}
-      - install_java:
-          os: <<parameters.os >>
+          key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
+      - run:
+          name: Install Java
+          command: sudo apt-get update && sudo apt-get install default-jdk
       - run:
           name: Lint
           command: yarn lint
@@ -160,23 +150,18 @@ jobs:
           command: yarn coverage
 
   mock_e2e_tests:
-    parameters:
-      os:
-        type: executor
-        default: os.build_img
-    executor: << parameters.os >>
+    <<: *node12
     steps:
       - attach_workspace:
           at: ./
       - restore_cache:
-          key: amplify-build-artifact-{{ .Revision }}-{{ arch }}
-      - install_java:
-          os: <<parameters.os >>
+          key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
+      - run:
+          name: Install Java
+          command: sudo apt-get update && sudo apt-get install default-jdk
       - run:
           name: Run Transformer end-to-end tests with mock server
-          command: |
-            cd packages/amplify-util-mock/
-            yarn e2e
+          command: cd packages/amplify-util-mock/ && yarn e2e
           no_output_timeout: 90m
           environment:
             JEST_JUNIT_OUTPUT: 'reports/junit/js-test-results.xml'
@@ -189,9 +174,7 @@ jobs:
       - attach_workspace:
           at: ./
       - restore_cache:
-          keys:
-            - amplify-build-artifact-{{ .Revision }}-{{ arch }}
-            - amplify-cli-yarn-deps-{{ arch }}-{{ checksum "yarn.lock" }}
+          key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
       - run:
           name: Publish to verdaccio
           command: |
@@ -231,8 +214,7 @@ jobs:
       - attach_workspace:
           at: ./
       - restore_cache:
-          keys:
-            - amplify-build-artifact-{{ .Revision }}-{{ arch }}
+          key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
       - restore_cache:
           key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - run:
@@ -255,8 +237,7 @@ jobs:
       - attach_workspace:
           at: ./
       - restore_cache:
-          keys:
-            - amplify-build-artifact-{{ .Revision }}-{{ arch }}
+          key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
       - run:
           name: Run GraphQL end-to-end tests
           command: cd packages/graphql-transformers-e2e-tests/ && yarn e2e --maxWorkers=3
@@ -274,8 +255,6 @@ jobs:
           key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
           key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
-      - restore_cache:
-          key: amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - run:
           name: Update OS Packages
           command: sudo apt-get update
@@ -315,7 +294,7 @@ jobs:
     steps:
       - run: echo 'Done with Node CLI E2E Tests'
 
-  done_with_pkg_e2e_tests:
+  done_with_pkg_linux_e2e_tests:
     <<: *node12
     steps:
       - run: echo 'Done with pkg CLI E2E Tests'
@@ -355,8 +334,7 @@ jobs:
       - attach_workspace:
           at: ./
       - restore_cache:
-          keys:
-            - amplify-build-artifact-{{ .Revision }}-{{ arch }}
+          key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
       - run:
           name: Run tests migrating from CLI v4.0.0
           command: |
@@ -428,8 +406,7 @@ jobs:
       - attach_workspace:
           at: ./
       - restore_cache:
-          keys:
-            - amplify-build-artifact-{{ .Revision }}-{{ arch }}
+          key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
       - run:
           name: Update OS Packages
           command: sudo apt-get update
@@ -454,8 +431,7 @@ jobs:
       - attach_workspace:
           at: ./
       - restore_cache:
-          keys:
-            - amplify-build-artifact-{{ .Revision }}-{{ arch }}
+          key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
       - run:
           name: Run tests migrating from latest CLI
           command: |
@@ -478,8 +454,7 @@ jobs:
       - attach_workspace:
           at: ./
       - restore_cache:
-          keys:
-            - amplify-build-artifact-{{ .Revision }}-{{ arch }}
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - run: *install_cli_from_local_registery
       - run:
           command: |
@@ -501,7 +476,7 @@ jobs:
     working_directory: ~/repo
     resource_class: large
     docker:
-      - image: cypress/base:14.17.0
+      - image: cypress/base:12
         environment:
           TERM: dumb
     steps:
@@ -625,10 +600,6 @@ jobs:
       - attach_workspace:
           at: ./
       - restore_cache:
-          keys:
-            - amplify-build-artifact-{{ .Revision }}-{{ arch }}
-            - amplify-cli-yarn-deps-{{ arch }}-{{ checksum "yarn.lock" }}
-      - restore_cache:
           key: amplify-unified-changelog-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
           key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
@@ -668,9 +639,7 @@ jobs:
       - attach_workspace:
           at: ./
       - restore_cache:
-          keys:
-            - amplify-build-artifact-{{ .Revision }}-{{ arch }}
-            - amplify-cli-yarn-deps-{{ arch }}-{{ checksum "yarn.lock" }}
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
           key: amplfiy-pkg-tag-{{ .Branch }}-{{ .Revision }}
       - run:
@@ -684,9 +653,7 @@ jobs:
       - attach_workspace:
           at: ./
       - restore_cache:
-          keys:
-            - amplify-build-artifact-{{ .Revision }}-{{ arch }}
-            - amplify-cli-yarn-deps-{{ arch }}-{{ checksum "yarn.lock" }}
+          key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
       - run:
           name: 'Run cleanup script'
           command: |
@@ -704,9 +671,7 @@ jobs:
       - attach_workspace:
           at: ./
       - restore_cache:
-          keys:
-            - amplify-build-artifact-{{ .Revision }}-{{ arch }}
-            - amplify-cli-yarn-deps-{{ arch }}-{{ checksum "yarn.lock" }}
+          key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
       - run:
           name: 'Run cleanup script'
           command: |
@@ -729,10 +694,7 @@ workflows:
               only:
                 - master
     jobs:
-      - build:
-          matrix:
-            parameters:
-              os: [windows, build_img]
+      - build
       - publish_to_local_registry:
           requires:
             - build
@@ -754,10 +716,7 @@ workflows:
               only:
                 - master
     jobs:
-      - build:
-          matrix:
-            parameters:
-              os: [build_img]
+      - build
       - cleanup_resources:
           context:
             - cleanup-resources
@@ -767,20 +726,11 @@ workflows:
 
   build_test_deploy:
     jobs:
-      - build:
-          matrix:
-            parameters:
-              os: [build_img, windows]
+      - build
       - test:
-          matrix:
-            parameters:
-              os: [build_img]
           requires:
-            - build-build_img
+            - build
       - mock_e2e_tests:
-          matrix:
-            parameters:
-              os: [build_img]
           requires:
             - build
       - graphql_e2e_tests:
@@ -791,11 +741,10 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
-            - build-build_img
+            - build
             - mock_e2e_tests
       - integration_test:
           context:
@@ -805,25 +754,23 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - beta
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
-            - build-build_img
+            - build
             - mock_e2e_tests
       - publish_to_local_registry:
           filters:
             branches:
               only:
                 - master
-                - win-e2e
                 - beta
                 - release
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
-            - build-build_img
+            - build
       - build_pkg_binaries:
           requires:
             - publish_to_local_registry
@@ -835,7 +782,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
       - amplify_e2e_tests:
@@ -844,25 +790,20 @@ workflows:
             - clean_e2e_resources
             - e2e-auth-credentials
             - e2e-test-context
-          # post-steps:
-          #   - run: *clean_e2e_resources
+          post-steps:
+            - run: *clean_e2e_resources
           filters:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
-            - build
             - publish_to_local_registry
       - done_with_node_e2e_tests:
           requires:
             - amplify_e2e_tests
-      - amplify_e2e_tests_pkg:
-          matrix:
-            parameters:
-              os: [windows]
+      - amplify_e2e_tests_pkg_linux:
           context:
             - amplify-ecr-image-pull
             - clean_e2e_resources
@@ -871,20 +812,15 @@ workflows:
           filters:
             branches:
               only:
-                - win-e2e
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
-            - build
+            - done_with_node_e2e_tests
             - build_pkg_binaries
-      - done_with_pkg_e2e_tests:
-          context:
-            - amplify-cli-ecr
-            - amplify-cli-aws-creds-< matrix.os >>
+      - done_with_pkg_linux_e2e_tests:
           requires:
-            - amplify_e2e_tests_pkg
+            - amplify_e2e_tests_pkg_linux
       - amplify_migration_tests_latest:
           context:
             - amplify-ecr-image-pull
@@ -895,7 +831,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -910,7 +845,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -925,7 +859,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -940,7 +873,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -955,7 +887,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -996,7 +927,7 @@ workflows:
             - cleanup-resources
             - e2e-test-context
           requires:
-            - done_with_pkg_e2e_tests
+            - done_with_pkg_linux_e2e_tests
             - amplify_migration_tests_latest
             - amplify_migration_tests_v4
             - amplify_migration_tests_v4_30_0
@@ -1011,7 +942,7 @@ workflows:
             - mock_e2e_tests
             - graphql_e2e_tests
             - integration_test
-            - done_with_pkg_e2e_tests
+            - done_with_pkg_linux_e2e_tests
             - amplify_sudo_install_test
             - amplify_console_integration_tests
             - amplify_migration_tests_latest
@@ -1025,7 +956,6 @@ workflows:
               only:
                 - release
                 - master
-                - win-e2e
                 - beta
                 - /tagged-release\/.*/
                 - /tagged-release-without-e2e-tests\/.*/
