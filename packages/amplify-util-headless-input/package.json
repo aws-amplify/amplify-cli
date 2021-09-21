@@ -1,6 +1,6 @@
 {
   "name": "amplify-util-headless-input",
-  "version": "1.5.3",
+  "version": "1.5.4",
   "description": "Logic for validating objects against JSON-schema specs and performing version upgrades when necessary / possible",
   "main": "lib/index.js",
   "scripts": {
@@ -19,7 +19,8 @@
     "amplify-headless-interface": "1.10.0"
   },
   "devDependencies": {
-    "@types/json-schema": "^7.0.5"
+    "@types/json-schema": "^7.0.5",
+    "fs-extra": "^8.1.0"
   },
   "jest": {
     "clearMocks": true,

@@ -1,6 +1,10 @@
+const fs = require('fs');
+const { printer } = require('amplify-prompts');
+const { FeatureFlags, pathManager, BannerMessage } = require('amplify-cli-core');
+const { messages } = require('../../provider-utils/awscloudformation/assets/string-maps');
+
 const subcommand = 'remove';
 const category = 'auth';
-const { messages } = require('../../provider-utils/awscloudformation/assets/string-maps');
 
 module.exports = {
   name: subcommand,
@@ -16,6 +20,23 @@ module.exports = {
 
     if (dependentResources) {
       context.print.info(messages.dependenciesExists);
+    }
+
+    const existingAuth = meta.auth || {};
+    if (Object.keys(existingAuth).length > 0) {
+      const services = Object.keys(existingAuth);
+      for (let i = 0; i < services.length; i++) {
+        const serviceMeta = existingAuth[services[i]];
+        if (serviceMeta.service === 'Cognito' && !FeatureFlags.getBoolean('auth.forceAliasAttributes')) {
+          const authAttributes = JSON.parse(
+            fs.readFileSync(pathManager.getResourceParametersFilePath(pathManager.findProjectRoot(), 'auth', services[i])).toString(),
+          );
+          if (authAttributes.aliasAttributes && authAttributes.aliasAttributes.length > 0) {
+            const authRemoveWarning = await BannerMessage.getMessage('AMPLIFY_REMOVE_AUTH_ALIAS_ATTRIBUTES_WARNING');
+            printer.warn(authRemoveWarning);
+          }
+        }
+      }
     }
 
     return amplify.removeResource(context, category, resourceName).catch(err => {

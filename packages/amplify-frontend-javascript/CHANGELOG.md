@@ -3,6 +3,49 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.24.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-javascript@2.24.0...amplify-frontend-javascript@2.24.1) (2021-09-18)
+
+**Note:** Version bump only for package amplify-frontend-javascript
+
+
+
+
+
+# [2.24.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-javascript@2.23.7...amplify-frontend-javascript@2.24.0) (2021-09-14)
+
+
+### Features
+
+* **amplify-category-auth:** add auth verification mechanisms to frontend config ([#8037](https://github.com/aws-amplify/amplify-cli/issues/8037)) ([88494b3](https://github.com/aws-amplify/amplify-cli/commit/88494b3f12a9989273aa3ae3e68c629f4c4cdff9))
+
+
+
+
+
+## [2.23.7](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-javascript@2.23.6...amplify-frontend-javascript@2.23.7) (2021-09-09)
+
+**Note:** Version bump only for package amplify-frontend-javascript
+
+
+
+
+
+## [2.23.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-javascript@2.23.5...amplify-frontend-javascript@2.23.6) (2021-09-02)
+
+**Note:** Version bump only for package amplify-frontend-javascript
+
+
+
+
+
+## [2.23.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-javascript@2.23.4...amplify-frontend-javascript@2.23.5) (2021-08-24)
+
+**Note:** Version bump only for package amplify-frontend-javascript
+
+
+
+
+
 ## [2.23.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-javascript@2.23.3...amplify-frontend-javascript@2.23.4) (2021-08-06)
 
 

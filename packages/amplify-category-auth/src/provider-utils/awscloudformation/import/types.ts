@@ -61,6 +61,7 @@ export type AuthParameters = {
   passwordPolicyCharacters?: string[];
   mfaConfiguration?: string;
   mfaTypes?: string[];
+  autoVerifiedAttributes?: string[];
 };
 
 // Persisted into team-provider-info

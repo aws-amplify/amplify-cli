@@ -531,7 +531,7 @@ function getCurrentConfig(context: $TSContext) {
 }
 
 function getConfigForEnv(context: $TSContext, envName: string) {
-  const projectConfigInfo: ProjectConfig = context?.exeInfo?.awsConfigInfo || {
+  const projectConfigInfo: ProjectConfig = _.cloneDeep(context?.exeInfo?.awsConfigInfo) || {
     configLevel: 'general',
     config: {},
   };

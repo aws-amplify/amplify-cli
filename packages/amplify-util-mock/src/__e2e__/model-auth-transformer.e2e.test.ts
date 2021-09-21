@@ -4,10 +4,9 @@ import { FeatureFlagProvider, GraphQLTransform } from 'graphql-transformer-core'
 import { signUpAddToGroupAndGetJwtToken } from './utils/cognito-utils';
 import { GraphQLClient } from './utils/graphql-client';
 import { deploy, launchDDBLocal, logDebug, terminateDDB } from './utils/index';
+import 'isomorphic-fetch';
 
 jest.setTimeout(2000000);
-
-(global as any).fetch = require('node-fetch');
 
 let GRAPHQL_ENDPOINT = undefined;
 

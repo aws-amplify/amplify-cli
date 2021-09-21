@@ -88,7 +88,7 @@ export class GenericFieldWrapper {
     this.directives = (field.directives || []).map(d => new DirectiveWrapper(d));
   }
   isList = (): boolean => {
-    return isListType(this.type);
+    return this.isListType(this.type);
   };
 
   isNonNullable = (): boolean => {
@@ -128,6 +128,15 @@ export class GenericFieldWrapper {
     }
     return false;
   };
+
+  private isListType = (type: TypeNode): boolean => {
+    if (type.kind === Kind.NON_NULL_TYPE) {
+      return isListType(type.type);
+    } else {
+      return type.kind === Kind.LIST_TYPE;
+    }
+  };
+
   public getBaseType = (): NamedTypeNode => {
     let node = this.type;
     while (node.kind === Kind.LIST_TYPE || node.kind === Kind.NON_NULL_TYPE) {
@@ -394,7 +403,7 @@ export class InputObjectDefinitionWrapper {
   };
 
   removeField = (field: InputFieldWrapper): void => {
-    if (this.hasField(field.name)) {
+    if (!this.hasField(field.name)) {
       throw new Error(`type ${this.name} does not have the field with name ${field.name}`);
     }
     const index = this.fields.indexOf(field);

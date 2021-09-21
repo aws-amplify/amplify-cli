@@ -1,7 +1,7 @@
+import { $TSAny, JSONUtilities, pathManager } from 'amplify-cli-core';
 import * as path from 'path';
-import { pathManager, JSONUtilities, $TSAny } from 'amplify-cli-core';
 
-export function getUserPoolGroupList(context) {
+export function getUserPoolGroupList(): $TSAny[] {
   let userPoolGroupList = [];
 
   const userGroupParamsPath = path.join(pathManager.getBackendDirPath(), 'auth', 'userPoolGroups', 'user-pool-group-precedence.json');

@@ -11,54 +11,54 @@ import { AuthParameters } from '../import/types';
  * @param context The amplify context
  * @param resultMetadata The metadata from the service selection prompt
  */
-export const getPostAddAuthMetaUpdater = (context: any, resultMetadata: { service: string; providerName: string }) => (
-  resourceName: string,
-): string => {
-  const options: any = {
-    service: resultMetadata.service,
-    providerPlugin: resultMetadata.providerName,
-  };
-  const parametersJSONPath = path.join(context.amplify.pathManager.getBackendDirPath(), 'auth', resourceName, 'parameters.json');
-  const authParameters = JSONUtilities.readJson<AuthParameters>(parametersJSONPath)!;
+export const getPostAddAuthMetaUpdater =
+  (context: any, resultMetadata: { service: string; providerName: string }) =>
+  (resourceName: string): string => {
+    const options: any = {
+      service: resultMetadata.service,
+      providerPlugin: resultMetadata.providerName,
+    };
+    const parametersJSONPath = path.join(context.amplify.pathManager.getBackendDirPath(), 'auth', resourceName, 'parameters.json');
+    const authParameters = JSONUtilities.readJson<AuthParameters>(parametersJSONPath)!;
 
-  if (authParameters.dependsOn) {
-    options.dependsOn = authParameters.dependsOn;
-  }
-
-  let customAuthConfigured = false;
-  if (authParameters.triggers) {
-    const triggers = JSONUtilities.parse<any>(authParameters.triggers);
-
-    customAuthConfigured =
-      !!triggers.DefineAuthChallenge &&
-      triggers.DefineAuthChallenge.length > 0 &&
-      !!triggers.CreateAuthChallenge &&
-      triggers.CreateAuthChallenge.length > 0 &&
-      !!triggers.VerifyAuthChallengeResponse &&
-      triggers.VerifyAuthChallengeResponse.length > 0;
-  }
-
-  options.customAuth = customAuthConfigured;
-  options.frontendAuthConfig = getFrontendConfig(authParameters);
-
-  context.amplify.updateamplifyMetaAfterResourceAdd('auth', resourceName, options);
-
-  // Remove Identity Pool dependency attributes on userpool groups if Identity Pool not enabled
-  const allResources = context.amplify.getProjectMeta();
-  if (allResources.auth && allResources.auth.userPoolGroups) {
-    if (!authParameters.identityPoolName) {
-      const userPoolGroupDependsOn = [
-        {
-          category: 'auth',
-          resourceName,
-          attributes: ['UserPoolId', 'AppClientIDWeb', 'AppClientID'],
-        },
-      ];
-      context.amplify.updateamplifyMetaAfterResourceUpdate('auth', 'userPoolGroups', 'dependsOn', userPoolGroupDependsOn);
+    if (authParameters.dependsOn) {
+      options.dependsOn = authParameters.dependsOn;
     }
-  }
-  return resourceName;
-};
+
+    let customAuthConfigured = false;
+    if (authParameters.triggers) {
+      const triggers = JSONUtilities.parse<any>(authParameters.triggers);
+
+      customAuthConfigured =
+        !!triggers.DefineAuthChallenge &&
+        triggers.DefineAuthChallenge.length > 0 &&
+        !!triggers.CreateAuthChallenge &&
+        triggers.CreateAuthChallenge.length > 0 &&
+        !!triggers.VerifyAuthChallengeResponse &&
+        triggers.VerifyAuthChallengeResponse.length > 0;
+    }
+
+    options.customAuth = customAuthConfigured;
+    options.frontendAuthConfig = getFrontendConfig(authParameters);
+
+    context.amplify.updateamplifyMetaAfterResourceAdd('auth', resourceName, options);
+
+    // Remove Identity Pool dependency attributes on userpool groups if Identity Pool not enabled
+    const allResources = context.amplify.getProjectMeta();
+    if (allResources.auth && allResources.auth.userPoolGroups) {
+      if (!authParameters.identityPoolName) {
+        const userPoolGroupDependsOn = [
+          {
+            category: 'auth',
+            resourceName,
+            attributes: ['UserPoolId', 'AppClientIDWeb', 'AppClientID'],
+          },
+        ];
+        context.amplify.updateamplifyMetaAfterResourceUpdate('auth', 'userPoolGroups', 'dependsOn', userPoolGroupDependsOn);
+      }
+    }
+    return resourceName;
+  };
 
 /**
  * Factory function that returns a function that updates Amplify meta files after updating auth resource assets
@@ -107,8 +107,8 @@ export const getPostUpdateAuthMetaUpdater = (context: any) => async (resourceNam
 };
 
 function getFrontendConfig(authParameters: AuthParameters) {
-  const loginMechanisms: string[] = [];
-  loginMechanisms.push(...(authParameters?.aliasAttributes || []).map((att: string) => att.toUpperCase()));
+  const loginMechanisms = (authParameters?.aliasAttributes || []).map((att: string) => att.toUpperCase());
+  const verificationMechanisms = (authParameters?.autoVerifiedAttributes || []).map((att: string) => att.toUpperCase());
 
   if (authParameters.authProviders) {
     authParameters.authProviders.forEach((provider: string) => {
@@ -144,5 +144,6 @@ function getFrontendConfig(authParameters: AuthParameters) {
     passwordProtectionSettings: passwordProtectionSettings,
     mfaConfiguration: authParameters?.mfaConfiguration,
     mfaTypes: mfaTypes,
+    verificationMechanisms: verificationMechanisms,
   };
 }
