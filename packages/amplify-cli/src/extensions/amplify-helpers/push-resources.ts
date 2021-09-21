@@ -4,7 +4,7 @@ import { onCategoryOutputsChange } from './on-category-outputs-change';
 import { initializeEnv } from '../../initialize-env';
 import { getProviderPlugins } from './get-provider-plugins';
 import { getEnvInfo } from './get-env-info';
-import { EnvironmentDoesNotExistError, exitOnNextTick, stateManager, $TSAny, $TSContext } from 'amplify-cli-core';
+import { EnvironmentDoesNotExistError, exitOnNextTick, stateManager, $TSAny, $TSContext, IAmplifyResource } from 'amplify-cli-core';
 
 export async function pushResources(
   context: $TSContext,
@@ -50,7 +50,8 @@ export async function pushResources(
   }
 
   // building all CFN stacks here to get the resource Changes
-  context.amplify.executeProviderUtils(context, 'awscloudformation', 'buildOverrides', { forceCompile: true });
+  const resourcesToBuild: IAmplifyResource[] = await getResources(context);
+  context.amplify.executeProviderUtils(context, 'awscloudformation', 'buildOverrides', { resourcesToBuild, forceCompile: true });
 
   const hasChanges = await showResourceTable(category, resourceName, filteredResources);
 
@@ -117,3 +118,24 @@ export async function storeCurrentCloudBackend(context: $TSContext) {
 
   await Promise.all(providerPromises);
 }
+
+const getResources = async (context: $TSContext): Promise<IAmplifyResource[]> => {
+  const resources: IAmplifyResource[] = [];
+  const { resourcesToBeCreated, resourcesToBeUpdated } = await context.amplify.getResourceStatus();
+  resourcesToBeCreated.forEach(resourceCreated => {
+    resources.push({
+      service: resourceCreated.service as string,
+      category: resourceCreated.category as string,
+      resourceName: resourceCreated.resourceName as string,
+    });
+  });
+
+  resourcesToBeUpdated.forEach(resourceUpdated => {
+    resources.push({
+      service: resourceUpdated.service as string,
+      category: resourceUpdated.category as string,
+      resourceName: resourceUpdated.resourceName as string,
+    });
+  });
+  return resources;
+};

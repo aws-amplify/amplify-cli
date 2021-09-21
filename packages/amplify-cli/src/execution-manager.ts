@@ -40,19 +40,29 @@ export function isContainersEnabled(context) {
 
 async function selectPluginForExecution(context: Context, pluginCandidates: PluginInfo[]): Promise<PluginInfo> {
   const pluginCandidatesCategorySet = new Set<string>();
-  const overidedcategories = ['auth', 'storage', 'function'];
+  const overidedcategories = ['auth'];
 
   pluginCandidates.forEach(plugin => {
     pluginCandidatesCategorySet.add(plugin.manifest.name);
   });
 
-  // overrided package : @aws-amplify/amplify-category-<catgoryName>
-  if (pluginCandidatesCategorySet.size == 1 && overidedcategories.includes(pluginCandidatesCategorySet.values().next().value)) {
-    const pluginName = pluginCandidatesCategorySet.values().next().value;
-    if (pluginCandidates[0].packageName.includes('@aws-amplify') && FeatureFlags.getBoolean(`overrides.${pluginName}`)) {
-      return pluginCandidates[0];
+  // overrided packageName format : @aws-amplify/amplify-category-<catgoryName>
+  const pluginName = pluginCandidatesCategorySet.values().next().value;
+  if (pluginCandidatesCategorySet.size == 1 && overidedcategories.includes(pluginName)) {
+    if (FeatureFlags.getBoolean(`overrides.${pluginName}`)) {
+      const overidedPlugin = pluginCandidates.find(plugin => {
+        return plugin.packageName === `@aws-amplify/amlify-category-${pluginName}`;
+      });
+      if (overidedPlugin !== undefined) {
+        return overidedPlugin;
+      }
     } else {
-      return pluginCandidates[1];
+      const normalPlugin = pluginCandidates.find(plugin => {
+        return plugin.packageName === `amlify-category-${pluginName}`;
+      });
+      if (pluginCandidates.length === 2 && normalPlugin !== undefined) {
+        return normalPlugin;
+      }
     }
   }
 

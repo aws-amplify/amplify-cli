@@ -63,8 +63,10 @@ module.exports = {
     return transformGraphQLSchema(context, optionsWithUpdateHandler);
   },
 
-  buildOverrides: async context => {
-    return transformCfnWithOverrides(context);
+  buildOverrides: async (context, options) => {
+    for (const resource of options.resourcesToBuild) {
+      await transformCfnWithOverrides(context, resource);
+    }
   },
 
   newSecret: async (context, options) => {

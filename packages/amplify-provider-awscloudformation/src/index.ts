@@ -36,8 +36,6 @@ import { updateEnv } from './update-env';
 
 import { uploadHooksDirectory } from './utils/hooks-manager';
 
-import { generateOverrideSkeleton } from './utils/override-skeleton-generator';
-
 import { transformCfnWithOverrides } from './override-manager';
 
 function init(context) {
@@ -163,6 +161,5 @@ module.exports = {
   getConfiguredSSMClient,
   updateEnv,
   uploadHooksDirectory,
-  generateOverrideSkeleton,
   transformCfnWithOverrides,
 };

@@ -3,20 +3,26 @@ import { printer } from 'amplify-prompts';
 /**
  * Command to transform CFN with overrides
  */
-const subcommand = 'build-overrides';
+const subcommand = 'build-override';
 
 export const run = async (context: $TSContext) => {
-  const resourceName = context?.input?.subCommands?.[0];
+  let resourceName = context?.input?.subCommands?.[0];
   const categoryName = context?.input?.subCommands?.[1];
-  const confirmContinue =
-    !!resourceName ||
-    context.input?.options?.yes ||
-    (await context.amplify.confirmPrompt('Are you sure you want to continue building the resources?', false));
-  if (!confirmContinue) {
-    return;
+
+  if (categoryName === undefined) {
+    // if no category is mentioned , then defaults to all resource
+    resourceName = undefined;
   }
+
   try {
     const resourcesToBuild: IAmplifyResource[] = await getResources(context);
+    let filteredResources = {};
+    if (categoryName) {
+      filteredResources = resourcesToBuild.filter(resource => resource.category === categoryName);
+    }
+    if (categoryName && resourceName) {
+      filteredResources = resourcesToBuild.filter(resource => resource.category === categoryName && resource.resourceName === resourceName);
+    }
     for (const resource of resourcesToBuild) {
       await context.amplify.invokePluginMethod(context, 'awscloudformation', undefined, 'transformCfnWithOverrides', [context, resource]);
     }

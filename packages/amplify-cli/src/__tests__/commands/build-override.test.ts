@@ -1,4 +1,4 @@
-import { run } from '../../commands/build-overrides';
+import { run } from '../../commands/build-override';
 import { $TSContext } from 'amplify-cli-core';
 
 jest.mock('amplify-cli-core');
