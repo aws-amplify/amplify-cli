@@ -1,0 +1,40 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`generate maps and search configuration does not add any geo configuration if no maps or search is added 1`] = `
+Object {
+  "UserAgent": "aws-amplify-cli/2.0",
+  "Version": "1.0",
+}
+`;
+
+exports[`generate maps and search configuration generates correct configuration for maps and search geo resources 1`] = `
+Object {
+  "UserAgent": "aws-amplify-cli/2.0",
+  "Version": "1.0",
+  "geo": Object {
+    "plugins": Object {
+      "awsLocationGeoPlugin": Object {
+        "maps": Object {
+          "default": "defaultMap12345",
+          "items": Object {
+            "defaultMap12345": Object {
+              "style": "VectorEsriStreets",
+            },
+            "map12345": Object {
+              "style": "VectorEsriStreets",
+            },
+          },
+        },
+        "region": "us-west-2",
+        "searchIndices": Object {
+          "default": "defaultIndex12345",
+          "items": Array [
+            "index12345",
+            "defaultIndex12345",
+          ],
+        },
+      },
+    },
+  },
+}
+`;
