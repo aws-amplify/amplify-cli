@@ -21,10 +21,13 @@ const { getAddAuthRequestAdaptor, getUpdateAuthRequestAdaptor } = require('./pro
 const { getAddAuthHandler, getUpdateAuthHandler } = require('./provider-utils/awscloudformation/handlers/resource-handlers');
 const { projectHasAuth } = require('./provider-utils/awscloudformation/utils/project-has-auth');
 const { attachPrevParamsToContext } = require('./provider-utils/awscloudformation/utils/attach-prev-params-to-context');
+const { getFrontendConfig } = require('./provider-utils/awscloudformation/utils/amplify-meta-updaters');
 const { stateManager } = require('amplify-cli-core');
 const { JSONUtilities } = require('amplify-cli-core/lib/jsonUtilities');
 const { headlessImport } = require('./provider-utils/awscloudformation/import');
+const { AuthParameters } = require('./provider-utils/awscloudformation/import/types');
 const { getSupportedServices } = require('./provider-utils/supported-services');
+
 const {
   doesConfigurationIncludeSMS,
   loadResourceParameters,
@@ -477,4 +480,6 @@ module.exports = {
   category,
   importAuth,
   isSMSWorkflowEnabled,
+  AuthParameters,
+  getFrontendConfig,
 };
