@@ -15,7 +15,12 @@ import { FunctionTransformer } from '@aws-amplify/graphql-function-transformer';
 import { HttpTransformer } from '@aws-amplify/graphql-http-transformer';
 import { PredictionsTransformer } from '@aws-amplify/graphql-predictions-transformer';
 import { IndexTransformer, PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
-import { BelongsToTransformer, HasManyTransformer, HasOneTransformer } from '@aws-amplify/graphql-relational-transformer';
+import {
+  BelongsToTransformer,
+  HasManyTransformer,
+  HasOneTransformer,
+  ManyToManyTransformer,
+} from '@aws-amplify/graphql-relational-transformer';
 import { SearchableModelTransformer } from '@aws-amplify/graphql-searchable-transformer';
 import { ProviderName as providerName } from '../constants';
 import { hashDirectory } from '../upload-appsync-files';
@@ -49,16 +54,20 @@ function warnOnAuth(context, map) {
 
 function getTransformerFactory(context, resourceDir) {
   return async (options?: TransformerFactoryArgs) => {
+    const modelTransformer = new ModelTransformer();
+    const indexTransformer = new IndexTransformer();
+    const hasOneTransformer = new HasOneTransformer();
     const transformerList: TransformerPluginProvider[] = [
-      new ModelTransformer(),
+      modelTransformer,
       new FunctionTransformer(),
       new HttpTransformer(),
       new PredictionsTransformer(options?.storageConfig),
       new PrimaryKeyTransformer(),
-      new IndexTransformer(),
+      indexTransformer,
       new BelongsToTransformer(),
       new HasManyTransformer(),
-      new HasOneTransformer(),
+      hasOneTransformer,
+      new ManyToManyTransformer(modelTransformer, indexTransformer, hasOneTransformer),
       // TODO: initialize transformer plugins
     ];
 
@@ -67,9 +76,8 @@ function getTransformerFactory(context, resourceDir) {
     }
 
     const customTransformersConfig = await readTransformerConfiguration(resourceDir);
-    const customTransformers = (customTransformersConfig && customTransformersConfig.transformers
-      ? customTransformersConfig.transformers
-      : []
+    const customTransformers = (
+      customTransformersConfig && customTransformersConfig.transformers ? customTransformersConfig.transformers : []
     )
       .map(transformer => {
         const fileUrlMatch = /^file:\/\/(.*)\s*$/m.exec(transformer);
