@@ -24,7 +24,10 @@ export interface TransformerContextProvider {
   getResolverConfig<ResolverConfig>(): ResolverConfig | undefined;
 }
 
-export type TransformerBeforeStepContextProvider = Pick<TransformerContextProvider, 'inputDocument' | 'featureFlags'>;
+export type TransformerBeforeStepContextProvider = Pick<
+  TransformerContextProvider,
+  'inputDocument' | 'featureFlags' | 'isProjectUsingDataStore'
+>;
 export type TransformerSchemaVisitStepContextProvider = Pick<
   TransformerContextProvider,
   'inputDocument' | 'output' | 'providerRegistry' | 'featureFlags' | 'isProjectUsingDataStore' | 'getResolverConfig'

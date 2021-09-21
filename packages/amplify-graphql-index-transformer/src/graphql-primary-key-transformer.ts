@@ -1,6 +1,7 @@
 import { DirectiveWrapper, InvalidDirectiveError, TransformerPluginBase } from '@aws-amplify/graphql-transformer-core';
 import {
   TransformerContextProvider,
+  TransformerResolverProvider,
   TransformerSchemaVisitStepContextProvider,
   TransformerTransformSchemaStepContextProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
@@ -13,7 +14,7 @@ import {
   ObjectTypeDefinitionNode,
 } from 'graphql';
 import { isNonNullType, isScalarOrEnum } from 'graphql-transformer-common';
-import { replaceDdbPrimaryKey, updateResolvers } from './resolvers';
+import { constructSyncVTL, replaceDdbPrimaryKey, updateResolvers } from './resolvers';
 import {
   addKeyConditionInputs,
   removeAutoCreatedPrimaryKey,
@@ -31,6 +32,7 @@ const directiveDefinition = `
 
 export class PrimaryKeyTransformer extends TransformerPluginBase {
   private directiveList: PrimaryKeyDirectiveConfiguration[] = [];
+  private resolverMap: Map<TransformerResolverProvider, string> = new Map();
 
   constructor() {
     super('amplify-primary-key-transformer', directiveDefinition);
@@ -61,7 +63,16 @@ export class PrimaryKeyTransformer extends TransformerPluginBase {
     this.directiveList.push(args);
   };
 
-  // TODO(cjihrig): before() and after() are needed to handle sync queries once they are supported.
+  public after = (ctx: TransformerContextProvider): void => {
+    if (!ctx.isProjectUsingDataStore()) return;
+
+    // construct sync VTL code
+    this.resolverMap.forEach((syncVTLContent, resource) => {
+      if (syncVTLContent) {
+        constructSyncVTL(syncVTLContent, resource);
+      }
+    });
+  };
 
   transformSchema = (ctx: TransformerTransformSchemaStepContextProvider): void => {
     const context = ctx as TransformerContextProvider;
@@ -79,7 +90,7 @@ export class PrimaryKeyTransformer extends TransformerPluginBase {
   generateResolvers = (ctx: TransformerContextProvider): void => {
     for (const config of this.directiveList) {
       replaceDdbPrimaryKey(config, ctx);
-      updateResolvers(config, ctx);
+      updateResolvers(config, ctx, this.resolverMap);
     }
   };
 }
