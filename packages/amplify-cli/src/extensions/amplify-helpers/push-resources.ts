@@ -5,7 +5,6 @@ import { initializeEnv } from '../../initialize-env';
 import { getProviderPlugins } from './get-provider-plugins';
 import { getEnvInfo } from './get-env-info';
 import { EnvironmentDoesNotExistError, exitOnNextTick, stateManager, $TSAny, $TSContext } from 'amplify-cli-core';
-import { searchablePushChecks } from './searchable-push-checks';
 
 export async function pushResources(
   context: $TSContext,
