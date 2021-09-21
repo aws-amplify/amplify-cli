@@ -26,7 +26,7 @@ export const getAddAuthHandler = (context: any) => async (request: ServiceQuesti
     await getPostAddAuthMetaUpdater(context, { service: requestWithDefaults.serviceName, providerName: provider })(
       requestWithDefaults.resourceName!,
     );
-    await getPostAddAuthMessagePrinter(context.print)(requestWithDefaults.resourceName!);
+    await getPostAddAuthMessagePrinter(context.print)(requestWithDefaults.resourceName!, skipNextSteps);
 
     if (doesConfigurationIncludeSMS(request)) {
       await printSMSSandboxWarning(context.print);

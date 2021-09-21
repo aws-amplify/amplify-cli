@@ -17,7 +17,7 @@ function serviceQuestions(context, defaultValuesFilename, stringMapsFilename, se
 async function addResource(context, service) {
   const serviceMetadata = getSupportedServices()[service];
   const { defaultValuesFilename, stringMapsFilename, serviceWalkthroughFilename } = serviceMetadata;
-  return getAddAuthHandler(context)(
+  return getAddAuthHandler(context, skipNextSteps)(
     await serviceQuestions(context, defaultValuesFilename, stringMapsFilename, serviceWalkthroughFilename, serviceMetadata),
   );
 }

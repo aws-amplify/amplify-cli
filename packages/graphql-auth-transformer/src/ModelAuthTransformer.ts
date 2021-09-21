@@ -84,7 +84,7 @@ import { OWNER_AUTH_STRATEGY, GROUPS_AUTH_STRATEGY, DEFAULT_OWNER_FIELD, AUTH_NO
  * attributes of the records using conditional expressions. This will likely
  * be via a new argument such as "groupsField".
  */
-export type AppSyncAuthMode = 'API_KEY' | 'AMAZON_COGNITO_USER_POOLS' | 'AWS_IAM' | 'OPENID_CONNECT';
+export type AppSyncAuthMode = 'API_KEY' | 'AMAZON_COGNITO_USER_POOLS' | 'AWS_IAM' | 'OPENID_CONNECT' | 'AWS_LAMBDA';
 export type AppSyncAuthConfiguration = {
   defaultAuthentication: AppSyncAuthConfigurationEntry;
   additionalAuthenticationProviders: Array<AppSyncAuthConfigurationEntry>;
@@ -122,7 +122,7 @@ const validateAuthModes = (authConfig: AppSyncAuthConfiguration) => {
   for (let i = 0; i < authModes.length; i++) {
     const mode = authModes[i];
 
-    if (mode !== 'API_KEY' && mode !== 'AMAZON_COGNITO_USER_POOLS' && mode !== 'AWS_IAM' && mode !== 'OPENID_CONNECT') {
+    if (mode !== 'API_KEY' && mode !== 'AMAZON_COGNITO_USER_POOLS' && mode !== 'AWS_IAM' && mode !== 'OPENID_CONNECT' && mode !== 'AWS_LAMBDA') {
       throw new Error(`Invalid auth mode ${mode}`);
     }
   }

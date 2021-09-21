@@ -9,6 +9,7 @@ const authTypeMap: Record<AppSyncAuthMode, AuthorizationType> = {
   AMAZON_COGNITO_USER_POOLS: AuthorizationType.USER_POOL,
   AWS_IAM: AuthorizationType.IAM,
   OPENID_CONNECT: AuthorizationType.OIDC,
+  AWS_LAMBDA: AuthorizationType.API_KEY,
 };
 export function adoptAuthModes(stack: StackManager, authConfig: AppSyncAuthConfiguration): AuthorizationConfig {
   return {
@@ -52,6 +53,18 @@ export function adoptAuthMode(stackManager: StackManager, entry: AppSyncAuthConf
           tokenExpiryFromAuth: strToNumber(entry.openIDConnectConfig!.authTTL),
           tokenExpiryFromIssue: strToNumber(entry.openIDConnectConfig!.iatTTL),
         },
+      };
+    case 'AWS_LAMBDA':
+    // case AuthorizationType.AWS_LAMBDA:
+      // return {
+      //   authorizationType: authType,
+      //   lambdaConnectConfig: {
+      //     lambdaFunction: entry.lambdaConnectConfig!.lambdaFunction,
+      //     ttlSeconds: entry.lambdaConnectConfig!.ttlSeconds,
+      //   },
+      // };
+      return {
+        authorizationType: authType,
       };
     default:
       throw new Error('Invalid auth config');

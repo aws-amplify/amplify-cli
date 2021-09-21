@@ -1,0 +1,17 @@
+type AMPLIFY_GLOBAL @allow_public_data_access_with_api_key(in: 'dev') # FOR TESTING ONLY!
+
+type Task
+  @model
+  @auth(rules: [
+      { allow: groups, groups: ["Managers"], operations: [create, update, read, delete] }
+      { allow: groups, groups: ["Employees"], operations: [read] } ]) {
+  id: ID!
+  title: String!
+  description: String
+  status: String
+}
+
+type PrivateNote @model @auth(rules: [{ allow: owner }]) {
+  id: ID!
+  content: String!
+}
