@@ -51,14 +51,14 @@ async function selectPluginForExecution(context: Context, pluginCandidates: Plug
   if (pluginCandidatesCategorySet.size == 1 && overidedcategories.includes(pluginName)) {
     if (FeatureFlags.getBoolean(`overrides.${pluginName}`)) {
       const overidedPlugin = pluginCandidates.find(plugin => {
-        return plugin.packageName === `@aws-amplify/amlify-category-${pluginName}`;
+        return plugin.packageName === `@aws-amplify/amplify-category-${pluginName}`;
       });
       if (overidedPlugin !== undefined) {
         return overidedPlugin;
       }
     } else {
       const normalPlugin = pluginCandidates.find(plugin => {
-        return plugin.packageName === `amlify-category-${pluginName}`;
+        return plugin.packageName === `amplify-category-${pluginName}`;
       });
       if (pluginCandidates.length === 2 && normalPlugin !== undefined) {
         return normalPlugin;
