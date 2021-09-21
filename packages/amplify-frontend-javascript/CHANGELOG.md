@@ -3,6 +3,20 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.24.2-geo.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-javascript@2.24.1...amplify-frontend-javascript@2.24.2-geo.0) (2021-09-21)
+
+
+### Bug Fixes
+
+* **amplify-category-geo:** make resource names env specific ([344d977](https://github.com/aws-amplify/amplify-cli/commit/344d977146c0a4b01e0ec3a9f0359c26adba5499))
+* **amplify-category-geo:** minor changes to place index walkthrough ([ee8b00e](https://github.com/aws-amplify/amplify-cli/commit/ee8b00ec161881b7bb07db601254f8520d73def0))
+* **amplify-category-geo:** modify the pricing plan walkthrough ([b91a03f](https://github.com/aws-amplify/amplify-cli/commit/b91a03ffbb9425689fa984d7acee02541cd57abf))
+* **amplify-category-geo:** pricing plan, data provider,  JS plugin name updates ([#8155](https://github.com/aws-amplify/amplify-cli/issues/8155)) ([38b962f](https://github.com/aws-amplify/amplify-cli/commit/38b962ff7dbeb97c792564ea6067417b9d7f7688))
+
+
+
+
+
 ## [2.24.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-javascript@2.24.0...amplify-frontend-javascript@2.24.1) (2021-09-18)
 
 **Note:** Version bump only for package amplify-frontend-javascript

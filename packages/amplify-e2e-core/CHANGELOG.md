@@ -3,6 +3,21 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.26.2-geo.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@1.26.1...amplify-e2e-core@1.26.2-geo.0) (2021-09-21)
+
+
+### Bug Fixes
+
+* **amplify-category-geo:** e2e test changes; remove dev preview banner ([25f640d](https://github.com/aws-amplify/amplify-cli/commit/25f640df59aa49854e07ee43f25844c074a4ed7f))
+* **amplify-category-geo:** move setting default resource walktrough question to after developer confirms deletion of resource ([d1272c1](https://github.com/aws-amplify/amplify-cli/commit/d1272c108e64f44af01f7b16f2a25d7e3368ca38))
+* **amplify-category-geo:** nits and minor walkthrough updates ([07294ca](https://github.com/aws-amplify/amplify-cli/commit/07294ca9f2088813108b51bec0b616a01245ac00))
+* **amplify-category-geo:** pricing plan, data provider,  JS plugin name updates ([#8155](https://github.com/aws-amplify/amplify-cli/issues/8155)) ([38b962f](https://github.com/aws-amplify/amplify-cli/commit/38b962ff7dbeb97c792564ea6067417b9d7f7688))
+* **amplify-category-geo:** use amplify-prompts in place of inquirer for prompts ([#8182](https://github.com/aws-amplify/amplify-cli/issues/8182)) ([a1a14aa](https://github.com/aws-amplify/amplify-cli/commit/a1a14aa50ce9c9445978b72f8a2598b57bc6b061))
+
+
+
+
+
 ## [1.26.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@1.26.0...amplify-e2e-core@1.26.1) (2021-09-18)
 
 **Note:** Version bump only for package amplify-e2e-core

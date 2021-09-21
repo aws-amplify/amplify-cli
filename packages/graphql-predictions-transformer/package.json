@@ -1,6 +1,6 @@
 {
   "name": "graphql-predictions-transformer",
-  "version": "2.5.21",
+  "version": "2.5.22-geo.0",
   "description": "Implements the @predictions directive.",
   "repository": {
     "type": "git",
@@ -27,7 +27,7 @@
     "graphql": "^14.5.8",
     "graphql-mapping-template": "4.18.3",
     "graphql-transformer-common": "4.19.9",
-    "graphql-transformer-core": "6.29.7"
+    "graphql-transformer-core": "6.29.8-geo.0"
   },
   "devDependencies": {
     "bestzip": "^2.1.5"

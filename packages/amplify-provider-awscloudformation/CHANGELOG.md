@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.60.2-geo.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.60.1...amplify-provider-awscloudformation@4.60.2-geo.0) (2021-09-21)
+
+
+### Bug Fixes
+
+* **amplify-category-geo:** nits and minor walkthrough updates ([07294ca](https://github.com/aws-amplify/amplify-cli/commit/07294ca9f2088813108b51bec0b616a01245ac00))
+
+
+
+
+
 ## [4.60.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.60.0...amplify-provider-awscloudformation@4.60.1) (2021-09-18)
 
 **Note:** Version bump only for package amplify-provider-awscloudformation

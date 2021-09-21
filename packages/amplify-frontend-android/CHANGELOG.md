@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.16.0-geo.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-android@2.15.4...amplify-frontend-android@2.16.0-geo.0) (2021-09-21)
+
+
+### Features
+
+* **amplify-fronted-ios, amplify-frontend-android:** add geo config ([#8237](https://github.com/aws-amplify/amplify-cli/issues/8237)) ([52ac164](https://github.com/aws-amplify/amplify-cli/commit/52ac1645bb157bde29e07344e36b5c3c38484b67))
+
+
+
+
+
 ## [2.15.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-android@2.15.3...amplify-frontend-android@2.15.4) (2021-08-06)
 
 

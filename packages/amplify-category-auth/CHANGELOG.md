@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.38.2-geo.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.38.1...amplify-category-auth@2.38.2-geo.0) (2021-09-21)
+
+**Note:** Version bump only for package amplify-category-auth
+
+
+
+
+
 ## [2.38.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.38.0...amplify-category-auth@2.38.1) (2021-09-20)
 
 

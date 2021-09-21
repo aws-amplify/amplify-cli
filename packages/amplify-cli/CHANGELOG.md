@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [6.1.0-geo.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@6.0.1...@aws-amplify/cli@6.1.0-geo.0) (2021-09-21)
+
+
+### Features
+
+* **amplify-fronted-ios, amplify-frontend-android:** add geo config ([#8237](https://github.com/aws-amplify/amplify-cli/issues/8237)) ([52ac164](https://github.com/aws-amplify/amplify-cli/commit/52ac1645bb157bde29e07344e36b5c3c38484b67))
+
+
+
+
+
 ## [6.0.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@6.0.0...@aws-amplify/cli@6.0.1) (2021-09-20)
 
 **Note:** Version bump only for package @aws-amplify/cli
