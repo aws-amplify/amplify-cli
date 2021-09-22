@@ -1095,7 +1095,7 @@ async function newLambdaFunction(context) {
   // ]);
   const resourceName = await createLambdaAuthorizerFunction(context);
 
-  context.print.success('Succesfully added the Lambda function locally');
+  // context.print.success('Succesfully added the Lambda function locally');
 
   return { lambdaFunction: resourceName };
 }
@@ -1122,7 +1122,7 @@ async function askLambdaFromProject(context) {
 
 async function createLambdaAuthorizerFunction(context) {
   const targetDir = context.amplify.pathManager.getBackendDirPath();
-  const assetDir = path.normalize(path.join(rootAssetDir, 'sync-conflict-handler'));
+  const assetDir = path.normalize(path.join(rootAssetDir, 'graphql-lambda-authorizer'));
   const [shortId] = uuid().split('-');
 
   const functionName = `graphQlLambdaAuthorizer${shortId}`;
@@ -1135,17 +1135,17 @@ async function createLambdaAuthorizerFunction(context) {
   const copyJobs = [
     {
       dir: assetDir,
-      template: 'sync-conflict-handler-index.js.ejs',
+      template: 'graphql-lambda-authorizer-index.js.ejs',
       target: `${targetDir}/function/${functionName}/src/index.js`,
     },
     {
       dir: assetDir,
-      template: 'sync-conflict-handler-package.json.ejs',
+      template: 'graphql-lambda-authorizer-package.json.ejs',
       target: `${targetDir}/function/${functionName}/src/package.json`,
     },
     {
       dir: assetDir,
-      template: 'sync-conflict-handler-template.json.ejs',
+      template: 'graphql-lambda-authorizer-template.json.ejs',
       target: `${targetDir}/function/${functionName}/${functionName}-cloudformation-template.json`,
     },
   ];
@@ -1160,6 +1160,7 @@ async function createLambdaAuthorizerFunction(context) {
   };
 
   await context.amplify.updateamplifyMetaAfterResourceAdd('function', functionName, backendConfigs);
+  context.print.success(`Successfully added ${functionName} function locally`);
 
   return functionName;
 };
