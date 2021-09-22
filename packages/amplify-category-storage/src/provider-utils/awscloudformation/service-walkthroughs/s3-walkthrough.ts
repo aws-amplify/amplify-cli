@@ -25,19 +25,13 @@ import {
   createPermissionKeys,
   getAuthResourceName,
   loadDefaults,
+  permissionMap,
   readStorageParamsFileSafe,
   removeNotStoredParameters,
   removeTrigger,
+  updateCfnTemplateWithGroups,
   writeToStorageParamsFile,
 } from '../storage-configuration-helpers';
-
-// map of s3 actions corresponding to CRUD verbs
-// 'create/update' have been consolidated since s3 only has put concept
-const permissionMap = {
-  'create/update': ['s3:PutObject'],
-  read: ['s3:GetObject', 's3:ListBucket'],
-  delete: ['s3:DeleteObject'],
-};
 
 export const addWalkthrough = async (context: $TSContext, defaultValuesFilename: string, serviceMetadata: $TSAny, options: $TSAny) => {
   while (!checkIfAuthExists()) {
@@ -470,137 +464,12 @@ async function configure(context: $TSContext, serviceMetadata: $TSAny, resourceN
   return resource;
 }
 
-async function updateCfnTemplateWithGroups(
-  context: $TSContext,
-  oldGroupList: $TSAny[],
-  newGroupList: $TSAny[],
-  newGroupPolicyMap: $TSObject,
-  s3ResourceName: string,
-  authResourceName: string,
-) {
-  const groupsToBeDeleted = _.difference(oldGroupList, newGroupList);
-
-  // Update Cloudformtion file
-  const projectRoot = pathManager.findProjectRoot();
-  const resourceDirPath = pathManager.getResourceDirectoryPath(projectRoot, categoryName, s3ResourceName);
-  const storageCFNFilePath = path.join(resourceDirPath, 's3-cloudformation-template.json');
-
-  const { cfnTemplate: storageCFNFile }: { cfnTemplate: $TSAny } = await readCFNTemplate(storageCFNFilePath);
-
-  const amplifyMetaFile = stateManager.getMeta(projectRoot);
-
-  let s3DependsOnResources = amplifyMetaFile.storage[s3ResourceName].dependsOn || [];
-
-  s3DependsOnResources = s3DependsOnResources.filter((resource: $TSAny) => resource.category !== authCategoryName);
-
-  if (newGroupList.length > 0) {
-    s3DependsOnResources.push({
-      category: authCategoryName,
-      resourceName: authResourceName,
-      attributes: ['UserPoolId'],
-    });
-  }
-
-  storageCFNFile.Parameters[`auth${authResourceName}UserPoolId`] = {
-    Type: 'String',
-    Default: `auth${authResourceName}UserPoolId`,
-  };
-
-  groupsToBeDeleted.forEach(group => {
-    delete storageCFNFile.Parameters[`authuserPoolGroups${group}GroupRole`];
-    delete storageCFNFile.Resources[`${group}GroupPolicy`];
-  });
-
-  newGroupList.forEach(group => {
-    s3DependsOnResources.push({
-      category: authCategoryName,
-      resourceName: 'userPoolGroups',
-      attributes: [`${group}GroupRole`],
-    });
-
-    storageCFNFile.Parameters[`authuserPoolGroups${group}GroupRole`] = {
-      Type: 'String',
-      Default: `authuserPoolGroups${group}GroupRole`,
-    };
-
-    storageCFNFile.Resources[`${group}GroupPolicy`] = {
-      Type: 'AWS::IAM::Policy',
-      Properties: {
-        PolicyName: `${group}-group-s3-policy`,
-        Roles: [
-          {
-            'Fn::Join': [
-              '',
-              [
-                {
-                  Ref: `auth${authResourceName}UserPoolId`,
-                },
-                `-${group}GroupRole`,
-              ],
-            ],
-          },
-        ],
-        PolicyDocument: {
-          Version: '2012-10-17',
-          Statement: [
-            {
-              Effect: 'Allow',
-              Action: newGroupPolicyMap[group],
-              Resource: [
-                {
-                  'Fn::Join': [
-                    '',
-                    [
-                      'arn:aws:s3:::',
-                      {
-                        Ref: 'S3Bucket',
-                      },
-                      '/*',
-                    ],
-                  ],
-                },
-              ],
-            },
-          ],
-        },
-      },
-    };
-  });
-
-  // added a new policy for the user group to make action on buckets
-  newGroupList.forEach(group => {
-    if (newGroupPolicyMap[group].includes('s3:ListBucket') === true) {
-      storageCFNFile.Resources[`${group}GroupPolicy`].Properties.PolicyDocument.Statement.push({
-        Effect: 'Allow',
-        Action: 's3:ListBucket',
-        Resource: [
-          {
-            'Fn::Join': [
-              '',
-              [
-                'arn:aws:s3:::',
-                {
-                  Ref: 'S3Bucket',
-                },
-              ],
-            ],
-          },
-        ],
-      });
-    }
-  });
-
-  context.amplify.updateamplifyMetaAfterResourceUpdate(categoryName, s3ResourceName, 'dependsOn', s3DependsOnResources);
-
-  await writeCFNTemplate(storageCFNFile, storageCFNFilePath);
-}
-
 async function askReadWrite(userType: string, context: $TSContext, answers: $TSAny, parameters: $TSAny) {
   const defaults: $TSAny[] = [];
 
   if (parameters[`selected${userType}Permissions`]) {
     Object.values(permissionMap).forEach((el, index) => {
-      if (el.every(i => parameters[`selected${userType}Permissions`].includes(i))) {
+      if (el.every((i: $TSAny) => parameters[`selected${userType}Permissions`].includes(i))) {
         defaults.push(Object.keys(permissionMap)[index]);
       }
     });
