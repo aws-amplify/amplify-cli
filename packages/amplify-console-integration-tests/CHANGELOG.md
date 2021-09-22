@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.8.10-headless-s3-not-for-production.0](https://github.com/aws-amplify/amplify-console-integration-tests/compare/amplify-console-integration-tests@1.8.9...amplify-console-integration-tests@1.8.10-headless-s3-not-for-production.0) (2021-09-22)
+
+**Note:** Version bump only for package amplify-console-integration-tests
+
+
+
+
+
 ## [1.8.9](https://github.com/aws-amplify/amplify-console-integration-tests/compare/amplify-console-integration-tests@1.8.8...amplify-console-integration-tests@1.8.9) (2021-09-18)
 
 **Note:** Version bump only for package amplify-console-integration-tests

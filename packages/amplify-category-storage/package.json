@@ -1,6 +1,6 @@
 {
   "name": "amplify-category-storage",
-  "version": "2.12.9",
+  "version": "2.13.0-headless-s3-not-for-production.0",
   "description": "amplify-cli storage plugin",
   "repository": {
     "type": "git",
@@ -22,10 +22,10 @@
     "aws"
   ],
   "dependencies": {
-    "amplify-cli-core": "1.29.0",
-    "amplify-headless-interface": "1.10.0",
-    "amplify-prompts": "1.1.2",
-    "amplify-util-import": "1.5.12",
+    "amplify-cli-core": "1.29.1-headless-s3-not-for-production.0",
+    "amplify-headless-interface": "1.11.0-headless-s3-not-for-production.0",
+    "amplify-prompts": "1.2.0-headless-s3-not-for-production.0",
+    "amplify-util-import": "1.5.13-headless-s3-not-for-production.0",
     "chalk": "^4.1.1",
     "cloudform-types": "^4.2.0",
     "enquirer": "^2.3.6",

@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.24.23-headless-s3-not-for-production.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-auth-transformer@6.24.22...graphql-auth-transformer@6.24.23-headless-s3-not-for-production.0) (2021-09-22)
+
+
+### Bug Fixes
+
+* **graphql-model-transformer:** [@model](https://github.com/model) conflict resolution ([#8035](https://github.com/aws-amplify/amplify-cli/issues/8035)) ([f3bdc4a](https://github.com/aws-amplify/amplify-cli/commit/f3bdc4ac1fcf596f634d9d2e968785e76f7b138c))
+
+
+
+
+
 ## [6.24.22](https://github.com/aws-amplify/amplify-cli/compare/graphql-auth-transformer@6.24.21...graphql-auth-transformer@6.24.22) (2021-09-18)
 
 **Note:** Version bump only for package graphql-auth-transformer

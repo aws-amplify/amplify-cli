@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.51.0-headless-s3-not-for-production.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.50.0...amplify-e2e-tests@2.51.0-headless-s3-not-for-production.0) (2021-09-22)
+
+
+### Features
+
+* **amplify-category-storage:** --headless add and update support for S3 ([#8249](https://github.com/aws-amplify/amplify-cli/issues/8249)) ([37bb7fb](https://github.com/aws-amplify/amplify-cli/commit/37bb7fb429082b4f3380593b53aebacb6b036a31))
+
+
+
+
+
 # [2.50.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.49.0...amplify-e2e-tests@2.50.0) (2021-09-18)
 
 

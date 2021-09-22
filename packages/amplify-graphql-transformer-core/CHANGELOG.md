@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.9.1-headless-s3-not-for-production.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-transformer-core@0.9.0...@aws-amplify/graphql-transformer-core@0.9.1-headless-s3-not-for-production.0) (2021-09-22)
+
+
+### Bug Fixes
+
+* **graphql-model-transformer:** [@model](https://github.com/model) conflict resolution ([#8035](https://github.com/aws-amplify/amplify-cli/issues/8035)) ([f3bdc4a](https://github.com/aws-amplify/amplify-cli/commit/f3bdc4ac1fcf596f634d9d2e968785e76f7b138c))
+* **graphql-transformer-core:** add default api name when generating stack ([#8201](https://github.com/aws-amplify/amplify-cli/issues/8201)) ([fe52f9b](https://github.com/aws-amplify/amplify-cli/commit/fe52f9b44900888b30f8ce5c88286b197e9cd3af))
+
+
+
+
+
 # [0.9.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-transformer-core@0.8.2...@aws-amplify/graphql-transformer-core@0.9.0) (2021-09-02)
 
 

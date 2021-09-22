@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.31.24-headless-s3-not-for-production.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@2.31.23...amplify-category-api@2.31.24-headless-s3-not-for-production.0) (2021-09-22)
+
+
+### Bug Fixes
+
+* [#8223](https://github.com/aws-amplify/amplify-cli/issues/8223), conversion to typescript ([#8245](https://github.com/aws-amplify/amplify-cli/issues/8245)) ([096e6ca](https://github.com/aws-amplify/amplify-cli/commit/096e6ca19b94aa40ef249ea98d008380395afa16))
+
+
+
+
+
 ## [2.31.23](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@2.31.22...amplify-category-api@2.31.23) (2021-09-18)
 
 **Note:** Version bump only for package amplify-category-api

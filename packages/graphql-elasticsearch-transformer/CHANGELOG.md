@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.12.2-headless-s3-not-for-production.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-elasticsearch-transformer@4.12.1...graphql-elasticsearch-transformer@4.12.2-headless-s3-not-for-production.0) (2021-09-22)
+
+**Note:** Version bump only for package graphql-elasticsearch-transformer
+
+
+
+
+
 ## [4.12.1](https://github.com/aws-amplify/amplify-cli/compare/graphql-elasticsearch-transformer@4.12.0...graphql-elasticsearch-transformer@4.12.1) (2021-09-18)
 
 **Note:** Version bump only for package graphql-elasticsearch-transformer

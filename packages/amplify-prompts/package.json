@@ -1,6 +1,6 @@
 {
   "name": "amplify-prompts",
-  "version": "1.1.2",
+  "version": "1.2.0-headless-s3-not-for-production.0",
   "description": "Utility functions for Amplify CLI terminal I/O",
   "main": "lib/index.js",
   "scripts": {

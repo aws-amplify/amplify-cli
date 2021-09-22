@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/graphql-index-transformer",
-  "version": "0.3.2",
+  "version": "0.3.3-headless-s3-not-for-production.0",
   "description": "Amplify GraphQL index and key transformers",
   "repository": {
     "type": "git",
@@ -27,9 +27,9 @@
     "test": "jest"
   },
   "dependencies": {
-    "@aws-amplify/graphql-model-transformer": "0.6.2",
-    "@aws-amplify/graphql-transformer-core": "0.9.0",
-    "@aws-amplify/graphql-transformer-interfaces": "1.9.0",
+    "@aws-amplify/graphql-model-transformer": "0.6.3-headless-s3-not-for-production.0",
+    "@aws-amplify/graphql-transformer-core": "0.9.1-headless-s3-not-for-production.0",
+    "@aws-amplify/graphql-transformer-interfaces": "1.9.1-headless-s3-not-for-production.0",
     "@aws-cdk/aws-appsync": "~1.119.0",
     "@aws-cdk/aws-dynamodb": "~1.119.0",
     "@aws-cdk/core": "~1.119.0",

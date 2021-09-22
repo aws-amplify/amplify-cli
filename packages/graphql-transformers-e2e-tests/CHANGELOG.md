@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [6.27.0-headless-s3-not-for-production.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformers-e2e-tests@6.26.3...graphql-transformers-e2e-tests@6.27.0-headless-s3-not-for-production.0) (2021-09-22)
+
+
+### Features
+
+* add [@many](https://github.com/many)ToMany directive ([#8195](https://github.com/aws-amplify/amplify-cli/issues/8195)) ([cc644eb](https://github.com/aws-amplify/amplify-cli/commit/cc644ebc4968f29ad6b3f0b42013d7ee6a142f7e))
+
+
+
+
+
 ## [6.26.3](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformers-e2e-tests@6.26.2...graphql-transformers-e2e-tests@6.26.3) (2021-09-18)
 
 **Note:** Version bump only for package graphql-transformers-e2e-tests
