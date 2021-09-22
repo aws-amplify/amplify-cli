@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.2.0-auth-dir-v-next.7](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-auth-transformer@0.2.0-auth-dir-v-next.6...@aws-amplify/graphql-auth-transformer@0.2.0-auth-dir-v-next.7) (2021-09-22)
+
+
+### Bug Fixes
+
+* auth filter expression ([#8248](https://github.com/aws-amplify/amplify-cli/issues/8248)) ([3476482](https://github.com/aws-amplify/amplify-cli/commit/347648226a4efae99337a5cbe876f689cc3f3c37))
+
+
+
+
+
 # [0.2.0-auth-dir-v-next.6](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-auth-transformer@0.2.0-auth-dir-v-next.5...@aws-amplify/graphql-auth-transformer@0.2.0-auth-dir-v-next.6) (2021-09-22)
 
 
