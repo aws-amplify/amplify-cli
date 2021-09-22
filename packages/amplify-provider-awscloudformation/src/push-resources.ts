@@ -232,7 +232,6 @@ export async function run(context: $TSContext, resourceDefinition: $TSObject, re
         await generateAndUploadRootStack(context, nestedStackFilepath, nestedStackFileName);
 
         // Use state manager to do the final deployment. The final deployment include not just API change but the whole Amplify Project
-        // TODO check that this step will also reinstate the original function template
         const finalStep: DeploymentOp = {
           stackTemplatePathOrUrl: nestedStackFileName,
           tableNames: [],

@@ -106,7 +106,9 @@ export class GraphQLResourceManager {
         throw err;
       }
     }
-    this.gsiManagement(gqlDiff.diff, gqlDiff.current, gqlDiff.next);
+    if (!this.rebuildAllTables) {
+      this.gsiManagement(gqlDiff.diff, gqlDiff.current, gqlDiff.next);
+    }
     this.tableRecreationManagement(gqlDiff.current, gqlDiff.next);
     return await this.getDeploymentSteps();
   };

@@ -87,9 +87,6 @@ describe('generateTempFuncCFNTemplates', () => {
 });
 
 describe('uploadTempFuncDeploymentFiles', () => {
-  // const log_mock = jest.fn();
-  // const logger_mock = jest.fn().mockReturnValue(log_mock);
-  // fileLogger_mock.mockReturnValue(() => () => jest.fn());
   it('uploads template and meta file', async () => {
     fs_mock.createReadStream
       .mockReturnValueOnce('func1Template' as any)
