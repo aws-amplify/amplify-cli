@@ -1,4 +1,11 @@
-import { AddApiRequest, AddAuthRequest, ImportAuthRequest, UpdateApiRequest, UpdateAuthRequest } from 'amplify-headless-interface';
+import {
+  AddApiRequest,
+  AddAuthRequest,
+  AddStorageRequest,
+  ImportAuthRequest,
+  UpdateApiRequest,
+  UpdateAuthRequest,
+} from 'amplify-headless-interface';
 import execa from 'execa';
 import { getCLIPath } from '..';
 
@@ -30,6 +37,10 @@ export const headlessAuthImport = async (cwd: string, request: ImportAuthRequest
   await executeHeadlessCommand(cwd, 'auth', 'import', request);
 };
 
+export const addHeadlessStorage = async (cwd: string, request: AddStorageRequest) => {
+  await executeHeadlessCommand(cwd, 'storage', 'add', request);
+};
+
 const headlessRemoveResource = async (cwd: string, category: string, resourceName: string) => {
   await execa(getCLIPath(), ['remove', category, resourceName, '--yes'], { cwd });
 };
@@ -37,4 +48,4 @@ const executeHeadlessCommand = async (cwd: string, category: string, operation: 
   await execa(getCLIPath(), [operation, category, '--headless'], { input: JSON.stringify(request), cwd });
 };
 
-type AnyHeadlessRequest = AddApiRequest | UpdateApiRequest | AddAuthRequest | UpdateAuthRequest | ImportAuthRequest;
+type AnyHeadlessRequest = AddApiRequest | UpdateApiRequest | AddAuthRequest | UpdateAuthRequest | ImportAuthRequest | AddStorageRequest;

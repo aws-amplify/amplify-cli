@@ -1,20 +1,26 @@
-import { initJSProjectWithProfile, initFlutterProjectWithProfile, deleteProject, amplifyPushAuth } from 'amplify-e2e-core';
-import { addAuthWithDefault, addAuthWithGroupsAndAdminAPI } from 'amplify-e2e-core';
 import {
-  addSimpleDDB,
-  addDDBWithTrigger,
-  updateDDBWithTrigger,
-  addSimpleDDBwithGSI,
-  updateSimpleDDBwithGSI,
+  addAuthWithDefault,
+  addAuthWithGroups,
+  addAuthWithGroupsAndAdminAPI,
+  addHeadlessStorage,
   addS3AndAuthWithAuthOnlyAccess,
-  addS3WithGuestAccess,
   addS3WithGroupAccess,
+  addS3WithGuestAccess,
   addS3WithTrigger,
+  amplifyPushAuth,
+  checkIfBucketExists,
+  createNewProjectDir,
+  deleteProject,
+  deleteProjectDir,
+  getProjectMeta,
+  initFlutterProjectWithProfile,
+  initJSProjectWithProfile,
   updateS3AddTrigger,
 } from 'amplify-e2e-core';
-import { createNewProjectDir, deleteProjectDir, getProjectMeta, getDDBTable, checkIfBucketExists } from 'amplify-e2e-core';
+import { AddStorageRequest, CrudOperation } from 'amplify-headless-interface';
 import * as fs from 'fs-extra';
 import * as path from 'path';
+import { v4 as uuid } from 'uuid';
 
 describe('amplify add/update storage(S3)', () => {
   let projRoot: string;
@@ -27,7 +33,7 @@ describe('amplify add/update storage(S3)', () => {
     deleteProjectDir(projRoot);
   });
 
-  async function validate(projRoot) {
+  async function validate(projRoot: string) {
     const meta = getProjectMeta(projRoot);
     const { BucketName: bucketName, Region: region } = Object.keys(meta.storage).map(key => meta.storage[key])[0].output;
 
@@ -86,69 +92,57 @@ describe('amplify add/update storage(S3)', () => {
     await amplifyPushAuth(projRoot);
     await validate(projRoot);
   });
-});
 
-describe('amplify add/update storage(DDB) with GSI', () => {
-  let projRoot: string;
-  beforeEach(async () => {
-    projRoot = await createNewProjectDir('ddb-gsi');
-  });
+  it('init a project and add S3 headlessly', async () => {
+    const [shortId] = uuid().split('-');
 
-  afterEach(async () => {
-    await deleteProject(projRoot);
-    deleteProjectDir(projRoot);
-  });
+    const addStorageRequest = {
+      version: 1,
+      serviceConfiguration: {
+        serviceName: 'S3',
+        permissions: {
+          auth: [CrudOperation.CREATE_AND_UPDATE, CrudOperation.DELETE, CrudOperation.READ],
+        },
+        bucketName: `integtest${shortId}`,
+        resourceName: 'headlessTest1',
+      },
+    };
 
-  it('init a project add a GSI and then update with another GSI', async () => {
     await initJSProjectWithProfile(projRoot, {});
     await addAuthWithDefault(projRoot, {});
-    await addSimpleDDBwithGSI(projRoot, {});
-    await updateSimpleDDBwithGSI(projRoot, {});
+    await addHeadlessStorage(projRoot, addStorageRequest as AddStorageRequest);
     await amplifyPushAuth(projRoot);
-  });
-});
-
-describe('amplify add/update storage(DDB)', () => {
-  let projRoot: string;
-  beforeEach(async () => {
-    projRoot = await createNewProjectDir('ddb-add-update');
+    await validate(projRoot);
   });
 
-  afterEach(async () => {
-    await deleteProject(projRoot);
-    deleteProjectDir(projRoot);
-  });
+  it('init a project and add S3 with Lambda trigger headlessly', async () => {
+    const [shortId] = uuid().split('-');
 
-  it('init a project and add/update ddb table with & without trigger', async () => {
+    const addStorageRequest = {
+      version: 1,
+      serviceConfiguration: {
+        serviceName: 'S3',
+        permissions: {
+          auth: [CrudOperation.CREATE_AND_UPDATE, CrudOperation.READ],
+          guest: [CrudOperation.READ],
+          groups: {
+            Admins: [CrudOperation.CREATE_AND_UPDATE, CrudOperation.DELETE, CrudOperation.READ],
+            Users: [CrudOperation.CREATE_AND_UPDATE, CrudOperation.READ],
+          },
+        },
+        bucketName: `integtest${shortId}`,
+        resourceName: 'headlessTest2',
+        lambdaTrigger: {
+          mode: 'new',
+          name: `lambdaTrigger${shortId}`,
+        },
+      },
+    };
+
     await initJSProjectWithProfile(projRoot, {});
-    await addSimpleDDB(projRoot, {});
-    await addDDBWithTrigger(projRoot, {});
+    await addAuthWithGroups(projRoot);
+    await addHeadlessStorage(projRoot, addStorageRequest as AddStorageRequest);
     await amplifyPushAuth(projRoot);
-    await updateDDBWithTrigger(projRoot, {});
-    await amplifyPushAuth(projRoot);
-
-    const meta = getProjectMeta(projRoot);
-    const { Name: table1Name, Arn: table1Arn, Region: table1Region, StreamArn: table1StreamArn } = Object.keys(meta.storage).map(
-      key => meta.storage[key],
-    )[0].output;
-
-    expect(table1Name).toBeDefined();
-    expect(table1Arn).toBeDefined();
-    expect(table1Region).toBeDefined();
-    expect(table1StreamArn).toBeDefined();
-    const table1Configs = await getDDBTable(table1Name, table1Region);
-
-    expect(table1Configs.Table.TableArn).toEqual(table1Arn);
-
-    const { Name: table2Name, Arn: table2Arn, Region: table2Region, StreamArn: table2StreamArn } = Object.keys(meta.storage).map(
-      key => meta.storage[key],
-    )[1].output;
-
-    expect(table2Name).toBeDefined();
-    expect(table2Arn).toBeDefined();
-    expect(table2Region).toBeDefined();
-    expect(table2StreamArn).toBeDefined();
-    const table2Configs = await getDDBTable(table2Name, table2Region);
-    expect(table2Configs.Table.TableArn).toEqual(table2Arn);
+    await validate(projRoot);
   });
 });

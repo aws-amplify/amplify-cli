@@ -1,0 +1,9 @@
+{
+  "version": 1,
+  "serviceConfiguration": {
+    "serviceName": "S3",
+    "permissions": { "auth": ["CREATE_AND_UPDATE", "DELETE", "READ"] },
+    "bucketName": "testing1bucketname",
+    "resourceName": "testing1ResourceName"
+  }
+}
