@@ -72,6 +72,7 @@ import {
   ObjectDefinitionWrapper,
 } from './wrappers/object-definition-wrapper';
 import { CfnRole } from '@aws-cdk/aws-iam';
+import md5 from 'md5';
 
 export type Nullable<T> = T | null;
 export type OptionalAndNullable<T> = Partial<T>;
@@ -186,9 +187,9 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
       },
       subscriptions: {
         level: SubscriptionLevel.public,
-        onCreate: [toCamelCase(['onCreate', typeName])],
-        onDelete: [toCamelCase(['onDelete', typeName])],
-        onUpdate: [toCamelCase(['onUpdate', typeName])],
+        onCreate: [this.ensureValidSubscriptionName(toCamelCase(['onCreate', typeName]))],
+        onDelete: [this.ensureValidSubscriptionName(toCamelCase(['onDelete', typeName]))],
+        onUpdate: [this.ensureValidSubscriptionName(toCamelCase(['onUpdate', typeName]))],
       },
       timestamps: {
         createdAt: 'createdAt',
@@ -1106,7 +1107,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
   }
 
   private createIAMRole(context: TransformerContextProvider, def: ObjectTypeDefinitionNode, stack: cdk.Stack, tableName: string) {
-    const roleName = context.resourceHelper.generateResourceName(ModelResourceIDs.ModelTableIAMRoleID(def!.name.value));
+    const roleName = context.resourceHelper.generateIAMRoleName(ModelResourceIDs.ModelTableIAMRoleID(def!.name.value));
     const role = new iam.Role(stack, ModelResourceIDs.ModelTableIAMRoleID(def!.name.value), {
       roleName: roleName,
       assumedBy: new iam.ServicePrincipal('appsync.amazonaws.com'),
@@ -1178,5 +1179,11 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
       EnableDeletionProtection: false,
       ...options,
     };
+  };
+
+  private ensureValidSubscriptionName = (name: string): string => {
+    if (name.length <= 50) return name;
+
+    return name.slice(0, 45) + md5(name).slice(0, 5);
   };
 }

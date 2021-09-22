@@ -29,7 +29,7 @@
     "pluralize": "8.0.0"
   },
   "devDependencies": {
-    "@types/md5": "^2.1.33",
+    "@types/md5": "^2.3.1",
     "@types/node": "^12.12.6"
   },
   "jest": {
