@@ -3,7 +3,7 @@ import { dataStoreLearnMore } from '../sync-conflict-handler-assets/syncAssets';
 import inquirer from 'inquirer';
 import fs from 'fs-extra';
 import path from 'path';
-import { rootAssetDir } from '../aws-constants';
+import { rootAssetDir, provider } from '../aws-constants';
 import { collectDirectivesByTypeNames, readProjectConfiguration } from 'graphql-transformer-core';
 import { category } from '../../../category-constants';
 import { UpdateApiRequest } from '../../../../../amplify-headless-interface/lib/interface/api/update';
@@ -11,6 +11,7 @@ import { authConfigToAppSyncAuthType } from '../utils/auth-config-to-app-sync-au
 import { resolverConfigToConflictResolution } from '../utils/resolver-config-to-conflict-resolution-bi-di-mapper';
 import _ from 'lodash';
 import chalk from 'chalk';
+import uuid from 'uuid';
 import { getAppSyncAuthConfig, checkIfAuthExists, authConfigHasApiKey } from '../utils/amplify-meta-utils';
 import {
   ResourceAlreadyExistsError,
@@ -1087,11 +1088,12 @@ async function askLambdaSource(context, functionType) {
 }
 
 async function newLambdaFunction(context) {
-  const resourceName = await context.amplify.invokePluginMethod(context, 'function', undefined, 'add', [
-    context,
-    'awscloudformation',
-    FunctionServiceNameLambdaFunction,
-  ]);
+  // const resourceName = await context.amplify.invokePluginMethod(context, 'function', undefined, 'add', [
+  //   context,
+  //   'awscloudformation',
+  //   FunctionServiceNameLambdaFunction,
+  // ]);
+  const resourceName = await createLambdaAuthorizerFunction(context);
 
   context.print.success('Succesfully added the Lambda function locally');
 
@@ -1117,3 +1119,47 @@ async function askLambdaFromProject(context) {
 
   return { lambdaFunction: answer.lambdaFunction };
 }
+
+async function createLambdaAuthorizerFunction(context) {
+  const targetDir = context.amplify.pathManager.getBackendDirPath();
+  const assetDir = path.normalize(path.join(rootAssetDir, 'sync-conflict-handler'));
+  const [shortId] = uuid().split('-');
+
+  const functionName = `graphQlLambdaAuthorizer${shortId}`;
+
+  const functionProps = {
+    functionName: `${functionName}`,
+    roleName: `${functionName}LambdaRole`,
+  };
+
+  const copyJobs = [
+    {
+      dir: assetDir,
+      template: 'sync-conflict-handler-index.js.ejs',
+      target: `${targetDir}/function/${functionName}/src/index.js`,
+    },
+    {
+      dir: assetDir,
+      template: 'sync-conflict-handler-package.json.ejs',
+      target: `${targetDir}/function/${functionName}/src/package.json`,
+    },
+    {
+      dir: assetDir,
+      template: 'sync-conflict-handler-template.json.ejs',
+      target: `${targetDir}/function/${functionName}/${functionName}-cloudformation-template.json`,
+    },
+  ];
+
+  // copy over the files
+  await context.amplify.copyBatch(context, copyJobs, functionProps, true);
+
+  const backendConfigs = {
+    service: FunctionServiceNameLambdaFunction,
+    providerPlugin: provider,
+    build: true,
+  };
+
+  await context.amplify.updateamplifyMetaAfterResourceAdd('function', functionName, backendConfigs);
+
+  return functionName;
+};
