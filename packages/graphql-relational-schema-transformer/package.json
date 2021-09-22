@@ -19,6 +19,7 @@
   "scripts": {
     "test": "jest --coverage",
     "build": "tsc",
+    "watch": "tsc -w",
     "clean": "rimraf ./lib"
   },
   "dependencies": {
