@@ -157,7 +157,7 @@ module.exports = {
       context.print.info(error.stack);
       context.print.error('There was an error adding the datasource');
 
-      context.usageData.emitError(error);
+      await context.usageData.emitError(error);
 
       process.exitCode = 1;
     }
@@ -165,7 +165,7 @@ module.exports = {
   readSchema,
 };
 
-function datasourceSelectionPrompt(context, supportedDatasources) {
+async function datasourceSelectionPrompt(context, supportedDatasources) {
   const options = [];
   Object.keys(supportedDatasources).forEach(datasource => {
     const optionName =
@@ -183,14 +183,18 @@ function datasourceSelectionPrompt(context, supportedDatasources) {
 
   if (options.length === 0) {
     const errMessage = `No datasources defined by configured providers for category: ${category}`;
+
     context.print.error(errMessage);
-    context.usageData.emitError(new ResourceDoesNotExistError(errMessage));
+
+    await context.usageData.emitError(new ResourceDoesNotExistError(errMessage));
+
     exitOnNextTick(1);
   }
 
   if (options.length === 1) {
     // No need to ask questions
     context.print.info(`Using datasource: ${options[0].value.datasource}, provided by: ${options[0].value.providerName}`);
+
     return new Promise(resolve => {
       resolve(options[0].value);
     });
