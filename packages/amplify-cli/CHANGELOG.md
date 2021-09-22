@@ -3,6 +3,61 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.0.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@6.0.0...@aws-amplify/cli@6.0.1) (2021-09-20)
+
+**Note:** Version bump only for package @aws-amplify/cli
+
+
+
+
+
+# [6.0.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@5.6.0...@aws-amplify/cli@6.0.0) (2021-09-18)
+
+
+
+# 6.0.0 (2021-09-17)
+
+
+### chore
+
+* bump up major version ([#8209](https://github.com/aws-amplify/amplify-cli/issues/8209)) ([53295a2](https://github.com/aws-amplify/amplify-cli/commit/53295a2333dab0e03815db600fdf9bebe39e2e81)), closes [pr#8188](https://github.com/pr/issues/8188)
+
+
+### BREAKING CHANGES
+
+* make usernameAttributes the default behavior for cognito userpools
+
+
+
+
+
+# [5.6.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@5.5.0...@aws-amplify/cli@5.6.0) (2021-09-14)
+
+
+
+# 5.6.0 (2021-09-14)
+
+
+### Bug Fixes
+
+* incorrect documentation link ([#8148](https://github.com/aws-amplify/amplify-cli/issues/8148)) ([28026e9](https://github.com/aws-amplify/amplify-cli/commit/28026e9a19daf83cde12f04c5e97a909fb18b93c))
+
+
+### Features
+
+* **amplify-category-auth:** add auth verification mechanisms to frontend config ([#8037](https://github.com/aws-amplify/amplify-cli/issues/8037)) ([#8093](https://github.com/aws-amplify/amplify-cli/issues/8093)) ([b8949b2](https://github.com/aws-amplify/amplify-cli/commit/b8949b2b519f6b6a26bcab3596c051acec51e077))
+* version blocking for CLI ([#7834](https://github.com/aws-amplify/amplify-cli/issues/7834)) ([045ef3b](https://github.com/aws-amplify/amplify-cli/commit/045ef3b83598c287b7e34bb5d1487bbe026026af))
+
+
+### Reverts
+
+* Revert "feat: version blocking for CLI (#7834)" (#8170) ([f5a92e3](https://github.com/aws-amplify/amplify-cli/commit/f5a92e3fcd288ba8f5eb48db62ccf02f6bb7d03d)), closes [#7834](https://github.com/aws-amplify/amplify-cli/issues/7834) [#8170](https://github.com/aws-amplify/amplify-cli/issues/8170)
+* Revert "feat(amplify-category-auth): add auth verification mechanisms to frontend config (#8037) (#8093)" (#8158) ([50f07ef](https://github.com/aws-amplify/amplify-cli/commit/50f07efcf7c5663b6fd123d300ec473377d03abe)), closes [#8037](https://github.com/aws-amplify/amplify-cli/issues/8037) [#8093](https://github.com/aws-amplify/amplify-cli/issues/8093) [#8158](https://github.com/aws-amplify/amplify-cli/issues/8158)
+
+
+
+
+
 # [5.5.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@5.4.0...@aws-amplify/cli@5.5.0) (2021-09-09)
 
 

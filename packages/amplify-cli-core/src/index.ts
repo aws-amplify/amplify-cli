@@ -49,7 +49,6 @@ export type $TSContext = {
   newUserInfo?: $TSAny;
   filesystem: IContextFilesystem;
   template: IContextTemplate;
-  versionInfo: CLIVersionInfo;
 };
 
 export type CategoryName = string;
@@ -144,11 +143,6 @@ export type DeploymentSecrets = {
   }>;
 };
 
-export type CLIVersionInfo = {
-  currentCLIVersion: string;
-  minimumCompatibleCLIVersion: string;
-};
-
 /**
  * Plugins or other packages bundled with the CLI that pass a file to a system command or execute a binary file must export a function named
  * "getPackageAssetPaths" of this type.
@@ -205,6 +199,15 @@ export interface AmplifyProjectConfig {
   version: string;
   frontend: AmplifyFrontend;
   providers: string[];
+}
+
+/**
+ * higher level context object that could be used in plugins
+ */
+export interface ProviderContext {
+  provider: string;
+  service: string;
+  projectName: string;
 }
 
 export type $TSCopyJob = any;

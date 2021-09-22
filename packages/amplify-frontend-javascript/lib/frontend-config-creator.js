@@ -105,6 +105,7 @@ function getAWSExportsObject(resources) {
   const { serviceResourceMapping } = resources;
   const configOutput = {};
   const predictionsConfig = {};
+  const geoConfig = {};
 
   const projectRegion = resources.metadata.Region;
   configOutput.aws_project_region = projectRegion;
@@ -167,6 +168,12 @@ function getAWSExportsObject(resources) {
           ...getInferConfig(serviceResourceMapping[service]),
         };
         break;
+      case 'Map':
+        geoConfig.maps = getMapConfig(serviceResourceMapping[service]);
+        break;
+      case 'PlaceIndex':
+        geoConfig.search_indices = getPlaceIndexConfig(serviceResourceMapping[service]);
+        break;
       default:
         break;
     }
@@ -175,6 +182,19 @@ function getAWSExportsObject(resources) {
   // add predictions config if predictions resources exist
   if (Object.entries(predictionsConfig).length > 0) {
     Object.assign(configOutput, { predictions: predictionsConfig });
+  }
+
+  // add geo config if geo resources exist
+  if (Object.entries(geoConfig).length > 0) {
+    geoConfig.region = projectRegion;
+    Object.assign(
+      configOutput,
+      {
+        geo: {
+          amazon_location_service: geoConfig
+        }
+      }
+    );
   }
 
   return configOutput;
@@ -296,6 +316,7 @@ function getCognitoConfig(cognitoResources, projectRegion) {
     frontendAuthConfig.aws_cognito_mfa_configuration = cognitoResource.frontendAuthConfig.mfaConfiguration;
     frontendAuthConfig.aws_cognito_mfa_types = cognitoResource.frontendAuthConfig.mfaTypes;
     frontendAuthConfig.aws_cognito_password_protection_settings = cognitoResource.frontendAuthConfig.passwordProtectionSettings;
+    frontendAuthConfig.aws_cognito_verification_mechanisms = cognitoResource.frontendAuthConfig.verificationMechanisms;
   }
 
   return {
@@ -537,6 +558,40 @@ function getSumerianConfig(sumerianResources) {
       scenes,
     },
   };
+}
+
+function getMapConfig(mapResources) {
+  let defaultMap = "";
+  const mapConfig = {
+    items: {}
+  };
+  mapResources.forEach(mapResource => {
+    const mapName = mapResource.output.Name;
+    mapConfig.items[mapName] = {
+      style: mapResource.output.Style
+    }
+    if(mapResource.isDefault) {
+      defaultMap = mapName;
+    }
+  });
+  mapConfig.default = defaultMap;
+  return mapConfig;
+}
+
+function getPlaceIndexConfig(placeIndexResources) {
+  let defaultPlaceIndex = "";
+  const placeIndexConfig = {
+    items: []
+  };
+  placeIndexResources.forEach(placeIndexResource => {
+    const placeIndexName = placeIndexResource.output.Name;
+    placeIndexConfig.items.push(placeIndexName);
+    if(placeIndexResource.isDefault) {
+      defaultPlaceIndex = placeIndexName;
+    }
+  });
+  placeIndexConfig.default = defaultPlaceIndex;
+  return placeIndexConfig;
 }
 
 module.exports = { createAWSExports, createAmplifyConfig, deleteAmplifyConfig };

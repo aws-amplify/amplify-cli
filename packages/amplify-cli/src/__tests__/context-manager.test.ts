@@ -23,13 +23,8 @@ jest.mock('../domain/amplify-usageData/', () => {
 });
 jest.mock('../app-config');
 
-jest.mock('../version-gating', () => ({
-  getCurrentCLIVersion: jest.fn().mockReturnValue(() => '5.2.0'),
-  getMinimumCompatibleCLIVersion: jest.fn().mockReturnValue(() => '5.0.0'),
-}));
-
 describe('test attachUsageData', () => {
-  const version = '5.2.0';
+  const version = 'latestversion';
   const mockContext = jest.genMockFromModule<Context>('../domain/context');
 
   mockContext.input = new Input([
@@ -37,10 +32,6 @@ describe('test attachUsageData', () => {
     '/Users/userName/.nvm/versions/node/v8.11.4/bin/amplify',
     'status',
   ]);
-  mockContext.versionInfo = {
-    currentCLIVersion: '5.2.0',
-    minimumCompatibleCLIVersion: '5.0.0',
-  };
   mockContext.pluginPlatform = new PluginPlatform();
   mockContext.pluginPlatform.plugins['core'] = [new PluginInfo('', version, '', new PluginManifest('', ''))];
 

@@ -532,6 +532,10 @@ export async function storeCurrentCloudBackend(context: $TSContext) {
 
 function validateCfnTemplates(context: $TSContext, resourcesToBeUpdated: $TSAny[]) {
   for (const { category, resourceName } of resourcesToBeUpdated) {
+    // Turning off the error log for Geo resources as they're considered invalid by cfn-lint
+    if (category === 'geo') {
+      continue;
+    }
     const backEndDir = pathManager.getBackendDirPath();
     const resourceDir = path.normalize(path.join(backEndDir, category, resourceName));
     const cfnFiles = glob.sync(cfnTemplateGlobPattern, {
@@ -682,7 +686,7 @@ async function updateCloudFormationNestedStack(
   const log = logger('updateCloudFormationNestedStack', [providerDirectory, transformedStackPath]);
   try {
     log();
-    await cfnItem.updateResourceStack(context, transformedStackPath);
+    await cfnItem.updateResourceStack(transformedStackPath);
   } catch (error) {
     log(error);
     throw error;
@@ -841,18 +845,6 @@ async function formNestedStack(
 
   const { amplifyMeta } = projectDetails;
   let authResourceName: string;
-
-  // Add CLI versioning information to the root stack's metadata
-  const metadata = nestedStack.Metadata || {};
-
-  Object.assign(metadata, {
-    AmplifyCLI: {
-      DeployedByCLIVersion: context.versionInfo.currentCLIVersion,
-      MinimumCompatibleCLIVersion: context.versionInfo.minimumCompatibleCLIVersion,
-    },
-  });
-
-  nestedStack.Metadata = metadata;
 
   const { APIGatewayAuthURL, NetworkStackS3Url, AuthTriggerTemplateURL } = amplifyMeta.providers[constants.ProviderName];
 

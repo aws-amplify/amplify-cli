@@ -1,7 +1,7 @@
 import { AuthorizationConfig, AuthorizationMode, AuthorizationType } from '@aws-cdk/aws-appsync';
 import { UserPool } from '@aws-cdk/aws-cognito';
 import { Duration, Expiration } from '@aws-cdk/core';
-import { AppSyncAuthConfiguration, AppSyncAuthConfigurationEntry, AppSyncAuthMode } from '../transformation';
+import { AppSyncAuthConfiguration, AppSyncAuthConfigurationEntry, AppSyncAuthMode } from '../config';
 import { StackManager } from '../transformer-context/stack-manager';
 
 const authTypeMap: Record<AppSyncAuthMode, AuthorizationType> = {
@@ -25,12 +25,12 @@ export function adoptAuthMode(stackManager: StackManager, entry: AppSyncAuthConf
         authorizationType: authType,
         apiKeyConfig: {
           description: entry.apiKeyConfig.description,
-          expires: Expiration.after(Duration.days(entry.apiKeyConfig.apiKeyExpirationDays))
-        }
+          expires: Expiration.after(Duration.days(entry.apiKeyConfig.apiKeyExpirationDays)),
+        },
       };
     case AuthorizationType.USER_POOL:
       const userPoolId = stackManager.addParameter('AuthCognitoUserPoolId', {
-        type: 'String'
+        type: 'String',
       }).valueAsString;
       const rootStack = stackManager.rootStack;
       return {
@@ -58,9 +58,9 @@ export function adoptAuthMode(stackManager: StackManager, entry: AppSyncAuthConf
   }
 }
 
-function strToNumber(input: string | number| undefined): number| undefined {
-  if(typeof input === 'string') {
+function strToNumber(input: string | number | undefined): number | undefined {
+  if (typeof input === 'string') {
     return Number.parseInt(input, 10);
   }
-  return input
+  return input;
 }

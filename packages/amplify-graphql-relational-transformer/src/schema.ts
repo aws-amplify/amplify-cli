@@ -20,7 +20,7 @@ import {
   toCamelCase,
   toUpper,
 } from 'graphql-transformer-common';
-import { HasManyDirectiveConfiguration, HasOneDirectiveConfiguration } from './types';
+import { HasManyDirectiveConfiguration, HasOneDirectiveConfiguration, ManyToManyDirectiveConfiguration } from './types';
 import { getConnectionAttributeName } from './utils';
 
 export function extendTypeWithConnection(config: HasManyDirectiveConfiguration, ctx: TransformerContextProvider) {
@@ -132,7 +132,10 @@ export function ensureHasOneConnectionField(config: HasOneDirectiveConfiguration
   config.connectionFields.push(connectionAttributeName);
 }
 
-export function ensureHasManyConnectionField(config: HasManyDirectiveConfiguration, ctx: TransformerContextProvider) {
+export function ensureHasManyConnectionField(
+  config: HasManyDirectiveConfiguration | ManyToManyDirectiveConfiguration,
+  ctx: TransformerContextProvider,
+) {
   const { field, fieldNodes, object, relatedType } = config;
 
   // If fields were explicitly provided to the directive, there is nothing else to do here.
@@ -326,4 +329,22 @@ function makeModelXFilterInputObject(
     fields,
     directives: [],
   };
+}
+
+export function getPartitionKeyField(object: ObjectTypeDefinitionNode): FieldDefinitionNode {
+  const fieldMap = new Map<string, FieldDefinitionNode>();
+  let name = 'id';
+
+  for (const field of object.fields!) {
+    fieldMap.set(field.name.value, field);
+
+    for (const directive of field.directives!) {
+      if (directive.name.value === 'primaryKey') {
+        name = field.name.value;
+        break;
+      }
+    }
+  }
+
+  return fieldMap.get(name)!;
 }
