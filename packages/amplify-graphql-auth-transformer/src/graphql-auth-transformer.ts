@@ -139,7 +139,7 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
     this.addTypeToResourceReferences(def.name.value, rules);
     // turn rules into roles and add into acm and roleMap
     this.convertRulesToRoles(acm, rules);
-    this.modelDirectiveConfig.set(typeName, getModelConfig(modelDirective, typeName));
+    this.modelDirectiveConfig.set(typeName, getModelConfig(modelDirective, typeName, context.isProjectUsingDataStore()));
     this.authModelConfig.set(typeName, acm);
   };
 
@@ -188,7 +188,7 @@ Static group authorization should perform as expected.`,
       let acm: AccessControlMatrix;
       // check if the parent is already in the model config if not add it
       if (!this.modelDirectiveConfig.has(typeName)) {
-        this.modelDirectiveConfig.set(typeName, getModelConfig(modelDirective, typeName));
+        this.modelDirectiveConfig.set(typeName, getModelConfig(modelDirective, typeName, context.isProjectUsingDataStore()));
         acm = new AccessControlMatrix({
           operations: MODEL_OPERATIONS,
           resources: collectFieldNames(parent),

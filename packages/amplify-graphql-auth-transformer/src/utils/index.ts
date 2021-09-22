@@ -61,12 +61,13 @@ export const ensureAuthRuleDefaults = (rules: AuthRule[]) => {
   }
 };
 
-export const getModelConfig = (directive: DirectiveNode, typeName: string): ModelDirectiveConfiguration => {
+export const getModelConfig = (directive: DirectiveNode, typeName: string, isDataStoreEnabled = false): ModelDirectiveConfiguration => {
   const directiveWrapped: DirectiveWrapper = new DirectiveWrapper(directive);
   const options = directiveWrapped.getArguments<ModelDirectiveConfiguration>({
     queries: {
       get: toCamelCase(['get', typeName]),
       list: toCamelCase(['list', plurality(typeName, true)]),
+      ...(isDataStoreEnabled ? { sync: toCamelCase(['sync', plurality(typeName, true)]) } : undefined),
     },
     mutations: {
       create: toCamelCase(['create', typeName]),
