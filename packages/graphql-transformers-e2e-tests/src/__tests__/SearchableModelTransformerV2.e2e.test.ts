@@ -30,9 +30,9 @@ const featureFlags = {
 };
 
 const BUILD_TIMESTAMP = moment().format('YYYYMMDDHHmmss');
-const STACK_NAME = `TestSearchableModelTransformer-${BUILD_TIMESTAMP}`;
-const BUCKET_NAME = `testsearchablemodeltransformer-${BUILD_TIMESTAMP}`;
-const LOCAL_FS_BUILD_DIR = '/tmp/model_searchable_transform_tests/';
+const STACK_NAME = `TestSearchableAggregates-${BUILD_TIMESTAMP}`;
+const BUCKET_NAME = `testsearchableaggregates-${BUILD_TIMESTAMP}`;
+const LOCAL_FS_BUILD_DIR = '/tmp/model_searchable_aggregates_tests/';
 const S3_ROOT_DIR_KEY = 'deployments';
 
 const fragments = [`fragment FullPost on Post { id author title ups downs percentageUp isPublished createdAt }`];

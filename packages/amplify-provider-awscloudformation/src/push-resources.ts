@@ -73,14 +73,8 @@ export async function run(context: $TSContext, resourceDefinition: $TSObject) {
   let layerResources = [];
 
   try {
-    const {
-      resourcesToBeCreated,
-      resourcesToBeUpdated,
-      resourcesToBeSynced,
-      resourcesToBeDeleted,
-      tagsUpdated,
-      allResources,
-    } = resourceDefinition;
+    const { resourcesToBeCreated, resourcesToBeUpdated, resourcesToBeSynced, resourcesToBeDeleted, tagsUpdated, allResources } =
+      resourceDefinition;
     const cloudformationMeta = context.amplify.getProjectMeta().providers.awscloudformation;
     const {
       parameters: { options },
@@ -525,6 +519,10 @@ export async function storeCurrentCloudBackend(context: $TSContext) {
 
 function validateCfnTemplates(context: $TSContext, resourcesToBeUpdated: $TSAny[]) {
   for (const { category, resourceName } of resourcesToBeUpdated) {
+    // Turning off the error log for Geo resources as they're considered invalid by cfn-lint
+    if (category === 'geo') {
+      continue;
+    }
     const backEndDir = pathManager.getBackendDirPath();
     const resourceDir = path.normalize(path.join(backEndDir, category, resourceName));
     const cfnFiles = glob.sync(cfnTemplateGlobPattern, {
@@ -1027,14 +1025,8 @@ async function formNestedStack(
         // If auth is imported check the parameters section of the nested template
         // and if it has auth or unauth role arn or name or userpool id, then inject it from the
         // imported auth resource's properties
-        const {
-          imported,
-          userPoolId,
-          authRoleArn,
-          authRoleName,
-          unauthRoleArn,
-          unauthRoleName,
-        } = context.amplify.getImportedAuthProperties(context);
+        const { imported, userPoolId, authRoleArn, authRoleName, unauthRoleArn, unauthRoleName } =
+          context.amplify.getImportedAuthProperties(context);
 
         if (category !== 'auth' && resourceDetails.service !== 'Cognito' && imported) {
           if (parameters.AuthCognitoUserPoolId) {
@@ -1046,7 +1038,7 @@ async function formNestedStack(
           }
 
           if (parameters.authRoleName) {
-            parameters.authRoleName = authRoleName;
+            parameters.authRoleName = authRoleName || { Ref: 'AuthRoleName' }; // if only a user pool is imported, we ref the root stack AuthRoleName because the child stacks still need this parameter
           }
 
           if (parameters.unauthRoleArn) {

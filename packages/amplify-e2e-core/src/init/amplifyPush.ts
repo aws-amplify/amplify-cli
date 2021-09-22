@@ -15,7 +15,7 @@ export function amplifyPush(cwd: string, testingWithLatestCodebase: boolean = fa
     spawn(getCLIPath(testingWithLatestCodebase), ['status', '-v'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
       .wait(/.*/)
       .run((err: Error) => {
-        if ( err ){
+        if (err) {
           reject(err);
         }
       });
@@ -244,5 +244,13 @@ export function amplifyPushMissingFuncSecret(cwd: string, newSecretValue: string
       .wait('Are you sure you want to continue?')
       .sendConfirmYes()
       .run(err => (err ? reject(err) : resolve()));
+  });
+}
+
+export function amplifyPushWithNoChanges(cwd: string, testingWithLatestCodebase: boolean = false): Promise<void> {
+  return new Promise((resolve, reject) => {
+    spawn(getCLIPath(testingWithLatestCodebase), ['push'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
+      .wait('No changes detected')
+      .run((err: Error) => (err ? reject(err) : resolve()));
   });
 }

@@ -19,6 +19,8 @@ import {
   getTeamProviderInfo,
   initJSProjectWithProfile,
   initProjectWithAccessKey,
+  addApi,
+  updateApiSchema,
 } from 'amplify-e2e-core';
 import {
   AppClientSettings,
@@ -230,6 +232,17 @@ describe('auth import userpool only', () => {
     await expect(addS3WithAuthConfigurationMismatchErrorExit(projectRoot, {})).rejects.toThrowError(
       'Process exited with non zero exit code 1',
     );
+  });
+
+  it('imported user pool only should allow iam auth in graphql api', async () => {
+    await initJSProjectWithProfile(projectRoot, projectSettings);
+    await importUserPoolOnly(projectRoot, ogSettings.userPoolName, { native: '_app_client ', web: '_app_clientWeb' });
+    await addApi(projectRoot, {
+      IAM: {},
+    });
+    await updateApiSchema(projectRoot, projectPrefix, 'model_with_iam_auth.graphql');
+    await amplifyPush(projectRoot);
+    // successful push indicates iam auth works when only importing user pool
   });
 
   it('imported auth, push, pull to empty directory, files should match', async () => {

@@ -420,7 +420,7 @@ jobs:
     working_directory: ~/repo
     resource_class: large
     docker:
-      - image: cypress/base:12
+      - image: cypress/base:14.17.0
         environment:
           TERM: dumb
     steps:

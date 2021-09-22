@@ -3,6 +3,70 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.34.7](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@2.34.6...amplify-category-function@2.34.7) (2021-09-18)
+
+**Note:** Version bump only for package amplify-category-function
+
+
+
+
+
+## [2.34.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@2.34.5...amplify-category-function@2.34.6) (2021-09-14)
+
+
+### Bug Fixes
+
+* **amplify-category-function:** specify UTC tz when selecting start time ([#8053](https://github.com/aws-amplify/amplify-cli/issues/8053)) ([5e3d69a](https://github.com/aws-amplify/amplify-cli/commit/5e3d69aef42d02b661a7ffe878f40de8a3881d5a))
+* remove overwrite of email-only verification when triggers are added ([#7671](https://github.com/aws-amplify/amplify-cli/issues/7671)) ([704295b](https://github.com/aws-amplify/amplify-cli/commit/704295b918701eb81fdaabb786417463672fa02c))
+
+
+
+
+
+## [2.34.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@2.34.4...amplify-category-function@2.34.5) (2021-09-09)
+
+
+### Bug Fixes
+
+* 'filter' of undefined when removing layers ([#8057](https://github.com/aws-amplify/amplify-cli/issues/8057)) ([b524870](https://github.com/aws-amplify/amplify-cli/commit/b524870200d56901482af5d6b18993ae1f6af6ec))
+
+
+
+
+
+## [2.34.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@2.34.3...amplify-category-function@2.34.4) (2021-09-02)
+
+
+### Bug Fixes
+
+* **amplify-category-function:** check for new function when adding permissions ([#8017](https://github.com/aws-amplify/amplify-cli/issues/8017)) ([7af3b0d](https://github.com/aws-amplify/amplify-cli/commit/7af3b0d576310b8e9ec837a0f8c717a7b10c6f7e)), closes [#7970](https://github.com/aws-amplify/amplify-cli/issues/7970)
+* **amplify-provider-awscloudformation:** display mfa prompt ([#7866](https://github.com/aws-amplify/amplify-cli/issues/7866)) ([8947b18](https://github.com/aws-amplify/amplify-cli/commit/8947b187bf7a7ff6c998488a9931839ca3169d02))
+* function names are made to match package.json's format ([#7988](https://github.com/aws-amplify/amplify-cli/issues/7988)) ([25689dd](https://github.com/aws-amplify/amplify-cli/commit/25689ddd099895d3d2ea2f4cb70f69f3c7801661))
+* include files starting with a period on packaging ([#7861](https://github.com/aws-amplify/amplify-cli/issues/7861)) ([870ad10](https://github.com/aws-amplify/amplify-cli/commit/870ad1001bb63b2f4b1b576bdde6c0ba24173676))
+* parameterize AppId in secrets path for multi-account workflows ([#7922](https://github.com/aws-amplify/amplify-cli/issues/7922)) ([50a11a8](https://github.com/aws-amplify/amplify-cli/commit/50a11a8bfe173103d7f7490b87eace112d9d6412))
+* resource key should be 'category', not 'categoryName' ([#8041](https://github.com/aws-amplify/amplify-cli/issues/8041)) ([3908d1b](https://github.com/aws-amplify/amplify-cli/commit/3908d1badde29ffe79da3c31274a7c893ee0afc4))
+
+
+### Reverts
+
+* Revert "fix(amplify-provider-awscloudformation): display mfa prompt (#7866)" (#8054) ([7b5de7b](https://github.com/aws-amplify/amplify-cli/commit/7b5de7b553e189a47c88e2902a0f21744a16dc10)), closes [#7866](https://github.com/aws-amplify/amplify-cli/issues/7866) [#8054](https://github.com/aws-amplify/amplify-cli/issues/8054)
+* Revert "fix: function names are made to match package.json's format (#7988)" (#8051) ([b40faa7](https://github.com/aws-amplify/amplify-cli/commit/b40faa79244f3a24fc5f444759500bef522ecf6f)), closes [#7988](https://github.com/aws-amplify/amplify-cli/issues/7988) [#8051](https://github.com/aws-amplify/amplify-cli/issues/8051)
+
+
+
+
+
+## [2.34.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@2.34.2...amplify-category-function@2.34.3) (2021-08-24)
+
+
+### Bug Fixes
+
+* **amplify-category-function:** fixed issue for removing function env variable ([#7917](https://github.com/aws-amplify/amplify-cli/issues/7917)) ([423c4b1](https://github.com/aws-amplify/amplify-cli/commit/423c4b1855a0de5eb627c982a6c54bd3b6c2c9e0)), closes [#7777](https://github.com/aws-amplify/amplify-cli/issues/7777)
+
+
+
+
+
 ## [2.34.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@2.34.1...amplify-category-function@2.34.2) (2021-08-06)
 
 

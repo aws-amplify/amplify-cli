@@ -3,6 +3,7 @@ import {
   EnumTypeDefinitionNode,
   FieldDefinitionNode,
   InputObjectTypeDefinitionNode,
+  Kind,
   ObjectTypeDefinitionNode,
   TypeDefinitionNode,
 } from 'graphql';
@@ -13,7 +14,7 @@ import {
   makeField,
   makeNamedType,
   makeValueNode,
-  toPascalCase,
+  ModelResourceIDs,
 } from 'graphql-transformer-common';
 import {
   ATTRIBUTE_TYPES,
@@ -31,6 +32,7 @@ import {
 } from '../definitions';
 import {
   EnumWrapper,
+  FieldWrapper,
   InputFieldWrapper,
   InputObjectDefinitionWrapper,
   ObjectDefinitionWrapper,
@@ -40,22 +42,24 @@ import {
  * Creates the condition/filter input for a model
  * @param ctx TransformerContext
  * @param name model name
- * @param object ModelObjectDefination
+ * @param object ModelObjectDefinition
  */
 export const makeConditionFilterInput = (
   ctx: TransformerTransformSchemaStepContextProvider,
   name: string,
   object: ObjectTypeDefinitionNode,
 ): InputObjectDefinitionWrapper => {
+  const supportsConditions = true;
   const input = InputObjectDefinitionWrapper.create(name);
   const wrappedObject = new ObjectDefinitionWrapper(object);
   for (let field of wrappedObject.fields) {
     const fieldType = ctx.output.getType(field.getTypeName());
-    const isEnumType = fieldType && fieldType.kind === 'EnumTypeDefinition';
+    const isEnumType = fieldType && fieldType.kind === Kind.ENUM_TYPE_DEFINITION;
     if (field.isScalar() || isEnumType) {
-      const fieldTypeName = field.getTypeName();
-      const nameOverride = DEFAULT_SCALARS[fieldTypeName] || fieldTypeName;
-      const conditionTypeName = isEnumType && field.isList() ? `Model${nameOverride}ListInput` : `Model${nameOverride}Input`;
+      const conditionTypeName =
+        isEnumType && field.isList()
+          ? ModelResourceIDs.ModelFilterListInputTypeName(field.getTypeName(), !supportsConditions)
+          : ModelResourceIDs.ModelFilterScalarInputTypeName(field.getTypeName(), !supportsConditions);
       const inputField = InputFieldWrapper.create(field.name, conditionTypeName, true);
       input.addField(inputField);
     }
@@ -90,7 +94,7 @@ export const addModelConditionInputs = (ctx: TransformerTransformSchemaStepConte
 
 /**
  *
- * @param typeName Name of the scarlar type
+ * @param typeName Name of the scalar type
  * @param includeFilter add filter suffix to input
  */
 export function generateModelScalarFilterInputName(typeName: string, includeFilter: boolean): string {
@@ -100,6 +104,7 @@ export function generateModelScalarFilterInputName(typeName: string, includeFilt
   }
   return `Model${typeName}${includeFilter ? 'Filter' : ''}Input`;
 }
+
 export const createEnumModelFilters = (
   ctx: TransformerTransformSchemaStepContextProvider,
   type: ObjectTypeDefinitionNode,
@@ -111,7 +116,8 @@ export const createEnumModelFilters = (
     const typeObj = ctx.output.getType(typeName);
     return typeObj && typeObj.kind === 'EnumTypeDefinition';
   });
-  return enumFields.map(field => makeEnumFilterInput(field.getTypeName()));
+
+  return enumFields.map(field => makeEnumFilterInput(field));
 };
 
 /**
@@ -218,13 +224,24 @@ export function makeSizeInputType(): InputObjectTypeDefinitionNode {
   return input.serialize();
 }
 
-export function makeEnumFilterInput(name: string): InputObjectTypeDefinitionNode {
-  const inputName = toPascalCase(['Model', name, 'Input']);
-  const input = InputObjectDefinitionWrapper.create(inputName);
+export function makeEnumFilterInput(fieldWrapper: FieldWrapper): InputObjectTypeDefinitionNode {
+  const supportsConditions = true;
+  const conditionTypeName = fieldWrapper.isList()
+    ? ModelResourceIDs.ModelFilterListInputTypeName(fieldWrapper.getTypeName(), !supportsConditions)
+    : ModelResourceIDs.ModelFilterScalarInputTypeName(fieldWrapper.getTypeName(), !supportsConditions);
+
+  const input = InputObjectDefinitionWrapper.create(conditionTypeName);
   ['eq', 'ne'].forEach(fieldName => {
-    const field = InputFieldWrapper.create(fieldName, name, true);
+    const field = InputFieldWrapper.create(fieldName, fieldWrapper.getTypeName(), true, fieldWrapper.isList());
     input.addField(field);
   });
+
+  if (fieldWrapper.isList()) {
+    ['contains', 'notContains'].forEach(fieldName => {
+      const field = InputFieldWrapper.create(fieldName, fieldWrapper.getTypeName(), true);
+      input.addField(field);
+    });
+  }
   return input.serialize();
 }
 

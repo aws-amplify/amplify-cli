@@ -6,6 +6,7 @@ import * as actions from 'enquirer/lib/combos';
 import { isYes } from './flags';
 import { Validator } from './validators';
 import { printer } from './printer';
+import chalk from 'chalk';
 
 /**
  * Provides methods for collecting interactive customer responses from the shell
@@ -89,9 +90,9 @@ class AmplifyPrompter implements Prompter {
       if (Array.isArray(result)) {
         return (await Promise.all(result.map(async part => (opts.transform as Function)(part) as T))) as PromptReturn<RS, T>;
       }
-      return (opts.transform(result as string) as unknown) as PromptReturn<RS, T>;
+      return opts.transform(result as string) as unknown as PromptReturn<RS, T>;
     } else {
-      return (result as unknown) as PromptReturn<RS, T>;
+      return result as unknown as PromptReturn<RS, T>;
     }
   };
 
@@ -120,7 +121,7 @@ class AmplifyPrompter implements Prompter {
     // map string[] choices into GenericChoice<T>[]
     const genericChoices: GenericChoice<T>[] =
       typeof choices[0] === 'string'
-        ? (((choices as string[]).map(choice => ({ name: choice, value: choice })) as unknown) as GenericChoice<T>[]) // this assertion is safe because the choice array can only be a string[] if the generic type is a string
+        ? ((choices as string[]).map(choice => ({ name: choice, value: choice })) as unknown as GenericChoice<T>[]) // this assertion is safe because the choice array can only be a string[] if the generic type is a string
         : (choices as GenericChoice<T>[]);
 
     // enquirer requires all choice values be strings, so set up a mapping of string => T
@@ -147,6 +148,10 @@ class AmplifyPrompter implements Prompter {
         result = opts?.initial.map(idx => genericChoices[idx].name);
       }
     } else {
+      // enquirer does not clear the stdout buffer on TSTP (Ctrl + Z) so this listener maps it to process.exit() which will clear the buffer
+      // This does mean that the process can't be resumed, but enquirer errors when trying to resume the process anyway because it can't reattach to the TTY buffer
+      const sigTstpListener = () => process.exit();
+      process.once('SIGTSTP', sigTstpListener);
       ({ result } = await this.prompter<{ result: RS extends 'many' ? string[] : string }>({
         // actions is not part of the TS interface but it's part of the JS API
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -155,17 +160,24 @@ class AmplifyPrompter implements Prompter {
         // footer is not part of the TS interface but it's part of the JS API
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
-        footer: opts?.returnSize === 'many' ? '(Use <space> to select, <ctrl + a> to toggle all)' : undefined,
+        footer: opts?.returnSize === 'many' ? chalk.gray('(Use <space> to select, <ctrl + a> to toggle all)') : undefined,
         type: 'autocomplete',
         name: 'result',
         message,
+        hint: '(Use arrow keys or type to filter)',
         initial: opts?.initial,
         // there is a typo in the .d.ts file for this field -- muliple -> multiple
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         multiple: opts?.returnSize === 'many',
         choices: enquirerChoices,
+        pointer(_: unknown, i: number) {
+          // this.state is bound to a property of enquirer's prompt object, it does not reference a property of AmplifyPrompter
+          return this.state.index === i ? chalk.cyan('❯') : ' ';
+        },
       }));
+      // remove the TSTP listener
+      process.removeListener('SIGTSTP', sigTstpListener);
     }
 
     if (Array.isArray(result)) {

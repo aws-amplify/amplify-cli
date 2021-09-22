@@ -23,7 +23,8 @@ export async function adminLoginFlow(context: $TSContext, appId: string, envName
   const spinner = ora('Continue in browser to log in…\n').start();
   try {
     // spawn express server locally to get credentials
-    const originUrl = adminBackendMap[region].amplifyAdminUrl;
+    // environment variable AMPLIFY_CLI_ADMINUI_BASE_URL is used to set the login url to http://localhost:3000 when developing against beta/gamma endpoints
+    const originUrl = process.env.AMPLIFY_CLI_ADMINUI_BASE_URL ?? adminBackendMap[region]?.amplifyAdminUrl;
     const adminLoginServer = new AdminLoginServer(appId, originUrl, context.print);
     await new Promise<void>(resolve =>
       adminLoginServer.startServer(() => {

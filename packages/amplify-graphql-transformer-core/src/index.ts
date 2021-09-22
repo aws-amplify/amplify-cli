@@ -1,19 +1,6 @@
 import { print } from 'graphql';
 import { EXTRA_DIRECTIVES_DOCUMENT } from './transformation/validation';
-export {
-  GraphQLTransform,
-  GraphQLTransformOptions,
-  AppSyncAuthConfiguration,
-  AppSyncAuthConfigurationAPIKeyEntry,
-  AppSyncAuthConfigurationEntry,
-  AppSyncAuthConfigurationIAMEntry,
-  ApiKeyConfig,
-  AppSyncAuthConfigurationOIDCEntry,
-  AppSyncAuthConfigurationUserPoolEntry,
-  AppSyncAuthMode,
-  UserPoolConfig,
-  LogConfig,
-} from './transformation';
+export { GraphQLTransform, GraphQLTransformOptions, SyncUtils } from './transformation';
 export { DeploymentResources } from './transformation/types';
 export { validateModelSchema } from './transformation/validation';
 export {
@@ -26,6 +13,17 @@ export {
   SyncConfigServer,
   TransformConfig,
   TransformerProjectConfig,
+  AppSyncAuthConfiguration,
+  AppSyncAuthConfigurationAPIKeyEntry,
+  AppSyncAuthConfigurationEntry,
+  AppSyncAuthConfigurationIAMEntry,
+  ApiKeyConfig,
+  AppSyncAuthConfigurationOIDCEntry,
+  AppSyncAuthConfigurationUserPoolEntry,
+  AppSyncAuthMode,
+  UserPoolConfig,
+  LambdaConflictHandler,
+  LogConfig,
 } from './config/index';
 export { collectDirectives, collectDirectivesByTypeNames, DirectiveWrapper } from './utils';
 export * from './errors';

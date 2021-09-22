@@ -14,6 +14,7 @@ import {
   AmplifyBackend,
   IAM,
   SSM,
+  Location,
 } from 'aws-sdk';
 import * as path from 'path';
 import _ from 'lodash';
@@ -57,6 +58,17 @@ export const getBucketEncryption = async (bucket: string) => {
     return result.ServerSideEncryptionConfiguration;
   } catch (err) {
     throw new Error(`Error fetching SSE info for bucket ${bucket}. Underlying error was [${err.message}]`);
+  }
+};
+
+export const getBucketKeys = async (params: S3.ListObjectsRequest) => {
+  const s3 = new S3();
+
+  try {
+    const result = await s3.listObjects(params).promise();
+    return result.Contents.map(contentObj => contentObj.Key);
+  } catch (err) {
+    throw new Error(`Error fetching keys for bucket ${params.Bucket}. Underlying error was [${err.message}]`);
   }
 };
 
@@ -325,6 +337,24 @@ export const getSSMParameters = async (region: string, appId: string, envName: s
     .getParameters({
       Names: parameterNames.map(name => path.posix.join('/amplify', appId, envName, `AMPLIFY_${funcName}_${name}`)),
       WithDecryption: true,
+    })
+    .promise();
+};
+//Amazon location service calls
+export const getMap = async (mapName: string, region: string) => {
+  const service = new Location({ region });
+  return await service
+    .describeMap({
+      MapName: mapName,
+    })
+    .promise();
+};
+
+export const getPlaceIndex = async (placeIndexName: string, region: string) => {
+  const service = new Location({ region });
+  return await service
+    .describePlaceIndex({
+      IndexName: placeIndexName,
     })
     .promise();
 };

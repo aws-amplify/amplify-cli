@@ -540,33 +540,6 @@ $util.toJson($ListRequest)
   $util.toJson($ctx.result)
 #end
 ## [End] Get ResponseTemplate. **",
-  "Subscription.onCreateTest.req.vtl": "## [Start] Subscription Request template. **
-$util.toJson({
-  \\"version\\": \\"2018-05-29\\",
-  \\"payload\\": {}
-})
-## [End] Subscription Request template. **",
-  "Subscription.onCreateTest.res.vtl": "## [Start] Subscription Resonse template. **
-$util.toJson(null)
-## [End] Subscription Resonse template. **",
-  "Subscription.onDeleteTest.req.vtl": "## [Start] Subscription Request template. **
-$util.toJson({
-  \\"version\\": \\"2018-05-29\\",
-  \\"payload\\": {}
-})
-## [End] Subscription Request template. **",
-  "Subscription.onDeleteTest.res.vtl": "## [Start] Subscription Resonse template. **
-$util.toJson(null)
-## [End] Subscription Resonse template. **",
-  "Subscription.onUpdateTest.req.vtl": "## [Start] Subscription Request template. **
-$util.toJson({
-  \\"version\\": \\"2018-05-29\\",
-  \\"payload\\": {}
-})
-## [End] Subscription Request template. **",
-  "Subscription.onUpdateTest.res.vtl": "## [Start] Subscription Resonse template. **
-$util.toJson(null)
-## [End] Subscription Resonse template. **",
 }
 `;
 
@@ -1050,33 +1023,6 @@ $util.toJson($ListRequest)
   $util.toJson($ctx.result)
 #end
 ## [End] Get ResponseTemplate. **",
-  "Subscription.onCreateTest.req.vtl": "## [Start] Subscription Request template. **
-$util.toJson({
-  \\"version\\": \\"2018-05-29\\",
-  \\"payload\\": {}
-})
-## [End] Subscription Request template. **",
-  "Subscription.onCreateTest.res.vtl": "## [Start] Subscription Resonse template. **
-$util.toJson(null)
-## [End] Subscription Resonse template. **",
-  "Subscription.onDeleteTest.req.vtl": "## [Start] Subscription Request template. **
-$util.toJson({
-  \\"version\\": \\"2018-05-29\\",
-  \\"payload\\": {}
-})
-## [End] Subscription Request template. **",
-  "Subscription.onDeleteTest.res.vtl": "## [Start] Subscription Resonse template. **
-$util.toJson(null)
-## [End] Subscription Resonse template. **",
-  "Subscription.onUpdateTest.req.vtl": "## [Start] Subscription Request template. **
-$util.toJson({
-  \\"version\\": \\"2018-05-29\\",
-  \\"payload\\": {}
-})
-## [End] Subscription Request template. **",
-  "Subscription.onUpdateTest.res.vtl": "## [Start] Subscription Resonse template. **
-$util.toJson(null)
-## [End] Subscription Resonse template. **",
 }
 `;
 
@@ -1513,33 +1459,6 @@ $util.toJson($ListRequest)
   $util.toJson($ctx.result)
 #end
 ## [End] Get ResponseTemplate. **",
-  "Subscription.onCreateTest.req.vtl": "## [Start] Subscription Request template. **
-$util.toJson({
-  \\"version\\": \\"2018-05-29\\",
-  \\"payload\\": {}
-})
-## [End] Subscription Request template. **",
-  "Subscription.onCreateTest.res.vtl": "## [Start] Subscription Resonse template. **
-$util.toJson(null)
-## [End] Subscription Resonse template. **",
-  "Subscription.onDeleteTest.req.vtl": "## [Start] Subscription Request template. **
-$util.toJson({
-  \\"version\\": \\"2018-05-29\\",
-  \\"payload\\": {}
-})
-## [End] Subscription Request template. **",
-  "Subscription.onDeleteTest.res.vtl": "## [Start] Subscription Resonse template. **
-$util.toJson(null)
-## [End] Subscription Resonse template. **",
-  "Subscription.onUpdateTest.req.vtl": "## [Start] Subscription Request template. **
-$util.toJson({
-  \\"version\\": \\"2018-05-29\\",
-  \\"payload\\": {}
-})
-## [End] Subscription Request template. **",
-  "Subscription.onUpdateTest.res.vtl": "## [Start] Subscription Resonse template. **
-$util.toJson(null)
-## [End] Subscription Resonse template. **",
 }
 `;
 
@@ -2023,33 +1942,6 @@ $util.toJson($ListRequest)
   $util.toJson($ctx.result)
 #end
 ## [End] Get ResponseTemplate. **",
-  "Subscription.onCreateTest.req.vtl": "## [Start] Subscription Request template. **
-$util.toJson({
-  \\"version\\": \\"2018-05-29\\",
-  \\"payload\\": {}
-})
-## [End] Subscription Request template. **",
-  "Subscription.onCreateTest.res.vtl": "## [Start] Subscription Resonse template. **
-$util.toJson(null)
-## [End] Subscription Resonse template. **",
-  "Subscription.onDeleteTest.req.vtl": "## [Start] Subscription Request template. **
-$util.toJson({
-  \\"version\\": \\"2018-05-29\\",
-  \\"payload\\": {}
-})
-## [End] Subscription Request template. **",
-  "Subscription.onDeleteTest.res.vtl": "## [Start] Subscription Resonse template. **
-$util.toJson(null)
-## [End] Subscription Resonse template. **",
-  "Subscription.onUpdateTest.req.vtl": "## [Start] Subscription Request template. **
-$util.toJson({
-  \\"version\\": \\"2018-05-29\\",
-  \\"payload\\": {}
-})
-## [End] Subscription Request template. **",
-  "Subscription.onUpdateTest.res.vtl": "## [Start] Subscription Resonse template. **
-$util.toJson(null)
-## [End] Subscription Resonse template. **",
 }
 `;
 
@@ -2967,33 +2859,6 @@ $util.toJson($ListRequest)
   $util.toJson($ctx.result)
 #end
 ## [End] Get ResponseTemplate. **",
-  "Subscription.onCreateTest.req.vtl": "## [Start] Subscription Request template. **
-$util.toJson({
-  \\"version\\": \\"2018-05-29\\",
-  \\"payload\\": {}
-})
-## [End] Subscription Request template. **",
-  "Subscription.onCreateTest.res.vtl": "## [Start] Subscription Resonse template. **
-$util.toJson(null)
-## [End] Subscription Resonse template. **",
-  "Subscription.onDeleteTest.req.vtl": "## [Start] Subscription Request template. **
-$util.toJson({
-  \\"version\\": \\"2018-05-29\\",
-  \\"payload\\": {}
-})
-## [End] Subscription Request template. **",
-  "Subscription.onDeleteTest.res.vtl": "## [Start] Subscription Resonse template. **
-$util.toJson(null)
-## [End] Subscription Resonse template. **",
-  "Subscription.onUpdateTest.req.vtl": "## [Start] Subscription Request template. **
-$util.toJson({
-  \\"version\\": \\"2018-05-29\\",
-  \\"payload\\": {}
-})
-## [End] Subscription Request template. **",
-  "Subscription.onUpdateTest.res.vtl": "## [Start] Subscription Resonse template. **
-$util.toJson(null)
-## [End] Subscription Resonse template. **",
 }
 `;
 
@@ -3908,32 +3773,5 @@ $util.toJson($ListRequest)
   $util.toJson($ctx.result)
 #end
 ## [End] Get ResponseTemplate. **",
-  "Subscription.onCreateTest.req.vtl": "## [Start] Subscription Request template. **
-$util.toJson({
-  \\"version\\": \\"2018-05-29\\",
-  \\"payload\\": {}
-})
-## [End] Subscription Request template. **",
-  "Subscription.onCreateTest.res.vtl": "## [Start] Subscription Resonse template. **
-$util.toJson(null)
-## [End] Subscription Resonse template. **",
-  "Subscription.onDeleteTest.req.vtl": "## [Start] Subscription Request template. **
-$util.toJson({
-  \\"version\\": \\"2018-05-29\\",
-  \\"payload\\": {}
-})
-## [End] Subscription Request template. **",
-  "Subscription.onDeleteTest.res.vtl": "## [Start] Subscription Resonse template. **
-$util.toJson(null)
-## [End] Subscription Resonse template. **",
-  "Subscription.onUpdateTest.req.vtl": "## [Start] Subscription Request template. **
-$util.toJson({
-  \\"version\\": \\"2018-05-29\\",
-  \\"payload\\": {}
-})
-## [End] Subscription Request template. **",
-  "Subscription.onUpdateTest.res.vtl": "## [Start] Subscription Resonse template. **
-$util.toJson(null)
-## [End] Subscription Resonse template. **",
 }
 `;

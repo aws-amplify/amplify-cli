@@ -1,6 +1,6 @@
 {
   "name": "amplify-appsync-simulator",
-  "version": "1.27.6",
+  "version": "1.27.7",
   "description": "An AppSync Simulator to test AppSync API.",
   "repository": {
     "type": "git",
@@ -27,7 +27,7 @@
   },
   "dependencies": {
     "amplify-velocity-template": "1.4.5",
-    "aws-sdk": "^2.919.0",
+    "aws-sdk": "^2.963.0",
     "chalk": "^4.1.1",
     "cors": "^2.8.5",
     "dataloader": "^2.0.0",
@@ -48,7 +48,7 @@
     "moment-timezone": "0.5.27",
     "mqtt-connection": "4.0.0",
     "nanoid": "2.1.10",
-    "pino": "5.16.0",
+    "pino": "^6.13.0",
     "portfinder": "^1.0.25",
     "qlobber": "3.1.0",
     "retimer": "2.0.0",
@@ -62,7 +62,7 @@
     "@types/express": "^4.17.2",
     "@types/moment-timezone": "0.5.12",
     "@types/node": "^12.12.6",
-    "@types/pino": "5.15.3",
+    "@types/pino": "^6.3.11",
     "@types/ws": "^7.4.4",
     "amplify-graphiql-explorer": "1.6.1"
   },

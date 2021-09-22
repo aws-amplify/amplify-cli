@@ -3,6 +3,41 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.6.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-searchable-transformer@0.5.1...@aws-amplify/graphql-searchable-transformer@0.6.0) (2021-09-14)
+
+
+### Features
+
+* support five new regions in CLI ([#8094](https://github.com/aws-amplify/amplify-cli/issues/8094)) ([98e6c56](https://github.com/aws-amplify/amplify-cli/commit/98e6c56b21cc9a7e1145ab658c3d8611474d5c44))
+
+
+
+
+
+## [0.5.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-searchable-transformer@0.5.0...@aws-amplify/graphql-searchable-transformer@0.5.1) (2021-09-02)
+
+
+### Bug Fixes
+
+* add model transformer v2 e2e tests ([#7946](https://github.com/aws-amplify/amplify-cli/issues/7946)) ([351a8bc](https://github.com/aws-amplify/amplify-cli/commit/351a8bce6069398535878fd62886e0ee5c402329))
+* model transformer support condition ([#7935](https://github.com/aws-amplify/amplify-cli/issues/7935)) ([fc93dba](https://github.com/aws-amplify/amplify-cli/commit/fc93dbabb38427607ef6abb6f1d7fb2f357a284b))
+
+
+
+
+
+# [0.5.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-searchable-transformer@0.4.1...@aws-amplify/graphql-searchable-transformer@0.5.0) (2021-08-24)
+
+
+### Features
+
+* add [@index](https://github.com/index) directive ([#7887](https://github.com/aws-amplify/amplify-cli/issues/7887)) ([e011555](https://github.com/aws-amplify/amplify-cli/commit/e0115557aad893b3286226e92ce8fecbd5636c1a))
+* model transformer advanced subscriptions ([#7927](https://github.com/aws-amplify/amplify-cli/issues/7927)) ([1725630](https://github.com/aws-amplify/amplify-cli/commit/1725630c61c40923e8dfa3c697ea5472df2e5de1))
+
+
+
+
+
 ## [0.4.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-searchable-transformer@0.4.0...@aws-amplify/graphql-searchable-transformer@0.4.1) (2021-08-06)
 
 

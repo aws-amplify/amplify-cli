@@ -60,7 +60,7 @@ function removeObjectRecursively(obj, keys) {
   }
 }
 
-export function saveEnvResourceParameters(context: $TSContext, category: string, resource: string, parameters: $TSObject) {
+export function saveEnvResourceParameters(context: $TSContext, category: string, resource: string, parameters?: $TSObject) {
   if (!parameters) {
     return;
   }

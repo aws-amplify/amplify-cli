@@ -6,9 +6,7 @@ import gql from 'graphql-tag';
 import { FeatureFlagProvider, GraphQLTransform } from 'graphql-transformer-core';
 import { signUpAddToGroupAndGetJwtToken } from './utils/cognito-utils';
 import { deploy, launchDDBLocal, logDebug, terminateDDB } from './utils/index';
-
-// to deal with bug in cognito-identity-js
-(global as any).fetch = require('node-fetch');
+import 'isomorphic-fetch';
 
 jest.setTimeout(2000000);
 
@@ -218,7 +216,7 @@ test(`Test 'public' authStrategy`, async () => {
     `;
 
     const getQuery = gql`
-      query($id: ID!) {
+      query ($id: ID!) {
         getPostPublic(id: $id) {
           id
           title
@@ -266,7 +264,7 @@ test(`Test 'private' authStrategy`, async () => {
     `;
 
     const getQuery = gql`
-      query($id: ID!) {
+      query ($id: ID!) {
         getPostPrivate(id: $id) {
           id
           title
@@ -314,7 +312,7 @@ describe(`Connection tests with @auth on type`, () => {
   `;
 
   const createCommentMutation = gql`
-    mutation($postId: ID!) {
+    mutation ($postId: ID!) {
       createCommentConnection(input: { content: "Comment", commentConnectionPostId: $postId }) {
         id
         content
@@ -323,7 +321,7 @@ describe(`Connection tests with @auth on type`, () => {
   `;
 
   const getPostQuery = gql`
-    query($postId: ID!) {
+    query ($postId: ID!) {
       getPostConnection(id: $postId) {
         id
         title
@@ -332,7 +330,7 @@ describe(`Connection tests with @auth on type`, () => {
   `;
 
   const getPostQueryWithComments = gql`
-    query($postId: ID!) {
+    query ($postId: ID!) {
       getPostConnection(id: $postId) {
         id
         title
@@ -347,7 +345,7 @@ describe(`Connection tests with @auth on type`, () => {
   `;
 
   const getCommentQuery = gql`
-    query($commentId: ID!) {
+    query ($commentId: ID!) {
       getCommentConnection(id: $commentId) {
         id
         content
@@ -356,7 +354,7 @@ describe(`Connection tests with @auth on type`, () => {
   `;
 
   const getCommentWithPostQuery = gql`
-    query($commentId: ID!) {
+    query ($commentId: ID!) {
       getCommentConnection(id: $commentId) {
         id
         content
