@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.34.3-auth-dir-v-next.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@3.34.3-auth-dir-v-next.5...amplify-util-mock@3.34.3-auth-dir-v-next.6) (2021-09-22)
+
+**Note:** Version bump only for package amplify-util-mock
+
+
+
+
+
 ## [3.34.3-auth-dir-v-next.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@3.34.3-auth-dir-v-next.4...amplify-util-mock@3.34.3-auth-dir-v-next.5) (2021-09-21)
 
 **Note:** Version bump only for package amplify-util-mock

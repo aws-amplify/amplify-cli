@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.59.0-auth-dir-v-next.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.59.0-auth-dir-v-next.5...amplify-provider-awscloudformation@4.59.0-auth-dir-v-next.6) (2021-09-22)
+
+**Note:** Version bump only for package amplify-provider-awscloudformation
+
+
+
+
+
 # [4.59.0-auth-dir-v-next.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.59.0-auth-dir-v-next.4...amplify-provider-awscloudformation@4.59.0-auth-dir-v-next.5) (2021-09-21)
 
 **Note:** Version bump only for package amplify-provider-awscloudformation
