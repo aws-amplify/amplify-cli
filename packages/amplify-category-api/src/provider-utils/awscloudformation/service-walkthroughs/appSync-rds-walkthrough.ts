@@ -1,13 +1,14 @@
-const inquirer = require('inquirer');
-const ora = require('ora');
-const { DataApiParams } = require('graphql-relational-schema-transformer');
-const { ResourceDoesNotExistError, ResourceCredentialsNotFoundError, exitOnNextTick } = require('amplify-cli-core');
+import inquirer from 'inquirer';
+import chalk from 'chalk';
+import ora from 'ora';
+import { DataApiParams } from 'graphql-relational-schema-transformer';
+import { ResourceDoesNotExistError, ResourceCredentialsNotFoundError, exitOnNextTick, $TSContext, $TSObject } from 'amplify-cli-core';
 
 const spinner = ora('');
 const category = 'api';
 const providerName = 'awscloudformation';
 
-async function serviceWalkthrough(context, defaultValuesFilename, datasourceMetadata) {
+export async function serviceWalkthrough(context: $TSContext, defaultValuesFilename: string, datasourceMetadata: $TSObject) {
   const amplifyMeta = context.amplify.getProjectMeta();
 
   // Verify that an API exists in the project before proceeding.
@@ -20,7 +21,7 @@ async function serviceWalkthrough(context, defaultValuesFilename, datasourceMeta
   }
 
   // Loop through to find the AppSync API Resource Name
-  let appSyncApi;
+  let appSyncApi: string;
   const apis = Object.keys(amplifyMeta[category]);
 
   for (let i = 0; i < apis.length; i += 1) {
@@ -73,20 +74,30 @@ async function serviceWalkthrough(context, defaultValuesFilename, datasourceMeta
  *
  * @param {*} inputs
  */
-async function selectCluster(context, inputs, AWS) {
+async function selectCluster(context: $TSContext, inputs, AWS) {
   const RDS = new AWS.RDS();
 
   const describeDBClustersResult = await RDS.describeDBClusters().promise();
   const rawClusters = describeDBClustersResult.DBClusters;
-  const clusters = new Map();
 
-  for (let i = 0; i < rawClusters.length; i += 1) {
-    if (rawClusters[i].EngineMode === 'serverless') {
-      clusters.set(rawClusters[i].DBClusterIdentifier, rawClusters[i]);
-    }
+  const clusters = new Map();
+  const serverlessClusters = rawClusters.filter(cluster => cluster.EngineMode === 'serverless');
+
+  if (serverlessClusters.length === 0) {
+    const errMessage = 'No properly configured Aurora Serverless clusters found.';
+
+    context.print.error(errMessage);
+
+    await context.usageData.emitError(new ResourceDoesNotExistError(errMessage));
+
+    exitOnNextTick(0);
   }
 
-  if (clusters.size > 0) {
+  for (const cluster of serverlessClusters) {
+    clusters.set(cluster.DBClusterIdentifier, cluster);
+  }
+
+  if (clusters.size > 1) {
     const clusterIdentifier = await promptWalkthroughQuestion(inputs, 1, Array.from(clusters.keys()));
     const selectedCluster = clusters.get(clusterIdentifier);
 
@@ -95,10 +106,16 @@ async function selectCluster(context, inputs, AWS) {
       clusterResourceId: selectedCluster.DbClusterResourceId,
     };
   }
-  const errMessage = 'No properly configured Aurora Serverless clusters found.';
-  context.print.error(errMessage);
-  await context.usageData.emitError(new ResourceDoesNotExistError(errMessage));
-  exitOnNextTick(0);
+
+  // Pick first and only value
+  const firstCluster = Array.from(clusters.values())[0];
+
+  context.print.info(`${chalk.green('✔')} Only one Cluster was found: '${firstCluster.DBClusterIdentifier}' was automatically selected.`);
+
+  return {
+    selectedClusterArn: firstCluster.DBClusterArn,
+    clusterResourceId: firstCluster.DbClusterResourceId,
+  };
 }
 
 /**
@@ -106,7 +123,7 @@ async function selectCluster(context, inputs, AWS) {
  * @param {*} inputs
  * @param {*} clusterResourceId
  */
-async function getSecretStoreArn(context, inputs, clusterResourceId, AWS) {
+async function getSecretStoreArn(context: $TSContext, inputs, clusterResourceId, AWS) {
   const SecretsManager = new AWS.SecretsManager();
   const NextToken = 'NextToken';
   let rawSecrets = [];
@@ -126,32 +143,33 @@ async function getSecretStoreArn(context, inputs, clusterResourceId, AWS) {
   }
 
   const secrets = new Map();
-  let selectedSecretArn;
+  const secretsForCluster = rawSecrets.filter(secret => secret.Name.startsWith(`rds-db-credentials/${clusterResourceId}`));
 
-  for (let i = 0; i < rawSecrets.length; i += 1) {
-    /**
-     * Attempt to auto-detect Secret Store that was created by Aurora Serverless
-     * as it follows a specfic format for the Secret Name
-     */
-    if (rawSecrets[i].Name.startsWith(`rds-db-credentials/${clusterResourceId}`)) {
-      // Found the secret store - store the details and break out.
-      selectedSecretArn = rawSecrets[i].ARN;
-      break;
-    }
-    secrets.set(rawSecrets[i].Name, rawSecrets[i].ARN);
+  if (secretsForCluster.length === 0) {
+    const errMessage = 'No RDS access credentials found in the AWS Secrect Manager.';
+
+    context.print.error(errMessage);
+
+    await context.usageData.emitError(new ResourceCredentialsNotFoundError(errMessage));
+
+    exitOnNextTick(0);
   }
 
-  if (!selectedSecretArn) {
-    if (secrets.size > 0) {
-      // Kick off questions flow
-      const selectedSecretName = await promptWalkthroughQuestion(inputs, 2, Array.from(secrets.keys()));
-      selectedSecretArn = secrets.get(selectedSecretName);
-    } else {
-      const errMessage = 'No RDS access credentials found in the AWS Secrect Manager.';
-      context.print.error(errMessage);
-      await context.usageData.emitError(new ResourceCredentialsNotFoundError(errMessage));
-      exitOnNextTick(0);
-    }
+  for (const secret of secretsForCluster) {
+    secrets.set(secret.Name, secret.ARN);
+  }
+
+  let selectedSecretArn;
+
+  if (secrets.size > 1) {
+    // Kick off questions flow
+    const selectedSecretName = await promptWalkthroughQuestion(inputs, 2, Array.from(secrets.keys()));
+    selectedSecretArn = secrets.get(selectedSecretName);
+  } else {
+    // Pick first and only value
+    selectedSecretArn = Array.from(secrets.values())[0];
+
+    context.print.info(`${chalk.green('✔')} Only one Secret was found for the cluster: '${selectedSecretArn}' was automatically selected.`);
   }
 
   return selectedSecretArn;
@@ -163,7 +181,7 @@ async function getSecretStoreArn(context, inputs, clusterResourceId, AWS) {
  * @param {*} clusterArn
  * @param {*} secretArn
  */
-async function selectDatabase(context, inputs, clusterArn, secretArn, AWS) {
+async function selectDatabase(context: $TSContext, inputs, clusterArn, secretArn, AWS) {
   // Database Name Question
   const DataApi = new AWS.RDSDataService();
   const params = new DataApiParams();
@@ -176,17 +194,9 @@ async function selectDatabase(context, inputs, clusterArn, secretArn, AWS) {
 
   try {
     const dataApiResult = await DataApi.executeStatement(params).promise();
+    const excludedDatabases = ['information_schema', 'performance_schema', 'mysql', 'sys'];
 
-    // eslint-disable-next-line prefer-destructuring
-    const records = dataApiResult.records;
-
-    for (const record of records) {
-      const recordValue = record[0].stringValue;
-      // ignore the three meta tables that the cluster creates
-      if (!['information_schema', 'performance_schema', 'mysql'].includes(recordValue)) {
-        databaseList.push(recordValue);
-      }
-    }
+    databaseList.push(...dataApiResult.records.map(record => record[0].stringValue).filter(name => !excludedDatabases.includes(name)));
 
     spinner.succeed('Fetched Aurora Serverless cluster.');
   } catch (err) {
@@ -200,14 +210,23 @@ async function selectDatabase(context, inputs, clusterArn, secretArn, AWS) {
     }
   }
 
-  if (databaseList.length > 0) {
+  if (databaseList.length === 0) {
+    const errMessage = 'No database found in the selected cluster.';
+
+    context.print.error(errMessage);
+
+    await context.usageData.emitError(new ResourceDoesNotExistError(errMessage));
+
+    exitOnNextTick(0);
+  }
+
+  if (databaseList.length > 1) {
     return await promptWalkthroughQuestion(inputs, 3, databaseList);
   }
 
-  const errMessage = 'No properly configured databases found.';
-  context.print.error(errMessage);
-  await context.usageData.emitError(new ResourceDoesNotExistError(errMessage));
-  exitOnNextTick(0);
+  context.print.info(`${chalk.green('✔')} Only one Database was found: '${databaseList[0]}' was automatically selected.`);
+
+  return databaseList[0];
 }
 
 /**
@@ -230,12 +249,8 @@ async function promptWalkthroughQuestion(inputs, questionNumber, choicesList) {
   return answer[inputs[questionNumber].key];
 }
 
-async function getAwsClient(context, action) {
+async function getAwsClient(context: $TSContext, action: string) {
   const providerPlugins = context.amplify.getProviderPlugins(context);
   const provider = require(providerPlugins[providerName]);
   return await provider.getConfiguredAWSClient(context, 'aurora-serverless', action);
 }
-
-module.exports = {
-  serviceWalkthrough,
-};

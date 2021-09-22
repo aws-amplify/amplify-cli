@@ -253,7 +253,7 @@ interface AmplifyToolkit {
     filteredResources?: { category: string; resourceName: string }[],
   ) => $TSAny;
   storeCurrentCloudBackend: () => $TSAny;
-  readJsonFile: () => $TSAny;
+  readJsonFile: (fileName: string) => $TSAny;
   removeDeploymentSecrets: (context: $TSContext, category: string, resource: string) => void;
   removeResource: (
     context: $TSContext,
@@ -319,9 +319,7 @@ interface AmplifyToolkit {
   leaveBreadcrumbs: (category: string, resourceName: string, breadcrumbs: unknown) => void;
   readBreadcrumbs: (category: string, resourceName: string) => $TSAny;
   loadRuntimePlugin: (context: $TSContext, pluginId: string) => Promise<$TSAny>;
-  getImportedAuthProperties: (
-    context: $TSContext,
-  ) => {
+  getImportedAuthProperties: (context: $TSContext) => {
     imported: boolean;
     userPoolId?: string;
     authRoleArn?: string;
