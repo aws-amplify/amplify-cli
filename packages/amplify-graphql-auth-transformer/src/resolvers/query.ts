@@ -94,7 +94,13 @@ const generateAuthFilter = (
     return [
       iff(
         not(ref(IS_AUTHORIZED_FLAG)),
-        qref(methodCall(ref('ctx.stash.put'), str('authFilter'), authFilter.length > 1 ? obj({ or: list(authFilter) }) : list(authFilter))),
+        qref(
+          methodCall(
+            ref('ctx.stash.put'),
+            str('authFilter'),
+            authFilter.length > 1 ? obj({ or: list(authFilter) }) : compoundExpression(authFilter),
+          ),
+        ),
       ),
     ];
   }
