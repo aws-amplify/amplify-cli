@@ -1,3 +1,4 @@
-export interface TransformerResourceProvider {
-  generateResourceName(name: string): string;
+export interface TransformerResourceHelperProvider {
+  generateTableName(modelName: string): string;
+  registerModelToTableNameMaping(modelName: string, tableName: string): void;
 }

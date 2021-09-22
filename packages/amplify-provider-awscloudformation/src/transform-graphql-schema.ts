@@ -39,6 +39,7 @@ import { print } from 'graphql';
 import { hashDirectory } from './upload-appsync-files';
 import { exitOnNextTick, FeatureFlags } from 'amplify-cli-core';
 import { transformGraphQLSchema as transformGraphQLSchemaV6 } from './graphql-transformer/transform-graphql-schema';
+import { V1WasTransformer } from './graphql-transformer/was-transformer';
 
 const apiCategory = 'api';
 const storageCategory = 'storage';
@@ -62,6 +63,7 @@ function getTransformerFactory(context, resourceDir, authConfig?) {
     const transformerList: ITransformer[] = [
       // TODO: Removing until further discussion. `getTransformerOptions(project, '@model')`
       new DynamoDBModelTransformer(),
+      new V1WasTransformer(),
       new VersionedModelTransformer(),
       new FunctionTransformer(),
       new HttpTransformer(),
@@ -75,9 +77,8 @@ function getTransformerFactory(context, resourceDir, authConfig?) {
     }
 
     const customTransformersConfig: TransformConfig = await readTransformerConfiguration(resourceDir);
-    const customTransformers = (customTransformersConfig && customTransformersConfig.transformers
-      ? customTransformersConfig.transformers
-      : []
+    const customTransformers = (
+      customTransformersConfig && customTransformersConfig.transformers ? customTransformersConfig.transformers : []
     )
       .map(transformer => {
         const fileUrlMatch = /^file:\/\/(.*)\s*$/m.exec(transformer);

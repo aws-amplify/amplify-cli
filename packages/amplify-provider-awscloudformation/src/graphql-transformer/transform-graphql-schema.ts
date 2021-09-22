@@ -26,6 +26,7 @@ import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-core'
 import { Template } from '@aws-amplify/graphql-transformer-core/lib/config/project-config';
 import { AmplifyCLIFeatureFlagAdapter } from '../utils/amplify-cli-feature-flag-adapter';
 import { JSONUtilities } from 'amplify-cli-core';
+import { V2WasTransformer } from './was-transformer';
 
 const API_CATEGORY = 'api';
 const STORAGE_CATEGORY = 'storage';
@@ -59,6 +60,7 @@ function getTransformerFactory(context, resourceDir) {
       new BelongsToTransformer(),
       new HasManyTransformer(),
       new HasOneTransformer(),
+      new V2WasTransformer(),
       // TODO: initialize transformer plugins
     ];
 
@@ -67,9 +69,8 @@ function getTransformerFactory(context, resourceDir) {
     }
 
     const customTransformersConfig = await readTransformerConfiguration(resourceDir);
-    const customTransformers = (customTransformersConfig && customTransformersConfig.transformers
-      ? customTransformersConfig.transformers
-      : []
+    const customTransformers = (
+      customTransformersConfig && customTransformersConfig.transformers ? customTransformersConfig.transformers : []
     )
       .map(transformer => {
         const fileUrlMatch = /^file:\/\/(.*)\s*$/m.exec(transformer);

@@ -5,7 +5,7 @@ import { DocumentNode } from 'graphql';
 import { TransformerContextOutputProvider } from './transformer-context-output-provider';
 import { StackManagerProvider } from './stack-manager-provider';
 import { GraphQLAPIProvider } from '../graphql-api-provider';
-import { TransformerResourceProvider } from './resource-resource-provider';
+import { TransformerResourceHelperProvider } from './resource-resource-provider';
 import { FeatureFlagProvider } from '../feature-flag-provider';
 
 export interface TransformerContextProvider {
@@ -17,14 +17,14 @@ export interface TransformerContextProvider {
   output: TransformerContextOutputProvider;
   stackManager: StackManagerProvider;
   api: GraphQLAPIProvider;
-  resourceHelper: TransformerResourceProvider;
+  resourceHelper: TransformerResourceHelperProvider;
   featureFlags: FeatureFlagProvider;
 }
 
 export type TransformerBeforeStepContextProvider = Pick<TransformerContextProvider, 'inputDocument' | 'featureFlags'>;
 export type TransformerSchemaVisitStepContextProvider = Pick<
   TransformerContextProvider,
-  'inputDocument' | 'output' | 'providerRegistry' | 'featureFlags'
+  'inputDocument' | 'output' | 'providerRegistry' | 'featureFlags' | 'resourceHelper'
 >;
 export type TransformerValidationStepContextProvider = Pick<
   TransformerContextProvider,

@@ -221,7 +221,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
       const def = context.output.getObject(type);
       // add the table
       const tableLogicalName = `${def!.name.value}Table`;
-      const tableName = context.resourceHelper.generateResourceName(def!.name.value);
+      const tableName = context.resourceHelper.generateTableName(def!.name.value);
       const stack = context.stackManager.getStackFor(tableLogicalName, def!.name.value);
 
       // Add parameters.
