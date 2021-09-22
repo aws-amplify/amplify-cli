@@ -56,7 +56,7 @@ export type ResourceName = string;
 
 export type IContextPrint = {
   /**
-   * @deprecated Use printer.info from amplify-prommpts instead
+   * @deprecated Use printer.info from amplify-prompts instead
    */
   info: (message: string) => void;
   /**
@@ -72,7 +72,7 @@ export type IContextPrint = {
    */
   error: (message: string) => void;
   /**
-   * @deprecated Use printer.success from amplify-prommpts instead
+   * @deprecated Use printer.success from amplify-prompts instead
    */
   success: (message: string) => void;
   /**

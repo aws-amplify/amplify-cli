@@ -2,11 +2,11 @@ import { printer } from '../printer';
 import { prompter } from '../prompter';
 import { alphanumeric, and, integer, minLength } from '../validators';
 
-const printResult = (result: any) => console.log(`Prommpt result was [${result}]`);
+const printResult = (result: any) => console.log(`Prompt result was [${result}]`);
 const printTypeofResult = (result: any) => console.log(`Response type was [${typeof result}]`);
 
 /**
- * The following is meant to be a runnable example of functionality offered by amplify-prommpts
+ * The following is meant to be a runnable example of functionality offered by amplify-prompts
  * Run `yarn demo` to see it in action
  */
 const demo = async () => {
@@ -76,7 +76,7 @@ const demo = async () => {
 
   // pick
   printer.blankLine();
-  printer.info('prommpter.pick is used to select one or more items fromm a selection set');
+  printer.info('prompter.pick is used to select one or more items fromm a selection set');
   printer.info('It supports autocomplete of choices automatically');
   const choices1 = ['red', 'yellow', 'green', 'orange', 'purple'];
   printResult(await prompter.pick('Pick your favorite Skittle color', choices1));
