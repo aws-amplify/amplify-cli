@@ -60,7 +60,31 @@ const createEntries = async () => {
   await runQuery(getCreatePostsMutation('testuser', 'test title', 170, 30, 77.7, true));
   // Waiting for the ES Cluster + Streaming Lambda infra to be setup
   await cf.wait(120, () => Promise.resolve());
+  await waitForESPropagate();
 };
+
+const waitForESPropagate = async (initialWaitSeconds = 5, maxRetryCount = 5 ) => {
+  const expectedCount = 8;
+  let waitInMilliseconds = initialWaitSeconds * 1000;
+  let currentRetryCount = 0;
+  let searchResponse;
+  
+  do {
+    await new Promise(r => setTimeout(r, waitInMilliseconds));
+    searchResponse = await GRAPHQL_CLIENT.query(
+      `query {
+        searchPosts {
+          items {
+            id
+          }
+        }
+      }`,
+      {},
+    );
+    currentRetryCount += 1;
+    waitInMilliseconds = waitInMilliseconds * 2;
+  } while (searchResponse.data.searchPosts?.items?.length < expectedCount && currentRetryCount <= maxRetryCount);
+}
 
 beforeAll(async () => {
   const validSchema = `
