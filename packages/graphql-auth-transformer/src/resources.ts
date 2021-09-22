@@ -201,16 +201,6 @@ export class ResourceFactory {
               OpenIDConnectConfig: this.assignOpenIDConnectConfig(sourceProvider.openIDConnectConfig),
             };
             break;
-          case 'AWS_LAMBDA':
-            provider = {
-              AuthenticationType: 'API_KEY',
-              // AuthenticationType: 'AWS_LAMBDA',
-              // LambdaAuthorizerConfig: {
-              //   AuthorizerUri: sourceProvider.lambdaAuthorizerConfig.lambdaFunction,
-              //   AuthorizerResultTtlInSeconds: sourceProvider.lambdaAuthorizerConfig.ttlSeconds,
-              // },
-            };
-            break;
         }
 
         additionalAuthenticationProviders.push(provider);

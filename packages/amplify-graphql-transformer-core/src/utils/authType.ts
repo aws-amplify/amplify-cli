@@ -4,12 +4,12 @@ import { Duration, Expiration } from '@aws-cdk/core';
 import { AppSyncAuthConfiguration, AppSyncAuthConfigurationEntry, AppSyncAuthMode } from '../transformation';
 import { StackManager } from '../transformer-context/stack-manager';
 
-const authTypeMap: Record<AppSyncAuthMode, AuthorizationType> = {
+const authTypeMap: Record<AppSyncAuthMode, AuthorizationType | string> = {
   API_KEY: AuthorizationType.API_KEY,
   AMAZON_COGNITO_USER_POOLS: AuthorizationType.USER_POOL,
   AWS_IAM: AuthorizationType.IAM,
   OPENID_CONNECT: AuthorizationType.OIDC,
-  AWS_LAMBDA: AuthorizationType.API_KEY,
+  AWS_LAMBDA: "AWS_LAMBDA",
 };
 export function adoptAuthModes(stack: StackManager, authConfig: AppSyncAuthConfiguration): AuthorizationConfig {
   return {
@@ -18,7 +18,7 @@ export function adoptAuthModes(stack: StackManager, authConfig: AppSyncAuthConfi
   };
 }
 
-export function adoptAuthMode(stackManager: StackManager, entry: AppSyncAuthConfigurationEntry): AuthorizationMode {
+export function adoptAuthMode(stackManager: StackManager, entry: AppSyncAuthConfigurationEntry): AuthorizationMode | any {
   const authType = authTypeMap[entry.authenticationType];
   switch (entry.authenticationType) {
     case AuthorizationType.API_KEY:
@@ -55,16 +55,12 @@ export function adoptAuthMode(stackManager: StackManager, entry: AppSyncAuthConf
         },
       };
     case 'AWS_LAMBDA':
-    // case AuthorizationType.AWS_LAMBDA:
-      // return {
-      //   authorizationType: authType,
-      //   lambdaConnectConfig: {
-      //     lambdaFunction: entry.lambdaConnectConfig!.lambdaFunction,
-      //     ttlSeconds: entry.lambdaConnectConfig!.ttlSeconds,
-      //   },
-      // };
       return {
         authorizationType: authType,
+        lambdaAuthorizerConfig: {
+          lambdaFunction: entry.lambdaAuthorizerConfig!.lambdaFunction,
+          ttlSeconds: strToNumber(entry.lambdaAuthorizerConfig!.ttlSeconds),
+        },
       };
     default:
       throw new Error('Invalid auth config');

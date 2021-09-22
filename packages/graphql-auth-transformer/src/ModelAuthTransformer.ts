@@ -94,6 +94,7 @@ export type AppSyncAuthConfigurationEntry = {
   apiKeyConfig?: ApiKeyConfig;
   userPoolConfig?: UserPoolConfig;
   openIDConnectConfig?: OpenIDConnectConfig;
+  lambdaAuthorizerConfig?: LambdaAuthorizerConfig;
 };
 export type ApiKeyConfig = {
   description?: string;
@@ -108,6 +109,10 @@ export type OpenIDConnectConfig = {
   clientId?: string;
   iatTTL?: number;
   authTTL?: number;
+};
+export type LambdaAuthorizerConfig = {
+  lambdaFunction: string;
+  ttlSeconds?: number;
 };
 
 const validateAuthModes = (authConfig: AppSyncAuthConfiguration) => {

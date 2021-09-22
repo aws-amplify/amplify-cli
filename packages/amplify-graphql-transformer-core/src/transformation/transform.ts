@@ -247,7 +247,8 @@ export class GraphQLTransform {
     const api = new GraphQLApi(rootStack, 'GraphQLAPI', {
       name: `${apiName}-${envName.valueAsString}`,
       authorizationConfig,
-      host: this.options.host
+      host: this.options.host,
+      environmentName: envName.valueAsString,
     });
     const authModes = [authorizationConfig.defaultAuthorization, ...(authorizationConfig.additionalAuthorizationModes || [])].map(
       mode => mode?.authorizationType,

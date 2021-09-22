@@ -48,10 +48,6 @@ const authProviderChoices = [
     name: 'OpenID Connect',
     value: 'OPENID_CONNECT',
   },
-  {
-    name: 'Lambda',
-    value: 'AWS_LAMBDA',
-  },
 ];
 
 const conflictResolutionHanlderChoices = [
@@ -648,6 +644,15 @@ async function askDefaultAuthQuestion(context) {
   const currentAuthConfig = getAppSyncAuthConfig(context.amplify.getProjectMeta());
   const currentDefaultAuth =
     currentAuthConfig && currentAuthConfig.defaultAuthentication ? currentAuthConfig.defaultAuthentication.authenticationType : undefined;
+
+  const useExperimentalPipelineTransformer = FeatureFlags.getBoolean('graphQLTransformer.useExperimentalPipelinedTransformer');
+  if (useExperimentalPipelineTransformer && !authProviderChoices.find(choice => choice.value == 'AWS_LAMBDA')) {
+    authProviderChoices.push({
+        name: 'Lambda',
+        value: 'AWS_LAMBDA',
+    });
+  }
+
   const defaultAuthTypeQuestion = {
     type: 'list',
     name: 'defaultAuthType',
