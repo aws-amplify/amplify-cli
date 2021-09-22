@@ -1,6 +1,6 @@
-const fs = require('fs');
+const { BannerMessage, FeatureFlags, pathManager } = require('amplify-cli-core');
 const { printer } = require('amplify-prompts');
-const { FeatureFlags, pathManager, BannerMessage } = require('amplify-cli-core');
+const fs = require('fs');
 const { messages } = require('../../provider-utils/awscloudformation/assets/string-maps');
 
 const subcommand = 'remove';
@@ -19,17 +19,17 @@ module.exports = {
     });
 
     if (dependentResources) {
-      context.print.info(messages.dependenciesExists);
+      printer.info(messages.dependenciesExists);
     }
 
     const existingAuth = meta.auth || {};
     if (Object.keys(existingAuth).length > 0) {
       const services = Object.keys(existingAuth);
-      for (let i = 0; i < services.length; i++) {
-        const serviceMeta = existingAuth[services[i]];
+      for (const service of services) {
+        const serviceMeta = existingAuth[service];
         if (serviceMeta.service === 'Cognito' && !FeatureFlags.getBoolean('auth.forceAliasAttributes')) {
           const authAttributes = JSON.parse(
-            fs.readFileSync(pathManager.getResourceParametersFilePath(pathManager.findProjectRoot(), 'auth', services[i])).toString(),
+            fs.readFileSync(pathManager.getResourceParametersFilePath(pathManager.findProjectRoot(), 'auth', service)).toString(),
           );
           if (authAttributes.aliasAttributes && authAttributes.aliasAttributes.length > 0) {
             const authRemoveWarning = await BannerMessage.getMessage('AMPLIFY_REMOVE_AUTH_ALIAS_ATTRIBUTES_WARNING');
@@ -39,10 +39,10 @@ module.exports = {
       }
     }
 
-    return amplify.removeResource(context, category, resourceName).catch(err => {
-      context.print.info(err.stack);
-      context.print.error('There was an error removing the auth resource');
-      context.usageData.emitError(err);
+    return amplify.removeResource(context, category, resourceName).catch(async err => {
+      printer.info(err.stack);
+      printer.error('There was an error removing the auth resource');
+      await context.usageData.emitError(err);
       process.exitCode = 1;
     });
   },

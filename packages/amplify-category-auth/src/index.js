@@ -1,5 +1,7 @@
 const category = 'auth';
 
+const { JSONUtilities, stateManager } = require('amplify-cli-core');
+const { validateAddAuthRequest, validateUpdateAuthRequest, validateImportAuthRequest } = require('amplify-util-headless-input');
 const _ = require('lodash');
 const path = require('path');
 const sequential = require('promise-sequential');
@@ -16,14 +18,11 @@ const { ENV_SPECIFIC_PARAMS } = require('./provider-utils/awscloudformation/cons
 
 const { transformUserPoolGroupSchema } = require('./provider-utils/awscloudformation/utils/transform-user-pool-group');
 const { uploadFiles } = require('./provider-utils/awscloudformation/utils/trigger-file-uploader');
-const { validateAddAuthRequest, validateUpdateAuthRequest, validateImportAuthRequest } = require('amplify-util-headless-input');
 const { getAddAuthRequestAdaptor, getUpdateAuthRequestAdaptor } = require('./provider-utils/awscloudformation/utils/auth-request-adaptors');
 const { getAddAuthHandler, getUpdateAuthHandler } = require('./provider-utils/awscloudformation/handlers/resource-handlers');
 const { projectHasAuth } = require('./provider-utils/awscloudformation/utils/project-has-auth');
 const { attachPrevParamsToContext } = require('./provider-utils/awscloudformation/utils/attach-prev-params-to-context');
 const { getFrontendConfig } = require('./provider-utils/awscloudformation/utils/amplify-meta-updaters');
-const { stateManager } = require('amplify-cli-core');
-const { JSONUtilities } = require('amplify-cli-core/lib/jsonUtilities');
 const { headlessImport } = require('./provider-utils/awscloudformation/import');
 const { AuthParameters } = require('./provider-utils/awscloudformation/import/types');
 const { getSupportedServices } = require('./provider-utils/supported-services');
