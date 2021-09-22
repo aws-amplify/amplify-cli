@@ -123,12 +123,14 @@ export const getQueryFieldNames = (
       type: QueryFieldType.LIST,
     });
   }
-  // check if this API is sync enabled and then if the model is sync enabled
-  // fields.add({
-  //   typeName: 'Query',
-  //   fieldName: camelCase(`sync ${typeName}`),
-  //   type: QueryFieldType.SYNC,
-  // });
+
+  if (modelDirectiveConfig?.queries?.sync) {
+    fields.add({
+      typeName: 'Query',
+      fieldName: modelDirectiveConfig.queries.sync,
+      type: QueryFieldType.SYNC,
+    });
+  }
   return fields;
 };
 
