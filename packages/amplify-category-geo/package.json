@@ -31,7 +31,7 @@
     "lodash": "^4.17.19",
     "mime-types": "^2.1.26",
     "promise-sequential": "^1.1.1",
-    "uuid": "^3.4.0",
+    "uuid": "^8.3.2",
     "@aws-cdk/core": "~1.119.0",
     "@aws-cdk/aws-location": "~1.119.0",
     "@aws-cdk/aws-iam": "~1.119.0"
