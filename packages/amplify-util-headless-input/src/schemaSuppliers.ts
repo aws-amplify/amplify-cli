@@ -4,6 +4,10 @@ export const addStorageRequestSchemaSupplier: VersionedSchemaSupplier = version 
   return getSchema('AddStorageRequest', 'storage', version);
 };
 
+export const updateStorageRequestSchemaSupplier: VersionedSchemaSupplier = version => {
+  return getSchema('UpdateStorageRequest', 'storage', version);
+};
+
 export const addAuthRequestSchemaSupplier: VersionedSchemaSupplier = version => {
   return getSchema('AddAuthRequest', 'auth', version);
 };
