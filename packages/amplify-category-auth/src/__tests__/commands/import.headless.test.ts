@@ -1,7 +1,14 @@
-import { executeAmplifyHeadlessCommand } from '../../../lib';
+import { executeAmplifyHeadlessCommand } from '../../../src';
 import { ImportAuthRequest } from 'amplify-headless-interface';
 import { messages } from '../../provider-utils/awscloudformation/assets/string-maps';
-import { stateManager, FeatureFlags } from 'amplify-cli-core';
+import { stateManager, FeatureFlags, JSONUtilities } from 'amplify-cli-core';
+import { printer } from 'amplify-prompts';
+
+jest.mock('amplify-prompts', () => ({
+  printer: {
+    info: jest.fn(),
+  },
+}));
 
 jest.mock('amplify-cli-core', () => ({
   stateManager: {
@@ -14,6 +21,9 @@ jest.mock('amplify-cli-core', () => ({
   },
   FeatureFlags: {
     getBoolean: () => false,
+  },
+  JSONUtilities: {
+    parse: JSON.parse,
   },
 }));
 

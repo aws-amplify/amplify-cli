@@ -807,6 +807,13 @@
     "@aws-cdk/region-info" "1.119.0"
     constructs "^3.3.69"
 
+"@aws-cdk/aws-location@~1.119.0":
+  version "1.119.0"
+  resolved "https://registry.yarnpkg.com/@aws-cdk/aws-location/-/aws-location-1.119.0.tgz#55967e50f5480a30fa6b36116d726c67547c5ff3"
+  integrity sha512-jMXgE6w8QsjRtMgkR2z3RU+NoeiNphnUS16YZVSErvbfl1krNGjNbZrZkZIWlFs08aV7sC/oXIMFR0LLtsGw+Q==
+  dependencies:
+    "@aws-cdk/core" "1.119.0"
+
 "@aws-cdk/aws-logs@1.119.0", "@aws-cdk/aws-logs@~1.119.0":
   version "1.119.0"
   resolved "https://registry.yarnpkg.com/@aws-cdk/aws-logs/-/aws-logs-1.119.0.tgz#79a0ca461d36e90af338684150324ee9851534d7"
