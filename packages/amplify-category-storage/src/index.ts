@@ -1,8 +1,10 @@
 import { $TSAny, $TSContext, $TSObject, stateManager } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
+import { validateAddStorageRequest, validateUpdateStorageRequest } from 'amplify-util-headless-input';
 import * as path from 'path';
 import sequential from 'promise-sequential';
 import { updateConfigOnEnvInit } from './provider-utils/awscloudformation';
+import { headlessAddStorage, headlessUpdateStorage } from './provider-utils/awscloudformation/storage-configuration-helpers';
 import { categoryName } from './constants';
 export { categoryName as category } from './constants';
 
@@ -106,6 +108,23 @@ export async function executeAmplifyCommand(context: $TSContext) {
 
   await commandModule.run(context);
 }
+
+export const executeAmplifyHeadlessCommand = async (context: $TSContext, headlessPayload: string) => {
+  switch (context.input.command) {
+    case 'add':
+      await headlessAddStorage(context, await validateAddStorageRequest(headlessPayload));
+      break;
+    case 'update':
+      await headlessUpdateStorage(context, await validateUpdateStorageRequest(headlessPayload));
+      break;
+    // case 'remove':
+    //   break;
+    // case 'import':
+    //   break;
+    default:
+      printer.error(`Headless mode for ${context.input.command} storage is not implemented yet`);
+  }
+};
 
 export async function handleAmplifyEvent(context: $TSContext, args: $TSAny) {
   printer.info(`${categoryName} handleAmplifyEvent to be implemented`);
