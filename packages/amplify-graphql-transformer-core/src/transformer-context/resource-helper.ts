@@ -18,6 +18,16 @@ export class TransformerResourceHelper implements TransformerResourceHelperProvi
     return `${baseName}-${apiId}-${env}`;
   };
 
+  generateRoleName = (baseName: string): string => {
+    if (!this.api) {
+      throw new Error('API not initalized');
+    }
+    this.ensureEnv();
+    const env = (this.stackManager.getParameter('env') as CfnParameter).valueAsString;
+    const apiId = this.api!.apiId;
+    return `${baseName}-${apiId}-${env}`;
+  }
+
   bind(api: GraphQLAPIProvider) {
     this.api = api;
   }

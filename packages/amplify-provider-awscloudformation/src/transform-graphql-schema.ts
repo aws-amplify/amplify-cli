@@ -38,8 +38,10 @@ import {
 import { print } from 'graphql';
 import { hashDirectory } from './upload-appsync-files';
 import { exitOnNextTick, FeatureFlags } from 'amplify-cli-core';
-import { transformGraphQLSchema as transformGraphQLSchemaV6 } from './graphql-transformer/transform-graphql-schema';
-import { V1WasTransformer } from './graphql-transformer/was-transformer';
+import {
+  transformGraphQLSchema as transformGraphQLSchemaV6,
+  getDirectiveDefinitions as getDirectiveDefinitionsV6,
+} from './graphql-transformer/transform-graphql-schema';
 
 const apiCategory = 'api';
 const storageCategory = 'storage';
@@ -63,7 +65,6 @@ function getTransformerFactory(context, resourceDir, authConfig?) {
     const transformerList: ITransformer[] = [
       // TODO: Removing until further discussion. `getTransformerOptions(project, '@model')`
       new DynamoDBModelTransformer(),
-      new V1WasTransformer(),
       new VersionedModelTransformer(),
       new FunctionTransformer(),
       new HttpTransformer(),
@@ -536,6 +537,11 @@ async function getPreviousDeploymentRootKey(previouslyDeployedBackendDir) {
 // }
 
 export async function getDirectiveDefinitions(context, resourceDir) {
+  const useExperimentalPipelineTransformer = FeatureFlags.getBoolean('graphQLTransformer.useExperimentalPipelinedTransformer');
+  if (useExperimentalPipelineTransformer) {
+    return getDirectiveDefinitionsV6(context, resourceDir);
+  }
+
   const transformList = await getTransformerFactory(context, resourceDir)(true);
   const appSynDirectives = getAppSyncServiceExtraDirectives();
   const transformDirectives = transformList

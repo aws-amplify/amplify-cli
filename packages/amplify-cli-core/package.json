@@ -1,6 +1,6 @@
 {
   "name": "amplify-cli-core",
-  "version": "1.28.0",
+  "version": "1.29.0",
   "description": "Amplify CLI Core",
   "repository": {
     "type": "git",
@@ -39,7 +39,7 @@
     "lodash": "^4.17.21",
     "node-fetch": "^2.6.1",
     "open": "^7.3.1",
-    "proxy-agent": "^4.0.1",
+    "proxy-agent": "^5.0.0",
     "semver": "^7.3.5",
     "which": "^2.0.2"
   },

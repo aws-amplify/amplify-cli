@@ -111,22 +111,16 @@ const demo = async () => {
   printTypeofResult(result2);
 
   printer.info('A default selection can be specified by providing the index of the option');
-  printResult(
-    await prompter.pick<'one', number>('Pick it again, this time with a default value', choices2, { initial: 2 }),
-  );
+  printResult(await prompter.pick<'one', number>('Pick it again, this time with a default value', choices2, { initial: 2 }));
 
   printer.info('Multiple choices can be selected by specifying multiSelect true');
   printer.info('When multiSelect is on, an array of initial indexes can be specified');
-  printResult(
-    await prompter.pick<'many', number>('Pick your favorite colors', choices2, { returnSize: 'many', initial: [1, 2] }),
-  );
+  printResult(await prompter.pick<'many', number>('Pick your favorite colors', choices2, { returnSize: 'many', initial: [1, 2] }));
 
   printer.info('Individual choices can be disabled or have hint text next to them');
   (choices2[1] as any).hint = 'definitely the best';
   (choices2[2] as any).disabled = true;
-  printResult(
-    await prompter.pick<'many', number>('Pick your favorite Skittle color', choices2, { returnSize: 'many' }),
-  );
+  printResult(await prompter.pick<'many', number>('Pick your favorite Skittle color', choices2, { returnSize: 'many' }));
 };
 
-demo();
+demo().catch(console.error);

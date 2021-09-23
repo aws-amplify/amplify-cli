@@ -201,6 +201,15 @@ export interface AmplifyProjectConfig {
   providers: string[];
 }
 
+/**
+ * higher level context object that could be used in plugins
+ */
+export interface ProviderContext {
+  provider: string;
+  service: string;
+  projectName: string;
+}
+
 export type $TSCopyJob = any;
 
 // Temporary interface until Context refactor
