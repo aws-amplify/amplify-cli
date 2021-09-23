@@ -122,6 +122,6 @@ export const insufficientInfoForUpdateError = (service: ServiceName) => {
   new Error(`Insufficient information to update ${getServiceFriendlyName(service)}. Please re-try and provide all inputs.`);
 }
 
-export const unsupportedRegionError = (region: string): string => {
-  return `Geo category is not supported in your region: ${region}`;
-}
+export const unsupportedRegionMessage = (region: string): string => {
+  return `Geo category is not supported in your region: ${region}`
+};

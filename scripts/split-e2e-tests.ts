@@ -2,6 +2,8 @@ import * as yaml from 'js-yaml';
 import * as glob from 'glob';
 import { join } from 'path';
 import * as fs from 'fs-extra';
+import { supportedRegions } from '../packages/amplify-category-geo/src/constants';
+
 const CONCURRENCY = 4;
 // Ensure to update packages/amplify-e2e-tests/src/cleanup-e2e-resources.ts is also updated this gets updated
 const AWS_REGIONS_TO_RUN_TESTS = [
@@ -305,9 +307,7 @@ function getRequiredJob(jobNames: string[], index: number, concurrency: number =
  */
 function getSupportedRegions(suite: string): string[] {
   if (suite.startsWith('src/__tests__/geo')) {
-    return AWS_REGIONS_TO_RUN_TESTS.filter(function(value, index, arr){ 
-      return value !== 'eu-west-2';
-    });
+    return AWS_REGIONS_TO_RUN_TESTS.filter(region => supportedRegions.includes(region));
   }
   return AWS_REGIONS_TO_RUN_TESTS;
 }

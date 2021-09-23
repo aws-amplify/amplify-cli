@@ -2,7 +2,7 @@ import { chooseServiceMessageUpdate, provider } from '../../service-utils/consta
 import { category, supportedRegions } from '../../constants';
 import { supportedServices } from '../../supportedServices';
 import { $TSAny, $TSContext, stateManager } from 'amplify-cli-core';
-import { updateResource, unsupportedRegionError } from '../../provider-controllers';
+import { updateResource, unsupportedRegionMessage } from '../../provider-controllers';
 import { printer } from 'amplify-prompts';
 
 export const name = 'update';
@@ -12,7 +12,7 @@ export const run = async(context: $TSContext) => {
   try {
     const region = stateManager.getMeta()?.providers[provider]?.Region;
     if(!supportedRegions.includes(region)) {
-      printer.error(unsupportedRegionError(region));
+      printer.error(unsupportedRegionMessage(region));
       return;
     }
 

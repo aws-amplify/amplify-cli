@@ -1,5 +1,5 @@
 import { $TSContext, stateManager } from 'amplify-cli-core';
-import { openConsole, unsupportedRegionError } from '../../provider-controllers';
+import { openConsole, unsupportedRegionMessage } from '../../provider-controllers';
 import { category, supportedRegions } from '../../constants';
 import { supportedServices } from '../../supportedServices';
 import { provider } from '../../service-utils/constants';
@@ -11,7 +11,7 @@ export const run = async (context: $TSContext) => {
   const { amplify } = context;
   const region = stateManager.getMeta()?.providers[provider]?.Region;
   if(!supportedRegions.includes(region)) {
-    printer.error(unsupportedRegionError(region));
+    printer.error(unsupportedRegionMessage(region));
     return;
   }
 
