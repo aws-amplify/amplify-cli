@@ -1,5 +1,5 @@
 import { stateManager } from 'amplify-cli-core';
-import { ApiKeyConfig } from '@aws-amplify/graphql-transformer-core';
+import { ApiKeyConfig } from '@aws-amplify/graphql-transformer-interfaces';
 
 export function getAppSyncApiConfig(): any {
   const apiConfig = stateManager.getMeta()?.api;

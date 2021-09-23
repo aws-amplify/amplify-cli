@@ -12,19 +12,19 @@ test('test simple model with public auth rule and amplify admin app is present',
     updatedAt: String
   }`;
   const transformer = new GraphQLTransform({
+    authConfig: {
+      defaultAuthentication: {
+        authenticationType: 'API_KEY',
+      },
+      additionalAuthenticationProviders: [
+        {
+          authenticationType: 'AWS_IAM',
+        },
+      ],
+    },
     transformers: [
       new ModelTransformer(),
       new AuthTransformer({
-        authConfig: {
-          defaultAuthentication: {
-            authenticationType: 'API_KEY',
-          },
-          additionalAuthenticationProviders: [
-            {
-              authenticationType: 'AWS_IAM',
-            },
-          ],
-        },
         addAwsIamAuthInOutputSchema: true,
         adminUserPoolID: 'us-fake-1_uuid',
       }),
@@ -45,15 +45,15 @@ test('Test simple model with public auth rule and amplify admin app is not enabl
       }
       `;
   const transformer = new GraphQLTransform({
+    authConfig: {
+      defaultAuthentication: {
+        authenticationType: 'API_KEY',
+      },
+      additionalAuthenticationProviders: [],
+    },
     transformers: [
       new ModelTransformer(),
       new AuthTransformer({
-        authConfig: {
-          defaultAuthentication: {
-            authenticationType: 'API_KEY',
-          },
-          additionalAuthenticationProviders: [],
-        },
         addAwsIamAuthInOutputSchema: false,
       }),
     ],
@@ -73,19 +73,19 @@ test('Test model with public auth rule without all operations and amplify admin 
       }
       `;
   const transformer = new GraphQLTransform({
+    authConfig: {
+      defaultAuthentication: {
+        authenticationType: 'API_KEY',
+      },
+      additionalAuthenticationProviders: [
+        {
+          authenticationType: 'AWS_IAM',
+        },
+      ],
+    },
     transformers: [
       new ModelTransformer(),
       new AuthTransformer({
-        authConfig: {
-          defaultAuthentication: {
-            authenticationType: 'API_KEY',
-          },
-          additionalAuthenticationProviders: [
-            {
-              authenticationType: 'AWS_IAM',
-            },
-          ],
-        },
         addAwsIamAuthInOutputSchema: true,
         adminUserPoolID: 'us-fake-1_uuid',
       }),
@@ -98,10 +98,6 @@ test('Test model with public auth rule without all operations and amplify admin 
   expect(out.schema).toContain('createPost(input: CreatePostInput!, condition: ModelPostConditionInput): Post @aws_api_key @aws_iam');
   expect(out.schema).toContain('updatePost(input: UpdatePostInput!, condition: ModelPostConditionInput): Post @aws_api_key @aws_iam');
   expect(out.schema).toContain('deletePost(input: DeletePostInput!, condition: ModelPostConditionInput): Post @aws_api_key @aws_iam');
-
-  // No parameter for Auth and UnAuth policy
-  expect(out.rootStack.Parameters!.authRoleName).toBeUndefined();
-  expect(out.rootStack.Parameters!.unauthRoleName).toBeUndefined();
 
   // No Resource extending Auth and UnAuth role
   const policyResources = Object.values(out.rootStack.Resources!).filter(r => r.Type === 'AWS::IAM::ManagedPolicy');
@@ -118,19 +114,19 @@ test('Test simple model with private auth rule and amplify admin app is present'
       }
       `;
   const transformer = new GraphQLTransform({
+    authConfig: {
+      defaultAuthentication: {
+        authenticationType: 'AMAZON_COGNITO_USER_POOLS',
+      },
+      additionalAuthenticationProviders: [
+        {
+          authenticationType: 'AWS_IAM',
+        },
+      ],
+    },
     transformers: [
       new ModelTransformer(),
       new AuthTransformer({
-        authConfig: {
-          defaultAuthentication: {
-            authenticationType: 'AMAZON_COGNITO_USER_POOLS',
-          },
-          additionalAuthenticationProviders: [
-            {
-              authenticationType: 'AWS_IAM',
-            },
-          ],
-        },
         addAwsIamAuthInOutputSchema: true,
         adminUserPoolID: 'us-fake-1_uuid',
       }),
@@ -151,19 +147,19 @@ test('Test simple model with private auth rule and amplify admin app not enabled
       }
       `;
   const transformer = new GraphQLTransform({
+    authConfig: {
+      defaultAuthentication: {
+        authenticationType: 'AMAZON_COGNITO_USER_POOLS',
+      },
+      additionalAuthenticationProviders: [
+        {
+          authenticationType: 'AWS_IAM',
+        },
+      ],
+    },
     transformers: [
       new ModelTransformer(),
       new AuthTransformer({
-        authConfig: {
-          defaultAuthentication: {
-            authenticationType: 'AMAZON_COGNITO_USER_POOLS',
-          },
-          additionalAuthenticationProviders: [
-            {
-              authenticationType: 'AWS_IAM',
-            },
-          ],
-        },
         addAwsIamAuthInOutputSchema: false,
       }),
     ],
@@ -183,6 +179,16 @@ test('Test simple model with private auth rule, few operations, and amplify admi
       }
       `;
   const transformer = new GraphQLTransform({
+    authConfig: {
+      defaultAuthentication: {
+        authenticationType: 'AMAZON_COGNITO_USER_POOLS',
+      },
+      additionalAuthenticationProviders: [
+        {
+          authenticationType: 'AWS_IAM',
+        },
+      ],
+    },
     transformers: [
       new ModelTransformer(),
       new AuthTransformer({
@@ -214,10 +220,6 @@ test('Test simple model with private auth rule, few operations, and amplify admi
     'deletePost(input: DeletePostInput!, condition: ModelPostConditionInput): Post @aws_iam @aws_cognito_user_pools',
   );
 
-  // No parameter for Auth and UnAuth policy
-  expect(out.rootStack.Parameters!.authRoleName).toBeUndefined();
-  expect(out.rootStack.Parameters!.unauthRoleName).toBeUndefined();
-
   // No Resource extending Auth and UnAuth role
   const policyResources = Object.values(out.rootStack.Resources!).filter(r => r.Type === 'AWS::IAM::ManagedPolicy');
   expect(policyResources).toHaveLength(0);
@@ -233,19 +235,19 @@ test('Test simple model with private IAM auth rule, few operations, and amplify 
       }
       `;
   const transformer = new GraphQLTransform({
+    authConfig: {
+      defaultAuthentication: {
+        authenticationType: 'AMAZON_COGNITO_USER_POOLS',
+      },
+      additionalAuthenticationProviders: [
+        {
+          authenticationType: 'AWS_IAM',
+        },
+      ],
+    },
     transformers: [
       new ModelTransformer(),
       new AuthTransformer({
-        authConfig: {
-          defaultAuthentication: {
-            authenticationType: 'AMAZON_COGNITO_USER_POOLS',
-          },
-          additionalAuthenticationProviders: [
-            {
-              authenticationType: 'AWS_IAM',
-            },
-          ],
-        },
         addAwsIamAuthInOutputSchema: false,
       }),
     ],
@@ -273,19 +275,19 @@ test('Test simple model with AdminUI enabled should add IAM policy only for fiel
       }
       `;
   const transformer = new GraphQLTransform({
+    authConfig: {
+      defaultAuthentication: {
+        authenticationType: 'AMAZON_COGNITO_USER_POOLS',
+      },
+      additionalAuthenticationProviders: [
+        {
+          authenticationType: 'AWS_IAM',
+        },
+      ],
+    },
     transformers: [
       new ModelTransformer(),
       new AuthTransformer({
-        authConfig: {
-          defaultAuthentication: {
-            authenticationType: 'AMAZON_COGNITO_USER_POOLS',
-          },
-          additionalAuthenticationProviders: [
-            {
-              authenticationType: 'AWS_IAM',
-            },
-          ],
-        },
         addAwsIamAuthInOutputSchema: true,
         adminUserPoolID: 'us-fake-1_uuid',
       }),

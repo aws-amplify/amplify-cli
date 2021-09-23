@@ -1,9 +1,10 @@
 import { parse } from 'graphql';
 import { AuthTransformer } from '@aws-amplify/graphql-auth-transformer';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
-import { AppSyncAuthConfiguration, GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
+import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
 import { ResourceConstants } from 'graphql-transformer-common';
 import { getField, getObjectType } from './test-helpers';
+import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-interfaces';
 
 test('auth transformer validation happy case', () => {
   const authConfig: AppSyncAuthConfiguration = {

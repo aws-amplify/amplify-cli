@@ -13,15 +13,6 @@ export {
   SyncConfigLambda,
   TransformConfig,
   TransformerProjectConfig,
-  AppSyncAuthConfiguration,
-  AppSyncAuthConfigurationAPIKeyEntry,
-  AppSyncAuthConfigurationEntry,
-  AppSyncAuthConfigurationIAMEntry,
-  ApiKeyConfig,
-  AppSyncAuthConfigurationOIDCEntry,
-  AppSyncAuthConfigurationUserPoolEntry,
-  AppSyncAuthMode,
-  UserPoolConfig,
 } from './config/index';
 export {
   collectDirectives,
@@ -29,6 +20,8 @@ export {
   DirectiveWrapper,
   getSandboxModeEnvNameFromDirectiveSet,
   getSandboxModeEnvNameFromNodeMap,
+  IAM_AUTH_ROLE_PARAMETER,
+  IAM_UNAUTH_ROLE_PARAMETER,
 } from './utils';
 export * from './errors';
 export {
@@ -37,6 +30,7 @@ export {
   TransformerPluginBase,
   TransformerAuthBase,
 } from './transformation/transformer-plugin-base';
+export { TransformerResolver } from './transformer-context';
 /**
  * Returns the extra set of directives that are supported by AppSync service
  */

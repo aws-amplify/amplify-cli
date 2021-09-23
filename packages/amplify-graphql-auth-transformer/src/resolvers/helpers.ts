@@ -53,7 +53,7 @@ export const addAllowedFieldsIfElse = (fieldKey: string, breakLoop: boolean = fa
 };
 
 // iam check
-export const iamCheck = (claim: string, exp: Expression) => iff(equals(ref('ctx.identity.cognitoIdentityAuthType'), str(claim)), exp);
+export const iamCheck = (claim: string, exp: Expression) => iff(equals(ref('ctx.identity.userArn'), ref(`ctx.stash.${claim}`)), exp);
 
 /**
  * Behavior of auth v1

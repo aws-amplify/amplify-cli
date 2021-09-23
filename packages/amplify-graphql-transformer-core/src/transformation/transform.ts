@@ -4,6 +4,7 @@ import {
   GraphQLAPIProvider,
   TransformerPluginProvider,
   TransformHostProvider,
+  AppSyncAuthConfiguration,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { AuthorizationMode, AuthorizationType } from '@aws-cdk/aws-appsync';
 import { App, Aws, CfnOutput, Fn, Duration, Expiration } from '@aws-cdk/core';
@@ -28,8 +29,8 @@ import { GraphQLApi } from '../graphql-api';
 import { TransformerContext } from '../transformer-context';
 import { TransformerOutput } from '../transformer-context/output';
 import { StackManager } from '../transformer-context/stack-manager';
-import { adoptAuthModes } from '../utils/authType';
-import { TransformConfig, AppSyncAuthConfiguration } from '../config';
+import { adoptAuthModes, IAM_AUTH_ROLE_PARAMETER, IAM_UNAUTH_ROLE_PARAMETER } from '../utils/authType';
+import { TransformConfig } from '../config';
 import * as SyncUtils from './sync-utils';
 
 import Template, { DeploymentResources } from './types';
@@ -129,6 +130,7 @@ export class GraphQLTransform {
       this.app,
       parsedDocument,
       this.stackMappingOverrides,
+      this.authConfig,
       this.options.featureFlags,
       this.transformConfig.ResolverConfig,
     );
@@ -265,7 +267,7 @@ export class GraphQLTransform {
       name: `${apiName}-${envName.valueAsString}`,
       authorizationConfig,
       host: this.options.host,
-      globalSandboxModeEnv
+      globalSandboxModeEnv,
     });
     const authModes = [authorizationConfig.defaultAuthorization, ...(authorizationConfig.additionalAuthorizationModes || [])].map(
       mode => mode?.authorizationType,
@@ -292,6 +294,11 @@ export class GraphQLTransform {
         description: 'Your GraphQL API ID.',
         exportName: Fn.join(':', [Aws.STACK_NAME, 'GraphQLApiKey']),
       });
+    }
+
+    if (authModes.includes(AuthorizationType.IAM)) {
+      stackManager.addParameter(IAM_AUTH_ROLE_PARAMETER, { type: 'String' });
+      stackManager.addParameter(IAM_UNAUTH_ROLE_PARAMETER, { type: 'String' });
     }
 
     new CfnOutput(rootStack, 'GraphQLAPIIdOutput', {

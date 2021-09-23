@@ -55,7 +55,7 @@ import { NoUnusedVariables } from 'graphql/validation/rules/NoUnusedVariables';
 import { UniqueDirectivesPerLocation } from 'graphql/validation/rules/UniqueDirectivesPerLocation';
 
 // AuthMode Types
-import { AppSyncAuthConfiguration, AppSyncAuthMode } from '../config';
+import { AppSyncAuthConfiguration, AppSyncAuthMode } from '@aws-amplify/graphql-transformer-interfaces';
 
 /**
  * This set includes all validation rules defined by the GraphQL spec.
