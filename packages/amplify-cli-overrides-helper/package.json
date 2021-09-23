@@ -26,7 +26,9 @@
     "watch": "tsc -w",
     "clean": "rimraf ./lib"
   },
-  "dependencies": {},
+  "dependencies": {
+    "amplify-prompts": "1.1.2"
+  },
   "devDependencies": {},
   "jest": {
     "transform": {
