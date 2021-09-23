@@ -780,7 +780,7 @@ async function askUserPoolQuestions(context) {
   };
 }
 
-async function askApiKeyQuestions(authSettings) {
+export async function askApiKeyQuestions(authSettings = undefined) {
   let defaultValues = {
     apiKeyExpirationDays: 7,
     description: undefined,

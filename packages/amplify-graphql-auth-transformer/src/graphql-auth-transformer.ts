@@ -642,6 +642,10 @@ Static group authorization should perform as expected.`,
               claim: rule.allow === 'private' ? 'authenticated' : 'unauthenticated',
             };
             break;
+          case 'function':
+            roleName = `function:custom`;
+            roleDefinition = { provider: rule.provider, strategy: rule.allow, static: true };
+            break;
           case 'oidc':
           case 'userPools':
             if (rule.allow === 'groups') {

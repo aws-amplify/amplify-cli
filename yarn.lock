@@ -156,6 +156,90 @@
     prettier "^1.19.1"
     yargs "^15.1.0"
 
+"@aws-amplify/graphql-index-transformer@0.3.1":
+  version "0.3.1"
+  resolved "https://registry.yarnpkg.com/@aws-amplify/graphql-index-transformer/-/graphql-index-transformer-0.3.1.tgz#597864e66728f479add5bc2b0d4ab03464505958"
+  integrity sha512-AQXUVE4b9ct6qIjki3kanfJkMEs8USQHnaYfH3XbA1Fzz7cQKWerKs5UIHxm00q3EgJxPBYhwUUD7PJxEcnlOA==
+  dependencies:
+    "@aws-amplify/graphql-model-transformer" "0.6.1"
+    "@aws-amplify/graphql-transformer-core" "0.9.0"
+    "@aws-amplify/graphql-transformer-interfaces" "1.9.0"
+    "@aws-cdk/aws-appsync" "~1.119.0"
+    "@aws-cdk/aws-dynamodb" "~1.119.0"
+    "@aws-cdk/core" "~1.119.0"
+    graphql "^14.5.8"
+    graphql-mapping-template "4.18.3"
+    graphql-transformer-common "4.19.9"
+
+"@aws-amplify/graphql-model-transformer@0.6.1":
+  version "0.6.1"
+  resolved "https://registry.yarnpkg.com/@aws-amplify/graphql-model-transformer/-/graphql-model-transformer-0.6.1.tgz#13abafa64e54199f0aca4ab41b53acfcba0a3cd7"
+  integrity sha512-/hnfr5QT16/c7qKq5TNh3KYOg/lqD3x0tC7AkIuboUltwCdkVDGvtkz5ilOpmWJipQjFjgW5daALNdVxitD8kg==
+  dependencies:
+    "@aws-amplify/graphql-transformer-core" "0.9.0"
+    "@aws-amplify/graphql-transformer-interfaces" "1.9.0"
+    "@aws-cdk/assets" "~1.119.0"
+    "@aws-cdk/aws-applicationautoscaling" "~1.119.0"
+    "@aws-cdk/aws-autoscaling-common" "~1.119.0"
+    "@aws-cdk/aws-cloudformation" "~1.119.0"
+    "@aws-cdk/aws-cloudwatch" "~1.119.0"
+    "@aws-cdk/aws-codeguruprofiler" "~1.119.0"
+    "@aws-cdk/aws-dynamodb" "~1.119.0"
+    "@aws-cdk/aws-ec2" "~1.119.0"
+    "@aws-cdk/aws-efs" "~1.119.0"
+    "@aws-cdk/aws-events" "~1.119.0"
+    "@aws-cdk/aws-iam" "~1.119.0"
+    "@aws-cdk/aws-kms" "~1.119.0"
+    "@aws-cdk/aws-lambda" "~1.119.0"
+    "@aws-cdk/aws-logs" "~1.119.0"
+    "@aws-cdk/aws-s3" "~1.119.0"
+    "@aws-cdk/aws-s3-assets" "~1.119.0"
+    "@aws-cdk/aws-sns" "~1.119.0"
+    "@aws-cdk/aws-sqs" "~1.119.0"
+    "@aws-cdk/aws-ssm" "~1.119.0"
+    "@aws-cdk/cloud-assembly-schema" "~1.119.0"
+    "@aws-cdk/core" "~1.119.0"
+    "@aws-cdk/custom-resources" "~1.119.0"
+    "@aws-cdk/cx-api" "~1.119.0"
+    "@aws-cdk/region-info" "~1.119.0"
+    constructs "^3.3.125"
+    graphql "^14.5.8"
+    graphql-mapping-template "4.18.3"
+    graphql-transformer-common "4.19.9"
+    lodash "^4.17.21"
+
+"@aws-amplify/graphql-relational-transformer@0.2.0":
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/@aws-amplify/graphql-relational-transformer/-/graphql-relational-transformer-0.2.0.tgz#9cf92be6b0fc4c082570eca90605c61c34683996"
+  integrity sha512-Uxe2N6iJVGxXQIXMyHlssZuS+fumqlDUL+u8THhm6QHFXrSjUAL3aQzMHdJh3od+O6Ih7grH0GodKtUVTOy8BQ==
+  dependencies:
+    "@aws-amplify/graphql-transformer-core" "0.9.0"
+    "@aws-amplify/graphql-transformer-interfaces" "1.9.0"
+    "@aws-cdk/aws-appsync" "~1.119.0"
+    "@aws-cdk/aws-dynamodb" "~1.119.0"
+    "@aws-cdk/core" "~1.119.0"
+    graphql "^14.5.8"
+    graphql-mapping-template "4.18.3"
+    graphql-transformer-common "4.19.9"
+
+"@aws-amplify/graphql-searchable-transformer@0.5.1":
+  version "0.5.1"
+  resolved "https://registry.yarnpkg.com/@aws-amplify/graphql-searchable-transformer/-/graphql-searchable-transformer-0.5.1.tgz#331c82e839da3163d0d1962d433a627d2ac636d8"
+  integrity sha512-gF+elEyJy8Nq1gT4X6GZ/at0iQrYogzPSJB59csq1yLyrOLOmF+d+VqKqFuPaYdV6qoa4NH0sQZEPLcDBanNQw==
+  dependencies:
+    "@aws-amplify/graphql-transformer-core" "0.9.0"
+    "@aws-amplify/graphql-transformer-interfaces" "1.9.0"
+    "@aws-cdk/aws-appsync" "~1.119.0"
+    "@aws-cdk/aws-dynamodb" "~1.119.0"
+    "@aws-cdk/aws-ec2" "~1.119.0"
+    "@aws-cdk/aws-elasticsearch" "~1.119.0"
+    "@aws-cdk/aws-iam" "~1.119.0"
+    "@aws-cdk/aws-lambda" "~1.119.0"
+    "@aws-cdk/core" "~1.119.0"
+    graphql "^14.5.8"
+    graphql-mapping-template "4.18.3"
+    graphql-transformer-common "4.19.9"
+
 "@aws-amplify/graphql-types-generator@2.8.0":
   version "2.8.0"
   resolved "https://registry.yarnpkg.com/@aws-amplify/graphql-types-generator/-/graphql-types-generator-2.8.0.tgz#4d1de0d2bebfe86863d892b175ef9ee5fea489ca"

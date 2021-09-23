@@ -18,7 +18,7 @@ import {
   raw,
   set,
 } from 'graphql-mapping-template';
-import { getIdentityClaimExp, getOwnerClaim, apiKeyExpression, iamExpression, emptyPayload, setHasAuthExpression } from './helpers';
+import { getIdentityClaimExp, getOwnerClaim, apiKeyExpression, iamExpression, lambdaExpression, emptyPayload, setHasAuthExpression } from './helpers';
 import {
   COGNITO_AUTH_TYPE,
   OIDC_AUTH_TYPE,
@@ -143,10 +143,13 @@ export const generateAuthExpressionForQueries = (
   fields: ReadonlyArray<FieldDefinitionNode>,
   querySource: QuerySource = 'dynamodb',
 ): string => {
-  const { cogntoStaticRoles, cognitoDynamicRoles, oidcStaticRoles, oidcDynamicRoles, apiKeyRoles, iamRoles } = splitRoles(roles);
+  const { cogntoStaticRoles, cognitoDynamicRoles, oidcStaticRoles, oidcDynamicRoles, apiKeyRoles, iamRoles, lambdaRoles } = splitRoles(roles);
   const totalAuthExpressions: Array<Expression> = [setHasAuthExpression, set(ref(IS_AUTHORIZED_FLAG), bool(false))];
   if (providers.hasApiKey) {
     totalAuthExpressions.push(apiKeyExpression(apiKeyRoles));
+  }
+  if (providers.hasLambda) {
+    totalAuthExpressions.push(lambdaExpression(lambdaRoles));
   }
   if (providers.hasIAM) {
     iamExpression(iamRoles, providers.hasAdminUIEnabled, providers.adminUserPoolID);

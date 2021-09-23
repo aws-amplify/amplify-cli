@@ -4,20 +4,21 @@ import { Duration, Expiration } from '@aws-cdk/core';
 import { AppSyncAuthConfiguration, AppSyncAuthConfigurationEntry, AppSyncAuthMode } from '../config';
 import { StackManager } from '../transformer-context/stack-manager';
 
-const authTypeMap: Record<AppSyncAuthMode, AuthorizationType> = {
+const authTypeMap: Record<AppSyncAuthMode, AuthorizationType | any> = {
   API_KEY: AuthorizationType.API_KEY,
   AMAZON_COGNITO_USER_POOLS: AuthorizationType.USER_POOL,
   AWS_IAM: AuthorizationType.IAM,
   OPENID_CONNECT: AuthorizationType.OIDC,
+  AWS_LAMBDA: 'AWS_LAMBDA',
 };
-export function adoptAuthModes(stack: StackManager, authConfig: AppSyncAuthConfiguration): AuthorizationConfig {
+export function adoptAuthModes(stack: StackManager, authConfig: AppSyncAuthConfiguration): AuthorizationConfig | any {
   return {
     defaultAuthorization: adoptAuthMode(stack, authConfig.defaultAuthentication),
     additionalAuthorizationModes: authConfig.additionalAuthenticationProviders?.map(entry => adoptAuthMode(stack, entry)),
   };
 }
 
-export function adoptAuthMode(stackManager: StackManager, entry: AppSyncAuthConfigurationEntry): AuthorizationMode {
+export function adoptAuthMode(stackManager: StackManager, entry: AppSyncAuthConfigurationEntry): AuthorizationMode | any {
   const authType = authTypeMap[entry.authenticationType];
   switch (entry.authenticationType) {
     case AuthorizationType.API_KEY:
@@ -53,6 +54,14 @@ export function adoptAuthMode(stackManager: StackManager, entry: AppSyncAuthConf
           clientId: entry.openIDConnectConfig!.clientId,
           tokenExpiryFromAuth: strToNumber(entry.openIDConnectConfig!.authTTL),
           tokenExpiryFromIssue: strToNumber(entry.openIDConnectConfig!.iatTTL),
+        },
+      };
+    case 'AWS_LAMBDA':
+      return {
+        authorizationType: authType,
+        lambdaAuthorizerConfig: {
+          lambdaFunction: entry.lambdaAuthorizerConfig!.lambdaFunction,
+          ttlSeconds: strToNumber(entry.lambdaAuthorizerConfig!.ttlSeconds),
         },
       };
     default:

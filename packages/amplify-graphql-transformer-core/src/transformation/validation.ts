@@ -111,6 +111,7 @@ directive @aws_auth(cognito_groups: [String!]!) on FIELD_DEFINITION
 directive @aws_api_key on FIELD_DEFINITION | OBJECT
 directive @aws_iam on FIELD_DEFINITION | OBJECT
 directive @aws_oidc on FIELD_DEFINITION | OBJECT
+directive @aws_lambda on FIELD_DEFINITION | OBJECT
 directive @aws_cognito_user_pools(cognito_groups: [String!]) on FIELD_DEFINITION | OBJECT
 directive @allow_public_data_access_with_api_key(in: [String!]) on OBJECT
 
@@ -159,7 +160,7 @@ export const validateAuthModes = (authConfig: AppSyncAuthConfiguration) => {
   for (let i = 0; i < authModes.length; i++) {
     const mode = authModes[i];
 
-    if (mode !== 'API_KEY' && mode !== 'AMAZON_COGNITO_USER_POOLS' && mode !== 'AWS_IAM' && mode !== 'OPENID_CONNECT') {
+    if (mode !== 'API_KEY' && mode !== 'AMAZON_COGNITO_USER_POOLS' && mode !== 'AWS_IAM' && mode !== 'OPENID_CONNECT' && mode !== 'AWS_LAMBDA') {
       throw new Error(`Invalid auth mode ${mode}`);
     }
   }

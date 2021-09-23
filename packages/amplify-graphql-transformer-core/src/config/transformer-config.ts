@@ -5,7 +5,7 @@ export interface TransformMigrationConfig {
 }
 
 // Auth Config
-export type AppSyncAuthMode = 'API_KEY' | 'AMAZON_COGNITO_USER_POOLS' | 'AWS_IAM' | 'OPENID_CONNECT';
+export type AppSyncAuthMode = 'API_KEY' | 'AMAZON_COGNITO_USER_POOLS' | 'AWS_IAM' | 'OPENID_CONNECT' | 'AWS_LAMBDA';
 export type AppSyncAuthConfiguration = {
   defaultAuthentication: AppSyncAuthConfigurationEntry;
   additionalAuthenticationProviders: Array<AppSyncAuthConfigurationEntry>;
@@ -15,7 +15,8 @@ export type AppSyncAuthConfigurationEntry =
   | AppSyncAuthConfigurationUserPoolEntry
   | AppSyncAuthConfigurationAPIKeyEntry
   | AppSyncAuthConfigurationIAMEntry
-  | AppSyncAuthConfigurationOIDCEntry;
+  | AppSyncAuthConfigurationOIDCEntry
+  | AppSyncAuthConfigurationLambdaEntry;
 export type AppSyncAuthConfigurationAPIKeyEntry = {
   authenticationType: 'API_KEY';
   apiKeyConfig?: ApiKeyConfig;
@@ -33,6 +34,11 @@ export type AppSyncAuthConfigurationOIDCEntry = {
   openIDConnectConfig?: OpenIDConnectConfig;
 };
 
+export type AppSyncAuthConfigurationLambdaEntry = {
+  authenticationType: 'AWS_LAMBDA';
+  lambdaAuthorizerConfig?: LambdaConfig;
+};
+
 export type ApiKeyConfig = {
   description?: string;
   apiKeyExpirationDays: number;
@@ -48,6 +54,10 @@ export type OpenIDConnectConfig = {
   iatTTL?: number;
   authTTL?: number;
 };
+export type LambdaConfig = {
+  lambdaFunction: string;
+  ttlSeconds: number;
+}
 
 // Sync Config
 export const enum ConflictHandlerType {

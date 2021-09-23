@@ -26,6 +26,7 @@ import {
   IS_AUTHORIZED_FLAG,
   ALLOWED_FIELDS,
   API_KEY_AUTH_TYPE,
+  LAMBDA_AUTH_TYPE,
   ADMIN_ROLE,
   IAM_AUTH_TYPE,
   MANAGE_ROLE,
@@ -109,6 +110,11 @@ export const apiKeyExpression = (roles: Array<RoleDefinition>) =>
     compoundExpression([...(roles.length > 0 ? [set(ref(IS_AUTHORIZED_FLAG), bool(true))] : [])]),
   );
 
+export const lambdaExpression = (roles: Array<RoleDefinition>) =>
+  iff(
+    equals(ref('util.authType()'), str(LAMBDA_AUTH_TYPE)),
+    compoundExpression([...(roles.length > 0 ? [set(ref(IS_AUTHORIZED_FLAG), bool(true))] : [])]),
+  );
 export const iamExpression = (roles: Array<RoleDefinition>, adminuiEnabled: boolean = false, adminUserPoolID?: string) => {
   const iamCheck = (claim: string, exp: Expression) =>
     iff(equals(methodCall(ref('ctx.identity.get'), str('cognitoIdentityAuthType')), str(claim)), exp);

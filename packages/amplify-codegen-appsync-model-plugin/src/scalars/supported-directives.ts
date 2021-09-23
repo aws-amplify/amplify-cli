@@ -90,6 +90,7 @@ export const directives = /* GraphQL */ `
     groups
     private
     public
+    custom
   }
 
   enum AuthProvider {
@@ -97,6 +98,7 @@ export const directives = /* GraphQL */ `
     iam
     oidc
     userPools
+    function
   }
 
   enum ModelOperation {
