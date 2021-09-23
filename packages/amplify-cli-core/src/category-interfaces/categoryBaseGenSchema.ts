@@ -7,6 +7,7 @@ import { getProgramFromFiles, buildGenerator, PartialArgs } from 'typescript-jso
 import fs from 'fs-extra';
 import path from 'path';
 import Ajv from 'ajv';
+import { printer } from 'amplify-prompts';
 
 // Interface types are expected to be exported as "typeName" in the file
 export type TypeDef = {
@@ -17,7 +18,7 @@ export type TypeDef = {
 export class CLIInputSchemaGenerator {
   // Paths are relative to the package root
   TYPES_SRC_ROOT = './src/provider-utils/awscloudformation/service-walkthrough-types/';
-  SCHEMA_FILES_ROOT = './src/provider-utils/awscloudformation/schemas';
+  SCHEMA_FILES_ROOT = './resources/schemas';
   OVERWRITE_SCHEMA_FLAG = '--overwrite';
 
   private serviceTypeDefs: TypeDef[];
@@ -35,13 +36,13 @@ export class CLIInputSchemaGenerator {
   }
 
   private printWarningSchemaFileExists() {
-    console.info('The interface version must be bumped after any changes.');
-    console.info(`Use the ${this.OVERWRITE_SCHEMA_FLAG} flag to overwrite existing versions`);
-    console.info('Skipping this schema');
+    printer.info('The interface version must be bumped after any changes.');
+    printer.info(`Use the ${this.OVERWRITE_SCHEMA_FLAG} flag to overwrite existing versions`);
+    printer.info('Skipping this schema');
   }
 
   private printSuccessSchemaFileWritten(typeName: string) {
-    console.log(`Schema written for type ${typeName}.`);
+    printer.info(`Schema written for type ${typeName}.`);
   }
 
   constructor(typeDefs: TypeDef[]) {
@@ -60,7 +61,7 @@ export class CLIInputSchemaGenerator {
     for (const typeDef of this.serviceTypeDefs) {
       //get absolute file path to the user-input types for the given service
       const svcAbsoluteFilePath = this.getSvcFileAbsolutePath(typeDef.service);
-      console.log(svcAbsoluteFilePath);
+      printer.info(svcAbsoluteFilePath);
       //generate json-schema from the input-types
       const typeSchema = buildGenerator(getProgramFromFiles([svcAbsoluteFilePath]), settings)?.getSchemaForSymbol(typeDef.typeName);
       //save json-schema file for the input-types. (used to validate cli-inputs.json)
@@ -98,11 +99,11 @@ export class CLIInputSchemaValidator {
   async getUserInputSchema() {
     try {
       return await import(
-        `@aws-amplify/amplify-category-${this._category}/src/provider-utils/awscloudformation/schemas/${this._service}/${this._schemaFileName}.schema.json`
+        `@aws-amplify/amplify-category-${this._category}/resources/schemas/${this._service}/${this._schemaFileName}.schema.json`
       );
     } catch (ex) {
       throw new Error(
-        `Schema defination doesnt exist : amplify-category-${this._category}-v2/src/provider-utils/awscloudformation/schemas/${this._service}/${this._schemaFileName}.schema.json`,
+        `Schema defination doesnt exist : amplify-category-${this._category}-v2/resources/schemas/${this._service}/${this._schemaFileName}.schema.json`,
       );
     }
   }
