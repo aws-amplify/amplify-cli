@@ -531,7 +531,7 @@ export class FeatureFlags {
         name: 'useExperimentalPipelinedTransformer',
         type: 'boolean',
         defaultValueForExistingProjects: false,
-        defaultValueForNewProjects: false,
+        defaultValueForNewProjects: true,
       },
       {
         name: 'enableIterativeGSIUpdates',
