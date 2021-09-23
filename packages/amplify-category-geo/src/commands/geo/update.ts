@@ -1,8 +1,8 @@
 import { chooseServiceMessageUpdate, provider } from '../../service-utils/constants';
-import { category } from '../../constants';
+import { category, supportedRegions } from '../../constants';
 import { supportedServices } from '../../supportedServices';
-import { $TSAny, $TSContext } from 'amplify-cli-core';
-import { updateResource } from '../../provider-controllers';
+import { $TSAny, $TSContext, stateManager } from 'amplify-cli-core';
+import { updateResource, unsupportedRegionError } from '../../provider-controllers';
 import { printer } from 'amplify-prompts';
 
 export const name = 'update';
@@ -10,6 +10,12 @@ export const name = 'update';
 export const run = async(context: $TSContext) => {
   const { amplify } = context;
   try {
+    const region = stateManager.getMeta()?.providers[provider]?.Region;
+    if(!supportedRegions.includes(region)) {
+      printer.error(unsupportedRegionError(region));
+      return;
+    }
+
     const result: {service: string, providerName: string} = await amplify.serviceSelectionPrompt(context, category, supportedServices, chooseServiceMessageUpdate);
 
     if (result.providerName !== provider) {

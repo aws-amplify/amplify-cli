@@ -166,7 +166,8 @@ function splitTests(
   const testSuites = getTestFiles(jobRootDir);
 
   const newJobs = testSuites.reduce((acc, suite, index) => {
-    const testRegion = AWS_REGIONS_TO_RUN_TESTS[index % AWS_REGIONS_TO_RUN_TESTS.length];
+    const supportedRegions = getSupportedRegions(suite);
+    const testRegion = supportedRegions[index % supportedRegions.length];
     const newJob = {
       ...job,
       environment: {
@@ -296,6 +297,19 @@ function getRequiredJob(jobNames: string[], index: number, concurrency: number =
     const prevIndex = (mult - 1) * concurrency + mod;
     return jobNames[prevIndex];
   }
+}
+
+/**
+ * Helper function to filter unsupported regions for certain category tests
+ * @returns list of supported regions
+ */
+function getSupportedRegions(suite: string): string[] {
+  if (suite.startsWith('src/__tests__/geo')) {
+    return AWS_REGIONS_TO_RUN_TESTS.filter(function(value, index, arr){ 
+      return value !== 'eu-west-2';
+    });
+  }
+  return AWS_REGIONS_TO_RUN_TESTS;
 }
 
 function loadConfig(): CircleCIConfig {
