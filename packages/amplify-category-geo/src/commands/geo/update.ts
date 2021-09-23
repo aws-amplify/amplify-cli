@@ -4,12 +4,17 @@ import { supportedServices } from '../../supportedServices';
 import { $TSAny, $TSContext } from 'amplify-cli-core';
 import { updateResource } from '../../provider-controllers';
 import { printer } from 'amplify-prompts';
+import { verifySupportedRegion } from '../../service-utils/resourceUtils';
 
 export const name = 'update';
 
 export const run = async(context: $TSContext) => {
   const { amplify } = context;
   try {
+    if(!verifySupportedRegion()) {
+      return;
+    }
+
     const result: {service: string, providerName: string} = await amplify.serviceSelectionPrompt(context, category, supportedServices, chooseServiceMessageUpdate);
 
     if (result.providerName !== provider) {
