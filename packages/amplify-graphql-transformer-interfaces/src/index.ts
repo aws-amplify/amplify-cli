@@ -37,6 +37,15 @@ export {
   InlineMappingTemplateProvider,
   APIIAMResourceProvider,
   TemplateType as MappingTemplateType,
+  AppSyncAuthConfiguration,
+  AppSyncAuthConfigurationAPIKeyEntry,
+  AppSyncAuthConfigurationEntry,
+  AppSyncAuthConfigurationIAMEntry,
+  ApiKeyConfig,
+  AppSyncAuthConfigurationOIDCEntry,
+  AppSyncAuthConfigurationUserPoolEntry,
+  AppSyncAuthMode,
+  UserPoolConfig,
 } from './graphql-api-provider';
 
 export { TransformHostProvider, DynamoDbDataSourceOptions } from './transform-host-provider';

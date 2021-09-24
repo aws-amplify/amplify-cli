@@ -5,6 +5,7 @@ import {
   TransformerContextOutputProvider,
   TransformerContextProvider,
   TransformerDataSourceManagerProvider,
+  AppSyncAuthConfiguration,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { TransformerContextMetadataProvider } from '@aws-amplify/graphql-transformer-interfaces/src/transformer-context/transformer-context-provider';
 import { App } from '@aws-cdk/core';
@@ -18,7 +19,7 @@ import { TransformerContextProviderRegistry } from './provider-registry';
 import { ResolverManager } from './resolver';
 import { TransformerResourceHelper } from './resource-helper';
 import { StackManager } from './stack-manager';
-
+export { TransformerResolver } from './resolver';
 export class TransformerContextMetadata implements TransformerContextMetadataProvider {
   /**
    * Used by transformers to pass information between one another.
@@ -47,6 +48,7 @@ export class TransformerContext implements TransformerContextProvider {
   public readonly resourceHelper: TransformerResourceHelper;
   public readonly featureFlags: FeatureFlagProvider;
   public _api?: GraphQLAPIProvider;
+  public readonly authConfig: AppSyncAuthConfiguration;
   private resolverConfig: ResolverConfig | undefined;
 
   public metadata: TransformerContextMetadata;
@@ -54,6 +56,7 @@ export class TransformerContext implements TransformerContextProvider {
     app: App,
     public readonly inputDocument: DocumentNode,
     stackMapping: Record<string, string>,
+    authConfig: AppSyncAuthConfiguration,
     featureFlags?: FeatureFlagProvider,
     resolverConfig?: ResolverConfig,
   ) {
@@ -63,6 +66,7 @@ export class TransformerContext implements TransformerContextProvider {
     this.providerRegistry = new TransformerContextProviderRegistry();
     const stackManager = new StackManager(app, stackMapping);
     this.stackManager = stackManager;
+    this.authConfig = authConfig;
     this.resourceHelper = new TransformerResourceHelper(stackManager);
     this.featureFlags = featureFlags ?? new NoopFeatureFlagProvider();
     this.resolverConfig = resolverConfig;

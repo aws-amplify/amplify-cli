@@ -25,9 +25,6 @@ export const IS_AUTHORIZED_FLAG = 'isAuthorized';
 export const ALLOWED_FIELDS = 'allowedFields';
 export const NULL_ALLOWED_FIELDS = 'nullAllowedFields';
 export const DENIED_FIELDS = 'deniedFields';
-// iam parameter names
-export const IAM_AUTH_ROLE_PARAMETER = 'authRoleName';
-export const IAM_UNAUTH_ROLE_PARAMETER = 'unauthRoleName';
 // Admin Roles
 export const ADMIN_ROLE = '_Full-access/CognitoIdentityCredentials';
 export const MANAGE_ROLE = '_Manage-only/CognitoIdentityCredentials';

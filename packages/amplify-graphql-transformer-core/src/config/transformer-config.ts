@@ -4,51 +4,6 @@ export interface TransformMigrationConfig {
   };
 }
 
-// Auth Config
-export type AppSyncAuthMode = 'API_KEY' | 'AMAZON_COGNITO_USER_POOLS' | 'AWS_IAM' | 'OPENID_CONNECT';
-export type AppSyncAuthConfiguration = {
-  defaultAuthentication: AppSyncAuthConfigurationEntry;
-  additionalAuthenticationProviders: Array<AppSyncAuthConfigurationEntry>;
-};
-
-export type AppSyncAuthConfigurationEntry =
-  | AppSyncAuthConfigurationUserPoolEntry
-  | AppSyncAuthConfigurationAPIKeyEntry
-  | AppSyncAuthConfigurationIAMEntry
-  | AppSyncAuthConfigurationOIDCEntry;
-export type AppSyncAuthConfigurationAPIKeyEntry = {
-  authenticationType: 'API_KEY';
-  apiKeyConfig?: ApiKeyConfig;
-};
-export type AppSyncAuthConfigurationUserPoolEntry = {
-  authenticationType: 'AMAZON_COGNITO_USER_POOLS';
-  userPoolConfig?: UserPoolConfig;
-};
-export type AppSyncAuthConfigurationIAMEntry = {
-  authenticationType: 'AWS_IAM';
-};
-
-export type AppSyncAuthConfigurationOIDCEntry = {
-  authenticationType: 'OPENID_CONNECT';
-  openIDConnectConfig?: OpenIDConnectConfig;
-};
-
-export type ApiKeyConfig = {
-  description?: string;
-  apiKeyExpirationDays: number;
-  apiKeyExpirationDate?: Date;
-};
-export type UserPoolConfig = {
-  userPoolId: string;
-};
-export type OpenIDConnectConfig = {
-  name: string;
-  issuerUrl: string;
-  clientId?: string;
-  iatTTL?: number;
-  authTTL?: number;
-};
-
 // Sync Config
 export const enum ConflictHandlerType {
   OPTIMISTIC = 'OPTIMISTIC_CONCURRENCY',

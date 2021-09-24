@@ -1,5 +1,6 @@
 import { ModelDirectiveConfiguration, SubscriptionLevel } from '@aws-amplify/graphql-model-transformer';
-import { AppSyncAuthMode, DirectiveWrapper } from '@aws-amplify/graphql-transformer-core';
+import { DirectiveWrapper } from '@aws-amplify/graphql-transformer-core';
+import { AppSyncAuthMode } from '@aws-amplify/graphql-transformer-interfaces';
 import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { Stack } from '@aws-cdk/core';
 import { DirectiveNode, ObjectTypeDefinitionNode } from 'graphql';

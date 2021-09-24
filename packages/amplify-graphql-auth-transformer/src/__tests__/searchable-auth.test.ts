@@ -1,7 +1,8 @@
 import { AuthTransformer } from '@aws-amplify/graphql-auth-transformer';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { SearchableModelTransformer } from '@aws-amplify/graphql-searchable-transformer';
-import { AppSyncAuthConfiguration, GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
+import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
+import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-interfaces';
 
 test('auth logic is enabled on owner/static rules in es request', () => {
   const validSchema = `

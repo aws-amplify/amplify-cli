@@ -3,7 +3,7 @@ import path from 'path';
 import importGlobal from 'import-global';
 import { print } from 'graphql';
 import importFrom from 'import-from';
-import { TransformerPluginProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { TransformerPluginProvider, AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-interfaces';
 import {
   getAppSyncServiceExtraDirectives,
   GraphQLTransform,
@@ -25,7 +25,6 @@ import { hashDirectory } from '../upload-appsync-files';
 import { showACM, writeDeploymentToDisk } from './utils';
 import { loadProject as readTransformerConfiguration } from './transform-config';
 import { loadProject } from 'graphql-transformer-core';
-import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-core';
 import { Template } from '@aws-amplify/graphql-transformer-core/lib/config/project-config';
 import { AmplifyCLIFeatureFlagAdapter } from '../utils/amplify-cli-feature-flag-adapter';
 import { isAmplifyAdminApp } from '../utils/admin-helpers';

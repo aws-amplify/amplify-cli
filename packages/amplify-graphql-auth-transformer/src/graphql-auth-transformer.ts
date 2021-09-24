@@ -4,6 +4,9 @@ import {
   TransformerAuthBase,
   InvalidDirectiveError,
   MappingTemplate,
+  IAM_AUTH_ROLE_PARAMETER,
+  IAM_UNAUTH_ROLE_PARAMETER,
+  TransformerResolver,
 } from '@aws-amplify/graphql-transformer-core';
 import {
   DataSourceProvider,
@@ -14,6 +17,7 @@ import {
   TransformerResolverProvider,
   TransformerSchemaVisitStepContextProvider,
   TransformerAuthProvider,
+  TransformerBeforeStepContextProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import {
   AuthRule,
@@ -38,8 +42,6 @@ import {
   RoleDefinition,
   addDirectivesToOperation,
   createPolicyDocumentForManagedPolicy,
-  IAM_AUTH_ROLE_PARAMETER,
-  IAM_UNAUTH_ROLE_PARAMETER,
   getQueryFieldNames,
   getMutationFieldNames,
   addSubscriptionArguments,
@@ -106,7 +108,6 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
   constructor(config: AuthTransformerConfig) {
     super('amplify-auth-transformer', authDirectiveDefinition);
     this.config = config;
-    this.configuredAuthProviders = getConfiguredAuthProviders(this.config);
     this.modelDirectiveConfig = new Map();
     this.seenNonModelTypes = new Map();
     this.authModelConfig = new Map();
@@ -115,6 +116,12 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
     this.generateIAMPolicyforAuthRole = false;
     this.authNonModelConfig = new Map();
   }
+
+  before = (context: TransformerBeforeStepContextProvider): void => {
+    // if there was no auth config in the props we add the authConfig from the context
+    this.config.authConfig = this.config.authConfig || context.authConfig;
+    this.configuredAuthProviders = getConfiguredAuthProviders(this.config);
+  };
 
   object = (def: ObjectTypeDefinitionNode, directive: DirectiveNode, context: TransformerSchemaVisitStepContextProvider): void => {
     const modelDirective = def.directives?.find(dir => dir.name.value === 'model');
@@ -506,18 +513,19 @@ Static group authorization should perform as expected.`,
       const fieldAuthExpression = generateAuthExpressionForField(this.configuredAuthProviders, roleDefinitions, def.fields ?? []);
       const subsEnabled = hasModelDirective ? this.modelDirectiveConfig.get(typeName)!.subscriptions.level === 'on' : false;
       const fieldResponse = generateFieldAuthResponse('Mutation', fieldName, subsEnabled);
-      if (!ctx.api.host.hasDataSource(NONE_DS)) {
-        ctx.api.host.addNoneDataSource(NONE_DS);
-      }
-      ctx.api.host.addResolver(
+      const resolver = ctx.resolvers.addResolver(
         typeName,
         fieldName,
-        MappingTemplate.s3MappingTemplateFromString(fieldAuthExpression, `${typeName}.${fieldName}.req.vtl`, 'resolver'),
-        MappingTemplate.s3MappingTemplateFromString(fieldResponse, `${typeName}.${fieldName}.res.vtl`, 'resolver'),
-        NONE_DS,
-        undefined,
-        stack,
+        new TransformerResolver(
+          typeName,
+          fieldName,
+          MappingTemplate.s3MappingTemplateFromString(fieldAuthExpression, `${typeName}.${fieldName}.req.vtl`),
+          MappingTemplate.s3MappingTemplateFromString(fieldResponse, `${typeName}.${fieldName}.res.vtl`),
+          ['init'],
+          ['finish'],
+        ),
       );
+      resolver.mapToStack(stack);
     }
   };
   protectCreateResolver = (
@@ -640,7 +648,7 @@ Static group authorization should perform as expected.`,
               provider: rule.provider,
               strategy: rule.allow,
               static: true,
-              claim: rule.allow === 'private' ? 'authenticated' : 'unauthenticated',
+              claim: rule.allow === 'private' ? 'authRole' : 'unauthRole',
             };
             break;
           case 'oidc':
@@ -825,7 +833,7 @@ Static group authorization should perform as expected.`,
           throw new TransformerContractError('AuthRole policies should be generated, but no resources were added.');
         }
       } else {
-        const authRoleParameter = ctx.stackManager.addParameter(IAM_AUTH_ROLE_PARAMETER, { type: 'String' });
+        const authRoleParameter = (ctx.stackManager.getParameter(IAM_AUTH_ROLE_PARAMETER) as cdk.CfnParameter).valueAsString;
         const authPolicyDocuments = createPolicyDocumentForManagedPolicy(this.authPolicyResources);
         const rootStack = ctx.stackManager.rootStack;
         for (let i = 0; i < authPolicyDocuments.length; i++) {
@@ -838,7 +846,7 @@ Static group authorization should perform as expected.`,
               iam.Role.fromRoleArn(
                 rootStack,
                 'auth-role-name',
-                `arn:aws:iam::${cdk.Stack.of(rootStack).account}:role/${authRoleParameter.valueAsString}`,
+                `arn:aws:iam::${cdk.Stack.of(rootStack).account}:role/${authRoleParameter}`,
               ),
             ],
           });
@@ -850,7 +858,7 @@ Static group authorization should perform as expected.`,
       if (this.unauthPolicyResources.size === 0) {
         throw new TransformerContractError('UnauthRole policies should be generated, but no resources were added');
       }
-      const unauthRoleParameter = ctx.stackManager.addParameter(IAM_UNAUTH_ROLE_PARAMETER, { type: 'String' });
+      const unauthRoleParameter = (ctx.stackManager.getParameter(IAM_UNAUTH_ROLE_PARAMETER) as cdk.CfnParameter).valueAsString;
       const unauthPolicyDocuments = createPolicyDocumentForManagedPolicy(this.unauthPolicyResources);
       const rootStack = ctx.stackManager.rootStack;
       for (let i = 0; i < unauthPolicyDocuments.length; i++) {
@@ -862,7 +870,7 @@ Static group authorization should perform as expected.`,
             iam.Role.fromRoleArn(
               rootStack,
               'unauth-role-name',
-              `arn:aws:iam::${cdk.Stack.of(rootStack).account}:role/${unauthRoleParameter.valueAsString}`,
+              `arn:aws:iam::${cdk.Stack.of(rootStack).account}:role/${unauthRoleParameter}`,
             ),
           ],
         });

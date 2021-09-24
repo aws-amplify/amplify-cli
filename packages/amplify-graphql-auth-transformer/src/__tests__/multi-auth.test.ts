@@ -2,12 +2,8 @@ import { AuthTransformer } from '@aws-amplify/graphql-auth-transformer';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { IndexTransformer } from '@aws-amplify/graphql-index-transformer';
 import { HasManyTransformer, HasOneTransformer, BelongsToTransformer } from '@aws-amplify/graphql-relational-transformer';
-import {
-  AppSyncAuthConfiguration,
-  AppSyncAuthConfigurationOIDCEntry,
-  AppSyncAuthMode,
-  GraphQLTransform,
-} from '@aws-amplify/graphql-transformer-core';
+import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
+import { AppSyncAuthConfiguration, AppSyncAuthConfigurationOIDCEntry, AppSyncAuthMode } from '@aws-amplify/graphql-transformer-interfaces';
 import { DocumentNode, ObjectTypeDefinitionNode, Kind, FieldDefinitionNode, parse, InputValueDefinitionNode } from 'graphql';
 
 const userPoolsDefaultConfig: AppSyncAuthConfiguration = {
@@ -435,10 +431,10 @@ describe('schema generation directive tests', () => {
     // Check that resolvers containing the authMode check block
     const authModeCheckSnippet = '## [Start] Field Authorization Steps. **';
     // resolvers to check is all other resolvers other than protected
-    expect(out.resolvers['Post.id.req.vtl']).toContain(authModeCheckSnippet);
-    expect(out.resolvers['Post.title.req.vtl']).toContain(authModeCheckSnippet);
-    expect(out.resolvers['Post.createdAt.req.vtl']).toContain(authModeCheckSnippet);
-    expect(out.resolvers['Post.updatedAt.req.vtl']).toContain(authModeCheckSnippet);
+    expect(out.pipelineFunctions['Post.id.req.vtl']).toContain(authModeCheckSnippet);
+    expect(out.pipelineFunctions['Post.title.req.vtl']).toContain(authModeCheckSnippet);
+    expect(out.pipelineFunctions['Post.createdAt.req.vtl']).toContain(authModeCheckSnippet);
+    expect(out.pipelineFunctions['Post.updatedAt.req.vtl']).toContain(authModeCheckSnippet);
   });
 
   test(`'groups' @auth at field level is propagated to type and the type related operations`, () => {
@@ -462,10 +458,10 @@ describe('schema generation directive tests', () => {
     const authModeCheckSnippet = '## [Start] Field Authorization Steps. **';
 
     // resolvers to check is all other resolvers other than protected
-    expect(out.resolvers['Post.id.req.vtl']).toContain(authModeCheckSnippet);
-    expect(out.resolvers['Post.title.req.vtl']).toContain(authModeCheckSnippet);
-    expect(out.resolvers['Post.createdAt.req.vtl']).toContain(authModeCheckSnippet);
-    expect(out.resolvers['Post.updatedAt.req.vtl']).toContain(authModeCheckSnippet);
+    expect(out.pipelineFunctions['Post.id.req.vtl']).toContain(authModeCheckSnippet);
+    expect(out.pipelineFunctions['Post.title.req.vtl']).toContain(authModeCheckSnippet);
+    expect(out.pipelineFunctions['Post.createdAt.req.vtl']).toContain(authModeCheckSnippet);
+    expect(out.pipelineFunctions['Post.updatedAt.req.vtl']).toContain(authModeCheckSnippet);
   });
 
   test(`'groups' @auth at field level is propagated to type and the type related operations, also default provider for read`, () => {
@@ -488,10 +484,10 @@ describe('schema generation directive tests', () => {
     const groupCheckSnippet = '#set( $staticGroupRoles = [{"claim":"cognito:groups","entity":"admin"}] )';
 
     // resolvers to check is all other resolvers other than protected by the group rule
-    expect(out.resolvers['Post.id.req.vtl']).toContain(groupCheckSnippet);
-    expect(out.resolvers['Post.title.req.vtl']).toContain(groupCheckSnippet);
-    expect(out.resolvers['Post.createdAt.req.vtl']).toContain(groupCheckSnippet);
-    expect(out.resolvers['Post.updatedAt.req.vtl']).toContain(groupCheckSnippet);
+    expect(out.pipelineFunctions['Post.id.req.vtl']).toContain(groupCheckSnippet);
+    expect(out.pipelineFunctions['Post.title.req.vtl']).toContain(groupCheckSnippet);
+    expect(out.pipelineFunctions['Post.createdAt.req.vtl']).toContain(groupCheckSnippet);
+    expect(out.pipelineFunctions['Post.updatedAt.req.vtl']).toContain(groupCheckSnippet);
   });
 
   test(`Nested types without @model not getting directives applied for iam, and no policy is generated`, () => {

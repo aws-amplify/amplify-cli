@@ -1,4 +1,4 @@
-import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-core';
+import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-interfaces';
 export type AuthStrategy = 'owner' | 'groups' | 'public' | 'private';
 export type AuthProvider = 'apiKey' | 'iam' | 'oidc' | 'userPools';
 export type ModelQuery = 'get' | 'list';
@@ -61,8 +61,8 @@ export interface ConfiguredAuthProviders {
 }
 
 export interface AuthTransformerConfig {
-  authConfig: AppSyncAuthConfiguration;
   addAwsIamAuthInOutputSchema: boolean;
+  authConfig?: AppSyncAuthConfiguration;
   adminUserPoolID?: string;
 }
 
