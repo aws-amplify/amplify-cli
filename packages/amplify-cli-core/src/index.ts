@@ -251,6 +251,7 @@ interface AmplifyToolkit {
     category?: string,
     resourceName?: string,
     filteredResources?: { category: string; resourceName: string }[],
+    rebuild?: boolean,
   ) => $TSAny;
   storeCurrentCloudBackend: () => $TSAny;
   readJsonFile: (fileName: string) => $TSAny;
