@@ -154,6 +154,7 @@ export async function run(context: $TSContext, resourceDefinition: $TSObject) {
     await transformGraphQLSchema(context, {
       handleMigration: opts => updateStackForAPIMigration(context, 'api', undefined, opts),
       minify: options['minify'],
+      promptApiKeyCreation: true,
     });
 
     // If there is a deployment already in progress we have to fail the push operation as another

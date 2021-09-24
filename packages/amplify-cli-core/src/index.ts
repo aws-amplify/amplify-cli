@@ -264,7 +264,6 @@ interface AmplifyToolkit {
   ) => $TSAny;
   sharedQuestions: () => $TSAny;
   showAllHelp: () => $TSAny;
-  showGlobalSandboxModeWarning: (context: $TSContext) => $TSAny;
   showHelp: (header: string, commands: { name: string; description: string }[]) => $TSAny;
   showHelpfulProviderLinks: (context: $TSContext) => $TSAny;
   showResourceTable: () => $TSAny;

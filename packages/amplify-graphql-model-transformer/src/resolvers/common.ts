@@ -99,7 +99,7 @@ export const generateResolverKey = (typeName: string, fieldName: string): string
  * @param ctx context to get sandbox mode
  */
 export const generateAuthExpressionForSandboxMode = (ctx: any): string => {
-  let enabled = ctx.resourceHelper.api.globalSandboxModeEnabled;
+  const enabled = ctx.resourceHelper.api.sandboxModeEnabled;
   let exp;
 
   if (enabled) exp = iff(notEquals(methodCall(ref('util.authType')), str(API_KEY)), methodCall(ref('util.unauthorized')));

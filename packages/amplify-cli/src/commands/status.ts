@@ -13,7 +13,6 @@ export const run = async (context: $TSContext) => {
   } else {
     try {
       await context.amplify.showStatusTable(view);
-      await context.amplify.showGlobalSandboxModeWarning(context);
       await context.amplify.showHelpfulProviderLinks(context);
       await showAmplifyConsoleHostingStatus(context);
     } catch (e) {
