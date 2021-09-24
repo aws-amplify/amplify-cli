@@ -24,7 +24,7 @@ import {
 import { SearchableModelTransformer } from '@aws-amplify/graphql-searchable-transformer';
 import { ProviderName as providerName } from '../constants';
 import { hashDirectory } from '../upload-appsync-files';
-import { writeDeploymentToDisk } from './utils';
+import { mergeUserConfigWithTransformOutput, writeDeploymentToDisk } from './utils';
 import { loadProject as readTransformerConfiguration } from './transform-config';
 import { loadProject } from 'graphql-transformer-core';
 import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-core';
@@ -432,5 +432,8 @@ async function _buildProject(opts: ProjectOptions<TransformerFactoryArgs>) {
     stacks: opts.projectConfig.stacks || {},
     featureFlags: new AmplifyCLIFeatureFlagAdapter(),
   });
-  return transform.transform(userProjectConfig.schema.toString());
+
+  const transformOutput = transform.transform(userProjectConfig.schema.toString());
+
+  return mergeUserConfigWithTransformOutput(userProjectConfig, transformOutput);
 }

@@ -85,6 +85,20 @@ export function readFromPath(directory: string): any {
   return accum;
 }
 
+export function mergeUserConfigWithTransformOutput(userConfig: any, transformOutput: any) {
+  const userResolvers = userConfig.resolvers || {};
+  const userPipelineFunctions = userConfig.pipelineFunctions || {};
+  const pipelineFunctions = transformOutput.pipelineFunctions;
+
+  for (const userResolver of Object.keys(userResolvers)) pipelineFunctions[userResolver] = userResolvers[userResolver];
+  for (const userResolver of Object.keys(userPipelineFunctions)) pipelineFunctions[userResolver] = userPipelineFunctions[userResolver];
+
+  return {
+    ...transformOutput,
+    pipelineFunctions,
+  };
+}
+
 /**
  * Writes a deployment to disk at a path.
  */
