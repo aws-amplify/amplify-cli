@@ -113,7 +113,7 @@ export class IamResource implements APIIAMResourceProvider {
 export type TransformerAPIProps = GraphqlApiProps & {
   readonly createApiKey?: boolean;
   readonly host?: TransformHostProvider;
-  readonly globalSandboxModeEnv?: string;
+  readonly sandboxModeEnabled?: boolean;
 };
 export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
   /**
@@ -165,7 +165,7 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
   /**
    * Global Sandbox Mode for GraphQL API
    */
-  public readonly globalSandboxModeEnabled?: boolean;
+  public readonly sandboxModeEnabled?: boolean;
 
   private schemaResource: CfnGraphQLSchema;
   private api: CfnGraphQLApi;
@@ -215,7 +215,7 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
       this.apiKey = this.apiKeyResource.attrApiKey;
     }
 
-    if (hasApiKey && !!props.globalSandboxModeEnv) this.globalSandboxModeEnabled = true;
+    if (hasApiKey && props.sandboxModeEnabled) this.sandboxModeEnabled = true;
 
     if (props.host) {
       this.host = props.host;

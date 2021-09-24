@@ -44,7 +44,6 @@ import {
   sortTransformerPlugins,
 } from './utils';
 import { validateModelSchema, validateAuthModes } from './validation';
-import { getSandboxModeEnvNameFromNodeMap } from '../utils/sandbox-mode';
 
 // eslint-disable-next-line @typescript-eslint/ban-types
 function isFunction(obj: any): obj is Function {
@@ -72,6 +71,7 @@ export interface GraphQLTransformOptions {
   readonly stacks?: Record<string, Template>;
   readonly featureFlags?: FeatureFlagProvider;
   readonly host?: TransformHostProvider;
+  readonly sandboxModeEnabled?: boolean;
 }
 export type StackMapping = { [resourceId: string]: string };
 export class GraphQLTransform {
@@ -261,13 +261,12 @@ export class GraphQLTransform {
       type: 'String',
     }).valueAsString;
     const envName = stackManager.getParameter('env');
-    const globalSandboxModeEnv = getSandboxModeEnvNameFromNodeMap(output.nodeMap);
     assert(envName);
     const api = new GraphQLApi(rootStack, 'GraphQLAPI', {
       name: `${apiName}-${envName.valueAsString}`,
       authorizationConfig,
       host: this.options.host,
-      globalSandboxModeEnv,
+      sandboxModeEnabled: this.options.sandboxModeEnabled,
     });
     const authModes = [authorizationConfig.defaultAuthorization, ...(authorizationConfig.additionalAuthorizationModes || [])].map(
       mode => mode?.authorizationType,
