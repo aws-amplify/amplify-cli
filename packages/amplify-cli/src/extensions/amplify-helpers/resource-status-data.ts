@@ -3,7 +3,7 @@ import * as fs from 'fs-extra';
 import * as path from 'path';
 import { ServiceName as FunctionServiceName, hashLayerResource } from 'amplify-category-function';
 import { removeGetUserEndpoints } from '../amplify-helpers/remove-pinpoint-policy';
-import { pathManager, stateManager, NotInitializedError, ViewResourceTableParams } from 'amplify-cli-core';
+import { pathManager, stateManager, NotInitializedError, ViewResourceTableParams, FeatureFlags } from 'amplify-cli-core';
 import { hashElement, HashElementOptions } from 'folder-hash';
 import { CLOUD_INITIALIZED, CLOUD_NOT_INITIALIZED, getCloudInitStatus } from './get-cloud-init-status';
 import * as resourceStatus from './resource-status-diff';
@@ -133,17 +133,28 @@ export async function getResourceStatus(
   const tagsUpdated = !_.isEqual(stateManager.getProjectTags(), stateManager.getCurrentProjectTags());
 
   // if not equal there is a root stack update
-  const rootStackUpdated = await isRootStackModifiedSinceLastPush(getHashForRootStack);
+  if (FeatureFlags.getBoolean('overrides.project')) {
+    const rootStackUpdated = await isRootStackModifiedSinceLastPush(getHashForRootStack);
 
-  return {
-    resourcesToBeCreated,
-    resourcesToBeUpdated,
-    resourcesToBeSynced,
-    resourcesToBeDeleted,
-    rootStackUpdated,
-    tagsUpdated,
-    allResources,
-  };
+    return {
+      resourcesToBeCreated,
+      resourcesToBeUpdated,
+      resourcesToBeSynced,
+      resourcesToBeDeleted,
+      rootStackUpdated,
+      tagsUpdated,
+      allResources,
+    };
+  } else {
+    return {
+      resourcesToBeCreated,
+      resourcesToBeUpdated,
+      resourcesToBeSynced,
+      resourcesToBeDeleted,
+      tagsUpdated,
+      allResources,
+    };
+  }
 }
 
 export function getAllResources(amplifyMeta, category, resourceName, filteredResources) {

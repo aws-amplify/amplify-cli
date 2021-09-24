@@ -1,7 +1,7 @@
 import { $TSContext, Template } from 'amplify-cli-core';
 import { AmplifyRootStackTransform } from '../root-stack-builder';
 
-export * from './transform-cfn';
+export * from './transform-resource';
 
 export const transformRootStack = async (context: $TSContext): Promise<Template> => {
   try {

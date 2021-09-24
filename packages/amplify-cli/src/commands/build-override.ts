@@ -23,6 +23,7 @@ export const run = async (context: $TSContext) => {
     if (categoryName && resourceName) {
       filteredResources = resourcesToBuild.filter(resource => resource.category === categoryName && resource.resourceName === resourceName);
     }
+    await context.amplify.invokePluginMethod(context, 'awscloudformation', undefined, 'transformResourceWithOverrides', [context]);
     for (const resource of resourcesToBuild) {
       await context.amplify.invokePluginMethod(context, 'awscloudformation', undefined, 'transformResourceWithOverrides', [
         context,

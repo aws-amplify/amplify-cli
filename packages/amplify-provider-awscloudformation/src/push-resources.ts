@@ -47,7 +47,6 @@ import { preProcessCFNTemplate } from './pre-push-cfn-processor/cfn-pre-processo
 import { AUTH_TRIGGER_STACK, AUTH_TRIGGER_TEMPLATE } from './utils/upload-auth-trigger-template';
 import { ensureValidFunctionModelDependencies } from './utils/remove-dependent-function';
 import { legacyLayerMigration, postPushLambdaLayerCleanup, prePushLambdaLayerPrompt } from './lambdaLayerInvocations';
-import { rootStackFileName } from '.';
 import { storeRootStackTemplate } from './initializer';
 import { transformRootStack } from './override-manager';
 import { Template } from './root-stack-builder/types';
@@ -62,6 +61,10 @@ const spinner = ora('Updating resources in the cloud. This may take a few minute
 const optionalBuildDirectoryName = 'build';
 const cfnTemplateGlobPattern = '*template*.+(yaml|yml|json)';
 const parametersJson = 'parameters.json';
+export const rootStackFileName = 'rootStackTemplate.json';
+export const nestedStackFileName = FeatureFlags.getBoolean('overrides.project')
+  ? 'root-cloudformation-stack.json'
+  : 'nested-cloudformation-stack.yml';
 
 const deploymentInProgressErrorMessage = (context: $TSContext) => {
   context.print.error('A deployment is in progress.');
@@ -228,11 +231,11 @@ export async function run(context: $TSContext, resourceDefinition: $TSObject) {
         // generate nested stack
         const backEndDir = pathManager.getBackendDirPath();
         const nestedStackFilepath = path.normalize(path.join(backEndDir, providerName, rootStackFileName));
-        await generateAndUploadRootStack(context, nestedStackFilepath, rootStackFileName);
+        await generateAndUploadRootStack(context, nestedStackFilepath, nestedStackFileName);
 
         // Use state manager to do the final deployment. The final deployment include not just API change but the whole Amplify Project
         const finalStep: DeploymentOp = {
-          stackTemplatePathOrUrl: rootStackFileName,
+          stackTemplatePathOrUrl: nestedStackFileName,
           tableNames: [],
           stackName: cloudformationMeta.StackName,
           parameters: {
@@ -678,7 +681,7 @@ async function updateCloudFormationNestedStack(
 ) {
   const backEndDir = pathManager.getBackendDirPath();
   const projectRoot = pathManager.findProjectRoot();
-  const nestedStackFilePath = path.join(pathManager.getRootStackDirPath(projectRoot), rootStackFileName);
+  const nestedStackFilePath = path.join(pathManager.getRootStackDirPath(projectRoot), nestedStackFileName);
   // deploy new nested stack to disk
   JSONUtilities.writeJson(nestedStackFilePath, nestedStack);
   const transformedStackPath = await preProcessCFNTemplate(nestedStackFilePath);

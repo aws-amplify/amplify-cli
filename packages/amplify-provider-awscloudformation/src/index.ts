@@ -36,10 +36,12 @@ import { updateEnv } from './update-env';
 
 import { uploadHooksDirectory } from './utils/hooks-manager';
 
-export const rootStackFileName = 'root-cloudformation-stack.json';
+export const cfnRootStackFileName = 'root-cloudformation-stack.json';
 export { storeRootStackTemplate } from './initializer';
 import { transformResourceWithOverrides } from './override-manager';
 export { transformResourceWithOverrides } from './override-manager';
+import { nestedStackFileName } from './push-resources';
+export { nestedStackFileName } from './push-resources';
 
 function init(context) {
   return initializer.run(context);
@@ -164,6 +166,6 @@ module.exports = {
   getConfiguredSSMClient,
   updateEnv,
   uploadHooksDirectory,
-  rootStackFileName,
   transformResourceWithOverrides,
+  nestedStackFileName,
 };
