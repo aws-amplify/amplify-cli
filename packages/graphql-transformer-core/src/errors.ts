@@ -56,7 +56,7 @@ export class DestructiveMigrationError extends Error {
     } else if (replacedModelsList) {
       this.message = `${this.message}\nThis update will replace table(s) [${replacedModelsList}]`;
     }
-    this.message = `${this.message}\nALL EXISTING DATA IN THESE TABLES WILL BE LOST!\nIf this is intended, rerun the command with '--allow-destructuve-graphql-schema-updates'.`;
+    this.message = `${this.message}\nALL EXISTING DATA IN THESE TABLES WILL BE LOST!\nIf this is intended, rerun the command with '--allow-destructive-graphql-schema-updates'.`;
   }
   toString = () => this.message;
 }

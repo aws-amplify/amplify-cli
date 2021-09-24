@@ -98,9 +98,18 @@ export function amplifyPushWithoutCodegen(cwd: string, testingWithLatestCodebase
   });
 }
 
-export function amplifyPushUpdate(cwd: string, waitForText?: RegExp, testingWithLatestCodebase: boolean = false): Promise<void> {
+export function amplifyPushUpdate(
+  cwd: string,
+  waitForText?: RegExp,
+  testingWithLatestCodebase: boolean = false,
+  allowDestructiveUpdates: boolean = false,
+): Promise<void> {
+  const args = ['push'];
+  if (allowDestructiveUpdates) {
+    args.push('--allow-destructive-graphql-schema-updates');
+  }
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(testingWithLatestCodebase), ['push'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
+    spawn(getCLIPath(testingWithLatestCodebase), args, { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
       .wait('Are you sure you want to continue?')
       .sendConfirmYes()
       .wait(waitForText || /.*/)
@@ -130,9 +139,17 @@ export function amplifyPushAuth(cwd: string, testingWithLatestCodebase: boolean 
   });
 }
 
-export function amplifyPushUpdateForDependentModel(cwd: string, testingWithLatestCodebase: boolean = false): Promise<void> {
+export function amplifyPushUpdateForDependentModel(
+  cwd: string,
+  testingWithLatestCodebase: boolean = false,
+  allowDestructiveUpdates: boolean = false,
+): Promise<void> {
+  const args = ['push'];
+  if (allowDestructiveUpdates) {
+    args.push('--allow-destructive-graphql-schema-updates');
+  }
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(testingWithLatestCodebase), ['push'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
+    spawn(getCLIPath(testingWithLatestCodebase), args, { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
       .wait('Are you sure you want to continue?')
       .sendConfirmYes()
       .wait(/.*/)
@@ -251,7 +268,7 @@ export function amplifyPushWithNoChanges(cwd: string, testingWithLatestCodebase:
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(testingWithLatestCodebase), ['push'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
       .wait('No changes detected')
-      .run((err: Error) => err ? reject(err) : resolve());
+      .run((err: Error) => (err ? reject(err) : resolve()));
   });
 }
 

@@ -415,7 +415,9 @@ export const cantRemoveTableAfterCreation = (_: Diff, currentBuild: DiffableProj
       .map(([name]) => name);
   const currentModels = getNestedStackLogicalIds(currentBuild);
   const nextModels = getNestedStackLogicalIds(nextBuild);
-  const removedModels = currentModels.filter(currModel => !nextModels.includes(currModel));
+  const removedModels = currentModels
+    .filter(currModel => !nextModels.includes(currModel))
+    .filter(stackLogicalId => stackLogicalId !== 'ConnectionStack');
   if (removedModels.length > 0) {
     throw new DestructiveMigrationError(
       'Removing a model from the GraphQL schema will also remove the underlying DynamoDB table.',

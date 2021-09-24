@@ -6,8 +6,8 @@ export const addHeadlessApi = async (cwd: string, request: AddApiRequest) => {
   await executeHeadlessCommand(cwd, 'api', 'add', request);
 };
 
-export const updateHeadlessApi = async (cwd: string, request: UpdateApiRequest) => {
-  await executeHeadlessCommand(cwd, 'api', 'update', request);
+export const updateHeadlessApi = async (cwd: string, request: UpdateApiRequest, allowDestructiveUpdates?: boolean) => {
+  await executeHeadlessCommand(cwd, 'api', 'update', request, allowDestructiveUpdates);
 };
 
 export const removeHeadlessApi = async (cwd: string, apiName: string) => {
@@ -33,8 +33,18 @@ export const headlessAuthImport = async (cwd: string, request: ImportAuthRequest
 const headlessRemoveResource = async (cwd: string, category: string, resourceName: string) => {
   await execa(getCLIPath(), ['remove', category, resourceName, '--yes'], { cwd });
 };
-const executeHeadlessCommand = async (cwd: string, category: string, operation: string, request: AnyHeadlessRequest) => {
-  await execa(getCLIPath(), [operation, category, '--headless'], { input: JSON.stringify(request), cwd });
+const executeHeadlessCommand = async (
+  cwd: string,
+  category: string,
+  operation: string,
+  request: AnyHeadlessRequest,
+  allowDestructiveUpdates: boolean = false,
+) => {
+  const args = [operation, category, '--headless'];
+  if (allowDestructiveUpdates) {
+    args.push('--allow-destructive-graphql-schema-updates');
+  }
+  await execa(getCLIPath(), args, { input: JSON.stringify(request), cwd });
 };
 
 type AnyHeadlessRequest = AddApiRequest | UpdateApiRequest | AddAuthRequest | UpdateAuthRequest | ImportAuthRequest;

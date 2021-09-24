@@ -235,7 +235,7 @@ describe('amplify add api (GraphQL)', () => {
     );
     await amplifyPush(projRoot);
     updateApiSchema(projRoot, projectName, nextSchema);
-    await amplifyPushUpdateForDependentModel(projRoot);
+    await amplifyPushUpdateForDependentModel(projRoot, undefined, true);
     const meta = getProjectMeta(projRoot);
     const region = meta.providers.awscloudformation.Region;
     const { output } = meta.api.blogapp;

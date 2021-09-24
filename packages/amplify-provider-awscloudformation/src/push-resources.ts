@@ -160,7 +160,6 @@ export async function run(context: $TSContext, resourceDefinition: $TSObject, re
     }
 
     let deploymentSteps: DeploymentStep[] = [];
-    let functionsDependentOnReplacedModelTables: string[] = [];
 
     // location where the intermediate deployment steps are stored
     let stateFolder: { local?: string; cloud?: string } = {};

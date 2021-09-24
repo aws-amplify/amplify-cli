@@ -31,7 +31,7 @@ export const prependDeploymentStepsToDisconnectFunctionsFromReplacedModelTables 
 ): Promise<DeploymentStep[]> => {
   const amplifyMeta = stateManager.getMeta();
   const rootStackId = amplifyMeta?.providers?.awscloudformation?.StackId;
-  const allFunctionNames = Object.keys(amplifyMeta?.function);
+  const allFunctionNames = Object.keys(amplifyMeta?.function || {});
   functionsDependentOnReplacedModelTables = await getDependentFunctions(
     modelsBeingReplaced,
     allFunctionNames,
