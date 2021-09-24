@@ -3,7 +3,7 @@ import {
   askAdditionalAuthQuestions,
 } from '../../../../provider-utils/awscloudformation/service-walkthroughs/appSync-walkthrough';
 import { authConfigHasApiKey, getAppSyncAuthConfig } from '../../../../provider-utils/awscloudformation/utils/amplify-meta-utils';
-import { FeatureFlags, CLIEnvironmentProvider, FeatureFlagRegistration } from 'amplify-cli-core';
+import { FeatureFlags } from 'amplify-cli-core';
 jest.mock('../../../../provider-utils/awscloudformation/utils/amplify-meta-utils', () => ({
   getAppSyncAuthConfig: jest.fn(),
   authConfigHasApiKey: jest.fn(),

@@ -34,6 +34,7 @@
     "@aws-amplify/graphql-index-transformer": "0.3.3",
     "@aws-amplify/graphql-model-transformer": "0.6.3",
     "@aws-amplify/graphql-transformer-core": "0.9.1",
+    "@aws-amplify/graphql-transformer-interfaces": "1.9.1",
     "@types/node": "^12.12.6",
     "aws-amplify": "^4.2.8",
     "aws-appsync": "^4.1.1",

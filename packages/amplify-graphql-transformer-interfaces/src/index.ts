@@ -21,8 +21,9 @@ export {
   MutationFieldType,
   QueryFieldType,
   SubscriptionFieldType,
-  TransformerModelEnhancementProvider,
   TransformerModelProvider,
+  TransformerModelEnhancementProvider,
+  TransformerAuthProvider,
 } from './transformer-model-provider';
 export { FeatureFlagProvider } from './feature-flag-provider';
 
@@ -36,6 +37,15 @@ export {
   InlineMappingTemplateProvider,
   APIIAMResourceProvider,
   TemplateType as MappingTemplateType,
+  AppSyncAuthConfiguration,
+  AppSyncAuthConfigurationAPIKeyEntry,
+  AppSyncAuthConfigurationEntry,
+  AppSyncAuthConfigurationIAMEntry,
+  ApiKeyConfig,
+  AppSyncAuthConfigurationOIDCEntry,
+  AppSyncAuthConfigurationUserPoolEntry,
+  AppSyncAuthMode,
+  UserPoolConfig,
 } from './graphql-api-provider';
 
 export { TransformHostProvider, DynamoDbDataSourceOptions } from './transform-host-provider';
