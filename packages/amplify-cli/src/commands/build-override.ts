@@ -24,7 +24,10 @@ export const run = async (context: $TSContext) => {
       filteredResources = resourcesToBuild.filter(resource => resource.category === categoryName && resource.resourceName === resourceName);
     }
     for (const resource of resourcesToBuild) {
-      await context.amplify.invokePluginMethod(context, 'awscloudformation', undefined, 'transformCfnWithOverrides', [context, resource]);
+      await context.amplify.invokePluginMethod(context, 'awscloudformation', undefined, 'transformResourceWithOverrides', [
+        context,
+        resource,
+      ]);
     }
   } catch (err) {
     printer.error(err.stack);
@@ -34,7 +37,7 @@ export const run = async (context: $TSContext) => {
   }
 };
 
-const getResources = async (context: $TSContext): Promise<IAmplifyResource[]> => {
+export const getResources = async (context: $TSContext): Promise<IAmplifyResource[]> => {
   const resources: IAmplifyResource[] = [];
   const { resourcesToBeCreated, resourcesToBeUpdated } = await context.amplify.getResourceStatus();
   resourcesToBeCreated.forEach(resourceCreated => {

@@ -98,13 +98,9 @@ export class CLIInputSchemaValidator {
 
   async getUserInputSchema() {
     try {
-      return await import(
-        `@aws-amplify/amplify-category-${this._category}/resources/schemas/${this._service}/${this._schemaFileName}.schema.json`
-      );
+      return await import(generateSchemaPath(this._category, this._service, this._schemaFileName));
     } catch (ex) {
-      throw new Error(
-        `Schema defination doesnt exist : amplify-category-${this._category}-v2/resources/schemas/${this._service}/${this._schemaFileName}.schema.json`,
-      );
+      throw new Error(`Schema defination doesnt exist : ${generateSchemaPath(this._category, this._service, this._schemaFileName)}`);
     }
   }
 
@@ -121,3 +117,7 @@ export class CLIInputSchemaValidator {
     return true;
   }
 }
+
+const generateSchemaPath = (category: string, service: string, schemaFileName: string): string => {
+  return path.join(`@aws-amplify/amplify-category-${category}`, 'resources', 'schemas', `${service}`, `${schemaFileName}.schema.json`);
+};

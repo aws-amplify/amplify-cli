@@ -6,7 +6,7 @@ const { Lex } = require('./aws-utils/aws-lex');
 const Polly = require('./aws-utils/aws-polly');
 const SageMaker = require('./aws-utils/aws-sagemaker');
 const { transformGraphQLSchema, getDirectiveDefinitions } = require('./transform-graphql-schema');
-const { transformCfnWithOverrides } = require('./override-manager');
+const { transformResourceWithOverrides } = require('./override-manager');
 
 const { updateStackForAPIMigration } = require('./push-resources');
 const SecretsManager = require('./aws-utils/aws-secretsmanager');
@@ -63,9 +63,13 @@ module.exports = {
     return transformGraphQLSchema(context, optionsWithUpdateHandler);
   },
 
+  /**
+   * Utility function to build resource CFN with overrides
+   * Resources to build are passed with options
+   */
   buildOverrides: async (context, options) => {
     for (const resource of options.resourcesToBuild) {
-      await transformCfnWithOverrides(context, resource);
+      await transformResourceWithOverrides(context, resource);
     }
   },
 

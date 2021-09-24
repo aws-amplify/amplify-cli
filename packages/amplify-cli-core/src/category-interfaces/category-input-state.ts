@@ -6,7 +6,7 @@ export abstract class CategoryInputState {
     this._resourceName = resourceName;
   }
 
-  abstract getCliInputPayload(): $TSAny;
-  abstract saveCliInputPayload(props: $TSAny): void;
+  abstract getCLIInputPayload(): $TSAny;
+  abstract saveCLIInputPayload(props: $TSAny): void;
   abstract isCLIInputsValid(props: $TSAny): void;
 }

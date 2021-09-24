@@ -697,13 +697,19 @@ export class FeatureFlags {
         type: 'number',
         defaultValueForExistingProjects: 0,
         defaultValueForNewProjects: 1,
-      }
-    ])
+      },
+    ]);
 
     // FF for overrides
     this.registerFlag('overrides', [
       {
         name: 'auth',
+        type: 'boolean',
+        defaultValueForExistingProjects: false,
+        defaultValueForNewProjects: false,
+      },
+      {
+        name: 'project',
         type: 'boolean',
         defaultValueForExistingProjects: false,
         defaultValueForNewProjects: false,

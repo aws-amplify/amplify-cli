@@ -21,7 +21,7 @@ export const AmplifyCategories = {
 };
 
 export const AmplifySupportedService = {
-  S3: 's3',
+  S3: 'S3',
   DYNAMODB: 'DynamoDB',
   COGNITO: 'Cognito',
 };

@@ -36,7 +36,7 @@ import { updateEnv } from './update-env';
 
 import { uploadHooksDirectory } from './utils/hooks-manager';
 
-import { transformCfnWithOverrides } from './override-manager';
+import { transformResourceWithOverrides } from './override-manager';
 
 function init(context) {
   return initializer.run(context);
@@ -161,5 +161,5 @@ module.exports = {
   getConfiguredSSMClient,
   updateEnv,
   uploadHooksDirectory,
-  transformCfnWithOverrides,
+  transformResourceWithOverrides,
 };

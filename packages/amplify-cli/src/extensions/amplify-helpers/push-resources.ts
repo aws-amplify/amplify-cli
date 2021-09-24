@@ -5,6 +5,7 @@ import { initializeEnv } from '../../initialize-env';
 import { getProviderPlugins } from './get-provider-plugins';
 import { getEnvInfo } from './get-env-info';
 import { EnvironmentDoesNotExistError, exitOnNextTick, stateManager, $TSAny, $TSContext, IAmplifyResource } from 'amplify-cli-core';
+import { getResources } from '../../commands/build-override';
 
 export async function pushResources(
   context: $TSContext,
@@ -118,24 +119,3 @@ export async function storeCurrentCloudBackend(context: $TSContext) {
 
   await Promise.all(providerPromises);
 }
-
-const getResources = async (context: $TSContext): Promise<IAmplifyResource[]> => {
-  const resources: IAmplifyResource[] = [];
-  const { resourcesToBeCreated, resourcesToBeUpdated } = await context.amplify.getResourceStatus();
-  resourcesToBeCreated.forEach(resourceCreated => {
-    resources.push({
-      service: resourceCreated.service as string,
-      category: resourceCreated.category as string,
-      resourceName: resourceCreated.resourceName as string,
-    });
-  });
-
-  resourcesToBeUpdated.forEach(resourceUpdated => {
-    resources.push({
-      service: resourceUpdated.service as string,
-      category: resourceUpdated.category as string,
-      resourceName: resourceUpdated.resourceName as string,
-    });
-  });
-  return resources;
-};

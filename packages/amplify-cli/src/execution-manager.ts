@@ -1,7 +1,7 @@
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import * as inquirer from 'inquirer';
-import { FeatureFlags, stateManager, executeHooks, HooksMeta } from 'amplify-cli-core';
+import { FeatureFlags, stateManager, executeHooks, HooksMeta, overriddenCategories } from 'amplify-cli-core';
 import { twoStringSetsAreEqual, twoStringSetsAreDisjoint } from './utils/set-ops';
 import { Context } from './domain/context';
 import { constants } from './domain/constants';
@@ -40,7 +40,6 @@ export function isContainersEnabled(context) {
 
 async function selectPluginForExecution(context: Context, pluginCandidates: PluginInfo[]): Promise<PluginInfo> {
   const pluginCandidatesCategorySet = new Set<string>();
-  const overidedcategories = ['auth'];
 
   pluginCandidates.forEach(plugin => {
     pluginCandidatesCategorySet.add(plugin.manifest.name);
@@ -48,20 +47,20 @@ async function selectPluginForExecution(context: Context, pluginCandidates: Plug
 
   // overrided packageName format : @aws-amplify/amplify-category-<catgoryName>
   const pluginName = pluginCandidatesCategorySet.values().next().value;
-  if (pluginCandidatesCategorySet.size == 1 && overidedcategories.includes(pluginName)) {
+  if (pluginCandidatesCategorySet.size == 1 && overriddenCategories.includes(pluginName)) {
     if (FeatureFlags.getBoolean(`overrides.${pluginName}`)) {
-      const overidedPlugin = pluginCandidates.find(plugin => {
+      const pluginWithOverrides = pluginCandidates.find(plugin => {
         return plugin.packageName === `@aws-amplify/amplify-category-${pluginName}`;
       });
-      if (overidedPlugin !== undefined) {
-        return overidedPlugin;
+      if (pluginWithOverrides !== undefined) {
+        return pluginWithOverrides;
       }
     } else {
-      const normalPlugin = pluginCandidates.find(plugin => {
+      const pluginWithOutOverrides = pluginCandidates.find(plugin => {
         return plugin.packageName === `amplify-category-${pluginName}`;
       });
-      if (pluginCandidates.length === 2 && normalPlugin !== undefined) {
-        return normalPlugin;
+      if (pluginCandidates.length === 2 && pluginWithOutOverrides !== undefined) {
+        return pluginWithOutOverrides;
       }
     }
   }

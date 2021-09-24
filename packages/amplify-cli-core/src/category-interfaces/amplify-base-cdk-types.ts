@@ -15,9 +15,6 @@ export interface AmplifyStackTemplate {
   getCfnCondition(logicalId: string): cdk.CfnCondition;
 }
 
-/**
- * Temporary type for generated CFN Template
- */
 export interface Template {
   AWSTemplateFormatVersion?: string;
   Description?: string;
