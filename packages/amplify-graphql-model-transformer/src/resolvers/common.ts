@@ -15,7 +15,13 @@ import {
   ifElse,
   printBlock,
   toJson,
+  qref,
+  str,
+  not,
 } from 'graphql-mapping-template';
+import { OPERATION_KEY } from '../definitions';
+
+const API_KEY = 'API Key Authorization';
 
 /**
  * Helper method to generate code that converts DynamoDB condition object to condition
@@ -57,9 +63,11 @@ export const generateConditionSlot = (inputConditionObjectName: string, conditio
 
 /**
  * Generate common response template used by most of the resolvers.
+ * Append operation if response is coming from a mutation, this is to protect field resolver for subscriptions
  */
-export const generateDefaultResponseMappingTemplate = (isSyncEnabled: boolean): string => {
+export const generateDefaultResponseMappingTemplate = (isSyncEnabled: boolean, mutation = false): string => {
   const statements: Expression[] = [];
+  if (mutation) statements.push(qref(methodCall(ref('ctx.result.put'), str(OPERATION_KEY), str('Mutation'))));
   if (isSyncEnabled) {
     statements.push(
       ifElse(
@@ -74,14 +82,30 @@ export const generateDefaultResponseMappingTemplate = (isSyncEnabled: boolean): 
     );
   }
 
-  return printBlock('Get ResponseTemplate')(compoundExpression(statements));
+  return printBlock('ResponseTemplate')(compoundExpression(statements));
 };
 
 /**
- * Util function to gernate resolver key used to keep track of all the resolvers in memory
+ * Util function to generate resolver key used to keep track of all the resolvers in memory
  * @param typeName Name of the type
  * @param fieldName Name of the field
  */
 export const generateResolverKey = (typeName: string, fieldName: string): string => {
   return `${typeName}.${fieldName}`;
+};
+
+/**
+ * Util function to generate sandbox mode expression
+ * @param ctx context to get sandbox mode
+ */
+export const generateAuthExpressionForSandboxMode = (ctx: any): string => {
+  let enabled = ctx.resourceHelper.api.globalSandboxModeEnabled;
+  let exp;
+
+  if (enabled) exp = iff(notEquals(methodCall(ref('util.authType')), str(API_KEY)), methodCall(ref('util.unauthorized')));
+  else exp = methodCall(ref('util.unauthorized'));
+
+  return printBlock(`Sandbox Mode ${enabled ? 'Enabled' : 'Disabled'}`)(
+    compoundExpression([iff(not(ref('ctx.stash.get("hasAuth")')), exp), toJson(obj({}))]),
+  );
 };

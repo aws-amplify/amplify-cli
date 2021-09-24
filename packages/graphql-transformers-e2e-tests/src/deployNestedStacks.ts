@@ -178,7 +178,7 @@ export async function deploy(
 }
 
 function addAPIKeys(stack: DeploymentResources) {
-  if (!stack.rootStack.Resources.GraphQLAPIKey) {
+  if (stack.rootStack.Parameters.CreateAPIKey && !stack.rootStack.Resources.GraphQLAPIKey) {
     stack.rootStack.Resources.GraphQLAPIKey = {
       Type: 'AWS::AppSync::ApiKey',
       Properties: {
@@ -189,7 +189,7 @@ function addAPIKeys(stack: DeploymentResources) {
     };
   }
 
-  if (!stack.rootStack.Outputs.GraphQLAPIKeyOutput) {
+  if (stack.rootStack.Parameters.CreateAPIKey && !stack.rootStack.Outputs.GraphQLAPIKeyOutput) {
     stack.rootStack.Outputs.GraphQLAPIKeyOutput = {
       Value: {
         'Fn::GetAtt': ['GraphQLAPIKey', 'ApiKey'],

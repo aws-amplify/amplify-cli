@@ -1,4 +1,4 @@
-import { isResourceNameUnique } from 'amplify-cli-core';
+import { isResourceNameUnique, FeatureFlags } from 'amplify-cli-core';
 import {
   AddApiRequest,
   AppSyncServiceConfiguration,

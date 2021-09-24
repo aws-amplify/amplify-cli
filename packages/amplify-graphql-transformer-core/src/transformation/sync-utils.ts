@@ -90,7 +90,7 @@ export function syncDataSourceConfig(): DeltaSyncConfig {
 export function validateResolverConfigForType(ctx: TransformerSchemaVisitStepContextProvider, typeName: string): void {
   const resolverConfig = ctx.getResolverConfig<ResolverConfig>();
   const typeResolverConfig = resolverConfig?.models?.[typeName];
-  if (!typeResolverConfig || !typeResolverConfig.ConflictDetection || !typeResolverConfig.ConflictHandler) {
+  if (typeResolverConfig && !typeResolverConfig.ConflictDetection && !typeResolverConfig.ConflictHandler) {
     console.warn(`Invalid resolverConfig for type ${typeName}. Using the project resolverConfig instead.`);
   }
 }
