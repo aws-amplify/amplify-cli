@@ -219,8 +219,16 @@ export const getServicePermissionPolicies = (
 export const verifySupportedRegion = (): boolean => {
   const currentRegion = stateManager.getMeta()?.providers[provider]?.Region;
   if(!supportedRegions.includes(currentRegion)) {
-    printer.error(`Geo category is not supported in your region: ${currentRegion}`);
+    printer.error(`Geo category is not supported in the region: [${currentRegion}]`);
     return false;
   }
   return true;
 };
+
+/**
+ * Check if any Geo resource exists
+ */
+ export const checkAnyGeoResourceExists = async (): Promise<boolean> => {
+  const geoMeta = stateManager.getMeta()?.[category];
+  return geoMeta && Object.keys(geoMeta) && Object.keys(geoMeta).length > 0;
+}
