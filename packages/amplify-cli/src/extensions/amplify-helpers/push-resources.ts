@@ -11,7 +11,6 @@ export async function pushResources(
   category?: string,
   resourceName?: string,
   filteredResources?: { category: string; resourceName: string }[],
-  rebuild: boolean = false,
 ) {
   if (context.parameters.options['iterative-rollback']) {
     // validate --iterative-rollback with --force
@@ -50,21 +49,16 @@ export async function pushResources(
     }
   }
 
-  let hasChanges = false;
-  if (!rebuild) {
-    // status table does not have a way to show resource in "rebuild" state so skipping it to avoid confusion
-    hasChanges = await showResourceTable(category, resourceName, filteredResources);
-  }
+  const hasChanges = await showResourceTable(category, resourceName, filteredResources);
 
   // no changes detected
-  if (!hasChanges && !context.exeInfo.forcePush && !rebuild) {
+  if (!hasChanges && !context.exeInfo.forcePush) {
     context.print.info('\nNo changes detected');
 
     return context;
   }
 
-  // rebuild has an upstream confirmation prompt so no need to prompt again here
-  let continueToPush = (context.exeInfo && context.exeInfo.inputParams && context.exeInfo.inputParams.yes) || rebuild;
+  let continueToPush = context.exeInfo && context.exeInfo.inputParams && context.exeInfo.inputParams.yes;
 
   if (!continueToPush) {
     if (context.exeInfo.iterativeRollback) {
@@ -74,11 +68,18 @@ export async function pushResources(
   }
 
   if (continueToPush) {
-    // Get current-cloud-backend's amplify-meta
-    const currentAmplifyMeta = stateManager.getCurrentMeta();
+    try {
+      // Get current-cloud-backend's amplify-meta
+      const currentAmplifyMeta = stateManager.getCurrentMeta();
 
-    await providersPush(context, rebuild, category, resourceName, filteredResources);
-    await onCategoryOutputsChange(context, currentAmplifyMeta);
+      await providersPush(context, category, resourceName, filteredResources);
+      await onCategoryOutputsChange(context, currentAmplifyMeta);
+    } catch (err) {
+      // Handle the errors and print them nicely for the user.
+      context.print.error(`\n${err.message}`);
+
+      throw err;
+    }
   } else {
     // there's currently no other mechanism to stop the execution of the postPush workflow in this case, so exiting here
     exitOnNextTick(1);
@@ -87,13 +88,7 @@ export async function pushResources(
   return continueToPush;
 }
 
-async function providersPush(
-  context: $TSContext,
-  rebuild: boolean = false,
-  category?: string,
-  resourceName?: string,
-  filteredResources?: { category: string; resourceName: string }[],
-) {
+async function providersPush(context: $TSContext, category, resourceName, filteredResources) {
   const { providers } = getProjectConfig();
   const providerPlugins = getProviderPlugins(context);
   const providerPromises: (() => Promise<$TSAny>)[] = [];
@@ -101,7 +96,7 @@ async function providersPush(
   for (const provider of providers) {
     const providerModule = require(providerPlugins[provider]);
     const resourceDefiniton = await context.amplify.getResourceStatus(category, resourceName, provider, filteredResources);
-    providerPromises.push(providerModule.pushResources(context, resourceDefiniton, rebuild));
+    providerPromises.push(providerModule.pushResources(context, resourceDefiniton));
   }
 
   await Promise.all(providerPromises);
