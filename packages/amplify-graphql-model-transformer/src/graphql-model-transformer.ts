@@ -171,7 +171,9 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
 
     // todo: get model configuration with default values and store it in the map
     const typeName = definition.name.value;
-    SyncUtils.validateResolverConfigForType(ctx, typeName);
+    if (ctx.isProjectUsingDataStore()) {
+      SyncUtils.validateResolverConfigForType(ctx, typeName);
+    }
     const directiveWrapped: DirectiveWrapper = new DirectiveWrapper(directive);
     const options = directiveWrapped.getArguments({
       queries: {
