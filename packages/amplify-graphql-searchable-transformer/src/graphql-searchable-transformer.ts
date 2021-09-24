@@ -86,7 +86,7 @@ export class SearchableModelTransformer extends TransformerPluginBase {
 
     const domain = createSearchableDomain(stack, parameterMap, context.api.apiId);
 
-    const openSearchRole = createSearchableDomainRole(stack, parameterMap, context.api.apiId, envParam);
+    const openSearchRole = createSearchableDomainRole(context, stack, parameterMap);
 
     domain.grantReadWrite(openSearchRole);
 
@@ -99,7 +99,7 @@ export class SearchableModelTransformer extends TransformerPluginBase {
     );
 
     // streaming lambda role
-    const lambdaRole = createLambdaRole(stack, parameterMap);
+    const lambdaRole = createLambdaRole(context, stack, parameterMap);
     domain.grantWrite(lambdaRole);
 
     // creates streaming lambda
