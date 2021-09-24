@@ -26,7 +26,7 @@ export class TransformerResourceHelper implements TransformerResourceHelperProvi
     const env = (this.stackManager.getParameter('env') as CfnParameter).valueAsString;
     const apiId = this.api!.apiId;
     return `${baseName}-${apiId}-${env}`;
-  }
+  };
 
   bind(api: GraphQLAPIProvider) {
     this.api = api;
@@ -35,6 +35,8 @@ export class TransformerResourceHelper implements TransformerResourceHelperProvi
   registerModelToTableNameMaping = (modelName: string, tableName: string) => {
     this.modelToTableNameMap.set(modelName, tableName);
   };
+
+  getTableBaseName = (modelName: string) => this.modelToTableNameMap.get(modelName) ?? modelName;
 
   private ensureEnv = (): void => {
     if (!this.stackManager.getParameter('env')) {

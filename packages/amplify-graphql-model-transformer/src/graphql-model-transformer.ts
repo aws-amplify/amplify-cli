@@ -241,8 +241,9 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
       const def = context.output.getObject(type);
 
       // This name is used by the mock functionality. Changing this can break mock.
-      const tableLogicalName = `${def!.name.value}Table`;
-      const stack = context.stackManager.getStackFor(tableLogicalName, def!.name.value);
+      const tableBaseName = context.resourceHelper.getTableBaseName(def!.name.value);
+      const tableLogicalName = `${tableBaseName}Table`;
+      const stack = context.stackManager.getStackFor(tableLogicalName, tableBaseName);
 
       this.createModelTable(stack, def!, context);
 
@@ -964,7 +965,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
   };
 
   private createModelTable(stack: cdk.Stack, def: ObjectTypeDefinitionNode, context: TransformerContextProvider) {
-    const tableLogicalName = `${def!.name.value}Table`;
+    const tableLogicalName = `${context.resourceHelper.getTableBaseName(def!.name.value)}Table`;
     const tableName = context.resourceHelper.generateTableName(def!.name.value);
 
     // Add parameters.
@@ -1060,7 +1061,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
     });
 
     const role = this.createIAMRole(context, def, stack, tableName);
-    this.createModelTableDataSource(def, context, table, stack, role);
+    this.createModelTableDataSource(def, context, table, stack, role, tableLogicalName);
   }
 
   private createModelTableDataSource(
@@ -1069,8 +1070,8 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
     table: Table,
     stack: cdk.Stack,
     role: iam.Role,
+    tableLogicalName: string,
   ) {
-    const tableLogicalName = `${def!.name.value}Table`;
     const datasourceRoleLogicalID = ModelResourceIDs.ModelTableDataSourceID(def!.name.value);
     const dataSource = context.api.host.addDynamoDbDataSource(
       datasourceRoleLogicalID,

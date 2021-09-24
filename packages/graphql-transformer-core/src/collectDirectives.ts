@@ -90,6 +90,10 @@ export function collectDirectivesByType(sdl: string): Object {
   return types;
 }
 
+export function getTableBaseNames(sdl: string): string[] {
+  const directivesByType = collectDirectivesByType(sdl);
+}
+
 export function collectObjectDirectives(node: ObjectTypeDefinitionNode): DirectiveNode[] {
   let dirs = [];
   for (const field of node.fields) {
