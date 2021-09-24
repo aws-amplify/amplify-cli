@@ -34,6 +34,7 @@
     "publish:beta": "lerna publish --exact --dist-tag=beta --preid=beta --conventional-commits --conventional-prerelease --message 'chore(release): Publish [ci skip]' --no-verify-access --yes",
     "publish:tag": "lerna publish --exact --dist-tag=$NPM_TAG --preid=$NPM_TAG --conventional-commits --conventional-prerelease --message 'chore(release): Publish tagged release $NPM_TAG [ci skip]' --no-verify-access --yes",
     "publish:release": "lerna publish --conventional-commits --exact --yes --message 'chore(release): Publish [ci skip]' --no-verify-access",
+    "publish:tagged-release-without-e2e-tests/graphql-vnext-dev-preview": "lerna publish --exact --dist-tag=graphql-vnext-dev-preview --preid=graphql-vnext-dev-preview --conventional-commits --conventional-prerelease --message 'chore(release): Publish [ci skip]' --no-verify-access --yes",
     "postpublish:release": "git fetch . release:master && git push origin master",
     "yarn-use-bash": "yarn config set script-shell /bin/bash",
     "verdaccio-start": "source .circleci/local_publish_helpers.sh && startLocalRegistry \"$(pwd)/.circleci/verdaccio.yaml\"",

@@ -2412,26 +2412,11 @@ workflows:
             - npm-publish
           requires:
             - test
-            - mock_e2e_tests
-            - graphql_e2e_tests
-            - integration_test
-            - done_with_pkg_linux_e2e_tests
-            - amplify_sudo_install_test
-            - amplify_console_integration_tests
-            - amplify_migration_tests_latest
-            - amplify_migration_tests_v4
-            - amplify_migration_tests_v4_30_0
-            - amplify_migration_tests_non_multi_env_layers
-            - amplify_migration_tests_multi_env_layers
             - github_prerelease_install_sanity_check
           filters:
             branches:
               only:
-                - release
-                - master
-                - beta
-                - /tagged-release\/.*/
-                - /tagged-release-without-e2e-tests\/.*/
+                - tagged-release-without-e2e-tests/graphql-vnext-dev-preview
       - github_release:
           context: github-publish
           requires:
