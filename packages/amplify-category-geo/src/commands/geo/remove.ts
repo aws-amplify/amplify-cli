@@ -4,17 +4,12 @@ import { supportedServices } from '../../supportedServices';
 import { $TSAny, $TSContext } from 'amplify-cli-core';
 import { removeResource } from '../../provider-controllers';
 import { printer } from 'amplify-prompts';
-import { verifySupportedRegion } from '../../service-utils/resourceUtils';
 
 export const name = 'remove';
 
 export const run = async(context: $TSContext) => {
   const { amplify } = context;
   try {
-    if(!verifySupportedRegion()) {
-      return;
-    }
-
     const result: {service: string, providerName: string} = await amplify.serviceSelectionPrompt(context, category, supportedServices, chooseServiceMessageRemove);
 
     if (result.providerName !== provider) {

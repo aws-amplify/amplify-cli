@@ -12,5 +12,5 @@
     "commandAliases":{
         "configure": "update"
     },
-    "eventHandlers": []
+    "eventHandlers": ["PrePush"]
 }
