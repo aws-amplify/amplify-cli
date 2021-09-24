@@ -11,12 +11,16 @@ import {
   block,
   bool,
   compoundExpression,
+  equals,
   Expression,
   forEach,
   ifElse,
   iff,
+  int,
+  isNullOrEmpty,
   list,
   methodCall,
+  not,
   obj,
   print,
   printBlock,
@@ -293,7 +297,7 @@ function setQuerySnippet(config: PrimaryKeyDirectiveConfiguration, ctx: Transfor
 
   expressions.push(
     set(ref(ResourceConstants.SNIPPETS.ModelQueryExpression), obj({})),
-    applyKeyExpressionForCompositeKey(keyNames, keyTypes, ResourceConstants.SNIPPETS.ModelQueryExpression),
+    applyKeyExpressionForCompositeKey(keyNames, keyTypes, ResourceConstants.SNIPPETS.ModelQueryExpression)!,
   );
 
   return block(`Set query expression for key`, expressions);
@@ -410,6 +414,7 @@ function makeQueryResolver(config: IndexDirectiveConfiguration, ctx: Transformer
   const dataSource = ctx.api.host.getDataSource(`${object.name.value}Table`);
   const queryTypeName = ctx.output.getQueryTypeName() as string;
   const table = getTable(ctx, object);
+  const authFilter = ref('ctx.stash.authFilter');
   const requestVariable = 'QueryRequest';
 
   assert(dataSource);
@@ -440,10 +445,35 @@ function makeQueryResolver(config: IndexDirectiveConfiguration, ctx: Transformer
             set(ref(`${requestVariable}.scanIndexForward`), bool(true)),
           ),
           iff(ref('context.args.nextToken'), set(ref(`${requestVariable}.nextToken`), ref('context.args.nextToken')), true),
+          ifElse(
+            not(isNullOrEmpty(authFilter)),
+            compoundExpression([
+              set(ref('filter'), authFilter),
+              iff(
+                not(isNullOrEmpty(ref('ctx.args.filter'))),
+                set(ref('filter'), obj({ and: list([ref('filter'), ref('ctx.args.filter')]) })),
+              ),
+            ]),
+            iff(not(isNullOrEmpty(ref('ctx.args.filter'))), set(ref('filter'), ref('ctx.args.filter'))),
+          ),
           iff(
-            ref('context.args.filter'),
-            set(ref(`${requestVariable}.filter`), ref('util.parseJson("$util.transform.toDynamoDBFilterExpression($ctx.args.filter)")')),
-            true,
+            not(isNullOrEmpty(ref('filter'))),
+            compoundExpression([
+              set(
+                ref(`filterExpression`),
+                methodCall(ref('util.parseJson'), methodCall(ref('util.transform.toDynamoDBFilterExpression'), ref('filter'))),
+              ),
+              iff(
+                not(methodCall(ref('util.isNullOrBlank'), ref('filterExpression.expression'))),
+                compoundExpression([
+                  iff(
+                    equals(methodCall(ref('filterEpression.expressionValues.size')), int(0)),
+                    qref(methodCall(ref('filterEpression.remove'), str('expressionValues'))),
+                  ),
+                  set(ref(`${requestVariable}.filter`), ref(`filterExpression`)),
+                ]),
+              ),
+            ]),
           ),
           raw(`$util.toJson($${requestVariable})`),
         ]),
@@ -505,7 +535,7 @@ function addIndexToResolverSlot(resolver: TransformerResolverProvider, lines: st
   const res = resolver as any;
 
   res.addToSlot(
-    'postAuth',
+    'preAuth',
     MappingTemplate.s3MappingTemplateFromString(
       lines.join('\n') + '\n{}',
       `${res.typeName}.${res.fieldName}.{slotName}.{slotIndex}.req.vtl`,
