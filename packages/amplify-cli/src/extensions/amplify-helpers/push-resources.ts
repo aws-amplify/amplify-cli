@@ -6,7 +6,6 @@ import { getProviderPlugins } from './get-provider-plugins';
 import { getEnvInfo } from './get-env-info';
 import { EnvironmentDoesNotExistError, exitOnNextTick, stateManager, $TSAny, $TSContext, CustomPoliciesFormatError } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
-import { promptSandboxModeApiKey } from './prompt-sandbox-mode-api-key';
 
 export async function pushResources(
   context: $TSContext,
@@ -68,8 +67,6 @@ export async function pushResources(
     }
     continueToPush = await context.amplify.confirmPrompt('Are you sure you want to continue?');
   }
-
-  await promptSandboxModeApiKey(context);
 
   if (continueToPush) {
     try {

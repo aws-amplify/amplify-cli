@@ -12,14 +12,14 @@ export function getAppSyncApiConfig(): any {
   return appSyncApi;
 }
 
-function getDefaultIfApiKey(): ApiKeyConfig | void {
+function getDefaultIfApiKey(): ApiKeyConfig {
   const authConfig = getAppSyncApiConfig()?.output?.authConfig;
   const { defaultAuthentication } = authConfig;
 
   if (defaultAuthentication.authenticationType === 'API_KEY') return defaultAuthentication.apiKeyConfig;
 }
 
-function getAdditionalApiKeyConfig(): ApiKeyConfig | void {
+function getAdditionalApiKeyConfig(): ApiKeyConfig {
   const authConfig = getAppSyncApiConfig()?.output?.authConfig;
   const { additionalAuthenticationProviders } = authConfig;
   let apiKeyConfig;
@@ -31,8 +31,9 @@ function getAdditionalApiKeyConfig(): ApiKeyConfig | void {
   return apiKeyConfig;
 }
 
-export function getApiKeyConfig(): ApiKeyConfig | void {
-  return getDefaultIfApiKey() || getAdditionalApiKeyConfig();
+export function getApiKeyConfig(): ApiKeyConfig {
+  const emptyConfig = {} as ApiKeyConfig;
+  return getDefaultIfApiKey() || getAdditionalApiKeyConfig() || emptyConfig;
 }
 
 export function apiKeyIsActive(): boolean {

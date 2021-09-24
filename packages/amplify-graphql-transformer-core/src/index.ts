@@ -18,8 +18,6 @@ export {
   collectDirectives,
   collectDirectivesByTypeNames,
   DirectiveWrapper,
-  getSandboxModeEnvNameFromDirectiveSet,
-  getSandboxModeEnvNameFromNodeMap,
   IAM_AUTH_ROLE_PARAMETER,
   IAM_UNAUTH_ROLE_PARAMETER,
 } from './utils';

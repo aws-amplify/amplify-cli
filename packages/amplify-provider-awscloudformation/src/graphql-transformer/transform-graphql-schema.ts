@@ -10,7 +10,6 @@ import {
   collectDirectivesByTypeNames,
   collectDirectives,
   TransformerProjectConfig,
-  getSandboxModeEnvNameFromDirectiveSet,
 } from '@aws-amplify/graphql-transformer-core';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { AuthTransformer } from '@aws-amplify/graphql-auth-transformer';
@@ -37,6 +36,7 @@ import { JSONUtilities, stateManager, $TSContext } from 'amplify-cli-core';
 import { searchablePushChecks } from '../transform-graphql-schema';
 import { ResourceConstants } from 'graphql-transformer-common';
 import { isAmplifyAdminApp } from '../utils/admin-helpers';
+import { showSandboxModePrompts, getSandboxModeEnvNameFromDirectiveSet } from '../utils/sandbox-mode-helpers';
 
 const API_CATEGORY = 'api';
 const STORAGE_CATEGORY = 'storage';
@@ -306,7 +306,16 @@ export async function transformGraphQLSchema(context, options) {
 
   const transformerListFactory = getTransformerFactory(context, resourceDir);
 
+  const { envName } = context.amplify._getEnvInfo();
   const sandboxModeEnv = getSandboxModeEnvNameFromDirectiveSet(collectDirectives(project.schema));
+  const sandboxModeEnabled = envName === sandboxModeEnv;
+
+  if (sandboxModeEnabled && options.promptApiKeyCreation) {
+    const apiKeyConfig = await showSandboxModePrompts(context);
+    if (apiKeyConfig) {
+      authConfig.additionalAuthenticationProviders.push(apiKeyConfig);
+    }
+  }
 
   let searchableTransformerFlag = false;
 
@@ -326,7 +335,7 @@ export async function transformGraphQLSchema(context, options) {
     projectConfig: project,
     lastDeployedProjectConfig,
     authConfig,
-    sandboxModeEnv,
+    sandboxModeEnabled,
   };
 
   let transformerOutput;
@@ -464,7 +473,7 @@ export type ProjectOptions<T> = {
   dryRun?: boolean;
   authConfig?: AppSyncAuthConfiguration;
   stacks: Record<string, Template>;
-  sandboxModeEnv?: string;
+  sandboxModeEnabled?: boolean;
 };
 
 export async function buildAPIProject(opts: ProjectOptions<TransformerFactoryArgs>) {
@@ -502,6 +511,7 @@ async function _buildProject(opts: ProjectOptions<TransformerFactoryArgs>) {
     buildParameters: opts.buildParameters,
     stacks: opts.projectConfig.stacks || {},
     featureFlags: new AmplifyCLIFeatureFlagAdapter(),
+    sandboxModeEnabled: opts.sandboxModeEnabled,
   });
   return transform.transform(userProjectConfig.schema.toString());
 }
