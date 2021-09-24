@@ -51,6 +51,10 @@ jest.mock('../../../extensions/amplify-helpers/get-cloud-init-status', () => ({
   getCloudInitStatus: jest.fn(),
 }));
 
+jest.mock('../../../extensions/amplify-helpers/root-stack-status', () => ({
+  isRootStackModifiedSinceLastPush: jest.fn().mockResolvedValue(false),
+}));
+
 const backendDirPathStub = 'backendDirPath';
 const currentBackendDirPathStub = 'currentBackendDirPathStub';
 const projectRootPath = 'projectRootPath';
@@ -145,6 +149,7 @@ describe('resource-status', () => {
         resourcesToBeDeleted: [],
         resourcesToBeSynced: [],
         resourcesToBeUpdated: [],
+        rootStackUpdated: false,
         tagsUpdated: false,
       });
     });
@@ -184,6 +189,7 @@ describe('resource-status', () => {
         resourcesToBeSynced: [],
         resourcesToBeUpdated: [],
         tagsUpdated: false,
+        rootStackUpdated: false,
       });
     });
 
@@ -246,6 +252,7 @@ describe('resource-status', () => {
         resourcesToBeSynced: [],
         resourcesToBeUpdated: [],
         tagsUpdated: false,
+        rootStackUpdated: false,
       });
     });
 
@@ -284,6 +291,7 @@ describe('resource-status', () => {
         resourcesToBeSynced: [],
         resourcesToBeUpdated: [],
         tagsUpdated: false,
+        rootStackUpdated: false,
       });
     });
 
@@ -336,6 +344,7 @@ describe('resource-status', () => {
         ],
         resourcesToBeUpdated: [],
         tagsUpdated: false,
+        rootStackUpdated: false,
       });
     });
 
@@ -380,6 +389,7 @@ describe('resource-status', () => {
         ],
         resourcesToBeUpdated: [],
         tagsUpdated: false,
+        rootStackUpdated: false,
       });
     });
 
@@ -439,6 +449,7 @@ describe('resource-status', () => {
         ],
         resourcesToBeUpdated: [],
         tagsUpdated: false,
+        rootStackUpdated: false,
       });
     });
 
@@ -502,6 +513,7 @@ describe('resource-status', () => {
           },
         ],
         tagsUpdated: false,
+        rootStackUpdated: false,
       });
     });
 
@@ -559,6 +571,7 @@ describe('resource-status', () => {
           },
         ],
         tagsUpdated: false,
+        rootStackUpdated: false,
       });
     });
 
@@ -614,6 +627,7 @@ describe('resource-status', () => {
           },
         ],
         tagsUpdated: false,
+        rootStackUpdated: false,
       });
     });
 
@@ -669,6 +683,7 @@ describe('resource-status', () => {
           },
         ],
         tagsUpdated: false,
+        rootStackUpdated: false,
       });
     });
 
@@ -699,6 +714,7 @@ describe('resource-status', () => {
         resourcesToBeSynced: [],
         resourcesToBeUpdated: [],
         tagsUpdated: true,
+        rootStackUpdated: false,
       });
     });
 
@@ -713,6 +729,7 @@ describe('resource-status', () => {
         resourcesToBeSynced: [],
         resourcesToBeUpdated: [],
         tagsUpdated: false,
+        rootStackUpdated: false,
       });
     });
 
