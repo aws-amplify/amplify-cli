@@ -22,6 +22,8 @@ import {
   $TSContext,
   open,
 } from 'amplify-cli-core';
+import { Duration, Expiration } from '@aws-cdk/core';
+import { defineGlobalSandboxMode } from '../utils/global-sandbox-mode';
 
 const serviceName = 'AppSync';
 const elasticContainerServiceName = 'ElasticContainer';
@@ -215,7 +217,7 @@ const serviceApiInputWalkthrough = async (context: $TSContext, defaultValuesFile
   authConfig = {
     defaultAuthentication: {
       apiKeyConfig: {
-        apiKeyExpirationDays: 7
+        apiKeyExpirationDays: 7,
       },
       authenticationType: 'API_KEY',
     },
@@ -226,21 +228,22 @@ const serviceApiInputWalkthrough = async (context: $TSContext, defaultValuesFile
   // Repeat prompt until user selects Continue
   //
   while (!continuePrompt) {
-
     const getAuthModeChoice = async () => {
       if (authConfig.defaultAuthentication.authenticationType === 'API_KEY') {
-        return `${authProviderChoices.find(choice => choice.value === authConfig.defaultAuthentication.authenticationType).name} (default, expiration time: ${authConfig.defaultAuthentication.apiKeyConfig.apiKeyExpirationDays} days from now)`;
+        return `${
+          authProviderChoices.find(choice => choice.value === authConfig.defaultAuthentication.authenticationType).name
+        } (default, expiration time: ${authConfig.defaultAuthentication.apiKeyConfig.apiKeyExpirationDays} days from now)`;
       }
       return `${authProviderChoices.find(choice => choice.value === authConfig.defaultAuthentication.authenticationType).name} (default)`;
     };
 
     const getAdditionalAuthModeChoices = async () => {
       let additionalAuthModesText = '';
-      authConfig.additionalAuthenticationProviders.map(async (authMode) => {
-        additionalAuthModesText += `, ${authProviderChoices.find(choice => choice.value === authMode.authenticationType).name}`
+      authConfig.additionalAuthenticationProviders.map(async authMode => {
+        additionalAuthModesText += `, ${authProviderChoices.find(choice => choice.value === authMode.authenticationType).name}`;
       });
       return additionalAuthModesText;
-    }
+    };
 
     const basicInfoQuestionChoices = [];
 
@@ -261,7 +264,9 @@ const serviceApiInputWalkthrough = async (context: $TSContext, defaultValuesFile
 
     if (resolverConfig?.project) {
       basicInfoQuestionChoices.push({
-        name: chalk`{bold Conflict resolution strategy:} ${conflictResolutionHanlderChoices.find(x => x.value === resolverConfig.project.ConflictHandler).name}`,
+        name: chalk`{bold Conflict resolution strategy:} ${
+          conflictResolutionHanlderChoices.find(x => x.value === resolverConfig.project.ConflictHandler).name
+        }`,
         value: 'CONFLICT_STRATEGY',
       });
     }
@@ -281,7 +286,7 @@ const serviceApiInputWalkthrough = async (context: $TSContext, defaultValuesFile
 
     let { basicApiSettings } = await inquirer.prompt([basicInfoQuestion]);
 
-    switch(basicApiSettings) {
+    switch (basicApiSettings) {
       case 'API_NAME':
         const resourceQuestions = [
           {
@@ -323,7 +328,6 @@ const serviceApiInputWalkthrough = async (context: $TSContext, defaultValuesFile
     },
     resolverConfig,
   };
-
 };
 
 const updateApiInputWalkthrough = async (context, project, resolverConfig, modelTypes) => {
@@ -380,6 +384,7 @@ const updateApiInputWalkthrough = async (context, project, resolverConfig, model
 
 export const serviceWalkthrough = async (context: $TSContext, defaultValuesFilename, serviceMetadata) => {
   const resourceName = resourceAlreadyExists(context);
+  const useExperimentalPipelineTransformer = FeatureFlags.getBoolean('graphQLTransformer.useExperimentalPipelinedTransformer');
 
   if (resourceName) {
     const errMessage =
@@ -397,7 +402,7 @@ export const serviceWalkthrough = async (context: $TSContext, defaultValuesFilen
   let askToEdit = true;
 
   // Schema template selection
-  const schemaTemplateOptions = FeatureFlags.getBoolean('graphQLTransformer.useExperimentalPipelinedTransformer') ? schemaTemplatesV2 : schemaTemplatesV1;
+  const schemaTemplateOptions = useExperimentalPipelineTransformer ? schemaTemplatesV2 : schemaTemplatesV1;
   const templateSelectionQuestion = {
     type: inputs[4].type,
     name: inputs[4].key,
@@ -408,7 +413,8 @@ export const serviceWalkthrough = async (context: $TSContext, defaultValuesFilen
 
   const { templateSelection } = await inquirer.prompt(templateSelectionQuestion);
   const schemaFilePath = path.join(graphqlSchemaDir, templateSelection);
-  schemaContent = fs.readFileSync(schemaFilePath, 'utf8');
+  schemaContent += useExperimentalPipelineTransformer ? defineGlobalSandboxMode(context) : '';
+  schemaContent += fs.readFileSync(schemaFilePath, 'utf8');
 
   return {
     ...basicInfoAnswers,
@@ -481,8 +487,10 @@ export const updateWalkthrough = async (context): Promise<UpdateApiRequest> => {
 
 async function displayApiInformation(context, resource, project) {
   let authModes: string[] = [];
-  authModes.push(`- Default: ${await displayAuthMode(context, resource, resource.output.authConfig.defaultAuthentication.authenticationType)}`);
-  await resource.output.authConfig.additionalAuthenticationProviders.map(async (authMode) => {
+  authModes.push(
+    `- Default: ${await displayAuthMode(context, resource, resource.output.authConfig.defaultAuthentication.authenticationType)}`,
+  );
+  await resource.output.authConfig.additionalAuthenticationProviders.map(async authMode => {
     authModes.push(`- ${await displayAuthMode(context, resource, authMode.authenticationType)}`);
   });
 
@@ -501,7 +509,11 @@ async function displayApiInformation(context, resource, project) {
 
   context.print.success('Conflict detection (required for DataStore)');
   if (project.config && !_.isEmpty(project.config.ResolverConfig)) {
-    context.print.info(`- Conflict resolution strategy: ${conflictResolutionHanlderChoices.find(choice => choice.value === project.config.ResolverConfig.project.ConflictHandler).name}`);
+    context.print.info(
+      `- Conflict resolution strategy: ${
+        conflictResolutionHanlderChoices.find(choice => choice.value === project.config.ResolverConfig.project.ConflictHandler).name
+      }`,
+    );
   } else {
     context.print.info('- Disabled');
   }
@@ -519,7 +531,9 @@ async function displayAuthMode(context, resource, authMode) {
       return authProviderChoices.find(choice => choice.value === authMode).name;
     }
     let apiKeyExpiresDate = new Date(apiKeyExpires * 1000);
-    return `${authProviderChoices.find(choice => choice.value === authMode).name} expiring ${apiKeyExpiresDate}: ${resource.output.GraphQLAPIKeyOutput}`;
+    return `${authProviderChoices.find(choice => choice.value === authMode).name} expiring ${apiKeyExpiresDate}: ${
+      resource.output.GraphQLAPIKeyOutput
+    }`;
   }
   return authProviderChoices.find(choice => choice.value === authMode).name;
 }
@@ -668,9 +682,11 @@ export async function askAdditionalAuthQuestions(context, authConfig, defaultAut
   if (await context.prompt.confirm('Configure additional auth types?')) {
     // Get additional auth configured
     const remainingAuthProviderChoices = authProviderChoices.filter(p => p.value !== defaultAuthType);
-    const currentAdditionalAuth = ((currentAuthConfig && currentAuthConfig.additionalAuthenticationProviders
-      ? currentAuthConfig.additionalAuthenticationProviders
-      : []) as any[]).map(authProvider => authProvider.authenticationType);
+    const currentAdditionalAuth = (
+      (currentAuthConfig && currentAuthConfig.additionalAuthenticationProviders
+        ? currentAuthConfig.additionalAuthenticationProviders
+        : []) as any[]
+    ).map(authProvider => authProvider.authenticationType);
 
     const additionalProvidersQuestion: CheckboxQuestion = {
       type: 'checkbox',
@@ -685,7 +701,12 @@ export async function askAdditionalAuthQuestions(context, authConfig, defaultAut
     for (let i = 0; i < additionalProvidersAnswer.authType.length; i += 1) {
       const authProvider = additionalProvidersAnswer.authType[i];
 
-      const config = await askAuthQuestions(authProvider, context, true, currentAuthConfig?.additionalAuthenticationProviders?.find(authSetting => authSetting.authenticationType == authProvider));
+      const config = await askAuthQuestions(
+        authProvider,
+        context,
+        true,
+        currentAuthConfig?.additionalAuthenticationProviders?.find(authSetting => authSetting.authenticationType == authProvider),
+      );
 
       authConfig.additionalAuthenticationProviders.push(config);
     }
@@ -759,7 +780,7 @@ async function askUserPoolQuestions(context) {
   };
 }
 
-async function askApiKeyQuestions(authSettings) {
+export async function askApiKeyQuestions(authSettings = undefined) {
   let defaultValues = {
     apiKeyExpirationDays: 7,
     description: undefined,
@@ -785,6 +806,8 @@ async function askApiKeyQuestions(authSettings) {
   ];
 
   const apiKeyConfig = await inquirer.prompt(apiKeyQuestions);
+  const apiKeyExpirationDaysNum = Number(apiKeyConfig.apiKeyExpirationDays);
+  apiKeyConfig.apiKeyExpirationDate = Expiration.after(Duration.days(apiKeyExpirationDaysNum)).date;
 
   return {
     authenticationType: 'API_KEY',
@@ -857,9 +880,10 @@ function validateDays(input) {
 }
 
 function validateIssuerUrl(input) {
-  const isValid = /^(((?!http:\/\/(?!localhost))([a-zA-Z0-9.]{1,}):\/\/([a-zA-Z0-9-._~:?#@!$&'()*+,;=/]{1,})\/)|(?!http)(?!https)([a-zA-Z0-9.]{1,}):\/\/)$/.test(
-    input,
-  );
+  const isValid =
+    /^(((?!http:\/\/(?!localhost))([a-zA-Z0-9.]{1,}):\/\/([a-zA-Z0-9-._~:?#@!$&'()*+,;=/]{1,})\/)|(?!http)(?!https)([a-zA-Z0-9.]{1,}):\/\/)$/.test(
+      input,
+    );
 
   if (!isValid) {
     return 'The value must be a valid URI with a trailing forward slash. HTTPS must be used instead of HTTP unless you are using localhost.';
@@ -959,8 +983,8 @@ const buildPolicyResource = (resourceName: string, path: string | null) => {
         {
           Ref: `${category}${resourceName}GraphQLAPIIdOutput`,
         },
-        ...(path ? [path] : [])
-      ]
+        ...(path ? [path] : []),
+      ],
     ],
   };
 };
@@ -968,7 +992,8 @@ const buildPolicyResource = (resourceName: string, path: string | null) => {
 const templateSchemaFilter = authConfig => {
   const authIncludesCognito = getAuthTypes(authConfig).includes('AMAZON_COGNITO_USER_POOLS');
   return (templateOption: ListChoiceOptions): boolean =>
-    authIncludesCognito || templateOption.name !== 'Objects with fine-grained access control (e.g., a project management app with owner-based authorization)';
+    authIncludesCognito ||
+    templateOption.name !== 'Objects with fine-grained access control (e.g., a project management app with owner-based authorization)';
 };
 
 const getAuthTypes = authConfig => {

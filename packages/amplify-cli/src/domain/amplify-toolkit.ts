@@ -38,6 +38,7 @@ export class AmplifyToolkit {
   private _removeResource: any;
   private _sharedQuestions: any;
   private _showAllHelp: any;
+  private _showGlobalSandboxModeWarning: any;
   private _showHelp: any;
   private _showHelpfulProviderLinks: any;
   private _showResourceTable: any;
@@ -240,6 +241,12 @@ export class AmplifyToolkit {
     this._sharedQuestions = this._sharedQuestions || require(path.join(this._amplifyHelpersDirPath, 'shared-questions')).sharedQuestions;
     return this._sharedQuestions;
   }
+  get showGlobalSandboxModeWarning(): any {
+    this._showGlobalSandboxModeWarning =
+      this._showGlobalSandboxModeWarning ||
+      require(path.join(this._amplifyHelpersDirPath, 'show-global-sandbox-mode-warning')).showGlobalSandboxModeWarning;
+    return this._showGlobalSandboxModeWarning;
+  }
   get showHelp(): any {
     this._showHelp = this._showHelp || require(path.join(this._amplifyHelpersDirPath, 'show-help')).showHelp;
     return this._showHelp;
@@ -261,8 +268,7 @@ export class AmplifyToolkit {
   }
 
   get showStatusTable(): any {
-    this._showStatusTable =
-    this._showStatusTable || require(path.join(this._amplifyHelpersDirPath, 'resource-status')).showStatusTable;
+    this._showStatusTable = this._showStatusTable || require(path.join(this._amplifyHelpersDirPath, 'resource-status')).showStatusTable;
     return this._showStatusTable;
   }
 

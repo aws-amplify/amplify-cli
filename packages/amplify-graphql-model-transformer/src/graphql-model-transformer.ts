@@ -54,6 +54,7 @@ import {
   makeUpdateInputField,
 } from './graphql-types';
 import {
+  generateAuthExpressionForSandboxMode,
   generateCreateInitSlotTemplate,
   generateCreateRequestTemplate,
   generateDefaultResponseMappingTemplate,
@@ -64,7 +65,12 @@ import {
   generateUpdateInitSlotTemplate,
   generateUpdateRequestTemplate,
 } from './resolvers';
-import { generateGetRequestTemplate, generateListRequestTemplate, generateSyncRequestTemplate } from './resolvers/query';
+import {
+  generateGetRequestTemplate,
+  generateGetResponseTemplate,
+  generateListRequestTemplate,
+  generateSyncRequestTemplate,
+} from './resolvers/query';
 import {
   DirectiveWrapper,
   FieldWrapper,
@@ -88,17 +94,17 @@ export type ModelDirectiveConfiguration = {
     list: OptionalAndNullable<string>;
     sync: OptionalAndNullable<string>;
   }>;
-  mutations: {
+  mutations: OptionalAndNullable<{
     create: OptionalAndNullable<string>;
     update: OptionalAndNullable<string>;
     delete: OptionalAndNullable<string>;
-  } | null;
-  subscriptions: {
+  }>;
+  subscriptions: OptionalAndNullable<{
     onCreate: OptionalAndNullable<string>[];
     onUpdate: OptionalAndNullable<string>[];
     onDelete: OptionalAndNullable<string>[];
-    level: Partial<SubscriptionLevel>;
-  } | null;
+    level: SubscriptionLevel;
+  }>;
   timestamps: OptionalAndNullable<{
     createdAt: OptionalAndNullable<string>;
     updatedAt: OptionalAndNullable<string>;
@@ -169,12 +175,13 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
         `'${definition.name.value}' is a reserved type name and currently in use within the default schema element.`,
       );
     }
-
     // todo: get model configuration with default values and store it in the map
     const typeName = definition.name.value;
+
     if (ctx.isProjectUsingDataStore()) {
       SyncUtils.validateResolverConfigForType(ctx, typeName);
     }
+
     const directiveWrapped: DirectiveWrapper = new DirectiveWrapper(directive);
     const options = directiveWrapped.getArguments({
       queries: {
@@ -188,7 +195,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
         delete: toCamelCase(['delete', typeName]),
       },
       subscriptions: {
-        level: SubscriptionLevel.public,
+        level: SubscriptionLevel.on,
         onCreate: [this.ensureValidSubscriptionName(toCamelCase(['onCreate', typeName]))],
         onDelete: [this.ensureValidSubscriptionName(toCamelCase(['onDelete', typeName]))],
         onUpdate: [this.ensureValidSubscriptionName(toCamelCase(['onUpdate', typeName]))],
@@ -234,6 +241,8 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
       this.addAutoGeneratableFields(ctx, type);
 
       if (ctx.isProjectUsingDataStore()) {
+        SyncUtils.validateResolverConfigForType(ctx, def!.name.value);
+        this.options.SyncConfig = SyncUtils.getSyncConfig(ctx, def!.name.value);
         this.addModelSyncFields(ctx, type);
       }
     }
@@ -241,8 +250,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
 
   generateResolvers = (context: TransformerContextProvider): void => {
     for (let type of this.typesWithModelDirective) {
-      const def = context.output.getObject(type);
-
+      const def = context.output.getObject(type)!;
       // This name is used by the mock functionality. Changing this can break mock.
       const tableLogicalName = `${def!.name.value}Table`;
       const stack = context.stackManager.getStackFor(tableLogicalName, def!.name.value);
@@ -265,7 +273,13 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
           default:
             throw new Error('Unknown query field type');
         }
-
+        resolver.addToSlot(
+          'postAuth',
+          MappingTemplate.s3MappingTemplateFromString(
+            generateAuthExpressionForSandboxMode(context),
+            `${query.typeName}.${query.fieldName}.{slotName}.{slotIndex}.req.vtl`,
+          ),
+        );
         resolver.mapToStack(stack);
         context.resolvers.addResolver(query.typeName, query.fieldName, resolver);
       }
@@ -284,10 +298,48 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
             resolver = this.generateUpdateResolver(context, def!, mutation.typeName, mutation.fieldName);
             break;
           default:
-            throw new Error('Unknown query field type');
+            throw new Error('Unknown mutation field type');
         }
+        resolver.addToSlot(
+          'postAuth',
+          MappingTemplate.s3MappingTemplateFromString(
+            generateAuthExpressionForSandboxMode(context),
+            `${mutation.typeName}.${mutation.fieldName}.{slotName}.{slotIndex}.req.vtl`,
+          ),
+        );
         resolver.mapToStack(stack);
         context.resolvers.addResolver(mutation.typeName, mutation.fieldName, resolver);
+      }
+
+      const subscriptionLevel = this.modelDirectiveConfig.get(def.name.value)?.subscriptions?.level;
+      // in order to create subscription resolvers the level needs to be on
+      if (subscriptionLevel === SubscriptionLevel.on) {
+        const subscriptionFields = this.getSubscriptionFieldNames(context, def!);
+        for (let subscription of subscriptionFields.values()) {
+          let resolver;
+          switch (subscription.type) {
+            case SubscriptionFieldType.ON_CREATE:
+              resolver = this.generateOnCreateResolver(context, def, subscription.typeName, subscription.fieldName);
+              break;
+            case SubscriptionFieldType.ON_UPDATE:
+              resolver = this.generateOnUpdateResolver(context, def, subscription.typeName, subscription.fieldName);
+              break;
+            case SubscriptionFieldType.ON_DELETE:
+              resolver = this.generateOnDeleteResolver(context, def, subscription.typeName, subscription.fieldName);
+              break;
+            default:
+              throw new Error('Unknown subscription field type');
+          }
+          resolver.addToSlot(
+            'postAuth',
+            MappingTemplate.s3MappingTemplateFromString(
+              generateAuthExpressionForSandboxMode(context),
+              `${subscription.typeName}.${subscription.fieldName}.{slotName}.{slotIndex}.req.vtl`,
+            ),
+          );
+          resolver.mapToStack(stack);
+          context.resolvers.addResolver(subscription.typeName, subscription.fieldName, resolver);
+        }
       }
     }
   };
@@ -307,10 +359,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
         fieldName,
         dataSource,
         MappingTemplate.s3MappingTemplateFromString(generateGetRequestTemplate(), `${typeName}.${fieldName}.req.vtl`),
-        MappingTemplate.s3MappingTemplateFromString(
-          generateDefaultResponseMappingTemplate(isSyncEnabled),
-          `${typeName}.${fieldName}.res.vtl`,
-        ),
+        MappingTemplate.s3MappingTemplateFromString(generateGetResponseTemplate(isSyncEnabled), `${typeName}.${fieldName}.res.vtl`),
       );
     }
     return this.resolverMap[resolverKey];
@@ -359,7 +408,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
           `${typeName}.${fieldName}.req.vtl`,
         ),
         MappingTemplate.s3MappingTemplateFromString(
-          generateDefaultResponseMappingTemplate(isSyncEnabled),
+          generateDefaultResponseMappingTemplate(isSyncEnabled, true),
           `${typeName}.${fieldName}.res.vtl`,
         ),
       );
@@ -391,7 +440,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
         dataSource,
         MappingTemplate.s3MappingTemplateFromString(generateDeleteRequestTemplate(isSyncEnabled), `${typeName}.${fieldName}.req.vtl`),
         MappingTemplate.s3MappingTemplateFromString(
-          generateDefaultResponseMappingTemplate(isSyncEnabled),
+          generateDefaultResponseMappingTemplate(isSyncEnabled, true),
           `${typeName}.${fieldName}.res.vtl`,
         ),
       );
@@ -701,7 +750,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
         dataSource,
         MappingTemplate.s3MappingTemplateFromString(generateCreateRequestTemplate(type.name.value), `${typeName}.${fieldName}.req.vtl`),
         MappingTemplate.s3MappingTemplateFromString(
-          generateDefaultResponseMappingTemplate(isSyncEnabled),
+          generateDefaultResponseMappingTemplate(isSyncEnabled, true),
           `${typeName}.${fieldName}.res.vtl`,
         ),
       );
@@ -1158,13 +1207,15 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
       }),
     );
 
-    const syncConfig = SyncUtils.getSyncConfig(context, def!.name.value);
-    if (syncConfig && SyncUtils.isLambdaSyncConfig(syncConfig)) {
+    if (this.options.SyncConfig && SyncUtils.isLambdaSyncConfig(this.options.SyncConfig)) {
       role.attachInlinePolicy(
-        SyncUtils.createSyncLambdaIAMPolicy(stack, syncConfig.LambdaConflictHandler.name, syncConfig.LambdaConflictHandler.region),
+        SyncUtils.createSyncLambdaIAMPolicy(
+          stack,
+          this.options.SyncConfig.LambdaConflictHandler.name,
+          this.options.SyncConfig.LambdaConflictHandler.region,
+        ),
       );
     }
-
     return role;
   }
 

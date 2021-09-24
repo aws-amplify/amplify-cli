@@ -26,6 +26,7 @@ export interface DefaultTransformHostOptions {
 
 export class DefaultTransformHost implements TransformHostProvider {
   private dataSources: Map<string, BaseDataSource> = new Map();
+  private resolvers: Map<string, CfnResolver> = new Map();
   private api: GraphQLApi;
 
   public constructor(options: DefaultTransformHostOptions) {
@@ -42,6 +43,16 @@ export class DefaultTransformHost implements TransformHostProvider {
   public getDataSource = (name: string): BaseDataSource | void => {
     if (this.hasDataSource(name)) {
       return this.dataSources.get(name);
+    }
+  };
+
+  public hasResolver = (typeName: string, fieldName: string) => {
+    return this.resolvers.has(`${typeName}:${fieldName}`);
+  };
+
+  public getResolver = (typeName: string, fieldName: string): CfnResolver | void => {
+    if (this.resolvers.has(`${typeName}:${fieldName}`)) {
+      return this.resolvers.get(`${typeName}:${fieldName}`);
     }
   };
 
@@ -125,7 +136,7 @@ export class DefaultTransformHost implements TransformHostProvider {
     dataSourceName?: string,
     pipelineConfig?: string[],
     stack?: Stack,
-  ) {
+  ): CfnResolver {
     if (dataSourceName && !Token.isUnresolved(dataSourceName) && !this.dataSources.has(dataSourceName)) {
       throw new Error(`DataSource ${dataSourceName} is missing in the API`);
     }
@@ -168,6 +179,7 @@ export class DefaultTransformHost implements TransformHostProvider {
         },
       });
       this.api.addSchemaDependency(resolver);
+      this.resolvers.set(`${typeName}:${fieldName}`, resolver);
       return resolver;
     } else {
       throw new Error('Resolver needs either dataSourceName or pipelineConfig to be passed');

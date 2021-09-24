@@ -6,6 +6,7 @@ import { Table } from '@aws-cdk/aws-dynamodb';
 import * as cdk from '@aws-cdk/core';
 import { ObjectTypeDefinitionNode } from 'graphql';
 import {
+  and,
   bool,
   compoundExpression,
   DynamoDBMappingTemplate,
@@ -13,16 +14,22 @@ import {
   Expression,
   ifElse,
   iff,
+  int,
+  isNullOrEmpty,
   list,
+  methodCall,
+  not,
   nul,
   obj,
   ObjectNode,
   or,
   print,
+  qref,
   raw,
   ref,
   set,
   str,
+  toJson,
 } from 'graphql-mapping-template';
 import {
   applyCompositeKeyConditionExpression,
@@ -36,6 +43,8 @@ import {
 import { HasManyDirectiveConfiguration, HasOneDirectiveConfiguration } from './types';
 import { getConnectionAttributeName } from './utils';
 
+const authFilter = ref('ctx.stash.authFilter');
+
 export function makeGetItemConnectionWithKeyResolver(config: HasOneDirectiveConfiguration, ctx: TransformerContextProvider) {
   const { connectionFields, field, fields, object, relatedType, relatedTypeIndex } = config;
   assert(relatedTypeIndex.length > 0);
@@ -44,8 +53,11 @@ export function makeGetItemConnectionWithKeyResolver(config: HasOneDirectiveConf
   const { keySchema } = table as any;
   const dataSource = ctx.api.host.getDataSource(`${relatedType.name.value}Table`);
   const partitionKeyName = keySchema[0].attributeName;
-  const keyObj = {
-    [partitionKeyName]: ref(`util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($ctx.source.${localFields[0]}, "${NONE_VALUE}"))`),
+  let totalExpressions = [`${partitionKeyName} = :${partitionKeyName}`];
+  let totalExpressionValues: Record<string, Expression> = {
+    [`:${partitionKeyName}`]: ref(
+      `util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($ctx.source.${localFields[0]}, "${NONE_VALUE}")))`,
+    ),
   };
 
   // Add a composite sort key or simple sort key if there is one.
@@ -54,11 +66,16 @@ export function makeGetItemConnectionWithKeyResolver(config: HasOneDirectiveConf
     const sortKeyName = keySchema[1].attributeName;
     const condensedSortKeyValue = condenseRangeKey(rangeKeyFields.map(keyField => `\${ctx.source.${keyField}}`));
 
-    keyObj[sortKeyName] = ref(`util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank("${condensedSortKeyValue}", "${NONE_VALUE}"))`);
+    totalExpressions.push(`${sortKeyName} = :${sortKeyName}`);
+    totalExpressionValues[`:${sortKeyName}`] = ref(
+      `util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank("${condensedSortKeyValue}", "${NONE_VALUE}")))`,
+    );
   } else if (relatedTypeIndex.length === 2) {
     const sortKeyName = keySchema[1].attributeName;
-
-    keyObj[sortKeyName] = ref(`util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($ctx.source.${localFields[1]}, "${NONE_VALUE}"))`);
+    totalExpressions.push(`${sortKeyName} = :${sortKeyName}`);
+    totalExpressionValues[`:${sortKeyName}`] = ref(
+      `util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($ctx.source.${localFields[1]}, "${NONE_VALUE}")))`,
+    );
   }
 
   const resolver = ctx.resolvers.generateQueryResolver(
@@ -71,16 +88,49 @@ export function makeGetItemConnectionWithKeyResolver(config: HasOneDirectiveConf
           or(localFields.map(f => raw(`$util.isNull($ctx.source.${f})`))),
           raw('#return'),
           compoundExpression([
-            DynamoDBMappingTemplate.getItem({
-              key: obj(keyObj),
-            }),
+            set(ref('GetRequest'), obj({ version: str('2018-05-29'), operation: str('Query') })),
+            qref(
+              methodCall(
+                ref('GetRequest.put'),
+                str('query'),
+                obj({
+                  expression: str(totalExpressions.join(' AND ')),
+                  expressionValues: obj(totalExpressionValues),
+                }),
+              ),
+            ),
+            iff(
+              not(isNullOrEmpty(authFilter)),
+              qref(
+                methodCall(
+                  ref('GetRequest.put'),
+                  str('filter'),
+                  methodCall(ref('util.parseJson'), methodCall(ref('util.transform.toDynamoDBFilterExpression'), authFilter)),
+                ),
+              ),
+            ),
+            toJson(ref('GetRequest')),
           ]),
         ),
       ),
       `${object.name.value}.${field.name.value}.req.vtl`,
     ),
     MappingTemplate.s3MappingTemplateFromString(
-      print(DynamoDBMappingTemplate.dynamoDBResponse(false)),
+      print(
+        DynamoDBMappingTemplate.dynamoDBResponse(
+          false,
+          compoundExpression([
+            ifElse(
+              and([not(ref('ctx.result.items.isEmpty()')), equals(ref('ctx.result.scannedCount'), int(1))]),
+              toJson(ref('ctx.result.items[0]')),
+              compoundExpression([
+                iff(and([ref('ctx.result.items.isEmpty()'), equals(ref('ctx.result.scannedCount'), int(1))]), ref('util.unauthorized()')),
+                toJson(nul()),
+              ]),
+            ),
+          ]),
+        ),
+      ),
       `${object.name.value}.${field.name.value}.res.vtl`,
     ),
   );
@@ -115,6 +165,36 @@ export function makeQueryConnectionWithKeyResolver(config: HasManyDirectiveConfi
       setup.push(applyCompositeKeyConditionExpression(sortKeyFieldNames, 'query', toCamelCase(sortKeyFieldNames), sortKeyFieldName));
     }
   }
+  // add setup filter to query
+  setup.push(
+    ifElse(
+      not(isNullOrEmpty(authFilter)),
+      compoundExpression([
+        set(ref('filter'), authFilter),
+        iff(not(isNullOrEmpty(ref('ctx.args.filter'))), set(ref('filter'), obj({ and: list([ref('filter'), ref('ctx.args.filter')]) }))),
+      ]),
+      iff(not(isNullOrEmpty(ref('ctx.args.filter'))), set(ref('filter'), ref('ctx.args.filter'))),
+    ),
+    iff(
+      not(isNullOrEmpty(ref('filter'))),
+      compoundExpression([
+        set(
+          ref(`filterExpression`),
+          methodCall(ref('util.parseJson'), methodCall(ref('util.transform.toDynamoDBFilterExpression'), ref('filter'))),
+        ),
+        iff(
+          not(methodCall(ref('util.isNullOrBlank'), ref('filterExpression.expression'))),
+          compoundExpression([
+            iff(
+              equals(methodCall(ref('filterEpression.expressionValues.size')), int(0)),
+              qref(methodCall(ref('filterEpression.remove'), str('expressionValues'))),
+            ),
+            set(ref('filter'), ref('filterExpression')),
+          ]),
+        ),
+      ]),
+    ),
+  );
 
   const queryArguments = {
     query: raw('$util.toJson($query)'),
@@ -123,7 +203,7 @@ export function makeQueryConnectionWithKeyResolver(config: HasManyDirectiveConfi
       ifElse(equals(ref('context.args.sortDirection'), str('ASC')), bool(true), bool(false)),
       bool(true),
     ),
-    filter: ifElse(ref('context.args.filter'), ref('util.transform.toDynamoDBFilterExpression($ctx.args.filter)'), nul()),
+    filter: ifElse(ref('filter'), ref('util.toJson($filter)'), nul()),
     limit: ref('limit'),
     nextToken: ifElse(ref('context.args.nextToken'), ref('util.toJson($context.args.nextToken)'), nul()),
   } as any;

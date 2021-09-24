@@ -13,4 +13,4 @@ export const BOOLEAN_FUNCTIONS = new Set<string>(['attributeExists', 'attributeT
 
 export const ATTRIBUTE_TYPES = ['binary', 'binarySet', 'bool', 'list', 'map', 'number', 'numberSet', 'string', 'stringSet', '_null'];
 
-
+export const OPERATION_KEY = '__operation';
