@@ -32,11 +32,6 @@ export const minLength =
   (input: string) =>
     input.length < minLen ? message || `Input must be more than ${minLen} characters long` : true;
 
-export const exact =
-  (expected: string, message?: string): Validator =>
-  (input: string) =>
-    input === expected ? true : message ?? 'Input does not match expected value';
-
 /**
  * Logically "and"s several validators
  * If a validator returns an error message, that message is returned by this function, unless an override message is specified

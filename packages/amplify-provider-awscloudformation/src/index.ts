@@ -54,8 +54,8 @@ function onInitSuccessful(context) {
   return initializer.onInitSuccessful(context);
 }
 
-function pushResources(context, resourceList, rebuild: boolean = false) {
-  return resourcePusher.run(context, resourceList, rebuild);
+function pushResources(context, resourceList) {
+  return resourcePusher.run(context, resourceList);
 }
 
 function storeCurrentCloudBackend(context) {

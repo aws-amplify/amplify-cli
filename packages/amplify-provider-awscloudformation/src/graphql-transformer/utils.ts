@@ -43,11 +43,20 @@ export const getGQLDiff = (currentBackendDir: string, cloudBackendDir: string): 
   return null;
 };
 
-export const getGqlUpdatedResource = (resources: any[]) =>
-  resources.find(
-    resource =>
-      resource?.service === 'AppSync' && resource?.providerMetadata?.logicalId && resource?.providerPlugin === 'awscloudformation',
-  ) || null;
+export const getGqlUpdatedResource = (resources: any[]) => {
+  if (resources.length > 0) {
+    const resource = resources[0];
+    if (
+      resource.service === 'AppSync' &&
+      resource.providerMetadata &&
+      resource.providerMetadata.logicalId &&
+      resource.providerPlugin === 'awscloudformation'
+    ) {
+      return resource;
+    }
+  }
+  return null;
+};
 
 export function loadDiffableProject(path: string, rootStackName: string): DiffableProject {
   const project = readFromPath(path);

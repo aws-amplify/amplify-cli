@@ -251,21 +251,6 @@ export function amplifyPushWithNoChanges(cwd: string, testingWithLatestCodebase:
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(testingWithLatestCodebase), ['push'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
       .wait('No changes detected')
-      .run((err: Error) => err ? reject(err) : resolve());
-  });
-}
-
-export function amplifyPushDestructiveApiUpdate(cwd: string, includeForce: boolean) {
-  return new Promise<void>((resolve, reject) => {
-    const args = ['push', '--yes'];
-    if (includeForce) {
-      args.push('--force');
-    }
-    const chain = spawn(getCLIPath(), args, { cwd, stripColors: true });
-    if (includeForce) {
-      chain.wait('All resources are updated in the cloud').run(err => (err ? reject(err) : resolve()));
-    } else {
-      chain.wait('If this is intended, rerun the command with').run(err => (err ? resolve(err) : reject())); // in this case, we expect the CLI to error out
-    }
+      .run((err: Error) => (err ? reject(err) : resolve()));
   });
 }

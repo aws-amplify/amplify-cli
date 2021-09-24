@@ -13,10 +13,10 @@ import { FunctionTransformer } from 'graphql-function-transformer';
 import { HttpTransformer } from 'graphql-http-transformer';
 import { PredictionsTransformer } from 'graphql-predictions-transformer';
 import { KeyTransformer } from 'graphql-key-transformer';
-import { destructiveUpdatesFlag, ProviderName as providerName } from './constants';
+import { ProviderName as providerName } from './constants';
 import { AmplifyCLIFeatureFlagAdapter } from './utils/amplify-cli-feature-flag-adapter';
 import { isAmplifyAdminApp } from './utils/admin-helpers';
-import { $TSContext, JSONUtilities, stateManager } from 'amplify-cli-core';
+import { JSONUtilities, stateManager } from 'amplify-cli-core';
 import { ResourceConstants } from 'graphql-transformer-common';
 import { printer } from 'amplify-prompts';
 
@@ -61,7 +61,9 @@ export function searchablePushChecks(context, map): void {
     const apiCategory = teamProviderInfo[currEnv]?.categories?.api;
     const instanceType = apiCategory ? apiCategory[ResourceConstants.PARAMETERS.ElasticsearchInstanceType] : null;
     if (!instanceType || instanceType === 't2.small.elasticsearch') {
-      printer.warn("Your instance type for OpenSearch is t2.small, you may experience performance issues or data loss. Consider reconfiguring with the instructions here https://docs.amplify.aws/cli/graphql-transformer/searchable/")
+      printer.warn(
+        'Your instance type for OpenSearch is t2.small, you may experience performance issues or data loss. Consider reconfiguring with the instructions here https://docs.amplify.aws/cli/graphql-transformer/searchable/',
+      );
     }
   }
 }
@@ -307,7 +309,7 @@ async function migrateProject(context, options) {
   }
 }
 
-export async function transformGraphQLSchema(context: $TSContext, options) {
+export async function transformGraphQLSchema(context, options) {
   const useExperimentalPipelineTransformer = FeatureFlags.getBoolean('graphQLTransformer.useExperimentalPipelinedTransformer');
   if (useExperimentalPipelineTransformer) {
     return transformGraphQLSchemaV6(context, options);
@@ -378,7 +380,7 @@ export async function transformGraphQLSchema(context: $TSContext, options) {
 
   if (!parameters && fs.existsSync(parametersFilePath)) {
     try {
-      parameters = JSONUtilities.readJson(parametersFilePath);
+      parameters = context.amplify.readJsonFile(parametersFilePath);
     } catch (e) {
       parameters = {};
     }
@@ -492,8 +494,7 @@ export async function transformGraphQLSchema(context: $TSContext, options) {
   }
 
   const ff = new AmplifyCLIFeatureFlagAdapter();
-  const allowDestructiveUpdates = context?.input?.options?.[destructiveUpdatesFlag] || context.input?.options?.force;
-  const sanityCheckRulesList = getSanityCheckRules(isNewAppSyncAPI, ff, allowDestructiveUpdates);
+  const sanityCheckRulesList = getSanityCheckRules(isNewAppSyncAPI, ff);
 
   const buildConfig = {
     ...options,
@@ -518,11 +519,19 @@ export async function transformGraphQLSchema(context: $TSContext, options) {
       if (err.message === `@auth directive with 'iam' provider found, but the project has no IAM authentication provider configured.`) {
         authConfig.additionalAuthenticationProviders.push(await addGraphQLAuthRequirement(context, 'AWS_IAM'));
       } else if (!context?.parameters?.options?.yes) {
-        if (err.message === `@auth directive with 'userPools' provider found, but the project has no Cognito User Pools authentication provider configured.`) {
+        if (
+          err.message ===
+          `@auth directive with 'userPools' provider found, but the project has no Cognito User Pools authentication provider configured.`
+        ) {
           authConfig.additionalAuthenticationProviders.push(await addGraphQLAuthRequirement(context, 'AMAZON_COGNITO_USER_POOLS'));
-        } else if (err.message === `@auth directive with 'oidc' provider found, but the project has no OPENID_CONNECT authentication provider configured.`) {
+        } else if (
+          err.message ===
+          `@auth directive with 'oidc' provider found, but the project has no OPENID_CONNECT authentication provider configured.`
+        ) {
           authConfig.additionalAuthenticationProviders.push(await addGraphQLAuthRequirement(context, 'OPENID_CONNECT'));
-        } else if (err.message === `@auth directive with 'apiKey' provider found, but the project has no API Key authentication provider configured.`) {
+        } else if (
+          err.message === `@auth directive with 'apiKey' provider found, but the project has no API Key authentication provider configured.`
+        ) {
           authConfig.additionalAuthenticationProviders.push(await addGraphQLAuthRequirement(context, 'AWS_KEY'));
         } else {
           throw err;
