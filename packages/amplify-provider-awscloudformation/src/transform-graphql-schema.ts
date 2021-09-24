@@ -13,10 +13,10 @@ import { FunctionTransformer } from 'graphql-function-transformer';
 import { HttpTransformer } from 'graphql-http-transformer';
 import { PredictionsTransformer } from 'graphql-predictions-transformer';
 import { KeyTransformer } from 'graphql-key-transformer';
-import { destructiveUpdatesFlag, ProviderName as providerName } from './constants';
+import { ProviderName as providerName } from './constants';
 import { AmplifyCLIFeatureFlagAdapter } from './utils/amplify-cli-feature-flag-adapter';
 import { isAmplifyAdminApp } from './utils/admin-helpers';
-import { $TSContext, JSONUtilities, stateManager } from 'amplify-cli-core';
+import { JSONUtilities, stateManager } from 'amplify-cli-core';
 import { ResourceConstants } from 'graphql-transformer-common';
 import { printer, prompter } from 'amplify-prompts';
 
@@ -308,7 +308,7 @@ async function migrateProject(context, options) {
   }
 }
 
-export async function transformGraphQLSchema(context: $TSContext, options) {
+export async function transformGraphQLSchema(context, options) {
   const useExperimentalPipelineTransformer = FeatureFlags.getBoolean('graphQLTransformer.useExperimentalPipelinedTransformer');
   if (useExperimentalPipelineTransformer) {
     return transformGraphQLSchemaV6(context, options);
@@ -385,7 +385,7 @@ export async function transformGraphQLSchema(context: $TSContext, options) {
 
   if (!parameters && fs.existsSync(parametersFilePath)) {
     try {
-      parameters = JSONUtilities.readJson(parametersFilePath);
+      parameters = context.amplify.readJsonFile(parametersFilePath);
     } catch (e) {
       parameters = {};
     }
@@ -499,8 +499,7 @@ export async function transformGraphQLSchema(context: $TSContext, options) {
   }
 
   const ff = new AmplifyCLIFeatureFlagAdapter();
-  const allowDestructiveUpdates = context?.input?.options?.[destructiveUpdatesFlag] || context.input?.options?.force;
-  const sanityCheckRulesList = getSanityCheckRules(isNewAppSyncAPI, ff, allowDestructiveUpdates);
+  const sanityCheckRulesList = getSanityCheckRules(isNewAppSyncAPI, ff);
 
   const buildConfig = {
     ...options,
