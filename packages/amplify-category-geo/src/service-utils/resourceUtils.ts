@@ -1,9 +1,9 @@
 import { JSONUtilities, pathManager, $TSObject, stateManager, $TSContext } from 'amplify-cli-core';
-import { category } from '../constants';
+import { category, supportedRegions } from '../constants';
 import path from 'path';
 import _ from 'lodash';
 import { BaseStack } from '../service-stacks/baseStack';
-import { parametersFileName, ServiceName } from './constants';
+import { parametersFileName, ServiceName, provider } from './constants';
 import { PricingPlan, ResourceParameters, AccessType } from './resourceParams';
 import os from 'os';
 import { getMapIamPolicies } from './mapUtils';
@@ -215,3 +215,12 @@ export const getServicePermissionPolicies = (
   }
   return {policy: [], attributes: []};
 }
+
+export const verifySupportedRegion = (): boolean => {
+  const currentRegion = stateManager.getMeta()?.providers[provider]?.Region;
+  if(!supportedRegions.includes(currentRegion)) {
+    printer.error(`Geo category is not supported in your region: ${currentRegion}`);
+    return false;
+  }
+  return true;
+};

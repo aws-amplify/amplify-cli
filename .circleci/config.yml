@@ -1018,7 +1018,7 @@ jobs:
     steps: *ref_5
     environment:
       TEST_SUITE: src/__tests__/geo-remove.test.ts
-      CLI_REGION: eu-west-2
+      CLI_REGION: eu-central-1
   geo-update-amplify_e2e_tests:
     working_directory: ~/repo
     docker: *ref_1
@@ -1026,7 +1026,7 @@ jobs:
     steps: *ref_5
     environment:
       TEST_SUITE: src/__tests__/geo-update.test.ts
-      CLI_REGION: eu-central-1
+      CLI_REGION: ap-northeast-1
   geo-add-amplify_e2e_tests:
     working_directory: ~/repo
     docker: *ref_1
@@ -1034,7 +1034,7 @@ jobs:
     steps: *ref_5
     environment:
       TEST_SUITE: src/__tests__/geo-add.test.ts
-      CLI_REGION: ap-northeast-1
+      CLI_REGION: ap-southeast-1
   hostingPROD-amplify_e2e_tests:
     working_directory: ~/repo
     docker: *ref_1
@@ -1763,7 +1763,7 @@ jobs:
       AMPLIFY_DIR: /home/circleci/repo/out
       AMPLIFY_PATH: /home/circleci/repo/out/amplify-pkg-linux
       TEST_SUITE: src/__tests__/geo-remove.test.ts
-      CLI_REGION: eu-west-2
+      CLI_REGION: eu-central-1
     steps: *ref_6
   geo-update-amplify_e2e_tests_pkg_linux:
     working_directory: ~/repo
@@ -1773,7 +1773,7 @@ jobs:
       AMPLIFY_DIR: /home/circleci/repo/out
       AMPLIFY_PATH: /home/circleci/repo/out/amplify-pkg-linux
       TEST_SUITE: src/__tests__/geo-update.test.ts
-      CLI_REGION: eu-central-1
+      CLI_REGION: ap-northeast-1
     steps: *ref_6
   geo-add-amplify_e2e_tests_pkg_linux:
     working_directory: ~/repo
@@ -1783,7 +1783,7 @@ jobs:
       AMPLIFY_DIR: /home/circleci/repo/out
       AMPLIFY_PATH: /home/circleci/repo/out/amplify-pkg-linux
       TEST_SUITE: src/__tests__/geo-add.test.ts
-      CLI_REGION: ap-northeast-1
+      CLI_REGION: ap-southeast-1
     steps: *ref_6
   hostingPROD-amplify_e2e_tests_pkg_linux:
     working_directory: ~/repo
@@ -2630,36 +2630,30 @@ workflows:
           filters: *ref_10
           requires:
             - migration-api-connection-migration-amplify_e2e_tests
-      - geo-remove-amplify_e2e_tests:
-          context: *ref_8
-          post-steps: *ref_9
-          filters: *ref_10
-          requires:
-            - schema-auth-11-amplify_e2e_tests
       - feature-flags-amplify_e2e_tests:
           context: *ref_8
           post-steps: *ref_9
           filters: *ref_10
           requires:
-            - import_s3_1-amplify_e2e_tests
+            - schema-auth-11-amplify_e2e_tests
       - schema-versioned-amplify_e2e_tests:
           context: *ref_8
           post-steps: *ref_9
           filters: *ref_10
           requires:
-            - schema-auth-7-amplify_e2e_tests
+            - import_s3_1-amplify_e2e_tests
       - plugin-amplify_e2e_tests:
           context: *ref_8
           post-steps: *ref_9
           filters: *ref_10
           requires:
-            - schema-auth-3-amplify_e2e_tests
+            - schema-auth-7-amplify_e2e_tests
       - hooks-amplify_e2e_tests:
           context: *ref_8
           post-steps: *ref_9
           filters: *ref_10
           requires:
-            - geo-remove-amplify_e2e_tests
+            - schema-auth-3-amplify_e2e_tests
       - auth_6-amplify_e2e_tests:
           context: *ref_8
           post-steps: *ref_9
@@ -2702,7 +2696,7 @@ workflows:
           filters: *ref_10
           requires:
             - schema-model-amplify_e2e_tests
-      - geo-update-amplify_e2e_tests:
+      - geo-remove-amplify_e2e_tests:
           context: *ref_8
           post-steps: *ref_9
           filters: *ref_10
@@ -2731,7 +2725,7 @@ workflows:
           post-steps: *ref_9
           filters: *ref_10
           requires:
-            - geo-update-amplify_e2e_tests
+            - geo-remove-amplify_e2e_tests
       - api_5-amplify_e2e_tests:
           context: *ref_8
           post-steps: *ref_9
@@ -2774,7 +2768,7 @@ workflows:
           filters: *ref_10
           requires:
             - schema-function-amplify_e2e_tests
-      - geo-add-amplify_e2e_tests:
+      - geo-update-amplify_e2e_tests:
           context: *ref_8
           post-steps: *ref_9
           filters: *ref_10
@@ -2803,7 +2797,7 @@ workflows:
           post-steps: *ref_9
           filters: *ref_10
           requires:
-            - geo-add-amplify_e2e_tests
+            - geo-update-amplify_e2e_tests
       - api_4-amplify_e2e_tests:
           context: *ref_8
           post-steps: *ref_9
@@ -2846,30 +2840,36 @@ workflows:
           filters: *ref_10
           requires:
             - function_4-amplify_e2e_tests
-      - hostingPROD-amplify_e2e_tests:
+      - geo-add-amplify_e2e_tests:
           context: *ref_8
           post-steps: *ref_9
           filters: *ref_10
           requires:
             - env-amplify_e2e_tests
-      - amplify-app-amplify_e2e_tests:
+      - hostingPROD-amplify_e2e_tests:
           context: *ref_8
           post-steps: *ref_9
           filters: *ref_10
           requires:
             - api_3-amplify_e2e_tests
-      - init-amplify_e2e_tests:
+      - amplify-app-amplify_e2e_tests:
           context: *ref_8
           post-steps: *ref_9
           filters: *ref_10
           requires:
             - layer-amplify_e2e_tests
-      - pull-amplify_e2e_tests:
+      - init-amplify_e2e_tests:
           context: *ref_8
           post-steps: *ref_9
           filters: *ref_10
           requires:
             - auth_5-amplify_e2e_tests
+      - pull-amplify_e2e_tests:
+          context: *ref_8
+          post-steps: *ref_9
+          filters: *ref_10
+          requires:
+            - geo-add-amplify_e2e_tests
       - function_5-amplify_e2e_tests:
           context: *ref_8
           post-steps: *ref_9
@@ -3144,36 +3144,30 @@ workflows:
           filters: *ref_13
           requires:
             - migration-api-connection-migration-amplify_e2e_tests_pkg_linux
-      - geo-remove-amplify_e2e_tests_pkg_linux:
-          context: *ref_11
-          post-steps: *ref_12
-          filters: *ref_13
-          requires:
-            - schema-auth-11-amplify_e2e_tests_pkg_linux
       - feature-flags-amplify_e2e_tests_pkg_linux:
           context: *ref_11
           post-steps: *ref_12
           filters: *ref_13
           requires:
-            - import_s3_1-amplify_e2e_tests_pkg_linux
+            - schema-auth-11-amplify_e2e_tests_pkg_linux
       - schema-versioned-amplify_e2e_tests_pkg_linux:
           context: *ref_11
           post-steps: *ref_12
           filters: *ref_13
           requires:
-            - schema-auth-7-amplify_e2e_tests_pkg_linux
+            - import_s3_1-amplify_e2e_tests_pkg_linux
       - plugin-amplify_e2e_tests_pkg_linux:
           context: *ref_11
           post-steps: *ref_12
           filters: *ref_13
           requires:
-            - schema-auth-3-amplify_e2e_tests_pkg_linux
+            - schema-auth-7-amplify_e2e_tests_pkg_linux
       - hooks-amplify_e2e_tests_pkg_linux:
           context: *ref_11
           post-steps: *ref_12
           filters: *ref_13
           requires:
-            - geo-remove-amplify_e2e_tests_pkg_linux
+            - schema-auth-3-amplify_e2e_tests_pkg_linux
       - auth_6-amplify_e2e_tests_pkg_linux:
           context: *ref_11
           post-steps: *ref_12
@@ -3220,7 +3214,7 @@ workflows:
           filters: *ref_13
           requires:
             - schema-model-amplify_e2e_tests_pkg_linux
-      - geo-update-amplify_e2e_tests_pkg_linux:
+      - geo-remove-amplify_e2e_tests_pkg_linux:
           context: *ref_11
           post-steps: *ref_12
           filters: *ref_13
@@ -3249,7 +3243,7 @@ workflows:
           post-steps: *ref_12
           filters: *ref_13
           requires:
-            - geo-update-amplify_e2e_tests_pkg_linux
+            - geo-remove-amplify_e2e_tests_pkg_linux
       - api_5-amplify_e2e_tests_pkg_linux:
           context: *ref_11
           post-steps: *ref_12
@@ -3296,7 +3290,7 @@ workflows:
           filters: *ref_13
           requires:
             - schema-function-amplify_e2e_tests_pkg_linux
-      - geo-add-amplify_e2e_tests_pkg_linux:
+      - geo-update-amplify_e2e_tests_pkg_linux:
           context: *ref_11
           post-steps: *ref_12
           filters: *ref_13
@@ -3325,7 +3319,7 @@ workflows:
           post-steps: *ref_12
           filters: *ref_13
           requires:
-            - geo-add-amplify_e2e_tests_pkg_linux
+            - geo-update-amplify_e2e_tests_pkg_linux
       - api_4-amplify_e2e_tests_pkg_linux:
           context: *ref_11
           post-steps: *ref_12
@@ -3372,30 +3366,36 @@ workflows:
           filters: *ref_13
           requires:
             - function_4-amplify_e2e_tests_pkg_linux
-      - hostingPROD-amplify_e2e_tests_pkg_linux:
+      - geo-add-amplify_e2e_tests_pkg_linux:
           context: *ref_11
           post-steps: *ref_12
           filters: *ref_13
           requires:
             - env-amplify_e2e_tests_pkg_linux
-      - amplify-app-amplify_e2e_tests_pkg_linux:
+      - hostingPROD-amplify_e2e_tests_pkg_linux:
           context: *ref_11
           post-steps: *ref_12
           filters: *ref_13
           requires:
             - api_3-amplify_e2e_tests_pkg_linux
-      - init-amplify_e2e_tests_pkg_linux:
+      - amplify-app-amplify_e2e_tests_pkg_linux:
           context: *ref_11
           post-steps: *ref_12
           filters: *ref_13
           requires:
             - layer-amplify_e2e_tests_pkg_linux
-      - pull-amplify_e2e_tests_pkg_linux:
+      - init-amplify_e2e_tests_pkg_linux:
           context: *ref_11
           post-steps: *ref_12
           filters: *ref_13
           requires:
             - auth_5-amplify_e2e_tests_pkg_linux
+      - pull-amplify_e2e_tests_pkg_linux:
+          context: *ref_11
+          post-steps: *ref_12
+          filters: *ref_13
+          requires:
+            - geo-add-amplify_e2e_tests_pkg_linux
       - function_5-amplify_e2e_tests_pkg_linux:
           context: *ref_11
           post-steps: *ref_12
