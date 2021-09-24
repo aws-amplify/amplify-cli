@@ -60,11 +60,13 @@
         "graphql": "^14.5.8",
         "graphql-transformer-common": "4.19.9",
         "lodash": "^4.17.21",
-        "ts-dedent": "^2.0.0"
+        "ts-dedent": "^2.0.0",
+        "md5": "^2.3.0"
     },
     "devDependencies": {
         "@types/fs-extra": "^8.0.1",
-        "@types/node": "^12.12.6"
+        "@types/node": "^12.12.6",
+        "@types/md5": "^2.3.1"
     },
     "jest": {
         "transform": {
