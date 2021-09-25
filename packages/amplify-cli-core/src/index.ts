@@ -23,9 +23,12 @@ export * from './banner-message';
 export * from './cliGetCategories';
 export * from './cliRemoveResourcePrompt';
 export * from './cliViewAPI';
+export * from './overrides-manager';
 export * from './hooks';
 export * from './cliViewAPI';
 export * from './customPoliciesUtils'
+export * from './cliConstants';
+export * from './category-interfaces';
 
 // Temporary types until we can finish full type definition across the whole CLI
 

@@ -38,6 +38,8 @@ import { updateEnv } from './update-env';
 
 import { uploadHooksDirectory } from './utils/hooks-manager';
 
+import { transformResourceWithOverrides } from './override-manager';
+
 function init(context) {
   return initializer.run(context);
 }
@@ -162,5 +164,6 @@ module.exports = {
   updateEnv,
   uploadHooksDirectory,
   getLocationSupportedRegion,
-  getLocationRegionMapping
+  getLocationRegionMapping,
+  transformResourceWithOverrides,
 };
