@@ -1,17 +1,12 @@
-import * as helpers from '../../utils/sandbox-mode-helpers';
+import { showSandboxModePrompts } from '../../utils/sandbox-mode-helpers';
 import { $TSContext } from 'amplify-cli-core';
 import chalk from 'chalk';
 import * as prompts from 'amplify-prompts';
-import * as api from 'amplify-category-api';
 import * as apiKeyHelpers from '../../utils/api-key-helpers';
 
 let ctx;
 let apiKeyActive = true;
 let apiKeyPresent = true;
-
-jest.mock('amplify-category-api', () => ({
-  promptToAddApiKey: jest.fn(),
-}));
 
 describe('sandbox mode helpers', () => {
   beforeEach(() => {
@@ -21,12 +16,11 @@ describe('sandbox mode helpers', () => {
         getEnvInfo() {
           return { envName };
         },
+        invokePluginMethod: jest.fn(),
       },
     } as unknown as $TSContext;
 
     jest.spyOn(prompts.printer, 'info').mockImplementation();
-    jest.spyOn(api, 'promptToAddApiKey');
-
     jest.spyOn(apiKeyHelpers, 'apiKeyIsActive').mockReturnValue(apiKeyActive);
     jest.spyOn(apiKeyHelpers, 'hasApiKey').mockReturnValue(apiKeyPresent);
   });
@@ -38,7 +32,7 @@ describe('sandbox mode helpers', () => {
       });
 
       it('displays warning', async () => {
-        await helpers.showSandboxModePrompts(ctx);
+        await showSandboxModePrompts(ctx);
 
         expect(prompts.printer.info).toBeCalledWith(
           `
@@ -49,7 +43,7 @@ sandbox mode disabled in '${ctx.amplify.getEnvInfo().envName}', do not create an
 `,
           'yellow',
         );
-        expect(api.promptToAddApiKey).toBeCalledWith(ctx);
+        expect(ctx.amplify.invokePluginMethod).toBeCalledWith(ctx, 'api', undefined, 'promptToAddApiKey', [ctx]);
       });
     });
 
@@ -59,7 +53,7 @@ sandbox mode disabled in '${ctx.amplify.getEnvInfo().envName}', do not create an
       });
 
       it('displays warning', async () => {
-        await helpers.showSandboxModePrompts(ctx);
+        await showSandboxModePrompts(ctx);
 
         expect(prompts.printer.info).toBeCalledWith(
           `
@@ -70,7 +64,7 @@ sandbox mode disabled in '${ctx.amplify.getEnvInfo().envName}', do not create an
 `,
           'yellow',
         );
-        expect(api.promptToAddApiKey).toBeCalledWith(ctx);
+        expect(ctx.amplify.invokePluginMethod).toBeCalledWith(ctx, 'api', undefined, 'promptToAddApiKey', [ctx]);
       });
     });
   });

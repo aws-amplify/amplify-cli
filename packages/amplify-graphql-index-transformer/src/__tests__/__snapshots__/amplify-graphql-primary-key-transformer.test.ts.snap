@@ -619,9 +619,9 @@ $util.toJson({
   \\"payload\\": {}
 })
 ## [End] Subscription Request template. **",
-  "Subscription.onCreateTest.res.vtl": "## [Start] Subscription Resonse template. **
+  "Subscription.onCreateTest.res.vtl": "## [Start] Subscription Response template. **
 $util.toJson(null)
-## [End] Subscription Resonse template. **",
+## [End] Subscription Response template. **",
   "Subscription.onDeleteTest.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
@@ -634,9 +634,9 @@ $util.toJson({
   \\"payload\\": {}
 })
 ## [End] Subscription Request template. **",
-  "Subscription.onDeleteTest.res.vtl": "## [Start] Subscription Resonse template. **
+  "Subscription.onDeleteTest.res.vtl": "## [Start] Subscription Response template. **
 $util.toJson(null)
-## [End] Subscription Resonse template. **",
+## [End] Subscription Response template. **",
   "Subscription.onUpdateTest.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
@@ -649,9 +649,9 @@ $util.toJson({
   \\"payload\\": {}
 })
 ## [End] Subscription Request template. **",
-  "Subscription.onUpdateTest.res.vtl": "## [Start] Subscription Resonse template. **
+  "Subscription.onUpdateTest.res.vtl": "## [Start] Subscription Response template. **
 $util.toJson(null)
-## [End] Subscription Resonse template. **",
+## [End] Subscription Response template. **",
 }
 `;
 
@@ -1214,9 +1214,9 @@ $util.toJson({
   \\"payload\\": {}
 })
 ## [End] Subscription Request template. **",
-  "Subscription.onCreateTest.res.vtl": "## [Start] Subscription Resonse template. **
+  "Subscription.onCreateTest.res.vtl": "## [Start] Subscription Response template. **
 $util.toJson(null)
-## [End] Subscription Resonse template. **",
+## [End] Subscription Response template. **",
   "Subscription.onDeleteTest.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
@@ -1229,9 +1229,9 @@ $util.toJson({
   \\"payload\\": {}
 })
 ## [End] Subscription Request template. **",
-  "Subscription.onDeleteTest.res.vtl": "## [Start] Subscription Resonse template. **
+  "Subscription.onDeleteTest.res.vtl": "## [Start] Subscription Response template. **
 $util.toJson(null)
-## [End] Subscription Resonse template. **",
+## [End] Subscription Response template. **",
   "Subscription.onUpdateTest.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
@@ -1244,9 +1244,9 @@ $util.toJson({
   \\"payload\\": {}
 })
 ## [End] Subscription Request template. **",
-  "Subscription.onUpdateTest.res.vtl": "## [Start] Subscription Resonse template. **
+  "Subscription.onUpdateTest.res.vtl": "## [Start] Subscription Response template. **
 $util.toJson(null)
-## [End] Subscription Resonse template. **",
+## [End] Subscription Response template. **",
 }
 `;
 
@@ -1762,9 +1762,9 @@ $util.toJson({
   \\"payload\\": {}
 })
 ## [End] Subscription Request template. **",
-  "Subscription.onCreateTest.res.vtl": "## [Start] Subscription Resonse template. **
+  "Subscription.onCreateTest.res.vtl": "## [Start] Subscription Response template. **
 $util.toJson(null)
-## [End] Subscription Resonse template. **",
+## [End] Subscription Response template. **",
   "Subscription.onDeleteTest.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
@@ -1777,9 +1777,9 @@ $util.toJson({
   \\"payload\\": {}
 })
 ## [End] Subscription Request template. **",
-  "Subscription.onDeleteTest.res.vtl": "## [Start] Subscription Resonse template. **
+  "Subscription.onDeleteTest.res.vtl": "## [Start] Subscription Response template. **
 $util.toJson(null)
-## [End] Subscription Resonse template. **",
+## [End] Subscription Response template. **",
   "Subscription.onUpdateTest.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
@@ -1792,9 +1792,9 @@ $util.toJson({
   \\"payload\\": {}
 })
 ## [End] Subscription Request template. **",
-  "Subscription.onUpdateTest.res.vtl": "## [Start] Subscription Resonse template. **
+  "Subscription.onUpdateTest.res.vtl": "## [Start] Subscription Response template. **
 $util.toJson(null)
-## [End] Subscription Resonse template. **",
+## [End] Subscription Response template. **",
 }
 `;
 
@@ -2357,9 +2357,9 @@ $util.toJson({
   \\"payload\\": {}
 })
 ## [End] Subscription Request template. **",
-  "Subscription.onCreateTest.res.vtl": "## [Start] Subscription Resonse template. **
+  "Subscription.onCreateTest.res.vtl": "## [Start] Subscription Response template. **
 $util.toJson(null)
-## [End] Subscription Resonse template. **",
+## [End] Subscription Response template. **",
   "Subscription.onDeleteTest.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
@@ -2372,9 +2372,9 @@ $util.toJson({
   \\"payload\\": {}
 })
 ## [End] Subscription Request template. **",
-  "Subscription.onDeleteTest.res.vtl": "## [Start] Subscription Resonse template. **
+  "Subscription.onDeleteTest.res.vtl": "## [Start] Subscription Response template. **
 $util.toJson(null)
-## [End] Subscription Resonse template. **",
+## [End] Subscription Response template. **",
   "Subscription.onUpdateTest.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
@@ -2387,9 +2387,9 @@ $util.toJson({
   \\"payload\\": {}
 })
 ## [End] Subscription Request template. **",
-  "Subscription.onUpdateTest.res.vtl": "## [Start] Subscription Resonse template. **
+  "Subscription.onUpdateTest.res.vtl": "## [Start] Subscription Response template. **
 $util.toJson(null)
-## [End] Subscription Resonse template. **",
+## [End] Subscription Response template. **",
 }
 `;
 
@@ -3453,9 +3453,9 @@ $util.toJson({
   \\"payload\\": {}
 })
 ## [End] Subscription Request template. **",
-  "Subscription.onCreateTest.res.vtl": "## [Start] Subscription Resonse template. **
+  "Subscription.onCreateTest.res.vtl": "## [Start] Subscription Response template. **
 $util.toJson(null)
-## [End] Subscription Resonse template. **",
+## [End] Subscription Response template. **",
   "Subscription.onDeleteTest.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
@@ -3468,9 +3468,9 @@ $util.toJson({
   \\"payload\\": {}
 })
 ## [End] Subscription Request template. **",
-  "Subscription.onDeleteTest.res.vtl": "## [Start] Subscription Resonse template. **
+  "Subscription.onDeleteTest.res.vtl": "## [Start] Subscription Response template. **
 $util.toJson(null)
-## [End] Subscription Resonse template. **",
+## [End] Subscription Response template. **",
   "Subscription.onUpdateTest.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
@@ -3483,9 +3483,9 @@ $util.toJson({
   \\"payload\\": {}
 })
 ## [End] Subscription Request template. **",
-  "Subscription.onUpdateTest.res.vtl": "## [Start] Subscription Resonse template. **
+  "Subscription.onUpdateTest.res.vtl": "## [Start] Subscription Response template. **
 $util.toJson(null)
-## [End] Subscription Resonse template. **",
+## [End] Subscription Response template. **",
 }
 `;
 
@@ -4546,9 +4546,9 @@ $util.toJson({
   \\"payload\\": {}
 })
 ## [End] Subscription Request template. **",
-  "Subscription.onCreateTest.res.vtl": "## [Start] Subscription Resonse template. **
+  "Subscription.onCreateTest.res.vtl": "## [Start] Subscription Response template. **
 $util.toJson(null)
-## [End] Subscription Resonse template. **",
+## [End] Subscription Response template. **",
   "Subscription.onDeleteTest.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
@@ -4561,9 +4561,9 @@ $util.toJson({
   \\"payload\\": {}
 })
 ## [End] Subscription Request template. **",
-  "Subscription.onDeleteTest.res.vtl": "## [Start] Subscription Resonse template. **
+  "Subscription.onDeleteTest.res.vtl": "## [Start] Subscription Response template. **
 $util.toJson(null)
-## [End] Subscription Resonse template. **",
+## [End] Subscription Response template. **",
   "Subscription.onUpdateTest.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
 #if( !$ctx.stash.get(\\"hasAuth\\") )
   $util.unauthorized()
@@ -4576,8 +4576,8 @@ $util.toJson({
   \\"payload\\": {}
 })
 ## [End] Subscription Request template. **",
-  "Subscription.onUpdateTest.res.vtl": "## [Start] Subscription Resonse template. **
+  "Subscription.onUpdateTest.res.vtl": "## [Start] Subscription Response template. **
 $util.toJson(null)
-## [End] Subscription Resonse template. **",
+## [End] Subscription Response template. **",
 }
 `;
