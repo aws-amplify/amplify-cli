@@ -4,7 +4,8 @@ import { onCategoryOutputsChange } from './on-category-outputs-change';
 import { initializeEnv } from '../../initialize-env';
 import { getProviderPlugins } from './get-provider-plugins';
 import { getEnvInfo } from './get-env-info';
-import { EnvironmentDoesNotExistError, exitOnNextTick, stateManager, $TSAny, $TSContext } from 'amplify-cli-core';
+import { EnvironmentDoesNotExistError, exitOnNextTick, stateManager, $TSAny, $TSContext, IAmplifyResource } from 'amplify-cli-core';
+import { getResources } from '../../commands/build-override';
 
 export async function pushResources(
   context: $TSContext,
@@ -48,6 +49,10 @@ export async function pushResources(
       exitOnNextTick(1);
     }
   }
+
+  // building all CFN stacks here to get the resource Changes
+  const resourcesToBuild: IAmplifyResource[] = await getResources(context);
+  context.amplify.executeProviderUtils(context, 'awscloudformation', 'buildOverrides', { resourcesToBuild, forceCompile: true });
 
   const hasChanges = await showResourceTable(category, resourceName, filteredResources);
 
