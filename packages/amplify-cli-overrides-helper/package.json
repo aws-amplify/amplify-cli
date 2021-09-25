@@ -1,0 +1,48 @@
+{
+  "name": "@aws-amplify/cli-overrides-helper",
+  "version": "1.0.0",
+  "description": "Amplify CLI Overrides Helper utility package",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aws-amplify/amplify-cli.git",
+    "directory": "packages/amplify-cli-overrides-helper"
+  },
+  "author": "Amazon Web Services",
+  "license": "Apache-2.0",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "keywords": [
+    "graphql",
+    "cli",
+    "cloudformation",
+    "aws",
+    "amplify"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc -w",
+    "clean": "rimraf ./lib"
+  },
+  "dependencies": {
+    "amplify-prompts": "1.1.2"
+  },
+  "devDependencies": {},
+  "jest": {
+    "transform": {
+      "^.+\\.(ts|tsx)?$": "ts-jest"
+    },
+    "testRegex": "(src/__tests__/.*.test.ts)$",
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "jsx",
+      "json",
+      "node"
+    ],
+    "collectCoverage": true
+  }
+}
