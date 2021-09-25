@@ -4,13 +4,8 @@ import { onCategoryOutputsChange } from './on-category-outputs-change';
 import { initializeEnv } from '../../initialize-env';
 import { getProviderPlugins } from './get-provider-plugins';
 import { getEnvInfo } from './get-env-info';
-import {
-  EnvironmentDoesNotExistError,
-  exitOnNextTick,
-  stateManager,
-  $TSAny,
-  $TSContext,
-} from 'amplify-cli-core';
+import { EnvironmentDoesNotExistError, exitOnNextTick, stateManager, $TSAny, $TSContext, IAmplifyResource } from 'amplify-cli-core';
+import { getResources } from '../../commands/build-override';
 import { printer } from 'amplify-prompts';
 
 export async function pushResources(
@@ -57,7 +52,10 @@ export async function pushResources(
     }
   }
 
-  let hasChanges = false;
+  // building all CFN stacks here to get the resource Changes
+  const resourcesToBuild: IAmplifyResource[] = await getResources(context);
+  context.amplify.executeProviderUtils(context, 'awscloudformation', 'buildOverrides', { resourcesToBuild, forceCompile: true });
+
   if (!rebuild) {
     // status table does not have a way to show resource in "rebuild" state so skipping it to avoid confusion
     hasChanges = await showResourceTable(category, resourceName, filteredResources);
