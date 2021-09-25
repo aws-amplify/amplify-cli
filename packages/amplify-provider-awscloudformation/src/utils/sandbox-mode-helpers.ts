@@ -1,6 +1,5 @@
 import chalk from 'chalk';
 import { $TSContext } from 'amplify-cli-core';
-import { promptToAddApiKey } from 'amplify-category-api';
 import { getApiKeyConfig, apiKeyIsActive, hasApiKey } from './api-key-helpers';
 import { printer } from 'amplify-prompts';
 
@@ -15,7 +14,7 @@ sandbox mode disabled in '${context.amplify.getEnvInfo().envName}', do not creat
 `,
       'yellow',
     );
-    return await promptToAddApiKey(context);
+    return await context.amplify.invokePluginMethod(context, 'api', undefined, 'promptToAddApiKey', [context]);
   } else {
     showGlobalSandboxModeWarning();
     return;
