@@ -68,3 +68,5 @@ packages/**/reports/junit/*
 test.out.log
 *.tsbuildinfo
 packages/amplify-graphiql-explorer/.eslintcache
+packages/amplify-cli-overrides-helper/lib
+
