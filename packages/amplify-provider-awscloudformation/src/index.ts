@@ -39,6 +39,8 @@ import { updateEnv } from './update-env';
 import { uploadHooksDirectory } from './utils/hooks-manager';
 import { getTransformerVersion } from './transform-graphql-schema';
 
+import { transformResourceWithOverrides } from './override-manager';
+
 function init(context) {
   return initializer.run(context);
 }
@@ -165,4 +167,5 @@ module.exports = {
   getLocationSupportedRegion,
   getLocationRegionMapping,
   getTransformerVersion,
+  transformResourceWithOverrides,
 };
