@@ -323,6 +323,7 @@ module.exports = {
     '/packages/amplify-graphql-*transformer*/lib',
     '/packages/amplify-provider-awscloudformation/lib',
     '/packages/amplify-console-integration-tests/lib',
+    '/packages/amplify-cli-overrides-helper/lib',
 
     // Ignore CHANGELOG.md files
     '/packages/*/CHANGELOG.md',
