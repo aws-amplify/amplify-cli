@@ -1,3 +1,5 @@
+import { FeatureFlags } from 'amplify-cli-core';
+
 export function getCategoryPluginInfo(context, category, service?) {
   let categoryPluginInfo;
 
@@ -15,6 +17,12 @@ export function getCategoryPluginInfo(context, category, service?) {
         categoryPluginInfo = pluginInfosForCategory[0];
       }
     } else {
+      const overidedPlugin = pluginInfosForCategory.find(plugin => {
+        return plugin.packageName === `@aws-amplify/amplify-category-${category}` && FeatureFlags.getBoolean(`overrides.${category}`);
+      });
+      if (overidedPlugin !== undefined) {
+        return overidedPlugin;
+      }
       categoryPluginInfo = pluginInfosForCategory[0];
     }
   }
