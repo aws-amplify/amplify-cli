@@ -55,13 +55,11 @@ function setSudoNpmRegistryUrlToLocal {
 
 function setAwsAccountCredentials {
   if [[ "$OSTYPE" == "win32" ]]; then
-    # windows, do nothing
     echo "Using parent account credentials for OSTYPE $OSTYPE"
   elif [[ "$OSTYPE" == "cygwin" ]]; then
-    # windows, do nothing
     echo "Using parent account credentials for OSTYPE $OSTYPE"
   elif [[ "$OSTYPE" == "msys" ]]; then
-    # windows, do nothing
+    # windows provided by circleci has this OSTYPE
     if [ -z "$USE_PARENT_ACCOUNT" ]; then
       export AWS_PAGER=""
       export CREDS=$(aws sts assume-role --role-arn arn:aws:iam::$(aws organizations list-accounts | jq -c -r ".Accounts [$((1 + $RANDOM % 5))].Id"):role/OrganizationAccountAccessRole --role-session-name testSession$((1 + $RANDOM % 10000)) --duration-seconds 3600)

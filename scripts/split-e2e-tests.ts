@@ -21,7 +21,7 @@ const WINDOWS_TEST_FAILURES = [
   'auth_2-amplify_e2e_tests',
   'auth_3-amplify_e2e_tests',
   // Auth tests are failing because
-  // us-east-1 region is not allowed in e2e test account
+  // us-east-1 region is not allowed in parent e2e test account
   // and `singleSelect` for region is not working properly in windows
   'auth_5-amplify_e2e_tests',
   'auth_6-amplify_e2e_tests',
