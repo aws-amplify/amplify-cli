@@ -1,5 +1,5 @@
 import { pathManager } from 'amplify-cli-core';
-import { nestedStackFileName } from 'amplify-provider-awscloudformation';
+import { rootStackFileName } from 'amplify-provider-awscloudformation';
 import { hashElement, HashElementOptions } from 'folder-hash';
 import * as fs from 'fs-extra';
 
@@ -20,9 +20,9 @@ export async function isRootStackModifiedSinceLastPush(hashFunction): Promise<bo
     const localBackendDir = pathManager.getRootStackDirPath(projectPath!);
     const cloudBackendDir = pathManager.getCurrentCloudRootStackDirPath(projectPath!);
     if (fs.existsSync(localBackendDir)) {
-      const localDirHash = await hashFunction(localBackendDir, [nestedStackFileName]);
+      const localDirHash = await hashFunction(localBackendDir, [rootStackFileName]);
       if (fs.existsSync(cloudBackendDir)) {
-        const cloudDirHash = await hashFunction(cloudBackendDir, [nestedStackFileName]);
+        const cloudDirHash = await hashFunction(cloudBackendDir, [rootStackFileName]);
         return localDirHash !== cloudDirHash;
       } else {
         return true;
