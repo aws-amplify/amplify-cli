@@ -75,7 +75,7 @@ export function removeAuthWithDefault(cwd: string): Promise<void> {
       .wait('Choose the resource you would want to remove')
       .sendCarriageReturn()
       .wait('Are you sure you want to delete the resource? This')
-      .sendLine('y')
+      .sendConfirmYes()
       .sendEof()
       .run((err: Error) => {
         if (!err) {
@@ -885,7 +885,7 @@ export function addAuthWithGroupsAndAdminAPI(cwd: string, settings: any): Promis
       .wait('Provide a name for your user pool group')
       .sendLine('Admins')
       .wait('Do you want to add another User Pool Group')
-      .sendLine('y')
+      .sendConfirmYes()
       .wait('Provide a name for your user pool group')
       .sendLine('Users')
       .wait('Do you want to add another User Pool Group')
@@ -895,7 +895,7 @@ export function addAuthWithGroupsAndAdminAPI(cwd: string, settings: any): Promis
       .wait('Do you want to add an admin queries API')
       .sendCarriageReturn() // Yes
       .wait('Do you want to restrict access to the admin queries API')
-      .sendLine('y')
+      .sendConfirmYes()
       .wait('Select the group to restrict access with')
       .sendCarriageReturn() // Admins
       .wait('Multifactor authentication (MFA) user login options')
@@ -1017,7 +1017,7 @@ export function addAuthWithMaxOptions(cwd: string, settings: any): Promise<void>
       .wait('Please specify an email verification message')
       .sendCarriageReturn()
       .wait('Do you want to override the default password policy')
-      .sendLine('y')
+      .sendConfirmYes()
       .wait('Enter the minimum password length for this User Pool')
       .sendCarriageReturn()
       .wait('Select the password character requirements for your userpool')
@@ -1028,7 +1028,7 @@ export function addAuthWithMaxOptions(cwd: string, settings: any): Promise<void>
       .wait('Specify the app')
       .sendCarriageReturn()
       .wait('Do you want to specify the user attributes this app')
-      .sendLine('y')
+      .sendConfirmYes()
       .wait('Specify read attributes')
       .sendCarriageReturn()
       .wait('Specify write attributes')
@@ -1075,7 +1075,7 @@ export function addAuthWithMaxOptions(cwd: string, settings: any): Promise<void>
       .wait('Enter your Private Key for your OAuth flow')
       .sendLine(APPLE_PRIVATE_KEY)
       .wait('Do you want to configure Lambda Triggers for Cognito')
-      .sendLine('y')
+      .sendConfirmYes()
       .wait('Which triggers do you want to enable for Cognito')
       .send('a')
       .send(' ')
@@ -1179,7 +1179,7 @@ export function updateAuthAddUserGroups(projectDir: string, groupNames: string[]
       while (index < groupNames.length) {
         chain
           .wait('Do you want to add another User Pool Group')
-          .sendLine('y')
+          .sendConfirmYes()
           .wait('Provide a name for your user pool group')
           .send(groupNames[index++]);
       }

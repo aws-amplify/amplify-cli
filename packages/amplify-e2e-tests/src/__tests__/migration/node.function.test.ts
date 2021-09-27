@@ -94,7 +94,7 @@ describe('nodejs version migration tests', () => {
         .sendConfirmYes()
         .wait('Node.js runtime version successfully updated')
         .wait('Are you sure you want to continue?')
-        .sendLine('y')
+        .sendConfirmYes()
         .wait(/.*/)
         .run((err: Error) => {
           if (!err) {

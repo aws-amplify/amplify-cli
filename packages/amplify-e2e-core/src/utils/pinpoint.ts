@@ -1,17 +1,18 @@
 import { Pinpoint } from 'aws-sdk';
 import { getCLIPath, nspawn as spawn, singleSelect, amplifyRegions, addCircleCITags, KEY_DOWN_ARROW } from '..';
 import _ from 'lodash';
+import { EOL } from 'os';
 
 const settings = {
-  name: '\r',
+  name: EOL,
   envName: 'test',
-  editor: '\r',
-  appType: '\r',
-  framework: '\r',
-  srcDir: '\r',
-  distDir: '\r',
-  buildCmd: '\r',
-  startCmd: '\r',
+  editor: EOL,
+  appType: EOL,
+  framework: EOL,
+  srcDir: EOL,
+  distDir: EOL,
+  buildCmd: EOL,
+  startCmd: EOL,
   accessKeyId: process.env.AWS_ACCESS_KEY_ID,
   secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
   sessionToken: process.env.AWS_SESSION_TOKEN,
@@ -87,7 +88,7 @@ export function initProjectForPinpoint(cwd: string): Promise<void> {
       .wait('Enter a name for the project')
       .sendLine(settings.name)
       .wait('Initialize the project with the above configuration?')
-      .sendLine('n')
+      .sendConfirmNo()
       .wait('Enter a name for the environment')
       .sendLine(settings.envName)
       .wait('Choose your default editor:')
@@ -136,7 +137,7 @@ export function addPinpointAnalytics(cwd: string): Promise<string> {
       .wait('Provide your pinpoint resource name:')
       .sendLine(settings.pinpointResourceName)
       .wait('Apps need authorization to send analytics events. Do you want to allow guests')
-      .sendLine('n')
+      .sendConfirmNo()
       .wait(`Successfully added resource ${settings.pinpointResourceName} locally`)
       .sendEof()
       .run((err: Error) => {
@@ -170,7 +171,7 @@ export function amplifyDelete(cwd: string): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['delete'], { cwd, stripColors: true })
       .wait('Are you sure you want to continue?')
-      .sendLine('Y')
+      .sendConfirmYes()
       .wait('Project deleted in the cloud')
       .wait('Project deleted locally.')
       .run((err: Error) => {
