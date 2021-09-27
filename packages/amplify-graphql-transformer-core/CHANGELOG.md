@@ -3,6 +3,26 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.10.0-graphql-vnext-dev-preview.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-transformer-core@0.9.0...@aws-amplify/graphql-transformer-core@0.10.0-graphql-vnext-dev-preview.0) (2021-09-27)
+
+
+### Bug Fixes
+
+* **amplify-provider-awscloudformation:** remove sandbox mode directive from schema before transform ([#8272](https://github.com/aws-amplify/amplify-cli/issues/8272)) ([17aa0a2](https://github.com/aws-amplify/amplify-cli/commit/17aa0a2fd9356e05ff30e76b125554dbe7564e80))
+* **graphql-model-transformer:** [@model](https://github.com/model) conflict resolution ([#8035](https://github.com/aws-amplify/amplify-cli/issues/8035)) ([f3bdc4a](https://github.com/aws-amplify/amplify-cli/commit/f3bdc4ac1fcf596f634d9d2e968785e76f7b138c))
+* **graphql-model-transformer:** iam role name does not exceed 64 characters ([#8244](https://github.com/aws-amplify/amplify-cli/issues/8244)) ([812a671](https://github.com/aws-amplify/amplify-cli/commit/812a67163d6dd33160bf7ace9afd538c83a7af1a))
+* **graphql-transformer-core:** add default api name when generating stack ([#8201](https://github.com/aws-amplify/amplify-cli/issues/8201)) ([fe52f9b](https://github.com/aws-amplify/amplify-cli/commit/fe52f9b44900888b30f8ce5c88286b197e9cd3af))
+
+
+### Features
+
+* add [@auth](https://github.com/auth) ([#1](https://github.com/aws-amplify/amplify-cli/issues/1)) ([7c13d99](https://github.com/aws-amplify/amplify-cli/commit/7c13d99a15e811efeff32ed061573d63ee9093ba)), closes [#8074](https://github.com/aws-amplify/amplify-cli/issues/8074) [#8078](https://github.com/aws-amplify/amplify-cli/issues/8078) [#8124](https://github.com/aws-amplify/amplify-cli/issues/8124) [#8146](https://github.com/aws-amplify/amplify-cli/issues/8146) [#8168](https://github.com/aws-amplify/amplify-cli/issues/8168) [#8138](https://github.com/aws-amplify/amplify-cli/issues/8138) [#8174](https://github.com/aws-amplify/amplify-cli/issues/8174) [#8175](https://github.com/aws-amplify/amplify-cli/issues/8175) [#8180](https://github.com/aws-amplify/amplify-cli/issues/8180) [#8179](https://github.com/aws-amplify/amplify-cli/issues/8179) [#8234](https://github.com/aws-amplify/amplify-cli/issues/8234) [#8246](https://github.com/aws-amplify/amplify-cli/issues/8246) [#8248](https://github.com/aws-amplify/amplify-cli/issues/8248) [#8259](https://github.com/aws-amplify/amplify-cli/issues/8259)
+* **amplify-provider-awscloudformation:** match env directive field for sandbox mode ([#3](https://github.com/aws-amplify/amplify-cli/issues/3)) ([3158549](https://github.com/aws-amplify/amplify-cli/commit/31585492fd4c358903d68d9640e9ac53e9b32eef))
+
+
+
+
+
 # [0.9.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-transformer-core@0.8.2...@aws-amplify/graphql-transformer-core@0.9.0) (2021-09-02)
 
 

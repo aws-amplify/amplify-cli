@@ -3,6 +3,35 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.61.0-graphql-vnext-dev-preview.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.60.1...amplify-provider-awscloudformation@4.61.0-graphql-vnext-dev-preview.0) (2021-09-27)
+
+
+### Bug Fixes
+
+* add pull check for missing s3 objects, ref [#8233](https://github.com/aws-amplify/amplify-cli/issues/8233) ([#8250](https://github.com/aws-amplify/amplify-cli/issues/8250)) ([d17309d](https://github.com/aws-amplify/amplify-cli/commit/d17309d36679f7b0c2fee858f38c44618e885370))
+* **amplify-cli-core:** add service mapping FFs ([#7024](https://github.com/aws-amplify/amplify-cli/issues/7024)) ([36fe24d](https://github.com/aws-amplify/amplify-cli/commit/36fe24db9f37a8a12d50f1e20ea44562eb44d04a))
+* **amplify-provider-awscloudformation:** invoke api function from invoker plugin ([#8274](https://github.com/aws-amplify/amplify-cli/issues/8274)) ([d30f1d6](https://github.com/aws-amplify/amplify-cli/commit/d30f1d65e3b2cf259cb0382389b6ae27d914d9cc))
+* **amplify-provider-awscloudformation:** remove sandbox mode directive from schema before transform ([#8272](https://github.com/aws-amplify/amplify-cli/issues/8272)) ([17aa0a2](https://github.com/aws-amplify/amplify-cli/commit/17aa0a2fd9356e05ff30e76b125554dbe7564e80))
+* **graphql-model-transformer:** [@model](https://github.com/model) conflict resolution ([#8035](https://github.com/aws-amplify/amplify-cli/issues/8035)) ([f3bdc4a](https://github.com/aws-amplify/amplify-cli/commit/f3bdc4ac1fcf596f634d9d2e968785e76f7b138c))
+* **graphql-model-transformer:** provide correct directive definitions based on transformer version ([#8208](https://github.com/aws-amplify/amplify-cli/issues/8208)) ([5583cd4](https://github.com/aws-amplify/amplify-cli/commit/5583cd47e620992ea9df1f02d812577dc90391eb))
+
+
+### Features
+
+* add [@auth](https://github.com/auth) ([#1](https://github.com/aws-amplify/amplify-cli/issues/1)) ([7c13d99](https://github.com/aws-amplify/amplify-cli/commit/7c13d99a15e811efeff32ed061573d63ee9093ba)), closes [#8074](https://github.com/aws-amplify/amplify-cli/issues/8074) [#8078](https://github.com/aws-amplify/amplify-cli/issues/8078) [#8124](https://github.com/aws-amplify/amplify-cli/issues/8124) [#8146](https://github.com/aws-amplify/amplify-cli/issues/8146) [#8168](https://github.com/aws-amplify/amplify-cli/issues/8168) [#8138](https://github.com/aws-amplify/amplify-cli/issues/8138) [#8174](https://github.com/aws-amplify/amplify-cli/issues/8174) [#8175](https://github.com/aws-amplify/amplify-cli/issues/8175) [#8180](https://github.com/aws-amplify/amplify-cli/issues/8180) [#8179](https://github.com/aws-amplify/amplify-cli/issues/8179) [#8234](https://github.com/aws-amplify/amplify-cli/issues/8234) [#8246](https://github.com/aws-amplify/amplify-cli/issues/8246) [#8248](https://github.com/aws-amplify/amplify-cli/issues/8248) [#8259](https://github.com/aws-amplify/amplify-cli/issues/8259)
+* add [@many](https://github.com/many)ToMany directive ([#8195](https://github.com/aws-amplify/amplify-cli/issues/8195)) ([cc644eb](https://github.com/aws-amplify/amplify-cli/commit/cc644ebc4968f29ad6b3f0b42013d7ee6a142f7e))
+* **amplify-provider-awscloudformation:** match env directive field for sandbox mode ([#3](https://github.com/aws-amplify/amplify-cli/issues/3)) ([3158549](https://github.com/aws-amplify/amplify-cli/commit/31585492fd4c358903d68d9640e9ac53e9b32eef))
+* Flag to allow schema changes that require table replacement ([#8144](https://github.com/aws-amplify/amplify-cli/issues/8144)) ([2d4e65a](https://github.com/aws-amplify/amplify-cli/commit/2d4e65acfd034d33c6fa8ac1f5f8582e7e3bc399))
+
+
+### Reverts
+
+* Revert "feat: Flag to allow schema changes that require table replacement (#8144)" (#8268) ([bb67a35](https://github.com/aws-amplify/amplify-cli/commit/bb67a35fc81913264d9a29088b0eb37b8d13a666)), closes [#8144](https://github.com/aws-amplify/amplify-cli/issues/8144) [#8268](https://github.com/aws-amplify/amplify-cli/issues/8268)
+
+
+
+
+
 ## [4.60.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.60.0...amplify-provider-awscloudformation@4.60.1) (2021-09-18)
 
 **Note:** Version bump only for package amplify-provider-awscloudformation

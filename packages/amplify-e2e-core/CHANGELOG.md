@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.27.0-graphql-vnext-dev-preview.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@1.26.1...amplify-e2e-core@1.27.0-graphql-vnext-dev-preview.0) (2021-09-27)
+
+
+### Features
+
+* **cli-api:** improve add and update api ([02af6b5](https://github.com/aws-amplify/amplify-cli/commit/02af6b582367b584ad755c889fb04722af355368))
+* Flag to allow schema changes that require table replacement ([#8144](https://github.com/aws-amplify/amplify-cli/issues/8144)) ([2d4e65a](https://github.com/aws-amplify/amplify-cli/commit/2d4e65acfd034d33c6fa8ac1f5f8582e7e3bc399))
+
+
+### Reverts
+
+* Revert "feat: Flag to allow schema changes that require table replacement (#8144)" (#8268) ([bb67a35](https://github.com/aws-amplify/amplify-cli/commit/bb67a35fc81913264d9a29088b0eb37b8d13a666)), closes [#8144](https://github.com/aws-amplify/amplify-cli/issues/8144) [#8268](https://github.com/aws-amplify/amplify-cli/issues/8268)
+
+
+
+
+
 ## [1.26.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@1.26.0...amplify-e2e-core@1.26.1) (2021-09-18)
 
 **Note:** Version bump only for package amplify-e2e-core

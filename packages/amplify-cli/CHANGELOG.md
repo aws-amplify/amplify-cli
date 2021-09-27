@@ -3,6 +3,29 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [6.1.0-graphql-vnext-dev-preview.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@6.0.1...@aws-amplify/cli@6.1.0-graphql-vnext-dev-preview.0) (2021-09-27)
+
+
+### Bug Fixes
+
+* **amplify-category-auth:** update front end config on pull ([#8173](https://github.com/aws-amplify/amplify-cli/issues/8173)) ([da2b008](https://github.com/aws-amplify/amplify-cli/commit/da2b0083add2f5b10520efade8628080a34c8791))
+
+
+### Features
+
+* add [@auth](https://github.com/auth) ([#1](https://github.com/aws-amplify/amplify-cli/issues/1)) ([7c13d99](https://github.com/aws-amplify/amplify-cli/commit/7c13d99a15e811efeff32ed061573d63ee9093ba)), closes [#8074](https://github.com/aws-amplify/amplify-cli/issues/8074) [#8078](https://github.com/aws-amplify/amplify-cli/issues/8078) [#8124](https://github.com/aws-amplify/amplify-cli/issues/8124) [#8146](https://github.com/aws-amplify/amplify-cli/issues/8146) [#8168](https://github.com/aws-amplify/amplify-cli/issues/8168) [#8138](https://github.com/aws-amplify/amplify-cli/issues/8138) [#8174](https://github.com/aws-amplify/amplify-cli/issues/8174) [#8175](https://github.com/aws-amplify/amplify-cli/issues/8175) [#8180](https://github.com/aws-amplify/amplify-cli/issues/8180) [#8179](https://github.com/aws-amplify/amplify-cli/issues/8179) [#8234](https://github.com/aws-amplify/amplify-cli/issues/8234) [#8246](https://github.com/aws-amplify/amplify-cli/issues/8246) [#8248](https://github.com/aws-amplify/amplify-cli/issues/8248) [#8259](https://github.com/aws-amplify/amplify-cli/issues/8259)
+* **amplify-provider-awscloudformation:** match env directive field for sandbox mode ([#3](https://github.com/aws-amplify/amplify-cli/issues/3)) ([3158549](https://github.com/aws-amplify/amplify-cli/commit/31585492fd4c358903d68d9640e9ac53e9b32eef))
+* Flag to allow schema changes that require table replacement ([#8144](https://github.com/aws-amplify/amplify-cli/issues/8144)) ([2d4e65a](https://github.com/aws-amplify/amplify-cli/commit/2d4e65acfd034d33c6fa8ac1f5f8582e7e3bc399))
+
+
+### Reverts
+
+* Revert "feat: Flag to allow schema changes that require table replacement (#8144)" (#8268) ([bb67a35](https://github.com/aws-amplify/amplify-cli/commit/bb67a35fc81913264d9a29088b0eb37b8d13a666)), closes [#8144](https://github.com/aws-amplify/amplify-cli/issues/8144) [#8268](https://github.com/aws-amplify/amplify-cli/issues/8268)
+
+
+
+
+
 ## [6.0.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@6.0.0...@aws-amplify/cli@6.0.1) (2021-09-20)
 
 **Note:** Version bump only for package @aws-amplify/cli

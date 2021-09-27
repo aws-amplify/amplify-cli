@@ -3,6 +3,24 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.51.0-graphql-vnext-dev-preview.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.50.0...amplify-e2e-tests@2.51.0-graphql-vnext-dev-preview.0) (2021-09-27)
+
+
+### Features
+
+* add [@auth](https://github.com/auth) ([#1](https://github.com/aws-amplify/amplify-cli/issues/1)) ([7c13d99](https://github.com/aws-amplify/amplify-cli/commit/7c13d99a15e811efeff32ed061573d63ee9093ba)), closes [#8074](https://github.com/aws-amplify/amplify-cli/issues/8074) [#8078](https://github.com/aws-amplify/amplify-cli/issues/8078) [#8124](https://github.com/aws-amplify/amplify-cli/issues/8124) [#8146](https://github.com/aws-amplify/amplify-cli/issues/8146) [#8168](https://github.com/aws-amplify/amplify-cli/issues/8168) [#8138](https://github.com/aws-amplify/amplify-cli/issues/8138) [#8174](https://github.com/aws-amplify/amplify-cli/issues/8174) [#8175](https://github.com/aws-amplify/amplify-cli/issues/8175) [#8180](https://github.com/aws-amplify/amplify-cli/issues/8180) [#8179](https://github.com/aws-amplify/amplify-cli/issues/8179) [#8234](https://github.com/aws-amplify/amplify-cli/issues/8234) [#8246](https://github.com/aws-amplify/amplify-cli/issues/8246) [#8248](https://github.com/aws-amplify/amplify-cli/issues/8248) [#8259](https://github.com/aws-amplify/amplify-cli/issues/8259)
+* **cli-api:** improve add and update api ([02af6b5](https://github.com/aws-amplify/amplify-cli/commit/02af6b582367b584ad755c889fb04722af355368))
+* Flag to allow schema changes that require table replacement ([#8144](https://github.com/aws-amplify/amplify-cli/issues/8144)) ([2d4e65a](https://github.com/aws-amplify/amplify-cli/commit/2d4e65acfd034d33c6fa8ac1f5f8582e7e3bc399))
+
+
+### Reverts
+
+* Revert "feat: Flag to allow schema changes that require table replacement (#8144)" (#8268) ([bb67a35](https://github.com/aws-amplify/amplify-cli/commit/bb67a35fc81913264d9a29088b0eb37b8d13a666)), closes [#8144](https://github.com/aws-amplify/amplify-cli/issues/8144) [#8268](https://github.com/aws-amplify/amplify-cli/issues/8268)
+
+
+
+
+
 # [2.50.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.49.0...amplify-e2e-tests@2.50.0) (2021-09-18)
 
 
