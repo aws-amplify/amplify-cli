@@ -2,7 +2,7 @@ import { SynthUtils } from '@aws-cdk/assert';
 import * as cdk from '@aws-cdk/core';
 import { AmplifyRootStack } from '../../root-stack-builder/root-stack-builder';
 
-jest.mock('../../root-stack-builder/stackSynthesizer');
+jest.mock('../../root-stack-builder/stack-synthesizer');
 
 describe('Check RootStack Template', () => {
   beforeEach(() => {
