@@ -284,12 +284,12 @@ jobs:
     steps:
       - run: echo 'Done with Node CLI E2E Tests'
 
-  done_with_pkg_linux_e2e_tests:
+  done_with_pkg_e2e_tests:
     <<: *node12
     steps:
       - run: echo 'Done with pkg CLI E2E Tests'
 
-  amplify_e2e_tests_pkg_linux:
+  amplify_e2e_tests_pkg:
     parameters:
       os:
         type: executor
@@ -752,7 +752,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -766,7 +765,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - beta
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
@@ -778,7 +776,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - beta
                 - release
                 - /tagged-release\/.*/
@@ -796,7 +793,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
       - amplify_e2e_tests:
@@ -811,7 +807,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -820,7 +815,7 @@ workflows:
       - done_with_node_e2e_tests:
           requires:
             - amplify_e2e_tests
-      - amplify_e2e_tests_pkg_linux:
+      - amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
             - clean_e2e_resources
@@ -830,15 +825,14 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
             - done_with_node_e2e_tests
             - build_pkg_binaries
-      - done_with_pkg_linux_e2e_tests:
+      - done_with_pkg_e2e_tests:
           requires:
-            - amplify_e2e_tests_pkg_linux
+            - amplify_e2e_tests_pkg
       - amplify_migration_tests_latest:
           context:
             - amplify-ecr-image-pull
@@ -849,7 +843,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -865,7 +858,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -881,7 +873,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -897,7 +888,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -913,7 +903,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -955,7 +944,7 @@ workflows:
             - cleanup-resources
             - e2e-test-context
           requires:
-            - done_with_pkg_linux_e2e_tests
+            - done_with_pkg_e2e_tests
             - amplify_migration_tests_latest
             - amplify_migration_tests_v4
             - amplify_migration_tests_v4_30_0
@@ -970,7 +959,7 @@ workflows:
             - mock_e2e_tests
             - graphql_e2e_tests
             - integration_test
-            - done_with_pkg_linux_e2e_tests
+            - done_with_pkg_e2e_tests
             - amplify_sudo_install_test
             - amplify_console_integration_tests
             - amplify_migration_tests_latest
@@ -984,7 +973,6 @@ workflows:
               only:
                 - release
                 - master
-                - win-e2e
                 - beta
                 - /tagged-release\/.*/
                 - /tagged-release-without-e2e-tests\/.*/

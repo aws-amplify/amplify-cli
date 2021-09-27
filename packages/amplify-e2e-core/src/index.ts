@@ -71,13 +71,6 @@ export function injectSessionToken(profileName: string) {
   fs.writeFileSync(pathManager.getAWSCredentialsFilePath(), ini.stringify(credentialsContents));
 }
 
-export function injectRegion(profileName: string) {
-  const credentialsContents = ini.parse(fs.readFileSync(pathManager.getAWSConfigFilePath()).toString());
-  credentialsContents[`profile ${profileName}`] = credentialsContents[`profile ${profileName}`] || {};
-  credentialsContents[`profile ${profileName}`].region = process.env.CLI_REGION;
-  fs.writeFileSync(pathManager.getAWSConfigFilePath(), ini.stringify(credentialsContents));
-}
-
 export function npmInstall(cwd: string) {
   spawnSync('npm', ['install'], { cwd });
 }

@@ -67,7 +67,7 @@ const WINDOWS_TEST_FAILURES = [
   'schema-iterative-update-locking-amplify_e2e_tests',
   'schema-iterative-rollback-1-amplify_e2e_tests',
   'schema-iterative-rollback-2-amplify_e2e_tests',
-  'schema-key-amplify_e2e_tests_pkg_linux',
+  'schema-key-amplify_e2e_tests_pkg',
   'schema-model-amplify_e2e_tests',
   'storage-amplify_e2e_tests',
 ];
@@ -88,21 +88,13 @@ const AWS_REGIONS_TO_RUN_TESTS = [
 const FORCE_US_WEST_2 = ['interactions-amplify_e2e_tests'];
 
 const USE_PARENT_ACCOUNT = [
-  'auth_2-amplify_e2e_tests',
-  'auth_3-amplify_e2e_tests',
-  'auth_5-amplify_e2e_tests',
-  'auth_6-amplify_e2e_tests',
-  'env-amplify_e2e_tests_pkg_linux',
-  'migration-node-function-amplify_e2e_tests',
-  'schema-function-amplify_e2e_tests',
-  'schema-iterative-update-locking-amplify_e2e_tests',
-  'migration-api-key-migration2-amplify_e2e_tests',
-  'api_1-amplify_e2e_tests',
   'api_2-amplify_e2e_tests',
-  'import_s3_1-amplify_e2e_tests',
+  'api_1-amplify_e2e_tests',
+  'auth_2-amplify_e2e_tests',
   'import_dynamodb_1-amplify_e2e_tests',
+  'import_s3_1-amplify_e2e_tests',
+  'migration-api-key-migration2-amplify_e2e_tests',
   'storage-amplify_e2e_tests',
-  'function_2-amplify_e2e_tests',
 ];
 
 // This array needs to be update periodically when new tests suites get added
@@ -315,7 +307,7 @@ function splitTests(
                 matrix: {
                   parameters: {
                     os:
-                      WINDOWS_TEST_FAILURES.some(failingJob => newJobName.startsWith(failingJob)) || !newJobName.endsWith('_pkg_linux')
+                      WINDOWS_TEST_FAILURES.some(failingJob => newJobName.startsWith(failingJob)) || !newJobName.endsWith('_pkg')
                         ? ['linux']
                         : ['linux', 'windows'],
                   },
@@ -437,7 +429,7 @@ function main(): void {
   );
   const splitPkgTests = splitTests(
     splitNodeTests,
-    'amplify_e2e_tests_pkg_linux',
+    'amplify_e2e_tests_pkg',
     'build_test_deploy',
     join(process.cwd(), 'packages', 'amplify-e2e-tests'),
     CONCURRENCY,
