@@ -11,13 +11,22 @@ import {
   stateManager,
   writeCFNTemplate,
 } from 'amplify-cli-core';
-import { AddStorageRequest, CrudOperation, LambdaTriggerConfig, S3Permissions, UpdateStorageRequest } from 'amplify-headless-interface';
-import { prompter, printer } from 'amplify-prompts';
+import {
+  AddStorageRequest,
+  CrudOperation,
+  ImportStorageRequest,
+  LambdaTriggerConfig,
+  RemoveStorageRequest,
+  S3Permissions,
+  UpdateStorageRequest,
+} from 'amplify-headless-interface';
+import { printer, prompter } from 'amplify-prompts';
 import * as fs from 'fs-extra';
 import _ from 'lodash';
 import * as path from 'path';
 import { v4 as uuid } from 'uuid';
 import { authCategoryName, categoryName, functionCategoryName } from '../../constants';
+import { getAllDefaults } from './default-values/s3-defaults';
 import {
   FunctionServiceNameLambdaFunction,
   providerName,
@@ -25,7 +34,6 @@ import {
   storageParamsFilename,
   templateFilenameMap,
 } from './provider-constants';
-import { getAllDefaults } from './default-values/s3-defaults';
 
 const enum S3IamPolicy {
   GET = 's3:GetObject',
@@ -88,7 +96,7 @@ export async function headlessUpdateStorage(context: $TSContext, storageRequest:
     }
 
     if (storageResource.mobileHubMigrated === true) {
-      const error = new ResourceDoesNotExistError(`Updating storage resources migrated from mobile hub is not supported.`);
+      const error = new Error(`Updating storage resources migrated from mobile hub is not supported.`);
       await context.usageData.emitError(error);
       throw error;
     }
@@ -109,6 +117,27 @@ export async function headlessUpdateStorage(context: $TSContext, storageRequest:
   } else if (storageRequest.serviceConfiguration.serviceName === ServiceName.DynamoDB) {
     throw new Error('Headless support for DynamoDB resources is not yet implemented.');
   }
+}
+
+// TODO
+export async function headlessImportStorage(context: $TSContext, storageRequest: ImportStorageRequest) {
+  const {
+    serviceConfiguration: { bucketName, serviceName },
+  } = storageRequest;
+  throw new Error('Not yet implemented');
+}
+
+export async function headlessRemoveStorage(context: $TSContext, storageRequest: RemoveStorageRequest) {
+  return context.amplify
+    .removeResource(context, categoryName, storageRequest.serviceConfiguration.resourceName, { headless: true })
+    .catch(async (err: $TSAny) => {
+      printer.info(err.stack);
+      printer.error('An error occurred when removing the storage resource');
+
+      await context.usageData.emitError(err);
+
+      process.exitCode = 1;
+    });
 }
 
 function constructParametersJson(parameters: $TSAny, permissions: S3Permissions, lambdaTrigger?: LambdaTriggerConfig) {

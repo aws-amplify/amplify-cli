@@ -20,5 +20,5 @@ export interface RemoveS3ServiceConfiguration extends S3ServiceConfigurationBase
   /**
    * Delete data and clean up resource entirely
    */
-  deleteBucketAndContents: boolean;
+  deleteBucketAndContents?: boolean;
 }
