@@ -149,8 +149,6 @@ export class GraphQLTransform {
     for (const transformer of this.transformers) {
       allModelDefinitions = allModelDefinitions.concat(...transformer.typeDefinitions, transformer.directive);
     }
-    const ampGlobalIdx = allModelDefinitions.findIndex(el => el.kind === 'ObjectTypeDefinition' && el.name.value === 'AMPLIFY_GLOBAL');
-    if (ampGlobalIdx > -1) allModelDefinitions.splice(ampGlobalIdx, 1);
 
     const errors = validateModelSchema({
       kind: Kind.DOCUMENT,
