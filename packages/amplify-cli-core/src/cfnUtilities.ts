@@ -26,6 +26,7 @@ export async function readCFNTemplate(
   }
 
   const fileContent = await fs.readFile(filePath, 'utf8');
+  console.log(fileContent);
   // We use the first character to determine if the content is json or yaml because historically the CLI could
   // have emitted JSON with YML extension, so we can't rely on filename extension.
   const isJson = isJsonFileContent(fileContent);

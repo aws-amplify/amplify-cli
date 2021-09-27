@@ -17,6 +17,7 @@ import {
   DeploymentStepState,
   DeploymentStepStatus,
   readCFNTemplate,
+  Template,
 } from 'amplify-cli-core';
 import ora from 'ora';
 import { S3 } from './aws-utils/aws-s3';
@@ -49,7 +50,6 @@ import { ensureValidFunctionModelDependencies } from './utils/remove-dependent-f
 import { legacyLayerMigration, postPushLambdaLayerCleanup, prePushLambdaLayerPrompt } from './lambdaLayerInvocations';
 import { storeRootStackTemplate } from './initializer';
 import { transformRootStack } from './override-manager';
-import { Template } from './root-stack-builder/types';
 
 const logger = fileLogger('push-resources');
 
@@ -61,10 +61,8 @@ const spinner = ora('Updating resources in the cloud. This may take a few minute
 const optionalBuildDirectoryName = 'build';
 const cfnTemplateGlobPattern = '*template*.+(yaml|yml|json)';
 const parametersJson = 'parameters.json';
-export const rootStackFileName = 'rootStackTemplate.json';
-export const nestedStackFileName = FeatureFlags.getBoolean('overrides.project')
-  ? 'root-cloudformation-stack.json'
-  : 'nested-cloudformation-stack.yml';
+export const defaultRootStackFileName = 'rootStackTemplate.json';
+export const rootStackFileName = 'root-cloudformation-stack.json';
 
 const deploymentInProgressErrorMessage = (context: $TSContext) => {
   context.print.error('A deployment is in progress.');
@@ -230,12 +228,12 @@ export async function run(context: $TSContext, resourceDefinition: $TSObject) {
 
         // generate nested stack
         const backEndDir = pathManager.getBackendDirPath();
-        const nestedStackFilepath = path.normalize(path.join(backEndDir, providerName, rootStackFileName));
-        await generateAndUploadRootStack(context, nestedStackFilepath, nestedStackFileName);
+        const rootStackFilepath = path.normalize(path.join(backEndDir, providerName, rootStackFileName));
+        await generateAndUploadRootStack(context, rootStackFilepath, rootStackFileName);
 
         // Use state manager to do the final deployment. The final deployment include not just API change but the whole Amplify Project
         const finalStep: DeploymentOp = {
-          stackTemplatePathOrUrl: nestedStackFileName,
+          stackTemplatePathOrUrl: rootStackFileName,
           tableNames: [],
           stackName: cloudformationMeta.StackName,
           parameters: {
@@ -681,10 +679,10 @@ async function updateCloudFormationNestedStack(
 ) {
   const backEndDir = pathManager.getBackendDirPath();
   const projectRoot = pathManager.findProjectRoot();
-  const nestedStackFilePath = path.join(pathManager.getRootStackDirPath(projectRoot), nestedStackFileName);
+  const rootStackFilePath = path.join(pathManager.getRootStackDirPath(projectRoot), rootStackFileName);
   // deploy new nested stack to disk
-  JSONUtilities.writeJson(nestedStackFilePath, nestedStack);
-  const transformedStackPath = await preProcessCFNTemplate(nestedStackFilePath);
+  JSONUtilities.writeJson(rootStackFilePath, nestedStack);
+  const transformedStackPath = await preProcessCFNTemplate(rootStackFilePath);
   const cfnItem = await new Cloudformation(context, generateUserAgentAction(resourcesToBeCreated, resourcesToBeUpdated));
   const providerDirectory = path.normalize(path.join(backEndDir, providerName));
 
@@ -857,7 +855,7 @@ async function formNestedStack(
       context.amplify.updateProvideramplifyMeta(providerName, metaToBeUpdated);
     }
   } else {
-    const initTemplateFilePath = path.join(__dirname, '..', 'resources', rootStackFileName);
+    const initTemplateFilePath = path.join(__dirname, '..', 'resources', defaultRootStackFileName);
     rootStack = JSONUtilities.readJson<Template>(initTemplateFilePath);
   }
 
@@ -977,7 +975,7 @@ async function formNestedStack(
 
   let categories = Object.keys(amplifyMeta);
 
-  categories = categories.filter(category => category !== 'provider');
+  categories = categories.filter(category => category !== 'providers');
 
   categories.forEach(category => {
     const resources = Object.keys(amplifyMeta[category]);

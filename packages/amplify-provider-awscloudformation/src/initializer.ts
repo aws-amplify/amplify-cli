@@ -1,9 +1,7 @@
-import { $TSContext, FeatureFlags } from 'amplify-cli-core';
+import { $TSContext, FeatureFlags, Template, pathManager, PathConstants, stateManager, JSONUtilities } from 'amplify-cli-core';
 import _ from 'lodash';
-import { pathManager, PathConstants, stateManager, JSONUtilities } from 'amplify-cli-core';
-import { Template } from './root-stack-builder/types';
 import { transformRootStack } from './override-manager';
-import { nestedStackFileName } from './push-resources';
+import { rootStackFileName } from './push-resources';
 
 const moment = require('moment');
 const path = require('path');
@@ -196,8 +194,8 @@ export const storeRootStackTemplate = async (context: $TSContext, template?: Tem
   const rootStackCloudBackendBuildDir = pathManager.getCurrentCloudRootStackDirPath(projectRoot);
 
   fs.ensureDirSync(rootStackBackendBuildDir);
-  const rootStackBackendFilePath = path.join(rootStackBackendBuildDir, nestedStackFileName);
-  const rootStackCloudBackendFilePath = path.join(rootStackCloudBackendBuildDir, nestedStackFileName);
+  const rootStackBackendFilePath = path.join(rootStackBackendBuildDir, rootStackFileName);
+  const rootStackCloudBackendFilePath = path.join(rootStackCloudBackendBuildDir, rootStackFileName);
 
   JSONUtilities.writeJson(rootStackBackendFilePath, template);
   // copy the awscloudformation backend to #current-cloud-backend

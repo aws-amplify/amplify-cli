@@ -12,6 +12,7 @@ import {
 } from '../../../extensions/amplify-helpers/get-cloud-init-status';
 import { stateManager } from 'amplify-cli-core';
 import { hashLayerResource } from 'amplify-category-function';
+import { cronJobSetting } from '../../../../../amplify-category-function/lib/provider-utils/awscloudformation/utils/constants';
 
 const sample_hash1 = 'testhash1';
 const sample_hash2 = 'testhash2';
@@ -73,6 +74,9 @@ jest.mock('amplify-cli-core', () => ({
     getBackendDirPath: jest.fn(() => backendDirPathStub),
     getCurrentCloudBackendDirPath: jest.fn(() => currentBackendDirPathStub),
     findProjectRoot: jest.fn(() => projectRootPath),
+  },
+  FeatureFlags: {
+    getBoolean: jest.fn().mockReturnValue(true),
   },
 }));
 

@@ -1,5 +1,5 @@
 import { ISynthesisSession, Stack, LegacyStackSynthesizer } from '@aws-cdk/core';
-import { Template } from './types';
+import { Template } from 'amplify-cli-core';
 import { AmplifyRootStack, AmplifyRootStackOutputs } from './root-stack-builder';
 
 export class RootStackSythesizer extends LegacyStackSynthesizer {
