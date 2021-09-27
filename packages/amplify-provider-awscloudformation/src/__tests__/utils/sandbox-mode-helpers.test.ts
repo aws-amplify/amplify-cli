@@ -1,4 +1,4 @@
-import { showSandboxModePrompts } from '../../utils/sandbox-mode-helpers';
+import { showSandboxModePrompts, removeSandboxDirectiveFromSchema } from '../../utils/sandbox-mode-helpers';
 import { $TSContext } from 'amplify-cli-core';
 import chalk from 'chalk';
 import * as prompts from 'amplify-prompts';
@@ -66,6 +66,62 @@ sandbox mode disabled in '${ctx.amplify.getEnvInfo().envName}', do not create an
         );
         expect(ctx.amplify.invokePluginMethod).toBeCalledWith(ctx, 'api', undefined, 'promptToAddApiKey', [ctx]);
       });
+    });
+  });
+
+  describe('removeSandboxDirectiveFromSchema', () => {
+    it('removes sandbox mode directive', () => {
+      const schema = `
+type AMPLIFY_GLOBAL @allow_public_data_access_with_api_key(in: "dev")
+      `;
+
+      expect(removeSandboxDirectiveFromSchema(schema)).toEqual(`
+
+      `);
+    });
+
+    it('does not change user schema with directive', () => {
+      const schema = `
+type AMPLIFY_GLOBAL @allow_public_data_access_with_api_key(in: "dev10105") # FOR TESTING ONLY!
+
+type Todo @model {
+  id: ID!
+  name: String!
+  description: String
+}
+      `;
+
+      expect(removeSandboxDirectiveFromSchema(schema)).toEqual(`
+ # FOR TESTING ONLY!
+
+type Todo @model {
+  id: ID!
+  name: String!
+  description: String
+}
+      `);
+    });
+
+    it('does not change user schema with directive and single quotes', () => {
+      const schema = `
+type AMPLIFY_GLOBAL @allow_public_data_access_with_api_key(in: 'dev10105') # FOR TESTING ONLY!
+
+type Todo @model {
+  id: ID!
+  name: String!
+  description: String
+}
+      `;
+
+      expect(removeSandboxDirectiveFromSchema(schema)).toEqual(`
+ # FOR TESTING ONLY!
+
+type Todo @model {
+  id: ID!
+  name: String!
+  description: String
+}
+      `);
     });
   });
 });

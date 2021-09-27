@@ -48,3 +48,8 @@ export function getSandboxModeEnvNameFromDirectiveSet(input: any): string {
   const inField = sandboxModeDirective.arguments.find((el: any) => el.name.value === 'in');
   return inField.value.value;
 }
+
+export function removeSandboxDirectiveFromSchema(schema): string {
+  const ampGlobalRegex = /(type AMPLIFY_GLOBAL @allow_public_data_access_with_api_key\(in:)+(.*?)+(\))/g;
+  return schema.replace(ampGlobalRegex, '');
+}

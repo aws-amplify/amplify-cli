@@ -33,7 +33,11 @@ import { Template } from '@aws-amplify/graphql-transformer-core/lib/config/proje
 import { AmplifyCLIFeatureFlagAdapter } from '../utils/amplify-cli-feature-flag-adapter';
 import { isAmplifyAdminApp } from '../utils/admin-helpers';
 import { JSONUtilities, stateManager, $TSContext } from 'amplify-cli-core';
-import { showSandboxModePrompts, getSandboxModeEnvNameFromDirectiveSet } from '../utils/sandbox-mode-helpers';
+import {
+  showSandboxModePrompts,
+  getSandboxModeEnvNameFromDirectiveSet,
+  removeSandboxDirectiveFromSchema,
+} from '../utils/sandbox-mode-helpers';
 
 const API_CATEGORY = 'api';
 const STORAGE_CATEGORY = 'storage';
@@ -508,5 +512,9 @@ async function _buildProject(opts: ProjectOptions<TransformerFactoryArgs>) {
     featureFlags: new AmplifyCLIFeatureFlagAdapter(),
     sandboxModeEnabled: opts.sandboxModeEnabled,
   });
-  return transform.transform(userProjectConfig.schema.toString());
+
+  let schema = userProjectConfig.schema.toString();
+  if (opts.sandboxModeEnabled) schema = removeSandboxDirectiveFromSchema(schema);
+
+  return transform.transform(schema);
 }
