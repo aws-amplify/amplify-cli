@@ -28,55 +28,14 @@
                       "S3"
                   ]
               },
-              "bucketName": {
-                  "description": "Globally unique bucket name",
-                  "type": "string"
-              },
               "resourceName": {
                   "description": "Amplify resource name",
                   "type": "string"
               }
           },
           "required": [
-              "permissions",
+              "resourceName",
               "serviceName"
-          ]
-      },
-      "S3Permissions": {
-          "description": "Permissions that should be applied to the bucket",
-          "type": "object",
-          "properties": {
-              "auth": {
-                  "description": "Permissions for authenticated users",
-                  "type": "array",
-                  "items": {
-                      "enum": [
-                          "CREATE_AND_UPDATE",
-                          "DELETE",
-                          "READ"
-                      ],
-                      "type": "string"
-                  }
-              },
-              "guest": {
-                  "description": "Permissions for unauthenticated users",
-                  "type": "array",
-                  "items": {
-                      "enum": [
-                          "CREATE_AND_UPDATE",
-                          "DELETE",
-                          "READ"
-                      ],
-                      "type": "string"
-                  }
-              },
-              "groups": {
-                  "$ref": "#/definitions/PermissionGroups",
-                  "description": "Permissions for Cognito user groups"
-              }
-          },
-          "required": [
-              "auth"
           ]
       }
   },

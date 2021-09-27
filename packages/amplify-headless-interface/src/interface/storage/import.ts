@@ -16,9 +16,4 @@ export interface ImportS3ServiceConfiguration extends S3ServiceConfigurationBase
    * Globally unique bucket name
    */
   bucketName: string;
-
-  /**
-   * AWS region, e.g. 'us-west-2' ** TODO SEE IF NECESSARY
-   */
-  region: string;
 }
