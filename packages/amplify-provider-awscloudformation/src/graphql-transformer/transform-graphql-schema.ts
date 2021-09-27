@@ -36,7 +36,11 @@ import { JSONUtilities, stateManager, $TSContext } from 'amplify-cli-core';
 import { searchablePushChecks } from '../transform-graphql-schema';
 import { ResourceConstants } from 'graphql-transformer-common';
 import { isAmplifyAdminApp } from '../utils/admin-helpers';
-import { showSandboxModePrompts, getSandboxModeEnvNameFromDirectiveSet } from '../utils/sandbox-mode-helpers';
+import {
+  showSandboxModePrompts,
+  getSandboxModeEnvNameFromDirectiveSet,
+  removeSandboxDirectiveFromSchema,
+} from '../utils/sandbox-mode-helpers';
 
 const API_CATEGORY = 'api';
 const STORAGE_CATEGORY = 'storage';
@@ -513,5 +517,11 @@ async function _buildProject(opts: ProjectOptions<TransformerFactoryArgs>) {
     featureFlags: new AmplifyCLIFeatureFlagAdapter(),
     sandboxModeEnabled: opts.sandboxModeEnabled,
   });
-  return transform.transform(userProjectConfig.schema.toString());
+
+  let schema = userProjectConfig.schema.toString();
+  if (opts.sandboxModeEnabled) schema = removeSandboxDirectiveFromSchema(schema);
+
+  const transformOutput = transform.transform(schema);
+
+  return mergeUserConfigWithTransformOutput(userProjectConfig, transformOutput);
 }
