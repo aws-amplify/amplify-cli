@@ -17,6 +17,7 @@ import { ProviderName as providerName } from './constants';
 import { AmplifyCLIFeatureFlagAdapter } from './utils/amplify-cli-feature-flag-adapter';
 import { isAmplifyAdminApp } from './utils/admin-helpers';
 import { JSONUtilities, stateManager } from 'amplify-cli-core';
+import { prompter } from 'amplify-prompts';
 
 import {
   collectDirectivesByTypeNames,
@@ -39,6 +40,7 @@ import { print } from 'graphql';
 import { hashDirectory } from './upload-appsync-files';
 import { exitOnNextTick, FeatureFlags } from 'amplify-cli-core';
 import { transformGraphQLSchema as transformGraphQLSchemaV6 } from './graphql-transformer/transform-graphql-schema';
+import { migrateToV2Transformer } from '@aws-amplify/graphql-transformer-core/lib/migration/migrate';
 
 const apiCategory = 'api';
 const storageCategory = 'storage';
@@ -295,6 +297,7 @@ export async function transformGraphQLSchema(context, options) {
   if (useExperimentalPipelineTransformer) {
     return transformGraphQLSchemaV6(context, options);
   }
+
   const backEndDir = context.amplify.pathManager.getBackendDirPath();
   const flags = context.parameters.options;
   if (flags['no-gql-override']) {
@@ -340,6 +343,11 @@ export async function transformGraphQLSchema(context, options) {
       // No appsync resource to update/add
       return;
     }
+  }
+
+  const runMigration = await prompter.confirmContinue("The V2 GraphQL transformer is available, would you like to auto-migrate your schema(s)?");
+  if (runMigration) {
+    await migrateToV2Transformer(resourceDir, context)
   }
 
   let previouslyDeployedBackendDir = options.cloudBackendDirectory;
