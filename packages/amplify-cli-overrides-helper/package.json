@@ -27,7 +27,8 @@
     "clean": "rimraf ./lib"
   },
   "dependencies": {
-    "amplify-prompts": "1.1.2"
+    "amplify-prompts": "1.1.2",
+    "amplify-provider-awscloudformation": "4.60.1"
   },
   "devDependencies": {},
   "jest": {
