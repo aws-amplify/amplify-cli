@@ -74,7 +74,7 @@ async function runMigration(schemas: SchemaDocument[], authMode: string): Promis
 
 export async function updateTransformerVersion(env: string): Promise<void> {
   const projectPath = pathManager.findProjectRoot() ?? process.cwd();
-  let envCLI: boolean = true;
+  let envCLI = true;
   let cliJSON: any;
   try {
     cliJSON = stateManager.getCLIJSON(projectPath, env);
