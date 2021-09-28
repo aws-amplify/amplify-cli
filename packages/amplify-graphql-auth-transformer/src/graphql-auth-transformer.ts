@@ -770,6 +770,10 @@ Static group authorization should perform as expected.`,
             roleName = 'apiKey:public';
             roleDefinition = { provider: rule.provider, strategy: rule.allow, static: true };
             break;
+          case 'function':
+            roleName = 'function:custom';
+            roleDefinition = { provider: rule.provider, strategy: rule.allow, static: true };
+            break;
           case 'iam':
             roleName = `iam:${rule.allow}`;
             roleDefinition = {

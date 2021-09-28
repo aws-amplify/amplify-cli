@@ -1,33 +1,29 @@
 import {
-  amplifyPush,
-  amplifyPushUpdate,
-  deleteProject,
-  initJSProjectWithProfile,
-  listAttachedRolePolicies,
-  listRolePolicies,
-  updateAuthAddAdminQueries,
-} from 'amplify-e2e-core';
-import * as path from 'path';
-import { existsSync, readFileSync, readdirSync, writeFileSync } from 'fs';
-import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
-import gql from 'graphql-tag';
-const providerName = 'awscloudformation';
-
-import {
-  addRestApi,
+  addApiWithoutSchema,
+  addFeatureFlag,
   addFunction,
+  addRestApi,
   addSimpleDDB,
+  amplifyPushGraphQlWithCognitoPrompt,
+  amplifyPushUpdate,
   checkIfBucketExists,
   createNewProjectDir,
+  deleteProject,
   deleteProjectDir,
   getAppSyncApi,
   getProjectMeta,
-  getLocalEnvInfo,
-  getTransformConfig,
-  enableAdminUI,
+  initJSProjectWithProfile,
+  listAttachedRolePolicies,
+  listRolePolicies,
+  updateApiSchema,
+  updateAuthAddAdminQueries,
+  addApiWithAllAuthModesV2,
+  amplifyPush,
 } from 'amplify-e2e-core';
-import { TRANSFORM_CURRENT_VERSION } from 'graphql-transformer-core';
-import _ from 'lodash';
+import { readdirSync, readFileSync, writeFileSync } from 'fs';
+import * as path from 'path';
+const providerName = 'awscloudformation';
+
 
 // to deal with bug in cognito-identity-js
 (global as any).fetch = require('node-fetch');
@@ -177,5 +173,50 @@ describe('amplify add api (REST)', () => {
 
     writeFileSync(cfnTemplateFile, JSON.stringify(cfnTemplate));
     await amplifyPushUpdate(projRoot);
+  });
+
+  it('init a project and add the simple_model api include lambda auth', async () => {
+    const envName = 'devtest';
+    const projName = 'lambdaauthmode';
+    await initJSProjectWithProfile(projRoot, { name: projName, envName });
+    await addFeatureFlag(projRoot, 'graphqltransformer', 'useexperimentalpipelinedtransformer', true);
+    await addApiWithAllAuthModesV2(projRoot);
+    await amplifyPush(projRoot);
+
+    const meta = getProjectMeta(projRoot);
+    const region = meta.providers.awscloudformation.Region;
+    const { output } = meta.api.lambdaauthmode;
+    const { GraphQLAPIIdOutput, GraphQLAPIEndpointOutput, GraphQLAPIKeyOutput } = output;
+    const { graphqlApi } = await getAppSyncApi(GraphQLAPIIdOutput, region);
+
+    expect(GraphQLAPIIdOutput).toBeDefined();
+    expect(GraphQLAPIEndpointOutput).toBeDefined();
+    expect(GraphQLAPIKeyOutput).toBeDefined();
+
+    expect(graphqlApi).toBeDefined();
+    expect(graphqlApi.apiId).toEqual(GraphQLAPIIdOutput);
+  });
+
+  it('amplify push prompt for cognito configuration if auth mode is missing', async () => {
+    const envName = 'devtest';
+    const projName = 'lambdaauthmode';
+    await initJSProjectWithProfile(projRoot, { name: projName, envName });
+    await addFeatureFlag(projRoot, 'graphqltransformer', 'useexperimentalpipelinedtransformer', true);
+    await addApiWithoutSchema(projRoot);
+    await updateApiSchema(projRoot, projName, 'cognito_simple_model.graphql');
+    await amplifyPushGraphQlWithCognitoPrompt(projRoot);
+
+    const meta = getProjectMeta(projRoot);
+    const region = meta.providers.awscloudformation.Region;
+    const { output } = meta.api.lambdaauthmode;
+    const { GraphQLAPIIdOutput, GraphQLAPIEndpointOutput, GraphQLAPIKeyOutput } = output;
+    const { graphqlApi } = await getAppSyncApi(GraphQLAPIIdOutput, region);
+
+    expect(GraphQLAPIIdOutput).toBeDefined();
+    expect(GraphQLAPIEndpointOutput).toBeDefined();
+    expect(GraphQLAPIKeyOutput).toBeDefined();
+
+    expect(graphqlApi).toBeDefined();
+    expect(graphqlApi.apiId).toEqual(GraphQLAPIIdOutput);
   });
 });

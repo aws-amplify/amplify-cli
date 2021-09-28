@@ -513,7 +513,6 @@ export async function transformGraphQLSchema(context, options) {
     featureFlags: ff,
     sanityCheckRules: sanityCheckRulesList,
   };
-
   const transformerOutput = await buildAPIProject(buildConfig);
 
   context.print.success(`GraphQL schema compiled successfully.\n\nEdit your schema at ${schemaFilePath} or \
@@ -524,17 +523,6 @@ place .graphql files in a directory at ${schemaDirPath}`);
   }
 
   return transformerOutput;
-}
-
-async function addGraphQLAuthRequirement(context, authType) {
-  return await context.amplify.invokePluginMethod(context, 'api', undefined, 'addGraphQLAuthorizationMode', [
-    context,
-    {
-      authType: authType,
-      printLeadText: true,
-      authSettings: undefined,
-    },
-  ]);
 }
 
 function getProjectBucket(context) {

@@ -14,11 +14,13 @@ export const AUTH_PROVIDER_DIRECTIVE_MAP = new Map<AuthProvider, string>([
   ['iam', 'aws_iam'],
   ['oidc', 'aws_oidc'],
   ['userPools', 'aws_cognito_user_pools'],
+  ['function', 'aws_lambda'],
 ]);
 // values for $util.authType() https://docs.aws.amazon.com/appsync/latest/devguide/resolver-util-reference.html
 export const COGNITO_AUTH_TYPE = 'User Pool Authorization';
 export const OIDC_AUTH_TYPE = 'Open ID Connect Authorization';
 export const IAM_AUTH_TYPE = 'IAM Authorization';
+export const LAMBDA_AUTH_TYPE = 'Lambda Authorization';
 export const API_KEY_AUTH_TYPE = 'API Key Authorization';
 // resolver refs
 export const IS_AUTHORIZED_FLAG = 'isAuthorized';

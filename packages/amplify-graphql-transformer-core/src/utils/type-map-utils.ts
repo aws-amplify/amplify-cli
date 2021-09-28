@@ -15,6 +15,9 @@ import {
 
 
 export function collectDirectives(sdl: string): DirectiveNode[] {
+  if (!sdl) {
+    return [];
+  }
   const doc = parse(sdl);
   let directives: DirectiveNode[] = [];
   for (const def of doc.definitions) {
@@ -61,6 +64,9 @@ export function collectDirectivesByTypeNames(sdl: string) {
 }
 
 export function collectDirectivesByType(sdl: string): Record<string, DirectiveNode[]> {
+  if (!sdl) {
+    return {};
+  }
   const doc = parse(sdl);
   // defined types with directives list
   let types: Record<string, DirectiveNode[]> = {};

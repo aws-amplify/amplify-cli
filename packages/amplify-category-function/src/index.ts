@@ -27,7 +27,7 @@ export { lambdasWithApiDependency } from './provider-utils/awscloudformation/uti
 export { hashLayerResource } from './provider-utils/awscloudformation/utils/layerHelpers';
 export { migrateLegacyLayer } from './provider-utils/awscloudformation/utils/layerMigrationUtils';
 export { packageResource } from './provider-utils/awscloudformation/utils/package';
-export { updateDependentFunctionsCfn } from './provider-utils/awscloudformation/utils/updateDependentFunctionCfn';
+export { updateDependentFunctionsCfn, addAppSyncInvokeMethodPermission } from './provider-utils/awscloudformation/utils/updateDependentFunctionCfn';
 export { loadFunctionParameters } from './provider-utils/awscloudformation/utils/loadFunctionParameters';
 
 export async function add(context, providerName, service, parameters) {

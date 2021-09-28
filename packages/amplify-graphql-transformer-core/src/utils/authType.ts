@@ -4,11 +4,12 @@ import { Duration, Expiration } from '@aws-cdk/core';
 import { StackManager } from '../transformer-context/stack-manager';
 import { AppSyncAuthConfiguration, AppSyncAuthConfigurationEntry, AppSyncAuthMode } from '@aws-amplify/graphql-transformer-interfaces';
 
-const authTypeMap: Record<AppSyncAuthMode, AuthorizationType> = {
+const authTypeMap: Record<AppSyncAuthMode, AuthorizationType | any> = {
   API_KEY: AuthorizationType.API_KEY,
   AMAZON_COGNITO_USER_POOLS: AuthorizationType.USER_POOL,
   AWS_IAM: AuthorizationType.IAM,
   OPENID_CONNECT: AuthorizationType.OIDC,
+  AWS_LAMBDA: "AWS_LAMBDA",
 };
 
 export const IAM_AUTH_ROLE_PARAMETER = 'authRoleName';
@@ -21,7 +22,7 @@ export function adoptAuthModes(stack: StackManager, authConfig: AppSyncAuthConfi
   };
 }
 
-export function adoptAuthMode(stackManager: StackManager, entry: AppSyncAuthConfigurationEntry): AuthorizationMode {
+export function adoptAuthMode(stackManager: StackManager, entry: AppSyncAuthConfigurationEntry): AuthorizationMode | any {
   const authType = authTypeMap[entry.authenticationType];
   switch (entry.authenticationType) {
     case AuthorizationType.API_KEY:
@@ -57,6 +58,14 @@ export function adoptAuthMode(stackManager: StackManager, entry: AppSyncAuthConf
           clientId: entry.openIDConnectConfig!.clientId,
           tokenExpiryFromAuth: strToNumber(entry.openIDConnectConfig!.authTTL),
           tokenExpiryFromIssue: strToNumber(entry.openIDConnectConfig!.iatTTL),
+        },
+      };
+    case 'AWS_LAMBDA':
+      return {
+        authorizationType: authType,
+        lambdaAuthorizerConfig: {
+          lambdaFunction: entry.lambdaAuthorizerConfig!.lambdaFunction,
+          ttlSeconds: strToNumber(entry.lambdaAuthorizerConfig!.ttlSeconds),
         },
       };
     default:

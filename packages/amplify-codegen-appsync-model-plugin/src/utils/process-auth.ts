@@ -4,12 +4,14 @@ export enum AuthProvider {
   iam = 'iam',
   oidc = 'oidc',
   userPools = 'userPools',
+  function = 'function',
 }
 export enum AuthStrategy {
   owner = 'owner',
   groups = 'groups',
   private = 'private',
   public = 'public',
+  custom = 'custom',
 }
 
 export enum AuthModelOperation {

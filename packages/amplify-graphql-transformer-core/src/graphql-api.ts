@@ -17,6 +17,7 @@ import { Grant, IGrantable, ManagedPolicy, Role, ServicePrincipal } from '@aws-c
 import { CfnResource, Construct, Duration, Stack } from '@aws-cdk/core';
 import { TransformerSchema } from './cdk-compat/schema-asset';
 import { DefaultTransformHost } from './transform-host';
+import * as cdk from '@aws-cdk/core';
 
 export interface GraphqlApiProps {
   /**
@@ -114,6 +115,7 @@ export type TransformerAPIProps = GraphqlApiProps & {
   readonly createApiKey?: boolean;
   readonly host?: TransformHostProvider;
   readonly sandboxModeEnabled?: boolean;
+  readonly environmentName?: string;
 };
 export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
   /**
@@ -166,11 +168,16 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
    * Global Sandbox Mode for GraphQL API
    */
   public readonly sandboxModeEnabled?: boolean;
+  
+  /**
+   * the amplify environment name
+   */
+  public readonly environmentName?: string;
 
   private schemaResource: CfnGraphQLSchema;
   private api: CfnGraphQLApi;
   private apiKeyResource?: CfnApiKey;
-  private authorizationConfig?: Required<AuthorizationConfig>;
+  private authorizationConfig?: Required<AuthorizationConfig | any>;
 
   constructor(scope: Construct, id: string, props: TransformerAPIProps) {
     super(scope, id);
@@ -184,7 +191,7 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
     const modes = [defaultMode, ...additionalModes];
 
     this.modes = modes.map(mode => mode.authorizationType);
-
+    this.environmentName = props.environmentName;
     this.validateAuthorizationProps(modes);
 
     this.api = new CfnGraphQLApi(this, 'Resource', {
@@ -193,6 +200,7 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
       logConfig: this.setupLogConfig(props.logConfig),
       openIdConnectConfig: this.setupOpenIdConnectConfig(defaultMode.openIdConnectConfig),
       userPoolConfig: this.setupUserPoolConfig(defaultMode.userPoolConfig),
+      lambdaAuthorizerConfig: this.setupLambdaConfig(defaultMode.lambdaAuthorizerConfig),
       additionalAuthenticationProviders: this.setupAdditionalAuthorizationModes(additionalModes),
       xrayEnabled: props.xrayEnabled,
     });
@@ -338,7 +346,22 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
     };
   }
 
-  private setupAdditionalAuthorizationModes(modes?: AuthorizationMode[]) {
+  private setupLambdaConfig(config?: any) {
+    if (!config) return undefined;
+    return {
+      authorizerUri: this.lambdaArnKey(config.lambdaFunction),
+      authorizerResultTtlInSeconds: config.ttlSeconds,
+      identityValidationExpression: "",
+    };
+  }
+
+  private lambdaArnKey(name: string) {
+    return this.environmentName ?
+      `arn:${cdk.Aws.PARTITION}:lambda:${cdk.Aws.REGION}:${cdk.Aws.ACCOUNT_ID}:function:${name}-${this.environmentName}`
+      : `arn:${cdk.Aws.PARTITION}:lambda:${cdk.Aws.REGION}:${cdk.Aws.ACCOUNT_ID}:function:${name}`;
+  }
+
+  private setupAdditionalAuthorizationModes(modes?: Array<AuthorizationMode | any>) {
     if (!modes || modes.length === 0) return undefined;
     return modes.reduce<CfnGraphQLApi.AdditionalAuthenticationProviderProperty[]>(
       (acc, mode) => [
@@ -347,6 +370,7 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
           authenticationType: mode.authorizationType,
           userPoolConfig: this.setupUserPoolConfig(mode.userPoolConfig),
           openIdConnectConfig: this.setupOpenIdConnectConfig(mode.openIdConnectConfig),
+          lambdaAuthorizerConfig: this.setupLambdaConfig(mode.lambdaAuthorizerConfig),
         },
       ],
       [],

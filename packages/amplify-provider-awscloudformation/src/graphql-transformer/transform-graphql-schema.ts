@@ -348,17 +348,6 @@ place .graphql files in a directory at ${schemaDirPath}`);
   return transformerOutput;
 }
 
-async function addGraphQLAuthRequirement(context, authType) {
-  return await context.amplify.invokePluginMethod(context, 'api', undefined, 'addGraphQLAuthorizationMode', [
-    context,
-    {
-      authType: authType,
-      printLeadText: true,
-      authSettings: undefined,
-    },
-  ]);
-}
-
 function getProjectBucket(context) {
   const projectDetails = context.amplify.getProjectDetails();
   const projectBucket = projectDetails.amplifyMeta.providers ? projectDetails.amplifyMeta.providers[providerName].DeploymentBucketName : '';
@@ -452,6 +441,12 @@ export type ProjectOptions<T> = {
 };
 
 export async function buildAPIProject(opts: ProjectOptions<TransformerFactoryArgs>) {
+  const schema = opts.projectConfig.schema.toString();
+  // Skip building the project if the schema is blank
+  if (!schema) {
+    return;
+  }
+
   const builtProject = await _buildProject(opts);
 
   if (opts.projectDirectory && !opts.dryRun) {

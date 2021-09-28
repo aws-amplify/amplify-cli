@@ -586,7 +586,7 @@ export class TransformerOutput implements TransformerContextOutputProvider {
         kind: 'Document',
         definitions: Object.values(this.nodeMap),
       },
-      ['aws_subscribe', 'aws_auth', 'aws_api_key', 'aws_iam', 'aws_oidc', 'aws_cognito_user_pools', 'deprecated'],
+      ['aws_subscribe', 'aws_auth', 'aws_api_key', 'aws_iam', 'aws_oidc', 'aws_cognito_user_pools', 'aws_lambda', 'deprecated'],
     );
     const SDL = print(astSansDirectives);
     return SDL;

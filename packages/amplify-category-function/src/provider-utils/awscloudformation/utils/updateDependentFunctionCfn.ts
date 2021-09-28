@@ -1,4 +1,4 @@
-import { $TSContext, $TSObject, JSONUtilities } from 'amplify-cli-core';
+import { $TSAny, $TSContext, $TSObject, JSONUtilities, pathManager } from 'amplify-cli-core';
 import { FunctionParameters } from 'amplify-function-plugin-interface';
 import { getResourcesForCfn, generateEnvVariablesForCfn } from '../service-walkthroughs/execPermissionsWalkthrough';
 import { updateCFNFileForResourcePermissions } from '../service-walkthroughs/lambda-walkthrough';
@@ -82,4 +82,28 @@ export async function updateDependentFunctionsCfn(
     // update amplify-meta.json
     context.amplify.updateamplifyMetaAfterResourceUpdate(categoryName, lambda.resourceName, 'dependsOn', lambda.dependsOn);
   }
+}
+
+export function addAppSyncInvokeMethodPermission(
+  functionName: string,
+) {
+  const backendDir = pathManager.getBackendDirPath();
+  const resourceDirPath = path.join(backendDir, categoryName, functionName);
+  const cfnFileName = `${functionName}-cloudformation-template.json`;
+  const cfnFilePath = path.join(resourceDirPath, cfnFileName);
+  const cfnContent = JSONUtilities.readJson<$TSAny>(cfnFilePath);
+
+  if (!cfnContent.Resources.PermissionForAppSyncToInvokeLambda) {
+    cfnContent.Resources.PermissionForAppSyncToInvokeLambda = {
+      Type: 'AWS::Lambda::Permission',
+      Properties: {
+        FunctionName: {
+          Ref: "LambdaFunction"
+        },
+        Action: "lambda:InvokeFunction",
+        Principal: "appsync.amazonaws.com",
+      },
+    };
+  }
+  JSONUtilities.writeJson(cfnFilePath, cfnContent);
 }

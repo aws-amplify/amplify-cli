@@ -22,6 +22,7 @@ import {
   ADMIN_ROLE,
   API_KEY_AUTH_TYPE,
   COGNITO_AUTH_TYPE,
+  LAMBDA_AUTH_TYPE,
   ConfiguredAuthProviders,
   fieldIsList,
   IAM_AUTH_TYPE,
@@ -74,6 +75,22 @@ const iamExpression = (roles: Array<RoleDefinition>, hasAdminUIEnabled: boolean 
     expression.push(ref('util.unauthorized()'));
   }
   return iff(equals(ref('util.authType()'), str(IAM_AUTH_TYPE)), compoundExpression(expression));
+};
+
+/**
+ * There is only one role for Lambda we can use the first index
+ * @param roles
+ * @returns Expression | null
+ */
+ const lambdaExpression = (roles: Array<RoleDefinition>) => {
+  const expression = new Array<Expression>();
+  if (roles.length === 0) {
+    return iff(equals(ref('util.authType()'), str(LAMBDA_AUTH_TYPE)), ref('util.unauthorized()'));
+  }
+  if (roles.length > 0) {
+    expression.push(set(ref(IS_AUTHORIZED_FLAG), bool(true)));
+  }
+  return iff(equals(ref('util.authType()'), str(LAMBDA_AUTH_TYPE)), compoundExpression(expression));
 };
 
 const generateStaticRoleExpression = (roles: Array<RoleDefinition>): Array<Expression> => {
@@ -157,13 +174,16 @@ export const geneateAuthExpressionForDelete = (
   roles: Array<RoleDefinition>,
   fields: ReadonlyArray<FieldDefinitionNode>,
 ) => {
-  const { cogntoStaticRoles, cognitoDynamicRoles, oidcStaticRoles, oidcDynamicRoles, apiKeyRoles, iamRoles } = splitRoles(roles);
+  const { cogntoStaticRoles, cognitoDynamicRoles, oidcStaticRoles, oidcDynamicRoles, apiKeyRoles, iamRoles, lambdaRoles } = splitRoles(roles);
   const totalAuthExpressions: Array<Expression> = [setHasAuthExpression, set(ref(IS_AUTHORIZED_FLAG), bool(false))];
   if (providers.hasApiKey) {
     totalAuthExpressions.push(apiKeyExpression(apiKeyRoles));
   }
   if (providers.hasIAM) {
     totalAuthExpressions.push(iamExpression(iamRoles, providers.hasAdminUIEnabled, providers.adminUserPoolID));
+  }
+  if (providers.hasLambda) {
+    totalAuthExpressions.push(lambdaExpression(lambdaRoles));
   }
   if (providers.hasUserPools) {
     totalAuthExpressions.push(
