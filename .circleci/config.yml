@@ -15,14 +15,6 @@ executors:
     environment:
       AMPLIFY_DIR: C:/home/circleci/repo/out
       AMPLIFY_PATH: C:/home/circleci/repo/out/amplify.exe
-  build_img:
-    docker:
-      - image: circleci/node:12
-        auth:
-          username: $DOCKERHUB_USERNAME
-          password: $DOCKERHUB_ACCESS_TOKEN
-    working_directory: ~/repo
-    resource_class: large
   linux:
     docker:
       - image: public.ecr.aws/a6e6w2n0/amplify-cli-e2e-base-image-repo-public:latest
@@ -31,14 +23,6 @@ executors:
     environment:
       AMPLIFY_DIR: /home/circleci/repo/out
       AMPLIFY_PATH: /home/circleci/repo/out/amplify-pkg-linux
-node12:
-  working_directory: ~/repo
-  docker:
-    - image: circleci/node:12
-      auth:
-        username: $DOCKERHUB_USERNAME
-        password: $DOCKERHUB_ACCESS_TOKEN
-  resource_class: large
 defaults:
   working_directory: ~/repo
   parameters:
@@ -91,7 +75,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: build_img
+        default: linux
     executor: << parameters.os >>
     steps:
       - checkout
@@ -123,13 +107,13 @@ jobs:
                 root: .
                 paths: .
   test:
-    working_directory: ~/repo
     docker:
-      - image: circleci/node:12
-        auth:
-          username: $DOCKERHUB_USERNAME
-          password: $DOCKERHUB_ACCESS_TOKEN
+      - image: public.ecr.aws/a6e6w2n0/amplify-cli-e2e-base-image-repo-public:latest
+    working_directory: ~/repo
     resource_class: large
+    environment:
+      AMPLIFY_DIR: /home/circleci/repo/out
+      AMPLIFY_PATH: /home/circleci/repo/out/amplify-pkg-linux
     steps:
       - attach_workspace:
           at: ./
@@ -150,13 +134,13 @@ jobs:
           name: Collect code coverage
           command: yarn coverage
   mock_e2e_tests:
-    working_directory: ~/repo
     docker:
-      - image: circleci/node:12
-        auth:
-          username: $DOCKERHUB_USERNAME
-          password: $DOCKERHUB_ACCESS_TOKEN
+      - image: public.ecr.aws/a6e6w2n0/amplify-cli-e2e-base-image-repo-public:latest
+    working_directory: ~/repo
     resource_class: large
+    environment:
+      AMPLIFY_DIR: /home/circleci/repo/out
+      AMPLIFY_PATH: /home/circleci/repo/out/amplify-pkg-linux
     steps:
       - attach_workspace:
           at: ./
@@ -176,13 +160,13 @@ jobs:
       - store_test_results:
           path: packages/amplify-util-mock/
   publish_to_local_registry:
-    working_directory: ~/repo
     docker:
-      - image: circleci/node:12
-        auth:
-          username: $DOCKERHUB_USERNAME
-          password: $DOCKERHUB_ACCESS_TOKEN
+      - image: public.ecr.aws/a6e6w2n0/amplify-cli-e2e-base-image-repo-public:latest
+    working_directory: ~/repo
     resource_class: large
+    environment:
+      AMPLIFY_DIR: /home/circleci/repo/out
+      AMPLIFY_PATH: /home/circleci/repo/out/amplify-pkg-linux
     steps:
       - attach_workspace:
           at: ./
@@ -223,13 +207,13 @@ jobs:
           paths:
             - ~/repo/.amplify-pkg-version
   build_pkg_binaries:
-    working_directory: ~/repo
     docker:
-      - image: circleci/node:12
-        auth:
-          username: $DOCKERHUB_USERNAME
-          password: $DOCKERHUB_ACCESS_TOKEN
+      - image: public.ecr.aws/a6e6w2n0/amplify-cli-e2e-base-image-repo-public:latest
+    working_directory: ~/repo
     resource_class: large
+    environment:
+      AMPLIFY_DIR: /home/circleci/repo/out
+      AMPLIFY_PATH: /home/circleci/repo/out/amplify-pkg-linux
     steps:
       - attach_workspace:
           at: ./
@@ -359,30 +343,30 @@ jobs:
       - store_artifacts:
           path: ~/repo/packages/amplify-e2e-tests/amplify-e2e-reports
   done_with_node_e2e_tests:
-    working_directory: ~/repo
     docker:
-      - image: circleci/node:12
-        auth:
-          username: $DOCKERHUB_USERNAME
-          password: $DOCKERHUB_ACCESS_TOKEN
+      - image: public.ecr.aws/a6e6w2n0/amplify-cli-e2e-base-image-repo-public:latest
+    working_directory: ~/repo
     resource_class: large
+    environment:
+      AMPLIFY_DIR: /home/circleci/repo/out
+      AMPLIFY_PATH: /home/circleci/repo/out/amplify-pkg-linux
     steps:
       - run: echo 'Done with Node CLI E2E Tests'
   done_with_pkg_e2e_tests:
-    working_directory: ~/repo
     docker:
-      - image: circleci/node:12
-        auth:
-          username: $DOCKERHUB_USERNAME
-          password: $DOCKERHUB_ACCESS_TOKEN
+      - image: public.ecr.aws/a6e6w2n0/amplify-cli-e2e-base-image-repo-public:latest
+    working_directory: ~/repo
     resource_class: large
+    environment:
+      AMPLIFY_DIR: /home/circleci/repo/out
+      AMPLIFY_PATH: /home/circleci/repo/out/amplify-pkg-linux
     steps:
       - run: echo 'Done with pkg CLI E2E Tests'
   amplify_e2e_tests_pkg:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -782,13 +766,13 @@ jobs:
       - store_artifacts:
           path: /root/aws-amplify-cypress-api/cypress/screenshots
   deploy:
-    working_directory: ~/repo
     docker:
-      - image: circleci/node:12
-        auth:
-          username: $DOCKERHUB_USERNAME
-          password: $DOCKERHUB_ACCESS_TOKEN
+      - image: public.ecr.aws/a6e6w2n0/amplify-cli-e2e-base-image-repo-public:latest
+    working_directory: ~/repo
     resource_class: large
+    environment:
+      AMPLIFY_DIR: /home/circleci/repo/out
+      AMPLIFY_PATH: /home/circleci/repo/out/amplify-pkg-linux
     steps:
       - attach_workspace:
           at: ./
@@ -812,13 +796,13 @@ jobs:
             fi
           when: always
   github_prerelease:
-    working_directory: ~/repo
     docker:
-      - image: circleci/node:12
-        auth:
-          username: $DOCKERHUB_USERNAME
-          password: $DOCKERHUB_ACCESS_TOKEN
+      - image: public.ecr.aws/a6e6w2n0/amplify-cli-e2e-base-image-repo-public:latest
+    working_directory: ~/repo
     resource_class: large
+    environment:
+      AMPLIFY_DIR: /home/circleci/repo/out
+      AMPLIFY_PATH: /home/circleci/repo/out/amplify-pkg-linux
     steps:
       - attach_workspace:
           at: ./
@@ -841,13 +825,13 @@ jobs:
             version=$(cat .amplify-pkg-version)
             yarn ts-node scripts/github-prerelease.ts $version
   github_prerelease_install_sanity_check:
-    working_directory: ~/repo
     docker:
-      - image: circleci/node:12
-        auth:
-          username: $DOCKERHUB_USERNAME
-          password: $DOCKERHUB_ACCESS_TOKEN
+      - image: public.ecr.aws/a6e6w2n0/amplify-cli-e2e-base-image-repo-public:latest
+    working_directory: ~/repo
     resource_class: large
+    environment:
+      AMPLIFY_DIR: /home/circleci/repo/out
+      AMPLIFY_PATH: /home/circleci/repo/out/amplify-pkg-linux
     steps:
       - restore_cache:
           key: amplfiy-pkg-tag-{{ .Branch }}-{{ .Revision }}
@@ -865,13 +849,13 @@ jobs:
           command: |
             amplify version
   github_release:
-    working_directory: ~/repo
     docker:
-      - image: circleci/node:12
-        auth:
-          username: $DOCKERHUB_USERNAME
-          password: $DOCKERHUB_ACCESS_TOKEN
+      - image: public.ecr.aws/a6e6w2n0/amplify-cli-e2e-base-image-repo-public:latest
+    working_directory: ~/repo
     resource_class: large
+    environment:
+      AMPLIFY_DIR: /home/circleci/repo/out
+      AMPLIFY_PATH: /home/circleci/repo/out/amplify-pkg-linux
     steps:
       - attach_workspace:
           at: ./
@@ -885,13 +869,13 @@ jobs:
             version=$(cat .amplify-pkg-version)
             yarn ts-node scripts/github-release.ts $version
   cleanup_resources:
-    working_directory: ~/repo
     docker:
-      - image: circleci/node:12
-        auth:
-          username: $DOCKERHUB_USERNAME
-          password: $DOCKERHUB_ACCESS_TOKEN
+      - image: public.ecr.aws/a6e6w2n0/amplify-cli-e2e-base-image-repo-public:latest
+    working_directory: ~/repo
     resource_class: large
+    environment:
+      AMPLIFY_DIR: /home/circleci/repo/out
+      AMPLIFY_PATH: /home/circleci/repo/out/amplify-pkg-linux
     steps:
       - attach_workspace:
           at: ./
@@ -917,13 +901,13 @@ jobs:
       - store_artifacts:
           path: ~/repo/packages/amplify-e2e-tests/amplify-e2e-reports
   cleanup_resources_after_e2e_runs:
-    working_directory: ~/repo
     docker:
-      - image: circleci/node:12
-        auth:
-          username: $DOCKERHUB_USERNAME
-          password: $DOCKERHUB_ACCESS_TOKEN
+      - image: public.ecr.aws/a6e6w2n0/amplify-cli-e2e-base-image-repo-public:latest
+    working_directory: ~/repo
     resource_class: large
+    environment:
+      AMPLIFY_DIR: /home/circleci/repo/out
+      AMPLIFY_PATH: /home/circleci/repo/out/amplify-pkg-linux
     steps:
       - attach_workspace:
           at: ./
@@ -1006,6 +990,8 @@ jobs:
     environment:
       TEST_SUITE: src/__tests__/api_4.test.ts
       CLI_REGION: us-east-2
+      AMPLIFY_DIR: /home/circleci/repo/packages/amplify-cli/bin
+      AMPLIFY_PATH: /home/circleci/repo/packages/amplify-cli/bin/amplify
   auth_6-amplify_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -1064,6 +1050,8 @@ jobs:
     environment:
       TEST_SUITE: src/__tests__/auth_6.test.ts
       CLI_REGION: us-west-2
+      AMPLIFY_DIR: /home/circleci/repo/packages/amplify-cli/bin
+      AMPLIFY_PATH: /home/circleci/repo/packages/amplify-cli/bin/amplify
   configure-project-amplify_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -1122,6 +1110,8 @@ jobs:
     environment:
       TEST_SUITE: src/__tests__/configure-project.test.ts
       CLI_REGION: eu-west-2
+      AMPLIFY_DIR: /home/circleci/repo/packages/amplify-cli/bin
+      AMPLIFY_PATH: /home/circleci/repo/packages/amplify-cli/bin/amplify
   container-hosting-amplify_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -1180,6 +1170,8 @@ jobs:
     environment:
       TEST_SUITE: src/__tests__/container-hosting.test.ts
       CLI_REGION: eu-central-1
+      AMPLIFY_DIR: /home/circleci/repo/packages/amplify-cli/bin
+      AMPLIFY_PATH: /home/circleci/repo/packages/amplify-cli/bin/amplify
   frontend_config_drift-amplify_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -1238,6 +1230,8 @@ jobs:
     environment:
       TEST_SUITE: src/__tests__/frontend_config_drift.test.ts
       CLI_REGION: ap-northeast-1
+      AMPLIFY_DIR: /home/circleci/repo/packages/amplify-cli/bin
+      AMPLIFY_PATH: /home/circleci/repo/packages/amplify-cli/bin/amplify
   function_5-amplify_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -1296,6 +1290,8 @@ jobs:
     environment:
       TEST_SUITE: src/__tests__/function_5.test.ts
       CLI_REGION: ap-southeast-1
+      AMPLIFY_DIR: /home/circleci/repo/packages/amplify-cli/bin
+      AMPLIFY_PATH: /home/circleci/repo/packages/amplify-cli/bin/amplify
   function_6-amplify_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -1354,6 +1350,8 @@ jobs:
     environment:
       TEST_SUITE: src/__tests__/function_6.test.ts
       CLI_REGION: ap-southeast-2
+      AMPLIFY_DIR: /home/circleci/repo/packages/amplify-cli/bin
+      AMPLIFY_PATH: /home/circleci/repo/packages/amplify-cli/bin/amplify
   function_7-amplify_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -1412,6 +1410,8 @@ jobs:
     environment:
       TEST_SUITE: src/__tests__/function_7.test.ts
       CLI_REGION: us-east-2
+      AMPLIFY_DIR: /home/circleci/repo/packages/amplify-cli/bin
+      AMPLIFY_PATH: /home/circleci/repo/packages/amplify-cli/bin/amplify
   hooks-amplify_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -1470,6 +1470,8 @@ jobs:
     environment:
       TEST_SUITE: src/__tests__/hooks.test.ts
       CLI_REGION: us-west-2
+      AMPLIFY_DIR: /home/circleci/repo/packages/amplify-cli/bin
+      AMPLIFY_PATH: /home/circleci/repo/packages/amplify-cli/bin/amplify
   iam-permissions-boundary-amplify_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -1528,6 +1530,8 @@ jobs:
     environment:
       TEST_SUITE: src/__tests__/iam-permissions-boundary.test.ts
       CLI_REGION: eu-west-2
+      AMPLIFY_DIR: /home/circleci/repo/packages/amplify-cli/bin
+      AMPLIFY_PATH: /home/circleci/repo/packages/amplify-cli/bin/amplify
   layer-2-amplify_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -1586,6 +1590,8 @@ jobs:
     environment:
       TEST_SUITE: src/__tests__/layer-2.test.ts
       CLI_REGION: eu-central-1
+      AMPLIFY_DIR: /home/circleci/repo/packages/amplify-cli/bin
+      AMPLIFY_PATH: /home/circleci/repo/packages/amplify-cli/bin/amplify
   migration-node-function-amplify_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -1644,6 +1650,8 @@ jobs:
     environment:
       TEST_SUITE: src/__tests__/migration/node.function.test.ts
       CLI_REGION: ap-northeast-1
+      AMPLIFY_DIR: /home/circleci/repo/packages/amplify-cli/bin
+      AMPLIFY_PATH: /home/circleci/repo/packages/amplify-cli/bin/amplify
   pull-amplify_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -1702,6 +1710,8 @@ jobs:
     environment:
       TEST_SUITE: src/__tests__/pull.test.ts
       CLI_REGION: ap-southeast-1
+      AMPLIFY_DIR: /home/circleci/repo/packages/amplify-cli/bin
+      AMPLIFY_PATH: /home/circleci/repo/packages/amplify-cli/bin/amplify
   s3-sse-amplify_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -1760,6 +1770,8 @@ jobs:
     environment:
       TEST_SUITE: src/__tests__/s3-sse.test.ts
       CLI_REGION: ap-southeast-2
+      AMPLIFY_DIR: /home/circleci/repo/packages/amplify-cli/bin
+      AMPLIFY_PATH: /home/circleci/repo/packages/amplify-cli/bin/amplify
   schema-iterative-update-locking-amplify_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -1818,6 +1830,8 @@ jobs:
     environment:
       TEST_SUITE: src/__tests__/schema-iterative-update-locking.test.ts
       CLI_REGION: us-east-2
+      AMPLIFY_DIR: /home/circleci/repo/packages/amplify-cli/bin
+      AMPLIFY_PATH: /home/circleci/repo/packages/amplify-cli/bin/amplify
   plugin-amplify_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -1876,6 +1890,8 @@ jobs:
     environment:
       TEST_SUITE: src/__tests__/plugin.test.ts
       CLI_REGION: us-west-2
+      AMPLIFY_DIR: /home/circleci/repo/packages/amplify-cli/bin
+      AMPLIFY_PATH: /home/circleci/repo/packages/amplify-cli/bin/amplify
   init-special-case-amplify_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -1934,6 +1950,8 @@ jobs:
     environment:
       TEST_SUITE: src/__tests__/init-special-case.test.ts
       CLI_REGION: eu-west-2
+      AMPLIFY_DIR: /home/circleci/repo/packages/amplify-cli/bin
+      AMPLIFY_PATH: /home/circleci/repo/packages/amplify-cli/bin/amplify
   datastore-modelgen-amplify_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -1992,6 +2010,8 @@ jobs:
     environment:
       TEST_SUITE: src/__tests__/datastore-modelgen.test.ts
       CLI_REGION: eu-central-1
+      AMPLIFY_DIR: /home/circleci/repo/packages/amplify-cli/bin
+      AMPLIFY_PATH: /home/circleci/repo/packages/amplify-cli/bin/amplify
   amplify-configure-amplify_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -2050,6 +2070,8 @@ jobs:
     environment:
       TEST_SUITE: src/__tests__/amplify-configure.test.ts
       CLI_REGION: ap-northeast-1
+      AMPLIFY_DIR: /home/circleci/repo/packages/amplify-cli/bin
+      AMPLIFY_PATH: /home/circleci/repo/packages/amplify-cli/bin/amplify
   init-amplify_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -2108,6 +2130,8 @@ jobs:
     environment:
       TEST_SUITE: src/__tests__/init.test.ts
       CLI_REGION: ap-southeast-1
+      AMPLIFY_DIR: /home/circleci/repo/packages/amplify-cli/bin
+      AMPLIFY_PATH: /home/circleci/repo/packages/amplify-cli/bin/amplify
   tags-amplify_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -2166,6 +2190,8 @@ jobs:
     environment:
       TEST_SUITE: src/__tests__/tags.test.ts
       CLI_REGION: ap-southeast-2
+      AMPLIFY_DIR: /home/circleci/repo/packages/amplify-cli/bin
+      AMPLIFY_PATH: /home/circleci/repo/packages/amplify-cli/bin/amplify
   notifications-amplify_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -2224,6 +2250,8 @@ jobs:
     environment:
       TEST_SUITE: src/__tests__/notifications.test.ts
       CLI_REGION: us-east-2
+      AMPLIFY_DIR: /home/circleci/repo/packages/amplify-cli/bin
+      AMPLIFY_PATH: /home/circleci/repo/packages/amplify-cli/bin/amplify
   schema-versioned-amplify_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -2282,6 +2310,8 @@ jobs:
     environment:
       TEST_SUITE: src/__tests__/schema-versioned.test.ts
       CLI_REGION: us-west-2
+      AMPLIFY_DIR: /home/circleci/repo/packages/amplify-cli/bin
+      AMPLIFY_PATH: /home/circleci/repo/packages/amplify-cli/bin/amplify
   schema-data-access-patterns-amplify_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -2340,6 +2370,8 @@ jobs:
     environment:
       TEST_SUITE: src/__tests__/schema-data-access-patterns.test.ts
       CLI_REGION: eu-west-2
+      AMPLIFY_DIR: /home/circleci/repo/packages/amplify-cli/bin
+      AMPLIFY_PATH: /home/circleci/repo/packages/amplify-cli/bin/amplify
   interactions-amplify_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -2398,6 +2430,8 @@ jobs:
     environment:
       TEST_SUITE: src/__tests__/interactions.test.ts
       CLI_REGION: us-west-2
+      AMPLIFY_DIR: /home/circleci/repo/packages/amplify-cli/bin
+      AMPLIFY_PATH: /home/circleci/repo/packages/amplify-cli/bin/amplify
   schema-predictions-amplify_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -2456,6 +2490,8 @@ jobs:
     environment:
       TEST_SUITE: src/__tests__/schema-predictions.test.ts
       CLI_REGION: ap-northeast-1
+      AMPLIFY_DIR: /home/circleci/repo/packages/amplify-cli/bin
+      AMPLIFY_PATH: /home/circleci/repo/packages/amplify-cli/bin/amplify
   amplify-app-amplify_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -2514,6 +2550,8 @@ jobs:
     environment:
       TEST_SUITE: src/__tests__/amplify-app.test.ts
       CLI_REGION: ap-southeast-1
+      AMPLIFY_DIR: /home/circleci/repo/packages/amplify-cli/bin
+      AMPLIFY_PATH: /home/circleci/repo/packages/amplify-cli/bin/amplify
   hosting-amplify_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -2572,6 +2610,8 @@ jobs:
     environment:
       TEST_SUITE: src/__tests__/hosting.test.ts
       CLI_REGION: ap-southeast-2
+      AMPLIFY_DIR: /home/circleci/repo/packages/amplify-cli/bin
+      AMPLIFY_PATH: /home/circleci/repo/packages/amplify-cli/bin/amplify
   analytics-amplify_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -2630,6 +2670,8 @@ jobs:
     environment:
       TEST_SUITE: src/__tests__/analytics.test.ts
       CLI_REGION: us-east-2
+      AMPLIFY_DIR: /home/circleci/repo/packages/amplify-cli/bin
+      AMPLIFY_PATH: /home/circleci/repo/packages/amplify-cli/bin/amplify
   feature-flags-amplify_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -2688,6 +2730,8 @@ jobs:
     environment:
       TEST_SUITE: src/__tests__/feature-flags.test.ts
       CLI_REGION: us-west-2
+      AMPLIFY_DIR: /home/circleci/repo/packages/amplify-cli/bin
+      AMPLIFY_PATH: /home/circleci/repo/packages/amplify-cli/bin/amplify
   schema-iterative-update-2-amplify_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -2746,6 +2790,8 @@ jobs:
     environment:
       TEST_SUITE: src/__tests__/schema-iterative-update-2.test.ts
       CLI_REGION: eu-west-2
+      AMPLIFY_DIR: /home/circleci/repo/packages/amplify-cli/bin
+      AMPLIFY_PATH: /home/circleci/repo/packages/amplify-cli/bin/amplify
   containers-api-amplify_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -2804,6 +2850,8 @@ jobs:
     environment:
       TEST_SUITE: src/__tests__/containers-api.test.ts
       CLI_REGION: eu-central-1
+      AMPLIFY_DIR: /home/circleci/repo/packages/amplify-cli/bin
+      AMPLIFY_PATH: /home/circleci/repo/packages/amplify-cli/bin/amplify
   predictions-amplify_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -2862,6 +2910,8 @@ jobs:
     environment:
       TEST_SUITE: src/__tests__/predictions.test.ts
       CLI_REGION: ap-northeast-1
+      AMPLIFY_DIR: /home/circleci/repo/packages/amplify-cli/bin
+      AMPLIFY_PATH: /home/circleci/repo/packages/amplify-cli/bin/amplify
   hostingPROD-amplify_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -2920,6 +2970,8 @@ jobs:
     environment:
       TEST_SUITE: src/__tests__/hostingPROD.test.ts
       CLI_REGION: ap-southeast-1
+      AMPLIFY_DIR: /home/circleci/repo/packages/amplify-cli/bin
+      AMPLIFY_PATH: /home/circleci/repo/packages/amplify-cli/bin/amplify
   geo-add-amplify_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -2978,6 +3030,8 @@ jobs:
     environment:
       TEST_SUITE: src/__tests__/geo-add.test.ts
       CLI_REGION: ap-southeast-1
+      AMPLIFY_DIR: /home/circleci/repo/packages/amplify-cli/bin
+      AMPLIFY_PATH: /home/circleci/repo/packages/amplify-cli/bin/amplify
   geo-update-amplify_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -3036,6 +3090,8 @@ jobs:
     environment:
       TEST_SUITE: src/__tests__/geo-update.test.ts
       CLI_REGION: ap-southeast-2
+      AMPLIFY_DIR: /home/circleci/repo/packages/amplify-cli/bin
+      AMPLIFY_PATH: /home/circleci/repo/packages/amplify-cli/bin/amplify
   geo-remove-amplify_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -3094,6 +3150,8 @@ jobs:
     environment:
       TEST_SUITE: src/__tests__/geo-remove.test.ts
       CLI_REGION: us-east-2
+      AMPLIFY_DIR: /home/circleci/repo/packages/amplify-cli/bin
+      AMPLIFY_PATH: /home/circleci/repo/packages/amplify-cli/bin/amplify
   schema-auth-10-amplify_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -3152,6 +3210,8 @@ jobs:
     environment:
       TEST_SUITE: src/__tests__/schema-auth-10.test.ts
       CLI_REGION: eu-west-2
+      AMPLIFY_DIR: /home/circleci/repo/packages/amplify-cli/bin
+      AMPLIFY_PATH: /home/circleci/repo/packages/amplify-cli/bin/amplify
   schema-key-amplify_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -3210,6 +3270,8 @@ jobs:
     environment:
       TEST_SUITE: src/__tests__/schema-key.test.ts
       CLI_REGION: eu-central-1
+      AMPLIFY_DIR: /home/circleci/repo/packages/amplify-cli/bin
+      AMPLIFY_PATH: /home/circleci/repo/packages/amplify-cli/bin/amplify
   auth_1-amplify_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -3268,6 +3330,8 @@ jobs:
     environment:
       TEST_SUITE: src/__tests__/auth_1.test.ts
       CLI_REGION: ap-northeast-1
+      AMPLIFY_DIR: /home/circleci/repo/packages/amplify-cli/bin
+      AMPLIFY_PATH: /home/circleci/repo/packages/amplify-cli/bin/amplify
   auth_5-amplify_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -3326,6 +3390,8 @@ jobs:
     environment:
       TEST_SUITE: src/__tests__/auth_5.test.ts
       CLI_REGION: ap-southeast-1
+      AMPLIFY_DIR: /home/circleci/repo/packages/amplify-cli/bin
+      AMPLIFY_PATH: /home/circleci/repo/packages/amplify-cli/bin/amplify
   function_3-amplify_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -3384,6 +3450,8 @@ jobs:
     environment:
       TEST_SUITE: src/__tests__/function_3.test.ts
       CLI_REGION: ap-southeast-2
+      AMPLIFY_DIR: /home/circleci/repo/packages/amplify-cli/bin
+      AMPLIFY_PATH: /home/circleci/repo/packages/amplify-cli/bin/amplify
   schema-iterative-update-1-amplify_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -3442,6 +3510,8 @@ jobs:
     environment:
       TEST_SUITE: src/__tests__/schema-iterative-update-1.test.ts
       CLI_REGION: us-east-2
+      AMPLIFY_DIR: /home/circleci/repo/packages/amplify-cli/bin
+      AMPLIFY_PATH: /home/circleci/repo/packages/amplify-cli/bin/amplify
   schema-auth-3-amplify_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -3500,6 +3570,8 @@ jobs:
     environment:
       TEST_SUITE: src/__tests__/schema-auth-3.test.ts
       CLI_REGION: us-west-2
+      AMPLIFY_DIR: /home/circleci/repo/packages/amplify-cli/bin
+      AMPLIFY_PATH: /home/circleci/repo/packages/amplify-cli/bin/amplify
   delete-amplify_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -3558,6 +3630,8 @@ jobs:
     environment:
       TEST_SUITE: src/__tests__/delete.test.ts
       CLI_REGION: eu-west-2
+      AMPLIFY_DIR: /home/circleci/repo/packages/amplify-cli/bin
+      AMPLIFY_PATH: /home/circleci/repo/packages/amplify-cli/bin/amplify
   function_2-amplify_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -3616,6 +3690,8 @@ jobs:
     environment:
       TEST_SUITE: src/__tests__/function_2.test.ts
       CLI_REGION: eu-central-1
+      AMPLIFY_DIR: /home/circleci/repo/packages/amplify-cli/bin
+      AMPLIFY_PATH: /home/circleci/repo/packages/amplify-cli/bin/amplify
   auth_3-amplify_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -3674,6 +3750,8 @@ jobs:
     environment:
       TEST_SUITE: src/__tests__/auth_3.test.ts
       CLI_REGION: ap-northeast-1
+      AMPLIFY_DIR: /home/circleci/repo/packages/amplify-cli/bin
+      AMPLIFY_PATH: /home/circleci/repo/packages/amplify-cli/bin/amplify
   layer-amplify_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -3732,6 +3810,8 @@ jobs:
     environment:
       TEST_SUITE: src/__tests__/layer.test.ts
       CLI_REGION: ap-southeast-1
+      AMPLIFY_DIR: /home/circleci/repo/packages/amplify-cli/bin
+      AMPLIFY_PATH: /home/circleci/repo/packages/amplify-cli/bin/amplify
   migration-api-key-migration1-amplify_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -3790,6 +3870,8 @@ jobs:
     environment:
       TEST_SUITE: src/__tests__/migration/api.key.migration1.test.ts
       CLI_REGION: ap-southeast-2
+      AMPLIFY_DIR: /home/circleci/repo/packages/amplify-cli/bin
+      AMPLIFY_PATH: /home/circleci/repo/packages/amplify-cli/bin/amplify
   auth_4-amplify_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -3848,6 +3930,8 @@ jobs:
     environment:
       TEST_SUITE: src/__tests__/auth_4.test.ts
       CLI_REGION: us-east-2
+      AMPLIFY_DIR: /home/circleci/repo/packages/amplify-cli/bin
+      AMPLIFY_PATH: /home/circleci/repo/packages/amplify-cli/bin/amplify
   schema-auth-7-amplify_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -3906,6 +3990,8 @@ jobs:
     environment:
       TEST_SUITE: src/__tests__/schema-auth-7.test.ts
       CLI_REGION: us-west-2
+      AMPLIFY_DIR: /home/circleci/repo/packages/amplify-cli/bin
+      AMPLIFY_PATH: /home/circleci/repo/packages/amplify-cli/bin/amplify
   schema-auth-8-amplify_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -3964,6 +4050,8 @@ jobs:
     environment:
       TEST_SUITE: src/__tests__/schema-auth-8.test.ts
       CLI_REGION: eu-west-2
+      AMPLIFY_DIR: /home/circleci/repo/packages/amplify-cli/bin
+      AMPLIFY_PATH: /home/circleci/repo/packages/amplify-cli/bin/amplify
   schema-searchable-amplify_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -4022,6 +4110,8 @@ jobs:
     environment:
       TEST_SUITE: src/__tests__/schema-searchable.test.ts
       CLI_REGION: eu-central-1
+      AMPLIFY_DIR: /home/circleci/repo/packages/amplify-cli/bin
+      AMPLIFY_PATH: /home/circleci/repo/packages/amplify-cli/bin/amplify
   schema-auth-4-amplify_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -4080,6 +4170,8 @@ jobs:
     environment:
       TEST_SUITE: src/__tests__/schema-auth-4.test.ts
       CLI_REGION: ap-northeast-1
+      AMPLIFY_DIR: /home/circleci/repo/packages/amplify-cli/bin
+      AMPLIFY_PATH: /home/circleci/repo/packages/amplify-cli/bin/amplify
   api_3-amplify_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -4138,6 +4230,8 @@ jobs:
     environment:
       TEST_SUITE: src/__tests__/api_3.test.ts
       CLI_REGION: ap-southeast-1
+      AMPLIFY_DIR: /home/circleci/repo/packages/amplify-cli/bin
+      AMPLIFY_PATH: /home/circleci/repo/packages/amplify-cli/bin/amplify
   import_auth_1-amplify_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -4196,6 +4290,8 @@ jobs:
     environment:
       TEST_SUITE: src/__tests__/import_auth_1.test.ts
       CLI_REGION: ap-southeast-2
+      AMPLIFY_DIR: /home/circleci/repo/packages/amplify-cli/bin
+      AMPLIFY_PATH: /home/circleci/repo/packages/amplify-cli/bin/amplify
   import_auth_2-amplify_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -4254,6 +4350,8 @@ jobs:
     environment:
       TEST_SUITE: src/__tests__/import_auth_2.test.ts
       CLI_REGION: us-east-2
+      AMPLIFY_DIR: /home/circleci/repo/packages/amplify-cli/bin
+      AMPLIFY_PATH: /home/circleci/repo/packages/amplify-cli/bin/amplify
   import_s3_1-amplify_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -4313,6 +4411,8 @@ jobs:
       TEST_SUITE: src/__tests__/import_s3_1.test.ts
       CLI_REGION: us-west-2
       USE_PARENT_ACCOUNT: 1
+      AMPLIFY_DIR: /home/circleci/repo/packages/amplify-cli/bin
+      AMPLIFY_PATH: /home/circleci/repo/packages/amplify-cli/bin/amplify
   import_dynamodb_1-amplify_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -4372,6 +4472,8 @@ jobs:
       TEST_SUITE: src/__tests__/import_dynamodb_1.test.ts
       CLI_REGION: eu-west-2
       USE_PARENT_ACCOUNT: 1
+      AMPLIFY_DIR: /home/circleci/repo/packages/amplify-cli/bin
+      AMPLIFY_PATH: /home/circleci/repo/packages/amplify-cli/bin/amplify
   schema-iterative-rollback-1-amplify_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -4430,6 +4532,8 @@ jobs:
     environment:
       TEST_SUITE: src/__tests__/schema-iterative-rollback-1.test.ts
       CLI_REGION: eu-central-1
+      AMPLIFY_DIR: /home/circleci/repo/packages/amplify-cli/bin
+      AMPLIFY_PATH: /home/circleci/repo/packages/amplify-cli/bin/amplify
   schema-iterative-rollback-2-amplify_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -4488,6 +4592,8 @@ jobs:
     environment:
       TEST_SUITE: src/__tests__/schema-iterative-rollback-2.test.ts
       CLI_REGION: ap-northeast-1
+      AMPLIFY_DIR: /home/circleci/repo/packages/amplify-cli/bin
+      AMPLIFY_PATH: /home/circleci/repo/packages/amplify-cli/bin/amplify
   env-amplify_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -4546,6 +4652,8 @@ jobs:
     environment:
       TEST_SUITE: src/__tests__/env.test.ts
       CLI_REGION: ap-southeast-1
+      AMPLIFY_DIR: /home/circleci/repo/packages/amplify-cli/bin
+      AMPLIFY_PATH: /home/circleci/repo/packages/amplify-cli/bin/amplify
   auth_2-amplify_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -4605,6 +4713,8 @@ jobs:
       TEST_SUITE: src/__tests__/auth_2.test.ts
       CLI_REGION: ap-southeast-2
       USE_PARENT_ACCOUNT: 1
+      AMPLIFY_DIR: /home/circleci/repo/packages/amplify-cli/bin
+      AMPLIFY_PATH: /home/circleci/repo/packages/amplify-cli/bin/amplify
   schema-auth-9-amplify_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -4663,6 +4773,8 @@ jobs:
     environment:
       TEST_SUITE: src/__tests__/schema-auth-9.test.ts
       CLI_REGION: us-east-2
+      AMPLIFY_DIR: /home/circleci/repo/packages/amplify-cli/bin
+      AMPLIFY_PATH: /home/circleci/repo/packages/amplify-cli/bin/amplify
   schema-auth-11-amplify_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -4721,6 +4833,8 @@ jobs:
     environment:
       TEST_SUITE: src/__tests__/schema-auth-11.test.ts
       CLI_REGION: us-west-2
+      AMPLIFY_DIR: /home/circleci/repo/packages/amplify-cli/bin
+      AMPLIFY_PATH: /home/circleci/repo/packages/amplify-cli/bin/amplify
   migration-api-key-migration2-amplify_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -4780,6 +4894,8 @@ jobs:
       TEST_SUITE: src/__tests__/migration/api.key.migration2.test.ts
       CLI_REGION: eu-west-2
       USE_PARENT_ACCOUNT: 1
+      AMPLIFY_DIR: /home/circleci/repo/packages/amplify-cli/bin
+      AMPLIFY_PATH: /home/circleci/repo/packages/amplify-cli/bin/amplify
   function_1-amplify_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -4838,6 +4954,8 @@ jobs:
     environment:
       TEST_SUITE: src/__tests__/function_1.test.ts
       CLI_REGION: eu-central-1
+      AMPLIFY_DIR: /home/circleci/repo/packages/amplify-cli/bin
+      AMPLIFY_PATH: /home/circleci/repo/packages/amplify-cli/bin/amplify
   schema-auth-1-amplify_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -4896,6 +5014,8 @@ jobs:
     environment:
       TEST_SUITE: src/__tests__/schema-auth-1.test.ts
       CLI_REGION: ap-northeast-1
+      AMPLIFY_DIR: /home/circleci/repo/packages/amplify-cli/bin
+      AMPLIFY_PATH: /home/circleci/repo/packages/amplify-cli/bin/amplify
   function_4-amplify_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -4954,6 +5074,8 @@ jobs:
     environment:
       TEST_SUITE: src/__tests__/function_4.test.ts
       CLI_REGION: ap-southeast-1
+      AMPLIFY_DIR: /home/circleci/repo/packages/amplify-cli/bin
+      AMPLIFY_PATH: /home/circleci/repo/packages/amplify-cli/bin/amplify
   schema-function-amplify_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -5012,6 +5134,8 @@ jobs:
     environment:
       TEST_SUITE: src/__tests__/schema-function.test.ts
       CLI_REGION: ap-southeast-2
+      AMPLIFY_DIR: /home/circleci/repo/packages/amplify-cli/bin
+      AMPLIFY_PATH: /home/circleci/repo/packages/amplify-cli/bin/amplify
   schema-model-amplify_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -5070,6 +5194,8 @@ jobs:
     environment:
       TEST_SUITE: src/__tests__/schema-model.test.ts
       CLI_REGION: us-east-2
+      AMPLIFY_DIR: /home/circleci/repo/packages/amplify-cli/bin
+      AMPLIFY_PATH: /home/circleci/repo/packages/amplify-cli/bin/amplify
   migration-api-connection-migration-amplify_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -5128,6 +5254,8 @@ jobs:
     environment:
       TEST_SUITE: src/__tests__/migration/api.connection.migration.test.ts
       CLI_REGION: us-west-2
+      AMPLIFY_DIR: /home/circleci/repo/packages/amplify-cli/bin
+      AMPLIFY_PATH: /home/circleci/repo/packages/amplify-cli/bin/amplify
   schema-connection-amplify_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -5186,6 +5314,8 @@ jobs:
     environment:
       TEST_SUITE: src/__tests__/schema-connection.test.ts
       CLI_REGION: eu-west-2
+      AMPLIFY_DIR: /home/circleci/repo/packages/amplify-cli/bin
+      AMPLIFY_PATH: /home/circleci/repo/packages/amplify-cli/bin/amplify
   schema-auth-6-amplify_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -5244,6 +5374,8 @@ jobs:
     environment:
       TEST_SUITE: src/__tests__/schema-auth-6.test.ts
       CLI_REGION: eu-central-1
+      AMPLIFY_DIR: /home/circleci/repo/packages/amplify-cli/bin
+      AMPLIFY_PATH: /home/circleci/repo/packages/amplify-cli/bin/amplify
   schema-iterative-update-3-amplify_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -5302,6 +5434,8 @@ jobs:
     environment:
       TEST_SUITE: src/__tests__/schema-iterative-update-3.test.ts
       CLI_REGION: ap-northeast-1
+      AMPLIFY_DIR: /home/circleci/repo/packages/amplify-cli/bin
+      AMPLIFY_PATH: /home/circleci/repo/packages/amplify-cli/bin/amplify
   schema-auth-2-amplify_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -5360,6 +5494,8 @@ jobs:
     environment:
       TEST_SUITE: src/__tests__/schema-auth-2.test.ts
       CLI_REGION: ap-southeast-1
+      AMPLIFY_DIR: /home/circleci/repo/packages/amplify-cli/bin
+      AMPLIFY_PATH: /home/circleci/repo/packages/amplify-cli/bin/amplify
   api_1-amplify_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -5419,6 +5555,8 @@ jobs:
       TEST_SUITE: src/__tests__/api_1.test.ts
       CLI_REGION: ap-southeast-2
       USE_PARENT_ACCOUNT: 1
+      AMPLIFY_DIR: /home/circleci/repo/packages/amplify-cli/bin
+      AMPLIFY_PATH: /home/circleci/repo/packages/amplify-cli/bin/amplify
   schema-auth-5-amplify_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -5477,6 +5615,8 @@ jobs:
     environment:
       TEST_SUITE: src/__tests__/schema-auth-5.test.ts
       CLI_REGION: us-east-2
+      AMPLIFY_DIR: /home/circleci/repo/packages/amplify-cli/bin
+      AMPLIFY_PATH: /home/circleci/repo/packages/amplify-cli/bin/amplify
   storage-amplify_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -5536,6 +5676,8 @@ jobs:
       TEST_SUITE: src/__tests__/storage.test.ts
       CLI_REGION: us-west-2
       USE_PARENT_ACCOUNT: 1
+      AMPLIFY_DIR: /home/circleci/repo/packages/amplify-cli/bin
+      AMPLIFY_PATH: /home/circleci/repo/packages/amplify-cli/bin/amplify
   api_2-amplify_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -5595,6 +5737,8 @@ jobs:
       TEST_SUITE: src/__tests__/api_2.test.ts
       CLI_REGION: eu-west-2
       USE_PARENT_ACCOUNT: 1
+      AMPLIFY_DIR: /home/circleci/repo/packages/amplify-cli/bin
+      AMPLIFY_PATH: /home/circleci/repo/packages/amplify-cli/bin/amplify
   schema-iterative-update-4-amplify_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -5653,11 +5797,13 @@ jobs:
     environment:
       TEST_SUITE: src/__tests__/schema-iterative-update-4.test.ts
       CLI_REGION: eu-central-1
+      AMPLIFY_DIR: /home/circleci/repo/packages/amplify-cli/bin
+      AMPLIFY_PATH: /home/circleci/repo/packages/amplify-cli/bin/amplify
   api_4-amplify_e2e_tests_pkg:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -5694,7 +5840,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -5731,7 +5877,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -5768,7 +5914,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -5805,7 +5951,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -5842,7 +5988,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -5879,7 +6025,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -5916,7 +6062,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -5953,7 +6099,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -5990,7 +6136,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -6027,7 +6173,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -6064,7 +6210,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -6101,7 +6247,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -6138,7 +6284,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -6175,7 +6321,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -6212,7 +6358,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -6249,7 +6395,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -6286,7 +6432,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -6323,7 +6469,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -6360,7 +6506,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -6397,7 +6543,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -6434,7 +6580,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -6471,7 +6617,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -6508,7 +6654,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -6545,7 +6691,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -6582,7 +6728,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -6619,7 +6765,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -6656,7 +6802,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -6693,7 +6839,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -6730,7 +6876,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -6767,7 +6913,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -6804,7 +6950,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -6841,7 +6987,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -6878,7 +7024,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -6915,7 +7061,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -6952,7 +7098,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -6989,7 +7135,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -7026,7 +7172,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -7063,7 +7209,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -7100,7 +7246,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -7137,7 +7283,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -7174,7 +7320,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -7211,7 +7357,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -7248,7 +7394,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -7285,7 +7431,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -7322,7 +7468,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -7359,7 +7505,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -7396,7 +7542,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -7433,7 +7579,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -7470,7 +7616,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -7507,7 +7653,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -7544,7 +7690,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -7581,7 +7727,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -7618,7 +7764,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -7655,7 +7801,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -7692,7 +7838,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -7729,7 +7875,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -7766,7 +7912,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -7804,7 +7950,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -7842,7 +7988,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -7879,7 +8025,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -7916,7 +8062,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -7953,7 +8099,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -7991,7 +8137,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -8028,7 +8174,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -8065,7 +8211,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -8103,7 +8249,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -8140,7 +8286,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -8177,7 +8323,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -8214,7 +8360,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -8251,7 +8397,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -8288,7 +8434,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -8325,7 +8471,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -8362,7 +8508,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -8399,7 +8545,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -8436,7 +8582,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -8473,7 +8619,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -8511,7 +8657,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -8548,7 +8694,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -8586,7 +8732,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -8624,7 +8770,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -8705,7 +8851,6 @@ workflows:
               os:
                 - linux
                 - windows
-                - build_img
       - test:
           requires:
             - build
@@ -9107,7 +9252,6 @@ workflows:
                 - /run-e2e\/*./
           requires:
             - publish_to_local_registry
-            - build_pkg_binaries
           matrix:
             parameters:
               os:
@@ -9134,7 +9278,6 @@ workflows:
                 - /run-e2e\/*./
           requires:
             - publish_to_local_registry
-            - build_pkg_binaries
           matrix:
             parameters:
               os:
@@ -9161,7 +9304,6 @@ workflows:
                 - /run-e2e\/*./
           requires:
             - publish_to_local_registry
-            - build_pkg_binaries
           matrix:
             parameters:
               os:
@@ -9188,7 +9330,6 @@ workflows:
                 - /run-e2e\/*./
           requires:
             - publish_to_local_registry
-            - build_pkg_binaries
           matrix:
             parameters:
               os:
@@ -9215,7 +9356,6 @@ workflows:
                 - /run-e2e\/*./
           requires:
             - publish_to_local_registry
-            - build_pkg_binaries
           matrix:
             parameters:
               os:
@@ -9242,7 +9382,6 @@ workflows:
                 - /run-e2e\/*./
           requires:
             - publish_to_local_registry
-            - build_pkg_binaries
           matrix:
             parameters:
               os:
@@ -9269,7 +9408,6 @@ workflows:
                 - /run-e2e\/*./
           requires:
             - publish_to_local_registry
-            - build_pkg_binaries
           matrix:
             parameters:
               os:
@@ -9296,7 +9434,6 @@ workflows:
                 - /run-e2e\/*./
           requires:
             - publish_to_local_registry
-            - build_pkg_binaries
           matrix:
             parameters:
               os:
@@ -9323,7 +9460,6 @@ workflows:
                 - /run-e2e\/*./
           requires:
             - publish_to_local_registry
-            - build_pkg_binaries
           matrix:
             parameters:
               os:
@@ -9350,7 +9486,6 @@ workflows:
                 - /run-e2e\/*./
           requires:
             - publish_to_local_registry
-            - build_pkg_binaries
           matrix:
             parameters:
               os:
@@ -9377,7 +9512,6 @@ workflows:
                 - /run-e2e\/*./
           requires:
             - publish_to_local_registry
-            - build_pkg_binaries
           matrix:
             parameters:
               os:
@@ -9404,7 +9538,6 @@ workflows:
                 - /run-e2e\/*./
           requires:
             - publish_to_local_registry
-            - build_pkg_binaries
           matrix:
             parameters:
               os:
@@ -9431,7 +9564,6 @@ workflows:
                 - /run-e2e\/*./
           requires:
             - publish_to_local_registry
-            - build_pkg_binaries
           matrix:
             parameters:
               os:
@@ -9458,7 +9590,6 @@ workflows:
                 - /run-e2e\/*./
           requires:
             - publish_to_local_registry
-            - build_pkg_binaries
           matrix:
             parameters:
               os:
@@ -9485,7 +9616,6 @@ workflows:
                 - /run-e2e\/*./
           requires:
             - publish_to_local_registry
-            - build_pkg_binaries
           matrix:
             parameters:
               os:
@@ -9512,7 +9642,6 @@ workflows:
                 - /run-e2e\/*./
           requires:
             - publish_to_local_registry
-            - build_pkg_binaries
           matrix:
             parameters:
               os:
@@ -9539,7 +9668,6 @@ workflows:
                 - /run-e2e\/*./
           requires:
             - publish_to_local_registry
-            - build_pkg_binaries
           matrix:
             parameters:
               os:
@@ -9566,7 +9694,6 @@ workflows:
                 - /run-e2e\/*./
           requires:
             - publish_to_local_registry
-            - build_pkg_binaries
           matrix:
             parameters:
               os:
@@ -9593,7 +9720,6 @@ workflows:
                 - /run-e2e\/*./
           requires:
             - publish_to_local_registry
-            - build_pkg_binaries
           matrix:
             parameters:
               os:
@@ -9620,7 +9746,6 @@ workflows:
                 - /run-e2e\/*./
           requires:
             - publish_to_local_registry
-            - build_pkg_binaries
           matrix:
             parameters:
               os:
@@ -9647,7 +9772,6 @@ workflows:
                 - /run-e2e\/*./
           requires:
             - publish_to_local_registry
-            - build_pkg_binaries
           matrix:
             parameters:
               os:
@@ -9674,7 +9798,6 @@ workflows:
                 - /run-e2e\/*./
           requires:
             - publish_to_local_registry
-            - build_pkg_binaries
           matrix:
             parameters:
               os:
@@ -9701,7 +9824,6 @@ workflows:
                 - /run-e2e\/*./
           requires:
             - publish_to_local_registry
-            - build_pkg_binaries
           matrix:
             parameters:
               os:
@@ -9728,7 +9850,6 @@ workflows:
                 - /run-e2e\/*./
           requires:
             - publish_to_local_registry
-            - build_pkg_binaries
           matrix:
             parameters:
               os:
@@ -9755,7 +9876,6 @@ workflows:
                 - /run-e2e\/*./
           requires:
             - publish_to_local_registry
-            - build_pkg_binaries
           matrix:
             parameters:
               os:
@@ -9782,7 +9902,6 @@ workflows:
                 - /run-e2e\/*./
           requires:
             - publish_to_local_registry
-            - build_pkg_binaries
           matrix:
             parameters:
               os:
@@ -9809,7 +9928,6 @@ workflows:
                 - /run-e2e\/*./
           requires:
             - publish_to_local_registry
-            - build_pkg_binaries
           matrix:
             parameters:
               os:
@@ -9836,7 +9954,6 @@ workflows:
                 - /run-e2e\/*./
           requires:
             - publish_to_local_registry
-            - build_pkg_binaries
           matrix:
             parameters:
               os:
@@ -9863,7 +9980,6 @@ workflows:
                 - /run-e2e\/*./
           requires:
             - publish_to_local_registry
-            - build_pkg_binaries
           matrix:
             parameters:
               os:
@@ -9890,7 +10006,6 @@ workflows:
                 - /run-e2e\/*./
           requires:
             - publish_to_local_registry
-            - build_pkg_binaries
           matrix:
             parameters:
               os:
@@ -9917,7 +10032,6 @@ workflows:
                 - /run-e2e\/*./
           requires:
             - publish_to_local_registry
-            - build_pkg_binaries
           matrix:
             parameters:
               os:
@@ -9944,7 +10058,6 @@ workflows:
                 - /run-e2e\/*./
           requires:
             - publish_to_local_registry
-            - build_pkg_binaries
           matrix:
             parameters:
               os:
@@ -9971,7 +10084,6 @@ workflows:
                 - /run-e2e\/*./
           requires:
             - publish_to_local_registry
-            - build_pkg_binaries
           matrix:
             parameters:
               os:
@@ -9998,7 +10110,6 @@ workflows:
                 - /run-e2e\/*./
           requires:
             - publish_to_local_registry
-            - build_pkg_binaries
           matrix:
             parameters:
               os:
@@ -10025,7 +10136,6 @@ workflows:
                 - /run-e2e\/*./
           requires:
             - publish_to_local_registry
-            - build_pkg_binaries
           matrix:
             parameters:
               os:
@@ -10052,7 +10162,6 @@ workflows:
                 - /run-e2e\/*./
           requires:
             - publish_to_local_registry
-            - build_pkg_binaries
           matrix:
             parameters:
               os:
@@ -10079,7 +10188,6 @@ workflows:
                 - /run-e2e\/*./
           requires:
             - publish_to_local_registry
-            - build_pkg_binaries
           matrix:
             parameters:
               os:
@@ -10106,7 +10214,6 @@ workflows:
                 - /run-e2e\/*./
           requires:
             - publish_to_local_registry
-            - build_pkg_binaries
           matrix:
             parameters:
               os:
@@ -10133,7 +10240,6 @@ workflows:
                 - /run-e2e\/*./
           requires:
             - publish_to_local_registry
-            - build_pkg_binaries
           matrix:
             parameters:
               os:
@@ -10160,7 +10266,6 @@ workflows:
                 - /run-e2e\/*./
           requires:
             - publish_to_local_registry
-            - build_pkg_binaries
           matrix:
             parameters:
               os:
@@ -10187,7 +10292,6 @@ workflows:
                 - /run-e2e\/*./
           requires:
             - publish_to_local_registry
-            - build_pkg_binaries
           matrix:
             parameters:
               os:
@@ -10214,7 +10318,6 @@ workflows:
                 - /run-e2e\/*./
           requires:
             - publish_to_local_registry
-            - build_pkg_binaries
           matrix:
             parameters:
               os:
@@ -10241,7 +10344,6 @@ workflows:
                 - /run-e2e\/*./
           requires:
             - publish_to_local_registry
-            - build_pkg_binaries
           matrix:
             parameters:
               os:
@@ -10268,7 +10370,6 @@ workflows:
                 - /run-e2e\/*./
           requires:
             - publish_to_local_registry
-            - build_pkg_binaries
           matrix:
             parameters:
               os:
@@ -10295,7 +10396,6 @@ workflows:
                 - /run-e2e\/*./
           requires:
             - publish_to_local_registry
-            - build_pkg_binaries
           matrix:
             parameters:
               os:
@@ -10322,7 +10422,6 @@ workflows:
                 - /run-e2e\/*./
           requires:
             - publish_to_local_registry
-            - build_pkg_binaries
           matrix:
             parameters:
               os:
@@ -10349,7 +10448,6 @@ workflows:
                 - /run-e2e\/*./
           requires:
             - publish_to_local_registry
-            - build_pkg_binaries
           matrix:
             parameters:
               os:
@@ -10376,7 +10474,6 @@ workflows:
                 - /run-e2e\/*./
           requires:
             - publish_to_local_registry
-            - build_pkg_binaries
           matrix:
             parameters:
               os:
@@ -10403,7 +10500,6 @@ workflows:
                 - /run-e2e\/*./
           requires:
             - publish_to_local_registry
-            - build_pkg_binaries
           matrix:
             parameters:
               os:
@@ -10430,7 +10526,6 @@ workflows:
                 - /run-e2e\/*./
           requires:
             - publish_to_local_registry
-            - build_pkg_binaries
           matrix:
             parameters:
               os:
@@ -10457,7 +10552,6 @@ workflows:
                 - /run-e2e\/*./
           requires:
             - publish_to_local_registry
-            - build_pkg_binaries
           matrix:
             parameters:
               os:
@@ -10484,7 +10578,6 @@ workflows:
                 - /run-e2e\/*./
           requires:
             - publish_to_local_registry
-            - build_pkg_binaries
           matrix:
             parameters:
               os:
@@ -10511,7 +10604,6 @@ workflows:
                 - /run-e2e\/*./
           requires:
             - publish_to_local_registry
-            - build_pkg_binaries
           matrix:
             parameters:
               os:
@@ -10538,7 +10630,6 @@ workflows:
                 - /run-e2e\/*./
           requires:
             - publish_to_local_registry
-            - build_pkg_binaries
           matrix:
             parameters:
               os:
@@ -10565,7 +10656,6 @@ workflows:
                 - /run-e2e\/*./
           requires:
             - publish_to_local_registry
-            - build_pkg_binaries
           matrix:
             parameters:
               os:
@@ -10592,7 +10682,6 @@ workflows:
                 - /run-e2e\/*./
           requires:
             - publish_to_local_registry
-            - build_pkg_binaries
           matrix:
             parameters:
               os:
@@ -10619,7 +10708,6 @@ workflows:
                 - /run-e2e\/*./
           requires:
             - publish_to_local_registry
-            - build_pkg_binaries
           matrix:
             parameters:
               os:
@@ -10646,7 +10734,6 @@ workflows:
                 - /run-e2e\/*./
           requires:
             - publish_to_local_registry
-            - build_pkg_binaries
           matrix:
             parameters:
               os:
@@ -10673,7 +10760,6 @@ workflows:
                 - /run-e2e\/*./
           requires:
             - publish_to_local_registry
-            - build_pkg_binaries
           matrix:
             parameters:
               os:
@@ -10700,7 +10786,6 @@ workflows:
                 - /run-e2e\/*./
           requires:
             - publish_to_local_registry
-            - build_pkg_binaries
           matrix:
             parameters:
               os:
@@ -10727,7 +10812,6 @@ workflows:
                 - /run-e2e\/*./
           requires:
             - publish_to_local_registry
-            - build_pkg_binaries
           matrix:
             parameters:
               os:
@@ -10754,7 +10838,6 @@ workflows:
                 - /run-e2e\/*./
           requires:
             - publish_to_local_registry
-            - build_pkg_binaries
           matrix:
             parameters:
               os:
@@ -10781,7 +10864,6 @@ workflows:
                 - /run-e2e\/*./
           requires:
             - publish_to_local_registry
-            - build_pkg_binaries
           matrix:
             parameters:
               os:
@@ -10808,7 +10890,6 @@ workflows:
                 - /run-e2e\/*./
           requires:
             - publish_to_local_registry
-            - build_pkg_binaries
           matrix:
             parameters:
               os:
@@ -10835,7 +10916,6 @@ workflows:
                 - /run-e2e\/*./
           requires:
             - publish_to_local_registry
-            - build_pkg_binaries
           matrix:
             parameters:
               os:
@@ -10862,7 +10942,6 @@ workflows:
                 - /run-e2e\/*./
           requires:
             - publish_to_local_registry
-            - build_pkg_binaries
           matrix:
             parameters:
               os:
@@ -10889,7 +10968,6 @@ workflows:
                 - /run-e2e\/*./
           requires:
             - publish_to_local_registry
-            - build_pkg_binaries
           matrix:
             parameters:
               os:
@@ -10916,7 +10994,6 @@ workflows:
                 - /run-e2e\/*./
           requires:
             - publish_to_local_registry
-            - build_pkg_binaries
           matrix:
             parameters:
               os:
@@ -10943,7 +11020,6 @@ workflows:
                 - /run-e2e\/*./
           requires:
             - publish_to_local_registry
-            - build_pkg_binaries
           matrix:
             parameters:
               os:
@@ -10970,7 +11046,6 @@ workflows:
                 - /run-e2e\/*./
           requires:
             - publish_to_local_registry
-            - build_pkg_binaries
           matrix:
             parameters:
               os:
@@ -10997,7 +11072,6 @@ workflows:
                 - /run-e2e\/*./
           requires:
             - publish_to_local_registry
-            - build_pkg_binaries
           matrix:
             parameters:
               os:
@@ -11024,7 +11098,6 @@ workflows:
                 - /run-e2e\/*./
           requires:
             - publish_to_local_registry
-            - build_pkg_binaries
           matrix:
             parameters:
               os:
@@ -11051,7 +11124,6 @@ workflows:
                 - /run-e2e\/*./
           requires:
             - publish_to_local_registry
-            - build_pkg_binaries
           matrix:
             parameters:
               os:
@@ -11078,7 +11150,6 @@ workflows:
                 - /run-e2e\/*./
           requires:
             - publish_to_local_registry
-            - build_pkg_binaries
           matrix:
             parameters:
               os:
@@ -11105,7 +11176,6 @@ workflows:
                 - /run-e2e\/*./
           requires:
             - publish_to_local_registry
-            - build_pkg_binaries
           matrix:
             parameters:
               os:
@@ -11132,7 +11202,6 @@ workflows:
                 - /run-e2e\/*./
           requires:
             - publish_to_local_registry
-            - build_pkg_binaries
           matrix:
             parameters:
               os:
@@ -11159,7 +11228,6 @@ workflows:
                 - /run-e2e\/*./
           requires:
             - publish_to_local_registry
-            - build_pkg_binaries
           matrix:
             parameters:
               os:
@@ -11186,7 +11254,6 @@ workflows:
                 - /run-e2e\/*./
           requires:
             - publish_to_local_registry
-            - build_pkg_binaries
           matrix:
             parameters:
               os:
@@ -11213,7 +11280,6 @@ workflows:
                 - /run-e2e\/*./
           requires:
             - publish_to_local_registry
-            - build_pkg_binaries
           matrix:
             parameters:
               os:
@@ -11240,7 +11306,6 @@ workflows:
                 - /run-e2e\/*./
           requires:
             - publish_to_local_registry
-            - build_pkg_binaries
           matrix:
             parameters:
               os:
@@ -11267,7 +11332,6 @@ workflows:
                 - /run-e2e\/*./
           requires:
             - publish_to_local_registry
-            - build_pkg_binaries
           matrix:
             parameters:
               os:
@@ -11285,7 +11349,6 @@ workflows:
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
-            - done_with_node_e2e_tests
             - build_pkg_binaries
           matrix:
             parameters:
@@ -11304,7 +11367,6 @@ workflows:
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
-            - done_with_node_e2e_tests
             - build_pkg_binaries
           matrix:
             parameters:
@@ -11323,7 +11385,6 @@ workflows:
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
-            - done_with_node_e2e_tests
             - build_pkg_binaries
           matrix:
             parameters:
@@ -11342,7 +11403,6 @@ workflows:
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
-            - done_with_node_e2e_tests
             - build_pkg_binaries
           matrix:
             parameters:
@@ -11362,7 +11422,6 @@ workflows:
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
-            - done_with_node_e2e_tests
             - build_pkg_binaries
           matrix:
             parameters:
@@ -11382,7 +11441,6 @@ workflows:
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
-            - done_with_node_e2e_tests
             - build_pkg_binaries
           matrix:
             parameters:
@@ -11402,7 +11460,6 @@ workflows:
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
-            - done_with_node_e2e_tests
             - build_pkg_binaries
           matrix:
             parameters:
@@ -11421,7 +11478,6 @@ workflows:
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
-            - done_with_node_e2e_tests
             - build_pkg_binaries
           matrix:
             parameters:
@@ -11441,7 +11497,6 @@ workflows:
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
-            - done_with_node_e2e_tests
             - build_pkg_binaries
           matrix:
             parameters:
@@ -11460,7 +11515,6 @@ workflows:
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
-            - done_with_node_e2e_tests
             - build_pkg_binaries
           matrix:
             parameters:
@@ -11479,7 +11533,6 @@ workflows:
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
-            - done_with_node_e2e_tests
             - build_pkg_binaries
           matrix:
             parameters:
@@ -11498,7 +11551,6 @@ workflows:
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
-            - done_with_node_e2e_tests
             - build_pkg_binaries
           matrix:
             parameters:
@@ -11517,13 +11569,11 @@ workflows:
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
-            - done_with_node_e2e_tests
             - build_pkg_binaries
           matrix:
             parameters:
               os:
                 - linux
-                - windows
       - hooks-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
@@ -11537,7 +11587,6 @@ workflows:
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
-            - done_with_node_e2e_tests
             - build_pkg_binaries
           matrix:
             parameters:
@@ -11557,7 +11606,6 @@ workflows:
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
-            - done_with_node_e2e_tests
             - build_pkg_binaries
           matrix:
             parameters:
@@ -11577,7 +11625,6 @@ workflows:
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
-            - done_with_node_e2e_tests
             - build_pkg_binaries
           matrix:
             parameters:
@@ -11597,7 +11644,6 @@ workflows:
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
-            - done_with_node_e2e_tests
             - build_pkg_binaries
           matrix:
             parameters:
@@ -11617,7 +11663,6 @@ workflows:
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
-            - done_with_node_e2e_tests
             - build_pkg_binaries
           matrix:
             parameters:
@@ -11636,7 +11681,6 @@ workflows:
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
-            - done_with_node_e2e_tests
             - build_pkg_binaries
           matrix:
             parameters:
@@ -11655,7 +11699,6 @@ workflows:
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
-            - done_with_node_e2e_tests
             - build_pkg_binaries
           matrix:
             parameters:
@@ -11674,7 +11717,6 @@ workflows:
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
-            - done_with_node_e2e_tests
             - build_pkg_binaries
           matrix:
             parameters:
@@ -11693,7 +11735,6 @@ workflows:
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
-            - done_with_node_e2e_tests
             - build_pkg_binaries
           matrix:
             parameters:
@@ -11712,7 +11753,6 @@ workflows:
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
-            - done_with_node_e2e_tests
             - build_pkg_binaries
           matrix:
             parameters:
@@ -11731,7 +11771,6 @@ workflows:
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
-            - done_with_node_e2e_tests
             - build_pkg_binaries
           matrix:
             parameters:
@@ -11750,7 +11789,6 @@ workflows:
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
-            - done_with_node_e2e_tests
             - build_pkg_binaries
           matrix:
             parameters:
@@ -11770,7 +11808,6 @@ workflows:
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
-            - done_with_node_e2e_tests
             - build_pkg_binaries
           matrix:
             parameters:
@@ -11790,7 +11827,6 @@ workflows:
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
-            - done_with_node_e2e_tests
             - build_pkg_binaries
           matrix:
             parameters:
@@ -11810,7 +11846,6 @@ workflows:
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
-            - done_with_node_e2e_tests
             - build_pkg_binaries
           matrix:
             parameters:
@@ -11829,7 +11864,6 @@ workflows:
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
-            - done_with_node_e2e_tests
             - build_pkg_binaries
           matrix:
             parameters:
@@ -11848,7 +11882,6 @@ workflows:
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
-            - done_with_node_e2e_tests
             - build_pkg_binaries
           matrix:
             parameters:
@@ -11867,7 +11900,6 @@ workflows:
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
-            - done_with_node_e2e_tests
             - build_pkg_binaries
           matrix:
             parameters:
@@ -11886,7 +11918,6 @@ workflows:
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
-            - done_with_node_e2e_tests
             - build_pkg_binaries
           matrix:
             parameters:
@@ -11905,7 +11936,6 @@ workflows:
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
-            - done_with_node_e2e_tests
             - build_pkg_binaries
           matrix:
             parameters:
@@ -11924,7 +11954,6 @@ workflows:
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
-            - done_with_node_e2e_tests
             - build_pkg_binaries
           matrix:
             parameters:
@@ -11943,7 +11972,6 @@ workflows:
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
-            - done_with_node_e2e_tests
             - build_pkg_binaries
           matrix:
             parameters:
@@ -11963,7 +11991,6 @@ workflows:
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
-            - done_with_node_e2e_tests
             - build_pkg_binaries
           matrix:
             parameters:
@@ -11982,7 +12009,6 @@ workflows:
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
-            - done_with_node_e2e_tests
             - build_pkg_binaries
           matrix:
             parameters:
@@ -12002,7 +12028,6 @@ workflows:
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
-            - done_with_node_e2e_tests
             - build_pkg_binaries
           matrix:
             parameters:
@@ -12021,7 +12046,6 @@ workflows:
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
-            - done_with_node_e2e_tests
             - build_pkg_binaries
           matrix:
             parameters:
@@ -12040,7 +12064,6 @@ workflows:
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
-            - done_with_node_e2e_tests
             - build_pkg_binaries
           matrix:
             parameters:
@@ -12060,7 +12083,6 @@ workflows:
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
-            - done_with_node_e2e_tests
             - build_pkg_binaries
           matrix:
             parameters:
@@ -12079,7 +12101,6 @@ workflows:
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
-            - done_with_node_e2e_tests
             - build_pkg_binaries
           matrix:
             parameters:
@@ -12098,7 +12119,6 @@ workflows:
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
-            - done_with_node_e2e_tests
             - build_pkg_binaries
           matrix:
             parameters:
@@ -12118,7 +12138,6 @@ workflows:
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
-            - done_with_node_e2e_tests
             - build_pkg_binaries
           matrix:
             parameters:
@@ -12137,7 +12156,6 @@ workflows:
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
-            - done_with_node_e2e_tests
             - build_pkg_binaries
           matrix:
             parameters:
@@ -12156,7 +12174,6 @@ workflows:
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
-            - done_with_node_e2e_tests
             - build_pkg_binaries
           matrix:
             parameters:
@@ -12175,7 +12192,6 @@ workflows:
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
-            - done_with_node_e2e_tests
             - build_pkg_binaries
           matrix:
             parameters:
@@ -12194,7 +12210,6 @@ workflows:
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
-            - done_with_node_e2e_tests
             - build_pkg_binaries
           matrix:
             parameters:
@@ -12214,7 +12229,6 @@ workflows:
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
-            - done_with_node_e2e_tests
             - build_pkg_binaries
           matrix:
             parameters:
@@ -12233,7 +12247,6 @@ workflows:
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
-            - done_with_node_e2e_tests
             - build_pkg_binaries
           matrix:
             parameters:
@@ -12253,7 +12266,6 @@ workflows:
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
-            - done_with_node_e2e_tests
             - build_pkg_binaries
           matrix:
             parameters:
@@ -12273,7 +12285,6 @@ workflows:
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
-            - done_with_node_e2e_tests
             - build_pkg_binaries
           matrix:
             parameters:
@@ -12292,7 +12303,6 @@ workflows:
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
-            - done_with_node_e2e_tests
             - build_pkg_binaries
           matrix:
             parameters:
@@ -12311,7 +12321,6 @@ workflows:
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
-            - done_with_node_e2e_tests
             - build_pkg_binaries
           matrix:
             parameters:
@@ -12330,7 +12339,6 @@ workflows:
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
-            - done_with_node_e2e_tests
             - build_pkg_binaries
           matrix:
             parameters:
@@ -12349,7 +12357,6 @@ workflows:
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
-            - done_with_node_e2e_tests
             - build_pkg_binaries
           matrix:
             parameters:
@@ -12368,7 +12375,6 @@ workflows:
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
-            - done_with_node_e2e_tests
             - build_pkg_binaries
           matrix:
             parameters:
@@ -12387,7 +12393,6 @@ workflows:
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
-            - done_with_node_e2e_tests
             - build_pkg_binaries
           matrix:
             parameters:
@@ -12406,7 +12411,6 @@ workflows:
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
-            - done_with_node_e2e_tests
             - build_pkg_binaries
           matrix:
             parameters:
@@ -12425,7 +12429,6 @@ workflows:
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
-            - done_with_node_e2e_tests
             - build_pkg_binaries
           matrix:
             parameters:
@@ -12444,7 +12447,6 @@ workflows:
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
-            - done_with_node_e2e_tests
             - build_pkg_binaries
           matrix:
             parameters:
@@ -12464,7 +12466,6 @@ workflows:
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
-            - done_with_node_e2e_tests
             - build_pkg_binaries
           matrix:
             parameters:
@@ -12483,7 +12484,6 @@ workflows:
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
-            - done_with_node_e2e_tests
             - build_pkg_binaries
           matrix:
             parameters:
@@ -12502,7 +12502,6 @@ workflows:
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
-            - done_with_node_e2e_tests
             - build_pkg_binaries
           matrix:
             parameters:
@@ -12522,13 +12521,11 @@ workflows:
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
-            - done_with_node_e2e_tests
             - build_pkg_binaries
           matrix:
             parameters:
               os:
                 - linux
-                - windows
       - layer-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
@@ -12542,7 +12539,6 @@ workflows:
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
-            - done_with_node_e2e_tests
             - build_pkg_binaries
           matrix:
             parameters:
@@ -12561,7 +12557,6 @@ workflows:
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
-            - done_with_node_e2e_tests
             - build_pkg_binaries
           matrix:
             parameters:
@@ -12580,7 +12575,6 @@ workflows:
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
-            - done_with_node_e2e_tests
             - build_pkg_binaries
           matrix:
             parameters:
@@ -12599,7 +12593,6 @@ workflows:
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
-            - done_with_node_e2e_tests
             - build_pkg_binaries
           matrix:
             parameters:
@@ -12618,7 +12611,6 @@ workflows:
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
-            - done_with_node_e2e_tests
             - build_pkg_binaries
           matrix:
             parameters:
@@ -12637,7 +12629,6 @@ workflows:
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
-            - done_with_node_e2e_tests
             - build_pkg_binaries
           matrix:
             parameters:
@@ -12656,7 +12647,6 @@ workflows:
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
-            - done_with_node_e2e_tests
             - build_pkg_binaries
           matrix:
             parameters:
@@ -12676,7 +12666,6 @@ workflows:
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
-            - done_with_node_e2e_tests
             - build_pkg_binaries
           matrix:
             parameters:
@@ -12696,7 +12685,6 @@ workflows:
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
-            - done_with_node_e2e_tests
             - build_pkg_binaries
           matrix:
             parameters:
@@ -12715,7 +12703,6 @@ workflows:
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
-            - done_with_node_e2e_tests
             - build_pkg_binaries
           matrix:
             parameters:
@@ -12735,7 +12722,6 @@ workflows:
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
-            - done_with_node_e2e_tests
             - build_pkg_binaries
           matrix:
             parameters:
@@ -12754,7 +12740,6 @@ workflows:
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
-            - done_with_node_e2e_tests
             - build_pkg_binaries
           matrix:
             parameters:
@@ -12773,7 +12758,6 @@ workflows:
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
-            - done_with_node_e2e_tests
             - build_pkg_binaries
           matrix:
             parameters:
@@ -12792,7 +12776,6 @@ workflows:
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
-            - done_with_node_e2e_tests
             - build_pkg_binaries
           matrix:
             parameters:
@@ -12811,7 +12794,6 @@ workflows:
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
-            - done_with_node_e2e_tests
             - build_pkg_binaries
           matrix:
             parameters:
@@ -12830,7 +12812,6 @@ workflows:
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
-            - done_with_node_e2e_tests
             - build_pkg_binaries
           matrix:
             parameters:
@@ -12875,26 +12856,16 @@ commands:
                 command: amplify version
       - when:
           condition:
-            or:
-              - equal:
-                  - docker:
-                      - image: >-
-                          public.ecr.aws/a6e6w2n0/amplify-cli-e2e-base-image-repo-public:latest
-                    working_directory: ~/repo
-                    resource_class: large
-                    environment:
-                      AMPLIFY_DIR: /home/circleci/repo/out
-                      AMPLIFY_PATH: /home/circleci/repo/out/amplify-pkg-linux
-                  - << parameters.os >>
-              - equal:
-                  - docker:
-                      - image: circleci/node:12
-                        auth:
-                          username: $DOCKERHUB_USERNAME
-                          password: $DOCKERHUB_ACCESS_TOKEN
-                    working_directory: ~/repo
-                    resource_class: large
-                  - << parameters.os >>
+            equal:
+              - docker:
+                  - image: >-
+                      public.ecr.aws/a6e6w2n0/amplify-cli-e2e-base-image-repo-public:latest
+                working_directory: ~/repo
+                resource_class: large
+                environment:
+                  AMPLIFY_DIR: /home/circleci/repo/out
+                  AMPLIFY_PATH: /home/circleci/repo/out/amplify-pkg-linux
+              - << parameters.os >>
           steps:
             - run:
                 name: Symlink Amplify packaged CLI
@@ -12942,26 +12913,16 @@ commands:
     steps:
       - when:
           condition:
-            or:
-              - equal:
-                  - docker:
-                      - image: >-
-                          public.ecr.aws/a6e6w2n0/amplify-cli-e2e-base-image-repo-public:latest
-                    working_directory: ~/repo
-                    resource_class: large
-                    environment:
-                      AMPLIFY_DIR: /home/circleci/repo/out
-                      AMPLIFY_PATH: /home/circleci/repo/out/amplify-pkg-linux
-                  - << parameters.os >>
-              - equal:
-                  - docker:
-                      - image: circleci/node:12
-                        auth:
-                          username: $DOCKERHUB_USERNAME
-                          password: $DOCKERHUB_ACCESS_TOKEN
-                    working_directory: ~/repo
-                    resource_class: large
-                  - << parameters.os >>
+            equal:
+              - docker:
+                  - image: >-
+                      public.ecr.aws/a6e6w2n0/amplify-cli-e2e-base-image-repo-public:latest
+                working_directory: ~/repo
+                resource_class: large
+                environment:
+                  AMPLIFY_DIR: /home/circleci/repo/out
+                  AMPLIFY_PATH: /home/circleci/repo/out/amplify-pkg-linux
+              - << parameters.os >>
           steps:
             - run:
                 name: Install Java
@@ -13001,26 +12962,16 @@ commands:
                 no_output_timeout: 90m
       - when:
           condition:
-            or:
-              - equal:
-                  - docker:
-                      - image: >-
-                          public.ecr.aws/a6e6w2n0/amplify-cli-e2e-base-image-repo-public:latest
-                    working_directory: ~/repo
-                    resource_class: large
-                    environment:
-                      AMPLIFY_DIR: /home/circleci/repo/out
-                      AMPLIFY_PATH: /home/circleci/repo/out/amplify-pkg-linux
-                  - << parameters.os >>
-              - equal:
-                  - docker:
-                      - image: circleci/node:12
-                        auth:
-                          username: $DOCKERHUB_USERNAME
-                          password: $DOCKERHUB_ACCESS_TOKEN
-                    working_directory: ~/repo
-                    resource_class: large
-                  - << parameters.os >>
+            equal:
+              - docker:
+                  - image: >-
+                      public.ecr.aws/a6e6w2n0/amplify-cli-e2e-base-image-repo-public:latest
+                working_directory: ~/repo
+                resource_class: large
+                environment:
+                  AMPLIFY_DIR: /home/circleci/repo/out
+                  AMPLIFY_PATH: /home/circleci/repo/out/amplify-pkg-linux
+              - << parameters.os >>
           steps:
             - run:
                 name: Shuffle AWS Credentials
@@ -13069,26 +13020,16 @@ commands:
                 when: always
       - when:
           condition:
-            or:
-              - equal:
-                  - docker:
-                      - image: >-
-                          public.ecr.aws/a6e6w2n0/amplify-cli-e2e-base-image-repo-public:latest
-                    working_directory: ~/repo
-                    resource_class: large
-                    environment:
-                      AMPLIFY_DIR: /home/circleci/repo/out
-                      AMPLIFY_PATH: /home/circleci/repo/out/amplify-pkg-linux
-                  - << parameters.os >>
-              - equal:
-                  - docker:
-                      - image: circleci/node:12
-                        auth:
-                          username: $DOCKERHUB_USERNAME
-                          password: $DOCKERHUB_ACCESS_TOKEN
-                    working_directory: ~/repo
-                    resource_class: large
-                  - << parameters.os >>
+            equal:
+              - docker:
+                  - image: >-
+                      public.ecr.aws/a6e6w2n0/amplify-cli-e2e-base-image-repo-public:latest
+                working_directory: ~/repo
+                resource_class: large
+                environment:
+                  AMPLIFY_DIR: /home/circleci/repo/out
+                  AMPLIFY_PATH: /home/circleci/repo/out/amplify-pkg-linux
+              - << parameters.os >>
           steps:
             - run:
                 name: Scan E2E artifacts
@@ -13129,26 +13070,16 @@ commands:
                 when: always
       - when:
           condition:
-            or:
-              - equal:
-                  - docker:
-                      - image: >-
-                          public.ecr.aws/a6e6w2n0/amplify-cli-e2e-base-image-repo-public:latest
-                    working_directory: ~/repo
-                    resource_class: large
-                    environment:
-                      AMPLIFY_DIR: /home/circleci/repo/out
-                      AMPLIFY_PATH: /home/circleci/repo/out/amplify-pkg-linux
-                  - << parameters.os >>
-              - equal:
-                  - docker:
-                      - image: circleci/node:12
-                        auth:
-                          username: $DOCKERHUB_USERNAME
-                          password: $DOCKERHUB_ACCESS_TOKEN
-                    working_directory: ~/repo
-                    resource_class: large
-                  - << parameters.os >>
+            equal:
+              - docker:
+                  - image: >-
+                      public.ecr.aws/a6e6w2n0/amplify-cli-e2e-base-image-repo-public:latest
+                working_directory: ~/repo
+                resource_class: large
+                environment:
+                  AMPLIFY_DIR: /home/circleci/repo/out
+                  AMPLIFY_PATH: /home/circleci/repo/out/amplify-pkg-linux
+              - << parameters.os >>
           steps:
             - run:
                 name: Scan E2E artifacts

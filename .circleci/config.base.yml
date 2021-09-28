@@ -16,15 +16,6 @@ executors:
       AMPLIFY_DIR: C:/home/circleci/repo/out
       AMPLIFY_PATH: C:/home/circleci/repo/out/amplify.exe
 
-  build_img: &build-executor
-    docker:
-      - image: circleci/node:12
-        auth:
-          username: $DOCKERHUB_USERNAME
-          password: $DOCKERHUB_ACCESS_TOKEN
-    working_directory: ~/repo
-    resource_class: large
-
   linux: &linux-e2e-executor
     docker:
       - image: public.ecr.aws/a6e6w2n0/amplify-cli-e2e-base-image-repo-public:latest
@@ -33,15 +24,6 @@ executors:
     environment:
       AMPLIFY_DIR: /home/circleci/repo/out
       AMPLIFY_PATH: /home/circleci/repo/out/amplify-pkg-linux
-
-node12: &node12
-  working_directory: ~/repo
-  docker:
-    - image: circleci/node:12
-      auth:
-        username: $DOCKERHUB_USERNAME
-        password: $DOCKERHUB_ACCESS_TOKEN
-  resource_class: large
 
 defaults: &defaults
   working_directory: ~/repo
@@ -100,7 +82,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: build_img
+        default: linux
     executor: << parameters.os >>
     steps:
       - checkout
@@ -121,7 +103,7 @@ jobs:
                 root: .
                 paths: .
   test:
-    <<: *node12
+    <<: *linux-e2e-executor
     steps:
       - attach_workspace:
           at: ./
@@ -141,7 +123,7 @@ jobs:
           command: yarn coverage
 
   mock_e2e_tests:
-    <<: *node12
+    <<: *linux-e2e-executor
     steps:
       - attach_workspace:
           at: ./
@@ -160,7 +142,7 @@ jobs:
           path: packages/amplify-util-mock/
 
   publish_to_local_registry:
-    <<: *node12
+    <<: *linux-e2e-executor
     steps:
       - attach_workspace:
           at: ./
@@ -200,7 +182,7 @@ jobs:
             - ~/repo/.amplify-pkg-version
 
   build_pkg_binaries:
-    <<: *node12
+    <<: *linux-e2e-executor
     steps:
       - attach_workspace:
           at: ./
@@ -280,12 +262,12 @@ jobs:
           path: ~/repo/packages/amplify-e2e-tests/amplify-e2e-reports
 
   done_with_node_e2e_tests:
-    <<: *node12
+    <<: *linux-e2e-executor
     steps:
       - run: echo 'Done with Node CLI E2E Tests'
 
   done_with_pkg_e2e_tests:
-    <<: *node12
+    <<: *linux-e2e-executor
     steps:
       - run: echo 'Done with pkg CLI E2E Tests'
 
@@ -293,7 +275,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -584,7 +566,7 @@ jobs:
           path: /root/aws-amplify-cypress-api/cypress/screenshots
 
   deploy:
-    <<: *node12
+    <<: *linux-e2e-executor
     steps:
       - attach_workspace:
           at: ./
@@ -600,7 +582,7 @@ jobs:
             bash ./.circleci/publish.sh
       - run: *scan_e2e_test_artifacts
   github_prerelease:
-    <<: *node12
+    <<: *linux-e2e-executor
     steps:
       - attach_workspace:
           at: ./
@@ -624,7 +606,7 @@ jobs:
             yarn ts-node scripts/github-prerelease.ts $version
 
   github_prerelease_install_sanity_check:
-    <<: *node12
+    <<: *linux-e2e-executor
     steps:
       - restore_cache:
           key: amplfiy-pkg-tag-{{ .Branch }}-{{ .Revision }}
@@ -639,7 +621,7 @@ jobs:
           command: |
             amplify version
   github_release:
-    <<: *node12
+    <<: *linux-e2e-executor
     steps:
       - attach_workspace:
           at: ./
@@ -653,7 +635,7 @@ jobs:
             version=$(cat .amplify-pkg-version)
             yarn ts-node scripts/github-release.ts $version
   cleanup_resources:
-    <<: *node12
+    <<: *linux-e2e-executor
     steps:
       - attach_workspace:
           at: ./
@@ -671,7 +653,7 @@ jobs:
     working_directory: ~/repo
 
   cleanup_resources_after_e2e_runs:
-    <<: *node12
+    <<: *linux-e2e-executor
     steps:
       - attach_workspace:
           at: ./
@@ -737,7 +719,6 @@ workflows:
               os:
                 - linux
                 - windows
-                - build_img
       - test:
           requires:
             - build
@@ -811,7 +792,6 @@ workflows:
                 - /run-e2e\/*./
           requires:
             - publish_to_local_registry
-            - build_pkg_binaries
       - done_with_node_e2e_tests:
           requires:
             - amplify_e2e_tests
@@ -828,7 +808,6 @@ workflows:
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
-            - done_with_node_e2e_tests
             - build_pkg_binaries
       - done_with_pkg_e2e_tests:
           requires:
@@ -1014,9 +993,7 @@ commands:
 
       - when:
           condition:
-            or:
-              - equal: [*linux-e2e-executor, << parameters.os >>]
-              - equal: [*build-executor, << parameters.os >>]
+            equal: [*linux-e2e-executor, << parameters.os >>]
           steps:
             - run:
                 name: Symlink Amplify packaged CLI
@@ -1054,9 +1031,7 @@ commands:
     steps:
       - when:
           condition:
-            or:
-              - equal: [*linux-e2e-executor, << parameters.os >>]
-              - equal: [*build-executor, << parameters.os >>]
+            equal: [*linux-e2e-executor, << parameters.os >>]
           steps:
             - run:
                 name: Install Java
@@ -1088,9 +1063,7 @@ commands:
                 no_output_timeout: 90m
       - when:
           condition:
-            or:
-              - equal: [*linux-e2e-executor, << parameters.os >>]
-              - equal: [*build-executor, << parameters.os >>]
+            equal: [*linux-e2e-executor, << parameters.os >>]
           steps:
             - run:
                 name: Shuffle AWS Credentials
@@ -1131,9 +1104,7 @@ commands:
 
       - when:
           condition:
-            or:
-              - equal: [*linux-e2e-executor, << parameters.os >>]
-              - equal: [*build-executor, << parameters.os >>]
+            equal: [*linux-e2e-executor, << parameters.os >>]
           steps:
             - run:
                 name: Scan E2E artifacts
@@ -1166,9 +1137,7 @@ commands:
 
       - when:
           condition:
-            or:
-              - equal: [*linux-e2e-executor, << parameters.os >>]
-              - equal: [*build-executor, << parameters.os >>]
+            equal: [*linux-e2e-executor, << parameters.os >>]
           steps:
             - run:
                 name: Scan E2E artifacts
