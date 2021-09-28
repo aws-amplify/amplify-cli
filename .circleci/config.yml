@@ -15,14 +15,6 @@ executors:
     environment:
       AMPLIFY_DIR: C:/home/circleci/repo/out
       AMPLIFY_PATH: C:/home/circleci/repo/out/amplify.exe
-  build_img:
-    docker:
-      - image: circleci/node:12
-        auth:
-          username: $DOCKERHUB_USERNAME
-          password: $DOCKERHUB_ACCESS_TOKEN
-    working_directory: ~/repo
-    resource_class: large
   linux:
     docker:
       - image: public.ecr.aws/a6e6w2n0/amplify-cli-e2e-base-image-repo-public:latest
@@ -31,14 +23,6 @@ executors:
     environment:
       AMPLIFY_DIR: /home/circleci/repo/out
       AMPLIFY_PATH: /home/circleci/repo/out/amplify-pkg-linux
-node12:
-  working_directory: ~/repo
-  docker:
-    - image: circleci/node:12
-      auth:
-        username: $DOCKERHUB_USERNAME
-        password: $DOCKERHUB_ACCESS_TOKEN
-  resource_class: large
 defaults:
   working_directory: ~/repo
   parameters:
@@ -91,7 +75,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: build_img
+        default: linux
     executor: << parameters.os >>
     steps:
       - checkout
@@ -123,13 +107,13 @@ jobs:
                 root: .
                 paths: .
   test:
-    working_directory: ~/repo
     docker:
-      - image: circleci/node:12
-        auth:
-          username: $DOCKERHUB_USERNAME
-          password: $DOCKERHUB_ACCESS_TOKEN
+      - image: public.ecr.aws/a6e6w2n0/amplify-cli-e2e-base-image-repo-public:latest
+    working_directory: ~/repo
     resource_class: large
+    environment:
+      AMPLIFY_DIR: /home/circleci/repo/out
+      AMPLIFY_PATH: /home/circleci/repo/out/amplify-pkg-linux
     steps:
       - attach_workspace:
           at: ./
@@ -150,13 +134,13 @@ jobs:
           name: Collect code coverage
           command: yarn coverage
   mock_e2e_tests:
-    working_directory: ~/repo
     docker:
-      - image: circleci/node:12
-        auth:
-          username: $DOCKERHUB_USERNAME
-          password: $DOCKERHUB_ACCESS_TOKEN
+      - image: public.ecr.aws/a6e6w2n0/amplify-cli-e2e-base-image-repo-public:latest
+    working_directory: ~/repo
     resource_class: large
+    environment:
+      AMPLIFY_DIR: /home/circleci/repo/out
+      AMPLIFY_PATH: /home/circleci/repo/out/amplify-pkg-linux
     steps:
       - attach_workspace:
           at: ./
@@ -176,13 +160,13 @@ jobs:
       - store_test_results:
           path: packages/amplify-util-mock/
   publish_to_local_registry:
-    working_directory: ~/repo
     docker:
-      - image: circleci/node:12
-        auth:
-          username: $DOCKERHUB_USERNAME
-          password: $DOCKERHUB_ACCESS_TOKEN
+      - image: public.ecr.aws/a6e6w2n0/amplify-cli-e2e-base-image-repo-public:latest
+    working_directory: ~/repo
     resource_class: large
+    environment:
+      AMPLIFY_DIR: /home/circleci/repo/out
+      AMPLIFY_PATH: /home/circleci/repo/out/amplify-pkg-linux
     steps:
       - attach_workspace:
           at: ./
@@ -223,13 +207,13 @@ jobs:
           paths:
             - ~/repo/.amplify-pkg-version
   build_pkg_binaries:
-    working_directory: ~/repo
     docker:
-      - image: circleci/node:12
-        auth:
-          username: $DOCKERHUB_USERNAME
-          password: $DOCKERHUB_ACCESS_TOKEN
+      - image: public.ecr.aws/a6e6w2n0/amplify-cli-e2e-base-image-repo-public:latest
+    working_directory: ~/repo
     resource_class: large
+    environment:
+      AMPLIFY_DIR: /home/circleci/repo/out
+      AMPLIFY_PATH: /home/circleci/repo/out/amplify-pkg-linux
     steps:
       - attach_workspace:
           at: ./
@@ -359,30 +343,30 @@ jobs:
       - store_artifacts:
           path: ~/repo/packages/amplify-e2e-tests/amplify-e2e-reports
   done_with_node_e2e_tests:
-    working_directory: ~/repo
     docker:
-      - image: circleci/node:12
-        auth:
-          username: $DOCKERHUB_USERNAME
-          password: $DOCKERHUB_ACCESS_TOKEN
+      - image: public.ecr.aws/a6e6w2n0/amplify-cli-e2e-base-image-repo-public:latest
+    working_directory: ~/repo
     resource_class: large
+    environment:
+      AMPLIFY_DIR: /home/circleci/repo/out
+      AMPLIFY_PATH: /home/circleci/repo/out/amplify-pkg-linux
     steps:
       - run: echo 'Done with Node CLI E2E Tests'
   done_with_pkg_e2e_tests:
-    working_directory: ~/repo
     docker:
-      - image: circleci/node:12
-        auth:
-          username: $DOCKERHUB_USERNAME
-          password: $DOCKERHUB_ACCESS_TOKEN
+      - image: public.ecr.aws/a6e6w2n0/amplify-cli-e2e-base-image-repo-public:latest
+    working_directory: ~/repo
     resource_class: large
+    environment:
+      AMPLIFY_DIR: /home/circleci/repo/out
+      AMPLIFY_PATH: /home/circleci/repo/out/amplify-pkg-linux
     steps:
       - run: echo 'Done with pkg CLI E2E Tests'
   amplify_e2e_tests_pkg:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -782,13 +766,13 @@ jobs:
       - store_artifacts:
           path: /root/aws-amplify-cypress-api/cypress/screenshots
   deploy:
-    working_directory: ~/repo
     docker:
-      - image: circleci/node:12
-        auth:
-          username: $DOCKERHUB_USERNAME
-          password: $DOCKERHUB_ACCESS_TOKEN
+      - image: public.ecr.aws/a6e6w2n0/amplify-cli-e2e-base-image-repo-public:latest
+    working_directory: ~/repo
     resource_class: large
+    environment:
+      AMPLIFY_DIR: /home/circleci/repo/out
+      AMPLIFY_PATH: /home/circleci/repo/out/amplify-pkg-linux
     steps:
       - attach_workspace:
           at: ./
@@ -812,13 +796,13 @@ jobs:
             fi
           when: always
   github_prerelease:
-    working_directory: ~/repo
     docker:
-      - image: circleci/node:12
-        auth:
-          username: $DOCKERHUB_USERNAME
-          password: $DOCKERHUB_ACCESS_TOKEN
+      - image: public.ecr.aws/a6e6w2n0/amplify-cli-e2e-base-image-repo-public:latest
+    working_directory: ~/repo
     resource_class: large
+    environment:
+      AMPLIFY_DIR: /home/circleci/repo/out
+      AMPLIFY_PATH: /home/circleci/repo/out/amplify-pkg-linux
     steps:
       - attach_workspace:
           at: ./
@@ -841,13 +825,13 @@ jobs:
             version=$(cat .amplify-pkg-version)
             yarn ts-node scripts/github-prerelease.ts $version
   github_prerelease_install_sanity_check:
-    working_directory: ~/repo
     docker:
-      - image: circleci/node:12
-        auth:
-          username: $DOCKERHUB_USERNAME
-          password: $DOCKERHUB_ACCESS_TOKEN
+      - image: public.ecr.aws/a6e6w2n0/amplify-cli-e2e-base-image-repo-public:latest
+    working_directory: ~/repo
     resource_class: large
+    environment:
+      AMPLIFY_DIR: /home/circleci/repo/out
+      AMPLIFY_PATH: /home/circleci/repo/out/amplify-pkg-linux
     steps:
       - restore_cache:
           key: amplfiy-pkg-tag-{{ .Branch }}-{{ .Revision }}
@@ -865,13 +849,13 @@ jobs:
           command: |
             amplify version
   github_release:
-    working_directory: ~/repo
     docker:
-      - image: circleci/node:12
-        auth:
-          username: $DOCKERHUB_USERNAME
-          password: $DOCKERHUB_ACCESS_TOKEN
+      - image: public.ecr.aws/a6e6w2n0/amplify-cli-e2e-base-image-repo-public:latest
+    working_directory: ~/repo
     resource_class: large
+    environment:
+      AMPLIFY_DIR: /home/circleci/repo/out
+      AMPLIFY_PATH: /home/circleci/repo/out/amplify-pkg-linux
     steps:
       - attach_workspace:
           at: ./
@@ -885,13 +869,13 @@ jobs:
             version=$(cat .amplify-pkg-version)
             yarn ts-node scripts/github-release.ts $version
   cleanup_resources:
-    working_directory: ~/repo
     docker:
-      - image: circleci/node:12
-        auth:
-          username: $DOCKERHUB_USERNAME
-          password: $DOCKERHUB_ACCESS_TOKEN
+      - image: public.ecr.aws/a6e6w2n0/amplify-cli-e2e-base-image-repo-public:latest
+    working_directory: ~/repo
     resource_class: large
+    environment:
+      AMPLIFY_DIR: /home/circleci/repo/out
+      AMPLIFY_PATH: /home/circleci/repo/out/amplify-pkg-linux
     steps:
       - attach_workspace:
           at: ./
@@ -917,13 +901,13 @@ jobs:
       - store_artifacts:
           path: ~/repo/packages/amplify-e2e-tests/amplify-e2e-reports
   cleanup_resources_after_e2e_runs:
-    working_directory: ~/repo
     docker:
-      - image: circleci/node:12
-        auth:
-          username: $DOCKERHUB_USERNAME
-          password: $DOCKERHUB_ACCESS_TOKEN
+      - image: public.ecr.aws/a6e6w2n0/amplify-cli-e2e-base-image-repo-public:latest
+    working_directory: ~/repo
     resource_class: large
+    environment:
+      AMPLIFY_DIR: /home/circleci/repo/out
+      AMPLIFY_PATH: /home/circleci/repo/out/amplify-pkg-linux
     steps:
       - attach_workspace:
           at: ./
@@ -5819,7 +5803,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -5856,7 +5840,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -5893,7 +5877,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -5930,7 +5914,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -5967,7 +5951,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -6004,7 +5988,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -6041,7 +6025,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -6078,7 +6062,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -6115,7 +6099,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -6152,7 +6136,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -6189,7 +6173,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -6226,7 +6210,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -6263,7 +6247,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -6300,7 +6284,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -6337,7 +6321,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -6374,7 +6358,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -6411,7 +6395,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -6448,7 +6432,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -6485,7 +6469,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -6522,7 +6506,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -6559,7 +6543,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -6596,7 +6580,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -6633,7 +6617,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -6670,7 +6654,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -6707,7 +6691,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -6744,7 +6728,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -6781,7 +6765,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -6818,7 +6802,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -6855,7 +6839,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -6892,7 +6876,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -6929,7 +6913,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -6966,7 +6950,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -7003,7 +6987,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -7040,7 +7024,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -7077,7 +7061,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -7114,7 +7098,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -7151,7 +7135,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -7188,7 +7172,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -7225,7 +7209,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -7262,7 +7246,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -7299,7 +7283,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -7336,7 +7320,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -7373,7 +7357,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -7410,7 +7394,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -7447,7 +7431,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -7484,7 +7468,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -7521,7 +7505,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -7558,7 +7542,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -7595,7 +7579,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -7632,7 +7616,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -7669,7 +7653,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -7706,7 +7690,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -7743,7 +7727,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -7780,7 +7764,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -7817,7 +7801,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -7854,7 +7838,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -7891,7 +7875,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -7928,7 +7912,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -7966,7 +7950,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -8004,7 +7988,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -8041,7 +8025,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -8078,7 +8062,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -8115,7 +8099,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -8153,7 +8137,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -8190,7 +8174,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -8227,7 +8211,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -8265,7 +8249,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -8302,7 +8286,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -8339,7 +8323,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -8376,7 +8360,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -8413,7 +8397,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -8450,7 +8434,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -8487,7 +8471,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -8524,7 +8508,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -8561,7 +8545,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -8598,7 +8582,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -8635,7 +8619,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -8673,7 +8657,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -8710,7 +8694,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -8748,7 +8732,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -8786,7 +8770,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.build_img
+        default: os.linux
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -8867,7 +8851,6 @@ workflows:
               os:
                 - linux
                 - windows
-                - build_img
       - test:
           requires:
             - build
@@ -8882,7 +8865,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -8896,7 +8878,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - beta
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
@@ -8908,7 +8889,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - beta
                 - release
                 - /tagged-release\/.*/
@@ -8926,7 +8906,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
       - done_with_node_e2e_tests:
@@ -9105,7 +9084,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -9121,7 +9099,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -9137,7 +9114,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -9153,7 +9129,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -9169,7 +9144,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -9245,7 +9219,6 @@ workflows:
               only:
                 - release
                 - master
-                - win-e2e
                 - beta
                 - /tagged-release\/.*/
                 - /tagged-release-without-e2e-tests\/.*/
@@ -9275,7 +9248,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -9302,7 +9274,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -9329,7 +9300,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -9356,7 +9326,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -9383,7 +9352,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -9410,7 +9378,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -9437,7 +9404,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -9464,7 +9430,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -9491,7 +9456,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -9518,7 +9482,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -9545,7 +9508,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -9572,7 +9534,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -9599,7 +9560,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -9626,7 +9586,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -9653,7 +9612,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -9680,7 +9638,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -9707,7 +9664,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -9734,7 +9690,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -9761,7 +9716,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -9788,7 +9742,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -9815,7 +9768,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -9842,7 +9794,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -9869,7 +9820,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -9896,7 +9846,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -9923,7 +9872,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -9950,7 +9898,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -9977,7 +9924,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -10004,7 +9950,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -10031,7 +9976,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -10058,7 +10002,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -10085,7 +10028,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -10112,7 +10054,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -10139,7 +10080,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -10166,7 +10106,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -10193,7 +10132,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -10220,7 +10158,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -10247,7 +10184,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -10274,7 +10210,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -10301,7 +10236,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -10328,7 +10262,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -10355,7 +10288,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -10382,7 +10314,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -10409,7 +10340,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -10436,7 +10366,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -10463,7 +10392,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -10490,7 +10418,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -10517,7 +10444,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -10544,7 +10470,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -10571,7 +10496,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -10598,7 +10522,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -10625,7 +10548,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -10652,7 +10574,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -10679,7 +10600,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -10706,7 +10626,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -10733,7 +10652,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -10760,7 +10678,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -10787,7 +10704,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -10814,7 +10730,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -10841,7 +10756,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -10868,7 +10782,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -10895,7 +10808,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -10922,7 +10834,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -10949,7 +10860,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -10976,7 +10886,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -11003,7 +10912,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -11030,7 +10938,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -11057,7 +10964,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -11084,7 +10990,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -11111,7 +11016,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -11138,7 +11042,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -11165,7 +11068,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -11192,7 +11094,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -11219,7 +11120,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -11246,7 +11146,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -11273,7 +11172,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -11300,7 +11198,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -11327,7 +11224,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -11354,7 +11250,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -11381,7 +11276,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -11408,7 +11302,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -11435,7 +11328,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -11454,7 +11346,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -11473,7 +11364,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -11492,7 +11382,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -11511,7 +11400,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -11531,7 +11419,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -11551,7 +11438,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -11571,7 +11457,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -11590,7 +11475,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -11610,7 +11494,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -11629,7 +11512,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -11648,7 +11530,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -11667,7 +11548,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -11686,7 +11566,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -11705,7 +11584,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -11725,7 +11603,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -11745,7 +11622,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -11765,7 +11641,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -11785,7 +11660,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -11804,7 +11678,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -11823,7 +11696,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -11842,7 +11714,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -11861,7 +11732,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -11880,7 +11750,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -11899,7 +11768,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -11918,7 +11786,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -11938,7 +11805,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -11958,7 +11824,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -11978,7 +11843,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -11997,7 +11861,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -12016,7 +11879,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -12035,7 +11897,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -12054,7 +11915,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -12073,7 +11933,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -12092,7 +11951,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -12111,7 +11969,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -12131,7 +11988,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -12150,7 +12006,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -12170,7 +12025,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -12189,7 +12043,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -12208,7 +12061,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -12228,7 +12080,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -12247,7 +12098,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -12266,7 +12116,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -12286,7 +12135,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -12305,7 +12153,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -12324,7 +12171,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -12343,7 +12189,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -12362,7 +12207,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -12382,7 +12226,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -12401,7 +12244,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -12421,7 +12263,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -12441,7 +12282,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -12460,7 +12300,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -12479,7 +12318,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -12498,7 +12336,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -12517,7 +12354,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -12536,7 +12372,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -12555,7 +12390,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -12574,7 +12408,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -12593,7 +12426,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -12612,7 +12444,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -12632,7 +12463,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -12651,7 +12481,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -12670,7 +12499,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -12690,7 +12518,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -12709,7 +12536,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -12728,7 +12554,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -12747,7 +12572,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -12766,7 +12590,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -12785,7 +12608,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -12804,7 +12626,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -12823,7 +12644,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -12843,7 +12663,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -12863,7 +12682,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -12882,7 +12700,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -12902,7 +12719,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -12921,7 +12737,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -12940,7 +12755,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -12959,7 +12773,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -12978,7 +12791,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -12997,7 +12809,6 @@ workflows:
             branches:
               only:
                 - master
-                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -13045,26 +12856,16 @@ commands:
                 command: amplify version
       - when:
           condition:
-            or:
-              - equal:
-                  - docker:
-                      - image: >-
-                          public.ecr.aws/a6e6w2n0/amplify-cli-e2e-base-image-repo-public:latest
-                    working_directory: ~/repo
-                    resource_class: large
-                    environment:
-                      AMPLIFY_DIR: /home/circleci/repo/out
-                      AMPLIFY_PATH: /home/circleci/repo/out/amplify-pkg-linux
-                  - << parameters.os >>
-              - equal:
-                  - docker:
-                      - image: circleci/node:12
-                        auth:
-                          username: $DOCKERHUB_USERNAME
-                          password: $DOCKERHUB_ACCESS_TOKEN
-                    working_directory: ~/repo
-                    resource_class: large
-                  - << parameters.os >>
+            equal:
+              - docker:
+                  - image: >-
+                      public.ecr.aws/a6e6w2n0/amplify-cli-e2e-base-image-repo-public:latest
+                working_directory: ~/repo
+                resource_class: large
+                environment:
+                  AMPLIFY_DIR: /home/circleci/repo/out
+                  AMPLIFY_PATH: /home/circleci/repo/out/amplify-pkg-linux
+              - << parameters.os >>
           steps:
             - run:
                 name: Symlink Amplify packaged CLI
@@ -13112,26 +12913,16 @@ commands:
     steps:
       - when:
           condition:
-            or:
-              - equal:
-                  - docker:
-                      - image: >-
-                          public.ecr.aws/a6e6w2n0/amplify-cli-e2e-base-image-repo-public:latest
-                    working_directory: ~/repo
-                    resource_class: large
-                    environment:
-                      AMPLIFY_DIR: /home/circleci/repo/out
-                      AMPLIFY_PATH: /home/circleci/repo/out/amplify-pkg-linux
-                  - << parameters.os >>
-              - equal:
-                  - docker:
-                      - image: circleci/node:12
-                        auth:
-                          username: $DOCKERHUB_USERNAME
-                          password: $DOCKERHUB_ACCESS_TOKEN
-                    working_directory: ~/repo
-                    resource_class: large
-                  - << parameters.os >>
+            equal:
+              - docker:
+                  - image: >-
+                      public.ecr.aws/a6e6w2n0/amplify-cli-e2e-base-image-repo-public:latest
+                working_directory: ~/repo
+                resource_class: large
+                environment:
+                  AMPLIFY_DIR: /home/circleci/repo/out
+                  AMPLIFY_PATH: /home/circleci/repo/out/amplify-pkg-linux
+              - << parameters.os >>
           steps:
             - run:
                 name: Install Java
@@ -13171,26 +12962,16 @@ commands:
                 no_output_timeout: 90m
       - when:
           condition:
-            or:
-              - equal:
-                  - docker:
-                      - image: >-
-                          public.ecr.aws/a6e6w2n0/amplify-cli-e2e-base-image-repo-public:latest
-                    working_directory: ~/repo
-                    resource_class: large
-                    environment:
-                      AMPLIFY_DIR: /home/circleci/repo/out
-                      AMPLIFY_PATH: /home/circleci/repo/out/amplify-pkg-linux
-                  - << parameters.os >>
-              - equal:
-                  - docker:
-                      - image: circleci/node:12
-                        auth:
-                          username: $DOCKERHUB_USERNAME
-                          password: $DOCKERHUB_ACCESS_TOKEN
-                    working_directory: ~/repo
-                    resource_class: large
-                  - << parameters.os >>
+            equal:
+              - docker:
+                  - image: >-
+                      public.ecr.aws/a6e6w2n0/amplify-cli-e2e-base-image-repo-public:latest
+                working_directory: ~/repo
+                resource_class: large
+                environment:
+                  AMPLIFY_DIR: /home/circleci/repo/out
+                  AMPLIFY_PATH: /home/circleci/repo/out/amplify-pkg-linux
+              - << parameters.os >>
           steps:
             - run:
                 name: Shuffle AWS Credentials
@@ -13239,26 +13020,16 @@ commands:
                 when: always
       - when:
           condition:
-            or:
-              - equal:
-                  - docker:
-                      - image: >-
-                          public.ecr.aws/a6e6w2n0/amplify-cli-e2e-base-image-repo-public:latest
-                    working_directory: ~/repo
-                    resource_class: large
-                    environment:
-                      AMPLIFY_DIR: /home/circleci/repo/out
-                      AMPLIFY_PATH: /home/circleci/repo/out/amplify-pkg-linux
-                  - << parameters.os >>
-              - equal:
-                  - docker:
-                      - image: circleci/node:12
-                        auth:
-                          username: $DOCKERHUB_USERNAME
-                          password: $DOCKERHUB_ACCESS_TOKEN
-                    working_directory: ~/repo
-                    resource_class: large
-                  - << parameters.os >>
+            equal:
+              - docker:
+                  - image: >-
+                      public.ecr.aws/a6e6w2n0/amplify-cli-e2e-base-image-repo-public:latest
+                working_directory: ~/repo
+                resource_class: large
+                environment:
+                  AMPLIFY_DIR: /home/circleci/repo/out
+                  AMPLIFY_PATH: /home/circleci/repo/out/amplify-pkg-linux
+              - << parameters.os >>
           steps:
             - run:
                 name: Scan E2E artifacts
@@ -13299,26 +13070,16 @@ commands:
                 when: always
       - when:
           condition:
-            or:
-              - equal:
-                  - docker:
-                      - image: >-
-                          public.ecr.aws/a6e6w2n0/amplify-cli-e2e-base-image-repo-public:latest
-                    working_directory: ~/repo
-                    resource_class: large
-                    environment:
-                      AMPLIFY_DIR: /home/circleci/repo/out
-                      AMPLIFY_PATH: /home/circleci/repo/out/amplify-pkg-linux
-                  - << parameters.os >>
-              - equal:
-                  - docker:
-                      - image: circleci/node:12
-                        auth:
-                          username: $DOCKERHUB_USERNAME
-                          password: $DOCKERHUB_ACCESS_TOKEN
-                    working_directory: ~/repo
-                    resource_class: large
-                  - << parameters.os >>
+            equal:
+              - docker:
+                  - image: >-
+                      public.ecr.aws/a6e6w2n0/amplify-cli-e2e-base-image-repo-public:latest
+                working_directory: ~/repo
+                resource_class: large
+                environment:
+                  AMPLIFY_DIR: /home/circleci/repo/out
+                  AMPLIFY_PATH: /home/circleci/repo/out/amplify-pkg-linux
+              - << parameters.os >>
           steps:
             - run:
                 name: Scan E2E artifacts

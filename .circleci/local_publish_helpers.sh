@@ -1,5 +1,4 @@
 #!/bin/bash
-export ORGANIZATION_SIZE=$(aws organizations list-accounts | jq '.Accounts | length')
 
 custom_registry_url=http://localhost:4873
 default_verdaccio_package=verdaccio@5.1.2
@@ -57,7 +56,8 @@ function setSudoNpmRegistryUrlToLocal {
 function useChildAccountCredentials {
   if [ -z "$USE_PARENT_ACCOUNT" ]; then
     export AWS_PAGER=""
-    export CREDS=$(aws sts assume-role --role-arn arn:aws:iam::$(aws organizations list-accounts | jq -c -r ".Accounts [$((1 + $RANDOM % $ORGANIZATION_SIZE))].Id"):role/OrganizationAccountAccessRole --role-session-name testSession$((1 + $RANDOM % 10000)) --duration-seconds 3600)
+    export ORGANIZATION_SIZE=$(aws organizations list-accounts | jq '.Accounts | length')
+    export CREDS=$(aws sts assume-role --role-arn arn:aws:iam::$(aws organizations list-accounts | jq -c -r ".Accounts [$(($RANDOM % $ORGANIZATION_SIZE))].Id"):role/OrganizationAccountAccessRole --role-session-name testSession$((1 + $RANDOM % 10000)) --duration-seconds 3600)
     if [ -z $(echo $CREDS | jq -c -r '.AssumedRoleUser.Arn') ]; then
       echo "Unable to assume child account role. Falling back to parent AWS account"
     else
