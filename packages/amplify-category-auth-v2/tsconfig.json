@@ -1,0 +1,23 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "lib",
+    "allowJs": true,
+    "strictPropertyInitialization": false,
+    "inlineSources": true
+  },
+  "exclude": [
+    "coverage",
+    "lib",
+    "resources",
+    "provider-utils/awscloudformation/triggers",
+    "src/__tests__",
+  ],
+  "references": [
+    {"path": "../amplify-cli-core"},
+    {"path": "../amplify-headless-interface"},
+    {"path": "../amplify-util-headless-input"},
+    {"path": "../amplify-util-import"},
+  ],
+  "include": ["src/**/*"]
+}

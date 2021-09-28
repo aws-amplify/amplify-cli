@@ -324,6 +324,8 @@ module.exports = {
     '/packages/amplify-provider-awscloudformation/lib',
     '/packages/amplify-console-integration-tests/lib',
     '/packages/amplify-cli-overrides-helper/lib',
+    '/packages/amplify-category-auth-v2/lib',
+    '/packages/amplify-category-auth-v2/resources/auth-custom-resource',
 
     // Ignore CHANGELOG.md files
     '/packages/*/CHANGELOG.md',

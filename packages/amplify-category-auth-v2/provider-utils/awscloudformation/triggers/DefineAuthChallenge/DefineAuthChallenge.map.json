@@ -1,0 +1,10 @@
+{
+  "captcha-define-challenge": {
+    "name": "MFA w/ Captcha (Definition)",
+    "description": "1 of 3 triggers needed to enable your application to use Google reCaptcha during the authentication flow."
+  },
+  "boilerplate-define-challenge": {
+    "name": "Custom Auth Challenge Scaffolding (Definition)",
+    "description": "1 of 3 triggers needed to set-up the basic scaffolding for a custom authentication flow.  Please note that this scaffolding should be built out using your desired functionality before being used in production."
+  }
+}
