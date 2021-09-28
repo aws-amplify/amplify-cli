@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.6.0-headless-s3-not-for-production-2.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-headless-input@1.5.4...amplify-util-headless-input@1.6.0-headless-s3-not-for-production-2.0) (2021-09-28)
+
+
+### Features
+
+* **amplify-category-storage:** --headless add, update, remove S3 ([#8289](https://github.com/aws-amplify/amplify-cli/issues/8289)) ([2994e06](https://github.com/aws-amplify/amplify-cli/commit/2994e06c7d2939e182a25db4d973519060d271cb))
+
+
+
+
+
 ## [1.5.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-headless-input@1.5.3...amplify-util-headless-input@1.5.4) (2021-09-14)
 
 **Note:** Version bump only for package amplify-util-headless-input
