@@ -12,6 +12,7 @@ import {
 } from '../../../extensions/amplify-helpers/get-cloud-init-status';
 import { stateManager } from 'amplify-cli-core';
 import { hashLayerResource } from 'amplify-category-function';
+import { cronJobSetting } from '../../../../../amplify-category-function/lib/provider-utils/awscloudformation/utils/constants';
 
 const sample_hash1 = 'testhash1';
 const sample_hash2 = 'testhash2';
@@ -51,6 +52,10 @@ jest.mock('../../../extensions/amplify-helpers/get-cloud-init-status', () => ({
   getCloudInitStatus: jest.fn(),
 }));
 
+jest.mock('../../../extensions/amplify-helpers/root-stack-status', () => ({
+  isRootStackModifiedSinceLastPush: jest.fn().mockResolvedValue(false),
+}));
+
 const backendDirPathStub = 'backendDirPath';
 const currentBackendDirPathStub = 'currentBackendDirPathStub';
 const projectRootPath = 'projectRootPath';
@@ -69,6 +74,9 @@ jest.mock('amplify-cli-core', () => ({
     getBackendDirPath: jest.fn(() => backendDirPathStub),
     getCurrentCloudBackendDirPath: jest.fn(() => currentBackendDirPathStub),
     findProjectRoot: jest.fn(() => projectRootPath),
+  },
+  FeatureFlags: {
+    getBoolean: jest.fn().mockReturnValue(true),
   },
 }));
 
@@ -145,6 +153,7 @@ describe('resource-status', () => {
         resourcesToBeDeleted: [],
         resourcesToBeSynced: [],
         resourcesToBeUpdated: [],
+        rootStackUpdated: false,
         tagsUpdated: false,
       });
     });
@@ -184,6 +193,7 @@ describe('resource-status', () => {
         resourcesToBeSynced: [],
         resourcesToBeUpdated: [],
         tagsUpdated: false,
+        rootStackUpdated: false,
       });
     });
 
@@ -246,6 +256,7 @@ describe('resource-status', () => {
         resourcesToBeSynced: [],
         resourcesToBeUpdated: [],
         tagsUpdated: false,
+        rootStackUpdated: false,
       });
     });
 
@@ -284,6 +295,7 @@ describe('resource-status', () => {
         resourcesToBeSynced: [],
         resourcesToBeUpdated: [],
         tagsUpdated: false,
+        rootStackUpdated: false,
       });
     });
 
@@ -336,6 +348,7 @@ describe('resource-status', () => {
         ],
         resourcesToBeUpdated: [],
         tagsUpdated: false,
+        rootStackUpdated: false,
       });
     });
 
@@ -380,6 +393,7 @@ describe('resource-status', () => {
         ],
         resourcesToBeUpdated: [],
         tagsUpdated: false,
+        rootStackUpdated: false,
       });
     });
 
@@ -439,6 +453,7 @@ describe('resource-status', () => {
         ],
         resourcesToBeUpdated: [],
         tagsUpdated: false,
+        rootStackUpdated: false,
       });
     });
 
@@ -502,6 +517,7 @@ describe('resource-status', () => {
           },
         ],
         tagsUpdated: false,
+        rootStackUpdated: false,
       });
     });
 
@@ -559,6 +575,7 @@ describe('resource-status', () => {
           },
         ],
         tagsUpdated: false,
+        rootStackUpdated: false,
       });
     });
 
@@ -614,6 +631,7 @@ describe('resource-status', () => {
           },
         ],
         tagsUpdated: false,
+        rootStackUpdated: false,
       });
     });
 
@@ -669,6 +687,7 @@ describe('resource-status', () => {
           },
         ],
         tagsUpdated: false,
+        rootStackUpdated: false,
       });
     });
 
@@ -699,6 +718,7 @@ describe('resource-status', () => {
         resourcesToBeSynced: [],
         resourcesToBeUpdated: [],
         tagsUpdated: true,
+        rootStackUpdated: false,
       });
     });
 
@@ -713,6 +733,7 @@ describe('resource-status', () => {
         resourcesToBeSynced: [],
         resourcesToBeUpdated: [],
         tagsUpdated: false,
+        rootStackUpdated: false,
       });
     });
 

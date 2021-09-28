@@ -198,7 +198,7 @@ export class PathManager {
     ]);
   };
 
-  getRootStackDirPath = (projectPath: string): string => {
+  getRootStackBuildDirPath = (projectPath: string): string => {
     return this.constructPath(projectPath, [
       PathConstants.AmplifyDirName,
       PathConstants.BackendDirName,
