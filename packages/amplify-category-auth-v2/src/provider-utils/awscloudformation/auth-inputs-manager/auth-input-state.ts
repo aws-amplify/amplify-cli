@@ -10,7 +10,7 @@ import {
 } from 'amplify-cli-core';
 import { CognitoCLIInputs } from '../service-walkthrough-types/awsCognito-user-input-types';
 
-export class AuthInputState {
+export class AuthInputState extends CategoryInputState {
   _cliInputsFilePath: string; //cli-inputs.json (output) filepath
   _resourceName: string; //user friendly name provided by user
   _category: string; //category of the resource
@@ -18,6 +18,7 @@ export class AuthInputState {
   _buildFilePath: string;
 
   constructor(resourceName: string) {
+    super(resourceName);
     this._category = AmplifyCategories.AUTH;
     this._service = AmplifySupportedService.COGNITO;
     this._resourceName = resourceName;
@@ -32,7 +33,11 @@ export class AuthInputState {
       cliInputs = this.getCLIInputPayload();
     }
     const schemaValidator = new CLIInputSchemaValidator('awsCognito', this._category, 'CognitoCLIInputs');
-    return await schemaValidator.validateInput(JSON.stringify(cliInputs));
+    try {
+      return await schemaValidator.validateInput(JSON.stringify(cliInputs));
+    } catch (e) {
+      throw e;
+    }
   }
 
   public getCLIInputPayload(): CognitoCLIInputs {

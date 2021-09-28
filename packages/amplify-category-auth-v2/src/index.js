@@ -32,6 +32,8 @@ const {
   loadImportedAuthParameters,
 } = require('./provider-utils/awscloudformation/utils/auth-sms-workflow-helper');
 
+const { AmplifyAuthTemplate, AmplifyUserPoolGroupTemplate } = require('./provider-utils/awscloudformation/auth-stack-builder');
+
 // this function is being kept for temporary compatability.
 async function add(context) {
   const { amplify } = context;
@@ -483,4 +485,6 @@ module.exports = {
   generateAuthStackTemplate,
   AmplifyAuthTransform,
   AmplifyUserPoolGroupTransform,
+  AmplifyUserPoolGroupTemplate,
+  AmplifyAuthTemplate,
 };
