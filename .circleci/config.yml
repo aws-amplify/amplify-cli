@@ -1818,6 +1818,122 @@ jobs:
     environment:
       TEST_SUITE: src/__tests__/schema-iterative-update-locking.test.ts
       CLI_REGION: us-east-2
+  storage_1-amplify_e2e_tests:
+    working_directory: ~/repo
+    parameters:
+      os:
+        type: executor
+        default: linux
+    executor: << parameters.os >>
+    steps:
+      - attach_workspace:
+          at: ./
+      - restore_cache:
+          key: >-
+            amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
+            arch }}
+      - restore_cache:
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
+      - restore_cache:
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
+      - run:
+          name: Start verdaccio, install node CLI and amplify-app
+          command: |
+            source .circleci/local_publish_helpers.sh
+            startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
+            setNpmRegistryUrlToLocal
+            changeNpmGlobalPath
+            npm install -g @aws-amplify/cli
+            npm install -g amplify-app
+            unsetNpmRegistryUrl
+      - run:
+          name: Run Amplify end-to-end tests
+          command: |
+            source .circleci/local_publish_helpers.sh
+            changeNpmGlobalPath
+            amplify -v
+            amplify-app --version
+            startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
+            setNpmRegistryUrlToLocal
+            setAwsAccountCredentials
+            cd packages/amplify-e2e-tests
+            yarn run e2e --detectOpenHandles --maxWorkers=3 $TEST_SUITE
+            unsetNpmRegistryUrl
+          no_output_timeout: 90m
+      - run:
+          name: Scan And Cleanup E2E Test Artifacts
+          command: |
+            if ! yarn ts-node .circleci/scan_artifacts.ts; then
+              echo "Cleaning the repository"
+              git clean -fdx
+              exit 1
+            fi
+          when: always
+      - store_test_results:
+          path: packages/amplify-e2e-tests/
+      - store_artifacts:
+          path: ~/repo/packages/amplify-e2e-tests/amplify-e2e-reports
+    environment:
+      TEST_SUITE: src/__tests__/storage_1.test.ts
+      CLI_REGION: us-west-2
+  storage_2-amplify_e2e_tests:
+    working_directory: ~/repo
+    parameters:
+      os:
+        type: executor
+        default: linux
+    executor: << parameters.os >>
+    steps:
+      - attach_workspace:
+          at: ./
+      - restore_cache:
+          key: >-
+            amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
+            arch }}
+      - restore_cache:
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
+      - restore_cache:
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
+      - run:
+          name: Start verdaccio, install node CLI and amplify-app
+          command: |
+            source .circleci/local_publish_helpers.sh
+            startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
+            setNpmRegistryUrlToLocal
+            changeNpmGlobalPath
+            npm install -g @aws-amplify/cli
+            npm install -g amplify-app
+            unsetNpmRegistryUrl
+      - run:
+          name: Run Amplify end-to-end tests
+          command: |
+            source .circleci/local_publish_helpers.sh
+            changeNpmGlobalPath
+            amplify -v
+            amplify-app --version
+            startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
+            setNpmRegistryUrlToLocal
+            setAwsAccountCredentials
+            cd packages/amplify-e2e-tests
+            yarn run e2e --detectOpenHandles --maxWorkers=3 $TEST_SUITE
+            unsetNpmRegistryUrl
+          no_output_timeout: 90m
+      - run:
+          name: Scan And Cleanup E2E Test Artifacts
+          command: |
+            if ! yarn ts-node .circleci/scan_artifacts.ts; then
+              echo "Cleaning the repository"
+              git clean -fdx
+              exit 1
+            fi
+          when: always
+      - store_test_results:
+          path: packages/amplify-e2e-tests/
+      - store_artifacts:
+          path: ~/repo/packages/amplify-e2e-tests/amplify-e2e-reports
+    environment:
+      TEST_SUITE: src/__tests__/storage_2.test.ts
+      CLI_REGION: eu-west-2
   plugin-amplify_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -1875,7 +1991,7 @@ jobs:
           path: ~/repo/packages/amplify-e2e-tests/amplify-e2e-reports
     environment:
       TEST_SUITE: src/__tests__/plugin.test.ts
-      CLI_REGION: us-west-2
+      CLI_REGION: eu-central-1
   init-special-case-amplify_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -1933,7 +2049,7 @@ jobs:
           path: ~/repo/packages/amplify-e2e-tests/amplify-e2e-reports
     environment:
       TEST_SUITE: src/__tests__/init-special-case.test.ts
-      CLI_REGION: eu-west-2
+      CLI_REGION: ap-northeast-1
   datastore-modelgen-amplify_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -1991,7 +2107,7 @@ jobs:
           path: ~/repo/packages/amplify-e2e-tests/amplify-e2e-reports
     environment:
       TEST_SUITE: src/__tests__/datastore-modelgen.test.ts
-      CLI_REGION: eu-central-1
+      CLI_REGION: ap-southeast-1
   amplify-configure-amplify_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -2049,7 +2165,7 @@ jobs:
           path: ~/repo/packages/amplify-e2e-tests/amplify-e2e-reports
     environment:
       TEST_SUITE: src/__tests__/amplify-configure.test.ts
-      CLI_REGION: ap-northeast-1
+      CLI_REGION: ap-southeast-2
   init-amplify_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -2107,7 +2223,7 @@ jobs:
           path: ~/repo/packages/amplify-e2e-tests/amplify-e2e-reports
     environment:
       TEST_SUITE: src/__tests__/init.test.ts
-      CLI_REGION: ap-southeast-1
+      CLI_REGION: us-east-2
   tags-amplify_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -2165,7 +2281,7 @@ jobs:
           path: ~/repo/packages/amplify-e2e-tests/amplify-e2e-reports
     environment:
       TEST_SUITE: src/__tests__/tags.test.ts
-      CLI_REGION: ap-southeast-2
+      CLI_REGION: us-west-2
   notifications-amplify_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -2223,7 +2339,7 @@ jobs:
           path: ~/repo/packages/amplify-e2e-tests/amplify-e2e-reports
     environment:
       TEST_SUITE: src/__tests__/notifications.test.ts
-      CLI_REGION: us-east-2
+      CLI_REGION: eu-west-2
   schema-versioned-amplify_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -2281,7 +2397,7 @@ jobs:
           path: ~/repo/packages/amplify-e2e-tests/amplify-e2e-reports
     environment:
       TEST_SUITE: src/__tests__/schema-versioned.test.ts
-      CLI_REGION: us-west-2
+      CLI_REGION: eu-central-1
   schema-data-access-patterns-amplify_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -2339,7 +2455,7 @@ jobs:
           path: ~/repo/packages/amplify-e2e-tests/amplify-e2e-reports
     environment:
       TEST_SUITE: src/__tests__/schema-data-access-patterns.test.ts
-      CLI_REGION: eu-west-2
+      CLI_REGION: ap-northeast-1
   interactions-amplify_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -2455,7 +2571,7 @@ jobs:
           path: ~/repo/packages/amplify-e2e-tests/amplify-e2e-reports
     environment:
       TEST_SUITE: src/__tests__/schema-predictions.test.ts
-      CLI_REGION: ap-northeast-1
+      CLI_REGION: ap-southeast-2
   amplify-app-amplify_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -2513,7 +2629,7 @@ jobs:
           path: ~/repo/packages/amplify-e2e-tests/amplify-e2e-reports
     environment:
       TEST_SUITE: src/__tests__/amplify-app.test.ts
-      CLI_REGION: ap-southeast-1
+      CLI_REGION: us-east-2
   hosting-amplify_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -2571,7 +2687,7 @@ jobs:
           path: ~/repo/packages/amplify-e2e-tests/amplify-e2e-reports
     environment:
       TEST_SUITE: src/__tests__/hosting.test.ts
-      CLI_REGION: ap-southeast-2
+      CLI_REGION: us-west-2
   analytics-amplify_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -2629,7 +2745,7 @@ jobs:
           path: ~/repo/packages/amplify-e2e-tests/amplify-e2e-reports
     environment:
       TEST_SUITE: src/__tests__/analytics.test.ts
-      CLI_REGION: us-east-2
+      CLI_REGION: eu-west-2
   feature-flags-amplify_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -2687,7 +2803,7 @@ jobs:
           path: ~/repo/packages/amplify-e2e-tests/amplify-e2e-reports
     environment:
       TEST_SUITE: src/__tests__/feature-flags.test.ts
-      CLI_REGION: us-west-2
+      CLI_REGION: eu-central-1
   schema-iterative-update-2-amplify_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -2745,7 +2861,7 @@ jobs:
           path: ~/repo/packages/amplify-e2e-tests/amplify-e2e-reports
     environment:
       TEST_SUITE: src/__tests__/schema-iterative-update-2.test.ts
-      CLI_REGION: eu-west-2
+      CLI_REGION: ap-northeast-1
   containers-api-amplify_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -2803,7 +2919,7 @@ jobs:
           path: ~/repo/packages/amplify-e2e-tests/amplify-e2e-reports
     environment:
       TEST_SUITE: src/__tests__/containers-api.test.ts
-      CLI_REGION: eu-central-1
+      CLI_REGION: ap-southeast-1
   predictions-amplify_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -2861,7 +2977,7 @@ jobs:
           path: ~/repo/packages/amplify-e2e-tests/amplify-e2e-reports
     environment:
       TEST_SUITE: src/__tests__/predictions.test.ts
-      CLI_REGION: ap-northeast-1
+      CLI_REGION: ap-southeast-2
   hostingPROD-amplify_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -2919,7 +3035,7 @@ jobs:
           path: ~/repo/packages/amplify-e2e-tests/amplify-e2e-reports
     environment:
       TEST_SUITE: src/__tests__/hostingPROD.test.ts
-      CLI_REGION: ap-southeast-1
+      CLI_REGION: us-east-2
   geo-add-amplify_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -2977,7 +3093,7 @@ jobs:
           path: ~/repo/packages/amplify-e2e-tests/amplify-e2e-reports
     environment:
       TEST_SUITE: src/__tests__/geo-add.test.ts
-      CLI_REGION: ap-southeast-1
+      CLI_REGION: us-east-2
   geo-update-amplify_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -3035,7 +3151,7 @@ jobs:
           path: ~/repo/packages/amplify-e2e-tests/amplify-e2e-reports
     environment:
       TEST_SUITE: src/__tests__/geo-update.test.ts
-      CLI_REGION: ap-southeast-2
+      CLI_REGION: us-west-2
   geo-remove-amplify_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -3093,7 +3209,7 @@ jobs:
           path: ~/repo/packages/amplify-e2e-tests/amplify-e2e-reports
     environment:
       TEST_SUITE: src/__tests__/geo-remove.test.ts
-      CLI_REGION: us-east-2
+      CLI_REGION: eu-central-1
   schema-auth-10-amplify_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -3151,7 +3267,7 @@ jobs:
           path: ~/repo/packages/amplify-e2e-tests/amplify-e2e-reports
     environment:
       TEST_SUITE: src/__tests__/schema-auth-10.test.ts
-      CLI_REGION: eu-west-2
+      CLI_REGION: ap-northeast-1
   schema-key-amplify_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -3209,7 +3325,7 @@ jobs:
           path: ~/repo/packages/amplify-e2e-tests/amplify-e2e-reports
     environment:
       TEST_SUITE: src/__tests__/schema-key.test.ts
-      CLI_REGION: eu-central-1
+      CLI_REGION: ap-southeast-1
   auth_1-amplify_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -3267,7 +3383,7 @@ jobs:
           path: ~/repo/packages/amplify-e2e-tests/amplify-e2e-reports
     environment:
       TEST_SUITE: src/__tests__/auth_1.test.ts
-      CLI_REGION: ap-northeast-1
+      CLI_REGION: ap-southeast-2
   auth_5-amplify_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -3325,7 +3441,7 @@ jobs:
           path: ~/repo/packages/amplify-e2e-tests/amplify-e2e-reports
     environment:
       TEST_SUITE: src/__tests__/auth_5.test.ts
-      CLI_REGION: ap-southeast-1
+      CLI_REGION: us-east-2
   function_3-amplify_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -3383,7 +3499,7 @@ jobs:
           path: ~/repo/packages/amplify-e2e-tests/amplify-e2e-reports
     environment:
       TEST_SUITE: src/__tests__/function_3.test.ts
-      CLI_REGION: ap-southeast-2
+      CLI_REGION: us-west-2
   schema-iterative-update-1-amplify_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -3441,7 +3557,7 @@ jobs:
           path: ~/repo/packages/amplify-e2e-tests/amplify-e2e-reports
     environment:
       TEST_SUITE: src/__tests__/schema-iterative-update-1.test.ts
-      CLI_REGION: us-east-2
+      CLI_REGION: eu-west-2
   schema-auth-3-amplify_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -3499,7 +3615,7 @@ jobs:
           path: ~/repo/packages/amplify-e2e-tests/amplify-e2e-reports
     environment:
       TEST_SUITE: src/__tests__/schema-auth-3.test.ts
-      CLI_REGION: us-west-2
+      CLI_REGION: eu-central-1
   delete-amplify_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -3557,7 +3673,7 @@ jobs:
           path: ~/repo/packages/amplify-e2e-tests/amplify-e2e-reports
     environment:
       TEST_SUITE: src/__tests__/delete.test.ts
-      CLI_REGION: eu-west-2
+      CLI_REGION: ap-northeast-1
   function_2-amplify_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -3615,7 +3731,7 @@ jobs:
           path: ~/repo/packages/amplify-e2e-tests/amplify-e2e-reports
     environment:
       TEST_SUITE: src/__tests__/function_2.test.ts
-      CLI_REGION: eu-central-1
+      CLI_REGION: ap-southeast-1
   auth_3-amplify_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -3673,7 +3789,7 @@ jobs:
           path: ~/repo/packages/amplify-e2e-tests/amplify-e2e-reports
     environment:
       TEST_SUITE: src/__tests__/auth_3.test.ts
-      CLI_REGION: ap-northeast-1
+      CLI_REGION: ap-southeast-2
   layer-amplify_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -3731,7 +3847,7 @@ jobs:
           path: ~/repo/packages/amplify-e2e-tests/amplify-e2e-reports
     environment:
       TEST_SUITE: src/__tests__/layer.test.ts
-      CLI_REGION: ap-southeast-1
+      CLI_REGION: us-east-2
   migration-api-key-migration1-amplify_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -3789,7 +3905,7 @@ jobs:
           path: ~/repo/packages/amplify-e2e-tests/amplify-e2e-reports
     environment:
       TEST_SUITE: src/__tests__/migration/api.key.migration1.test.ts
-      CLI_REGION: ap-southeast-2
+      CLI_REGION: us-west-2
   auth_4-amplify_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -3847,7 +3963,7 @@ jobs:
           path: ~/repo/packages/amplify-e2e-tests/amplify-e2e-reports
     environment:
       TEST_SUITE: src/__tests__/auth_4.test.ts
-      CLI_REGION: us-east-2
+      CLI_REGION: eu-west-2
   schema-auth-7-amplify_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -3905,7 +4021,7 @@ jobs:
           path: ~/repo/packages/amplify-e2e-tests/amplify-e2e-reports
     environment:
       TEST_SUITE: src/__tests__/schema-auth-7.test.ts
-      CLI_REGION: us-west-2
+      CLI_REGION: eu-central-1
   schema-auth-8-amplify_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -3963,7 +4079,7 @@ jobs:
           path: ~/repo/packages/amplify-e2e-tests/amplify-e2e-reports
     environment:
       TEST_SUITE: src/__tests__/schema-auth-8.test.ts
-      CLI_REGION: eu-west-2
+      CLI_REGION: ap-northeast-1
   schema-searchable-amplify_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -4021,7 +4137,7 @@ jobs:
           path: ~/repo/packages/amplify-e2e-tests/amplify-e2e-reports
     environment:
       TEST_SUITE: src/__tests__/schema-searchable.test.ts
-      CLI_REGION: eu-central-1
+      CLI_REGION: ap-southeast-1
   schema-auth-4-amplify_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -4079,7 +4195,7 @@ jobs:
           path: ~/repo/packages/amplify-e2e-tests/amplify-e2e-reports
     environment:
       TEST_SUITE: src/__tests__/schema-auth-4.test.ts
-      CLI_REGION: ap-northeast-1
+      CLI_REGION: ap-southeast-2
   api_3-amplify_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -4137,7 +4253,7 @@ jobs:
           path: ~/repo/packages/amplify-e2e-tests/amplify-e2e-reports
     environment:
       TEST_SUITE: src/__tests__/api_3.test.ts
-      CLI_REGION: ap-southeast-1
+      CLI_REGION: us-east-2
   import_auth_1-amplify_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -4195,7 +4311,7 @@ jobs:
           path: ~/repo/packages/amplify-e2e-tests/amplify-e2e-reports
     environment:
       TEST_SUITE: src/__tests__/import_auth_1.test.ts
-      CLI_REGION: ap-southeast-2
+      CLI_REGION: us-west-2
   import_auth_2-amplify_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -4253,7 +4369,7 @@ jobs:
           path: ~/repo/packages/amplify-e2e-tests/amplify-e2e-reports
     environment:
       TEST_SUITE: src/__tests__/import_auth_2.test.ts
-      CLI_REGION: us-east-2
+      CLI_REGION: eu-west-2
   import_s3_1-amplify_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -4311,7 +4427,7 @@ jobs:
           path: ~/repo/packages/amplify-e2e-tests/amplify-e2e-reports
     environment:
       TEST_SUITE: src/__tests__/import_s3_1.test.ts
-      CLI_REGION: us-west-2
+      CLI_REGION: eu-central-1
       USE_PARENT_ACCOUNT: 1
   import_dynamodb_1-amplify_e2e_tests:
     working_directory: ~/repo
@@ -4370,7 +4486,7 @@ jobs:
           path: ~/repo/packages/amplify-e2e-tests/amplify-e2e-reports
     environment:
       TEST_SUITE: src/__tests__/import_dynamodb_1.test.ts
-      CLI_REGION: eu-west-2
+      CLI_REGION: ap-northeast-1
       USE_PARENT_ACCOUNT: 1
   schema-iterative-rollback-1-amplify_e2e_tests:
     working_directory: ~/repo
@@ -4429,7 +4545,7 @@ jobs:
           path: ~/repo/packages/amplify-e2e-tests/amplify-e2e-reports
     environment:
       TEST_SUITE: src/__tests__/schema-iterative-rollback-1.test.ts
-      CLI_REGION: eu-central-1
+      CLI_REGION: ap-southeast-1
   schema-iterative-rollback-2-amplify_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -4487,7 +4603,7 @@ jobs:
           path: ~/repo/packages/amplify-e2e-tests/amplify-e2e-reports
     environment:
       TEST_SUITE: src/__tests__/schema-iterative-rollback-2.test.ts
-      CLI_REGION: ap-northeast-1
+      CLI_REGION: ap-southeast-2
   env-amplify_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -4545,7 +4661,7 @@ jobs:
           path: ~/repo/packages/amplify-e2e-tests/amplify-e2e-reports
     environment:
       TEST_SUITE: src/__tests__/env.test.ts
-      CLI_REGION: ap-southeast-1
+      CLI_REGION: us-east-2
   auth_2-amplify_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -4603,7 +4719,7 @@ jobs:
           path: ~/repo/packages/amplify-e2e-tests/amplify-e2e-reports
     environment:
       TEST_SUITE: src/__tests__/auth_2.test.ts
-      CLI_REGION: ap-southeast-2
+      CLI_REGION: us-west-2
       USE_PARENT_ACCOUNT: 1
   schema-auth-9-amplify_e2e_tests:
     working_directory: ~/repo
@@ -4662,7 +4778,7 @@ jobs:
           path: ~/repo/packages/amplify-e2e-tests/amplify-e2e-reports
     environment:
       TEST_SUITE: src/__tests__/schema-auth-9.test.ts
-      CLI_REGION: us-east-2
+      CLI_REGION: eu-west-2
   schema-auth-11-amplify_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -4720,7 +4836,7 @@ jobs:
           path: ~/repo/packages/amplify-e2e-tests/amplify-e2e-reports
     environment:
       TEST_SUITE: src/__tests__/schema-auth-11.test.ts
-      CLI_REGION: us-west-2
+      CLI_REGION: eu-central-1
   migration-api-key-migration2-amplify_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -4778,7 +4894,7 @@ jobs:
           path: ~/repo/packages/amplify-e2e-tests/amplify-e2e-reports
     environment:
       TEST_SUITE: src/__tests__/migration/api.key.migration2.test.ts
-      CLI_REGION: eu-west-2
+      CLI_REGION: ap-northeast-1
       USE_PARENT_ACCOUNT: 1
   function_1-amplify_e2e_tests:
     working_directory: ~/repo
@@ -4837,7 +4953,7 @@ jobs:
           path: ~/repo/packages/amplify-e2e-tests/amplify-e2e-reports
     environment:
       TEST_SUITE: src/__tests__/function_1.test.ts
-      CLI_REGION: eu-central-1
+      CLI_REGION: ap-southeast-1
   schema-auth-1-amplify_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -4895,7 +5011,7 @@ jobs:
           path: ~/repo/packages/amplify-e2e-tests/amplify-e2e-reports
     environment:
       TEST_SUITE: src/__tests__/schema-auth-1.test.ts
-      CLI_REGION: ap-northeast-1
+      CLI_REGION: ap-southeast-2
   function_4-amplify_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -4953,7 +5069,7 @@ jobs:
           path: ~/repo/packages/amplify-e2e-tests/amplify-e2e-reports
     environment:
       TEST_SUITE: src/__tests__/function_4.test.ts
-      CLI_REGION: ap-southeast-1
+      CLI_REGION: us-east-2
   schema-function-amplify_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -5011,7 +5127,7 @@ jobs:
           path: ~/repo/packages/amplify-e2e-tests/amplify-e2e-reports
     environment:
       TEST_SUITE: src/__tests__/schema-function.test.ts
-      CLI_REGION: ap-southeast-2
+      CLI_REGION: us-west-2
   schema-model-amplify_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -5069,7 +5185,7 @@ jobs:
           path: ~/repo/packages/amplify-e2e-tests/amplify-e2e-reports
     environment:
       TEST_SUITE: src/__tests__/schema-model.test.ts
-      CLI_REGION: us-east-2
+      CLI_REGION: eu-west-2
   migration-api-connection-migration-amplify_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -5127,7 +5243,7 @@ jobs:
           path: ~/repo/packages/amplify-e2e-tests/amplify-e2e-reports
     environment:
       TEST_SUITE: src/__tests__/migration/api.connection.migration.test.ts
-      CLI_REGION: us-west-2
+      CLI_REGION: eu-central-1
   schema-connection-amplify_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -5185,7 +5301,7 @@ jobs:
           path: ~/repo/packages/amplify-e2e-tests/amplify-e2e-reports
     environment:
       TEST_SUITE: src/__tests__/schema-connection.test.ts
-      CLI_REGION: eu-west-2
+      CLI_REGION: ap-northeast-1
   schema-auth-6-amplify_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -5243,7 +5359,7 @@ jobs:
           path: ~/repo/packages/amplify-e2e-tests/amplify-e2e-reports
     environment:
       TEST_SUITE: src/__tests__/schema-auth-6.test.ts
-      CLI_REGION: eu-central-1
+      CLI_REGION: ap-southeast-1
   schema-iterative-update-3-amplify_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -5301,7 +5417,7 @@ jobs:
           path: ~/repo/packages/amplify-e2e-tests/amplify-e2e-reports
     environment:
       TEST_SUITE: src/__tests__/schema-iterative-update-3.test.ts
-      CLI_REGION: ap-northeast-1
+      CLI_REGION: ap-southeast-2
   schema-auth-2-amplify_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -5359,7 +5475,7 @@ jobs:
           path: ~/repo/packages/amplify-e2e-tests/amplify-e2e-reports
     environment:
       TEST_SUITE: src/__tests__/schema-auth-2.test.ts
-      CLI_REGION: ap-southeast-1
+      CLI_REGION: us-east-2
   api_1-amplify_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -5417,7 +5533,7 @@ jobs:
           path: ~/repo/packages/amplify-e2e-tests/amplify-e2e-reports
     environment:
       TEST_SUITE: src/__tests__/api_1.test.ts
-      CLI_REGION: ap-southeast-2
+      CLI_REGION: us-west-2
       USE_PARENT_ACCOUNT: 1
   schema-auth-5-amplify_e2e_tests:
     working_directory: ~/repo
@@ -5476,66 +5592,7 @@ jobs:
           path: ~/repo/packages/amplify-e2e-tests/amplify-e2e-reports
     environment:
       TEST_SUITE: src/__tests__/schema-auth-5.test.ts
-      CLI_REGION: us-east-2
-  storage-amplify_e2e_tests:
-    working_directory: ~/repo
-    parameters:
-      os:
-        type: executor
-        default: linux
-    executor: << parameters.os >>
-    steps:
-      - attach_workspace:
-          at: ./
-      - restore_cache:
-          key: >-
-            amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
-            arch }}
-      - restore_cache:
-          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
-      - restore_cache:
-          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
-      - run:
-          name: Start verdaccio, install node CLI and amplify-app
-          command: |
-            source .circleci/local_publish_helpers.sh
-            startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
-            setNpmRegistryUrlToLocal
-            changeNpmGlobalPath
-            npm install -g @aws-amplify/cli
-            npm install -g amplify-app
-            unsetNpmRegistryUrl
-      - run:
-          name: Run Amplify end-to-end tests
-          command: |
-            source .circleci/local_publish_helpers.sh
-            changeNpmGlobalPath
-            amplify -v
-            amplify-app --version
-            startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
-            setNpmRegistryUrlToLocal
-            setAwsAccountCredentials
-            cd packages/amplify-e2e-tests
-            yarn run e2e --detectOpenHandles --maxWorkers=3 $TEST_SUITE
-            unsetNpmRegistryUrl
-          no_output_timeout: 90m
-      - run:
-          name: Scan And Cleanup E2E Test Artifacts
-          command: |
-            if ! yarn ts-node .circleci/scan_artifacts.ts; then
-              echo "Cleaning the repository"
-              git clean -fdx
-              exit 1
-            fi
-          when: always
-      - store_test_results:
-          path: packages/amplify-e2e-tests/
-      - store_artifacts:
-          path: ~/repo/packages/amplify-e2e-tests/amplify-e2e-reports
-    environment:
-      TEST_SUITE: src/__tests__/storage.test.ts
-      CLI_REGION: us-west-2
-      USE_PARENT_ACCOUNT: 1
+      CLI_REGION: eu-west-2
   api_2-amplify_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -5593,7 +5650,7 @@ jobs:
           path: ~/repo/packages/amplify-e2e-tests/amplify-e2e-reports
     environment:
       TEST_SUITE: src/__tests__/api_2.test.ts
-      CLI_REGION: eu-west-2
+      CLI_REGION: eu-central-1
       USE_PARENT_ACCOUNT: 1
   schema-iterative-update-4-amplify_e2e_tests:
     working_directory: ~/repo
@@ -5652,7 +5709,7 @@ jobs:
           path: ~/repo/packages/amplify-e2e-tests/amplify-e2e-reports
     environment:
       TEST_SUITE: src/__tests__/schema-iterative-update-4.test.ts
-      CLI_REGION: eu-central-1
+      CLI_REGION: ap-northeast-1
   api_4-amplify_e2e_tests_pkg:
     parameters:
       os:
@@ -6208,6 +6265,80 @@ jobs:
     environment:
       TEST_SUITE: src/__tests__/schema-iterative-update-locking.test.ts
       CLI_REGION: us-east-2
+  storage_1-amplify_e2e_tests_pkg:
+    parameters:
+      os:
+        type: executor
+        default: os.build_img
+    executor: << parameters.os >>
+    working_directory: ~/repo
+    steps:
+      - attach_workspace:
+          at: ./
+      - restore_cache:
+          key: >-
+            amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
+            arch }}
+      - restore_cache:
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
+      - restore_cache:
+          key: amplify-build-artifact-{{ .Revision }}-{{ arch }}
+      - restore_cache:
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
+      - install_yarn:
+          os: << parameters.os >>
+      - install_packaged_cli:
+          os: << parameters.os >>
+      - run_e2e_tests:
+          os: << parameters.os >>
+      - scan_e2e_test_artifacts:
+          os: << parameters.os >>
+      - store_test_results:
+          path: packages/amplify-e2e-tests/
+      - store_artifacts:
+          path: packages/amplify-e2e-tests/amplify-e2e-reports
+      - clean_e2e_resources:
+          os: << parameters.os >>
+    environment:
+      TEST_SUITE: src/__tests__/storage_1.test.ts
+      CLI_REGION: us-west-2
+  storage_2-amplify_e2e_tests_pkg:
+    parameters:
+      os:
+        type: executor
+        default: os.build_img
+    executor: << parameters.os >>
+    working_directory: ~/repo
+    steps:
+      - attach_workspace:
+          at: ./
+      - restore_cache:
+          key: >-
+            amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
+            arch }}
+      - restore_cache:
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
+      - restore_cache:
+          key: amplify-build-artifact-{{ .Revision }}-{{ arch }}
+      - restore_cache:
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
+      - install_yarn:
+          os: << parameters.os >>
+      - install_packaged_cli:
+          os: << parameters.os >>
+      - run_e2e_tests:
+          os: << parameters.os >>
+      - scan_e2e_test_artifacts:
+          os: << parameters.os >>
+      - store_test_results:
+          path: packages/amplify-e2e-tests/
+      - store_artifacts:
+          path: packages/amplify-e2e-tests/amplify-e2e-reports
+      - clean_e2e_resources:
+          os: << parameters.os >>
+    environment:
+      TEST_SUITE: src/__tests__/storage_2.test.ts
+      CLI_REGION: eu-west-2
   plugin-amplify_e2e_tests_pkg:
     parameters:
       os:
@@ -6244,7 +6375,7 @@ jobs:
           os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/plugin.test.ts
-      CLI_REGION: us-west-2
+      CLI_REGION: eu-central-1
   init-special-case-amplify_e2e_tests_pkg:
     parameters:
       os:
@@ -6281,7 +6412,7 @@ jobs:
           os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/init-special-case.test.ts
-      CLI_REGION: eu-west-2
+      CLI_REGION: ap-northeast-1
   datastore-modelgen-amplify_e2e_tests_pkg:
     parameters:
       os:
@@ -6318,7 +6449,7 @@ jobs:
           os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/datastore-modelgen.test.ts
-      CLI_REGION: eu-central-1
+      CLI_REGION: ap-southeast-1
   amplify-configure-amplify_e2e_tests_pkg:
     parameters:
       os:
@@ -6355,7 +6486,7 @@ jobs:
           os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/amplify-configure.test.ts
-      CLI_REGION: ap-northeast-1
+      CLI_REGION: ap-southeast-2
   init-amplify_e2e_tests_pkg:
     parameters:
       os:
@@ -6392,7 +6523,7 @@ jobs:
           os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/init.test.ts
-      CLI_REGION: ap-southeast-1
+      CLI_REGION: us-east-2
   tags-amplify_e2e_tests_pkg:
     parameters:
       os:
@@ -6429,7 +6560,7 @@ jobs:
           os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/tags.test.ts
-      CLI_REGION: ap-southeast-2
+      CLI_REGION: us-west-2
   notifications-amplify_e2e_tests_pkg:
     parameters:
       os:
@@ -6466,7 +6597,7 @@ jobs:
           os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/notifications.test.ts
-      CLI_REGION: us-east-2
+      CLI_REGION: eu-west-2
   schema-versioned-amplify_e2e_tests_pkg:
     parameters:
       os:
@@ -6503,7 +6634,7 @@ jobs:
           os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/schema-versioned.test.ts
-      CLI_REGION: us-west-2
+      CLI_REGION: eu-central-1
   schema-data-access-patterns-amplify_e2e_tests_pkg:
     parameters:
       os:
@@ -6540,7 +6671,7 @@ jobs:
           os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/schema-data-access-patterns.test.ts
-      CLI_REGION: eu-west-2
+      CLI_REGION: ap-northeast-1
   interactions-amplify_e2e_tests_pkg:
     parameters:
       os:
@@ -6614,7 +6745,7 @@ jobs:
           os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/schema-predictions.test.ts
-      CLI_REGION: ap-northeast-1
+      CLI_REGION: ap-southeast-2
   amplify-app-amplify_e2e_tests_pkg:
     parameters:
       os:
@@ -6651,7 +6782,7 @@ jobs:
           os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/amplify-app.test.ts
-      CLI_REGION: ap-southeast-1
+      CLI_REGION: us-east-2
   hosting-amplify_e2e_tests_pkg:
     parameters:
       os:
@@ -6688,7 +6819,7 @@ jobs:
           os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/hosting.test.ts
-      CLI_REGION: ap-southeast-2
+      CLI_REGION: us-west-2
   analytics-amplify_e2e_tests_pkg:
     parameters:
       os:
@@ -6725,7 +6856,7 @@ jobs:
           os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/analytics.test.ts
-      CLI_REGION: us-east-2
+      CLI_REGION: eu-west-2
   feature-flags-amplify_e2e_tests_pkg:
     parameters:
       os:
@@ -6762,7 +6893,7 @@ jobs:
           os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/feature-flags.test.ts
-      CLI_REGION: us-west-2
+      CLI_REGION: eu-central-1
   schema-iterative-update-2-amplify_e2e_tests_pkg:
     parameters:
       os:
@@ -6799,7 +6930,7 @@ jobs:
           os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/schema-iterative-update-2.test.ts
-      CLI_REGION: eu-west-2
+      CLI_REGION: ap-northeast-1
   containers-api-amplify_e2e_tests_pkg:
     parameters:
       os:
@@ -6836,7 +6967,7 @@ jobs:
           os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/containers-api.test.ts
-      CLI_REGION: eu-central-1
+      CLI_REGION: ap-southeast-1
   predictions-amplify_e2e_tests_pkg:
     parameters:
       os:
@@ -6873,7 +7004,7 @@ jobs:
           os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/predictions.test.ts
-      CLI_REGION: ap-northeast-1
+      CLI_REGION: ap-southeast-2
   hostingPROD-amplify_e2e_tests_pkg:
     parameters:
       os:
@@ -6910,7 +7041,7 @@ jobs:
           os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/hostingPROD.test.ts
-      CLI_REGION: ap-southeast-1
+      CLI_REGION: us-east-2
   geo-add-amplify_e2e_tests_pkg:
     parameters:
       os:
@@ -6947,7 +7078,7 @@ jobs:
           os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/geo-add.test.ts
-      CLI_REGION: ap-southeast-1
+      CLI_REGION: us-east-2
   geo-update-amplify_e2e_tests_pkg:
     parameters:
       os:
@@ -6984,7 +7115,7 @@ jobs:
           os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/geo-update.test.ts
-      CLI_REGION: ap-southeast-2
+      CLI_REGION: us-west-2
   geo-remove-amplify_e2e_tests_pkg:
     parameters:
       os:
@@ -7021,7 +7152,7 @@ jobs:
           os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/geo-remove.test.ts
-      CLI_REGION: us-east-2
+      CLI_REGION: eu-central-1
   schema-auth-10-amplify_e2e_tests_pkg:
     parameters:
       os:
@@ -7058,7 +7189,7 @@ jobs:
           os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/schema-auth-10.test.ts
-      CLI_REGION: eu-west-2
+      CLI_REGION: ap-northeast-1
   schema-key-amplify_e2e_tests_pkg:
     parameters:
       os:
@@ -7095,7 +7226,7 @@ jobs:
           os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/schema-key.test.ts
-      CLI_REGION: eu-central-1
+      CLI_REGION: ap-southeast-1
   auth_1-amplify_e2e_tests_pkg:
     parameters:
       os:
@@ -7132,7 +7263,7 @@ jobs:
           os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/auth_1.test.ts
-      CLI_REGION: ap-northeast-1
+      CLI_REGION: ap-southeast-2
   auth_5-amplify_e2e_tests_pkg:
     parameters:
       os:
@@ -7169,7 +7300,7 @@ jobs:
           os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/auth_5.test.ts
-      CLI_REGION: ap-southeast-1
+      CLI_REGION: us-east-2
   function_3-amplify_e2e_tests_pkg:
     parameters:
       os:
@@ -7206,7 +7337,7 @@ jobs:
           os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/function_3.test.ts
-      CLI_REGION: ap-southeast-2
+      CLI_REGION: us-west-2
   schema-iterative-update-1-amplify_e2e_tests_pkg:
     parameters:
       os:
@@ -7243,7 +7374,7 @@ jobs:
           os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/schema-iterative-update-1.test.ts
-      CLI_REGION: us-east-2
+      CLI_REGION: eu-west-2
   schema-auth-3-amplify_e2e_tests_pkg:
     parameters:
       os:
@@ -7280,7 +7411,7 @@ jobs:
           os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/schema-auth-3.test.ts
-      CLI_REGION: us-west-2
+      CLI_REGION: eu-central-1
   delete-amplify_e2e_tests_pkg:
     parameters:
       os:
@@ -7317,7 +7448,7 @@ jobs:
           os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/delete.test.ts
-      CLI_REGION: eu-west-2
+      CLI_REGION: ap-northeast-1
   function_2-amplify_e2e_tests_pkg:
     parameters:
       os:
@@ -7354,7 +7485,7 @@ jobs:
           os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/function_2.test.ts
-      CLI_REGION: eu-central-1
+      CLI_REGION: ap-southeast-1
   auth_3-amplify_e2e_tests_pkg:
     parameters:
       os:
@@ -7391,7 +7522,7 @@ jobs:
           os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/auth_3.test.ts
-      CLI_REGION: ap-northeast-1
+      CLI_REGION: ap-southeast-2
   layer-amplify_e2e_tests_pkg:
     parameters:
       os:
@@ -7428,7 +7559,7 @@ jobs:
           os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/layer.test.ts
-      CLI_REGION: ap-southeast-1
+      CLI_REGION: us-east-2
   migration-api-key-migration1-amplify_e2e_tests_pkg:
     parameters:
       os:
@@ -7465,7 +7596,7 @@ jobs:
           os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/migration/api.key.migration1.test.ts
-      CLI_REGION: ap-southeast-2
+      CLI_REGION: us-west-2
   auth_4-amplify_e2e_tests_pkg:
     parameters:
       os:
@@ -7502,7 +7633,7 @@ jobs:
           os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/auth_4.test.ts
-      CLI_REGION: us-east-2
+      CLI_REGION: eu-west-2
   schema-auth-7-amplify_e2e_tests_pkg:
     parameters:
       os:
@@ -7539,7 +7670,7 @@ jobs:
           os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/schema-auth-7.test.ts
-      CLI_REGION: us-west-2
+      CLI_REGION: eu-central-1
   schema-auth-8-amplify_e2e_tests_pkg:
     parameters:
       os:
@@ -7576,7 +7707,7 @@ jobs:
           os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/schema-auth-8.test.ts
-      CLI_REGION: eu-west-2
+      CLI_REGION: ap-northeast-1
   schema-searchable-amplify_e2e_tests_pkg:
     parameters:
       os:
@@ -7613,7 +7744,7 @@ jobs:
           os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/schema-searchable.test.ts
-      CLI_REGION: eu-central-1
+      CLI_REGION: ap-southeast-1
   schema-auth-4-amplify_e2e_tests_pkg:
     parameters:
       os:
@@ -7650,7 +7781,7 @@ jobs:
           os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/schema-auth-4.test.ts
-      CLI_REGION: ap-northeast-1
+      CLI_REGION: ap-southeast-2
   api_3-amplify_e2e_tests_pkg:
     parameters:
       os:
@@ -7687,7 +7818,7 @@ jobs:
           os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/api_3.test.ts
-      CLI_REGION: ap-southeast-1
+      CLI_REGION: us-east-2
   import_auth_1-amplify_e2e_tests_pkg:
     parameters:
       os:
@@ -7724,7 +7855,7 @@ jobs:
           os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/import_auth_1.test.ts
-      CLI_REGION: ap-southeast-2
+      CLI_REGION: us-west-2
   import_auth_2-amplify_e2e_tests_pkg:
     parameters:
       os:
@@ -7761,7 +7892,7 @@ jobs:
           os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/import_auth_2.test.ts
-      CLI_REGION: us-east-2
+      CLI_REGION: eu-west-2
   import_s3_1-amplify_e2e_tests_pkg:
     parameters:
       os:
@@ -7798,7 +7929,7 @@ jobs:
           os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/import_s3_1.test.ts
-      CLI_REGION: us-west-2
+      CLI_REGION: eu-central-1
       USE_PARENT_ACCOUNT: 1
   import_dynamodb_1-amplify_e2e_tests_pkg:
     parameters:
@@ -7836,7 +7967,7 @@ jobs:
           os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/import_dynamodb_1.test.ts
-      CLI_REGION: eu-west-2
+      CLI_REGION: ap-northeast-1
       USE_PARENT_ACCOUNT: 1
   schema-iterative-rollback-1-amplify_e2e_tests_pkg:
     parameters:
@@ -7874,7 +8005,7 @@ jobs:
           os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/schema-iterative-rollback-1.test.ts
-      CLI_REGION: eu-central-1
+      CLI_REGION: ap-southeast-1
   schema-iterative-rollback-2-amplify_e2e_tests_pkg:
     parameters:
       os:
@@ -7911,7 +8042,7 @@ jobs:
           os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/schema-iterative-rollback-2.test.ts
-      CLI_REGION: ap-northeast-1
+      CLI_REGION: ap-southeast-2
   env-amplify_e2e_tests_pkg:
     parameters:
       os:
@@ -7948,7 +8079,7 @@ jobs:
           os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/env.test.ts
-      CLI_REGION: ap-southeast-1
+      CLI_REGION: us-east-2
   auth_2-amplify_e2e_tests_pkg:
     parameters:
       os:
@@ -7985,7 +8116,7 @@ jobs:
           os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/auth_2.test.ts
-      CLI_REGION: ap-southeast-2
+      CLI_REGION: us-west-2
       USE_PARENT_ACCOUNT: 1
   schema-auth-9-amplify_e2e_tests_pkg:
     parameters:
@@ -8023,7 +8154,7 @@ jobs:
           os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/schema-auth-9.test.ts
-      CLI_REGION: us-east-2
+      CLI_REGION: eu-west-2
   schema-auth-11-amplify_e2e_tests_pkg:
     parameters:
       os:
@@ -8060,7 +8191,7 @@ jobs:
           os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/schema-auth-11.test.ts
-      CLI_REGION: us-west-2
+      CLI_REGION: eu-central-1
   migration-api-key-migration2-amplify_e2e_tests_pkg:
     parameters:
       os:
@@ -8097,7 +8228,7 @@ jobs:
           os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/migration/api.key.migration2.test.ts
-      CLI_REGION: eu-west-2
+      CLI_REGION: ap-northeast-1
       USE_PARENT_ACCOUNT: 1
   function_1-amplify_e2e_tests_pkg:
     parameters:
@@ -8135,7 +8266,7 @@ jobs:
           os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/function_1.test.ts
-      CLI_REGION: eu-central-1
+      CLI_REGION: ap-southeast-1
   schema-auth-1-amplify_e2e_tests_pkg:
     parameters:
       os:
@@ -8172,7 +8303,7 @@ jobs:
           os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/schema-auth-1.test.ts
-      CLI_REGION: ap-northeast-1
+      CLI_REGION: ap-southeast-2
   function_4-amplify_e2e_tests_pkg:
     parameters:
       os:
@@ -8209,7 +8340,7 @@ jobs:
           os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/function_4.test.ts
-      CLI_REGION: ap-southeast-1
+      CLI_REGION: us-east-2
   schema-function-amplify_e2e_tests_pkg:
     parameters:
       os:
@@ -8246,7 +8377,7 @@ jobs:
           os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/schema-function.test.ts
-      CLI_REGION: ap-southeast-2
+      CLI_REGION: us-west-2
   schema-model-amplify_e2e_tests_pkg:
     parameters:
       os:
@@ -8283,7 +8414,7 @@ jobs:
           os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/schema-model.test.ts
-      CLI_REGION: us-east-2
+      CLI_REGION: eu-west-2
   migration-api-connection-migration-amplify_e2e_tests_pkg:
     parameters:
       os:
@@ -8320,7 +8451,7 @@ jobs:
           os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/migration/api.connection.migration.test.ts
-      CLI_REGION: us-west-2
+      CLI_REGION: eu-central-1
   schema-connection-amplify_e2e_tests_pkg:
     parameters:
       os:
@@ -8357,7 +8488,7 @@ jobs:
           os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/schema-connection.test.ts
-      CLI_REGION: eu-west-2
+      CLI_REGION: ap-northeast-1
   schema-auth-6-amplify_e2e_tests_pkg:
     parameters:
       os:
@@ -8394,7 +8525,7 @@ jobs:
           os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/schema-auth-6.test.ts
-      CLI_REGION: eu-central-1
+      CLI_REGION: ap-southeast-1
   schema-iterative-update-3-amplify_e2e_tests_pkg:
     parameters:
       os:
@@ -8431,7 +8562,7 @@ jobs:
           os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/schema-iterative-update-3.test.ts
-      CLI_REGION: ap-northeast-1
+      CLI_REGION: ap-southeast-2
   schema-auth-2-amplify_e2e_tests_pkg:
     parameters:
       os:
@@ -8468,7 +8599,7 @@ jobs:
           os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/schema-auth-2.test.ts
-      CLI_REGION: ap-southeast-1
+      CLI_REGION: us-east-2
   api_1-amplify_e2e_tests_pkg:
     parameters:
       os:
@@ -8505,7 +8636,7 @@ jobs:
           os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/api_1.test.ts
-      CLI_REGION: ap-southeast-2
+      CLI_REGION: us-west-2
       USE_PARENT_ACCOUNT: 1
   schema-auth-5-amplify_e2e_tests_pkg:
     parameters:
@@ -8543,45 +8674,7 @@ jobs:
           os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/schema-auth-5.test.ts
-      CLI_REGION: us-east-2
-  storage-amplify_e2e_tests_pkg:
-    parameters:
-      os:
-        type: executor
-        default: os.build_img
-    executor: << parameters.os >>
-    working_directory: ~/repo
-    steps:
-      - attach_workspace:
-          at: ./
-      - restore_cache:
-          key: >-
-            amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
-            arch }}
-      - restore_cache:
-          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
-      - restore_cache:
-          key: amplify-build-artifact-{{ .Revision }}-{{ arch }}
-      - restore_cache:
-          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
-      - install_yarn:
-          os: << parameters.os >>
-      - install_packaged_cli:
-          os: << parameters.os >>
-      - run_e2e_tests:
-          os: << parameters.os >>
-      - scan_e2e_test_artifacts:
-          os: << parameters.os >>
-      - store_test_results:
-          path: packages/amplify-e2e-tests/
-      - store_artifacts:
-          path: packages/amplify-e2e-tests/amplify-e2e-reports
-      - clean_e2e_resources:
-          os: << parameters.os >>
-    environment:
-      TEST_SUITE: src/__tests__/storage.test.ts
-      CLI_REGION: us-west-2
-      USE_PARENT_ACCOUNT: 1
+      CLI_REGION: eu-west-2
   api_2-amplify_e2e_tests_pkg:
     parameters:
       os:
@@ -8618,7 +8711,7 @@ jobs:
           os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/api_2.test.ts
-      CLI_REGION: eu-west-2
+      CLI_REGION: eu-central-1
       USE_PARENT_ACCOUNT: 1
   schema-iterative-update-4-amplify_e2e_tests_pkg:
     parameters:
@@ -8656,7 +8749,7 @@ jobs:
           os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/schema-iterative-update-4.test.ts
-      CLI_REGION: eu-central-1
+      CLI_REGION: ap-northeast-1
 workflows:
   version: 2
   nightly_console_integration_tests:
@@ -8765,66 +8858,8 @@ workflows:
                 - /run-e2e\/*./
       - done_with_node_e2e_tests:
           requires:
-            - api_4-amplify_e2e_tests
             - function_7-amplify_e2e_tests
             - schema-iterative-update-locking-amplify_e2e_tests
-            - notifications-amplify_e2e_tests
-            - analytics-amplify_e2e_tests
-            - geo-remove-amplify_e2e_tests
-            - schema-iterative-update-1-amplify_e2e_tests
-            - auth_4-amplify_e2e_tests
-            - import_auth_2-amplify_e2e_tests
-            - schema-auth-9-amplify_e2e_tests
-            - schema-model-amplify_e2e_tests
-            - schema-auth-5-amplify_e2e_tests
-            - auth_6-amplify_e2e_tests
-            - hooks-amplify_e2e_tests
-            - plugin-amplify_e2e_tests
-            - schema-versioned-amplify_e2e_tests
-            - interactions-amplify_e2e_tests
-            - feature-flags-amplify_e2e_tests
-            - schema-auth-3-amplify_e2e_tests
-            - schema-auth-7-amplify_e2e_tests
-            - import_s3_1-amplify_e2e_tests
-            - schema-auth-11-amplify_e2e_tests
-            - migration-api-connection-migration-amplify_e2e_tests
-            - storage-amplify_e2e_tests
-            - configure-project-amplify_e2e_tests
-            - iam-permissions-boundary-amplify_e2e_tests
-            - init-special-case-amplify_e2e_tests
-            - schema-data-access-patterns-amplify_e2e_tests
-            - schema-iterative-update-2-amplify_e2e_tests
-            - schema-auth-10-amplify_e2e_tests
-            - delete-amplify_e2e_tests
-            - schema-auth-8-amplify_e2e_tests
-            - import_dynamodb_1-amplify_e2e_tests
-            - migration-api-key-migration2-amplify_e2e_tests
-            - schema-connection-amplify_e2e_tests
-            - api_2-amplify_e2e_tests
-            - container-hosting-amplify_e2e_tests
-            - layer-2-amplify_e2e_tests
-            - datastore-modelgen-amplify_e2e_tests
-            - containers-api-amplify_e2e_tests
-            - schema-key-amplify_e2e_tests
-            - function_2-amplify_e2e_tests
-            - schema-searchable-amplify_e2e_tests
-            - schema-iterative-rollback-1-amplify_e2e_tests
-            - function_1-amplify_e2e_tests
-            - schema-auth-6-amplify_e2e_tests
-            - schema-iterative-update-4-amplify_e2e_tests
-            - frontend_config_drift-amplify_e2e_tests
-            - migration-node-function-amplify_e2e_tests
-            - amplify-configure-amplify_e2e_tests
-            - schema-predictions-amplify_e2e_tests
-            - predictions-amplify_e2e_tests
-            - auth_1-amplify_e2e_tests
-            - auth_3-amplify_e2e_tests
-            - schema-auth-4-amplify_e2e_tests
-            - schema-iterative-rollback-2-amplify_e2e_tests
-            - schema-auth-1-amplify_e2e_tests
-            - schema-iterative-update-3-amplify_e2e_tests
-            - function_5-amplify_e2e_tests
-            - pull-amplify_e2e_tests
             - init-amplify_e2e_tests
             - amplify-app-amplify_e2e_tests
             - hostingPROD-amplify_e2e_tests
@@ -8835,9 +8870,10 @@ workflows:
             - env-amplify_e2e_tests
             - function_4-amplify_e2e_tests
             - schema-auth-2-amplify_e2e_tests
-            - function_6-amplify_e2e_tests
-            - s3-sse-amplify_e2e_tests
+            - hooks-amplify_e2e_tests
+            - storage_1-amplify_e2e_tests
             - tags-amplify_e2e_tests
+            - interactions-amplify_e2e_tests
             - hosting-amplify_e2e_tests
             - geo-update-amplify_e2e_tests
             - function_3-amplify_e2e_tests
@@ -8846,68 +8882,66 @@ workflows:
             - auth_2-amplify_e2e_tests
             - schema-function-amplify_e2e_tests
             - api_1-amplify_e2e_tests
+            - configure-project-amplify_e2e_tests
+            - iam-permissions-boundary-amplify_e2e_tests
+            - storage_2-amplify_e2e_tests
+            - notifications-amplify_e2e_tests
+            - analytics-amplify_e2e_tests
+            - schema-iterative-update-1-amplify_e2e_tests
+            - auth_4-amplify_e2e_tests
+            - import_auth_2-amplify_e2e_tests
+            - schema-auth-9-amplify_e2e_tests
+            - schema-model-amplify_e2e_tests
+            - schema-auth-5-amplify_e2e_tests
+            - container-hosting-amplify_e2e_tests
+            - layer-2-amplify_e2e_tests
+            - plugin-amplify_e2e_tests
+            - schema-versioned-amplify_e2e_tests
+            - feature-flags-amplify_e2e_tests
+            - geo-remove-amplify_e2e_tests
+            - schema-auth-3-amplify_e2e_tests
+            - schema-auth-7-amplify_e2e_tests
+            - import_s3_1-amplify_e2e_tests
+            - schema-auth-11-amplify_e2e_tests
+            - migration-api-connection-migration-amplify_e2e_tests
+            - api_2-amplify_e2e_tests
+            - frontend_config_drift-amplify_e2e_tests
+            - migration-node-function-amplify_e2e_tests
+            - init-special-case-amplify_e2e_tests
+            - schema-data-access-patterns-amplify_e2e_tests
+            - schema-iterative-update-2-amplify_e2e_tests
+            - schema-auth-10-amplify_e2e_tests
+            - delete-amplify_e2e_tests
+            - schema-auth-8-amplify_e2e_tests
+            - import_dynamodb_1-amplify_e2e_tests
+            - migration-api-key-migration2-amplify_e2e_tests
+            - schema-connection-amplify_e2e_tests
+            - schema-iterative-update-4-amplify_e2e_tests
+            - function_5-amplify_e2e_tests
+            - pull-amplify_e2e_tests
+            - datastore-modelgen-amplify_e2e_tests
+            - containers-api-amplify_e2e_tests
+            - schema-key-amplify_e2e_tests
+            - function_2-amplify_e2e_tests
+            - schema-searchable-amplify_e2e_tests
+            - schema-iterative-rollback-1-amplify_e2e_tests
+            - function_1-amplify_e2e_tests
+            - schema-auth-6-amplify_e2e_tests
+            - function_6-amplify_e2e_tests
+            - s3-sse-amplify_e2e_tests
+            - amplify-configure-amplify_e2e_tests
+            - schema-predictions-amplify_e2e_tests
+            - predictions-amplify_e2e_tests
+            - auth_1-amplify_e2e_tests
+            - auth_3-amplify_e2e_tests
+            - schema-auth-4-amplify_e2e_tests
+            - schema-iterative-rollback-2-amplify_e2e_tests
+            - schema-auth-1-amplify_e2e_tests
+            - schema-iterative-update-3-amplify_e2e_tests
       - done_with_pkg_e2e_tests:
           requires:
-            - api_4-amplify_e2e_tests_pkg
             - function_7-amplify_e2e_tests_pkg
             - schema-iterative-update-locking-amplify_e2e_tests_pkg
-            - notifications-amplify_e2e_tests_pkg
-            - analytics-amplify_e2e_tests_pkg
-            - geo-remove-amplify_e2e_tests_pkg
-            - schema-iterative-update-1-amplify_e2e_tests_pkg
-            - auth_4-amplify_e2e_tests_pkg
-            - import_auth_2-amplify_e2e_tests_pkg
-            - schema-auth-9-amplify_e2e_tests_pkg
-            - schema-model-amplify_e2e_tests_pkg
-            - schema-auth-5-amplify_e2e_tests_pkg
-            - auth_6-amplify_e2e_tests_pkg
-            - hooks-amplify_e2e_tests_pkg
-            - plugin-amplify_e2e_tests_pkg
-            - schema-versioned-amplify_e2e_tests_pkg
-            - interactions-amplify_e2e_tests_pkg
-            - feature-flags-amplify_e2e_tests_pkg
-            - schema-auth-3-amplify_e2e_tests_pkg
-            - schema-auth-7-amplify_e2e_tests_pkg
-            - import_s3_1-amplify_e2e_tests_pkg
-            - schema-auth-11-amplify_e2e_tests_pkg
-            - migration-api-connection-migration-amplify_e2e_tests_pkg
-            - storage-amplify_e2e_tests_pkg
-            - configure-project-amplify_e2e_tests_pkg
-            - iam-permissions-boundary-amplify_e2e_tests_pkg
-            - init-special-case-amplify_e2e_tests_pkg
-            - schema-data-access-patterns-amplify_e2e_tests_pkg
-            - schema-iterative-update-2-amplify_e2e_tests_pkg
-            - schema-auth-10-amplify_e2e_tests_pkg
-            - delete-amplify_e2e_tests_pkg
-            - schema-auth-8-amplify_e2e_tests_pkg
-            - import_dynamodb_1-amplify_e2e_tests_pkg
-            - migration-api-key-migration2-amplify_e2e_tests_pkg
-            - schema-connection-amplify_e2e_tests_pkg
-            - api_2-amplify_e2e_tests_pkg
-            - container-hosting-amplify_e2e_tests_pkg
-            - layer-2-amplify_e2e_tests_pkg
-            - datastore-modelgen-amplify_e2e_tests_pkg
-            - containers-api-amplify_e2e_tests_pkg
-            - schema-key-amplify_e2e_tests_pkg
-            - function_2-amplify_e2e_tests_pkg
-            - schema-searchable-amplify_e2e_tests_pkg
-            - schema-iterative-rollback-1-amplify_e2e_tests_pkg
-            - function_1-amplify_e2e_tests_pkg
-            - schema-auth-6-amplify_e2e_tests_pkg
-            - schema-iterative-update-4-amplify_e2e_tests_pkg
-            - frontend_config_drift-amplify_e2e_tests_pkg
-            - migration-node-function-amplify_e2e_tests_pkg
-            - amplify-configure-amplify_e2e_tests_pkg
-            - schema-predictions-amplify_e2e_tests_pkg
-            - predictions-amplify_e2e_tests_pkg
-            - auth_1-amplify_e2e_tests_pkg
-            - auth_3-amplify_e2e_tests_pkg
-            - schema-auth-4-amplify_e2e_tests_pkg
-            - schema-iterative-rollback-2-amplify_e2e_tests_pkg
-            - schema-auth-1-amplify_e2e_tests_pkg
-            - schema-iterative-update-3-amplify_e2e_tests_pkg
-            - function_5-amplify_e2e_tests_pkg
-            - pull-amplify_e2e_tests_pkg
             - init-amplify_e2e_tests_pkg
             - amplify-app-amplify_e2e_tests_pkg
             - hostingPROD-amplify_e2e_tests_pkg
@@ -8918,9 +8952,10 @@ workflows:
             - env-amplify_e2e_tests_pkg
             - function_4-amplify_e2e_tests_pkg
             - schema-auth-2-amplify_e2e_tests_pkg
-            - function_6-amplify_e2e_tests_pkg
-            - s3-sse-amplify_e2e_tests_pkg
+            - hooks-amplify_e2e_tests_pkg
+            - storage_1-amplify_e2e_tests_pkg
             - tags-amplify_e2e_tests_pkg
+            - interactions-amplify_e2e_tests_pkg
             - hosting-amplify_e2e_tests_pkg
             - geo-update-amplify_e2e_tests_pkg
             - function_3-amplify_e2e_tests_pkg
@@ -8929,6 +8964,62 @@ workflows:
             - auth_2-amplify_e2e_tests_pkg
             - schema-function-amplify_e2e_tests_pkg
             - api_1-amplify_e2e_tests_pkg
+            - configure-project-amplify_e2e_tests_pkg
+            - iam-permissions-boundary-amplify_e2e_tests_pkg
+            - storage_2-amplify_e2e_tests_pkg
+            - notifications-amplify_e2e_tests_pkg
+            - analytics-amplify_e2e_tests_pkg
+            - schema-iterative-update-1-amplify_e2e_tests_pkg
+            - auth_4-amplify_e2e_tests_pkg
+            - import_auth_2-amplify_e2e_tests_pkg
+            - schema-auth-9-amplify_e2e_tests_pkg
+            - schema-model-amplify_e2e_tests_pkg
+            - schema-auth-5-amplify_e2e_tests_pkg
+            - container-hosting-amplify_e2e_tests_pkg
+            - layer-2-amplify_e2e_tests_pkg
+            - plugin-amplify_e2e_tests_pkg
+            - schema-versioned-amplify_e2e_tests_pkg
+            - feature-flags-amplify_e2e_tests_pkg
+            - geo-remove-amplify_e2e_tests_pkg
+            - schema-auth-3-amplify_e2e_tests_pkg
+            - schema-auth-7-amplify_e2e_tests_pkg
+            - import_s3_1-amplify_e2e_tests_pkg
+            - schema-auth-11-amplify_e2e_tests_pkg
+            - migration-api-connection-migration-amplify_e2e_tests_pkg
+            - api_2-amplify_e2e_tests_pkg
+            - frontend_config_drift-amplify_e2e_tests_pkg
+            - migration-node-function-amplify_e2e_tests_pkg
+            - init-special-case-amplify_e2e_tests_pkg
+            - schema-data-access-patterns-amplify_e2e_tests_pkg
+            - schema-iterative-update-2-amplify_e2e_tests_pkg
+            - schema-auth-10-amplify_e2e_tests_pkg
+            - delete-amplify_e2e_tests_pkg
+            - schema-auth-8-amplify_e2e_tests_pkg
+            - import_dynamodb_1-amplify_e2e_tests_pkg
+            - migration-api-key-migration2-amplify_e2e_tests_pkg
+            - schema-connection-amplify_e2e_tests_pkg
+            - schema-iterative-update-4-amplify_e2e_tests_pkg
+            - function_5-amplify_e2e_tests_pkg
+            - pull-amplify_e2e_tests_pkg
+            - datastore-modelgen-amplify_e2e_tests_pkg
+            - containers-api-amplify_e2e_tests_pkg
+            - schema-key-amplify_e2e_tests_pkg
+            - function_2-amplify_e2e_tests_pkg
+            - schema-searchable-amplify_e2e_tests_pkg
+            - schema-iterative-rollback-1-amplify_e2e_tests_pkg
+            - function_1-amplify_e2e_tests_pkg
+            - schema-auth-6-amplify_e2e_tests_pkg
+            - function_6-amplify_e2e_tests_pkg
+            - s3-sse-amplify_e2e_tests_pkg
+            - amplify-configure-amplify_e2e_tests_pkg
+            - schema-predictions-amplify_e2e_tests_pkg
+            - predictions-amplify_e2e_tests_pkg
+            - auth_1-amplify_e2e_tests_pkg
+            - auth_3-amplify_e2e_tests_pkg
+            - schema-auth-4-amplify_e2e_tests_pkg
+            - schema-iterative-rollback-2-amplify_e2e_tests_pkg
+            - schema-auth-1-amplify_e2e_tests_pkg
+            - schema-iterative-update-3-amplify_e2e_tests_pkg
       - amplify_migration_tests_latest:
           context:
             - amplify-ecr-image-pull
@@ -9140,1545 +9231,6 @@ workflows:
               os:
                 - linux
       - schema-iterative-update-locking-amplify_e2e_tests:
-          context:
-            - amplify-ecr-image-pull
-            - clean_e2e_resources
-            - e2e-auth-credentials
-            - e2e-test-context
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
-          filters:
-            branches:
-              only:
-                - master
-                - /tagged-release\/.*/
-                - /run-e2e\/*./
-          requires:
-            - publish_to_local_registry
-            - build_pkg_binaries
-          matrix:
-            parameters:
-              os:
-                - linux
-      - notifications-amplify_e2e_tests:
-          context:
-            - amplify-ecr-image-pull
-            - clean_e2e_resources
-            - e2e-auth-credentials
-            - e2e-test-context
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
-          filters:
-            branches:
-              only:
-                - master
-                - /tagged-release\/.*/
-                - /run-e2e\/*./
-          requires:
-            - publish_to_local_registry
-            - build_pkg_binaries
-          matrix:
-            parameters:
-              os:
-                - linux
-      - analytics-amplify_e2e_tests:
-          context:
-            - amplify-ecr-image-pull
-            - clean_e2e_resources
-            - e2e-auth-credentials
-            - e2e-test-context
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
-          filters:
-            branches:
-              only:
-                - master
-                - /tagged-release\/.*/
-                - /run-e2e\/*./
-          requires:
-            - publish_to_local_registry
-            - build_pkg_binaries
-          matrix:
-            parameters:
-              os:
-                - linux
-      - geo-remove-amplify_e2e_tests:
-          context:
-            - amplify-ecr-image-pull
-            - clean_e2e_resources
-            - e2e-auth-credentials
-            - e2e-test-context
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
-          filters:
-            branches:
-              only:
-                - master
-                - /tagged-release\/.*/
-                - /run-e2e\/*./
-          requires:
-            - publish_to_local_registry
-            - build_pkg_binaries
-          matrix:
-            parameters:
-              os:
-                - linux
-      - schema-iterative-update-1-amplify_e2e_tests:
-          context:
-            - amplify-ecr-image-pull
-            - clean_e2e_resources
-            - e2e-auth-credentials
-            - e2e-test-context
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
-          filters:
-            branches:
-              only:
-                - master
-                - /tagged-release\/.*/
-                - /run-e2e\/*./
-          requires:
-            - publish_to_local_registry
-            - build_pkg_binaries
-          matrix:
-            parameters:
-              os:
-                - linux
-      - auth_4-amplify_e2e_tests:
-          context:
-            - amplify-ecr-image-pull
-            - clean_e2e_resources
-            - e2e-auth-credentials
-            - e2e-test-context
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
-          filters:
-            branches:
-              only:
-                - master
-                - /tagged-release\/.*/
-                - /run-e2e\/*./
-          requires:
-            - publish_to_local_registry
-            - build_pkg_binaries
-          matrix:
-            parameters:
-              os:
-                - linux
-      - import_auth_2-amplify_e2e_tests:
-          context:
-            - amplify-ecr-image-pull
-            - clean_e2e_resources
-            - e2e-auth-credentials
-            - e2e-test-context
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
-          filters:
-            branches:
-              only:
-                - master
-                - /tagged-release\/.*/
-                - /run-e2e\/*./
-          requires:
-            - publish_to_local_registry
-            - build_pkg_binaries
-          matrix:
-            parameters:
-              os:
-                - linux
-      - schema-auth-9-amplify_e2e_tests:
-          context:
-            - amplify-ecr-image-pull
-            - clean_e2e_resources
-            - e2e-auth-credentials
-            - e2e-test-context
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
-          filters:
-            branches:
-              only:
-                - master
-                - /tagged-release\/.*/
-                - /run-e2e\/*./
-          requires:
-            - publish_to_local_registry
-            - build_pkg_binaries
-          matrix:
-            parameters:
-              os:
-                - linux
-      - schema-model-amplify_e2e_tests:
-          context:
-            - amplify-ecr-image-pull
-            - clean_e2e_resources
-            - e2e-auth-credentials
-            - e2e-test-context
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
-          filters:
-            branches:
-              only:
-                - master
-                - /tagged-release\/.*/
-                - /run-e2e\/*./
-          requires:
-            - publish_to_local_registry
-            - build_pkg_binaries
-          matrix:
-            parameters:
-              os:
-                - linux
-      - schema-auth-5-amplify_e2e_tests:
-          context:
-            - amplify-ecr-image-pull
-            - clean_e2e_resources
-            - e2e-auth-credentials
-            - e2e-test-context
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
-          filters:
-            branches:
-              only:
-                - master
-                - /tagged-release\/.*/
-                - /run-e2e\/*./
-          requires:
-            - publish_to_local_registry
-            - build_pkg_binaries
-          matrix:
-            parameters:
-              os:
-                - linux
-      - auth_6-amplify_e2e_tests:
-          context:
-            - amplify-ecr-image-pull
-            - clean_e2e_resources
-            - e2e-auth-credentials
-            - e2e-test-context
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
-          filters:
-            branches:
-              only:
-                - master
-                - /tagged-release\/.*/
-                - /run-e2e\/*./
-          requires:
-            - publish_to_local_registry
-            - build_pkg_binaries
-          matrix:
-            parameters:
-              os:
-                - linux
-      - hooks-amplify_e2e_tests:
-          context:
-            - amplify-ecr-image-pull
-            - clean_e2e_resources
-            - e2e-auth-credentials
-            - e2e-test-context
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
-          filters:
-            branches:
-              only:
-                - master
-                - /tagged-release\/.*/
-                - /run-e2e\/*./
-          requires:
-            - publish_to_local_registry
-            - build_pkg_binaries
-          matrix:
-            parameters:
-              os:
-                - linux
-      - plugin-amplify_e2e_tests:
-          context:
-            - amplify-ecr-image-pull
-            - clean_e2e_resources
-            - e2e-auth-credentials
-            - e2e-test-context
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
-          filters:
-            branches:
-              only:
-                - master
-                - /tagged-release\/.*/
-                - /run-e2e\/*./
-          requires:
-            - publish_to_local_registry
-            - build_pkg_binaries
-          matrix:
-            parameters:
-              os:
-                - linux
-      - schema-versioned-amplify_e2e_tests:
-          context:
-            - amplify-ecr-image-pull
-            - clean_e2e_resources
-            - e2e-auth-credentials
-            - e2e-test-context
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
-          filters:
-            branches:
-              only:
-                - master
-                - /tagged-release\/.*/
-                - /run-e2e\/*./
-          requires:
-            - publish_to_local_registry
-            - build_pkg_binaries
-          matrix:
-            parameters:
-              os:
-                - linux
-      - interactions-amplify_e2e_tests:
-          context:
-            - amplify-ecr-image-pull
-            - clean_e2e_resources
-            - e2e-auth-credentials
-            - e2e-test-context
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
-          filters:
-            branches:
-              only:
-                - master
-                - /tagged-release\/.*/
-                - /run-e2e\/*./
-          requires:
-            - publish_to_local_registry
-            - build_pkg_binaries
-          matrix:
-            parameters:
-              os:
-                - linux
-      - feature-flags-amplify_e2e_tests:
-          context:
-            - amplify-ecr-image-pull
-            - clean_e2e_resources
-            - e2e-auth-credentials
-            - e2e-test-context
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
-          filters:
-            branches:
-              only:
-                - master
-                - /tagged-release\/.*/
-                - /run-e2e\/*./
-          requires:
-            - publish_to_local_registry
-            - build_pkg_binaries
-          matrix:
-            parameters:
-              os:
-                - linux
-      - schema-auth-3-amplify_e2e_tests:
-          context:
-            - amplify-ecr-image-pull
-            - clean_e2e_resources
-            - e2e-auth-credentials
-            - e2e-test-context
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
-          filters:
-            branches:
-              only:
-                - master
-                - /tagged-release\/.*/
-                - /run-e2e\/*./
-          requires:
-            - publish_to_local_registry
-            - build_pkg_binaries
-          matrix:
-            parameters:
-              os:
-                - linux
-      - schema-auth-7-amplify_e2e_tests:
-          context:
-            - amplify-ecr-image-pull
-            - clean_e2e_resources
-            - e2e-auth-credentials
-            - e2e-test-context
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
-          filters:
-            branches:
-              only:
-                - master
-                - /tagged-release\/.*/
-                - /run-e2e\/*./
-          requires:
-            - publish_to_local_registry
-            - build_pkg_binaries
-          matrix:
-            parameters:
-              os:
-                - linux
-      - import_s3_1-amplify_e2e_tests:
-          context:
-            - amplify-ecr-image-pull
-            - clean_e2e_resources
-            - e2e-auth-credentials
-            - e2e-test-context
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
-          filters:
-            branches:
-              only:
-                - master
-                - /tagged-release\/.*/
-                - /run-e2e\/*./
-          requires:
-            - publish_to_local_registry
-            - build_pkg_binaries
-          matrix:
-            parameters:
-              os:
-                - linux
-      - schema-auth-11-amplify_e2e_tests:
-          context:
-            - amplify-ecr-image-pull
-            - clean_e2e_resources
-            - e2e-auth-credentials
-            - e2e-test-context
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
-          filters:
-            branches:
-              only:
-                - master
-                - /tagged-release\/.*/
-                - /run-e2e\/*./
-          requires:
-            - publish_to_local_registry
-            - build_pkg_binaries
-          matrix:
-            parameters:
-              os:
-                - linux
-      - migration-api-connection-migration-amplify_e2e_tests:
-          context:
-            - amplify-ecr-image-pull
-            - clean_e2e_resources
-            - e2e-auth-credentials
-            - e2e-test-context
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
-          filters:
-            branches:
-              only:
-                - master
-                - /tagged-release\/.*/
-                - /run-e2e\/*./
-          requires:
-            - publish_to_local_registry
-            - build_pkg_binaries
-          matrix:
-            parameters:
-              os:
-                - linux
-      - storage-amplify_e2e_tests:
-          context:
-            - amplify-ecr-image-pull
-            - clean_e2e_resources
-            - e2e-auth-credentials
-            - e2e-test-context
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
-          filters:
-            branches:
-              only:
-                - master
-                - /tagged-release\/.*/
-                - /run-e2e\/*./
-          requires:
-            - publish_to_local_registry
-            - build_pkg_binaries
-          matrix:
-            parameters:
-              os:
-                - linux
-      - configure-project-amplify_e2e_tests:
-          context:
-            - amplify-ecr-image-pull
-            - clean_e2e_resources
-            - e2e-auth-credentials
-            - e2e-test-context
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
-          filters:
-            branches:
-              only:
-                - master
-                - /tagged-release\/.*/
-                - /run-e2e\/*./
-          requires:
-            - publish_to_local_registry
-            - build_pkg_binaries
-          matrix:
-            parameters:
-              os:
-                - linux
-      - iam-permissions-boundary-amplify_e2e_tests:
-          context:
-            - amplify-ecr-image-pull
-            - clean_e2e_resources
-            - e2e-auth-credentials
-            - e2e-test-context
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
-          filters:
-            branches:
-              only:
-                - master
-                - /tagged-release\/.*/
-                - /run-e2e\/*./
-          requires:
-            - publish_to_local_registry
-            - build_pkg_binaries
-          matrix:
-            parameters:
-              os:
-                - linux
-      - init-special-case-amplify_e2e_tests:
-          context:
-            - amplify-ecr-image-pull
-            - clean_e2e_resources
-            - e2e-auth-credentials
-            - e2e-test-context
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
-          filters:
-            branches:
-              only:
-                - master
-                - /tagged-release\/.*/
-                - /run-e2e\/*./
-          requires:
-            - publish_to_local_registry
-            - build_pkg_binaries
-          matrix:
-            parameters:
-              os:
-                - linux
-      - schema-data-access-patterns-amplify_e2e_tests:
-          context:
-            - amplify-ecr-image-pull
-            - clean_e2e_resources
-            - e2e-auth-credentials
-            - e2e-test-context
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
-          filters:
-            branches:
-              only:
-                - master
-                - /tagged-release\/.*/
-                - /run-e2e\/*./
-          requires:
-            - publish_to_local_registry
-            - build_pkg_binaries
-          matrix:
-            parameters:
-              os:
-                - linux
-      - schema-iterative-update-2-amplify_e2e_tests:
-          context:
-            - amplify-ecr-image-pull
-            - clean_e2e_resources
-            - e2e-auth-credentials
-            - e2e-test-context
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
-          filters:
-            branches:
-              only:
-                - master
-                - /tagged-release\/.*/
-                - /run-e2e\/*./
-          requires:
-            - publish_to_local_registry
-            - build_pkg_binaries
-          matrix:
-            parameters:
-              os:
-                - linux
-      - schema-auth-10-amplify_e2e_tests:
-          context:
-            - amplify-ecr-image-pull
-            - clean_e2e_resources
-            - e2e-auth-credentials
-            - e2e-test-context
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
-          filters:
-            branches:
-              only:
-                - master
-                - /tagged-release\/.*/
-                - /run-e2e\/*./
-          requires:
-            - publish_to_local_registry
-            - build_pkg_binaries
-          matrix:
-            parameters:
-              os:
-                - linux
-      - delete-amplify_e2e_tests:
-          context:
-            - amplify-ecr-image-pull
-            - clean_e2e_resources
-            - e2e-auth-credentials
-            - e2e-test-context
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
-          filters:
-            branches:
-              only:
-                - master
-                - /tagged-release\/.*/
-                - /run-e2e\/*./
-          requires:
-            - publish_to_local_registry
-            - build_pkg_binaries
-          matrix:
-            parameters:
-              os:
-                - linux
-      - schema-auth-8-amplify_e2e_tests:
-          context:
-            - amplify-ecr-image-pull
-            - clean_e2e_resources
-            - e2e-auth-credentials
-            - e2e-test-context
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
-          filters:
-            branches:
-              only:
-                - master
-                - /tagged-release\/.*/
-                - /run-e2e\/*./
-          requires:
-            - publish_to_local_registry
-            - build_pkg_binaries
-          matrix:
-            parameters:
-              os:
-                - linux
-      - import_dynamodb_1-amplify_e2e_tests:
-          context:
-            - amplify-ecr-image-pull
-            - clean_e2e_resources
-            - e2e-auth-credentials
-            - e2e-test-context
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
-          filters:
-            branches:
-              only:
-                - master
-                - /tagged-release\/.*/
-                - /run-e2e\/*./
-          requires:
-            - publish_to_local_registry
-            - build_pkg_binaries
-          matrix:
-            parameters:
-              os:
-                - linux
-      - migration-api-key-migration2-amplify_e2e_tests:
-          context:
-            - amplify-ecr-image-pull
-            - clean_e2e_resources
-            - e2e-auth-credentials
-            - e2e-test-context
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
-          filters:
-            branches:
-              only:
-                - master
-                - /tagged-release\/.*/
-                - /run-e2e\/*./
-          requires:
-            - publish_to_local_registry
-            - build_pkg_binaries
-          matrix:
-            parameters:
-              os:
-                - linux
-      - schema-connection-amplify_e2e_tests:
-          context:
-            - amplify-ecr-image-pull
-            - clean_e2e_resources
-            - e2e-auth-credentials
-            - e2e-test-context
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
-          filters:
-            branches:
-              only:
-                - master
-                - /tagged-release\/.*/
-                - /run-e2e\/*./
-          requires:
-            - publish_to_local_registry
-            - build_pkg_binaries
-          matrix:
-            parameters:
-              os:
-                - linux
-      - api_2-amplify_e2e_tests:
-          context:
-            - amplify-ecr-image-pull
-            - clean_e2e_resources
-            - e2e-auth-credentials
-            - e2e-test-context
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
-          filters:
-            branches:
-              only:
-                - master
-                - /tagged-release\/.*/
-                - /run-e2e\/*./
-          requires:
-            - publish_to_local_registry
-            - build_pkg_binaries
-          matrix:
-            parameters:
-              os:
-                - linux
-      - container-hosting-amplify_e2e_tests:
-          context:
-            - amplify-ecr-image-pull
-            - clean_e2e_resources
-            - e2e-auth-credentials
-            - e2e-test-context
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
-          filters:
-            branches:
-              only:
-                - master
-                - /tagged-release\/.*/
-                - /run-e2e\/*./
-          requires:
-            - publish_to_local_registry
-            - build_pkg_binaries
-          matrix:
-            parameters:
-              os:
-                - linux
-      - layer-2-amplify_e2e_tests:
-          context:
-            - amplify-ecr-image-pull
-            - clean_e2e_resources
-            - e2e-auth-credentials
-            - e2e-test-context
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
-          filters:
-            branches:
-              only:
-                - master
-                - /tagged-release\/.*/
-                - /run-e2e\/*./
-          requires:
-            - publish_to_local_registry
-            - build_pkg_binaries
-          matrix:
-            parameters:
-              os:
-                - linux
-      - datastore-modelgen-amplify_e2e_tests:
-          context:
-            - amplify-ecr-image-pull
-            - clean_e2e_resources
-            - e2e-auth-credentials
-            - e2e-test-context
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
-          filters:
-            branches:
-              only:
-                - master
-                - /tagged-release\/.*/
-                - /run-e2e\/*./
-          requires:
-            - publish_to_local_registry
-            - build_pkg_binaries
-          matrix:
-            parameters:
-              os:
-                - linux
-      - containers-api-amplify_e2e_tests:
-          context:
-            - amplify-ecr-image-pull
-            - clean_e2e_resources
-            - e2e-auth-credentials
-            - e2e-test-context
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
-          filters:
-            branches:
-              only:
-                - master
-                - /tagged-release\/.*/
-                - /run-e2e\/*./
-          requires:
-            - publish_to_local_registry
-            - build_pkg_binaries
-          matrix:
-            parameters:
-              os:
-                - linux
-      - schema-key-amplify_e2e_tests:
-          context:
-            - amplify-ecr-image-pull
-            - clean_e2e_resources
-            - e2e-auth-credentials
-            - e2e-test-context
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
-          filters:
-            branches:
-              only:
-                - master
-                - /tagged-release\/.*/
-                - /run-e2e\/*./
-          requires:
-            - publish_to_local_registry
-            - build_pkg_binaries
-          matrix:
-            parameters:
-              os:
-                - linux
-      - function_2-amplify_e2e_tests:
-          context:
-            - amplify-ecr-image-pull
-            - clean_e2e_resources
-            - e2e-auth-credentials
-            - e2e-test-context
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
-          filters:
-            branches:
-              only:
-                - master
-                - /tagged-release\/.*/
-                - /run-e2e\/*./
-          requires:
-            - publish_to_local_registry
-            - build_pkg_binaries
-          matrix:
-            parameters:
-              os:
-                - linux
-      - schema-searchable-amplify_e2e_tests:
-          context:
-            - amplify-ecr-image-pull
-            - clean_e2e_resources
-            - e2e-auth-credentials
-            - e2e-test-context
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
-          filters:
-            branches:
-              only:
-                - master
-                - /tagged-release\/.*/
-                - /run-e2e\/*./
-          requires:
-            - publish_to_local_registry
-            - build_pkg_binaries
-          matrix:
-            parameters:
-              os:
-                - linux
-      - schema-iterative-rollback-1-amplify_e2e_tests:
-          context:
-            - amplify-ecr-image-pull
-            - clean_e2e_resources
-            - e2e-auth-credentials
-            - e2e-test-context
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
-          filters:
-            branches:
-              only:
-                - master
-                - /tagged-release\/.*/
-                - /run-e2e\/*./
-          requires:
-            - publish_to_local_registry
-            - build_pkg_binaries
-          matrix:
-            parameters:
-              os:
-                - linux
-      - function_1-amplify_e2e_tests:
-          context:
-            - amplify-ecr-image-pull
-            - clean_e2e_resources
-            - e2e-auth-credentials
-            - e2e-test-context
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
-          filters:
-            branches:
-              only:
-                - master
-                - /tagged-release\/.*/
-                - /run-e2e\/*./
-          requires:
-            - publish_to_local_registry
-            - build_pkg_binaries
-          matrix:
-            parameters:
-              os:
-                - linux
-      - schema-auth-6-amplify_e2e_tests:
-          context:
-            - amplify-ecr-image-pull
-            - clean_e2e_resources
-            - e2e-auth-credentials
-            - e2e-test-context
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
-          filters:
-            branches:
-              only:
-                - master
-                - /tagged-release\/.*/
-                - /run-e2e\/*./
-          requires:
-            - publish_to_local_registry
-            - build_pkg_binaries
-          matrix:
-            parameters:
-              os:
-                - linux
-      - schema-iterative-update-4-amplify_e2e_tests:
-          context:
-            - amplify-ecr-image-pull
-            - clean_e2e_resources
-            - e2e-auth-credentials
-            - e2e-test-context
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
-          filters:
-            branches:
-              only:
-                - master
-                - /tagged-release\/.*/
-                - /run-e2e\/*./
-          requires:
-            - publish_to_local_registry
-            - build_pkg_binaries
-          matrix:
-            parameters:
-              os:
-                - linux
-      - frontend_config_drift-amplify_e2e_tests:
-          context:
-            - amplify-ecr-image-pull
-            - clean_e2e_resources
-            - e2e-auth-credentials
-            - e2e-test-context
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
-          filters:
-            branches:
-              only:
-                - master
-                - /tagged-release\/.*/
-                - /run-e2e\/*./
-          requires:
-            - publish_to_local_registry
-            - build_pkg_binaries
-          matrix:
-            parameters:
-              os:
-                - linux
-      - migration-node-function-amplify_e2e_tests:
-          context:
-            - amplify-ecr-image-pull
-            - clean_e2e_resources
-            - e2e-auth-credentials
-            - e2e-test-context
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
-          filters:
-            branches:
-              only:
-                - master
-                - /tagged-release\/.*/
-                - /run-e2e\/*./
-          requires:
-            - publish_to_local_registry
-            - build_pkg_binaries
-          matrix:
-            parameters:
-              os:
-                - linux
-      - amplify-configure-amplify_e2e_tests:
-          context:
-            - amplify-ecr-image-pull
-            - clean_e2e_resources
-            - e2e-auth-credentials
-            - e2e-test-context
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
-          filters:
-            branches:
-              only:
-                - master
-                - /tagged-release\/.*/
-                - /run-e2e\/*./
-          requires:
-            - publish_to_local_registry
-            - build_pkg_binaries
-          matrix:
-            parameters:
-              os:
-                - linux
-      - schema-predictions-amplify_e2e_tests:
-          context:
-            - amplify-ecr-image-pull
-            - clean_e2e_resources
-            - e2e-auth-credentials
-            - e2e-test-context
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
-          filters:
-            branches:
-              only:
-                - master
-                - /tagged-release\/.*/
-                - /run-e2e\/*./
-          requires:
-            - publish_to_local_registry
-            - build_pkg_binaries
-          matrix:
-            parameters:
-              os:
-                - linux
-      - predictions-amplify_e2e_tests:
-          context:
-            - amplify-ecr-image-pull
-            - clean_e2e_resources
-            - e2e-auth-credentials
-            - e2e-test-context
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
-          filters:
-            branches:
-              only:
-                - master
-                - /tagged-release\/.*/
-                - /run-e2e\/*./
-          requires:
-            - publish_to_local_registry
-            - build_pkg_binaries
-          matrix:
-            parameters:
-              os:
-                - linux
-      - auth_1-amplify_e2e_tests:
-          context:
-            - amplify-ecr-image-pull
-            - clean_e2e_resources
-            - e2e-auth-credentials
-            - e2e-test-context
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
-          filters:
-            branches:
-              only:
-                - master
-                - /tagged-release\/.*/
-                - /run-e2e\/*./
-          requires:
-            - publish_to_local_registry
-            - build_pkg_binaries
-          matrix:
-            parameters:
-              os:
-                - linux
-      - auth_3-amplify_e2e_tests:
-          context:
-            - amplify-ecr-image-pull
-            - clean_e2e_resources
-            - e2e-auth-credentials
-            - e2e-test-context
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
-          filters:
-            branches:
-              only:
-                - master
-                - /tagged-release\/.*/
-                - /run-e2e\/*./
-          requires:
-            - publish_to_local_registry
-            - build_pkg_binaries
-          matrix:
-            parameters:
-              os:
-                - linux
-      - schema-auth-4-amplify_e2e_tests:
-          context:
-            - amplify-ecr-image-pull
-            - clean_e2e_resources
-            - e2e-auth-credentials
-            - e2e-test-context
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
-          filters:
-            branches:
-              only:
-                - master
-                - /tagged-release\/.*/
-                - /run-e2e\/*./
-          requires:
-            - publish_to_local_registry
-            - build_pkg_binaries
-          matrix:
-            parameters:
-              os:
-                - linux
-      - schema-iterative-rollback-2-amplify_e2e_tests:
-          context:
-            - amplify-ecr-image-pull
-            - clean_e2e_resources
-            - e2e-auth-credentials
-            - e2e-test-context
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
-          filters:
-            branches:
-              only:
-                - master
-                - /tagged-release\/.*/
-                - /run-e2e\/*./
-          requires:
-            - publish_to_local_registry
-            - build_pkg_binaries
-          matrix:
-            parameters:
-              os:
-                - linux
-      - schema-auth-1-amplify_e2e_tests:
-          context:
-            - amplify-ecr-image-pull
-            - clean_e2e_resources
-            - e2e-auth-credentials
-            - e2e-test-context
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
-          filters:
-            branches:
-              only:
-                - master
-                - /tagged-release\/.*/
-                - /run-e2e\/*./
-          requires:
-            - publish_to_local_registry
-            - build_pkg_binaries
-          matrix:
-            parameters:
-              os:
-                - linux
-      - schema-iterative-update-3-amplify_e2e_tests:
-          context:
-            - amplify-ecr-image-pull
-            - clean_e2e_resources
-            - e2e-auth-credentials
-            - e2e-test-context
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
-          filters:
-            branches:
-              only:
-                - master
-                - /tagged-release\/.*/
-                - /run-e2e\/*./
-          requires:
-            - publish_to_local_registry
-            - build_pkg_binaries
-          matrix:
-            parameters:
-              os:
-                - linux
-      - function_5-amplify_e2e_tests:
-          context:
-            - amplify-ecr-image-pull
-            - clean_e2e_resources
-            - e2e-auth-credentials
-            - e2e-test-context
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
-          filters:
-            branches:
-              only:
-                - master
-                - /tagged-release\/.*/
-                - /run-e2e\/*./
-          requires:
-            - publish_to_local_registry
-            - build_pkg_binaries
-          matrix:
-            parameters:
-              os:
-                - linux
-      - pull-amplify_e2e_tests:
           context:
             - amplify-ecr-image-pull
             - clean_e2e_resources
@@ -10969,13 +9521,12 @@ workflows:
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
-            - publish_to_local_registry
-            - build_pkg_binaries
+            - api_4-amplify_e2e_tests
           matrix:
             parameters:
               os:
                 - linux
-      - function_6-amplify_e2e_tests:
+      - auth_6-amplify_e2e_tests:
           context:
             - amplify-ecr-image-pull
             - clean_e2e_resources
@@ -11002,7 +9553,34 @@ workflows:
             parameters:
               os:
                 - linux
-      - s3-sse-amplify_e2e_tests:
+      - hooks-amplify_e2e_tests:
+          context:
+            - amplify-ecr-image-pull
+            - clean_e2e_resources
+            - e2e-auth-credentials
+            - e2e-test-context
+          post-steps:
+            - run:
+                name: Cleanup resources
+                command: |
+                  pwd
+                  cd packages/amplify-e2e-tests
+                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
+                working_directory: ~/repo
+          filters:
+            branches:
+              only:
+                - master
+                - /tagged-release\/.*/
+                - /run-e2e\/*./
+          requires:
+            - publish_to_local_registry
+            - build_pkg_binaries
+          matrix:
+            parameters:
+              os:
+                - linux
+      - storage_1-amplify_e2e_tests:
           context:
             - amplify-ecr-image-pull
             - clean_e2e_resources
@@ -11030,6 +9608,33 @@ workflows:
               os:
                 - linux
       - tags-amplify_e2e_tests:
+          context:
+            - amplify-ecr-image-pull
+            - clean_e2e_resources
+            - e2e-auth-credentials
+            - e2e-test-context
+          post-steps:
+            - run:
+                name: Cleanup resources
+                command: |
+                  pwd
+                  cd packages/amplify-e2e-tests
+                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
+                working_directory: ~/repo
+          filters:
+            branches:
+              only:
+                - master
+                - /tagged-release\/.*/
+                - /run-e2e\/*./
+          requires:
+            - publish_to_local_registry
+            - build_pkg_binaries
+          matrix:
+            parameters:
+              os:
+                - linux
+      - interactions-amplify_e2e_tests:
           context:
             - amplify-ecr-image-pull
             - clean_e2e_resources
@@ -11266,6 +9871,1517 @@ workflows:
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
+            - auth_6-amplify_e2e_tests
+          matrix:
+            parameters:
+              os:
+                - linux
+      - configure-project-amplify_e2e_tests:
+          context:
+            - amplify-ecr-image-pull
+            - clean_e2e_resources
+            - e2e-auth-credentials
+            - e2e-test-context
+          post-steps:
+            - run:
+                name: Cleanup resources
+                command: |
+                  pwd
+                  cd packages/amplify-e2e-tests
+                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
+                working_directory: ~/repo
+          filters:
+            branches:
+              only:
+                - master
+                - /tagged-release\/.*/
+                - /run-e2e\/*./
+          requires:
+            - publish_to_local_registry
+            - build_pkg_binaries
+          matrix:
+            parameters:
+              os:
+                - linux
+      - iam-permissions-boundary-amplify_e2e_tests:
+          context:
+            - amplify-ecr-image-pull
+            - clean_e2e_resources
+            - e2e-auth-credentials
+            - e2e-test-context
+          post-steps:
+            - run:
+                name: Cleanup resources
+                command: |
+                  pwd
+                  cd packages/amplify-e2e-tests
+                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
+                working_directory: ~/repo
+          filters:
+            branches:
+              only:
+                - master
+                - /tagged-release\/.*/
+                - /run-e2e\/*./
+          requires:
+            - publish_to_local_registry
+            - build_pkg_binaries
+          matrix:
+            parameters:
+              os:
+                - linux
+      - storage_2-amplify_e2e_tests:
+          context:
+            - amplify-ecr-image-pull
+            - clean_e2e_resources
+            - e2e-auth-credentials
+            - e2e-test-context
+          post-steps:
+            - run:
+                name: Cleanup resources
+                command: |
+                  pwd
+                  cd packages/amplify-e2e-tests
+                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
+                working_directory: ~/repo
+          filters:
+            branches:
+              only:
+                - master
+                - /tagged-release\/.*/
+                - /run-e2e\/*./
+          requires:
+            - publish_to_local_registry
+            - build_pkg_binaries
+          matrix:
+            parameters:
+              os:
+                - linux
+      - notifications-amplify_e2e_tests:
+          context:
+            - amplify-ecr-image-pull
+            - clean_e2e_resources
+            - e2e-auth-credentials
+            - e2e-test-context
+          post-steps:
+            - run:
+                name: Cleanup resources
+                command: |
+                  pwd
+                  cd packages/amplify-e2e-tests
+                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
+                working_directory: ~/repo
+          filters:
+            branches:
+              only:
+                - master
+                - /tagged-release\/.*/
+                - /run-e2e\/*./
+          requires:
+            - publish_to_local_registry
+            - build_pkg_binaries
+          matrix:
+            parameters:
+              os:
+                - linux
+      - analytics-amplify_e2e_tests:
+          context:
+            - amplify-ecr-image-pull
+            - clean_e2e_resources
+            - e2e-auth-credentials
+            - e2e-test-context
+          post-steps:
+            - run:
+                name: Cleanup resources
+                command: |
+                  pwd
+                  cd packages/amplify-e2e-tests
+                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
+                working_directory: ~/repo
+          filters:
+            branches:
+              only:
+                - master
+                - /tagged-release\/.*/
+                - /run-e2e\/*./
+          requires:
+            - publish_to_local_registry
+            - build_pkg_binaries
+          matrix:
+            parameters:
+              os:
+                - linux
+      - schema-iterative-update-1-amplify_e2e_tests:
+          context:
+            - amplify-ecr-image-pull
+            - clean_e2e_resources
+            - e2e-auth-credentials
+            - e2e-test-context
+          post-steps:
+            - run:
+                name: Cleanup resources
+                command: |
+                  pwd
+                  cd packages/amplify-e2e-tests
+                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
+                working_directory: ~/repo
+          filters:
+            branches:
+              only:
+                - master
+                - /tagged-release\/.*/
+                - /run-e2e\/*./
+          requires:
+            - publish_to_local_registry
+            - build_pkg_binaries
+          matrix:
+            parameters:
+              os:
+                - linux
+      - auth_4-amplify_e2e_tests:
+          context:
+            - amplify-ecr-image-pull
+            - clean_e2e_resources
+            - e2e-auth-credentials
+            - e2e-test-context
+          post-steps:
+            - run:
+                name: Cleanup resources
+                command: |
+                  pwd
+                  cd packages/amplify-e2e-tests
+                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
+                working_directory: ~/repo
+          filters:
+            branches:
+              only:
+                - master
+                - /tagged-release\/.*/
+                - /run-e2e\/*./
+          requires:
+            - publish_to_local_registry
+            - build_pkg_binaries
+          matrix:
+            parameters:
+              os:
+                - linux
+      - import_auth_2-amplify_e2e_tests:
+          context:
+            - amplify-ecr-image-pull
+            - clean_e2e_resources
+            - e2e-auth-credentials
+            - e2e-test-context
+          post-steps:
+            - run:
+                name: Cleanup resources
+                command: |
+                  pwd
+                  cd packages/amplify-e2e-tests
+                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
+                working_directory: ~/repo
+          filters:
+            branches:
+              only:
+                - master
+                - /tagged-release\/.*/
+                - /run-e2e\/*./
+          requires:
+            - publish_to_local_registry
+            - build_pkg_binaries
+          matrix:
+            parameters:
+              os:
+                - linux
+      - schema-auth-9-amplify_e2e_tests:
+          context:
+            - amplify-ecr-image-pull
+            - clean_e2e_resources
+            - e2e-auth-credentials
+            - e2e-test-context
+          post-steps:
+            - run:
+                name: Cleanup resources
+                command: |
+                  pwd
+                  cd packages/amplify-e2e-tests
+                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
+                working_directory: ~/repo
+          filters:
+            branches:
+              only:
+                - master
+                - /tagged-release\/.*/
+                - /run-e2e\/*./
+          requires:
+            - publish_to_local_registry
+            - build_pkg_binaries
+          matrix:
+            parameters:
+              os:
+                - linux
+      - schema-model-amplify_e2e_tests:
+          context:
+            - amplify-ecr-image-pull
+            - clean_e2e_resources
+            - e2e-auth-credentials
+            - e2e-test-context
+          post-steps:
+            - run:
+                name: Cleanup resources
+                command: |
+                  pwd
+                  cd packages/amplify-e2e-tests
+                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
+                working_directory: ~/repo
+          filters:
+            branches:
+              only:
+                - master
+                - /tagged-release\/.*/
+                - /run-e2e\/*./
+          requires:
+            - publish_to_local_registry
+            - build_pkg_binaries
+          matrix:
+            parameters:
+              os:
+                - linux
+      - schema-auth-5-amplify_e2e_tests:
+          context:
+            - amplify-ecr-image-pull
+            - clean_e2e_resources
+            - e2e-auth-credentials
+            - e2e-test-context
+          post-steps:
+            - run:
+                name: Cleanup resources
+                command: |
+                  pwd
+                  cd packages/amplify-e2e-tests
+                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
+                working_directory: ~/repo
+          filters:
+            branches:
+              only:
+                - master
+                - /tagged-release\/.*/
+                - /run-e2e\/*./
+          requires:
+            - publish_to_local_registry
+            - build_pkg_binaries
+          matrix:
+            parameters:
+              os:
+                - linux
+      - container-hosting-amplify_e2e_tests:
+          context:
+            - amplify-ecr-image-pull
+            - clean_e2e_resources
+            - e2e-auth-credentials
+            - e2e-test-context
+          post-steps:
+            - run:
+                name: Cleanup resources
+                command: |
+                  pwd
+                  cd packages/amplify-e2e-tests
+                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
+                working_directory: ~/repo
+          filters:
+            branches:
+              only:
+                - master
+                - /tagged-release\/.*/
+                - /run-e2e\/*./
+          requires:
+            - publish_to_local_registry
+            - build_pkg_binaries
+          matrix:
+            parameters:
+              os:
+                - linux
+      - layer-2-amplify_e2e_tests:
+          context:
+            - amplify-ecr-image-pull
+            - clean_e2e_resources
+            - e2e-auth-credentials
+            - e2e-test-context
+          post-steps:
+            - run:
+                name: Cleanup resources
+                command: |
+                  pwd
+                  cd packages/amplify-e2e-tests
+                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
+                working_directory: ~/repo
+          filters:
+            branches:
+              only:
+                - master
+                - /tagged-release\/.*/
+                - /run-e2e\/*./
+          requires:
+            - publish_to_local_registry
+            - build_pkg_binaries
+          matrix:
+            parameters:
+              os:
+                - linux
+      - plugin-amplify_e2e_tests:
+          context:
+            - amplify-ecr-image-pull
+            - clean_e2e_resources
+            - e2e-auth-credentials
+            - e2e-test-context
+          post-steps:
+            - run:
+                name: Cleanup resources
+                command: |
+                  pwd
+                  cd packages/amplify-e2e-tests
+                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
+                working_directory: ~/repo
+          filters:
+            branches:
+              only:
+                - master
+                - /tagged-release\/.*/
+                - /run-e2e\/*./
+          requires:
+            - publish_to_local_registry
+            - build_pkg_binaries
+          matrix:
+            parameters:
+              os:
+                - linux
+      - schema-versioned-amplify_e2e_tests:
+          context:
+            - amplify-ecr-image-pull
+            - clean_e2e_resources
+            - e2e-auth-credentials
+            - e2e-test-context
+          post-steps:
+            - run:
+                name: Cleanup resources
+                command: |
+                  pwd
+                  cd packages/amplify-e2e-tests
+                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
+                working_directory: ~/repo
+          filters:
+            branches:
+              only:
+                - master
+                - /tagged-release\/.*/
+                - /run-e2e\/*./
+          requires:
+            - publish_to_local_registry
+            - build_pkg_binaries
+          matrix:
+            parameters:
+              os:
+                - linux
+      - feature-flags-amplify_e2e_tests:
+          context:
+            - amplify-ecr-image-pull
+            - clean_e2e_resources
+            - e2e-auth-credentials
+            - e2e-test-context
+          post-steps:
+            - run:
+                name: Cleanup resources
+                command: |
+                  pwd
+                  cd packages/amplify-e2e-tests
+                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
+                working_directory: ~/repo
+          filters:
+            branches:
+              only:
+                - master
+                - /tagged-release\/.*/
+                - /run-e2e\/*./
+          requires:
+            - publish_to_local_registry
+            - build_pkg_binaries
+          matrix:
+            parameters:
+              os:
+                - linux
+      - geo-remove-amplify_e2e_tests:
+          context:
+            - amplify-ecr-image-pull
+            - clean_e2e_resources
+            - e2e-auth-credentials
+            - e2e-test-context
+          post-steps:
+            - run:
+                name: Cleanup resources
+                command: |
+                  pwd
+                  cd packages/amplify-e2e-tests
+                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
+                working_directory: ~/repo
+          filters:
+            branches:
+              only:
+                - master
+                - /tagged-release\/.*/
+                - /run-e2e\/*./
+          requires:
+            - publish_to_local_registry
+            - build_pkg_binaries
+          matrix:
+            parameters:
+              os:
+                - linux
+      - schema-auth-3-amplify_e2e_tests:
+          context:
+            - amplify-ecr-image-pull
+            - clean_e2e_resources
+            - e2e-auth-credentials
+            - e2e-test-context
+          post-steps:
+            - run:
+                name: Cleanup resources
+                command: |
+                  pwd
+                  cd packages/amplify-e2e-tests
+                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
+                working_directory: ~/repo
+          filters:
+            branches:
+              only:
+                - master
+                - /tagged-release\/.*/
+                - /run-e2e\/*./
+          requires:
+            - publish_to_local_registry
+            - build_pkg_binaries
+          matrix:
+            parameters:
+              os:
+                - linux
+      - schema-auth-7-amplify_e2e_tests:
+          context:
+            - amplify-ecr-image-pull
+            - clean_e2e_resources
+            - e2e-auth-credentials
+            - e2e-test-context
+          post-steps:
+            - run:
+                name: Cleanup resources
+                command: |
+                  pwd
+                  cd packages/amplify-e2e-tests
+                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
+                working_directory: ~/repo
+          filters:
+            branches:
+              only:
+                - master
+                - /tagged-release\/.*/
+                - /run-e2e\/*./
+          requires:
+            - publish_to_local_registry
+            - build_pkg_binaries
+          matrix:
+            parameters:
+              os:
+                - linux
+      - import_s3_1-amplify_e2e_tests:
+          context:
+            - amplify-ecr-image-pull
+            - clean_e2e_resources
+            - e2e-auth-credentials
+            - e2e-test-context
+          post-steps:
+            - run:
+                name: Cleanup resources
+                command: |
+                  pwd
+                  cd packages/amplify-e2e-tests
+                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
+                working_directory: ~/repo
+          filters:
+            branches:
+              only:
+                - master
+                - /tagged-release\/.*/
+                - /run-e2e\/*./
+          requires:
+            - publish_to_local_registry
+            - build_pkg_binaries
+          matrix:
+            parameters:
+              os:
+                - linux
+      - schema-auth-11-amplify_e2e_tests:
+          context:
+            - amplify-ecr-image-pull
+            - clean_e2e_resources
+            - e2e-auth-credentials
+            - e2e-test-context
+          post-steps:
+            - run:
+                name: Cleanup resources
+                command: |
+                  pwd
+                  cd packages/amplify-e2e-tests
+                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
+                working_directory: ~/repo
+          filters:
+            branches:
+              only:
+                - master
+                - /tagged-release\/.*/
+                - /run-e2e\/*./
+          requires:
+            - publish_to_local_registry
+            - build_pkg_binaries
+          matrix:
+            parameters:
+              os:
+                - linux
+      - migration-api-connection-migration-amplify_e2e_tests:
+          context:
+            - amplify-ecr-image-pull
+            - clean_e2e_resources
+            - e2e-auth-credentials
+            - e2e-test-context
+          post-steps:
+            - run:
+                name: Cleanup resources
+                command: |
+                  pwd
+                  cd packages/amplify-e2e-tests
+                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
+                working_directory: ~/repo
+          filters:
+            branches:
+              only:
+                - master
+                - /tagged-release\/.*/
+                - /run-e2e\/*./
+          requires:
+            - publish_to_local_registry
+            - build_pkg_binaries
+          matrix:
+            parameters:
+              os:
+                - linux
+      - api_2-amplify_e2e_tests:
+          context:
+            - amplify-ecr-image-pull
+            - clean_e2e_resources
+            - e2e-auth-credentials
+            - e2e-test-context
+          post-steps:
+            - run:
+                name: Cleanup resources
+                command: |
+                  pwd
+                  cd packages/amplify-e2e-tests
+                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
+                working_directory: ~/repo
+          filters:
+            branches:
+              only:
+                - master
+                - /tagged-release\/.*/
+                - /run-e2e\/*./
+          requires:
+            - publish_to_local_registry
+            - build_pkg_binaries
+          matrix:
+            parameters:
+              os:
+                - linux
+      - frontend_config_drift-amplify_e2e_tests:
+          context:
+            - amplify-ecr-image-pull
+            - clean_e2e_resources
+            - e2e-auth-credentials
+            - e2e-test-context
+          post-steps:
+            - run:
+                name: Cleanup resources
+                command: |
+                  pwd
+                  cd packages/amplify-e2e-tests
+                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
+                working_directory: ~/repo
+          filters:
+            branches:
+              only:
+                - master
+                - /tagged-release\/.*/
+                - /run-e2e\/*./
+          requires:
+            - publish_to_local_registry
+            - build_pkg_binaries
+          matrix:
+            parameters:
+              os:
+                - linux
+      - migration-node-function-amplify_e2e_tests:
+          context:
+            - amplify-ecr-image-pull
+            - clean_e2e_resources
+            - e2e-auth-credentials
+            - e2e-test-context
+          post-steps:
+            - run:
+                name: Cleanup resources
+                command: |
+                  pwd
+                  cd packages/amplify-e2e-tests
+                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
+                working_directory: ~/repo
+          filters:
+            branches:
+              only:
+                - master
+                - /tagged-release\/.*/
+                - /run-e2e\/*./
+          requires:
+            - publish_to_local_registry
+            - build_pkg_binaries
+          matrix:
+            parameters:
+              os:
+                - linux
+      - init-special-case-amplify_e2e_tests:
+          context:
+            - amplify-ecr-image-pull
+            - clean_e2e_resources
+            - e2e-auth-credentials
+            - e2e-test-context
+          post-steps:
+            - run:
+                name: Cleanup resources
+                command: |
+                  pwd
+                  cd packages/amplify-e2e-tests
+                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
+                working_directory: ~/repo
+          filters:
+            branches:
+              only:
+                - master
+                - /tagged-release\/.*/
+                - /run-e2e\/*./
+          requires:
+            - publish_to_local_registry
+            - build_pkg_binaries
+          matrix:
+            parameters:
+              os:
+                - linux
+      - schema-data-access-patterns-amplify_e2e_tests:
+          context:
+            - amplify-ecr-image-pull
+            - clean_e2e_resources
+            - e2e-auth-credentials
+            - e2e-test-context
+          post-steps:
+            - run:
+                name: Cleanup resources
+                command: |
+                  pwd
+                  cd packages/amplify-e2e-tests
+                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
+                working_directory: ~/repo
+          filters:
+            branches:
+              only:
+                - master
+                - /tagged-release\/.*/
+                - /run-e2e\/*./
+          requires:
+            - publish_to_local_registry
+            - build_pkg_binaries
+          matrix:
+            parameters:
+              os:
+                - linux
+      - schema-iterative-update-2-amplify_e2e_tests:
+          context:
+            - amplify-ecr-image-pull
+            - clean_e2e_resources
+            - e2e-auth-credentials
+            - e2e-test-context
+          post-steps:
+            - run:
+                name: Cleanup resources
+                command: |
+                  pwd
+                  cd packages/amplify-e2e-tests
+                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
+                working_directory: ~/repo
+          filters:
+            branches:
+              only:
+                - master
+                - /tagged-release\/.*/
+                - /run-e2e\/*./
+          requires:
+            - publish_to_local_registry
+            - build_pkg_binaries
+          matrix:
+            parameters:
+              os:
+                - linux
+      - schema-auth-10-amplify_e2e_tests:
+          context:
+            - amplify-ecr-image-pull
+            - clean_e2e_resources
+            - e2e-auth-credentials
+            - e2e-test-context
+          post-steps:
+            - run:
+                name: Cleanup resources
+                command: |
+                  pwd
+                  cd packages/amplify-e2e-tests
+                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
+                working_directory: ~/repo
+          filters:
+            branches:
+              only:
+                - master
+                - /tagged-release\/.*/
+                - /run-e2e\/*./
+          requires:
+            - publish_to_local_registry
+            - build_pkg_binaries
+          matrix:
+            parameters:
+              os:
+                - linux
+      - delete-amplify_e2e_tests:
+          context:
+            - amplify-ecr-image-pull
+            - clean_e2e_resources
+            - e2e-auth-credentials
+            - e2e-test-context
+          post-steps:
+            - run:
+                name: Cleanup resources
+                command: |
+                  pwd
+                  cd packages/amplify-e2e-tests
+                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
+                working_directory: ~/repo
+          filters:
+            branches:
+              only:
+                - master
+                - /tagged-release\/.*/
+                - /run-e2e\/*./
+          requires:
+            - publish_to_local_registry
+            - build_pkg_binaries
+          matrix:
+            parameters:
+              os:
+                - linux
+      - schema-auth-8-amplify_e2e_tests:
+          context:
+            - amplify-ecr-image-pull
+            - clean_e2e_resources
+            - e2e-auth-credentials
+            - e2e-test-context
+          post-steps:
+            - run:
+                name: Cleanup resources
+                command: |
+                  pwd
+                  cd packages/amplify-e2e-tests
+                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
+                working_directory: ~/repo
+          filters:
+            branches:
+              only:
+                - master
+                - /tagged-release\/.*/
+                - /run-e2e\/*./
+          requires:
+            - publish_to_local_registry
+            - build_pkg_binaries
+          matrix:
+            parameters:
+              os:
+                - linux
+      - import_dynamodb_1-amplify_e2e_tests:
+          context:
+            - amplify-ecr-image-pull
+            - clean_e2e_resources
+            - e2e-auth-credentials
+            - e2e-test-context
+          post-steps:
+            - run:
+                name: Cleanup resources
+                command: |
+                  pwd
+                  cd packages/amplify-e2e-tests
+                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
+                working_directory: ~/repo
+          filters:
+            branches:
+              only:
+                - master
+                - /tagged-release\/.*/
+                - /run-e2e\/*./
+          requires:
+            - publish_to_local_registry
+            - build_pkg_binaries
+          matrix:
+            parameters:
+              os:
+                - linux
+      - migration-api-key-migration2-amplify_e2e_tests:
+          context:
+            - amplify-ecr-image-pull
+            - clean_e2e_resources
+            - e2e-auth-credentials
+            - e2e-test-context
+          post-steps:
+            - run:
+                name: Cleanup resources
+                command: |
+                  pwd
+                  cd packages/amplify-e2e-tests
+                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
+                working_directory: ~/repo
+          filters:
+            branches:
+              only:
+                - master
+                - /tagged-release\/.*/
+                - /run-e2e\/*./
+          requires:
+            - publish_to_local_registry
+            - build_pkg_binaries
+          matrix:
+            parameters:
+              os:
+                - linux
+      - schema-connection-amplify_e2e_tests:
+          context:
+            - amplify-ecr-image-pull
+            - clean_e2e_resources
+            - e2e-auth-credentials
+            - e2e-test-context
+          post-steps:
+            - run:
+                name: Cleanup resources
+                command: |
+                  pwd
+                  cd packages/amplify-e2e-tests
+                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
+                working_directory: ~/repo
+          filters:
+            branches:
+              only:
+                - master
+                - /tagged-release\/.*/
+                - /run-e2e\/*./
+          requires:
+            - publish_to_local_registry
+            - build_pkg_binaries
+          matrix:
+            parameters:
+              os:
+                - linux
+      - schema-iterative-update-4-amplify_e2e_tests:
+          context:
+            - amplify-ecr-image-pull
+            - clean_e2e_resources
+            - e2e-auth-credentials
+            - e2e-test-context
+          post-steps:
+            - run:
+                name: Cleanup resources
+                command: |
+                  pwd
+                  cd packages/amplify-e2e-tests
+                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
+                working_directory: ~/repo
+          filters:
+            branches:
+              only:
+                - master
+                - /tagged-release\/.*/
+                - /run-e2e\/*./
+          requires:
+            - publish_to_local_registry
+            - build_pkg_binaries
+          matrix:
+            parameters:
+              os:
+                - linux
+      - function_5-amplify_e2e_tests:
+          context:
+            - amplify-ecr-image-pull
+            - clean_e2e_resources
+            - e2e-auth-credentials
+            - e2e-test-context
+          post-steps:
+            - run:
+                name: Cleanup resources
+                command: |
+                  pwd
+                  cd packages/amplify-e2e-tests
+                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
+                working_directory: ~/repo
+          filters:
+            branches:
+              only:
+                - master
+                - /tagged-release\/.*/
+                - /run-e2e\/*./
+          requires:
+            - publish_to_local_registry
+            - build_pkg_binaries
+          matrix:
+            parameters:
+              os:
+                - linux
+      - pull-amplify_e2e_tests:
+          context:
+            - amplify-ecr-image-pull
+            - clean_e2e_resources
+            - e2e-auth-credentials
+            - e2e-test-context
+          post-steps:
+            - run:
+                name: Cleanup resources
+                command: |
+                  pwd
+                  cd packages/amplify-e2e-tests
+                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
+                working_directory: ~/repo
+          filters:
+            branches:
+              only:
+                - master
+                - /tagged-release\/.*/
+                - /run-e2e\/*./
+          requires:
+            - publish_to_local_registry
+            - build_pkg_binaries
+          matrix:
+            parameters:
+              os:
+                - linux
+      - datastore-modelgen-amplify_e2e_tests:
+          context:
+            - amplify-ecr-image-pull
+            - clean_e2e_resources
+            - e2e-auth-credentials
+            - e2e-test-context
+          post-steps:
+            - run:
+                name: Cleanup resources
+                command: |
+                  pwd
+                  cd packages/amplify-e2e-tests
+                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
+                working_directory: ~/repo
+          filters:
+            branches:
+              only:
+                - master
+                - /tagged-release\/.*/
+                - /run-e2e\/*./
+          requires:
+            - publish_to_local_registry
+            - build_pkg_binaries
+          matrix:
+            parameters:
+              os:
+                - linux
+      - containers-api-amplify_e2e_tests:
+          context:
+            - amplify-ecr-image-pull
+            - clean_e2e_resources
+            - e2e-auth-credentials
+            - e2e-test-context
+          post-steps:
+            - run:
+                name: Cleanup resources
+                command: |
+                  pwd
+                  cd packages/amplify-e2e-tests
+                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
+                working_directory: ~/repo
+          filters:
+            branches:
+              only:
+                - master
+                - /tagged-release\/.*/
+                - /run-e2e\/*./
+          requires:
+            - publish_to_local_registry
+            - build_pkg_binaries
+          matrix:
+            parameters:
+              os:
+                - linux
+      - schema-key-amplify_e2e_tests:
+          context:
+            - amplify-ecr-image-pull
+            - clean_e2e_resources
+            - e2e-auth-credentials
+            - e2e-test-context
+          post-steps:
+            - run:
+                name: Cleanup resources
+                command: |
+                  pwd
+                  cd packages/amplify-e2e-tests
+                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
+                working_directory: ~/repo
+          filters:
+            branches:
+              only:
+                - master
+                - /tagged-release\/.*/
+                - /run-e2e\/*./
+          requires:
+            - publish_to_local_registry
+            - build_pkg_binaries
+          matrix:
+            parameters:
+              os:
+                - linux
+      - function_2-amplify_e2e_tests:
+          context:
+            - amplify-ecr-image-pull
+            - clean_e2e_resources
+            - e2e-auth-credentials
+            - e2e-test-context
+          post-steps:
+            - run:
+                name: Cleanup resources
+                command: |
+                  pwd
+                  cd packages/amplify-e2e-tests
+                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
+                working_directory: ~/repo
+          filters:
+            branches:
+              only:
+                - master
+                - /tagged-release\/.*/
+                - /run-e2e\/*./
+          requires:
+            - publish_to_local_registry
+            - build_pkg_binaries
+          matrix:
+            parameters:
+              os:
+                - linux
+      - schema-searchable-amplify_e2e_tests:
+          context:
+            - amplify-ecr-image-pull
+            - clean_e2e_resources
+            - e2e-auth-credentials
+            - e2e-test-context
+          post-steps:
+            - run:
+                name: Cleanup resources
+                command: |
+                  pwd
+                  cd packages/amplify-e2e-tests
+                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
+                working_directory: ~/repo
+          filters:
+            branches:
+              only:
+                - master
+                - /tagged-release\/.*/
+                - /run-e2e\/*./
+          requires:
+            - publish_to_local_registry
+            - build_pkg_binaries
+          matrix:
+            parameters:
+              os:
+                - linux
+      - schema-iterative-rollback-1-amplify_e2e_tests:
+          context:
+            - amplify-ecr-image-pull
+            - clean_e2e_resources
+            - e2e-auth-credentials
+            - e2e-test-context
+          post-steps:
+            - run:
+                name: Cleanup resources
+                command: |
+                  pwd
+                  cd packages/amplify-e2e-tests
+                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
+                working_directory: ~/repo
+          filters:
+            branches:
+              only:
+                - master
+                - /tagged-release\/.*/
+                - /run-e2e\/*./
+          requires:
+            - publish_to_local_registry
+            - build_pkg_binaries
+          matrix:
+            parameters:
+              os:
+                - linux
+      - function_1-amplify_e2e_tests:
+          context:
+            - amplify-ecr-image-pull
+            - clean_e2e_resources
+            - e2e-auth-credentials
+            - e2e-test-context
+          post-steps:
+            - run:
+                name: Cleanup resources
+                command: |
+                  pwd
+                  cd packages/amplify-e2e-tests
+                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
+                working_directory: ~/repo
+          filters:
+            branches:
+              only:
+                - master
+                - /tagged-release\/.*/
+                - /run-e2e\/*./
+          requires:
+            - publish_to_local_registry
+            - build_pkg_binaries
+          matrix:
+            parameters:
+              os:
+                - linux
+      - schema-auth-6-amplify_e2e_tests:
+          context:
+            - amplify-ecr-image-pull
+            - clean_e2e_resources
+            - e2e-auth-credentials
+            - e2e-test-context
+          post-steps:
+            - run:
+                name: Cleanup resources
+                command: |
+                  pwd
+                  cd packages/amplify-e2e-tests
+                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
+                working_directory: ~/repo
+          filters:
+            branches:
+              only:
+                - master
+                - /tagged-release\/.*/
+                - /run-e2e\/*./
+          requires:
+            - publish_to_local_registry
+            - build_pkg_binaries
+          matrix:
+            parameters:
+              os:
+                - linux
+      - function_6-amplify_e2e_tests:
+          context:
+            - amplify-ecr-image-pull
+            - clean_e2e_resources
+            - e2e-auth-credentials
+            - e2e-test-context
+          post-steps:
+            - run:
+                name: Cleanup resources
+                command: |
+                  pwd
+                  cd packages/amplify-e2e-tests
+                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
+                working_directory: ~/repo
+          filters:
+            branches:
+              only:
+                - master
+                - /tagged-release\/.*/
+                - /run-e2e\/*./
+          requires:
+            - publish_to_local_registry
+            - build_pkg_binaries
+          matrix:
+            parameters:
+              os:
+                - linux
+      - s3-sse-amplify_e2e_tests:
+          context:
+            - amplify-ecr-image-pull
+            - clean_e2e_resources
+            - e2e-auth-credentials
+            - e2e-test-context
+          post-steps:
+            - run:
+                name: Cleanup resources
+                command: |
+                  pwd
+                  cd packages/amplify-e2e-tests
+                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
+                working_directory: ~/repo
+          filters:
+            branches:
+              only:
+                - master
+                - /tagged-release\/.*/
+                - /run-e2e\/*./
+          requires:
+            - publish_to_local_registry
+            - build_pkg_binaries
+          matrix:
+            parameters:
+              os:
+                - linux
+      - amplify-configure-amplify_e2e_tests:
+          context:
+            - amplify-ecr-image-pull
+            - clean_e2e_resources
+            - e2e-auth-credentials
+            - e2e-test-context
+          post-steps:
+            - run:
+                name: Cleanup resources
+                command: |
+                  pwd
+                  cd packages/amplify-e2e-tests
+                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
+                working_directory: ~/repo
+          filters:
+            branches:
+              only:
+                - master
+                - /tagged-release\/.*/
+                - /run-e2e\/*./
+          requires:
+            - publish_to_local_registry
+            - build_pkg_binaries
+          matrix:
+            parameters:
+              os:
+                - linux
+      - schema-predictions-amplify_e2e_tests:
+          context:
+            - amplify-ecr-image-pull
+            - clean_e2e_resources
+            - e2e-auth-credentials
+            - e2e-test-context
+          post-steps:
+            - run:
+                name: Cleanup resources
+                command: |
+                  pwd
+                  cd packages/amplify-e2e-tests
+                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
+                working_directory: ~/repo
+          filters:
+            branches:
+              only:
+                - master
+                - /tagged-release\/.*/
+                - /run-e2e\/*./
+          requires:
+            - publish_to_local_registry
+            - build_pkg_binaries
+          matrix:
+            parameters:
+              os:
+                - linux
+      - predictions-amplify_e2e_tests:
+          context:
+            - amplify-ecr-image-pull
+            - clean_e2e_resources
+            - e2e-auth-credentials
+            - e2e-test-context
+          post-steps:
+            - run:
+                name: Cleanup resources
+                command: |
+                  pwd
+                  cd packages/amplify-e2e-tests
+                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
+                working_directory: ~/repo
+          filters:
+            branches:
+              only:
+                - master
+                - /tagged-release\/.*/
+                - /run-e2e\/*./
+          requires:
+            - publish_to_local_registry
+            - build_pkg_binaries
+          matrix:
+            parameters:
+              os:
+                - linux
+      - auth_1-amplify_e2e_tests:
+          context:
+            - amplify-ecr-image-pull
+            - clean_e2e_resources
+            - e2e-auth-credentials
+            - e2e-test-context
+          post-steps:
+            - run:
+                name: Cleanup resources
+                command: |
+                  pwd
+                  cd packages/amplify-e2e-tests
+                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
+                working_directory: ~/repo
+          filters:
+            branches:
+              only:
+                - master
+                - /tagged-release\/.*/
+                - /run-e2e\/*./
+          requires:
+            - publish_to_local_registry
+            - build_pkg_binaries
+          matrix:
+            parameters:
+              os:
+                - linux
+      - auth_3-amplify_e2e_tests:
+          context:
+            - amplify-ecr-image-pull
+            - clean_e2e_resources
+            - e2e-auth-credentials
+            - e2e-test-context
+          post-steps:
+            - run:
+                name: Cleanup resources
+                command: |
+                  pwd
+                  cd packages/amplify-e2e-tests
+                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
+                working_directory: ~/repo
+          filters:
+            branches:
+              only:
+                - master
+                - /tagged-release\/.*/
+                - /run-e2e\/*./
+          requires:
+            - publish_to_local_registry
+            - build_pkg_binaries
+          matrix:
+            parameters:
+              os:
+                - linux
+      - schema-auth-4-amplify_e2e_tests:
+          context:
+            - amplify-ecr-image-pull
+            - clean_e2e_resources
+            - e2e-auth-credentials
+            - e2e-test-context
+          post-steps:
+            - run:
+                name: Cleanup resources
+                command: |
+                  pwd
+                  cd packages/amplify-e2e-tests
+                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
+                working_directory: ~/repo
+          filters:
+            branches:
+              only:
+                - master
+                - /tagged-release\/.*/
+                - /run-e2e\/*./
+          requires:
+            - publish_to_local_registry
+            - build_pkg_binaries
+          matrix:
+            parameters:
+              os:
+                - linux
+      - schema-iterative-rollback-2-amplify_e2e_tests:
+          context:
+            - amplify-ecr-image-pull
+            - clean_e2e_resources
+            - e2e-auth-credentials
+            - e2e-test-context
+          post-steps:
+            - run:
+                name: Cleanup resources
+                command: |
+                  pwd
+                  cd packages/amplify-e2e-tests
+                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
+                working_directory: ~/repo
+          filters:
+            branches:
+              only:
+                - master
+                - /tagged-release\/.*/
+                - /run-e2e\/*./
+          requires:
+            - publish_to_local_registry
+            - build_pkg_binaries
+          matrix:
+            parameters:
+              os:
+                - linux
+      - schema-auth-1-amplify_e2e_tests:
+          context:
+            - amplify-ecr-image-pull
+            - clean_e2e_resources
+            - e2e-auth-credentials
+            - e2e-test-context
+          post-steps:
+            - run:
+                name: Cleanup resources
+                command: |
+                  pwd
+                  cd packages/amplify-e2e-tests
+                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
+                working_directory: ~/repo
+          filters:
+            branches:
+              only:
+                - master
+                - /tagged-release\/.*/
+                - /run-e2e\/*./
+          requires:
+            - publish_to_local_registry
+            - build_pkg_binaries
+          matrix:
+            parameters:
+              os:
+                - linux
+      - schema-iterative-update-3-amplify_e2e_tests:
+          context:
+            - amplify-ecr-image-pull
+            - clean_e2e_resources
+            - e2e-auth-credentials
+            - e2e-test-context
+          post-steps:
+            - run:
+                name: Cleanup resources
+                command: |
+                  pwd
+                  cd packages/amplify-e2e-tests
+                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
+                working_directory: ~/repo
+          filters:
+            branches:
+              only:
+                - master
+                - /tagged-release\/.*/
+                - /run-e2e\/*./
+          requires:
             - publish_to_local_registry
             - build_pkg_binaries
           matrix:
@@ -11329,6 +11445,508 @@ workflows:
             parameters:
               os:
                 - linux
+      - init-amplify_e2e_tests_pkg:
+          context:
+            - amplify-ecr-image-pull
+            - clean_e2e_resources
+            - e2e-auth-credentials
+            - e2e-test-context
+          filters:
+            branches:
+              only:
+                - master
+                - /tagged-release\/.*/
+                - /run-e2e\/*./
+          requires:
+            - done_with_node_e2e_tests
+            - build_pkg_binaries
+          matrix:
+            parameters:
+              os:
+                - linux
+                - windows
+      - amplify-app-amplify_e2e_tests_pkg:
+          context:
+            - amplify-ecr-image-pull
+            - clean_e2e_resources
+            - e2e-auth-credentials
+            - e2e-test-context
+          filters:
+            branches:
+              only:
+                - master
+                - /tagged-release\/.*/
+                - /run-e2e\/*./
+          requires:
+            - done_with_node_e2e_tests
+            - build_pkg_binaries
+          matrix:
+            parameters:
+              os:
+                - linux
+      - hostingPROD-amplify_e2e_tests_pkg:
+          context:
+            - amplify-ecr-image-pull
+            - clean_e2e_resources
+            - e2e-auth-credentials
+            - e2e-test-context
+          filters:
+            branches:
+              only:
+                - master
+                - /tagged-release\/.*/
+                - /run-e2e\/*./
+          requires:
+            - done_with_node_e2e_tests
+            - build_pkg_binaries
+          matrix:
+            parameters:
+              os:
+                - linux
+      - geo-add-amplify_e2e_tests_pkg:
+          context:
+            - amplify-ecr-image-pull
+            - clean_e2e_resources
+            - e2e-auth-credentials
+            - e2e-test-context
+          filters:
+            branches:
+              only:
+                - master
+                - /tagged-release\/.*/
+                - /run-e2e\/*./
+          requires:
+            - done_with_node_e2e_tests
+            - build_pkg_binaries
+          matrix:
+            parameters:
+              os:
+                - linux
+                - windows
+      - auth_5-amplify_e2e_tests_pkg:
+          context:
+            - amplify-ecr-image-pull
+            - clean_e2e_resources
+            - e2e-auth-credentials
+            - e2e-test-context
+          filters:
+            branches:
+              only:
+                - master
+                - /tagged-release\/.*/
+                - /run-e2e\/*./
+          requires:
+            - done_with_node_e2e_tests
+            - build_pkg_binaries
+          matrix:
+            parameters:
+              os:
+                - linux
+      - layer-amplify_e2e_tests_pkg:
+          context:
+            - amplify-ecr-image-pull
+            - clean_e2e_resources
+            - e2e-auth-credentials
+            - e2e-test-context
+          filters:
+            branches:
+              only:
+                - master
+                - /tagged-release\/.*/
+                - /run-e2e\/*./
+          requires:
+            - done_with_node_e2e_tests
+            - build_pkg_binaries
+          matrix:
+            parameters:
+              os:
+                - linux
+      - api_3-amplify_e2e_tests_pkg:
+          context:
+            - amplify-ecr-image-pull
+            - clean_e2e_resources
+            - e2e-auth-credentials
+            - e2e-test-context
+          filters:
+            branches:
+              only:
+                - master
+                - /tagged-release\/.*/
+                - /run-e2e\/*./
+          requires:
+            - done_with_node_e2e_tests
+            - build_pkg_binaries
+          matrix:
+            parameters:
+              os:
+                - linux
+      - env-amplify_e2e_tests_pkg:
+          context:
+            - amplify-ecr-image-pull
+            - clean_e2e_resources
+            - e2e-auth-credentials
+            - e2e-test-context
+          filters:
+            branches:
+              only:
+                - master
+                - /tagged-release\/.*/
+                - /run-e2e\/*./
+          requires:
+            - done_with_node_e2e_tests
+            - build_pkg_binaries
+          matrix:
+            parameters:
+              os:
+                - linux
+      - function_4-amplify_e2e_tests_pkg:
+          context:
+            - amplify-ecr-image-pull
+            - clean_e2e_resources
+            - e2e-auth-credentials
+            - e2e-test-context
+          filters:
+            branches:
+              only:
+                - master
+                - /tagged-release\/.*/
+                - /run-e2e\/*./
+          requires:
+            - done_with_node_e2e_tests
+            - build_pkg_binaries
+          matrix:
+            parameters:
+              os:
+                - linux
+      - schema-auth-2-amplify_e2e_tests_pkg:
+          context:
+            - amplify-ecr-image-pull
+            - clean_e2e_resources
+            - e2e-auth-credentials
+            - e2e-test-context
+          filters:
+            branches:
+              only:
+                - master
+                - /tagged-release\/.*/
+                - /run-e2e\/*./
+          requires:
+            - api_4-amplify_e2e_tests_pkg
+          matrix:
+            parameters:
+              os:
+                - linux
+      - auth_6-amplify_e2e_tests_pkg:
+          context:
+            - amplify-ecr-image-pull
+            - clean_e2e_resources
+            - e2e-auth-credentials
+            - e2e-test-context
+          filters:
+            branches:
+              only:
+                - master
+                - /tagged-release\/.*/
+                - /run-e2e\/*./
+          requires:
+            - done_with_node_e2e_tests
+            - build_pkg_binaries
+          matrix:
+            parameters:
+              os:
+                - linux
+      - hooks-amplify_e2e_tests_pkg:
+          context:
+            - amplify-ecr-image-pull
+            - clean_e2e_resources
+            - e2e-auth-credentials
+            - e2e-test-context
+          filters:
+            branches:
+              only:
+                - master
+                - /tagged-release\/.*/
+                - /run-e2e\/*./
+          requires:
+            - done_with_node_e2e_tests
+            - build_pkg_binaries
+          matrix:
+            parameters:
+              os:
+                - linux
+                - windows
+      - storage_1-amplify_e2e_tests_pkg:
+          context:
+            - amplify-ecr-image-pull
+            - clean_e2e_resources
+            - e2e-auth-credentials
+            - e2e-test-context
+          filters:
+            branches:
+              only:
+                - master
+                - /tagged-release\/.*/
+                - /run-e2e\/*./
+          requires:
+            - done_with_node_e2e_tests
+            - build_pkg_binaries
+          matrix:
+            parameters:
+              os:
+                - linux
+                - windows
+      - tags-amplify_e2e_tests_pkg:
+          context:
+            - amplify-ecr-image-pull
+            - clean_e2e_resources
+            - e2e-auth-credentials
+            - e2e-test-context
+          filters:
+            branches:
+              only:
+                - master
+                - /tagged-release\/.*/
+                - /run-e2e\/*./
+          requires:
+            - done_with_node_e2e_tests
+            - build_pkg_binaries
+          matrix:
+            parameters:
+              os:
+                - linux
+                - windows
+      - interactions-amplify_e2e_tests_pkg:
+          context:
+            - amplify-ecr-image-pull
+            - clean_e2e_resources
+            - e2e-auth-credentials
+            - e2e-test-context
+          filters:
+            branches:
+              only:
+                - master
+                - /tagged-release\/.*/
+                - /run-e2e\/*./
+          requires:
+            - done_with_node_e2e_tests
+            - build_pkg_binaries
+          matrix:
+            parameters:
+              os:
+                - linux
+                - windows
+      - hosting-amplify_e2e_tests_pkg:
+          context:
+            - amplify-ecr-image-pull
+            - clean_e2e_resources
+            - e2e-auth-credentials
+            - e2e-test-context
+          filters:
+            branches:
+              only:
+                - master
+                - /tagged-release\/.*/
+                - /run-e2e\/*./
+          requires:
+            - done_with_node_e2e_tests
+            - build_pkg_binaries
+          matrix:
+            parameters:
+              os:
+                - linux
+      - geo-update-amplify_e2e_tests_pkg:
+          context:
+            - amplify-ecr-image-pull
+            - clean_e2e_resources
+            - e2e-auth-credentials
+            - e2e-test-context
+          filters:
+            branches:
+              only:
+                - master
+                - /tagged-release\/.*/
+                - /run-e2e\/*./
+          requires:
+            - done_with_node_e2e_tests
+            - build_pkg_binaries
+          matrix:
+            parameters:
+              os:
+                - linux
+                - windows
+      - function_3-amplify_e2e_tests_pkg:
+          context:
+            - amplify-ecr-image-pull
+            - clean_e2e_resources
+            - e2e-auth-credentials
+            - e2e-test-context
+          filters:
+            branches:
+              only:
+                - master
+                - /tagged-release\/.*/
+                - /run-e2e\/*./
+          requires:
+            - done_with_node_e2e_tests
+            - build_pkg_binaries
+          matrix:
+            parameters:
+              os:
+                - linux
+      - migration-api-key-migration1-amplify_e2e_tests_pkg:
+          context:
+            - amplify-ecr-image-pull
+            - clean_e2e_resources
+            - e2e-auth-credentials
+            - e2e-test-context
+          filters:
+            branches:
+              only:
+                - master
+                - /tagged-release\/.*/
+                - /run-e2e\/*./
+          requires:
+            - done_with_node_e2e_tests
+            - build_pkg_binaries
+          matrix:
+            parameters:
+              os:
+                - linux
+      - import_auth_1-amplify_e2e_tests_pkg:
+          context:
+            - amplify-ecr-image-pull
+            - clean_e2e_resources
+            - e2e-auth-credentials
+            - e2e-test-context
+          filters:
+            branches:
+              only:
+                - master
+                - /tagged-release\/.*/
+                - /run-e2e\/*./
+          requires:
+            - done_with_node_e2e_tests
+            - build_pkg_binaries
+          matrix:
+            parameters:
+              os:
+                - linux
+      - auth_2-amplify_e2e_tests_pkg:
+          context:
+            - amplify-ecr-image-pull
+            - clean_e2e_resources
+            - e2e-auth-credentials
+            - e2e-test-context
+          filters:
+            branches:
+              only:
+                - master
+                - /tagged-release\/.*/
+                - /run-e2e\/*./
+          requires:
+            - done_with_node_e2e_tests
+            - build_pkg_binaries
+          matrix:
+            parameters:
+              os:
+                - linux
+      - schema-function-amplify_e2e_tests_pkg:
+          context:
+            - amplify-ecr-image-pull
+            - clean_e2e_resources
+            - e2e-auth-credentials
+            - e2e-test-context
+          filters:
+            branches:
+              only:
+                - master
+                - /tagged-release\/.*/
+                - /run-e2e\/*./
+          requires:
+            - done_with_node_e2e_tests
+            - build_pkg_binaries
+          matrix:
+            parameters:
+              os:
+                - linux
+      - api_1-amplify_e2e_tests_pkg:
+          context:
+            - amplify-ecr-image-pull
+            - clean_e2e_resources
+            - e2e-auth-credentials
+            - e2e-test-context
+          filters:
+            branches:
+              only:
+                - master
+                - /tagged-release\/.*/
+                - /run-e2e\/*./
+          requires:
+            - auth_6-amplify_e2e_tests_pkg
+          matrix:
+            parameters:
+              os:
+                - linux
+      - configure-project-amplify_e2e_tests_pkg:
+          context:
+            - amplify-ecr-image-pull
+            - clean_e2e_resources
+            - e2e-auth-credentials
+            - e2e-test-context
+          filters:
+            branches:
+              only:
+                - master
+                - /tagged-release\/.*/
+                - /run-e2e\/*./
+          requires:
+            - done_with_node_e2e_tests
+            - build_pkg_binaries
+          matrix:
+            parameters:
+              os:
+                - linux
+                - windows
+      - iam-permissions-boundary-amplify_e2e_tests_pkg:
+          context:
+            - amplify-ecr-image-pull
+            - clean_e2e_resources
+            - e2e-auth-credentials
+            - e2e-test-context
+          filters:
+            branches:
+              only:
+                - master
+                - /tagged-release\/.*/
+                - /run-e2e\/*./
+          requires:
+            - done_with_node_e2e_tests
+            - build_pkg_binaries
+          matrix:
+            parameters:
+              os:
+                - linux
+                - windows
+      - storage_2-amplify_e2e_tests_pkg:
+          context:
+            - amplify-ecr-image-pull
+            - clean_e2e_resources
+            - e2e-auth-credentials
+            - e2e-test-context
+          filters:
+            branches:
+              only:
+                - master
+                - /tagged-release\/.*/
+                - /run-e2e\/*./
+          requires:
+            - done_with_node_e2e_tests
+            - build_pkg_binaries
+          matrix:
+            parameters:
+              os:
+                - linux
+                - windows
       - notifications-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
@@ -11350,26 +11968,6 @@ workflows:
                 - linux
                 - windows
       - analytics-amplify_e2e_tests_pkg:
-          context:
-            - amplify-ecr-image-pull
-            - clean_e2e_resources
-            - e2e-auth-credentials
-            - e2e-test-context
-          filters:
-            branches:
-              only:
-                - master
-                - /tagged-release\/.*/
-                - /run-e2e\/*./
-          requires:
-            - done_with_node_e2e_tests
-            - build_pkg_binaries
-          matrix:
-            parameters:
-              os:
-                - linux
-                - windows
-      - geo-remove-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
             - clean_e2e_resources
@@ -11504,7 +12102,7 @@ workflows:
             parameters:
               os:
                 - linux
-      - auth_6-amplify_e2e_tests_pkg:
+      - container-hosting-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
             - clean_e2e_resources
@@ -11524,7 +12122,7 @@ workflows:
               os:
                 - linux
                 - windows
-      - hooks-amplify_e2e_tests_pkg:
+      - layer-2-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
             - clean_e2e_resources
@@ -11543,7 +12141,6 @@ workflows:
             parameters:
               os:
                 - linux
-                - windows
       - plugin-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
@@ -11584,26 +12181,6 @@ workflows:
               os:
                 - linux
                 - windows
-      - interactions-amplify_e2e_tests_pkg:
-          context:
-            - amplify-ecr-image-pull
-            - clean_e2e_resources
-            - e2e-auth-credentials
-            - e2e-test-context
-          filters:
-            branches:
-              only:
-                - master
-                - /tagged-release\/.*/
-                - /run-e2e\/*./
-          requires:
-            - done_with_node_e2e_tests
-            - build_pkg_binaries
-          matrix:
-            parameters:
-              os:
-                - linux
-                - windows
       - feature-flags-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
@@ -11623,6 +12200,26 @@ workflows:
             parameters:
               os:
                 - linux
+      - geo-remove-amplify_e2e_tests_pkg:
+          context:
+            - amplify-ecr-image-pull
+            - clean_e2e_resources
+            - e2e-auth-credentials
+            - e2e-test-context
+          filters:
+            branches:
+              only:
+                - master
+                - /tagged-release\/.*/
+                - /run-e2e\/*./
+          requires:
+            - done_with_node_e2e_tests
+            - build_pkg_binaries
+          matrix:
+            parameters:
+              os:
+                - linux
+                - windows
       - schema-auth-3-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
@@ -11718,7 +12315,7 @@ workflows:
             parameters:
               os:
                 - linux
-      - storage-amplify_e2e_tests_pkg:
+      - api_2-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
             - clean_e2e_resources
@@ -11737,27 +12334,7 @@ workflows:
             parameters:
               os:
                 - linux
-      - configure-project-amplify_e2e_tests_pkg:
-          context:
-            - amplify-ecr-image-pull
-            - clean_e2e_resources
-            - e2e-auth-credentials
-            - e2e-test-context
-          filters:
-            branches:
-              only:
-                - master
-                - /tagged-release\/.*/
-                - /run-e2e\/*./
-          requires:
-            - done_with_node_e2e_tests
-            - build_pkg_binaries
-          matrix:
-            parameters:
-              os:
-                - linux
-                - windows
-      - iam-permissions-boundary-amplify_e2e_tests_pkg:
+      - frontend_config_drift-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
             - clean_e2e_resources
@@ -11777,6 +12354,25 @@ workflows:
               os:
                 - linux
                 - windows
+      - migration-node-function-amplify_e2e_tests_pkg:
+          context:
+            - amplify-ecr-image-pull
+            - clean_e2e_resources
+            - e2e-auth-credentials
+            - e2e-test-context
+          filters:
+            branches:
+              only:
+                - master
+                - /tagged-release\/.*/
+                - /run-e2e\/*./
+          requires:
+            - done_with_node_e2e_tests
+            - build_pkg_binaries
+          matrix:
+            parameters:
+              os:
+                - linux
       - init-special-case-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
@@ -11950,7 +12546,7 @@ workflows:
               os:
                 - linux
                 - windows
-      - api_2-amplify_e2e_tests_pkg:
+      - schema-iterative-update-4-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
             - clean_e2e_resources
@@ -11969,7 +12565,7 @@ workflows:
             parameters:
               os:
                 - linux
-      - container-hosting-amplify_e2e_tests_pkg:
+      - function_5-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
             - clean_e2e_resources
@@ -11988,8 +12584,7 @@ workflows:
             parameters:
               os:
                 - linux
-                - windows
-      - layer-2-amplify_e2e_tests_pkg:
+      - pull-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
             - clean_e2e_resources
@@ -12162,7 +12757,7 @@ workflows:
             parameters:
               os:
                 - linux
-      - schema-iterative-update-4-amplify_e2e_tests_pkg:
+      - function_6-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
             - clean_e2e_resources
@@ -12181,7 +12776,7 @@ workflows:
             parameters:
               os:
                 - linux
-      - frontend_config_drift-amplify_e2e_tests_pkg:
+      - s3-sse-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
             - clean_e2e_resources
@@ -12201,25 +12796,6 @@ workflows:
               os:
                 - linux
                 - windows
-      - migration-node-function-amplify_e2e_tests_pkg:
-          context:
-            - amplify-ecr-image-pull
-            - clean_e2e_resources
-            - e2e-auth-credentials
-            - e2e-test-context
-          filters:
-            branches:
-              only:
-                - master
-                - /tagged-release\/.*/
-                - /run-e2e\/*./
-          requires:
-            - done_with_node_e2e_tests
-            - build_pkg_binaries
-          matrix:
-            parameters:
-              os:
-                - linux
       - amplify-configure-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
@@ -12375,449 +12951,6 @@ workflows:
               os:
                 - linux
       - schema-iterative-update-3-amplify_e2e_tests_pkg:
-          context:
-            - amplify-ecr-image-pull
-            - clean_e2e_resources
-            - e2e-auth-credentials
-            - e2e-test-context
-          filters:
-            branches:
-              only:
-                - master
-                - /tagged-release\/.*/
-                - /run-e2e\/*./
-          requires:
-            - done_with_node_e2e_tests
-            - build_pkg_binaries
-          matrix:
-            parameters:
-              os:
-                - linux
-      - function_5-amplify_e2e_tests_pkg:
-          context:
-            - amplify-ecr-image-pull
-            - clean_e2e_resources
-            - e2e-auth-credentials
-            - e2e-test-context
-          filters:
-            branches:
-              only:
-                - master
-                - /tagged-release\/.*/
-                - /run-e2e\/*./
-          requires:
-            - done_with_node_e2e_tests
-            - build_pkg_binaries
-          matrix:
-            parameters:
-              os:
-                - linux
-      - pull-amplify_e2e_tests_pkg:
-          context:
-            - amplify-ecr-image-pull
-            - clean_e2e_resources
-            - e2e-auth-credentials
-            - e2e-test-context
-          filters:
-            branches:
-              only:
-                - master
-                - /tagged-release\/.*/
-                - /run-e2e\/*./
-          requires:
-            - done_with_node_e2e_tests
-            - build_pkg_binaries
-          matrix:
-            parameters:
-              os:
-                - linux
-      - init-amplify_e2e_tests_pkg:
-          context:
-            - amplify-ecr-image-pull
-            - clean_e2e_resources
-            - e2e-auth-credentials
-            - e2e-test-context
-          filters:
-            branches:
-              only:
-                - master
-                - /tagged-release\/.*/
-                - /run-e2e\/*./
-          requires:
-            - done_with_node_e2e_tests
-            - build_pkg_binaries
-          matrix:
-            parameters:
-              os:
-                - linux
-                - windows
-      - amplify-app-amplify_e2e_tests_pkg:
-          context:
-            - amplify-ecr-image-pull
-            - clean_e2e_resources
-            - e2e-auth-credentials
-            - e2e-test-context
-          filters:
-            branches:
-              only:
-                - master
-                - /tagged-release\/.*/
-                - /run-e2e\/*./
-          requires:
-            - done_with_node_e2e_tests
-            - build_pkg_binaries
-          matrix:
-            parameters:
-              os:
-                - linux
-      - hostingPROD-amplify_e2e_tests_pkg:
-          context:
-            - amplify-ecr-image-pull
-            - clean_e2e_resources
-            - e2e-auth-credentials
-            - e2e-test-context
-          filters:
-            branches:
-              only:
-                - master
-                - /tagged-release\/.*/
-                - /run-e2e\/*./
-          requires:
-            - done_with_node_e2e_tests
-            - build_pkg_binaries
-          matrix:
-            parameters:
-              os:
-                - linux
-      - geo-add-amplify_e2e_tests_pkg:
-          context:
-            - amplify-ecr-image-pull
-            - clean_e2e_resources
-            - e2e-auth-credentials
-            - e2e-test-context
-          filters:
-            branches:
-              only:
-                - master
-                - /tagged-release\/.*/
-                - /run-e2e\/*./
-          requires:
-            - done_with_node_e2e_tests
-            - build_pkg_binaries
-          matrix:
-            parameters:
-              os:
-                - linux
-                - windows
-      - auth_5-amplify_e2e_tests_pkg:
-          context:
-            - amplify-ecr-image-pull
-            - clean_e2e_resources
-            - e2e-auth-credentials
-            - e2e-test-context
-          filters:
-            branches:
-              only:
-                - master
-                - /tagged-release\/.*/
-                - /run-e2e\/*./
-          requires:
-            - done_with_node_e2e_tests
-            - build_pkg_binaries
-          matrix:
-            parameters:
-              os:
-                - linux
-                - windows
-      - layer-amplify_e2e_tests_pkg:
-          context:
-            - amplify-ecr-image-pull
-            - clean_e2e_resources
-            - e2e-auth-credentials
-            - e2e-test-context
-          filters:
-            branches:
-              only:
-                - master
-                - /tagged-release\/.*/
-                - /run-e2e\/*./
-          requires:
-            - done_with_node_e2e_tests
-            - build_pkg_binaries
-          matrix:
-            parameters:
-              os:
-                - linux
-      - api_3-amplify_e2e_tests_pkg:
-          context:
-            - amplify-ecr-image-pull
-            - clean_e2e_resources
-            - e2e-auth-credentials
-            - e2e-test-context
-          filters:
-            branches:
-              only:
-                - master
-                - /tagged-release\/.*/
-                - /run-e2e\/*./
-          requires:
-            - done_with_node_e2e_tests
-            - build_pkg_binaries
-          matrix:
-            parameters:
-              os:
-                - linux
-      - env-amplify_e2e_tests_pkg:
-          context:
-            - amplify-ecr-image-pull
-            - clean_e2e_resources
-            - e2e-auth-credentials
-            - e2e-test-context
-          filters:
-            branches:
-              only:
-                - master
-                - /tagged-release\/.*/
-                - /run-e2e\/*./
-          requires:
-            - done_with_node_e2e_tests
-            - build_pkg_binaries
-          matrix:
-            parameters:
-              os:
-                - linux
-      - function_4-amplify_e2e_tests_pkg:
-          context:
-            - amplify-ecr-image-pull
-            - clean_e2e_resources
-            - e2e-auth-credentials
-            - e2e-test-context
-          filters:
-            branches:
-              only:
-                - master
-                - /tagged-release\/.*/
-                - /run-e2e\/*./
-          requires:
-            - done_with_node_e2e_tests
-            - build_pkg_binaries
-          matrix:
-            parameters:
-              os:
-                - linux
-      - schema-auth-2-amplify_e2e_tests_pkg:
-          context:
-            - amplify-ecr-image-pull
-            - clean_e2e_resources
-            - e2e-auth-credentials
-            - e2e-test-context
-          filters:
-            branches:
-              only:
-                - master
-                - /tagged-release\/.*/
-                - /run-e2e\/*./
-          requires:
-            - done_with_node_e2e_tests
-            - build_pkg_binaries
-          matrix:
-            parameters:
-              os:
-                - linux
-      - function_6-amplify_e2e_tests_pkg:
-          context:
-            - amplify-ecr-image-pull
-            - clean_e2e_resources
-            - e2e-auth-credentials
-            - e2e-test-context
-          filters:
-            branches:
-              only:
-                - master
-                - /tagged-release\/.*/
-                - /run-e2e\/*./
-          requires:
-            - done_with_node_e2e_tests
-            - build_pkg_binaries
-          matrix:
-            parameters:
-              os:
-                - linux
-      - s3-sse-amplify_e2e_tests_pkg:
-          context:
-            - amplify-ecr-image-pull
-            - clean_e2e_resources
-            - e2e-auth-credentials
-            - e2e-test-context
-          filters:
-            branches:
-              only:
-                - master
-                - /tagged-release\/.*/
-                - /run-e2e\/*./
-          requires:
-            - done_with_node_e2e_tests
-            - build_pkg_binaries
-          matrix:
-            parameters:
-              os:
-                - linux
-                - windows
-      - tags-amplify_e2e_tests_pkg:
-          context:
-            - amplify-ecr-image-pull
-            - clean_e2e_resources
-            - e2e-auth-credentials
-            - e2e-test-context
-          filters:
-            branches:
-              only:
-                - master
-                - /tagged-release\/.*/
-                - /run-e2e\/*./
-          requires:
-            - done_with_node_e2e_tests
-            - build_pkg_binaries
-          matrix:
-            parameters:
-              os:
-                - linux
-                - windows
-      - hosting-amplify_e2e_tests_pkg:
-          context:
-            - amplify-ecr-image-pull
-            - clean_e2e_resources
-            - e2e-auth-credentials
-            - e2e-test-context
-          filters:
-            branches:
-              only:
-                - master
-                - /tagged-release\/.*/
-                - /run-e2e\/*./
-          requires:
-            - done_with_node_e2e_tests
-            - build_pkg_binaries
-          matrix:
-            parameters:
-              os:
-                - linux
-      - geo-update-amplify_e2e_tests_pkg:
-          context:
-            - amplify-ecr-image-pull
-            - clean_e2e_resources
-            - e2e-auth-credentials
-            - e2e-test-context
-          filters:
-            branches:
-              only:
-                - master
-                - /tagged-release\/.*/
-                - /run-e2e\/*./
-          requires:
-            - done_with_node_e2e_tests
-            - build_pkg_binaries
-          matrix:
-            parameters:
-              os:
-                - linux
-                - windows
-      - function_3-amplify_e2e_tests_pkg:
-          context:
-            - amplify-ecr-image-pull
-            - clean_e2e_resources
-            - e2e-auth-credentials
-            - e2e-test-context
-          filters:
-            branches:
-              only:
-                - master
-                - /tagged-release\/.*/
-                - /run-e2e\/*./
-          requires:
-            - done_with_node_e2e_tests
-            - build_pkg_binaries
-          matrix:
-            parameters:
-              os:
-                - linux
-      - migration-api-key-migration1-amplify_e2e_tests_pkg:
-          context:
-            - amplify-ecr-image-pull
-            - clean_e2e_resources
-            - e2e-auth-credentials
-            - e2e-test-context
-          filters:
-            branches:
-              only:
-                - master
-                - /tagged-release\/.*/
-                - /run-e2e\/*./
-          requires:
-            - done_with_node_e2e_tests
-            - build_pkg_binaries
-          matrix:
-            parameters:
-              os:
-                - linux
-      - import_auth_1-amplify_e2e_tests_pkg:
-          context:
-            - amplify-ecr-image-pull
-            - clean_e2e_resources
-            - e2e-auth-credentials
-            - e2e-test-context
-          filters:
-            branches:
-              only:
-                - master
-                - /tagged-release\/.*/
-                - /run-e2e\/*./
-          requires:
-            - done_with_node_e2e_tests
-            - build_pkg_binaries
-          matrix:
-            parameters:
-              os:
-                - linux
-      - auth_2-amplify_e2e_tests_pkg:
-          context:
-            - amplify-ecr-image-pull
-            - clean_e2e_resources
-            - e2e-auth-credentials
-            - e2e-test-context
-          filters:
-            branches:
-              only:
-                - master
-                - /tagged-release\/.*/
-                - /run-e2e\/*./
-          requires:
-            - done_with_node_e2e_tests
-            - build_pkg_binaries
-          matrix:
-            parameters:
-              os:
-                - linux
-      - schema-function-amplify_e2e_tests_pkg:
-          context:
-            - amplify-ecr-image-pull
-            - clean_e2e_resources
-            - e2e-auth-credentials
-            - e2e-test-context
-          filters:
-            branches:
-              only:
-                - master
-                - /tagged-release\/.*/
-                - /run-e2e\/*./
-          requires:
-            - done_with_node_e2e_tests
-            - build_pkg_binaries
-          matrix:
-            parameters:
-              os:
-                - linux
-      - api_1-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
             - clean_e2e_resources
