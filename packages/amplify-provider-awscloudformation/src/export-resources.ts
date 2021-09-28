@@ -157,6 +157,7 @@ async function revertToBackup(amplifyExportFolder: string) {
 async function createBackup(amplifyExportFolder: string) {
   await fs.copy(amplifyExportFolder, `${amplifyExportFolder}-${backup}`);
 }
+
 /**
  * Transforms the stackparameters file path to convert into the export manifest file
  * @param stackParameters
