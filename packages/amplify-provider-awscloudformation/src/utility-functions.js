@@ -71,6 +71,7 @@ module.exports = {
     for (const resource of options.resourcesToBuild) {
       await transformResourceWithOverrides(context, resource);
     }
+    await transformResourceWithOverrides(context);
   },
 
   newSecret: async (context, options) => {

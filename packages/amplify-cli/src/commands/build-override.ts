@@ -1,13 +1,14 @@
 import { $TSContext, IAmplifyResource } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
+import { Console } from 'console';
 /**
  * Command to transform CFN with overrides
  */
 const subcommand = 'build-override';
 
 export const run = async (context: $TSContext) => {
-  let resourceName = context?.input?.subCommands?.[0];
-  const categoryName = context?.input?.subCommands?.[1];
+  const categoryName = context?.input?.subCommands?.[0];
+  let resourceName = context?.input?.subCommands?.[1];
 
   if (categoryName === undefined) {
     // if no category is mentioned , then defaults to all resource
@@ -16,14 +17,19 @@ export const run = async (context: $TSContext) => {
 
   try {
     const resourcesToBuild: IAmplifyResource[] = await getResources(context);
-    let filteredResources = {};
+    let filteredResources: IAmplifyResource[] = resourcesToBuild;
     if (categoryName) {
-      filteredResources = resourcesToBuild.filter(resource => resource.category === categoryName);
+      filteredResources = filteredResources.filter(resource => resource.category === categoryName);
     }
     if (categoryName && resourceName) {
-      filteredResources = resourcesToBuild.filter(resource => resource.category === categoryName && resource.resourceName === resourceName);
+      filteredResources = filteredResources.filter(
+        resource => resource.category === categoryName && resource.resourceName === resourceName,
+      );
     }
-    for (const resource of resourcesToBuild) {
+    if (!categoryName && !resourceName) {
+      await context.amplify.invokePluginMethod(context, 'awscloudformation', undefined, 'transformResourceWithOverrides', [context]);
+    }
+    for (const resource of filteredResources) {
       await context.amplify.invokePluginMethod(context, 'awscloudformation', undefined, 'transformResourceWithOverrides', [
         context,
         resource,
