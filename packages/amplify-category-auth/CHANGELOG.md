@@ -3,6 +3,50 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.38.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.38.1...amplify-category-auth@2.38.2) (2021-09-27)
+
+
+### Bug Fixes
+
+* add missing await, fix import paths ([#8199](https://github.com/aws-amplify/amplify-cli/issues/8199)) ([51c4dd9](https://github.com/aws-amplify/amplify-cli/commit/51c4dd9c021d894fe2c06fc005e1e1960fe4529c))
+* **amplify-category-auth:** update front end config on pull ([#8173](https://github.com/aws-amplify/amplify-cli/issues/8173)) ([da2b008](https://github.com/aws-amplify/amplify-cli/commit/da2b0083add2f5b10520efade8628080a34c8791))
+
+
+
+
+
+## [2.38.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.38.0...amplify-category-auth@2.38.1) (2021-09-20)
+
+
+
+## 6.0.1 (2021-09-20)
+
+
+### Bug Fixes
+
+* **amplify-category-auth:** handle undefined aliasattributes ([#8222](https://github.com/aws-amplify/amplify-cli/issues/8222)) ([c3b89af](https://github.com/aws-amplify/amplify-cli/commit/c3b89afbc410dd5de7964a8002dd4dc459199d00))
+
+
+
+
+
+# [2.38.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.37.0...amplify-category-auth@2.38.0) (2021-09-18)
+
+
+### Bug Fixes
+
+* added warning for usernameAttributes ([#8202](https://github.com/aws-amplify/amplify-cli/issues/8202)) ([b56eef0](https://github.com/aws-amplify/amplify-cli/commit/b56eef07a42b6d44f3834a4f204bd029eb653a2e))
+* **amplify-category-auth:** check for undefined aliasAttributes ([#8203](https://github.com/aws-amplify/amplify-cli/issues/8203)) ([c68dda1](https://github.com/aws-amplify/amplify-cli/commit/c68dda1888efe4fcc6d837864a50db54630cff5e))
+
+
+### Features
+
+* **amplify-category-auth:** use usernameAttributes by default, FF for aliasAttributes ([#8188](https://github.com/aws-amplify/amplify-cli/issues/8188)) ([f3044ee](https://github.com/aws-amplify/amplify-cli/commit/f3044eeff21fa900da5aac613db87502526bc165))
+
+
+
+
+
 # [2.37.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.36.5...amplify-category-auth@2.37.0) (2021-09-14)
 
 

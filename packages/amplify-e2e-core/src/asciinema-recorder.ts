@@ -58,6 +58,7 @@ export class Recorder {
       cols: this.cols,
       rows: this.rows,
       cwd: this.cwd,
+      useConpty: false,
       ...this.options,
     });
     this.addFrame(this.renderPrompt(this.cwd, this.cmd, this.args));

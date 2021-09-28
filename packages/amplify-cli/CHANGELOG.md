@@ -3,6 +3,55 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [6.1.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@6.0.1...@aws-amplify/cli@6.1.0) (2021-09-27)
+
+
+### Bug Fixes
+
+* **amplify-category-auth:** update front end config on pull ([#8173](https://github.com/aws-amplify/amplify-cli/issues/8173)) ([da2b008](https://github.com/aws-amplify/amplify-cli/commit/da2b0083add2f5b10520efade8628080a34c8791))
+
+
+### Features
+
+* Flag to allow schema changes that require table replacement ([#8144](https://github.com/aws-amplify/amplify-cli/issues/8144)) ([2d4e65a](https://github.com/aws-amplify/amplify-cli/commit/2d4e65acfd034d33c6fa8ac1f5f8582e7e3bc399))
+
+
+### Reverts
+
+* Revert "feat: Flag to allow schema changes that require table replacement (#8144)" (#8268) ([422dd04](https://github.com/aws-amplify/amplify-cli/commit/422dd04425c72aa7276e086d38ce4d5f4681f9f3)), closes [#8144](https://github.com/aws-amplify/amplify-cli/issues/8144) [#8268](https://github.com/aws-amplify/amplify-cli/issues/8268)
+
+
+
+
+
+## [6.0.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@6.0.0...@aws-amplify/cli@6.0.1) (2021-09-20)
+
+**Note:** Version bump only for package @aws-amplify/cli
+
+
+
+
+
+# [6.0.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@5.6.0...@aws-amplify/cli@6.0.0) (2021-09-18)
+
+
+
+# 6.0.0 (2021-09-17)
+
+
+### chore
+
+* bump up major version ([#8209](https://github.com/aws-amplify/amplify-cli/issues/8209)) ([53295a2](https://github.com/aws-amplify/amplify-cli/commit/53295a2333dab0e03815db600fdf9bebe39e2e81)), closes [pr#8188](https://github.com/pr/issues/8188)
+
+
+### BREAKING CHANGES
+
+* make usernameAttributes the default behavior for cognito userpools
+
+
+
+
+
 # [5.6.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@5.5.0...@aws-amplify/cli@5.6.0) (2021-09-14)
 
 

@@ -297,6 +297,7 @@ module.exports = {
     '/packages/amplify-category-api/lib',
     '/packages/amplify-category-auth/lib',
     '/packages/amplify-category-function/lib',
+    '/packages/amplify-category-geo/lib',
     '/packages/amplify-category-storage/lib',
     '/packages/amplify-cli-core/lib',
     '/packages/amplify-cli/lib',

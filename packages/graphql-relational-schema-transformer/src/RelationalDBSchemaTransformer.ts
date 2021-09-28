@@ -12,7 +12,7 @@ import {
 } from './RelationalDBSchemaTransformerUtils';
 import { RelationalDBParsingException } from './RelationalDBParsingException';
 import { IRelationalDBReader } from './IRelationalDBReader';
-import { toUpper } from 'graphql-transformer-common';
+import { plurality, toUpper } from 'graphql-transformer-common';
 
 /**
  * This class is used to transition all of the columns and key metadata from a table for use
@@ -84,30 +84,39 @@ export class TemplateContext {
 export class RelationalDBSchemaTransformer {
   dbReader: IRelationalDBReader;
   database: string;
+  improvePluralization: boolean;
 
-  constructor(dbReader: IRelationalDBReader, database: string) {
+  constructor(dbReader: IRelationalDBReader, database: string, improvePluralization: boolean) {
     this.dbReader = dbReader;
     this.database = database;
+    this.improvePluralization = improvePluralization;
   }
 
-  public introspectDatabaseSchema = async (): Promise<TemplateContext> => {
+  public introspectDatabaseSchema = async (): Promise<TemplateContext | null> => {
     // Get all of the tables within the provided db
     let tableNames = null;
+
     try {
       tableNames = await this.dbReader.listTables();
     } catch (err) {
       throw new RelationalDBParsingException(`Failed to list tables in ${this.database}`, err.stack);
     }
 
-    let typeContexts = new Array();
-    let types = new Array();
-    let pkeyMap = new Map<string, string>();
-    let pkeyTypeMap = new Map<string, string>();
-    let stringFieldMap = new Map<string, string[]>();
-    let intFieldMap = new Map<string, string[]>();
+    // Return early if there are no tables in the database
+    if (tableNames.length === 0) {
+      return null;
+    }
+
+    const typeContexts = new Array();
+    const types = new Array();
+    const pkeyMap = new Map<string, string>();
+    const pkeyTypeMap = new Map<string, string>();
+    const stringFieldMap = new Map<string, string[]>();
+    const intFieldMap = new Map<string, string[]>();
 
     for (const tableName of tableNames) {
       let type: TableContext = null;
+
       try {
         type = await this.dbReader.describeTable(tableName);
       } catch (err) {
@@ -139,15 +148,18 @@ export class RelationalDBSchemaTransformer {
       }
     }
 
-    // Generate the mutations and queries based on the table structures
-    types.push(this.getMutations(typeContexts));
-    types.push(this.getQueries(typeContexts));
-    types.push(this.getSubscriptions(typeContexts));
-    types.push(this.getSchemaType());
+    if (typeContexts.length > 0) {
+      // Generate the mutations and queries based on the table structures
+      types.push(this.getMutations(typeContexts));
+      types.push(this.getQueries(typeContexts));
+      types.push(this.getSubscriptions(typeContexts));
+      types.push(this.getSchemaType());
+    }
 
     let context = this.dbReader.hydrateTemplateContext(
       new TemplateContext({ kind: Kind.DOCUMENT, definitions: types }, pkeyMap, stringFieldMap, intFieldMap, pkeyTypeMap),
     );
+
     return context;
   };
 
@@ -177,9 +189,11 @@ export class RelationalDBSchemaTransformer {
    */
   private getMutations(types: TableContext[]): ObjectTypeDefinitionNode {
     const fields = [];
+
     for (const typeContext of types) {
       const type = typeContext.tableTypeDefinition;
       const formattedTypeValue = toUpper(type.name.value);
+
       fields.push(
         getOperationFieldDefinition(
           `delete${formattedTypeValue}`,
@@ -188,6 +202,7 @@ export class RelationalDBSchemaTransformer {
           null,
         ),
       );
+
       fields.push(
         getOperationFieldDefinition(
           `create${formattedTypeValue}`,
@@ -196,6 +211,7 @@ export class RelationalDBSchemaTransformer {
           null,
         ),
       );
+
       fields.push(
         getOperationFieldDefinition(
           `update${formattedTypeValue}`,
@@ -205,6 +221,7 @@ export class RelationalDBSchemaTransformer {
         ),
       );
     }
+
     return getTypeDefinition(fields, 'Mutation');
   }
 
@@ -217,15 +234,18 @@ export class RelationalDBSchemaTransformer {
    */
   private getSubscriptions(types: TableContext[]): ObjectTypeDefinitionNode {
     const fields = [];
+
     for (const typeContext of types) {
       const type = typeContext.tableTypeDefinition;
       const formattedTypeValue = toUpper(type.name.value);
+
       fields.push(
         getOperationFieldDefinition(`onCreate${formattedTypeValue}`, [], getNamedType(`${type.name.value}`), [
           getDirectiveNode(`create${formattedTypeValue}`),
         ]),
       );
     }
+
     return getTypeDefinition(fields, 'Subscription');
   }
 
@@ -238,9 +258,11 @@ export class RelationalDBSchemaTransformer {
    */
   private getQueries(types: TableContext[]): ObjectTypeDefinitionNode {
     const fields = [];
+
     for (const typeContext of types) {
       const type = typeContext.tableTypeDefinition;
       const formattedTypeValue = toUpper(type.name.value);
+
       fields.push(
         getOperationFieldDefinition(
           `get${formattedTypeValue}`,
@@ -249,10 +271,13 @@ export class RelationalDBSchemaTransformer {
           null,
         ),
       );
+
       // use list type node to match the ast of current schema built by graphql.parse
       const nameListType = getSingletonListTypeNode(type.name.value);
-      fields.push(getOperationFieldDefinition(`list${formattedTypeValue}s`, [], nameListType, null));
+
+      fields.push(getOperationFieldDefinition(`list${plurality(formattedTypeValue, this.improvePluralization)}`, [], nameListType, null));
     }
+
     return getTypeDefinition(fields, 'Query');
   }
 

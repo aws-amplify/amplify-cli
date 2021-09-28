@@ -77,7 +77,7 @@ export class SearchableModelTransformer extends TransformerPluginBase {
       expression: Fn.conditionNot(Fn.conditionEquals(envParam, ResourceConstants.NONE)),
     });
 
-    const isProjectUsingDataStore = false;
+    const isProjectUsingDataStore = context.isProjectUsingDataStore();
 
     stack.templateOptions.description = 'An auto-generated nested stack for searchable.';
     stack.templateOptions.templateFormatVersion = '2010-09-09';
@@ -86,7 +86,7 @@ export class SearchableModelTransformer extends TransformerPluginBase {
 
     const domain = createSearchableDomain(stack, parameterMap, context.api.apiId);
 
-    const openSearchRole = createSearchableDomainRole(stack, parameterMap, context.api.apiId, envParam);
+    const openSearchRole = createSearchableDomainRole(context, stack, parameterMap);
 
     domain.grantReadWrite(openSearchRole);
 
@@ -99,7 +99,7 @@ export class SearchableModelTransformer extends TransformerPluginBase {
     );
 
     // streaming lambda role
-    const lambdaRole = createLambdaRole(stack, parameterMap);
+    const lambdaRole = createLambdaRole(context, stack, parameterMap);
     domain.grantWrite(lambdaRole);
 
     // creates streaming lambda

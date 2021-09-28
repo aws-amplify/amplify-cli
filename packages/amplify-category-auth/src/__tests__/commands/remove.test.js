@@ -1,5 +1,9 @@
+const { printer } = require('amplify-prompts');
 const remove = require('../../commands/auth/remove');
 const { messages } = require('../../provider-utils/awscloudformation/assets/string-maps');
+
+jest.mock('amplify-prompts');
+printer.info = jest.fn();
 
 describe('auth remove: ', () => {
   const mockExecuteProviderUtils = jest.fn();
@@ -12,9 +16,6 @@ describe('auth remove: ', () => {
       executeProviderUtils: mockExecuteProviderUtils,
       getProjectDetails: mockGetProjectDetails,
       removeResource: mockRemoveResource,
-    },
-    print: {
-      info: jest.fn(),
     },
     parameters: {
       first: 'mockFirst',
@@ -39,10 +40,12 @@ describe('auth remove: ', () => {
           amplifyMeta,
         });
       });
+
       it(`remove method should detect existing ${d} metadata and display warning`, async () => {
         await remove.run(mockContext);
-        expect(mockContext.print.info).toBeCalledWith(warningString);
+        expect(printer.info).toBeCalledWith(warningString);
       });
+
       it(`remove method should still be called even when warning displayed for existing ${d} resource`, async () => {
         await remove.run(mockContext);
         expect(mockContext.amplify.removeResource).toBeCalled();
@@ -60,13 +63,15 @@ describe('auth remove: ', () => {
         amplifyMeta: {},
       });
     });
+
     it('service selection prompt should be called', async () => {
       await remove.run(mockContext);
       expect(mockContext.amplify.removeResource).toBeCalled();
     });
+
     it('should not display a warning for existing resources', async () => {
       await remove.run(mockContext);
-      expect(mockContext.print.info).not.toBeCalledWith(warningString);
+      expect(printer.info).not.toBeCalledWith(warningString);
     });
   });
 });
