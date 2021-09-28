@@ -2,7 +2,7 @@ import fs from 'fs-extra';
 import { $TSContext, getPackageManager } from '../index';
 import execa from 'execa';
 import * as path from 'path';
-import { printer } from 'amplify-prompts';
+import { printer, prompter } from 'amplify-prompts';
 import { JSONUtilities } from '../jsonUtilities';
 
 export const generateOverrideSkeleton = async (context: $TSContext, srcResourceDirPath: string, destDirPath: string): Promise<void> => {
@@ -25,10 +25,13 @@ export const generateOverrideSkeleton = async (context: $TSContext, srcResourceD
   await buildOverrideDir(backendDir, destDirPath);
 
   printer.success(`Successfully generated "override.ts" folder at ${destDirPath}`);
-  await context.amplify.openEditor(context, overrideFile);
+  const isOpen = await prompter.confirmContinue('Do you want to edit override.ts file now?');
+  if (isOpen) {
+    await context.amplify.openEditor(context, overrideFile);
+  }
 };
 
-export async function buildOverrideDir(cwd: string, destDirPath: string) {
+export async function buildOverrideDir(cwd: string, destDirPath: string): Promise<boolean> {
   const packageManager = getPackageManager(cwd);
 
   if (packageManager === null) {
@@ -41,6 +44,15 @@ export async function buildOverrideDir(cwd: string, destDirPath: string) {
       stdio: 'pipe',
       encoding: 'utf-8',
     });
+    // run tsc build to build override.ts file
+    const tsConfigDir = path.join(destDirPath, 'build');
+    const tsConfigFilePath = path.join(tsConfigDir, 'tsconfig.resource.json');
+    execa.sync('tsc', [`--project`, `${tsConfigFilePath}`], {
+      cwd: tsConfigDir,
+      stdio: 'pipe',
+      encoding: 'utf-8',
+    });
+    return true;
   } catch (error) {
     if ((error as any).code === 'ENOENT') {
       throw new Error(`Packaging overrides failed. Could not find ${packageManager} executable in the PATH.`);
@@ -48,15 +60,6 @@ export async function buildOverrideDir(cwd: string, destDirPath: string) {
       throw new Error(`Packaging overrides failed with the error \n${error.message}`);
     }
   }
-
-  // run tsc build to build override.ts file
-  const tsConfigDir = path.join(destDirPath, 'build');
-  const tsConfigFilePath = path.join(tsConfigDir, 'tsconfig.resource.json');
-  execa.sync('tsc', [`--project`, `${tsConfigFilePath}`], {
-    cwd: tsConfigDir,
-    stdio: 'pipe',
-    encoding: 'utf-8',
-  });
 }
 
 export const generateAmplifyOverrideProjectBuildFiles = (backendDir: string, srcResourceDirPath: string) => {
@@ -64,12 +67,14 @@ export const generateAmplifyOverrideProjectBuildFiles = (backendDir: string, src
   const tsConfigFilePath = path.join(backendDir, 'tsconfig.json');
   // add package.json to amplofy backend
   if (!fs.existsSync(packageJSONFilePath)) {
-    JSONUtilities.writeJson(packageJSONFilePath, JSONUtilities.readJson(path.join(srcResourceDirPath, 'package.json')));
+    const packageJson = JSONUtilities.readJson(path.join(srcResourceDirPath, 'package.json'));
+    JSONUtilities.writeJson(packageJSONFilePath, packageJson);
   }
 
   // add tsConfig.json to amplify backend
   if (!fs.existsSync(tsConfigFilePath)) {
-    JSONUtilities.writeJson(tsConfigFilePath, JSONUtilities.readJson(path.join(srcResourceDirPath, 'tsconfig.json')));
+    const tsConfigJson = JSONUtilities.readJson(path.join(srcResourceDirPath, 'tsconfig.json'));
+    JSONUtilities.writeJson(tsConfigFilePath, tsConfigJson);
   }
 };
 
