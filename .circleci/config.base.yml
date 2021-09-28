@@ -366,6 +366,30 @@ jobs:
           path: ~/repo/packages/amplify-migration-tests/amplify-migration-reports
     working_directory: ~/repo
 
+  amplify_migration_tests_overrides:
+    <<: *defaults
+    environment:
+      AMPLIFY_PATH: /home/circleci/.npm-global/lib/node_modules/@aws-amplify/cli/bin/amplify
+    steps:
+      - attach_workspace:
+          at: ./
+      - restore_cache:
+          key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
+      - run:
+          name: Run tests migrating from CLI v6.0.1
+          command: |
+            source .circleci/local_publish_helpers.sh
+            changeNpmGlobalPath
+            cd packages/amplify-migration-tests
+            yarn run migration_v6.0.1 --maxWorkers=3 $TEST_SUITE
+          no_output_timeout: 90m
+      - run: *scan_e2e_test_artifacts
+      - store_test_results:
+          path: packages/amplify-migration-tests/
+      - store_artifacts:
+          path: ~/repo/packages/amplify-migration-tests/amplify-migration-reports
+    working_directory: ~/repo
+
   amplify_migration_tests_v4_30_0:
     <<: *defaults
     environment:
