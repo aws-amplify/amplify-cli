@@ -3,6 +3,10 @@
     "compilerOptions": {
       "outDir": "./lib",
       "rootDir": "./src",
-    }
-  }
+      "module": "ESNext"
+    },
+  "references": [
+    { "path": "../amplify-provider-awscloudformation" },
+    ]
+}
   
