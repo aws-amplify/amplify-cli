@@ -939,6 +939,7 @@ workflows:
             - graphql_e2e_tests
             - integration_test
             - done_with_pkg_e2e_tests
+            - done_with_node_e2e_tests
             - amplify_sudo_install_test
             - amplify_console_integration_tests
             - amplify_migration_tests_latest
