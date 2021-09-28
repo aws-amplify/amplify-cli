@@ -1,9 +1,10 @@
-import { $TSContext } from 'amplify-cli-core';
+import { $TSContext, FeatureFlags, Template, pathManager, PathConstants, stateManager, JSONUtilities } from 'amplify-cli-core';
 import _ from 'lodash';
+import { transformRootStack } from './override-manager';
+import { rootStackFileName } from './push-resources';
 
 const moment = require('moment');
 const path = require('path');
-const { pathManager, PathConstants, stateManager, JSONUtilities } = require('amplify-cli-core');
 const glob = require('glob');
 const archiver = require('./utils/archiver');
 const fs = require('fs-extra');
@@ -20,7 +21,6 @@ const { prePushCfnTemplateModifier } = require('./pre-push-cfn-processor/pre-pus
 const logger = fileLogger('attach-backend');
 const { configurePermissionsBoundaryForInit } = require('./permissions-boundary/permissions-boundary');
 const { uploadHooksDirectory } = require('./utils/hooks-manager');
-
 export async function run(context) {
   await configurationManager.init(context);
   if (!context.exeInfo || context.exeInfo.isNewEnv) {
@@ -43,19 +43,25 @@ export async function run(context) {
     };
     const { amplifyAppId, verifiedStackName, deploymentBucketName } = await amplifyServiceManager.init(amplifyServiceParams);
 
+    // start root stack builder and deploy
+
+    // moved cfn build to next its builder
     stackName = verifiedStackName;
     const Tags = context.amplify.getTags(context);
 
     const authRoleName = `${stackName}-authRole`;
     const unauthRoleName = `${stackName}-unauthRole`;
 
-    const rootStack = JSONUtilities.readJson(initTemplateFilePath);
+    const rootStack = JSONUtilities.readJson<Template>(initTemplateFilePath);
+
     await prePushCfnTemplateModifier(rootStack);
+
     // Track Amplify Console generated stacks
     if (!!process.env.CLI_DEV_INTERNAL_DISABLE_AMPLIFY_APP_DELETION) {
       rootStack.Description = 'Root Stack for AWS Amplify Console';
     }
 
+    // deploy steps
     const params = {
       StackName: stackName,
       Capabilities: ['CAPABILITY_NAMED_IAM', 'CAPABILITY_AUTO_EXPAND'],
@@ -165,12 +171,36 @@ function cloneCLIJSONForNewEnvironment(context) {
 export async function onInitSuccessful(context) {
   configurationManager.onInitSuccessful(context);
   if (context.exeInfo.isNewEnv) {
+    if (FeatureFlags.getBoolean('overrides.project')) {
+      await storeRootStackTemplate(context);
+    }
     context = await storeCurrentCloudBackend(context);
     await storeArtifactsForAmplifyService(context);
     await uploadHooksDirectory(context);
   }
   return context;
 }
+
+export const storeRootStackTemplate = async (context: $TSContext, template?: Template) => {
+  // generate template again as the folder structure was not created when root stack was initiaized
+  if (template === undefined) {
+    template = await transformRootStack(context);
+    await prePushCfnTemplateModifier(template);
+  }
+
+  // RootStack deployed to backend/awscloudformation/build
+  const projectRoot = pathManager.findProjectRoot();
+  const rootStackBackendBuildDir = pathManager.getRootStackBuildDirPath(projectRoot);
+  const rootStackCloudBackendBuildDir = pathManager.getCurrentCloudRootStackDirPath(projectRoot);
+
+  fs.ensureDirSync(rootStackBackendBuildDir);
+  const rootStackBackendFilePath = path.join(rootStackBackendBuildDir, rootStackFileName);
+  const rootStackCloudBackendFilePath = path.join(rootStackCloudBackendBuildDir, rootStackFileName);
+
+  JSONUtilities.writeJson(rootStackBackendFilePath, template);
+  // copy the awscloudformation backend to #current-cloud-backend
+  fs.copySync(rootStackBackendFilePath, rootStackCloudBackendFilePath);
+};
 
 function storeCurrentCloudBackend(context) {
   const zipFilename = '#current-cloud-backend.zip';

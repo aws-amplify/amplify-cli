@@ -249,6 +249,7 @@ export interface ICategoryStatusCollection {
   resourcesToBeUpdated: any[];
   resourcesToBeDeleted: any[];
   resourcesToBeSynced: any[];
+  rootStackUpdated?: boolean;
   allResources: any[];
   tagsUpdated: boolean;
 }
