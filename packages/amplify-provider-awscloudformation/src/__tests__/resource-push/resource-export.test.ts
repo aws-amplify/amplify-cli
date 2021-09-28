@@ -1,13 +1,5 @@
-import {
-  $TSContext,
-  CFNTemplateFormat,
-  JSONUtilities,
-  pathManager,
-  readCFNTemplate,
-  stateManager,
-  writeCFNTemplate,
-} from 'amplify-cli-core';
-import { DeploymentResources, ResourceDeployType } from '../../resource-push/Types';
+import { $TSContext, CFNTemplateFormat, JSONUtilities, pathManager, readCFNTemplate, stateManager } from 'amplify-cli-core';
+import { DeploymentResources, PackagedResourceDefinition, ResourceDeployType, StackParameters } from '../../resource-push/Types';
 import * as fs from 'fs-extra';
 
 const mockMeta = jest.fn(() => {
@@ -251,7 +243,7 @@ import path from 'path';
 import { ResourceExport } from '../../resource-push/ResourceExport';
 import { Template } from 'cloudform-types';
 
-describe.only('test resource export', () => {
+describe('test resource export', () => {
   const exportPath = './exportPath';
   const mockContext = {
     amplify: {
@@ -273,18 +265,24 @@ describe.only('test resource export', () => {
     resourceExport = new ResourceExport(mockContext, exportPath);
   });
 
+  let invokePluginCount: number = 1;
+  let packagedResources: PackagedResourceDefinition[] = [];
+  let exportStackParameters: StackParameters;
+
   test('resource Export is defined', async () => {
     expect(resourceExport).toBeDefined();
     expect(resourceExport.deployType).toEqual(ResourceDeployType.Export);
     expect(mockMeta).toBeCalledTimes(1);
-    const packagedResources = await resourceExport.packageBuildWriteResources(mockResource);
+  });
+
+  test('resource Export build and write', async () => {
+    packagedResources = await resourceExport.packageBuildWriteResources(mockResource);
     expect(packagedResources).not.toContain({
       service: '',
       resourceName: 'awscloudformation',
       category: 'providers',
     });
 
-    let invokePluginCount: number = 1;
     const resourcesWithoutProvider = mockResource.allResources.filter(r => r.category !== 'providers');
     resourcesWithoutProvider
       .filter(r => r.service === 'LambdaLayer')
@@ -334,7 +332,9 @@ describe.only('test resource export', () => {
       });
 
     expect(mockTransformGql).toBeCalledTimes(1);
+  });
 
+  test('resource Export write resources to destination', async () => {
     await resourceExport.writeResourcesToDestination(packagedResources);
 
     let copyCount = 1;
@@ -358,7 +358,6 @@ describe.only('test resource export', () => {
       }
 
       if (resource.service === 'AppSync') {
-        const folders = ['functions', 'pipelineFunctions', 'resolvers', 'stacks', 'schema.graphql'];
         expect(fs_mock.copy).nthCalledWith(
           copyCount++,
           path.join('backend', resource.category, resource.resourceName, 'build', 'functions'),
@@ -423,7 +422,11 @@ describe.only('test resource export', () => {
         },
       );
     }
+  });
+
+  test('resource Export generate and transform cfn category resources', async () => {
     const { stackParameters, transformedResources } = await resourceExport.generateAndTransformCfnResources(packagedResources);
+    exportStackParameters = stackParameters;
     expect(stackParameters).toBeDefined();
     expect(transformedResources).toBeDefined();
     expect(mockconsolidateApiGatewayPolicies).toBeCalledWith(mockContext, 'amplify-amplifyexportest-dev-172019');
@@ -434,7 +437,10 @@ describe.only('test resource export', () => {
       mockContext,
       apiResource,
     ]);
-    const parameters = await resourceExport.generateAndWriteRootStack(stackParameters);
+  });
+
+  test('resource Export generate and write Root Stack', async () => {
+    const parameters = await resourceExport.generateAndWriteRootStack(exportStackParameters);
 
     expect(Object.keys(parameters).length).toBeLessThan(2);
   });

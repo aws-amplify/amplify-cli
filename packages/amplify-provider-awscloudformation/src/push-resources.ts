@@ -73,14 +73,8 @@ export async function run(context: $TSContext, resourceDefinition: $TSObject) {
   let layerResources = [];
 
   try {
-    const {
-      resourcesToBeCreated,
-      resourcesToBeUpdated,
-      resourcesToBeSynced,
-      resourcesToBeDeleted,
-      tagsUpdated,
-      allResources,
-    } = resourceDefinition;
+    const { resourcesToBeCreated, resourcesToBeUpdated, resourcesToBeSynced, resourcesToBeDeleted, tagsUpdated, allResources } =
+      resourceDefinition;
     const cloudformationMeta = context.amplify.getProjectMeta().providers.awscloudformation;
     const {
       parameters: { options },
@@ -842,7 +836,7 @@ export async function formNestedStack(
   let authResourceName: string;
 
   const { APIGatewayAuthURL, NetworkStackS3Url, AuthTriggerTemplateURL } = amplifyMeta.providers[constants.ProviderName];
-
+  const { envName } = stateManager.getLocalEnvInfo();
   if (APIGatewayAuthURL) {
     const stack = {
       Type: 'AWS::CloudFormation::Stack',
@@ -855,7 +849,7 @@ export async function formNestedStack(
           unauthRoleName: {
             Ref: 'UnauthRoleName',
           },
-          env: context.exeInfo.localEnvInfo.envName,
+          env: envName,
         },
       },
     };
@@ -880,7 +874,7 @@ export async function formNestedStack(
       Properties: {
         TemplateURL: AuthTriggerTemplateURL,
         Parameters: {
-          env: context.exeInfo.localEnvInfo.envName,
+          env: envName,
         },
       },
       DependsOn: [],
@@ -1033,14 +1027,8 @@ export async function formNestedStack(
         // If auth is imported check the parameters section of the nested template
         // and if it has auth or unauth role arn or name or userpool id, then inject it from the
         // imported auth resource's properties
-        const {
-          imported,
-          userPoolId,
-          authRoleArn,
-          authRoleName,
-          unauthRoleArn,
-          unauthRoleName,
-        } = context.amplify.getImportedAuthProperties(context);
+        const { imported, userPoolId, authRoleArn, authRoleName, unauthRoleArn, unauthRoleName } =
+          context.amplify.getImportedAuthProperties(context);
 
         if (category !== 'auth' && resourceDetails.service !== 'Cognito' && imported) {
           if (parameters.AuthCognitoUserPoolId) {
