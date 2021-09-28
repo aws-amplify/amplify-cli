@@ -42,6 +42,7 @@ import { transformResourceWithOverrides } from './override-manager';
 export { transformResourceWithOverrides } from './override-manager';
 import { rootStackFileName } from './push-resources';
 export { rootStackFileName } from './push-resources';
+export { AmplifyRootStackTemplate } from './root-stack-builder';
 
 function init(context) {
   return initializer.run(context);

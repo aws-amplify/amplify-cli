@@ -15,7 +15,7 @@ export function amplifyPush(cwd: string, testingWithLatestCodebase: boolean = fa
     spawn(getCLIPath(testingWithLatestCodebase), ['status', '-v'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
       .wait(/.*/)
       .run((err: Error) => {
-        if ( err ){
+        if (err) {
           reject(err);
         }
       });
@@ -251,6 +251,31 @@ export function amplifyPushWithNoChanges(cwd: string, testingWithLatestCodebase:
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(testingWithLatestCodebase), ['push'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
       .wait('No changes detected')
-      .run((err: Error) => err ? reject(err) : resolve());
+      .run((err: Error) => (err ? reject(err) : resolve()));
+  });
+}
+
+export function amplifyPushOverride(cwd: string, testingWithLatestCodebase: boolean = false): Promise<void> {
+  return new Promise((resolve, reject) => {
+    //Test detailed status
+    spawn(getCLIPath(testingWithLatestCodebase), ['status', '-v'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
+      .wait(/.*/)
+      .run((err: Error) => {
+        if (err) {
+          reject(err);
+        }
+      });
+    //Test amplify push
+    spawn(getCLIPath(testingWithLatestCodebase), ['push'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
+      .wait('Are you sure you want to continue?')
+      .sendConfirmYes()
+      .wait(/.*/)
+      .run((err: Error) => {
+        if (!err) {
+          resolve();
+        } else {
+          reject(err);
+        }
+      });
   });
 }

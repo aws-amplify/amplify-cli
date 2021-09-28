@@ -1,10 +1,9 @@
 import { AmplifyRootStackTemplate } from './types';
-import { $TSContext, CFNTemplateFormat, Template, pathManager, writeCFNTemplate } from 'amplify-cli-core';
+import { $TSContext, CFNTemplateFormat, Template, pathManager, writeCFNTemplate, buildOverrideDir } from 'amplify-cli-core';
 import { AmplifyRootStack, AmplifyRootStackOutputs } from './root-stack-builder';
 import { RootStackSythesizer } from './stack-synthesizer';
 import { App } from '@aws-cdk/core';
 import * as cdk from '@aws-cdk/core';
-import { buildOverrideDir } from 'amplify-cli-core';
 import * as path from 'path';
 import * as amplifyPrinter from 'amplify-prompts';
 

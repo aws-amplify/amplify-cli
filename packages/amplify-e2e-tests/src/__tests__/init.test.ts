@@ -13,9 +13,12 @@ import {
   getProjectSchema,
   amplifyPush,
   amplifyOverrideRoot,
-  amplifyPushAuth,
+  amplifyPushOverride,
+  createNewProjectDir,
+  deleteProjectDir,
+  getEnvVars,
+  getProjectMeta,
 } from 'amplify-e2e-core';
-import { createNewProjectDir, deleteProjectDir, getEnvVars, getProjectMeta } from 'amplify-e2e-core';
 import { JSONUtilities } from 'amplify-cli-core';
 import { SandboxApp } from '../types/SandboxApp';
 
@@ -26,8 +29,8 @@ describe('amplify init', () => {
   });
 
   afterEach(async () => {
-    await deleteProject(projRoot);
-    deleteProjectDir(projRoot);
+    // await deleteProject(projRoot);
+    // deleteProjectDir(projRoot);
   });
 
   it('should pull sandbox and download schema', async () => {
@@ -165,11 +168,11 @@ describe('amplify init', () => {
     expect(DeploymentBucketName).toBeAS3Bucket(DeploymentBucketName);
 
     // override new env
-    await amplifyOverrideRoot(projRoot);
+    await amplifyOverrideRoot(projRoot, {});
     const srcOverrideFilePath = path.join(__dirname, '..', '..', 'overrides', 'override-root.ts');
     const destOverrideFilePath = path.join(projRoot, 'amplify', 'backend', 'awscloudformation', 'override.ts');
     fs.copyFileSync(srcOverrideFilePath, destOverrideFilePath);
-    await amplifyPushAuth(projRoot);
+    await amplifyPushOverride(projRoot);
     const newEnvMeta = getProjectMeta(projRoot).providers.awscloudformation;
     expect(newEnvMeta.AuthRoleName).toEqual('mockRole');
   });

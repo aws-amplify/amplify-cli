@@ -679,7 +679,7 @@ async function updateCloudFormationNestedStack(
 ) {
   const backEndDir = pathManager.getBackendDirPath();
   const projectRoot = pathManager.findProjectRoot();
-  const rootStackFilePath = path.join(pathManager.getRootStackDirPath(projectRoot), rootStackFileName);
+  const rootStackFilePath = path.join(pathManager.getRootStackBuildDirPath(projectRoot), rootStackFileName);
   // deploy new nested stack to disk
   JSONUtilities.writeJson(rootStackFilePath, nestedStack);
   const transformedStackPath = await preProcessCFNTemplate(rootStackFilePath);
@@ -833,30 +833,33 @@ async function formNestedStack(
   skipEnv?: boolean,
 ) {
   let rootStack;
-  if (FeatureFlags.getBoolean('overrides.project')) {
-    // CFN transform for Root stack
-    rootStack = await transformRootStack(context);
+  // CFN transform for Root stack
+  rootStack = await transformRootStack(context);
 
-    // get the {deploymentBucketName , AuthRoleName , UnAuthRole from overridded data}
+  // get the {deploymentBucketName , AuthRoleName , UnAuthRole from overridded data}
 
-    const metaToBeUpdated = {
-      DeploymentBucketName: rootStack.Resources.DeploymentBucket.Properties.BucketName,
-      AuthRoleName: rootStack.Resources.AuthRole.Properties.RoleName,
-      UnauthRoleName: rootStack.Resources.UnauthRole.Properties.RoleName,
-    };
-    // sanitize this data if needed
-    for (const key of Object.keys(metaToBeUpdated)) {
-      if (typeof metaToBeUpdated[key] === 'object' && 'Ref' in metaToBeUpdated[key]) {
-        delete metaToBeUpdated[key];
-      }
+  const metaToBeUpdated = {
+    DeploymentBucketName: rootStack.Resources.DeploymentBucket.Properties.BucketName,
+    AuthRoleName: rootStack.Resources.AuthRole.Properties.RoleName,
+    UnauthRoleName: rootStack.Resources.UnauthRole.Properties.RoleName,
+  };
+  // sanitize this data if needed
+  for (const key of Object.keys(metaToBeUpdated)) {
+    if (typeof metaToBeUpdated[key] === 'object' && 'Ref' in metaToBeUpdated[key]) {
+      delete metaToBeUpdated[key];
     }
-    // update amplify meta with updated root stack Info
-    if (Object.keys(metaToBeUpdated).length) {
-      context.amplify.updateProvideramplifyMeta(providerName, metaToBeUpdated);
-    }
-  } else {
-    const initTemplateFilePath = path.join(__dirname, '..', 'resources', defaultRootStackFileName);
-    rootStack = JSONUtilities.readJson<Template>(initTemplateFilePath);
+  }
+  // update amplify meta with updated root stack Info
+  if (Object.keys(metaToBeUpdated).length) {
+    context.amplify.updateProvideramplifyMeta(providerName, metaToBeUpdated);
+    //update teamProviderInfo
+    const { envName } = context.amplify.getEnvInfo();
+    const projectPath = pathManager.findProjectRoot();
+    const teamProviderInfo = stateManager.getTeamProviderInfo(projectPath);
+    const tpiResourceParams: $TSAny = _.get(teamProviderInfo, [envName, 'awscloudformation'], {});
+    _.assign(tpiResourceParams, metaToBeUpdated);
+    _.set(teamProviderInfo, [envName, 'awscloudformation'], tpiResourceParams);
+    stateManager.setTeamProviderInfo(projectPath, teamProviderInfo);
   }
 
   // Track Amplify Console generated stacks

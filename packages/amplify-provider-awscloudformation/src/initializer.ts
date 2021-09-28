@@ -190,7 +190,7 @@ export const storeRootStackTemplate = async (context: $TSContext, template?: Tem
 
   // RootStack deployed to backend/awscloudformation/build
   const projectRoot = pathManager.findProjectRoot();
-  const rootStackBackendBuildDir = pathManager.getRootStackDirPath(projectRoot);
+  const rootStackBackendBuildDir = pathManager.getRootStackBuildDirPath(projectRoot);
   const rootStackCloudBackendBuildDir = pathManager.getCurrentCloudRootStackDirPath(projectRoot);
 
   fs.ensureDirSync(rootStackBackendBuildDir);

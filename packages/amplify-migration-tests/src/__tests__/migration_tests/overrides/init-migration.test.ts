@@ -4,10 +4,10 @@ import {
   initJSProjectWithProfile,
   deleteProject,
   amplifyOverrideRoot,
-  amplifyPushAuth,
   createNewProjectDir,
   deleteProjectDir,
   getProjectMeta,
+  amplifyPushOverride,
 } from 'amplify-e2e-core';
 import { JSONUtilities } from 'amplify-cli-core';
 
@@ -36,7 +36,7 @@ describe('amplify init', () => {
     const srcOverrideFilePath = path.join(__dirname, '..', '..', 'overrides', 'override-root.ts');
     const destOverrideFilePath = path.join(projRoot, 'amplify', 'backend', 'awscloudformation', 'override.ts');
     fs.copyFileSync(srcOverrideFilePath, destOverrideFilePath);
-    await amplifyPushAuth(projRoot);
+    await amplifyPushOverride(projRoot);
     const newEnvMeta = getProjectMeta(projRoot).providers.awscloudformation;
     expect(newEnvMeta.AuthRoleName).toEqual('mockRole');
   });

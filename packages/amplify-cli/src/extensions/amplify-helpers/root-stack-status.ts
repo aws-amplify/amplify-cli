@@ -5,7 +5,6 @@ import * as fs from 'fs-extra';
 
 export function getHashForRootStack(dirPath, files?: string[]) {
   const options: HashElementOptions = {
-    folders: { exclude: ['.*', 'node_modules', 'test_coverage', 'dist', 'build'] },
     files: {
       include: files,
     },
@@ -17,12 +16,12 @@ export function getHashForRootStack(dirPath, files?: string[]) {
 export async function isRootStackModifiedSinceLastPush(hashFunction): Promise<boolean> {
   try {
     const projectPath = pathManager.findProjectRoot();
-    const localBackendDir = pathManager.getRootStackDirPath(projectPath!);
+    const localBackendDir = pathManager.getRootStackBuildDirPath(projectPath!);
     const cloudBackendDir = pathManager.getCurrentCloudRootStackDirPath(projectPath!);
     if (fs.existsSync(localBackendDir)) {
-      const localDirHash = await hashFunction(localBackendDir, [rootStackFileName]);
+      const localDirHash = await hashFunction(localBackendDir, ['*.json']);
       if (fs.existsSync(cloudBackendDir)) {
-        const cloudDirHash = await hashFunction(cloudBackendDir, [rootStackFileName]);
+        const cloudDirHash = await hashFunction(cloudBackendDir, ['*.json']);
         return localDirHash !== cloudDirHash;
       } else {
         return true;
