@@ -1,9 +1,10 @@
-import * as path from 'path';
-import { removeResource, forceRemoveResource } from '../../../extensions/amplify-helpers/remove-resource';
-import { stateManager, exitOnNextTick, ResourceDoesNotExistError, MissingParametersError } from 'amplify-cli-core';
+import { stateManager, exitOnNextTick, ResourceDoesNotExistError } from 'amplify-cli-core';
+import { printer } from 'amplify-prompts';
 import * as inquirer from 'inquirer';
-import { updateBackendConfigAfterResourceRemove } from '../../../extensions/amplify-helpers/update-backend-config';
+import * as path from 'path';
 import { removeResourceParameters } from '../../../extensions/amplify-helpers/envResourceParams';
+import { removeResource, forceRemoveResource } from '../../../extensions/amplify-helpers/remove-resource';
+import { updateBackendConfigAfterResourceRemove } from '../../../extensions/amplify-helpers/update-backend-config';
 
 jest.mock('../../../extensions/amplify-helpers/envResourceParams');
 jest.mock('../../../extensions/amplify-helpers/update-backend-config');
@@ -12,7 +13,6 @@ jest.mock('inquirer', () => ({
   prompt: jest.fn().mockResolvedValue({ resource: 'lambda1' }),
 }));
 
-const backendDirPathStub = 'backendDirPath';
 jest.mock('amplify-cli-core', () => ({
   ...(jest.requireActual('amplify-cli-core') as {}),
   stateManager: {
@@ -23,7 +23,7 @@ jest.mock('amplify-cli-core', () => ({
     setTeamProviderInfo: jest.fn(),
   },
   pathManager: {
-    getBackendDirPath: jest.fn(() => backendDirPathStub),
+    getResourceDirectoryPath: jest.fn((_, categoryName, resourceName) => path.join('backendDirPath', categoryName, resourceName)),
   },
   exitOnNextTick: jest.fn().mockImplementation(() => {
     throw 'process.exit mock';
@@ -33,7 +33,14 @@ jest.mock('amplify-cli-core', () => ({
 const stateManagerMock = stateManager as jest.Mocked<typeof stateManager>;
 const inquirerMock = inquirer as jest.Mocked<typeof inquirer>;
 
-jest.mock('amplify-cli-core');
+jest.mock('amplify-prompts', () => ({
+  printer: {
+    info: jest.fn(),
+    error: jest.fn(),
+    success: jest.fn(),
+    blankLine: jest.fn(),
+  },
+}));
 
 describe('remove-resource', () => {
   let context;
@@ -45,11 +52,6 @@ describe('remove-resource', () => {
       },
       filesystem: {
         remove: jest.fn(),
-      },
-      print: {
-        info: jest.fn(),
-        error: jest.fn(),
-        success: jest.fn(),
       },
       usageData: {
         emitError: jest.fn(),
@@ -118,7 +120,7 @@ describe('remove-resource', () => {
     it('emit an error when the resource of the specified category does not exist', async () => {
       await expect(removeResource(context as any, 'api', 'test')).rejects.toBe('process.exit mock');
 
-      expect(context.print.error).toBeCalledWith('No resources added for this category');
+      expect(printer.error).toBeCalledWith('No resources added for this category');
       expect(context.usageData.emitError).toBeCalledWith(new ResourceDoesNotExistError());
       expect(exitOnNextTick).toBeCalledWith(1);
     });
@@ -127,7 +129,7 @@ describe('remove-resource', () => {
       await expect(removeResource(context as any, 'function', 'lambda2')).rejects.toBe('process.exit mock');
 
       const errorMessage = 'Resource lambda2 has not been added to function';
-      expect(context.print.error).toBeCalledWith(errorMessage);
+      expect(printer.error).toBeCalledWith(errorMessage);
       expect(context.usageData.emitError).toBeCalledWith(new ResourceDoesNotExistError(errorMessage));
       expect(exitOnNextTick).toBeCalledWith(1);
     });
@@ -193,7 +195,7 @@ describe('remove-resource', () => {
         },
       ]);
 
-      expect(context.print.info).toBeCalledWith('lambdaLayer deletion info message');
+      expect(printer.info).toBeCalledWith('lambdaLayer deletion info message');
     });
 
     it('remove resource when the resource of the specified resource name does exist', async () => {
@@ -219,7 +221,7 @@ describe('remove-resource', () => {
       expect(context.filesystem.remove).toBeCalledWith(path.join('backendDirPath', 'function', 'lambda1'));
       expect(removeResourceParameters).toBeCalledWith(context, 'function', 'lambda1');
       expect(updateBackendConfigAfterResourceRemove).toBeCalledWith('function', 'lambda1');
-      expect(context.print.success).toBeCalledWith('Successfully removed resource');
+      expect(printer.success).toBeCalledWith('Successfully removed resource');
     });
 
     it('not remove resource when confirm prompt returns false', async () => {
@@ -236,9 +238,9 @@ describe('remove-resource', () => {
     it('throw an error when the dependent resources has a specified resource', async () => {
       await expect(removeResource(context as any, 'function', 'lambdaLayer1')).resolves.toBeUndefined();
 
-      expect(context.print.error).toBeCalledWith('Resource cannot be removed because it has a dependency on another resource');
-      expect(context.print.error).toBeCalledWith('Dependency: Lambda - lambda1');
-      expect(context.print.error).toBeCalledWith('An error occurred when removing the resources from the local directory');
+      expect(printer.error).toBeCalledWith('Resource cannot be removed because it has a dependency on another resource');
+      expect(printer.error).toBeCalledWith('Dependency: Lambda - lambda1');
+      expect(printer.error).toBeCalledWith('An error occurred when removing the resources from the local directory');
       expect(context.usageData.emitError).toBeCalledWith(
         new Error('Resource cannot be removed because it has a dependency on another resource'),
       );
@@ -288,7 +290,7 @@ describe('remove-resource', () => {
       expect(context.filesystem.remove).toBeCalledWith('backendDirPath/function/lambdaLayer1');
       expect(removeResourceParameters).toBeCalledWith(context, 'function', 'lambdaLayer1');
       expect(updateBackendConfigAfterResourceRemove).toBeCalledWith('function', 'lambdaLayer1');
-      expect(context.print.success).toBeCalledWith('Successfully removed resource');
+      expect(printer.success).toBeCalledWith('Successfully removed resource');
     });
 
     it('emit an error when the resource of the specified category does not exist', async () => {
@@ -296,16 +298,8 @@ describe('remove-resource', () => {
         forceRemoveResource(context as any, 'hosting', 'S3AndCloudFront', 'backendDirPath/hosting/S3AndCloudFront'),
       ).rejects.toBe('process.exit mock');
 
-      expect(context.print.error).toBeCalledWith('No resources added for this category');
+      expect(printer.error).toBeCalledWith('No resources added for this category');
       expect(context.usageData.emitError).toBeCalledWith(new ResourceDoesNotExistError());
-      expect(exitOnNextTick).toBeCalledWith(1);
-    });
-
-    it('emit an error when parameters missing', async () => {
-      await expect(forceRemoveResource(context as any, 'function', 'lambdaLayer1', null)).rejects.toBe('process.exit mock');
-
-      expect(context.print.error).toBeCalledWith('Unable to force removal of resource: missing parameters');
-      expect(context.usageData.emitError).toBeCalledWith(new MissingParametersError());
       expect(exitOnNextTick).toBeCalledWith(1);
     });
 
@@ -316,7 +310,7 @@ describe('remove-resource', () => {
       await expect(
         forceRemoveResource(context as any, 'function', 'lambdaLayer1', 'backendDirPath/function/lambdaLayer1'),
       ).resolves.toBeUndefined();
-      expect(context.print.error).toBeCalledWith('Unable to force removal of resource: error deleting files');
+      expect(printer.error).toBeCalledWith('Unable to force removal of resource: error deleting files');
     });
   });
 });

@@ -1,7 +1,6 @@
 import {
   $TSContext,
   exitOnNextTick,
-  MissingParametersError,
   pathManager,
   promptConfirmationRemove,
   ResourceDoesNotExistError,
@@ -19,12 +18,6 @@ export async function forceRemoveResource(context: $TSContext, category: string,
   if (!amplifyMeta[category] || Object.keys(amplifyMeta[category]).length === 0) {
     printer.error('No resources added for this category');
     await context.usageData.emitError(new ResourceDoesNotExistError());
-    exitOnNextTick(1);
-  }
-
-  if (!context || !category || !resourceName || !resourceDir) {
-    printer.error('Unable to force removal of resource: missing parameters');
-    await context.usageData.emitError(new MissingParametersError());
     exitOnNextTick(1);
   }
 
@@ -96,13 +89,13 @@ export async function removeResource(
 
   const resourceDir = pathManager.getResourceDirectoryPath(undefined, category, resourceName);
 
-  if (options.headless === false) {
+  if (options.headless !== true) {
     printer.blankLine();
     const service = _.get(amplifyMeta, [category, resourceName, 'service']);
     const serviceType = _.get(amplifyMeta, [category, resourceName, 'serviceType']);
 
-    if (_.has(options, ['serviceDeletionInfo', service])) {
-      printer.info(options.serviceDeletionInfo![service]);
+    if (options?.serviceDeletionInfo?.[service]) {
+      printer.info(options.serviceDeletionInfo[service]);
     }
 
     const confirm = await promptConfirmationRemove(context, serviceType);
