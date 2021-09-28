@@ -836,7 +836,7 @@ export async function formNestedStack(
   let authResourceName: string;
 
   const { APIGatewayAuthURL, NetworkStackS3Url, AuthTriggerTemplateURL } = amplifyMeta.providers[constants.ProviderName];
-
+  const { envName } = stateManager.getLocalEnvInfo();
   if (APIGatewayAuthURL) {
     const stack = {
       Type: 'AWS::CloudFormation::Stack',
@@ -849,7 +849,7 @@ export async function formNestedStack(
           unauthRoleName: {
             Ref: 'UnauthRoleName',
           },
-          env: context.exeInfo.localEnvInfo.envName,
+          env: envName,
         },
       },
     };
@@ -874,7 +874,7 @@ export async function formNestedStack(
       Properties: {
         TemplateURL: AuthTriggerTemplateURL,
         Parameters: {
-          env: context.exeInfo.localEnvInfo.envName,
+          env: envName,
         },
       },
       DependsOn: [],

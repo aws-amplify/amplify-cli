@@ -1,6 +1,7 @@
-import { $TSContext } from 'amplify-cli-core';
+import { $TSContext, ExportPathValidationError } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
-import chalk from 'chalk';
+import * as chalk from 'chalk';
+import * as fs from 'fs-extra';
 export const run = async (context: $TSContext) => {
   const options = context.input.options;
 
@@ -17,17 +18,25 @@ export const run = async (context: $TSContext) => {
     return;
   }
 
-  const exportCompatiblity = 'cdk';
   await context.amplify.showResourceTable();
   const resources = await context.amplify.getResourceStatus();
-  try {
-    const providerPlugin = context.amplify.getProviderPlugins(context);
-    const providers = Object.keys(providerPlugin);
-    for await (const provider of providers) {
-      const plugin = await import(providerPlugin[provider]);
-      await plugin.exportResources(context, resources, exportCompatiblity);
-    }
-  } catch (ex) {
-    throw ex;
+  const providerPlugin = context.amplify.getProviderPlugins(context);
+  const providers = Object.keys(providerPlugin);
+  const exportPath = context.input.options['out'];
+  validatePath(exportPath);
+  for await (const provider of providers) {
+    const plugin = await import(providerPlugin[provider]);
+    await plugin.exportResources(context, resources, exportPath);
   }
 };
+
+function validatePath(exportPath: any) {
+  if (typeof exportPath !== 'string') {
+    throw new ExportPathValidationError(`${exportPath} is not a valid path specified by --out`);
+  }
+
+  const stat = fs.lstatSync(exportPath);
+  if (!stat.isDirectory()) {
+    throw new ExportPathValidationError(`${exportPath} is not a valid directory`);
+  }
+}

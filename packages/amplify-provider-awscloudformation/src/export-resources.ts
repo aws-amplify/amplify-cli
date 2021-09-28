@@ -7,6 +7,7 @@ import * as fs from 'fs-extra';
 import Ora from 'ora';
 const backup = 'backup';
 import _ from 'lodash';
+import rimraf from 'rimraf';
 // don't change file names ever ever
 const AMPLIFY_EXPORT_MANIFEST_JSON_FILE = 'amplify-export-manifest.json';
 const AMPLIFY_EXPORT_TAGS_JSON_FILE = 'export-tags.json';
@@ -15,20 +16,23 @@ const AMPLIFY_EXPORT_CATEGORY_STACK_MAPPING_FILE = 'category-stack-mapping.json'
  * Walks through
  * @param context
  * @param resourceDefinition
- * @param _exportType is left in posterity
+ * @param exportPath is the path to export to
  *
  */
-export async function run(context: $TSContext, resourceDefinition: $TSAny[], _exportType: string) {
-  const exportPath = context.input.options['out'];
+export async function run(context: $TSContext, resourceDefinition: $TSAny[], exportPath: string) {
   const { projectName } = stateManager.getProjectConfig();
   const amplifyExportFolder = path.join(path.resolve(exportPath), `amplify-export-${projectName}`);
   const proceed = await checkForExistingExport(amplifyExportFolder);
-  if (!proceed) {
+
+  if (proceed) {
+    // create backup and then start exporting
+    await createBackup(amplifyExportFolder);
+    deleteFolder(amplifyExportFolder);
+  } else {
+    // return if user selects not to proceed
     return;
   }
-  context.exeInfo = {
-    localEnvInfo: stateManager.getLocalEnvInfo(),
-  };
+
   const spinner = Ora('Exporting...');
   spinner.start();
   try {
@@ -118,19 +122,13 @@ function createCategoryStackMapping(resources: ResourceDefinition[], amplifyExpo
   JSONUtilities.writeJson(
     path.join(amplifyExportFolder, AMPLIFY_EXPORT_CATEGORY_STACK_MAPPING_FILE),
     resources.map(r => {
-      const { category, resourceName, service } = r;
-      return {
-        category,
-        resourceName,
-        service,
-      };
+      return _.pick(r, ['category', 'resourceName', 'service']);
     }),
   );
 }
 
 /**
  *  checks if there is an existing folder and prompt
- * if yes then a back up is created
  * @param amplifyExportFolder
  * @returns true if to proceed no if to exit
  */
@@ -141,34 +139,20 @@ async function checkForExistingExport(amplifyExportFolder: string): Promise<bool
       `Existing files at ${amplifyExportFolder} will be deleted and new files will be generated, continue?`,
       true,
     );
-    if (proceed) {
-      await createBackup(amplifyExportFolder);
-      await deleteFolderRecursive(amplifyExportFolder);
-    }
   }
   await fs.ensureDir(amplifyExportFolder);
   return proceed;
 }
 
-function deleteFolderRecursive(directoryPath) {
+function deleteFolder(directoryPath) {
   if (fs.existsSync(directoryPath)) {
-    fs.readdirSync(directoryPath).forEach((file, index) => {
-      const curPath = path.join(directoryPath, file);
-      if (fs.lstatSync(curPath).isDirectory()) {
-        // recurse
-        deleteFolderRecursive(curPath);
-      } else {
-        // delete file
-        fs.unlinkSync(curPath);
-      }
-    });
-    fs.rmdirSync(directoryPath);
+    rimraf.sync(directoryPath);
   }
 }
 
 async function removeBackup(amplifyExportFolder: string) {
   if (fs.existsSync(`${amplifyExportFolder}-${backup}`)) {
-    await deleteFolderRecursive(`${amplifyExportFolder}-${backup}`);
+    deleteFolder(`${amplifyExportFolder}-${backup}`);
   }
 }
 async function revertToBackup(amplifyExportFolder: string) {
@@ -180,6 +164,7 @@ async function revertToBackup(amplifyExportFolder: string) {
 async function createBackup(amplifyExportFolder: string) {
   await fs.copy(amplifyExportFolder, `${amplifyExportFolder}-${backup}`);
 }
+
 /**
  * Transforms the stackparameters file path to convert into the export manifest file
  * @param stackParameters
