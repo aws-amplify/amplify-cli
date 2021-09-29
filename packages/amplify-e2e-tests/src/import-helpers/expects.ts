@@ -1,6 +1,7 @@
 import _ from 'lodash';
 import { getProjectMeta, getBackendAmplifyMeta, getTeamProviderInfo, getBackendConfig } from 'amplify-e2e-core';
 import { AuthProjectDetails, DynamoDBProjectDetails, readRootStack, StorageProjectDetails } from '.';
+import { AuthParameters } from 'amplify-category-auth';
 
 export const expectAuthProjectDetailsMatch = (projectDetails: AuthProjectDetails, ogProjectDetails: AuthProjectDetails) => {
   expect(projectDetails.parameters.authSelections).toEqual(ogProjectDetails.parameters.authSelections);
@@ -167,4 +168,13 @@ export const expectDynamoDBLocalAndOGMetaFilesOutputMatching = (projectRoot: str
   expect(storageMeta.output.SortKeyType).toEqual(ogStorageMeta.output.SortKeyType);
   expect(storageMeta.output.Arn).toEqual(ogStorageMeta.output.Arn);
   expect(storageMeta.output.StreamArn).toEqual(ogStorageMeta.output.StreamArn);
+};
+
+export const expectAuthParametersMatch = (authParameters: AuthParameters, ogAuthParameters: AuthParameters) => {
+  expect(authParameters.authProvidersUserPool).toEqual(ogAuthParameters.authProvidersUserPool);
+  expect(authParameters.requiredAttributes).toEqual(ogAuthParameters.requiredAttributes);
+  expect(authParameters.passwordPolicyMinLength).toEqual(ogAuthParameters.passwordPolicyMinLength);
+  expect(authParameters.passwordPolicyCharacters).toEqual(ogAuthParameters.passwordPolicyCharacters);
+  expect(authParameters.mfaConfiguration).toEqual(ogAuthParameters.mfaConfiguration);
+  expect(authParameters.autoVerifiedAttributes).toEqual(ogAuthParameters.autoVerifiedAttributes);
 };

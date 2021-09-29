@@ -34,12 +34,6 @@ describe('zero config auth ', () => {
 
     expect(authMeta.frontendAuthConfig).toMatchInlineSnapshot(`
       Object {
-        "loginMechanisms": Array [
-          "FACEBOOK",
-          "GOOGLE",
-          "AMAZON",
-          "APPLE",
-        ],
         "mfaConfiguration": "ON",
         "mfaTypes": Array [
           "SMS",
@@ -57,6 +51,13 @@ describe('zero config auth ', () => {
         "signupAttributes": Array [
           "EMAIL",
         ],
+        "socialProviders": Array [
+          "FACEBOOK",
+          "GOOGLE",
+          "AMAZON",
+          "APPLE",
+        ],
+        "usernameAttributes": Array [],
         "verificationMechanisms": Array [
           "EMAIL",
         ],
