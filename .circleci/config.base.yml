@@ -257,16 +257,6 @@ jobs:
       - store_artifacts:
           path: ~/repo/packages/amplify-e2e-tests/amplify-e2e-reports
 
-  done_with_node_e2e_tests:
-    <<: *linux-e2e-executor
-    steps:
-      - run: echo 'Done with Node CLI E2E Tests'
-
-  done_with_pkg_e2e_tests:
-    <<: *linux-e2e-executor
-    steps:
-      - run: echo 'Done with pkg CLI E2E Tests'
-
   amplify_e2e_tests_pkg:
     parameters:
       os:
@@ -787,9 +777,6 @@ workflows:
                 - /run-e2e\/.*/
           requires:
             - publish_to_local_registry
-      - done_with_node_e2e_tests:
-          requires:
-            - amplify_e2e_tests
       - amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
@@ -804,9 +791,6 @@ workflows:
                 - /run-e2e\/.*/
           requires:
             - build_pkg_binaries
-      - done_with_pkg_e2e_tests:
-          requires:
-            - amplify_e2e_tests_pkg
       - amplify_migration_tests_latest:
           context:
             - amplify-ecr-image-pull
@@ -918,11 +902,11 @@ workflows:
             - cleanup-resources
             - e2e-test-context
           requires:
-            - done_with_pkg_e2e_tests
+            - amplify_e2e_tests
+            - amplify_e2e_tests_pkg
             - amplify_migration_tests_latest
             - amplify_migration_tests_v4
             - amplify_migration_tests_v4_30_0
-            - done_with_node_e2e_tests
 
       - deploy:
           context:
@@ -933,8 +917,8 @@ workflows:
             - mock_e2e_tests
             - graphql_e2e_tests
             - integration_test
-            - done_with_pkg_e2e_tests
-            - done_with_node_e2e_tests
+            - amplify_e2e_tests
+            - amplify_e2e_tests_pkg
             - amplify_sudo_install_test
             - amplify_console_integration_tests
             - amplify_migration_tests_latest
