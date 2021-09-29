@@ -734,7 +734,6 @@ workflows:
                 - /run-e2e\/.*/
           requires:
             - build
-            - mock_e2e_tests
       - integration_test:
           context:
             - amplify-ecr-image-pull
@@ -748,7 +747,6 @@ workflows:
                 - /run-e2e\/.*/
           requires:
             - build
-            - mock_e2e_tests
       - publish_to_local_registry:
           filters:
             branches:
