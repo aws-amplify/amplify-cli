@@ -731,7 +731,7 @@ workflows:
               only:
                 - master
                 - /tagged-release\/.*/
-                - /run-e2e\/*./
+                - /run-e2e\/.*/
           requires:
             - build
             - mock_e2e_tests
@@ -745,7 +745,7 @@ workflows:
                 - master
                 - beta
                 - /tagged-release\/.*/
-                - /run-e2e\/*./
+                - /run-e2e\/.*/
           requires:
             - build
             - mock_e2e_tests
@@ -757,7 +757,7 @@ workflows:
                 - beta
                 - release
                 - /tagged-release\/.*/
-                - /run-e2e\/*./
+                - /run-e2e\/.*/
           requires:
             - build
       - build_pkg_binaries:
@@ -772,7 +772,7 @@ workflows:
               only:
                 - master
                 - /tagged-release\/.*/
-                - /run-e2e\/*./
+                - /run-e2e\/.*/
       - amplify_e2e_tests:
           context:
             - amplify-ecr-image-pull
@@ -786,7 +786,7 @@ workflows:
               only:
                 - master
                 - /tagged-release\/.*/
-                - /run-e2e\/*./
+                - /run-e2e\/.*/
           requires:
             - publish_to_local_registry
       - done_with_node_e2e_tests:
@@ -803,7 +803,7 @@ workflows:
               only:
                 - master
                 - /tagged-release\/.*/
-                - /run-e2e\/*./
+                - /run-e2e\/.*/
           requires:
             - build_pkg_binaries
       - done_with_pkg_e2e_tests:
@@ -820,7 +820,7 @@ workflows:
               only:
                 - master
                 - /tagged-release\/.*/
-                - /run-e2e\/*./
+                - /run-e2e\/.*/
           requires:
             - build
             - build_pkg_binaries
@@ -835,7 +835,7 @@ workflows:
               only:
                 - master
                 - /tagged-release\/.*/
-                - /run-e2e\/*./
+                - /run-e2e\/.*/
           requires:
             - build
             - build_pkg_binaries
@@ -850,7 +850,7 @@ workflows:
               only:
                 - master
                 - /tagged-release\/.*/
-                - /run-e2e\/*./
+                - /run-e2e\/.*/
           requires:
             - build
             - build_pkg_binaries
@@ -865,7 +865,7 @@ workflows:
               only:
                 - master
                 - /tagged-release\/.*/
-                - /run-e2e\/*./
+                - /run-e2e\/.*/
           requires:
             - build
             - build_pkg_binaries
@@ -880,7 +880,7 @@ workflows:
               only:
                 - master
                 - /tagged-release\/.*/
-                - /run-e2e\/*./
+                - /run-e2e\/.*/
           requires:
             - build
             - build_pkg_binaries
