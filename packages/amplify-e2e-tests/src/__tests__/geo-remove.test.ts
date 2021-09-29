@@ -13,8 +13,7 @@ import {
   removePlaceIndex,
   removeFirstDefaultMap,
   removeFirstDefaultPlaceIndex,
-  generateRandomShortId,
-  generateTwoResourceIdsInOrder,
+  generateResourceIdsInOrder,
   getGeoJSConfiguration
 } from 'amplify-e2e-core';
 import { existsSync } from 'fs';
@@ -69,12 +68,13 @@ describe('amplify geo remove', () => {
     expect(awsExport.geo).toBeUndefined();
   });
 
-  it('init a project with default auth config and two map resources, then remove the default map', async () => {
-    const [map1Id, map2Id] = generateTwoResourceIdsInOrder();
+  it('init a project with default auth config and multiple map resources, then remove the default map', async () => {
+    const [map1Id, map2Id, map3Id] = generateResourceIdsInOrder(3);
     await initJSProjectWithProfile(projRoot, {});
     await addAuthWithDefault(projRoot);
     await addMapWithDefault(projRoot, { resourceName: map1Id, isFirstGeoResource: true });
-    await addMapWithDefault(projRoot, { resourceName: map2Id, isAdditional: true, isDefault: false })
+    await addMapWithDefault(projRoot, { resourceName: map2Id, isAdditional: true, isDefault: false });
+    await addMapWithDefault(projRoot, { resourceName: map3Id, isAdditional: true, isDefault: false });
     await amplifyPushWithoutCodegen(projRoot);
     const oldMeta = getProjectMeta(projRoot);
     expect(oldMeta.geo[map1Id].isDefault).toBe(true);
@@ -95,12 +95,13 @@ describe('amplify geo remove', () => {
     expect(getGeoJSConfiguration(awsExport).region).toEqual(region);
   });
 
-  it('init a project with default auth config and two index resources, then remove the default index', async () => {
-    const [index1Id, index2Id] = generateTwoResourceIdsInOrder();
+  it('init a project with default auth config and multiple index resources, then remove the default index', async () => {
+    const [index1Id, index2Id, index3Id] = generateResourceIdsInOrder(3);
     await initJSProjectWithProfile(projRoot, {});
     await addAuthWithDefault(projRoot);
     await addPlaceIndexWithDefault(projRoot, { resourceName: index1Id, isFirstGeoResource: true });
-    await addPlaceIndexWithDefault(projRoot, { resourceName: index2Id, isAdditional: true, isDefault: false })
+    await addPlaceIndexWithDefault(projRoot, { resourceName: index2Id, isAdditional: true, isDefault: false });
+    await addPlaceIndexWithDefault(projRoot, { resourceName: index3Id, isAdditional: true, isDefault: false });
     await amplifyPushWithoutCodegen(projRoot);
     const oldMeta = getProjectMeta(projRoot);
     expect(oldMeta.geo[index1Id].isDefault).toBe(true);
@@ -114,7 +115,7 @@ describe('amplify geo remove', () => {
     expect(newMeta.geo[index1Id]).toBeUndefined();
     expect(newMeta.geo[index2Id].isDefault).toBe(true);
     const awsExport: any = getAWSExports(projRoot).default;
-    expect(getGeoJSConfiguration(awsExport).search_indices.items).toEqual([index2Name]);
+    expect(getGeoJSConfiguration(awsExport).search_indices.items).toContain(index2Name);
     expect(getGeoJSConfiguration(awsExport).search_indices.default).toEqual(index2Name);
     expect(getGeoJSConfiguration(awsExport).region).toEqual(region);
   });
