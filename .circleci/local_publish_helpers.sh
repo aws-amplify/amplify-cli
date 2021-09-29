@@ -71,7 +71,45 @@ function useChildAccountCredentials {
   fi
 }
 
+retry() {
+   MAX_RETRY=3
+   SLEEP_DURATION=5
+   n=0
+   until [ $n -ge $MAX_RETRY ]
+   do
+      "$@" && break
+      n=$[$n+1]
+      sleep $SLEEP_DURATION
+   done
+   if [ $n -ge $MAX_RETRY ]; then
+     echo "failed: ${@}" >&2
+     exit 1
+   fi
+}
+
+function resetAwsAccountCredentials {
+  if [ -z "$AWS_ACCESS_KEY_ID_ORIG" ]; then
+    echo "AWS Access Key environment variable is already set"
+  else
+    export AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID_ORIG
+  fi
+  if [ -z "$AWS_SECRET_ACCESS_KEY_ORIG" ]; then
+    echo "AWS Secret Access Key environment variable is already set"
+  else
+    export AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY_ORIG
+  fi
+  if [ -z "$AWS_SESSION_TOKEN_ORIG" ]; then
+    echo "AWS Session Token environment variable is already set"
+  else
+    export AWS_SESSION_TOKEN=$AWS_SESSION_TOKEN_ORIG
+  fi
+}
+
 function setAwsAccountCredentials {
+  resetAwsAccountCredentials
+  export AWS_ACCESS_KEY_ID_ORIG=$AWS_ACCESS_KEY_ID
+  export AWS_SECRET_ACCESS_KEY_ORIG=$AWS_SECRET_ACCESS_KEY
+  export AWS_SESSION_TOKEN_ORIG=$AWS_SESSION_TOKEN
   if [[ "$OSTYPE" == "msys" ]]; then
     # windows provided by circleci has this OSTYPE
     useChildAccountCredentials
@@ -82,4 +120,16 @@ function setAwsAccountCredentials {
     export PATH=$PATH:$(pwd)/aws/dist
     useChildAccountCredentials
   fi
+}
+
+function runE2eTest {
+  changeNpmGlobalPath
+  amplify -v
+  amplify-app --version
+  startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
+  setNpmRegistryUrlToLocal
+  setAwsAccountCredentials
+  cd $(pwd)/packages/amplify-e2e-tests
+  yarn run e2e --detectOpenHandles --maxWorkers=3 $TEST_SUITE
+  unsetNpmRegistryUrl
 }

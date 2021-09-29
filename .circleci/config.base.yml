@@ -10,7 +10,7 @@ executors:
     machine:
       image: 'windows-server-2019-vs2019:stable'
       resource_class: 'windows.large'
-      shell: powershell.exe
+      shell: bash.exe
     working_directory: ~/repo
     environment:
       AMPLIFY_DIR: C:/home/circleci/repo/out
@@ -50,21 +50,6 @@ scan_e2e_test_artifacts: &scan_e2e_test_artifacts
       exit 1
     fi
   when: always
-
-run_e2e_tests: &run_e2e_tests
-  name: Run Amplify end-to-end tests
-  command: |
-    source .circleci/local_publish_helpers.sh
-    changeNpmGlobalPath
-    amplify -v
-    amplify-app --version
-    startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
-    setNpmRegistryUrlToLocal
-    setAwsAccountCredentials
-    cd packages/amplify-e2e-tests
-    yarn run e2e --detectOpenHandles --maxWorkers=3 $TEST_SUITE
-    unsetNpmRegistryUrl
-  no_output_timeout: 90m
 
 install_cli_from_local_registery: &install_cli_from_local_registery
   name: Start verdaccio, install node CLI and amplify-app
@@ -254,7 +239,12 @@ jobs:
       - restore_cache:
           key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run: *install_cli_from_local_registery
-      - run: *run_e2e_tests
+      - run:
+          name: Run E2e Tests
+          command: |
+            source .circleci/local_publish_helpers.sh
+            retry runE2eTest
+          no_output_timeout: 90m
       - run: *scan_e2e_test_artifacts
       - store_test_results:
           path: packages/amplify-e2e-tests/
@@ -1058,38 +1048,14 @@ commands:
         type: executor
         default: linux-e2e-executor
     steps:
-      - when:
-          condition:
-            equal: [*windows-e2e-executor, << parameters.os >>]
-          steps:
-            - run:
-                name: Run E2E tests
-                shell: bash.exe
-                command: |
-                  source .circleci/local_publish_helpers.sh
-                  setAwsAccountCredentials
-                  cd packages/amplify-e2e-tests
-                  yarn run e2e --detectOpenHandles --maxWorkers=3 $TEST_SUITE
-                no_output_timeout: 90m
-      - when:
-          condition:
-            equal: [*linux-e2e-executor, << parameters.os >>]
-          steps:
-            - run:
-                name: Shuffle AWS Credentials
-                command: |
-                  source .circleci/local_publish_helpers.sh
-                  setAwsAccountCredentials
-            - run:
-                name: Run E2E tests
-                command: |
-                  source $BASH_ENV
-                  amplify version
-                  source .circleci/local_publish_helpers.sh
-                  setAwsAccountCredentials
-                  cd packages/amplify-e2e-tests
-                  yarn run e2e --detectOpenHandles --maxWorkers=3 $TEST_SUITE
-                no_output_timeout: 90m
+      - run:
+          name: Run E2e Tests
+          command: |
+            source .circleci/local_publish_helpers.sh
+            source $BASH_ENV
+            amplify version
+            retry runE2eTest
+          no_output_timeout: 90m
   scan_e2e_test_artifacts:
     description: 'Scan And Cleanup E2E Test Artifacts'
     parameters:
@@ -1097,34 +1063,15 @@ commands:
         type: executor
         default: linux-e2e-executor
     steps:
-      - when:
-          condition:
-            equal: [*windows-e2e-executor, << parameters.os >>]
-          steps:
-            - run:
-                name: Scan E2E artifacts
-                shell: bash.exe
-                command: |
-                  if ! yarn ts-node .circleci/scan_artifacts.ts; then
-                    echo "Cleaning the repository"
-                    git clean -fdx
-                    exit 1
-                  fi
-                when: always
-
-      - when:
-          condition:
-            equal: [*linux-e2e-executor, << parameters.os >>]
-          steps:
-            - run:
-                name: Scan E2E artifacts
-                command: |
-                  if ! yarn ts-node .circleci/scan_artifacts.ts; then
-                    echo "Cleaning the repository"
-                    git clean -fdx
-                    exit 1
-                  fi
-                when: always
+      - run:
+          name: Scan E2E artifacts
+          command: |
+            if ! yarn ts-node .circleci/scan_artifacts.ts; then
+              echo "Cleaning the repository"
+              git clean -fdx
+              exit 1
+            fi
+          when: always
   clean_e2e_resources:
     description: Cleanup resources
     parameters:
@@ -1132,27 +1079,10 @@ commands:
         type: executor
         default: linux-e2e-executor
     steps:
-      - when:
-          condition:
-            equal: [*windows-e2e-executor, << parameters.os >>]
-          steps:
-            - run:
-                name: Scan E2E artifacts
-                shell: bash.exe
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                when: always
-
-      - when:
-          condition:
-            equal: [*linux-e2e-executor, << parameters.os >>]
-          steps:
-            - run:
-                name: Scan E2E artifacts
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                when: always
+      - run:
+          name: Scan E2E artifacts
+          command: |
+            pwd
+            cd packages/amplify-e2e-tests
+            yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
+          when: always
