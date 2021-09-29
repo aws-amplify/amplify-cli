@@ -316,7 +316,7 @@ jobs:
             changeNpmGlobalPath
             cd packages/amplify-migration-tests
             retry yarn run migration_v4.0.0 --maxWorkers=3 $TEST_SUITE
-          no_output_timeout: 30m
+          no_output_timeout: 90m
       - run: *scan_e2e_test_artifacts
       - store_test_results:
           path: packages/amplify-migration-tests/
