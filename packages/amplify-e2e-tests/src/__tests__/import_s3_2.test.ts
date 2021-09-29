@@ -117,118 +117,55 @@ describe('s3 import', () => {
     deleteProjectDir(projectRoot);
   });
 
-  it('status should reflect correct values for imported storage', async () => {
+  it('imported storage, create prod env, files should match', async () => {
     await initJSProjectWithProfile(projectRoot, projectSettings);
     await addAuthWithDefault(projectRoot, {});
     await importS3(projectRoot, ogSettings.bucketName);
 
-    let projectDetails = getStorageProjectDetails(projectRoot);
-
-    expectStorageProjectDetailsMatch(projectDetails, ogProjectDetails);
-
-    await amplifyStatus(projectRoot, 'Import');
     await amplifyPushAuth(projectRoot);
-    await amplifyStatus(projectRoot, 'No Change');
 
+    const firstEnvName = 'integtest';
+    const secondEnvName = 'prod';
+
+    await addEnvironmentWithImportedAuth(projectRoot, {
+      envName: secondEnvName,
+      currentEnvName: firstEnvName,
+    });
+
+    let teamInfo = getTeamProviderInfo(projectRoot);
+    const env1 = teamInfo[firstEnvName];
+    const env2 = teamInfo[secondEnvName];
+
+    // Verify that same storage resource object is present
+    expect(Object.keys(env1)[0]).toEqual(Object.keys(env2)[0]);
+
+    await amplifyPushAuth(projectRoot);
+
+    // Meta is matching the data with the OG project's resources
     expectLocalAndCloudMetaFilesMatching(projectRoot);
+    expectS3LocalAndOGMetaFilesOutputMatching(projectRoot, ogProjectRoot);
 
-    projectDetails = getStorageProjectDetails(projectRoot);
+    await checkoutEnvironment(projectRoot, {
+      envName: firstEnvName,
+    });
 
-    expectStorageProjectDetailsMatch(projectDetails, ogProjectDetails);
+    await removeEnvironment(projectRoot, {
+      envName: secondEnvName,
+    });
 
-    await removeImportedS3WithDefault(projectRoot);
-    await amplifyStatus(projectRoot, 'Unlink');
+    teamInfo = getTeamProviderInfo(projectRoot);
 
-    await amplifyPushAuth(projectRoot);
-
-    expectNoStorageInMeta(projectRoot);
-
-    expectLocalTeamInfoHasOnlyAuthCategoryAndNoStorage(projectRoot);
+    // No prod in team proovider info
+    expect(teamInfo.prod).toBeUndefined();
   });
 
-  it('imported storage with function and crud on storage should push', async () => {
-    await initJSProjectWithProfile(projectRoot, projectSettings);
-    await addAuthWithDefault(projectRoot, {});
-    await importS3(projectRoot, ogSettings.bucketName);
-
-    const functionName = randomizedFunctionName('s3impfunc');
-    const storageResourceName = getS3ResourceName(projectRoot);
-
-    await addFunction(
-      projectRoot,
-      {
-        name: functionName,
-        functionTemplate: 'Hello World',
-        additionalPermissions: {
-          permissions: ['storage'],
-          choices: ['auth', 'storage'],
-          resources: [storageResourceName],
-          resourceChoices: [storageResourceName],
-          operations: ['create', 'read', 'update', 'delete'],
-        },
-      },
-      'nodejs',
-    );
-
-    await amplifyPushAuth(projectRoot);
-
-    const projectDetails = getStorageProjectDetails(projectRoot);
-
-    // Verify that index.js gets the userpool env var name injected
-    const amplifyBackendDirPath = path.join(projectRoot, 'amplify', 'backend');
-    const functionFilePath = path.join(amplifyBackendDirPath, 'function', functionName);
-    const amplifyFunctionIndexFilePath = path.join(functionFilePath, 'src', 'index.js');
-    const s3ResourceNameUpperCase = projectDetails.storageResourceName.toUpperCase();
-    const s3EnvVarName = `STORAGE_${s3ResourceNameUpperCase}_BUCKETNAME`;
-
-    const indexjsContents = fs.readFileSync(amplifyFunctionIndexFilePath).toString();
-
-    expect(indexjsContents.indexOf(s3EnvVarName)).toBeGreaterThanOrEqual(0);
-
-    // Verify bucket name in root stack
-    const rootStack = readRootStack(projectRoot);
-    const functionResourceName = `function${functionName}`;
-    const bucketNameParameterName = `storage${projectDetails.storageResourceName}BucketName`;
-    const functionResource = rootStack.Resources[functionResourceName];
-    expect(functionResource.Properties?.Parameters[bucketNameParameterName]).toEqual(projectDetails.meta.BucketName);
-
-    // Verify bucket name env var in function stack
-    const functionStackFilePath = path.join(functionFilePath, `${functionName}-cloudformation-template.json`);
-    const functionStack = JSONUtilities.readJson<$TSObject>(functionStackFilePath);
-    expect(functionStack.Resources?.LambdaFunction?.Properties?.Environment?.Variables[s3EnvVarName].Ref).toEqual(bucketNameParameterName);
-
-    // Verify if generated policy has the userpool id as resource
-    expect(
-      functionStack.Resources?.AmplifyResourcesPolicy?.Properties?.PolicyDocument?.Statement[0].Resource[0]['Fn::Join'][1][1].Ref,
-    ).toEqual(bucketNameParameterName);
-  });
-
-  it('imported storage, push, pull to empty directory, files should match', async () => {
+  it('storage headless pull missing parameters', async () => {
     await initJSProjectWithProfile(projectRoot, {
       ...projectSettings,
       disableAmplifyAppCreation: false,
     });
     await addAuthWithDefault(projectRoot, {});
     await importS3(projectRoot, ogSettings.bucketName);
-
-    const functionName = randomizedFunctionName('s3impfunc');
-    const storageResourceName = getS3ResourceName(projectRoot);
-
-    await addFunction(
-      projectRoot,
-      {
-        name: functionName,
-        functionTemplate: 'Hello World',
-        additionalPermissions: {
-          permissions: ['storage'],
-          choices: ['auth', 'storage'],
-          resources: [storageResourceName],
-          resourceChoices: [storageResourceName],
-          operations: ['create', 'read', 'update', 'delete'],
-        },
-      },
-      'nodejs',
-    );
 
     await amplifyPushAuth(projectRoot);
 
@@ -240,7 +177,68 @@ describe('s3 import', () => {
     try {
       projectRootPull = await createNewProjectDir('s3import-pull');
 
-      await amplifyPull(projectRootPull, { override: false, emptyDir: true, appId });
+      const envName = 'integtest';
+      const providersParam = {
+        awscloudformation: {
+          configLevel: 'project',
+          useProfile: true,
+          profileName,
+        },
+      };
+
+      await expect(
+        headlessPullExpectError(
+          projectRootPull,
+          { envName, appId },
+          providersParam,
+          'Error: storage headless is missing the following inputParams bucketName, region',
+          {},
+        ),
+      ).rejects.toThrowError('Process exited with non zero exit code 1');
+    } finally {
+      deleteProjectDir(projectRootPull);
+    }
+  });
+
+  it('storage headless pull successful', async () => {
+    await initJSProjectWithProfile(projectRoot, {
+      ...projectSettings,
+      disableAmplifyAppCreation: false,
+    });
+    await addAuthWithDefault(projectRoot, {});
+    await importS3(projectRoot, ogSettings.bucketName);
+
+    await amplifyPushAuth(projectRoot);
+
+    let projectDetails = getStorageProjectDetails(projectRoot);
+
+    const appId = getAppId(projectRoot);
+    expect(appId).toBeDefined();
+
+    let projectRootPull;
+
+    try {
+      projectRootPull = await createNewProjectDir('s3import-pull');
+
+      const envName = 'integtest';
+      const providersParam = {
+        awscloudformation: {
+          configLevel: 'project',
+          useProfile: true,
+          profileName,
+        },
+      };
+
+      const categoryConfig = {
+        storage: {
+          bucketName: projectDetails.team.bucketName,
+          region: projectDetails.team.region,
+        },
+      };
+
+      await headlessPull(projectRootPull, { envName, appId }, providersParam, categoryConfig);
+
+      await amplifyStatus(projectRoot, 'No Change');
 
       expectLocalAndCloudMetaFilesMatching(projectRoot);
       expectLocalAndPulledBackendConfigMatching(projectRoot, projectRootPull);

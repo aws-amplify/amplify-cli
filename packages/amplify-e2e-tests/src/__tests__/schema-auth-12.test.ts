@@ -14,12 +14,12 @@ describe('api directives @auth batch 2', () => {
     deleteProjectDir(projectDir);
   });
 
-  it('auth owner5', async () => {
-    const testresult = await testSchema(projectDir, 'auth', 'owner5');
+  it('auth owner7', async () => {
+    const testresult = await testSchema(projectDir, 'auth', 'owner7');
     expect(testresult).toBeTruthy();
   });
-  it('auth owner6', async () => {
-    const testresult = await testSchema(projectDir, 'auth', 'owner6');
+  it('auth ownerMultiAuthRules', async () => {
+    const testresult = await testSchema(projectDir, 'auth', 'ownerMultiAuthRules');
     expect(testresult).toBeTruthy();
   });
 });

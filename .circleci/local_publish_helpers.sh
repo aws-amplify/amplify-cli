@@ -72,18 +72,18 @@ function useChildAccountCredentials {
 }
 
 retry() {
-    MAX_RETRY=3
+    MAX_ATTEMPTS=2
     SLEEP_DURATION=5
     n=0
-    until [ $n -ge $MAX_RETRY ]
+    until [ $n -ge $MAX_ATTEMPTS ]
     do
-        echo "Attempting $@ with max retries $MAX_RETRY"
+        echo "Attempting $@ with max retries $MAX_ATTEMPTS"
         "$@" && break
         n=$[$n+1]
         echo "Attempt $n completed."
         sleep $SLEEP_DURATION
     done
-    if [ $n -ge $MAX_RETRY ]; then
+    if [ $n -ge $MAX_ATTEMPTS ]; then
         echo "failed: ${@}" >&2
         exit 1
     fi
