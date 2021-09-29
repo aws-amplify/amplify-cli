@@ -806,7 +806,6 @@ workflows:
                 - /run-e2e\/.*/
           requires:
             - build
-            - build_pkg_binaries
       - amplify_migration_tests_v4:
           context:
             - amplify-ecr-image-pull
@@ -821,7 +820,6 @@ workflows:
                 - /run-e2e\/.*/
           requires:
             - build
-            - build_pkg_binaries
       - amplify_migration_tests_v4_30_0:
           context:
             - amplify-ecr-image-pull
@@ -836,7 +834,6 @@ workflows:
                 - /run-e2e\/.*/
           requires:
             - build
-            - build_pkg_binaries
       - amplify_migration_tests_non_multi_env_layers:
           context:
             - amplify-ecr-image-pull
@@ -851,7 +848,6 @@ workflows:
                 - /run-e2e\/.*/
           requires:
             - build
-            - build_pkg_binaries
       - amplify_migration_tests_multi_env_layers:
           context:
             - amplify-ecr-image-pull
@@ -866,7 +862,6 @@ workflows:
                 - /run-e2e\/.*/
           requires:
             - build
-            - build_pkg_binaries
       - amplify_console_integration_tests:
           context:
             - amplify-ecr-image-pull
