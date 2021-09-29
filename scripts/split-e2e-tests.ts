@@ -4,7 +4,7 @@ import { join } from 'path';
 import * as fs from 'fs-extra';
 import { supportedRegions } from '../packages/amplify-category-geo/src/constants';
 
-const CONCURRENCY = 12;
+const CONCURRENCY = 25;
 // Some our e2e tests are known to fail when run on windows hosts
 // These are caused by issues with our test harness, not broken cli behavior on windows
 // (examples: sending line endings when we shouldn't, java/gradle not installed on windows host)
@@ -25,6 +25,8 @@ const WINDOWS_TEST_FAILURES = [
   // and `singleSelect` for region is not working properly in windows
   'auth_5-amplify_e2e_tests',
   'auth_6-amplify_e2e_tests',
+  'auth_7-amplify_e2e_tests',
+  'auth_8-amplify_e2e_tests',
   'datastore-modelgen-amplify_e2e_tests',
   'delete-amplify_e2e_tests',
   'env-amplify_e2e_tests',
@@ -36,6 +38,8 @@ const WINDOWS_TEST_FAILURES = [
   'function_6-amplify_e2e_tests',
   'function_5-amplify_e2e_tests',
   'function_7-amplify_e2e_tests',
+  'function_8-amplify_e2e_tests',
+  'function_9-amplify_e2e_tests',
   'geo-add-amplify_e2e_tests',
   'geo-update-amplify_e2e_tests',
   'geo-remove-amplify_e2e_tests',
@@ -43,12 +47,17 @@ const WINDOWS_TEST_FAILURES = [
   'hostingPROD-amplify_e2e_tests',
   'import_auth_1-amplify_e2e_tests',
   'import_auth_2-amplify_e2e_tests',
+  'import_auth_3-amplify_e2e_tests',
   'import_dynamodb_1-amplify_e2e_tests',
   'import_dynamodb_2-amplify_e2e_tests',
   'import_s3_1-amplify_e2e_tests',
-  'layer-amplify_e2e_tests',
+  'import_s3_2-amplify_e2e_tests',
+  'layer-1-amplify_e2e_tests',
   'layer-2-amplify_e2e_tests',
+  'layer-3-amplify_e2e_tests',
+  'layer-4-amplify_e2e_tests',
   'migration-api-connection-migration-amplify_e2e_tests',
+  'migration-api-connection-migration2-amplify_e2e_tests',
   'migration-api-key-migration1-amplify_e2e_tests',
   'migration-api-key-migration2-amplify_e2e_tests',
   'migration-api-key-migration3-amplify_e2e_tests',
@@ -66,8 +75,11 @@ const WINDOWS_TEST_FAILURES = [
   'schema-auth-9-amplify_e2e_tests',
   'schema-auth-10-amplify_e2e_tests',
   'schema-auth-11-amplify_e2e_tests',
+  'schema-auth-12-amplify_e2e_tests',
+  'schema-auth-13-amplify_e2e_tests',
   'schema-data-access-patterns-amplify_e2e_tests',
-  'schema-function-amplify_e2e_tests',
+  'schema-function-1-amplify_e2e_tests',
+  'schema-function-2-amplify_e2e_tests',
   'schema-iterative-update-1-amplify_e2e_tests',
   'schema-iterative-update-2-amplify_e2e_tests',
   'schema-iterative-update-3-amplify_e2e_tests',
@@ -77,7 +89,8 @@ const WINDOWS_TEST_FAILURES = [
   'schema-iterative-rollback-2-amplify_e2e_tests',
   'schema-key-amplify_e2e_tests_pkg',
   'schema-model-amplify_e2e_tests',
-  'storage-amplify_e2e_tests',
+  'storage-1-amplify_e2e_tests',
+  'storage-2-amplify_e2e_tests',
 ];
 
 // Ensure to update packages/amplify-e2e-tests/src/cleanup-e2e-resources.ts is also updated this gets updated
@@ -450,6 +463,13 @@ function main(): void {
     join(process.cwd(), 'packages', 'amplify-e2e-tests'),
     CONCURRENCY,
   );
-  saveConfig(splitPkgTests);
+  const splitGqlTests = splitTests(
+    splitPkgTests,
+    'graphql_e2e_tests',
+    'build_test_deploy',
+    join(process.cwd(), 'packages', 'graphql-transformers-e2e-tests'),
+    CONCURRENCY,
+  );
+  saveConfig(splitGqlTests);
 }
 main();

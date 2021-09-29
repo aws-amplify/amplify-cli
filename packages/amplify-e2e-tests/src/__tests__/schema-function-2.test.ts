@@ -14,21 +14,6 @@ describe('api directives @function', () => {
     deleteProjectDir(projectDir);
   });
 
-  it('function usage', async () => {
-    const testresult = await testSchema(projectDir, 'function', 'usage');
-    expect(testresult).toBeTruthy();
-  });
-
-  it('function example1', async () => {
-    const testresult = await testSchema(projectDir, 'function', 'example1');
-    expect(testresult).toBeTruthy();
-  });
-
-  it('function example2', async () => {
-    const testresult = await testSchema(projectDir, 'function', 'example2');
-    expect(testresult).toBeTruthy();
-  });
-
   it('function differentRegion', async () => {
     const testresult = await testSchema(projectDir, 'function', 'differentRegion');
     expect(testresult).toBeTruthy();

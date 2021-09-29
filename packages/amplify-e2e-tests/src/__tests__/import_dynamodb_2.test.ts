@@ -117,127 +117,55 @@ describe('dynamodb import', () => {
     deleteProjectDir(projectRoot);
   });
 
-  it('status should reflect correct values for imported dynamodb table', async () => {
+  it('imported dynamodb table, create prod env, files should match', async () => {
     await initJSProjectWithProfile(projectRoot, projectSettings);
     await addAuthWithDefault(projectRoot, {});
     await importDynamoDBTable(projectRoot, ogSettings.tableName);
 
-    let projectDetails = getDynamoDBProjectDetails(projectRoot);
-
-    expectDynamoDBProjectDetailsMatch(projectDetails, ogProjectDetails);
-
-    await amplifyStatus(projectRoot, 'Import');
     await amplifyPushAuth(projectRoot);
-    await amplifyStatus(projectRoot, 'No Change');
 
+    const firstEnvName = 'integtest';
+    const secondEnvName = 'prod';
+
+    await addEnvironmentWithImportedAuth(projectRoot, {
+      envName: secondEnvName,
+      currentEnvName: firstEnvName,
+    });
+
+    let teamInfo = getTeamProviderInfo(projectRoot);
+    const env1 = teamInfo[firstEnvName];
+    const env2 = teamInfo[secondEnvName];
+
+    // Verify that same storage resource object is present
+    expect(Object.keys(env1)[0]).toEqual(Object.keys(env2)[0]);
+
+    await amplifyPushAuth(projectRoot);
+
+    // Meta is matching the data with the OG project's resources
     expectLocalAndCloudMetaFilesMatching(projectRoot);
+    expectDynamoDBLocalAndOGMetaFilesOutputMatching(projectRoot, ogProjectRoot);
 
-    projectDetails = getDynamoDBProjectDetails(projectRoot);
+    await checkoutEnvironment(projectRoot, {
+      envName: firstEnvName,
+    });
 
-    expectDynamoDBProjectDetailsMatch(projectDetails, ogProjectDetails);
+    await removeEnvironment(projectRoot, {
+      envName: secondEnvName,
+    });
 
-    await removeImportedDynamoDBWithDefault(projectRoot);
-    await amplifyStatus(projectRoot, 'Unlink');
+    teamInfo = getTeamProviderInfo(projectRoot);
 
-    await amplifyPushAuth(projectRoot);
-
-    expectNoStorageInMeta(projectRoot);
-
-    expectLocalTeamInfoHasOnlyAuthCategoryAndNoStorage(projectRoot);
+    // No prod in team proovider info
+    expect(teamInfo.prod).toBeUndefined();
   });
 
-  it('imported dynamodb table with function and crud on storage should push', async () => {
-    await initJSProjectWithProfile(projectRoot, projectSettings);
-    await addAuthWithDefault(projectRoot, {});
-    await importDynamoDBTable(projectRoot, ogSettings.tableName);
-
-    const functionName = randomizedFunctionName('ddbimpfunc');
-    const storageResourceName = getDynamoDBResourceName(projectRoot);
-
-    await addFunction(
-      projectRoot,
-      {
-        name: functionName,
-        functionTemplate: 'Hello World',
-        additionalPermissions: {
-          permissions: ['storage'],
-          choices: ['auth', 'storage'],
-          resources: [storageResourceName],
-          resourceChoices: [storageResourceName],
-          operations: ['create', 'read', 'update', 'delete'],
-        },
-      },
-      'nodejs',
-    );
-
-    await amplifyPushAuth(projectRoot);
-
-    const projectDetails = getDynamoDBProjectDetails(projectRoot);
-
-    // Verify that index.js gets the userpool env var name injected
-    const amplifyBackendDirPath = path.join(projectRoot, 'amplify', 'backend');
-    const functionFilePath = path.join(amplifyBackendDirPath, 'function', functionName);
-    const amplifyFunctionIndexFilePath = path.join(functionFilePath, 'src', 'index.js');
-    const dynamoDBResourceNameUpperCase = projectDetails.storageResourceName.toUpperCase();
-    const tableEnvVarName = `STORAGE_${dynamoDBResourceNameUpperCase}_NAME`;
-    const arnEnvVarName = `STORAGE_${dynamoDBResourceNameUpperCase}_ARN`;
-
-    const indexjsContents = fs.readFileSync(amplifyFunctionIndexFilePath).toString();
-
-    expect(indexjsContents.indexOf(tableEnvVarName)).toBeGreaterThanOrEqual(0);
-    expect(indexjsContents.indexOf(arnEnvVarName)).toBeGreaterThanOrEqual(0);
-
-    // Verify table name in root stack
-    const rootStack = readRootStack(projectRoot);
-    const functionResourceName = `function${functionName}`;
-    const tableNameParameterName = `storage${projectDetails.storageResourceName.replace(/[\W_]+/g, '')}Name`;
-    const arnParameterName = `storage${projectDetails.storageResourceName.replace(/[\W_]+/g, '')}Arn`;
-    const functionResource = rootStack.Resources[functionResourceName];
-    expect(functionResource.Properties?.Parameters[tableNameParameterName]).toEqual(projectDetails.meta.Name);
-
-    // Verify table name env var in function stack
-    const functionStackFilePath = path.join(functionFilePath, `${functionName}-cloudformation-template.json`);
-    const functionStack = JSONUtilities.readJson<$TSObject>(functionStackFilePath);
-    expect(functionStack.Resources?.LambdaFunction?.Properties?.Environment?.Variables[tableEnvVarName].Ref).toEqual(
-      tableNameParameterName,
-    );
-    expect(functionStack.Resources?.LambdaFunction?.Properties?.Environment?.Variables[arnEnvVarName].Ref).toEqual(arnParameterName);
-
-    // Verify if generated policy has the userpool id as resource
-    expect(functionStack.Resources?.AmplifyResourcesPolicy?.Properties?.PolicyDocument?.Statement[0].Resource[0].Ref).toEqual(
-      arnParameterName,
-    );
-    expect(
-      functionStack.Resources?.AmplifyResourcesPolicy?.Properties?.PolicyDocument?.Statement[0].Resource[1]['Fn::Join'][1][0].Ref,
-    ).toEqual(arnParameterName);
-  });
-
-  it('imported dynamodb table, push, pull to empty directory, files should match', async () => {
+  it('dynamodb headless pull missing parameters', async () => {
     await initJSProjectWithProfile(projectRoot, {
       ...projectSettings,
       disableAmplifyAppCreation: false,
     });
     await addAuthWithDefault(projectRoot, {});
     await importDynamoDBTable(projectRoot, ogSettings.tableName);
-
-    const functionName = randomizedFunctionName('ddbimpfunc');
-    const storageResourceName = getDynamoDBResourceName(projectRoot);
-
-    await addFunction(
-      projectRoot,
-      {
-        name: functionName,
-        functionTemplate: 'Hello World',
-        additionalPermissions: {
-          permissions: ['storage'],
-          choices: ['auth', 'storage'],
-          resources: [storageResourceName],
-          resourceChoices: [storageResourceName],
-          operations: ['create', 'read', 'update', 'delete'],
-        },
-      },
-      'nodejs',
-    );
 
     await amplifyPushAuth(projectRoot);
 
@@ -249,7 +177,70 @@ describe('dynamodb import', () => {
     try {
       projectRootPull = await createNewProjectDir('ddbimport-pull');
 
-      await amplifyPull(projectRootPull, { override: false, emptyDir: true, appId });
+      const envName = 'integtest';
+      const providersParam = {
+        awscloudformation: {
+          configLevel: 'project',
+          useProfile: true,
+          profileName,
+        },
+      };
+
+      await expect(
+        headlessPullExpectError(
+          projectRootPull,
+          { envName, appId },
+          providersParam,
+          'Error: storage headless is missing the following inputParams tableName, region',
+          {},
+        ),
+      ).rejects.toThrowError('Process exited with non zero exit code 1');
+    } finally {
+      deleteProjectDir(projectRootPull);
+    }
+  });
+
+  it('dynamodb headless pull successful', async () => {
+    await initJSProjectWithProfile(projectRoot, {
+      ...projectSettings,
+      disableAmplifyAppCreation: false,
+    });
+    await addAuthWithDefault(projectRoot, {});
+    await importDynamoDBTable(projectRoot, ogSettings.tableName);
+
+    await amplifyPushAuth(projectRoot);
+
+    let projectDetails = getDynamoDBProjectDetails(projectRoot);
+
+    const appId = getAppId(projectRoot);
+    expect(appId).toBeDefined();
+
+    let projectRootPull;
+
+    try {
+      projectRootPull = await createNewProjectDir('ddbimport-pull');
+
+      const envName = 'integtest';
+      const providersParam = {
+        awscloudformation: {
+          configLevel: 'project',
+          useProfile: true,
+          profileName,
+        },
+      };
+
+      const categoryConfig = {
+        storage: {
+          region: projectDetails.team.region,
+          tables: {
+            [projectDetails.storageResourceName]: projectDetails.team.tableName,
+          },
+        },
+      };
+
+      await headlessPull(projectRootPull, { envName, appId }, providersParam, categoryConfig);
+
+      await amplifyStatus(projectRoot, 'No Change');
 
       expectLocalAndCloudMetaFilesMatching(projectRoot);
       expectLocalAndPulledBackendConfigMatching(projectRoot, projectRootPull);
