@@ -36,6 +36,9 @@ const WINDOWS_TEST_FAILURES = [
   'function_6-amplify_e2e_tests',
   'function_5-amplify_e2e_tests',
   'function_7-amplify_e2e_tests',
+  'geo-add-amplify_e2e_tests',
+  'geo-update-amplify_e2e_tests',
+  'geo-remove-amplify_e2e_tests',
   'hosting-amplify_e2e_tests',
   'hostingPROD-amplify_e2e_tests',
   'import_auth_1-amplify_e2e_tests',
@@ -278,7 +281,7 @@ function splitTests(
         ...newJob.environment,
         AMPLIFY_DIR: '/home/circleci/repo/packages/amplify-cli/bin',
         AMPLIFY_PATH: '/home/circleci/repo/packages/amplify-cli/bin/amplify',
-      }
+      };
     }
     return { ...acc, [newJobName]: newJob };
   }, {});
