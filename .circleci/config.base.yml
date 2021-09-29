@@ -119,7 +119,10 @@ jobs:
           command: sudo apt-get update && sudo apt-get install default-jdk
       - run:
           name: Run Transformer end-to-end tests with mock server
-          command: cd packages/amplify-util-mock/ && yarn e2e
+          command: |
+            source .circleci/local_publish_helpers.sh
+            cd packages/amplify-util-mock/
+            retry yarn e2e
           no_output_timeout: 90m
           environment:
             JEST_JUNIT_OUTPUT: 'reports/junit/js-test-results.xml'
@@ -198,7 +201,10 @@ jobs:
           key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{ arch }}
       - run:
           name: Run GraphQL end-to-end tests
-          command: cd packages/graphql-transformers-e2e-tests/ && yarn e2e --maxWorkers=3
+          command: |
+            source .circleci/local_publish_helpers.sh
+            cd packages/graphql-transformers-e2e-tests/
+            retry yarn e2e --maxWorkers=3
           environment:
             AMPLIFY_CLI_DISABLE_LOGGING: 'true'
           no_output_timeout: 90m
@@ -309,7 +315,7 @@ jobs:
             source .circleci/local_publish_helpers.sh
             changeNpmGlobalPath
             cd packages/amplify-migration-tests
-            yarn run migration_v4.0.0 --maxWorkers=3 $TEST_SUITE
+            retry yarn run migration_v4.0.0 --maxWorkers=3 $TEST_SUITE
           no_output_timeout: 30m
       - run: *scan_e2e_test_artifacts
       - store_test_results:
@@ -335,7 +341,7 @@ jobs:
             source .circleci/local_publish_helpers.sh
             changeNpmGlobalPath
             cd packages/amplify-migration-tests
-            yarn run migration_v4.28.2_nonmultienv_layers --maxWorkers=3 $TEST_SUITE
+            retry yarn run migration_v4.28.2_nonmultienv_layers --maxWorkers=3 $TEST_SUITE
           no_output_timeout: 90m
       - run: *scan_e2e_test_artifacts
       - store_test_results:
@@ -361,7 +367,7 @@ jobs:
             source .circleci/local_publish_helpers.sh
             changeNpmGlobalPath
             cd packages/amplify-migration-tests
-            yarn run migration_v4.52.0_multienv_layers --maxWorkers=3 $TEST_SUITE
+            retry yarn run migration_v4.52.0_multienv_layers --maxWorkers=3 $TEST_SUITE
           no_output_timeout: 90m
       - run: *scan_e2e_test_artifacts
       - store_test_results:
@@ -390,7 +396,7 @@ jobs:
             source .circleci/local_publish_helpers.sh
             changeNpmGlobalPath
             cd packages/amplify-migration-tests
-            yarn run migration_v4.30.0_auth --maxWorkers=3
+            retry yarn run migration_v4.30.0_auth --maxWorkers=3
           no_output_timeout: 90m
       - run: *scan_e2e_test_artifacts
       - store_test_results:
@@ -416,7 +422,7 @@ jobs:
             source .circleci/local_publish_helpers.sh
             changeNpmGlobalPath
             cd packages/amplify-migration-tests
-            yarn run migration --maxWorkers=3 $TEST_SUITE
+            retry yarn run migration --maxWorkers=3 $TEST_SUITE
           no_output_timeout: 90m
       - run: *scan_e2e_test_artifacts
       - store_test_results:
@@ -437,9 +443,10 @@ jobs:
           command: |
             echo "export PATH=~/.npm-global/bin:$PATH" >> $BASH_ENV
             source $BASH_ENV
+            source .circleci/local_publish_helpers.sh
             amplify -v
             cd packages/amplify-console-integration-tests
-            yarn run console-integration --maxWorkers=3
+            retry yarn run console-integration --maxWorkers=3
           name: 'Run Amplify Console integration tests'
           no_output_timeout: 90m
       - run: *scan_e2e_test_artifacts
@@ -980,12 +987,14 @@ commands:
             equal: [*windows-e2e-executor, << parameters.os >>]
           steps:
             - run:
+                shell: powershell.exe
                 name: Rename the Packaged CLI to amplify
                 command: |
                   # rename the command to amplify
                   cd /home/circleci/repo/out
                   cp amplify-pkg-win.exe amplify.exe
             - run:
+                shell: powershell.exe
                 name: Move to CLI Binary to already existing PATH
                 command: |
                   # This is a Hack to make sure the Amplify CLI is in the PATH
@@ -1024,7 +1033,9 @@ commands:
             - run: nvm use 12.22.5
             - run: npm install -g yarn
             - run: yarn --cache-folder ~/.cache/yarn
-            - run: cp /home/circleci/repo/out/amplify-pkg-win.exe $env:homedrive\$env:homepath\AppData\Local\Microsoft\WindowsApps\amplify.exe
+            - run:
+                shell: powershell.exe
+                command: cp /home/circleci/repo/out/amplify-pkg-win.exe $env:homedrive\$env:homepath\AppData\Local\Microsoft\WindowsApps\amplify.exe
   install_java:
     description: 'Install Java on Linux and Docker images'
     parameters:
