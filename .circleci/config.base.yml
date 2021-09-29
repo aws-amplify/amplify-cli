@@ -733,6 +733,7 @@ workflows:
             branches:
               only:
                 - master
+                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -746,6 +747,7 @@ workflows:
             branches:
               only:
                 - master
+                - win-e2e
                 - beta
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
@@ -757,6 +759,7 @@ workflows:
             branches:
               only:
                 - master
+                - win-e2e
                 - beta
                 - release
                 - /tagged-release\/.*/
@@ -774,6 +777,7 @@ workflows:
             branches:
               only:
                 - master
+                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
       - amplify_e2e_tests:
@@ -788,6 +792,7 @@ workflows:
             branches:
               only:
                 - master
+                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -805,6 +810,7 @@ workflows:
             branches:
               only:
                 - master
+                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -822,6 +828,7 @@ workflows:
             branches:
               only:
                 - master
+                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -837,6 +844,7 @@ workflows:
             branches:
               only:
                 - master
+                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -852,6 +860,7 @@ workflows:
             branches:
               only:
                 - master
+                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -867,6 +876,7 @@ workflows:
             branches:
               only:
                 - master
+                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -882,6 +892,7 @@ workflows:
             branches:
               only:
                 - master
+                - win-e2e
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -953,6 +964,7 @@ workflows:
               only:
                 - release
                 - master
+                - win-e2e
                 - beta
                 - /tagged-release\/.*/
                 - /tagged-release-without-e2e-tests\/.*/
