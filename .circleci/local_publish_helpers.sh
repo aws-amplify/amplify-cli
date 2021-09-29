@@ -72,7 +72,8 @@ function useChildAccountCredentials {
 }
 
 retry() {
-    MAX_ATTEMPTS=2
+    # TODO: Bump MAX_ATTEMPTS when there is more team buy-in to this strategy
+    MAX_ATTEMPTS=0
     SLEEP_DURATION=5
     n=0
     until [ $n -ge $MAX_ATTEMPTS ]
