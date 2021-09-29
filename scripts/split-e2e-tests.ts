@@ -463,6 +463,13 @@ function main(): void {
     join(process.cwd(), 'packages', 'amplify-e2e-tests'),
     CONCURRENCY,
   );
-  saveConfig(splitPkgTests);
+  const splitGqlTests = splitTests(
+    splitPkgTests,
+    'graphql_e2e_tests',
+    'build_test_deploy',
+    join(process.cwd(), 'packages', 'graphql-transformers-e2e-tests'),
+    CONCURRENCY,
+  );
+  saveConfig(splitGqlTests);
 }
 main();
