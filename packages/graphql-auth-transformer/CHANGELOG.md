@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [6.25.0-graphql-vnext-dev-preview.1](https://github.com/aws-amplify/amplify-cli/compare/graphql-auth-transformer@6.25.0-graphql-vnext-dev-preview.0...graphql-auth-transformer@6.25.0-graphql-vnext-dev-preview.1) (2021-09-29)
+
+**Note:** Version bump only for package graphql-auth-transformer
+
+
+
+
+
 # [6.25.0-graphql-vnext-dev-preview.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-auth-transformer@6.24.22...graphql-auth-transformer@6.25.0-graphql-vnext-dev-preview.0) (2021-09-27)
 
 

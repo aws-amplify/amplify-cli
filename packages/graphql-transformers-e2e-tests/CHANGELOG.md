@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [6.27.0-graphql-vnext-dev-preview.1](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformers-e2e-tests@6.27.0-graphql-vnext-dev-preview.0...graphql-transformers-e2e-tests@6.27.0-graphql-vnext-dev-preview.1) (2021-09-29)
+
+
+### Features
+
+* **graphql-default-value-transformer:** implemented default value directive ([6688572](https://github.com/aws-amplify/amplify-cli/commit/66885720fed4a20e9d300d8cfd7aab01ed458097))
+
+
+
+
+
 # [6.27.0-graphql-vnext-dev-preview.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformers-e2e-tests@6.26.3...graphql-transformers-e2e-tests@6.27.0-graphql-vnext-dev-preview.0) (2021-09-27)
 
 

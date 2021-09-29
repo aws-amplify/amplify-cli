@@ -1,6 +1,6 @@
 {
     "name": "@aws-amplify/graphql-searchable-transformer",
-    "version": "0.7.0-graphql-vnext-dev-preview.0",
+    "version": "0.7.0-graphql-vnext-dev-preview.1",
     "description": "Amplfy GraphQL @searchable transformer",
     "repository": {
         "type": "git",

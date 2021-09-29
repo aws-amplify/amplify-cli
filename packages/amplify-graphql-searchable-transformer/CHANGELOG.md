@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.7.0-graphql-vnext-dev-preview.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-searchable-transformer@0.7.0-graphql-vnext-dev-preview.0...@aws-amplify/graphql-searchable-transformer@0.7.0-graphql-vnext-dev-preview.1) (2021-09-29)
+
+**Note:** Version bump only for package @aws-amplify/graphql-searchable-transformer
+
+
+
+
+
 # [0.7.0-graphql-vnext-dev-preview.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-searchable-transformer@0.6.0...@aws-amplify/graphql-searchable-transformer@0.7.0-graphql-vnext-dev-preview.0) (2021-09-27)
 
 

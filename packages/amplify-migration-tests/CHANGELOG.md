@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.2.0-graphql-vnext-dev-preview.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@3.2.0-graphql-vnext-dev-preview.0...amplify-migration-tests@3.2.0-graphql-vnext-dev-preview.1) (2021-09-29)
+
+**Note:** Version bump only for package amplify-migration-tests
+
+
+
+
+
 # [3.2.0-graphql-vnext-dev-preview.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@3.1.9...amplify-migration-tests@3.2.0-graphql-vnext-dev-preview.0) (2021-09-27)
 
 

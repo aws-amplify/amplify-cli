@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.4.0-graphql-vnext-dev-preview.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-index-transformer@0.4.0-graphql-vnext-dev-preview.0...@aws-amplify/graphql-index-transformer@0.4.0-graphql-vnext-dev-preview.1) (2021-09-29)
+
+
+### Bug Fixes
+
+* update snapshot tests ([c68e925](https://github.com/aws-amplify/amplify-cli/commit/c68e925bc0284cda517bf7a9f4d10fa7edc4738d))
+
+
+### Features
+
+* **graphql-model-transformer:** index/primarykey datastore selective sync capability ([2bf386b](https://github.com/aws-amplify/amplify-cli/commit/2bf386bae2a9d6914da5519dc420cf18b7bddafd))
+
+
+
+
+
 # [0.4.0-graphql-vnext-dev-preview.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-index-transformer@0.3.2...@aws-amplify/graphql-index-transformer@0.4.0-graphql-vnext-dev-preview.0) (2021-09-27)
 
 

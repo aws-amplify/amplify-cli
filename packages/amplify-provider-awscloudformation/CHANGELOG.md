@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.61.0-graphql-vnext-dev-preview.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.61.0-graphql-vnext-dev-preview.0...amplify-provider-awscloudformation@4.61.0-graphql-vnext-dev-preview.1) (2021-09-29)
+
+
+### Bug Fixes
+
+* logic to display searchable instance warning ([#8297](https://github.com/aws-amplify/amplify-cli/issues/8297)) ([362058a](https://github.com/aws-amplify/amplify-cli/commit/362058ade6da31c9e68aa12a3622c2016740163a))
+
+
+### Features
+
+* **graphql-default-value-transformer:** implemented default value directive ([6688572](https://github.com/aws-amplify/amplify-cli/commit/66885720fed4a20e9d300d8cfd7aab01ed458097))
+
+
+
+
+
 # [4.61.0-graphql-vnext-dev-preview.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.60.1...amplify-provider-awscloudformation@4.61.0-graphql-vnext-dev-preview.0) (2021-09-27)
 
 

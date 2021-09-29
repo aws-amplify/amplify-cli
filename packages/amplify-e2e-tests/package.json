@@ -1,6 +1,6 @@
 {
   "name": "amplify-e2e-tests",
-  "version": "2.51.0-graphql-vnext-dev-preview.0",
+  "version": "2.51.0-graphql-vnext-dev-preview.1",
   "description": "",
   "repository": {
     "type": "git",
@@ -24,7 +24,7 @@
   },
   "dependencies": {
     "amplify-cli-core": "1.30.0-graphql-vnext-dev-preview.0",
-    "amplify-e2e-core": "1.27.0-graphql-vnext-dev-preview.0",
+    "amplify-e2e-core": "1.27.0-graphql-vnext-dev-preview.1",
     "aws-amplify": "^4.2.8",
     "aws-appsync": "^4.1.1",
     "aws-sdk": "^2.963.0",

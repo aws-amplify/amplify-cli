@@ -1,6 +1,6 @@
 {
   "name": "graphql-auth-transformer",
-  "version": "6.25.0-graphql-vnext-dev-preview.0",
+  "version": "6.25.0-graphql-vnext-dev-preview.1",
   "description": "Implements the @auth directive for the appsync model transform.",
   "repository": {
     "type": "git",
@@ -33,7 +33,7 @@
     "@types/node": "^12.12.6",
     "cloudform-types": "^4.2.0",
     "graphql-dynamodb-transformer": "6.22.23-graphql-vnext-dev-preview.0",
-    "graphql-elasticsearch-transformer": "4.12.2-graphql-vnext-dev-preview.0",
+    "graphql-elasticsearch-transformer": "4.12.2-graphql-vnext-dev-preview.1",
     "graphql-function-transformer": "2.5.22-graphql-vnext-dev-preview.0",
     "rimraf": "^3.0.0"
   },
