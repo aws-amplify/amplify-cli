@@ -2,6 +2,7 @@ import { $TSContext, ExportPathValidationError } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import * as chalk from 'chalk';
 import * as fs from 'fs-extra';
+import * as path from 'path';
 export const run = async (context: $TSContext) => {
   const options = context.input.options;
 
@@ -22,7 +23,7 @@ export const run = async (context: $TSContext) => {
   const resources = await context.amplify.getResourceStatus();
   const providerPlugin = context.amplify.getProviderPlugins(context);
   const providers = Object.keys(providerPlugin);
-  const exportPath = context.input.options['out'];
+  const exportPath = path.resolve(context.input.options['out']);
   validatePath(exportPath);
   for await (const provider of providers) {
     const plugin = await import(providerPlugin[provider]);
