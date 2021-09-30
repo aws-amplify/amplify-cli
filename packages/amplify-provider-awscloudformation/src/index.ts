@@ -58,7 +58,7 @@ function onInitSuccessful(context) {
   return initializer.onInitSuccessful(context);
 }
 
-export function exportResources(context, resourceList, exportType) {
+function exportResources(context, resourceList, exportType) {
   return resourceExport.run(context, resourceList, exportType);
 }
 
@@ -130,6 +130,7 @@ module.exports = {
   adminLoginFlow,
   console: openConsole,
   attachBackend,
+  exportResources,
   init,
   initEnv,
   isAmplifyAdminApp,
