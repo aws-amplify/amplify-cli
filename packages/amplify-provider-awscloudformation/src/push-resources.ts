@@ -73,19 +73,12 @@ export async function run(context: $TSContext, resourceDefinition: $TSObject) {
   let layerResources = [];
 
   try {
-    const {
-      resourcesToBeCreated,
-      resourcesToBeUpdated,
-      resourcesToBeSynced,
-      resourcesToBeDeleted,
-      tagsUpdated,
-      allResources,
-    } = resourceDefinition;
+    const { resourcesToBeCreated, resourcesToBeUpdated, resourcesToBeSynced, resourcesToBeDeleted, tagsUpdated, allResources } =
+      resourceDefinition;
     const cloudformationMeta = context.amplify.getProjectMeta().providers.awscloudformation;
     const {
       parameters: { options },
     } = context;
-
     let resources = !!context?.exeInfo?.forcePush ? allResources : resourcesToBeCreated.concat(resourcesToBeUpdated);
     layerResources = resources.filter(r => r.service === FunctionServiceNameLambdaLayer);
 
@@ -113,6 +106,7 @@ export async function run(context: $TSContext, resourceDefinition: $TSObject) {
         resources = _.uniqBy(resources.concat(functionResourceToBeUpdated), `resourceName`);
       }
     }
+
     validateCfnTemplates(context, resources);
 
     for await (const resource of resources) {
@@ -721,7 +715,7 @@ function getAllUniqueCategories(resources: $TSObject[]): $TSObject[] {
   return [...categories];
 }
 
-function getCfnFiles(category: string, resourceName: string) {
+export function getCfnFiles(category: string, resourceName: string, options?: glob.IOptions) {
   const backEndDir = pathManager.getBackendDirPath();
   const resourceDir = path.normalize(path.join(backEndDir, category, resourceName));
   const resourceBuildDir = path.join(resourceDir, optionalBuildDirectoryName);
@@ -735,6 +729,7 @@ function getCfnFiles(category: string, resourceName: string) {
     const cfnFiles = glob.sync(cfnTemplateGlobPattern, {
       cwd: resourceBuildDir,
       ignore: [parametersJson],
+      ...options,
     });
 
     if (cfnFiles.length > 0) {
@@ -748,6 +743,7 @@ function getCfnFiles(category: string, resourceName: string) {
   const cfnFiles = glob.sync(cfnTemplateGlobPattern, {
     cwd: resourceDir,
     ignore: [parametersJson, AUTH_TRIGGER_TEMPLATE],
+    ...options,
   });
 
   return {
@@ -814,7 +810,7 @@ export async function uploadTemplateToS3(
   }
 }
 
-async function formNestedStack(
+export async function formNestedStack(
   context: $TSContext,
   projectDetails: $TSObject,
   categoryName?: string,
@@ -840,7 +836,7 @@ async function formNestedStack(
   let authResourceName: string;
 
   const { APIGatewayAuthURL, NetworkStackS3Url, AuthTriggerTemplateURL } = amplifyMeta.providers[constants.ProviderName];
-
+  const { envName } = stateManager.getLocalEnvInfo();
   if (APIGatewayAuthURL) {
     const stack = {
       Type: 'AWS::CloudFormation::Stack',
@@ -853,7 +849,7 @@ async function formNestedStack(
           unauthRoleName: {
             Ref: 'UnauthRoleName',
           },
-          env: context.exeInfo.localEnvInfo.envName,
+          env: envName,
         },
       },
     };
@@ -878,7 +874,7 @@ async function formNestedStack(
       Properties: {
         TemplateURL: AuthTriggerTemplateURL,
         Parameters: {
-          env: context.exeInfo.localEnvInfo.envName,
+          env: envName,
         },
       },
       DependsOn: [],
@@ -1031,14 +1027,8 @@ async function formNestedStack(
         // If auth is imported check the parameters section of the nested template
         // and if it has auth or unauth role arn or name or userpool id, then inject it from the
         // imported auth resource's properties
-        const {
-          imported,
-          userPoolId,
-          authRoleArn,
-          authRoleName,
-          unauthRoleArn,
-          unauthRoleName,
-        } = context.amplify.getImportedAuthProperties(context);
+        const { imported, userPoolId, authRoleArn, authRoleName, unauthRoleArn, unauthRoleName } =
+          context.amplify.getImportedAuthProperties(context);
 
         if (category !== 'auth' && resourceDetails.service !== 'Cognito' && imported) {
           if (parameters.AuthCognitoUserPoolId) {
@@ -1104,6 +1094,14 @@ function updateIdPRolesInNestedStack(nestedStack: $TSAny, authResourceName: $TSA
   Object.assign(nestedStack.Resources, idpUpdateRoleCfn);
 }
 
+function isAuthTrigger(dependsOnResource: $TSObject) {
+  return (
+    FeatureFlags.getBoolean('auth.breakCircularDependency') &&
+    dependsOnResource.category === 'function' &&
+    dependsOnResource.triggerProvider === 'Cognito'
+  );
+}
+
 export async function generateAndUploadRootStack(context: $TSContext, destinationPath: string, destinationS3Key: string) {
   const projectDetails = context.amplify.getProjectDetails();
   const nestedStack = await formNestedStack(context, projectDetails);
@@ -1118,14 +1116,6 @@ export async function generateAndUploadRootStack(context: $TSContext, destinatio
   };
 
   await s3Client.uploadFile(s3Params, false);
-}
-
-function isAuthTrigger(dependsOnResource: $TSObject) {
-  return (
-    FeatureFlags.getBoolean('auth.breakCircularDependency') &&
-    dependsOnResource.category === 'function' &&
-    dependsOnResource.triggerProvider === 'Cognito'
-  );
 }
 
 function rollbackLambdaLayers(layerResources: $TSAny[]) {
