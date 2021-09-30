@@ -1,4 +1,4 @@
-import { GraphQLAPIProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { GraphQLAPIProvider, TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { EventSourceMapping, IFunction, LayerVersion, Runtime, StartingPosition } from '@aws-cdk/aws-lambda';
 import { CfnParameter, Construct, Fn, Stack, Duration } from '@aws-cdk/core';
 import { Effect, IRole, Policy, PolicyStatement, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
@@ -45,12 +45,12 @@ export const createLambda = (
   );
 };
 
-export const createLambdaRole = (stack: Construct, parameterMap: Map<string, CfnParameter>): IRole => {
+export const createLambdaRole = (context: TransformerContextProvider, stack: Construct, parameterMap: Map<string, CfnParameter>): IRole => {
   const { OpenSearchStreamingLambdaIAMRoleLogicalID } = ResourceConstants.RESOURCES;
   const { OpenSearchStreamingIAMRoleName } = ResourceConstants.PARAMETERS;
   const role = new Role(stack, OpenSearchStreamingLambdaIAMRoleLogicalID, {
     assumedBy: new ServicePrincipal('lambda.amazonaws.com'),
-    roleName: parameterMap.get(OpenSearchStreamingIAMRoleName)?.valueAsString,
+    roleName: context.resourceHelper.generateIAMRoleName(parameterMap.get(OpenSearchStreamingIAMRoleName)?.valueAsString ?? ''),
   });
   role.attachInlinePolicy(
     new Policy(stack, 'CloudwatchLogsAccess', {

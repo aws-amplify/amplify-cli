@@ -241,7 +241,7 @@ export function removeEnvironment(cwd: string, settings: { envName: string }): P
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['env', 'remove', settings.envName], { cwd, stripColors: true })
       .wait(`Are you sure you want to continue?`)
-      .sendLine('y')
+      .sendConfirmYes()
       .wait('Successfully removed environment from your project locally')
       .run((err: Error) => {
         if (!err) {
