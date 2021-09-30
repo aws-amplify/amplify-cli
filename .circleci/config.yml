@@ -13743,7 +13743,6 @@ workflows:
             parameters:
               os:
                 - linux
-                - windows
       - geo-remove-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
@@ -13997,7 +13996,6 @@ workflows:
             parameters:
               os:
                 - linux
-                - windows
       - schema-predictions-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
@@ -14016,7 +14014,6 @@ workflows:
             parameters:
               os:
                 - linux
-                - windows
       - predictions-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
@@ -14251,7 +14248,6 @@ workflows:
             parameters:
               os:
                 - linux
-                - windows
       - amplify-app-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
@@ -14468,7 +14464,6 @@ workflows:
             parameters:
               os:
                 - linux
-                - windows
       - storage-2-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
@@ -14505,7 +14500,6 @@ workflows:
             parameters:
               os:
                 - linux
-                - windows
       - hosting-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
@@ -14560,7 +14554,6 @@ workflows:
             parameters:
               os:
                 - linux
-                - windows
       - import_auth_2-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
@@ -14724,7 +14717,6 @@ workflows:
             parameters:
               os:
                 - linux
-                - windows
       - notifications-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
@@ -14743,7 +14735,6 @@ workflows:
             parameters:
               os:
                 - linux
-                - windows
       - analytics-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
@@ -14762,7 +14753,6 @@ workflows:
             parameters:
               os:
                 - linux
-                - windows
       - schema-iterative-update-1-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
@@ -14853,7 +14843,6 @@ workflows:
             parameters:
               os:
                 - linux
-                - windows
       - api_5-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
@@ -14909,7 +14898,6 @@ workflows:
             parameters:
               os:
                 - linux
-                - windows
       - layer-3-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
@@ -14983,7 +14971,6 @@ workflows:
             parameters:
               os:
                 - linux
-                - windows
       - feature-flags-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
@@ -15146,7 +15133,6 @@ workflows:
             parameters:
               os:
                 - linux
-                - windows
       - iam-permissions-boundary-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
@@ -15165,7 +15151,6 @@ workflows:
             parameters:
               os:
                 - linux
-                - windows
       - layer-4-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
@@ -15329,7 +15314,6 @@ workflows:
             parameters:
               os:
                 - linux
-                - windows
       - schema-iterative-rollback-1-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
