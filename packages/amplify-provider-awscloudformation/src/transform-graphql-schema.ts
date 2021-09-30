@@ -16,7 +16,7 @@ import { KeyTransformer } from 'graphql-key-transformer';
 import { ProviderName as providerName } from './constants';
 import { AmplifyCLIFeatureFlagAdapter } from './utils/amplify-cli-feature-flag-adapter';
 import { isAmplifyAdminApp } from './utils/admin-helpers';
-import { JSONUtilities, stateManager } from 'amplify-cli-core';
+import { JSONUtilities, pathManager, stateManager } from 'amplify-cli-core';
 import { ResourceConstants } from 'graphql-transformer-common';
 import { printer } from 'amplify-prompts';
 import _ from 'lodash';
@@ -314,8 +314,8 @@ async function migrateProject(context, options) {
 }
 
 export async function transformGraphQLSchema(context, options) {
-  const useExperimentalPipelineTransformer = FeatureFlags.getBoolean('graphQLTransformer.useExperimentalPipelinedTransformer');
-  if (useExperimentalPipelineTransformer) {
+  const transformerVersion = getTransformerVersion(context);
+  if (transformerVersion === 2) {
     return transformGraphQLSchemaV6(context, options);
   }
   const backEndDir = context.amplify.pathManager.getBackendDirPath();
@@ -559,8 +559,8 @@ async function getPreviousDeploymentRootKey(previouslyDeployedBackendDir) {
 // }
 
 export async function getDirectiveDefinitions(context, resourceDir) {
-  const useExperimentalPipelineTransformer = FeatureFlags.getBoolean('graphQLTransformer.useExperimentalPipelinedTransformer');
-  if (useExperimentalPipelineTransformer) {
+  const transformerVersion = getTransformerVersion(context);
+  if (transformerVersion === 2) {
     return getDirectiveDefinitionsV6(context, resourceDir);
   }
 
@@ -607,4 +607,36 @@ function getBucketName(context, s3ResourceName, backEndDir) {
     ? `${bucketParameters.bucketName}\${hash}-\${env}`
     : `${bucketParameters.bucketName}${s3ResourceName}-\${env}`;
   return { bucketName };
+}
+
+function getTransformerVersion(context) {
+  migrateToTransformerVersionFeatureFlag(context);
+
+  const transformerVersion = FeatureFlags.getNumber('graphQLTransformer.transformerVersion');
+  if (transformerVersion !== 1 && transformerVersion !== 2) {
+    throw new Error(`Invalid value specified for transformerVersion: '${transformerVersion}'`);
+  }
+
+  return transformerVersion;
+}
+
+function migrateToTransformerVersionFeatureFlag(context) {
+  const projectPath = pathManager.findProjectRoot() ?? process.cwd();
+
+  let config = stateManager.getCLIJSON(projectPath, undefined, {
+    throwIfNotExist: false,
+    preserveComments: true,
+  });
+
+  const useExperimentalPipelineTransformer = FeatureFlags.getBoolean('graphQLTransformer.useExperimentalPipelinedTransformer');
+  const transformerVersion = FeatureFlags.getNumber('graphQLTransformer.transformerVersion');
+
+  if (useExperimentalPipelineTransformer && transformerVersion === 1) {
+    config.features.graphqltransformer.transformerversion = 2;
+    stateManager.setCLIJSON(projectPath, config);
+
+    context.print.warning(
+      `\nThe project is configured with 'transformerVersion': ${transformerVersion}, but 'useExperimentalPipelinedTransformer': ${useExperimentalPipelineTransformer}. Setting the 'transformerVersion': ${config.features.graphqltransformer.transformerversion}. 'useExperimentalPipelinedTransformer' is deprecated.`,
+    );
+  }
 }
