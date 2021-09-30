@@ -1,0 +1,50 @@
+{
+  "type": "object",
+  "properties": {
+    "resourceName": {
+      "type": "string"
+    },
+    "bucketName": {
+      "type": "string"
+    },
+    "storageAccess": {
+      "$ref": "#/definitions/S3AccessType"
+    },
+    "selectedGuestPermissions": {
+      "type": "array",
+      "items": {
+        "enum": ["DELETE_OBJECT", "GET_OBJECT", "LIST_BUCKET", "PUT_OBJECT"],
+        "type": "string"
+      }
+    },
+    "selectedAuthenticatedPermissions": {
+      "type": "array",
+      "items": {
+        "enum": ["DELETE_OBJECT", "GET_OBJECT", "LIST_BUCKET", "PUT_OBJECT"],
+        "type": "string"
+      }
+    },
+    "isTriggerEnabled": {
+      "type": "boolean"
+    },
+    "triggerFunctionName": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "bucketName",
+    "isTriggerEnabled",
+    "resourceName",
+    "selectedAuthenticatedPermissions",
+    "selectedGuestPermissions",
+    "storageAccess",
+    "triggerFunctionName"
+  ],
+  "definitions": {
+    "S3AccessType": {
+      "enum": ["auth", "authAndGuest"],
+      "type": "string"
+    }
+  },
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
