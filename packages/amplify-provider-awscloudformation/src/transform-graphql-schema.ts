@@ -310,8 +310,8 @@ async function migrateProject(context, options) {
 }
 
 export async function transformGraphQLSchema(context, options) {
-  const useExperimentalPipelineTransformer = FeatureFlags.getBoolean('graphQLTransformer.useExperimentalPipelinedTransformer');
-  if (useExperimentalPipelineTransformer) {
+  const transformerVersion = getTransformerVersion(context);
+  if (transformerVersion === 2) {
     return transformGraphQLSchemaV6(context, options);
   }
   const backEndDir = context.amplify.pathManager.getBackendDirPath();
@@ -601,8 +601,8 @@ async function getPreviousDeploymentRootKey(previouslyDeployedBackendDir) {
 // }
 
 export async function getDirectiveDefinitions(context, resourceDir) {
-  const useExperimentalPipelineTransformer = FeatureFlags.getBoolean('graphQLTransformer.useExperimentalPipelinedTransformer');
-  if (useExperimentalPipelineTransformer) {
+  const transformerVersion = getTransformerVersion(context);
+  if (transformerVersion === 2) {
     return getDirectiveDefinitionsV6(context, resourceDir);
   }
 
@@ -649,4 +649,20 @@ function getBucketName(context, s3ResourceName, backEndDir) {
     ? `${bucketParameters.bucketName}\${hash}-\${env}`
     : `${bucketParameters.bucketName}${s3ResourceName}-\${env}`;
   return { bucketName };
+}
+
+function getTransformerVersion(context) {
+  const transformerVersion = FeatureFlags.getNumber('graphQLTransformer.transformerVersion');
+  const useExperimentalPipelineTransformer = FeatureFlags.getBoolean('graphQLTransformer.useExperimentalPipelinedTransformer');
+
+  if (
+    (transformerVersion !== 1 && !useExperimentalPipelineTransformer) ||
+    (transformerVersion === 1 && useExperimentalPipelineTransformer)
+  ) {
+    context.print.warning(
+      `\nThe project is configured with 'transformerVersion': ${transformerVersion}, but 'useExperimentalPipelinedTransformer': ${useExperimentalPipelineTransformer}. Using the 'transformerVersion': ${transformerVersion}.`,
+    );
+  }
+
+  return transformerVersion;
 }
