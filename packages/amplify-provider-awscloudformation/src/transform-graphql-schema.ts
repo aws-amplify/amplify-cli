@@ -54,7 +54,7 @@ const ROOT_APPSYNC_S3_KEY = 'amplify-appsync-files';
 const s3ServiceName = 'S3';
 
 export function searchablePushChecks(context, map): void {
-  const searchableModelTypes = Object.keys(map).filter(type => !map[type].includes('searchable') && map[type].includes('model'));
+  const searchableModelTypes = Object.keys(map).filter(type => map[type].includes('searchable') && map[type].includes('model'));
   if (searchableModelTypes.length) {
     const currEnv = context.amplify.getEnvInfo().envName;
     const teamProviderInfo = stateManager.getTeamProviderInfo();

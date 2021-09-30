@@ -1,17 +1,18 @@
 import * as util from '../util';
 import { nspawn as spawn, getSocialProviders } from 'amplify-e2e-core';
+import { EOL } from 'os';
 
 const defaultSettings = {
-  name: '\r',
-  editor: '\r',
-  appType: '\r',
-  framework: '\r',
-  srcDir: '\r',
-  distDir: '\r',
-  buildCmd: '\r',
-  startCmd: '\r',
-  useProfile: '\r',
-  profileName: '\r',
+  name: EOL,
+  editor: EOL,
+  appType: EOL,
+  framework: EOL,
+  srcDir: EOL,
+  distDir: EOL,
+  buildCmd: EOL,
+  startCmd: EOL,
+  useProfile: EOL,
+  profileName: EOL,
 };
 
 export type FrontendConfig = {
@@ -84,7 +85,7 @@ export function authConfigPull(
       .wait('Start Command:')
       .sendLine(s.startCmd)
       .wait('Do you plan on modifying this backend?')
-      .sendLine('y')
+      .sendConfirmYes()
       .wait('Successfully pulled backend environment dev from the cloud.')
       .run((err: Error) => {
         if (!err) {

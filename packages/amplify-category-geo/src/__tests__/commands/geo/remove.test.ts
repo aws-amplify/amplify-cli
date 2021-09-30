@@ -58,15 +58,4 @@ describe('remove command tests', () => {
 
     expect(mockRemoveResource).toHaveBeenCalledWith(mockContext, service);
   });
-
-  it('remove resource workflow is not invoked for unsupported region', async () => {
-    mockAmplifyMeta.providers[provider] = {
-      Region: 'eu-west-2',
-    };
-    stateManager.getMeta = jest.fn().mockReturnValue(mockAmplifyMeta);
-
-    await run(mockContext);
-
-    expect(mockRemoveResource).toBeCalledTimes(0);
-  });
 });

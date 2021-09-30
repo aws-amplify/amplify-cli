@@ -41,7 +41,7 @@ export function createSyncTable(context: TransformerContext) {
 
 function createSyncIAMRole(context: TransformerContext, stack: cdk.Stack, tableName: string) {
   const role = new iam.Role(stack, SyncResourceIDs.syncIAMRoleName, {
-    roleName: context.resourceHelper.generateResourceName(SyncResourceIDs.syncIAMRoleName),
+    roleName: context.resourceHelper.generateIAMRoleName(SyncResourceIDs.syncIAMRoleName),
     assumedBy: new iam.ServicePrincipal('appsync.amazonaws.com'),
   });
 

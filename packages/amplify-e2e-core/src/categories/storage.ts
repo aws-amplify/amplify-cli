@@ -26,15 +26,15 @@ export function addSimpleDDB(cwd: string, settings: any): Promise<void> {
       .wait('Please choose the data type')
       .sendCarriageReturn()
       .wait('Would you like to add another column')
-      .sendLine('n')
+      .sendConfirmNo()
       .wait('Please choose partition key for the table')
       .sendCarriageReturn()
       .wait('Do you want to add a sort key to your table')
-      .sendLine('n')
+      .sendConfirmNo()
       .wait('Do you want to add global secondary indexes to your table')
-      .sendLine('n')
+      .sendConfirmNo()
       .wait('Do you want to add a Lambda Trigger for your Table')
-      .sendLine('n')
+      .sendConfirmNo()
       .sendEof()
       .run((err: Error) => {
         if (!err) {
@@ -66,19 +66,19 @@ export function addDDBWithTrigger(cwd: string, settings: { ddbResourceName?: str
       .wait('Please choose the data type')
       .sendCarriageReturn()
       .wait('Would you like to add another column')
-      .sendLine('n')
+      .sendConfirmNo()
       .wait('Please choose partition key for the table')
       .sendCarriageReturn()
       .wait('Do you want to add a sort key to your table')
-      .sendLine('n')
+      .sendConfirmNo()
       .wait('Do you want to add global secondary indexes to your table')
-      .sendLine('n')
+      .sendConfirmNo()
       .wait('Do you want to add a Lambda Trigger for your Table')
-      .sendLine('y')
+      .sendConfirmYes()
       .wait('Select from the following options')
       .sendLine(KEY_DOWN_ARROW)
       .wait('Do you want to edit the local')
-      .sendLine('n')
+      .sendConfirmNo()
       .sendEof()
       .run((err: Error) => {
         if (!err) {
@@ -98,17 +98,17 @@ export function updateDDBWithTrigger(cwd: string, settings: any): Promise<void> 
       .wait('Specify the resource that you would want to update')
       .sendCarriageReturn()
       .wait('Would you like to add another column')
-      .sendLine('n')
+      .sendConfirmNo()
       .wait('Do you want to add global secondary indexes to your table')
-      .sendLine('n')
+      .sendConfirmNo()
       .wait('Do you want to add a Lambda Trigger for your Table')
-      .sendLine('y')
+      .sendConfirmYes()
       .wait('Select from the following options')
       .sendLine(KEY_DOWN_ARROW)
       .wait('Do you want to edit the local')
-      .sendLine('n')
+      .sendConfirmNo()
       .wait('overwrite')
-      .sendLine('y')
+      .sendConfirmYes()
       .sendEof()
       .run((err: Error) => {
         if (!err) {
@@ -129,15 +129,15 @@ export function updateSimpleDDBwithGSI(cwd: string, settings: any): Promise<void
       .wait('Specify the resource that you would want to update')
       .sendCarriageReturn()
       .wait('Would you like to add another column')
-      .sendLine('y')
+      .sendConfirmYes()
       .wait('What would you like to name this column')
       .sendLine('gsi-col2')
       .wait('Please choose the data type')
       .sendCarriageReturn()
       .wait('Would you like to add another column')
-      .sendLine('n')
+      .sendConfirmNo()
       .wait('Do you want to add global secondary indexes to your table?')
-      .sendLine('y')
+      .sendConfirmYes()
       .wait('Please provide the GSI name')
       .sendLine('gsi2')
       .wait('Please choose partition key for the GSI')
@@ -145,15 +145,15 @@ export function updateSimpleDDBwithGSI(cwd: string, settings: any): Promise<void
       .sendKeyDown()
       .sendCarriageReturn()
       .wait('Do you want to add a sort key to your global secondary index?')
-      .sendLine('n')
+      .sendConfirmNo()
       .wait('Do you want to add more global secondary indexes to your table?')
-      .sendLine('n')
+      .sendConfirmNo()
       .wait('Do you want to keep existing global seconday indexes created on your table?')
-      .sendLine('y')
+      .sendConfirmYes()
       .wait('Do you want to add a Lambda Trigger for your Table?')
-      .sendLine('n')
+      .sendConfirmNo()
       .wait('overwrite')
-      .sendLine('y')
+      .sendConfirmYes()
       .sendEof()
       .run((err: Error) => {
         if (!err) {
@@ -180,30 +180,30 @@ export function addSimpleDDBwithGSI(cwd: string, settings: any): Promise<void> {
       .wait('Please choose the data type')
       .sendCarriageReturn()
       .wait('Would you like to add another column')
-      .sendLine('y')
+      .sendConfirmYes()
       .wait('What would you like to name this column')
       .sendLine('gsi-col1')
       .wait('Please choose the data type')
       .sendCarriageReturn()
       .wait('Would you like to add another column')
-      .sendLine('n')
+      .sendConfirmNo()
       .wait('Please choose partition key for the table')
       .sendCarriageReturn()
       .wait('Do you want to add a sort key to your table')
-      .sendLine('n')
+      .sendConfirmNo()
       .wait('Do you want to add global secondary indexes to your table?')
-      .sendLine('y')
+      .sendConfirmYes()
       .wait('Please provide the GSI name')
       .sendLine('gsi1')
       .wait('Please choose partition key for the GSI')
       .send(KEY_DOWN_ARROW)
       .sendCarriageReturn()
       .wait('Do you want to add a sort key to your global secondary index?')
-      .sendLine('n')
+      .sendConfirmNo()
       .wait('Do you want to add more global secondary indexes to your table')
-      .sendLine('n')
+      .sendConfirmNo()
       .wait('Do you want to add a Lambda Trigger for your Table')
-      .sendLine('n')
+      .sendConfirmNo()
       .sendEof()
       .run((err: Error) => {
         if (!err) {
@@ -229,7 +229,7 @@ export function addS3(cwd: string, settings: any): Promise<void> {
       .wait('What kind of access do you want')
       .sendLine(' ')
       .wait('Do you want to add a Lambda Trigger for your S3 Bucket')
-      .sendLine('n')
+      .sendConfirmNo()
       .sendEof()
       .run((err: Error) => {
         if (!err) {
@@ -248,7 +248,7 @@ export function addS3AndAuthWithAuthOnlyAccess(cwd: string, settings: any): Prom
       .wait('Please select from one of the below mentioned services')
       .sendCarriageReturn() // Content
       .wait('You need to add auth (Amazon Cognito) to your project in order to add storage')
-      .sendLine('y')
+      .sendConfirmYes()
       .wait('Do you want to use the default authentication and security configuration')
       .sendCarriageReturn() // Default config
       .wait('How do you want users to be able to sign in')
@@ -265,7 +265,7 @@ export function addS3AndAuthWithAuthOnlyAccess(cwd: string, settings: any): Prom
       .send('i') // Select all
       .sendCarriageReturn()
       .wait('Do you want to add a Lambda Trigger for your S3 Bucket')
-      .sendLine('n')
+      .sendConfirmNo()
       .sendEof()
       .run((err: Error) => {
         if (!err) {
@@ -297,7 +297,7 @@ export function addS3WithGuestAccess(cwd: string, settings: any): Promise<void> 
       .send(' ') // Select read
       .sendCarriageReturn()
       .wait('Do you want to add a Lambda Trigger for your S3 Bucket')
-      .sendLine('n')
+      .sendConfirmNo()
       .sendEof()
       .run((err: Error) => {
         if (!err) {
@@ -334,7 +334,7 @@ export function addS3WithGroupAccess(cwd: string, settings: any): Promise<void> 
       .send(' ') // Select read
       .sendCarriageReturn()
       .wait('Do you want to add a Lambda Trigger for your S3 Bucket')
-      .sendLine('n')
+      .sendConfirmNo()
       .sendEof()
       .run((err: Error) => {
         if (!err) {
@@ -361,12 +361,12 @@ export function addS3WithTrigger(cwd: string, settings: any): Promise<void> {
       .send(' ')
       .sendCarriageReturn()
       .wait('Do you want to add a Lambda Trigger for your S3 Bucket')
-      .sendLine('y')
+      .sendConfirmYes()
       .wait('Select from the following options')
       .send(KEY_DOWN_ARROW)
       .sendCarriageReturn()
       .wait('Do you want to edit the local')
-      .sendLine('n')
+      .sendConfirmNo()
       .sendCarriageReturn()
       .sendEof()
       .run((err: Error) => {
@@ -394,12 +394,12 @@ export function updateS3AddTrigger(cwd: string, settings: any): Promise<void> {
       .wait('What kind of access do you want') // for <UserGroup2> users?
       .sendCarriageReturn()
       .wait('Do you want to add a Lambda Trigger for your S3 Bucket')
-      .sendLine('y')
+      .sendConfirmYes()
       .wait('Select from the following options')
       .send(KEY_DOWN_ARROW)
       .sendCarriageReturn()
       .wait('Do you want to edit the local')
-      .sendLine('n')
+      .sendConfirmNo()
       .sendCarriageReturn()
       .sendEof()
       .run((err: Error) => {
@@ -441,7 +441,7 @@ export function addS3Storage(projectDir: string): Promise<void> {
       ['create/update', 'read', 'delete'],
     );
 
-    chain.wait('Do you want to add a Lambda Trigger for your S3 Bucket?').sendLine('N');
+    chain.wait('Do you want to add a Lambda Trigger for your S3 Bucket?').sendConfirmNo();
 
     chain.run((err: Error) => {
       if (!err) {

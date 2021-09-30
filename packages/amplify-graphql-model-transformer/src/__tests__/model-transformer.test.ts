@@ -13,6 +13,7 @@ import {
   verifyInputCount,
   verifyMatchingTypes,
 } from './test-utils/helpers';
+import { expect as cdkExpect, haveResource } from '@aws-cdk/assert';
 
 const featureFlags = {
   getBoolean: jest.fn(),
@@ -981,5 +982,78 @@ describe('ModelTransformer: ', () => {
     expect(out.pipelineFunctions).toMatchSnapshot();
 
     validateModelSchema(parse(definition));
+  });
+
+  it('should generate iam role names under 64 chars and subscriptions under 50', () => {
+    const validSchema = `
+      type ThisIsAVeryLongNameModelThatShouldNotGenerateIAMRoleNamesOver64Characters @model {
+          id: ID!
+          title: String!
+      }
+    `;
+
+    const config: SyncConfig = {
+      ConflictDetection: 'VERSION',
+      ConflictHandler: ConflictHandlerType.AUTOMERGE,
+    };
+
+    const transformer = new GraphQLTransform({
+      transformers: [new ModelTransformer()],
+      featureFlags,
+      transformConfig: {
+        ResolverConfig: {
+          project: config,
+        },
+      },
+    });
+    const out = transformer.transform(validSchema);
+    expect(out).toBeDefined();
+
+    const definition = out.schema;
+    expect(definition).toBeDefined();
+
+    const parsed = parse(definition);
+    const subscriptionType = getObjectType(parsed, 'Subscription');
+    expect(subscriptionType).toBeDefined();
+
+    subscriptionType!.fields!.forEach(it => {
+      expect(it.name.value.length <= 50).toBeTruthy();
+    });
+
+    const iamStackResource = out.stacks.ThisIsAVeryLongNameModelThatShouldNotGenerateIAMRoleNamesOver64Characters;
+    expect(iamStackResource).toBeDefined();
+    cdkExpect(iamStackResource).to(
+      haveResource('AWS::IAM::Role', {
+        AssumeRolePolicyDocument: {
+          Statement: [
+            {
+              Action: 'sts:AssumeRole',
+              Effect: 'Allow',
+              Principal: {
+                Service: 'appsync.amazonaws.com',
+              },
+            },
+          ],
+          Version: '2012-10-17',
+        },
+        RoleName: {
+          'Fn::Join': [
+            '',
+            [
+              'ThisIsAVeryLongNameM2d9fca-',
+              {
+                Ref: 'referencetotransformerrootstackGraphQLAPI20497F53ApiId',
+              },
+              '-',
+              {
+                Ref: 'referencetotransformerrootstackenv10C5A902Ref',
+              },
+            ],
+          ],
+        },
+      }),
+    );
+
+    validateModelSchema(parsed);
   });
 });
