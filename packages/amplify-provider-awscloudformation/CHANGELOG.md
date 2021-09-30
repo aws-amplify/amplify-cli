@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.61.1-amplify-export2.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.61.0...amplify-provider-awscloudformation@4.61.1-amplify-export2.0) (2021-09-30)
+
+
+### Bug Fixes
+
+* logic to display searchable instance warning ([#8297](https://github.com/aws-amplify/amplify-cli/issues/8297)) ([1fc7a9a](https://github.com/aws-amplify/amplify-cli/commit/1fc7a9ae0a585b1abf9f94ad982e5573ead22391))
+
+
+
+
+
 # [4.61.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.60.1...amplify-provider-awscloudformation@4.61.0) (2021-09-27)
 
 
