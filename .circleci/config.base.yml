@@ -1025,14 +1025,30 @@ commands:
         type: executor
         default: linux-e2e-executor
     steps:
-      - run:
-          name: Run E2e Tests
-          command: |
-            source .circleci/local_publish_helpers.sh
-            source $BASH_ENV
-            amplify version
-            retry runE2eTest
-          no_output_timeout: 90m
+      - when:
+          condition:
+            equal: [*windows-e2e-executor, << parameters.os >>]
+          steps:
+            - run:
+                name: Run E2e Tests
+                command: |
+                  source .circleci/local_publish_helpers.sh
+                  source $BASH_ENV
+                  amplify version
+                  runE2eTest
+                no_output_timeout: 90m
+      - when:
+          condition:
+            equal: [*linux-e2e-executor, << parameters.os >>]
+          steps:
+            - run:
+                name: Run E2e Tests
+                command: |
+                  source .circleci/local_publish_helpers.sh
+                  source $BASH_ENV
+                  amplify version
+                  retry runE2eTest
+                no_output_timeout: 90m
   scan_e2e_test_artifacts:
     description: 'Scan And Cleanup E2E Test Artifacts'
     parameters:
