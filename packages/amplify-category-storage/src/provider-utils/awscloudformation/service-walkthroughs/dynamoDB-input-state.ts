@@ -1,7 +1,5 @@
 import { DynamoDBCLIInputs, DynamoDBCLIInputsGSIType } from '../service-walkthrough-types/dynamoDB-user-input-types';
-import { AmplifyCategories, AmplifySupportedService } from 'amplify-cli-core';
-import { JSONUtilities, pathManager } from 'amplify-cli-core';
-import { CLIInputSchemaValidator } from 'amplify-cli-core';
+import { AmplifyCategories, AmplifySupportedService, CLIInputSchemaValidator, JSONUtilities, pathManager } from 'amplify-cli-core';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 
@@ -29,7 +27,7 @@ export class DynamoDBInputState {
 
     // Read cliInputs file if exists
     try {
-      cliInputs = JSON.parse(fs.readFileSync(this._cliInputsFilePath, 'utf8'));
+      cliInputs = JSONUtilities.readJson(this._cliInputsFilePath) as DynamoDBCLIInputs;
     } catch (e) {
       throw new Error('cli-inputs.json file missing from the resource directory');
     }

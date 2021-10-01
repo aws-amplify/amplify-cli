@@ -17,10 +17,10 @@ const FunctionServiceNameLambdaFunction = 'Lambda';
 const serviceName = 'DynamoDB';
 
 async function addWalkthrough(context: $TSContext, defaultValuesFilename: string) {
-  printer.info('');
+  printer.blankLine();
   printer.info('Welcome to the NoSQL DynamoDB database wizard');
   printer.info('This wizard asks you a series of questions to help determine how to set up your NoSQL database table.');
-  printer.info('');
+  printer.blankLine();
 
   const defaultValuesSrc = path.join(__dirname, '..', 'default-values', defaultValuesFilename);
   const { getAllDefaults } = require(defaultValuesSrc);
@@ -228,7 +228,7 @@ async function askGSIQuestion(
   attributeDefinitions: DynamoDBAttributeDefType[],
   existingGSIList?: DynamoDBCLIInputsGSIType[],
 ) {
-  printer.info('');
+  printer.blankLine();
   printer.info(
     'You can optionally add global secondary indexes for this table. These are useful when you run queries defined in a different column than the primary key.',
   );
@@ -236,7 +236,7 @@ async function askGSIQuestion(
   printer.info(
     'https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.CoreComponents.html#HowItWorks.CoreComponents.SecondaryIndexes',
   );
-  printer.info('');
+  printer.blankLine();
 
   const { amplify } = context;
   let gsiList: DynamoDBCLIInputsGSIType[] = [];
@@ -361,16 +361,16 @@ async function askSortKeyQuestion(
 }
 
 async function askPrimaryKeyQuestion(indexableAttributeList: string[], attributeDefinitions: DynamoDBAttributeDefType[]) {
-  printer.info('');
+  printer.blankLine();
   printer.info(
     'Before you create the database, you must specify how items in your table are uniquely organized. You do this by specifying a primary key. The primary key uniquely identifies each item in the table so that no two items can have the same key. This can be an individual column, or a combination that includes a primary key and a sort key.',
   );
-  printer.info('');
+  printer.blankLine();
   printer.info('To learn more about primary keys, see:');
   printer.info(
     'https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.CoreComponents.html#HowItWorks.CoreComponents.PrimaryKey',
   );
-  printer.info('');
+  printer.blankLine();
 
   const primaryKeyQuestion = {
     type: 'list',
@@ -404,9 +404,9 @@ async function askAttributeListQuestion(context: $TSContext, existingAttributeDe
     'binary-set': { code: 'binary-set', indexable: false },
   };
 
-  printer.info('');
+  printer.blankLine();
   printer.info('You can now add columns to the table.');
-  printer.info('');
+  printer.blankLine();
 
   const QUESTION_KEY = 'attribute';
   const { amplify } = context;
@@ -530,7 +530,7 @@ async function askResourceNameQuestion(context: $TSContext, defaultValues: any):
   return answer.resourceName;
 }
 
-async function removeTrigger(context: any, resourceName: string, triggerList: string[]) {
+async function removeTrigger(context: $TSContext, resourceName: string, triggerList: string[]) {
   const triggerOptionQuestion = {
     type: 'list',
     name: 'triggerOption',
@@ -559,7 +559,7 @@ async function removeTrigger(context: any, resourceName: string, triggerList: st
   return functionName;
 }
 
-async function addTrigger(context: any, resourceName: string, triggerList: string[]) {
+async function addTrigger(context: $TSContext, resourceName: string, triggerList: string[]) {
   const triggerTypeQuestion = {
     type: 'list',
     name: 'triggerType',
@@ -761,7 +761,7 @@ async function addTrigger(context: any, resourceName: string, triggerList: strin
   return functionName;
 }
 
-async function getLambdaFunctions(context: any) {
+async function getLambdaFunctions(context: $TSContext) {
   const { allResources } = await context.amplify.getResourceStatus();
   const lambdaResources = allResources
     .filter((resource: any) => resource.service === FunctionServiceNameLambdaFunction)
@@ -770,7 +770,7 @@ async function getLambdaFunctions(context: any) {
   return lambdaResources;
 }
 
-function migrateCategory(context: any, projectPath: any, resourceName: any) {
+function migrateCategory(context: $TSContext, projectPath: any, resourceName: any) {
   const resourceDirPath = path.join(projectPath, 'amplify', 'backend', AmplifyCategories.STORAGE, resourceName);
   const cfnFilePath = path.join(resourceDirPath, `${resourceName}-cloudformation-template.json`);
 

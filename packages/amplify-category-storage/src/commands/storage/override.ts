@@ -2,25 +2,25 @@
     entry code for amplify override root
 */
 
-import path from 'path';
-import { generateOverrideSkeleton, $TSContext, FeatureFlags } from 'amplify-cli-core';
+import { generateOverrideSkeleton, $TSContext, FeatureFlags, stateManager, pathManager } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import * as fs from 'fs-extra';
 import inquirer from 'inquirer';
 import { DynamoDBInputState } from '../../provider-utils/awscloudformation/service-walkthroughs/dynamoDB-input-state';
 import { DDBStackTransform } from '../../provider-utils/awscloudformation/cdk-stack-builder/ddb-stack-transform';
+import * as path from 'path';
+import { categoryName } from '../../constants';
 
-const category = 'storage';
 export const name = 'override';
 
 export const run = async (context: $TSContext) => {
   if (FeatureFlags.getBoolean('overrides.project')) {
     const { amplify } = context;
-    const { amplifyMeta } = amplify.getProjectDetails();
+    const amplifyMeta = stateManager.getMeta();
 
     const storageResources: string[] = [];
 
-    Object.keys(amplifyMeta[category]).forEach(resourceName => {
+    Object.keys(amplifyMeta[categoryName]).forEach(resourceName => {
       storageResources.push(resourceName);
     });
 
@@ -30,7 +30,7 @@ export const run = async (context: $TSContext) => {
       return;
     }
 
-    let selectedResource: string = storageResources[0];
+    let selectedResourceName: string = storageResources[0];
 
     if (storageResources.length > 1) {
       const resourceAnswer = await inquirer.prompt({
@@ -39,11 +39,10 @@ export const run = async (context: $TSContext) => {
         message: 'Which resource would you like to add overrides for?',
         choices: storageResources,
       });
-      selectedResource = resourceAnswer.resource;
+      selectedResourceName = resourceAnswer.resource;
     }
 
-    const backendDir = context.amplify.pathManager.getBackendDirPath();
-    const destPath = path.join(backendDir, category, selectedResource);
+    const destPath = pathManager.getResourceDirectoryPath(undefined, categoryName, selectedResourceName);
     fs.ensureDirSync(destPath);
 
     const srcPath = path.join(
@@ -53,22 +52,22 @@ export const run = async (context: $TSContext) => {
       '..',
       'resources',
       'overrides-resource',
-      amplifyMeta[category][selectedResource].service,
+      amplifyMeta[categoryName][selectedResourceName].service,
     );
 
     // Make sure to migrate first
-    if (amplifyMeta[category][selectedResource].service === 'DynamoDB') {
-      const resourceInputState = new DynamoDBInputState(selectedResource);
+    if (amplifyMeta[categoryName][selectedResourceName].service === 'DynamoDB') {
+      const resourceInputState = new DynamoDBInputState(selectedResourceName);
       if (!resourceInputState.cliInputFileExists()) {
         if (await amplify.confirmPrompt('File migration required to continue. Do you want to continue?', true)) {
           resourceInputState.migrate();
-          const stackGenerator = new DDBStackTransform(selectedResource);
+          const stackGenerator = new DDBStackTransform(selectedResourceName);
           stackGenerator.transform();
         } else {
           return;
         }
       }
-    } else if (amplifyMeta[category][selectedResource].service === 'S3') {
+    } else if (amplifyMeta[categoryName][selectedResourceName].service === 'S3') {
       // S3 migration logic goes in here
     }
 

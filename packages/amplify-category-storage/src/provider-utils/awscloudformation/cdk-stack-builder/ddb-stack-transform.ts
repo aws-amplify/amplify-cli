@@ -5,17 +5,17 @@ import { AmplifyDDBResourceInputParameters, AmplifyDDBResourceTemplate } from '.
 import { App } from '@aws-cdk/core';
 import * as cdk from '@aws-cdk/core';
 import * as fs from 'fs-extra';
-import { JSONUtilities, pathManager, buildOverrideDir } from 'amplify-cli-core';
-import path from 'path';
+import { JSONUtilities, pathManager, buildOverrideDir, $TSAny } from 'amplify-cli-core';
+import * as path from 'path';
 import { formatter, printer } from 'amplify-prompts';
 
 export class DDBStackTransform {
   app: App;
-  cliInputs: DynamoDBCLIInputs;
+  _cliInputs: DynamoDBCLIInputs;
   _resourceTemplateObj: AmplifyDDBResourceStack | undefined;
-  cliInputsState: DynamoDBInputState;
-  cfn!: string;
-  cfnInputParams!: AmplifyDDBResourceInputParameters;
+  _cliInputsState: DynamoDBInputState;
+  _cfn!: string;
+  _cfnInputParams!: AmplifyDDBResourceInputParameters;
   _resourceName: string;
 
   constructor(resourceName: string) {
@@ -23,16 +23,16 @@ export class DDBStackTransform {
     this._resourceName = resourceName;
 
     // Validate the cli-inputs.json for the resource
-    this.cliInputsState = new DynamoDBInputState(resourceName);
-    this.cliInputs = this.cliInputsState.getCliInputPayload();
-    this.cliInputsState.isCLIInputsValid();
+    this._cliInputsState = new DynamoDBInputState(resourceName);
+    this._cliInputs = this._cliInputsState.getCliInputPayload();
+    this._cliInputsState.isCLIInputsValid();
   }
 
   async transform() {
     // Generate  cloudformation stack from cli-inputs.json
     await this.generateStack();
 
-    // Generate  cloudformation stack from cli-inputs.json
+    // Generate  cloudformation stack input params from cli-inputs.json
     this.generateCfnInputParameters();
 
     // Modify cloudformation files based on overrides
@@ -43,19 +43,19 @@ export class DDBStackTransform {
   }
 
   generateCfnInputParameters() {
-    this.cfnInputParams = {
-      tableName: this.cliInputs.tableName,
-      partitionKeyName: this.cliInputs.partitionKey.fieldName,
-      partitionKeyType: this.cliInputs.partitionKey.fieldType,
+    this._cfnInputParams = {
+      tableName: this._cliInputs.tableName,
+      partitionKeyName: this._cliInputs.partitionKey.fieldName,
+      partitionKeyType: this._cliInputs.partitionKey.fieldType,
     };
-    if (this.cliInputs.sortKey) {
-      this.cfnInputParams.sortKeyName = this.cliInputs.sortKey.fieldName;
-      this.cfnInputParams.sortKeyType = this.cliInputs.sortKey.fieldType;
+    if (this._cliInputs.sortKey) {
+      this._cfnInputParams.sortKeyName = this._cliInputs.sortKey.fieldName;
+      this._cfnInputParams.sortKeyType = this._cliInputs.sortKey.fieldType;
     }
   }
 
   async generateStack() {
-    this._resourceTemplateObj = new AmplifyDDBResourceStack(this.app, 'AmplifyDDBResourceStack', this.cliInputs);
+    this._resourceTemplateObj = new AmplifyDDBResourceStack(this.app, 'AmplifyDDBResourceStack', this._cliInputs);
 
     // Add Parameters
     this._resourceTemplateObj.addCfnParameter(
@@ -76,7 +76,7 @@ export class DDBStackTransform {
       },
       'env',
     );
-    if (this.cliInputs.sortKey) {
+    if (this._cliInputs.sortKey) {
       this._resourceTemplateObj.addCfnParameter(
         {
           type: 'String',
@@ -143,7 +143,7 @@ export class DDBStackTransform {
       'PartitionKeyType',
     );
 
-    if (this.cliInputs.sortKey) {
+    if (this._cliInputs.sortKey) {
       this._resourceTemplateObj.addCfnOutput(
         {
           value: cdk.Fn.ref('sortKeyName'),
@@ -168,7 +168,7 @@ export class DDBStackTransform {
 
   async applyOverrides() {
     const backendDir = pathManager.getBackendDirPath();
-    const overrideFilePath = path.join(backendDir, 'storage', this._resourceName);
+    const overrideFilePath = pathManager.getResourceDirectoryPath(undefined, 'storage', this._resourceName);
 
     const isBuild = await buildOverrideDir(backendDir, overrideFilePath).catch(error => {
       printer.warn(`Skipping build as ${error.message}`);
@@ -192,7 +192,7 @@ export class DDBStackTransform {
           // const script = new vm.Script(overrideCode);
           // script.runInContext(vm.createContext(cognitoStackTemplateObj));
           return;
-        } catch (error: any) {
+        } catch (error: $TSAny) {
           throw new Error(error);
         }
       }
@@ -201,23 +201,23 @@ export class DDBStackTransform {
 
   saveBuildFiles() {
     if (this._resourceTemplateObj) {
-      this.cfn = JSON.parse(this._resourceTemplateObj.renderCloudFormationTemplate());
+      this._cfn = JSON.parse(this._resourceTemplateObj.renderCloudFormationTemplate());
     }
 
     // store files in local-filesysten
 
-    fs.ensureDirSync(this.cliInputsState.buildFilePath);
-    const cfnFilePath = path.resolve(path.join(this.cliInputsState.buildFilePath, 'cloudformation-template.json'));
+    fs.ensureDirSync(this._cliInputsState.buildFilePath);
+    const cfnFilePath = path.resolve(path.join(this._cliInputsState.buildFilePath, 'cloudformation-template.json'));
     try {
-      JSONUtilities.writeJson(cfnFilePath, this.cfn);
+      JSONUtilities.writeJson(cfnFilePath, this._cfn);
     } catch (e) {
       throw new Error(e);
     }
 
-    fs.ensureDirSync(this.cliInputsState.buildFilePath);
-    const cfnInputParamsFilePath = path.resolve(path.join(this.cliInputsState.buildFilePath, 'parameters.json'));
+    fs.ensureDirSync(this._cliInputsState.buildFilePath);
+    const cfnInputParamsFilePath = path.resolve(path.join(this._cliInputsState.buildFilePath, 'parameters.json'));
     try {
-      JSONUtilities.writeJson(cfnInputParamsFilePath, this.cfnInputParams);
+      JSONUtilities.writeJson(cfnInputParamsFilePath, this._cfnInputParams);
     } catch (e) {
       throw new Error(e);
     }

@@ -11,8 +11,8 @@
     "resources",
   ],
   "references": [
-    {"path": "../amplify-cli-core"},
+    { "path": "../amplify-cli-core" },
     { "path": "../amplify-prompts" },
-    {"path": "../amplify-util-import"},
+    { "path": "../amplify-util-import" }
   ]
 }
