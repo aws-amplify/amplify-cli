@@ -4531,7 +4531,7 @@ $util.toJson(null)
 }
 `;
 
-exports[`ModelTransformer:  should generate sync resolver with ConflictHandlerType.Lambda 1`] = `
+exports[`ModelTransformer:  should generate sync resolver with ConflictHandlerType.LAMBDA 1`] = `
 Object {
   "Mutation.createAuthor.init.1.req.vtl": "## [Start] Initialization default values. **
 $util.qr($ctx.stash.put(\\"defaultValues\\", $util.defaultIfNull($ctx.stash.defaultValues, {})))
