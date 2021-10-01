@@ -89,35 +89,38 @@ export function makeGetItemConnectionWithKeyResolver(config: HasOneDirectiveConf
     dataSource as any,
     MappingTemplate.s3MappingTemplateFromString(
       print(
-        ifElse(
-          or(localFields.map(f => raw(`$util.isNull($ctx.source.${f})`))),
-          raw('#return'),
-          compoundExpression([
-            set(ref('GetRequest'), obj({ version: str('2018-05-29'), operation: str('Query') })),
-            qref(
-              methodCall(
-                ref('GetRequest.put'),
-                str('query'),
-                obj({
-                  expression: str(totalExpressions.join(' AND ')),
-                  expressionNames: obj(totalExpressionNames),
-                  expressionValues: obj(totalExpressionValues),
-                }),
-              ),
-            ),
-            iff(
-              not(isNullOrEmpty(authFilter)),
+        compoundExpression([
+          iff(ref('ctx.source.deniedField'), raw(`#return($util.toJson(null))`)),
+          ifElse(
+            or(localFields.map(f => raw(`$util.isNull($ctx.source.${f})`))),
+            raw('#return'),
+            compoundExpression([
+              set(ref('GetRequest'), obj({ version: str('2018-05-29'), operation: str('Query') })),
               qref(
                 methodCall(
                   ref('GetRequest.put'),
-                  str('filter'),
-                  methodCall(ref('util.parseJson'), methodCall(ref('util.transform.toDynamoDBFilterExpression'), authFilter)),
+                  str('query'),
+                  obj({
+                    expression: str(totalExpressions.join(' AND ')),
+                    expressionNames: obj(totalExpressionNames),
+                    expressionValues: obj(totalExpressionValues),
+                  }),
                 ),
               ),
-            ),
-            toJson(ref('GetRequest')),
-          ]),
-        ),
+              iff(
+                not(isNullOrEmpty(authFilter)),
+                qref(
+                  methodCall(
+                    ref('GetRequest.put'),
+                    str('filter'),
+                    methodCall(ref('util.parseJson'), methodCall(ref('util.transform.toDynamoDBFilterExpression'), authFilter)),
+                  ),
+                ),
+              ),
+              toJson(ref('GetRequest')),
+            ]),
+          ),
+        ]),
       ),
       `${object.name.value}.${field.name.value}.req.vtl`,
     ),
@@ -125,16 +128,14 @@ export function makeGetItemConnectionWithKeyResolver(config: HasOneDirectiveConf
       print(
         DynamoDBMappingTemplate.dynamoDBResponse(
           false,
-          compoundExpression([
-            ifElse(
-              and([not(ref('ctx.result.items.isEmpty()')), equals(ref('ctx.result.scannedCount'), int(1))]),
-              toJson(ref('ctx.result.items[0]')),
-              compoundExpression([
-                iff(and([ref('ctx.result.items.isEmpty()'), equals(ref('ctx.result.scannedCount'), int(1))]), ref('util.unauthorized()')),
-                toJson(nul()),
-              ]),
-            ),
-          ]),
+          ifElse(
+            and([not(ref('ctx.result.items.isEmpty()')), equals(ref('ctx.result.scannedCount'), int(1))]),
+            toJson(ref('ctx.result.items[0]')),
+            compoundExpression([
+              iff(and([ref('ctx.result.items.isEmpty()'), equals(ref('ctx.result.scannedCount'), int(1))]), ref('util.unauthorized()')),
+              toJson(nul()),
+            ]),
+          ),
         ),
       ),
       `${object.name.value}.${field.name.value}.res.vtl`,
@@ -225,11 +226,14 @@ export function makeQueryConnectionWithKeyResolver(config: HasManyDirectiveConfi
     dataSource as any,
     MappingTemplate.s3MappingTemplateFromString(
       print(
-        ifElse(
-          raw(`$util.isNull($ctx.source.${connectionAttributes[0]})`),
-          compoundExpression([set(ref('result'), obj({ items: list([]) })), raw('#return($result)')]),
-          compoundExpression([...setup, queryObj]),
-        ),
+        compoundExpression([
+          iff(ref('ctx.source.deniedField'), raw(`#return($util.toJson(null))`)),
+          ifElse(
+            raw(`$util.isNull($ctx.source.${connectionAttributes[0]})`),
+            compoundExpression([set(ref('result'), obj({ items: list([]) })), raw('#return($result)')]),
+            compoundExpression([...setup, queryObj]),
+          ),
+        ]),
       ),
       `${object.name.value}.${field.name.value}.req.vtl`,
     ),

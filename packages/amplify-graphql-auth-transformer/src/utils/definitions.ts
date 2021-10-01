@@ -4,8 +4,9 @@ export type AuthProvider = 'apiKey' | 'iam' | 'oidc' | 'userPools';
 export type ModelQuery = 'get' | 'list';
 export type ModelMutation = 'create' | 'update' | 'delete';
 export type ModelOperation = 'create' | 'update' | 'delete' | 'read';
-
 export type QuerySource = 'dynamodb' | 'opensearch';
+
+export type RelationalPrimaryMapConfig = Map<string, { claim: string; field: string }>;
 export interface SearchableConfig {
   queries: {
     search: string;

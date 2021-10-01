@@ -68,7 +68,7 @@ const iamExpression = (roles: Array<RoleDefinition>, hasAdminUIEnabled: boolean 
   }
   if (roles.length > 0) {
     for (let role of roles) {
-      iamCheck(role.claim!, set(ref(IS_AUTHORIZED_FLAG), bool(true)));
+      expression.push(iamCheck(role.claim!, set(ref(IS_AUTHORIZED_FLAG), bool(true))));
     }
   } else {
     expression.push(ref('util.unauthorized()'));

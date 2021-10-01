@@ -88,7 +88,7 @@ const iamExpression = (roles: Array<RoleDefinition>, hasAdminUIEnabled: boolean 
           ),
         );
       } else {
-        iamCheck(role.claim!, set(ref(IS_AUTHORIZED_FLAG), bool(true)));
+        expression.push(iamCheck(role.claim!, set(ref(IS_AUTHORIZED_FLAG), bool(true))));
       }
     }
   } else {
@@ -300,7 +300,7 @@ export const generateAuthExpressionForUpdate = (
       compoundExpression([
         forEach(ref('entry'), ref('util.map.copyAndRetainAllKeys($ctx.args.input, $inputFields).entrySet()'), [
           iff(
-            and([methodCall(ref('util.isNull'), ref('entry.value')), not(ref(`${NULL_ALLOWED_FIELDS}.contains($entry.value)`))]),
+            and([methodCall(ref('util.isNull'), ref('entry.value')), not(ref(`${NULL_ALLOWED_FIELDS}.contains($entry.key)`))]),
             qref(methodCall(ref(`${DENIED_FIELDS}.put`), ref('entry.key'), str(''))),
           ),
         ]),

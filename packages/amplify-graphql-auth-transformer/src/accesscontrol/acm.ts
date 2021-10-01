@@ -71,6 +71,10 @@ export class AccessControlMatrix {
     return this.resources;
   }
 
+  public hasResource(resource: string): boolean {
+    return this.resources.includes(resource);
+  }
+
   public isAllowed(role: string, resource: string, operation: string): boolean {
     this.validate({ role, resource, operations: [operation] });
     const roleIndex = this.roles.indexOf(role);

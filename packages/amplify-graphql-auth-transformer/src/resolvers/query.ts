@@ -17,6 +17,7 @@ import {
   qref,
   raw,
   set,
+  ifElse,
 } from 'graphql-mapping-template';
 import { getIdentityClaimExp, getOwnerClaim, apiKeyExpression, iamExpression, emptyPayload, setHasAuthExpression } from './helpers';
 import {
@@ -28,6 +29,7 @@ import {
   IS_AUTHORIZED_FLAG,
   fieldIsList,
   QuerySource,
+  RelationalPrimaryMapConfig,
 } from '../utils';
 import { InvalidDirectiveError } from '@aws-amplify/graphql-transformer-core';
 import { NONE_VALUE } from 'graphql-transformer-common';
@@ -59,6 +61,119 @@ const generateStaticRoleExpression = (roles: Array<RoleDefinition>): Array<Expre
   return staticRoleExpression;
 };
 
+const generateAuthOnRelationalModelQueryExpression = (
+  roles: Array<RoleDefinition>,
+  primaryFieldMap: RelationalPrimaryMapConfig,
+): Array<Expression> => {
+  const modelQueryExpression = new Array<Expression>();
+  const primaryRoles = roles.filter(r => primaryFieldMap.has(r.entity));
+  if (primaryRoles.length > 0) {
+    primaryRoles.forEach((role, idx) => {
+      const { claim, field } = primaryFieldMap.get(role.entity);
+      modelQueryExpression.push(
+        set(
+          ref(`primaryRole${idx}`),
+          role.strategy === 'owner' ? getOwnerClaim(role.claim!) : getIdentityClaimExp(str(role.claim!), str(NONE_VALUE)),
+        ),
+        ifElse(
+          not(ref(`util.isNull($ctx.${claim}.${field})`)),
+          compoundExpression([
+            iff(equals(ref(`ctx.${claim}.${field}`), ref(`primaryRole${idx}`)), set(ref(IS_AUTHORIZED_FLAG), bool(true))),
+          ]),
+          iff(
+            not(ref(IS_AUTHORIZED_FLAG)),
+            compoundExpression([
+              set(ref('primaryFieldAuth'), bool(true)),
+              qref(methodCall(ref(`ctx.${claim}.put`), str(field), ref(`primaryRole${idx}`))),
+            ]),
+          ),
+        ),
+      );
+    });
+    return [
+      iff(
+        and([not(ref(IS_AUTHORIZED_FLAG)), methodCall(ref('util.isNull'), ref('ctx.stash.authFilter'))]),
+        compoundExpression(modelQueryExpression),
+      ),
+    ];
+  }
+  return modelQueryExpression;
+};
+
+/**
+ * In the event that an owner/group field is the same as a primary field we can validate against the args if provided
+ * if the field is not in the args we include it in the KeyConditionExpression which is formed as a part of the query
+ */
+const generateAuthOnModelQueryExpression = (
+  roles: Array<RoleDefinition>,
+  primaryFields: Array<string>,
+  isIndexQuery = false,
+): Array<Expression> => {
+  const modelQueryExpression = new Array<Expression>();
+  const primaryRoles = roles.filter(r => primaryFields.includes(r.entity));
+  if (primaryRoles.length > 0) {
+    if (isIndexQuery) {
+      for (let role of primaryRoles) {
+        const claimExpression =
+          role.strategy === 'owner' ? getOwnerClaim(role.claim!) : getIdentityClaimExp(str(role.claim!), str(NONE_VALUE));
+        modelQueryExpression.push(
+          ifElse(
+            not(ref(`util.isNull($ctx.args.${role.entity})`)),
+            compoundExpression([iff(equals(ref(`ctx.args.${role.entity}`), claimExpression), set(ref(IS_AUTHORIZED_FLAG), bool(true)))]),
+            qref(methodCall(ref('primaryFieldMap.put'), str(role.entity), claimExpression)),
+          ),
+        );
+      }
+      modelQueryExpression.push(
+        iff(
+          and([
+            not(ref(IS_AUTHORIZED_FLAG)),
+            methodCall(ref('util.isNull'), ref('ctx.stash.authFilter')),
+            not(ref('primaryFieldMap.isEmpty()')),
+          ]),
+          compoundExpression([
+            forEach(ref('entry'), ref('primaryFieldMap.entrySet()'), [
+              qref(methodCall(ref('ctx.args.put'), ref('entry.key'), ref('entry.value'))),
+            ]),
+          ]),
+        ),
+      );
+    } else {
+      for (let role of primaryRoles) {
+        const claimExpression =
+          role.strategy === 'owner' ? getOwnerClaim(role.claim!) : getIdentityClaimExp(str(role.claim!), str(NONE_VALUE));
+        modelQueryExpression.push(
+          ifElse(
+            not(ref(`util.isNull($ctx.args.${role.entity})`)),
+            compoundExpression([iff(equals(ref(`ctx.args.${role.entity}`), claimExpression), set(ref(IS_AUTHORIZED_FLAG), bool(true)))]),
+            qref(methodCall(ref('primaryFieldMap.put'), str(role.entity), claimExpression)),
+          ),
+        );
+      }
+      modelQueryExpression.push(
+        iff(
+          and([
+            not(ref(IS_AUTHORIZED_FLAG)),
+            methodCall(ref('util.isNull'), ref('ctx.stash.authFilter')),
+            not(ref('primaryFieldMap.isEmpty()')),
+          ]),
+          compoundExpression([
+            set(ref('modelQueryExpression'), ref('ctx.stash.modelQueryExpression')),
+            forEach(ref('entry'), ref('primaryFieldMap.entrySet()'), [
+              set(ref('modelQueryExpression.expression'), str('${modelQueryExpression.expression} AND #${entry.key} = :${entry.value}')),
+              qref(ref('modelQueryExpression.expressionNames.put("#${entry.key}", $entry.key)')),
+              qref(ref('modelQueryExpression.expressionValues.put(":${entry.value}", $util.dynamodb.toDynamoDB($entry.value))')),
+            ]),
+            qref(methodCall(ref('ctx.stash.put'), str('modelQueryExpression'), ref('modelQueryExpression'))),
+          ]),
+        ),
+      );
+    }
+    return modelQueryExpression;
+  }
+  return [];
+};
+
 const generateAuthFilter = (
   roles: Array<RoleDefinition>,
   fields: ReadonlyArray<FieldDefinitionNode>,
@@ -77,14 +192,14 @@ const generateAuthFilter = (
    * if groupsField is a string
    * groupsField: { in: "cognito:groups" }
    * if groupsField is a list
-   * groupsField: { contains: "cognito:groups" }
+   * we create contains experession for each cognito group
    *  */
   if (querySource === 'dynamodb') {
     for (let role of roles) {
-      const entityIsList = fieldIsList(fields, role.entity!);
+      const entityIsList = fieldIsList(fields, role.entity);
       if (role.strategy === 'owner') {
         const ownerCondition = entityIsList ? 'contains' : 'eq';
-        authFilter.push(obj({ [role.entity!]: obj({ [ownerCondition]: getOwnerClaim(role.claim!) }) }));
+        authFilter.push(obj({ [role.entity]: obj({ [ownerCondition]: getOwnerClaim(role.claim!) }) }));
       }
       if (role.strategy === 'groups') {
         // for fields where the group is a list and the token is a list we must add every group in the claim
@@ -95,7 +210,7 @@ const generateAuthFilter = (
             groupMap.set(role.claim!, [role.entity]);
           }
         } else {
-          authFilter.push(obj({ [role.entity!]: obj({ in: getIdentityClaimExp(str(role.claim!), list([str(NONE_VALUE)])) }) }));
+          authFilter.push(obj({ [role.entity]: obj({ in: getIdentityClaimExp(str(role.claim!), list([str(NONE_VALUE)])) }) }));
         }
       }
     }
@@ -119,28 +234,32 @@ const generateAuthFilter = (
       ),
     ];
   }
+  /**
+   * for opensearch
+   * we create a terms_set where the field (role.entity) has to match at least element in the terms
+   * if the field is a list it will look for a subset of elements in the list which should exist in the terms list
+   *  */
   if (querySource === 'opensearch') {
     for (let role of roles) {
-      let claimValue: Expression;
+      const entityIsList = fieldIsList(fields, role.entity);
+      const roleKey = entityIsList ? role.entity : `${role.entity}.keyword`;
       if (role.strategy === 'owner') {
-        claimValue = getOwnerClaim(role.claim!);
         authFilter.push(
           obj({
             terms_set: obj({
-              [role.entity!]: obj({
-                terms: list([claimValue]),
+              [roleKey]: obj({
+                terms: list([getOwnerClaim(role.claim!)]),
                 minimum_should_match_script: obj({ source: str('1') }),
               }),
             }),
           }),
         );
       } else if (role.strategy === 'groups') {
-        claimValue = getIdentityClaimExp(str(role.claim!), list([str(NONE_VALUE)]));
         authFilter.push(
           obj({
             terms_set: obj({
-              [role.entity!]: obj({
-                terms: claimValue,
+              [roleKey]: obj({
+                terms: getIdentityClaimExp(str(role.claim!), list([str(NONE_VALUE)])),
                 minimum_should_match_script: obj({ source: str('1') }),
               }),
             }),
@@ -162,7 +281,59 @@ export const generateAuthExpressionForQueries = (
   providers: ConfiguredAuthProviders,
   roles: Array<RoleDefinition>,
   fields: ReadonlyArray<FieldDefinitionNode>,
-  querySource: QuerySource = 'dynamodb',
+  primaryFields: Array<string>,
+  isIndexQuery = false,
+): string => {
+  const { cogntoStaticRoles, cognitoDynamicRoles, oidcStaticRoles, oidcDynamicRoles, apiKeyRoles, iamRoles } = splitRoles(roles);
+  const getNonPrimaryFieldRoles = (roles: RoleDefinition[]) => roles.filter(roles => !primaryFields.includes(roles.entity));
+  const totalAuthExpressions: Array<Expression> = [
+    setHasAuthExpression,
+    set(ref(IS_AUTHORIZED_FLAG), bool(false)),
+    set(ref('primaryFieldMap'), obj({})),
+  ];
+  if (providers.hasApiKey) {
+    totalAuthExpressions.push(apiKeyExpression(apiKeyRoles));
+  }
+  if (providers.hasIAM) {
+    totalAuthExpressions.push(iamExpression(iamRoles, providers.hasAdminUIEnabled, providers.adminUserPoolID));
+  }
+  if (providers.hasUserPools) {
+    totalAuthExpressions.push(
+      iff(
+        equals(ref('util.authType()'), str(COGNITO_AUTH_TYPE)),
+        compoundExpression([
+          ...generateStaticRoleExpression(cogntoStaticRoles),
+          ...generateAuthFilter(getNonPrimaryFieldRoles(cognitoDynamicRoles), fields, 'dynamodb'),
+          ...generateAuthOnModelQueryExpression(cognitoDynamicRoles, primaryFields, isIndexQuery),
+        ]),
+      ),
+    );
+  }
+  if (providers.hasOIDC) {
+    totalAuthExpressions.push(
+      iff(
+        equals(ref('util.authType()'), str(OIDC_AUTH_TYPE)),
+        compoundExpression([
+          ...generateStaticRoleExpression(oidcStaticRoles),
+          ...generateAuthFilter(getNonPrimaryFieldRoles(oidcDynamicRoles), fields, 'dynamodb'),
+          ...generateAuthOnModelQueryExpression(oidcDynamicRoles, primaryFields, isIndexQuery),
+        ]),
+      ),
+    );
+  }
+  totalAuthExpressions.push(
+    iff(
+      and([not(ref(IS_AUTHORIZED_FLAG)), methodCall(ref('util.isNull'), ref('ctx.stash.authFilter')), ref('primaryFieldMap.isEmpty()')]),
+      ref('util.unauthorized()'),
+    ),
+  );
+  return printBlock('Authorization Steps')(compoundExpression([...totalAuthExpressions, emptyPayload]));
+};
+
+export const generateAuthExpressionForSearchQueries = (
+  providers: ConfiguredAuthProviders,
+  roles: Array<RoleDefinition>,
+  fields: ReadonlyArray<FieldDefinitionNode>,
 ): string => {
   const { cogntoStaticRoles, cognitoDynamicRoles, oidcStaticRoles, oidcDynamicRoles, apiKeyRoles, iamRoles } = splitRoles(roles);
   const totalAuthExpressions: Array<Expression> = [setHasAuthExpression, set(ref(IS_AUTHORIZED_FLAG), bool(false))];
@@ -178,7 +349,52 @@ export const generateAuthExpressionForQueries = (
         equals(ref('util.authType()'), str(COGNITO_AUTH_TYPE)),
         compoundExpression([
           ...generateStaticRoleExpression(cogntoStaticRoles),
-          ...generateAuthFilter(cognitoDynamicRoles, fields, querySource),
+          ...generateAuthFilter(cognitoDynamicRoles, fields, 'opensearch'),
+        ]),
+      ),
+    );
+  }
+  if (providers.hasOIDC) {
+    totalAuthExpressions.push(
+      iff(
+        equals(ref('util.authType()'), str(OIDC_AUTH_TYPE)),
+        compoundExpression([...generateStaticRoleExpression(oidcStaticRoles), ...generateAuthFilter(oidcDynamicRoles, [], 'opensearch')]),
+      ),
+    );
+  }
+  totalAuthExpressions.push(
+    iff(and([not(ref(IS_AUTHORIZED_FLAG)), methodCall(ref('util.isNull'), ref('ctx.stash.authFilter'))]), ref('util.unauthorized()')),
+  );
+  return printBlock('Authorization Steps')(compoundExpression([...totalAuthExpressions, emptyPayload]));
+};
+
+export const generateAuthExpressionForRelationQuery = (
+  providers: ConfiguredAuthProviders,
+  roles: Array<RoleDefinition>,
+  fields: ReadonlyArray<FieldDefinitionNode>,
+  primaryFieldMap: RelationalPrimaryMapConfig,
+) => {
+  const { cogntoStaticRoles, cognitoDynamicRoles, oidcStaticRoles, oidcDynamicRoles, apiKeyRoles, iamRoles } = splitRoles(roles);
+  const getNonPrimaryFieldRoles = (roles: RoleDefinition[]) => roles.filter(roles => !primaryFieldMap.has(roles.entity));
+  const totalAuthExpressions: Array<Expression> = [
+    setHasAuthExpression,
+    set(ref(IS_AUTHORIZED_FLAG), bool(false)),
+    set(ref('primaryFieldAuth'), bool(false)),
+  ];
+  if (providers.hasApiKey) {
+    totalAuthExpressions.push(apiKeyExpression(apiKeyRoles));
+  }
+  if (providers.hasIAM) {
+    totalAuthExpressions.push(iamExpression(iamRoles, providers.hasAdminUIEnabled, providers.adminUserPoolID));
+  }
+  if (providers.hasUserPools) {
+    totalAuthExpressions.push(
+      iff(
+        equals(ref('util.authType()'), str(COGNITO_AUTH_TYPE)),
+        compoundExpression([
+          ...generateStaticRoleExpression(cogntoStaticRoles),
+          ...generateAuthFilter(getNonPrimaryFieldRoles(cognitoDynamicRoles), fields, 'dynamodb'),
+          ...generateAuthOnRelationalModelQueryExpression(cognitoDynamicRoles, primaryFieldMap),
         ]),
       ),
     );
@@ -188,15 +404,16 @@ export const generateAuthExpressionForQueries = (
       iff(
         equals(ref('util.authType()'), str(OIDC_AUTH_TYPE)),
         compoundExpression([
-          ...generateAuthFilter(oidcDynamicRoles, fields, querySource),
           ...generateStaticRoleExpression(oidcStaticRoles),
+          ...generateAuthFilter(getNonPrimaryFieldRoles(oidcDynamicRoles), fields, 'dynamodb'),
+          ...generateAuthOnRelationalModelQueryExpression(oidcDynamicRoles, primaryFieldMap),
         ]),
       ),
     );
   }
   totalAuthExpressions.push(
     iff(
-      and([not(ref(IS_AUTHORIZED_FLAG)), methodCall(ref('util.isNullOrEmpty'), methodCall(ref('ctx.stash.get'), str('authFilter')))]),
+      and([not(ref(IS_AUTHORIZED_FLAG)), methodCall(ref('util.isNull'), ref('ctx.stash.authFilter')), not(ref('primaryFieldAuth'))]),
       ref('util.unauthorized()'),
     ),
   );

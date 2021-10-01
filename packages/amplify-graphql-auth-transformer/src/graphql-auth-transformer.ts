@@ -51,6 +51,9 @@ import {
   getSearchableConfig,
   getStackForField,
   NONE_DS,
+  hasRelationalDirective,
+  getTable,
+  getRelationalPrimaryMap,
 } from './utils';
 import {
   DirectiveNode,
@@ -73,9 +76,13 @@ import {
   generateAuthExpressionForField,
   generateFieldAuthResponse,
   generateAuthExpressionForQueries,
+  generateAuthExpressionForSearchQueries,
   generateAuthExpressionForSubscriptions,
+  setDeniedFieldFlag,
+  generateAuthExpressionForRelationQuery,
 } from './resolvers';
 import { toUpper } from 'graphql-transformer-common';
+import { generateSandboxExpressionForField } from './resolvers/field';
 
 // @ auth
 // changing the schema
@@ -280,7 +287,8 @@ Static group authorization should perform as expected.`,
       // protect additional query fields if they exist
       if (context.metadata.has(indexKeyName)) {
         for (let index of context.metadata.get<Set<string>>(indexKeyName)!.values()) {
-          this.protectListResolver(context, def, def.name.value, index, acm);
+          const [indexName, indexQueryName] = index.split(':');
+          this.protectListResolver(context, def, def.name.value, indexQueryName, acm, indexName);
         }
       }
       // check if searchable if included in the typeName
@@ -291,15 +299,19 @@ Static group authorization should perform as expected.`,
       }
       // get fields specified in the schema
       // if there is a role that does not have read access on the field then we create a field resolver
+      // or there is a relational directive on the field then we should protect that as well
       const readRoles = acm.getRolesPerOperation('read');
-      const modelFields = def.fields?.filter(f => acm.getResources().includes(f.name.value)) ?? [];
+      const modelFields = def.fields?.filter(f => acm.hasResource(f.name.value)) ?? [];
       for (let field of modelFields) {
         const allowedRoles = readRoles.filter(r => acm.isAllowed(r, field.name.value, 'read'));
-        if (allowedRoles.length < readRoles.length) {
-          if (field.type.kind === Kind.NON_NULL_TYPE) {
-            throw new InvalidDirectiveError(`\nPer-field auth on the required field ${field.name.value} is not supported with subscriptions.
+        const needsFieldResolver = allowedRoles.length < readRoles.length;
+        if (needsFieldResolver && field.type.kind === Kind.NON_NULL_TYPE) {
+          throw new InvalidDirectiveError(`\nPer-field auth on the required field ${field.name.value} is not supported with subscriptions.
   Either make the field optional, set auth on the object and not the field, or disable subscriptions for the object (setting level to off or public)\n`);
-          }
+        }
+        if (hasRelationalDirective(field)) {
+          this.protectRelationalResolver(context, def, modelName, field, needsFieldResolver ? allowedRoles : null);
+        } else if (needsFieldResolver) {
           this.protectFieldResolver(context, def, modelName, field.name.value, allowedRoles);
         }
       }
@@ -367,7 +379,7 @@ Static group authorization should perform as expected.`,
     // @index queries
     if (ctx.metadata.has(indexKeyName)) {
       for (let index of ctx.metadata.get<Set<string>>(indexKeyName)!.values()) {
-        addServiceDirective(ctx.output.getQueryTypeName(), 'read', index);
+        addServiceDirective(ctx.output.getQueryTypeName(), 'read', index.split(':')[1]);
       }
     }
     // @searchable
@@ -377,7 +389,7 @@ Static group authorization should perform as expected.`,
     }
 
     const subscriptions = modelConfig?.subscriptions;
-    if (subscriptions.level === SubscriptionLevel.on) {
+    if (subscriptions && subscriptions.level === SubscriptionLevel.on) {
       const subscriptionArguments = acm
         .getRolesPerOperation('read')
         .map(role => this.roleMap.get(role)!)
@@ -412,7 +424,8 @@ Static group authorization should perform as expected.`,
   ): void => {
     const resolver = ctx.resolvers.getResolver(typeName, fieldName) as TransformerResolverProvider;
     const roleDefinitions = acm.getRolesPerOperation('read').map(r => this.roleMap.get(r)!);
-    const authExpression = generateAuthExpressionForQueries(this.configuredAuthProviders, roleDefinitions, def.fields ?? []);
+    const primaryFields = getTable(ctx, def).keySchema.map(att => att.attributeName);
+    const authExpression = generateAuthExpressionForQueries(this.configuredAuthProviders, roleDefinitions, def.fields ?? [], primaryFields);
     resolver.addToSlot(
       'auth',
       MappingTemplate.s3MappingTemplateFromString(authExpression, `${typeName}.${fieldName}.{slotName}.{slotIndex}.req.vtl`),
@@ -424,14 +437,87 @@ Static group authorization should perform as expected.`,
     typeName: string,
     fieldName: string,
     acm: AccessControlMatrix,
+    indexName?: string,
   ): void => {
     const resolver = ctx.resolvers.getResolver(typeName, fieldName) as TransformerResolverProvider;
     const roleDefinitions = acm.getRolesPerOperation('read').map(r => this.roleMap.get(r)!);
-    const authExpression = generateAuthExpressionForQueries(this.configuredAuthProviders, roleDefinitions, def.fields ?? []);
+    let primaryFields: Array<string>;
+    const table = getTable(ctx, def);
+    try {
+      if (indexName) {
+        primaryFields = table.globalSecondaryIndexes
+          .find((gsi: any) => gsi.indexName === indexName)
+          .keySchema.map((att: any) => att.attributeName);
+      } else {
+        primaryFields = table.keySchema.map((att: any) => att.attributeName);
+      }
+    } catch (err) {
+      throw new InvalidDirectiveError(`Could not fetch keySchema for ${def.name.value}.`);
+    }
+    const authExpression = generateAuthExpressionForQueries(
+      this.configuredAuthProviders,
+      roleDefinitions,
+      def.fields ?? [],
+      primaryFields,
+      !!indexName,
+    );
     resolver.addToSlot(
       'auth',
       MappingTemplate.s3MappingTemplateFromString(authExpression, `${typeName}.${fieldName}.{slotName}.{slotIndex}.req.vtl`),
     );
+  };
+  protectRelationalResolver = (
+    ctx: TransformerContextProvider,
+    def: ObjectTypeDefinitionNode,
+    typeName: string,
+    field: FieldDefinitionNode,
+    fieldRoles: Array<string> | null,
+  ): void => {
+    let fieldAuthExpression: string;
+    let relatedAuthExpression: string;
+    const relatedModel = getBaseType(field.type);
+    const relatedModelObject = ctx.output.getObject(relatedModel);
+    if (this.authModelConfig.has(relatedModel)) {
+      const acm = this.authModelConfig.get(relatedModel);
+      const roleDefinitions = acm.getRolesPerOperation('read').map(r => this.roleMap.get(r)!);
+      const relationalPrimaryMap = getRelationalPrimaryMap(ctx, def, field, relatedModelObject);
+      relatedAuthExpression = generateAuthExpressionForRelationQuery(
+        this.configuredAuthProviders,
+        roleDefinitions,
+        relatedModelObject.fields ?? [],
+        relationalPrimaryMap,
+      );
+    } else {
+      // if the related @model does not have auth we need to add a sandbox mode expression
+      relatedAuthExpression = generateSandboxExpressionForField((ctx as any).resourceHelper.api.sandboxModeEnabled);
+    }
+    // if there is field auth on the relational query then we need to add field auth read rules first
+    // in the request we then add the rules of the related type
+    if (fieldRoles) {
+      const roleDefinitions = fieldRoles.map(r => this.roleMap.get(r)!);
+      const hasSubsEnabled = this.modelDirectiveConfig.get(typeName)!.subscriptions.level === 'on';
+      relatedAuthExpression = setDeniedFieldFlag('Mutation', hasSubsEnabled) + '\n' + relatedAuthExpression;
+      fieldAuthExpression = generateAuthExpressionForField(this.configuredAuthProviders, roleDefinitions, def.fields ?? []);
+    }
+    const resolver = ctx.resolvers.getResolver(typeName, field.name.value) as TransformerResolverProvider;
+    if (fieldAuthExpression) {
+      resolver.addToSlot(
+        'auth',
+        MappingTemplate.s3MappingTemplateFromString(fieldAuthExpression, `${typeName}.${field.name.value}.{slotName}.{slotIndex}.req.vtl`),
+        MappingTemplate.s3MappingTemplateFromString(
+          relatedAuthExpression,
+          `${typeName}.${field.name.value}.{slotName}.{slotIndex}.res.vtl`,
+        ),
+      );
+    } else {
+      resolver.addToSlot(
+        'auth',
+        MappingTemplate.s3MappingTemplateFromString(
+          relatedAuthExpression,
+          `${typeName}.${field.name.value}.{slotName}.{slotIndex}.req.vtl`,
+        ),
+      );
+    }
   };
   protectSyncResolver = (
     ctx: TransformerContextProvider,
@@ -443,7 +529,13 @@ Static group authorization should perform as expected.`,
     if (ctx.isProjectUsingDataStore()) {
       const resolver = ctx.resolvers.getResolver(typeName, fieldName) as TransformerResolverProvider;
       const roleDefinitions = acm.getRolesPerOperation('read').map(r => this.roleMap.get(r)!);
-      const authExpression = generateAuthExpressionForQueries(this.configuredAuthProviders, roleDefinitions, def.fields ?? []);
+      const primaryFields = getTable(ctx, def).keySchema.map(att => att.attributeName);
+      const authExpression = generateAuthExpressionForQueries(
+        this.configuredAuthProviders,
+        roleDefinitions,
+        def.fields ?? [],
+        primaryFields,
+      );
       resolver.addToSlot(
         'auth',
         MappingTemplate.s3MappingTemplateFromString(authExpression, `${typeName}.${fieldName}.{slotName}.{slotIndex}.req.vtl`),
@@ -459,7 +551,7 @@ Static group authorization should perform as expected.`,
   ): void => {
     const resolver = ctx.resolvers.getResolver(typeName, fieldName) as TransformerResolverProvider;
     const roleDefinitions = acm.getRolesPerOperation('read').map(r => this.roleMap.get(r)!);
-    const authExpression = generateAuthExpressionForQueries(this.configuredAuthProviders, roleDefinitions, def.fields ?? [], 'opensearch');
+    const authExpression = generateAuthExpressionForSearchQueries(this.configuredAuthProviders, roleDefinitions, def.fields ?? []);
     resolver.addToSlot(
       'auth',
       MappingTemplate.s3MappingTemplateFromString(authExpression, `${typeName}.${fieldName}.{slotName}.{slotIndex}.req.vtl`),
@@ -468,13 +560,11 @@ Static group authorization should perform as expected.`,
   /*
   Field Resovler can protect the following
   - model fields
-  - relational fields (hasOne, hasMany, belongsTo)
   - fields on an operation (query/mutation)
   - protection on predictions/function/no directive
   Order of precendence
   - resolver in api host (ex. @function, @predictions)
-  - resolver in resolver manager (ex. @hasOne, @hasMany @belongsTo)
-  - no resolver creates a blank non-pipeline resolver will return the source field
+  - no resolver -> creates a blank resolver will return the source field
   */
   protectFieldResolver = (
     ctx: TransformerContextProvider,
@@ -501,14 +591,6 @@ Static group authorization should perform as expected.`,
         stack,
       );
       (fieldResolver.pipelineConfig.functions as string[]).unshift(authFunction.functionId);
-    } else if (ctx.resolvers.hasResolver(typeName, fieldName)) {
-      // if there a resolver in the resolver manager we can append to the auth slot
-      const fieldResolver = ctx.resolvers.getResolver(typeName, fieldName) as TransformerResolverProvider;
-      const authExpression = generateAuthExpressionForQueries(this.configuredAuthProviders, roleDefinitions, def.fields ?? []);
-      fieldResolver.addToSlot(
-        'auth',
-        MappingTemplate.s3MappingTemplateFromString(authExpression, `${typeName}.${fieldName}.{slotName}.{slotIndex}.req.vtl`),
-      );
     } else {
       const fieldAuthExpression = generateAuthExpressionForField(this.configuredAuthProviders, roleDefinitions, def.fields ?? []);
       const subsEnabled = hasModelDirective ? this.modelDirectiveConfig.get(typeName)!.subscriptions.level === 'on' : false;
@@ -839,19 +921,18 @@ Static group authorization should perform as expected.`,
         const authRoleParameter = (ctx.stackManager.getParameter(IAM_AUTH_ROLE_PARAMETER) as cdk.CfnParameter).valueAsString;
         const authPolicyDocuments = createPolicyDocumentForManagedPolicy(this.authPolicyResources);
         const rootStack = ctx.stackManager.rootStack;
+        // we need to add the arn path as this is something cdk is looking for when using imported roles in policies
+        const iamAuthRoleArn = iam.Role.fromRoleArn(
+          rootStack,
+          'auth-role-name',
+          `arn:aws:iam::${cdk.Stack.of(rootStack).account}:role/${authRoleParameter}`,
+        );
         for (let i = 0; i < authPolicyDocuments.length; i++) {
           const paddedIndex = `${i + 1}`.padStart(2, '0');
           const resourceName = `${ResourceConstants.RESOURCES.AuthRolePolicy}${paddedIndex}`;
           new iam.ManagedPolicy(rootStack, resourceName, {
             document: iam.PolicyDocument.fromJson(authPolicyDocuments[i]),
-            // we need to add the arn path as this is something cdk is looking for when using imported roles in policies
-            roles: [
-              iam.Role.fromRoleArn(
-                rootStack,
-                'auth-role-name',
-                `arn:aws:iam::${cdk.Stack.of(rootStack).account}:role/${authRoleParameter}`,
-              ),
-            ],
+            roles: [iamAuthRoleArn],
           });
         }
       }
@@ -864,18 +945,17 @@ Static group authorization should perform as expected.`,
       const unauthRoleParameter = (ctx.stackManager.getParameter(IAM_UNAUTH_ROLE_PARAMETER) as cdk.CfnParameter).valueAsString;
       const unauthPolicyDocuments = createPolicyDocumentForManagedPolicy(this.unauthPolicyResources);
       const rootStack = ctx.stackManager.rootStack;
+      const iamUnauthRoleArn = iam.Role.fromRoleArn(
+        rootStack,
+        'unauth-role-name',
+        `arn:aws:iam::${cdk.Stack.of(rootStack).account}:role/${unauthRoleParameter}`,
+      );
       for (let i = 0; i < unauthPolicyDocuments.length; i++) {
         const paddedIndex = `${i + 1}`.padStart(2, '0');
         const resourceName = `${ResourceConstants.RESOURCES.UnauthRolePolicy}${paddedIndex}`;
         new iam.ManagedPolicy(ctx.stackManager.rootStack, resourceName, {
           document: iam.PolicyDocument.fromJson(unauthPolicyDocuments[i]),
-          roles: [
-            iam.Role.fromRoleArn(
-              rootStack,
-              'unauth-role-name',
-              `arn:aws:iam::${cdk.Stack.of(rootStack).account}:role/${unauthRoleParameter}`,
-            ),
-          ],
+          roles: [iamUnauthRoleArn],
         });
       }
     }

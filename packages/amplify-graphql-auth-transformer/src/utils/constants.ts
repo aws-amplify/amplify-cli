@@ -30,3 +30,5 @@ export const ADMIN_ROLE = '_Full-access/CognitoIdentityCredentials';
 export const MANAGE_ROLE = '_Manage-only/CognitoIdentityCredentials';
 // resolver
 export const NONE_DS = 'NONE_DS';
+// relational directives
+export const RELATIONAL_DIRECTIVES = ['hasOne', 'belongsTo', 'hasMany', 'manyToMany'];
