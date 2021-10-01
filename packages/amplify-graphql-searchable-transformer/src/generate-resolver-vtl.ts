@@ -76,15 +76,21 @@ export function requestTemplate(primaryKey: string, nonKeywordFields: Expression
             not(isNullOrEmpty(ref('ctx.args.filter'))),
             set(
               ref('filter'),
-              list([
-                obj({
-                  bool: obj({ must: list([ref('ctx.stash.authFilter'), ref('util.transform.toElasticsearchQueryDSL($ctx.args.filter)')]) }),
+              obj({
+                bool: obj({
+                  must: list([
+                    ref('ctx.stash.authFilter'),
+                    ref('util.parseJson($util.transform.toElasticsearchQueryDSL($ctx.args.filter))'),
+                  ]),
                 }),
-              ]),
+              }),
             ),
           ),
         ]),
-        iff(not(isNullOrEmpty(ref('ctx.args.filter'))), set(ref('filter'), ref('ctx.args.filter'))),
+        iff(
+          not(isNullOrEmpty(ref('ctx.args.filter'))),
+          set(ref('filter'), ref('util.parseJson($util.transform.toElasticsearchQueryDSL($ctx.args.filter))')),
+        ),
       ),
       iff(isNullOrEmpty(ref('filter')), set(ref('filter'), obj({ match_all: obj({}) }))),
       SearchableMappingTemplate.searchTemplate({

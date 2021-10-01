@@ -17,6 +17,9 @@ import {
   bool,
   raw,
   forEach,
+  qref,
+  notEquals,
+  obj,
 } from 'graphql-mapping-template';
 import {
   RoleDefinition,
@@ -26,6 +29,7 @@ import {
   ConfiguredAuthProviders,
   fieldIsList,
   IS_AUTHORIZED_FLAG,
+  API_KEY_AUTH_TYPE,
 } from '../utils';
 import { getOwnerClaim, generateStaticRoleExpression, apiKeyExpression, iamExpression, emptyPayload } from './helpers';
 
@@ -133,4 +137,25 @@ export const generateFieldAuthResponse = (operation: string, fieldName: string, 
     );
   }
   return printBlock('Return Source Field')(toJson(ref(`context.source.${fieldName}`)));
+};
+
+export const setDeniedFieldFlag = (operation: string, subscriptionsEnabled: boolean): string => {
+  if (subscriptionsEnabled) {
+    return printBlock('Check if subscriptions is protected')(
+      compoundExpression([
+        iff(
+          equals(methodCall(ref('util.defaultIfNull'), methodCall(ref('ctx.source.get'), str(OPERATION_KEY)), nul()), str(operation)),
+          qref(methodCall(ref('ctx.result.put'), str('deniedField'), bool(true))),
+        ),
+      ]),
+    );
+  }
+  return '';
+};
+
+export const generateSandboxExpressionForField = (sandboxEnabled: boolean): string => {
+  let exp: Expression;
+  if (sandboxEnabled) exp = iff(notEquals(methodCall(ref('util.authType')), str(API_KEY_AUTH_TYPE)), methodCall(ref('util.unauthorized')));
+  else exp = methodCall(ref('util.unauthorized'));
+  return printBlock(`Sandbox Mode ${sandboxEnabled ? 'Enabled' : 'Disabled'}`)(compoundExpression([exp, toJson(obj({}))]));
 };

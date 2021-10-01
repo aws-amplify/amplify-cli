@@ -1060,15 +1060,15 @@ $util.toJson($ListRequest)
 #if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
   #set( $filter = $ctx.stash.authFilter )
   #if( !$util.isNullOrEmpty($ctx.args.filter) )
-    #set( $filter = [{
+    #set( $filter = {
   \\"bool\\": {
-      \\"must\\":     [$ctx.stash.authFilter, $util.transform.toElasticsearchQueryDSL($ctx.args.filter)]
+      \\"must\\":     [$ctx.stash.authFilter, $util.parseJson($util.transform.toElasticsearchQueryDSL($ctx.args.filter))]
   }
-}] )
+} )
   #end
 #else
   #if( !$util.isNullOrEmpty($ctx.args.filter) )
-    #set( $filter = $ctx.args.filter )
+    #set( $filter = $util.parseJson($util.transform.toElasticsearchQueryDSL($ctx.args.filter)) )
   #end
 #end
 #if( $util.isNullOrEmpty($filter) )

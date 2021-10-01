@@ -263,7 +263,10 @@ input ModelIDKeyConditionInput {
 
 exports[`valid schema 2`] = `
 Object {
-  "Bar.foos.req.vtl": "#if( $util.isNull($ctx.source.id) )
+  "Bar.foos.req.vtl": "#if( $ctx.source.deniedField )
+  #return($util.toJson(null))
+#end
+#if( $util.isNull($ctx.source.id) )
   #set( $result = {
   \\"items\\":   []
 } )
@@ -373,7 +376,10 @@ $util.error($ctx.error.message, $ctx.error.type)
   #end
   $util.toJson($result)
 #end",
-  "Foo.bars.req.vtl": "#if( $util.isNull($ctx.source.id) )
+  "Foo.bars.req.vtl": "#if( $ctx.source.deniedField )
+  #return($util.toJson(null))
+#end
+#if( $util.isNull($ctx.source.id) )
   #set( $result = {
   \\"items\\":   []
 } )
@@ -483,7 +489,10 @@ $util.error($ctx.error.message, $ctx.error.type)
   #end
   $util.toJson($result)
 #end",
-  "FooBar.bar.req.vtl": "#if( $util.isNull($ctx.source.barID) )
+  "FooBar.bar.req.vtl": "#if( $ctx.source.deniedField )
+  #return($util.toJson(null))
+#end
+#if( $util.isNull($ctx.source.barID) )
   #return
 #else
   #set( $GetRequest = {
@@ -516,7 +525,10 @@ $util.unauthorized()
     $util.toJson(null)
   #end
 #end",
-  "FooBar.foo.req.vtl": "#if( $util.isNull($ctx.source.fooID) )
+  "FooBar.foo.req.vtl": "#if( $ctx.source.deniedField )
+  #return($util.toJson(null))
+#end
+#if( $util.isNull($ctx.source.fooID) )
   #return
 #else
   #set( $GetRequest = {

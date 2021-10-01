@@ -3,7 +3,7 @@
 exports[`it generates the expected resources 1`] = `
 Object {
   "InvokeEchofunctionLambdaDataSource.req.vtl": "## [Start] Invoke AWS Lambda data source: EchofunctionLambdaDataSource. **
-$util.toJson({
+{
   \\"version\\": \\"2018-05-29\\",
   \\"operation\\": \\"Invoke\\",
   \\"payload\\": {
@@ -15,7 +15,7 @@ $util.toJson({
       \\"request\\": $util.toJson($ctx.request),
       \\"prev\\": $util.toJson($ctx.prev)
   }
-})
+}
 ## [End] Invoke AWS Lambda data source: EchofunctionLambdaDataSource. **",
   "InvokeEchofunctionLambdaDataSource.res.vtl": "## [Start] Handle error or return result. **
 #if( $ctx.error )
