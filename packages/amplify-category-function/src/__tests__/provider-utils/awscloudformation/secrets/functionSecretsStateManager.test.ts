@@ -26,17 +26,17 @@ pathManager_mock.getBackendDirPath.mockReturnValue(path.join('test', 'path'));
 
 getAppId_mock.mockReturnValue('testappid');
 
-SSMClientWrapper_mock.getInstance.mockResolvedValue({
+SSMClientWrapper_mock.getInstance.mockResolvedValue(({
   deleteSecret: jest.fn(),
   setSecret: jest.fn(),
-} as unknown as SSMClientWrapper);
+} as unknown) as SSMClientWrapper);
 
 describe('syncSecretDeltas', () => {
-  const context_stub = {
+  const context_stub = ({
     parameters: {
       command: 'update',
     },
-  } as unknown as $TSContext;
+  } as unknown) as $TSContext;
   beforeEach(jest.clearAllMocks);
 
   it('sets Amplify AppID in team-provider-info if secrets are present', async () => {

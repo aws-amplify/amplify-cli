@@ -87,3 +87,4 @@ export const getMapStyleComponents = (mapStyle: string): Pick<MapParameters, 'da
             throw new Error(`Invalid map style ${mapStyle}`);
     }
 };
+
