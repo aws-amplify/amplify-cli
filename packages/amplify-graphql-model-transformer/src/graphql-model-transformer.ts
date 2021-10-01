@@ -241,8 +241,6 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
       this.addAutoGeneratableFields(ctx, type);
 
       if (ctx.isProjectUsingDataStore()) {
-        SyncUtils.validateResolverConfigForType(ctx, def!.name.value);
-        this.options.SyncConfig = SyncUtils.getSyncConfig(ctx, def!.name.value);
         this.addModelSyncFields(ctx, type);
       }
     }
@@ -1207,13 +1205,10 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
       }),
     );
 
-    if (this.options.SyncConfig && SyncUtils.isLambdaSyncConfig(this.options.SyncConfig)) {
+    const syncConfig = SyncUtils.getSyncConfig(context, def!.name.value);
+    if (syncConfig && SyncUtils.isLambdaSyncConfig(syncConfig)) {
       role.attachInlinePolicy(
-        SyncUtils.createSyncLambdaIAMPolicy(
-          stack,
-          this.options.SyncConfig.LambdaConflictHandler.name,
-          this.options.SyncConfig.LambdaConflictHandler.region,
-        ),
+        SyncUtils.createSyncLambdaIAMPolicy(stack, syncConfig.LambdaConflictHandler.name, syncConfig.LambdaConflictHandler.region),
       );
     }
     return role;

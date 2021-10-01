@@ -913,7 +913,7 @@ describe('ModelTransformer: ', () => {
     validateModelSchema(parse(definition));
   });
 
-  it('should generate sync resolver with ConflictHandlerType.Lambda', () => {
+  it('should generate sync resolver with ConflictHandlerType.LAMBDA', () => {
     const validSchema = `
       type Post @model {
           id: ID!
