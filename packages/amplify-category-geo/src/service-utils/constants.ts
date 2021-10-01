@@ -1,8 +1,8 @@
 export const apiDocs = {
-  mapStyles: 'https://docs.aws.amazon.com/location-maps/latest/APIReference/API_MapConfiguration.html',
-  pricingPlan: 'https://aws.amazon.com/location/pricing/',
-  dataSourceUsage: 'https://docs.aws.amazon.com/location-places/latest/APIReference/API_DataSourceConfiguration.html',
-};
+  mapStyles: "https://docs.aws.amazon.com/location-maps/latest/APIReference/API_MapConfiguration.html",
+  pricingPlan: "https://aws.amazon.com/location/pricing/",
+  dataSourceUsage: "https://docs.aws.amazon.com/location-places/latest/APIReference/API_DataSourceConfiguration.html"
+}
 
 export const previewBanner = 'Amplify Geo category is in developer preview and not intended for production use at this time.';
 export const chooseServiceMessageAdd = 'Select which capability you want to add:';
@@ -16,5 +16,5 @@ export enum ServiceName {
   Map = 'Map',
   PlaceIndex = 'PlaceIndex',
   GeofenceCollection = 'GeofenceCollection',
-  Tracker = 'Tracker',
+  Tracker = 'Tracker'
 }

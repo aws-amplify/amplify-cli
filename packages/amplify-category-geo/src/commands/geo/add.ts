@@ -8,19 +8,14 @@ import { verifySupportedRegion } from '../../service-utils/resourceUtils';
 
 export const name = 'add';
 
-export const run = async (context: $TSContext) => {
+export const run = async(context: $TSContext) => {
   const { amplify } = context;
   try {
-    if (!verifySupportedRegion()) {
+    if(!verifySupportedRegion()) {
       return;
     }
 
-    const result: { service: string; providerName: string } = await amplify.serviceSelectionPrompt(
-      context,
-      category,
-      supportedServices,
-      chooseServiceMessageAdd,
-    );
+    const result: {service: string, providerName: string} = await amplify.serviceSelectionPrompt(context, category, supportedServices, chooseServiceMessageAdd);
 
     if (result.providerName !== provider) {
       printer.error(`Provider ${result.providerName} not configured for this category`);
@@ -28,6 +23,7 @@ export const run = async (context: $TSContext) => {
     }
 
     return await addResource(context, result.service);
+
   } catch (error: $TSAny) {
     if (error.message) {
       printer.error(error.message);

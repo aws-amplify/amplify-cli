@@ -68,9 +68,7 @@ export function loadAndMergeQueryDocuments(inputPaths: string[], tagName: string
       return parse(source);
     } catch (err) {
       const relativePathToInput = relative(process.cwd(), source.name);
-      throw new ToolError(
-        `Could not parse graphql operations in ${relativePathToInput.replace(/\\/g, '/')}${os.EOL}  Failed on : ${source.body}`,
-      );
+      throw new ToolError(`Could not parse graphql operations in ${relativePathToInput.replace(/\\/g, '/')}${os.EOL}  Failed on : ${source.body}`);
     }
   });
   return concatAST(parsedSources);

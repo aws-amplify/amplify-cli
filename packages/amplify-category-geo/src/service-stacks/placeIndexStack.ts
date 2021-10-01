@@ -22,12 +22,12 @@ export class PlaceIndexStack extends BaseStack {
       'dataSourceIntendedUse',
       'pricingPlan',
       'env',
-      'isDefault',
+      'isDefault'
     ]);
     this.resources = this.constructResources();
 
     new cdk.CfnOutput(this, 'Name', {
-      value: this.resources.get('placeIndex')!.ref,
+      value: this.resources.get('placeIndex')!.ref
     });
   }
 
@@ -45,37 +45,47 @@ export class PlaceIndexStack extends BaseStack {
 
   private constructIndexResource(): CfnResource {
     return new location.CfnPlaceIndex(this, 'PlaceIndex', {
-      indexName: Fn.join('-', [this.parameters.get('indexName')!.valueAsString, this.parameters.get('env')!.valueAsString]),
-      dataSource: this.parameters.get('dataProvider')!.valueAsString,
-      dataSourceConfiguration: {
-        intendedUse: this.parameters.get('dataSourceIntendedUse')!.valueAsString,
-      },
-      pricingPlan: this.parameters.get('pricingPlan')!.valueAsString,
-    });
+        indexName: Fn.join('-', [
+          this.parameters.get('indexName')!.valueAsString,
+          this.parameters.get('env')!.valueAsString
+        ]),
+        dataSource: this.parameters.get('dataProvider')!.valueAsString,
+        dataSourceConfiguration: {
+          intendedUse: this.parameters.get('dataSourceIntendedUse')!.valueAsString
+        },
+        pricingPlan: this.parameters.get('pricingPlan')!.valueAsString
+      });
   }
 
   // Grant read-only access to the Place Index for Authorized and/or Guest users
   private constructIndexPolicyResource(indexResource: CfnResource): CfnResource {
     let policy = new iam.PolicyDocument({
-      statements: [
-        new iam.PolicyStatement({
-          effect: iam.Effect.ALLOW,
-          actions: ['geo:SearchPlaceIndexForPosition', 'geo:SearchPlaceIndexForText'],
-          resources: [indexResource.getAtt('IndexArn').toString()],
-        }),
-      ],
+        statements: [
+          new iam.PolicyStatement({
+            effect: iam.Effect.ALLOW,
+            actions: [
+                "geo:SearchPlaceIndexForPosition",
+                "geo:SearchPlaceIndexForText"
+            ],
+            resources: [indexResource.getAtt('IndexArn').toString()],
+          })
+        ],
     });
 
     let cognitoRoles: Array<string> = new Array();
     cognitoRoles.push(this.parameters.get('authRoleName')!.valueAsString);
     if (this.accessType == AccessType.AuthorizedAndGuestUsers) {
-      cognitoRoles.push(this.parameters.get('unauthRoleName')!.valueAsString);
+        cognitoRoles.push(this.parameters.get('unauthRoleName')!.valueAsString);
     }
 
     return new iam.CfnPolicy(this, 'PlaceIndexPolicy', {
-      policyName: cdk.Fn.join('-', [this.parameters.get('indexName')!.valueAsString, this.parameters.get('env')!.valueAsString, 'Policy']),
-      roles: cognitoRoles,
-      policyDocument: policy,
+        policyName: cdk.Fn.join('-', [
+          this.parameters.get('indexName')!.valueAsString,
+          this.parameters.get('env')!.valueAsString,
+          'Policy'
+        ]),
+        roles: cognitoRoles,
+        policyDocument: policy
     });
-  }
+}
 }

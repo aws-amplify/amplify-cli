@@ -1,4 +1,4 @@
-import {
+import { 
   createNewProjectDir,
   deleteProject,
   deleteProjectDir,
@@ -15,7 +15,7 @@ import {
   updateSecondMapAsDefault,
   updateSecondPlaceIndexAsDefault,
   generateTwoResourceIdsInOrder,
-  getGeoJSConfiguration,
+  getGeoJSConfiguration
 } from 'amplify-e2e-core';
 import { existsSync } from 'fs';
 import path from 'path';
@@ -43,9 +43,7 @@ describe('amplify geo update', () => {
     await amplifyPushWithoutCodegen(projRoot);
 
     const meta = getProjectMeta(projRoot);
-    const geoMeta = Object.keys(meta.geo)
-      .filter(key => meta.geo[key].service === 'Map')
-      .map(key => meta.geo[key])[0];
+    const geoMeta = Object.keys(meta.geo).filter(key => meta.geo[key].service === 'Map').map(key => meta.geo[key])[0]
     const mapName = geoMeta.output.Name;
     const region = meta.providers.awscloudformation.Region;
     const map = await getMap(mapName, region);
@@ -65,9 +63,7 @@ describe('amplify geo update', () => {
     await amplifyPushWithoutCodegen(projRoot);
 
     const meta = getProjectMeta(projRoot);
-    const geoMeta = Object.keys(meta.geo)
-      .filter(key => meta.geo[key].service === 'PlaceIndex')
-      .map(key => meta.geo[key])[0];
+    const geoMeta = Object.keys(meta.geo).filter(key => meta.geo[key].service === 'PlaceIndex').map(key => meta.geo[key])[0]
     const placeIndexName = geoMeta.output.Name;
     const region = meta.providers.awscloudformation.Region;
     const placeIndex = await getPlaceIndex(placeIndexName, region);

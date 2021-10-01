@@ -1,21 +1,19 @@
 import { createPlaceIndexResource, modifyPlaceIndexResource, getCurrentPlaceIndexParameters } from '../service-utils/placeIndexUtils';
 import { removeWalkthrough } from '../service-walkthroughs/removeWalkthrough';
 import { category } from '../constants';
-import {
-  updateDefaultPlaceIndexWalkthrough,
-  createPlaceIndexWalkthrough,
-  updatePlaceIndexWalkthrough,
-} from '../service-walkthroughs/placeIndexWalkthrough';
+import { updateDefaultPlaceIndexWalkthrough, createPlaceIndexWalkthrough, updatePlaceIndexWalkthrough } from '../service-walkthroughs/placeIndexWalkthrough';
 import { convertToCompletePlaceIndexParams, PlaceIndexParameters } from '../service-utils/placeIndexParams';
 import { $TSAny, $TSContext } from 'amplify-cli-core';
 import { printNextStepsSuccessMessage, setProviderContext, insufficientInfoForUpdateError } from './index';
 import { ServiceName } from '../service-utils/constants';
 import { printer } from 'amplify-prompts';
 
-export const addPlaceIndexResource = async (context: $TSContext): Promise<string> => {
+export const addPlaceIndexResource = async (
+  context: $TSContext
+): Promise<string> => {
   // initialize the Place Index parameters
   let placeIndexParams: Partial<PlaceIndexParameters> = {
-    providerContext: setProviderContext(context, ServiceName.PlaceIndex),
+    providerContext: setProviderContext(context, ServiceName.PlaceIndex)
   };
   // populate the parameters for the resource
   await createPlaceIndexWalkthrough(context, placeIndexParams);
@@ -28,9 +26,11 @@ export const addPlaceIndexResource = async (context: $TSContext): Promise<string
   return completeParameters.name;
 };
 
-export const updatePlaceIndexResource = async (context: $TSContext): Promise<string> => {
+export const updatePlaceIndexResource = async (
+  context: $TSContext
+): Promise<string> => {
   let placeIndexParams: Partial<PlaceIndexParameters> = {
-    providerContext: setProviderContext(context, ServiceName.PlaceIndex),
+    providerContext: setProviderContext(context, ServiceName.PlaceIndex)
   };
   // populate the parameters for the resource
   await updatePlaceIndexWalkthrough(context, placeIndexParams);
@@ -39,9 +39,10 @@ export const updatePlaceIndexResource = async (context: $TSContext): Promise<str
     modifyPlaceIndexResource(context, {
       accessType: placeIndexParams.accessType,
       name: placeIndexParams.name,
-      isDefault: placeIndexParams.isDefault,
+      isDefault: placeIndexParams.isDefault
     });
-  } else {
+  }
+  else {
     throw insufficientInfoForUpdateError(ServiceName.PlaceIndex);
   }
 
@@ -50,7 +51,9 @@ export const updatePlaceIndexResource = async (context: $TSContext): Promise<str
   return placeIndexParams.name;
 };
 
-export const removePlaceIndexResource = async (context: any): Promise<string | undefined> => {
+export const removePlaceIndexResource = async (
+  context: any
+): Promise<string | undefined> => {
   const { amplify } = context;
   const resourceToRemove = await removeWalkthrough(context, ServiceName.PlaceIndex);
   if (!resourceToRemove) return;
@@ -58,7 +61,8 @@ export const removePlaceIndexResource = async (context: any): Promise<string | u
   const resourceParameters = await getCurrentPlaceIndexParameters(resourceToRemove);
 
   try {
-    await amplify.removeResource(context, category, resourceToRemove).then(async (resource: { service: string; resourceName: string }) => {
+    await amplify.removeResource(context, category, resourceToRemove)
+    .then(async (resource: { service: string; resourceName: string }) => {
       if (resource?.service === ServiceName.PlaceIndex && resourceParameters.isDefault) {
         // choose another default if removing a default place index
         await updateDefaultPlaceIndexWalkthrough(context, resource.resourceName);

@@ -3,59 +3,60 @@ import { removeResource } from '../../../provider-controllers';
 import { ServiceName } from '../../../service-utils/constants';
 import { run } from '../../../commands/geo/remove';
 
-const mockRemoveResource = removeResource as jest.MockedFunction<typeof removeResource>;
+const mockRemoveResource = removeResource as jest.MockedFunction< typeof removeResource >;
 const mockResource = 'resource12345';
 mockRemoveResource.mockImplementation((context: $TSContext, service: string): Promise<string> => {
-  return new Promise<string>(resolve => {
-    resolve(mockResource);
-  });
+    return new Promise<string>((resolve) => {
+		resolve(mockResource);
+	});
 });
 
 jest.mock('amplify-cli-core');
 jest.mock('../../../provider-controllers');
 
+
 describe('remove command tests', () => {
-  const provider = 'awscloudformation';
-  let mockContext: $TSContext;
-  // construct mock amplify meta
-  const mockAmplifyMeta: $TSObject = {
-    providers: {},
-  };
-
-  beforeEach(() => {
-    jest.clearAllMocks();
-    mockContext = {
-      print: {
-        info: jest.fn(),
-        warning: jest.fn(),
-      },
-      amplify: {},
-    } as unknown as $TSContext;
-    mockAmplifyMeta.providers[provider] = {
-      Region: 'us-west-2',
+    const provider = 'awscloudformation';
+    let mockContext: $TSContext;
+    // construct mock amplify meta
+    const mockAmplifyMeta: $TSObject = {
+        providers: {}
     };
-    stateManager.getMeta = jest.fn().mockReturnValue(mockAmplifyMeta);
-  });
-
-  it('remove resource workflow is invoked for map service', async () => {
-    const service = ServiceName.Map;
-    mockContext.amplify.serviceSelectionPrompt = jest.fn().mockImplementation(async () => {
-      return { service: service, providerName: provider };
+    
+    beforeEach(() => {
+        jest.clearAllMocks();
+        mockContext = ({
+            print: {
+                info: jest.fn(),
+                warning: jest.fn()
+            },
+            amplify: {}
+        } as unknown) as $TSContext;
+        mockAmplifyMeta.providers[provider] = {
+            Region: 'us-west-2'
+        };
+        stateManager.getMeta = jest.fn().mockReturnValue(mockAmplifyMeta);
     });
 
-    await run(mockContext);
+    it('remove resource workflow is invoked for map service', async() => {
+        const service = ServiceName.Map;
+        mockContext.amplify.serviceSelectionPrompt = jest.fn().mockImplementation( async () => {
+            return { service: service, providerName: provider};
+        });
 
-    expect(mockRemoveResource).toHaveBeenCalledWith(mockContext, service);
-  });
+        await run(mockContext);
 
-  it('remove resource workflow is invoked for place index service', async () => {
-    const service = ServiceName.PlaceIndex;
-    mockContext.amplify.serviceSelectionPrompt = jest.fn().mockImplementation(async () => {
-      return { service: service, providerName: provider };
+        expect(mockRemoveResource).toHaveBeenCalledWith(mockContext, service);
     });
 
-    await run(mockContext);
+    it('remove resource workflow is invoked for place index service', async() => {
+        const service = ServiceName.PlaceIndex;
+        mockContext.amplify.serviceSelectionPrompt  = jest.fn().mockImplementation( async () => {
+            return { service: service, providerName: provider};
+        });
 
-    expect(mockRemoveResource).toHaveBeenCalledWith(mockContext, service);
-  });
+        await run(mockContext);
+
+        expect(mockRemoveResource).toHaveBeenCalledWith(mockContext, service);
+    });
 });

@@ -63,12 +63,12 @@ const createEntries = async () => {
   await waitForESPropagate();
 };
 
-const waitForESPropagate = async (initialWaitSeconds = 5, maxRetryCount = 5) => {
+const waitForESPropagate = async (initialWaitSeconds = 5, maxRetryCount = 5 ) => {
   const expectedCount = 8;
   let waitInMilliseconds = initialWaitSeconds * 1000;
   let currentRetryCount = 0;
   let searchResponse;
-
+  
   do {
     await new Promise(r => setTimeout(r, waitInMilliseconds));
     searchResponse = await GRAPHQL_CLIENT.query(
@@ -84,7 +84,7 @@ const waitForESPropagate = async (initialWaitSeconds = 5, maxRetryCount = 5) => 
     currentRetryCount += 1;
     waitInMilliseconds = waitInMilliseconds * 2;
   } while (searchResponse.data.searchPosts?.items?.length < expectedCount && currentRetryCount <= maxRetryCount);
-};
+}
 
 beforeAll(async () => {
   const validSchema = `

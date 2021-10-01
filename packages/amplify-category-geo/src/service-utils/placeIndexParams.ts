@@ -12,8 +12,8 @@ export type PlaceIndexParameters = ResourceParameters & {
  * Storage option for search data
  */
 export enum DataSourceIntendedUse {
-  SingleUse = 'SingleUse',
-  Storage = 'Storage',
+  SingleUse = "SingleUse",
+  Storage = "Storage"
 }
 
 /**
@@ -27,7 +27,7 @@ export const isCompletePlaceIndexParams = (partial: Partial<PlaceIndexParameters
 
 export const convertToCompletePlaceIndexParams = (partial: Partial<PlaceIndexParameters>): PlaceIndexParameters => {
   if (isCompletePlaceIndexParams(partial)) {
-    return partial as PlaceIndexParameters;
+      return partial as PlaceIndexParameters;
   }
   throw new Error('Partial<PlaceIndexParameters> does not satisfy PlaceIndexParameters');
 };

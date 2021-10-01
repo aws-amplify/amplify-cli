@@ -8,10 +8,12 @@ import { printNextStepsSuccessMessage, setProviderContext, insufficientInfoForUp
 import { ServiceName } from '../service-utils/constants';
 import { printer } from 'amplify-prompts';
 
-export const addMapResource = async (context: $TSContext): Promise<string> => {
+export const addMapResource = async (
+  context: $TSContext
+): Promise<string> => {
   // initialize the Map parameters
   let mapParams: Partial<MapParameters> = {
-    providerContext: setProviderContext(context, ServiceName.Map),
+      providerContext: setProviderContext(context, ServiceName.Map)
   };
   // populate the parameters for the resource
   await createMapWalkthrough(context, mapParams);
@@ -24,10 +26,12 @@ export const addMapResource = async (context: $TSContext): Promise<string> => {
   return completeParameters.name;
 };
 
-export const updateMapResource = async (context: $TSContext): Promise<string> => {
+export const updateMapResource = async (
+  context: $TSContext
+): Promise<string> => {
   // initialize the Map parameters
   let mapParams: Partial<MapParameters> = {
-    providerContext: setProviderContext(context, ServiceName.Map),
+    providerContext: setProviderContext(context, ServiceName.Map)
   };
   // populate the parameters for the resource
   await updateMapWalkthrough(context, mapParams);
@@ -36,7 +40,7 @@ export const updateMapResource = async (context: $TSContext): Promise<string> =>
     modifyMapResource(context, {
       accessType: mapParams.accessType,
       name: mapParams.name,
-      isDefault: mapParams.isDefault,
+      isDefault: mapParams.isDefault
     });
   } else {
     throw insufficientInfoForUpdateError(ServiceName.Map);
@@ -47,7 +51,9 @@ export const updateMapResource = async (context: $TSContext): Promise<string> =>
   return mapParams.name;
 };
 
-export const removeMapResource = async (context: any): Promise<string | undefined> => {
+export const removeMapResource = async (
+  context: any
+): Promise<string | undefined> => {
   const { amplify } = context;
   const resourceToRemove = await removeWalkthrough(context, ServiceName.Map);
   if (!resourceToRemove) return;
@@ -55,7 +61,8 @@ export const removeMapResource = async (context: any): Promise<string | undefine
   const resourceParameters = await getCurrentMapParameters(resourceToRemove);
 
   try {
-    await amplify.removeResource(context, category, resourceToRemove).then(async (resource: { service: string; resourceName: string }) => {
+    await amplify.removeResource(context, category, resourceToRemove)
+    .then(async (resource: { service: string; resourceName: string }) => {
       if (resource?.service === ServiceName.Map && resourceParameters.isDefault) {
         // choose another default if removing a default map
         await updateDefaultMapWalkthrough(context, resource.resourceName);

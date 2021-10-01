@@ -45,7 +45,7 @@ describe('headless auth', () => {
   });
 
   describe(' import', () => {
-    let ogProjectSettings: { name: string };
+    let ogProjectSettings: {name: string};
     let ogProjectRoot: string;
 
     beforeEach(async () => {

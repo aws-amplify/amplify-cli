@@ -342,19 +342,15 @@ export const getSSMParameters = async (region: string, appId: string, envName: s
 };
 //Amazon location service calls
 export const getMap = async (mapName: string, region: string) => {
-  const service = new Location({ region });
-  return await service
-    .describeMap({
-      MapName: mapName,
-    })
-    .promise();
-};
+  const service = new Location({region});
+  return await service.describeMap({
+    MapName: mapName
+  }).promise()
+}
 
 export const getPlaceIndex = async (placeIndexName: string, region: string) => {
-  const service = new Location({ region });
-  return await service
-    .describePlaceIndex({
-      IndexName: placeIndexName,
-    })
-    .promise();
-};
+  const service = new Location({region});
+  return await service.describePlaceIndex({
+    IndexName: placeIndexName
+  }).promise()
+}

@@ -57,6 +57,7 @@ module.exports = {
         handleMigration: resources.length ? opts => updateStackForAPIMigration(context, category, resources[0], opts) : undefined,
       };
     }
+
     return transformGraphQLSchema(context, optionsWithUpdateHandler);
   },
   newSecret: async (context, options) => {

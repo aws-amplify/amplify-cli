@@ -1,4 +1,4 @@
-import {
+import { 
   createNewProjectDir,
   deleteProject,
   deleteProjectDir,
@@ -15,7 +15,7 @@ import {
   removeFirstDefaultPlaceIndex,
   generateRandomShortId,
   generateTwoResourceIdsInOrder,
-  getGeoJSConfiguration,
+  getGeoJSConfiguration
 } from 'amplify-e2e-core';
 import { existsSync } from 'fs';
 import path from 'path';
@@ -74,7 +74,7 @@ describe('amplify geo remove', () => {
     await initJSProjectWithProfile(projRoot, {});
     await addAuthWithDefault(projRoot);
     await addMapWithDefault(projRoot, { resourceName: map1Id, isFirstGeoResource: true });
-    await addMapWithDefault(projRoot, { resourceName: map2Id, isAdditional: true, isDefault: false });
+    await addMapWithDefault(projRoot, { resourceName: map2Id, isAdditional: true, isDefault: false })
     await amplifyPushWithoutCodegen(projRoot);
     const oldMeta = getProjectMeta(projRoot);
     expect(oldMeta.geo[map1Id].isDefault).toBe(true);
@@ -100,7 +100,7 @@ describe('amplify geo remove', () => {
     await initJSProjectWithProfile(projRoot, {});
     await addAuthWithDefault(projRoot);
     await addPlaceIndexWithDefault(projRoot, { resourceName: index1Id, isFirstGeoResource: true });
-    await addPlaceIndexWithDefault(projRoot, { resourceName: index2Id, isAdditional: true, isDefault: false });
+    await addPlaceIndexWithDefault(projRoot, { resourceName: index2Id, isAdditional: true, isDefault: false })
     await amplifyPushWithoutCodegen(projRoot);
     const oldMeta = getProjectMeta(projRoot);
     expect(oldMeta.geo[index1Id].isDefault).toBe(true);
