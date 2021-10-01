@@ -7,6 +7,8 @@ import { generateOverrideSkeleton, $TSContext, FeatureFlags } from 'amplify-cli-
 import { printer } from 'amplify-prompts';
 import * as fs from 'fs-extra';
 import inquirer from 'inquirer';
+import { DynamoDBInputState } from '../../provider-utils/awscloudformation/service-walkthroughs/dynamoDB-input-state';
+import { DDBStackTransform } from '../../provider-utils/awscloudformation/cdk-stack-builder/ddb-stack-transform';
 
 const category = 'storage';
 export const name = 'override';
@@ -53,6 +55,23 @@ export const run = async (context: $TSContext) => {
       'overrides-resource',
       amplifyMeta[category][selectedResource].service,
     );
+
+    // Make sure to migrate first
+    if (amplifyMeta[category][selectedResource].service === 'DynamoDB') {
+      const resourceInputState = new DynamoDBInputState(selectedResource);
+      if (!resourceInputState.cliInputFileExists()) {
+        if (await amplify.confirmPrompt('File migration required to continue. Do you want to continue?', true)) {
+          resourceInputState.migrate();
+          const stackGenerator = new DDBStackTransform(selectedResource);
+          stackGenerator.transform();
+        } else {
+          return;
+        }
+      }
+    } else if (amplifyMeta[category][selectedResource].service === 'S3') {
+      // S3 migration logic goes in here
+    }
+
     await generateOverrideSkeleton(context, srcPath, destPath);
   } else {
     printer.info('Storage overrides is currently not turned on. In amplify/cli.json file please include the following:');

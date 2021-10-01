@@ -1,8 +1,9 @@
 import * as path from 'path';
 const sequential = require('promise-sequential');
 import { updateConfigOnEnvInit } from './provider-utils/awscloudformation';
-import { $TSContext, AmplifyCategories, IAmplifyResource } from 'amplify-cli-core';
+import { $TSContext, AmplifyCategories, IAmplifyResource, pathManager } from 'amplify-cli-core';
 import { DDBStackTransform } from './provider-utils/awscloudformation/cdk-stack-builder/ddb-stack-transform';
+import { DynamoDBInputState } from './provider-utils/awscloudformation/service-walkthroughs/dynamoDB-input-state';
 export { AmplifyDDBResourceTemplate } from './provider-utils/awscloudformation/cdk-stack-builder/types';
 
 async function add(context: any, providerName: any, service: any) {
@@ -60,11 +61,18 @@ async function migrateStorageCategory(context: any) {
 
 async function transformCategoryStack(context: $TSContext, resource: IAmplifyResource) {
   if (resource.service === 'DynamoDB') {
-    const stackGenerator = new DDBStackTransform(resource.resourceName);
-    stackGenerator.transform();
-  } else if (resource.service === 'DynamoDB') {
+    if (canResourceBeTransformed(resource.resourceName)) {
+      const stackGenerator = new DDBStackTransform(resource.resourceName);
+      stackGenerator.transform();
+    }
+  } else if (resource.service === 'S3') {
     // Not yet implemented
   }
+}
+
+function canResourceBeTransformed(resourceName: string) {
+  const resourceInputState = new DynamoDBInputState(resourceName);
+  return resourceInputState.cliInputFileExists();
 }
 
 async function getPermissionPolicies(context: any, resourceOpsMapping: any) {

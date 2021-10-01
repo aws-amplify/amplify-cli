@@ -1,4 +1,4 @@
-import { DynamoDBCLIInputs } from '../service-walkthrough-types/dynamoDB-user-input-types';
+import { DynamoDBCLIInputs, DynamoDBCLIInputsGSIType } from '../service-walkthrough-types/dynamoDB-user-input-types';
 import { AmplifyCategories, AmplifySupportedService } from 'amplify-cli-core';
 import { JSONUtilities, pathManager } from 'amplify-cli-core';
 import { CLIInputSchemaValidator } from 'amplify-cli-core';
@@ -26,14 +26,114 @@ export class DynamoDBInputState {
 
   public getCliInputPayload(): DynamoDBCLIInputs {
     let cliInputs: DynamoDBCLIInputs;
+
     // Read cliInputs file if exists
     try {
       cliInputs = JSON.parse(fs.readFileSync(this._cliInputsFilePath, 'utf8'));
     } catch (e) {
-      throw new Error('migrate project with command : amplify migrate <to be decided>');
+      throw new Error('cli-inputs.json file missing from the resource directory');
     }
 
     return cliInputs;
+  }
+
+  public migrate() {
+    let cliInputs: DynamoDBCLIInputs;
+    const attrReverseMap: any = {
+      S: 'string',
+      N: 'number',
+      B: 'binary',
+      BOOL: 'boolean',
+      L: 'list',
+      M: 'map',
+      NULL: null,
+      SS: 'string-set',
+      NS: 'number-set',
+      BS: 'binary-set',
+    };
+
+    // migrate the resource to new directory structure if cli-inputs.json is not found for the resource
+
+    const backendDir = pathManager.getBackendDirPath();
+    const oldParametersFilepath = path.join(backendDir, 'storage', this._resourceName, 'parameters.json');
+    const oldCFNFilepath = path.join(backendDir, 'storage', this._resourceName, `${this._resourceName}-cloudformation-template.json`);
+    const oldStorageParamsFilepath = path.join(backendDir, 'storage', this._resourceName, `storage-params.json`);
+
+    const oldParameters: any = JSONUtilities.readJson(oldParametersFilepath, { throwIfNotExist: true });
+    const oldCFN: any = JSONUtilities.readJson(oldCFNFilepath, { throwIfNotExist: true });
+    const oldStorageParams: any = JSONUtilities.readJson(oldStorageParamsFilepath, { throwIfNotExist: false }) || {};
+
+    const partitionKey = {
+      fieldName: oldParameters.partitionKeyName,
+      fieldType: attrReverseMap[oldParameters.partitionKeyType],
+    };
+
+    let sortKey;
+
+    if (oldParameters.sortKeyName) {
+      sortKey = {
+        fieldName: oldParameters.sortKeyName,
+        fieldType: attrReverseMap[oldParameters.sortKeyType],
+      };
+    }
+
+    let triggerFunctions = [];
+
+    if (oldStorageParams.triggerFunctions) {
+      triggerFunctions = oldStorageParams.triggerFunctions;
+    }
+
+    const getType = (attrList: any, attrName: string) => {
+      let attrType;
+
+      attrList.forEach((attr: any) => {
+        if (attr.AttributeName === attrName) {
+          attrType = attrReverseMap[attr.AttributeType];
+        }
+      });
+
+      return attrType;
+    };
+
+    let gsi: DynamoDBCLIInputsGSIType[] = [];
+
+    if (oldCFN?.Resources?.DynamoDBTable?.Properties?.GlobalSecondaryIndexes) {
+      oldCFN.Resources.DynamoDBTable.Properties.GlobalSecondaryIndexes.forEach((cfnGSIValue: any) => {
+        let gsiValue: any = {};
+        (gsiValue.name = cfnGSIValue.IndexName),
+          cfnGSIValue.KeySchema.forEach((keySchema: any) => {
+            if (keySchema.KeyType === 'HASH') {
+              gsiValue.partitionKey = {
+                fieldName: keySchema.AttributeName,
+                fieldType: getType(oldCFN.Resources.DynamoDBTable.Properties.AttributeDefinitions, keySchema.AttributeName),
+              };
+            } else {
+              gsiValue.sortKey = {
+                fieldName: keySchema.AttributeName,
+                fieldType: getType(oldCFN.Resources.DynamoDBTable.Properties.AttributeDefinitions, keySchema.AttributeName),
+              };
+            }
+          });
+        gsi.push(gsiValue);
+      });
+    }
+    cliInputs = {
+      resourceName: this._resourceName,
+      tableName: oldParameters.tableName,
+      partitionKey,
+      sortKey,
+      triggerFunctions,
+      gsi,
+    };
+
+    this.saveCliInputPayload(cliInputs);
+  }
+
+  public cliInputFileExists(): boolean {
+    if (fs.existsSync(this._cliInputsFilePath)) {
+      return true;
+    }
+    return false;
   }
 
   public isCLIInputsValid(cliInputs?: DynamoDBCLIInputs) {
@@ -41,8 +141,8 @@ export class DynamoDBInputState {
       cliInputs = this.getCliInputPayload();
     }
 
-    /*const schemaValidator = new CLIInputSchemaValidator(this._service, this._category, "DynamoDBCLIInputs" );
-  schemaValidator.validateInput(JSON.stringify(cliInputs));*/
+    const schemaValidator = new CLIInputSchemaValidator(this._service, this._category, 'DynamoDBCLIInputs');
+    schemaValidator.validateInput(JSON.stringify(cliInputs));
   }
 
   public saveCliInputPayload(cliInputs: DynamoDBCLIInputs): void {

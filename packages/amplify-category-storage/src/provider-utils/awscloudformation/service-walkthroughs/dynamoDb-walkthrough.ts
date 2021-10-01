@@ -93,7 +93,21 @@ async function updateWalkthrough(context: $TSContext) {
 
   const answer = await inquirer.prompt(question);
 
+  // Check if we need to migrate to cli-inputs.json
   const cliInputsState = new DynamoDBInputState(answer.resourceName);
+
+  if (!cliInputsState.cliInputFileExists()) {
+    if (
+      context.exeInfo?.forcePush ||
+      (await amplify.confirmPrompt('File migration required to continue. Do you want to continue?', true))
+    ) {
+      cliInputsState.migrate();
+      const stackGenerator = new DDBStackTransform(answer.resourceName);
+      stackGenerator.transform();
+    } else {
+      return;
+    }
+  }
 
   const cliInputs = cliInputsState.getCliInputPayload();
 
