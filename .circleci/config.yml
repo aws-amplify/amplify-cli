@@ -13743,7 +13743,6 @@ workflows:
             parameters:
               os:
                 - linux
-                - windows
       - geo-remove-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
@@ -13997,7 +13996,6 @@ workflows:
             parameters:
               os:
                 - linux
-                - windows
       - schema-predictions-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
@@ -14016,7 +14014,6 @@ workflows:
             parameters:
               os:
                 - linux
-                - windows
       - predictions-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
@@ -14251,7 +14248,6 @@ workflows:
             parameters:
               os:
                 - linux
-                - windows
       - amplify-app-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
@@ -14468,7 +14464,6 @@ workflows:
             parameters:
               os:
                 - linux
-                - windows
       - storage-2-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
@@ -14505,7 +14500,6 @@ workflows:
             parameters:
               os:
                 - linux
-                - windows
       - hosting-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
@@ -14560,7 +14554,6 @@ workflows:
             parameters:
               os:
                 - linux
-                - windows
       - import_auth_2-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
@@ -14724,7 +14717,6 @@ workflows:
             parameters:
               os:
                 - linux
-                - windows
       - notifications-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
@@ -14743,7 +14735,6 @@ workflows:
             parameters:
               os:
                 - linux
-                - windows
       - analytics-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
@@ -14762,7 +14753,6 @@ workflows:
             parameters:
               os:
                 - linux
-                - windows
       - schema-iterative-update-1-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
@@ -14853,7 +14843,6 @@ workflows:
             parameters:
               os:
                 - linux
-                - windows
       - api_5-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
@@ -14909,7 +14898,6 @@ workflows:
             parameters:
               os:
                 - linux
-                - windows
       - layer-3-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
@@ -14983,7 +14971,6 @@ workflows:
             parameters:
               os:
                 - linux
-                - windows
       - feature-flags-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
@@ -15146,7 +15133,6 @@ workflows:
             parameters:
               os:
                 - linux
-                - windows
       - iam-permissions-boundary-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
@@ -15165,7 +15151,6 @@ workflows:
             parameters:
               os:
                 - linux
-                - windows
       - layer-4-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
@@ -15329,7 +15314,6 @@ workflows:
             parameters:
               os:
                 - linux
-                - windows
       - schema-iterative-rollback-1-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
@@ -15970,14 +15954,49 @@ commands:
         type: executor
         default: linux-e2e-executor
     steps:
-      - run:
-          name: Run E2e Tests
-          command: |
-            source .circleci/local_publish_helpers.sh
-            source $BASH_ENV
-            amplify version
-            retry runE2eTest
-          no_output_timeout: 90m
+      - when:
+          condition:
+            equal:
+              - machine:
+                  image: windows-server-2019-vs2019:stable
+                  resource_class: windows.large
+                  shell: bash.exe
+                working_directory: ~/repo
+                environment:
+                  AMPLIFY_DIR: C:/home/circleci/repo/out
+                  AMPLIFY_PATH: C:/home/circleci/repo/out/amplify.exe
+              - << parameters.os >>
+          steps:
+            - run:
+                name: Run E2e Tests
+                shell: powershell.exe
+                command: >
+                  cd packages/amplify-e2e-tests
+
+                  yarn run e2e --detectOpenHandles --maxWorkers=3
+                  $env:TEST_SUITE
+                no_output_timeout: 90m
+      - when:
+          condition:
+            equal:
+              - docker:
+                  - image: >-
+                      public.ecr.aws/a6e6w2n0/amplify-cli-e2e-base-image-repo-public:latest
+                working_directory: ~/repo
+                resource_class: large
+                environment:
+                  AMPLIFY_DIR: /home/circleci/repo/out
+                  AMPLIFY_PATH: /home/circleci/repo/out/amplify-pkg-linux
+              - << parameters.os >>
+          steps:
+            - run:
+                name: Run E2e Tests
+                command: |
+                  source .circleci/local_publish_helpers.sh
+                  source $BASH_ENV
+                  amplify version
+                  retry runE2eTest
+                no_output_timeout: 90m
   scan_e2e_test_artifacts:
     description: Scan And Cleanup E2E Test Artifacts
     parameters:
