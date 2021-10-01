@@ -37,6 +37,30 @@ export class DynamoDBInputState {
     return cliInputs;
   }
 
+  public cliInputFileExists(): boolean {
+    return fs.existsSync(this._cliInputsFilePath);
+  }
+
+  public isCLIInputsValid(cliInputs?: DynamoDBCLIInputs) {
+    if (!cliInputs) {
+      cliInputs = this.getCliInputPayload();
+    }
+
+    const schemaValidator = new CLIInputSchemaValidator(this._service, this._category, 'DynamoDBCLIInputs');
+    schemaValidator.validateInput(JSON.stringify(cliInputs));
+  }
+
+  public saveCliInputPayload(cliInputs: DynamoDBCLIInputs): void {
+    this.isCLIInputsValid(cliInputs);
+
+    fs.ensureDirSync(path.join(pathManager.getBackendDirPath(), this._category, this._resourceName));
+    try {
+      JSONUtilities.writeJson(this._cliInputsFilePath, cliInputs);
+    } catch (e) {
+      throw new Error(e);
+    }
+  }
+
   public migrate() {
     let cliInputs: DynamoDBCLIInputs;
     const attrReverseMap: any = {
@@ -127,32 +151,17 @@ export class DynamoDBInputState {
     };
 
     this.saveCliInputPayload(cliInputs);
-  }
 
-  public cliInputFileExists(): boolean {
-    if (fs.existsSync(this._cliInputsFilePath)) {
-      return true;
+    // Remove old files
+
+    if (fs.existsSync(oldCFNFilepath)) {
+      fs.removeSync(oldCFNFilepath);
     }
-    return false;
-  }
-
-  public isCLIInputsValid(cliInputs?: DynamoDBCLIInputs) {
-    if (!cliInputs) {
-      cliInputs = this.getCliInputPayload();
+    if (fs.existsSync(oldParametersFilepath)) {
+      fs.removeSync(oldParametersFilepath);
     }
-
-    const schemaValidator = new CLIInputSchemaValidator(this._service, this._category, 'DynamoDBCLIInputs');
-    schemaValidator.validateInput(JSON.stringify(cliInputs));
-  }
-
-  public saveCliInputPayload(cliInputs: DynamoDBCLIInputs): void {
-    this.isCLIInputsValid(cliInputs);
-
-    fs.ensureDirSync(path.join(pathManager.getBackendDirPath(), this._category, this._resourceName));
-    try {
-      JSONUtilities.writeJson(this._cliInputsFilePath, cliInputs);
-    } catch (e) {
-      throw new Error(e);
+    if (fs.existsSync(oldStorageParamsFilepath)) {
+      fs.removeSync(oldStorageParamsFilepath);
     }
   }
 }
