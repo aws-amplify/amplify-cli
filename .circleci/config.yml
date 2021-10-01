@@ -15234,7 +15234,6 @@ workflows:
             parameters:
               os:
                 - linux
-                - windows
       - frontend_config_drift-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull

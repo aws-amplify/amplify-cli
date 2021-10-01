@@ -18,6 +18,7 @@ const WINDOWS_TEST_FAILURES = [
   'api_3-amplify_e2e_tests',
   'api_4-amplify_e2e_tests',
   'api_5-amplify_e2e_tests',
+  'api_6-amplify_e2e_tests',
   'auth_1-amplify_e2e_tests',
   'auth_2-amplify_e2e_tests',
   'auth_3-amplify_e2e_tests',
