@@ -307,9 +307,9 @@ function splitTests(
     const isPkg = newJobName.endsWith('_pkg');
     if (!isPkg) {
       (newJob.environment as any) = {
-        ...newJob.environment,
         AMPLIFY_DIR: '/home/circleci/repo/packages/amplify-cli/bin',
         AMPLIFY_PATH: '/home/circleci/repo/packages/amplify-cli/bin/amplify',
+        ...newJob.environment,
       };
     }
     return { ...acc, [newJobName]: newJob };
