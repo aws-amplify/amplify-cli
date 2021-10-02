@@ -10535,7 +10535,7 @@ workflows:
           context:
             - amplify-ecr-image-pull
             - e2e-auth-credentials
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-test-context
           filters:
             branches:
@@ -10545,11 +10545,19 @@ workflows:
                 - /run-e2e\/.*/
           requires:
             - build
+          post-steps:
+            - run:
+                name: Cleanup resources
+                command: |
+                  pwd
+                  cd packages/amplify-e2e-tests
+                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
+                working_directory: ~/repo
       - amplify_migration_tests_v4:
           context:
             - amplify-ecr-image-pull
             - e2e-auth-credentials
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-test-context
           filters:
             branches:
@@ -10559,11 +10567,19 @@ workflows:
                 - /run-e2e\/.*/
           requires:
             - build
+          post-steps:
+            - run:
+                name: Cleanup resources
+                command: |
+                  pwd
+                  cd packages/amplify-e2e-tests
+                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
+                working_directory: ~/repo
       - amplify_migration_tests_v4_30_0:
           context:
             - amplify-ecr-image-pull
             - e2e-auth-credentials
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-test-context
           filters:
             branches:
@@ -10573,11 +10589,19 @@ workflows:
                 - /run-e2e\/.*/
           requires:
             - build
+          post-steps:
+            - run:
+                name: Cleanup resources
+                command: |
+                  pwd
+                  cd packages/amplify-e2e-tests
+                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
+                working_directory: ~/repo
       - amplify_migration_tests_non_multi_env_layers:
           context:
             - amplify-ecr-image-pull
             - e2e-auth-credentials
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-test-context
           filters:
             branches:
@@ -10587,11 +10611,19 @@ workflows:
                 - /run-e2e\/.*/
           requires:
             - build
+          post-steps:
+            - run:
+                name: Cleanup resources
+                command: |
+                  pwd
+                  cd packages/amplify-e2e-tests
+                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
+                working_directory: ~/repo
       - amplify_migration_tests_multi_env_layers:
           context:
             - amplify-ecr-image-pull
             - e2e-auth-credentials
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-test-context
           filters:
             branches:
@@ -10601,11 +10633,19 @@ workflows:
                 - /run-e2e\/.*/
           requires:
             - build
+          post-steps:
+            - run:
+                name: Cleanup resources
+                command: |
+                  pwd
+                  cd packages/amplify-e2e-tests
+                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
+                working_directory: ~/repo
       - amplify_console_integration_tests:
           context:
             - amplify-ecr-image-pull
             - e2e-auth-credentials
-            - clean_e2e_resources
+            - cleanup-resources
             - console-e2e-test
             - e2e-test-context
           post-steps:
@@ -11098,7 +11138,7 @@ workflows:
       - api_4-amplify_e2e_tests:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           post-steps:
@@ -11124,7 +11164,7 @@ workflows:
       - function_5-amplify_e2e_tests:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           post-steps:
@@ -11150,7 +11190,7 @@ workflows:
       - import_auth_3-amplify_e2e_tests:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           post-steps:
@@ -11176,7 +11216,7 @@ workflows:
       - migration-api-connection-migration2-amplify_e2e_tests:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           post-steps:
@@ -11202,7 +11242,7 @@ workflows:
       - schema-function-2-amplify_e2e_tests:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           post-steps:
@@ -11228,7 +11268,7 @@ workflows:
       - datastore-modelgen-amplify_e2e_tests:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           post-steps:
@@ -11254,7 +11294,7 @@ workflows:
       - containers-api-amplify_e2e_tests:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           post-steps:
@@ -11280,7 +11320,7 @@ workflows:
       - geo-remove-amplify_e2e_tests:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           post-steps:
@@ -11306,7 +11346,7 @@ workflows:
       - schema-key-amplify_e2e_tests:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           post-steps:
@@ -11332,7 +11372,7 @@ workflows:
       - function_2-amplify_e2e_tests:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           post-steps:
@@ -11358,7 +11398,7 @@ workflows:
       - schema-auth-4-amplify_e2e_tests:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           post-steps:
@@ -11384,7 +11424,7 @@ workflows:
       - schema-iterative-rollback-2-amplify_e2e_tests:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           post-steps:
@@ -11410,7 +11450,7 @@ workflows:
       - schema-auth-1-amplify_e2e_tests:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           post-steps:
@@ -11436,7 +11476,7 @@ workflows:
       - schema-auth-2-amplify_e2e_tests:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           post-steps:
@@ -11462,7 +11502,7 @@ workflows:
       - auth_6-amplify_e2e_tests:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           post-steps:
@@ -11488,7 +11528,7 @@ workflows:
       - function_6-amplify_e2e_tests:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           post-steps:
@@ -11514,7 +11554,7 @@ workflows:
       - import_dynamodb_2-amplify_e2e_tests:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           post-steps:
@@ -11540,7 +11580,7 @@ workflows:
       - migration-node-function-amplify_e2e_tests:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           post-steps:
@@ -11566,7 +11606,7 @@ workflows:
       - schema-iterative-update-locking-amplify_e2e_tests:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           post-steps:
@@ -11592,7 +11632,7 @@ workflows:
       - amplify-configure-amplify_e2e_tests:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           post-steps:
@@ -11618,7 +11658,7 @@ workflows:
       - interactions-amplify_e2e_tests:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           post-steps:
@@ -11644,7 +11684,7 @@ workflows:
       - schema-predictions-amplify_e2e_tests:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           post-steps:
@@ -11670,7 +11710,7 @@ workflows:
       - predictions-amplify_e2e_tests:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           post-steps:
@@ -11696,7 +11736,7 @@ workflows:
       - auth_1-amplify_e2e_tests:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           post-steps:
@@ -11722,7 +11762,7 @@ workflows:
       - auth_3-amplify_e2e_tests:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           post-steps:
@@ -11748,7 +11788,7 @@ workflows:
       - api_3-amplify_e2e_tests:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           post-steps:
@@ -11774,7 +11814,7 @@ workflows:
       - env-amplify_e2e_tests:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           post-steps:
@@ -11800,7 +11840,7 @@ workflows:
       - function_4-amplify_e2e_tests:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           post-steps:
@@ -11826,7 +11866,7 @@ workflows:
       - api_1-amplify_e2e_tests:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           post-steps:
@@ -11852,7 +11892,7 @@ workflows:
       - auth_7-amplify_e2e_tests:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           post-steps:
@@ -11878,7 +11918,7 @@ workflows:
       - function_7-amplify_e2e_tests:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           post-steps:
@@ -11904,7 +11944,7 @@ workflows:
       - import_s3_2-amplify_e2e_tests:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           post-steps:
@@ -11930,7 +11970,7 @@ workflows:
       - pull-amplify_e2e_tests:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           post-steps:
@@ -11956,7 +11996,7 @@ workflows:
       - storage-1-amplify_e2e_tests:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           post-steps:
@@ -11982,7 +12022,7 @@ workflows:
       - init-amplify_e2e_tests:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           post-steps:
@@ -12008,7 +12048,7 @@ workflows:
       - amplify-app-amplify_e2e_tests:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           post-steps:
@@ -12034,7 +12074,7 @@ workflows:
       - hostingPROD-amplify_e2e_tests:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           post-steps:
@@ -12060,7 +12100,7 @@ workflows:
       - auth_5-amplify_e2e_tests:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           post-steps:
@@ -12086,7 +12126,7 @@ workflows:
       - migration-api-key-migration1-amplify_e2e_tests:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           post-steps:
@@ -12112,7 +12152,7 @@ workflows:
       - import_auth_1-amplify_e2e_tests:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           post-steps:
@@ -12138,7 +12178,7 @@ workflows:
       - auth_2-amplify_e2e_tests:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           post-steps:
@@ -12164,7 +12204,7 @@ workflows:
       - schema-model-amplify_e2e_tests:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           post-steps:
@@ -12190,7 +12230,7 @@ workflows:
       - schema-auth-5-amplify_e2e_tests:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           post-steps:
@@ -12216,7 +12256,7 @@ workflows:
       - auth_8-amplify_e2e_tests:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           post-steps:
@@ -12242,7 +12282,7 @@ workflows:
       - function_8-amplify_e2e_tests:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           post-steps:
@@ -12268,7 +12308,7 @@ workflows:
       - layer-1-amplify_e2e_tests:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           post-steps:
@@ -12294,7 +12334,7 @@ workflows:
       - s3-sse-amplify_e2e_tests:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           post-steps:
@@ -12320,7 +12360,7 @@ workflows:
       - storage-2-amplify_e2e_tests:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           post-steps:
@@ -12346,7 +12386,7 @@ workflows:
       - tags-amplify_e2e_tests:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           post-steps:
@@ -12372,7 +12412,7 @@ workflows:
       - hosting-amplify_e2e_tests:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           post-steps:
@@ -12398,7 +12438,7 @@ workflows:
       - function_3-amplify_e2e_tests:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           post-steps:
@@ -12424,7 +12464,7 @@ workflows:
       - auth_4-amplify_e2e_tests:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           post-steps:
@@ -12450,7 +12490,7 @@ workflows:
       - import_auth_2-amplify_e2e_tests:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           post-steps:
@@ -12476,7 +12516,7 @@ workflows:
       - schema-auth-9-amplify_e2e_tests:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           post-steps:
@@ -12502,7 +12542,7 @@ workflows:
       - migration-api-connection-migration-amplify_e2e_tests:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           post-steps:
@@ -12528,7 +12568,7 @@ workflows:
       - api_2-amplify_e2e_tests:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           post-steps:
@@ -12554,7 +12594,7 @@ workflows:
       - configure-project-amplify_e2e_tests:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           post-steps:
@@ -12580,7 +12620,7 @@ workflows:
       - function_9-amplify_e2e_tests:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           post-steps:
@@ -12606,7 +12646,7 @@ workflows:
       - layer-2-amplify_e2e_tests:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           post-steps:
@@ -12632,7 +12672,7 @@ workflows:
       - schema-auth-12-amplify_e2e_tests:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           post-steps:
@@ -12658,7 +12698,7 @@ workflows:
       - storage-3-amplify_e2e_tests:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           post-steps:
@@ -12684,7 +12724,7 @@ workflows:
       - notifications-amplify_e2e_tests:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           post-steps:
@@ -12710,7 +12750,7 @@ workflows:
       - analytics-amplify_e2e_tests:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           post-steps:
@@ -12736,7 +12776,7 @@ workflows:
       - schema-iterative-update-1-amplify_e2e_tests:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           post-steps:
@@ -12762,7 +12802,7 @@ workflows:
       - schema-auth-7-amplify_e2e_tests:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           post-steps:
@@ -12788,7 +12828,7 @@ workflows:
       - import_s3_1-amplify_e2e_tests:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           post-steps:
@@ -12814,7 +12854,7 @@ workflows:
       - schema-auth-11-amplify_e2e_tests:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           post-steps:
@@ -12840,7 +12880,7 @@ workflows:
       - schema-connection-amplify_e2e_tests:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           post-steps:
@@ -12866,7 +12906,7 @@ workflows:
       - api_5-amplify_e2e_tests:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           post-steps:
@@ -12892,7 +12932,7 @@ workflows:
       - container-hosting-amplify_e2e_tests:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           post-steps:
@@ -12918,7 +12958,7 @@ workflows:
       - hooks-amplify_e2e_tests:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           post-steps:
@@ -12944,7 +12984,7 @@ workflows:
       - layer-3-amplify_e2e_tests:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           post-steps:
@@ -12970,7 +13010,7 @@ workflows:
       - schema-auth-13-amplify_e2e_tests:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           post-steps:
@@ -12996,7 +13036,7 @@ workflows:
       - plugin-amplify_e2e_tests:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           post-steps:
@@ -13022,7 +13062,7 @@ workflows:
       - schema-versioned-amplify_e2e_tests:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           post-steps:
@@ -13048,7 +13088,7 @@ workflows:
       - feature-flags-amplify_e2e_tests:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           post-steps:
@@ -13074,7 +13114,7 @@ workflows:
       - geo-add-amplify_e2e_tests:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           post-steps:
@@ -13100,7 +13140,7 @@ workflows:
       - schema-auth-3-amplify_e2e_tests:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           post-steps:
@@ -13126,7 +13166,7 @@ workflows:
       - schema-auth-8-amplify_e2e_tests:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           post-steps:
@@ -13152,7 +13192,7 @@ workflows:
       - import_dynamodb_1-amplify_e2e_tests:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           post-steps:
@@ -13178,7 +13218,7 @@ workflows:
       - migration-api-key-migration2-amplify_e2e_tests:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           post-steps:
@@ -13204,7 +13244,7 @@ workflows:
       - schema-auth-6-amplify_e2e_tests:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           post-steps:
@@ -13230,7 +13270,7 @@ workflows:
       - schema-iterative-update-4-amplify_e2e_tests:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           post-steps:
@@ -13256,7 +13296,7 @@ workflows:
       - frontend_config_drift-amplify_e2e_tests:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           post-steps:
@@ -13282,7 +13322,7 @@ workflows:
       - iam-permissions-boundary-amplify_e2e_tests:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           post-steps:
@@ -13308,7 +13348,7 @@ workflows:
       - layer-4-amplify_e2e_tests:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           post-steps:
@@ -13334,7 +13374,7 @@ workflows:
       - schema-function-1-amplify_e2e_tests:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           post-steps:
@@ -13360,7 +13400,7 @@ workflows:
       - init-special-case-amplify_e2e_tests:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           post-steps:
@@ -13386,7 +13426,7 @@ workflows:
       - schema-data-access-patterns-amplify_e2e_tests:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           post-steps:
@@ -13412,7 +13452,7 @@ workflows:
       - schema-iterative-update-2-amplify_e2e_tests:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           post-steps:
@@ -13438,7 +13478,7 @@ workflows:
       - geo-update-amplify_e2e_tests:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           post-steps:
@@ -13464,7 +13504,7 @@ workflows:
       - schema-auth-10-amplify_e2e_tests:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           post-steps:
@@ -13490,7 +13530,7 @@ workflows:
       - delete-amplify_e2e_tests:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           post-steps:
@@ -13516,7 +13556,7 @@ workflows:
       - schema-searchable-amplify_e2e_tests:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           post-steps:
@@ -13542,7 +13582,7 @@ workflows:
       - schema-iterative-rollback-1-amplify_e2e_tests:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           post-steps:
@@ -13568,7 +13608,7 @@ workflows:
       - function_1-amplify_e2e_tests:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           post-steps:
@@ -13594,7 +13634,7 @@ workflows:
       - schema-iterative-update-3-amplify_e2e_tests:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           post-steps:
@@ -13620,7 +13660,7 @@ workflows:
       - api_4-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           filters:
@@ -13638,7 +13678,7 @@ workflows:
       - function_5-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           filters:
@@ -13656,7 +13696,7 @@ workflows:
       - import_auth_3-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           filters:
@@ -13674,7 +13714,7 @@ workflows:
       - migration-api-connection-migration2-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           filters:
@@ -13692,7 +13732,7 @@ workflows:
       - schema-function-2-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           filters:
@@ -13710,7 +13750,7 @@ workflows:
       - datastore-modelgen-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           filters:
@@ -13728,7 +13768,7 @@ workflows:
       - containers-api-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           filters:
@@ -13746,7 +13786,7 @@ workflows:
       - geo-remove-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           filters:
@@ -13764,7 +13804,7 @@ workflows:
       - schema-key-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           filters:
@@ -13782,7 +13822,7 @@ workflows:
       - function_2-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           filters:
@@ -13800,7 +13840,7 @@ workflows:
       - schema-auth-4-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           filters:
@@ -13818,7 +13858,7 @@ workflows:
       - schema-iterative-rollback-2-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           filters:
@@ -13836,7 +13876,7 @@ workflows:
       - schema-auth-1-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           filters:
@@ -13854,7 +13894,7 @@ workflows:
       - schema-auth-2-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           filters:
@@ -13872,7 +13912,7 @@ workflows:
       - auth_6-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           filters:
@@ -13890,7 +13930,7 @@ workflows:
       - function_6-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           filters:
@@ -13908,7 +13948,7 @@ workflows:
       - import_dynamodb_2-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           filters:
@@ -13926,7 +13966,7 @@ workflows:
       - migration-node-function-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           filters:
@@ -13944,7 +13984,7 @@ workflows:
       - schema-iterative-update-locking-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           filters:
@@ -13962,7 +14002,7 @@ workflows:
       - amplify-configure-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           filters:
@@ -13981,7 +14021,7 @@ workflows:
       - interactions-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           filters:
@@ -13999,7 +14039,7 @@ workflows:
       - schema-predictions-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           filters:
@@ -14017,7 +14057,7 @@ workflows:
       - predictions-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           filters:
@@ -14035,7 +14075,7 @@ workflows:
       - auth_1-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           filters:
@@ -14053,7 +14093,7 @@ workflows:
       - auth_3-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           filters:
@@ -14071,7 +14111,7 @@ workflows:
       - api_3-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           filters:
@@ -14089,7 +14129,7 @@ workflows:
       - env-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           filters:
@@ -14107,7 +14147,7 @@ workflows:
       - function_4-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           filters:
@@ -14125,7 +14165,7 @@ workflows:
       - api_1-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           filters:
@@ -14143,7 +14183,7 @@ workflows:
       - auth_7-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           filters:
@@ -14161,7 +14201,7 @@ workflows:
       - function_7-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           filters:
@@ -14179,7 +14219,7 @@ workflows:
       - import_s3_2-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           filters:
@@ -14197,7 +14237,7 @@ workflows:
       - pull-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           filters:
@@ -14215,7 +14255,7 @@ workflows:
       - storage-1-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           filters:
@@ -14233,7 +14273,7 @@ workflows:
       - init-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           filters:
@@ -14251,7 +14291,7 @@ workflows:
       - amplify-app-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           filters:
@@ -14269,7 +14309,7 @@ workflows:
       - hostingPROD-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           filters:
@@ -14287,7 +14327,7 @@ workflows:
       - auth_5-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           filters:
@@ -14305,7 +14345,7 @@ workflows:
       - migration-api-key-migration1-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           filters:
@@ -14323,7 +14363,7 @@ workflows:
       - import_auth_1-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           filters:
@@ -14341,7 +14381,7 @@ workflows:
       - auth_2-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           filters:
@@ -14359,7 +14399,7 @@ workflows:
       - schema-model-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           filters:
@@ -14377,7 +14417,7 @@ workflows:
       - schema-auth-5-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           filters:
@@ -14395,7 +14435,7 @@ workflows:
       - auth_8-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           filters:
@@ -14413,7 +14453,7 @@ workflows:
       - function_8-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           filters:
@@ -14431,7 +14471,7 @@ workflows:
       - layer-1-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           filters:
@@ -14449,7 +14489,7 @@ workflows:
       - s3-sse-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           filters:
@@ -14467,7 +14507,7 @@ workflows:
       - storage-2-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           filters:
@@ -14485,7 +14525,7 @@ workflows:
       - tags-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           filters:
@@ -14503,7 +14543,7 @@ workflows:
       - hosting-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           filters:
@@ -14521,7 +14561,7 @@ workflows:
       - function_3-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           filters:
@@ -14539,7 +14579,7 @@ workflows:
       - auth_4-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           filters:
@@ -14557,7 +14597,7 @@ workflows:
       - import_auth_2-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           filters:
@@ -14575,7 +14615,7 @@ workflows:
       - schema-auth-9-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           filters:
@@ -14593,7 +14633,7 @@ workflows:
       - migration-api-connection-migration-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           filters:
@@ -14611,7 +14651,7 @@ workflows:
       - api_2-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           filters:
@@ -14629,7 +14669,7 @@ workflows:
       - configure-project-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           filters:
@@ -14648,7 +14688,7 @@ workflows:
       - function_9-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           filters:
@@ -14666,7 +14706,7 @@ workflows:
       - layer-2-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           filters:
@@ -14684,7 +14724,7 @@ workflows:
       - schema-auth-12-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           filters:
@@ -14702,7 +14742,7 @@ workflows:
       - storage-3-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           filters:
@@ -14720,7 +14760,7 @@ workflows:
       - notifications-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           filters:
@@ -14738,7 +14778,7 @@ workflows:
       - analytics-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           filters:
@@ -14756,7 +14796,7 @@ workflows:
       - schema-iterative-update-1-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           filters:
@@ -14774,7 +14814,7 @@ workflows:
       - schema-auth-7-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           filters:
@@ -14792,7 +14832,7 @@ workflows:
       - import_s3_1-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           filters:
@@ -14810,7 +14850,7 @@ workflows:
       - schema-auth-11-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           filters:
@@ -14828,7 +14868,7 @@ workflows:
       - schema-connection-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           filters:
@@ -14846,7 +14886,7 @@ workflows:
       - api_5-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           filters:
@@ -14864,7 +14904,7 @@ workflows:
       - container-hosting-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           filters:
@@ -14883,7 +14923,7 @@ workflows:
       - hooks-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           filters:
@@ -14901,7 +14941,7 @@ workflows:
       - layer-3-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           filters:
@@ -14919,7 +14959,7 @@ workflows:
       - schema-auth-13-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           filters:
@@ -14937,7 +14977,7 @@ workflows:
       - plugin-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           filters:
@@ -14956,7 +14996,7 @@ workflows:
       - schema-versioned-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           filters:
@@ -14974,7 +15014,7 @@ workflows:
       - feature-flags-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           filters:
@@ -14992,7 +15032,7 @@ workflows:
       - geo-add-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           filters:
@@ -15010,7 +15050,7 @@ workflows:
       - schema-auth-3-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           filters:
@@ -15028,7 +15068,7 @@ workflows:
       - schema-auth-8-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           filters:
@@ -15046,7 +15086,7 @@ workflows:
       - import_dynamodb_1-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           filters:
@@ -15064,7 +15104,7 @@ workflows:
       - migration-api-key-migration2-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           filters:
@@ -15082,7 +15122,7 @@ workflows:
       - schema-auth-6-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           filters:
@@ -15100,7 +15140,7 @@ workflows:
       - schema-iterative-update-4-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           filters:
@@ -15118,7 +15158,7 @@ workflows:
       - frontend_config_drift-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           filters:
@@ -15136,7 +15176,7 @@ workflows:
       - iam-permissions-boundary-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           filters:
@@ -15154,7 +15194,7 @@ workflows:
       - layer-4-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           filters:
@@ -15172,7 +15212,7 @@ workflows:
       - schema-function-1-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           filters:
@@ -15190,7 +15230,7 @@ workflows:
       - init-special-case-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           filters:
@@ -15209,7 +15249,7 @@ workflows:
       - schema-data-access-patterns-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           filters:
@@ -15227,7 +15267,7 @@ workflows:
       - schema-iterative-update-2-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           filters:
@@ -15245,7 +15285,7 @@ workflows:
       - geo-update-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           filters:
@@ -15263,7 +15303,7 @@ workflows:
       - schema-auth-10-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           filters:
@@ -15281,7 +15321,7 @@ workflows:
       - delete-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           filters:
@@ -15299,7 +15339,7 @@ workflows:
       - schema-searchable-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           filters:
@@ -15317,7 +15357,7 @@ workflows:
       - schema-iterative-rollback-1-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           filters:
@@ -15335,7 +15375,7 @@ workflows:
       - function_1-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           filters:
@@ -15353,7 +15393,7 @@ workflows:
       - schema-iterative-update-3-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           filters:
@@ -16021,7 +16061,7 @@ commands:
         default: linux-e2e-executor
     steps:
       - run:
-          name: Scan E2E artifacts
+          name: Clean job resources
           command: |
             pwd
             cd packages/amplify-e2e-tests
