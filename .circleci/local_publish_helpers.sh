@@ -71,7 +71,7 @@ function useChildAccountCredentials {
     fi
 }
 
-retry() {
+function retry {
     MAX_ATTEMPTS=2
     SLEEP_DURATION=5
     n=0
@@ -136,5 +136,7 @@ function runE2eTest {
     setAwsAccountCredentials
     cd $(pwd)/packages/amplify-e2e-tests
     yarn run e2e --detectOpenHandles --maxWorkers=3 $TEST_SUITE
+    EXIT_CODE=$?
     unsetNpmRegistryUrl
+    return $EXIT_CODE
 }
