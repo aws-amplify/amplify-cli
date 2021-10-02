@@ -1,8 +1,8 @@
 import * as path from 'path';
 import * as fs from 'fs-extra';
 import uuid from 'uuid';
-import { printer } from 'amplify-prompts';
-import { $TSContext, AmplifyCategories, pathManager, ResourceDoesNotExistError, exitOnNextTick } from 'amplify-cli-core';
+import { alphanumeric, printer, prompter, Validator } from 'amplify-prompts';
+import { $TSContext, AmplifyCategories, ResourceDoesNotExistError, exitOnNextTick } from 'amplify-cli-core';
 import { DynamoDBInputState } from './dynamoDB-input-state';
 import {
   DynamoDBAttributeDefType,
@@ -11,7 +11,7 @@ import {
   DynamoDBCLIInputsKeyType,
 } from '../service-walkthrough-types/dynamoDB-user-input-types';
 import { DDBStackTransform } from '../cdk-stack-builder/ddb-stack-transform';
-const inquirer = require('inquirer');
+
 // keep in sync with ServiceName in amplify-AmplifyCategories.STORAGE-function, but probably it will not change
 const FunctionServiceNameLambdaFunction = 'Lambda';
 const serviceName = 'DynamoDB';
@@ -27,10 +27,10 @@ async function addWalkthrough(context: $TSContext, defaultValuesFilename: string
   const { amplify } = context;
   const defaultValues = getAllDefaults(amplify.getProjectDetails());
 
-  const resourceName = await askResourceNameQuestion(context, defaultValues); // Cannot be changed once added
-  const tableName = await askTableNameQuestion(context, defaultValues, resourceName); // Cannot be changed once added
+  const resourceName = await askResourceNameQuestion(defaultValues); // Cannot be changed once added
+  const tableName = await askTableNameQuestion(defaultValues, resourceName); // Cannot be changed once added
 
-  const { attributeAnswers, indexableAttributeList } = await askAttributeListQuestion(context);
+  const { attributeAnswers, indexableAttributeList } = await askAttributeListQuestion();
 
   const partitionKey = await askPrimaryKeyQuestion(indexableAttributeList, attributeAnswers); // Cannot be changed once added
 
@@ -40,9 +40,9 @@ async function addWalkthrough(context: $TSContext, defaultValuesFilename: string
     partitionKey,
   };
 
-  cliInputs.sortKey = await askSortKeyQuestion(context, indexableAttributeList, attributeAnswers, cliInputs.partitionKey.fieldName);
+  cliInputs.sortKey = await askSortKeyQuestion(indexableAttributeList, attributeAnswers, cliInputs.partitionKey.fieldName);
 
-  cliInputs.gsi = await askGSIQuestion(context, indexableAttributeList, attributeAnswers);
+  cliInputs.gsi = await askGSIQuestion(indexableAttributeList, attributeAnswers);
 
   cliInputs.triggerFunctions = await askTriggersQuestion(context, cliInputs.resourceName);
 
@@ -82,27 +82,15 @@ async function updateWalkthrough(context: $TSContext) {
   }
 
   const resources = Object.keys(dynamoDbResources);
-  const question = [
-    {
-      name: 'resourceName',
-      message: 'Specify the resource that you would want to update',
-      type: 'list',
-      choices: resources,
-    },
-  ];
-
-  const answer = await inquirer.prompt(question);
+  const resourceName = await prompter.pick('Specify the resource that you would want to update', resources);
 
   // Check if we need to migrate to cli-inputs.json
-  const cliInputsState = new DynamoDBInputState(answer.resourceName);
+  const cliInputsState = new DynamoDBInputState(resourceName);
 
   if (!cliInputsState.cliInputFileExists()) {
-    if (
-      context.exeInfo?.forcePush ||
-      (await amplify.confirmPrompt('File migration required to continue. Do you want to continue?', true))
-    ) {
+    if (context.exeInfo?.forcePush || (await prompter.yesOrNo('File migration required to continue. Do you want to continue?', true))) {
       cliInputsState.migrate();
-      const stackGenerator = new DDBStackTransform(answer.resourceName);
+      const stackGenerator = new DDBStackTransform(resourceName);
       stackGenerator.transform();
     } else {
       return;
@@ -134,9 +122,9 @@ async function updateWalkthrough(context: $TSContext) {
     throw new Error('resourceName not found in cli-inputs');
   }
 
-  const { attributeAnswers, indexableAttributeList } = await askAttributeListQuestion(context, existingAttributeDefinitions);
+  const { attributeAnswers, indexableAttributeList } = await askAttributeListQuestion(existingAttributeDefinitions);
 
-  cliInputs.gsi = await askGSIQuestion(context, indexableAttributeList, attributeAnswers, cliInputs.gsi);
+  cliInputs.gsi = await askGSIQuestion(indexableAttributeList, attributeAnswers, cliInputs.gsi);
   cliInputs.triggerFunctions = await askTriggersQuestion(context, cliInputs.resourceName, cliInputs.triggerFunctions);
 
   cliInputsState.saveCliInputPayload(cliInputs);
@@ -148,11 +136,10 @@ async function updateWalkthrough(context: $TSContext) {
 }
 
 async function askTriggersQuestion(context: $TSContext, resourceName: string, existingTriggerFunctions?: string[]): Promise<string[]> {
-  const { amplify } = context;
   let triggerFunctions: string[] = existingTriggerFunctions || [];
 
   if (!existingTriggerFunctions || existingTriggerFunctions.length === 0) {
-    if (await amplify.confirmPrompt('Do you want to add a Lambda Trigger for your Table?', false)) {
+    if (await prompter.confirmContinue('Do you want to add a Lambda Trigger for your Table?')) {
       let triggerName;
       try {
         // @ts-expect-error ts-migrate(2554) FIXME: Expected 3 arguments, but got 2.
@@ -163,19 +150,17 @@ async function askTriggersQuestion(context: $TSContext, resourceName: string, ex
       }
     }
   } else {
-    const triggerOperationQuestion = {
-      type: 'list',
-      name: 'triggerOperation',
-      message: 'Select from the following options',
-      choices: ['Add a Trigger', 'Remove a trigger', 'Skip Question'],
-    };
     let triggerName;
     let continueWithTriggerOperationQuestion = true;
 
     while (continueWithTriggerOperationQuestion) {
-      const triggerOperationAnswer = await inquirer.prompt([triggerOperationQuestion]);
+      const triggerOperationAnswer = await prompter.pick('Select from the following options', [
+        'Add a Trigger',
+        'Remove a trigger',
+        `I'm done`,
+      ]);
 
-      switch (triggerOperationAnswer.triggerOperation) {
+      switch (triggerOperationAnswer) {
         case 'Add a Trigger': {
           try {
             triggerName = await addTrigger(context, resourceName, triggerFunctions);
@@ -210,12 +195,12 @@ async function askTriggersQuestion(context: $TSContext, resourceName: string, ex
 
           break;
         }
-        case 'Skip Question': {
+        case `I'm done`: {
           continueWithTriggerOperationQuestion = false;
           break;
         }
         default:
-          printer.error(`${triggerOperationAnswer.triggerOperation} not supported`);
+          printer.error(`${triggerOperationAnswer} not supported`);
       }
     }
   }
@@ -223,7 +208,6 @@ async function askTriggersQuestion(context: $TSContext, resourceName: string, ex
 }
 
 async function askGSIQuestion(
-  context: $TSContext,
   indexableAttributeList: string[],
   attributeDefinitions: DynamoDBAttributeDefType[],
   existingGSIList?: DynamoDBCLIInputsGSIType[],
@@ -238,85 +222,63 @@ async function askGSIQuestion(
   );
   printer.blankLine();
 
-  const { amplify } = context;
   let gsiList: DynamoDBCLIInputsGSIType[] = [];
 
   if (
     existingGSIList &&
     !!existingGSIList.length &&
-    (await amplify.confirmPrompt('Do you want to keep existing global seconday indexes created on your table?'))
+    (await prompter.yesOrNo('Do you want to keep existing global seconday indexes created on your table?', true))
   ) {
     gsiList = existingGSIList;
   }
 
-  if (await amplify.confirmPrompt('Do you want to add global secondary indexes to your table?')) {
+  if (await prompter.confirmContinue('Do you want to add global secondary indexes to your table?')) {
     let continuewithGSIQuestions = true;
 
     while (continuewithGSIQuestions) {
       if (indexableAttributeList.length > 0) {
-        const gsiAttributeQuestion = {
-          type: 'input',
-          name: 'gsiName',
-          message: 'Please provide the GSI name:',
-          validate: amplify.inputValidation({
-            validation: {
-              operator: 'regex',
-              value: '^[a-zA-Z0-9_-]+$',
-              onErrorMsg: 'You can use the following characters: a-z A-Z 0-9 - _',
-            },
-          }),
-        };
-        const gsiPrimaryKeyQuestion = {
-          type: 'list',
-          name: 'gsiPartitionKey',
-          message: 'Please choose partition key for the GSI:',
-          choices: [...new Set(indexableAttributeList)],
-        };
+        const gsiNameValidator =
+          (message: string): Validator =>
+          (input: string) =>
+            /^[a-zA-Z0-9_-]+$/.test(input) ? true : message;
 
-        /*eslint-disable*/
-        const gsiPrimaryAnswer = await inquirer.prompt([gsiAttributeQuestion, gsiPrimaryKeyQuestion]);
+        const gsiName = await prompter.input('Provide the GSI name', {
+          validate: gsiNameValidator('You can use the following characters: a-z A-Z 0-9 - _'),
+        });
 
-        const gsiPrimaryKeyName = gsiPrimaryAnswer['gsiPartitionKey'];
+        const gsiPartitionKeyName = await prompter.pick('Choose partition key for the GSI', [...new Set(indexableAttributeList)]);
+
         const gsiPrimaryKeyIndex = attributeDefinitions.findIndex(
-          (attr: DynamoDBAttributeDefType) => attr.AttributeName === gsiPrimaryKeyName,
+          (attr: DynamoDBAttributeDefType) => attr.AttributeName === gsiPartitionKeyName,
         );
 
         /* eslint-enable */
         let gsiItem: DynamoDBCLIInputsGSIType = {
-          name: gsiPrimaryAnswer['gsiName'],
+          name: gsiName,
           partitionKey: {
-            fieldName: gsiPrimaryKeyName,
+            fieldName: gsiPartitionKeyName,
             fieldType: attributeDefinitions[gsiPrimaryKeyIndex].AttributeType,
           },
         };
 
-        const sortKeyOptions = indexableAttributeList.filter((att: string) => att !== gsiPrimaryKeyName);
+        const sortKeyOptions = indexableAttributeList.filter((att: string) => att !== gsiPartitionKeyName);
 
         if (sortKeyOptions.length > 0) {
-          if (await amplify.confirmPrompt('Do you want to add a sort key to your global secondary index?')) {
-            const sortKeyQuestion = {
-              type: 'list',
-              name: 'gsiSortKey',
-              message: 'Please choose sort key for the GSI:',
-              choices: [...new Set(sortKeyOptions)],
-            };
-
-            const sortKeyAnswer = await inquirer.prompt([sortKeyQuestion]);
-
-            const gsiSortKeyName = sortKeyAnswer['gsiSortKey'];
+          if (await prompter.confirmContinue('Do you want to add a sort key to your global secondary index?')) {
+            const gsiSortKeyName = await prompter.pick('Choose sort key for the GSI', [...new Set(sortKeyOptions)]);
             const gsiSortKeyIndex = attributeDefinitions.findIndex(
               (attr: DynamoDBAttributeDefType) => attr.AttributeName === gsiSortKeyName,
             );
 
             gsiItem.sortKey = {
-              fieldName: sortKeyAnswer['gsiSortKey'],
+              fieldName: gsiSortKeyName,
               fieldType: attributeDefinitions[gsiSortKeyIndex].AttributeType,
             };
           }
         }
 
         gsiList.push(gsiItem);
-        continuewithGSIQuestions = await amplify.confirmPrompt('Do you want to add more global secondary indexes to your table?');
+        continuewithGSIQuestions = await prompter.confirmContinue('Do you want to add more global secondary indexes to your table?');
       } else {
         printer.error('You do not have any other attributes remaining to configure');
         break;
@@ -327,26 +289,17 @@ async function askGSIQuestion(
 }
 
 async function askSortKeyQuestion(
-  context: $TSContext,
   indexableAttributeList: string[],
   attributeDefinitions: DynamoDBAttributeDefType[],
   partitionKeyFieldName: string,
 ): Promise<undefined | DynamoDBCLIInputsKeyType> {
-  const { amplify } = context;
-
-  if (await amplify.confirmPrompt('Do you want to add a sort key to your table?')) {
+  if (await prompter.confirmContinue('Do you want to add a sort key to your table?')) {
     // Ask for sort key
     if (attributeDefinitions.length > 1) {
-      const sortKeyQuestion = {
-        type: 'list',
-        name: 'sortKey',
-        message: 'Please choose sort key for the table:',
-        choices: indexableAttributeList.filter((att: string) => att !== partitionKeyFieldName),
-      };
-
-      const sortKeyAnswer = await inquirer.prompt([sortKeyQuestion]);
-
-      const sortKeyName = sortKeyAnswer['sortKey'];
+      const sortKeyName = await prompter.pick(
+        'Choose sort key for the table',
+        indexableAttributeList.filter((att: string) => att !== partitionKeyFieldName),
+      );
       const sortKeyAttrTypeIndex = attributeDefinitions.findIndex((attr: DynamoDBAttributeDefType) => attr.AttributeName === sortKeyName);
 
       return {
@@ -372,16 +325,7 @@ async function askPrimaryKeyQuestion(indexableAttributeList: string[], attribute
   );
   printer.blankLine();
 
-  const primaryKeyQuestion = {
-    type: 'list',
-    name: 'partitionKey',
-    message: 'Please choose partition key for the table:',
-    choices: indexableAttributeList,
-  };
-
-  const partitionKeyAnswer = await inquirer.prompt([primaryKeyQuestion]);
-
-  const partitionKeyName = partitionKeyAnswer['partitionKey'];
+  const partitionKeyName = await prompter.pick('Choose partition key for the table', indexableAttributeList);
   const primaryAttrTypeIndex = attributeDefinitions.findIndex((attr: DynamoDBAttributeDefType) => attr.AttributeName === partitionKeyName);
 
   return {
@@ -390,7 +334,7 @@ async function askPrimaryKeyQuestion(indexableAttributeList: string[], attribute
   };
 }
 
-async function askAttributeListQuestion(context: $TSContext, existingAttributeDefinitions?: DynamoDBCLIInputsKeyType[]) {
+async function askAttributeListQuestion(existingAttributeDefinitions?: DynamoDBCLIInputsKeyType[]) {
   const attributeTypes = {
     string: { code: 'string', indexable: true },
     number: { code: 'number', indexable: true },
@@ -407,29 +351,6 @@ async function askAttributeListQuestion(context: $TSContext, existingAttributeDe
   printer.blankLine();
   printer.info('You can now add columns to the table.');
   printer.blankLine();
-
-  const QUESTION_KEY = 'attribute';
-  const { amplify } = context;
-
-  const attributeQuestion = {
-    type: 'input',
-    name: QUESTION_KEY,
-    message: 'What would you like to name this column:',
-    validate: amplify.inputValidation({
-      validation: {
-        operator: 'regex',
-        value: '^[a-zA-Z0-9_-]+$',
-        onErrorMsg: "'You can use the following characters: a-z A-Z 0-9 - _'",
-      },
-    }),
-  };
-
-  const attributeTypeQuestion = {
-    type: 'list',
-    name: 'attributeType',
-    message: 'Please choose the data type:',
-    choices: Object.keys(attributeTypes),
-  };
 
   let continueAttributeQuestion = true;
   let attributeAnswers: DynamoDBAttributeDefType[] = [];
@@ -448,99 +369,72 @@ async function askAttributeListQuestion(context: $TSContext, existingAttributeDe
   if (existingAttributes.length > 0) {
     attributeAnswers = existingAttributes;
     indexableAttributeList = attributeAnswers.map((attr: DynamoDBAttributeDefType) => attr.AttributeName);
-    continueAttributeQuestion = await amplify.confirmPrompt('Would you like to add another column?');
+    continueAttributeQuestion = await prompter.confirmContinue('Would you like to add another column?');
   }
 
   while (continueAttributeQuestion) {
-    const attributeAnswer = await inquirer.prompt([attributeQuestion, attributeTypeQuestion]);
+    const attributeNameValidator =
+      (message: string): Validator =>
+      (input: string) =>
+        /^[a-zA-Z0-9_-]+$/.test(input) ? true : message;
 
-    if (
-      attributeAnswers.findIndex((attribute: DynamoDBAttributeDefType) => attribute.AttributeName === attributeAnswer[QUESTION_KEY]) !== -1
-    ) {
-      continueAttributeQuestion = await amplify.confirmPrompt('This attribute was already added. Do you want to add another attribute?');
+    const attributeName = await prompter.input('What would you like to name this column', {
+      validate: attributeNameValidator('You can use the following characters: a-z A-Z 0-9 - _'),
+    });
+
+    const attributeType = await prompter.pick('Choose the data type', Object.keys(attributeTypes));
+
+    if (attributeAnswers.findIndex((attribute: DynamoDBAttributeDefType) => attribute.AttributeName === attributeName) !== -1) {
+      continueAttributeQuestion = await prompter.confirmContinue('This attribute was already added. Do you want to add another attribute?');
       continue;
     }
 
     attributeAnswers.push({
-      AttributeName: attributeAnswer[QUESTION_KEY],
+      AttributeName: attributeName,
       // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-      AttributeType: attributeTypes[attributeAnswer['attributeType']].code,
+      AttributeType: attributeTypes[attributeType].code,
     });
 
     // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-    if (attributeTypes[attributeAnswer['attributeType']].indexable) {
-      indexableAttributeList.push(attributeAnswer[QUESTION_KEY]);
+    if (attributeTypes[attributeType].indexable) {
+      indexableAttributeList.push(attributeName);
     }
 
-    continueAttributeQuestion = await amplify.confirmPrompt('Would you like to add another column?');
+    continueAttributeQuestion = await prompter.confirmContinue('Would you like to add another column?');
   }
 
   return { attributeAnswers, indexableAttributeList };
 }
 
-async function askTableNameQuestion(context: $TSContext, defaultValues: any, resourceName: string) {
-  const { amplify } = context;
+async function askTableNameQuestion(defaultValues: any, resourceName: string) {
+  const tableNameValidator =
+    (message: string): Validator =>
+    (input: string) =>
+      /^[a-zA-Z0-9._-]+$/.test(input) ? true : message;
 
-  const question = [
-    {
-      type: 'input',
-      name: 'tableName',
-      message: 'Please provide table name:',
-      validate: amplify.inputValidation({
-        validation: {
-          operator: 'regex',
-          value: '^[a-zA-Z0-9._-]+$',
-          onErrorMsg: 'You can use the following characters: a-z A-Z 0-9 . - _',
-        },
-      }),
-      default: (answers: any) => {
-        const defaultValue = defaultValues['tableName'];
-        return resourceName || defaultValue;
-      },
-    },
-  ];
+  const tableName = await prompter.input('Provide table name:', {
+    validate: tableNameValidator('You can use the following characters: a-z A-Z 0-9 . - _'),
+    initial: resourceName || defaultValues['tableName'],
+  });
 
-  const answer = await inquirer.prompt(question);
-
-  return answer.tableName;
+  return tableName;
 }
 
-async function askResourceNameQuestion(context: $TSContext, defaultValues: any): Promise<string> {
-  const { amplify } = context;
-
-  const question = [
+async function askResourceNameQuestion(defaultValues: any): Promise<string> {
+  const resourceName = await prompter.input(
+    'Provide a friendly name for your resource that will be used to label this category in the project',
     {
-      type: 'input',
-      name: 'resourceName',
-      message: 'Please provide a friendly name for your resource that will be used to label this category in the project:',
-      validate: amplify.inputValidation({
-        validation: {
-          operator: 'regex',
-          value: '^[a-zA-Z0-9]+$',
-          onErrorMsg: 'Resource name should be alphanumeric',
-        },
-      }),
-      default: () => {
-        const defaultValue = defaultValues['resourceName'];
-        return defaultValue;
-      },
+      validate: alphanumeric(),
+      initial: defaultValues['resourceName'],
     },
-  ];
-  const answer = await inquirer.prompt(question);
-  return answer.resourceName;
+  );
+
+  return resourceName;
 }
 
 async function removeTrigger(context: $TSContext, resourceName: string, triggerList: string[]) {
-  const triggerOptionQuestion = {
-    type: 'list',
-    name: 'triggerOption',
-    message: 'Select from the function you would like to remove',
-    choices: triggerList,
-  };
+  const functionName = await prompter.pick('Select from the function you would like to remove', triggerList);
 
-  const triggerOptionAnswer = await inquirer.prompt([triggerOptionQuestion]);
-
-  const functionName = triggerOptionAnswer.triggerOption;
   const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
   const functionCFNFilePath = path.join(projectBackendDirPath, 'function', functionName, `${functionName}-cloudformation-template.json`);
 
@@ -560,16 +454,13 @@ async function removeTrigger(context: $TSContext, resourceName: string, triggerL
 }
 
 async function addTrigger(context: $TSContext, resourceName: string, triggerList: string[]) {
-  const triggerTypeQuestion = {
-    type: 'list',
-    name: 'triggerType',
-    message: 'Select from the following options',
-    choices: ['Choose an existing function from the project', 'Create a new function'],
-  };
-  const triggerTypeAnswer = await inquirer.prompt([triggerTypeQuestion]);
+  const triggerTypeAnswer = await prompter.pick('Select from the following options', [
+    'Choose an existing function from the project',
+    'Create a new function',
+  ]);
   let functionName;
 
-  if (triggerTypeAnswer.triggerType === 'Choose an existing function from the project') {
+  if (triggerTypeAnswer === 'Choose an existing function from the project') {
     let lambdaResources = await getLambdaFunctions(context);
 
     if (triggerList) {
@@ -588,16 +479,7 @@ async function addTrigger(context: $TSContext, resourceName: string, triggerList
       throw new Error("No functions were found in the project. Use 'amplify add function' to add a new function.");
     }
 
-    const triggerOptionQuestion = {
-      type: 'list',
-      name: 'triggerOption',
-      message: 'Select from the following options',
-      choices: lambdaResources,
-    };
-
-    const triggerOptionAnswer = await inquirer.prompt([triggerOptionQuestion]);
-
-    functionName = triggerOptionAnswer.triggerOption;
+    functionName = await prompter.pick('Select from the following options', lambdaResources);
   } else {
     // Create a new lambda trigger
 
@@ -751,7 +633,7 @@ async function addTrigger(context: $TSContext, resourceName: string, triggerList
     context.amplify.updateamplifyMetaAfterResourceUpdate('function', functionName, 'dependsOn', resourceDependsOn);
     printer.success(`Successfully updated resource ${functionName} locally`);
 
-    if (await context.amplify.confirmPrompt(`Do you want to edit the local ${functionName} lambda function now?`)) {
+    if (await prompter.confirmContinue(`Do you want to edit the local ${functionName} lambda function now?`)) {
       await context.amplify.openEditor(context, `${projectBackendDirPath}/function/${functionName}/src/index.js`);
     }
   } else {
