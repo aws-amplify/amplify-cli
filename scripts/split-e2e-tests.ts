@@ -448,6 +448,7 @@ function saveConfig(config: CircleCIConfig): void {
   const output = ['# auto generated file. Edit config.base.yaml if you want to change', yaml.dump(config, { noRefs: true })];
   fs.writeFileSync(configFile, output.join('\n'));
 }
+
 function verifyConfig() {
   try {
     execa.commandSync('which circleci');
