@@ -32,5 +32,5 @@ export function viewEnvInfo() {
 export function viewSummaryTable(resourceStateData) {
   const tableOptions = getSummaryTableData(resourceStateData);
   const { table } = print;
-  table(tableOptions, { format: 'lean' });
+  table(tableOptions);
 }
