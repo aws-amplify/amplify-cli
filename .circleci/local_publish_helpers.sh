@@ -79,6 +79,7 @@ function retry {
     until [ $n -ge $MAX_ATTEMPTS ]
     do
         echo "Attempting $@ with max retries $MAX_ATTEMPTS"
+        setAwsAccountCredentials
         "$@" && break
         n=$[$n+1]
         FIRST_RUN=false
@@ -142,6 +143,5 @@ function runE2eTest {
         amplify-app --version
         cd $(pwd)/packages/amplify-e2e-tests
     fi
-    setAwsAccountCredentials
     yarn run e2e --detectOpenHandles --maxWorkers=3 $TEST_SUITE
 }
