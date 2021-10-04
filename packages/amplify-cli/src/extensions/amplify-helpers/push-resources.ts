@@ -81,9 +81,11 @@ export async function pushResources(
         if (await isValidGraphQLAuthError(err.message)) {
           retryPush = await handleValidGraphQLAuthError(context, err.message);
         }
-        // Handle the errors and print them nicely for the user.
-        context.print.error(`\n${err.message}`);
-        throw err;
+        if(!retryPush) {
+          // Handle the errors and print them nicely for the user.
+          context.print.error(`\n${err.message}`);
+          throw err;
+        }
       }
     } while (retryPush);
   } else {
