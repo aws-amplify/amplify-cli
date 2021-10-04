@@ -109,6 +109,7 @@ beforeAll(async () => {
   const transformer = new GraphQLTransform({
     featureFlags,
     transformers: [new ModelTransformer(), new SearchableModelTransformer()],
+    sandboxModeEnabled: true,
   });
   try {
     await awsS3Client.createBucket({ Bucket: BUCKET_NAME }).promise();
