@@ -1,6 +1,6 @@
-const { v4: uuid } = require('uuid');
+import { v4  as  uuid } from 'uuid';
 
-const getAllDefaults = project => {
+const getAllDefaults = (project: any) => {
   const name = project.projectConfig.projectName.toLowerCase();
   const [shortId] = uuid().split('-');
   const defaults = {
