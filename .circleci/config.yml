@@ -245,7 +245,6 @@ jobs:
             source .circleci/local_publish_helpers.sh
             setAwsAccountCredentials
             cd packages/graphql-transformers-e2e-tests/
-            setAwsAccountCredentials
             retry yarn e2e --maxWorkers=3 $TEST_SUITE
           environment:
             AMPLIFY_CLI_DISABLE_LOGGING: 'true'
@@ -9569,7 +9568,6 @@ jobs:
             source .circleci/local_publish_helpers.sh
             setAwsAccountCredentials
             cd packages/graphql-transformers-e2e-tests/
-            setAwsAccountCredentials
             retry yarn e2e --maxWorkers=3 $TEST_SUITE
           environment:
             AMPLIFY_CLI_DISABLE_LOGGING: 'true'
@@ -9601,7 +9599,6 @@ jobs:
             source .circleci/local_publish_helpers.sh
             setAwsAccountCredentials
             cd packages/graphql-transformers-e2e-tests/
-            setAwsAccountCredentials
             retry yarn e2e --maxWorkers=3 $TEST_SUITE
           environment:
             AMPLIFY_CLI_DISABLE_LOGGING: 'true'
@@ -9633,7 +9630,6 @@ jobs:
             source .circleci/local_publish_helpers.sh
             setAwsAccountCredentials
             cd packages/graphql-transformers-e2e-tests/
-            setAwsAccountCredentials
             retry yarn e2e --maxWorkers=3 $TEST_SUITE
           environment:
             AMPLIFY_CLI_DISABLE_LOGGING: 'true'
@@ -9665,7 +9661,6 @@ jobs:
             source .circleci/local_publish_helpers.sh
             setAwsAccountCredentials
             cd packages/graphql-transformers-e2e-tests/
-            setAwsAccountCredentials
             retry yarn e2e --maxWorkers=3 $TEST_SUITE
           environment:
             AMPLIFY_CLI_DISABLE_LOGGING: 'true'
@@ -9697,7 +9692,6 @@ jobs:
             source .circleci/local_publish_helpers.sh
             setAwsAccountCredentials
             cd packages/graphql-transformers-e2e-tests/
-            setAwsAccountCredentials
             retry yarn e2e --maxWorkers=3 $TEST_SUITE
           environment:
             AMPLIFY_CLI_DISABLE_LOGGING: 'true'
@@ -9729,7 +9723,6 @@ jobs:
             source .circleci/local_publish_helpers.sh
             setAwsAccountCredentials
             cd packages/graphql-transformers-e2e-tests/
-            setAwsAccountCredentials
             retry yarn e2e --maxWorkers=3 $TEST_SUITE
           environment:
             AMPLIFY_CLI_DISABLE_LOGGING: 'true'
@@ -9761,7 +9754,6 @@ jobs:
             source .circleci/local_publish_helpers.sh
             setAwsAccountCredentials
             cd packages/graphql-transformers-e2e-tests/
-            setAwsAccountCredentials
             retry yarn e2e --maxWorkers=3 $TEST_SUITE
           environment:
             AMPLIFY_CLI_DISABLE_LOGGING: 'true'
@@ -9793,7 +9785,6 @@ jobs:
             source .circleci/local_publish_helpers.sh
             setAwsAccountCredentials
             cd packages/graphql-transformers-e2e-tests/
-            setAwsAccountCredentials
             retry yarn e2e --maxWorkers=3 $TEST_SUITE
           environment:
             AMPLIFY_CLI_DISABLE_LOGGING: 'true'
@@ -9825,7 +9816,6 @@ jobs:
             source .circleci/local_publish_helpers.sh
             setAwsAccountCredentials
             cd packages/graphql-transformers-e2e-tests/
-            setAwsAccountCredentials
             retry yarn e2e --maxWorkers=3 $TEST_SUITE
           environment:
             AMPLIFY_CLI_DISABLE_LOGGING: 'true'
@@ -9857,7 +9847,6 @@ jobs:
             source .circleci/local_publish_helpers.sh
             setAwsAccountCredentials
             cd packages/graphql-transformers-e2e-tests/
-            setAwsAccountCredentials
             retry yarn e2e --maxWorkers=3 $TEST_SUITE
           environment:
             AMPLIFY_CLI_DISABLE_LOGGING: 'true'
@@ -9889,7 +9878,6 @@ jobs:
             source .circleci/local_publish_helpers.sh
             setAwsAccountCredentials
             cd packages/graphql-transformers-e2e-tests/
-            setAwsAccountCredentials
             retry yarn e2e --maxWorkers=3 $TEST_SUITE
           environment:
             AMPLIFY_CLI_DISABLE_LOGGING: 'true'
@@ -9921,7 +9909,6 @@ jobs:
             source .circleci/local_publish_helpers.sh
             setAwsAccountCredentials
             cd packages/graphql-transformers-e2e-tests/
-            setAwsAccountCredentials
             retry yarn e2e --maxWorkers=3 $TEST_SUITE
           environment:
             AMPLIFY_CLI_DISABLE_LOGGING: 'true'
@@ -9953,7 +9940,6 @@ jobs:
             source .circleci/local_publish_helpers.sh
             setAwsAccountCredentials
             cd packages/graphql-transformers-e2e-tests/
-            setAwsAccountCredentials
             retry yarn e2e --maxWorkers=3 $TEST_SUITE
           environment:
             AMPLIFY_CLI_DISABLE_LOGGING: 'true'
@@ -9985,7 +9971,6 @@ jobs:
             source .circleci/local_publish_helpers.sh
             setAwsAccountCredentials
             cd packages/graphql-transformers-e2e-tests/
-            setAwsAccountCredentials
             retry yarn e2e --maxWorkers=3 $TEST_SUITE
           environment:
             AMPLIFY_CLI_DISABLE_LOGGING: 'true'
@@ -10017,7 +10002,6 @@ jobs:
             source .circleci/local_publish_helpers.sh
             setAwsAccountCredentials
             cd packages/graphql-transformers-e2e-tests/
-            setAwsAccountCredentials
             retry yarn e2e --maxWorkers=3 $TEST_SUITE
           environment:
             AMPLIFY_CLI_DISABLE_LOGGING: 'true'
@@ -10049,7 +10033,6 @@ jobs:
             source .circleci/local_publish_helpers.sh
             setAwsAccountCredentials
             cd packages/graphql-transformers-e2e-tests/
-            setAwsAccountCredentials
             retry yarn e2e --maxWorkers=3 $TEST_SUITE
           environment:
             AMPLIFY_CLI_DISABLE_LOGGING: 'true'
@@ -10081,7 +10064,6 @@ jobs:
             source .circleci/local_publish_helpers.sh
             setAwsAccountCredentials
             cd packages/graphql-transformers-e2e-tests/
-            setAwsAccountCredentials
             retry yarn e2e --maxWorkers=3 $TEST_SUITE
           environment:
             AMPLIFY_CLI_DISABLE_LOGGING: 'true'
@@ -10113,7 +10095,6 @@ jobs:
             source .circleci/local_publish_helpers.sh
             setAwsAccountCredentials
             cd packages/graphql-transformers-e2e-tests/
-            setAwsAccountCredentials
             retry yarn e2e --maxWorkers=3 $TEST_SUITE
           environment:
             AMPLIFY_CLI_DISABLE_LOGGING: 'true'
@@ -10145,7 +10126,6 @@ jobs:
             source .circleci/local_publish_helpers.sh
             setAwsAccountCredentials
             cd packages/graphql-transformers-e2e-tests/
-            setAwsAccountCredentials
             retry yarn e2e --maxWorkers=3 $TEST_SUITE
           environment:
             AMPLIFY_CLI_DISABLE_LOGGING: 'true'
@@ -10177,7 +10157,6 @@ jobs:
             source .circleci/local_publish_helpers.sh
             setAwsAccountCredentials
             cd packages/graphql-transformers-e2e-tests/
-            setAwsAccountCredentials
             retry yarn e2e --maxWorkers=3 $TEST_SUITE
           environment:
             AMPLIFY_CLI_DISABLE_LOGGING: 'true'
@@ -10209,7 +10188,6 @@ jobs:
             source .circleci/local_publish_helpers.sh
             setAwsAccountCredentials
             cd packages/graphql-transformers-e2e-tests/
-            setAwsAccountCredentials
             retry yarn e2e --maxWorkers=3 $TEST_SUITE
           environment:
             AMPLIFY_CLI_DISABLE_LOGGING: 'true'
@@ -10241,7 +10219,6 @@ jobs:
             source .circleci/local_publish_helpers.sh
             setAwsAccountCredentials
             cd packages/graphql-transformers-e2e-tests/
-            setAwsAccountCredentials
             retry yarn e2e --maxWorkers=3 $TEST_SUITE
           environment:
             AMPLIFY_CLI_DISABLE_LOGGING: 'true'
@@ -10273,7 +10250,6 @@ jobs:
             source .circleci/local_publish_helpers.sh
             setAwsAccountCredentials
             cd packages/graphql-transformers-e2e-tests/
-            setAwsAccountCredentials
             retry yarn e2e --maxWorkers=3 $TEST_SUITE
           environment:
             AMPLIFY_CLI_DISABLE_LOGGING: 'true'
@@ -10305,7 +10281,6 @@ jobs:
             source .circleci/local_publish_helpers.sh
             setAwsAccountCredentials
             cd packages/graphql-transformers-e2e-tests/
-            setAwsAccountCredentials
             retry yarn e2e --maxWorkers=3 $TEST_SUITE
           environment:
             AMPLIFY_CLI_DISABLE_LOGGING: 'true'
@@ -10337,7 +10312,6 @@ jobs:
             source .circleci/local_publish_helpers.sh
             setAwsAccountCredentials
             cd packages/graphql-transformers-e2e-tests/
-            setAwsAccountCredentials
             retry yarn e2e --maxWorkers=3 $TEST_SUITE
           environment:
             AMPLIFY_CLI_DISABLE_LOGGING: 'true'
@@ -10369,7 +10343,6 @@ jobs:
             source .circleci/local_publish_helpers.sh
             setAwsAccountCredentials
             cd packages/graphql-transformers-e2e-tests/
-            setAwsAccountCredentials
             retry yarn e2e --maxWorkers=3 $TEST_SUITE
           environment:
             AMPLIFY_CLI_DISABLE_LOGGING: 'true'
@@ -10401,7 +10374,6 @@ jobs:
             source .circleci/local_publish_helpers.sh
             setAwsAccountCredentials
             cd packages/graphql-transformers-e2e-tests/
-            setAwsAccountCredentials
             retry yarn e2e --maxWorkers=3 $TEST_SUITE
           environment:
             AMPLIFY_CLI_DISABLE_LOGGING: 'true'
@@ -10433,7 +10405,6 @@ jobs:
             source .circleci/local_publish_helpers.sh
             setAwsAccountCredentials
             cd packages/graphql-transformers-e2e-tests/
-            setAwsAccountCredentials
             retry yarn e2e --maxWorkers=3 $TEST_SUITE
           environment:
             AMPLIFY_CLI_DISABLE_LOGGING: 'true'
@@ -10465,7 +10436,6 @@ jobs:
             source .circleci/local_publish_helpers.sh
             setAwsAccountCredentials
             cd packages/graphql-transformers-e2e-tests/
-            setAwsAccountCredentials
             retry yarn e2e --maxWorkers=3 $TEST_SUITE
           environment:
             AMPLIFY_CLI_DISABLE_LOGGING: 'true'
