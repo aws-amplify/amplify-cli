@@ -357,8 +357,6 @@ jobs:
           path: packages/amplify-e2e-tests/
       - store_artifacts:
           path: packages/amplify-e2e-tests/amplify-e2e-reports
-      - clean_e2e_resources:
-          os: << parameters.os >>
   amplify_migration_tests_v4:
     working_directory: ~/repo
     parameters:
@@ -5985,8 +5983,6 @@ jobs:
           path: packages/amplify-e2e-tests/
       - store_artifacts:
           path: packages/amplify-e2e-tests/amplify-e2e-reports
-      - clean_e2e_resources:
-          os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/api_4.test.ts
       CLI_REGION: us-east-2
@@ -6022,8 +6018,6 @@ jobs:
           path: packages/amplify-e2e-tests/
       - store_artifacts:
           path: packages/amplify-e2e-tests/amplify-e2e-reports
-      - clean_e2e_resources:
-          os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/auth_6.test.ts
       CLI_REGION: us-west-2
@@ -6059,8 +6053,6 @@ jobs:
           path: packages/amplify-e2e-tests/
       - store_artifacts:
           path: packages/amplify-e2e-tests/amplify-e2e-reports
-      - clean_e2e_resources:
-          os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/auth_7.test.ts
       CLI_REGION: eu-west-2
@@ -6096,8 +6088,6 @@ jobs:
           path: packages/amplify-e2e-tests/
       - store_artifacts:
           path: packages/amplify-e2e-tests/amplify-e2e-reports
-      - clean_e2e_resources:
-          os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/auth_8.test.ts
       CLI_REGION: eu-central-1
@@ -6133,8 +6123,6 @@ jobs:
           path: packages/amplify-e2e-tests/
       - store_artifacts:
           path: packages/amplify-e2e-tests/amplify-e2e-reports
-      - clean_e2e_resources:
-          os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/configure-project.test.ts
       CLI_REGION: ap-northeast-1
@@ -6170,8 +6158,6 @@ jobs:
           path: packages/amplify-e2e-tests/
       - store_artifacts:
           path: packages/amplify-e2e-tests/amplify-e2e-reports
-      - clean_e2e_resources:
-          os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/container-hosting.test.ts
       CLI_REGION: ap-southeast-1
@@ -6207,8 +6193,6 @@ jobs:
           path: packages/amplify-e2e-tests/
       - store_artifacts:
           path: packages/amplify-e2e-tests/amplify-e2e-reports
-      - clean_e2e_resources:
-          os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/frontend_config_drift.test.ts
       CLI_REGION: ap-southeast-2
@@ -6244,8 +6228,6 @@ jobs:
           path: packages/amplify-e2e-tests/
       - store_artifacts:
           path: packages/amplify-e2e-tests/amplify-e2e-reports
-      - clean_e2e_resources:
-          os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/function_5.test.ts
       CLI_REGION: us-east-2
@@ -6281,8 +6263,6 @@ jobs:
           path: packages/amplify-e2e-tests/
       - store_artifacts:
           path: packages/amplify-e2e-tests/amplify-e2e-reports
-      - clean_e2e_resources:
-          os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/function_6.test.ts
       CLI_REGION: us-west-2
@@ -6318,8 +6298,6 @@ jobs:
           path: packages/amplify-e2e-tests/
       - store_artifacts:
           path: packages/amplify-e2e-tests/amplify-e2e-reports
-      - clean_e2e_resources:
-          os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/function_7.test.ts
       CLI_REGION: eu-west-2
@@ -6355,8 +6333,6 @@ jobs:
           path: packages/amplify-e2e-tests/
       - store_artifacts:
           path: packages/amplify-e2e-tests/amplify-e2e-reports
-      - clean_e2e_resources:
-          os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/function_8.test.ts
       CLI_REGION: eu-central-1
@@ -6392,8 +6368,6 @@ jobs:
           path: packages/amplify-e2e-tests/
       - store_artifacts:
           path: packages/amplify-e2e-tests/amplify-e2e-reports
-      - clean_e2e_resources:
-          os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/function_9.test.ts
       CLI_REGION: ap-northeast-1
@@ -6429,8 +6403,6 @@ jobs:
           path: packages/amplify-e2e-tests/
       - store_artifacts:
           path: packages/amplify-e2e-tests/amplify-e2e-reports
-      - clean_e2e_resources:
-          os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/hooks.test.ts
       CLI_REGION: ap-southeast-1
@@ -6466,8 +6438,6 @@ jobs:
           path: packages/amplify-e2e-tests/
       - store_artifacts:
           path: packages/amplify-e2e-tests/amplify-e2e-reports
-      - clean_e2e_resources:
-          os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/iam-permissions-boundary.test.ts
       CLI_REGION: ap-southeast-2
@@ -6503,8 +6473,6 @@ jobs:
           path: packages/amplify-e2e-tests/
       - store_artifacts:
           path: packages/amplify-e2e-tests/amplify-e2e-reports
-      - clean_e2e_resources:
-          os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/import_auth_3.test.ts
       CLI_REGION: us-east-2
@@ -6540,8 +6508,6 @@ jobs:
           path: packages/amplify-e2e-tests/
       - store_artifacts:
           path: packages/amplify-e2e-tests/amplify-e2e-reports
-      - clean_e2e_resources:
-          os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/import_dynamodb_2.test.ts
       CLI_REGION: us-west-2
@@ -6577,8 +6543,6 @@ jobs:
           path: packages/amplify-e2e-tests/
       - store_artifacts:
           path: packages/amplify-e2e-tests/amplify-e2e-reports
-      - clean_e2e_resources:
-          os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/import_s3_2.test.ts
       CLI_REGION: eu-west-2
@@ -6614,8 +6578,6 @@ jobs:
           path: packages/amplify-e2e-tests/
       - store_artifacts:
           path: packages/amplify-e2e-tests/amplify-e2e-reports
-      - clean_e2e_resources:
-          os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/layer-1.test.ts
       CLI_REGION: eu-central-1
@@ -6651,8 +6613,6 @@ jobs:
           path: packages/amplify-e2e-tests/
       - store_artifacts:
           path: packages/amplify-e2e-tests/amplify-e2e-reports
-      - clean_e2e_resources:
-          os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/layer-2.test.ts
       CLI_REGION: ap-northeast-1
@@ -6688,8 +6648,6 @@ jobs:
           path: packages/amplify-e2e-tests/
       - store_artifacts:
           path: packages/amplify-e2e-tests/amplify-e2e-reports
-      - clean_e2e_resources:
-          os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/layer-3.test.ts
       CLI_REGION: ap-southeast-1
@@ -6725,8 +6683,6 @@ jobs:
           path: packages/amplify-e2e-tests/
       - store_artifacts:
           path: packages/amplify-e2e-tests/amplify-e2e-reports
-      - clean_e2e_resources:
-          os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/layer-4.test.ts
       CLI_REGION: ap-southeast-2
@@ -6762,8 +6718,6 @@ jobs:
           path: packages/amplify-e2e-tests/
       - store_artifacts:
           path: packages/amplify-e2e-tests/amplify-e2e-reports
-      - clean_e2e_resources:
-          os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/migration/api.connection.migration2.test.ts
       CLI_REGION: us-east-2
@@ -6799,8 +6753,6 @@ jobs:
           path: packages/amplify-e2e-tests/
       - store_artifacts:
           path: packages/amplify-e2e-tests/amplify-e2e-reports
-      - clean_e2e_resources:
-          os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/migration/node.function.test.ts
       CLI_REGION: us-west-2
@@ -6836,8 +6788,6 @@ jobs:
           path: packages/amplify-e2e-tests/
       - store_artifacts:
           path: packages/amplify-e2e-tests/amplify-e2e-reports
-      - clean_e2e_resources:
-          os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/pull.test.ts
       CLI_REGION: eu-west-2
@@ -6873,8 +6823,6 @@ jobs:
           path: packages/amplify-e2e-tests/
       - store_artifacts:
           path: packages/amplify-e2e-tests/amplify-e2e-reports
-      - clean_e2e_resources:
-          os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/s3-sse.test.ts
       CLI_REGION: eu-central-1
@@ -6910,8 +6858,6 @@ jobs:
           path: packages/amplify-e2e-tests/
       - store_artifacts:
           path: packages/amplify-e2e-tests/amplify-e2e-reports
-      - clean_e2e_resources:
-          os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/schema-auth-12.test.ts
       CLI_REGION: ap-northeast-1
@@ -6947,8 +6893,6 @@ jobs:
           path: packages/amplify-e2e-tests/
       - store_artifacts:
           path: packages/amplify-e2e-tests/amplify-e2e-reports
-      - clean_e2e_resources:
-          os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/schema-auth-13.test.ts
       CLI_REGION: ap-southeast-1
@@ -6984,8 +6928,6 @@ jobs:
           path: packages/amplify-e2e-tests/
       - store_artifacts:
           path: packages/amplify-e2e-tests/amplify-e2e-reports
-      - clean_e2e_resources:
-          os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/schema-function-1.test.ts
       CLI_REGION: ap-southeast-2
@@ -7021,8 +6963,6 @@ jobs:
           path: packages/amplify-e2e-tests/
       - store_artifacts:
           path: packages/amplify-e2e-tests/amplify-e2e-reports
-      - clean_e2e_resources:
-          os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/schema-function-2.test.ts
       CLI_REGION: us-east-2
@@ -7058,8 +6998,6 @@ jobs:
           path: packages/amplify-e2e-tests/
       - store_artifacts:
           path: packages/amplify-e2e-tests/amplify-e2e-reports
-      - clean_e2e_resources:
-          os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/schema-iterative-update-locking.test.ts
       CLI_REGION: us-west-2
@@ -7095,8 +7033,6 @@ jobs:
           path: packages/amplify-e2e-tests/
       - store_artifacts:
           path: packages/amplify-e2e-tests/amplify-e2e-reports
-      - clean_e2e_resources:
-          os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/storage-1.test.ts
       CLI_REGION: eu-west-2
@@ -7132,8 +7068,6 @@ jobs:
           path: packages/amplify-e2e-tests/
       - store_artifacts:
           path: packages/amplify-e2e-tests/amplify-e2e-reports
-      - clean_e2e_resources:
-          os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/storage-2.test.ts
       CLI_REGION: eu-central-1
@@ -7169,8 +7103,6 @@ jobs:
           path: packages/amplify-e2e-tests/
       - store_artifacts:
           path: packages/amplify-e2e-tests/amplify-e2e-reports
-      - clean_e2e_resources:
-          os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/storage-3.test.ts
       CLI_REGION: ap-northeast-1
@@ -7206,8 +7138,6 @@ jobs:
           path: packages/amplify-e2e-tests/
       - store_artifacts:
           path: packages/amplify-e2e-tests/amplify-e2e-reports
-      - clean_e2e_resources:
-          os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/plugin.test.ts
       CLI_REGION: ap-southeast-1
@@ -7243,8 +7173,6 @@ jobs:
           path: packages/amplify-e2e-tests/
       - store_artifacts:
           path: packages/amplify-e2e-tests/amplify-e2e-reports
-      - clean_e2e_resources:
-          os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/init-special-case.test.ts
       CLI_REGION: ap-southeast-2
@@ -7280,8 +7208,6 @@ jobs:
           path: packages/amplify-e2e-tests/
       - store_artifacts:
           path: packages/amplify-e2e-tests/amplify-e2e-reports
-      - clean_e2e_resources:
-          os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/datastore-modelgen.test.ts
       CLI_REGION: us-east-2
@@ -7317,8 +7243,6 @@ jobs:
           path: packages/amplify-e2e-tests/
       - store_artifacts:
           path: packages/amplify-e2e-tests/amplify-e2e-reports
-      - clean_e2e_resources:
-          os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/amplify-configure.test.ts
       CLI_REGION: us-west-2
@@ -7354,8 +7278,6 @@ jobs:
           path: packages/amplify-e2e-tests/
       - store_artifacts:
           path: packages/amplify-e2e-tests/amplify-e2e-reports
-      - clean_e2e_resources:
-          os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/init.test.ts
       CLI_REGION: eu-west-2
@@ -7391,8 +7313,6 @@ jobs:
           path: packages/amplify-e2e-tests/
       - store_artifacts:
           path: packages/amplify-e2e-tests/amplify-e2e-reports
-      - clean_e2e_resources:
-          os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/tags.test.ts
       CLI_REGION: eu-central-1
@@ -7428,8 +7348,6 @@ jobs:
           path: packages/amplify-e2e-tests/
       - store_artifacts:
           path: packages/amplify-e2e-tests/amplify-e2e-reports
-      - clean_e2e_resources:
-          os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/notifications.test.ts
       CLI_REGION: ap-northeast-1
@@ -7465,8 +7383,6 @@ jobs:
           path: packages/amplify-e2e-tests/
       - store_artifacts:
           path: packages/amplify-e2e-tests/amplify-e2e-reports
-      - clean_e2e_resources:
-          os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/schema-versioned.test.ts
       CLI_REGION: ap-southeast-1
@@ -7502,8 +7418,6 @@ jobs:
           path: packages/amplify-e2e-tests/
       - store_artifacts:
           path: packages/amplify-e2e-tests/amplify-e2e-reports
-      - clean_e2e_resources:
-          os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/schema-data-access-patterns.test.ts
       CLI_REGION: ap-southeast-2
@@ -7539,8 +7453,6 @@ jobs:
           path: packages/amplify-e2e-tests/
       - store_artifacts:
           path: packages/amplify-e2e-tests/amplify-e2e-reports
-      - clean_e2e_resources:
-          os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/interactions.test.ts
       CLI_REGION: us-west-2
@@ -7576,8 +7488,6 @@ jobs:
           path: packages/amplify-e2e-tests/
       - store_artifacts:
           path: packages/amplify-e2e-tests/amplify-e2e-reports
-      - clean_e2e_resources:
-          os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/schema-predictions.test.ts
       CLI_REGION: us-west-2
@@ -7613,8 +7523,6 @@ jobs:
           path: packages/amplify-e2e-tests/
       - store_artifacts:
           path: packages/amplify-e2e-tests/amplify-e2e-reports
-      - clean_e2e_resources:
-          os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/amplify-app.test.ts
       CLI_REGION: eu-west-2
@@ -7650,8 +7558,6 @@ jobs:
           path: packages/amplify-e2e-tests/
       - store_artifacts:
           path: packages/amplify-e2e-tests/amplify-e2e-reports
-      - clean_e2e_resources:
-          os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/hosting.test.ts
       CLI_REGION: eu-central-1
@@ -7687,8 +7593,6 @@ jobs:
           path: packages/amplify-e2e-tests/
       - store_artifacts:
           path: packages/amplify-e2e-tests/amplify-e2e-reports
-      - clean_e2e_resources:
-          os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/analytics.test.ts
       CLI_REGION: ap-northeast-1
@@ -7724,8 +7628,6 @@ jobs:
           path: packages/amplify-e2e-tests/
       - store_artifacts:
           path: packages/amplify-e2e-tests/amplify-e2e-reports
-      - clean_e2e_resources:
-          os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/feature-flags.test.ts
       CLI_REGION: ap-southeast-1
@@ -7761,8 +7663,6 @@ jobs:
           path: packages/amplify-e2e-tests/
       - store_artifacts:
           path: packages/amplify-e2e-tests/amplify-e2e-reports
-      - clean_e2e_resources:
-          os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/schema-iterative-update-2.test.ts
       CLI_REGION: ap-southeast-2
@@ -7798,8 +7698,6 @@ jobs:
           path: packages/amplify-e2e-tests/
       - store_artifacts:
           path: packages/amplify-e2e-tests/amplify-e2e-reports
-      - clean_e2e_resources:
-          os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/containers-api.test.ts
       CLI_REGION: us-east-2
@@ -7835,8 +7733,6 @@ jobs:
           path: packages/amplify-e2e-tests/
       - store_artifacts:
           path: packages/amplify-e2e-tests/amplify-e2e-reports
-      - clean_e2e_resources:
-          os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/predictions.test.ts
       CLI_REGION: us-west-2
@@ -7872,8 +7768,6 @@ jobs:
           path: packages/amplify-e2e-tests/
       - store_artifacts:
           path: packages/amplify-e2e-tests/amplify-e2e-reports
-      - clean_e2e_resources:
-          os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/hostingPROD.test.ts
       CLI_REGION: eu-west-2
@@ -7909,8 +7803,6 @@ jobs:
           path: packages/amplify-e2e-tests/
       - store_artifacts:
           path: packages/amplify-e2e-tests/amplify-e2e-reports
-      - clean_e2e_resources:
-          os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/geo-add.test.ts
       CLI_REGION: ap-southeast-1
@@ -7946,8 +7838,6 @@ jobs:
           path: packages/amplify-e2e-tests/
       - store_artifacts:
           path: packages/amplify-e2e-tests/amplify-e2e-reports
-      - clean_e2e_resources:
-          os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/geo-update.test.ts
       CLI_REGION: ap-southeast-2
@@ -7983,8 +7873,6 @@ jobs:
           path: packages/amplify-e2e-tests/
       - store_artifacts:
           path: packages/amplify-e2e-tests/amplify-e2e-reports
-      - clean_e2e_resources:
-          os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/geo-remove.test.ts
       CLI_REGION: us-east-2
@@ -8020,8 +7908,6 @@ jobs:
           path: packages/amplify-e2e-tests/
       - store_artifacts:
           path: packages/amplify-e2e-tests/amplify-e2e-reports
-      - clean_e2e_resources:
-          os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/schema-auth-10.test.ts
       CLI_REGION: ap-southeast-2
@@ -8057,8 +7943,6 @@ jobs:
           path: packages/amplify-e2e-tests/
       - store_artifacts:
           path: packages/amplify-e2e-tests/amplify-e2e-reports
-      - clean_e2e_resources:
-          os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/schema-key.test.ts
       CLI_REGION: us-east-2
@@ -8094,8 +7978,6 @@ jobs:
           path: packages/amplify-e2e-tests/
       - store_artifacts:
           path: packages/amplify-e2e-tests/amplify-e2e-reports
-      - clean_e2e_resources:
-          os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/auth_1.test.ts
       CLI_REGION: us-west-2
@@ -8131,8 +8013,6 @@ jobs:
           path: packages/amplify-e2e-tests/
       - store_artifacts:
           path: packages/amplify-e2e-tests/amplify-e2e-reports
-      - clean_e2e_resources:
-          os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/auth_5.test.ts
       CLI_REGION: eu-west-2
@@ -8168,8 +8048,6 @@ jobs:
           path: packages/amplify-e2e-tests/
       - store_artifacts:
           path: packages/amplify-e2e-tests/amplify-e2e-reports
-      - clean_e2e_resources:
-          os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/function_3.test.ts
       CLI_REGION: eu-central-1
@@ -8205,8 +8083,6 @@ jobs:
           path: packages/amplify-e2e-tests/
       - store_artifacts:
           path: packages/amplify-e2e-tests/amplify-e2e-reports
-      - clean_e2e_resources:
-          os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/schema-iterative-update-1.test.ts
       CLI_REGION: ap-northeast-1
@@ -8242,8 +8118,6 @@ jobs:
           path: packages/amplify-e2e-tests/
       - store_artifacts:
           path: packages/amplify-e2e-tests/amplify-e2e-reports
-      - clean_e2e_resources:
-          os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/schema-auth-3.test.ts
       CLI_REGION: ap-southeast-1
@@ -8279,8 +8153,6 @@ jobs:
           path: packages/amplify-e2e-tests/
       - store_artifacts:
           path: packages/amplify-e2e-tests/amplify-e2e-reports
-      - clean_e2e_resources:
-          os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/delete.test.ts
       CLI_REGION: ap-southeast-2
@@ -8316,8 +8188,6 @@ jobs:
           path: packages/amplify-e2e-tests/
       - store_artifacts:
           path: packages/amplify-e2e-tests/amplify-e2e-reports
-      - clean_e2e_resources:
-          os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/function_2.test.ts
       CLI_REGION: us-east-2
@@ -8353,8 +8223,6 @@ jobs:
           path: packages/amplify-e2e-tests/
       - store_artifacts:
           path: packages/amplify-e2e-tests/amplify-e2e-reports
-      - clean_e2e_resources:
-          os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/auth_3.test.ts
       CLI_REGION: us-west-2
@@ -8390,8 +8258,6 @@ jobs:
           path: packages/amplify-e2e-tests/
       - store_artifacts:
           path: packages/amplify-e2e-tests/amplify-e2e-reports
-      - clean_e2e_resources:
-          os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/migration/api.key.migration1.test.ts
       CLI_REGION: eu-west-2
@@ -8427,8 +8293,6 @@ jobs:
           path: packages/amplify-e2e-tests/
       - store_artifacts:
           path: packages/amplify-e2e-tests/amplify-e2e-reports
-      - clean_e2e_resources:
-          os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/auth_4.test.ts
       CLI_REGION: eu-central-1
@@ -8464,8 +8328,6 @@ jobs:
           path: packages/amplify-e2e-tests/
       - store_artifacts:
           path: packages/amplify-e2e-tests/amplify-e2e-reports
-      - clean_e2e_resources:
-          os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/schema-auth-7.test.ts
       CLI_REGION: ap-northeast-1
@@ -8501,8 +8363,6 @@ jobs:
           path: packages/amplify-e2e-tests/
       - store_artifacts:
           path: packages/amplify-e2e-tests/amplify-e2e-reports
-      - clean_e2e_resources:
-          os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/schema-auth-8.test.ts
       CLI_REGION: ap-southeast-1
@@ -8538,8 +8398,6 @@ jobs:
           path: packages/amplify-e2e-tests/
       - store_artifacts:
           path: packages/amplify-e2e-tests/amplify-e2e-reports
-      - clean_e2e_resources:
-          os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/schema-searchable.test.ts
       CLI_REGION: ap-southeast-2
@@ -8575,8 +8433,6 @@ jobs:
           path: packages/amplify-e2e-tests/
       - store_artifacts:
           path: packages/amplify-e2e-tests/amplify-e2e-reports
-      - clean_e2e_resources:
-          os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/schema-auth-4.test.ts
       CLI_REGION: us-east-2
@@ -8612,8 +8468,6 @@ jobs:
           path: packages/amplify-e2e-tests/
       - store_artifacts:
           path: packages/amplify-e2e-tests/amplify-e2e-reports
-      - clean_e2e_resources:
-          os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/api_3.test.ts
       CLI_REGION: us-west-2
@@ -8649,8 +8503,6 @@ jobs:
           path: packages/amplify-e2e-tests/
       - store_artifacts:
           path: packages/amplify-e2e-tests/amplify-e2e-reports
-      - clean_e2e_resources:
-          os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/import_auth_1.test.ts
       CLI_REGION: eu-west-2
@@ -8686,8 +8538,6 @@ jobs:
           path: packages/amplify-e2e-tests/
       - store_artifacts:
           path: packages/amplify-e2e-tests/amplify-e2e-reports
-      - clean_e2e_resources:
-          os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/import_auth_2.test.ts
       CLI_REGION: eu-central-1
@@ -8723,8 +8573,6 @@ jobs:
           path: packages/amplify-e2e-tests/
       - store_artifacts:
           path: packages/amplify-e2e-tests/amplify-e2e-reports
-      - clean_e2e_resources:
-          os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/import_s3_1.test.ts
       CLI_REGION: ap-northeast-1
@@ -8761,8 +8609,6 @@ jobs:
           path: packages/amplify-e2e-tests/
       - store_artifacts:
           path: packages/amplify-e2e-tests/amplify-e2e-reports
-      - clean_e2e_resources:
-          os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/import_dynamodb_1.test.ts
       CLI_REGION: ap-southeast-1
@@ -8799,8 +8645,6 @@ jobs:
           path: packages/amplify-e2e-tests/
       - store_artifacts:
           path: packages/amplify-e2e-tests/amplify-e2e-reports
-      - clean_e2e_resources:
-          os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/schema-iterative-rollback-1.test.ts
       CLI_REGION: ap-southeast-2
@@ -8836,8 +8680,6 @@ jobs:
           path: packages/amplify-e2e-tests/
       - store_artifacts:
           path: packages/amplify-e2e-tests/amplify-e2e-reports
-      - clean_e2e_resources:
-          os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/schema-iterative-rollback-2.test.ts
       CLI_REGION: us-east-2
@@ -8873,8 +8715,6 @@ jobs:
           path: packages/amplify-e2e-tests/
       - store_artifacts:
           path: packages/amplify-e2e-tests/amplify-e2e-reports
-      - clean_e2e_resources:
-          os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/env.test.ts
       CLI_REGION: us-west-2
@@ -8910,8 +8750,6 @@ jobs:
           path: packages/amplify-e2e-tests/
       - store_artifacts:
           path: packages/amplify-e2e-tests/amplify-e2e-reports
-      - clean_e2e_resources:
-          os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/auth_2.test.ts
       CLI_REGION: eu-west-2
@@ -8948,8 +8786,6 @@ jobs:
           path: packages/amplify-e2e-tests/
       - store_artifacts:
           path: packages/amplify-e2e-tests/amplify-e2e-reports
-      - clean_e2e_resources:
-          os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/schema-auth-9.test.ts
       CLI_REGION: eu-central-1
@@ -8985,8 +8821,6 @@ jobs:
           path: packages/amplify-e2e-tests/
       - store_artifacts:
           path: packages/amplify-e2e-tests/amplify-e2e-reports
-      - clean_e2e_resources:
-          os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/schema-auth-11.test.ts
       CLI_REGION: ap-northeast-1
@@ -9022,8 +8856,6 @@ jobs:
           path: packages/amplify-e2e-tests/
       - store_artifacts:
           path: packages/amplify-e2e-tests/amplify-e2e-reports
-      - clean_e2e_resources:
-          os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/migration/api.key.migration2.test.ts
       CLI_REGION: ap-southeast-1
@@ -9060,8 +8892,6 @@ jobs:
           path: packages/amplify-e2e-tests/
       - store_artifacts:
           path: packages/amplify-e2e-tests/amplify-e2e-reports
-      - clean_e2e_resources:
-          os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/function_1.test.ts
       CLI_REGION: ap-southeast-2
@@ -9097,8 +8927,6 @@ jobs:
           path: packages/amplify-e2e-tests/
       - store_artifacts:
           path: packages/amplify-e2e-tests/amplify-e2e-reports
-      - clean_e2e_resources:
-          os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/schema-auth-1.test.ts
       CLI_REGION: us-east-2
@@ -9134,8 +8962,6 @@ jobs:
           path: packages/amplify-e2e-tests/
       - store_artifacts:
           path: packages/amplify-e2e-tests/amplify-e2e-reports
-      - clean_e2e_resources:
-          os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/function_4.test.ts
       CLI_REGION: us-west-2
@@ -9171,8 +8997,6 @@ jobs:
           path: packages/amplify-e2e-tests/
       - store_artifacts:
           path: packages/amplify-e2e-tests/amplify-e2e-reports
-      - clean_e2e_resources:
-          os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/schema-model.test.ts
       CLI_REGION: eu-west-2
@@ -9208,8 +9032,6 @@ jobs:
           path: packages/amplify-e2e-tests/
       - store_artifacts:
           path: packages/amplify-e2e-tests/amplify-e2e-reports
-      - clean_e2e_resources:
-          os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/migration/api.connection.migration.test.ts
       CLI_REGION: eu-central-1
@@ -9245,8 +9067,6 @@ jobs:
           path: packages/amplify-e2e-tests/
       - store_artifacts:
           path: packages/amplify-e2e-tests/amplify-e2e-reports
-      - clean_e2e_resources:
-          os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/schema-connection.test.ts
       CLI_REGION: ap-northeast-1
@@ -9282,8 +9102,6 @@ jobs:
           path: packages/amplify-e2e-tests/
       - store_artifacts:
           path: packages/amplify-e2e-tests/amplify-e2e-reports
-      - clean_e2e_resources:
-          os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/schema-auth-6.test.ts
       CLI_REGION: ap-southeast-1
@@ -9319,8 +9137,6 @@ jobs:
           path: packages/amplify-e2e-tests/
       - store_artifacts:
           path: packages/amplify-e2e-tests/amplify-e2e-reports
-      - clean_e2e_resources:
-          os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/schema-iterative-update-3.test.ts
       CLI_REGION: ap-southeast-2
@@ -9356,8 +9172,6 @@ jobs:
           path: packages/amplify-e2e-tests/
       - store_artifacts:
           path: packages/amplify-e2e-tests/amplify-e2e-reports
-      - clean_e2e_resources:
-          os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/schema-auth-2.test.ts
       CLI_REGION: us-east-2
@@ -9393,8 +9207,6 @@ jobs:
           path: packages/amplify-e2e-tests/
       - store_artifacts:
           path: packages/amplify-e2e-tests/amplify-e2e-reports
-      - clean_e2e_resources:
-          os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/api_1.test.ts
       CLI_REGION: us-west-2
@@ -9431,8 +9243,6 @@ jobs:
           path: packages/amplify-e2e-tests/
       - store_artifacts:
           path: packages/amplify-e2e-tests/amplify-e2e-reports
-      - clean_e2e_resources:
-          os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/schema-auth-5.test.ts
       CLI_REGION: eu-west-2
@@ -9468,8 +9278,6 @@ jobs:
           path: packages/amplify-e2e-tests/
       - store_artifacts:
           path: packages/amplify-e2e-tests/amplify-e2e-reports
-      - clean_e2e_resources:
-          os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/api_2.test.ts
       CLI_REGION: eu-central-1
@@ -9506,8 +9314,6 @@ jobs:
           path: packages/amplify-e2e-tests/
       - store_artifacts:
           path: packages/amplify-e2e-tests/amplify-e2e-reports
-      - clean_e2e_resources:
-          os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/api_5.test.ts
       CLI_REGION: ap-northeast-1
@@ -9543,8 +9349,6 @@ jobs:
           path: packages/amplify-e2e-tests/
       - store_artifacts:
           path: packages/amplify-e2e-tests/amplify-e2e-reports
-      - clean_e2e_resources:
-          os: << parameters.os >>
     environment:
       TEST_SUITE: src/__tests__/schema-iterative-update-4.test.ts
       CLI_REGION: ap-southeast-1
@@ -11755,14 +11559,6 @@ workflows:
                 - /run-e2e\/.*/
           requires:
             - build
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
       - amplify_migration_tests_multi_env_layers:
           context:
             - amplify-ecr-image-pull
@@ -11777,14 +11573,6 @@ workflows:
                 - /run-e2e\/.*/
           requires:
             - build
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
       - amplify_console_integration_tests:
           context:
             - amplify-ecr-image-pull
@@ -11792,14 +11580,6 @@ workflows:
             - cleanup-resources
             - console-e2e-test
             - e2e-test-context
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
           filters:
             branches:
               only:
@@ -12371,14 +12151,6 @@ workflows:
             - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
           filters:
             branches:
               only:
@@ -12397,14 +12169,6 @@ workflows:
             - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
           filters:
             branches:
               only:
@@ -12423,14 +12187,6 @@ workflows:
             - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
           filters:
             branches:
               only:
@@ -12449,14 +12205,6 @@ workflows:
             - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
           filters:
             branches:
               only:
@@ -12475,14 +12223,6 @@ workflows:
             - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
           filters:
             branches:
               only:
@@ -12501,14 +12241,6 @@ workflows:
             - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
           filters:
             branches:
               only:
@@ -12527,14 +12259,6 @@ workflows:
             - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
           filters:
             branches:
               only:
@@ -12553,14 +12277,6 @@ workflows:
             - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
           filters:
             branches:
               only:
@@ -12579,14 +12295,6 @@ workflows:
             - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
           filters:
             branches:
               only:
@@ -12605,14 +12313,6 @@ workflows:
             - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
           filters:
             branches:
               only:
@@ -12631,14 +12331,6 @@ workflows:
             - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
           filters:
             branches:
               only:
@@ -12657,14 +12349,6 @@ workflows:
             - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
           filters:
             branches:
               only:
@@ -12683,14 +12367,6 @@ workflows:
             - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
           filters:
             branches:
               only:
@@ -12709,14 +12385,6 @@ workflows:
             - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
           filters:
             branches:
               only:
@@ -12735,14 +12403,6 @@ workflows:
             - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
           filters:
             branches:
               only:
@@ -12761,14 +12421,6 @@ workflows:
             - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
           filters:
             branches:
               only:
@@ -12787,14 +12439,6 @@ workflows:
             - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
           filters:
             branches:
               only:
@@ -12813,14 +12457,6 @@ workflows:
             - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
           filters:
             branches:
               only:
@@ -12839,14 +12475,6 @@ workflows:
             - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
           filters:
             branches:
               only:
@@ -12865,14 +12493,6 @@ workflows:
             - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
           filters:
             branches:
               only:
@@ -12891,14 +12511,6 @@ workflows:
             - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
           filters:
             branches:
               only:
@@ -12917,14 +12529,6 @@ workflows:
             - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
           filters:
             branches:
               only:
@@ -12943,14 +12547,6 @@ workflows:
             - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
           filters:
             branches:
               only:
@@ -12969,14 +12565,6 @@ workflows:
             - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
           filters:
             branches:
               only:
@@ -12995,14 +12583,6 @@ workflows:
             - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
           filters:
             branches:
               only:
@@ -13021,14 +12601,6 @@ workflows:
             - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
           filters:
             branches:
               only:
@@ -13047,14 +12619,6 @@ workflows:
             - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
           filters:
             branches:
               only:
@@ -13073,14 +12637,6 @@ workflows:
             - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
           filters:
             branches:
               only:
@@ -13099,14 +12655,6 @@ workflows:
             - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
           filters:
             branches:
               only:
@@ -13125,14 +12673,6 @@ workflows:
             - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
           filters:
             branches:
               only:
@@ -13151,14 +12691,6 @@ workflows:
             - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
           filters:
             branches:
               only:
@@ -13177,14 +12709,6 @@ workflows:
             - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
           filters:
             branches:
               only:
@@ -13203,14 +12727,6 @@ workflows:
             - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
           filters:
             branches:
               only:
@@ -13229,14 +12745,6 @@ workflows:
             - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
           filters:
             branches:
               only:
@@ -13255,14 +12763,6 @@ workflows:
             - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
           filters:
             branches:
               only:
@@ -13281,14 +12781,6 @@ workflows:
             - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
           filters:
             branches:
               only:
@@ -13307,14 +12799,6 @@ workflows:
             - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
           filters:
             branches:
               only:
@@ -13333,14 +12817,6 @@ workflows:
             - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
           filters:
             branches:
               only:
@@ -13359,14 +12835,6 @@ workflows:
             - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
           filters:
             branches:
               only:
@@ -13385,14 +12853,6 @@ workflows:
             - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
           filters:
             branches:
               only:
@@ -13411,14 +12871,6 @@ workflows:
             - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
           filters:
             branches:
               only:
@@ -13437,14 +12889,6 @@ workflows:
             - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
           filters:
             branches:
               only:
@@ -13463,14 +12907,6 @@ workflows:
             - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
           filters:
             branches:
               only:
@@ -13489,14 +12925,6 @@ workflows:
             - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
           filters:
             branches:
               only:
@@ -13515,14 +12943,6 @@ workflows:
             - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
           filters:
             branches:
               only:
@@ -13541,14 +12961,6 @@ workflows:
             - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
           filters:
             branches:
               only:
@@ -13567,14 +12979,6 @@ workflows:
             - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
           filters:
             branches:
               only:
@@ -13593,14 +12997,6 @@ workflows:
             - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
           filters:
             branches:
               only:
@@ -13619,14 +13015,6 @@ workflows:
             - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
           filters:
             branches:
               only:
@@ -13645,14 +13033,6 @@ workflows:
             - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
           filters:
             branches:
               only:
@@ -13671,14 +13051,6 @@ workflows:
             - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
           filters:
             branches:
               only:
@@ -13697,14 +13069,6 @@ workflows:
             - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
           filters:
             branches:
               only:
@@ -13723,14 +13087,6 @@ workflows:
             - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
           filters:
             branches:
               only:
@@ -13749,14 +13105,6 @@ workflows:
             - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
           filters:
             branches:
               only:
@@ -13775,14 +13123,6 @@ workflows:
             - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
           filters:
             branches:
               only:
@@ -13801,14 +13141,6 @@ workflows:
             - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
           filters:
             branches:
               only:
@@ -13827,14 +13159,6 @@ workflows:
             - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
           filters:
             branches:
               only:
@@ -13853,14 +13177,6 @@ workflows:
             - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
           filters:
             branches:
               only:
@@ -13879,14 +13195,6 @@ workflows:
             - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
           filters:
             branches:
               only:
@@ -13905,14 +13213,6 @@ workflows:
             - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
           filters:
             branches:
               only:
@@ -13931,14 +13231,6 @@ workflows:
             - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
           filters:
             branches:
               only:
@@ -13957,14 +13249,6 @@ workflows:
             - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
           filters:
             branches:
               only:
@@ -13983,14 +13267,6 @@ workflows:
             - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
           filters:
             branches:
               only:
@@ -14009,14 +13285,6 @@ workflows:
             - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
           filters:
             branches:
               only:
@@ -14035,14 +13303,6 @@ workflows:
             - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
           filters:
             branches:
               only:
@@ -14061,14 +13321,6 @@ workflows:
             - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
           filters:
             branches:
               only:
@@ -14087,14 +13339,6 @@ workflows:
             - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
           filters:
             branches:
               only:
@@ -14113,14 +13357,6 @@ workflows:
             - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
           filters:
             branches:
               only:
@@ -14139,14 +13375,6 @@ workflows:
             - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
           filters:
             branches:
               only:
@@ -14165,14 +13393,6 @@ workflows:
             - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
           filters:
             branches:
               only:
@@ -14191,14 +13411,6 @@ workflows:
             - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
           filters:
             branches:
               only:
@@ -14217,14 +13429,6 @@ workflows:
             - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
           filters:
             branches:
               only:
@@ -14243,14 +13447,6 @@ workflows:
             - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
           filters:
             branches:
               only:
@@ -14269,14 +13465,6 @@ workflows:
             - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
           filters:
             branches:
               only:
@@ -14295,14 +13483,6 @@ workflows:
             - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
           filters:
             branches:
               only:
@@ -14321,14 +13501,6 @@ workflows:
             - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
           filters:
             branches:
               only:
@@ -14347,14 +13519,6 @@ workflows:
             - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
           filters:
             branches:
               only:
@@ -14373,14 +13537,6 @@ workflows:
             - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
           filters:
             branches:
               only:
@@ -14399,14 +13555,6 @@ workflows:
             - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
           filters:
             branches:
               only:
@@ -14425,14 +13573,6 @@ workflows:
             - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
           filters:
             branches:
               only:
@@ -14451,14 +13591,6 @@ workflows:
             - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
           filters:
             branches:
               only:
@@ -14477,14 +13609,6 @@ workflows:
             - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
           filters:
             branches:
               only:
@@ -14503,14 +13627,6 @@ workflows:
             - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
           filters:
             branches:
               only:
@@ -14529,14 +13645,6 @@ workflows:
             - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
           filters:
             branches:
               only:
@@ -14555,14 +13663,6 @@ workflows:
             - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
           filters:
             branches:
               only:
@@ -14581,14 +13681,6 @@ workflows:
             - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
           filters:
             branches:
               only:
@@ -14607,14 +13699,6 @@ workflows:
             - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
           filters:
             branches:
               only:
@@ -14633,14 +13717,6 @@ workflows:
             - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
           filters:
             branches:
               only:
@@ -14659,14 +13735,6 @@ workflows:
             - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
           filters:
             branches:
               only:
@@ -14685,14 +13753,6 @@ workflows:
             - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
           filters:
             branches:
               only:
@@ -14711,14 +13771,6 @@ workflows:
             - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
           filters:
             branches:
               only:
@@ -14737,14 +13789,6 @@ workflows:
             - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
           filters:
             branches:
               only:
@@ -14763,14 +13807,6 @@ workflows:
             - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
           filters:
             branches:
               only:
@@ -14789,14 +13825,6 @@ workflows:
             - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
           filters:
             branches:
               only:
@@ -14815,14 +13843,6 @@ workflows:
             - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
           filters:
             branches:
               only:
@@ -14841,14 +13861,6 @@ workflows:
             - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
           filters:
             branches:
               only:
@@ -14867,14 +13879,6 @@ workflows:
             - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
           filters:
             branches:
               only:
@@ -17116,14 +16120,6 @@ workflows:
                 - /run-e2e\/.*/
           requires:
             - build
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
           matrix:
             parameters:
               os:
@@ -17142,14 +16138,6 @@ workflows:
                 - /run-e2e\/.*/
           requires:
             - build
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
           matrix:
             parameters:
               os:
@@ -17168,14 +16156,6 @@ workflows:
                 - /run-e2e\/.*/
           requires:
             - build
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
           matrix:
             parameters:
               os:
@@ -17194,14 +16174,6 @@ workflows:
                 - /run-e2e\/.*/
           requires:
             - build
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
           matrix:
             parameters:
               os:
@@ -17220,14 +16192,6 @@ workflows:
                 - /run-e2e\/.*/
           requires:
             - build
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
           matrix:
             parameters:
               os:
@@ -17246,14 +16210,6 @@ workflows:
                 - /run-e2e\/.*/
           requires:
             - build
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
           matrix:
             parameters:
               os:
@@ -17272,14 +16228,6 @@ workflows:
                 - /run-e2e\/.*/
           requires:
             - build
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
           matrix:
             parameters:
               os:
@@ -17298,14 +16246,6 @@ workflows:
                 - /run-e2e\/.*/
           requires:
             - build
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
           matrix:
             parameters:
               os:
@@ -17324,14 +16264,6 @@ workflows:
                 - /run-e2e\/.*/
           requires:
             - build
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
           matrix:
             parameters:
               os:
@@ -17350,14 +16282,6 @@ workflows:
                 - /run-e2e\/.*/
           requires:
             - build
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
           matrix:
             parameters:
               os:
@@ -17376,14 +16300,6 @@ workflows:
                 - /run-e2e\/.*/
           requires:
             - build
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
           matrix:
             parameters:
               os:
@@ -17402,14 +16318,6 @@ workflows:
                 - /run-e2e\/.*/
           requires:
             - build
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
           matrix:
             parameters:
               os:
@@ -17428,14 +16336,6 @@ workflows:
                 - /run-e2e\/.*/
           requires:
             - build
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
           matrix:
             parameters:
               os:
@@ -17454,14 +16354,6 @@ workflows:
                 - /run-e2e\/.*/
           requires:
             - build
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
           matrix:
             parameters:
               os:
@@ -17480,14 +16372,6 @@ workflows:
                 - /run-e2e\/.*/
           requires:
             - build
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
           matrix:
             parameters:
               os:
@@ -17506,14 +16390,6 @@ workflows:
                 - /run-e2e\/.*/
           requires:
             - build
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
           matrix:
             parameters:
               os:
@@ -17532,14 +16408,6 @@ workflows:
                 - /run-e2e\/.*/
           requires:
             - build
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
           matrix:
             parameters:
               os:
@@ -17558,14 +16426,6 @@ workflows:
                 - /run-e2e\/.*/
           requires:
             - build
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
           matrix:
             parameters:
               os:
@@ -17584,14 +16444,6 @@ workflows:
                 - /run-e2e\/.*/
           requires:
             - build
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
           matrix:
             parameters:
               os:
@@ -17610,14 +16462,6 @@ workflows:
                 - /run-e2e\/.*/
           requires:
             - build
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
           matrix:
             parameters:
               os:
@@ -17636,14 +16480,6 @@ workflows:
                 - /run-e2e\/.*/
           requires:
             - build
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
           matrix:
             parameters:
               os:
@@ -17662,14 +16498,6 @@ workflows:
                 - /run-e2e\/.*/
           requires:
             - build
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
           matrix:
             parameters:
               os:
@@ -17688,14 +16516,6 @@ workflows:
                 - /run-e2e\/.*/
           requires:
             - build
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
           matrix:
             parameters:
               os:
@@ -17714,14 +16534,6 @@ workflows:
                 - /run-e2e\/.*/
           requires:
             - build
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
           matrix:
             parameters:
               os:
@@ -17740,14 +16552,6 @@ workflows:
                 - /run-e2e\/.*/
           requires:
             - build
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
           matrix:
             parameters:
               os:
@@ -17766,14 +16570,6 @@ workflows:
                 - /run-e2e\/.*/
           requires:
             - build
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
           matrix:
             parameters:
               os:
@@ -17792,14 +16588,6 @@ workflows:
                 - /run-e2e\/.*/
           requires:
             - build
-          post-steps:
-            - run:
-                name: Cleanup resources
-                command: |
-                  pwd
-                  cd packages/amplify-e2e-tests
-                  yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
-                working_directory: ~/repo
           matrix:
             parameters:
               os:
