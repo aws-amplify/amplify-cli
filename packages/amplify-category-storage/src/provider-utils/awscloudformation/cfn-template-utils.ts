@@ -3,10 +3,15 @@ import { Template } from 'cloudform-types';
 import Table, { AttributeDefinition, GlobalSecondaryIndex } from 'cloudform-types/types/dynamoDb/table';
 import _ from 'lodash';
 import * as path from 'path';
-const category = 'storage';
+import { AmplifyCategories } from 'amplify-cli-core';
 
 export const getCloudFormationTemplatePath = (resourceName: string) => {
-  return path.join(pathManager.getBackendDirPath(), category, resourceName, `${resourceName}-cloudformation-template.json`);
+  return path.join(
+    pathManager.getBackendDirPath(),
+    AmplifyCategories.STORAGE,
+    resourceName,
+    `${resourceName}-cloudformation-template.json`,
+  );
 };
 
 export const getExistingStorageGSIs = async (resourceName: string) => {
