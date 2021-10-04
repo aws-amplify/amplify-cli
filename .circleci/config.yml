@@ -515,7 +515,7 @@ jobs:
             changeNpmGlobalPath
             cd packages/amplify-migration-tests
             setAwsAccountCredentials
-            retry yarn run migration_v4.30.0_auth --maxWorkers=3
+            retry yarn run migration_v4.30.0_auth --maxWorkers=3 $TEST_SUITE
           no_output_timeout: 90m
       - run:
           name: Scan And Cleanup E2E Test Artifacts
@@ -11263,7 +11263,7 @@ jobs:
             changeNpmGlobalPath
             cd packages/amplify-migration-tests
             setAwsAccountCredentials
-            retry yarn run migration_v4.30.0_auth --maxWorkers=3
+            retry yarn run migration_v4.30.0_auth --maxWorkers=3 $TEST_SUITE
           no_output_timeout: 90m
       - run:
           name: Scan And Cleanup E2E Test Artifacts
@@ -11310,7 +11310,7 @@ jobs:
             changeNpmGlobalPath
             cd packages/amplify-migration-tests
             setAwsAccountCredentials
-            retry yarn run migration_v4.30.0_auth --maxWorkers=3
+            retry yarn run migration_v4.30.0_auth --maxWorkers=3 $TEST_SUITE
           no_output_timeout: 90m
       - run:
           name: Scan And Cleanup E2E Test Artifacts
@@ -11357,7 +11357,7 @@ jobs:
             changeNpmGlobalPath
             cd packages/amplify-migration-tests
             setAwsAccountCredentials
-            retry yarn run migration_v4.30.0_auth --maxWorkers=3
+            retry yarn run migration_v4.30.0_auth --maxWorkers=3 $TEST_SUITE
           no_output_timeout: 90m
       - run:
           name: Scan And Cleanup E2E Test Artifacts
@@ -11404,7 +11404,7 @@ jobs:
             changeNpmGlobalPath
             cd packages/amplify-migration-tests
             setAwsAccountCredentials
-            retry yarn run migration_v4.30.0_auth --maxWorkers=3
+            retry yarn run migration_v4.30.0_auth --maxWorkers=3 $TEST_SUITE
           no_output_timeout: 90m
       - run:
           name: Scan And Cleanup E2E Test Artifacts
@@ -11451,7 +11451,7 @@ jobs:
             changeNpmGlobalPath
             cd packages/amplify-migration-tests
             setAwsAccountCredentials
-            retry yarn run migration_v4.30.0_auth --maxWorkers=3
+            retry yarn run migration_v4.30.0_auth --maxWorkers=3 $TEST_SUITE
           no_output_timeout: 90m
       - run:
           name: Scan And Cleanup E2E Test Artifacts
@@ -11497,7 +11497,7 @@ jobs:
             changeNpmGlobalPath
             cd packages/amplify-migration-tests
             setAwsAccountCredentials
-            retry yarn run migration_v4.30.0_auth --maxWorkers=3
+            retry yarn run migration_v4.30.0_auth --maxWorkers=3 $TEST_SUITE
           no_output_timeout: 90m
       - run:
           name: Scan And Cleanup E2E Test Artifacts
@@ -11543,7 +11543,7 @@ jobs:
             changeNpmGlobalPath
             cd packages/amplify-migration-tests
             setAwsAccountCredentials
-            retry yarn run migration_v4.30.0_auth --maxWorkers=3
+            retry yarn run migration_v4.30.0_auth --maxWorkers=3 $TEST_SUITE
           no_output_timeout: 90m
       - run:
           name: Scan And Cleanup E2E Test Artifacts
@@ -11589,7 +11589,7 @@ jobs:
             changeNpmGlobalPath
             cd packages/amplify-migration-tests
             setAwsAccountCredentials
-            retry yarn run migration_v4.30.0_auth --maxWorkers=3
+            retry yarn run migration_v4.30.0_auth --maxWorkers=3 $TEST_SUITE
           no_output_timeout: 90m
       - run:
           name: Scan And Cleanup E2E Test Artifacts
@@ -11635,7 +11635,7 @@ jobs:
             changeNpmGlobalPath
             cd packages/amplify-migration-tests
             setAwsAccountCredentials
-            retry yarn run migration_v4.30.0_auth --maxWorkers=3
+            retry yarn run migration_v4.30.0_auth --maxWorkers=3 $TEST_SUITE
           no_output_timeout: 90m
       - run:
           name: Scan And Cleanup E2E Test Artifacts
