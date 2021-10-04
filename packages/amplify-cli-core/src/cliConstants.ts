@@ -26,7 +26,7 @@ export const AmplifySupportedService = {
   COGNITO: 'Cognito',
 };
 
-export const overriddenCategories = [AmplifyCategories.AUTH];
+export const overriddenCategories = [AmplifyCategories.AUTH, AmplifyCategories.STORAGE];
 
 export type IAmplifyResource = {
   category: string;
