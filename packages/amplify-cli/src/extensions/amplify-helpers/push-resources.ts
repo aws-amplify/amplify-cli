@@ -4,7 +4,15 @@ import { onCategoryOutputsChange } from './on-category-outputs-change';
 import { initializeEnv } from '../../initialize-env';
 import { getProviderPlugins } from './get-provider-plugins';
 import { getEnvInfo } from './get-env-info';
-import { EnvironmentDoesNotExistError, exitOnNextTick, stateManager, $TSAny, $TSContext } from 'amplify-cli-core';
+import {
+  EnvironmentDoesNotExistError,
+  exitOnNextTick,
+  stateManager,
+  $TSAny,
+  $TSContext,
+  CustomPoliciesFormatError,
+} from 'amplify-cli-core';
+import { printer } from 'amplify-prompts';
 
 export async function pushResources(
   context: $TSContext,
@@ -67,27 +75,20 @@ export async function pushResources(
     continueToPush = await context.amplify.confirmPrompt('Are you sure you want to continue?');
   }
 
-  let retryPush;
   if (continueToPush) {
-    do {
-      retryPush = false;
-      try {
-        // Get current-cloud-backend's amplify-meta
-        const currentAmplifyMeta = stateManager.getCurrentMeta();
+    try {
+      // Get current-cloud-backend's amplify-meta
+      const currentAmplifyMeta = stateManager.getCurrentMeta();
 
-        await providersPush(context, category, resourceName, filteredResources);
-        await onCategoryOutputsChange(context, currentAmplifyMeta);
-      } catch (err) {
-        if (await isValidGraphQLAuthError(err.message)) {
-          retryPush = await handleValidGraphQLAuthError(context, err.message);
-        }
-        if (!retryPush) {
-          // Handle the errors and print them nicely for the user.
-          context.print.error(`\n${err.message}`);
-          throw err;
-        }
+      await providersPush(context, category, resourceName, filteredResources);
+      await onCategoryOutputsChange(context, currentAmplifyMeta);
+    } catch (err) {
+      // Handle the errors and print them nicely for the user.
+      if (!(err instanceof CustomPoliciesFormatError)) {
+        printer.error(`\n${err.message}`);
       }
-    } while (retryPush);
+      throw err;
+    }
   } else {
     // there's currently no other mechanism to stop the execution of the postPush workflow in this case, so exiting here
     exitOnNextTick(1);

@@ -576,3 +576,29 @@ export function addRestContainerApi(projectDir: string) {
       });
   });
 }
+
+export function addRestContainerApiForCustomPolicies(projectDir: string, settings: { name: string }) {
+  return new Promise<void>((resolve, reject) => {
+    spawn(getCLIPath(), ['add', 'api'], { cwd: projectDir, stripColors: true })
+      .wait('Please select from one of the below mentioned services:')
+      .sendKeyDown()
+      .sendCarriageReturn()
+      .wait('Which service would you like to use')
+      .sendKeyDown()
+      .sendCarriageReturn()
+      .wait('Provide a friendly name for your resource to be used as a label for this category in the project:')
+      .send(settings.name)
+      .sendCarriageReturn()
+      .wait('What image would you like to use')
+      .sendKeyDown()
+      .sendCarriageReturn()
+      .wait('When do you want to build & deploy the Fargate task')
+      .sendCarriageReturn()
+      .wait('Do you want to restrict API access')
+      .sendConfirmNo()
+      .wait('Select which container is the entrypoint')
+      .sendCarriageReturn()
+      .wait('"amplify publish" will build all your local backend and frontend resources')
+      .run((err: Error) => (err ? reject(err) : resolve()));
+  });
+}

@@ -1,11 +1,12 @@
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import _ from 'lodash';
-import { $TSAny, $TSMeta, $TSTeamProviderInfo, DeploymentSecrets, HooksConfig, PathConstants } from '..';
-import { SecretFileMode } from '../cliConstants';
+import { PathConstants, pathManager } from './pathManager';
+import { $TSMeta, $TSTeamProviderInfo, $TSAny, DeploymentSecrets, HooksConfig } from '..';
 import { JSONUtilities } from '../jsonUtilities';
+import { SecretFileMode } from '../cliConstants';
 import { HydrateTags, ReadTags, Tag } from '../tags';
-import { pathManager } from './pathManager';
+import { CustomIAMPolicies } from '../customPoliciesUtils';
 
 export type GetOptions<T> = {
   throwIfNotExist?: boolean;
@@ -74,6 +75,15 @@ export class StateManager {
     };
 
     return this.getData<$TSTeamProviderInfo>(filePath, mergedOptions);
+  };
+
+  getCustomPolicies = (categoryName: string, resourceName: string): CustomIAMPolicies | undefined => {
+    const filePath = pathManager.getCustomPoliciesPath(categoryName, resourceName);
+    try {
+      return JSONUtilities.readJson<CustomIAMPolicies>(filePath);
+    } catch (err) {
+      return undefined;
+    }
   };
 
   localEnvInfoExists = (projectPath?: string): boolean => this.doesExist(pathManager.getLocalEnvFilePath, projectPath);

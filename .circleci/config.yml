@@ -1307,6 +1307,22 @@ jobs:
     environment:
       TEST_SUITE: src/__tests__/frontend_config_drift.test.ts
       CLI_REGION: eu-central-1
+  custom_policies_function-amplify_e2e_tests:
+    working_directory: ~/repo
+    docker: *ref_1
+    resource_class: large
+    steps: *ref_5
+    environment:
+      TEST_SUITE: src/__tests__/custom_policies_function.test.ts
+      CLI_REGION: ap-northeast-1
+  custom_policies_container-amplify_e2e_tests:
+    working_directory: ~/repo
+    docker: *ref_1
+    resource_class: large
+    steps: *ref_5
+    environment:
+      TEST_SUITE: src/__tests__/custom_policies_container.test.ts
+      CLI_REGION: ap-southeast-1
   container-hosting-amplify_e2e_tests:
     working_directory: ~/repo
     docker: *ref_1
@@ -1314,7 +1330,7 @@ jobs:
     steps: *ref_5
     environment:
       TEST_SUITE: src/__tests__/container-hosting.test.ts
-      CLI_REGION: ap-northeast-1
+      CLI_REGION: ap-southeast-2
   configure-project-amplify_e2e_tests:
     working_directory: ~/repo
     docker: *ref_1
@@ -1322,7 +1338,7 @@ jobs:
     steps: *ref_5
     environment:
       TEST_SUITE: src/__tests__/configure-project.test.ts
-      CLI_REGION: ap-southeast-1
+      CLI_REGION: us-east-2
   auth_6-amplify_e2e_tests:
     working_directory: ~/repo
     docker: *ref_1
@@ -1330,7 +1346,7 @@ jobs:
     steps: *ref_5
     environment:
       TEST_SUITE: src/__tests__/auth_6.test.ts
-      CLI_REGION: ap-southeast-2
+      CLI_REGION: us-west-2
   api_5-amplify_e2e_tests:
     working_directory: ~/repo
     docker: *ref_1
@@ -1338,7 +1354,7 @@ jobs:
     steps: *ref_5
     environment:
       TEST_SUITE: src/__tests__/api_5.test.ts
-      CLI_REGION: us-east-2
+      CLI_REGION: eu-west-2
   api_4-amplify_e2e_tests:
     working_directory: ~/repo
     docker: *ref_1
@@ -1346,7 +1362,7 @@ jobs:
     steps: *ref_5
     environment:
       TEST_SUITE: src/__tests__/api_4.test.ts
-      CLI_REGION: us-west-2
+      CLI_REGION: eu-central-1
   schema-iterative-update-4-amplify_e2e_tests_pkg_linux:
     working_directory: ~/repo
     docker: *ref_1
@@ -2157,6 +2173,26 @@ jobs:
       TEST_SUITE: src/__tests__/frontend_config_drift.test.ts
       CLI_REGION: eu-central-1
     steps: *ref_6
+  custom_policies_function-amplify_e2e_tests_pkg_linux:
+    working_directory: ~/repo
+    docker: *ref_1
+    resource_class: large
+    environment:
+      AMPLIFY_DIR: /home/circleci/repo/out
+      AMPLIFY_PATH: /home/circleci/repo/out/amplify-pkg-linux
+      TEST_SUITE: src/__tests__/custom_policies_function.test.ts
+      CLI_REGION: ap-northeast-1
+    steps: *ref_6
+  custom_policies_container-amplify_e2e_tests_pkg_linux:
+    working_directory: ~/repo
+    docker: *ref_1
+    resource_class: large
+    environment:
+      AMPLIFY_DIR: /home/circleci/repo/out
+      AMPLIFY_PATH: /home/circleci/repo/out/amplify-pkg-linux
+      TEST_SUITE: src/__tests__/custom_policies_container.test.ts
+      CLI_REGION: ap-southeast-1
+    steps: *ref_6
   container-hosting-amplify_e2e_tests_pkg_linux:
     working_directory: ~/repo
     docker: *ref_1
@@ -2165,7 +2201,7 @@ jobs:
       AMPLIFY_DIR: /home/circleci/repo/out
       AMPLIFY_PATH: /home/circleci/repo/out/amplify-pkg-linux
       TEST_SUITE: src/__tests__/container-hosting.test.ts
-      CLI_REGION: ap-northeast-1
+      CLI_REGION: ap-southeast-2
     steps: *ref_6
   configure-project-amplify_e2e_tests_pkg_linux:
     working_directory: ~/repo
@@ -2175,7 +2211,7 @@ jobs:
       AMPLIFY_DIR: /home/circleci/repo/out
       AMPLIFY_PATH: /home/circleci/repo/out/amplify-pkg-linux
       TEST_SUITE: src/__tests__/configure-project.test.ts
-      CLI_REGION: ap-southeast-1
+      CLI_REGION: us-east-2
     steps: *ref_6
   auth_6-amplify_e2e_tests_pkg_linux:
     working_directory: ~/repo
@@ -2185,7 +2221,7 @@ jobs:
       AMPLIFY_DIR: /home/circleci/repo/out
       AMPLIFY_PATH: /home/circleci/repo/out/amplify-pkg-linux
       TEST_SUITE: src/__tests__/auth_6.test.ts
-      CLI_REGION: ap-southeast-2
+      CLI_REGION: us-west-2
     steps: *ref_6
   api_5-amplify_e2e_tests_pkg_linux:
     working_directory: ~/repo
@@ -2195,7 +2231,7 @@ jobs:
       AMPLIFY_DIR: /home/circleci/repo/out
       AMPLIFY_PATH: /home/circleci/repo/out/amplify-pkg-linux
       TEST_SUITE: src/__tests__/api_5.test.ts
-      CLI_REGION: us-east-2
+      CLI_REGION: eu-west-2
     steps: *ref_6
   api_4-amplify_e2e_tests_pkg_linux:
     working_directory: ~/repo
@@ -2205,7 +2241,7 @@ jobs:
       AMPLIFY_DIR: /home/circleci/repo/out
       AMPLIFY_PATH: /home/circleci/repo/out/amplify-pkg-linux
       TEST_SUITE: src/__tests__/api_4.test.ts
-      CLI_REGION: us-west-2
+      CLI_REGION: eu-central-1
     steps: *ref_6
 workflows:
   version: 2
@@ -2312,61 +2348,61 @@ workflows:
             - datastore-modelgen-amplify_e2e_tests
             - pull-amplify_e2e_tests
             - function_7-amplify_e2e_tests
-            - api_5-amplify_e2e_tests
+            - configure-project-amplify_e2e_tests
             - init-special-case-amplify_e2e_tests
             - migration-node-function-amplify_e2e_tests
             - function_6-amplify_e2e_tests
-            - api_4-amplify_e2e_tests
-            - schema-versioned-amplify_e2e_tests
+            - auth_6-amplify_e2e_tests
             - plugin-amplify_e2e_tests
             - migration-api-connection-migration2-amplify_e2e_tests
             - function_5-amplify_e2e_tests
-            - notifications-amplify_e2e_tests
+            - api_5-amplify_e2e_tests
             - schema-iterative-update-locking-amplify_e2e_tests
             - layer-2-amplify_e2e_tests
             - frontend_config_drift-amplify_e2e_tests
+            - api_4-amplify_e2e_tests
             - tags-amplify_e2e_tests
             - sandbox-mode-amplify_e2e_tests
             - iam-permissions-boundary-amplify_e2e_tests
-            - container-hosting-amplify_e2e_tests
+            - custom_policies_function-amplify_e2e_tests
             - init-amplify_e2e_tests
             - s3-sse-amplify_e2e_tests
             - hooks-amplify_e2e_tests
-            - configure-project-amplify_e2e_tests
+            - custom_policies_container-amplify_e2e_tests
             - amplify-configure-amplify_e2e_tests
             - resolvers-amplify_e2e_tests
             - function_9-amplify_e2e_tests
-            - auth_6-amplify_e2e_tests
+            - container-hosting-amplify_e2e_tests
       - done_with_pkg_linux_e2e_tests:
           requires:
             - datastore-modelgen-amplify_e2e_tests_pkg_linux
             - pull-amplify_e2e_tests_pkg_linux
             - function_7-amplify_e2e_tests_pkg_linux
-            - api_5-amplify_e2e_tests_pkg_linux
+            - configure-project-amplify_e2e_tests_pkg_linux
             - init-special-case-amplify_e2e_tests_pkg_linux
             - migration-node-function-amplify_e2e_tests_pkg_linux
             - function_6-amplify_e2e_tests_pkg_linux
-            - api_4-amplify_e2e_tests_pkg_linux
-            - schema-versioned-amplify_e2e_tests_pkg_linux
+            - auth_6-amplify_e2e_tests_pkg_linux
             - plugin-amplify_e2e_tests_pkg_linux
             - migration-api-connection-migration2-amplify_e2e_tests_pkg_linux
             - function_5-amplify_e2e_tests_pkg_linux
-            - notifications-amplify_e2e_tests_pkg_linux
+            - api_5-amplify_e2e_tests_pkg_linux
             - schema-iterative-update-locking-amplify_e2e_tests_pkg_linux
             - layer-2-amplify_e2e_tests_pkg_linux
             - frontend_config_drift-amplify_e2e_tests_pkg_linux
+            - api_4-amplify_e2e_tests_pkg_linux
             - tags-amplify_e2e_tests_pkg_linux
             - sandbox-mode-amplify_e2e_tests_pkg_linux
             - iam-permissions-boundary-amplify_e2e_tests_pkg_linux
-            - container-hosting-amplify_e2e_tests_pkg_linux
+            - custom_policies_function-amplify_e2e_tests_pkg_linux
             - init-amplify_e2e_tests_pkg_linux
             - s3-sse-amplify_e2e_tests_pkg_linux
             - hooks-amplify_e2e_tests_pkg_linux
-            - configure-project-amplify_e2e_tests_pkg_linux
+            - custom_policies_container-amplify_e2e_tests_pkg_linux
             - amplify-configure-amplify_e2e_tests_pkg_linux
             - resolvers-amplify_e2e_tests_pkg_linux
             - function_9-amplify_e2e_tests_pkg_linux
-            - auth_6-amplify_e2e_tests_pkg_linux
+            - container-hosting-amplify_e2e_tests_pkg_linux
       - amplify_migration_tests_latest:
           context:
             - amplify-ecr-image-pull
@@ -2579,7 +2615,7 @@ workflows:
           filters: *ref_10
           requires:
             - containers-api-amplify_e2e_tests
-      - api_5-amplify_e2e_tests:
+      - configure-project-amplify_e2e_tests:
           context: *ref_8
           post-steps: *ref_9
           filters: *ref_10
@@ -2657,7 +2693,7 @@ workflows:
           filters: *ref_10
           requires:
             - schema-iterative-update-2-amplify_e2e_tests
-      - api_4-amplify_e2e_tests:
+      - auth_6-amplify_e2e_tests:
           context: *ref_8
           post-steps: *ref_9
           filters: *ref_10
@@ -2729,6 +2765,12 @@ workflows:
           filters: *ref_10
           requires:
             - feature-flags-amplify_e2e_tests
+      - api_5-amplify_e2e_tests:
+          context: *ref_8
+          post-steps: *ref_9
+          filters: *ref_10
+          requires:
+            - schema-versioned-amplify_e2e_tests
       - schema-auth-5-amplify_e2e_tests:
           context: *ref_8
           post-steps: *ref_9
@@ -2801,6 +2843,12 @@ workflows:
           filters: *ref_10
           requires:
             - analytics-amplify_e2e_tests
+      - api_4-amplify_e2e_tests:
+          context: *ref_8
+          post-steps: *ref_9
+          filters: *ref_10
+          requires:
+            - notifications-amplify_e2e_tests
       - api_1-amplify_e2e_tests:
           context: *ref_8
           post-steps: *ref_9
@@ -2867,7 +2915,7 @@ workflows:
           filters: *ref_10
           requires:
             - geo-update-amplify_e2e_tests
-      - container-hosting-amplify_e2e_tests:
+      - custom_policies_function-amplify_e2e_tests:
           context: *ref_8
           post-steps: *ref_9
           filters: *ref_10
@@ -2945,7 +2993,7 @@ workflows:
           filters: *ref_10
           requires:
             - hostingPROD-amplify_e2e_tests
-      - configure-project-amplify_e2e_tests:
+      - custom_policies_container-amplify_e2e_tests:
           context: *ref_8
           post-steps: *ref_9
           filters: *ref_10
@@ -3017,7 +3065,7 @@ workflows:
           filters: *ref_10
           requires:
             - predictions-amplify_e2e_tests
-      - auth_6-amplify_e2e_tests:
+      - container-hosting-amplify_e2e_tests:
           context: *ref_8
           post-steps: *ref_9
           filters: *ref_10
@@ -3109,7 +3157,7 @@ workflows:
           filters: *ref_13
           requires:
             - containers-api-amplify_e2e_tests_pkg_linux
-      - api_5-amplify_e2e_tests_pkg_linux:
+      - configure-project-amplify_e2e_tests_pkg_linux:
           context: *ref_11
           post-steps: *ref_12
           filters: *ref_13
@@ -3191,7 +3239,7 @@ workflows:
           filters: *ref_13
           requires:
             - schema-iterative-update-2-amplify_e2e_tests_pkg_linux
-      - api_4-amplify_e2e_tests_pkg_linux:
+      - auth_6-amplify_e2e_tests_pkg_linux:
           context: *ref_11
           post-steps: *ref_12
           filters: *ref_13
@@ -3267,6 +3315,12 @@ workflows:
           filters: *ref_13
           requires:
             - feature-flags-amplify_e2e_tests_pkg_linux
+      - api_5-amplify_e2e_tests_pkg_linux:
+          context: *ref_11
+          post-steps: *ref_12
+          filters: *ref_13
+          requires:
+            - schema-versioned-amplify_e2e_tests_pkg_linux
       - schema-auth-5-amplify_e2e_tests_pkg_linux:
           context: *ref_11
           post-steps: *ref_12
@@ -3343,6 +3397,12 @@ workflows:
           filters: *ref_13
           requires:
             - analytics-amplify_e2e_tests_pkg_linux
+      - api_4-amplify_e2e_tests_pkg_linux:
+          context: *ref_11
+          post-steps: *ref_12
+          filters: *ref_13
+          requires:
+            - notifications-amplify_e2e_tests_pkg_linux
       - api_1-amplify_e2e_tests_pkg_linux:
           context: *ref_11
           post-steps: *ref_12
@@ -3413,7 +3473,7 @@ workflows:
           filters: *ref_13
           requires:
             - geo-update-amplify_e2e_tests_pkg_linux
-      - container-hosting-amplify_e2e_tests_pkg_linux:
+      - custom_policies_function-amplify_e2e_tests_pkg_linux:
           context: *ref_11
           post-steps: *ref_12
           filters: *ref_13
@@ -3495,7 +3555,7 @@ workflows:
           filters: *ref_13
           requires:
             - hostingPROD-amplify_e2e_tests_pkg_linux
-      - configure-project-amplify_e2e_tests_pkg_linux:
+      - custom_policies_container-amplify_e2e_tests_pkg_linux:
           context: *ref_11
           post-steps: *ref_12
           filters: *ref_13
@@ -3571,7 +3631,7 @@ workflows:
           filters: *ref_13
           requires:
             - predictions-amplify_e2e_tests_pkg_linux
-      - auth_6-amplify_e2e_tests_pkg_linux:
+      - container-hosting-amplify_e2e_tests_pkg_linux:
           context: *ref_11
           post-steps: *ref_12
           filters: *ref_13

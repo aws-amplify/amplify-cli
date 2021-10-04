@@ -22,7 +22,7 @@ const awsCredentials = {
   secretAccessKey: 'TestAmplifyContextsSecretAccessKey',
 };
 
-const mockContext = ({
+const mockContext = {
   exeInfo: {
     localEnvInfo: { projectPath: testProjectRootPath },
     region: 'TestAmplifyContextRegion',
@@ -39,7 +39,7 @@ const mockContext = ({
       .fn()
       .mockReturnValue({ teamProviderInfo: { 'test-env': { awscloudformation: { DeploymentBucketName: bucketName } } } }),
   },
-} as unknown) as $TSContext;
+} as unknown as $TSContext;
 
 let S3_mock_instance: S3;
 
@@ -59,7 +59,6 @@ const istestProjectSubPath = childPath => {
   return relativePath && !relativePath.startsWith('..') && !path.isAbsolute(relativePath);
 };
 
-jest.mock('process');
 jest.mock('amplify-cli-core', () => ({ ...Object.assign({}, jest.requireActual('amplify-cli-core')) }));
 jest.mock('glob', () => {
   const actualGlob = jest.requireActual('glob');
@@ -111,26 +110,18 @@ describe('test hooks-manager ', () => {
     jest.clearAllMocks();
 
     S3_mock_instance = await S3.getInstance(mockContext);
-    jest.spyOn(S3_mock_instance, 'deleteDirectory').mockImplementation(
-      (): Promise<void> => {
-        return;
-      },
-    );
-    jest.spyOn(S3_mock_instance, 'uploadFile').mockImplementation(
-      (): Promise<string> => {
-        return;
-      },
-    );
-    jest.spyOn(S3_mock_instance, 'getAllObjectVersions').mockImplementation(
-      (): Promise<Required<aws.S3.ObjectIdentifier>[]> => {
-        return S3ListObjectsMockReturn.Contents as any;
-      },
-    );
-    jest.spyOn(S3_mock_instance, 'getFile').mockImplementation(
-      (): Promise<aws.S3.Body> => {
-        return 'test data' as any;
-      },
-    );
+    jest.spyOn(S3_mock_instance, 'deleteDirectory').mockImplementation((): Promise<void> => {
+      return;
+    });
+    jest.spyOn(S3_mock_instance, 'uploadFile').mockImplementation((): Promise<string> => {
+      return;
+    });
+    jest.spyOn(S3_mock_instance, 'getAllObjectVersions').mockImplementation((): Promise<Required<aws.S3.ObjectIdentifier>[]> => {
+      return S3ListObjectsMockReturn.Contents as any;
+    });
+    jest.spyOn(S3_mock_instance, 'getFile').mockImplementation((): Promise<aws.S3.Body> => {
+      return 'test data' as any;
+    });
   });
   afterEach(() => {});
 
