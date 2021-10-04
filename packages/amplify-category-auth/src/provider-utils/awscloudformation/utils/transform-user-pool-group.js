@@ -1,6 +1,7 @@
 const path = require('path');
 const fs = require('fs');
-const { cfnTemplateRoot } = require('../constants');
+const { generateUserPoolGroupStackTemplate } = require('./generate-user-pool-group-stack-template');
+const { AuthInputState } = require('../auth-inputs-manager/auth-input-state');
 
 async function transformUserPoolGroupSchema(context) {
   const resourceDirPath = path.join(
@@ -41,23 +42,18 @@ async function transformUserPoolGroupSchema(context) {
     }
   });
 
-  const copyJobs = [
-    {
-      dir: cfnTemplateRoot,
-      template: 'user-pool-group-template.json.ejs',
-      target: path.join(context.amplify.pathManager.getBackendDirPath(), 'auth', 'userPoolGroups', 'template.json'),
-    },
-  ];
-
-  const authResourceParameters = loadResourceParameters(context, authResourceName);
-
+  // validating cli-inputs
+  const cliState = new AuthInputState(authResourceName);
+  const identityPoolName = cliState.getCLIInputPayload()?.identityPoolName;
   const props = {
     groups,
     cognitoResourceName: authResourceName,
-    identityPoolName: authResourceParameters.identityPoolName,
+    identityPoolName: identityPoolName,
   };
 
-  await context.amplify.copyBatch(context, copyJobs, props, true);
+  await generateUserPoolGroupStackTemplate(props);
+
+  //await context.amplify.copyBatch(context, copyJobs, props, true);
 }
 
 function loadResourceParameters(context, authResourceName) {

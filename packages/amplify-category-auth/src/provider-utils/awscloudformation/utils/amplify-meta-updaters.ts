@@ -18,7 +18,7 @@ export const getPostAddAuthMetaUpdater =
       service: resultMetadata.service,
       providerPlugin: resultMetadata.providerName,
     };
-    const parametersJSONPath = path.join(context.amplify.pathManager.getBackendDirPath(), 'auth', resourceName, 'parameters.json');
+    const parametersJSONPath = path.join(context.amplify.pathManager.getBackendDirPath(), 'auth', resourceName, 'build', 'parameters.json');
     const authParameters = JSONUtilities.readJson<AuthParameters>(parametersJSONPath)!;
 
     if (authParameters.dependsOn) {
@@ -65,7 +65,7 @@ export const getPostAddAuthMetaUpdater =
  * @param context The amplify context
  */
 export const getPostUpdateAuthMetaUpdater = (context: any) => async (resourceName: string) => {
-  const resourceDirPath = path.join(pathManager.getBackendDirPath(), 'auth', resourceName, 'parameters.json');
+  const resourceDirPath = path.join(pathManager.getBackendDirPath(), 'auth', resourceName, 'build', 'parameters.json');
   const authParameters = JSONUtilities.readJson<AuthParameters>(resourceDirPath)!;
   if (authParameters.dependsOn) {
     context.amplify.updateamplifyMetaAfterResourceUpdate('auth', resourceName, 'dependsOn', authParameters.dependsOn);
@@ -73,7 +73,7 @@ export const getPostUpdateAuthMetaUpdater = (context: any) => async (resourceNam
 
   let customAuthConfigured = false;
   if (authParameters.triggers) {
-    const triggers = JSON.parse(authParameters.triggers);
+    const triggers = JSONUtilities.parse<any>(authParameters.triggers);
     customAuthConfigured =
       !!triggers.DefineAuthChallenge &&
       triggers.DefineAuthChallenge.length > 0 &&
@@ -101,33 +101,22 @@ export const getPostUpdateAuthMetaUpdater = (context: any) => async (resourceNam
     ];
 
     context.amplify.updateamplifyMetaAfterResourceUpdate('auth', 'userPoolGroups', 'dependsOn', userPoolGroupDependsOn);
-    await transformUserPoolGroupSchema(context);
   }
   return resourceName;
 };
 
-export function getFrontendConfig(authParameters: AuthParameters) {
-  const verificationMechanisms = (authParameters?.autoVerifiedAttributes || []).map((att: string) => att.toUpperCase());
-  const loginMechanisms = new Set<string>();
-  (authParameters?.aliasAttributes ?? []).forEach(it => loginMechanisms.add(it.toUpperCase()));
-
-  // backwards compatibility
-  if (authParameters?.usernameAttributes && authParameters.usernameAttributes.length > 0) {
-    authParameters.usernameAttributes[0].split(',').forEach(it => loginMechanisms.add(it.trim().toUpperCase()));
-  }
+function getFrontendConfig(authParameters: AuthParameters) {
+  const loginMechanisms: string[] = [];
+  loginMechanisms.push(...(authParameters?.aliasAttributes || []).map((att: string) => att.toUpperCase()));
 
   if (authParameters.authProviders) {
     authParameters.authProviders.forEach((provider: string) => {
       let name = authProviderList.find(it => it.value === provider)?.name;
 
       if (name) {
-        loginMechanisms.add(name.toUpperCase());
+        loginMechanisms.push(name.toUpperCase());
       }
     });
-  }
-
-  if (loginMechanisms.size === 0) {
-    loginMechanisms.add('PREFERRED_USERNAME');
   }
 
   const signupAttributes = (authParameters?.requiredAttributes || []).map((att: string) => att.toUpperCase());
@@ -149,11 +138,10 @@ export function getFrontendConfig(authParameters: AuthParameters) {
   }
 
   return {
-    loginMechanisms: Array.from(loginMechanisms),
+    loginMechanisms: loginMechanisms,
     signupAttributes: signupAttributes,
     passwordProtectionSettings: passwordProtectionSettings,
     mfaConfiguration: authParameters?.mfaConfiguration,
     mfaTypes: mfaTypes,
-    verificationMechanisms: verificationMechanisms,
   };
 }

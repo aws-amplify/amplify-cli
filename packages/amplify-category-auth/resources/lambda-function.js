@@ -6,45 +6,12 @@ exports.handler = async function (event, context) {
     const userPoolId = event.ResourceProperties.userpoolId;
     const lambdaConfig = event.ResourceProperties.lambdaConfig;
     const config = {};
-    const cognitoClient = new aws.CognitoIdentityServiceProvider();
-    const userPoolConfig = await cognitoClient.describeUserPool({ UserPoolId: userPoolId }).promise();
-    const userPoolParams = userPoolConfig.UserPool;
-    // update userPool params
-
-    const updateUserPoolConfig = {
-      UserPoolId: userPoolParams.Id,
-      Policies: userPoolParams.Policies,
-      SmsVerificationMessage: userPoolParams.SmsVerificationMessage,
-      AccountRecoverySetting: userPoolParams.AccountRecoverySetting,
-      AdminCreateUserConfig: userPoolParams.AdminCreateUserConfig,
-      AutoVerifiedAttributes: userPoolParams.AutoVerifiedAttributes,
-      EmailConfiguration: userPoolParams.EmailConfiguration,
-      EmailVerificationMessage: userPoolParams.EmailVerificationMessage,
-      EmailVerificationSubject: userPoolParams.EmailVerificationSubject,
-      VerificationMessageTemplate: userPoolParams.VerificationMessageTemplate,
-      SmsAuthenticationMessage: userPoolParams.SmsAuthenticationMessage,
-      MfaConfiguration: userPoolParams.MfaConfiguration,
-      DeviceConfiguration: userPoolParams.DeviceConfiguration,
-      SmsConfiguration: userPoolParams.SmsConfiguration,
-      UserPoolTags: userPoolParams.UserPoolTags,
-      UserPoolAddOns: userPoolParams.UserPoolAddOns,
-    };
-
-    // removing undefined keys
-    Object.keys(updateUserPoolConfig).forEach(key => updateUserPoolConfig[key] === undefined && delete updateUserPoolConfig[key]);
-
-    /*removing UnusedAccountValidityDays as deprecated
-    InvalidParameterException: Please use TemporaryPasswordValidityDays in PasswordPolicy instead of UnusedAccountValidityDays
-    */
-    if (updateUserPoolConfig.AdminCreateUserConfig && updateUserPoolConfig.AdminCreateUserConfig.UnusedAccountValidityDays) {
-      delete updateUserPoolConfig.AdminCreateUserConfig.UnusedAccountValidityDays;
-    }
-
     lambdaConfig.forEach(lambda => (config[`${lambda.triggerType}`] = lambda.lambdaFunctionArn));
     if (event.RequestType == 'Delete') {
+      const authParams = { UserPoolId: userPoolId, LambdaConfig: {} };
+      const cognitoclient = new aws.CognitoIdentityServiceProvider();
       try {
-        updateUserPoolConfig.LambdaConfig = {};
-        const result = await cognitoClient.updateUserPool(updateUserPoolConfig).promise();
+        const result = await cognitoclient.updateUserPool(authParams).promise();
         console.log('delete response data ' + JSON.stringify(result));
         await response.send(event, context, response.SUCCESS, {});
       } catch (err) {
@@ -53,10 +20,11 @@ exports.handler = async function (event, context) {
       }
     }
     if (event.RequestType == 'Update' || event.RequestType == 'Create') {
-      updateUserPoolConfig.LambdaConfig = config;
-      console.log(updateUserPoolConfig);
+      const authParams = { UserPoolId: userPoolId, LambdaConfig: config };
+      console.log(authParams);
+      const cognitoclient = new aws.CognitoIdentityServiceProvider();
       try {
-        const result = await cognitoClient.updateUserPool(updateUserPoolConfig).promise();
+        const result = await cognitoclient.updateUserPool(authParams).promise();
         console.log('createOrUpdate response data ' + JSON.stringify(result));
         await response.send(event, context, response.SUCCESS, { result });
       } catch (err) {

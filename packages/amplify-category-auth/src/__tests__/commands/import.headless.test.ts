@@ -1,16 +1,10 @@
-import { executeAmplifyHeadlessCommand } from '../../../src';
+import { executeAmplifyHeadlessCommand } from '../../../lib';
 import { ImportAuthRequest } from 'amplify-headless-interface';
 import { messages } from '../../provider-utils/awscloudformation/assets/string-maps';
-import { stateManager, FeatureFlags, JSONUtilities } from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
-
-jest.mock('amplify-prompts', () => ({
-  printer: {
-    info: jest.fn(),
-  },
-}));
+import { stateManager } from 'amplify-cli-core';
 
 jest.mock('amplify-cli-core', () => ({
+  ...(jest.requireActual('amplify-cli-core') as {}),
   stateManager: {
     setResourceParametersJson: jest.fn(),
     getMeta: jest.fn().mockReturnValue({
@@ -19,13 +13,9 @@ jest.mock('amplify-cli-core', () => ({
       },
     }),
   },
-  FeatureFlags: {
-    getBoolean: () => false,
-  },
-  JSONUtilities: {
-    parse: JSON.parse,
-  },
 }));
+
+jest.mock('../../provider-utils/awscloudformation/auth-inputs-manager/auth-input-state');
 
 describe('import auth headless', () => {
   let mockContext: any;

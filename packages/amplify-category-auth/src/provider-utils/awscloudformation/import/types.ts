@@ -52,17 +52,15 @@ export type MetaOutput = {
 
 export type AuthParameters = {
   dependsOn?: $TSAny[];
-  triggers?: string;
+  triggers?: $TSAny;
   identityPoolName?: string;
   aliasAttributes?: string[];
-  usernameAttributes?: string[];
   authProviders?: string[];
   requiredAttributes?: string[];
   passwordPolicyMinLength?: string;
   passwordPolicyCharacters?: string[];
   mfaConfiguration?: string;
   mfaTypes?: string[];
-  autoVerifiedAttributes?: string[];
 };
 
 // Persisted into team-provider-info

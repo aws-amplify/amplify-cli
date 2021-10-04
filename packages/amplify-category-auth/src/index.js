@@ -1,7 +1,5 @@
 const category = 'auth';
 
-const { JSONUtilities, stateManager } = require('amplify-cli-core');
-const { validateAddAuthRequest, validateUpdateAuthRequest, validateImportAuthRequest } = require('amplify-util-headless-input');
 const _ = require('lodash');
 const path = require('path');
 const sequential = require('promise-sequential');
@@ -18,25 +16,32 @@ const { ENV_SPECIFIC_PARAMS } = require('./provider-utils/awscloudformation/cons
 
 const { transformUserPoolGroupSchema } = require('./provider-utils/awscloudformation/utils/transform-user-pool-group');
 const { uploadFiles } = require('./provider-utils/awscloudformation/utils/trigger-file-uploader');
+const { validateAddAuthRequest, validateUpdateAuthRequest, validateImportAuthRequest } = require('amplify-util-headless-input');
 const { getAddAuthRequestAdaptor, getUpdateAuthRequestAdaptor } = require('./provider-utils/awscloudformation/utils/auth-request-adaptors');
 const { getAddAuthHandler, getUpdateAuthHandler } = require('./provider-utils/awscloudformation/handlers/resource-handlers');
 const { projectHasAuth } = require('./provider-utils/awscloudformation/utils/project-has-auth');
 const { attachPrevParamsToContext } = require('./provider-utils/awscloudformation/utils/attach-prev-params-to-context');
-const { getFrontendConfig } = require('./provider-utils/awscloudformation/utils/amplify-meta-updaters');
+const { stateManager } = require('amplify-cli-core');
 const { headlessImport } = require('./provider-utils/awscloudformation/import');
-const { AuthParameters } = require('./provider-utils/awscloudformation/import/types');
-const { getSupportedServices } = require('./provider-utils/supported-services');
+const { generateAuthStackTemplate } = require('./provider-utils/awscloudformation/utils/generate-auth-stack-template');
+const {
+  AmplifyAuthTransform,
+  AmplifyUserPoolGroupTransform,
+  AmplifyAuthTemplate,
+  AmplifyUserPoolGroupTemplate,
+} = require('./provider-utils/awscloudformation/auth-stack-builder');
 
 const {
   doesConfigurationIncludeSMS,
   loadResourceParameters,
   loadImportedAuthParameters,
 } = require('./provider-utils/awscloudformation/utils/auth-sms-workflow-helper');
+const AuthInputState = require('./provider-utils/awscloudformation/auth-inputs-manager/auth-input-state');
 
 // this function is being kept for temporary compatability.
 async function add(context) {
   const { amplify } = context;
-  const servicesMetadata = getSupportedServices();
+  const servicesMetadata = require('./provider-utils/supported-services').supportedServices;
   const existingAuth = amplify.getProjectDetails().amplifyMeta.auth || {};
 
   if (Object.keys(existingAuth).length > 0) {
@@ -66,7 +71,7 @@ async function add(context) {
 
 async function externalAuthEnable(context, externalCategory, resourceName, requirements) {
   const { amplify } = context;
-  const serviceMetadata = getSupportedServices();
+  const serviceMetadata = require('./provider-utils/supported-services').supportedServices;
   const { cfnFilename, provider } = serviceMetadata.Cognito;
   const authExists = amplify.getProjectDetails().amplifyMeta.auth && Object.keys(amplify.getProjectDetails().amplifyMeta.auth).length > 0; //eslint-disable-line
   let currentAuthName;
@@ -80,9 +85,10 @@ async function externalAuthEnable(context, externalCategory, resourceName, requi
 
   // if auth has already been enabled, grab the existing parameters
   if (authExists) {
-    const providerPlugin = context.amplify.getPluginInstance(context, provider);
+    //const providerPlugin = context.amplify.getPluginInstance(context, provider);
     currentAuthName = await getAuthResourceName(context);
-    currentAuthParams = providerPlugin.loadResourceParameters(context, 'auth', currentAuthName);
+    const cliState = new AuthInputState(currentAuthName);
+    currentAuthParams = await cliState.loadResourceParameters(context, cliState.getCLIInputPayload());
 
     // sanity check that it cannot happen
     const existingAuthResource = _.get(amplify.getProjectDetails().amplifyMeta, ['auth', currentAuthName], undefined);
@@ -129,6 +135,7 @@ async function externalAuthEnable(context, externalCategory, resourceName, requi
 
   try {
     authProps = await removeDeprecatedProps(authProps);
+    //TODO: call transform function here
     await copyCfnTemplate(context, category, authProps, cfnFilename);
     await saveResourceParameters(context, provider, category, authProps.resourceName, authProps, ENV_SPECIFIC_PARAMS);
     const resourceDirPath = path.join(amplify.pathManager.getBackendDirPath(), 'auth', authProps.resourceName, 'parameters.json');
@@ -311,7 +318,7 @@ async function initEnv(context) {
 
 async function console(context) {
   const { amplify } = context;
-  const supportedServices = getSupportedServices();
+  const { supportedServices } = require('./provider-utils/supported-services');
   const amplifyMeta = amplify.getProjectMeta();
 
   if (!amplifyMeta.auth || Object.keys(amplifyMeta.auth).length === 0) {
@@ -403,10 +410,11 @@ const executeAmplifyHeadlessCommand = async (context, headlessPayload) => {
         return;
       }
       await validateImportAuthRequest(headlessPayload);
-      const { provider } = getSupportedServices().Cognito;
+      const { provider } = require('./provider-utils/supported-services').supportedServices.Cognito;
       const providerPlugin = context.amplify.getPluginInstance(context, provider);
       const cognito = await providerPlugin.createCognitoUserPoolService(context);
       const identity = await providerPlugin.createIdentityPoolService(context);
+      const { JSONUtilities } = require('amplify-cli-core/lib/jsonUtilities');
       const { userPoolId, identityPoolId, nativeClientId, webClientId } = JSONUtilities.parse(headlessPayload);
       const projectConfig = context.amplify.getProjectConfig();
       const resourceName = projectConfig.projectName.toLowerCase().replace(/[^A-Za-z0-9_]+/g, '_');
@@ -433,12 +441,12 @@ async function handleAmplifyEvent(context, args) {
 }
 
 async function prePushAuthHook(context) {
-  await transformUserPoolGroupSchema(context);
+  //await transformUserPoolGroupSchema(context);
 }
 
 async function importAuth(context) {
   const { amplify } = context;
-  const servicesMetadata = getSupportedServices();
+  const servicesMetadata = require('./provider-utils/supported-services').supportedServices;
   const existingAuth = amplify.getProjectDetails().amplifyMeta.auth || {};
 
   if (Object.keys(existingAuth).length > 0) {
@@ -479,6 +487,9 @@ module.exports = {
   category,
   importAuth,
   isSMSWorkflowEnabled,
-  AuthParameters,
-  getFrontendConfig,
+  generateAuthStackTemplate,
+  AmplifyAuthTransform,
+  AmplifyUserPoolGroupTransform,
+  AmplifyUserPoolGroupTemplate,
+  AmplifyAuthTemplate,
 };

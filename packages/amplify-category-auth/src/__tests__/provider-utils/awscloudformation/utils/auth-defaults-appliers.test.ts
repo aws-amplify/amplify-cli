@@ -1,4 +1,6 @@
-import { ServiceQuestionsResult } from '../../../../provider-utils/awscloudformation/service-walkthrough-types';
+import { $TSAny } from '../../../../../../amplify-cli-core/lib';
+import { CognitoConfiguration } from '../../../../provider-utils/awscloudformation/service-walkthrough-types/awsCognito-user-input-types';
+import { ServiceQuestionHeadlessResult } from '../../../../provider-utils/awscloudformation/service-walkthrough-types/cognito-user-input-types';
 import { structureOAuthMetadata } from '../../../../provider-utils/awscloudformation/service-walkthroughs/auth-questions';
 import {
   getAddAuthDefaultsApplier,
@@ -19,6 +21,7 @@ jest.mock('../../../../provider-utils/awscloudformation/service-walkthroughs/aut
 
 jest.mock('amplify-cli-core', () => {
   return {
+    ...(jest.requireActual('amplify-cli-core') as {}),
     FeatureFlags: {
       getBoolean: jest.fn().mockImplementation((name, defaultValue) => {
         if (name === 'auth.enableCaseInsensitivity') {
@@ -39,9 +42,9 @@ describe('update auth defaults applier', () => {
     const stubResult = {
       useDefault: 'manual',
       authSelections: 'userPoolOnly',
-    } as ServiceQuestionsResult;
+    } as ServiceQuestionHeadlessResult;
 
-    const result = await getUpdateAuthDefaultsApplier({}, 'cognito-defaults.js', {} as ServiceQuestionsResult)(stubResult);
+    const result = await getUpdateAuthDefaultsApplier({}, 'cognito-defaults.js', {} as $TSAny)(stubResult);
     expect(result).toMatchSnapshot();
     expect(structureOAuthMetadata_mock.mock.calls.length).toBe(1);
   });
@@ -51,20 +54,20 @@ describe('update auth defaults applier', () => {
       useDefault: 'manual',
       authSelections: 'userPoolOnly',
       requiredAttributes: [] as string[],
-    } as ServiceQuestionsResult;
+    } as ServiceQuestionHeadlessResult;
 
-    const result = await getUpdateAuthDefaultsApplier({}, 'cognito-defaults.js', {} as ServiceQuestionsResult)(stubResult);
+    const result = await getUpdateAuthDefaultsApplier({}, 'cognito-defaults.js', {} as $TSAny)(stubResult);
     expect(result.requiredAttributes).toEqual([]);
   });
 });
 
 describe('add auth defaults applier', () => {
   it('overwrites default parameters', async () => {
-    const stubResult: ServiceQuestionsResult = {
+    const stubResult: ServiceQuestionHeadlessResult = {
       useDefault: 'manual',
       authSelections: 'userPoolOnly',
       requiredAttributes: [] as string[],
-    } as ServiceQuestionsResult;
+    } as ServiceQuestionHeadlessResult;
 
     const result = await getAddAuthDefaultsApplier({}, 'cognito-defaults.js', 'testProjectName')(stubResult);
     expect(result.requiredAttributes).toEqual([]);

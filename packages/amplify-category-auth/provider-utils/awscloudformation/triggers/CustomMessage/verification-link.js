@@ -18,7 +18,7 @@ exports.handler = async event => {
       'sa-east-1',
     ];
 
-    const separator = hyphenRegions.includes(region) ? '-' : '.';
+    const seperator = hyphenRegions.includes(region) ? '-' : '.';
 
     const payload = Buffer.from(
       JSON.stringify({
@@ -28,7 +28,7 @@ exports.handler = async event => {
         clientId,
       }),
     ).toString('base64');
-    const bucketUrl = `http://${resourcePrefix}verificationbucket-${process.env.ENV}.s3-website${separator}${region}.amazonaws.com`;
+    const bucketUrl = `http://${resourcePrefix}verificationbucket-${process.env.ENV}.s3-website${seperator}${region}.amazonaws.com`;
     const url = `${bucketUrl}/?data=${payload}&code=${codeParameter}`;
     const message = `${process.env.EMAILMESSAGE}. \n ${url}`;
     event.response.smsMessage = message;
