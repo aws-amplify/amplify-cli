@@ -19,7 +19,6 @@ import { AmplifyUserPoolGroupStack } from './auth-user-pool-group-stack-builder'
 import * as amplifyPrinter from 'amplify-prompts';
 import _ from 'lodash';
 import { CognitoCLIInputs } from '../service-walkthrough-types/awsCognito-user-input-types';
-import { getAuthResourceName } from '../../../utils/getAuthResourceName';
 
 export type UserPoolGroupMetadata = {
   groupName: string;
@@ -37,6 +36,8 @@ export class AmplifyUserPoolGroupTransform extends AmplifyCategoryTransform {
   _app: cdk.App;
   _userPoolGroupTemplateObj: AmplifyUserPoolGroupStack; // Props to modify Root stack data
   _synthesizer: AuthStackSythesizer;
+  // private _synthesizerOutputs: RootStackSythesizer;
+  // private __userPoolGroupTemplateObjOutputs: AmplifyUserPoolGroupStackOutputs;
   _authResourceName: string;
   _category: string;
   _service: string;
@@ -166,6 +167,7 @@ export class AmplifyUserPoolGroupTransform extends AmplifyCategoryTransform {
       return false;
     });
     if (isBuild) {
+      console.log(path.join(overrideDir, 'build', 'override.js'));
       const { overrideProps } = await import(path.join(overrideDir, 'build', 'override.js')).catch(error => {
         amplifyPrinter.formatter.list([
           'No override File Found',

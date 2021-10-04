@@ -161,11 +161,18 @@
         "type": "category",
         "packageName": "amplify-category-api"
       },
-      "auth": {
-        "name": "auth",
-        "type": "category",
-        "packageName": "amplify-category-auth"
-      },
+      "auth": [
+        {
+          "name": "auth",
+          "type": "category",
+          "packageName": "@aws-amplify/amplify-category-auth"
+        },
+        {
+          "name": "auth",
+          "type": "category",
+          "packageName": "amplify-category-auth"
+        }
+      ],
       "function": {
         "name": "function",
         "type": "category",

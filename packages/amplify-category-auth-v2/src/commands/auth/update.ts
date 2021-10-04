@@ -1,7 +1,12 @@
 import { messages } from '../../provider-utils/awscloudformation/assets/string-maps';
 import { getAuthResourceName } from '../../utils/getAuthResourceName';
-import { category } from '../..';
+import { category, generateAuthStackTemplate } from '../..';
 import { $TSContext, stateManager } from 'amplify-cli-core';
+import { printer, prompter } from 'amplify-prompts';
+import { AuthInputState } from '../../provider-utils/awscloudformation/auth-inputs-manager/auth-input-state';
+import _ from 'lodash';
+import { migrateResourceToSupportOverride } from '../../provider-utils/awscloudformation/utils/migrate-override-resource';
+import { CognitoCLIInputs } from '../../provider-utils/awscloudformation/service-walkthrough-types/awsCognito-user-input-types';
 
 export const name = 'update';
 export const alias = ['update'];
@@ -9,35 +14,52 @@ export const alias = ['update'];
 export const run = async (context: $TSContext) => {
   const { amplify } = context;
   const servicesMetadata = (await import('../../provider-utils/supported-services')).supportedServices;
-  const existingAuth = stateManager.getMeta().auth;
+  const stateMeta = stateManager.getMeta();
+  const existingAuth = stateMeta.auth;
   if (!existingAuth) {
-    return context.print.warning('Auth has not yet been added to this project.');
+    return printer.warn('Auth has not yet been added to this project.');
   } else {
     const services = Object.keys(existingAuth);
     for (const service of services) {
       const serviceMeta = existingAuth[service];
       if (serviceMeta.service === 'Cognito' && serviceMeta.mobileHubMigrated === true) {
-        context.print.error('Auth is migrated from Mobile Hub and cannot be updated with Amplify CLI.');
+        printer.error('Auth is migrated from Mobile Hub and cannot be updated with Amplify CLI.');
         return context;
       } else if (serviceMeta.service === 'Cognito' && serviceMeta.serviceType === 'imported') {
-        context.print.error('Updating of imported Auth resources is not supported.');
+        printer.error('Updating of imported Auth resources is not supported.');
         return context;
       }
     }
   }
 
-  context.print.info('Please note that certain attributes may not be overwritten if you choose to use defaults settings.');
-  const meta = stateManager.getMeta();
-  const dependentResources = Object.keys(meta).some(e => {
-    return ['analytics', 'api', 'storage', 'function'].includes(e) && Object.keys(meta[e]).length > 0;
+  printer.info('Please note that certain attributes may not be overwritten if you choose to use defaults settings.');
+  const dependentResources = Object.keys(stateMeta).some(e => {
+    return ['analytics', 'api', 'storage', 'function'].includes(e) && Object.keys(stateMeta[e]).length > 0;
   });
   if (dependentResources) {
-    context.print.info(messages.dependenciesExists);
+    printer.info(messages.dependenciesExists);
   }
   const resourceName = await getAuthResourceName(context);
-  const providerPlugin = context.amplify.getPluginInstance(context, servicesMetadata.Cognito.provider);
-  // TODO: free context from updating auth
-  context.updatingAuth = providerPlugin.loadResourceParameters(context, 'auth', resourceName);
+  let prevCLIInputs: CognitoCLIInputs;
+  try {
+    const cliState = new AuthInputState(resourceName);
+    prevCLIInputs = cliState.getCLIInputPayload();
+  } catch (err) {
+    printer.warn('Cli-inputs.json doesnt exist');
+    // put spinner here
+    const isMigrate = await prompter.confirmContinue(`Do you want to migrate this ${resourceName} to support overrides?`);
+    if (isMigrate) {
+      // generate cli-inputs for migration from parameters.json
+      migrateResourceToSupportOverride(resourceName);
+      // fetch cli Inputs again
+      const cliState = new AuthInputState(resourceName);
+      prevCLIInputs = cliState.getCLIInputPayload();
+      await generateAuthStackTemplate(context, prevCLIInputs.cognitoConfig.resourceName);
+    }
+  }
+  const cliState = new AuthInputState(resourceName);
+  context.updatingAuth = await cliState.loadResourceParameters(context, cliState.getCLIInputPayload());
+
   try {
     const result = await amplify.serviceSelectionPrompt(context, category, servicesMetadata);
     const options = {
@@ -47,23 +69,22 @@ export const run = async (context: $TSContext) => {
     };
     const providerController = await import(`../../provider-utils/${result.providerName}/index`);
     if (!providerController) {
-      context.print.error('Provider not configured for this category');
+      printer.error('Provider not configured for this category');
       return;
     }
     const updateRsourceResponse = await providerController.updateResource(context, options);
-    const { print } = context;
-    print.success(`Successfully updated resource ${name} locally`);
-    print.info('');
-    print.success('Some next steps:');
-    print.info('"amplify push" will build all your local backend resources and provision it in the cloud');
-    print.info(
+    printer.success(`Successfully updated resource ${name} locally`);
+    printer.info('');
+    printer.success('Some next steps:');
+    printer.info('"amplify push" will build all your local backend resources and provision it in the cloud');
+    printer.info(
       '"amplify publish" will build all your local backend and frontend resources (if you have hosting category added) and provision it in the cloud',
     );
-    print.info('');
+    printer.info('');
     return updateRsourceResponse;
   } catch (err) {
-    context.print.info(err.stack);
-    context.print.error('There was an error adding the auth resource');
+    printer.info(err.stack);
+    printer.error('There was an error adding the auth resource');
     context.usageData.emitError(err);
     process.exitCode = 1;
   }

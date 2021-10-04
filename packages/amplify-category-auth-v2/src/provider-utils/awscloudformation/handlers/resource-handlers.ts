@@ -1,4 +1,4 @@
-import { ServiceQuestionsResult } from '../service-walkthrough-types/cognito-user-input-types';
+import { ServiceQuestionHeadlessResult } from '../service-walkthrough-types/cognito-user-input-types';
 import { getAddAuthDefaultsApplier, getUpdateAuthDefaultsApplier } from '../utils/auth-defaults-appliers';
 import {
   getResourceSynthesizer,
@@ -15,17 +15,16 @@ import { AuthInputState } from '../auth-inputs-manager/auth-input-state';
 import { category, ENV_SPECIFIC_PARAMS, privateKeys } from '../constants';
 import { generateAuthStackTemplate } from '../utils/generate-auth-stack-template';
 import { authProviders } from '../assets/string-maps';
-import { CognitoCLIInputs } from '../service-walkthrough-types/awsCognito-user-input-types';
+import { CognitoCLIInputs, CognitoConfiguration } from '../service-walkthrough-types/awsCognito-user-input-types';
 import { getAuthResourceName } from '../../../utils/getAuthResourceName';
-import { printer, prompter } from 'amplify-prompts';
-import { migrateResourceToSupportOverride } from '../utils/migrate-override-resource';
+import { printer } from 'amplify-prompts';
 
 /**
  * Factory function that returns a CognitoCLIInputs consumer that handles all of the resource generation logic.
  * The consumer returns the resourceName of the generated resource.
  * @param context The amplify context
  */
-export const getAddAuthHandler = (context: any) => async (request: ServiceQuestionsResult) => {
+export const getAddAuthHandler = (context: any) => async (request: ServiceQuestionHeadlessResult | CognitoConfiguration) => {
   const serviceMetadata = supportedServices[request.serviceName];
   const { cfnFilename, defaultValuesFilename, provider } = serviceMetadata;
 
@@ -85,23 +84,12 @@ export const getAddAuthHandler = (context: any) => async (request: ServiceQuesti
   return cognitoCLIInputs.cognitoConfig.resourceName;
 };
 
-export const getUpdateAuthHandler = (context: any) => async (request: ServiceQuestionsResult) => {
-  const { cfnFilename, defaultValuesFilename, provider } = supportedServices[request.serviceName];
-  let prevCliInputs: CognitoCLIInputs;
-  const authResourceName = await getAuthResourceName(context);
-  try {
-    const cliState = new AuthInputState(authResourceName);
-    prevCliInputs = cliState.getCLIInputPayload();
-  } catch (err) {
-    printer.warn('Cli-inputs.json doesnt exist');
-    const isMigrate = await prompter.confirmContinue(`Do you want to migrate this ${authResourceName} to support overrides?`);
-    if (isMigrate) {
-      migrateResourceToSupportOverride(context, authResourceName);
-      // fetch cli Inputs again
-      const cliState = new AuthInputState(authResourceName);
-      prevCliInputs = cliState.getCLIInputPayload();
-    }
-  }
+export const getUpdateAuthHandler = (context: any) => async (request: ServiceQuestionHeadlessResult | CognitoConfiguration) => {
+  const { defaultValuesFilename } = supportedServices[request.serviceName];
+  // loading previous cli-inputs
+  const resourceName = await getAuthResourceName(context);
+  const cliState = new AuthInputState(resourceName);
+  let prevCliInputs: CognitoCLIInputs = cliState.getCLIInputPayload();
   const requestWithDefaults = await getUpdateAuthDefaultsApplier(context, defaultValuesFilename, prevCliInputs!.cognitoConfig)(request);
   const resources = context.amplify.getProjectDetails().amplifyMeta;
   if (resources.auth.userPoolGroups) {
@@ -161,10 +149,15 @@ export const getUpdateAuthHandler = (context: any) => async (request: ServiceQue
   };
   try {
     const cliState = new AuthInputState(cognitoCLIInputs.cognitoConfig.resourceName);
+    const triggers = cognitoCLIInputs.cognitoConfig.triggers;
+    // convert triggers to JSON as overided in defaults
+    if (triggers && typeof triggers === 'string') {
+      cognitoCLIInputs.cognitoConfig.triggers = JSON.parse(triggers);
+    }
     // saving cli-inputs except secrets
     await cliState.saveCLIInputPayload(cognitoCLIInputs);
     // remoe this when api and functions transform are done
-    await getResourceUpdater(context, cfnFilename, provider)(requestWithDefaults);
+    await getResourceUpdater(context, cliInputs);
     if (request.updateFlow !== 'updateUserPoolGroups' && request.updateFlow !== 'updateAdminQueries') {
       await generateAuthStackTemplate(context, cognitoCLIInputs.cognitoConfig.resourceName);
     }
@@ -172,7 +165,7 @@ export const getUpdateAuthHandler = (context: any) => async (request: ServiceQue
     await getPostUpdateAuthMetaUpdater(context)(cognitoCLIInputs.cognitoConfig.resourceName);
     await getPostUpdateAuthMessagePrinter(context.print)(cognitoCLIInputs.cognitoConfig.resourceName);
 
-    if (doesConfigurationIncludeSMS(requestWithDefaults)) {
+    if (doesConfigurationIncludeSMS(cliInputs)) {
       await printSMSSandboxWarning(context.print);
     }
   } catch (err) {

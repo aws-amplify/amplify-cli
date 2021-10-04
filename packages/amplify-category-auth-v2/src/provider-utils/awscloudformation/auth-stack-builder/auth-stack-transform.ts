@@ -11,6 +11,7 @@ import {
   AmplifyStackTemplate,
   AmplifyCategoryTransform,
   JSONUtilities,
+  stateManager,
 } from 'amplify-cli-core';
 import { AmplifyAuthCognitoStack } from './auth-cognito-stack-builder';
 import { AuthStackSythesizer } from './stack-synthesizer';
@@ -51,7 +52,8 @@ export class AmplifyAuthTransform extends AmplifyCategoryTransform {
     this._cliInputs = cliState.getCLIInputPayload();
     this._cognitoStackProps = await this.generateStackProps(context);
 
-    const resources = context.amplify.getProjectMeta();
+    const resources = stateManager.getMeta();
+    console.log(resources);
     if (resources.auth?.userPoolGroups) {
       await updateUserPoolGroups(context, this._cognitoStackProps.resourceName!, this._cognitoStackProps.userPoolGroupList);
     } else {
@@ -406,7 +408,7 @@ export class AmplifyAuthTransform extends AmplifyCategoryTransform {
         this._cliInputs.cognitoConfig.resourceName,
       );
 
-      const triggerPermissions: AuthTriggerPermissions[] = permissions.map((i: string) => JSON.parse(i));
+      const triggerPermissions: AuthTriggerPermissions[] = permissions?.map((i: string) => JSON.parse(i));
 
       // handle dependsOn data
       const dependsOnKeys = Object.keys(this._cliInputs.cognitoConfig.triggers).map(

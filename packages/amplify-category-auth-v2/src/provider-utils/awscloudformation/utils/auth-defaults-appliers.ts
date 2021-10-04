@@ -4,11 +4,11 @@ import { structureOAuthMetadata } from '../service-walkthroughs/auth-questions';
 import { removeDeprecatedProps } from './synthesize-resources';
 import { immutableAttributes, safeDefaults } from '../constants';
 import { FeatureFlags } from 'amplify-cli-core';
-import { ServiceQuestionsResult } from '../service-walkthrough-types/cognito-user-input-types';
 import { CognitoConfiguration } from '../service-walkthrough-types/awsCognito-user-input-types';
+import { ServiceQuestionHeadlessResult } from '../service-walkthrough-types/cognito-user-input-types';
 
 /**
- * Factory function that returns a function that applies default values to a ServiceQuestionsResult request.
+ * Factory function that returns a function that applies default values to a CognitoConfiguation request.
  * It does not overwrite existing values in the request.
  *
  * The logic here has been refactored from service-walkthroughs/auth-questions.js and is mostly unchanged
@@ -17,7 +17,7 @@ import { CognitoConfiguration } from '../service-walkthrough-types/awsCognito-us
  */
 export const getAddAuthDefaultsApplier =
   (context: any, defaultValuesFilename: string, projectName: string) =>
-  async (result: ServiceQuestionsResult): Promise<ServiceQuestionsResult> => {
+  async (result: CognitoConfiguration | ServiceQuestionHeadlessResult): Promise<CognitoConfiguration> => {
     const { functionMap, generalDefaults, roles, getAllDefaults } = await import(`../assets/${defaultValuesFilename}`);
     result = assignDefaults({}, generalDefaults(projectName), result);
 
@@ -38,7 +38,7 @@ export const getAddAuthDefaultsApplier =
 
 export const getUpdateAuthDefaultsApplier =
   (context: any, defaultValuesFilename: string, previousResult: CognitoConfiguration) =>
-  async (result: ServiceQuestionsResult): Promise<ServiceQuestionsResult> => {
+  async (result: CognitoConfiguration | ServiceQuestionHeadlessResult): Promise<CognitoConfiguration> => {
     const { functionMap, getAllDefaults } = await import(`../assets/${defaultValuesFilename}`);
     if (!result.authSelections) {
       result.authSelections = previousResult.authSelections ?? 'identityPoolAndUserPool';

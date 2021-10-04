@@ -1,4 +1,4 @@
-import { $TSContext, $TSObject, JSONUtilities, pathManager } from 'amplify-cli-core';
+import { $TSObject, JSONUtilities, pathManager } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import * as path from 'path';
 import uuid from 'uuid';
@@ -15,10 +15,9 @@ import {
   PasswordRecoveryResult,
   AdminQueriesResult,
   PasswordPolicyResult,
-  Triggers,
 } from '../service-walkthrough-types/awsCognito-user-input-types';
 
-export const migrateResourceToSupportOverride = (context: $TSContext, resourceName: string) => {
+export const migrateResourceToSupportOverride = (resourceName: string) => {
   printer.info('Starting Migration Process');
   /**
    * backup resource folder
@@ -32,12 +31,20 @@ export const migrateResourceToSupportOverride = (context: $TSContext, resourceNa
     return;
   }
   const authresourceDirPath = path.join(pathManager.getBackendDirPath(), 'auth', resourceName);
-  const userPoolGroupResourceDirPath = path.join(pathManager.getBackendDirPath(), 'auth', '');
+  const userPoolGroupResourceDirPath = path.join(pathManager.getBackendDirPath(), 'auth', 'UserPoolGroups');
   const backupAuthResourceFolder = backup(authresourceDirPath, projectPath, resourceName);
-  const backupUserPoolGroupResourceFolder = backup(authresourceDirPath, projectPath, resourceName);
+  let backupUserPoolGroupResourceFolder: string;
+  if (fs.existsSync(userPoolGroupResourceDirPath)) {
+    backupUserPoolGroupResourceFolder = backup(userPoolGroupResourceDirPath, projectPath, 'UserPoolGroups');
+  }
   try {
     const parameters = JSONUtilities.readJson<$TSObject>(path.join(authresourceDirPath, 'parameters.json'), { throwIfNotExist: true });
     fs.emptyDirSync(authresourceDirPath);
+    // remomve UserPool Resource
+    if (parameters && parameters.userPoolGroupList.length > 0) {
+      fs.unlinkSync(path.join(userPoolGroupResourceDirPath, 'template.json'));
+      fs.unlinkSync(path.join(userPoolGroupResourceDirPath, 'parameters.json'));
+    }
 
     // convert parameters.json to cli-inputs.json
     const cliInputs = getCliInputs(parameters!);
@@ -47,10 +54,16 @@ export const migrateResourceToSupportOverride = (context: $TSContext, resourceNa
   } catch (e) {
     printer.error('There was an error migrating your project.');
     rollback(authresourceDirPath, backupAuthResourceFolder);
+    if (fs.existsSync(userPoolGroupResourceDirPath)) {
+      rollback(userPoolGroupResourceDirPath, backupUserPoolGroupResourceFolder!);
+    }
     printer.info('migration operations are rolled back.');
     throw e;
   } finally {
     cleanUp(backupAuthResourceFolder);
+    if (fs.existsSync(userPoolGroupResourceDirPath)) {
+      cleanUp(backupUserPoolGroupResourceFolder!);
+    }
   }
 };
 
@@ -72,7 +85,7 @@ function backup(authresourcePath: string, projectPath: string, resourceName: str
 }
 
 function rollback(authresourcePath: string, backupauthResourceDirPath: string) {
-  if (backupauthResourceDirPath && fs.existsSync(backupauthResourceDirPath)) {
+  if (fs.existsSync(authresourcePath) && fs.existsSync(backupauthResourceDirPath)) {
     fs.removeSync(authresourcePath);
     fs.moveSync(backupauthResourceDirPath, authresourcePath);
   }

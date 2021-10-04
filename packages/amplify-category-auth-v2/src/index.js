@@ -24,15 +24,19 @@ const { attachPrevParamsToContext } = require('./provider-utils/awscloudformatio
 const { stateManager } = require('amplify-cli-core');
 const { headlessImport } = require('./provider-utils/awscloudformation/import');
 const { generateAuthStackTemplate } = require('./provider-utils/awscloudformation/utils/generate-auth-stack-template');
-const { AmplifyAuthTransform, AmplifyUserPoolGroupTransform } = require('./provider-utils/awscloudformation/auth-stack-builder');
+const {
+  AmplifyAuthTransform,
+  AmplifyUserPoolGroupTransform,
+  AmplifyAuthTemplate,
+  AmplifyUserPoolGroupTemplate,
+} = require('./provider-utils/awscloudformation/auth-stack-builder');
 
 const {
   doesConfigurationIncludeSMS,
   loadResourceParameters,
   loadImportedAuthParameters,
 } = require('./provider-utils/awscloudformation/utils/auth-sms-workflow-helper');
-
-const { AmplifyAuthTemplate, AmplifyUserPoolGroupTemplate } = require('./provider-utils/awscloudformation/auth-stack-builder');
+const AuthInputState = require('./provider-utils/awscloudformation/auth-inputs-manager/auth-input-state');
 
 // this function is being kept for temporary compatability.
 async function add(context) {
@@ -81,9 +85,10 @@ async function externalAuthEnable(context, externalCategory, resourceName, requi
 
   // if auth has already been enabled, grab the existing parameters
   if (authExists) {
-    const providerPlugin = context.amplify.getPluginInstance(context, provider);
+    //const providerPlugin = context.amplify.getPluginInstance(context, provider);
     currentAuthName = await getAuthResourceName(context);
-    currentAuthParams = providerPlugin.loadResourceParameters(context, 'auth', currentAuthName);
+    const cliState = new AuthInputState(currentAuthName);
+    currentAuthParams = await cliState.loadResourceParameters(context, cliState.getCLIInputPayload());
 
     // sanity check that it cannot happen
     const existingAuthResource = _.get(amplify.getProjectDetails().amplifyMeta, ['auth', currentAuthName], undefined);

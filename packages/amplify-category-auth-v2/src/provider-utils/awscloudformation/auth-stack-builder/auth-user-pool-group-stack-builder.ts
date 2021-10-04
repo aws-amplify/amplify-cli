@@ -142,6 +142,7 @@ export class AmplifyUserPoolGroupStack extends cdk.Stack implements AmplifyUserP
         groupName: group.groupName,
         precedence: group.precedence,
       });
+      this.userPoolGroup[`${group.groupName}`].description = 'override success';
       if (props.identityPoolName) {
         this.userPoolGroup[`${group.groupName}`].addPropertyOverride(
           'RoleArn',
@@ -323,3 +324,39 @@ export class AmplifyUserPoolGroupStack extends cdk.Stack implements AmplifyUserP
 export const getCfnParamslogicalId = (cognitoResourceName: string, cfnParamName: string): string => {
   return `auth${cognitoResourceName}${cfnParamName}`;
 };
+
+/**
+ * additional class to merge CFN parameters and CFN outputs as cdk doesnt allow same logical ID of constructs in same stack
+ */
+//  export class AmplifyUserPoolGroupStackOutputs extends cdk.Stack implements AmplifyUserPoolGroupStackTemplate {
+//   constructor(scope: cdk.Construct, id: string, props: AmplifyUserPoolGroupStackProps) {
+//     super(scope, id, props);
+//   }
+//   deploymentBucket?: s3.CfnBucket;
+//   authRole?: iam.CfnRole;
+//   unauthRole?: iam.CfnRole;
+
+//   addCfnParameter(props: cdk.CfnParameterProps, logicalId: string): void {
+//     throw new Error('Method not implemented.');
+//   }
+//   addCfnOutput(props: cdk.CfnOutputProps, logicalId: string): void {
+//     try {
+//       new cdk.CfnOutput(this, logicalId, props);
+//     } catch (error) {
+//       throw new Error(error);
+//     }
+//   }
+//   addCfnMapping(props: cdk.CfnMappingProps, logicalId: string): void {
+//     throw new Error('Method not implemented.');
+//   }
+//   addCfnCondition(props: cdk.CfnConditionProps, logicalId: string): void {
+//     throw new Error('Method not implemented.');
+//   }
+//   addCfnResource(props: cdk.CfnResourceProps, logicalId: string): void {
+//     throw new Error('Method not implemented.');
+//   }
+
+//   public renderCloudFormationTemplate = (_: ISynthesisSession): string => {
+//     return JSON.stringify((this as any)._toCloudFormation(), undefined, 2);
+//   };
+// }

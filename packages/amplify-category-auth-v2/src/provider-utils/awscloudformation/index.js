@@ -7,6 +7,7 @@ const { ENV_SPECIFIC_PARAMS, AmplifyAdmin, UserPool, IdentityPool, BothPools, pr
 const { getAddAuthHandler, getUpdateAuthHandler } = require('./handlers/resource-handlers');
 const { supportedServices } = require('../supported-services');
 const { importResource, importedAuthEnvInit } = require('./import');
+const AuthInputState = require('./auth-inputs-manager/auth-input-state');
 
 function serviceQuestions(context, defaultValuesFilename, stringMapsFilename, serviceWalkthroughFilename, serviceMetadata) {
   const serviceWalkthroughSrc = `${__dirname}/service-walkthroughs/${serviceWalkthroughFilename}`;
@@ -37,7 +38,9 @@ async function updateConfigOnEnvInit(context, category, service) {
 
   const providerPlugin = context.amplify.getPluginInstance(context, provider);
   // previously selected answers
-  const resourceParams = providerPlugin.loadResourceParameters(context, 'auth', service);
+  const currentAuthName = await getAuthResourceName(context);
+  const cliState = new AuthInputState(currentAuthName);
+  const resourceParams = await cliState.loadResourceParameters(context, cliState.getCLIInputPayload());
   // ask only env specific questions
   let currentEnvSpecificValues = context.amplify.loadEnvResourceParameters(context, category, service);
 

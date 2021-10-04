@@ -1,11 +1,13 @@
-import { AuthTriggerConfig, AuthTriggerConnection, ServiceQuestionsResult } from '../service-walkthrough-types/cognito-user-input-types';
+import { AuthTriggerConfig, AuthTriggerConnection } from '../service-walkthrough-types/cognito-user-input-types';
 import * as path from 'path';
 import { existsSync, copySync, outputFileSync } from 'fs-extra';
 import uuid from 'uuid';
 import { cfnTemplateRoot, privateKeys, adminAuthAssetRoot, triggerRoot } from '../constants';
-import { pathManager, JSONUtilities, FeatureFlags } from 'amplify-cli-core';
+import { pathManager, JSONUtilities, FeatureFlags, $TSAny } from 'amplify-cli-core';
 import { get } from 'lodash';
 import { generateUserPoolGroupStackTemplate } from './generate-user-pool-group-stack-template';
+import { AuthInputState } from '../auth-inputs-manager/auth-input-state';
+import { CognitoConfiguration } from '../service-walkthrough-types/awsCognito-user-input-types';
 
 const category = 'auth';
 
@@ -19,7 +21,7 @@ const FunctionServiceNameLambdaFunction = 'Lambda';
  * @param cfnFilename The template CFN filename
  * @param provider The cloud provider name
  */
-export const getResourceSynthesizer = async (context: any, request: Readonly<ServiceQuestionsResult>) => {
+export const getResourceSynthesizer = async (context: any, request: Readonly<CognitoConfiguration>) => {
   await lambdaTriggers(request, context, null);
   // transformation handled in api and functions.
   await addAdminAuth(context, request.resourceName!, 'add', request.adminQueryGroup);
@@ -37,7 +39,7 @@ export const getResourceSynthesizer = async (context: any, request: Readonly<Ser
  * @param cfnFilename The template CFN filename
  * @param provider The cloud provider name
  */
-export const getResourceUpdater = (context: any, cfnFilename: string, provider: string) => async (request: ServiceQuestionsResult) => {
+export const getResourceUpdater = async (context: $TSAny, request: Readonly<CognitoConfiguration>) => {
   const resources = context.amplify.getProjectMeta();
 
   const adminQueriesFunctionName = get<{ category: string; resourceName: string }[]>(resources, ['api', 'AdminQueries', 'dependsOn'], [])
@@ -50,9 +52,9 @@ export const getResourceUpdater = (context: any, cfnFilename: string, provider: 
     await addAdminAuth(context, request.resourceName!, 'add', request.adminQueryGroup);
   }
 
-  const providerPlugin = context.amplify.getPluginInstance(context, provider);
-  const previouslySaved = providerPlugin.loadResourceParameters(context, 'auth', request.resourceName).triggers || '{}';
-  await lambdaTriggers(request, context, JSON.parse(previouslySaved));
+  const previouslySaved =
+    typeof context.updatingAuth.triggers === 'string' ? JSON.parse(context.updatingAuth.triggers) : context.updatingAuth.triggers;
+  await lambdaTriggers(request, context, previouslySaved);
 
   await copyS3Assets(request);
   return request;
@@ -396,7 +398,7 @@ const createAdminAuthAPI = async (context: any, authResourceName: string, functi
   }
 };
 
-const copyS3Assets = async (request: ServiceQuestionsResult) => {
+const copyS3Assets = async (request: CognitoConfiguration) => {
   const targetDir = path.join(pathManager.getBackendDirPath(), 'auth', request.resourceName!, 'assets');
   const triggers = request.triggers ? JSONUtilities.parse<any>(request.triggers) : null;
   const confirmationFileNeeded = request.triggers && triggers.CustomMessage && triggers.CustomMessage.includes('verification-link');

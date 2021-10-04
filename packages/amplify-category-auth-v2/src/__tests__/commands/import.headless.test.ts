@@ -4,6 +4,7 @@ import { messages } from '../../provider-utils/awscloudformation/assets/string-m
 import { stateManager } from 'amplify-cli-core';
 
 jest.mock('amplify-cli-core', () => ({
+  ...(jest.requireActual('amplify-cli-core') as {}),
   stateManager: {
     setResourceParametersJson: jest.fn(),
     getMeta: jest.fn().mockReturnValue({
@@ -13,6 +14,8 @@ jest.mock('amplify-cli-core', () => ({
     }),
   },
 }));
+
+jest.mock('../../provider-utils/awscloudformation/auth-inputs-manager/auth-input-state');
 
 describe('import auth headless', () => {
   let mockContext: any;

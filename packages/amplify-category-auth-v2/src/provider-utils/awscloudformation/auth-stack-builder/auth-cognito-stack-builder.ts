@@ -36,7 +36,7 @@ const authProvidersList: Record<string, string> = {
   'graph.facebook.com': 'facebookAppId',
   'accounts.google.com': 'googleClientId',
   'www.amazon.com': 'amazonAppId',
-  'appleid.apple.com': 'appleId',
+  'appleid.apple.com': 'appleAppId',
 };
 
 export type AmplifyAuthCognitoStackProps = {

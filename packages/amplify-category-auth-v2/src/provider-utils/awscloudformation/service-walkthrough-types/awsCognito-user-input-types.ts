@@ -4,8 +4,8 @@ export interface CognitoCLIInputs {
 }
 
 export type CognitoConfiguration = ServiceQuestionsBaseResult &
-  Pick<OAuthResult, 'hostedUI' | 'hostedUIDomainName' | 'hostedUIProviderMeta' | 'oAuthMetadata'> &
-  Pick<SocialProviderResult, 'authProvidersUserPool'> &
+  OAuthResult &
+  SocialProviderResult &
   IdentityPoolResult &
   PasswordPolicyResult &
   PasswordRecoveryResult &

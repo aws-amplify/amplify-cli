@@ -27,7 +27,7 @@ type AuthStackMetadata = {
   authTriggerConnections?: AuthTriggerConnection[];
 };
 
-export type ServiceQuestionsResult = ServiceQuestionsBaseResult &
+export type ServiceQuestionHeadlessResult = ServiceQuestionsBaseResult &
   OAuthResult &
   SocialProviderResult &
   IdentityPoolResult &
