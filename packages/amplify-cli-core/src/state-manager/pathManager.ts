@@ -55,6 +55,7 @@ export const PathConstants = {
   CfnFileName: (resourceName: string) => `${resourceName}-awscloudformation-template.json`,
 
   CustomPoliciesFilename: 'custom-policies.json',
+  cliInputsFileName: 'cli-inputs.json',
 };
 
 export class PathManager {
@@ -90,6 +91,16 @@ export class PathManager {
 
   getBackendDirPath = (projectPath?: string): string =>
     this.constructPath(projectPath, [PathConstants.AmplifyDirName, PathConstants.BackendDirName]);
+
+  getCliInputsPath = (projectPath: string, category: string, resourceName: string): string => {
+    return this.constructPath(projectPath, [
+      PathConstants.AmplifyDirName,
+      PathConstants.BackendDirName,
+      category,
+      resourceName,
+      PathConstants.cliInputsFileName,
+    ]);
+  };
 
   getCurrentCloudBackendDirPath = (projectPath?: string): string =>
     this.constructPath(projectPath, [PathConstants.AmplifyDirName, PathConstants.CurrentCloudBackendDirName]);

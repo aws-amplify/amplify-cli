@@ -721,6 +721,12 @@ export class FeatureFlags {
     // FF for overrides
     this.registerFlag('overrides', [
       {
+        name: 'storage',
+        type: 'boolean',
+        defaultValueForExistingProjects: false,
+        defaultValueForNewProjects: true,
+      },
+      {
         name: 'auth',
         type: 'boolean',
         defaultValueForExistingProjects: false,
