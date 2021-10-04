@@ -205,7 +205,7 @@ jobs:
             source .circleci/local_publish_helpers.sh
             setAwsAccountCredentials
             cd packages/graphql-transformers-e2e-tests/
-            retry yarn e2e --maxWorkers=3 $TEST_SUITE
+            yarn e2e --maxWorkers=3 $TEST_SUITE
           environment:
             AMPLIFY_CLI_DISABLE_LOGGING: 'true'
           no_output_timeout: 90m
@@ -306,7 +306,7 @@ jobs:
             changeNpmGlobalPath
             cd packages/amplify-migration-tests
             setAwsAccountCredentials
-            retry yarn run migration_v4.0.0 --maxWorkers=3 $TEST_SUITE
+            yarn run migration_v4.0.0 --maxWorkers=3 $TEST_SUITE
           no_output_timeout: 90m
       - run: *scan_e2e_test_artifacts
       - store_test_results:
@@ -333,7 +333,7 @@ jobs:
             changeNpmGlobalPath
             cd packages/amplify-migration-tests
             setAwsAccountCredentials
-            retry yarn run migration_v4.28.2_nonmultienv_layers --maxWorkers=3 $TEST_SUITE
+            yarn run migration_v4.28.2_nonmultienv_layers --maxWorkers=3 $TEST_SUITE
           no_output_timeout: 90m
       - run: *scan_e2e_test_artifacts
       - store_test_results:
@@ -360,7 +360,7 @@ jobs:
             changeNpmGlobalPath
             cd packages/amplify-migration-tests
             setAwsAccountCredentials
-            retry yarn run migration_v4.52.0_multienv_layers --maxWorkers=3 $TEST_SUITE
+            yarn run migration_v4.52.0_multienv_layers --maxWorkers=3 $TEST_SUITE
           no_output_timeout: 90m
       - run: *scan_e2e_test_artifacts
       - store_test_results:
@@ -390,7 +390,7 @@ jobs:
             changeNpmGlobalPath
             cd packages/amplify-migration-tests
             setAwsAccountCredentials
-            retry yarn run migration_v4.30.0_auth --maxWorkers=3 $TEST_SUITE
+            yarn run migration_v4.30.0_auth --maxWorkers=3 $TEST_SUITE
           no_output_timeout: 90m
       - run: *scan_e2e_test_artifacts
       - store_test_results:
@@ -417,7 +417,7 @@ jobs:
             changeNpmGlobalPath
             cd packages/amplify-migration-tests
             setAwsAccountCredentials
-            retry yarn run migration --maxWorkers=3 $TEST_SUITE
+            yarn run migration --maxWorkers=3 $TEST_SUITE
           no_output_timeout: 90m
       - run: *scan_e2e_test_artifacts
       - store_test_results:
