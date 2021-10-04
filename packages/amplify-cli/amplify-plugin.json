@@ -19,7 +19,8 @@
     "status",
     "uninstall",
     "upgrade",
-    "version"
+    "version",
+    "build-override"
   ],
   "commandAliases": {
     "h": "help",

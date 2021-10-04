@@ -44,9 +44,9 @@
     "amplify-category-interactions": "2.6.9",
     "amplify-category-notifications": "2.19.4",
     "amplify-category-predictions": "2.9.16",
-    "amplify-category-storage": "2.13.0",
-    "amplify-category-xr": "2.8.25",
-    "amplify-cli-core": "1.32.0",
+    "@aws-amplify/amplify-category-storage": "1.0.0",
+    "amplify-category-xr": "2.8.24",
+    "amplify-cli-core": "1.31.1",
     "amplify-cli-logger": "1.1.0",
     "amplify-codegen": "^2.23.1",
     "amplify-console-hosting": "1.9.16",
@@ -211,7 +211,7 @@
       "storage": {
         "name": "storage",
         "type": "category",
-        "packageName": "amplify-category-storage"
+        "packageName": "@aws-amplify/amplify-category-storage"
       },
       "xr": {
         "name": "xr",
