@@ -1,6 +1,6 @@
 {
-  "name": "amplify-category-storage",
-  "version": "2.12.12",
+  "name": "@aws-amplify/amplify-category-storage",
+  "version": "1.0.0",
   "description": "amplify-cli storage plugin",
   "repository": {
     "type": "git",
@@ -15,7 +15,8 @@
     "build": "tsc",
     "test": "jest",
     "clean": "rimraf lib tsconfig.tsbuildinfo",
-    "watch": "tsc -w"
+    "watch": "tsc -w",
+    "generateSchemas": "ts-node ./resources/genInputSchema.ts"
   },
   "keywords": [
     "amplify",
@@ -28,6 +29,9 @@
     "amplify-util-import": "1.5.15",
     "chalk": "^4.1.1",
     "cloudform-types": "^4.2.0",
+    "@aws-cdk/aws-s3": "~1.124.0",
+    "@aws-cdk/core": "~1.124.0",
+    "@aws-cdk/aws-dynamodb": "~1.124.0",
     "enquirer": "^2.3.6",
     "fs-extra": "^8.1.0",
     "inquirer": "^7.3.3",
@@ -53,6 +57,10 @@
       "json",
       "node"
     ],
-    "collectCoverage": true
+    "collectCoverage": true,
+    "coverageReporters": [
+      "json",
+      "html"
+    ]
   }
 }
