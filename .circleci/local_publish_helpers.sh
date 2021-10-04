@@ -92,6 +92,7 @@ function retry {
     fi
 
     resetAwsAccountCredentials
+    TEST_SUITE=${TEST_SUITE:-"TestSuiteNotSet"}
     aws cloudwatch put-metric-data --metric-name FlakyE2ETests --namespace amplify-cli-e2e-tests --unit Count --value $n --dimensions testFile=$TEST_SUITE
     echo "Attempt $n succeeded."
     exit 0 # don't fail the step if putting the metric fails
