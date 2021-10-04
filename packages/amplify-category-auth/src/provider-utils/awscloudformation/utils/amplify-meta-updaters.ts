@@ -105,7 +105,7 @@ export const getPostUpdateAuthMetaUpdater = (context: any) => async (resourceNam
   return resourceName;
 };
 
-function getFrontendConfig(authParameters: AuthParameters) {
+export function getFrontendConfig(authParameters: AuthParameters) {
   const loginMechanisms: string[] = [];
   loginMechanisms.push(...(authParameters?.aliasAttributes || []).map((att: string) => att.toUpperCase()));
 

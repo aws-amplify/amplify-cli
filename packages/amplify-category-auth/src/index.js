@@ -23,13 +23,11 @@ const { projectHasAuth } = require('./provider-utils/awscloudformation/utils/pro
 const { attachPrevParamsToContext } = require('./provider-utils/awscloudformation/utils/attach-prev-params-to-context');
 const { stateManager } = require('amplify-cli-core');
 const { headlessImport } = require('./provider-utils/awscloudformation/import');
+const { getFrontendConfig } = require('./provider-utils/awscloudformation/utils/amplify-meta-updaters');
+const { AuthParameters } = require('./provider-utils/awscloudformation/import/types');
+const { getSupportedServices } = require('./provider-utils/supported-services');
 const { generateAuthStackTemplate } = require('./provider-utils/awscloudformation/utils/generate-auth-stack-template');
-const {
-  AmplifyAuthTransform,
-  AmplifyUserPoolGroupTransform,
-  AmplifyAuthTemplate,
-  AmplifyUserPoolGroupTemplate,
-} = require('./provider-utils/awscloudformation/auth-stack-builder');
+const { AmplifyAuthTransform, AmplifyUserPoolGroupTransform } = require('./provider-utils/awscloudformation/auth-stack-builder');
 
 const {
   doesConfigurationIncludeSMS,
@@ -487,9 +485,9 @@ module.exports = {
   category,
   importAuth,
   isSMSWorkflowEnabled,
+  AuthParameters,
+  getFrontendConfig,
   generateAuthStackTemplate,
   AmplifyAuthTransform,
   AmplifyUserPoolGroupTransform,
-  AmplifyUserPoolGroupTemplate,
-  AmplifyAuthTemplate,
 };

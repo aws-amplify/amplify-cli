@@ -1588,7 +1588,7 @@ exports.handler = (event, context, callback) => {
             "Ref": "googleClientId",
           },
           "appleid.apple.com": Object {
-            "Ref": "appleId",
+            "Ref": "appleAppId",
           },
           "graph.facebook.com": Object {
             "Ref": "facebookAppId",
