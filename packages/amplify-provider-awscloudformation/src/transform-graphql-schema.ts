@@ -53,16 +53,19 @@ const schemaDirName = 'schema';
 const ROOT_APPSYNC_S3_KEY = 'amplify-appsync-files';
 const s3ServiceName = 'S3';
 
-export function searchablePushChecks(context, map): void {
+export function searchablePushChecks(context, map, apiName): void {
   const searchableModelTypes = Object.keys(map).filter(type => map[type].includes('searchable') && map[type].includes('model'));
   if (searchableModelTypes.length) {
     const currEnv = context.amplify.getEnvInfo().envName;
     const teamProviderInfo = stateManager.getTeamProviderInfo();
-    const apiCategory = teamProviderInfo[currEnv]?.categories?.api;
-    const instanceType = apiCategory ? apiCategory[ResourceConstants.PARAMETERS.ElasticsearchInstanceType] : null;
-    if (!instanceType || instanceType === 't2.small.elasticsearch') {
+    const apiCategory = teamProviderInfo[currEnv]?.categories?.api[apiName];
+    const instanceType =
+      apiCategory && apiCategory[ResourceConstants.PARAMETERS.ElasticsearchInstanceType]
+        ? apiCategory[ResourceConstants.PARAMETERS.ElasticsearchInstanceType]
+        : 't2.small.elasticsearch';
+    if (instanceType === 't2.small.elasticsearch' || instanceType === 't3.small.elasticsearch') {
       printer.warn(
-        'Your instance type for OpenSearch is t2.small, you may experience performance issues or data loss. Consider reconfiguring with the instructions here https://docs.amplify.aws/cli/graphql-transformer/searchable/',
+        `Your instance type for OpenSearch is ${instanceType}, you may experience performance issues or data loss. Consider reconfiguring with the instructions here https://docs.amplify.aws/cli/graphql-transformer/searchable/`,
       );
     }
   }
@@ -481,7 +484,7 @@ export async function transformGraphQLSchema(context, options) {
   // Check for common errors
   const directiveMap = collectDirectivesByTypeNames(project.schema);
   warnOnAuth(context, directiveMap.types);
-  searchablePushChecks(context, directiveMap.types);
+  searchablePushChecks(context, directiveMap.types, parameters[ResourceConstants.PARAMETERS.AppSyncApiName]);
 
   await transformerVersionCheck(context, resourceDir, previouslyDeployedBackendDir, resourcesToBeUpdated, directiveMap.directives);
 
