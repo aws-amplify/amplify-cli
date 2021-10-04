@@ -3,19 +3,21 @@ import {
   deleteProject,
   createNewProjectDir,
   deleteProjectDir,
-  addApiWithSchema,
+  addApiWithoutSchema,
   amplifyPush,
   getProjectMeta,
+  updateApiSchema,
 } from 'amplify-e2e-core';
 import { testSchema } from '../schema-api-directives';
 
 describe('api directives @allow_public_data_access_with_api_key', () => {
   let projectDir: string;
+  const projName = 'myproject';
   const envName = 'dev';
 
   beforeEach(async () => {
     projectDir = await createNewProjectDir('model');
-    await initJSProjectWithProfile(projectDir, { envName });
+    await initJSProjectWithProfile(projectDir, { name: projName, envName });
   });
 
   afterEach(async () => {
@@ -24,7 +26,8 @@ describe('api directives @allow_public_data_access_with_api_key', () => {
   });
 
   it('schema and files generate with sandbox mode', async () => {
-    await addApiWithSchema(projectDir, 'model_with_sandbox_mode.graphql');
+    await addApiWithoutSchema(projectDir);
+    await updateApiSchema(projectDir, projName,'model_with_sandbox_mode.graphql')
     await amplifyPush(projectDir);
 
     const meta = getProjectMeta(projectDir);
