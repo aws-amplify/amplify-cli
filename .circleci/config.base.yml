@@ -292,7 +292,6 @@ jobs:
           os: << parameters.os >>
   amplify_migration_tests_v4:
     <<: *defaults
-
     steps:
       - attach_workspace:
           at: ./
@@ -770,7 +769,7 @@ workflows:
       - amplify_e2e_tests:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           post-steps:
@@ -786,7 +785,7 @@ workflows:
       - amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           filters:
@@ -801,7 +800,7 @@ workflows:
           context:
             - amplify-ecr-image-pull
             - e2e-auth-credentials
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-test-context
           filters:
             branches:
@@ -811,11 +810,13 @@ workflows:
                 - /run-e2e\/.*/
           requires:
             - build
+          post-steps:
+            - run: *clean_e2e_resources
       - amplify_migration_tests_v4:
           context:
             - amplify-ecr-image-pull
             - e2e-auth-credentials
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-test-context
           filters:
             branches:
@@ -825,11 +826,13 @@ workflows:
                 - /run-e2e\/.*/
           requires:
             - build
+          post-steps:
+            - run: *clean_e2e_resources
       - amplify_migration_tests_v4_30_0:
           context:
             - amplify-ecr-image-pull
             - e2e-auth-credentials
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-test-context
           filters:
             branches:
@@ -839,11 +842,13 @@ workflows:
                 - /run-e2e\/.*/
           requires:
             - build
+          post-steps:
+            - run: *clean_e2e_resources
       - amplify_migration_tests_non_multi_env_layers:
           context:
             - amplify-ecr-image-pull
             - e2e-auth-credentials
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-test-context
           filters:
             branches:
@@ -853,11 +858,13 @@ workflows:
                 - /run-e2e\/.*/
           requires:
             - build
+          post-steps:
+            - run: *clean_e2e_resources
       - amplify_migration_tests_multi_env_layers:
           context:
             - amplify-ecr-image-pull
             - e2e-auth-credentials
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-test-context
           filters:
             branches:
@@ -867,11 +874,13 @@ workflows:
                 - /run-e2e\/.*/
           requires:
             - build
+          post-steps:
+            - run: *clean_e2e_resources
       - amplify_console_integration_tests:
           context:
             - amplify-ecr-image-pull
             - e2e-auth-credentials
-            - clean_e2e_resources
+            - cleanup-resources
             - console-e2e-test
             - e2e-test-context
           post-steps:
@@ -1077,7 +1086,7 @@ commands:
         default: linux-e2e-executor
     steps:
       - run:
-          name: Scan E2E artifacts
+          name: Clean job resources
           command: |
             pwd
             cd packages/amplify-e2e-tests

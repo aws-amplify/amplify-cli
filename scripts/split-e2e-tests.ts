@@ -3,6 +3,7 @@ import * as glob from 'glob';
 import { join } from 'path';
 import * as fs from 'fs-extra';
 import { supportedRegions } from '../packages/amplify-category-geo/src/constants';
+import * as execa from 'execa';
 
 const CONCURRENCY = 25;
 // Some our e2e tests are known to fail when run on windows hosts
@@ -463,6 +464,24 @@ function saveConfig(config: CircleCIConfig): void {
   const output = ['# auto generated file. Edit config.base.yaml if you want to change', yaml.dump(config, { noRefs: true })];
   fs.writeFileSync(configFile, output.join('\n'));
 }
+
+function verifyConfig() {
+  try {
+    execa.commandSync('which circleci');
+  } catch {
+    console.error(
+      'Please install circleci cli to validate your circle config. Installation information can be found at https://circleci.com/docs/2.0/local-cli/',
+    );
+    process.exit(1);
+  }
+  try {
+    execa.commandSync('circleci config validate');
+  } catch {
+    console.error(`"circleci config validate" command failed. Please check your .circleci/config.yml validity`);
+    process.exit(1);
+  }
+}
+
 function main(): void {
   const config = loadConfig();
   const splitNodeTests = splitTests(
@@ -509,5 +528,6 @@ function main(): void {
     CONCURRENCY,
   );
   saveConfig(splitV430MigrationTests);
+  verifyConfig();
 }
 main();

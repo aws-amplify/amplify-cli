@@ -71,7 +71,7 @@ function useChildAccountCredentials {
     fi
 }
 
-retry() {
+function retry {
     MAX_ATTEMPTS=2
     SLEEP_DURATION=5
     n=0
@@ -87,6 +87,9 @@ retry() {
         echo "failed: ${@}" >&2
         exit 1
     fi
+
+    resetAwsAccountCredentials
+    aws cloudwatch put-metric-data --metric-name FlakyE2ETests --namespace amplify-cli-e2e-tests --unit Count --value $n --dimensions testFile=$TEST_SUITE
     echo "Attempt $n succeeded."
 }
 
@@ -136,5 +139,7 @@ function runE2eTest {
     setAwsAccountCredentials
     cd $(pwd)/packages/amplify-e2e-tests
     yarn run e2e --detectOpenHandles --maxWorkers=3 $TEST_SUITE
+    EXIT_CODE=$?
     unsetNpmRegistryUrl
+    return $EXIT_CODE
 }
