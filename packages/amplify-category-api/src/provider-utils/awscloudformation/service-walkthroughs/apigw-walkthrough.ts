@@ -623,7 +623,6 @@ async function askLambdaSource(context: $TSContext, functionType: string, path, 
   }
 }
 
-// YIKES
 async function newLambdaFunction(context: $TSContext & { api: $TSAny }, path) {
   context.api = {
     path,
