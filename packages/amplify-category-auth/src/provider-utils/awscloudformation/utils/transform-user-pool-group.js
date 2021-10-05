@@ -44,7 +44,7 @@ async function transformUserPoolGroupSchema(context) {
 
   // validating cli-inputs
   const cliState = new AuthInputState(authResourceName);
-  const identityPoolName = cliState.getCLIInputPayload()?.identityPoolName;
+  const identityPoolName = cliState.getCLIInputPayload().identityPoolName;
   const props = {
     groups,
     cognitoResourceName: authResourceName,
@@ -52,8 +52,6 @@ async function transformUserPoolGroupSchema(context) {
   };
 
   await generateUserPoolGroupStackTemplate(props);
-
-  //await context.amplify.copyBatch(context, copyJobs, props, true);
 }
 
 function loadResourceParameters(context, authResourceName) {
