@@ -1,5 +1,5 @@
-const { readSchema } = require('../../../commands/api/add-graphql-datasource');
-const path = require('path');
+import { readSchema } from '../../../commands/api/add-graphql-datasource';
+import * as path from 'path';
 
 describe('read schema', () => {
   it('Valid schema present in folder', async () => {

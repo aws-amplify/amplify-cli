@@ -1,4 +1,4 @@
-import path from 'path';
+import * as path from 'path';
 
 export const provider = 'awscloudformation';
 export const parametersFileName = 'api-params.json';

@@ -1,22 +1,22 @@
-import fs from 'fs-extra';
-import path from 'path';
-import uuid from 'uuid';
+import { $TSContext, createDefaultCustomPoliciesFile, pathManager } from 'amplify-cli-core';
+import { printer } from 'amplify-prompts';
+import * as fs from 'fs-extra';
+import * as path from 'path';
+import { v4 as uuid } from 'uuid';
 import { NETWORK_STACK_LOGICAL_ID } from '../../category-constants';
 import { DEPLOYMENT_MECHANISM } from './base-api-stack';
 import { GitHubSourceActionInfo } from './pipeline-with-awaiter';
 import { API_TYPE, IMAGE_SOURCE_TYPE, ResourceDependency, ServiceConfiguration } from './service-walkthroughs/containers-walkthrough';
 import { ApiResource, generateContainersArtifacts } from './utils/containers-artifacts';
-import { createDefaultCustomPoliciesFile, pathManager } from 'amplify-cli-core';
 
 export const addResource = async (
   serviceWalkthroughPromise: Promise<ServiceConfiguration>,
-  context,
-  category,
+  context: $TSContext,
+  category: string,
   service,
   options,
   apiType: API_TYPE,
 ) => {
-  const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
   const walkthroughOptions = await serviceWalkthroughPromise;
 
   const {
@@ -31,7 +31,7 @@ export const addResource = async (
     dependsOn = [],
     mutableParametersState,
   } = walkthroughOptions;
-  const resourceDirPath = path.join(projectBackendDirPath, category, resourceName);
+  const resourceDirPath = pathManager.getResourceDirectoryPath(undefined, category, resourceName);
 
   let [authName, updatedDependsOn] = await getResourceDependencies({ dependsOn, restrictAccess, category, resourceName, context });
 
@@ -88,36 +88,37 @@ export const addResource = async (
 
   if (imageSource.type === IMAGE_SOURCE_TYPE.TEMPLATE) {
     fs.copySync(
-      path.join(__dirname, '../../../resources/awscloudformation/container-templates', imageSource.template),
+      path.join(__dirname, '..', '..', '..', 'resources', 'awscloudformation/container-templates', imageSource.template),
       path.join(resourceDirPath, 'src'),
-      { recursive: true }
+      { recursive: true },
     );
     const { exposedContainer } = await generateContainersArtifacts(context, apiResource);
     await context.amplify.updateamplifyMetaAfterResourceUpdate(category, options.resourceName, 'exposedContainer', exposedContainer);
-
   }
 
   createDefaultCustomPoliciesFile(category, resourceName);
 
   const customPoliciesPath = pathManager.getCustomPoliciesPath(category, resourceName);
 
-  context.print.success(`Successfully added resource ${resourceName} locally.`);
-  context.print.info('');
-  context.print.success('Next steps:');
+  printer.success(`Successfully added resource ${resourceName} locally.`);
+  printer.info('');
+  printer.success('Next steps:');
 
   if (deploymentMechanism === DEPLOYMENT_MECHANISM.FULLY_MANAGED) {
-    context.print.info(`- Place your Dockerfile, docker-compose.yml and any related container source files in "amplify/backend/api/${resourceName}/src"`);
+    printer.info(
+      `- Place your Dockerfile, docker-compose.yml and any related container source files in "amplify/backend/api/${resourceName}/src"`,
+    );
   } else if (deploymentMechanism === DEPLOYMENT_MECHANISM.INDENPENDENTLY_MANAGED) {
-    context.print.info(
+    printer.info(
       `- Ensure you have the Dockerfile, docker-compose.yml and any related container source files in your Github path: ${gitHubInfo.path}`,
     );
   }
 
-  context.print.info(
+  printer.info(
     `- Amplify CLI infers many configuration settings from the "docker-compose.yaml" file. Learn more: docs.amplify.aws/cli/usage/containers`,
   );
-  context.print.info(`- To access AWS resources outside of this Amplify app, edit the ${customPoliciesPath}`);
-  context.print.info('- Run "amplify push" to build and deploy your image');
+  printer.info(`- To access AWS resources outside of this Amplify app, edit the ${customPoliciesPath}`);
+  printer.info('- Run "amplify push" to build and deploy your image');
 
   return resourceName;
 };
@@ -131,7 +132,7 @@ const getResourceDependencies = async ({
 }: {
   restrictAccess: boolean;
   dependsOn: ResourceDependency[];
-  context: any;
+  context: $TSContext;
   category: string;
   resourceName: string;
 }) => {
@@ -165,7 +166,7 @@ const getResourceDependencies = async ({
           apiRequirements,
         ]);
       } catch (e) {
-        context.print.error(e);
+        printer.error(e);
         throw e;
       }
     } else {
@@ -192,7 +193,7 @@ const getResourceDependencies = async ({
   return [authName, updatedDependsOn];
 };
 
-export const updateResource = async (serviceWalkthroughPromise: Promise<ServiceConfiguration>, context, category) => {
+export const updateResource = async (serviceWalkthroughPromise: Promise<ServiceConfiguration>, context: $TSContext, category: string) => {
   const options = await serviceWalkthroughPromise;
 
   const {

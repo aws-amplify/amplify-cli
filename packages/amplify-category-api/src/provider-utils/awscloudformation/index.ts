@@ -5,9 +5,10 @@ import { legacyAddResource } from './legacy-add-resource';
 import { legacyUpdateResource } from './legacy-update-resource';
 import { UpdateApiRequest } from 'amplify-headless-interface';
 import { editSchemaFlow } from './utils/edit-schema-flow';
-import { NotImplementedError, exitOnNextTick } from 'amplify-cli-core';
+import { NotImplementedError, exitOnNextTick, $TSContext } from 'amplify-cli-core';
 import { addResource as addContainer, updateResource as updateContainer } from './containers-handler';
 import inquirer from 'inquirer';
+import * as path from 'path';
 import {
   API_TYPE,
   ServiceConfiguration,
@@ -15,10 +16,10 @@ import {
 } from './service-walkthroughs/containers-walkthrough';
 import { category } from '../../category-constants';
 
-export async function console(context, service) {
+export async function console(context: $TSContext, service) {
   const { serviceWalkthroughFilename } = await serviceMetadataFor(service);
-  const serviceWalkthroughSrc = `${__dirname}/service-walkthroughs/${serviceWalkthroughFilename}`;
-  const { openConsole } = require(serviceWalkthroughSrc);
+  const serviceWalkthroughSrc = path.join(__dirname, 'service-walkthroughs', serviceWalkthroughFilename);
+  const { openConsole } = await import(serviceWalkthroughSrc);
 
   if (!openConsole) {
     const errMessage = 'Opening console functionality not available for this option';
@@ -30,7 +31,7 @@ export async function console(context, service) {
   return openConsole(context);
 }
 
-async function addContainerResource(context, category, service, options, apiType) {
+async function addContainerResource(context: $TSContext, category, service, options, apiType) {
   const serviceWalkthroughFilename = 'containers-walkthrough.js';
   const defaultValuesFilename = 'containers-defaults.js';
 
@@ -40,7 +41,7 @@ async function addContainerResource(context, category, service, options, apiType
   return await addContainer(serviceWalkthroughPromise, context, category, service, options, apiType);
 }
 
-async function addNonContainerResource(context, category, service, options) {
+async function addNonContainerResource(context: $TSContext, category, service, options) {
   const serviceMetadata = await serviceMetadataFor(service);
   const { serviceWalkthroughFilename, defaultValuesFilename } = serviceMetadata;
   const serviceWalkthrough = await getServiceWalkthrough(serviceWalkthroughFilename);
@@ -60,18 +61,18 @@ async function addNonContainerResource(context, category, service, options) {
   }
 }
 
-export async function addResource(context, category, service, options) {
+export async function addResource(context: $TSContext, category, service: string, options) {
   let useContainerResource = false;
   let apiType = API_TYPE.GRAPHQL;
 
   if (isContainersEnabled(context)) {
     switch (service) {
       case 'AppSync':
-        useContainerResource = await isGraphQLContainer(context);
+        useContainerResource = await isGraphQLContainer();
         apiType = API_TYPE.GRAPHQL;
         break;
       case 'API Gateway':
-        useContainerResource = await isRestContainer(context);
+        useContainerResource = await isRestContainer();
         apiType = API_TYPE.REST;
         break;
       default:
@@ -84,7 +85,7 @@ export async function addResource(context, category, service, options) {
     : addNonContainerResource(context, category, service, options);
 }
 
-function isContainersEnabled(context) {
+function isContainersEnabled(context: $TSContext) {
   const { frontend } = context.amplify.getProjectConfig();
   if (frontend) {
     const { config: { ServerlessContainers = false } = {} } = context.amplify.getProjectConfig()[frontend] || {};
@@ -95,7 +96,7 @@ function isContainersEnabled(context) {
   return false;
 }
 
-async function isGraphQLContainer(context): Promise<boolean> {
+async function isGraphQLContainer(): Promise<boolean> {
   const { graphqlSelection } = await inquirer.prompt({
     name: 'graphqlSelection',
     message: 'Which service would you like to use',
@@ -115,7 +116,7 @@ async function isGraphQLContainer(context): Promise<boolean> {
   return graphqlSelection;
 }
 
-async function isRestContainer(context) {
+async function isRestContainer() {
   const { restSelection } = await inquirer.prompt({
     name: 'restSelection',
     message: 'Which service would you like to use',
@@ -135,22 +136,18 @@ async function isRestContainer(context) {
   return restSelection;
 }
 
-export async function updateResource(context, category, service, options) {
+export async function updateResource(context: $TSContext, category, service: string, options) {
   const allowContainers = options?.allowContainers ?? true;
   let useContainerResource = false;
   let apiType = API_TYPE.GRAPHQL;
   if (allowContainers && isContainersEnabled(context)) {
-    const {
-      hasAPIGatewayContainerResource,
-      hasAPIGatewayLambdaResource,
-      hasGraphQLAppSyncResource,
-      hasGraphqlContainerResource,
-    } = await describeApiResourcesBySubCategory(context);
+    const { hasAPIGatewayContainerResource, hasAPIGatewayLambdaResource, hasGraphQLAppSyncResource, hasGraphqlContainerResource } =
+      await describeApiResourcesBySubCategory(context);
 
     switch (service) {
       case 'AppSync':
         if (hasGraphQLAppSyncResource && hasGraphqlContainerResource) {
-          useContainerResource = await isGraphQLContainer(context);
+          useContainerResource = await isGraphQLContainer();
         } else if (hasGraphqlContainerResource) {
           useContainerResource = true;
         } else {
@@ -160,7 +157,7 @@ export async function updateResource(context, category, service, options) {
         break;
       case 'API Gateway':
         if (hasAPIGatewayContainerResource && hasAPIGatewayLambdaResource) {
-          useContainerResource = await isRestContainer(context);
+          useContainerResource = await isRestContainer();
         } else if (hasAPIGatewayContainerResource) {
           useContainerResource = true;
         } else {
@@ -178,7 +175,7 @@ export async function updateResource(context, category, service, options) {
     : updateNonContainerResource(context, category, service);
 }
 
-async function describeApiResourcesBySubCategory(context) {
+async function describeApiResourcesBySubCategory(context: $TSContext) {
   const { allResources } = await context.amplify.getResourceStatus();
   const resources = allResources.filter(resource => resource.category === category && resource.mobileHubMigrated !== true);
 
@@ -207,7 +204,7 @@ async function describeApiResourcesBySubCategory(context) {
   };
 }
 
-async function updateContainerResource(context, category, service, apiType: API_TYPE) {
+async function updateContainerResource(context: $TSContext, category, service, apiType: API_TYPE) {
   const serviceWalkthroughFilename = 'containers-walkthrough';
   const defaultValuesFilename = 'containers-defaults.js';
   const serviceWalkthroughSrc = `${__dirname}/service-walkthroughs/${serviceWalkthroughFilename}`;

@@ -1,10 +1,22 @@
-import { $TSContext, exitOnNextTick, isResourceNameUnique, open, ResourceDoesNotExistError, stateManager } from 'amplify-cli-core';
-import * as fs from 'fs-extra';
+import {
+  $TSAny,
+  $TSContext,
+  $TSObject,
+  exitOnNextTick,
+  isResourceNameUnique,
+  JSONUtilities,
+  open,
+  pathManager,
+  ResourceDoesNotExistError,
+  stateManager,
+} from 'amplify-cli-core';
+import { printer } from 'amplify-prompts';
 import inquirer from 'inquirer';
 import os from 'os';
 import * as path from 'path';
 import uuid from 'uuid';
 import { rootAssetDir } from '../aws-constants';
+import { getAllDefaults } from '../default-values/apigw-defaults';
 import { checkForPathOverlap, formatCFNPathParamsForExpressJs, validatePathName } from '../utils/rest-api-path-utils';
 
 // keep in sync with ServiceName in amplify-category-function, but probably it will not change
@@ -16,11 +28,8 @@ const elasticContainerServiceName = 'ElasticContainer';
 const parametersFileName = 'api-params.json';
 const cfnParametersFilename = 'parameters.json';
 
-export async function serviceWalkthrough(context, defaultValuesFilename) {
-  const { amplify } = context;
-  const defaultValuesSrc = `${__dirname}/../default-values/${defaultValuesFilename}`;
-  const { getAllDefaults } = await import(defaultValuesSrc);
-  const allDefaultValues = getAllDefaults(amplify.getProjectDetails());
+export async function serviceWalkthrough(context: $TSContext) {
+  const allDefaultValues = getAllDefaults(context.amplify.getProjectDetails());
 
   let answers = {
     paths: [],
@@ -32,12 +41,9 @@ export async function serviceWalkthrough(context, defaultValuesFilename) {
   return pathFlow(context, answers);
 }
 
-export async function updateWalkthrough(context, defaultValuesFilename) {
-  const { amplify } = context;
+export async function updateWalkthrough(context: $TSContext) {
   const { allResources } = await context.amplify.getResourceStatus();
-  const defaultValuesSrc = `${__dirname}/../default-values/${defaultValuesFilename}`;
-  const { getAllDefaults } = await import(defaultValuesSrc);
-  const allDefaultValues = getAllDefaults(amplify.getProjectDetails());
+  const allDefaultValues = getAllDefaults(context.amplify.getProjectDetails());
   const resources = allResources
     .filter(resource => resource.service === serviceName && resource.mobileHubMigrated !== true)
     .map(resource => resource.resourceName);
@@ -45,13 +51,13 @@ export async function updateWalkthrough(context, defaultValuesFilename) {
   // There can only be one appsync resource
   if (resources.length === 0) {
     const errMessage = 'No REST API resource to update. Please use "amplify add api" command to create a new REST API';
-    context.print.error(errMessage);
+    printer.error(errMessage);
     await context.usageData.emitError(new ResourceDoesNotExistError(errMessage));
     exitOnNextTick(0);
     return;
   }
 
-  let answers: any = {
+  let answers: $TSAny = {
     paths: [],
   };
 
@@ -85,20 +91,15 @@ export async function updateWalkthrough(context, defaultValuesFilename) {
 
   if (updateApi.resourceName === 'AdminQueries') {
     const errMessage = `The Admin Queries API is maintained through the Auth category and should be updated using 'amplify update auth' command`;
-    context.print.warning(errMessage);
+    printer.warn(errMessage);
     await context.usageData.emitError(new ResourceDoesNotExistError(errMessage));
     exitOnNextTick(0);
   }
 
-  const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
+  const projectBackendDirPath = pathManager.getBackendDirPath();
   const resourceDirPath = path.join(projectBackendDirPath, category, updateApi.resourceName as string);
   const parametersFilePath = path.join(resourceDirPath, parametersFileName);
-  let parameters;
-  try {
-    parameters = context.amplify.readJsonFile(parametersFilePath);
-  } catch (e) {
-    parameters = {};
-  }
+  const parameters = JSONUtilities.readJson<$TSObject>(parametersFilePath, { throwIfNotExist: false }) ?? {};
   parameters.resourceName = updateApi.resourceName;
 
   Object.assign(allDefaultValues, parameters);
@@ -152,7 +153,7 @@ export async function updateWalkthrough(context, defaultValuesFilename) {
   return updatedResult;
 }
 
-async function pathFlow(context, answers, currentPath?) {
+async function pathFlow(context: $TSContext, answers: $TSObject, currentPath?) {
   const pathsAnswer = await askPaths(context, answers, currentPath);
   answers = { ...answers, paths: pathsAnswer.paths, functionArns: pathsAnswer.functionArns };
   const { dependsOn } = pathsAnswer;
@@ -164,14 +165,9 @@ async function pathFlow(context, answers, currentPath?) {
 
   answers = { ...answers, privacy, dependsOn };
 
-  if (
-    context.amplify.getProjectDetails() &&
-    context.amplify.getProjectDetails().amplifyMeta &&
-    context.amplify.getProjectDetails().amplifyMeta.providers &&
-    context.amplify.getProjectDetails().amplifyMeta.providers.awscloudformation
-  ) {
-    // TODO: read from utility functions (Dustin PR)
-    const { amplifyMeta } = context.amplify.getProjectDetails();
+  const amplifyMeta = stateManager.getMeta();
+
+  if (amplifyMeta.providers && amplifyMeta.providers.awscloudformation) {
     const providerInfo = amplifyMeta.providers.awscloudformation;
 
     answers.privacy.authRoleName = providerInfo.AuthRoleName;
@@ -181,7 +177,7 @@ async function pathFlow(context, answers, currentPath?) {
   return { answers, dependsOn };
 }
 
-async function askApiNames(context, defaults) {
+async function askApiNames(context: $TSContext, defaults) {
   const { amplify } = context;
   const apiNameValidator = (input: string) => {
     const amplifyValidatorOutput = amplify.inputValidation({
@@ -217,7 +213,7 @@ async function askApiNames(context, defaults) {
   return answer;
 }
 
-async function askPrivacy(context, answers, currentPath) {
+async function askPrivacy(context: $TSContext & { api: $TSAny }, answers, currentPath) {
   while (true) {
     const apiAccess = await inquirer.prompt({
       name: 'restrict',
@@ -230,19 +226,19 @@ async function askPrivacy(context, answers, currentPath) {
       return { open: true };
     }
 
-    const userPoolGroupList = await context.amplify.getUserPoolGroupList(context);
+    const userPoolGroupList = await context.amplify.getUserPoolGroupList();
 
     let permissionSelected = 'Auth/Guest Users';
-    const privacy: any = {};
+    const privacy: $TSAny = {};
 
     if (userPoolGroupList.length > 0) {
       do {
         if (permissionSelected === 'Learn more') {
-          context.print.info('');
-          context.print.info(
+          printer.info('');
+          printer.info(
             'You can restrict access using CRUD policies for Authenticated Users, Guest Users, or on individual Group that users belong to in a User Pool. If a user logs into your application and is not a member of any group they will use policy set for “Authenticated Users”, however if they belong to a group they will only get the policy associated with that specific group.',
           );
-          context.print.info('');
+          printer.info('');
         }
         const permissionSelection = await inquirer.prompt({
           name: 'selection',
@@ -347,28 +343,28 @@ async function askPrivacy(context, answers, currentPath) {
 
       const selectedUserPoolGroupList = userPoolGroupSelection.userpoolGroups;
 
-      for (let i = 0; i < selectedUserPoolGroupList.length; i += 1) {
+      for (const selectedUserPoolGroup of selectedUserPoolGroupList) {
         let defaults = [];
         if (
           currentPath &&
           currentPath.privacy &&
           currentPath.privacy.userPoolGroups &&
-          currentPath.privacy.userPoolGroups[selectedUserPoolGroupList[i]]
+          currentPath.privacy.userPoolGroups[selectedUserPoolGroup]
         ) {
-          defaults = currentPath.privacy.userPoolGroups[selectedUserPoolGroupList[i]];
+          defaults = currentPath.privacy.userPoolGroups[selectedUserPoolGroup];
         }
         if (!privacy.userPoolGroups) {
           privacy.userPoolGroups = {};
         }
-        privacy.userPoolGroups[selectedUserPoolGroupList[i]] = await askReadWrite(selectedUserPoolGroupList[i], context, defaults);
+        privacy.userPoolGroups[selectedUserPoolGroup] = await askReadWrite(selectedUserPoolGroup, context, defaults);
       }
     }
     return privacy;
   }
 }
 
-async function ensureAuth(context, apiRequirements, resourceName) {
-  const checkResult = await context.amplify.invokePluginMethod(context, 'auth', undefined, 'checkRequirements', [
+async function ensureAuth(context: $TSContext, apiRequirements, resourceName: string) {
+  const checkResult: $TSAny = await context.amplify.invokePluginMethod(context, 'auth', undefined, 'checkRequirements', [
     apiRequirements,
     context,
     'api',
@@ -382,7 +378,7 @@ async function ensureAuth(context, apiRequirements, resourceName) {
   }
 
   if (checkResult.errors && checkResult.errors.length > 0) {
-    context.print.warning(checkResult.errors.join(os.EOL));
+    printer.warn(checkResult.errors.join(os.EOL));
   }
 
   // If auth is not imported and there were errors, adjust or enable auth configuration
@@ -395,13 +391,13 @@ async function ensureAuth(context, apiRequirements, resourceName) {
         apiRequirements,
       ]);
     } catch (error) {
-      context.print.error(error);
+      printer.error(error);
       throw error;
     }
   }
 }
 
-async function askReadWrite(userType, context, privacy) {
+async function askReadWrite(userType, context: $TSContext, privacy) {
   const permissionMap = {
     create: ['/POST'],
     read: ['/GET'],
@@ -423,10 +419,10 @@ async function askReadWrite(userType, context, privacy) {
   return crudAnswers;
 }
 
-async function askPaths(context, answers, currentPath) {
+async function askPaths(context: $TSContext, answers, currentPath: $TSObject) {
   // const existingLambdaArns = true;
 
-  const existingFunctions = functionsExist(context);
+  const existingFunctions = functionsExist();
 
   const choices = [
     {
@@ -508,7 +504,7 @@ async function askPaths(context, answers, currentPath) {
     do {
       lambda = await askLambdaSource(context, lambdaAnswer.functionType, path.name, currentPath);
     } while (!lambda);
-    const privacy = await askPrivacy(context, answers, currentPath);
+    const privacy = await askPrivacy(context as $TSAny, answers, currentPath);
     path = { ...path, ...lambda, privacy };
     paths.push(path);
 
@@ -531,29 +527,29 @@ async function askPaths(context, answers, currentPath) {
   return { paths, dependsOn, functionArns };
 }
 
-async function findDependsOn(paths, context) {
+async function findDependsOn(paths, context: $TSContext) {
   // go thru all paths and add lambdaFunctions to dependsOn and functionArns uniquely
   const dependsOn = [];
   const functionArns = [];
 
-  for (let i = 0; i < paths.length; i += 1) {
-    if (paths[i].lambdaFunction && !paths[i].lambdaArn) {
-      if (!dependsOn.find(func => func.resourceName === paths[i].lambdaFunction)) {
+  for (const path of paths) {
+    if (path.lambdaFunction && !path.lambdaArn) {
+      if (!dependsOn.find(func => func.resourceName === path.lambdaFunction)) {
         dependsOn.push({
           category: 'function',
-          resourceName: paths[i].lambdaFunction,
+          resourceName: path.lambdaFunction,
           attributes: ['Name', 'Arn'],
         });
       }
     }
-    if (!functionArns.find(func => func.lambdaFunction === paths[i].lambdaFunction)) {
+    if (!functionArns.find(func => func.lambdaFunction === path.lambdaFunction)) {
       functionArns.push({
-        lambdaFunction: paths[i].lambdaFunction,
-        lambdaArn: paths[i].lambdaArn,
+        lambdaFunction: path.lambdaFunction,
+        lambdaArn: path.lambdaArn,
       });
     }
-    if (paths[i].privacy && paths[i].privacy.userPoolGroups) {
-      const userPoolGroups = Object.keys(paths[i].privacy.userPoolGroups);
+    if (path.privacy && path.privacy.userPoolGroups) {
+      const userPoolGroups = Object.keys(path.privacy.userPoolGroups);
       if (userPoolGroups.length > 0) {
         // Get auth resource name
 
@@ -582,7 +578,7 @@ async function findDependsOn(paths, context) {
   return { dependsOn, functionArns };
 }
 
-async function getAuthResourceName(context) {
+async function getAuthResourceName(context: $TSContext) {
   let authResources = (await context.amplify.getResourceStatus('auth')).allResources;
   authResources = authResources.filter(resource => resource.service === 'Cognito');
   if (authResources.length === 0) {
@@ -593,12 +589,13 @@ async function getAuthResourceName(context) {
   return authResourceName;
 }
 
-function functionsExist(context) {
-  if (!context.amplify.getProjectDetails().amplifyMeta.function) {
+function functionsExist() {
+  const meta = stateManager.getMeta();
+  if (!meta.function) {
     return false;
   }
 
-  const functionResources = context.amplify.getProjectDetails().amplifyMeta.function;
+  const functionResources = meta.function;
   const lambdaFunctions = [];
   Object.keys(functionResources).forEach(resourceName => {
     if (functionResources[resourceName].service === FunctionServiceNameLambdaFunction) {
@@ -613,20 +610,21 @@ function functionsExist(context) {
   return true;
 }
 
-async function askLambdaSource(context, functionType, path, currentPath) {
+async function askLambdaSource(context: $TSContext, functionType: string, path, currentPath) {
   switch (functionType) {
     case 'arn':
       return askLambdaArn(context, currentPath);
     case 'projectFunction':
       return askLambdaFromProject(context, currentPath);
     case 'newFunction':
-      return newLambdaFunction(context, path);
+      return newLambdaFunction(context as $TSAny, path);
     default:
       throw new Error('Type not supported');
   }
 }
 
-async function newLambdaFunction(context, path) {
+// YIKES
+async function newLambdaFunction(context: $TSContext & { api: $TSAny }, path) {
   context.api = {
     path,
     // ExpressJS represents path parameters as /:param instead of /{param}. This expression performs this replacement.
@@ -649,12 +647,12 @@ async function newLambdaFunction(context, path) {
     params,
   ]);
 
-  context.print.success('Succesfully added the Lambda function locally');
+  printer.success('Succesfully added the Lambda function locally');
 
   return { lambdaFunction: resourceName };
 }
 
-async function askLambdaFromProject(context, currentPath) {
+async function askLambdaFromProject(context: $TSContext, currentPath) {
   const functionResources = context.amplify.getProjectDetails().amplifyMeta.function;
   const lambdaFunctions = [];
   Object.keys(functionResources).forEach(resourceName => {
@@ -674,7 +672,7 @@ async function askLambdaFromProject(context, currentPath) {
   return { lambdaFunction: answer.lambdaFunction };
 }
 
-async function askLambdaArn(context, currentPath) {
+async function askLambdaArn(context: $TSContext, currentPath?: $TSObject) {
   const lambdaFunctions = await context.amplify.executeProviderUtils(context, 'awscloudformation', 'getLambdaFunctions');
 
   const lambdaOptions = lambdaFunctions.map(lambdaFunction => ({
@@ -683,7 +681,7 @@ async function askLambdaArn(context, currentPath) {
   }));
 
   if (lambdaOptions.length === 0) {
-    context.print.error('You do not have any Lambda functions configured for the selected Region');
+    printer.error('You do not have any Lambda functions configured for the selected Region');
     return null;
   }
 
@@ -700,7 +698,7 @@ async function askLambdaArn(context, currentPath) {
     try {
       lambdaOption = await inquirer.prompt([lambdaCloudOptionQuestion]);
     } catch (err) {
-      context.print.error('Select a Lambda Function');
+      printer.error('Select a Lambda Function');
     }
   }
 
@@ -712,24 +710,22 @@ async function askLambdaArn(context, currentPath) {
   };
 }
 
-export async function migrate(context, projectPath, resourceName) {
-  const { amplify } = context;
-
-  const targetDir = amplify.pathManager.getBackendDirPath();
+export async function migrate(context: $TSContext, projectPath: string, resourceName: string) {
+  const targetDir = pathManager.getBackendDirPath();
   const resourceDirPath = path.join(targetDir, category, resourceName);
   const parametersFilePath = path.join(resourceDirPath, parametersFileName);
   let parameters;
   try {
-    parameters = amplify.readJsonFile(parametersFilePath);
+    parameters = JSONUtilities.readJson(parametersFilePath);
   } catch (e) {
-    context.print.error(`Error reading api-params.json file for ${resourceName} resource`);
+    printer.error(`Error reading api-params.json file for ${resourceName} resource`);
     throw e;
   }
   const copyJobs = [
     {
       dir: path.join(rootAssetDir, 'cloudformation-templates'),
       template: 'apigw-cloudformation-template-default.json.ejs',
-      target: `${targetDir}/${category}/${resourceName}/${resourceName}-cloudformation-template.json`,
+      target: path.join(targetDir, category, resourceName, `${resourceName}-cloudformation-template.json`),
     },
   ];
 
@@ -747,21 +743,21 @@ export async function migrate(context, projectPath, resourceName) {
   };
 
   const cfnParametersFilePath = path.join(resourceDirPath, cfnParametersFilename);
-  const jsonString = JSON.stringify(cfnParameters, null, 4);
-  fs.writeFileSync(cfnParametersFilePath, jsonString, 'utf8');
+  JSONUtilities.writeJson(cfnParametersFilePath, cfnParameters);
 }
 
-function convertToCRUD(privacy) {
+function convertToCRUD(privacy: string) {
+  let privacyList: string[];
   if (privacy === 'r') {
-    privacy = ['/GET'];
+    privacyList = ['/GET'];
   } else if (privacy === 'rw') {
-    privacy = ['/POST', '/GET', '/PUT', '/PATCH', '/DELETE'];
+    privacyList = ['/POST', '/GET', '/PUT', '/PATCH', '/DELETE'];
   }
 
-  return privacy;
+  return privacyList;
 }
 
-export function getIAMPolicies(resourceName, crudOptions) {
+export function getIAMPolicies(resourceName: string, crudOptions: string[]) {
   let policy = {};
   const actions = [];
 
@@ -874,13 +870,13 @@ export const openConsole = async (context: $TSContext) => {
       } else if (selectedConsole === codePipeline) {
         url = `https://${Region}.console.aws.amazon.com/codesuite/codepipeline/pipelines/${PipelineName}/view`;
       } else {
-        context.print.error('Option not available');
+        printer.error('Option not available');
         return;
       }
     }
 
     open(url, { wait: false });
   } else {
-    context.print.error('There are no REST APIs pushed to the cloud');
+    printer.error('There are no REST APIs pushed to the cloud');
   }
 };
