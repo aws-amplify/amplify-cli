@@ -484,8 +484,11 @@ jobs:
           path: ~/repo/packages/amplify-migration-tests/amplify-migration-reports
   amplify_migration_tests_overrides:
     working_directory: ~/repo
-    docker: *ref_1
-    resource_class: large
+    parameters:
+      os:
+        type: executor
+        default: linux
+    executor: << parameters.os >>
     environment:
       AMPLIFY_PATH: /home/circleci/.npm-global/lib/node_modules/@aws-amplify/cli/bin/amplify
     steps:
@@ -501,7 +504,15 @@ jobs:
             cd packages/amplify-migration-tests
             yarn run migration_v6.0.1 --maxWorkers=3 $TEST_SUITE
           no_output_timeout: 90m
-      - run: *ref_4
+      - run:
+          name: Scan And Cleanup E2E Test Artifacts
+          command: |
+            if ! yarn ts-node .circleci/scan_artifacts.ts; then
+              echo "Cleaning the repository"
+              git clean -fdx
+              exit 1
+            fi
+          when: always
       - store_test_results:
           path: packages/amplify-migration-tests/
       - store_artifacts:
