@@ -14,7 +14,7 @@ import { printer } from 'amplify-prompts';
 import inquirer from 'inquirer';
 import os from 'os';
 import * as path from 'path';
-import uuid from 'uuid';
+import { v4 as uuid } from 'uuid';
 import { rootAssetDir } from '../aws-constants';
 import { getAllDefaults } from '../default-values/apigw-defaults';
 import { checkForPathOverlap, formatCFNPathParamsForExpressJs, validatePathName } from '../utils/rest-api-path-utils';

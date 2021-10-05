@@ -2,7 +2,7 @@ import { Octokit } from '@octokit/rest';
 import * as fs from 'fs-extra';
 import inquirer from 'inquirer';
 import * as path from 'path';
-import uuid from 'uuid';
+import { v4 as uuid } from 'uuid';
 import { provider as cloudformationProviderName } from '../../../provider-utils/awscloudformation/aws-constants';
 import { getContainers } from '../../../provider-utils/awscloudformation/docker-compose';
 import Container from '../docker-compose/ecs-objects/container';
