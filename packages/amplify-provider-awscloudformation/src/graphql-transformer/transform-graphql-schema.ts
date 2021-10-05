@@ -337,31 +337,8 @@ export async function transformGraphQLSchema(context, options) {
     sandboxModeEnabled,
   };
 
-  let transformerOutput;
-  let authSchemaErrors = false;
-  do {
-    try {
-    transformerOutput = await buildAPIProject(buildConfig);
-    authSchemaErrors = false;
-  } catch (err) {
-    authSchemaErrors = true;
-    if (err.message === `@auth directive with 'iam' provider found, but the project has no IAM authentication provider configured.`) {
-      authConfig.additionalAuthenticationProviders.push(await addGraphQLAuthRequirement(context, 'AWS_IAM'));
-    } else if (!context?.parameters?.options?.yes) {
-      if (err.message === `@auth directive with 'userPools' provider found, but the project has no Cognito User Pools authentication provider configured.`) {
-        authConfig.additionalAuthenticationProviders.push(await addGraphQLAuthRequirement(context, 'AMAZON_COGNITO_USER_POOLS'));
-      } else if (err.message === `@auth directive with 'oidc' provider found, but the project has no OPENID_CONNECT authentication provider configured.`) {
-        authConfig.additionalAuthenticationProviders.push(await addGraphQLAuthRequirement(context, 'OPENID_CONNECT'));
-      } else if (err.message === `@auth directive with 'apiKey' provider found, but the project has no API Key authentication provider configured.`) {
-        authConfig.additionalAuthenticationProviders.push(await addGraphQLAuthRequirement(context, 'AWS_KEY'));
-      } else {
-        throw err;
-      }
-    } else {
-      throw err;
-    }
-  }
-  } while (authSchemaErrors);
+  const transformerOutput = await buildAPIProject(buildConfig);
+
   context.print.success(`GraphQL schema compiled successfully.\n\nEdit your schema at ${schemaFilePath} or \
 place .graphql files in a directory at ${schemaDirPath}`);
 
