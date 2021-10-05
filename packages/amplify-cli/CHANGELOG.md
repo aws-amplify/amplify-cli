@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [6.2.0-custom-type-preview.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@6.1.1...@aws-amplify/cli@6.2.0-custom-type-preview.0) (2021-10-05)
+
+
+### Features
+
+* **cli:** add tag released version codegen ([a0081d3](https://github.com/aws-amplify/amplify-cli/commit/a0081d3d2fcfcb301bf82412fb036e8d7ed5de2d))
+
+
+
+
+
 ## [6.1.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@6.1.0...@aws-amplify/cli@6.1.1) (2021-10-01)
 
 **Note:** Version bump only for package @aws-amplify/cli

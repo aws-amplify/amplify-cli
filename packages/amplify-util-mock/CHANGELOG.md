@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.35.0-custom-type-preview.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@3.34.7...amplify-util-mock@3.35.0-custom-type-preview.0) (2021-10-05)
+
+
+### Features
+
+* **cli:** add tag released version codegen ([a0081d3](https://github.com/aws-amplify/amplify-cli/commit/a0081d3d2fcfcb301bf82412fb036e8d7ed5de2d))
+
+
+
+
+
 ## [3.34.7](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@3.34.6...amplify-util-mock@3.34.7) (2021-10-01)
 
 **Note:** Version bump only for package amplify-util-mock

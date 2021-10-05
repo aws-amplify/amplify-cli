@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.62.0-custom-type-preview.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.61.1...amplify-provider-awscloudformation@4.62.0-custom-type-preview.0) (2021-10-05)
+
+
+### Features
+
+* **cli:** add tag released version codegen ([a0081d3](https://github.com/aws-amplify/amplify-cli/commit/a0081d3d2fcfcb301bf82412fb036e8d7ed5de2d))
+
+
+
+
+
 ## [4.61.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.61.0...amplify-provider-awscloudformation@4.61.1) (2021-10-01)
 
 
