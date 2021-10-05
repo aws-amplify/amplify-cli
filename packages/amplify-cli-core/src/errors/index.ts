@@ -20,6 +20,8 @@ export class UnrecognizedFrameworkError extends Error {}
 export class ConfigurationError extends Error {}
 export class CustomPoliciesFormatError extends Error {}
 export class ExportPathValidationError extends Error {}
+export class ExportedStackNotFoundError extends Error {}
+export class ExportedStackNotInValidStateError extends Error {}
 export class NotInitializedError extends Error {
   public constructor() {
     super();

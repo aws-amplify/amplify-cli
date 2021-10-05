@@ -311,6 +311,37 @@ class CloudFormation {
       });
   }
 
+  // async getStackOutputsAsMeta(rootStackName) {
+  //   const rootStackResult = await this.cfn.describeStackResources({
+  //     StackName: rootStackName
+  //   }).promise();
+  //   const excludeResourceSet = new Set([
+  //     'DeploymentBucket',
+  //     'AuthRole',
+  //     'UnauthRole',
+  //     'UpdateRolesWithIDPFunction',
+  //     'UpdateRolesWithIDPFunctionOutputs',
+  //     'UpdateRolesWithIDPFunctionRole',
+  //   ])
+  //   const resources = rootStackResult.StackResources.filter(resource =>
+  //     !excludeResourceSet.has(resource.LogicalResourceId) &&
+  //     resource.ResourceType === 'AWS::CloudFormation::Stack');
+  //   const resourceByLogicalId = new Map([...resources.map(resource => [resource.LogicalResourceId, resource])]);
+  //   const amplifyMeta  = stateManager.getMeta();
+  //   Object.keys(amplifyMeta)
+  //       .
+
+  // }
+
+  async listStacks(nextToken = null, stackStatusFilter) {
+    return await this.cfn
+      .listStacks({
+        NextToken: nextToken,
+        StackStatusFilter: stackStatusFilter,
+      })
+      .promise();
+  }
+
   async updateamplifyMetaFileWithStackOutputs(parentStackName) {
     const cfnParentStackParams = {
       StackName: parentStackName,
