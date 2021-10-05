@@ -344,17 +344,6 @@ place .graphql files in a directory at ${schemaDirPath}`);
   return transformerOutput;
 }
 
-async function addGraphQLAuthRequirement(context, authType) {
-  return await context.amplify.invokePluginMethod(context, 'api', undefined, 'addGraphQLAuthorizationMode', [
-    context,
-    {
-      authType: authType,
-      printLeadText: true,
-      authSettings: undefined,
-    },
-  ]);
-}
-
 function getProjectBucket(context) {
   const projectDetails = context.amplify.getProjectDetails();
   const projectBucket = projectDetails.amplifyMeta.providers ? projectDetails.amplifyMeta.providers[providerName].DeploymentBucketName : '';

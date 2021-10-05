@@ -397,7 +397,7 @@ export async function run(context: $TSContext, resourceDefinition: $TSObject) {
       await deploymentStateManager.failDeployment();
     }
 
-    if(!canAutoResolveGraphQLAuthError(error.message)) {
+    if(!await canAutoResolveGraphQLAuthError(error.message)) {
       spinner.fail('An error occurred when pushing the resources to the cloud');
     }
 
