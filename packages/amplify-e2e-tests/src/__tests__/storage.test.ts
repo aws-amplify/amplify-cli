@@ -1,7 +1,10 @@
+import { JSONUtilities } from 'amplify-cli-core';
 import { initJSProjectWithProfile, initFlutterProjectWithProfile, deleteProject, amplifyPushAuth } from 'amplify-e2e-core';
 import { addAuthWithDefault, addAuthWithGroupsAndAdminAPI } from 'amplify-e2e-core';
 import {
   addSimpleDDB,
+  overrideDDB,
+  buildOverrideStorage,
   addDDBWithTrigger,
   updateDDBWithTrigger,
   addSimpleDDBwithGSI,
@@ -15,6 +18,7 @@ import {
 import { createNewProjectDir, deleteProjectDir, getProjectMeta, getDDBTable, checkIfBucketExists } from 'amplify-e2e-core';
 import * as fs from 'fs-extra';
 import * as path from 'path';
+import uuid from 'uuid';
 
 describe('amplify add/update storage(S3)', () => {
   let projRoot: string;
@@ -128,9 +132,12 @@ describe('amplify add/update storage(DDB)', () => {
     await amplifyPushAuth(projRoot);
 
     const meta = getProjectMeta(projRoot);
-    const { Name: table1Name, Arn: table1Arn, Region: table1Region, StreamArn: table1StreamArn } = Object.keys(meta.storage).map(
-      key => meta.storage[key],
-    )[0].output;
+    const {
+      Name: table1Name,
+      Arn: table1Arn,
+      Region: table1Region,
+      StreamArn: table1StreamArn,
+    } = Object.keys(meta.storage).map(key => meta.storage[key])[0].output;
 
     expect(table1Name).toBeDefined();
     expect(table1Arn).toBeDefined();
@@ -140,9 +147,12 @@ describe('amplify add/update storage(DDB)', () => {
 
     expect(table1Configs.Table.TableArn).toEqual(table1Arn);
 
-    const { Name: table2Name, Arn: table2Arn, Region: table2Region, StreamArn: table2StreamArn } = Object.keys(meta.storage).map(
-      key => meta.storage[key],
-    )[1].output;
+    const {
+      Name: table2Name,
+      Arn: table2Arn,
+      Region: table2Region,
+      StreamArn: table2StreamArn,
+    } = Object.keys(meta.storage).map(key => meta.storage[key])[1].output;
 
     expect(table2Name).toBeDefined();
     expect(table2Arn).toBeDefined();
@@ -150,5 +160,60 @@ describe('amplify add/update storage(DDB)', () => {
     expect(table2StreamArn).toBeDefined();
     const table2Configs = await getDDBTable(table2Name, table2Region);
     expect(table2Configs.Table.TableArn).toEqual(table2Arn);
+  });
+});
+
+describe('ddb override tests', () => {
+  let projRoot: string;
+  beforeEach(async () => {
+    projRoot = await createNewProjectDir('ddb-overrides');
+  });
+
+  afterEach(async () => {
+    await deleteProject(projRoot);
+    deleteProjectDir(projRoot);
+  });
+
+  it('override DDB StreamSpecification property', async () => {
+    const resourceName = `dynamo${uuid.v4().split('-')[0]}`;
+    await initJSProjectWithProfile(projRoot, {});
+    await addSimpleDDB(projRoot, { name: resourceName });
+    await overrideDDB(projRoot, {});
+
+    const srcOverrideFilePath = path.join(__dirname, '..', '..', 'overrides', 'override-storage-ddb.ts');
+    const destOverrideFilePath = path.join(projRoot, 'amplify', 'backend', 'storage', resourceName, 'override.ts');
+    const cfnFilePath = path.join(projRoot, 'amplify', 'backend', 'storage', resourceName, 'build', 'cloudformation-template.json');
+
+    fs.copyFileSync(srcOverrideFilePath, destOverrideFilePath);
+
+    await buildOverrideStorage(projRoot, {});
+
+    let ddbCFNFileJSON: any = JSONUtilities.readJson(cfnFilePath);
+
+    // check if overrides are applied to the cfn file
+    expect(ddbCFNFileJSON?.Resources?.DynamoDBTable?.Properties?.StreamSpecification?.StreamViewType).toEqual('NEW_AND_OLD_IMAGES');
+
+    await updateDDBWithTrigger(projRoot, {});
+
+    // check if override persists after an update
+    ddbCFNFileJSON = JSONUtilities.readJson(cfnFilePath);
+    expect(ddbCFNFileJSON?.Resources?.DynamoDBTable?.Properties?.StreamSpecification?.StreamViewType).toEqual('NEW_AND_OLD_IMAGES');
+
+    await amplifyPushAuth(projRoot);
+
+    const meta = getProjectMeta(projRoot);
+    const {
+      Name: table1Name,
+      Arn: table1Arn,
+      Region: table1Region,
+      StreamArn: table1StreamArn,
+    } = Object.keys(meta.storage).map(key => meta.storage[key])[0].output;
+
+    expect(table1Name).toBeDefined();
+    expect(table1Arn).toBeDefined();
+    expect(table1Region).toBeDefined();
+    expect(table1StreamArn).toBeDefined();
+    const table1Configs = await getDDBTable(table1Name, table1Region);
+    expect(table1Configs.Table.TableArn).toEqual(table1Arn);
   });
 });

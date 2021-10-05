@@ -44,7 +44,8 @@
     "yargs": "^15.1.0"
   },
   "devDependencies": {
-    "ts-node": "^8.9.0"
+    "ts-node": "^8.9.0",
+    "jest": "^27.2.4"
   },
   "jest": {
     "verbose": false,
