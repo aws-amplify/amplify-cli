@@ -2,7 +2,7 @@ import * as path from 'path';
 import * as fs from 'fs-extra';
 import uuid from 'uuid';
 import { alphanumeric, printer, prompter, Validator } from 'amplify-prompts';
-import { $TSContext, AmplifyCategories, ResourceDoesNotExistError, exitOnNextTick } from 'amplify-cli-core';
+import { $TSContext, AmplifyCategories, ResourceDoesNotExistError, exitOnNextTick, stateManager } from 'amplify-cli-core';
 import { DynamoDBInputState } from './dynamoDB-input-state';
 import {
   DynamoDBAttributeDefType,
@@ -11,19 +11,20 @@ import {
   DynamoDBCLIInputsKeyType,
 } from '../service-walkthrough-types/dynamoDB-user-input-types';
 import { DDBStackTransform } from '../cdk-stack-builder/ddb-stack-transform';
+import { ConfigSnapshotDeliveryProperties } from 'cloudform-types/types/config/deliveryChannel';
 
 // keep in sync with ServiceName in amplify-AmplifyCategories.STORAGE-function, but probably it will not change
 const FunctionServiceNameLambdaFunction = 'Lambda';
 const serviceName = 'DynamoDB';
 
-async function addWalkthrough(context: $TSContext, defaultValuesFilename: string) {
+export async function addWalkthrough(context: $TSContext, defaultValuesFilename: string) {
   printer.blankLine();
   printer.info('Welcome to the NoSQL DynamoDB database wizard');
   printer.info('This wizard asks you a series of questions to help determine how to set up your NoSQL database table.');
   printer.blankLine();
 
   const defaultValuesSrc = path.join(__dirname, '..', 'default-values', defaultValuesFilename);
-  const { getAllDefaults } = require(defaultValuesSrc);
+  const { getAllDefaults } = await import(defaultValuesSrc);
   const { amplify } = context;
   const defaultValues = getAllDefaults(amplify.getProjectDetails());
 
@@ -55,11 +56,8 @@ async function addWalkthrough(context: $TSContext, defaultValuesFilename: string
   return cliInputs.resourceName;
 }
 
-async function updateWalkthrough(context: $TSContext) {
-  // const resourceName = resourceAlreadyExists(context);
-  const { amplify } = context;
-  const { amplifyMeta } = amplify.getProjectDetails();
-
+export async function updateWalkthrough(context: $TSContext) {
+  const amplifyMeta = stateManager.getMeta();
   const dynamoDbResources: any = {};
 
   Object.keys(amplifyMeta[AmplifyCategories.STORAGE]).forEach(resourceName => {
@@ -232,7 +230,7 @@ async function askGSIQuestion(
     gsiList = existingGSIList;
   }
 
-  if (await prompter.confirmContinue('Do you want to add global secondary indexes to your table?')) {
+  if (await prompter.yesOrNo('Do you want to add global secondary indexes to your table?', true)) {
     let continuewithGSIQuestions = true;
 
     while (continuewithGSIQuestions) {
@@ -264,12 +262,11 @@ async function askGSIQuestion(
         const sortKeyOptions = indexableAttributeList.filter((att: string) => att !== gsiPartitionKeyName);
 
         if (sortKeyOptions.length > 0) {
-          if (await prompter.confirmContinue('Do you want to add a sort key to your global secondary index?')) {
+          if (await prompter.yesOrNo('Do you want to add a sort key to your global secondary index?', true)) {
             const gsiSortKeyName = await prompter.pick('Choose sort key for the GSI', [...new Set(sortKeyOptions)]);
             const gsiSortKeyIndex = attributeDefinitions.findIndex(
               (attr: DynamoDBAttributeDefType) => attr.AttributeName === gsiSortKeyName,
             );
-
             gsiItem.sortKey = {
               fieldName: gsiSortKeyName,
               fieldType: attributeDefinitions[gsiSortKeyIndex].AttributeType,
@@ -278,7 +275,7 @@ async function askGSIQuestion(
         }
 
         gsiList.push(gsiItem);
-        continuewithGSIQuestions = await prompter.confirmContinue('Do you want to add more global secondary indexes to your table?');
+        continuewithGSIQuestions = await prompter.yesOrNo('Do you want to add more global secondary indexes to your table?', true);
       } else {
         printer.error('You do not have any other attributes remaining to configure');
         break;
@@ -293,7 +290,7 @@ async function askSortKeyQuestion(
   attributeDefinitions: DynamoDBAttributeDefType[],
   partitionKeyFieldName: string,
 ): Promise<undefined | DynamoDBCLIInputsKeyType> {
-  if (await prompter.confirmContinue('Do you want to add a sort key to your table?')) {
+  if (await prompter.yesOrNo('Do you want to add a sort key to your table?', true)) {
     // Ask for sort key
     if (attributeDefinitions.length > 1) {
       const sortKeyName = await prompter.pick(
@@ -369,7 +366,7 @@ async function askAttributeListQuestion(existingAttributeDefinitions?: DynamoDBC
   if (existingAttributes.length > 0) {
     attributeAnswers = existingAttributes;
     indexableAttributeList = attributeAnswers.map((attr: DynamoDBAttributeDefType) => attr.AttributeName);
-    continueAttributeQuestion = await prompter.confirmContinue('Would you like to add another column?');
+    continueAttributeQuestion = await prompter.yesOrNo('Would you like to add another column?', true);
   }
 
   while (continueAttributeQuestion) {
@@ -400,7 +397,7 @@ async function askAttributeListQuestion(existingAttributeDefinitions?: DynamoDBC
       indexableAttributeList.push(attributeName);
     }
 
-    continueAttributeQuestion = await prompter.confirmContinue('Would you like to add another column?');
+    continueAttributeQuestion = await prompter.yesOrNo('Would you like to add another column?', true);
   }
 
   return { attributeAnswers, indexableAttributeList };
@@ -412,7 +409,7 @@ async function askTableNameQuestion(defaultValues: any, resourceName: string) {
     (input: string) =>
       /^[a-zA-Z0-9._-]+$/.test(input) ? true : message;
 
-  const tableName = await prompter.input('Provide table name:', {
+  const tableName = await prompter.input('Provide table name', {
     validate: tableNameValidator('You can use the following characters: a-z A-Z 0-9 . - _'),
     initial: resourceName || defaultValues['tableName'],
   });
@@ -421,13 +418,10 @@ async function askTableNameQuestion(defaultValues: any, resourceName: string) {
 }
 
 async function askResourceNameQuestion(defaultValues: any): Promise<string> {
-  const resourceName = await prompter.input(
-    'Provide a friendly name for your resource that will be used to label this category in the project',
-    {
-      validate: alphanumeric(),
-      initial: defaultValues['resourceName'],
-    },
-  );
+  const resourceName = await prompter.input('Provide a friendly name', {
+    validate: alphanumeric(),
+    initial: defaultValues['resourceName'],
+  });
 
   return resourceName;
 }
