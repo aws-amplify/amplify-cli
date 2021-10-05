@@ -17,17 +17,23 @@ export function addSimpleDDB(cwd: string, settings: any): Promise<void> {
     spawn(getCLIPath(), ['add', 'storage'], { cwd, stripColors: true })
       .wait('Please select from one of the below mentioned services')
       .sendLine(KEY_DOWN_ARROW)
-      .wait('Please provide a friendly name for your resource')
-      .sendLine(settings.name || '')
-      .wait('Please provide table name')
+      .wait('Provide a friendly name')
+      .sendLine(settings.name || '\r')
+      .wait('Provide table name')
       .sendCarriageReturn()
       .wait('What would you like to name this column')
       .sendLine('id')
-      .wait('Please choose the data type')
+      .wait('Choose the data type')
+      .sendCarriageReturn()
+      .wait('Would you like to add another column')
+      .sendLine('y')
+      .wait('What would you like to name this column')
+      .sendLine('col2')
+      .wait('Choose the data type')
       .sendCarriageReturn()
       .wait('Would you like to add another column')
       .sendLine('n')
-      .wait('Please choose partition key for the table')
+      .wait('Choose partition key for the table')
       .sendCarriageReturn()
       .wait('Do you want to add a sort key to your table')
       .sendLine('n')
@@ -51,7 +57,7 @@ export function addDDBWithTrigger(cwd: string, settings: { ddbResourceName?: str
     const chain = spawn(getCLIPath(), ['add', 'storage'], { cwd, stripColors: true })
       .wait('Please select from one of the below mentioned services')
       .sendLine(KEY_DOWN_ARROW)
-      .wait('Please provide a friendly name for your resource');
+      .wait('Provide a friendly name');
     if (settings.ddbResourceName) {
       chain.sendLine(settings.ddbResourceName);
     } else {
@@ -59,15 +65,21 @@ export function addDDBWithTrigger(cwd: string, settings: { ddbResourceName?: str
     }
     chain
       .sendCarriageReturn()
-      .wait('Please provide table name')
+      .wait('Provide table name')
       .sendCarriageReturn()
       .wait('What would you like to name this column')
       .sendLine('id')
-      .wait('Please choose the data type')
+      .wait('Choose the data type')
+      .sendCarriageReturn()
+      .wait('Would you like to add another column')
+      .sendLine('y')
+      .wait('What would you like to name this column')
+      .sendLine('col2')
+      .wait('Choose the data type')
       .sendCarriageReturn()
       .wait('Would you like to add another column')
       .sendLine('n')
-      .wait('Please choose partition key for the table')
+      .wait('Choose partition key for the table')
       .sendCarriageReturn()
       .wait('Do you want to add a sort key to your table')
       .sendLine('n')
@@ -107,8 +119,6 @@ export function updateDDBWithTrigger(cwd: string, settings: any): Promise<void> 
       .sendLine(KEY_DOWN_ARROW)
       .wait('Do you want to edit the local')
       .sendLine('n')
-      .wait('overwrite')
-      .sendLine('y')
       .sendEof()
       .run((err: Error) => {
         if (!err) {
@@ -132,15 +142,17 @@ export function updateSimpleDDBwithGSI(cwd: string, settings: any): Promise<void
       .sendLine('y')
       .wait('What would you like to name this column')
       .sendLine('gsi-col2')
-      .wait('Please choose the data type')
+      .wait('Choose the data type')
       .sendCarriageReturn()
       .wait('Would you like to add another column')
       .sendLine('n')
+      .wait('Do you want to keep existing global seconday indexes created on your table?')
+      .sendLine('y')
       .wait('Do you want to add global secondary indexes to your table?')
       .sendLine('y')
-      .wait('Please provide the GSI name')
+      .wait('Provide the GSI name')
       .sendLine('gsi2')
-      .wait('Please choose partition key for the GSI')
+      .wait('Choose partition key for the GSI')
       .sendKeyDown()
       .sendKeyDown()
       .sendCarriageReturn()
@@ -148,12 +160,8 @@ export function updateSimpleDDBwithGSI(cwd: string, settings: any): Promise<void
       .sendLine('n')
       .wait('Do you want to add more global secondary indexes to your table?')
       .sendLine('n')
-      .wait('Do you want to keep existing global seconday indexes created on your table?')
-      .sendLine('y')
       .wait('Do you want to add a Lambda Trigger for your Table?')
       .sendLine('n')
-      .wait('overwrite')
-      .sendLine('y')
       .sendEof()
       .run((err: Error) => {
         if (!err) {
@@ -171,31 +179,31 @@ export function addSimpleDDBwithGSI(cwd: string, settings: any): Promise<void> {
       .wait('Please select from one of the below mentioned services')
       .send(KEY_DOWN_ARROW)
       .sendCarriageReturn()
-      .wait('Please provide a friendly name for your resource')
+      .wait('Provide a friendly name')
       .sendCarriageReturn()
-      .wait('Please provide table name')
+      .wait('Provide table name')
       .sendCarriageReturn()
       .wait('What would you like to name this column')
       .sendLine('id')
-      .wait('Please choose the data type')
+      .wait('Choose the data type')
       .sendCarriageReturn()
       .wait('Would you like to add another column')
       .sendLine('y')
       .wait('What would you like to name this column')
       .sendLine('gsi-col1')
-      .wait('Please choose the data type')
+      .wait('Choose the data type')
       .sendCarriageReturn()
       .wait('Would you like to add another column')
       .sendLine('n')
-      .wait('Please choose partition key for the table')
+      .wait('Choose partition key for the table')
       .sendCarriageReturn()
       .wait('Do you want to add a sort key to your table')
       .sendLine('n')
       .wait('Do you want to add global secondary indexes to your table?')
       .sendLine('y')
-      .wait('Please provide the GSI name')
+      .wait('Provide the GSI name')
       .sendLine('gsi1')
-      .wait('Please choose partition key for the GSI')
+      .wait('Choose partition key for the GSI')
       .send(KEY_DOWN_ARROW)
       .sendCarriageReturn()
       .wait('Do you want to add a sort key to your global secondary index?')
@@ -204,6 +212,115 @@ export function addSimpleDDBwithGSI(cwd: string, settings: any): Promise<void> {
       .sendLine('n')
       .wait('Do you want to add a Lambda Trigger for your Table')
       .sendLine('n')
+      .sendEof()
+      .run((err: Error) => {
+        if (!err) {
+          resolve();
+        } else {
+          reject(err);
+        }
+      });
+  });
+}
+
+export function overrideDDB(cwd: string, settings: {}) {
+  return new Promise((resolve, reject) => {
+    const args = ['override', 'storage'];
+
+    spawn(getCLIPath(), args, { cwd, stripColors: true })
+      .wait('Do you want to edit override.ts file now?')
+      .sendConfirmNo()
+      .sendEof()
+      .run((err: Error) => {
+        if (!err) {
+          resolve({});
+        } else {
+          reject(err);
+        }
+      });
+  });
+}
+
+export function buildOverrideStorage(cwd: string, settings: {}) {
+  return new Promise((resolve, reject) => {
+    // Add 'storage' as a category param once implemented
+    const args = ['build-override'];
+
+    spawn(getCLIPath(), args, { cwd, stripColors: true })
+      .sendEof()
+      .run((err: Error) => {
+        if (!err) {
+          resolve({});
+        } else {
+          reject(err);
+        }
+      });
+  });
+}
+
+export function addDynamoDBWithGSIWithSettings(projectDir: string, settings: AddDynamoDBSettings): Promise<void> {
+  return new Promise((resolve, reject) => {
+    let chain = spawn(getCLIPath(), ['add', 'storage'], { cwd: projectDir, stripColors: true });
+
+    singleSelect(chain.wait('Please select from one of the below mentioned services:'), 'NoSQL Database', [
+      'Content (Images, audio, video, etc.)',
+      'NoSQL Database',
+    ]);
+
+    const addColumn = (name, type) => {
+      chain.wait('What would you like to name this column').sendLine(name);
+
+      singleSelect(chain.wait('Choose the data type'), type, ['string', 'number', 'binary', 'boolean', 'list', 'map', 'null']);
+    };
+
+    const addAnotherColumn = () => {
+      chain.wait('Would you like to add another column').sendConfirmYes();
+    };
+
+    chain.wait('Provide a friendly name').sendLine(settings.resourceName).wait('Provide table name').sendLine(settings.tableName);
+
+    addColumn('pk', 'string');
+    addAnotherColumn();
+
+    addColumn('sk', 'string');
+    addAnotherColumn();
+
+    addColumn('gsi-pk', 'string');
+    addAnotherColumn();
+
+    addColumn('gsi-sk', 'string');
+    addAnotherColumn();
+
+    addColumn('title', 'string');
+    addAnotherColumn();
+
+    addColumn('description', 'string');
+
+    chain.wait('Would you like to add another column').sendConfirmNo();
+
+    singleSelect(chain.wait('Choose the data type'), 'pk', ['pk', 'sk', 'gsi-pk', 'gsi-sk', 'title', 'description']);
+
+    chain.wait('Do you want to add a sort key to your table').sendConfirmYes();
+
+    singleSelect(chain.wait('Choose sort key for the table'), 'sk', ['sk', 'gsi-pk', 'gsi-sk', 'title', 'description']);
+
+    chain
+      .wait('Do you want to add global secondary indexes to your table?')
+      .sendConfirmYes()
+      .wait('Provide the GSI name')
+      .sendLine(settings.gsiName);
+
+    singleSelect(chain.wait('Choose partition key for the GSI'), 'gsi-pk', ['sk', 'gsi-pk', 'gsi-sk', 'title', 'description']);
+
+    chain.wait('Do you want to add a sort key to your global secondary index').sendConfirmYes();
+
+    singleSelect(chain.wait('Choose sort key for the GSI'), 'gsi-sk', ['sk', 'gsi-sk', 'title', 'description']);
+
+    chain
+      .wait('Do you want to add more global secondary indexes to your table')
+      .sendConfirmNo()
+      .wait('Do you want to add a Lambda Trigger for your Table')
+      .sendConfirmNo()
       .sendEof()
       .run((err: Error) => {
         if (!err) {
@@ -491,83 +608,5 @@ export function addS3StorageWithSettings(projectDir: string, settings: AddStorag
         reject(err);
       }
     });
-  });
-}
-
-export function addDynamoDBWithGSIWithSettings(projectDir: string, settings: AddDynamoDBSettings): Promise<void> {
-  return new Promise((resolve, reject) => {
-    let chain = spawn(getCLIPath(), ['add', 'storage'], { cwd: projectDir, stripColors: true });
-
-    singleSelect(chain.wait('Please select from one of the below mentioned services:'), 'NoSQL Database', [
-      'Content (Images, audio, video, etc.)',
-      'NoSQL Database',
-    ]);
-
-    const addColumn = (name, type) => {
-      chain.wait('What would you like to name this column').sendLine(name);
-
-      singleSelect(chain.wait('Please choose the data type:'), type, ['string', 'number', 'binary', 'boolean', 'list', 'map', 'null']);
-    };
-
-    const addAnotherColumn = () => {
-      chain.wait('Would you like to add another column').sendConfirmYes();
-    };
-
-    chain
-      .wait('Please provide a friendly name for your resource')
-      .sendLine(settings.resourceName)
-      .wait('Please provide table name')
-      .sendLine(settings.tableName);
-
-    addColumn('pk', 'string');
-    addAnotherColumn();
-
-    addColumn('sk', 'string');
-    addAnotherColumn();
-
-    addColumn('gsi-pk', 'string');
-    addAnotherColumn();
-
-    addColumn('gsi-sk', 'string');
-    addAnotherColumn();
-
-    addColumn('title', 'string');
-    addAnotherColumn();
-
-    addColumn('description', 'string');
-
-    chain.wait('Would you like to add another column').sendConfirmNo();
-
-    singleSelect(chain.wait('Please choose partition key for the table'), 'pk', ['pk', 'sk', 'gsi-pk', 'gsi-sk', 'title', 'description']);
-
-    chain.wait('Do you want to add a sort key to your table').sendConfirmYes();
-
-    singleSelect(chain.wait('Please choose sort key for the table'), 'sk', ['sk', 'gsi-pk', 'gsi-sk', 'title', 'description']);
-
-    chain
-      .wait('Do you want to add global secondary indexes to your table?')
-      .sendConfirmYes()
-      .wait('Please provide the GSI name')
-      .sendLine(settings.gsiName);
-
-    singleSelect(chain.wait('Please choose partition key for the GSI'), 'gsi-pk', ['sk', 'gsi-pk', 'gsi-sk', 'title', 'description']);
-
-    chain.wait('Do you want to add a sort key to your global secondary index').sendConfirmYes();
-
-    singleSelect(chain.wait('Please choose sort key for the GSI'), 'gsi-sk', ['sk', 'gsi-sk', 'title', 'description']);
-
-    chain
-      .wait('Do you want to add more global secondary indexes to your table')
-      .sendConfirmNo()
-      .wait('Do you want to add a Lambda Trigger for your Table')
-      .sendConfirmNo()
-      .sendEof()
-      .run((err: Error) => {
-        if (!err) {
-          resolve();
-        } else {
-          reject(err);
-        }
-      });
   });
 }
