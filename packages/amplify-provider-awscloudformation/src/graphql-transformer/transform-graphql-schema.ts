@@ -39,6 +39,8 @@ import {
   getSandboxModeEnvNameFromDirectiveSet,
   removeSandboxDirectiveFromSchema,
 } from '../utils/sandbox-mode-helpers';
+import { searchablePushChecks } from '../transform-graphql-schema';
+import { ResourceConstants } from 'graphql-transformer-common';
 
 const API_CATEGORY = 'api';
 const STORAGE_CATEGORY = 'storage';
@@ -304,6 +306,7 @@ export async function transformGraphQLSchema(context, options) {
   // Check for common errors
   const directiveMap = collectDirectivesByTypeNames(project.schema);
   warnOnAuth(context, directiveMap.types);
+  searchablePushChecks(context, directiveMap.types, parameters[ResourceConstants.PARAMETERS.AppSyncApiName]);
 
   const transformerListFactory = getTransformerFactory(context, resourceDir);
 
