@@ -31,6 +31,8 @@ import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-core'
 import { Template } from '@aws-amplify/graphql-transformer-core/lib/config/project-config';
 import { AmplifyCLIFeatureFlagAdapter } from '../utils/amplify-cli-feature-flag-adapter';
 import { JSONUtilities } from 'amplify-cli-core';
+import { searchablePushChecks } from '../transform-graphql-schema';
+import { ResourceConstants } from 'graphql-transformer-common';
 
 const API_CATEGORY = 'api';
 const STORAGE_CATEGORY = 'storage';
@@ -275,6 +277,7 @@ export async function transformGraphQLSchema(context, options) {
   // Check for common errors
   const directiveMap = collectDirectivesByTypeNames(project.schema);
   warnOnAuth(context, directiveMap.types);
+  searchablePushChecks(context, directiveMap.types, parameters[ResourceConstants.PARAMETERS.AppSyncApiName]);
 
   const transformerListFactory = getTransformerFactory(context, resourceDir);
 
