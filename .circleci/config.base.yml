@@ -386,7 +386,7 @@ jobs:
             source .circleci/local_publish_helpers.sh
             changeNpmGlobalPath
             cd packages/amplify-migration-tests
-            retry yarn run migration_v4.30.0_auth --maxWorkers=3 $TEST_SUITE
+            retry yarn run migration_v4.30.0_auth --maxWorkers=3
           no_output_timeout: 90m
       - run: *scan_e2e_test_artifacts
       - store_test_results:

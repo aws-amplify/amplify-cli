@@ -519,15 +519,7 @@ function main(): void {
     join(process.cwd(), 'packages', 'amplify-migration-tests'),
     CONCURRENCY,
   );
-
-  const splitV430MigrationTests = splitTests(
-    splitLatestMigrationTests,
-    'amplify_migration_tests_v4_30_0',
-    'build_test_deploy',
-    join(process.cwd(), 'packages', 'amplify-migration-tests'),
-    CONCURRENCY,
-  );
-  saveConfig(splitV430MigrationTests);
+  saveConfig(splitLatestMigrationTests);
   verifyConfig();
 }
 main();
