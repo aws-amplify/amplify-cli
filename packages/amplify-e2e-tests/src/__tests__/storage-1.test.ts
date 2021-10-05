@@ -1,7 +1,10 @@
+import { JSONUtilities } from 'amplify-cli-core';
 import { initJSProjectWithProfile, initFlutterProjectWithProfile, deleteProject, amplifyPushAuth } from 'amplify-e2e-core';
 import { addAuthWithDefault, addAuthWithGroupsAndAdminAPI } from 'amplify-e2e-core';
 import {
   addSimpleDDB,
+  overrideDDB,
+  buildOverrideStorage,
   addDDBWithTrigger,
   updateDDBWithTrigger,
   addSimpleDDBwithGSI,
@@ -15,6 +18,7 @@ import {
 import { createNewProjectDir, deleteProjectDir, getProjectMeta, getDDBTable, checkIfBucketExists } from 'amplify-e2e-core';
 import * as fs from 'fs-extra';
 import * as path from 'path';
+import uuid from 'uuid';
 
 describe('amplify add/update storage(S3)', () => {
   let projRoot: string;
