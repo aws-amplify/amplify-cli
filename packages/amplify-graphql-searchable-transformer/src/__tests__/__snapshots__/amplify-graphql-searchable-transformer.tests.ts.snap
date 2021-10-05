@@ -611,25 +611,6 @@ $util.toJson({
 $util.toJson({})
 ## [End] Sandbox Mode Disabled. **",
   "Mutation.createPost.req.vtl": "## [Start] Create Request template. **
-## Begin - key condition **
-#if( $ctx.stash.metadata.modelObjectKey )
-  #set( $keyConditionExpr = {} )
-  #set( $keyConditionExprNames = {} )
-  #foreach( $entry in $ctx.stash.metadata.modelObjectKey.entrySet() )
-    $util.qr($keyConditionExpr.put(\\"keyCondition$velocityCount\\", {
-  \\"attributeExists\\": false
-}))
-    $util.qr($keyConditionExprNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
-  #end
-  $util.qr($ctx.stash.conditions.add($keyConditionExpr))
-#else
-  $util.qr($ctx.stash.conditions.add({
-  \\"id\\": {
-      \\"attributeExists\\": false
-  }
-}))
-#end
-## End - key condition **
 ## Set the default values to put request **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
 ## copy the values from input **
@@ -938,14 +919,17 @@ $util.toJson({})
 } )
 #if( $ctx.stash.metadata.modelObjectKey )
   #set( $expression = \\"\\" )
+  #set( $expressionNames = {} )
   #set( $expressionValues = {} )
   #foreach( $item in $ctx.stash.metadata.modelObjectKey.entrySet() )
-    #set( $expression = \\"$expression$item.key = :$item.key AND \\" )
-    $util.qr($expressionValues.put(\\":$item.key\\", $item.value))
+    #set( $expression = \\"$expression#keyCount$velocityCount = :valueCount$velocityCount AND \\" )
+    $util.qr($expressionNames.put(\\"#keyCount$velocityCount\\", $item.key))
+    $util.qr($expressionValues.put(\\":valueCount$velocityCount\\", $item.value))
   #end
   #set( $expression = $expression.replaceAll(\\"AND $\\", \\"\\") )
   #set( $query = {
   \\"expression\\": $expression,
+  \\"expressionNames\\": $expressionNames,
   \\"expressionValues\\": $expressionValues
 } )
 #else

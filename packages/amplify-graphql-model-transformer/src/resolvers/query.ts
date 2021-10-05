@@ -34,13 +34,18 @@ export const generateGetRequestTemplate = (): string => {
       ref('ctx.stash.metadata.modelObjectKey'),
       compoundExpression([
         set(ref('expression'), str('')),
+        set(ref('expressionNames'), obj({})),
         set(ref('expressionValues'), obj({})),
         forEach(ref('item'), ref('ctx.stash.metadata.modelObjectKey.entrySet()'), [
-          set(ref('expression'), str('$expression$item.key = :$item.key AND ')),
-          qref(methodCall(ref('expressionValues.put'), str(':$item.key'), ref('item.value'))),
+          set(ref('expression'), str('$expression#keyCount$velocityCount = :valueCount$velocityCount AND ')),
+          qref(methodCall(ref('expressionNames.put'), str('#keyCount$velocityCount'), ref('item.key'))),
+          qref(methodCall(ref('expressionValues.put'), str(':valueCount$velocityCount'), ref('item.value'))),
         ]),
         set(ref('expression'), methodCall(ref('expression.replaceAll'), str('AND $'), str(''))),
-        set(ref('query'), obj({ expression: ref('expression'), expressionValues: ref('expressionValues') })),
+        set(
+          ref('query'),
+          obj({ expression: ref('expression'), expressionNames: ref('expressionNames'), expressionValues: ref('expressionValues') }),
+        ),
       ]),
       set(
         ref('query'),

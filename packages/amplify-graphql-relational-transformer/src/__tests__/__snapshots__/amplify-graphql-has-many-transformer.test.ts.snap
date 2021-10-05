@@ -8236,25 +8236,6 @@ $util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
 
 {}",
   "Mutation.createChild.req.vtl": "## [Start] Create Request template. **
-## Begin - key condition **
-#if( $ctx.stash.metadata.modelObjectKey )
-  #set( $keyConditionExpr = {} )
-  #set( $keyConditionExprNames = {} )
-  #foreach( $entry in $ctx.stash.metadata.modelObjectKey.entrySet() )
-    $util.qr($keyConditionExpr.put(\\"keyCondition$velocityCount\\", {
-  \\"attributeExists\\": false
-}))
-    $util.qr($keyConditionExprNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
-  #end
-  $util.qr($ctx.stash.conditions.add($keyConditionExpr))
-#else
-  $util.qr($ctx.stash.conditions.add({
-  \\"id\\": {
-      \\"attributeExists\\": false
-  }
-}))
-#end
-## End - key condition **
 ## Set the default values to put request **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
 ## copy the values from input **
@@ -8345,25 +8326,6 @@ $util.toJson({
 $util.toJson({})
 ## [End] Sandbox Mode Disabled. **",
   "Mutation.createComment.req.vtl": "## [Start] Create Request template. **
-## Begin - key condition **
-#if( $ctx.stash.metadata.modelObjectKey )
-  #set( $keyConditionExpr = {} )
-  #set( $keyConditionExprNames = {} )
-  #foreach( $entry in $ctx.stash.metadata.modelObjectKey.entrySet() )
-    $util.qr($keyConditionExpr.put(\\"keyCondition$velocityCount\\", {
-  \\"attributeExists\\": false
-}))
-    $util.qr($keyConditionExprNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
-  #end
-  $util.qr($ctx.stash.conditions.add($keyConditionExpr))
-#else
-  $util.qr($ctx.stash.conditions.add({
-  \\"id\\": {
-      \\"attributeExists\\": false
-  }
-}))
-#end
-## End - key condition **
 ## Set the default values to put request **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
 ## copy the values from input **
@@ -8454,25 +8416,6 @@ $util.toJson({
 $util.toJson({})
 ## [End] Sandbox Mode Disabled. **",
   "Mutation.createFriendship.req.vtl": "## [Start] Create Request template. **
-## Begin - key condition **
-#if( $ctx.stash.metadata.modelObjectKey )
-  #set( $keyConditionExpr = {} )
-  #set( $keyConditionExprNames = {} )
-  #foreach( $entry in $ctx.stash.metadata.modelObjectKey.entrySet() )
-    $util.qr($keyConditionExpr.put(\\"keyCondition$velocityCount\\", {
-  \\"attributeExists\\": false
-}))
-    $util.qr($keyConditionExprNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
-  #end
-  $util.qr($ctx.stash.conditions.add($keyConditionExpr))
-#else
-  $util.qr($ctx.stash.conditions.add({
-  \\"id\\": {
-      \\"attributeExists\\": false
-  }
-}))
-#end
-## End - key condition **
 ## Set the default values to put request **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
 ## copy the values from input **
@@ -8563,25 +8506,6 @@ $util.toJson({
 $util.toJson({})
 ## [End] Sandbox Mode Disabled. **",
   "Mutation.createParent.req.vtl": "## [Start] Create Request template. **
-## Begin - key condition **
-#if( $ctx.stash.metadata.modelObjectKey )
-  #set( $keyConditionExpr = {} )
-  #set( $keyConditionExprNames = {} )
-  #foreach( $entry in $ctx.stash.metadata.modelObjectKey.entrySet() )
-    $util.qr($keyConditionExpr.put(\\"keyCondition$velocityCount\\", {
-  \\"attributeExists\\": false
-}))
-    $util.qr($keyConditionExprNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
-  #end
-  $util.qr($ctx.stash.conditions.add($keyConditionExpr))
-#else
-  $util.qr($ctx.stash.conditions.add({
-  \\"id\\": {
-      \\"attributeExists\\": false
-  }
-}))
-#end
-## End - key condition **
 ## Set the default values to put request **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
 ## copy the values from input **
@@ -8683,25 +8607,6 @@ $util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
 
 {}",
   "Mutation.createPost.req.vtl": "## [Start] Create Request template. **
-## Begin - key condition **
-#if( $ctx.stash.metadata.modelObjectKey )
-  #set( $keyConditionExpr = {} )
-  #set( $keyConditionExprNames = {} )
-  #foreach( $entry in $ctx.stash.metadata.modelObjectKey.entrySet() )
-    $util.qr($keyConditionExpr.put(\\"keyCondition$velocityCount\\", {
-  \\"attributeExists\\": false
-}))
-    $util.qr($keyConditionExprNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
-  #end
-  $util.qr($ctx.stash.conditions.add($keyConditionExpr))
-#else
-  $util.qr($ctx.stash.conditions.add({
-  \\"id\\": {
-      \\"attributeExists\\": false
-  }
-}))
-#end
-## End - key condition **
 ## Set the default values to put request **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
 ## copy the values from input **
@@ -8792,25 +8697,6 @@ $util.toJson({
 $util.toJson({})
 ## [End] Sandbox Mode Disabled. **",
   "Mutation.createPostAuthor.req.vtl": "## [Start] Create Request template. **
-## Begin - key condition **
-#if( $ctx.stash.metadata.modelObjectKey )
-  #set( $keyConditionExpr = {} )
-  #set( $keyConditionExprNames = {} )
-  #foreach( $entry in $ctx.stash.metadata.modelObjectKey.entrySet() )
-    $util.qr($keyConditionExpr.put(\\"keyCondition$velocityCount\\", {
-  \\"attributeExists\\": false
-}))
-    $util.qr($keyConditionExprNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
-  #end
-  $util.qr($ctx.stash.conditions.add($keyConditionExpr))
-#else
-  $util.qr($ctx.stash.conditions.add({
-  \\"id\\": {
-      \\"attributeExists\\": false
-  }
-}))
-#end
-## End - key condition **
 ## Set the default values to put request **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
 ## copy the values from input **
@@ -8901,25 +8787,6 @@ $util.toJson({
 $util.toJson({})
 ## [End] Sandbox Mode Disabled. **",
   "Mutation.createPostEditor.req.vtl": "## [Start] Create Request template. **
-## Begin - key condition **
-#if( $ctx.stash.metadata.modelObjectKey )
-  #set( $keyConditionExpr = {} )
-  #set( $keyConditionExprNames = {} )
-  #foreach( $entry in $ctx.stash.metadata.modelObjectKey.entrySet() )
-    $util.qr($keyConditionExpr.put(\\"keyCondition$velocityCount\\", {
-  \\"attributeExists\\": false
-}))
-    $util.qr($keyConditionExprNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
-  #end
-  $util.qr($ctx.stash.conditions.add($keyConditionExpr))
-#else
-  $util.qr($ctx.stash.conditions.add({
-  \\"id\\": {
-      \\"attributeExists\\": false
-  }
-}))
-#end
-## End - key condition **
 ## Set the default values to put request **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
 ## copy the values from input **
@@ -9010,25 +8877,6 @@ $util.toJson({
 $util.toJson({})
 ## [End] Sandbox Mode Disabled. **",
   "Mutation.createPostModel.req.vtl": "## [Start] Create Request template. **
-## Begin - key condition **
-#if( $ctx.stash.metadata.modelObjectKey )
-  #set( $keyConditionExpr = {} )
-  #set( $keyConditionExprNames = {} )
-  #foreach( $entry in $ctx.stash.metadata.modelObjectKey.entrySet() )
-    $util.qr($keyConditionExpr.put(\\"keyCondition$velocityCount\\", {
-  \\"attributeExists\\": false
-}))
-    $util.qr($keyConditionExprNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
-  #end
-  $util.qr($ctx.stash.conditions.add($keyConditionExpr))
-#else
-  $util.qr($ctx.stash.conditions.add({
-  \\"id\\": {
-      \\"attributeExists\\": false
-  }
-}))
-#end
-## End - key condition **
 ## Set the default values to put request **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
 ## copy the values from input **
@@ -9119,25 +8967,6 @@ $util.toJson({
 $util.toJson({})
 ## [End] Sandbox Mode Disabled. **",
   "Mutation.createTest.req.vtl": "## [Start] Create Request template. **
-## Begin - key condition **
-#if( $ctx.stash.metadata.modelObjectKey )
-  #set( $keyConditionExpr = {} )
-  #set( $keyConditionExprNames = {} )
-  #foreach( $entry in $ctx.stash.metadata.modelObjectKey.entrySet() )
-    $util.qr($keyConditionExpr.put(\\"keyCondition$velocityCount\\", {
-  \\"attributeExists\\": false
-}))
-    $util.qr($keyConditionExprNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
-  #end
-  $util.qr($ctx.stash.conditions.add($keyConditionExpr))
-#else
-  $util.qr($ctx.stash.conditions.add({
-  \\"id\\": {
-      \\"attributeExists\\": false
-  }
-}))
-#end
-## End - key condition **
 ## Set the default values to put request **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
 ## copy the values from input **
@@ -9247,25 +9076,6 @@ $util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
 $util.qr($ctx.args.input.put(\\"email#name\\",\\"\${mergedValues.email}#\${mergedValues.name}\\"))
 {}",
   "Mutation.createTest1.req.vtl": "## [Start] Create Request template. **
-## Begin - key condition **
-#if( $ctx.stash.metadata.modelObjectKey )
-  #set( $keyConditionExpr = {} )
-  #set( $keyConditionExprNames = {} )
-  #foreach( $entry in $ctx.stash.metadata.modelObjectKey.entrySet() )
-    $util.qr($keyConditionExpr.put(\\"keyCondition$velocityCount\\", {
-  \\"attributeExists\\": false
-}))
-    $util.qr($keyConditionExprNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
-  #end
-  $util.qr($ctx.stash.conditions.add($keyConditionExpr))
-#else
-  $util.qr($ctx.stash.conditions.add({
-  \\"id\\": {
-      \\"attributeExists\\": false
-  }
-}))
-#end
-## End - key condition **
 ## Set the default values to put request **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
 ## copy the values from input **
@@ -9375,25 +9185,6 @@ $util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
 $util.qr($ctx.args.input.put(\\"name#surname\\",\\"\${mergedValues.name}#\${mergedValues.surname}\\"))
 {}",
   "Mutation.createUser.req.vtl": "## [Start] Create Request template. **
-## Begin - key condition **
-#if( $ctx.stash.metadata.modelObjectKey )
-  #set( $keyConditionExpr = {} )
-  #set( $keyConditionExprNames = {} )
-  #foreach( $entry in $ctx.stash.metadata.modelObjectKey.entrySet() )
-    $util.qr($keyConditionExpr.put(\\"keyCondition$velocityCount\\", {
-  \\"attributeExists\\": false
-}))
-    $util.qr($keyConditionExprNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
-  #end
-  $util.qr($ctx.stash.conditions.add($keyConditionExpr))
-#else
-  $util.qr($ctx.stash.conditions.add({
-  \\"id\\": {
-      \\"attributeExists\\": false
-  }
-}))
-#end
-## End - key condition **
 ## Set the default values to put request **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
 ## copy the values from input **
@@ -9523,25 +9314,6 @@ $util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
 #end
 {}",
   "Mutation.createUserModel.req.vtl": "## [Start] Create Request template. **
-## Begin - key condition **
-#if( $ctx.stash.metadata.modelObjectKey )
-  #set( $keyConditionExpr = {} )
-  #set( $keyConditionExprNames = {} )
-  #foreach( $entry in $ctx.stash.metadata.modelObjectKey.entrySet() )
-    $util.qr($keyConditionExpr.put(\\"keyCondition$velocityCount\\", {
-  \\"attributeExists\\": false
-}))
-    $util.qr($keyConditionExprNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
-  #end
-  $util.qr($ctx.stash.conditions.add($keyConditionExpr))
-#else
-  $util.qr($ctx.stash.conditions.add({
-  \\"id\\": {
-      \\"attributeExists\\": false
-  }
-}))
-#end
-## End - key condition **
 ## Set the default values to put request **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
 ## copy the values from input **
@@ -12465,10 +12237,14 @@ $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
   \\"operation\\": \\"Query\\"
 } )
   $util.qr($GetRequest.put(\\"query\\", {
-  \\"expression\\": \\"id = :id AND name = :name\\",
+  \\"expression\\": \\"#partitionKey = :partitionValue AND #sortKeyName = :sortKeyName\\",
+  \\"expressionNames\\": {
+      \\"#partitionKey\\": \\"id\\",
+      \\"#sortKeyName\\": \\"name\\"
+  },
   \\"expressionValues\\": {
-      \\":id\\": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($ctx.source.childID, \\"___xamznone____\\"))),
-      \\":name\\": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($ctx.source.childName, \\"___xamznone____\\")))
+      \\":partitionValue\\": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($ctx.source.childID, \\"___xamznone____\\"))),
+      \\":sortKeyName\\": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($ctx.source.childName, \\"___xamznone____\\")))
   }
 }))
   #if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
@@ -12496,9 +12272,12 @@ $util.unauthorized()
   \\"operation\\": \\"Query\\"
 } )
   $util.qr($GetRequest.put(\\"query\\", {
-  \\"expression\\": \\"id = :id\\",
+  \\"expression\\": \\"#partitionKey = :partitionValue\\",
+  \\"expressionNames\\": {
+      \\"#partitionKey\\": \\"id\\"
+  },
   \\"expressionValues\\": {
-      \\":id\\": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($ctx.source.owner, \\"___xamznone____\\")))
+      \\":partitionValue\\": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($ctx.source.owner, \\"___xamznone____\\")))
   }
 }))
   #if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
@@ -12840,9 +12619,12 @@ $util.error($ctx.error.message, $ctx.error.type)
   \\"operation\\": \\"Query\\"
 } )
   $util.qr($GetRequest.put(\\"query\\", {
-  \\"expression\\": \\"id = :id\\",
+  \\"expression\\": \\"#partitionKey = :partitionValue\\",
+  \\"expressionNames\\": {
+      \\"#partitionKey\\": \\"id\\"
+  },
   \\"expressionValues\\": {
-      \\":id\\": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($ctx.source.postID, \\"___xamznone____\\")))
+      \\":partitionValue\\": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($ctx.source.postID, \\"___xamznone____\\")))
   }
 }))
   #if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
@@ -12870,9 +12652,12 @@ $util.unauthorized()
   \\"operation\\": \\"Query\\"
 } )
   $util.qr($GetRequest.put(\\"query\\", {
-  \\"expression\\": \\"id = :id\\",
+  \\"expression\\": \\"#partitionKey = :partitionValue\\",
+  \\"expressionNames\\": {
+      \\"#partitionKey\\": \\"id\\"
+  },
   \\"expressionValues\\": {
-      \\":id\\": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($ctx.source.editorID, \\"___xamznone____\\")))
+      \\":partitionValue\\": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($ctx.source.editorID, \\"___xamznone____\\")))
   }
 }))
   #if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
@@ -12900,9 +12685,12 @@ $util.unauthorized()
   \\"operation\\": \\"Query\\"
 } )
   $util.qr($GetRequest.put(\\"query\\", {
-  \\"expression\\": \\"id = :id\\",
+  \\"expression\\": \\"#partitionKey = :partitionValue\\",
+  \\"expressionNames\\": {
+      \\"#partitionKey\\": \\"id\\"
+  },
   \\"expressionValues\\": {
-      \\":id\\": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($ctx.source.postID, \\"___xamznone____\\")))
+      \\":partitionValue\\": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($ctx.source.postID, \\"___xamznone____\\")))
   }
 }))
   #if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
@@ -13004,10 +12792,14 @@ $util.error($ctx.error.message, $ctx.error.type)
   \\"operation\\": \\"Query\\"
 } )
   $util.qr($GetRequest.put(\\"query\\", {
-  \\"expression\\": \\"id = :id AND name#surname = :name#surname\\",
+  \\"expression\\": \\"#partitionKey = :partitionValue AND #sortKeyName = :sortKeyName\\",
+  \\"expressionNames\\": {
+      \\"#partitionKey\\": \\"id\\",
+      \\"#sortKeyName\\": \\"name#surname\\"
+  },
   \\"expressionValues\\": {
-      \\":id\\": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($ctx.source.authorID, \\"___xamznone____\\"))),
-      \\":name#surname\\": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank(\\"\${ctx.source.authorName}#\${ctx.source.authorSurname}\\", \\"___xamznone____\\")))
+      \\":partitionValue\\": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($ctx.source.authorID, \\"___xamznone____\\"))),
+      \\":sortKeyName\\": $util.parseJson($util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank(\\"\${ctx.source.authorName}#\${ctx.source.authorSurname}\\", \\"___xamznone____\\")))
   }
 }))
   #if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
@@ -13047,14 +12839,17 @@ $util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
 } )
 #if( $ctx.stash.metadata.modelObjectKey )
   #set( $expression = \\"\\" )
+  #set( $expressionNames = {} )
   #set( $expressionValues = {} )
   #foreach( $item in $ctx.stash.metadata.modelObjectKey.entrySet() )
-    #set( $expression = \\"$expression$item.key = :$item.key AND \\" )
-    $util.qr($expressionValues.put(\\":$item.key\\", $item.value))
+    #set( $expression = \\"$expression#keyCount$velocityCount = :valueCount$velocityCount AND \\" )
+    $util.qr($expressionNames.put(\\"#keyCount$velocityCount\\", $item.key))
+    $util.qr($expressionValues.put(\\":valueCount$velocityCount\\", $item.value))
   #end
   #set( $expression = $expression.replaceAll(\\"AND $\\", \\"\\") )
   #set( $query = {
   \\"expression\\": $expression,
+  \\"expressionNames\\": $expressionNames,
   \\"expressionValues\\": $expressionValues
 } )
 #else
@@ -13097,14 +12892,17 @@ $util.toJson({})
 } )
 #if( $ctx.stash.metadata.modelObjectKey )
   #set( $expression = \\"\\" )
+  #set( $expressionNames = {} )
   #set( $expressionValues = {} )
   #foreach( $item in $ctx.stash.metadata.modelObjectKey.entrySet() )
-    #set( $expression = \\"$expression$item.key = :$item.key AND \\" )
-    $util.qr($expressionValues.put(\\":$item.key\\", $item.value))
+    #set( $expression = \\"$expression#keyCount$velocityCount = :valueCount$velocityCount AND \\" )
+    $util.qr($expressionNames.put(\\"#keyCount$velocityCount\\", $item.key))
+    $util.qr($expressionValues.put(\\":valueCount$velocityCount\\", $item.value))
   #end
   #set( $expression = $expression.replaceAll(\\"AND $\\", \\"\\") )
   #set( $query = {
   \\"expression\\": $expression,
+  \\"expressionNames\\": $expressionNames,
   \\"expressionValues\\": $expressionValues
 } )
 #else
@@ -13147,14 +12945,17 @@ $util.toJson({})
 } )
 #if( $ctx.stash.metadata.modelObjectKey )
   #set( $expression = \\"\\" )
+  #set( $expressionNames = {} )
   #set( $expressionValues = {} )
   #foreach( $item in $ctx.stash.metadata.modelObjectKey.entrySet() )
-    #set( $expression = \\"$expression$item.key = :$item.key AND \\" )
-    $util.qr($expressionValues.put(\\":$item.key\\", $item.value))
+    #set( $expression = \\"$expression#keyCount$velocityCount = :valueCount$velocityCount AND \\" )
+    $util.qr($expressionNames.put(\\"#keyCount$velocityCount\\", $item.key))
+    $util.qr($expressionValues.put(\\":valueCount$velocityCount\\", $item.value))
   #end
   #set( $expression = $expression.replaceAll(\\"AND $\\", \\"\\") )
   #set( $query = {
   \\"expression\\": $expression,
+  \\"expressionNames\\": $expressionNames,
   \\"expressionValues\\": $expressionValues
 } )
 #else
@@ -13197,14 +12998,17 @@ $util.toJson({})
 } )
 #if( $ctx.stash.metadata.modelObjectKey )
   #set( $expression = \\"\\" )
+  #set( $expressionNames = {} )
   #set( $expressionValues = {} )
   #foreach( $item in $ctx.stash.metadata.modelObjectKey.entrySet() )
-    #set( $expression = \\"$expression$item.key = :$item.key AND \\" )
-    $util.qr($expressionValues.put(\\":$item.key\\", $item.value))
+    #set( $expression = \\"$expression#keyCount$velocityCount = :valueCount$velocityCount AND \\" )
+    $util.qr($expressionNames.put(\\"#keyCount$velocityCount\\", $item.key))
+    $util.qr($expressionValues.put(\\":valueCount$velocityCount\\", $item.value))
   #end
   #set( $expression = $expression.replaceAll(\\"AND $\\", \\"\\") )
   #set( $query = {
   \\"expression\\": $expression,
+  \\"expressionNames\\": $expressionNames,
   \\"expressionValues\\": $expressionValues
 } )
 #else
@@ -13253,14 +13057,17 @@ $util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
 } )
 #if( $ctx.stash.metadata.modelObjectKey )
   #set( $expression = \\"\\" )
+  #set( $expressionNames = {} )
   #set( $expressionValues = {} )
   #foreach( $item in $ctx.stash.metadata.modelObjectKey.entrySet() )
-    #set( $expression = \\"$expression$item.key = :$item.key AND \\" )
-    $util.qr($expressionValues.put(\\":$item.key\\", $item.value))
+    #set( $expression = \\"$expression#keyCount$velocityCount = :valueCount$velocityCount AND \\" )
+    $util.qr($expressionNames.put(\\"#keyCount$velocityCount\\", $item.key))
+    $util.qr($expressionValues.put(\\":valueCount$velocityCount\\", $item.value))
   #end
   #set( $expression = $expression.replaceAll(\\"AND $\\", \\"\\") )
   #set( $query = {
   \\"expression\\": $expression,
+  \\"expressionNames\\": $expressionNames,
   \\"expressionValues\\": $expressionValues
 } )
 #else
@@ -13303,14 +13110,17 @@ $util.toJson({})
 } )
 #if( $ctx.stash.metadata.modelObjectKey )
   #set( $expression = \\"\\" )
+  #set( $expressionNames = {} )
   #set( $expressionValues = {} )
   #foreach( $item in $ctx.stash.metadata.modelObjectKey.entrySet() )
-    #set( $expression = \\"$expression$item.key = :$item.key AND \\" )
-    $util.qr($expressionValues.put(\\":$item.key\\", $item.value))
+    #set( $expression = \\"$expression#keyCount$velocityCount = :valueCount$velocityCount AND \\" )
+    $util.qr($expressionNames.put(\\"#keyCount$velocityCount\\", $item.key))
+    $util.qr($expressionValues.put(\\":valueCount$velocityCount\\", $item.value))
   #end
   #set( $expression = $expression.replaceAll(\\"AND $\\", \\"\\") )
   #set( $query = {
   \\"expression\\": $expression,
+  \\"expressionNames\\": $expressionNames,
   \\"expressionValues\\": $expressionValues
 } )
 #else
@@ -13353,14 +13163,17 @@ $util.toJson({})
 } )
 #if( $ctx.stash.metadata.modelObjectKey )
   #set( $expression = \\"\\" )
+  #set( $expressionNames = {} )
   #set( $expressionValues = {} )
   #foreach( $item in $ctx.stash.metadata.modelObjectKey.entrySet() )
-    #set( $expression = \\"$expression$item.key = :$item.key AND \\" )
-    $util.qr($expressionValues.put(\\":$item.key\\", $item.value))
+    #set( $expression = \\"$expression#keyCount$velocityCount = :valueCount$velocityCount AND \\" )
+    $util.qr($expressionNames.put(\\"#keyCount$velocityCount\\", $item.key))
+    $util.qr($expressionValues.put(\\":valueCount$velocityCount\\", $item.value))
   #end
   #set( $expression = $expression.replaceAll(\\"AND $\\", \\"\\") )
   #set( $query = {
   \\"expression\\": $expression,
+  \\"expressionNames\\": $expressionNames,
   \\"expressionValues\\": $expressionValues
 } )
 #else
@@ -13403,14 +13216,17 @@ $util.toJson({})
 } )
 #if( $ctx.stash.metadata.modelObjectKey )
   #set( $expression = \\"\\" )
+  #set( $expressionNames = {} )
   #set( $expressionValues = {} )
   #foreach( $item in $ctx.stash.metadata.modelObjectKey.entrySet() )
-    #set( $expression = \\"$expression$item.key = :$item.key AND \\" )
-    $util.qr($expressionValues.put(\\":$item.key\\", $item.value))
+    #set( $expression = \\"$expression#keyCount$velocityCount = :valueCount$velocityCount AND \\" )
+    $util.qr($expressionNames.put(\\"#keyCount$velocityCount\\", $item.key))
+    $util.qr($expressionValues.put(\\":valueCount$velocityCount\\", $item.value))
   #end
   #set( $expression = $expression.replaceAll(\\"AND $\\", \\"\\") )
   #set( $query = {
   \\"expression\\": $expression,
+  \\"expressionNames\\": $expressionNames,
   \\"expressionValues\\": $expressionValues
 } )
 #else
@@ -13460,14 +13276,17 @@ $util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
 } )
 #if( $ctx.stash.metadata.modelObjectKey )
   #set( $expression = \\"\\" )
+  #set( $expressionNames = {} )
   #set( $expressionValues = {} )
   #foreach( $item in $ctx.stash.metadata.modelObjectKey.entrySet() )
-    #set( $expression = \\"$expression$item.key = :$item.key AND \\" )
-    $util.qr($expressionValues.put(\\":$item.key\\", $item.value))
+    #set( $expression = \\"$expression#keyCount$velocityCount = :valueCount$velocityCount AND \\" )
+    $util.qr($expressionNames.put(\\"#keyCount$velocityCount\\", $item.key))
+    $util.qr($expressionValues.put(\\":valueCount$velocityCount\\", $item.value))
   #end
   #set( $expression = $expression.replaceAll(\\"AND $\\", \\"\\") )
   #set( $query = {
   \\"expression\\": $expression,
+  \\"expressionNames\\": $expressionNames,
   \\"expressionValues\\": $expressionValues
 } )
 #else
@@ -13517,14 +13336,17 @@ $util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
 } )
 #if( $ctx.stash.metadata.modelObjectKey )
   #set( $expression = \\"\\" )
+  #set( $expressionNames = {} )
   #set( $expressionValues = {} )
   #foreach( $item in $ctx.stash.metadata.modelObjectKey.entrySet() )
-    #set( $expression = \\"$expression$item.key = :$item.key AND \\" )
-    $util.qr($expressionValues.put(\\":$item.key\\", $item.value))
+    #set( $expression = \\"$expression#keyCount$velocityCount = :valueCount$velocityCount AND \\" )
+    $util.qr($expressionNames.put(\\"#keyCount$velocityCount\\", $item.key))
+    $util.qr($expressionValues.put(\\":valueCount$velocityCount\\", $item.value))
   #end
   #set( $expression = $expression.replaceAll(\\"AND $\\", \\"\\") )
   #set( $query = {
   \\"expression\\": $expression,
+  \\"expressionNames\\": $expressionNames,
   \\"expressionValues\\": $expressionValues
 } )
 #else
@@ -13574,14 +13396,17 @@ $util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
 } )
 #if( $ctx.stash.metadata.modelObjectKey )
   #set( $expression = \\"\\" )
+  #set( $expressionNames = {} )
   #set( $expressionValues = {} )
   #foreach( $item in $ctx.stash.metadata.modelObjectKey.entrySet() )
-    #set( $expression = \\"$expression$item.key = :$item.key AND \\" )
-    $util.qr($expressionValues.put(\\":$item.key\\", $item.value))
+    #set( $expression = \\"$expression#keyCount$velocityCount = :valueCount$velocityCount AND \\" )
+    $util.qr($expressionNames.put(\\"#keyCount$velocityCount\\", $item.key))
+    $util.qr($expressionValues.put(\\":valueCount$velocityCount\\", $item.value))
   #end
   #set( $expression = $expression.replaceAll(\\"AND $\\", \\"\\") )
   #set( $query = {
   \\"expression\\": $expression,
+  \\"expressionNames\\": $expressionNames,
   \\"expressionValues\\": $expressionValues
 } )
 #else
