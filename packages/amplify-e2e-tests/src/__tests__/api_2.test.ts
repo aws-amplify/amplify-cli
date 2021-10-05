@@ -21,7 +21,7 @@ import {
   listAttachedRolePolicies,
   listRolePolicies,
   updateApiSchema, 
-  updateAPIWithResolutionStrategy, 
+  updateAPIWithResolutionStrategyWithModels,
   updateAuthAddAdminQueries,
 } from 'amplify-e2e-core';
 import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
@@ -222,7 +222,7 @@ describe('amplify add api (GraphQL)', () => {
     expect(transformConfig.ResolverConfig.project.ConflictDetection).toEqual('VERSION');
     expect(transformConfig.ResolverConfig.project.ConflictHandler).toEqual('AUTOMERGE');
 
-    await updateAPIWithResolutionStrategy(projRoot, {});
+    await updateAPIWithResolutionStrategyWithModels(projRoot, {});
 
     transformConfig = getTransformConfig(projRoot, name);
     expect(transformConfig).toBeDefined();
