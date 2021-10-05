@@ -484,7 +484,8 @@ export const cleanup = async () => {
     });
     accs = await Promise.all(accs);
   } catch (e) {
-    console.log('No child accounts found. Using parent AWS account.');
+    console.error(e);
+    console.log('Error assuming role in child account. Using parent AWS account.');
     accs = [
       {
         accessKeyId: process.env.AWS_ACCESS_KEY_ID,

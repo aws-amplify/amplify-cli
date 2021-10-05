@@ -3,6 +3,7 @@ import * as glob from 'glob';
 import { join } from 'path';
 import * as fs from 'fs-extra';
 import { supportedRegions } from '../packages/amplify-category-geo/src/constants';
+import * as execa from 'execa';
 
 const CONCURRENCY = 25;
 // Some our e2e tests are known to fail when run on windows hosts
@@ -308,9 +309,9 @@ function splitTests(
     const isPkg = newJobName.endsWith('_pkg');
     if (!isPkg) {
       (newJob.environment as any) = {
-        ...newJob.environment,
         AMPLIFY_DIR: '/home/circleci/repo/packages/amplify-cli/bin',
         AMPLIFY_PATH: '/home/circleci/repo/packages/amplify-cli/bin/amplify',
+        ...newJob.environment,
       };
     }
     return { ...acc, [newJobName]: newJob };
@@ -464,6 +465,24 @@ function saveConfig(config: CircleCIConfig): void {
   const output = ['# auto generated file. Edit config.base.yaml if you want to change', yaml.dump(config, { noRefs: true })];
   fs.writeFileSync(configFile, output.join('\n'));
 }
+
+function verifyConfig() {
+  try {
+    execa.commandSync('which circleci');
+  } catch {
+    console.error(
+      'Please install circleci cli to validate your circle config. Installation information can be found at https://circleci.com/docs/2.0/local-cli/',
+    );
+    process.exit(1);
+  }
+  try {
+    execa.commandSync('circleci config validate');
+  } catch {
+    console.error(`"circleci config validate" command failed. Please check your .circleci/config.yml validity`);
+    process.exit(1);
+  }
+}
+
 function main(): void {
   const config = loadConfig();
   const splitNodeTests = splitTests(
@@ -487,6 +506,21 @@ function main(): void {
     join(process.cwd(), 'packages', 'graphql-transformers-e2e-tests'),
     CONCURRENCY,
   );
-  saveConfig(splitGqlTests);
+  const splitV4MigrationTests = splitTests(
+    splitGqlTests,
+    'amplify_migration_tests_v4',
+    'build_test_deploy',
+    join(process.cwd(), 'packages', 'amplify-migration-tests'),
+    CONCURRENCY,
+  );
+  const splitLatestMigrationTests = splitTests(
+    splitV4MigrationTests,
+    'amplify_migration_tests_latest',
+    'build_test_deploy',
+    join(process.cwd(), 'packages', 'amplify-migration-tests'),
+    CONCURRENCY,
+  );
+  saveConfig(splitLatestMigrationTests);
+  verifyConfig();
 }
 main();
