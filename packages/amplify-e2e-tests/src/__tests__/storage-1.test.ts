@@ -1,18 +1,4 @@
-import { initJSProjectWithProfile, initFlutterProjectWithProfile, deleteProject, amplifyPushAuth } from 'amplify-e2e-core';
-import { addAuthWithDefault, addAuthWithGroupsAndAdminAPI } from 'amplify-e2e-core';
-import {
-  addSimpleDDB,
-  addDDBWithTrigger,
-  updateDDBWithTrigger,
-  addSimpleDDBwithGSI,
-  updateSimpleDDBwithGSI,
-  addS3AndAuthWithAuthOnlyAccess,
-  addS3WithGuestAccess,
-  addS3WithGroupAccess,
-  addS3WithTrigger,
-  updateS3AddTrigger,
-} from 'amplify-e2e-core';
-import { createNewProjectDir, deleteProjectDir, getProjectMeta, getDDBTable, checkIfBucketExists } from 'amplify-e2e-core';
+import { addAuthWithDefault, addAuthWithGroupsAndAdminAPI, addS3AndAuthWithAuthOnlyAccess, addS3WithGroupAccess, addS3WithGuestAccess, addS3WithTrigger, amplifyPushAuth, checkIfBucketExists, createNewProjectDir, deleteProject, deleteProjectDir, getProjectMeta, initFlutterProjectWithProfile, initJSProjectWithProfile, updateS3AddTrigger } from 'amplify-e2e-core';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 
