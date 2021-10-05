@@ -74,12 +74,15 @@ function useChildAccountCredentials {
 function retry {
     MAX_ATTEMPTS=2
     SLEEP_DURATION=5
+    FIRST_RUN=true
     n=0
     until [ $n -ge $MAX_ATTEMPTS ]
     do
         echo "Attempting $@ with max retries $MAX_ATTEMPTS"
+        setAwsAccountCredentials
         "$@" && break
         n=$[$n+1]
+        FIRST_RUN=false
         echo "Attempt $n completed."
         sleep $SLEEP_DURATION
     done
@@ -89,8 +92,10 @@ function retry {
     fi
 
     resetAwsAccountCredentials
+    TEST_SUITE=${TEST_SUITE:-"TestSuiteNotSet"}
     aws cloudwatch put-metric-data --metric-name FlakyE2ETests --namespace amplify-cli-e2e-tests --unit Count --value $n --dimensions testFile=$TEST_SUITE
     echo "Attempt $n succeeded."
+    exit 0 # don't fail the step if putting the metric fails
 }
 
 function resetAwsAccountCredentials {
@@ -129,17 +134,15 @@ function setAwsAccountCredentials {
 }
 
 function runE2eTest {
-    startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
-    setNpmRegistryUrlToLocal
-    changeNpmGlobalPath
-    npm install -g @aws-amplify/cli
-    npm install -g amplify-app
-    amplify -v
-    amplify-app --version
-    setAwsAccountCredentials
-    cd $(pwd)/packages/amplify-e2e-tests
+    if [ -z "$FIRST_RUN" ] || [ "$FIRST_RUN" == "true" ]; then
+        startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
+        setNpmRegistryUrlToLocal
+        changeNpmGlobalPath
+        npm install -g @aws-amplify/cli
+        npm install -g amplify-app
+        amplify -v
+        amplify-app --version
+        cd $(pwd)/packages/amplify-e2e-tests
+    fi
     yarn run e2e --detectOpenHandles --maxWorkers=3 $TEST_SUITE
-    EXIT_CODE=$?
-    unsetNpmRegistryUrl
-    return $EXIT_CODE
 }

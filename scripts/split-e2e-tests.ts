@@ -308,9 +308,9 @@ function splitTests(
     const isPkg = newJobName.endsWith('_pkg');
     if (!isPkg) {
       (newJob.environment as any) = {
-        ...newJob.environment,
         AMPLIFY_DIR: '/home/circleci/repo/packages/amplify-cli/bin',
         AMPLIFY_PATH: '/home/circleci/repo/packages/amplify-cli/bin/amplify',
+        ...newJob.environment,
       };
     }
     return { ...acc, [newJobName]: newJob };
@@ -505,7 +505,21 @@ function main(): void {
     join(process.cwd(), 'packages', 'graphql-transformers-e2e-tests'),
     CONCURRENCY,
   );
-  saveConfig(splitGqlTests);
+  const splitV4MigrationTests = splitTests(
+    splitGqlTests,
+    'amplify_migration_tests_v4',
+    'build_test_deploy',
+    join(process.cwd(), 'packages', 'amplify-migration-tests'),
+    CONCURRENCY,
+  );
+  const splitLatestMigrationTests = splitTests(
+    splitV4MigrationTests,
+    'amplify_migration_tests_latest',
+    'build_test_deploy',
+    join(process.cwd(), 'packages', 'amplify-migration-tests'),
+    CONCURRENCY,
+  );
+  saveConfig(splitLatestMigrationTests);
   verifyConfig();
 }
 main();
