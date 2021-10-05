@@ -70,10 +70,10 @@
     "@aws-amplify/api-graphql" "2.2.3"
     "@aws-amplify/api-rest" "2.0.14"
 
-"@aws-amplify/appsync-modelgen-plugin@1.27.1":
-  version "1.27.1"
-  resolved "https://registry.yarnpkg.com/@aws-amplify/appsync-modelgen-plugin/-/appsync-modelgen-plugin-1.27.1.tgz#3092783a8b44241f08ce94ea433dafc2c5370b54"
-  integrity sha512-HBqzRkYBmSpdP2Il/h42oetZbUbGU5UD6qdsPItlaY9A42TWHKS2xCRUSgYahQhr393Snkr6XVGn+1ClM0Q5Yg==
+"@aws-amplify/appsync-modelgen-plugin@1.29.0-custom-type-preview.0":
+  version "1.29.0-custom-type-preview.0"
+  resolved "https://registry.npmjs.org/@aws-amplify/appsync-modelgen-plugin/-/appsync-modelgen-plugin-1.29.0-custom-type-preview.0.tgz#25be74134904253a78f2b6e18f0239f2987c602b"
+  integrity sha512-fAh4qOH/OHILb4FnzZmK4DrrzIvyWikwNsc01bWgFZTakoklVd91fEPNp4jSmM9GAIaDheIYoMrv20++6I+dvQ==
   dependencies:
     "@graphql-codegen/plugin-helpers" "^1.12.2"
     "@graphql-codegen/visitor-plugin-common" "1.12.2"
@@ -156,10 +156,10 @@
     prettier "^1.19.1"
     yargs "^15.1.0"
 
-"@aws-amplify/graphql-types-generator@2.8.0":
-  version "2.8.0"
-  resolved "https://registry.yarnpkg.com/@aws-amplify/graphql-types-generator/-/graphql-types-generator-2.8.0.tgz#4d1de0d2bebfe86863d892b175ef9ee5fea489ca"
-  integrity sha512-/zhoQlRP2mD6Q8HqdiErwVgCK6R0jBEXsDFBNkLXljmKuspK8N+aWdF1GTKjAm9y6dwiIb/Nw3WZpQNy1Gp/Tg==
+"@aws-amplify/graphql-types-generator@2.8.2":
+  version "2.8.2"
+  resolved "https://registry.npmjs.org/@aws-amplify/graphql-types-generator/-/graphql-types-generator-2.8.2.tgz#6ba293cf5b029861b143852c03e9c2354d2d514e"
+  integrity sha512-p3Cw1+3Z+8IBlAkP83bD2mGwH/tB8CopnzOj6STA1xwTyvbupX+nGfnyIG5agak6RmOAkoLHW1GdqwHEjN4KvQ==
   dependencies:
     "@babel/generator" "7.0.0-beta.4"
     "@babel/types" "7.0.0-beta.4"
@@ -6671,14 +6671,14 @@ amdefine@>=0.0.4:
   resolved "https://registry.yarnpkg.com/amdefine/-/amdefine-1.0.1.tgz#4a5282ac164729e93619bcfd3ad151f817ce91f5"
   integrity sha1-SlKCrBZHKek2Gbz9OtFR+BfOkfU=
 
-amplify-codegen@^2.23.1:
-  version "2.26.2"
-  resolved "https://registry.yarnpkg.com/amplify-codegen/-/amplify-codegen-2.26.2.tgz#f5837dae2a15eaee214fe7eb318aa577a1f7e198"
-  integrity sha512-Kokdm3r+sF3FtJiCXxE5DqIq+cXNGb8+cWpeZjRwV1UQhcYl6TyMqff5EqsNuVZMAX0Yc+54MKNH05AJ+PJgyw==
+amplify-codegen@^2.27.0-custom-type-preview.0:
+  version "2.27.0-custom-type-preview.0"
+  resolved "https://registry.npmjs.org/amplify-codegen/-/amplify-codegen-2.27.0-custom-type-preview.0.tgz#3b79dc2e586aea74fb2ba45c68482a3c8097b623"
+  integrity sha512-zHPSFMjUkufzDhxzj4GWcn1g3B+nUjA66f6d6snj0kVAd/J2nTI/iJDXMsmNgOuKFultVgQF6w8D+QzNAlGfnw==
   dependencies:
-    "@aws-amplify/appsync-modelgen-plugin" "1.27.1"
+    "@aws-amplify/appsync-modelgen-plugin" "1.29.0-custom-type-preview.0"
     "@aws-amplify/graphql-docs-generator" "2.3.4"
-    "@aws-amplify/graphql-types-generator" "2.8.0"
+    "@aws-amplify/graphql-types-generator" "2.8.2"
     "@graphql-codegen/core" "1.8.3"
     amplify-codegen-appsync-model-plugin "^1.22.3"
     amplify-graphql-docs-generator "^2.2.1"
