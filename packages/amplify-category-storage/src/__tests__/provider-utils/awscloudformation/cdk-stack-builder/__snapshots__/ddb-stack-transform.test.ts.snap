@@ -1,0 +1,190 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Test DDB transform generates correct CFN template Generated ddb template with all CLI configurations set with no overrides 1`] = `
+Object {
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Conditions": Object {
+    "ShouldNotCreateEnvResources": Object {
+      "Fn::Equals": Array [
+        Object {
+          "Ref": "env",
+        },
+        "NONE",
+      ],
+    },
+  },
+  "Description": "DDB Resource for AWS Amplify CLI",
+  "Outputs": Object {
+    "Arn": Object {
+      "Value": Object {
+        "Fn::GetAtt": Array [
+          "DynamoDBTable",
+          "Arn",
+        ],
+      },
+    },
+    "Name": Object {
+      "Value": Object {
+        "Ref": "DynamoDBTable",
+      },
+    },
+    "PartitionKeyName": Object {
+      "Value": Object {
+        "Ref": "partitionKeyName",
+      },
+    },
+    "PartitionKeyType": Object {
+      "Value": Object {
+        "Ref": "partitionKeyType",
+      },
+    },
+    "Region": Object {
+      "Value": Object {
+        "Ref": "AWS::Region",
+      },
+    },
+    "SortKeyName": Object {
+      "Value": Object {
+        "Ref": "sortKeyName",
+      },
+    },
+    "SortKeyType": Object {
+      "Value": Object {
+        "Ref": "sortKeyType",
+      },
+    },
+    "StreamArn": Object {
+      "Value": Object {
+        "Fn::GetAtt": Array [
+          "DynamoDBTable",
+          "StreamArn",
+        ],
+      },
+    },
+  },
+  "Parameters": Object {
+    "env": Object {
+      "Type": "String",
+    },
+    "partitionKeyName": Object {
+      "Type": "String",
+    },
+    "partitionKeyType": Object {
+      "Type": "String",
+    },
+    "sortKeyName": Object {
+      "Type": "String",
+    },
+    "sortKeyType": Object {
+      "Type": "String",
+    },
+    "tableName": Object {
+      "Type": "String",
+    },
+  },
+  "Resources": Object {
+    "DynamoDBTable": Object {
+      "Properties": Object {
+        "AttributeDefinitions": Array [
+          Object {
+            "AttributeName": "id",
+            "AttributeType": "S",
+          },
+          Object {
+            "AttributeName": "name",
+            "AttributeType": "N",
+          },
+          Object {
+            "AttributeName": "col",
+            "AttributeType": "S",
+          },
+        ],
+        "GlobalSecondaryIndexes": Array [
+          Object {
+            "IndexName": "gsiname",
+            "KeySchema": Array [
+              Object {
+                "AttributeName": "name",
+                "KeyType": "HASH",
+              },
+            ],
+            "Projection": Object {
+              "ProjectionType": "ALL",
+            },
+            "ProvisionedThroughput": Object {
+              "ReadCapacityUnits": 5,
+              "WriteCapacityUnits": 5,
+            },
+          },
+          Object {
+            "IndexName": "updategsiname",
+            "KeySchema": Array [
+              Object {
+                "AttributeName": "col",
+                "KeyType": "HASH",
+              },
+            ],
+            "Projection": Object {
+              "ProjectionType": "ALL",
+            },
+            "ProvisionedThroughput": Object {
+              "ReadCapacityUnits": 5,
+              "WriteCapacityUnits": 5,
+            },
+          },
+        ],
+        "KeySchema": Array [
+          Object {
+            "AttributeName": "id",
+            "KeyType": "HASH",
+          },
+          Object {
+            "AttributeName": "name",
+            "KeyType": "RANGE",
+          },
+        ],
+        "ProvisionedThroughput": Object {
+          "ReadCapacityUnits": 5,
+          "WriteCapacityUnits": 5,
+        },
+        "StreamSpecification": Object {
+          "StreamViewType": "NEW_IMAGE",
+        },
+        "TableName": Object {
+          "Fn::If": Array [
+            "ShouldNotCreateEnvResources",
+            Object {
+              "Ref": "tableName",
+            },
+            Object {
+              "Fn::Join": Array [
+                "",
+                Array [
+                  Object {
+                    "Ref": "tableName",
+                  },
+                  "-",
+                  Object {
+                    "Ref": "env",
+                  },
+                ],
+              ],
+            },
+          ],
+        },
+      },
+      "Type": "AWS::DynamoDB::Table",
+    },
+  },
+}
+`;
+
+exports[`Test DDB transform generates correct CFN template Generated ddb template with all CLI configurations set with no overrides 2`] = `
+Object {
+  "partitionKeyName": "id",
+  "partitionKeyType": "string",
+  "sortKeyName": "name",
+  "sortKeyType": "number",
+  "tableName": "mocktablename",
+}
+`;
