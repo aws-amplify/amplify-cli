@@ -528,7 +528,9 @@ async function _buildProject(opts: ProjectOptions<TransformerFactoryArgs>) {
     sandboxModeEnabled: opts.sandboxModeEnabled,
   });
 
-  const transformOutput = transform.transform(userProjectConfig.schema.toString());
+  let schema = userProjectConfig.schema.toString();
+  if (opts.sandboxModeEnabled) schema = removeSandboxDirectiveFromSchema(schema);
+  const transformOutput = transform.transform(schema);
 
   return mergeUserConfigWithTransformOutput(userProjectConfig, transformOutput);
 }
