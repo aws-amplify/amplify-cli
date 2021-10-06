@@ -36,7 +36,7 @@ describe('update command tests', () => {
     it('update resource workflow is invoked for map service', async() => {
         const service = ServiceName.Map;
         mockContext.amplify.serviceSelectionPrompt = jest.fn().mockImplementation( async () => {
-            return { service: service, providerName: provider};
+            return { service: service, providerName: provider };
         });
 
         await run(mockContext);
@@ -47,7 +47,7 @@ describe('update command tests', () => {
     it('update resource workflow is invoked for place index service', async() => {
         const service = ServiceName.PlaceIndex;
         mockContext.amplify.serviceSelectionPrompt = jest.fn().mockImplementation( async () => {
-            return { service: service, providerName: provider};
+            return { service: service, providerName: provider };
         });
 
         await run(mockContext);
@@ -63,7 +63,7 @@ describe('update command tests', () => {
 
         const service = ServiceName.Map;
         mockContext.amplify.serviceSelectionPrompt = jest.fn().mockImplementation( async () => {
-            return { service: service, providerName: provider};
+            return { service: service, providerName: provider };
         });
 
         await run(mockContext);
@@ -78,7 +78,7 @@ describe('update command tests', () => {
 
         const service = ServiceName.PlaceIndex;
         mockContext.amplify.serviceSelectionPrompt = jest.fn().mockImplementation( async () => {
-            return { service: service, providerName: provider};
+            return { service: service, providerName: provider };
         });
 
         await run(mockContext);

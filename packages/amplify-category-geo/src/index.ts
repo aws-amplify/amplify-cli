@@ -5,7 +5,7 @@ import * as updateCommand from './commands/geo/update';
 import * as removeCommand from './commands/geo/remove';
 import * as consoleCommand from './commands/geo/console';
 import * as helpCommand from './commands/geo/help';
-import { getServicePermissionPolicies, verifySupportedRegion, checkAnyGeoResourceExists } from './service-utils/resourceUtils';
+import { getServicePermissionPolicies } from './service-utils/resourceUtils';
 import { ServiceName } from './service-utils/constants';
 import { printer } from 'amplify-prompts';
 
@@ -33,18 +33,8 @@ export const executeAmplifyCommand = async (context: $TSContext) => {
 };
 
 export const handleAmplifyEvent = async (context: $TSContext, args: $TSAny) => {
-  switch (args.event) {
-    case 'PrePush':
-      // if((await checkAnyGeoResourceExists()) && !verifySupportedRegion()) {
-      //   const errMessage = 'Failed to create Geo resources';
-      //   await context.usageData.emitError(new Error(errMessage));
-      //   printer.info('Remove Geo resources using "amplify remove geo" and retry "amplify push"');
-      //   exitOnNextTick(1);
-      // }
-      break;
-    default:
-      break;
-  }
+  printer.info(`${category} handleAmplifyEvent to be implemented`);
+  printer.info(`Received event args ${args}`);
 };
 
 export const getPermissionPolicies = (context: $TSContext, resourceOpsMapping: $TSObject) => {
