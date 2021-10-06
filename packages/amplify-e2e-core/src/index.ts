@@ -61,7 +61,6 @@ export function getNpxPath() {
 }
 
 export function isCI(): boolean {
-  return true;
   return process.env.CI && process.env.CIRCLECI ? true : false;
 }
 

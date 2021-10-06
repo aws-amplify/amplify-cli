@@ -625,7 +625,7 @@ export function nspawn(command: string | string[], params: string[] = [], option
   const testingWithLatestCodebase = isTestingWithLatestCodebase(command);
   if (
     testingWithLatestCodebase ||
-    (process.platform === "win32" && !command.endsWith("node.exe"))
+    (process.platform === "win32" && !command.endsWith(".exe"))
   ) {
     params.unshift(command);
     command = getScriptRunnerPath(testingWithLatestCodebase);
