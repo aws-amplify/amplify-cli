@@ -1044,7 +1044,7 @@ commands:
                 command: |
                   source .circleci/local_publish_helpers.sh
                   cd packages/amplify-e2e-tests
-                  retry yarn run e2e --detectOpenHandles --maxWorkers=3 $env:TEST_SUITE
+                  retry yarn run e2e --detectOpenHandles --maxWorkers=3 $TEST_SUITE
                 no_output_timeout: 90m
       - when:
           condition:
