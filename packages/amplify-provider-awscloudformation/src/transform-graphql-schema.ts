@@ -58,7 +58,7 @@ export function searchablePushChecks(context, map, apiName): void {
   if (searchableModelTypes.length) {
     const currEnv = context.amplify.getEnvInfo().envName;
     const teamProviderInfo = stateManager.getTeamProviderInfo();
-    const apiCategory = teamProviderInfo[currEnv]?.categories?.api[apiName];
+    const apiCategory = teamProviderInfo[currEnv]?.categories?.api?.[apiName];
     const instanceType =
       apiCategory && apiCategory[ResourceConstants.PARAMETERS.ElasticsearchInstanceType]
         ? apiCategory[ResourceConstants.PARAMETERS.ElasticsearchInstanceType]

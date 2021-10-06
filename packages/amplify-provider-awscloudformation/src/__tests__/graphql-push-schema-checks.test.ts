@@ -106,4 +106,19 @@ describe('graphql schema checks', () => {
     searchablePushChecks(contextMock, map, 'test_api_name');
     expect(printerMock.warn).not.toBeCalled();
   });
+
+  it('should warn users if they use not recommended open search instance with overrides', async () => {
+    printerMock.warn.mockImplementation(jest.fn());
+    stateManagerMock.getTeamProviderInfo.mockReturnValue({
+      test: {
+        categories: {},
+      },
+    });
+    contextMock.amplify.getEnvInfo.mockReturnValue({ envName: 'test' });
+    const map = { Post: ['model', 'searchable'] };
+    searchablePushChecks(contextMock, map, 'test_api_name');
+    expect(printerMock.warn).lastCalledWith(
+      'Your instance type for OpenSearch is t2.small.elasticsearch, you may experience performance issues or data loss. Consider reconfiguring with the instructions here https://docs.amplify.aws/cli/graphql-transformer/searchable/',
+    );
+  });
 });
