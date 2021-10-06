@@ -4,7 +4,7 @@ import {
   createNewProjectDir,
   deleteProjectDir,
   addFeatureFlag,
-  addApiWithSchema,
+  // addApiWithSchema,
   addCustomResolver,
   apiGqlCompile,
   addCustomResourcesJson,
@@ -28,19 +28,19 @@ describe('overriding generated resolvers', () => {
     deleteProjectDir(projectDir);
   });
 
-  it('adds the overwritten resolver to the build', async () => {
-    const resolverName = 'Query.listTodos.req.vtl';
-    const resolver = '$util.unauthorized()';
-    const generatedResolverPath = join(projectDir, 'amplify', 'backend', 'api', apiName, 'build', 'pipelineFunctions', resolverName);
+  // it('adds the overwritten resolver to the build', async () => {
+  //   const resolverName = 'Query.listTodos.req.vtl';
+  //   const resolver = '$util.unauthorized()';
+  //   const generatedResolverPath = join(projectDir, 'amplify', 'backend', 'api', apiName, 'build', 'pipelineFunctions', resolverName);
 
-    await addApiWithSchema(projectDir, 'simple_model.graphql');
-    await apiGqlCompile(projectDir, true);
+  //   await addApiWithSchema(projectDir, 'simple_model.graphql');
+  //   await apiGqlCompile(projectDir, true);
 
-    addCustomResolver(projectDir, apiName, resolverName, resolver);
-    await apiGqlCompile(projectDir, true);
+  //   addCustomResolver(projectDir, apiName, resolverName, resolver);
+  //   await apiGqlCompile(projectDir, true);
 
-    expect(fs.readFileSync(generatedResolverPath)).toEqual(resolver);
-  });
+  //   expect(fs.readFileSync(generatedResolverPath)).toEqual(resolver);
+  // });
 });
 
 describe('custom resolvers', () => {
@@ -59,27 +59,27 @@ describe('custom resolvers', () => {
     deleteProjectDir(projectDir);
   });
 
-  it('adds the overwritten resolver to the build', async () => {
-    const resolverReqName = 'Query.commentsForTodo.req.vtl';
-    const resolverResName = 'Query.commentsForTodo.res.vtl';
+  // it('adds the overwritten resolver to the build', async () => {
+  //   const resolverReqName = 'Query.commentsForTodo.req.vtl';
+  //   const resolverResName = 'Query.commentsForTodo.res.vtl';
 
-    const resolverReq = '$util.unauthorized()';
-    const resolverRes = '$util.toJson({})';
+  //   const resolverReq = '$util.unauthorized()';
+  //   const resolverRes = '$util.toJson({})';
 
-    const generatedReqResolverPath = join(projectDir, 'amplify', 'backend', 'api', apiName, 'build', 'pipelineFunctions', resolverReqName);
-    const generatedResResolverPath = join(projectDir, 'amplify', 'backend', 'api', apiName, 'build', 'pipelineFunctions', resolverResName);
-    const stackPath = join(projectDir, 'amplify', 'backend', 'api', apiName, 'build', 'stacks', 'CustomResources.json');
+  //   const generatedReqResolverPath = join(projectDir, 'amplify', 'backend', 'api', apiName, 'build', 'pipelineFunctions', resolverReqName);
+  //   const generatedResResolverPath = join(projectDir, 'amplify', 'backend', 'api', apiName, 'build', 'pipelineFunctions', resolverResName);
+  //   const stackPath = join(projectDir, 'amplify', 'backend', 'api', apiName, 'build', 'stacks', 'CustomResources.json');
 
-    await addApiWithSchema(projectDir, 'simple_model.graphql');
-    await apiGqlCompile(projectDir, true);
+  //   await addApiWithSchema(projectDir, 'simple_model.graphql');
+  //   await apiGqlCompile(projectDir, true);
 
-    addCustomResolver(projectDir, apiName, resolverReqName, resolverReq);
-    addCustomResolver(projectDir, apiName, resolverResName, resolverRes);
-    addCustomResourcesJson(projectDir, apiName);
-    await apiGqlCompile(projectDir, true);
+  //   addCustomResolver(projectDir, apiName, resolverReqName, resolverReq);
+  //   addCustomResolver(projectDir, apiName, resolverResName, resolverRes);
+  //   addCustomResourcesJson(projectDir, apiName);
+  //   await apiGqlCompile(projectDir, true);
 
-    expect(fs.readFileSync(generatedReqResolverPath)).toEqual(resolverReq);
-    expect(fs.readFileSync(generatedResResolverPath)).toEqual(resolverRes);
-    expect(fs.readFileSync(stackPath)).toEqual('{}');
-  });
+  //   expect(fs.readFileSync(generatedReqResolverPath)).toEqual(resolverReq);
+  //   expect(fs.readFileSync(generatedResResolverPath)).toEqual(resolverRes);
+  //   expect(fs.readFileSync(stackPath)).toEqual('{}');
+  // });
 });
