@@ -44,7 +44,7 @@ export function isTestingWithLatestCodebase(scriptRunnerPath) {
 export function getScriptRunnerPath(testingWithLatestCodebase = false) {
   if (!testingWithLatestCodebase) {
     return process.platform === 'win32'
-      ? 'C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe'
+      ? 'node.exe'
       : 'exec';
   }
 
@@ -61,6 +61,7 @@ export function getNpxPath() {
 }
 
 export function isCI(): boolean {
+  return true;
   return process.env.CI && process.env.CIRCLECI ? true : false;
 }
 
