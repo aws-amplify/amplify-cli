@@ -2,10 +2,31 @@
 
 exports[`cdk stack creation for map service creates Map policy for Authorized and Guest users access type 1`] = `
 Object {
+  "Mappings": Object {
+    "RegionMapping": Object {
+      "eu-west-2": Object {
+        "locationServiceRegion": "eu-central-1",
+      },
+    },
+  },
   "Outputs": Object {
     "Name": Object {
       "Value": Object {
-        "Ref": "Map",
+        "Fn::GetAtt": Array [
+          "CustomMap",
+          "MapName",
+        ],
+      },
+    },
+    "Region": Object {
+      "Value": Object {
+        "Fn::FindInMap": Array [
+          "RegionMapping",
+          Object {
+            "Ref": "AWS::Region",
+          },
+          "locationServiceRegion",
+        ],
       },
     },
     "Style": Object {
@@ -38,14 +59,19 @@ Object {
     },
   },
   "Resources": Object {
-    "Map": Object {
+    "CustomMap": Object {
+      "DeletionPolicy": "Delete",
       "Properties": Object {
-        "Configuration": Object {
-          "Style": Object {
-            "Ref": "mapStyle",
-          },
+        "ServiceToken": Object {
+          "Fn::GetAtt": Array [
+            "CustomMapLambda",
+            "Arn",
+          ],
         },
-        "MapName": Object {
+        "env": Object {
+          "Ref": "env",
+        },
+        "mapName": Object {
           "Fn::Join": Array [
             "-",
             Array [
@@ -58,11 +84,224 @@ Object {
             ],
           ],
         },
-        "PricingPlan": Object {
+        "mapStyle": Object {
+          "Ref": "mapStyle",
+        },
+        "pricingPlan": Object {
           "Ref": "pricingPlan",
         },
+        "region": Object {
+          "Fn::FindInMap": Array [
+            "RegionMapping",
+            Object {
+              "Ref": "AWS::Region",
+            },
+            "locationServiceRegion",
+          ],
+        },
       },
-      "Type": "AWS::Location::Map",
+      "Type": "Custom::LambdaCallout",
+      "UpdateReplacePolicy": "Delete",
+    },
+    "CustomMapLambda": Object {
+      "Properties": Object {
+        "Code": Object {
+          "ZipFile": "const response = require('cfn-response');
+const aws = require('aws-sdk');
+exports.handler = (event, context) => {
+ try {
+  console.log('REQUEST RECEIVED:' + JSON.stringify(event));
+  if (event.RequestType == 'Create') {
+    let params = {
+      MapName: event.ResourceProperties.mapName,
+      Configuration: {
+        Style: event.ResourceProperties.mapStyle
+      },
+      PricingPlan: event.ResourceProperties.pricingPlan
+    };
+    const locationClient = new aws.Location({ apiVersion: '2020-11-19', region: event.ResourceProperties.region });
+    locationClient.createMap(params).promise()
+    .then((res) => {
+       console.log(\\"create\\" + res);
+       console.log(\\"response data\\" + JSON.stringify(res));
+       if (res.MapName && res.MapArn) {
+         event.PhysicalResourceId = event.ResourceProperties.mapName;
+         response.send(event, context, response.SUCCESS, res);
+       }
+       else {
+         response.send(event, context, response.FAILED, res);
+       }
+     });
+  }
+  if (event.RequestType == 'Update') {
+    let params = {
+      MapName: event.ResourceProperties.mapName,
+      PricingPlan: event.ResourceProperties.pricingPlan
+    };
+    const locationClient = new aws.Location({ apiVersion: '2020-11-19', region: event.ResourceProperties.region });
+    locationClient.updateMap(params).promise()
+    .then((res) => {
+       console.log(\\"update\\" + res);
+       console.log(\\"response data\\" + JSON.stringify(res));
+       if (res.MapName && res.MapArn) {
+         event.PhysicalResourceId = event.ResourceProperties.mapName;
+         response.send(event, context, response.SUCCESS, res);
+       }
+       else {
+         response.send(event, context, response.FAILED, res);
+       }
+     });
+  }
+  if (event.RequestType == 'Delete') {
+    let params = {
+      MapName: event.ResourceProperties.mapName
+    };
+    const locationClient = new aws.Location({ apiVersion: '2020-11-19', region: event.ResourceProperties.region });
+    locationClient.deleteMap(params).promise()
+    .then((res) => {
+       event.PhysicalResourceId = event.ResourceProperties.mapName;
+       console.log(\\"delete\\" + res);
+       console.log(\\"response data\\" + JSON.stringify(res));
+       response.send(event, context, response.SUCCESS, res);
+     });
+  }
+ } catch(err) {
+  console.log(err.stack);
+  const res = {Error: err};
+  response.send(event, context, response.FAILED, res);
+  throw err;
+ }
+};",
+        },
+        "Handler": "index.handler",
+        "Role": Object {
+          "Fn::GetAtt": Array [
+            "CustomMapLambdaExecutionRole",
+            "Arn",
+          ],
+        },
+        "Runtime": "nodejs12.x",
+        "Timeout": 300,
+      },
+      "Type": "AWS::Lambda::Function",
+    },
+    "CustomMapLambdaExecutionRole": Object {
+      "Properties": Object {
+        "AssumeRolePolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": Array [
+                "sts:AssumeRole",
+              ],
+              "Effect": "Allow",
+              "Principal": Object {
+                "Service": Array [
+                  "lambda.amazonaws.com",
+                ],
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "Policies": Array [
+          Object {
+            "PolicyDocument": Object {
+              "Statement": Array [
+                Object {
+                  "Action": Array [
+                    "logs:CreateLogGroup",
+                    "logs:CreateLogStream",
+                    "logs:PutLogEvents",
+                  ],
+                  "Effect": "Allow",
+                  "Resource": "arn:aws:logs:*:*:*",
+                },
+              ],
+              "Version": "2012-10-17",
+            },
+            "PolicyName": Object {
+              "Fn::Join": Array [
+                "",
+                Array [
+                  Object {
+                    "Fn::Join": Array [
+                      "-",
+                      Array [
+                        Object {
+                          "Ref": "mapName",
+                        },
+                        Object {
+                          "Ref": "env",
+                        },
+                      ],
+                    ],
+                  },
+                  "CustomLambdaLogPolicy",
+                ],
+              ],
+            },
+          },
+          Object {
+            "PolicyDocument": Object {
+              "Statement": Array [
+                Object {
+                  "Action": Array [
+                    "geo:CreateMap",
+                    "geo:UpdateMap",
+                    "geo:DeleteMap",
+                  ],
+                  "Effect": "Allow",
+                  "Resource": "*",
+                },
+              ],
+              "Version": "2012-10-17",
+            },
+            "PolicyName": Object {
+              "Fn::Join": Array [
+                "",
+                Array [
+                  Object {
+                    "Fn::Join": Array [
+                      "-",
+                      Array [
+                        Object {
+                          "Ref": "mapName",
+                        },
+                        Object {
+                          "Ref": "env",
+                        },
+                      ],
+                    ],
+                  },
+                  "CustomLambdaGeoPolicy",
+                ],
+              ],
+            },
+          },
+        ],
+        "RoleName": Object {
+          "Fn::Join": Array [
+            "",
+            Array [
+              Object {
+                "Fn::Join": Array [
+                  "-",
+                  Array [
+                    Object {
+                      "Ref": "mapName",
+                    },
+                    Object {
+                      "Ref": "env",
+                    },
+                  ],
+                ],
+              },
+              "LambdaRole",
+            ],
+          ],
+        },
+      },
+      "Type": "AWS::IAM::Role",
     },
     "MapPolicy": Object {
       "Properties": Object {
@@ -78,7 +317,7 @@ Object {
               "Effect": "Allow",
               "Resource": Object {
                 "Fn::GetAtt": Array [
-                  "Map",
+                  "CustomMap",
                   "MapArn",
                 ],
               },
@@ -88,13 +327,20 @@ Object {
         },
         "PolicyName": Object {
           "Fn::Join": Array [
-            "-",
+            "",
             Array [
               Object {
-                "Ref": "mapName",
-              },
-              Object {
-                "Ref": "env",
+                "Fn::Join": Array [
+                  "-",
+                  Array [
+                    Object {
+                      "Ref": "mapName",
+                    },
+                    Object {
+                      "Ref": "env",
+                    },
+                  ],
+                ],
               },
               "Policy",
             ],
@@ -117,10 +363,31 @@ Object {
 
 exports[`cdk stack creation for map service creates Map policy for Authorized users only access type 1`] = `
 Object {
+  "Mappings": Object {
+    "RegionMapping": Object {
+      "eu-west-2": Object {
+        "locationServiceRegion": "eu-central-1",
+      },
+    },
+  },
   "Outputs": Object {
     "Name": Object {
       "Value": Object {
-        "Ref": "Map",
+        "Fn::GetAtt": Array [
+          "CustomMap",
+          "MapName",
+        ],
+      },
+    },
+    "Region": Object {
+      "Value": Object {
+        "Fn::FindInMap": Array [
+          "RegionMapping",
+          Object {
+            "Ref": "AWS::Region",
+          },
+          "locationServiceRegion",
+        ],
       },
     },
     "Style": Object {
@@ -153,14 +420,19 @@ Object {
     },
   },
   "Resources": Object {
-    "Map": Object {
+    "CustomMap": Object {
+      "DeletionPolicy": "Delete",
       "Properties": Object {
-        "Configuration": Object {
-          "Style": Object {
-            "Ref": "mapStyle",
-          },
+        "ServiceToken": Object {
+          "Fn::GetAtt": Array [
+            "CustomMapLambda",
+            "Arn",
+          ],
         },
-        "MapName": Object {
+        "env": Object {
+          "Ref": "env",
+        },
+        "mapName": Object {
           "Fn::Join": Array [
             "-",
             Array [
@@ -173,11 +445,224 @@ Object {
             ],
           ],
         },
-        "PricingPlan": Object {
+        "mapStyle": Object {
+          "Ref": "mapStyle",
+        },
+        "pricingPlan": Object {
           "Ref": "pricingPlan",
         },
+        "region": Object {
+          "Fn::FindInMap": Array [
+            "RegionMapping",
+            Object {
+              "Ref": "AWS::Region",
+            },
+            "locationServiceRegion",
+          ],
+        },
       },
-      "Type": "AWS::Location::Map",
+      "Type": "Custom::LambdaCallout",
+      "UpdateReplacePolicy": "Delete",
+    },
+    "CustomMapLambda": Object {
+      "Properties": Object {
+        "Code": Object {
+          "ZipFile": "const response = require('cfn-response');
+const aws = require('aws-sdk');
+exports.handler = (event, context) => {
+ try {
+  console.log('REQUEST RECEIVED:' + JSON.stringify(event));
+  if (event.RequestType == 'Create') {
+    let params = {
+      MapName: event.ResourceProperties.mapName,
+      Configuration: {
+        Style: event.ResourceProperties.mapStyle
+      },
+      PricingPlan: event.ResourceProperties.pricingPlan
+    };
+    const locationClient = new aws.Location({ apiVersion: '2020-11-19', region: event.ResourceProperties.region });
+    locationClient.createMap(params).promise()
+    .then((res) => {
+       console.log(\\"create\\" + res);
+       console.log(\\"response data\\" + JSON.stringify(res));
+       if (res.MapName && res.MapArn) {
+         event.PhysicalResourceId = event.ResourceProperties.mapName;
+         response.send(event, context, response.SUCCESS, res);
+       }
+       else {
+         response.send(event, context, response.FAILED, res);
+       }
+     });
+  }
+  if (event.RequestType == 'Update') {
+    let params = {
+      MapName: event.ResourceProperties.mapName,
+      PricingPlan: event.ResourceProperties.pricingPlan
+    };
+    const locationClient = new aws.Location({ apiVersion: '2020-11-19', region: event.ResourceProperties.region });
+    locationClient.updateMap(params).promise()
+    .then((res) => {
+       console.log(\\"update\\" + res);
+       console.log(\\"response data\\" + JSON.stringify(res));
+       if (res.MapName && res.MapArn) {
+         event.PhysicalResourceId = event.ResourceProperties.mapName;
+         response.send(event, context, response.SUCCESS, res);
+       }
+       else {
+         response.send(event, context, response.FAILED, res);
+       }
+     });
+  }
+  if (event.RequestType == 'Delete') {
+    let params = {
+      MapName: event.ResourceProperties.mapName
+    };
+    const locationClient = new aws.Location({ apiVersion: '2020-11-19', region: event.ResourceProperties.region });
+    locationClient.deleteMap(params).promise()
+    .then((res) => {
+       event.PhysicalResourceId = event.ResourceProperties.mapName;
+       console.log(\\"delete\\" + res);
+       console.log(\\"response data\\" + JSON.stringify(res));
+       response.send(event, context, response.SUCCESS, res);
+     });
+  }
+ } catch(err) {
+  console.log(err.stack);
+  const res = {Error: err};
+  response.send(event, context, response.FAILED, res);
+  throw err;
+ }
+};",
+        },
+        "Handler": "index.handler",
+        "Role": Object {
+          "Fn::GetAtt": Array [
+            "CustomMapLambdaExecutionRole",
+            "Arn",
+          ],
+        },
+        "Runtime": "nodejs12.x",
+        "Timeout": 300,
+      },
+      "Type": "AWS::Lambda::Function",
+    },
+    "CustomMapLambdaExecutionRole": Object {
+      "Properties": Object {
+        "AssumeRolePolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": Array [
+                "sts:AssumeRole",
+              ],
+              "Effect": "Allow",
+              "Principal": Object {
+                "Service": Array [
+                  "lambda.amazonaws.com",
+                ],
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "Policies": Array [
+          Object {
+            "PolicyDocument": Object {
+              "Statement": Array [
+                Object {
+                  "Action": Array [
+                    "logs:CreateLogGroup",
+                    "logs:CreateLogStream",
+                    "logs:PutLogEvents",
+                  ],
+                  "Effect": "Allow",
+                  "Resource": "arn:aws:logs:*:*:*",
+                },
+              ],
+              "Version": "2012-10-17",
+            },
+            "PolicyName": Object {
+              "Fn::Join": Array [
+                "",
+                Array [
+                  Object {
+                    "Fn::Join": Array [
+                      "-",
+                      Array [
+                        Object {
+                          "Ref": "mapName",
+                        },
+                        Object {
+                          "Ref": "env",
+                        },
+                      ],
+                    ],
+                  },
+                  "CustomLambdaLogPolicy",
+                ],
+              ],
+            },
+          },
+          Object {
+            "PolicyDocument": Object {
+              "Statement": Array [
+                Object {
+                  "Action": Array [
+                    "geo:CreateMap",
+                    "geo:UpdateMap",
+                    "geo:DeleteMap",
+                  ],
+                  "Effect": "Allow",
+                  "Resource": "*",
+                },
+              ],
+              "Version": "2012-10-17",
+            },
+            "PolicyName": Object {
+              "Fn::Join": Array [
+                "",
+                Array [
+                  Object {
+                    "Fn::Join": Array [
+                      "-",
+                      Array [
+                        Object {
+                          "Ref": "mapName",
+                        },
+                        Object {
+                          "Ref": "env",
+                        },
+                      ],
+                    ],
+                  },
+                  "CustomLambdaGeoPolicy",
+                ],
+              ],
+            },
+          },
+        ],
+        "RoleName": Object {
+          "Fn::Join": Array [
+            "",
+            Array [
+              Object {
+                "Fn::Join": Array [
+                  "-",
+                  Array [
+                    Object {
+                      "Ref": "mapName",
+                    },
+                    Object {
+                      "Ref": "env",
+                    },
+                  ],
+                ],
+              },
+              "LambdaRole",
+            ],
+          ],
+        },
+      },
+      "Type": "AWS::IAM::Role",
     },
     "MapPolicy": Object {
       "Properties": Object {
@@ -193,7 +678,7 @@ Object {
               "Effect": "Allow",
               "Resource": Object {
                 "Fn::GetAtt": Array [
-                  "Map",
+                  "CustomMap",
                   "MapArn",
                 ],
               },
@@ -203,13 +688,20 @@ Object {
         },
         "PolicyName": Object {
           "Fn::Join": Array [
-            "-",
+            "",
             Array [
               Object {
-                "Ref": "mapName",
-              },
-              Object {
-                "Ref": "env",
+                "Fn::Join": Array [
+                  "-",
+                  Array [
+                    Object {
+                      "Ref": "mapName",
+                    },
+                    Object {
+                      "Ref": "env",
+                    },
+                  ],
+                ],
               },
               "Policy",
             ],

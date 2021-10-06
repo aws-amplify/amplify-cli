@@ -6,13 +6,14 @@ import { category } from '../constants';
 import { PlaceIndexStack } from '../service-stacks/placeIndexStack';
 import { updateParametersFile, generateTemplateFile, updateDefaultResource, readResourceMetaParameters, checkAuthConfig } from './resourceUtils';
 import { App } from '@aws-cdk/core';
+import { getTemplateMappings } from '../provider-controllers';
 
 export const createPlaceIndexResource = async (context: $TSContext, parameters: PlaceIndexParameters) => {
   // allow unauth access for identity pool if guest access is enabled
   await checkAuthConfig(context, parameters, ServiceName.PlaceIndex);
 
   // generate CFN files
-  const placeIndexStack = new PlaceIndexStack(new App(), 'PlaceIndexStack', parameters);
+  const placeIndexStack = new PlaceIndexStack(new App(), 'PlaceIndexStack', { ...parameters, ...getTemplateMappings(context) });
   generateTemplateFile(placeIndexStack, parameters.name);
   saveCFNParameters(parameters);
 
@@ -39,7 +40,7 @@ export const modifyPlaceIndexResource = async (
   await checkAuthConfig(context, parameters, ServiceName.PlaceIndex);
 
   // generate CFN files
-  const placeIndexStack = new PlaceIndexStack(new App(), 'PlaceIndexStack', parameters);
+  const placeIndexStack = new PlaceIndexStack(new App(), 'PlaceIndexStack', { ...parameters, ...getTemplateMappings(context) });
   generateTemplateFile(placeIndexStack, parameters.name);
 
   // update the default place index

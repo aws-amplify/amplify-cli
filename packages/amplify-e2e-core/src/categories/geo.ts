@@ -114,6 +114,8 @@ export function updateMapWithDefault(cwd: string): Promise<void> {
       .wait('Who can access this Map?')
       .send(KEY_DOWN_ARROW)
       .sendCarriageReturn()
+      .wait(defaultMapQuestion)
+      .sendConfirmYes()
       .run((err: Error) => {
         if (!err) {
           resolve();
@@ -165,6 +167,8 @@ export function updatePlaceIndexWithDefault(cwd: string): Promise<void> {
       .wait('Who can access this Search Index?')
       .send(KEY_DOWN_ARROW)
       .sendCarriageReturn()
+      .wait(defaultSearchIndexQuestion)
+      .sendConfirmYes()
       .run((err: Error) => {
         if (!err) {
           resolve();
@@ -307,9 +311,12 @@ export function getGeoJSConfiguration(awsExports: any): any {
   return awsExports.geo.amazon_location_service;
 }
 
-export function generateTwoResourceIdsInOrder(): string[] {
+export function generateResourceIdsInOrder(count: number): string[] {
   const resourceIdArr: string[] = [];
-  resourceIdArr.push(generateRandomShortId());
-  resourceIdArr.push(generateRandomShortId());
+  while (count > 0) {
+    resourceIdArr.push(generateRandomShortId());
+    resourceIdArr.push(generateRandomShortId());
+    count--;
+  }
   return resourceIdArr.sort();
 }

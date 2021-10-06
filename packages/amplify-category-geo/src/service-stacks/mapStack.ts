@@ -1,18 +1,24 @@
 import * as cdk from '@aws-cdk/core';
-import * as location from '@aws-cdk/aws-location';
 import * as iam from '@aws-cdk/aws-iam';
+import * as lambda from '@aws-cdk/aws-lambda';
 import { MapParameters } from '../service-utils/mapParams';
 import { CfnResource, Fn } from '@aws-cdk/core';
 import { AccessType } from '../service-utils/resourceParams';
-import { BaseStack } from './baseStack';
+import { BaseStack, TemplateMappings } from './baseStack';
+
+type MapStackProps = Pick<MapParameters, 'accessType'> & TemplateMappings;
 
 export class MapStack extends BaseStack {
     protected readonly accessType: string;
+    protected readonly mapResource: cdk.CustomResource;
+    protected readonly mapRegion: string
+    protected readonly mapName: string
 
-    constructor(scope: cdk.Construct, id: string, private readonly props: Pick<MapParameters, 'accessType'>) {
-        super(scope, id);
+    constructor(scope: cdk.Construct, id: string, private readonly props: MapStackProps) {
+        super(scope, id, props);
 
         this.accessType = this.props.accessType;
+        this.mapRegion = this.regionMapping.findInMap(cdk.Fn.ref('AWS::Region'), 'locationServiceRegion');
 
         this.parameters = this.constructInputParameters([
             'authRoleName',
@@ -24,43 +30,174 @@ export class MapStack extends BaseStack {
             'isDefault'
         ]);
 
-        this.resources = this.constructResources();
+        this.mapName = Fn.join('-', [
+            this.parameters.get('mapName')!.valueAsString,
+            this.parameters.get('env')!.valueAsString
+        ]);
+        this.mapResource = this.constructMapResource();
+        this.constructMapPolicyResource(this.mapResource);
+        this.constructOutputs();
+    }
 
+    private constructOutputs() {
         new cdk.CfnOutput(this, 'Name', {
-            value: this.resources.get('map')!.ref
+            value: this.mapResource.getAtt('MapName').toString()
         });
         new cdk.CfnOutput(this, 'Style', {
             value: this.parameters.get('mapStyle')!.valueAsString
         });
-    }
-
-    private constructResources(): Map<string, CfnResource> {
-        let resourcesMap: Map<string, cdk.CfnResource> = new Map();
-
-        const mapResource = this.constructMapResource();
-        resourcesMap.set('map', mapResource);
-
-        const mapPolicyResource = this.constructMapPolicyResource(mapResource);
-        resourcesMap.set('mapPolicy', mapPolicyResource);
-
-        return resourcesMap;
-    }
-
-    private constructMapResource(): CfnResource {
-        return new location.CfnMap(this, 'Map', {
-            mapName: Fn.join('-', [
-                this.parameters.get('mapName')!.valueAsString,
-                this.parameters.get('env')!.valueAsString
-            ]),
-            configuration: {
-                style: this.parameters.get('mapStyle')!.valueAsString
-            },
-            pricingPlan: this.parameters.get('pricingPlan')!.valueAsString
+        new cdk.CfnOutput(this, 'Region', {
+            value: this.mapRegion
         });
     }
 
+    private constructMapResource(): cdk.CustomResource {
+        const lambdaExecutionRole = new iam.CfnRole(this, 'CustomMapLambdaExecutionRole', {
+            roleName: `${this.mapName}LambdaRole`,
+            assumeRolePolicyDocument: {
+              Version: '2012-10-17',
+              Statement: [
+                {
+                  Effect: 'Allow',
+                  Principal: {
+                    Service: ['lambda.amazonaws.com'],
+                  },
+                  Action: ['sts:AssumeRole'],
+                },
+              ],
+            },
+            policies: [
+              {
+                policyName: `${this.mapName}CustomLambdaLogPolicy`,
+                policyDocument: {
+                  Version: '2012-10-17',
+                  Statement: [
+                    {
+                      Effect: 'Allow',
+                      Action: ['logs:CreateLogGroup', 'logs:CreateLogStream', 'logs:PutLogEvents'],
+                      Resource: 'arn:aws:logs:*:*:*',
+                    },
+                  ],
+                },
+              },
+              {
+                policyName: `${this.mapName}CustomLambdaGeoPolicy`,
+                policyDocument: {
+                  Version: '2012-10-17',
+                  Statement: [
+                    {
+                      Effect: 'Allow',
+                      Action: [
+                        'geo:CreateMap',
+                        'geo:UpdateMap',
+                        'geo:DeleteMap'
+                      ],
+                      Resource: '*',
+                    },
+                  ],
+                },
+              }
+            ],
+        });
+
+        const mapStyle = this.parameters.get('mapStyle')!.valueAsString;
+
+        const mapPricingPlan = this.parameters.get('pricingPlan')!.valueAsString;
+
+        const customMapLambda = new lambda.CfnFunction(this, 'CustomMapLambda', {
+            code: {
+            zipFile: cdk.Fn.join('\n', [
+                "const response = require('cfn-response');",
+                "const aws = require('aws-sdk');",
+                "exports.handler = (event, context) => {",
+                " try {",
+                "  console.log('REQUEST RECEIVED:' + JSON.stringify(event));",
+                "  if (event.RequestType == 'Create') {",
+                "    let params = {",
+                "      MapName: event.ResourceProperties.mapName,",
+                "      Configuration: {",
+                "        Style: event.ResourceProperties.mapStyle",
+                "      },",
+                "      PricingPlan: event.ResourceProperties.pricingPlan",
+                "    };",
+                "    const locationClient = new aws.Location({ apiVersion: '2020-11-19', region: event.ResourceProperties.region });",
+                "    locationClient.createMap(params).promise()",
+                "    .then((res) => {",
+                "       console.log(\"create\" + res);",
+                "       console.log(\"response data\" + JSON.stringify(res));",
+                "       if (res.MapName && res.MapArn) {",
+                "         event.PhysicalResourceId = event.ResourceProperties.mapName;",
+                "         response.send(event, context, response.SUCCESS, res);",
+                "       }",
+                "       else {",
+                "         response.send(event, context, response.FAILED, res);",
+                "       }",
+                "     });",
+                "  }",
+                "  if (event.RequestType == 'Update') {",
+                "    let params = {",
+                "      MapName: event.ResourceProperties.mapName,",
+                "      PricingPlan: event.ResourceProperties.pricingPlan",
+                "    };",
+                "    const locationClient = new aws.Location({ apiVersion: '2020-11-19', region: event.ResourceProperties.region });",
+                "    locationClient.updateMap(params).promise()",
+                "    .then((res) => {",
+                "       console.log(\"update\" + res);",
+                "       console.log(\"response data\" + JSON.stringify(res));",
+                "       if (res.MapName && res.MapArn) {",
+                "         event.PhysicalResourceId = event.ResourceProperties.mapName;",
+                "         response.send(event, context, response.SUCCESS, res);",
+                "       }",
+                "       else {",
+                "         response.send(event, context, response.FAILED, res);",
+                "       }",
+                "     });",
+                "  }",
+                "  if (event.RequestType == 'Delete') {",
+                "    let params = {",
+                "      MapName: event.ResourceProperties.mapName",
+                "    };",
+                "    const locationClient = new aws.Location({ apiVersion: '2020-11-19', region: event.ResourceProperties.region });",
+                "    locationClient.deleteMap(params).promise()",
+                "    .then((res) => {",
+                "       event.PhysicalResourceId = event.ResourceProperties.mapName;",
+                "       console.log(\"delete\" + res);",
+                "       console.log(\"response data\" + JSON.stringify(res));",
+                "       response.send(event, context, response.SUCCESS, res);",
+                "     });",
+                "  }",
+                " } catch(err) {",
+                "  console.log(err.stack);",
+                "  const res = {Error: err};",
+                "  response.send(event, context, response.FAILED, res);",
+                "  throw err;",
+                " }",
+                "};"
+            ]),
+            },
+            handler: 'index.handler',
+            runtime: 'nodejs12.x',
+            timeout: 300,
+            role: lambdaExecutionRole.attrArn
+        });
+
+        const mapCustomResource = new cdk.CustomResource(this, 'CustomMap', {
+            serviceToken: customMapLambda.attrArn,
+            resourceType: 'Custom::LambdaCallout',
+            properties: {
+                mapName: this.mapName,
+                mapStyle: mapStyle,
+                pricingPlan: mapPricingPlan,
+                region: this.mapRegion,
+                env: cdk.Fn.ref('env'),
+            },
+        });
+
+        return mapCustomResource;
+    }
+
     // Grant read-only access to the Map for Authorized and/or Guest users
-    private constructMapPolicyResource(mapResource: CfnResource): CfnResource {
+    private constructMapPolicyResource(mapResource: cdk.CustomResource): CfnResource {
         let policy = new iam.PolicyDocument({
             statements: [
               new iam.PolicyStatement({
@@ -83,11 +220,7 @@ export class MapStack extends BaseStack {
         }
 
         return new iam.CfnPolicy(this, 'MapPolicy', {
-            policyName: cdk.Fn.join('-', [
-                this.parameters.get('mapName')!.valueAsString,
-                this.parameters.get('env')!.valueAsString,
-                'Policy'
-            ]),
+            policyName: `${this.mapName}Policy`,
             roles: cognitoRoles,
             policyDocument: policy
         });

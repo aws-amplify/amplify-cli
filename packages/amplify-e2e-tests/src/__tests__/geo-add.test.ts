@@ -41,7 +41,7 @@ describe('amplify geo add', () => {
     expect(meta.geo).toBeDefined();
     const mapId = Object.keys(meta.geo).filter(key => meta.geo[key].service === 'Map')[0];
     const mapName = meta.geo[mapId].output.Name;
-    const region = meta.providers.awscloudformation.Region;
+    const region = meta.geo[mapId].output.Region;
     const map = await getMap(mapName, region);
     const awsExport: any = getAWSExports(projRoot).default;
     expect(map.MapName).toBeDefined();
@@ -60,7 +60,7 @@ describe('amplify geo add', () => {
     expect(meta.geo).toBeDefined();
     const placeIndexId = Object.keys(meta.geo).filter(key => meta.geo[key].service === 'PlaceIndex')[0];
     const indexName = meta.geo[placeIndexId].output.Name;
-    const region = meta.providers.awscloudformation.Region;
+    const region = meta.geo[placeIndexId].output.Region;
     const placeIndex = await getPlaceIndex(indexName, region);
     const awsExport: any = getAWSExports(projRoot).default;
     expect(placeIndex.IndexName).toBeDefined();
@@ -83,7 +83,7 @@ describe('amplify geo add', () => {
     expect(meta.geo[map1Id].isDefault).toBe(false);
     expect(meta.geo[map2Id].isDefault).toBe(true);
     // check if resource is provisioned in cloud
-    const region = meta.providers.awscloudformation.Region;
+    const region = meta.geo[map1Id].output.Region;
     const map1Name = meta.geo[map1Id].output.Name;
     const map2Name = meta.geo[map2Id].output.Name;
     const map1 = await getMap(map1Name, region);
@@ -112,7 +112,7 @@ describe('amplify geo add', () => {
     expect(meta.geo[index1Id].isDefault).toBe(false);
     expect(meta.geo[index2Id].isDefault).toBe(true);
     // check if resource is provisioned in cloud
-    const region = meta.providers.awscloudformation.Region;
+    const region = meta.geo[index1Id].output.Region;
     const index1Name = meta.geo[index1Id].output.Name;
     const index2Name = meta.geo[index2Id].output.Name;
     const index1 = await getPlaceIndex(index1Name, region);

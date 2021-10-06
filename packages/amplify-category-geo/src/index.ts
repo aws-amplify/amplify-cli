@@ -35,12 +35,12 @@ export const executeAmplifyCommand = async (context: $TSContext) => {
 export const handleAmplifyEvent = async (context: $TSContext, args: $TSAny) => {
   switch (args.event) {
     case 'PrePush':
-      if((await checkAnyGeoResourceExists()) && !verifySupportedRegion()) {
-        const errMessage = 'Failed to create Geo resources';
-        await context.usageData.emitError(new Error(errMessage));
-        printer.info('Remove Geo resources using "amplify remove geo" and retry "amplify push"');
-        exitOnNextTick(1);
-      }
+      // if((await checkAnyGeoResourceExists()) && !verifySupportedRegion()) {
+      //   const errMessage = 'Failed to create Geo resources';
+      //   await context.usageData.emitError(new Error(errMessage));
+      //   printer.info('Remove Geo resources using "amplify remove geo" and retry "amplify push"');
+      //   exitOnNextTick(1);
+      // }
       break;
     default:
       break;

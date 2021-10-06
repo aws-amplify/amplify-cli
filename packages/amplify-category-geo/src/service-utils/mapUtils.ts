@@ -6,13 +6,14 @@ import { category } from '../constants';
 import { MapStack } from '../service-stacks/mapStack';
 import { updateParametersFile, getGeoServiceMeta, generateTemplateFile, updateDefaultResource, readResourceMetaParameters, checkAuthConfig } from './resourceUtils';
 import { App } from '@aws-cdk/core';
+import { getTemplateMappings } from '../provider-controllers';
 
 export const createMapResource = async (context: $TSContext, parameters: MapParameters) => {
   // allow unauth access for identity pool if guest access is enabled
   await checkAuthConfig(context, parameters, ServiceName.Map);
 
   // generate CFN files
-  const mapStack = new MapStack(new App(), 'MapStack', parameters);
+  const mapStack = new MapStack(new App(), 'MapStack', { ...parameters, ...getTemplateMappings(context) });
   generateTemplateFile(mapStack, parameters.name);
   saveCFNParameters(parameters);
 
@@ -39,7 +40,7 @@ export const modifyMapResource = async (
   await checkAuthConfig(context, parameters, ServiceName.Map);
 
   // generate CFN files
-  const mapStack = new MapStack(new App(), 'MapStack', parameters);
+  const mapStack = new MapStack(new App(), 'MapStack', { ...parameters, ...getTemplateMappings(context) });
   generateTemplateFile(mapStack, parameters.name);
 
   // update the default map
