@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.28.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@1.27.1...amplify-e2e-core@1.28.0) (2021-10-06)
+
+
+### Features
+
+* Custom policies IAM Policies for Lambda and Containers ([#8068](https://github.com/aws-amplify/amplify-cli/issues/8068)) ([3e1ce0d](https://github.com/aws-amplify/amplify-cli/commit/3e1ce0de4d25ab239adcdcef778cc82f30b17a94))
+
+
+
+
+
 ## [1.27.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@1.27.0...amplify-e2e-core@1.27.1) (2021-10-01)
 
 **Note:** Version bump only for package amplify-e2e-core
