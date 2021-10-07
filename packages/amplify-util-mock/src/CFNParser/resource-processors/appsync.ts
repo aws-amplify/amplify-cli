@@ -45,7 +45,7 @@ export function appSyncDataSourceHandler(
   resource,
   cfnContext: CloudFormationParseContext,
 ): AppSyncDataSourceProcessedResource {
-  const tableName = resource.Properties.Name;
+  const tableName = resource.Properties?.DynamoDBConfig?.TableName?.Ref || resource.Properties.Name;
   const typeName = resource.Properties.Type;
   const commonProps = {
     cfnExposedAttributes: { DataSourceArn: 'Arn', Name: 'name' },
