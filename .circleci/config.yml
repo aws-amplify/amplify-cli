@@ -13655,7 +13655,6 @@ workflows:
             parameters:
               os:
                 - linux
-                - windows
       - hooks-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
@@ -15191,7 +15190,6 @@ workflows:
             parameters:
               os:
                 - linux
-                - windows
       - function_9-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
