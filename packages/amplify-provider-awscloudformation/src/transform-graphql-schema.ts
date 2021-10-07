@@ -19,6 +19,7 @@ import { isAmplifyAdminApp } from './utils/admin-helpers';
 import { JSONUtilities, stateManager } from 'amplify-cli-core';
 import { ResourceConstants } from 'graphql-transformer-common';
 import { printer } from 'amplify-prompts';
+import _ from 'lodash';
 
 import {
   collectDirectivesByTypeNames,
@@ -58,11 +59,11 @@ export function searchablePushChecks(context, map, apiName): void {
   if (searchableModelTypes.length) {
     const currEnv = context.amplify.getEnvInfo().envName;
     const teamProviderInfo = stateManager.getTeamProviderInfo();
-    const apiCategory = teamProviderInfo[currEnv]?.categories?.api[apiName];
-    const instanceType =
-      apiCategory && apiCategory[ResourceConstants.PARAMETERS.ElasticsearchInstanceType]
-        ? apiCategory[ResourceConstants.PARAMETERS.ElasticsearchInstanceType]
-        : 't2.small.elasticsearch';
+    const instanceType = _.get(
+      teamProviderInfo,
+      [currEnv, 'categories', 'api', apiName, ResourceConstants.PARAMETERS.ElasticsearchInstanceType],
+      't2.small.elasticsearch',
+    );
     if (instanceType === 't2.small.elasticsearch' || instanceType === 't3.small.elasticsearch') {
       printer.warn(
         `Your instance type for OpenSearch is ${instanceType}, you may experience performance issues or data loss. Consider reconfiguring with the instructions here https://docs.amplify.aws/cli/graphql-transformer/searchable/`,
