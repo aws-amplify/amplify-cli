@@ -108,6 +108,8 @@ const WINDOWS_TEST_FAILURES = [
   'storage-2-amplify_e2e_tests',
   'storage-3-amplify_e2e_tests',
   'tags-amplify_e2e_tests',
+  'custom_policies_container-amplify_e2e_tests',
+  'custom_policies_function-amplify_e2e_tests',
 ];
 
 // Ensure to update packages/amplify-e2e-tests/src/cleanup-e2e-resources.ts is also updated this gets updated
