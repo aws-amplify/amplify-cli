@@ -3,15 +3,18 @@ import { getAppSyncResourceName } from './appSyncHelper';
 import * as path from 'path';
 import { pathManager, readCFNTemplate, writeCFNTemplate } from 'amplify-cli-core';
 import { categoryName } from '../../../constants';
+import { getTableNameForModel, readProjectConfiguration } from 'graphql-transformer-core';
 
-const functionCloudFormationFilePath = (functionName: string) => path.join(pathManager.getBackendDirPath(), categoryName, functionName, `${functionName}-cloudformation-template.json`);
+const functionCloudFormationFilePath = (functionName: string) =>
+  path.join(pathManager.getBackendDirPath(), categoryName, functionName, `${functionName}-cloudformation-template.json`);
 
 export const getFunctionCloudFormationTemplate = async (functionName: string) => {
   const { cfnTemplate } = await readCFNTemplate(functionCloudFormationFilePath(functionName));
   return cfnTemplate;
-}
+};
 
-export const setFunctionCloudFormationTemplate = async (functionName: string, cfnTemplate: object) => writeCFNTemplate(cfnTemplate, functionCloudFormationFilePath(functionName));
+export const setFunctionCloudFormationTemplate = async (functionName: string, cfnTemplate: object) =>
+  writeCFNTemplate(cfnTemplate, functionCloudFormationFilePath(functionName));
 
 export function getNewCFNEnvVariables(oldCFNEnvVariables, currentDefaults, newCFNEnvVariables, newDefaults, apiResourceName?) {
   const currentResources = [];
@@ -185,22 +188,23 @@ export function getIAMPolicies(resourceName, crudOptions) {
 }
 
 /** CF template component of join function { "Fn::Join": ["": THIS_PART ] } */
-export function constructCFModelTableArnComponent(appsyncResourceName, resourceName, appsyncTableSuffix) {
+export async function constructCFModelTableArnComponent(appsyncResourceName, resourceName, appsyncTableSuffix) {
   return [
     'arn:aws:dynamodb:',
     { Ref: 'AWS::Region' },
     ':',
     { Ref: 'AWS::AccountId' },
     ':table/',
-    constructCFModelTableNameComponent(appsyncResourceName, resourceName, appsyncTableSuffix),
+    await constructCFModelTableNameComponent(appsyncResourceName, resourceName, appsyncTableSuffix),
   ];
 }
 
 /** CF template component of join function { "Fn::Join": ["-": THIS_PART ] } */
-export function constructCFModelTableNameComponent(appsyncResourceName, resourceName, appsyncTableSuffix) {
+export async function constructCFModelTableNameComponent(appsyncResourceName, resourceName, appsyncTableSuffix) {
+  const tableName = await mapModelNameToTableName(resourceName.replace(`:${appsyncTableSuffix}`, ''));
   return {
     'Fn::ImportValue': {
-      'Fn::Sub': `\${api${appsyncResourceName}GraphQLAPIIdOutput}:GetAtt:${resourceName.replace(`:${appsyncTableSuffix}`, 'Table')}:Name`,
+      'Fn::Sub': `\${api${appsyncResourceName}GraphQLAPIIdOutput}:GetAtt:${tableName}Table:Name`,
     },
   };
 }
@@ -258,4 +262,11 @@ function apiResourceAddCheck(currentResources, newResources, apiResourceName, re
   if (apiAddFlag) {
     isEnvParams ? currentResources.push(`API_${apiResourceName.toUpperCase()}_`) : currentResources.push(`api${apiResourceName}`);
   }
+}
+
+async function mapModelNameToTableName(modelName: string): Promise<string> {
+  const appSyncResourceName = getAppSyncResourceName();
+  const resourceDirPath = path.join(pathManager.getBackendDirPath(), 'api', appSyncResourceName);
+  const project = await readProjectConfiguration(resourceDirPath);
+  return getTableNameForModel(project.schema, modelName);
 }
