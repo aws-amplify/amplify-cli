@@ -61,7 +61,6 @@ export async function undoAllSchemaMigration(resourceDir: string): Promise<void>
       await undoAllSchemaMigration(fullPath);
     } else if (stats.isFile()) {
       fs.moveSync(fullPath, removeBkpExtension(fullPath), { overwrite: true });
-      fs.removeSync(fullPath);
     }
   }
 }
