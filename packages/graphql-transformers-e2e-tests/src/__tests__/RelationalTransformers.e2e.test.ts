@@ -132,7 +132,7 @@ type Course @model {
         new HasManyTransformer(),
         new BelongsToTransformer(),
         // TODO(cjihrig): Need to configure auth here.
-        new ManyToManyTransformer(modelTransformer, indexTransformer, hasOneTransformer),
+        // new ManyToManyTransformer(modelTransformer, indexTransformer, hasOneTransformer),
       ],
       sandboxModeEnabled: true,
     });
