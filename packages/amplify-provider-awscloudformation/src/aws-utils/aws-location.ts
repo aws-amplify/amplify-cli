@@ -23,7 +23,7 @@ const serviceRegionMap = {
   'eu-west-3': 'eu-west-1',
   'me-south-1': 'ap-southeast-1'
 };
-  
+
 export const getLocationSupportedRegion = (region: string): string => {
     if (serviceRegionMap[region]) {
     return serviceRegionMap[region];
@@ -34,4 +34,3 @@ export const getLocationSupportedRegion = (region: string): string => {
 export const getLocationRegionMapping = (): $TSObject => {
     return serviceRegionMap;
 }
-  
