@@ -10,11 +10,8 @@ const defaultAuthModeMap: Map<string, string> = new Map<string, string>([
 
 function getDefaultAuthRule(authMode: any, rules: any) {
   const parsedRules = rules.map((rule: any) => ({
-    provider: rule.fields.find((r: any) => r.name.value === 'provider'),
-    strategy: rule.fields.find((r: any) => r.name.value === 'allow')
-  })).map((r: any) => ({
-    strategy: r.strategy.value.value,
-    provider: r.provider?.value?.value
+    provider: rule.fields.find((r: any) => r.name.value === 'provider')?.value?.value,
+    strategy: rule.fields.find((r: any) => r.name.value === 'allow')?.value?.value
   }));
 
   const foundRules = parsedRules.filter((r: any) => r.strategy === defaultAuthModeMap.get(authMode));
@@ -22,17 +19,11 @@ function getDefaultAuthRule(authMode: any, rules: any) {
     return null;
   }
 
-  if (authMode === "iam" && foundRules.filter((r: any) => r.provider === 'iam').length !== 0) {
+  if (authMode === "iam") {
     return foundRules.find((r: any) => r.provider === 'iam');
-  } else if (authMode === 'iam') {
-    return null;
   }
 
-  if (foundRules.filter((r: any) => r.provider === undefined || r.provider === authMode).length !== 0) {
-    return foundRules.find((r: any) => r.provider === undefined || r.provider === authMode);
-  }
-
-  return null;
+  return foundRules.find((r: any) => r.provider === undefined || r.provider === authMode);
 }
 
 export function migrateDefaultAuthMode(node: any, defaultAuthMode: any) {

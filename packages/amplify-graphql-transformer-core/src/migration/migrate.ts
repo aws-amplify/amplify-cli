@@ -55,9 +55,7 @@ async function runMigration(schemas: SchemaDocument[], authMode: string): Promis
     schemaList[idx] = doc.schema;
     backupSchemaPromiseArray.push(backupSchema(doc.filePath));
   });
-  for (let promise of backupSchemaPromiseArray) {
-    await promise;
-  }
+  await Promise.all(backupSchemaPromiseArray);
 
   fullSchema = schemaList.join('\n');
   let fullSchemaNode = parse(fullSchema);
@@ -66,10 +64,7 @@ async function runMigration(schemas: SchemaDocument[], authMode: string): Promis
     const newSchema = migrateGraphQLSchema(doc.schema, authMode, fullSchemaNode);
     writeNewPromiseArray.push(replaceFile(newSchema, doc.filePath));
   });
-
-  for (let promise of writeNewPromiseArray) {
-    await promise;
-  }
+  await Promise.all(writeNewPromiseArray);
 }
 
 export async function updateTransformerVersion(env: string): Promise<void> {
@@ -114,8 +109,8 @@ export async function migrateToV2Transformer(resourceDir: string, context: $TSCo
   }
   const schemaFilePath = path.join(resourceDir, 'schema.graphql');
   const schemaDirectoryPath = path.join(resourceDir, 'schema');
-  const schemaFileExists = await fs.existsSync(schemaFilePath);
-  const schemaDirectoryExists = await fs.existsSync(schemaDirectoryPath);
+  const schemaFileExists = fs.existsSync(schemaFilePath);
+  const schemaDirectoryExists = fs.existsSync(schemaDirectoryPath);
 
   if (schemaFileExists || schemaDirectoryExists) {
     let migrateCheck = await askMigration(schemaFileExists, schemaDirectoryExists);

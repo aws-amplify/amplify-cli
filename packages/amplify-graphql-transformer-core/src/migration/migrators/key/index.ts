@@ -1,12 +1,9 @@
-import { createArgumentNode, createDirectiveNode } from "../generators";
+import { makeArgument, makeDirective } from 'graphql-transformer-common';
 
-export function isPrimaryKey(directive: any) {
-    if (directive.name.value === 'key'
-        && directive.arguments.find((a: any) => a.name.value === "fields")
-        && !directive.arguments.find((a: any) => a.name.value === "name")) {
-        return true;
-    }
-    return false;
+export function isPrimaryKey(directive: any): boolean {
+    return (directive.name.value === 'key'
+        && directive.arguments.some((a: any) => a.name.value === "fields")
+        && !directive.arguments.some((a: any) => a.name.value === "name"));
 }
 
 export function migratePrimaryKey(node: any, directive: any) {
@@ -14,22 +11,19 @@ export function migratePrimaryKey(node: any, directive: any) {
     const fieldIndex = node.fields.findIndex((field: any) => field.name.value === fields.value.values[0].value);
     let args: any[] = [];
     if (fields.value.values.length !== 1) {
-        args = [createArgumentNode('sortKeyFields', {
+        args = [makeArgument('sortKeyFields', {
                 ...fields.value,
                 values: fields.value.values.slice(1)
             }
         )];
     }
-    node.fields[fieldIndex].directives.push(createDirectiveNode('primaryKey', args));
+    node.fields[fieldIndex].directives.push(makeDirective('primaryKey', args));
 }
 
 export function isSecondaryKey(directive: any) {
-    if (directive.name.value === 'key'
-        && directive.arguments.find((a: any) => a.name.value === "fields")
-        && directive.arguments.find((a: any) => a.name.value === "name")) {
-        return true;
-    }
-    return false;
+    return (directive.name.value === 'key'
+        && directive.arguments.some((a: any) => a.name.value === "fields")
+        && directive.arguments.some((a: any) => a.name.value === "name"));
 }
 
 export function migrateSecondaryKey(node: any, directive: any) {
@@ -37,14 +31,14 @@ export function migrateSecondaryKey(node: any, directive: any) {
     const fieldIndex = node.fields.findIndex((field: any) => field.name.value === fields.value.values[0].value);
     let args = directive.arguments.filter((i: any) => i.name.value !== "fields");
     if (fields.value.values.length !== 1) {
-        args = [...args, createArgumentNode(
+        args = [...args, makeArgument(
             'sortKeyFields', {
                 ...fields.value,
                 values: fields.value.values.slice(1)
             },
         )];
     }
-    node.fields[fieldIndex].directives.push(createDirectiveNode('index', args));
+    node.fields[fieldIndex].directives.push(makeDirective('index', args));
 }
 
 export function migrateKeys(node: any) {

@@ -2,7 +2,8 @@ import { isModelType } from '../model';
 import { migrateDefaultAuthMode } from './defaultAuth';
 import { migrateFieldAuth } from './fieldAuth';
 import { migrateOwnerAuth } from './ownerAuth';
-import { createArgumentNode, createAuthRule, createDirectiveNode, createListValueNode } from '../generators';
+import { createAuthRule } from '../generators';
+import { makeArgument, makeDirective, makeValueNode } from 'graphql-transformer-common';
 
 export function hasAuthDirectives(node: any) {
   return node.directives.some((dir: any) => dir.name.value === 'auth');
@@ -18,8 +19,8 @@ export function setAuthRules(node: any, rules: any) {
 
 export function addAuthRuleToNode(node: any, rule: any) {
   if (!hasAuthDirectives(node)) {
-    const authDirArgs = createArgumentNode('rules', createListValueNode([rule]));
-    const authDir = createDirectiveNode('auth', [authDirArgs]);
+    const authDirArgs = makeArgument('rules', makeValueNode([rule]));
+    const authDir = makeDirective('auth', [authDirArgs]);
     node.directives.push(authDir);
   } else {
     const authRules = getAuthRules(node);
@@ -53,13 +54,9 @@ function getAuthProvider(rule: any) {
 }
 
 function getAuthRuleWithSameScopeIndex(rules: any[], rule: any) {
-  let sameRule;
-  rules.forEach((r, index) => {
-    if (getAuthStrategy(r) === getAuthStrategy(rule) && getAuthProvider(r) === getAuthProvider(rule)) {
-      sameRule = index
-    }
-  })
-  return sameRule
+  return rules.findIndex((r) => {
+    return (getAuthStrategy(r) === getAuthStrategy(rule) && getAuthProvider(r) === getAuthProvider(rule));
+  });
 }
 
 function mergeOperations(a: any, b: any) {
@@ -72,15 +69,15 @@ function mergeOperations(a: any, b: any) {
 }
 
 function mergeAuthRules(node: any, rules: any[]) {
-  const newRules = rules.reduce((result, rule) => {
-    const existingRuleIndex = getAuthRuleWithSameScopeIndex(result, rule);
+  let newRules: any[] = [];
+  rules.forEach(rule => {
+    const existingRuleIndex = getAuthRuleWithSameScopeIndex(newRules, rule);
     if (existingRuleIndex !== undefined) {
-      result[existingRuleIndex] = createAuthRule(getAuthStrategy(rule), getAuthProvider(rule), mergeOperations(result[existingRuleIndex], rule));
+      newRules[existingRuleIndex] = createAuthRule(getAuthStrategy(rule), getAuthProvider(rule), mergeOperations(newRules[existingRuleIndex], rule));
     } else {
-      result.push(rule);
+      newRules.push(rule);
     }
-    return result;
-  }, [])
+  });
 
   setAuthRules(node, newRules.map((r: any) => createAuthRule(getAuthStrategy(r), getAuthProvider(r), getAuthOperations(r))));
 }

@@ -1,3 +1,7 @@
+import { isListType } from 'graphql-transformer-common';
+
+const validConnectionDirectiveNames = new Set(["hasOne", "hasMany", "connection"]);
+
 export function getFieldsWithConnection(fields: any) {
   return fields.filter((field: any) => field.directives.find((d: any) => d.name.value === "connection"));
 }
@@ -7,7 +11,7 @@ export function getConnectionFieldsArg(connection: any) {
 }
 
 export function isFieldIndex(field: any) {
-  return !!field.directives.find((dir: any) => dir.name.value === "index");
+  return field.directives.some((dir: any) => dir.name.value === "index");
 }
 
 export function getConnectionDirective(field: any) {
@@ -30,16 +34,6 @@ function getFieldType(field: any): any {
   }
 }
 
-function isListType(field: any): any {
-  if (field.type.kind === 'ListType') {
-    return true;
-  } else if (field.type.kind === 'NamedType') {
-    return false;
-  } else {
-    return isListType(field.type);
-  }
-}
-
 export function migrateConnection(node: any, ast: any) {
   const connections = getFieldsWithConnection(node.fields);
   if (connections.length === 0) {
@@ -58,22 +52,13 @@ export function migrateConnection(node: any, ast: any) {
           return false;
         }
 
-        if (connectionDirective.arguments.length === 0) {
-          return false;
-        }
-
         const fieldsArg = node.fields.find((f: any) => f.name.value === getConnectionFieldsArg(connectionDirective)[0]);
         if (fieldsArg && !isFieldIndex(fieldsArg)) {
           return false;
         }
 
         return relatedField.directives.some((relatedDirective: any) => {
-          const validConnectionDirectiveNames = new Set(["hasOne", "hasMany", "connection"]);
-          if (validConnectionDirectiveNames.has(relatedDirective.name.value)) {
-            return true;
-          } else {
-            return false;
-          }
+          return validConnectionDirectiveNames.has(relatedDirective.name.value);
         });
       });
 
