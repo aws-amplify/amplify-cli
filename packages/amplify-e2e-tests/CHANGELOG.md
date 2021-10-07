@@ -3,6 +3,20 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.51.0-graphql-vnext-dev-preview.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.51.0-graphql-vnext-dev-preview.1...amplify-e2e-tests@2.51.0-graphql-vnext-dev-preview.2) (2021-10-07)
+
+
+### Features
+
+* add [@auth](https://github.com/auth) and add/update api flow ([1c9da17](https://github.com/aws-amplify/amplify-cli/commit/1c9da1756b76717a9c1a9ed02e3b05b75e6f10d1))
+* **amplify-provider-awscloudformation:** enable custom resolvers for v2 transformer ([31c65c2](https://github.com/aws-amplify/amplify-cli/commit/31c65c22131d3bd7f7841c4fcecae2e7c356f65a))
+* **amplify-provider-awscloudformation:** merge user config with transform generated resolvers ([c5fabf1](https://github.com/aws-amplify/amplify-cli/commit/c5fabf14b25e0c3b1294fc0eb9d5415dd4c8a6ef))
+* custom policies ([#8068](https://github.com/aws-amplify/amplify-cli/issues/8068)) ([2100c2b](https://github.com/aws-amplify/amplify-cli/commit/2100c2bd07150353f8f6cea7016842f700d3aa24))
+
+
+
+
+
 # [2.51.0-graphql-vnext-dev-preview.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.51.0-graphql-vnext-dev-preview.0...amplify-e2e-tests@2.51.0-graphql-vnext-dev-preview.1) (2021-09-29)
 
 **Note:** Version bump only for package amplify-e2e-tests

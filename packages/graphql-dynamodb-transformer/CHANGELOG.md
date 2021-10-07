@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.22.23-graphql-vnext-dev-preview.1](https://github.com/aws-amplify/amplify-cli/compare/graphql-dynamodb-transformer@6.22.23-graphql-vnext-dev-preview.0...graphql-dynamodb-transformer@6.22.23-graphql-vnext-dev-preview.1) (2021-10-07)
+
+**Note:** Version bump only for package graphql-dynamodb-transformer
+
+
+
+
+
 ## [6.22.23-graphql-vnext-dev-preview.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-dynamodb-transformer@6.22.22...graphql-dynamodb-transformer@6.22.23-graphql-vnext-dev-preview.0) (2021-09-27)
 
 

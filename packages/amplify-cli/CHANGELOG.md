@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [6.1.0-graphql-vnext-dev-preview.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@6.1.0-graphql-vnext-dev-preview.1...@aws-amplify/cli@6.1.0-graphql-vnext-dev-preview.2) (2021-10-07)
+
+
+### Bug Fixes
+
+* auto apply auth fix ([7433d88](https://github.com/aws-amplify/amplify-cli/commit/7433d88bc672526345b7ab7d414f1e344eb4da82))
+
+
+### Features
+
+* add [@auth](https://github.com/auth) and add/update api flow ([1c9da17](https://github.com/aws-amplify/amplify-cli/commit/1c9da1756b76717a9c1a9ed02e3b05b75e6f10d1))
+* custom policies ([#8068](https://github.com/aws-amplify/amplify-cli/issues/8068)) ([2100c2b](https://github.com/aws-amplify/amplify-cli/commit/2100c2bd07150353f8f6cea7016842f700d3aa24))
+
+
+
+
+
 # [6.1.0-graphql-vnext-dev-preview.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@6.1.0-graphql-vnext-dev-preview.0...@aws-amplify/cli@6.1.0-graphql-vnext-dev-preview.1) (2021-09-29)
 
 **Note:** Version bump only for package @aws-amplify/cli

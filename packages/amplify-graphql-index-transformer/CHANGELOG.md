@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.4.0-graphql-vnext-dev-preview.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-index-transformer@0.4.0-graphql-vnext-dev-preview.1...@aws-amplify/graphql-index-transformer@0.4.0-graphql-vnext-dev-preview.2) (2021-10-07)
+
+
+### Features
+
+* add [@auth](https://github.com/auth) and add/update api flow ([1c9da17](https://github.com/aws-amplify/amplify-cli/commit/1c9da1756b76717a9c1a9ed02e3b05b75e6f10d1))
+
+
+
+
+
 # [0.4.0-graphql-vnext-dev-preview.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-index-transformer@0.4.0-graphql-vnext-dev-preview.0...@aws-amplify/graphql-index-transformer@0.4.0-graphql-vnext-dev-preview.1) (2021-09-29)
 
 

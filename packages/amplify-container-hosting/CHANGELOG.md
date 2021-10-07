@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.3.24-graphql-vnext-dev-preview.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-container-hosting@1.3.24-graphql-vnext-dev-preview.0...amplify-container-hosting@1.3.24-graphql-vnext-dev-preview.1) (2021-10-07)
+
+**Note:** Version bump only for package amplify-container-hosting
+
+
+
+
+
 ## [1.3.24-graphql-vnext-dev-preview.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-container-hosting@1.3.23...amplify-container-hosting@1.3.24-graphql-vnext-dev-preview.0) (2021-09-27)
 
 **Note:** Version bump only for package amplify-container-hosting

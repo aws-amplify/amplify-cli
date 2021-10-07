@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.30.0-graphql-vnext-dev-preview.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@1.30.0-graphql-vnext-dev-preview.0...amplify-cli-core@1.30.0-graphql-vnext-dev-preview.1) (2021-10-07)
+
+
+### Bug Fixes
+
+* update transformerVersion FF value for new projects ([ad28b5a](https://github.com/aws-amplify/amplify-cli/commit/ad28b5a192a42a914ba3ceea9fe4b30f0bed5af5))
+
+
+### Features
+
+* custom policies ([#8068](https://github.com/aws-amplify/amplify-cli/issues/8068)) ([2100c2b](https://github.com/aws-amplify/amplify-cli/commit/2100c2bd07150353f8f6cea7016842f700d3aa24))
+* **graphql-model-transformer:** added transformer version feature flag ([4842e74](https://github.com/aws-amplify/amplify-cli/commit/4842e7431350519c07640a7eaa31a6649e4be183))
+
+
+
+
+
 # [1.30.0-graphql-vnext-dev-preview.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@1.29.0...amplify-cli-core@1.30.0-graphql-vnext-dev-preview.0) (2021-09-27)
 
 

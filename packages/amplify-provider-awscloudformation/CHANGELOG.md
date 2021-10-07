@@ -3,6 +3,31 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.61.0-graphql-vnext-dev-preview.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.61.0-graphql-vnext-dev-preview.1...amplify-provider-awscloudformation@4.61.0-graphql-vnext-dev-preview.2) (2021-10-07)
+
+
+### Bug Fixes
+
+* add [@many](https://github.com/many)ToMany auth integration ([8a011d1](https://github.com/aws-amplify/amplify-cli/commit/8a011d1a6e90969d8a232e3f92e0a6000e4196ac))
+* **amplify-provider-awscloudformation:** fix api key creation when sandbox mode enable ([4405c7a](https://github.com/aws-amplify/amplify-cli/commit/4405c7a92f0acb7940a2d90c02b3206118ecbc73))
+* auto apply auth fix ([7433d88](https://github.com/aws-amplify/amplify-cli/commit/7433d88bc672526345b7ab7d414f1e344eb4da82))
+* **graphql-model-transformer:** fix open search instance check for v1 and v2 transformers ([#8354](https://github.com/aws-amplify/amplify-cli/issues/8354)) ([2a3dcc8](https://github.com/aws-amplify/amplify-cli/commit/2a3dcc8fb781eb04294a8c7484ba647583539524))
+* pr 8371 ([ab16640](https://github.com/aws-amplify/amplify-cli/commit/ab16640f9f2f6de1449078913d4b02124f642dfb))
+* strip invalid directive from schema ([458450b](https://github.com/aws-amplify/amplify-cli/commit/458450ba7607fc72f8dfa3dbc8f3b2b4da51e141))
+
+
+### Features
+
+* add [@auth](https://github.com/auth) and add/update api flow ([1c9da17](https://github.com/aws-amplify/amplify-cli/commit/1c9da1756b76717a9c1a9ed02e3b05b75e6f10d1))
+* **amplify-provider-awscloudformation:** enable custom resolvers for v2 transformer ([31c65c2](https://github.com/aws-amplify/amplify-cli/commit/31c65c22131d3bd7f7841c4fcecae2e7c356f65a))
+* **amplify-provider-awscloudformation:** merge user config with transform generated resolvers ([c5fabf1](https://github.com/aws-amplify/amplify-cli/commit/c5fabf14b25e0c3b1294fc0eb9d5415dd4c8a6ef))
+* custom policies ([#8068](https://github.com/aws-amplify/amplify-cli/issues/8068)) ([2100c2b](https://github.com/aws-amplify/amplify-cli/commit/2100c2bd07150353f8f6cea7016842f700d3aa24))
+* **graphql-model-transformer:** added transformer version feature flag ([4842e74](https://github.com/aws-amplify/amplify-cli/commit/4842e7431350519c07640a7eaa31a6649e4be183))
+
+
+
+
+
 # [4.61.0-graphql-vnext-dev-preview.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.61.0-graphql-vnext-dev-preview.0...amplify-provider-awscloudformation@4.61.0-graphql-vnext-dev-preview.1) (2021-09-29)
 
 

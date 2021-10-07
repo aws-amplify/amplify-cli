@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.35.0-graphql-vnext-dev-preview.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@2.35.0-graphql-vnext-dev-preview.0...amplify-category-function@2.35.0-graphql-vnext-dev-preview.1) (2021-10-07)
+
+
+### Features
+
+* custom policies ([#8068](https://github.com/aws-amplify/amplify-cli/issues/8068)) ([2100c2b](https://github.com/aws-amplify/amplify-cli/commit/2100c2bd07150353f8f6cea7016842f700d3aa24))
+
+
+
+
+
 # [2.35.0-graphql-vnext-dev-preview.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@2.34.7...amplify-category-function@2.35.0-graphql-vnext-dev-preview.0) (2021-09-27)
 
 

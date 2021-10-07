@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [6.27.0-graphql-vnext-dev-preview.2](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformers-e2e-tests@6.27.0-graphql-vnext-dev-preview.1...graphql-transformers-e2e-tests@6.27.0-graphql-vnext-dev-preview.2) (2021-10-07)
+
+
+### Bug Fixes
+
+* add [@many](https://github.com/many)ToMany auth integration ([8a011d1](https://github.com/aws-amplify/amplify-cli/commit/8a011d1a6e90969d8a232e3f92e0a6000e4196ac))
+
+
+### Features
+
+* add [@auth](https://github.com/auth) and add/update api flow ([1c9da17](https://github.com/aws-amplify/amplify-cli/commit/1c9da1756b76717a9c1a9ed02e3b05b75e6f10d1))
+
+
+
+
+
 # [6.27.0-graphql-vnext-dev-preview.1](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformers-e2e-tests@6.27.0-graphql-vnext-dev-preview.0...graphql-transformers-e2e-tests@6.27.0-graphql-vnext-dev-preview.1) (2021-09-29)
 
 

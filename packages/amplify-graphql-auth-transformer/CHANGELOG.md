@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.2.0-graphql-vnext-dev-preview.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-auth-transformer@0.2.0-graphql-vnext-dev-preview.1...@aws-amplify/graphql-auth-transformer@0.2.0-graphql-vnext-dev-preview.2) (2021-10-07)
+
+
+### Bug Fixes
+
+* break cyclic dependency ([b14f2cc](https://github.com/aws-amplify/amplify-cli/commit/b14f2cc34e3a414a153c47216ed02371acbfcd8e))
+
+
+
+
+
 # [0.2.0-graphql-vnext-dev-preview.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-auth-transformer@0.2.0-graphql-vnext-dev-preview.0...@aws-amplify/graphql-auth-transformer@0.2.0-graphql-vnext-dev-preview.1) (2021-09-29)
 
 **Note:** Version bump only for package @aws-amplify/graphql-auth-transformer

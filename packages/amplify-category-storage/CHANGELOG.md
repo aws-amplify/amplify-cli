@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.12.10-graphql-vnext-dev-preview.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-storage@2.12.10-graphql-vnext-dev-preview.0...amplify-category-storage@2.12.10-graphql-vnext-dev-preview.1) (2021-10-07)
+
+**Note:** Version bump only for package amplify-category-storage
+
+
+
+
+
 ## [2.12.10-graphql-vnext-dev-preview.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-storage@2.12.9...amplify-category-storage@2.12.10-graphql-vnext-dev-preview.0) (2021-09-27)
 
 **Note:** Version bump only for package amplify-category-storage
