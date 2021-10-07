@@ -31,7 +31,7 @@ import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-core'
 import { Template } from '@aws-amplify/graphql-transformer-core/lib/config/project-config';
 import { AmplifyCLIFeatureFlagAdapter } from '../utils/amplify-cli-feature-flag-adapter';
 import { JSONUtilities } from 'amplify-cli-core';
-import { V2WasTransformer } from './was-transformer';
+import { OriginalTransformer } from './original-transformer';
 import { searchablePushChecks } from '../transform-graphql-schema';
 import { ResourceConstants } from 'graphql-transformer-common';
 
@@ -69,7 +69,7 @@ function getTransformerFactory(context, resourceDir) {
       indexTransformer,
       new BelongsToTransformer(),
       new HasManyTransformer(),
-      new V2WasTransformer(),
+      new OriginalTransformer(),
       hasOneTransformer,
       new ManyToManyTransformer(modelTransformer, indexTransformer, hasOneTransformer),
       // TODO: initialize transformer plugins
