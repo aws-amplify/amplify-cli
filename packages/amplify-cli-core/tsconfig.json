@@ -3,5 +3,7 @@
   "compilerOptions": {
     "outDir": "./lib",
     "rootDir": "./src",
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
   }
 }

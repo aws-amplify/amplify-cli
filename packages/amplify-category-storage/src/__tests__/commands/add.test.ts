@@ -35,3 +35,29 @@ describe('add ddb command tests', () => {
     });
   });
 });
+
+describe('add s3 command tests', () => {
+  const provider = 'awscloudformation';
+  let mockContext: $TSContext;
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+    mockContext = {
+      amplify: {},
+    } as unknown as $TSContext;
+  });
+
+  it('add resource workflow is invoked for S3', async () => {
+    const service = 's3';
+    mockContext.amplify.serviceSelectionPrompt = jest.fn().mockImplementation(async () => {
+      return { service: service, providerName: provider };
+    });
+
+    await run(mockContext);
+
+    expect(providerController_mock.addResource).toHaveBeenCalledWith(mockContext, 'storage', service, {
+      service: service,
+      providerPlugin: provider,
+    });
+  });
+});

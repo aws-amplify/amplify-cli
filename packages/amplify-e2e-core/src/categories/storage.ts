@@ -15,7 +15,7 @@ export type AddDynamoDBSettings = {
 export function addSimpleDDB(cwd: string, settings: any): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['add', 'storage'], { cwd, stripColors: true })
-      .wait('Please select from one of the below mentioned services')
+      .wait('Select from one of the below mentioned services')
       .sendLine(KEY_DOWN_ARROW)
       .wait('Provide a friendly name')
       .sendLine(settings.name || '\r')
@@ -55,7 +55,7 @@ export function addSimpleDDB(cwd: string, settings: any): Promise<void> {
 export function addDDBWithTrigger(cwd: string, settings: { ddbResourceName?: string }): Promise<void> {
   return new Promise((resolve, reject) => {
     const chain = spawn(getCLIPath(), ['add', 'storage'], { cwd, stripColors: true })
-      .wait('Please select from one of the below mentioned services')
+      .wait('Select from one of the below mentioned services')
       .sendLine(KEY_DOWN_ARROW)
       .wait('Provide a friendly name');
     if (settings.ddbResourceName) {
@@ -105,7 +105,7 @@ export function addDDBWithTrigger(cwd: string, settings: { ddbResourceName?: str
 export function updateDDBWithTrigger(cwd: string, settings: any): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['update', 'storage'], { cwd, stripColors: true })
-      .wait('Please select from one of the below mentioned services')
+      .wait('Select from one of the below mentioned services')
       .sendLine(KEY_DOWN_ARROW)
       .wait('Specify the resource that you would want to update')
       .sendCarriageReturn()
@@ -133,7 +133,7 @@ export function updateDDBWithTrigger(cwd: string, settings: any): Promise<void> 
 export function updateSimpleDDBwithGSI(cwd: string, settings: any): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['update', 'storage'], { cwd, stripColors: true })
-      .wait('Please select from one of the below mentioned services')
+      .wait('Select from one of the below mentioned services')
       .send(KEY_DOWN_ARROW)
       .sendCarriageReturn()
       .wait('Specify the resource that you would want to update')
@@ -176,7 +176,7 @@ export function updateSimpleDDBwithGSI(cwd: string, settings: any): Promise<void
 export function addSimpleDDBwithGSI(cwd: string, settings: any): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['add', 'storage'], { cwd, stripColors: true })
-      .wait('Please select from one of the below mentioned services')
+      .wait('Select from one of the below mentioned services')
       .send(KEY_DOWN_ARROW)
       .sendCarriageReturn()
       .wait('Provide a friendly name')
@@ -262,7 +262,7 @@ export function addDynamoDBWithGSIWithSettings(projectDir: string, settings: Add
   return new Promise((resolve, reject) => {
     let chain = spawn(getCLIPath(), ['add', 'storage'], { cwd: projectDir, stripColors: true });
 
-    singleSelect(chain.wait('Please select from one of the below mentioned services:'), 'NoSQL Database', [
+    singleSelect(chain.wait('Select from one of the below mentioned services:'), 'NoSQL Database', [
       'Content (Images, audio, video, etc.)',
       'NoSQL Database',
     ]);
@@ -335,11 +335,11 @@ export function addDynamoDBWithGSIWithSettings(projectDir: string, settings: Add
 export function addS3(cwd: string, settings: any): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['add', 'storage'], { cwd, stripColors: true })
-      .wait('Please select from one of the below mentioned services')
+      .wait('Select from one of the below mentioned services')
       .sendCarriageReturn()
-      .wait('Please provide a friendly name')
+      .wait('Provide a friendly name')
       .sendCarriageReturn()
-      .wait('Please provide bucket name')
+      .wait('Provide bucket name')
       .sendCarriageReturn()
       .wait('Who should have access')
       .sendCarriageReturn()
@@ -362,7 +362,7 @@ export function addS3(cwd: string, settings: any): Promise<void> {
 export function addS3AndAuthWithAuthOnlyAccess(cwd: string, settings: any): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['add', 'storage'], { cwd, stripColors: true })
-      .wait('Please select from one of the below mentioned services')
+      .wait('Select from one of the below mentioned services')
       .sendCarriageReturn() // Content
       .wait('You need to add auth (Amazon Cognito) to your project in order to add storage')
       .sendConfirmYes()
@@ -372,14 +372,14 @@ export function addS3AndAuthWithAuthOnlyAccess(cwd: string, settings: any): Prom
       .sendCarriageReturn() // Username
       .wait('Do you want to configure advanced settings')
       .sendCarriageReturn() // No, I am done.
-      .wait('Please provide a friendly name for your resource')
+      .wait('Provide a friendly name for your resource')
       .sendCarriageReturn() // Default name
-      .wait('Please provide bucket name')
+      .wait('Provide bucket name')
       .sendCarriageReturn() // Default name
       .wait('Who should have access')
       .sendCarriageReturn() // Auth users only
-      .wait('What kind of access do you want for Authenticated users')
-      .send('i') // Select all
+      .wait('What kind of access do you want for')
+      .sendCtrlA() // Select all
       .sendCarriageReturn()
       .wait('Do you want to add a Lambda Trigger for your S3 Bucket')
       .sendConfirmNo()
@@ -397,19 +397,24 @@ export function addS3AndAuthWithAuthOnlyAccess(cwd: string, settings: any): Prom
 export function addS3WithGuestAccess(cwd: string, settings: any): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['add', 'storage'], { cwd, stripColors: true })
-      .wait('Please select from one of the below mentioned services')
+      .wait('Select from one of the below mentioned services')
       .sendCarriageReturn() // Content
-      .wait('Please provide a friendly name for your resource')
+      .wait('Provide a friendly name for your resource')
       .sendCarriageReturn() // Default name
-      .wait('Please provide bucket name')
+      .wait('Provide bucket name')
       .sendCarriageReturn() // Default name
       .wait('Who should have access')
       .send(KEY_DOWN_ARROW)
       .sendCarriageReturn() // Auth and guest users
-      .wait('What kind of access do you want for Authenticated users')
-      .send('i') // Select all
+      .wait('What kind of access do you want for')
+      .send(' ') // Create
+      .send(KEY_DOWN_ARROW)
+      .send(' ') // Read
+      .send(KEY_DOWN_ARROW)
+      .send(' ') // Delete
+      .send(KEY_DOWN_ARROW)
       .sendCarriageReturn()
-      .wait('What kind of access do you want for Guest users')
+      .wait('What kind of access do you want for')
       .send(KEY_DOWN_ARROW)
       .send(' ') // Select read
       .sendCarriageReturn()
@@ -430,20 +435,23 @@ export function addS3WithGuestAccess(cwd: string, settings: any): Promise<void> 
 export function addS3WithGroupAccess(cwd: string, settings: any): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['add', 'storage'], { cwd, stripColors: true })
-      .wait('Please select from one of the below mentioned services')
+      .wait('Select from one of the below mentioned services')
       .sendCarriageReturn() // Content
-      .wait('Please provide a friendly name for your resource')
+      .wait('Provide a friendly name for your resource')
       .sendCarriageReturn() // Default name
-      .wait('Please provide bucket name')
+      .wait('Provide bucket name')
       .sendCarriageReturn() // Default name
       .wait('Restrict access by')
       .send(KEY_DOWN_ARROW)
       .sendCarriageReturn() // Individual groups
       .wait('Select groups')
-      .send('i') // Select all groups
+      .send(' ')
+      .send(KEY_DOWN_ARROW) //select Admin
+      .send(' ')
+      .send(KEY_DOWN_ARROW) //select User
       .sendCarriageReturn()
       .wait('What kind of access do you want') // for <UserGroup1> users?
-      .send('i') // Select all permissions
+      .sendCtrlA() // Select all permissions
       .sendCarriageReturn()
       .wait('What kind of access do you want') // for <UserGroup2> users?
       .send(' ') // Select create/update
@@ -466,11 +474,11 @@ export function addS3WithGroupAccess(cwd: string, settings: any): Promise<void> 
 export function addS3WithTrigger(cwd: string, settings: any): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['add', 'storage'], { cwd, stripColors: true })
-      .wait('Please select from one of the below mentioned services')
+      .wait('Select from one of the below mentioned services')
       .sendCarriageReturn()
-      .wait('Please provide a friendly name')
+      .wait('Provide a friendly name')
       .sendCarriageReturn()
-      .wait('Please provide bucket name')
+      .wait('Provide bucket name')
       .sendCarriageReturn()
       .wait('Who should have access')
       .sendCarriageReturn()
@@ -499,7 +507,7 @@ export function addS3WithTrigger(cwd: string, settings: any): Promise<void> {
 export function updateS3AddTrigger(cwd: string, settings: any): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['update', 'storage'], { cwd, stripColors: true })
-      .wait('Please select from one of the below mentioned services')
+      .wait('Select from one of the below mentioned services')
       .sendCarriageReturn() // Content
       .wait('Restrict access by')
       .send(KEY_DOWN_ARROW)
@@ -514,7 +522,7 @@ export function updateS3AddTrigger(cwd: string, settings: any): Promise<void> {
       .sendConfirmYes()
       .wait('Select from the following options')
       .send(KEY_DOWN_ARROW)
-      .sendCarriageReturn()
+      .sendCarriageReturn() //Create a new function
       .wait('Do you want to edit the local')
       .sendConfirmNo()
       .sendCarriageReturn()
@@ -533,15 +541,15 @@ export function addS3Storage(projectDir: string): Promise<void> {
   return new Promise((resolve, reject) => {
     let chain = spawn(getCLIPath(), ['add', 'storage'], { cwd: projectDir, stripColors: true });
 
-    singleSelect(chain.wait('Please select from one of the below mentioned services:'), 'Content (Images, audio, video, etc.)', [
+    singleSelect(chain.wait('Select from one of the below mentioned services:'), 'Content (Images, audio, video, etc.)', [
       'Content (Images, audio, video, etc.)',
       'NoSQL Database',
     ]);
 
     chain
-      .wait('Please provide a friendly name for your resource that will be used to label this category in the project:')
+      .wait('Provide a friendly name for your resource that will be used to label this category in the project:')
       .sendCarriageReturn()
-      .wait('Please provide bucket name:')
+      .wait('Provide bucket name:')
       .sendCarriageReturn();
 
     singleSelect(chain.wait('Who should have access:'), 'Auth and guest users', ['Auth users only', 'Auth and guest users']);
@@ -570,19 +578,37 @@ export function addS3Storage(projectDir: string): Promise<void> {
   });
 }
 
+export function overrideS3(cwd: string, settings: {}) {
+  return new Promise((resolve, reject) => {
+    const args = ['override', 'storage'];
+    spawn(getCLIPath(), args, { cwd, stripColors: true })
+      .wait('Do you want to edit override.ts file now?')
+      .sendConfirmNo()
+      .sendEof()
+      .run((err: Error) => {
+        if (!err) {
+          resolve({});
+        } else {
+          reject(err);
+        }
+      });
+  });
+}
+
+
 export function addS3StorageWithSettings(projectDir: string, settings: AddStorageSettings): Promise<void> {
   return new Promise((resolve, reject) => {
     let chain = spawn(getCLIPath(), ['add', 'storage'], { cwd: projectDir, stripColors: true });
 
-    singleSelect(chain.wait('Please select from one of the below mentioned services:'), 'Content (Images, audio, video, etc.)', [
+    singleSelect(chain.wait('Select from one of the below mentioned services:'), 'Content (Images, audio, video, etc.)', [
       'Content (Images, audio, video, etc.)',
       'NoSQL Database',
     ]);
 
     chain
-      .wait('Please provide a friendly name for your resource that will be used to label this category in the project:')
+      .wait('Provide a friendly name for your resource that will be used to label this category in the project:')
       .sendLine(settings.resourceName)
-      .wait('Please provide bucket name:')
+      .wait('Provide bucket name:')
       .sendLine(settings.bucketName);
 
     singleSelect(chain.wait('Who should have access:'), 'Auth and guest users', ['Auth users only', 'Auth and guest users']);

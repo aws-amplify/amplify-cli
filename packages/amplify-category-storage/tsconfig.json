@@ -3,12 +3,12 @@
   "compilerOptions": {
     "outDir": "lib",
     "rootDir": "src",
-    "allowJs": true
+    "allowJs": false
   },
   "exclude": [
     "coverage",
     "lib",
-    "resources",
+    "resources"
   ],
   "references": [
     { "path": "../amplify-cli-core" },

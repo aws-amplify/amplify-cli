@@ -5,7 +5,10 @@ import { updateConfigOnEnvInit } from './provider-utils/awscloudformation';
 import { $TSContext, AmplifyCategories, IAmplifyResource, pathManager } from 'amplify-cli-core';
 import { DDBStackTransform } from './provider-utils/awscloudformation/cdk-stack-builder/ddb-stack-transform';
 import { DynamoDBInputState } from './provider-utils/awscloudformation/service-walkthroughs/dynamoDB-input-state';
+import { transformS3ResourceStack } from './provider-utils/awscloudformation/cdk-stack-builder/s3-stack-transform';
+import { AmplifySupportedService } from 'amplify-cli-core';
 export { AmplifyDDBResourceTemplate } from './provider-utils/awscloudformation/cdk-stack-builder/types';
+
 
 async function add(context: any, providerName: any, service: any) {
   const options = {
@@ -61,13 +64,13 @@ async function migrateStorageCategory(context: any) {
 }
 
 async function transformCategoryStack(context: $TSContext, resource: IAmplifyResource) {
-  if (resource.service === 'DynamoDB') {
+  if (resource.service === AmplifySupportedService.DYNAMODB ) {
     if (canResourceBeTransformed(resource.resourceName)) {
       const stackGenerator = new DDBStackTransform(resource.resourceName);
-      stackGenerator.transform();
+      await stackGenerator.transform();
     }
-  } else if (resource.service === 'S3') {
-    // Not yet implemented
+  } else if (resource.service === AmplifySupportedService.S3) {
+    await transformS3ResourceStack(context, resource);
   }
 }
 
