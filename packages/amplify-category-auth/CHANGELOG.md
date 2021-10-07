@@ -3,6 +3,26 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.38.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.38.2...amplify-category-auth@2.38.3) (2021-10-06)
+
+**Note:** Version bump only for package amplify-category-auth
+
+
+
+
+
+## [2.38.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.38.1...amplify-category-auth@2.38.2) (2021-09-27)
+
+
+### Bug Fixes
+
+* add missing await, fix import paths ([#8199](https://github.com/aws-amplify/amplify-cli/issues/8199)) ([51c4dd9](https://github.com/aws-amplify/amplify-cli/commit/51c4dd9c021d894fe2c06fc005e1e1960fe4529c))
+* **amplify-category-auth:** update front end config on pull ([#8173](https://github.com/aws-amplify/amplify-cli/issues/8173)) ([da2b008](https://github.com/aws-amplify/amplify-cli/commit/da2b0083add2f5b10520efade8628080a34c8791))
+
+
+
+
+
 ## [2.38.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.38.0...amplify-category-auth@2.38.1) (2021-09-20)
 
 

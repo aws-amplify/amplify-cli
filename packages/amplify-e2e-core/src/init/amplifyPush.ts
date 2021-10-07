@@ -24,7 +24,7 @@ export function amplifyPush(cwd: string, testingWithLatestCodebase: boolean = fa
       .wait('Are you sure you want to continue?')
       .sendConfirmYes()
       .wait('Do you want to generate code for your newly created GraphQL API')
-      .sendLine('n')
+      .sendConfirmNo()
       .wait(/.*/)
       .run((err: Error) => {
         if (!err) {

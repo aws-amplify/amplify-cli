@@ -12,7 +12,7 @@ export function addPinpoint(cwd: string, settings: any): Promise<void> {
       .delay(1000) // Some delay required for autocomplete and terminal to catch up
       .sendLine(settings.rightName)
       .wait('Apps need authorization to send analytics events. Do you want to allow guests')
-      .sendLine('n')
+      .sendConfirmNo()
       .wait(`Successfully added resource ${settings.rightName} locally`)
       .sendEof()
       .run((err: Error) => {
@@ -40,7 +40,7 @@ export function addKinesis(cwd: string, settings: any): Promise<void> {
       .wait('Enter number of shards')
       .sendCarriageReturn()
       .wait('Apps need authorization to send analytics events. Do you want to allow guests')
-      .sendLine('n')
+      .sendConfirmNo()
       .wait(`Successfully added resource ${settings.rightName} locally`)
       .sendEof()
       .run((err: Error) => {

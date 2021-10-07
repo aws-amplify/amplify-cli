@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.22.24](https://github.com/aws-amplify/amplify-cli/compare/graphql-dynamodb-transformer@6.22.23...graphql-dynamodb-transformer@6.22.24) (2021-10-06)
+
+**Note:** Version bump only for package graphql-dynamodb-transformer
+
+
+
+
+
+## [6.22.23](https://github.com/aws-amplify/amplify-cli/compare/graphql-dynamodb-transformer@6.22.22...graphql-dynamodb-transformer@6.22.23) (2021-09-27)
+
+
+### Bug Fixes
+
+* **graphql-model-transformer:** iam role name does not exceed 64 characters ([#8244](https://github.com/aws-amplify/amplify-cli/issues/8244)) ([812a671](https://github.com/aws-amplify/amplify-cli/commit/812a67163d6dd33160bf7ace9afd538c83a7af1a))
+
+
+
+
+
 ## [6.22.22](https://github.com/aws-amplify/amplify-cli/compare/graphql-dynamodb-transformer@6.22.21...graphql-dynamodb-transformer@6.22.22) (2021-09-18)
 
 **Note:** Version bump only for package graphql-dynamodb-transformer

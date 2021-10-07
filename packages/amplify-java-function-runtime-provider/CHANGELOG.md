@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.8.16](https://github.com/aws-amplify/amplify-cli/compare/amplify-java-function-runtime-provider@1.8.15...amplify-java-function-runtime-provider@1.8.16) (2021-10-06)
+
+**Note:** Version bump only for package amplify-java-function-runtime-provider
+
+
+
+
+
+## [1.8.15](https://github.com/aws-amplify/amplify-cli/compare/amplify-java-function-runtime-provider@1.8.14...amplify-java-function-runtime-provider@1.8.15) (2021-09-27)
+
+**Note:** Version bump only for package amplify-java-function-runtime-provider
+
+
+
+
+
 ## [1.8.14](https://github.com/aws-amplify/amplify-cli/compare/amplify-java-function-runtime-provider@1.8.13...amplify-java-function-runtime-provider@1.8.14) (2021-09-18)
 
 **Note:** Version bump only for package amplify-java-function-runtime-provider

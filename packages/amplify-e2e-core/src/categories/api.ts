@@ -3,6 +3,7 @@ import * as fs from 'fs-extra';
 import { selectRuntime, selectTemplate } from './lambda-function';
 import { singleSelect, multiSelect } from '../utils/selectors';
 import _ from 'lodash';
+import { EOL } from 'os';
 
 export function getSchemaPath(schemaName: string): string {
   return `${__dirname}/../../../amplify-e2e-tests/schemas/${schemaName}`;
@@ -27,7 +28,7 @@ interface AddApiOptions {
 }
 
 const defaultOptions: AddApiOptions = {
-  apiName: '\r',
+  apiName: EOL,
 };
 
 export function addApiWithoutSchema(cwd: string, opts: Partial<AddApiOptions> = {}) {
@@ -47,11 +48,11 @@ export function addApiWithoutSchema(cwd: string, opts: Partial<AddApiOptions> = 
       .wait(/.*Do you want to configure advanced settings for the GraphQL API.*/)
       .sendCarriageReturn()
       .wait('Do you have an annotated GraphQL schema?')
-      .sendLine('n')
+      .sendConfirmNo()
       .wait('Choose a schema template:')
       .sendCarriageReturn()
       .wait('Do you want to edit the schema now?')
-      .sendLine('n')
+      .sendConfirmNo()
       .wait(
         '"amplify publish" will build all your local backend and frontend resources (if you have hosting category added) and provision it in the cloud',
       )
@@ -83,7 +84,7 @@ export function addApiWithSchema(cwd: string, schemaFile: string, opts: Partial<
       .wait(/.*Do you want to configure advanced settings for the GraphQL API.*/)
       .sendCarriageReturn()
       .wait('Do you have an annotated GraphQL schema?')
-      .sendLine('y')
+      .sendConfirmYes()
       .wait('Provide your schema file path:')
       .sendLine(schemaPath)
       .wait(
@@ -116,13 +117,13 @@ export function addApiWithSchemaAndConflictDetection(cwd: string, schemaFile: st
       .wait(/.*Do you want to configure advanced settings for the GraphQL API.*/)
       .sendLine(KEY_DOWN_ARROW) // Down
       .wait(/.*Configure additional auth types.*/)
-      .sendLine('n')
+      .sendConfirmNo()
       .wait(/.*Enable conflict detection.*/)
-      .sendLine('y')
+      .sendConfirmYes()
       .wait(/.*Select the default resolution strategy.*/)
       .sendCarriageReturn()
       .wait(/.*Do you have an annotated GraphQL schema.*/)
-      .sendLine('y')
+      .sendConfirmYes()
       .wait('Provide your schema file path:')
       .sendLine(schemaPath)
       .wait(
@@ -163,9 +164,9 @@ export function updateApiWithMultiAuth(cwd: string, settings: any) {
       .wait(/.*Do you want to configure advanced settings for the GraphQL API.*/)
       .sendLine(KEY_DOWN_ARROW) // Down
       .wait(/.*Configure additional auth types.*/)
-      .sendLine('y')
+      .sendConfirmYes()
       .wait(/.*Choose the additional authorization types you want to configure for the API.*/)
-      .sendLine('a\r') // All items
+      .sendLine('a') // All items
       // Cognito
       .wait(/.*Do you want to use the default authentication and security configuration.*/)
       .sendCarriageReturn()
@@ -185,7 +186,7 @@ export function updateApiWithMultiAuth(cwd: string, settings: any) {
       .wait(/.*Enter the number of milliseconds a token is valid after being authenticated.*/)
       .sendLine('2000')
       .wait('Enable conflict detection?')
-      .sendLine('n')
+      .sendConfirmNo()
       .wait(/.*Successfully updated resource.*/)
       .sendEof()
       .run((err: Error) => {
@@ -234,13 +235,13 @@ export function updateAPIWithResolutionStrategy(cwd: string, settings: any) {
       .wait(/.*Do you want to configure advanced settings for the GraphQL API.*/)
       .sendLine(KEY_DOWN_ARROW) // Down
       .wait(/.*Configure additional auth types.*/)
-      .sendLine('n')
+      .sendConfirmNo()
       .wait(/.*Enable conflict detection.*/)
-      .sendLine('y')
+      .sendConfirmYes()
       .wait(/.*Select the default resolution strategy.*/)
       .sendLine(KEY_DOWN_ARROW) // Down
       .wait(/.*Do you want to override default per model settings.*/)
-      .sendLine('n')
+      .sendConfirmNo()
       .wait(/.*Successfully updated resource.*/)
       .sendEof()
       .run((err: Error) => {
@@ -334,9 +335,9 @@ export function addRestApi(cwd: string, settings: any) {
 
         chain
           .wait('Do you want to configure advanced settings?')
-          .sendLine('n')
+          .sendConfirmNo()
           .wait('Do you want to edit the local lambda function now')
-          .sendLine('n');
+          .sendConfirmNo();
       }
 
       chain.wait('Restrict API access');
@@ -364,7 +365,7 @@ export function addRestApi(cwd: string, settings: any) {
 
       chain
         .wait('Do you want to add another path')
-        .sendLine('n')
+        .sendConfirmNo()
         .sendEof()
         .run((err: Error) => {
           if (!err) {
@@ -403,7 +404,7 @@ export function addApi(projectDir: string, settings?: any) {
           .send(KEY_DOWN_ARROW) //yes
           .sendCarriageReturn()
           .wait('Configure additional auth types?')
-          .sendLine('y');
+          .sendConfirmYes();
 
         authTypesToSelectFrom = authTypesToSelectFrom.filter(x => x !== defaultType);
 
@@ -430,11 +431,11 @@ export function addApi(projectDir: string, settings?: any) {
 
     chain
       .wait('Do you have an annotated GraphQL schema?')
-      .sendLine('n')
+      .sendConfirmNo()
       .wait('Choose a schema template:')
       .sendCarriageReturn()
       .wait('Do you want to edit the schema now?')
-      .sendLine('n')
+      .sendConfirmNo()
       .wait('"amplify publish" will build all your local backend and frontend resources')
       .run((err: Error) => {
         if (!err) {
@@ -520,11 +521,11 @@ export function addApiWithCognitoUserPoolAuthTypeWhenAuthExists(projectDir: stri
       .wait('Do you want to configure advanced settings for the GraphQL AP')
       .sendCarriageReturn()
       .wait('Do you have an annotated GraphQL schema?')
-      .sendLine('n')
+      .sendConfirmNo()
       .wait('Choose a schema template:')
       .sendCarriageReturn()
       .wait('Do you want to edit the schema now?')
-      .sendLine('n')
+      .sendConfirmNo()
       .wait('"amplify publish" will build all your local backend and frontend resources')
       .run((err: Error) => {
         if (!err) {
@@ -564,5 +565,31 @@ export function addRestContainerApi(projectDir: string) {
           reject(err);
         }
       });
+  });
+}
+
+export function addRestContainerApiForCustomPolicies(projectDir: string, settings: { name: string }) {
+  return new Promise<void>((resolve, reject) => {
+    spawn(getCLIPath(), ['add', 'api'], { cwd: projectDir, stripColors: true })
+      .wait('Please select from one of the below mentioned services:')
+      .sendKeyDown()
+      .sendCarriageReturn()
+      .wait('Which service would you like to use')
+      .sendKeyDown()
+      .sendCarriageReturn()
+      .wait('Provide a friendly name for your resource to be used as a label for this category in the project:')
+      .send(settings.name)
+      .sendCarriageReturn()
+      .wait('What image would you like to use')
+      .sendKeyDown()
+      .sendCarriageReturn()
+      .wait('When do you want to build & deploy the Fargate task')
+      .sendCarriageReturn()
+      .wait('Do you want to restrict API access')
+      .sendConfirmNo()
+      .wait('Select which container is the entrypoint')
+      .sendCarriageReturn()
+      .wait('"amplify publish" will build all your local backend and frontend resources')
+      .run((err: Error) => err ? reject(err) : resolve());
   });
 }

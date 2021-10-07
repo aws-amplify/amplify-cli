@@ -1,17 +1,18 @@
 import { addCircleCITags, getCLIPath, nspawn as spawn } from 'amplify-e2e-core';
+import { EOL } from 'os';
 
 const defaultSettings = {
-  name: '\r',
+  name: EOL,
   envName: 'integtest',
-  editor: '\r',
-  appType: '\r',
-  framework: '\r',
-  srcDir: '\r',
-  distDir: '\r',
-  buildCmd: '\r',
-  startCmd: '\r',
-  useProfile: '\r',
-  profileName: '\r',
+  editor: EOL,
+  appType: EOL,
+  framework: EOL,
+  srcDir: EOL,
+  distDir: EOL,
+  buildCmd: EOL,
+  startCmd: EOL,
+  useProfile: EOL,
+  profileName: EOL,
   region: process.env.CLI_REGION,
   local: false,
   disableAmplifyAppCreation: true,
@@ -82,7 +83,7 @@ export function initJSProjectWithProfile(cwd: string, settings: Object, testingW
       .wait('Enter a name for the project')
       .sendLine(s.name)
       .wait('Initialize the project with the above configuration?')
-      .sendLine('n')
+      .sendConfirmNo()
       .wait('Enter a name for the environment')
       .sendLine(s.envName)
       .wait('Choose your default editor:')
