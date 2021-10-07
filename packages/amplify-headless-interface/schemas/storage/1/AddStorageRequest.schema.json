@@ -1,5 +1,5 @@
 {
-    "description": "Headless mode for add storage is not yet implemented.\nThis interface is subject to change and should not be used.",
+    "description": "Defines acceptable payloads to amplify add storage --headless.",
     "type": "object",
     "properties": {
         "version": {
@@ -9,7 +9,7 @@
             ]
         },
         "serviceConfiguration": {
-            "$ref": "#/definitions/S3ServiceConfiguration"
+            "$ref": "#/definitions/AddS3ServiceConfiguration"
         }
     },
     "required": [
@@ -17,7 +17,7 @@
         "version"
     ],
     "definitions": {
-        "S3ServiceConfiguration": {
+        "AddS3ServiceConfiguration": {
             "description": "Service configuration for AWS S3 through Amplify",
             "type": "object",
             "properties": {
@@ -25,7 +25,7 @@
                     "description": "Descriminant used to determine the service config type",
                     "type": "string",
                     "enum": [
-                        "s3"
+                        "S3"
                     ]
                 },
                 "permissions": {
@@ -33,7 +33,11 @@
                     "description": "The permissions that should be applied to the bucket"
                 },
                 "bucketName": {
-                    "description": "Globally unique bucket name",
+                    "description": "Globally unique bucket name - bucket names must be lowercase",
+                    "type": "string"
+                },
+                "resourceName": {
+                    "description": "Amplify resource name",
                     "type": "string"
                 },
                 "lambdaTrigger": {
@@ -44,6 +48,7 @@
             "required": [
                 "bucketName",
                 "permissions",
+                "resourceName",
                 "serviceName"
             ]
         },
@@ -56,10 +61,9 @@
                     "type": "array",
                     "items": {
                         "enum": [
-                            "CREATE",
+                            "CREATE_AND_UPDATE",
                             "DELETE",
-                            "READ",
-                            "UPDATE"
+                            "READ"
                         ],
                         "type": "string"
                     }
@@ -69,10 +73,9 @@
                     "type": "array",
                     "items": {
                         "enum": [
-                            "CREATE",
+                            "CREATE_AND_UPDATE",
                             "DELETE",
-                            "READ",
-                            "UPDATE"
+                            "READ"
                         ],
                         "type": "string"
                     }
@@ -93,10 +96,9 @@
                 "type": "array",
                 "items": {
                     "enum": [
-                        "CREATE",
+                        "CREATE_AND_UPDATE",
                         "DELETE",
-                        "READ",
-                        "UPDATE"
+                        "READ"
                     ],
                     "type": "string"
                 }
