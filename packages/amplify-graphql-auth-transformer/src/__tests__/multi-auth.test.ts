@@ -1,7 +1,7 @@
 import { AuthTransformer } from '@aws-amplify/graphql-auth-transformer';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { IndexTransformer } from '@aws-amplify/graphql-index-transformer';
-import { HasManyTransformer, HasOneTransformer, BelongsToTransformer } from '@aws-amplify/graphql-relational-transformer';
+// import { HasManyTransformer, HasOneTransformer, BelongsToTransformer } from '@aws-amplify/graphql-relational-transformer';
 import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
 import { AppSyncAuthConfiguration, AppSyncAuthConfigurationOIDCEntry, AppSyncAuthMode } from '@aws-amplify/graphql-transformer-interfaces';
 import { DocumentNode, ObjectTypeDefinitionNode, Kind, FieldDefinitionNode, parse, InputValueDefinitionNode } from 'graphql';
@@ -171,9 +171,9 @@ const getTransformer = (authConfig: AppSyncAuthConfiguration) =>
     transformers: [
       new ModelTransformer(),
       new IndexTransformer(),
-      new HasManyTransformer(),
-      new HasOneTransformer(),
-      new BelongsToTransformer(),
+      // new HasManyTransformer(),
+      // new HasOneTransformer(),
+      // new BelongsToTransformer(),
       new AuthTransformer({
         authConfig,
         addAwsIamAuthInOutputSchema: false,
@@ -605,79 +605,79 @@ describe('schema generation directive tests', () => {
     }
   });
 
-  test(`ModelXConnection type is getting the directives added, when a field has @hasMany but one fo the types has no queries defined`, () => {
-    const validSchema = `
-    type User @model
-       @auth(rules: [
-         { allow: private, provider: iam, operations: [read] }
-         { allow: groups, groups: ["group"], operations: [read, update, delete] },
-       ]) {
-       id: ID!
-       posts: [Post!] @hasMany(indexName: "byUser", fields: ["id"])
-     }
-     type Post @model(queries: null)
-      @auth(rules: [
-        { allow: private, provider: iam, operations: [read] },
-        { allow: groups, groups: ["group"], operations: [read, update, delete] }
-      ]) {
-      id: ID!
-      postUserId: ID! @index(name: "byUser")
-      message: String
-    }`;
-    const transformer = getTransformer(withAuthModes(iamDefaultConfig, ['AMAZON_COGNITO_USER_POOLS']));
-    const out = transformer.transform(validSchema);
-    const schemaDoc = parse(out.schema);
-    const queryType = getObjectType(schemaDoc, 'Query');
-    const mutationType = getObjectType(schemaDoc, 'Mutation');
+  // test(`ModelXConnection type is getting the directives added, when a field has @hasMany but one fo the types has no queries defined`, () => {
+  //   const validSchema = `
+  //   type User @model
+  //      @auth(rules: [
+  //        { allow: private, provider: iam, operations: [read] }
+  //        { allow: groups, groups: ["group"], operations: [read, update, delete] },
+  //      ]) {
+  //      id: ID!
+  //      posts: [Post!] @hasMany(indexName: "byUser", fields: ["id"])
+  //    }
+  //    type Post @model(queries: null)
+  //     @auth(rules: [
+  //       { allow: private, provider: iam, operations: [read] },
+  //       { allow: groups, groups: ["group"], operations: [read, update, delete] }
+  //     ]) {
+  //     id: ID!
+  //     postUserId: ID! @index(name: "byUser")
+  //     message: String
+  //   }`;
+  //   const transformer = getTransformer(withAuthModes(iamDefaultConfig, ['AMAZON_COGNITO_USER_POOLS']));
+  //   const out = transformer.transform(validSchema);
+  //   const schemaDoc = parse(out.schema);
+  //   const queryType = getObjectType(schemaDoc, 'Query');
+  //   const mutationType = getObjectType(schemaDoc, 'Mutation');
 
-    expectTwo(getField(queryType, 'getUser'), ['aws_iam', 'aws_cognito_user_pools']);
-    expectTwo(getField(queryType, 'listUsers'), ['aws_iam', 'aws_cognito_user_pools']);
+  //   expectTwo(getField(queryType, 'getUser'), ['aws_iam', 'aws_cognito_user_pools']);
+  //   expectTwo(getField(queryType, 'listUsers'), ['aws_iam', 'aws_cognito_user_pools']);
 
-    expectNone(getField(mutationType, 'createUser'));
-    expectOne(getField(mutationType, 'updateUser'), 'aws_cognito_user_pools');
-    expectOne(getField(mutationType, 'deleteUser'), 'aws_cognito_user_pools');
+  //   expectNone(getField(mutationType, 'createUser'));
+  //   expectOne(getField(mutationType, 'updateUser'), 'aws_cognito_user_pools');
+  //   expectOne(getField(mutationType, 'deleteUser'), 'aws_cognito_user_pools');
 
-    const userType = getObjectType(schemaDoc, 'User');
-    expectTwo(userType, ['aws_iam', 'aws_cognito_user_pools']);
-    expectNone(getField(userType, 'posts'));
+  //   const userType = getObjectType(schemaDoc, 'User');
+  //   expectTwo(userType, ['aws_iam', 'aws_cognito_user_pools']);
+  //   expectNone(getField(userType, 'posts'));
 
-    const modelPostConnectionType = getObjectType(schemaDoc, 'ModelPostConnection');
-    expect(modelPostConnectionType).toBeDefined();
-    expectTwo(modelPostConnectionType, ['aws_iam', 'aws_cognito_user_pools']);
-  });
+  //   const modelPostConnectionType = getObjectType(schemaDoc, 'ModelPostConnection');
+  //   expect(modelPostConnectionType).toBeDefined();
+  //   expectTwo(modelPostConnectionType, ['aws_iam', 'aws_cognito_user_pools']);
+  // });
 
-  test(`ModelXConnection type is getting the directives added, when a field has @connection but one of the types has no queries defined. Many to Many`, () => {
-    const schema = `
-    type Post @model @auth(rules: [{ allow: owner }]) {
-      id: ID!
-      title: String!
-      editors: [PostEditor] @hasMany(indexName: "byPost", fields: ["id"])
-    }
-    # Create a join model and disable queries as you don't need them
-    # and can query through Post.editors and User.posts
-    type PostEditor
-      @model(queries: null)
-      @auth(rules: [{ allow: owner }]) {
-      id: ID!
-      postID: ID! @index(name: "byPost", sortKeyFields: ["editorID"])
-      editorID: ID! @index(name: "byEditor", sortKeyFields: ["postID"])
-      post: Post! @belongsTo(fields: ["postID"])
-      editor: User! @belongsTo(fields: ["editorID"])
-    }
-    type User @model @auth(rules: [{ allow: owner }]) {
-      id: ID!
-      username: String!
-      posts: [PostEditor] @hasMany(indexName: "byEditor", fields: ["id"])
-    }`;
+  // test(`ModelXConnection type is getting the directives added, when a field has @connection but one of the types has no queries defined. Many to Many`, () => {
+  //   const schema = `
+  //   type Post @model @auth(rules: [{ allow: owner }]) {
+  //     id: ID!
+  //     title: String!
+  //     editors: [PostEditor] @hasMany(indexName: "byPost", fields: ["id"])
+  //   }
+  //   # Create a join model and disable queries as you don't need them
+  //   # and can query through Post.editors and User.posts
+  //   type PostEditor
+  //     @model(queries: null)
+  //     @auth(rules: [{ allow: owner }]) {
+  //     id: ID!
+  //     postID: ID! @index(name: "byPost", sortKeyFields: ["editorID"])
+  //     editorID: ID! @index(name: "byEditor", sortKeyFields: ["postID"])
+  //     post: Post! @belongsTo(fields: ["postID"])
+  //     editor: User! @belongsTo(fields: ["editorID"])
+  //   }
+  //   type User @model @auth(rules: [{ allow: owner }]) {
+  //     id: ID!
+  //     username: String!
+  //     posts: [PostEditor] @hasMany(indexName: "byEditor", fields: ["id"])
+  //   }`;
 
-    const transformer = getTransformer(withAuthModes(apiKeyDefaultConfig, ['AMAZON_COGNITO_USER_POOLS']));
-    const out = transformer.transform(schema);
-    const schemaDoc = parse(out.schema);
+  //   const transformer = getTransformer(withAuthModes(apiKeyDefaultConfig, ['AMAZON_COGNITO_USER_POOLS']));
+  //   const out = transformer.transform(schema);
+  //   const schemaDoc = parse(out.schema);
 
-    const modelPostEditorConnectionType = getObjectType(schemaDoc, 'ModelPostEditorConnection');
-    expect(modelPostEditorConnectionType).toBeDefined();
-    // since we have resolver level auth to deny providers the default is added here to ensure the access is granted if the default type is not applied on the parent
-    // therefore we just need to make sure that the access is at least granted on the schema level
-    expect(modelPostEditorConnectionType.directives.some(dir => dir.name.value === 'aws_cognito_user_pools')).toBe(true);
-  });
+  //   const modelPostEditorConnectionType = getObjectType(schemaDoc, 'ModelPostEditorConnection');
+  //   expect(modelPostEditorConnectionType).toBeDefined();
+  //   // since we have resolver level auth to deny providers the default is added here to ensure the access is granted if the default type is not applied on the parent
+  //   // therefore we just need to make sure that the access is at least granted on the schema level
+  //   expect(modelPostEditorConnectionType.directives.some(dir => dir.name.value === 'aws_cognito_user_pools')).toBe(true);
+  // });
 });

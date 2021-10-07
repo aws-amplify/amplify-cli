@@ -42,7 +42,6 @@
   },
   "devDependencies": {
     "@aws-amplify/graphql-index-transformer": "0.4.0-graphql-vnext-dev-preview.1",
-    "@aws-amplify/graphql-relational-transformer": "0.3.0-graphql-vnext-dev-preview.1",
     "@aws-amplify/graphql-searchable-transformer": "0.7.0-graphql-vnext-dev-preview.1",
     "@aws-cdk/assert": "~1.124.0",
     "@types/fs-extra": "^8.0.1",
