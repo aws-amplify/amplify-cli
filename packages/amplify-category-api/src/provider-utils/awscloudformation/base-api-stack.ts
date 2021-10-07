@@ -498,17 +498,19 @@ export abstract class ContainersStack extends cdk.Stack {
     return `https://${region}.console.aws.amazon.com/codesuite/codepipeline/pipelines/${pipelineName}/view`;
   }
   toCloudFormation() {
-    this.node.findAll().forEach(construct => {
-      if (construct instanceof CfnFunction) {
-        const lambdaFunction = construct as CfnFunction;
+    this.node
+      .findAll()
+      .filter(construct => construct instanceof CfnFunction)
+      .map(construct => construct as CfnFunction)
+      .forEach(lambdaFunction => {
         if (lambdaFunction.logicalId.includes('AwaiterMyProvider')) {
           lambdaFunction.code = {
             s3Bucket: this.deploymentBucketName,
             s3Key: this.awaiterS3Key,
           };
         }
-      }
-    });
+      });
+
     prepareApp(this);
 
     const cfn = this._toCloudFormation();

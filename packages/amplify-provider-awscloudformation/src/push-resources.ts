@@ -1012,7 +1012,7 @@ async function formNestedStack(
           }
         }
 
-        if (category === 'api' && resourceDetails.service === ApiServiceNameElasticContainer) {
+        if ((category === 'api' || category === 'hosting') && resourceDetails.service === ApiServiceNameElasticContainer) {
           parameters['deploymentBucketName'] = Fn.Ref('DeploymentBucketName');
           parameters['rootStackName'] = Fn.Ref('AWS::StackName');
         }
