@@ -1064,7 +1064,8 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
     });
 
     const role = this.createIAMRole(context, def, stack, tableName);
-    this.createModelTableDataSource(def, context, table, stack, role, tableLogicalName);
+    const tableDataSourceLogicalName = `${def!.name.value}DataSource`;
+    this.createModelTableDataSource(def, context, table, stack, role, tableDataSourceLogicalName);
   }
 
   private createModelTableDataSource(
@@ -1073,13 +1074,13 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
     table: Table,
     stack: cdk.Stack,
     role: iam.Role,
-    tableLogicalName: string,
+    dataSourceLogicalName: string,
   ) {
     const datasourceRoleLogicalID = ModelResourceIDs.ModelTableDataSourceID(def!.name.value);
     const dataSource = context.api.host.addDynamoDbDataSource(
       datasourceRoleLogicalID,
       table,
-      { name: tableLogicalName, serviceRole: role },
+      { name: dataSourceLogicalName, serviceRole: role },
       stack,
     );
 

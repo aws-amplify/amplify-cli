@@ -12,7 +12,7 @@ const directiveName = 'original';
  */
 export function getTableNameForModel(sdl: string, modelName: string): string {
   const directivesByType = collectDirectivesByType(sdl);
-  const originalDirective = directivesByType?.[modelName].find(directive => directive.name.value === directiveName);
+  const originalDirective = directivesByType?.[modelName]?.find(directive => directive.name.value === directiveName);
   if (!originalDirective) {
     return modelName;
   }
