@@ -775,7 +775,7 @@ export function getIAMPolicies(resourceName: string, crudOptions: string[]) {
         actions.push('apigateway:DELETE');
         break;
       default:
-        console.log(`${crudOption} not supported`);
+        printer.info(`${crudOption} not supported`);
     }
   });
 

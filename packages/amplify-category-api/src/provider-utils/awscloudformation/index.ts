@@ -5,7 +5,7 @@ import { legacyAddResource } from './legacy-add-resource';
 import { legacyUpdateResource } from './legacy-update-resource';
 import { UpdateApiRequest } from 'amplify-headless-interface';
 import { editSchemaFlow } from './utils/edit-schema-flow';
-import { NotImplementedError, exitOnNextTick, $TSContext } from 'amplify-cli-core';
+import { NotImplementedError, exitOnNextTick, $TSContext, $TSAny } from 'amplify-cli-core';
 import { addResource as addContainer, updateResource as updateContainer } from './containers-handler';
 import inquirer from 'inquirer';
 import * as path from 'path';
@@ -15,6 +15,7 @@ import {
   getPermissionPolicies as getContainerPermissionPolicies,
 } from './service-walkthroughs/containers-walkthrough';
 import { category } from '../../category-constants';
+import { printer } from 'amplify-prompts';
 
 export async function console(context: $TSContext, service) {
   const { serviceWalkthroughFilename } = await serviceMetadataFor(service);
@@ -23,7 +24,7 @@ export async function console(context: $TSContext, service) {
 
   if (!openConsole) {
     const errMessage = 'Opening console functionality not available for this option';
-    context.print.error(errMessage);
+    printer.error(errMessage);
     await context.usageData.emitError(new NotImplementedError(errMessage));
     exitOnNextTick(0);
   }
@@ -33,20 +34,19 @@ export async function console(context: $TSContext, service) {
 
 async function addContainerResource(context: $TSContext, category, service, options, apiType) {
   const serviceWalkthroughFilename = 'containers-walkthrough.js';
-  const defaultValuesFilename = 'containers-defaults.js';
 
   const serviceWalkthrough = await getServiceWalkthrough(serviceWalkthroughFilename);
-  const serviceWalkthroughPromise: Promise<any> = serviceWalkthrough(context, defaultValuesFilename, apiType);
+  const serviceWalkthroughPromise: Promise<$TSAny> = serviceWalkthrough(context, apiType);
 
   return await addContainer(serviceWalkthroughPromise, context, category, service, options, apiType);
 }
 
 async function addNonContainerResource(context: $TSContext, category, service, options) {
   const serviceMetadata = await serviceMetadataFor(service);
-  const { serviceWalkthroughFilename, defaultValuesFilename } = serviceMetadata;
+  const { serviceWalkthroughFilename } = serviceMetadata;
   const serviceWalkthrough = await getServiceWalkthrough(serviceWalkthroughFilename);
 
-  const serviceWalkthroughPromise: Promise<any> = serviceWalkthrough(context, defaultValuesFilename, serviceMetadata);
+  const serviceWalkthroughPromise: Promise<$TSAny> = serviceWalkthrough(context, serviceMetadata);
   switch (service) {
     case 'AppSync':
       const walkthroughResult = await serviceWalkthroughPromise;
@@ -206,31 +206,30 @@ async function describeApiResourcesBySubCategory(context: $TSContext) {
 
 async function updateContainerResource(context: $TSContext, category, service, apiType: API_TYPE) {
   const serviceWalkthroughFilename = 'containers-walkthrough';
-  const defaultValuesFilename = 'containers-defaults.js';
-  const serviceWalkthroughSrc = `${__dirname}/service-walkthroughs/${serviceWalkthroughFilename}`;
-  const { updateWalkthrough } = require(serviceWalkthroughSrc);
+  const serviceWalkthroughSrc = path.join(__dirname, 'service-walkthroughs', serviceWalkthroughFilename);
+  const { updateWalkthrough } = await import(serviceWalkthroughSrc);
 
   if (!updateWalkthrough) {
     const errMessage = 'Update functionality not available for this option';
-    context.print.error(errMessage);
+    printer.error(errMessage);
     await context.usageData.emitError(new NotImplementedError(errMessage));
     exitOnNextTick(0);
   }
 
-  const updateWalkthroughPromise: Promise<ServiceConfiguration> = updateWalkthrough(context, defaultValuesFilename, apiType);
+  const updateWalkthroughPromise: Promise<ServiceConfiguration> = updateWalkthrough(context, apiType);
 
   updateContainer(updateWalkthroughPromise, context, category);
 }
 
-async function updateNonContainerResource(context, category, service) {
+async function updateNonContainerResource(context: $TSContext, category, service) {
   const serviceMetadata = await serviceMetadataFor(service);
   const { defaultValuesFilename, serviceWalkthroughFilename } = serviceMetadata;
-  const serviceWalkthroughSrc = `${__dirname}/service-walkthroughs/${serviceWalkthroughFilename}`;
-  const { updateWalkthrough } = require(serviceWalkthroughSrc);
+  const serviceWalkthroughSrc = path.join(__dirname, 'service-walkthroughs', serviceWalkthroughFilename);
+  const { updateWalkthrough } = await import(serviceWalkthroughSrc);
 
   if (!updateWalkthrough) {
     const errMessage = 'Update functionality not available for this option';
-    context.print.error(errMessage);
+    printer.error(errMessage);
     await context.usageData.emitError(new NotImplementedError(errMessage));
     exitOnNextTick(0);
   }
@@ -245,7 +244,7 @@ async function updateNonContainerResource(context, category, service) {
   }
 }
 
-export async function migrateResource(context, projectPath, service, resourceName) {
+export async function migrateResource(context: $TSContext, projectPath, service, resourceName) {
   if (service === 'ElasticContainer') {
     return migrateResourceContainer(context, projectPath, service, resourceName);
   } else {
@@ -253,53 +252,53 @@ export async function migrateResource(context, projectPath, service, resourceNam
   }
 }
 
-async function migrateResourceContainer(context, projectPath, service, resourceName) {
-  context.print.info(`No migration required for ${resourceName}`);
+async function migrateResourceContainer(context: $TSContext, projectPath, service, resourceName) {
+  printer.info(`No migration required for ${resourceName}`);
   return;
 }
 
-async function migrateResourceNonContainer(context, projectPath, service, resourceName) {
+async function migrateResourceNonContainer(context: $TSContext, projectPath: string, service: string, resourceName: string) {
   const serviceMetadata = await serviceMetadataFor(service);
   const { serviceWalkthroughFilename } = serviceMetadata;
-  const serviceWalkthroughSrc = `${__dirname}/service-walkthroughs/${serviceWalkthroughFilename}`;
-  const { migrate } = require(serviceWalkthroughSrc);
+  const serviceWalkthroughSrc = path.join(__dirname, 'service-walkthroughs', serviceWalkthroughFilename);
+  const { migrate } = await import(serviceWalkthroughSrc);
 
   if (!migrate) {
-    context.print.info(`No migration required for ${resourceName}`);
+    printer.info(`No migration required for ${resourceName}`);
     return;
   }
 
   return await migrate(context, projectPath, resourceName);
 }
 
-export async function addDatasource(context, category, datasource) {
+export async function addDatasource(context: $TSContext, category, datasource) {
   const serviceMetadata = await datasourceMetadataFor(datasource);
-  const { defaultValuesFilename, serviceWalkthroughFilename } = serviceMetadata;
-  return (await getServiceWalkthrough(serviceWalkthroughFilename))(context, defaultValuesFilename, serviceMetadata);
+  const { serviceWalkthroughFilename } = serviceMetadata;
+  return (await getServiceWalkthrough(serviceWalkthroughFilename))(context, serviceMetadata);
 }
 
-export async function getPermissionPolicies(context, service, resourceName, crudOptions) {
+export async function getPermissionPolicies(context: $TSContext, service, resourceName, crudOptions) {
   if (service === 'ElasticContainer') {
     return getPermissionPoliciesContainer(context, service, resourceName, crudOptions);
   } else {
-    return getPermissionPoliciesNonContainer(context, service, resourceName, crudOptions);
+    return getPermissionPoliciesNonContainer(service, resourceName, crudOptions);
   }
 }
 
-async function getPermissionPoliciesContainer(context, service, resourceName, crudOptions) {
+async function getPermissionPoliciesContainer(context: $TSContext, service, resourceName, crudOptions) {
   return getContainerPermissionPolicies(context, service, resourceName, crudOptions);
 }
 
-async function getPermissionPoliciesNonContainer(context, service, resourceName, crudOptions) {
+async function getPermissionPoliciesNonContainer(service: string, resourceName: string, crudOptions) {
   const serviceMetadata = await serviceMetadataFor(service);
   const { serviceWalkthroughFilename } = serviceMetadata;
-  const serviceWalkthroughSrc = `${__dirname}/service-walkthroughs/${serviceWalkthroughFilename}`;
-  const { getIAMPolicies } = require(serviceWalkthroughSrc);
+  const serviceWalkthroughSrc = path.join(__dirname, 'service-walkthroughs', serviceWalkthroughFilename);
+  const { getIAMPolicies } = await import(serviceWalkthroughSrc);
 
   if (!getIAMPolicies) {
-    context.print.info(`No policies found for ${resourceName}`);
+    printer.info(`No policies found for ${resourceName}`);
     return;
   }
 
-  return getIAMPolicies(resourceName, crudOptions, context);
+  return getIAMPolicies(resourceName, crudOptions);
 }

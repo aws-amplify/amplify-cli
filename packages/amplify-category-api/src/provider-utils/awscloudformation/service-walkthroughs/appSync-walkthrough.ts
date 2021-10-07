@@ -11,6 +11,7 @@ import {
   stateManager,
   UnknownResourceTypeError,
 } from 'amplify-cli-core';
+import { UpdateApiRequest } from 'amplify-headless-interface';
 import { printer } from 'amplify-prompts';
 import chalk from 'chalk';
 import * as fs from 'fs-extra';
@@ -18,7 +19,6 @@ import { collectDirectivesByTypeNames, readProjectConfiguration } from 'graphql-
 import inquirer, { CheckboxQuestion, ListChoiceOptions, ListQuestion } from 'inquirer';
 import _ from 'lodash';
 import * as path from 'path';
-import { UpdateApiRequest } from '../../../../../amplify-headless-interface/lib/interface/api/update';
 import { category } from '../../../category-constants';
 import { rootAssetDir } from '../aws-constants';
 import { dataStoreLearnMore } from '../sync-conflict-handler-assets/syncAssets';
@@ -26,6 +26,7 @@ import { authConfigHasApiKey, checkIfAuthExists, getAppSyncAuthConfig } from '..
 import { authConfigToAppSyncAuthType } from '../utils/auth-config-to-app-sync-auth-type-bi-di-mapper';
 import { defineGlobalSandboxMode } from '../utils/global-sandbox-mode';
 import { resolverConfigToConflictResolution } from '../utils/resolver-config-to-conflict-resolution-bi-di-mapper';
+import { getAllDefaults } from '../default-values/appSync-defaults';
 
 const serviceName = 'AppSync';
 const elasticContainerServiceName = 'ElasticContainer';
@@ -205,8 +206,6 @@ const serviceApiInputWalkthrough = async (context: $TSContext, defaultValuesFile
   let resolverConfig;
   const { amplify } = context;
   const { inputs } = serviceMetadata;
-  const defaultValuesSrc = path.join(__dirname, '..', 'default-values', defaultValuesFilename);
-  const { getAllDefaults } = await import(defaultValuesSrc);
   const allDefaultValues = getAllDefaults(amplify.getProjectDetails());
 
   let resourceAnswers = {};
@@ -926,8 +925,9 @@ export const migrate = async (context: $TSContext) => {
   });
 };
 
-export const getIAMPolicies = (resourceName: string, operations: string[], context: any) => {
-  let policy: any = {};
+
+export const getIAMPolicies = (resourceName: string, operations: string[]) => {
+  let policy: $TSObject = {};
   const resources = [];
   const actions = [];
   if (!FeatureFlags.getBoolean('appSync.generateGraphQLPermissions')) {
@@ -963,7 +963,7 @@ export const getIAMPolicies = (resourceName: string, operations: string[], conte
   };
 
   const attributes = ['GraphQLAPIIdOutput', 'GraphQLAPIEndpointOutput'];
-  if (authConfigHasApiKey(getAppSyncAuthConfig(context.amplify.getProjectMeta()))) {
+  if (authConfigHasApiKey(getAppSyncAuthConfig(stateManager.getMeta()))) {
     attributes.push('GraphQLAPIKeyOutput');
   }
 

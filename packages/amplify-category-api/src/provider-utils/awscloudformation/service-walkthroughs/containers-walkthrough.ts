@@ -46,11 +46,7 @@ export type ServiceConfiguration = {
   gitHubInfo?: GitHubSourceActionInfo;
 };
 
-export async function serviceWalkthrough(
-  context: $TSContext,
-  defaultValuesFilename: string,
-  apiType: API_TYPE,
-): Promise<Partial<ServiceConfiguration>> {
+export async function serviceWalkthrough(context: $TSContext, apiType: API_TYPE): Promise<Partial<ServiceConfiguration>> {
   const allDefaultValues = getAllDefaults();
 
   const resourceName = await askResourceName(context, allDefaultValues);
@@ -237,7 +233,7 @@ async function newContainer(context: $TSContext, resourceName: string, apiType: 
   };
 }
 
-export async function updateWalkthrough(context: $TSContext, defaultValuesFilename: string, apiType: API_TYPE) {
+export async function updateWalkthrough(context: $TSContext, apiType: API_TYPE) {
   const { allResources } = await context.amplify.getResourceStatus();
 
   const resources = allResources
