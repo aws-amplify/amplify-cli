@@ -1,10 +1,11 @@
 import chalk from 'chalk';
 import { $TSContext } from 'amplify-cli-core';
-import { getApiKeyConfig, apiKeyIsActive, hasApiKey } from './api-key-helpers';
+import { hasApiKey } from './api-key-helpers';
 import { printer } from 'amplify-prompts';
 
 export async function showSandboxModePrompts(context: $TSContext): Promise<any> {
-  if (!hasApiKey() || !apiKeyIsActive()) {
+  if (hasApiKey()) return showGlobalSandboxModeWarning();
+  else {
     printer.info(
       `
 ⚠️  WARNING: Global Sandbox Mode has been enabled, which requires a valid API key. If
@@ -15,26 +16,13 @@ sandbox mode disabled in '${context.amplify.getEnvInfo().envName}', do not creat
       'yellow',
     );
     return await context.amplify.invokePluginMethod(context, 'api', undefined, 'promptToAddApiKey', [context]);
-  } else {
-    showGlobalSandboxModeWarning();
-    return;
   }
 }
 
 export function showGlobalSandboxModeWarning(): void {
-  const { apiKeyExpirationDate } = getApiKeyConfig();
-
-  if (!apiKeyExpirationDate) return;
-
-  const expirationDate = new Date(apiKeyExpirationDate);
-
   printer.info(
     `
-⚠️  WARNING: ${chalk.green('"type AMPLIFY_GLOBAL @allow_public_data_access_with_api_key"')} in your GraphQL schema
-allows public create, read, update, and delete access to all models via API Key. This
-should only be used for testing purposes. API Key expiration date is: ${expirationDate.toLocaleDateString()}
-
-To configure PRODUCTION-READY authorization rules, review: https://docs.amplify.aws/cli/graphql-transformer/auth
+⚠️  WARNING: your GraphQL API currently allows public create, read, update, and delete access to all models via an API Key. To configure PRODUCTION-READY authorization rules, review: https://docs.amplify.aws/cli/graphql-transformer/auth
 `,
     'yellow',
   );
