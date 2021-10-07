@@ -6,6 +6,7 @@ import { immutableAttributes, safeDefaults } from '../constants';
 import { FeatureFlags } from 'amplify-cli-core';
 import { CognitoConfiguration } from '../service-walkthrough-types/awsCognito-user-input-types';
 import { ServiceQuestionHeadlessResult } from '../service-walkthrough-types/cognito-user-input-types';
+import { $TSContext } from 'amplify-cli-core';
 
 /**
  * Factory function that returns a function that applies default values to a CognitoConfiguation request.
@@ -16,7 +17,7 @@ import { ServiceQuestionHeadlessResult } from '../service-walkthrough-types/cogn
  * @param projectName The name of the current project (used to generate some default values)
  */
 export const getAddAuthDefaultsApplier =
-  (context: any, defaultValuesFilename: string, projectName: string) =>
+  (context: $TSContext, defaultValuesFilename: string, projectName: string) =>
   async (result: CognitoConfiguration | ServiceQuestionHeadlessResult): Promise<CognitoConfiguration> => {
     const { functionMap, generalDefaults, roles, getAllDefaults } = await import(`../assets/${defaultValuesFilename}`);
     result = assignDefaults({}, generalDefaults(projectName), result);
@@ -37,7 +38,7 @@ export const getAddAuthDefaultsApplier =
   };
 
 export const getUpdateAuthDefaultsApplier =
-  (context: any, defaultValuesFilename: string, previousResult: CognitoConfiguration) =>
+  (context: $TSContext, defaultValuesFilename: string, previousResult: CognitoConfiguration) =>
   async (result: CognitoConfiguration | ServiceQuestionHeadlessResult): Promise<CognitoConfiguration> => {
     const { functionMap, getAllDefaults } = await import(`../assets/${defaultValuesFilename}`);
     if (!result.authSelections) {

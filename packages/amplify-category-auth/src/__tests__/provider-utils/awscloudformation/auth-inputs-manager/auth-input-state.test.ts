@@ -97,7 +97,7 @@ jest.mock('amplify-cli-core', () => ({
 test('Auth Input State -> validate cli payload manual payload', async () => {
   const resourceName = 'mockResource';
   const authState = new AuthInputState(resourceName);
-  expect(await authState.isCLIInputsValid()).toBeTruthy();
+  expect(await authState.isCLIInputsValid()).toBe(true);
 });
 
 test('Auth Input State -> validate cli payload manual payload to throw error', async () => {

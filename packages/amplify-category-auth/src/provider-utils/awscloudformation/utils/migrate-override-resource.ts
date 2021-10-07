@@ -50,7 +50,7 @@ export const migrateResourceToSupportOverride = (resourceName: string) => {
     const cliInputs = getCliInputs(parameters!);
     const cliInputsPath = path.join(authresourceDirPath, 'cli-inputs.json');
     JSONUtilities.writeJson(cliInputsPath, cliInputs);
-    // push here
+    printer.success('Migration is Successful');
   } catch (e) {
     printer.error('There was an error migrating your project.');
     rollback(authresourceDirPath, backupAuthResourceFolder);
@@ -61,14 +61,12 @@ export const migrateResourceToSupportOverride = (resourceName: string) => {
     throw e;
   } finally {
     cleanUp(backupAuthResourceFolder);
-    if (fs.existsSync(userPoolGroupResourceDirPath)) {
-      cleanUp(backupUserPoolGroupResourceFolder!);
-    }
+    cleanUp(backupUserPoolGroupResourceFolder!);
   }
 };
 
 function backup(authresourcePath: string, projectPath: string, resourceName: string) {
-  const backupauthResourceDirName = `${resourceName}-${uuid().split('-')[0]}`;
+  const backupauthResourceDirName = `${resourceName}-BACKUP-${uuid().split('-')[0]}`;
   const backupauthResourceDirPath = path.join(projectPath, backupauthResourceDirName);
 
   if (fs.existsSync(backupauthResourceDirPath)) {
@@ -92,7 +90,7 @@ function rollback(authresourcePath: string, backupauthResourceDirPath: string) {
 }
 
 function cleanUp(authresourcePath: string) {
-  fs.removeSync(authresourcePath);
+  if (fs.existsSync(authresourcePath)) fs.removeSync(authresourcePath);
 }
 
 const getCliInputs = (parameters: $TSObject): CognitoCLIInputs => {

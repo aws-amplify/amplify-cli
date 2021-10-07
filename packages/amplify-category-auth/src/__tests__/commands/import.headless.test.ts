@@ -1,7 +1,6 @@
-import { executeAmplifyHeadlessCommand } from '../../../lib';
+import { executeAmplifyHeadlessCommand } from '../../..';
 import { ImportAuthRequest } from 'amplify-headless-interface';
 import { messages } from '../../provider-utils/awscloudformation/assets/string-maps';
-import { stateManager } from 'amplify-cli-core';
 
 jest.mock('amplify-cli-core', () => ({
   ...(jest.requireActual('amplify-cli-core') as {}),

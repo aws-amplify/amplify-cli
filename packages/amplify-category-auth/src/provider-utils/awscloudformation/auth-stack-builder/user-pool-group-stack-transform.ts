@@ -10,6 +10,7 @@ import {
   Template,
   AmplifyStackTemplate,
   AmplifyCategoryTransform,
+  $TSAny,
 } from 'amplify-cli-core';
 import { AuthStackSythesizer } from './stack-synthesizer';
 import * as cdk from '@aws-cdk/core';
@@ -19,6 +20,10 @@ import { AmplifyUserPoolGroupStack } from './auth-user-pool-group-stack-builder'
 import * as amplifyPrinter from 'amplify-prompts';
 import _ from 'lodash';
 import { CognitoCLIInputs } from '../service-walkthrough-types/awsCognito-user-input-types';
+import { printer } from 'amplify-prompts';
+import * as fs from 'fs-extra';
+import * as vm from 'vm2';
+import os from 'os';
 
 export type UserPoolGroupMetadata = {
   groupName: string;
@@ -167,31 +172,23 @@ export class AmplifyUserPoolGroupTransform extends AmplifyCategoryTransform {
       return false;
     });
     if (isBuild) {
-      console.log(path.join(overrideDir, 'build', 'override.js'));
-      const { overrideProps } = await import(path.join(overrideDir, 'build', 'override.js')).catch(error => {
-        amplifyPrinter.formatter.list([
-          'No override File Found',
-          `To override ${this._resourceName} run amplify override auth ${this._resourceName} `,
-        ]);
-        return undefined;
+      const overrideCode: string = await fs.readFile(path.join(overrideDir, 'build', 'override.js'), 'utf-8').catch(() => {
+        amplifyPrinter.formatter.list(['No override File Found', `To override ${this._resourceName} run amplify override auth`]);
+        return '';
       });
-      // const overrideCode : string = await fs.readFile(path.join(overrideDir,'build','override.js'),'utf-8').catch( ()  =>{
-      //   amplifyPrinter.formatter.list(['No override File Found',`To override ${this._resourceName} run amplify override auth ${this._resourceName} `]);
-      //   return '';
-      // });
       const cognitoStackTemplateObj = this._userPoolGroupTemplateObj as AmplifyUserPoolGroupStack & AmplifyStackTemplate;
-      //TODO: Check Script Options
-      if (typeof overrideProps === 'function' && overrideProps) {
-        try {
-          this._userPoolGroupTemplateObj = overrideProps(cognitoStackTemplateObj);
-
-          //The vm module enables compiling and running code within V8 Virtual Machine contexts. The vm module is not a security mechanism. Do not use it to run untrusted code.
-          // const script = new vm.Script(overrideCode);
-          // script.runInContext(vm.createContext(cognitoStackTemplateObj));
-          return;
-        } catch (error) {
-          throw new Error(`Error while override resource ${this._resourceName}`);
-        }
+      const sandboxNode = new vm.NodeVM({
+        console: 'inherit',
+        timeout: 5000,
+        sandbox: {},
+      });
+      try {
+        this._userPoolGroupTemplateObj = sandboxNode.run(overrideCode).overrideProps(cognitoStackTemplateObj);
+      } catch (err: $TSAny) {
+        const error = new Error(`Skipping override due to ${err}${os.EOL}`);
+        printer.error(`${error}`);
+        error.stack = undefined;
+        throw error;
       }
     }
   };

@@ -1,5 +1,4 @@
-import { $TSAny } from '../../../../../../amplify-cli-core/lib';
-import { CognitoConfiguration } from '../../../../provider-utils/awscloudformation/service-walkthrough-types/awsCognito-user-input-types';
+import { $TSAny, $TSContext } from 'amplify-cli-core';
 import { ServiceQuestionHeadlessResult } from '../../../../provider-utils/awscloudformation/service-walkthrough-types/cognito-user-input-types';
 import { structureOAuthMetadata } from '../../../../provider-utils/awscloudformation/service-walkthroughs/auth-questions';
 import {
@@ -44,7 +43,7 @@ describe('update auth defaults applier', () => {
       authSelections: 'userPoolOnly',
     } as ServiceQuestionHeadlessResult;
 
-    const result = await getUpdateAuthDefaultsApplier({}, 'cognito-defaults.js', {} as $TSAny)(stubResult);
+    const result = await getUpdateAuthDefaultsApplier({} as unknown as $TSContext, 'cognito-defaults.js', {} as $TSAny)(stubResult);
     expect(result).toMatchSnapshot();
     expect(structureOAuthMetadata_mock.mock.calls.length).toBe(1);
   });
@@ -56,7 +55,7 @@ describe('update auth defaults applier', () => {
       requiredAttributes: [] as string[],
     } as ServiceQuestionHeadlessResult;
 
-    const result = await getUpdateAuthDefaultsApplier({}, 'cognito-defaults.js', {} as $TSAny)(stubResult);
+    const result = await getUpdateAuthDefaultsApplier({} as unknown as $TSContext, 'cognito-defaults.js', {} as $TSAny)(stubResult);
     expect(result.requiredAttributes).toEqual([]);
   });
 });
@@ -69,7 +68,7 @@ describe('add auth defaults applier', () => {
       requiredAttributes: [] as string[],
     } as ServiceQuestionHeadlessResult;
 
-    const result = await getAddAuthDefaultsApplier({}, 'cognito-defaults.js', 'testProjectName')(stubResult);
+    const result = await getAddAuthDefaultsApplier({} as unknown as $TSContext, 'cognito-defaults.js', 'testProjectName')(stubResult);
     expect(result.requiredAttributes).toEqual([]);
   });
 });

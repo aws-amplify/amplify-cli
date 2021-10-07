@@ -18,13 +18,14 @@ import { authProviders } from '../assets/string-maps';
 import { CognitoCLIInputs, CognitoConfiguration } from '../service-walkthrough-types/awsCognito-user-input-types';
 import { getAuthResourceName } from '../../../utils/getAuthResourceName';
 import { printer } from 'amplify-prompts';
+import { $TSContext } from 'amplify-cli-core';
 
 /**
  * Factory function that returns a CognitoCLIInputs consumer that handles all of the resource generation logic.
  * The consumer returns the resourceName of the generated resource.
  * @param context The amplify context
  */
-export const getAddAuthHandler = (context: any) => async (request: ServiceQuestionHeadlessResult | CognitoConfiguration) => {
+export const getAddAuthHandler = (context: $TSContext) => async (request: ServiceQuestionHeadlessResult | CognitoConfiguration) => {
   const serviceMetadata = supportedServices[request.serviceName];
   const { cfnFilename, defaultValuesFilename, provider } = serviceMetadata;
 
@@ -60,7 +61,7 @@ export const getAddAuthHandler = (context: any) => async (request: ServiceQuesti
   try {
     const cliState = new AuthInputState(cognitoCLIInputs.cognitoConfig.resourceName);
     // saving cli-inputs except secrets
-    const answer = await cliState.saveCLIInputPayload(cognitoCLIInputs);
+    await cliState.saveCLIInputPayload(cognitoCLIInputs);
     // cdk transformation in this function
     // start auth transform here
     await generateAuthStackTemplate(context, cognitoCLIInputs.cognitoConfig.resourceName);
@@ -70,10 +71,10 @@ export const getAddAuthHandler = (context: any) => async (request: ServiceQuesti
     getPostAddAuthMetaUpdater(context, { service: cognitoCLIInputs.cognitoConfig.serviceName, providerName: provider })(
       cliInputs.resourceName,
     );
-    getPostAddAuthMessagePrinter(context.print)(cognitoCLIInputs.cognitoConfig.resourceName);
+    getPostAddAuthMessagePrinter(cognitoCLIInputs.cognitoConfig.resourceName);
 
     if (doesConfigurationIncludeSMS(request)) {
-      await printSMSSandboxWarning(context.print);
+      await printSMSSandboxWarning();
     }
   } catch (err) {
     printer.info(err.stack);
@@ -166,7 +167,7 @@ export const getUpdateAuthHandler = (context: any) => async (request: ServiceQue
     await getPostUpdateAuthMessagePrinter(context.print)(cognitoCLIInputs.cognitoConfig.resourceName);
 
     if (doesConfigurationIncludeSMS(cliInputs)) {
-      await printSMSSandboxWarning(context.print);
+      await printSMSSandboxWarning();
     }
   } catch (err) {
     printer.info(err.stack);

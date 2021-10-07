@@ -1,4 +1,5 @@
 import { $TSContext } from 'amplify-cli-core';
+import { printer } from 'amplify-prompts';
 import { uploadFiles } from '../../provider-utils/awscloudformation/utils/trigger-file-uploader';
 
 export const name = 'push';
@@ -13,8 +14,8 @@ export const run = async (context: $TSContext) => {
     await uploadFiles(context);
     return result;
   } catch (err) {
-    context.print.info(err.stack);
-    context.print.error('There was an error pushing the auth resource');
+    printer.info(err.stack);
+    printer.error('There was an error pushing the auth resource');
     context.usageData.emitError(err);
     process.exitCode = 1;
   }

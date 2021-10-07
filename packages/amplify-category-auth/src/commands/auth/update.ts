@@ -7,13 +7,15 @@ import { AuthInputState } from '../../provider-utils/awscloudformation/auth-inpu
 import _ from 'lodash';
 import { migrateResourceToSupportOverride } from '../../provider-utils/awscloudformation/utils/migrate-override-resource';
 import { CognitoCLIInputs } from '../../provider-utils/awscloudformation/service-walkthrough-types/awsCognito-user-input-types';
+import { supportedServices } from '../../provider-utils/supported-services';
+
+import * as providerController from '../../provider-utils/awscloudformation/index';
 
 export const name = 'update';
 export const alias = ['update'];
 
 export const run = async (context: $TSContext) => {
   const { amplify } = context;
-  const servicesMetadata = (await import('../../provider-utils/supported-services')).supportedServices;
   const stateMeta = stateManager.getMeta();
   const existingAuth = stateMeta.auth;
   if (!existingAuth) {
@@ -41,47 +43,42 @@ export const run = async (context: $TSContext) => {
   }
   const resourceName = await getAuthResourceName(context);
   let prevCLIInputs: CognitoCLIInputs;
-  try {
-    const cliState = new AuthInputState(resourceName);
-    prevCLIInputs = cliState.getCLIInputPayload();
-  } catch (err) {
-    printer.warn('Cli-inputs.json doesnt exist');
+  const cliState = new AuthInputState(resourceName);
+  if (!cliState.cliInputFileExists()) {
+    printer.debug('Cli-inputs.json doesnt exist');
     // put spinner here
     const isMigrate = await prompter.confirmContinue(`Do you want to migrate this ${resourceName} to support overrides?`);
     if (isMigrate) {
       // generate cli-inputs for migration from parameters.json
       migrateResourceToSupportOverride(resourceName);
       // fetch cli Inputs again
-      const cliState = new AuthInputState(resourceName);
       prevCLIInputs = cliState.getCLIInputPayload();
       await generateAuthStackTemplate(context, prevCLIInputs.cognitoConfig.resourceName);
     }
   }
-  const cliState = new AuthInputState(resourceName);
   context.updatingAuth = await cliState.loadResourceParameters(context, cliState.getCLIInputPayload());
 
   try {
-    const result = await amplify.serviceSelectionPrompt(context, category, servicesMetadata);
+    const result = await amplify.serviceSelectionPrompt(context, category, supportedServices);
     const options = {
       service: result.service,
       providerPlugin: result.providerName,
       resourceName,
     };
-    const providerController = await import(`../../provider-utils/${result.providerName}/index`);
     if (!providerController) {
       printer.error('Provider not configured for this category');
       return;
     }
-    const updateRsourceResponse = await providerController.updateResource(context, options);
+    const updateResourceResponse = await providerController.updateResource(context, options);
     printer.success(`Successfully updated resource ${name} locally`);
-    printer.info('');
+    printer.blankLine();
     printer.success('Some next steps:');
     printer.info('"amplify push" will build all your local backend resources and provision it in the cloud');
     printer.info(
       '"amplify publish" will build all your local backend and frontend resources (if you have hosting category added) and provision it in the cloud',
     );
-    printer.info('');
-    return updateRsourceResponse;
+    printer.blankLine();
+    return updateResourceResponse;
   } catch (err) {
     printer.info(err.stack);
     printer.error('There was an error adding the auth resource');

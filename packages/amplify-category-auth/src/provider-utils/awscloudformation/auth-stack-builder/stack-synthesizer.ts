@@ -4,7 +4,7 @@ import { AmplifyAuthCognitoStack } from './auth-cognito-stack-builder';
 import { AmplifyUserPoolGroupStack } from './auth-user-pool-group-stack-builder';
 
 export class AuthStackSythesizer extends LegacyStackSynthesizer {
-  private stacks: Map<string, Stack> = new Map();
+  private readonly stacks: Map<string, Stack> = new Map();
   private static readonly stackAssets: Map<string, Template> = new Map();
 
   protected synthesizeStackTemplate(stack: Stack, session: ISynthesisSession): void {

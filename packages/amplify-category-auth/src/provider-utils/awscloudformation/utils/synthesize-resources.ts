@@ -6,7 +6,6 @@ import { cfnTemplateRoot, privateKeys, adminAuthAssetRoot, triggerRoot } from '.
 import { pathManager, JSONUtilities, FeatureFlags, $TSAny } from 'amplify-cli-core';
 import { get } from 'lodash';
 import { generateUserPoolGroupStackTemplate } from './generate-user-pool-group-stack-template';
-import { AuthInputState } from '../auth-inputs-manager/auth-input-state';
 import { CognitoConfiguration } from '../service-walkthrough-types/awsCognito-user-input-types';
 
 const category = 'auth';

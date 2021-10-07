@@ -1,7 +1,5 @@
 import { AmplifyUserPoolGroupTransform } from '../../../../provider-utils/awscloudformation/auth-stack-builder';
 import { $TSContext } from 'amplify-cli-core';
-import { AuthInputState } from '../../../../provider-utils/awscloudformation/auth-inputs-manager/auth-input-state';
-import * as path from 'path';
 
 jest.mock('amplify-cli-core', () => ({
   ...(jest.requireActual('amplify-cli-core') as {}),

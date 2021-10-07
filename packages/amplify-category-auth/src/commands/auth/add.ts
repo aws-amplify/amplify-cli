@@ -4,5 +4,5 @@ import * as enable from './enable';
 export const name = 'add';
 
 export const run = async (context: $TSContext) => {
-  enable.run(context);
+  await enable.run(context);
 };

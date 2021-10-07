@@ -1,7 +1,5 @@
 import { AmplifyAuthTransform } from '../../../../provider-utils/awscloudformation/auth-stack-builder';
 import { $TSContext } from 'amplify-cli-core';
-import { AuthInputState } from '../../../../provider-utils/awscloudformation/auth-inputs-manager/auth-input-state';
-import * as path from 'path';
 
 jest.mock('amplify-cli-core', () => ({
   ...(jest.requireActual('amplify-cli-core') as {}),
@@ -14,7 +12,7 @@ jest.mock('amplify-cli-core', () => ({
     }),
   },
   pathManager: {
-    getBackendDirPath: jest.fn().mockReturnValue('..'),
+    getBackendDirPath: jest.fn().mockReturnValue(__dirname),
   },
   JSONUtilities: {
     writeJson: jest.fn(),

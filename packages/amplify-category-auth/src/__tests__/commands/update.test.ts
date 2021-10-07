@@ -10,13 +10,7 @@ jest.mock('fs-extra', () => ({
   existsSync: () => true,
 }));
 
-jest.mock('amplify-prompts', () => ({
-  printer: {
-    info: jest.fn(),
-    warn: jest.fn(),
-    error: jest.fn(),
-  },
-}));
+jest.mock('amplify-prompts');
 
 jest.mock('amplify-cli-core', () => ({
   ...(jest.requireActual('amplify-cli-core') as {}),

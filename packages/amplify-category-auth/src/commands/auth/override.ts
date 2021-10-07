@@ -1,11 +1,6 @@
-/*
-    entry code for amplify override auth
-*/
 import path from 'path';
 import { generateOverrideSkeleton, $TSContext, stateManager, pathManager } from 'amplify-cli-core';
-import * as inquirer from 'inquirer';
 import { AuthInputState } from '../../provider-utils/awscloudformation/auth-inputs-manager/auth-input-state';
-import { CognitoCLIInputs } from '../../provider-utils/awscloudformation/service-walkthrough-types/awsCognito-user-input-types';
 import { printer, prompter } from 'amplify-prompts';
 import { migrateResourceToSupportOverride } from '../../provider-utils/awscloudformation/utils/migrate-override-resource';
 import { generateAuthStackTemplate } from '../../provider-utils/awscloudformation/utils/generate-auth-stack-template';
@@ -26,31 +21,17 @@ export const run = async (context: $TSContext) => {
     return;
   }
 
-  let selectedAuthResource = authResources[0];
-
-  if (authResources.length > 1) {
-    const resourceAnswer = await inquirer.prompt({
-      type: 'list',
-      name: 'resource',
-      message: 'Which resource would you like to add overrides for?',
-      choices: authResources,
-    });
-    selectedAuthResource = resourceAnswer.resource;
-  }
-
+  const selectedAuthResource = await prompter.pick<'one', string>(`Which resource would you like to add overrides for?`, authResources);
   // check if migration needed
-  let cliInputs: CognitoCLIInputs;
-  try {
-    const cliState = new AuthInputState(selectedAuthResource);
-    cliInputs = cliState.getCLIInputPayload();
-  } catch (err) {
-    printer.warn('Cli-inputs.json doesnt exist');
+  const cliState = new AuthInputState(selectedAuthResource);
+  if (!cliState.cliInputFileExists()) {
+    printer.debug('Cli-inputs.json doesnt exist');
     const isMigrate = await prompter.confirmContinue(`Do you want to migrate this ${selectedAuthResource} to support overrides?`);
     if (isMigrate) {
       migrateResourceToSupportOverride(selectedAuthResource);
       generateAuthStackTemplate(context, selectedAuthResource);
     } else {
-      printer.warn('Turn off the feature flag to stay on existing state');
+      printer.warn('Migration is needed to support Overrides feature');
       return;
     }
   }

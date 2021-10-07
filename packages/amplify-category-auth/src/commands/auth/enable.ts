@@ -1,5 +1,9 @@
 import { $TSContext } from 'amplify-cli-core';
+import { printer } from 'amplify-prompts';
+import * as path from 'path';
 import { projectHasAuth } from '../../provider-utils/awscloudformation/utils/project-has-auth';
+import { supportedServices } from '../../provider-utils/supported-services';
+
 export const name = 'enable';
 export const category = 'auth';
 export const alias = ['add'];
@@ -9,11 +13,10 @@ export const run = async (context: $TSContext) => {
     return;
   }
   const { amplify } = context;
-  const servicesMetadata = (await import('../../provider-utils/supported-services')).supportedServices;
-  const serviceSelectionPromptResult = await amplify.serviceSelectionPrompt(context, category, servicesMetadata);
-  const providerController = await import(`../../provider-utils/${serviceSelectionPromptResult.providerName}/index`);
+  const serviceSelectionPromptResult = await amplify.serviceSelectionPrompt(context, category, supportedServices);
+  const providerController = await import(path.join(`..`, `..`, `provider-utils`, `${serviceSelectionPromptResult.providerName}`, `index`));
   if (!providerController) {
-    context.print.error('Provider not configured for this category');
+    printer.error('Provider not configured for this category');
     return;
   }
   return providerController.addResource(context, serviceSelectionPromptResult.service);

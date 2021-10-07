@@ -11,49 +11,46 @@ import {
   $TSContext,
 } from 'amplify-cli-core';
 import { CognitoCLIInputs } from '../service-walkthrough-types/awsCognito-user-input-types';
-import { AuthTriggerConnection, AuthTriggerPermissions, CognitoStackOptions } from '../service-walkthrough-types/cognito-user-input-types';
+import { CognitoStackOptions } from '../service-walkthrough-types/cognito-user-input-types';
 import _ from 'lodash';
 
 export class AuthInputState extends CategoryInputState {
-  _cliInputsFilePath: string; //cli-inputs.json (output) filepath
-  _resourceName: string; //user friendly name provided by user
-  _category: string; //category of the resource
-  _service: string; //AWS service for the resource
-  _buildFilePath: string;
+  #cliInputsFilePath: string; //cli-inputs.json (output) filepath
+  #resourceName: string; //user friendly name provided by user
+  #category: string; //category of the resource
+  #service: string; //AWS service for the resource
+  #buildFilePath: string;
 
   constructor(resourceName: string) {
     super(resourceName);
-    this._category = AmplifyCategories.AUTH;
-    this._service = AmplifySupportedService.COGNITO;
-    this._resourceName = resourceName;
+    this.#category = AmplifyCategories.AUTH;
+    this.#service = AmplifySupportedService.COGNITO;
+    this.#resourceName = resourceName;
 
     const projectBackendDirPath = pathManager.getBackendDirPath();
-    this._cliInputsFilePath = path.resolve(path.join(projectBackendDirPath, AmplifyCategories.AUTH, resourceName, 'cli-inputs.json'));
-    this._buildFilePath = path.resolve(path.join(projectBackendDirPath, AmplifyCategories.AUTH, resourceName, 'build'));
+    this.#cliInputsFilePath = path.resolve(path.join(projectBackendDirPath, AmplifyCategories.AUTH, resourceName, 'cli-inputs.json'));
+    this.#buildFilePath = path.resolve(path.join(projectBackendDirPath, AmplifyCategories.AUTH, resourceName, 'build'));
   }
 
-  public async isCLIInputsValid(cliInputs?: CognitoCLIInputs): Promise<boolean> {
-    if (!cliInputs) {
-      cliInputs = this.getCLIInputPayload();
-    }
-    const schemaValidator = new CLIInputSchemaValidator('awsCognito', this._category, 'CognitoCLIInputs');
-    try {
-      return await schemaValidator.validateInput(JSON.stringify(cliInputs));
-    } catch (e) {
+  public async isCLIInputsValid(cliInputs: CognitoCLIInputs = this.getCLIInputPayload()): Promise<boolean> {
+    const schemaValidator = new CLIInputSchemaValidator('awsCognito', this.#category, 'CognitoCLIInputs');
+    return schemaValidator.validateInput(JSON.stringify(cliInputs)).catch(e => {
       throw e;
-    }
+    });
   }
 
   public getCLIInputPayload(): CognitoCLIInputs {
-    let cliInputs: CognitoCLIInputs;
-    cliInputs = JSONUtilities.readJson(this._cliInputsFilePath, { throwIfNotExist: true }) as CognitoCLIInputs;
-    return cliInputs;
+    return JSONUtilities.readJson<CognitoCLIInputs>(this.#cliInputsFilePath, { throwIfNotExist: true })!;
+  }
+
+  public cliInputFileExists(): boolean {
+    return fs.existsSync(this.#cliInputsFilePath);
   }
 
   public async saveCLIInputPayload(cliInputs: CognitoCLIInputs): Promise<void> {
     if (await this.isCLIInputsValid(cliInputs)) {
-      fs.ensureDirSync(path.join(pathManager.getBackendDirPath(), this._category, this._resourceName));
-      JSONUtilities.writeJson(this._cliInputsFilePath, cliInputs);
+      fs.ensureDirSync(path.join(pathManager.getBackendDirPath(), this.#category, this._resourceName));
+      JSONUtilities.writeJson(this.#cliInputsFilePath, cliInputs);
     }
   }
 
@@ -82,7 +79,7 @@ export class AuthInputState extends CategoryInputState {
     };
 
     // determine permissions needed for each trigger module
-    if (parameters.triggers && !_.isEmpty(parameters.triggers)) {
+    if (!_.isEmpty(parameters.triggers)) {
       parameters.triggers = JSON.stringify(parameters.triggers);
       // convert dependsOn
       let dependsOn;

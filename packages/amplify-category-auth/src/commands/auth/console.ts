@@ -1,8 +1,6 @@
 import { $TSContext } from 'amplify-cli-core';
-import * as indexModule from '../../index';
+import { console } from '../..';
 
 export const subcommand = 'console';
 
-export const run = async (context: $TSContext) => {
-  await indexModule.console(context);
-};
+export const run = console;

@@ -355,41 +355,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
         });
         //Updating lambda role with permissions to Cognito
         if (!_.isEmpty(props.permissions)) {
-          props.permissions?.forEach(permission => {
-            const resourceKey = `${props.resourceName}${permission.trigger}${permission.policyName}`;
-            this.lambdaTriggerPermissions![resourceKey] = new iam.CfnPolicy(this, resourceKey, {
-              policyName: resourceKey,
-              policyDocument: {
-                Version: '2012-10-17',
-                Statement: [
-                  {
-                    Effect: permission.effect,
-                    Action: cdk.Lazy.anyValue({
-                      produce: () => {
-                        permission.actions.forEach(action => {
-                          return action;
-                        });
-                      },
-                    }),
-                    Resource: cdk.Lazy.stringValue({
-                      produce: () => {
-                        if (permission.resource.paramType === 'string') {
-                          return permission.resource.keys as string;
-                        }
-                        if (permission.resource.paramType === '!GetAtt') {
-                          return cdk.Fn.getAtt(permission.resource.keys[0], permission.resource.keys[1]).toString();
-                        }
-                        if (permission.resource.paramType === '!Ref') {
-                          return cdk.Fn.ref(permission.resource.keys as string);
-                        }
-                      },
-                    }),
-                  },
-                ],
-              },
-              roles: [cdk.Fn.join('', [`${props.resourceName}${permission.trigger}`, '-', cdk.Fn.ref('env')])],
-            });
-          });
+          this.generateIAMPolicies(props);
         }
       }
       /**
@@ -1141,4 +1107,42 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
     });
     this.openIdLambdaInputs.node.addDependency(this.openIdLogPolicy);
   }
+
+  generateIAMPolicies = (props: CognitoStackOptions): void => {
+    props.permissions?.forEach(permission => {
+      const resourceKey = `${props.resourceName}${permission.trigger}${permission.policyName}`;
+      this.lambdaTriggerPermissions![resourceKey] = new iam.CfnPolicy(this, resourceKey, {
+        policyName: resourceKey,
+        policyDocument: {
+          Version: '2012-10-17',
+          Statement: [
+            {
+              Effect: permission.effect,
+              Action: cdk.Lazy.anyValue({
+                produce: () => {
+                  permission.actions.forEach(action => {
+                    return action;
+                  });
+                },
+              }),
+              Resource: cdk.Lazy.stringValue({
+                produce: () => {
+                  if (permission.resource.paramType === 'string') {
+                    return permission.resource.keys as string;
+                  }
+                  if (permission.resource.paramType === '!GetAtt') {
+                    return cdk.Fn.getAtt(permission.resource.keys[0], permission.resource.keys[1]).toString();
+                  }
+                  if (permission.resource.paramType === '!Ref') {
+                    return cdk.Fn.ref(permission.resource.keys as string);
+                  }
+                },
+              }),
+            },
+          ],
+        },
+        roles: [cdk.Fn.join('', [`${props.resourceName}${permission.trigger}`, '-', cdk.Fn.ref('env')])],
+      });
+    });
+  };
 }

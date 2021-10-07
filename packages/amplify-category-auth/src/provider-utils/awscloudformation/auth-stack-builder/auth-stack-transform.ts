@@ -12,6 +12,7 @@ import {
   AmplifyCategoryTransform,
   JSONUtilities,
   stateManager,
+  $TSAny,
 } from 'amplify-cli-core';
 import { AmplifyAuthCognitoStack } from './auth-cognito-stack-builder';
 import { AuthStackSythesizer } from './stack-synthesizer';
@@ -24,6 +25,10 @@ import * as amplifyPrinter from 'amplify-prompts';
 import { generateNestedAuthTriggerTemplate } from '../utils/generate-auth-trigger-template';
 import { createUserPoolGroups, updateUserPoolGroups } from '../utils/synthesize-resources';
 import { CognitoCLIInputs } from '../service-walkthrough-types/awsCognito-user-input-types';
+import * as vm from 'vm2';
+import * as fs from 'fs-extra';
+import { printer } from 'amplify-prompts';
+import os from 'os';
 
 export class AmplifyAuthTransform extends AmplifyCategoryTransform {
   _app: cdk.App;
@@ -106,49 +111,46 @@ export class AmplifyAuthTransform extends AmplifyCategoryTransform {
       });
     }
 
-    for (var i = 0; i < Object.keys(props).length; i++) {
-      if (
-        typeof Object.values(props)[i] === 'string' ||
-        (typeof Object.values(props)[i] === 'object' && !Array.isArray(Object.values(props)[i]))
-      ) {
+    for (const [key, value] of Object.entries(props)) {
+      if (typeof value === 'string' || (typeof value === 'object' && !Array.isArray(value))) {
         this._authTemplateObj.addCfnParameter(
           {
             type: 'String',
           },
-          `${Object.keys(props)[i]}`,
+          `${key}`,
         );
       }
 
-      if (typeof Object.values(props)[i] === 'boolean') {
+      if (typeof value === 'boolean') {
         this._authTemplateObj.addCfnParameter(
           {
             type: 'String',
           },
-          `${Object.keys(props)[i]}`,
+          `${key}`,
         );
       }
-      if (typeof Object.values(props)[i] === 'number') {
+      if (typeof value === 'number') {
         this._authTemplateObj.addCfnParameter(
           {
             type: 'String',
           },
-          `${Object.keys(props)[i]}`,
+          `${key}`,
         );
       }
-      if (Object.keys(props)[i] === 'parentStack') {
+      if (value === 'parentStack') {
         this._authTemplateObj.addCfnParameter(
           {
             type: 'String',
           },
-          `${Object.keys(props)[i]}`,
+          `${key}`,
         );
       }
-      if (Array.isArray(Object.values(props)[i])) {
+      if (Array.isArray(value)) {
         this._authTemplateObj.addCfnParameter(
           {
             type: 'CommaDelimitedList',
           },
-          `${Object.keys(props)[i]}`,
+          `${key}`,
         );
       }
     }
@@ -345,30 +347,24 @@ export class AmplifyAuthTransform extends AmplifyCategoryTransform {
       return false;
     });
     if (isBuild) {
-      const { overrideProps } = await import(path.join(overrideDir, 'build', 'override.js')).catch(error => {
-        amplifyPrinter.formatter.list([
-          'No override File Found',
-          `To override ${this._resourceName} run amplify override auth ${this._resourceName} `,
-        ]);
-        return undefined;
+      const overrideCode: string = await fs.readFile(path.join(overrideDir, 'build', 'override.js'), 'utf-8').catch(() => {
+        amplifyPrinter.formatter.list(['No override File Found', `To override ${this._resourceName} run amplify override auth`]);
+        return '';
       });
-      // const overrideCode : string = await fs.readFile(path.join(overrideDir,'build','override.js'),'utf-8').catch( ()  =>{
-      //   amplifyPrinter.formatter.list(['No override File Found',`To override ${this._resourceName} run amplify override auth ${this._resourceName} `]);
-      //   return '';
-      // });
       const cognitoStackTemplateObj = this._authTemplateObj as AmplifyAuthCognitoStack & AmplifyStackTemplate;
-      //TODO: Check Script Options
-      if (typeof overrideProps === 'function' && overrideProps) {
-        try {
-          this._authTemplateObj = overrideProps(cognitoStackTemplateObj);
-
-          //The vm module enables compiling and running code within V8 Virtual Machine contexts. The vm module is not a security mechanism. Do not use it to run untrusted code.
-          // const script = new vm.Script(overrideCode);
-          // script.runInContext(vm.createContext(cognitoStackTemplateObj));
-          return;
-        } catch (error) {
-          throw new Error(`Error while override resource ${this._resourceName}`);
-        }
+      const sandboxNode = new vm.NodeVM({
+        console: 'inherit',
+        timeout: 5000,
+        sandbox: {},
+        require: true,
+      });
+      try {
+        this._authTemplateObj = sandboxNode.run(overrideCode).overrideProps(cognitoStackTemplateObj);
+      } catch (err: $TSAny) {
+        const error = new Error(`Skipping override due to ${err}${os.EOL}`);
+        printer.error(`${error}`);
+        error.stack = undefined;
+        throw error;
       }
     }
   };

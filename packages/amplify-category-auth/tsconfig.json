@@ -11,6 +11,7 @@
     "coverage",
     "lib",
     "resources",
+    "scripts",
     "provider-utils/awscloudformation/triggers",
     "src/__tests__",
   ],

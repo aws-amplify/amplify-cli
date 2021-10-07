@@ -1,5 +1,5 @@
 import * as path from 'path';
-import { JSONUtilities, pathManager } from 'amplify-cli-core';
+import { JSONUtilities, pathManager, $TSAny } from 'amplify-cli-core';
 import { transformUserPoolGroupSchema } from './transform-user-pool-group';
 import { authProviders as authProviderList } from '../assets/string-maps';
 import { AuthParameters } from '../import/types';
@@ -73,7 +73,7 @@ export const getPostUpdateAuthMetaUpdater = (context: any) => async (resourceNam
 
   let customAuthConfigured = false;
   if (authParameters.triggers) {
-    const triggers = JSONUtilities.parse<any>(authParameters.triggers);
+    const triggers = JSONUtilities.parse<$TSAny>(authParameters.triggers);
     customAuthConfigured =
       !!triggers.DefineAuthChallenge &&
       triggers.DefineAuthChallenge.length > 0 &&
