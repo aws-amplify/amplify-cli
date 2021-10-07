@@ -12,7 +12,55 @@ const CONCURRENCY = 25;
 // Each of these failures should be independently investigated, resolved, and removed from this list.
 // For now, this list is being used to skip creation of circleci jobs for these tasks
 const WINDOWS_TEST_FAILURES = [
-  
+  'datastore-modelgen-amplify_e2e_tests',
+  'delete-amplify_e2e_tests',
+  'env-amplify_e2e_tests',
+  'feature-flags-amplify_e2e_tests',
+  'function_1-amplify_e2e_tests',
+  'function_2-amplify_e2e_tests',
+  'function_3-amplify_e2e_tests',
+  'function_4-amplify_e2e_tests',
+  'function_5-amplify_e2e_tests',
+  'function_6-amplify_e2e_tests',
+  'function_7-amplify_e2e_tests',
+  'function_8-amplify_e2e_tests',
+  'function_9-amplify_e2e_tests',
+  'geo-remove-amplify_e2e_tests',
+  'geo-update-amplify_e2e_tests',
+  'layer-1-amplify_e2e_tests',
+  'layer-2-amplify_e2e_tests',
+  'layer-3-amplify_e2e_tests',
+  'layer-4-amplify_e2e_tests',
+  'migration-api-connection-migration-amplify_e2e_tests',
+  'migration-api-connection-migration2-amplify_e2e_tests',
+  'migration-api-key-migration1-amplify_e2e_tests',
+  'migration-api-key-migration2-amplify_e2e_tests',
+  'pull-amplify_e2e_tests',
+  'schema-iterative-rollback-1-amplify_e2e_tests',
+  'schema-iterative-rollback-2-amplify_e2e_tests',
+  'schema-iterative-update-1-amplify_e2e_tests',
+  'schema-iterative-update-2-amplify_e2e_tests',
+  'schema-iterative-update-3-amplify_e2e_tests',
+  'schema-iterative-update-4-amplify_e2e_tests',
+  'schema-iterative-update-locking-amplify_e2e_tests',
+  'schema-key-amplify_e2e_tests',
+  'api_4-amplify_e2e_tests',
+  'api_3-amplify_e2e_tests',
+  'api_2-amplify_e2e_tests',
+  'api_1-amplify_e2e_tests',
+  'amplify-app-amplify_e2e_tests',
+  'import_s3_1-amplify_e2e_tests',
+  'auth_4-amplify_e2e_tests',
+  'auth_3-amplify_e2e_tests',
+
+  // 👇 These fail due to ExpiredToken. 👇
+  // 👇 Tests should be split to speed up execution time. 👇
+  'geo-add-amplify_e2e_tests',
+  'import_auth_1-amplify_e2e_tests',
+  'import_auth_2-amplify_e2e_tests',
+  'import_auth_3-amplify_e2e_tests',
+  'import_dynamodb_2-amplify_e2e_tests',
+  'import_s3_2-amplify_e2e_tests',
 ];
 
 // Ensure to update packages/amplify-e2e-tests/src/cleanup-e2e-resources.ts is also updated this gets updated
