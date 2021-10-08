@@ -100,6 +100,18 @@
                         "type": "string"
                     }
                 },
+                "aliasAttributes": {
+                    "description": "Alias attributes that can be used for sign-up/sign-in",
+                    "type": "array",
+                    "items": {
+                        "enum": [
+                            "EMAIL",
+                            "PHONE_NUMBER",
+                            "PREFERRED_USERNAME"
+                        ],
+                        "type": "string"
+                    }
+                },
                 "userPoolName": {
                     "description": "The name of the user pool. If not specified, a unique string will be generated.",
                     "type": "string"
@@ -419,7 +431,14 @@
                     "description": "If defined, users will be able to login with the specified social providers.",
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/CognitoSocialProviderConfiguration"
+                        "anyOf": [
+                            {
+                                "$ref": "#/definitions/SocialProviderConfig"
+                            },
+                            {
+                                "$ref": "#/definitions/SignInWithAppleSocialProviderConfig"
+                            }
+                        ]
                     }
                 }
             },
@@ -430,7 +449,7 @@
                 "redirectSignoutURIs"
             ]
         },
-        "CognitoSocialProviderConfiguration": {
+        "SocialProviderConfig": {
             "description": "Defines a Cognito oAuth social provider",
             "type": "object",
             "properties": {
@@ -456,6 +475,40 @@
                 "clientId",
                 "clientSecret",
                 "provider"
+            ]
+        },
+        "SignInWithAppleSocialProviderConfig": {
+            "description": "Defines a Cognito Sign in with Apple oAuth social provider",
+            "type": "object",
+            "properties": {
+                "provider": {
+                    "type": "string",
+                    "enum": [
+                        "SIGN_IN_WITH_APPLE"
+                    ]
+                },
+                "clientId": {
+                    "description": "The client ID (sometimes called apple services ID) configured with the provider.",
+                    "type": "string"
+                },
+                "teamId": {
+                    "description": "The team ID configured with the provider",
+                    "type": "string"
+                },
+                "keyId": {
+                    "description": "The key ID (sometimes called apple private key ID) configured with the provider.",
+                    "type": "string"
+                },
+                "privateKey": {
+                    "description": "The private key configured with the provider. Value can be undefined on an update request.\nEvery member can be updated except the privateKey because the privateKey isn't easily retrievable.",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "clientId",
+                "keyId",
+                "provider",
+                "teamId"
             ]
         },
         "NoCognitoIdentityPool": {
@@ -521,6 +574,7 @@
                 "provider": {
                     "enum": [
                         "AMAZON",
+                        "APPLE",
                         "FACEBOOK",
                         "GOOGLE"
                     ],

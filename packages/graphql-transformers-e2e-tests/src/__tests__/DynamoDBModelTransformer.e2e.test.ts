@@ -15,7 +15,17 @@ jest.setTimeout(2000000);
 const cf = new CloudFormationClient('us-west-2');
 const customS3Client = new S3Client('us-west-2');
 const awsS3Client = new S3({ region: 'us-west-2' });
-
+const featureFlags = {
+  getBoolean: jest.fn().mockImplementation((name, defaultValue) => {
+    if (name === 'improvePluralization') {
+      return true;
+    }
+    return;
+  }),
+  getNumber: jest.fn(),
+  getObject: jest.fn(),
+  getString: jest.fn(),
+};
 const BUILD_TIMESTAMP = moment().format('YYYYMMDDHHmmss');
 const STACK_NAME = `DynamoDBModelTransformerTest-${BUILD_TIMESTAMP}`;
 const BUCKET_NAME = `appsync-model-transformer-test-bucket-${BUILD_TIMESTAMP}`;
@@ -81,6 +91,7 @@ beforeAll(async () => {
     }
   `;
   const transformer = new GraphQLTransform({
+    featureFlags,
     transformers: [
       new DynamoDBModelTransformer(),
       new ModelAuthTransformer({

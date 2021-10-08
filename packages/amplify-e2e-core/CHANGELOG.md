@@ -3,6 +3,217 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.28.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@1.27.1...amplify-e2e-core@1.28.0) (2021-10-06)
+
+
+### Features
+
+* Custom policies IAM Policies for Lambda and Containers ([#8068](https://github.com/aws-amplify/amplify-cli/issues/8068)) ([3e1ce0d](https://github.com/aws-amplify/amplify-cli/commit/3e1ce0de4d25ab239adcdcef778cc82f30b17a94))
+
+
+
+
+
+## [1.27.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@1.27.0...amplify-e2e-core@1.27.1) (2021-10-01)
+
+**Note:** Version bump only for package amplify-e2e-core
+
+
+
+
+
+# [1.27.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@1.26.1...amplify-e2e-core@1.27.0) (2021-09-27)
+
+
+### Features
+
+* Flag to allow schema changes that require table replacement ([#8144](https://github.com/aws-amplify/amplify-cli/issues/8144)) ([2d4e65a](https://github.com/aws-amplify/amplify-cli/commit/2d4e65acfd034d33c6fa8ac1f5f8582e7e3bc399))
+
+
+### Reverts
+
+* Revert "feat: Flag to allow schema changes that require table replacement (#8144)" (#8268) ([422dd04](https://github.com/aws-amplify/amplify-cli/commit/422dd04425c72aa7276e086d38ce4d5f4681f9f3)), closes [#8144](https://github.com/aws-amplify/amplify-cli/issues/8144) [#8268](https://github.com/aws-amplify/amplify-cli/issues/8268)
+
+
+
+
+
+## [1.26.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@1.26.0...amplify-e2e-core@1.26.1) (2021-09-18)
+
+**Note:** Version bump only for package amplify-e2e-core
+
+
+
+
+
+# [1.26.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@1.25.0...amplify-e2e-core@1.26.0) (2021-09-14)
+
+
+
+# 5.6.0 (2021-09-14)
+
+
+### Bug Fixes
+
+* **amplify-category-function:** specify UTC tz when selecting start time ([#8053](https://github.com/aws-amplify/amplify-cli/issues/8053)) ([5e3d69a](https://github.com/aws-amplify/amplify-cli/commit/5e3d69aef42d02b661a7ffe878f40de8a3881d5a))
+
+
+### Features
+
+* support five new regions in CLI ([#8094](https://github.com/aws-amplify/amplify-cli/issues/8094)) ([98e6c56](https://github.com/aws-amplify/amplify-cli/commit/98e6c56b21cc9a7e1145ab658c3d8611474d5c44))
+* version blocking for CLI ([#7834](https://github.com/aws-amplify/amplify-cli/issues/7834)) ([045ef3b](https://github.com/aws-amplify/amplify-cli/commit/045ef3b83598c287b7e34bb5d1487bbe026026af))
+
+
+### Reverts
+
+* Revert "feat: version blocking for CLI (#7834)" (#8170) ([f5a92e3](https://github.com/aws-amplify/amplify-cli/commit/f5a92e3fcd288ba8f5eb48db62ccf02f6bb7d03d)), closes [#7834](https://github.com/aws-amplify/amplify-cli/issues/7834) [#8170](https://github.com/aws-amplify/amplify-cli/issues/8170)
+
+
+
+
+
+# [1.25.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@1.24.4...amplify-e2e-core@1.25.0) (2021-09-09)
+
+
+### Features
+
+* Amplify Command Hooks ([#7633](https://github.com/aws-amplify/amplify-cli/issues/7633)) ([4cacaad](https://github.com/aws-amplify/amplify-cli/commit/4cacaadcb87d377a37890b0092bf66c6e7b65b0b))
+
+
+### Reverts
+
+* Revert "ci: add windows e2e test coverage" ([0560b0f](https://github.com/aws-amplify/amplify-cli/commit/0560b0f4a16ce8ce0b7efebb2494c7e2eb8601c8))
+
+
+
+
+
+## [1.24.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@1.24.3...amplify-e2e-core@1.24.4) (2021-09-02)
+
+
+
+# 5.4.0 (2021-09-02)
+
+**Note:** Version bump only for package amplify-e2e-core
+
+
+
+
+
+## [1.24.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@1.24.2...amplify-e2e-core@1.24.3) (2021-08-24)
+
+
+### Bug Fixes
+
+* **amplify-category-auth:** fixed no parameter when hostedui is not present ([#7914](https://github.com/aws-amplify/amplify-cli/issues/7914)) ([a83c978](https://github.com/aws-amplify/amplify-cli/commit/a83c978bb18c6fc1980343523c7ee560079cefe5))
+
+
+
+
+
+## [1.24.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@1.24.1...amplify-e2e-core@1.24.2) (2021-08-06)
+
+
+### Bug Fixes
+
+* **amplify-category-auth:** add auth user selections to aws-exports/amplifyconfiguration files ([#7807](https://github.com/aws-amplify/amplify-cli/issues/7807)) ([3deae39](https://github.com/aws-amplify/amplify-cli/commit/3deae3969740562c8fe1a82d2659e0efffccb49d))
+* multi-env container hosting ([#7009](https://github.com/aws-amplify/amplify-cli/issues/7009)) ([#7346](https://github.com/aws-amplify/amplify-cli/issues/7346)) ([6c33215](https://github.com/aws-amplify/amplify-cli/commit/6c33215d064029add6b93bb10cad96bb63f40101))
+
+
+
+
+
+## [1.24.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@1.24.0...amplify-e2e-core@1.24.1) (2021-07-30)
+
+
+### Bug Fixes
+
+* [#7696](https://github.com/aws-amplify/amplify-cli/issues/7696) - support production package install for function category ([#7812](https://github.com/aws-amplify/amplify-cli/issues/7812)) ([b39141e](https://github.com/aws-amplify/amplify-cli/commit/b39141e9d00bf0dc23318dcc476ed92ab031e88b))
+
+
+
+
+
+# [1.24.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@1.23.1...amplify-e2e-core@1.24.0) (2021-07-27)
+
+
+### Bug Fixes
+
+* **cli:** prevent re-prompt of info on `amplify pull` ([#7730](https://github.com/aws-amplify/amplify-cli/issues/7730)) ([1919558](https://github.com/aws-amplify/amplify-cli/commit/19195589ab2d8b7382cac100c888bdbb62b9ba59))
+* disable layer version removal if fn depends on pinned version ([#7627](https://github.com/aws-amplify/amplify-cli/issues/7627)) ([a086789](https://github.com/aws-amplify/amplify-cli/commit/a086789661df95735679214a65a3808c8a5497e5))
+
+
+### Features
+
+* **amplify-category-auth:** use EnabledMFAs to only configure TOTP ([#7779](https://github.com/aws-amplify/amplify-cli/issues/7779)) ([c2102c5](https://github.com/aws-amplify/amplify-cli/commit/c2102c53fd2ca974fb95c4468ad7a87fefe14ab0))
+* **amplify-category-function:** skip unnecessary prompt for 'amplify update function' ([12872a4](https://github.com/aws-amplify/amplify-cli/commit/12872a40d178f829cab3666037ebefde5eda02c2))
+
+
+### Reverts
+
+* Revert "feat(amplify-category-auth): use EnabledMFAs to only configure TOTP (#7779)" (#7790) ([fa172c4](https://github.com/aws-amplify/amplify-cli/commit/fa172c4caf6f15de56925bd1ff4f8ee743788b52)), closes [#7779](https://github.com/aws-amplify/amplify-cli/issues/7779) [#7790](https://github.com/aws-amplify/amplify-cli/issues/7790)
+* Revert "Revert "ci: add support for e2e token rotation (#7665)" (#7759)" (#7762) ([9ea4c8e](https://github.com/aws-amplify/amplify-cli/commit/9ea4c8e115ae62d7c348c3f0d82c89d795eebf46)), closes [#7665](https://github.com/aws-amplify/amplify-cli/issues/7665) [#7759](https://github.com/aws-amplify/amplify-cli/issues/7759) [#7762](https://github.com/aws-amplify/amplify-cli/issues/7762)
+* Revert "ci: add support for e2e token rotation (#7665)" (#7759) ([aadc915](https://github.com/aws-amplify/amplify-cli/commit/aadc9155f5c25478c7f317aec77f51290c6b9cfe)), closes [#7665](https://github.com/aws-amplify/amplify-cli/issues/7665) [#7759](https://github.com/aws-amplify/amplify-cli/issues/7759)
+
+
+
+
+
+## [1.23.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@1.23.0...amplify-e2e-core@1.23.1) (2021-07-16)
+
+
+### Bug Fixes
+
+* add/update function when some LL are not yet migrated ([#7674](https://github.com/aws-amplify/amplify-cli/issues/7674)) ([9688681](https://github.com/aws-amplify/amplify-cli/commit/968868103744edcfbed6b082b3d9a92867180f73))
+
+
+
+
+
+# [1.23.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@1.22.0...amplify-e2e-core@1.23.0) (2021-07-12)
+
+
+### Features
+
+* support for sign in with apple ([#7413](https://github.com/aws-amplify/amplify-cli/issues/7413)) ([00d6676](https://github.com/aws-amplify/amplify-cli/commit/00d6676b4c1d6995cac01956078f7b6ee6186814))
+
+
+
+
+
+# [1.22.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@1.21.0...amplify-e2e-core@1.22.0) (2021-06-30)
+
+
+### Bug Fixes
+
+* [#7561](https://github.com/aws-amplify/amplify-cli/issues/7561) - auth trigger usage with user groups ([#7592](https://github.com/aws-amplify/amplify-cli/issues/7592)) ([d1d372e](https://github.com/aws-amplify/amplify-cli/commit/d1d372ee55d2fb1c15022642837c1f6fb6994ac8))
+* handle migrated layers with no runtime or multiple runtimes ([#7603](https://github.com/aws-amplify/amplify-cli/issues/7603)) ([856fdf7](https://github.com/aws-amplify/amplify-cli/commit/856fdf7d226c8a6dc47a8e2278b13dd793fee22a))
+
+
+### Features
+
+* configure env vars and secrets for lambda functions ([#7529](https://github.com/aws-amplify/amplify-cli/issues/7529)) ([fac354e](https://github.com/aws-amplify/amplify-cli/commit/fac354e5e26846e8b1499d3a4718b15983e0110f))
+
+
+
+
+
+# [1.21.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@1.20.0...amplify-e2e-core@1.21.0) (2021-06-24)
+
+
+### Bug Fixes
+
+* support adding REST API paths in 'add api' ([#7229](https://github.com/aws-amplify/amplify-cli/issues/7229)) ([fa9404a](https://github.com/aws-amplify/amplify-cli/commit/fa9404afd1eedd342ea6ff2033fcbd143b33748a))
+
+
+### Features
+
+* **import-auth:** add headless support ([#7266](https://github.com/aws-amplify/amplify-cli/issues/7266)) ([7fa478b](https://github.com/aws-amplify/amplify-cli/commit/7fa478bbfebbbe70e286eb19d436d772c32c4fd2))
+
+
+
+
+
 # [1.20.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@1.19.3...amplify-e2e-core@1.20.0) (2021-06-15)
 
 

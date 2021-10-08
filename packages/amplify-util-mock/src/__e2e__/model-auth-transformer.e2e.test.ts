@@ -1,13 +1,12 @@
 import { ModelAuthTransformer } from 'graphql-auth-transformer';
 import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
-import { GraphQLTransform } from 'graphql-transformer-core';
+import { FeatureFlagProvider, GraphQLTransform } from 'graphql-transformer-core';
 import { signUpAddToGroupAndGetJwtToken } from './utils/cognito-utils';
 import { GraphQLClient } from './utils/graphql-client';
 import { deploy, launchDDBLocal, logDebug, terminateDDB } from './utils/index';
+import 'isomorphic-fetch';
 
 jest.setTimeout(2000000);
-
-(global as any).fetch = require('node-fetch');
 
 let GRAPHQL_ENDPOINT = undefined;
 
@@ -141,6 +140,9 @@ beforeAll(async () => {
         },
       }),
     ],
+    featureFlags: {
+      getBoolean: name => (name === 'improvePluralization' ? true : false),
+    } as FeatureFlagProvider,
   });
 
   try {
@@ -792,7 +794,7 @@ test(`Test getSalary w/ Admin group protection not authorized`, async () => {
   expect((req2.errors[0] as any).errorType).toEqual('Unauthorized');
 });
 
-test(`Test listSalarys w/ Admin group protection authorized`, async () => {
+test(`Test listSalaries w/ Admin group protection authorized`, async () => {
   const req = await GRAPHQL_CLIENT_1.query(`
     mutation {
         createSalary(input: { wage: 101 }) {
@@ -806,7 +808,7 @@ test(`Test listSalarys w/ Admin group protection authorized`, async () => {
   expect(req.data.createSalary.wage).toEqual(101);
   const req2 = await GRAPHQL_CLIENT_1.query(`
     query {
-        listSalarys(filter: { wage: { eq: 101 }}) {
+        listSalaries(filter: { wage: { eq: 101 }}) {
             items {
                 id
                 wage
@@ -814,12 +816,12 @@ test(`Test listSalarys w/ Admin group protection authorized`, async () => {
         }
     }
     `);
-  expect(req2.data.listSalarys.items.length).toEqual(1);
-  expect(req2.data.listSalarys.items[0].id).toEqual(req.data.createSalary.id);
-  expect(req2.data.listSalarys.items[0].wage).toEqual(101);
+  expect(req2.data.listSalaries.items.length).toEqual(1);
+  expect(req2.data.listSalaries.items[0].id).toEqual(req.data.createSalary.id);
+  expect(req2.data.listSalaries.items[0].wage).toEqual(101);
 });
 
-test(`Test listSalarys w/ Admin group protection not authorized`, async () => {
+test(`Test listSalaries w/ Admin group protection not authorized`, async () => {
   const req = await GRAPHQL_CLIENT_1.query(`
     mutation {
         createSalary(input: { wage: 102 }) {
@@ -833,7 +835,7 @@ test(`Test listSalarys w/ Admin group protection not authorized`, async () => {
   expect(req.data.createSalary.wage).toEqual(102);
   const req2 = await GRAPHQL_CLIENT_2.query(`
     query {
-        listSalarys(filter: { wage: { eq: 102 }}) {
+        listSalaries(filter: { wage: { eq: 102 }}) {
             items {
                 id
                 wage
@@ -841,7 +843,7 @@ test(`Test listSalarys w/ Admin group protection not authorized`, async () => {
         }
     }
     `);
-  expect(req2.data.listSalarys.items).toEqual([]);
+  expect(req2.data.listSalaries.items).toEqual([]);
 });
 
 /**
@@ -2374,7 +2376,7 @@ test(`Test createTestIdentity as admin.`, async () => {
 
   const listResponse = await GRAPHQL_CLIENT_3.query(
     `query {
-        listTestIdentitys(filter: { title: { eq: "Test title update" } }, limit: 100) {
+        listTestIdentities(filter: { title: { eq: "Test title update" } }, limit: 100) {
             items {
                 id
                 title
@@ -2384,7 +2386,7 @@ test(`Test createTestIdentity as admin.`, async () => {
     }`,
     {},
   );
-  const relevantPost = listResponse.data.listTestIdentitys.items.find(p => p.id === getReq.data.getTestIdentity.id);
+  const relevantPost = listResponse.data.listTestIdentities.items.find(p => p.id === getReq.data.getTestIdentity.id);
   logDebug(JSON.stringify(listResponse, null, 4));
   expect(relevantPost).toBeTruthy();
   expect(relevantPost.title).toEqual('Test title update');

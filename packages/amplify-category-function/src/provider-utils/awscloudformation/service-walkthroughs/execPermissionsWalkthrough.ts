@@ -1,4 +1,4 @@
-import { $TSContext, FeatureFlags, pathManager, stateManager } from 'amplify-cli-core';
+import { $TSAny, $TSContext, FeatureFlags, pathManager, stateManager } from 'amplify-cli-core';
 import { FunctionDependency, FunctionParameters } from 'amplify-function-plugin-interface';
 import * as TransformPackage from 'graphql-transformer-core';
 import inquirer, { CheckboxQuestion, DistinctChoice } from 'inquirer';
@@ -81,12 +81,17 @@ export const askExecRolePermissionsQuestions = async (
       // Lambda layer dependencies are handled seperately, also apply the filter if the selected resource is within the function category
       // but serviceName argument was no passed in
       if (serviceName === ServiceName.LambdaFunction || selectedCategory === categoryName) {
+        const selectedResource = _.get(amplifyMeta, [categoryName, resourceNameToUpdate]);
+        // A new function resource does not exist in amplifyMeta yet
+        const isNewFunctionResource = !selectedResource;
         resourcesList = resourcesList.filter(
-          resourceName => resourceName !== resourceNameToUpdate && amplifyMeta[selectedCategory][resourceName].service === serviceName,
+          resourceName =>
+            resourceName !== resourceNameToUpdate &&
+            (isNewFunctionResource || amplifyMeta[selectedCategory][resourceName].service === selectedResource.service),
         );
       } else {
         resourcesList = resourcesList.filter(
-          resourceName => resourceName !== resourceNameToUpdate && amplifyMeta[selectedCategory][resourceName].iamAccessUnavailable,
+          resourceName => resourceName !== resourceNameToUpdate && !amplifyMeta[selectedCategory][resourceName].iamAccessUnavailable,
         );
       }
     }
@@ -189,7 +194,6 @@ const selectResourcesInCategory = (choices: DistinctChoice<any>[], currentPermis
   name: 'resources',
   message: `${_.capitalize(category)} has ${choices.length} resources in this project. Select the one you would like your Lambda to access`,
   choices,
-  validate: answers => (_.isEmpty(answers) ? 'You must select at least one resource' : true),
   default: fetchPermissionResourcesForCategory(currentPermissionMap, category),
 });
 
@@ -254,7 +258,7 @@ export async function getResourcesForCfn(context, resourceName, resourcePolicy, 
   return { permissionPolicies, cfnResources };
 }
 
-export async function generateEnvVariablesForCfn(context, resources, currentEnvMap) {
+export async function generateEnvVariablesForCfn(context: $TSContext, resources: $TSAny[], currentEnvMap: $TSAny) {
   const environmentMap = {};
   const envVars = new Set<string>();
   const dependsOn: FunctionDependency[] = [];

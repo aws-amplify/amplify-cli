@@ -20,10 +20,16 @@ import strip = require('strip-ansi');
 import { EOL } from 'os';
 import retimer = require('retimer');
 import { join, parse } from 'path';
+import * as fs from 'fs-extra';
+import * as os from 'os';
+import { getScriptRunnerPath, isTestingWithLatestCodebase } from '..';
 
-const DEFAULT_NO_OUTPUT_TIMEOUT = 5 * 60 * 1000; // 5 Minutes
+const DEFAULT_NO_OUTPUT_TIMEOUT = process.env.AMPLIFY_TEST_TIMEOUT_SEC
+  ? Number.parseInt(process.env.AMPLIFY_TEST_TIMEOUT_SEC, 10) * 1000
+  : 5 * 60 * 1000; // 5 Minutes
 const EXIT_CODE_TIMEOUT = 2;
 const EXIT_CODE_GENERIC_ERROR = 3;
+const LOG_DUMP_FILE = process.env.LOG_DUMP_FILE;
 
 // https://notes.burke.libbey.me/ansi-escape-codes/
 export const KEY_UP_ARROW = '\x1b[A';
@@ -267,7 +273,7 @@ function chain(context: Context): ExecutionContext {
     sendEof: function (): ExecutionContext {
       var _sendEof: ExecutionStep = {
         fn: () => {
-          context.process.write('');
+          context.process.sendEof();
           return true;
         },
         shift: true,
@@ -302,9 +308,23 @@ function chain(context: Context): ExecutionContext {
       let options;
       let noOutputTimer;
 
+      let logDumpFile: fs.WriteStream;
+
+      if (process.env.VERBOSE_LOGGING_DO_NOT_USE_IN_CI_OR_YOU_WILL_BE_FIRED) {
+        const rand = Math.floor(Math.random() * 10000);
+        const logdir = join(os.tmpdir(), 'amplify_e2e_logs');
+        fs.ensureDirSync(logdir);
+        const filename = join(logdir, `amplify_e2e_log_${rand}`);
+        logDumpFile = fs.createWriteStream(filename);
+        console.log(`CLI test logs at [${filename}]`);
+      }
+
       const exitHandler = (code: number, signal: any) => {
         noOutputTimer.clear();
         context.process.removeOnExitHandlers(exitHandler);
+        if (logDumpFile) {
+          logDumpFile.close();
+        }
         if (code !== 0) {
           if (code === EXIT_CODE_TIMEOUT) {
             const err = new Error(
@@ -441,6 +461,8 @@ function chain(context: Context): ExecutionContext {
         }
       }
 
+      const spinnerRegex = new RegExp(/.*(⠋|⠙|⠹|⠸|⠼|⠴|⠦|⠧|⠇|⠏).*/);
+
       //
       // **onLine**
       //
@@ -454,12 +476,8 @@ function chain(context: Context): ExecutionContext {
       function onLine(data: string | Buffer) {
         noOutputTimer.reschedule(context.noOutputTimeout);
         data = data.toString();
-
-        if (process.env && process.env.VERBOSE_LOGGING_DO_NOT_USE_IN_CI_OR_YOU_WILL_BE_FIRED) {
-          const spinnerRegex = new RegExp(/.*(⠋|⠙|⠹|⠸|⠼|⠴|⠦|⠧|⠇|⠏).*/);
-          if (spinnerRegex.test(data) === false && strip(data).trim().length > 0) {
-            console.log(data);
-          }
+        if (logDumpFile && spinnerRegex.test(data) === false && strip(data).trim().length > 0) {
+          logDumpFile.write(data);
         }
 
         if (context.stripColors) {
@@ -602,6 +620,12 @@ export function nspawn(command: string | string[], params: string[] = [], option
     const parsedArgs = parsedPath.base.split(' ');
     command = join(parsedPath.dir, parsedArgs[0]);
     params = params || parsedArgs.slice(1);
+  }
+
+  const testingWithLatestCodebase = isTestingWithLatestCodebase(command);
+  if (testingWithLatestCodebase) {
+    params.unshift(command);
+    command = getScriptRunnerPath(testingWithLatestCodebase);
   }
 
   let childEnv = undefined;

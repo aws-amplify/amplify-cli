@@ -5,6 +5,7 @@ import {
   amplifyPush,
   validateNodeModulesDirRemoval,
   updateFunction,
+  addAuthwithUserPoolGroupsViaAPIWithTrigger,
 } from 'amplify-e2e-core';
 import { addAuthWithDefaultSocial, addAuthWithGroupTrigger, addAuthWithRecaptchaTrigger, addAuthViaAPIWithTrigger } from 'amplify-e2e-core';
 import {
@@ -15,6 +16,7 @@ import {
   getUserPoolClients,
   isDeploymentSecretForEnvExists,
   getLambdaFunction,
+  removeAuthWithDefault,
 } from 'amplify-e2e-core';
 
 const defaultsSettings = {
@@ -50,7 +52,15 @@ describe('amplify add auth...', () => {
     validateNodeModulesDirRemoval(projRoot);
     expect(clients[0].UserPoolClient.CallbackURLs[0]).toEqual('https://www.google.com/');
     expect(clients[0].UserPoolClient.LogoutURLs[0]).toEqual('https://www.nytimes.com/');
-    expect(clients[0].UserPoolClient.SupportedIdentityProviders).toHaveLength(4);
+    expect(clients[0].UserPoolClient.SupportedIdentityProviders).toHaveLength(5);
+  });
+
+  it('...should init a project and add auth with defaultSocial and then remove federation', async () => {
+    await initJSProjectWithProfile(projRoot, defaultsSettings);
+    await addAuthWithDefaultSocial(projRoot, {});
+    await amplifyPushAuth(projRoot);
+    await removeAuthWithDefault(projRoot);
+    await amplifyPushAuth(projRoot);
   });
 
   it('...should init a project and add auth a PostConfirmation: add-to-group trigger', async () => {
@@ -90,6 +100,7 @@ describe('amplify add auth...', () => {
 
     const lambdaFunction = await getLambdaFunction(functionName, meta.providers.awscloudformation.Region);
     expect(userPool.UserPool).toBeDefined();
+    expect(userPool.UserPool.AliasAttributes).not.toBeDefined();
     validateNodeModulesDirRemoval(projRoot);
     expect(clients).toHaveLength(2);
     expect(lambdaFunction).toBeDefined();
@@ -98,7 +109,7 @@ describe('amplify add auth...', () => {
 
   it('...should allow the user to add auth via API category, with a trigger and function dependsOn API', async () => {
     await initJSProjectWithProfile(projRoot, defaultsSettings);
-    await addAuthViaAPIWithTrigger(projRoot, {});
+    await addAuthwithUserPoolGroupsViaAPIWithTrigger(projRoot, {});
     await updateFunction(
       projRoot,
       {
@@ -115,8 +126,9 @@ describe('amplify add auth...', () => {
     );
     await amplifyPush(projRoot);
     const meta = getProjectMeta(projRoot);
-    const functionName = `${Object.keys(meta.auth)[0]}PostConfirmation-integtest`;
-    const authMeta = Object.keys(meta.auth).map(key => meta.auth[key])[0];
+    const authKey = Object.keys(meta.auth).find(key => meta.auth[key].service === 'Cognito');
+    const functionName = `${authKey}PostConfirmation-integtest`;
+    const authMeta = meta.auth[authKey];
     const id = authMeta.output.UserPoolId;
     const userPool = await getUserPool(id, meta.providers.awscloudformation.Region);
     const clientIds = [authMeta.output.AppClientIDWeb, authMeta.output.AppClientID];

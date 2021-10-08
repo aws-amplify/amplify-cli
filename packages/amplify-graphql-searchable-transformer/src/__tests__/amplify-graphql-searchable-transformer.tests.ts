@@ -3,6 +3,17 @@ import { SearchableModelTransformer } from '../';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { anything, countResources, expect as cdkExpect, haveResource } from '@aws-cdk/assert';
 import { parse } from 'graphql';
+const featureFlags = {
+  getBoolean: jest.fn().mockImplementation((name, defaultValue) => {
+    if (name === 'improvePluralization') {
+      return true;
+    }
+    return;
+  }),
+  getNumber: jest.fn(),
+  getObject: jest.fn(),
+  getString: jest.fn(),
+};
 
 test('Test SearchableModelTransformer validation happy case', () => {
   const validSchema = `
@@ -15,6 +26,7 @@ test('Test SearchableModelTransformer validation happy case', () => {
     `;
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new SearchableModelTransformer()],
+    featureFlags,
   });
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
@@ -33,6 +45,7 @@ test('Test SearchableModelTransformer vtl', () => {
     `;
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new SearchableModelTransformer()],
+    featureFlags,
   });
 
   const out = transformer.transform(validSchema);
@@ -50,6 +63,7 @@ test('Test SearchableModelTransformer with query overrides', () => {
     `;
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new SearchableModelTransformer()],
+    featureFlags,
   });
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
@@ -67,6 +81,7 @@ test('Test SearchableModelTransformer with only create mutations', () => {
     `;
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new SearchableModelTransformer()],
+    featureFlags,
   });
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
@@ -90,6 +105,7 @@ test('Test SearchableModelTransformer with multiple model searchable directives'
     `;
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new SearchableModelTransformer()],
+    featureFlags,
   });
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
@@ -108,6 +124,7 @@ test('Test SearchableModelTransformer with sort fields', () => {
     `;
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new SearchableModelTransformer()],
+    featureFlags,
   });
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
@@ -137,6 +154,7 @@ test('it generates expected resources', () => {
  `;
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new SearchableModelTransformer()],
+    featureFlags,
   });
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
@@ -173,13 +191,20 @@ test('it generates expected resources', () => {
       },
     }),
   );
-
+  cdkExpect(searchableStack).to(
+    haveResource('AWS::Elasticsearch::Domain', {
+      DomainName: anything(),
+      EBSOptions: anything(),
+      ElasticsearchClusterConfig: anything(),
+      ElasticsearchVersion: '7.10',
+    }),
+  );
   cdkExpect(searchableStack).to(
     haveResource('AWS::AppSync::DataSource', {
       ApiId: {
         Ref: anything(),
       },
-      Name: 'ElasticSearchDataSource',
+      Name: 'OpenSearchDataSource',
       Type: 'AMAZON_ELASTICSEARCH',
       ElasticsearchConfig: {
         AwsRegion: {
@@ -189,7 +214,7 @@ test('it generates expected resources', () => {
               'Fn::Split': [
                 ':',
                 {
-                  'Fn::GetAtt': ['ElasticSearchDomain', 'Arn'],
+                  'Fn::GetAtt': ['OpenSearchDomain', 'Arn'],
                 },
               ],
             },
@@ -201,14 +226,14 @@ test('it generates expected resources', () => {
             [
               'https://',
               {
-                'Fn::GetAtt': ['ElasticSearchDomain', 'DomainEndpoint'],
+                'Fn::GetAtt': ['OpenSearchDomain', 'DomainEndpoint'],
               },
             ],
           ],
         },
       },
       ServiceRoleArn: {
-        'Fn::GetAtt': ['ElasticSearchAccessIAMRoleAAA3FF0B', 'Arn'],
+        'Fn::GetAtt': ['OpenSearchAccessIAMRole6A1D9CC5', 'Arn'],
       },
     }),
   );
@@ -238,7 +263,7 @@ test('it generates expected resources', () => {
             },
             '"))\n$util.qr($ctx.stash.put("endpoint", "https://',
             {
-              'Fn::GetAtt': ['ElasticSearchDomain', 'DomainEndpoint'],
+              'Fn::GetAtt': ['OpenSearchDomain', 'DomainEndpoint'],
             },
             '"))\n$util.toJson({})',
           ],
@@ -291,4 +316,28 @@ test('it generates expected resources', () => {
       },
     }),
   );
+});
+
+test('Test SearchableModelTransformer enum type generates StringFilterInput', () => {
+  const validSchema = `
+    type Employee @model @searchable {
+      id: ID!
+      firstName: String!
+      lastName: String!
+      type: EmploymentType!
+    }
+    
+    enum EmploymentType {
+      FULLTIME
+      HOURLY
+    }
+    `;
+  const transformer = new GraphQLTransform({
+    transformers: [new ModelTransformer(), new SearchableModelTransformer()],
+    featureFlags,
+  });
+  const out = transformer.transform(validSchema);
+  expect(out).toBeDefined();
+  parse(out.schema);
+  expect(out.schema).toMatchSnapshot();
 });

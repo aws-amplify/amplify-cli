@@ -13,7 +13,10 @@ import {
   CloudFormation,
   AmplifyBackend,
   IAM,
+  SSM,
+  Location,
 } from 'aws-sdk';
+import * as path from 'path';
 import _ from 'lodash';
 
 export const getDDBTable = async (tableName: string, region: string) => {
@@ -55,6 +58,17 @@ export const getBucketEncryption = async (bucket: string) => {
     return result.ServerSideEncryptionConfiguration;
   } catch (err) {
     throw new Error(`Error fetching SSE info for bucket ${bucket}. Underlying error was [${err.message}]`);
+  }
+};
+
+export const getBucketKeys = async (params: S3.ListObjectsRequest) => {
+  const s3 = new S3();
+
+  try {
+    const result = await s3.listObjects(params).promise();
+    return result.Contents.map(contentObj => contentObj.Key);
+  } catch (err) {
+    throw new Error(`Error fetching keys for bucket ${params.Bucket}. Underlying error was [${err.message}]`);
   }
 };
 
@@ -114,15 +128,13 @@ export const getUserPool = async (userpoolId, region) => {
   return res;
 };
 
-export const getLambdaFunction = async (functionName, region) => {
-  const lambda = new Lambda();
-  let res;
+export const getLambdaFunction = async (functionName: string, region: string) => {
+  const lambda = new Lambda({ region });
   try {
-    res = await lambda.getFunction({ FunctionName: functionName }).promise();
+    return await lambda.getFunction({ FunctionName: functionName }).promise();
   } catch (e) {
     console.log(e);
   }
-  return res;
 };
 
 export const getUserPoolClients = async (userPoolId: string, clientIds: string[], region: string) => {
@@ -315,3 +327,30 @@ export const getPermissionsBoundary = async (roleName: string, region) => {
   const iamClient = new IAM({ region });
   return (await iamClient.getRole({ RoleName: roleName }).promise())?.Role?.PermissionsBoundary?.PermissionsBoundaryArn;
 };
+
+export const getSSMParameters = async (region: string, appId: string, envName: string, funcName: string, parameterNames: string[]) => {
+  const ssmClient = new SSM({ region });
+  if (!parameterNames || parameterNames.length === 0) {
+    throw new Error('no parameterNames specified');
+  }
+  return await ssmClient
+    .getParameters({
+      Names: parameterNames.map(name => path.posix.join('/amplify', appId, envName, `AMPLIFY_${funcName}_${name}`)),
+      WithDecryption: true,
+    })
+    .promise();
+};
+//Amazon location service calls
+export const getMap = async (mapName: string, region: string) => {
+  const service = new Location({region});
+  return await service.describeMap({
+    MapName: mapName
+  }).promise()
+}
+
+export const getPlaceIndex = async (placeIndexName: string, region: string) => {
+  const service = new Location({region});
+  return await service.describePlaceIndex({
+    IndexName: placeIndexName
+  }).promise()
+}

@@ -494,7 +494,13 @@ export class DynamoDBModelTransformer extends Transformer {
       this.generateModelXConnectionType(ctx, def);
 
       // Create the list resolver
-      const listResolver = this.resources.makeListResolver(def.name.value, listFieldNameOverride, isSyncEnabled, ctx.getQueryTypeName());
+      const listResolver = this.resources.makeListResolver(
+        def.name.value,
+        ctx.featureFlags.getBoolean('improvePluralization'),
+        listFieldNameOverride,
+        isSyncEnabled,
+        ctx.getQueryTypeName(),
+      );
       const resourceId = ResolverResourceIDs.DynamoDBListResolverResourceID(typeName);
       ctx.setResource(resourceId, listResolver);
       ctx.mapResourceToStack(typeName, resourceId);

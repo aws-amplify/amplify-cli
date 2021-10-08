@@ -17,10 +17,11 @@ import { default as moment } from 'moment';
 import {
   createUserPool,
   createUserPoolClient,
-  signupAndAuthenticateUser,
   createGroup,
   addUserToGroup,
   configureAmplify,
+  signupUser,
+  authenticateUser,
 } from '../cognitoUtils';
 import 'isomorphic-fetch';
 
@@ -28,7 +29,17 @@ import 'isomorphic-fetch';
 (global as any).fetch = require('node-fetch');
 
 jest.setTimeout(2000000);
-
+const featureFlags = {
+  getBoolean: jest.fn().mockImplementation((name, defaultValue) => {
+    if (name === 'improvePluralization') {
+      return true;
+    }
+    return;
+  }),
+  getNumber: jest.fn(),
+  getObject: jest.fn(),
+  getString: jest.fn(),
+};
 describe(`ModelAuthTests`, () => {
   const cf = new CloudFormationClient('us-west-2');
 
@@ -195,6 +206,7 @@ describe(`ModelAuthTests`, () => {
       }
       `;
     const transformer = new GraphQLTransform({
+      featureFlags,
       transformers: [
         new DynamoDBModelTransformer(),
         new ModelConnectionTransformer(),
@@ -248,10 +260,9 @@ describe(`ModelAuthTests`, () => {
       // Configure Amplify, create users, and sign in.
       configureAmplify(USER_POOL_ID, userPoolClientId);
 
-      const authRes: any = await signupAndAuthenticateUser(USER_POOL_ID, USERNAME1, TMP_PASSWORD, REAL_PASSWORD);
-      const authRes2: any = await signupAndAuthenticateUser(USER_POOL_ID, USERNAME2, TMP_PASSWORD, REAL_PASSWORD);
-      const authRes3: any = await signupAndAuthenticateUser(USER_POOL_ID, USERNAME3, TMP_PASSWORD, REAL_PASSWORD);
-
+      await signupUser(USER_POOL_ID, USERNAME1, TMP_PASSWORD);
+      await signupUser(USER_POOL_ID, USERNAME2, TMP_PASSWORD);
+      await signupUser(USER_POOL_ID, USERNAME3, TMP_PASSWORD);
       await createGroup(USER_POOL_ID, ADMIN_GROUP_NAME);
       await createGroup(USER_POOL_ID, PARTICIPANT_GROUP_NAME);
       await createGroup(USER_POOL_ID, WATCHER_GROUP_NAME);
@@ -262,7 +273,7 @@ describe(`ModelAuthTests`, () => {
       await addUserToGroup(WATCHER_GROUP_NAME, USERNAME1, USER_POOL_ID);
       await addUserToGroup(DEVS_GROUP_NAME, USERNAME2, USER_POOL_ID);
       await addUserToGroup(DEVS_ADMIN_GROUP_NAME, USERNAME3, USER_POOL_ID);
-      const authResAfterGroup: any = await signupAndAuthenticateUser(USER_POOL_ID, USERNAME1, TMP_PASSWORD, REAL_PASSWORD);
+      const authResAfterGroup: any = await authenticateUser(USERNAME1, TMP_PASSWORD, REAL_PASSWORD);
 
       const idToken = authResAfterGroup.getIdToken().getJwtToken();
       GRAPHQL_CLIENT_1 = new GraphQLClient(GRAPHQL_ENDPOINT, { Authorization: idToken });
@@ -270,11 +281,11 @@ describe(`ModelAuthTests`, () => {
       const accessToken = authResAfterGroup.getAccessToken().getJwtToken();
       GRAPHQL_CLIENT_1_ACCESS = new GraphQLClient(GRAPHQL_ENDPOINT, { Authorization: accessToken });
 
-      const authRes2AfterGroup: any = await signupAndAuthenticateUser(USER_POOL_ID, USERNAME2, TMP_PASSWORD, REAL_PASSWORD);
+      const authRes2AfterGroup: any = await authenticateUser(USERNAME2, TMP_PASSWORD, REAL_PASSWORD);
       const idToken2 = authRes2AfterGroup.getIdToken().getJwtToken();
       GRAPHQL_CLIENT_2 = new GraphQLClient(GRAPHQL_ENDPOINT, { Authorization: idToken2 });
 
-      const authRes3AfterGroup: any = await signupAndAuthenticateUser(USER_POOL_ID, USERNAME3, TMP_PASSWORD, REAL_PASSWORD);
+      const authRes3AfterGroup: any = await authenticateUser(USERNAME3, TMP_PASSWORD, REAL_PASSWORD);
       const idToken3 = authRes3AfterGroup.getIdToken().getJwtToken();
       GRAPHQL_CLIENT_3 = new GraphQLClient(GRAPHQL_ENDPOINT, { Authorization: idToken3 });
 
@@ -918,7 +929,7 @@ describe(`ModelAuthTests`, () => {
     expect((req2.errors[0] as any).errorType).toEqual('Unauthorized');
   });
 
-  test(`Test listSalarys w/ Admin group protection authorized`, async () => {
+  test(`Test listSalaries w/ Admin group protection authorized`, async () => {
     const req = await GRAPHQL_CLIENT_1.query(
       `
       mutation {
@@ -936,7 +947,7 @@ describe(`ModelAuthTests`, () => {
     const req2 = await GRAPHQL_CLIENT_1.query(
       `
       query {
-          listSalarys(filter: { wage: { eq: 101 }}) {
+          listSalaries(filter: { wage: { eq: 101 }}) {
               items {
                   id
                   wage
@@ -946,12 +957,12 @@ describe(`ModelAuthTests`, () => {
       `,
       {},
     );
-    expect(req2.data.listSalarys.items.length).toEqual(1);
-    expect(req2.data.listSalarys.items[0].id).toEqual(req.data.createSalary.id);
-    expect(req2.data.listSalarys.items[0].wage).toEqual(101);
+    expect(req2.data.listSalaries.items.length).toEqual(1);
+    expect(req2.data.listSalaries.items[0].id).toEqual(req.data.createSalary.id);
+    expect(req2.data.listSalaries.items[0].wage).toEqual(101);
   });
 
-  test(`Test listSalarys w/ Admin group protection not authorized`, async () => {
+  test(`Test listSalaries w/ Admin group protection not authorized`, async () => {
     const req = await GRAPHQL_CLIENT_1.query(
       `
       mutation {
@@ -969,7 +980,7 @@ describe(`ModelAuthTests`, () => {
     const req2 = await GRAPHQL_CLIENT_2.query(
       `
       query {
-          listSalarys(filter: { wage: { eq: 102 }}) {
+          listSalaries(filter: { wage: { eq: 102 }}) {
               items {
                   id
                   wage
@@ -979,7 +990,7 @@ describe(`ModelAuthTests`, () => {
       `,
       {},
     );
-    expect(req2.data.listSalarys.items).toEqual([]);
+    expect(req2.data.listSalaries.items).toEqual([]);
   });
 
   /**
@@ -2817,7 +2828,7 @@ describe(`ModelAuthTests`, () => {
 
     const listResponse = await GRAPHQL_CLIENT_3.query(
       `query {
-          listTestIdentitys(filter: { title: { eq: "Test title update" } }, limit: 100) {
+          listTestIdentities(filter: { title: { eq: "Test title update" } }, limit: 100) {
               items {
                   id
                   title
@@ -2827,7 +2838,7 @@ describe(`ModelAuthTests`, () => {
       }`,
       {},
     );
-    const relevantPost = listResponse.data.listTestIdentitys.items.find(p => p.id === getReq.data.getTestIdentity.id);
+    const relevantPost = listResponse.data.listTestIdentities.items.find(p => p.id === getReq.data.getTestIdentity.id);
     expect(relevantPost).toBeTruthy();
     expect(relevantPost.title).toEqual('Test title update');
     expect(relevantPost.owner.slice(0, 19)).toEqual('https://cognito-idp');

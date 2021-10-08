@@ -5,7 +5,7 @@ const { getAuthResourceName } = require('../../utils/getAuthResourceName');
 const { copyCfnTemplate, saveResourceParameters } = require('./utils/synthesize-resources');
 const { ENV_SPECIFIC_PARAMS, AmplifyAdmin, UserPool, IdentityPool, BothPools, privateKeys } = require('./constants');
 const { getAddAuthHandler, getUpdateAuthHandler } = require('./handlers/resource-handlers');
-const { supportedServices } = require('../supported-services');
+const { getSupportedServices } = require('../supported-services');
 const { importResource, importedAuthEnvInit } = require('./import');
 
 function serviceQuestions(context, defaultValuesFilename, stringMapsFilename, serviceWalkthroughFilename, serviceMetadata) {
@@ -15,7 +15,7 @@ function serviceQuestions(context, defaultValuesFilename, stringMapsFilename, se
 }
 
 async function addResource(context, service) {
-  const serviceMetadata = supportedServices[service];
+  const serviceMetadata = getSupportedServices()[service];
   const { defaultValuesFilename, stringMapsFilename, serviceWalkthroughFilename } = serviceMetadata;
   return getAddAuthHandler(context)(
     await serviceQuestions(context, defaultValuesFilename, stringMapsFilename, serviceWalkthroughFilename, serviceMetadata),
@@ -23,7 +23,7 @@ async function addResource(context, service) {
 }
 
 async function updateResource(context, { service }) {
-  const serviceMetadata = supportedServices[service];
+  const serviceMetadata = getSupportedServices()[service];
   const { defaultValuesFilename, stringMapsFilename, serviceWalkthroughFilename } = serviceMetadata;
   return getUpdateAuthHandler(context)(
     await serviceQuestions(context, defaultValuesFilename, stringMapsFilename, serviceWalkthroughFilename, serviceMetadata),
@@ -31,7 +31,7 @@ async function updateResource(context, { service }) {
 }
 
 async function updateConfigOnEnvInit(context, category, service) {
-  const srvcMetaData = supportedServices.Cognito;
+  const srvcMetaData = getSupportedServices().Cognito;
   const { defaultValuesFilename, stringMapsFilename, serviceWalkthroughFilename, provider } = srvcMetaData;
 
   const providerPlugin = context.amplify.getPluginInstance(context, provider);
@@ -180,7 +180,7 @@ async function migrate(context) {
   if (!Object.keys(existingAuth).length > 0) {
     return;
   }
-  const { provider, cfnFilename, defaultValuesFilename } = supportedServices.Cognito;
+  const { provider, cfnFilename, defaultValuesFilename } = getSupportedServices().Cognito;
   const defaultValuesSrc = `${__dirname}/assets/${defaultValuesFilename}`;
 
   const { roles } = require(defaultValuesSrc);
@@ -216,9 +216,17 @@ function getOAuthProviderKeys(currentEnvSpecificValues, resourceParams) {
   const { hostedUIProviderCreds = '[]' } = currentEnvSpecificValues;
   const configuredProviders = JSON.parse(hostedUIProviderCreds).map(h => h.ProviderName);
   const deltaProviders = _.intersection(oAuthProviders, configuredProviders);
-  deltaProviders.forEach(d => {
-    currentEnvSpecificValues[`${d.toLowerCase()}AppIdUserPool`] = configuredProviders[`${d.toLowerCase()}AppIdUserPool`];
-    currentEnvSpecificValues[`${d.toLowerCase()}AppSecretUserPool`] = configuredProviders[`${d.toLowerCase()}AppSecretUserPool`];
+  deltaProviders.forEach(provider => {
+    const lowerCaseProvider = provider.toLowerCase();
+    if (provider === 'SignInWithApple') {
+      currentEnvSpecificValues[`${lowerCaseProvider}ClientIdUserPool`] = configuredProviders[`${lowerCaseProvider}ClientIdUserPool`];
+      currentEnvSpecificValues[`${lowerCaseProvider}TeamIdUserPool`] = configuredProviders[`${lowerCaseProvider}TeamIdUserPool`];
+      currentEnvSpecificValues[`${lowerCaseProvider}KeyIdUserPool`] = configuredProviders[`${lowerCaseProvider}KeyIdUserPool`];
+      currentEnvSpecificValues[`${lowerCaseProvider}PrivateKeyUserPool`] = configuredProviders[`${lowerCaseProvider}PrivateKeyUserPool`];
+    } else {
+      currentEnvSpecificValues[`${lowerCaseProvider}AppIdUserPool`] = configuredProviders[`${lowerCaseProvider}AppIdUserPool`];
+      currentEnvSpecificValues[`${lowerCaseProvider}AppSecretUserPool`] = configuredProviders[`${lowerCaseProvider}AppSecretUserPool`];
+    }
   });
   return currentEnvSpecificValues;
 }
@@ -249,15 +257,36 @@ function formatCredsforEnvParams(currentEnvSpecificValues, result, resourceParam
 function parseCredsForHeadless(mergedValues, envParams) {
   const oAuthProviders = JSON.parse(mergedValues.hostedUIProviderMeta).map(h => h.ProviderName);
   envParams.hostedUIProviderCreds = JSON.stringify(
-    oAuthProviders.map(el => ({
-      ProviderName: el,
-      client_id: mergedValues[`${el.toLowerCase()}AppIdUserPool`],
-      client_secret: mergedValues[`${el.toLowerCase()}AppSecretUserPool`],
-    })),
+    oAuthProviders.map(provider => {
+      const lowerCaseProvider = provider.toLowerCase();
+      if (provider === 'SignInWithApple') {
+        return {
+          ProviderName: provider,
+          client_id: mergedValues[`${lowerCaseProvider}ClientIdUserPool`],
+          team_id: mergedValues[`${lowerCaseProvider}TeamIdUserPool`],
+          key_id: mergedValues[`${lowerCaseProvider}KeyIdUserPool`],
+          private_key: mergedValues[`${lowerCaseProvider}PrivateKeyUserPool`],
+        };
+      } else {
+        return {
+          ProviderName: provider,
+          client_id: mergedValues[`${lowerCaseProvider}AppIdUserPool`],
+          client_secret: mergedValues[`${lowerCaseProvider}AppSecretUserPool`],
+        };
+      }
+    }),
   );
-  oAuthProviders.forEach(i => {
-    delete envParams[`${i.toLowerCase()}AppIdUserPool`];
-    delete envParams[`${i.toLowerCase()}AppSecretUserPool`];
+  oAuthProviders.forEach(provider => {
+    const lowerCaseProvider = provider.toLowerCase();
+    if (provider === 'SignInWithApple') {
+      delete envParams[`${lowerCaseProvider}ClientIdUserPool`];
+      delete envParams[`${lowerCaseProvider}TeamIdUserPool`];
+      delete envParams[`${lowerCaseProvider}KeyIdUserPool`];
+      delete envParams[`${lowerCaseProvider}PrivateKeyUserPool`];
+    } else {
+      delete envParams[`${lowerCaseProvider}AppIdUserPool`];
+      delete envParams[`${lowerCaseProvider}AppSecretUserPool`];
+    }
   });
 }
 
@@ -280,14 +309,23 @@ function getRequiredParamsForHeadlessInit(projectType, previousValues) {
     if (previousValues.authProviders.includes('www.amazon.com')) {
       requiredParams.push('amazonAppId');
     }
+    if (previousValues.authProviders.includes('appleid.apple.com')) {
+      requiredParams.push('appleAppId');
+    }
   }
 
   if (previousValues.hostedUIProviderMeta) {
     const oAuthProviders = JSON.parse(previousValues.hostedUIProviderMeta).map(h => h.ProviderName);
     if (oAuthProviders && oAuthProviders.length > 0) {
-      oAuthProviders.forEach(o => {
-        requiredParams.push(`${o.toLowerCase()}AppIdUserPool`);
-        requiredParams.push(`${o.toLowerCase()}AppSecretUserPool`);
+      oAuthProviders.forEach(provider => {
+        const lowerCaseProvider = provider.toLowerCase();
+        // Everything but SIWA is required because the private key isn't returned by Cognito
+        // so we can't initialize SIWA in a new environment programmatically.
+        // User will have to reconfigure SIWA through Admin UI or CLI.
+        if (provider !== 'SignInWithApple') {
+          requiredParams.push(`${lowerCaseProvider}AppIdUserPool`);
+          requiredParams.push(`${lowerCaseProvider}AppSecretUserPool`);
+        }
       });
     }
   }
@@ -392,7 +430,7 @@ async function openIdentityPoolConsole(context, region, identityPoolId) {
 }
 
 function getPermissionPolicies(context, service, resourceName, crudOptions) {
-  const { serviceWalkthroughFilename } = supportedServices[service];
+  const { serviceWalkthroughFilename } = getSupportedServices()[service];
   const serviceWalkthroughSrc = `${__dirname}/service-walkthroughs/${serviceWalkthroughFilename}`;
   const { getIAMPolicies } = require(serviceWalkthroughSrc);
 

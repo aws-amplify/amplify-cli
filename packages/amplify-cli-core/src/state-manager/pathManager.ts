@@ -19,6 +19,7 @@ export const PathConstants = {
   DotConfigDirName: '.config',
   BackendDirName: 'backend',
   CurrentCloudBackendDirName: '#current-cloud-backend',
+  HooksDirName: 'hooks',
 
   // FileNames
   AmplifyAdminConfigFileName: 'config.json',
@@ -31,6 +32,11 @@ export const PathConstants = {
   ParametersJsonFileName: 'parameters.json',
   ReadMeFileName: 'README.md',
 
+  HooksConfigFileName: 'hooks-config.json',
+  HooksShellSampleFileName: 'post-push.sh.sample',
+  HooksJsSampleFileName: 'pre-push.js.sample',
+  HooksReadmeFileName: 'hooks-readme.md',
+
   LocalEnvFileName: 'local-env-info.json',
   LocalAWSInfoFileName: 'local-aws-info.json',
   TeamProviderInfoFileName: 'team-provider-info.json',
@@ -41,6 +47,8 @@ export const PathConstants = {
   CLIJsonWithEnvironmentFileName: (env: string) => `cli.${env}.json`,
 
   CfnFileName: (resourceName: string) => `${resourceName}-awscloudformation-template.json`,
+
+  CustomPoliciesFilename: 'custom-policies.json',
 };
 
 export class PathManager {
@@ -142,6 +150,9 @@ export class PathManager {
 
   getDotAWSDirPath = (): string => path.normalize(path.join(homedir(), PathConstants.DotAWSDirName));
 
+  getCustomPoliciesPath  = (category: string, resourceName: string): string =>
+  path.join(this.getResourceDirectoryPath(undefined, category, resourceName), PathConstants.CustomPoliciesFilename);
+
   getAWSCredentialsFilePath = (): string => path.normalize(path.join(this.getDotAWSDirPath(), PathConstants.AWSCredentials));
 
   getAWSConfigFilePath = (): string => path.normalize(path.join(this.getDotAWSDirPath(), PathConstants.AWSConfig));
@@ -155,6 +166,12 @@ export class PathManager {
   getDotAWSAmplifyDirPath = (): string => path.normalize(path.join(homedir(), PathConstants.DotAWSDirName, PathConstants.AmplifyDirName));
 
   getDeploymentSecrets = (): string => path.normalize(path.join(this.getDotAWSAmplifyDirPath(), PathConstants.DeploymentSecretsFileName));
+
+  getHooksDirPath = (projectPath?: string): string =>
+    this.constructPath(projectPath, [PathConstants.AmplifyDirName, PathConstants.HooksDirName]);
+
+  getHooksConfigFilePath = (projectPath?: string): string =>
+    path.join(this.getHooksDirPath(projectPath), PathConstants.HooksConfigFileName);
 
   private constructPath = (projectPath?: string, segments: string[] = []): string => {
     if (!projectPath) {

@@ -27,7 +27,7 @@ import { importMessages } from './messages';
 import uuid from 'uuid';
 
 // Currently the CLI only supports the output generation of these providers
-const supportedIdentityProviders = ['COGNITO', 'Facebook', 'Google', 'LoginWithAmazon'];
+const supportedIdentityProviders = ['COGNITO', 'Facebook', 'Google', 'LoginWithAmazon', 'SignInWithApple'];
 
 export const importResource = async (
   context: $TSContext,
@@ -415,7 +415,7 @@ const selectAppClients = async (
   answers: ImportAnswers,
 ): Promise<void> => {
   let autoSelected = 0;
-  let changeAppClientSelction = false;
+  let changeAppClientSelection = false;
   do {
     // Select web application clients
     if (questionParameters.webClients!.length === 1) {
@@ -480,12 +480,13 @@ const selectAppClients = async (
       answers.appClientNative = questionParameters.nativeClients!.find(c => c.ClientId! === appClientNativeId);
       answers.appClientNativeId = undefined; // Only to be used by enquirer
 
-      if (answers.appClientNative === answers.appClientWeb) {
-        changeAppClientSelction = await context.prompt.confirm(importMessages.ConfirmUseDifferentAppClient);
-      }
+      changeAppClientSelection =
+        answers.appClientNative === answers.appClientWeb
+          ? await context.prompt.confirm(importMessages.ConfirmUseDifferentAppClient)
+          : false;
     }
     questionParameters.bothAppClientsWereAutoSelected = autoSelected === 2;
-  } while (changeAppClientSelction);
+  } while (changeAppClientSelection);
 };
 
 const appClientsOAuthPropertiesMatching = async (
@@ -752,6 +753,9 @@ const createMetaOutput = (answers: ImportAnswers, hasOAuthConfig: boolean): Meta
           case 'accounts.google.com':
             output.GoogleWebClient = answers.identityPool!.SupportedLoginProviders![key];
             break;
+          case 'appleid.apple.com':
+            output.AppleWebClient = answers.identityPool!.SupportedLoginProviders![key];
+            break;
           default:
             // We don't do anything with the providers that the CLI currently does not support.
             break;
@@ -815,6 +819,9 @@ const createEnvSpecificResourceParameters = (
         case 'graph.facebook.com':
           envSpecificResourceParameters.facebookAppId = answers.identityPool!.SupportedLoginProviders![key];
           break;
+        case 'appleid.apple.com':
+          envSpecificResourceParameters.appleAppId = answers.identityPool!.SupportedLoginProviders![key];
+          break;
         case 'accounts.google.com': {
           switch (projectType) {
             case 'javascript':
@@ -840,11 +847,23 @@ const createEnvSpecificResourceParameters = (
 };
 
 const createOAuthCredentials = (identityProviders: IdentityProviderType[]): string => {
-  const credentials = identityProviders.map(idp => ({
-    ProviderName: idp.ProviderName!,
-    client_id: idp.ProviderDetails!.client_id,
-    client_secret: idp.ProviderDetails!.client_secret,
-  }));
+  const credentials = identityProviders.map(idp => {
+    if (idp.ProviderName === 'SignInWithApple') {
+      return {
+        ProviderName: idp.ProviderName!,
+        client_id: idp.ProviderDetails!.client_id,
+        team_id: idp.ProviderDetails!.team_id,
+        key_id: idp.ProviderDetails!.key_id,
+        private_key: idp.ProviderDetails!.private_key,
+      };
+    } else {
+      return {
+        ProviderName: idp.ProviderName!,
+        client_id: idp.ProviderDetails!.client_id,
+        client_secret: idp.ProviderDetails!.client_secret,
+      };
+    }
+  });
 
   return JSON.stringify(credentials);
 };

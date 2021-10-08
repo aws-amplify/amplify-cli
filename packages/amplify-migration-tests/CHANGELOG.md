@@ -3,6 +3,150 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.1.12](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@3.1.11...amplify-migration-tests@3.1.12) (2021-10-06)
+
+**Note:** Version bump only for package amplify-migration-tests
+
+
+
+
+
+## [3.1.11](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@3.1.10...amplify-migration-tests@3.1.11) (2021-10-01)
+
+**Note:** Version bump only for package amplify-migration-tests
+
+
+
+
+
+## [3.1.10](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@3.1.9...amplify-migration-tests@3.1.10) (2021-09-27)
+
+**Note:** Version bump only for package amplify-migration-tests
+
+
+
+
+
+## [3.1.9](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@3.1.8...amplify-migration-tests@3.1.9) (2021-09-18)
+
+**Note:** Version bump only for package amplify-migration-tests
+
+
+
+
+
+## [3.1.8](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@3.1.7...amplify-migration-tests@3.1.8) (2021-09-14)
+
+**Note:** Version bump only for package amplify-migration-tests
+
+
+
+
+
+## [3.1.7](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@3.1.6...amplify-migration-tests@3.1.7) (2021-09-09)
+
+
+### Reverts
+
+* Revert "ci: add windows e2e test coverage" ([0560b0f](https://github.com/aws-amplify/amplify-cli/commit/0560b0f4a16ce8ce0b7efebb2494c7e2eb8601c8))
+
+
+
+
+
+## [3.1.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@3.1.5...amplify-migration-tests@3.1.6) (2021-09-02)
+
+
+
+# 5.4.0 (2021-09-02)
+
+**Note:** Version bump only for package amplify-migration-tests
+
+
+
+
+
+## [3.1.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@3.1.4...amplify-migration-tests@3.1.5) (2021-08-24)
+
+**Note:** Version bump only for package amplify-migration-tests
+
+
+
+
+
+## [3.1.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@3.1.3...amplify-migration-tests@3.1.4) (2021-08-06)
+
+**Note:** Version bump only for package amplify-migration-tests
+
+
+
+
+
+## [3.1.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@3.1.2...amplify-migration-tests@3.1.3) (2021-07-30)
+
+**Note:** Version bump only for package amplify-migration-tests
+
+
+
+
+
+## [3.1.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@3.1.1...amplify-migration-tests@3.1.2) (2021-07-27)
+
+
+
+# 5.2.0 (2021-07-26)
+
+
+### Reverts
+
+* Revert "Revert "ci: add support for e2e token rotation (#7665)" (#7759)" (#7762) ([9ea4c8e](https://github.com/aws-amplify/amplify-cli/commit/9ea4c8e115ae62d7c348c3f0d82c89d795eebf46)), closes [#7665](https://github.com/aws-amplify/amplify-cli/issues/7665) [#7759](https://github.com/aws-amplify/amplify-cli/issues/7759) [#7762](https://github.com/aws-amplify/amplify-cli/issues/7762)
+* Revert "ci: add support for e2e token rotation (#7665)" (#7759) ([aadc915](https://github.com/aws-amplify/amplify-cli/commit/aadc9155f5c25478c7f317aec77f51290c6b9cfe)), closes [#7665](https://github.com/aws-amplify/amplify-cli/issues/7665) [#7759](https://github.com/aws-amplify/amplify-cli/issues/7759)
+
+
+
+
+
+## [3.1.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@3.1.0...amplify-migration-tests@3.1.1) (2021-07-16)
+
+
+### Bug Fixes
+
+* add/update function when some LL are not yet migrated ([#7674](https://github.com/aws-amplify/amplify-cli/issues/7674)) ([9688681](https://github.com/aws-amplify/amplify-cli/commit/968868103744edcfbed6b082b3d9a92867180f73))
+
+
+
+
+
+# [3.1.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@3.0.2...amplify-migration-tests@3.1.0) (2021-07-12)
+
+
+### Features
+
+* support for sign in with apple ([#7413](https://github.com/aws-amplify/amplify-cli/issues/7413)) ([00d6676](https://github.com/aws-amplify/amplify-cli/commit/00d6676b4c1d6995cac01956078f7b6ee6186814))
+
+
+
+
+
+## [3.0.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@3.0.1...amplify-migration-tests@3.0.2) (2021-06-30)
+
+
+### Bug Fixes
+
+* handle migrated layers with no runtime or multiple runtimes ([#7603](https://github.com/aws-amplify/amplify-cli/issues/7603)) ([856fdf7](https://github.com/aws-amplify/amplify-cli/commit/856fdf7d226c8a6dc47a8e2278b13dd793fee22a))
+
+
+
+
+
+## [3.0.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@3.0.0...amplify-migration-tests@3.0.1) (2021-06-24)
+
+**Note:** Version bump only for package amplify-migration-tests
+
+
+
+
+
 # [3.0.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@2.22.0...amplify-migration-tests@3.0.0) (2021-06-15)
 
 

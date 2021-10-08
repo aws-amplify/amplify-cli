@@ -15,7 +15,6 @@ export async function initProviders(context) {
   });
 
   await sequential(initializationTasks);
-
   return context;
 }
 

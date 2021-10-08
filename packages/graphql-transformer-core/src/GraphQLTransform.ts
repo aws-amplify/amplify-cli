@@ -234,6 +234,7 @@ export class GraphQLTransform {
       aws_api_key: true,
       aws_iam: true,
       aws_oidc: true,
+      aws_lambda: true,
       aws_cognito_user_pools: true,
       deprecated: true,
     });

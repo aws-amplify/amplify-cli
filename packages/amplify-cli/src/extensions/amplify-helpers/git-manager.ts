@@ -2,12 +2,16 @@ import * as fs from 'fs-extra';
 import * as os from 'os';
 import { LocalLogDirectory } from 'amplify-cli-logger';
 
-const amplifyMark = '#amplify';
+const amplifyMark = '#amplify-do-not-edit-begin';
+const amplifyEndMark = '#amplify-do-not-edit-end';
+const deprecatedAmplifyMark = '#amplify';
 const amplifyMarkRegExp = new RegExp(`^${amplifyMark}`);
+const amplifyEndMarkRegExp = new RegExp(`^${amplifyEndMark}`);
+const deprecatedAmplifyMarkRegExp = new RegExp(`^${deprecatedAmplifyMark}`);
 
 export function insertAmplifyIgnore(gitIgnoreFilePath: string): void {
   if (fs.existsSync(gitIgnoreFilePath)) {
-    removeAmplifyIgnore(gitIgnoreFilePath);
+    rebuildAmplifyIgnore(gitIgnoreFilePath);
 
     fs.appendFileSync(gitIgnoreFilePath, getGitIgnoreAppendString());
   } else {
@@ -15,7 +19,7 @@ export function insertAmplifyIgnore(gitIgnoreFilePath: string): void {
   }
 }
 
-function removeAmplifyIgnore(gitIgnoreFilePath: string): void {
+function rebuildAmplifyIgnore(gitIgnoreFilePath: string): void {
   if (fs.existsSync(gitIgnoreFilePath)) {
     let newGitIgnoreString = '';
     const gitIgnoreStringArray = fs.readFileSync(gitIgnoreFilePath, 'utf8').split(os.EOL);
@@ -26,10 +30,10 @@ function removeAmplifyIgnore(gitIgnoreFilePath: string): void {
       const newLine = gitIgnoreStringArray[i].trim();
 
       if (isInRemoval) {
-        if (newLine.length === 0) {
+        if (amplifyEndMarkRegExp.test(newLine) || newLine.length === 0) {
           isInRemoval = false;
         }
-      } else if (amplifyMarkRegExp.test(newLine)) {
+      } else if (amplifyMarkRegExp.test(newLine) || deprecatedAmplifyMarkRegExp.test(newLine)) {
         isInRemoval = true;
       } else {
         newGitIgnoreString += newLine + os.EOL;
@@ -62,9 +66,10 @@ function getGitIgnoreAppendString() {
     'amplify-gradle-config.json',
     'amplifytools.xcconfig',
     '.secret-*',
+    '**.sample',
   ];
 
-  const toAppend = `${os.EOL + os.EOL + amplifyMark + os.EOL}${ignoreList.join(os.EOL)}`;
+  const toAppend = `${os.EOL + os.EOL + amplifyMark + os.EOL}${ignoreList.join(os.EOL)}${os.EOL + amplifyEndMark + os.EOL}`;
 
   return toAppend;
 }

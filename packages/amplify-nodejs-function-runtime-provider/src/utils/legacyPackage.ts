@@ -30,7 +30,7 @@ export async function packageResource(request: PackageRequest, context: $TSConte
         );
       }
 
-      [optPath, ...libGlob].forEach(folder => {
+      [...libGlob].forEach(folder => {
         if (fs.lstatSync(folder).isDirectory()) {
           zipEntries.push({
             packageFolder: folder,

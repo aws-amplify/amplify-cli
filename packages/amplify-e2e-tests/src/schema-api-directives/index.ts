@@ -1,6 +1,6 @@
-import path from 'path';
-import fs from 'fs-extra';
-import { runTest, runAutTest } from './common';
+import * as fs from 'fs-extra';
+import * as path from 'path';
+import { runTest, runAuthTest } from './common';
 import { runFunctionTest } from './functionTester';
 
 //The contents in the test files might be modified from its original version in the Amplify CLI doc,
@@ -10,15 +10,13 @@ import { runFunctionTest } from './functionTester';
 //#error: corrected error in the original content
 //#extra: the content does not exist in the Amplify CLI document, added for the completeness of the testing, such as the mutation needed to test subscriptions
 
-// to deal with bug in cognito-identity-js
-(global as any).fetch = require('node-fetch');
 // to deal with subscriptions in node env
 (global as any).WebSocket = require('ws');
 
 export async function testSchema(projectDir: string, directive: string, section: string): Promise<boolean> {
   let testModule;
 
-  const testFilePath = path.join(__dirname, `/tests/${directive}-${section}.ts`);
+  const testFilePath = path.join(__dirname, 'tests', `${directive}-${section}.ts`);
   if (!fs.existsSync(testFilePath)) {
     throw new Error(`Missing test file ${directive}-${section}.ts`);
   }
@@ -35,7 +33,7 @@ export async function testSchema(projectDir: string, directive: string, section:
     } else {
       switch (directive) {
         case 'auth':
-          await runAutTest(projectDir, testModule);
+          await runAuthTest(projectDir, testModule);
           break;
         case 'function':
           await runFunctionTest(projectDir, testModule);
@@ -55,4 +53,5 @@ export async function testSchema(projectDir: string, directive: string, section:
     return false;
   }
 }
+
 export * from './authHelper';

@@ -1,10 +1,8 @@
-import { nspawn as spawn, getCLIPath, getSocialProviders } from 'amplify-e2e-core';
+import { nspawn as spawn, getCLIPath, getSocialProviders, isCI } from 'amplify-e2e-core';
 
 export function addEnvironment(cwd: string, settings: { envName: string; numLayers?: number }): Promise<void> {
   return new Promise((resolve, reject) => {
     const chain = spawn(getCLIPath(), ['env', 'add'], { cwd, stripColors: true })
-      .wait('Do you want to use an existing environment?')
-      .sendLine('n')
       .wait('Enter a name for the environment')
       .sendLine(settings.envName)
       .wait('Select the authentication method you want to use:')
@@ -31,14 +29,26 @@ export function updateEnvironment(cwd: string, settings: { permissionsBoundaryAr
   });
 }
 
-export function addEnvironmentYes(cwd: string, settings: { envName: string }): Promise<void> {
+export function addEnvironmentYes(cwd: string, settings: { envName: string; disableAmplifyAppCreation?: boolean }): Promise<void> {
+  settings.disableAmplifyAppCreation = settings.disableAmplifyAppCreation ?? true;
+  const env = settings.disableAmplifyAppCreation
+    ? {
+        CLI_DEV_INTERNAL_DISABLE_AMPLIFY_APP_CREATION: '1',
+      }
+    : undefined;
+
+  const providerConfig = {
+    awscloudformation: {
+      configLevel: 'project',
+      useProfile: true,
+      profileName: isCI() ? 'amplify-integ-test-user' : 'default',
+    },
+  };
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['env', 'add', '--yes', '--envName', settings.envName], {
+    spawn(getCLIPath(), ['env', 'add', '--yes', '--envName', settings.envName, '--providers', JSON.stringify(providerConfig)], {
       cwd,
       stripColors: true,
-      env: {
-        CLI_DEV_INTERNAL_DISABLE_AMPLIFY_APP_CREATION: '1',
-      },
+      env,
     }).run((err: Error) => (err ? reject(err) : resolve()));
   });
 }
@@ -46,8 +56,6 @@ export function addEnvironmentYes(cwd: string, settings: { envName: string }): P
 export function addEnvironmentWithImportedAuth(cwd: string, settings: { envName: string; currentEnvName: string }): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['env', 'add'], { cwd, stripColors: true })
-      .wait('Do you want to use an existing environment?')
-      .sendConfirmNo()
       .wait('Enter a name for the environment')
       .sendLine(settings.envName)
       .wait('Select the authentication method you want to use:')
@@ -105,9 +113,9 @@ export function listEnvironment(cwd: string, settings: { numEnv?: number }): Pro
 // Get environment details and return them as JSON
 export function getEnvironment(cwd: string, settings: { envName: string }): Promise<string> {
   const envData = {};
-  let helper = output => {
-    let keyVal = output.split(/:(.+)/); // Split string on first ':' only
-    envData[keyVal[0].trim()] = keyVal[1].trim();
+  const helper = (output: string) => {
+    const [key, value] = output.split(/:(.+)/); // Split string on first ':' only
+    envData[key.trim()] = value.trim();
   };
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['env', 'get', '--name', settings.envName], { cwd, stripColors: true })
@@ -116,6 +124,7 @@ export function getEnvironment(cwd: string, settings: { envName: string }): Prom
       .wait('Provider')
       .wait('AuthRoleName', helper)
       .wait('UnauthRoleArn', helper)
+      .wait(/^AuthRoleArn/, helper) // Needs to be a regex to prevent matching UnauthRoleArn twice
       .wait('Region', helper)
       .wait('DeploymentBucketName', helper)
       .wait('UnauthRoleName', helper)
@@ -124,10 +133,8 @@ export function getEnvironment(cwd: string, settings: { envName: string }): Prom
       .wait('--------------')
       .sendEof()
       .run((err: Error) => {
-        let jsonEnvData = JSON.stringify({ awscloudformation: envData });
         if (!err) {
-          resolve(jsonEnvData);
-          return jsonEnvData;
+          resolve(JSON.stringify({ awscloudformation: envData }));
         } else {
           reject(err);
         }
@@ -153,11 +160,20 @@ export function pullEnvironment(cwd: string): Promise<void> {
 }
 
 export function addEnvironmentHostedUI(cwd: string, settings: { envName: string }): Promise<void> {
-  const { FACEBOOK_APP_ID, FACEBOOK_APP_SECRET, GOOGLE_APP_ID, GOOGLE_APP_SECRET, AMAZON_APP_ID, AMAZON_APP_SECRET } = getSocialProviders();
+  const {
+    FACEBOOK_APP_ID,
+    FACEBOOK_APP_SECRET,
+    GOOGLE_APP_ID,
+    GOOGLE_APP_SECRET,
+    AMAZON_APP_ID,
+    AMAZON_APP_SECRET,
+    APPLE_APP_ID,
+    APPLE_TEAM_ID,
+    APPLE_KEY_ID,
+    APPLE_PRIVATE_KEY,
+  } = getSocialProviders();
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['env', 'add'], { cwd, stripColors: true })
-      .wait('Do you want to use an existing environment?')
-      .sendLine('n')
       .wait('Enter a name for the environment')
       .sendLine(settings.envName)
       .wait('Select the authentication method you want to use:')
@@ -176,6 +192,14 @@ export function addEnvironmentHostedUI(cwd: string, settings: { envName: string 
       .sendLine(AMAZON_APP_ID)
       .wait('Enter your Amazon App Secret for your OAuth flow:')
       .sendLine(AMAZON_APP_SECRET)
+      .wait('Enter your Services ID for your OAuth flow:')
+      .sendLine(APPLE_APP_ID)
+      .wait('Enter your Team ID for your OAuth flow:')
+      .sendLine(APPLE_TEAM_ID)
+      .wait('Enter your Key ID for your OAuth flow:')
+      .sendLine(APPLE_KEY_ID)
+      .wait('Enter your Private Key for your OAuth flow:')
+      .sendLine(APPLE_PRIVATE_KEY)
       .wait('Try "amplify add api" to create a backend API and then "amplify publish" to deploy everything')
       .run((err: Error) => {
         if (!err) {
@@ -217,7 +241,7 @@ export function removeEnvironment(cwd: string, settings: { envName: string }): P
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['env', 'remove', settings.envName], { cwd, stripColors: true })
       .wait(`Are you sure you want to continue?`)
-      .sendLine('y')
+      .sendConfirmYes()
       .wait('Successfully removed environment from your project locally')
       .run((err: Error) => {
         if (!err) {

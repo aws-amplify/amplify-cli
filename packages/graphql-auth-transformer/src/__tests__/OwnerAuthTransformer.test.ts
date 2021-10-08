@@ -1,9 +1,20 @@
-import { parse, DefinitionNode, InputObjectTypeDefinitionNode } from 'graphql';
+import { parse } from 'graphql';
 import { FeatureFlagProvider, GraphQLTransform } from 'graphql-transformer-core';
 import { ResourceConstants } from 'graphql-transformer-common';
 import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
 import { ModelAuthTransformer } from '../ModelAuthTransformer';
 import { getObjectType, getField } from './test-helpers';
+const featureFlags = {
+  getBoolean: jest.fn().mockImplementation((name, defaultValue) => {
+    if (name === 'improvePluralization') {
+      return true;
+    }
+    return;
+  }),
+  getNumber: jest.fn(),
+  getObject: jest.fn(),
+  getString: jest.fn(),
+};
 
 test('Test ModelAuthTransformer validation happy case', () => {
   const validSchema = `
@@ -15,6 +26,7 @@ test('Test ModelAuthTransformer validation happy case', () => {
     }
     `;
   const transformer = new GraphQLTransform({
+    featureFlags,
     transformers: [
       new DynamoDBModelTransformer(),
       new ModelAuthTransformer({
@@ -46,6 +58,7 @@ test('Test OwnerField with Subscriptions', () => {
             postOwner: String
         }`;
   const transformer = new GraphQLTransform({
+    featureFlags,
     transformers: [
       new DynamoDBModelTransformer(),
       new ModelAuthTransformer({
@@ -78,6 +91,64 @@ test('Test OwnerField with Subscriptions', () => {
   );
 });
 
+test('Test multiple owner rules with Subscriptions', () => {
+  const validSchema = `
+        type Post @model
+            @auth(rules: [
+              { allow: owner },
+              { allow: owner, ownerField: "editors", operations: [read, update] }
+            ])
+        {
+            id: ID!
+            title: String
+            owner: String
+            editors: [String]
+        }`;
+  const transformer = new GraphQLTransform({
+    featureFlags,
+    transformers: [
+      new DynamoDBModelTransformer(),
+      new ModelAuthTransformer({
+        authConfig: {
+          defaultAuthentication: {
+            authenticationType: 'AMAZON_COGNITO_USER_POOLS',
+          },
+          additionalAuthenticationProviders: [],
+        },
+      }),
+    ],
+  });
+  const out = transformer.transform(validSchema);
+  expect(out).toBeDefined();
+
+  // expect 'owner' and 'editors' as arguments for subscription operations
+  expect(out.schema).toContain('onCreatePost(owner: String, editors: String)');
+  expect(out.schema).toContain('onUpdatePost(owner: String, editors: String)');
+  expect(out.schema).toContain('onDeletePost(owner: String, editors: String)');
+
+  // expect logic in the resolvers to check for owner args as an allowedOwner
+  expect(out.resolvers['Subscription.onCreatePost.res.vtl']).toContain(
+    '#set( $allowedOwners0 = $util.defaultIfNull($ctx.args.owner, null) )',
+  );
+  expect(out.resolvers['Subscription.onUpdatePost.res.vtl']).toContain(
+    '#set( $allowedOwners0 = $util.defaultIfNull($ctx.args.owner, null) )',
+  );
+  expect(out.resolvers['Subscription.onDeletePost.res.vtl']).toContain(
+    '#set( $allowedOwners0 = $util.defaultIfNull($ctx.args.owner, null) )',
+  );
+
+  // expect logic in the resolvers to check for editors args as an allowedOwner
+  expect(out.resolvers['Subscription.onCreatePost.res.vtl']).toContain(
+    '#set( $allowedOwners1 = $util.defaultIfNull($ctx.args.editors, null) )',
+  );
+  expect(out.resolvers['Subscription.onUpdatePost.res.vtl']).toContain(
+    '#set( $allowedOwners1 = $util.defaultIfNull($ctx.args.editors, null) )',
+  );
+  expect(out.resolvers['Subscription.onDeletePost.res.vtl']).toContain(
+    '#set( $allowedOwners1 = $util.defaultIfNull($ctx.args.editors, null) )',
+  );
+});
+
 describe('add missing implicit owner fields to type', () => {
   let ff: FeatureFlagProvider;
   const runTransformer = (validSchema: string) => {
@@ -100,6 +171,9 @@ describe('add missing implicit owner fields to type', () => {
     ff = {
       getBoolean: jest.fn().mockImplementation((name, defaultValue) => {
         if (name === 'addMissingOwnerFields') {
+          return true;
+        }
+        if (name === 'improvePluralization') {
           return true;
         }
       }),

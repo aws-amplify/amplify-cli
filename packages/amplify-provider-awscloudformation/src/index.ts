@@ -25,6 +25,7 @@ import { S3Service, createS3Service } from './aws-utils/S3Service';
 import { DynamoDBService, createDynamoDBService } from './aws-utils/DynamoDBService';
 import { resolveAppId } from './utils/resolve-appId';
 import { loadConfigurationForEnv } from './configuration-manager';
+import { SSM } from './aws-utils/aws-ssm';
 import { Lambda } from './aws-utils/aws-lambda';
 import CloudFormation from './aws-utils/aws-cfn';
 import { $TSContext } from 'amplify-cli-core';
@@ -32,6 +33,8 @@ import { $TSContext } from 'amplify-cli-core';
 export { resolveAppId } from './utils/resolve-appId';
 export { loadConfigurationForEnv } from './configuration-manager';
 import { updateEnv } from './update-env';
+
+import { uploadHooksDirectory } from './utils/hooks-manager';
 
 function init(context) {
   return initializer.run(context);
@@ -87,7 +90,7 @@ function getPinpointRegionMapping() {
 }
 
 function getConfiguredAmplifyClient(context, category, action, options = {}) {
-  return amplifyService.getConfiguredAmplifyClient(context, category, action, options);
+  return amplifyService.getConfiguredAmplifyClient(context, options);
 }
 
 function showHelpfulLinks(context, resources) {
@@ -100,6 +103,10 @@ function configureNewUser(context) {
 
 function openConsole(context) {
   return consoleCommand.run(context);
+}
+
+export async function getConfiguredSSMClient(context) {
+  return await SSM.getInstance(context);
 }
 
 async function getLambdaSdk(context: $TSContext) {
@@ -149,5 +156,7 @@ module.exports = {
   createDynamoDBService,
   resolveAppId,
   loadConfigurationForEnv,
+  getConfiguredSSMClient,
   updateEnv,
+  uploadHooksDirectory,
 };

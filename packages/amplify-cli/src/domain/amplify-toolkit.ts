@@ -35,13 +35,13 @@ export class AmplifyToolkit {
   private _pushResources: any;
   private _storeCurrentCloudBackend: any;
   private _readJsonFile: any;
-  private _removeEnvFromCloud: any;
   private _removeResource: any;
   private _sharedQuestions: any;
   private _showAllHelp: any;
   private _showHelp: any;
   private _showHelpfulProviderLinks: any;
   private _showResourceTable: any;
+  private _showStatusTable: any;
   private _serviceSelectionPrompt: any;
   private _updateProjectConfig: any;
   private _updateamplifyMetaAfterResourceUpdate: any;
@@ -232,11 +232,6 @@ export class AmplifyToolkit {
     this._readJsonFile = this._readJsonFile || require(path.join(this._amplifyHelpersDirPath, 'read-json-file')).readJsonFile;
     return this._readJsonFile;
   }
-  get removeEnvFromCloud(): any {
-    this._removeEnvFromCloud =
-      this._removeEnvFromCloud || require(path.join(this._amplifyHelpersDirPath, 'remove-env-from-cloud')).removeEnvFromCloud;
-    return this._removeEnvFromCloud;
-  }
   get removeResource(): any {
     this._removeResource = this._removeResource || require(path.join(this._amplifyHelpersDirPath, 'remove-resource')).removeResource;
     return this._removeResource;
@@ -264,6 +259,13 @@ export class AmplifyToolkit {
       this._showResourceTable || require(path.join(this._amplifyHelpersDirPath, 'resource-status')).showResourceTable;
     return this._showResourceTable;
   }
+
+  get showStatusTable(): any {
+    this._showStatusTable =
+    this._showStatusTable || require(path.join(this._amplifyHelpersDirPath, 'resource-status')).showStatusTable;
+    return this._showStatusTable;
+  }
+
   get serviceSelectionPrompt(): any {
     this._serviceSelectionPrompt =
       this._serviceSelectionPrompt || require(path.join(this._amplifyHelpersDirPath, 'service-select-prompt')).serviceSelectionPrompt;

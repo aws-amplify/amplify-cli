@@ -1,6 +1,6 @@
 {
   "name": "amplify-category-storage",
-  "version": "2.11.11",
+  "version": "2.12.11",
   "description": "amplify-cli storage plugin",
   "repository": {
     "type": "git",
@@ -13,6 +13,7 @@
   "types": "lib/index.d.ts",
   "scripts": {
     "build": "tsc",
+    "test": "jest",
     "clean": "rimraf lib tsconfig.tsbuildinfo",
     "watch": "tsc -w"
   },
@@ -21,8 +22,11 @@
     "aws"
   ],
   "dependencies": {
-    "amplify-cli-core": "1.23.0",
-    "amplify-util-import": "1.5.1",
+    "amplify-cli-core": "1.31.0",
+    "amplify-prompts": "1.2.0",
+    "amplify-util-import": "1.5.14",
+    "chalk": "^4.1.1",
+    "cloudform-types": "^4.2.0",
     "enquirer": "^2.3.6",
     "fs-extra": "^8.1.0",
     "inquirer": "^7.3.3",
@@ -31,6 +35,23 @@
     "uuid": "^3.4.0"
   },
   "devDependencies": {
+    "aws-sdk": "^2.963.0",
     "rimraf": "^3.0.2"
+  },
+  "jest": {
+    "testURL": "http://localhost",
+    "transform": {
+      "^.+\\.tsx?$": "ts-jest"
+    },
+    "testRegex": "((\\.|/)(test|spec))\\.tsx?$",
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "jsx",
+      "json",
+      "node"
+    ],
+    "collectCoverage": true
   }
 }

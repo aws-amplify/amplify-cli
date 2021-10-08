@@ -7,6 +7,7 @@ export async function initWithoutCredentialFileAndNoNewUserSetup(projRoot) {
   const settings = {
     accessKeyId: process.env.AWS_ACCESS_KEY_ID,
     secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+    sessionToken: process.env.AWS_SESSION_TOKEN,
     region: process.env.AWS_REGION || process.env.AWS_DEFAULT_REGION || 'us-west-2',
   };
 
@@ -55,7 +56,7 @@ async function initWorkflow(cwd: string, settings: { accessKeyId: string; secret
       .wait('Enter a name for the project')
       .sendCarriageReturn()
       .wait('Initialize the project with the above configuration?')
-      .sendLine('n')
+      .sendConfirmNo()
       .wait('Enter a name for the environment')
       .sendCarriageReturn()
       .wait('Choose your default editor:')

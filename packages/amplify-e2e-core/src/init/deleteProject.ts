@@ -1,7 +1,9 @@
-import { nspawn as spawn, retry, getCLIPath, describeCloudFormationStack, getProjectMeta } from '..';
+import { nspawn as spawn, retry, getCLIPath, describeCloudFormationStack } from '..';
+import { getBackendAmplifyMeta } from '../utils';
 
 export const deleteProject = async (cwd: string, profileConfig?: any): Promise<void> => {
-  const { StackName: stackName, Region: region } = getProjectMeta(cwd).providers.awscloudformation;
+  // Read the meta from backend otherwise it could fail on non-pushed, just initialized projects
+  const { StackName: stackName, Region: region } = getBackendAmplifyMeta(cwd).providers.awscloudformation;
   await retry(
     () => describeCloudFormationStack(stackName, region, profileConfig),
     stack => stack.StackStatus.endsWith('_COMPLETE'),
@@ -10,7 +12,7 @@ export const deleteProject = async (cwd: string, profileConfig?: any): Promise<v
     const noOutputTimeout = 1000 * 60 * 20; // 20 minutes;
     spawn(getCLIPath(), ['delete'], { cwd, stripColors: true, noOutputTimeout })
       .wait('Are you sure you want to continue?')
-      .sendLine('y')
+      .sendConfirmYes()
       .wait('Project deleted locally.')
       .run((err: Error) => {
         if (!err) {

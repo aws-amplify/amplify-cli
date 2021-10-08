@@ -68,7 +68,7 @@ const loadResourceParameters_mock = loadFunctionParameters as jest.MockedFunctio
 
 test('get dependent functions', async () => {
   jest.clearAllMocks();
-  const modelsDeleted = ['model3'];
+  const modelsDeleted = ['model3', 'model2'];
   const FunctionMetaExpected = ['fn2', 'fn3'];
   loadResourceParameters_mock
     .mockReturnValueOnce({
@@ -91,9 +91,9 @@ test('get dependent functions', async () => {
   expect(fnMetaToBeUpdated.map(resource => resource.resourceName).toString()).toBe(FunctionMetaExpected.toString());
 });
 
-test('get dependent functions', async () => {
+test('get dependent functions with empty permissions', async () => {
   jest.clearAllMocks();
-  const modelsDeleted = ['model1', 'model2'];
+  const modelsDeleted = ['model3'];
   const FunctionMetaExpected = ['fn2'];
   loadResourceParameters_mock
     .mockReturnValueOnce({
@@ -105,13 +105,7 @@ test('get dependent functions', async () => {
         },
       },
     })
-    .mockReturnValueOnce({
-      permissions: {
-        storage: {
-          model3: ['create'],
-        },
-      },
-    });
+    .mockReturnValueOnce({});
   const fnMetaToBeUpdated = await lambdasWithApiDependency((contextStub as unknown) as $TSContext, allResources, backendDir, modelsDeleted);
   expect(fnMetaToBeUpdated.map(resource => resource.resourceName).toString()).toBe(FunctionMetaExpected.toString());
 });

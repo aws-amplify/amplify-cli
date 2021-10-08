@@ -13,17 +13,27 @@ import {
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { FunctionTransformer } from '@aws-amplify/graphql-function-transformer';
 import { HttpTransformer } from '@aws-amplify/graphql-http-transformer';
+import { PredictionsTransformer } from '@aws-amplify/graphql-predictions-transformer';
+import { IndexTransformer, PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
+import {
+  BelongsToTransformer,
+  HasManyTransformer,
+  HasOneTransformer,
+  ManyToManyTransformer,
+} from '@aws-amplify/graphql-relational-transformer';
 import { SearchableModelTransformer } from '@aws-amplify/graphql-searchable-transformer';
-
+import { DefaultValueTransformer } from '@aws-amplify/graphql-default-value-transformer';
 import { ProviderName as providerName } from '../constants';
 import { hashDirectory } from '../upload-appsync-files';
-import { writeDeploymentToDisk } from './utils';
+import { mergeUserConfigWithTransformOutput, writeDeploymentToDisk } from './utils';
 import { loadProject as readTransformerConfiguration } from './transform-config';
 import { loadProject } from 'graphql-transformer-core';
 import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-core';
 import { Template } from '@aws-amplify/graphql-transformer-core/lib/config/project-config';
 import { AmplifyCLIFeatureFlagAdapter } from '../utils/amplify-cli-feature-flag-adapter';
 import { JSONUtilities } from 'amplify-cli-core';
+import { searchablePushChecks } from '../transform-graphql-schema';
+import { ResourceConstants } from 'graphql-transformer-common';
 
 const API_CATEGORY = 'api';
 const STORAGE_CATEGORY = 'storage';
@@ -47,10 +57,21 @@ function warnOnAuth(context, map) {
 
 function getTransformerFactory(context, resourceDir) {
   return async (options?: TransformerFactoryArgs) => {
+    const modelTransformer = new ModelTransformer();
+    const indexTransformer = new IndexTransformer();
+    const hasOneTransformer = new HasOneTransformer();
     const transformerList: TransformerPluginProvider[] = [
-      new ModelTransformer(),
+      modelTransformer,
       new FunctionTransformer(),
       new HttpTransformer(),
+      new PredictionsTransformer(options?.storageConfig),
+      new PrimaryKeyTransformer(),
+      indexTransformer,
+      new BelongsToTransformer(),
+      new HasManyTransformer(),
+      hasOneTransformer,
+      new ManyToManyTransformer(modelTransformer, indexTransformer, hasOneTransformer),
+      new DefaultValueTransformer(),
       // TODO: initialize transformer plugins
     ];
 
@@ -59,9 +80,8 @@ function getTransformerFactory(context, resourceDir) {
     }
 
     const customTransformersConfig = await readTransformerConfiguration(resourceDir);
-    const customTransformers = (customTransformersConfig && customTransformersConfig.transformers
-      ? customTransformersConfig.transformers
-      : []
+    const customTransformers = (
+      customTransformersConfig && customTransformersConfig.transformers ? customTransformersConfig.transformers : []
     )
       .map(transformer => {
         const fileUrlMatch = /^file:\/\/(.*)\s*$/m.exec(transformer);
@@ -259,6 +279,7 @@ export async function transformGraphQLSchema(context, options) {
   // Check for common errors
   const directiveMap = collectDirectivesByTypeNames(project.schema);
   warnOnAuth(context, directiveMap.types);
+  searchablePushChecks(context, directiveMap.types, parameters[ResourceConstants.PARAMETERS.AppSyncApiName]);
 
   const transformerListFactory = getTransformerFactory(context, resourceDir);
 
@@ -414,7 +435,10 @@ async function _buildProject(opts: ProjectOptions<TransformerFactoryArgs>) {
     authConfig: opts.authConfig,
     buildParameters: opts.buildParameters,
     stacks: opts.projectConfig.stacks || {},
-    featuerFlags: new AmplifyCLIFeatureFlagAdapter(),
+    featureFlags: new AmplifyCLIFeatureFlagAdapter(),
   });
-  return transform.transform(userProjectConfig.schema.toString());
+
+  const transformOutput = transform.transform(userProjectConfig.schema.toString());
+
+  return mergeUserConfigWithTransformOutput(userProjectConfig, transformOutput);
 }

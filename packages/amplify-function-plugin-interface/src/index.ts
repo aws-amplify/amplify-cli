@@ -70,6 +70,7 @@ export type BuildRequest = {
     resourceName: string;
   };
   lastBuildTimeStamp?: Date;
+  lastBuildType?: BuildType;
   service?: string;
 };
 
@@ -134,6 +135,8 @@ export type FunctionParameters = {
   runtimePluginId: string;
   cloudwatchRule?: string;
   lambdaLayers: LambdaLayer[];
+  environmentVariables?: Record<string, string>;
+  secretDeltas?: SecretDeltas;
 };
 
 /**
@@ -160,6 +163,7 @@ export interface FunctionTriggerParameters {
   skipEdit: boolean;
   functionTemplate?: FunctionTemplate;
   cloudResourceTemplatePath?: string;
+  environmentVariables?: Record<string, string>;
 }
 
 export interface ProviderContext {
@@ -246,3 +250,35 @@ export interface FunctionScript {
   type: 'file' | 'inline';
   value: string;
 }
+
+export type SecretDeltas = Record<SecretName, SecretDelta>;
+
+export type SecretName = string;
+
+export type SecretDelta = RetainSecret | RemoveSecret | SetSecret;
+
+export type RetainSecret = {
+  operation: 'retain';
+};
+
+export const retainSecret: RetainSecret = {
+  operation: 'retain',
+};
+
+export type RemoveSecret = {
+  operation: 'remove';
+};
+
+export const removeSecret: RemoveSecret = {
+  operation: 'remove',
+};
+
+export type SetSecret = {
+  operation: 'set';
+  value: string;
+};
+
+export const setSecret = (value: string): SetSecret => ({
+  operation: 'set',
+  value,
+});

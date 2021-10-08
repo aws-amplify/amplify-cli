@@ -4,22 +4,26 @@ import _ from 'lodash';
 import * as path from 'path';
 import sequential from 'promise-sequential';
 import { categoryName } from './constants';
+import { postEnvRemoveHandler } from './events/postEnvRemoveHandler';
+import { postPushHandler } from './events/postPushHandler';
+import { prePushHandler } from './events/prePushHandler';
 import { updateConfigOnEnvInit } from './provider-utils/awscloudformation';
+import { cloneSecretsOnEnvInitHandler } from './provider-utils/awscloudformation/secrets/cloneSecretsOnEnvInitHandler';
 import { buildFunction, buildTypeKeyMap } from './provider-utils/awscloudformation/utils/buildFunction';
 import { ServiceName } from './provider-utils/awscloudformation/utils/constants';
+import { askEnvironmentVariableCarryOut } from './provider-utils/awscloudformation/utils/environmentVariablesHelper';
 import {
   deleteLayerVersionPermissionsToBeUpdatedInCfn,
   deleteLayerVersionsToBeRemovedByCfn,
 } from './provider-utils/awscloudformation/utils/layerConfiguration';
 import { checkContentChanges } from './provider-utils/awscloudformation/utils/packageLayer';
 import { supportedServices } from './provider-utils/supported-services';
-
 export { categoryName as category } from './constants';
 export { askExecRolePermissionsQuestions } from './provider-utils/awscloudformation/service-walkthroughs/execPermissionsWalkthrough';
-export { lambdasWithApiDependency } from './provider-utils/awscloudformation/utils/getDependentFunction';
 export { buildResource } from './provider-utils/awscloudformation/utils/build';
 export { buildTypeKeyMap } from './provider-utils/awscloudformation/utils/buildFunction';
 export { ServiceName } from './provider-utils/awscloudformation/utils/constants';
+export { lambdasWithApiDependency } from './provider-utils/awscloudformation/utils/getDependentFunction';
 export { hashLayerResource } from './provider-utils/awscloudformation/utils/layerHelpers';
 export { migrateLegacyLayer } from './provider-utils/awscloudformation/utils/layerMigrationUtils';
 export { packageResource } from './provider-utils/awscloudformation/utils/package';
@@ -168,6 +172,12 @@ export async function initEnv(context) {
   stateManager.setTeamProviderInfo(projectPath, teamProviderInfo);
 
   await sequential(functionTasks);
+
+  if (isNewEnv) {
+    const yesFlagSet = _.get(context, ['parameters', 'options', 'yes'], false);
+    await askEnvironmentVariableCarryOut(context, sourceEnv, context.exeInfo.localEnvInfo.projectPath, yesFlagSet);
+    await cloneSecretsOnEnvInitHandler(context, sourceEnv, envName);
+  }
 }
 
 // Returns a wrapper around FunctionRuntimeLifecycleManager.invoke() that can be used to invoke the function with only an event
@@ -190,9 +200,12 @@ export async function getInvoker(
 }
 
 export function getBuilder(context: $TSContext, resourceName: string, buildType: BuildType): () => Promise<void> {
-  const lastBuildTimestamp = _.get(stateManager.getMeta(), [categoryName, resourceName, buildTypeKeyMap[buildType]]);
+  const meta = stateManager.getMeta();
+  const lastBuildTimestamp = _.get(meta, [categoryName, resourceName, buildTypeKeyMap[buildType]]);
+  const lastBuildType = _.get(meta, [categoryName, resourceName, 'lastBuildType']);
+
   return async () => {
-    await buildFunction(context, { resourceName, buildType, lastBuildTimestamp });
+    await buildFunction(context, { resourceName, buildType, lastBuildTimestamp, lastBuildType });
   };
 }
 
@@ -238,9 +251,18 @@ export async function executeAmplifyCommand(context) {
   await commandModule.run(context);
 }
 
-export async function handleAmplifyEvent(context, args) {
-  context.print.info(`${categoryName} handleAmplifyEvent to be implemented`);
-  context.print.info(`Received event args ${args}`);
+export async function handleAmplifyEvent(context: $TSContext, args: $TSAny) {
+  switch (args.event) {
+    case 'PrePush':
+      await prePushHandler(context);
+      break;
+    case 'PostPush':
+      await postPushHandler(context);
+      break;
+    case 'InternalOnlyPostEnvRemove':
+      await postEnvRemoveHandler(context, args?.data?.envName);
+      break;
+  }
 }
 
 export async function lambdaLayerPrompt(context: $TSContext, resources: Array<$TSAny>): Promise<void> {

@@ -208,7 +208,7 @@ describe('feature flags', () => {
       await expect(async () => {
         await FeatureFlags.initialize(envProvider, undefined, getTestFlags());
       }).rejects.toThrowError(
-        `Found '}' where a key name was expected (check your syntax or use quotes if the key name includes {}[],: or whitespace) at line 1,0 >>> Not a json {\n ...`,
+        `Found '}' where a key name was expected (check your syntax or use quotes if the key name includes {}[],: or whitespace) at line 1,0 >>> Not a json {${os.EOL} ...`,
       );
     });
 

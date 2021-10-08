@@ -18,6 +18,8 @@ jest.mock('../../../extensions/amplify-helpers/get-provider-plugins', () => ({
   }),
 }));
 
+jest.mock('../../../execution-manager');
+
 const getAllCategoryPluginInfoMock = getAllCategoryPluginInfo as jest.MockedFunction<typeof getAllCategoryPluginInfo>;
 const deleteEnvMock = jest.fn();
 const deletePinpointAppForEnvMock = jest.fn();
@@ -59,5 +61,13 @@ describe('remove-env-from-cloud', () => {
     deleteEnvMock.mockRejectedValue(new Error('deleteEnv error'));
 
     await expect(removeEnvFromCloud(context, 'test', false)).rejects.toThrow('deleteEnv error');
+  });
+
+  it('does not throw not found error when deleteEnv promise rejected', async () => {
+    const e: any = new Error('deleteEnv error');
+    e.code = 'NotFoundException';
+    deleteEnvMock.mockRejectedValue(e);
+
+    await expect(removeEnvFromCloud(context, 'test', false)).resolves.not.toThrow('deleteEnv error');
   });
 });

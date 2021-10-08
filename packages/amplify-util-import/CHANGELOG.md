@@ -3,6 +3,110 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.5.14](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-import@1.5.13...amplify-util-import@1.5.14) (2021-10-06)
+
+**Note:** Version bump only for package amplify-util-import
+
+
+
+
+
+## [1.5.13](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-import@1.5.12...amplify-util-import@1.5.13) (2021-09-27)
+
+**Note:** Version bump only for package amplify-util-import
+
+
+
+
+
+## [1.5.12](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-import@1.5.11...amplify-util-import@1.5.12) (2021-09-18)
+
+**Note:** Version bump only for package amplify-util-import
+
+
+
+
+
+## [1.5.11](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-import@1.5.10...amplify-util-import@1.5.11) (2021-09-14)
+
+**Note:** Version bump only for package amplify-util-import
+
+
+
+
+
+## [1.5.10](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-import@1.5.9...amplify-util-import@1.5.10) (2021-09-09)
+
+**Note:** Version bump only for package amplify-util-import
+
+
+
+
+
+## [1.5.9](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-import@1.5.8...amplify-util-import@1.5.9) (2021-09-02)
+
+**Note:** Version bump only for package amplify-util-import
+
+
+
+
+
+## [1.5.8](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-import@1.5.7...amplify-util-import@1.5.8) (2021-08-24)
+
+**Note:** Version bump only for package amplify-util-import
+
+
+
+
+
+## [1.5.7](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-import@1.5.6...amplify-util-import@1.5.7) (2021-08-06)
+
+**Note:** Version bump only for package amplify-util-import
+
+
+
+
+
+## [1.5.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-import@1.5.5...amplify-util-import@1.5.6) (2021-07-30)
+
+**Note:** Version bump only for package amplify-util-import
+
+
+
+
+
+## [1.5.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-import@1.5.4...amplify-util-import@1.5.5) (2021-07-27)
+
+**Note:** Version bump only for package amplify-util-import
+
+
+
+
+
+## [1.5.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-import@1.5.3...amplify-util-import@1.5.4) (2021-07-16)
+
+**Note:** Version bump only for package amplify-util-import
+
+
+
+
+
+## [1.5.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-import@1.5.2...amplify-util-import@1.5.3) (2021-06-30)
+
+**Note:** Version bump only for package amplify-util-import
+
+
+
+
+
+## [1.5.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-import@1.5.1...amplify-util-import@1.5.2) (2021-06-24)
+
+**Note:** Version bump only for package amplify-util-import
+
+
+
+
+
 ## [1.5.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-import@1.5.0...amplify-util-import@1.5.1) (2021-06-15)
 
 **Note:** Version bump only for package amplify-util-import

@@ -1,19 +1,20 @@
 import {
-  TransformerResolverProvider,
-  DataSourceProvider,
-  TransformerContextProvider,
-  TransformerResolversManagerProvider,
   AppSyncFunctionConfigurationProvider,
-  MappingTemplateProvider,
+  DataSourceProvider,
   GraphQLAPIProvider,
+  MappingTemplateProvider,
+  TransformerContextProvider,
+  TransformerResolverProvider,
+  TransformerResolversManagerProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
-import { Stack, isResolvableObject } from '@aws-cdk/core';
-
-import { MappingTemplate, S3MappingTemplate } from '../cdk-compat';
-import { StackManager } from './stack-manager';
+import { CfnFunctionConfiguration } from '@aws-cdk/aws-appsync';
+import { isResolvableObject, Stack } from '@aws-cdk/core';
 import assert from 'assert';
 import { toPascalCase } from 'graphql-transformer-common';
 import { dedent } from 'ts-dedent';
+import { MappingTemplate, S3MappingTemplate } from '../cdk-compat';
+import * as SyncUtils from '../transformation/sync-utils';
+import { StackManager } from './stack-manager';
 
 type Slot = {
   requestMappingTemplate: MappingTemplateProvider;
@@ -26,6 +27,7 @@ const NONE_DATA_SOURCE_NAME = 'NONE_DS';
 
 export class ResolverManager implements TransformerResolversManagerProvider {
   private resolvers: Map<string, TransformerResolverProvider> = new Map();
+
   generateQueryResolver = (
     typeName: string,
     fieldName: string,
@@ -162,7 +164,7 @@ export class TransformerResolver implements TransformerResolverProvider {
     // substitue template name values
     [this.requestMappingTemplate, this.requestMappingTemplate].map(template => this.substitueSlotInfo(template, 'main', 0));
 
-    const dataSourceProviderFn = api.addAppSyncFunction(
+    const dataSourceProviderFn = api.host.addAppSyncFunction(
       toPascalCase([this.typeName, this.fieldName, 'DataResolverFn']),
       this.requestMappingTemplate,
       this.responseMappingTemplate,
@@ -180,6 +182,28 @@ export class TransformerResolver implements TransformerResolverProvider {
             const tableName = this.datasource.ds.dynamoDbConfig?.tableName;
             dataSource = `$util.qr($ctx.stash.put("tableName", "${tableName}"))`;
           }
+
+          if (context.isProjectUsingDataStore()) {
+            const syncConfig = SyncUtils.getSyncConfig(context, this.typeName)!;
+            const funcConf = dataSourceProviderFn.node.children.find(
+              (it: any) => it.cfnResourceType === 'AWS::AppSync::FunctionConfiguration',
+            ) as CfnFunctionConfiguration;
+
+            if (funcConf) {
+              funcConf.syncConfig = {
+                conflictDetection: syncConfig.ConflictDetection,
+                conflictHandler: syncConfig.ConflictHandler,
+                ...(SyncUtils.isLambdaSyncConfig(syncConfig)
+                  ? {
+                      lambdaConflictHandlerConfig: {
+                        lambdaConflictHandlerArn: syncConfig.LambdaConflictHandler.lambdaArn,
+                      },
+                    }
+                  : {}),
+              };
+            }
+          }
+
           break;
         case 'AMAZON_ELASTICSEARCH':
           if (this.datasource.ds.elasticsearchConfig && !isResolvableObject(this.datasource.ds.elasticsearchConfig)) {
@@ -213,7 +237,7 @@ export class TransformerResolver implements TransformerResolverProvider {
           throw new Error('Unknow DataSource type');
       }
     }
-    api.addResolver(
+    api.host.addResolver(
       this.typeName,
       this.fieldName,
       MappingTemplate.inlineTemplateFromString(
@@ -249,7 +273,7 @@ export class TransformerResolver implements TransformerResolverProvider {
           this.substitueSlotInfo(requestMappingTemplate, slotName, index);
           // eslint-disable-next-line no-unused-expressions
           responseMappingTemplate && this.substitueSlotInfo(responseMappingTemplate, slotName, index);
-          const fn = api.addAppSyncFunction(
+          const fn = api.host.addAppSyncFunction(
             name,
             requestMappingTemplate,
             responseMappingTemplate || MappingTemplate.inlineTemplateFromString('$util.toJson({})'),
@@ -270,8 +294,8 @@ export class TransformerResolver implements TransformerResolverProvider {
   }
 
   private ensureNoneDataSource(api: GraphQLAPIProvider) {
-    if (!api.hasDataSource(NONE_DATA_SOURCE_NAME)) {
-      api.addNoneDataSource(NONE_DATA_SOURCE_NAME, {
+    if (!api.host.hasDataSource(NONE_DATA_SOURCE_NAME)) {
+      api.host.addNoneDataSource(NONE_DATA_SOURCE_NAME, {
         name: NONE_DATA_SOURCE_NAME,
         description: 'None Data Source for Pipeline functions',
       });

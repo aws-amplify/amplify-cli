@@ -43,7 +43,7 @@ export class RelationalDBResolverGenerator {
    * Creates the CRUDL+Q Resolvers as a Map of Cloudform Resources. The output can then be
    * merged with an existing Template's map of Resources.
    */
-  public createRelationalResolvers(resolverFilePath: string) {
+  public createRelationalResolvers(resolverFilePath: string, improvePluralization: boolean) {
     let resources = {};
     this.resolverFilePath = resolverFilePath;
     this.typePrimaryKeyMap.forEach((value: string, key: string) => {
@@ -54,7 +54,7 @@ export class RelationalDBResolverGenerator {
         ...{ [resourceName + 'GetResolver']: this.makeGetRelationalResolver(key) },
         ...{ [resourceName + 'UpdateResolver']: this.makeUpdateRelationalResolver(key) },
         ...{ [resourceName + 'DeleteResolver']: this.makeDeleteRelationalResolver(key) },
-        ...{ [resourceName + 'ListResolver']: this.makeListRelationalResolver(key) },
+        ...{ [resourceName + 'ListResolver']: this.makeListRelationalResolver(key, improvePluralization) },
       };
       // TODO: Add Guesstimate Query Resolvers
     });
@@ -306,8 +306,8 @@ export class RelationalDBResolverGenerator {
    * @param type - the graphql type for which the list resolver will be created
    * @param queryTypeName - will be 'Query'
    */
-  private makeListRelationalResolver(type: string, queryTypeName: string = 'Query') {
-    const fieldName = graphqlName(GRAPHQL_RESOLVER_OPERATION.List + plurality(toUpper(type)));
+  private makeListRelationalResolver(type: string, improvePluralization: boolean, queryTypeName: string = 'Query') {
+    const fieldName = graphqlName(GRAPHQL_RESOLVER_OPERATION.List + plurality(toUpper(type), improvePluralization));
     const selectSql = this.generateSelectStatement(type);
     const reqFileName = `${queryTypeName}.${fieldName}.req.vtl`;
     const resFileName = `${queryTypeName}.${fieldName}.res.vtl`;
@@ -436,7 +436,7 @@ export class RelationalDBResolverGenerator {
     if (this.isPrimaryKeyAStringType(type)) {
       return `UPDATE ${type} SET $update WHERE ${primaryKey}=\'$ctx.args.update${tableName}Input.${primaryKey}\'`;
     }
-    return `UPDATE ${type} SET $update WHERE ${primaryKey}=$ctx.args.update${tableName}Input.${primaryKey}}`;
+    return `UPDATE ${type} SET $update WHERE ${primaryKey}=$ctx.args.update${tableName}Input.${primaryKey}`;
   }
 
   /**

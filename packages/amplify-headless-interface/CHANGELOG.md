@@ -3,6 +3,50 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.10.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-headless-interface@1.9.0...amplify-headless-interface@1.10.0) (2021-08-06)
+
+
+### Features
+
+* make cognito userpool id optional for headless mode ([#7820](https://github.com/aws-amplify/amplify-cli/issues/7820)) ([3746f91](https://github.com/aws-amplify/amplify-cli/commit/3746f91f531b4897e30eaa73ca26943f30a6bc38))
+
+
+
+
+
+# [1.9.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-headless-interface@1.8.0...amplify-headless-interface@1.9.0) (2021-07-27)
+
+
+### Features
+
+* **amplify-category-auth:** enable alternative signup/signin options ([#7461](https://github.com/aws-amplify/amplify-cli/issues/7461)) ([56a0c35](https://github.com/aws-amplify/amplify-cli/commit/56a0c35d2cef0fbff27c80f78dba57516ef18afb)), closes [#1546](https://github.com/aws-amplify/amplify-cli/issues/1546)
+
+
+
+
+
+# [1.8.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-headless-interface@1.7.0...amplify-headless-interface@1.8.0) (2021-07-12)
+
+
+### Features
+
+* support for sign in with apple ([#7413](https://github.com/aws-amplify/amplify-cli/issues/7413)) ([00d6676](https://github.com/aws-amplify/amplify-cli/commit/00d6676b4c1d6995cac01956078f7b6ee6186814))
+
+
+
+
+
+# [1.7.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-headless-interface@1.6.1...amplify-headless-interface@1.7.0) (2021-06-24)
+
+
+### Features
+
+* **import-auth:** add headless support ([#7266](https://github.com/aws-amplify/amplify-cli/issues/7266)) ([7fa478b](https://github.com/aws-amplify/amplify-cli/commit/7fa478bbfebbbe70e286eb19d436d772c32c4fd2))
+
+
+
+
+
 ## [1.6.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-headless-interface@1.6.0...amplify-headless-interface@1.6.1) (2021-05-18)
 
 

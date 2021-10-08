@@ -10,6 +10,8 @@ import {
   pathManager,
   stateManager,
   TeamProviderInfoMigrateError,
+  executeHooks,
+  HooksMeta,
 } from 'amplify-cli-core';
 import { isCI } from 'ci-info';
 import { EventEmitter } from 'events';
@@ -31,6 +33,7 @@ import { ensureMobileHubCommandCompatibility } from './utils/mobilehub-support';
 import { migrateTeamProviderInfo } from './utils/team-provider-migrate';
 import { deleteOldVersion } from './utils/win-utils';
 import { notify } from './version-notifier';
+import { getAmplifyVersion } from './extensions/amplify-helpers/get-amplify-version';
 
 // Adjust defaultMaxListeners to make sure Inquirer will not fail under Windows because of the multiple subscriptions
 // https://github.com/SBoudrias/Inquirer.js/issues/887
@@ -64,6 +67,50 @@ process.on('unhandledRejection', function (error) {
   throw error;
 });
 
+function convertKeysToLowerCase(obj: object) {
+  let newObj = {};
+  for (let key of Object.keys(obj)) {
+    newObj[key.toLowerCase()] = obj[key];
+  }
+  return newObj;
+}
+
+function normalizeStatusCommandOptions(input: Input) {
+  let options = input.options ? input.options : {};
+  const allowedVerboseIndicators = [constants.VERBOSE, 'v'];
+  //Normalize 'amplify status -v' to verbose, since -v is interpreted as 'version'
+  for (let verboseFlag of allowedVerboseIndicators) {
+    if (options.hasOwnProperty(verboseFlag)) {
+      if (typeof options[verboseFlag] === 'string') {
+        const pluginName = (options[verboseFlag] as string).toLowerCase();
+        options[pluginName] = true;
+      }
+      delete options[verboseFlag];
+      options['verbose'] = true;
+    }
+  }
+  //Merge plugins and subcommands as options (except help/verbose)
+  if (input.plugin) {
+    options[input.plugin] = true;
+    delete input.plugin;
+  }
+  if (input.subCommands) {
+    const allowedSubCommands = [constants.HELP, constants.VERBOSE]; //list of subcommands supported in Status
+    let inputSubCommands: string[] = [];
+    input.subCommands.map(subCommand => {
+      //plugins are inferred as subcommands when positionally supplied
+      if (!allowedSubCommands.includes(subCommand)) {
+        options[subCommand.toLowerCase()] = true;
+      } else {
+        inputSubCommands.push(subCommand);
+      }
+    });
+    input.subCommands = inputSubCommands;
+  }
+  input.options = convertKeysToLowerCase(options); //normalize keys to lower case
+  return input;
+}
+
 // entry from commandline
 export async function run() {
   try {
@@ -76,6 +123,11 @@ export async function run() {
     if (input.command !== 'help') {
       // Checks for available update, defaults to a 1 day interval for notification
       notify({ defer: false, isGlobal: true });
+    }
+
+    //Normalize status command options
+    if (input.command == 'status') {
+      input = normalizeStatusCommandOptions(input);
     }
 
     // Initialize Banner messages. These messages are set on the server side
@@ -107,6 +159,8 @@ export async function run() {
 
     rewireDeprecatedCommands(input);
     logInput(input);
+    const hooksMeta = HooksMeta.getInstance(input);
+    hooksMeta.setAmplifyVersion(getAmplifyVersion());
     const context = constructContext(pluginPlatform, input);
 
     // Initialize feature flags
@@ -219,6 +273,12 @@ export async function run() {
         print.info(error.stack);
       }
     }
+    await executeHooks(
+      HooksMeta.getInstance(undefined, 'post', {
+        message: error.message ?? 'undefined error in Amplify process',
+        stack: error.stack ?? 'undefined error stack',
+      }),
+    );
     exitOnNextTick(1);
   }
 }

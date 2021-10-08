@@ -396,3 +396,118 @@ test('env on the hostname', () => {
     }),
   );
 });
+
+test('aws_region on the URI path', () => {
+  const validSchema = `
+    type Comment {
+      id: ID!
+      content: String @http(method: POST, url: "http://www.api.com/ping\${aws_region}")
+    }
+  `;
+  const transformer = new GraphQLTransform({
+    transformers: [new HttpTransformer()],
+  });
+  const out = transformer.transform(validSchema);
+  expect(out).toBeDefined();
+  expect(out.stacks).toBeDefined();
+  parse(out.schema);
+  const stack = out.stacks.HttpDirectiveStack;
+  const reqTemplate = stack.Resources!.commentContentResolver.Properties.RequestMappingTemplate;
+  expect(reqTemplate['Fn::Sub']).toBeTruthy();
+  expect(reqTemplate['Fn::Sub'][0]).toMatch('"resourcePath": "/ping${aws_region}"');
+  expect(reqTemplate['Fn::Sub'][1].aws_region.Ref).toBeTruthy();
+});
+
+test('aws_region on the hostname', () => {
+  const validSchema = `
+    type Comment {
+      id: ID!
+      content: String @http(method: POST, url: "http://\${aws_region}www.api.com/ping")
+      content2: String @http(method: PUT, url: "http://\${aws_region}www.api.com/ping")
+      more: String @http(url: "http://\${aws_region}api.com/ping/me/2")
+      evenMore: String @http(method: DELETE, url: "http://\${aws_region}www.google.com/query/id")
+      stillMore: String @http(method: PATCH, url: "https://\${aws_region}www.api.com/ping/id")
+    }
+  `;
+  const transformer = new GraphQLTransform({
+    transformers: [new HttpTransformer()],
+  });
+  const out = transformer.transform(validSchema);
+  expect(out).toBeDefined();
+  expect(out.stacks).toBeDefined();
+  parse(out.schema);
+  const stack = out.stacks.HttpDirectiveStack;
+  cdkExpect(stack).to(countResources('AWS::AppSync::DataSource', 4));
+  cdkExpect(stack).to(
+    haveResource('AWS::AppSync::DataSource', {
+      Name: 'httpaws_regionwwwapicomDataSource',
+      Type: 'HTTP',
+      HttpConfig: {
+        Endpoint: {
+          'Fn::Sub': [
+            'http://${aws_region}www.api.com',
+            {
+              aws_region: {
+                Ref: anything(),
+              },
+            },
+          ],
+        },
+      },
+    }),
+  );
+  cdkExpect(stack).to(
+    haveResource('AWS::AppSync::DataSource', {
+      Name: 'httpaws_regionapicomDataSource',
+      Type: 'HTTP',
+      HttpConfig: {
+        Endpoint: {
+          'Fn::Sub': [
+            'http://${aws_region}api.com',
+            {
+              aws_region: {
+                Ref: anything(),
+              },
+            },
+          ],
+        },
+      },
+    }),
+  );
+  cdkExpect(stack).to(
+    haveResource('AWS::AppSync::DataSource', {
+      Name: 'httpaws_regionwwwgooglecomDataSource',
+      Type: 'HTTP',
+      HttpConfig: {
+        Endpoint: {
+          'Fn::Sub': [
+            'http://${aws_region}www.google.com',
+            {
+              aws_region: {
+                Ref: anything(),
+              },
+            },
+          ],
+        },
+      },
+    }),
+  );
+  cdkExpect(stack).to(
+    haveResource('AWS::AppSync::DataSource', {
+      Name: 'httpsaws_regionwwwapicomDataSource',
+      Type: 'HTTP',
+      HttpConfig: {
+        Endpoint: {
+          'Fn::Sub': [
+            'https://${aws_region}www.api.com',
+            {
+              aws_region: {
+                Ref: anything(),
+              },
+            },
+          ],
+        },
+      },
+    }),
+  );
+});

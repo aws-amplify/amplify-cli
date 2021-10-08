@@ -1,5 +1,5 @@
 import {
-  addAuthWithDefaultSocial,
+  addAuthWithDefaultSocial_v4_30,
   amplifyPushWithoutCodegen,
   amplifyStatus,
   amplifyStatusWithMigrate,
@@ -27,7 +27,7 @@ describe('amplify auth add with social', () => {
     const envName = 'integtest';
     await amplifyVersion(projRoot, '4.30.0', false);
     await initJSProjectWithProfileOldDX(projRoot, {});
-    await addAuthWithDefaultSocial(projRoot, {});
+    await addAuthWithDefaultSocial_v4_30(projRoot, {});
     expect(isDeploymentSecretForEnvExists(projRoot, envName)).toBeFalsy();
     await amplifyPushWithoutCodegen(projRoot);
     expect(isDeploymentSecretForEnvExists(projRoot, envName)).toBeFalsy();

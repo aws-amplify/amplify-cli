@@ -191,6 +191,7 @@ export class HttpTransformer extends TransformerPluginBase {
 
     const stack: cdk.Stack = context.stackManager.createStack(HTTP_DIRECTIVE_STACK);
     const env = context.stackManager.getParameter(ResourceConstants.PARAMETERS.Env) as cdk.CfnParameter;
+    const region = stack.region;
 
     stack.templateOptions.templateFormatVersion = '2010-09-09';
     stack.templateOptions.description = 'An auto-generated nested stack for the @http directive.';
@@ -199,8 +200,8 @@ export class HttpTransformer extends TransformerPluginBase {
       // Create a new data source if necessary.
       const dataSourceId = HttpResourceIDs.HttpDataSourceID(directive.origin);
 
-      if (context.api.getDataSource(dataSourceId) === undefined) {
-        context.api.addHttpDataSource(dataSourceId, replaceEnv(env, directive.origin), {}, stack);
+      if (context.api.host.getDataSource(dataSourceId) === undefined) {
+        context.api.host.addHttpDataSource(dataSourceId, replaceEnvAndRegion(env, region, directive.origin), {}, stack);
       }
 
       // Create the GraphQL resolver.
@@ -211,6 +212,8 @@ export class HttpTransformer extends TransformerPluginBase {
 
 function createResolver(stack: cdk.Stack, dataSourceId: string, context: TransformerContextProvider, config: HttpDirectiveConfiguration) {
   const env = context.stackManager.getParameter(ResourceConstants.PARAMETERS.Env) as cdk.CfnParameter;
+  const region = stack.region;
+
   const { method, supportsBody } = config;
   const reqCompoundExpr: any[] = [];
   const requestParams: any = { headers: ref('util.toJson($headers)') };
@@ -264,12 +267,12 @@ function createResolver(stack: cdk.Stack, dataSourceId: string, context: Transfo
     }),
   );
 
-  const requestTemplateString = replaceEnv(env, printBlock('Create request')(compoundExpression(reqCompoundExpr)));
+  const requestTemplateString = replaceEnvAndRegion(env, region, printBlock('Create request')(compoundExpression(reqCompoundExpr)));
   const requestMappingTemplate = cdk.Token.isUnresolved(requestTemplateString)
     ? MappingTemplate.inlineTemplateFromString(requestTemplateString)
     : MappingTemplate.s3MappingTemplateFromString(requestTemplateString, `${config.resolverTypeName}.${config.resolverFieldName}.req.vtl`);
 
-  return context.api.addResolver(
+  return context.api.host.addResolver(
     config.resolverTypeName,
     config.resolverFieldName,
     requestMappingTemplate,
@@ -293,14 +296,24 @@ function createResolver(stack: cdk.Stack, dataSourceId: string, context: Transfo
   );
 }
 
-function replaceEnv(env: cdk.CfnParameter, value: string): string {
-  if (!value.includes('${env}')) {
+function replaceEnvAndRegion(env: cdk.CfnParameter, region: string, value: string): string {
+  const vars: {
+    [key: string]: string;
+  } = {};
+
+  if (value.includes('${env}')) {
+    vars.env = (env as unknown) as string;
+  }
+
+  if (value.includes('${aws_region}')) {
+    vars.aws_region = region;
+  }
+
+  if (Object.keys(vars).length === 0) {
     return value;
   }
 
-  return cdk.Fn.sub(value, {
-    env: (env as unknown) as string,
-  });
+  return cdk.Fn.sub(value, vars);
 }
 
 function makeUrlParamInputObject(directive: HttpDirectiveConfiguration, urlParams: string[]): InputObjectTypeDefinitionNode {

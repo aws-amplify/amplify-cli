@@ -1264,7 +1264,7 @@ enum ModelAttributeTypes {
 
 type Query {
   getEntity(id: ID!): Entity
-  listEntitys(filter: ModelEntityFilterInput, limit: Int, nextToken: String): ModelEntityConnection
+  listEntities(filter: ModelEntityFilterInput, limit: Int, nextToken: String): ModelEntityConnection
 }
 "
 `;

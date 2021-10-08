@@ -1,4 +1,4 @@
-import Amplify from 'aws-amplify';
+import Amplify, { Auth } from 'aws-amplify';
 import {
   CreateGroupRequest,
   CreateGroupResponse,
@@ -12,7 +12,6 @@ import {
 } from 'aws-sdk/clients/cognitoidentityserviceprovider';
 import { ResourceConstants } from 'graphql-transformer-common';
 import { IAM as cfnIAM, Cognito as cfnCognito } from 'cloudform-types';
-import { AuthenticationDetails } from 'amazon-cognito-identity-js';
 import { default as CognitoClient } from 'aws-sdk/clients/cognitoidentityserviceprovider';
 import TestStorage from './TestStorage';
 import DeploymentResources from 'graphql-transformer-core/lib/DeploymentResources';
@@ -59,55 +58,16 @@ export async function signupUser(userPoolId: string, name: string, pw: string) {
   });
 }
 
-export async function authenticateUser(user: any, details: any, realPw: string) {
-  return new Promise((res, rej) => {
-    user.authenticateUser(details, {
-      onSuccess: function (result: any) {
-        res(result);
-      },
-      onFailure: function (err: any) {
-        rej(err);
-      },
-      newPasswordRequired: function (userAttributes: any, requiredAttributes: any) {
-        user.completeNewPasswordChallenge(realPw, user.Attributes, this);
-      },
-    });
-  });
-}
+export async function authenticateUser(username: string, tempPassword: string, password: string) {
+  let signinResult = await Auth.signIn(username, tempPassword);
 
-export async function signupAndAuthenticateUser(userPoolId: string, username: string, tmpPw: string, realPw: string) {
-  try {
-    // Sign up then login user 1.ß
-    await signupUser(userPoolId, username, tmpPw);
-    // 2. Sign in and change password if its an new user
-    try {
-      const authDetails = new AuthenticationDetails({
-        Username: username,
-        Password: tmpPw,
-      });
-      const user = Amplify.Auth.createCognitoUser(username);
-      const authRes = await authenticateUser(user, authDetails, realPw);
-      return authRes;
-    } catch (e) {
-      if (e.code !== 'NotAuthorizedException') console.error(`Failed to login with temp password`, e);
-    }
-  } catch (e) {
-    if (e.code !== 'UsernameExistsException') {
-      console.error(`Failed when signing up user`, e);
-    }
+  if (signinResult.challengeName === 'NEW_PASSWORD_REQUIRED') {
+    const { requiredAttributes } = signinResult.challengeParam;
+
+    signinResult = await Auth.completeNewPassword(signinResult, password, requiredAttributes);
   }
 
-  try {
-    const authDetails = new AuthenticationDetails({
-      Username: username,
-      Password: realPw,
-    });
-    const user = Amplify.Auth.createCognitoUser(username);
-    const authRes: any = await authenticateUser(user, authDetails, realPw);
-    return authRes;
-  } catch (e) {
-    console.error(`Failed to login`, e);
-  }
+  return signinResult.getSignInUserSession();
 }
 
 export async function deleteUser(accessToken: string): Promise<{}> {
@@ -311,7 +271,7 @@ export function addIAMRolesToCFNStack(out: DeploymentResources, e2eConfig: E2Eco
   });
 
   const identityPoolRoleMap = new cfnCognito.IdentityPoolRoleAttachment({
-    IdentityPoolId: ({ Ref: 'IdentityPool' } as unknown) as string,
+    IdentityPoolId: { Ref: 'IdentityPool' } as unknown as string,
     Roles: {
       unauthenticated: { 'Fn::GetAtt': ['UnauthRole', 'Arn'] },
       authenticated: { 'Fn::GetAtt': ['AuthRole', 'Arn'] },

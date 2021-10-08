@@ -1,3 +1,4 @@
+<% var autoVerifiedAttributes = props.autoVerifiedAttributes ? props.autoVerifiedAttributes.concat(props.aliasAttributes ? props.aliasAttributes : []).filter((attr, i, aliasAttributeArray) => ['email', 'phone_number'].includes(attr) && aliasAttributeArray.indexOf(attr) === i) : [] %>
 AWSTemplateFormatVersion: 2010-09-09
 
 Parameters:
@@ -157,10 +158,13 @@ Resources:
           VerifyAuthChallengeResponse: !Ref function<%=props.resourceName%>VerifyAuthChallengeResponseArn
         <% } %>
       <% } %>
-      <%if (props.autoVerifiedAttributes && props.autoVerifiedAttributes.length > 0) { %>
-      AutoVerifiedAttributes: !Ref autoVerifiedAttributes
+      <%if (autoVerifiedAttributes && autoVerifiedAttributes.length > 0) { %>
+      AutoVerifiedAttributes:
+      <% for(let x = 0; x < autoVerifiedAttributes.length; x++) { %>
+        - <%= autoVerifiedAttributes[x] %>
       <% } %>
-      <%if (props.autoVerifiedAttributes.includes('email')) { %>
+      <% } %>
+      <%if (autoVerifiedAttributes && autoVerifiedAttributes.includes('email')) { %>
       EmailVerificationMessage: !Ref emailVerificationMessage
       EmailVerificationSubject: !Ref emailVerificationSubject
       <% } %>
@@ -173,6 +177,9 @@ Resources:
           RequireUppercase: <%= props.passwordPolicyCharacters.includes('Requires Uppercase') %>
       <% if (props.usernameAttributes && props.usernameAttributes !== 'username') { %>
       UsernameAttributes: !Ref usernameAttributes
+      <% } %>
+      <% if (props.aliasAttributes && props.aliasAttributes.length > 0) { %>
+      AliasAttributes: !Ref aliasAttributes
       <% } %>
       MfaConfiguration: !Ref mfaConfiguration
       SmsVerificationMessage: !Ref smsVerificationMessage
@@ -382,7 +389,7 @@ Resources:
             - '};'
       Handler: index.handler
       Runtime: nodejs12.x
-      Timeout: '300'
+      Timeout: 300
       Role: !GetAtt
         - UserPoolClientRole
         - Arn
@@ -508,7 +515,7 @@ Resources:
 
       Handler: index.handler
       Runtime: nodejs12.x
-      Timeout: '300'
+      Timeout: 300
       Role: !GetAtt
         - UserPoolClientRole
         - Arn
@@ -589,24 +596,44 @@ Resources:
             - '   let providerCredsIndex = hostedUIProviderCreds.findIndex((provider) => provider.ProviderName === providerName);'
             - '   let providerCreds = hostedUIProviderCreds[providerCredsIndex];'
             - '   let requestParams = {'
-            - '    ProviderDetails: {'
-            - '     ''client_id'': providerCreds.client_id,'
-            - '     ''client_secret'': providerCreds.client_secret,'
-            - '     ''authorize_scopes'': providerMeta.authorize_scopes'
-            - '    },'
             - '    ProviderName: providerMeta.ProviderName,'
             - '    UserPoolId: userPoolId,'
-            - '    AttributeMapping: providerMeta.AttributeMapping'
+            - '    AttributeMapping: providerMeta.AttributeMapping,'
             - '   };'
+            - '   if (providerMeta.ProviderName === ''SignInWithApple'') {'
+            - '     if (providerCreds.client_id && providerCreds.team_id && providerCreds.key_id && providerCreds.private_key) {'
+            - '      requestParams.ProviderDetails = {'
+            - '       ''client_id'': providerCreds.client_id,'
+            - '       ''team_id'': providerCreds.team_id,'
+            - '       ''key_id'': providerCreds.key_id,'
+            - '       ''private_key'': providerCreds.private_key,'
+            - '       ''authorize_scopes'': providerMeta.authorize_scopes,'
+            - '      };'
+            - '     } else {'
+            - '       requestParams = null;'
+            - '     }'
+            - '   } else {'
+            - '    requestParams.ProviderDetails = {'
+            - '     ''client_id'': providerCreds.client_id,'
+            - '     ''client_secret'': providerCreds.client_secret,'
+            - '     ''authorize_scopes'': providerMeta.authorize_scopes,'
+            - '    };'
+            - '   }'
             - '   return requestParams;'
             - '  };'
             - '  let createIdentityProvider = (providerName) => {'
             - '   let requestParams = getRequestParams(providerName);'
+            - '   if (!requestParams) {'
+            - '     return Promise.resolve();'
+            - '   }'
             - '   requestParams.ProviderType = requestParams.ProviderName;'
             - '   return identity.createIdentityProvider(requestParams).promise();'
             - '  };'
             - '  let updateIdentityProvider = (providerName) => {'
             - '   let requestParams = getRequestParams(providerName);'
+            - '   if (!requestParams) {'
+            - '     return Promise.resolve();'
+            - '   }'
             - '   return identity.updateIdentityProvider(requestParams).promise();'
             - '  };'
             - '  let deleteIdentityProvider = (providerName) => {'
@@ -640,7 +667,7 @@ Resources:
 
       Handler: index.handler
       Runtime: nodejs12.x
-      Timeout: '300'
+      Timeout: 300
       Role: !GetAtt
         - UserPoolClientRole
         - Arn
@@ -739,7 +766,7 @@ Resources:
 
       Handler: index.handler
       Runtime: nodejs12.x
-      Timeout: '300'
+      Timeout: 300
       Role: !GetAtt
         - UserPoolClientRole
         - Arn
@@ -816,6 +843,15 @@ Resources:
               Action:
                 - 'iam:PassRole'
               Resource: !If [ShouldNotCreateEnvResources, '<%= `arn:aws:iam:::role/${props.resourceNameTruncated}_totp_lambda_role`%>', !Join ['',['<%= `arn:aws:iam:::role/${props.resourceNameTruncated}_totp_lambda_role` %>', '-', !Ref env]]]
+      - PolicyName: <%=`${props.resourceNameTruncated}_sns_pass_role_policy`%>
+        PolicyDocument:
+          Version: 2012-10-17
+          Statement:
+            - Effect: Allow
+              Action:
+                - 'iam:PassRole'
+              Resource: !GetAtt SNSRole.Arn
+    DependsOn: SNSRole
   MFALambda:
   # Lambda which sets MFA config values
   # Depends on MFALambdaRole for role ARN
@@ -860,7 +896,7 @@ Resources:
             - '};'
       Handler: index.handler
       Runtime: nodejs12.x
-      Timeout: '300'
+      Timeout: 300
       Role: !GetAtt
         - MFALambdaRole
         - Arn
@@ -1020,7 +1056,7 @@ Resources:
             - '};'
       Handler: index.handler
       Runtime: nodejs12.x
-      Timeout: '300'
+      Timeout: 300
       Role: !GetAtt
         - OpenIdLambdaRole
         - Arn
@@ -1112,6 +1148,9 @@ Resources:
         <%if (props.authProviders.indexOf('www.amazon.com') !== -1) { %>
         www.amazon.com: !Ref amazonAppId
         <% } %>
+        <%if (props.authProviders.indexOf('appleid.apple.com') !== -1) { %>
+        appleid.apple.com: !Ref appleAppId
+        <% } %>
       <% } %>
       AllowUnauthenticatedIdentities: !Ref allowUnauthenticatedIdentities
       <%if (props.audiences && props.audiences.length > 0) { %>
@@ -1193,5 +1232,9 @@ Outputs :
   <%if (props.amazonAppId) { %>
   AmazonWebClient:
     Value: !Ref amazonAppId
+  <% } %>
+  <%if (props.appleAppId) { %>
+  AppleWebClient:
+    Value: !Ref appleAppId
   <% } %>
   <% } %>

@@ -1,5 +1,306 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`Test SearchableModelTransformer enum type generates StringFilterInput 1`] = `
+"
+type Employee {
+  id: ID!
+  firstName: String!
+  lastName: String!
+  type: EmploymentType!
+  createdAt: AWSDateTime!
+  updatedAt: AWSDateTime!
+}
+
+enum EmploymentType {
+  FULLTIME
+  HOURLY
+}
+
+input SearchableStringFilterInput {
+  ne: String
+  gt: String
+  lt: String
+  gte: String
+  lte: String
+  eq: String
+  match: String
+  matchPhrase: String
+  matchPhrasePrefix: String
+  multiMatch: String
+  exists: Boolean
+  wildcard: String
+  regexp: String
+  range: [String]
+}
+
+input SearchableIntFilterInput {
+  ne: Int
+  gt: Int
+  lt: Int
+  gte: Int
+  lte: Int
+  eq: Int
+  range: [Int]
+}
+
+input SearchableFloatFilterInput {
+  ne: Float
+  gt: Float
+  lt: Float
+  gte: Float
+  lte: Float
+  eq: Float
+  range: [Float]
+}
+
+input SearchableBooleanFilterInput {
+  eq: Boolean
+  ne: Boolean
+}
+
+input SearchableIDFilterInput {
+  ne: ID
+  gt: ID
+  lt: ID
+  gte: ID
+  lte: ID
+  eq: ID
+  match: ID
+  matchPhrase: ID
+  matchPhrasePrefix: ID
+  multiMatch: ID
+  exists: Boolean
+  wildcard: ID
+  regexp: ID
+  range: [ID]
+}
+
+input SearchableEmployeeFilterInput {
+  id: SearchableIDFilterInput
+  firstName: SearchableStringFilterInput
+  lastName: SearchableStringFilterInput
+  type: SearchableStringFilterInput
+  and: [SearchableEmployeeFilterInput]
+  or: [SearchableEmployeeFilterInput]
+  not: SearchableEmployeeFilterInput
+}
+
+enum SearchableSortDirection {
+  asc
+  desc
+}
+
+enum SearchableEmployeeSortableFields {
+  id
+  firstName
+  lastName
+}
+
+input SearchableEmployeeSortInput {
+  field: SearchableEmployeeSortableFields
+  direction: SearchableSortDirection
+}
+
+input SearchableEmployeeAggregationInput {
+  name: String!
+  type: SearchableAggregateType!
+  field: String!
+}
+
+enum SearchableAggregateType {
+  terms
+  avg
+  min
+  max
+  sum
+}
+
+type SearchableEmployeeConnection {
+  items: [Employee]
+  nextToken: String
+  total: Int
+  aggregateItems: [SearchableAggregateResult]
+}
+
+type SearchableAggregateResult {
+  name: String!
+  result: SearchableAggregateGenericResult
+}
+
+type SearchableAggregateScalarResult {
+  value: Float!
+}
+
+type SearchableAggregateBucketResult {
+  buckets: [SearchableAggregateBucketResultItem]
+}
+
+type SearchableAggregateBucketResultItem {
+  key: String!
+  doc_count: Int!
+}
+
+union SearchableAggregateGenericResult = SearchableAggregateScalarResult | SearchableAggregateBucketResult
+
+type Query {
+  searchEmployees(filter: SearchableEmployeeFilterInput, sort: [SearchableEmployeeSortInput], limit: Int, nextToken: String, from: Int, aggregates: [SearchableEmployeeAggregationInput]): SearchableEmployeeConnection
+  getEmployee(id: ID!): Employee
+  listEmployees(filter: ModelEmployeeFilterInput, limit: Int, nextToken: String): ModelEmployeeConnection
+}
+
+input ModelStringInput {
+  ne: String
+  eq: String
+  le: String
+  lt: String
+  ge: String
+  gt: String
+  contains: String
+  notContains: String
+  between: [String]
+  beginsWith: String
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+  size: ModelSizeInput
+}
+
+input ModelIntInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+}
+
+input ModelFloatInput {
+  ne: Float
+  eq: Float
+  le: Float
+  lt: Float
+  ge: Float
+  gt: Float
+  between: [Float]
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+}
+
+input ModelBooleanInput {
+  ne: Boolean
+  eq: Boolean
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+}
+
+input ModelIDInput {
+  ne: ID
+  eq: ID
+  le: ID
+  lt: ID
+  ge: ID
+  gt: ID
+  contains: ID
+  notContains: ID
+  between: [ID]
+  beginsWith: ID
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+  size: ModelSizeInput
+}
+
+enum ModelAttributeTypes {
+  binary
+  binarySet
+  bool
+  list
+  map
+  number
+  numberSet
+  string
+  stringSet
+  _null
+}
+
+input ModelSizeInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+}
+
+enum ModelSortDirection {
+  ASC
+  DESC
+}
+
+type ModelEmployeeConnection {
+  items: [Employee]
+  nextToken: String
+}
+
+input ModelEmploymentTypeInput {
+  eq: EmploymentType
+  ne: EmploymentType
+}
+
+input ModelEmployeeFilterInput {
+  id: ModelIDInput
+  firstName: ModelStringInput
+  lastName: ModelStringInput
+  type: ModelEmploymentTypeInput
+  and: [ModelEmployeeFilterInput]
+  or: [ModelEmployeeFilterInput]
+  not: ModelEmployeeFilterInput
+}
+
+input ModelEmployeeConditionInput {
+  firstName: ModelStringInput
+  lastName: ModelStringInput
+  type: ModelEmploymentTypeInput
+  and: [ModelEmployeeConditionInput]
+  or: [ModelEmployeeConditionInput]
+  not: ModelEmployeeConditionInput
+}
+
+input CreateEmployeeInput {
+  id: ID
+  firstName: String!
+  lastName: String!
+  type: EmploymentType!
+}
+
+input UpdateEmployeeInput {
+  id: ID!
+  firstName: String
+  lastName: String
+  type: EmploymentType
+}
+
+input DeleteEmployeeInput {
+  id: ID!
+}
+
+type Mutation {
+  createEmployee(input: CreateEmployeeInput!, condition: ModelEmployeeConditionInput): Employee
+  updateEmployee(input: UpdateEmployeeInput!, condition: ModelEmployeeConditionInput): Employee
+  deleteEmployee(input: DeleteEmployeeInput!, condition: ModelEmployeeConditionInput): Employee
+}
+
+type Subscription {
+  onCreateEmployee: Employee @aws_subscribe(mutations: [\\"createEmployee\\"])
+  onUpdateEmployee: Employee @aws_subscribe(mutations: [\\"updateEmployee\\"])
+  onDeleteEmployee: Employee @aws_subscribe(mutations: [\\"deleteEmployee\\"])
+}
+
+"
+`;
+
 exports[`Test SearchableModelTransformer validation happy case 1`] = `
 "
 type Post {
@@ -95,14 +396,49 @@ input SearchablePostSortInput {
   direction: SearchableSortDirection
 }
 
+input SearchablePostAggregationInput {
+  name: String!
+  type: SearchableAggregateType!
+  field: String!
+}
+
+enum SearchableAggregateType {
+  terms
+  avg
+  min
+  max
+  sum
+}
+
 type SearchablePostConnection {
   items: [Post]
   nextToken: String
   total: Int
+  aggregateItems: [SearchableAggregateResult]
 }
 
+type SearchableAggregateResult {
+  name: String!
+  result: SearchableAggregateGenericResult
+}
+
+type SearchableAggregateScalarResult {
+  value: Float!
+}
+
+type SearchableAggregateBucketResult {
+  buckets: [SearchableAggregateBucketResultItem]
+}
+
+type SearchableAggregateBucketResultItem {
+  key: String!
+  doc_count: Int!
+}
+
+union SearchableAggregateGenericResult = SearchableAggregateScalarResult | SearchableAggregateBucketResult
+
 type Query {
-  searchPosts(filter: SearchablePostFilterInput, sort: SearchablePostSortInput, limit: Int, nextToken: String, from: Int): SearchablePostConnection
+  searchPosts(filter: SearchablePostFilterInput, sort: [SearchablePostSortInput], limit: Int, nextToken: String, from: Int, aggregates: [SearchablePostAggregationInput]): SearchablePostConnection
   getPost(id: ID!): Post
   listPosts(filter: ModelPostFilterInput, limit: Int, nextToken: String): ModelPostConnection
 }
@@ -193,6 +529,11 @@ input ModelSizeInput {
   between: [Int]
 }
 
+enum ModelSortDirection {
+  ASC
+  DESC
+}
+
 type ModelPostConnection {
   items: [Post]
   nextToken: String
@@ -209,7 +550,6 @@ input ModelPostFilterInput {
 }
 
 input ModelPostConditionInput {
-  id: ModelIDInput
   title: ModelStringInput
   createdAt: ModelStringInput
   updatedAt: ModelStringInput
@@ -225,12 +565,6 @@ input CreatePostInput {
   updatedAt: String
 }
 
-type Mutation {
-  createPost(input: CreatePostInput!, condition: ModelPostConditionInput): Post
-  updatePost(input: UpdatePostInput!, condition: ModelPostConditionInput): Post
-  deletePost(input: DeletePostInput!, condition: ModelPostConditionInput): Post
-}
-
 input UpdatePostInput {
   id: ID!
   title: String
@@ -240,6 +574,12 @@ input UpdatePostInput {
 
 input DeletePostInput {
   id: ID!
+}
+
+type Mutation {
+  createPost(input: CreatePostInput!, condition: ModelPostConditionInput): Post
+  updatePost(input: UpdatePostInput!, condition: ModelPostConditionInput): Post
+  deletePost(input: DeletePostInput!, condition: ModelPostConditionInput): Post
 }
 
 type Subscription {
@@ -265,13 +605,15 @@ $util.toJson({
 })
 ## [End] Initialization default values. **",
   "Mutation.createPost.req.vtl": "## [Start] Create Request template. **
-## Begin - KeyCondition **
+## Begin - key condition **
 #if( $ctx.stash.metadata.modelObjectKey )
   #set( $keyConditionExpr = {} )
+  #set( $keyConditionExprNames = {} )
   #foreach( $entry in $ctx.stash.metadata.modelObjectKey.entrySet() )
-    $util.qr($keyConditionExpr.add(\\"$entry.key\\", {
-  \\"attributeExists\\": true
+    $util.qr($keyConditionExpr.put(\\"keyCondition$velocityCount\\", {
+  \\"attributeExists\\": false
 }))
+    $util.qr($keyConditionExprNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
   #end
   $util.qr($ctx.stash.conditions.add($keyConditionExpr))
 #else
@@ -281,7 +623,7 @@ $util.toJson({
   }
 }))
 #end
-## End - KeyCondition **
+## End - key condition **
 ## Set the default values to put request **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
 ## copy the values from input **
@@ -297,13 +639,15 @@ $util.qr($mergedValues.put(\\"__typename\\", \\"Post\\"))
 #if( $context.args.condition )
   $util.qr($ctx.stash.conditions.add($context.args.condition))
 #end
-## Begin - KeyCondtion **
+## Begin - key condition **
 #if( $ctx.stash.metadata.modelObjectKey )
   #set( $keyConditionExpr = {} )
+  #set( $keyConditionExprNames = {} )
   #foreach( $entry in $ctx.stash.metadata.modelObjectKey.entrySet() )
-    $util.qr($keyConditionExpr.put(\\"$entry.key\\", {
+    $util.qr($keyConditionExpr.put(\\"keyCondition$velocityCount\\", {
   \\"attributeExists\\": false
 }))
+    $util.qr($keyConditionExprNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
   #end
   $util.qr($ctx.stash.conditions.add($keyConditionExpr))
 #else
@@ -313,9 +657,9 @@ $util.qr($mergedValues.put(\\"__typename\\", \\"Post\\"))
   }
 }))
 #end
-## End - KeyCondition **
-## Start Condtion block **
-#if( $ctx.stash.conditions && $inputConditionObjectName.size() != 0 )
+## End - key condition **
+## Start condition block **
+#if( $ctx.stash.conditions && $ctx.stash.conditions.size() != 0 )
   #set( $mergedConditions = {
   \\"and\\": $ctx.stash.conditions
 } )
@@ -326,13 +670,16 @@ $util.qr($mergedValues.put(\\"__typename\\", \\"Post\\"))
   \\"expressionNames\\": $Conditions.expressionNames
 } )
   #end
-  ## End Condtion block **
+  ## End condition block **
 #end
 #if( $Conditions )
+  #if( $keyConditionExprNames )
+    $util.qr($Conditions.expressionNames.putAll($keyConditionExprNames))
+  #end
   $util.qr($PutObject.put(\\"condition\\", $Conditions))
 #end
-#if( $ctx.stash.metadata.modelObject )
-  $PutObject.put(\\"id\\", $ctx.stash.metadata.modelObject)
+#if( $ctx.stash.metadata.modelObjectKey )
+  $util.qr($PutObject.put(\\"key\\", $ctx.stash.metadata.modelObjectKey))
 #else
   #set( $Key = {
   \\"id\\":   $util.dynamodb.toDynamoDB($mergedValues.id)
@@ -364,10 +711,12 @@ $util.qr($DeleteRequest.put(\\"key\\", $Key))
 ## Begin - key condition **
 #if( $ctx.stash.metadata.modelObjectKey )
   #set( $keyConditionExpr = {} )
+  #set( $keyConditionExprNames = {} )
   #foreach( $entry in $ctx.stash.metadata.modelObjectKey.entrySet() )
-    $util.qr($keyConditionExpr.put(\\"$entry.key\\", {
+    $util.qr($keyConditionExpr.put(\\"keyCondition$velocityCount\\", {
   \\"attributeExists\\": true
 }))
+    $util.qr($keyConditionExprNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
   #end
   $util.qr($ctx.stash.conditions.add($keyConditionExpr))
 #else
@@ -381,8 +730,8 @@ $util.qr($DeleteRequest.put(\\"key\\", $Key))
 #if( $context.args.condition )
   $util.qr($ctx.stash.conditions.add($context.args.condition))
 #end
-## Start Condtion block **
-#if( $ctx.stash.conditions && $inputConditionObjectName.size() != 0 )
+## Start condition block **
+#if( $ctx.stash.conditions && $ctx.stash.conditions.size() != 0 )
   #set( $mergedConditions = {
   \\"and\\": $ctx.stash.conditions
 } )
@@ -393,9 +742,12 @@ $util.qr($DeleteRequest.put(\\"key\\", $Key))
   \\"expressionNames\\": $Conditions.expressionNames
 } )
   #end
-  ## End Condtion block **
+  ## End condition block **
 #end
 #if( $Conditions )
+  #if( $keyConditionExprNames )
+    $util.qr($Conditions.expressionNames.putAll($keyConditionExprNames))
+  #end
   $util.qr($DeleteRequest.put(\\"condition\\", $Conditions))
 #end
 $util.toJson($DeleteRequest)
@@ -428,29 +780,35 @@ $util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
 #set( $expSet = {} )
 #set( $expAdd = {} )
 #set( $expRemove = [] )
-#if( $ctx.stash.metadata.modelObjetKey )
-  #set( $Key = $util.dynamodb.toDynamoDB($ctx.stash.metadata.modelObjetKey) )
+#if( $ctx.stash.metadata.modelObjectKey )
+  #set( $Key = $ctx.stash.metadata.modelObjectKey )
 #else
   #set( $Key = {
   \\"id\\":   $util.dynamodb.toDynamoDB($ctx.args.input.id)
 } )
 #end
 ## Model key **
-#if( $ctx.stash.metadata.modelObjetKey )
-  #foreach( $entry in $ctx.stash.metadata.modelObjetKey.entrySet() )
+#if( $ctx.stash.metadata.modelObjectKey )
+  #set( $keyFields = [] )
+  #foreach( $entry in $ctx.stash.metadata.modelObjectKey.entrySet() )
     $util.qr($keyFields.add(\\"$entry.key\\"))
   #end
 #else
   #set( $keyFields = [\\"id\\"] )
 #end
 #foreach( $entry in $util.map.copyAndRemoveAllKeys($mergedValues, $keyFields).entrySet() )
-  #if( $util.isNull($entry.value) )
-    #set( $discard = $expRemove.add(\\"#$entry.key\\") )
-    $util.qr($expNames.put(\\"#$entry.key\\", \\"$entry.key\\"))
+  #if( !$util.isNull($ctx.stash.metadata.dynamodbNameOverrideMap) && $ctx.stash.metadata.dynamodbNameOverrideMap.containsKey(\\"$entry.key\\") )
+    #set( $entryKeyAttributeName = $ctx.stash.metadata.dynamodbNameOverrideMap.get(\\"$entry.key\\") )
   #else
-    $util.qr($expSet.put(\\"#$entry.key\\", \\":$entry.key\\"))
-    $util.qr($expNames.put(\\"#$entry.key\\", \\"$entry.key\\"))
-    $util.qr($expValues.put(\\":$entry.key\\", $util.dynamodb.toDynamoDB($entry.value)))
+    #set( $entryKeyAttributeName = $entry.key )
+  #end
+  #if( $util.isNull($entry.value) )
+    #set( $discard = $expRemove.add(\\"#$entryKeyAttributeName\\") )
+    $util.qr($expNames.put(\\"#$entryKeyAttributeName\\", \\"$entry.key\\"))
+  #else
+    $util.qr($expSet.put(\\"#$entryKeyAttributeName\\", \\":$entryKeyAttributeName\\"))
+    $util.qr($expNames.put(\\"#$entryKeyAttributeName\\", \\"$entry.key\\"))
+    $util.qr($expValues.put(\\":$entryKeyAttributeName\\", $util.dynamodb.toDynamoDB($entry.value)))
   #end
 #end
 #set( $expression = \\"\\" )
@@ -492,10 +850,12 @@ $util.qr($update.put(\\"expression\\", \\"$expression\\"))
 ## Begin - key condition **
 #if( $ctx.stash.metadata.modelObjectKey )
   #set( $keyConditionExpr = {} )
+  #set( $keyConditionExprNames = {} )
   #foreach( $entry in $ctx.stash.metadata.modelObjectKey.entrySet() )
-    $util.qr($keyConditionExpr.put(\\"$entry.key\\", {
+    $util.qr($keyConditionExpr.put(\\"keyCondition$velocityCount\\", {
   \\"attributeExists\\": true
 }))
+    $util.qr($keyConditionExprNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
   #end
   $util.qr($ctx.stash.conditions.add($keyConditionExpr))
 #else
@@ -509,8 +869,8 @@ $util.qr($update.put(\\"expression\\", \\"$expression\\"))
 #if( $context.args.condition )
   $util.qr($ctx.stash.conditions.add($context.args.condition))
 #end
-## Start Condtion block **
-#if( $ctx.stash.conditions && $inputConditionObjectName.size() != 0 )
+## Start condition block **
+#if( $ctx.stash.conditions && $ctx.stash.conditions.size() != 0 )
   #set( $mergedConditions = {
   \\"and\\": $ctx.stash.conditions
 } )
@@ -521,7 +881,7 @@ $util.qr($update.put(\\"expression\\", \\"$expression\\"))
   \\"expressionNames\\": $Conditions.expressionNames
 } )
   #end
-  ## End Condtion block **
+  ## End condition block **
 #end
 #set( $UpdateItem = {
   \\"version\\": \\"2018-05-29\\",
@@ -530,6 +890,9 @@ $util.qr($update.put(\\"expression\\", \\"$expression\\"))
   \\"update\\": $update
 } )
 #if( $Conditions )
+  #if( $keyConditionExprNames )
+    $util.qr($Conditions.expressionNames.putAll($keyConditionExprNames))
+  #end
   $util.qr($UpdateItem.put(\\"condition\\", $Conditions))
 #end
 $util.toJson($UpdateItem)
@@ -546,8 +909,8 @@ $util.toJson($UpdateItem)
   \\"version\\": \\"2018-05-29\\",
   \\"operation\\": \\"GetItem\\"
 } )
-#if( $ctx.stash.metadata.modelKeyObject )
-  #set( $Key = $ctx.stash.metadata.modelKeyObject )
+#if( $ctx.stash.metadata.modelObjectKey )
+  #set( $key = $ctx.stash.metadata.modelObjectKey )
 #else
   #set( $key = {
   \\"id\\":   $util.dynamodb.toDynamoDB($ctx.args.id)
@@ -581,10 +944,9 @@ $util.toJson($GetRequest)
     #set( $ListRequest.filter = $filterExpression )
   #end
 #end
-#if( !$util.isNull($ctx.stash.modelQuery) )
-  #set( $Query = $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.modelQuery)) )
+#if( !$util.isNull($ctx.stash.modelQueryExpression) && !$util.isNullOrEmpty($ctx.stash.modelQueryExpression.expression) )
   $util.qr($ListRequest.put(\\"operation\\", \\"Query\\"))
-  $util.qr($ListRequest.put(\\"query\\", $Query))
+  $util.qr($ListRequest.put(\\"query\\", $ctx.stash.modelQueryExpression))
   #if( !$util.isNull($ctx.args.sortDirection) && $ctx.args.sortDirection == \\"DESC\\" )
     #set( $ListRequest.scanIndexForward = false )
   #else
@@ -607,17 +969,42 @@ $util.toJson($ListRequest)
 ## [End] Get ResponseTemplate. **",
   "Query.searchPosts.req.vtl": "#set( $indexPath = \\"/post/doc/_search\\" )
 #set( $nonKeywordFields = [] )
+#set( $sortValues = [] )
+#set( $aggregateValues = {} )
+#set( $primaryKey = \\"id\\" )
 #if( $util.isNullOrEmpty($context.args.sort) )
-  #set( $sortDirection = \\"desc\\" )
-  #set( $sortField = \\"id\\" )
+  #if( $nonKeywordFields.contains($primaryKey) )
+    #set( $sortField = $util.toJson($primaryKey) )
+  #else
+    #set( $sortField = $util.toJson(\\"\${primaryKey}.keyword\\") )
+  #end
+  #set( $sortDirection = $util.toJson({\\"order\\": \\"desc\\"}) )
+  $util.qr($sortValues.add(\\"{$sortField: $sortDirection}\\"))
 #else
-  #set( $sortDirection = $util.defaultIfNull($context.args.sort.direction, \\"desc\\") )
-  #set( $sortField = $util.defaultIfNull($context.args.sort.field, \\"id\\") )
+  #foreach( $sortItem in $context.args.sort )
+    #if( $util.isNullOrEmpty($sortItem.field) )
+      #if( $nonKeywordFields.contains($primaryKey) )
+        #set( $sortField = $util.toJson($primaryKey) )
+      #else
+        #set( $sortField = $util.toJson(\\"\${primaryKey}.keyword\\") )
+      #end
+    #else
+      #if( $nonKeywordFields.contains($sortItem.field) )
+        #set( $sortField = $util.toJson($sortItem.field) )
+      #else
+        #set( $sortField = $util.toJson(\\"\${sortItem.field}.keyword\\") )
+      #end
+    #end
+    #set( $sortDirection = $util.toJson({\\"order\\": $sortItem.direction}) )
+    $util.qr($sortValues.add(\\"{$sortField: $sortDirection}\\"))
+  #end
 #end
-#if( $nonKeywordFields.contains($sortField) )
-  #set( $sortField0 = $util.toJson($sortField) )
-#else
-  #set( $sortField0 = $util.toJson(\\"\${sortField}.keyword\\") )
+#foreach( $aggItem in $context.args.aggregates )
+  #if( $nonKeywordFields.contains($aggItem.field) )
+    $util.qr($aggregateValues.put(\\"$aggItem.name\\", {\\"$aggItem.type\\": {\\"field\\": \\"$aggItem.field\\"}}))
+  #else
+    $util.qr($aggregateValues.put(\\"$aggItem.name\\", {\\"$aggItem.type\\": {\\"field\\": \\"\${aggItem.field}.keyword\\"}}))
+  #end
 #end
 {
   \\"version\\": \\"2018-05-29\\",
@@ -625,10 +1012,10 @@ $util.toJson($ListRequest)
   \\"path\\": \\"$indexPath\\",
   \\"params\\": {
       \\"body\\":     {
-                #if( $context.args.nextToken )\\"search_after\\": [$util.toJson($context.args.nextToken)], #end
+                #if( $context.args.nextToken )\\"search_after\\": $util.base64Decode($context.args.nextToken), #end
                 #if( $context.args.from )\\"from\\": $context.args.from, #end
                 \\"size\\": #if( $context.args.limit ) $context.args.limit #else 100 #end,
-                \\"sort\\": [{$sortField0: { \\"order\\" : $util.toJson($sortDirection) }}],
+                \\"sort\\": $sortValues,
                 \\"version\\": false,
                 \\"query\\": #if( $context.args.filter )
 $util.transform.toElasticsearchQueryDSL($ctx.args.filter)
@@ -636,49 +1023,42 @@ $util.transform.toElasticsearchQueryDSL($ctx.args.filter)
 {
       \\"match_all\\": {}
   }
-#end
+#end,
+                \\"aggs\\": $util.toJson($aggregateValues)
                 }
   }
 }",
   "Query.searchPosts.res.vtl": "#set( $es_items = [] )
+#set( $aggregateValues = [] )
 #foreach( $entry in $context.result.hits.hits )
   #if( !$foreach.hasNext )
-    #set( $nextToken = $entry.sort.get(0) )
+    #set( $nextToken = $util.base64Encode($util.toJson($entry.sort)) )
   #end
   $util.qr($es_items.add($entry.get(\\"_source\\")))
 #end
+#foreach( $aggItem in $context.result.aggregations.keySet() )
+  #set( $aggResult = {} )
+  #set( $aggResultValue = {} )
+  $util.qr($aggResult.put(\\"name\\", $aggItem))
+  #if( !$util.isNullOrEmpty($context.result.aggregations) )
+    #if( !$util.isNullOrEmpty($context.result.aggregations.get($aggItem).buckets) )
+      $util.qr($aggResultValue.put(\\"__typename\\", \\"SearchableAggregateBucketResult\\"))
+      $util.qr($aggResultValue.put(\\"buckets\\", $context.result.aggregations.get($aggItem).buckets))
+    #end
+    #if( !$util.isNullOrEmpty($context.result.aggregations.get($aggItem).value) )
+      $util.qr($aggResultValue.put(\\"__typename\\", \\"SearchableAggregateScalarResult\\"))
+      $util.qr($aggResultValue.put(\\"value\\", $context.result.aggregations.get($aggItem).value))
+    #end
+  #end
+  $util.qr($aggResult.put(\\"result\\", $aggResultValue))
+  $util.qr($aggregateValues.add($aggResult))
+#end
 $util.toJson({
   \\"items\\": $es_items,
-  \\"total\\": $ctx.result.hits.total,
-  \\"nextToken\\": $nextToken
+  \\"total\\": $ctx.result.hits.total.value,
+  \\"nextToken\\": $nextToken,
+  \\"aggregateItems\\": $aggregateValues
 })",
-  "Subscription.onCreatePost.req.vtl": "## [Start] Subscription Request template. **
-$util.toJson({
-  \\"version\\": \\"2018-05-29\\",
-  \\"payload\\": {}
-})
-## [End] Subscription Request template. **",
-  "Subscription.onCreatePost.res.vtl": "## [Start] Subscription Resonse template. **
-$util.toJson(null)
-## [End] Subscription Resonse template. **",
-  "Subscription.onDeletePost.req.vtl": "## [Start] Subscription Request template. **
-$util.toJson({
-  \\"version\\": \\"2018-05-29\\",
-  \\"payload\\": {}
-})
-## [End] Subscription Request template. **",
-  "Subscription.onDeletePost.res.vtl": "## [Start] Subscription Resonse template. **
-$util.toJson(null)
-## [End] Subscription Resonse template. **",
-  "Subscription.onUpdatePost.req.vtl": "## [Start] Subscription Request template. **
-$util.toJson({
-  \\"version\\": \\"2018-05-29\\",
-  \\"payload\\": {}
-})
-## [End] Subscription Request template. **",
-  "Subscription.onUpdatePost.res.vtl": "## [Start] Subscription Resonse template. **
-$util.toJson(null)
-## [End] Subscription Resonse template. **",
 }
 `;
 
@@ -784,15 +1164,50 @@ input SearchablePostSortInput {
   direction: SearchableSortDirection
 }
 
+input SearchablePostAggregationInput {
+  name: String!
+  type: SearchableAggregateType!
+  field: String!
+}
+
+enum SearchableAggregateType {
+  terms
+  avg
+  min
+  max
+  sum
+}
+
 type SearchablePostConnection {
   items: [Post]
   nextToken: String
   total: Int
+  aggregateItems: [SearchableAggregateResult]
 }
 
+type SearchableAggregateResult {
+  name: String!
+  result: SearchableAggregateGenericResult
+}
+
+type SearchableAggregateScalarResult {
+  value: Float!
+}
+
+type SearchableAggregateBucketResult {
+  buckets: [SearchableAggregateBucketResultItem]
+}
+
+type SearchableAggregateBucketResultItem {
+  key: String!
+  doc_count: Int!
+}
+
+union SearchableAggregateGenericResult = SearchableAggregateScalarResult | SearchableAggregateBucketResult
+
 type Query {
-  searchPosts(filter: SearchablePostFilterInput, sort: SearchablePostSortInput, limit: Int, nextToken: String, from: Int): SearchablePostConnection
-  searchUsers(filter: SearchableUserFilterInput, sort: SearchableUserSortInput, limit: Int, nextToken: String, from: Int): SearchableUserConnection
+  searchPosts(filter: SearchablePostFilterInput, sort: [SearchablePostSortInput], limit: Int, nextToken: String, from: Int, aggregates: [SearchablePostAggregationInput]): SearchablePostConnection
+  searchUsers(filter: SearchableUserFilterInput, sort: [SearchableUserSortInput], limit: Int, nextToken: String, from: Int, aggregates: [SearchableUserAggregationInput]): SearchableUserConnection
   getPost(id: ID!): Post
   listPosts(filter: ModelPostFilterInput, limit: Int, nextToken: String): ModelPostConnection
   getUser(id: ID!): User
@@ -817,10 +1232,17 @@ input SearchableUserSortInput {
   direction: SearchableSortDirection
 }
 
+input SearchableUserAggregationInput {
+  name: String!
+  type: SearchableAggregateType!
+  field: String!
+}
+
 type SearchableUserConnection {
   items: [User]
   nextToken: String
   total: Int
+  aggregateItems: [SearchableAggregateResult]
 }
 
 input ModelStringInput {
@@ -909,6 +1331,11 @@ input ModelSizeInput {
   between: [Int]
 }
 
+enum ModelSortDirection {
+  ASC
+  DESC
+}
+
 type ModelPostConnection {
   items: [Post]
   nextToken: String
@@ -925,7 +1352,6 @@ input ModelPostFilterInput {
 }
 
 input ModelPostConditionInput {
-  id: ModelIDInput
   title: ModelStringInput
   createdAt: ModelStringInput
   updatedAt: ModelStringInput
@@ -941,15 +1367,6 @@ input CreatePostInput {
   updatedAt: String
 }
 
-type Mutation {
-  createPost(input: CreatePostInput!, condition: ModelPostConditionInput): Post
-  updatePost(input: UpdatePostInput!, condition: ModelPostConditionInput): Post
-  deletePost(input: DeletePostInput!, condition: ModelPostConditionInput): Post
-  createUser(input: CreateUserInput!, condition: ModelUserConditionInput): User
-  updateUser(input: UpdateUserInput!, condition: ModelUserConditionInput): User
-  deleteUser(input: DeleteUserInput!, condition: ModelUserConditionInput): User
-}
-
 input UpdatePostInput {
   id: ID!
   title: String
@@ -959,6 +1376,15 @@ input UpdatePostInput {
 
 input DeletePostInput {
   id: ID!
+}
+
+type Mutation {
+  createPost(input: CreatePostInput!, condition: ModelPostConditionInput): Post
+  updatePost(input: UpdatePostInput!, condition: ModelPostConditionInput): Post
+  deletePost(input: DeletePostInput!, condition: ModelPostConditionInput): Post
+  createUser(input: CreateUserInput!, condition: ModelUserConditionInput): User
+  updateUser(input: UpdateUserInput!, condition: ModelUserConditionInput): User
+  deleteUser(input: DeleteUserInput!, condition: ModelUserConditionInput): User
 }
 
 type Subscription {
@@ -984,7 +1410,6 @@ input ModelUserFilterInput {
 }
 
 input ModelUserConditionInput {
-  id: ModelIDInput
   name: ModelStringInput
   and: [ModelUserConditionInput]
   or: [ModelUserConditionInput]
@@ -1103,14 +1528,49 @@ input SearchablePostSortInput {
   direction: SearchableSortDirection
 }
 
+input SearchablePostAggregationInput {
+  name: String!
+  type: SearchableAggregateType!
+  field: String!
+}
+
+enum SearchableAggregateType {
+  terms
+  avg
+  min
+  max
+  sum
+}
+
 type SearchablePostConnection {
   items: [Post]
   nextToken: String
   total: Int
+  aggregateItems: [SearchableAggregateResult]
 }
 
+type SearchableAggregateResult {
+  name: String!
+  result: SearchableAggregateGenericResult
+}
+
+type SearchableAggregateScalarResult {
+  value: Float!
+}
+
+type SearchableAggregateBucketResult {
+  buckets: [SearchableAggregateBucketResultItem]
+}
+
+type SearchableAggregateBucketResultItem {
+  key: String!
+  doc_count: Int!
+}
+
+union SearchableAggregateGenericResult = SearchableAggregateScalarResult | SearchableAggregateBucketResult
+
 type Query {
-  searchPosts(filter: SearchablePostFilterInput, sort: SearchablePostSortInput, limit: Int, nextToken: String, from: Int): SearchablePostConnection
+  searchPosts(filter: SearchablePostFilterInput, sort: [SearchablePostSortInput], limit: Int, nextToken: String, from: Int, aggregates: [SearchablePostAggregationInput]): SearchablePostConnection
   getPost(id: ID!): Post
   listPosts(filter: ModelPostFilterInput, limit: Int, nextToken: String): ModelPostConnection
 }
@@ -1201,6 +1661,11 @@ input ModelSizeInput {
   between: [Int]
 }
 
+enum ModelSortDirection {
+  ASC
+  DESC
+}
+
 type ModelPostConnection {
   items: [Post]
   nextToken: String
@@ -1217,7 +1682,6 @@ input ModelPostFilterInput {
 }
 
 input ModelPostConditionInput {
-  id: ModelIDInput
   title: ModelStringInput
   createdAt: ModelStringInput
   updatedAt: ModelStringInput
@@ -1235,25 +1699,10 @@ input CreatePostInput {
 
 type Mutation {
   customCreatePost(input: CreatePostInput!, condition: ModelPostConditionInput): Post
-  updatePost(input: UpdatePostInput!, condition: ModelPostConditionInput): Post
-  deletePost(input: DeletePostInput!, condition: ModelPostConditionInput): Post
-}
-
-input UpdatePostInput {
-  id: ID!
-  title: String
-  createdAt: String
-  updatedAt: String
-}
-
-input DeletePostInput {
-  id: ID!
 }
 
 type Subscription {
   onCreatePost: Post @aws_subscribe(mutations: [\\"customCreatePost\\"])
-  onUpdatePost: Post @aws_subscribe(mutations: [\\"updatePost\\"])
-  onDeletePost: Post @aws_subscribe(mutations: [\\"deletePost\\"])
 }
 
 "
@@ -1354,14 +1803,49 @@ input SearchablePostSortInput {
   direction: SearchableSortDirection
 }
 
+input SearchablePostAggregationInput {
+  name: String!
+  type: SearchableAggregateType!
+  field: String!
+}
+
+enum SearchableAggregateType {
+  terms
+  avg
+  min
+  max
+  sum
+}
+
 type SearchablePostConnection {
   items: [Post]
   nextToken: String
   total: Int
+  aggregateItems: [SearchableAggregateResult]
 }
 
+type SearchableAggregateResult {
+  name: String!
+  result: SearchableAggregateGenericResult
+}
+
+type SearchableAggregateScalarResult {
+  value: Float!
+}
+
+type SearchableAggregateBucketResult {
+  buckets: [SearchableAggregateBucketResultItem]
+}
+
+type SearchableAggregateBucketResultItem {
+  key: String!
+  doc_count: Int!
+}
+
+union SearchableAggregateGenericResult = SearchableAggregateScalarResult | SearchableAggregateBucketResult
+
 type Query {
-  customSearchPost(filter: SearchablePostFilterInput, sort: SearchablePostSortInput, limit: Int, nextToken: String, from: Int): SearchablePostConnection
+  customSearchPost(filter: SearchablePostFilterInput, sort: [SearchablePostSortInput], limit: Int, nextToken: String, from: Int, aggregates: [SearchablePostAggregationInput]): SearchablePostConnection
   getPost(id: ID!): Post
   listPosts(filter: ModelPostFilterInput, limit: Int, nextToken: String): ModelPostConnection
 }
@@ -1452,6 +1936,11 @@ input ModelSizeInput {
   between: [Int]
 }
 
+enum ModelSortDirection {
+  ASC
+  DESC
+}
+
 type ModelPostConnection {
   items: [Post]
   nextToken: String
@@ -1468,7 +1957,6 @@ input ModelPostFilterInput {
 }
 
 input ModelPostConditionInput {
-  id: ModelIDInput
   title: ModelStringInput
   createdAt: ModelStringInput
   updatedAt: ModelStringInput
@@ -1484,12 +1972,6 @@ input CreatePostInput {
   updatedAt: String
 }
 
-type Mutation {
-  createPost(input: CreatePostInput!, condition: ModelPostConditionInput): Post
-  updatePost(input: UpdatePostInput!, condition: ModelPostConditionInput): Post
-  deletePost(input: DeletePostInput!, condition: ModelPostConditionInput): Post
-}
-
 input UpdatePostInput {
   id: ID!
   title: String
@@ -1499,6 +1981,12 @@ input UpdatePostInput {
 
 input DeletePostInput {
   id: ID!
+}
+
+type Mutation {
+  createPost(input: CreatePostInput!, condition: ModelPostConditionInput): Post
+  updatePost(input: UpdatePostInput!, condition: ModelPostConditionInput): Post
+  deletePost(input: DeletePostInput!, condition: ModelPostConditionInput): Post
 }
 
 type Subscription {
@@ -1605,14 +2093,49 @@ input SearchablePostSortInput {
   direction: SearchableSortDirection
 }
 
+input SearchablePostAggregationInput {
+  name: String!
+  type: SearchableAggregateType!
+  field: String!
+}
+
+enum SearchableAggregateType {
+  terms
+  avg
+  min
+  max
+  sum
+}
+
 type SearchablePostConnection {
   items: [Post]
   nextToken: String
   total: Int
+  aggregateItems: [SearchableAggregateResult]
 }
 
+type SearchableAggregateResult {
+  name: String!
+  result: SearchableAggregateGenericResult
+}
+
+type SearchableAggregateScalarResult {
+  value: Float!
+}
+
+type SearchableAggregateBucketResult {
+  buckets: [SearchableAggregateBucketResultItem]
+}
+
+type SearchableAggregateBucketResultItem {
+  key: String!
+  doc_count: Int!
+}
+
+union SearchableAggregateGenericResult = SearchableAggregateScalarResult | SearchableAggregateBucketResult
+
 type Query {
-  searchPosts(filter: SearchablePostFilterInput, sort: SearchablePostSortInput, limit: Int, nextToken: String, from: Int): SearchablePostConnection
+  searchPosts(filter: SearchablePostFilterInput, sort: [SearchablePostSortInput], limit: Int, nextToken: String, from: Int, aggregates: [SearchablePostAggregationInput]): SearchablePostConnection
   getPost(id: ID!): Post
   listPosts(filter: ModelPostFilterInput, limit: Int, nextToken: String): ModelPostConnection
 }
@@ -1703,6 +2226,11 @@ input ModelSizeInput {
   between: [Int]
 }
 
+enum ModelSortDirection {
+  ASC
+  DESC
+}
+
 type ModelPostConnection {
   items: [Post]
   nextToken: String
@@ -1719,7 +2247,6 @@ input ModelPostFilterInput {
 }
 
 input ModelPostConditionInput {
-  id: ModelIDInput
   title: ModelStringInput
   createdAt: ModelStringInput
   updatedAt: ModelStringInput
@@ -1735,12 +2262,6 @@ input CreatePostInput {
   updatedAt: String
 }
 
-type Mutation {
-  createPost(input: CreatePostInput!, condition: ModelPostConditionInput): Post
-  updatePost(input: UpdatePostInput!, condition: ModelPostConditionInput): Post
-  deletePost(input: DeletePostInput!, condition: ModelPostConditionInput): Post
-}
-
 input UpdatePostInput {
   id: ID!
   title: String
@@ -1750,6 +2271,12 @@ input UpdatePostInput {
 
 input DeletePostInput {
   id: ID!
+}
+
+type Mutation {
+  createPost(input: CreatePostInput!, condition: ModelPostConditionInput): Post
+  updatePost(input: UpdatePostInput!, condition: ModelPostConditionInput): Post
+  deletePost(input: DeletePostInput!, condition: ModelPostConditionInput): Post
 }
 
 type Subscription {

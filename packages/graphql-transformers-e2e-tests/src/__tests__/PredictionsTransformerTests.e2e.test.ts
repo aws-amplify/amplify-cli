@@ -18,7 +18,17 @@ const AWS_REGION = 'us-east-2';
 const cf = new CloudFormationClient(AWS_REGION);
 const customS3Client = new S3Client(AWS_REGION);
 const awsS3Client = new S3({ region: AWS_REGION });
-
+const featureFlags = {
+  getBoolean: jest.fn().mockImplementation((name, defaultValue) => {
+    if (name === 'improvePluralization') {
+      return true;
+    }
+    return;
+  }),
+  getNumber: jest.fn(),
+  getObject: jest.fn(),
+  getString: jest.fn(),
+};
 const BUILD_TIMESTAMP = moment().format('YYYYMMDDHHmmss');
 const STACK_NAME = `PredictionsTransformerTests-${BUILD_TIMESTAMP}`;
 const BUCKET_NAME = `appsync-predictions-transformer-test-bucket-${BUILD_TIMESTAMP}`;
@@ -48,6 +58,7 @@ beforeAll(async () => {
     console.warn(`Could not create bucket: ${e}`);
   }
   const transformer = new GraphQLTransform({
+    featureFlags,
     transformers: [
       new DynamoDBModelTransformer(),
       new PredictionsTransformer({ bucketName: BUCKET_NAME }),

@@ -1,19 +1,20 @@
 import { nspawn as spawn, getCLIPath, singleSelect, addCircleCITags } from '..';
 import { KEY_DOWN_ARROW } from '../utils';
 import { amplifyRegions } from '../configure';
+import { EOL } from 'os';
 
 const defaultSettings = {
-  name: '\r',
+  name: EOL,
   envName: 'integtest',
-  editor: '\r',
-  appType: '\r',
-  framework: '\r',
-  srcDir: '\r',
-  distDir: '\r',
-  buildCmd: '\r',
-  startCmd: '\r',
-  useProfile: '\r',
-  profileName: '\r',
+  editor: EOL,
+  appType: EOL,
+  framework: EOL,
+  srcDir: EOL,
+  distDir: EOL,
+  buildCmd: EOL,
+  startCmd: EOL,
+  useProfile: EOL,
+  profileName: EOL,
   region: process.env.CLI_REGION,
   local: false,
   disableAmplifyAppCreation: true,
@@ -22,7 +23,7 @@ const defaultSettings = {
   permissionsBoundaryArn: undefined,
 };
 
-export function initJSProjectWithProfile(cwd: string, settings: Object): Promise<void> {
+export function initJSProjectWithProfile(cwd: string, settings?: Partial<typeof defaultSettings>): Promise<void> {
   const s = { ...defaultSettings, ...settings };
   let env;
 
@@ -49,7 +50,7 @@ export function initJSProjectWithProfile(cwd: string, settings: Object): Promise
       .wait('Enter a name for the project')
       .sendLine(s.name)
       .wait('Initialize the project with the above configuration?')
-      .sendLine('n')
+      .sendConfirmNo()
       .wait('Enter a name for the environment')
       .sendLine(s.envName)
       .wait('Choose your default editor:')
@@ -102,7 +103,7 @@ export function initAndroidProjectWithProfile(cwd: string, settings: Object): Pr
       .wait('Enter a name for the project')
       .sendLine(s.name)
       .wait('Initialize the project with the above configuration?')
-      .sendLine('n')
+      .sendConfirmNo()
       .wait('Enter a name for the environment')
       .sendLine(s.envName)
       .wait('Choose your default editor:')
@@ -145,7 +146,7 @@ export function initIosProjectWithProfile(cwd: string, settings: Object): Promis
       .wait('Enter a name for the project')
       .sendLine(s.name)
       .wait('Initialize the project with the above configuration?')
-      .sendLine('n')
+      .sendConfirmNo()
       .wait('Enter a name for the environment')
       .sendLine(s.envName)
       .wait('Choose your default editor:')
@@ -180,7 +181,7 @@ export function initFlutterProjectWithProfile(cwd: string, settings: Object): Pr
       .wait('Enter a name for the project')
       .sendLine(s.name)
       .wait('Initialize the project with the above configuration?')
-      .sendLine('n')
+      .sendConfirmNo()
       .wait('Enter a name for the environment')
       .sendLine(s.envName)
       .wait('Choose your default editor:')
@@ -227,7 +228,7 @@ export function initProjectWithAccessKey(
       .wait('Enter a name for the project')
       .sendLine(s.name)
       .wait('Initialize the project with the above configuration?')
-      .sendLine('n')
+      .sendConfirmNo()
       .wait('Enter a name for the environment')
       .sendLine(s.envName)
       .wait('Choose your default editor:')
@@ -280,7 +281,7 @@ export function initNewEnvWithAccessKey(cwd: string, s: { envName: string; acces
       },
     })
       .wait('Do you want to use an existing environment?')
-      .sendLine('n')
+      .sendConfirmNo()
       .wait('Enter a name for the environment')
       .sendLine(s.envName)
       .wait('Using default provider  awscloudformation')
@@ -319,7 +320,7 @@ export function initNewEnvWithProfile(cwd: string, s: { envName: string }): Prom
       },
     })
       .wait('Do you want to use an existing environment?')
-      .sendLine('n')
+      .sendConfirmNo()
       .wait('Enter a name for the environment')
       .sendLine(s.envName)
       .wait('Using default provider  awscloudformation')
@@ -380,7 +381,13 @@ export function amplifyInitYes(cwd: string): Promise<void> {
       env: {
         CLI_DEV_INTERNAL_DISABLE_AMPLIFY_APP_CREATION: '1',
       },
-    }).run((err: Error) => (err ? reject(err) : resolve()));
+    }).run((err: Error) =>
+      err
+        ? reject(err)
+        : (() => {
+            resolve();
+          })(),
+    );
   });
 }
 
@@ -406,7 +413,7 @@ export function amplifyStatusWithMigrate(cwd: string, expectedStatus: string, te
       .wait('Amplify has been upgraded to handle secrets more securely by migrating some values')
       .sendConfirmYes()
       .wait(regex)
-      .sendLine('\r')
+      .sendCarriageReturn()
       .run((err: Error) => {
         if (!err) {
           resolve();
@@ -422,7 +429,7 @@ export function amplifyStatus(cwd: string, expectedStatus: string, testingWithLa
     let regex = new RegExp(`.*${expectedStatus}*`);
     spawn(getCLIPath(testingWithLatestCodebase), ['status'], { cwd, stripColors: true })
       .wait(regex)
-      .sendLine('\r')
+      .sendCarriageReturn()
       .run((err: Error) => {
         if (!err) {
           resolve();

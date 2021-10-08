@@ -10,15 +10,31 @@ Please see sample.env for the keys that are expected in your `.env` file.
 
 The `.env` file does not get commited as its in the `.gitignore` file.
 
+# Verbose logging
+
+To see the CLI output set VERBOSE_LOGGING_DO_NOT_USE_IN_CI_OR_YOU_WILL_BE_FIRED=true
+
+# Path to Amplify CLI to test migrating from installed version
+
+In order to test migration from one CLI installation to another, the following environment variable must be set:
+AMPLIFY_PATH=<your-local-installation-path>
+
+The path can be found by executing `which amplify`.
+
+N.B. The migration tests will install an older version of Amplify CLI via npm,
+but a native installation overrides an npm installation on your PATH
+
 ## Running individual tests
 
 Amplify Migration tests use Jest. So all the standard Jest comnmads work.
 You can run a single test while adding a new test by running
 
 ```bash
-cd <amplif-cli-root>/packages/amplify-e2e-tests/
-npm run e2e __tests__/init.test.ts
+cd <amplif-cli-root>/packages/amplify-migration-tests/__tests__/
+yarn migration update_tests/function_migration_update.test.ts
 ```
+
+The exact command is different for some tests. See `package.json` for all of the variations of the `migration` script.
 
 ## Writing a new integration test
 

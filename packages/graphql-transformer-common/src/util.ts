@@ -1,9 +1,14 @@
 import md5 from 'md5';
-
-export function plurality(val: string): string {
+import pluralize from 'pluralize';
+export function plurality(val: string, improvePluralization: boolean): string {
   if (!val.trim()) {
     return '';
   }
+
+  if (improvePluralization) {
+    return pluralize(val);
+  }
+
   return val.concat('s');
 }
 

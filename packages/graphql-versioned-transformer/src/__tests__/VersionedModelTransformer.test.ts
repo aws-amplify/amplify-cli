@@ -2,13 +2,23 @@ import { ObjectTypeDefinitionNode, parse, DocumentNode, Kind, InputObjectTypeDef
 import { GraphQLTransform } from 'graphql-transformer-core';
 import { VersionedModelTransformer } from '../VersionedModelTransformer';
 import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
-
 const getInputType = (schemaDoc: DocumentNode) => (name: string): InputObjectTypeDefinitionNode =>
   schemaDoc.definitions.find(d => d.kind === Kind.INPUT_OBJECT_TYPE_DEFINITION && d.name.value === name) as InputObjectTypeDefinitionNode;
 const getInputField = (input: InputObjectTypeDefinitionNode, field: string) => input.fields.find(f => f.name.value === field);
 const getType = (schemaDoc: DocumentNode) => (name: string): ObjectTypeDefinitionNode =>
   schemaDoc.definitions.find(d => d.kind === Kind.OBJECT_TYPE_DEFINITION && d.name.value === name) as ObjectTypeDefinitionNode;
 const getField = (input: ObjectTypeDefinitionNode, field: string) => input.fields.find(f => f.name.value === field);
+const featureFlags = {
+  getBoolean: jest.fn().mockImplementation((name, defaultValue) => {
+    if (name === 'improvePluralization') {
+      return true;
+    }
+    return;
+  }),
+  getNumber: jest.fn(),
+  getObject: jest.fn(),
+  getString: jest.fn(),
+};
 
 test('Test VersionedModelTransformer validation happy case', () => {
   const validSchema = `
@@ -21,6 +31,7 @@ test('Test VersionedModelTransformer validation happy case', () => {
     `;
   const transformer = new GraphQLTransform({
     transformers: [new DynamoDBModelTransformer(), new VersionedModelTransformer()],
+    featureFlags,
   });
   const out = transformer.transform(validSchema);
   // tslint:disable-next-line
@@ -47,6 +58,7 @@ test('Test VersionedModelTransformer validation fails when provided version fiel
   try {
     const transformer = new GraphQLTransform({
       transformers: [new DynamoDBModelTransformer(), new VersionedModelTransformer()],
+      featureFlags,
     });
     const out = transformer.transform(validSchema);
   } catch (e) {
@@ -66,6 +78,7 @@ test('Test VersionedModelTransformer version field replaced by non-null if provi
     `;
   const transformer = new GraphQLTransform({
     transformers: [new DynamoDBModelTransformer(), new VersionedModelTransformer()],
+    featureFlags,
   });
   const out = transformer.transform(validSchema);
   const sdl = out.schema;

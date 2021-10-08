@@ -1,14 +1,19 @@
-const { getCloudFormationTemplatePath, getExistingStorageAttributeDefinitions, getExistingStorageGSIs } = require('./utils');
+const {
+  getCloudFormationTemplatePath,
+  getExistingStorageAttributeDefinitions,
+  getExistingStorageGSIs,
+  getExistingTableColumnNames,
+} = require('../cfn-template-utils');
 const inquirer = require('inquirer');
 const path = require('path');
 const fs = require('fs-extra');
 const uuid = require('uuid');
 const { ResourceDoesNotExistError, exitOnNextTick } = require('amplify-cli-core');
+const { category } = require('../../..');
 
 // keep in sync with ServiceName in amplify-category-function, but probably it will not change
 const FunctionServiceNameLambdaFunction = 'Lambda';
 
-const category = 'storage';
 const parametersFileName = 'parameters.json';
 const storageParamsFileName = 'storage-params.json';
 const serviceName = 'DynamoDB';
@@ -181,7 +186,7 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
     continueAttributeQuestion = await amplify.confirmPrompt('Would you like to add another column?');
   }
 
-  const indexableAttributeList = [];
+  const indexableAttributeList = await getExistingTableColumnNames(resourceName);
 
   while (continueAttributeQuestion) {
     const attributeAnswer = await inquirer.prompt([attributeQuestion, attributeTypeQuestion]);
@@ -386,11 +391,8 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
 
     // if resource name is undefined then it's an 'add storage' we want to check on an update
     if (resourceName) {
-      const storageFile = getCloudFormationTemplatePath(projectBackendDirPath, resourceName);
-      const fileExists = fs.existsSync(storageFile);
-      const template = fileExists ? context.amplify.readJsonFile(storageFile) : null;
-      const existingGSIs = getExistingStorageGSIs(template);
-      const existingAttributeDefinitions = getExistingStorageAttributeDefinitions(template);
+      const existingGSIs = await getExistingStorageGSIs(resourceName);
+      const existingAttributeDefinitions = await getExistingStorageAttributeDefinitions(resourceName);
       const allAttributeDefinitionsMap = new Map([
         ...existingAttributeDefinitions.map(r => [r.AttributeName, r]),
         ...answers.AttributeDefinitions.map(r => [r.AttributeName, r]),
@@ -537,7 +539,7 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
 
   fs.writeFileSync(storageParamsFilePath, jsonString, 'utf8');
 
-  await copyCfnTemplate(context, category, resource, defaultValues);
+  await copyCfnTemplate(context, resource, defaultValues);
 
   return resource;
 }
@@ -782,16 +784,13 @@ async function getLambdaFunctions(context) {
   return lambdaResources;
 }
 
-function copyCfnTemplate(context, categoryName, resourceName, options) {
-  const { amplify } = context;
-  const targetDir = amplify.pathManager.getBackendDirPath();
+function copyCfnTemplate(context, resourceName, options) {
   const pluginDir = __dirname;
-
   const copyJobs = [
     {
       dir: pluginDir,
       template: path.join('..', '..', '..', '..', 'resources', 'cloudformation-templates', templateFileName),
-      target: path.join(targetDir, categoryName, resourceName, `${resourceName}-cloudformation-template.json`),
+      target: getCloudFormationTemplatePath(resourceName),
     },
   ];
 
@@ -919,7 +918,7 @@ function getIAMPolicies(resourceName, crudOptions) {
         ],
   };
 
-  const attributes = ['Name', 'Arn'];
+  const attributes = ['Name', 'Arn', 'StreamArn'];
 
   return { policy, attributes };
 }

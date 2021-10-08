@@ -3,6 +3,113 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.21.24](https://github.com/aws-amplify/amplify-cli/compare/graphql-connection-transformer@4.21.23...graphql-connection-transformer@4.21.24) (2021-10-06)
+
+**Note:** Version bump only for package graphql-connection-transformer
+
+
+
+
+
+## [4.21.23](https://github.com/aws-amplify/amplify-cli/compare/graphql-connection-transformer@4.21.22...graphql-connection-transformer@4.21.23) (2021-09-27)
+
+**Note:** Version bump only for package graphql-connection-transformer
+
+
+
+
+
+## [4.21.22](https://github.com/aws-amplify/amplify-cli/compare/graphql-connection-transformer@4.21.21...graphql-connection-transformer@4.21.22) (2021-09-18)
+
+**Note:** Version bump only for package graphql-connection-transformer
+
+
+
+
+
+## [4.21.21](https://github.com/aws-amplify/amplify-cli/compare/graphql-connection-transformer@4.21.20...graphql-connection-transformer@4.21.21) (2021-09-14)
+
+**Note:** Version bump only for package graphql-connection-transformer
+
+
+
+
+
+## [4.21.20](https://github.com/aws-amplify/amplify-cli/compare/graphql-connection-transformer@4.21.19...graphql-connection-transformer@4.21.20) (2021-09-09)
+
+**Note:** Version bump only for package graphql-connection-transformer
+
+
+
+
+
+## [4.21.19](https://github.com/aws-amplify/amplify-cli/compare/graphql-connection-transformer@4.21.18...graphql-connection-transformer@4.21.19) (2021-09-02)
+
+**Note:** Version bump only for package graphql-connection-transformer
+
+
+
+
+
+## [4.21.18](https://github.com/aws-amplify/amplify-cli/compare/graphql-connection-transformer@4.21.17...graphql-connection-transformer@4.21.18) (2021-08-24)
+
+**Note:** Version bump only for package graphql-connection-transformer
+
+
+
+
+
+## [4.21.17](https://github.com/aws-amplify/amplify-cli/compare/graphql-connection-transformer@4.21.16...graphql-connection-transformer@4.21.17) (2021-08-06)
+
+**Note:** Version bump only for package graphql-connection-transformer
+
+
+
+
+
+## [4.21.16](https://github.com/aws-amplify/amplify-cli/compare/graphql-connection-transformer@4.21.15...graphql-connection-transformer@4.21.16) (2021-07-30)
+
+**Note:** Version bump only for package graphql-connection-transformer
+
+
+
+
+
+## [4.21.15](https://github.com/aws-amplify/amplify-cli/compare/graphql-connection-transformer@4.21.14...graphql-connection-transformer@4.21.15) (2021-07-27)
+
+**Note:** Version bump only for package graphql-connection-transformer
+
+
+
+
+
+## [4.21.14](https://github.com/aws-amplify/amplify-cli/compare/graphql-connection-transformer@4.21.13...graphql-connection-transformer@4.21.14) (2021-07-16)
+
+**Note:** Version bump only for package graphql-connection-transformer
+
+
+
+
+
+## [4.21.13](https://github.com/aws-amplify/amplify-cli/compare/graphql-connection-transformer@4.21.12...graphql-connection-transformer@4.21.13) (2021-06-30)
+
+**Note:** Version bump only for package graphql-connection-transformer
+
+
+
+
+
+## [4.21.12](https://github.com/aws-amplify/amplify-cli/compare/graphql-connection-transformer@4.21.11...graphql-connection-transformer@4.21.12) (2021-06-24)
+
+
+### Bug Fixes
+
+* **graphql-transformer-common:** improve generated graphql pluralization ([#7258](https://github.com/aws-amplify/amplify-cli/issues/7258)) ([fc3ad0d](https://github.com/aws-amplify/amplify-cli/commit/fc3ad0dd5a12a7912c59ae12024f593b4cdf7f2d)), closes [#4224](https://github.com/aws-amplify/amplify-cli/issues/4224)
+
+
+
+
+
 ## [4.21.11](https://github.com/aws-amplify/amplify-cli/compare/graphql-connection-transformer@4.21.10...graphql-connection-transformer@4.21.11) (2021-06-15)
 
 **Note:** Version bump only for package graphql-connection-transformer

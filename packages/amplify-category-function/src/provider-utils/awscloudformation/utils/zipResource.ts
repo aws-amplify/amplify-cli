@@ -19,6 +19,7 @@ export const zipPackage = (zipEntries: ZipEntry[], packageFileName: string): Pro
           zip.glob('**/*', {
             cwd: entry.sourceFolder,
             ignore: entry.ignoreFiles,
+            dot: true,
           });
         }
         if (entry.packageFolder) {

@@ -3,6 +3,71 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.19.10](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-common@4.19.9...graphql-transformer-common@4.19.10) (2021-09-27)
+
+
+### Bug Fixes
+
+* **graphql-model-transformer:** iam role name does not exceed 64 characters ([#8244](https://github.com/aws-amplify/amplify-cli/issues/8244)) ([812a671](https://github.com/aws-amplify/amplify-cli/commit/812a67163d6dd33160bf7ace9afd538c83a7af1a))
+
+
+
+
+
+## [4.19.9](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-common@4.19.8...graphql-transformer-common@4.19.9) (2021-09-02)
+
+**Note:** Version bump only for package graphql-transformer-common
+
+
+
+
+
+## [4.19.8](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-common@4.19.7...graphql-transformer-common@4.19.8) (2021-08-24)
+
+**Note:** Version bump only for package graphql-transformer-common
+
+
+
+
+
+## [4.19.7](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-common@4.19.6...graphql-transformer-common@4.19.7) (2021-08-06)
+
+
+### Bug Fixes
+
+* **graphql-model-transformer:** model input fields transform ([#7857](https://github.com/aws-amplify/amplify-cli/issues/7857)) ([12ff663](https://github.com/aws-amplify/amplify-cli/commit/12ff663a94a4896bd9eacef3847be15b7631d8df))
+
+
+
+
+
+## [4.19.6](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-common@4.19.5...graphql-transformer-common@4.19.6) (2021-07-27)
+
+**Note:** Version bump only for package graphql-transformer-common
+
+
+
+
+
+## [4.19.5](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-common@4.19.4...graphql-transformer-common@4.19.5) (2021-07-16)
+
+**Note:** Version bump only for package graphql-transformer-common
+
+
+
+
+
+## [4.19.4](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-common@4.19.3...graphql-transformer-common@4.19.4) (2021-06-30)
+
+
+### Bug Fixes
+
+* **graphql-transformer-common:** improve generated graphql pluralization ([#7258](https://github.com/aws-amplify/amplify-cli/issues/7258)) ([fc3ad0d](https://github.com/aws-amplify/amplify-cli/commit/fc3ad0dd5a12a7912c59ae12024f593b4cdf7f2d)), closes [#4224](https://github.com/aws-amplify/amplify-cli/issues/4224)
+
+
+
+
+
 ## [4.19.3](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-common@4.19.1...graphql-transformer-common@4.19.3) (2021-05-03)
 
 

@@ -149,56 +149,56 @@ test('Test HttpTransformer with four basic requests with env on the URI', () => 
   expect(
     out.stacks.HttpStack.Resources[ResolverResourceIDs.ResolverResourceID('Comment', 'content')].Properties.RequestMappingTemplate[
       'Fn::Sub'
-    ][0]
+    ][0],
   ).toContain('${env}');
   expect(
     out.stacks.HttpStack.Resources[ResolverResourceIDs.ResolverResourceID('Comment', 'content')].Properties.RequestMappingTemplate[
       'Fn::Sub'
-    ][1].env.Ref
+    ][1].env.Ref,
   ).toBe('env');
 
   expect(
     out.stacks.HttpStack.Resources[ResolverResourceIDs.ResolverResourceID('Comment', 'content2')].Properties.RequestMappingTemplate[
       'Fn::Sub'
-    ][0]
+    ][0],
   ).toContain('${env}');
   expect(
     out.stacks.HttpStack.Resources[ResolverResourceIDs.ResolverResourceID('Comment', 'content2')].Properties.RequestMappingTemplate[
       'Fn::Sub'
-    ][1].env.Ref
+    ][1].env.Ref,
   ).toBe('env');
 
   expect(
     out.stacks.HttpStack.Resources[ResolverResourceIDs.ResolverResourceID('Comment', 'more')].Properties.RequestMappingTemplate[
       'Fn::Sub'
-    ][0]
+    ][0],
   ).toContain('${env}');
   expect(
     out.stacks.HttpStack.Resources[ResolverResourceIDs.ResolverResourceID('Comment', 'more')].Properties.RequestMappingTemplate[
       'Fn::Sub'
-    ][1].env.Ref
+    ][1].env.Ref,
   ).toBe('env');
 
   expect(
     out.stacks.HttpStack.Resources[ResolverResourceIDs.ResolverResourceID('Comment', 'evenMore')].Properties.RequestMappingTemplate[
       'Fn::Sub'
-    ][0]
+    ][0],
   ).toContain('${env}');
   expect(
     out.stacks.HttpStack.Resources[ResolverResourceIDs.ResolverResourceID('Comment', 'evenMore')].Properties.RequestMappingTemplate[
       'Fn::Sub'
-    ][1].env.Ref
+    ][1].env.Ref,
   ).toBe('env');
 
   expect(
     out.stacks.HttpStack.Resources[ResolverResourceIDs.ResolverResourceID('Comment', 'stillMore')].Properties.RequestMappingTemplate[
       'Fn::Sub'
-    ][0]
+    ][0],
   ).toContain('${env}');
   expect(
     out.stacks.HttpStack.Resources[ResolverResourceIDs.ResolverResourceID('Comment', 'stillMore')].Properties.RequestMappingTemplate[
       'Fn::Sub'
-    ][1].env.Ref
+    ][1].env.Ref,
   ).toBe('env');
 });
 
@@ -251,4 +251,135 @@ test('Test HttpTransformer with four basic requests with env on the hostname', (
     ][0];
   expect(out.stacks.HttpStack.Resources[stillMoreDatasource].Properties.HttpConfig.Endpoint['Fn::Sub'][0]).toContain('${env}');
   expect(out.stacks.HttpStack.Resources[stillMoreDatasource].Properties.HttpConfig.Endpoint['Fn::Sub'][1].env.Ref).toBe('env');
+});
+
+test('Test HttpTransformer with four basic requests with aws_region on the URI', () => {
+  const validSchema = `
+    type Comment {
+        id: ID!
+        content: String @http(method: POST, url: "http://www.api.com/ping\${aws_region}")
+        content2: String @http(method: PUT, url: "http://www.api.com/ping\${aws_region}")
+        more: String @http(url: "http://api.com/ping/me/2\${aws_region}")
+        evenMore: String @http(method: DELETE, url: "http://www.google.com/query/id\${aws_region}")
+        stillMore: String @http(method: PATCH, url: "https://www.api.com/ping/id\${aws_region}")
+    }
+    `;
+  const transformer = new GraphQLTransform({
+    transformers: [new HttpTransformer()],
+  });
+  const out = transformer.transform(validSchema);
+  expect(out).toBeDefined();
+  const schemaDoc = parse(out.schema);
+
+  expect(
+    out.stacks.HttpStack.Resources[ResolverResourceIDs.ResolverResourceID('Comment', 'content')].Properties.RequestMappingTemplate[
+      'Fn::Sub'
+    ][0],
+  ).toContain('${aws_region}');
+  expect(
+    out.stacks.HttpStack.Resources[ResolverResourceIDs.ResolverResourceID('Comment', 'content')].Properties.RequestMappingTemplate[
+      'Fn::Sub'
+    ][1].aws_region.Ref,
+  ).toBe('AWS::Region');
+
+  expect(
+    out.stacks.HttpStack.Resources[ResolverResourceIDs.ResolverResourceID('Comment', 'content2')].Properties.RequestMappingTemplate[
+      'Fn::Sub'
+    ][0],
+  ).toContain('${aws_region}');
+  expect(
+    out.stacks.HttpStack.Resources[ResolverResourceIDs.ResolverResourceID('Comment', 'content2')].Properties.RequestMappingTemplate[
+      'Fn::Sub'
+    ][1].aws_region.Ref,
+  ).toBe('AWS::Region');
+
+  expect(
+    out.stacks.HttpStack.Resources[ResolverResourceIDs.ResolverResourceID('Comment', 'more')].Properties.RequestMappingTemplate[
+      'Fn::Sub'
+    ][0],
+  ).toContain('${aws_region}');
+  expect(
+    out.stacks.HttpStack.Resources[ResolverResourceIDs.ResolverResourceID('Comment', 'more')].Properties.RequestMappingTemplate[
+      'Fn::Sub'
+    ][1].aws_region.Ref,
+  ).toBe('AWS::Region');
+
+  expect(
+    out.stacks.HttpStack.Resources[ResolverResourceIDs.ResolverResourceID('Comment', 'evenMore')].Properties.RequestMappingTemplate[
+      'Fn::Sub'
+    ][0],
+  ).toContain('${aws_region}');
+  expect(
+    out.stacks.HttpStack.Resources[ResolverResourceIDs.ResolverResourceID('Comment', 'evenMore')].Properties.RequestMappingTemplate[
+      'Fn::Sub'
+    ][1].aws_region.Ref,
+  ).toBe('AWS::Region');
+
+  expect(
+    out.stacks.HttpStack.Resources[ResolverResourceIDs.ResolverResourceID('Comment', 'stillMore')].Properties.RequestMappingTemplate[
+      'Fn::Sub'
+    ][0],
+  ).toContain('${aws_region}');
+  expect(
+    out.stacks.HttpStack.Resources[ResolverResourceIDs.ResolverResourceID('Comment', 'stillMore')].Properties.RequestMappingTemplate[
+      'Fn::Sub'
+    ][1].aws_region.Ref,
+  ).toBe('AWS::Region');
+});
+
+test('Test HttpTransformer with four basic requests with aws_region on the hostname', () => {
+  const validSchema = `
+    type Comment {
+        id: ID!
+        content: String @http(method: POST, url: "http://\${aws_region}www.api.com/ping")
+        content2: String @http(method: PUT, url: "http://\${aws_region}www.api.com/ping")
+        more: String @http(url: "http://\${aws_region}api.com/ping/me/2")
+        evenMore: String @http(method: DELETE, url: "http://\${aws_region}www.google.com/query/id")
+        stillMore: String @http(method: PATCH, url: "https://\${aws_region}www.api.com/ping/id")
+    }
+    `;
+  const transformer = new GraphQLTransform({
+    transformers: [new HttpTransformer()],
+  });
+  const out = transformer.transform(validSchema);
+  expect(out).toBeDefined();
+
+  const schemaDoc = parse(out.schema);
+
+  const contentDatasource =
+    out.stacks.HttpStack.Resources[ResolverResourceIDs.ResolverResourceID('Comment', 'content')].Properties.DataSourceName['Fn::GetAtt'][0];
+  expect(out.stacks.HttpStack.Resources[contentDatasource].Properties.HttpConfig.Endpoint['Fn::Sub'][0]).toContain('${aws_region}');
+  expect(out.stacks.HttpStack.Resources[contentDatasource].Properties.HttpConfig.Endpoint['Fn::Sub'][1].aws_region.Ref).toBe('AWS::Region');
+
+  const content2Datasource =
+    out.stacks.HttpStack.Resources[ResolverResourceIDs.ResolverResourceID('Comment', 'content2')].Properties.DataSourceName[
+      'Fn::GetAtt'
+    ][0];
+  expect(out.stacks.HttpStack.Resources[content2Datasource].Properties.HttpConfig.Endpoint['Fn::Sub'][0]).toContain('${aws_region}');
+  expect(out.stacks.HttpStack.Resources[content2Datasource].Properties.HttpConfig.Endpoint['Fn::Sub'][1].aws_region.Ref).toBe(
+    'AWS::Region',
+  );
+
+  const moreDatasource =
+    out.stacks.HttpStack.Resources[ResolverResourceIDs.ResolverResourceID('Comment', 'more')].Properties.DataSourceName['Fn::GetAtt'][0];
+  expect(out.stacks.HttpStack.Resources[moreDatasource].Properties.HttpConfig.Endpoint['Fn::Sub'][0]).toContain('${aws_region}');
+  expect(out.stacks.HttpStack.Resources[moreDatasource].Properties.HttpConfig.Endpoint['Fn::Sub'][1].aws_region.Ref).toBe('AWS::Region');
+
+  const evenMoreDatasource =
+    out.stacks.HttpStack.Resources[ResolverResourceIDs.ResolverResourceID('Comment', 'evenMore')].Properties.DataSourceName[
+      'Fn::GetAtt'
+    ][0];
+  expect(out.stacks.HttpStack.Resources[evenMoreDatasource].Properties.HttpConfig.Endpoint['Fn::Sub'][0]).toContain('${aws_region}');
+  expect(out.stacks.HttpStack.Resources[evenMoreDatasource].Properties.HttpConfig.Endpoint['Fn::Sub'][1].aws_region.Ref).toBe(
+    'AWS::Region',
+  );
+
+  const stillMoreDatasource =
+    out.stacks.HttpStack.Resources[ResolverResourceIDs.ResolverResourceID('Comment', 'stillMore')].Properties.DataSourceName[
+      'Fn::GetAtt'
+    ][0];
+  expect(out.stacks.HttpStack.Resources[stillMoreDatasource].Properties.HttpConfig.Endpoint['Fn::Sub'][0]).toContain('${aws_region}');
+  expect(out.stacks.HttpStack.Resources[stillMoreDatasource].Properties.HttpConfig.Endpoint['Fn::Sub'][1].aws_region.Ref).toBe(
+    'AWS::Region',
+  );
 });

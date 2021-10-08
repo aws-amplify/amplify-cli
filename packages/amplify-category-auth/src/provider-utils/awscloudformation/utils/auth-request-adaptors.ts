@@ -1,5 +1,6 @@
 import {
   AddAuthRequest,
+  CognitoUserAliasAttributes,
   CognitoUserPoolSigninMethod,
   CognitoAdminQueries,
   CognitoMFAConfiguration,
@@ -28,8 +29,11 @@ import {
   PasswordPolicy,
   PasswordRecoveryResult,
   UsernameAttributes,
+  AliasAttributes,
+  AttributeType,
 } from '../service-walkthrough-types';
 import { pascalCase } from 'change-case';
+import { FeatureFlags } from 'amplify-cli-core';
 
 export type AddAuthRequestAdaptorFactory = (projectType: string) => AddAuthRequestAdaptor;
 
@@ -38,43 +42,45 @@ export type AddAuthRequestAdaptor = (request: AddAuthRequest) => ServiceQuestion
  * Factory function that returns a function to convert an AddAuthRequest into the existing ServiceQuestionsResult output format
  * @param projectType The project type (such as 'javascript', 'ios', 'android')
  */
-export const getAddAuthRequestAdaptor: AddAuthRequestAdaptorFactory = projectType => ({
-  serviceConfiguration: cognitoConfig,
-  resourceName,
-}): ServiceQuestionsResult => {
-  const userPoolConfig = cognitoConfig.userPoolConfiguration;
-  const identityPoolConfig = cognitoConfig.includeIdentityPool ? cognitoConfig.identityPoolConfiguration : undefined;
-  const requiredAttributes = userPoolConfig.requiredSignupAttributes.map(att => att.toLowerCase());
-  return {
-    serviceName: cognitoConfig.serviceName,
-    resourceName,
-    requiredAttributes,
-    ...immutableAttributeAdaptor(userPoolConfig, identityPoolConfig),
-    ...mutableAttributeAdaptor(projectType, requiredAttributes, userPoolConfig, cognitoConfig.includeIdentityPool, identityPoolConfig),
-  };
-};
-
-export const getUpdateAuthRequestAdaptor = (projectType: string, requiredAttributes: string[]) => ({
-  serviceModification,
-}: UpdateAuthRequest): ServiceQuestionsResult => {
-  const idPoolModification = serviceModification.includeIdentityPool ? serviceModification.identityPoolModification : undefined;
-  return {
-    serviceName: serviceModification.serviceName,
-    requiredAttributes,
-    ...mutableAttributeAdaptor(
-      projectType,
+export const getAddAuthRequestAdaptor: AddAuthRequestAdaptorFactory =
+  projectType =>
+  ({ serviceConfiguration: cognitoConfig, resourceName }): ServiceQuestionsResult => {
+    const userPoolConfig = cognitoConfig.userPoolConfiguration;
+    const identityPoolConfig = cognitoConfig.includeIdentityPool ? cognitoConfig.identityPoolConfiguration : undefined;
+    const requiredAttributes = userPoolConfig.requiredSignupAttributes.map(att => att.toLowerCase());
+    return {
+      serviceName: cognitoConfig.serviceName,
+      resourceName,
       requiredAttributes,
-      serviceModification.userPoolModification,
-      serviceModification.includeIdentityPool,
-      idPoolModification,
-    ),
+      ...immutableAttributeAdaptor(userPoolConfig, identityPoolConfig),
+      ...mutableAttributeAdaptor(projectType, requiredAttributes, userPoolConfig, cognitoConfig.includeIdentityPool, identityPoolConfig),
+    };
   };
-};
+
+export const getUpdateAuthRequestAdaptor =
+  (projectType: string, requiredAttributes: string[]) =>
+  ({ serviceModification }: UpdateAuthRequest): ServiceQuestionsResult => {
+    const idPoolModification = serviceModification.includeIdentityPool ? serviceModification.identityPoolModification : undefined;
+    return {
+      serviceName: serviceModification.serviceName,
+      requiredAttributes,
+      ...mutableAttributeAdaptor(
+        projectType,
+        requiredAttributes,
+        serviceModification.userPoolModification,
+        serviceModification.includeIdentityPool,
+        idPoolModification,
+      ),
+    };
+  };
 
 const immutableAttributeAdaptor = (userPoolConfig: CognitoUserPoolConfiguration, identityPoolConfig?: CognitoIdentityPoolConfiguration) => {
   return {
     userPoolName: userPoolConfig.userPoolName,
     usernameAttributes: signinAttributeMap[userPoolConfig.signinMethod],
+    aliasAttributes: FeatureFlags.getBoolean('auth.forceAliasAttributes')
+      ? userPoolConfig.aliasAttributes?.map(attr => aliasAttributeMap[attr]) ?? []
+      : [],
     ...immutableIdentityPoolMap(identityPoolConfig),
   };
 };
@@ -146,6 +152,12 @@ const socialProviderMap = (
         acc.loginwithamazonAppIdUserPool = it.clientId;
         acc.loginwithamazonAppSecretUserPool = it.clientSecret;
         break;
+      case 'SIGN_IN_WITH_APPLE':
+        acc.signinwithappleClientIdUserPool = it.clientId;
+        acc.signinwithappleTeamIdUserPool = it.teamId;
+        acc.signinwithappleKeyIdUserPool = it.keyId;
+        acc.signinwithapplePrivateKeyUserPool = it.privateKey;
+        break;
     }
     return acc;
   }, {} as any) as SocialProviderResult;
@@ -167,7 +179,7 @@ const mutableIdentityPoolMap = (
       thirdPartyAuth: false,
       authProviders: [],
     };
-  type AppIds = Pick<IdentityPoolResult, 'facebookAppId' | 'googleClientId' | 'googleIos' | 'googleAndroid' | 'amazonAppId'>;
+  type AppIds = Pick<IdentityPoolResult, 'facebookAppId' | 'googleClientId' | 'googleIos' | 'googleAndroid' | 'amazonAppId' | 'appleAppId'>;
   const result = {
     allowUnauthenticatedIdentities: idPoolConfig.unauthenticatedLogin,
     thirdPartyAuth: !!idPoolConfig.identitySocialFederation,
@@ -257,12 +269,18 @@ const mfaTypeMap: Record<'SMS' | 'TOTP', 'SMS Text Message' | 'TOTP'> = {
 
 const signinAttributeMap: Record<CognitoUserPoolSigninMethod, UsernameAttributes[] | undefined> = {
   [CognitoUserPoolSigninMethod.USERNAME]: undefined,
-  [CognitoUserPoolSigninMethod.EMAIL]: ['email'],
-  [CognitoUserPoolSigninMethod.PHONE_NUMBER]: ['phone_number'],
-  [CognitoUserPoolSigninMethod.EMAIL_AND_PHONE_NUMBER]: ['email', 'phone_number'],
+  [CognitoUserPoolSigninMethod.EMAIL]: [AttributeType.EMAIL],
+  [CognitoUserPoolSigninMethod.PHONE_NUMBER]: [AttributeType.PHONE_NUMBER],
+  [CognitoUserPoolSigninMethod.EMAIL_AND_PHONE_NUMBER]: [AttributeType.EMAIL, AttributeType.PHONE_NUMBER],
 };
 
-const socialFederationKeyMap = (provider: 'FACEBOOK' | 'AMAZON' | 'GOOGLE', projectType: string): string => {
+const aliasAttributeMap: Record<CognitoUserAliasAttributes, AliasAttributes> = {
+  [CognitoUserAliasAttributes.PREFERRED_USERNAME]: AttributeType.PREFERRED_USERNAME,
+  [CognitoUserAliasAttributes.EMAIL]: AttributeType.EMAIL,
+  [CognitoUserAliasAttributes.PHONE_NUMBER]: AttributeType.PHONE_NUMBER,
+};
+
+const socialFederationKeyMap = (provider: 'FACEBOOK' | 'AMAZON' | 'GOOGLE' | 'APPLE', projectType: string): string => {
   switch (provider) {
     case 'FACEBOOK':
       return 'facebookAppId';
@@ -279,6 +297,8 @@ const socialFederationKeyMap = (provider: 'FACEBOOK' | 'AMAZON' | 'GOOGLE', proj
         default:
           throw new Error(`Unknown project type [${projectType}] when mapping federation type`);
       }
+    case 'APPLE':
+      return 'appleAppId';
     default:
       throw new Error(`Unknown social federation provider [${provider}]`);
   }

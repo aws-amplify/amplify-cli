@@ -20,6 +20,7 @@ import { ServiceConfig } from '../supportedServicesType';
 import { functionParametersFileName, provider, ServiceName, versionHash } from './utils/constants';
 import { convertExternalLayersToProjectLayers, convertProjectLayersToExternalLayers } from './utils/convertLayersTypes';
 import { convertToComplete, isComplete, merge } from './utils/funcParamsUtils';
+import { loadLayerParametersJson } from './utils/layerConfiguration';
 import { isMultiEnvLayer } from './utils/layerHelpers';
 import { LayerParameters } from './utils/layerParams';
 import {
@@ -29,6 +30,7 @@ import {
   saveMutableState,
   updateLayerArtifacts,
 } from './utils/storeResources';
+import { createDefaultCustomPoliciesFile } from 'amplify-cli-core';
 
 /**
  * Entry point for creating a new function
@@ -109,7 +111,9 @@ export async function addFunctionResource(
     completeParams = parameters;
   }
 
-  createFunctionResources(context, completeParams);
+  await createFunctionResources(context, completeParams);
+
+  createDefaultCustomPoliciesFile(category, completeParams.resourceName);
 
   if (!completeParams.skipEdit) {
     await openEditor(context, category, completeParams.resourceName, completeParams.functionTemplate);
@@ -117,12 +121,15 @@ export async function addFunctionResource(
 
   const { print } = context;
 
+  const customPoliciesPath = pathManager.getCustomPoliciesPath(category, completeParams.resourceName);
+
   print.success(`Successfully added resource ${completeParams.resourceName} locally.`);
   print.info('');
   print.success('Next steps:');
   print.info(`Check out sample function code generated in <project-dir>/amplify/backend/function/${completeParams.resourceName}/src`);
   print.info('"amplify function build" builds all of your functions currently in the project');
   print.info('"amplify mock function <functionName>" runs your function locally');
+  print.info(`To access AWS resources outside of this Amplify app, edit the ${customPoliciesPath}`);
   print.info('"amplify push" builds all of your local backend resources and provisions them in the cloud');
   print.info(
     '"amplify publish" builds all of your local backend and front-end resources (if you added hosting category) and provisions them in the cloud',
@@ -200,14 +207,14 @@ export async function updateFunctionResource(
       }
     }
 
-    saveMutableState(parameters);
+    await saveMutableState(context, parameters);
     saveCFNParameters(parameters);
   } else {
     parameters = await serviceConfig.walkthroughs.updateWalkthrough(context, parameters, resourceToUpdate);
     if (parameters.dependsOn) {
       context.amplify.updateamplifyMetaAfterResourceUpdate(category, parameters.resourceName, 'dependsOn', parameters.dependsOn);
     }
-    saveMutableState(parameters);
+    await saveMutableState(context, parameters);
     saveCFNParameters(parameters);
   }
 
@@ -398,14 +405,16 @@ export async function updateConfigOnEnvInit(context: $TSContext, resourceName: s
       const currentParametersJson =
         stateManager.getCurrentResourceParametersJson(projectPath, categoryName, resourceName, { throwIfNotExist: false }) || undefined;
       if (currentParametersJson) {
-        const backendParametersJson = stateManager.getResourceParametersJson(projectPath, categoryName, resourceName);
+        const backendParametersJson = loadLayerParametersJson(resourceName);
         backendParametersJson.description = currentParametersJson.description;
         stateManager.setResourceParametersJson(projectPath, categoryName, resourceName, backendParametersJson);
       }
 
       const currentCfnTemplatePath = pathManager.getCurrentCfnTemplatePath(projectPath, categoryName, resourceName);
-      const { cfnTemplate: currentCfnTemplate } = await readCFNTemplate(currentCfnTemplatePath);
-      await writeCFNTemplate(currentCfnTemplate, pathManager.getResourceCfnTemplatePath(projectPath, categoryName, resourceName));
+      const { cfnTemplate: currentCfnTemplate } = (await readCFNTemplate(currentCfnTemplatePath, { throwIfNotExist: false })) || {};
+      if (currentCfnTemplate !== undefined) {
+        await writeCFNTemplate(currentCfnTemplate, pathManager.getResourceCfnTemplatePath(projectPath, categoryName, resourceName));
+      }
     }
   }
 }

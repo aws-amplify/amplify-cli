@@ -1,6 +1,6 @@
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import { nspawn as spawn, getCLIPath, createNewProjectDir, KEY_DOWN_ARROW, readJsonFile } from '..';
+import { nspawn as spawn, getCLIPath, createNewProjectDir, KEY_DOWN_ARROW, readJsonFile, getNpxPath } from '..';
 import _ from 'lodash';
 import { spawnSync } from 'child_process';
 import { getBackendAmplifyMeta } from '../utils';
@@ -19,6 +19,44 @@ export function addDEVHosting(cwd: string): Promise<void> {
       .sendCarriageReturn()
       .wait('error doc for the website')
       .sendCarriageReturn()
+      .run((err: Error) => {
+        if (!err) {
+          resolve();
+        } else {
+          reject(err);
+        }
+      });
+  });
+}
+
+export function enableContainerHosting(cwd: string): Promise<void> {
+  return new Promise((resolve, reject) => {
+    spawn(getCLIPath(), ['configure', 'project'], { cwd, stripColors: true })
+      .wait('Which setting do you want to configure?')
+      .sendKeyDown(2)
+      .sendCarriageReturn()
+      .wait('Do you want to enable container-based deployments?')
+      .sendConfirmYes()
+      .run((err: Error) => {
+        if (!err) {
+          resolve();
+        } else {
+          reject(err);
+        }
+      });
+  });
+}
+
+export function addDevContainerHosting(cwd: string): Promise<void> {
+  return new Promise((resolve, reject) => {
+    spawn(getCLIPath(), ['add', 'hosting'], { cwd, stripColors: true })
+      .wait('Select the plugin module to execute')
+      .sendKeyDown(2)
+      .sendCarriageReturn()
+      .wait('Provide your web app endpoint (e.g. app.example.com or www.example.com):')
+      .sendLine('www.test-amplify-app.com')
+      .wait('Do you want to automatically protect your web app using Amazon Cognito Hosted UI')
+      .sendConfirmNo()
       .run((err: Error) => {
         if (!err) {
           resolve();
@@ -126,7 +164,7 @@ export async function createReactTestProject(): Promise<string> {
   const projectName = path.basename(projRoot);
   const projectDir = path.dirname(projRoot);
 
-  spawnSync('npx', ['create-react-app', projectName], { cwd: projectDir });
+  spawnSync(getNpxPath(), ['create-react-app', projectName], { cwd: projectDir });
 
   return projRoot;
 }

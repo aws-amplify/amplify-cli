@@ -21,16 +21,27 @@ import {
   createUserPool,
   createUserPoolClient,
   addIAMRolesToCFNStack,
-  signupAndAuthenticateUser,
   createGroup,
   addUserToGroup,
   configureAmplify,
+  signupUser,
+  authenticateUser,
 } from '../cognitoUtils';
 import 'isomorphic-fetch';
 
 // To overcome of the way of how AmplifyJS picks up currentUserCredentials
 const anyAWS = AWS as any;
-
+const featureFlags = {
+  getBoolean: jest.fn().mockImplementation((name, defaultValue) => {
+    if (name === 'improvePluralization') {
+      return true;
+    }
+    return;
+  }),
+  getNumber: jest.fn(),
+  getObject: jest.fn(),
+  getString: jest.fn(),
+};
 if (anyAWS && anyAWS.config && anyAWS.config.credentials) {
   delete anyAWS.config.credentials;
 }
@@ -152,6 +163,7 @@ beforeAll(async () => {
     }`;
 
   const transformer = new GraphQLTransform({
+    featureFlags,
     transformers: [
       new DynamoDBModelTransformer(),
       new ModelConnectionTransformer(),
@@ -233,15 +245,15 @@ beforeAll(async () => {
     // Configure Amplify, create users, and sign in.
     configureAmplify(USER_POOL_ID, userPoolClientId, identityPoolId);
 
-    await signupAndAuthenticateUser(USER_POOL_ID, USERNAME1, TMP_PASSWORD, REAL_PASSWORD);
-    await signupAndAuthenticateUser(USER_POOL_ID, USERNAME2, TMP_PASSWORD, REAL_PASSWORD);
-    await signupAndAuthenticateUser(USER_POOL_ID, USERNAME3, TMP_PASSWORD, REAL_PASSWORD);
+    await signupUser(USER_POOL_ID, USERNAME1, TMP_PASSWORD);
+    await signupUser(USER_POOL_ID, USERNAME2, TMP_PASSWORD);
+    await signupUser(USER_POOL_ID, USERNAME3, TMP_PASSWORD);
     await createGroup(USER_POOL_ID, WRITER_GROUP_NAME);
     await createGroup(USER_POOL_ID, ADMIN_GROUP_NAME);
     await addUserToGroup(WRITER_GROUP_NAME, USERNAME2, USER_POOL_ID);
     await addUserToGroup(ADMIN_GROUP_NAME, USERNAME2, USER_POOL_ID);
 
-    const authResAfterGroup: any = await signupAndAuthenticateUser(USER_POOL_ID, USERNAME1, TMP_PASSWORD, REAL_PASSWORD);
+    const authResAfterGroup: any = await authenticateUser(USERNAME1, TMP_PASSWORD, REAL_PASSWORD);
     const idToken = authResAfterGroup.getIdToken().getJwtToken();
     GRAPHQL_CLIENT_1 = new AWSAppSyncClient({
       url: GRAPHQL_ENDPOINT,
@@ -256,7 +268,7 @@ beforeAll(async () => {
       },
     });
 
-    const authRes2AfterGroup: any = await signupAndAuthenticateUser(USER_POOL_ID, USERNAME2, TMP_PASSWORD, REAL_PASSWORD);
+    const authRes2AfterGroup: any = await authenticateUser(USERNAME2, TMP_PASSWORD, REAL_PASSWORD);
     const idToken2 = authRes2AfterGroup.getIdToken().getJwtToken();
     GRAPHQL_CLIENT_2 = new AWSAppSyncClient({
       url: GRAPHQL_ENDPOINT,
@@ -271,7 +283,7 @@ beforeAll(async () => {
       },
     });
 
-    const authRes3: any = await signupAndAuthenticateUser(USER_POOL_ID, USERNAME3, TMP_PASSWORD, REAL_PASSWORD);
+    const authRes3: any = await authenticateUser(USERNAME3, TMP_PASSWORD, REAL_PASSWORD);
     const idToken3 = authRes3.getIdToken().getJwtToken();
     GRAPHQL_CLIENT_3 = new AWSAppSyncClient({
       url: GRAPHQL_ENDPOINT,

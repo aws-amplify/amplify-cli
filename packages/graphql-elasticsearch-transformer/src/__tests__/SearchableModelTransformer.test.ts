@@ -1,6 +1,17 @@
 import { GraphQLTransform, TRANSFORM_CURRENT_VERSION, ConflictHandlerType } from 'graphql-transformer-core';
 import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
 import { SearchableModelTransformer } from '../SearchableModelTransformer';
+const featureFlags = {
+  getBoolean: jest.fn().mockImplementation((name, defaultValue) => {
+    if (name === 'improvePluralization') {
+      return true;
+    }
+    return;
+  }),
+  getNumber: jest.fn(),
+  getObject: jest.fn(),
+  getString: jest.fn(),
+};
 
 test('Test SearchableModelTransformer validation happy case', () => {
   const validSchema = `
@@ -13,6 +24,7 @@ test('Test SearchableModelTransformer validation happy case', () => {
     `;
   const transformer = new GraphQLTransform({
     transformers: [new DynamoDBModelTransformer(), new SearchableModelTransformer()],
+    featureFlags,
   });
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
@@ -30,6 +42,7 @@ test('Test SearchableModelTransformer with query overrides', () => {
     `;
   const transformer = new GraphQLTransform({
     transformers: [new DynamoDBModelTransformer(), new SearchableModelTransformer()],
+    featureFlags,
   });
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
@@ -47,6 +60,7 @@ test('Test SearchableModelTransformer with only create mutations', () => {
     `;
   const transformer = new GraphQLTransform({
     transformers: [new DynamoDBModelTransformer(), new SearchableModelTransformer()],
+    featureFlags,
   });
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
@@ -70,6 +84,7 @@ test('Test SearchableModelTransformer with multiple model searchable directives'
     `;
   const transformer = new GraphQLTransform({
     transformers: [new DynamoDBModelTransformer(), new SearchableModelTransformer()],
+    featureFlags,
   });
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
@@ -88,6 +103,7 @@ test('Test SearchableModelTransformer with sort fields', () => {
     `;
   const transformer = new GraphQLTransform({
     transformers: [new DynamoDBModelTransformer(), new SearchableModelTransformer()],
+    featureFlags,
   });
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
@@ -108,6 +124,7 @@ test('SearchableModelTransformer with external versioning', () => {
 
   const transformer = new GraphQLTransform({
     transformers: [new DynamoDBModelTransformer(), new SearchableModelTransformer()],
+    featureFlags,
     transformConfig: {
       Version: TRANSFORM_CURRENT_VERSION,
       ResolverConfig: {

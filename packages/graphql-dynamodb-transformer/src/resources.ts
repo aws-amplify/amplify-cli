@@ -685,8 +685,14 @@ export class ResourceFactory {
    * TODO: actually fill out the right filter expression. This is a placeholder only.
    * @param type
    */
-  public makeListResolver(type: string, nameOverride?: string, isSyncEnabled: boolean = false, queryTypeName: string = 'Query') {
-    const fieldName = nameOverride ? nameOverride : graphqlName('list' + plurality(toUpper(type)));
+  public makeListResolver(
+    type: string,
+    improvePluralization: boolean,
+    nameOverride?: string,
+    isSyncEnabled: boolean = false,
+    queryTypeName: string = 'Query',
+  ) {
+    const fieldName = nameOverride ? nameOverride : graphqlName('list' + plurality(toUpper(type), improvePluralization));
     const requestVariable = 'ListRequest';
     return new AppSync.Resolver({
       ApiId: Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),

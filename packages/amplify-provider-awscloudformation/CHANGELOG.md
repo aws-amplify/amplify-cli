@@ -3,6 +3,251 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.62.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.62.0...amplify-provider-awscloudformation@4.62.1) (2021-10-08)
+
+
+### Bug Fixes
+
+* **amplify-category-api:** custom policies attached to TaskRoleArn ([#8376](https://github.com/aws-amplify/amplify-cli/issues/8376)) ([6d92c8b](https://github.com/aws-amplify/amplify-cli/commit/6d92c8b31541381e16507f0be2f608db30164139))
+* opensearch warning, add optional chaining to get api category ([#8371](https://github.com/aws-amplify/amplify-cli/issues/8371)) ([2bdae3a](https://github.com/aws-amplify/amplify-cli/commit/2bdae3ac09c0fd065fb03115cfbdc4d29c3577fe))
+
+
+
+
+
+# [4.62.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.61.1...amplify-provider-awscloudformation@4.62.0) (2021-10-06)
+
+
+
+# 6.2.0 (2021-10-05)
+
+
+### Bug Fixes
+
+* **graphql-model-transformer:** fix open search instance check for v1 and v2 transformers ([#8354](https://github.com/aws-amplify/amplify-cli/issues/8354)) ([d7d9476](https://github.com/aws-amplify/amplify-cli/commit/d7d9476ff0d3e5f49b02d2de86f87b2f247e7a8d))
+
+
+### Features
+
+* Custom policies IAM Policies for Lambda and Containers ([#8068](https://github.com/aws-amplify/amplify-cli/issues/8068)) ([3e1ce0d](https://github.com/aws-amplify/amplify-cli/commit/3e1ce0de4d25ab239adcdcef778cc82f30b17a94))
+
+
+
+
+
+## [4.61.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.61.0...amplify-provider-awscloudformation@4.61.1) (2021-10-01)
+
+
+### Bug Fixes
+
+* logic to display searchable instance warning ([#8297](https://github.com/aws-amplify/amplify-cli/issues/8297)) ([1fc7a9a](https://github.com/aws-amplify/amplify-cli/commit/1fc7a9ae0a585b1abf9f94ad982e5573ead22391))
+
+
+
+
+
+# [4.61.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.60.1...amplify-provider-awscloudformation@4.61.0) (2021-09-27)
+
+
+### Bug Fixes
+
+* add pull check for missing s3 objects, ref [#8233](https://github.com/aws-amplify/amplify-cli/issues/8233) ([#8250](https://github.com/aws-amplify/amplify-cli/issues/8250)) ([d17309d](https://github.com/aws-amplify/amplify-cli/commit/d17309d36679f7b0c2fee858f38c44618e885370))
+* **amplify-cli-core:** add service mapping FFs ([#7024](https://github.com/aws-amplify/amplify-cli/issues/7024)) ([36fe24d](https://github.com/aws-amplify/amplify-cli/commit/36fe24db9f37a8a12d50f1e20ea44562eb44d04a))
+* **graphql-model-transformer:** [@model](https://github.com/model) conflict resolution ([#8035](https://github.com/aws-amplify/amplify-cli/issues/8035)) ([f3bdc4a](https://github.com/aws-amplify/amplify-cli/commit/f3bdc4ac1fcf596f634d9d2e968785e76f7b138c))
+* **graphql-model-transformer:** provide correct directive definitions based on transformer version ([#8208](https://github.com/aws-amplify/amplify-cli/issues/8208)) ([5583cd4](https://github.com/aws-amplify/amplify-cli/commit/5583cd47e620992ea9df1f02d812577dc90391eb))
+
+
+### Features
+
+* add [@many](https://github.com/many)ToMany directive ([#8195](https://github.com/aws-amplify/amplify-cli/issues/8195)) ([cc644eb](https://github.com/aws-amplify/amplify-cli/commit/cc644ebc4968f29ad6b3f0b42013d7ee6a142f7e))
+* Flag to allow schema changes that require table replacement ([#8144](https://github.com/aws-amplify/amplify-cli/issues/8144)) ([2d4e65a](https://github.com/aws-amplify/amplify-cli/commit/2d4e65acfd034d33c6fa8ac1f5f8582e7e3bc399))
+
+
+### Reverts
+
+* Revert "feat: Flag to allow schema changes that require table replacement (#8144)" (#8268) ([422dd04](https://github.com/aws-amplify/amplify-cli/commit/422dd04425c72aa7276e086d38ce4d5f4681f9f3)), closes [#8144](https://github.com/aws-amplify/amplify-cli/issues/8144) [#8268](https://github.com/aws-amplify/amplify-cli/issues/8268)
+
+
+
+
+
+## [4.60.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.60.0...amplify-provider-awscloudformation@4.60.1) (2021-09-18)
+
+**Note:** Version bump only for package amplify-provider-awscloudformation
+
+
+
+
+
+# [4.60.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.59.0...amplify-provider-awscloudformation@4.60.0) (2021-09-14)
+
+
+
+# 5.6.0 (2021-09-14)
+
+
+### Features
+
+* support five new regions in CLI ([#8094](https://github.com/aws-amplify/amplify-cli/issues/8094)) ([98e6c56](https://github.com/aws-amplify/amplify-cli/commit/98e6c56b21cc9a7e1145ab658c3d8611474d5c44))
+* version blocking for CLI ([#7834](https://github.com/aws-amplify/amplify-cli/issues/7834)) ([045ef3b](https://github.com/aws-amplify/amplify-cli/commit/045ef3b83598c287b7e34bb5d1487bbe026026af))
+
+
+### Reverts
+
+* Revert "feat: version blocking for CLI (#7834)" (#8170) ([f5a92e3](https://github.com/aws-amplify/amplify-cli/commit/f5a92e3fcd288ba8f5eb48db62ccf02f6bb7d03d)), closes [#7834](https://github.com/aws-amplify/amplify-cli/issues/7834) [#8170](https://github.com/aws-amplify/amplify-cli/issues/8170)
+
+
+
+
+
+# [4.59.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.58.0...amplify-provider-awscloudformation@4.59.0) (2021-09-09)
+
+
+### Features
+
+* Amplify Command Hooks ([#7633](https://github.com/aws-amplify/amplify-cli/issues/7633)) ([4cacaad](https://github.com/aws-amplify/amplify-cli/commit/4cacaadcb87d377a37890b0092bf66c6e7b65b0b))
+
+
+
+
+
+# [4.58.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.57.0...amplify-provider-awscloudformation@4.58.0) (2021-09-02)
+
+
+### Bug Fixes
+
+* **amplify-provider-awscloudformation:** display mfa prompt ([#7866](https://github.com/aws-amplify/amplify-cli/issues/7866)) ([8947b18](https://github.com/aws-amplify/amplify-cli/commit/8947b187bf7a7ff6c998488a9931839ca3169d02))
+
+
+### Features
+
+* add new relational modeling directives ([#7997](https://github.com/aws-amplify/amplify-cli/issues/7997)) ([e9cdb7a](https://github.com/aws-amplify/amplify-cli/commit/e9cdb7a1a45b8f16546952a469ab2d45f82e855c))
+
+
+### Reverts
+
+* Revert "fix(amplify-provider-awscloudformation): display mfa prompt (#7866)" (#8054) ([7b5de7b](https://github.com/aws-amplify/amplify-cli/commit/7b5de7b553e189a47c88e2902a0f21744a16dc10)), closes [#7866](https://github.com/aws-amplify/amplify-cli/issues/7866) [#8054](https://github.com/aws-amplify/amplify-cli/issues/8054)
+
+
+
+
+
+# [4.57.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.56.1...amplify-provider-awscloudformation@4.57.0) (2021-08-24)
+
+
+### Bug Fixes
+
+* remove side effect from getConfigForEnv ([#7990](https://github.com/aws-amplify/amplify-cli/issues/7990)) ([02b6f84](https://github.com/aws-amplify/amplify-cli/commit/02b6f84b1312b1859626d4f29853b4a11de41c57))
+* specify default auth role name on import auth ([#7921](https://github.com/aws-amplify/amplify-cli/issues/7921)) ([148c994](https://github.com/aws-amplify/amplify-cli/commit/148c9947b010ae21d426f71f7d89d5ebe278dd19))
+
+
+### Features
+
+* add [@index](https://github.com/index) directive ([#7887](https://github.com/aws-amplify/amplify-cli/issues/7887)) ([e011555](https://github.com/aws-amplify/amplify-cli/commit/e0115557aad893b3286226e92ce8fecbd5636c1a))
+
+
+
+
+
+## [4.56.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.56.0...amplify-provider-awscloudformation@4.56.1) (2021-08-06)
+
+**Note:** Version bump only for package amplify-provider-awscloudformation
+
+
+
+
+
+# [4.56.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.55.2...amplify-provider-awscloudformation@4.56.0) (2021-07-30)
+
+
+### Bug Fixes
+
+* lambda timeout should be an integer type ([#7699](https://github.com/aws-amplify/amplify-cli/issues/7699)) ([cbacf4d](https://github.com/aws-amplify/amplify-cli/commit/cbacf4d3e497421855c09825970e025550aacfd7))
+
+
+### Features
+
+* add [@primary](https://github.com/primary)Key directive to Transformer v2 ([#7797](https://github.com/aws-amplify/amplify-cli/issues/7797)) ([c11b7dd](https://github.com/aws-amplify/amplify-cli/commit/c11b7dd33152eced2ba23089ef08f5696c73b5f2))
+
+
+
+
+
+## [4.55.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.55.1...amplify-provider-awscloudformation@4.55.2) (2021-07-27)
+
+
+### Bug Fixes
+
+* **cli:** prevent re-prompt of info on `amplify pull` ([#7730](https://github.com/aws-amplify/amplify-cli/issues/7730)) ([1919558](https://github.com/aws-amplify/amplify-cli/commit/19195589ab2d8b7382cac100c888bdbb62b9ba59))
+
+
+### Reverts
+
+* Revert "Revert "ci: add support for e2e token rotation (#7665)" (#7759)" (#7762) ([9ea4c8e](https://github.com/aws-amplify/amplify-cli/commit/9ea4c8e115ae62d7c348c3f0d82c89d795eebf46)), closes [#7665](https://github.com/aws-amplify/amplify-cli/issues/7665) [#7759](https://github.com/aws-amplify/amplify-cli/issues/7759) [#7762](https://github.com/aws-amplify/amplify-cli/issues/7762)
+* Revert "ci: add support for e2e token rotation (#7665)" (#7759) ([aadc915](https://github.com/aws-amplify/amplify-cli/commit/aadc9155f5c25478c7f317aec77f51290c6b9cfe)), closes [#7665](https://github.com/aws-amplify/amplify-cli/issues/7665) [#7759](https://github.com/aws-amplify/amplify-cli/issues/7759)
+
+
+
+
+
+## [4.55.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.55.0...amplify-provider-awscloudformation@4.55.1) (2021-07-16)
+
+
+### Bug Fixes
+
+* [#7441](https://github.com/aws-amplify/amplify-cli/issues/7441) - init from git prompts for credentials twice ([#7682](https://github.com/aws-amplify/amplify-cli/issues/7682)) ([7471c5f](https://github.com/aws-amplify/amplify-cli/commit/7471c5fcc86af0e17a967066a388f67891f93355))
+* **amplify-provider-awscloudformation:** rebase code and fixed yaml template load ([#7518](https://github.com/aws-amplify/amplify-cli/issues/7518)) ([8dfb71c](https://github.com/aws-amplify/amplify-cli/commit/8dfb71cb78fafc108a3d9d67505d46c208607026))
+
+
+
+
+
+# [4.55.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.54.0...amplify-provider-awscloudformation@4.55.0) (2021-07-12)
+
+
+### Features
+
+* port [@predictions](https://github.com/predictions) to GraphQL Transformer v2 ([#7387](https://github.com/aws-amplify/amplify-cli/issues/7387)) ([3f2e647](https://github.com/aws-amplify/amplify-cli/commit/3f2e647b9dfe14aa5919b46f53342937dd0c7fa9))
+
+
+
+
+
+# [4.54.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.53.0...amplify-provider-awscloudformation@4.54.0) (2021-06-30)
+
+
+### Bug Fixes
+
+* [#7561](https://github.com/aws-amplify/amplify-cli/issues/7561) - auth trigger usage with user groups ([#7592](https://github.com/aws-amplify/amplify-cli/issues/7592)) ([d1d372e](https://github.com/aws-amplify/amplify-cli/commit/d1d372ee55d2fb1c15022642837c1f6fb6994ac8))
+* correct featuer typo in gql transformer v2 ([#7584](https://github.com/aws-amplify/amplify-cli/issues/7584)) ([81659ee](https://github.com/aws-amplify/amplify-cli/commit/81659ee2399025307cc1aa05252a712623a95818))
+
+
+### Features
+
+* configure env vars and secrets for lambda functions ([#7529](https://github.com/aws-amplify/amplify-cli/issues/7529)) ([fac354e](https://github.com/aws-amplify/amplify-cli/commit/fac354e5e26846e8b1499d3a4718b15983e0110f))
+
+
+
+
+
+# [4.53.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.52.1...amplify-provider-awscloudformation@4.53.0) (2021-06-24)
+
+
+### Bug Fixes
+
+* includes getAtt to maintain dependency in root stack ([#7392](https://github.com/aws-amplify/amplify-cli/issues/7392)) ([d24b44a](https://github.com/aws-amplify/amplify-cli/commit/d24b44a4731e407fac0391817e851314f1bb13f8))
+* Move credential validation to the top function call ([#7401](https://github.com/aws-amplify/amplify-cli/issues/7401)) ([97ed227](https://github.com/aws-amplify/amplify-cli/commit/97ed2275572f89ab2dd231ec15e3ac8602f7987e))
+* **graphql-transformer-common:** improve generated graphql pluralization ([#7258](https://github.com/aws-amplify/amplify-cli/issues/7258)) ([fc3ad0d](https://github.com/aws-amplify/amplify-cli/commit/fc3ad0dd5a12a7912c59ae12024f593b4cdf7f2d)), closes [#4224](https://github.com/aws-amplify/amplify-cli/issues/4224)
+
+
+### Features
+
+* **import-auth:** add headless support ([#7266](https://github.com/aws-amplify/amplify-cli/issues/7266)) ([7fa478b](https://github.com/aws-amplify/amplify-cli/commit/7fa478bbfebbbe70e286eb19d436d772c32c4fd2))
+
+
+
+
+
 ## [4.52.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.52.0...amplify-provider-awscloudformation@4.52.1) (2021-06-19)
 
 

@@ -56,7 +56,7 @@ export class JavaMap {
   }
 
   keySet() {
-    return new JavaArray(Array.from(this.map.keys()), this.mapper);
+    return new JavaArray(Array.from(this.map.keys()).map(this.mapper as any), this.mapper);
   }
 
   put(key, value) {

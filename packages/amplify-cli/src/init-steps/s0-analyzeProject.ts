@@ -254,8 +254,9 @@ async function getEnvName(context: $TSContext) {
     await newEnvQuestion();
   } else {
     const allEnvs = context.amplify.getAllEnvs();
+    const envAddExec = checkEnvAddExec(context);
 
-    if (allEnvs.length > 0) {
+    if (allEnvs.length > 0 && envAddExec === false) {
       if (await context.amplify.confirmPrompt('Do you want to use an existing environment?')) {
         const envQuestion: inquirer.ListQuestion = {
           type: 'list',
@@ -268,6 +269,8 @@ async function getEnvName(context: $TSContext) {
       } else {
         await newEnvQuestion();
       }
+    } else if (envAddExec === true && context.parameters.first) {
+      envName = context.parameters.first;
     } else {
       await newEnvQuestion();
     }
@@ -309,4 +312,13 @@ function getDefaultEditor() {
   });
 
   return localEnvInfo.defaultEditor;
+}
+
+/**
+ * Checks if `amplify env add` has been executed
+ * @param {$TSContext} context The Amplify context object
+ * @returns `boolean`
+ */
+function checkEnvAddExec(context): boolean {
+  return context.parameters.command === 'env' && context.parameters.array[0] === 'add';
 }

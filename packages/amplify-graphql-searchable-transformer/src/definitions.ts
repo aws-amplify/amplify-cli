@@ -5,10 +5,20 @@ import {
   FieldDefinitionNode,
   Kind,
   TypeNode,
+  DocumentNode,
   EnumTypeDefinitionNode,
   EnumValueDefinitionNode,
 } from 'graphql';
-import { graphqlName, makeNamedType, isScalar, makeListType, getBaseType, SearchableResourceIDs } from 'graphql-transformer-common';
+import {
+  graphqlName,
+  makeNamedType,
+  isScalar,
+  isEnum,
+  makeListType,
+  makeNonNullType,
+  getBaseType,
+  SearchableResourceIDs,
+} from 'graphql-transformer-common';
 
 const ID_CONDITIONS = [
   'ne',
@@ -59,7 +69,7 @@ export function makeSearchableScalarInputObject(type: string): InputObjectTypeDe
   };
 }
 
-export function makeSearchableXFilterInputObject(obj: ObjectTypeDefinitionNode): InputObjectTypeDefinitionNode {
+export function makeSearchableXFilterInputObject(obj: ObjectTypeDefinitionNode, document: DocumentNode): InputObjectTypeDefinitionNode {
   const name = SearchableResourceIDs.SearchableFilterInputTypeName(obj.name.value);
   assert(obj.fields);
   const fields: InputValueDefinitionNode[] = obj.fields
@@ -75,6 +85,22 @@ export function makeSearchableXFilterInputObject(obj: ObjectTypeDefinitionNode):
           directives: [],
         } as InputValueDefinitionNode),
     );
+
+  fields.push(
+    ...obj.fields
+      .filter((field: FieldDefinitionNode) => isEnum(field.type, document))
+      .map(
+        (field: FieldDefinitionNode) =>
+          ({
+            kind: Kind.INPUT_VALUE_DEFINITION,
+            name: field.name,
+            type: makeNamedType(SearchableResourceIDs.SearchableFilterInputTypeName('String')),
+            // TODO: Service does not support new style descriptions so wait.
+            // description: field.description,
+            directives: [],
+          } as InputValueDefinitionNode),
+      ),
+  );
 
   fields.push(
     {
@@ -202,6 +228,57 @@ export function makeSearchableXSortInputObject(obj: ObjectTypeDefinitionNode): I
         //     kind: 'StringValue',
         //     value: `The id of the ${obj.name.value} to delete.`
         // },
+        directives: [],
+      },
+    ],
+    directives: [],
+  };
+}
+
+export function makeSearchableAggregateTypeEnumObject(): EnumTypeDefinitionNode {
+  const name = graphqlName('SearchableAggregateType');
+  const values: EnumValueDefinitionNode[] = ['terms', 'avg', 'min', 'max', 'sum'].map((type: string) => ({
+    kind: Kind.ENUM_VALUE_DEFINITION,
+    name: { kind: 'Name', value: type },
+    directives: [],
+  }));
+
+  return {
+    kind: Kind.ENUM_TYPE_DEFINITION,
+    name: {
+      kind: 'Name',
+      value: name,
+    },
+    values,
+    directives: [],
+  };
+}
+
+export function makeSearchableXAggregationInputObject(obj: ObjectTypeDefinitionNode): InputObjectTypeDefinitionNode {
+  const name = graphqlName(`Searchable${obj.name.value}AggregationInput`);
+  return {
+    kind: Kind.INPUT_OBJECT_TYPE_DEFINITION,
+    name: {
+      kind: 'Name',
+      value: name,
+    },
+    fields: [
+      {
+        kind: Kind.INPUT_VALUE_DEFINITION,
+        name: { kind: 'Name', value: 'name' },
+        type: makeNonNullType(makeNamedType('String')),
+        directives: [],
+      },
+      {
+        kind: Kind.INPUT_VALUE_DEFINITION,
+        name: { kind: 'Name', value: 'type' },
+        type: makeNonNullType(makeNamedType('SearchableAggregateType')),
+        directives: [],
+      },
+      {
+        kind: Kind.INPUT_VALUE_DEFINITION,
+        name: { kind: 'Name', value: 'field' },
+        type: makeNonNullType(makeNamedType('String')),
         directives: [],
       },
     ],

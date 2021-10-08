@@ -16,6 +16,7 @@ import {
   $TSMeta,
   DeploymentStepState,
   DeploymentStepStatus,
+  readCFNTemplate,
 } from 'amplify-cli-core';
 import ora from 'ora';
 import { S3 } from './aws-utils/aws-s3';
@@ -42,7 +43,7 @@ import { fileLogger } from './utils/aws-logger';
 import { APIGW_AUTH_STACK_LOGICAL_ID, loadApiWithPrivacyParams } from './utils/consolidate-apigw-policies';
 import { createEnvLevelConstructs } from './utils/env-level-constructs';
 import { NETWORK_STACK_LOGICAL_ID } from './network/stack';
-import { preProcessCFNTemplate } from './pre-push-cfn-processor/cfn-pre-processor';
+import { preProcessCFNTemplate, writeCustomPoliciesToCFNTemplate } from './pre-push-cfn-processor/cfn-pre-processor';
 import { AUTH_TRIGGER_STACK, AUTH_TRIGGER_TEMPLATE } from './utils/upload-auth-trigger-template';
 import { ensureValidFunctionModelDependencies } from './utils/remove-dependent-function';
 import { legacyLayerMigration, postPushLambdaLayerCleanup, prePushLambdaLayerPrompt } from './lambdaLayerInvocations';
@@ -72,14 +73,8 @@ export async function run(context: $TSContext, resourceDefinition: $TSObject) {
   let layerResources = [];
 
   try {
-    const {
-      resourcesToBeCreated,
-      resourcesToBeUpdated,
-      resourcesToBeSynced,
-      resourcesToBeDeleted,
-      tagsUpdated,
-      allResources,
-    } = resourceDefinition;
+    const { resourcesToBeCreated, resourcesToBeUpdated, resourcesToBeSynced, resourcesToBeDeleted, tagsUpdated, allResources } =
+      resourceDefinition;
     const cloudformationMeta = context.amplify.getProjectMeta().providers.awscloudformation;
     const {
       parameters: { options },
@@ -524,6 +519,10 @@ export async function storeCurrentCloudBackend(context: $TSContext) {
 
 function validateCfnTemplates(context: $TSContext, resourcesToBeUpdated: $TSAny[]) {
   for (const { category, resourceName } of resourcesToBeUpdated) {
+    // Turning off the error log for Geo resources as they're considered invalid by cfn-lint
+    if (category === 'geo') {
+      continue;
+    }
     const backEndDir = pathManager.getBackendDirPath();
     const resourceDir = path.normalize(path.join(backEndDir, category, resourceName));
     const cfnFiles = glob.sync(cfnTemplateGlobPattern, {
@@ -537,7 +536,7 @@ function validateCfnTemplates(context: $TSContext, resourcesToBeUpdated: $TSAny[
       try {
         validateFile(filePath);
       } catch (err) {
-        context.print.error(`Invalid CloudFormation template: ${filePath}${EOL}${err.message}`);
+        context.print.warning(`Invalid CloudFormation template: ${filePath}${EOL}${err.message}`);
       }
     }
   }
@@ -619,25 +618,25 @@ async function prepareResource(context: $TSContext, resource: $TSAny) {
     const cfnParamsFilePath = path.normalize(path.join(resourceDir, 'parameters.json'));
     JSONUtilities.writeJson(cfnParamsFilePath, cfnParams);
   } else {
-    const cfnMeta = JSONUtilities.readJson<$TSAny>(cfnFilePath);
-    cfnMeta.Parameters.deploymentBucketName = paramType;
-    cfnMeta.Parameters.s3Key = paramType;
+    const { cfnTemplate } = await readCFNTemplate(cfnFilePath);
+    cfnTemplate.Parameters.deploymentBucketName = paramType;
+    cfnTemplate.Parameters.s3Key = paramType;
     const deploymentBucketNameRef = 'deploymentBucketName';
     const s3KeyRef = 's3Key';
 
-    if (cfnMeta.Resources.LambdaFunction.Type === 'AWS::Serverless::Function') {
-      cfnMeta.Resources.LambdaFunction.Properties.CodeUri = {
+    if (cfnTemplate.Resources.LambdaFunction.Type === 'AWS::Serverless::Function') {
+      cfnTemplate.Resources.LambdaFunction.Properties.CodeUri = {
         Bucket: Fn.Ref(deploymentBucketNameRef),
         Key: Fn.Ref(s3KeyRef),
       };
     } else {
-      cfnMeta.Resources.LambdaFunction.Properties.Code = {
+      cfnTemplate.Resources.LambdaFunction.Properties.Code = {
         S3Bucket: Fn.Ref(deploymentBucketNameRef),
         S3Key: Fn.Ref(s3KeyRef),
       };
     }
     storeS3BucketInfo(category, s3Bucket, envName, resourceName, s3Key);
-    JSONUtilities.writeJson(cfnFilePath, cfnMeta);
+    JSONUtilities.writeJson(cfnFilePath, cfnTemplate);
   }
 }
 
@@ -754,10 +753,10 @@ function getCfnFiles(category: string, resourceName: string) {
 async function updateS3Templates(context: $TSContext, resourcesToBeUpdated: $TSAny, amplifyMeta: $TSMeta) {
   const promises = [];
 
-  for (const { category, resourceName } of resourcesToBeUpdated) {
+  for (const { category, resourceName, service } of resourcesToBeUpdated) {
     const { resourceDir, cfnFiles } = getCfnFiles(category, resourceName);
-
     for (const cfnFile of cfnFiles) {
+      await writeCustomPoliciesToCFNTemplate(resourceName, service, cfnFile, category);
       const transformedCFNPath = await preProcessCFNTemplate(path.join(resourceDir, cfnFile));
       promises.push(uploadTemplateToS3(context, transformedCFNPath, category, resourceName, amplifyMeta));
     }
@@ -878,8 +877,10 @@ async function formNestedStack(
       },
       DependsOn: [],
     };
-    const authResource = amplifyMeta?.auth ?? {};
-    const authRootStackResourceName = `auth${Object.keys(authResource)[0]}`;
+
+    const cognitoResource = stateManager.getResourceFromMeta(amplifyMeta, 'auth', 'Cognito');
+    const authRootStackResourceName = `auth${cognitoResource.resourceName}`;
+
     stack.Properties.Parameters['userpoolId'] = {
       'Fn::GetAtt': [authRootStackResourceName, 'Outputs.UserPoolId'],
     };
@@ -888,18 +889,23 @@ async function formNestedStack(
     };
     stack.DependsOn.push(authRootStackResourceName);
 
-    const { dependsOn } = authResource[Object.keys(authResource)[0]];
+    const { dependsOn } = cognitoResource.resource as { dependsOn };
 
     dependsOn.forEach(resource => {
-      const dependsOnStackName = resource.category + resource.resourceName;
+      const dependsOnStackName = `${resource.category}${resource.resourceName}`;
+
       stack.DependsOn.push(dependsOnStackName);
+
       const dependsOnAttributes = resource?.attributes;
+
       dependsOnAttributes.forEach(attribute => {
         const parameterKey = `${resource.category}${resource.resourceName}${attribute}`;
         const parameterValue = { 'Fn::GetAtt': [dependsOnStackName, `Outputs.${attribute}`] };
+
         stack.Properties.Parameters[parameterKey] = parameterValue;
       });
     });
+
     nestedStack.Resources[AUTH_TRIGGER_STACK] = stack;
   }
 
@@ -1006,6 +1012,11 @@ async function formNestedStack(
           }
         }
 
+        if ((category === 'api' || category === 'hosting') && resourceDetails.service === ApiServiceNameElasticContainer) {
+          parameters['deploymentBucketName'] = Fn.Ref('DeploymentBucketName');
+          parameters['rootStackName'] = Fn.Ref('AWS::StackName');
+        }
+
         const currentEnv = context.amplify.getEnvInfo().envName;
 
         if (!skipEnv && resourceName) {
@@ -1019,14 +1030,8 @@ async function formNestedStack(
         // If auth is imported check the parameters section of the nested template
         // and if it has auth or unauth role arn or name or userpool id, then inject it from the
         // imported auth resource's properties
-        const {
-          imported,
-          userPoolId,
-          authRoleArn,
-          authRoleName,
-          unauthRoleArn,
-          unauthRoleName,
-        } = context.amplify.getImportedAuthProperties(context);
+        const { imported, userPoolId, authRoleArn, authRoleName, unauthRoleArn, unauthRoleName } =
+          context.amplify.getImportedAuthProperties(context);
 
         if (category !== 'auth' && resourceDetails.service !== 'Cognito' && imported) {
           if (parameters.AuthCognitoUserPoolId) {
@@ -1038,7 +1043,7 @@ async function formNestedStack(
           }
 
           if (parameters.authRoleName) {
-            parameters.authRoleName = authRoleName;
+            parameters.authRoleName = authRoleName || { Ref: 'AuthRoleName' }; // if only a user pool is imported, we ref the root stack AuthRoleName because the child stacks still need this parameter
           }
 
           if (parameters.unauthRoleArn) {

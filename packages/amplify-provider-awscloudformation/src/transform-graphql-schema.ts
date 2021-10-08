@@ -17,6 +17,9 @@ import { ProviderName as providerName } from './constants';
 import { AmplifyCLIFeatureFlagAdapter } from './utils/amplify-cli-feature-flag-adapter';
 import { isAmplifyAdminApp } from './utils/admin-helpers';
 import { JSONUtilities, stateManager } from 'amplify-cli-core';
+import { ResourceConstants } from 'graphql-transformer-common';
+import { printer } from 'amplify-prompts';
+import _ from 'lodash';
 
 import {
   collectDirectivesByTypeNames,
@@ -38,7 +41,10 @@ import {
 import { print } from 'graphql';
 import { hashDirectory } from './upload-appsync-files';
 import { exitOnNextTick, FeatureFlags } from 'amplify-cli-core';
-import { transformGraphQLSchema as transformGraphQLSchemaV6 } from './graphql-transformer/transform-graphql-schema';
+import {
+  transformGraphQLSchema as transformGraphQLSchemaV6,
+  getDirectiveDefinitions as getDirectiveDefinitionsV6,
+} from './graphql-transformer/transform-graphql-schema';
 
 const apiCategory = 'api';
 const storageCategory = 'storage';
@@ -47,6 +53,24 @@ const schemaFileName = 'schema.graphql';
 const schemaDirName = 'schema';
 const ROOT_APPSYNC_S3_KEY = 'amplify-appsync-files';
 const s3ServiceName = 'S3';
+
+export function searchablePushChecks(context, map, apiName): void {
+  const searchableModelTypes = Object.keys(map).filter(type => map[type].includes('searchable') && map[type].includes('model'));
+  if (searchableModelTypes.length) {
+    const currEnv = context.amplify.getEnvInfo().envName;
+    const teamProviderInfo = stateManager.getTeamProviderInfo();
+    const instanceType = _.get(
+      teamProviderInfo,
+      [currEnv, 'categories', 'api', apiName, ResourceConstants.PARAMETERS.ElasticsearchInstanceType],
+      't2.small.elasticsearch',
+    );
+    if (instanceType === 't2.small.elasticsearch' || instanceType === 't3.small.elasticsearch') {
+      printer.warn(
+        `Your instance type for OpenSearch is ${instanceType}, you may experience performance issues or data loss. Consider reconfiguring with the instructions here https://docs.amplify.aws/cli/graphql-transformer/searchable/`,
+      );
+    }
+  }
+}
 
 function warnOnAuth(context, map) {
   const unAuthModelTypes = Object.keys(map).filter(type => !map[type].includes('auth') && map[type].includes('model'));
@@ -75,9 +99,8 @@ function getTransformerFactory(context, resourceDir, authConfig?) {
     }
 
     const customTransformersConfig: TransformConfig = await readTransformerConfiguration(resourceDir);
-    const customTransformers = (customTransformersConfig && customTransformersConfig.transformers
-      ? customTransformersConfig.transformers
-      : []
+    const customTransformers = (
+      customTransformersConfig && customTransformersConfig.transformers ? customTransformersConfig.transformers : []
     )
       .map(transformer => {
         const fileUrlMatch = /^file:\/\/(.*)\s*$/m.exec(transformer);
@@ -462,6 +485,7 @@ export async function transformGraphQLSchema(context, options) {
   // Check for common errors
   const directiveMap = collectDirectivesByTypeNames(project.schema);
   warnOnAuth(context, directiveMap.types);
+  searchablePushChecks(context, directiveMap.types, parameters[ResourceConstants.PARAMETERS.AppSyncApiName]);
 
   await transformerVersionCheck(context, resourceDir, previouslyDeployedBackendDir, resourcesToBeUpdated, directiveMap.directives);
 
@@ -535,6 +559,11 @@ async function getPreviousDeploymentRootKey(previouslyDeployedBackendDir) {
 // }
 
 export async function getDirectiveDefinitions(context, resourceDir) {
+  const useExperimentalPipelineTransformer = FeatureFlags.getBoolean('graphQLTransformer.useExperimentalPipelinedTransformer');
+  if (useExperimentalPipelineTransformer) {
+    return getDirectiveDefinitionsV6(context, resourceDir);
+  }
+
   const transformList = await getTransformerFactory(context, resourceDir)(true);
   const appSynDirectives = getAppSyncServiceExtraDirectives();
   const transformDirectives = transformList

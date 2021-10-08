@@ -16,7 +16,7 @@ import { S3Client } from '../S3Client';
 import * as path from 'path';
 import { cleanupStackAfterTest, deploy } from '../deployNestedStacks';
 import { default as moment } from 'moment';
-import { createUserPool, createUserPoolClient, signupAndAuthenticateUser, configureAmplify } from '../cognitoUtils';
+import { createUserPool, createUserPoolClient, configureAmplify, signupUser, authenticateUser } from '../cognitoUtils';
 import Role from 'cloudform-types/types/iam/role';
 import UserPoolClient from 'cloudform-types/types/cognito/userPoolClient';
 import IdentityPool from 'cloudform-types/types/cognito/identityPool';
@@ -38,7 +38,17 @@ jest.setTimeout(2000000);
 
 const REGION = 'us-west-2';
 const cf = new CloudFormationClient(REGION);
-
+const featureFlags = {
+  getBoolean: jest.fn().mockImplementation((name, defaultValue) => {
+    if (name === 'improvePluralization') {
+      return true;
+    }
+    return;
+  }),
+  getNumber: jest.fn(),
+  getObject: jest.fn(),
+  getString: jest.fn(),
+};
 const BUILD_TIMESTAMP = moment().format('YYYYMMDDHHmmss');
 const STACK_NAME = `MultiAuthModelAuthTransformerTest-${BUILD_TIMESTAMP}`;
 const BUCKET_NAME = `appsync-multi-auth-transformer-test-bucket-${BUILD_TIMESTAMP}`;
@@ -238,6 +248,7 @@ beforeAll(async () => {
     `;
 
   const transformer = new GraphQLTransform({
+    featureFlags,
     transformers: [
       new DynamoDBModelTransformer(),
       new ModelConnectionTransformer(),
@@ -394,7 +405,7 @@ beforeAll(async () => {
     });
 
     const identityPoolRoleMap = new IdentityPoolRoleAttachment({
-      IdentityPoolId: ({ Ref: 'IdentityPool' } as unknown) as string,
+      IdentityPoolId: { Ref: 'IdentityPool' } as unknown as string,
       Roles: {
         unauthenticated: { 'Fn::GetAtt': ['UnauthRole', 'Arn'] },
         authenticated: { 'Fn::GetAtt': ['AuthRole', 'Arn'] },
@@ -537,6 +548,7 @@ beforeAll(async () => {
         credentials: {
           accessKeyId: unauthCredentials.accessKeyId,
           secretAccessKey: unauthCredentials.secretAccessKey,
+          sessionToken: unauthCredentials.sessionToken,
         },
       },
       offlineConfig: {
@@ -545,7 +557,8 @@ beforeAll(async () => {
       disableOffline: true,
     });
 
-    const authRes = await signupAndAuthenticateUser(USER_POOL_ID, USERNAME1, TMP_PASSWORD, REAL_PASSWORD);
+    await signupUser(USER_POOL_ID, USERNAME1, TMP_PASSWORD);
+    const authRes = await authenticateUser(USERNAME1, TMP_PASSWORD, REAL_PASSWORD);
     const idToken = authRes.getIdToken().getJwtToken();
 
     USER_POOL_AUTH_CLIENT = new AWSAppSyncClient({
@@ -602,7 +615,7 @@ test(`Test 'public' authStrategy`, async () => {
     `;
 
     const getQuery = gql`
-      query($id: ID!) {
+      query ($id: ID!) {
         getPostPublic(id: $id) {
           id
           title
@@ -666,7 +679,7 @@ test(`Test 'public' provider: 'iam' authStrategy`, async () => {
     `;
 
     const getQuery = gql`
-      query($id: ID!) {
+      query ($id: ID!) {
         getPostPublicIAM(id: $id) {
           id
           title
@@ -730,7 +743,7 @@ test(`Test 'private' authStrategy`, async () => {
     `;
 
     const getQuery = gql`
-      query($id: ID!) {
+      query ($id: ID!) {
         getPostPrivate(id: $id) {
           id
           title
@@ -796,7 +809,7 @@ test(`Test 'private' provider: 'iam' authStrategy`, async () => {
     `;
 
     const getQuery = gql`
-      query($id: ID!) {
+      query ($id: ID!) {
         getPostPrivateIAM(id: $id) {
           id
           title
@@ -871,7 +884,7 @@ test(`Test 'private' provider: 'iam' authStrategy`, async () => {
     `;
 
     const getQuery = gql`
-      query($id: ID!) {
+      query ($id: ID!) {
         getPostOwnerIAM(id: $id) {
           id
           title
@@ -984,7 +997,7 @@ describe(`Test IAM protected field operations`, () => {
   `;
 
   const getQuery = gql`
-    query($id: ID!) {
+    query ($id: ID!) {
       getPostSecretFieldIAM(id: $id) {
         id
         title
@@ -993,7 +1006,7 @@ describe(`Test IAM protected field operations`, () => {
   `;
 
   const getQueryWithSecret = gql`
-    query($id: ID!) {
+    query ($id: ID!) {
       getPostSecretFieldIAM(id: $id) {
         id
         title
@@ -1078,7 +1091,7 @@ describe(`Connection tests with @auth on type`, () => {
   `;
 
   const createCommentMutation = gql`
-    mutation($postId: ID!) {
+    mutation ($postId: ID!) {
       createCommentConnection(input: { content: "Comment", commentConnectionPostId: $postId }) {
         id
         content
@@ -1087,7 +1100,7 @@ describe(`Connection tests with @auth on type`, () => {
   `;
 
   const getPostQuery = gql`
-    query($postId: ID!) {
+    query ($postId: ID!) {
       getPostConnection(id: $postId) {
         id
         title
@@ -1096,7 +1109,7 @@ describe(`Connection tests with @auth on type`, () => {
   `;
 
   const getPostQueryWithComments = gql`
-    query($postId: ID!) {
+    query ($postId: ID!) {
       getPostConnection(id: $postId) {
         id
         title
@@ -1111,7 +1124,7 @@ describe(`Connection tests with @auth on type`, () => {
   `;
 
   const getCommentQuery = gql`
-    query($commentId: ID!) {
+    query ($commentId: ID!) {
       getCommentConnection(id: $commentId) {
         id
         content
@@ -1120,7 +1133,7 @@ describe(`Connection tests with @auth on type`, () => {
   `;
 
   const getCommentWithPostQuery = gql`
-    query($commentId: ID!) {
+    query ($commentId: ID!) {
       getCommentConnection(id: $commentId) {
         id
         content

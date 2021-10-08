@@ -2,8 +2,12 @@ const { messages } = require('../../provider-utils/awscloudformation/assets/stri
 const { getAuthResourceName } = require('../../utils/getAuthResourceName');
 const { transformUserPoolGroupSchema } = require('../../provider-utils/awscloudformation/utils/transform-user-pool-group');
 const path = require('path');
+const fs = require('fs');
 const { category } = require('../..');
 const { attachPrevParamsToContext } = require('../../provider-utils/awscloudformation/utils/attach-prev-params-to-context');
+const { FeatureFlags, pathManager, BannerMessage } = require('amplify-cli-core');
+const { printer } = require('amplify-prompts');
+const { getSupportedServices } = require('../../provider-utils/supported-services');
 
 const subcommand = 'update';
 let options;
@@ -13,7 +17,7 @@ module.exports = {
   alias: ['update'],
   run: async context => {
     const { amplify } = context;
-    const servicesMetadata = require('../../provider-utils/supported-services').supportedServices;
+    const servicesMetadata = getSupportedServices();
     const existingAuth = amplify.getProjectDetails().amplifyMeta.auth || {};
 
     if (!Object.keys(existingAuth).length > 0) {
@@ -30,6 +34,16 @@ module.exports = {
         } else if (serviceMeta.service === 'Cognito' && serviceMeta.serviceType === 'imported') {
           context.print.error('Updating of imported Auth resources is not supported.');
           return context;
+        } else if (serviceMeta.service === 'Cognito' && !FeatureFlags.getBoolean('auth.forceAliasAttributes')) {
+          const authAttributes = JSON.parse(
+            fs.readFileSync(pathManager.getResourceParametersFilePath(undefined, 'auth', services[i])).toString(),
+          );
+          if (authAttributes.aliasAttributes && authAttributes.aliasAttributes.length > 0) {
+            const authUpdateWarning = await BannerMessage.getMessage('AMPLIFY_UPDATE_AUTH_ALIAS_ATTRIBUTES_WARNING');
+            if (authUpdateWarning) {
+              printer.warn(authUpdateWarning);
+            }
+          }
         }
       }
     }

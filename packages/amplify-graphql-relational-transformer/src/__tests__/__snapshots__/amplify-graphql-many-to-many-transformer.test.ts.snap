@@ -1,0 +1,1599 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`valid schema 1`] = `
+"
+type Foo {
+  id: ID!
+  bars(filter: ModelFooBarFilterInput, sortDirection: ModelSortDirection, limit: Int, nextToken: String): ModelFooBarConnection
+  createdAt: AWSDateTime!
+  updatedAt: AWSDateTime!
+}
+
+type Bar {
+  id: ID!
+  foos(filter: ModelFooBarFilterInput, sortDirection: ModelSortDirection, limit: Int, nextToken: String): ModelFooBarConnection
+  createdAt: AWSDateTime!
+  updatedAt: AWSDateTime!
+}
+
+type FooBar {
+  id: ID!
+  fooID: ID!
+  barID: ID!
+  foo: Foo!
+  bar: Bar!
+  createdAt: AWSDateTime!
+  updatedAt: AWSDateTime!
+}
+
+input ModelStringInput {
+  ne: String
+  eq: String
+  le: String
+  lt: String
+  ge: String
+  gt: String
+  contains: String
+  notContains: String
+  between: [String]
+  beginsWith: String
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+  size: ModelSizeInput
+}
+
+input ModelIntInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+}
+
+input ModelFloatInput {
+  ne: Float
+  eq: Float
+  le: Float
+  lt: Float
+  ge: Float
+  gt: Float
+  between: [Float]
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+}
+
+input ModelBooleanInput {
+  ne: Boolean
+  eq: Boolean
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+}
+
+input ModelIDInput {
+  ne: ID
+  eq: ID
+  le: ID
+  lt: ID
+  ge: ID
+  gt: ID
+  contains: ID
+  notContains: ID
+  between: [ID]
+  beginsWith: ID
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+  size: ModelSizeInput
+}
+
+enum ModelAttributeTypes {
+  binary
+  binarySet
+  bool
+  list
+  map
+  number
+  numberSet
+  string
+  stringSet
+  _null
+}
+
+input ModelSizeInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+}
+
+enum ModelSortDirection {
+  ASC
+  DESC
+}
+
+type ModelFooConnection {
+  items: [Foo]
+  nextToken: String
+}
+
+input ModelFooFilterInput {
+  id: ModelIDInput
+  and: [ModelFooFilterInput]
+  or: [ModelFooFilterInput]
+  not: ModelFooFilterInput
+}
+
+type Query {
+  getFoo(id: ID!): Foo
+  listFoos(filter: ModelFooFilterInput, limit: Int, nextToken: String): ModelFooConnection
+  getBar(id: ID!): Bar
+  listBars(filter: ModelBarFilterInput, limit: Int, nextToken: String): ModelBarConnection
+  getFooBar(id: ID!): FooBar
+  listFooBars(filter: ModelFooBarFilterInput, limit: Int, nextToken: String): ModelFooBarConnection
+}
+
+input ModelFooConditionInput {
+  and: [ModelFooConditionInput]
+  or: [ModelFooConditionInput]
+  not: ModelFooConditionInput
+}
+
+input CreateFooInput {
+  id: ID
+}
+
+input UpdateFooInput {
+  id: ID!
+}
+
+input DeleteFooInput {
+  id: ID!
+}
+
+type Mutation {
+  createFoo(input: CreateFooInput!, condition: ModelFooConditionInput): Foo
+  updateFoo(input: UpdateFooInput!, condition: ModelFooConditionInput): Foo
+  deleteFoo(input: DeleteFooInput!, condition: ModelFooConditionInput): Foo
+  createBar(input: CreateBarInput!, condition: ModelBarConditionInput): Bar
+  updateBar(input: UpdateBarInput!, condition: ModelBarConditionInput): Bar
+  deleteBar(input: DeleteBarInput!, condition: ModelBarConditionInput): Bar
+  createFooBar(input: CreateFooBarInput!, condition: ModelFooBarConditionInput): FooBar
+  updateFooBar(input: UpdateFooBarInput!, condition: ModelFooBarConditionInput): FooBar
+  deleteFooBar(input: DeleteFooBarInput!, condition: ModelFooBarConditionInput): FooBar
+}
+
+type Subscription {
+  onCreateFoo: Foo @aws_subscribe(mutations: [\\"createFoo\\"])
+  onUpdateFoo: Foo @aws_subscribe(mutations: [\\"updateFoo\\"])
+  onDeleteFoo: Foo @aws_subscribe(mutations: [\\"deleteFoo\\"])
+  onCreateBar: Bar @aws_subscribe(mutations: [\\"createBar\\"])
+  onUpdateBar: Bar @aws_subscribe(mutations: [\\"updateBar\\"])
+  onDeleteBar: Bar @aws_subscribe(mutations: [\\"deleteBar\\"])
+  onCreateFooBar: FooBar @aws_subscribe(mutations: [\\"createFooBar\\"])
+  onUpdateFooBar: FooBar @aws_subscribe(mutations: [\\"updateFooBar\\"])
+  onDeleteFooBar: FooBar @aws_subscribe(mutations: [\\"deleteFooBar\\"])
+}
+
+type ModelBarConnection {
+  items: [Bar]
+  nextToken: String
+}
+
+input ModelBarFilterInput {
+  id: ModelIDInput
+  and: [ModelBarFilterInput]
+  or: [ModelBarFilterInput]
+  not: ModelBarFilterInput
+}
+
+input ModelBarConditionInput {
+  and: [ModelBarConditionInput]
+  or: [ModelBarConditionInput]
+  not: ModelBarConditionInput
+}
+
+input CreateBarInput {
+  id: ID
+}
+
+input UpdateBarInput {
+  id: ID!
+}
+
+input DeleteBarInput {
+  id: ID!
+}
+
+type ModelFooBarConnection {
+  items: [FooBar]
+  nextToken: String
+}
+
+input ModelFooBarFilterInput {
+  id: ModelIDInput
+  fooID: ModelIDInput
+  barID: ModelIDInput
+  and: [ModelFooBarFilterInput]
+  or: [ModelFooBarFilterInput]
+  not: ModelFooBarFilterInput
+}
+
+input ModelFooBarConditionInput {
+  fooID: ModelIDInput
+  barID: ModelIDInput
+  and: [ModelFooBarConditionInput]
+  or: [ModelFooBarConditionInput]
+  not: ModelFooBarConditionInput
+}
+
+input CreateFooBarInput {
+  id: ID
+  fooID: ID!
+  barID: ID!
+}
+
+input UpdateFooBarInput {
+  id: ID!
+  fooID: ID
+  barID: ID
+}
+
+input DeleteFooBarInput {
+  id: ID!
+}
+
+input ModelIDKeyConditionInput {
+  eq: ID
+  le: ID
+  lt: ID
+  ge: ID
+  gt: ID
+  between: [ID]
+  beginsWith: ID
+}
+
+"
+`;
+
+exports[`valid schema 2`] = `
+Object {
+  "Bar.foos.req.vtl": "#if( $util.isNull($ctx.source.id) )
+  #set( $result = {
+  \\"items\\":   []
+} )
+  #return($result)
+#else
+  #set( $limit = $util.defaultIfNull($context.args.limit, 100) )
+  #set( $query = {
+  \\"expression\\": \\"#partitionKey = :partitionKey\\",
+  \\"expressionNames\\": {
+      \\"#partitionKey\\": \\"barID\\"
+  },
+  \\"expressionValues\\": {
+      \\":partitionKey\\": $util.dynamodb.toDynamoDB($context.source.id)
+  }
+} )
+  ## [Start] Applying Key Condition **
+  #if( !$util.isNull($ctx.args.fooID) && !$util.isNull($ctx.args.fooID.beginsWith) )
+    #set( $query.expression = \\"$query.expression AND begins_with(#sortKey, :sortKey)\\" )
+    $util.qr($query.expressionNames.put(\\"#sortKey\\", \\"fooID\\"))
+    $util.qr($query.expressionValues.put(\\":sortKey\\", { \\"S\\": \\"$ctx.args.fooID.beginsWith\\" }))
+  #end
+  #if( !$util.isNull($ctx.args.fooID) && !$util.isNull($ctx.args.fooID.between) )
+    #set( $query.expression = \\"$query.expression AND #sortKey BETWEEN :sortKey0 AND :sortKey1\\" )
+    $util.qr($query.expressionNames.put(\\"#sortKey\\", \\"fooID\\"))
+    $util.qr($query.expressionValues.put(\\":sortKey0\\", { \\"S\\": \\"$ctx.args.fooID.between[0]\\" }))
+    $util.qr($query.expressionValues.put(\\":sortKey1\\", { \\"S\\": \\"$ctx.args.fooID.between[1]\\" }))
+  #end
+  #if( !$util.isNull($ctx.args.fooID) && !$util.isNull($ctx.args.fooID.eq) )
+    #set( $query.expression = \\"$query.expression AND #sortKey = :sortKey\\" )
+    $util.qr($query.expressionNames.put(\\"#sortKey\\", \\"fooID\\"))
+    $util.qr($query.expressionValues.put(\\":sortKey\\", { \\"S\\": \\"$ctx.args.fooID.eq\\" }))
+  #end
+  #if( !$util.isNull($ctx.args.fooID) && !$util.isNull($ctx.args.fooID.lt) )
+    #set( $query.expression = \\"$query.expression AND #sortKey < :sortKey\\" )
+    $util.qr($query.expressionNames.put(\\"#sortKey\\", \\"fooID\\"))
+    $util.qr($query.expressionValues.put(\\":sortKey\\", { \\"S\\": \\"$ctx.args.fooID.lt\\" }))
+  #end
+  #if( !$util.isNull($ctx.args.fooID) && !$util.isNull($ctx.args.fooID.le) )
+    #set( $query.expression = \\"$query.expression AND #sortKey <= :sortKey\\" )
+    $util.qr($query.expressionNames.put(\\"#sortKey\\", \\"fooID\\"))
+    $util.qr($query.expressionValues.put(\\":sortKey\\", { \\"S\\": \\"$ctx.args.fooID.le\\" }))
+  #end
+  #if( !$util.isNull($ctx.args.fooID) && !$util.isNull($ctx.args.fooID.gt) )
+    #set( $query.expression = \\"$query.expression AND #sortKey > :sortKey\\" )
+    $util.qr($query.expressionNames.put(\\"#sortKey\\", \\"fooID\\"))
+    $util.qr($query.expressionValues.put(\\":sortKey\\", { \\"S\\": \\"$ctx.args.fooID.gt\\" }))
+  #end
+  #if( !$util.isNull($ctx.args.fooID) && !$util.isNull($ctx.args.fooID.ge) )
+    #set( $query.expression = \\"$query.expression AND #sortKey >= :sortKey\\" )
+    $util.qr($query.expressionNames.put(\\"#sortKey\\", \\"fooID\\"))
+    $util.qr($query.expressionValues.put(\\":sortKey\\", { \\"S\\": \\"$ctx.args.fooID.ge\\" }))
+  #end
+  ## [End] Applying Key Condition **
+{
+      \\"version\\": \\"2018-05-29\\",
+      \\"operation\\": \\"Query\\",
+      \\"query\\":     $util.toJson($query),
+      \\"scanIndexForward\\":     #if( $context.args.sortDirection )
+      #if( $context.args.sortDirection == \\"ASC\\" )
+true
+      #else
+false
+      #end
+    #else
+true
+    #end,
+      \\"filter\\":     #if( $context.args.filter )
+$util.transform.toDynamoDBFilterExpression($ctx.args.filter)
+    #else
+null
+    #end,
+      \\"limit\\": $limit,
+      \\"nextToken\\":     #if( $context.args.nextToken )
+$util.toJson($context.args.nextToken)
+    #else
+null
+    #end,
+      \\"index\\": \\"byBar\\"
+  }
+#end",
+  "Bar.foos.res.vtl": "#if( $ctx.error )
+$util.error($ctx.error.message, $ctx.error.type)
+#else
+  #if( !$result )
+    #set( $result = $ctx.result )
+  #end
+  $util.toJson($result)
+#end",
+  "Foo.bars.req.vtl": "#if( $util.isNull($ctx.source.id) )
+  #set( $result = {
+  \\"items\\":   []
+} )
+  #return($result)
+#else
+  #set( $limit = $util.defaultIfNull($context.args.limit, 100) )
+  #set( $query = {
+  \\"expression\\": \\"#partitionKey = :partitionKey\\",
+  \\"expressionNames\\": {
+      \\"#partitionKey\\": \\"fooID\\"
+  },
+  \\"expressionValues\\": {
+      \\":partitionKey\\": $util.dynamodb.toDynamoDB($context.source.id)
+  }
+} )
+  ## [Start] Applying Key Condition **
+  #if( !$util.isNull($ctx.args.barID) && !$util.isNull($ctx.args.barID.beginsWith) )
+    #set( $query.expression = \\"$query.expression AND begins_with(#sortKey, :sortKey)\\" )
+    $util.qr($query.expressionNames.put(\\"#sortKey\\", \\"barID\\"))
+    $util.qr($query.expressionValues.put(\\":sortKey\\", { \\"S\\": \\"$ctx.args.barID.beginsWith\\" }))
+  #end
+  #if( !$util.isNull($ctx.args.barID) && !$util.isNull($ctx.args.barID.between) )
+    #set( $query.expression = \\"$query.expression AND #sortKey BETWEEN :sortKey0 AND :sortKey1\\" )
+    $util.qr($query.expressionNames.put(\\"#sortKey\\", \\"barID\\"))
+    $util.qr($query.expressionValues.put(\\":sortKey0\\", { \\"S\\": \\"$ctx.args.barID.between[0]\\" }))
+    $util.qr($query.expressionValues.put(\\":sortKey1\\", { \\"S\\": \\"$ctx.args.barID.between[1]\\" }))
+  #end
+  #if( !$util.isNull($ctx.args.barID) && !$util.isNull($ctx.args.barID.eq) )
+    #set( $query.expression = \\"$query.expression AND #sortKey = :sortKey\\" )
+    $util.qr($query.expressionNames.put(\\"#sortKey\\", \\"barID\\"))
+    $util.qr($query.expressionValues.put(\\":sortKey\\", { \\"S\\": \\"$ctx.args.barID.eq\\" }))
+  #end
+  #if( !$util.isNull($ctx.args.barID) && !$util.isNull($ctx.args.barID.lt) )
+    #set( $query.expression = \\"$query.expression AND #sortKey < :sortKey\\" )
+    $util.qr($query.expressionNames.put(\\"#sortKey\\", \\"barID\\"))
+    $util.qr($query.expressionValues.put(\\":sortKey\\", { \\"S\\": \\"$ctx.args.barID.lt\\" }))
+  #end
+  #if( !$util.isNull($ctx.args.barID) && !$util.isNull($ctx.args.barID.le) )
+    #set( $query.expression = \\"$query.expression AND #sortKey <= :sortKey\\" )
+    $util.qr($query.expressionNames.put(\\"#sortKey\\", \\"barID\\"))
+    $util.qr($query.expressionValues.put(\\":sortKey\\", { \\"S\\": \\"$ctx.args.barID.le\\" }))
+  #end
+  #if( !$util.isNull($ctx.args.barID) && !$util.isNull($ctx.args.barID.gt) )
+    #set( $query.expression = \\"$query.expression AND #sortKey > :sortKey\\" )
+    $util.qr($query.expressionNames.put(\\"#sortKey\\", \\"barID\\"))
+    $util.qr($query.expressionValues.put(\\":sortKey\\", { \\"S\\": \\"$ctx.args.barID.gt\\" }))
+  #end
+  #if( !$util.isNull($ctx.args.barID) && !$util.isNull($ctx.args.barID.ge) )
+    #set( $query.expression = \\"$query.expression AND #sortKey >= :sortKey\\" )
+    $util.qr($query.expressionNames.put(\\"#sortKey\\", \\"barID\\"))
+    $util.qr($query.expressionValues.put(\\":sortKey\\", { \\"S\\": \\"$ctx.args.barID.ge\\" }))
+  #end
+  ## [End] Applying Key Condition **
+{
+      \\"version\\": \\"2018-05-29\\",
+      \\"operation\\": \\"Query\\",
+      \\"query\\":     $util.toJson($query),
+      \\"scanIndexForward\\":     #if( $context.args.sortDirection )
+      #if( $context.args.sortDirection == \\"ASC\\" )
+true
+      #else
+false
+      #end
+    #else
+true
+    #end,
+      \\"filter\\":     #if( $context.args.filter )
+$util.transform.toDynamoDBFilterExpression($ctx.args.filter)
+    #else
+null
+    #end,
+      \\"limit\\": $limit,
+      \\"nextToken\\":     #if( $context.args.nextToken )
+$util.toJson($context.args.nextToken)
+    #else
+null
+    #end,
+      \\"index\\": \\"byFoo\\"
+  }
+#end",
+  "Foo.bars.res.vtl": "#if( $ctx.error )
+$util.error($ctx.error.message, $ctx.error.type)
+#else
+  #if( !$result )
+    #set( $result = $ctx.result )
+  #end
+  $util.toJson($result)
+#end",
+  "FooBar.bar.req.vtl": "#if( $util.isNull($ctx.source.barID) )
+  #return
+#else
+{
+      \\"version\\": \\"2018-05-29\\",
+      \\"operation\\": \\"GetItem\\",
+      \\"key\\": {
+          \\"id\\": $util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($ctx.source.barID, \\"___xamznone____\\"))
+    }
+  }
+#end",
+  "FooBar.bar.res.vtl": "#if( $ctx.error )
+$util.error($ctx.error.message, $ctx.error.type)
+#else
+$util.toJson($ctx.result)
+#end",
+  "FooBar.foo.req.vtl": "#if( $util.isNull($ctx.source.fooID) )
+  #return
+#else
+{
+      \\"version\\": \\"2018-05-29\\",
+      \\"operation\\": \\"GetItem\\",
+      \\"key\\": {
+          \\"id\\": $util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($ctx.source.fooID, \\"___xamznone____\\"))
+    }
+  }
+#end",
+  "FooBar.foo.res.vtl": "#if( $ctx.error )
+$util.error($ctx.error.message, $ctx.error.type)
+#else
+$util.toJson($ctx.result)
+#end",
+  "Mutation.createBar.init.1.req.vtl": "## [Start] Initialization default values. **
+$util.qr($ctx.stash.put(\\"defaultValues\\", $util.defaultIfNull($ctx.stash.defaultValues, {})))
+#set( $createdAt = $util.time.nowISO8601() )
+$util.qr($ctx.stash.defaultValues.put(\\"id\\", $util.autoId()))
+$util.qr($ctx.stash.defaultValues.put(\\"createdAt\\", $createdAt))
+$util.qr($ctx.stash.defaultValues.put(\\"updatedAt\\", $createdAt))
+$util.toJson({
+  \\"version\\": \\"2018-05-29\\",
+  \\"payload\\": {}
+})
+## [End] Initialization default values. **",
+  "Mutation.createBar.req.vtl": "## [Start] Create Request template. **
+## Begin - key condition **
+#if( $ctx.stash.metadata.modelObjectKey )
+  #set( $keyConditionExpr = {} )
+  #set( $keyConditionExprNames = {} )
+  #foreach( $entry in $ctx.stash.metadata.modelObjectKey.entrySet() )
+    $util.qr($keyConditionExpr.put(\\"keyCondition$velocityCount\\", {
+  \\"attributeExists\\": false
+}))
+    $util.qr($keyConditionExprNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
+  #end
+  $util.qr($ctx.stash.conditions.add($keyConditionExpr))
+#else
+  $util.qr($ctx.stash.conditions.add({
+  \\"id\\": {
+      \\"attributeExists\\": false
+  }
+}))
+#end
+## End - key condition **
+## Set the default values to put request **
+#set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
+## copy the values from input **
+$util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
+## set the typename **
+$util.qr($mergedValues.put(\\"__typename\\", \\"Bar\\"))
+#set( $PutObject = {
+  \\"version\\": \\"2018-05-29\\",
+  \\"operation\\": \\"PutItem\\",
+  \\"attributeValues\\":   $util.dynamodb.toMapValues($mergedValues),
+  \\"condition\\": $condition
+} )
+#if( $context.args.condition )
+  $util.qr($ctx.stash.conditions.add($context.args.condition))
+#end
+## Begin - key condition **
+#if( $ctx.stash.metadata.modelObjectKey )
+  #set( $keyConditionExpr = {} )
+  #set( $keyConditionExprNames = {} )
+  #foreach( $entry in $ctx.stash.metadata.modelObjectKey.entrySet() )
+    $util.qr($keyConditionExpr.put(\\"keyCondition$velocityCount\\", {
+  \\"attributeExists\\": false
+}))
+    $util.qr($keyConditionExprNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
+  #end
+  $util.qr($ctx.stash.conditions.add($keyConditionExpr))
+#else
+  $util.qr($ctx.stash.conditions.add({
+  \\"id\\": {
+      \\"attributeExists\\": false
+  }
+}))
+#end
+## End - key condition **
+## Start condition block **
+#if( $ctx.stash.conditions && $ctx.stash.conditions.size() != 0 )
+  #set( $mergedConditions = {
+  \\"and\\": $ctx.stash.conditions
+} )
+  #set( $Conditions = $util.parseJson($util.transform.toDynamoDBConditionExpression($mergedConditions)) )
+  #if( $Conditions.expressionValues && $Conditions.expressionValues.size() == 0 )
+    #set( $Conditions = {
+  \\"expression\\": $Conditions.expression,
+  \\"expressionNames\\": $Conditions.expressionNames
+} )
+  #end
+  ## End condition block **
+#end
+#if( $Conditions )
+  #if( $keyConditionExprNames )
+    $util.qr($Conditions.expressionNames.putAll($keyConditionExprNames))
+  #end
+  $util.qr($PutObject.put(\\"condition\\", $Conditions))
+#end
+#if( $ctx.stash.metadata.modelObjectKey )
+  $util.qr($PutObject.put(\\"key\\", $ctx.stash.metadata.modelObjectKey))
+#else
+  #set( $Key = {
+  \\"id\\":   $util.dynamodb.toDynamoDB($mergedValues.id)
+} )
+  $util.qr($PutObject.put(\\"key\\", $Key))
+#end
+$util.toJson($PutObject)
+## [End] Create Request template. **",
+  "Mutation.createBar.res.vtl": "## [Start] Get ResponseTemplate. **
+#if( $ctx.error )
+  $util.error($ctx.error.message, $ctx.error.type)
+#else
+  $util.toJson($ctx.result)
+#end
+## [End] Get ResponseTemplate. **",
+  "Mutation.createFoo.init.1.req.vtl": "## [Start] Initialization default values. **
+$util.qr($ctx.stash.put(\\"defaultValues\\", $util.defaultIfNull($ctx.stash.defaultValues, {})))
+#set( $createdAt = $util.time.nowISO8601() )
+$util.qr($ctx.stash.defaultValues.put(\\"id\\", $util.autoId()))
+$util.qr($ctx.stash.defaultValues.put(\\"createdAt\\", $createdAt))
+$util.qr($ctx.stash.defaultValues.put(\\"updatedAt\\", $createdAt))
+$util.toJson({
+  \\"version\\": \\"2018-05-29\\",
+  \\"payload\\": {}
+})
+## [End] Initialization default values. **",
+  "Mutation.createFoo.req.vtl": "## [Start] Create Request template. **
+## Begin - key condition **
+#if( $ctx.stash.metadata.modelObjectKey )
+  #set( $keyConditionExpr = {} )
+  #set( $keyConditionExprNames = {} )
+  #foreach( $entry in $ctx.stash.metadata.modelObjectKey.entrySet() )
+    $util.qr($keyConditionExpr.put(\\"keyCondition$velocityCount\\", {
+  \\"attributeExists\\": false
+}))
+    $util.qr($keyConditionExprNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
+  #end
+  $util.qr($ctx.stash.conditions.add($keyConditionExpr))
+#else
+  $util.qr($ctx.stash.conditions.add({
+  \\"id\\": {
+      \\"attributeExists\\": false
+  }
+}))
+#end
+## End - key condition **
+## Set the default values to put request **
+#set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
+## copy the values from input **
+$util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
+## set the typename **
+$util.qr($mergedValues.put(\\"__typename\\", \\"Foo\\"))
+#set( $PutObject = {
+  \\"version\\": \\"2018-05-29\\",
+  \\"operation\\": \\"PutItem\\",
+  \\"attributeValues\\":   $util.dynamodb.toMapValues($mergedValues),
+  \\"condition\\": $condition
+} )
+#if( $context.args.condition )
+  $util.qr($ctx.stash.conditions.add($context.args.condition))
+#end
+## Begin - key condition **
+#if( $ctx.stash.metadata.modelObjectKey )
+  #set( $keyConditionExpr = {} )
+  #set( $keyConditionExprNames = {} )
+  #foreach( $entry in $ctx.stash.metadata.modelObjectKey.entrySet() )
+    $util.qr($keyConditionExpr.put(\\"keyCondition$velocityCount\\", {
+  \\"attributeExists\\": false
+}))
+    $util.qr($keyConditionExprNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
+  #end
+  $util.qr($ctx.stash.conditions.add($keyConditionExpr))
+#else
+  $util.qr($ctx.stash.conditions.add({
+  \\"id\\": {
+      \\"attributeExists\\": false
+  }
+}))
+#end
+## End - key condition **
+## Start condition block **
+#if( $ctx.stash.conditions && $ctx.stash.conditions.size() != 0 )
+  #set( $mergedConditions = {
+  \\"and\\": $ctx.stash.conditions
+} )
+  #set( $Conditions = $util.parseJson($util.transform.toDynamoDBConditionExpression($mergedConditions)) )
+  #if( $Conditions.expressionValues && $Conditions.expressionValues.size() == 0 )
+    #set( $Conditions = {
+  \\"expression\\": $Conditions.expression,
+  \\"expressionNames\\": $Conditions.expressionNames
+} )
+  #end
+  ## End condition block **
+#end
+#if( $Conditions )
+  #if( $keyConditionExprNames )
+    $util.qr($Conditions.expressionNames.putAll($keyConditionExprNames))
+  #end
+  $util.qr($PutObject.put(\\"condition\\", $Conditions))
+#end
+#if( $ctx.stash.metadata.modelObjectKey )
+  $util.qr($PutObject.put(\\"key\\", $ctx.stash.metadata.modelObjectKey))
+#else
+  #set( $Key = {
+  \\"id\\":   $util.dynamodb.toDynamoDB($mergedValues.id)
+} )
+  $util.qr($PutObject.put(\\"key\\", $Key))
+#end
+$util.toJson($PutObject)
+## [End] Create Request template. **",
+  "Mutation.createFoo.res.vtl": "## [Start] Get ResponseTemplate. **
+#if( $ctx.error )
+  $util.error($ctx.error.message, $ctx.error.type)
+#else
+  $util.toJson($ctx.result)
+#end
+## [End] Get ResponseTemplate. **",
+  "Mutation.createFooBar.init.1.req.vtl": "## [Start] Initialization default values. **
+$util.qr($ctx.stash.put(\\"defaultValues\\", $util.defaultIfNull($ctx.stash.defaultValues, {})))
+#set( $createdAt = $util.time.nowISO8601() )
+$util.qr($ctx.stash.defaultValues.put(\\"id\\", $util.autoId()))
+$util.qr($ctx.stash.defaultValues.put(\\"createdAt\\", $createdAt))
+$util.qr($ctx.stash.defaultValues.put(\\"updatedAt\\", $createdAt))
+$util.toJson({
+  \\"version\\": \\"2018-05-29\\",
+  \\"payload\\": {}
+})
+## [End] Initialization default values. **",
+  "Mutation.createFooBar.req.vtl": "## [Start] Create Request template. **
+## Begin - key condition **
+#if( $ctx.stash.metadata.modelObjectKey )
+  #set( $keyConditionExpr = {} )
+  #set( $keyConditionExprNames = {} )
+  #foreach( $entry in $ctx.stash.metadata.modelObjectKey.entrySet() )
+    $util.qr($keyConditionExpr.put(\\"keyCondition$velocityCount\\", {
+  \\"attributeExists\\": false
+}))
+    $util.qr($keyConditionExprNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
+  #end
+  $util.qr($ctx.stash.conditions.add($keyConditionExpr))
+#else
+  $util.qr($ctx.stash.conditions.add({
+  \\"id\\": {
+      \\"attributeExists\\": false
+  }
+}))
+#end
+## End - key condition **
+## Set the default values to put request **
+#set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
+## copy the values from input **
+$util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
+## set the typename **
+$util.qr($mergedValues.put(\\"__typename\\", \\"FooBar\\"))
+#set( $PutObject = {
+  \\"version\\": \\"2018-05-29\\",
+  \\"operation\\": \\"PutItem\\",
+  \\"attributeValues\\":   $util.dynamodb.toMapValues($mergedValues),
+  \\"condition\\": $condition
+} )
+#if( $context.args.condition )
+  $util.qr($ctx.stash.conditions.add($context.args.condition))
+#end
+## Begin - key condition **
+#if( $ctx.stash.metadata.modelObjectKey )
+  #set( $keyConditionExpr = {} )
+  #set( $keyConditionExprNames = {} )
+  #foreach( $entry in $ctx.stash.metadata.modelObjectKey.entrySet() )
+    $util.qr($keyConditionExpr.put(\\"keyCondition$velocityCount\\", {
+  \\"attributeExists\\": false
+}))
+    $util.qr($keyConditionExprNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
+  #end
+  $util.qr($ctx.stash.conditions.add($keyConditionExpr))
+#else
+  $util.qr($ctx.stash.conditions.add({
+  \\"id\\": {
+      \\"attributeExists\\": false
+  }
+}))
+#end
+## End - key condition **
+## Start condition block **
+#if( $ctx.stash.conditions && $ctx.stash.conditions.size() != 0 )
+  #set( $mergedConditions = {
+  \\"and\\": $ctx.stash.conditions
+} )
+  #set( $Conditions = $util.parseJson($util.transform.toDynamoDBConditionExpression($mergedConditions)) )
+  #if( $Conditions.expressionValues && $Conditions.expressionValues.size() == 0 )
+    #set( $Conditions = {
+  \\"expression\\": $Conditions.expression,
+  \\"expressionNames\\": $Conditions.expressionNames
+} )
+  #end
+  ## End condition block **
+#end
+#if( $Conditions )
+  #if( $keyConditionExprNames )
+    $util.qr($Conditions.expressionNames.putAll($keyConditionExprNames))
+  #end
+  $util.qr($PutObject.put(\\"condition\\", $Conditions))
+#end
+#if( $ctx.stash.metadata.modelObjectKey )
+  $util.qr($PutObject.put(\\"key\\", $ctx.stash.metadata.modelObjectKey))
+#else
+  #set( $Key = {
+  \\"id\\":   $util.dynamodb.toDynamoDB($mergedValues.id)
+} )
+  $util.qr($PutObject.put(\\"key\\", $Key))
+#end
+$util.toJson($PutObject)
+## [End] Create Request template. **",
+  "Mutation.createFooBar.res.vtl": "## [Start] Get ResponseTemplate. **
+#if( $ctx.error )
+  $util.error($ctx.error.message, $ctx.error.type)
+#else
+  $util.toJson($ctx.result)
+#end
+## [End] Get ResponseTemplate. **",
+  "Mutation.deleteBar.req.vtl": "## [Start] Delete Request template. **
+#set( $DeleteRequest = {
+  \\"version\\": \\"2018-05-29\\",
+  \\"operation\\": \\"DeleteItem\\"
+} )
+#if( $ctx.stash.metadata.modelObjectKey )
+  #set( $Key = $ctx.stash.metadata.modelObjectKey )
+#else
+  #set( $Key = {
+  \\"id\\":   $util.dynamodb.toDynamoDB($ctx.args.input.id)
+} )
+#end
+$util.qr($DeleteRequest.put(\\"key\\", $Key))
+## Begin - key condition **
+#if( $ctx.stash.metadata.modelObjectKey )
+  #set( $keyConditionExpr = {} )
+  #set( $keyConditionExprNames = {} )
+  #foreach( $entry in $ctx.stash.metadata.modelObjectKey.entrySet() )
+    $util.qr($keyConditionExpr.put(\\"keyCondition$velocityCount\\", {
+  \\"attributeExists\\": true
+}))
+    $util.qr($keyConditionExprNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
+  #end
+  $util.qr($ctx.stash.conditions.add($keyConditionExpr))
+#else
+  $util.qr($ctx.stash.conditions.add({
+  \\"id\\": {
+      \\"attributeExists\\": true
+  }
+}))
+#end
+## End - key condition **
+#if( $context.args.condition )
+  $util.qr($ctx.stash.conditions.add($context.args.condition))
+#end
+## Start condition block **
+#if( $ctx.stash.conditions && $ctx.stash.conditions.size() != 0 )
+  #set( $mergedConditions = {
+  \\"and\\": $ctx.stash.conditions
+} )
+  #set( $Conditions = $util.parseJson($util.transform.toDynamoDBConditionExpression($mergedConditions)) )
+  #if( $Conditions.expressionValues && $Conditions.expressionValues.size() == 0 )
+    #set( $Conditions = {
+  \\"expression\\": $Conditions.expression,
+  \\"expressionNames\\": $Conditions.expressionNames
+} )
+  #end
+  ## End condition block **
+#end
+#if( $Conditions )
+  #if( $keyConditionExprNames )
+    $util.qr($Conditions.expressionNames.putAll($keyConditionExprNames))
+  #end
+  $util.qr($DeleteRequest.put(\\"condition\\", $Conditions))
+#end
+$util.toJson($DeleteRequest)
+## [End] Delete Request template. **",
+  "Mutation.deleteBar.res.vtl": "## [Start] Get ResponseTemplate. **
+#if( $ctx.error )
+  $util.error($ctx.error.message, $ctx.error.type)
+#else
+  $util.toJson($ctx.result)
+#end
+## [End] Get ResponseTemplate. **",
+  "Mutation.deleteFoo.req.vtl": "## [Start] Delete Request template. **
+#set( $DeleteRequest = {
+  \\"version\\": \\"2018-05-29\\",
+  \\"operation\\": \\"DeleteItem\\"
+} )
+#if( $ctx.stash.metadata.modelObjectKey )
+  #set( $Key = $ctx.stash.metadata.modelObjectKey )
+#else
+  #set( $Key = {
+  \\"id\\":   $util.dynamodb.toDynamoDB($ctx.args.input.id)
+} )
+#end
+$util.qr($DeleteRequest.put(\\"key\\", $Key))
+## Begin - key condition **
+#if( $ctx.stash.metadata.modelObjectKey )
+  #set( $keyConditionExpr = {} )
+  #set( $keyConditionExprNames = {} )
+  #foreach( $entry in $ctx.stash.metadata.modelObjectKey.entrySet() )
+    $util.qr($keyConditionExpr.put(\\"keyCondition$velocityCount\\", {
+  \\"attributeExists\\": true
+}))
+    $util.qr($keyConditionExprNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
+  #end
+  $util.qr($ctx.stash.conditions.add($keyConditionExpr))
+#else
+  $util.qr($ctx.stash.conditions.add({
+  \\"id\\": {
+      \\"attributeExists\\": true
+  }
+}))
+#end
+## End - key condition **
+#if( $context.args.condition )
+  $util.qr($ctx.stash.conditions.add($context.args.condition))
+#end
+## Start condition block **
+#if( $ctx.stash.conditions && $ctx.stash.conditions.size() != 0 )
+  #set( $mergedConditions = {
+  \\"and\\": $ctx.stash.conditions
+} )
+  #set( $Conditions = $util.parseJson($util.transform.toDynamoDBConditionExpression($mergedConditions)) )
+  #if( $Conditions.expressionValues && $Conditions.expressionValues.size() == 0 )
+    #set( $Conditions = {
+  \\"expression\\": $Conditions.expression,
+  \\"expressionNames\\": $Conditions.expressionNames
+} )
+  #end
+  ## End condition block **
+#end
+#if( $Conditions )
+  #if( $keyConditionExprNames )
+    $util.qr($Conditions.expressionNames.putAll($keyConditionExprNames))
+  #end
+  $util.qr($DeleteRequest.put(\\"condition\\", $Conditions))
+#end
+$util.toJson($DeleteRequest)
+## [End] Delete Request template. **",
+  "Mutation.deleteFoo.res.vtl": "## [Start] Get ResponseTemplate. **
+#if( $ctx.error )
+  $util.error($ctx.error.message, $ctx.error.type)
+#else
+  $util.toJson($ctx.result)
+#end
+## [End] Get ResponseTemplate. **",
+  "Mutation.deleteFooBar.req.vtl": "## [Start] Delete Request template. **
+#set( $DeleteRequest = {
+  \\"version\\": \\"2018-05-29\\",
+  \\"operation\\": \\"DeleteItem\\"
+} )
+#if( $ctx.stash.metadata.modelObjectKey )
+  #set( $Key = $ctx.stash.metadata.modelObjectKey )
+#else
+  #set( $Key = {
+  \\"id\\":   $util.dynamodb.toDynamoDB($ctx.args.input.id)
+} )
+#end
+$util.qr($DeleteRequest.put(\\"key\\", $Key))
+## Begin - key condition **
+#if( $ctx.stash.metadata.modelObjectKey )
+  #set( $keyConditionExpr = {} )
+  #set( $keyConditionExprNames = {} )
+  #foreach( $entry in $ctx.stash.metadata.modelObjectKey.entrySet() )
+    $util.qr($keyConditionExpr.put(\\"keyCondition$velocityCount\\", {
+  \\"attributeExists\\": true
+}))
+    $util.qr($keyConditionExprNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
+  #end
+  $util.qr($ctx.stash.conditions.add($keyConditionExpr))
+#else
+  $util.qr($ctx.stash.conditions.add({
+  \\"id\\": {
+      \\"attributeExists\\": true
+  }
+}))
+#end
+## End - key condition **
+#if( $context.args.condition )
+  $util.qr($ctx.stash.conditions.add($context.args.condition))
+#end
+## Start condition block **
+#if( $ctx.stash.conditions && $ctx.stash.conditions.size() != 0 )
+  #set( $mergedConditions = {
+  \\"and\\": $ctx.stash.conditions
+} )
+  #set( $Conditions = $util.parseJson($util.transform.toDynamoDBConditionExpression($mergedConditions)) )
+  #if( $Conditions.expressionValues && $Conditions.expressionValues.size() == 0 )
+    #set( $Conditions = {
+  \\"expression\\": $Conditions.expression,
+  \\"expressionNames\\": $Conditions.expressionNames
+} )
+  #end
+  ## End condition block **
+#end
+#if( $Conditions )
+  #if( $keyConditionExprNames )
+    $util.qr($Conditions.expressionNames.putAll($keyConditionExprNames))
+  #end
+  $util.qr($DeleteRequest.put(\\"condition\\", $Conditions))
+#end
+$util.toJson($DeleteRequest)
+## [End] Delete Request template. **",
+  "Mutation.deleteFooBar.res.vtl": "## [Start] Get ResponseTemplate. **
+#if( $ctx.error )
+  $util.error($ctx.error.message, $ctx.error.type)
+#else
+  $util.toJson($ctx.result)
+#end
+## [End] Get ResponseTemplate. **",
+  "Mutation.updateBar.init.1.req.vtl": "## [Start] Initialization default values. **
+$util.qr($ctx.stash.put(\\"defaultValues\\", $util.defaultIfNull($ctx.stash.defaultValues, {})))
+#set( $updatedAt = $util.time.nowISO8601() )
+$util.qr($ctx.stash.defaultValues.put(\\"updatedAt\\", $updatedAt))
+$util.toJson({
+  \\"version\\": \\"2018-05-29\\",
+  \\"payload\\": {}
+})
+## [End] Initialization default values. **",
+  "Mutation.updateBar.req.vtl": "## [Start] Mutation Update resolver. **
+## Set the default values to put request **
+#set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
+## copy the values from input **
+$util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
+## set the typename **
+## Initialize the vars for creating ddb expression **
+#set( $expNames = {} )
+#set( $expValues = {} )
+#set( $expSet = {} )
+#set( $expAdd = {} )
+#set( $expRemove = [] )
+#if( $ctx.stash.metadata.modelObjectKey )
+  #set( $Key = $ctx.stash.metadata.modelObjectKey )
+#else
+  #set( $Key = {
+  \\"id\\":   $util.dynamodb.toDynamoDB($ctx.args.input.id)
+} )
+#end
+## Model key **
+#if( $ctx.stash.metadata.modelObjectKey )
+  #set( $keyFields = [] )
+  #foreach( $entry in $ctx.stash.metadata.modelObjectKey.entrySet() )
+    $util.qr($keyFields.add(\\"$entry.key\\"))
+  #end
+#else
+  #set( $keyFields = [\\"id\\"] )
+#end
+#foreach( $entry in $util.map.copyAndRemoveAllKeys($mergedValues, $keyFields).entrySet() )
+  #if( !$util.isNull($ctx.stash.metadata.dynamodbNameOverrideMap) && $ctx.stash.metadata.dynamodbNameOverrideMap.containsKey(\\"$entry.key\\") )
+    #set( $entryKeyAttributeName = $ctx.stash.metadata.dynamodbNameOverrideMap.get(\\"$entry.key\\") )
+  #else
+    #set( $entryKeyAttributeName = $entry.key )
+  #end
+  #if( $util.isNull($entry.value) )
+    #set( $discard = $expRemove.add(\\"#$entryKeyAttributeName\\") )
+    $util.qr($expNames.put(\\"#$entryKeyAttributeName\\", \\"$entry.key\\"))
+  #else
+    $util.qr($expSet.put(\\"#$entryKeyAttributeName\\", \\":$entryKeyAttributeName\\"))
+    $util.qr($expNames.put(\\"#$entryKeyAttributeName\\", \\"$entry.key\\"))
+    $util.qr($expValues.put(\\":$entryKeyAttributeName\\", $util.dynamodb.toDynamoDB($entry.value)))
+  #end
+#end
+#set( $expression = \\"\\" )
+#if( !$expSet.isEmpty() )
+  #set( $expression = \\"SET\\" )
+  #foreach( $entry in $expSet.entrySet() )
+    #set( $expression = \\"$expression $entry.key = $entry.value\\" )
+    #if( $foreach.hasNext() )
+      #set( $expression = \\"$expression,\\" )
+    #end
+  #end
+#end
+#if( !$expAdd.isEmpty() )
+  #set( $expression = \\"$expression ADD\\" )
+  #foreach( $entry in $expAdd.entrySet() )
+    #set( $expression = \\"$expression $entry.key $entry.value\\" )
+    #if( $foreach.hasNext() )
+      #set( $expression = \\"$expression,\\" )
+    #end
+  #end
+#end
+#if( !$expRemove.isEmpty() )
+  #set( $expression = \\"$expression REMOVE\\" )
+  #foreach( $entry in $expRemove )
+    #set( $expression = \\"$expression $entry\\" )
+    #if( $foreach.hasNext() )
+      #set( $expression = \\"$expression,\\" )
+    #end
+  #end
+#end
+#set( $update = {} )
+$util.qr($update.put(\\"expression\\", \\"$expression\\"))
+#if( !$expNames.isEmpty() )
+  $util.qr($update.put(\\"expressionNames\\", $expNames))
+#end
+#if( !$expValues.isEmpty() )
+  $util.qr($update.put(\\"expressionValues\\", $expValues))
+#end
+## Begin - key condition **
+#if( $ctx.stash.metadata.modelObjectKey )
+  #set( $keyConditionExpr = {} )
+  #set( $keyConditionExprNames = {} )
+  #foreach( $entry in $ctx.stash.metadata.modelObjectKey.entrySet() )
+    $util.qr($keyConditionExpr.put(\\"keyCondition$velocityCount\\", {
+  \\"attributeExists\\": true
+}))
+    $util.qr($keyConditionExprNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
+  #end
+  $util.qr($ctx.stash.conditions.add($keyConditionExpr))
+#else
+  $util.qr($ctx.stash.conditions.add({
+  \\"id\\": {
+      \\"attributeExists\\": true
+  }
+}))
+#end
+## End - key condition **
+#if( $context.args.condition )
+  $util.qr($ctx.stash.conditions.add($context.args.condition))
+#end
+## Start condition block **
+#if( $ctx.stash.conditions && $ctx.stash.conditions.size() != 0 )
+  #set( $mergedConditions = {
+  \\"and\\": $ctx.stash.conditions
+} )
+  #set( $Conditions = $util.parseJson($util.transform.toDynamoDBConditionExpression($mergedConditions)) )
+  #if( $Conditions.expressionValues && $Conditions.expressionValues.size() == 0 )
+    #set( $Conditions = {
+  \\"expression\\": $Conditions.expression,
+  \\"expressionNames\\": $Conditions.expressionNames
+} )
+  #end
+  ## End condition block **
+#end
+#set( $UpdateItem = {
+  \\"version\\": \\"2018-05-29\\",
+  \\"operation\\": \\"UpdateItem\\",
+  \\"key\\": $Key,
+  \\"update\\": $update
+} )
+#if( $Conditions )
+  #if( $keyConditionExprNames )
+    $util.qr($Conditions.expressionNames.putAll($keyConditionExprNames))
+  #end
+  $util.qr($UpdateItem.put(\\"condition\\", $Conditions))
+#end
+$util.toJson($UpdateItem)
+## [End] Mutation Update resolver. **",
+  "Mutation.updateBar.res.vtl": "## [Start] Get ResponseTemplate. **
+#if( $ctx.error )
+  $util.error($ctx.error.message, $ctx.error.type)
+#else
+  $util.toJson($ctx.result)
+#end
+## [End] Get ResponseTemplate. **",
+  "Mutation.updateFoo.init.1.req.vtl": "## [Start] Initialization default values. **
+$util.qr($ctx.stash.put(\\"defaultValues\\", $util.defaultIfNull($ctx.stash.defaultValues, {})))
+#set( $updatedAt = $util.time.nowISO8601() )
+$util.qr($ctx.stash.defaultValues.put(\\"updatedAt\\", $updatedAt))
+$util.toJson({
+  \\"version\\": \\"2018-05-29\\",
+  \\"payload\\": {}
+})
+## [End] Initialization default values. **",
+  "Mutation.updateFoo.req.vtl": "## [Start] Mutation Update resolver. **
+## Set the default values to put request **
+#set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
+## copy the values from input **
+$util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
+## set the typename **
+## Initialize the vars for creating ddb expression **
+#set( $expNames = {} )
+#set( $expValues = {} )
+#set( $expSet = {} )
+#set( $expAdd = {} )
+#set( $expRemove = [] )
+#if( $ctx.stash.metadata.modelObjectKey )
+  #set( $Key = $ctx.stash.metadata.modelObjectKey )
+#else
+  #set( $Key = {
+  \\"id\\":   $util.dynamodb.toDynamoDB($ctx.args.input.id)
+} )
+#end
+## Model key **
+#if( $ctx.stash.metadata.modelObjectKey )
+  #set( $keyFields = [] )
+  #foreach( $entry in $ctx.stash.metadata.modelObjectKey.entrySet() )
+    $util.qr($keyFields.add(\\"$entry.key\\"))
+  #end
+#else
+  #set( $keyFields = [\\"id\\"] )
+#end
+#foreach( $entry in $util.map.copyAndRemoveAllKeys($mergedValues, $keyFields).entrySet() )
+  #if( !$util.isNull($ctx.stash.metadata.dynamodbNameOverrideMap) && $ctx.stash.metadata.dynamodbNameOverrideMap.containsKey(\\"$entry.key\\") )
+    #set( $entryKeyAttributeName = $ctx.stash.metadata.dynamodbNameOverrideMap.get(\\"$entry.key\\") )
+  #else
+    #set( $entryKeyAttributeName = $entry.key )
+  #end
+  #if( $util.isNull($entry.value) )
+    #set( $discard = $expRemove.add(\\"#$entryKeyAttributeName\\") )
+    $util.qr($expNames.put(\\"#$entryKeyAttributeName\\", \\"$entry.key\\"))
+  #else
+    $util.qr($expSet.put(\\"#$entryKeyAttributeName\\", \\":$entryKeyAttributeName\\"))
+    $util.qr($expNames.put(\\"#$entryKeyAttributeName\\", \\"$entry.key\\"))
+    $util.qr($expValues.put(\\":$entryKeyAttributeName\\", $util.dynamodb.toDynamoDB($entry.value)))
+  #end
+#end
+#set( $expression = \\"\\" )
+#if( !$expSet.isEmpty() )
+  #set( $expression = \\"SET\\" )
+  #foreach( $entry in $expSet.entrySet() )
+    #set( $expression = \\"$expression $entry.key = $entry.value\\" )
+    #if( $foreach.hasNext() )
+      #set( $expression = \\"$expression,\\" )
+    #end
+  #end
+#end
+#if( !$expAdd.isEmpty() )
+  #set( $expression = \\"$expression ADD\\" )
+  #foreach( $entry in $expAdd.entrySet() )
+    #set( $expression = \\"$expression $entry.key $entry.value\\" )
+    #if( $foreach.hasNext() )
+      #set( $expression = \\"$expression,\\" )
+    #end
+  #end
+#end
+#if( !$expRemove.isEmpty() )
+  #set( $expression = \\"$expression REMOVE\\" )
+  #foreach( $entry in $expRemove )
+    #set( $expression = \\"$expression $entry\\" )
+    #if( $foreach.hasNext() )
+      #set( $expression = \\"$expression,\\" )
+    #end
+  #end
+#end
+#set( $update = {} )
+$util.qr($update.put(\\"expression\\", \\"$expression\\"))
+#if( !$expNames.isEmpty() )
+  $util.qr($update.put(\\"expressionNames\\", $expNames))
+#end
+#if( !$expValues.isEmpty() )
+  $util.qr($update.put(\\"expressionValues\\", $expValues))
+#end
+## Begin - key condition **
+#if( $ctx.stash.metadata.modelObjectKey )
+  #set( $keyConditionExpr = {} )
+  #set( $keyConditionExprNames = {} )
+  #foreach( $entry in $ctx.stash.metadata.modelObjectKey.entrySet() )
+    $util.qr($keyConditionExpr.put(\\"keyCondition$velocityCount\\", {
+  \\"attributeExists\\": true
+}))
+    $util.qr($keyConditionExprNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
+  #end
+  $util.qr($ctx.stash.conditions.add($keyConditionExpr))
+#else
+  $util.qr($ctx.stash.conditions.add({
+  \\"id\\": {
+      \\"attributeExists\\": true
+  }
+}))
+#end
+## End - key condition **
+#if( $context.args.condition )
+  $util.qr($ctx.stash.conditions.add($context.args.condition))
+#end
+## Start condition block **
+#if( $ctx.stash.conditions && $ctx.stash.conditions.size() != 0 )
+  #set( $mergedConditions = {
+  \\"and\\": $ctx.stash.conditions
+} )
+  #set( $Conditions = $util.parseJson($util.transform.toDynamoDBConditionExpression($mergedConditions)) )
+  #if( $Conditions.expressionValues && $Conditions.expressionValues.size() == 0 )
+    #set( $Conditions = {
+  \\"expression\\": $Conditions.expression,
+  \\"expressionNames\\": $Conditions.expressionNames
+} )
+  #end
+  ## End condition block **
+#end
+#set( $UpdateItem = {
+  \\"version\\": \\"2018-05-29\\",
+  \\"operation\\": \\"UpdateItem\\",
+  \\"key\\": $Key,
+  \\"update\\": $update
+} )
+#if( $Conditions )
+  #if( $keyConditionExprNames )
+    $util.qr($Conditions.expressionNames.putAll($keyConditionExprNames))
+  #end
+  $util.qr($UpdateItem.put(\\"condition\\", $Conditions))
+#end
+$util.toJson($UpdateItem)
+## [End] Mutation Update resolver. **",
+  "Mutation.updateFoo.res.vtl": "## [Start] Get ResponseTemplate. **
+#if( $ctx.error )
+  $util.error($ctx.error.message, $ctx.error.type)
+#else
+  $util.toJson($ctx.result)
+#end
+## [End] Get ResponseTemplate. **",
+  "Mutation.updateFooBar.init.1.req.vtl": "## [Start] Initialization default values. **
+$util.qr($ctx.stash.put(\\"defaultValues\\", $util.defaultIfNull($ctx.stash.defaultValues, {})))
+#set( $updatedAt = $util.time.nowISO8601() )
+$util.qr($ctx.stash.defaultValues.put(\\"updatedAt\\", $updatedAt))
+$util.toJson({
+  \\"version\\": \\"2018-05-29\\",
+  \\"payload\\": {}
+})
+## [End] Initialization default values. **",
+  "Mutation.updateFooBar.req.vtl": "## [Start] Mutation Update resolver. **
+## Set the default values to put request **
+#set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
+## copy the values from input **
+$util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
+## set the typename **
+## Initialize the vars for creating ddb expression **
+#set( $expNames = {} )
+#set( $expValues = {} )
+#set( $expSet = {} )
+#set( $expAdd = {} )
+#set( $expRemove = [] )
+#if( $ctx.stash.metadata.modelObjectKey )
+  #set( $Key = $ctx.stash.metadata.modelObjectKey )
+#else
+  #set( $Key = {
+  \\"id\\":   $util.dynamodb.toDynamoDB($ctx.args.input.id)
+} )
+#end
+## Model key **
+#if( $ctx.stash.metadata.modelObjectKey )
+  #set( $keyFields = [] )
+  #foreach( $entry in $ctx.stash.metadata.modelObjectKey.entrySet() )
+    $util.qr($keyFields.add(\\"$entry.key\\"))
+  #end
+#else
+  #set( $keyFields = [\\"id\\"] )
+#end
+#foreach( $entry in $util.map.copyAndRemoveAllKeys($mergedValues, $keyFields).entrySet() )
+  #if( !$util.isNull($ctx.stash.metadata.dynamodbNameOverrideMap) && $ctx.stash.metadata.dynamodbNameOverrideMap.containsKey(\\"$entry.key\\") )
+    #set( $entryKeyAttributeName = $ctx.stash.metadata.dynamodbNameOverrideMap.get(\\"$entry.key\\") )
+  #else
+    #set( $entryKeyAttributeName = $entry.key )
+  #end
+  #if( $util.isNull($entry.value) )
+    #set( $discard = $expRemove.add(\\"#$entryKeyAttributeName\\") )
+    $util.qr($expNames.put(\\"#$entryKeyAttributeName\\", \\"$entry.key\\"))
+  #else
+    $util.qr($expSet.put(\\"#$entryKeyAttributeName\\", \\":$entryKeyAttributeName\\"))
+    $util.qr($expNames.put(\\"#$entryKeyAttributeName\\", \\"$entry.key\\"))
+    $util.qr($expValues.put(\\":$entryKeyAttributeName\\", $util.dynamodb.toDynamoDB($entry.value)))
+  #end
+#end
+#set( $expression = \\"\\" )
+#if( !$expSet.isEmpty() )
+  #set( $expression = \\"SET\\" )
+  #foreach( $entry in $expSet.entrySet() )
+    #set( $expression = \\"$expression $entry.key = $entry.value\\" )
+    #if( $foreach.hasNext() )
+      #set( $expression = \\"$expression,\\" )
+    #end
+  #end
+#end
+#if( !$expAdd.isEmpty() )
+  #set( $expression = \\"$expression ADD\\" )
+  #foreach( $entry in $expAdd.entrySet() )
+    #set( $expression = \\"$expression $entry.key $entry.value\\" )
+    #if( $foreach.hasNext() )
+      #set( $expression = \\"$expression,\\" )
+    #end
+  #end
+#end
+#if( !$expRemove.isEmpty() )
+  #set( $expression = \\"$expression REMOVE\\" )
+  #foreach( $entry in $expRemove )
+    #set( $expression = \\"$expression $entry\\" )
+    #if( $foreach.hasNext() )
+      #set( $expression = \\"$expression,\\" )
+    #end
+  #end
+#end
+#set( $update = {} )
+$util.qr($update.put(\\"expression\\", \\"$expression\\"))
+#if( !$expNames.isEmpty() )
+  $util.qr($update.put(\\"expressionNames\\", $expNames))
+#end
+#if( !$expValues.isEmpty() )
+  $util.qr($update.put(\\"expressionValues\\", $expValues))
+#end
+## Begin - key condition **
+#if( $ctx.stash.metadata.modelObjectKey )
+  #set( $keyConditionExpr = {} )
+  #set( $keyConditionExprNames = {} )
+  #foreach( $entry in $ctx.stash.metadata.modelObjectKey.entrySet() )
+    $util.qr($keyConditionExpr.put(\\"keyCondition$velocityCount\\", {
+  \\"attributeExists\\": true
+}))
+    $util.qr($keyConditionExprNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
+  #end
+  $util.qr($ctx.stash.conditions.add($keyConditionExpr))
+#else
+  $util.qr($ctx.stash.conditions.add({
+  \\"id\\": {
+      \\"attributeExists\\": true
+  }
+}))
+#end
+## End - key condition **
+#if( $context.args.condition )
+  $util.qr($ctx.stash.conditions.add($context.args.condition))
+#end
+## Start condition block **
+#if( $ctx.stash.conditions && $ctx.stash.conditions.size() != 0 )
+  #set( $mergedConditions = {
+  \\"and\\": $ctx.stash.conditions
+} )
+  #set( $Conditions = $util.parseJson($util.transform.toDynamoDBConditionExpression($mergedConditions)) )
+  #if( $Conditions.expressionValues && $Conditions.expressionValues.size() == 0 )
+    #set( $Conditions = {
+  \\"expression\\": $Conditions.expression,
+  \\"expressionNames\\": $Conditions.expressionNames
+} )
+  #end
+  ## End condition block **
+#end
+#set( $UpdateItem = {
+  \\"version\\": \\"2018-05-29\\",
+  \\"operation\\": \\"UpdateItem\\",
+  \\"key\\": $Key,
+  \\"update\\": $update
+} )
+#if( $Conditions )
+  #if( $keyConditionExprNames )
+    $util.qr($Conditions.expressionNames.putAll($keyConditionExprNames))
+  #end
+  $util.qr($UpdateItem.put(\\"condition\\", $Conditions))
+#end
+$util.toJson($UpdateItem)
+## [End] Mutation Update resolver. **",
+  "Mutation.updateFooBar.res.vtl": "## [Start] Get ResponseTemplate. **
+#if( $ctx.error )
+  $util.error($ctx.error.message, $ctx.error.type)
+#else
+  $util.toJson($ctx.result)
+#end
+## [End] Get ResponseTemplate. **",
+  "Query.getBar.req.vtl": "## [Start] Get Request template. **
+#set( $GetRequest = {
+  \\"version\\": \\"2018-05-29\\",
+  \\"operation\\": \\"GetItem\\"
+} )
+#if( $ctx.stash.metadata.modelObjectKey )
+  #set( $key = $ctx.stash.metadata.modelObjectKey )
+#else
+  #set( $key = {
+  \\"id\\":   $util.dynamodb.toDynamoDB($ctx.args.id)
+} )
+#end
+$util.qr($GetRequest.put(\\"key\\", $key))
+$util.toJson($GetRequest)
+## [End] Get Request template. **",
+  "Query.getBar.res.vtl": "## [Start] Get ResponseTemplate. **
+#if( $ctx.error )
+  $util.error($ctx.error.message, $ctx.error.type)
+#else
+  $util.toJson($ctx.result)
+#end
+## [End] Get ResponseTemplate. **",
+  "Query.getFoo.req.vtl": "## [Start] Get Request template. **
+#set( $GetRequest = {
+  \\"version\\": \\"2018-05-29\\",
+  \\"operation\\": \\"GetItem\\"
+} )
+#if( $ctx.stash.metadata.modelObjectKey )
+  #set( $key = $ctx.stash.metadata.modelObjectKey )
+#else
+  #set( $key = {
+  \\"id\\":   $util.dynamodb.toDynamoDB($ctx.args.id)
+} )
+#end
+$util.qr($GetRequest.put(\\"key\\", $key))
+$util.toJson($GetRequest)
+## [End] Get Request template. **",
+  "Query.getFoo.res.vtl": "## [Start] Get ResponseTemplate. **
+#if( $ctx.error )
+  $util.error($ctx.error.message, $ctx.error.type)
+#else
+  $util.toJson($ctx.result)
+#end
+## [End] Get ResponseTemplate. **",
+  "Query.getFooBar.req.vtl": "## [Start] Get Request template. **
+#set( $GetRequest = {
+  \\"version\\": \\"2018-05-29\\",
+  \\"operation\\": \\"GetItem\\"
+} )
+#if( $ctx.stash.metadata.modelObjectKey )
+  #set( $key = $ctx.stash.metadata.modelObjectKey )
+#else
+  #set( $key = {
+  \\"id\\":   $util.dynamodb.toDynamoDB($ctx.args.id)
+} )
+#end
+$util.qr($GetRequest.put(\\"key\\", $key))
+$util.toJson($GetRequest)
+## [End] Get Request template. **",
+  "Query.getFooBar.res.vtl": "## [Start] Get ResponseTemplate. **
+#if( $ctx.error )
+  $util.error($ctx.error.message, $ctx.error.type)
+#else
+  $util.toJson($ctx.result)
+#end
+## [End] Get ResponseTemplate. **",
+  "Query.listBars.req.vtl": "## [Start] List Request. **
+#set( $limit = $util.defaultIfNull($context.args.limit, 100) )
+#set( $ListRequest = {
+  \\"version\\": \\"2018-05-29\\",
+  \\"limit\\": $limit
+} )
+#if( $context.args.nextToken )
+  #set( $ListRequest.nextToken = $context.args.nextToken )
+#end
+#if( $context.args.filter )
+  #set( $filterExpression = $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.args.filter)) )
+  #if( !$util.isNullOrBlank($filterExpression.expression) )
+    #if( $filterEpression.expressionValues.size() == 0 )
+      $util.qr($filterEpression.remove(\\"expressionValues\\"))
+    #end
+    #set( $ListRequest.filter = $filterExpression )
+  #end
+#end
+#if( !$util.isNull($ctx.stash.modelQueryExpression) && !$util.isNullOrEmpty($ctx.stash.modelQueryExpression.expression) )
+  $util.qr($ListRequest.put(\\"operation\\", \\"Query\\"))
+  $util.qr($ListRequest.put(\\"query\\", $ctx.stash.modelQueryExpression))
+  #if( !$util.isNull($ctx.args.sortDirection) && $ctx.args.sortDirection == \\"DESC\\" )
+    #set( $ListRequest.scanIndexForward = false )
+  #else
+    #set( $ListRequest.scanIndexForward = true )
+  #end
+#else
+  $util.qr($ListRequest.put(\\"operation\\", \\"Scan\\"))
+#end
+#if( !$util.isNull($ctx.stash.metadata.index) )
+  #set( $ListRequest.IndexName = $ctx.stash.metadata.index )
+#end
+$util.toJson($ListRequest)
+## [End] List Request. **",
+  "Query.listBars.res.vtl": "## [Start] Get ResponseTemplate. **
+#if( $ctx.error )
+  $util.error($ctx.error.message, $ctx.error.type)
+#else
+  $util.toJson($ctx.result)
+#end
+## [End] Get ResponseTemplate. **",
+  "Query.listFooBars.req.vtl": "## [Start] List Request. **
+#set( $limit = $util.defaultIfNull($context.args.limit, 100) )
+#set( $ListRequest = {
+  \\"version\\": \\"2018-05-29\\",
+  \\"limit\\": $limit
+} )
+#if( $context.args.nextToken )
+  #set( $ListRequest.nextToken = $context.args.nextToken )
+#end
+#if( $context.args.filter )
+  #set( $filterExpression = $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.args.filter)) )
+  #if( !$util.isNullOrBlank($filterExpression.expression) )
+    #if( $filterEpression.expressionValues.size() == 0 )
+      $util.qr($filterEpression.remove(\\"expressionValues\\"))
+    #end
+    #set( $ListRequest.filter = $filterExpression )
+  #end
+#end
+#if( !$util.isNull($ctx.stash.modelQueryExpression) && !$util.isNullOrEmpty($ctx.stash.modelQueryExpression.expression) )
+  $util.qr($ListRequest.put(\\"operation\\", \\"Query\\"))
+  $util.qr($ListRequest.put(\\"query\\", $ctx.stash.modelQueryExpression))
+  #if( !$util.isNull($ctx.args.sortDirection) && $ctx.args.sortDirection == \\"DESC\\" )
+    #set( $ListRequest.scanIndexForward = false )
+  #else
+    #set( $ListRequest.scanIndexForward = true )
+  #end
+#else
+  $util.qr($ListRequest.put(\\"operation\\", \\"Scan\\"))
+#end
+#if( !$util.isNull($ctx.stash.metadata.index) )
+  #set( $ListRequest.IndexName = $ctx.stash.metadata.index )
+#end
+$util.toJson($ListRequest)
+## [End] List Request. **",
+  "Query.listFooBars.res.vtl": "## [Start] Get ResponseTemplate. **
+#if( $ctx.error )
+  $util.error($ctx.error.message, $ctx.error.type)
+#else
+  $util.toJson($ctx.result)
+#end
+## [End] Get ResponseTemplate. **",
+  "Query.listFoos.req.vtl": "## [Start] List Request. **
+#set( $limit = $util.defaultIfNull($context.args.limit, 100) )
+#set( $ListRequest = {
+  \\"version\\": \\"2018-05-29\\",
+  \\"limit\\": $limit
+} )
+#if( $context.args.nextToken )
+  #set( $ListRequest.nextToken = $context.args.nextToken )
+#end
+#if( $context.args.filter )
+  #set( $filterExpression = $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.args.filter)) )
+  #if( !$util.isNullOrBlank($filterExpression.expression) )
+    #if( $filterEpression.expressionValues.size() == 0 )
+      $util.qr($filterEpression.remove(\\"expressionValues\\"))
+    #end
+    #set( $ListRequest.filter = $filterExpression )
+  #end
+#end
+#if( !$util.isNull($ctx.stash.modelQueryExpression) && !$util.isNullOrEmpty($ctx.stash.modelQueryExpression.expression) )
+  $util.qr($ListRequest.put(\\"operation\\", \\"Query\\"))
+  $util.qr($ListRequest.put(\\"query\\", $ctx.stash.modelQueryExpression))
+  #if( !$util.isNull($ctx.args.sortDirection) && $ctx.args.sortDirection == \\"DESC\\" )
+    #set( $ListRequest.scanIndexForward = false )
+  #else
+    #set( $ListRequest.scanIndexForward = true )
+  #end
+#else
+  $util.qr($ListRequest.put(\\"operation\\", \\"Scan\\"))
+#end
+#if( !$util.isNull($ctx.stash.metadata.index) )
+  #set( $ListRequest.IndexName = $ctx.stash.metadata.index )
+#end
+$util.toJson($ListRequest)
+## [End] List Request. **",
+  "Query.listFoos.res.vtl": "## [Start] Get ResponseTemplate. **
+#if( $ctx.error )
+  $util.error($ctx.error.message, $ctx.error.type)
+#else
+  $util.toJson($ctx.result)
+#end
+## [End] Get ResponseTemplate. **",
+}
+`;

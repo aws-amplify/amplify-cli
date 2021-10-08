@@ -78,7 +78,7 @@ export interface CognitoIdentityPoolConfiguration {
  * Defines a social federation provider.
  */
 export interface CognitoIdentitySocialFederation {
-  provider: 'FACEBOOK' | 'GOOGLE' | 'AMAZON';
+  provider: 'FACEBOOK' | 'GOOGLE' | 'AMAZON' | 'APPLE';
   /**
    * ClientId unique to your client and the provider.
    */
@@ -97,6 +97,10 @@ export interface CognitoUserPoolConfiguration {
    * Account attributes that must be specified to sign up.
    */
   requiredSignupAttributes: CognitoUserProperty[];
+  /**
+   * Alias attributes that can be used for sign-up/sign-in
+   */
+  aliasAttributes?: CognitoUserAliasAttributes[];
   /**
    * The name of the user pool. If not specified, a unique string will be generated.
    */
@@ -172,7 +176,7 @@ export interface CognitoOAuthConfiguration {
 /**
  * Defines a Cognito oAuth social provider
  */
-export interface CognitoSocialProviderConfiguration {
+interface SocialProviderConfig {
   /**
    * Social providers supported by Amplify and Cognito
    */
@@ -186,6 +190,35 @@ export interface CognitoSocialProviderConfiguration {
    */
   clientSecret: string;
 }
+
+/**
+ * Defines a Cognito Sign in with Apple oAuth social provider
+ */
+interface SignInWithAppleSocialProviderConfig {
+  provider: 'SIGN_IN_WITH_APPLE';
+  /**
+   * The client ID (sometimes called apple services ID) configured with the provider.
+   */
+  clientId: string;
+  /**
+   * The team ID configured with the provider
+   */
+  teamId: string;
+  /**
+   * The key ID (sometimes called apple private key ID) configured with the provider.
+   */
+  keyId: string;
+  /**
+   * The private key configured with the provider. Value can be undefined on an update request.
+   * Every member can be updated except the privateKey because the privateKey isn't easily retrievable.
+   */
+  privateKey?: string;
+}
+
+/**
+ * Defines a Cognito oAuth social provider
+ */
+export type CognitoSocialProviderConfiguration = SocialProviderConfig | SignInWithAppleSocialProviderConfig;
 
 export interface CognitoPasswordPolicy {
   minimumLength?: number;
@@ -280,6 +313,12 @@ export enum CognitoUserPoolSigninMethod {
   EMAIL = 'EMAIL',
   PHONE_NUMBER = 'PHONE_NUMBER',
   EMAIL_AND_PHONE_NUMBER = 'EMAIL_AND_PHONE_NUMBER',
+}
+
+export enum CognitoUserAliasAttributes {
+  PREFERRED_USERNAME = 'PREFERRED_USERNAME',
+  EMAIL = 'EMAIL',
+  PHONE_NUMBER = 'PHONE_NUMBER',
 }
 
 export enum CognitoUserProperty {

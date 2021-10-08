@@ -15,7 +15,15 @@
         },
         "s3Key": {
             "Type": "String"
-        }<%if (props.dependsOn && props.dependsOn.length > 0) { %>,<% } %>
+        }<% if (props.environmentVariables) { %>
+        <% for(var i = 0; Object.keys(props.environmentVariables).length > i; i++) { %>
+        ,
+        "<%- props.environmentMap[Object.keys(props.environmentVariables)[i]].Ref %>": {
+            "Type": "String"
+        }
+        <% } %>
+        <% } %>
+        <%if (props.dependsOn && props.dependsOn.length > 0) { %>,<% } %>
     <% if (props.dependsOn) { %>
     <% for(var i=0; i < props.dependsOn.length; i++) { %>
     <% for(var j=0; j < props.dependsOn[i].attributes.length; j++) { %>
@@ -85,7 +93,7 @@
             "Role": { "Fn::GetAtt": ["LambdaExecutionRole", "Arn"] },
             "Runtime": "<%= props.runtime.cloudTemplateValue %>",
             "Layers": <%- JSON.stringify(props.lambdaLayersCFNArray) %>,
-            "Timeout": "25"
+            "Timeout": 25
           }
         },
         "LambdaExecutionRole": {

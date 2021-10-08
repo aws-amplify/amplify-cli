@@ -1,3 +1,4 @@
+import { ViewResourceTableParams } from './cliViewAPI';
 import { ServiceSelection } from './serviceSelection';
 
 export * from './cfnUtilities';
@@ -21,6 +22,10 @@ export * from './utils';
 export * from './banner-message';
 export * from './cliGetCategories';
 export * from './cliRemoveResourcePrompt';
+export * from './cliViewAPI';
+export * from './hooks';
+export * from './cliViewAPI';
+export * from './customPoliciesUtils'
 
 // Temporary types until we can finish full type definition across the whole CLI
 
@@ -30,6 +35,9 @@ export type $TSAny = any;
 // Use it for all CLI Context class references, it enables a quick way to see what we have on the context
 export type $TSContext = {
   amplify: AmplifyToolkit;
+  /**
+   * @deprecated Use printer from package amplify-prompts instead
+   */
   print: IContextPrint;
   migrationInfo: $TSAny;
   projectHasMobileHubResources: boolean;
@@ -45,17 +53,53 @@ export type $TSContext = {
   template: IContextTemplate;
 };
 
+export type CategoryName = string;
+export type ResourceName = string;
+
 export type IContextPrint = {
+  /**
+   * @deprecated Use printer.info from amplify-prompts instead
+   */
   info: (message: string) => void;
+  /**
+   * @deprecated Why are you using this? If you really need it, implement it in amplify-prompts printer.ts
+   */
   fancy: (message?: string) => void;
+  /**
+   * @deprecated Use printer.warn from amplify-prompts instead
+   */
   warning: (message: string) => void;
+  /**
+   * @deprecated Use printer.error from amplify-prompts instead
+   */
   error: (message: string) => void;
+  /**
+   * @deprecated Use printer.success from amplify-prompts instead
+   */
   success: (message: string) => void;
+  /**
+   * @deprecated The next time we refactor code that uses this function, refactor the table function into formatter.ts from amplify-prompts and use that instead
+   */
   table: (data: string[][], options?: { format?: 'markdown' | 'lean' }) => void;
+  /**
+   * @deprecated Use printer.debug from amplify-prompts instead
+   */
   debug: (message: string) => void;
+  /**
+   * @deprecated Use printer.info from amplify-prompts and specify color
+   */
   green: (message: string) => void;
+  /**
+   * @deprecated Use printer.info from amplify-prompts and specify color
+   */
   yellow: (message: string) => void;
+  /**
+   * @deprecated Use printer.info from amplify-prompts and specify color
+   */
   red: (message: string) => void;
+  /**
+   * @deprecated Use printer.info from amplify-prompts and specify color
+   */
   blue: (message: string) => void;
 };
 
@@ -159,6 +203,15 @@ export interface AmplifyProjectConfig {
   providers: string[];
 }
 
+/**
+ * higher level context object that could be used in plugins
+ */
+export interface ProviderContext {
+  provider: string;
+  service: string;
+  projectName: string;
+}
+
 export type $TSCopyJob = any;
 
 // Temporary interface until Context refactor
@@ -167,7 +220,7 @@ interface AmplifyToolkit {
   constants: $TSAny;
   constructExeInfo: (context: $TSContext) => $TSAny;
   copyBatch: (context: $TSContext, jobs: $TSCopyJob[], props: object, force?: boolean, writeParams?: boolean | object) => $TSAny;
-  crudFlow: () => $TSAny;
+  crudFlow: (role: string, permissionMap?: $TSObject, defaults?: $TSAny[]) => $TSAny;
   deleteProject: () => $TSAny;
   executeProviderUtils: (context: $TSContext, providerName: string, utilName: string, options: $TSAny) => $TSAny;
   getAllEnvs: () => string[];
@@ -185,6 +238,9 @@ interface AmplifyToolkit {
   getResourceStatus: (category?: $TSAny, resourceName?: $TSAny, providerName?: $TSAny, filteredResources?: $TSAny) => $TSAny;
   getResourceOutputs: () => $TSAny;
   getWhen: () => $TSAny;
+  /**
+   * @deprecated Use validators from amplify-prompts or add a new validator in that module
+   */
   inputValidation: (input: $TSAny) => (value: $TSAny) => boolean | string;
   listCategories: () => $TSAny;
   makeId: (n?: number) => string;
@@ -199,15 +255,21 @@ interface AmplifyToolkit {
     filteredResources?: { category: string; resourceName: string }[],
   ) => $TSAny;
   storeCurrentCloudBackend: () => $TSAny;
-  readJsonFile: () => $TSAny;
-  removeEnvFromCloud: () => $TSAny;
+  readJsonFile: (fileName: string) => $TSAny;
   removeDeploymentSecrets: (context: $TSContext, category: string, resource: string) => void;
-  removeResource: (context: $TSContext, category: string, resource: string) => $TSAny;
+  removeResource: (
+    context: $TSContext,
+    category: string,
+    resource: string,
+    questionOptions?: $TSAny,
+    resourceNameCallback?: (resourceName: string) => Promise<void>,
+  ) => $TSAny;
   sharedQuestions: () => $TSAny;
   showAllHelp: () => $TSAny;
   showHelp: (header: string, commands: { name: string; description: string }[]) => $TSAny;
-  showHelpfulProviderLinks: () => $TSAny;
+  showHelpfulProviderLinks: (context: $TSContext) => $TSAny;
   showResourceTable: () => $TSAny;
+  showStatusTable: (resourceTableParams: ViewResourceTableParams) => $TSAny; //Enhanced Status with CFN-Diff
   serviceSelectionPrompt: (
     context: $TSContext,
     category: string,
@@ -239,8 +301,8 @@ interface AmplifyToolkit {
   updateBackendConfigAfterResourceUpdate: () => $TSAny;
   updateBackendConfigAfterResourceRemove: () => $TSAny;
   loadEnvResourceParameters: (context: $TSContext, category: string, resourceName: string) => $TSAny;
-  saveEnvResourceParameters: (context: $TSContext, category: string, resourceName: string, envSpecificParams: $TSObject) => $TSAny;
-  removeResourceParameters: () => $TSAny;
+  saveEnvResourceParameters: (context: $TSContext, category: string, resourceName: string, envSpecificParams?: $TSObject) => void;
+  removeResourceParameters: (context: $TSContext, category: string, resource: string) => void;
   triggerFlow: () => $TSAny;
   addTrigger: () => $TSAny;
   updateTrigger: () => $TSAny;
@@ -252,16 +314,14 @@ interface AmplifyToolkit {
   getTriggerPermissions: () => $TSAny;
   getTriggerEnvVariables: () => $TSAny;
   getTriggerEnvInputs: () => $TSAny;
-  getUserPoolGroupList: () => $TSAny;
+  getUserPoolGroupList: () => $TSAny[];
   forceRemoveResource: () => $TSAny;
   writeObjectAsJson: () => $TSAny;
   hashDir: (dir: string, exclude: string[]) => Promise<string>;
   leaveBreadcrumbs: (category: string, resourceName: string, breadcrumbs: unknown) => void;
   readBreadcrumbs: (category: string, resourceName: string) => $TSAny;
   loadRuntimePlugin: (context: $TSContext, pluginId: string) => Promise<$TSAny>;
-  getImportedAuthProperties: (
-    context: $TSContext,
-  ) => {
+  getImportedAuthProperties: (context: $TSContext) => {
     imported: boolean;
     userPoolId?: string;
     authRoleArn?: string;
@@ -269,5 +329,5 @@ interface AmplifyToolkit {
     unauthRoleArn?: string;
     unauthRoleName?: string;
   };
-  invokePluginMethod: <T>(context: $TSContext, category: string, service: string | null, method: string, args: any[]) => Promise<T>;
+  invokePluginMethod: <T>(context: $TSContext, category: string, service: string | undefined, method: string, args: any[]) => Promise<T>;
 }

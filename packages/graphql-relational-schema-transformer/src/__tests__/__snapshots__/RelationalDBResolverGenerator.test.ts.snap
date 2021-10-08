@@ -95,7 +95,7 @@ exports[`verify generated templates 16`] = `
 $utils.toJson($output[0])"
 `;
 
-exports[`verify generated templates 17`] = `"testFilePath/Query.listTomatoess.req.vtl"`;
+exports[`verify generated templates 17`] = `"testFilePath/Query.listTomatoes.req.vtl"`;
 
 exports[`verify generated templates 18`] = `
 "{
@@ -104,7 +104,7 @@ exports[`verify generated templates 18`] = `
 }"
 `;
 
-exports[`verify generated templates 19`] = `"testFilePath/Query.listTomatoess.res.vtl"`;
+exports[`verify generated templates 19`] = `"testFilePath/Query.listTomatoes.res.vtl"`;
 
 exports[`verify generated templates 20`] = `"$utils.toJson($utils.rds.toJsonObject($ctx.result)[0])"`;
 
@@ -162,7 +162,7 @@ exports[`verify generated templates using a Int primary key 10`] = `
 #set( $update = $updateList.toString().replace(\\"{\\",\\"\\").replace(\\"}\\",\\"\\") )
 {
   \\"version\\": \\"2018-05-29\\",
-  \\"statements\\":   [\\"UPDATE Apples SET $update WHERE Id=$ctx.args.updateApplesInput.Id}\\", \\"SELECT * FROM Apples WHERE Id=$ctx.args.updateApplesInput.Id\\"]
+  \\"statements\\":   [\\"UPDATE Apples SET $update WHERE Id=$ctx.args.updateApplesInput.Id\\", \\"SELECT * FROM Apples WHERE Id=$ctx.args.updateApplesInput.Id\\"]
 }"
 `;
 
@@ -203,7 +203,7 @@ exports[`verify generated templates using a Int primary key 16`] = `
 $utils.toJson($output[0])"
 `;
 
-exports[`verify generated templates using a Int primary key 17`] = `"testFilePath/Query.listAppless.req.vtl"`;
+exports[`verify generated templates using a Int primary key 17`] = `"testFilePath/Query.listApples.req.vtl"`;
 
 exports[`verify generated templates using a Int primary key 18`] = `
 "{
@@ -212,6 +212,114 @@ exports[`verify generated templates using a Int primary key 18`] = `
 }"
 `;
 
-exports[`verify generated templates using a Int primary key 19`] = `"testFilePath/Query.listAppless.res.vtl"`;
+exports[`verify generated templates using a Int primary key 19`] = `"testFilePath/Query.listApples.res.vtl"`;
 
 exports[`verify generated templates using a Int primary key 20`] = `"$utils.toJson($utils.rds.toJsonObject($ctx.result)[0])"`;
+
+exports[`verify generated templates with old pluralization 1`] = `"testFilePath/Mutation.createApples.req.vtl"`;
+
+exports[`verify generated templates with old pluralization 2`] = `
+"#set( $cols = [] )
+#set( $vals = [] )
+#foreach( $entry in $ctx.args.createApplesInput.keySet() )
+  #set( $discard = $cols.add($entry) )
+  #set( $discard = $vals.add(\\"'$ctx.args.createApplesInput[$entry]'\\") )
+#end
+#set( $valStr = $vals.toString().replace(\\"[\\",\\"(\\").replace(\\"]\\",\\")\\") )
+#set( $colStr = $cols.toString().replace(\\"[\\",\\"(\\").replace(\\"]\\",\\")\\") )
+{
+  \\"version\\": \\"2018-05-29\\",
+  \\"statements\\":   [\\"INSERT INTO Apples $colStr VALUES $valStr\\", \\"SELECT * FROM Apples WHERE Id=$ctx.args.createApplesInput.Id\\"]
+}"
+`;
+
+exports[`verify generated templates with old pluralization 3`] = `"testFilePath/Mutation.createApples.res.vtl"`;
+
+exports[`verify generated templates with old pluralization 4`] = `"$utils.toJson($utils.parseJson($utils.rds.toJsonString($ctx.result))[1][0])"`;
+
+exports[`verify generated templates with old pluralization 5`] = `"testFilePath/Query.getApples.req.vtl"`;
+
+exports[`verify generated templates with old pluralization 6`] = `
+"{
+  \\"version\\": \\"2018-05-29\\",
+  \\"statements\\":   [\\"SELECT * FROM Apples WHERE Id=$ctx.args.Id\\"]
+}"
+`;
+
+exports[`verify generated templates with old pluralization 7`] = `"testFilePath/Query.getApples.res.vtl"`;
+
+exports[`verify generated templates with old pluralization 8`] = `
+"#set( $output = $utils.rds.toJsonObject($ctx.result) )
+#if( $output.isEmpty() )
+  $util.error(\\"Invalid response from RDS DataSource. See info for the full response.\\", \\"InvalidResponse\\", {}, $output)
+#end
+#set( $output = $output[0] )
+#if( $output.isEmpty() )
+  #return
+#end
+$utils.toJson($output[0])"
+`;
+
+exports[`verify generated templates with old pluralization 9`] = `"testFilePath/Mutation.updateApples.req.vtl"`;
+
+exports[`verify generated templates with old pluralization 10`] = `
+"#set( $updateList = {} )
+#foreach( $entry in $ctx.args.updateApplesInput.keySet() )
+  #set( $discard = $updateList.put($entry, \\"'$ctx.args.updateApplesInput[$entry]'\\") )
+#end
+#set( $update = $updateList.toString().replace(\\"{\\",\\"\\").replace(\\"}\\",\\"\\") )
+{
+  \\"version\\": \\"2018-05-29\\",
+  \\"statements\\":   [\\"UPDATE Apples SET $update WHERE Id=$ctx.args.updateApplesInput.Id\\", \\"SELECT * FROM Apples WHERE Id=$ctx.args.updateApplesInput.Id\\"]
+}"
+`;
+
+exports[`verify generated templates with old pluralization 11`] = `"testFilePath/Mutation.updateApples.res.vtl"`;
+
+exports[`verify generated templates with old pluralization 12`] = `
+"#set( $output = $utils.rds.toJsonObject($ctx.result) )
+#if( $output.length() < 2 )
+  $util.error(\\"Invalid response from RDS DataSource. See info for the full response.\\", \\"InvalidResponse\\", {}, $output)
+#end
+#set( $output = $output[1] )
+#if( $output.isEmpty() )
+  #return
+#end
+$utils.toJson($output[0])"
+`;
+
+exports[`verify generated templates with old pluralization 13`] = `"testFilePath/Mutation.deleteApples.req.vtl"`;
+
+exports[`verify generated templates with old pluralization 14`] = `
+"{
+  \\"version\\": \\"2018-05-29\\",
+  \\"statements\\":   [\\"SELECT * FROM Apples WHERE Id=$ctx.args.Id\\", \\"DELETE FROM Apples WHERE Id=$ctx.args.Id\\"]
+}"
+`;
+
+exports[`verify generated templates with old pluralization 15`] = `"testFilePath/Mutation.deleteApples.res.vtl"`;
+
+exports[`verify generated templates with old pluralization 16`] = `
+"#set( $output = $utils.rds.toJsonObject($ctx.result) )
+#if( $output.isEmpty() )
+  $util.error(\\"Invalid response from RDS DataSource. See info for the full response.\\", \\"InvalidResponse\\", {}, $output)
+#end
+#set( $output = $output[0] )
+#if( $output.isEmpty() )
+  #return
+#end
+$utils.toJson($output[0])"
+`;
+
+exports[`verify generated templates with old pluralization 17`] = `"testFilePath/Query.listAppless.req.vtl"`;
+
+exports[`verify generated templates with old pluralization 18`] = `
+"{
+  \\"version\\": \\"2018-05-29\\",
+  \\"statements\\":   [\\"SELECT * FROM Apples\\"]
+}"
+`;
+
+exports[`verify generated templates with old pluralization 19`] = `"testFilePath/Query.listAppless.res.vtl"`;
+
+exports[`verify generated templates with old pluralization 20`] = `"$utils.toJson($utils.rds.toJsonObject($ctx.result)[0])"`;

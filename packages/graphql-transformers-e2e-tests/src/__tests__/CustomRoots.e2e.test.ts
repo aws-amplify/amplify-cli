@@ -14,6 +14,17 @@ import fs = require('fs');
 import path = require('path');
 
 jest.setTimeout(2000000);
+const featureFlags = {
+  getBoolean: jest.fn().mockImplementation((name, defaultValue) => {
+    if (name === 'improvePluralization') {
+      return true;
+    }
+    return;
+  }),
+  getNumber: jest.fn(),
+  getObject: jest.fn(),
+  getString: jest.fn(),
+};
 
 test('Test custom root types with additional fields.', () => {
   const validSchema = `
@@ -32,6 +43,7 @@ test('Test custom root types with additional fields.', () => {
     }
     `;
   const transformer = new GraphQLTransform({
+    featureFlags,
     transformers: [new DynamoDBModelTransformer()],
   });
   const out = transformer.transform(validSchema);
@@ -75,6 +87,7 @@ test('Test custom root query, mutation, and subscriptions.', () => {
     }
     `;
   const transformer = new GraphQLTransform({
+    featureFlags,
     transformers: [new DynamoDBModelTransformer()],
   });
   const out = transformer.transform(validSchema);
@@ -115,6 +128,7 @@ test('Test custom roots without any directives. This should still be valid.', ()
     }
     `;
   const transformer = new GraphQLTransform({
+    featureFlags,
     transformers: [new DynamoDBModelTransformer()],
   });
   const out = transformer.transform(validSchema);

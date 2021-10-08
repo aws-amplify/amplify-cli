@@ -196,7 +196,7 @@ export function removeLayer(cwd: string, versionsToRemove: number[], allVersions
 
 export function removeLayerVersion(
   cwd: string,
-  settings: { removeLegacyOnly?: boolean },
+  settings: { removeLegacyOnly?: boolean; removeNoLayerVersions?: boolean },
   versionsToRemove: number[],
   allVersions: number[],
   testingWithLatestCodebase = false,
@@ -215,7 +215,9 @@ export function removeLayerVersion(
       chain.wait(/Warning: By continuing, these layer versions \[.+\] will be immediately deleted./);
     }
 
-    chain.wait('All new layer versions created with the Amplify CLI will only be deleted on amplify push.');
+    if (!settings.removeNoLayerVersions) {
+      chain.wait('All new layer versions created with the Amplify CLI will only be deleted on amplify push.');
+    }
 
     if (settings.removeLegacyOnly) {
       chain.wait('✔ Layers deleted');
@@ -249,9 +251,6 @@ export function updateLayer(
 ): Promise<void> {
   return new Promise((resolve, reject) => {
     const chain: ExecutionContext = spawn(getCLIPath(testingWithLatestCodebase), ['update', 'function'], { cwd, stripColors: true })
-      .wait('Select which capability you want to update:')
-      .sendKeyDown()
-      .sendCarriageReturn(); // Layer
     if (settings.numLayers > 1) {
       chain.wait('Select the Lambda layer to update:').sendCarriageReturn();
     }
@@ -375,17 +374,20 @@ function waitForLayerSuccessPrintout(
   settings: { layerName?: string; projName?: string; runtimes?: LayerRuntime[] } | $TSAny,
   action: string,
 ) {
-  chain
-    .wait(`✅ Lambda layer folders & files ${action}:`)
-    .wait(path.join('amplify', 'backend', 'function', settings.projName + settings.layerName))
-    .wait('Next steps:')
-    .wait('Move your libraries to the following folder:');
+  chain.wait(`✅ Lambda layer folders & files ${action}:`);
 
-  const runtimes = settings.runtimes && settings.layerName && settings.projName ? settings.runtimes : [];
-  for (const runtime of runtimes) {
-    const { displayName, path } = getLayerRuntimeInfo(runtime);
-    const layerRuntimeDir = `[${displayName}]: amplify/backend/function/${settings.projName + settings.layerName}/${path}`;
-    chain.wait(layerRuntimeDir);
+  if (settings?.runtimes?.length > 0) {
+    chain
+      .wait(path.join('amplify', 'backend', 'function', (settings.projName || '') + settings.layerName))
+      .wait('Next steps:')
+      .wait('Move your libraries to the following folder:');
+
+    const runtimes = settings.layerName && settings.projName ? settings.runtimes : [];
+    for (const runtime of runtimes) {
+      const { displayName, path } = getLayerRuntimeInfo(runtime);
+      const layerRuntimeDir = `[${displayName}]: amplify/backend/function/${settings.projName + settings.layerName}/${path}`;
+      chain.wait(layerRuntimeDir);
+    }
   }
 
   chain

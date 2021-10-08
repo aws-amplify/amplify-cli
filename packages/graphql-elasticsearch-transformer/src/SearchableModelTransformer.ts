@@ -125,6 +125,7 @@ export class SearchableModelTransformer extends Transformer {
         nonKeywordFields,
         primaryKey,
         ctx.getQueryTypeName(),
+        ctx.featureFlags.getBoolean('improvePluralization'),
         searchFieldNameOverride,
         ctx.isProjectUsingDataStore(),
       );

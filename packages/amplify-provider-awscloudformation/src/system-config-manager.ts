@@ -13,7 +13,7 @@ const logger = fileLogger('system-config-manager');
 const credentialsFilePath = pathManager.getAWSCredentialsFilePath();
 const configFilePath = pathManager.getAWSConfigFilePath();
 
-export function setProfile(awsConfig: $TSAny, profileName: string) {
+export function setProfile(awsConfigInfo: $TSAny, profileName: string) {
   fs.ensureDirSync(pathManager.getDotAWSDirPath());
 
   let credentials = {};
@@ -25,7 +25,7 @@ export function setProfile(awsConfig: $TSAny, profileName: string) {
   }
 
   if (fs.existsSync(configFilePath)) {
-    logger('setProfile.credetialsFilePathExists', [credentialsFilePath])();
+    logger('setProfile.configFilePathExists', [configFilePath])();
     makeFileOwnerReadWrite(configFilePath);
     config = ini.parse(fs.readFileSync(configFilePath, 'utf-8'));
   }
@@ -34,15 +34,15 @@ export function setProfile(awsConfig: $TSAny, profileName: string) {
   Object.keys(credentials).forEach(key => {
     const keyName = key.trim();
     if (profileName === keyName) {
-      credentials[key].aws_access_key_id = awsConfig.accessKeyId;
-      credentials[key].aws_secret_access_key = awsConfig.secretAccessKey;
+      credentials[key].aws_access_key_id = awsConfigInfo.accessKeyId;
+      credentials[key].aws_secret_access_key = awsConfigInfo.secretAccessKey;
       isCredSet = true;
     }
   });
   if (!isCredSet) {
     credentials[profileName] = {
-      aws_access_key_id: awsConfig.accessKeyId,
-      aws_secret_access_key: awsConfig.secretAccessKey,
+      aws_access_key_id: awsConfigInfo.accessKeyId,
+      aws_secret_access_key: awsConfigInfo.secretAccessKey,
     };
   }
 
@@ -50,14 +50,14 @@ export function setProfile(awsConfig: $TSAny, profileName: string) {
   Object.keys(config).forEach(key => {
     const keyName = key.replace('profile', '').trim();
     if (profileName === keyName) {
-      config[key].region = awsConfig.region;
+      config[key].region = awsConfigInfo.region;
       isConfigSet = true;
     }
   });
   if (!isConfigSet) {
     const keyName = profileName === 'default' ? 'default' : `profile ${profileName}`;
     config[keyName] = {
-      region: awsConfig.region,
+      region: awsConfigInfo.region,
     };
   }
   logger('setProfile.writecredetialsFilePath', [credentialsFilePath])();
@@ -66,7 +66,7 @@ export function setProfile(awsConfig: $TSAny, profileName: string) {
 }
 
 export async function getProfiledAwsConfig(context: $TSContext, profileName: string, isRoleSourceProfile?: boolean) {
-  let awsConfig;
+  let awsConfigInfo;
   const httpProxy = process.env.HTTP_PROXY || process.env.HTTPS_PROXY;
   const profileConfig = getProfileConfig(profileName);
   if (profileConfig) {
@@ -75,18 +75,18 @@ export async function getProfiledAwsConfig(context: $TSContext, profileName: str
       const roleCredentials = await getRoleCredentials(context, profileName, profileConfig);
       delete profileConfig.role_arn;
       delete profileConfig.source_profile;
-      awsConfig = {
+      awsConfigInfo = {
         ...profileConfig,
         ...roleCredentials,
       };
     } else {
       logger('getProfiledAwsConfig.getProfileCredentials', [profileName]);
       const profileCredentials = getProfileCredentials(profileName);
-      awsConfig = {
+      awsConfigInfo = {
         ...profileConfig,
         ...profileCredentials,
       };
-      validateCredentials(awsConfig, profileName);
+      validateCredentials(awsConfigInfo, profileName);
     }
   } else {
     const err = new Error(`Profile configuration is missing for: ${profileName}`);
@@ -95,13 +95,13 @@ export async function getProfiledAwsConfig(context: $TSContext, profileName: str
   }
 
   if (httpProxy) {
-    awsConfig = {
-      ...awsConfig,
+    awsConfigInfo = {
+      ...awsConfigInfo,
       httpOptions: { agent: proxyAgent(httpProxy) },
     };
   }
 
-  return awsConfig;
+  return awsConfigInfo;
 }
 
 function makeFileOwnerReadWrite(filePath: string) {
@@ -232,7 +232,8 @@ function isCredentialsExpired(roleCredentials: $TSAny) {
 }
 
 export async function resetCache(context: $TSContext, profileName: string) {
-  let awsConfig;
+  let awsConfigInfo;
+
   const profileConfig = getProfileConfig(profileName);
   const cacheFilePath = getCacheFilePath();
   if (profileConfig && profileConfig.role_arn && fs.existsSync(cacheFilePath)) {
@@ -251,7 +252,8 @@ export async function resetCache(context: $TSContext, profileName: string) {
     context.print.info('  No temp credentials are cached for the project.');
     context.print.info('');
   }
-  return awsConfig;
+
+  return awsConfigInfo;
 }
 
 function getCacheFilePath() {

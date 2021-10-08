@@ -148,7 +148,7 @@ export interface AppSyncCognitoUserPoolsAuthType {
   /**
    * The user pool that will be used to authenticate requests.
    */
-  cognitoUserPoolId: string;
+  cognitoUserPoolId?: string;
 }
 
 /**

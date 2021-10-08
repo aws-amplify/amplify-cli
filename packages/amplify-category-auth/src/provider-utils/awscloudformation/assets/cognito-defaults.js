@@ -36,6 +36,7 @@ const userPoolDefaults = projectName => {
     passwordPolicyMinLength: 8,
     passwordPolicyCharacters: [],
     requiredAttributes: ['email'],
+    aliasAttributes: [],
     userpoolClientGenerateSecret: false,
     userpoolClientRefreshTokenValidity: 30,
     userpoolClientWriteAttributes: ['email'],

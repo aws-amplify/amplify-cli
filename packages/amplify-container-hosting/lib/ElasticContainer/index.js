@@ -268,13 +268,11 @@ export async function generateHostingResources(
   );
 
   const stack = new EcsAlbStack(undefined, 'ContainersHosting', {
-    envName,
     categoryName,
     apiName: resourceName,
     authName,
     dependsOn,
     policies: [], // TODO
-    deploymentBucketName,
     restrictAccess,
     createCloudMapService: false,
     secretsArns,
@@ -291,6 +289,11 @@ export async function generateHostingResources(
     existingEcrRepositories,
   });
 
+  const domainConfig = {
+    domain,
+    restrictAccess,
+  };
+
   context.exeInfo.template = stack.toCloudFormation();
 
   const resourceDirPath = path.join(projectBackendDirPath, constants.CategoryName, serviceName);
@@ -300,10 +303,13 @@ export async function generateHostingResources(
   let jsonString = JSON.stringify(context.exeInfo.template, null, 4);
   fs.writeFileSync(templateFilePath, jsonString, 'utf8');
 
+  await context.amplify.saveEnvResourceParameters(context, 'hosting', 'ElasticContainer', domainConfig);
+
   if (addResource) {
     return context.amplify.updateamplifyMetaAfterResourceAdd(constants.CategoryName, serviceName, resource);
   } else {
     await context.amplify.updateamplifyMetaAfterResourceUpdate(constants.CategoryName, serviceName, 'restrictAccess', restrictAccess);
+    await context.amplify.updateamplifyMetaAfterResourceUpdate(constants.CategoryName, serviceName, 'domain', domain);
     await context.amplify.updateamplifyMetaAfterResourceUpdate(constants.CategoryName, serviceName, 'hostedZoneId', hostedZoneId);
     await context.amplify.updateamplifyMetaAfterResourceUpdate(constants.CategoryName, serviceName, 'exposedContainer', exposedContainer);
     await context.amplify.updateamplifyMetaAfterResourceUpdate(constants.CategoryName, serviceName, 'environmentMap', environmentMap);

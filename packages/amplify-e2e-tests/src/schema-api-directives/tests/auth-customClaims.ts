@@ -61,7 +61,7 @@ type Post
 ##customClaims`;
 
 export const func = `
-exports.handler = async (event, context, callback) => {
+exports.handler = async event => {
   event.response = {
     claimsOverrideDetails: {
       claimsToAddOrOverride: {
@@ -69,7 +69,7 @@ exports.handler = async (event, context, callback) => {
       }
     }
   };
-  callback(null, event);
+  return event;
 };
 `;
 

@@ -68,7 +68,7 @@ export class FunctionTransformer extends TransformerPluginBase {
         const dataSourceId = FunctionResourceIDs.FunctionDataSourceID(config.name, config.region);
 
         if (!createdResources.has(dataSourceId)) {
-          const dataSource = context.api.addLambdaDataSource(
+          const dataSource = context.api.host.addLambdaDataSource(
             dataSourceId,
             lambda.Function.fromFunctionAttributes(stack, `${dataSourceId}Function`, {
               functionArn: lambdaArnResource(env, config.name, config.region),
@@ -84,7 +84,7 @@ export class FunctionTransformer extends TransformerPluginBase {
         let func = createdResources.get(functionId);
 
         if (func === undefined) {
-          func = context.api.addAppSyncFunction(
+          func = context.api.host.addAppSyncFunction(
             functionId,
             MappingTemplate.s3MappingTemplateFromString(
               printBlock(`Invoke AWS Lambda data source: ${dataSourceId}`)(
@@ -125,7 +125,7 @@ export class FunctionTransformer extends TransformerPluginBase {
         let resolver = createdResources.get(resolverId);
 
         if (resolver === undefined) {
-          resolver = context.api.addResolver(
+          resolver = context.api.host.addResolver(
             config.resolverTypeName,
             config.resolverFieldName,
             MappingTemplate.s3MappingTemplateFromString(

@@ -11,11 +11,20 @@ export type LayerPushSettings = {
 
 export function amplifyPush(cwd: string, testingWithLatestCodebase: boolean = false): Promise<void> {
   return new Promise((resolve, reject) => {
+    //Test detailed status
+    spawn(getCLIPath(testingWithLatestCodebase), ['status', '-v'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
+      .wait(/.*/)
+      .run((err: Error) => {
+        if ( err ){
+          reject(err);
+        }
+      });
+    //Test amplify push
     spawn(getCLIPath(testingWithLatestCodebase), ['push'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
       .wait('Are you sure you want to continue?')
       .sendConfirmYes()
       .wait('Do you want to generate code for your newly created GraphQL API')
-      .sendLine('n')
+      .sendConfirmNo()
       .wait(/.*/)
       .run((err: Error) => {
         if (!err) {
@@ -213,5 +222,35 @@ export function amplifyPushIterativeRollback(cwd: string, testingWithLatestCodeb
           reject(err);
         }
       });
+  });
+}
+
+export function amplifyPushMissingEnvVar(cwd: string, newEnvVarValue: string) {
+  return new Promise<void>((resolve, reject) => {
+    spawn(getCLIPath(), ['push'], { cwd, stripColors: true })
+      .wait('Enter the missing environment variable value of')
+      .sendLine(newEnvVarValue)
+      .wait('Are you sure you want to continue?')
+      .sendConfirmYes()
+      .run(err => (err ? reject(err) : resolve()));
+  });
+}
+
+export function amplifyPushMissingFuncSecret(cwd: string, newSecretValue: string) {
+  return new Promise<void>((resolve, reject) => {
+    spawn(getCLIPath(), ['push'], { cwd, stripColors: true })
+      .wait('does not have a value in this environment. Specify one now:')
+      .sendLine(newSecretValue)
+      .wait('Are you sure you want to continue?')
+      .sendConfirmYes()
+      .run(err => (err ? reject(err) : resolve()));
+  });
+}
+
+export function amplifyPushWithNoChanges(cwd: string, testingWithLatestCodebase: boolean = false): Promise<void> {
+  return new Promise((resolve, reject) => {
+    spawn(getCLIPath(testingWithLatestCodebase), ['push'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
+      .wait('No changes detected')
+      .run((err: Error) => err ? reject(err) : resolve());
   });
 }
