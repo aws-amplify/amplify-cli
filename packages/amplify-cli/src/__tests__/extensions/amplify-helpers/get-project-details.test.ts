@@ -56,7 +56,7 @@ describe('getProjectDetails', () => {
       teamProviderInfo: {},
     });
   });
-  it('should return correctly if amplify-meta.json and team-provider.json exists', () => {
+  it('should return correctly if amplify-meta.json and team-provider-info.json exist', () => {
     stateManagerMock.metaFileExists.mockReturnValue(true);
     stateManagerMock.teamProviderInfoExists.mockReturnValue(true);
     const response = getProjectDetails();
