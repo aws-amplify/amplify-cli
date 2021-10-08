@@ -22,7 +22,7 @@ describe('Iterative Rollback - removing two @keys', () => {
   beforeAll(async () => {
     projectDir = await createNewProjectDir('iterativeRollback');
     await initJSProjectWithProfile(projectDir, {
-      name: 'iterativerollbackaddkeys',
+      name: 'rollbackaddkeys2',
     });
     addFeatureFlag(projectDir, 'graphqltransformer', 'enableiterativegsiupdates', true);
   });
@@ -31,7 +31,7 @@ describe('Iterative Rollback - removing two @keys', () => {
     deleteProjectDir(projectDir);
   });
   it('should support rolling back from the 2nd deployment on adding gsis', async () => {
-    const apiName = 'iterativerollbackaddkeys';
+    const apiName = 'rollbackaddkeys2';
     const initialSchema = path.join('iterative-push', 'multiple-key-delete', 'initial-schema.graphql');
     await addApiWithoutSchema(projectDir, { apiKeyExpirationDays: 7 });
     await updateApiSchema(projectDir, apiName, initialSchema);
