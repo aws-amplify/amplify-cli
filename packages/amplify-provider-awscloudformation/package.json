@@ -33,6 +33,7 @@
     "@aws-amplify/graphql-searchable-transformer": "0.6.2",
     "@aws-amplify/graphql-transformer-core": "0.9.1",
     "@aws-amplify/graphql-transformer-interfaces": "1.9.1",
+    "@aws-amplify/graphql-default-value-transformer": "0.1.0",
     "@aws-cdk/assets": "~1.124.0",
     "@aws-cdk/aws-apigatewayv2": "~1.124.0",
     "@aws-cdk/aws-autoscaling": "~1.124.0",
