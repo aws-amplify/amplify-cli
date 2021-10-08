@@ -16,3 +16,8 @@ export function addCustomResolver(projectDir: string, projectName: string, resol
   const resolverPath = path.join(projectDir, 'amplify', 'backend', 'api', projectName, 'resolvers', resolverName);
   fs.writeFileSync(resolverPath, resolver);
 }
+
+export function addCustomResourcesJson(projectDir: string, projectName: string, json?: string) {
+  const jsonPath = path.join(projectDir, 'amplify', 'backend', 'api', projectName, 'stacks', 'CustomResources.json');
+  fs.writeFileSync(jsonPath, json || '{}');
+}
