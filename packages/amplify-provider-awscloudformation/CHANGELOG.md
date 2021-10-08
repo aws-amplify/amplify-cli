@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.62.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.62.0...amplify-provider-awscloudformation@4.62.1) (2021-10-08)
+
+
+### Bug Fixes
+
+* **amplify-category-api:** custom policies attached to TaskRoleArn ([#8376](https://github.com/aws-amplify/amplify-cli/issues/8376)) ([6d92c8b](https://github.com/aws-amplify/amplify-cli/commit/6d92c8b31541381e16507f0be2f608db30164139))
+* opensearch warning, add optional chaining to get api category ([#8371](https://github.com/aws-amplify/amplify-cli/issues/8371)) ([2bdae3a](https://github.com/aws-amplify/amplify-cli/commit/2bdae3ac09c0fd065fb03115cfbdc4d29c3577fe))
+
+
+
+
+
 # [4.62.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.61.1...amplify-provider-awscloudformation@4.62.0) (2021-10-06)
 
 
