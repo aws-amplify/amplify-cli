@@ -46,9 +46,7 @@
                 }
             },
             "required": [
-                "bucketName",
                 "permissions",
-                "resourceName",
                 "serviceName"
             ]
         },

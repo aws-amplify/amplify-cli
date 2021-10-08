@@ -20,12 +20,12 @@ export interface AddS3ServiceConfiguration extends S3ServiceConfigurationBase {
   /**
    * Amplify resource name
    */
-  resourceName: string;
+  resourceName?: string;
 
   /**
    * Globally unique bucket name
    */
-  bucketName: string;
+  bucketName?: string;
 
   /**
    * Optional parameter specifying a lambda that should run when the bucket is modified
