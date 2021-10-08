@@ -18,7 +18,7 @@ describe('rejects promise when invalid payload', () => {
     await expect(resultPromise).rejects.toBeTruthy();
   });
 
-  const missingFields = ['permissions', 'resourceName', 'serviceName', 'version'];
+  const missingFields = ['permissions', 'serviceName', 'version'];
   for (const field of missingFields) {
     it(`rejects request with missing field ${field}`, async () => {
       const rawRequest = fs.readFileSync(path.join(assetRoot, 'storage', 'add', `invalidRequest.missing.${field}.json`), 'utf8');
