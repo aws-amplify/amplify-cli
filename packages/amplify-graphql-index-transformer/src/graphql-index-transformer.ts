@@ -1,6 +1,7 @@
 import { DirectiveWrapper, InvalidDirectiveError, TransformerPluginBase } from '@aws-amplify/graphql-transformer-core';
 import {
   TransformerContextProvider,
+  TransformerResolverProvider,
   TransformerSchemaVisitStepContextProvider,
   TransformerTransformSchemaStepContextProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
@@ -13,7 +14,7 @@ import {
   ObjectTypeDefinitionNode,
 } from 'graphql';
 import { isScalarOrEnum } from 'graphql-transformer-common';
-import { appendSecondaryIndex, updateResolversForIndex } from './resolvers';
+import { appendSecondaryIndex, constructSyncVTL, updateResolversForIndex } from './resolvers';
 import { addKeyConditionInputs, ensureQueryField, updateMutationConditionInput } from './schema';
 import { IndexDirectiveConfiguration } from './types';
 
@@ -24,6 +25,7 @@ const directiveDefinition = `
 
 export class IndexTransformer extends TransformerPluginBase {
   private directiveList: IndexDirectiveConfiguration[] = [];
+  private resolverMap: Map<TransformerResolverProvider, string> = new Map();
 
   constructor() {
     super('amplify-index-transformer', directiveDefinition);
@@ -54,7 +56,16 @@ export class IndexTransformer extends TransformerPluginBase {
     this.directiveList.push(args);
   };
 
-  // TODO(cjihrig): before() and after() are needed to handle sync queries once they are supported.
+  public after = (ctx: TransformerContextProvider): void => {
+    if (!ctx.isProjectUsingDataStore()) return;
+
+    // construct sync VTL code
+    this.resolverMap.forEach((syncVTLContent, resource) => {
+      if (syncVTLContent) {
+        constructSyncVTL(syncVTLContent, resource);
+      }
+    });
+  };
 
   transformSchema = (ctx: TransformerTransformSchemaStepContextProvider): void => {
     const context = ctx as TransformerContextProvider;
@@ -69,7 +80,7 @@ export class IndexTransformer extends TransformerPluginBase {
   generateResolvers = (ctx: TransformerContextProvider): void => {
     for (const config of this.directiveList) {
       appendSecondaryIndex(config, ctx);
-      updateResolversForIndex(config, ctx);
+      updateResolversForIndex(config, ctx, this.resolverMap);
     }
   };
 }

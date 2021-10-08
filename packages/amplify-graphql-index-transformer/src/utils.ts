@@ -4,7 +4,7 @@ import { PrimaryKeyDirectiveConfiguration } from './types';
 
 export function lookupResolverName(config: PrimaryKeyDirectiveConfiguration, ctx: TransformerContextProvider, op: string): string | null {
   const { object, modelDirective } = config;
-  const argName = op === 'get' || op === 'list' ? 'queries' : 'mutations';
+  const argName = op === 'get' || op === 'list' || op === 'sync' ? 'queries' : 'mutations';
   let resolverName;
 
   // Check if @model overrides the default resolver names.
@@ -27,7 +27,7 @@ export function lookupResolverName(config: PrimaryKeyDirectiveConfiguration, ctx
   }
 
   if (!resolverName) {
-    if (op === 'list') {
+    if (op === 'list' || op === 'sync') {
       resolverName = `${op}${plurality(object.name.value, true)}`;
     } else {
       resolverName = `${op}${object.name.value}`;
