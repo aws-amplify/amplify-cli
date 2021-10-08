@@ -1,0 +1,57 @@
+{
+  "name": "@aws-amplify/graphql-default-value-transformer",
+  "version": "0.1.0",
+  "description": "Amplify GraphQL default value transformer",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aws-amplify/amplify-cli.git",
+    "directory": "packages/amplify-graphql-default-value-transformer"
+  },
+  "author": "Amazon Web Services",
+  "license": "Apache-2.0",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "keywords": [
+    "graphql",
+    "cloudformation",
+    "aws",
+    "amplify"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc -w",
+    "clean": "rimraf ./lib",
+    "test": "jest",
+    "test-watch": "jest --watch"
+  },
+  "dependencies": {
+    "@aws-amplify/graphql-transformer-interfaces": "1.9.1",
+    "@aws-amplify/graphql-transformer-core": "0.9.1",
+    "graphql-mapping-template": "4.18.3",
+    "graphql-transformer-common": "4.19.10",
+    "graphql": "^14.5.8",
+    "libphonenumber-js": "^1.7.31"
+  },
+  "devDependencies": {
+    "@aws-cdk/assert": "~1.124.0"
+  },
+  "jest": {
+    "transform": {
+      "^.+\\.tsx?$": "ts-jest"
+    },
+    "testURL": "http://localhost",
+    "testRegex": "(src/__tests__/.*\\.(test|spec))\\.(jsx?|tsx?)$",
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "jsx",
+      "json",
+      "node"
+    ],
+    "collectCoverage": true
+  }
+}
