@@ -190,7 +190,7 @@ describe('nodejs', () => {
 
     it('existing lambda updated with additional permissions should be able to scan ddb', async () => {
       await initJSProjectWithProfile(projRoot, {
-        name: 'lambdaadditionalpermissions',
+        name: 'lambdaaddperm',
       });
 
       const random = Math.floor(Math.random() * 10000);
@@ -216,7 +216,7 @@ describe('nodejs', () => {
       expect(region).toBeDefined();
 
       await addApiWithoutSchema(projRoot);
-      await updateApiSchema(projRoot, 'lambdaadditionalpermissions', 'simple_model.graphql');
+      await updateApiSchema(projRoot, 'lambdaaddperm', 'simple_model.graphql');
       await updateFunction(
         projRoot,
         {

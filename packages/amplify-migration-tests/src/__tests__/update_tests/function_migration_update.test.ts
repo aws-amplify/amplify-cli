@@ -36,7 +36,7 @@ describe('amplify function migration', () => {
 
   it('existing lambda updated with additional permissions should be able to scan ddb', async () => {
     await initJSProjectWithProfile(projRoot, {
-      name: 'lambdapermissionscanddb',
+      name: 'lambdapermscanddb',
     });
 
     const random = Math.floor(Math.random() * 10000);
@@ -62,7 +62,7 @@ describe('amplify function migration', () => {
     expect(region).toBeDefined();
 
     await addApiWithoutSchema(projRoot);
-    await updateApiSchema(projRoot, 'lambdapermissionscanddb', 'simple_model.graphql');
+    await updateApiSchema(projRoot, 'lambdapermscanddb', 'simple_model.graphql');
     await updateFunction(
       projRoot,
       {
