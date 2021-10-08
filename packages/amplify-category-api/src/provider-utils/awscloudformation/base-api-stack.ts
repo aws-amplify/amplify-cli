@@ -2,6 +2,7 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecr from '@aws-cdk/aws-ecr';
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as iam from '@aws-cdk/aws-iam';
+import { CfnFunction } from '@aws-cdk/aws-lambda';
 import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as ssm from '@aws-cdk/aws-secretsmanager';
@@ -31,10 +32,8 @@ export enum DEPLOYMENT_MECHANISM {
 
 export type ContainersStackProps = Readonly<{
   skipWait?: boolean;
-  envName: string;
   categoryName: string;
   apiName: string;
-  deploymentBucketName: string;
   dependsOn: ReadonlyArray<{
     category: string;
     resourceName: string;
@@ -70,6 +69,9 @@ export abstract class ContainersStack extends cdk.Stack {
   protected readonly userPoolId: string | undefined;
   protected readonly ecsServiceSecurityGroup: ec2.CfnSecurityGroup;
   protected readonly parameters: ReadonlyMap<string, cdk.CfnParameter>;
+  protected readonly envName: string;
+  protected readonly deploymentBucketName: string;
+  protected readonly awaiterS3Key: string;
 
   constructor(scope: cdk.Construct, id: string, private readonly props: ContainersStackProps) {
     super(scope, id);
@@ -86,6 +88,9 @@ export abstract class ContainersStack extends cdk.Stack {
       isAuthCondition,
       appClientId,
       userPoolId,
+      envName,
+      deploymentBucketName,
+      awaiterS3Key,
     } = this.init();
 
     this.parameters = parameters;
@@ -100,7 +105,9 @@ export abstract class ContainersStack extends cdk.Stack {
     this.isAuthCondition = isAuthCondition;
     this.appClientId = appClientId;
     this.userPoolId = userPoolId;
-
+    this.envName = envName;
+    this.deploymentBucketName = deploymentBucketName;
+    this.awaiterS3Key = awaiterS3Key;
     const { service, serviceSecurityGroup, containersInfo, cloudMapService } = this.ecs();
 
     this.cloudMapService = cloudMapService;
@@ -192,6 +199,17 @@ export abstract class ContainersStack extends cdk.Stack {
       ),
     });
 
+    const stackNameParameter = new cdk.CfnParameter(this, 'rootStackName', {
+      type: 'String',
+    });
+
+    const deploymentBucketName = new cdk.CfnParameter(this, 'deploymentBucketName', {
+      type: 'String',
+    });
+    const awaiterS3Key = new cdk.CfnParameter(this, 'awaiterS3Key', {
+      type: 'String',
+      default: PIPELINE_AWAITER_ZIP,
+    });
     return {
       parameters,
       vpcId: paramVpcId.valueAsString,
@@ -204,12 +222,14 @@ export abstract class ContainersStack extends cdk.Stack {
       isAuthCondition,
       userPoolId: paramUserPoolId && paramUserPoolId.valueAsString,
       appClientId: paramAppClientIdWeb && paramAppClientIdWeb.valueAsString,
+      envName: stackNameParameter.valueAsString,
+      deploymentBucketName: deploymentBucketName.valueAsString,
+      awaiterS3Key: awaiterS3Key.valueAsString,
     };
   }
 
   private ecs() {
     const {
-      envName,
       categoryName,
       apiName,
       policies,
@@ -245,7 +265,7 @@ export abstract class ContainersStack extends cdk.Stack {
       compatibility: ecs.Compatibility.FARGATE,
       memoryMiB: '1024',
       cpu: '512',
-      family: `${envName}-${apiName}`,
+      family: `${this.envName}-${apiName}`,
     });
     (task.node.defaultChild as ecs.CfnTaskDefinition).overrideLogicalId('TaskDefinition');
     policies.forEach(policy => {
@@ -274,7 +294,7 @@ export abstract class ContainersStack extends cdk.Stack {
         secrets: containerSecrets,
       }) => {
         const logGroup = new logs.LogGroup(this, `${name}ContainerLogGroup`, {
-          logGroupName: `/ecs/${envName}-${apiName}-${name}`,
+          logGroupName: `/ecs/${this.envName}-${apiName}-${name}`,
           retention: logs.RetentionDays.ONE_MONTH,
           removalPolicy: cdk.RemovalPolicy.DESTROY,
         });
@@ -293,13 +313,13 @@ export abstract class ContainersStack extends cdk.Stack {
         if (build) {
           const logicalId = `${name}Repository`;
 
-          const repositoryName = `${envName}-${categoryName}-${apiName}-${name}`;
+          const repositoryName = `${this.envName}-${categoryName}-${apiName}-${name}`;
 
           if (this.props.existingEcrRepositories.has(repositoryName)) {
             repository = ecr.Repository.fromRepositoryName(this, logicalId, repositoryName);
           } else {
             repository = new ecr.Repository(this, logicalId, {
-              repositoryName: `${envName}-${categoryName}-${apiName}-${name}`,
+              repositoryName: `${this.envName}-${categoryName}-${apiName}-${name}`,
               removalPolicy: cdk.RemovalPolicy.RETAIN,
               lifecycleRules: [
                 {
@@ -446,15 +466,15 @@ export abstract class ContainersStack extends cdk.Stack {
     }[];
     gitHubSourceActionInfo?: GitHubSourceActionInfo;
   }) {
-    const { envName, deploymentBucketName, deploymentMechanism, desiredCount } = this.props;
+    const { deploymentMechanism, desiredCount } = this.props;
 
     const s3SourceActionKey = this.zipPath;
 
-    const bucket = s3.Bucket.fromBucketName(this, 'Bucket', deploymentBucketName);
+    const bucket = s3.Bucket.fromBucketName(this, 'Bucket', this.deploymentBucketName);
 
     const pipelineWithAwaiter = new PipelineWithAwaiter(this, 'ApiPipeline', {
       skipWait,
-      envName,
+      envName: this.envName,
       containersInfo,
       service,
       bucket,
@@ -477,26 +497,29 @@ export abstract class ContainersStack extends cdk.Stack {
     const pipelineName = this.getPipelineName();
     return `https://${region}.console.aws.amazon.com/codesuite/codepipeline/pipelines/${pipelineName}/view`;
   }
-
   toCloudFormation() {
+    this.node
+      .findAll()
+      .filter(construct => construct instanceof CfnFunction)
+      .map(construct => construct as CfnFunction)
+      .forEach(lambdaFunction => {
+        if (lambdaFunction.logicalId.includes('AwaiterMyProvider')) {
+          lambdaFunction.code = {
+            s3Bucket: this.deploymentBucketName,
+            s3Key: this.awaiterS3Key,
+          };
+        }
+      });
+
     prepareApp(this);
 
     const cfn = this._toCloudFormation();
 
     Object.keys(cfn.Parameters).forEach(k => {
       if (k.startsWith('AssetParameters')) {
-        let value = '';
-
-        if (k.includes('Bucket')) {
-          value = this.props.deploymentBucketName;
-        } else if (k.includes('VersionKey')) {
-          value = `${PIPELINE_AWAITER_ZIP}||`;
-        }
-
-        cfn.Parameters[k].Default = value;
+        delete cfn.Parameters[k];
       }
     });
-
     return cfn;
   }
 }
