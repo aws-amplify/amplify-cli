@@ -27,16 +27,18 @@ export function apiGqlCompile(cwd: string, testingWithLatestCodebase: boolean = 
 
 interface AddApiOptions {
   apiName: string;
+  testingWithLatestCodebase: boolean;
 }
 
 const defaultOptions: AddApiOptions = {
-  apiName: EOL,
+  apiName: '\r',
+  testingWithLatestCodebase: true,
 };
 
 export function addApiWithoutSchema(cwd: string, opts: Partial<AddApiOptions & { apiKeyExpirationDays: number }> = {}) {
   const options = _.assign(defaultOptions, opts);
   return new Promise<void>((resolve, reject) => {
-    spawn(getCLIPath(), ['add', 'api'], { cwd, stripColors: true })
+    spawn(getCLIPath(options.testingWithLatestCodebase), ['add', 'api'], { cwd, stripColors: true })
       .wait('Please select from one of the below mentioned services:')
       .sendCarriageReturn()
       .wait(/.*Here is the GraphQL API that we will create. Select a setting to edit or continue.*/)
@@ -530,15 +532,16 @@ export function addApiWithCognitoUserPoolAuthTypeWhenAuthExists(projectDir: stri
     spawn(getCLIPath(), ['add', 'api'], { cwd: projectDir, stripColors: true })
       .wait('Please select from one of the below mentioned services:')
       .sendCarriageReturn()
-      .wait('Provide API name:')
+      .wait(/.*Here is the GraphQL API that we will create. Select a setting to edit or continue.*/)
+      .sendKeyUp(2)
       .sendCarriageReturn()
-      .wait('Choose the default authorization type for the API')
-      .send(KEY_DOWN_ARROW)
+      .wait(/.*Choose the default authorization type for the API.*/)
+      .sendKeyDown(1)
       .sendCarriageReturn()
-      .wait('Do you want to configure advanced settings for the GraphQL AP')
+      .wait(/.*Configure additional auth types.*/)
+      .sendLine('n')
+      .wait(/.*Here is the GraphQL API that we will create. Select a setting to edit or continue.*/)
       .sendCarriageReturn()
-      .wait('Do you have an annotated GraphQL schema?')
-      .sendConfirmNo()
       .wait('Choose a schema template:')
       .sendCarriageReturn()
       .wait('Do you want to edit the schema now?')
