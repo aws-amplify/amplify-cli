@@ -220,15 +220,26 @@ function constructParametersJson(parameters: $TSAny, permissions: S3Permissions,
 
 async function createS3StorageArtifacts(context: $TSContext, storageRequest: AddStorageRequest) {
   const {
-    serviceConfiguration: { bucketName, permissions, resourceName, lambdaTrigger },
+    serviceConfiguration: { permissions, lambdaTrigger },
   } = storageRequest;
+  let {
+    serviceConfiguration: { bucketName, resourceName },
+  } = storageRequest;
+  let parameters = getAllDefaults(context.amplify.getProjectDetails());
+
+  if (!resourceName) {
+    ({ resourceName } = parameters);
+  }
+
+  if (!bucketName) {
+    ({ bucketName } = parameters);
+  }
 
   if (isResourceNameUnique(categoryName, resourceName)) {
     const resourceDirPath = pathManager.getResourceDirectoryPath(undefined, categoryName, resourceName);
     fs.ensureDirSync(resourceDirPath);
 
     // create parameters.json
-    let parameters = getAllDefaults(context.amplify.getProjectDetails());
     parameters.bucketName = bucketName;
     parameters.resourceName = resourceName;
 
