@@ -18,6 +18,7 @@ import {
   updateApiSchema,
   updateFunction,
   validateLayerMetadata,
+  createRandomName,
 } from 'amplify-e2e-core';
 import { v4 as uuid } from 'uuid';
 import { initJSProjectWithProfile } from '../../migration-helpers';
@@ -35,8 +36,9 @@ describe('amplify function migration', () => {
   });
 
   it('existing lambda updated with additional permissions should be able to scan ddb', async () => {
+    const appName = createRandomName();
     await initJSProjectWithProfile(projRoot, {
-      name: 'lambdapermissionscanddb',
+      name: appName,
     });
 
     const random = Math.floor(Math.random() * 10000);
@@ -62,7 +64,7 @@ describe('amplify function migration', () => {
     expect(region).toBeDefined();
 
     await addApiWithoutSchema(projRoot);
-    await updateApiSchema(projRoot, 'lambdapermissionscanddb', 'simple_model.graphql');
+    await updateApiSchema(projRoot, appName, 'simple_model.graphql');
     await updateFunction(
       projRoot,
       {

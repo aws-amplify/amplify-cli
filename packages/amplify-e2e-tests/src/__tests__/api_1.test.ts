@@ -4,7 +4,6 @@ import {
   deleteProject,
   initFlutterProjectWithProfile,
   initJSProjectWithProfile,
-  addApiWithBlankSchema,
   addApiWithoutSchema,
   updateApiSchema,
   updateApiWithMultiAuth,
@@ -23,7 +22,7 @@ import {
   getBackendAmplifyMeta,
   amplifyPushUpdateForDependentModel,
   amplifyPushForce,
-  updateSchema,
+  createRandomName,
 } from 'amplify-e2e-core';
 import path from 'path';
 import { existsSync } from 'fs';
@@ -156,9 +155,10 @@ describe('amplify add api (GraphQL)', () => {
   });
 
   it('init a project and add the simple_model api with multiple authorization providers', async () => {
-    await initJSProjectWithProfile(projRoot, { name: 'simplemodelmultiauth' });
+    const appName = createRandomName();
+    await initJSProjectWithProfile(projRoot, { name: appName });
     await addApiWithoutSchema(projRoot);
-    await updateApiSchema(projRoot, 'simplemodelmultiauth', 'simple_model.graphql');
+    await updateApiSchema(projRoot, appName, 'simple_model.graphql');
     await updateApiWithMultiAuth(projRoot, {});
     await amplifyPush(projRoot);
 

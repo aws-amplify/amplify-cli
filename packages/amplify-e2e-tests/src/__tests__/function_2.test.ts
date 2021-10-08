@@ -29,9 +29,8 @@ import {
   addAuthWithGroupsAndAdminAPI,
   getFunction,
   loadFunctionTestFile,
+  createRandomName,
 } from 'amplify-e2e-core';
-import fs from 'fs-extra';
-import path from 'path';
 import _ from 'lodash';
 
 describe('nodejs', () => {
@@ -189,8 +188,9 @@ describe('nodejs', () => {
     });
 
     it('existing lambda updated with additional permissions should be able to scan ddb', async () => {
+      const appName = createRandomName();
       await initJSProjectWithProfile(projRoot, {
-        name: 'lambdaadditionalpermissions',
+        name: appName,
       });
 
       const random = Math.floor(Math.random() * 10000);
@@ -216,7 +216,7 @@ describe('nodejs', () => {
       expect(region).toBeDefined();
 
       await addApiWithoutSchema(projRoot);
-      await updateApiSchema(projRoot, 'lambdaadditionalpermissions', 'simple_model.graphql');
+      await updateApiSchema(projRoot, appName, 'simple_model.graphql');
       await updateFunction(
         projRoot,
         {

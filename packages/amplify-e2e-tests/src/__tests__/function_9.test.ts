@@ -29,6 +29,7 @@ import {
   getFunction,
   loadFunctionTestFile,
   updateApiSchema,
+  createRandomName,
 } from 'amplify-e2e-core';
 import fs from 'fs-extra';
 import path from 'path';
@@ -81,11 +82,12 @@ describe('nodejs', () => {
     });
 
     it('adding api and storage permissions should not add duplicates to CFN', async () => {
+      const appName = createRandomName();
       await initJSProjectWithProfile(projRoot, {
-        name: 'apistoragenoduplicate',
+        name: appName,
       });
       await addApiWithoutSchema(projRoot);
-      await updateApiSchema(projRoot, 'apistoragenoduplicate', 'two-model-schema.graphql');
+      await updateApiSchema(projRoot, appName, 'two-model-schema.graphql');
 
       const random = Math.floor(Math.random() * 10000);
       const fnName = `integtestfn${random}`;
@@ -147,11 +149,12 @@ describe('nodejs', () => {
     });
 
     it('function dependencies should be preserved when not editing permissions during `amplify update function`', async () => {
+      const appName = createRandomName();
       await initJSProjectWithProfile(projRoot, {
-        name: 'functiondependenciespermission',
+        name: appName,
       });
       await addApiWithoutSchema(projRoot);
-      await updateApiSchema(projRoot, 'functiondependenciespermission', 'two-model-schema.graphql');
+      await updateApiSchema(projRoot, appName, 'two-model-schema.graphql');
 
       const random = Math.floor(Math.random() * 10000);
       const fnName = `integtestfn${random}`;
