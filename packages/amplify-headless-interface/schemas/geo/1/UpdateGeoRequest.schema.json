@@ -1,0 +1,96 @@
+{
+  "type": "object",
+  "properties": {
+      "version": {
+          "description": "The schema version.",
+          "type": "number",
+          "enum": [
+              1
+          ]
+      },
+      "serviceModification": {
+          "description": "Service modifications that will be interpreted by Amplify.",
+          "oneOf": [
+            {"$ref": "#/definitions/MapModification"},
+            {"$ref": "#/definitions/PlaceIndexModification"}
+        ]      
+      }
+  },
+  "required": [
+      "serviceModification",
+      "version"
+  ],
+  "definitions": {
+    "MapModification": {
+      "description": "Modification exposed by Map.",
+      "type": "object",
+      "properties": {
+          "serviceType": {
+            "description": "The service name of the resource provider.",
+            "type": "string",
+            "enum": [
+                "Map"
+            ]
+          },
+          "name": {
+              "description": "The name of the map that will be modified.",
+              "type": "string"
+          },
+          "accessType": {
+              "$ref": "#/definitions/AccessType"
+          },
+          "isDefault": {
+              "$ref": "#/definitions/IsDefault"
+          }
+      },
+      "required": [
+          "serviceType",
+          "name",
+          "accessType",
+          "isDefault"
+      ]
+  },
+  "PlaceIndexModification": {
+      "description": "Modification exposed by Place Index.",
+      "type": "object",
+      "properties": {
+          "serviceType": {
+            "description": "The service name of the resource provider.",
+            "type": "string",
+            "enum": [
+                "PlaceIndex"
+            ]
+          },
+          "name": {
+              "description": "The name of the index that will be created.",
+              "type": "string"
+          },
+          "accessType": {
+              "$ref": "#/definitions/AccessType"
+          },
+          "isDefault": {
+              "$ref": "#/definitions/IsDefault"
+          }
+      },
+      "required": [
+          "serviceType",
+          "name",
+          "accessType",
+          "isDefault"
+      ]
+  },
+  "AccessType": {
+      "description": "The access policy for geo resources.",
+      "type": "string",
+      "enum": [
+          "AuthorizedUsers",
+          "AuthorizedAndGuestUsers"
+      ]
+  },
+  "IsDefault": {
+      "description": "Whether the geo resource added is set to default.",
+      "type": "boolean"
+  }
+  },
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}

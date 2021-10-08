@@ -7,6 +7,8 @@ import { $TSAny, $TSContext } from 'amplify-cli-core';
 import { printNextStepsSuccessMessage, setProviderContext, insufficientInfoForUpdateError } from './index';
 import { ServiceName } from '../service-utils/constants';
 import { printer } from 'amplify-prompts';
+import { getMapStyleComponents } from '../service-utils/mapParams';
+import { MapConfiguration } from 'amplify-headless-interface';
 
 export const addMapResource = async (
   context: $TSContext
@@ -82,3 +84,23 @@ export const removeMapResource = async (
   printNextStepsSuccessMessage(context);
   return resourceToRemove;
 };
+
+export const addMapResourceHeadless = async (
+  context: $TSContext,
+  config: MapConfiguration
+): Promise<string> => {
+  // initialize the Map parameters
+  let mapParams: Partial<MapParameters> = {
+    providerContext: setProviderContext(context, ServiceName.Map),
+    name: config.name,
+    accessType: config.accessType,
+    pricingPlan: config.pricingPlan,
+    isDefault: config.isDefault,
+    ...getMapStyleComponents(config.mapStyle)
+  };
+  const completeParameters: MapParameters = convertToCompleteMapParams(mapParams);
+  await createMapResource(context, completeParameters);
+  printer.success(`Successfully added resource ${completeParameters.name} locally.`);
+  printNextStepsSuccessMessage(context);
+  return completeParameters.name;
+}
