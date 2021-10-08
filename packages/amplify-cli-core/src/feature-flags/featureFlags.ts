@@ -519,7 +519,7 @@ export class FeatureFlags {
         name: 'improvePluralization',
         type: 'boolean',
         defaultValueForExistingProjects: false,
-        defaultValueForNewProjects: true,
+        defaultValueForNewProjects: false,
       },
       {
         name: 'validateTypeNameReservedWords',
