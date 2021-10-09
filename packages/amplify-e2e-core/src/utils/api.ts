@@ -11,8 +11,3 @@ export function updateConfig(projectDir: string, projectName: string, config: an
   const configPath = path.join(projectDir, 'amplify', 'backend', 'api', projectName, TRANSFORM_CONFIG_FILE_NAME);
   fs.writeFileSync(configPath, JSON.stringify(config, null, 4));
 }
-
-export function addCustomResolver(projectDir: string, projectName: string, resolverName: string, resolver: string) {
-  const resolverPath = path.join(projectDir, 'amplify', 'backend', 'api', projectName, 'resolvers', resolverName);
-  fs.writeFileSync(resolverPath, resolver);
-}
