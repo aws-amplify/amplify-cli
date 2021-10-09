@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [6.3.0-beta.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@6.2.1...@aws-amplify/cli@6.3.0-beta.0) (2021-10-09)
+
+
+### Features
+
+* **cli:** add post env add plugin event ([#8220](https://github.com/aws-amplify/amplify-cli/issues/8220)) ([d400a37](https://github.com/aws-amplify/amplify-cli/commit/d400a37a8394329ef0fdf92ec67fa1310e07ad46))
+
+
+### Reverts
+
+* Revert "fix: fixes e2e bug" (#8397) ([1c42200](https://github.com/aws-amplify/amplify-cli/commit/1c42200c747e7ad9d240a66ed47c72a1dbf09948)), closes [#8397](https://github.com/aws-amplify/amplify-cli/issues/8397) [#7067](https://github.com/aws-amplify/amplify-cli/issues/7067)
+
+
+
+
+
 ## [6.2.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@6.2.0...@aws-amplify/cli@6.2.1) (2021-10-08)
 
 **Note:** Version bump only for package @aws-amplify/cli

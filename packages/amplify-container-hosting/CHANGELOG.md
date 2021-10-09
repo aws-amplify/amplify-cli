@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.3.26-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-container-hosting@1.3.25...amplify-container-hosting@1.3.26-beta.0) (2021-10-09)
+
+
+### Bug Fixes
+
+* **amplify-category-api:** fixed api to reference stack name and deployment bucket ([#8145](https://github.com/aws-amplify/amplify-cli/issues/8145)) ([4c7493a](https://github.com/aws-amplify/amplify-cli/commit/4c7493ac34fa89cab0c80e5c674bbeb102891a64))
+
+
+
+
+
 ## [1.3.25](https://github.com/aws-amplify/amplify-cli/compare/amplify-container-hosting@1.3.24...amplify-container-hosting@1.3.25) (2021-10-06)
 
 **Note:** Version bump only for package amplify-container-hosting

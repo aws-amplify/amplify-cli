@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.31.1-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@1.31.0...amplify-cli-core@1.31.1-beta.0) (2021-10-09)
+
+
+### Reverts
+
+* temporarily setup new apps with old pluralization ([#8401](https://github.com/aws-amplify/amplify-cli/issues/8401)) ([7bb57d0](https://github.com/aws-amplify/amplify-cli/commit/7bb57d093bd76adf358d5fb414ed0c5a614e6ce9))
+
+
+
+
+
 # [1.31.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@1.30.0...amplify-cli-core@1.31.0) (2021-10-06)
 
 
