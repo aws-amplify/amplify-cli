@@ -2,7 +2,7 @@ import { nspawn as spawn, getCLIPath, singleSelect, addCircleCITags } from '..';
 import { KEY_DOWN_ARROW } from '../utils';
 import { amplifyRegions } from '../configure';
 import { EOL } from 'os';
-import * as crypto from 'crypto';
+import { v4 as uuid } from 'uuid';
 
 const defaultSettings = {
   name: EOL,
@@ -136,7 +136,7 @@ export function initAndroidProjectWithProfile(cwd: string, settings: Object): Pr
 export function createRandomName() {
   const length = 20;
   const regExp = new RegExp('-', 'g');
-  return crypto.randomUUID().replace(regExp, '').substring(0, length);
+  return uuid().replace(regExp, '').substring(0, length);
 }
 
 export function initIosProjectWithProfile(cwd: string, settings: Object): Promise<void> {
