@@ -18,7 +18,7 @@ import { AmplifyCLIFeatureFlagAdapter } from './utils/amplify-cli-feature-flag-a
 import { isAmplifyAdminApp } from './utils/admin-helpers';
 import { JSONUtilities, stateManager } from 'amplify-cli-core';
 import { ResourceConstants } from 'graphql-transformer-common';
-import { printer, prompter } from 'amplify-prompts';
+import { printer } from 'amplify-prompts';
 
 import {
   collectDirectivesByTypeNames,
@@ -40,11 +40,11 @@ import {
 import { print } from 'graphql';
 import { hashDirectory } from './upload-appsync-files';
 import { exitOnNextTick, FeatureFlags } from 'amplify-cli-core';
-import { migrateToV2Transformer } from '@aws-amplify/graphql-transformer-core/lib/migration/migrate';
 import {
   transformGraphQLSchema as transformGraphQLSchemaV6,
   getDirectiveDefinitions as getDirectiveDefinitionsV6,
 } from './graphql-transformer/transform-graphql-schema';
+import { attemptV2TransformerMigration } from '@aws-amplify/graphql-transformer-core/lib/migration/migrate';
 
 const apiCategory = 'api';
 const storageCategory = 'storage';
@@ -310,9 +310,7 @@ async function migrateProject(context, options) {
 
 export async function transformGraphQLSchema(context, options) {
   const useExperimentalPipelineTransformer = FeatureFlags.getBoolean('graphQLTransformer.useExperimentalPipelinedTransformer');
-  if (useExperimentalPipelineTransformer) {
-    return transformGraphQLSchemaV6(context, options);
-  }
+  const suppressSchemaMigrationPrompt = FeatureFlags.getBoolean('graphQLTransformer.suppressSchemaMigrationPrompt');
 
   const backEndDir = context.amplify.pathManager.getBackendDirPath();
   const flags = context.parameters.options;
@@ -361,10 +359,6 @@ export async function transformGraphQLSchema(context, options) {
     }
   }
 
-  const runMigration = await prompter.confirmContinue("The V2 GraphQL transformer is available, would you like to auto-migrate your schema(s)?");
-  if (runMigration) {
-    await migrateToV2Transformer(resourceDir, context)
-  }
 
   let previouslyDeployedBackendDir = options.cloudBackendDirectory;
   if (!previouslyDeployedBackendDir) {
@@ -389,6 +383,15 @@ export async function transformGraphQLSchema(context, options) {
     } catch (e) {
       parameters = {};
     }
+  }
+
+  let migratedResult = false;
+  await printer.error(`BLAH: ${suppressSchemaMigrationPrompt}`);
+  if (useExperimentalPipelineTransformer && !suppressSchemaMigrationPrompt) {
+    migratedResult = await attemptV2TransformerMigration(resourceDir, parameters[ResourceConstants.PARAMETERS.AppSyncApiName], context);
+  }
+  if (migratedResult || useExperimentalPipelineTransformer) {
+    return transformGraphQLSchemaV6(context, options);
   }
 
   const isCLIMigration = options.migrate;
