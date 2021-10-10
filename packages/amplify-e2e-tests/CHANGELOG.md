@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.53.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.52.0...amplify-e2e-tests@2.53.0) (2021-10-10)
+
+
+### Features
+
+* **amplify-provider-awscloudformation:** enable custom resolvers for v2 transformer ([#8332](https://github.com/aws-amplify/amplify-cli/issues/8332)) ([1c73042](https://github.com/aws-amplify/amplify-cli/commit/1c730423085b09b4ba681193f020c30bc2a5e3cc))
+* **amplify-provider-awscloudformation:** merge user config with transform generated resolvers ([#8262](https://github.com/aws-amplify/amplify-cli/issues/8262)) ([f25abbf](https://github.com/aws-amplify/amplify-cli/commit/f25abbf68f1e268f6e3dcb362685e7fe9ec760c8))
+
+
+### Reverts
+
+* Revert custom override resolvers (#8409) ([efbd048](https://github.com/aws-amplify/amplify-cli/commit/efbd04873815be2f0268d2ba072a022c8e699a52)), closes [#8409](https://github.com/aws-amplify/amplify-cli/issues/8409) [#8332](https://github.com/aws-amplify/amplify-cli/issues/8332) [#8262](https://github.com/aws-amplify/amplify-cli/issues/8262)
+
+
+
+
+
 # [2.52.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.51.1...amplify-e2e-tests@2.52.0) (2021-10-06)
 
 
