@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.33.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@2.33.0...amplify-category-api@2.33.1) (2021-10-10)
+
+
+### Bug Fixes
+
+* **amplify-category-api:** fixed api to reference stack name and deployment bucket ([#8145](https://github.com/aws-amplify/amplify-cli/issues/8145)) ([4c7493a](https://github.com/aws-amplify/amplify-cli/commit/4c7493ac34fa89cab0c80e5c674bbeb102891a64))
+
+
+
+
+
 # [2.33.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@2.32.0...amplify-category-api@2.33.0) (2021-10-06)
 
 

@@ -9578,6 +9578,36 @@ jobs:
       AMPLIFY_PATH: /home/circleci/repo/packages/amplify-cli/bin/amplify
       TEST_SUITE: src/__tests__/CustomRoots.e2e.test.ts
       CLI_REGION: us-west-2
+  DefaultValueTransformer-e2e-graphql_e2e_tests:
+    working_directory: ~/repo
+    parameters:
+      os:
+        type: executor
+        default: linux
+    executor: << parameters.os >>
+    steps:
+      - attach_workspace:
+          at: ./
+      - restore_cache:
+          key: >-
+            amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
+            arch }}
+      - run:
+          name: Run GraphQL end-to-end tests
+          command: |
+            source .circleci/local_publish_helpers.sh
+            cd packages/graphql-transformers-e2e-tests/
+            retry yarn e2e --maxWorkers=3 $TEST_SUITE
+          environment:
+            AMPLIFY_CLI_DISABLE_LOGGING: 'true'
+          no_output_timeout: 90m
+      - store_test_results:
+          path: packages/graphql-transformers-e2e-tests/
+    environment:
+      AMPLIFY_DIR: /home/circleci/repo/packages/amplify-cli/bin
+      AMPLIFY_PATH: /home/circleci/repo/packages/amplify-cli/bin/amplify
+      TEST_SUITE: src/__tests__/DefaultValueTransformer.e2e.test.ts
+      CLI_REGION: eu-west-2
   DynamoDBModelTransformer-e2e-graphql_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -9607,7 +9637,7 @@ jobs:
       AMPLIFY_DIR: /home/circleci/repo/packages/amplify-cli/bin
       AMPLIFY_PATH: /home/circleci/repo/packages/amplify-cli/bin/amplify
       TEST_SUITE: src/__tests__/DynamoDBModelTransformer.e2e.test.ts
-      CLI_REGION: eu-west-2
+      CLI_REGION: eu-central-1
   FunctionTransformerTests-e2e-graphql_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -9637,7 +9667,7 @@ jobs:
       AMPLIFY_DIR: /home/circleci/repo/packages/amplify-cli/bin
       AMPLIFY_PATH: /home/circleci/repo/packages/amplify-cli/bin/amplify
       TEST_SUITE: src/__tests__/FunctionTransformerTests.e2e.test.ts
-      CLI_REGION: eu-central-1
+      CLI_REGION: ap-northeast-1
   HttpTransformer-e2e-graphql_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -9667,7 +9697,7 @@ jobs:
       AMPLIFY_DIR: /home/circleci/repo/packages/amplify-cli/bin
       AMPLIFY_PATH: /home/circleci/repo/packages/amplify-cli/bin/amplify
       TEST_SUITE: src/__tests__/HttpTransformer.e2e.test.ts
-      CLI_REGION: ap-northeast-1
+      CLI_REGION: ap-southeast-1
   IndexTransformer-e2e-graphql_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -9697,7 +9727,7 @@ jobs:
       AMPLIFY_DIR: /home/circleci/repo/packages/amplify-cli/bin
       AMPLIFY_PATH: /home/circleci/repo/packages/amplify-cli/bin/amplify
       TEST_SUITE: src/__tests__/IndexTransformer.e2e.test.ts
-      CLI_REGION: ap-southeast-1
+      CLI_REGION: ap-southeast-2
   KeyTransformer-e2e-graphql_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -9727,7 +9757,7 @@ jobs:
       AMPLIFY_DIR: /home/circleci/repo/packages/amplify-cli/bin
       AMPLIFY_PATH: /home/circleci/repo/packages/amplify-cli/bin/amplify
       TEST_SUITE: src/__tests__/KeyTransformer.e2e.test.ts
-      CLI_REGION: ap-southeast-2
+      CLI_REGION: us-east-2
   KeyTransformerLocal-e2e-graphql_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -9757,7 +9787,7 @@ jobs:
       AMPLIFY_DIR: /home/circleci/repo/packages/amplify-cli/bin
       AMPLIFY_PATH: /home/circleci/repo/packages/amplify-cli/bin/amplify
       TEST_SUITE: src/__tests__/KeyTransformerLocal.e2e.test.ts
-      CLI_REGION: us-east-2
+      CLI_REGION: us-west-2
   KeyWithAuth-e2e-graphql_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -9787,7 +9817,7 @@ jobs:
       AMPLIFY_DIR: /home/circleci/repo/packages/amplify-cli/bin
       AMPLIFY_PATH: /home/circleci/repo/packages/amplify-cli/bin/amplify
       TEST_SUITE: src/__tests__/KeyWithAuth.e2e.test.ts
-      CLI_REGION: us-west-2
+      CLI_REGION: eu-west-2
   ModelAuthTransformer-e2e-graphql_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -9817,7 +9847,7 @@ jobs:
       AMPLIFY_DIR: /home/circleci/repo/packages/amplify-cli/bin
       AMPLIFY_PATH: /home/circleci/repo/packages/amplify-cli/bin/amplify
       TEST_SUITE: src/__tests__/ModelAuthTransformer.e2e.test.ts
-      CLI_REGION: eu-west-2
+      CLI_REGION: eu-central-1
   ModelConnectionTransformer-e2e-graphql_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -9847,7 +9877,7 @@ jobs:
       AMPLIFY_DIR: /home/circleci/repo/packages/amplify-cli/bin
       AMPLIFY_PATH: /home/circleci/repo/packages/amplify-cli/bin/amplify
       TEST_SUITE: src/__tests__/ModelConnectionTransformer.e2e.test.ts
-      CLI_REGION: eu-central-1
+      CLI_REGION: ap-northeast-1
   ModelConnectionWithKeyTransformer-e2e-graphql_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -9877,7 +9907,7 @@ jobs:
       AMPLIFY_DIR: /home/circleci/repo/packages/amplify-cli/bin
       AMPLIFY_PATH: /home/circleci/repo/packages/amplify-cli/bin/amplify
       TEST_SUITE: src/__tests__/ModelConnectionWithKeyTransformer.e2e.test.ts
-      CLI_REGION: ap-northeast-1
+      CLI_REGION: ap-southeast-1
   ModelTransformer-e2e-graphql_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -9907,7 +9937,7 @@ jobs:
       AMPLIFY_DIR: /home/circleci/repo/packages/amplify-cli/bin
       AMPLIFY_PATH: /home/circleci/repo/packages/amplify-cli/bin/amplify
       TEST_SUITE: src/__tests__/ModelTransformer.e2e.test.ts
-      CLI_REGION: ap-southeast-1
+      CLI_REGION: ap-southeast-2
   MultiAuthModelAuthTransformer-e2e-graphql_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -9937,7 +9967,7 @@ jobs:
       AMPLIFY_DIR: /home/circleci/repo/packages/amplify-cli/bin
       AMPLIFY_PATH: /home/circleci/repo/packages/amplify-cli/bin/amplify
       TEST_SUITE: src/__tests__/MultiAuthModelAuthTransformer.e2e.test.ts
-      CLI_REGION: ap-southeast-2
+      CLI_REGION: us-east-2
   MutationCondition-e2e-graphql_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -9967,7 +9997,7 @@ jobs:
       AMPLIFY_DIR: /home/circleci/repo/packages/amplify-cli/bin
       AMPLIFY_PATH: /home/circleci/repo/packages/amplify-cli/bin/amplify
       TEST_SUITE: src/__tests__/MutationCondition.e2e.test.ts
-      CLI_REGION: us-east-2
+      CLI_REGION: us-west-2
   NestedStacksTest-e2e-graphql_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -9997,7 +10027,7 @@ jobs:
       AMPLIFY_DIR: /home/circleci/repo/packages/amplify-cli/bin
       AMPLIFY_PATH: /home/circleci/repo/packages/amplify-cli/bin/amplify
       TEST_SUITE: src/__tests__/NestedStacksTest.e2e.test.ts
-      CLI_REGION: us-west-2
+      CLI_REGION: eu-west-2
   NewConnectionTransformer-e2e-graphql_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -10027,7 +10057,7 @@ jobs:
       AMPLIFY_DIR: /home/circleci/repo/packages/amplify-cli/bin
       AMPLIFY_PATH: /home/circleci/repo/packages/amplify-cli/bin/amplify
       TEST_SUITE: src/__tests__/NewConnectionTransformer.e2e.test.ts
-      CLI_REGION: eu-west-2
+      CLI_REGION: eu-central-1
   NewConnectionWithAuth-e2e-graphql_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -10057,7 +10087,7 @@ jobs:
       AMPLIFY_DIR: /home/circleci/repo/packages/amplify-cli/bin
       AMPLIFY_PATH: /home/circleci/repo/packages/amplify-cli/bin/amplify
       TEST_SUITE: src/__tests__/NewConnectionWithAuth.e2e.test.ts
-      CLI_REGION: eu-central-1
+      CLI_REGION: ap-northeast-1
   NoneEnvFunctionTransformer-e2e-graphql_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -10087,7 +10117,7 @@ jobs:
       AMPLIFY_DIR: /home/circleci/repo/packages/amplify-cli/bin
       AMPLIFY_PATH: /home/circleci/repo/packages/amplify-cli/bin/amplify
       TEST_SUITE: src/__tests__/NoneEnvFunctionTransformer.e2e.test.ts
-      CLI_REGION: ap-northeast-1
+      CLI_REGION: ap-southeast-1
   NonModelAuthFunction-e2e-graphql_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -10117,7 +10147,7 @@ jobs:
       AMPLIFY_DIR: /home/circleci/repo/packages/amplify-cli/bin
       AMPLIFY_PATH: /home/circleci/repo/packages/amplify-cli/bin/amplify
       TEST_SUITE: src/__tests__/NonModelAuthFunction.e2e.test.ts
-      CLI_REGION: ap-southeast-1
+      CLI_REGION: ap-southeast-2
   PerFieldAuthTests-e2e-graphql_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -10147,7 +10177,7 @@ jobs:
       AMPLIFY_DIR: /home/circleci/repo/packages/amplify-cli/bin
       AMPLIFY_PATH: /home/circleci/repo/packages/amplify-cli/bin/amplify
       TEST_SUITE: src/__tests__/PerFieldAuthTests.e2e.test.ts
-      CLI_REGION: ap-southeast-2
+      CLI_REGION: us-east-2
   PredictionsTransformerTests-e2e-graphql_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -10177,7 +10207,7 @@ jobs:
       AMPLIFY_DIR: /home/circleci/repo/packages/amplify-cli/bin
       AMPLIFY_PATH: /home/circleci/repo/packages/amplify-cli/bin/amplify
       TEST_SUITE: src/__tests__/PredictionsTransformerTests.e2e.test.ts
-      CLI_REGION: us-east-2
+      CLI_REGION: us-west-2
   RelationalTransformers-e2e-graphql_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -10207,7 +10237,7 @@ jobs:
       AMPLIFY_DIR: /home/circleci/repo/packages/amplify-cli/bin
       AMPLIFY_PATH: /home/circleci/repo/packages/amplify-cli/bin/amplify
       TEST_SUITE: src/__tests__/RelationalTransformers.e2e.test.ts
-      CLI_REGION: us-west-2
+      CLI_REGION: eu-west-2
   SearchableModelTransformer-e2e-graphql_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -10237,7 +10267,7 @@ jobs:
       AMPLIFY_DIR: /home/circleci/repo/packages/amplify-cli/bin
       AMPLIFY_PATH: /home/circleci/repo/packages/amplify-cli/bin/amplify
       TEST_SUITE: src/__tests__/SearchableModelTransformer.e2e.test.ts
-      CLI_REGION: eu-west-2
+      CLI_REGION: eu-central-1
   SearchableModelTransformerV2-e2e-graphql_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -10267,7 +10297,7 @@ jobs:
       AMPLIFY_DIR: /home/circleci/repo/packages/amplify-cli/bin
       AMPLIFY_PATH: /home/circleci/repo/packages/amplify-cli/bin/amplify
       TEST_SUITE: src/__tests__/SearchableModelTransformerV2.e2e.test.ts
-      CLI_REGION: eu-central-1
+      CLI_REGION: ap-northeast-1
   SearchableWithAuthTests-e2e-graphql_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -10297,7 +10327,7 @@ jobs:
       AMPLIFY_DIR: /home/circleci/repo/packages/amplify-cli/bin
       AMPLIFY_PATH: /home/circleci/repo/packages/amplify-cli/bin/amplify
       TEST_SUITE: src/__tests__/SearchableWithAuthTests.e2e.test.ts
-      CLI_REGION: ap-northeast-1
+      CLI_REGION: ap-southeast-1
   SubscriptionsWithAuthTest-e2e-graphql_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -10327,7 +10357,7 @@ jobs:
       AMPLIFY_DIR: /home/circleci/repo/packages/amplify-cli/bin
       AMPLIFY_PATH: /home/circleci/repo/packages/amplify-cli/bin/amplify
       TEST_SUITE: src/__tests__/SubscriptionsWithAuthTest.e2e.test.ts
-      CLI_REGION: ap-southeast-1
+      CLI_REGION: ap-southeast-2
   TestComplexStackMappingsLocal-e2e-graphql_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -10357,7 +10387,7 @@ jobs:
       AMPLIFY_DIR: /home/circleci/repo/packages/amplify-cli/bin
       AMPLIFY_PATH: /home/circleci/repo/packages/amplify-cli/bin/amplify
       TEST_SUITE: src/__tests__/TestComplexStackMappingsLocal.e2e.test.ts
-      CLI_REGION: ap-southeast-2
+      CLI_REGION: us-east-2
   VersionedModelTransformer-e2e-graphql_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -10387,36 +10417,6 @@ jobs:
       AMPLIFY_DIR: /home/circleci/repo/packages/amplify-cli/bin
       AMPLIFY_PATH: /home/circleci/repo/packages/amplify-cli/bin/amplify
       TEST_SUITE: src/__tests__/VersionedModelTransformer.e2e.test.ts
-      CLI_REGION: us-east-2
-  OriginalTransformer-e2e-graphql_e2e_tests:
-    working_directory: ~/repo
-    parameters:
-      os:
-        type: executor
-        default: linux
-    executor: << parameters.os >>
-    steps:
-      - attach_workspace:
-          at: ./
-      - restore_cache:
-          key: >-
-            amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
-            arch }}
-      - run:
-          name: Run GraphQL end-to-end tests
-          command: |
-            source .circleci/local_publish_helpers.sh
-            cd packages/graphql-transformers-e2e-tests/
-            retry yarn e2e --maxWorkers=3 $TEST_SUITE
-          environment:
-            AMPLIFY_CLI_DISABLE_LOGGING: 'true'
-          no_output_timeout: 90m
-      - store_test_results:
-          path: packages/graphql-transformers-e2e-tests/
-    environment:
-      AMPLIFY_DIR: /home/circleci/repo/packages/amplify-cli/bin
-      AMPLIFY_PATH: /home/circleci/repo/packages/amplify-cli/bin/amplify
-      TEST_SUITE: src/OriginalTransformer.e2e.test.ts
       CLI_REGION: us-west-2
   migration_tests-auth-deployment-migration-auth-deployment-secrets-amplify_migration_tests_v4:
     working_directory: ~/repo
@@ -11793,15 +11793,19 @@ workflows:
             - schema-connection-amplify_e2e_tests_pkg
             - api_5-amplify_e2e_tests_pkg
             - ConnectionsWithAuthTests-e2e-graphql_e2e_tests
+            - KeyTransformer-e2e-graphql_e2e_tests
+            - MultiAuthModelAuthTransformer-e2e-graphql_e2e_tests
+            - PerFieldAuthTests-e2e-graphql_e2e_tests
+            - TestComplexStackMappingsLocal-e2e-graphql_e2e_tests
+            - CustomRoots-e2e-graphql_e2e_tests
             - KeyTransformerLocal-e2e-graphql_e2e_tests
             - MutationCondition-e2e-graphql_e2e_tests
             - PredictionsTransformerTests-e2e-graphql_e2e_tests
             - VersionedModelTransformer-e2e-graphql_e2e_tests
-            - CustomRoots-e2e-graphql_e2e_tests
+            - DefaultValueTransformer-e2e-graphql_e2e_tests
             - KeyWithAuth-e2e-graphql_e2e_tests
             - NestedStacksTest-e2e-graphql_e2e_tests
             - RelationalTransformers-e2e-graphql_e2e_tests
-            - OriginalTransformer-e2e-graphql_e2e_tests
             - DynamoDBModelTransformer-e2e-graphql_e2e_tests
             - ModelAuthTransformer-e2e-graphql_e2e_tests
             - NewConnectionTransformer-e2e-graphql_e2e_tests
@@ -11818,10 +11822,6 @@ workflows:
             - ModelTransformer-e2e-graphql_e2e_tests
             - NonModelAuthFunction-e2e-graphql_e2e_tests
             - SubscriptionsWithAuthTest-e2e-graphql_e2e_tests
-            - KeyTransformer-e2e-graphql_e2e_tests
-            - MultiAuthModelAuthTransformer-e2e-graphql_e2e_tests
-            - PerFieldAuthTests-e2e-graphql_e2e_tests
-            - TestComplexStackMappingsLocal-e2e-graphql_e2e_tests
             - >-
               migration_tests-auth-deployment-migration-auth-deployment-secrets-amplify_migration_tests_v4
             - update_tests-function_migration_update-amplify_migration_tests_v4
@@ -15453,6 +15453,86 @@ workflows:
             parameters:
               os:
                 - linux
+      - KeyTransformer-e2e-graphql_e2e_tests:
+          context:
+            - amplify-ecr-image-pull
+            - e2e-test-context
+          filters:
+            branches:
+              only:
+                - master
+                - /tagged-release\/.*/
+                - /run-e2e\/.*/
+          requires:
+            - build
+          matrix:
+            parameters:
+              os:
+                - linux
+      - MultiAuthModelAuthTransformer-e2e-graphql_e2e_tests:
+          context:
+            - amplify-ecr-image-pull
+            - e2e-test-context
+          filters:
+            branches:
+              only:
+                - master
+                - /tagged-release\/.*/
+                - /run-e2e\/.*/
+          requires:
+            - build
+          matrix:
+            parameters:
+              os:
+                - linux
+      - PerFieldAuthTests-e2e-graphql_e2e_tests:
+          context:
+            - amplify-ecr-image-pull
+            - e2e-test-context
+          filters:
+            branches:
+              only:
+                - master
+                - /tagged-release\/.*/
+                - /run-e2e\/.*/
+          requires:
+            - build
+          matrix:
+            parameters:
+              os:
+                - linux
+      - TestComplexStackMappingsLocal-e2e-graphql_e2e_tests:
+          context:
+            - amplify-ecr-image-pull
+            - e2e-test-context
+          filters:
+            branches:
+              only:
+                - master
+                - /tagged-release\/.*/
+                - /run-e2e\/.*/
+          requires:
+            - build
+          matrix:
+            parameters:
+              os:
+                - linux
+      - CustomRoots-e2e-graphql_e2e_tests:
+          context:
+            - amplify-ecr-image-pull
+            - e2e-test-context
+          filters:
+            branches:
+              only:
+                - master
+                - /tagged-release\/.*/
+                - /run-e2e\/.*/
+          requires:
+            - build
+          matrix:
+            parameters:
+              os:
+                - linux
       - KeyTransformerLocal-e2e-graphql_e2e_tests:
           context:
             - amplify-ecr-image-pull
@@ -15517,7 +15597,7 @@ workflows:
             parameters:
               os:
                 - linux
-      - CustomRoots-e2e-graphql_e2e_tests:
+      - DefaultValueTransformer-e2e-graphql_e2e_tests:
           context:
             - amplify-ecr-image-pull
             - e2e-test-context
@@ -15566,22 +15646,6 @@ workflows:
               os:
                 - linux
       - RelationalTransformers-e2e-graphql_e2e_tests:
-          context:
-            - amplify-ecr-image-pull
-            - e2e-test-context
-          filters:
-            branches:
-              only:
-                - master
-                - /tagged-release\/.*/
-                - /run-e2e\/.*/
-          requires:
-            - build
-          matrix:
-            parameters:
-              os:
-                - linux
-      - OriginalTransformer-e2e-graphql_e2e_tests:
           context:
             - amplify-ecr-image-pull
             - e2e-test-context
@@ -15838,70 +15902,6 @@ workflows:
               os:
                 - linux
       - SubscriptionsWithAuthTest-e2e-graphql_e2e_tests:
-          context:
-            - amplify-ecr-image-pull
-            - e2e-test-context
-          filters:
-            branches:
-              only:
-                - master
-                - /tagged-release\/.*/
-                - /run-e2e\/.*/
-          requires:
-            - build
-          matrix:
-            parameters:
-              os:
-                - linux
-      - KeyTransformer-e2e-graphql_e2e_tests:
-          context:
-            - amplify-ecr-image-pull
-            - e2e-test-context
-          filters:
-            branches:
-              only:
-                - master
-                - /tagged-release\/.*/
-                - /run-e2e\/.*/
-          requires:
-            - build
-          matrix:
-            parameters:
-              os:
-                - linux
-      - MultiAuthModelAuthTransformer-e2e-graphql_e2e_tests:
-          context:
-            - amplify-ecr-image-pull
-            - e2e-test-context
-          filters:
-            branches:
-              only:
-                - master
-                - /tagged-release\/.*/
-                - /run-e2e\/.*/
-          requires:
-            - build
-          matrix:
-            parameters:
-              os:
-                - linux
-      - PerFieldAuthTests-e2e-graphql_e2e_tests:
-          context:
-            - amplify-ecr-image-pull
-            - e2e-test-context
-          filters:
-            branches:
-              only:
-                - master
-                - /tagged-release\/.*/
-                - /run-e2e\/.*/
-          requires:
-            - build
-          matrix:
-            parameters:
-              os:
-                - linux
-      - TestComplexStackMappingsLocal-e2e-graphql_e2e_tests:
           context:
             - amplify-ecr-image-pull
             - e2e-test-context

@@ -1,5 +1,5 @@
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
-import { GraphQLTransform, validateModelSchema } from '@aws-amplify/graphql-transformer-core';
+import { ConflictHandlerType, GraphQLTransform, SyncConfig, validateModelSchema } from '@aws-amplify/graphql-transformer-core';
 import { expect as cdkExpect, haveResourceLike } from '@aws-cdk/assert';
 import { Kind, parse } from 'graphql';
 import { IndexTransformer, PrimaryKeyTransformer } from '..';
@@ -829,4 +829,41 @@ test('GSI composite sort keys are wrapped in conditional to check presence in mu
   validateModelSchema(schema);
   expect(out.pipelineFunctions['Mutation.createPerson.req.vtl']).toMatchSnapshot();
   expect(out.pipelineFunctions['Mutation.updatePerson.req.vtl']).toMatchSnapshot();
+});
+
+it('should support index/primary key with sync resolvers', () => {
+  const validSchema = `
+    type Item @model {
+      orderId: ID! @primaryKey(sortKeyFields: ["status", "createdAt"])
+      status: Status! @index(name: "ByStatus", sortKeyFields: ["createdAt"], queryField: "itemsByStatus")
+      createdAt: AWSDateTime! @index(name: "ByCreatedAt", sortKeyFields: ["status"], queryField: "itemsByCreatedAt")
+      name: String!
+    }
+    enum Status {
+      DELIVERED IN_TRANSIT PENDING UNKNOWN
+    }
+  `;
+
+  const config: SyncConfig = {
+    ConflictDetection: 'VERSION',
+    ConflictHandler: ConflictHandlerType.AUTOMERGE,
+  };
+
+  const transformer = new GraphQLTransform({
+    transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new IndexTransformer()],
+    transformConfig: {
+      ResolverConfig: {
+        project: config,
+      },
+    },
+  });
+
+  const out = transformer.transform(validSchema);
+  expect(out).toBeDefined();
+
+  const definition = out.schema;
+  expect(definition).toBeDefined();
+  expect(out.pipelineFunctions).toMatchSnapshot();
+
+  validateModelSchema(parse(definition));
 });
