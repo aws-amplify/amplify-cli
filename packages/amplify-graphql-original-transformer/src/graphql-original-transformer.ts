@@ -1,7 +1,6 @@
-import { TransformerPluginBase } from '@aws-amplify/graphql-transformer-core';
+import { TransformerPluginBase, InvalidDirectiveError } from '@aws-amplify/graphql-transformer-core';
 import { TransformerPluginType, TransformerSchemaVisitStepContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { ObjectTypeDefinitionNode, DirectiveNode } from 'graphql';
-import { InvalidDirectiveError } from 'graphql-transformer-core';
 
 const directiveName = 'original';
 
@@ -16,7 +15,7 @@ export class OriginalTransformer extends TransformerPluginBase {
 
   object = (definition: ObjectTypeDefinitionNode, directive: DirectiveNode, ctx: TransformerSchemaVisitStepContextProvider) => {
     const modelName = definition.name.value;
-    const prevNameNode = directive.arguments.find(arg => arg.name.value === 'name');
+    const prevNameNode = directive.arguments?.find(arg => arg.name.value === 'name');
     if (!prevNameNode) {
       throw new InvalidDirectiveError(`name is required in @${directiveName} directive`);
     }

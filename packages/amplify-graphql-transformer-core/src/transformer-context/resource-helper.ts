@@ -19,16 +19,6 @@ export class TransformerResourceHelper implements TransformerResourceHelperProvi
     return `${baseName}-${apiId}-${env}`;
   };
 
-  generateRoleName = (baseName: string): string => {
-    if (!this.api) {
-      throw new Error('API not initalized');
-    }
-    this.ensureEnv();
-    const env = (this.stackManager.getParameter('env') as CfnParameter).valueAsString;
-    const apiId = this.api!.apiId;
-    return `${baseName}-${apiId}-${env}`;
-  };
-
   public generateIAMRoleName = (name: string): string => {
     if (!this.api) {
       throw new Error('API not initialized');
@@ -46,7 +36,7 @@ export class TransformerResourceHelper implements TransformerResourceHelperProvi
     this.api = api;
   }
 
-  registerModelToTableNameMaping = (modelName: string, tableName: string) => {
+  registerModelToTableNameMapping = (modelName: string, tableName: string) => {
     this.modelToTableNameMap.set(modelName, tableName);
   };
 
