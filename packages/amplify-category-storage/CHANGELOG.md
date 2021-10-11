@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.13.0-headless-s3-not-for-production-3.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-storage@2.12.12...amplify-category-storage@2.13.0-headless-s3-not-for-production-3.0) (2021-10-11)
+
+
+### Bug Fixes
+
+* **amplify-category-storage:** improve error handling ([778786c](https://github.com/aws-amplify/amplify-cli/commit/778786c475654df53102a90a2b0215c4f8636640))
+* unit tests, make resource + bucket names optional for add ([#8398](https://github.com/aws-amplify/amplify-cli/issues/8398)) ([b0814ae](https://github.com/aws-amplify/amplify-cli/commit/b0814ae6a64c5f934ceadf03e010c31a5db4be9b))
+
+
+### Features
+
+* support --headless flag for storage category (S3) ([#8377](https://github.com/aws-amplify/amplify-cli/issues/8377)) ([083f7b1](https://github.com/aws-amplify/amplify-cli/commit/083f7b1137ff580ac8a787eed006259d792b5fe6))
+
+
+
+
+
 ## [2.12.12](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-storage@2.12.11...amplify-category-storage@2.12.12) (2021-10-10)
 
 **Note:** Version bump only for package amplify-category-storage

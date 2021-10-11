@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.30.0-headless-s3-not-for-production-3.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@1.29.0...amplify-e2e-core@1.30.0-headless-s3-not-for-production-3.0) (2021-10-11)
+
+
+### Features
+
+* support --headless flag for storage category (S3) ([#8377](https://github.com/aws-amplify/amplify-cli/issues/8377)) ([083f7b1](https://github.com/aws-amplify/amplify-cli/commit/083f7b1137ff580ac8a787eed006259d792b5fe6))
+
+
+
+
+
 # [1.29.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@1.28.0...amplify-e2e-core@1.29.0) (2021-10-10)
 
 

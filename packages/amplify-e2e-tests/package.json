@@ -1,6 +1,6 @@
 {
   "name": "amplify-e2e-tests",
-  "version": "2.53.0",
+  "version": "2.54.0-headless-s3-not-for-production-3.0",
   "description": "",
   "repository": {
     "type": "git",
@@ -24,7 +24,7 @@
   },
   "dependencies": {
     "amplify-cli-core": "1.31.1",
-    "amplify-e2e-core": "1.29.0",
+    "amplify-e2e-core": "1.30.0-headless-s3-not-for-production-3.0",
     "aws-amplify": "^4.2.8",
     "aws-appsync": "^4.1.1",
     "aws-sdk": "^2.963.0",
