@@ -8,7 +8,7 @@ import * as helpCommand from './commands/geo/help';
 import { getServicePermissionPolicies } from './service-utils/resourceUtils';
 import { ServiceName } from './service-utils/constants';
 import { printer } from 'amplify-prompts';
-import { addResourceHeadless } from './provider-controllers';
+import { addResourceHeadless, updateResourceHeadless } from './provider-controllers';
 
 export const executeAmplifyCommand = async (context: $TSContext) => {
   switch (context.input.command) {
@@ -71,11 +71,12 @@ export const getPermissionPolicies = (context: $TSContext, resourceOpsMapping: $
  export const executeAmplifyHeadlessCommand = async (context: $TSContext, headlessPayload: string) => {
   switch (context.input.command) {
     case 'add':
-    case 'update':
-      console.log(headlessPayload);
       await addResourceHeadless(context, headlessPayload);
       break;
+    case 'update':
+      await updateResourceHeadless(context, headlessPayload);
+      break;
     default:
-      printer.error(`Headless mode for ${context.input.command} codegen is not implemented yet`);
+      printer.error(`Headless mode for ${context.input.command} geo is not implemented yet`);
   }
 };

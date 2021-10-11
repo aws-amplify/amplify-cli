@@ -8,7 +8,7 @@ import { printNextStepsSuccessMessage, setProviderContext, insufficientInfoForUp
 import { ServiceName } from '../service-utils/constants';
 import { printer } from 'amplify-prompts';
 import { getMapStyleComponents } from '../service-utils/mapParams';
-import { MapConfiguration } from 'amplify-headless-interface';
+import { MapConfiguration, MapModification } from 'amplify-headless-interface';
 
 export const addMapResource = async (
   context: $TSContext
@@ -95,7 +95,7 @@ export const addMapResourceHeadless = async (
     name: config.name,
     accessType: config.accessType,
     pricingPlan: config.pricingPlan,
-    isDefault: config.isDefault,
+    isDefault: config.setAsDefault,
     ...getMapStyleComponents(config.mapStyle)
   };
   const completeParameters: MapParameters = convertToCompleteMapParams(mapParams);
@@ -103,4 +103,29 @@ export const addMapResourceHeadless = async (
   printer.success(`Successfully added resource ${completeParameters.name} locally.`);
   printNextStepsSuccessMessage(context);
   return completeParameters.name;
+}
+
+export const updateMapResourceHeadless = async (
+  context: $TSContext,
+  config: MapModification
+): Promise<string> => {
+  // initialize the Map parameters
+  let mapParams: Partial<MapParameters> = {
+    providerContext: setProviderContext(context, ServiceName.Map),
+    name: config.name,
+    accessType: config.accessType,
+    isDefault: config.setAsDefault,
+  };
+  if (mapParams.name && mapParams.isDefault !== undefined && mapParams.accessType) {
+    modifyMapResource(context, {
+      accessType: mapParams.accessType,
+      name: mapParams.name,
+      isDefault: mapParams.isDefault
+    });
+  } else {
+    throw insufficientInfoForUpdateError(ServiceName.Map);
+  }
+  printer.success(`Successfully updated resource ${mapParams.name} locally.`);
+  printNextStepsSuccessMessage(context);
+  return mapParams.name;
 }

@@ -14,16 +14,12 @@ import { AccessType } from "./add";
 }
 
 export interface GeoModification {
-  serviceType: string;
+  serviceName: string;
   name: string;
-  isDefault: boolean;
+  setAsDefault: boolean;
   accessType: AccessType
 }
 
 export interface MapModification extends GeoModification {
-  serviceType: "Map";
-}
-
-export interface PlaceIndexModification extends GeoModification {
-  serviceType: "PlaceIndex";
+  serviceName: "Map";
 }

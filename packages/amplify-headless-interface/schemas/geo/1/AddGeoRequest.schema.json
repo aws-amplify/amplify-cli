@@ -12,8 +12,7 @@
       "serviceConfiguration": {
           "description": "The service configuration that will be interpreted by Amplify.",
           "oneOf": [
-              {"$ref": "#/definitions/MapServiceConfiguration"},
-              {"$ref": "#/definitions/PlaceIndexServiceConfiguration"}
+              {"$ref": "#/definitions/MapServiceConfiguration"}
           ]
       }
   },
@@ -26,7 +25,7 @@
           "description": "Configuration exposed by Map.",
           "type": "object",
           "properties": {
-              "serviceType": {
+              "serviceName": {
                 "description": "The service name of the resource provider.",
                 "type": "string",
                 "enum": [
@@ -55,50 +54,17 @@
               "accessType": {
                   "$ref": "#/definitions/AccessType"
               },
-              "isDefault": {
-                  "$ref": "#/definitions/IsDefault"
+              "setAsDefault": {
+                  "$ref": "#/definitions/SetAsDefault"
               }
           },
           "required": [
-              "serviceType",
+              "serviceName",
               "name",
               "mapStyle",
               "accessType",
               "pricingPlan",
-              "isDefault"
-          ]
-      },
-      "PlaceIndexServiceConfiguration": {
-          "description": "Configuration exposed by Place Index.",
-          "type": "object",
-          "properties": {
-              "serviceType": {
-                "description": "The service name of the resource provider.",
-                "type": "string",
-                "enum": [
-                    "PlaceIndex"
-                ]
-              },
-              "name": {
-                  "description": "The name of the index that will be created.",
-                  "type": "string"
-              },
-              "pricingPlan": {
-                  "$ref": "#/definitions/PricingPlan"
-              },
-              "accessType": {
-                  "$ref": "#/definitions/AccessType"
-              },
-              "isDefault": {
-                  "$ref": "#/definitions/IsDefault"
-              }
-          },
-          "required": [
-              "serviceType",
-              "name",
-              "accessType",
-              "pricingPlan",
-              "isDefault"
+              "setAsDefault"
           ]
       },
       "PricingPlan": {
@@ -118,7 +84,7 @@
               "AuthorizedAndGuestUsers"
           ]
       },
-      "IsDefault": {
+      "SetAsDefault": {
           "description": "Whether the geo resource added is set to default.",
           "type": "boolean"
       }

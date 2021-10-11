@@ -13,19 +13,15 @@
 }
 
 export interface GeoServiceConfiguration {
-  serviceType: string;
+  serviceName: string;
   name: string;
   accessType: AccessType;
   pricingPlan: PricingPlan;
-  isDefault: boolean;
+  setAsDefault: boolean;
 }
 export interface MapConfiguration extends GeoServiceConfiguration {
-  serviceType: "Map";
+  serviceName: "Map";
   mapStyle: MapStyle;
-}
-
-export interface PlaceIndexConfiguration extends GeoServiceConfiguration {
-  serviceType: "PlaceIndex";
 }
 
 export enum PricingPlan {
