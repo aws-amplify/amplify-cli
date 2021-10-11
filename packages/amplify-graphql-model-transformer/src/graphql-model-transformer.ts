@@ -1064,7 +1064,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
     });
 
     const role = this.createIAMRole(context, def, stack, tableName);
-    const tableDataSourceLogicalName = `${def!.name.value}DataSource`;
+    const tableDataSourceLogicalName = `${def!.name.value}Table`;
     this.createModelTableDataSource(def, context, table, stack, role, tableDataSourceLogicalName);
   }
 

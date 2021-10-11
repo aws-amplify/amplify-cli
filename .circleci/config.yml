@@ -4,20 +4,20 @@ orbs:
   aws-ecr: circleci/aws-ecr@6.15.3
 machine:
   environment:
-    PATH: '${PATH}:${HOME}/${CIRCLE_PROJECT_REPONAME}/node_modules/.bin'
+    PATH: ${PATH}:${HOME}/${CIRCLE_PROJECT_REPONAME}/node_modules/.bin
 executors:
   windows:
     machine:
-      image: 'windows-server-2019-vs2019:stable'
+      image: windows-server-2019-vs2019:stable
       resource_class: windows.large
       shell: bash.exe
     working_directory: ~/repo
     environment:
-      AMPLIFY_DIR: 'C:/home/circleci/repo/out'
-      AMPLIFY_PATH: 'C:/home/circleci/repo/out/amplify.exe'
+      AMPLIFY_DIR: C:/home/circleci/repo/out
+      AMPLIFY_PATH: C:/home/circleci/repo/out/amplify.exe
   linux:
     docker:
-      - image: 'public.ecr.aws/a6e6w2n0/amplify-cli-e2e-base-image-repo-public:latest'
+      - image: public.ecr.aws/a6e6w2n0/amplify-cli-e2e-base-image-repo-public:latest
     working_directory: ~/repo
     resource_class: large
     environment:
@@ -47,7 +47,7 @@ scan_e2e_test_artifacts:
     fi
   when: always
 install_cli_from_local_registery:
-  name: 'Start verdaccio, install node CLI and amplify-app'
+  name: Start verdaccio, install node CLI and amplify-app
   command: |
     source .circleci/local_publish_helpers.sh
     startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
@@ -73,7 +73,7 @@ jobs:
           paths:
             - ~/.cache
       - save_cache:
-          key: 'amplify-cli-ssh-deps-{{ .Branch }}'
+          key: amplify-cli-ssh-deps-{{ .Branch }}
           paths:
             - ~/.ssh
       - when:
@@ -94,7 +94,7 @@ jobs:
                 paths: .
   test:
     docker:
-      - image: 'public.ecr.aws/a6e6w2n0/amplify-cli-e2e-base-image-repo-public:latest'
+      - image: public.ecr.aws/a6e6w2n0/amplify-cli-e2e-base-image-repo-public:latest
     working_directory: ~/repo
     resource_class: large
     environment:
@@ -121,7 +121,7 @@ jobs:
           command: yarn coverage
   mock_e2e_tests:
     docker:
-      - image: 'public.ecr.aws/a6e6w2n0/amplify-cli-e2e-base-image-repo-public:latest'
+      - image: public.ecr.aws/a6e6w2n0/amplify-cli-e2e-base-image-repo-public:latest
     working_directory: ~/repo
     resource_class: large
     environment:
@@ -150,7 +150,7 @@ jobs:
           path: packages/amplify-util-mock/
   publish_to_local_registry:
     docker:
-      - image: 'public.ecr.aws/a6e6w2n0/amplify-cli-e2e-base-image-repo-public:latest'
+      - image: public.ecr.aws/a6e6w2n0/amplify-cli-e2e-base-image-repo-public:latest
     working_directory: ~/repo
     resource_class: large
     environment:
@@ -184,20 +184,20 @@ jobs:
           name: Save new amplify GitHub tag
           command: node scripts/echo-current-cli-version.js > .amplify-pkg-version
       - save_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
           paths:
             - ~/verdaccio-cache/
       - save_cache:
-          key: 'amplify-unified-changelog-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-unified-changelog-{{ .Branch }}-{{ .Revision }}
           paths:
             - ~/repo/UNIFIED_CHANGELOG.md
       - save_cache:
-          key: 'amplfiy-pkg-tag-{{ .Branch }}-{{ .Revision }}'
+          key: amplfiy-pkg-tag-{{ .Branch }}-{{ .Revision }}
           paths:
             - ~/repo/.amplify-pkg-version
   build_pkg_binaries:
     docker:
-      - image: 'public.ecr.aws/a6e6w2n0/amplify-cli-e2e-base-image-repo-public:latest'
+      - image: public.ecr.aws/a6e6w2n0/amplify-cli-e2e-base-image-repo-public:latest
     working_directory: ~/repo
     resource_class: large
     environment:
@@ -211,7 +211,7 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - run:
           name: Start verdaccio and package CLI
           command: |
@@ -222,7 +222,7 @@ jobs:
             yarn pkg-all
             unsetNpmRegistryUrl
       - save_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
           paths:
             - ~/repo/out
   graphql_e2e_tests:
@@ -261,9 +261,9 @@ jobs:
       - attach_workspace:
           at: ./
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
           name: Update OS Packages
           command: sudo apt-get update
@@ -292,11 +292,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
-          name: 'Start verdaccio, install node CLI and amplify-app'
+          name: Start verdaccio, install node CLI and amplify-app
           command: |
             source .circleci/local_publish_helpers.sh
             startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
@@ -339,11 +339,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-build-artifact-{{ .Revision }}-{{ arch }}'
+          key: amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - install_yarn:
           os: << parameters.os >>
       - install_packaged_cli:
@@ -371,7 +371,7 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
           name: Run tests migrating from CLI v4.0.0
           command: |
@@ -406,7 +406,7 @@ jobs:
       - attach_workspace:
           at: ./
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
           key: >-
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
@@ -453,7 +453,7 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
           name: Run tests migrating from CLI v4.52.0
           command: >
@@ -496,7 +496,7 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
           name: Update OS Packages
           command: sudo apt-get update
@@ -538,7 +538,7 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
           name: Run tests migrating from latest CLI
           command: |
@@ -571,9 +571,9 @@ jobs:
       - attach_workspace:
           at: ./
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - run:
-          name: 'Start verdaccio, install node CLI and amplify-app'
+          name: Start verdaccio, install node CLI and amplify-app
           command: |
             source .circleci/local_publish_helpers.sh
             startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
@@ -610,14 +610,14 @@ jobs:
     working_directory: ~/repo
     resource_class: large
     docker:
-      - image: 'cypress/base:12'
+      - image: cypress/base:12
         environment:
           TERM: dumb
     steps:
       - attach_workspace:
           at: ./
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - run:
           name: Setup Dependencies
           command: |
@@ -674,7 +674,7 @@ jobs:
             cp ../repo/cypress.json .
             cp -R ../repo/cypress .
             yarn cypress run --spec $(find . -type f -name 'auth_spec*')
-      - run: 'sudo kill -9 $(lsof -t -i:3000)'
+      - run: sudo kill -9 $(lsof -t -i:3000)
       - run: cd .circleci/ && chmod +x delete_auth.sh
       - run: expect .circleci/delete_auth.exp
       - run:
@@ -728,7 +728,7 @@ jobs:
           path: /root/aws-amplify-cypress-api/cypress/screenshots
   deploy:
     docker:
-      - image: 'public.ecr.aws/a6e6w2n0/amplify-cli-e2e-base-image-repo-public:latest'
+      - image: public.ecr.aws/a6e6w2n0/amplify-cli-e2e-base-image-repo-public:latest
     working_directory: ~/repo
     resource_class: large
     environment:
@@ -739,10 +739,10 @@ jobs:
           at: ./
       - restore_cache:
           keys:
-            - 'amplify-cli-ssh-deps-{{ .Branch }}'
+            - amplify-cli-ssh-deps-{{ .Branch }}
       - run:
           name: Authenticate with npm
-          command: 'echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/.npmrc'
+          command: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/.npmrc
       - run:
           name: Publish Amplify CLI
           command: |
@@ -758,7 +758,7 @@ jobs:
           when: always
   github_prerelease:
     docker:
-      - image: 'public.ecr.aws/a6e6w2n0/amplify-cli-e2e-base-image-repo-public:latest'
+      - image: public.ecr.aws/a6e6w2n0/amplify-cli-e2e-base-image-repo-public:latest
     working_directory: ~/repo
     resource_class: large
     environment:
@@ -768,11 +768,11 @@ jobs:
       - attach_workspace:
           at: ./
       - restore_cache:
-          key: 'amplify-unified-changelog-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-unified-changelog-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplfiy-pkg-tag-{{ .Branch }}-{{ .Revision }}'
+          key: amplfiy-pkg-tag-{{ .Branch }}-{{ .Revision }}
       - run:
           name: Compress binaries
           command: |
@@ -787,7 +787,7 @@ jobs:
             yarn ts-node scripts/github-prerelease.ts $version
   github_prerelease_install_sanity_check:
     docker:
-      - image: 'public.ecr.aws/a6e6w2n0/amplify-cli-e2e-base-image-repo-public:latest'
+      - image: public.ecr.aws/a6e6w2n0/amplify-cli-e2e-base-image-repo-public:latest
     working_directory: ~/repo
     resource_class: large
     environment:
@@ -795,7 +795,7 @@ jobs:
       AMPLIFY_PATH: /home/circleci/repo/out/amplify-pkg-linux
     steps:
       - restore_cache:
-          key: 'amplfiy-pkg-tag-{{ .Branch }}-{{ .Revision }}'
+          key: amplfiy-pkg-tag-{{ .Branch }}-{{ .Revision }}
       - run:
           name: Install packaged Amplify CLI
           command: >
@@ -811,7 +811,7 @@ jobs:
             amplify version
   github_release:
     docker:
-      - image: 'public.ecr.aws/a6e6w2n0/amplify-cli-e2e-base-image-repo-public:latest'
+      - image: public.ecr.aws/a6e6w2n0/amplify-cli-e2e-base-image-repo-public:latest
     working_directory: ~/repo
     resource_class: large
     environment:
@@ -821,9 +821,9 @@ jobs:
       - attach_workspace:
           at: ./
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplfiy-pkg-tag-{{ .Branch }}-{{ .Revision }}'
+          key: amplfiy-pkg-tag-{{ .Branch }}-{{ .Revision }}
       - run:
           name: Publish Amplify CLI GitHub release
           command: |
@@ -831,7 +831,7 @@ jobs:
             yarn ts-node scripts/github-release.ts $version
   cleanup_resources:
     docker:
-      - image: 'public.ecr.aws/a6e6w2n0/amplify-cli-e2e-base-image-repo-public:latest'
+      - image: public.ecr.aws/a6e6w2n0/amplify-cli-e2e-base-image-repo-public:latest
     working_directory: ~/repo
     resource_class: large
     environment:
@@ -863,7 +863,7 @@ jobs:
           path: ~/repo/packages/amplify-e2e-tests/amplify-e2e-reports
   cleanup_resources_after_e2e_runs:
     docker:
-      - image: 'public.ecr.aws/a6e6w2n0/amplify-cli-e2e-base-image-repo-public:latest'
+      - image: public.ecr.aws/a6e6w2n0/amplify-cli-e2e-base-image-repo-public:latest
     working_directory: ~/repo
     resource_class: large
     environment:
@@ -908,11 +908,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
-          name: 'Start verdaccio, install node CLI and amplify-app'
+          name: Start verdaccio, install node CLI and amplify-app
           command: |
             source .circleci/local_publish_helpers.sh
             startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
@@ -960,11 +960,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
-          name: 'Start verdaccio, install node CLI and amplify-app'
+          name: Start verdaccio, install node CLI and amplify-app
           command: |
             source .circleci/local_publish_helpers.sh
             startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
@@ -1012,11 +1012,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
-          name: 'Start verdaccio, install node CLI and amplify-app'
+          name: Start verdaccio, install node CLI and amplify-app
           command: |
             source .circleci/local_publish_helpers.sh
             startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
@@ -1064,11 +1064,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
-          name: 'Start verdaccio, install node CLI and amplify-app'
+          name: Start verdaccio, install node CLI and amplify-app
           command: |
             source .circleci/local_publish_helpers.sh
             startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
@@ -1116,11 +1116,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
-          name: 'Start verdaccio, install node CLI and amplify-app'
+          name: Start verdaccio, install node CLI and amplify-app
           command: |
             source .circleci/local_publish_helpers.sh
             startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
@@ -1168,11 +1168,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
-          name: 'Start verdaccio, install node CLI and amplify-app'
+          name: Start verdaccio, install node CLI and amplify-app
           command: |
             source .circleci/local_publish_helpers.sh
             startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
@@ -1220,11 +1220,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
-          name: 'Start verdaccio, install node CLI and amplify-app'
+          name: Start verdaccio, install node CLI and amplify-app
           command: |
             source .circleci/local_publish_helpers.sh
             startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
@@ -1272,11 +1272,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
-          name: 'Start verdaccio, install node CLI and amplify-app'
+          name: Start verdaccio, install node CLI and amplify-app
           command: |
             source .circleci/local_publish_helpers.sh
             startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
@@ -1324,11 +1324,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
-          name: 'Start verdaccio, install node CLI and amplify-app'
+          name: Start verdaccio, install node CLI and amplify-app
           command: |
             source .circleci/local_publish_helpers.sh
             startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
@@ -1376,11 +1376,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
-          name: 'Start verdaccio, install node CLI and amplify-app'
+          name: Start verdaccio, install node CLI and amplify-app
           command: |
             source .circleci/local_publish_helpers.sh
             startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
@@ -1428,11 +1428,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
-          name: 'Start verdaccio, install node CLI and amplify-app'
+          name: Start verdaccio, install node CLI and amplify-app
           command: |
             source .circleci/local_publish_helpers.sh
             startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
@@ -1480,11 +1480,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
-          name: 'Start verdaccio, install node CLI and amplify-app'
+          name: Start verdaccio, install node CLI and amplify-app
           command: |
             source .circleci/local_publish_helpers.sh
             startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
@@ -1532,11 +1532,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
-          name: 'Start verdaccio, install node CLI and amplify-app'
+          name: Start verdaccio, install node CLI and amplify-app
           command: |
             source .circleci/local_publish_helpers.sh
             startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
@@ -1584,11 +1584,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
-          name: 'Start verdaccio, install node CLI and amplify-app'
+          name: Start verdaccio, install node CLI and amplify-app
           command: |
             source .circleci/local_publish_helpers.sh
             startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
@@ -1636,11 +1636,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
-          name: 'Start verdaccio, install node CLI and amplify-app'
+          name: Start verdaccio, install node CLI and amplify-app
           command: |
             source .circleci/local_publish_helpers.sh
             startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
@@ -1688,11 +1688,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
-          name: 'Start verdaccio, install node CLI and amplify-app'
+          name: Start verdaccio, install node CLI and amplify-app
           command: |
             source .circleci/local_publish_helpers.sh
             startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
@@ -1740,11 +1740,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
-          name: 'Start verdaccio, install node CLI and amplify-app'
+          name: Start verdaccio, install node CLI and amplify-app
           command: |
             source .circleci/local_publish_helpers.sh
             startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
@@ -1792,11 +1792,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
-          name: 'Start verdaccio, install node CLI and amplify-app'
+          name: Start verdaccio, install node CLI and amplify-app
           command: |
             source .circleci/local_publish_helpers.sh
             startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
@@ -1844,11 +1844,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
-          name: 'Start verdaccio, install node CLI and amplify-app'
+          name: Start verdaccio, install node CLI and amplify-app
           command: |
             source .circleci/local_publish_helpers.sh
             startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
@@ -1896,11 +1896,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
-          name: 'Start verdaccio, install node CLI and amplify-app'
+          name: Start verdaccio, install node CLI and amplify-app
           command: |
             source .circleci/local_publish_helpers.sh
             startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
@@ -1948,11 +1948,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
-          name: 'Start verdaccio, install node CLI and amplify-app'
+          name: Start verdaccio, install node CLI and amplify-app
           command: |
             source .circleci/local_publish_helpers.sh
             startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
@@ -2000,11 +2000,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
-          name: 'Start verdaccio, install node CLI and amplify-app'
+          name: Start verdaccio, install node CLI and amplify-app
           command: |
             source .circleci/local_publish_helpers.sh
             startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
@@ -2052,11 +2052,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
-          name: 'Start verdaccio, install node CLI and amplify-app'
+          name: Start verdaccio, install node CLI and amplify-app
           command: |
             source .circleci/local_publish_helpers.sh
             startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
@@ -2104,11 +2104,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
-          name: 'Start verdaccio, install node CLI and amplify-app'
+          name: Start verdaccio, install node CLI and amplify-app
           command: |
             source .circleci/local_publish_helpers.sh
             startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
@@ -2156,11 +2156,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
-          name: 'Start verdaccio, install node CLI and amplify-app'
+          name: Start verdaccio, install node CLI and amplify-app
           command: |
             source .circleci/local_publish_helpers.sh
             startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
@@ -2208,11 +2208,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
-          name: 'Start verdaccio, install node CLI and amplify-app'
+          name: Start verdaccio, install node CLI and amplify-app
           command: |
             source .circleci/local_publish_helpers.sh
             startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
@@ -2260,11 +2260,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
-          name: 'Start verdaccio, install node CLI and amplify-app'
+          name: Start verdaccio, install node CLI and amplify-app
           command: |
             source .circleci/local_publish_helpers.sh
             startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
@@ -2312,11 +2312,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
-          name: 'Start verdaccio, install node CLI and amplify-app'
+          name: Start verdaccio, install node CLI and amplify-app
           command: |
             source .circleci/local_publish_helpers.sh
             startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
@@ -2364,11 +2364,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
-          name: 'Start verdaccio, install node CLI and amplify-app'
+          name: Start verdaccio, install node CLI and amplify-app
           command: |
             source .circleci/local_publish_helpers.sh
             startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
@@ -2416,11 +2416,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
-          name: 'Start verdaccio, install node CLI and amplify-app'
+          name: Start verdaccio, install node CLI and amplify-app
           command: |
             source .circleci/local_publish_helpers.sh
             startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
@@ -2468,11 +2468,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
-          name: 'Start verdaccio, install node CLI and amplify-app'
+          name: Start verdaccio, install node CLI and amplify-app
           command: |
             source .circleci/local_publish_helpers.sh
             startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
@@ -2520,11 +2520,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
-          name: 'Start verdaccio, install node CLI and amplify-app'
+          name: Start verdaccio, install node CLI and amplify-app
           command: |
             source .circleci/local_publish_helpers.sh
             startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
@@ -2572,11 +2572,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
-          name: 'Start verdaccio, install node CLI and amplify-app'
+          name: Start verdaccio, install node CLI and amplify-app
           command: |
             source .circleci/local_publish_helpers.sh
             startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
@@ -2624,11 +2624,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
-          name: 'Start verdaccio, install node CLI and amplify-app'
+          name: Start verdaccio, install node CLI and amplify-app
           command: |
             source .circleci/local_publish_helpers.sh
             startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
@@ -2676,11 +2676,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
-          name: 'Start verdaccio, install node CLI and amplify-app'
+          name: Start verdaccio, install node CLI and amplify-app
           command: |
             source .circleci/local_publish_helpers.sh
             startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
@@ -2728,11 +2728,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
-          name: 'Start verdaccio, install node CLI and amplify-app'
+          name: Start verdaccio, install node CLI and amplify-app
           command: |
             source .circleci/local_publish_helpers.sh
             startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
@@ -2780,11 +2780,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
-          name: 'Start verdaccio, install node CLI and amplify-app'
+          name: Start verdaccio, install node CLI and amplify-app
           command: |
             source .circleci/local_publish_helpers.sh
             startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
@@ -2832,11 +2832,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
-          name: 'Start verdaccio, install node CLI and amplify-app'
+          name: Start verdaccio, install node CLI and amplify-app
           command: |
             source .circleci/local_publish_helpers.sh
             startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
@@ -2884,11 +2884,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
-          name: 'Start verdaccio, install node CLI and amplify-app'
+          name: Start verdaccio, install node CLI and amplify-app
           command: |
             source .circleci/local_publish_helpers.sh
             startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
@@ -2936,11 +2936,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
-          name: 'Start verdaccio, install node CLI and amplify-app'
+          name: Start verdaccio, install node CLI and amplify-app
           command: |
             source .circleci/local_publish_helpers.sh
             startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
@@ -2988,11 +2988,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
-          name: 'Start verdaccio, install node CLI and amplify-app'
+          name: Start verdaccio, install node CLI and amplify-app
           command: |
             source .circleci/local_publish_helpers.sh
             startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
@@ -3040,11 +3040,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
-          name: 'Start verdaccio, install node CLI and amplify-app'
+          name: Start verdaccio, install node CLI and amplify-app
           command: |
             source .circleci/local_publish_helpers.sh
             startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
@@ -3092,11 +3092,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
-          name: 'Start verdaccio, install node CLI and amplify-app'
+          name: Start verdaccio, install node CLI and amplify-app
           command: |
             source .circleci/local_publish_helpers.sh
             startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
@@ -3144,11 +3144,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
-          name: 'Start verdaccio, install node CLI and amplify-app'
+          name: Start verdaccio, install node CLI and amplify-app
           command: |
             source .circleci/local_publish_helpers.sh
             startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
@@ -3196,11 +3196,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
-          name: 'Start verdaccio, install node CLI and amplify-app'
+          name: Start verdaccio, install node CLI and amplify-app
           command: |
             source .circleci/local_publish_helpers.sh
             startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
@@ -3248,11 +3248,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
-          name: 'Start verdaccio, install node CLI and amplify-app'
+          name: Start verdaccio, install node CLI and amplify-app
           command: |
             source .circleci/local_publish_helpers.sh
             startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
@@ -3300,11 +3300,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
-          name: 'Start verdaccio, install node CLI and amplify-app'
+          name: Start verdaccio, install node CLI and amplify-app
           command: |
             source .circleci/local_publish_helpers.sh
             startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
@@ -3352,11 +3352,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
-          name: 'Start verdaccio, install node CLI and amplify-app'
+          name: Start verdaccio, install node CLI and amplify-app
           command: |
             source .circleci/local_publish_helpers.sh
             startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
@@ -3404,11 +3404,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
-          name: 'Start verdaccio, install node CLI and amplify-app'
+          name: Start verdaccio, install node CLI and amplify-app
           command: |
             source .circleci/local_publish_helpers.sh
             startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
@@ -3456,11 +3456,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
-          name: 'Start verdaccio, install node CLI and amplify-app'
+          name: Start verdaccio, install node CLI and amplify-app
           command: |
             source .circleci/local_publish_helpers.sh
             startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
@@ -3508,11 +3508,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
-          name: 'Start verdaccio, install node CLI and amplify-app'
+          name: Start verdaccio, install node CLI and amplify-app
           command: |
             source .circleci/local_publish_helpers.sh
             startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
@@ -3560,11 +3560,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
-          name: 'Start verdaccio, install node CLI and amplify-app'
+          name: Start verdaccio, install node CLI and amplify-app
           command: |
             source .circleci/local_publish_helpers.sh
             startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
@@ -3612,11 +3612,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
-          name: 'Start verdaccio, install node CLI and amplify-app'
+          name: Start verdaccio, install node CLI and amplify-app
           command: |
             source .circleci/local_publish_helpers.sh
             startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
@@ -3664,11 +3664,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
-          name: 'Start verdaccio, install node CLI and amplify-app'
+          name: Start verdaccio, install node CLI and amplify-app
           command: |
             source .circleci/local_publish_helpers.sh
             startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
@@ -3716,11 +3716,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
-          name: 'Start verdaccio, install node CLI and amplify-app'
+          name: Start verdaccio, install node CLI and amplify-app
           command: |
             source .circleci/local_publish_helpers.sh
             startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
@@ -3768,11 +3768,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
-          name: 'Start verdaccio, install node CLI and amplify-app'
+          name: Start verdaccio, install node CLI and amplify-app
           command: |
             source .circleci/local_publish_helpers.sh
             startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
@@ -3820,11 +3820,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
-          name: 'Start verdaccio, install node CLI and amplify-app'
+          name: Start verdaccio, install node CLI and amplify-app
           command: |
             source .circleci/local_publish_helpers.sh
             startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
@@ -3872,11 +3872,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
-          name: 'Start verdaccio, install node CLI and amplify-app'
+          name: Start verdaccio, install node CLI and amplify-app
           command: |
             source .circleci/local_publish_helpers.sh
             startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
@@ -3924,11 +3924,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
-          name: 'Start verdaccio, install node CLI and amplify-app'
+          name: Start verdaccio, install node CLI and amplify-app
           command: |
             source .circleci/local_publish_helpers.sh
             startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
@@ -3976,11 +3976,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
-          name: 'Start verdaccio, install node CLI and amplify-app'
+          name: Start verdaccio, install node CLI and amplify-app
           command: |
             source .circleci/local_publish_helpers.sh
             startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
@@ -4028,11 +4028,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
-          name: 'Start verdaccio, install node CLI and amplify-app'
+          name: Start verdaccio, install node CLI and amplify-app
           command: |
             source .circleci/local_publish_helpers.sh
             startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
@@ -4080,11 +4080,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
-          name: 'Start verdaccio, install node CLI and amplify-app'
+          name: Start verdaccio, install node CLI and amplify-app
           command: |
             source .circleci/local_publish_helpers.sh
             startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
@@ -4132,11 +4132,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
-          name: 'Start verdaccio, install node CLI and amplify-app'
+          name: Start verdaccio, install node CLI and amplify-app
           command: |
             source .circleci/local_publish_helpers.sh
             startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
@@ -4184,11 +4184,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
-          name: 'Start verdaccio, install node CLI and amplify-app'
+          name: Start verdaccio, install node CLI and amplify-app
           command: |
             source .circleci/local_publish_helpers.sh
             startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
@@ -4236,11 +4236,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
-          name: 'Start verdaccio, install node CLI and amplify-app'
+          name: Start verdaccio, install node CLI and amplify-app
           command: |
             source .circleci/local_publish_helpers.sh
             startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
@@ -4288,11 +4288,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
-          name: 'Start verdaccio, install node CLI and amplify-app'
+          name: Start verdaccio, install node CLI and amplify-app
           command: |
             source .circleci/local_publish_helpers.sh
             startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
@@ -4340,11 +4340,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
-          name: 'Start verdaccio, install node CLI and amplify-app'
+          name: Start verdaccio, install node CLI and amplify-app
           command: |
             source .circleci/local_publish_helpers.sh
             startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
@@ -4392,11 +4392,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
-          name: 'Start verdaccio, install node CLI and amplify-app'
+          name: Start verdaccio, install node CLI and amplify-app
           command: |
             source .circleci/local_publish_helpers.sh
             startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
@@ -4444,11 +4444,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
-          name: 'Start verdaccio, install node CLI and amplify-app'
+          name: Start verdaccio, install node CLI and amplify-app
           command: |
             source .circleci/local_publish_helpers.sh
             startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
@@ -4496,11 +4496,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
-          name: 'Start verdaccio, install node CLI and amplify-app'
+          name: Start verdaccio, install node CLI and amplify-app
           command: |
             source .circleci/local_publish_helpers.sh
             startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
@@ -4548,11 +4548,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
-          name: 'Start verdaccio, install node CLI and amplify-app'
+          name: Start verdaccio, install node CLI and amplify-app
           command: |
             source .circleci/local_publish_helpers.sh
             startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
@@ -4600,11 +4600,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
-          name: 'Start verdaccio, install node CLI and amplify-app'
+          name: Start verdaccio, install node CLI and amplify-app
           command: |
             source .circleci/local_publish_helpers.sh
             startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
@@ -4652,11 +4652,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
-          name: 'Start verdaccio, install node CLI and amplify-app'
+          name: Start verdaccio, install node CLI and amplify-app
           command: |
             source .circleci/local_publish_helpers.sh
             startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
@@ -4704,11 +4704,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
-          name: 'Start verdaccio, install node CLI and amplify-app'
+          name: Start verdaccio, install node CLI and amplify-app
           command: |
             source .circleci/local_publish_helpers.sh
             startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
@@ -4756,11 +4756,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
-          name: 'Start verdaccio, install node CLI and amplify-app'
+          name: Start verdaccio, install node CLI and amplify-app
           command: |
             source .circleci/local_publish_helpers.sh
             startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
@@ -4808,11 +4808,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
-          name: 'Start verdaccio, install node CLI and amplify-app'
+          name: Start verdaccio, install node CLI and amplify-app
           command: |
             source .circleci/local_publish_helpers.sh
             startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
@@ -4860,11 +4860,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
-          name: 'Start verdaccio, install node CLI and amplify-app'
+          name: Start verdaccio, install node CLI and amplify-app
           command: |
             source .circleci/local_publish_helpers.sh
             startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
@@ -4913,11 +4913,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
-          name: 'Start verdaccio, install node CLI and amplify-app'
+          name: Start verdaccio, install node CLI and amplify-app
           command: |
             source .circleci/local_publish_helpers.sh
             startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
@@ -4966,11 +4966,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
-          name: 'Start verdaccio, install node CLI and amplify-app'
+          name: Start verdaccio, install node CLI and amplify-app
           command: |
             source .circleci/local_publish_helpers.sh
             startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
@@ -5018,11 +5018,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
-          name: 'Start verdaccio, install node CLI and amplify-app'
+          name: Start verdaccio, install node CLI and amplify-app
           command: |
             source .circleci/local_publish_helpers.sh
             startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
@@ -5070,11 +5070,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
-          name: 'Start verdaccio, install node CLI and amplify-app'
+          name: Start verdaccio, install node CLI and amplify-app
           command: |
             source .circleci/local_publish_helpers.sh
             startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
@@ -5122,11 +5122,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
-          name: 'Start verdaccio, install node CLI and amplify-app'
+          name: Start verdaccio, install node CLI and amplify-app
           command: |
             source .circleci/local_publish_helpers.sh
             startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
@@ -5175,11 +5175,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
-          name: 'Start verdaccio, install node CLI and amplify-app'
+          name: Start verdaccio, install node CLI and amplify-app
           command: |
             source .circleci/local_publish_helpers.sh
             startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
@@ -5227,11 +5227,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
-          name: 'Start verdaccio, install node CLI and amplify-app'
+          name: Start verdaccio, install node CLI and amplify-app
           command: |
             source .circleci/local_publish_helpers.sh
             startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
@@ -5279,11 +5279,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
-          name: 'Start verdaccio, install node CLI and amplify-app'
+          name: Start verdaccio, install node CLI and amplify-app
           command: |
             source .circleci/local_publish_helpers.sh
             startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
@@ -5332,11 +5332,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
-          name: 'Start verdaccio, install node CLI and amplify-app'
+          name: Start verdaccio, install node CLI and amplify-app
           command: |
             source .circleci/local_publish_helpers.sh
             startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
@@ -5384,11 +5384,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
-          name: 'Start verdaccio, install node CLI and amplify-app'
+          name: Start verdaccio, install node CLI and amplify-app
           command: |
             source .circleci/local_publish_helpers.sh
             startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
@@ -5436,11 +5436,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
-          name: 'Start verdaccio, install node CLI and amplify-app'
+          name: Start verdaccio, install node CLI and amplify-app
           command: |
             source .circleci/local_publish_helpers.sh
             startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
@@ -5488,11 +5488,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
-          name: 'Start verdaccio, install node CLI and amplify-app'
+          name: Start verdaccio, install node CLI and amplify-app
           command: |
             source .circleci/local_publish_helpers.sh
             startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
@@ -5540,11 +5540,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
-          name: 'Start verdaccio, install node CLI and amplify-app'
+          name: Start verdaccio, install node CLI and amplify-app
           command: |
             source .circleci/local_publish_helpers.sh
             startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
@@ -5592,11 +5592,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
-          name: 'Start verdaccio, install node CLI and amplify-app'
+          name: Start verdaccio, install node CLI and amplify-app
           command: |
             source .circleci/local_publish_helpers.sh
             startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
@@ -5644,11 +5644,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
-          name: 'Start verdaccio, install node CLI and amplify-app'
+          name: Start verdaccio, install node CLI and amplify-app
           command: |
             source .circleci/local_publish_helpers.sh
             startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
@@ -5696,11 +5696,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
-          name: 'Start verdaccio, install node CLI and amplify-app'
+          name: Start verdaccio, install node CLI and amplify-app
           command: |
             source .circleci/local_publish_helpers.sh
             startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
@@ -5748,11 +5748,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
-          name: 'Start verdaccio, install node CLI and amplify-app'
+          name: Start verdaccio, install node CLI and amplify-app
           command: |
             source .circleci/local_publish_helpers.sh
             startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
@@ -5800,11 +5800,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
-          name: 'Start verdaccio, install node CLI and amplify-app'
+          name: Start verdaccio, install node CLI and amplify-app
           command: |
             source .circleci/local_publish_helpers.sh
             startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
@@ -5853,11 +5853,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
-          name: 'Start verdaccio, install node CLI and amplify-app'
+          name: Start verdaccio, install node CLI and amplify-app
           command: |
             source .circleci/local_publish_helpers.sh
             startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
@@ -5905,11 +5905,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
-          name: 'Start verdaccio, install node CLI and amplify-app'
+          name: Start verdaccio, install node CLI and amplify-app
           command: |
             source .circleci/local_publish_helpers.sh
             startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
@@ -5958,11 +5958,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
-          name: 'Start verdaccio, install node CLI and amplify-app'
+          name: Start verdaccio, install node CLI and amplify-app
           command: |
             source .circleci/local_publish_helpers.sh
             startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
@@ -6010,11 +6010,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
-          name: 'Start verdaccio, install node CLI and amplify-app'
+          name: Start verdaccio, install node CLI and amplify-app
           command: |
             source .circleci/local_publish_helpers.sh
             startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
@@ -6062,11 +6062,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-build-artifact-{{ .Revision }}-{{ arch }}'
+          key: amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - install_yarn:
           os: << parameters.os >>
       - install_packaged_cli:
@@ -6097,11 +6097,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-build-artifact-{{ .Revision }}-{{ arch }}'
+          key: amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - install_yarn:
           os: << parameters.os >>
       - install_packaged_cli:
@@ -6132,11 +6132,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-build-artifact-{{ .Revision }}-{{ arch }}'
+          key: amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - install_yarn:
           os: << parameters.os >>
       - install_packaged_cli:
@@ -6167,11 +6167,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-build-artifact-{{ .Revision }}-{{ arch }}'
+          key: amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - install_yarn:
           os: << parameters.os >>
       - install_packaged_cli:
@@ -6202,11 +6202,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-build-artifact-{{ .Revision }}-{{ arch }}'
+          key: amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - install_yarn:
           os: << parameters.os >>
       - install_packaged_cli:
@@ -6237,11 +6237,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-build-artifact-{{ .Revision }}-{{ arch }}'
+          key: amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - install_yarn:
           os: << parameters.os >>
       - install_packaged_cli:
@@ -6272,11 +6272,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-build-artifact-{{ .Revision }}-{{ arch }}'
+          key: amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - install_yarn:
           os: << parameters.os >>
       - install_packaged_cli:
@@ -6307,11 +6307,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-build-artifact-{{ .Revision }}-{{ arch }}'
+          key: amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - install_yarn:
           os: << parameters.os >>
       - install_packaged_cli:
@@ -6342,11 +6342,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-build-artifact-{{ .Revision }}-{{ arch }}'
+          key: amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - install_yarn:
           os: << parameters.os >>
       - install_packaged_cli:
@@ -6377,11 +6377,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-build-artifact-{{ .Revision }}-{{ arch }}'
+          key: amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - install_yarn:
           os: << parameters.os >>
       - install_packaged_cli:
@@ -6412,11 +6412,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-build-artifact-{{ .Revision }}-{{ arch }}'
+          key: amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - install_yarn:
           os: << parameters.os >>
       - install_packaged_cli:
@@ -6447,11 +6447,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-build-artifact-{{ .Revision }}-{{ arch }}'
+          key: amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - install_yarn:
           os: << parameters.os >>
       - install_packaged_cli:
@@ -6482,11 +6482,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-build-artifact-{{ .Revision }}-{{ arch }}'
+          key: amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - install_yarn:
           os: << parameters.os >>
       - install_packaged_cli:
@@ -6517,11 +6517,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-build-artifact-{{ .Revision }}-{{ arch }}'
+          key: amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - install_yarn:
           os: << parameters.os >>
       - install_packaged_cli:
@@ -6552,11 +6552,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-build-artifact-{{ .Revision }}-{{ arch }}'
+          key: amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - install_yarn:
           os: << parameters.os >>
       - install_packaged_cli:
@@ -6587,11 +6587,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-build-artifact-{{ .Revision }}-{{ arch }}'
+          key: amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - install_yarn:
           os: << parameters.os >>
       - install_packaged_cli:
@@ -6622,11 +6622,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-build-artifact-{{ .Revision }}-{{ arch }}'
+          key: amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - install_yarn:
           os: << parameters.os >>
       - install_packaged_cli:
@@ -6657,11 +6657,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-build-artifact-{{ .Revision }}-{{ arch }}'
+          key: amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - install_yarn:
           os: << parameters.os >>
       - install_packaged_cli:
@@ -6692,11 +6692,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-build-artifact-{{ .Revision }}-{{ arch }}'
+          key: amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - install_yarn:
           os: << parameters.os >>
       - install_packaged_cli:
@@ -6727,11 +6727,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-build-artifact-{{ .Revision }}-{{ arch }}'
+          key: amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - install_yarn:
           os: << parameters.os >>
       - install_packaged_cli:
@@ -6762,11 +6762,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-build-artifact-{{ .Revision }}-{{ arch }}'
+          key: amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - install_yarn:
           os: << parameters.os >>
       - install_packaged_cli:
@@ -6797,11 +6797,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-build-artifact-{{ .Revision }}-{{ arch }}'
+          key: amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - install_yarn:
           os: << parameters.os >>
       - install_packaged_cli:
@@ -6832,11 +6832,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-build-artifact-{{ .Revision }}-{{ arch }}'
+          key: amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - install_yarn:
           os: << parameters.os >>
       - install_packaged_cli:
@@ -6867,11 +6867,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-build-artifact-{{ .Revision }}-{{ arch }}'
+          key: amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - install_yarn:
           os: << parameters.os >>
       - install_packaged_cli:
@@ -6902,11 +6902,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-build-artifact-{{ .Revision }}-{{ arch }}'
+          key: amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - install_yarn:
           os: << parameters.os >>
       - install_packaged_cli:
@@ -6937,11 +6937,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-build-artifact-{{ .Revision }}-{{ arch }}'
+          key: amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - install_yarn:
           os: << parameters.os >>
       - install_packaged_cli:
@@ -6972,11 +6972,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-build-artifact-{{ .Revision }}-{{ arch }}'
+          key: amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - install_yarn:
           os: << parameters.os >>
       - install_packaged_cli:
@@ -7007,11 +7007,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-build-artifact-{{ .Revision }}-{{ arch }}'
+          key: amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - install_yarn:
           os: << parameters.os >>
       - install_packaged_cli:
@@ -7042,11 +7042,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-build-artifact-{{ .Revision }}-{{ arch }}'
+          key: amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - install_yarn:
           os: << parameters.os >>
       - install_packaged_cli:
@@ -7077,11 +7077,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-build-artifact-{{ .Revision }}-{{ arch }}'
+          key: amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - install_yarn:
           os: << parameters.os >>
       - install_packaged_cli:
@@ -7112,11 +7112,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-build-artifact-{{ .Revision }}-{{ arch }}'
+          key: amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - install_yarn:
           os: << parameters.os >>
       - install_packaged_cli:
@@ -7147,11 +7147,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-build-artifact-{{ .Revision }}-{{ arch }}'
+          key: amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - install_yarn:
           os: << parameters.os >>
       - install_packaged_cli:
@@ -7182,11 +7182,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-build-artifact-{{ .Revision }}-{{ arch }}'
+          key: amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - install_yarn:
           os: << parameters.os >>
       - install_packaged_cli:
@@ -7217,11 +7217,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-build-artifact-{{ .Revision }}-{{ arch }}'
+          key: amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - install_yarn:
           os: << parameters.os >>
       - install_packaged_cli:
@@ -7252,11 +7252,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-build-artifact-{{ .Revision }}-{{ arch }}'
+          key: amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - install_yarn:
           os: << parameters.os >>
       - install_packaged_cli:
@@ -7287,11 +7287,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-build-artifact-{{ .Revision }}-{{ arch }}'
+          key: amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - install_yarn:
           os: << parameters.os >>
       - install_packaged_cli:
@@ -7322,11 +7322,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-build-artifact-{{ .Revision }}-{{ arch }}'
+          key: amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - install_yarn:
           os: << parameters.os >>
       - install_packaged_cli:
@@ -7357,11 +7357,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-build-artifact-{{ .Revision }}-{{ arch }}'
+          key: amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - install_yarn:
           os: << parameters.os >>
       - install_packaged_cli:
@@ -7392,11 +7392,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-build-artifact-{{ .Revision }}-{{ arch }}'
+          key: amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - install_yarn:
           os: << parameters.os >>
       - install_packaged_cli:
@@ -7427,11 +7427,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-build-artifact-{{ .Revision }}-{{ arch }}'
+          key: amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - install_yarn:
           os: << parameters.os >>
       - install_packaged_cli:
@@ -7462,11 +7462,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-build-artifact-{{ .Revision }}-{{ arch }}'
+          key: amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - install_yarn:
           os: << parameters.os >>
       - install_packaged_cli:
@@ -7497,11 +7497,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-build-artifact-{{ .Revision }}-{{ arch }}'
+          key: amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - install_yarn:
           os: << parameters.os >>
       - install_packaged_cli:
@@ -7532,11 +7532,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-build-artifact-{{ .Revision }}-{{ arch }}'
+          key: amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - install_yarn:
           os: << parameters.os >>
       - install_packaged_cli:
@@ -7567,11 +7567,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-build-artifact-{{ .Revision }}-{{ arch }}'
+          key: amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - install_yarn:
           os: << parameters.os >>
       - install_packaged_cli:
@@ -7602,11 +7602,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-build-artifact-{{ .Revision }}-{{ arch }}'
+          key: amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - install_yarn:
           os: << parameters.os >>
       - install_packaged_cli:
@@ -7637,11 +7637,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-build-artifact-{{ .Revision }}-{{ arch }}'
+          key: amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - install_yarn:
           os: << parameters.os >>
       - install_packaged_cli:
@@ -7672,11 +7672,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-build-artifact-{{ .Revision }}-{{ arch }}'
+          key: amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - install_yarn:
           os: << parameters.os >>
       - install_packaged_cli:
@@ -7707,11 +7707,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-build-artifact-{{ .Revision }}-{{ arch }}'
+          key: amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - install_yarn:
           os: << parameters.os >>
       - install_packaged_cli:
@@ -7742,11 +7742,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-build-artifact-{{ .Revision }}-{{ arch }}'
+          key: amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - install_yarn:
           os: << parameters.os >>
       - install_packaged_cli:
@@ -7777,11 +7777,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-build-artifact-{{ .Revision }}-{{ arch }}'
+          key: amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - install_yarn:
           os: << parameters.os >>
       - install_packaged_cli:
@@ -7812,11 +7812,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-build-artifact-{{ .Revision }}-{{ arch }}'
+          key: amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - install_yarn:
           os: << parameters.os >>
       - install_packaged_cli:
@@ -7847,11 +7847,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-build-artifact-{{ .Revision }}-{{ arch }}'
+          key: amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - install_yarn:
           os: << parameters.os >>
       - install_packaged_cli:
@@ -7882,11 +7882,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-build-artifact-{{ .Revision }}-{{ arch }}'
+          key: amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - install_yarn:
           os: << parameters.os >>
       - install_packaged_cli:
@@ -7917,11 +7917,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-build-artifact-{{ .Revision }}-{{ arch }}'
+          key: amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - install_yarn:
           os: << parameters.os >>
       - install_packaged_cli:
@@ -7952,11 +7952,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-build-artifact-{{ .Revision }}-{{ arch }}'
+          key: amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - install_yarn:
           os: << parameters.os >>
       - install_packaged_cli:
@@ -7987,11 +7987,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-build-artifact-{{ .Revision }}-{{ arch }}'
+          key: amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - install_yarn:
           os: << parameters.os >>
       - install_packaged_cli:
@@ -8022,11 +8022,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-build-artifact-{{ .Revision }}-{{ arch }}'
+          key: amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - install_yarn:
           os: << parameters.os >>
       - install_packaged_cli:
@@ -8057,11 +8057,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-build-artifact-{{ .Revision }}-{{ arch }}'
+          key: amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - install_yarn:
           os: << parameters.os >>
       - install_packaged_cli:
@@ -8092,11 +8092,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-build-artifact-{{ .Revision }}-{{ arch }}'
+          key: amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - install_yarn:
           os: << parameters.os >>
       - install_packaged_cli:
@@ -8127,11 +8127,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-build-artifact-{{ .Revision }}-{{ arch }}'
+          key: amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - install_yarn:
           os: << parameters.os >>
       - install_packaged_cli:
@@ -8162,11 +8162,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-build-artifact-{{ .Revision }}-{{ arch }}'
+          key: amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - install_yarn:
           os: << parameters.os >>
       - install_packaged_cli:
@@ -8197,11 +8197,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-build-artifact-{{ .Revision }}-{{ arch }}'
+          key: amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - install_yarn:
           os: << parameters.os >>
       - install_packaged_cli:
@@ -8232,11 +8232,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-build-artifact-{{ .Revision }}-{{ arch }}'
+          key: amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - install_yarn:
           os: << parameters.os >>
       - install_packaged_cli:
@@ -8267,11 +8267,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-build-artifact-{{ .Revision }}-{{ arch }}'
+          key: amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - install_yarn:
           os: << parameters.os >>
       - install_packaged_cli:
@@ -8302,11 +8302,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-build-artifact-{{ .Revision }}-{{ arch }}'
+          key: amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - install_yarn:
           os: << parameters.os >>
       - install_packaged_cli:
@@ -8337,11 +8337,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-build-artifact-{{ .Revision }}-{{ arch }}'
+          key: amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - install_yarn:
           os: << parameters.os >>
       - install_packaged_cli:
@@ -8372,11 +8372,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-build-artifact-{{ .Revision }}-{{ arch }}'
+          key: amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - install_yarn:
           os: << parameters.os >>
       - install_packaged_cli:
@@ -8407,11 +8407,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-build-artifact-{{ .Revision }}-{{ arch }}'
+          key: amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - install_yarn:
           os: << parameters.os >>
       - install_packaged_cli:
@@ -8442,11 +8442,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-build-artifact-{{ .Revision }}-{{ arch }}'
+          key: amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - install_yarn:
           os: << parameters.os >>
       - install_packaged_cli:
@@ -8477,11 +8477,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-build-artifact-{{ .Revision }}-{{ arch }}'
+          key: amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - install_yarn:
           os: << parameters.os >>
       - install_packaged_cli:
@@ -8512,11 +8512,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-build-artifact-{{ .Revision }}-{{ arch }}'
+          key: amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - install_yarn:
           os: << parameters.os >>
       - install_packaged_cli:
@@ -8547,11 +8547,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-build-artifact-{{ .Revision }}-{{ arch }}'
+          key: amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - install_yarn:
           os: << parameters.os >>
       - install_packaged_cli:
@@ -8582,11 +8582,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-build-artifact-{{ .Revision }}-{{ arch }}'
+          key: amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - install_yarn:
           os: << parameters.os >>
       - install_packaged_cli:
@@ -8617,11 +8617,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-build-artifact-{{ .Revision }}-{{ arch }}'
+          key: amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - install_yarn:
           os: << parameters.os >>
       - install_packaged_cli:
@@ -8652,11 +8652,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-build-artifact-{{ .Revision }}-{{ arch }}'
+          key: amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - install_yarn:
           os: << parameters.os >>
       - install_packaged_cli:
@@ -8687,11 +8687,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-build-artifact-{{ .Revision }}-{{ arch }}'
+          key: amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - install_yarn:
           os: << parameters.os >>
       - install_packaged_cli:
@@ -8722,11 +8722,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-build-artifact-{{ .Revision }}-{{ arch }}'
+          key: amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - install_yarn:
           os: << parameters.os >>
       - install_packaged_cli:
@@ -8758,11 +8758,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-build-artifact-{{ .Revision }}-{{ arch }}'
+          key: amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - install_yarn:
           os: << parameters.os >>
       - install_packaged_cli:
@@ -8794,11 +8794,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-build-artifact-{{ .Revision }}-{{ arch }}'
+          key: amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - install_yarn:
           os: << parameters.os >>
       - install_packaged_cli:
@@ -8829,11 +8829,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-build-artifact-{{ .Revision }}-{{ arch }}'
+          key: amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - install_yarn:
           os: << parameters.os >>
       - install_packaged_cli:
@@ -8864,11 +8864,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-build-artifact-{{ .Revision }}-{{ arch }}'
+          key: amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - install_yarn:
           os: << parameters.os >>
       - install_packaged_cli:
@@ -8899,11 +8899,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-build-artifact-{{ .Revision }}-{{ arch }}'
+          key: amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - install_yarn:
           os: << parameters.os >>
       - install_packaged_cli:
@@ -8935,11 +8935,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-build-artifact-{{ .Revision }}-{{ arch }}'
+          key: amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - install_yarn:
           os: << parameters.os >>
       - install_packaged_cli:
@@ -8970,11 +8970,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-build-artifact-{{ .Revision }}-{{ arch }}'
+          key: amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - install_yarn:
           os: << parameters.os >>
       - install_packaged_cli:
@@ -9005,11 +9005,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-build-artifact-{{ .Revision }}-{{ arch }}'
+          key: amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - install_yarn:
           os: << parameters.os >>
       - install_packaged_cli:
@@ -9041,11 +9041,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-build-artifact-{{ .Revision }}-{{ arch }}'
+          key: amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - install_yarn:
           os: << parameters.os >>
       - install_packaged_cli:
@@ -9076,11 +9076,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-build-artifact-{{ .Revision }}-{{ arch }}'
+          key: amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - install_yarn:
           os: << parameters.os >>
       - install_packaged_cli:
@@ -9111,11 +9111,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-build-artifact-{{ .Revision }}-{{ arch }}'
+          key: amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - install_yarn:
           os: << parameters.os >>
       - install_packaged_cli:
@@ -9146,11 +9146,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-build-artifact-{{ .Revision }}-{{ arch }}'
+          key: amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - install_yarn:
           os: << parameters.os >>
       - install_packaged_cli:
@@ -9181,11 +9181,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-build-artifact-{{ .Revision }}-{{ arch }}'
+          key: amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - install_yarn:
           os: << parameters.os >>
       - install_packaged_cli:
@@ -9216,11 +9216,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-build-artifact-{{ .Revision }}-{{ arch }}'
+          key: amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - install_yarn:
           os: << parameters.os >>
       - install_packaged_cli:
@@ -9251,11 +9251,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-build-artifact-{{ .Revision }}-{{ arch }}'
+          key: amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - install_yarn:
           os: << parameters.os >>
       - install_packaged_cli:
@@ -9286,11 +9286,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-build-artifact-{{ .Revision }}-{{ arch }}'
+          key: amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - install_yarn:
           os: << parameters.os >>
       - install_packaged_cli:
@@ -9321,11 +9321,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-build-artifact-{{ .Revision }}-{{ arch }}'
+          key: amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - install_yarn:
           os: << parameters.os >>
       - install_packaged_cli:
@@ -9356,11 +9356,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-build-artifact-{{ .Revision }}-{{ arch }}'
+          key: amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - install_yarn:
           os: << parameters.os >>
       - install_packaged_cli:
@@ -9392,11 +9392,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-build-artifact-{{ .Revision }}-{{ arch }}'
+          key: amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - install_yarn:
           os: << parameters.os >>
       - install_packaged_cli:
@@ -9427,11 +9427,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-build-artifact-{{ .Revision }}-{{ arch }}'
+          key: amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - install_yarn:
           os: << parameters.os >>
       - install_packaged_cli:
@@ -9463,11 +9463,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-build-artifact-{{ .Revision }}-{{ arch }}'
+          key: amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - install_yarn:
           os: << parameters.os >>
       - install_packaged_cli:
@@ -9498,11 +9498,11 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-build-artifact-{{ .Revision }}-{{ arch }}'
+          key: amplify-build-artifact-{{ .Revision }}-{{ arch }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - install_yarn:
           os: << parameters.os >>
       - install_packaged_cli:
@@ -10433,7 +10433,7 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
           name: Run tests migrating from CLI v4.0.0
           command: |
@@ -10476,7 +10476,7 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
           name: Run tests migrating from CLI v4.0.0
           command: |
@@ -10519,7 +10519,7 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
           name: Run tests migrating from CLI v4.0.0
           command: |
@@ -10562,7 +10562,7 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
           name: Run tests migrating from CLI v4.0.0
           command: |
@@ -10605,7 +10605,7 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
           name: Run tests migrating from CLI v4.0.0
           command: |
@@ -10648,7 +10648,7 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
           name: Run tests migrating from CLI v4.0.0
           command: |
@@ -10690,7 +10690,7 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
           name: Run tests migrating from CLI v4.0.0
           command: |
@@ -10732,7 +10732,7 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
           name: Run tests migrating from CLI v4.0.0
           command: |
@@ -10774,7 +10774,7 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
           name: Run tests migrating from CLI v4.0.0
           command: |
@@ -10822,7 +10822,7 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
           name: Run tests migrating from latest CLI
           command: |
@@ -10865,7 +10865,7 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
           name: Run tests migrating from latest CLI
           command: |
@@ -10908,7 +10908,7 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
           name: Run tests migrating from latest CLI
           command: |
@@ -10951,7 +10951,7 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
           name: Run tests migrating from latest CLI
           command: |
@@ -10994,7 +10994,7 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
           name: Run tests migrating from latest CLI
           command: |
@@ -11036,7 +11036,7 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
           name: Run tests migrating from latest CLI
           command: |
@@ -11078,7 +11078,7 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
           name: Run tests migrating from latest CLI
           command: |
@@ -11120,7 +11120,7 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
           name: Run tests migrating from latest CLI
           command: |
@@ -11162,7 +11162,7 @@ jobs:
             amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
             arch }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
           name: Run tests migrating from latest CLI
           command: |
@@ -11211,7 +11211,7 @@ workflows:
   e2e_resource_cleanup:
     triggers:
       - schedule:
-          cron: '45 0,12 * * *'
+          cron: 45 0,12 * * *
           filters:
             branches:
               only:
@@ -16253,13 +16253,13 @@ commands:
           condition:
             equal:
               - machine:
-                  image: 'windows-server-2019-vs2019:stable'
+                  image: windows-server-2019-vs2019:stable
                   resource_class: windows.large
                   shell: bash.exe
                 working_directory: ~/repo
                 environment:
-                  AMPLIFY_DIR: 'C:/home/circleci/repo/out'
-                  AMPLIFY_PATH: 'C:/home/circleci/repo/out/amplify.exe'
+                  AMPLIFY_DIR: C:/home/circleci/repo/out
+                  AMPLIFY_PATH: C:/home/circleci/repo/out/amplify.exe
               - << parameters.os >>
           steps:
             - run:
@@ -16314,13 +16314,13 @@ commands:
           condition:
             equal:
               - machine:
-                  image: 'windows-server-2019-vs2019:stable'
+                  image: windows-server-2019-vs2019:stable
                   resource_class: windows.large
                   shell: bash.exe
                 working_directory: ~/repo
                 environment:
-                  AMPLIFY_DIR: 'C:/home/circleci/repo/out'
-                  AMPLIFY_PATH: 'C:/home/circleci/repo/out/amplify.exe'
+                  AMPLIFY_DIR: C:/home/circleci/repo/out
+                  AMPLIFY_PATH: C:/home/circleci/repo/out/amplify.exe
               - << parameters.os >>
           steps:
             - run: nvm install 12.22.5
@@ -16367,13 +16367,13 @@ commands:
           condition:
             equal:
               - machine:
-                  image: 'windows-server-2019-vs2019:stable'
+                  image: windows-server-2019-vs2019:stable
                   resource_class: windows.large
                   shell: bash.exe
                 working_directory: ~/repo
                 environment:
-                  AMPLIFY_DIR: 'C:/home/circleci/repo/out'
-                  AMPLIFY_PATH: 'C:/home/circleci/repo/out/amplify.exe'
+                  AMPLIFY_DIR: C:/home/circleci/repo/out
+                  AMPLIFY_PATH: C:/home/circleci/repo/out/amplify.exe
               - << parameters.os >>
           steps:
             - run:
