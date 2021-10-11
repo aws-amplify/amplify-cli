@@ -107,7 +107,7 @@ const badServiceError = (service: string) => {
 };
 
 export const insufficientInfoForUpdateError = (service: ServiceName) => {
-  new Error(`Insufficient information to update ${getServiceFriendlyName(service)}. Please re-try and provide all inputs.`);
+  return new Error(`Insufficient information to update ${getServiceFriendlyName(service)}. Please re-try and provide all inputs.`);
 };
 
 export const getTemplateMappings = async (context: $TSContext): Promise<TemplateMappings> => {
