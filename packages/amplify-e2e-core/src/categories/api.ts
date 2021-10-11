@@ -68,7 +68,7 @@ export function addApiWithoutSchema(cwd: string, opts: Partial<AddApiOptions & {
 export function addApiWithBlankSchema(cwd: string, opts: Partial<AddApiOptions & { apiKeyExpirationDays: number }> = {}) {
   const options = _.assign(defaultOptions, opts);
   return new Promise<void>((resolve, reject) => {
-    spawn(getCLIPath(), ['add', 'api'], { cwd, stripColors: true })
+    spawn(getCLIPath(options.testingWithLatestCodebase), ['add', 'api'], { cwd, stripColors: true })
       .wait('Please select from one of the below mentioned services:')
       .sendCarriageReturn()
       .wait(/.*Here is the GraphQL API that we will create. Select a setting to edit or continue.*/)
@@ -100,7 +100,7 @@ export function addApiWithBlankSchema(cwd: string, opts: Partial<AddApiOptions &
 
 export function addApiWithBlankSchemaAndConflictDetection(cwd: string) {
   return new Promise<void>((resolve, reject) => {
-    spawn(getCLIPath(), ['add', 'api'], { cwd, stripColors: true })
+    spawn(getCLIPath(defaultOptions.testingWithLatestCodebase), ['add', 'api'], { cwd, stripColors: true })
       .wait('Please select from one of the below mentioned services:')
       .sendCarriageReturn()
       .wait(/.*Here is the GraphQL API that we will create. Select a setting to edit or continue.*/)
@@ -407,7 +407,7 @@ const allAuthTypes = ['API key', 'Amazon Cognito User Pool', 'IAM', 'OpenID Conn
 export function addApi(projectDir: string, settings?: any) {
   let authTypesToSelectFrom = allAuthTypes.slice();
   return new Promise<void>((resolve, reject) => {
-    let chain = spawn(getCLIPath(), ['add', 'api'], { cwd: projectDir, stripColors: true })
+    let chain = spawn(getCLIPath(defaultOptions.testingWithLatestCodebase), ['add', 'api'], { cwd: projectDir, stripColors: true })
       .wait('Please select from one of the below mentioned services:')
       .sendCarriageReturn()
 
@@ -529,7 +529,7 @@ function setupOIDC(chain: any, settings?: any) {
 
 export function addApiWithCognitoUserPoolAuthTypeWhenAuthExists(projectDir: string) {
   return new Promise<void>((resolve, reject) => {
-    spawn(getCLIPath(), ['add', 'api'], { cwd: projectDir, stripColors: true })
+    spawn(getCLIPath(defaultOptions.testingWithLatestCodebase), ['add', 'api'], { cwd: projectDir, stripColors: true })
       .wait('Please select from one of the below mentioned services:')
       .sendCarriageReturn()
       .wait(/.*Here is the GraphQL API that we will create. Select a setting to edit or continue.*/)
