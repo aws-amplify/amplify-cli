@@ -27,7 +27,7 @@ import { SearchableModelTransformer } from '@aws-amplify/graphql-searchable-tran
 import { DefaultValueTransformer } from '@aws-amplify/graphql-default-value-transformer';
 import { ProviderName as providerName } from '../constants';
 import { hashDirectory } from '../upload-appsync-files';
-import { mergeUserConfigWithTransformOutput, writeDeploymentToDisk } from './utils';
+import { writeDeploymentToDisk } from './utils';
 import { loadProject as readTransformerConfiguration } from './transform-config';
 import { loadProject } from 'graphql-transformer-core';
 import { Template } from '@aws-amplify/graphql-transformer-core/lib/config/project-config';
@@ -493,7 +493,5 @@ async function _buildProject(opts: ProjectOptions<TransformerFactoryArgs>) {
   let schema = userProjectConfig.schema.toString();
   if (opts.sandboxModeEnabled) schema = removeSandboxDirectiveFromSchema(schema);
 
-  const transformOutput = transform.transform(schema);
-
-  return mergeUserConfigWithTransformOutput(userProjectConfig, transformOutput);
+  return transform.transform(schema);
 }
