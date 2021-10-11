@@ -1,0 +1,31 @@
+import fs from 'fs-extra';
+import path from 'path';
+import { validateAddGeoRequest, validateUpdateGeoRequest } from '../index';
+
+const assetRoot = path.resolve(path.join(__dirname, 'assets'));
+
+describe('validate add geo request', () => {
+  it('returns valid payload for map', async () => {
+    const rawRequest = fs.readFileSync(path.join(assetRoot, 'geo', 'add', 'validRequest.map.json'), 'utf8');
+    const result = await validateAddGeoRequest(rawRequest);
+    expect(result).toMatchSnapshot();
+  });
+
+  it('rejects promise when invalid payload', async () => {
+    const resultPromise = validateAddGeoRequest('garbage');
+    expect(resultPromise).rejects.toBeTruthy();
+  });
+});
+
+describe('validate update geo request', () => {
+  it('returns valid payload for map', async () => {
+    const rawRequest = fs.readFileSync(path.join(assetRoot, 'geo', 'update', 'validRequest.map.json'), 'utf8');
+    const result = await validateUpdateGeoRequest(rawRequest);
+    expect(result).toMatchSnapshot();
+  });
+
+  it('rejects promise when invalid payload', async () => {
+    const resultPromise = validateUpdateGeoRequest('garbage');
+    expect(resultPromise).rejects.toBeTruthy();
+  });
+});
