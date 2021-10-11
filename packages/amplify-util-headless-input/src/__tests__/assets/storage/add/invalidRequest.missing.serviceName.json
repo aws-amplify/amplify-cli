@@ -3,10 +3,7 @@
   "serviceConfiguration": {
     "permissions": {
       "auth": ["READ", "CREATE_AND_UPDATE"],
-      "guest": ["READ"],
-      "groups": {
-        "myUserGroup": ["CREATE_AND_UPDATE"]
-      }
+      "guest": ["READ"]
     },
     "bucketName": "something",
     "resourceName": "something",
