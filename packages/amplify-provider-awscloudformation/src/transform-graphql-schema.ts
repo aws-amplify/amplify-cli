@@ -386,7 +386,6 @@ export async function transformGraphQLSchema(context, options) {
   }
 
   let migratedResult = false;
-  await printer.error(`BLAH: ${suppressSchemaMigrationPrompt}`);
   if (useExperimentalPipelineTransformer && !suppressSchemaMigrationPrompt) {
     migratedResult = await attemptV2TransformerMigration(resourceDir, parameters[ResourceConstants.PARAMETERS.AppSyncApiName], context);
   }
