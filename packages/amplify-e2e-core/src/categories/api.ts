@@ -1,5 +1,6 @@
 import { getCLIPath, updateSchema, nspawn as spawn, KEY_DOWN_ARROW } from '..';
 import * as fs from 'fs-extra';
+import * as path from 'path';
 import { selectRuntime, selectTemplate } from './lambda-function';
 import { singleSelect, multiSelect } from '../utils/selectors';
 import _ from 'lodash';
@@ -590,6 +591,18 @@ export function addRestContainerApiForCustomPolicies(projectDir: string, setting
       .wait('Select which container is the entrypoint')
       .sendCarriageReturn()
       .wait('"amplify publish" will build all your local backend and frontend resources')
-      .run((err: Error) => err ? reject(err) : resolve());
+      .run((err: Error) => (err ? reject(err) : resolve()));
   });
+}
+
+export function modifyRestAPI(projectDir: string, apiName: string) {
+  const indexFilePath = path.join(projectDir, 'amplify', 'backend', 'api', apiName, 'src', 'express', 'index.js');
+  const filesString = fs.readFileSync(indexFilePath, { encoding: 'utf8' });
+  const fileLines = filesString.split(EOL);
+  const index = fileLines.findIndex(r => r === '// Error middleware must be defined last');
+  fs.writeFileSync(indexFilePath, fileLines.slice(0, index - 1).join(EOL));
+  fs.appendFileSync(indexFilePath, EOL + "app.put('/post', async(req, res, next) => {\
+    return {};\
+});" + EOL);
+  fs.appendFileSync(indexFilePath, fileLines.slice(index, fileLines.length).join(EOL));
 }
