@@ -31,6 +31,10 @@
               "resourceName": {
                   "description": "Amplify resource name",
                   "type": "string"
+              },
+              "deleteBucketAndContents": {
+                  "description": "Not yet implemented - permanently delete the bucket after removal from amplify project.",
+                  "type": "string"
               }
           },
           "required": [

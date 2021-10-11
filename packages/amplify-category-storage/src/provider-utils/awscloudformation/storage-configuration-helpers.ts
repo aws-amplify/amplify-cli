@@ -66,13 +66,19 @@ const convertHeadlessPayloadToParameters = (arr: S3IamPolicy[], op: CrudOperatio
 
 export async function headlessAddStorage(context: $TSContext, storageRequest: AddStorageRequest) {
   if (!checkIfAuthExists()) {
-    throw new Error('Cannot headlessly add storage resource without an existing auth resource. It can be added with "amplify add auth"');
+    const error = new Error(
+      'Cannot headlessly add storage resource without an existing auth resource. It can be added with "amplify add auth"',
+    );
+    await context.usageData.emitError(error);
+    error.stack = undefined;
+    throw error;
   }
 
   if (storageRequest.serviceConfiguration.serviceName === ServiceName.S3) {
     if (resourceAlreadyExists()) {
       const error = new ResourceAlreadyExistsError('Amazon S3 storage was already added to your project.');
       await context.usageData.emitError(error);
+      error.stack = undefined;
       throw error;
     }
 
@@ -81,12 +87,16 @@ export async function headlessAddStorage(context: $TSContext, storageRequest: Ad
     if (storageRequest.serviceConfiguration.permissions.groups && !doUserPoolGroupsExist(meta)) {
       const error = new Error('No user pool groups found in amplify-meta.json.');
       await context.usageData.emitError(error);
+      error.stack = undefined;
       throw error;
     }
 
     await createS3StorageArtifacts(context, storageRequest);
   } else if (storageRequest.serviceConfiguration.serviceName === ServiceName.DynamoDB) {
-    throw new Error('Headless support for DynamoDB resources is not yet implemented.');
+    const error = new Error('Headless support for DynamoDB resources is not yet implemented.');
+    await context.usageData.emitError(error);
+    error.stack = undefined;
+    throw error;
   }
 }
 
@@ -102,30 +112,37 @@ export async function headlessUpdateStorage(context: $TSContext, storageRequest:
     if (!storageResource || storageResource.service !== ServiceName.S3) {
       const error = new ResourceDoesNotExistError(`No S3 resource '${resourceName}' found in amplify-meta.json.`);
       await context.usageData.emitError(error);
+      error.stack = undefined;
       throw error;
     }
 
     if (storageResource.mobileHubMigrated === true) {
       const error = new Error(`Updating storage resources migrated from mobile hub is not supported.`);
       await context.usageData.emitError(error);
+      error.stack = undefined;
       throw error;
     }
 
     if (storageResource.serviceType === 'imported') {
       const error = new Error('Updating an imported storage resource is not supported.');
       await context.usageData.emitError(error);
+      error.stack = undefined;
       throw error;
     }
 
     if (permissions.groups && !doUserPoolGroupsExist(meta)) {
       const error = new Error('No user pool groups found in amplify-meta.json.');
       await context.usageData.emitError(error);
+      error.stack = undefined;
       throw error;
     }
 
     await updateS3StorageArtifacts(context, storageRequest, storageResource);
   } else if (storageRequest.serviceConfiguration.serviceName === ServiceName.DynamoDB) {
-    throw new Error('Headless support for DynamoDB resources is not yet implemented.');
+    const error = new Error('Headless support for DynamoDB resources is not yet implemented.');
+    await context.usageData.emitError(error);
+    error.stack = undefined;
+    throw error;
   }
 }
 
@@ -139,6 +156,7 @@ export async function headlessImportStorage(context: $TSContext, storageRequest:
       'Cannot headlessly import storage resource without an existing auth resource. It can be added with "amplify add auth"',
     );
     await context.usageData.emitError(error);
+    error.stack = undefined;
     throw error;
   }
 
@@ -146,6 +164,7 @@ export async function headlessImportStorage(context: $TSContext, storageRequest:
     if (resourceAlreadyExists()) {
       const error = new ResourceAlreadyExistsError('Amazon S3 storage was already added to your project.');
       await context.usageData.emitError(error);
+      error.stack = undefined;
       throw error;
     }
 
@@ -184,21 +203,29 @@ export async function headlessImportStorage(context: $TSContext, storageRequest:
     // As this is a resource add, we need to update environment specific parameters
     await updateStateFiles(context, questionParameters, answers, true);
   } else if (storageRequest.serviceConfiguration.serviceName === ServiceName.DynamoDB) {
-    throw new Error('Headless support for importing DynamoDB resources is not yet implemented.');
+    const error = new Error('Headless support for importing DynamoDB resources is not yet implemented.');
+    await context.usageData.emitError(error);
+    error.stack = undefined;
+    throw error;
   }
 }
 
 export async function headlessRemoveStorage(context: $TSContext, storageRequest: RemoveStorageRequest) {
-  return context.amplify
-    .removeResource(context, categoryName, storageRequest.serviceConfiguration.resourceName, { headless: true })
-    .catch(async (err: $TSAny) => {
-      printer.info(err.stack);
-      printer.error('An error occurred when removing the storage resource');
+  const { resourceName, deleteBucketAndContents } = storageRequest.serviceConfiguration;
 
-      await context.usageData.emitError(err);
+  if (deleteBucketAndContents === true) {
+    throw new Error('deleteBucketAndContents is set to true, but the functionality is not yet implemented.');
+  }
 
-      process.exitCode = 1;
-    });
+  try {
+    await context.amplify.removeResource(context, categoryName, resourceName, { headless: true });
+  } catch (error: $TSAny) {
+    printer.error(`An error occurred when headlessly removing the storage resource "${resourceName}": ${error.message || error}`);
+
+    await context.usageData.emitError(error);
+
+    process.exitCode = 1;
+  }
 }
 
 function constructParametersJson(parameters: $TSAny, permissions: S3Permissions, lambdaTrigger?: LambdaTriggerConfig) {
