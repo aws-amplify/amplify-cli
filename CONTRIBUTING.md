@@ -56,6 +56,16 @@ This section should get you running with **Amplify CLI** and get you familiar wi
    cd amplify-cli
    ```
 
+1. If you are using a Node.js version manager like [nvm](https://github.com/nvm-sh/nvm) or [fnm](https://github.com/Schniz/fnm), install and use the suggested Node.js version in `.nvmrc`. Otherwise use the `.nvmrc` file as a reference to manually install the suggested Node.js version.
+
+    ```sh
+    # with nvm
+    nvm install
+
+    # with fnm
+    fnm install && fnm use
+    ```
+
 1. Then, you can run the `setup-dev` script, which installs dependencies and performs initial configuration:
 
    ```sh
