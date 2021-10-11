@@ -8,6 +8,7 @@ import Ora from 'ora';
 const backup = 'backup';
 import _ from 'lodash';
 import rimraf from 'rimraf';
+import { validateExportDirectoryPath } from 'amplify-cli-core';
 // don't change file names ever ever
 const AMPLIFY_EXPORT_MANIFEST_JSON_FILE = 'amplify-export-manifest.json';
 const AMPLIFY_EXPORT_TAGS_JSON_FILE = 'export-tags.json';
@@ -17,9 +18,10 @@ const AMPLIFY_EXPORT_CATEGORY_STACK_MAPPING_FILE = 'category-stack-mapping.json'
  * @param context
  * @param resourceDefinition
  * @param exportPath is the path to export to
- *
  */
 export async function run(context: $TSContext, resourceDefinition: $TSAny[], exportPath: string) {
+  validateExportDirectoryPath(exportPath);
+
   const { projectName } = stateManager.getProjectConfig();
   const amplifyExportFolder = path.join(path.resolve(exportPath), `amplify-export-${projectName}`);
   const proceed = await checkForExistingExport(amplifyExportFolder);
@@ -95,18 +97,18 @@ async function setPermissions(amplifyExportFolder: string): Promise<void> {
  */
 function createTagsFile(exportPath: string) {
   const tags = stateManager.getProjectTags();
-  const hydratedTags = stateManager.getHydratedTags();
-  const tagsWithEnv = hydratedTags.map((hydratedTag, i) => {
-    const tag = tags[i];
-    //revert Tags with amplify-env the amplify-env are handled in the construct
-    if (tag.Value.includes('{project-env}')) {
-      hydratedTag.Value = tag.Value;
-    }
-    return hydratedTag;
-  });
+  const hydratedTags = stateManager.getHydratedTags(undefined, true);
+  // const tagsWithEnv = hydratedTags.map((hydratedTag, i) => {
+  //   const tag = tags[i];
+  //   //revert Tags with amplify-env the amplify-env are handled in the construct
+  //   if (tag.Value.includes('{project-env}')) {
+  //     hydratedTag.Value = tag.Value;
+  //   }
+  //   return hydratedTag;
+  // });
   JSONUtilities.writeJson(
     path.join(exportPath, AMPLIFY_EXPORT_TAGS_JSON_FILE),
-    tagsWithEnv.map(tag => ({
+    hydratedTags.map(tag => ({
       key: tag.Key,
       value: tag.Value,
     })),

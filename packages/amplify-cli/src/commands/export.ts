@@ -24,20 +24,8 @@ export const run = async (context: $TSContext) => {
   const providerPlugin = context.amplify.getProviderPlugins(context);
   const providers = Object.keys(providerPlugin);
   const exportPath = path.resolve(context.input.options['out']);
-  validatePath(exportPath);
   for await (const provider of providers) {
     const plugin = await import(providerPlugin[provider]);
     await plugin.exportResources(context, resources, exportPath);
   }
 };
-
-function validatePath(exportPath: any) {
-  if (typeof exportPath !== 'string') {
-    throw new ExportPathValidationError(`${exportPath} is not a valid path specified by --out`);
-  }
-
-  const stat = fs.lstatSync(exportPath);
-  if (!stat.isDirectory()) {
-    throw new ExportPathValidationError(`${exportPath} is not a valid directory`);
-  }
-}
