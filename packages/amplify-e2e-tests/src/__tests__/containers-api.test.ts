@@ -55,7 +55,7 @@ describe('amplify api add', () => {
     await amplifyPushWithoutCodegen(projRoot);
     const meta = await getProjectMeta(projRoot);
     const apiName = Object.keys(meta['api'])[0];
-    await modifyRestAPI(projRoot, apiName);
+    modifyRestAPI(projRoot, apiName);
     await amplifyPushWithoutCodegen(projRoot);
   });
 });

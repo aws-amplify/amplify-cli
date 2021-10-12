@@ -5,6 +5,7 @@ import { selectRuntime, selectTemplate } from './lambda-function';
 import { singleSelect, multiSelect } from '../utils/selectors';
 import _ from 'lodash';
 import { EOL } from 'os';
+import { modifiedApi } from './resources/modified-api-index';
 
 export function getSchemaPath(schemaName: string): string {
   return `${__dirname}/../../../amplify-e2e-tests/schemas/${schemaName}`;
@@ -597,12 +598,5 @@ export function addRestContainerApiForCustomPolicies(projectDir: string, setting
 
 export function modifyRestAPI(projectDir: string, apiName: string) {
   const indexFilePath = path.join(projectDir, 'amplify', 'backend', 'api', apiName, 'src', 'express', 'index.js');
-  const filesString = fs.readFileSync(indexFilePath, { encoding: 'utf8' });
-  const fileLines = filesString.split(EOL);
-  const index = fileLines.findIndex(r => r === '// Error middleware must be defined last');
-  fs.writeFileSync(indexFilePath, fileLines.slice(0, index - 1).join(EOL));
-  fs.appendFileSync(indexFilePath, EOL + "app.put('/post', async(req, res, next) => {\
-    return {};\
-});" + EOL);
-  fs.appendFileSync(indexFilePath, fileLines.slice(index, fileLines.length).join(EOL));
+  fs.writeFileSync(indexFilePath, modifiedApi);
 }
