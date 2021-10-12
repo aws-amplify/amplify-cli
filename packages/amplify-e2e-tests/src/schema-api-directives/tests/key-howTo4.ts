@@ -269,9 +269,9 @@ export const expected_result_query5 = {
   },
 };
 
-export async function runTest(projectDir: string, testModule: any) {
+export async function runTest(projectDir: string, testModule: any, appName: string) {
   await addApiWithBlankSchemaAndConflictDetection(projectDir);
-  await updateApiSchema(projectDir, 'testapi', testModule.schemaName);
+  await updateApiSchema(projectDir, appName, testModule.schemaName);
   await amplifyPush(projectDir);
 
   const awsconfig = configureAmplify(projectDir);

@@ -163,7 +163,7 @@ describe('amplify add api (GraphQL)', () => {
     await amplifyPush(projRoot);
 
     const meta = getProjectMeta(projRoot);
-    const { output } = meta.api.simplemodelmultiauth;
+    const { output } = meta.api[appName];
     const { GraphQLAPIIdOutput, GraphQLAPIEndpointOutput, GraphQLAPIKeyOutput } = output;
     const { graphqlApi } = await getAppSyncApi(GraphQLAPIIdOutput, meta.providers.awscloudformation.Region);
 
