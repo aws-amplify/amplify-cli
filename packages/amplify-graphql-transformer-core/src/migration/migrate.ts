@@ -37,17 +37,13 @@ async function showDiffs(diffDocs: DiffDocument[]): Promise<void> {
 }
 
 export function migrateGraphQLSchema(schema: string, authMode: string, massSchema: DocumentNode): string {
-  printer.info(schema);
   let output = parse(schema)
   visit(output, {
     ObjectTypeDefinition: {
       enter(node) {
         migrateKeys(node);
-        printer.info("keys");
         migrateAuth(node, authMode);
-        printer.info("auth");
         migrateConnection(node, massSchema);
-        printer.info("conn");
         return node;
       }
     }
@@ -83,7 +79,6 @@ async function runMigration(schemas: SchemaDocument[], authMode: string): Promis
     backupSchemaPromiseArray.push(backupSchema(doc.filePath));
   });
   await Promise.all(backupSchemaPromiseArray);
-  await printer.info("backed up");
 
   fullSchema = schemaList.join('\n');
   let fullSchemaNode = parse(fullSchema);
@@ -93,11 +88,8 @@ async function runMigration(schemas: SchemaDocument[], authMode: string): Promis
     newSchemaList[idx] = { schema: newSchema, filePath: doc.filePath };
   });
 
-  await printer.info("pre diffs");
   const diffs = getSchemaDiffs(schemas, newSchemaList);
-  await printer.info("mid diffs");
   await showDiffs(diffs);
-  await printer.info("post diffs");
 
   const migrationChoices: Array<string> = ["Yes", "Yes, but exit the CLI so I can review/edit my new schemas before compiling/pushing",
     "No, continue my operation with my old schemas"];

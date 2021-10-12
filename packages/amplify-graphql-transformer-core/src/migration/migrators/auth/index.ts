@@ -3,7 +3,6 @@ import { migrateDefaultAuthMode } from './defaultAuth';
 import { migrateFieldAuth } from './fieldAuth';
 import { migrateOwnerAuth } from './ownerAuth';
 import { createArgumentNode, createAuthRule, createDirectiveNode, createListValueNode } from '../generators';
-import { printer } from 'amplify-prompts';
 
 export function hasAuthDirectives(node: any) {
   return node.directives.some((dir: any) => dir.name.value === 'auth');
@@ -73,7 +72,7 @@ function mergeAuthRules(node: any, rules: any[]) {
   let newRules: any[] = [];
   rules.forEach(rule => {
     const existingRuleIndex = getAuthRuleWithSameScopeIndex(newRules, rule);
-    if (existingRuleIndex !== undefined) {
+    if (existingRuleIndex >= 0) {
       newRules[existingRuleIndex] = createAuthRule(getAuthStrategy(rule), getAuthProvider(rule), mergeOperations(newRules[existingRuleIndex], rule));
     } else {
       newRules.push(rule);
