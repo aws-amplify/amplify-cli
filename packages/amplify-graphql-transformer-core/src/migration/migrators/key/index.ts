@@ -1,4 +1,4 @@
-import { makeArgument, makeDirective } from 'graphql-transformer-common';
+import { createArgumentNode, createDirectiveNode } from '../generators';
 
 export function isPrimaryKey(directive: any): boolean {
     return (directive.name.value === 'key'
@@ -11,13 +11,13 @@ export function migratePrimaryKey(node: any, directive: any) {
     const fieldIndex = node.fields.findIndex((field: any) => field.name.value === fields.value.values[0].value);
     let args: any[] = [];
     if (fields.value.values.length !== 1) {
-        args = [makeArgument('sortKeyFields', {
+        args = [createArgumentNode('sortKeyFields', {
                 ...fields.value,
                 values: fields.value.values.slice(1)
             }
         )];
     }
-    node.fields[fieldIndex].directives.push(makeDirective('primaryKey', args));
+    node.fields[fieldIndex].directives.push(createDirectiveNode('primaryKey', args));
 }
 
 export function isSecondaryKey(directive: any) {
@@ -31,14 +31,14 @@ export function migrateSecondaryKey(node: any, directive: any) {
     const fieldIndex = node.fields.findIndex((field: any) => field.name.value === fields.value.values[0].value);
     let args = directive.arguments.filter((i: any) => i.name.value !== "fields");
     if (fields.value.values.length !== 1) {
-        args = [...args, makeArgument(
+        args = [...args, createArgumentNode(
             'sortKeyFields', {
                 ...fields.value,
                 values: fields.value.values.slice(1)
             },
         )];
     }
-    node.fields[fieldIndex].directives.push(makeDirective('index', args));
+    node.fields[fieldIndex].directives.push(createDirectiveNode('index', args));
 }
 
 export function migrateKeys(node: any) {

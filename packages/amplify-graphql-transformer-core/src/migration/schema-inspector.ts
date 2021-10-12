@@ -4,6 +4,7 @@ import { visit } from 'graphql';
 import { collectDirectivesByTypeNames } from '../utils';
 import { listContainsOnlySetString } from './utils';
 import * as fs from 'fs-extra';
+import { printer } from 'amplify-prompts';
 
 
 export function graphQLUsingSQL(apiName: string): boolean {
@@ -11,7 +12,7 @@ export function graphQLUsingSQL(apiName: string): boolean {
   const env = stateManager.getLocalEnvInfo().envName;
   if (teamProviderInfo && teamProviderInfo[env]) {
     const apiCategory = teamProviderInfo[env]?.categories?.api;
-    if (apiCategory[apiName] && apiCategory[apiName]?.rdsClusterIdentifier) {
+    if (apiCategory && apiCategory[apiName] && apiCategory[apiName]?.rdsClusterIdentifier) {
       return true;
     }
   }
@@ -40,16 +41,16 @@ export function detectOverriddenResolvers(apiName: string): boolean {
 }
 
 
-export function detectUnsupportedDirectives(schema: string): Array<string> {
+export async function detectUnsupportedDirectives(schema: string): Promise<Array<string>> {
   const supportedDirectives: Set<string> = new Set<string>(['connection', 'key', 'searchable', 'auth', 'model', 'function',
     'predictions', 'aws_api_key', 'aws_iam', 'aws_oidc', 'aws_cognito_user_pools', 'aws_auth', 'aws_subscribe']);
-  const directiveMap: any = collectDirectivesByTypeNames(schema);
+  const directiveMap: any = collectDirectivesByTypeNames(schema).types;
   let unsupportedDirSet: Set<string> = new Set<string>();
-  Object.keys(directiveMap).forEach(type => {
-    listContainsOnlySetString(directiveMap[type], supportedDirectives).forEach(dirName => {
+  for(let type of Object.keys(directiveMap)) {
+    for(let dirName of listContainsOnlySetString(directiveMap[type], supportedDirectives)) {
       unsupportedDirSet.add(dirName);
-    })
-  });
+    }
+  }
 
   return Array.from(unsupportedDirSet);
 }
