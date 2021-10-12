@@ -14,7 +14,7 @@ import {
   updatePlaceIndexWithDefault,
   updateSecondMapAsDefault,
   updateSecondPlaceIndexAsDefault,
-  generateTwoResourceIdsInOrder,
+  generateResourceIdsInOrder,
   getGeoJSConfiguration
 } from 'amplify-e2e-core';
 import { existsSync } from 'fs';
@@ -36,19 +36,20 @@ describe('amplify geo update', () => {
   });
 
   it('init a project with default auth config, add the map resource and update the auth config', async () => {
+    const [map1Id, map2Id] = generateResourceIdsInOrder(2);
     await initJSProjectWithProfile(projRoot, {});
     await addAuthWithDefault(projRoot);
-    await addMapWithDefault(projRoot, { isFirstGeoResource: true });
+    await addMapWithDefault(projRoot, { resourceName: map1Id, isFirstGeoResource: true });
+    await addMapWithDefault(projRoot, { resourceName: map2Id, isAdditional: true, isDefault: false });
     await updateMapWithDefault(projRoot);
     await amplifyPushWithoutCodegen(projRoot);
 
     const meta = getProjectMeta(projRoot);
-    const geoMeta = Object.keys(meta.geo).filter(key => meta.geo[key].service === 'Map').map(key => meta.geo[key])[0]
-    const mapName = geoMeta.output.Name;
-    const region = meta.providers.awscloudformation.Region;
+    const mapName = meta.geo[map1Id].output.Name;
+    const region = meta.geo[map1Id].output.Region;
     const map = await getMap(mapName, region);
     expect(map.MapName).toBeDefined();
-    expect(geoMeta.accessType).toBe('AuthorizedAndGuestUsers');
+    expect(meta.geo[map1Id].accessType).toBe('AuthorizedAndGuestUsers');
     const awsExport: any = getAWSExports(projRoot).default;
     expect(getGeoJSConfiguration(awsExport).maps.items[mapName]).toBeDefined();
     expect(getGeoJSConfiguration(awsExport).maps.default).toEqual(mapName);
@@ -56,19 +57,20 @@ describe('amplify geo update', () => {
   });
 
   it('init a project with default auth config, add the place index resource and update the auth config', async () => {
+    const [index1Id, index2Id] = generateResourceIdsInOrder(2);
     await initJSProjectWithProfile(projRoot, {});
     await addAuthWithDefault(projRoot);
-    await addPlaceIndexWithDefault(projRoot, { isFirstGeoResource: true });
+    await addPlaceIndexWithDefault(projRoot, { resourceName: index1Id, isFirstGeoResource: true });
+    await addPlaceIndexWithDefault(projRoot, { resourceName: index2Id, isAdditional: true, isDefault: false });
     await updatePlaceIndexWithDefault(projRoot);
     await amplifyPushWithoutCodegen(projRoot);
 
     const meta = getProjectMeta(projRoot);
-    const geoMeta = Object.keys(meta.geo).filter(key => meta.geo[key].service === 'PlaceIndex').map(key => meta.geo[key])[0]
-    const placeIndexName = geoMeta.output.Name;
-    const region = meta.providers.awscloudformation.Region;
+    const placeIndexName = meta.geo[index1Id].output.Name;
+    const region = meta.geo[index1Id].output.Region;
     const placeIndex = await getPlaceIndex(placeIndexName, region);
     expect(placeIndex.IndexName).toBeDefined();
-    expect(geoMeta.accessType).toBe('AuthorizedAndGuestUsers');
+    expect(meta.geo[index1Id].accessType).toBe('AuthorizedAndGuestUsers');
     const awsExport: any = getAWSExports(projRoot).default;
     expect(getGeoJSConfiguration(awsExport).search_indices.items).toContain(placeIndexName);
     expect(getGeoJSConfiguration(awsExport).search_indices.default).toEqual(placeIndexName);
@@ -76,11 +78,12 @@ describe('amplify geo update', () => {
   });
 
   it('init a project with default auth config, add multiple map resources and update the default map', async () => {
-    const [map1Id, map2Id] = generateTwoResourceIdsInOrder();
+    const [map1Id, map2Id, map3Id] = generateResourceIdsInOrder(3);
     await initJSProjectWithProfile(projRoot, {});
     await addAuthWithDefault(projRoot);
     await addMapWithDefault(projRoot, { resourceName: map1Id, isFirstGeoResource: true });
     await addMapWithDefault(projRoot, { resourceName: map2Id, isAdditional: true, isDefault: false });
+    await addMapWithDefault(projRoot, { resourceName: map3Id, isAdditional: true, isDefault: false });
     await updateSecondMapAsDefault(projRoot);
     await amplifyPushWithoutCodegen(projRoot);
 
@@ -89,7 +92,7 @@ describe('amplify geo update', () => {
     expect(meta.geo[map1Id].isDefault).toBe(false);
     expect(meta.geo[map2Id].isDefault).toBe(true);
     //check if resource is provisioned in cloud
-    const region = meta.providers.awscloudformation.Region;
+    const region = meta.geo[map1Id].output.Region;
     const map1Name = meta.geo[map1Id].output.Name;
     const map2Name = meta.geo[map2Id].output.Name;
     const map1 = await getMap(map1Name, region);
@@ -105,11 +108,12 @@ describe('amplify geo update', () => {
   });
 
   it('init a project with default auth config, add multiple place index resources and update the default index', async () => {
-    const [index1Id, index2Id] = generateTwoResourceIdsInOrder();
+    const [index1Id, index2Id, index3Id] = generateResourceIdsInOrder(3);
     await initJSProjectWithProfile(projRoot, {});
     await addAuthWithDefault(projRoot);
     await addPlaceIndexWithDefault(projRoot, { resourceName: index1Id, isFirstGeoResource: true });
     await addPlaceIndexWithDefault(projRoot, { resourceName: index2Id, isAdditional: true, isDefault: false });
+    await addPlaceIndexWithDefault(projRoot, { resourceName: index3Id, isAdditional: true, isDefault: false });
     await updateSecondPlaceIndexAsDefault(projRoot);
     await amplifyPushWithoutCodegen(projRoot);
 
@@ -118,7 +122,7 @@ describe('amplify geo update', () => {
     expect(meta.geo[index1Id].isDefault).toBe(false);
     expect(meta.geo[index2Id].isDefault).toBe(true);
     //check if resource is provisioned in cloud
-    const region = meta.providers.awscloudformation.Region;
+    const region = meta.geo[index1Id].output.Region;
     const index1Name = meta.geo[index1Id].output.Name;
     const index2Name = meta.geo[index2Id].output.Name;
     const index1 = await getPlaceIndex(index1Name, region);
