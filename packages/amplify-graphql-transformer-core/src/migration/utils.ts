@@ -1,6 +1,7 @@
 import * as fs from 'fs-extra';
 import { stateManager } from 'amplify-cli-core';
 import * as Diff from 'diff';
+import { Change } from 'diff';
 
 export type SchemaDocument = {
   schema: string;
@@ -100,11 +101,23 @@ export function listContainsOnlySetString(list: Array<string>, set: Set<string>)
   return outputArray;
 }
 
+function diffPrefix(change: Change): string {
+  if (change.added) {
+    return '+';
+  }
+  else if (change.removed) {
+    return '-';
+  }
+  return ' ';
+}
+
 export function getSchemaDiffs(oldSchemas: SchemaDocument[], newSchemas: SchemaDocument[]): DiffDocument[] {
   const diffDocs = new Array<DiffDocument>(oldSchemas.length);
   oldSchemas.forEach((oldSchema, idx) => {
+    const lineDifferences = Diff.diffLines(oldSchemas[idx].schema, newSchemas[idx].schema);
+    const totalDiff = lineDifferences.map(change => { return `${diffPrefix(change)}${change.value}` }).join('');
     diffDocs[idx] = {
-      schemaDiff: Diff.diffLines(oldSchemas[idx].schema, newSchemas[idx].schema).toString(),
+      schemaDiff: totalDiff,
       filePath: oldSchema.filePath
     };
   });
