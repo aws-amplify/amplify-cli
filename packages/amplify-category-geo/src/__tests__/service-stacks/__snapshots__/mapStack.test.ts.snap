@@ -10,6 +10,14 @@ Object {
     },
   },
   "Outputs": Object {
+    "Arn": Object {
+      "Value": Object {
+        "Fn::GetAtt": Array [
+          "CustomMap",
+          "MapArn",
+        ],
+      },
+    },
     "Name": Object {
       "Value": Object {
         "Fn::GetAtt": Array [
@@ -64,7 +72,7 @@ Object {
       "Properties": Object {
         "ServiceToken": Object {
           "Fn::GetAtt": Array [
-            "CustomMapLambda",
+            "CustomMapLambda51D5D430",
             "Arn",
           ],
         },
@@ -103,12 +111,16 @@ Object {
       "Type": "Custom::LambdaCallout",
       "UpdateReplacePolicy": "Delete",
     },
-    "CustomMapLambda": Object {
+    "CustomMapLambda51D5D430": Object {
+      "DependsOn": Array [
+        "CustomMapLambdaServiceRoleDefaultPolicy983FDD4E",
+        "CustomMapLambdaServiceRole4EE7732C",
+      ],
       "Properties": Object {
         "Code": Object {
           "ZipFile": "const response = require('cfn-response');
 const aws = require('aws-sdk');
-exports.handler = (event, context) => {
+exports.handler = async (event, context) => {
  try {
   console.log('REQUEST RECEIVED:' + JSON.stringify(event));
   if (event.RequestType == 'Create') {
@@ -120,18 +132,15 @@ exports.handler = (event, context) => {
       PricingPlan: event.ResourceProperties.pricingPlan
     };
     const locationClient = new aws.Location({ apiVersion: '2020-11-19', region: event.ResourceProperties.region });
-    locationClient.createMap(params).promise()
-    .then((res) => {
-       console.log(\\"create\\" + res);
-       console.log(\\"response data\\" + JSON.stringify(res));
-       if (res.MapName && res.MapArn) {
-         event.PhysicalResourceId = event.ResourceProperties.mapName;
-         response.send(event, context, response.SUCCESS, res);
-       }
-       else {
-         response.send(event, context, response.FAILED, res);
-       }
-     });
+    const res = await locationClient.createMap(params).promise();
+    console.log(\\"create resource response data\\" + JSON.stringify(res));
+    if (res.MapName && res.MapArn) {
+        event.PhysicalResourceId = res.MapName;
+        await send(event, context, response.SUCCESS, res);
+    }
+    else {
+        await send(event, context, response.FAILED, res);
+    }
   }
   if (event.RequestType == 'Update') {
     let params = {
@@ -139,169 +148,141 @@ exports.handler = (event, context) => {
       PricingPlan: event.ResourceProperties.pricingPlan
     };
     const locationClient = new aws.Location({ apiVersion: '2020-11-19', region: event.ResourceProperties.region });
-    locationClient.updateMap(params).promise()
-    .then((res) => {
-       console.log(\\"update\\" + res);
-       console.log(\\"response data\\" + JSON.stringify(res));
-       if (res.MapName && res.MapArn) {
-         event.PhysicalResourceId = event.ResourceProperties.mapName;
-         response.send(event, context, response.SUCCESS, res);
-       }
-       else {
-         response.send(event, context, response.FAILED, res);
-       }
-     });
+    const res = await locationClient.updateMap(params).promise();
+    console.log(\\"update resource response data\\" + JSON.stringify(res));
+    if (res.MapName && res.MapArn) {
+        event.PhysicalResourceId = res.MapName;
+        await send(event, context, response.SUCCESS, res);
+    }
+    else {
+        await send(event, context, response.FAILED, res);
+    }
   }
   if (event.RequestType == 'Delete') {
     let params = {
       MapName: event.ResourceProperties.mapName
     };
     const locationClient = new aws.Location({ apiVersion: '2020-11-19', region: event.ResourceProperties.region });
-    locationClient.deleteMap(params).promise()
-    .then((res) => {
-       event.PhysicalResourceId = event.ResourceProperties.mapName;
-       console.log(\\"delete\\" + res);
-       console.log(\\"response data\\" + JSON.stringify(res));
-       response.send(event, context, response.SUCCESS, res);
-     });
+    const res = await locationClient.deleteMap(params).promise();
+    event.PhysicalResourceId = event.ResourceProperties.mapName;
+    console.log(\\"delete resource response data\\" + JSON.stringify(res));
+    await send(event, context, response.SUCCESS, res);
   }
  } catch(err) {
   console.log(err.stack);
   const res = {Error: err};
-  response.send(event, context, response.FAILED, res);
+  await send(event, context, response.FAILED, res);
   throw err;
  }
-};",
+};
+
+function send(event, context, status, data) {
+    return new Promise(() => { response.send(event, context, status, data) });
+}
+",
         },
         "Handler": "index.handler",
         "Role": Object {
           "Fn::GetAtt": Array [
-            "CustomMapLambdaExecutionRole",
+            "CustomMapLambdaServiceRole4EE7732C",
             "Arn",
           ],
         },
-        "Runtime": "nodejs12.x",
+        "Runtime": "nodejs14.x",
         "Timeout": 300,
       },
       "Type": "AWS::Lambda::Function",
     },
-    "CustomMapLambdaExecutionRole": Object {
+    "CustomMapLambdaServiceRole4EE7732C": Object {
       "Properties": Object {
         "AssumeRolePolicyDocument": Object {
           "Statement": Array [
             Object {
-              "Action": Array [
-                "sts:AssumeRole",
-              ],
+              "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": Object {
-                "Service": Array [
-                  "lambda.amazonaws.com",
+                "Service": "lambda.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "ManagedPolicyArns": Array [
+          Object {
+            "Fn::Join": Array [
+              "",
+              Array [
+                "arn:",
+                Object {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+              ],
+            ],
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "CustomMapLambdaServiceRoleDefaultPolicy983FDD4E": Object {
+      "Properties": Object {
+        "PolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": "geo:CreateMap",
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+            Object {
+              "Action": Array [
+                "geo:UpdateMap",
+                "geo:DeleteMap",
+              ],
+              "Effect": "Allow",
+              "Resource": Object {
+                "Fn::Sub": Array [
+                  "arn:aws:geo:\${region}:\${account}:map/\${mapName}",
+                  Object {
+                    "account": Object {
+                      "Ref": "AWS::AccountId",
+                    },
+                    "mapName": Object {
+                      "Fn::Join": Array [
+                        "-",
+                        Array [
+                          Object {
+                            "Ref": "mapName",
+                          },
+                          Object {
+                            "Ref": "env",
+                          },
+                        ],
+                      ],
+                    },
+                    "region": Object {
+                      "Fn::FindInMap": Array [
+                        "RegionMapping",
+                        Object {
+                          "Ref": "AWS::Region",
+                        },
+                        "locationServiceRegion",
+                      ],
+                    },
+                  },
                 ],
               },
             },
           ],
           "Version": "2012-10-17",
         },
-        "Policies": Array [
+        "PolicyName": "CustomMapLambdaServiceRoleDefaultPolicy983FDD4E",
+        "Roles": Array [
           Object {
-            "PolicyDocument": Object {
-              "Statement": Array [
-                Object {
-                  "Action": Array [
-                    "logs:CreateLogGroup",
-                    "logs:CreateLogStream",
-                    "logs:PutLogEvents",
-                  ],
-                  "Effect": "Allow",
-                  "Resource": "arn:aws:logs:*:*:*",
-                },
-              ],
-              "Version": "2012-10-17",
-            },
-            "PolicyName": Object {
-              "Fn::Join": Array [
-                "",
-                Array [
-                  Object {
-                    "Fn::Join": Array [
-                      "-",
-                      Array [
-                        Object {
-                          "Ref": "mapName",
-                        },
-                        Object {
-                          "Ref": "env",
-                        },
-                      ],
-                    ],
-                  },
-                  "CustomLambdaLogPolicy",
-                ],
-              ],
-            },
-          },
-          Object {
-            "PolicyDocument": Object {
-              "Statement": Array [
-                Object {
-                  "Action": Array [
-                    "geo:CreateMap",
-                    "geo:UpdateMap",
-                    "geo:DeleteMap",
-                  ],
-                  "Effect": "Allow",
-                  "Resource": "*",
-                },
-              ],
-              "Version": "2012-10-17",
-            },
-            "PolicyName": Object {
-              "Fn::Join": Array [
-                "",
-                Array [
-                  Object {
-                    "Fn::Join": Array [
-                      "-",
-                      Array [
-                        Object {
-                          "Ref": "mapName",
-                        },
-                        Object {
-                          "Ref": "env",
-                        },
-                      ],
-                    ],
-                  },
-                  "CustomLambdaGeoPolicy",
-                ],
-              ],
-            },
+            "Ref": "CustomMapLambdaServiceRole4EE7732C",
           },
         ],
-        "RoleName": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              Object {
-                "Fn::Join": Array [
-                  "-",
-                  Array [
-                    Object {
-                      "Ref": "mapName",
-                    },
-                    Object {
-                      "Ref": "env",
-                    },
-                  ],
-                ],
-              },
-              "LambdaRole",
-            ],
-          ],
-        },
       },
-      "Type": "AWS::IAM::Role",
+      "Type": "AWS::IAM::Policy",
     },
     "MapPolicy": Object {
       "Properties": Object {
@@ -371,6 +352,14 @@ Object {
     },
   },
   "Outputs": Object {
+    "Arn": Object {
+      "Value": Object {
+        "Fn::GetAtt": Array [
+          "CustomMap",
+          "MapArn",
+        ],
+      },
+    },
     "Name": Object {
       "Value": Object {
         "Fn::GetAtt": Array [
@@ -425,7 +414,7 @@ Object {
       "Properties": Object {
         "ServiceToken": Object {
           "Fn::GetAtt": Array [
-            "CustomMapLambda",
+            "CustomMapLambda51D5D430",
             "Arn",
           ],
         },
@@ -464,12 +453,16 @@ Object {
       "Type": "Custom::LambdaCallout",
       "UpdateReplacePolicy": "Delete",
     },
-    "CustomMapLambda": Object {
+    "CustomMapLambda51D5D430": Object {
+      "DependsOn": Array [
+        "CustomMapLambdaServiceRoleDefaultPolicy983FDD4E",
+        "CustomMapLambdaServiceRole4EE7732C",
+      ],
       "Properties": Object {
         "Code": Object {
           "ZipFile": "const response = require('cfn-response');
 const aws = require('aws-sdk');
-exports.handler = (event, context) => {
+exports.handler = async (event, context) => {
  try {
   console.log('REQUEST RECEIVED:' + JSON.stringify(event));
   if (event.RequestType == 'Create') {
@@ -481,18 +474,15 @@ exports.handler = (event, context) => {
       PricingPlan: event.ResourceProperties.pricingPlan
     };
     const locationClient = new aws.Location({ apiVersion: '2020-11-19', region: event.ResourceProperties.region });
-    locationClient.createMap(params).promise()
-    .then((res) => {
-       console.log(\\"create\\" + res);
-       console.log(\\"response data\\" + JSON.stringify(res));
-       if (res.MapName && res.MapArn) {
-         event.PhysicalResourceId = event.ResourceProperties.mapName;
-         response.send(event, context, response.SUCCESS, res);
-       }
-       else {
-         response.send(event, context, response.FAILED, res);
-       }
-     });
+    const res = await locationClient.createMap(params).promise();
+    console.log(\\"create resource response data\\" + JSON.stringify(res));
+    if (res.MapName && res.MapArn) {
+        event.PhysicalResourceId = res.MapName;
+        await send(event, context, response.SUCCESS, res);
+    }
+    else {
+        await send(event, context, response.FAILED, res);
+    }
   }
   if (event.RequestType == 'Update') {
     let params = {
@@ -500,169 +490,141 @@ exports.handler = (event, context) => {
       PricingPlan: event.ResourceProperties.pricingPlan
     };
     const locationClient = new aws.Location({ apiVersion: '2020-11-19', region: event.ResourceProperties.region });
-    locationClient.updateMap(params).promise()
-    .then((res) => {
-       console.log(\\"update\\" + res);
-       console.log(\\"response data\\" + JSON.stringify(res));
-       if (res.MapName && res.MapArn) {
-         event.PhysicalResourceId = event.ResourceProperties.mapName;
-         response.send(event, context, response.SUCCESS, res);
-       }
-       else {
-         response.send(event, context, response.FAILED, res);
-       }
-     });
+    const res = await locationClient.updateMap(params).promise();
+    console.log(\\"update resource response data\\" + JSON.stringify(res));
+    if (res.MapName && res.MapArn) {
+        event.PhysicalResourceId = res.MapName;
+        await send(event, context, response.SUCCESS, res);
+    }
+    else {
+        await send(event, context, response.FAILED, res);
+    }
   }
   if (event.RequestType == 'Delete') {
     let params = {
       MapName: event.ResourceProperties.mapName
     };
     const locationClient = new aws.Location({ apiVersion: '2020-11-19', region: event.ResourceProperties.region });
-    locationClient.deleteMap(params).promise()
-    .then((res) => {
-       event.PhysicalResourceId = event.ResourceProperties.mapName;
-       console.log(\\"delete\\" + res);
-       console.log(\\"response data\\" + JSON.stringify(res));
-       response.send(event, context, response.SUCCESS, res);
-     });
+    const res = await locationClient.deleteMap(params).promise();
+    event.PhysicalResourceId = event.ResourceProperties.mapName;
+    console.log(\\"delete resource response data\\" + JSON.stringify(res));
+    await send(event, context, response.SUCCESS, res);
   }
  } catch(err) {
   console.log(err.stack);
   const res = {Error: err};
-  response.send(event, context, response.FAILED, res);
+  await send(event, context, response.FAILED, res);
   throw err;
  }
-};",
+};
+
+function send(event, context, status, data) {
+    return new Promise(() => { response.send(event, context, status, data) });
+}
+",
         },
         "Handler": "index.handler",
         "Role": Object {
           "Fn::GetAtt": Array [
-            "CustomMapLambdaExecutionRole",
+            "CustomMapLambdaServiceRole4EE7732C",
             "Arn",
           ],
         },
-        "Runtime": "nodejs12.x",
+        "Runtime": "nodejs14.x",
         "Timeout": 300,
       },
       "Type": "AWS::Lambda::Function",
     },
-    "CustomMapLambdaExecutionRole": Object {
+    "CustomMapLambdaServiceRole4EE7732C": Object {
       "Properties": Object {
         "AssumeRolePolicyDocument": Object {
           "Statement": Array [
             Object {
-              "Action": Array [
-                "sts:AssumeRole",
-              ],
+              "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": Object {
-                "Service": Array [
-                  "lambda.amazonaws.com",
+                "Service": "lambda.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "ManagedPolicyArns": Array [
+          Object {
+            "Fn::Join": Array [
+              "",
+              Array [
+                "arn:",
+                Object {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+              ],
+            ],
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "CustomMapLambdaServiceRoleDefaultPolicy983FDD4E": Object {
+      "Properties": Object {
+        "PolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": "geo:CreateMap",
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+            Object {
+              "Action": Array [
+                "geo:UpdateMap",
+                "geo:DeleteMap",
+              ],
+              "Effect": "Allow",
+              "Resource": Object {
+                "Fn::Sub": Array [
+                  "arn:aws:geo:\${region}:\${account}:map/\${mapName}",
+                  Object {
+                    "account": Object {
+                      "Ref": "AWS::AccountId",
+                    },
+                    "mapName": Object {
+                      "Fn::Join": Array [
+                        "-",
+                        Array [
+                          Object {
+                            "Ref": "mapName",
+                          },
+                          Object {
+                            "Ref": "env",
+                          },
+                        ],
+                      ],
+                    },
+                    "region": Object {
+                      "Fn::FindInMap": Array [
+                        "RegionMapping",
+                        Object {
+                          "Ref": "AWS::Region",
+                        },
+                        "locationServiceRegion",
+                      ],
+                    },
+                  },
                 ],
               },
             },
           ],
           "Version": "2012-10-17",
         },
-        "Policies": Array [
+        "PolicyName": "CustomMapLambdaServiceRoleDefaultPolicy983FDD4E",
+        "Roles": Array [
           Object {
-            "PolicyDocument": Object {
-              "Statement": Array [
-                Object {
-                  "Action": Array [
-                    "logs:CreateLogGroup",
-                    "logs:CreateLogStream",
-                    "logs:PutLogEvents",
-                  ],
-                  "Effect": "Allow",
-                  "Resource": "arn:aws:logs:*:*:*",
-                },
-              ],
-              "Version": "2012-10-17",
-            },
-            "PolicyName": Object {
-              "Fn::Join": Array [
-                "",
-                Array [
-                  Object {
-                    "Fn::Join": Array [
-                      "-",
-                      Array [
-                        Object {
-                          "Ref": "mapName",
-                        },
-                        Object {
-                          "Ref": "env",
-                        },
-                      ],
-                    ],
-                  },
-                  "CustomLambdaLogPolicy",
-                ],
-              ],
-            },
-          },
-          Object {
-            "PolicyDocument": Object {
-              "Statement": Array [
-                Object {
-                  "Action": Array [
-                    "geo:CreateMap",
-                    "geo:UpdateMap",
-                    "geo:DeleteMap",
-                  ],
-                  "Effect": "Allow",
-                  "Resource": "*",
-                },
-              ],
-              "Version": "2012-10-17",
-            },
-            "PolicyName": Object {
-              "Fn::Join": Array [
-                "",
-                Array [
-                  Object {
-                    "Fn::Join": Array [
-                      "-",
-                      Array [
-                        Object {
-                          "Ref": "mapName",
-                        },
-                        Object {
-                          "Ref": "env",
-                        },
-                      ],
-                    ],
-                  },
-                  "CustomLambdaGeoPolicy",
-                ],
-              ],
-            },
+            "Ref": "CustomMapLambdaServiceRole4EE7732C",
           },
         ],
-        "RoleName": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              Object {
-                "Fn::Join": Array [
-                  "-",
-                  Array [
-                    Object {
-                      "Ref": "mapName",
-                    },
-                    Object {
-                      "Ref": "env",
-                    },
-                  ],
-                ],
-              },
-              "LambdaRole",
-            ],
-          ],
-        },
       },
-      "Type": "AWS::IAM::Role",
+      "Type": "AWS::IAM::Policy",
     },
     "MapPolicy": Object {
       "Properties": Object {
