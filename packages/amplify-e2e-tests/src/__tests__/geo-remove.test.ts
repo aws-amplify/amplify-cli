@@ -106,6 +106,7 @@ describe('amplify geo remove', () => {
     const oldMeta = getProjectMeta(projRoot);
     expect(oldMeta.geo[index1Id].isDefault).toBe(true);
     expect(oldMeta.geo[index2Id].isDefault).toBe(false);
+    const index1Name = oldMeta.geo[index1Id].output.Name;
     const index2Name = oldMeta.geo[index2Id].output.Name;
     const region = oldMeta.geo[index1Id].output.Region;
     //remove place index
@@ -116,6 +117,7 @@ describe('amplify geo remove', () => {
     expect(newMeta.geo[index2Id].isDefault).toBe(true);
     const awsExport: any = getAWSExports(projRoot).default;
     expect(getGeoJSConfiguration(awsExport).search_indices.items).toContain(index2Name);
+    expect(getGeoJSConfiguration(awsExport).search_indices.items).not.toContain(index1Name);
     expect(getGeoJSConfiguration(awsExport).search_indices.default).toEqual(index2Name);
     expect(getGeoJSConfiguration(awsExport).region).toEqual(region);
   });

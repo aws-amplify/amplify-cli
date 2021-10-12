@@ -123,12 +123,12 @@ export const insufficientInfoForUpdateError = (service: ServiceName) => {
   new Error(`Insufficient information to update ${getServiceFriendlyName(service)}. Please re-try and provide all inputs.`);
 }
 
-export const getTemplateMappings = (context: $TSContext): TemplateMappings => {
+export const getTemplateMappings = async (context: $TSContext): Promise<TemplateMappings> => {
   const Mappings: TemplateMappings = {
     RegionMapping: {}
   };
   const providerPlugins = context.amplify.getProviderPlugins(context);
-  const providerPlugin = require(providerPlugins[provider]);
+  const providerPlugin = await import(providerPlugins[provider]);
   const regionMapping = providerPlugin.getLocationRegionMapping();
   Object.keys(regionMapping).forEach(region => {
     Mappings.RegionMapping[region] = {

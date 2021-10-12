@@ -13,7 +13,8 @@ export const createPlaceIndexResource = async (context: $TSContext, parameters: 
   await checkAuthConfig(context, parameters, ServiceName.PlaceIndex);
 
   // generate CFN files
-  const placeIndexStack = new PlaceIndexStack(new App(), 'PlaceIndexStack', { ...parameters, ...getTemplateMappings(context) });
+  const templateMappings = await getTemplateMappings(context);
+  const placeIndexStack = new PlaceIndexStack(new App(), 'PlaceIndexStack', { ...parameters, ...templateMappings });
   generateTemplateFile(placeIndexStack, parameters.name);
   saveCFNParameters(parameters);
 
@@ -40,7 +41,8 @@ export const modifyPlaceIndexResource = async (
   await checkAuthConfig(context, parameters, ServiceName.PlaceIndex);
 
   // generate CFN files
-  const placeIndexStack = new PlaceIndexStack(new App(), 'PlaceIndexStack', { ...parameters, ...getTemplateMappings(context) });
+  const templateMappings = await getTemplateMappings(context);
+  const placeIndexStack = new PlaceIndexStack(new App(), 'PlaceIndexStack', { ...parameters, ...templateMappings });
   generateTemplateFile(placeIndexStack, parameters.name);
 
   // update the default place index

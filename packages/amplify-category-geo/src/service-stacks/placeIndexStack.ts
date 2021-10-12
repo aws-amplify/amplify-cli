@@ -1,10 +1,14 @@
 import * as cdk from '@aws-cdk/core';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
-import { CfnResource, Fn } from '@aws-cdk/core';
+import { CfnResource, Duration, Fn } from '@aws-cdk/core';
 import { PlaceIndexParameters } from '../service-utils/placeIndexParams';
 import { AccessType } from '../service-utils/resourceParams';
 import { BaseStack, TemplateMappings } from './baseStack';
+import { Effect } from '@aws-cdk/aws-iam';
+import { customPlaceIndexLambdaCodePath } from '../service-utils/constants';
+import * as fs from 'fs-extra';
+import { Runtime } from '@aws-cdk/aws-lambda';
 
 type PlaceIndexStackProps = Pick<PlaceIndexParameters, 'accessType'> & TemplateMappings;
 
@@ -48,159 +52,61 @@ export class PlaceIndexStack extends BaseStack {
     new cdk.CfnOutput(this, 'Region', {
         value: this.placeIndexRegion
     });
+    new cdk.CfnOutput(this, 'Arn', {
+      value: this.placeIndexResource.getAtt('IndexArn').toString()
+    });
   }
 
   private constructIndexResource(): cdk.CustomResource {
-    const lambdaExecutionRole = new iam.CfnRole(this, 'CustomPlaceIndexLambdaExecutionRole', {
-      roleName: `${this.placeIndexName}LambdaRole`,
-      assumeRolePolicyDocument: {
-        Version: '2012-10-17',
-        Statement: [
-          {
-            Effect: 'Allow',
-            Principal: {
-              Service: ['lambda.amazonaws.com'],
-            },
-            Action: ['sts:AssumeRole'],
-          },
-        ],
-      },
-      policies: [
-        {
-          policyName: `${this.placeIndexName}CustomLambdaLogPolicy`,
-          policyDocument: {
-            Version: '2012-10-17',
-            Statement: [
-              {
-                Effect: 'Allow',
-                Action: ['logs:CreateLogGroup', 'logs:CreateLogStream', 'logs:PutLogEvents'],
-                Resource: 'arn:aws:logs:*:*:*',
-              },
-            ],
-          },
-        },
-        {
-          policyName: `${this.placeIndexName}CustomLambdaGeoPolicy`,
-          policyDocument: {
-            Version: '2012-10-17',
-            Statement: [
-              {
-                Effect: 'Allow',
-                Action: [
-                  'geo:CreatePlaceIndex',
-                  'geo:UpdatePlaceIndex',
-                  'geo:DeletePlaceIndex'
-                ],
-                Resource: '*',
-              },
-            ],
-          },
-        }
-      ],
+    const geoCreateIndexStatement = new iam.PolicyStatement({
+      effect: Effect.ALLOW
+    });
+    geoCreateIndexStatement.addActions('geo:CreatePlaceIndex');
+    geoCreateIndexStatement.addAllResources();
+
+    const placeIndexARN = cdk.Fn.sub('arn:aws:geo:${region}:${account}:place-index/${indexName}', {
+      region: this.placeIndexRegion,
+      account: cdk.Fn.ref('AWS::AccountId'),
+      indexName: this.placeIndexName
     });
 
-  const dataSource = this.parameters.get('dataProvider')!.valueAsString;
+    const geoUpdateDeleteIndexStatement = new iam.PolicyStatement({
+      effect: Effect.ALLOW
+    });
+    geoUpdateDeleteIndexStatement.addActions('geo:UpdatePlaceIndex', 'geo:DeletePlaceIndex');
+    geoUpdateDeleteIndexStatement.addResources(placeIndexARN);
 
-  const dataSourceIntendedUse = this.parameters.get('dataSourceIntendedUse')!.valueAsString;
+    const dataSource = this.parameters.get('dataProvider')!.valueAsString;
 
-  const indexPricingPlan = this.parameters.get('pricingPlan')!.valueAsString;
+    const dataSourceIntendedUse = this.parameters.get('dataSourceIntendedUse')!.valueAsString;
 
-  const customPlaceIndexLambda = new lambda.CfnFunction(this, 'CustomPlaceIndexLambda', {
-    code: {
-    zipFile: cdk.Fn.join('\n', [
-        "const response = require('cfn-response');",
-        "const aws = require('aws-sdk');",
-        "exports.handler = (event, context) => {",
-        " try {",
-        "  console.log('REQUEST RECEIVED:' + JSON.stringify(event));",
-        "  if (event.RequestType == 'Create') {",
-        "    let params = {",
-        "      IndexName: event.ResourceProperties.indexName,",
-        "      DataSource: event.ResourceProperties.dataSource,",
-        "      PricingPlan: event.ResourceProperties.pricingPlan,",
-        "      DataSourceConfiguration: {",
-        "        IntendedUse: event.ResourceProperties.dataSourceIntendedUse",
-        "      }",
-        "    };",
-        "    const locationClient = new aws.Location({ apiVersion: '2020-11-19', region: event.ResourceProperties.region });",
-        "    locationClient.createPlaceIndex(params).promise()",
-        "    .then((res) => {",
-        "       console.log(\"create\" + res);",
-        "       console.log(\"response data\" + JSON.stringify(res));",
-        "       if (res.IndexName && res.IndexArn) {",
-        "         event.PhysicalResourceId = event.ResourceProperties.indexName;",
-        "         response.send(event, context, response.SUCCESS, res);",
-        "       }",
-        "       else {",
-        "         response.send(event, context, response.FAILED, res);",
-        "       }",
-        "     });",
-        "  }",
-        "  if (event.RequestType == 'Update') {",
-        "    let params = {",
-        "      IndexName: event.ResourceProperties.indexName,",
-        "      PricingPlan: event.ResourceProperties.pricingPlan,",
-        "      DataSourceConfiguration: {",
-        "        IntendedUse: event.ResourceProperties.dataSourceIntendedUse",
-        "      }",
-        "    };",
-        "    const locationClient = new aws.Location({ apiVersion: '2020-11-19', region: event.ResourceProperties.region });",
-        "    locationClient.updatePlaceIndex(params).promise()",
-        "    .then((res) => {",
-        "       console.log(\"update\" + res);",
-        "       console.log(\"response data\" + JSON.stringify(res));",
-        "       if (res.IndexName && res.IndexArn) {",
-        "         event.PhysicalResourceId = event.ResourceProperties.indexName;",
-        "         response.send(event, context, response.SUCCESS, res);",
-        "       }",
-        "       else {",
-        "         response.send(event, context, response.FAILED, res);",
-        "       }",
-        "     });",
-        "  }",
-        "  if (event.RequestType == 'Delete') {",
-        "    let params = {",
-        "      IndexName: event.ResourceProperties.indexName",
-        "    };",
-        "    const locationClient = new aws.Location({ apiVersion: '2020-11-19', region: event.ResourceProperties.region });",
-        "    locationClient.deletePlaceIndex(params).promise()",
-        "    .then((res) => {",
-        "       event.PhysicalResourceId = event.ResourceProperties.indexName;",
-        "       console.log(\"delete\" + res);",
-        "       console.log(\"response data\" + JSON.stringify(res));",
-        "       response.send(event, context, response.SUCCESS, res);",
-        "     });",
-        "  }",
-        " } catch(err) {",
-        "  console.log(err.stack);",
-        "  const res = {Error: err};",
-        "  response.send(event, context, response.FAILED, res);",
-        "  throw err;",
-        " }",
-        "};"
-    ]),
-    },
-    handler: 'index.handler',
-    runtime: 'nodejs12.x',
-    timeout: 300,
-    role: lambdaExecutionRole.attrArn
-  });
+    const indexPricingPlan = this.parameters.get('pricingPlan')!.valueAsString;
 
-  const placeIndexCustomResource = new cdk.CustomResource(this, 'CustomPlaceIndex', {
-    serviceToken: customPlaceIndexLambda.attrArn,
-    resourceType: 'Custom::LambdaCallout',
-    properties: {
-      indexName: this.placeIndexName,
-      dataSource: dataSource,
-      dataSourceIntendedUse: dataSourceIntendedUse,
-      pricingPlan: indexPricingPlan,
-      region: this.placeIndexRegion,
-      env: cdk.Fn.ref('env'),
-    },
-  });
+    const customPlaceIndexLambdaCode = fs.readFileSync(customPlaceIndexLambdaCodePath, 'utf-8');
+    const customPlaceIndexLambda = new lambda.Function(this, 'CustomPlaceIndexLambda', {
+      code: lambda.Code.fromInline(customPlaceIndexLambdaCode),
+      handler: 'index.handler',
+      runtime: Runtime.NODEJS_14_X,
+      timeout: Duration.seconds(300)
+    });
+    customPlaceIndexLambda.addToRolePolicy(geoCreateIndexStatement);
+    customPlaceIndexLambda.addToRolePolicy(geoUpdateDeleteIndexStatement);
 
-  return placeIndexCustomResource;
-}
+    const placeIndexCustomResource = new cdk.CustomResource(this, 'CustomPlaceIndex', {
+      serviceToken: customPlaceIndexLambda.functionArn,
+      resourceType: 'Custom::LambdaCallout',
+      properties: {
+        indexName: this.placeIndexName,
+        dataSource: dataSource,
+        dataSourceIntendedUse: dataSourceIntendedUse,
+        pricingPlan: indexPricingPlan,
+        region: this.placeIndexRegion,
+        env: cdk.Fn.ref('env'),
+      }
+    });
+
+    return placeIndexCustomResource;
+  }
 
   // Grant read-only access to the Place Index for Authorized and/or Guest users
   private constructIndexPolicyResource(indexResource: cdk.CustomResource): CfnResource {

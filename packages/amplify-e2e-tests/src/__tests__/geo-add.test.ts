@@ -16,6 +16,7 @@ import {
 import { existsSync } from 'fs';
 import path from 'path';
 import { getAWSExports } from '../aws-exports/awsExports';
+import _ from 'lodash';
 
 describe('amplify geo add', () => {
   let projRoot: string;
@@ -39,7 +40,7 @@ describe('amplify geo add', () => {
 
     const meta = getProjectMeta(projRoot);
     expect(meta.geo).toBeDefined();
-    const mapId = Object.keys(meta.geo).filter(key => meta.geo[key].service === 'Map')[0];
+    const mapId = _.findKey(meta.geo, ['service', 'Map']);
     const mapName = meta.geo[mapId].output.Name;
     const region = meta.geo[mapId].output.Region;
     const map = await getMap(mapName, region);
@@ -58,7 +59,7 @@ describe('amplify geo add', () => {
 
     const meta = getProjectMeta(projRoot);
     expect(meta.geo).toBeDefined();
-    const placeIndexId = Object.keys(meta.geo).filter(key => meta.geo[key].service === 'PlaceIndex')[0];
+    const placeIndexId = _.findKey(meta.geo, ['service', 'PlaceIndex']);
     const indexName = meta.geo[placeIndexId].output.Name;
     const region = meta.geo[placeIndexId].output.Region;
     const placeIndex = await getPlaceIndex(indexName, region);

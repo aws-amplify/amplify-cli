@@ -13,7 +13,8 @@ export const createMapResource = async (context: $TSContext, parameters: MapPara
   await checkAuthConfig(context, parameters, ServiceName.Map);
 
   // generate CFN files
-  const mapStack = new MapStack(new App(), 'MapStack', { ...parameters, ...getTemplateMappings(context) });
+  const templateMappings = await getTemplateMappings(context);
+  const mapStack = new MapStack(new App(), 'MapStack', { ...parameters, ...templateMappings });
   generateTemplateFile(mapStack, parameters.name);
   saveCFNParameters(parameters);
 
@@ -40,7 +41,8 @@ export const modifyMapResource = async (
   await checkAuthConfig(context, parameters, ServiceName.Map);
 
   // generate CFN files
-  const mapStack = new MapStack(new App(), 'MapStack', { ...parameters, ...getTemplateMappings(context) });
+  const templateMappings = await getTemplateMappings(context);
+  const mapStack = new MapStack(new App(), 'MapStack', { ...parameters, ...templateMappings});
   generateTemplateFile(mapStack, parameters.name);
 
   // update the default map
