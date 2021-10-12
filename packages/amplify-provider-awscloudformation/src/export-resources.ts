@@ -72,13 +72,12 @@ export async function run(context: $TSContext, resourceDefinition: $TSAny[], exp
     printer.info('By installing the Amplify Backend Export Construct by running npm i @aws-amplify/amplify-export-backend in your CDK app');
     printer.info('For more information: docs.amplify.aws/cli/export');
     printer.blankLine();
-
-    removeBackup(amplifyExportFolder);
   } catch (ex) {
     revertToBackup(amplifyExportFolder);
     spinner.fail();
     throw ex;
   } finally {
+    removeBackup(amplifyExportFolder);
     spinner.stop();
   }
 }
@@ -96,16 +95,8 @@ async function setPermissions(amplifyExportFolder: string): Promise<void> {
  * @param exportPath
  */
 function createTagsFile(exportPath: string) {
-  const tags = stateManager.getProjectTags();
   const hydratedTags = stateManager.getHydratedTags(undefined, true);
-  // const tagsWithEnv = hydratedTags.map((hydratedTag, i) => {
-  //   const tag = tags[i];
-  //   //revert Tags with amplify-env the amplify-env are handled in the construct
-  //   if (tag.Value.includes('{project-env}')) {
-  //     hydratedTag.Value = tag.Value;
-  //   }
-  //   return hydratedTag;
-  // });
+
   JSONUtilities.writeJson(
     path.join(exportPath, AMPLIFY_EXPORT_TAGS_JSON_FILE),
     hydratedTags.map(tag => ({
