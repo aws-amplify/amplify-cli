@@ -1,7 +1,7 @@
 import { URL } from 'url';
 import { GraphQLInt, GraphQLScalarType, GraphQLError, Kind, StringValueNode, ValueNode } from 'graphql';
 import { isValidNumber } from 'libphonenumber-js';
-import * as ip from 'ip';
+import * as net from 'net';
 
 import { GraphQLDate, GraphQLTime, GraphQLDateTime } from 'graphql-iso-date';
 
@@ -118,7 +118,7 @@ const validateIPAddress = value => {
   if (typeof value !== 'string') {
     throw new TypeError(`Value is not string: ${value}`);
   }
-  if (ip.isV4Format(value) || ip.isV6Format(value)) {
+  if (net.isIPv4(value) || net.isIPv6(value)) {
     return value;
   }
 
