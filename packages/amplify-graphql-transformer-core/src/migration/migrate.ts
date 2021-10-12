@@ -36,14 +36,18 @@ async function showDiffs(diffDocs: DiffDocument[]): Promise<void> {
   }
 }
 
-function migrateGraphQLSchema(schema: string, authMode: string, massSchema: DocumentNode): string {
+export function migrateGraphQLSchema(schema: string, authMode: string, massSchema: DocumentNode): string {
+  printer.info(schema);
   let output = parse(schema)
   visit(output, {
     ObjectTypeDefinition: {
       enter(node) {
         migrateKeys(node);
+        printer.info("keys");
         migrateAuth(node, authMode);
+        printer.info("auth");
         migrateConnection(node, massSchema);
+        printer.info("conn");
         return node;
       }
     }
@@ -79,6 +83,7 @@ async function runMigration(schemas: SchemaDocument[], authMode: string): Promis
     backupSchemaPromiseArray.push(backupSchema(doc.filePath));
   });
   await Promise.all(backupSchemaPromiseArray);
+  await printer.info("backed up");
 
   fullSchema = schemaList.join('\n');
   let fullSchemaNode = parse(fullSchema);
@@ -88,8 +93,11 @@ async function runMigration(schemas: SchemaDocument[], authMode: string): Promis
     newSchemaList[idx] = { schema: newSchema, filePath: doc.filePath };
   });
 
+  await printer.info("pre diffs");
   const diffs = getSchemaDiffs(schemas, newSchemaList);
+  await printer.info("mid diffs");
   await showDiffs(diffs);
+  await printer.info("post diffs");
 
   const migrationChoices: Array<string> = ["Yes", "Yes, but exit the CLI so I can review/edit my new schemas before compiling/pushing",
     "No, continue my operation with my old schemas"];
@@ -153,7 +161,7 @@ export async function updateTransformerVersion(env: string): Promise<void> {
   await FeatureFlags.reloadValues();
 }
 
-export async function migrateToV2Transformer(resourceDir: string, context: $TSContext, schemaDocs: SchemaDocument[]): Promise<boolean> {
+async function migrateToV2Transformer(resourceDir: string, context: $TSContext, schemaDocs: SchemaDocument[]): Promise<boolean> {
   const { envName } = context.amplify.getEnvInfo();
   const defaultAuth = await getDefaultAuthFromContext();
   const authMode = cliToMigratorAuthMap.get(defaultAuth);
@@ -186,7 +194,7 @@ here: ${MIGRATION_URL}`);
   const fullSchema = combineSchemas(schemaDocs);
   const usingCustomResolvers = detectCustomResolvers(parse(fullSchema));
   const usingOverriddenResolvers = detectOverriddenResolvers(apiName);
-  const unsupportedDirectives: Array<string> = detectUnsupportedDirectives(fullSchema);
+  const unsupportedDirectives: Array<string> = await detectUnsupportedDirectives(fullSchema);
   if (usingCustomResolvers || unsupportedDirectives.length > 0) {
     await printer.info(`We detected that your GraphQL schema can not be auto-migrated because:`);
     if (usingCustomResolvers) {
@@ -202,9 +210,6 @@ here: ${MIGRATION_URL}`);
 here: ${MIGRATION_URL}`);
     return false;
   }
-  await printer.warn(`If you have overridden any of the Amplify-generated resolvers, you will
-need to migrate manually. The GraphQL migrator does not detect this,
-so you should decline migration.`);
   const chooseToRunMigration: string = await prompter.pick(`We detected that your GraphQL schema can be auto-migrated! In particular, we've made 
 a number of authorization rule changes. Let's review the changes we'll apply to your
 GraphQL schema:`, ['Continue', `No, I'll migrate later`]);

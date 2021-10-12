@@ -2,8 +2,8 @@ import { isModelType } from '../model';
 import { migrateDefaultAuthMode } from './defaultAuth';
 import { migrateFieldAuth } from './fieldAuth';
 import { migrateOwnerAuth } from './ownerAuth';
-import { createAuthRule } from '../generators';
-import { makeArgument, makeDirective, makeValueNode } from 'graphql-transformer-common';
+import { createArgumentNode, createAuthRule, createDirectiveNode, createListValueNode } from '../generators';
+import { printer } from 'amplify-prompts';
 
 export function hasAuthDirectives(node: any) {
   return node.directives.some((dir: any) => dir.name.value === 'auth');
@@ -19,8 +19,9 @@ export function setAuthRules(node: any, rules: any) {
 
 export function addAuthRuleToNode(node: any, rule: any) {
   if (!hasAuthDirectives(node)) {
-    const authDirArgs = makeArgument('rules', makeValueNode([rule]));
-    const authDir = makeDirective('auth', [authDirArgs]);
+    const valueNode = createListValueNode([rule]);
+    const authDirArgs = createArgumentNode('rules', valueNode);
+    const authDir = createDirectiveNode('auth', [authDirArgs]);
     node.directives.push(authDir);
   } else {
     const authRules = getAuthRules(node);

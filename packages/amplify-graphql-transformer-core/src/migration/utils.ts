@@ -92,11 +92,11 @@ export async function getDefaultAuthFromContext(): Promise<string> {
 
 export function listContainsOnlySetString(list: Array<string>, set: Set<string>): Array<string> {
   let outputArray: Array<string> = new Array<string>();
-  list.forEach(str => {
+  for(let str of list) {
     if (!set.has(str)) {
       outputArray.push(str);
     }
-  });
+  }
   return outputArray;
 }
 
