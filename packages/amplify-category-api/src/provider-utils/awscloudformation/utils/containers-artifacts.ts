@@ -99,6 +99,7 @@ export async function generateContainersArtifacts(
     isInitialDeploy,
     desiredCount,
     restrictAccess,
+    currentStackName: envName,
     apiType,
     exposedContainer,
     secretsArns,

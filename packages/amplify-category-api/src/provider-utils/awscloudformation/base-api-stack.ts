@@ -52,6 +52,7 @@ export type ContainersStackProps = Readonly<{
   createCloudMapService?: boolean;
   gitHubSourceActionInfo?: GitHubSourceActionInfo;
   existingEcrRepositories: Set<string>;
+  currentStackName: string;
 }>;
 export abstract class ContainersStack extends cdk.Stack {
   protected readonly vpcId: string;
@@ -240,6 +241,7 @@ export abstract class ContainersStack extends cdk.Stack {
       taskPorts,
       isInitialDeploy,
       desiredCount,
+      currentStackName,
       createCloudMapService,
     } = this.props;
 
@@ -313,7 +315,7 @@ export abstract class ContainersStack extends cdk.Stack {
         if (build) {
           const logicalId = `${name}Repository`;
 
-          const repositoryName = `${this.envName}-${categoryName}-${apiName}-${name}`;
+          const repositoryName = `${currentStackName}-${categoryName}-${apiName}-${name}`;
 
           if (this.props.existingEcrRepositories.has(repositoryName)) {
             repository = ecr.Repository.fromRepositoryName(this, logicalId, repositoryName);

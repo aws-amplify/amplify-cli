@@ -1,9 +1,11 @@
 import { getCLIPath, updateSchema, nspawn as spawn, KEY_DOWN_ARROW } from '..';
 import * as fs from 'fs-extra';
+import * as path from 'path';
 import { selectRuntime, selectTemplate } from './lambda-function';
 import { singleSelect, multiSelect } from '../utils/selectors';
 import _ from 'lodash';
 import { EOL } from 'os';
+import { modifiedApi } from './resources/modified-api-index';
 
 export function getSchemaPath(schemaName: string): string {
   return `${__dirname}/../../../amplify-e2e-tests/schemas/${schemaName}`;
@@ -590,6 +592,11 @@ export function addRestContainerApiForCustomPolicies(projectDir: string, setting
       .wait('Select which container is the entrypoint')
       .sendCarriageReturn()
       .wait('"amplify publish" will build all your local backend and frontend resources')
-      .run((err: Error) => err ? reject(err) : resolve());
+      .run((err: Error) => (err ? reject(err) : resolve()));
   });
+}
+
+export function modifyRestAPI(projectDir: string, apiName: string) {
+  const indexFilePath = path.join(projectDir, 'amplify', 'backend', 'api', apiName, 'src', 'express', 'index.js');
+  fs.writeFileSync(indexFilePath, modifiedApi);
 }
