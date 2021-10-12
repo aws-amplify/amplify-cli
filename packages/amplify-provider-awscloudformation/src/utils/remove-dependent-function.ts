@@ -68,7 +68,6 @@ async function getTableNameDiff(currentBackendDir: string, backendDir: string, a
   const deployedModelNames = await getTableNames(currentBackendDir, apiResourceName);
   const currentModelNames = await getTableNames(backendDir, apiResourceName);
   const modelsDeleted = deployedModelNames.filter(val => !currentModelNames.includes(val));
-  // TODO add back models that retained their original table name
   return modelsDeleted;
 }
 

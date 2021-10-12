@@ -32,7 +32,7 @@ import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-core'
 import { Template } from '@aws-amplify/graphql-transformer-core/lib/config/project-config';
 import { AmplifyCLIFeatureFlagAdapter } from '../utils/amplify-cli-feature-flag-adapter';
 import { JSONUtilities } from 'amplify-cli-core';
-import { OriginalTransformer } from './original-transformer';
+import { OriginalTransformer } from '@aws-amplify/graphql-original-transformer';
 import { searchablePushChecks } from '../transform-graphql-schema';
 import { ResourceConstants } from 'graphql-transformer-common';
 

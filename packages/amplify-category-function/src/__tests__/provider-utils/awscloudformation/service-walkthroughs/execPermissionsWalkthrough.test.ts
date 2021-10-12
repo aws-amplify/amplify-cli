@@ -89,7 +89,7 @@ test('check CFN resources', async () => {
       },
     },
   };
-  await expect(await getResourcesForCfn(contextStub, resourceName, {}, appsyncResourceName, 'api')).toMatchSnapshot();
+  expect(await getResourcesForCfn(contextStub, resourceName, {}, appsyncResourceName, 'api')).toMatchSnapshot();
 });
 
 test('env resources for CFN for DDB table and api', async () => {

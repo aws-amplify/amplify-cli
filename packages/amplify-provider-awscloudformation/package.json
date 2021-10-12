@@ -29,6 +29,7 @@
     "@aws-amplify/graphql-http-transformer": "0.5.5",
     "@aws-amplify/graphql-index-transformer": "0.4.0",
     "@aws-amplify/graphql-model-transformer": "0.6.4",
+    "@aws-amplify/graphql-original-transformer": "1.0.0",
     "@aws-amplify/graphql-predictions-transformer": "0.3.5",
     "@aws-amplify/graphql-relational-transformer": "0.3.1",
     "@aws-amplify/graphql-searchable-transformer": "0.6.3",
