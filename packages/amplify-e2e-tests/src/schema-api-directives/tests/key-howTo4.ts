@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import { addApiWithBlankSchemaAndConflictDetection, addApiWithBlankSchema, amplifyPush, updateApiSchema } from 'amplify-e2e-core';
+import { addApiWithBlankSchemaAndConflictDetection, amplifyPush, updateApiSchema } from 'amplify-e2e-core';
 import { getApiKey, configureAmplify, getConfiguredAppsyncClientAPIKeyAuth } from '../authHelper';
 import { testQueries, testMutations } from '../common';
 
@@ -270,9 +270,7 @@ export const expected_result_query5 = {
 };
 
 export async function runTest(projectDir: string, testModule: any) {
-  await addApiWithBlankSchema(projectDir, {
-    apiName: 'testapi',
-  });
+  await addApiWithBlankSchemaAndConflictDetection(projectDir);
   await updateApiSchema(projectDir, 'testapi', testModule.schemaName);
   await amplifyPush(projectDir);
 
