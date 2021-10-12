@@ -14715,7 +14715,7 @@ workflows:
             parameters:
               os:
                 - linux
-      - api_1-amplify_e2e_tests_pkg:
+      - configure-project-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
             - cleanup-resources
