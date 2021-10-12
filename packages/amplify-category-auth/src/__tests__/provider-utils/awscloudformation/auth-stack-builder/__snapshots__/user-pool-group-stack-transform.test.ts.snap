@@ -15,7 +15,7 @@ Object {
   },
   "Description": "Root Stack for AWS Amplify CLI",
   "Outputs": Object {
-    "adinGroupRoleOutput": Object {
+    "adinGroupRole": Object {
       "Value": Object {
         "Fn::GetAtt": Array [
           "adinGroupRole",
@@ -197,8 +197,8 @@ if (event.RequestType == 'Create' || event.RequestType == 'Update') {
        let params = {
            IdentityPoolId: identityPoolId,
            Roles: {
-               'authenticated': event.ResourceProperties.AuthRoleArn,
-               'unauthenticated': event.ResourceProperties.UnauthRoleArn,
+               authenticated: event.ResourceProperties.AuthRoleArn,
+               unauthenticated: event.ResourceProperties.UnauthRoleArn
            },
            RoleMappings: {}
        };
@@ -211,7 +211,7 @@ if (event.RequestType == 'Create' || event.RequestType == 'Update') {
        if (appClientID) {
            params.RoleMappings[\`cognito-idp.\${region}.amazonaws.com/\${userPoolId}:\${appClientID}\`] = {
                Type: 'Token',
-               AmbiguousRoleResolution: 'AuthenticatedRole',
+               AmbiguousRoleResolution: 'AuthenticatedRole'
            }
        }
     cognitoidentity.setIdentityPoolRoles(params).promise();
@@ -309,7 +309,7 @@ Object {
   },
   "Description": "Root Stack for AWS Amplify CLI",
   "Outputs": Object {
-    "adinmockGroupRoleOutput": Object {
+    "adinmockGroupRole": Object {
       "Value": Object {
         "Fn::GetAtt": Array [
           "adinmockGroupRole",
@@ -491,8 +491,8 @@ if (event.RequestType == 'Create' || event.RequestType == 'Update') {
        let params = {
            IdentityPoolId: identityPoolId,
            Roles: {
-               'authenticated': event.ResourceProperties.AuthRoleArn,
-               'unauthenticated': event.ResourceProperties.UnauthRoleArn,
+               authenticated: event.ResourceProperties.AuthRoleArn,
+               unauthenticated: event.ResourceProperties.UnauthRoleArn
            },
            RoleMappings: {}
        };
@@ -505,7 +505,7 @@ if (event.RequestType == 'Create' || event.RequestType == 'Update') {
        if (appClientID) {
            params.RoleMappings[\`cognito-idp.\${region}.amazonaws.com/\${userPoolId}:\${appClientID}\`] = {
                Type: 'Token',
-               AmbiguousRoleResolution: 'AuthenticatedRole',
+               AmbiguousRoleResolution: 'AuthenticatedRole'
            }
        }
     cognitoidentity.setIdentityPoolRoles(params).promise();

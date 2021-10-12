@@ -5,6 +5,8 @@ import { CfnUserPoolGroup } from '@aws-cdk/aws-cognito';
 import { AmplifyUserPoolGroupStackTemplate } from './types';
 import { AmplifyUserPoolGroupStackOptions } from './user-pool-group-stack-transform';
 import { AmplifyStackTemplate } from 'amplify-cli-core';
+import * as fs from 'fs-extra';
+import { roleMapLambdaFilePath } from '../constants';
 
 const CFN_TEMPLATE_FORMAT_VERSION = '2010-09-09';
 const ROOT_CFN_DESCRIPTION = 'Root Stack for AWS Amplify CLI';
@@ -256,45 +258,7 @@ export class AmplifyUserPoolGroupStack extends cdk.Stack implements AmplifyUserP
       // lambda function for RoleMap Custom Resource
       this.roleMapLambdaFunction = new lambda.CfnFunction(this, 'RoleMapLambdaFunction', {
         code: {
-          zipFile: cdk.Fn.join('\n', [
-            "const response = require('cfn-response');",
-            "const AWS = require('aws-sdk');",
-            'exports.handler = (event, context) => {',
-            "if (event.RequestType == 'Delete') {",
-            "    response.send(event, context, response.SUCCESS, {message: 'Request type delete'})",
-            '};',
-            "if (event.RequestType == 'Create' || event.RequestType == 'Update') {",
-            '    let { identityPoolId, appClientID, appClientIDWeb, userPoolId, region }  = event.ResourceProperties;',
-            '    try {',
-            '       const cognitoidentity = new AWS.CognitoIdentity();',
-            '       let params = {',
-            '           IdentityPoolId: identityPoolId,',
-            '           Roles: {',
-            "               'authenticated': event.ResourceProperties.AuthRoleArn,",
-            "               'unauthenticated': event.ResourceProperties.UnauthRoleArn,",
-            '           },',
-            '           RoleMappings: {}',
-            '       };',
-            '       if (appClientIDWeb) {',
-            '           params.RoleMappings[`cognito-idp.${region}.amazonaws.com/${userPoolId}:${appClientIDWeb}`] = {',
-            "               Type: 'Token',",
-            "               AmbiguousRoleResolution: 'AuthenticatedRole',",
-            '           }',
-            '       }',
-            '       if (appClientID) {',
-            '           params.RoleMappings[`cognito-idp.${region}.amazonaws.com/${userPoolId}:${appClientID}`] = {',
-            "               Type: 'Token',",
-            "               AmbiguousRoleResolution: 'AuthenticatedRole',",
-            '           }',
-            '       }',
-            '    cognitoidentity.setIdentityPoolRoles(params).promise();',
-            "    response.send(event, context, response.SUCCESS, {message: 'Successfully updated identity pool.'})",
-            '    } catch(err) {',
-            "        response.send(event, context, response.FAILED, {message: 'Error updating identity pool'});",
-            '    }',
-            '   };',
-            '};',
-          ]),
+          zipFile: fs.readFileSync(roleMapLambdaFilePath, 'utf-8'),
         },
         handler: 'index.handler',
         runtime: 'nodejs12.x',
@@ -328,35 +292,44 @@ export const getCfnParamslogicalId = (cognitoResourceName: string, cfnParamName:
 /**
  * additional class to merge CFN parameters and CFN outputs as cdk doesnt allow same logical ID of constructs in same stack
  */
-//  export class AmplifyUserPoolGroupStackOutputs extends cdk.Stack implements AmplifyUserPoolGroupStackTemplate {
-//   constructor(scope: cdk.Construct, id: string, props: AmplifyUserPoolGroupStackProps) {
-//     super(scope, id, props);
-//   }
-//   deploymentBucket?: s3.CfnBucket;
-//   authRole?: iam.CfnRole;
-//   unauthRole?: iam.CfnRole;
+export class AmplifyUserPoolGroupStackOutputs extends cdk.Stack implements AmplifyStackTemplate {
+  constructor(scope: cdk.Construct, id: string, props: AmplifyAuthCognitoStackProps) {
+    super(scope, id, props);
+  }
+  getCfnParameter(logicalId: string): cdk.CfnParameter {
+    throw new Error('Method not implemented.');
+  }
+  getCfnOutput(logicalId: string): cdk.CfnOutput {
+    throw new Error('Method not implemented.');
+  }
+  getCfnMapping(logicalId: string): cdk.CfnMapping {
+    throw new Error('Method not implemented.');
+  }
+  getCfnCondition(logicalId: string): cdk.CfnCondition {
+    throw new Error('Method not implemented.');
+  }
 
-//   addCfnParameter(props: cdk.CfnParameterProps, logicalId: string): void {
-//     throw new Error('Method not implemented.');
-//   }
-//   addCfnOutput(props: cdk.CfnOutputProps, logicalId: string): void {
-//     try {
-//       new cdk.CfnOutput(this, logicalId, props);
-//     } catch (error) {
-//       throw new Error(error);
-//     }
-//   }
-//   addCfnMapping(props: cdk.CfnMappingProps, logicalId: string): void {
-//     throw new Error('Method not implemented.');
-//   }
-//   addCfnCondition(props: cdk.CfnConditionProps, logicalId: string): void {
-//     throw new Error('Method not implemented.');
-//   }
-//   addCfnResource(props: cdk.CfnResourceProps, logicalId: string): void {
-//     throw new Error('Method not implemented.');
-//   }
+  addCfnParameter(props: cdk.CfnParameterProps, logicalId: string): void {
+    throw new Error('Method not implemented.');
+  }
+  addCfnOutput(props: cdk.CfnOutputProps, logicalId: string): void {
+    try {
+      new cdk.CfnOutput(this, logicalId, props);
+    } catch (error) {
+      throw new Error(error);
+    }
+  }
+  addCfnMapping(props: cdk.CfnMappingProps, logicalId: string): void {
+    throw new Error('Method not implemented.');
+  }
+  addCfnCondition(props: cdk.CfnConditionProps, logicalId: string): void {
+    throw new Error('Method not implemented.');
+  }
+  addCfnResource(props: cdk.CfnResourceProps, logicalId: string): void {
+    throw new Error('Method not implemented.');
+  }
 
-//   public renderCloudFormationTemplate = (_: ISynthesisSession): string => {
-//     return JSON.stringify((this as any)._toCloudFormation(), undefined, 2);
-//   };
-// }
+  public renderCloudFormationTemplate = (_: cdk.ISynthesisSession): string => {
+    return JSON.stringify((this as any)._toCloudFormation(), undefined, 2);
+  };
+}

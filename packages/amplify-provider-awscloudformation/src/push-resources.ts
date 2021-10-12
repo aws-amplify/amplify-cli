@@ -840,7 +840,7 @@ async function formNestedStack(
 
   const metaToBeUpdated = {
     DeploymentBucketName: rootStack.Resources.DeploymentBucket.Properties.BucketName,
-    AuthRoleName: rootStack.AuthRole.Properties.RoleName,
+    AuthRoleName: rootStack.Resources.AuthRole.Properties.RoleName,
     UnauthRoleName: rootStack.Resources.UnauthRole.Properties.RoleName,
   };
   // sanitize this data if needed

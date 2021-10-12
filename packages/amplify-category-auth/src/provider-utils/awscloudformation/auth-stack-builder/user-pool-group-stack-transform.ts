@@ -16,7 +16,7 @@ import { AuthStackSythesizer } from './stack-synthesizer';
 import * as cdk from '@aws-cdk/core';
 import { AuthInputState } from '../auth-inputs-manager/auth-input-state';
 import * as path from 'path';
-import { AmplifyUserPoolGroupStack } from './auth-user-pool-group-stack-builder';
+import { AmplifyUserPoolGroupStack, AmplifyUserPoolGroupStackOutputs } from './auth-user-pool-group-stack-builder';
 import * as amplifyPrinter from 'amplify-prompts';
 import _ from 'lodash';
 import { CognitoCLIInputs } from '../service-walkthrough-types/awsCognito-user-input-types';
@@ -41,8 +41,8 @@ export class AmplifyUserPoolGroupTransform extends AmplifyCategoryTransform {
   _app: cdk.App;
   _userPoolGroupTemplateObj: AmplifyUserPoolGroupStack; // Props to modify Root stack data
   _synthesizer: AuthStackSythesizer;
-  // private _synthesizerOutputs: RootStackSythesizer;
-  // private __userPoolGroupTemplateObjOutputs: AmplifyUserPoolGroupStackOutputs;
+  _synthesizerOutputs: AuthStackSythesizer;
+  __userPoolGroupTemplateObjOutputs: AmplifyUserPoolGroupStackOutputs;
   _authResourceName: string;
   _category: string;
   _service: string;
@@ -54,6 +54,7 @@ export class AmplifyUserPoolGroupTransform extends AmplifyCategoryTransform {
     this._resourceName = 'userPoolGroups';
     this._authResourceName = resourceName;
     this._synthesizer = new AuthStackSythesizer();
+    this._synthesizerOutputs = new AuthStackSythesizer();
     this._app = new cdk.App();
     this._category = AmplifyCategories.AUTH;
     this._service = AmplifySupportedService.COGNITOUSERPOOLGROUPS;
@@ -85,6 +86,10 @@ export class AmplifyUserPoolGroupTransform extends AmplifyCategoryTransform {
   private generateStackResources = async (props: AmplifyUserPoolGroupStackOptions) => {
     this._userPoolGroupTemplateObj = new AmplifyUserPoolGroupStack(this._app, 'AmplifyUserPoolGroupStack', {
       synthesizer: this._synthesizer,
+    });
+
+    this.__userPoolGroupTemplateObjOutputs = new AmplifyUserPoolGroupStackOutputs(this._app, 'AmplifyUserPoolGroupStackOutputs', {
+      synthesizer: this._synthesizerOutputs,
     });
 
     // add CFN parameters
@@ -150,15 +155,14 @@ export class AmplifyUserPoolGroupTransform extends AmplifyCategoryTransform {
     // generate resources
     this._userPoolGroupTemplateObj.generateUserPoolGroupResources(props);
 
-    // generate CFN outputs
-    //TODO: same output params as root stack
+    // generate CFN outputs again to generate same Output Names as cdk doesnt allow resource with same logical names
     if (props.identityPoolName) {
       props.groups.forEach(group => {
-        this._userPoolGroupTemplateObj.addCfnOutput(
+        this.__userPoolGroupTemplateObjOutputs.addCfnOutput(
           {
             value: cdk.Fn.getAtt(`${group.groupName}GroupRole`, 'Arn').toString(),
           },
-          `${group.groupName}GroupRoleOutput`,
+          `${group.groupName}GroupRole`,
         );
       });
     }
@@ -216,7 +220,10 @@ export class AmplifyUserPoolGroupTransform extends AmplifyCategoryTransform {
   public synthesizeTemplates = async (): Promise<Template> => {
     this._app.synth();
     const templates = this._synthesizer.collectStacks();
-    return templates.get('AmplifyUserPoolGroupStack')!;
+    const cfnTemplate = templates.get('AmplifyUserPoolGroupStack')!;
+    const cfnTemplateOutputs = templates.get('AmplifyUserPoolGroupStackOutputs')!;
+    Object.assign(cfnTemplate, cfnTemplateOutputs);
+    return cfnTemplate;
   };
 
   public saveBuildFiles = async (context: $TSContext, template: Template): Promise<void> => {

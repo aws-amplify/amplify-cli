@@ -54,9 +54,7 @@ export const migrateResourceToSupportOverride = (resourceName: string) => {
   } catch (e) {
     printer.error('There was an error migrating your project.');
     rollback(authresourceDirPath, backupAuthResourceFolder);
-    if (fs.existsSync(userPoolGroupResourceDirPath)) {
-      rollback(userPoolGroupResourceDirPath, backupUserPoolGroupResourceFolder!);
-    }
+    rollback(userPoolGroupResourceDirPath, backupUserPoolGroupResourceFolder!);
     printer.info('migration operations are rolled back.');
     throw e;
   } finally {

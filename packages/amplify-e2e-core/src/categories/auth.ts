@@ -320,11 +320,11 @@ export function addAuthWithCustomTrigger(cwd: string, settings: any): Promise<vo
       .wait('Enter a comma-delimited list of disallowed email domains')
       .send('amazon.com')
       .sendCarriageReturn()
-      .wait(`Do you want to edit your email-filter-denylist${settings.useInclusiveTerminology === false ? '-legacy' : ''} function now?`)
-      .sendConfirmNo()
-      .wait('Do you want to edit your custom function now')
-      .sendConfirmNo()
       .wait('Successfully')
+      .wait(`Do you want to edit your email-filter-denylist${settings.useInclusiveTerminology === false ? '-legacy' : ''} function now?`)
+      .sendLine('n')
+      .wait('Do you want to edit your custom function now')
+      .sendLine('n')
       .run((err: Error) => {
         if (!err) {
           resolve();
@@ -339,7 +339,7 @@ export function updateAuthSignInSignOutUrl(cwd: string, settings: any): Promise<
   return new Promise((resolve, reject) => {
     const chain = spawn(getCLIPath(), ['update', 'auth'], { cwd, stripColors: true });
     if (settings?.overrides?.category === 'auth') {
-      chain.wait(`Do you want to migrate this ${settings.overrides.resourceName} to support overrides?`).sendLine('y');
+      chain.wait(`Do you want to migrate this ${settings.overrides.resourceName} to support overrides?`).sendConfirmYes();
     }
     chain
       .wait('What do you want to do?')
@@ -377,7 +377,7 @@ export function updateAuthToRemoveFederation(cwd: string, settings: any): Promis
   return new Promise((resolve, reject) => {
     const chain = spawn(getCLIPath(), ['update', 'auth'], { cwd, stripColors: true });
     if (settings?.overrides?.category === 'auth') {
-      chain.wait(`Do you want to migrate this ${settings.overrides.resourceName} to support overrides?`).sendLine('y');
+      chain.wait(`Do you want to migrate this ${settings.overrides.resourceName} to support overrides?`).sendConfirmYes();
     }
     chain
       .wait('What do you want to do?')
@@ -398,7 +398,7 @@ export function updateAuthWithoutCustomTrigger(cwd: string, settings: any): Prom
   return new Promise((resolve, reject) => {
     const chain = spawn(getCLIPath(), ['update', 'auth'], { cwd, stripColors: true });
     if (settings?.overrides?.category === 'auth') {
-      chain.wait(`Do you want to migrate this ${settings.overrides.resourceName} to support overrides?`).sendLine('y');
+      chain.wait(`Do you want to migrate this ${settings.overrides.resourceName} to support overrides?`).sendConfirmYes();
     }
     chain
       .wait('What do you want to do?')
@@ -491,7 +491,7 @@ export function updateAuthRemoveRecaptchaTrigger(cwd: string, settings: any): Pr
   return new Promise((resolve, reject) => {
     const chain = spawn(getCLIPath(), ['update', 'auth'], { cwd, stripColors: true });
     if (settings?.overrides?.category === 'auth') {
-      chain.wait(`Do you want to migrate this ${settings.overrides.resourceName} to support overrides?`).sendLine('y');
+      chain.wait(`Do you want to migrate this ${settings.overrides.resourceName} to support overrides?`).sendConfirmYes();
     }
     chain
       .wait('What do you want to do')
@@ -1533,7 +1533,7 @@ export function updateAuthWithoutTrigger(cwd: string, settings: any): Promise<vo
   return new Promise((resolve, reject) => {
     const chain = spawn(getCLIPath(), ['update', 'auth'], { cwd, stripColors: true });
     if (settings?.overrides?.category === 'auth') {
-      chain.wait(`Do you want to migrate this ${settings.overrides.resourceName} to support overrides?`).sendLine('y');
+      chain.wait(`Do you want to migrate this ${settings.overrides.resourceName} to support overrides?`).sendConfirmYes();
     }
     chain
       .wait('What do you want to do?')

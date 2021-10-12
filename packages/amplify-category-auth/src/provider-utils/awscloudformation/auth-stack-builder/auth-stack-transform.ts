@@ -58,7 +58,6 @@ export class AmplifyAuthTransform extends AmplifyCategoryTransform {
     this._cognitoStackProps = await this.generateStackProps(context);
 
     const resources = stateManager.getMeta();
-    console.log(resources);
     if (resources.auth?.userPoolGroups) {
       await updateUserPoolGroups(context, this._cognitoStackProps.resourceName!, this._cognitoStackProps.userPoolGroupList);
     } else {
@@ -356,10 +355,16 @@ export class AmplifyAuthTransform extends AmplifyCategoryTransform {
         console: 'inherit',
         timeout: 5000,
         sandbox: {},
-        require: true,
+        require: {
+          context: 'sandbox',
+          builtin: ['path'],
+          external: true,
+        },
       });
       try {
-        this._authTemplateObj = sandboxNode.run(overrideCode).overrideProps(cognitoStackTemplateObj);
+        this._authTemplateObj = await sandboxNode
+          .run(overrideCode, path.join(overrideDir, 'build', 'override.js'))
+          .overrideProps(cognitoStackTemplateObj);
       } catch (err: $TSAny) {
         const error = new Error(`Skipping override due to ${err}${os.EOL}`);
         printer.error(`${error}`);

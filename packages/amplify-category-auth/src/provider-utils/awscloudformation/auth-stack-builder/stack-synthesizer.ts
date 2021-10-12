@@ -1,20 +1,26 @@
 import { ISynthesisSession, Stack, LegacyStackSynthesizer } from '@aws-cdk/core';
 import { Template } from 'cloudform-types';
 import { AmplifyAuthCognitoStack } from './auth-cognito-stack-builder';
-import { AmplifyUserPoolGroupStack } from './auth-user-pool-group-stack-builder';
+import { AmplifyUserPoolGroupStack, AmplifyUserPoolGroupStackOutputs } from './auth-user-pool-group-stack-builder';
 
 export class AuthStackSythesizer extends LegacyStackSynthesizer {
   private readonly stacks: Map<string, Stack> = new Map();
   private static readonly stackAssets: Map<string, Template> = new Map();
 
   protected synthesizeStackTemplate(stack: Stack, session: ISynthesisSession): void {
-    if (stack instanceof AmplifyAuthCognitoStack || stack instanceof AmplifyUserPoolGroupStack) {
+    if (
+      stack instanceof AmplifyAuthCognitoStack ||
+      stack instanceof AmplifyUserPoolGroupStack ||
+      stack instanceof AmplifyUserPoolGroupStackOutputs
+    ) {
       this.addStack(stack);
       const template = stack.renderCloudFormationTemplate(session) as string;
       const templateName = stack.node.id;
       this.setStackAsset(templateName, template);
     } else {
-      throw new Error('Error synthesizing the template. Expected Stack to be either instance of AmplifyRootStack');
+      throw new Error(
+        'Error synthesizing the template. Expected Stack to be either instance of AmplifyAuthCognitoStack or AmplifyUserPoolGroupStack',
+      );
     }
   }
 

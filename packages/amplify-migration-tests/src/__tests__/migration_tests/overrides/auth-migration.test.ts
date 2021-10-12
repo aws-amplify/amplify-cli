@@ -1,29 +1,39 @@
+import { $TSAny, JSONUtilities } from 'amplify-cli-core';
 import {
   addAuthWithCustomTrigger,
   addAuthWithDefault,
+  addAuthWithRecaptchaTrigger,
+  addAuthWithSignInSignOutUrl,
   amplifyPushAuth,
   createNewProjectDir,
   deleteProject,
   deleteProjectDir,
+  getAwsAndroidConfig,
   getLambdaFunction,
   getProjectMeta,
   getUserPool,
   getUserPoolClients,
+  initAndroidProjectWithProfile,
+  initJSProjectWithProfile,
+  updateAuthRemoveRecaptchaTrigger,
+  updateAuthSignInSignOutUrl,
   updateAuthWithoutCustomTrigger,
   updateAuthWithoutTrigger,
 } from 'amplify-e2e-core';
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import { initJSProjectWithProfile } from '../../migration-helpers';
 
+const defaultSettings = {
+  name: 'authMigration',
+};
 describe('amplify auth migration', () => {
   let projRoot: string;
   beforeEach(async () => {
-    projRoot = await createNewProjectDir('auth migration');
+    projRoot = await createNewProjectDir('auth_migration');
   });
 
   afterEach(async () => {
-    const metaFilePath = join(projRoot, 'amplify', '#current-cloud-backend', 'amplify-meta.json');
+    const metaFilePath = path.join(projRoot, 'amplify', '#current-cloud-backend', 'amplify-meta.json');
     if (fs.existsSync(metaFilePath)) {
       await deleteProject(projRoot);
     }
@@ -31,7 +41,7 @@ describe('amplify auth migration', () => {
   });
   it('...should init a project and add auth with a custom trigger, and then update to remove the custom js while leaving the other js', async () => {
     // init, add and push auth with installed cli
-    await initJSProjectWithProfile(projRoot, { name: 'authMigration' });
+    await initJSProjectWithProfile(projRoot, defaultSettings);
     await addAuthWithCustomTrigger(projRoot, {});
     await amplifyPushAuth(projRoot);
     const meta = getProjectMeta(projRoot);
@@ -51,11 +61,7 @@ describe('amplify auth migration', () => {
     expect(clients).toHaveLength(2);
     expect(lambdaFunction).toBeDefined();
     expect(lambdaFunction.Configuration.Environment.Variables.MODULES).toEqual('email-filter-denylist,custom');
-    // turn ON feature flag
-    const cliJsonPath = path.join(projRoot, 'amplify', 'cli.json');
-    const cliJSON = JSONUtilities.readJson(cliJsonPath);
-    const modifiedCliJson = Object.assign(cliJSON, { overrides: { auth: true } });
-    JSONUtilities.writeJson(cliJsonPath, modifiedCliJson);
+
     // update and push with codebase
     const overridesObj: $TSAny = {
       resourceName: Object.keys(authMeta)[0],
@@ -73,17 +79,12 @@ describe('amplify auth migration', () => {
 
   it('...should init a project and add auth with default, and then update with latest and push', async () => {
     // init, add and push auth with installed cli
-    await initJSProjectWithProfile(projRoot, { name: 'authMigration' });
+    await initJSProjectWithProfile(projRoot, defaultSettings);
     await addAuthWithDefault(projRoot, {});
     await amplifyPushAuth(projRoot);
     const meta = getProjectMeta(projRoot);
     const authMeta = Object.keys(meta.auth).map(key => meta.auth[key])[0];
     // update and push with codebase
-    // turn ON feature flag
-    const cliJsonPath = path.join(projRoot, 'amplify', 'cli.json');
-    const cliJSON = JSONUtilities.readJson(cliJsonPath);
-    const modifiedCliJson = Object.assign(cliJSON, { overrides: { auth: true } });
-    JSONUtilities.writeJson(cliJsonPath, modifiedCliJson);
     const overridesObj: $TSAny = {
       resourceName: Object.keys(authMeta)[0],
       category: 'auth',
@@ -94,17 +95,13 @@ describe('amplify auth migration', () => {
   });
 
   it('...should init an android project and add customAuth flag, and remove flag when custom auth triggers are removed upon update ', async () => {
-    await initAndroidProjectWithProfile(projRoot, defaultsSettings);
+    await initAndroidProjectWithProfile(projRoot, defaultSettings);
     await addAuthWithRecaptchaTrigger(projRoot, {});
     await amplifyPushAuth(projRoot);
     let meta = getAwsAndroidConfig(projRoot);
     expect(meta.Auth.Default.authenticationFlowType).toBeDefined();
     expect(meta.Auth.Default.authenticationFlowType).toEqual('CUSTOM_AUTH');
-    // turn ON feature flag
-    const cliJsonPath = path.join(projRoot, 'amplify', 'cli.json');
-    const cliJSON = JSONUtilities.readJson(cliJsonPath);
-    const modifiedCliJson = Object.assign(cliJSON, { overrides: { auth: true } });
-    JSONUtilities.writeJson(cliJsonPath, modifiedCliJson);
+
     await updateAuthRemoveRecaptchaTrigger(projRoot, {});
     await amplifyPushAuth(projRoot);
     meta = getAwsAndroidConfig(projRoot);
@@ -119,28 +116,20 @@ describe('amplify auth migration', () => {
       updatesigninUrl: 'http://localhost:3003/',
       updatesignoutUrl: 'http://localhost:3004/',
     };
-    await initAndroidProjectWithProfile(projRoot, defaultsSettings);
+    await initAndroidProjectWithProfile(projRoot, defaultSettings);
     await addAuthWithSignInSignOutUrl(projRoot, settings);
     // turn ON feature flag
-    const cliJsonPath = path.join(projRoot, 'amplify', 'cli.json');
-    const cliJSON = JSONUtilities.readJson(cliJsonPath);
-    const modifiedCliJson = Object.assign(cliJSON, { overrides: { auth: true } });
-    JSONUtilities.writeJson(cliJsonPath, modifiedCliJson);
     await updateAuthSignInSignOutUrl(projRoot, settings);
   });
 
   it('...should init an android project and add customAuth flag, and remove flag when custom auth triggers are removed upon update ', async () => {
-    await initAndroidProjectWithProfile(projRoot, defaultsSettings);
+    await initAndroidProjectWithProfile(projRoot, defaultSettings);
     await addAuthWithRecaptchaTrigger(projRoot, {});
     await amplifyPushAuth(projRoot);
     let meta = getAwsAndroidConfig(projRoot);
     expect(meta.Auth.Default.authenticationFlowType).toBeDefined();
     expect(meta.Auth.Default.authenticationFlowType).toEqual('CUSTOM_AUTH');
-    // turn ON feature flag
-    const cliJsonPath = path.join(projRoot, 'amplify', 'cli.json');
-    const cliJSON = JSONUtilities.readJson(cliJsonPath);
-    const modifiedCliJson = Object.assign(cliJSON, { overrides: { auth: true } });
-    JSONUtilities.writeJson(cliJsonPath, modifiedCliJson);
+
     await updateAuthRemoveRecaptchaTrigger(projRoot, {});
     await amplifyPushAuth(projRoot);
     meta = getAwsAndroidConfig(projRoot);
