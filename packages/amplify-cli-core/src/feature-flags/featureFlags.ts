@@ -593,31 +593,31 @@ export class FeatureFlags {
       {
         name: 'useAppSyncModelgenPlugin',
         type: 'boolean',
-        defaultValueForExistingProjects: false,
+        defaultValueForExistingProjects: true,
         defaultValueForNewProjects: true,
       },
       {
         name: 'useDocsGeneratorPlugin',
         type: 'boolean',
-        defaultValueForExistingProjects: false,
+        defaultValueForExistingProjects: true,
         defaultValueForNewProjects: true,
       },
       {
         name: 'useTypesGeneratorPlugin',
         type: 'boolean',
-        defaultValueForExistingProjects: false,
+        defaultValueForExistingProjects: true,
         defaultValueForNewProjects: true,
       },
       {
         name: 'cleanGeneratedModelsDirectory',
         type: 'boolean',
-        defaultValueForExistingProjects: false,
+        defaultValueForExistingProjects: true,
         defaultValueForNewProjects: true,
       },
       {
         name: 'retainCaseStyle',
         type: 'boolean',
-        defaultValueForExistingProjects: false,
+        defaultValueForExistingProjects: true,
         defaultValueForNewProjects: true,
       },
       {
