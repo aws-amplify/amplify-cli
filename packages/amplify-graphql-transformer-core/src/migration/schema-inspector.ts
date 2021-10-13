@@ -4,7 +4,6 @@ import { visit } from 'graphql';
 import { collectDirectivesByTypeNames } from '../utils';
 import { listContainsOnlySetString } from './utils';
 import * as fs from 'fs-extra';
-import { printer } from 'amplify-prompts';
 
 
 export function graphQLUsingSQL(apiName: string): boolean {

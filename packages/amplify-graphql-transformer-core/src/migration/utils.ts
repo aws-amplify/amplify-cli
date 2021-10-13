@@ -31,7 +31,7 @@ export async function replaceFile(newSchema: string, filePath: string): Promise<
 }
 
 export function removeBkpExtension(path: string): string {
-  return path.slice(0, path.length - 4);
+  return path.slice(0, -4);
 }
 
 export function combineSchemas(schemaDocs: SchemaDocument[]): string {

@@ -20,7 +20,7 @@ function getPrivateAuthRule(rules: any, provider: any) {
 }
 
 function getOwnerAuthRules(rules: any) {
-  return rules.filter((rule: any) => rule.fields.find((f: any) => f.name.value === 'allow').value.value === 'owner');
+  return rules.filter((rule: any) => rule.fields.find((f: any) => f?.name?.value === 'allow')?.value?.value === 'owner');
 }
 
 export function migrateOwnerAuth(node: any, defaultAuthMode: any) {

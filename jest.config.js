@@ -51,6 +51,7 @@ module.exports = {
     '<rootDir>/packages/amplify-graphql-predictions-transformer',
     '<rootDir>/packages/amplify-graphql-relational-transformer',
     '<rootDir>/packages/amplify-graphql-searchable-transformer',
+    '<rootDir>/packages/amplify-graphql-transformer-core',
     '<rootDir>/packages/amplify-graphql-types-generator',
     '<rootDir>/packages/amplify-provider-awscloudformation',
     '<rootDir>/packages/amplify-storage-simulator',
