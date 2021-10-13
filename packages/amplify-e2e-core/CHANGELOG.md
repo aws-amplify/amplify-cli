@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.30.0-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@1.29.0...amplify-e2e-core@1.30.0-beta.0) (2021-10-13)
+
+
+### Bug Fixes
+
+* api containers on repushing does not fail ([#8416](https://github.com/aws-amplify/amplify-cli/issues/8416)) ([eb64172](https://github.com/aws-amplify/amplify-cli/commit/eb641725febba88ebb7349c0e662d4ffc6cf7e97))
+
+
+### Features
+
+* Geo category plugin - support for additional regions ([#8373](https://github.com/aws-amplify/amplify-cli/issues/8373)) ([3a0c29f](https://github.com/aws-amplify/amplify-cli/commit/3a0c29fc1cb07fb1f16ac9546148c564eee97989))
+
+
+
+
+
 # [1.29.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@1.28.0...amplify-e2e-core@1.29.0) (2021-10-10)
 
 

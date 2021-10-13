@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.64.0-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.63.0...amplify-provider-awscloudformation@4.64.0-beta.0) (2021-10-13)
+
+
+### Features
+
+* Geo category plugin - support for additional regions ([#8373](https://github.com/aws-amplify/amplify-cli/issues/8373)) ([3a0c29f](https://github.com/aws-amplify/amplify-cli/commit/3a0c29fc1cb07fb1f16ac9546148c564eee97989))
+
+
+
+
+
 # [4.63.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.62.1...amplify-provider-awscloudformation@4.63.0) (2021-10-10)
 
 

@@ -1,6 +1,6 @@
 {
   "name": "amplify-migration-tests",
-  "version": "3.1.13",
+  "version": "3.1.14-beta.0",
   "description": "",
   "repository": {
     "type": "git",
@@ -26,7 +26,7 @@
     "setup-profile": "ts-node ./src/configure_tests.ts"
   },
   "dependencies": {
-    "amplify-e2e-core": "1.29.0",
+    "amplify-e2e-core": "1.30.0-beta.0",
     "aws-sdk": "^2.963.0",
     "dotenv": "^8.2.0",
     "esm": "^3.2.25",
