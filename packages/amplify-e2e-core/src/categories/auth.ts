@@ -928,13 +928,7 @@ export function addAuthWithGroups(cwd: string): Promise<void> {
       .wait('Do you want to configure Lambda Triggers for Cognito')
       .sendConfirmNo()
       .sendEof()
-      .run((err: Error) => {
-        if (!err) {
-          resolve();
-        } else {
-          reject(err);
-        }
-      });
+      .run((err: Error) => err ? reject(err) : resolve());
   });
 }
 
