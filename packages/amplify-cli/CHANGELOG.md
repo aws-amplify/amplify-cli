@@ -3,6 +3,21 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.3.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@6.3.0...@aws-amplify/cli@6.3.1) (2021-10-13)
+
+
+
+## 6.3.1 (2021-10-12)
+
+
+### Bug Fixes
+
+* null check ([#8429](https://github.com/aws-amplify/amplify-cli/issues/8429)) ([e190292](https://github.com/aws-amplify/amplify-cli/commit/e190292171d6cb5422724deb392a32f6cc239883))
+
+
+
+
+
 # [6.3.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@6.2.1...@aws-amplify/cli@6.3.0) (2021-10-10)
 
 
