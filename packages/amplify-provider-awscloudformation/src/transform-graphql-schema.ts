@@ -44,7 +44,7 @@ import {
   transformGraphQLSchema as transformGraphQLSchemaV6,
   getDirectiveDefinitions as getDirectiveDefinitionsV6,
 } from './graphql-transformer/transform-graphql-schema';
-import { attemptV2TransformerMigration } from '@aws-amplify/graphql-transformer-core/lib/migration/migrate';
+import { attemptV2TransformerMigration } from '@aws-amplify/graphql-transformer-core';
 
 const apiCategory = 'api';
 const storageCategory = 'storage';
