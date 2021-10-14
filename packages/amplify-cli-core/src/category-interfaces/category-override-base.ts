@@ -2,9 +2,9 @@ import { $TSContext } from '..';
 import { Template } from './amplify-base-cdk-types';
 
 export abstract class AmplifyCategoryTransform {
-  _resourceName: string;
+  resourceName: string;
   constructor(resourceName: string) {
-    this._resourceName = resourceName;
+    this.resourceName = resourceName;
   }
   /**
    * Entry point for CFN transformation process for a category

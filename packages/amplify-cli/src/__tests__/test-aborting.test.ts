@@ -10,6 +10,7 @@ describe('test SIGINT with execute', () => {
     const mockExit = jest.fn();
 
     jest.setMock('amplify-cli-core', {
+      ...(jest.requireActual('amplify-cli-core') as {}),
       JSONUtilities: {
         readJson: jest.fn().mockReturnValue({
           name: 'cli',
