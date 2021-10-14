@@ -7,7 +7,7 @@ const sequential = require('promise-sequential');
 const defaults = require('./provider-utils/awscloudformation/assets/cognito-defaults');
 const { getAuthResourceName } = require('./utils/getAuthResourceName');
 const { updateConfigOnEnvInit, migrate } = require('./provider-utils/awscloudformation');
-const { saveResourceParameters, removeDeprecatedProps } = require('./provider-utils/awscloudformation/utils/synthesize-resources');
+const { removeDeprecatedProps } = require('./provider-utils/awscloudformation/utils/synthesize-resources');
 const { ENV_SPECIFIC_PARAMS } = require('./provider-utils/awscloudformation/constants');
 
 const { transformUserPoolGroupSchema } = require('./provider-utils/awscloudformation/utils/transform-user-pool-group');
@@ -85,9 +85,9 @@ function canResourceBeTransformed(resourceName) {
 async function externalAuthEnable(context, externalCategory, resourceName, requirements) {
   const { amplify } = context;
   const serviceMetadata = getSupportedServices.supportedServices;
-  const { provider } = serviceMetadata.Cognito;
+  const currentAuthName = await getAuthResourceName(context);
   const existingAuthResource = _.get(amplify.getProjectDetails().amplifyMeta, ['auth', currentAuthName], undefined);
-  let currentAuthName;
+
   const projectName = context.amplify
     .getProjectConfig()
     .projectName.toLowerCase()
@@ -102,7 +102,6 @@ async function externalAuthEnable(context, externalCategory, resourceName, requi
     if (existingAuthResource.serviceType === 'imported') {
       throw new Error('Existing auth resource is imported and auth configuration update was requested.');
     }
-    currentAuthName = await getAuthResourceName(context);
     // check for migration when auth has been enabled
     checkAuthResourceMigration(context, currentAuthName);
     const cliState = new AuthInputState(currentAuthName);

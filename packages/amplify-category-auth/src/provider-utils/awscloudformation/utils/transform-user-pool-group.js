@@ -54,21 +54,6 @@ async function transformUserPoolGroupSchema(context) {
   await generateUserPoolGroupStackTemplate(props);
 }
 
-function loadResourceParameters(context, authResourceName) {
-  let parameters = {};
-  let category = 'auth';
-  const backendDirPath = context.amplify.pathManager.getBackendDirPath();
-  const resourceDirPath = path.join(backendDirPath, category, authResourceName);
-  const parametersFilePath = path.join(resourceDirPath, 'parameters.json');
-  if (fs.existsSync(parametersFilePath)) {
-    parameters = context.amplify.readJsonFile(parametersFilePath);
-  } else {
-    throw new Error('Auth resource missing parameters file');
-  }
-
-  return parameters;
-}
-
 module.exports = {
   transformUserPoolGroupSchema,
 };

@@ -27,8 +27,8 @@ describe('amplify add auth...', () => {
   });
 
   afterEach(async () => {
-    await deleteProject(projRoot);
-    deleteProjectDir(projRoot);
+    // await deleteProject(projRoot);
+    // deleteProjectDir(projRoot);
   });
 
   it('...should init a project and add auth with defaults', async () => {
@@ -71,7 +71,7 @@ describe('amplify add auth...', () => {
     expect(clients[0].UserPoolClient.ClientSecret).toBeDefined();
   });
 
-  it('...should init an Android project and add default auth', async () => {
+  it.only('...should init an Android project and add default auth', async () => {
     await initAndroidProjectWithProfile(projRoot, defaultsSettings);
     await addAuthWithDefault(projRoot, {});
     await amplifyPushAuth(projRoot);

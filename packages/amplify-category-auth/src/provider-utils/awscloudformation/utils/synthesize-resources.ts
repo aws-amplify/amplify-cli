@@ -8,8 +8,6 @@ import { get } from 'lodash';
 import { generateUserPoolGroupStackTemplate } from './generate-user-pool-group-stack-template';
 import { CognitoConfiguration } from '../service-walkthrough-types/awsCognito-user-input-types';
 
-const category = 'auth';
-
 // keep in sync with ServiceName in amplify-category-function, but probably it will not change
 const FunctionServiceNameLambdaFunction = 'Lambda';
 

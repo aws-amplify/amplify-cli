@@ -1,6 +1,5 @@
 import * as path from 'path';
 import { JSONUtilities, pathManager, $TSAny } from 'amplify-cli-core';
-import { transformUserPoolGroupSchema } from './transform-user-pool-group';
 import { authProviders as authProviderList } from '../assets/string-maps';
 import { AuthParameters } from '../import/types';
 
