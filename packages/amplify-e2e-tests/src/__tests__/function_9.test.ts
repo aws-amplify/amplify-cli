@@ -1,5 +1,5 @@
 import {
-  addApiWithSchema,
+  addApiWithoutSchema,
   addApi,
   addAuthWithDefault,
   addDDBWithTrigger,
@@ -28,6 +28,8 @@ import {
   addAuthWithGroupsAndAdminAPI,
   getFunction,
   loadFunctionTestFile,
+  updateApiSchema,
+  createRandomName,
 } from 'amplify-e2e-core';
 import fs from 'fs-extra';
 import path from 'path';
@@ -80,8 +82,12 @@ describe('nodejs', () => {
     });
 
     it('adding api and storage permissions should not add duplicates to CFN', async () => {
-      await initJSProjectWithProfile(projRoot, {});
-      await addApiWithSchema(projRoot, 'two-model-schema.graphql');
+      const appName = createRandomName();
+      await initJSProjectWithProfile(projRoot, {
+        name: appName,
+      });
+      await addApiWithoutSchema(projRoot);
+      await updateApiSchema(projRoot, appName, 'two-model-schema.graphql');
 
       const random = Math.floor(Math.random() * 10000);
       const fnName = `integtestfn${random}`;
@@ -143,8 +149,12 @@ describe('nodejs', () => {
     });
 
     it('function dependencies should be preserved when not editing permissions during `amplify update function`', async () => {
-      await initJSProjectWithProfile(projRoot, {});
-      await addApiWithSchema(projRoot, 'two-model-schema.graphql');
+      const appName = createRandomName();
+      await initJSProjectWithProfile(projRoot, {
+        name: appName,
+      });
+      await addApiWithoutSchema(projRoot);
+      await updateApiSchema(projRoot, appName, 'two-model-schema.graphql');
 
       const random = Math.floor(Math.random() * 10000);
       const fnName = `integtestfn${random}`;

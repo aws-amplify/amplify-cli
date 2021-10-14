@@ -3,7 +3,7 @@
 exports[`it generates the expected resources 1`] = `
 Object {
   "InvokeEchofunctionLambdaDataSource.req.vtl": "## [Start] Invoke AWS Lambda data source: EchofunctionLambdaDataSource. **
-{
+$util.toJson({
   \\"version\\": \\"2018-05-29\\",
   \\"operation\\": \\"Invoke\\",
   \\"payload\\": {
@@ -15,7 +15,7 @@ Object {
       \\"request\\": $util.toJson($ctx.request),
       \\"prev\\": $util.toJson($ctx.prev)
   }
-}
+})
 ## [End] Invoke AWS Lambda data source: EchofunctionLambdaDataSource. **",
   "InvokeEchofunctionLambdaDataSource.res.vtl": "## [Start] Handle error or return result. **
 #if( $ctx.error )
@@ -23,11 +23,6 @@ Object {
 #end
 $util.toJson($ctx.result)
 ## [End] Handle error or return result. **",
-  "Query.echo.req.vtl": "## [Start] Stash resolver specific context.. **
-$util.qr($ctx.stash.put(\\"typeName\\", \\"Query\\"))
-$util.qr($ctx.stash.put(\\"fieldName\\", \\"echo\\"))
-{}
-## [End] Stash resolver specific context.. **",
   "Query.echo.res.vtl": "$util.toJson($ctx.prev.result)",
 }
 `;

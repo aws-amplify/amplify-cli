@@ -1,8 +1,8 @@
 import { AuthorizationConfig, AuthorizationMode, AuthorizationType } from '@aws-cdk/aws-appsync';
 import { UserPool } from '@aws-cdk/aws-cognito';
 import { Duration, Expiration } from '@aws-cdk/core';
-import { AppSyncAuthConfiguration, AppSyncAuthConfigurationEntry, AppSyncAuthMode } from '../config';
 import { StackManager } from '../transformer-context/stack-manager';
+import { AppSyncAuthConfiguration, AppSyncAuthConfigurationEntry, AppSyncAuthMode } from '@aws-amplify/graphql-transformer-interfaces';
 
 const authTypeMap: Record<AppSyncAuthMode, AuthorizationType> = {
   API_KEY: AuthorizationType.API_KEY,
@@ -10,6 +10,10 @@ const authTypeMap: Record<AppSyncAuthMode, AuthorizationType> = {
   AWS_IAM: AuthorizationType.IAM,
   OPENID_CONNECT: AuthorizationType.OIDC,
 };
+
+export const IAM_AUTH_ROLE_PARAMETER = 'authRoleName';
+export const IAM_UNAUTH_ROLE_PARAMETER = 'unauthRoleName';
+
 export function adoptAuthModes(stack: StackManager, authConfig: AppSyncAuthConfiguration): AuthorizationConfig {
   return {
     defaultAuthorization: adoptAuthMode(stack, authConfig.defaultAuthentication),
@@ -24,8 +28,10 @@ export function adoptAuthMode(stackManager: StackManager, entry: AppSyncAuthConf
       return {
         authorizationType: authType,
         apiKeyConfig: {
-          description: entry.apiKeyConfig.description,
-          expires: Expiration.after(Duration.days(entry.apiKeyConfig.apiKeyExpirationDays)),
+          description: entry.apiKeyConfig?.description,
+          expires: entry.apiKeyConfig?.apiKeyExpirationDays
+            ? Expiration.after(Duration.days(entry.apiKeyConfig.apiKeyExpirationDays))
+            : undefined,
         },
       };
     case AuthorizationType.USER_POOL:

@@ -14,11 +14,7 @@ import gql from 'graphql-tag';
 const providerName = 'awscloudformation';
 
 import {
-  addApiWithSchema,
-  addApiWithSchemaAndConflictDetection,
   addRestApi,
-  updateAPIWithResolutionStrategy,
-  apiUpdateToggleDataStore,
   addFunction,
   addSimpleDDB,
   checkIfBucketExists,

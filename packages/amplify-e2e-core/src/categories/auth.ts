@@ -119,12 +119,23 @@ export function addAuthWithGroupTrigger(cwd: string, settings: any): Promise<voi
   });
 }
 
+interface AddApiOptions {
+  apiName: string;
+  testingWithLatestCodebase: boolean;
+}
+
+const defaultOptions: AddApiOptions = {
+  apiName: '\r',
+  testingWithLatestCodebase: true,
+};
+
 export function addAuthViaAPIWithTrigger(cwd: string, settings: any): Promise<void> {
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['add', 'api'], { cwd, stripColors: true })
+    spawn(getCLIPath(defaultOptions.testingWithLatestCodebase), ['add', 'api'], { cwd, stripColors: true })
       .wait('Please select from one of the below mentioned services:')
       .sendCarriageReturn()
-      .wait('Provide API name')
+      .wait(/.*Here is the GraphQL API that we will create. Select a setting to edit or continue.*/)
+      .sendKeyUp(2)
       .sendCarriageReturn()
       .wait('Choose the default authorization type for the API')
       .send(KEY_DOWN_ARROW)
@@ -148,10 +159,9 @@ export function addAuthViaAPIWithTrigger(cwd: string, settings: any): Promise<vo
       .sendCarriageReturn()
       .wait('Do you want to edit your add-to-group function now?')
       .sendConfirmNo()
-      .wait(/.*Do you want to configure advanced settings for the GraphQL API.*/)
-      .sendCarriageReturn()
-      .wait('Do you have an annotated GraphQL schema?')
+      .wait(/.*Configure additional auth types.*/)
       .sendConfirmNo()
+      .wait(/.*Here is the GraphQL API that we will create. Select a setting to edit or continue.*/)
       .sendCarriageReturn()
       .wait('Choose a schema template:')
       .sendCarriageReturn()
@@ -169,10 +179,11 @@ export function addAuthViaAPIWithTrigger(cwd: string, settings: any): Promise<vo
 
 export function addAuthwithUserPoolGroupsViaAPIWithTrigger(cwd: string, settings: any): Promise<void> {
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['add', 'api'], { cwd, stripColors: true })
+    spawn(getCLIPath(defaultOptions.testingWithLatestCodebase), ['add', 'api'], { cwd, stripColors: true })
       .wait('Please select from one of the below mentioned services:')
       .sendCarriageReturn()
-      .wait('Provide API name')
+      .wait(/.*Here is the GraphQL API that we will create. Select a setting to edit or continue.*/)
+      .sendKeyUp(2)
       .sendCarriageReturn()
       .wait('Choose the default authorization type for the API')
       .send(KEY_DOWN_ARROW)
@@ -235,10 +246,9 @@ export function addAuthwithUserPoolGroupsViaAPIWithTrigger(cwd: string, settings
       .sendCarriageReturn()
       .wait('Do you want to edit your add-to-group function now?')
       .sendConfirmNo()
-      .wait(/.*Do you want to configure advanced settings for the GraphQL API.*/)
-      .sendCarriageReturn()
-      .wait('Do you have an annotated GraphQL schema?')
+      .wait(/.*Configure additional auth types.*/)
       .sendConfirmNo()
+      .wait(/.*Here is the GraphQL API that we will create. Select a setting to edit or continue.*/)
       .sendCarriageReturn()
       .wait('Choose a schema template:')
       .sendCarriageReturn()

@@ -881,7 +881,7 @@ describe('ModelTransformer: ', () => {
     validateModelSchema(parse(out.schema));
   });
 
-  it('should generate sync resolver with ConflictHandlerType.AUTOMERGE', () => {
+  it('should generate sync resolver with ConflictHandlerType.Automerge', () => {
     const validSchema = `
       type Post @model {
           id: ID!
@@ -950,7 +950,7 @@ describe('ModelTransformer: ', () => {
     validateModelSchema(parse(definition));
   });
 
-  it('should generate sync resolver with ConflictHandlerType.OPTIMISTIC', () => {
+  it('should generate sync resolver with ConflictHandlerType.Optimistic', () => {
     const validSchema = `
       type Post @model {
           id: ID!

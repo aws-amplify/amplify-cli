@@ -65,6 +65,8 @@
     "@octokit/rest": "^18.0.9",
     "amplify-cli-core": "1.31.1",
     "amplify-headless-interface": "1.10.0",
+    "amplify-prompts": "1.2.0",
+    "amplify-provider-awscloudformation": "4.61.1",
     "amplify-util-headless-input": "1.5.4",
     "chalk": "^4.1.1",
     "constructs": "^3.3.125",

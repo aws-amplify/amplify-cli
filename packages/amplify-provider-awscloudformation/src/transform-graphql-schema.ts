@@ -173,7 +173,7 @@ function getTransformerFactory(context, resourceDir, authConfig?) {
       const res = await isAmplifyAdminApp(appId);
       amplifyAdminEnabled = res.isAdminApp;
     } catch (err) {
-      console.info('App not deployed yet.');
+      // if it is not an AmplifyAdmin app, do nothing
     }
 
     transformerList.push(new ModelAuthTransformer({ authConfig, addAwsIamAuthInOutputSchema: amplifyAdminEnabled }));
@@ -512,8 +512,10 @@ export async function transformGraphQLSchema(context, options) {
     featureFlags: ff,
     sanityCheckRules: sanityCheckRulesList,
   };
+
   const transformerOutput = await buildAPIProject(buildConfig);
-  context.print.success(`\nGraphQL schema compiled successfully.\n\nEdit your schema at ${schemaFilePath} or \
+
+  context.print.success(`GraphQL schema compiled successfully.\n\nEdit your schema at ${schemaFilePath} or \
 place .graphql files in a directory at ${schemaDirPath}`);
 
   if (!options.dryRun) {
@@ -521,6 +523,17 @@ place .graphql files in a directory at ${schemaDirPath}`);
   }
 
   return transformerOutput;
+}
+
+async function addGraphQLAuthRequirement(context, authType) {
+  return await context.amplify.invokePluginMethod(context, 'api', undefined, 'addGraphQLAuthorizationMode', [
+    context,
+    {
+      authType: authType,
+      printLeadText: true,
+      authSettings: undefined,
+    },
+  ]);
 }
 
 function getProjectBucket(context) {
