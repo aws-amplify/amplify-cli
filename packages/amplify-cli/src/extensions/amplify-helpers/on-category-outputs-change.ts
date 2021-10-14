@@ -3,7 +3,7 @@ import * as path from 'path';
 import { getResourceOutputs } from './get-resource-outputs';
 import sequential from 'promise-sequential';
 import { stateManager } from 'amplify-cli-core';
-import { AuthParameters, getFrontendConfig } from 'amplify-category-auth';
+import { AuthParameters, getFrontendConfig } from '@aws-amplify/amplify-category-auth';
 
 export async function onCategoryOutputsChange(context, cloudAmplifyMeta?, localMeta?) {
   if (!cloudAmplifyMeta) {

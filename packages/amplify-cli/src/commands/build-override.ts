@@ -1,6 +1,5 @@
 import { $TSContext, IAmplifyResource } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
-import { Console } from 'console';
 /**
  * Command to transform CFN with overrides
  */
@@ -9,7 +8,6 @@ const subcommand = 'build-override';
 export const run = async (context: $TSContext) => {
   const categoryName = context?.input?.subCommands?.[0];
   let resourceName = context?.input?.subCommands?.[1];
-
   if (categoryName === undefined) {
     // if no category is mentioned , then defaults to all resource
     resourceName = undefined;

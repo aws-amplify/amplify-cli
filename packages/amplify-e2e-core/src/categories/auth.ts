@@ -330,11 +330,11 @@ export function addAuthWithCustomTrigger(cwd: string, settings: any): Promise<vo
       .wait('Enter a comma-delimited list of disallowed email domains')
       .send('amazon.com')
       .sendCarriageReturn()
-      .wait(`Do you want to edit your email-filter-denylist${settings.useInclusiveTerminology === false ? '-legacy' : ''} function now?`)
-      .sendConfirmNo()
-      .wait('Do you want to edit your custom function now')
-      .sendConfirmNo()
       .wait('Successfully')
+      .wait(`Do you want to edit your email-filter-denylist${settings.useInclusiveTerminology === false ? '-legacy' : ''} function now?`)
+      .sendLine('n')
+      .wait('Do you want to edit your custom function now')
+      .sendLine('n')
       .run((err: Error) => {
         if (!err) {
           resolve();
@@ -347,7 +347,11 @@ export function addAuthWithCustomTrigger(cwd: string, settings: any): Promise<vo
 
 export function updateAuthSignInSignOutUrl(cwd: string, settings: any): Promise<void> {
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['update', 'auth'], { cwd, stripColors: true })
+    const chain = spawn(getCLIPath(), ['update', 'auth'], { cwd, stripColors: true });
+    if (settings?.overrides?.category === 'auth') {
+      chain.wait(`Do you want to migrate this ${settings.overrides.resourceName} to support overrides?`).send('y');
+    }
+    chain
       .wait('What do you want to do?')
       .send(KEY_DOWN_ARROW)
       .send(KEY_DOWN_ARROW)
@@ -381,7 +385,11 @@ export function updateAuthSignInSignOutUrl(cwd: string, settings: any): Promise<
 
 export function updateAuthToRemoveFederation(cwd: string, settings: any): Promise<void> {
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['update', 'auth'], { cwd, stripColors: true })
+    const chain = spawn(getCLIPath(), ['update', 'auth'], { cwd, stripColors: true });
+    if (settings?.overrides?.category === 'auth') {
+      chain.wait(`Do you want to migrate this ${settings.overrides.resourceName} to support overrides?`).send('y');
+    }
+    chain
       .wait('What do you want to do?')
       .sendCarriageReturn()
       .wait('"amplify publish" will build all your local backend and frontend resources')
@@ -398,7 +406,11 @@ export function updateAuthToRemoveFederation(cwd: string, settings: any): Promis
 
 export function updateAuthWithoutCustomTrigger(cwd: string, settings: any): Promise<void> {
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['update', 'auth'], { cwd, stripColors: true })
+    const chain = spawn(getCLIPath(), ['update', 'auth'], { cwd, stripColors: true });
+    if (settings?.overrides?.category === 'auth') {
+      chain.wait(`Do you want to migrate this ${settings.overrides.resourceName} to support overrides?`).send('y');
+    }
+    chain
       .wait('What do you want to do?')
       .send(KEY_DOWN_ARROW)
       .send(KEY_DOWN_ARROW)
@@ -487,7 +499,11 @@ export function addAuthWithRecaptchaTrigger(cwd: string, settings: any): Promise
 
 export function updateAuthRemoveRecaptchaTrigger(cwd: string, settings: any): Promise<void> {
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['update', 'auth'], { cwd, stripColors: true })
+    const chain = spawn(getCLIPath(), ['update', 'auth'], { cwd, stripColors: true });
+    if (settings?.overrides?.category === 'auth') {
+      chain.wait(`Do you want to migrate this ${settings.overrides.resourceName} to support overrides?`).send('y');
+    }
+    chain
       .wait('What do you want to do')
       .send(KEY_DOWN_ARROW)
       .sendCarriageReturn()
@@ -1234,13 +1250,17 @@ export function addAuthWithPreTokenGenerationTrigger(projectDir: string): Promis
   });
 }
 
-export function updateAuthAddUserGroups(projectDir: string, groupNames: string[]): Promise<void> {
+export function updateAuthAddUserGroups(projectDir: string, groupNames: string[], settings?: any): Promise<void> {
   if (groupNames.length == 0) {
     return;
   }
 
   return new Promise((resolve, reject) => {
-    let chain = spawn(getCLIPath(), ['update', 'auth'], { cwd: projectDir, stripColors: true })
+    const chain = spawn(getCLIPath(), ['update', 'auth'], { cwd: projectDir, stripColors: true });
+    if (settings?.overrides?.category === 'auth') {
+      chain.wait(`Do you want to migrate this ${settings.overrides.resourceName} to support overrides?`).sendLine('y');
+    }
+    chain
       .wait('What do you want to do?')
       .send(KEY_DOWN_ARROW)
       .send(KEY_DOWN_ARROW)
@@ -1554,9 +1574,13 @@ export function addAuthUserPoolOnlyNoOAuth(cwd: string, settings: AddAuthUserPoo
   });
 }
 
-export function updateAuthAddAdminQueries(projectDir: string, groupName: string = 'adminQueriesGroup'): Promise<void> {
+export function updateAuthAddAdminQueries(projectDir: string, groupName: string = 'adminQueriesGroup', settings?: any): Promise<void> {
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['update', 'auth'], { cwd: projectDir, stripColors: true })
+    const chain = spawn(getCLIPath(), ['update', 'auth'], { cwd: projectDir, stripColors: true });
+    if (settings?.overrides?.category === 'auth') {
+      chain.wait(`Do you want to migrate this ${settings.overrides.resourceName} to support overrides?`).sendLine('y');
+    }
+    chain
       .wait('What do you want to do?')
       .send(KEY_DOWN_ARROW)
       .send(KEY_DOWN_ARROW)
@@ -1583,7 +1607,11 @@ export function updateAuthAddAdminQueries(projectDir: string, groupName: string 
 
 export function updateAuthWithoutTrigger(cwd: string, settings: any): Promise<void> {
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['update', 'auth'], { cwd, stripColors: true })
+    const chain = spawn(getCLIPath(), ['update', 'auth'], { cwd, stripColors: true });
+    if (settings?.overrides?.category === 'auth') {
+      chain.wait(`Do you want to migrate this ${settings.overrides.resourceName} to support overrides?`).sendConfirmYes();
+    }
+    chain
       .wait('What do you want to do?')
       .send(KEY_DOWN_ARROW)
       .sendCarriageReturn()

@@ -134,7 +134,7 @@ export const addTrigger = async triggerOptions => {
  * {
  *  key: "PostConfirmation",
  *  values: ["add-to-group"]
- *  category: "amplify-category-auth",
+ *  category: "@aws-amplify/amplify-category-auth",
  *  context: <cli-contex-object>,
  *  functionName:"parentAuthResourcePostConfirmation",
  *  parentResource:"parentAuthResource",
@@ -231,7 +231,7 @@ export const deleteAllTriggers = async (triggers, functionName, dir, context) =>
  * @function triggerFlow
  * @param {object} context CLI context
  * @param {string} resource The provider (i.e. cognito)
- * @param {string} category The CLI category (i.e. amplify-category-auth)
+ * @param {string} category The CLI category (i.e. @aws-amplify/amplify-category-auth)
  * @param {object} previousTriggers Object representing already configured triggers
  *  @example {"PostConfirmation":["add-to-group"]}
  * @returns {object} Object with current key/value pairs for triggers and templates
@@ -322,7 +322,7 @@ export const triggerFlow = async (context, resource, category, previousTriggers 
  * @function getTriggerPermissions
  * @param {object} context CLI context
  * @param {string} triggers Serialized trigger object
- * @param {string} category The CLI category (i.e. amplify-category-auth)
+ * @param {string} category The CLI category (i.e. @aws-amplify/amplify-category-auth)
  * @returns {array} Array of serialized permissions objects
  * @example ["{
  *    "policyName": "AddToGroup",

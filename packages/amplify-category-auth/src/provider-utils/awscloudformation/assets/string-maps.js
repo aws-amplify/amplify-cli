@@ -116,8 +116,7 @@ const emailRegistration = [
 
 const authSelectionMap = [
   {
-    name:
-      'User Sign-Up, Sign-In, connected with AWS IAM controls (Enables per-user Storage features for images or other content, Analytics, and more)',
+    name: 'User Sign-Up, Sign-In, connected with AWS IAM controls (Enables per-user Storage features for images or other content, Analytics, and more)',
     value: 'identityPoolAndUserPool',
   },
   {
