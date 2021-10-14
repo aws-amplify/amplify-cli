@@ -85,9 +85,8 @@ function canResourceBeTransformed(resourceName) {
 async function externalAuthEnable(context, externalCategory, resourceName, requirements) {
   const { amplify } = context;
   const serviceMetadata = getSupportedServices.supportedServices;
-  const currentAuthName = await getAuthResourceName(context);
   const existingAuthResource = _.get(amplify.getProjectDetails().amplifyMeta, ['auth', currentAuthName], undefined);
-
+  let currentAuthName;
   const projectName = context.amplify
     .getProjectConfig()
     .projectName.toLowerCase()
@@ -102,6 +101,7 @@ async function externalAuthEnable(context, externalCategory, resourceName, requi
     if (existingAuthResource.serviceType === 'imported') {
       throw new Error('Existing auth resource is imported and auth configuration update was requested.');
     }
+    currentAuthName = await getAuthResourceName(context);
     // check for migration when auth has been enabled
     checkAuthResourceMigration(context, currentAuthName);
     const cliState = new AuthInputState(currentAuthName);
