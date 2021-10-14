@@ -1,8 +1,9 @@
 import { $TSContext } from 'amplify-cli-core';
 import { ProviderUtils } from '../import/types';
-
-import { ServiceQuestionsResult } from '../service-walkthrough-types';
-import { getSupportedServices } from '../../supported-services';
+import { supportedServices } from '../../supported-services';
+import { ServiceQuestionHeadlessResult } from '../service-walkthrough-types/cognito-user-input-types';
+import { AuthInputState } from '../auth-inputs-manager/auth-input-state';
+import { CognitoConfiguration } from '../service-walkthrough-types/awsCognito-user-input-types';
 
 export type UserPoolMessageConfiguration = {
   mfaConfiguration?: string;
@@ -10,7 +11,7 @@ export type UserPoolMessageConfiguration = {
   usernameAttributes?: string[];
 };
 
-export const doesConfigurationIncludeSMS = (request: ServiceQuestionsResult): boolean => {
+export const doesConfigurationIncludeSMS = (request: CognitoConfiguration | ServiceQuestionHeadlessResult): boolean => {
   if ((request.mfaConfiguration === 'OPTIONAL' || request.mfaConfiguration === 'ON') && request.mfaTypes?.includes('SMS Text Message')) {
     return true;
   }
@@ -26,14 +27,18 @@ export const doesConfigurationIncludeSMS = (request: ServiceQuestionsResult): bo
 };
 
 const getProviderPlugin = (context: $TSContext): ProviderUtils => {
-  const serviceMetaData = getSupportedServices().Cognito;
+  const serviceMetaData = supportedServices.Cognito;
   const { provider } = serviceMetaData;
 
   return context.amplify.getPluginInstance(context, provider);
 };
-export const loadResourceParameters = (context: $TSContext, resourceName: string): UserPoolMessageConfiguration => {
-  const providerPlugin = getProviderPlugin(context);
-  return providerPlugin.loadResourceParameters(context, 'auth', resourceName) as ServiceQuestionsResult;
+export const loadResourceParameters = async (context: $TSContext, resourceName: string): Promise<UserPoolMessageConfiguration> => {
+  const cliState = new AuthInputState(resourceName);
+  const userPoolMessageConfig = (await cliState.loadResourceParameters(
+    context,
+    cliState.getCLIInputPayload(),
+  )) as UserPoolMessageConfiguration;
+  return userPoolMessageConfig;
 };
 
 export const loadImportedAuthParameters = async (context: $TSContext, userPoolName: string): Promise<UserPoolMessageConfiguration> => {
