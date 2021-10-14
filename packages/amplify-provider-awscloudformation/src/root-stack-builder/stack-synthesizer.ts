@@ -7,18 +7,11 @@ export class RootStackSythesizer extends LegacyStackSynthesizer {
   private static readonly stackAssets: Map<string, Template> = new Map();
 
   protected synthesizeStackTemplate(stack: Stack, session: ISynthesisSession): void {
-    if (stack instanceof AmplifyRootStackOutputs) {
+    if (stack instanceof AmplifyRootStack || stack instanceof AmplifyRootStackOutputs) {
       this.addStack(stack);
       const template = stack.renderCloudFormationTemplate(session) as string;
       const templateName = stack.node.id;
       this.setStackAsset(templateName, template);
-      return;
-    } else if (stack instanceof AmplifyRootStack) {
-      this.addStack(stack);
-      const template = stack.renderCloudFormationTemplate(session) as string;
-      const templateName = stack.node.id;
-      this.setStackAsset(templateName, template);
-      return;
     } else {
       throw new Error('Error synthesizing the template. Expected Stack to be either instance of AmplifyRootStack');
     }
