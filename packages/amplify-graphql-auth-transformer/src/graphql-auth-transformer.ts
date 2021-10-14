@@ -20,24 +20,25 @@ import {
   TransformerBeforeStepContextProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import {
+  AUTH_PROVIDER_DIRECTIVE_MAP,
+  DEFAULT_GROUP_CLAIM,
+  DEFAULT_IDENTITY_CLAIM,
+  DEFAULT_GROUPS_FIELD,
+  DEFAULT_OWNER_FIELD,
+  MODEL_OPERATIONS,
+  SEARCHABLE_AGGREGATE_TYPES,
   AuthRule,
   authDirectiveDefinition,
   ConfiguredAuthProviders,
   getConfiguredAuthProviders,
   AuthTransformerConfig,
   collectFieldNames,
-  DEFAULT_GROUP_CLAIM,
-  MODEL_OPERATIONS,
   ModelOperation,
   ensureAuthRuleDefaults,
-  DEFAULT_IDENTITY_CLAIM,
-  DEFAULT_GROUPS_FIELD,
-  DEFAULT_OWNER_FIELD,
   getModelConfig,
   validateFieldRules,
   validateRules,
   AuthProvider,
-  AUTH_PROVIDER_DIRECTIVE_MAP,
   extendTypeWithDirectives,
   RoleDefinition,
   addDirectivesToOperation,
@@ -229,6 +230,7 @@ Static group authorization should perform as expected.`,
   };
 
   transformSchema = (context: TransformerTransformSchemaStepContextProvider): void => {
+    const searchableAggregateServiceDirectives = new Set<AuthProvider>();
     const getOwnerFields = (acm: AccessControlMatrix) => {
       return acm.getRoles().reduce((prev: string[], role: string) => {
         if (this.roleMap.get(role)!.strategy === 'owner') prev.push(this.roleMap.get(role)!.entity!);
@@ -237,11 +239,15 @@ Static group authorization should perform as expected.`,
     };
     for (let [modelName, acm] of this.authModelConfig) {
       const def = context.output.getObject(modelName)!;
+      const modelHasSearchable = def.directives.some(dir => dir.name.value === 'searchable');
       // collect ownerFields and them in the model
       this.addFieldsToObject(context, modelName, getOwnerFields(acm));
       // Get the directives we need to add to the GraphQL nodes
       const providers = this.getAuthProviders(acm.getRoles());
       const directives = this.getServiceDirectives(providers, providers.length === 0 ? this.shouldAddDefaultServiceDirective() : false);
+      if (modelHasSearchable) {
+        providers.forEach(p => searchableAggregateServiceDirectives.add(p));
+      }
       if (directives.length > 0) {
         extendTypeWithDirectives(context, modelName, directives);
       }
@@ -255,6 +261,13 @@ Static group authorization should perform as expected.`,
       const directives = this.getServiceDirectives(providers, false);
       if (directives.length > 0) {
         addDirectivesToField(context, typeName, fieldName, directives);
+      }
+    }
+    // add the service directives to the searchable aggregate types
+    if (searchableAggregateServiceDirectives.size > 0) {
+      const serviceDirectives = this.getServiceDirectives(Array.from(searchableAggregateServiceDirectives), false);
+      for (let aggType of SEARCHABLE_AGGREGATE_TYPES) {
+        extendTypeWithDirectives(context, aggType, serviceDirectives);
       }
     }
   };
@@ -541,6 +554,12 @@ Static group authorization should perform as expected.`,
       );
     }
   };
+  /*
+  Searchable Auth
+  Protects
+    - Search Query
+    - Agg Query
+  */
   protectSearchResolver = (
     ctx: TransformerContextProvider,
     def: ObjectTypeDefinitionNode,
@@ -548,9 +567,35 @@ Static group authorization should perform as expected.`,
     fieldName: string,
     acm: AccessControlMatrix,
   ): void => {
+    const acmFields = acm.getResources();
+    const modelFields = def.fields ?? [];
+    // only add readonly fields if they exist
+    const allowedAggFields = modelFields.map(f => f.name.value).filter(f => !acmFields.includes(f));
+    let leastAllowedFields = acmFields;
     const resolver = ctx.resolvers.getResolver(typeName, fieldName) as TransformerResolverProvider;
-    const roleDefinitions = acm.getRolesPerOperation('read').map(r => this.roleMap.get(r)!);
-    const authExpression = generateAuthExpressionForSearchQueries(this.configuredAuthProviders, roleDefinitions, def.fields ?? []);
+    // to protect search and aggregation queries we need to collect all the roles which can query
+    // and the allowed fields to run field auth on aggregation queries
+    const readRoleDefinitions = acm.getRolesPerOperation('read').map(role => {
+      const allowedFields = acmFields.filter(resource => acm.isAllowed(role, resource, 'read'));
+      const roleDefinition = this.roleMap.get(role)!;
+      // we add the allowed fields if the role does not have full access
+      // or if the rule is a dynamic rule (ex. ownerField, groupField)
+      if (allowedFields.length !== acmFields.length || !roleDefinition.static) {
+        roleDefinition.allowedFields = allowedFields;
+        leastAllowedFields = leastAllowedFields.filter(f => allowedFields.includes(f));
+      } else {
+        roleDefinition.allowedFields = null;
+      }
+      return roleDefinition;
+    });
+    // add readonly fields with all the fields every role has access to
+    allowedAggFields.push(...leastAllowedFields);
+    const authExpression = generateAuthExpressionForSearchQueries(
+      this.configuredAuthProviders,
+      readRoleDefinitions,
+      modelFields,
+      allowedAggFields,
+    );
     resolver.addToSlot(
       'auth',
       MappingTemplate.s3MappingTemplateFromString(authExpression, `${typeName}.${fieldName}.{slotName}.{slotIndex}.req.vtl`),
