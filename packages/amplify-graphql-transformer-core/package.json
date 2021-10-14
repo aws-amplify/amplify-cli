@@ -71,7 +71,6 @@
         "graphql-predictions-transformer": "2.5.22",
         "graphql-transformer-common": "4.19.10",
         "graphql-transformer-core": "6.30.0",
-        "graphql-versioned-transformer": "4.17.23",
         "lodash": "^4.17.21",
         "md5": "^2.3.0",
         "ts-dedent": "^2.0.0"

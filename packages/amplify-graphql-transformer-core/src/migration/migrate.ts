@@ -20,7 +20,6 @@ import { detectCustomResolvers, detectOverriddenResolvers, detectUnsupportedDire
 import { validateModelSchema } from '../transformation/validation';
 import { SchemaValidationError } from 'graphql-transformer-core';
 import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
-import { VersionedModelTransformer } from 'graphql-versioned-transformer';
 import { FunctionTransformer } from 'graphql-function-transformer';
 import { HttpTransformer } from 'graphql-http-transformer';
 import { KeyTransformer } from 'graphql-key-transformer';
@@ -41,7 +40,6 @@ function doSchemaValidation(schema: DocumentNode) {
   const transformList: any[] = [
     // TODO: Removing until further discussion. `getTransformerOptions(project, '@model')`
     new DynamoDBModelTransformer(),
-    new VersionedModelTransformer(),
     new FunctionTransformer(),
     new HttpTransformer(),
     new KeyTransformer(),
