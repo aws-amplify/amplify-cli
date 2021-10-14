@@ -21,7 +21,7 @@ const { stateManager, AmplifySupportedService } = require('amplify-cli-core');
 const { headlessImport } = require('./provider-utils/awscloudformation/import');
 const { getFrontendConfig } = require('./provider-utils/awscloudformation/utils/amplify-meta-updaters');
 const { AuthParameters } = require('./provider-utils/awscloudformation/import/types');
-const { getSupportedServices } = require('./provider-utils/supported-services');
+const getSupportedServices = require('./provider-utils/supported-services');
 const { generateAuthStackTemplate } = require('./provider-utils/awscloudformation/utils/generate-auth-stack-template');
 const { AmplifyAuthTransform, AmplifyUserPoolGroupTransform } = require('./provider-utils/awscloudformation/auth-stack-builder');
 const { AmplifyAuthCognitoStackTemplate } = require('./provider-utils/awscloudformation/auth-stack-builder/types');
@@ -32,14 +32,14 @@ const {
   loadImportedAuthParameters,
 } = require('./provider-utils/awscloudformation/utils/auth-sms-workflow-helper');
 const { AuthInputState } = require('./provider-utils/awscloudformation/auth-inputs-manager/auth-input-state');
-const { printer, prompter } = require('amplify-prompts');
-const { migrateResourceToSupportOverride } = require('./provider-utils/awscloudformation/utils/migrate-override-resource');
+const { printer } = require('amplify-prompts');
+const { checkAuthResourceMigration } = require('./provider-utils/awscloudformation/utils/migrate-override-resource');
 const { privateKeys } = require('./provider-utils/awscloudformation/constants');
 
 // this function is being kept for temporary compatability.
 async function add(context) {
   const { amplify } = context;
-  const servicesMetadata = require('./provider-utils/supported-services').supportedServices;
+  const servicesMetadata = getSupportedServices.supportedServices;
   const existingAuth = amplify.getProjectDetails().amplifyMeta.auth || {};
 
   if (Object.keys(existingAuth).length > 0) {
@@ -84,7 +84,7 @@ function canResourceBeTransformed(resourceName) {
 
 async function externalAuthEnable(context, externalCategory, resourceName, requirements) {
   const { amplify } = context;
-  const serviceMetadata = require('./provider-utils/supported-services').supportedServices;
+  const serviceMetadata = getSupportedServices.supportedServices;
   const { provider } = serviceMetadata.Cognito;
   const existingAuthResource = _.get(amplify.getProjectDetails().amplifyMeta, ['auth', currentAuthName], undefined);
   let currentAuthName;
@@ -103,19 +103,9 @@ async function externalAuthEnable(context, externalCategory, resourceName, requi
       throw new Error('Existing auth resource is imported and auth configuration update was requested.');
     }
     currentAuthName = await getAuthResourceName(context);
+    // check for migration when auth has been enabled
+    checkAuthResourceMigration(context, currentAuthName);
     const cliState = new AuthInputState(currentAuthName);
-    if (!cliState.cliInputFileExists()) {
-      printer.debug('Cli-inputs.json doesnt exist');
-      // put spinner here
-      const isMigrate = await prompter.confirmContinue(`Do you want to migrate this ${resourceName} to support overrides?`);
-      if (isMigrate) {
-        // generate cli-inputs for migration from parameters.json
-        migrateResourceToSupportOverride(resourceName);
-        // fetch cli Inputs again
-        const cliInputs = cliState.getCLIInputPayload();
-        await generateAuthStackTemplate(context, cliInputs.cognitoConfig.resourceName);
-      }
-    }
     currentAuthParams = await cliState.loadResourceParameters(context, cliState.getCLIInputPayload());
 
     if (requirements.authSelections.includes('identityPoolOnly') && currentAuthParams.userPoolName) {
@@ -353,7 +343,6 @@ async function initEnv(context) {
 
 async function console(context) {
   const { amplify } = context;
-  const { supportedServices } = require('./provider-utils/supported-services');
   const amplifyMeta = amplify.getProjectMeta();
 
   if (!amplifyMeta.auth || Object.keys(amplifyMeta.auth).length === 0) {
@@ -361,7 +350,7 @@ async function console(context) {
   }
 
   return amplify
-    .serviceSelectionPrompt(context, category, supportedServices)
+    .serviceSelectionPrompt(context, category, getSupportedServices.supportedServices)
     .then(result => {
       const providerController = require(`${__dirname}/provider-utils/${result.providerName}/index`);
       if (!providerController) {
@@ -445,7 +434,7 @@ const executeAmplifyHeadlessCommand = async (context, headlessPayload) => {
         return;
       }
       await validateImportAuthRequest(headlessPayload);
-      const { provider } = require('./provider-utils/supported-services').supportedServices.Cognito;
+      const { provider } = getSupportedServices.supportedServices.Cognito;
       const providerPlugin = context.amplify.getPluginInstance(context, provider);
       const cognito = await providerPlugin.createCognitoUserPoolService(context);
       const identity = await providerPlugin.createIdentityPoolService(context);
@@ -481,7 +470,7 @@ async function prePushAuthHook(context) {
 
 async function importAuth(context) {
   const { amplify } = context;
-  const servicesMetadata = require('./provider-utils/supported-services').supportedServices;
+  const servicesMetadata = getSupportedServices.supportedServices;
   const existingAuth = amplify.getProjectDetails().amplifyMeta.auth || {};
 
   if (Object.keys(existingAuth).length > 0) {

@@ -1,12 +1,11 @@
 import { messages } from '../../provider-utils/awscloudformation/assets/string-maps';
 import { getAuthResourceName } from '../../utils/getAuthResourceName';
-import { category, generateAuthStackTemplate } from '../..';
+import { category } from '../..';
 import { $TSContext, stateManager } from 'amplify-cli-core';
-import { printer, prompter } from 'amplify-prompts';
+import { printer } from 'amplify-prompts';
 import { AuthInputState } from '../../provider-utils/awscloudformation/auth-inputs-manager/auth-input-state';
 import _ from 'lodash';
-import { migrateResourceToSupportOverride } from '../../provider-utils/awscloudformation/utils/migrate-override-resource';
-import { CognitoCLIInputs } from '../../provider-utils/awscloudformation/service-walkthrough-types/awsCognito-user-input-types';
+import { checkAuthResourceMigration } from '../../provider-utils/awscloudformation/utils/check-for-auth-migration';
 import { supportedServices } from '../../provider-utils/supported-services';
 
 import * as providerController from '../../provider-utils/awscloudformation/index';
@@ -17,9 +16,9 @@ export const alias = ['update'];
 export const run = async (context: $TSContext) => {
   const { amplify } = context;
   const stateMeta = stateManager.getMeta();
-  const existingAuth = stateMeta.auth;
-  if (!existingAuth) {
-    return printer.warn('Auth has not yet been added to this project.');
+  const existingAuth = stateMeta.auth ?? {};
+  if (_.isEmpty(existingAuth)) {
+    return printer.warn('Project does not contain auth resources. Add auth using `amplify add auth`.');
   } else {
     const services = Object.keys(existingAuth);
     for (const service of services) {
@@ -28,7 +27,7 @@ export const run = async (context: $TSContext) => {
         printer.error('Auth is migrated from Mobile Hub and cannot be updated with Amplify CLI.');
         return context;
       } else if (serviceMeta.service === 'Cognito' && serviceMeta.serviceType === 'imported') {
-        printer.error('Updating of imported Auth resources is not supported.');
+        printer.error('Updating imported Auth resource is not supported.');
         return context;
       }
     }
@@ -42,20 +41,8 @@ export const run = async (context: $TSContext) => {
     printer.info(messages.dependenciesExists);
   }
   const resourceName = await getAuthResourceName(context);
-  let prevCLIInputs: CognitoCLIInputs;
+  await checkAuthResourceMigration(context, resourceName);
   const cliState = new AuthInputState(resourceName);
-  if (!cliState.cliInputFileExists()) {
-    printer.debug('Cli-inputs.json doesnt exist');
-    // put spinner here
-    const isMigrate = await prompter.confirmContinue(`Do you want to migrate this ${resourceName} to support overrides?`);
-    if (isMigrate) {
-      // generate cli-inputs for migration from parameters.json
-      migrateResourceToSupportOverride(resourceName);
-      // fetch cli Inputs again
-      prevCLIInputs = cliState.getCLIInputPayload();
-      await generateAuthStackTemplate(context, prevCLIInputs.cognitoConfig.resourceName);
-    }
-  }
   context.updatingAuth = await cliState.loadResourceParameters(context, cliState.getCLIInputPayload());
 
   try {

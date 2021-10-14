@@ -12,7 +12,7 @@ export const run = async (context: $TSContext) => {
     // if no category is mentioned , then defaults to all resource
     resourceName = undefined;
   }
-  console.log(categoryName);
+
   try {
     const resourcesToBuild: IAmplifyResource[] = await getResources(context);
     let filteredResources: IAmplifyResource[] = resourcesToBuild;

@@ -1,7 +1,7 @@
 {
   "name": "@aws-amplify/amplify-category-auth",
   "version": "1.0.0",
-  "description": "amplify-cli authentication override plugin",
+  "description": "amplify-cli authentication plugin",
   "repository": {
     "type": "git",
     "url": "https://github.com/aws-amplify/amplify-cli.git",

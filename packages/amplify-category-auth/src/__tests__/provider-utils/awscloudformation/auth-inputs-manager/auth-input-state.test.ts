@@ -1,5 +1,7 @@
 import { AuthInputState } from '../../../../provider-utils/awscloudformation/auth-inputs-manager/auth-input-state';
 
+jest.mock('fs-extra');
+
 jest.mock('amplify-cli-core', () => ({
   ...(jest.requireActual('amplify-cli-core') as {}),
   pathManager: {

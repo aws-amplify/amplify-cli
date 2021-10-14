@@ -1,4 +1,4 @@
-import { $TSObject, JSONUtilities, pathManager } from 'amplify-cli-core';
+import { $TSObject, JSONUtilities, NotInitializedError, pathManager } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import * as path from 'path';
 import uuid from 'uuid';
@@ -17,7 +17,7 @@ import {
   PasswordPolicyResult,
 } from '../service-walkthrough-types/awsCognito-user-input-types';
 
-export const migrateResourceToSupportOverride = (resourceName: string) => {
+export const migrateResourceToSupportOverride = async (resourceName: string) => {
   printer.info('Starting Migration Process');
   /**
    * backup resource folder
@@ -28,56 +28,56 @@ export const migrateResourceToSupportOverride = (resourceName: string) => {
   const projectPath = pathManager.findProjectRoot();
   if (!projectPath) {
     // New project, hence not able to find the amplify dir
-    return;
+    throw new NotInitializedError();
   }
   const authresourceDirPath = path.join(pathManager.getBackendDirPath(), 'auth', resourceName);
   const userPoolGroupResourceDirPath = path.join(pathManager.getBackendDirPath(), 'auth', 'UserPoolGroups');
   const backupAuthResourceFolder = backup(authresourceDirPath, projectPath, resourceName);
-  let backupUserPoolGroupResourceFolder: string;
-  if (fs.existsSync(userPoolGroupResourceDirPath)) {
-    backupUserPoolGroupResourceFolder = backup(userPoolGroupResourceDirPath, projectPath, 'UserPoolGroups');
-  }
+  const backupUserPoolGroupResourceFolder = backup(userPoolGroupResourceDirPath, projectPath, 'UserPoolGroups');
+
   try {
     const parameters = JSONUtilities.readJson<$TSObject>(path.join(authresourceDirPath, 'parameters.json'), { throwIfNotExist: true });
     fs.emptyDirSync(authresourceDirPath);
     // remomve UserPool Resource
-    if (parameters && parameters.userPoolGroupList.length > 0) {
+    if (parameters?.userPoolGroupList?.length > 0) {
       fs.unlinkSync(path.join(userPoolGroupResourceDirPath, 'template.json'));
       fs.unlinkSync(path.join(userPoolGroupResourceDirPath, 'parameters.json'));
     }
 
     // convert parameters.json to cli-inputs.json
-    const cliInputs = getCliInputs(parameters!);
+    const cliInputs = mapParametersJsonToCliInputs(parameters!);
     const cliInputsPath = path.join(authresourceDirPath, 'cli-inputs.json');
     JSONUtilities.writeJson(cliInputsPath, cliInputs);
     printer.success('Migration is Successful');
   } catch (e) {
     printer.error('There was an error migrating your project.');
-    rollback(authresourceDirPath, backupAuthResourceFolder);
+    rollback(authresourceDirPath, backupAuthResourceFolder!);
     rollback(userPoolGroupResourceDirPath, backupUserPoolGroupResourceFolder!);
     printer.info('migration operations are rolled back.');
     throw e;
   } finally {
     cleanUp(backupAuthResourceFolder);
-    cleanUp(backupUserPoolGroupResourceFolder!);
+    cleanUp(backupUserPoolGroupResourceFolder);
   }
 };
 
 function backup(authresourcePath: string, projectPath: string, resourceName: string) {
-  const backupauthResourceDirName = `${resourceName}-BACKUP-${uuid().split('-')[0]}`;
-  const backupauthResourceDirPath = path.join(projectPath, backupauthResourceDirName);
+  if (fs.existsSync(authresourcePath)) {
+    const backupauthResourceDirName = `${resourceName}-BACKUP-${uuid().split('-')[0]}`;
+    const backupauthResourceDirPath = path.join(projectPath, backupauthResourceDirName);
 
-  if (fs.existsSync(backupauthResourceDirPath)) {
-    const error = new Error(`Backup folder at ${backupauthResourceDirPath} already exists, remove the folder and retry the operation.`);
+    if (fs.existsSync(backupauthResourceDirPath)) {
+      const error = new Error(`Backup folder at ${backupauthResourceDirPath} already exists, remove the folder and retry the operation.`);
 
-    error.name = 'BackupFolderAlreadyExist';
-    error.stack = undefined;
+      error.name = 'BackupFolderAlreadyExist';
+      error.stack = undefined;
 
-    throw error;
+      throw error;
+    }
+
+    fs.copySync(authresourcePath, backupauthResourceDirPath);
+    return backupauthResourceDirPath;
   }
-
-  fs.copySync(authresourcePath, backupauthResourceDirPath);
-  return backupauthResourceDirPath;
 }
 
 function rollback(authresourcePath: string, backupauthResourceDirPath: string) {
@@ -87,11 +87,11 @@ function rollback(authresourcePath: string, backupauthResourceDirPath: string) {
   }
 }
 
-function cleanUp(authresourcePath: string) {
-  if (fs.existsSync(authresourcePath)) fs.removeSync(authresourcePath);
+function cleanUp(authresourcePath: string | undefined) {
+  if (!!authresourcePath && fs.existsSync(authresourcePath)) fs.removeSync(authresourcePath);
 }
 
-const getCliInputs = (parameters: $TSObject): CognitoCLIInputs => {
+const mapParametersJsonToCliInputs = (parameters: $TSObject): CognitoCLIInputs => {
   const baseResult: ServiceQuestionsBaseResult = {
     authSelections: parameters.authSelections,
     requiredAttributes: parameters.requiredAttributes,

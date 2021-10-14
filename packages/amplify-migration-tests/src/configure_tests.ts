@@ -32,7 +32,6 @@ async function setupAmplify(version: string = 'latest') {
 process.nextTick(async () => {
   try {
     // check if cli version was passed to setup-profile
-    console.log(process.argv);
     if (process.argv.length > 2) {
       const cliVersion = process.argv[2];
       await setupAmplify(cliVersion);

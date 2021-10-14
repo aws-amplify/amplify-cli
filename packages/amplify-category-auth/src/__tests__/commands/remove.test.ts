@@ -11,6 +11,8 @@ jest.mock('amplify-prompts', () => ({
 
 const saveCLIInputPayload_mock = jest.fn();
 
+jest.mock('fs-extra');
+
 jest.mock('../../provider-utils/awscloudformation/auth-inputs-manager/auth-input-state', () => {
   return {
     AuthInputState: jest.fn().mockImplementation(() => {

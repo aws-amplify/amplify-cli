@@ -11,7 +11,7 @@ type AuthCommandType = {
 
 export const run = async (context: $TSContext) => {
   try {
-    const { run } = await import(path.join('.', `${name}`, `${context.parameters.first}`));
+    const { run } = await import(path.join('.', name, context.parameters.first));
     return run(context);
   } catch (err) {
     const header = `amplify ${name} <subcommands>`;

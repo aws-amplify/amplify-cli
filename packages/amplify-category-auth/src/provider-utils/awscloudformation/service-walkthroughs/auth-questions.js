@@ -45,7 +45,7 @@ async function serviceWalkthrough(context, defaultValuesFilename, stringMapsFile
     }
 
     if (answer.triggers && answer.triggers !== '{}') {
-      const tempTriggers = context.updatingAuth && context.updatingAuth.triggers ? context.updatingAuth.triggers : {};
+      const tempTriggers = context.updatingAuth && context.updatingAuth.triggers ? JSON.parse(context.updatingAuth.triggers) : {};
       const selectionMetadata = capabilities;
 
       /* eslint-disable no-loop-func */

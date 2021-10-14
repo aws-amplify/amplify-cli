@@ -26,6 +26,7 @@ jest.mock('amplify-cli-core', () => ({
       ]),
   },
   buildOverrideDir: jest.fn().mockResolvedValue(false),
+  writeCFNTemplate: jest.fn(),
 }));
 
 const getCLIInputPayload_mock = jest.fn().mockReturnValue({

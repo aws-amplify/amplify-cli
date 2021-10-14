@@ -98,7 +98,7 @@ describe('auth update: ', () => {
     });
     it('update run method should detect absence of auth resource and print a message', async () => {
       await update.run(mockContext);
-      expect(printer.warn).toBeCalledWith('Auth has not yet been added to this project.');
+      expect(printer.warn).toBeCalledWith('Project does not contain auth resources. Add auth using `amplify add auth`.');
     });
   });
 

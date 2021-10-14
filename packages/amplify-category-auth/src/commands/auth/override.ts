@@ -1,9 +1,7 @@
 import path from 'path';
 import { generateOverrideSkeleton, $TSContext, stateManager, pathManager } from 'amplify-cli-core';
-import { AuthInputState } from '../../provider-utils/awscloudformation/auth-inputs-manager/auth-input-state';
 import { printer, prompter } from 'amplify-prompts';
-import { migrateResourceToSupportOverride } from '../../provider-utils/awscloudformation/utils/migrate-override-resource';
-import { generateAuthStackTemplate } from '../../provider-utils/awscloudformation/utils/generate-auth-stack-template';
+import { checkAuthResourceMigration } from '../../provider-utils/awscloudformation/utils/check-for-auth-migration';
 
 const category = 'auth';
 
@@ -16,26 +14,14 @@ export const run = async (context: $TSContext) => {
     authResources.push(resourceName);
   });
   if (authResources.length === 0) {
-    const errMessage = 'No resources to update. You need to add a resource.';
+    const errMessage = 'No auth resources to override. Add auth using `amplify add auth`';
     printer.error(errMessage);
     return;
   }
 
   const selectedAuthResource = await prompter.pick<'one', string>(`Which resource would you like to add overrides for?`, authResources);
   // check if migration needed
-  const cliState = new AuthInputState(selectedAuthResource);
-  if (!cliState.cliInputFileExists()) {
-    printer.debug('Cli-inputs.json doesnt exist');
-    const isMigrate = await prompter.confirmContinue(`Do you want to migrate this ${selectedAuthResource} to support overrides?`);
-    if (isMigrate) {
-      migrateResourceToSupportOverride(selectedAuthResource);
-      generateAuthStackTemplate(context, selectedAuthResource);
-    } else {
-      printer.warn('Migration is needed to support Overrides feature');
-      return;
-    }
-  }
-
+  await checkAuthResourceMigration(context, selectedAuthResource);
   const backendDir = pathManager.getBackendDirPath();
 
   const destPath = path.normalize(path.join(backendDir, category, selectedAuthResource));

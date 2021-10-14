@@ -38,20 +38,18 @@ export type AmplifyUserPoolGroupStackOptions = {
 };
 
 export class AmplifyUserPoolGroupTransform extends AmplifyCategoryTransform {
-  _app: cdk.App;
-  _userPoolGroupTemplateObj: AmplifyUserPoolGroupStack; // Props to modify Root stack data
-  _synthesizer: AuthStackSythesizer;
-  _synthesizerOutputs: AuthStackSythesizer;
-  __userPoolGroupTemplateObjOutputs: AmplifyUserPoolGroupStackOutputs;
-  _authResourceName: string;
-  _category: string;
-  _service: string;
-  _resourceName: string;
-  _cliInputs: CognitoCLIInputs;
+  private _app: cdk.App;
+  private _userPoolGroupTemplateObj: AmplifyUserPoolGroupStack; // Props to modify Root stack data
+  private _synthesizer: AuthStackSythesizer;
+  private _synthesizerOutputs: AuthStackSythesizer;
+  private __userPoolGroupTemplateObjOutputs: AmplifyUserPoolGroupStackOutputs;
+  private _authResourceName: string;
+  private _category: string;
+  private _service: string;
+  private _cliInputs: CognitoCLIInputs;
 
   constructor(resourceName: string) {
     super(resourceName);
-    this._resourceName = 'userPoolGroups';
     this._authResourceName = resourceName;
     this._synthesizer = new AuthStackSythesizer();
     this._synthesizerOutputs = new AuthStackSythesizer();
@@ -170,14 +168,14 @@ export class AmplifyUserPoolGroupTransform extends AmplifyCategoryTransform {
 
   public applyOverride = async (): Promise<void> => {
     const backendDir = pathManager.getBackendDirPath();
-    const overrideDir = path.join(backendDir, this._category, this._resourceName);
+    const overrideDir = path.join(backendDir, this._category, this.resourceName);
     const isBuild = await buildOverrideDir(backendDir, overrideDir).catch(error => {
       amplifyPrinter.printer.warn(`Skipping build as ${error.message}`);
       return false;
     });
     if (isBuild) {
       const overrideCode: string = await fs.readFile(path.join(overrideDir, 'build', 'override.js'), 'utf-8').catch(() => {
-        amplifyPrinter.formatter.list(['No override File Found', `To override ${this._resourceName} run amplify override auth`]);
+        amplifyPrinter.formatter.list(['No override File Found', `To override ${this.resourceName} run amplify override auth`]);
         return '';
       });
       const cognitoStackTemplateObj = this._userPoolGroupTemplateObj as AmplifyUserPoolGroupStack & AmplifyStackTemplate;
@@ -227,11 +225,11 @@ export class AmplifyUserPoolGroupTransform extends AmplifyCategoryTransform {
   };
 
   public saveBuildFiles = async (context: $TSContext, template: Template): Promise<void> => {
-    const cognitoStackFileName = 'template.json';
+    const cognitoStackFileName = `${this.resourceName}-cloudformation-template.json`;
     const cognitostackFilePath = path.join(
       pathManager.getBackendDirPath(),
       this._category,
-      this._resourceName,
+      this.resourceName,
       'build',
       cognitoStackFileName,
     );

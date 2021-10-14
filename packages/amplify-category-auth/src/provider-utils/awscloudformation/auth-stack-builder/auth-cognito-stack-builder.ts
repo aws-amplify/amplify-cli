@@ -44,11 +44,11 @@ export type AmplifyAuthCognitoStackProps = {
 };
 
 export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCognitoStackTemplate, AmplifyStackTemplate {
-  _scope: cdk.Construct;
-  _cfnParameterMap: Map<string, cdk.CfnParameter> = new Map();
-  _cfnConditionMap: Map<string, cdk.CfnCondition> = new Map();
-  _cfnOutputMap: Map<string, cdk.CfnOutput> = new Map();
-  _cfnMappingMap: Map<string, cdk.CfnMapping> = new Map();
+  private _scope: cdk.Construct;
+  private _cfnParameterMap: Map<string, cdk.CfnParameter> = new Map();
+  private _cfnConditionMap: Map<string, cdk.CfnCondition> = new Map();
+  private _cfnOutputMap: Map<string, cdk.CfnOutput> = new Map();
+  private _cfnMappingMap: Map<string, cdk.CfnMapping> = new Map();
   customMessageConfirmationBucket?: s3.CfnBucket;
   snsRole: iam.CfnRole | undefined;
   userPool: cognito.CfnUserPool | undefined;

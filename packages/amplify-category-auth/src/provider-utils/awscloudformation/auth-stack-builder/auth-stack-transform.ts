@@ -21,28 +21,25 @@ import { AuthInputState } from '../auth-inputs-manager/auth-input-state';
 import { CognitoStackOptions, AuthTriggerConnection, AuthTriggerPermissions } from '../service-walkthrough-types/cognito-user-input-types';
 import _ from 'lodash';
 import * as path from 'path';
-import * as amplifyPrinter from 'amplify-prompts';
+import { printer, formatter } from 'amplify-prompts';
 import { generateNestedAuthTriggerTemplate } from '../utils/generate-auth-trigger-template';
 import { createUserPoolGroups, updateUserPoolGroups } from '../utils/synthesize-resources';
 import { CognitoCLIInputs } from '../service-walkthrough-types/awsCognito-user-input-types';
 import * as vm from 'vm2';
 import * as fs from 'fs-extra';
-import { printer } from 'amplify-prompts';
 import os from 'os';
 
 export class AmplifyAuthTransform extends AmplifyCategoryTransform {
-  _app: cdk.App;
-  _category: string;
-  _service: string;
-  _resourceName: string;
-  _authTemplateObj: AmplifyAuthCognitoStack; // Props to modify Root stack data
-  _synthesizer: AuthStackSythesizer;
-  _cliInputs: CognitoCLIInputs;
-  _cognitoStackProps: CognitoStackOptions;
+  private _app: cdk.App;
+  private _category: string;
+  private _service: string;
+  private _authTemplateObj: AmplifyAuthCognitoStack; // Props to modify Root stack data
+  private _synthesizer: AuthStackSythesizer;
+  private _cliInputs: CognitoCLIInputs;
+  private _cognitoStackProps: CognitoStackOptions;
 
   constructor(resourceName: string) {
     super(resourceName);
-    this._resourceName = resourceName;
     this._synthesizer = new AuthStackSythesizer();
     this._app = new cdk.App();
     this._category = AmplifyCategories.AUTH;
@@ -53,7 +50,7 @@ export class AmplifyAuthTransform extends AmplifyCategoryTransform {
   public async transform(context: $TSContext): Promise<Template> {
     // parse Input data
     // validating cli-inputs
-    const cliState = new AuthInputState(this._resourceName);
+    const cliState = new AuthInputState(this.resourceName);
     this._cliInputs = cliState.getCLIInputPayload();
     this._cognitoStackProps = await this.generateStackProps(context);
 
@@ -65,7 +62,7 @@ export class AmplifyAuthTransform extends AmplifyCategoryTransform {
     }
     // generate customm Auth Trigger for Cognito
     if (this._cognitoStackProps.breakCircularDependency) {
-      await generateNestedAuthTriggerTemplate(this._category, this._resourceName, this._cognitoStackProps);
+      await generateNestedAuthTriggerTemplate(this._category, this.resourceName, this._cognitoStackProps);
     }
     // this will also include lambda triggers and adminQueries once api and function transform are done
 
@@ -88,103 +85,192 @@ export class AmplifyAuthTransform extends AmplifyCategoryTransform {
    */
 
   private async generateStackResources(props: CognitoStackOptions) {
-    this._authTemplateObj.addCfnParameter(
-      {
-        type: 'String',
-      },
-      'env',
-    );
-
-    if (!_.isEmpty(props.dependsOn)) {
-      const dependsOn = props.dependsOn;
-      dependsOn?.forEach(param => {
-        param.attributes.forEach(attribute => {
-          this._authTemplateObj.addCfnParameter(
-            {
-              type: 'String',
-              default: `${param.category}${param.resourceName}${attribute}`,
-            },
-            `${param.category}${param.resourceName}${attribute}`,
-          );
-        });
-      });
-    }
-
-    for (const [key, value] of Object.entries(props)) {
-      if (typeof value === 'string' || (typeof value === 'object' && !Array.isArray(value))) {
-        this._authTemplateObj.addCfnParameter(
-          {
-            type: 'String',
-          },
-          `${key}`,
-        );
-      }
-
-      if (typeof value === 'boolean') {
-        this._authTemplateObj.addCfnParameter(
-          {
-            type: 'String',
-          },
-          `${key}`,
-        );
-      }
-      if (typeof value === 'number') {
-        this._authTemplateObj.addCfnParameter(
-          {
-            type: 'String',
-          },
-          `${key}`,
-        );
-      }
-      if (value === 'parentStack') {
-        this._authTemplateObj.addCfnParameter(
-          {
-            type: 'String',
-          },
-          `${key}`,
-        );
-      }
-      if (Array.isArray(value)) {
-        this._authTemplateObj.addCfnParameter(
-          {
-            type: 'CommaDelimitedList',
-          },
-          `${key}`,
-        );
-      }
-    }
-
-    if (Object.keys(props).includes('hostedUIProviderMeta') && !Object.keys(props).includes('hostedUIProviderCreds')) {
-      this._authTemplateObj.addCfnParameter(
-        {
-          type: 'String',
-          default: [],
-        },
-        'hostedUIProviderCreds',
-      );
-    }
+    // add CFN parameter
+    this.addCfnParameters(props);
 
     // add CFN condition
-    this._authTemplateObj.addCfnCondition(
-      {
-        expression: cdk.Fn.conditionEquals(cdk.Fn.ref('env'), 'NONE'),
-      },
-      'ShouldNotCreateEnvResources',
-    );
-
-    if (props.authSelections !== 'identityPoolOnly') {
-      this._authTemplateObj.addCfnCondition(
-        {
-          expression: cdk.Fn.conditionEquals(cdk.Fn.ref('userpoolClientGenerateSecret'), true),
-        },
-        'ShouldOutputAppClientSecrets',
-      );
-    }
+    this.addCfnConditions(props);
     // generate Resources
 
     this._authTemplateObj.generateCognitoStackResources(props);
 
     //generate Output
+    this.generateCfnOutputs(props);
+  }
+
+  public applyOverride = async (): Promise<void> => {
+    const backendDir = pathManager.getBackendDirPath();
+    const overrideDir = path.join(backendDir, this._category, this.resourceName);
+    const isBuild = await buildOverrideDir(backendDir, overrideDir).catch(error => {
+      printer.warn(`Skipping build as ${error.message}`);
+      return false;
+    });
+    if (isBuild) {
+      const overrideCode: string = await fs.readFile(path.join(overrideDir, 'build', 'override.js'), 'utf-8').catch(() => {
+        formatter.list(['No override File Found', `To override ${this.resourceName} run amplify override auth`]);
+        return '';
+      });
+      const cognitoStackTemplateObj = this._authTemplateObj as AmplifyAuthCognitoStack & AmplifyStackTemplate;
+      const sandboxNode = new vm.NodeVM({
+        console: 'inherit',
+        timeout: 5000,
+        sandbox: {},
+        require: {
+          context: 'sandbox',
+          builtin: ['path'],
+          external: true,
+        },
+      });
+      try {
+        this._authTemplateObj = await sandboxNode
+          .run(overrideCode, path.join(overrideDir, 'build', 'override.js'))
+          .overrideProps(cognitoStackTemplateObj);
+      } catch (err: $TSAny) {
+        const error = new Error(`Skipping override due to ${err}${os.EOL}`);
+        printer.error(`${error}`);
+        error.stack = undefined;
+        throw error;
+      }
+    }
+  };
+  /**
+   *
+   * @returns Object required to generate Stack using cdk
+   */
+  private generateStackProps = async (context: $TSContext): Promise<CognitoStackOptions> => {
+    // roles to append to cognito stacks
+    const roles = {
+      authRoleArn: {
+        'Fn::GetAtt': ['AuthRole', 'Arn'],
+      },
+      unauthRoleArn: {
+        'Fn::GetAtt': ['UnauthRole', 'Arn'],
+      },
+    };
+
+    let cognitoStackProps = {
+      ...this._cliInputs.cognitoConfig,
+      ...roles,
+      breakCircularDependency: FeatureFlags.getBoolean('auth.breakcirculardependency'),
+      dependsOn: [],
+    };
+
+    // get env secrets
+    const teamProviderobj = context.amplify.loadEnvResourceParameters(context, this._category, this.resourceName);
+    if (!_.isEmpty(teamProviderobj)) {
+      cognitoStackProps = Object.assign(cognitoStackProps, teamProviderobj);
+    }
+    // determine permissions needed for each trigger module
+    if (!_.isEmpty(this._cliInputs.cognitoConfig.triggers)) {
+      const permissions = await context.amplify.getTriggerPermissions(
+        context,
+        this._cliInputs.cognitoConfig.triggers,
+        AmplifyCategories.AUTH,
+        this._cliInputs.cognitoConfig.resourceName,
+      );
+
+      const triggerPermissions: AuthTriggerPermissions[] = permissions?.map((i: string) => JSON.parse(i));
+
+      // handle dependsOn data
+      const dependsOnKeys = Object.keys(this._cliInputs.cognitoConfig.triggers).map(
+        i => `${this._cliInputs.cognitoConfig.resourceName}${i}`,
+      );
+      const dependsOn = context.amplify.dependsOnBlock(context, dependsOnKeys, 'Cognito');
+      // generate trigger config
+      const keys = Object.keys(this._cliInputs.cognitoConfig.triggers);
+      // Auth lambda config for Triggers
+      const authTriggerConnections: AuthTriggerConnection[] = [];
+      keys.forEach(key => {
+        let config: AuthTriggerConnection = {
+          triggerType: key === 'PreSignup' ? 'PreSignUp' : key,
+          lambdaFunctionName: key === 'PreSignup' ? 'PreSignUp' : `${this.resourceName}${key}`,
+        };
+        authTriggerConnections.push(config);
+      });
+      cognitoStackProps = Object.assign(cognitoStackProps, { permissions: triggerPermissions, dependsOn, authTriggerConnections });
+    }
+    return cognitoStackProps;
+  };
+
+  /**
+   *
+   * @returns return CFN templates sunthesized by app
+   */
+  private synthesizeTemplates = async (): Promise<Template> => {
+    this._app.synth();
+    const templates = this._synthesizer.collectStacks();
+    return templates.get('AmplifyAuthCongitoStack')!;
+  };
+
+  public saveBuildFiles = async (context: $TSContext, template: Template): Promise<void> => {
+    const cognitoStackFileName = `${this.resourceName}-cloudformation-template.json`;
+    const cognitostackFilePath = path.join(
+      pathManager.getBackendDirPath(),
+      this._category,
+      this.resourceName,
+      'build',
+      cognitoStackFileName,
+    );
+    // write CFN template
+    writeCFNTemplate(template, cognitostackFilePath, {
+      templateFormat: CFNTemplateFormat.JSON,
+    });
+    // write parameters.json
+    this.writeBuildFiles(context);
+  };
+
+  private writeBuildFiles = async (context: $TSContext) => {
+    const parametersJSONFilePath = path.join(
+      pathManager.getBackendDirPath(),
+      this._category,
+      this.resourceName,
+      'build',
+      'parameters.json',
+    );
+
+    const roles = {
+      authRoleArn: {
+        'Fn::GetAtt': ['AuthRole', 'Arn'],
+      },
+      unauthRoleArn: {
+        'Fn::GetAtt': ['UnauthRole', 'Arn'],
+      },
+    };
+
+    //save parameters
+    let parameters = {
+      ...this._cliInputs.cognitoConfig,
+      ...roles,
+      breakCircularDependency: this._cognitoStackProps.breakCircularDependency,
+      dependsOn: [], // to support undefined meta in update,
+    };
+
+    // convert triggers to JSON
+    if (this._cognitoStackProps.triggers && !_.isEmpty(this._cognitoStackProps.triggers)) {
+      this._cognitoStackProps.triggers = JSON.stringify(this._cognitoStackProps.triggers);
+      // convert permissions
+      const triggerPermissions = this._cognitoStackProps.permissions!.map(i => JSON.stringify(i));
+      // convert dependsOn
+      const dependsOn = this._cognitoStackProps.dependsOn;
+      // convert auth trigger connections
+      const authTriggerConnections = this._cognitoStackProps.authTriggerConnections!.map(obj => {
+        const modifiedObj = _.omit(obj, ['lambdaFunctionArn']);
+        return JSON.stringify(modifiedObj);
+      });
+      parameters = Object.assign(parameters, {
+        permissions: triggerPermissions,
+        triggers: this._cognitoStackProps.triggers,
+        dependsOn,
+        authTriggerConnections,
+      });
+    } else if (_.isEmpty(this._cognitoStackProps.triggers)) {
+      parameters = Object.assign(parameters, { triggers: JSON.stringify(this._cognitoStackProps.triggers) });
+    }
+    //save parameters
+    JSONUtilities.writeJson(parametersJSONFilePath, parameters);
+  };
+
+  private generateCfnOutputs = (props: CognitoStackOptions) => {
     if (props.authSelections === 'identityPoolAndUserPool' || props.authSelections == 'identityPoolOnly') {
       this._authTemplateObj.addCfnOutput(
         {
@@ -336,177 +422,101 @@ export class AmplifyAuthTransform extends AmplifyCategoryTransform {
         );
       }
     }
-  }
+  };
 
-  public applyOverride = async (): Promise<void> => {
-    const backendDir = pathManager.getBackendDirPath();
-    const overrideDir = path.join(backendDir, this._category, this._resourceName);
-    const isBuild = await buildOverrideDir(backendDir, overrideDir).catch(error => {
-      amplifyPrinter.printer.warn(`Skipping build as ${error.message}`);
-      return false;
-    });
-    if (isBuild) {
-      const overrideCode: string = await fs.readFile(path.join(overrideDir, 'build', 'override.js'), 'utf-8').catch(() => {
-        amplifyPrinter.formatter.list(['No override File Found', `To override ${this._resourceName} run amplify override auth`]);
-        return '';
+  private addCfnParameters = (props: CognitoStackOptions) => {
+    this._authTemplateObj.addCfnParameter(
+      {
+        type: 'String',
+      },
+      'env',
+    );
+
+    if (!_.isEmpty(props.dependsOn)) {
+      const dependsOn = props.dependsOn;
+      dependsOn?.forEach(param => {
+        param.attributes.forEach(attribute => {
+          this._authTemplateObj.addCfnParameter(
+            {
+              type: 'String',
+              default: `${param.category}${param.resourceName}${attribute}`,
+            },
+            `${param.category}${param.resourceName}${attribute}`,
+          );
+        });
       });
-      const cognitoStackTemplateObj = this._authTemplateObj as AmplifyAuthCognitoStack & AmplifyStackTemplate;
-      const sandboxNode = new vm.NodeVM({
-        console: 'inherit',
-        timeout: 5000,
-        sandbox: {},
-        require: {
-          context: 'sandbox',
-          builtin: ['path'],
-          external: true,
-        },
-      });
-      try {
-        this._authTemplateObj = await sandboxNode
-          .run(overrideCode, path.join(overrideDir, 'build', 'override.js'))
-          .overrideProps(cognitoStackTemplateObj);
-      } catch (err: $TSAny) {
-        const error = new Error(`Skipping override due to ${err}${os.EOL}`);
-        printer.error(`${error}`);
-        error.stack = undefined;
-        throw error;
+    }
+
+    for (const [key, value] of Object.entries(props)) {
+      if (typeof value === 'string' || (typeof value === 'object' && !Array.isArray(value))) {
+        this._authTemplateObj.addCfnParameter(
+          {
+            type: 'String',
+          },
+          `${key}`,
+        );
+      }
+
+      if (typeof value === 'boolean') {
+        this._authTemplateObj.addCfnParameter(
+          {
+            type: 'String',
+          },
+          `${key}`,
+        );
+      }
+      if (typeof value === 'number') {
+        this._authTemplateObj.addCfnParameter(
+          {
+            type: 'String',
+          },
+          `${key}`,
+        );
+      }
+      if (value === 'parentStack') {
+        this._authTemplateObj.addCfnParameter(
+          {
+            type: 'String',
+          },
+          `${key}`,
+        );
+      }
+      if (Array.isArray(value)) {
+        this._authTemplateObj.addCfnParameter(
+          {
+            type: 'CommaDelimitedList',
+          },
+          `${key}`,
+        );
       }
     }
-  };
-  /**
-   *
-   * @returns Object required to generate Stack using cdk
-   */
-  private generateStackProps = async (context: $TSContext): Promise<CognitoStackOptions> => {
-    // roles to append to cognito stacks
-    const roles = {
-      authRoleArn: {
-        'Fn::GetAtt': ['AuthRole', 'Arn'],
-      },
-      unauthRoleArn: {
-        'Fn::GetAtt': ['UnauthRole', 'Arn'],
-      },
-    };
 
-    let cognitoStackProps = {
-      ...this._cliInputs.cognitoConfig,
-      ...roles,
-      breakCircularDependency: FeatureFlags.getBoolean('auth.breakcirculardependency'),
-      dependsOn: [],
-    };
-
-    // get env secrets
-    const teamProviderobj = context.amplify.loadEnvResourceParameters(context, this._category, this._resourceName);
-    if (!_.isEmpty(teamProviderobj)) {
-      cognitoStackProps = Object.assign(cognitoStackProps, teamProviderobj);
-    }
-    // determine permissions needed for each trigger module
-    if (!_.isEmpty(this._cliInputs.cognitoConfig.triggers)) {
-      const permissions = await context.amplify.getTriggerPermissions(
-        context,
-        this._cliInputs.cognitoConfig.triggers,
-        AmplifyCategories.AUTH,
-        this._cliInputs.cognitoConfig.resourceName,
+    if (Object.keys(props).includes('hostedUIProviderMeta') && !Object.keys(props).includes('hostedUIProviderCreds')) {
+      this._authTemplateObj.addCfnParameter(
+        {
+          type: 'String',
+          default: [],
+        },
+        'hostedUIProviderCreds',
       );
-
-      const triggerPermissions: AuthTriggerPermissions[] = permissions?.map((i: string) => JSON.parse(i));
-
-      // handle dependsOn data
-      const dependsOnKeys = Object.keys(this._cliInputs.cognitoConfig.triggers).map(
-        i => `${this._cliInputs.cognitoConfig.resourceName}${i}`,
-      );
-      const dependsOn = context.amplify.dependsOnBlock(context, dependsOnKeys, 'Cognito');
-      // generate trigger config
-      const keys = Object.keys(this._cliInputs.cognitoConfig.triggers);
-      // Auth lambda config for Triggers
-      const authTriggerConnections: AuthTriggerConnection[] = [];
-      keys.forEach(key => {
-        let config: AuthTriggerConnection = {
-          triggerType: key === 'PreSignup' ? 'PreSignUp' : key,
-          lambdaFunctionName: key === 'PreSignup' ? 'PreSignUp' : `${this._resourceName}${key}`,
-        };
-        authTriggerConnections.push(config);
-      });
-      cognitoStackProps = Object.assign(cognitoStackProps, { permissions: triggerPermissions, dependsOn, authTriggerConnections });
     }
-    return cognitoStackProps;
   };
 
-  /**
-   *
-   * @returns return CFN templates sunthesized by app
-   */
-  private synthesizeTemplates = async (): Promise<Template> => {
-    this._app.synth();
-    const templates = this._synthesizer.collectStacks();
-    return templates.get('AmplifyAuthCongitoStack')!;
-  };
-
-  public saveBuildFiles = async (context: $TSContext, template: Template): Promise<void> => {
-    const cognitoStackFileName = `${this._resourceName}-cloudformation-template.json`;
-    const cognitostackFilePath = path.join(
-      pathManager.getBackendDirPath(),
-      this._category,
-      this._resourceName,
-      'build',
-      cognitoStackFileName,
-    );
-    // write CFN template
-    writeCFNTemplate(template, cognitostackFilePath, {
-      templateFormat: CFNTemplateFormat.JSON,
-    });
-    // write parameters.json
-    this.writeBuildFiles(context);
-  };
-
-  private writeBuildFiles = async (context: $TSContext) => {
-    const parametersJSONFilePath = path.join(
-      pathManager.getBackendDirPath(),
-      this._category,
-      this._resourceName,
-      'build',
-      'parameters.json',
+  private addCfnConditions = (props: CognitoStackOptions) => {
+    this._authTemplateObj.addCfnCondition(
+      {
+        expression: cdk.Fn.conditionEquals(cdk.Fn.ref('env'), 'NONE'),
+      },
+      'ShouldNotCreateEnvResources',
     );
 
-    const roles = {
-      authRoleArn: {
-        'Fn::GetAtt': ['AuthRole', 'Arn'],
-      },
-      unauthRoleArn: {
-        'Fn::GetAtt': ['UnauthRole', 'Arn'],
-      },
-    };
-
-    //save parameters
-    let parameters = {
-      ...this._cliInputs.cognitoConfig,
-      ...roles,
-      breakCircularDependency: this._cognitoStackProps.breakCircularDependency,
-      dependsOn: [], // to support undefined meta in update,
-    };
-
-    // convert triggers to JSON
-    if (this._cognitoStackProps.triggers && !_.isEmpty(this._cognitoStackProps.triggers)) {
-      this._cognitoStackProps.triggers = JSON.stringify(this._cognitoStackProps.triggers);
-      // convert permissions
-      const triggerPermissions = this._cognitoStackProps.permissions!.map(i => JSON.stringify(i));
-      // convert dependsOn
-      const dependsOn = this._cognitoStackProps.dependsOn;
-      // convert auth trigger connections
-      const authTriggerConnections = this._cognitoStackProps.authTriggerConnections!.map(obj => {
-        const modifiedObj = _.omit(obj, ['lambdaFunctionArn']);
-        return JSON.stringify(modifiedObj);
-      });
-      parameters = Object.assign(parameters, {
-        permissions: triggerPermissions,
-        triggers: this._cognitoStackProps.triggers,
-        dependsOn,
-        authTriggerConnections,
-      });
-    } else if (_.isEmpty(this._cognitoStackProps.triggers)) {
-      parameters = Object.assign(parameters, { triggers: JSON.stringify(this._cognitoStackProps.triggers) });
+    if (props.authSelections !== 'identityPoolOnly') {
+      this._authTemplateObj.addCfnCondition(
+        {
+          expression: cdk.Fn.conditionEquals(cdk.Fn.ref('userpoolClientGenerateSecret'), true),
+        },
+        'ShouldOutputAppClientSecrets',
+      );
     }
-    //save parameters
-    JSONUtilities.writeJson(parametersJSONFilePath, parameters);
   };
 }
