@@ -622,7 +622,7 @@ function getBucketName(context, s3ResourceName, backEndDir) {
   return { bucketName };
 }
 
-function getTransformerVersion(context) {
+export function getTransformerVersion(context) {
   migrateToTransformerVersionFeatureFlag(context);
 
   const transformerVersion = FeatureFlags.getNumber('graphQLTransformer.transformerVersion');
