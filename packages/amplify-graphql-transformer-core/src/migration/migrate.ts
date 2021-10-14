@@ -1,5 +1,5 @@
 import * as fs from 'fs-extra';
-import { parse, print, visit } from 'graphql'
+import { Kind, parse, print, visit } from 'graphql';
 import { migrateKeys } from './migrators/key'
 import { migrateAuth } from './migrators/auth'
 import { migrateConnection } from './migrators/connection'
@@ -18,6 +18,15 @@ import path from 'path';
 import { $TSContext, exitOnNextTick, FeatureFlags, pathManager, stateManager } from 'amplify-cli-core';
 import { detectCustomResolvers, detectOverriddenResolvers, detectUnsupportedDirectives, graphQLUsingSQL } from './schema-inspector';
 import { validateModelSchema } from '../transformation/validation';
+import { SchemaValidationError } from 'graphql-transformer-core';
+import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
+import { VersionedModelTransformer } from 'graphql-versioned-transformer';
+import { FunctionTransformer } from 'graphql-function-transformer';
+import { HttpTransformer } from 'graphql-http-transformer';
+import { KeyTransformer } from 'graphql-key-transformer';
+import { ModelConnectionTransformer } from 'graphql-connection-transformer';
+import { PredictionsTransformer } from 'graphql-predictions-transformer';
+import { SearchableModelTransformer } from 'graphql-elasticsearch-transformer';
 
 const cliToMigratorAuthMap: Map<string, string> = new Map<string, string>([
   ['API_KEY', 'apiKey'],
@@ -27,6 +36,29 @@ const cliToMigratorAuthMap: Map<string, string> = new Map<string, string>([
 ]);
 
 const MIGRATION_URL = "<insert migration docs URL here>";
+
+function doSchemaValidation(schema: DocumentNode) {
+  const transformList: any[] = [
+    // TODO: Removing until further discussion. `getTransformerOptions(project, '@model')`
+    new DynamoDBModelTransformer(),
+    new VersionedModelTransformer(),
+    new FunctionTransformer(),
+    new HttpTransformer(),
+    new KeyTransformer(),
+    new ModelConnectionTransformer(),
+    new PredictionsTransformer(),
+    new SearchableModelTransformer(),
+  ];
+  const directiveDefinitions = transformList
+    .map(transformPluginInst => [transformPluginInst.directive, ...transformPluginInst.typeDefinitions]);
+
+  let allModelDefinitions = [...schema.definitions];
+  allModelDefinitions = allModelDefinitions.concat(...directiveDefinitions);
+  const errors = validateModelSchema({ kind: Kind.DOCUMENT, definitions: allModelDefinitions });
+  if (errors && errors.length) {
+    throw new SchemaValidationError(errors);
+  }
+}
 
 function showDiffs(diffDocs: DiffDocument[]): void {
   printer.info("Changes made to your schemas:\n");
@@ -39,7 +71,7 @@ function showDiffs(diffDocs: DiffDocument[]): void {
 
 export function migrateGraphQLSchema(schema: string, authMode: string, massSchema: DocumentNode): string {
   let output = parse(schema)
-  validateModelSchema(output);
+  doSchemaValidation(output);
   visit(output, {
     ObjectTypeDefinition: {
       enter(node) {
@@ -84,13 +116,13 @@ async function runMigration(schemas: SchemaDocument[], authMode: string): Promis
 
   fullSchema = schemaList.join('\n');
   let fullSchemaNode = parse(fullSchema);
-  validateModelSchema(fullSchemaNode);
+  doSchemaValidation(fullSchemaNode);
 
-  let newSchemaList: SchemaDocument[] = new Array(schemas.length);
-  schemas.forEach((doc, idx) => {
-    const newSchema = migrateGraphQLSchema(doc.schema, authMode, fullSchemaNode);
-    newSchemaList[idx] = { schema: newSchema, filePath: doc.filePath };
-  });
+  let newSchemaList: SchemaDocument[] = new Array<SchemaDocument>();
+  for(let doc of schemas) {
+    const newSchema = await migrateGraphQLSchema(doc.schema, authMode, fullSchemaNode);
+    newSchemaList.push({ schema: newSchema, filePath: doc.filePath });
+  }
 
   const diffs = getSchemaDiffs(schemas, newSchemaList);
   showDiffs(diffs);

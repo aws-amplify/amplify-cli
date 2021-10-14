@@ -561,9 +561,9 @@ async function getPreviousDeploymentRootKey(previouslyDeployedBackendDir) {
 //   return undefined;
 // }
 
-export async function getDirectiveDefinitions(context, resourceDir) {
+export async function getDirectiveDefinitions(context, resourceDir, useV1TransformerOverride?: boolean) {
   const useExperimentalPipelineTransformer = FeatureFlags.getBoolean('graphQLTransformer.useExperimentalPipelinedTransformer');
-  if (useExperimentalPipelineTransformer) {
+  if (!useV1TransformerOverride && useExperimentalPipelineTransformer) {
     return getDirectiveDefinitionsV6(context, resourceDir);
   }
 

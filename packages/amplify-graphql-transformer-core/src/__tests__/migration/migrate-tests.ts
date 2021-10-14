@@ -5,12 +5,12 @@ describe('Schema migration tests', () => {
   describe('Schema conversion tests', () => {
     it('Should match expected output for base Todo and API key', () => {
       const schema = /* graphql */
-`type Todo @model {
-  id: ID!
-  name: String!
-  description: String
-}
-`;
+      `type Todo @model {
+        id: ID!
+        name: String!
+        description: String
+      }
+      `;
       const outputSchema = /* graphql */
 `type Todo @model @auth(rules: [{allow: public}]) {
   id: ID!
@@ -23,7 +23,7 @@ describe('Schema migration tests', () => {
       expect(newSchema).toMatch(outputSchema);
     });
 
-    it('Should match expected output for extended Todo and API key', () => {
+    it('Should match expected output for extended Todo and API key', async () => {
       const schema = /* graphql */
       `type Todo @model {
         id: ID!
@@ -37,16 +37,16 @@ describe('Schema migration tests', () => {
       }
 `;
       const outputSchema = /* graphql */
-      `type Todo @model @auth(rules: [{allow: public}]) {
-        id: ID!
-        name: String!
-        description: String
-      }
-      
-      type Ope @model @auth(rules: [{allow: public}]) {
-        foo: ID!
-        bar: String
-      }
+`type Todo @model @auth(rules: [{allow: public}]) {
+  id: ID!
+  name: String!
+  description: String
+}
+
+type Ope @model @auth(rules: [{allow: public}]) {
+  foo: ID!
+  bar: String
+}
 `;
       const docNode = parse(schema);
       const newSchema = migrateGraphQLSchema(schema, 'apiKey', docNode);
