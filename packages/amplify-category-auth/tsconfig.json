@@ -3,12 +3,15 @@
   "compilerOptions": {
     "outDir": "lib",
     "rootDir": "src",
-    "allowJs": true
+    "allowJs": true,
+    "strictPropertyInitialization": false,
+    "inlineSources": true
   },
   "exclude": [
     "coverage",
     "lib",
     "resources",
+    "scripts",
     "provider-utils/awscloudformation/triggers",
     "src/__tests__",
   ],
