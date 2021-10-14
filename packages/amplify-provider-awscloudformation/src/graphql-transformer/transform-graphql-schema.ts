@@ -22,6 +22,7 @@ import {
   ManyToManyTransformer,
 } from '@aws-amplify/graphql-relational-transformer';
 import { SearchableModelTransformer } from '@aws-amplify/graphql-searchable-transformer';
+import { DefaultValueTransformer } from '@aws-amplify/graphql-default-value-transformer';
 import { ProviderName as providerName } from '../constants';
 import { hashDirectory } from '../upload-appsync-files';
 import { writeDeploymentToDisk } from './utils';
@@ -31,6 +32,8 @@ import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-core'
 import { Template } from '@aws-amplify/graphql-transformer-core/lib/config/project-config';
 import { AmplifyCLIFeatureFlagAdapter } from '../utils/amplify-cli-feature-flag-adapter';
 import { JSONUtilities } from 'amplify-cli-core';
+import { searchablePushChecks } from '../transform-graphql-schema';
+import { ResourceConstants } from 'graphql-transformer-common';
 
 const API_CATEGORY = 'api';
 const STORAGE_CATEGORY = 'storage';
@@ -68,6 +71,7 @@ function getTransformerFactory(context, resourceDir) {
       new HasManyTransformer(),
       hasOneTransformer,
       new ManyToManyTransformer(modelTransformer, indexTransformer, hasOneTransformer),
+      new DefaultValueTransformer(),
       // TODO: initialize transformer plugins
     ];
 
@@ -275,6 +279,7 @@ export async function transformGraphQLSchema(context, options) {
   // Check for common errors
   const directiveMap = collectDirectivesByTypeNames(project.schema);
   warnOnAuth(context, directiveMap.types);
+  searchablePushChecks(context, directiveMap.types, parameters[ResourceConstants.PARAMETERS.AppSyncApiName]);
 
   const transformerListFactory = getTransformerFactory(context, resourceDir);
 

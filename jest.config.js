@@ -47,6 +47,7 @@ module.exports = {
     '<rootDir>/packages/amplify-graphql-function-transformer',
     '<rootDir>/packages/amplify-graphql-http-transformer',
     '<rootDir>/packages/amplify-graphql-index-transformer',
+    '<rootDir>/packages/amplify-graphql-default-value-transformer',
     '<rootDir>/packages/amplify-graphql-model-transformer',
     '<rootDir>/packages/amplify-graphql-predictions-transformer',
     '<rootDir>/packages/amplify-graphql-relational-transformer',

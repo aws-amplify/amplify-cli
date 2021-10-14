@@ -9,7 +9,12 @@ describe('cdk stack creation for map service', () => {
 
     it('creates Map policy for Authorized users only access type', async() => {
         const stackProps = {
-            accessType: AccessType.AuthorizedUsers
+            accessType: AccessType.AuthorizedUsers,
+            RegionMapping: { 
+                'eu-west-2': {
+                    locationServiceRegion: 'eu-central-1'
+                }
+            }
         }
         const mapStack = new MapStack(new App(), 'MapStack', stackProps);
         expect(mapStack.toCloudFormation()).toMatchSnapshot();
@@ -17,7 +22,12 @@ describe('cdk stack creation for map service', () => {
 
     it('creates Map policy for Authorized and Guest users access type', async() => {
         const stackProps = {
-            accessType: AccessType.AuthorizedAndGuestUsers
+            accessType: AccessType.AuthorizedAndGuestUsers,
+            RegionMapping: { 
+                'eu-west-2': {
+                    locationServiceRegion: 'eu-central-1'
+                }
+            }
         }
         const mapStack = new MapStack(new App(), 'MapStack', stackProps);
         expect(mapStack.toCloudFormation()).toMatchSnapshot();

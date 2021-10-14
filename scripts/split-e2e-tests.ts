@@ -2,9 +2,115 @@ import * as yaml from 'js-yaml';
 import * as glob from 'glob';
 import { join } from 'path';
 import * as fs from 'fs-extra';
-import { supportedRegions } from '../packages/amplify-category-geo/src/constants';
+import * as execa from 'execa';
 
-const CONCURRENCY = 4;
+const CONCURRENCY = 25;
+// Some our e2e tests are known to fail when run on windows hosts
+// These are caused by issues with our test harness, not broken cli behavior on windows
+// (examples: sending line endings when we shouldn't, java/gradle not installed on windows host)
+// Each of these failures should be independently investigated, resolved, and removed from this list.
+// For now, this list is being used to skip creation of circleci jobs for these tasks
+const WINDOWS_TEST_FAILURES = [
+  'amplify-app-amplify_e2e_tests',
+  'analytics-amplify_e2e_tests',
+  'api_1-amplify_e2e_tests',
+  'api_2-amplify_e2e_tests',
+  'api_3-amplify_e2e_tests',
+  'api_4-amplify_e2e_tests',
+  'api_5-amplify_e2e_tests',
+  'auth_1-amplify_e2e_tests',
+  'auth_2-amplify_e2e_tests',
+  'auth_3-amplify_e2e_tests',
+  'auth_4-amplify_e2e_tests',
+  // Auth tests are failing because
+  // us-east-1 region is not allowed in parent e2e test account
+  // and `singleSelect` for region is not working properly in windows
+  'auth_5-amplify_e2e_tests',
+  'auth_6-amplify_e2e_tests',
+  'auth_7-amplify_e2e_tests',
+  'auth_8-amplify_e2e_tests',
+  'containers-api-amplify_e2e_tests',
+  'datastore-modelgen-amplify_e2e_tests',
+  'delete-amplify_e2e_tests',
+  'env-amplify_e2e_tests',
+  'feature-flags-amplify_e2e_tests',
+  'frontend_config_drift-amplify_e2e_tests',
+  'function_1-amplify_e2e_tests',
+  'function_2-amplify_e2e_tests',
+  'function_3-amplify_e2e_tests',
+  'function_4-amplify_e2e_tests',
+  'function_6-amplify_e2e_tests',
+  'function_5-amplify_e2e_tests',
+  'function_7-amplify_e2e_tests',
+  'function_8-amplify_e2e_tests',
+  'function_9-amplify_e2e_tests',
+  'geo-add-amplify_e2e_tests',
+  'geo-update-amplify_e2e_tests',
+  'geo-remove-amplify_e2e_tests',
+  'hooks-amplify_e2e_tests',
+  'hosting-amplify_e2e_tests',
+  'hostingPROD-amplify_e2e_tests',
+  'iam-permissions-boundary-amplify_e2e_tests',
+  'import_auth_1-amplify_e2e_tests',
+  'import_auth_2-amplify_e2e_tests',
+  'import_auth_3-amplify_e2e_tests',
+  'import_dynamodb_1-amplify_e2e_tests',
+  'import_dynamodb_2-amplify_e2e_tests',
+  'import_s3_1-amplify_e2e_tests',
+  'import_s3_2-amplify_e2e_tests',
+  'init-amplify_e2e_tests',
+  'interactions-amplify_e2e_tests',
+  'layer-1-amplify_e2e_tests',
+  'layer-2-amplify_e2e_tests',
+  'layer-3-amplify_e2e_tests',
+  'layer-4-amplify_e2e_tests',
+  'migration-api-connection-migration-amplify_e2e_tests',
+  'migration-api-connection-migration2-amplify_e2e_tests',
+  'migration-api-key-migration1-amplify_e2e_tests',
+  'migration-api-key-migration2-amplify_e2e_tests',
+  'migration-api-key-migration3-amplify_e2e_tests',
+  'migration-node-function-amplify_e2e_tests',
+  'notifications-amplify_e2e_tests',
+  'predictions-amplify_e2e_tests',
+  'pull-amplify_e2e_tests',
+  's3-sse-amplify_e2e_tests',
+  'schema-auth-1-amplify_e2e_tests',
+  'schema-auth-2-amplify_e2e_tests',
+  'schema-auth-3-amplify_e2e_tests',
+  'schema-auth-4-amplify_e2e_tests',
+  'schema-auth-5-amplify_e2e_tests',
+  'schema-auth-6-amplify_e2e_tests',
+  'schema-auth-7-amplify_e2e_tests',
+  'schema-auth-8-amplify_e2e_tests',
+  'schema-auth-9-amplify_e2e_tests',
+  'schema-auth-10-amplify_e2e_tests',
+  'schema-auth-11-amplify_e2e_tests',
+  'schema-auth-12-amplify_e2e_tests',
+  'schema-auth-13-amplify_e2e_tests',
+  'schema-connection-amplify_e2e_tests',
+  'schema-data-access-patterns-amplify_e2e_tests',
+  'schema-function-1-amplify_e2e_tests',
+  'schema-function-2-amplify_e2e_tests',
+  'schema-iterative-update-1-amplify_e2e_tests',
+  'schema-iterative-update-2-amplify_e2e_tests',
+  'schema-iterative-update-3-amplify_e2e_tests',
+  'schema-iterative-update-4-amplify_e2e_tests',
+  'schema-iterative-update-locking-amplify_e2e_tests',
+  'schema-iterative-rollback-1-amplify_e2e_tests',
+  'schema-iterative-rollback-2-amplify_e2e_tests',
+  'schema-key-amplify_e2e_tests_pkg',
+  'schema-model-amplify_e2e_tests',
+  'schema-predictions-amplify_e2e_tests',
+  'schema-searchable-amplify_e2e_tests',
+  'schema-versioned-amplify_e2e_tests',
+  'storage-1-amplify_e2e_tests',
+  'storage-2-amplify_e2e_tests',
+  'storage-3-amplify_e2e_tests',
+  'tags-amplify_e2e_tests',
+  'custom_policies_container-amplify_e2e_tests',
+  'custom_policies_function-amplify_e2e_tests',
+];
+
 // Ensure to update packages/amplify-e2e-tests/src/cleanup-e2e-resources.ts is also updated this gets updated
 const AWS_REGIONS_TO_RUN_TESTS = [
   'us-east-2',
@@ -14,6 +120,20 @@ const AWS_REGIONS_TO_RUN_TESTS = [
   'ap-northeast-1',
   'ap-southeast-1',
   'ap-southeast-2',
+];
+
+// Some services (eg. amazon lex) are not available in all regions
+// Tests added to this list will always run in us-west-2
+const FORCE_US_WEST_2 = ['interactions-amplify_e2e_tests'];
+
+const USE_PARENT_ACCOUNT = [
+  'api_2-amplify_e2e_tests',
+  'api_1-amplify_e2e_tests',
+  'auth_2-amplify_e2e_tests',
+  'import_dynamodb_1-amplify_e2e_tests',
+  'import_s3_1-amplify_e2e_tests',
+  'migration-api-key-migration2-amplify_e2e_tests',
+  'storage-amplify_e2e_tests',
 ];
 
 // This array needs to be update periodically when new tests suites get added
@@ -78,6 +198,7 @@ const KNOWN_SUITES_SORTED_ACCORDING_TO_RUNTIME = [
   'src/__tests__/schema-auth-9.test.ts',
   'src/__tests__/schema-auth-11.test.ts',
   'src/__tests__/migration/api.key.migration2.test.ts',
+  'src/__tests__/migration/api.key.migration3.test.ts',
   'src/__tests__/function_1.test.ts',
   'src/__tests__/schema-auth-1.test.ts',
   'src/__tests__/function_4.test.ts',
@@ -95,6 +216,8 @@ const KNOWN_SUITES_SORTED_ACCORDING_TO_RUNTIME = [
   //<55m
   'src/__tests__/storage.test.ts',
   'src/__tests__/api_2.test.ts',
+  'src/__tests__/api_5.test.ts',
+  'src/__tests__/api_6.test.ts',
   'src/__tests__/schema-iterative-update-4.test.ts',
 ];
 
@@ -134,7 +257,8 @@ export type CircleCIConfig = {
 };
 
 function getTestFiles(dir: string, pattern = 'src/**/*.test.ts'): string[] {
-  return sortTestsBasedOnTime(glob.sync(pattern, { cwd: dir })).reverse();
+  // Todo: add reverse to run longest tests first
+  return sortTestsBasedOnTime(glob.sync(pattern, { cwd: dir })); // .reverse();
 }
 
 function generateJobName(baseName: string, testSuitePath: string): string {
@@ -168,17 +292,27 @@ function splitTests(
   const testSuites = getTestFiles(jobRootDir);
 
   const newJobs = testSuites.reduce((acc, suite, index) => {
-    const supportedRegions = getSupportedRegions(suite);
-    const testRegion = supportedRegions[index % supportedRegions.length];
+    const newJobName = generateJobName(jobName, suite);
+    const testRegion = FORCE_US_WEST_2.some(job => newJobName.startsWith(job))
+      ? 'us-west-2'
+      : AWS_REGIONS_TO_RUN_TESTS[index % AWS_REGIONS_TO_RUN_TESTS.length];
     const newJob = {
       ...job,
       environment: {
-        ...job.environment,
+        ...(job?.environment || {}),
         TEST_SUITE: suite,
         CLI_REGION: testRegion,
+        ...(USE_PARENT_ACCOUNT.some(job => newJobName.startsWith(job)) ? { USE_PARENT_ACCOUNT: 1 } : {}),
       },
     };
-    const newJobName = generateJobName(jobName, suite);
+    const isPkg = newJobName.endsWith('_pkg');
+    if (!isPkg) {
+      (newJob.environment as any) = {
+        AMPLIFY_DIR: '/home/circleci/repo/packages/amplify-cli/bin',
+        AMPLIFY_PATH: '/home/circleci/repo/packages/amplify-cli/bin/amplify',
+        ...newJob.environment,
+      };
+    }
     return { ...acc, [newJobName]: newJob };
   }, {});
 
@@ -216,6 +350,14 @@ function splitTests(
               [newJobName]: {
                 ...Object.values(workflowJob)[0],
                 requires: [...(requires ? [requires] : workflowJob[jobName].requires || [])],
+                matrix: {
+                  parameters: {
+                    os:
+                      WINDOWS_TEST_FAILURES.some(failingJob => newJobName.startsWith(failingJob)) || !newJobName.endsWith('_pkg')
+                        ? ['linux']
+                        : ['linux', 'windows'],
+                  },
+                },
               },
             };
           }
@@ -301,17 +443,6 @@ function getRequiredJob(jobNames: string[], index: number, concurrency: number =
   }
 }
 
-/**
- * Helper function to filter unsupported regions for certain category tests
- * @returns list of supported regions
- */
-function getSupportedRegions(suite: string): string[] {
-  if (suite.startsWith('src/__tests__/geo')) {
-    return AWS_REGIONS_TO_RUN_TESTS.filter(region => supportedRegions.includes(region));
-  }
-  return AWS_REGIONS_TO_RUN_TESTS;
-}
-
 function loadConfig(): CircleCIConfig {
   const configFile = join(process.cwd(), '.circleci', 'config.base.yml');
   return <CircleCIConfig>yaml.load(fs.readFileSync(configFile, 'utf8'));
@@ -319,9 +450,27 @@ function loadConfig(): CircleCIConfig {
 
 function saveConfig(config: CircleCIConfig): void {
   const configFile = join(process.cwd(), '.circleci', 'config.yml');
-  const output = ['# auto generated file. Edit config.base.yaml if you want to change', yaml.dump(config)];
+  const output = ['# auto generated file. Edit config.base.yaml if you want to change', yaml.dump(config, { noRefs: true })];
   fs.writeFileSync(configFile, output.join('\n'));
 }
+
+function verifyConfig() {
+  try {
+    execa.commandSync('which circleci');
+  } catch {
+    console.error(
+      'Please install circleci cli to validate your circle config. Installation information can be found at https://circleci.com/docs/2.0/local-cli/',
+    );
+    process.exit(1);
+  }
+  try {
+    execa.commandSync('circleci config validate');
+  } catch {
+    console.error(`"circleci config validate" command failed. Please check your .circleci/config.yml validity`);
+    process.exit(1);
+  }
+}
+
 function main(): void {
   const config = loadConfig();
   const splitNodeTests = splitTests(
@@ -333,11 +482,33 @@ function main(): void {
   );
   const splitPkgTests = splitTests(
     splitNodeTests,
-    'amplify_e2e_tests_pkg_linux',
+    'amplify_e2e_tests_pkg',
     'build_test_deploy',
     join(process.cwd(), 'packages', 'amplify-e2e-tests'),
     CONCURRENCY,
   );
-  saveConfig(splitPkgTests);
+  const splitGqlTests = splitTests(
+    splitPkgTests,
+    'graphql_e2e_tests',
+    'build_test_deploy',
+    join(process.cwd(), 'packages', 'graphql-transformers-e2e-tests'),
+    CONCURRENCY,
+  );
+  const splitV4MigrationTests = splitTests(
+    splitGqlTests,
+    'amplify_migration_tests_v4',
+    'build_test_deploy',
+    join(process.cwd(), 'packages', 'amplify-migration-tests'),
+    CONCURRENCY,
+  );
+  const splitLatestMigrationTests = splitTests(
+    splitV4MigrationTests,
+    'amplify_migration_tests_latest',
+    'build_test_deploy',
+    join(process.cwd(), 'packages', 'amplify-migration-tests'),
+    CONCURRENCY,
+  );
+  saveConfig(splitLatestMigrationTests);
+  verifyConfig();
 }
 main();

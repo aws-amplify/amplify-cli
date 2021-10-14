@@ -191,7 +191,7 @@ export function getResourcesToBeCreated(amplifyMeta, currentAmplifyMeta, categor
     const categoryItem = amplifyMeta[categoryName];
     Object.keys(categoryItem).forEach(resource => {
       if (
-        (!amplifyMeta[categoryName][resource].lastPushTimeStamp ||
+        (!amplifyMeta[categoryName][resource]?.lastPushTimeStamp ||
           !currentAmplifyMeta[categoryName] ||
           !currentAmplifyMeta[categoryName][resource]) &&
         categoryName !== 'providers' &&
@@ -225,7 +225,7 @@ export function getResourcesToBeCreated(amplifyMeta, currentAmplifyMeta, categor
         const dependsOnResourcename = resources[i].dependsOn[j].resourceName;
         if (
           amplifyMeta[dependsOnCategory] &&
-          (!amplifyMeta[dependsOnCategory][dependsOnResourcename].lastPushTimeStamp ||
+          (!amplifyMeta[dependsOnCategory][dependsOnResourcename]?.lastPushTimeStamp ||
             !currentAmplifyMeta[dependsOnCategory] ||
             !currentAmplifyMeta[dependsOnCategory][dependsOnResourcename]) &&
           amplifyMeta[dependsOnCategory][dependsOnResourcename].serviceType !== 'imported'
@@ -290,7 +290,7 @@ export async function getResourcesToBeUpdated(amplifyMeta, currentAmplifyMeta, c
           const backendModified = await isBackendDirModifiedSinceLastPush(
             resource,
             categoryName,
-            currentAmplifyMeta[categoryName][resource].lastPushTimeStamp,
+            currentAmplifyMeta[categoryName][resource]?.lastPushTimeStamp,
             hashLayerResource,
           );
 
@@ -303,7 +303,7 @@ export async function getResourcesToBeUpdated(amplifyMeta, currentAmplifyMeta, c
           const backendModified = await isBackendDirModifiedSinceLastPush(
             resource,
             categoryName,
-            currentAmplifyMeta[categoryName][resource].lastPushTimeStamp,
+            currentAmplifyMeta[categoryName][resource]?.lastPushTimeStamp,
             getHashForResourceDir,
           );
 

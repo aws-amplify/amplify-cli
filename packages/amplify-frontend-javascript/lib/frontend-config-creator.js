@@ -169,9 +169,11 @@ function getAWSExportsObject(resources) {
         };
         break;
       case 'Map':
+        geoConfig.region = serviceResourceMapping[service][0].output.Region;
         geoConfig.maps = getMapConfig(serviceResourceMapping[service]);
         break;
       case 'PlaceIndex':
+        geoConfig.region = serviceResourceMapping[service][0].output.Region;
         geoConfig.search_indices = getPlaceIndexConfig(serviceResourceMapping[service]);
         break;
       default:
@@ -186,7 +188,6 @@ function getAWSExportsObject(resources) {
 
   // add geo config if geo resources exist
   if (Object.entries(geoConfig).length > 0) {
-    geoConfig.region = projectRegion;
     Object.assign(
       configOutput,
       {

@@ -7,14 +7,15 @@ import * as elb2 from '@aws-cdk/aws-elasticloadbalancingv2';
 import * as route53 from '@aws-cdk/aws-route53';
 import * as route53targets from '@aws-cdk/aws-route53-targets';
 import * as cdk from '@aws-cdk/core';
-import { ContainersStack, ContainersStackProps } from "./base-api-stack";
-import { v4 as uuid } from "uuid";
+import { ContainersStack, ContainersStackProps } from './base-api-stack';
+import { v4 as uuid } from 'uuid';
 
-type EcsStackProps = ContainersStackProps & Readonly<{
-  domainName: string;
-  hostedZoneId?: string;
-  authName: string;
-}>;
+type EcsStackProps = ContainersStackProps &
+  Readonly<{
+    domainName: string;
+    hostedZoneId?: string;
+    authName: string;
+  }>;
 export class EcsAlbStack extends ContainersStack {
   private readonly userPoolDomain: string;
 
@@ -40,13 +41,9 @@ export class EcsAlbStack extends ContainersStack {
 
   private alb() {
     const {
-      envName,
       domainName,
       hostedZoneId,
-      exposedContainer: {
-        name: containerName,
-        port
-      },
+      exposedContainer: { name: containerName, port },
       restrictAccess,
     } = this.ecsProps;
 
@@ -70,39 +67,37 @@ export class EcsAlbStack extends ContainersStack {
     ]);
 
     const [distributionDomainName, , domainNameSuffix] = domainName.match(/([^\.]+)\.(.*)/);
-    const lbPrefix = `lb-${envName}`;
+    const lbPrefix = `lb-${this.envName}`;
     const albDomainName = `${lbPrefix}.${domainNameSuffix}`;
     const wildcardDomainName = `*.${domainNameSuffix}`;
 
     const wildcardCertificate = new acm.CfnCertificate(this, 'Certificate', {
       domainName: wildcardDomainName,
       validationMethod: hostedZoneId ? acm.ValidationMethod.DNS : acm.ValidationMethod.EMAIL,
-      domainValidationOptions: [{
-        domainName: wildcardDomainName,
-        validationDomain: hostedZoneId === undefined ? domainNameSuffix : undefined,
-        hostedZoneId,
-      }]
+      domainValidationOptions: [
+        {
+          domainName: wildcardDomainName,
+          validationDomain: hostedZoneId === undefined ? domainNameSuffix : undefined,
+          hostedZoneId,
+        },
+      ],
     });
 
-    const userPoolClient = restrictAccess ? new cognito.CfnUserPoolClient(this, 'UserPoolClient', {
-      userPoolId: this.userPoolId,
-      allowedOAuthFlows: [
-        // 'implicit',
-        'code',
-      ],
-      allowedOAuthFlowsUserPoolClient: true,
-      allowedOAuthScopes: [
-        "profile",
-        "phone",
-        "email",
-        "openid",
-        "aws.cognito.signin.user.admin"
-      ],
-      generateSecret: true,
-      supportedIdentityProviders: ['COGNITO'],
-      callbackUrLs: [`https://${distributionDomainName}/oauth2/idpresponse`],
-      logoutUrLs: [`https://${distributionDomainName}/oauth2/idpresponse`],
-    }) : undefined;
+    const userPoolClient = restrictAccess
+      ? new cognito.CfnUserPoolClient(this, 'UserPoolClient', {
+          userPoolId: this.userPoolId,
+          allowedOAuthFlows: [
+            // 'implicit',
+            'code',
+          ],
+          allowedOAuthFlowsUserPoolClient: true,
+          allowedOAuthScopes: ['profile', 'phone', 'email', 'openid', 'aws.cognito.signin.user.admin'],
+          generateSecret: true,
+          supportedIdentityProviders: ['COGNITO'],
+          callbackUrLs: [`https://${distributionDomainName}/oauth2/idpresponse`],
+          logoutUrLs: [`https://${distributionDomainName}/oauth2/idpresponse`],
+        })
+      : undefined;
 
     const targetGroup = new elb2.CfnTargetGroup(this, 'TargetGroup', {
       healthCheckIntervalSeconds: cdk.Duration.seconds(90).toSeconds(),
@@ -119,38 +114,44 @@ export class EcsAlbStack extends ContainersStack {
     const albSecurityGroup = new ec2.CfnSecurityGroup(this, 'AlbSecurityGroup', {
       vpcId,
       groupDescription: 'ALB Security Group',
-      securityGroupEgress: [{
-        description: 'Allow all outbound traffic by default',
-        ipProtocol: '-1',
-        cidrIp: '0.0.0.0/0',
-      }],
-      securityGroupIngress: [{
-        description: 'Allow from anyone on port 443',
-        ipProtocol: ec2.Protocol.TCP,
-        cidrIp: '0.0.0.0/0',
-        fromPort: 443,
-        toPort: 443,
-      }]
+      securityGroupEgress: [
+        {
+          description: 'Allow all outbound traffic by default',
+          ipProtocol: '-1',
+          cidrIp: '0.0.0.0/0',
+        },
+      ],
+      securityGroupIngress: [
+        {
+          description: 'Allow from anyone on port 443',
+          ipProtocol: ec2.Protocol.TCP,
+          cidrIp: '0.0.0.0/0',
+          fromPort: 443,
+          toPort: 443,
+        },
+      ],
     });
 
     const loadBalancer = new elb2.CfnLoadBalancer(this, 'LoadBalancer', {
       type: 'application',
-      securityGroups: [
-        albSecurityGroup.attrGroupId,
+      securityGroups: [albSecurityGroup.attrGroupId],
+      loadBalancerAttributes: [
+        {
+          key: 'deletion_protection.enabled',
+          value: 'false',
+        },
       ],
-      loadBalancerAttributes: [{
-        key: 'deletion_protection.enabled',
-        value: 'false',
-      }],
       scheme: 'internet-facing',
       subnets,
     });
 
-    (<ecs.CfnService.LoadBalancerProperty[]>this.ecsService.loadBalancers) = [{
-      containerName,
-      containerPort: port,
-      targetGroupArn: targetGroup.ref,
-    }];
+    (<ecs.CfnService.LoadBalancerProperty[]>this.ecsService.loadBalancers) = [
+      {
+        containerName,
+        containerPort: port,
+        targetGroupArn: targetGroup.ref,
+      },
+    ];
     (<ec2.CfnSecurityGroup.IngressProperty[]>this.ecsServiceSecurityGroup.securityGroupIngress).push({
       ipProtocol: ec2.Protocol.TCP,
       fromPort: port,
@@ -159,16 +160,18 @@ export class EcsAlbStack extends ContainersStack {
     });
 
     const listener = new elb2.CfnListener(this, 'AlbListener', {
-      defaultActions: [{
-        fixedResponseConfig: {
-          statusCode: '403',
+      defaultActions: [
+        {
+          fixedResponseConfig: {
+            statusCode: '403',
+          },
+          type: 'fixed-response',
         },
-        type: 'fixed-response',
-      }],
+      ],
       loadBalancerArn: loadBalancer.ref,
       port: 443,
       protocol: elb2.Protocol.HTTPS,
-      certificates: [{ certificateArn: wildcardCertificate.ref }]
+      certificates: [{ certificateArn: wildcardCertificate.ref }],
     });
 
     this.ecsService.addDependsOn(listener);
@@ -178,20 +181,22 @@ export class EcsAlbStack extends ContainersStack {
       priority: 1,
       listenerArn: listener.ref,
       actions: [].concat(
-        restrictAccess ? {
-          order: actionsOrderCounter++,
-          type: 'authenticate-cognito',
-          authenticateCognitoConfig: {
-            userPoolArn,
-            userPoolClientId: userPoolClient.ref,
-            userPoolDomain,
-          }
-        } : undefined,
+        restrictAccess
+          ? {
+              order: actionsOrderCounter++,
+              type: 'authenticate-cognito',
+              authenticateCognitoConfig: {
+                userPoolArn,
+                userPoolClientId: userPoolClient.ref,
+                userPoolDomain,
+              },
+            }
+          : undefined,
         {
           order: actionsOrderCounter++,
           type: 'forward',
           targetGroupArn: targetGroup.ref,
-        }
+        },
       ),
       conditions: [
         {
@@ -205,8 +210,8 @@ export class EcsAlbStack extends ContainersStack {
           httpHeaderConfig: {
             httpHeaderName: sharedSecretHeaderName,
             values: [sharedSecretHeader],
-          }
-        }
+          },
+        },
       ],
     });
 
@@ -227,25 +232,29 @@ export class EcsAlbStack extends ContainersStack {
             queryString: true,
           },
           targetOriginId: originId,
-          viewerProtocolPolicy: 'redirect-to-https'
+          viewerProtocolPolicy: 'redirect-to-https',
         },
-        origins: [{
-          customOriginConfig: {
-            originProtocolPolicy: 'https-only',
+        origins: [
+          {
+            customOriginConfig: {
+              originProtocolPolicy: 'https-only',
+            },
+            domainName: albDomainName,
+            id: originId,
+            originCustomHeaders: [
+              {
+                headerName: sharedSecretHeaderName,
+                headerValue: sharedSecretHeader,
+              },
+            ],
           },
-          domainName: albDomainName,
-          id: originId,
-          originCustomHeaders: [{
-            headerName: sharedSecretHeaderName,
-            headerValue: sharedSecretHeader,
-          }]
-        }],
+        ],
         viewerCertificate: {
           acmCertificateArn: wildcardCertificate.ref,
           minimumProtocolVersion: 'TLSv1.2_2019',
           sslSupportMethod: 'sni-only',
         },
-      }
+      },
     });
 
     if (hostedZoneId) {
@@ -257,7 +266,7 @@ export class EcsAlbStack extends ContainersStack {
             type: route53.RecordType.A,
             aliasTarget: {
               hostedZoneId: loadBalancer.attrCanonicalHostedZoneId,
-              dnsName: loadBalancer.attrDnsName
+              dnsName: loadBalancer.attrDnsName,
             },
           },
           {
@@ -265,10 +274,10 @@ export class EcsAlbStack extends ContainersStack {
             type: route53.RecordType.A,
             aliasTarget: {
               hostedZoneId: route53targets.CloudFrontTarget.CLOUDFRONT_ZONE_ID,
-              dnsName: distribution.attrDomainName
+              dnsName: distribution.attrDomainName,
             },
-          }
-        ]
+          },
+        ],
       });
     }
 
@@ -278,8 +287,8 @@ export class EcsAlbStack extends ContainersStack {
         cdk.Aws.REGION,
         '.console.aws.amazon.com/codesuite/codepipeline/pipelines/',
         this.getPipelineName(),
-        '/view'
-      ])
+        '/view',
+      ]),
     });
 
     new cdk.CfnOutput(this, 'LoadBalancerAliasDomainName', { value: loadBalancer.attrDnsName });

@@ -6695,6 +6695,14 @@ amplify-codegen@^2.23.1:
     semver "^7.3.5"
     slash "^3.0.0"
 
+amplify-prompts@1.1.2:
+  version "1.1.2"
+  resolved "https://registry.yarnpkg.com/amplify-prompts/-/amplify-prompts-1.1.2.tgz#b1306dad4a33c9ab207352961dc81cc98418b698"
+  integrity sha512-reSjj7RKYrqSq34lYrP+sykUBvYrnCoJen2euKDwwRdxq/heWS97aJD1DahIJvEEW/YN+WUdzhpuzjBL8W3hcA==
+  dependencies:
+    chalk "^4.1.1"
+    enquirer "^2.3.6"
+
 ansi-align@^3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/ansi-align/-/ansi-align-3.0.0.tgz#b536b371cf687caaef236c18d3e21fe3797467cb"
