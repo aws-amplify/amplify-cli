@@ -53,6 +53,7 @@ export type $TSContext = {
   newUserInfo?: $TSAny;
   filesystem: IContextFilesystem;
   template: IContextTemplate;
+  updatingAuth: $TSAny;
 };
 
 export type CategoryName = string;
@@ -312,9 +313,9 @@ interface AmplifyToolkit {
   deleteTrigger: () => $TSAny;
   deleteAllTriggers: () => $TSAny;
   deleteDeselectedTriggers: () => $TSAny;
-  dependsOnBlock: () => $TSAny;
+  dependsOnBlock: (context: $TSContext, dependsOnKeys: string[], service: string) => $TSAny;
   getTriggerMetadata: () => $TSAny;
-  getTriggerPermissions: () => $TSAny;
+  getTriggerPermissions: (context: $TSContext, triggers: any, category: string, resourceName: string) => $TSAny;
   getTriggerEnvVariables: () => $TSAny;
   getTriggerEnvInputs: () => $TSAny;
   getUserPoolGroupList: () => $TSAny[];

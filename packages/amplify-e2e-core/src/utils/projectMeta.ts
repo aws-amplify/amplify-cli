@@ -63,7 +63,7 @@ function getCloudBackendConfig(projectRoot: string) {
 }
 
 function getParameterPath(projRoot: string, category: string, resourceName: string) {
-  return path.join(projRoot, 'amplify', 'backend', category, resourceName, 'parameters.json');
+  return path.join(projRoot, 'amplify', 'backend', category, resourceName, 'build', 'parameters.json');
 }
 
 function getCategoryParameterPath(projRoot: string, category: string, resourceName: string) {
