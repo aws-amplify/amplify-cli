@@ -79,7 +79,7 @@ export class ModelResourceIDs {
     return /^Model.*Connection$/.test(typeName);
   }
   static GetModelFromConnectionType(typeName: string): string {
-    return /(?<=Model)(.*)(?=Connection)/.exec(typeName)[0];
+    return /(?<=Model)(.*)(?=Connection)/.exec(typeName)?.[0];
   }
   static ModelDeleteInputObjectName(typeName: string): string {
     return graphqlName('Delete' + toUpper(typeName) + 'Input');
