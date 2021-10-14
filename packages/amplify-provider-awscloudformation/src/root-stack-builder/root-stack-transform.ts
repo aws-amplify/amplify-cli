@@ -1,11 +1,15 @@
 import { AmplifyRootStackTemplate } from './types';
-import { $TSContext, CFNTemplateFormat, Template, pathManager, writeCFNTemplate, buildOverrideDir } from 'amplify-cli-core';
+import { $TSContext, CFNTemplateFormat, Template, pathManager, writeCFNTemplate, buildOverrideDir, $TSAny } from 'amplify-cli-core';
 import { AmplifyRootStack, AmplifyRootStackOutputs } from './root-stack-builder';
 import { RootStackSythesizer } from './stack-synthesizer';
 import { App } from '@aws-cdk/core';
 import * as cdk from '@aws-cdk/core';
 import * as path from 'path';
 import * as amplifyPrinter from 'amplify-prompts';
+import * as fs from 'fs-extra';
+import os from 'os';
+import * as vm from 'vm2';
+import { printer } from 'amplify-prompts';
 
 export class AmplifyRootStackTransform {
   private app: App | undefined;
@@ -50,28 +54,23 @@ export class AmplifyRootStackTransform {
     });
     // skip if packageManager or override.ts not found
     if (isBuild) {
-      const { overrideProps } = await import(path.join(overrideFilePath, 'build', 'override.js')).catch(error => {
-        amplifyPrinter.formatter.list([
-          'No override File Found',
-          `To override ${this._resourceName} run amplify override auth ${this._resourceName} `,
-        ]);
-        return undefined;
+      const overrideCode: string = await fs.readFile(path.join(overrideFilePath, 'build', 'override.js'), 'utf-8').catch(() => {
+        amplifyPrinter.formatter.list(['No override File Found', `To override ${this._resourceName} run amplify override auth`]);
+        return '';
       });
-
-      // pass stack object
       const rootStackTemplateObj = this._rootTemplateObj as AmplifyRootStackTemplate;
-      //TODO: Check Script Options
-      if (typeof overrideProps === 'function' && overrideProps) {
-        try {
-          this._rootTemplateObj = overrideProps(rootStackTemplateObj);
-
-          //The vm module enables compiling and running code within V8 Virtual Machine contexts. The vm module is not a security mechanism. Do not use it to run untrusted code.
-          // const script = new vm.Script(overrideCode);
-          // script.runInContext(vm.createContext(cognitoStackTemplateObj));
-          return;
-        } catch (error) {
-          throw new Error(error);
-        }
+      const sandboxNode = new vm.NodeVM({
+        console: 'inherit',
+        timeout: 5000,
+        sandbox: {},
+      });
+      try {
+        this._rootTemplateObj = sandboxNode.run(overrideCode).overrideProps(rootStackTemplateObj);
+      } catch (err: $TSAny) {
+        const error = new Error(`Skipping override due to ${err}${os.EOL}`);
+        printer.error(`${error}`);
+        error.stack = undefined;
+        throw error;
       }
     }
   };

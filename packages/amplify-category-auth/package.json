@@ -1,6 +1,6 @@
 {
-  "name": "amplify-category-auth",
-  "version": "2.38.4",
+  "name": "@aws-amplify/amplify-category-auth",
+  "version": "1.0.0",
   "description": "amplify-cli authentication plugin",
   "repository": {
     "type": "git",
@@ -20,7 +20,8 @@
     "watch": "tsc -w",
     "clean": "rimraf lib tsconfig.tsbuildinfo",
     "test": "jest",
-    "test-watch": "jest --watch"
+    "test-watch": "jest --watch",
+    "generateSchemas": "ts-node ./scripts/generateAuthSchemas.ts"
   },
   "dependencies": {
     "amplify-cli-core": "1.31.1",
@@ -38,7 +39,8 @@
     "mime-types": "^2.1.26",
     "ora": "^4.0.3",
     "promise-sequential": "^1.1.1",
-    "uuid": "^3.4.0"
+    "uuid": "^3.4.0",
+    "vm2": "^3.9.3"
   },
   "devDependencies": {
     "rimraf": "^3.0.2"
