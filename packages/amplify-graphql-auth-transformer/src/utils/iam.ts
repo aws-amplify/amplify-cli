@@ -49,7 +49,7 @@ export const createPolicyDocumentForManagedPolicy = (resources: Set<string>) => 
           typeName,
         }).toString(),
       );
-      resourceSize = RESOURCE_OVERHEAD + typeName.length;
+      resourceSize += RESOURCE_OVERHEAD + typeName.length;
     }
     //
     // Check size of resource and if needed create a new one and clear the resources and
