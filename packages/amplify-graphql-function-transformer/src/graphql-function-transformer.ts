@@ -99,8 +99,8 @@ export class FunctionTransformer extends TransformerPluginBase {
                   version: str('2018-05-29'),
                   operation: str('Invoke'),
                   payload: obj({
-                    typeName: ref('ctx.stash.get("typeName")'),
-                    fieldName: ref('ctx.stash.get("fieldName")'),
+                    typeName: ref('util.toJson($ctx.stash.get("typeName"))'),
+                    fieldName: ref('util.toJson($ctx.stash.get("fieldName"))'),
                     arguments: ref('util.toJson($ctx.arguments)'),
                     identity: ref('util.toJson($ctx.identity)'),
                     source: ref('util.toJson($ctx.source)'),

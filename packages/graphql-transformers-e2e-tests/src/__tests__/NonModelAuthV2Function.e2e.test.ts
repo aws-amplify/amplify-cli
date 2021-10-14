@@ -44,7 +44,6 @@ let LAMBDA_EXECUTION_POLICY_ARN = '';
 const AUTH_ROLE_NAME = `${STACK_NAME}-authRole`;
 const UNAUTH_ROLE_NAME = `${STACK_NAME}-unauthRole`;
 let IAM_AUTH_CLIENT: AWSAppSyncClient<any> = undefined;
-let USER_POOL_AUTH_CLIENT: AWSAppSyncClient<any> = undefined;
 let USER_POOL_ID: string;
 let IDENTITY_POOL_ID: string;
 let GRAPHQL_ENDPOINT: string;
@@ -162,21 +161,7 @@ beforeAll(async () => {
   configureAmplify(USER_POOL_ID, userPoolClientId, IDENTITY_POOL_ID);
 
   await signupUser(USER_POOL_ID, USERNAME1, TMP_PASSWORD);
-  const authRes = await authenticateUser(USERNAME1, TMP_PASSWORD, REAL_PASSWORD);
-  const idToken = authRes.getIdToken().getJwtToken();
-
-  USER_POOL_AUTH_CLIENT = new AWSAppSyncClient({
-    url: endpoint,
-    region: REGION,
-    auth: {
-      type: AUTH_TYPE.AMAZON_COGNITO_USER_POOLS,
-      jwtToken: () => idToken,
-    },
-    offlineConfig: {
-      keyPrefix: 'userPools',
-    },
-    disableOffline: true,
-  });
+  await authenticateUser(USERNAME1, TMP_PASSWORD, REAL_PASSWORD);
 
   await Auth.signIn(USERNAME1, REAL_PASSWORD);
   const authCredentials = await Auth.currentCredentials();
