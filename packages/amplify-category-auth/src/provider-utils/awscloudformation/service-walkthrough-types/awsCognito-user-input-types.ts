@@ -1,8 +1,9 @@
-// Some convenience types for the existing service walkthrough logic
+export interface CognitoCLIInputs {
+  version?: string;
+  cognitoConfig: CognitoConfiguration;
+}
 
-import { $TSObject } from 'amplify-cli-core';
-
-export type ServiceQuestionsResult = ServiceQuestionsBaseResult &
+export type CognitoConfiguration = ServiceQuestionsBaseResult &
   OAuthResult &
   SocialProviderResult &
   IdentityPoolResult &
@@ -14,21 +15,26 @@ export type ServiceQuestionsResult = ServiceQuestionsBaseResult &
 
 export interface ServiceQuestionsBaseResult {
   serviceName: 'Cognito';
-  resourceName?: string;
+  resourceName: string;
   useDefault: 'default' | 'defaultSocial' | 'manual';
   updateFlow?: 'default' | 'defaultSocial' | 'manual' | 'callbacks' | 'providers' | 'updateUserPoolGroups' | 'updateAdminQueries';
   requiredAttributes: string[];
-  authSelections: 'userPoolOnly' | 'identityPoolAndUserPool';
+  authSelections: 'userPoolOnly' | 'identityPoolAndUserPool' | 'identityPoolOnly';
   userPoolName?: string;
   usernameAttributes?: UsernameAttributes[];
-  userPoolGroups: boolean;
+  aliasAttributes?: AliasAttributes[];
+  userPoolGroups?: boolean;
   userPoolGroupList?: string[];
   userpoolClientRefreshTokenValidity?: number;
   userpoolClientReadAttributes: string[];
   userpoolClientWriteAttributes: string[];
+  userpoolClientSetAttributes?: boolean;
   usernameCaseSensitive?: boolean;
-  useEnabledMfas?: boolean;
-  authTriggerConnections?: string;
+  verificationBucketName?: string;
+  resourceNameTruncated?: string;
+  sharedId?: string;
+  userpoolClientGenerateSecret: boolean;
+  userpoolClientLambdaRole: string;
 }
 
 export interface OAuthResult {
@@ -58,10 +64,10 @@ export interface SocialProviderResult {
 }
 
 export interface IdentityPoolResult {
-  thirdPartyAuth: boolean;
+  thirdPartyAuth?: boolean;
   identityPoolName?: string;
   allowUnauthenticatedIdentities?: boolean;
-  authProviders: string[];
+  authProviders?: string[];
   googleClientId?: string;
   googleIos?: string;
   googleAndroid?: string;
@@ -86,7 +92,7 @@ export interface MfaResult {
 }
 
 export interface AdminQueriesResult {
-  adminQueries: boolean;
+  adminQueries?: boolean;
   adminQueryGroup?: string;
 }
 
@@ -106,29 +112,7 @@ export type PasswordPolicy = 'Requires Lowercase' | 'Requires Numbers' | 'Requir
 export type UsernameAttributes = AttributeType.EMAIL | AttributeType.PHONE_NUMBER;
 
 export type AliasAttributes = AttributeType.EMAIL | AttributeType.PHONE_NUMBER | AttributeType.PREFERRED_USERNAME;
+
 export interface Triggers {
   triggers?: any; // TODO create a type for this
 }
-
-export enum TriggerType {
-  CreateAuthChallenge = 'CreateAuthChallenge',
-  CustomMessage = 'CustomMessage',
-  DefineAuthChallenge = 'DefineAuthChallenge',
-  PostAuthentication = 'PostAuthentication',
-  PostConfirmation = 'PostConfirmation',
-  PreAuthentication = 'PreAuthentication',
-  PreSignup = 'PreSignUp',
-  VerifyAuthChallengeResponse = 'VerifyAuthChallengeResponse',
-  PreTokenGeneration = 'PreTokenGeneration',
-}
-
-export type AuthTriggerConnection = {
-  lambdaFunctionName: string;
-  triggerType: TriggerType;
-  lambdaFunctionArn?: string;
-};
-
-export type AuthTriggerConfig = {
-  triggers: $TSObject;
-  authTriggerConnections: AuthTriggerConnection[];
-};
