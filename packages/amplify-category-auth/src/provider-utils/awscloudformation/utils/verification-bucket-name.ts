@@ -1,6 +1,6 @@
 /**
  * Refactored from awscloudformation/index.js
- * @param current The current ServiceQuestionsResult
+ * @param current The current CognitoCLIInputs
  * @param previous Previous results (if any)
  */
 export const verificationBucketName = async (current: any, previous?: any) => {

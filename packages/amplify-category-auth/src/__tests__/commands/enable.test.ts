@@ -2,8 +2,6 @@ const fs = require('fs');
 const add = require('../../commands/auth/enable');
 const { messages } = require('../../provider-utils/awscloudformation/assets/string-maps');
 const providerController = require('../../provider-utils/awscloudformation');
-const { FeatureFlags } = require('amplify-cli-core');
-FeatureFlags.getBoolean = () => false;
 
 jest.mock('../../provider-utils/awscloudformation', () => ({
   addResource: jest.fn(),

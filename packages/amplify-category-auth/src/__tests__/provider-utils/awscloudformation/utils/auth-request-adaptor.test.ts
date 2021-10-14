@@ -9,12 +9,8 @@ import {
   getAddAuthRequestAdaptor,
   getUpdateAuthRequestAdaptor,
 } from '../../../../provider-utils/awscloudformation/utils/auth-request-adaptors';
-import { FeatureFlags } from 'amplify-cli-core';
 
 describe('get add auth request adaptor', () => {
-  beforeEach(() => {
-    FeatureFlags.getBoolean = () => false;
-  });
   describe('valid translations', () => {
     it('translates request with minimal user pool config only', () => {
       const addAuthRequest: AddAuthRequest = {
@@ -34,28 +30,6 @@ describe('get add auth request adaptor', () => {
     });
   });
   it('translates request with aliasAttributes', () => {
-    FeatureFlags.getBoolean = () => true;
-    const addAuthRequest: AddAuthRequest = {
-      version: 1,
-      resourceName: 'myTestAuth',
-      serviceConfiguration: {
-        serviceName: 'Cognito',
-        userPoolConfiguration: {
-          signinMethod: CognitoUserPoolSigninMethod.EMAIL,
-          requiredSignupAttributes: [CognitoUserProperty.EMAIL],
-          aliasAttributes: [
-            CognitoUserAliasAttributes.EMAIL,
-            CognitoUserAliasAttributes.PHONE_NUMBER,
-            CognitoUserAliasAttributes.PREFERRED_USERNAME,
-          ],
-        },
-        includeIdentityPool: false,
-      },
-    };
-
-    expect(getAddAuthRequestAdaptor('javascript')(addAuthRequest)).toMatchSnapshot();
-  });
-  it('translates request without aliasAttributes', () => {
     const addAuthRequest: AddAuthRequest = {
       version: 1,
       resourceName: 'myTestAuth',
