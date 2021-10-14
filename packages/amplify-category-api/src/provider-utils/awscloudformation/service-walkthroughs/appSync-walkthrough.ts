@@ -384,7 +384,8 @@ const updateApiInputWalkthrough = async (context, project, resolverConfig, model
 
 export const serviceWalkthrough = async (context: $TSContext, defaultValuesFilename, serviceMetadata) => {
   const resourceName = resourceAlreadyExists(context);
-  const useExperimentalPipelineTransformer = FeatureFlags.getBoolean('graphQLTransformer.useExperimentalPipelinedTransformer');
+  const providerPlugin = await import(context.amplify.getProviderPlugins(context).awscloudformation);
+  const transformerVersion = providerPlugin.getTransformerVersion(context);
 
   if (resourceName) {
     const errMessage =
@@ -402,7 +403,7 @@ export const serviceWalkthrough = async (context: $TSContext, defaultValuesFilen
   let askToEdit = true;
 
   // Schema template selection
-  const schemaTemplateOptions = useExperimentalPipelineTransformer ? schemaTemplatesV2 : schemaTemplatesV1;
+  const schemaTemplateOptions = transformerVersion === 2 ? schemaTemplatesV2 : schemaTemplatesV1;
   const templateSelectionQuestion = {
     type: inputs[4].type,
     name: inputs[4].key,
@@ -413,7 +414,7 @@ export const serviceWalkthrough = async (context: $TSContext, defaultValuesFilen
 
   const { templateSelection } = await inquirer.prompt(templateSelectionQuestion);
   const schemaFilePath = path.join(graphqlSchemaDir, templateSelection);
-  schemaContent += useExperimentalPipelineTransformer ? defineGlobalSandboxMode(context) : '';
+  schemaContent += transformerVersion === 2 ? defineGlobalSandboxMode(context) : '';
   schemaContent += fs.readFileSync(schemaFilePath, 'utf8');
 
   return {

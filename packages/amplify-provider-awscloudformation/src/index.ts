@@ -37,6 +37,7 @@ export { getLocationSupportedRegion, getLocationRegionMapping } from './aws-util
 import { updateEnv } from './update-env';
 
 import { uploadHooksDirectory } from './utils/hooks-manager';
+import { getTransformerVersion } from './transform-graphql-schema';
 
 function init(context) {
   return initializer.run(context);
@@ -162,5 +163,6 @@ module.exports = {
   updateEnv,
   uploadHooksDirectory,
   getLocationSupportedRegion,
-  getLocationRegionMapping
+  getLocationRegionMapping,
+  getTransformerVersion,
 };
