@@ -1,5 +1,6 @@
 @keyframes spinner-line-fade-more {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 0; /* minimum opacity */
   }
   1% {
@@ -7,7 +8,9 @@
   }
 }
 @keyframes spinner-line-fade-quick {
-  0%, 39%, 100% {
+  0%,
+  39%,
+  100% {
     opacity: 0.25; /* minimum opacity */
   }
   40% {
@@ -15,7 +18,8 @@
   }
 }
 @keyframes spinner-line-fade-default {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 0.22; /* minimum opacity */
   }
   1% {

@@ -24,6 +24,7 @@ export const AmplifySupportedService = {
   S3: 'S3',
   DYNAMODB: 'DynamoDB',
   COGNITO: 'Cognito',
+  COGNITOUSERPOOLGROUPS: 'Cognito-UserPool-Groups',
 };
 
 export const overriddenCategories = [AmplifyCategories.AUTH, AmplifyCategories.STORAGE];
