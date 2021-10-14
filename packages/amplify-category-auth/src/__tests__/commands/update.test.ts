@@ -1,12 +1,59 @@
-const fs = require('fs');
-const update = require('../../commands/auth/update');
-const { messages } = require('../../provider-utils/awscloudformation/assets/string-maps');
-const { FeatureFlags } = require('amplify-cli-core');
-FeatureFlags.getBoolean = () => false;
+import * as fs from 'fs-extra';
+import { $TSContext } from 'amplify-cli-core';
+import * as update from '../../commands/auth/update';
+import { messages } from '../../provider-utils/awscloudformation/assets/string-maps';
+import { printer } from 'amplify-prompts';
 
-jest.mock('fs', () => ({
+jest.mock('../../provider-utils/awscloudformation/auth-inputs-manager/auth-input-state');
+jest.mock('fs-extra', () => ({
   readFileSync: () => '{ "Cognito": { "provider": "aws"}}',
   existsSync: () => true,
+}));
+
+jest.mock('amplify-prompts');
+
+jest.mock('amplify-cli-core', () => ({
+  ...(jest.requireActual('amplify-cli-core') as {}),
+  AmplifySupportedService: {
+    COGNITO: 'Cognito',
+    COGNITOUSERPOOLGROUPS: 'Cognito-UserPool-Groups',
+  },
+  stateManager: {
+    getMeta: jest
+      .fn()
+      .mockReturnValue({})
+      .mockReturnValueOnce({
+        analytics: {
+          mockResource1: {},
+        },
+        api: {
+          mockResource1: {},
+        },
+        function: {
+          mockResource1: {},
+        },
+        storage: {
+          mockResource1: {},
+        },
+      })
+      .mockReturnValueOnce({
+        analytics: {
+          mockResource1: {},
+        },
+        api: {
+          mockResource1: {},
+        },
+        function: {
+          mockResource1: {},
+        },
+        storage: {
+          mockResource1: {},
+        },
+        auth: {
+          mockResource1: {},
+        },
+      }),
+  },
 }));
 
 describe('auth update: ', () => {
@@ -22,7 +69,7 @@ describe('auth update: ', () => {
       getProjectDetails: mockGetProjectDetails,
       serviceSelectionPrompt: mockSelectionPrompt,
       getPluginInstance: jest.fn().mockReturnValue(mockPluginInstance),
-      readJsonFile: jest.fn(path => JSON.parse(fs.readFileSync(path))),
+      readJsonFile: jest.fn(path => JSON.parse(fs.readFileSync(path, 'utf-8'))),
       pathManager: {
         getBackendDirPath: jest.fn(),
       },
@@ -31,15 +78,10 @@ describe('auth update: ', () => {
         return { allResources: [{ service: 'Cognito', serviceType: 'managed' }] };
       }, //eslint-disable-line
     },
-    print: {
-      warning: jest.fn(),
-      info: jest.fn(),
-      error: jest.fn(),
-    },
     usageData: {
       emitError: jest.fn(),
     },
-  };
+  } as unknown as $TSContext;
   const dependencies = ['analytics', 'api', 'function', 'storage'];
 
   it('update run method should exist', async () => {
@@ -52,55 +94,27 @@ describe('auth update: ', () => {
         projectConfig: {
           projectPath: mockProjectPath,
         },
-        amplifyMeta: {
-          auth: {},
-        },
       });
     });
     it('update run method should detect absence of auth resource and print a message', async () => {
       await update.run(mockContext);
-      expect(mockContext.print.warning).toBeCalledWith('Auth has not yet been added to this project.');
+      expect(printer.warn).toBeCalledWith('Project does not contain auth resources. Add auth using `amplify add auth`.');
     });
   });
 
   describe('case: resources may rely on auth', () => {
-    dependencies.forEach(d => {
-      beforeEach(() => {
-        const amplifyMeta = { auth: { foo: { bar: 'bar', Cognito: { provider: 'provider' } } } };
-        amplifyMeta[d] = {};
-        amplifyMeta[d].foo = 'bar';
-        mockGetProjectDetails.mockReturnValue({
-          projectConfig: {
-            projectPath: mockProjectPath,
-          },
-          amplifyMeta,
-        });
-      });
-      it(`update run method should detect presence of ${d} resource and print a message`, async () => {
-        await update.run(mockContext);
-        expect(mockContext.print.info).toBeCalledWith(messages.dependenciesExists);
-      });
-      it(`serviceSelectionPrompt should still be called even when warning displayed for existing ${d} resource`, async () => {
-        await update.run(mockContext);
-        expect(mockContext.amplify.serviceSelectionPrompt).toBeCalled();
-      });
-    });
-  });
-
-  describe('case: auth resource exists', () => {
     beforeEach(() => {
       mockGetProjectDetails.mockReturnValue({
         projectConfig: {
           projectPath: mockProjectPath,
         },
-        amplifyMeta: {
-          auth: {
-            foo: 'bar',
-          },
-        },
       });
     });
-    it('update run method should detect presence of storage resource and print a message', async () => {
+    it(`update run method should detect presence of dependent resource and print a message`, async () => {
+      await update.run(mockContext);
+      expect(printer.info).toBeCalledWith(messages.dependenciesExists);
+    });
+    it(`serviceSelectionPrompt should still be called even when warning displayed for existing resource`, async () => {
       await update.run(mockContext);
       expect(mockContext.amplify.serviceSelectionPrompt).toBeCalled();
     });

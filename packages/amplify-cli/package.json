@@ -37,7 +37,7 @@
     "amplify-app": "3.0.16",
     "amplify-category-analytics": "2.21.24",
     "amplify-category-api": "2.33.2",
-    "amplify-category-auth": "2.38.4",
+    "@aws-amplify/amplify-category-auth": "1.0.0",
     "amplify-category-function": "2.36.1",
     "amplify-category-geo": "1.1.0",
     "amplify-category-hosting": "2.7.24",
@@ -161,11 +161,13 @@
         "type": "category",
         "packageName": "amplify-category-api"
       },
-      "auth": {
-        "name": "auth",
-        "type": "category",
-        "packageName": "amplify-category-auth"
-      },
+      "auth": [
+        {
+          "name": "auth",
+          "type": "category",
+          "packageName": "@aws-amplify/amplify-category-auth"
+        }
+      ],
       "function": {
         "name": "function",
         "type": "category",

@@ -46,6 +46,10 @@ export async function buildOverrideDir(cwd: string, destDirPath: string): Promis
     });
     // run tsc build to build override.ts file
     const tsConfigDir = path.join(destDirPath, 'build');
+
+    // making sure build folder exists for resource
+    fs.ensureDirSync(tsConfigDir);
+
     const tsConfigFilePath = path.join(tsConfigDir, 'tsconfig.resource.json');
     execa.sync('tsc', [`--project`, `${tsConfigFilePath}`], {
       cwd: tsConfigDir,
@@ -80,6 +84,8 @@ export const generateAmplifyOverrideProjectBuildFiles = (backendDir: string, src
 
 export const generateTsConfigforProject = (backendDir: string, srcResourceDirPath: string, destDirPath: string) => {
   const overrideFileName = path.join(destDirPath, 'override.ts');
+  // ensure build dir path
+  fs.ensureDirSync(path.join(destDirPath, 'build'));
   const resourceTsConfigFileName = path.join(destDirPath, 'build', 'tsconfig.resource.json');
   fs.writeFileSync(overrideFileName, fs.readFileSync(path.join(srcResourceDirPath, 'override.ts')));
   fs.writeFileSync(resourceTsConfigFileName, fs.readFileSync(path.join(srcResourceDirPath, 'tsconfig.resource.json')));
