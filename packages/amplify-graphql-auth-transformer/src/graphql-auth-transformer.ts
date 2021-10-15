@@ -65,7 +65,7 @@ import {
 } from 'graphql';
 import { SubscriptionLevel, ModelDirectiveConfiguration } from '@aws-amplify/graphql-model-transformer';
 import { AccessControlMatrix } from './accesscontrol';
-import { getBaseType, makeDirective, makeField, makeNamedType, ResourceConstants } from 'graphql-transformer-common';
+import { getBaseType, makeDirective, makeField, makeNamedType, ResourceConstants, ModelResourceIDs } from 'graphql-transformer-common';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import {
@@ -475,10 +475,9 @@ Static group authorization should perform as expected.`,
   ): void => {
     let fieldAuthExpression: string;
     let relatedAuthExpression: string;
-    const relatedModel = getBaseType(field.type);
-    const relatedModelObject = ctx.output.getObject(relatedModel);
-    if (this.authModelConfig.has(relatedModel)) {
-      const acm = this.authModelConfig.get(relatedModel);
+    const relatedModelObject = this.getRelatedModelObject(ctx, getBaseType(field.type));
+    if (this.authModelConfig.has(relatedModelObject.name.value)) {
+      const acm = this.authModelConfig.get(relatedModelObject.name.value);
       const roleDefinitions = acm.getRolesPerOperation('read').map(r => this.roleMap.get(r)!);
       const relationalPrimaryMap = getRelationalPrimaryMap(ctx, def, field, relatedModelObject);
       relatedAuthExpression = generateAuthExpressionForRelationQuery(
@@ -802,6 +801,16 @@ Static group authorization should perform as expected.`,
   /*
   Schema Generation Helpers
   */
+  private getRelatedModelObject(ctx: TransformerContextProvider, typeName: string) {
+    const modelObjectName: string = ModelResourceIDs.IsModelConnectionType(typeName)
+      ? ModelResourceIDs.GetModelFromConnectionType(typeName)
+      : typeName;
+    if (!ctx.output.hasType(modelObjectName)) {
+      throw new TransformerContractError(`Could not find type: ${modelObjectName}`);
+    } else {
+      return ctx.output.getObject(modelObjectName);
+    }
+  }
   private addFieldsToObject(ctx: TransformerTransformSchemaStepContextProvider, modelName: string, ownerFields: Array<string>) {
     const modelObject = ctx.output.getObject(modelName)!;
     const existingFields = collectFieldNames(modelObject);

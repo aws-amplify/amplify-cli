@@ -18,6 +18,7 @@ import {
   raw,
   set,
   ifElse,
+  nul,
 } from 'graphql-mapping-template';
 import { getIdentityClaimExp, getOwnerClaim, apiKeyExpression, iamExpression, emptyPayload, setHasAuthExpression } from './helpers';
 import {
@@ -78,13 +79,19 @@ const generateAuthOnRelationalModelQueryExpression = (
         ifElse(
           not(ref(`util.isNull($ctx.${claim}.${field})`)),
           compoundExpression([
-            iff(equals(ref(`ctx.${claim}.${field}`), ref(`primaryRole${idx}`)), set(ref(IS_AUTHORIZED_FLAG), bool(true))),
+            iff(
+              equals(ref(`ctx.${claim}.${field}`), ref(`primaryRole${idx}`)),
+              compoundExpression([
+                set(ref(IS_AUTHORIZED_FLAG), bool(true)),
+                qref(methodCall(ref('ctx.stash.put'), str('authFilter'), nul())),
+              ]),
+            ),
           ]),
           iff(
             not(ref(IS_AUTHORIZED_FLAG)),
             compoundExpression([
-              set(ref('primaryFieldAuth'), bool(true)),
               qref(methodCall(ref(`ctx.${claim}.put`), str(field), ref(`primaryRole${idx}`))),
+              set(ref('primaryFieldAuth'), bool(true)),
             ]),
           ),
         ),
@@ -119,7 +126,13 @@ const generateAuthOnModelQueryExpression = (
         modelQueryExpression.push(
           ifElse(
             not(ref(`util.isNull($ctx.args.${role.entity})`)),
-            compoundExpression([iff(equals(ref(`ctx.args.${role.entity}`), claimExpression), set(ref(IS_AUTHORIZED_FLAG), bool(true)))]),
+            iff(
+              equals(ref(`ctx.args.${role.entity}`), claimExpression),
+              compoundExpression([
+                set(ref(IS_AUTHORIZED_FLAG), bool(true)),
+                qref(methodCall(ref('ctx.stash.put'), str('authFilter'), nul())),
+              ]),
+            ),
             qref(methodCall(ref('primaryFieldMap.put'), str(role.entity), claimExpression)),
           ),
         );
