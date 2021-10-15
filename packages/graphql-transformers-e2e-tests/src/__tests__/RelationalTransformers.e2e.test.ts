@@ -125,7 +125,7 @@ type Course @model {
       defaultAuthentication: {
         authenticationType: 'API_KEY',
       },
-      additionalAuthenticationProviders: [{ authenticationType: 'AWS_IAM' }],
+      additionalAuthenticationProviders: [],
     };
     const authTransformer = new AuthTransformer({ authConfig, addAwsIamAuthInOutputSchema: false });
     const modelTransformer = new ModelTransformer();
