@@ -42,7 +42,7 @@ export function migrateConnection(node: any, ast: any) {
 
   connections.forEach((connectionField: any) => {
     const connectionDirective = getConnectionDirective(connectionField);
-    if (isListType(connectionField)) {
+    if (isListType(connectionField.type)) {
       connectionDirective.name.value = "hasMany";
       connectionDirective.arguments.find((a: any) => a.name.value === "keyName").name.value = "indexName";
     } else {

@@ -1,7 +1,7 @@
 import { stateManager } from 'amplify-cli-core';
 import { DocumentNode } from 'graphql/language';
 import { visit } from 'graphql';
-import { collectDirectivesByTypeNames } from '../utils';
+import { collectDirectivesByTypeNames } from '@aws-amplify/graphql-transformer-core';
 import { listContainsOnlySetString } from './utils';
 import * as fs from 'fs-extra';
 

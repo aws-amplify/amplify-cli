@@ -17,7 +17,7 @@ import { prompter, printer } from 'amplify-prompts';
 import path from 'path';
 import { $TSContext, exitOnNextTick, FeatureFlags, pathManager, stateManager } from 'amplify-cli-core';
 import { detectCustomResolvers, detectOverriddenResolvers, detectUnsupportedDirectives, graphQLUsingSQL } from './schema-inspector';
-import { validateModelSchema } from '../transformation/validation';
+import { validateModelSchema } from '@aws-amplify/graphql-transformer-core';
 import { SchemaValidationError } from 'graphql-transformer-core';
 import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
 import { FunctionTransformer } from 'graphql-function-transformer';

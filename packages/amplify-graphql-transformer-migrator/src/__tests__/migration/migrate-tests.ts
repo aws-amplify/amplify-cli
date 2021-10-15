@@ -1,4 +1,4 @@
-import { migrateGraphQLSchema } from '../../migration/migrate';
+import { migrateGraphQLSchema } from '../../migrate';
 import { parse } from 'graphql';
 
 describe('Schema migration tests', () => {

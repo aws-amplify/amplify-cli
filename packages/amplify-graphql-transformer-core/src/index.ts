@@ -27,7 +27,6 @@ export {
 export { collectDirectives, collectDirectivesByTypeNames, DirectiveWrapper } from './utils';
 export * from './errors';
 export { TransformerModelBase, TransformerModelEnhancerBase, TransformerPluginBase } from './transformation/transformer-plugin-base';
-export { attemptV2TransformerMigration } from './migration/migrate';
 /**
  * Returns the extra set of directives that are supported by AppSync service
  */

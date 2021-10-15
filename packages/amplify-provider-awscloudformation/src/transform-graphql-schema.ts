@@ -44,7 +44,7 @@ import {
   transformGraphQLSchema as transformGraphQLSchemaV6,
   getDirectiveDefinitions as getDirectiveDefinitionsV6,
 } from './graphql-transformer/transform-graphql-schema';
-import { attemptV2TransformerMigration } from '@aws-amplify/graphql-transformer-core';
+import { attemptV2TransformerMigration } from '@aws-amplify/graphql-transformer-migrator';
 
 const apiCategory = 'api';
 const storageCategory = 'storage';
@@ -79,7 +79,6 @@ function warnOnAuth(context, map) {
 function getTransformerFactory(context, resourceDir, authConfig?) {
   return async (addSearchableTransformer, storageConfig?) => {
     const transformerList: ITransformer[] = [
-      // TODO: Removing until further discussion. `getTransformerOptions(project, '@model')`
       new DynamoDBModelTransformer(),
       new VersionedModelTransformer(),
       new FunctionTransformer(),
