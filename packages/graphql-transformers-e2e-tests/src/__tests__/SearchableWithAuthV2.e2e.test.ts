@@ -84,7 +84,7 @@ const USERNAME1 = 'user1@test.com';
 const USERNAME2 = 'user2@test.com';
 const USERNAME3 = 'user3@test.com';
 const TMP_PASSWORD = 'Password123!';
-const REAL_PASSWORD = 'password';
+const REAL_PASSWORD = 'Password1234!';
 const WRITER_GROUP_NAME = 'writer';
 const ADMIN_GROUP_NAME = 'admin';
 
