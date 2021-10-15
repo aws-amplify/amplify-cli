@@ -40,7 +40,9 @@ module.exports = {
           );
           if (authAttributes.aliasAttributes && authAttributes.aliasAttributes.length > 0) {
             const authUpdateWarning = await BannerMessage.getMessage('AMPLIFY_UPDATE_AUTH_ALIAS_ATTRIBUTES_WARNING');
-            printer.warn(authUpdateWarning);
+            if (authUpdateWarning) {
+              printer.warn(authUpdateWarning);
+            }
           }
         }
       }

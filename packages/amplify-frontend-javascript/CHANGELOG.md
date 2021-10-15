@@ -3,6 +3,33 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.25.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-javascript@2.24.4...amplify-frontend-javascript@2.25.0) (2021-10-13)
+
+
+### Features
+
+* Geo category plugin - support for additional regions ([#8373](https://github.com/aws-amplify/amplify-cli/issues/8373)) ([3a0c29f](https://github.com/aws-amplify/amplify-cli/commit/3a0c29fc1cb07fb1f16ac9546148c564eee97989))
+
+
+
+
+
+## [2.24.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-javascript@2.24.3...amplify-frontend-javascript@2.24.4) (2021-10-10)
+
+**Note:** Version bump only for package amplify-frontend-javascript
+
+
+
+
+
+## [2.24.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-javascript@2.24.2...amplify-frontend-javascript@2.24.3) (2021-10-06)
+
+**Note:** Version bump only for package amplify-frontend-javascript
+
+
+
+
+
 ## [2.24.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-javascript@2.24.1...amplify-frontend-javascript@2.24.2) (2021-09-27)
 
 **Note:** Version bump only for package amplify-frontend-javascript

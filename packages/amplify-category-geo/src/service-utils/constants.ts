@@ -1,3 +1,5 @@
+import * as path from 'path';
+
 export const apiDocs = {
   mapStyles: "https://docs.aws.amazon.com/location-maps/latest/APIReference/API_MapConfiguration.html",
   pricingPlan: "https://aws.amazon.com/location/pricing/",
@@ -11,6 +13,8 @@ export const chooseServiceMessageRemove = 'Select which capability you want to r
 export const choosePricingPlan = `The following choices determine the pricing plan for Geo resources. Learn more at ${apiDocs.pricingPlan}`;
 export const parametersFileName = 'parameters.json';
 export const provider = 'awscloudformation';
+export const customMapLambdaCodePath = path.join(__dirname, '../../resources/custom-map-resource-handler.js');
+export const customPlaceIndexLambdaCodePath = path.join(__dirname, '../../resources/custom-place-index-resource-handler.js');
 
 export enum ServiceName {
   Map = 'Map',

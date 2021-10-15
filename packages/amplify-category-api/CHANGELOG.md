@@ -3,6 +3,39 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.33.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@2.33.1...amplify-category-api@2.33.2) (2021-10-13)
+
+
+### Bug Fixes
+
+* api containers on repushing does not fail ([#8416](https://github.com/aws-amplify/amplify-cli/issues/8416)) ([eb64172](https://github.com/aws-amplify/amplify-cli/commit/eb641725febba88ebb7349c0e662d4ffc6cf7e97))
+
+
+
+
+
+## [2.33.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@2.33.0...amplify-category-api@2.33.1) (2021-10-10)
+
+
+### Bug Fixes
+
+* **amplify-category-api:** fixed api to reference stack name and deployment bucket ([#8145](https://github.com/aws-amplify/amplify-cli/issues/8145)) ([4c7493a](https://github.com/aws-amplify/amplify-cli/commit/4c7493ac34fa89cab0c80e5c674bbeb102891a64))
+
+
+
+
+
+# [2.33.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@2.32.0...amplify-category-api@2.33.0) (2021-10-06)
+
+
+### Features
+
+* Custom policies IAM Policies for Lambda and Containers ([#8068](https://github.com/aws-amplify/amplify-cli/issues/8068)) ([3e1ce0d](https://github.com/aws-amplify/amplify-cli/commit/3e1ce0de4d25ab239adcdcef778cc82f30b17a94))
+
+
+
+
+
 # [2.32.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@2.31.23...amplify-category-api@2.32.0) (2021-09-27)
 
 

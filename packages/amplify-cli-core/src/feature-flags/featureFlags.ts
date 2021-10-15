@@ -519,7 +519,7 @@ export class FeatureFlags {
         name: 'improvePluralization',
         type: 'boolean',
         defaultValueForExistingProjects: false,
-        defaultValueForNewProjects: true,
+        defaultValueForNewProjects: false,
       },
       {
         name: 'validateTypeNameReservedWords',
@@ -556,7 +556,12 @@ export class FeatureFlags {
         type: 'boolean',
         defaultValueForExistingProjects: false,
         defaultValueForNewProjects: false,
-      }
+      },
+        name: 'transformerVersion',
+        type: 'number',
+        defaultValueForExistingProjects: 1,
+        defaultValueForNewProjects: 1,
+      },
     ]);
 
     this.registerFlag('frontend-ios', [

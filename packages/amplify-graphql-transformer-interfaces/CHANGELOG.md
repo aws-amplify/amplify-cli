@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.10.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-transformer-interfaces@1.9.1...@aws-amplify/graphql-transformer-interfaces@1.10.0) (2021-10-10)
+
+
+### Features
+
+* **graphql-model-transformer:** index/primarykey datastore selective sync capability ([#8240](https://github.com/aws-amplify/amplify-cli/issues/8240)) ([e108783](https://github.com/aws-amplify/amplify-cli/commit/e10878370a4785a412b561002d78b5cec9859346))
+
+
+
+
+
 ## [1.9.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-transformer-interfaces@1.9.0...@aws-amplify/graphql-transformer-interfaces@1.9.1) (2021-09-27)
 
 

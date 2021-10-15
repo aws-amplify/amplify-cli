@@ -48,7 +48,7 @@ describe('feature flags', () => {
 
         await fs.copyFile(templateConfigFileName, projectConfigFileName);
 
-        await FeatureFlags.initialize(({ getCurrentEnvName: () => 'dev' } as unknown) as CLIEnvironmentProvider, undefined, getTestFlags());
+        await FeatureFlags.initialize({ getCurrentEnvName: () => 'dev' } as unknown as CLIEnvironmentProvider, undefined, getTestFlags());
 
         await FeatureFlags.ensureDefaultFeatureFlags(true);
 
@@ -78,7 +78,7 @@ describe('feature flags', () => {
 
         await fs.copyFile(templateConfigFileName, projectConfigFileName);
 
-        await FeatureFlags.initialize(({ getCurrentEnvName: () => 'dev' } as unknown) as CLIEnvironmentProvider, undefined, getTestFlags());
+        await FeatureFlags.initialize({ getCurrentEnvName: () => 'dev' } as unknown as CLIEnvironmentProvider, undefined, getTestFlags());
         await FeatureFlags.ensureDefaultFeatureFlags(true);
 
         const originalConfig = (await fs.readFile(templateConfigFileName)).toString();
@@ -103,7 +103,7 @@ describe('feature flags', () => {
 
         await fs.mkdirs(path.dirname(projectConfigFileName));
 
-        await FeatureFlags.initialize(({ getCurrentEnvName: () => 'dev' } as unknown) as CLIEnvironmentProvider, undefined, getTestFlags());
+        await FeatureFlags.initialize({ getCurrentEnvName: () => 'dev' } as unknown as CLIEnvironmentProvider, undefined, getTestFlags());
         await FeatureFlags.ensureDefaultFeatureFlags(true);
 
         const createdConfig = (await fs.readFile(projectConfigFileName)).toString();
@@ -131,7 +131,7 @@ describe('feature flags', () => {
 
         await fs.copyFile(templateConfigFileName, projectConfigFileName);
 
-        await FeatureFlags.initialize(({ getCurrentEnvName: () => 'dev' } as unknown) as CLIEnvironmentProvider);
+        await FeatureFlags.initialize({ getCurrentEnvName: () => 'dev' } as unknown as CLIEnvironmentProvider);
 
         expect(FeatureFlags.getBoolean('graphQLTransformer.validateTypeNameReservedWords')).toBe(false);
       } finally {
@@ -141,7 +141,7 @@ describe('feature flags', () => {
 
     test('missing environmentProvider argument', async () => {
       await expect(async () => {
-        await FeatureFlags.initialize((undefined as unknown) as CLIContextEnvironmentProvider, undefined, getTestFlags());
+        await FeatureFlags.initialize(undefined as unknown as CLIContextEnvironmentProvider, undefined, getTestFlags());
       }).rejects.toThrowError(`'environmentProvider' argument is required`);
     });
 
@@ -162,10 +162,10 @@ describe('feature flags', () => {
 
       await FeatureFlags.initialize(envProvider, undefined, getTestFlags());
 
-      const transformerVersion = FeatureFlags.getNumber('graphQLTransformer.transformerVersion');
+      const customTransformerVersion = FeatureFlags.getNumber('graphQLTransformer.customTransformerVersion');
       const isDefaultQueryEnabled = FeatureFlags.getBoolean('keyTransformer.defaultQuery');
 
-      expect(transformerVersion).toBe(4);
+      expect(customTransformerVersion).toBe(4);
       expect(isDefaultQueryEnabled).toBe(true);
     });
 
@@ -178,12 +178,12 @@ describe('feature flags', () => {
 
         process.chdir(tempProjectDir);
 
-        await FeatureFlags.initialize(({ getCurrentEnvName: () => 'dev' } as unknown) as CLIEnvironmentProvider, true, getTestFlags());
+        await FeatureFlags.initialize({ getCurrentEnvName: () => 'dev' } as unknown as CLIEnvironmentProvider, true, getTestFlags());
 
-        const transformerVersion = FeatureFlags.getNumber('graphQLTransformer.transformerVersion');
+        const customTransformerVersion = FeatureFlags.getNumber('graphQLTransformer.customTransformerVersion');
         const isDefaultQueryEnabled = FeatureFlags.getBoolean('keyTransformer.defaultQuery');
 
-        expect(transformerVersion).toBe(5);
+        expect(customTransformerVersion).toBe(5);
         expect(isDefaultQueryEnabled).toBe(true);
       } finally {
         rimraf.sync(tempProjectDir);
@@ -232,7 +232,7 @@ describe('feature flags', () => {
 
       expect(effectiveFlags).toMatchObject({
         graphqltransformer: {
-          transformerversion: 3,
+          customtransformerversion: 3,
         },
         keytransformer: {
           defaultquery: false,
@@ -260,7 +260,7 @@ describe('feature flags', () => {
 
       expect(effectiveFlags).toMatchObject({
         graphqltransformer: {
-          transformerversion: 4,
+          customtransformerversion: 4,
         },
         keytransformer: {
           defaultquery: true,
@@ -288,7 +288,7 @@ describe('feature flags', () => {
 
       expect(effectiveFlags).toMatchObject({
         graphqltransformer: {
-          transformerversion: 5,
+          customtransformerversion: 5,
         },
         keytransformer: {
           defaultquery: false,
@@ -316,7 +316,7 @@ describe('feature flags', () => {
 
       expect(effectiveFlags).toMatchObject({
         graphqltransformer: {
-          transformerversion: 6,
+          customtransformerversion: 6,
         },
         keytransformer: {
           defaultquery: true,
@@ -401,7 +401,7 @@ describe('feature flags', () => {
 
       await expect(async () => {
         await FeatureFlags.initialize(envProvider, undefined, getTestFlags());
-      }).rejects.toThrowError(`Invalid number value: 'invalid' for 'transformerversion' in section 'graphqltransformer'`);
+      }).rejects.toThrowError(`Invalid number value: 'invalid' for 'customtransformerversion' in section 'graphqltransformer'`);
     });
 
     test('initialize feature flag provider fail unknown flags', async () => {
@@ -425,7 +425,7 @@ describe('feature flags', () => {
         message: 'Invalid feature flag configuration',
         name: 'JSONValidationError',
         unknownFlags: ['graphqltransformer.foo', 'graphqltransformer.bar'],
-        otherErrors: ['graphqltransformer.transformerversion: should be number'],
+        otherErrors: ['graphqltransformer.customtransformerversion: should be number'],
       });
     });
 
@@ -433,7 +433,7 @@ describe('feature flags', () => {
       return {
         graphQLTransformer: [
           {
-            name: 'transformerVersion',
+            name: 'customTransformerVersion',
             type: 'number',
             defaultValueForExistingProjects: 4,
             defaultValueForNewProjects: 5,
@@ -533,7 +533,7 @@ describe('feature flags', () => {
 
     test('error with empty field returns unknown', () => {
       expect(() => {
-        throw new EnvVarFormatError((undefined as unknown) as string);
+        throw new EnvVarFormatError(undefined as unknown as string);
       }).toThrowError(`Invalid variable name format: '<unknown>'`);
     });
 
@@ -594,13 +594,13 @@ describe('feature flags', () => {
       expect(features).toMatchObject({
         project: {
           graphqltransformer: {
-            transformerversion: 5,
+            customtransformerversion: 5,
           },
         },
         environments: {
           dev: {
             graphqltransformer: {
-              transformerversion: 6,
+              customtransformerversion: 6,
             },
           },
         },
@@ -626,7 +626,7 @@ describe('feature flags', () => {
       expect(features).toMatchObject({
         project: {
           graphqltransformer: {
-            transformerversion: 5,
+            customtransformerversion: 5,
           },
         },
         environments: {},
@@ -676,7 +676,7 @@ describe('feature flags', () => {
         environments: {
           dev: {
             graphqltransformer: {
-              transformerversion: 6,
+              customtransformerversion: 6,
             },
           },
         },

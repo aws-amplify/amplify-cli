@@ -1,14 +1,22 @@
 import * as cdk from '@aws-cdk/core';
 import { prepareApp } from '@aws-cdk/core/lib/private/prepare-app';
+import { $TSObject } from 'amplify-cli-core';
+
+export type TemplateMappings = {
+    RegionMapping: $TSObject
+};
 
 export class BaseStack extends cdk.Stack {
     protected parameters: Map<string, cdk.CfnParameter>;
-    protected resources: Map<string, cdk.CfnResource>;
+    protected regionMapping: cdk.CfnMapping;
 
-    constructor(scope: cdk.Construct, id: string) {
+    constructor(scope: cdk.Construct, id: string, props:TemplateMappings) {
         super(scope, id);
         this.parameters = new Map();
-        this.resources = new Map();
+
+        this.regionMapping = new cdk.CfnMapping(this, 'RegionMapping', {
+            mapping: props.RegionMapping
+        });
     }
 
     // construct the stack CFN input parameters

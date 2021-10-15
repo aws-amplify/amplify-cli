@@ -3,6 +3,9 @@ import fs from 'fs-extra';
 import path from 'path';
 import { run } from './commands/api/console';
 import { getCfnApiArtifactHandler } from './provider-utils/awscloudformation/cfn-api-artifact-handler';
+import { askAuthQuestions } from './provider-utils/awscloudformation/service-walkthroughs/appSync-walkthrough';
+import { getAppSyncResourceName, getAppSyncAuthConfig } from './provider-utils/awscloudformation//utils/amplify-meta-utils';
+import { authConfigToAppSyncAuthType } from './provider-utils/awscloudformation/utils/auth-config-to-app-sync-auth-type-bi-di-mapper';
 
 export { NETWORK_STACK_LOGICAL_ID } from './category-constants';
 export { DEPLOYMENT_MECHANISM } from './provider-utils/awscloudformation/base-api-stack';
@@ -15,6 +18,7 @@ export {
   processDockerConfig,
 } from './provider-utils/awscloudformation/utils/containers-artifacts';
 export { getContainers } from './provider-utils/awscloudformation/docker-compose';
+export { promptToAddApiKey } from './provider-utils/awscloudformation/prompt-to-add-api-key';
 
 const category = 'api';
 
@@ -216,4 +220,33 @@ export const executeAmplifyHeadlessCommand = async (context, headlessPayload: st
 export async function handleAmplifyEvent(context, args) {
   context.print.info(`${category} handleAmplifyEvent to be implemented`);
   context.print.info(`Received event args ${args}`);
+}
+
+export async function addGraphQLAuthorizationMode(context, args) {
+  const { authType, printLeadText, authSettings } = args;
+  const apiName = getAppSyncResourceName(context.amplify.getProjectMeta());
+  if (!apiName) {
+    return;
+  }
+
+  const authConfig = getAppSyncAuthConfig(context.amplify.getProjectMeta());
+  const addAuthConfig = await askAuthQuestions(authType, context, printLeadText, authSettings);
+  authConfig.additionalAuthenticationProviders.push(addAuthConfig);
+  await context.amplify.updateamplifyMetaAfterResourceUpdate(category, apiName, 'output', { authConfig });
+  await context.amplify.updateBackendConfigAfterResourceUpdate(category, apiName, 'output', { authConfig });
+
+  await getCfnApiArtifactHandler(context).updateArtifacts(
+    {
+      version: 1,
+      serviceModification: {
+        serviceName: 'AppSync',
+        additionalAuthTypes: authConfig.additionalAuthenticationProviders.map(authConfigToAppSyncAuthType),
+      },
+    },
+    {
+      skipCompile: false,
+    },
+  );
+
+  return addAuthConfig;
 }

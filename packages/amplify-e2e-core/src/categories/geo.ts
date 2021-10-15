@@ -67,7 +67,7 @@ export function addPlaceIndexWithDefault(cwd: string, settings: GeoConfig = {}):
   return new Promise((resolve, reject) => {
     const chain = spawn(getCLIPath(), ['geo', 'add'], { cwd, stripColors: true })
       .wait('Select which capability you want to add:')
-      .send(KEY_DOWN_ARROW)
+      .sendKeyDown()
       .sendCarriageReturn()
       .wait('Provide a name for the location search index (place index):')
       .sendLine(config.resourceName)
@@ -112,8 +112,10 @@ export function updateMapWithDefault(cwd: string): Promise<void> {
       .wait('Select the Map you want to update')
       .sendCarriageReturn()
       .wait('Who can access this Map?')
-      .send(KEY_DOWN_ARROW)
+      .sendKeyDown()
       .sendCarriageReturn()
+      .wait(defaultMapQuestion)
+      .sendConfirmYes()
       .run((err: Error) => {
         if (!err) {
           resolve();
@@ -134,7 +136,7 @@ export function updateSecondMapAsDefault(cwd: string): Promise<void> {
       .wait('Select which capability you want to update:')
       .sendCarriageReturn()
       .wait('Select the Map you want to update')
-      .send(KEY_DOWN_ARROW)
+      .sendKeyDown()
       .sendCarriageReturn()
       .wait('Who can access this Map?')
       .sendCarriageReturn()
@@ -158,13 +160,15 @@ export function updatePlaceIndexWithDefault(cwd: string): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['geo', 'update'], { cwd, stripColors: true })
       .wait('Select which capability you want to update:')
-      .send(KEY_DOWN_ARROW)
+      .sendKeyDown()
       .sendCarriageReturn()
       .wait('Select the search index you want to update')
       .sendCarriageReturn()
       .wait('Who can access this Search Index?')
-      .send(KEY_DOWN_ARROW)
+      .sendKeyDown()
       .sendCarriageReturn()
+      .wait(defaultSearchIndexQuestion)
+      .sendConfirmYes()
       .run((err: Error) => {
         if (!err) {
           resolve();
@@ -183,10 +187,10 @@ export function updateSecondPlaceIndexAsDefault(cwd: string): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['geo', 'update'], { cwd, stripColors: true })
       .wait('Select which capability you want to update:')
-      .send(KEY_DOWN_ARROW)
+      .sendKeyDown()
       .sendCarriageReturn()
       .wait('Select the search index you want to update')
-      .send(KEY_DOWN_ARROW)
+      .sendKeyDown()
       .sendCarriageReturn()
       .wait('Who can access this Search Index?')
       .sendCarriageReturn()
@@ -258,7 +262,7 @@ export function removePlaceIndex(cwd: string): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['geo', 'remove'], { cwd, stripColors: true })
       .wait('Select which capability you want to remove:')
-      .send(KEY_DOWN_ARROW)
+      .sendKeyDown()
       .sendCarriageReturn()
       .wait('Select the search index you want to remove')
       .sendCarriageReturn()
@@ -282,7 +286,7 @@ export function removeFirstDefaultPlaceIndex(cwd: string): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['geo', 'remove'], { cwd, stripColors: true })
       .wait('Select which capability you want to remove:')
-      .send(KEY_DOWN_ARROW)
+      .sendKeyDown()
       .sendCarriageReturn()
       .wait('Select the search index you want to remove')
       .sendCarriageReturn()
@@ -307,9 +311,11 @@ export function getGeoJSConfiguration(awsExports: any): any {
   return awsExports.geo.amazon_location_service;
 }
 
-export function generateTwoResourceIdsInOrder(): string[] {
+export function generateResourceIdsInOrder(count: number): string[] {
   const resourceIdArr: string[] = [];
-  resourceIdArr.push(generateRandomShortId());
-  resourceIdArr.push(generateRandomShortId());
-  return resourceIdArr.sort();
+  while (count > 0) {
+    resourceIdArr.push(generateRandomShortId());
+    count--;
+  }
+  return resourceIdArr;
 }

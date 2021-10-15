@@ -36,7 +36,6 @@ pathManager_mock.getHooksDirPath.mockReturnValue(testProjectHooksDirPath);
 stateManager_mock.getHooksConfigJson.mockReturnValueOnce({ extensions: { py: { runtime: 'python3' } } });
 
 jest.mock('execa');
-jest.mock('process');
 jest.mock('../../state-manager');
 jest.mock('which', () => ({
   sync: jest.fn().mockImplementation(runtimeName => {
