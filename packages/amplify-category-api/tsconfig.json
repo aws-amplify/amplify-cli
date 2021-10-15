@@ -9,6 +9,7 @@
   "exclude": [
     "coverage",
     "lib",
+    "scripts",
     "resources/awscloudformation/lambdas",
     "resources/awscloudformation/container-templates",
     "resources/awscloudformation/graphql-lambda-authorizer",
