@@ -41,6 +41,7 @@
         "graphql-http-transformer": "4.18.10",
         "graphql-key-transformer": "2.23.23",
         "graphql-predictions-transformer": "2.5.22",
+        "graphql-transformer-common": "4.19.10",
         "graphql-transformer-core": "6.30.0",
         "lodash": "^4.17.21",
         "md5": "^2.3.0",
