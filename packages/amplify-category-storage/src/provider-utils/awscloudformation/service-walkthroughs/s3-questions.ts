@@ -6,7 +6,7 @@ import {
   S3PermissionType,
   S3TriggerFunctionType,
   S3UserAccessRole,
-  S3UserInputs
+  S3UserInputs,
 } from '../service-walkthrough-types/s3-user-input-types';
 import { S3PermissionMapType } from './s3-user-input-state';
 import { checkIfAuthExists } from './s3-walkthrough';
@@ -47,7 +47,7 @@ export const possibleCRUDOperations = Object.keys(permissionMap).map(el => ({
 export async function askAndOpenFunctionEditor(context: $TSContext, functionName: string) {
   const targetDir = context.amplify.pathManager.getBackendDirPath();
   if (await prompter.confirmContinue(`Do you want to edit the local ${functionName} lambda function now?`)) {
-    await context.amplify.openEditor(context, path.join(targetDir,'function',functionName,'src','index.js'));
+    await context.amplify.openEditor(context, path.join(targetDir, 'function', functionName, 'src', 'index.js'));
   }
 }
 
@@ -141,7 +141,7 @@ export async function askUserPoolGroupSelectionQuestion(
 ): Promise<string[]> {
   const message = 'Select groups:';
   const choices = userPoolGroupList;
-  const selectedChoices = (defaultValues.groupAccess)? Object.keys(defaultValues.groupAccess):[];
+  const selectedChoices = defaultValues.groupAccess ? Object.keys(defaultValues.groupAccess) : [];
   const selectedIndexes = defaultValues.groupList ? getIndexArray(choices, selectedChoices) : undefined;
   const userPoolGroups = await prompter.pick<'many', string>(message, choices, { returnSize: 'many', initial: selectedIndexes });
   //Selected user-pool groups
@@ -210,11 +210,11 @@ export async function askUserPoolGroupSelectionUntilPermissionSelected(
   if (userPoolGroupList && userPoolGroupList.length > 0) {
     do {
       if (permissionSelected === 'Learn more') {
-        printer.info('');
+        printer.blankLine();
         printer.info(
           'You can restrict access using CRUD policies for Authenticated Users, Guest Users, or on individual Groups that users belong to in a User Pool. If a user logs into your application and is not a member of any group they will use policy set for “Authenticated Users”, however if they belong to a group they will only get the policy associated with that specific group.',
         );
-        printer.info('');
+        printer.blankLine();
       }
       permissionSelected = await askUserPoolGroupPermissionSelectionQuestion();
     } while (permissionSelected === 'Learn more');
