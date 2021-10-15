@@ -1,4 +1,3 @@
-import * as inquirer from 'inquirer';
 import * as path from 'path';
 import * as fs from 'fs-extra';
 // import _ from 'lodash';
