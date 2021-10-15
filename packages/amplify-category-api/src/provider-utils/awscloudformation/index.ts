@@ -17,7 +17,7 @@ import {
 import { category } from '../../category-constants';
 import { printer } from 'amplify-prompts';
 
-export async function console(context: $TSContext, service) {
+export async function console(context: $TSContext, service: string) {
   const { serviceWalkthroughFilename } = await serviceMetadataFor(service);
   const serviceWalkthroughSrc = path.join(__dirname, 'service-walkthroughs', serviceWalkthroughFilename);
   const { openConsole } = await import(serviceWalkthroughSrc);
@@ -32,7 +32,7 @@ export async function console(context: $TSContext, service) {
   return openConsole(context);
 }
 
-async function addContainerResource(context: $TSContext, category, service, options, apiType) {
+async function addContainerResource(context: $TSContext, category, service: string, options, apiType) {
   const serviceWalkthroughFilename = 'containers-walkthrough.js';
 
   const serviceWalkthrough = await getServiceWalkthrough(serviceWalkthroughFilename);
@@ -41,8 +41,9 @@ async function addContainerResource(context: $TSContext, category, service, opti
   return await addContainer(serviceWalkthroughPromise, context, category, service, options, apiType);
 }
 
-async function addNonContainerResource(context: $TSContext, category, service, options) {
+async function addNonContainerResource(context: $TSContext, category, service: string, options) {
   const serviceMetadata = await serviceMetadataFor(service);
+  printer.info(`DEBUG serviceMetadata: ${JSON.stringify(serviceMetadata, undefined, 2)}`);
   const { serviceWalkthroughFilename } = serviceMetadata;
   const serviceWalkthrough = await getServiceWalkthrough(serviceWalkthroughFilename);
 

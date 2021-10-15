@@ -15,7 +15,7 @@ export const authConfigHasApiKey = (authConfig?: $TSAny) => {
 };
 
 export const checkIfAuthExists = () => {
-  const { amplifyMeta } = stateManager.getMeta();
+  const amplifyMeta = stateManager.getMeta();
   let authResourceName;
   const authServiceName = 'Cognito';
   const authCategoryName = 'auth';

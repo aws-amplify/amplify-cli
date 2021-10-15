@@ -199,7 +199,7 @@ export const openConsole = async (context: $TSContext) => {
   }
 };
 
-const serviceApiInputWalkthrough = async (context: $TSContext, defaultValuesFilename, serviceMetadata) => {
+const serviceApiInputWalkthrough = async (context: $TSContext, serviceMetadata) => {
   let continuePrompt = false;
   let authConfig;
   let defaultAuthType;
@@ -383,10 +383,9 @@ const updateApiInputWalkthrough = async (context: $TSContext, project: $TSObject
   };
 };
 
-export const serviceWalkthrough = async (context: $TSContext, defaultValuesFilename, serviceMetadata) => {
+export const serviceWalkthrough = async (context: $TSContext, serviceMetadata: $TSObject) => {
   const resourceName = resourceAlreadyExists();
-  const providerPlugin = await import(context.amplify.getProviderPlugins(context).awscloudformation);
-  const transformerVersion = providerPlugin.getTransformerVersion(context);
+  const useExperimentalPipelineTransformer = FeatureFlags.getBoolean('graphQLTransformer.useExperimentalPipelinedTransformer');
 
   if (resourceName) {
     const errMessage =
@@ -399,12 +398,12 @@ export const serviceWalkthrough = async (context: $TSContext, defaultValuesFilen
   const { amplify } = context;
   const { inputs } = serviceMetadata;
 
-  const basicInfoAnswers = await serviceApiInputWalkthrough(context, defaultValuesFilename, serviceMetadata);
+  const basicInfoAnswers = await serviceApiInputWalkthrough(context, serviceMetadata);
   let schemaContent = '';
   let askToEdit = true;
 
   // Schema template selection
-  const schemaTemplateOptions = transformerVersion === 2 ? schemaTemplatesV2 : schemaTemplatesV1;
+  const schemaTemplateOptions = useExperimentalPipelineTransformer ? schemaTemplatesV2 : schemaTemplatesV1;
   const templateSelectionQuestion = {
     type: inputs[4].type,
     name: inputs[4].key,
@@ -415,7 +414,7 @@ export const serviceWalkthrough = async (context: $TSContext, defaultValuesFilen
 
   const { templateSelection } = await inquirer.prompt(templateSelectionQuestion);
   const schemaFilePath = path.join(graphqlSchemaDir, templateSelection);
-  schemaContent += transformerVersion === 2 ? defineGlobalSandboxMode(context) : '';
+  schemaContent += useExperimentalPipelineTransformer ? defineGlobalSandboxMode(context) : '';
   schemaContent += fs.readFileSync(schemaFilePath, 'utf8');
 
   return {
@@ -607,9 +606,7 @@ async function askResolverConflictHandlerQuestion(context: $TSContext, modelType
       if (selectedModelTypes.length > 0) {
         resolverConfig.models = {};
         for (const modelType of selectedModelTypes) {
-          resolverConfig.models[modelType] = await askConflictResolutionStrategy(
-            `Select the resolution strategy for ${modelType} model`,
-          );
+          resolverConfig.models[modelType] = await askConflictResolutionStrategy(`Select the resolution strategy for ${modelType} model`);
         }
       }
     }
@@ -924,7 +921,6 @@ export const migrate = async (context: $TSContext) => {
     migrate: true,
   });
 };
-
 
 export const getIAMPolicies = (resourceName: string, operations: string[]) => {
   let policy: $TSObject = {};
