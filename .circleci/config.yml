@@ -15380,7 +15380,6 @@ workflows:
             parameters:
               os:
                 - linux
-                - windows
       - storage-1-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull

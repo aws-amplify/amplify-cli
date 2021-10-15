@@ -73,6 +73,7 @@ const WINDOWS_TEST_FAILURES = [
   'notifications-amplify_e2e_tests',
   'predictions-amplify_e2e_tests',
   'pull-amplify_e2e_tests',
+  'resolvers-amplify_e2e_tests',
   's3-sse-amplify_e2e_tests',
   'schema-auth-1-amplify_e2e_tests',
   'schema-auth-2-amplify_e2e_tests',
