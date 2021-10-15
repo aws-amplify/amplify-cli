@@ -1,10 +1,5 @@
 import { ModelDirectiveConfiguration, SubscriptionLevel } from '@aws-amplify/graphql-model-transformer';
-import {
-  DirectiveWrapper,
-  InvalidDirectiveError,
-  InvalidTransformerError,
-  TransformerContractError,
-} from '@aws-amplify/graphql-transformer-core';
+import { DirectiveWrapper, InvalidDirectiveError, TransformerContractError } from '@aws-amplify/graphql-transformer-core';
 import {
   QueryFieldType,
   MutationFieldType,
@@ -23,7 +18,6 @@ import {
   makeNamedType,
   ModelResourceIDs,
   plurality,
-  ResourceConstants,
   toCamelCase,
   toUpper,
 } from 'graphql-transformer-common';
@@ -36,24 +30,6 @@ export const collectFieldNames = (object: ObjectTypeDefinitionNode): Array<strin
 
 export const fieldIsList = (fields: ReadonlyArray<FieldDefinitionNode>, fieldName: string) => {
   return fields.some(field => field.name.value === fieldName && isListType(field.type));
-};
-
-/**
- * for the relational directives we either get the model name or a model connection name
- */
-export const getModelObject = (
-  ctx: TransformerContextProvider,
-  typeName: string,
-  modelDirectiveConfig: Map<string, ModelDirectiveConfiguration>,
-) => {
-  let modelObjectName: string = ModelResourceIDs.IsModelConnectionType(typeName)
-    ? ModelResourceIDs.GetModelFromConnectionType(typeName)
-    : typeName;
-  if (modelDirectiveConfig.has(modelObjectName)) {
-    return ctx.output.getObject(modelObjectName);
-  } else {
-    throw new InvalidTransformerError(`Could not find @model named: ${typeName}`);
-  }
 };
 
 export const getModelConfig = (directive: DirectiveNode, typeName: string, isDataStoreEnabled = false): ModelDirectiveConfiguration => {
