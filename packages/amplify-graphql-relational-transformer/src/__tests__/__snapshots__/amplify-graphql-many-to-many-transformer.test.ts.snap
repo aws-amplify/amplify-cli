@@ -4,6 +4,7 @@ exports[`join table inherits auth from both tables 1`] = `
 "## [Start] Authorization Steps. **
 $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #set( $isAuthorized = false )
+#set( $primaryFieldMap = {} )
 #if( $util.authType() == \\"API Key Authorization\\" )
   #set( $isAuthorized = true )
 #end
@@ -14,7 +15,7 @@ $util.qr($ctx.stash.put(\\"hasAuth\\", true))
     #end
   #end
 #end
-#if( !$isAuthorized && $util.isNullOrEmpty($ctx.stash.get(\\"authFilter\\")) )
+#if( !$isAuthorized && $util.isNull($ctx.stash.authFilter) && $primaryFieldMap.isEmpty() )
 $util.unauthorized()
 #end
 $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
@@ -50,6 +51,7 @@ exports[`join table inherits auth from both tables 4`] = `
 "## [Start] Authorization Steps. **
 $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #set( $isAuthorized = false )
+#set( $primaryFieldMap = {} )
 #if( $util.authType() == \\"API Key Authorization\\" )
   #set( $isAuthorized = true )
 #end
@@ -60,7 +62,7 @@ $util.qr($ctx.stash.put(\\"hasAuth\\", true))
     #end
   #end
 #end
-#if( !$isAuthorized && $util.isNullOrEmpty($ctx.stash.get(\\"authFilter\\")) )
+#if( !$isAuthorized && $util.isNull($ctx.stash.authFilter) && $primaryFieldMap.isEmpty() )
 $util.unauthorized()
 #end
 $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
@@ -147,7 +149,9 @@ $util.qr($ctx.stash.put(\\"hasAuth\\", true))
   #set( $isAuthorized = true )
 #end
 #if( $util.authType() == \\"IAM Authorization\\" )
-
+  #if( $ctx.identity.userArn == $ctx.stash.unauthRole )
+    #set( $isAuthorized = true )
+  #end
 #end
 #if( !$isAuthorized )
 $util.unauthorized()
@@ -269,14 +273,16 @@ $util.qr($ctx.stash.put(\\"hasAuth\\", true))
   #set( $isAuthorized = true )
 #end
 #if( $util.authType() == \\"IAM Authorization\\" )
-
+  #if( $ctx.identity.userArn == $ctx.stash.unauthRole )
+    #set( $isAuthorized = true )
+  #end
 #end
 #if( !$isAuthorized && $allowedFields.isEmpty() && $nullAllowedFields.isEmpty() )
 $util.unauthorized()
 #end
 #if( !$isAuthorized )
   #foreach( $entry in $util.map.copyAndRetainAllKeys($ctx.args.input, $inputFields).entrySet() )
-    #if( $util.isNull($entry.value) && !$nullAllowedFields.contains($entry.value) )
+    #if( $util.isNull($entry.value) && !$nullAllowedFields.contains($entry.key) )
       $util.qr($deniedFields.put($entry.key, \\"\\"))
     #end
   #end
