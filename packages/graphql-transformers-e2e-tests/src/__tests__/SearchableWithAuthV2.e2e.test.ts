@@ -209,11 +209,8 @@ beforeAll(async () => {
       },
     });
 
-    // const authRes2AfterGroup: any = await authenticateUser(USERNAME2, TMP_PASSWORD, REAL_PASSWORD);
-    // const idToken2 = authRes2AfterGroup.getIdToken().getJwtToken();
-    await Auth.signOut();
-    await Auth.signIn(USERNAME2, REAL_PASSWORD);
-    const idToken2 = (await Auth.currentSession()).getIdToken().getJwtToken();
+    const authRes2AfterGroup: any = await authenticateUser(USERNAME2, TMP_PASSWORD, REAL_PASSWORD);
+    const idToken2 = authRes2AfterGroup.getIdToken().getJwtToken();
     GRAPHQL_CLIENT_2 = new AWSAppSyncClient({
       url: GRAPHQL_ENDPOINT,
       region: AWS_REGION,
@@ -224,11 +221,8 @@ beforeAll(async () => {
       },
     });
 
-    // const authRes3: any = await authenticateUser(USERNAME3, TMP_PASSWORD, REAL_PASSWORD);
-    // const idToken3 = authRes3.getIdToken().getJwtToken();
-    await Auth.signOut();
-    await Auth.signIn(USERNAME3, REAL_PASSWORD);
-    const idToken3 = (await Auth.currentSession()).getIdToken().getJwtToken();
+    const authRes3: any = await authenticateUser(USERNAME3, TMP_PASSWORD, REAL_PASSWORD);
+    const idToken3 = authRes3.getIdToken().getJwtToken();
     GRAPHQL_CLIENT_3 = new AWSAppSyncClient({
       url: GRAPHQL_ENDPOINT,
       region: AWS_REGION,
@@ -238,6 +232,8 @@ beforeAll(async () => {
         jwtToken: () => idToken3,
       },
     });
+
+    // clear previous signed in user
     await Auth.signOut();
     await Auth.signIn(USERNAME1, REAL_PASSWORD);
     const authCreds = await Auth.currentCredentials();
