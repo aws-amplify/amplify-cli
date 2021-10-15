@@ -1,6 +1,6 @@
 {
   "name": "amplify-nodejs-function-template-provider",
-  "version": "1.6.22-graphql-vnext-dev-preview.1",
+  "version": "1.6.22-graphql-vnext-dev-preview.2",
   "description": "Node JS templates supplied by the Amplify Team",
   "repository": {
     "type": "git",
@@ -23,7 +23,7 @@
   "dependencies": {
     "amplify-cli-core": "1.30.0-graphql-vnext-dev-preview.1",
     "amplify-function-plugin-interface": "1.9.1",
-    "graphql-transformer-core": "6.30.0-graphql-vnext-dev-preview.1",
+    "graphql-transformer-core": "6.30.0-graphql-vnext-dev-preview.2",
     "lodash": "^4.17.21"
   },
   "devDependencies": {

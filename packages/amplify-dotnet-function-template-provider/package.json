@@ -1,6 +1,6 @@
 {
   "name": "amplify-dotnet-function-template-provider",
-  "version": "1.5.22-graphql-vnext-dev-preview.1",
+  "version": "1.5.22-graphql-vnext-dev-preview.2",
   "description": ".NET Core templates supplied by the Amplify Team",
   "repository": {
     "type": "git",
@@ -24,7 +24,7 @@
   "dependencies": {
     "amplify-cli-core": "1.30.0-graphql-vnext-dev-preview.1",
     "amplify-function-plugin-interface": "1.9.1",
-    "graphql-transformer-core": "6.30.0-graphql-vnext-dev-preview.1"
+    "graphql-transformer-core": "6.30.0-graphql-vnext-dev-preview.2"
   },
   "devDependencies": {
     "@types/inquirer": "^6.5.0",

@@ -1,6 +1,6 @@
 {
   "name": "graphql-relational-schema-transformer",
-  "version": "2.18.7-graphql-vnext-dev-preview.0",
+  "version": "2.18.7-graphql-vnext-dev-preview.1",
   "description": "An AppSync model transform that takes a relational database and turns that into a GraphQL API.",
   "repository": {
     "type": "git",
@@ -28,7 +28,7 @@
     "fs-extra": "^8.1.0",
     "graphql": "^14.5.8",
     "graphql-mapping-template": "4.19.0-graphql-vnext-dev-preview.0",
-    "graphql-transformer-common": "4.19.10-graphql-vnext-dev-preview.0"
+    "graphql-transformer-common": "4.19.10-graphql-vnext-dev-preview.1"
   },
   "devDependencies": {
     "@types/fs-extra": "^8.0.1",

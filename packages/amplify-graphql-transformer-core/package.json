@@ -1,6 +1,6 @@
 {
     "name": "@aws-amplify/graphql-transformer-core",
-    "version": "0.10.0-graphql-vnext-dev-preview.1",
+    "version": "0.10.0-graphql-vnext-dev-preview.2",
     "description": "A framework to transform from GraphQL SDL to AWS CloudFormation.",
     "repository": {
         "type": "git",
@@ -58,7 +58,7 @@
         "fs-extra": "^8.1.0",
         "glob": "^7.1.6",
         "graphql": "^14.5.8",
-        "graphql-transformer-common": "4.19.10-graphql-vnext-dev-preview.0",
+        "graphql-transformer-common": "4.19.10-graphql-vnext-dev-preview.1",
         "lodash": "^4.17.21",
         "md5": "^2.3.0",
         "ts-dedent": "^2.0.0"

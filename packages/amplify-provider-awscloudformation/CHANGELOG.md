@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.61.0-graphql-vnext-dev-preview.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.61.0-graphql-vnext-dev-preview.2...amplify-provider-awscloudformation@4.61.0-graphql-vnext-dev-preview.3) (2021-10-15)
+
+**Note:** Version bump only for package amplify-provider-awscloudformation
+
+
+
+
+
 # [4.61.0-graphql-vnext-dev-preview.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.61.0-graphql-vnext-dev-preview.1...amplify-provider-awscloudformation@4.61.0-graphql-vnext-dev-preview.2) (2021-10-07)
 
 
