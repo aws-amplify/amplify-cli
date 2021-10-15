@@ -5,13 +5,13 @@ import { LambdaTriggerConfig, S3Permissions, S3ServiceConfigurationBase } from '
  */
 export interface UpdateStorageRequest {
   version: 1;
-  serviceConfiguration: UpdateS3ServiceConfiguration;
+  serviceModification: UpdateS3ServiceModification;
 }
 
 /**
- * Service configuration for AWS S3 through Amplify
+ * Service modification for AWS S3 through Amplify
  */
-export interface UpdateS3ServiceConfiguration extends S3ServiceConfigurationBase {
+export interface UpdateS3ServiceModification extends S3ServiceConfigurationBase {
   /**
    * The permissions that should be applied to the bucket
    */

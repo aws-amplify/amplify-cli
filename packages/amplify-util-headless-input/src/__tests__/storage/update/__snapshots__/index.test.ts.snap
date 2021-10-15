@@ -2,7 +2,7 @@
 
 exports[`validate update storage request returns valid payload 1`] = `
 Object {
-  "serviceConfiguration": Object {
+  "serviceModification": Object {
     "bucketName": "something",
     "lambdaTrigger": Object {
       "mode": "existing",

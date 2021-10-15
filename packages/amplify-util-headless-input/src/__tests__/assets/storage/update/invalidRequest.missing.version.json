@@ -1,5 +1,5 @@
 {
-  "serviceConfiguration": {
+  "serviceModification": {
     "serviceName": "S3",
     "permissions": {
       "auth": ["READ", "CREATE_AND_UPDATE"],

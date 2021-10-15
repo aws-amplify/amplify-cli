@@ -24,14 +24,29 @@ const typeDefs: TypeDef[] = [
     relativeSourcePaths: [path.join('api', 'add.ts')],
   },
   {
+    typeName: 'UpdateApiRequest',
+    category: 'api',
+    relativeSourcePaths: ['add.ts', 'update.ts'].map(file => path.join('api', file)),
+  },
+  {
     typeName: 'AddStorageRequest',
     category: 'storage',
     relativeSourcePaths: [path.join('storage', 'add.ts')],
   },
   {
-    typeName: 'UpdateApiRequest',
-    category: 'api',
-    relativeSourcePaths: ['add.ts', 'update.ts'].map(file => path.join('api', file)),
+    typeName: 'UpdateStorageRequest',
+    category: 'storage',
+    relativeSourcePaths: [path.join('storage', 'update.ts')],
+  },
+  {
+    typeName: 'ImportStorageRequest',
+    category: 'storage',
+    relativeSourcePaths: [path.join('storage', 'import.ts')],
+  },
+  {
+    typeName: 'RemoveStorageRequest',
+    category: 'storage',
+    relativeSourcePaths: [path.join('storage', 'remove.ts')],
   },
 ];
 

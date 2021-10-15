@@ -19,7 +19,6 @@ import * as path from 'path';
 import { authCategoryName, categoryName } from '../../../constants';
 import { ServiceName } from '../provider-constants';
 import {
-  addTrigger,
   checkIfAuthExists,
   copyCfnTemplate,
   createPermissionKeys,
@@ -28,10 +27,10 @@ import {
   permissionMap,
   readStorageParamsFileSafe,
   removeNotStoredParameters,
-  removeTrigger,
   updateCfnTemplateWithGroups,
   writeToStorageParamsFile,
 } from '../storage-configuration-helpers';
+import { addTrigger, removeTrigger } from '../s3-trigger-helpers';
 
 export const addWalkthrough = async (context: $TSContext, defaultValuesFilename: string, serviceMetadata: $TSAny, options: $TSAny) => {
   while (!checkIfAuthExists()) {

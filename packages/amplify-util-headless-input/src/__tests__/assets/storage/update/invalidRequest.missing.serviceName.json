@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "serviceConfiguration": {
+  "serviceModification": {
     "permissions": {
       "auth": ["READ", "CREATE_AND_UPDATE"],
       "guest": ["READ"],

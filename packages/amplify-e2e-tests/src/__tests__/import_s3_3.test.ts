@@ -1,102 +1,83 @@
-import * as path from 'path';
-import * as fs from 'fs-extra';
-import { $TSObject, JSONUtilities } from 'amplify-cli-core';
+import * as aws from 'aws-sdk';
 import {
   addAuthWithDefault,
-  addFunction,
-  addS3StorageWithSettings,
-  AddStorageSettings,
-  amplifyPull,
   amplifyPushAuth,
   amplifyStatus,
   createNewProjectDir,
   deleteProject,
   deleteProjectDir,
-  getAppId,
-  getTeamProviderInfo,
   initJSProjectWithProfile,
+  importHeadlessStorage,
+  removeHeadlessStorage,
 } from 'amplify-e2e-core';
-import { randomizedFunctionName } from '../schema-api-directives/functionTester';
-import { addEnvironmentWithImportedAuth, checkoutEnvironment, removeEnvironment } from '../environment/env';
 import {
   expectLocalAndCloudMetaFilesMatching,
-  expectLocalAndPulledBackendConfigMatching,
   getShortId,
-  readRootStack,
-  createStorageSettings,
-  StorageProjectDetails,
-  getOGStorageProjectDetails,
-  importS3,
   getStorageProjectDetails,
-  expectStorageProjectDetailsMatch,
-  removeImportedS3WithDefault,
   expectNoStorageInMeta,
   expectLocalTeamInfoHasOnlyAuthCategoryAndNoStorage,
   getS3ResourceName,
-  expectS3LocalAndOGMetaFilesOutputMatching,
-  headlessPullExpectError,
-  headlessPull,
 } from '../import-helpers';
 
 const profileName = 'amplify-integ-test-user';
 
-describe('s3 import', () => {
-  const projectPrefix = 'sssimp';
-  const ogProjectPrefix = 'ogsssimp';
+describe('headless s3 import', () => {
+  const projectPrefix = 'sssheadimp';
+  const bucketPrefix = 'sss-headless-import-';
 
   const projectSettings = {
     name: projectPrefix,
   };
 
-  const ogProjectSettings = {
-    name: ogProjectPrefix,
-  };
-
-  const dummyOGProjectSettings = {
-    name: 'dummyog1',
-  };
-
-  // OG is the CLI project that creates the s3 bucket to import by other test projects
-  let ogProjectRoot: string;
-  let ogShortId: string;
-  let ogSettings: AddStorageSettings;
-  let ogProjectDetails: StorageProjectDetails;
-
-  // We need an extra OG project to make sure that autocomplete prompt hits in
-  let dummyOGProjectRoot: string;
-  let dummyOGShortId: string;
-  let dummyOGSettings: AddStorageSettings;
-
   let projectRoot: string;
   let ignoreProjectDeleteErrors: boolean = false;
+  let bucketNameToImport: string;
+  let bucketLocation: string;
 
   beforeAll(async () => {
-    ogProjectRoot = await createNewProjectDir(ogProjectSettings.name);
-    ogShortId = getShortId();
-    ogSettings = createStorageSettings(ogProjectSettings.name, ogShortId);
+    const shortId = getShortId();
+    bucketNameToImport = `${bucketPrefix}${shortId}`;
 
-    await initJSProjectWithProfile(ogProjectRoot, ogProjectSettings);
-    await addAuthWithDefault(ogProjectRoot, {});
-    await addS3StorageWithSettings(ogProjectRoot, ogSettings);
-    await amplifyPushAuth(ogProjectRoot);
+    const credentials = new aws.SharedIniFileCredentials({ profile: profileName });
+    aws.config.credentials = credentials;
 
-    ogProjectDetails = getOGStorageProjectDetails(ogProjectRoot);
+    const s3 = new aws.S3();
 
-    dummyOGProjectRoot = await createNewProjectDir(dummyOGProjectSettings.name);
-    dummyOGShortId = getShortId();
-    dummyOGSettings = createStorageSettings(dummyOGProjectSettings.name, ogShortId);
+    await s3
+      .createBucket({
+        Bucket: bucketNameToImport,
+      })
+      .promise();
 
-    await initJSProjectWithProfile(dummyOGProjectRoot, dummyOGProjectSettings);
-    await addAuthWithDefault(dummyOGProjectRoot, {});
-    await addS3StorageWithSettings(dummyOGProjectRoot, dummyOGSettings);
-    await amplifyPushAuth(dummyOGProjectRoot);
+    const locationResponse = await s3
+      .getBucketLocation({
+        Bucket: bucketNameToImport,
+      })
+      .promise();
+
+    // For us-east-1 buckets the LocationConstraint is always emtpy, we have to return a
+    // region in every case.
+    // https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetBucketLocation.html
+    if (
+      locationResponse.LocationConstraint === undefined ||
+      locationResponse.LocationConstraint === '' ||
+      locationResponse.LocationConstraint === null
+    ) {
+      bucketLocation = 'us-east-1';
+    } else {
+      bucketLocation = locationResponse.LocationConstraint;
+    }
   });
 
   afterAll(async () => {
-    await deleteProject(ogProjectRoot);
-    deleteProjectDir(ogProjectRoot);
-    await deleteProject(dummyOGProjectRoot);
-    deleteProjectDir(dummyOGProjectRoot);
+    // Delete bucket
+    const s3 = new aws.S3();
+
+    await s3
+      .deleteBucket({
+        Bucket: bucketNameToImport,
+      })
+      .promise();
   });
 
   beforeEach(async () => {
@@ -114,137 +95,118 @@ describe('s3 import', () => {
         throw error;
       }
     }
+
     deleteProjectDir(projectRoot);
   });
 
-  it('imported storage, create prod env, files should match', async () => {
+  it('import storage when no auth resource is in the project', async () => {
+    await initJSProjectWithProfile(projectRoot, projectSettings);
+
+    const processResult = await importHeadlessStorage(projectRoot, {
+      version: 1,
+      serviceConfiguration: {
+        serviceName: 'S3',
+        bucketName: bucketNameToImport,
+      },
+    });
+
+    expect(processResult.exitCode).toBe(1);
+    expect(processResult.stdout).toContain(
+      'Cannot headlessly import storage resource without an existing auth resource. It can be added with "amplify add auth"',
+    );
+  });
+
+  it('import storage when there is already a storage resource in the project', async () => {
     await initJSProjectWithProfile(projectRoot, projectSettings);
     await addAuthWithDefault(projectRoot, {});
-    await importS3(projectRoot, ogSettings.bucketName);
 
-    await amplifyPushAuth(projectRoot);
-
-    const firstEnvName = 'integtest';
-    const secondEnvName = 'prod';
-
-    await addEnvironmentWithImportedAuth(projectRoot, {
-      envName: secondEnvName,
-      currentEnvName: firstEnvName,
+    const processResult = await importHeadlessStorage(projectRoot, {
+      version: 1,
+      serviceConfiguration: {
+        serviceName: 'S3',
+        bucketName: bucketNameToImport,
+      },
     });
 
-    let teamInfo = getTeamProviderInfo(projectRoot);
-    const env1 = teamInfo[firstEnvName];
-    const env2 = teamInfo[secondEnvName];
+    expect(processResult.exitCode).toBe(0);
+    expect(processResult.stdout).toEqual('');
 
-    // Verify that same storage resource object is present
-    expect(Object.keys(env1)[0]).toEqual(Object.keys(env2)[0]);
+    const processResultFail = await importHeadlessStorage(projectRoot, {
+      version: 1,
+      serviceConfiguration: {
+        serviceName: 'S3',
+        bucketName: bucketNameToImport,
+      },
+    });
 
+    expect(processResultFail.exitCode).toBe(1);
+    expect(processResultFail.stdout).toContain('Amazon S3 storage was already added to your project');
+  });
+
+  it('import storage with non-existent bucket`', async () => {
+    await initJSProjectWithProfile(projectRoot, projectSettings);
+    await addAuthWithDefault(projectRoot, {});
+
+    const fakeBucketName = `fake-bucket-name-${getShortId()}`;
+
+    const processResult = await importHeadlessStorage(projectRoot, {
+      version: 1,
+      serviceConfiguration: {
+        serviceName: 'S3',
+        bucketName: fakeBucketName,
+      },
+    });
+
+    expect(processResult.exitCode).toBe(1);
+    expect(processResult.stdout).toContain(`The specified bucket: "${fakeBucketName}" does not exist.`);
+  });
+
+  it('import storage successfully and push, remove storage and push`', async () => {
+    await initJSProjectWithProfile(projectRoot, projectSettings);
+    await addAuthWithDefault(projectRoot, {});
+
+    const processResult = await importHeadlessStorage(projectRoot, {
+      version: 1,
+      serviceConfiguration: {
+        serviceName: 'S3',
+        bucketName: bucketNameToImport,
+      },
+    });
+
+    expect(processResult.exitCode).toBe(0);
+    expect(processResult.stdout).toEqual('');
+
+    await amplifyStatus(projectRoot, 'Import');
     await amplifyPushAuth(projectRoot);
+    await amplifyStatus(projectRoot, 'No Change');
 
-    // Meta is matching the data with the OG project's resources
+    const storageResourceName = getS3ResourceName(projectRoot);
+
     expectLocalAndCloudMetaFilesMatching(projectRoot);
-    expectS3LocalAndOGMetaFilesOutputMatching(projectRoot, ogProjectRoot);
 
-    await checkoutEnvironment(projectRoot, {
-      envName: firstEnvName,
+    const projectDetails = getStorageProjectDetails(projectRoot);
+
+    expect(projectDetails.meta.BucketName).toEqual(bucketNameToImport);
+    expect(projectDetails.meta.Region).toEqual(bucketLocation);
+
+    expect(projectDetails.team.bucketName).toEqual(bucketNameToImport);
+    expect(projectDetails.team.region).toEqual(bucketLocation);
+
+    await removeHeadlessStorage(projectRoot, {
+      version: 1,
+      serviceConfiguration: {
+        serviceName: 'S3',
+        resourceName: storageResourceName,
+        // deleteBucketAndContents: true,
+      },
     });
 
-    await removeEnvironment(projectRoot, {
-      envName: secondEnvName,
-    });
-
-    teamInfo = getTeamProviderInfo(projectRoot);
-
-    // No prod in team proovider info
-    expect(teamInfo.prod).toBeUndefined();
-  });
-
-  it('storage headless pull missing parameters', async () => {
-    await initJSProjectWithProfile(projectRoot, {
-      ...projectSettings,
-      disableAmplifyAppCreation: false,
-    });
-    await addAuthWithDefault(projectRoot, {});
-    await importS3(projectRoot, ogSettings.bucketName);
+    await amplifyStatus(projectRoot, 'Unlink');
 
     await amplifyPushAuth(projectRoot);
 
-    const appId = getAppId(projectRoot);
-    expect(appId).toBeDefined();
+    expectNoStorageInMeta(projectRoot);
 
-    let projectRootPull;
-
-    try {
-      projectRootPull = await createNewProjectDir('s3import-pull');
-
-      const envName = 'integtest';
-      const providersParam = {
-        awscloudformation: {
-          configLevel: 'project',
-          useProfile: true,
-          profileName,
-        },
-      };
-
-      await expect(
-        headlessPullExpectError(
-          projectRootPull,
-          { envName, appId },
-          providersParam,
-          'Error: storage headless is missing the following inputParams bucketName, region',
-          {},
-        ),
-      ).rejects.toThrowError('Process exited with non zero exit code 1');
-    } finally {
-      deleteProjectDir(projectRootPull);
-    }
-  });
-
-  it('storage headless pull successful', async () => {
-    await initJSProjectWithProfile(projectRoot, {
-      ...projectSettings,
-      disableAmplifyAppCreation: false,
-    });
-    await addAuthWithDefault(projectRoot, {});
-    await importS3(projectRoot, ogSettings.bucketName);
-
-    await amplifyPushAuth(projectRoot);
-
-    let projectDetails = getStorageProjectDetails(projectRoot);
-
-    const appId = getAppId(projectRoot);
-    expect(appId).toBeDefined();
-
-    let projectRootPull;
-
-    try {
-      projectRootPull = await createNewProjectDir('s3import-pull');
-
-      const envName = 'integtest';
-      const providersParam = {
-        awscloudformation: {
-          configLevel: 'project',
-          useProfile: true,
-          profileName,
-        },
-      };
-
-      const categoryConfig = {
-        storage: {
-          bucketName: projectDetails.team.bucketName,
-          region: projectDetails.team.region,
-        },
-      };
-
-      await headlessPull(projectRootPull, { envName, appId }, providersParam, categoryConfig);
-
-      await amplifyStatus(projectRoot, 'No Change');
-
-      expectLocalAndCloudMetaFilesMatching(projectRoot);
-      expectLocalAndPulledBackendConfigMatching(projectRoot, projectRootPull);
-      expectS3LocalAndOGMetaFilesOutputMatching(projectRoot, projectRootPull);
-    } finally {
-      deleteProjectDir(projectRootPull);
-    }
+    expectLocalTeamInfoHasOnlyAuthCategoryAndNoStorage(projectRoot);
   });
 });

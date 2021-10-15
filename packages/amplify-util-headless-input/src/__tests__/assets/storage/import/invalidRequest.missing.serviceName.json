@@ -1,4 +1,6 @@
 {
   "version": 1,
-  "serviceConfiguration": {}
+  "serviceConfiguration": {
+    "bucketName": "import-this-bucket"
+  }
 }

@@ -45,7 +45,7 @@ export const addHeadlessStorage = async (cwd: string, request: AddStorageRequest
 };
 
 export const importHeadlessStorage = async (cwd: string, request: ImportStorageRequest) => {
-  await executeHeadlessCommand(cwd, 'storage', 'import', request);
+  return await executeHeadlessCommand(cwd, 'storage', 'import', request);
 };
 
 export const removeHeadlessStorage = async (cwd: string, request: RemoveStorageRequest) => {
@@ -60,7 +60,7 @@ const headlessRemoveResource = async (cwd: string, category: string, resourceNam
   await execa(getCLIPath(), ['remove', category, resourceName, '--yes'], { cwd });
 };
 const executeHeadlessCommand = async (cwd: string, category: string, operation: string, request: AnyHeadlessRequest) => {
-  await execa(getCLIPath(), [operation, category, '--headless'], { input: JSON.stringify(request), cwd });
+  return await execa(getCLIPath(), [operation, category, '--headless'], { input: JSON.stringify(request), cwd });
 };
 
 type AnyHeadlessRequest =

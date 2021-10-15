@@ -23,7 +23,7 @@ export interface AddS3ServiceConfiguration extends S3ServiceConfigurationBase {
   resourceName?: string;
 
   /**
-   * Globally unique bucket name
+   * Globally unique bucket name - bucket names must be lowercase
    */
   bucketName?: string;
 

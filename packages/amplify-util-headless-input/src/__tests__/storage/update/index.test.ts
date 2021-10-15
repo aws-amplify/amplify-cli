@@ -4,8 +4,8 @@ import { validateUpdateStorageRequest } from '../../../index';
 
 const topLevelMissingProperty: ExpectedFunction = (missingProperty: string) =>
   `Data did not validate against the supplied schema. Underlying errors were [{\"keyword\":\"required\",\"dataPath\":\"\",\"schemaPath\":\"#/required\",\"params\":{\"missingProperty\":\"${missingProperty}\"},\"message\":\"should have required property '${missingProperty}'\"}]`;
-const serviceConfigurationMissingProperty: ExpectedFunction = (missingProperty: string) =>
-  `Data did not validate against the supplied schema. Underlying errors were [{\"keyword\":\"required\",\"dataPath\":\".serviceConfiguration\",\"schemaPath\":\"#/required\",\"params\":{\"missingProperty\":\"${missingProperty}\"},\"message\":\"should have required property '${missingProperty}'\"}]`;
+const serviceModificationMissingProperty: ExpectedFunction = (missingProperty: string) =>
+  `Data did not validate against the supplied schema. Underlying errors were [{\"keyword\":\"required\",\"dataPath\":\".serviceModification\",\"schemaPath\":\"#/required\",\"params\":{\"missingProperty\":\"${missingProperty}\"},\"message\":\"should have required property '${missingProperty}'\"}]`;
 
 type ExpectedFunction = (missingProperty: string) => string;
 
@@ -37,10 +37,10 @@ describe('rejects promise when invalid payload', () => {
       (missingProperty: string) => `data does not have a top level \"${missingProperty}\" field`,
     ],
     ['version', 'invalidRequest.invalid.version.json', (missingProperty: string) => `No schema found for ${missingProperty} 9999`],
-    ['serviceConfiguration', 'invalidRequest.missing.serviceConfiguration.json', topLevelMissingProperty],
-    ['serviceName', 'invalidRequest.missing.serviceName.json', serviceConfigurationMissingProperty],
-    ['resourceName', 'invalidRequest.missing.resourceName.json', serviceConfigurationMissingProperty],
-    ['permissions', 'invalidRequest.missing.permissions.json', serviceConfigurationMissingProperty],
+    ['serviceModification', 'invalidRequest.missing.serviceModification.json', topLevelMissingProperty],
+    ['serviceName', 'invalidRequest.missing.serviceName.json', serviceModificationMissingProperty],
+    ['resourceName', 'invalidRequest.missing.resourceName.json', serviceModificationMissingProperty],
+    ['permissions', 'invalidRequest.missing.permissions.json', serviceModificationMissingProperty],
   ])(
     'with a rejected promise when the payload is missing %s',
     async (missingProperty: string, fileName: string, expectedFn: ExpectedFunction) => {

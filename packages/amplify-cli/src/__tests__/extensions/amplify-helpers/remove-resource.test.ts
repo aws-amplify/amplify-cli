@@ -33,14 +33,7 @@ jest.mock('amplify-cli-core', () => ({
 const stateManagerMock = stateManager as jest.Mocked<typeof stateManager>;
 const inquirerMock = inquirer as jest.Mocked<typeof inquirer>;
 
-jest.mock('amplify-prompts', () => ({
-  printer: {
-    info: jest.fn(),
-    error: jest.fn(),
-    success: jest.fn(),
-    blankLine: jest.fn(),
-  },
-}));
+jest.mock('amplify-prompts');
 
 describe('remove-resource', () => {
   let context;
