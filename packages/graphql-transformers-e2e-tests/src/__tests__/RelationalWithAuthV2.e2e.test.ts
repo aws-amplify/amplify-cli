@@ -85,25 +85,25 @@ beforeAll(async () => {
       author: User @belongsTo(fields: ["owner"])
       owner: ID! @index(name: "byOwner", sortKeyFields: ["id"])
     }
-      
+
     type User @model @auth(rules: [{ allow: owner }]) {
       id: ID!
       posts: [Post] @hasMany(indexName: "byOwner", fields: ["id"])
     }
-    
+
     type FieldProtected @model @auth(rules: [{ allow: private }, { allow: owner, operations: [read] }]) {
       id: ID!
       owner: String
       ownerOnly: String @auth(rules: [{allow: owner}])
     }
-    
+
     type OpenTopLevel @model @auth(rules: [{allow: private}]) {
       id: ID!
       name: String
       owner: String
       protected: [ConnectionProtected] @hasMany(indexName: "byTopLevel", fields: ["id"])
     }
-    
+
     type ConnectionProtected @model(queries: null) @auth(rules: [{allow: owner}]) {
       id: ID!
       name: String
@@ -116,6 +116,7 @@ beforeAll(async () => {
     const modelTransformer = new ModelTransformer();
     const indexTransformer = new IndexTransformer();
     const hasOneTransformer = new HasOneTransformer();
+    const authTransformer = new AuthTransformer({ addAwsIamAuthInOutputSchema: false });
     const transformer = new GraphQLTransform({
       authConfig: {
         defaultAuthentication: {
@@ -130,8 +131,8 @@ beforeAll(async () => {
         hasOneTransformer,
         new HasManyTransformer(),
         new BelongsToTransformer(),
-        new AuthTransformer({ addAwsIamAuthInOutputSchema: false }),
-        new ManyToManyTransformer(modelTransformer, indexTransformer, hasOneTransformer),
+        new ManyToManyTransformer(modelTransformer, indexTransformer, hasOneTransformer, authTransformer),
+        authTransformer,
       ],
     });
     out = transformer.transform(validSchema);
