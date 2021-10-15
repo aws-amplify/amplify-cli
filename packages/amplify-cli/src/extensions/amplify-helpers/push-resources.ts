@@ -119,7 +119,7 @@ async function handleValidGraphQLAuthError(context: $TSContext, message: string)
       await addGraphQLAuthRequirement(context, 'OPENID_CONNECT')
       return true;
     } else if (message === `@auth directive with 'apiKey' provider found, but the project has no API Key authentication provider configured.`) {
-      await addGraphQLAuthRequirement(context, 'AWS_KEY');
+      await addGraphQLAuthRequirement(context, 'API_KEY');
       return true;
     } else if (message === `@auth directive with 'function' provider found, but the project has no Lambda authentication provider configured.`) {
       await addGraphQLAuthRequirement(context, 'AWS_LAMBDA');
