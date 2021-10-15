@@ -1,6 +1,7 @@
 import {
   getAppId,
-  addApiWithSchema,
+  addApiWithoutSchema,
+  updateApiSchema,
   amplifyPull,
   amplifyPush,
   createNewProjectDir,
@@ -24,8 +25,12 @@ describe('amplify pull', () => {
   });
 
   it('pulling twice with noUpdateBackend does not re-prompt', async () => {
-    await initJSProjectWithProfile(projRoot, { disableAmplifyAppCreation: false });
-    await addApiWithSchema(projRoot, 'simple_model.graphql');
+    await initJSProjectWithProfile(projRoot, { 
+      disableAmplifyAppCreation: false,
+      name: 'testapi',
+    });
+    await addApiWithoutSchema(projRoot);
+    await updateApiSchema(projRoot, 'testapi', 'simple_model.graphql');
     await amplifyPush(projRoot);
     const appId = getAppId(projRoot);
     await amplifyPull(projRoot2, { appId, emptyDir: true, noUpdateBackend: true });

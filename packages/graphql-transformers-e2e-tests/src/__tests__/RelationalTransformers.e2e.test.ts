@@ -133,6 +133,7 @@ type Course @model {
         new BelongsToTransformer(),
         new ManyToManyTransformer(modelTransformer, indexTransformer, hasOneTransformer),
       ],
+      sandboxModeEnabled: true,
     });
     out = transformer.transform(validSchema);
   } catch (e) {

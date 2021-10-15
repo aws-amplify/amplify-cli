@@ -13,7 +13,13 @@ $util.toJson({
   \\"payload\\": {}
 })
 ## [End] Initialization default values. **",
-  "Mutation.createTest.postAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
+  "Mutation.createTest.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **",
+  "Mutation.createTest.preAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
 $util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
 ## [End] Merge default values and inputs. **
@@ -33,25 +39,6 @@ $util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
 $util.qr($ctx.args.input.put(\\"kind#other\\",\\"\${mergedValues.kind}#\${mergedValues.other}\\"))
 {}",
   "Mutation.createTest.req.vtl": "## [Start] Create Request template. **
-## Begin - key condition **
-#if( $ctx.stash.metadata.modelObjectKey )
-  #set( $keyConditionExpr = {} )
-  #set( $keyConditionExprNames = {} )
-  #foreach( $entry in $ctx.stash.metadata.modelObjectKey.entrySet() )
-    $util.qr($keyConditionExpr.put(\\"keyCondition$velocityCount\\", {
-  \\"attributeExists\\": false
-}))
-    $util.qr($keyConditionExprNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
-  #end
-  $util.qr($ctx.stash.conditions.add($keyConditionExpr))
-#else
-  $util.qr($ctx.stash.conditions.add({
-  \\"id\\": {
-      \\"attributeExists\\": false
-  }
-}))
-#end
-## End - key condition **
 ## Set the default values to put request **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
 ## copy the values from input **
@@ -116,14 +103,21 @@ $util.qr($mergedValues.put(\\"__typename\\", \\"Test\\"))
 #end
 $util.toJson($PutObject)
 ## [End] Create Request template. **",
-  "Mutation.createTest.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Mutation.createTest.res.vtl": "## [Start] ResponseTemplate. **
+$util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
-  "Mutation.deleteTest.postAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
+## [End] ResponseTemplate. **",
+  "Mutation.deleteTest.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **",
+  "Mutation.deleteTest.preAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
 $util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
 ## [End] Merge default values and inputs. **
@@ -191,13 +185,14 @@ $util.qr($DeleteRequest.put(\\"key\\", $Key))
 #end
 $util.toJson($DeleteRequest)
 ## [End] Delete Request template. **",
-  "Mutation.deleteTest.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Mutation.deleteTest.res.vtl": "## [Start] ResponseTemplate. **
+$util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
+## [End] ResponseTemplate. **",
   "Mutation.updateTest.init.1.req.vtl": "## [Start] Initialization default values. **
 $util.qr($ctx.stash.put(\\"defaultValues\\", $util.defaultIfNull($ctx.stash.defaultValues, {})))
 #set( $updatedAt = $util.time.nowISO8601() )
@@ -207,7 +202,13 @@ $util.toJson({
   \\"payload\\": {}
 })
 ## [End] Initialization default values. **",
-  "Mutation.updateTest.postAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
+  "Mutation.updateTest.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **",
+  "Mutation.updateTest.preAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
 $util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
 ## [End] Merge default values and inputs. **
@@ -355,14 +356,21 @@ $util.qr($update.put(\\"expression\\", \\"$expression\\"))
 #end
 $util.toJson($UpdateItem)
 ## [End] Mutation Update resolver. **",
-  "Mutation.updateTest.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Mutation.updateTest.res.vtl": "## [Start] ResponseTemplate. **
+$util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
-  "Query.getTest.postAuth.1.req.vtl": "## [Start] Set the primary key. **
+## [End] ResponseTemplate. **",
+  "Query.getTest.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **",
+  "Query.getTest.preAuth.1.req.vtl": "## [Start] Set the primary key. **
 $util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
   \\"email\\": $util.dynamodb.toDynamoDB($ctx.args.email),
   \\"kind#other\\": $util.dynamodb.toDynamoDB(\\"\${ctx.args.kind}#\${ctx.args.other}\\")
@@ -372,26 +380,57 @@ $util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
   "Query.getTest.req.vtl": "## [Start] Get Request template. **
 #set( $GetRequest = {
   \\"version\\": \\"2018-05-29\\",
-  \\"operation\\": \\"GetItem\\"
+  \\"operation\\": \\"Query\\"
 } )
 #if( $ctx.stash.metadata.modelObjectKey )
-  #set( $key = $ctx.stash.metadata.modelObjectKey )
+  #set( $expression = \\"\\" )
+  #set( $expressionNames = {} )
+  #set( $expressionValues = {} )
+  #foreach( $item in $ctx.stash.metadata.modelObjectKey.entrySet() )
+    #set( $expression = \\"$expression#keyCount$velocityCount = :valueCount$velocityCount AND \\" )
+    $util.qr($expressionNames.put(\\"#keyCount$velocityCount\\", $item.key))
+    $util.qr($expressionValues.put(\\":valueCount$velocityCount\\", $item.value))
+  #end
+  #set( $expression = $expression.replaceAll(\\"AND $\\", \\"\\") )
+  #set( $query = {
+  \\"expression\\": $expression,
+  \\"expressionNames\\": $expressionNames,
+  \\"expressionValues\\": $expressionValues
+} )
 #else
-  #set( $key = {
-  \\"id\\":   $util.dynamodb.toDynamoDB($ctx.args.id)
+  #set( $query = {
+  \\"expression\\": \\"id = :id\\",
+  \\"expressionValues\\": {
+      \\":id\\":     $util.parseJson($util.dynamodb.toDynamoDBJson($ctx.args.id))
+  }
 } )
 #end
-$util.qr($GetRequest.put(\\"key\\", $key))
+$util.qr($GetRequest.put(\\"query\\", $query))
+#if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
+  $util.qr($GetRequest.put(\\"filter\\", $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.authFilter))))
+#end
 $util.toJson($GetRequest)
 ## [End] Get Request template. **",
-  "Query.getTest.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Query.getTest.res.vtl": "## [Start] Get Response template. **
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
-#else
-  $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
-  "Query.listTests.postAuth.1.req.vtl": "## [Start] Set query expression for key **
+#if( !$ctx.result.items.isEmpty() && $ctx.result.scannedCount == 1 )
+  $util.toJson($ctx.result.items[0])
+#else
+  #if( $ctx.result.items.isEmpty() && $ctx.result.scannedCount == 1 )
+$util.unauthorized()
+  #end
+  $util.toJson(null)
+#end
+## [End] Get Response template. **",
+  "Query.listTests.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **",
+  "Query.listTests.preAuth.1.req.vtl": "## [Start] Set query expression for key **
 #if( $util.isNull($ctx.args.email) && !$util.isNull($ctx.args.sortDirection) )
   $util.error(\\"When providing argument 'sortDirection' you must also provide argument 'email'.\\", \\"InvalidArgumentsError\\")
 #end
@@ -508,8 +547,20 @@ $util.qr($ctx.stash.put(\\"modelQueryExpression\\", $modelQueryExpression))
 #if( $context.args.nextToken )
   #set( $ListRequest.nextToken = $context.args.nextToken )
 #end
-#if( $context.args.filter )
-  #set( $filterExpression = $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.args.filter)) )
+#if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
+  #set( $filter = $ctx.stash.authFilter )
+  #if( !$util.isNullOrEmpty($ctx.args.filter) )
+    #set( $filter = {
+  \\"and\\":   [$filter, $ctx.args.filter]
+} )
+  #end
+#else
+  #if( !$util.isNullOrEmpty($ctx.args.filter) )
+    #set( $filter = $ctx.args.filter )
+  #end
+#end
+#if( !$util.isNullOrEmpty($filter) )
+  #set( $filterExpression = $util.parseJson($util.transform.toDynamoDBFilterExpression($filter)) )
   #if( !$util.isNullOrBlank($filterExpression.expression) )
     #if( $filterEpression.expressionValues.size() == 0 )
       $util.qr($filterEpression.remove(\\"expressionValues\\"))
@@ -533,13 +584,58 @@ $util.qr($ctx.stash.put(\\"modelQueryExpression\\", $modelQueryExpression))
 #end
 $util.toJson($ListRequest)
 ## [End] List Request. **",
-  "Query.listTests.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Query.listTests.res.vtl": "## [Start] ResponseTemplate. **
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
+## [End] ResponseTemplate. **",
+  "Subscription.onCreateTest.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **",
+  "Subscription.onCreateTest.req.vtl": "## [Start] Subscription Request template. **
+$util.toJson({
+  \\"version\\": \\"2018-05-29\\",
+  \\"payload\\": {}
+})
+## [End] Subscription Request template. **",
+  "Subscription.onCreateTest.res.vtl": "## [Start] Subscription Response template. **
+$util.toJson(null)
+## [End] Subscription Response template. **",
+  "Subscription.onDeleteTest.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **",
+  "Subscription.onDeleteTest.req.vtl": "## [Start] Subscription Request template. **
+$util.toJson({
+  \\"version\\": \\"2018-05-29\\",
+  \\"payload\\": {}
+})
+## [End] Subscription Request template. **",
+  "Subscription.onDeleteTest.res.vtl": "## [Start] Subscription Response template. **
+$util.toJson(null)
+## [End] Subscription Response template. **",
+  "Subscription.onUpdateTest.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **",
+  "Subscription.onUpdateTest.req.vtl": "## [Start] Subscription Request template. **
+$util.toJson({
+  \\"version\\": \\"2018-05-29\\",
+  \\"payload\\": {}
+})
+## [End] Subscription Request template. **",
+  "Subscription.onUpdateTest.res.vtl": "## [Start] Subscription Response template. **
+$util.toJson(null)
+## [End] Subscription Response template. **",
 }
 `;
 
@@ -556,7 +652,13 @@ $util.toJson({
   \\"payload\\": {}
 })
 ## [End] Initialization default values. **",
-  "Mutation.createTest.postAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
+  "Mutation.createTest.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **",
+  "Mutation.createTest.preAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
 $util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
 ## [End] Merge default values and inputs. **
@@ -569,25 +671,6 @@ $util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
 
 {}",
   "Mutation.createTest.req.vtl": "## [Start] Create Request template. **
-## Begin - key condition **
-#if( $ctx.stash.metadata.modelObjectKey )
-  #set( $keyConditionExpr = {} )
-  #set( $keyConditionExprNames = {} )
-  #foreach( $entry in $ctx.stash.metadata.modelObjectKey.entrySet() )
-    $util.qr($keyConditionExpr.put(\\"keyCondition$velocityCount\\", {
-  \\"attributeExists\\": false
-}))
-    $util.qr($keyConditionExprNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
-  #end
-  $util.qr($ctx.stash.conditions.add($keyConditionExpr))
-#else
-  $util.qr($ctx.stash.conditions.add({
-  \\"id\\": {
-      \\"attributeExists\\": false
-  }
-}))
-#end
-## End - key condition **
 ## Set the default values to put request **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
 ## copy the values from input **
@@ -652,14 +735,21 @@ $util.qr($mergedValues.put(\\"__typename\\", \\"Test\\"))
 #end
 $util.toJson($PutObject)
 ## [End] Create Request template. **",
-  "Mutation.createTest.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Mutation.createTest.res.vtl": "## [Start] ResponseTemplate. **
+$util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
-  "Mutation.deleteTest.postAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
+## [End] ResponseTemplate. **",
+  "Mutation.deleteTest.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **",
+  "Mutation.deleteTest.preAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
 $util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
 ## [End] Merge default values and inputs. **
@@ -727,13 +817,14 @@ $util.qr($DeleteRequest.put(\\"key\\", $Key))
 #end
 $util.toJson($DeleteRequest)
 ## [End] Delete Request template. **",
-  "Mutation.deleteTest.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Mutation.deleteTest.res.vtl": "## [Start] ResponseTemplate. **
+$util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
+## [End] ResponseTemplate. **",
   "Mutation.updateTest.init.1.req.vtl": "## [Start] Initialization default values. **
 $util.qr($ctx.stash.put(\\"defaultValues\\", $util.defaultIfNull($ctx.stash.defaultValues, {})))
 #set( $updatedAt = $util.time.nowISO8601() )
@@ -743,7 +834,13 @@ $util.toJson({
   \\"payload\\": {}
 })
 ## [End] Initialization default values. **",
-  "Mutation.updateTest.postAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
+  "Mutation.updateTest.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **",
+  "Mutation.updateTest.preAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
 $util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
 ## [End] Merge default values and inputs. **
@@ -884,14 +981,21 @@ $util.qr($update.put(\\"expression\\", \\"$expression\\"))
 #end
 $util.toJson($UpdateItem)
 ## [End] Mutation Update resolver. **",
-  "Mutation.updateTest.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Mutation.updateTest.res.vtl": "## [Start] ResponseTemplate. **
+$util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
-  "Query.getTest.postAuth.1.req.vtl": "## [Start] Set the primary key. **
+## [End] ResponseTemplate. **",
+  "Query.getTest.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **",
+  "Query.getTest.preAuth.1.req.vtl": "## [Start] Set the primary key. **
 $util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
   \\"email\\": $util.dynamodb.toDynamoDB($ctx.args.email),
   \\"kind\\": $util.dynamodb.toDynamoDB($ctx.args.kind)
@@ -901,26 +1005,57 @@ $util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
   "Query.getTest.req.vtl": "## [Start] Get Request template. **
 #set( $GetRequest = {
   \\"version\\": \\"2018-05-29\\",
-  \\"operation\\": \\"GetItem\\"
+  \\"operation\\": \\"Query\\"
 } )
 #if( $ctx.stash.metadata.modelObjectKey )
-  #set( $key = $ctx.stash.metadata.modelObjectKey )
+  #set( $expression = \\"\\" )
+  #set( $expressionNames = {} )
+  #set( $expressionValues = {} )
+  #foreach( $item in $ctx.stash.metadata.modelObjectKey.entrySet() )
+    #set( $expression = \\"$expression#keyCount$velocityCount = :valueCount$velocityCount AND \\" )
+    $util.qr($expressionNames.put(\\"#keyCount$velocityCount\\", $item.key))
+    $util.qr($expressionValues.put(\\":valueCount$velocityCount\\", $item.value))
+  #end
+  #set( $expression = $expression.replaceAll(\\"AND $\\", \\"\\") )
+  #set( $query = {
+  \\"expression\\": $expression,
+  \\"expressionNames\\": $expressionNames,
+  \\"expressionValues\\": $expressionValues
+} )
 #else
-  #set( $key = {
-  \\"id\\":   $util.dynamodb.toDynamoDB($ctx.args.id)
+  #set( $query = {
+  \\"expression\\": \\"id = :id\\",
+  \\"expressionValues\\": {
+      \\":id\\":     $util.parseJson($util.dynamodb.toDynamoDBJson($ctx.args.id))
+  }
 } )
 #end
-$util.qr($GetRequest.put(\\"key\\", $key))
+$util.qr($GetRequest.put(\\"query\\", $query))
+#if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
+  $util.qr($GetRequest.put(\\"filter\\", $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.authFilter))))
+#end
 $util.toJson($GetRequest)
 ## [End] Get Request template. **",
-  "Query.getTest.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Query.getTest.res.vtl": "## [Start] Get Response template. **
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
-#else
-  $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
-  "Query.listTests.postAuth.1.req.vtl": "## [Start] Set query expression for key **
+#if( !$ctx.result.items.isEmpty() && $ctx.result.scannedCount == 1 )
+  $util.toJson($ctx.result.items[0])
+#else
+  #if( $ctx.result.items.isEmpty() && $ctx.result.scannedCount == 1 )
+$util.unauthorized()
+  #end
+  $util.toJson(null)
+#end
+## [End] Get Response template. **",
+  "Query.listTests.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **",
+  "Query.listTests.preAuth.1.req.vtl": "## [Start] Set query expression for key **
 #if( $util.isNull($ctx.args.email) && !$util.isNull($ctx.args.sortDirection) )
   $util.error(\\"When providing argument 'sortDirection' you must also provide argument 'email'.\\", \\"InvalidArgumentsError\\")
 #end
@@ -991,8 +1126,20 @@ $util.qr($ctx.stash.put(\\"modelQueryExpression\\", $modelQueryExpression))
 #if( $context.args.nextToken )
   #set( $ListRequest.nextToken = $context.args.nextToken )
 #end
-#if( $context.args.filter )
-  #set( $filterExpression = $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.args.filter)) )
+#if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
+  #set( $filter = $ctx.stash.authFilter )
+  #if( !$util.isNullOrEmpty($ctx.args.filter) )
+    #set( $filter = {
+  \\"and\\":   [$filter, $ctx.args.filter]
+} )
+  #end
+#else
+  #if( !$util.isNullOrEmpty($ctx.args.filter) )
+    #set( $filter = $ctx.args.filter )
+  #end
+#end
+#if( !$util.isNullOrEmpty($filter) )
+  #set( $filterExpression = $util.parseJson($util.transform.toDynamoDBFilterExpression($filter)) )
   #if( !$util.isNullOrBlank($filterExpression.expression) )
     #if( $filterEpression.expressionValues.size() == 0 )
       $util.qr($filterEpression.remove(\\"expressionValues\\"))
@@ -1016,13 +1163,58 @@ $util.qr($ctx.stash.put(\\"modelQueryExpression\\", $modelQueryExpression))
 #end
 $util.toJson($ListRequest)
 ## [End] List Request. **",
-  "Query.listTests.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Query.listTests.res.vtl": "## [Start] ResponseTemplate. **
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
+## [End] ResponseTemplate. **",
+  "Subscription.onCreateTest.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **",
+  "Subscription.onCreateTest.req.vtl": "## [Start] Subscription Request template. **
+$util.toJson({
+  \\"version\\": \\"2018-05-29\\",
+  \\"payload\\": {}
+})
+## [End] Subscription Request template. **",
+  "Subscription.onCreateTest.res.vtl": "## [Start] Subscription Response template. **
+$util.toJson(null)
+## [End] Subscription Response template. **",
+  "Subscription.onDeleteTest.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **",
+  "Subscription.onDeleteTest.req.vtl": "## [Start] Subscription Request template. **
+$util.toJson({
+  \\"version\\": \\"2018-05-29\\",
+  \\"payload\\": {}
+})
+## [End] Subscription Request template. **",
+  "Subscription.onDeleteTest.res.vtl": "## [Start] Subscription Response template. **
+$util.toJson(null)
+## [End] Subscription Response template. **",
+  "Subscription.onUpdateTest.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **",
+  "Subscription.onUpdateTest.req.vtl": "## [Start] Subscription Request template. **
+$util.toJson({
+  \\"version\\": \\"2018-05-29\\",
+  \\"payload\\": {}
+})
+## [End] Subscription Request template. **",
+  "Subscription.onUpdateTest.res.vtl": "## [Start] Subscription Response template. **
+$util.toJson(null)
+## [End] Subscription Response template. **",
 }
 `;
 
@@ -1039,7 +1231,13 @@ $util.toJson({
   \\"payload\\": {}
 })
 ## [End] Initialization default values. **",
-  "Mutation.createTest.postAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
+  "Mutation.createTest.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **",
+  "Mutation.createTest.preAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
 $util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
 ## [End] Merge default values and inputs. **
@@ -1051,25 +1249,6 @@ $util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
 
 {}",
   "Mutation.createTest.req.vtl": "## [Start] Create Request template. **
-## Begin - key condition **
-#if( $ctx.stash.metadata.modelObjectKey )
-  #set( $keyConditionExpr = {} )
-  #set( $keyConditionExprNames = {} )
-  #foreach( $entry in $ctx.stash.metadata.modelObjectKey.entrySet() )
-    $util.qr($keyConditionExpr.put(\\"keyCondition$velocityCount\\", {
-  \\"attributeExists\\": false
-}))
-    $util.qr($keyConditionExprNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
-  #end
-  $util.qr($ctx.stash.conditions.add($keyConditionExpr))
-#else
-  $util.qr($ctx.stash.conditions.add({
-  \\"id\\": {
-      \\"attributeExists\\": false
-  }
-}))
-#end
-## End - key condition **
 ## Set the default values to put request **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
 ## copy the values from input **
@@ -1134,14 +1313,21 @@ $util.qr($mergedValues.put(\\"__typename\\", \\"Test\\"))
 #end
 $util.toJson($PutObject)
 ## [End] Create Request template. **",
-  "Mutation.createTest.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Mutation.createTest.res.vtl": "## [Start] ResponseTemplate. **
+$util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
-  "Mutation.deleteTest.postAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
+## [End] ResponseTemplate. **",
+  "Mutation.deleteTest.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **",
+  "Mutation.deleteTest.preAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
 $util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
 ## [End] Merge default values and inputs. **
@@ -1208,13 +1394,14 @@ $util.qr($DeleteRequest.put(\\"key\\", $Key))
 #end
 $util.toJson($DeleteRequest)
 ## [End] Delete Request template. **",
-  "Mutation.deleteTest.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Mutation.deleteTest.res.vtl": "## [Start] ResponseTemplate. **
+$util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
+## [End] ResponseTemplate. **",
   "Mutation.updateTest.init.1.req.vtl": "## [Start] Initialization default values. **
 $util.qr($ctx.stash.put(\\"defaultValues\\", $util.defaultIfNull($ctx.stash.defaultValues, {})))
 #set( $updatedAt = $util.time.nowISO8601() )
@@ -1224,7 +1411,13 @@ $util.toJson({
   \\"payload\\": {}
 })
 ## [End] Initialization default values. **",
-  "Mutation.updateTest.postAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
+  "Mutation.updateTest.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **",
+  "Mutation.updateTest.preAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
 $util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
 ## [End] Merge default values and inputs. **
@@ -1364,14 +1557,21 @@ $util.qr($update.put(\\"expression\\", \\"$expression\\"))
 #end
 $util.toJson($UpdateItem)
 ## [End] Mutation Update resolver. **",
-  "Mutation.updateTest.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Mutation.updateTest.res.vtl": "## [Start] ResponseTemplate. **
+$util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
-  "Query.getTest.postAuth.1.req.vtl": "## [Start] Set the primary key. **
+## [End] ResponseTemplate. **",
+  "Query.getTest.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **",
+  "Query.getTest.preAuth.1.req.vtl": "## [Start] Set the primary key. **
 $util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
   \\"email\\": $util.dynamodb.toDynamoDB($ctx.args.email)
 }))
@@ -1380,26 +1580,57 @@ $util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
   "Query.getTest.req.vtl": "## [Start] Get Request template. **
 #set( $GetRequest = {
   \\"version\\": \\"2018-05-29\\",
-  \\"operation\\": \\"GetItem\\"
+  \\"operation\\": \\"Query\\"
 } )
 #if( $ctx.stash.metadata.modelObjectKey )
-  #set( $key = $ctx.stash.metadata.modelObjectKey )
+  #set( $expression = \\"\\" )
+  #set( $expressionNames = {} )
+  #set( $expressionValues = {} )
+  #foreach( $item in $ctx.stash.metadata.modelObjectKey.entrySet() )
+    #set( $expression = \\"$expression#keyCount$velocityCount = :valueCount$velocityCount AND \\" )
+    $util.qr($expressionNames.put(\\"#keyCount$velocityCount\\", $item.key))
+    $util.qr($expressionValues.put(\\":valueCount$velocityCount\\", $item.value))
+  #end
+  #set( $expression = $expression.replaceAll(\\"AND $\\", \\"\\") )
+  #set( $query = {
+  \\"expression\\": $expression,
+  \\"expressionNames\\": $expressionNames,
+  \\"expressionValues\\": $expressionValues
+} )
 #else
-  #set( $key = {
-  \\"id\\":   $util.dynamodb.toDynamoDB($ctx.args.id)
+  #set( $query = {
+  \\"expression\\": \\"id = :id\\",
+  \\"expressionValues\\": {
+      \\":id\\":     $util.parseJson($util.dynamodb.toDynamoDBJson($ctx.args.id))
+  }
 } )
 #end
-$util.qr($GetRequest.put(\\"key\\", $key))
+$util.qr($GetRequest.put(\\"query\\", $query))
+#if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
+  $util.qr($GetRequest.put(\\"filter\\", $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.authFilter))))
+#end
 $util.toJson($GetRequest)
 ## [End] Get Request template. **",
-  "Query.getTest.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Query.getTest.res.vtl": "## [Start] Get Response template. **
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
-#else
-  $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
-  "Query.listTests.postAuth.1.req.vtl": "## [Start] Set query expression for key **
+#if( !$ctx.result.items.isEmpty() && $ctx.result.scannedCount == 1 )
+  $util.toJson($ctx.result.items[0])
+#else
+  #if( $ctx.result.items.isEmpty() && $ctx.result.scannedCount == 1 )
+$util.unauthorized()
+  #end
+  $util.toJson(null)
+#end
+## [End] Get Response template. **",
+  "Query.listTests.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **",
+  "Query.listTests.preAuth.1.req.vtl": "## [Start] Set query expression for key **
 #if( !$util.isNull($ctx.args.sortDirection) )
   $util.error(\\"sortDirection is not supported for List operations without a Sort key defined.\\", \\"InvalidArgumentsError\\")
 #end
@@ -1427,8 +1658,20 @@ $util.qr($ctx.stash.put(\\"modelQueryExpression\\", $modelQueryExpression))
 #if( $context.args.nextToken )
   #set( $ListRequest.nextToken = $context.args.nextToken )
 #end
-#if( $context.args.filter )
-  #set( $filterExpression = $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.args.filter)) )
+#if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
+  #set( $filter = $ctx.stash.authFilter )
+  #if( !$util.isNullOrEmpty($ctx.args.filter) )
+    #set( $filter = {
+  \\"and\\":   [$filter, $ctx.args.filter]
+} )
+  #end
+#else
+  #if( !$util.isNullOrEmpty($ctx.args.filter) )
+    #set( $filter = $ctx.args.filter )
+  #end
+#end
+#if( !$util.isNullOrEmpty($filter) )
+  #set( $filterExpression = $util.parseJson($util.transform.toDynamoDBFilterExpression($filter)) )
   #if( !$util.isNullOrBlank($filterExpression.expression) )
     #if( $filterEpression.expressionValues.size() == 0 )
       $util.qr($filterEpression.remove(\\"expressionValues\\"))
@@ -1452,13 +1695,58 @@ $util.qr($ctx.stash.put(\\"modelQueryExpression\\", $modelQueryExpression))
 #end
 $util.toJson($ListRequest)
 ## [End] List Request. **",
-  "Query.listTests.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Query.listTests.res.vtl": "## [Start] ResponseTemplate. **
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
+## [End] ResponseTemplate. **",
+  "Subscription.onCreateTest.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **",
+  "Subscription.onCreateTest.req.vtl": "## [Start] Subscription Request template. **
+$util.toJson({
+  \\"version\\": \\"2018-05-29\\",
+  \\"payload\\": {}
+})
+## [End] Subscription Request template. **",
+  "Subscription.onCreateTest.res.vtl": "## [Start] Subscription Response template. **
+$util.toJson(null)
+## [End] Subscription Response template. **",
+  "Subscription.onDeleteTest.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **",
+  "Subscription.onDeleteTest.req.vtl": "## [Start] Subscription Request template. **
+$util.toJson({
+  \\"version\\": \\"2018-05-29\\",
+  \\"payload\\": {}
+})
+## [End] Subscription Request template. **",
+  "Subscription.onDeleteTest.res.vtl": "## [Start] Subscription Response template. **
+$util.toJson(null)
+## [End] Subscription Response template. **",
+  "Subscription.onUpdateTest.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **",
+  "Subscription.onUpdateTest.req.vtl": "## [Start] Subscription Request template. **
+$util.toJson({
+  \\"version\\": \\"2018-05-29\\",
+  \\"payload\\": {}
+})
+## [End] Subscription Request template. **",
+  "Subscription.onUpdateTest.res.vtl": "## [Start] Subscription Response template. **
+$util.toJson(null)
+## [End] Subscription Response template. **",
 }
 `;
 
@@ -1475,7 +1763,13 @@ $util.toJson({
   \\"payload\\": {}
 })
 ## [End] Initialization default values. **",
-  "Mutation.createTest.postAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
+  "Mutation.createTest.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **",
+  "Mutation.createTest.preAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
 $util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
 ## [End] Merge default values and inputs. **
@@ -1488,25 +1782,6 @@ $util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
 
 {}",
   "Mutation.createTest.req.vtl": "## [Start] Create Request template. **
-## Begin - key condition **
-#if( $ctx.stash.metadata.modelObjectKey )
-  #set( $keyConditionExpr = {} )
-  #set( $keyConditionExprNames = {} )
-  #foreach( $entry in $ctx.stash.metadata.modelObjectKey.entrySet() )
-    $util.qr($keyConditionExpr.put(\\"keyCondition$velocityCount\\", {
-  \\"attributeExists\\": false
-}))
-    $util.qr($keyConditionExprNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
-  #end
-  $util.qr($ctx.stash.conditions.add($keyConditionExpr))
-#else
-  $util.qr($ctx.stash.conditions.add({
-  \\"id\\": {
-      \\"attributeExists\\": false
-  }
-}))
-#end
-## End - key condition **
 ## Set the default values to put request **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
 ## copy the values from input **
@@ -1571,14 +1846,21 @@ $util.qr($mergedValues.put(\\"__typename\\", \\"Test\\"))
 #end
 $util.toJson($PutObject)
 ## [End] Create Request template. **",
-  "Mutation.createTest.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Mutation.createTest.res.vtl": "## [Start] ResponseTemplate. **
+$util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
-  "Mutation.deleteTest.postAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
+## [End] ResponseTemplate. **",
+  "Mutation.deleteTest.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **",
+  "Mutation.deleteTest.preAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
 $util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
 ## [End] Merge default values and inputs. **
@@ -1646,13 +1928,14 @@ $util.qr($DeleteRequest.put(\\"key\\", $Key))
 #end
 $util.toJson($DeleteRequest)
 ## [End] Delete Request template. **",
-  "Mutation.deleteTest.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Mutation.deleteTest.res.vtl": "## [Start] ResponseTemplate. **
+$util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
+## [End] ResponseTemplate. **",
   "Mutation.updateTest.init.1.req.vtl": "## [Start] Initialization default values. **
 $util.qr($ctx.stash.put(\\"defaultValues\\", $util.defaultIfNull($ctx.stash.defaultValues, {})))
 #set( $updatedAt = $util.time.nowISO8601() )
@@ -1662,7 +1945,13 @@ $util.toJson({
   \\"payload\\": {}
 })
 ## [End] Initialization default values. **",
-  "Mutation.updateTest.postAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
+  "Mutation.updateTest.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **",
+  "Mutation.updateTest.preAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
 $util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
 ## [End] Merge default values and inputs. **
@@ -1803,14 +2092,21 @@ $util.qr($update.put(\\"expression\\", \\"$expression\\"))
 #end
 $util.toJson($UpdateItem)
 ## [End] Mutation Update resolver. **",
-  "Mutation.updateTest.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Mutation.updateTest.res.vtl": "## [Start] ResponseTemplate. **
+$util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
-  "Query.getTest.postAuth.1.req.vtl": "## [Start] Set the primary key. **
+## [End] ResponseTemplate. **",
+  "Query.getTest.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **",
+  "Query.getTest.preAuth.1.req.vtl": "## [Start] Set the primary key. **
 $util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
   \\"status\\": $util.dynamodb.toDynamoDB($ctx.args.status),
   \\"lastStatus\\": $util.dynamodb.toDynamoDB($ctx.args.lastStatus)
@@ -1820,26 +2116,57 @@ $util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
   "Query.getTest.req.vtl": "## [Start] Get Request template. **
 #set( $GetRequest = {
   \\"version\\": \\"2018-05-29\\",
-  \\"operation\\": \\"GetItem\\"
+  \\"operation\\": \\"Query\\"
 } )
 #if( $ctx.stash.metadata.modelObjectKey )
-  #set( $key = $ctx.stash.metadata.modelObjectKey )
+  #set( $expression = \\"\\" )
+  #set( $expressionNames = {} )
+  #set( $expressionValues = {} )
+  #foreach( $item in $ctx.stash.metadata.modelObjectKey.entrySet() )
+    #set( $expression = \\"$expression#keyCount$velocityCount = :valueCount$velocityCount AND \\" )
+    $util.qr($expressionNames.put(\\"#keyCount$velocityCount\\", $item.key))
+    $util.qr($expressionValues.put(\\":valueCount$velocityCount\\", $item.value))
+  #end
+  #set( $expression = $expression.replaceAll(\\"AND $\\", \\"\\") )
+  #set( $query = {
+  \\"expression\\": $expression,
+  \\"expressionNames\\": $expressionNames,
+  \\"expressionValues\\": $expressionValues
+} )
 #else
-  #set( $key = {
-  \\"id\\":   $util.dynamodb.toDynamoDB($ctx.args.id)
+  #set( $query = {
+  \\"expression\\": \\"id = :id\\",
+  \\"expressionValues\\": {
+      \\":id\\":     $util.parseJson($util.dynamodb.toDynamoDBJson($ctx.args.id))
+  }
 } )
 #end
-$util.qr($GetRequest.put(\\"key\\", $key))
+$util.qr($GetRequest.put(\\"query\\", $query))
+#if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
+  $util.qr($GetRequest.put(\\"filter\\", $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.authFilter))))
+#end
 $util.toJson($GetRequest)
 ## [End] Get Request template. **",
-  "Query.getTest.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Query.getTest.res.vtl": "## [Start] Get Response template. **
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
-#else
-  $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
-  "Query.listTests.postAuth.1.req.vtl": "## [Start] Set query expression for key **
+#if( !$ctx.result.items.isEmpty() && $ctx.result.scannedCount == 1 )
+  $util.toJson($ctx.result.items[0])
+#else
+  #if( $ctx.result.items.isEmpty() && $ctx.result.scannedCount == 1 )
+$util.unauthorized()
+  #end
+  $util.toJson(null)
+#end
+## [End] Get Response template. **",
+  "Query.listTests.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **",
+  "Query.listTests.preAuth.1.req.vtl": "## [Start] Set query expression for key **
 #if( $util.isNull($ctx.args.status) && !$util.isNull($ctx.args.sortDirection) )
   $util.error(\\"When providing argument 'sortDirection' you must also provide argument 'status'.\\", \\"InvalidArgumentsError\\")
 #end
@@ -1910,8 +2237,20 @@ $util.qr($ctx.stash.put(\\"modelQueryExpression\\", $modelQueryExpression))
 #if( $context.args.nextToken )
   #set( $ListRequest.nextToken = $context.args.nextToken )
 #end
-#if( $context.args.filter )
-  #set( $filterExpression = $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.args.filter)) )
+#if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
+  #set( $filter = $ctx.stash.authFilter )
+  #if( !$util.isNullOrEmpty($ctx.args.filter) )
+    #set( $filter = {
+  \\"and\\":   [$filter, $ctx.args.filter]
+} )
+  #end
+#else
+  #if( !$util.isNullOrEmpty($ctx.args.filter) )
+    #set( $filter = $ctx.args.filter )
+  #end
+#end
+#if( !$util.isNullOrEmpty($filter) )
+  #set( $filterExpression = $util.parseJson($util.transform.toDynamoDBFilterExpression($filter)) )
   #if( !$util.isNullOrBlank($filterExpression.expression) )
     #if( $filterEpression.expressionValues.size() == 0 )
       $util.qr($filterEpression.remove(\\"expressionValues\\"))
@@ -1935,13 +2274,58 @@ $util.qr($ctx.stash.put(\\"modelQueryExpression\\", $modelQueryExpression))
 #end
 $util.toJson($ListRequest)
 ## [End] List Request. **",
-  "Query.listTests.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Query.listTests.res.vtl": "## [Start] ResponseTemplate. **
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
+## [End] ResponseTemplate. **",
+  "Subscription.onCreateTest.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **",
+  "Subscription.onCreateTest.req.vtl": "## [Start] Subscription Request template. **
+$util.toJson({
+  \\"version\\": \\"2018-05-29\\",
+  \\"payload\\": {}
+})
+## [End] Subscription Request template. **",
+  "Subscription.onCreateTest.res.vtl": "## [Start] Subscription Response template. **
+$util.toJson(null)
+## [End] Subscription Response template. **",
+  "Subscription.onDeleteTest.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **",
+  "Subscription.onDeleteTest.req.vtl": "## [Start] Subscription Request template. **
+$util.toJson({
+  \\"version\\": \\"2018-05-29\\",
+  \\"payload\\": {}
+})
+## [End] Subscription Request template. **",
+  "Subscription.onDeleteTest.res.vtl": "## [Start] Subscription Response template. **
+$util.toJson(null)
+## [End] Subscription Response template. **",
+  "Subscription.onUpdateTest.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **",
+  "Subscription.onUpdateTest.req.vtl": "## [Start] Subscription Request template. **
+$util.toJson({
+  \\"version\\": \\"2018-05-29\\",
+  \\"payload\\": {}
+})
+## [End] Subscription Request template. **",
+  "Subscription.onUpdateTest.res.vtl": "## [Start] Subscription Response template. **
+$util.toJson(null)
+## [End] Subscription Response template. **",
 }
 `;
 
@@ -1958,7 +2342,13 @@ $util.toJson({
   \\"payload\\": {}
 })
 ## [End] Initialization default values. **",
-  "Mutation.createTest.postAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
+  "Mutation.createTest.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **",
+  "Mutation.createTest.preAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
 $util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
 ## [End] Merge default values and inputs. **
@@ -1971,25 +2361,6 @@ $util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
 
 {}",
   "Mutation.createTest.req.vtl": "## [Start] Create Request template. **
-## Begin - key condition **
-#if( $ctx.stash.metadata.modelObjectKey )
-  #set( $keyConditionExpr = {} )
-  #set( $keyConditionExprNames = {} )
-  #foreach( $entry in $ctx.stash.metadata.modelObjectKey.entrySet() )
-    $util.qr($keyConditionExpr.put(\\"keyCondition$velocityCount\\", {
-  \\"attributeExists\\": false
-}))
-    $util.qr($keyConditionExprNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
-  #end
-  $util.qr($ctx.stash.conditions.add($keyConditionExpr))
-#else
-  $util.qr($ctx.stash.conditions.add({
-  \\"id\\": {
-      \\"attributeExists\\": false
-  }
-}))
-#end
-## End - key condition **
 ## Set the default values to put request **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
 ## copy the values from input **
@@ -2054,14 +2425,21 @@ $util.qr($mergedValues.put(\\"__typename\\", \\"Test\\"))
 #end
 $util.toJson($PutObject)
 ## [End] Create Request template. **",
-  "Mutation.createTest.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Mutation.createTest.res.vtl": "## [Start] ResponseTemplate. **
+$util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
-  "Mutation.deleteTest.postAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
+## [End] ResponseTemplate. **",
+  "Mutation.deleteTest.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **",
+  "Mutation.deleteTest.preAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
 $util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
 ## [End] Merge default values and inputs. **
@@ -2129,13 +2507,14 @@ $util.qr($DeleteRequest.put(\\"key\\", $Key))
 #end
 $util.toJson($DeleteRequest)
 ## [End] Delete Request template. **",
-  "Mutation.deleteTest.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Mutation.deleteTest.res.vtl": "## [Start] ResponseTemplate. **
+$util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
+## [End] ResponseTemplate. **",
   "Mutation.testCreate.init.1.req.vtl": "## [Start] Initialization default values. **
 $util.qr($ctx.stash.put(\\"defaultValues\\", $util.defaultIfNull($ctx.stash.defaultValues, {})))
 #set( $createdAt = $util.time.nowISO8601() )
@@ -2147,7 +2526,13 @@ $util.toJson({
   \\"payload\\": {}
 })
 ## [End] Initialization default values. **",
-  "Mutation.testCreate.postAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
+  "Mutation.testCreate.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **",
+  "Mutation.testCreate.preAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
 $util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
 ## [End] Merge default values and inputs. **
@@ -2160,25 +2545,6 @@ $util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
 
 {}",
   "Mutation.testCreate.req.vtl": "## [Start] Create Request template. **
-## Begin - key condition **
-#if( $ctx.stash.metadata.modelObjectKey )
-  #set( $keyConditionExpr = {} )
-  #set( $keyConditionExprNames = {} )
-  #foreach( $entry in $ctx.stash.metadata.modelObjectKey.entrySet() )
-    $util.qr($keyConditionExpr.put(\\"keyCondition$velocityCount\\", {
-  \\"attributeExists\\": false
-}))
-    $util.qr($keyConditionExprNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
-  #end
-  $util.qr($ctx.stash.conditions.add($keyConditionExpr))
-#else
-  $util.qr($ctx.stash.conditions.add({
-  \\"id\\": {
-      \\"attributeExists\\": false
-  }
-}))
-#end
-## End - key condition **
 ## Set the default values to put request **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
 ## copy the values from input **
@@ -2243,14 +2609,21 @@ $util.qr($mergedValues.put(\\"__typename\\", \\"Test\\"))
 #end
 $util.toJson($PutObject)
 ## [End] Create Request template. **",
-  "Mutation.testCreate.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Mutation.testCreate.res.vtl": "## [Start] ResponseTemplate. **
+$util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
-  "Mutation.testDelete.postAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
+## [End] ResponseTemplate. **",
+  "Mutation.testDelete.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **",
+  "Mutation.testDelete.preAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
 $util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
 ## [End] Merge default values and inputs. **
@@ -2318,13 +2691,14 @@ $util.qr($DeleteRequest.put(\\"key\\", $Key))
 #end
 $util.toJson($DeleteRequest)
 ## [End] Delete Request template. **",
-  "Mutation.testDelete.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Mutation.testDelete.res.vtl": "## [Start] ResponseTemplate. **
+$util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
+## [End] ResponseTemplate. **",
   "Mutation.testUpdate.init.1.req.vtl": "## [Start] Initialization default values. **
 $util.qr($ctx.stash.put(\\"defaultValues\\", $util.defaultIfNull($ctx.stash.defaultValues, {})))
 #set( $updatedAt = $util.time.nowISO8601() )
@@ -2334,7 +2708,13 @@ $util.toJson({
   \\"payload\\": {}
 })
 ## [End] Initialization default values. **",
-  "Mutation.testUpdate.postAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
+  "Mutation.testUpdate.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **",
+  "Mutation.testUpdate.preAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
 $util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
 ## [End] Merge default values and inputs. **
@@ -2475,13 +2855,14 @@ $util.qr($update.put(\\"expression\\", \\"$expression\\"))
 #end
 $util.toJson($UpdateItem)
 ## [End] Mutation Update resolver. **",
-  "Mutation.testUpdate.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Mutation.testUpdate.res.vtl": "## [Start] ResponseTemplate. **
+$util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
+## [End] ResponseTemplate. **",
   "Mutation.updateTest.init.1.req.vtl": "## [Start] Initialization default values. **
 $util.qr($ctx.stash.put(\\"defaultValues\\", $util.defaultIfNull($ctx.stash.defaultValues, {})))
 #set( $updatedAt = $util.time.nowISO8601() )
@@ -2491,7 +2872,13 @@ $util.toJson({
   \\"payload\\": {}
 })
 ## [End] Initialization default values. **",
-  "Mutation.updateTest.postAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
+  "Mutation.updateTest.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **",
+  "Mutation.updateTest.preAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
 $util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
 ## [End] Merge default values and inputs. **
@@ -2632,14 +3019,21 @@ $util.qr($update.put(\\"expression\\", \\"$expression\\"))
 #end
 $util.toJson($UpdateItem)
 ## [End] Mutation Update resolver. **",
-  "Mutation.updateTest.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Mutation.updateTest.res.vtl": "## [Start] ResponseTemplate. **
+$util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
-  "Query.getTest.postAuth.1.req.vtl": "## [Start] Set the primary key. **
+## [End] ResponseTemplate. **",
+  "Query.getTest.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **",
+  "Query.getTest.preAuth.1.req.vtl": "## [Start] Set the primary key. **
 $util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
   \\"email\\": $util.dynamodb.toDynamoDB($ctx.args.email)
 }))
@@ -2648,26 +3042,57 @@ $util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
   "Query.getTest.req.vtl": "## [Start] Get Request template. **
 #set( $GetRequest = {
   \\"version\\": \\"2018-05-29\\",
-  \\"operation\\": \\"GetItem\\"
+  \\"operation\\": \\"Query\\"
 } )
 #if( $ctx.stash.metadata.modelObjectKey )
-  #set( $key = $ctx.stash.metadata.modelObjectKey )
+  #set( $expression = \\"\\" )
+  #set( $expressionNames = {} )
+  #set( $expressionValues = {} )
+  #foreach( $item in $ctx.stash.metadata.modelObjectKey.entrySet() )
+    #set( $expression = \\"$expression#keyCount$velocityCount = :valueCount$velocityCount AND \\" )
+    $util.qr($expressionNames.put(\\"#keyCount$velocityCount\\", $item.key))
+    $util.qr($expressionValues.put(\\":valueCount$velocityCount\\", $item.value))
+  #end
+  #set( $expression = $expression.replaceAll(\\"AND $\\", \\"\\") )
+  #set( $query = {
+  \\"expression\\": $expression,
+  \\"expressionNames\\": $expressionNames,
+  \\"expressionValues\\": $expressionValues
+} )
 #else
-  #set( $key = {
-  \\"id\\":   $util.dynamodb.toDynamoDB($ctx.args.id)
+  #set( $query = {
+  \\"expression\\": \\"id = :id\\",
+  \\"expressionValues\\": {
+      \\":id\\":     $util.parseJson($util.dynamodb.toDynamoDBJson($ctx.args.id))
+  }
 } )
 #end
-$util.qr($GetRequest.put(\\"key\\", $key))
+$util.qr($GetRequest.put(\\"query\\", $query))
+#if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
+  $util.qr($GetRequest.put(\\"filter\\", $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.authFilter))))
+#end
 $util.toJson($GetRequest)
 ## [End] Get Request template. **",
-  "Query.getTest.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Query.getTest.res.vtl": "## [Start] Get Response template. **
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
-#else
-  $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
-  "Query.listTests.postAuth.1.req.vtl": "## [Start] Set query expression for key **
+#if( !$ctx.result.items.isEmpty() && $ctx.result.scannedCount == 1 )
+  $util.toJson($ctx.result.items[0])
+#else
+  #if( $ctx.result.items.isEmpty() && $ctx.result.scannedCount == 1 )
+$util.unauthorized()
+  #end
+  $util.toJson(null)
+#end
+## [End] Get Response template. **",
+  "Query.listTests.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **",
+  "Query.listTests.preAuth.1.req.vtl": "## [Start] Set query expression for key **
 #if( !$util.isNull($ctx.args.sortDirection) )
   $util.error(\\"sortDirection is not supported for List operations without a Sort key defined.\\", \\"InvalidArgumentsError\\")
 #end
@@ -2695,8 +3120,20 @@ $util.qr($ctx.stash.put(\\"modelQueryExpression\\", $modelQueryExpression))
 #if( $context.args.nextToken )
   #set( $ListRequest.nextToken = $context.args.nextToken )
 #end
-#if( $context.args.filter )
-  #set( $filterExpression = $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.args.filter)) )
+#if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
+  #set( $filter = $ctx.stash.authFilter )
+  #if( !$util.isNullOrEmpty($ctx.args.filter) )
+    #set( $filter = {
+  \\"and\\":   [$filter, $ctx.args.filter]
+} )
+  #end
+#else
+  #if( !$util.isNullOrEmpty($ctx.args.filter) )
+    #set( $filter = $ctx.args.filter )
+  #end
+#end
+#if( !$util.isNullOrEmpty($filter) )
+  #set( $filterExpression = $util.parseJson($util.transform.toDynamoDBFilterExpression($filter)) )
   #if( !$util.isNullOrBlank($filterExpression.expression) )
     #if( $filterEpression.expressionValues.size() == 0 )
       $util.qr($filterEpression.remove(\\"expressionValues\\"))
@@ -2720,14 +3157,20 @@ $util.qr($ctx.stash.put(\\"modelQueryExpression\\", $modelQueryExpression))
 #end
 $util.toJson($ListRequest)
 ## [End] List Request. **",
-  "Query.listTests.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Query.listTests.res.vtl": "## [Start] ResponseTemplate. **
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
-  "Query.testGet.postAuth.1.req.vtl": "## [Start] Set the primary key. **
+## [End] ResponseTemplate. **",
+  "Query.testGet.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **",
+  "Query.testGet.preAuth.1.req.vtl": "## [Start] Set the primary key. **
 $util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
   \\"id\\": $util.dynamodb.toDynamoDB($ctx.args.id),
   \\"email\\": $util.dynamodb.toDynamoDB($ctx.args.email)
@@ -2737,26 +3180,57 @@ $util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
   "Query.testGet.req.vtl": "## [Start] Get Request template. **
 #set( $GetRequest = {
   \\"version\\": \\"2018-05-29\\",
-  \\"operation\\": \\"GetItem\\"
+  \\"operation\\": \\"Query\\"
 } )
 #if( $ctx.stash.metadata.modelObjectKey )
-  #set( $key = $ctx.stash.metadata.modelObjectKey )
+  #set( $expression = \\"\\" )
+  #set( $expressionNames = {} )
+  #set( $expressionValues = {} )
+  #foreach( $item in $ctx.stash.metadata.modelObjectKey.entrySet() )
+    #set( $expression = \\"$expression#keyCount$velocityCount = :valueCount$velocityCount AND \\" )
+    $util.qr($expressionNames.put(\\"#keyCount$velocityCount\\", $item.key))
+    $util.qr($expressionValues.put(\\":valueCount$velocityCount\\", $item.value))
+  #end
+  #set( $expression = $expression.replaceAll(\\"AND $\\", \\"\\") )
+  #set( $query = {
+  \\"expression\\": $expression,
+  \\"expressionNames\\": $expressionNames,
+  \\"expressionValues\\": $expressionValues
+} )
 #else
-  #set( $key = {
-  \\"id\\":   $util.dynamodb.toDynamoDB($ctx.args.id)
+  #set( $query = {
+  \\"expression\\": \\"id = :id\\",
+  \\"expressionValues\\": {
+      \\":id\\":     $util.parseJson($util.dynamodb.toDynamoDBJson($ctx.args.id))
+  }
 } )
 #end
-$util.qr($GetRequest.put(\\"key\\", $key))
+$util.qr($GetRequest.put(\\"query\\", $query))
+#if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
+  $util.qr($GetRequest.put(\\"filter\\", $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.authFilter))))
+#end
 $util.toJson($GetRequest)
 ## [End] Get Request template. **",
-  "Query.testGet.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Query.testGet.res.vtl": "## [Start] Get Response template. **
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
-#else
-  $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
-  "Query.testList.postAuth.1.req.vtl": "## [Start] Set query expression for key **
+#if( !$ctx.result.items.isEmpty() && $ctx.result.scannedCount == 1 )
+  $util.toJson($ctx.result.items[0])
+#else
+  #if( $ctx.result.items.isEmpty() && $ctx.result.scannedCount == 1 )
+$util.unauthorized()
+  #end
+  $util.toJson(null)
+#end
+## [End] Get Response template. **",
+  "Query.testList.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **",
+  "Query.testList.preAuth.1.req.vtl": "## [Start] Set query expression for key **
 #if( $util.isNull($ctx.args.id) && !$util.isNull($ctx.args.sortDirection) )
   $util.error(\\"When providing argument 'sortDirection' you must also provide argument 'id'.\\", \\"InvalidArgumentsError\\")
 #end
@@ -2827,8 +3301,20 @@ $util.qr($ctx.stash.put(\\"modelQueryExpression\\", $modelQueryExpression))
 #if( $context.args.nextToken )
   #set( $ListRequest.nextToken = $context.args.nextToken )
 #end
-#if( $context.args.filter )
-  #set( $filterExpression = $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.args.filter)) )
+#if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
+  #set( $filter = $ctx.stash.authFilter )
+  #if( !$util.isNullOrEmpty($ctx.args.filter) )
+    #set( $filter = {
+  \\"and\\":   [$filter, $ctx.args.filter]
+} )
+  #end
+#else
+  #if( !$util.isNullOrEmpty($ctx.args.filter) )
+    #set( $filter = $ctx.args.filter )
+  #end
+#end
+#if( !$util.isNullOrEmpty($filter) )
+  #set( $filterExpression = $util.parseJson($util.transform.toDynamoDBFilterExpression($filter)) )
   #if( !$util.isNullOrBlank($filterExpression.expression) )
     #if( $filterEpression.expressionValues.size() == 0 )
       $util.qr($filterEpression.remove(\\"expressionValues\\"))
@@ -2852,13 +3338,58 @@ $util.qr($ctx.stash.put(\\"modelQueryExpression\\", $modelQueryExpression))
 #end
 $util.toJson($ListRequest)
 ## [End] List Request. **",
-  "Query.testList.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Query.testList.res.vtl": "## [Start] ResponseTemplate. **
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
+## [End] ResponseTemplate. **",
+  "Subscription.onCreateTest.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **",
+  "Subscription.onCreateTest.req.vtl": "## [Start] Subscription Request template. **
+$util.toJson({
+  \\"version\\": \\"2018-05-29\\",
+  \\"payload\\": {}
+})
+## [End] Subscription Request template. **",
+  "Subscription.onCreateTest.res.vtl": "## [Start] Subscription Response template. **
+$util.toJson(null)
+## [End] Subscription Response template. **",
+  "Subscription.onDeleteTest.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **",
+  "Subscription.onDeleteTest.req.vtl": "## [Start] Subscription Request template. **
+$util.toJson({
+  \\"version\\": \\"2018-05-29\\",
+  \\"payload\\": {}
+})
+## [End] Subscription Request template. **",
+  "Subscription.onDeleteTest.res.vtl": "## [Start] Subscription Response template. **
+$util.toJson(null)
+## [End] Subscription Response template. **",
+  "Subscription.onUpdateTest.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **",
+  "Subscription.onUpdateTest.req.vtl": "## [Start] Subscription Request template. **
+$util.toJson({
+  \\"version\\": \\"2018-05-29\\",
+  \\"payload\\": {}
+})
+## [End] Subscription Request template. **",
+  "Subscription.onUpdateTest.res.vtl": "## [Start] Subscription Response template. **
+$util.toJson(null)
+## [End] Subscription Response template. **",
 }
 `;
 
@@ -2875,7 +3406,13 @@ $util.toJson({
   \\"payload\\": {}
 })
 ## [End] Initialization default values. **",
-  "Mutation.createTest.postAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
+  "Mutation.createTest.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **",
+  "Mutation.createTest.preAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
 $util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
 ## [End] Merge default values and inputs. **
@@ -2887,25 +3424,6 @@ $util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
 
 {}",
   "Mutation.createTest.req.vtl": "## [Start] Create Request template. **
-## Begin - key condition **
-#if( $ctx.stash.metadata.modelObjectKey )
-  #set( $keyConditionExpr = {} )
-  #set( $keyConditionExprNames = {} )
-  #foreach( $entry in $ctx.stash.metadata.modelObjectKey.entrySet() )
-    $util.qr($keyConditionExpr.put(\\"keyCondition$velocityCount\\", {
-  \\"attributeExists\\": false
-}))
-    $util.qr($keyConditionExprNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
-  #end
-  $util.qr($ctx.stash.conditions.add($keyConditionExpr))
-#else
-  $util.qr($ctx.stash.conditions.add({
-  \\"id\\": {
-      \\"attributeExists\\": false
-  }
-}))
-#end
-## End - key condition **
 ## Set the default values to put request **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
 ## copy the values from input **
@@ -2970,14 +3488,21 @@ $util.qr($mergedValues.put(\\"__typename\\", \\"Test\\"))
 #end
 $util.toJson($PutObject)
 ## [End] Create Request template. **",
-  "Mutation.createTest.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Mutation.createTest.res.vtl": "## [Start] ResponseTemplate. **
+$util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
-  "Mutation.deleteTest.postAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
+## [End] ResponseTemplate. **",
+  "Mutation.deleteTest.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **",
+  "Mutation.deleteTest.preAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
 $util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
 ## [End] Merge default values and inputs. **
@@ -3044,13 +3569,14 @@ $util.qr($DeleteRequest.put(\\"key\\", $Key))
 #end
 $util.toJson($DeleteRequest)
 ## [End] Delete Request template. **",
-  "Mutation.deleteTest.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Mutation.deleteTest.res.vtl": "## [Start] ResponseTemplate. **
+$util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
+## [End] ResponseTemplate. **",
   "Mutation.testCreate.init.1.req.vtl": "## [Start] Initialization default values. **
 $util.qr($ctx.stash.put(\\"defaultValues\\", $util.defaultIfNull($ctx.stash.defaultValues, {})))
 #set( $createdAt = $util.time.nowISO8601() )
@@ -3062,7 +3588,13 @@ $util.toJson({
   \\"payload\\": {}
 })
 ## [End] Initialization default values. **",
-  "Mutation.testCreate.postAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
+  "Mutation.testCreate.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **",
+  "Mutation.testCreate.preAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
 $util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
 ## [End] Merge default values and inputs. **
@@ -3075,25 +3607,6 @@ $util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
 
 {}",
   "Mutation.testCreate.req.vtl": "## [Start] Create Request template. **
-## Begin - key condition **
-#if( $ctx.stash.metadata.modelObjectKey )
-  #set( $keyConditionExpr = {} )
-  #set( $keyConditionExprNames = {} )
-  #foreach( $entry in $ctx.stash.metadata.modelObjectKey.entrySet() )
-    $util.qr($keyConditionExpr.put(\\"keyCondition$velocityCount\\", {
-  \\"attributeExists\\": false
-}))
-    $util.qr($keyConditionExprNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
-  #end
-  $util.qr($ctx.stash.conditions.add($keyConditionExpr))
-#else
-  $util.qr($ctx.stash.conditions.add({
-  \\"id\\": {
-      \\"attributeExists\\": false
-  }
-}))
-#end
-## End - key condition **
 ## Set the default values to put request **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
 ## copy the values from input **
@@ -3158,14 +3671,21 @@ $util.qr($mergedValues.put(\\"__typename\\", \\"Test\\"))
 #end
 $util.toJson($PutObject)
 ## [End] Create Request template. **",
-  "Mutation.testCreate.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Mutation.testCreate.res.vtl": "## [Start] ResponseTemplate. **
+$util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
-  "Mutation.testDelete.postAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
+## [End] ResponseTemplate. **",
+  "Mutation.testDelete.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **",
+  "Mutation.testDelete.preAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
 $util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
 ## [End] Merge default values and inputs. **
@@ -3233,13 +3753,14 @@ $util.qr($DeleteRequest.put(\\"key\\", $Key))
 #end
 $util.toJson($DeleteRequest)
 ## [End] Delete Request template. **",
-  "Mutation.testDelete.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Mutation.testDelete.res.vtl": "## [Start] ResponseTemplate. **
+$util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
+## [End] ResponseTemplate. **",
   "Mutation.testUpdate.init.1.req.vtl": "## [Start] Initialization default values. **
 $util.qr($ctx.stash.put(\\"defaultValues\\", $util.defaultIfNull($ctx.stash.defaultValues, {})))
 #set( $updatedAt = $util.time.nowISO8601() )
@@ -3249,7 +3770,13 @@ $util.toJson({
   \\"payload\\": {}
 })
 ## [End] Initialization default values. **",
-  "Mutation.testUpdate.postAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
+  "Mutation.testUpdate.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **",
+  "Mutation.testUpdate.preAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
 $util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
 ## [End] Merge default values and inputs. **
@@ -3390,13 +3917,14 @@ $util.qr($update.put(\\"expression\\", \\"$expression\\"))
 #end
 $util.toJson($UpdateItem)
 ## [End] Mutation Update resolver. **",
-  "Mutation.testUpdate.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Mutation.testUpdate.res.vtl": "## [Start] ResponseTemplate. **
+$util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
+## [End] ResponseTemplate. **",
   "Mutation.updateTest.init.1.req.vtl": "## [Start] Initialization default values. **
 $util.qr($ctx.stash.put(\\"defaultValues\\", $util.defaultIfNull($ctx.stash.defaultValues, {})))
 #set( $updatedAt = $util.time.nowISO8601() )
@@ -3406,7 +3934,13 @@ $util.toJson({
   \\"payload\\": {}
 })
 ## [End] Initialization default values. **",
-  "Mutation.updateTest.postAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
+  "Mutation.updateTest.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **",
+  "Mutation.updateTest.preAuth.1.req.vtl": "## [Start] Merge default values and inputs. **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
 $util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
 ## [End] Merge default values and inputs. **
@@ -3546,14 +4080,21 @@ $util.qr($update.put(\\"expression\\", \\"$expression\\"))
 #end
 $util.toJson($UpdateItem)
 ## [End] Mutation Update resolver. **",
-  "Mutation.updateTest.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Mutation.updateTest.res.vtl": "## [Start] ResponseTemplate. **
+$util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
-  "Query.getTest.postAuth.1.req.vtl": "## [Start] Set the primary key. **
+## [End] ResponseTemplate. **",
+  "Query.getTest.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **",
+  "Query.getTest.preAuth.1.req.vtl": "## [Start] Set the primary key. **
 $util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
   \\"email\\": $util.dynamodb.toDynamoDB($ctx.args.email)
 }))
@@ -3562,26 +4103,57 @@ $util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
   "Query.getTest.req.vtl": "## [Start] Get Request template. **
 #set( $GetRequest = {
   \\"version\\": \\"2018-05-29\\",
-  \\"operation\\": \\"GetItem\\"
+  \\"operation\\": \\"Query\\"
 } )
 #if( $ctx.stash.metadata.modelObjectKey )
-  #set( $key = $ctx.stash.metadata.modelObjectKey )
+  #set( $expression = \\"\\" )
+  #set( $expressionNames = {} )
+  #set( $expressionValues = {} )
+  #foreach( $item in $ctx.stash.metadata.modelObjectKey.entrySet() )
+    #set( $expression = \\"$expression#keyCount$velocityCount = :valueCount$velocityCount AND \\" )
+    $util.qr($expressionNames.put(\\"#keyCount$velocityCount\\", $item.key))
+    $util.qr($expressionValues.put(\\":valueCount$velocityCount\\", $item.value))
+  #end
+  #set( $expression = $expression.replaceAll(\\"AND $\\", \\"\\") )
+  #set( $query = {
+  \\"expression\\": $expression,
+  \\"expressionNames\\": $expressionNames,
+  \\"expressionValues\\": $expressionValues
+} )
 #else
-  #set( $key = {
-  \\"id\\":   $util.dynamodb.toDynamoDB($ctx.args.id)
+  #set( $query = {
+  \\"expression\\": \\"id = :id\\",
+  \\"expressionValues\\": {
+      \\":id\\":     $util.parseJson($util.dynamodb.toDynamoDBJson($ctx.args.id))
+  }
 } )
 #end
-$util.qr($GetRequest.put(\\"key\\", $key))
+$util.qr($GetRequest.put(\\"query\\", $query))
+#if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
+  $util.qr($GetRequest.put(\\"filter\\", $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.authFilter))))
+#end
 $util.toJson($GetRequest)
 ## [End] Get Request template. **",
-  "Query.getTest.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Query.getTest.res.vtl": "## [Start] Get Response template. **
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
-#else
-  $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
-  "Query.listTests.postAuth.1.req.vtl": "## [Start] Set query expression for key **
+#if( !$ctx.result.items.isEmpty() && $ctx.result.scannedCount == 1 )
+  $util.toJson($ctx.result.items[0])
+#else
+  #if( $ctx.result.items.isEmpty() && $ctx.result.scannedCount == 1 )
+$util.unauthorized()
+  #end
+  $util.toJson(null)
+#end
+## [End] Get Response template. **",
+  "Query.listTests.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **",
+  "Query.listTests.preAuth.1.req.vtl": "## [Start] Set query expression for key **
 #if( !$util.isNull($ctx.args.sortDirection) )
   $util.error(\\"sortDirection is not supported for List operations without a Sort key defined.\\", \\"InvalidArgumentsError\\")
 #end
@@ -3609,8 +4181,20 @@ $util.qr($ctx.stash.put(\\"modelQueryExpression\\", $modelQueryExpression))
 #if( $context.args.nextToken )
   #set( $ListRequest.nextToken = $context.args.nextToken )
 #end
-#if( $context.args.filter )
-  #set( $filterExpression = $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.args.filter)) )
+#if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
+  #set( $filter = $ctx.stash.authFilter )
+  #if( !$util.isNullOrEmpty($ctx.args.filter) )
+    #set( $filter = {
+  \\"and\\":   [$filter, $ctx.args.filter]
+} )
+  #end
+#else
+  #if( !$util.isNullOrEmpty($ctx.args.filter) )
+    #set( $filter = $ctx.args.filter )
+  #end
+#end
+#if( !$util.isNullOrEmpty($filter) )
+  #set( $filterExpression = $util.parseJson($util.transform.toDynamoDBFilterExpression($filter)) )
   #if( !$util.isNullOrBlank($filterExpression.expression) )
     #if( $filterEpression.expressionValues.size() == 0 )
       $util.qr($filterEpression.remove(\\"expressionValues\\"))
@@ -3634,14 +4218,20 @@ $util.qr($ctx.stash.put(\\"modelQueryExpression\\", $modelQueryExpression))
 #end
 $util.toJson($ListRequest)
 ## [End] List Request. **",
-  "Query.listTests.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Query.listTests.res.vtl": "## [Start] ResponseTemplate. **
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
-  "Query.testGet.postAuth.1.req.vtl": "## [Start] Set the primary key. **
+## [End] ResponseTemplate. **",
+  "Query.testGet.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **",
+  "Query.testGet.preAuth.1.req.vtl": "## [Start] Set the primary key. **
 $util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
   \\"id\\": $util.dynamodb.toDynamoDB($ctx.args.id),
   \\"email\\": $util.dynamodb.toDynamoDB($ctx.args.email)
@@ -3651,26 +4241,57 @@ $util.qr($ctx.stash.metadata.put(\\"modelObjectKey\\", {
   "Query.testGet.req.vtl": "## [Start] Get Request template. **
 #set( $GetRequest = {
   \\"version\\": \\"2018-05-29\\",
-  \\"operation\\": \\"GetItem\\"
+  \\"operation\\": \\"Query\\"
 } )
 #if( $ctx.stash.metadata.modelObjectKey )
-  #set( $key = $ctx.stash.metadata.modelObjectKey )
+  #set( $expression = \\"\\" )
+  #set( $expressionNames = {} )
+  #set( $expressionValues = {} )
+  #foreach( $item in $ctx.stash.metadata.modelObjectKey.entrySet() )
+    #set( $expression = \\"$expression#keyCount$velocityCount = :valueCount$velocityCount AND \\" )
+    $util.qr($expressionNames.put(\\"#keyCount$velocityCount\\", $item.key))
+    $util.qr($expressionValues.put(\\":valueCount$velocityCount\\", $item.value))
+  #end
+  #set( $expression = $expression.replaceAll(\\"AND $\\", \\"\\") )
+  #set( $query = {
+  \\"expression\\": $expression,
+  \\"expressionNames\\": $expressionNames,
+  \\"expressionValues\\": $expressionValues
+} )
 #else
-  #set( $key = {
-  \\"id\\":   $util.dynamodb.toDynamoDB($ctx.args.id)
+  #set( $query = {
+  \\"expression\\": \\"id = :id\\",
+  \\"expressionValues\\": {
+      \\":id\\":     $util.parseJson($util.dynamodb.toDynamoDBJson($ctx.args.id))
+  }
 } )
 #end
-$util.qr($GetRequest.put(\\"key\\", $key))
+$util.qr($GetRequest.put(\\"query\\", $query))
+#if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
+  $util.qr($GetRequest.put(\\"filter\\", $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.authFilter))))
+#end
 $util.toJson($GetRequest)
 ## [End] Get Request template. **",
-  "Query.testGet.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Query.testGet.res.vtl": "## [Start] Get Response template. **
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
-#else
-  $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
-  "Query.testList.postAuth.1.req.vtl": "## [Start] Set query expression for key **
+#if( !$ctx.result.items.isEmpty() && $ctx.result.scannedCount == 1 )
+  $util.toJson($ctx.result.items[0])
+#else
+  #if( $ctx.result.items.isEmpty() && $ctx.result.scannedCount == 1 )
+$util.unauthorized()
+  #end
+  $util.toJson(null)
+#end
+## [End] Get Response template. **",
+  "Query.testList.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **",
+  "Query.testList.preAuth.1.req.vtl": "## [Start] Set query expression for key **
 #if( $util.isNull($ctx.args.id) && !$util.isNull($ctx.args.sortDirection) )
   $util.error(\\"When providing argument 'sortDirection' you must also provide argument 'id'.\\", \\"InvalidArgumentsError\\")
 #end
@@ -3741,8 +4362,20 @@ $util.qr($ctx.stash.put(\\"modelQueryExpression\\", $modelQueryExpression))
 #if( $context.args.nextToken )
   #set( $ListRequest.nextToken = $context.args.nextToken )
 #end
-#if( $context.args.filter )
-  #set( $filterExpression = $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.args.filter)) )
+#if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
+  #set( $filter = $ctx.stash.authFilter )
+  #if( !$util.isNullOrEmpty($ctx.args.filter) )
+    #set( $filter = {
+  \\"and\\":   [$filter, $ctx.args.filter]
+} )
+  #end
+#else
+  #if( !$util.isNullOrEmpty($ctx.args.filter) )
+    #set( $filter = $ctx.args.filter )
+  #end
+#end
+#if( !$util.isNullOrEmpty($filter) )
+  #set( $filterExpression = $util.parseJson($util.transform.toDynamoDBFilterExpression($filter)) )
   #if( !$util.isNullOrBlank($filterExpression.expression) )
     #if( $filterEpression.expressionValues.size() == 0 )
       $util.qr($filterEpression.remove(\\"expressionValues\\"))
@@ -3766,12 +4399,57 @@ $util.qr($ctx.stash.put(\\"modelQueryExpression\\", $modelQueryExpression))
 #end
 $util.toJson($ListRequest)
 ## [End] List Request. **",
-  "Query.testList.res.vtl": "## [Start] Get ResponseTemplate. **
+  "Query.testList.res.vtl": "## [Start] ResponseTemplate. **
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
   $util.toJson($ctx.result)
 #end
-## [End] Get ResponseTemplate. **",
+## [End] ResponseTemplate. **",
+  "Subscription.onCreateTest.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **",
+  "Subscription.onCreateTest.req.vtl": "## [Start] Subscription Request template. **
+$util.toJson({
+  \\"version\\": \\"2018-05-29\\",
+  \\"payload\\": {}
+})
+## [End] Subscription Request template. **",
+  "Subscription.onCreateTest.res.vtl": "## [Start] Subscription Response template. **
+$util.toJson(null)
+## [End] Subscription Response template. **",
+  "Subscription.onDeleteTest.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **",
+  "Subscription.onDeleteTest.req.vtl": "## [Start] Subscription Request template. **
+$util.toJson({
+  \\"version\\": \\"2018-05-29\\",
+  \\"payload\\": {}
+})
+## [End] Subscription Request template. **",
+  "Subscription.onDeleteTest.res.vtl": "## [Start] Subscription Response template. **
+$util.toJson(null)
+## [End] Subscription Response template. **",
+  "Subscription.onUpdateTest.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **",
+  "Subscription.onUpdateTest.req.vtl": "## [Start] Subscription Request template. **
+$util.toJson({
+  \\"version\\": \\"2018-05-29\\",
+  \\"payload\\": {}
+})
+## [End] Subscription Request template. **",
+  "Subscription.onUpdateTest.res.vtl": "## [Start] Subscription Response template. **
+$util.toJson(null)
+## [End] Subscription Response template. **",
 }
 `;
