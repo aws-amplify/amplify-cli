@@ -317,7 +317,7 @@ function replaceDeleteInput(config: PrimaryKeyDirectiveConfiguration, input: Inp
 }
 
 export function ensureQueryField(config: IndexDirectiveConfiguration, ctx: TransformerContextProvider): void {
-  const { object, queryField, sortKey } = config;
+  const { name, object, queryField, sortKey } = config;
 
   if (!queryField) {
     return;
@@ -326,10 +326,10 @@ export function ensureQueryField(config: IndexDirectiveConfiguration, ctx: Trans
   const keyName = `${object.name.value}:indicies`;
   let indicies: Set<string>;
   if (!ctx.metadata.has(keyName)) {
-    indicies = new Set([queryField]);
+    indicies = new Set([`${name}:${queryField}`]);
   } else {
     indicies = ctx.metadata.get<Set<string>>(keyName)!;
-    indicies.add(queryField);
+    indicies.add(`${name}:${queryField}`);
   }
   ctx.metadata.set(keyName, indicies);
 

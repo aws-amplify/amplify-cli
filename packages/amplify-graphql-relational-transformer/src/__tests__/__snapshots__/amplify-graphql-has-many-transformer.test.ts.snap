@@ -7964,7 +7964,10 @@ Object {
 
 exports[`validates VTL of a complex schema 1`] = `
 Object {
-  "Child.parents.req.vtl": "#if( $util.isNull($ctx.source.id) )
+  "Child.parents.req.vtl": "#if( $ctx.source.deniedField )
+  #return($util.toJson(null))
+#end
+#if( $util.isNull($ctx.source.id) )
   #set( $result = {
   \\"items\\":   []
 } )
@@ -8074,7 +8077,10 @@ $util.error($ctx.error.message, $ctx.error.type)
   #end
   $util.toJson($result)
 #end",
-  "Friendship.friend.req.vtl": "#if( $util.isNull($ctx.source.friendID) )
+  "Friendship.friend.req.vtl": "#if( $ctx.source.deniedField )
+  #return($util.toJson(null))
+#end
+#if( $util.isNull($ctx.source.friendID) )
   #set( $result = {
   \\"items\\":   []
 } )
@@ -12229,7 +12235,10 @@ $util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
   $util.toJson($ctx.result)
 #end
 ## [End] ResponseTemplate. **",
-  "Parent.child.req.vtl": "#if( $util.isNull($ctx.source.childID) || $util.isNull($ctx.source.childName) )
+  "Parent.child.req.vtl": "#if( $ctx.source.deniedField )
+  #return($util.toJson(null))
+#end
+#if( $util.isNull($ctx.source.childID) || $util.isNull($ctx.source.childName) )
   #return
 #else
   #set( $GetRequest = {
@@ -12264,7 +12273,10 @@ $util.unauthorized()
     $util.toJson(null)
   #end
 #end",
-  "Post.author.req.vtl": "#if( $util.isNull($ctx.source.owner) )
+  "Post.author.req.vtl": "#if( $ctx.source.deniedField )
+  #return($util.toJson(null))
+#end
+#if( $util.isNull($ctx.source.owner) )
   #return
 #else
   #set( $GetRequest = {
@@ -12297,7 +12309,10 @@ $util.unauthorized()
     $util.toJson(null)
   #end
 #end",
-  "Post.authors.req.vtl": "#if( $util.isNull($ctx.source.authorID) )
+  "Post.authors.req.vtl": "#if( $ctx.source.deniedField )
+  #return($util.toJson(null))
+#end
+#if( $util.isNull($ctx.source.authorID) )
   #set( $result = {
   \\"items\\":   []
 } )
@@ -12429,7 +12444,10 @@ $util.error($ctx.error.message, $ctx.error.type)
   #end
   $util.toJson($result)
 #end",
-  "Post.comments.req.vtl": "#if( $util.isNull($ctx.source.id) )
+  "Post.comments.req.vtl": "#if( $ctx.source.deniedField )
+  #return($util.toJson(null))
+#end
+#if( $util.isNull($ctx.source.id) )
   #set( $result = {
   \\"items\\":   []
 } )
@@ -12501,7 +12519,10 @@ $util.error($ctx.error.message, $ctx.error.type)
   #end
   $util.toJson($result)
 #end",
-  "Post.editors.req.vtl": "#if( $util.isNull($ctx.source.id) )
+  "Post.editors.req.vtl": "#if( $ctx.source.deniedField )
+  #return($util.toJson(null))
+#end
+#if( $util.isNull($ctx.source.id) )
   #set( $result = {
   \\"items\\":   []
 } )
@@ -12611,7 +12632,10 @@ $util.error($ctx.error.message, $ctx.error.type)
   #end
   $util.toJson($result)
 #end",
-  "PostAuthor.post.req.vtl": "#if( $util.isNull($ctx.source.postID) )
+  "PostAuthor.post.req.vtl": "#if( $ctx.source.deniedField )
+  #return($util.toJson(null))
+#end
+#if( $util.isNull($ctx.source.postID) )
   #return
 #else
   #set( $GetRequest = {
@@ -12644,7 +12668,10 @@ $util.unauthorized()
     $util.toJson(null)
   #end
 #end",
-  "PostEditor.editor.req.vtl": "#if( $util.isNull($ctx.source.editorID) )
+  "PostEditor.editor.req.vtl": "#if( $ctx.source.deniedField )
+  #return($util.toJson(null))
+#end
+#if( $util.isNull($ctx.source.editorID) )
   #return
 #else
   #set( $GetRequest = {
@@ -12677,7 +12704,10 @@ $util.unauthorized()
     $util.toJson(null)
   #end
 #end",
-  "PostEditor.post.req.vtl": "#if( $util.isNull($ctx.source.postID) )
+  "PostEditor.post.req.vtl": "#if( $ctx.source.deniedField )
+  #return($util.toJson(null))
+#end
+#if( $util.isNull($ctx.source.postID) )
   #return
 #else
   #set( $GetRequest = {
@@ -12710,7 +12740,10 @@ $util.unauthorized()
     $util.toJson(null)
   #end
 #end",
-  "PostModel.authors.req.vtl": "#if( $util.isNull($ctx.source.authorID) )
+  "PostModel.authors.req.vtl": "#if( $ctx.source.deniedField )
+  #return($util.toJson(null))
+#end
+#if( $util.isNull($ctx.source.authorID) )
   #set( $result = {
   \\"items\\":   []
 } )
@@ -12784,7 +12817,10 @@ $util.error($ctx.error.message, $ctx.error.type)
   #end
   $util.toJson($result)
 #end",
-  "PostModel.singleAuthor.req.vtl": "#if( $util.isNull($ctx.source.authorID) || $util.isNull($ctx.source.authorName) || $util.isNull($ctx.source.authorSurname) )
+  "PostModel.singleAuthor.req.vtl": "#if( $ctx.source.deniedField )
+  #return($util.toJson(null))
+#end
+#if( $util.isNull($ctx.source.authorID) || $util.isNull($ctx.source.authorName) || $util.isNull($ctx.source.authorSurname) )
   #return
 #else
   #set( $GetRequest = {
@@ -14984,7 +15020,10 @@ $util.toJson({
   "Subscription.onUpdateUserModel.res.vtl": "## [Start] Subscription Response template. **
 $util.toJson(null)
 ## [End] Subscription Response template. **",
-  "Test.otherParts.req.vtl": "#if( $util.isNull($ctx.source.id) )
+  "Test.otherParts.req.vtl": "#if( $ctx.source.deniedField )
+  #return($util.toJson(null))
+#end
+#if( $util.isNull($ctx.source.id) )
   #set( $result = {
   \\"items\\":   []
 } )
@@ -15116,7 +15155,10 @@ $util.error($ctx.error.message, $ctx.error.type)
   #end
   $util.toJson($result)
 #end",
-  "Test.testObj.req.vtl": "#if( $util.isNull($ctx.source.id) )
+  "Test.testObj.req.vtl": "#if( $ctx.source.deniedField )
+  #return($util.toJson(null))
+#end
+#if( $util.isNull($ctx.source.id) )
   #set( $result = {
   \\"items\\":   []
 } )
@@ -15249,7 +15291,10 @@ $util.error($ctx.error.message, $ctx.error.type)
   #end
   $util.toJson($result)
 #end",
-  "User.friendships.req.vtl": "#if( $util.isNull($ctx.source.id) )
+  "User.friendships.req.vtl": "#if( $ctx.source.deniedField )
+  #return($util.toJson(null))
+#end
+#if( $util.isNull($ctx.source.id) )
   #set( $result = {
   \\"items\\":   []
 } )
@@ -15359,7 +15404,10 @@ $util.error($ctx.error.message, $ctx.error.type)
   #end
   $util.toJson($result)
 #end",
-  "User.posts.req.vtl": "#if( $util.isNull($ctx.source.id) )
+  "User.posts.req.vtl": "#if( $ctx.source.deniedField )
+  #return($util.toJson(null))
+#end
+#if( $util.isNull($ctx.source.id) )
   #set( $result = {
   \\"items\\":   []
 } )
@@ -15469,7 +15517,10 @@ $util.error($ctx.error.message, $ctx.error.type)
   #end
   $util.toJson($result)
 #end",
-  "UserModel.authorPosts.req.vtl": "#if( $util.isNull($ctx.source.id) )
+  "UserModel.authorPosts.req.vtl": "#if( $ctx.source.deniedField )
+  #return($util.toJson(null))
+#end
+#if( $util.isNull($ctx.source.id) )
   #set( $result = {
   \\"items\\":   []
 } )

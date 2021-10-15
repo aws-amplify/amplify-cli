@@ -75,6 +75,12 @@ export class ModelResourceIDs {
   static ModelConnectionTypeName(typeName: string): string {
     return `Model${typeName}Connection`;
   }
+  static IsModelConnectionType(typeName: string): boolean {
+    return /^Model.*Connection$/.test(typeName);
+  }
+  static GetModelFromConnectionType(typeName: string): string {
+    return /(?<=Model)(.*)(?=Connection)/.exec(typeName)[0];
+  }
   static ModelDeleteInputObjectName(typeName: string): string {
     return graphqlName('Delete' + toUpper(typeName) + 'Input');
   }

@@ -14,7 +14,14 @@ import {
   printBlock,
 } from 'graphql-mapping-template';
 import { COGNITO_AUTH_TYPE, ConfiguredAuthProviders, IS_AUTHORIZED_FLAG, OIDC_AUTH_TYPE, RoleDefinition, splitRoles } from '../utils';
-import { generateStaticRoleExpression, getOwnerClaim, apiKeyExpression, iamExpression, emptyPayload } from './helpers';
+import {
+  generateStaticRoleExpression,
+  getOwnerClaim,
+  apiKeyExpression,
+  iamExpression,
+  emptyPayload,
+  setHasAuthExpression,
+} from './helpers';
 
 const dynamicRoleExpression = (roles: Array<RoleDefinition>): Array<Expression> => {
   const ownerExpression = new Array<Expression>();
@@ -39,7 +46,7 @@ const dynamicRoleExpression = (roles: Array<RoleDefinition>): Array<Expression> 
 
 export const generateAuthExpressionForSubscriptions = (providers: ConfiguredAuthProviders, roles: Array<RoleDefinition>): string => {
   const { cogntoStaticRoles, cognitoDynamicRoles, oidcStaticRoles, oidcDynamicRoles, iamRoles, apiKeyRoles } = splitRoles(roles);
-  const totalAuthExpressions: Array<Expression> = [set(ref(IS_AUTHORIZED_FLAG), bool(false)), set(ref('allowedFields'), list([]))];
+  const totalAuthExpressions: Array<Expression> = [setHasAuthExpression, set(ref(IS_AUTHORIZED_FLAG), bool(false))];
   if (providers.hasApiKey) {
     totalAuthExpressions.push(apiKeyExpression(apiKeyRoles));
   }

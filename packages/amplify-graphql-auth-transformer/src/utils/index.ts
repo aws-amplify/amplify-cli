@@ -1,19 +1,8 @@
-import { ModelDirectiveConfiguration, SubscriptionLevel } from '@aws-amplify/graphql-model-transformer';
-import { DirectiveWrapper } from '@aws-amplify/graphql-transformer-core';
 import { AppSyncAuthMode } from '@aws-amplify/graphql-transformer-interfaces';
 import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { Stack } from '@aws-cdk/core';
-import { DirectiveNode, ObjectTypeDefinitionNode } from 'graphql';
-import { toCamelCase, plurality, graphqlName, toUpper } from 'graphql-transformer-common';
-import {
-  AuthProvider,
-  AuthRule,
-  AuthTransformerConfig,
-  ConfiguredAuthProviders,
-  RoleDefinition,
-  RolesByProvider,
-  SearchableConfig,
-} from './definitions';
+import { ObjectTypeDefinitionNode } from 'graphql';
+import { AuthProvider, AuthRule, AuthTransformerConfig, ConfiguredAuthProviders, RoleDefinition, RolesByProvider } from './definitions';
 
 export * from './constants';
 export * from './definitions';
@@ -62,42 +51,6 @@ export const ensureAuthRuleDefaults = (rules: AuthRule[]) => {
   }
 };
 
-export const getModelConfig = (directive: DirectiveNode, typeName: string, isDataStoreEnabled = false): ModelDirectiveConfiguration => {
-  const directiveWrapped: DirectiveWrapper = new DirectiveWrapper(directive);
-  const options = directiveWrapped.getArguments<ModelDirectiveConfiguration>({
-    queries: {
-      get: toCamelCase(['get', typeName]),
-      list: toCamelCase(['list', plurality(typeName, true)]),
-      ...(isDataStoreEnabled ? { sync: toCamelCase(['sync', plurality(typeName, true)]) } : undefined),
-    },
-    mutations: {
-      create: toCamelCase(['create', typeName]),
-      update: toCamelCase(['update', typeName]),
-      delete: toCamelCase(['delete', typeName]),
-    },
-    subscriptions: {
-      level: SubscriptionLevel.on,
-      onCreate: [toCamelCase(['onCreate', typeName])],
-      onDelete: [toCamelCase(['onDelete', typeName])],
-      onUpdate: [toCamelCase(['onUpdate', typeName])],
-    },
-    timestamps: {
-      createdAt: 'createdAt',
-      updatedAt: 'updatedAt',
-    },
-  });
-  return options;
-};
-
-export const getSearchableConfig = (directive: DirectiveNode, typeName: string): SearchableConfig | null => {
-  const directiveWrapped: DirectiveWrapper = new DirectiveWrapper(directive);
-  const options = directiveWrapped.getArguments<SearchableConfig>({
-    queries: {
-      search: graphqlName(`search${plurality(toUpper(typeName), true)}`),
-    },
-  });
-  return options;
-};
 /**
  * gets stack name if the field is paired with function, predictions, or by itself
  */

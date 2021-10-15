@@ -1,21 +1,34 @@
 import { ModelDirectiveConfiguration, SubscriptionLevel } from '@aws-amplify/graphql-model-transformer';
 import {
+  DirectiveWrapper,
+  InvalidDirectiveError,
+  InvalidTransformerError,
+  TransformerContractError,
+} from '@aws-amplify/graphql-transformer-core';
+import {
   QueryFieldType,
   MutationFieldType,
   TransformerTransformSchemaStepContextProvider,
+  TransformerContextProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
-import { ObjectTypeDefinitionNode, FieldDefinitionNode, DirectiveNode, NamedTypeNode } from 'graphql';
+import { DynamoDbDataSource } from '@aws-cdk/aws-appsync';
+import { ObjectTypeDefinitionNode, FieldDefinitionNode, DirectiveNode, NamedTypeNode, DocumentNode } from 'graphql';
 import {
   blankObjectExtension,
   extendFieldWithDirectives,
   extensionWithDirectives,
+  graphqlName,
   isListType,
   makeInputValueDefinition,
   makeNamedType,
+  ModelResourceIDs,
   plurality,
+  ResourceConstants,
   toCamelCase,
+  toUpper,
 } from 'graphql-transformer-common';
-import { RoleDefinition } from './definitions';
+import { RELATIONAL_DIRECTIVES } from './constants';
+import { RelationalPrimaryMapConfig, RoleDefinition, SearchableConfig } from './definitions';
 
 export const collectFieldNames = (object: ObjectTypeDefinitionNode): Array<string> => {
   return object.fields!.map((field: FieldDefinitionNode) => field.name.value);
@@ -23,6 +36,145 @@ export const collectFieldNames = (object: ObjectTypeDefinitionNode): Array<strin
 
 export const fieldIsList = (fields: ReadonlyArray<FieldDefinitionNode>, fieldName: string) => {
   return fields.some(field => field.name.value === fieldName && isListType(field.type));
+};
+
+/**
+ * for the relational directives we either get the model name or a model connection name
+ */
+export const getModelObject = (
+  ctx: TransformerContextProvider,
+  typeName: string,
+  modelDirectiveConfig: Map<string, ModelDirectiveConfiguration>,
+) => {
+  let modelObjectName: string = ModelResourceIDs.IsModelConnectionType(typeName)
+    ? ModelResourceIDs.GetModelFromConnectionType(typeName)
+    : typeName;
+  if (modelDirectiveConfig.has(modelObjectName)) {
+    return ctx.output.getObject(modelObjectName);
+  } else {
+    throw new InvalidTransformerError(`Could not find @model named: ${typeName}`);
+  }
+};
+
+export const getModelConfig = (directive: DirectiveNode, typeName: string, isDataStoreEnabled = false): ModelDirectiveConfiguration => {
+  const directiveWrapped: DirectiveWrapper = new DirectiveWrapper(directive);
+  const options = directiveWrapped.getArguments<ModelDirectiveConfiguration>({
+    queries: {
+      get: toCamelCase(['get', typeName]),
+      list: toCamelCase(['list', plurality(typeName, true)]),
+      ...(isDataStoreEnabled ? { sync: toCamelCase(['sync', plurality(typeName, true)]) } : undefined),
+    },
+    mutations: {
+      create: toCamelCase(['create', typeName]),
+      update: toCamelCase(['update', typeName]),
+      delete: toCamelCase(['delete', typeName]),
+    },
+    subscriptions: {
+      level: SubscriptionLevel.on,
+      onCreate: [toCamelCase(['onCreate', typeName])],
+      onDelete: [toCamelCase(['onDelete', typeName])],
+      onUpdate: [toCamelCase(['onUpdate', typeName])],
+    },
+    timestamps: {
+      createdAt: 'createdAt',
+      updatedAt: 'updatedAt',
+    },
+  });
+  return options;
+};
+
+export const getSearchableConfig = (directive: DirectiveNode, typeName: string): SearchableConfig | null => {
+  const directiveWrapped: DirectiveWrapper = new DirectiveWrapper(directive);
+  const options = directiveWrapped.getArguments<SearchableConfig>({
+    queries: {
+      search: graphqlName(`search${plurality(toUpper(typeName), true)}`),
+    },
+  });
+  return options;
+};
+/*
+ This handles the scenario where a @auth field is also included in the keyschema of a related @model
+ since a filter expression cannot contain partition key or sort key attributes. We need to run auth on the query expression
+ https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Query.html#Query.FilterExpression
+ @hasMany
+ - we get the keyschema (default or provided index) and then check that against the fields provided in the argument
+ - we then create a map of this relation if the field is included in the directive then we use ctx.source.relatedField
+   otherwise we use ctx.args.relatedField
+ @hasOne, @belongsTo
+ - we check the key schema against the fields provided by the directive
+ - if they don't have the same length then we throw an error
+ - All of the fields specified are checked against the ctx.source.relatedField
+   since this isn't a many relational we don't need to get values from ctx.args
+ */
+export const getRelationalPrimaryMap = (
+  ctx: TransformerContextProvider,
+  def: ObjectTypeDefinitionNode,
+  field: FieldDefinitionNode,
+  relatedModel: ObjectTypeDefinitionNode,
+): RelationalPrimaryMapConfig => {
+  const relationalDirective = field.directives.find(dir => RELATIONAL_DIRECTIVES.includes(dir.name.value));
+  const directiveWrapped: DirectiveWrapper = new DirectiveWrapper(relationalDirective);
+  const primaryFieldMap = new Map();
+  if (relationalDirective.name.value === 'hasMany') {
+    const args = directiveWrapped.getArguments({
+      indexName: undefined,
+      fields: undefined,
+    });
+    // we only generate a primary map if a index name or field is specified
+    // if both are undefined then @hasMany will create a new gsi with a new readonly field
+    // we don't need a primary map since this readonly field is not a auth field
+    if (args.indexName || args.fields) {
+      // get related types keyschema
+      const fields = args.fields ? args.fields : [getTable(ctx, def).keySchema.find((att: any) => att.keyType === 'HASH').attributeName];
+      const relatedTable = args.indexName
+        ? (getTable(ctx, relatedModel)
+            .globalSecondaryIndexes.find((gsi: any) => gsi.indexName === args.indexName)
+            .keySchema.map((att: any) => att.attributeName) as Array<string>)
+        : (getTable(ctx, relatedModel).keySchema.map((att: any) => att.attributeName) as Array<string>);
+      relatedTable.forEach((att, idx) => {
+        primaryFieldMap.set(att, {
+          claim: fields[idx] ? 'source' : 'args',
+          field: fields[idx] ?? att,
+        });
+      });
+    }
+  } // manyToMany doesn't need a primaryMap since it will create it's own gsis
+  // to the join table between related @models
+  else if (relationalDirective.name.value !== 'manyToMany') {
+    const args = directiveWrapped.getArguments({
+      fields: [toCamelCase([def.name.value, field.name.value, 'id'])],
+    });
+    // get related types keyschema
+    const relatedPrimaryFields = getTable(ctx, relatedModel).keySchema.map((att: any) => att.attributeName) as Array<string>;
+    // the fields provided by the directive (implicit/explicit) need to match the total amount of fields used for the primary key in the related table
+    // otherwise the get request is incomplete
+    if (args.fields.length !== relatedPrimaryFields.length) {
+      throw new InvalidDirectiveError(
+        `Invalid @${relationalDirective.name.value} on ${def.name.value}:${field.name.value}. Provided fields do not match the size of primary key(s) for ${relatedModel.name.value}`,
+      );
+    }
+    relatedPrimaryFields.forEach((field, idx) => {
+      primaryFieldMap.set(field, {
+        claim: 'source',
+        field: args.fields[idx],
+      });
+    });
+  }
+  return primaryFieldMap;
+};
+
+export const hasRelationalDirective = (field: FieldDefinitionNode): boolean => {
+  return field.directives && field.directives.some(dir => RELATIONAL_DIRECTIVES.includes(dir.name.value));
+};
+
+export const getTable = (ctx: TransformerContextProvider, def: ObjectTypeDefinitionNode): any => {
+  try {
+    const dbSource = ctx.dataSources.get(def) as DynamoDbDataSource;
+    const tableName = ModelResourceIDs.ModelTableResourceID(def.name.value);
+    return dbSource.ds.stack.node.findChild(tableName) as any;
+  } catch (err) {
+    throw new TransformerContractError(`Could not load primary fields of @model:${def.name.value}`);
+  }
 };
 
 export const extendTypeWithDirectives = (

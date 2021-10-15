@@ -4,6 +4,7 @@ exports[`join table inherits auth from both tables 1`] = `
 "## [Start] Authorization Steps. **
 $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #set( $isAuthorized = false )
+#set( $primaryFieldMap = {} )
 #if( $util.authType() == \\"API Key Authorization\\" )
   #set( $isAuthorized = true )
 #end
@@ -14,7 +15,7 @@ $util.qr($ctx.stash.put(\\"hasAuth\\", true))
     #end
   #end
 #end
-#if( !$isAuthorized && $util.isNullOrEmpty($ctx.stash.get(\\"authFilter\\")) )
+#if( !$isAuthorized && $util.isNull($ctx.stash.authFilter) && $primaryFieldMap.isEmpty() )
 $util.unauthorized()
 #end
 $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
@@ -50,6 +51,7 @@ exports[`join table inherits auth from both tables 4`] = `
 "## [Start] Authorization Steps. **
 $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #set( $isAuthorized = false )
+#set( $primaryFieldMap = {} )
 #if( $util.authType() == \\"API Key Authorization\\" )
   #set( $isAuthorized = true )
 #end
@@ -60,7 +62,7 @@ $util.qr($ctx.stash.put(\\"hasAuth\\", true))
     #end
   #end
 #end
-#if( !$isAuthorized && $util.isNullOrEmpty($ctx.stash.get(\\"authFilter\\")) )
+#if( !$isAuthorized && $util.isNull($ctx.stash.authFilter) && $primaryFieldMap.isEmpty() )
 $util.unauthorized()
 #end
 $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
@@ -147,7 +149,9 @@ $util.qr($ctx.stash.put(\\"hasAuth\\", true))
   #set( $isAuthorized = true )
 #end
 #if( $util.authType() == \\"IAM Authorization\\" )
-
+  #if( $ctx.identity.userArn == $ctx.stash.unauthRole )
+    #set( $isAuthorized = true )
+  #end
 #end
 #if( !$isAuthorized )
 $util.unauthorized()
@@ -269,14 +273,16 @@ $util.qr($ctx.stash.put(\\"hasAuth\\", true))
   #set( $isAuthorized = true )
 #end
 #if( $util.authType() == \\"IAM Authorization\\" )
-
+  #if( $ctx.identity.userArn == $ctx.stash.unauthRole )
+    #set( $isAuthorized = true )
+  #end
 #end
 #if( !$isAuthorized && $allowedFields.isEmpty() && $nullAllowedFields.isEmpty() )
 $util.unauthorized()
 #end
 #if( !$isAuthorized )
   #foreach( $entry in $util.map.copyAndRetainAllKeys($ctx.args.input, $inputFields).entrySet() )
-    #if( $util.isNull($entry.value) && !$nullAllowedFields.contains($entry.value) )
+    #if( $util.isNull($entry.value) && !$nullAllowedFields.contains($entry.key) )
       $util.qr($deniedFields.put($entry.key, \\"\\"))
     #end
   #end
@@ -697,7 +703,10 @@ input ModelIDKeyConditionInput {
 
 exports[`valid schema 2`] = `
 Object {
-  "Bar.foos.req.vtl": "#if( $util.isNull($ctx.source.id) )
+  "Bar.foos.req.vtl": "#if( $ctx.source.deniedField )
+  #return($util.toJson(null))
+#end
+#if( $util.isNull($ctx.source.id) )
   #set( $result = {
   \\"items\\":   []
 } )
@@ -807,7 +816,10 @@ $util.error($ctx.error.message, $ctx.error.type)
   #end
   $util.toJson($result)
 #end",
-  "Foo.bars.req.vtl": "#if( $util.isNull($ctx.source.id) )
+  "Foo.bars.req.vtl": "#if( $ctx.source.deniedField )
+  #return($util.toJson(null))
+#end
+#if( $util.isNull($ctx.source.id) )
   #set( $result = {
   \\"items\\":   []
 } )
@@ -917,7 +929,10 @@ $util.error($ctx.error.message, $ctx.error.type)
   #end
   $util.toJson($result)
 #end",
-  "FooBar.bar.req.vtl": "#if( $util.isNull($ctx.source.barID) )
+  "FooBar.bar.req.vtl": "#if( $ctx.source.deniedField )
+  #return($util.toJson(null))
+#end
+#if( $util.isNull($ctx.source.barID) )
   #return
 #else
   #set( $GetRequest = {
@@ -950,7 +965,10 @@ $util.unauthorized()
     $util.toJson(null)
   #end
 #end",
-  "FooBar.foo.req.vtl": "#if( $util.isNull($ctx.source.fooID) )
+  "FooBar.foo.req.vtl": "#if( $ctx.source.deniedField )
+  #return($util.toJson(null))
+#end
+#if( $util.isNull($ctx.source.fooID) )
   #return
 #else
   #set( $GetRequest = {

@@ -95,21 +95,19 @@ export class FunctionTransformer extends TransformerPluginBase {
             functionId,
             MappingTemplate.s3MappingTemplateFromString(
               printBlock(`Invoke AWS Lambda data source: ${dataSourceId}`)(
-                toJson(
-                  obj({
-                    version: str('2018-05-29'),
-                    operation: str('Invoke'),
-                    payload: obj({
-                      typeName: ref('ctx.stash.get("typeName")'),
-                      fieldName: ref('ctx.stash.get("fieldName")'),
-                      arguments: ref('util.toJson($ctx.arguments)'),
-                      identity: ref('util.toJson($ctx.identity)'),
-                      source: ref('util.toJson($ctx.source)'),
-                      request: ref('util.toJson($ctx.request)'),
-                      prev: ref('util.toJson($ctx.prev)'),
-                    }),
+                obj({
+                  version: str('2018-05-29'),
+                  operation: str('Invoke'),
+                  payload: obj({
+                    typeName: ref('util.toJson($ctx.stash.get("typeName"))'),
+                    fieldName: ref('util.toJson($ctx.stash.get("fieldName"))'),
+                    arguments: ref('util.toJson($ctx.arguments)'),
+                    identity: ref('util.toJson($ctx.identity)'),
+                    source: ref('util.toJson($ctx.source)'),
+                    request: ref('util.toJson($ctx.request)'),
+                    prev: ref('util.toJson($ctx.prev)'),
                   }),
-                ),
+                }),
               ),
               `${functionId}.req.vtl`,
             ),
