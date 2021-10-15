@@ -14,7 +14,8 @@
     "build": "tsc",
     "watch": "tsc -w",
     "clean": "rimraf lib tsconfig.tsbuildinfo",
-    "test": "jest"
+    "test": "jest",
+    "generateSchemas": "ts-node ./scripts/generateApiSchemas.ts"
   },
   "dependencies": {
     "@aws-cdk/assets": "~1.124.0",
