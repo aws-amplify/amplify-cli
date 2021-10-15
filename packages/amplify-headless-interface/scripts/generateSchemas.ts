@@ -72,7 +72,7 @@ typeDefs.forEach(typeDef => {
     return;
   }
   fs.ensureFileSync(schemaFilePath);
-  fs.writeFileSync(schemaFilePath, JSON.stringify(typeSchema, undefined, 4));
+  fs.writeFileSync(schemaFilePath, JSON.stringify(typeSchema, undefined, 4) + '\n');
   console.log(`Schema version ${version} written for type ${typeDef.typeName}.`);
 });
 
