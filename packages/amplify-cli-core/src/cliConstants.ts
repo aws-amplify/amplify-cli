@@ -36,7 +36,8 @@ export const AmplifySupportedService = {
   DYNAMODB: 'DynamoDB',
   COGNITO: 'Cognito',
   COGNITOUSERPOOLGROUPS: 'Cognito-UserPool-Groups',
-  LAMBDA : 'Lambda'
+  LAMBDA : 'Lambda',
+  APPSYNC: 'appsync',
 };
 
 export const overriddenCategories = [AmplifyCategories.AUTH, AmplifyCategories.STORAGE];
