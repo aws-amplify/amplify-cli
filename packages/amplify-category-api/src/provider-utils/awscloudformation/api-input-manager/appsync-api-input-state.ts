@@ -20,17 +20,17 @@ export class AppsyncApiInputState extends CategoryInputState {
 
   constructor(resourceName: string) {
     super(resourceName);
-    this.#category = AmplifyCategories.AUTH;
-    this.#service = AmplifySupportedService.COGNITO;
+    this.#category = AmplifyCategories.API;
+    this.#service = AmplifySupportedService.APPSYNC;
     this.#resourceName = resourceName;
 
     const projectBackendDirPath = pathManager.getBackendDirPath();
-    this.#cliInputsFilePath = path.resolve(path.join(projectBackendDirPath, AmplifyCategories.AUTH, resourceName, 'cli-inputs.json'));
-    this.#buildFilePath = path.resolve(path.join(projectBackendDirPath, AmplifyCategories.AUTH, resourceName, 'build'));
+    this.#cliInputsFilePath = path.resolve(path.join(projectBackendDirPath, this.#category, this.#resourceName, 'cli-inputs.json'));
+    this.#buildFilePath = path.resolve(path.join(projectBackendDirPath, this.#category, this.#resourceName, 'build'));
   }
 
   public async isCLIInputsValid(cliInputs: AppsyncCLIInputs = this.getCLIInputPayload()): Promise<boolean> {
-    const schemaValidator = new CLIInputSchemaValidator('appsyncApi', this.#category, 'CognitoCLIInputs');
+    const schemaValidator = new CLIInputSchemaValidator('appsyncApi', this.#category, 'AppsyncCLIInputs');
     return schemaValidator.validateInput(JSON.stringify(cliInputs));
   }
 
@@ -44,7 +44,7 @@ export class AppsyncApiInputState extends CategoryInputState {
 
   public async saveCLIInputPayload(cliInputs: AppsyncCLIInputs): Promise<void> {
     if (await this.isCLIInputsValid(cliInputs)) {
-      fs.ensureDirSync(path.join(pathManager.getBackendDirPath(), this.#category, this._resourceName));
+      fs.ensureDirSync(path.join(pathManager.getBackendDirPath(), this.#category, this.#resourceName));
       JSONUtilities.writeJson(this.#cliInputsFilePath, cliInputs);
     }
   }
