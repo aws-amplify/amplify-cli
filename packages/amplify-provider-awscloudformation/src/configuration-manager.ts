@@ -94,7 +94,7 @@ export async function configure(context: $TSContext) {
 export async function enableServerlessContainers(context: $TSContext) {
   const frontend = context.exeInfo.projectConfig.frontend;
   const { config = {} } = context.exeInfo.projectConfig[frontend] || {};
-  const serverlessContainers = context.parameters.options.yes
+  const serverlessContainers = context?.input?.options?.yes
     ? config.ServerlessContainers || false
     : (
         await prompt({
