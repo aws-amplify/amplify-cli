@@ -28,11 +28,18 @@ export enum S3CFNPermissionType {
   LIST = "s3:ListBucket"
 }
 
-export interface S3CFNPermissionMapType {
-  'create/update': S3CFNPermissionType[],
-  read: S3CFNPermissionType[],
-  delete: S3CFNPermissionType[],
+export enum S3StorageParamsPermissionType {
+  CREATE_AND_UPDATE = 'create/update',
+  READ = "read",
+  DELETE = "delete",
 }
+
+export interface S3CFNPermissionMapType {
+  [S3StorageParamsPermissionType.CREATE_AND_UPDATE]: S3CFNPermissionType[],
+  [S3StorageParamsPermissionType.READ]: S3CFNPermissionType[],
+  [S3StorageParamsPermissionType.DELETE]: S3CFNPermissionType[],
+}
+
 //use this to capture input
 interface IObjectS3PermissionType {
   [key: string]: S3PermissionType[];
@@ -43,7 +50,6 @@ export interface S3PermissionMapType extends IObjectS3PermissionType {
   delete: S3PermissionType[],
 }
 
-
 export type S3CFNDependsOn = {
   category: string,
   resourceName: string,
@@ -51,6 +57,8 @@ export type S3CFNDependsOn = {
 }
 
 export type GroupCFNAccessType = Record<string, S3CFNPermissionType[]>;
+
+export type GroupStorageParamsAccessType = Record<string, S3StorageParamsPermissionType[]>;
 
 export type S3CLIWalkthroughParams = {
   resourceName: string,
@@ -191,7 +199,7 @@ export class S3InputState {
       }
 
       if (storageParams && storageParams.hasOwnProperty("groupPermissionMap")){
-        userInputs.groupAccess = S3InputState.getPolicyMapFromCfnPolicyMap( storageParams.groupPermissionMap );
+        userInputs.groupAccess = S3InputState.getPolicyMapFromStorageParamPolicyMap( storageParams.groupPermissionMap );
         userInputs.groupList = (userInputs.groupAccess)?Object.keys(userInputs.groupAccess) : [];
       }
 
@@ -266,6 +274,19 @@ export class S3InputState {
     }
   }
 
+  public static getPermissionTypeFromStorageParamsType( s3StorageParamsPermissionType : S3StorageParamsPermissionType ): S3PermissionType {
+    switch (s3StorageParamsPermissionType) {
+        case S3StorageParamsPermissionType.CREATE_AND_UPDATE:
+            return S3PermissionType.CREATE_AND_UPDATE;
+        case S3StorageParamsPermissionType.READ:
+            return S3PermissionType.READ;
+        case S3StorageParamsPermissionType.DELETE:
+            return S3PermissionType.DELETE;
+        default:
+          throw new Error(`Unknown Storage Param Type: ${s3StorageParamsPermissionType}`);
+    }
+  }
+
   //S3CFNPermissionType
   public static getCfnTypesFromPermissionType(s3PermissionType: S3PermissionType): Array<S3CFNPermissionType> {
     switch (s3PermissionType) {
@@ -283,6 +304,14 @@ export class S3InputState {
   public static getInputPermissionsFromCfnPermissions(selectedGuestPermissions: S3CFNPermissionType[] | undefined) {
     if (selectedGuestPermissions) {
       return selectedGuestPermissions.map(S3InputState.getPermissionTypeFromCfnType);
+    } else {
+      return []
+    }
+  }
+
+  public static getInputPermissionsFromStorageParamPermissions( storageParamGroupPermissions: S3StorageParamsPermissionType[] | undefined) {
+    if (storageParamGroupPermissions) {
+      return storageParamGroupPermissions.map(S3InputState.getPermissionTypeFromStorageParamsType);
     } else {
       return []
     }
@@ -312,27 +341,29 @@ export class S3InputState {
     }
   }
 
-  public static cliWalkThroughToCliInputParams(options: S3CLIWalkthroughParams): S3InputStateOptions {
-    const inputProps: S3InputStateOptions = {
-      resourceName: options.resourceName,
-      inputPayload: {
-        resourceName: options.resourceName,
-        bucketName: options.bucketName,
-        storageAccess: options.storageAccess,
-        guestAccess: S3InputState.getInputPermissionsFromCfnPermissions(options.selectedGuestPermissions),
-        authAccess: S3InputState.getInputPermissionsFromCfnPermissions(options.selectedAuthenticatedPermissions),
-        triggerFunction: (options.triggerFunction && (options.triggerFunction !== "NONE")) ? options.triggerFunction : undefined,
-        policyUUID: options.policyUUID,
-        groupList: Object.keys(options.groupPolicyMap),
-        groupAccess: S3InputState.getPolicyMapFromCfnPolicyMap(options.groupPolicyMap)
-      },
-      metadata: {
-        dependsOn: options.dependsOn
+  public static getPolicyMapFromStorageParamPolicyMap(groupStorageParamsPolicyMap: GroupStorageParamsAccessType): GroupAccessType|undefined {
+    if (groupStorageParamsPolicyMap) {
+      let result: GroupAccessType = {};
+      for (const groupName of Object.keys(groupStorageParamsPolicyMap)) {
+        result[groupName] =  S3InputState.getInputPermissionsFromStorageParamPermissions(groupStorageParamsPolicyMap[groupName])
       }
+      return result;
+    } else {
+      return undefined;
     }
-    return inputProps;
   }
 
+  public static getPolicyMapFromStorageParamsPolicyMap(groupStorageParamsPolicyMap: GroupStorageParamsAccessType) {
+    if (groupStorageParamsPolicyMap) {
+      let result: GroupAccessType = {};
+      for (const groupName of Object.keys(groupStorageParamsPolicyMap)) {
+        result[groupName] =  S3InputState.getInputPermissionsFromStorageParamPermissions(groupStorageParamsPolicyMap[groupName])
+      }
+      return result;
+    } else {
+      return undefined;
+    }
+  }
 
   updateInputPayload(props: S3InputStateOptions) {
     // Overwrite
