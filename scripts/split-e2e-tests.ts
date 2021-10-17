@@ -69,6 +69,8 @@ const WINDOWS_TEST_FAILURES = [
   'migration-api-key-migration1-amplify_e2e_tests',
   'migration-api-key-migration2-amplify_e2e_tests',
   'migration-api-key-migration3-amplify_e2e_tests',
+  'migration-api-key-migration4-amplify_e2e_tests',
+  'migration-api-key-migration5-amplify_e2e_tests',
   'migration-node-function-amplify_e2e_tests',
   'notifications-amplify_e2e_tests',
   'predictions-amplify_e2e_tests',
@@ -134,6 +136,9 @@ const USE_PARENT_ACCOUNT = [
   'import_dynamodb_1-amplify_e2e_tests',
   'import_s3_1-amplify_e2e_tests',
   'migration-api-key-migration2-amplify_e2e_tests',
+  'migration-api-key-migration3-amplify_e2e_tests',
+  'migration-api-key-migration4-amplify_e2e_tests',
+  'migration-api-key-migration5-amplify_e2e_tests',
   'storage-amplify_e2e_tests',
 ];
 

@@ -2193,6 +2193,7 @@ jobs:
       AMPLIFY_PATH: /home/circleci/repo/packages/amplify-cli/bin/amplify
       TEST_SUITE: src/__tests__/migration/api.key.migration4.test.ts
       CLI_REGION: eu-central-1
+      USE_PARENT_ACCOUNT: 1
   migration-api-key-migration5-amplify_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -2245,6 +2246,7 @@ jobs:
       AMPLIFY_PATH: /home/circleci/repo/packages/amplify-cli/bin/amplify
       TEST_SUITE: src/__tests__/migration/api.key.migration5.test.ts
       CLI_REGION: ap-northeast-1
+      USE_PARENT_ACCOUNT: 1
   migration-node-function-amplify_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -5525,6 +5527,7 @@ jobs:
       AMPLIFY_PATH: /home/circleci/repo/packages/amplify-cli/bin/amplify
       TEST_SUITE: src/__tests__/migration/api.key.migration3.test.ts
       CLI_REGION: ap-northeast-1
+      USE_PARENT_ACCOUNT: 1
   function_1-amplify_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -7130,6 +7133,7 @@ jobs:
     environment:
       TEST_SUITE: src/__tests__/migration/api.key.migration4.test.ts
       CLI_REGION: eu-central-1
+      USE_PARENT_ACCOUNT: 1
   migration-api-key-migration5-amplify_e2e_tests_pkg:
     parameters:
       os:
@@ -7165,6 +7169,7 @@ jobs:
     environment:
       TEST_SUITE: src/__tests__/migration/api.key.migration5.test.ts
       CLI_REGION: ap-northeast-1
+      USE_PARENT_ACCOUNT: 1
   migration-node-function-amplify_e2e_tests_pkg:
     parameters:
       os:
@@ -9374,6 +9379,7 @@ jobs:
     environment:
       TEST_SUITE: src/__tests__/migration/api.key.migration3.test.ts
       CLI_REGION: ap-northeast-1
+      USE_PARENT_ACCOUNT: 1
   function_1-amplify_e2e_tests_pkg:
     parameters:
       os:
@@ -15234,7 +15240,6 @@ workflows:
             parameters:
               os:
                 - linux
-                - windows
       - schema-auth-13-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
@@ -15507,7 +15512,6 @@ workflows:
             parameters:
               os:
                 - linux
-                - windows
       - schema-function-1-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
