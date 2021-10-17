@@ -16,10 +16,12 @@ import {
   STANDARD_SCALARS,
   blankObject,
   blankObjectExtension,
+  defineUnionType,
   extensionWithFields,
   makeField,
   makeListType,
   makeNamedType,
+  makeNonNullType,
   makeInputValueDefinition,
   graphqlName,
   plurality,
@@ -33,11 +35,13 @@ import {
   makeSearchableXFilterInputObject,
   makeSearchableXSortableFieldsEnumObject,
   makeSearchableXSortInputObject,
+  makeSearchableXAggregationInputObject,
+  makeSearchableAggregateTypeEnumObject,
 } from './definitions';
 import assert from 'assert';
 import { setMappings } from './cdk/create-layer-cfnMapping';
-import { createEsDomain, createEsDomainRole } from './cdk/create-es-domain';
-import { createEsDataSource } from './cdk/create-es-datasource';
+import { createSearchableDomain, createSearchableDomainRole } from './cdk/create-searchable-domain';
+import { createSearchableDataSource } from './cdk/create-searchable-datasource';
 import { createEventSourceMapping, createLambda, createLambdaRole } from './cdk/create-streaming-lambda';
 import { createStackOutputs } from './cdk/create-cfnOutput';
 
@@ -73,29 +77,29 @@ export class SearchableModelTransformer extends TransformerPluginBase {
       expression: Fn.conditionNot(Fn.conditionEquals(envParam, ResourceConstants.NONE)),
     });
 
-    const isProjectUsingDataStore = false;
+    const isProjectUsingDataStore = context.isProjectUsingDataStore();
 
     stack.templateOptions.description = 'An auto-generated nested stack for searchable.';
     stack.templateOptions.templateFormatVersion = '2010-09-09';
 
     const parameterMap = createParametersInStack(stack);
 
-    const domain = createEsDomain(stack, parameterMap, context.api.apiId);
+    const domain = createSearchableDomain(stack, parameterMap, context.api.apiId);
 
-    const elasticsearchRole = createEsDomainRole(stack, parameterMap, context.api.apiId, envParam);
+    const openSearchRole = createSearchableDomainRole(context, stack, parameterMap);
 
-    domain.grantReadWrite(elasticsearchRole);
+    domain.grantReadWrite(openSearchRole);
 
-    const datasource = createEsDataSource(
+    const datasource = createSearchableDataSource(
       stack,
       context.api,
       domain.domainEndpoint,
-      elasticsearchRole,
+      openSearchRole,
       stack.parseArn(domain.domainArn).region,
     );
 
     // streaming lambda role
-    const lambdaRole = createLambdaRole(stack, parameterMap);
+    const lambdaRole = createLambdaRole(context, stack, parameterMap);
     domain.grantWrite(lambdaRole);
 
     // creates streaming lambda
@@ -119,7 +123,7 @@ export class SearchableModelTransformer extends TransformerPluginBase {
       ddbTable.grantStreamRead(lambdaRole);
 
       // creates event source mapping from ddb to lambda
-      createEventSourceMapping(stack, type, lambda, ddbTable.tableStreamArn);
+      createEventSourceMapping(stack, type, lambda, parameterMap, ddbTable.tableStreamArn);
 
       const { attributeName } = (table as any).keySchema.find((att: any) => att.keyType === 'HASH');
       assert(typeName);
@@ -134,7 +138,7 @@ export class SearchableModelTransformer extends TransformerPluginBase {
         MappingTemplate.s3MappingTemplateFromString(responseTemplate(false), `${typeName}.${def.fieldName}.res.vtl`),
       );
       resolver.mapToStack(stack);
-      context.resolvers.addResolver(type, def.fieldName, resolver);
+      context.resolvers.addResolver(typeName, def.fieldName, resolver);
     }
 
     createStackOutputs(stack, domain.domainEndpoint, context.api.apiId, domain.domainArn);
@@ -160,7 +164,7 @@ export class SearchableModelTransformer extends TransformerPluginBase {
     }
     const fieldName = searchFieldNameOverride
       ? searchFieldNameOverride
-      : graphqlName(`search${plurality(toUpper(definition.name.value), ctx.featureFlags.getBoolean('improvePluralization'))}`);
+      : graphqlName(`search${plurality(toUpper(definition.name.value), true)}`);
     this.searchableObjectTypeDefinitions.push({
       node: definition,
       fieldName,
@@ -169,6 +173,7 @@ export class SearchableModelTransformer extends TransformerPluginBase {
     if (shouldMakeSearch) {
       this.generateSearchableInputs(ctx, definition);
       this.generateSearchableXConnectionType(ctx, definition);
+      this.generateSearchableAggregateTypes(ctx);
       const queryField = makeField(
         fieldName,
         [
@@ -177,6 +182,7 @@ export class SearchableModelTransformer extends TransformerPluginBase {
           makeInputValueDefinition('limit', makeNamedType('Int')),
           makeInputValueDefinition('nextToken', makeNamedType('String')),
           makeInputValueDefinition('from', makeNamedType('Int')),
+          makeInputValueDefinition('aggregates', makeListType(makeNamedType(`Searchable${definition.name.value}AggregationInput`))),
         ],
         makeNamedType(`Searchable${definition.name.value}Connection`),
       );
@@ -203,8 +209,107 @@ export class SearchableModelTransformer extends TransformerPluginBase {
     connectionTypeExtension = extensionWithFields(connectionTypeExtension, [
       makeField('nextToken', [], makeNamedType('String')),
       makeField('total', [], makeNamedType('Int')),
+      makeField('aggregateItems', [], makeListType(makeNamedType(`SearchableAggregateResult`))),
     ]);
     ctx.output.addObjectExtension(connectionTypeExtension);
+  }
+
+  private generateSearchableAggregateTypes(ctx: TransformerSchemaVisitStepContextProvider): void {
+    this.generateSearchableAggregateResultType(ctx);
+    this.generateSearchableGenericResultType(ctx);
+  }
+
+  private generateSearchableGenericResultType(ctx: TransformerSchemaVisitStepContextProvider): void {
+    const searchableAggregateGenericResult = `SearchableAggregateGenericResult`;
+    if (ctx.output.hasType(searchableAggregateGenericResult)) {
+      return;
+    }
+
+    let searchableAggregateGenericResultNode = defineUnionType(searchableAggregateGenericResult, [
+      makeNamedType(this.generateSearchableAggregateScalarResultType(ctx)),
+      makeNamedType(this.generateSearchableAggregateBucketResultType(ctx)),
+    ]);
+
+    ctx.output.addUnion(searchableAggregateGenericResultNode);
+  }
+
+  private generateSearchableAggregateScalarResultType(ctx: TransformerSchemaVisitStepContextProvider): string {
+    const searchableAggregateScalarResult = `SearchableAggregateScalarResult`;
+    if (ctx.output.hasType(searchableAggregateScalarResult)) {
+      return searchableAggregateScalarResult;
+    }
+
+    // Create the SearchableAggregateScalarResult
+    const aggregateScalarType = blankObject(searchableAggregateScalarResult);
+    ctx.output.addObject(aggregateScalarType);
+
+    // Create SearchableAggregateScalarResult type with value
+    let aggregateScalarTypeExtension = blankObjectExtension(searchableAggregateScalarResult);
+    aggregateScalarTypeExtension = extensionWithFields(aggregateScalarTypeExtension, [
+      makeField('value', [], makeNonNullType(makeNamedType('Float'))),
+    ]);
+    ctx.output.addObjectExtension(aggregateScalarTypeExtension);
+    return searchableAggregateScalarResult;
+  }
+
+  private generateSearchableAggregateBucketResultItemType(ctx: TransformerSchemaVisitStepContextProvider): string {
+    const searchableAggregateBucketResultItem = `SearchableAggregateBucketResultItem`;
+    if (ctx.output.hasType(searchableAggregateBucketResultItem)) {
+      return searchableAggregateBucketResultItem;
+    }
+
+    // Create the SearchableAggregateBucketResultItem
+    const aggregateBucketResultItemType = blankObject(searchableAggregateBucketResultItem);
+    ctx.output.addObject(aggregateBucketResultItemType);
+
+    // Create SearchableAggregateBucketResultItem type with key and doc_count
+    let aggregateBucketResultItemTypeExtension = blankObjectExtension(searchableAggregateBucketResultItem);
+    aggregateBucketResultItemTypeExtension = extensionWithFields(aggregateBucketResultItemTypeExtension, [
+      makeField('key', [], makeNonNullType(makeNamedType('String'))),
+      makeField('doc_count', [], makeNonNullType(makeNamedType('Int'))),
+    ]);
+    ctx.output.addObjectExtension(aggregateBucketResultItemTypeExtension);
+    return searchableAggregateBucketResultItem;
+  }
+
+  private generateSearchableAggregateBucketResultType(ctx: TransformerSchemaVisitStepContextProvider): string {
+    const searchableAggregateBucketResult = `SearchableAggregateBucketResult`;
+    if (ctx.output.hasType(searchableAggregateBucketResult)) {
+      return searchableAggregateBucketResult;
+    }
+
+    // Create the SearchableAggregateBucketResultItem
+    const aggregateBucketResultType = blankObject(searchableAggregateBucketResult);
+    ctx.output.addObject(aggregateBucketResultType);
+    this.generateSearchableAggregateBucketResultItemType(ctx);
+
+    // Create SearchableAggregateBucketResultItem type with buckets
+    let aggregateBucketResultTypeExtension = blankObjectExtension(searchableAggregateBucketResult);
+    aggregateBucketResultTypeExtension = extensionWithFields(aggregateBucketResultTypeExtension, [
+      makeField('buckets', [], makeListType(makeNamedType('SearchableAggregateBucketResultItem'))),
+    ]);
+    ctx.output.addObjectExtension(aggregateBucketResultTypeExtension);
+    return searchableAggregateBucketResult;
+  }
+
+  private generateSearchableAggregateResultType(ctx: TransformerSchemaVisitStepContextProvider): string {
+    const searchableAggregateResult = `SearchableAggregateResult`;
+    if (ctx.output.hasType(searchableAggregateResult)) {
+      return searchableAggregateResult;
+    }
+
+    // Create the SearchableAggregateResult
+    const aggregateResultType = blankObject(searchableAggregateResult);
+    ctx.output.addObject(aggregateResultType);
+
+    // Create SearchableAggregateResult type with name and result
+    let aggregateResultTypeExtension = blankObjectExtension(searchableAggregateResult);
+    aggregateResultTypeExtension = extensionWithFields(aggregateResultTypeExtension, [
+      makeField('name', [], makeNonNullType(makeNamedType('String'))),
+      makeField('result', [], makeNamedType('SearchableAggregateGenericResult')),
+    ]);
+    ctx.output.addObjectExtension(aggregateResultTypeExtension);
+    return searchableAggregateResult;
   }
 
   private generateSearchableInputs(ctx: TransformerSchemaVisitStepContextProvider, definition: ObjectTypeDefinitionNode): void {
@@ -214,7 +319,7 @@ export class SearchableModelTransformer extends TransformerPluginBase {
       .map(makeSearchableScalarInputObject)
       .forEach((node: InputObjectTypeDefinitionNode) => ctx.output.addInput(node));
 
-    const searchableXQueryFilterInput = makeSearchableXFilterInputObject(definition);
+    const searchableXQueryFilterInput = makeSearchableXFilterInputObject(definition, ctx.inputDocument);
     if (!ctx.output.hasType(searchableXQueryFilterInput.name.value)) {
       ctx.output.addInput(searchableXQueryFilterInput);
     }
@@ -232,6 +337,16 @@ export class SearchableModelTransformer extends TransformerPluginBase {
     if (!ctx.output.hasType(`Searchable${definition.name.value}SortInput`)) {
       const searchableXSortableInputDirection = makeSearchableXSortInputObject(definition);
       ctx.output.addInput(searchableXSortableInputDirection);
+    }
+
+    if (!ctx.output.hasType(`Searchable${definition.name.value}AggregationInput`)) {
+      const searchableXAggregationInputDirection = makeSearchableXAggregationInputObject(definition);
+      ctx.output.addInput(searchableXAggregationInputDirection);
+    }
+
+    if (!ctx.output.hasType('SearchableAggregateType')) {
+      const searchableAggregateTypeEnum = makeSearchableAggregateTypeEnumObject();
+      ctx.output.addEnum(searchableAggregateTypeEnum);
     }
   }
 }

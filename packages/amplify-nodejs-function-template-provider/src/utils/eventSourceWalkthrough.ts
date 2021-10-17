@@ -69,7 +69,7 @@ export async function askEventSourceQuestions(context: any) {
                 batchSize: 100,
                 startingPosition: 'LATEST',
                 eventSourceArn,
-                functionTemplateName: 'trigger-kinesis.js',
+                functionTemplateName: 'trigger-kinesis.js.ejs',
                 triggerPolicies: [
                   {
                     Effect: 'Allow',
@@ -135,7 +135,7 @@ export async function askEventSourceQuestions(context: any) {
                 batchSize: 100,
                 startingPosition: 'LATEST',
                 eventSourceArn,
-                functionTemplateName: 'trigger-dynamodb.js',
+                functionTemplateName: 'trigger-dynamodb.js.ejs',
                 triggerPolicies: [
                   {
                     Effect: 'Allow',
@@ -168,7 +168,7 @@ export async function askEventSourceQuestions(context: any) {
                 batchSize: 100,
                 startingPosition: 'LATEST',
                 eventSourceArn: dynamoDBCategoryStorageStreamArnRef,
-                functionTemplateName: 'trigger-dynamodb.js',
+                functionTemplateName: 'trigger-dynamodb.js.ejs',
                 triggerPolicies: [
                   {
                     Effect: 'Allow',

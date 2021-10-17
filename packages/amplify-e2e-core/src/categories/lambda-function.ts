@@ -142,7 +142,7 @@ export type CoreFunctionSettings = {
   expectFailure?: boolean;
   additionalPermissions?: any;
   schedulePermissions?: any;
-  layerOptions?: any;
+  layerOptions?: LayerOptions;
   environmentVariables?: any;
   secretsConfig?: AddSecretInput | UpdateSecretInput | DeleteSecretInput;
   triggerType?: string;
@@ -175,11 +175,10 @@ const coreFunction = (
         selectTemplate(chain, settings.functionTemplate, runtime);
       }
     } else {
-      chain
-        .wait('Select which capability you want to update:')
-        .sendCarriageReturn() // lambda function
-        .wait('Select the Lambda function you want to update')
-        .sendCarriageReturn(); // assumes only one function configured in the project
+      if (settings.layerOptions && settings.layerOptions.layerAndFunctionExist) {
+        chain.wait('Select which capability you want to update:').sendCarriageReturn(); // lambda function
+      }
+      chain.wait('Select the Lambda function you want to update').sendCarriageReturn(); // assumes only one function configured in the project
     }
 
     if (functionConfigCallback) {
@@ -335,7 +334,7 @@ export const functionBuild = (cwd: string, settings: any): Promise<void> => {
   });
 };
 
-export const selectRuntime = (chain: any, runtime: FunctionRuntimes) => {
+export const selectRuntime = (chain: ExecutionContext, runtime: FunctionRuntimes) => {
   const runtimeName = getRuntimeDisplayName(runtime);
   chain.wait('Choose the runtime that you want to use:');
 
@@ -345,7 +344,7 @@ export const selectRuntime = (chain: any, runtime: FunctionRuntimes) => {
   singleSelect(chain, runtimeName, runtimeChoices);
 };
 
-export const selectTemplate = (chain: any, functionTemplate: string, runtime: FunctionRuntimes) => {
+export const selectTemplate = (chain: ExecutionContext, functionTemplate: string, runtime: FunctionRuntimes) => {
   const templateChoices = getTemplateChoices(runtime);
   chain.wait('Choose the function template that you want to use');
 
@@ -361,8 +360,9 @@ export const removeFunction = (cwd: string, funcName: string) =>
   });
 
 export interface LayerOptions {
-  select: string[]; // list options to select
-  expectedListOptions: string[]; // the expeted list of all layers
+  select?: string[]; // list options to select
+  layerAndFunctionExist?: boolean; // whether this test involves both a function and a layer
+  expectedListOptions?: string[]; // the expected list of all layers
   versions?: Record<string, { version: number; expectedVersionOptions: number[] }>; // map with keys for each element of select that determines the verison and expected version for each layer
   customArns?: string[]; // external ARNs to enter
   skipLayerAssignment?: boolean; // true if the layer assigment must be left unchanged for the function, otherwise true
@@ -494,7 +494,7 @@ const addWeekly = (chain: ExecutionContext) => {
   chain
     .wait('Select the day to invoke the function:')
     .sendCarriageReturn()
-    .wait('Select the start time (use arrow keys):')
+    .wait('Select the start time in UTC (use arrow keys):')
     .sendCarriageReturn();
   return chain;
 };
@@ -520,7 +520,7 @@ const addCron = (chain: ExecutionContext, settings: any) => {
       addhourly(moveDown(chain, 1).sendCarriageReturn());
       break;
     case 'Daily':
-      moveDown(chain, 2).sendCarriageReturn().wait('Select the start time (use arrow keys):').sendCarriageReturn();
+      moveDown(chain, 2).sendCarriageReturn().wait('Select the start time in UTC (use arrow keys):').sendCarriageReturn();
       break;
     case 'Weekly':
       addWeekly(moveDown(chain, 3).sendCarriageReturn());

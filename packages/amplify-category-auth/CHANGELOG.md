@@ -3,6 +3,210 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.38.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.38.3...amplify-category-auth@2.38.4) (2021-10-10)
+
+**Note:** Version bump only for package amplify-category-auth
+
+
+
+
+
+## [2.38.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.38.2...amplify-category-auth@2.38.3) (2021-10-06)
+
+**Note:** Version bump only for package amplify-category-auth
+
+
+
+
+
+## [2.38.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.38.1...amplify-category-auth@2.38.2) (2021-09-27)
+
+
+### Bug Fixes
+
+* add missing await, fix import paths ([#8199](https://github.com/aws-amplify/amplify-cli/issues/8199)) ([51c4dd9](https://github.com/aws-amplify/amplify-cli/commit/51c4dd9c021d894fe2c06fc005e1e1960fe4529c))
+* **amplify-category-auth:** update front end config on pull ([#8173](https://github.com/aws-amplify/amplify-cli/issues/8173)) ([da2b008](https://github.com/aws-amplify/amplify-cli/commit/da2b0083add2f5b10520efade8628080a34c8791))
+
+
+
+
+
+## [2.38.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.38.0...amplify-category-auth@2.38.1) (2021-09-20)
+
+
+
+## 6.0.1 (2021-09-20)
+
+
+### Bug Fixes
+
+* **amplify-category-auth:** handle undefined aliasattributes ([#8222](https://github.com/aws-amplify/amplify-cli/issues/8222)) ([c3b89af](https://github.com/aws-amplify/amplify-cli/commit/c3b89afbc410dd5de7964a8002dd4dc459199d00))
+
+
+
+
+
+# [2.38.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.37.0...amplify-category-auth@2.38.0) (2021-09-18)
+
+
+### Bug Fixes
+
+* added warning for usernameAttributes ([#8202](https://github.com/aws-amplify/amplify-cli/issues/8202)) ([b56eef0](https://github.com/aws-amplify/amplify-cli/commit/b56eef07a42b6d44f3834a4f204bd029eb653a2e))
+* **amplify-category-auth:** check for undefined aliasAttributes ([#8203](https://github.com/aws-amplify/amplify-cli/issues/8203)) ([c68dda1](https://github.com/aws-amplify/amplify-cli/commit/c68dda1888efe4fcc6d837864a50db54630cff5e))
+
+
+### Features
+
+* **amplify-category-auth:** use usernameAttributes by default, FF for aliasAttributes ([#8188](https://github.com/aws-amplify/amplify-cli/issues/8188)) ([f3044ee](https://github.com/aws-amplify/amplify-cli/commit/f3044eeff21fa900da5aac613db87502526bc165))
+
+
+
+
+
+# [2.37.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.36.5...amplify-category-auth@2.37.0) (2021-09-14)
+
+
+### Bug Fixes
+
+* remove overwrite of email-only verification when triggers are added ([#7671](https://github.com/aws-amplify/amplify-cli/issues/7671)) ([704295b](https://github.com/aws-amplify/amplify-cli/commit/704295b918701eb81fdaabb786417463672fa02c))
+* verification-link variable with small typo ([#8073](https://github.com/aws-amplify/amplify-cli/issues/8073)) ([d9afc20](https://github.com/aws-amplify/amplify-cli/commit/d9afc20864cbfcc1eadc3e5c262888187624a5ad))
+
+
+### Features
+
+* **amplify-category-auth:** add auth verification mechanisms to frontend config ([#8037](https://github.com/aws-amplify/amplify-cli/issues/8037)) ([88494b3](https://github.com/aws-amplify/amplify-cli/commit/88494b3f12a9989273aa3ae3e68c629f4c4cdff9))
+* **amplify-category-auth:** add auth verification mechanisms to frontend config ([#8037](https://github.com/aws-amplify/amplify-cli/issues/8037)) ([#8093](https://github.com/aws-amplify/amplify-cli/issues/8093)) ([b8949b2](https://github.com/aws-amplify/amplify-cli/commit/b8949b2b519f6b6a26bcab3596c051acec51e077))
+
+
+### Reverts
+
+* Revert "feat(amplify-category-auth): add auth verification mechanisms to frontend config (#8037) (#8093)" (#8158) ([50f07ef](https://github.com/aws-amplify/amplify-cli/commit/50f07efcf7c5663b6fd123d300ec473377d03abe)), closes [#8037](https://github.com/aws-amplify/amplify-cli/issues/8037) [#8093](https://github.com/aws-amplify/amplify-cli/issues/8093) [#8158](https://github.com/aws-amplify/amplify-cli/issues/8158)
+
+
+
+
+
+## [2.36.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.36.4...amplify-category-auth@2.36.5) (2021-09-09)
+
+
+### Bug Fixes
+
+* **amplify-category-auth:** update attr mapping... ([#7979](https://github.com/aws-amplify/amplify-cli/issues/7979)) ([94d2491](https://github.com/aws-amplify/amplify-cli/commit/94d2491ca8b41c1673cca0dd7bf96ac1c3f2db69)), closes [#7793](https://github.com/aws-amplify/amplify-cli/issues/7793)
+
+
+### Reverts
+
+* Revert "fix(amplify-category-auth): update attr mapping... (#7979)" (#8115) ([35af7e1](https://github.com/aws-amplify/amplify-cli/commit/35af7e147d817206fe979fe2320e074407204a0a)), closes [#7979](https://github.com/aws-amplify/amplify-cli/issues/7979) [#8115](https://github.com/aws-amplify/amplify-cli/issues/8115)
+
+
+
+
+
+## [2.36.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.36.3...amplify-category-auth@2.36.4) (2021-09-02)
+
+
+### Bug Fixes
+
+* **amplify-category-auth:** fixed walkthrough prompt after choosing same web & native app clients ([#7954](https://github.com/aws-amplify/amplify-cli/issues/7954)) ([49d0e51](https://github.com/aws-amplify/amplify-cli/commit/49d0e51e6cf8b9e986dc309abdb67df930b0da13))
+
+
+
+
+
+## [2.36.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.36.2...amplify-category-auth@2.36.3) (2021-08-24)
+
+
+### Bug Fixes
+
+* **amplify-category-auth:** fixed no parameter when hostedui is not present ([#7914](https://github.com/aws-amplify/amplify-cli/issues/7914)) ([a83c978](https://github.com/aws-amplify/amplify-cli/commit/a83c978bb18c6fc1980343523c7ee560079cefe5))
+
+
+
+
+
+## [2.36.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.36.1...amplify-category-auth@2.36.2) (2021-08-06)
+
+
+### Bug Fixes
+
+* **amplify-category-auth:** add auth user selections to aws-exports/amplifyconfiguration files ([#7807](https://github.com/aws-amplify/amplify-cli/issues/7807)) ([3deae39](https://github.com/aws-amplify/amplify-cli/commit/3deae3969740562c8fe1a82d2659e0efffccb49d))
+
+
+
+
+
+## [2.36.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.36.0...amplify-category-auth@2.36.1) (2021-07-30)
+
+
+### Bug Fixes
+
+* lambda timeout should be an integer type ([#7699](https://github.com/aws-amplify/amplify-cli/issues/7699)) ([cbacf4d](https://github.com/aws-amplify/amplify-cli/commit/cbacf4d3e497421855c09825970e025550aacfd7))
+
+
+
+
+
+# [2.36.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.35.1...amplify-category-auth@2.36.0) (2021-07-27)
+
+
+### Bug Fixes
+
+* **amplify-category-auth:** add handling for undefined autoVerifiedAttributes ([#7780](https://github.com/aws-amplify/amplify-cli/issues/7780)) ([3aac45d](https://github.com/aws-amplify/amplify-cli/commit/3aac45d472903c2de2338409e71d6ba07248aa6b))
+* upgrade node default runtime to 14 ([#7700](https://github.com/aws-amplify/amplify-cli/issues/7700)) ([47968cc](https://github.com/aws-amplify/amplify-cli/commit/47968cc9c704ac1cffcbd0dbe40d164b1b1d48d6))
+
+
+### Features
+
+* **amplify-category-auth:** enable alternative signup/signin options ([#7461](https://github.com/aws-amplify/amplify-cli/issues/7461)) ([56a0c35](https://github.com/aws-amplify/amplify-cli/commit/56a0c35d2cef0fbff27c80f78dba57516ef18afb)), closes [#1546](https://github.com/aws-amplify/amplify-cli/issues/1546)
+* **amplify-category-auth:** use EnabledMFAs to only configure TOTP ([#7779](https://github.com/aws-amplify/amplify-cli/issues/7779)) ([c2102c5](https://github.com/aws-amplify/amplify-cli/commit/c2102c53fd2ca974fb95c4468ad7a87fefe14ab0))
+
+
+### Reverts
+
+* Revert "feat(amplify-category-auth): use EnabledMFAs to only configure TOTP (#7779)" (#7790) ([fa172c4](https://github.com/aws-amplify/amplify-cli/commit/fa172c4caf6f15de56925bd1ff4f8ee743788b52)), closes [#7779](https://github.com/aws-amplify/amplify-cli/issues/7779) [#7790](https://github.com/aws-amplify/amplify-cli/issues/7790)
+* Revert "fix: upgrade node default runtime to 14 (#7700)" (#7763) ([3ab8769](https://github.com/aws-amplify/amplify-cli/commit/3ab87694203584cdfa208bf75e648e0e944f5e18)), closes [#7700](https://github.com/aws-amplify/amplify-cli/issues/7700) [#7763](https://github.com/aws-amplify/amplify-cli/issues/7763)
+
+
+
+
+
+## [2.35.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.35.0...amplify-category-auth@2.35.1) (2021-07-16)
+
+
+
+## 5.1.2 (2021-07-15)
+
+
+### Bug Fixes
+
+* **amplify-category-auth:** \n made OS specific ([#7663](https://github.com/aws-amplify/amplify-cli/issues/7663)) ([3c0823e](https://github.com/aws-amplify/amplify-cli/commit/3c0823e8e004e00808351e958f5b587e8d77bd01)), closes [#7662](https://github.com/aws-amplify/amplify-cli/issues/7662)
+* **amplify-category-auth:** added passrole policy to MFALambaRole ([#7729](https://github.com/aws-amplify/amplify-cli/issues/7729)) ([cd5d33a](https://github.com/aws-amplify/amplify-cli/commit/cd5d33aa822ceeb19a1af847d8c3eab0f1d10632))
+* **auth:** standardize CloudFormation trigger templates, prevent errors at runtime ([#7219](https://github.com/aws-amplify/amplify-cli/issues/7219)) ([f9796bd](https://github.com/aws-amplify/amplify-cli/commit/f9796bd3aca6606f155d37ac6a8931d6bdec25b9))
+
+
+
+
+
+# [2.35.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.34.1...amplify-category-auth@2.35.0) (2021-07-12)
+
+
+
+## 5.1.1 (2021-07-07)
+
+
+### Bug Fixes
+
+* **amplify-category-auth:** check for siwa Cognito idp params ([#7678](https://github.com/aws-amplify/amplify-cli/issues/7678)) ([0c0adfb](https://github.com/aws-amplify/amplify-cli/commit/0c0adfb78350a192d4f44b722d6038b23c505527))
+
+
+### Features
+
+* support for sign in with apple ([#7413](https://github.com/aws-amplify/amplify-cli/issues/7413)) ([00d6676](https://github.com/aws-amplify/amplify-cli/commit/00d6676b4c1d6995cac01956078f7b6ee6186814))
+
+
+
+
+
 ## [2.34.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.34.0...amplify-category-auth@2.34.1) (2021-06-30)
 
 **Note:** Version bump only for package amplify-category-auth

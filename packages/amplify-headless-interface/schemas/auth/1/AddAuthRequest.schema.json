@@ -100,6 +100,18 @@
                         "type": "string"
                     }
                 },
+                "aliasAttributes": {
+                    "description": "Alias attributes that can be used for sign-up/sign-in",
+                    "type": "array",
+                    "items": {
+                        "enum": [
+                            "EMAIL",
+                            "PHONE_NUMBER",
+                            "PREFERRED_USERNAME"
+                        ],
+                        "type": "string"
+                    }
+                },
                 "userPoolName": {
                     "description": "The name of the user pool. If not specified, a unique string will be generated.",
                     "type": "string"

@@ -31,7 +31,7 @@ export async function runTest(projectDir: string, testModule: any) {
   await testQueries(testModule, appSyncClient);
 }
 
-export async function runAutTest(projectDir: string, testModule: any) {
+export async function runAuthTest(projectDir: string, testModule: any) {
   await addApi(projectDir, {
     'Amazon Cognito User Pool': {},
   });

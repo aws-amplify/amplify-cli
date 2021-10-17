@@ -21,22 +21,37 @@ type CLIPrintColors = typeof importedColors & {
 
 const colors = importedColors as CLIPrintColors;
 
+/**
+ * @deprecated Use printer.info from amplify-prompts instead
+ */
 function info(message) {
   console.log(colors.info(message));
 }
 
+/**
+ * @deprecated Use printer.warn from amplify-prompts instead
+ */
 function warning(message) {
   console.log(colors.warning(message));
 }
 
+/**
+ * @deprecated Use printer.error from amplify-prompts instead
+ */
 function error(message) {
   console.log(colors.error(message));
 }
 
+/**
+ * @deprecated Use printer.success from amplify-prompts instead
+ */
 function success(message) {
   console.log(colors.success(message));
 }
 
+/**
+ * @deprecated Use printer.debug from amplify-prompts instead
+ */
 function debug(message, title = 'DEBUG') {
   const topLine = `vvv -----[ ${title} ]----- vvv`;
   const botLine = `^^^ -----[ ${title} ]----- ^^^`;
@@ -46,6 +61,9 @@ function debug(message, title = 'DEBUG') {
   console.log(colors.rainbow(botLine));
 }
 
+/**
+ * @deprecated The next time we refactor code that uses this function, refactor the table function into formatter.ts from amplify-prompts and use that instead
+ */
 function table(data, options: any = {}) {
   let t: CLITable.Table;
   switch (options.format) {
@@ -121,6 +139,9 @@ const CLI_TABLE_MARKDOWN = {
   middle: '|',
 };
 
+/**
+ * @deprecated Use printer from amplify-prompts instead
+ */
 export const print = {
   info,
   warning,

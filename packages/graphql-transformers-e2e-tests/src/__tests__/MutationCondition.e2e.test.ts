@@ -25,7 +25,7 @@ import { default as S3 } from 'aws-sdk/clients/s3';
 import { S3Client } from '../S3Client';
 import { cleanupStackAfterTest, deploy } from '../deployNestedStacks';
 import { default as moment } from 'moment';
-import { createUserPool, createUserPoolClient, signupAndAuthenticateUser, configureAmplify } from '../cognitoUtils';
+import { createUserPool, createUserPoolClient, configureAmplify, signupUser, authenticateUser } from '../cognitoUtils';
 import Role from 'cloudform-types/types/iam/role';
 import UserPoolClient from 'cloudform-types/types/cognito/userPoolClient';
 import IdentityPool from 'cloudform-types/types/cognito/identityPool';
@@ -584,7 +584,8 @@ describe(`Deployed Mutation Condition tests`, () => {
   const customS3Client = new S3Client(REGION);
   const awsS3Client = new S3({ region: REGION });
 
-  const conditionRegexMatch = /GraphQL error: The conditional request failed \(Service: \w*DynamoD\w*\,?\;? Status Code: 400\,?\;? [a-zA-Z0-9:;, ]*\)/gm;
+  const conditionRegexMatch =
+    /GraphQL error: The conditional request failed \(Service: \w*DynamoD\w*\,?\;? Status Code: 400\,?\;? [a-zA-Z0-9:;, ]*\)/gm;
 
   function outputValueSelector(key: string) {
     return (outputs: Output[]) => {
@@ -772,7 +773,7 @@ describe(`Deployed Mutation Condition tests`, () => {
       });
 
       const identityPoolRoleMap = new IdentityPoolRoleAttachment({
-        IdentityPoolId: ({ Ref: 'IdentityPool' } as unknown) as string,
+        IdentityPoolId: { Ref: 'IdentityPool' } as unknown as string,
         Roles: {
           unauthenticated: { 'Fn::GetAtt': ['UnauthRole', 'Arn'] },
           authenticated: { 'Fn::GetAtt': ['AuthRole', 'Arn'] },
@@ -905,10 +906,12 @@ describe(`Deployed Mutation Condition tests`, () => {
       // Configure Amplify, create users, and sign in.
       configureAmplify(USER_POOL_ID, userPoolClientId, identityPoolId);
 
-      const authRes1 = await signupAndAuthenticateUser(USER_POOL_ID, USERNAME1, TMP_PASSWORD, REAL_PASSWORD);
+      await signupUser(USER_POOL_ID, USERNAME1, TMP_PASSWORD);
+      const authRes1 = await authenticateUser(USERNAME1, TMP_PASSWORD, REAL_PASSWORD);
       const idToken1 = authRes1.getIdToken().getJwtToken();
 
-      const authRes2 = await signupAndAuthenticateUser(USER_POOL_ID, USERNAME2, TMP_PASSWORD, REAL_PASSWORD);
+      await signupUser(USER_POOL_ID, USERNAME2, TMP_PASSWORD);
+      const authRes2 = await authenticateUser(USERNAME2, TMP_PASSWORD, REAL_PASSWORD);
       const idToken2 = authRes2.getIdToken().getJwtToken();
 
       USER_POOL_AUTH_CLIENT_1 = new AWSAppSyncClient({

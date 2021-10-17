@@ -105,6 +105,7 @@ function getAWSExportsObject(resources) {
   const { serviceResourceMapping } = resources;
   const configOutput = {};
   const predictionsConfig = {};
+  const geoConfig = {};
 
   const projectRegion = resources.metadata.Region;
   configOutput.aws_project_region = projectRegion;
@@ -167,6 +168,14 @@ function getAWSExportsObject(resources) {
           ...getInferConfig(serviceResourceMapping[service]),
         };
         break;
+      case 'Map':
+        geoConfig.region = serviceResourceMapping[service][0].output.Region;
+        geoConfig.maps = getMapConfig(serviceResourceMapping[service]);
+        break;
+      case 'PlaceIndex':
+        geoConfig.region = serviceResourceMapping[service][0].output.Region;
+        geoConfig.search_indices = getPlaceIndexConfig(serviceResourceMapping[service]);
+        break;
       default:
         break;
     }
@@ -175,6 +184,18 @@ function getAWSExportsObject(resources) {
   // add predictions config if predictions resources exist
   if (Object.entries(predictionsConfig).length > 0) {
     Object.assign(configOutput, { predictions: predictionsConfig });
+  }
+
+  // add geo config if geo resources exist
+  if (Object.entries(geoConfig).length > 0) {
+    Object.assign(
+      configOutput,
+      {
+        geo: {
+          amazon_location_service: geoConfig
+        }
+      }
+    );
   }
 
   return configOutput;
@@ -289,6 +310,16 @@ function getCognitoConfig(cognitoResources, projectRegion) {
     federationTarget = 'COGNITO_IDENTITY_POOLS';
   }
 
+  const frontendAuthConfig = {};
+  if (cognitoResource.frontendAuthConfig) {
+    frontendAuthConfig.aws_cognito_login_mechanisms = cognitoResource.frontendAuthConfig.loginMechanisms;
+    frontendAuthConfig.aws_cognito_signup_attributes = cognitoResource.frontendAuthConfig.signupAttributes;
+    frontendAuthConfig.aws_cognito_mfa_configuration = cognitoResource.frontendAuthConfig.mfaConfiguration;
+    frontendAuthConfig.aws_cognito_mfa_types = cognitoResource.frontendAuthConfig.mfaTypes;
+    frontendAuthConfig.aws_cognito_password_protection_settings = cognitoResource.frontendAuthConfig.passwordProtectionSettings;
+    frontendAuthConfig.aws_cognito_verification_mechanisms = cognitoResource.frontendAuthConfig.verificationMechanisms;
+  }
+
   return {
     aws_cognito_identity_pool_id: cognitoResource.output.IdentityPoolId,
     aws_cognito_region: projectRegion,
@@ -296,6 +327,7 @@ function getCognitoConfig(cognitoResources, projectRegion) {
     aws_user_pools_web_client_id: cognitoResource.output.AppClientIDWeb,
     oauth,
     federationTarget,
+    ...frontendAuthConfig,
   };
 }
 
@@ -527,6 +559,40 @@ function getSumerianConfig(sumerianResources) {
       scenes,
     },
   };
+}
+
+function getMapConfig(mapResources) {
+  let defaultMap = "";
+  const mapConfig = {
+    items: {}
+  };
+  mapResources.forEach(mapResource => {
+    const mapName = mapResource.output.Name;
+    mapConfig.items[mapName] = {
+      style: mapResource.output.Style
+    }
+    if(mapResource.isDefault) {
+      defaultMap = mapName;
+    }
+  });
+  mapConfig.default = defaultMap;
+  return mapConfig;
+}
+
+function getPlaceIndexConfig(placeIndexResources) {
+  let defaultPlaceIndex = "";
+  const placeIndexConfig = {
+    items: []
+  };
+  placeIndexResources.forEach(placeIndexResource => {
+    const placeIndexName = placeIndexResource.output.Name;
+    placeIndexConfig.items.push(placeIndexName);
+    if(placeIndexResource.isDefault) {
+      defaultPlaceIndex = placeIndexName;
+    }
+  });
+  placeIndexConfig.default = defaultPlaceIndex;
+  return placeIndexConfig;
 }
 
 module.exports = { createAWSExports, createAmplifyConfig, deleteAmplifyConfig };

@@ -3,7 +3,8 @@ import { run } from '../../commands/upgrade';
 import fetch, { Response } from 'node-fetch';
 import { $TSContext } from 'amplify-cli-core';
 import * as core from 'amplify-cli-core';
-
+import * as path from 'path';
+import { windowsPathSerializer } from '../testUtils/snapshot-serializer';
 jest.mock('fs-extra');
 const fs_mock = (fs as unknown) as jest.Mocked<typeof fs>;
 
@@ -45,6 +46,7 @@ const context_stub_typed = (context_stub as unknown) as $TSContext;
 
 // save original process.platform
 const originalPlatform = process.platform;
+expect.addSnapshotSerializer(windowsPathSerializer);
 
 describe('run upgrade using packaged CLI', () => {
   beforeEach(() => jest.clearAllMocks());
@@ -53,7 +55,7 @@ describe('run upgrade using packaged CLI', () => {
       value: originalPlatform,
     });
   });
-
+  
   it('exits early if no new packaged version available', async () => {
     // setup
     fetch_mock.mockResolvedValueOnce(({
@@ -98,16 +100,17 @@ describe('run upgrade using packaged CLI', () => {
     // validate
     expect(fs_mock.move.mock.calls[0]).toMatchInlineSnapshot(`
       Array [
-        "homedir/bin/amplify-pkg-linux",
-        "homedir/bin/amplify",
+        "${path.join('homedir', 'bin', 'amplify-pkg-linux')}",
+        "${path.join('homedir', 'bin', 'amplify')}",
         Object {
           "overwrite": true,
         },
       ]
     `);
+
     expect(fs_mock.chmod.mock.calls[0]).toMatchInlineSnapshot(`
       Array [
-        "homedir/bin/amplify",
+        "${path.join('homedir', 'bin', 'amplify')}",
         "700",
       ]
     `);
@@ -149,14 +152,14 @@ describe('run upgrade using packaged CLI', () => {
     // validate
     expect(fs_mock.move.mock.calls[0]).toMatchInlineSnapshot(`
       Array [
-        "homedir/bin/amplify.exe",
-        "homedir/bin/amplify-old.exe",
+        "${path.join('homedir', 'bin', 'amplify.exe')}",
+        "${path.join('homedir', 'bin', 'amplify-old.exe')}",
       ]
     `);
     expect(fs_mock.move.mock.calls[1]).toMatchInlineSnapshot(`
       Array [
-        "homedir/bin/amplify-pkg-win.exe",
-        "homedir/bin/amplify.exe",
+        "${path.join('homedir', 'bin', 'amplify-pkg-win.exe')}",
+        "${path.join('homedir', 'bin', 'amplify.exe')}",
         Object {
           "overwrite": true,
         },
@@ -164,7 +167,7 @@ describe('run upgrade using packaged CLI', () => {
     `);
     expect(fs_mock.chmod.mock.calls[0]).toMatchInlineSnapshot(`
       Array [
-        "homedir/bin/amplify.exe",
+        "${path.join('homedir', 'bin', 'amplify.exe')}",
         "700",
       ]
     `);

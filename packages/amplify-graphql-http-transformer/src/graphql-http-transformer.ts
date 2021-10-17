@@ -200,8 +200,8 @@ export class HttpTransformer extends TransformerPluginBase {
       // Create a new data source if necessary.
       const dataSourceId = HttpResourceIDs.HttpDataSourceID(directive.origin);
 
-      if (context.api.getDataSource(dataSourceId) === undefined) {
-        context.api.addHttpDataSource(dataSourceId, replaceEnvAndRegion(env, region, directive.origin), {}, stack);
+      if (context.api.host.getDataSource(dataSourceId) === undefined) {
+        context.api.host.addHttpDataSource(dataSourceId, replaceEnvAndRegion(env, region, directive.origin), {}, stack);
       }
 
       // Create the GraphQL resolver.
@@ -272,7 +272,7 @@ function createResolver(stack: cdk.Stack, dataSourceId: string, context: Transfo
     ? MappingTemplate.inlineTemplateFromString(requestTemplateString)
     : MappingTemplate.s3MappingTemplateFromString(requestTemplateString, `${config.resolverTypeName}.${config.resolverFieldName}.req.vtl`);
 
-  return context.api.addResolver(
+  return context.api.host.addResolver(
     config.resolverTypeName,
     config.resolverFieldName,
     requestMappingTemplate,

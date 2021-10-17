@@ -3,6 +3,144 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.34.11](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@3.34.10...amplify-util-mock@3.34.11) (2021-10-13)
+
+**Note:** Version bump only for package amplify-util-mock
+
+
+
+
+
+## [3.34.10](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@3.34.9...amplify-util-mock@3.34.10) (2021-10-10)
+
+**Note:** Version bump only for package amplify-util-mock
+
+
+
+
+
+## [3.34.9](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@3.34.8...amplify-util-mock@3.34.9) (2021-10-08)
+
+**Note:** Version bump only for package amplify-util-mock
+
+
+
+
+
+## [3.34.8](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@3.34.7...amplify-util-mock@3.34.8) (2021-10-06)
+
+**Note:** Version bump only for package amplify-util-mock
+
+
+
+
+
+## [3.34.7](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@3.34.6...amplify-util-mock@3.34.7) (2021-10-01)
+
+**Note:** Version bump only for package amplify-util-mock
+
+
+
+
+
+## [3.34.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@3.34.5...amplify-util-mock@3.34.6) (2021-09-27)
+
+**Note:** Version bump only for package amplify-util-mock
+
+
+
+
+
+## [3.34.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@3.34.4...amplify-util-mock@3.34.5) (2021-09-18)
+
+**Note:** Version bump only for package amplify-util-mock
+
+
+
+
+
+## [3.34.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@3.34.3...amplify-util-mock@3.34.4) (2021-09-14)
+
+**Note:** Version bump only for package amplify-util-mock
+
+
+
+
+
+## [3.34.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@3.34.2...amplify-util-mock@3.34.3) (2021-09-09)
+
+**Note:** Version bump only for package amplify-util-mock
+
+
+
+
+
+## [3.34.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@3.34.1...amplify-util-mock@3.34.2) (2021-09-02)
+
+**Note:** Version bump only for package amplify-util-mock
+
+
+
+
+
+## [3.34.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@3.34.0...amplify-util-mock@3.34.1) (2021-08-24)
+
+**Note:** Version bump only for package amplify-util-mock
+
+
+
+
+
+# [3.34.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@3.33.7...amplify-util-mock@3.34.0) (2021-08-06)
+
+
+### Features
+
+* **amplify-util-mock:** support pseudo parameters in environment variables when running `amplify mock function` ([#7804](https://github.com/aws-amplify/amplify-cli/issues/7804)) ([3d714b7](https://github.com/aws-amplify/amplify-cli/commit/3d714b7f522dd151f57d98d9bf48f161f7e75add))
+
+
+
+
+
+## [3.33.7](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@3.33.6...amplify-util-mock@3.33.7) (2021-07-30)
+
+**Note:** Version bump only for package amplify-util-mock
+
+
+
+
+
+## [3.33.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@3.33.5...amplify-util-mock@3.33.6) (2021-07-27)
+
+
+### Reverts
+
+* Revert "Revert "ci: add support for e2e token rotation (#7665)" (#7759)" (#7762) ([9ea4c8e](https://github.com/aws-amplify/amplify-cli/commit/9ea4c8e115ae62d7c348c3f0d82c89d795eebf46)), closes [#7665](https://github.com/aws-amplify/amplify-cli/issues/7665) [#7759](https://github.com/aws-amplify/amplify-cli/issues/7759) [#7762](https://github.com/aws-amplify/amplify-cli/issues/7762)
+* Revert "ci: add support for e2e token rotation (#7665)" (#7759) ([aadc915](https://github.com/aws-amplify/amplify-cli/commit/aadc9155f5c25478c7f317aec77f51290c6b9cfe)), closes [#7665](https://github.com/aws-amplify/amplify-cli/issues/7665) [#7759](https://github.com/aws-amplify/amplify-cli/issues/7759)
+
+
+
+
+
+## [3.33.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@3.33.4...amplify-util-mock@3.33.5) (2021-07-16)
+
+
+### Bug Fixes
+
+* [#7441](https://github.com/aws-amplify/amplify-cli/issues/7441) - init from git prompts for credentials twice ([#7682](https://github.com/aws-amplify/amplify-cli/issues/7682)) ([7471c5f](https://github.com/aws-amplify/amplify-cli/commit/7471c5fcc86af0e17a967066a388f67891f93355))
+
+
+
+
+
+## [3.33.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@3.33.3...amplify-util-mock@3.33.4) (2021-07-12)
+
+**Note:** Version bump only for package amplify-util-mock
+
+
+
+
+
 ## [3.33.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@3.33.2...amplify-util-mock@3.33.3) (2021-06-30)
 
 **Note:** Version bump only for package amplify-util-mock

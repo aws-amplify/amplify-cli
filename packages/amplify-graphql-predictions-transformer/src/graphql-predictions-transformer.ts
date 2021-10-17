@@ -1,7 +1,13 @@
 import * as path from 'path';
-import { DirectiveWrapper, InvalidDirectiveError, MappingTemplate, TransformerPluginBase } from '@aws-amplify/graphql-transformer-core';
 import {
-  TransformerBeforeStepContextProvider,
+  DirectiveWrapper,
+  IAM_AUTH_ROLE_PARAMETER,
+  IAM_UNAUTH_ROLE_PARAMETER,
+  InvalidDirectiveError,
+  MappingTemplate,
+  TransformerPluginBase,
+} from '@aws-amplify/graphql-transformer-core';
+import {
   TransformerContextProvider,
   TransformerSchemaVisitStepContextProvider,
   TransformerTransformSchemaStepContextProvider,
@@ -51,6 +57,7 @@ import {
   translateTextAmzTarget,
   PREDICTIONS_DIRECTIVE_STACK,
 } from './utils/constants';
+import { AuthorizationType } from '@aws-cdk/aws-appsync';
 
 type PredictionsDirectiveConfiguration = {
   actions: string[] | undefined;
@@ -71,18 +78,16 @@ export class PredictionsTransformer extends TransformerPluginBase {
     this.bucketName = predictionsConfig?.bucketName ?? '';
   }
 
-  before = (context: TransformerBeforeStepContextProvider): void => {
-    if (!this.bucketName) {
-      throw new InvalidDirectiveError('Please configure storage in your project in order to use the @predictions directive');
-    }
-  };
-
   field = (
     parent: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode,
     definition: FieldDefinitionNode,
     directive: DirectiveNode,
     context: TransformerSchemaVisitStepContextProvider,
   ): void => {
+    if (!this.bucketName) {
+      throw new InvalidDirectiveError('Please configure storage in your project in order to use the @predictions directive');
+    }
+
     if (parent.name.value !== context.output.getQueryTypeName()) {
       throw new InvalidDirectiveError('@predictions directive only works under Query operations.');
     }
@@ -94,7 +99,7 @@ export class PredictionsTransformer extends TransformerPluginBase {
     } as PredictionsDirectiveConfiguration);
 
     if (!Array.isArray(args.actions)) {
-      args.actions = [(args.actions as unknown) as string];
+      args.actions = [args.actions as unknown as string];
     }
 
     validateActions(args.actions);
@@ -181,7 +186,7 @@ export class PredictionsTransformer extends TransformerPluginBase {
         const datasourceName = actionToDataSourceMap.get(action) as string;
         const functionName = PredictionsResourceIDs.getPredictionFunctionName(action);
         const roleAction = actionToRoleAction.get(action);
-        let datasource = context.api.getDataSource(datasourceName);
+        let datasource = context.api.host.getDataSource(datasourceName);
 
         if (roleAction && !seenActions.has(action)) {
           role.attachInlinePolicy(
@@ -266,7 +271,7 @@ function createPredictionsDataSource(
     case identifyEntities:
     case identifyText:
     case identifyLabels:
-      datasource = context.api.addHttpDataSource(
+      datasource = context.api.host.addHttpDataSource(
         'RekognitionDataSource',
         cdk.Fn.sub('https://rekognition.${AWS::Region}.amazonaws.com'),
         {
@@ -279,7 +284,7 @@ function createPredictionsDataSource(
       );
       break;
     case translateText:
-      datasource = context.api.addHttpDataSource(
+      datasource = context.api.host.addHttpDataSource(
         'TranslateDataSource',
         cdk.Fn.sub('https://translate.${AWS::Region}.amazonaws.com'),
         {
@@ -293,7 +298,7 @@ function createPredictionsDataSource(
       break;
     case convertTextToSpeech:
     default:
-      datasource = context.api.addLambdaDataSource(
+      datasource = context.api.host.addLambdaDataSource(
         'LambdaDataSource',
         lambda.Function.fromFunctionAttributes(stack, 'LambdaDataSourceFunction', {
           functionArn: (lambdaFn as lambda.IFunction)?.functionArn,
@@ -321,23 +326,50 @@ function createResolver(
 
   if (referencesEnv(bucketName)) {
     const env = context.stackManager.getParameter(ResourceConstants.PARAMETERS.Env) as cdk.CfnParameter;
-    substitutions.env = (env as unknown) as string;
+    substitutions.env = env as unknown as string;
   }
+  const requestTemplate = [
+    cdk.Fn.conditionIf(
+      ResourceConstants.CONDITIONS.HasEnvironmentParameter,
+      cdk.Fn.sub(`$util.qr($ctx.stash.put("s3Bucket", "${bucketName}"))`, substitutions),
+      cdk.Fn.sub(`$util.qr($ctx.stash.put("s3Bucket", "${removeEnvReference(bucketName)}"))`, {
+        hash: cdk.Fn.select(3, cdk.Fn.split('-', cdk.Fn.ref('AWS::StackName'))),
+      }),
+    ) as unknown as string,
+    print(compoundExpression([qref('$ctx.stash.put("isList", false)')])),
+  ];
+  // TODO: predictions should use resolver manager
+  const authModes = [context.authConfig.defaultAuthentication, ...(context.authConfig.additionalAuthenticationProviders || [])].map(
+    mode => mode?.authenticationType,
+  );
+  if (authModes.includes(AuthorizationType.IAM)) {
+    const authRoleParameter = (context.stackManager.getParameter(IAM_AUTH_ROLE_PARAMETER) as cdk.CfnParameter).valueAsString;
+    const unauthRoleParameter = (context.stackManager.getParameter(IAM_UNAUTH_ROLE_PARAMETER) as cdk.CfnParameter).valueAsString;
+    requestTemplate.push(
+      `$util.qr($ctx.stash.put("authRole", "arn:aws:sts::${
+        cdk.Stack.of(context.stackManager.rootStack).account
+      }:assumed-role/${authRoleParameter}/CognitoIdentityCredentials"))`,
+      `$util.qr($ctx.stash.put("unauthRole", "arn:aws:sts::${
+        cdk.Stack.of(context.stackManager.rootStack).account
+      }:assumed-role/${unauthRoleParameter}/CognitoIdentityCredentials"))`,
+    );
+  }
+  requestTemplate.push(print(obj({})));
 
-  return context.api.addResolver(
+  return context.api.host.addResolver(
     config.resolverTypeName,
     config.resolverFieldName,
     MappingTemplate.inlineTemplateFromString(
-      (cdk.Fn.join('\n', [
-        (cdk.Fn.conditionIf(
+      cdk.Fn.join('\n', [
+        cdk.Fn.conditionIf(
           ResourceConstants.CONDITIONS.HasEnvironmentParameter,
           cdk.Fn.sub(`$util.qr($ctx.stash.put("s3Bucket", "${bucketName}"))`, substitutions),
           cdk.Fn.sub(`$util.qr($ctx.stash.put("s3Bucket", "${removeEnvReference(bucketName)}"))`, {
             hash: cdk.Fn.select(3, cdk.Fn.split('-', cdk.Fn.ref('AWS::StackName'))),
           }),
-        ) as unknown) as string,
+        ) as unknown as string,
         print(compoundExpression([qref('$ctx.stash.put("isList", false)'), obj({})])),
-      ]) as unknown) as string,
+      ]) as unknown as string,
     ),
     MappingTemplate.inlineTemplateFromString(
       print(
@@ -377,7 +409,7 @@ function createPredictionsLambda(context: TransformerContextProvider, stack: cdk
 
   // Update the runtime to Node 14 once the following issue is resolved:
   // https://github.com/aws-cloudformation/cloudformation-coverage-roadmap/issues/80#issuecomment-831796699
-  return context.api.addLambdaFunction(
+  return context.api.host.addLambdaFunction(
     PredictionsResourceIDs.lambdaHandlerName,
     `functions/${functionId}.zip`,
     PredictionsResourceIDs.lambdaHandlerName,
@@ -401,11 +433,11 @@ function removeEnvReference(value: string): string {
 
 function joinWithEnv(context: TransformerContextProvider, separator: string, listToJoin: any[]): string {
   const env = context.stackManager.getParameter(ResourceConstants.PARAMETERS.Env) as cdk.CfnParameter;
-  return (cdk.Fn.conditionIf(
+  return cdk.Fn.conditionIf(
     ResourceConstants.CONDITIONS.HasEnvironmentParameter,
     cdk.Fn.join(separator, [...listToJoin, env]),
     cdk.Fn.join(separator, listToJoin),
-  ) as unknown) as string;
+  ) as unknown as string;
 }
 
 function needsList(action: string, isCurrentlyList: boolean): boolean {
@@ -503,14 +535,14 @@ function getStorageArn(context: TransformerContextProvider, bucketName: string):
 
   if (referencesEnv(bucketName)) {
     const env = context.stackManager.getParameter(ResourceConstants.PARAMETERS.Env) as cdk.CfnParameter;
-    substitutions.env = (env as unknown) as string;
+    substitutions.env = env as unknown as string;
   }
 
-  return (cdk.Fn.conditionIf(
+  return cdk.Fn.conditionIf(
     ResourceConstants.CONDITIONS.HasEnvironmentParameter,
     cdk.Fn.sub(s3ArnKey(bucketName), substitutions),
     cdk.Fn.sub(s3ArnKey(removeEnvReference(bucketName)), { hash: cdk.Fn.select(3, cdk.Fn.split('-', cdk.Fn.ref('AWS::StackName'))) }),
-  ) as unknown) as string;
+  ) as unknown as string;
 }
 
 function createActionFunction(context: TransformerContextProvider, stack: cdk.Stack, action: string, datasourceName: string) {
@@ -672,7 +704,7 @@ function createActionFunction(context: TransformerContextProvider, stack: cdk.St
       break;
   }
 
-  return context.api.addAppSyncFunction(
+  return context.api.host.addAppSyncFunction(
     `${action}Function`,
     MappingTemplate.inlineTemplateFromString(print(actionFunctionResolver.request)),
     MappingTemplate.inlineTemplateFromString(print(actionFunctionResolver.response)),

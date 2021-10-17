@@ -5,7 +5,7 @@ import Lambda from 'cloudform-types/types/lambda';
 import Template from 'cloudform-types/types/template';
 import _ from 'lodash';
 import { hasExistingSecrets } from './secretDeltaUtilities';
-import { getFunctionSecretCfnName, getFunctionSecretCfnPrefix } from './secretName';
+import { getFunctionSecretCfnName, getFunctionSecretCfnPrefix, secretsPathAmplifyAppIdKey } from './secretName';
 
 /**
  * Makes changes to the function CFN template to support secrets via SSM Parameter Store
@@ -46,12 +46,23 @@ export const updateSecretsInCfnTemplate = async (
     }
   });
 
+  const hasSecrets = hasExistingSecrets(secretDeltas);
+
   // update policy to access secrets
-  if (hasExistingSecrets(secretDeltas)) {
+  if (hasSecrets) {
     cfnTemplate.Resources.AmplifyFunctionSecretsPolicy = getFunctionSecretsPolicy(functionName);
   } else {
     // if all secrets have been removed, remove the policy
     cfnTemplate.Resources.AmplifyFunctionSecretsPolicy = undefined;
+  }
+
+  // add app id param
+  if (hasSecrets) {
+    cfnTemplate.Parameters[secretsPathAmplifyAppIdKey] = {
+      Type: 'String',
+    };
+  } else {
+    cfnTemplate.Parameters[secretsPathAmplifyAppIdKey] = undefined;
   }
 
   return cfnTemplate;

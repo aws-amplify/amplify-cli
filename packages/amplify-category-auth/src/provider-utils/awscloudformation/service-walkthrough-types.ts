@@ -94,10 +94,17 @@ export interface PasswordPolicyResult {
   passwordPolicyMinLength?: number;
 }
 
+export enum AttributeType {
+  EMAIL = 'email',
+  PHONE_NUMBER = 'phone_number',
+  PREFERRED_USERNAME = 'preferred_username',
+}
+
 export type PasswordPolicy = 'Requires Lowercase' | 'Requires Numbers' | 'Requires Symbols' | 'Requires Uppercase';
 
-export type UsernameAttributes = 'email' | 'phone_number';
+export type UsernameAttributes = AttributeType.EMAIL | AttributeType.PHONE_NUMBER;
 
+export type AliasAttributes = AttributeType.EMAIL | AttributeType.PHONE_NUMBER | AttributeType.PREFERRED_USERNAME;
 export interface Triggers {
   triggers?: any; // TODO create a type for this
 }

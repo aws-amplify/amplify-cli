@@ -1,3 +1,4 @@
+import * as path from 'path';
 import { removeResource, forceRemoveResource } from '../../../extensions/amplify-helpers/remove-resource';
 import { stateManager, exitOnNextTick, ResourceDoesNotExistError, MissingParametersError } from 'amplify-cli-core';
 import * as inquirer from 'inquirer';
@@ -215,7 +216,7 @@ describe('remove-resource', () => {
           },
         },
       });
-      expect(context.filesystem.remove).toBeCalledWith('backendDirPath/function/lambda1');
+      expect(context.filesystem.remove).toBeCalledWith(path.join('backendDirPath', 'function', 'lambda1'));
       expect(removeResourceParameters).toBeCalledWith(context, 'function', 'lambda1');
       expect(updateBackendConfigAfterResourceRemove).toBeCalledWith('function', 'lambda1');
       expect(context.print.success).toBeCalledWith('Successfully removed resource');

@@ -1,5 +1,7 @@
 const category = 'auth';
 
+const { JSONUtilities, stateManager } = require('amplify-cli-core');
+const { validateAddAuthRequest, validateUpdateAuthRequest, validateImportAuthRequest } = require('amplify-util-headless-input');
 const _ = require('lodash');
 const path = require('path');
 const sequential = require('promise-sequential');
@@ -16,13 +18,14 @@ const { ENV_SPECIFIC_PARAMS } = require('./provider-utils/awscloudformation/cons
 
 const { transformUserPoolGroupSchema } = require('./provider-utils/awscloudformation/utils/transform-user-pool-group');
 const { uploadFiles } = require('./provider-utils/awscloudformation/utils/trigger-file-uploader');
-const { validateAddAuthRequest, validateUpdateAuthRequest, validateImportAuthRequest } = require('amplify-util-headless-input');
 const { getAddAuthRequestAdaptor, getUpdateAuthRequestAdaptor } = require('./provider-utils/awscloudformation/utils/auth-request-adaptors');
 const { getAddAuthHandler, getUpdateAuthHandler } = require('./provider-utils/awscloudformation/handlers/resource-handlers');
 const { projectHasAuth } = require('./provider-utils/awscloudformation/utils/project-has-auth');
 const { attachPrevParamsToContext } = require('./provider-utils/awscloudformation/utils/attach-prev-params-to-context');
-const { stateManager } = require('amplify-cli-core');
+const { getFrontendConfig } = require('./provider-utils/awscloudformation/utils/amplify-meta-updaters');
 const { headlessImport } = require('./provider-utils/awscloudformation/import');
+const { AuthParameters } = require('./provider-utils/awscloudformation/import/types');
+const { getSupportedServices } = require('./provider-utils/supported-services');
 
 const {
   doesConfigurationIncludeSMS,
@@ -31,9 +34,9 @@ const {
 } = require('./provider-utils/awscloudformation/utils/auth-sms-workflow-helper');
 
 // this function is being kept for temporary compatability.
-async function add(context) {
+async function add(context, skipNextSteps = false) {
   const { amplify } = context;
-  const servicesMetadata = require('./provider-utils/supported-services').supportedServices;
+  const servicesMetadata = getSupportedServices();
   const existingAuth = amplify.getProjectDetails().amplifyMeta.auth || {};
 
   if (Object.keys(existingAuth).length > 0) {
@@ -51,7 +54,7 @@ async function add(context) {
         context.print.error('Provider not configured for this category');
         return;
       }
-      return providerController.addResource(context, result.service);
+      return providerController.addResource(context, result.service, skipNextSteps);
     })
     .catch(err => {
       context.print.info(err.stack);
@@ -63,7 +66,7 @@ async function add(context) {
 
 async function externalAuthEnable(context, externalCategory, resourceName, requirements) {
   const { amplify } = context;
-  const serviceMetadata = require('./provider-utils/supported-services').supportedServices;
+  const serviceMetadata = getSupportedServices();
   const { cfnFilename, provider } = serviceMetadata.Cognito;
   const authExists = amplify.getProjectDetails().amplifyMeta.auth && Object.keys(amplify.getProjectDetails().amplifyMeta.auth).length > 0; //eslint-disable-line
   let currentAuthName;
@@ -250,13 +253,8 @@ async function checkRequirements(requirements, context, category, targetResource
 
 async function initEnv(context) {
   const { amplify } = context;
-  const {
-    resourcesToBeCreated,
-    resourcesToBeUpdated,
-    resourcesToBeSynced,
-    resourcesToBeDeleted,
-    allResources,
-  } = await amplify.getResourceStatus('auth');
+  const { resourcesToBeCreated, resourcesToBeUpdated, resourcesToBeSynced, resourcesToBeDeleted, allResources } =
+    await amplify.getResourceStatus('auth');
   const isPulling = context.input.command === 'pull' || (context.input.command === 'env' && context.input.subCommands[0] === 'pull');
   let toBeCreated = [];
   let toBeUpdated = [];
@@ -313,7 +311,7 @@ async function initEnv(context) {
 
 async function console(context) {
   const { amplify } = context;
-  const { supportedServices } = require('./provider-utils/supported-services');
+  const supportedServices = getSupportedServices();
   const amplifyMeta = amplify.getProjectMeta();
 
   if (!amplifyMeta.auth || Object.keys(amplifyMeta.auth).length === 0) {
@@ -405,17 +403,11 @@ const executeAmplifyHeadlessCommand = async (context, headlessPayload) => {
         return;
       }
       await validateImportAuthRequest(headlessPayload);
-      const { provider } = require('./provider-utils/supported-services').supportedServices.Cognito;
+      const { provider } = getSupportedServices().Cognito;
       const providerPlugin = context.amplify.getPluginInstance(context, provider);
       const cognito = await providerPlugin.createCognitoUserPoolService(context);
       const identity = await providerPlugin.createIdentityPoolService(context);
-      const { JSONUtilities } = require('amplify-cli-core/lib/jsonUtilities');
-      const {
-        userPoolId,
-        identityPoolId,
-        nativeClientId,
-        webClientId,
-      } = JSONUtilities.parse(headlessPayload);
+      const { userPoolId, identityPoolId, nativeClientId, webClientId } = JSONUtilities.parse(headlessPayload);
       const projectConfig = context.amplify.getProjectConfig();
       const resourceName = projectConfig.projectName.toLowerCase().replace(/[^A-Za-z0-9_]+/g, '_');
       const resourceParams = {
@@ -446,7 +438,7 @@ async function prePushAuthHook(context) {
 
 async function importAuth(context) {
   const { amplify } = context;
-  const servicesMetadata = require('./provider-utils/supported-services').supportedServices;
+  const servicesMetadata = getSupportedServices();
   const existingAuth = amplify.getProjectDetails().amplifyMeta.auth || {};
 
   if (Object.keys(existingAuth).length > 0) {
@@ -487,4 +479,6 @@ module.exports = {
   category,
   importAuth,
   isSMSWorkflowEnabled,
+  AuthParameters,
+  getFrontendConfig,
 };

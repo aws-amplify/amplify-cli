@@ -19,6 +19,7 @@ const { fileLogger } = require('./utils/aws-logger');
 const { prePushCfnTemplateModifier } = require('./pre-push-cfn-processor/pre-push-cfn-modifier');
 const logger = fileLogger('attach-backend');
 const { configurePermissionsBoundaryForInit } = require('./permissions-boundary/permissions-boundary');
+const { uploadHooksDirectory } = require('./utils/hooks-manager');
 
 export async function run(context) {
   await configurationManager.init(context);
@@ -29,13 +30,13 @@ export async function run(context) {
     const timeStamp = `${moment().format('Hmmss')}`;
     const { envName = '' } = context.exeInfo.localEnvInfo;
     let stackName = normalizeStackName(`amplify-${projectName}-${envName}-${timeStamp}`);
-    const awsConfig = await configurationManager.getAwsConfig(context);
+    const awsConfigInfo = await configurationManager.getAwsConfig(context);
 
     await configurePermissionsBoundaryForInit(context);
 
     const amplifyServiceParams = {
       context,
-      awsConfig,
+      awsConfigInfo,
       projectName,
       envName,
       stackName,
@@ -80,7 +81,7 @@ export async function run(context) {
     spinner.start('Initializing project in the cloud...');
 
     try {
-      const cfnItem = await new Cloudformation(context, 'init', awsConfig);
+      const cfnItem = await new Cloudformation(context, 'init', awsConfigInfo);
       const stackDescriptionData = await cfnItem.createResourceStack(params);
 
       processStackCreationData(context, amplifyAppId, stackDescriptionData);
@@ -166,6 +167,7 @@ export async function onInitSuccessful(context) {
   if (context.exeInfo.isNewEnv) {
     context = await storeCurrentCloudBackend(context);
     await storeArtifactsForAmplifyService(context);
+    await uploadHooksDirectory(context);
   }
   return context;
 }

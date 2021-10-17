@@ -3,36 +3,39 @@ import { CfnParameter, Stack } from '@aws-cdk/core';
 
 export function createParametersStack(stack: Stack): Map<string, CfnParameter> {
   const {
-    ElasticsearchAccessIAMRoleName,
-    ElasticsearchStreamingLambdaHandlerName,
-    ElasticsearchStreamingLambdaRuntime,
-    ElasticsearchStreamingFunctionName,
-    ElasticsearchStreamingIAMRoleName,
-    ElasticsearchDebugStreamingLambda,
-    ElasticsearchInstanceCount,
-    ElasticsearchInstanceType,
-    ElasticsearchEBSVolumeGB,
+    OpenSearchAccessIAMRoleName,
+    OpenSearchStreamingLambdaHandlerName,
+    OpenSearchStreamingLambdaRuntime,
+    OpenSearchStreamingFunctionName,
+    OpenSearchStreamBatchSize,
+    OpenSearchStreamMaximumBatchingWindowInSeconds,
+    OpenSearchStreamingIAMRoleName,
+    OpenSearchDebugStreamingLambda,
+    OpenSearchInstanceCount,
+    OpenSearchInstanceType,
+    OpenSearchEBSVolumeGB,
   } = ResourceConstants.PARAMETERS;
+
   return new Map<string, CfnParameter>([
     [
-      ElasticsearchAccessIAMRoleName,
-      new CfnParameter(stack, ElasticsearchAccessIAMRoleName, {
-        description: 'The name of the IAM role assumed by AppSync for Elasticsearch.',
-        default: 'AppSyncElasticsearchRole',
+      OpenSearchAccessIAMRoleName,
+      new CfnParameter(stack, OpenSearchAccessIAMRoleName, {
+        description: 'The name of the IAM role assumed by AppSync for OpenSearch.',
+        default: 'AppSyncOpenSearchRole',
       }),
     ],
 
     [
-      ElasticsearchStreamingLambdaHandlerName,
-      new CfnParameter(stack, ElasticsearchStreamingLambdaHandlerName, {
+      OpenSearchStreamingLambdaHandlerName,
+      new CfnParameter(stack, OpenSearchStreamingLambdaHandlerName, {
         description: 'The name of the lambda handler.',
         default: 'python_streaming_function.lambda_handler',
       }),
     ],
 
     [
-      ElasticsearchStreamingLambdaRuntime,
-      new CfnParameter(stack, ElasticsearchStreamingLambdaRuntime, {
+      OpenSearchStreamingLambdaRuntime,
+      new CfnParameter(stack, OpenSearchStreamingLambdaRuntime, {
         description: `The lambda runtime \
                 (https://docs.aws.amazon.com/lambda/latest/dg/API_CreateFunction.html#SSS-CreateFunction-request-Runtime)`,
         default: 'python3.6',
@@ -40,25 +43,43 @@ export function createParametersStack(stack: Stack): Map<string, CfnParameter> {
     ],
 
     [
-      ElasticsearchStreamingFunctionName,
-      new CfnParameter(stack, ElasticsearchStreamingFunctionName, {
+      OpenSearchStreamingFunctionName,
+      new CfnParameter(stack, OpenSearchStreamingFunctionName, {
         description: 'The name of the streaming lambda function.',
         default: 'DdbToEsFn',
       }),
     ],
 
     [
-      ElasticsearchAccessIAMRoleName,
-      new CfnParameter(stack, ElasticsearchStreamingIAMRoleName, {
+      OpenSearchStreamBatchSize,
+      new CfnParameter(stack, OpenSearchStreamBatchSize, {
+        description: 'The maximum number of records to stream to OpenSearch per batch.',
+        type: 'Number',
+        default: 100,
+      }),
+    ],
+
+    [
+      OpenSearchStreamMaximumBatchingWindowInSeconds,
+      new CfnParameter(stack, OpenSearchStreamMaximumBatchingWindowInSeconds, {
+        description: 'The maximum amount of time in seconds to wait for DynamoDB stream records before sending to streaming lambda.',
+        type: 'Number',
+        default: 1,
+      }),
+    ],
+
+    [
+      OpenSearchAccessIAMRoleName,
+      new CfnParameter(stack, OpenSearchStreamingIAMRoleName, {
         description: 'The name of the streaming lambda function IAM role.',
         default: 'SearchableLambdaIAMRole',
       }),
     ],
 
     [
-      ElasticsearchDebugStreamingLambda,
-      new CfnParameter(stack, ElasticsearchDebugStreamingLambda, {
-        description: 'Enable debug logs for the Dynamo -> ES streaming lambda.',
+      OpenSearchDebugStreamingLambda,
+      new CfnParameter(stack, OpenSearchDebugStreamingLambda, {
+        description: 'Enable debug logs for the Dynamo -> OpenSearch streaming lambda.',
         default: 1,
         type: 'Number',
         allowedValues: ['0', '1'],
@@ -66,18 +87,18 @@ export function createParametersStack(stack: Stack): Map<string, CfnParameter> {
     ],
 
     [
-      ElasticsearchInstanceCount,
-      new CfnParameter(stack, ElasticsearchInstanceCount, {
-        description: 'The number of instances to launch into the Elasticsearch domain.',
+      OpenSearchInstanceCount,
+      new CfnParameter(stack, OpenSearchInstanceCount, {
+        description: 'The number of instances to launch into the OpenSearch domain.',
         default: 1,
         type: 'Number',
       }),
     ],
 
     [
-      ElasticsearchInstanceType,
-      new CfnParameter(stack, ElasticsearchInstanceType, {
-        description: 'The type of instance to launch into the Elasticsearch domain.',
+      OpenSearchInstanceType,
+      new CfnParameter(stack, OpenSearchInstanceType, {
+        description: 'The type of instance to launch into the OpenSearch domain.',
         default: 't2.small.elasticsearch',
         allowedValues: [
           't2.small.elasticsearch',
@@ -115,13 +136,34 @@ export function createParametersStack(stack: Stack): Map<string, CfnParameter> {
           'i3.4xlarge.elasticsearch',
           'i3.8xlarge.elasticsearch',
           'i3.16xlarge.elasticsearch',
+          'r6gd.12xlarge.elasticsearch',
+          'ultrawarm1.xlarge.elasticsearch',
+          'm5.4xlarge.elasticsearch',
+          't3.xlarge.elasticsearch',
+          'm6g.xlarge.elasticsearch',
+          'm6g.12xlarge.elasticsearch',
+          't2.micro.elasticsearch',
+          'r6gd.16xlarge.elasticsearch',
+          'd2.2xlarge.elasticsearch',
+          't3.micro.elasticsearch',
+          'm5.large.elasticsearch',
+          'd2.4xlarge.elasticsearch',
+          't3.small.elasticsearch',
+          'c5.2xlarge.elasticsearch',
+          'c6g.2xlarge.elasticsearch',
+          'd2.8xlarge.elasticsearch',
+          'c5.4xlarge.elasticsearch',
+          't4g.medium.elasticsearch',
+          'c6g.4xlarge.elasticsearch',
+          'c6g.xlarge.elasticsearch',
+          'c6g.12xlarge.elasticsearch',
         ],
       }),
     ],
 
     [
-      ElasticsearchEBSVolumeGB,
-      new CfnParameter(stack, ElasticsearchEBSVolumeGB, {
+      OpenSearchEBSVolumeGB,
+      new CfnParameter(stack, OpenSearchEBSVolumeGB, {
         description: 'The size in GB of the EBS volumes that contain our data.',
         default: 10,
         type: 'Number',

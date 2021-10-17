@@ -1,6 +1,6 @@
-import { GraphQLAPIProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { GraphQLAPIProvider, TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { EventSourceMapping, IFunction, LayerVersion, Runtime, StartingPosition } from '@aws-cdk/aws-lambda';
-import { CfnParameter, Construct, Fn, Stack } from '@aws-cdk/core';
+import { CfnParameter, Construct, Fn, Stack, Duration } from '@aws-cdk/core';
 import { Effect, IRole, Policy, PolicyStatement, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 import { ResourceConstants, SearchableResourceIDs } from 'graphql-transformer-common';
 import * as path from 'path';
@@ -16,19 +16,19 @@ export const createLambda = (
   region?: string,
 ): IFunction => {
   assert(region);
-  const { ElasticsearchStreamingLambdaFunctionLogicalID } = ResourceConstants.RESOURCES;
-  const { ElasticsearchStreamingLambdaHandlerName, ElasticsearchDebugStreamingLambda } = ResourceConstants.PARAMETERS;
+  const { OpenSearchStreamingLambdaFunctionLogicalID } = ResourceConstants.RESOURCES;
+  const { OpenSearchStreamingLambdaHandlerName, OpenSearchDebugStreamingLambda } = ResourceConstants.PARAMETERS;
   const enviroment: { [key: string]: string } = {
-    ES_ENDPOINT: 'https://' + endpoint,
-    ES_REGION: region,
-    DEBUG: parameterMap.get(ElasticsearchDebugStreamingLambda)!.valueAsString,
-    ES_USE_EXTERNAL_VERSIONING: isProjectUsingDataStore.toString(),
+    OPENSEARCH_ENDPOINT: 'https://' + endpoint,
+    OPENSEARCH_REGION: region,
+    DEBUG: parameterMap.get(OpenSearchDebugStreamingLambda)!.valueAsString,
+    OPENSEARCH_USE_EXTERNAL_VERSIONING: isProjectUsingDataStore.toString(),
   };
 
-  return apiGraphql.addLambdaFunction(
-    ElasticsearchStreamingLambdaFunctionLogicalID,
-    'functions/' + ElasticsearchStreamingLambdaFunctionLogicalID + '.zip',
-    parameterMap.get(ElasticsearchStreamingLambdaHandlerName)!.valueAsString,
+  return apiGraphql.host.addLambdaFunction(
+    OpenSearchStreamingLambdaFunctionLogicalID,
+    'functions/' + OpenSearchStreamingLambdaFunctionLogicalID + '.zip',
+    parameterMap.get(OpenSearchStreamingLambdaHandlerName)!.valueAsString,
     path.resolve(__dirname, '..', '..', 'lib', 'streaming-lambda.zip'),
     Runtime.PYTHON_3_6,
     [
@@ -45,12 +45,12 @@ export const createLambda = (
   );
 };
 
-export const createLambdaRole = (stack: Construct, parameterMap: Map<string, CfnParameter>): IRole => {
-  const { ElasticsearchStreamingLambdaIAMRoleLogicalID } = ResourceConstants.RESOURCES;
-  const { ElasticsearchStreamingIAMRoleName } = ResourceConstants.PARAMETERS;
-  const role = new Role(stack, ElasticsearchStreamingLambdaIAMRoleLogicalID, {
+export const createLambdaRole = (context: TransformerContextProvider, stack: Construct, parameterMap: Map<string, CfnParameter>): IRole => {
+  const { OpenSearchStreamingLambdaIAMRoleLogicalID } = ResourceConstants.RESOURCES;
+  const { OpenSearchStreamingIAMRoleName } = ResourceConstants.PARAMETERS;
+  const role = new Role(stack, OpenSearchStreamingLambdaIAMRoleLogicalID, {
     assumedBy: new ServicePrincipal('lambda.amazonaws.com'),
-    roleName: parameterMap.get(ElasticsearchStreamingIAMRoleName)?.valueAsString,
+    roleName: context.resourceHelper.generateIAMRoleName(parameterMap.get(OpenSearchStreamingIAMRoleName)?.valueAsString ?? ''),
   });
   role.attachInlinePolicy(
     new Policy(stack, 'CloudwatchLogsAccess', {
@@ -71,13 +71,16 @@ export const createEventSourceMapping = (
   stack: Construct,
   type: string,
   target: IFunction,
+  parameterMap: Map<string, CfnParameter>,
   tableStreamArn?: string,
 ): EventSourceMapping => {
+  const { OpenSearchStreamBatchSize, OpenSearchStreamMaximumBatchingWindowInSeconds } = ResourceConstants.PARAMETERS;
   assert(tableStreamArn);
   return new EventSourceMapping(stack, SearchableResourceIDs.SearchableEventSourceMappingID(type), {
     eventSourceArn: tableStreamArn,
     target,
-    batchSize: 1,
+    batchSize: parameterMap.get(OpenSearchStreamBatchSize)!.valueAsNumber,
+    maxBatchingWindow: Duration.seconds(parameterMap.get(OpenSearchStreamMaximumBatchingWindowInSeconds)!.valueAsNumber),
     enabled: true,
     startingPosition: StartingPosition.LATEST,
   });

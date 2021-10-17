@@ -62,4 +62,12 @@ describe('remove-env-from-cloud', () => {
 
     await expect(removeEnvFromCloud(context, 'test', false)).rejects.toThrow('deleteEnv error');
   });
+
+  it('does not throw not found error when deleteEnv promise rejected', async () => {
+    const e: any = new Error('deleteEnv error');
+    e.code = 'NotFoundException';
+    deleteEnvMock.mockRejectedValue(e);
+
+    await expect(removeEnvFromCloud(context, 'test', false)).resolves.not.toThrow('deleteEnv error');
+  });
 });

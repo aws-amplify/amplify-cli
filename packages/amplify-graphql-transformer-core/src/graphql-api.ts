@@ -1,36 +1,22 @@
-import { APIIAMResourceProvider, GraphQLAPIProvider, MappingTemplateProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import { ElasticSearchDataSourceOptions } from '@aws-amplify/graphql-transformer-interfaces/src/graphql-api-provider';
+import { APIIAMResourceProvider, GraphQLAPIProvider, TransformHostProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import {
   ApiKeyConfig,
   AuthorizationConfig,
   AuthorizationMode,
   AuthorizationType,
-  BaseDataSource,
   CfnApiKey,
   CfnGraphQLApi,
   CfnGraphQLSchema,
-  CfnResolver,
-  DataSourceOptions,
-  DynamoDbDataSource,
   GraphqlApiBase,
-  HttpDataSource,
-  HttpDataSourceOptions,
-  LambdaDataSource,
   LogConfig,
-  NoneDataSource,
   OpenIdConnectConfig,
   UserPoolConfig,
   UserPoolDefaultAction,
 } from '@aws-cdk/aws-appsync';
-import { ITable } from '@aws-cdk/aws-dynamodb';
-import { Grant, IGrantable, IRole, ManagedPolicy, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
-import { CfnFunction, Code, Function, IFunction, ILayerVersion, Runtime } from '@aws-cdk/aws-lambda';
-import { CfnResource, Construct, Duration, Stack, Token } from '@aws-cdk/core';
-import { toCamelCase } from 'graphql-transformer-common';
-import { AppSyncFunctionConfiguration } from './appsync-function';
-import { ElasticsearchDataSource } from './cdk-compat/elasticsearch-datasource';
+import { Grant, IGrantable, ManagedPolicy, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
+import { CfnResource, Construct, Duration, Stack } from '@aws-cdk/core';
 import { TransformerSchema } from './cdk-compat/schema-asset';
-import { InlineTemplate, S3MappingFunctionCode } from './cdk-compat/template-asset';
+import { DefaultTransformHost } from './transform-host';
 
 export interface GraphqlApiProps {
   /**
@@ -126,6 +112,8 @@ export class IamResource implements APIIAMResourceProvider {
 
 export type TransformerAPIProps = GraphqlApiProps & {
   readonly createApiKey?: boolean;
+  readonly host?: TransformHostProvider;
+  readonly sandboxModeEnabled?: boolean;
 };
 export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
   /**
@@ -133,6 +121,12 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
    * i.e. 'lxz775lwdrgcndgz3nurvac7oa'
    */
   public readonly apiId: string;
+
+  /**
+   * The TransformHost object provides resource creation utilities in AWS
+   * such as a LambdaDataSource or a DynamoDBDataSource
+   */
+  public readonly host: TransformHostProvider;
 
   /**
    * the ARN of the API
@@ -168,12 +162,15 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
    */
   public readonly apiKey?: string;
 
+  /**
+   * Global Sandbox Mode for GraphQL API
+   */
+  public readonly sandboxModeEnabled?: boolean;
+
   private schemaResource: CfnGraphQLSchema;
   private api: CfnGraphQLApi;
   private apiKeyResource?: CfnApiKey;
   private authorizationConfig?: Required<AuthorizationConfig>;
-
-  private dataSources: Map<string, BaseDataSource> = new Map();
 
   constructor(scope: Construct, id: string, props: TransformerAPIProps) {
     super(scope, id);
@@ -207,7 +204,9 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
     this.schema = props.schema ?? new TransformerSchema();
     this.schemaResource = this.schema.bind(this);
 
-    if (props.createApiKey && modes.some(mode => mode.authorizationType === AuthorizationType.API_KEY)) {
+    const hasApiKey = modes.some(mode => mode.authorizationType === AuthorizationType.API_KEY);
+
+    if (props.createApiKey && hasApiKey) {
       const config = modes.find((mode: AuthorizationMode) => {
         return mode.authorizationType === AuthorizationType.API_KEY && mode.apiKeyConfig;
       })?.apiKeyConfig;
@@ -215,108 +214,17 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
       this.apiKeyResource.addDependsOn(this.schemaResource);
       this.apiKey = this.apiKeyResource.attrApiKey;
     }
-  }
 
-  addElasticSearchDataSource(
-    name: string,
-    awsRegion: string,
-    endpoint: string,
-    options?: ElasticSearchDataSourceOptions,
-    stack?: Stack,
-  ): ElasticsearchDataSource {
-    if (this.dataSources.has(name)) {
-      throw new Error(`DataSource ${name} already exists in the API`);
+    if (hasApiKey && props.sandboxModeEnabled) this.sandboxModeEnabled = true;
+
+    if (props.host) {
+      this.host = props.host;
+      this.host.setAPI(this);
+    } else {
+      this.host = new DefaultTransformHost({
+        api: this,
+      });
     }
-    const data = this.doAddElasticSearchDataSource(name, endpoint, awsRegion, options, stack);
-    this.dataSources.set(options?.name || name, data);
-    return data;
-  }
-
-  public addHttpDataSource(name: string, endpoint: string, options?: DataSourceOptions, stack?: Stack): HttpDataSource {
-    if (this.dataSources.has(name)) {
-      throw new Error(`DataSource ${name} already exists in the API`);
-    }
-    const dataSource = this.doAddHttpDataSource(name, endpoint, options, stack);
-    this.dataSources.set(name, dataSource);
-    return dataSource;
-  }
-
-  public addDynamoDbDataSource(name: string, table: ITable, options?: DataSourceOptions, stack?: Stack): DynamoDbDataSource {
-    if (this.dataSources.has(name)) {
-      throw new Error(`DataSource ${name} already exists in the API`);
-    }
-    const dataSource = this.doAddDynamoDbDataSource(name, table, options, stack);
-    this.dataSources.set(options?.name || name, dataSource);
-    return dataSource;
-  }
-
-  public addNoneDataSource(name: string, options?: DataSourceOptions, stack?: Stack): NoneDataSource {
-    if (this.dataSources.has(name)) {
-      throw new Error(`DataSource ${name} already exists in the API`);
-    }
-    const dataSource = this.doAddNoneDataSource(name, options, stack);
-    this.dataSources.set(name, dataSource);
-    return dataSource;
-  }
-
-  public addLambdaDataSource(name: string, lambdaFunction: IFunction, options?: DataSourceOptions, stack?: Stack): LambdaDataSource {
-    if (!Token.isUnresolved(name) && this.dataSources.has(name)) {
-      throw new Error(`DataSource ${name} already exists in the API`);
-    }
-    const dataSource = this.doAddLambdaDataSource(name, lambdaFunction, options, stack);
-    this.dataSources.set(name, dataSource);
-    return dataSource;
-  }
-
-  public addAppSyncFunction(
-    name: string,
-    requestMappingTemplate: MappingTemplateProvider,
-    responseMappingTemplate: MappingTemplateProvider,
-    dataSourceName: string,
-    stack?: Stack,
-  ): AppSyncFunctionConfiguration {
-    if (dataSourceName && !Token.isUnresolved(dataSourceName) && !this.dataSources.has(dataSourceName)) {
-      throw new Error(`DataSource ${dataSourceName} is missing in the API`);
-    }
-    const dataSource = this.dataSources.get(dataSourceName);
-    const fn = new AppSyncFunctionConfiguration(stack || this, name, {
-      api: this,
-      dataSource: dataSource || dataSourceName,
-      requestMappingTemplate,
-      responseMappingTemplate,
-    });
-    return fn;
-  }
-
-  addLambdaFunction(
-    functionName: string,
-    functionKey: string,
-    handlerName: string,
-    filePath: string,
-    runtime: Runtime,
-    layers?: ILayerVersion[],
-    role?: IRole,
-    environment?: { [key: string]: string },
-    timeout?: Duration,
-    stack?: Stack,
-  ): IFunction {
-    const dummycode = `if __name__ == "__main__":`; // assing dummy code so as to be overriden later
-    const fn = new Function(stack || this, functionName, {
-      code: Code.fromInline(dummycode),
-      handler: handlerName,
-      runtime,
-      role,
-      layers,
-      environment,
-      timeout,
-    });
-    fn.addLayers();
-    const functionCode = new S3MappingFunctionCode(functionKey, filePath).bind(fn);
-    (fn.node.defaultChild as CfnFunction).code = {
-      s3Key: functionCode.s3ObjectKey,
-      s3Bucket: functionCode.s3BucketName,
-    };
-    return fn;
   }
 
   /**
@@ -375,161 +283,6 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
     return this.authorizationConfig?.defaultAuthorization;
   }
 
-  public addResolver(
-    typeName: string,
-    fieldName: string,
-    requestMappingTemplate: MappingTemplateProvider,
-    responseMappingTemplate: MappingTemplateProvider,
-    dataSourceName?: string,
-    pipelineConfig?: string[],
-    stack?: Stack,
-  ) {
-    if (dataSourceName && !Token.isUnresolved(dataSourceName) && !this.dataSources.has(dataSourceName)) {
-      throw new Error(`DataSource ${dataSourceName} is missing in the API`);
-    }
-
-    const requestTemplateLocation = requestMappingTemplate.bind(this);
-    const responseTemplateLocation = responseMappingTemplate.bind(this);
-    const resolverName = toCamelCase([typeName, fieldName, 'Resolver']);
-    if (dataSourceName) {
-      const dataSource = this.dataSources.get(dataSourceName);
-
-      const resolver = new CfnResolver(stack || this, resolverName, {
-        apiId: this.apiId,
-        fieldName: fieldName,
-        typeName: typeName,
-        kind: 'UNIT',
-        dataSourceName: dataSource?.ds.attrName || dataSourceName,
-        ...(requestMappingTemplate instanceof InlineTemplate
-          ? { requestMappingTemplate: requestTemplateLocation }
-          : { requestMappingTemplateS3Location: requestTemplateLocation }),
-        ...(responseMappingTemplate instanceof InlineTemplate
-          ? { responseMappingTemplate: responseTemplateLocation }
-          : { responseMappingTemplateS3Location: responseTemplateLocation }),
-      });
-      this.addSchemaDependency(resolver);
-      return resolver;
-    } else if (pipelineConfig) {
-      const resolver = new CfnResolver(stack || this, resolverName, {
-        apiId: this.apiId,
-        fieldName: fieldName,
-        typeName: typeName,
-        kind: 'PIPELINE',
-        ...(requestMappingTemplate instanceof InlineTemplate
-          ? { requestMappingTemplate: requestTemplateLocation }
-          : { requestMappingTemplateS3Location: requestTemplateLocation }),
-        ...(responseMappingTemplate instanceof InlineTemplate
-          ? { responseMappingTemplate: responseTemplateLocation }
-          : { responseMappingTemplateS3Location: responseTemplateLocation }),
-        pipelineConfig: {
-          functions: pipelineConfig,
-        },
-      });
-      this.addSchemaDependency(resolver);
-      return resolver;
-    } else {
-      throw new Error('Resolver needs either dataSourceName or pipelineConfig to be passed');
-    }
-  }
-
-  public hasDataSource(name: string): boolean {
-    return this.dataSources.has(name);
-  }
-  public getDataSource = (name: string): BaseDataSource | void => {
-    if (this.hasDataSource(name)) {
-      return this.dataSources.get(name);
-    }
-  };
-
-  /**
-   *
-   * @param id The data source's id
-   * @param options optional configuration for data source
-   * @param stack  Stack to which this datasource needs to mapped to
-   */
-  protected doAddNoneDataSource(id: string, options?: DataSourceOptions, stack?: Stack): NoneDataSource {
-    return new NoneDataSource(stack ?? this, id, {
-      api: this,
-      name: options?.name,
-      description: options?.description,
-    });
-  }
-
-  /**
-   * add a new DynamoDB data source to this API
-   *
-   * @param id The data source's id
-   * @param table The DynamoDB table backing this data source
-   * @param options The optional configuration for this data source
-   * @param stack  Stack to which this datasource needs to mapped to
-   */
-  protected doAddDynamoDbDataSource(id: string, table: ITable, options?: DataSourceOptions, stack?: Stack): DynamoDbDataSource {
-    return new DynamoDbDataSource(stack ?? this, id, {
-      api: this,
-      table,
-      name: options?.name,
-      description: options?.description,
-    });
-  }
-
-  /**
-   * add a new http data source to this API
-   *
-   * @param id The data source's id
-   * @param endpoint The http endpoint
-   * @param options The optional configuration for this data source
-   * @param stack Stack to which the http datasource needs to be created in
-   */
-  protected doAddHttpDataSource(id: string, endpoint: string, options?: HttpDataSourceOptions, stack?: Stack): HttpDataSource {
-    return new HttpDataSource(stack ?? this, id, {
-      api: this,
-      endpoint,
-      name: options?.name,
-      description: options?.description,
-      authorizationConfig: options?.authorizationConfig,
-    });
-  }
-
-  /**
-   * add a new elasticsearch data source to this API
-   *
-   * @param id The data source's id
-   * @param endpoint The elasticsearch endpoint
-   * @param region The elasticsearch datasource region
-   * @param options The optional configuration for this data source
-   * @param stack Stack to which the elasticsearch datasource needs to be created in
-   */
-  protected doAddElasticSearchDataSource(
-    id: string,
-    endpoint: string,
-    region: string,
-    options?: ElasticSearchDataSourceOptions,
-    stack?: Stack,
-  ): ElasticsearchDataSource {
-    return new ElasticsearchDataSource(stack ?? this, id, {
-      api: this,
-      name: options?.name,
-      endpoint,
-      region,
-      serviceRole: options?.serviceRole,
-    });
-  }
-
-  /**
-   * add a new Lambda data source to this API
-   *
-   * @param id The data source's id
-   * @param lambdaFunction The Lambda function to call to interact with this data source
-   * @param options The optional configuration for this data source
-   */
-  protected doAddLambdaDataSource(id: string, lambdaFunction: IFunction, options?: DataSourceOptions, stack?: Stack): LambdaDataSource {
-    return new LambdaDataSource(stack || this, id, {
-      api: this,
-      lambdaFunction,
-      name: options?.name,
-      description: options?.description,
-    });
-  }
   private validateAuthorizationProps(modes: AuthorizationMode[]) {
     modes.forEach(mode => {
       if (mode.authorizationType === AuthorizationType.OIDC && !mode.openIdConnectConfig) {

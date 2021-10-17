@@ -41,6 +41,14 @@ describe('test SIGINT with execute', () => {
         DeploymentSecretsFileName: 'deployment-secrets.json',
       },
       CLIContextEnvironmentProvider: jest.fn(),
+      executeHooks: jest.fn(),
+      HooksMeta: {
+        getInstance: jest.fn().mockReturnValue({
+          setAmplifyVersion: jest.fn(),
+          setHookEventFromInput: jest.fn(),
+        }),
+      },
+      skipHooks: jest.fn(),
     });
     jest.setMock('../plugin-manager', {
       getPluginPlatform: jest.fn(),
@@ -72,6 +80,7 @@ describe('test SIGINT with execute', () => {
     };
     mockContext.projectHasMobileHubResources = false;
     mockContext.amplify = jest.genMockFromModule('../domain/amplify-toolkit');
+    Object.defineProperty(mockContext.amplify, 'getEnvInfo', { value: jest.fn() });
     jest.setMock('../context-manager', {
       constructContext: jest.fn().mockReturnValue(mockContext),
       attachUsageData: jest.fn(),

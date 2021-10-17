@@ -1,6 +1,6 @@
 {
   "name": "amplify-category-storage",
-  "version": "2.12.0",
+  "version": "2.12.12",
   "description": "amplify-cli storage plugin",
   "repository": {
     "type": "git",
@@ -22,8 +22,10 @@
     "aws"
   ],
   "dependencies": {
-    "amplify-cli-core": "1.24.0",
-    "amplify-util-import": "1.5.3",
+    "amplify-cli-core": "1.31.1",
+    "amplify-prompts": "1.2.0",
+    "amplify-util-import": "1.5.15",
+    "chalk": "^4.1.1",
     "cloudform-types": "^4.2.0",
     "enquirer": "^2.3.6",
     "fs-extra": "^8.1.0",
@@ -33,14 +35,15 @@
     "uuid": "^3.4.0"
   },
   "devDependencies": {
+    "aws-sdk": "^2.963.0",
     "rimraf": "^3.0.2"
   },
   "jest": {
     "testURL": "http://localhost",
     "transform": {
-      "^.+\\.(t|j)sx?$": "ts-jest"
+      "^.+\\.tsx?$": "ts-jest"
     },
-    "testRegex": "((\\.|/)(test|spec))\\.(jsx?|tsx?)$",
+    "testRegex": "((\\.|/)(test|spec))\\.tsx?$",
     "moduleFileExtensions": [
       "ts",
       "tsx",
@@ -49,10 +52,6 @@
       "json",
       "node"
     ],
-    "collectCoverage": true,
-    "coverageReporters": [
-      "json",
-      "html"
-    ]
+    "collectCoverage": true
   }
 }

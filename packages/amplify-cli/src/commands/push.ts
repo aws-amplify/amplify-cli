@@ -1,6 +1,6 @@
 import sequential from 'promise-sequential';
 import ora from 'ora';
-import { $TSAny, $TSContext, $TSObject, stateManager, exitOnNextTick } from 'amplify-cli-core';
+import { $TSAny, $TSContext, $TSObject, stateManager, exitOnNextTick, ConfigurationError } from 'amplify-cli-core';
 import { getProviderPlugins } from '../extensions/amplify-helpers/get-provider-plugins';
 
 const spinner = ora('');
@@ -38,12 +38,27 @@ async function syncCurrentCloudBackend(context: $TSContext) {
   }
 }
 
+async function pushHooks(context: $TSContext) {
+  context.exeInfo.pushHooks = true;
+  const providerPlugins = getProviderPlugins(context);
+  const pushHooksTasks: (() => Promise<$TSAny>)[] = [];
+  context.exeInfo.projectConfig.providers.forEach(provider => {
+    const providerModule = require(providerPlugins[provider]);
+    pushHooksTasks.push(() => providerModule.uploadHooksDirectory(context));
+  });
+  await sequential(pushHooksTasks);
+}
+
 export const run = async (context: $TSContext) => {
   try {
     context.amplify.constructExeInfo(context);
+    if (context.exeInfo.localEnvInfo.noUpdateBackend) {
+      throw new ConfigurationError('The local environment configuration does not allow backend updates.');
+    }
     if (context.parameters.options.force) {
       context.exeInfo.forcePush = true;
     }
+    await pushHooks(context);
     await syncCurrentCloudBackend(context);
     return await context.amplify.pushResources(context);
   } catch (e) {

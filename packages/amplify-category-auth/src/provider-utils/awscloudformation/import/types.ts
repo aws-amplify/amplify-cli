@@ -1,4 +1,4 @@
-import { $TSContext, $TSObject } from 'amplify-cli-core';
+import { $TSAny, $TSContext, $TSObject } from 'amplify-cli-core';
 import {
   GetUserPoolMfaConfigResponse,
   IdentityProviderType,
@@ -48,6 +48,21 @@ export type MetaOutput = {
   HostedUIDomain?: string;
   OAuthMetadata?: string;
   CreatedSNSRole?: string;
+};
+
+export type AuthParameters = {
+  dependsOn?: $TSAny[];
+  triggers?: string;
+  identityPoolName?: string;
+  aliasAttributes?: string[];
+  usernameAttributes?: string[];
+  authProviders?: string[];
+  requiredAttributes?: string[];
+  passwordPolicyMinLength?: string;
+  passwordPolicyCharacters?: string[];
+  mfaConfiguration?: string;
+  mfaTypes?: string[];
+  autoVerifiedAttributes?: string[];
 };
 
 // Persisted into team-provider-info

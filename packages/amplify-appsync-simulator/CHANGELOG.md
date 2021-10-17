@@ -3,6 +3,63 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.27.7](https://github.com/aws-amplify/amplify-cli/compare/amplify-appsync-simulator@1.27.6...amplify-appsync-simulator@1.27.7) (2021-08-24)
+
+**Note:** Version bump only for package amplify-appsync-simulator
+
+
+
+
+
+## [1.27.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-appsync-simulator@1.27.5...amplify-appsync-simulator@1.27.6) (2021-08-06)
+
+**Note:** Version bump only for package amplify-appsync-simulator
+
+
+
+
+
+## [1.27.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-appsync-simulator@1.27.4...amplify-appsync-simulator@1.27.5) (2021-07-30)
+
+
+### Bug Fixes
+
+* lambda timeout should be an integer type ([#7699](https://github.com/aws-amplify/amplify-cli/issues/7699)) ([cbacf4d](https://github.com/aws-amplify/amplify-cli/commit/cbacf4d3e497421855c09825970e025550aacfd7))
+
+
+
+
+
+## [1.27.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-appsync-simulator@1.27.3...amplify-appsync-simulator@1.27.4) (2021-07-27)
+
+**Note:** Version bump only for package amplify-appsync-simulator
+
+
+
+
+
+## [1.27.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-appsync-simulator@1.27.2...amplify-appsync-simulator@1.27.3) (2021-07-16)
+
+
+### Bug Fixes
+
+* **amplify-appsync-simulator:** string functions not called on items … ([#7636](https://github.com/aws-amplify/amplify-cli/issues/7636)) ([0027abb](https://github.com/aws-amplify/amplify-cli/commit/0027abb1a8cc18c4ec0bac1ddf0191e37322bbff))
+
+
+
+
+
+## [1.27.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-appsync-simulator@1.27.1...amplify-appsync-simulator@1.27.2) (2021-07-12)
+
+
+### Bug Fixes
+
+* get mock working with gql transformer v2 ([#7574](https://github.com/aws-amplify/amplify-cli/issues/7574)) ([4fa2900](https://github.com/aws-amplify/amplify-cli/commit/4fa2900d6b9ca515677d06bdffe29f56401b9c86))
+
+
+
+
+
 ## [1.27.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-appsync-simulator@1.27.0...amplify-appsync-simulator@1.27.1) (2021-06-24)
 
 

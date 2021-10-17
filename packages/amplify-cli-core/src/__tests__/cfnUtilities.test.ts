@@ -73,6 +73,42 @@ describe('readCFNTemplate', () => {
       }
     `);
   });
+
+  it('casts yaml boolean values to corresponding JavaScript boolean', async () => {
+    const yamlContent = `
+      someKey: true
+      someOtherKey: false
+      someStringKey: "true"
+    `;
+
+    ((fs_mock.readFile as unknown) as jest.MockedFunction<TwoArgReadFile>).mockResolvedValueOnce(yamlContent);
+
+    const result = await readCFNTemplate(testPath);
+
+    expect(result.cfnTemplate).toEqual({
+      someKey: true,
+      someOtherKey: false,
+      someStringKey: 'true',
+    });
+  });
+
+  it('casts yaml integer and float values to corresponding JavaScript number', async () => {
+    const yamlContent = `
+      someKey: 1
+      someOtherKey: 1.234
+      someStringKey: "1.234"
+    `;
+
+    ((fs_mock.readFile as unknown) as jest.MockedFunction<TwoArgReadFile>).mockResolvedValueOnce(yamlContent);
+
+    const result = await readCFNTemplate(testPath);
+
+    expect(result.cfnTemplate).toEqual({
+      someKey: 1,
+      someOtherKey: 1.234,
+      someStringKey: '1.234',
+    });
+  });
 });
 
 describe('writeCFNTemplate', () => {

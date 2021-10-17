@@ -83,13 +83,13 @@ describe('amplify init', () => {
   });
 
   it('should init project without profile', async () => {
-    const { ACCESS_KEY_ID, SECRET_ACCESS_KEY } = getEnvVars();
-    if (!ACCESS_KEY_ID || !SECRET_ACCESS_KEY) {
-      throw new Error('Set ACCESS_KEY_ID and SECRET_ACCESS_KEY either in .env file or as Environment variable');
+    const { AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY } = getEnvVars();
+    if (!AWS_ACCESS_KEY_ID || !AWS_SECRET_ACCESS_KEY) {
+      throw new Error('Set AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY either in .env file or as Environment variable');
     }
     await initProjectWithAccessKey(projRoot, {
-      accessKeyId: ACCESS_KEY_ID,
-      secretAccessKey: SECRET_ACCESS_KEY,
+      accessKeyId: AWS_ACCESS_KEY_ID,
+      secretAccessKey: AWS_SECRET_ACCESS_KEY,
     });
 
     const meta = getProjectMeta(projRoot).providers.awscloudformation;
@@ -103,8 +103,8 @@ describe('amplify init', () => {
     // init new env
     await initNewEnvWithAccessKey(projRoot, {
       envName: 'foo',
-      accessKeyId: ACCESS_KEY_ID,
-      secretAccessKey: SECRET_ACCESS_KEY,
+      accessKeyId: AWS_ACCESS_KEY_ID,
+      secretAccessKey: AWS_SECRET_ACCESS_KEY,
     });
     const newEnvMeta = getProjectMeta(projRoot).providers.awscloudformation;
 

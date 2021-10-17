@@ -1,12 +1,37 @@
+import { $TSContext, pathManager, JSONUtilities } from 'amplify-cli-core';
+import _ from 'lodash';
+import * as fs from 'fs-extra';
+import * as path from 'path';
+import { loadConfigurationForEnv } from '../configuration-manager';
+import { mocked } from 'ts-jest/utils';
 import { $TSContext } from 'amplify-cli-core';
 import { enableServerlessContainers } from '../configuration-manager';
 
+jest.mock('amplify-cli-core');
+jest.mock('fs-extra');
+jest.mock('../system-config-manager');
+    
 jest.setTimeout(15000);
 
 jest.mock('../utils/aws-logger', () => ({
   fileLogger: () => jest.fn(() => jest.fn()),
 }));
 
+const pathManager_mock = mocked(pathManager);
+const JSONUtilities_mock = mocked(JSONUtilities);
+const fs_mock = mocked(fs);
+
+const testPath = path.join('test', 'path');
+pathManager_mock.getDotConfigDirPath.mockReturnValue(testPath);
+fs_mock.existsSync.mockReturnValue(true);
+JSONUtilities_mock.readJson.mockReturnValue({
+  oldenv: {
+    configLevel: 'project',
+    useProfile: true,
+    profileName: 'oldprofile',
+  },
+});
+    
 const frontend = 'javascript';
 const context_stub = ({
   print: {
@@ -16,6 +41,25 @@ const context_stub = ({
   exeInfo: { projectConfig: { frontend, [frontend]: { config: {} } } },
   input: { options: { yes: false } },
 } as unknown) as jest.Mocked<$TSContext>;
+
+describe('load configuration for env', () => {
+  it('does not overwrite awsConfigInfo in context object', async () => {
+    const context_stub = {
+      exeInfo: {
+        awsConfigInfo: {
+          configLevel: 'project',
+          config: {
+            profileName: 'newprofile',
+            useProfile: true,
+          },
+        },
+      },
+    } as $TSContext;
+    const context_clone = _.cloneDeep(context_stub);
+    await loadConfigurationForEnv(context_clone, 'oldenv');
+    expect(context_clone).toStrictEqual(context_stub);
+  });
+});
 
 describe('enableServerlessContainers', () => {
   it('should prompt for a ServerlessContainers value when `--yes` is NOT present', async () => {

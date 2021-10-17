@@ -130,6 +130,7 @@ export type AppSyncAuthType =
 export interface AppSyncAPIKeyAuthType {
   mode: 'API_KEY';
   expirationTime?: number;
+  apiKeyExpirationDate?: Date;
   keyDescription?: string;
 }
 
@@ -148,7 +149,7 @@ export interface AppSyncCognitoUserPoolsAuthType {
   /**
    * The user pool that will be used to authenticate requests.
    */
-  cognitoUserPoolId: string;
+  cognitoUserPoolId?: string;
 }
 
 /**

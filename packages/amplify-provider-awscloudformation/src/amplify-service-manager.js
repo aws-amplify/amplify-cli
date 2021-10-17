@@ -12,13 +12,13 @@ const { loadConfigurationForEnv } = require('./configuration-manager');
 const logger = fileLogger('amplify-service-manager');
 
 async function init(amplifyServiceParams) {
-  const { context, awsConfig, projectName, envName, stackName } = amplifyServiceParams;
+  const { context, awsConfigInfo, projectName, envName, stackName } = amplifyServiceParams;
 
   let amplifyAppId;
   let verifiedStackName = stackName;
   let deploymentBucketName = `${stackName}-deployment`;
 
-  const amplifyClient = await getConfiguredAmplifyClient(context, awsConfig);
+  const amplifyClient = await getConfiguredAmplifyClient(context, awsConfigInfo);
   if (!amplifyClient) {
     // This happens when the Amplify service is not available in the region
     return {
@@ -74,7 +74,7 @@ async function init(amplifyServiceParams) {
       for (let env of envList) {
         if (
           env !== envName &&
-          teamProviderInfo[env][ProviderName].Region === awsConfig.region &&
+          teamProviderInfo[env][ProviderName].Region === awsConfigInfo.region &&
           teamProviderInfo[env][ProviderName][AmplifyAppIdLabel] &&
           !appIdsInTheSameLocalProjectAndRegion.includes(teamProviderInfo[env][ProviderName][AmplifyAppIdLabel])
         ) {
@@ -108,7 +108,7 @@ async function init(amplifyServiceParams) {
         if (appIdsInTheSameLocalProjectAndRegion.length === 1) {
           amplifyAppId = appIdsInTheSameLocalProjectAndRegion[0]; // eslint-disable-line
         } else if (appIdsInTheSameLocalProjectAndRegion.length > 1) {
-          context.print.info(`Your project is associated with multiple Amplify Service Apps in the region ${awsConfig.region}`);
+          context.print.info(`Your project is associated with multiple Amplify Service Apps in the region ${awsConfigInfo.region}`);
           amplifyAppId = await SelectFromExistingAppId(context, appIdsInTheSameLocalProjectAndRegion);
         }
       }
@@ -204,7 +204,7 @@ async function init(amplifyServiceParams) {
   };
 }
 
-async function deleteEnv(context, envName, awsConfig) {
+async function deleteEnv(context, envName, awsConfigInfo) {
   if (stateManager.teamProviderInfoExists()) {
     const teamProviderInfo = stateManager.getTeamProviderInfo();
     if (
@@ -213,7 +213,7 @@ async function deleteEnv(context, envName, awsConfig) {
       teamProviderInfo[envName][ProviderName][AmplifyAppIdLabel]
     ) {
       const envConfig = await loadConfigurationForEnv(context, envName);
-      const amplifyClient = await getConfiguredAmplifyClient(context, { ...awsConfig, ...envConfig });
+      const amplifyClient = await getConfiguredAmplifyClient(context, { ...awsConfigInfo, ...envConfig });
       if (!amplifyClient) {
         // This happens when the Amplify service is not available in the region
         return;
@@ -235,7 +235,12 @@ async function deleteEnv(context, envName, awsConfig) {
         await amplifyClient.deleteBackendEnvironment(deleteEnvParams).promise();
       } catch (ex) {
         log(ex);
-        throw ex;
+
+        if (ex.code === 'NotFoundException') {
+          context.print.warning(ex.message);
+        } else {
+          throw ex;
+        }
       }
     }
   }

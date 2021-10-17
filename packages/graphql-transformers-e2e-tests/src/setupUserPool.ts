@@ -1,4 +1,4 @@
-import { signupAndAuthenticateUser, createGroup, addUserToGroup, configureAmplify } from './cognitoUtils';
+import { createGroup, addUserToGroup, configureAmplify, authenticateUser, signupUser } from './cognitoUtils';
 
 const USERNAME1 = 'user1@test.com';
 const USERNAME2 = 'user2@test.com';
@@ -14,10 +14,9 @@ const WATCHER_GROUP_NAME = 'Watcher';
 export async function setupUserPool(userPoolId: string, userPoolClientId: string) {
   configureAmplify(userPoolId, userPoolClientId);
 
-  await signupAndAuthenticateUser(userPoolId, USERNAME1, TMP_PASSWORD, REAL_PASSWORD);
-  await signupAndAuthenticateUser(userPoolId, USERNAME2, TMP_PASSWORD, REAL_PASSWORD);
-  const authRes3: any = await signupAndAuthenticateUser(userPoolId, USERNAME3, TMP_PASSWORD, REAL_PASSWORD);
-
+  await signupUser(userPoolId, USERNAME1, TMP_PASSWORD);
+  await signupUser(userPoolId, USERNAME2, TMP_PASSWORD);
+  await signupUser(userPoolId, USERNAME3, TMP_PASSWORD);
   await createGroup(userPoolId, ADMIN_GROUP_NAME);
   await createGroup(userPoolId, PARTICIPANT_GROUP_NAME);
   await createGroup(userPoolId, WATCHER_GROUP_NAME);
@@ -26,14 +25,16 @@ export async function setupUserPool(userPoolId: string, userPoolClientId: string
   await addUserToGroup(PARTICIPANT_GROUP_NAME, USERNAME1, userPoolId);
   await addUserToGroup(WATCHER_GROUP_NAME, USERNAME1, userPoolId);
   await addUserToGroup(DEVS_GROUP_NAME, USERNAME2, userPoolId);
-  const authResAfterGroup: any = await signupAndAuthenticateUser(userPoolId, USERNAME1, TMP_PASSWORD, REAL_PASSWORD);
+  const authResAfterGroup: any = await authenticateUser(USERNAME1, TMP_PASSWORD, REAL_PASSWORD);
 
   const idToken = authResAfterGroup.getIdToken().getJwtToken();
 
   const accessToken = authResAfterGroup.getAccessToken().getJwtToken();
 
-  const authRes2AfterGroup: any = await signupAndAuthenticateUser(userPoolId, USERNAME2, TMP_PASSWORD, REAL_PASSWORD);
+  const authRes2AfterGroup: any = await authenticateUser(USERNAME2, TMP_PASSWORD, REAL_PASSWORD);
   const idToken2 = authRes2AfterGroup.getIdToken().getJwtToken();
+  const authRes3: any = await authenticateUser(USERNAME3, TMP_PASSWORD, REAL_PASSWORD);
   const idToken3 = authRes3.getIdToken().getJwtToken();
+
   return [idToken, idToken2, idToken3];
 }

@@ -3,6 +3,106 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.20.17](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-ios@2.20.16...amplify-frontend-ios@2.20.17) (2021-10-10)
+
+**Note:** Version bump only for package amplify-frontend-ios
+
+
+
+
+
+## [2.20.16](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-ios@2.20.15...amplify-frontend-ios@2.20.16) (2021-10-06)
+
+**Note:** Version bump only for package amplify-frontend-ios
+
+
+
+
+
+## [2.20.15](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-ios@2.20.14...amplify-frontend-ios@2.20.15) (2021-09-27)
+
+**Note:** Version bump only for package amplify-frontend-ios
+
+
+
+
+
+## [2.20.14](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-ios@2.20.13...amplify-frontend-ios@2.20.14) (2021-09-18)
+
+**Note:** Version bump only for package amplify-frontend-ios
+
+
+
+
+
+## [2.20.13](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-ios@2.20.12...amplify-frontend-ios@2.20.13) (2021-09-14)
+
+**Note:** Version bump only for package amplify-frontend-ios
+
+
+
+
+
+## [2.20.12](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-ios@2.20.11...amplify-frontend-ios@2.20.12) (2021-09-09)
+
+**Note:** Version bump only for package amplify-frontend-ios
+
+
+
+
+
+## [2.20.11](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-ios@2.20.10...amplify-frontend-ios@2.20.11) (2021-09-02)
+
+**Note:** Version bump only for package amplify-frontend-ios
+
+
+
+
+
+## [2.20.10](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-ios@2.20.9...amplify-frontend-ios@2.20.10) (2021-08-24)
+
+**Note:** Version bump only for package amplify-frontend-ios
+
+
+
+
+
+## [2.20.9](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-ios@2.20.8...amplify-frontend-ios@2.20.9) (2021-08-06)
+
+
+### Bug Fixes
+
+* **amplify-category-auth:** add auth user selections to aws-exports/amplifyconfiguration files ([#7807](https://github.com/aws-amplify/amplify-cli/issues/7807)) ([3deae39](https://github.com/aws-amplify/amplify-cli/commit/3deae3969740562c8fe1a82d2659e0efffccb49d))
+* **amplify-frontend-ios:** amplify-xcode, add files to primary target ([#7738](https://github.com/aws-amplify/amplify-cli/issues/7738)) ([c3d93fc](https://github.com/aws-amplify/amplify-cli/commit/c3d93fc0adea2ac951999ccd99e19e4ff7fc6579))
+
+
+
+
+
+## [2.20.8](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-ios@2.20.7...amplify-frontend-ios@2.20.8) (2021-07-30)
+
+**Note:** Version bump only for package amplify-frontend-ios
+
+
+
+
+
+## [2.20.7](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-ios@2.20.6...amplify-frontend-ios@2.20.7) (2021-07-27)
+
+**Note:** Version bump only for package amplify-frontend-ios
+
+
+
+
+
+## [2.20.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-ios@2.20.5...amplify-frontend-ios@2.20.6) (2021-07-16)
+
+**Note:** Version bump only for package amplify-frontend-ios
+
+
+
+
+
 ## [2.20.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-ios@2.20.4...amplify-frontend-ios@2.20.5) (2021-06-30)
 
 **Note:** Version bump only for package amplify-frontend-ios

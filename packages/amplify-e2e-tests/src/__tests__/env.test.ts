@@ -1,6 +1,10 @@
 import {
+  addAuthWithCustomTrigger,
   addAuthWithDefault,
+  addAuthWithDefaultSocial,
+  addAuthWithRecaptchaTrigger,
   amplifyPull,
+  amplifyPushAuth,
   amplifyPushUpdate,
   checkIfBucketExists,
   createNewProjectDir,
@@ -8,20 +12,16 @@ import {
   deleteProjectDir,
   getProjectMeta,
   initJSProjectWithProfile,
-  addAuthWithCustomTrigger,
-  amplifyPushAuth,
-  addAuthWithRecaptchaTrigger,
-  addAuthWithDefaultSocial,
 } from 'amplify-e2e-core';
 import {
   addEnvironment,
+  addEnvironmentHostedUI,
   checkoutEnvironment,
   getEnvironment,
   importEnvironment,
   listEnvironment,
   pullEnvironment,
   removeEnvironment,
-  addEnvironmentHostedUI,
 } from '../environment/env';
 
 async function validate(meta: any) {
@@ -70,8 +70,7 @@ describe('environment commands', () => {
   });
 });
 
-/* Disabling test for now */
-describe.skip('cross project environment commands', () => {
+describe('cross project environment commands', () => {
   let projRoot: string;
   beforeEach(async () => {
     projRoot = await createNewProjectDir('import-env-test');
@@ -86,8 +85,8 @@ describe.skip('cross project environment commands', () => {
     await initJSProjectWithProfile(projRoot, { envName: 'env' });
     await addAuthWithDefault(projRoot, {});
     const providerConfig: string = await getEnvironment(projRoot, { envName: 'env' });
-    expect(providerConfig === JSON.stringify(JSON.parse(providerConfig))).toBeTruthy();
     await amplifyPushUpdate(projRoot);
+
     let projRoot2: string;
     try {
       projRoot2 = await createNewProjectDir('import-env-test2');
@@ -95,10 +94,7 @@ describe.skip('cross project environment commands', () => {
       await importEnvironment(projRoot2, { providerConfig, envName: 'env' });
       await validate(getProjectMeta(projRoot));
       await validate(getProjectMeta(projRoot2));
-    } catch (e) {
-      console.error(e);
     } finally {
-      await deleteProject(projRoot2);
       deleteProjectDir(projRoot2);
     }
   });

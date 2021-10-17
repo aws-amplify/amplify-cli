@@ -70,6 +70,7 @@ export type BuildRequest = {
     resourceName: string;
   };
   lastBuildTimeStamp?: Date;
+  lastBuildType?: BuildType;
   service?: string;
 };
 

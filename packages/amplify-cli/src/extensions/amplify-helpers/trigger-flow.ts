@@ -45,6 +45,49 @@ export const addTrigger = async triggerOptions => {
     triggerEventPath,
     skipEdit,
   } = triggerOptions;
+  /**
+   * The function template dir for this trigger, i.e.
+   * PostConfirmation/function-template-dir.
+   */
+  const sourceRoot = path.join(triggerDir, 'function-template-dir');
+  /**
+   * The function template dir for the default trigger template.
+   */
+  const defaultRoot = path.resolve(triggerDir, '..', 'function-template-dir');
+  /**
+   * A key-value map of input filenames and output filepaths.
+   */
+  const templateMap = {
+    'trigger-index.js': path.join('src', 'index.js'),
+    'package.json.ejs': path.join('src', 'package.json'),
+    'event.json': path.join('src', 'event.json'),
+  };
+  /**
+   * Hold a key-value map of input filepaths and output filenames.
+   */
+  const destMap = {};
+  /**
+   * For each templateFile (i.e. trigger-index.js), use
+   * {triggerDir}/../{templateFile} if {triggerDir}/{templateFile}
+   * override does not exist.
+   */
+  const templateFiles = Object.keys(templateMap);
+  const sourceFiles = templateFiles.map(file => {
+    const defaultTemplate = path.resolve(defaultRoot, file);
+    const overrideTemplate = path.resolve(sourceRoot, file);
+    const templateToUse = fs.existsSync(overrideTemplate) ? overrideTemplate : defaultTemplate;
+    return path.relative(sourceRoot, templateToUse);
+  });
+  /**
+   * Map relative template pathnames to their new filenames.
+   */
+  for (const sourceFile of sourceFiles) {
+    /**
+     * /path/to/file.js -> file.js
+     */
+    const fileName = path.basename(sourceFile);
+    destMap[sourceFile] = templateMap[fileName];
+  }
 
   await context.amplify.invokePluginMethod(context, 'function', undefined, 'add', [
     context,
@@ -54,13 +97,9 @@ export const addTrigger = async triggerOptions => {
       trigger: true,
       cloudResourceTemplatePath: path.join(triggerDir, 'cloudformation-templates', triggerTemplate),
       functionTemplate: {
-        sourceRoot: path.join(triggerDir, 'function-template-dir'),
-        sourceFiles: ['trigger-index.js', 'package.json.ejs', 'event.json'],
-        destMap: {
-          'trigger-index.js': path.join('src', 'index.js'),
-          'package.json.ejs': path.join('src', 'package.json'),
-          'event.json': path.join('src', 'event.json'),
-        },
+        sourceRoot,
+        sourceFiles,
+        destMap,
       },
       modules: values,
       parentResource,

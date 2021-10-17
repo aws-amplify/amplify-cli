@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.19.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-notifications@2.19.3...amplify-category-notifications@2.19.4) (2021-07-16)
+
+
+### Bug Fixes
+
+* **amplify-category-notifications:** trim whitespace from fcm keys ([#7456](https://github.com/aws-amplify/amplify-cli/issues/7456)) ([155a071](https://github.com/aws-amplify/amplify-cli/commit/155a07156cb3467d9e6f6b9cb088bab21ab3bab9)), closes [#7440](https://github.com/aws-amplify/amplify-cli/issues/7440)
+
+
+
+
+
 ## [2.19.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-notifications@2.19.2...amplify-category-notifications@2.19.3) (2021-06-24)
 
 

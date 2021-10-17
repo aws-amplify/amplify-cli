@@ -98,6 +98,10 @@ export interface CognitoUserPoolConfiguration {
    */
   requiredSignupAttributes: CognitoUserProperty[];
   /**
+   * Alias attributes that can be used for sign-up/sign-in
+   */
+  aliasAttributes?: CognitoUserAliasAttributes[];
+  /**
    * The name of the user pool. If not specified, a unique string will be generated.
    */
   userPoolName?: string;
@@ -309,6 +313,12 @@ export enum CognitoUserPoolSigninMethod {
   EMAIL = 'EMAIL',
   PHONE_NUMBER = 'PHONE_NUMBER',
   EMAIL_AND_PHONE_NUMBER = 'EMAIL_AND_PHONE_NUMBER',
+}
+
+export enum CognitoUserAliasAttributes {
+  PREFERRED_USERNAME = 'PREFERRED_USERNAME',
+  EMAIL = 'EMAIL',
+  PHONE_NUMBER = 'PHONE_NUMBER',
 }
 
 export enum CognitoUserProperty {

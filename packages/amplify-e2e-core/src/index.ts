@@ -1,8 +1,11 @@
 import * as os from 'os';
 import * as path from 'path';
 import * as fs from 'fs-extra';
+import * as ini from 'ini';
+
 import { spawnSync, execSync } from 'child_process';
 import { v4 as uuid } from 'uuid';
+import { pathManager } from 'amplify-cli-core';
 
 export * from './configure/';
 export * from './init/';
@@ -22,13 +25,50 @@ declare global {
 const amplifyTestsDir = 'amplify-e2e-tests';
 
 export function getCLIPath(testingWithLatestCodebase = false) {
-  return testingWithLatestCodebase
-    ? path.join(__dirname, '..', '..', 'amplify-cli', 'bin', 'amplify')
-    : process.env.AMPLIFY_PATH || 'amplify';
+  if (!testingWithLatestCodebase) {
+    if (process.env.AMPLIFY_PATH && fs.existsSync(process.env.AMPLIFY_PATH)) {
+      return process.env.AMPLIFY_PATH;
+    }
+
+    return process.platform === 'win32' ? 'amplify.exe' : 'amplify';
+  }
+
+  const amplifyScriptPath = path.join(__dirname, '..', '..', 'amplify-cli', 'bin', 'amplify');
+  return amplifyScriptPath;
+}
+
+export function isTestingWithLatestCodebase(scriptRunnerPath) {
+  return scriptRunnerPath === process.execPath
+}
+
+export function getScriptRunnerPath(testingWithLatestCodebase = false) {
+  if (!testingWithLatestCodebase) {
+    return process.platform === 'win32'
+      ? 'C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe'
+      : 'exec';
+  }
+
+  // nodejs executable
+  return process.execPath;
+}
+
+export function getNpxPath() {
+  let npxPath = 'npx';
+  if (process.platform === 'win32') {
+    npxPath = getScriptRunnerPath().replace('node.exe', 'npx.cmd');
+  }
+  return npxPath;
 }
 
 export function isCI(): boolean {
   return process.env.CI && process.env.CIRCLECI ? true : false;
+}
+
+export function injectSessionToken(profileName: string) {
+  const credentialsContents = ini.parse(fs.readFileSync(pathManager.getAWSCredentialsFilePath()).toString());
+  credentialsContents[profileName] = credentialsContents[profileName] || {};
+  credentialsContents[profileName].aws_session_token = process.env.AWS_SESSION_TOKEN;
+  fs.writeFileSync(pathManager.getAWSCredentialsFilePath(), ini.stringify(credentialsContents));
 }
 
 export function npmInstall(cwd: string) {
@@ -41,6 +81,9 @@ export async function installAmplifyCLI(version: string = 'latest') {
     env: process.env,
     stdio: 'inherit',
   });
+  process.env.AMPLIFY_PATH = process.platform === 'win32'
+   ? path.join(os.homedir(), '..', '..', 'Program` Files', 'nodejs', 'node_modules', '@aws-amplify', 'cli', 'bin', 'amplify')
+   : path.join(os.homedir(), '.npm-global', 'bin', 'amplify');
 }
 
 export async function createNewProjectDir(

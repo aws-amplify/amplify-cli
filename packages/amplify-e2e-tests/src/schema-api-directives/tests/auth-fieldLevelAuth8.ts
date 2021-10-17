@@ -1,9 +1,9 @@
 //handle subscription from another user
-import { runAutTest } from '../common';
+import { runAuthTest } from '../common';
 
 export async function runTest(projectDir: string, testModule: any) {
   //test owner
-  await runAutTest(projectDir, testModule);
+  await runAuthTest(projectDir, testModule);
   //todo: test other user's ability to subscribe
 }
 

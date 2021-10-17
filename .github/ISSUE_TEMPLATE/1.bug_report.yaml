@@ -4,13 +4,14 @@ description: Create a report to help us improve Amplify CLI
 body:
   - type: markdown
     attributes:
-      value: | 
+      value: |
         Thanks for taking the time to fill out this bug report! Try to include as much information as you can.
 
         For reference, the current version of the Amplify CLI is <img src="https://img.shields.io/npm/v/@aws-amplify/cli.svg" />.
 
-        **Note**: If your issue is regarding the AWS Amplify Console service, please log it in the [Amplify Console GitHub Issue Tracker](https://github.com/aws-amplify/amplify-console/issues).
- 
+        > For **Amplify Console** issues, go [here](https://github.com/aws-amplify/amplify-console/issues/new/choose).
+        > For **Amplify Codegen** issues, go [here](https://github.com/aws-amplify/amplify-codegen/issues/new/choose).
+
   - type: checkboxes
     attributes:
       label: |
@@ -109,10 +110,11 @@ body:
     attributes:
       label: Reproduction steps
       description: |
-        How do you trigger this bug? Please walk us through it step by step. 
+        How can this bug be reproduced?
+        Will running the **exact** steps below _in an empty directory_ create an Amplify project that demonstrates the bug behavior?
         Screenshots can be provided in the issue body below.
       placeholder: |
-        1. 
+        1.
         2.
         3.
         ...

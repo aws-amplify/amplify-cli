@@ -5,6 +5,7 @@ import * as fs from 'fs-extra';
 import glob from 'glob';
 import _ from 'lodash';
 import * as path from 'path';
+import { ensureAmplifyMetaFrontendConfig } from './on-category-outputs-change';
 import { getHashForResourceDir } from './resource-status';
 import { updateBackendConfigAfterResourceAdd, updateBackendConfigAfterResourceUpdate } from './update-backend-config';
 
@@ -108,6 +109,7 @@ export function updateamplifyMetaAfterResourceAdd(
   amplifyMeta[category][resourceName] = metadataResource;
 
   stateManager.setMeta(undefined, amplifyMeta);
+  ensureAmplifyMetaFrontendConfig(amplifyMeta);
 
   // If a backend config resource passed in store it, otherwise the same data as in meta
   // In case of imported resources the output block contains only the user selected values that
@@ -207,6 +209,7 @@ export async function updateamplifyMetaAfterPush(resources: $TSObject[]) {
 export function updateamplifyMetaAfterBuild({ category, resourceName }: ResourceTuple, buildType: BuildType = BuildType.PROD) {
   const amplifyMeta = stateManager.getMeta();
   _.set(amplifyMeta, [category, resourceName, buildTypeKeyMap[buildType]], new Date());
+  _.set(amplifyMeta, [category, resourceName, 'lastBuildType'], buildType);
   stateManager.setMeta(undefined, amplifyMeta);
 }
 

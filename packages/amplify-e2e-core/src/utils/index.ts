@@ -4,6 +4,7 @@ import * as rimraf from 'rimraf';
 import { config } from 'dotenv';
 import execa from 'execa';
 import { getLayerDirectoryName, LayerDirectoryType } from '..';
+import { v4 as uuid } from 'uuid';
 
 export * from './add-circleci-tags';
 export * from './api';
@@ -22,6 +23,7 @@ export * from './selectors';
 export * from './sleep';
 export * from './transformConfig';
 export * from './admin-ui';
+export * from './hooks';
 
 // run dotenv config to update env variable
 config();
@@ -126,3 +128,11 @@ const getTestFileNamePath = (fileName: string): string =>
 const getPathToFunction = (root: string, funcName: string): string => path.join(root, 'amplify', 'backend', 'function', funcName);
 const getPathToLayer = (root: string, layerProjName: LayerDirectoryType): string =>
   path.join(root, 'amplify', 'backend', 'function', getLayerDirectoryName(layerProjName));
+
+/**
+ * Generate random resource name
+ * @returns generated resource name
+ */
+export function generateRandomShortId(): string {
+  return uuid().split('-')[0];
+}

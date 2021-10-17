@@ -1,10 +1,13 @@
 import * as fs from 'fs-extra';
-import { pathManager } from './pathManager';
-import { $TSMeta, $TSTeamProviderInfo, $TSAny, DeploymentSecrets } from '..';
-import { JSONUtilities } from '../jsonUtilities';
+import * as path from 'path';
 import _ from 'lodash';
+import { PathConstants, pathManager } from './pathManager';
+import { $TSMeta, $TSTeamProviderInfo, $TSAny, DeploymentSecrets, HooksConfig } from '..';
+import { JSONUtilities } from '../jsonUtilities';
 import { SecretFileMode } from '../cliConstants';
-import { Tag, ReadTags, HydrateTags } from '../tags';
+import { HydrateTags, ReadTags, Tag } from '../tags';
+import { CustomIAMPolicies } from '../customPoliciesUtils';
+
 
 export type GetOptions<T> = {
   throwIfNotExist?: boolean;
@@ -73,6 +76,15 @@ export class StateManager {
     };
 
     return this.getData<$TSTeamProviderInfo>(filePath, mergedOptions);
+  };
+
+  getCustomPolicies = (categoryName: string, resourceName: string): CustomIAMPolicies | undefined => {
+    const filePath = pathManager.getCustomPoliciesPath(categoryName, resourceName);
+    try{
+      return JSONUtilities.readJson<CustomIAMPolicies>(filePath);
+    } catch(err) {
+      return undefined;
+    }
   };
 
   localEnvInfoExists = (projectPath?: string): boolean => this.doesExist(pathManager.getLocalEnvFilePath, projectPath);
@@ -236,6 +248,26 @@ export class StateManager {
     JSONUtilities.writeJson(filePath, meta);
   };
 
+  getHooksConfigJson = (projectPath?: string): HooksConfig =>
+    this.getData<HooksConfig>(pathManager.getHooksConfigFilePath(projectPath), { throwIfNotExist: false }) ?? {};
+
+  setSampleHooksDir = (projectPath: string | undefined, sourceDirPath: string): void => {
+    const targetDirPath = pathManager.getHooksDirPath(projectPath);
+    // only create the hooks directory with sample hooks if the directory doesn't already exist
+    if (!fs.existsSync(targetDirPath)) {
+      fs.ensureDirSync(targetDirPath);
+      fs.copySync(
+        path.join(sourceDirPath, PathConstants.HooksShellSampleFileName),
+        path.join(targetDirPath, PathConstants.HooksShellSampleFileName),
+      );
+      fs.copySync(
+        path.join(sourceDirPath, PathConstants.HooksJsSampleFileName),
+        path.join(targetDirPath, PathConstants.HooksJsSampleFileName),
+      );
+      fs.copySync(path.join(sourceDirPath, PathConstants.HooksReadmeFileName), path.join(targetDirPath, PathConstants.ReadMeFileName));
+    }
+  };
+
   setResourceParametersJson = (projectPath: string | undefined, category: string, resourceName: string, parameters: $TSAny): void => {
     const filePath = pathManager.getResourceParametersFilePath(projectPath, category, resourceName);
 
@@ -347,3 +379,5 @@ export class StateManager {
 }
 
 export const stateManager = new StateManager();
+
+
