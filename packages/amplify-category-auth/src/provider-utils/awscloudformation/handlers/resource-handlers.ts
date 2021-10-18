@@ -138,7 +138,7 @@ export const getUpdateAuthHandler = (context: any) => async (request: ServiceQue
       delete cliInputs[paramName];
     }
   });
-  context.amplify.saveEnvResourceParameters(context, category, request.resourceName, envSpecificParams);
+  context.amplify.saveEnvResourceParameters(context, category, requestWithDefaults.resourceName, envSpecificParams);
 
   // saving updated request here
   /**
