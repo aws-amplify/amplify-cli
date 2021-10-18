@@ -13,11 +13,9 @@ import {
   deleteProject,
   deleteProjectDir,
   getAppId,
-  getTeamProviderInfo,
   initJSProjectWithProfile,
 } from 'amplify-e2e-core';
 import { randomizedFunctionName } from '../schema-api-directives/functionTester';
-import { addEnvironmentWithImportedAuth, checkoutEnvironment, removeEnvironment } from '../environment/env';
 import {
   expectLocalAndCloudMetaFilesMatching,
   expectLocalAndPulledBackendConfigMatching,
@@ -34,8 +32,6 @@ import {
   expectLocalTeamInfoHasOnlyAuthCategoryAndNoStorage,
   getS3ResourceName,
   expectS3LocalAndOGMetaFilesOutputMatching,
-  headlessPullExpectError,
-  headlessPull,
 } from '../import-helpers';
 
 const profileName = 'amplify-integ-test-user';

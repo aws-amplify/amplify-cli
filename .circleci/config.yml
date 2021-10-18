@@ -15779,7 +15779,6 @@ workflows:
             parameters:
               os:
                 - linux
-                - windows
       - notifications-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
@@ -16001,7 +16000,6 @@ workflows:
             parameters:
               os:
                 - linux
-                - windows
       - migration-api-key-migration5-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
