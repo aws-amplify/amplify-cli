@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.13.0-amplify-export2.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-storage@2.12.12...amplify-category-storage@2.13.0-amplify-export2.0) (2021-10-18)
+
+
+### Features
+
+* **amplify-category-storage:** headless support for S3 ([#8423](https://github.com/aws-amplify/amplify-cli/issues/8423)) ([76b0e70](https://github.com/aws-amplify/amplify-cli/commit/76b0e700d6221292a25b384e2ecfc7a64e9916dd))
+
+
+
+
+
 ## [2.12.12](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-storage@2.12.11...amplify-category-storage@2.12.12) (2021-10-10)
 
 **Note:** Version bump only for package amplify-category-storage

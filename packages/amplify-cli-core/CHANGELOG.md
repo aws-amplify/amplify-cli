@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.32.0-amplify-export2.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@1.31.1...amplify-cli-core@1.32.0-amplify-export2.0) (2021-10-18)
+
+
+### Features
+
+* export ([#8157](https://github.com/aws-amplify/amplify-cli/issues/8157)) ([26d7ea3](https://github.com/aws-amplify/amplify-cli/commit/26d7ea35adc4fd99070e7548faa0ea1df01ca7a9))
+* **graphql-model-transformer:** added transformer version feature flag ([#8328](https://github.com/aws-amplify/amplify-cli/issues/8328)) ([922bf61](https://github.com/aws-amplify/amplify-cli/commit/922bf6198b88826a72d2c1c47fbd31148e2b1250))
+
+
+
+
+
 ## [1.31.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@1.31.0...amplify-cli-core@1.31.1) (2021-10-10)
 
 

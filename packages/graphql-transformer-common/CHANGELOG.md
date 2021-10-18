@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.19.11-amplify-export2.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-common@4.19.10...graphql-transformer-common@4.19.11-amplify-export2.0) (2021-10-18)
+
+
+### Bug Fixes
+
+* [@function](https://github.com/function) vNext payload, remove unused code, and update common mapping tempalte function ([#8462](https://github.com/aws-amplify/amplify-cli/issues/8462)) ([24d0de9](https://github.com/aws-amplify/amplify-cli/commit/24d0de97a1bfacc3983e5b11a7582c9500759adc))
+* auth on getting related model name and searchablevNext e2e ([#8455](https://github.com/aws-amplify/amplify-cli/issues/8455)) ([8536dd3](https://github.com/aws-amplify/amplify-cli/commit/8536dd3eb4cffc14602d80eea82b8b62b8227485))
+
+
+
+
+
 ## [4.19.10](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-common@4.19.9...graphql-transformer-common@4.19.10) (2021-09-27)
 
 

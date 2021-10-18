@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.4.1-amplify-export2.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-index-transformer@0.4.0...@aws-amplify/graphql-index-transformer@0.4.1-amplify-export2.0) (2021-10-18)
+
+
+### Bug Fixes
+
+* [@auth](https://github.com/auth) fix relational auth, authv2 e2e with utils and fixes ([#8450](https://github.com/aws-amplify/amplify-cli/issues/8450)) ([aa320cd](https://github.com/aws-amplify/amplify-cli/commit/aa320cd2414665a484438f0764cf68fd78caa26a))
+* loosen [@index](https://github.com/index) validation ([#8445](https://github.com/aws-amplify/amplify-cli/issues/8445)) ([c73db78](https://github.com/aws-amplify/amplify-cli/commit/c73db786ce962cf3d976866b3a0996bfbda255fa))
+
+
+
+
+
 # [0.4.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-index-transformer@0.3.3...@aws-amplify/graphql-index-transformer@0.4.0) (2021-10-10)
 
 

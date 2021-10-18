@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.18.4-amplify-export2.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-mapping-template@4.18.3...graphql-mapping-template@4.18.4-amplify-export2.0) (2021-10-18)
+
+**Note:** Version bump only for package graphql-mapping-template
+
+
+
+
+
 ## [4.18.3](https://github.com/aws-amplify/amplify-cli/compare/graphql-mapping-template@4.18.2...graphql-mapping-template@4.18.3) (2021-08-24)
 
 **Note:** Version bump only for package graphql-mapping-template

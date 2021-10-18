@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.33.3-amplify-export2.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@2.33.2...amplify-category-api@2.33.3-amplify-export2.0) (2021-10-18)
+
+
+### Bug Fixes
+
+* **graphql-model-transformer:** fixed schema template options check for transformer version ([#8449](https://github.com/aws-amplify/amplify-cli/issues/8449)) ([aedcae3](https://github.com/aws-amplify/amplify-cli/commit/aedcae36f445c6e990bd94fd29d1b012e1b13787))
+
+
+
+
+
 ## [2.33.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@2.33.1...amplify-category-api@2.33.2) (2021-10-13)
 
 
