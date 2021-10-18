@@ -49,10 +49,12 @@ const WINDOWS_TEST_FAILURES = [
   'api_1-amplify_e2e_tests',
   'amplify-app-amplify_e2e_tests',
   'import_s3_1-amplify_e2e_tests',
+  'import_s3_3-amplify_e2e_tests',
   'auth_4-amplify_e2e_tests',
   'auth_3-amplify_e2e_tests',
   'custom_policies_container-amplify_e2e_tests',
   'custom_policies_function-amplify_e2e_tests',
+  'storage-4-amplify_e2e_tests',
 
   // 👇 These fail due to ExpiredToken. 👇
   // 👇 Tests should be split to speed up execution time. 👇
