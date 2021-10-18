@@ -9,7 +9,7 @@ export const checkAuthResourceMigration = async (context: $TSContext, authName: 
   if (!cliState.cliInputFileExists()) {
     printer.debug('Cli-inputs.json doesnt exist');
     // put spinner here
-    const isMigrate = await prompter.confirmContinue(`Do you want to migrate this ${authName} to support overrides?`);
+    const isMigrate = await prompter.yesOrNo(`Do you want to migrate this ${authName} to support overrides?`, true);
     if (isMigrate) {
       // generate cli-inputs for migration from parameters.json
       await migrateResourceToSupportOverride(authName);
