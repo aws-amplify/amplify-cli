@@ -17,8 +17,8 @@ export type TypeDef = {
 
 export class CLIInputSchemaGenerator {
   // Paths are relative to the package root
-  TYPES_SRC_ROOT = './src/provider-utils/awscloudformation/service-walkthrough-types/';
-  SCHEMA_FILES_ROOT = './resources/schemas';
+  TYPES_SRC_ROOT =  path.join('.','src','provider-utils','awscloudformation','service-walkthrough-types');
+  SCHEMA_FILES_ROOT = path.join('.','resources','schemas');
   OVERWRITE_SCHEMA_FLAG = '--overwrite';
 
   private serviceTypeDefs: TypeDef[];
@@ -27,22 +27,37 @@ export class CLIInputSchemaGenerator {
     return `${typeName}.schema.json`;
   }
 
-  private getTypesSrcRootForSvc(svcName: string): string {
-    return `${this.TYPES_SRC_ROOT}/${svcName}-user-input-types.ts`;
+  private getSvcFileAbsolutePath(normalizedSvcName: string): string {
+    return path.resolve(this.getTypesSrcRootForSvc(normalizedSvcName));
   }
 
-  private getSvcFileAbsolutePath(svcName: string): string {
-    return path.resolve(this.getTypesSrcRootForSvc(svcName));
+  private getTypesSrcRootForSvc(normalizedSvcName: string): string {
+    return path.join(this.TYPES_SRC_ROOT,`${normalizedSvcName}-user-input-types.ts`);
   }
 
+  /**
+   * Normalize Service Name for use in filepaths
+   * e.g Convert DynamoDB to dynamoDB , S3 to s3 as filename prefix
+   * @param svcName
+   * @returns normalizedSvcName
+   */
+  private normalizeServiceToFilePrefix( svcName : string ): string {
+    return `${svcName[0].toLowerCase()}${svcName.slice(1)}`
+  }
   private printWarningSchemaFileExists() {
     printer.info('The interface version must be bumped after any changes.');
     printer.info(`Use the ${this.OVERWRITE_SCHEMA_FLAG} flag to overwrite existing versions`);
     printer.info('Skipping this schema');
   }
 
-  private printSuccessSchemaFileWritten(typeName: string) {
+  private printSuccessSchemaFileWritten(schemaFilePath: string, typeName: string) {
     printer.info(`Schema written for type ${typeName}.`);
+    printer.info(`Output Path: ${schemaFilePath}`);
+  }
+
+  private printGeneratingSchemaMessage(svcAbsoluteFilePath: string, serviceName : string){
+    printer.info(`Generating Schema for ${serviceName}`);
+    printer.info(`Input Path: ${svcAbsoluteFilePath}`);
   }
 
   constructor(typeDefs: TypeDef[]) {
@@ -59,14 +74,17 @@ export class CLIInputSchemaGenerator {
     };
 
     for (const typeDef of this.serviceTypeDefs) {
+      const normalizedServiceName = this.normalizeServiceToFilePrefix( typeDef.service ) ;
       //get absolute file path to the user-input types for the given service
-      const svcAbsoluteFilePath = this.getSvcFileAbsolutePath(typeDef.service);
-      printer.info(svcAbsoluteFilePath);
+      const svcAbsoluteFilePath = this.getSvcFileAbsolutePath(normalizedServiceName);
+      this.printGeneratingSchemaMessage(svcAbsoluteFilePath, typeDef.service);
       //generate json-schema from the input-types
-      const typeSchema = buildGenerator(getProgramFromFiles([svcAbsoluteFilePath]), settings)?.getSchemaForSymbol(typeDef.typeName);
+      const program = getProgramFromFiles([svcAbsoluteFilePath]);
+      const schemaGenerator = buildGenerator(program, settings);
+      const typeSchema = schemaGenerator?.getSchemaForSymbol(typeDef.typeName);
       //save json-schema file for the input-types. (used to validate cli-inputs.json)
       const outputSchemaFilePath = path.resolve(
-        path.join(this.SCHEMA_FILES_ROOT, typeDef.service, this.getSchemaFileNameForType(typeDef.typeName)),
+        path.join(this.SCHEMA_FILES_ROOT, normalizedServiceName, this.getSchemaFileNameForType(typeDef.typeName)),
       );
       if (!force && fs.existsSync(outputSchemaFilePath)) {
         this.printWarningSchemaFileExists();
@@ -75,7 +93,7 @@ export class CLIInputSchemaGenerator {
       fs.ensureFileSync(outputSchemaFilePath);
       fs.writeFileSync(outputSchemaFilePath, JSON.stringify(typeSchema, undefined, 4));
       //print success status to the terminal
-      this.printSuccessSchemaFileWritten(typeDef.typeName);
+      this.printSuccessSchemaFileWritten(outputSchemaFilePath, typeDef.typeName);
       generatedFilePaths.push(outputSchemaFilePath);
     }
     return generatedFilePaths;
