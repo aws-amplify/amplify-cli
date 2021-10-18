@@ -67,8 +67,7 @@ export const getPostUpdateAuthMetaUpdater = (context: any) => async (resourceNam
   const resourceDirPath = path.join(pathManager.getBackendDirPath(), 'auth', resourceName, 'build', 'parameters.json');
   const authParameters = JSONUtilities.readJson<AuthParameters>(resourceDirPath)!;
   if (authParameters.dependsOn) {
-    const dependsOn = typeof authParameters.dependsOn === 'string' ? JSON.parse(authParameters.dependsOn) : authParameters.dependsOn;
-    context.amplify.updateamplifyMetaAfterResourceUpdate('auth', resourceName, 'dependsOn', dependsOn);
+    context.amplify.updateamplifyMetaAfterResourceUpdate('auth', resourceName, 'dependsOn', authParameters.dependsOn);
   }
 
   let customAuthConfigured = false;
