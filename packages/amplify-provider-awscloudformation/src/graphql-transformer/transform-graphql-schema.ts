@@ -266,8 +266,8 @@ export async function transformGraphQLSchema(context, options) {
       ({ authConfig } = resources[0].output);
     }
   }
-
-  let { logConfig = resources[0].output.logConfig } = options;
+  
+  let { logConfig = resources[0]?.output?.logConfig } = options;
 
   // for the predictions directive get storage config
   const s3Resource = s3ResourceAlreadyExists(context);
