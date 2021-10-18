@@ -273,7 +273,7 @@ const serviceApiInputWalkthrough = async (context: $TSContext, defaultValuesFile
     }
 
     basicInfoQuestionChoices.push({
-      name: chalk`{bold Log Config:} ${resolverConfig?.logConfig ? 'Enabled' : 'Disabled'}`,
+      name: chalk`{bold Log Config:} ${logConfig ? 'Enabled' : 'Disabled'}`,
       value: 'LOG_CONFIG',
     });
 
