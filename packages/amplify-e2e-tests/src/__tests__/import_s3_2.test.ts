@@ -1,12 +1,7 @@
-import * as path from 'path';
-import * as fs from 'fs-extra';
-import { $TSObject, JSONUtilities } from 'amplify-cli-core';
 import {
   addAuthWithDefault,
-  addFunction,
   addS3StorageWithSettings,
   AddStorageSettings,
-  amplifyPull,
   amplifyPushAuth,
   amplifyStatus,
   createNewProjectDir,
@@ -16,26 +11,19 @@ import {
   getTeamProviderInfo,
   initJSProjectWithProfile,
 } from 'amplify-e2e-core';
-import { randomizedFunctionName } from '../schema-api-directives/functionTester';
 import { addEnvironmentWithImportedAuth, checkoutEnvironment, removeEnvironment } from '../environment/env';
 import {
+  createStorageSettings,
   expectLocalAndCloudMetaFilesMatching,
   expectLocalAndPulledBackendConfigMatching,
-  getShortId,
-  readRootStack,
-  createStorageSettings,
-  StorageProjectDetails,
-  getOGStorageProjectDetails,
-  importS3,
-  getStorageProjectDetails,
-  expectStorageProjectDetailsMatch,
-  removeImportedS3WithDefault,
-  expectNoStorageInMeta,
-  expectLocalTeamInfoHasOnlyAuthCategoryAndNoStorage,
-  getS3ResourceName,
   expectS3LocalAndOGMetaFilesOutputMatching,
-  headlessPullExpectError,
+  getOGStorageProjectDetails,
+  getShortId,
+  getStorageProjectDetails,
   headlessPull,
+  headlessPullExpectError,
+  importS3,
+  StorageProjectDetails,
 } from '../import-helpers';
 
 const profileName = 'amplify-integ-test-user';

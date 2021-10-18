@@ -102,13 +102,17 @@ describe('headless s3 import', () => {
   it('import storage when no auth resource is in the project', async () => {
     await initJSProjectWithProfile(projectRoot, projectSettings);
 
-    const processResult = await importHeadlessStorage(projectRoot, {
-      version: 1,
-      serviceConfiguration: {
-        serviceName: 'S3',
-        bucketName: bucketNameToImport,
+    const processResult = await importHeadlessStorage(
+      projectRoot,
+      {
+        version: 1,
+        serviceConfiguration: {
+          serviceName: 'S3',
+          bucketName: bucketNameToImport,
+        },
       },
-    });
+      false,
+    );
 
     expect(processResult.exitCode).toBe(1);
     expect(processResult.stdout).toContain(
@@ -120,24 +124,32 @@ describe('headless s3 import', () => {
     await initJSProjectWithProfile(projectRoot, projectSettings);
     await addAuthWithDefault(projectRoot, {});
 
-    const processResult = await importHeadlessStorage(projectRoot, {
-      version: 1,
-      serviceConfiguration: {
-        serviceName: 'S3',
-        bucketName: bucketNameToImport,
+    const processResult = await importHeadlessStorage(
+      projectRoot,
+      {
+        version: 1,
+        serviceConfiguration: {
+          serviceName: 'S3',
+          bucketName: bucketNameToImport,
+        },
       },
-    });
+      false,
+    );
 
     expect(processResult.exitCode).toBe(0);
     expect(processResult.stdout).toEqual('');
 
-    const processResultFail = await importHeadlessStorage(projectRoot, {
-      version: 1,
-      serviceConfiguration: {
-        serviceName: 'S3',
-        bucketName: bucketNameToImport,
+    const processResultFail = await importHeadlessStorage(
+      projectRoot,
+      {
+        version: 1,
+        serviceConfiguration: {
+          serviceName: 'S3',
+          bucketName: bucketNameToImport,
+        },
       },
-    });
+      false,
+    );
 
     expect(processResultFail.exitCode).toBe(1);
     expect(processResultFail.stdout).toContain('Amazon S3 storage was already added to your project');
@@ -149,13 +161,17 @@ describe('headless s3 import', () => {
 
     const fakeBucketName = `fake-bucket-name-${getShortId()}`;
 
-    const processResult = await importHeadlessStorage(projectRoot, {
-      version: 1,
-      serviceConfiguration: {
-        serviceName: 'S3',
-        bucketName: fakeBucketName,
+    const processResult = await importHeadlessStorage(
+      projectRoot,
+      {
+        version: 1,
+        serviceConfiguration: {
+          serviceName: 'S3',
+          bucketName: fakeBucketName,
+        },
       },
-    });
+      false,
+    );
 
     expect(processResult.exitCode).toBe(1);
     expect(processResult.stdout).toContain(`The specified bucket: "${fakeBucketName}" does not exist.`);
