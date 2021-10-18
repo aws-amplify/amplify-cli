@@ -16,17 +16,21 @@ import inquirer from 'inquirer';
 import _ from 'lodash';
 import os from 'os';
 import * as path from 'path';
-import uuid from 'uuid';
-import { categoryName, FunctionServiceNameLambdaFunction, ServiceName, templateFilenameMap } from '../../../constants';
-import { readStorageParamsFileSafe, writeToStorageParamsFile } from '../storage-state-management';
-
-// map of s3 actions corresponding to CRUD verbs
-// 'create/update' have been consolidated since s3 only has put concept
-const permissionMap = {
-  'create/update': ['s3:PutObject'],
-  read: ['s3:GetObject', 's3:ListBucket'],
-  delete: ['s3:DeleteObject'],
-};
+import { authCategoryName, categoryName } from '../../../constants';
+import { ServiceName } from '../provider-constants';
+import {
+  checkIfAuthExists,
+  copyCfnTemplate,
+  createPermissionKeys,
+  getAuthResourceName,
+  loadDefaults,
+  permissionMap,
+  readStorageParamsFileSafe,
+  removeNotStoredParameters,
+  updateCfnTemplateWithGroups,
+  writeToStorageParamsFile,
+} from '../storage-configuration-helpers';
+import { addTrigger, removeTrigger } from '../s3-trigger-helpers';
 
 export const addWalkthrough = async (context: $TSContext, defaultValuesFilename: string, serviceMetadata: $TSAny, options: $TSAny) => {
   while (!checkIfAuthExists()) {
@@ -35,7 +39,7 @@ export const addWalkthrough = async (context: $TSContext, defaultValuesFilename:
         'You need to add auth (Amazon Cognito) to your project in order to add storage for user files. Do you want to add auth now?',
       )
     ) {
-      await context.amplify.invokePluginMethod(context, 'auth', undefined, 'add', [context]);
+      await context.amplify.invokePluginMethod(context, authCategoryName, undefined, 'add', [context]);
       break;
     } else {
       await context.usageData.emitSuccess();
@@ -52,7 +56,7 @@ export const addWalkthrough = async (context: $TSContext, defaultValuesFilename:
 
     exitOnNextTick(0);
   } else {
-    return await configure(context, defaultValuesFilename, serviceMetadata, undefined, options);
+    return await configure(context, serviceMetadata, undefined, options);
   }
 };
 
@@ -86,23 +90,13 @@ export const updateWalkthrough = async (context: $TSContext, defaultValuesFilena
     return;
   }
 
-  return configure(context, defaultValuesFilename, serviceMetada, resourceName);
+  return configure(context, serviceMetada, resourceName);
 };
 
-async function configure(
-  context: $TSContext,
-  defaultValuesFilename: string,
-  serviceMetadata: $TSAny,
-  resourceName?: string,
-  options?: $TSAny,
-) {
+async function configure(context: $TSContext, serviceMetadata: $TSAny, resourceName?: string, options?: $TSAny) {
   const { amplify } = context;
   let { inputs } = serviceMetadata;
-  const defaultValuesSrc = path.join(__dirname, '..', 'default-values', defaultValuesFilename);
-  const { getAllDefaults } = await import(defaultValuesSrc);
-
-  const defaultValues = getAllDefaults(amplify.getProjectDetails());
-
+  let defaultValues = await loadDefaults(context);
   const projectRoot = pathManager.findProjectRoot();
 
   let parameters: $TSObject = {};
@@ -112,7 +106,7 @@ async function configure(
     inputs = inputs.filter((input: $TSAny) => input.key !== 'resourceName');
 
     try {
-      parameters = stateManager.getResourceParametersJson(undefined, categoryName, resourceName);
+      parameters = stateManager.getResourceParametersJson(projectRoot, categoryName, resourceName);
     } catch (e) {
       parameters = {};
     }
@@ -167,9 +161,7 @@ async function configure(
     }
 
     answers = await inquirer.prompt(questions);
-  }
-
-  if (parameters.resourceName) {
+  } else {
     if (parameters.selectedGuestPermissions && parameters.selectedGuestPermissions.length !== 0) {
       Object.assign(defaultValues, { storageAccess: 'authAndGuest' });
     }
@@ -213,7 +205,7 @@ async function configure(
       choices: [
         {
           name: 'Auth users only',
-          value: 'auth',
+          value: authCategoryName,
         },
         {
           name: 'Auth and guest users',
@@ -303,17 +295,7 @@ async function configure(
       groupPolicyMap[selectedUserPoolGroup] = crudAnswers.policies;
     }
 
-    // Get auth resources
-
-    let authResources = (await context.amplify.getResourceStatus('auth')).allResources;
-
-    authResources = authResources.filter((resource: $TSAny) => resource.service === 'Cognito');
-
-    if (authResources.length === 0) {
-      throw new Error('No auth resource found. Please add it using amplify add auth');
-    }
-
-    const authResourceName = authResources[0].resourceName;
+    const authResourceName = await getAuthResourceName(context);
 
     // add to storage params
     storageParams.groupPermissionMap = groupPermissionMap;
@@ -325,14 +307,14 @@ async function configure(
       }
 
       options.dependsOn.push({
-        category: 'auth',
+        category: authCategoryName,
         resourceName: authResourceName,
         attributes: ['UserPoolId'],
       });
 
       selectedUserPoolGroupList.forEach((group: string) => {
         options.dependsOn.push({
-          category: 'auth',
+          category: authCategoryName,
           resourceName: 'userPoolGroups',
           attributes: [`${group}GroupRole`],
         });
@@ -356,7 +338,6 @@ async function configure(
   }
 
   // Ask Lambda trigger question
-
   if (!parameters || !parameters.triggerFunction || parameters.triggerFunction === 'NONE') {
     if (await amplify.confirmPrompt('Do you want to add a Lambda Trigger for your S3 Bucket?', false)) {
       try {
@@ -418,7 +399,7 @@ async function configure(
 
   const storageRequirements = { authSelections: 'identityPoolAndUserPool', allowUnauthenticatedIdentities };
 
-  const checkResult: $TSAny = await context.amplify.invokePluginMethod(context, 'auth', undefined, 'checkRequirements', [
+  const checkResult: $TSAny = await context.amplify.invokePluginMethod(context, authCategoryName, undefined, 'checkRequirements', [
     storageRequirements,
     context,
     'storage',
@@ -443,7 +424,7 @@ async function configure(
         storageRequirements.allowUnauthenticatedIdentities = false;
       }
 
-      await context.amplify.invokePluginMethod(context, 'auth', undefined, 'externalAuthEnable', [
+      await context.amplify.invokePluginMethod(context, authCategoryName, undefined, 'externalAuthEnable', [
         context,
         categoryName,
         answers.resourceName,
@@ -474,11 +455,7 @@ async function configure(
     await copyCfnTemplate(context, categoryName, resource, props);
   }
 
-  delete defaultValues.resourceName;
-  delete defaultValues.storageAccess;
-  delete defaultValues.groupPolicyMap;
-  delete defaultValues.groupList;
-  delete defaultValues.authResourceName;
+  removeNotStoredParameters(defaultValues);
 
   stateManager.setResourceParametersJson(undefined, categoryName, resourceName || resource, defaultValues);
   writeToStorageParamsFile(resourceName || resource, storageParams);
@@ -486,603 +463,12 @@ async function configure(
   return resource;
 }
 
-async function copyCfnTemplate(context: $TSContext, categoryName: string, resourceName: string, options: $TSAny) {
-  const targetDir = pathManager.getBackendDirPath();
-  const pluginDir = __dirname;
-
-  const copyJobs = [
-    {
-      dir: pluginDir,
-      template: path.join('..', '..', '..', '..', 'resources', 'cloudformation-templates', templateFilenameMap[ServiceName.S3]),
-      target: path.join(targetDir, categoryName, resourceName, 's3-cloudformation-template.json'),
-    },
-  ];
-
-  // copy over the files
-  return await context.amplify.copyBatch(context, copyJobs, options);
-}
-
-async function updateCfnTemplateWithGroups(
-  context: $TSContext,
-  oldGroupList: $TSAny[],
-  newGroupList: $TSAny[],
-  newGroupPolicyMap: $TSObject,
-  s3ResourceName: string,
-  authResourceName: string,
-) {
-  const groupsToBeDeleted = _.difference(oldGroupList, newGroupList);
-
-  // Update Cloudformtion file
-  const projectRoot = pathManager.findProjectRoot();
-  const resourceDirPath = pathManager.getResourceDirectoryPath(projectRoot, categoryName, s3ResourceName);
-  const storageCFNFilePath = path.join(resourceDirPath, 's3-cloudformation-template.json');
-
-  const { cfnTemplate: storageCFNFile }: { cfnTemplate: $TSAny } = await readCFNTemplate(storageCFNFilePath);
-
-  const amplifyMetaFile = stateManager.getMeta(projectRoot);
-
-  let s3DependsOnResources = amplifyMetaFile.storage[s3ResourceName].dependsOn || [];
-
-  s3DependsOnResources = s3DependsOnResources.filter((resource: $TSAny) => resource.category !== 'auth');
-
-  if (newGroupList.length > 0) {
-    s3DependsOnResources.push({
-      category: 'auth',
-      resourceName: authResourceName,
-      attributes: ['UserPoolId'],
-    });
-  }
-
-  storageCFNFile.Parameters[`auth${authResourceName}UserPoolId`] = {
-    Type: 'String',
-    Default: `auth${authResourceName}UserPoolId`,
-  };
-
-  groupsToBeDeleted.forEach(group => {
-    delete storageCFNFile.Parameters[`authuserPoolGroups${group}GroupRole`];
-    delete storageCFNFile.Resources[`${group}GroupPolicy`];
-  });
-
-  newGroupList.forEach(group => {
-    s3DependsOnResources.push({
-      category: 'auth',
-      resourceName: 'userPoolGroups',
-      attributes: [`${group}GroupRole`],
-    });
-
-    storageCFNFile.Parameters[`authuserPoolGroups${group}GroupRole`] = {
-      Type: 'String',
-      Default: `authuserPoolGroups${group}GroupRole`,
-    };
-
-    storageCFNFile.Resources[`${group}GroupPolicy`] = {
-      Type: 'AWS::IAM::Policy',
-      Properties: {
-        PolicyName: `${group}-group-s3-policy`,
-        Roles: [
-          {
-            'Fn::Join': [
-              '',
-              [
-                {
-                  Ref: `auth${authResourceName}UserPoolId`,
-                },
-                `-${group}GroupRole`,
-              ],
-            ],
-          },
-        ],
-        PolicyDocument: {
-          Version: '2012-10-17',
-          Statement: [
-            {
-              Effect: 'Allow',
-              Action: newGroupPolicyMap[group],
-              Resource: [
-                {
-                  'Fn::Join': [
-                    '',
-                    [
-                      'arn:aws:s3:::',
-                      {
-                        Ref: 'S3Bucket',
-                      },
-                      '/*',
-                    ],
-                  ],
-                },
-              ],
-            },
-          ],
-        },
-      },
-    };
-  });
-
-  // added a new policy for the user group to make action on buckets
-  newGroupList.forEach(group => {
-    if (newGroupPolicyMap[group].includes('s3:ListBucket') === true) {
-      storageCFNFile.Resources[`${group}GroupPolicy`].Properties.PolicyDocument.Statement.push({
-        Effect: 'Allow',
-        Action: 's3:ListBucket',
-        Resource: [
-          {
-            'Fn::Join': [
-              '',
-              [
-                'arn:aws:s3:::',
-                {
-                  Ref: 'S3Bucket',
-                },
-              ],
-            ],
-          },
-        ],
-      });
-    }
-  });
-
-  context.amplify.updateamplifyMetaAfterResourceUpdate(categoryName, s3ResourceName, 'dependsOn', s3DependsOnResources);
-
-  await writeCFNTemplate(storageCFNFile, storageCFNFilePath);
-}
-
-async function removeTrigger(context: $TSContext, resourceName: string, triggerFunction: string) {
-  // Update Cloudformtion file
-  const projectRoot = pathManager.findProjectRoot();
-  const resourceDirPath = pathManager.getResourceDirectoryPath(projectRoot, categoryName, resourceName);
-  const storageCFNFilePath = path.join(resourceDirPath, 's3-cloudformation-template.json');
-  const { cfnTemplate: storageCFNFile }: { cfnTemplate: $TSAny } = await readCFNTemplate(storageCFNFilePath);
-  const bucketParameters = stateManager.getResourceParametersJson(projectRoot, categoryName, resourceName);
-  const adminTrigger = bucketParameters.adminTriggerFunction;
-
-  delete storageCFNFile.Parameters[`function${triggerFunction}Arn`];
-  delete storageCFNFile.Parameters[`function${triggerFunction}Name`];
-  delete storageCFNFile.Parameters[`function${triggerFunction}LambdaExecutionRole`];
-  delete storageCFNFile.Resources.TriggerPermissions;
-
-  if (!adminTrigger) {
-    // Remove reference for old triggerFunction
-    delete storageCFNFile.Resources.S3Bucket.Properties.NotificationConfiguration;
-    delete storageCFNFile.Resources.S3TriggerBucketPolicy;
-    delete storageCFNFile.Resources.S3Bucket.DependsOn;
-  } else {
-    const lambdaConfigurations: $TSAny = [];
-
-    // eslint-disable-next-line max-len
-    storageCFNFile.Resources.S3Bucket.Properties.NotificationConfiguration.LambdaConfigurations.forEach((triggers: $TSAny) => {
-      if (
-        triggers.Filter &&
-        typeof triggers.Filter.S3Key.Rules[0].Value === 'string' &&
-        triggers.Filter.S3Key.Rules[0].Value.includes('index-faces')
-      ) {
-        lambdaConfigurations.push(triggers);
-      }
-    });
-
-    // eslint-disable-next-line max-len
-    storageCFNFile.Resources.S3Bucket.Properties.NotificationConfiguration.LambdaConfigurations = lambdaConfigurations;
-
-    const index = storageCFNFile.Resources.S3Bucket.DependsOn.indexOf('TriggerPermissions');
-
-    if (index > -1) {
-      storageCFNFile.Resources.S3Bucket.DependsOn.splice(index, 1);
-    }
-
-    const roles: $TSAny[] = [];
-
-    storageCFNFile.Resources.S3TriggerBucketPolicy.Properties.Roles.forEach((role: $TSAny) => {
-      if (!role.Ref.includes(triggerFunction)) {
-        roles.push(role);
-      }
-    });
-
-    storageCFNFile.Resources.S3TriggerBucketPolicy.Properties.Roles = roles;
-  }
-
-  await writeCFNTemplate(storageCFNFile, storageCFNFilePath);
-
-  const amplifyMeta = stateManager.getMeta();
-  const s3DependsOnResources = amplifyMeta.storage[resourceName].dependsOn;
-  const s3Resources: $TSAny[] = [];
-
-  s3DependsOnResources.forEach((resource: $TSAny) => {
-    if (resource.resourceName !== triggerFunction) {
-      s3Resources.push(resource);
-    }
-  });
-
-  context.amplify.updateamplifyMetaAfterResourceUpdate(categoryName, resourceName, 'dependsOn', s3Resources);
-}
-
-/*
-When updating
-Remove the old trigger
-Add a new one
-*/
-async function addTrigger(
-  context: $TSContext,
-  resourceName: string,
-  triggerFunction: $TSAny,
-  adminTriggerFunction: $TSAny,
-  options: $TSAny,
-) {
-  let functionName: string;
-
-  const triggerTypeQuestion = {
-    type: 'list',
-    name: 'triggerType',
-    message: 'Select from the following options',
-    choices: ['Choose an existing function from the project', 'Create a new function'],
-  };
-  const triggerTypeAnswer = await inquirer.prompt([triggerTypeQuestion]);
-
-  if (triggerTypeAnswer.triggerType === 'Choose an existing function from the project') {
-    let lambdaResources = await getLambdaFunctions(context);
-
-    if (triggerFunction) {
-      lambdaResources = lambdaResources.filter((lambdaResource: $TSAny) => lambdaResource !== triggerFunction);
-    }
-
-    if (lambdaResources.length === 0) {
-      throw new Error("No functions were found in the project. Use 'amplify add function' to add a new function.");
-    }
-
-    const triggerOptionQuestion = {
-      type: 'list',
-      name: 'triggerOption',
-      message: 'Select from the following options',
-      choices: lambdaResources,
-    };
-
-    const triggerOptionAnswer: $TSAny = await inquirer.prompt([triggerOptionQuestion]);
-
-    functionName = triggerOptionAnswer.triggerOption;
-
-    // Update Lambda CFN
-
-    const projectBackendDirPath = pathManager.getBackendDirPath();
-    const functionCFNFilePath = path.join(projectBackendDirPath, 'function', functionName, `${functionName}-cloudformation-template.json`);
-
-    if (fs.existsSync(functionCFNFilePath)) {
-      const { cfnTemplate: functionCFNFile }: { cfnTemplate: $TSAny } = await readCFNTemplate(functionCFNFilePath);
-
-      functionCFNFile.Outputs.LambdaExecutionRole = {
-        Value: {
-          Ref: 'LambdaExecutionRole',
-        },
-      };
-
-      // Update the functions resource
-
-      await writeCFNTemplate(functionCFNFile, functionCFNFilePath);
-
-      printer.success(`Successfully updated resource ${functionName} locally`);
-    }
-  } else {
-    // Create a new lambda trigger
-
-    const targetDir = pathManager.getBackendDirPath();
-    const [shortId] = uuid().split('-');
-    functionName = `S3Trigger${shortId}`;
-    const pluginDir = __dirname;
-
-    const defaults = {
-      functionName: `${functionName}`,
-      roleName: `${functionName}LambdaRole${shortId}`,
-    };
-
-    const copyJobs = [
-      {
-        dir: pluginDir,
-        template: path.join('..', '..', '..', '..', 'resources', 'triggers', 's3', 'lambda-cloudformation-template.json.ejs'),
-        target: path.join(targetDir, 'function', functionName, `${functionName}-cloudformation-template.json`),
-      },
-      {
-        dir: pluginDir,
-        template: path.join('..', '..', '..', '..', 'resources', 'triggers', 's3', 'event.json'),
-        target: path.join(targetDir, 'function', functionName, 'src', 'event.json'),
-      },
-      {
-        dir: pluginDir,
-        template: path.join('..', '..', '..', '..', 'resources', 'triggers', 's3', 'index.js'),
-        target: path.join(targetDir, 'function', functionName, 'src', 'index.js'),
-      },
-      {
-        dir: pluginDir,
-        template: path.join('..', '..', '..', '..', 'resources', 'triggers', 's3', 'package.json.ejs'),
-        target: path.join(targetDir, 'function', functionName, 'src', 'package.json'),
-      },
-    ];
-
-    // copy over the files
-    await context.amplify.copyBatch(context, copyJobs, defaults);
-
-    // Update amplify-meta and backend-config
-
-    const backendConfigs = {
-      service: FunctionServiceNameLambdaFunction,
-      providerPlugin: 'awscloudformation',
-      build: true,
-    };
-
-    await context.amplify.updateamplifyMetaAfterResourceAdd('function', functionName, backendConfigs);
-
-    printer.success(`Successfully added resource ${functionName} locally`);
-
-    if (await context.amplify.confirmPrompt(`Do you want to edit the local ${functionName} lambda function now?`)) {
-      await context.amplify.openEditor(context, `${targetDir}/function/${functionName}/src/index.js`);
-    }
-  }
-
-  // If updating an already existing S3 resource
-  if (resourceName) {
-    // Update Cloudformtion file
-    const projectBackendDirPath = pathManager.getBackendDirPath();
-    const storageCFNFilePath = path.join(projectBackendDirPath, categoryName, resourceName, 's3-cloudformation-template.json');
-    const { cfnTemplate: storageCFNFile }: { cfnTemplate: $TSAny } = await readCFNTemplate(storageCFNFilePath);
-    const amplifyMetaFile = stateManager.getMeta();
-
-    // Remove reference for old triggerFunction
-    if (triggerFunction) {
-      delete storageCFNFile.Parameters[`function${triggerFunction}Arn`];
-      delete storageCFNFile.Parameters[`function${triggerFunction}Name`];
-      delete storageCFNFile.Parameters[`function${triggerFunction}LambdaExecutionRole`];
-    }
-
-    // Add reference for the new triggerFunction
-
-    storageCFNFile.Parameters[`function${functionName}Arn`] = {
-      Type: 'String',
-      Default: `function${functionName}Arn`,
-    };
-
-    storageCFNFile.Parameters[`function${functionName}Name`] = {
-      Type: 'String',
-      Default: `function${functionName}Name`,
-    };
-
-    storageCFNFile.Parameters[`function${functionName}LambdaExecutionRole`] = {
-      Type: 'String',
-      Default: `function${functionName}LambdaExecutionRole`,
-    };
-
-    storageCFNFile.Parameters.triggerFunction = {
-      Type: 'String',
-    };
-
-    if (adminTriggerFunction && !triggerFunction) {
-      storageCFNFile.Resources.S3Bucket.DependsOn.push('TriggerPermissions');
-      storageCFNFile.Resources.S3TriggerBucketPolicy.Properties.Roles.push({
-        Ref: `function${functionName}LambdaExecutionRole`,
-      });
-
-      // eslint-disable-next-line max-len
-      let lambdaConf = storageCFNFile.Resources.S3Bucket.Properties.NotificationConfiguration.LambdaConfigurations;
-
-      lambdaConf = lambdaConf.concat(
-        getTriggersForLambdaConfiguration('private', functionName),
-        getTriggersForLambdaConfiguration('protected', functionName),
-        getTriggersForLambdaConfiguration('public', functionName),
-      );
-
-      // eslint-disable-next-line max-len
-      storageCFNFile.Resources.S3Bucket.Properties.NotificationConfiguration.LambdaConfigurations = lambdaConf;
-
-      const dependsOnResources = amplifyMetaFile.storage[resourceName].dependsOn;
-
-      dependsOnResources.push({
-        category: 'function',
-        resourceName: functionName,
-        attributes: ['Name', 'Arn', 'LambdaExecutionRole'],
-      });
-
-      context.amplify.updateamplifyMetaAfterResourceUpdate(categoryName, resourceName, 'dependsOn', dependsOnResources);
-    } else if (adminTriggerFunction && triggerFunction !== 'NONE') {
-      storageCFNFile.Resources.S3TriggerBucketPolicy.Properties.Roles.forEach((role: $TSAny) => {
-        if (role.Ref.includes(triggerFunction)) {
-          role.Ref = `function${functionName}LambdaExecutionRole`;
-        }
-      });
-
-      storageCFNFile.Resources.TriggerPermissions.Properties.FunctionName.Ref = `function${functionName}Name`;
-
-      // eslint-disable-next-line max-len
-      storageCFNFile.Resources.S3Bucket.Properties.NotificationConfiguration.LambdaConfigurations.forEach((lambdaConf: $TSAny) => {
-        if (
-          !(typeof lambdaConf.Filter.S3Key.Rules[0].Value === 'string' && lambdaConf.Filter.S3Key.Rules[0].Value.includes('index-faces'))
-        ) {
-          lambdaConf.Function.Ref = `function${functionName}Arn`;
-        }
-      });
-
-      const dependsOnResources = amplifyMetaFile.storage[resourceName].dependsOn;
-
-      dependsOnResources.forEach((resource: $TSAny) => {
-        if (resource.resourceName === triggerFunction) {
-          resource.resourceName = functionName;
-        }
-      });
-
-      context.amplify.updateamplifyMetaAfterResourceUpdate(categoryName, resourceName, 'dependsOn', dependsOnResources);
-    } else {
-      storageCFNFile.Resources.S3Bucket.Properties.NotificationConfiguration = {
-        LambdaConfigurations: [
-          {
-            Event: 's3:ObjectCreated:*',
-            Function: {
-              Ref: `function${functionName}Arn`,
-            },
-          },
-          {
-            Event: 's3:ObjectRemoved:*',
-            Function: {
-              Ref: `function${functionName}Arn`,
-            },
-          },
-        ],
-      };
-
-      storageCFNFile.Resources.S3Bucket.DependsOn = ['TriggerPermissions'];
-
-      storageCFNFile.Resources.S3TriggerBucketPolicy = {
-        Type: 'AWS::IAM::Policy',
-        DependsOn: ['S3Bucket'],
-        Properties: {
-          PolicyName: 's3-trigger-lambda-execution-policy',
-          Roles: [
-            {
-              Ref: `function${functionName}LambdaExecutionRole`,
-            },
-          ],
-          PolicyDocument: {
-            Version: '2012-10-17',
-            Statement: [
-              {
-                Effect: 'Allow',
-                Action: ['s3:PutObject', 's3:GetObject', 's3:DeleteObject'],
-                Resource: [
-                  {
-                    'Fn::Join': [
-                      '',
-                      [
-                        'arn:aws:s3:::',
-                        {
-                          Ref: 'S3Bucket',
-                        },
-                        '/*',
-                      ],
-                    ],
-                  },
-                ],
-              },
-              {
-                Effect: 'Allow',
-                Action: 's3:ListBucket',
-                Resource: [
-                  {
-                    'Fn::Join': [
-                      '',
-                      [
-                        'arn:aws:s3:::',
-                        {
-                          Ref: 'S3Bucket',
-                        },
-                      ],
-                    ],
-                  },
-                ],
-              },
-            ],
-          },
-        },
-      };
-
-      // Update DependsOn
-      const dependsOnResources = amplifyMetaFile.storage[resourceName].dependsOn || [];
-
-      dependsOnResources.filter((resource: $TSAny) => {
-        return resource.resourceName !== triggerFunction;
-      });
-
-      dependsOnResources.push({
-        category: 'function',
-        resourceName: functionName,
-        attributes: ['Name', 'Arn', 'LambdaExecutionRole'],
-      });
-
-      context.amplify.updateamplifyMetaAfterResourceUpdate(categoryName, resourceName, 'dependsOn', dependsOnResources);
-    }
-
-    storageCFNFile.Resources.TriggerPermissions = {
-      Type: 'AWS::Lambda::Permission',
-      Properties: {
-        Action: 'lambda:InvokeFunction',
-        FunctionName: {
-          Ref: `function${functionName}Name`,
-        },
-        Principal: 's3.amazonaws.com',
-        SourceAccount: {
-          Ref: 'AWS::AccountId',
-        },
-        SourceArn: {
-          'Fn::Join': [
-            '',
-            [
-              'arn:aws:s3:::',
-              {
-                'Fn::If': [
-                  'ShouldNotCreateEnvResources',
-                  {
-                    Ref: 'bucketName',
-                  },
-                  {
-                    'Fn::Join': [
-                      '',
-                      [
-                        {
-                          Ref: 'bucketName',
-                        },
-                        {
-                          'Fn::Select': [
-                            3,
-                            {
-                              'Fn::Split': [
-                                '-',
-                                {
-                                  Ref: 'AWS::StackName',
-                                },
-                              ],
-                            },
-                          ],
-                        },
-                        '-',
-                        {
-                          Ref: 'env',
-                        },
-                      ],
-                    ],
-                  },
-                ],
-              },
-            ],
-          ],
-        },
-      },
-    };
-
-    await writeCFNTemplate(storageCFNFile, storageCFNFilePath);
-  } else {
-    // New resource
-    if (!options.dependsOn) {
-      options.dependsOn = [];
-    }
-
-    options.dependsOn.push({
-      category: 'function',
-      resourceName: functionName,
-      attributes: ['Name', 'Arn', 'LambdaExecutionRole'],
-    });
-  }
-
-  return functionName;
-}
-
-async function getLambdaFunctions(context: $TSContext) {
-  const { allResources } = await context.amplify.getResourceStatus();
-  const lambdaResources = allResources
-    .filter((resource: $TSObject) => resource.service === FunctionServiceNameLambdaFunction)
-    .map((resource: $TSObject) => resource.resourceName);
-
-  return lambdaResources;
-}
-
 async function askReadWrite(userType: string, context: $TSContext, answers: $TSAny, parameters: $TSAny) {
   const defaults: $TSAny[] = [];
 
   if (parameters[`selected${userType}Permissions`]) {
     Object.values(permissionMap).forEach((el, index) => {
-      if (el.every(i => parameters[`selected${userType}Permissions`].includes(i))) {
+      if (el.every((i: $TSAny) => parameters[`selected${userType}Permissions`].includes(i))) {
         defaults.push(Object.keys(permissionMap)[index]);
       }
     });
@@ -1093,42 +479,6 @@ async function askReadWrite(userType: string, context: $TSContext, answers: $TSA
   createPermissionKeys(userType, answers, selectedPermissions);
 
   return selectedPermissions;
-}
-
-function createPermissionKeys(userType: string, answers: $TSAny, selectedPermissions: string[]) {
-  const [policyId] = uuid().split('-');
-
-  // max arrays represent highest possibly privileges for particular S3 keys
-  const maxPermissions = ['s3:GetObject', 's3:PutObject', 's3:DeleteObject'];
-  const maxPublic = maxPermissions;
-  const maxUploads = ['s3:PutObject'];
-  const maxPrivate = userType === 'Authenticated' ? maxPermissions : [];
-  const maxProtected = userType === 'Authenticated' ? maxPermissions : ['s3:GetObject'];
-
-  function addPermissionKeys(key: string, possiblePermissions: string[]) {
-    const permissions = _.intersection(selectedPermissions, possiblePermissions).join();
-
-    answers[`s3Permissions${userType}${key}`] = !permissions ? 'DISALLOW' : permissions;
-    answers[`s3${key}Policy`] = `${key}_policy_${policyId}`;
-  }
-
-  addPermissionKeys('Public', maxPublic);
-  addPermissionKeys('Uploads', maxUploads);
-
-  if (userType !== 'Guest') {
-    addPermissionKeys('Protected', maxProtected);
-    addPermissionKeys('Private', maxPrivate);
-  }
-
-  answers[`${userType}AllowList`] = selectedPermissions.includes('s3:GetObject') ? 'ALLOW' : 'DISALLOW';
-  answers.s3ReadPolicy = `read_policy_${policyId}`;
-
-  // double-check to make sure guest is denied
-  if (answers.storageAccess !== 'authAndGuest') {
-    answers.s3PermissionsGuestPublic = 'DISALLOW';
-    answers.s3PermissionsGuestUploads = 'DISALLOW';
-    answers.GuestAllowList = 'DISALLOW';
-  }
 }
 
 function removeAuthUnauthAccess(answers: $TSAny) {
@@ -1158,25 +508,6 @@ export const resourceAlreadyExists = () => {
   }
 
   return resourceName;
-};
-
-export const checkIfAuthExists = () => {
-  const amplifyMeta = stateManager.getMeta();
-  let authExists = false;
-  const authServiceName = 'Cognito';
-  const authCategory = 'auth';
-
-  if (amplifyMeta[authCategory] && Object.keys(amplifyMeta[authCategory]).length > 0) {
-    const categoryResources = amplifyMeta[authCategory];
-
-    Object.keys(categoryResources).forEach(resource => {
-      if (categoryResources[resource].service === authServiceName) {
-        authExists = true;
-      }
-    });
-  }
-
-  return authExists;
 };
 
 export const migrate = async (context: $TSContext, projectPath: string, resourceName: string) => {
@@ -1357,61 +688,3 @@ export const getIAMPolicies = (resourceName: string, crudOptions: string[]) => {
 
   return { policy, attributes };
 };
-
-function getTriggersForLambdaConfiguration(protectionLevel: string, functionName: string) {
-  const triggers = [
-    {
-      Event: 's3:ObjectCreated:*',
-      Filter: {
-        S3Key: {
-          Rules: [
-            {
-              Name: 'prefix',
-              Value: {
-                'Fn::Join': [
-                  '',
-                  [
-                    `${protectionLevel}/`,
-                    {
-                      Ref: 'AWS::Region',
-                    },
-                  ],
-                ],
-              },
-            },
-          ],
-        },
-      },
-      Function: {
-        Ref: `function${functionName}Arn`,
-      },
-    },
-    {
-      Event: 's3:ObjectRemoved:*',
-      Filter: {
-        S3Key: {
-          Rules: [
-            {
-              Name: 'prefix',
-              Value: {
-                'Fn::Join': [
-                  '',
-                  [
-                    `${protectionLevel}/`,
-                    {
-                      Ref: 'AWS::Region',
-                    },
-                  ],
-                ],
-              },
-            },
-          ],
-        },
-      },
-      Function: {
-        Ref: `function${functionName}Arn`,
-      },
-    },
-  ];
-  return triggers;
-}

@@ -12,12 +12,14 @@ export function updateConfig(projectDir: string, projectName: string, config: an
   fs.writeFileSync(configPath, JSON.stringify(config, null, 4));
 }
 
-export function addCustomResolver(projectDir: string, projectName: string, resolverName: string, resolver: string) {
-  const resolverPath = path.join(projectDir, 'amplify', 'backend', 'api', projectName, 'resolvers', resolverName);
+export function addCustomResolver(projectDir: string, apiName: string, resolverName: string, resolver: string) {
+  const resolverPath = path.join(projectDir, 'amplify', 'backend', 'api', apiName, 'resolvers', resolverName);
   fs.writeFileSync(resolverPath, resolver);
 }
 
-export function addCustomResourcesJson(projectDir: string, projectName: string, json?: string) {
-  const jsonPath = path.join(projectDir, 'amplify', 'backend', 'api', projectName, 'stacks', 'CustomResources.json');
-  fs.writeFileSync(jsonPath, json || '{}');
+export function writeToCustomResourcesJson(projectDir: string, apiName: string, json?: Object) {
+  const jsonPath = path.join(projectDir, 'amplify', 'backend', 'api', apiName, 'stacks', 'CustomResources.json');
+  const customResourceJson = JSON.parse(fs.readFileSync(jsonPath).toString());
+  const mergedJson = { ...customResourceJson, ...json };
+  fs.writeFileSync(jsonPath, JSON.stringify(mergedJson));
 }

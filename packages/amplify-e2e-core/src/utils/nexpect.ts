@@ -23,7 +23,7 @@ import { join, parse } from 'path';
 import * as fs from 'fs-extra';
 import * as os from 'os';
 import { getScriptRunnerPath, isTestingWithLatestCodebase } from '..';
-const RETURN = process.platform === 'win32' ? "\r" : EOL;
+const RETURN = process.platform === 'win32' ? '\r' : EOL;
 const DEFAULT_NO_OUTPUT_TIMEOUT = process.env.AMPLIFY_TEST_TIMEOUT_SEC
   ? Number.parseInt(process.env.AMPLIFY_TEST_TIMEOUT_SEC, 10) * 1000
   : 5 * 60 * 1000; // 5 Minutes
@@ -623,17 +623,14 @@ export function nspawn(command: string | string[], params: string[] = [], option
   }
 
   const testingWithLatestCodebase = isTestingWithLatestCodebase(command);
-  if (
-    testingWithLatestCodebase ||
-    (process.platform === "win32" && !command.endsWith(".exe"))
-  ) {
+  if (testingWithLatestCodebase || (process.platform === 'win32' && !command.endsWith('.exe'))) {
     params.unshift(command);
     command = getScriptRunnerPath(testingWithLatestCodebase);
   }
 
-  if (process.platform === "win32" && !command.endsWith('powershell.exe')) {
+  if (process.platform === 'win32' && !command.endsWith('powershell.exe')) {
     params.unshift(command);
-    command = 'C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe'
+    command = 'C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe';
   }
 
   let childEnv = undefined;

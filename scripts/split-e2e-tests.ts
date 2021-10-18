@@ -2,7 +2,6 @@ import * as yaml from 'js-yaml';
 import * as glob from 'glob';
 import { join } from 'path';
 import * as fs from 'fs-extra';
-import { supportedRegions } from '../packages/amplify-category-geo/src/constants';
 import * as execa from 'execa';
 
 const CONCURRENCY = 25;
@@ -87,6 +86,9 @@ const USE_PARENT_ACCOUNT = [
   'import_dynamodb_1-amplify_e2e_tests',
   'import_s3_1-amplify_e2e_tests',
   'migration-api-key-migration2-amplify_e2e_tests',
+  'migration-api-key-migration3-amplify_e2e_tests',
+  'migration-api-key-migration4-amplify_e2e_tests',
+  'migration-api-key-migration5-amplify_e2e_tests',
   'storage-amplify_e2e_tests',
 ];
 
@@ -246,11 +248,10 @@ function splitTests(
   const testSuites = getTestFiles(jobRootDir);
 
   const newJobs = testSuites.reduce((acc, suite, index) => {
-    const supportedRegions = getSupportedRegions(suite);
     const newJobName = generateJobName(jobName, suite);
     const testRegion = FORCE_US_WEST_2.some(job => newJobName.startsWith(job))
       ? 'us-west-2'
-      : supportedRegions[index % supportedRegions.length];
+      : AWS_REGIONS_TO_RUN_TESTS[index % AWS_REGIONS_TO_RUN_TESTS.length];
     const newJob = {
       ...job,
       environment: {
@@ -396,17 +397,6 @@ function getRequiredJob(jobNames: string[], index: number, concurrency: number =
     const prevIndex = (mult - 1) * concurrency + mod;
     return jobNames[prevIndex];
   }
-}
-
-/**
- * Helper function to filter unsupported regions for certain category tests
- * @returns list of supported regions
- */
-function getSupportedRegions(suite: string): string[] {
-  if (suite.startsWith('src/__tests__/geo')) {
-    return AWS_REGIONS_TO_RUN_TESTS.filter(region => supportedRegions.includes(region));
-  }
-  return AWS_REGIONS_TO_RUN_TESTS;
 }
 
 function loadConfig(): CircleCIConfig {
