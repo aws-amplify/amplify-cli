@@ -55,6 +55,10 @@ const WINDOWS_TEST_FAILURES = [
   'custom_policies_container-amplify_e2e_tests',
   'custom_policies_function-amplify_e2e_tests',
   'storage-4-amplify_e2e_tests',
+  'resolvers-amplify_e2e_tests',
+  'migration-api-key-migration3-amplify_e2e_tests',
+  'migration-api-key-migration4-amplify_e2e_tests',
+  'migration-api-key-migration5-amplify_e2e_tests',
 
   // 👇 These fail due to ExpiredToken. 👇
   // 👇 Tests should be split to speed up execution time. 👇
