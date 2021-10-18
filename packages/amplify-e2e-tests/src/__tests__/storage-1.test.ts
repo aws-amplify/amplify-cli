@@ -1,4 +1,4 @@
-import { JSONUtilities } from 'amplify-cli-core';
+import { $TSAny, JSONUtilities } from 'amplify-cli-core';
 import { initJSProjectWithProfile, initFlutterProjectWithProfile, deleteProject, amplifyPushAuth } from 'amplify-e2e-core';
 import { addAuthWithDefault, addAuthWithGroupsAndAdminAPI } from 'amplify-e2e-core';
 import {
@@ -9,6 +9,7 @@ import {
   updateDDBWithTrigger,
   addSimpleDDBwithGSI,
   updateSimpleDDBwithGSI,
+  overrideS3,
   addS3AndAuthWithAuthOnlyAccess,
   addS3WithGuestAccess,
   addS3WithGroupAccess,
@@ -19,6 +20,16 @@ import { createNewProjectDir, deleteProjectDir, getProjectMeta, getDDBTable, che
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import uuid from 'uuid';
+
+
+function getServiceMeta( projectRoot : string, category: string, service : string ): $TSAny {
+  const meta = getProjectMeta(projectRoot);
+  for ( const storageResourceName of Object.keys(meta[category]) ){
+    if ( meta.storage[storageResourceName].service.toUpperCase() === service.toUpperCase() ){
+      return meta.storage[storageResourceName];
+    }
+  }
+}
 
 describe('amplify add/update storage(S3)', () => {
   let projRoot: string;
@@ -32,8 +43,8 @@ describe('amplify add/update storage(S3)', () => {
   });
 
   async function validate(projRoot) {
-    const meta = getProjectMeta(projRoot);
-    const { BucketName: bucketName, Region: region } = Object.keys(meta.storage).map(key => meta.storage[key])[0].output;
+    const serviceMeta =  getServiceMeta( projRoot, 'storage', 'S3');
+    const { BucketName: bucketName, Region: region } = serviceMeta.output;
 
     expect(bucketName).toBeDefined();
     expect(region).toBeDefined();
@@ -81,7 +92,7 @@ describe('amplify add/update storage(S3)', () => {
     await amplifyPushAuth(projRoot);
     await validate(projRoot);
   });
-
+  
   it('init a project and add S3 bucket with user pool groups and then update S3 bucket to add trigger', async () => {
     await initJSProjectWithProfile(projRoot, {});
     await addAuthWithGroupsAndAdminAPI(projRoot, {});
@@ -89,6 +100,52 @@ describe('amplify add/update storage(S3)', () => {
     await updateS3AddTrigger(projRoot, {});
     await amplifyPushAuth(projRoot);
     await validate(projRoot);
+  });
+});
+describe('s3 override tests', () => {
+  let projRoot: string;
+  beforeEach(async () => {
+    projRoot = await createNewProjectDir('s3-overrides');
+  });
+
+  afterEach(async () => {
+    await deleteProject(projRoot);
+    deleteProjectDir(projRoot);
+  });
+
+  it('override S3 Removal property', async () => {
+    await initJSProjectWithProfile(projRoot, {});
+    await addAuthWithDefault(projRoot, {});
+    await addS3WithGuestAccess(projRoot, {});
+    await overrideS3(projRoot, {});
+
+    const resourcePath = path.join(projRoot, 'amplify', 'backend', 'storage');
+    const resourceName = (fs.readdirSync(resourcePath))[0];
+    const srcOverrideFilePath = path.join(__dirname, '..', '..', 'overrides', 'override-storage-s3.ts');
+    const destOverrideFilePath = path.join(projRoot, 'amplify', 'backend', 'storage', resourceName, 'override.ts');
+    
+    const cfnFilePath = path.join(projRoot, 'amplify', 'backend', 'storage', resourceName, 'build', 'cloudformation-template.json');
+    fs.copyFileSync(srcOverrideFilePath, destOverrideFilePath);
+    await buildOverrideStorage(projRoot, {});
+    let s3CFNFileJSON: any = JSONUtilities.readJson(cfnFilePath);
+    // check if overrides are applied to the cfn file
+    expect(s3CFNFileJSON?.Resources?.S3Bucket?.Properties?.VersioningConfiguration?.Status).toEqual('Enabled');
+
+    // check if override persists after an update
+    s3CFNFileJSON = JSONUtilities.readJson(cfnFilePath);
+    expect(s3CFNFileJSON?.Resources?.S3Bucket?.Properties?.VersioningConfiguration?.Status).toEqual('Enabled');
+
+    await amplifyPushAuth(projRoot);
+    const s3Meta =  getServiceMeta( projRoot, "storage", "S3" ); 
+    const {
+      BucketName: bucketName,
+      Region: region
+    } = s3Meta.output;
+
+    expect(region).toBeDefined();
+    expect(bucketName).toBeDefined();
+    const bucketExists = await checkIfBucketExists(bucketName, region);
+    expect(bucketExists).toMatchObject({});
   });
 });
 
