@@ -14,7 +14,7 @@ jest.mock('amplify-prompts', () => ({
     debug: jest.fn(),
   },
   prompter: {
-    confirmContinue: jest.fn().mockReturnValue(true),
+    yesOrNo: jest.fn().mockReturnValue(true),
     pick: jest.fn().mockReturnValue('mockResource'),
   },
 }));
