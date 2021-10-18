@@ -10915,6 +10915,36 @@ jobs:
       AMPLIFY_DIR: /home/circleci/repo/packages/amplify-cli/bin
       AMPLIFY_PATH: /home/circleci/repo/packages/amplify-cli/bin/amplify
       TEST_SUITE: src/__tests__/PredictionsTransformerTests.e2e.test.ts
+      CLI_REGION: ap-southeast-2
+  PredictionsTransformerV2Tests-e2e-graphql_e2e_tests:
+    working_directory: ~/repo
+    parameters:
+      os:
+        type: executor
+        default: linux
+    executor: << parameters.os >>
+    steps:
+      - attach_workspace:
+          at: ./
+      - restore_cache:
+          key: >-
+            amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
+            arch }}
+      - run:
+          name: Run GraphQL end-to-end tests
+          command: |
+            source .circleci/local_publish_helpers.sh
+            cd packages/graphql-transformers-e2e-tests/
+            retry yarn e2e --maxWorkers=3 $TEST_SUITE
+          environment:
+            AMPLIFY_CLI_DISABLE_LOGGING: 'true'
+          no_output_timeout: 90m
+      - store_test_results:
+          path: packages/graphql-transformers-e2e-tests/
+    environment:
+      AMPLIFY_DIR: /home/circleci/repo/packages/amplify-cli/bin
+      AMPLIFY_PATH: /home/circleci/repo/packages/amplify-cli/bin/amplify
+      TEST_SUITE: src/__tests__/PredictionsTransformerV2Tests.e2e.test.ts
       CLI_REGION: us-east-2
   RelationalTransformers-e2e-graphql_e2e_tests:
     working_directory: ~/repo
@@ -16595,6 +16625,7 @@ workflows:
               os:
                 - linux
       - PredictionsTransformerTests-e2e-graphql_e2e_tests:
+      - PredictionsTransformerV2Tests-e2e-graphql_e2e_tests:
           context:
             - amplify-ecr-image-pull
             - e2e-test-context
