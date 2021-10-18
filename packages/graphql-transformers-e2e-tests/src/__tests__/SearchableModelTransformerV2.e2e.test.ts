@@ -159,7 +159,7 @@ test('query for aggregate scalar results', async () => {
       searchPosts(aggregates: [{
         name: "Minimum",
         type: min,
-        field: "ups"
+        field: ups
       }]) {
         aggregateItems {
           name
@@ -185,7 +185,7 @@ test('query for aggregate bucket results', async () => {
       searchPosts(aggregates: [{
         name: "Terms",
         type: terms,
-        field: "title"
+        field: title
       }]) {
         aggregateItems {
           name
@@ -214,7 +214,7 @@ test('query for multiple aggregates', async () => {
       searchPosts(aggregates: [{
         name: "Minimum",
         type: min,
-        field: "ups"
+        field: ups
       },
       {
         name: "Terms",
