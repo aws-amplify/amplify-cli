@@ -22,6 +22,9 @@
     "amplify",
     "aws"
   ],
+  "publishConfig": {
+    "access": "public"
+  },
   "dependencies": {
     "amplify-cli-core": "1.32.0",
     "amplify-headless-interface": "1.11.0",
