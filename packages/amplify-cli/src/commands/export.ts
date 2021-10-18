@@ -1,14 +1,6 @@
-import {
-  $TSContext,
-  ExportPathValidationError,
-  stateManager,
-  UnrecognizedFrameworkError,
-  UnrecognizedFrontendError,
-} from 'amplify-cli-core';
+import { $TSContext, stateManager, UnrecognizedFrontendError, validateExportDirectoryPath } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import chalk from 'chalk';
-import * as fs from 'fs-extra';
-import * as path from 'path';
 import { getResourceOutputs } from '../extensions/amplify-helpers/get-resource-outputs';
 import Ora from 'ora';
 
@@ -53,7 +45,7 @@ export const run = async (context: $TSContext) => {
     printer.blankLine();
     return;
   }
-  const exportPath = validatePath(context.input.options['out']);
+  const exportPath = context.input.options['out'];
   if (isPull) {
     await createFrontEndConfigFile(context, exportPath);
   } else {
@@ -66,23 +58,10 @@ async function exportBackend(context: $TSContext, exportPath: string) {
   const resources = await context.amplify.getResourceStatus();
   const providerPlugin = context.amplify.getProviderPlugins(context);
   const providers = Object.keys(providerPlugin);
-  const exportPath = path.resolve(context.input.options['out']);
   for await (const provider of providers) {
     const plugin = await import(providerPlugin[provider]);
     await plugin.exportResources(context, resources, exportPath);
   }
-}
-
-function validatePath(exportPath: any): string {
-  if (typeof exportPath !== 'string') {
-    throw new ExportPathValidationError(`${exportPath} is not a valid path specified by --out`);
-  }
-
-  const stat = fs.lstatSync(exportPath);
-  if (!stat.isDirectory()) {
-    throw new ExportPathValidationError(`${exportPath} is not a valid directory`);
-  }
-  return path.resolve(exportPath);
 }
 
 async function createFrontEndConfigFile(context: $TSContext, exportPath: string) {
@@ -102,6 +81,7 @@ async function createFrontEndConfigFile(context: $TSContext, exportPath: string)
       const plugin = await import(providerPlugin[provider]);
       await plugin.exportedStackResourcesUpdateMeta(context, rootStackName);
     }
+    validateExportDirectoryPath(exportPath);
     spinner.text = `Generating files at ${exportPath}`;
     const meta = stateManager.getMeta();
     const cloudMeta = stateManager.getCurrentMeta();
