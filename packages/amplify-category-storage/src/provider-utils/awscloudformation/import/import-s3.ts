@@ -27,7 +27,7 @@ export const importS3 = async (
   providerPluginInstance?: ProviderUtils,
   printSuccessMessage: boolean = true,
 ): Promise<{ envSpecificParameters: S3EnvSpecificResourceParameters } | undefined> => {
-  let resourceName: string | undefined = resourceAlreadyExists();
+  let resourceName: string | undefined = resourceAlreadyExists(context);
 
   if (resourceName && !previousResourceParameters) {
     const errMessage = 'Amazon S3 storage was already added to your project.';
