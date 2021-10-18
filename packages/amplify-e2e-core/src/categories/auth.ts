@@ -349,7 +349,7 @@ export function updateAuthSignInSignOutUrl(cwd: string, settings: any): Promise<
   return new Promise((resolve, reject) => {
     const chain = spawn(getCLIPath(), ['update', 'auth'], { cwd, stripColors: true });
     if (settings?.overrides?.category === 'auth') {
-      chain.wait(`Do you want to migrate this ${settings.overrides.resourceName} to support overrides?`).send('y');
+      chain.wait(`Do you want to migrate this ${settings.overrides.resourceName} to support overrides?`).sendConfirmYes();
     }
     chain
       .wait('What do you want to do?')
@@ -387,7 +387,7 @@ export function updateAuthToRemoveFederation(cwd: string, settings: any): Promis
   return new Promise((resolve, reject) => {
     const chain = spawn(getCLIPath(), ['update', 'auth'], { cwd, stripColors: true });
     if (settings?.overrides?.category === 'auth') {
-      chain.wait(`Do you want to migrate this ${settings.overrides.resourceName} to support overrides?`).send('y');
+      chain.wait(`Do you want to migrate this ${settings.overrides.resourceName} to support overrides?`).sendConfirmYes();
     }
     chain
       .wait('What do you want to do?')
@@ -408,7 +408,7 @@ export function updateAuthWithoutCustomTrigger(cwd: string, settings: any): Prom
   return new Promise((resolve, reject) => {
     const chain = spawn(getCLIPath(), ['update', 'auth'], { cwd, stripColors: true });
     if (settings?.overrides?.category === 'auth') {
-      chain.wait(`Do you want to migrate this ${settings.overrides.resourceName} to support overrides?`).send('y');
+      chain.wait(`Do you want to migrate this ${settings.overrides.resourceName} to support overrides?`).sendConfirmYes();
     }
     chain
       .wait('What do you want to do?')
@@ -501,7 +501,7 @@ export function updateAuthRemoveRecaptchaTrigger(cwd: string, settings: any): Pr
   return new Promise((resolve, reject) => {
     const chain = spawn(getCLIPath(), ['update', 'auth'], { cwd, stripColors: true });
     if (settings?.overrides?.category === 'auth') {
-      chain.wait(`Do you want to migrate this ${settings.overrides.resourceName} to support overrides?`).send('y');
+      chain.wait(`Do you want to migrate this ${settings.overrides.resourceName} to support overrides?`).sendConfirmYes();
     }
     chain
       .wait('What do you want to do')
@@ -1258,7 +1258,7 @@ export function updateAuthAddUserGroups(projectDir: string, groupNames: string[]
   return new Promise((resolve, reject) => {
     const chain = spawn(getCLIPath(), ['update', 'auth'], { cwd: projectDir, stripColors: true });
     if (settings?.overrides?.category === 'auth') {
-      chain.wait(`Do you want to migrate this ${settings.overrides.resourceName} to support overrides?`).sendLine('y');
+      chain.wait(`Do you want to migrate this ${settings.overrides.resourceName} to support overrides?`).sendConfirmYes();
     }
     chain
       .wait('What do you want to do?')
@@ -1578,7 +1578,7 @@ export function updateAuthAddAdminQueries(projectDir: string, groupName: string 
   return new Promise((resolve, reject) => {
     const chain = spawn(getCLIPath(), ['update', 'auth'], { cwd: projectDir, stripColors: true });
     if (settings?.overrides?.category === 'auth') {
-      chain.wait(`Do you want to migrate this ${settings.overrides.resourceName} to support overrides?`).sendLine('y');
+      chain.wait(`Do you want to migrate this ${settings.overrides.resourceName} to support overrides?`).sendConfirmYes();
     }
     chain
       .wait('What do you want to do?')
