@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.9.3-ext2.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-transformer-core@0.9.0...@aws-amplify/graphql-transformer-core@0.9.3-ext2.0) (2021-10-18)
+
+
+### Bug Fixes
+
+* **graphql-model-transformer:** [@model](https://github.com/model) conflict resolution ([#8035](https://github.com/aws-amplify/amplify-cli/issues/8035)) ([f3bdc4a](https://github.com/aws-amplify/amplify-cli/commit/f3bdc4ac1fcf596f634d9d2e968785e76f7b138c))
+* **graphql-model-transformer:** iam role name does not exceed 64 characters ([#8244](https://github.com/aws-amplify/amplify-cli/issues/8244)) ([812a671](https://github.com/aws-amplify/amplify-cli/commit/812a67163d6dd33160bf7ace9afd538c83a7af1a))
+* **graphql-transformer-core:** add default api name when generating stack ([#8201](https://github.com/aws-amplify/amplify-cli/issues/8201)) ([fe52f9b](https://github.com/aws-amplify/amplify-cli/commit/fe52f9b44900888b30f8ce5c88286b197e9cd3af))
+
+
+
+
+
 ## [0.9.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-transformer-core@0.9.1...@aws-amplify/graphql-transformer-core@0.9.2) (2021-10-10)
 
 **Note:** Version bump only for package @aws-amplify/graphql-transformer-core
