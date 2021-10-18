@@ -21,7 +21,7 @@ export const getPostAddAuthMetaUpdater =
     const authParameters = JSONUtilities.readJson<AuthParameters>(parametersJSONPath)!;
 
     if (authParameters.dependsOn) {
-      options.dependsOn = typeof authParameters.dependsOn === 'string' ? JSON.parse(authParameters.dependsOn) : authParameters.dependsOn;
+      options.dependsOn = authParameters.dependsOn;
     }
 
     let customAuthConfigured = false;

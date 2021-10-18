@@ -172,7 +172,7 @@ async function externalAuthEnable(context, externalCategory, resourceName, requi
       };
 
       if (authParameters.dependsOn) {
-        options.dependsOn = typeof authParameters.dependsOn === 'string' ? JSON.parse(authParameters.dependsOn) : authParameters.dependsOn;
+        options.dependsOn = authParameters.dependsOn;
       }
       await amplify.updateamplifyMetaAfterResourceAdd(category, authProps.resourceName, options);
     }
