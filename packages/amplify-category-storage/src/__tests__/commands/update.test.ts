@@ -32,3 +32,26 @@ describe('update ddb command tests', () => {
     expect(providerController_mock.updateResource).toHaveBeenCalledWith(mockContext, 'storage', service);
   });
 });
+
+describe('update s3 command tests', () => {
+  const provider = 'awscloudformation';
+  let mockContext: $TSContext;
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+    mockContext = {
+      amplify: {},
+    } as unknown as $TSContext;
+  });
+
+  it('update resource workflow is invoked for S3', async () => {
+    const service = 's3';
+    mockContext.amplify.serviceSelectionPrompt = jest.fn().mockImplementation(async () => {
+      return { service: service, providerName: provider };
+    });
+
+    await run(mockContext);
+
+    expect(providerController_mock.updateResource).toHaveBeenCalledWith(mockContext, 'storage', service);
+  });
+});
