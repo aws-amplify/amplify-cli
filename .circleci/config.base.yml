@@ -203,9 +203,8 @@ jobs:
           name: Run GraphQL end-to-end tests
           command: |
             source .circleci/local_publish_helpers.sh
-            setAwsAccountCredentials
             cd packages/graphql-transformers-e2e-tests/
-            yarn e2e --maxWorkers=3 $TEST_SUITE
+            retry yarn e2e --maxWorkers=3 $TEST_SUITE
           environment:
             AMPLIFY_CLI_DISABLE_LOGGING: 'true'
           no_output_timeout: 90m
@@ -288,11 +287,11 @@ jobs:
           path: packages/amplify-e2e-tests/
       - store_artifacts:
           path: packages/amplify-e2e-tests/amplify-e2e-reports
-      - clean_e2e_resources:
-          os: << parameters.os >>
+      # - clean_e2e_resources:
+      #     os: << parameters.os >>
+
   amplify_migration_tests_v4:
     <<: *defaults
-
     steps:
       - attach_workspace:
           at: ./
@@ -306,7 +305,7 @@ jobs:
             source .circleci/local_publish_helpers.sh
             changeNpmGlobalPath
             cd packages/amplify-migration-tests
-            yarn run migration_v4.0.0 --maxWorkers=3 $TEST_SUITE
+            retry yarn run migration_v4.0.0 --maxWorkers=3 $TEST_SUITE
           no_output_timeout: 90m
       - run: *scan_e2e_test_artifacts
       - store_test_results:
@@ -413,7 +412,7 @@ jobs:
             source .circleci/local_publish_helpers.sh
             changeNpmGlobalPath
             cd packages/amplify-migration-tests
-            yarn run migration --maxWorkers=3 $TEST_SUITE
+            retry yarn run migration --maxWorkers=3 $TEST_SUITE
           no_output_timeout: 90m
       - run: *scan_e2e_test_artifacts
       - store_test_results:
@@ -765,11 +764,11 @@ workflows:
       - amplify_e2e_tests:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
-          post-steps:
-            - run: *clean_e2e_resources
+          # post-steps:
+          #   - run: *clean_e2e_resources
           filters:
             branches:
               only:
@@ -781,7 +780,7 @@ workflows:
       - amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-auth-credentials
             - e2e-test-context
           filters:
@@ -796,7 +795,7 @@ workflows:
           context:
             - amplify-ecr-image-pull
             - e2e-auth-credentials
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-test-context
           filters:
             branches:
@@ -806,11 +805,13 @@ workflows:
                 - /run-e2e\/.*/
           requires:
             - build
+          # post-steps:
+          #   - run: *clean_e2e_resources
       - amplify_migration_tests_v4:
           context:
             - amplify-ecr-image-pull
             - e2e-auth-credentials
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-test-context
           filters:
             branches:
@@ -820,11 +821,13 @@ workflows:
                 - /run-e2e\/.*/
           requires:
             - build
+          # post-steps:
+          #   - run: *clean_e2e_resources
       - amplify_migration_tests_v4_30_0:
           context:
             - amplify-ecr-image-pull
             - e2e-auth-credentials
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-test-context
           filters:
             branches:
@@ -834,11 +837,13 @@ workflows:
                 - /run-e2e\/.*/
           requires:
             - build
+          # post-steps:
+          #   - run: *clean_e2e_resources
       - amplify_migration_tests_non_multi_env_layers:
           context:
             - amplify-ecr-image-pull
             - e2e-auth-credentials
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-test-context
           filters:
             branches:
@@ -848,11 +853,13 @@ workflows:
                 - /run-e2e\/.*/
           requires:
             - build
+          # post-steps:
+          #   - run: *clean_e2e_resources
       - amplify_migration_tests_multi_env_layers:
           context:
             - amplify-ecr-image-pull
             - e2e-auth-credentials
-            - clean_e2e_resources
+            - cleanup-resources
             - e2e-test-context
           filters:
             branches:
@@ -862,15 +869,17 @@ workflows:
                 - /run-e2e\/.*/
           requires:
             - build
+          # post-steps:
+          #   - run: *clean_e2e_resources
       - amplify_console_integration_tests:
           context:
             - amplify-ecr-image-pull
             - e2e-auth-credentials
-            - clean_e2e_resources
+            - cleanup-resources
             - console-e2e-test
             - e2e-test-context
-          post-steps:
-            - run: *clean_e2e_resources
+          # post-steps:
+          #   - run: *clean_e2e_resources
           filters:
             branches:
               only:
@@ -1072,7 +1081,7 @@ commands:
         default: linux-e2e-executor
     steps:
       - run:
-          name: Scan E2E artifacts
+          name: Clean job resources
           command: |
             pwd
             cd packages/amplify-e2e-tests

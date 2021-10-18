@@ -3,6 +3,83 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.64.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.63.0...amplify-provider-awscloudformation@4.64.0) (2021-10-13)
+
+
+### Features
+
+* Geo category plugin - support for additional regions ([#8373](https://github.com/aws-amplify/amplify-cli/issues/8373)) ([3a0c29f](https://github.com/aws-amplify/amplify-cli/commit/3a0c29fc1cb07fb1f16ac9546148c564eee97989))
+
+
+
+
+
+# [4.63.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.62.1...amplify-provider-awscloudformation@4.63.0) (2021-10-10)
+
+
+### Bug Fixes
+
+* **amplify-category-api:** fixed api to reference stack name and deployment bucket ([#8145](https://github.com/aws-amplify/amplify-cli/issues/8145)) ([4c7493a](https://github.com/aws-amplify/amplify-cli/commit/4c7493ac34fa89cab0c80e5c674bbeb102891a64))
+
+
+### Features
+
+* **amplify-provider-awscloudformation:** enable custom resolvers for v2 transformer ([#8332](https://github.com/aws-amplify/amplify-cli/issues/8332)) ([1c73042](https://github.com/aws-amplify/amplify-cli/commit/1c730423085b09b4ba681193f020c30bc2a5e3cc))
+* **amplify-provider-awscloudformation:** merge user config with transform generated resolvers ([#8262](https://github.com/aws-amplify/amplify-cli/issues/8262)) ([f25abbf](https://github.com/aws-amplify/amplify-cli/commit/f25abbf68f1e268f6e3dcb362685e7fe9ec760c8))
+* **graphql-default-value-transformer:** implemented default value directive ([#8291](https://github.com/aws-amplify/amplify-cli/issues/8291)) ([130aba1](https://github.com/aws-amplify/amplify-cli/commit/130aba1dda122b3289270d1a711da6e0326ecf90))
+
+
+### Reverts
+
+* Revert custom override resolvers (#8409) ([efbd048](https://github.com/aws-amplify/amplify-cli/commit/efbd04873815be2f0268d2ba072a022c8e699a52)), closes [#8409](https://github.com/aws-amplify/amplify-cli/issues/8409) [#8332](https://github.com/aws-amplify/amplify-cli/issues/8332) [#8262](https://github.com/aws-amplify/amplify-cli/issues/8262)
+
+
+
+
+
+## [4.62.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.62.0...amplify-provider-awscloudformation@4.62.1) (2021-10-08)
+
+
+### Bug Fixes
+
+* **amplify-category-api:** custom policies attached to TaskRoleArn ([#8376](https://github.com/aws-amplify/amplify-cli/issues/8376)) ([6d92c8b](https://github.com/aws-amplify/amplify-cli/commit/6d92c8b31541381e16507f0be2f608db30164139))
+* opensearch warning, add optional chaining to get api category ([#8371](https://github.com/aws-amplify/amplify-cli/issues/8371)) ([2bdae3a](https://github.com/aws-amplify/amplify-cli/commit/2bdae3ac09c0fd065fb03115cfbdc4d29c3577fe))
+
+
+
+
+
+# [4.62.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.61.1...amplify-provider-awscloudformation@4.62.0) (2021-10-06)
+
+
+
+# 6.2.0 (2021-10-05)
+
+
+### Bug Fixes
+
+* **graphql-model-transformer:** fix open search instance check for v1 and v2 transformers ([#8354](https://github.com/aws-amplify/amplify-cli/issues/8354)) ([d7d9476](https://github.com/aws-amplify/amplify-cli/commit/d7d9476ff0d3e5f49b02d2de86f87b2f247e7a8d))
+
+
+### Features
+
+* Custom policies IAM Policies for Lambda and Containers ([#8068](https://github.com/aws-amplify/amplify-cli/issues/8068)) ([3e1ce0d](https://github.com/aws-amplify/amplify-cli/commit/3e1ce0de4d25ab239adcdcef778cc82f30b17a94))
+
+
+
+
+
+## [4.61.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.61.0...amplify-provider-awscloudformation@4.61.1) (2021-10-01)
+
+
+### Bug Fixes
+
+* logic to display searchable instance warning ([#8297](https://github.com/aws-amplify/amplify-cli/issues/8297)) ([1fc7a9a](https://github.com/aws-amplify/amplify-cli/commit/1fc7a9ae0a585b1abf9f94ad982e5573ead22391))
+
+
+
+
+
 # [4.61.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.60.1...amplify-provider-awscloudformation@4.61.0) (2021-09-27)
 
 

@@ -2,7 +2,7 @@ import * as yaml from 'js-yaml';
 import * as glob from 'glob';
 import { join } from 'path';
 import * as fs from 'fs-extra';
-import { supportedRegions } from '../packages/amplify-category-geo/src/constants';
+import * as execa from 'execa';
 
 const CONCURRENCY = 25;
 // Some our e2e tests are known to fail when run on windows hosts
@@ -73,6 +73,7 @@ const WINDOWS_TEST_FAILURES = [
   'notifications-amplify_e2e_tests',
   'predictions-amplify_e2e_tests',
   'pull-amplify_e2e_tests',
+  'resolvers-amplify_e2e_tests',
   's3-sse-amplify_e2e_tests',
   'schema-auth-1-amplify_e2e_tests',
   'schema-auth-2-amplify_e2e_tests',
@@ -107,6 +108,8 @@ const WINDOWS_TEST_FAILURES = [
   'storage-2-amplify_e2e_tests',
   'storage-3-amplify_e2e_tests',
   'tags-amplify_e2e_tests',
+  'custom_policies_container-amplify_e2e_tests',
+  'custom_policies_function-amplify_e2e_tests',
 ];
 
 // Ensure to update packages/amplify-e2e-tests/src/cleanup-e2e-resources.ts is also updated this gets updated
@@ -290,11 +293,10 @@ function splitTests(
   const testSuites = getTestFiles(jobRootDir);
 
   const newJobs = testSuites.reduce((acc, suite, index) => {
-    const supportedRegions = getSupportedRegions(suite);
     const newJobName = generateJobName(jobName, suite);
     const testRegion = FORCE_US_WEST_2.some(job => newJobName.startsWith(job))
       ? 'us-west-2'
-      : supportedRegions[index % supportedRegions.length];
+      : AWS_REGIONS_TO_RUN_TESTS[index % AWS_REGIONS_TO_RUN_TESTS.length];
     const newJob = {
       ...job,
       environment: {
@@ -307,9 +309,9 @@ function splitTests(
     const isPkg = newJobName.endsWith('_pkg');
     if (!isPkg) {
       (newJob.environment as any) = {
-        ...newJob.environment,
         AMPLIFY_DIR: '/home/circleci/repo/packages/amplify-cli/bin',
         AMPLIFY_PATH: '/home/circleci/repo/packages/amplify-cli/bin/amplify',
+        ...newJob.environment,
       };
     }
     return { ...acc, [newJobName]: newJob };
@@ -442,17 +444,6 @@ function getRequiredJob(jobNames: string[], index: number, concurrency: number =
   }
 }
 
-/**
- * Helper function to filter unsupported regions for certain category tests
- * @returns list of supported regions
- */
-function getSupportedRegions(suite: string): string[] {
-  if (suite.startsWith('src/__tests__/geo')) {
-    return AWS_REGIONS_TO_RUN_TESTS.filter(region => supportedRegions.includes(region));
-  }
-  return AWS_REGIONS_TO_RUN_TESTS;
-}
-
 function loadConfig(): CircleCIConfig {
   const configFile = join(process.cwd(), '.circleci', 'config.base.yml');
   return <CircleCIConfig>yaml.load(fs.readFileSync(configFile, 'utf8'));
@@ -463,6 +454,24 @@ function saveConfig(config: CircleCIConfig): void {
   const output = ['# auto generated file. Edit config.base.yaml if you want to change', yaml.dump(config, { noRefs: true })];
   fs.writeFileSync(configFile, output.join('\n'));
 }
+
+function verifyConfig() {
+  try {
+    execa.commandSync('which circleci');
+  } catch {
+    console.error(
+      'Please install circleci cli to validate your circle config. Installation information can be found at https://circleci.com/docs/2.0/local-cli/',
+    );
+    process.exit(1);
+  }
+  try {
+    execa.commandSync('circleci config validate');
+  } catch {
+    console.error(`"circleci config validate" command failed. Please check your .circleci/config.yml validity`);
+    process.exit(1);
+  }
+}
+
 function main(): void {
   const config = loadConfig();
   const splitNodeTests = splitTests(
@@ -486,6 +495,21 @@ function main(): void {
     join(process.cwd(), 'packages', 'graphql-transformers-e2e-tests'),
     CONCURRENCY,
   );
-  saveConfig(splitGqlTests);
+  const splitV4MigrationTests = splitTests(
+    splitGqlTests,
+    'amplify_migration_tests_v4',
+    'build_test_deploy',
+    join(process.cwd(), 'packages', 'amplify-migration-tests'),
+    CONCURRENCY,
+  );
+  const splitLatestMigrationTests = splitTests(
+    splitV4MigrationTests,
+    'amplify_migration_tests_latest',
+    'build_test_deploy',
+    join(process.cwd(), 'packages', 'amplify-migration-tests'),
+    CONCURRENCY,
+  );
+  saveConfig(splitLatestMigrationTests);
+  verifyConfig();
 }
 main();

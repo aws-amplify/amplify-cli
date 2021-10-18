@@ -268,13 +268,11 @@ export async function generateHostingResources(
   );
 
   const stack = new EcsAlbStack(undefined, 'ContainersHosting', {
-    envName,
     categoryName,
     apiName: resourceName,
     authName,
     dependsOn,
     policies: [], // TODO
-    deploymentBucketName,
     restrictAccess,
     createCloudMapService: false,
     secretsArns,

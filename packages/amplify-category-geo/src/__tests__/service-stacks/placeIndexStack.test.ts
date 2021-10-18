@@ -9,7 +9,12 @@ describe('cdk stack creation for place index service', () => {
 
     it('creates place index policy for Authorized users only access type', async() => {
         const stackProps = {
-            accessType: AccessType.AuthorizedUsers
+            accessType: AccessType.AuthorizedUsers,
+            RegionMapping: { 
+                'eu-west-2': {
+                    locationServiceRegion: 'eu-central-1'
+                }
+            }
         }
         const mapStack = new PlaceIndexStack(new App(), 'PlaceIndexStack', stackProps);
         expect(mapStack.toCloudFormation()).toMatchSnapshot();
@@ -17,7 +22,12 @@ describe('cdk stack creation for place index service', () => {
 
     it('creates place index policy for Authorized and Guest users access type', async() => {
         const stackProps = {
-            accessType: AccessType.AuthorizedAndGuestUsers
+            accessType: AccessType.AuthorizedAndGuestUsers,
+            RegionMapping: { 
+                'eu-west-2': {
+                    locationServiceRegion: 'eu-central-1'
+                }
+            }
         }
         const mapStack = new PlaceIndexStack(new App(), 'PlaceIndexStack', stackProps);
         expect(mapStack.toCloudFormation()).toMatchSnapshot();

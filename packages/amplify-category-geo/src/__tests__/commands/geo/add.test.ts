@@ -36,7 +36,7 @@ describe('add command tests', () => {
     it('add resource workflow is invoked for map service', async() => {
         const service = ServiceName.Map;
         mockContext.amplify.serviceSelectionPrompt = jest.fn().mockImplementation( async () => {
-            return { service: service, providerName: provider};
+            return { service: service, providerName: provider };
         });
 
         await run(mockContext);
@@ -47,7 +47,7 @@ describe('add command tests', () => {
     it('add resource workflow is invoked for place index service', async() => {
         const service = ServiceName.PlaceIndex;
         mockContext.amplify.serviceSelectionPrompt = jest.fn().mockImplementation( async () => {
-            return { service: service, providerName: provider};
+            return { service: service, providerName: provider };
         });
 
         await run(mockContext);
@@ -55,14 +55,31 @@ describe('add command tests', () => {
         expect(mockAddResource).toHaveBeenCalledWith(mockContext, service);
     });
 
-    it('add resource workflow is not invoked for unsupported region', async() => {
+    it('add resource workflow is invoked for Map service in unsupported region', async() => {
         mockAmplifyMeta.providers[provider] = {
             Region: 'eu-west-2'
         };
+        const service = ServiceName.Map;
+        mockContext.amplify.serviceSelectionPrompt = jest.fn().mockImplementation( async () => {
+            return { service: service, providerName: provider };
+        });
         stateManager.getMeta = jest.fn().mockReturnValue(mockAmplifyMeta);
 
         await run(mockContext);
+        expect(mockAddResource).toHaveBeenCalledWith(mockContext, service);
+    });
 
-        expect(mockAddResource).toBeCalledTimes(0);
+    it('add resource workflow is invoked for Place Index service in unsupported region', async() => {
+        mockAmplifyMeta.providers[provider] = {
+            Region: 'eu-west-2'
+        };
+        const service = ServiceName.PlaceIndex;
+        mockContext.amplify.serviceSelectionPrompt = jest.fn().mockImplementation( async () => {
+            return { service: service, providerName: provider };
+        });
+        stateManager.getMeta = jest.fn().mockReturnValue(mockAmplifyMeta);
+
+        await run(mockContext);
+        expect(mockAddResource).toHaveBeenCalledWith(mockContext, service);
     });
 });

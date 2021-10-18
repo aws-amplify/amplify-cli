@@ -6,6 +6,7 @@ import { DEPLOYMENT_MECHANISM } from './base-api-stack';
 import { GitHubSourceActionInfo } from './pipeline-with-awaiter';
 import { API_TYPE, IMAGE_SOURCE_TYPE, ResourceDependency, ServiceConfiguration } from './service-walkthroughs/containers-walkthrough';
 import { ApiResource, generateContainersArtifacts } from './utils/containers-artifacts';
+import { createDefaultCustomPoliciesFile, pathManager } from 'amplify-cli-core';
 
 export const addResource = async (
   serviceWalkthroughPromise: Promise<ServiceConfiguration>,
@@ -96,6 +97,10 @@ export const addResource = async (
 
   }
 
+  createDefaultCustomPoliciesFile(category, resourceName);
+
+  const customPoliciesPath = pathManager.getCustomPoliciesPath(category, resourceName);
+
   context.print.success(`Successfully added resource ${resourceName} locally.`);
   context.print.info('');
   context.print.success('Next steps:');
@@ -111,6 +116,7 @@ export const addResource = async (
   context.print.info(
     `- Amplify CLI infers many configuration settings from the "docker-compose.yaml" file. Learn more: docs.amplify.aws/cli/usage/containers`,
   );
+  context.print.info(`- To access AWS resources outside of this Amplify app, edit the ${customPoliciesPath}`);
   context.print.info('- Run "amplify push" to build and deploy your image');
 
   return resourceName;
