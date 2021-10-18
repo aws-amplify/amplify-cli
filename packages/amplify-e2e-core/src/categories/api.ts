@@ -94,7 +94,6 @@ export function addApiWithBlankSchema(cwd: string, opts: Partial<AddApiOptions &
           reject(err);
         }
       });
-
   });
 }
 
@@ -409,7 +408,7 @@ export function addApi(projectDir: string, settings?: any) {
   return new Promise<void>((resolve, reject) => {
     let chain = spawn(getCLIPath(defaultOptions.testingWithLatestCodebase), ['add', 'api'], { cwd: projectDir, stripColors: true })
       .wait('Please select from one of the below mentioned services:')
-      .sendCarriageReturn()
+      .sendCarriageReturn();
 
     if (settings && Object.keys(settings).length > 0) {
       const authTypesToAdd = Object.keys(settings);
@@ -426,9 +425,7 @@ export function addApi(projectDir: string, settings?: any) {
       if (authTypesToAdd.length > 1) {
         authTypesToAdd.shift();
 
-        chain
-          .wait('Configure additional auth types?')
-          .sendConfirmYes();
+        chain.wait('Configure additional auth types?').sendConfirmYes();
 
         authTypesToSelectFrom = authTypesToSelectFrom.filter(x => x !== defaultType);
 
@@ -442,9 +439,7 @@ export function addApi(projectDir: string, settings?: any) {
           setupAuthType(authType, chain, settings);
         });
       } else {
-        chain
-          .wait('Configure additional auth types?')
-          .sendLine('n');
+        chain.wait('Configure additional auth types?').sendLine('n');
       }
     }
 

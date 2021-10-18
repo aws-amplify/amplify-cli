@@ -390,7 +390,7 @@ export async function run(context: $TSContext, resourceDefinition: $TSObject) {
     if (iterativeDeploymentWasInvoked) {
       await deploymentStateManager.failDeployment();
     }
-    if(!await canAutoResolveGraphQLAuthError(error.message)) {
+    if (!(await canAutoResolveGraphQLAuthError(error.message))) {
       spinner.fail('An error occurred when pushing the resources to the cloud');
     }
     rollbackLambdaLayers(layerResources);
@@ -402,11 +402,14 @@ export async function run(context: $TSContext, resourceDefinition: $TSObject) {
 }
 
 async function canAutoResolveGraphQLAuthError(message: string) {
-  if (message === `@auth directive with 'iam' provider found, but the project has no IAM authentication provider configured.`
-    || message === `@auth directive with 'userPools' provider found, but the project has no Cognito User Pools authentication provider configured.`
-    || message === `@auth directive with 'oidc' provider found, but the project has no OPENID_CONNECT authentication provider configured.`
-    || message === `@auth directive with 'apiKey' provider found, but the project has no API Key authentication provider configured.`
-    || message === `@auth directive with 'function' provider found, but the project has no Lambda authentication provider configured.`) {
+  if (
+    message === `@auth directive with 'iam' provider found, but the project has no IAM authentication provider configured.` ||
+    message ===
+      `@auth directive with 'userPools' provider found, but the project has no Cognito User Pools authentication provider configured.` ||
+    message === `@auth directive with 'oidc' provider found, but the project has no OPENID_CONNECT authentication provider configured.` ||
+    message === `@auth directive with 'apiKey' provider found, but the project has no API Key authentication provider configured.` ||
+    message === `@auth directive with 'function' provider found, but the project has no Lambda authentication provider configured.`
+  ) {
     return true;
   }
 }

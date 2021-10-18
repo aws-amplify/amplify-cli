@@ -1,5 +1,13 @@
 import * as fs from 'fs-extra';
-import { initJSProjectWithProfile, deleteProject, addApiWithoutSchema, updateApiSchema, amplifyPush, amplifyPull, getAppId } from 'amplify-e2e-core';
+import {
+  initJSProjectWithProfile,
+  deleteProject,
+  addApiWithoutSchema,
+  updateApiSchema,
+  amplifyPush,
+  amplifyPull,
+  getAppId,
+} from 'amplify-e2e-core';
 import { createNewProjectDir, deleteProjectDir } from 'amplify-e2e-core';
 import { pathManager } from 'amplify-cli-core';
 import { addEnvironment } from '../environment/env';

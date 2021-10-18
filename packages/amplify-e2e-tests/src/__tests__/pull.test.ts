@@ -25,7 +25,7 @@ describe('amplify pull', () => {
   });
 
   it('pulling twice with noUpdateBackend does not re-prompt', async () => {
-    await initJSProjectWithProfile(projRoot, { 
+    await initJSProjectWithProfile(projRoot, {
       disableAmplifyAppCreation: false,
       name: 'testapi',
     });

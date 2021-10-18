@@ -1,8 +1,11 @@
 type Task
   @model
-  @auth(rules: [
+  @auth(
+    rules: [
       { allow: groups, groups: ["Managers"], operations: [create, update, read, delete] }
-      { allow: groups, groups: ["Employees"], operations: [read] } ]) {
+      { allow: groups, groups: ["Employees"], operations: [read] }
+    ]
+  ) {
   id: ID!
   title: String!
   description: String

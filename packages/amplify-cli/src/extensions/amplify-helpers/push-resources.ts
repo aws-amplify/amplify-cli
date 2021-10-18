@@ -4,7 +4,14 @@ import { onCategoryOutputsChange } from './on-category-outputs-change';
 import { initializeEnv } from '../../initialize-env';
 import { getProviderPlugins } from './get-provider-plugins';
 import { getEnvInfo } from './get-env-info';
-import { EnvironmentDoesNotExistError, exitOnNextTick, stateManager, $TSAny, $TSContext, CustomPoliciesFormatError } from 'amplify-cli-core';
+import {
+  EnvironmentDoesNotExistError,
+  exitOnNextTick,
+  stateManager,
+  $TSAny,
+  $TSContext,
+  CustomPoliciesFormatError,
+} from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 
 export async function pushResources(
@@ -82,7 +89,7 @@ export async function pushResources(
         if (await isValidGraphQLAuthError(err.message)) {
           retryPush = await handleValidGraphQLAuthError(context, err.message);
         }
-        if(!retryPush) {
+        if (!retryPush) {
           // Handle the errors and print them nicely for the user.
           context.print.error(`\n${err.message}`);
           throw err;
@@ -98,11 +105,14 @@ export async function pushResources(
 }
 
 async function isValidGraphQLAuthError(message: string) {
-  if (message === `@auth directive with 'iam' provider found, but the project has no IAM authentication provider configured.`
-    || message === `@auth directive with 'userPools' provider found, but the project has no Cognito User Pools authentication provider configured.`
-    || message === `@auth directive with 'oidc' provider found, but the project has no OPENID_CONNECT authentication provider configured.`
-    || message === `@auth directive with 'apiKey' provider found, but the project has no API Key authentication provider configured.`
-    || message === `@auth directive with 'function' provider found, but the project has no Lambda authentication provider configured.`) {
+  if (
+    message === `@auth directive with 'iam' provider found, but the project has no IAM authentication provider configured.` ||
+    message ===
+      `@auth directive with 'userPools' provider found, but the project has no Cognito User Pools authentication provider configured.` ||
+    message === `@auth directive with 'oidc' provider found, but the project has no OPENID_CONNECT authentication provider configured.` ||
+    message === `@auth directive with 'apiKey' provider found, but the project has no API Key authentication provider configured.` ||
+    message === `@auth directive with 'function' provider found, but the project has no Lambda authentication provider configured.`
+  ) {
     return true;
   }
 }
@@ -112,16 +122,25 @@ async function handleValidGraphQLAuthError(context: $TSContext, message: string)
     await addGraphQLAuthRequirement(context, 'AWS_IAM');
     return true;
   } else if (!context?.parameters?.options?.yes) {
-    if (message === `@auth directive with 'userPools' provider found, but the project has no Cognito User Pools authentication provider configured.`) {
+    if (
+      message ===
+      `@auth directive with 'userPools' provider found, but the project has no Cognito User Pools authentication provider configured.`
+    ) {
       await addGraphQLAuthRequirement(context, 'AMAZON_COGNITO_USER_POOLS');
       return true;
-    } else if (message === `@auth directive with 'oidc' provider found, but the project has no OPENID_CONNECT authentication provider configured.`) {
-      await addGraphQLAuthRequirement(context, 'OPENID_CONNECT')
+    } else if (
+      message === `@auth directive with 'oidc' provider found, but the project has no OPENID_CONNECT authentication provider configured.`
+    ) {
+      await addGraphQLAuthRequirement(context, 'OPENID_CONNECT');
       return true;
-    } else if (message === `@auth directive with 'apiKey' provider found, but the project has no API Key authentication provider configured.`) {
+    } else if (
+      message === `@auth directive with 'apiKey' provider found, but the project has no API Key authentication provider configured.`
+    ) {
       await addGraphQLAuthRequirement(context, 'API_KEY');
       return true;
-    } else if (message === `@auth directive with 'function' provider found, but the project has no Lambda authentication provider configured.`) {
+    } else if (
+      message === `@auth directive with 'function' provider found, but the project has no Lambda authentication provider configured.`
+    ) {
       await addGraphQLAuthRequirement(context, 'AWS_LAMBDA');
       return true;
     }

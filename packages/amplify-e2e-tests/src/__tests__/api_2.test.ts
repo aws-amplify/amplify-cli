@@ -1,26 +1,26 @@
 import {
-  addApiWithBlankSchemaAndConflictDetection, 
-  addApiWithoutSchema, 
-  addFunction, 
-  addRestApi, 
-  addSimpleDDB, 
+  addApiWithBlankSchemaAndConflictDetection,
+  addApiWithoutSchema,
+  addFunction,
+  addRestApi,
+  addSimpleDDB,
   amplifyPush,
-  amplifyPushUpdate, 
-  apiDisableDataStore, 
-  apiEnableDataStore, 
+  amplifyPushUpdate,
+  apiDisableDataStore,
+  apiEnableDataStore,
   checkIfBucketExists,
-  createNewProjectDir, 
-  deleteProject, 
-  deleteProjectDir, 
-  enableAdminUI, 
-  getAppSyncApi, 
-  getLocalEnvInfo, 
-  getProjectMeta, 
-  getTransformConfig, 
+  createNewProjectDir,
+  deleteProject,
+  deleteProjectDir,
+  enableAdminUI,
+  getAppSyncApi,
+  getLocalEnvInfo,
+  getProjectMeta,
+  getTransformConfig,
   initJSProjectWithProfile,
   listAttachedRolePolicies,
   listRolePolicies,
-  updateApiSchema, 
+  updateApiSchema,
   updateAPIWithResolutionStrategyWithModels,
   updateAuthAddAdminQueries,
 } from 'amplify-e2e-core';
@@ -31,7 +31,6 @@ import { TRANSFORM_CURRENT_VERSION } from 'graphql-transformer-core';
 import _ from 'lodash';
 import * as path from 'path';
 const providerName = 'awscloudformation';
-
 
 // to deal with bug in cognito-identity-js
 (global as any).fetch = require('node-fetch');
