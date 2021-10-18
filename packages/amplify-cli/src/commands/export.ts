@@ -1,10 +1,4 @@
-import {
-  $TSContext,
-  ExportPathValidationError,
-  stateManager,
-  UnrecognizedFrameworkError,
-  UnrecognizedFrontendError,
-} from 'amplify-cli-core';
+import { $TSContext, stateManager, UnrecognizedFrontendError, validateExportDirectoryPath } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import chalk from 'chalk';
 import * as fs from 'fs-extra';
@@ -53,7 +47,7 @@ export const run = async (context: $TSContext) => {
     printer.blankLine();
     return;
   }
-  const exportPath = validatePath(context.input.options['out']);
+  const exportPath = context.input.options['out'];
   if (isPull) {
     await createFrontEndConfigFile(context, exportPath);
   } else {
@@ -66,23 +60,10 @@ async function exportBackend(context: $TSContext, exportPath: string) {
   const resources = await context.amplify.getResourceStatus();
   const providerPlugin = context.amplify.getProviderPlugins(context);
   const providers = Object.keys(providerPlugin);
-  const exportPath = path.resolve(context.input.options['out']);
   for await (const provider of providers) {
     const plugin = await import(providerPlugin[provider]);
     await plugin.exportResources(context, resources, exportPath);
   }
-}
-
-function validatePath(exportPath: any): string {
-  if (typeof exportPath !== 'string') {
-    throw new ExportPathValidationError(`${exportPath} is not a valid path specified by --out`);
-  }
-
-  const stat = fs.lstatSync(exportPath);
-  if (!stat.isDirectory()) {
-    throw new ExportPathValidationError(`${exportPath} is not a valid directory`);
-  }
-  return path.resolve(exportPath);
 }
 
 async function createFrontEndConfigFile(context: $TSContext, exportPath: string) {
@@ -107,6 +88,7 @@ async function createFrontEndConfigFile(context: $TSContext, exportPath: string)
     const cloudMeta = stateManager.getCurrentMeta();
     const frontendPlugins = context.amplify.getFrontendPlugins(context);
     const frontendHandlerModule = require(frontendPlugins[frontend]);
+    validateExportDirectoryPath(exportPath);
     await frontendHandlerModule.createFrontendConfigsAtPath(context, getResourceOutputs(meta), getResourceOutputs(cloudMeta), exportPath);
     spinner.succeed('Successfully generated frontend config files');
   } catch (ex: any) {
