@@ -241,7 +241,7 @@ const serviceApiInputWalkthrough = async (context: $TSContext, defaultValuesFile
     const getAdditionalAuthModeChoices = async () => {
       let additionalAuthModesText = '';
       authConfig.additionalAuthenticationProviders.map(async authMode => {
-        additionalAuthModesText = `, ${authProviderChoices.find(choice => choice.value === authMode.authenticationType).name}`;
+        additionalAuthModesText += `, ${authProviderChoices.find(choice => choice.value === authMode.authenticationType).name}`;
       });
       return additionalAuthModesText;
     };
@@ -431,8 +431,8 @@ export const serviceWalkthrough = async (context: $TSContext, defaultValuesFilen
 
   const { templateSelection } = await inquirer.prompt(templateSelectionQuestion);
   const schemaFilePath = path.join(graphqlSchemaDir, templateSelection);
-  schemaContent = transformerVersion === 2 ? defineGlobalSandboxMode(context) : '';
-  schemaContent = fs.readFileSync(schemaFilePath, 'utf8');
+  schemaContent += transformerVersion === 2 ? defineGlobalSandboxMode(context) : '';
+  schemaContent += fs.readFileSync(schemaFilePath, 'utf8');
 
   return {
     ...basicInfoAnswers,
@@ -676,7 +676,7 @@ async function askResolverConflictHandlerQuestion(context, modelTypes?) {
 
       if (selectedModelTypes.length > 0) {
         resolverConfig.models = {};
-        for (let i = 0; i < selectedModelTypes.length; i = 1) {
+        for (let i = 0; i < selectedModelTypes.length; i += 1) {
           resolverConfig.models[selectedModelTypes[i]] = await askConflictResolutionStrategy(
             `Select the resolution strategy for ${selectedModelTypes[i]} model`,
           );
@@ -769,7 +769,7 @@ export async function askAdditionalAuthQuestions(context, authConfig, defaultAut
 
     const additionalProvidersAnswer = await inquirer.prompt([additionalProvidersQuestion]);
 
-    for (let i = 0; i < additionalProvidersAnswer.authType.length; i = 1) {
+    for (let i = 0; i < additionalProvidersAnswer.authType.length; i += 1) {
       const authProvider = additionalProvidersAnswer.authType[i];
 
       const config = await askAuthQuestions(
@@ -941,7 +941,7 @@ async function askOpenIDConnectQuestions(authSettings) {
 }
 
 function validateDays(input) {
-  const isValid = /^\d$/.test(input);
+  const isValid = /^\d+$/.test(input);
   const days = isValid ? parseInt(input, 10) : 0;
   if (!isValid || days < 1 || days > 365) {
     return 'Number of days must be between 1 and 365.';
@@ -952,7 +952,7 @@ function validateDays(input) {
 
 function validateIssuerUrl(input) {
   const isValid =
-    /^(((?!http:\/\/(?!localhost))([a-zA-Z0-9.]{1,}):\/\/([a-zA-Z0-9-._~:?#@!$&'()*,;=/]{1,})\/)|(?!http)(?!https)([a-zA-Z0-9.]{1,}):\/\/)$/.test(
+    /^(((?!http:\/\/(?!localhost))([a-zA-Z0-9.]{1,}):\/\/([a-zA-Z0-9-._~:?#@!$&'()*+,;=/]{1,})\/)|(?!http)(?!https)([a-zA-Z0-9.]{1,}):\/\/)$/.test(
       input,
     );
 
@@ -964,7 +964,7 @@ function validateIssuerUrl(input) {
 }
 
 function validateTTL(input) {
-  const isValid = /^\d$/.test(input);
+  const isValid = /^\d+$/.test(input);
 
   if (!isValid) {
     return 'The value must be a number.';
