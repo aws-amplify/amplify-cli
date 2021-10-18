@@ -1,50 +1,72 @@
 {
-  "type": "object",
-  "properties": {
-    "resourceName": {
-      "type": "string"
+    "type": "object",
+    "properties": {
+        "resourceName": {
+            "type": "string"
+        },
+        "bucketName": {
+            "type": "string"
+        },
+        "policyUUID": {
+            "type": "string"
+        },
+        "storageAccess": {
+            "enum": [
+                "auth",
+                "authAndGuest"
+            ],
+            "type": "string"
+        },
+        "guestAccess": {
+            "type": "array",
+            "items": {
+                "enum": [
+                    "CREATE_AND_UPDATE",
+                    "DELETE",
+                    "READ"
+                ],
+                "type": "string"
+            }
+        },
+        "authAccess": {
+            "type": "array",
+            "items": {
+                "enum": [
+                    "CREATE_AND_UPDATE",
+                    "DELETE",
+                    "READ"
+                ],
+                "type": "string"
+            }
+        },
+        "triggerFunction": {
+            "type": "string"
+        },
+        "groupAccess": {
+            "$ref": "#/definitions/Record<string,S3PermissionType[]>"
+        },
+        "groupList": {
+            "type": "array",
+            "items": {
+                "type": "string"
+            }
+        }
     },
-    "bucketName": {
-      "type": "string"
+    "required": [
+        "authAccess",
+        "bucketName",
+        "groupAccess",
+        "groupList",
+        "guestAccess",
+        "policyUUID",
+        "resourceName",
+        "storageAccess",
+        "triggerFunction"
+    ],
+    "definitions": {
+        "Record<string,S3PermissionType[]>": {
+            "type": "object"
+        }
     },
-    "storageAccess": {
-      "$ref": "#/definitions/S3AccessType"
-    },
-    "selectedGuestPermissions": {
-      "type": "array",
-      "items": {
-        "enum": ["DELETE_OBJECT", "GET_OBJECT", "LIST_BUCKET", "PUT_OBJECT"],
-        "type": "string"
-      }
-    },
-    "selectedAuthenticatedPermissions": {
-      "type": "array",
-      "items": {
-        "enum": ["DELETE_OBJECT", "GET_OBJECT", "LIST_BUCKET", "PUT_OBJECT"],
-        "type": "string"
-      }
-    },
-    "isTriggerEnabled": {
-      "type": "boolean"
-    },
-    "triggerFunctionName": {
-      "type": "string"
-    }
-  },
-  "required": [
-    "bucketName",
-    "isTriggerEnabled",
-    "resourceName",
-    "selectedAuthenticatedPermissions",
-    "selectedGuestPermissions",
-    "storageAccess",
-    "triggerFunctionName"
-  ],
-  "definitions": {
-    "S3AccessType": {
-      "enum": ["auth", "authAndGuest"],
-      "type": "string"
-    }
-  },
-  "$schema": "http://json-schema.org/draft-07/schema#"
+    "$schema": "http://json-schema.org/draft-07/schema#"
 }
