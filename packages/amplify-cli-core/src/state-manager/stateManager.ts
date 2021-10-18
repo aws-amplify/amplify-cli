@@ -8,7 +8,6 @@ import { SecretFileMode } from '../cliConstants';
 import { HydrateTags, ReadTags, Tag } from '../tags';
 import { CustomIAMPolicies } from '../customPoliciesUtils';
 
-
 export type GetOptions<T> = {
   throwIfNotExist?: boolean;
   preserveComments?: boolean;
@@ -80,9 +79,9 @@ export class StateManager {
 
   getCustomPolicies = (categoryName: string, resourceName: string): CustomIAMPolicies | undefined => {
     const filePath = pathManager.getCustomPoliciesPath(categoryName, resourceName);
-    try{
+    try {
       return JSONUtilities.readJson<CustomIAMPolicies>(filePath);
-    } catch(err) {
+    } catch (err) {
       return undefined;
     }
   };
@@ -201,11 +200,11 @@ export class StateManager {
     JSONUtilities.writeJson(filePath, localAWSInfo);
   };
 
-  getHydratedTags = (projectPath?: string | undefined): Tag[] => {
+  getHydratedTags = (projectPath?: string | undefined, skipProjEnv: boolean = false): Tag[] => {
     const tags = this.getProjectTags(projectPath);
     const { projectName } = this.getProjectConfig(projectPath);
     const { envName } = this.getLocalEnvInfo(projectPath);
-    return HydrateTags(tags, { projectName, envName });
+    return HydrateTags(tags, { projectName, envName }, skipProjEnv);
   };
 
   isTagFilePresent = (projectPath?: string | undefined): boolean => {
@@ -379,5 +378,3 @@ export class StateManager {
 }
 
 export const stateManager = new StateManager();
-
-
