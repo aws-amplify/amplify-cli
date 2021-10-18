@@ -34,6 +34,7 @@ import {
   makeSearchableSortDirectionEnumObject,
   makeSearchableXFilterInputObject,
   makeSearchableXSortableFieldsEnumObject,
+  makeSearchableXAggregateFieldEnumObject,
   makeSearchableXSortInputObject,
   makeSearchableXAggregationInputObject,
   makeSearchableAggregateTypeEnumObject,
@@ -339,15 +340,21 @@ export class SearchableModelTransformer extends TransformerPluginBase {
       ctx.output.addInput(searchableXSortableInputDirection);
     }
 
-    if (!ctx.output.hasType(`Searchable${definition.name.value}AggregationInput`)) {
-      const searchableXAggregationInputDirection = makeSearchableXAggregationInputObject(definition);
-      ctx.output.addInput(searchableXAggregationInputDirection);
-    }
-
     if (!ctx.output.hasType('SearchableAggregateType')) {
       const searchableAggregateTypeEnum = makeSearchableAggregateTypeEnumObject();
       ctx.output.addEnum(searchableAggregateTypeEnum);
     }
+
+    if (!ctx.output.hasType(`Searchable${definition.name.value}AggregateField`)) {
+      const searchableXAggregationField = makeSearchableXAggregateFieldEnumObject(definition);
+      ctx.output.addEnum(searchableXAggregationField);
+    }
+
+    if (!ctx.output.hasType(`Searchable${definition.name.value}AggregationInput`)) {
+      const searchableXAggregationInput = makeSearchableXAggregationInputObject(definition);
+      ctx.output.addInput(searchableXAggregationInput);
+    }
+
   }
 }
 

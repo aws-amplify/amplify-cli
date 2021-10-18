@@ -101,18 +101,24 @@ input SearchableEmployeeSortInput {
   direction: SearchableSortDirection
 }
 
-input SearchableEmployeeAggregationInput {
-  name: String!
-  type: SearchableAggregateType!
-  field: String!
-}
-
 enum SearchableAggregateType {
   terms
   avg
   min
   max
   sum
+}
+
+enum SearchableEmployeeAggregateField {
+  id
+  firstName
+  lastName
+}
+
+input SearchableEmployeeAggregationInput {
+  name: String!
+  type: SearchableAggregateType!
+  field: SearchableEmployeeAggregateField!
 }
 
 type SearchableEmployeeConnection {
@@ -396,18 +402,25 @@ input SearchablePostSortInput {
   direction: SearchableSortDirection
 }
 
-input SearchablePostAggregationInput {
-  name: String!
-  type: SearchableAggregateType!
-  field: String!
-}
-
 enum SearchableAggregateType {
   terms
   avg
   min
   max
   sum
+}
+
+enum SearchablePostAggregateField {
+  id
+  title
+  createdAt
+  updatedAt
+}
+
+input SearchablePostAggregationInput {
+  name: String!
+  type: SearchableAggregateType!
+  field: SearchablePostAggregateField!
 }
 
 type SearchablePostConnection {
@@ -1273,18 +1286,25 @@ input SearchablePostSortInput {
   direction: SearchableSortDirection
 }
 
-input SearchablePostAggregationInput {
-  name: String!
-  type: SearchableAggregateType!
-  field: String!
-}
-
 enum SearchableAggregateType {
   terms
   avg
   min
   max
   sum
+}
+
+enum SearchablePostAggregateField {
+  id
+  title
+  createdAt
+  updatedAt
+}
+
+input SearchablePostAggregationInput {
+  name: String!
+  type: SearchableAggregateType!
+  field: SearchablePostAggregateField!
 }
 
 type SearchablePostConnection {
@@ -1341,10 +1361,15 @@ input SearchableUserSortInput {
   direction: SearchableSortDirection
 }
 
+enum SearchableUserAggregateField {
+  id
+  name
+}
+
 input SearchableUserAggregationInput {
   name: String!
   type: SearchableAggregateType!
-  field: String!
+  field: SearchableUserAggregateField!
 }
 
 type SearchableUserConnection {
@@ -1637,18 +1662,25 @@ input SearchablePostSortInput {
   direction: SearchableSortDirection
 }
 
-input SearchablePostAggregationInput {
-  name: String!
-  type: SearchableAggregateType!
-  field: String!
-}
-
 enum SearchableAggregateType {
   terms
   avg
   min
   max
   sum
+}
+
+enum SearchablePostAggregateField {
+  id
+  title
+  createdAt
+  updatedAt
+}
+
+input SearchablePostAggregationInput {
+  name: String!
+  type: SearchableAggregateType!
+  field: SearchablePostAggregateField!
 }
 
 type SearchablePostConnection {
@@ -1912,18 +1944,25 @@ input SearchablePostSortInput {
   direction: SearchableSortDirection
 }
 
-input SearchablePostAggregationInput {
-  name: String!
-  type: SearchableAggregateType!
-  field: String!
-}
-
 enum SearchableAggregateType {
   terms
   avg
   min
   max
   sum
+}
+
+enum SearchablePostAggregateField {
+  id
+  title
+  createdAt
+  updatedAt
+}
+
+input SearchablePostAggregationInput {
+  name: String!
+  type: SearchableAggregateType!
+  field: SearchablePostAggregateField!
 }
 
 type SearchablePostConnection {
@@ -2202,18 +2241,25 @@ input SearchablePostSortInput {
   direction: SearchableSortDirection
 }
 
-input SearchablePostAggregationInput {
-  name: String!
-  type: SearchableAggregateType!
-  field: String!
-}
-
 enum SearchableAggregateType {
   terms
   avg
   min
   max
   sum
+}
+
+enum SearchablePostAggregateField {
+  id
+  title
+  createdAt
+  updatedAt
+}
+
+input SearchablePostAggregationInput {
+  name: String!
+  type: SearchableAggregateType!
+  field: SearchablePostAggregateField!
 }
 
 type SearchablePostConnection {
