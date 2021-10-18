@@ -63,8 +63,10 @@ describe('amplify auth migration', () => {
     expect(lambdaFunction.Configuration.Environment.Variables.MODULES).toEqual('email-filter-denylist,custom');
 
     // update and push with codebase
+    const authResourceName = Object.keys(meta.auth).filter(resourceName => meta.auth[resourceName].service === 'Cognito')[0];
+    // update and push with codebase
     const overridesObj: $TSAny = {
-      resourceName: Object.keys(authMeta)[0],
+      resourceName: authResourceName,
       category: 'auth',
       service: 'cognito',
     };
@@ -83,10 +85,10 @@ describe('amplify auth migration', () => {
     await addAuthWithDefault(projRoot, {});
     await amplifyPushAuth(projRoot);
     const meta = getProjectMeta(projRoot);
-    const authMeta = Object.keys(meta.auth).map(key => meta.auth[key])[0];
+    const authResourceName = Object.keys(meta.auth).filter(resourceName => meta.auth[resourceName].service === 'Cognito');
     // update and push with codebase
     const overridesObj: $TSAny = {
-      resourceName: Object.keys(authMeta)[0],
+      resourceName: authResourceName,
       category: 'auth',
       service: 'cognito',
     };
