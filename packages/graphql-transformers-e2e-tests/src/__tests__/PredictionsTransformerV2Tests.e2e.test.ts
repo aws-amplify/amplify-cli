@@ -1,15 +1,16 @@
-import { ResourceConstants } from 'graphql-transformer-common';
-import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
-import { PredictionsTransformer } from '@aws-amplify/graphql-predictions-transformer';
-import { CloudFormationClient } from '../CloudFormationClient';
-import { Output } from 'aws-sdk/clients/cloudformation';
-import { GraphQLClient } from '../GraphQLClient';
-import { default as moment } from 'moment';
-import { cleanupStackAfterTest, deploy } from '../deployNestedStacks';
-import { S3Client } from '../S3Client';
-import { default as S3 } from 'aws-sdk/clients/s3';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
-import { AuthTransformer } from '@aws-amplify/graphql-auth-transformer';
+import { PredictionsTransformer } from '@aws-amplify/graphql-predictions-transformer';
+import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
+import { Output } from 'aws-sdk/clients/cloudformation';
+import { default as S3 } from 'aws-sdk/clients/s3';
+import * as fs from 'fs-extra';
+import { ResourceConstants } from 'graphql-transformer-common';
+import { default as moment } from 'moment';
+import path from 'path';
+import { CloudFormationClient } from '../CloudFormationClient';
+import { cleanupStackAfterTest, deploy } from '../deployNestedStacks';
+import { GraphQLClient } from '../GraphQLClient';
+import { S3Client } from '../S3Client';
 
 // tslint:disable: no-magic-numbers
 jest.setTimeout(2000000);
@@ -36,7 +37,7 @@ function outputValueSelector(key: string) {
 beforeAll(async () => {
   const validSchema = `
     type Query {
-      translateImageText: String @predictions(actions: [ identifyText translateText ])
+      translateImageText: String @predictions(actions: [ identifyText ])
       translateLabels: String @predictions(actions: [ identifyLabels ])
       translateThis: String @predictions(actions: [ translateText ])
       speakTranslatedText: String @predictions(actions: [ translateText convertTextToSpeech])
@@ -123,4 +124,61 @@ test('test translate text individually', async () => {
   expect(response).toBeDefined();
   const translatedText = response.data.translateThis;
   expect(translatedText).toMatch(germanTranslation);
+});
+
+test('test identify image text', async () => {
+  const file = path.join(__dirname, 'test-data', 'amazon.png');
+  const buffer = fs.readFileSync(file);
+
+  const params = {
+    Key: 'public/amazon-logo.png',
+    Body: buffer,
+    Bucket: BUCKET_NAME,
+  };
+
+  await awsS3Client.upload(params).promise();
+  const response = await GRAPHQL_CLIENT.query(
+    `query TranslateImageText($input: TranslateImageTextInput!) {
+      translateImageText(input: $input)
+    }`,
+    {
+      input: {
+        identifyText: {
+          key: 'amazon-logo.png',
+        },
+      },
+    },
+  );
+
+  expect(response).toBeDefined();
+  expect(response.data.translateImageText).toEqual('Available on amazon R');
+});
+
+test('test identify labels', async () => {
+  const file = path.join(__dirname, 'test-data', 'dogs.png');
+  const buffer = fs.readFileSync(file);
+
+  const params = {
+    Key: 'public/dogs.png',
+    Body: buffer,
+    Bucket: BUCKET_NAME,
+  };
+
+  await awsS3Client.upload(params).promise();
+  const response = await GRAPHQL_CLIENT.query(
+    `query TranslateLabels($input: TranslateLabelsInput!) {
+      translateLabels(input: $input)
+    }`,
+    {
+      input: {
+        identifyLabels: {
+          key: 'dogs.png',
+        },
+      },
+    },
+  );
+
+  expect(response).toBeDefined();
+  expect(response.data.translateLabels).toBeDefined();
+  expect(response.data.translateLabels.length > 0).toBeTruthy();
 });
