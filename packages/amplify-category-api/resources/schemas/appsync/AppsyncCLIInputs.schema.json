@@ -8,13 +8,13 @@
       "enum": [1]
     },
     "serviceConfiguration": {
-      "$ref": "#/definitions/AppSyncServiceConfiguration",
+      "$ref": "#/definitions/AppSyncServiceConfig",
       "description": "The service configuration that will be interpreted by Amplify."
     }
   },
   "required": ["serviceConfiguration", "version"],
   "definitions": {
-    "AppSyncServiceConfiguration": {
+    "AppSyncServiceConfig": {
       "description": "Configuration exposed by AppSync. Currently this is the only API type supported by Amplify headless mode.",
       "type": "object",
       "properties": {
@@ -27,8 +27,8 @@
           "description": "The name of the API that will be created.",
           "type": "string"
         },
-        "transformSchema": {
-          "description": "The annotated GraphQL schema that defines the AppSync API.",
+        "gqlSchemaPath": {
+          "description": "Path to GraphQL schema that defines the AppSync API.",
           "type": "string"
         },
         "defaultAuthType": {
@@ -73,7 +73,7 @@
           "description": "The strategy for resolving API write conflicts."
         }
       },
-      "required": ["apiName", "defaultAuthType", "serviceName", "transformSchema"]
+      "required": ["apiName", "defaultAuthType", "gqlSchemaPath", "serviceName"]
     },
     "AppSyncAPIKeyAuthType": {
       "description": "Specifies that the AppSync API should be secured using an API key.",
@@ -166,8 +166,7 @@
             "$ref": "#/definitions/PerModelResolutionstrategy"
           }
         }
-      },
-      "required": ["defaultResolutionStrategy"]
+      }
     },
     "PredefinedResolutionStrategy": {
       "description": "Resolution strategies provided by AppSync. See https://docs.aws.amazon.com/appsync/latest/devguide/conflict-detection-and-sync.html for details.",

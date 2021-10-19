@@ -160,7 +160,7 @@
       "api": {
         "name": "api",
         "type": "category",
-        "packageName": "amplify-category-api"
+        "packageName": "@aws-amplify/amplify-category-api"
       },
       "auth": [
         {
