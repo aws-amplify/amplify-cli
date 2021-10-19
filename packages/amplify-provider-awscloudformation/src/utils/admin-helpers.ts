@@ -131,50 +131,70 @@ export const adminBackendMap: {
 } = {
   'ap-northeast-1': {
     amplifyAdminUrl: 'https://ap-northeast-1.admin.amplifyapp.com',
-    appStateUrl: 'https://9ug6dmgf8k.execute-api.ap-northeast-1.amazonaws.com/wave4Prod',
+    appStateUrl: 'https://prod.ap-northeast-1.appstate.amplifyapp.com/wave4Prod',
   },
   'ap-northeast-2': {
     amplifyAdminUrl: 'https://ap-northeast-2.admin.amplifyapp.com',
-    appStateUrl: 'https://ljnzstyu75.execute-api.ap-northeast-2.amazonaws.com/wave4Prod',
+    appStateUrl: 'https://prod.ap-northeast-2.appstate.amplifyapp.com/wave4Prod',
   },
   'ap-south-1': {
     amplifyAdminUrl: 'https://ap-south-1.admin.amplifyapp.com',
-    appStateUrl: 'https://pnxd1wa44e.execute-api.ap-south-1.amazonaws.com/wave4Prod',
+    appStateUrl: 'https://prod.ap-south-1.appstate.amplifyapp.com/wave4Prod',
   },
   'ap-southeast-1': {
     amplifyAdminUrl: 'https://ap-southeast-1.admin.amplifyapp.com',
-    appStateUrl: 'https://l5fi62t6yf.execute-api.ap-southeast-1.amazonaws.com/wave3Prod',
+    appStateUrl: 'https://prod.ap-southeast-1.appstate.amplifyapp.com/wave3Prod',
   },
   'ap-southeast-2': {
     amplifyAdminUrl: 'https://ap-southeast-2.admin.amplifyapp.com',
-    appStateUrl: 'https://wv7blgges9.execute-api.ap-southeast-2.amazonaws.com/wave4Prod',
+    appStateUrl: 'https://prod.ap-southeast-2.appstate.amplifyapp.com/wave4Prod',
   },
   'ca-central-1': {
     amplifyAdminUrl: 'https://ca-central-1.admin.amplifyapp.com',
-    appStateUrl: 'https://vnh7syjssb.execute-api.ca-central-1.amazonaws.com/wave5Prod',
+    appStateUrl: 'https://prod.ca-central-1.appstate.amplifyapp.com/wave5Prod',
   },
   'eu-central-1': {
     amplifyAdminUrl: 'https://eu-central-1.admin.amplifyapp.com',
-    appStateUrl: 'https://atz311uyx5.execute-api.eu-central-1.amazonaws.com/wave4Prod',
+    appStateUrl: 'https://prod.eu-central-1.appstate.amplifyapp.com/wave4Prod',
+  },
+  'eu-north-1': {
+    amplifyAdminUrl: 'https://eu-north-1.admin.amplifyapp.com',
+    appStateUrl: 'https://prod.eu-north-1.appstate.amplifyapp.com/wave5Prod',
   },
   'eu-west-1': {
     amplifyAdminUrl: 'https://eu-west-1.admin.amplifyapp.com',
-    appStateUrl: 'https://8dbn4hxfme.execute-api.eu-west-1.amazonaws.com/wave3Prod',
+    appStateUrl: 'https://prod.eu-west-1.appstate.amplifyapp.com/wave3Prod',
   },
   'eu-west-2': {
     amplifyAdminUrl: 'https://eu-west-2.admin.amplifyapp.com',
-    appStateUrl: 'https://apafhnmqme.execute-api.eu-west-2.amazonaws.com/wave1Prod',
+    appStateUrl: 'https://prod.eu-west-2.appstate.amplifyapp.com/wave1Prod',
+  },
+  'eu-west-3': {
+    amplifyAdminUrl: 'https://eu-west-3.admin.amplifyapp.com',
+    appStateUrl: 'https://prod.eu-west-3.appstate.amplifyapp.com/wave5Prod',
+  },
+  'me-south-1': {
+    amplifyAdminUrl: 'https://me-south-1.admin.amplifyapp.com',
+    appStateUrl: 'https://prod.me-south-1.appstate.amplifyapp.com/wave5Prod',
+  },
+  'sa-east-1': {
+    amplifyAdminUrl: 'https://sa-east-1.admin.amplifyapp.com',
+    appStateUrl: 'https://prod.sa-east-1.appstate.amplifyapp.com/wave5Prod',
   },
   'us-east-1': {
     amplifyAdminUrl: 'https://us-east-1.admin.amplifyapp.com',
-    appStateUrl: 'https://e7auv6no3g.execute-api.us-east-1.amazonaws.com/wave3Prod',
+    appStateUrl: 'https://prod.us-east-1.appstate.amplifyapp.com/wave3Prod',
   },
   'us-east-2': {
     amplifyAdminUrl: 'https://us-east-2.admin.amplifyapp.com',
-    appStateUrl: 'https://x1wkkmql32.execute-api.us-east-2.amazonaws.com/wave2Prod',
+    appStateUrl: 'https://prod.us-east-2.appstate.amplifyapp.com/wave2Prod',
+  },
+  'us-west-1': {
+    amplifyAdminUrl: 'https://us-west-1.admin.amplifyapp.com',
+    appStateUrl: 'https://prod.us-west-1.appstate.amplifyapp.com/wave5Prod',
   },
   'us-west-2': {
     amplifyAdminUrl: 'https://us-west-2.admin.amplifyapp.com',
-    appStateUrl: 'https://3ne6skqg0g.execute-api.us-west-2.amazonaws.com/wave4Prod',
+    appStateUrl: 'https://prod.us-west-2.appstate.amplifyapp.com/wave4Prod',
   },
 };
