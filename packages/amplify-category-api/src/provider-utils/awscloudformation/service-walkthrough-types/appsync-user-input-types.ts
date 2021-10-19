@@ -9,13 +9,13 @@ export interface AppsyncCLIInputs {
   /**
    * The service configuration that will be interpreted by Amplify.
    */
-  serviceConfiguration: AppSyncServiceConfiguration;
+  serviceConfiguration: AppSyncServiceConfig;
 }
 
 /**
  * Configuration exposed by AppSync. Currently this is the only API type supported by Amplify headless mode.
  */
-export interface AppSyncServiceConfiguration {
+export interface AppSyncServiceConfig {
   /**
    * The service name of the resource provider.
    */
@@ -25,9 +25,9 @@ export interface AppSyncServiceConfiguration {
    */
   apiName: string;
   /**
-   * The annotated GraphQL schema that defines the AppSync API.
+   * Path to GraphQL schema that defines the AppSync API.
    */
-  transformSchema: string;
+  gqlSchemaPath: string;
   /**
    * The auth type that will be used by default.
    */
@@ -49,7 +49,7 @@ export interface ConflictResolution {
   /**
    * The strategy that will be used for all models by default.
    */
-  defaultResolutionStrategy: ResolutionStrategy;
+  defaultResolutionStrategy?: ResolutionStrategy;
   /**
    * Strategies that will be used for individual models.
    */
