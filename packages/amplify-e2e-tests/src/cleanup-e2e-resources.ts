@@ -494,7 +494,7 @@ export const cleanup = async () => {
     accs = await Promise.all(accs);
   } catch (e) {
     console.error(e);
-    console.log('Error assuming role in child account. Using parent AWS account.');
+    console.log('Error assuming child account role. This could be because the script is already running from within a child account. Running on current AWS account only.');
     accs = [
       {
         accessKeyId: process.env.AWS_ACCESS_KEY_ID,
