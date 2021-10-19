@@ -30,7 +30,7 @@ export class AppsyncApiInputState extends CategoryInputState {
   }
 
   public async isCLIInputsValid(cliInputs: AppsyncCLIInputs = this.getCLIInputPayload()): Promise<boolean> {
-    const schemaValidator = new CLIInputSchemaValidator('appsyncApi', this.#category, 'AppsyncCLIInputs');
+    const schemaValidator = new CLIInputSchemaValidator('appsync', this.#category, 'AppsyncCLIInputs');
     return schemaValidator.validateInput(JSON.stringify(cliInputs));
   }
 
