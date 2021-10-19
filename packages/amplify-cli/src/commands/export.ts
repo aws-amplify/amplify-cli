@@ -32,7 +32,7 @@ export const run = async (context: $TSContext) => {
     const frontendPlugins = context.amplify.getFrontendPlugins(context);
     const frontends = Object.keys(frontendPlugins);
     printer.blankLine();
-    printer.info("'amplify export pull', Allows you to genreate frontend config files to desired location");
+    printer.info("'amplify export pull', Allows you to genreate frontend config files at a desired location");
     printer.blankLine();
     printer.info(`${chalk.yellow('--rooStackName')}         Amplify CLI deployed Root Stack name`);
     printer.info(`${chalk.yellow('--frontend')}             Front end type ex: ${frontends.join(', ')}`);
