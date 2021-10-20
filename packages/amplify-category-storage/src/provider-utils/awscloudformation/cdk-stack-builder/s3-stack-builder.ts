@@ -53,6 +53,11 @@ export class AmplifyS3ResourceCfnStack extends AmplifyResourceCfnStack implement
     this.s3DependsOnResources = [];
   }
 
+  private getGroupListFromProps(): Array<string>|undefined {
+     const groupList = (this._props.groupAccess)? Object.keys(this._props.groupAccess) : [];
+     return groupList;
+  }
+
   public getS3ResourceFriendlyName(): string {
     return this.id;
   }
@@ -90,12 +95,13 @@ export class AmplifyS3ResourceCfnStack extends AmplifyResourceCfnStack implement
     this.createAndSetIAMPolicies();
 
     //4. Configure Cognito User pool policies
-    if (this._props.groupList && this._props.groupList.length > 0) {
+    const groupList = this.getGroupListFromProps();
+    if (groupList && groupList.length > 0) {
       const authResourceName: string = await s3AuthAPI.getAuthResourceARN(context);
       this.authResourceName = authResourceName;
       this.s3GroupPolicyList = this.createS3AmplifyGroupPolicies(
         authResourceName,
-        this._props.groupList as Array<string>,
+        groupList,
         this._props.groupAccess as GroupAccessType,
       );
 
@@ -108,7 +114,7 @@ export class AmplifyS3ResourceCfnStack extends AmplifyResourceCfnStack implement
       //1. UserPoolID
       this.s3DependsOnResources.push(this.buildS3DependsOnUserPoolIdCfn(authResourceName as string));
       //2. User Pool Group List
-      const userPoollGroupList = this.buildS3DependsOnUserPoolGroupRoleListCfn(this._props.groupList);
+      const userPoollGroupList = this.buildS3DependsOnUserPoolGroupRoleListCfn(groupList);
       this.s3DependsOnResources = this.s3DependsOnResources.concat(userPoollGroupList);
     }
 
@@ -119,7 +125,8 @@ export class AmplifyS3ResourceCfnStack extends AmplifyResourceCfnStack implement
   }
 
   public addGroupParams(authResourceName: string): AmplifyS3CfnParameters | undefined {
-    if (this._props.groupList) {
+    const groupList = this.getGroupListFromProps();
+    if (groupList && groupList.length > 0 ) {
       let s3CfnParams: Array<AmplifyCfnParamType> = [
         {
           params: [`auth${authResourceName}UserPoolId`],
@@ -128,7 +135,7 @@ export class AmplifyS3ResourceCfnStack extends AmplifyResourceCfnStack implement
         },
       ];
 
-      for (const groupName of this._props.groupList) {
+      for (const groupName of groupList) {
         s3CfnParams.push({
           params: [`authuserPoolGroups${this.buildGroupRoleName(groupName)}`],
           paramType: 'String',
