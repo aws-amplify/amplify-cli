@@ -11,26 +11,6 @@ const CONCURRENCY = 25;
 // Each of these failures should be independently investigated, resolved, and removed from this list.
 // For now, this list is being used to skip creation of circleci jobs for these tasks
 const WINDOWS_TEST_FAILURES = [
-  'amplify-app-amplify_e2e_tests',
-  'analytics-amplify_e2e_tests',
-  'api_1-amplify_e2e_tests',
-  'api_2-amplify_e2e_tests',
-  'api_3-amplify_e2e_tests',
-  'api_4-amplify_e2e_tests',
-  'api_5-amplify_e2e_tests',
-  'api_6-amplify_e2e_tests',
-  'auth_1-amplify_e2e_tests',
-  'auth_2-amplify_e2e_tests',
-  'auth_3-amplify_e2e_tests',
-  'auth_4-amplify_e2e_tests',
-  // Auth tests are failing because
-  // us-east-1 region is not allowed in parent e2e test account
-  // and `singleSelect` for region is not working properly in windows
-  'auth_5-amplify_e2e_tests',
-  'auth_6-amplify_e2e_tests',
-  'auth_7-amplify_e2e_tests',
-  'auth_8-amplify_e2e_tests',
-  'containers-api-amplify_e2e_tests',
   'datastore-modelgen-amplify_e2e_tests',
   'delete-amplify_e2e_tests',
   'env-amplify_e2e_tests',

@@ -1,7 +1,7 @@
 import {
   createNewProjectDir,
   initJSProjectWithProfile,
-  addApiWithSchema,
+  addApiWithoutSchema,
   amplifyPush,
   deleteProject,
   deleteProjectDir,
@@ -20,7 +20,7 @@ let projRoot;
 beforeEach(async () => {
   projRoot = await createNewProjectDir(projName);
   await initJSProjectWithProfile(projRoot, { name: projName });
-  await addApiWithSchema(projRoot, 'simple_model.graphql', { apiKeyExpirationDays: 7 });
+  await addApiWithoutSchema(projRoot);
   await amplifyPush(projRoot);
 });
 afterEach(async () => {
@@ -46,20 +46,20 @@ describe('amplify reset api', () => {
     expect(scanResultAfter.Items.length).toBe(0);
   });
 });
-  
+
 describe('destructive updates flag', () => {
   it('blocks destructive updates when flag not present', async () => {
     updateApiSchema(projRoot, projName, 'simple_model_new_primary_key.graphql');
     await amplifyPushDestructiveApiUpdate(projRoot, false);
     // success indicates that the command errored out
   });
-  
+
   it('allows destructive updates when flag present', async () => {
     updateApiSchema(projRoot, projName, 'simple_model_new_primary_key.graphql');
     await amplifyPushDestructiveApiUpdate(projRoot, true);
     // success indicates that the push completed
   });
-  
+
   it('disconnects and reconnects functions dependent on replaced table', async () => {
     const functionName = 'funcTableDep';
     await addFunction(

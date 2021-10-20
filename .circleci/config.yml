@@ -14812,6 +14812,7 @@ workflows:
             parameters:
               os:
                 - linux
+                - windows
       - schema-key-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
@@ -14957,6 +14958,7 @@ workflows:
             parameters:
               os:
                 - linux
+                - windows
       - frontend_config_drift-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
@@ -15144,6 +15146,7 @@ workflows:
             parameters:
               os:
                 - linux
+                - windows
       - auth_3-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
@@ -15254,6 +15257,7 @@ workflows:
             parameters:
               os:
                 - linux
+                - windows
       - function_5-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
@@ -15420,6 +15424,7 @@ workflows:
             parameters:
               os:
                 - linux
+                - windows
       - migration-api-key-migration1-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
@@ -15474,6 +15479,7 @@ workflows:
             parameters:
               os:
                 - linux
+                - windows
       - function_4-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
@@ -15528,6 +15534,7 @@ workflows:
             parameters:
               os:
                 - linux
+                - windows
       - function_6-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
@@ -15934,6 +15941,7 @@ workflows:
             parameters:
               os:
                 - linux
+                - windows
       - geo-update-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
@@ -16340,6 +16348,7 @@ workflows:
             parameters:
               os:
                 - linux
+                - windows
       - custom_policies_container-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
@@ -16617,6 +16626,7 @@ workflows:
             parameters:
               os:
                 - linux
+                - windows
       - AuthV2Transformer-e2e-graphql_e2e_tests:
           context:
             - amplify-ecr-image-pull
