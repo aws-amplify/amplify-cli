@@ -1,13 +1,21 @@
 import { create } from '../../../velocity/util/index';
 import { mockedInputToRdsJsonString, mockedOutputFromRdsJsonString } from './mock-data';
 import { GraphQLResolveInfo } from 'graphql';
+import { AppSyncGraphQLExecutionContext } from '../../../utils/graphql-runner';
+import { AmplifyAppSyncSimulatorAuthenticationType } from '../../../type-definition';
 
 const stubInfo = {} as unknown;
 const mockInfo = stubInfo as GraphQLResolveInfo;
 let util;
 
 beforeEach(() => {
-  util = create(undefined, undefined, mockInfo);
+  const executionContext: AppSyncGraphQLExecutionContext = {
+    headers: { 'x-api-key': 'da-fake-key' },
+    requestAuthorizationMode: AmplifyAppSyncSimulatorAuthenticationType.API_KEY,
+    appsyncErrors: [],
+  };
+
+  util = create(undefined, undefined, mockInfo, executionContext);
 });
 
 describe('$utils.rds.toJsonString', () => {

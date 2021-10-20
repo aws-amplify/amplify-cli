@@ -19,6 +19,7 @@ import {
   AmplifyPreCodegenModelsEventData,
   AmplifyPostCodegenModelsEventData,
   AmplifyInternalOnlyPostEnvRemoveEventData,
+  AmplifyPostEnvAddEventData,
 } from './domain/amplify-event';
 import { isHeadlessCommand, readHeadlessPayload } from './utils/headless-input-utils';
 
@@ -317,6 +318,10 @@ export async function raiseIntenralOnlyPostEnvRemoveEvent(context: Context, envN
     context,
     new AmplifyEventArgs(AmplifyEvent.InternalOnlyPostEnvRemove, new AmplifyInternalOnlyPostEnvRemoveEventData(envName)),
   );
+}
+
+export async function raisePostEnvAddEvent(context: Context, prevEnvName: string, newEnvName: string) {
+  await raiseEvent(context, new AmplifyEventArgs(AmplifyEvent.PostEnvAdd, new AmplifyPostEnvAddEventData(prevEnvName, newEnvName)));
 }
 
 export async function raiseEvent(context: Context, args: AmplifyEventArgs) {

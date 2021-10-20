@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/graphql-predictions-transformer",
-  "version": "0.3.4",
+  "version": "0.3.5",
   "description": "Amplify GraphQL @predictions tranformer",
   "repository": {
     "type": "git",
@@ -27,8 +27,8 @@
     "test": "jest"
   },
   "dependencies": {
-    "@aws-amplify/graphql-transformer-core": "0.9.1",
-    "@aws-amplify/graphql-transformer-interfaces": "1.9.1",
+    "@aws-amplify/graphql-transformer-core": "0.9.2",
+    "@aws-amplify/graphql-transformer-interfaces": "1.10.0",
     "@aws-cdk/aws-appsync": "~1.124.0",
     "@aws-cdk/aws-iam": "~1.124.0",
     "@aws-cdk/aws-lambda": "~1.124.0",
