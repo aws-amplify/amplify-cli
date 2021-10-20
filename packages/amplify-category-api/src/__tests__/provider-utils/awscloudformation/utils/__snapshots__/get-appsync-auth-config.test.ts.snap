@@ -1,0 +1,27 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`test function with default and additional auth config 1`] = `
+Object {
+  "additionalAuthenticationProviders": Array [
+    Object {
+      "apiKeyConfig": Object {
+        "apiKeyExpirationDays": 7,
+        "description": "",
+      },
+      "authenticationType": "API_KEY",
+    },
+  ],
+  "defaultAuthentication": Object {
+    "authenticationType": "AWS_IAM",
+  },
+}
+`;
+
+exports[`test function with default auth config 1`] = `
+Object {
+  "additionalAuthenticationProviders": Array [],
+  "defaultAuthentication": Object {
+    "authenticationType": "AWS_IAM",
+  },
+}
+`;
