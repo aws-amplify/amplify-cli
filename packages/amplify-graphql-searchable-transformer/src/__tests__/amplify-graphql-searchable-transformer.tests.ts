@@ -326,7 +326,7 @@ test('Test SearchableModelTransformer enum type generates StringFilterInput', ()
       lastName: String!
       type: EmploymentType!
     }
-    
+
     enum EmploymentType {
       FULLTIME
       HOURLY

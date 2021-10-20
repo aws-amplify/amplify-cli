@@ -1,5 +1,159 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`DefaultValueModelTransformer:  should be supported on a required field. 1`] = `
+"
+type Test {
+  id: ID!
+  stringValue: String!
+  createdAt: AWSDateTime!
+  updatedAt: AWSDateTime!
+}
+
+input ModelStringInput {
+  ne: String
+  eq: String
+  le: String
+  lt: String
+  ge: String
+  gt: String
+  contains: String
+  notContains: String
+  between: [String]
+  beginsWith: String
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+  size: ModelSizeInput
+}
+
+input ModelIntInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+}
+
+input ModelFloatInput {
+  ne: Float
+  eq: Float
+  le: Float
+  lt: Float
+  ge: Float
+  gt: Float
+  between: [Float]
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+}
+
+input ModelBooleanInput {
+  ne: Boolean
+  eq: Boolean
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+}
+
+input ModelIDInput {
+  ne: ID
+  eq: ID
+  le: ID
+  lt: ID
+  ge: ID
+  gt: ID
+  contains: ID
+  notContains: ID
+  between: [ID]
+  beginsWith: ID
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+  size: ModelSizeInput
+}
+
+enum ModelAttributeTypes {
+  binary
+  binarySet
+  bool
+  list
+  map
+  number
+  numberSet
+  string
+  stringSet
+  _null
+}
+
+input ModelSizeInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+}
+
+enum ModelSortDirection {
+  ASC
+  DESC
+}
+
+type ModelTestConnection {
+  items: [Test]
+  nextToken: String
+}
+
+input ModelTestFilterInput {
+  id: ModelIDInput
+  stringValue: ModelStringInput
+  and: [ModelTestFilterInput]
+  or: [ModelTestFilterInput]
+  not: ModelTestFilterInput
+}
+
+type Query {
+  getTest(id: ID!): Test
+  listTests(filter: ModelTestFilterInput, limit: Int, nextToken: String): ModelTestConnection
+}
+
+input ModelTestConditionInput {
+  stringValue: ModelStringInput
+  and: [ModelTestConditionInput]
+  or: [ModelTestConditionInput]
+  not: ModelTestConditionInput
+}
+
+input CreateTestInput {
+  id: ID
+  stringValue: String!
+}
+
+input UpdateTestInput {
+  id: ID!
+  stringValue: String
+}
+
+input DeleteTestInput {
+  id: ID!
+}
+
+type Mutation {
+  createTest(input: CreateTestInput!, condition: ModelTestConditionInput): Test
+  updateTest(input: UpdateTestInput!, condition: ModelTestConditionInput): Test
+  deleteTest(input: DeleteTestInput!, condition: ModelTestConditionInput): Test
+}
+
+type Subscription {
+  onCreateTest: Test @aws_subscribe(mutations: [\\"createTest\\"])
+  onUpdateTest: Test @aws_subscribe(mutations: [\\"updateTest\\"])
+  onDeleteTest: Test @aws_subscribe(mutations: [\\"deleteTest\\"])
+}
+
+"
+`;
+
 exports[`DefaultValueModelTransformer:  should successfully transform simple valid schema 1`] = `
 "
 type Post {

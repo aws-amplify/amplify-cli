@@ -36,7 +36,7 @@ import {
   InputFieldWrapper,
   InputObjectDefinitionWrapper,
   ObjectDefinitionWrapper,
-} from '../wrappers/object-definition-wrapper';
+} from '@aws-amplify/graphql-transformer-core';
 
 /**
  * Creates the condition/filter input for a model

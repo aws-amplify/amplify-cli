@@ -14,13 +14,7 @@ export {
   TransformConfig,
   TransformerProjectConfig,
 } from './config/index';
-export {
-  collectDirectives,
-  collectDirectivesByTypeNames,
-  DirectiveWrapper,
-  IAM_AUTH_ROLE_PARAMETER,
-  IAM_UNAUTH_ROLE_PARAMETER,
-} from './utils';
+export { collectDirectives, collectDirectivesByTypeNames, IAM_AUTH_ROLE_PARAMETER, IAM_UNAUTH_ROLE_PARAMETER } from './utils';
 export * from './errors';
 export {
   TransformerModelBase,
@@ -37,3 +31,11 @@ export const getAppSyncServiceExtraDirectives = (): string => {
 };
 
 export { MappingTemplate } from './cdk-compat';
+export {
+  EnumWrapper,
+  FieldWrapper,
+  InputFieldWrapper,
+  InputObjectDefinitionWrapper,
+  ObjectDefinitionWrapper,
+  DirectiveWrapper,
+} from './wrappers/object-definition-wrapper';

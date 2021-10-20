@@ -1,4 +1,14 @@
-import { InvalidDirectiveError, MappingTemplate, SyncConfig, SyncUtils, TransformerModelBase } from '@aws-amplify/graphql-transformer-core';
+import {
+  InvalidDirectiveError,
+  MappingTemplate,
+  SyncConfig,
+  SyncUtils,
+  TransformerModelBase,
+  DirectiveWrapper,
+  FieldWrapper,
+  InputObjectDefinitionWrapper,
+  ObjectDefinitionWrapper,
+} from '@aws-amplify/graphql-transformer-core';
 import {
   AppSyncDataSourceType,
   DataSourceInstance,
@@ -71,12 +81,6 @@ import {
   generateListRequestTemplate,
   generateSyncRequestTemplate,
 } from './resolvers/query';
-import {
-  DirectiveWrapper,
-  FieldWrapper,
-  InputObjectDefinitionWrapper,
-  ObjectDefinitionWrapper,
-} from './wrappers/object-definition-wrapper';
 import { CfnRole } from '@aws-cdk/aws-iam';
 import md5 from 'md5';
 
