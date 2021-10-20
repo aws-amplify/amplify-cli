@@ -13,8 +13,7 @@ export const getAllDefaults = (project: Project, shortId : string) : S3UserInput
     guestAccess: [],
     authAccess:  [],
     triggerFunction : undefined,
-    groupAccess : {},
-    groupList : []
+    groupAccess : {}
   };
 
   return defaults;
