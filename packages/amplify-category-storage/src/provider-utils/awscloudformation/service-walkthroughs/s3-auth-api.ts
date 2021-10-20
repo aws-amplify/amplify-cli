@@ -4,15 +4,6 @@ import { S3InputState } from "./s3-user-input-state";
 
 /* This file contains all functions interacting with AUTH category */
 
-//DOWNSTREAM API: function to be called from  Auth or Auth event handler
-export async function saveUserPoolGroupsInUserInput( resourceName : string, userPoolGroups : Array<string> ): Promise<S3UserInputs>{
-    const cliInputsState = new S3InputState(resourceName, undefined);
-    cliInputsState.setPoolGroupList(userPoolGroups);
-    const userInput : S3UserInputs = cliInputsState.getUserInput();
-    cliInputsState.saveCliInputPayload(userInput);
-    return userInput;
-}
-
 //UPSTREAM API: function to be called from Storage to fetch or update Auth resources
 export  async function getAuthResourceARN( context : $TSContext ) : Promise<string> {
     let authResources = (await context.amplify.getResourceStatus('auth')).allResources;
