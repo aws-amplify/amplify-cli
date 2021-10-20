@@ -43,28 +43,19 @@
             "type": "string"
         },
         "groupAccess": {
-            "$ref": "#/definitions/Record<string,S3PermissionType[]>"
-        },
-        "groupList": {
-            "type": "array",
-            "items": {
-                "type": "string"
-            }
+            "$ref": "#/definitions/GroupAccessType"
         }
     },
     "required": [
         "authAccess",
         "bucketName",
-        "groupAccess",
-        "groupList",
         "guestAccess",
         "policyUUID",
         "resourceName",
-        "storageAccess",
-        "triggerFunction"
+        "storageAccess"
     ],
     "definitions": {
-        "Record<string,S3PermissionType[]>": {
+        "GroupAccessType": {
             "type": "object"
         }
     },
