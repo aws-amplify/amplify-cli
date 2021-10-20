@@ -226,11 +226,11 @@ export class AmplifyUserPoolGroupTransform extends AmplifyCategoryTransform {
   };
 
   public saveBuildFiles = async (context: $TSContext, template: Template): Promise<void> => {
-    const cognitoStackFileName = `${this.resourceName}-cloudformation-template.json`;
+    const cognitoStackFileName = `${this._resourceName}-cloudformation-template.json`;
     const cognitostackFilePath = path.join(
       pathManager.getBackendDirPath(),
       this._category,
-      this.resourceName,
+      this._resourceName,
       'build',
       cognitoStackFileName,
     );
