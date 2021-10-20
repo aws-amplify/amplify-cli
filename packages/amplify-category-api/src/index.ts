@@ -3,6 +3,8 @@ import fs from 'fs-extra';
 import path from 'path';
 import { run } from './commands/api/console';
 import { getCfnApiArtifactHandler } from './provider-utils/awscloudformation/cfn-api-artifact-handler';
+export { getAuthConfig } from './provider-utils/awscloudformation/utils/get-appsync-auth-config';
+export { getResolverConfig } from './provider-utils/awscloudformation/utils/get-appsync-resolver-config';
 
 export { NETWORK_STACK_LOGICAL_ID } from './category-constants';
 export { DEPLOYMENT_MECHANISM } from './provider-utils/awscloudformation/base-api-stack';

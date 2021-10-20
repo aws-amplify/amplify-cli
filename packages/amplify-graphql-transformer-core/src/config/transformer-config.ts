@@ -105,10 +105,4 @@ export interface TransformConfig {
   TransformerOptions?: {
     [transformer: string]: Record<string, any>;
   };
-
-  /**
-   * Object which states info about a resolver's configuration
-   * Such as sync configuration for appsync local support
-   */
-  ResolverConfig?: ResolverConfig;
 }

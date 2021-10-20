@@ -9,6 +9,7 @@ import {
   GraphQLTransform,
   collectDirectivesByTypeNames,
   TransformerProjectConfig,
+  ResolverConfig,
 } from '@aws-amplify/graphql-transformer-core';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { FunctionTransformer } from '@aws-amplify/graphql-function-transformer';
@@ -31,9 +32,10 @@ import { loadProject } from 'graphql-transformer-core';
 import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-core';
 import { Template } from '@aws-amplify/graphql-transformer-core/lib/config/project-config';
 import { AmplifyCLIFeatureFlagAdapter } from '../utils/amplify-cli-feature-flag-adapter';
-import { JSONUtilities } from 'amplify-cli-core';
+import { AmplifyCategories, AmplifySupportedService, JSONUtilities } from 'amplify-cli-core';
 import { searchablePushChecks } from '../transform-graphql-schema';
 import { ResourceConstants } from 'graphql-transformer-common';
+import _ from 'lodash';
 
 const API_CATEGORY = 'api';
 const STORAGE_CATEGORY = 'storage';
@@ -230,20 +232,23 @@ export async function transformGraphQLSchema(context, options) {
   // If we don't have an authConfig from the caller, use it from the
   // already read resources[0], which is an AppSync API.
   //
-
-  if (!authConfig) {
-    if (resources[0].output.securityType) {
-      // Convert to multi-auth format if needed.
-      authConfig = {
-        defaultAuthentication: {
-          authenticationType: resources[0].output.securityType,
-        },
-        additionalAuthenticationProviders: [],
-      };
-    } else {
-      ({ authConfig } = resources[0].output);
-    }
+  if (_.isEmpty(authConfig)) {
+    authConfig = await context.amplify.invokePluginMethod(
+      context,
+      AmplifyCategories.API,
+      AmplifySupportedService.APPSYNC,
+      'getAuthConfig',
+      [resources[0].resourceName],
+    );
   }
+
+  const resolverConfig = await context.amplify.invokePluginMethod(
+    context,
+    AmplifyCategories.API,
+    AmplifySupportedService.APPSYNC,
+    'getResolverConfig',
+    [resources[0].resourceName],
+  );
 
   // for the predictions directive get storage config
   const s3Resource = s3ResourceAlreadyExists(context);
@@ -301,6 +306,7 @@ export async function transformGraphQLSchema(context, options) {
     projectConfig: project,
     lastDeployedProjectConfig,
     authConfig,
+    resolverConfig: resolverConfig,
   };
   const transformerOutput = await buildAPIProject(buildConfig);
 
@@ -399,6 +405,7 @@ export type ProjectOptions<T> = {
   minify: boolean;
   lastDeployedProjectConfig?: TransformerProjectConfig;
   projectConfig: TransformerProjectConfig;
+  resolverConfig?: ResolverConfig;
   dryRun?: boolean;
   authConfig?: AppSyncAuthConfiguration;
   stacks: Record<string, Template>;
@@ -436,6 +443,7 @@ async function _buildProject(opts: ProjectOptions<TransformerFactoryArgs>) {
     buildParameters: opts.buildParameters,
     stacks: opts.projectConfig.stacks || {},
     featureFlags: new AmplifyCLIFeatureFlagAdapter(),
+    resolverConfig: opts.resolverConfig,
   });
   return transform.transform(userProjectConfig.schema.toString());
 }
