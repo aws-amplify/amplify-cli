@@ -46,9 +46,8 @@ export interface S3UserInputs {
      storageAccess : S3AccessType|undefined,
      guestAccess: S3PermissionType[],
      authAccess : S3PermissionType[],
-     triggerFunction: string|undefined,
-     groupAccess : GroupAccessType|undefined, //{ "admingroup": [create, read,  delete, list], "secondgroup" :[...''...] }
-     groupList : Array<string>|undefined   //Keys of group policy Map
+     triggerFunction?: string|undefined,
+     groupAccess? : GroupAccessType|undefined, //{ "admingroup": [create, read,  delete, list], "secondgroup" :[...''...] }
 }
 
 export function defaultS3UserInputs() :S3UserInputs {
@@ -61,7 +60,6 @@ export function defaultS3UserInputs() :S3UserInputs {
         authAccess : [],
         triggerFunction:undefined,
         groupAccess: undefined,
-        groupList: undefined
     };
     return defaultS3UserInputValues;
 }
