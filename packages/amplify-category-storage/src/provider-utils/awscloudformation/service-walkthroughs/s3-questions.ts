@@ -142,10 +142,15 @@ export async function askUserPoolGroupSelectionQuestion(
   const message = 'Select groups:';
   const choices = userPoolGroupList;
   const selectedChoices = defaultValues.groupAccess ? Object.keys(defaultValues.groupAccess) : [];
-  const selectedIndexes = defaultValues.groupList ? getIndexArray(choices, selectedChoices) : undefined;
+  const selectedIndexes = selectedChoices ? getIndexArray(choices, selectedChoices) : undefined;
   const userPoolGroups = await prompter.pick<'many', string>(message, choices, { returnSize: 'many', initial: selectedIndexes });
-  //Selected user-pool groups
-  return userPoolGroups as string[];
+  //prompter pick-many returns string if returnsize is 1, and array otherwise.
+  if ( Array.isArray(userPoolGroups) ){
+    return userPoolGroups as string[];
+  } else {
+    //Type is string
+    return [userPoolGroups];
+  }
 }
 
 export async function askUserPoolGroupPermissionSelectionQuestion(): Promise<UserPermissionTypeOptions> {
@@ -248,7 +253,6 @@ export async function askGroupOrIndividualAccessFlow(
 
       //Reset group-permissions if using auth/guest
       if (permissionSelected === UserPermissionTypeOptions.AUTH_GUEST_USERS) {
-        cliInputs.groupList = [];
         cliInputs.groupAccess = undefined;
       }
     }
@@ -259,20 +263,16 @@ export async function askGroupOrIndividualAccessFlow(
         cliInputs.authAccess = [];
         cliInputs.guestAccess = [];
       }
-      //Update the groupList to select from
+      //Update the group to select from
       const selectedUserPoolGroupList = await askUserPoolGroupSelectionQuestion(userPoolGroupList, context, cliInputs);
       //Ask Group Permissions and assign to cliInputs
       if (!cliInputs.groupAccess) {
         cliInputs.groupAccess = {};
       }
-      if (!cliInputs.groupList) {
-        cliInputs.groupList = [];
-      }
       if (selectedUserPoolGroupList && selectedUserPoolGroupList.length > 0) {
         for (const selectedGroup of selectedUserPoolGroupList) {
           cliInputs.groupAccess[selectedGroup] = await askGroupPermissionQuestion(selectedGroup, context, cliInputs);
         }
-        cliInputs.groupList = selectedUserPoolGroupList;
       }
     }
   }
