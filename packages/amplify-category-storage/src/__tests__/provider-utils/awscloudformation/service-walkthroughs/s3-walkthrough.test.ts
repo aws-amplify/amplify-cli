@@ -848,7 +848,6 @@ class S3MockDataBuilder {
     guestAccess: [],
     authAccess: this.defaultAuthPerms,
     groupAccess: {},
-    groupList: [],
     triggerFunction: 'NONE',
   };
   cliInputs: S3UserInputs = {
@@ -860,7 +859,6 @@ class S3MockDataBuilder {
     authAccess: [],
     triggerFunction: undefined,
     groupAccess: undefined,
-    groupList: undefined,
   };
 
   constructor(startCliInputState: S3UserInputs | undefined) {
@@ -937,13 +935,11 @@ class S3MockDataBuilder {
 
   addGroupAccess(): S3MockDataBuilder {
     this.cliInputs.groupAccess = this.mockGroupAccess;
-    this.cliInputs.groupList = Object.keys(this.mockGroupAccess);
     return this;
   }
 
   removeGroupAccess(): S3MockDataBuilder {
     this.cliInputs.groupAccess = undefined;
-    this.cliInputs.groupList = undefined;
     return this;
   }
 
