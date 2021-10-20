@@ -1,22 +1,10 @@
-import fs from 'fs-extra';
-import path from 'path';
-import importGlobal from 'import-global';
-import { print } from 'graphql';
-import importFrom from 'import-from';
-import { TransformerPluginProvider, AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-interfaces';
-import {
-  getAppSyncServiceExtraDirectives,
-  GraphQLTransform,
-  collectDirectivesByTypeNames,
-  collectDirectives,
-  TransformerProjectConfig,
-} from '@aws-amplify/graphql-transformer-core';
-import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { AuthTransformer } from '@aws-amplify/graphql-auth-transformer';
+import { DefaultValueTransformer } from '@aws-amplify/graphql-default-value-transformer';
 import { FunctionTransformer } from '@aws-amplify/graphql-function-transformer';
 import { HttpTransformer } from '@aws-amplify/graphql-http-transformer';
-import { PredictionsTransformer } from '@aws-amplify/graphql-predictions-transformer';
 import { IndexTransformer, PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
+import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
+import { PredictionsTransformer } from '@aws-amplify/graphql-predictions-transformer';
 import {
   BelongsToTransformer,
   HasManyTransformer,
@@ -24,26 +12,40 @@ import {
   ManyToManyTransformer,
 } from '@aws-amplify/graphql-relational-transformer';
 import { SearchableModelTransformer } from '@aws-amplify/graphql-searchable-transformer';
-import { DefaultValueTransformer } from '@aws-amplify/graphql-default-value-transformer';
-import { destructiveUpdatesFlag, ProviderName as providerName } from '../constants';
-import { hashDirectory } from '../upload-appsync-files';
-import { mergeUserConfigWithTransformOutput, writeDeploymentToDisk } from './utils';
-import { loadProject as readTransformerConfiguration } from './transform-config';
-import { getSanityCheckRules, loadProject } from 'graphql-transformer-core';
-import { Template } from '@aws-amplify/graphql-transformer-core/lib/config/project-config';
-import { AmplifyCLIFeatureFlagAdapter } from '../utils/amplify-cli-feature-flag-adapter';
-import { JSONUtilities, stateManager, $TSContext } from 'amplify-cli-core';
-import { searchablePushChecks } from '../transform-graphql-schema';
-import { ResourceConstants } from 'graphql-transformer-common';
-import { isAmplifyAdminApp } from '../utils/admin-helpers';
 import {
-  showGlobalSandboxModeWarning,
-  showSandboxModePrompts,
+  collectDirectives,
+  collectDirectivesByTypeNames,
+  getAppSyncServiceExtraDirectives,
+  GraphQLTransform,
+  ResolverConfig,
+  TransformerProjectConfig,
+} from '@aws-amplify/graphql-transformer-core';
+import { Template } from '@aws-amplify/graphql-transformer-core/lib/config/project-config';
+import { AppSyncAuthConfiguration, TransformerPluginProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { $TSContext, AmplifyCategories, AmplifySupportedService, JSONUtilities, stateManager } from 'amplify-cli-core';
+import { printer } from 'amplify-prompts';
+import fs from 'fs-extra';
+import { print } from 'graphql';
+import { ResourceConstants } from 'graphql-transformer-common';
+import { getSanityCheckRules, loadProject } from 'graphql-transformer-core';
+import importFrom from 'import-from';
+import importGlobal from 'import-global';
+import _ from 'lodash';
+import path from 'path';
+import { destructiveUpdatesFlag, ProviderName as providerName } from '../constants';
+import { searchablePushChecks } from '../transform-graphql-schema';
+import { hashDirectory } from '../upload-appsync-files';
+import { isAmplifyAdminApp } from '../utils/admin-helpers';
+import { AmplifyCLIFeatureFlagAdapter } from '../utils/amplify-cli-feature-flag-adapter';
+import {
   getSandboxModeEnvNameFromDirectiveSet,
   removeSandboxDirectiveFromSchema,
+  showGlobalSandboxModeWarning,
+  showSandboxModePrompts,
 } from '../utils/sandbox-mode-helpers';
-import { printer } from 'amplify-prompts';
 import { GraphQLSanityCheck, SanityCheckRules } from './sanity-check';
+import { loadProject as readTransformerConfiguration } from './transform-config';
+import { mergeUserConfigWithTransformOutput, writeDeploymentToDisk } from './utils';
 
 const API_CATEGORY = 'api';
 const STORAGE_CATEGORY = 'storage';
@@ -262,20 +264,23 @@ export async function transformGraphQLSchema(context, options) {
   // If we don't have an authConfig from the caller, use it from the
   // already read resources[0], which is an AppSync API.
   //
-
-  if (!authConfig) {
-    if (resources[0].output.securityType) {
-      // Convert to multi-auth format if needed.
-      authConfig = {
-        defaultAuthentication: {
-          authenticationType: resources[0].output.securityType,
-        },
-        additionalAuthenticationProviders: [],
-      };
-    } else {
-      ({ authConfig } = resources[0].output);
-    }
+  if (_.isEmpty(authConfig)) {
+    authConfig = await context.amplify.invokePluginMethod(
+      context,
+      AmplifyCategories.API,
+      AmplifySupportedService.APPSYNC,
+      'getAuthConfig',
+      [resources[0].resourceName],
+    );
   }
+
+  const resolverConfig = await context.amplify.invokePluginMethod(
+    context,
+    AmplifyCategories.API,
+    AmplifySupportedService.APPSYNC,
+    'getResolverConfig',
+    [resources[0].resourceName],
+  );
 
   // for the predictions directive get storage config
   const s3Resource = s3ResourceAlreadyExists(context);
@@ -355,6 +360,7 @@ export async function transformGraphQLSchema(context, options) {
     authConfig,
     sandboxModeEnabled,
     sanityCheckRules,
+    resolverConfig: resolverConfig,
   };
 
   const transformerOutput = await buildAPIProject(buildConfig);
@@ -466,6 +472,7 @@ export type ProjectOptions<T> = {
   minify: boolean;
   lastDeployedProjectConfig?: TransformerProjectConfig;
   projectConfig: TransformerProjectConfig;
+  resolverConfig?: ResolverConfig;
   dryRun?: boolean;
   authConfig?: AppSyncAuthConfiguration;
   stacks: Record<string, Template>;
@@ -506,6 +513,7 @@ async function _buildProject(opts: ProjectOptions<TransformerFactoryArgs>) {
     stacks: opts.projectConfig.stacks || {},
     featureFlags: new AmplifyCLIFeatureFlagAdapter(),
     sandboxModeEnabled: opts.sandboxModeEnabled,
+    resolverConfig: opts.resolverConfig,
   });
 
   let schema = userProjectConfig.schema.toString();
