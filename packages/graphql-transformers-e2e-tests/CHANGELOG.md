@@ -3,6 +3,20 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.28.1-beta.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformers-e2e-tests@6.28.0...graphql-transformers-e2e-tests@6.28.1-beta.0) (2021-10-20)
+
+
+### Bug Fixes
+
+* [@auth](https://github.com/auth) fix relational auth, authv2 e2e with utils and fixes ([#8450](https://github.com/aws-amplify/amplify-cli/issues/8450)) ([aa320cd](https://github.com/aws-amplify/amplify-cli/commit/aa320cd2414665a484438f0764cf68fd78caa26a))
+* [@function](https://github.com/function) vNext payload, remove unused code, and update common mapping tempalte function ([#8462](https://github.com/aws-amplify/amplify-cli/issues/8462)) ([24d0de9](https://github.com/aws-amplify/amplify-cli/commit/24d0de97a1bfacc3983e5b11a7582c9500759adc))
+* add [@manytomany](https://github.com/manytomany) join table auth ([#8460](https://github.com/aws-amplify/amplify-cli/issues/8460)) ([424bbda](https://github.com/aws-amplify/amplify-cli/commit/424bbda410fbab100d475d37fa9ab291bfd05317))
+* auth on getting related model name and searchablevNext e2e ([#8455](https://github.com/aws-amplify/amplify-cli/issues/8455)) ([8536dd3](https://github.com/aws-amplify/amplify-cli/commit/8536dd3eb4cffc14602d80eea82b8b62b8227485))
+
+
+
+
+
 # [6.28.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformers-e2e-tests@6.27.2...graphql-transformers-e2e-tests@6.28.0) (2021-10-10)
 
 

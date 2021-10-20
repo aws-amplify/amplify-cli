@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.31.0-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@1.30.0...amplify-e2e-core@1.31.0-beta.0) (2021-10-20)
+
+
+### Features
+
+* **amplify-category-storage:** headless support for S3 ([#8423](https://github.com/aws-amplify/amplify-cli/issues/8423)) ([76b0e70](https://github.com/aws-amplify/amplify-cli/commit/76b0e700d6221292a25b384e2ecfc7a64e9916dd))
+* **amplify-provider-awscloudformation:** enable custom resolvers for v2 transformer ([#8454](https://github.com/aws-amplify/amplify-cli/issues/8454)) ([934ad64](https://github.com/aws-amplify/amplify-cli/commit/934ad648e392050075f21413f8269ffe432e59dd))
+* **amplify-provider-awscloudformation:** merge user config with transform generated resolvers ([#8447](https://github.com/aws-amplify/amplify-cli/issues/8447)) ([4d553e5](https://github.com/aws-amplify/amplify-cli/commit/4d553e5602a84729e517a3716338f2235567ea82))
+
+
+
+
+
 # [1.30.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@1.29.0...amplify-e2e-core@1.30.0) (2021-10-13)
 
 

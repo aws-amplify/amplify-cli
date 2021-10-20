@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.6.4-beta.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-searchable-transformer@0.6.3...@aws-amplify/graphql-searchable-transformer@0.6.4-beta.0) (2021-10-20)
+
+
+### Bug Fixes
+
+* [@auth](https://github.com/auth) fix relational auth, authv2 e2e with utils and fixes ([#8450](https://github.com/aws-amplify/amplify-cli/issues/8450)) ([aa320cd](https://github.com/aws-amplify/amplify-cli/commit/aa320cd2414665a484438f0764cf68fd78caa26a))
+
+
+
+
+
 ## [0.6.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-searchable-transformer@0.6.2...@aws-amplify/graphql-searchable-transformer@0.6.3) (2021-10-10)
 
 **Note:** Version bump only for package @aws-amplify/graphql-searchable-transformer

@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [6.4.0-beta.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@6.3.1...@aws-amplify/cli@6.4.0-beta.0) (2021-10-20)
+
+
+### Bug Fixes
+
+* **graphql:** correct api key type on auto apply auth mode ([#8459](https://github.com/aws-amplify/amplify-cli/issues/8459)) ([59f2ab5](https://github.com/aws-amplify/amplify-cli/commit/59f2ab5e2b6a903176851bbcab8cbafe27d70406))
+
+
+### Features
+
+* **amplify-category-storage:** headless support for S3 ([#8423](https://github.com/aws-amplify/amplify-cli/issues/8423)) ([76b0e70](https://github.com/aws-amplify/amplify-cli/commit/76b0e700d6221292a25b384e2ecfc7a64e9916dd))
+
+
+
+
+
 ## [6.3.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@6.3.0...@aws-amplify/cli@6.3.1) (2021-10-13)
 
 
