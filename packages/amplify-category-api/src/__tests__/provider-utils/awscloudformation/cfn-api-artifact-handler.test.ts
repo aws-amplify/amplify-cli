@@ -19,6 +19,30 @@ jest.mock('fs-extra');
 const printer_mock = printer as jest.Mocked<typeof printer>;
 printer_mock.warn = jest.fn();
 
+jest.mock('../../../provider-utils/awscloudformation/api-input-manager/appsync-api-input-state.ts', () => {
+  return {
+    AppsyncApiInputState: jest.fn().mockImplementation(() => {
+      return {
+        getCLIInputPayload: jest.fn().mockImplementation(() => ({
+          version: 1,
+          serviceConfiguration: {
+            serviceName: 'AppSync',
+            apiName: testApiName,
+            transformSchema: 'my test schema',
+            defaultAuthType: {
+              mode: 'API_KEY',
+              expirationTime: 10,
+              keyDescription: 'api key description',
+            },
+          },
+        })),
+        saveCLIInputPayload: jest.fn(),
+        isCLIInputsValid: jest.fn(),
+      };
+    }),
+  };
+});
+
 jest.mock('graphql-transformer-core', () => ({
   readTransformerConfiguration: jest.fn(async () => ({})),
   writeTransformerConfiguration: jest.fn(),

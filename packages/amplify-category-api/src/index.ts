@@ -18,6 +18,8 @@ import { ApigwStackTransform } from './provider-utils/awscloudformation/cdk-stac
 import { getCfnApiArtifactHandler } from './provider-utils/awscloudformation/cfn-api-artifact-handler';
 import { askAuthQuestions } from './provider-utils/awscloudformation/service-walkthroughs/appSync-walkthrough';
 import { authConfigToAppSyncAuthType } from './provider-utils/awscloudformation/utils/auth-config-to-app-sync-auth-type-bi-di-mapper';
+export { getAuthConfig } from './provider-utils/awscloudformation/utils/get-appsync-auth-config';
+export { getResolverConfig } from './provider-utils/awscloudformation/utils/get-appsync-resolver-config';
 
 export { NETWORK_STACK_LOGICAL_ID } from './category-constants';
 export { addAdminQueriesApi, updateAdminQueriesApi } from './provider-utils/awscloudformation/';
