@@ -3,4 +3,5 @@
 **/tests/**
 src
 tsconfig.json
+!resources/overrides-resource/tsconfig.json
 tsconfig.tsbuildinfo
