@@ -74,7 +74,7 @@ class CfnApiArtifactHandler implements ApiArtifactHandler {
 
     serviceConfig.conflictResolution = await this.createResolverResources(serviceConfig.conflictResolution);
 
-    await writeResolverConfig(serviceConfig.conflictResolution, resourceDir);
+    //await writeResolverConfig(serviceConfig.conflictResolution, resourceDir);
 
     const appsyncCLIInputs = await this.generateAppsyncCLIInputs(serviceConfig, resourceDir);
 
@@ -115,7 +115,7 @@ class CfnApiArtifactHandler implements ApiArtifactHandler {
     }
     if (updates.conflictResolution) {
       updates.conflictResolution = await this.createResolverResources(appsyncCLIInputs.serviceConfiguration.conflictResolution);
-      await writeResolverConfig(appsyncCLIInputs.serviceConfiguration.conflictResolution, resourceDir);
+      //await writeResolverConfig(appsyncCLIInputs.serviceConfiguration.conflictResolution, resourceDir);
     }
     const authConfig = getAppSyncAuthConfig(this.context.amplify.getProjectMeta());
     const previousAuthConfig = _.cloneDeep(authConfig);
@@ -144,7 +144,7 @@ class CfnApiArtifactHandler implements ApiArtifactHandler {
   };
 
   private writeSchema = (resourceDir: string, schema: string) => {
-    fs.writeFileSync(path.join(resourceDir, gqlSchemaFilename), schema);
+    fs.writeFileSync(resourceDir, schema);
   };
 
   private getResourceDir = (apiName: string) => path.join(this.context.amplify.pathManager.getBackendDirPath(), category, apiName);
@@ -300,14 +300,15 @@ class CfnApiArtifactHandler implements ApiArtifactHandler {
   private updateAppsyncCLIInputs = async (updates: AppSyncServiceModification, apiName: string) => {
     const cliState = new AppsyncApiInputState(apiName);
     const prevAppsyncInputs = cliState.getCLIInputPayload();
+
     const appsyncInputs: AppsyncCLIInputs = prevAppsyncInputs;
-    if (updates.conflictResolution) {
+    if (!_.isEmpty(updates.conflictResolution)) {
       appsyncInputs.serviceConfiguration.conflictResolution = updates.conflictResolution;
     }
-    if (updates.defaultAuthType) {
+    if (!_.isEmpty(updates.defaultAuthType)) {
       appsyncInputs.serviceConfiguration.defaultAuthType = updates.defaultAuthType;
     }
-    if (updates.additionalAuthTypes) {
+    if (!_.isEmpty(updates.additionalAuthTypes)) {
       appsyncInputs.serviceConfiguration.additionalAuthTypes = updates.additionalAuthTypes;
     }
     cliState.saveCLIInputPayload(appsyncInputs);

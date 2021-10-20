@@ -24,6 +24,7 @@ import {
   TypeExtensionNode,
   UnionTypeDefinitionNode,
 } from 'graphql';
+import { AppSyncAuthConfiguration, ResolverConfig, TransformConfig } from '../config/transformer-config';
 import { InvalidTransformerError, SchemaValidationError, UnknownDirectiveError } from '../errors';
 import { GraphQLApi } from '../graphql-api';
 import { TransformerContext } from '../transformer-context';
@@ -74,6 +75,7 @@ export interface GraphQLTransformOptions {
   readonly host?: TransformHostProvider;
   readonly sandboxModeEnabled?: boolean;
   readonly userDefinedSlots?: Record<string, UserDefinedSlot[]>;
+  readonly resolverConfig?: ResolverConfig;
 }
 export type StackMapping = { [resourceId: string]: string };
 export class GraphQLTransform {
@@ -82,6 +84,7 @@ export class GraphQLTransform {
   private app: App | undefined;
   private transformConfig: TransformConfig;
   private readonly authConfig: AppSyncAuthConfiguration;
+  private readonly resolverConfig?: ResolverConfig;
   private readonly buildParameters: Record<string, any>;
   private readonly userDefinedSlots: Record<string, UserDefinedSlot[]>;
 
@@ -114,6 +117,7 @@ export class GraphQLTransform {
     this.stackMappingOverrides = options.stackMapping || {};
     this.transformConfig = options.transformConfig || {};
     this.userDefinedSlots = options.userDefinedSlots || ({} as Record<string, UserDefinedSlot[]>);
+    this.resolverConfig = options.resolverConfig || {};
   }
 
   /**
@@ -135,7 +139,7 @@ export class GraphQLTransform {
       this.authConfig,
       this.options.sandboxModeEnabled,
       this.options.featureFlags,
-      this.transformConfig.ResolverConfig,
+      this.resolverConfig,
     );
     const validDirectiveNameMap = this.transformers.reduce(
       (acc: any, t: TransformerPluginProvider) => ({ ...acc, [t.directive.name.value]: true }),
@@ -230,7 +234,7 @@ export class GraphQLTransform {
 
     // generate resolvers
     (context as TransformerContext).bind(api);
-    if (this.transformConfig.ResolverConfig) {
+    if (this.resolverConfig) {
       SyncUtils.createSyncTable(context);
     }
     for (const transformer of this.transformers) {
