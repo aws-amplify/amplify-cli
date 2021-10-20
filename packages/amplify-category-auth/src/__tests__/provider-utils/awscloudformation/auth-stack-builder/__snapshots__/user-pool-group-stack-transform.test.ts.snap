@@ -284,7 +284,7 @@ exports.handler = (event, context) => {
               Object {
                 "Ref": "authmockResourceUserPoolId",
               },
-              "adinGroupRole",
+              "-adinGroupRole",
             ],
           ],
         },
@@ -579,7 +579,7 @@ exports.handler = (event, context) => {
               Object {
                 "Ref": "authmockResourceUserPoolId",
               },
-              "adinmockGroupRole",
+              "-adinmockGroupRole",
             ],
           ],
         },
