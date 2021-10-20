@@ -153,7 +153,7 @@ export class AmplifyUserPoolGroupStack extends cdk.Stack implements AmplifyUserP
         this.userPoolGroupRole[`${group.groupName}`] = new iam.CfnRole(this, `${group.groupName}GroupRole`, {
           roleName: cdk.Fn.join('', [
             this.getCfnParameter(getCfnParamslogicalId(props.cognitoResourceName, 'UserPoolId'))!.valueAsString,
-            `${group.groupName}GroupRole`,
+            `-${group.groupName}GroupRole`,
           ]),
           assumeRolePolicyDocument: {
             Version: '2012-10-17',
