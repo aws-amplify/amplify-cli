@@ -1,6 +1,6 @@
 import { $TSAny, $TSContext} from "amplify-cli-core";
 import { printer } from "amplify-prompts";
-import { migrateAuthResource } from '@aws-amplify/amplify-category-auth';
+import { AmplifyCategories } from "amplify-cli-core";
 
 /* This file contains all functions interacting with AUTH category */
 
@@ -26,7 +26,10 @@ export  async function getAuthResourceARN( context : $TSContext ) : Promise<stri
 export async function migrateAuthDependencyResource( context : $TSContext ) {
     const authResourceName = await getAuthResourceARN(context);
     try {
-      await migrateAuthResource(context, authResourceName);
+      await context.amplify.invokePluginMethod(context,
+                                               AmplifyCategories.AUTH, undefined,
+                                               'migrateAuthResource',
+                                               [context, authResourceName ]);
     } catch (error) {
       printer.error(error as string);
       throw error;
