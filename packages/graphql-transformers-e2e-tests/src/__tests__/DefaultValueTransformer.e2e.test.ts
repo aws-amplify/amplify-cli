@@ -65,6 +65,7 @@ beforeAll(async () => {
 
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new DefaultValueTransformer()],
+    sandboxModeEnabled: true,
   });
   const out = transformer.transform(validSchema);
   const finishedStack = await deploy(
@@ -95,7 +96,7 @@ afterAll(async () => {
   await cleanupStackAfterTest(BUCKET_NAME, STACK_NAME, cf);
 });
 
-test('Test next token with key', async () => {
+test('Default value directive', async () => {
   await createPost();
 
   const posts = await listPosts();

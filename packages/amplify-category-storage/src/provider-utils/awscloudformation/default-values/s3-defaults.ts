@@ -1,6 +1,6 @@
-const uuid = require('uuid');
+import { v4 as uuid } from 'uuid';
 
-const getAllDefaults = project => {
+export const getAllDefaults = (project: Project) => {
   const name = project.projectConfig.projectName.toLowerCase();
   const [shortId] = uuid().split('-');
 
@@ -17,17 +17,15 @@ const getAllDefaults = project => {
     bucketName: `${name}${uuid().replace(/-/g, '')}`.substr(0, 47), // 63(max) - 10 (envName max) - 4(stack name) - 2(separators)
     authPolicyName: `s3_amplify_${shortId}`,
     unauthPolicyName: `s3_amplify_${shortId}`,
-
     authRoleName,
     unauthRoleName,
     storageAccess: 'auth',
     selectedGuestPermissions: ['s3:GetObject', 's3:ListBucket'],
     selectedAuthenticatedPermissions: ['s3:GetObject', 's3:ListBucket'],
+    triggerFunction: 'NONE',
   };
 
   return defaults;
 };
 
-module.exports = {
-  getAllDefaults,
-};
+type Project = { projectConfig: { projectName: string } };

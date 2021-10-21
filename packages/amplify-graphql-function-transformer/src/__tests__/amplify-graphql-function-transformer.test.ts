@@ -116,9 +116,7 @@ test('it generates the expected resources', () => {
       PipelineConfig: {
         Functions: [{ 'Fn::GetAtt': [anything(), 'FunctionId'] }],
       },
-      RequestMappingTemplateS3Location: {
-        'Fn::Join': ['', ['s3://', { Ref: anything() }, '/', { Ref: anything() }, '/pipelineFunctions/Query.echo.req.vtl']],
-      },
+      RequestMappingTemplate: anything(),
       ResponseMappingTemplateS3Location: {
         'Fn::Join': ['', ['s3://', { Ref: anything() }, '/', { Ref: anything() }, '/pipelineFunctions/Query.echo.res.vtl']],
       },

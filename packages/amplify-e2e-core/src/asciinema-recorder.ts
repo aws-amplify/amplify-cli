@@ -58,7 +58,9 @@ export class Recorder {
       cols: this.cols,
       rows: this.rows,
       cwd: this.cwd,
-      useConpty: false,
+      shell: true,
+      // Do not set useConpty. node-pty is smart enough to set it to true only on versions of Windows that support it.
+      // useConpty: true,
       ...this.options,
     });
     this.addFrame(this.renderPrompt(this.cwd, this.cmd, this.args));
