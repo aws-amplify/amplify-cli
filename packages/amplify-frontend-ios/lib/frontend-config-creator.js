@@ -50,7 +50,7 @@ function createAmplifyConfig(context, amplifyResources, cloudAmplifyResources) {
     const jsonString = JSON.stringify(amplifyConfig, null, 4);
     fs.writeFileSync(targetFilePath, jsonString, 'utf8');
 
-    writeToFile(srcDirPath, constants.amplifyConfigFilename);
+    writeToFile(srcDirPath, constants.amplifyConfigFilename, amplifyConfig);
   }
 }
 

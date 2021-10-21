@@ -928,7 +928,7 @@ export function addAuthWithGroups(cwd: string): Promise<void> {
       .wait('Do you want to configure Lambda Triggers for Cognito')
       .sendConfirmNo()
       .sendEof()
-      .run((err: Error) => err ? reject(err) : resolve());
+      .run((err: Error) => (err ? reject(err) : resolve()));
   });
 }
 
@@ -1022,7 +1022,7 @@ export function addAuthWithMaxOptions(cwd: string, settings: any): Promise<void>
   } = getSocialProviders(true);
 
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['add', 'auth'], { cwd, stripColors: true })
+    const chain = spawn(getCLIPath(), ['add', 'auth'], { cwd, stripColors: true })
       .wait('Do you want to use the default authentication and security configuration?')
       .send(KEY_DOWN_ARROW)
       .send(KEY_DOWN_ARROW)
@@ -1045,7 +1045,14 @@ export function addAuthWithMaxOptions(cwd: string, settings: any): Promise<void>
       .sendCarriageReturn()
       .wait('Enter your Google Web Client ID for your identity pool:')
       .send('googleIDPOOL')
-      .sendCarriageReturn()
+      .sendCarriageReturn();
+    if (settings.frontend === 'ios') {
+      chain.wait('Enter your Google iOS Client ID for your identity pool').send('googleiosclientId').sendCarriageReturn();
+    }
+    if (settings.frontend === 'android') {
+      chain.wait('Enter your Google Android Client ID for your identity pool').send('googleandroidclientid').sendCarriageReturn();
+    }
+    chain
       .wait('Enter your Amazon App ID for your identity pool')
       .send('amazonIDPOOL')
       .sendCarriageReturn()
@@ -1121,9 +1128,11 @@ export function addAuthWithMaxOptions(cwd: string, settings: any): Promise<void>
       .wait('Enter your redirect signout URI')
       .sendLine('https://signout1/')
       .wait('Do you want to add another redirect signout URI')
-      .sendConfirmNo()
-      .wait('Select the OAuth flows enabled for this project')
-      .sendCarriageReturn()
+      .sendConfirmNo();
+    if (settings.frontend !== 'ios' && settings.frontend !== 'android' && settings.frontend !== 'flutter') {
+      chain.wait('Select the OAuth flows enabled for this project').sendCarriageReturn();
+    }
+    chain
       .wait('Select the OAuth scopes enabled for this project')
       .sendCarriageReturn()
       .wait('Select the social providers you want to configure for your user pool')
