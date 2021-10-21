@@ -16626,7 +16626,6 @@ workflows:
             parameters:
               os:
                 - linux
-                - windows
       - AuthV2Transformer-e2e-graphql_e2e_tests:
           context:
             - amplify-ecr-image-pull
