@@ -31,9 +31,9 @@ export const migrateResourceToSupportOverride = async (resourceName: string) => 
     throw new NotInitializedError();
   }
   const authresourceDirPath = path.join(pathManager.getBackendDirPath(), 'auth', resourceName);
-  const userPoolGroupResourceDirPath = path.join(pathManager.getBackendDirPath(), 'auth', 'UserPoolGroups');
+  const userPoolGroupResourceDirPath = path.join(pathManager.getBackendDirPath(), 'auth', 'userPoolGroups');
   const backupAuthResourceFolder = backup(authresourceDirPath, projectPath, resourceName);
-  const backupUserPoolGroupResourceFolder = backup(userPoolGroupResourceDirPath, projectPath, 'UserPoolGroups');
+  const backupUserPoolGroupResourceFolder = backup(userPoolGroupResourceDirPath, projectPath, 'userPoolGroups');
 
   try {
     const parameters = JSONUtilities.readJson<$TSObject>(path.join(authresourceDirPath, 'parameters.json'), { throwIfNotExist: true });
