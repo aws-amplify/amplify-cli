@@ -256,7 +256,7 @@ export class AmplifyUserPoolGroupStack extends cdk.Stack implements AmplifyUserP
         ],
       });
       // lambda function for RoleMap Custom Resource
-      this.roleMapLambdaFunction = new lambda.CfnFunction(this, 'RoleMapLambdaFunction', {
+      this.roleMapLambdaFunction = new lambda.CfnFunction(this, 'RoleMapFunction', {
         code: {
           zipFile: fs.readFileSync(roleMapLambdaFilePath, 'utf-8'),
         },
@@ -281,6 +281,7 @@ export class AmplifyUserPoolGroupStack extends cdk.Stack implements AmplifyUserP
           env: cdk.Fn.ref('env'),
         },
       });
+      this.roleMapCustomResource.node.addDependency(this.roleMapLambdaFunction);
     }
   };
 }
