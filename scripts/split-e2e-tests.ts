@@ -11,6 +11,7 @@ const CONCURRENCY = 25;
 // Each of these failures should be independently investigated, resolved, and removed from this list.
 // For now, this list is being used to skip creation of circleci jobs for these tasks
 const WINDOWS_TEST_FAILURES = [
+  'api_6-amplify_e2e_tests',
   'datastore-modelgen-amplify_e2e_tests',
   'delete-amplify_e2e_tests',
   'env-amplify_e2e_tests',

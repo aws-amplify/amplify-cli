@@ -25,7 +25,7 @@ export * from './cliRemoveResourcePrompt';
 export * from './cliViewAPI';
 export * from './hooks';
 export * from './cliViewAPI';
-export * from './customPoliciesUtils'
+export * from './customPoliciesUtils';
 
 // Temporary types until we can finish full type definition across the whole CLI
 
@@ -51,6 +51,7 @@ export type $TSContext = {
   newUserInfo?: $TSAny;
   filesystem: IContextFilesystem;
   template: IContextTemplate;
+  versionInfo: CLIVersionInfo;
 };
 
 export type CategoryName = string;
@@ -143,6 +144,11 @@ export type DeploymentSecrets = {
 
     environments: { [env: string]: { [category: string]: { [resourceName: string]: { [key: string]: string } } } };
   }>;
+};
+
+export type CLIVersionInfo = {
+  currentCLIVersion: string;
+  minimumCompatibleCLIVersion: string;
 };
 
 /**
@@ -253,6 +259,7 @@ interface AmplifyToolkit {
     category?: string,
     resourceName?: string,
     filteredResources?: { category: string; resourceName: string }[],
+    rebuild?: boolean,
   ) => $TSAny;
   storeCurrentCloudBackend: () => $TSAny;
   readJsonFile: (fileName: string) => $TSAny;

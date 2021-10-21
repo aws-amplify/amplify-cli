@@ -10,7 +10,6 @@ import {
   stateManager,
   $TSAny,
   $TSContext,
-  CustomPoliciesFormatError,
 } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 
@@ -19,6 +18,7 @@ export async function pushResources(
   category?: string,
   resourceName?: string,
   filteredResources?: { category: string; resourceName: string }[],
+  rebuild: boolean = false,
 ) {
   if (context.parameters.options['iterative-rollback']) {
     // validate --iterative-rollback with --force
@@ -57,16 +57,21 @@ export async function pushResources(
     }
   }
 
-  const hasChanges = await showResourceTable(category, resourceName, filteredResources);
+  let hasChanges = false;
+  if (!rebuild) {
+    // status table does not have a way to show resource in "rebuild" state so skipping it to avoid confusion
+    hasChanges = await showResourceTable(category, resourceName, filteredResources);
+  }
 
   // no changes detected
-  if (!hasChanges && !context.exeInfo.forcePush) {
+  if (!hasChanges && !context.exeInfo.forcePush && !rebuild) {
     context.print.info('\nNo changes detected');
 
     return context;
   }
 
-  let continueToPush = context.exeInfo && context.exeInfo.inputParams && context.exeInfo.inputParams.yes;
+  // rebuild has an upstream confirmation prompt so no need to prompt again here
+  let continueToPush = (context.exeInfo && context.exeInfo.inputParams && context.exeInfo.inputParams.yes) || rebuild;
 
   if (!continueToPush) {
     if (context.exeInfo.iterativeRollback) {
@@ -83,7 +88,7 @@ export async function pushResources(
         // Get current-cloud-backend's amplify-meta
         const currentAmplifyMeta = stateManager.getCurrentMeta();
 
-        await providersPush(context, category, resourceName, filteredResources);
+        await providersPush(context, rebuild, category, resourceName, filteredResources);
         await onCategoryOutputsChange(context, currentAmplifyMeta);
       } catch (err) {
         if (await isValidGraphQLAuthError(err.message)) {
@@ -91,7 +96,8 @@ export async function pushResources(
         }
         if (!retryPush) {
           // Handle the errors and print them nicely for the user.
-          context.print.error(`\n${err.message}`);
+          printer.blankLine();
+          printer.error(err.message);
           throw err;
         }
       }
@@ -159,7 +165,13 @@ async function addGraphQLAuthRequirement(context, authType) {
   ]);
 }
 
-async function providersPush(context: $TSContext, category, resourceName, filteredResources) {
+async function providersPush(
+  context: $TSContext,
+  rebuild: boolean = false,
+  category?: string,
+  resourceName?: string,
+  filteredResources?: { category: string; resourceName: string }[],
+) {
   const { providers } = getProjectConfig();
   const providerPlugins = getProviderPlugins(context);
   const providerPromises: (() => Promise<$TSAny>)[] = [];
@@ -167,7 +179,7 @@ async function providersPush(context: $TSContext, category, resourceName, filter
   for (const provider of providers) {
     const providerModule = require(providerPlugins[provider]);
     const resourceDefiniton = await context.amplify.getResourceStatus(category, resourceName, provider, filteredResources);
-    providerPromises.push(providerModule.pushResources(context, resourceDefiniton));
+    providerPromises.push(providerModule.pushResources(context, resourceDefiniton, rebuild));
   }
 
   await Promise.all(providerPromises);

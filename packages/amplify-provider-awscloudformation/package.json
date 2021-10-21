@@ -74,6 +74,7 @@
     "@aws-cdk/custom-resources": "~1.124.0",
     "@aws-cdk/region-info": "~1.124.0",
     "@octokit/rest": "^18.0.9",
+    "ajv": "^6.12.3",
     "amplify-cli-core": "1.31.1",
     "amplify-cli-logger": "1.1.0",
     "amplify-codegen": "^2.23.1",
