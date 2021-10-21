@@ -6310,6 +6310,58 @@ jobs:
       AMPLIFY_PATH: /home/circleci/repo/packages/amplify-cli/bin/amplify
       TEST_SUITE: src/__tests__/api_5.test.ts
       CLI_REGION: ap-southeast-1
+  api_6-amplify_e2e_tests:
+    working_directory: ~/repo
+    parameters:
+      os:
+        type: executor
+        default: linux
+    executor: << parameters.os >>
+    steps:
+      - attach_workspace:
+          at: ./
+      - restore_cache:
+          key: >-
+            amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
+            arch }}
+      - restore_cache:
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
+      - restore_cache:
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
+      - run:
+          name: Start verdaccio, install node CLI and amplify-app
+          command: |
+            source .circleci/local_publish_helpers.sh
+            startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
+            setNpmRegistryUrlToLocal
+            changeNpmGlobalPath
+            npm install -g @aws-amplify/cli
+            npm install -g amplify-app
+            unsetNpmRegistryUrl
+      - run:
+          name: Run E2e Tests
+          command: |
+            source .circleci/local_publish_helpers.sh
+            retry runE2eTest
+          no_output_timeout: 90m
+      - run:
+          name: Scan And Cleanup E2E Test Artifacts
+          command: |
+            if ! yarn ts-node .circleci/scan_artifacts.ts; then
+              echo "Cleaning the repository"
+              git clean -fdx
+              exit 1
+            fi
+          when: always
+      - store_test_results:
+          path: packages/amplify-e2e-tests/
+      - store_artifacts:
+          path: ~/repo/packages/amplify-e2e-tests/amplify-e2e-reports
+    environment:
+      AMPLIFY_DIR: /home/circleci/repo/packages/amplify-cli/bin
+      AMPLIFY_PATH: /home/circleci/repo/packages/amplify-cli/bin/amplify
+      TEST_SUITE: src/__tests__/api_6.test.ts
+      CLI_REGION: ap-southeast-2
   schema-iterative-update-4-amplify_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -6361,7 +6413,7 @@ jobs:
       AMPLIFY_DIR: /home/circleci/repo/packages/amplify-cli/bin
       AMPLIFY_PATH: /home/circleci/repo/packages/amplify-cli/bin/amplify
       TEST_SUITE: src/__tests__/schema-iterative-update-4.test.ts
-      CLI_REGION: ap-southeast-2
+      CLI_REGION: us-east-2
   api_4-amplify_e2e_tests_pkg:
     parameters:
       os:
@@ -10011,6 +10063,41 @@ jobs:
     environment:
       TEST_SUITE: src/__tests__/api_5.test.ts
       CLI_REGION: ap-southeast-1
+  api_6-amplify_e2e_tests_pkg:
+    parameters:
+      os:
+        type: executor
+        default: os.linux
+    executor: << parameters.os >>
+    working_directory: ~/repo
+    steps:
+      - attach_workspace:
+          at: ./
+      - restore_cache:
+          key: >-
+            amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
+            arch }}
+      - restore_cache:
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
+      - restore_cache:
+          key: amplify-build-artifact-{{ .Revision }}-{{ arch }}
+      - restore_cache:
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
+      - install_yarn:
+          os: << parameters.os >>
+      - install_packaged_cli:
+          os: << parameters.os >>
+      - run_e2e_tests:
+          os: << parameters.os >>
+      - scan_e2e_test_artifacts:
+          os: << parameters.os >>
+      - store_test_results:
+          path: packages/amplify-e2e-tests/
+      - store_artifacts:
+          path: packages/amplify-e2e-tests/amplify-e2e-reports
+    environment:
+      TEST_SUITE: src/__tests__/api_6.test.ts
+      CLI_REGION: ap-southeast-2
   schema-iterative-update-4-amplify_e2e_tests_pkg:
     parameters:
       os:
@@ -10045,7 +10132,7 @@ jobs:
           path: packages/amplify-e2e-tests/amplify-e2e-reports
     environment:
       TEST_SUITE: src/__tests__/schema-iterative-update-4.test.ts
-      CLI_REGION: ap-southeast-2
+      CLI_REGION: us-east-2
   AuthV2Transformer-e2e-graphql_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -12164,6 +12251,7 @@ workflows:
             - schema-iterative-rollback-2-amplify_e2e_tests
             - function_1-amplify_e2e_tests
             - schema-iterative-update-3-amplify_e2e_tests
+            - schema-iterative-update-4-amplify_e2e_tests
             - auth_6-amplify_e2e_tests
             - frontend_config_drift-amplify_e2e_tests
             - iam-permissions-boundary-amplify_e2e_tests
@@ -12254,7 +12342,7 @@ workflows:
             - schema-iterative-rollback-1-amplify_e2e_tests
             - migration-api-key-migration3-amplify_e2e_tests
             - schema-auth-6-amplify_e2e_tests
-            - schema-iterative-update-4-amplify_e2e_tests
+            - api_6-amplify_e2e_tests
             - api_4-amplify_e2e_tests_pkg
             - custom_policies_function-amplify_e2e_tests_pkg
             - hooks-amplify_e2e_tests_pkg
@@ -12269,6 +12357,7 @@ workflows:
             - schema-iterative-rollback-2-amplify_e2e_tests_pkg
             - function_1-amplify_e2e_tests_pkg
             - schema-iterative-update-3-amplify_e2e_tests_pkg
+            - schema-iterative-update-4-amplify_e2e_tests_pkg
             - auth_6-amplify_e2e_tests_pkg
             - frontend_config_drift-amplify_e2e_tests_pkg
             - iam-permissions-boundary-amplify_e2e_tests_pkg
@@ -12359,7 +12448,7 @@ workflows:
             - schema-iterative-rollback-1-amplify_e2e_tests_pkg
             - migration-api-key-migration3-amplify_e2e_tests_pkg
             - schema-auth-6-amplify_e2e_tests_pkg
-            - schema-iterative-update-4-amplify_e2e_tests_pkg
+            - api_6-amplify_e2e_tests_pkg
             - >-
               migration_tests-auth-deployment-migration-auth-deployment-secrets-amplify_migration_tests_v4
             - update_tests-function_migration_update-amplify_migration_tests_v4
@@ -12418,6 +12507,7 @@ workflows:
             - schema-iterative-rollback-2-amplify_e2e_tests
             - function_1-amplify_e2e_tests
             - schema-iterative-update-3-amplify_e2e_tests
+            - schema-iterative-update-4-amplify_e2e_tests
             - auth_6-amplify_e2e_tests
             - frontend_config_drift-amplify_e2e_tests
             - iam-permissions-boundary-amplify_e2e_tests
@@ -12508,7 +12598,7 @@ workflows:
             - schema-iterative-rollback-1-amplify_e2e_tests
             - migration-api-key-migration3-amplify_e2e_tests
             - schema-auth-6-amplify_e2e_tests
-            - schema-iterative-update-4-amplify_e2e_tests
+            - api_6-amplify_e2e_tests
             - api_4-amplify_e2e_tests_pkg
             - custom_policies_function-amplify_e2e_tests_pkg
             - hooks-amplify_e2e_tests_pkg
@@ -12523,6 +12613,7 @@ workflows:
             - schema-iterative-rollback-2-amplify_e2e_tests_pkg
             - function_1-amplify_e2e_tests_pkg
             - schema-iterative-update-3-amplify_e2e_tests_pkg
+            - schema-iterative-update-4-amplify_e2e_tests_pkg
             - auth_6-amplify_e2e_tests_pkg
             - frontend_config_drift-amplify_e2e_tests_pkg
             - iam-permissions-boundary-amplify_e2e_tests_pkg
@@ -12613,7 +12704,7 @@ workflows:
             - schema-iterative-rollback-1-amplify_e2e_tests_pkg
             - migration-api-key-migration3-amplify_e2e_tests_pkg
             - schema-auth-6-amplify_e2e_tests_pkg
-            - schema-iterative-update-4-amplify_e2e_tests_pkg
+            - api_6-amplify_e2e_tests_pkg
             - AuthV2Transformer-e2e-graphql_e2e_tests
             - HttpTransformerV2-e2e-graphql_e2e_tests
             - ModelConnectionTransformer-e2e-graphql_e2e_tests
@@ -12934,6 +13025,24 @@ workflows:
               os:
                 - linux
       - schema-iterative-update-3-amplify_e2e_tests:
+          context:
+            - amplify-ecr-image-pull
+            - cleanup-resources
+            - e2e-auth-credentials
+            - e2e-test-context
+          filters:
+            branches:
+              only:
+                - master
+                - /tagged-release\/.*/
+                - /run-e2e\/.*/
+          requires:
+            - publish_to_local_registry
+          matrix:
+            parameters:
+              os:
+                - linux
+      - schema-iterative-update-4-amplify_e2e_tests:
           context:
             - amplify-ecr-image-pull
             - cleanup-resources
@@ -14571,7 +14680,7 @@ workflows:
             parameters:
               os:
                 - linux
-      - schema-iterative-update-4-amplify_e2e_tests:
+      - api_6-amplify_e2e_tests:
           context:
             - amplify-ecr-image-pull
             - cleanup-resources
@@ -14827,6 +14936,24 @@ workflows:
               os:
                 - linux
       - schema-iterative-update-3-amplify_e2e_tests_pkg:
+          context:
+            - amplify-ecr-image-pull
+            - cleanup-resources
+            - e2e-auth-credentials
+            - e2e-test-context
+          filters:
+            branches:
+              only:
+                - master
+                - /tagged-release\/.*/
+                - /run-e2e\/.*/
+          requires:
+            - build_pkg_binaries
+          matrix:
+            parameters:
+              os:
+                - linux
+      - schema-iterative-update-4-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
             - cleanup-resources
@@ -16512,7 +16639,7 @@ workflows:
               os:
                 - linux
                 - windows
-      - schema-iterative-update-4-amplify_e2e_tests_pkg:
+      - api_6-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
             - cleanup-resources

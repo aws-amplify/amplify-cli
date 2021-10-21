@@ -583,6 +583,16 @@ export function addRestContainerApi(projectDir: string) {
   });
 }
 
+export function rebuildApi(projDir: string, apiName: string) {
+  return new Promise<void>((resolve, reject) => {
+    spawn(getCLIPath(), ['rebuild', 'api'], { cwd: projDir, stripColors: true })
+      .wait('Type the name of the API to confirm you want to continue')
+      .sendLine(apiName)
+      .wait('All resources are updated in the cloud')
+      .run(err => (err ? reject(err) : resolve()));
+  });
+}
+
 export function addRestContainerApiForCustomPolicies(projectDir: string, settings: { name: string }) {
   return new Promise<void>((resolve, reject) => {
     spawn(getCLIPath(), ['add', 'api'], { cwd: projectDir, stripColors: true })

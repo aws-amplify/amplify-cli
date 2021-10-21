@@ -14,7 +14,9 @@
     "src/__tests__"
   ],
   "references": [
+    {"path": "../amplify-cli-core"},
     {"path": "../amplify-headless-interface"},
+    {"path": "../amplify-prompts"},
     {"path": "../graphql-transformer-core"},
     {"path": "../amplify-util-headless-input"},
   ]
