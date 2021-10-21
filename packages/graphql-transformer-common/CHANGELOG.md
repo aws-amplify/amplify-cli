@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.19.11-ext4.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-common@4.19.9...graphql-transformer-common@4.19.11-ext4.0) (2021-10-21)
+
+
+### Bug Fixes
+
+* **graphql-model-transformer:** iam role name does not exceed 64 characters ([#8244](https://github.com/aws-amplify/amplify-cli/issues/8244)) ([812a671](https://github.com/aws-amplify/amplify-cli/commit/812a67163d6dd33160bf7ace9afd538c83a7af1a))
+
+
+
+
+
 ## [4.19.10](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-common@4.19.9...graphql-transformer-common@4.19.10) (2021-09-27)
 
 

@@ -3,6 +3,32 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [6.4.0-ext4.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@6.0.1...@aws-amplify/cli@6.4.0-ext4.0) (2021-10-21)
+
+
+### Bug Fixes
+
+* **amplify-category-auth:** update front end config on pull ([#8173](https://github.com/aws-amplify/amplify-cli/issues/8173)) ([da2b008](https://github.com/aws-amplify/amplify-cli/commit/da2b0083add2f5b10520efade8628080a34c8791))
+* enable scoped packages in plugin platform ([#8492](https://github.com/aws-amplify/amplify-cli/issues/8492)) ([ee9b35d](https://github.com/aws-amplify/amplify-cli/commit/ee9b35d076a82c824e5467ac9e35b7f07aa62dc7))
+
+
+### Features
+
+* Auth refactor to  use cdk, eliminate EJS, overrides functionality ([#8355](https://github.com/aws-amplify/amplify-cli/issues/8355)) ([5a2a702](https://github.com/aws-amplify/amplify-cli/commit/5a2a702d373c7f090b0a9357e1b33350ce574066))
+* ddb overrides and flow refactor ([89b4f0a](https://github.com/aws-amplify/amplify-cli/commit/89b4f0a1990217b9fdc2b0987e79d9ce02b5ed80))
+* FF for override stacks ([#8228](https://github.com/aws-amplify/amplify-cli/issues/8228)) ([49ba6a3](https://github.com/aws-amplify/amplify-cli/commit/49ba6a3bd93566ea9c653c8e77144e3dd6e52bae))
+* Flag to allow schema changes that require table replacement ([#8144](https://github.com/aws-amplify/amplify-cli/issues/8144)) ([2d4e65a](https://github.com/aws-amplify/amplify-cli/commit/2d4e65acfd034d33c6fa8ac1f5f8582e7e3bc399))
+* root stack override ([#8276](https://github.com/aws-amplify/amplify-cli/issues/8276)) ([ee1c49e](https://github.com/aws-amplify/amplify-cli/commit/ee1c49e3ec976aae42ca00b48a6be7d2bd7a4b14))
+
+
+### Reverts
+
+* Revert "feat: Flag to allow schema changes that require table replacement (#8144)" (#8268) ([422dd04](https://github.com/aws-amplify/amplify-cli/commit/422dd04425c72aa7276e086d38ce4d5f4681f9f3)), closes [#8144](https://github.com/aws-amplify/amplify-cli/issues/8144) [#8268](https://github.com/aws-amplify/amplify-cli/issues/8268)
+
+
+
+
+
 ## [6.3.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@6.3.0...@aws-amplify/cli@6.3.1) (2021-10-13)
 
 
