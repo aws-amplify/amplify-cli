@@ -6,9 +6,11 @@ jest.mock('amplify-prompts');
 jest.mock('fs-extra');
 
 jest.mock('amplify-cli-core', () => ({
+  ...(jest.requireActual('amplify-cli-core') as {}),
   pathManager: {
     findProjectRoot: jest.fn().mockReturnValue('somePath'),
     getBackendDirPath: jest.fn().mockReturnValue('mockProjectPath'),
+    getResourceDirectoryPath: jest.fn().mockReturnValue('mockProjectPath'),
   },
   JSONUtilities: {
     readJson: jest.fn().mockReturnValue({
@@ -82,7 +84,7 @@ jest.mock('amplify-cli-core', () => ({
 test('migrate resource', async () => {
   const resourceName = 'mockResource';
   migrateResourceToSupportOverride(resourceName);
-  const expectedPath = path.join('mockProjectPath', 'auth', resourceName, 'cli-inputs.json');
+  const expectedPath = path.join('mockProjectPath', 'cli-inputs.json');
   const expectedPayload = {
     version: '1',
     cognitoConfig: {
