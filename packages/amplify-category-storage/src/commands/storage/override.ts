@@ -62,10 +62,10 @@ export const run = async (context: $TSContext) => {
     }
   } else if (amplifyMeta[categoryName][selectedResourceName].service === AmplifySupportedService.S3 ) {
       // S3 migration logic goes in here
-      const resourceInputState = new S3InputState(selectedResourceName, undefined);
-      if (!resourceInputState.cliInputFileExists()) {
+      const s3ResourceInputState = new S3InputState(selectedResourceName, undefined);
+      if (!s3ResourceInputState.cliInputFileExists()) {
         if (await prompter.yesOrNo('File migration required to continue. Do you want to continue?', true)) {
-          resourceInputState.migrate();
+          await s3ResourceInputState.migrate(context); //migrate auth and storage config resources
           const stackGenerator = new AmplifyS3ResourceStackTransform(selectedResourceName, context);
           stackGenerator.transform( CLISubCommandType.MIGRATE );
         } else {
