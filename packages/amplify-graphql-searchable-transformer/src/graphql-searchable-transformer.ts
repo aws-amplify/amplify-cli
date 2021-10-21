@@ -115,6 +115,7 @@ export class SearchableModelTransformer extends TransformerPluginBase {
 
     for (const def of this.searchableObjectTypeDefinitions) {
       const type = def.node.name.value;
+      const openSearchIndexName = context.resourceHelper.getTableBaseName(type);
       const typeName = context.output.getQueryTypeName();
       const table = getTable(context, def.node);
       const ddbTable = table as Table;
@@ -123,11 +124,10 @@ export class SearchableModelTransformer extends TransformerPluginBase {
       ddbTable.grantStreamRead(lambdaRole);
 
       // creates event source mapping from ddb to lambda
-      createEventSourceMapping(stack, type, lambda, parameterMap, ddbTable.tableStreamArn);
+      createEventSourceMapping(stack, openSearchIndexName, lambda, parameterMap, ddbTable.tableStreamArn);
 
       const { attributeName } = (table as any).keySchema.find((att: any) => att.keyType === 'HASH');
       assert(typeName);
-      const openSearchIndexName = context.resourceHelper.getTableBaseName(def.node.name.value);
       const resolver = context.resolvers.generateQueryResolver(
         typeName,
         def.fieldName,

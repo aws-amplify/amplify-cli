@@ -1,5 +1,6 @@
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { MapsToTransformer } from '@aws-amplify/graphql-maps-to-transformer';
+import { AuthTransformer } from '@aws-amplify/graphql-auth-transformer';
 import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
 import { GraphQLClient } from './utils/graphql-client';
 import { deploy, launchDDBLocal, logDebug, terminateDDB } from './utils/index';
@@ -12,7 +13,7 @@ let ddbEmulator;
 
 beforeAll(async () => {
   const validSchema = `
-    type Todo @model @mapsTo(name: "Task") {
+    type Todo @model @mapsTo(name: "Task") @auth(rules: [{allow: public}]) {
         id: ID!
         title: String!
         description: String
@@ -20,7 +21,7 @@ beforeAll(async () => {
     `;
   try {
     const transformer = new GraphQLTransform({
-      transformers: [new ModelTransformer(), new MapsToTransformer()],
+      transformers: [new ModelTransformer(), new AuthTransformer({ addAwsIamAuthInOutputSchema: false }), new MapsToTransformer()],
     });
     const out = transformer.transform(validSchema);
 
@@ -65,7 +66,7 @@ test('Model with original name specified points to original table', async () => 
     }`,
     {},
   );
-  logDebug(JSON.stringify(response, null, 4));
+  logDebug(JSON.stringify(response, null, 2));
   expect(response?.data?.createTodo?.id).toBeDefined();
   expect(response?.data?.createTodo?.title).toEqual('Test Todo');
   // successful response means that it was able to write to the original table correctly
