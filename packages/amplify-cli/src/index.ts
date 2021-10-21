@@ -5,7 +5,6 @@ import {
   CLIContextEnvironmentProvider,
   exitOnNextTick,
   FeatureFlags,
-  JSONUtilities,
   JSONValidationError,
   pathManager,
   stateManager,
@@ -32,6 +31,7 @@ import { rewireDeprecatedCommands } from './rewireDeprecatedCommands';
 import { ensureMobileHubCommandCompatibility } from './utils/mobilehub-support';
 import { migrateTeamProviderInfo } from './utils/team-provider-migrate';
 import { deleteOldVersion } from './utils/win-utils';
+import { getCurrentCLIVersion, isMinimumVersionSatisfied } from './version-gating';
 import { notify } from './version-notifier';
 import { getAmplifyVersion } from './extensions/amplify-helpers/get-amplify-version';
 
@@ -131,8 +131,7 @@ export async function run() {
     }
 
     // Initialize Banner messages. These messages are set on the server side
-    const pkg = JSONUtilities.readJson<$TSAny>(path.join(__dirname, '..', 'package.json'));
-    BannerMessage.initialize(pkg.version);
+    BannerMessage.initialize(getCurrentCLIVersion());
 
     ensureFilePermissions(pathManager.getAWSCredentialsFilePath());
     ensureFilePermissions(pathManager.getAWSConfigFilePath());
@@ -185,6 +184,12 @@ export async function run() {
 
     process.on('SIGINT', sigIntHandler.bind(context));
 
+    if ((await isMinimumVersionSatisfied(context as unknown as $TSContext)) === false) {
+      context.usageData.emitError(new Error('Version gating requirements were not passed.'));
+
+      return 1;
+    }
+
     // Skip NodeJS version check and migrations if Amplify CLI is executed in CI/CD or
     // the command is not push
     if (!isCI && context.input.command === 'push') {
@@ -194,7 +199,7 @@ export async function run() {
     context.usageData.emitInvoke();
 
     // For mobile hub migrated project validate project and command to be executed
-    if (!ensureMobileHubCommandCompatibility((context as unknown) as $TSContext)) {
+    if (!ensureMobileHubCommandCompatibility(context as unknown as $TSContext)) {
       // Double casting until we have properly typed context
       return 1;
     }

@@ -31,13 +31,17 @@ describe('run', () => {
         },
         teamProviderInfo: {},
       },
+      versionInfo: {
+        currentCLIVersion: '5.2.0',
+        minimumCompatibleCLIVersion: '5.0.0',
+      },
       amplify: {
-        getTags: jest.fn(),
+        getTags: jest.fn().mockImplementation(() => []),
       },
     };
     CloudFormation_mock.mockImplementation(
       () =>
-        (({
+        ({
           createResourceStack: jest.fn().mockResolvedValue({
             Stacks: [
               {
@@ -45,7 +49,7 @@ describe('run', () => {
               },
             ],
           }),
-        } as unknown) as CloudFormation),
+        } as unknown as CloudFormation),
     );
     amplifyServiceManager_mock.init.mockResolvedValueOnce({} as any);
     JSONUtilities_mock.readJson.mockReturnValueOnce({});
