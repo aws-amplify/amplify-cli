@@ -33,8 +33,8 @@ const {
 } = require('./provider-utils/awscloudformation/utils/auth-sms-workflow-helper');
 const { AuthInputState } = require('./provider-utils/awscloudformation/auth-inputs-manager/auth-input-state');
 const { printer } = require('amplify-prompts');
-const { checkAuthResourceMigration } = require('./provider-utils/awscloudformation/utils/migrate-override-resource');
 const { privateKeys } = require('./provider-utils/awscloudformation/constants');
+const { checkAuthResourceMigration } = require('./provider-utils/awscloudformation/utils/check-for-auth-migration');
 
 // this function is being kept for temporary compatability.
 async function add(context, skipNextSteps = false) {
@@ -82,6 +82,10 @@ function canResourceBeTransformed(resourceName) {
   return resourceInputState.cliInputFileExists();
 }
 
+async function migrateAuthResource( context, resourceName ){
+  await checkAuthResourceMigration( context, resourceName );
+}
+
 async function externalAuthEnable(context, externalCategory, resourceName, requirements) {
   const { amplify } = context;
   const serviceMetadata = getSupportedServices.supportedServices;
@@ -103,7 +107,7 @@ async function externalAuthEnable(context, externalCategory, resourceName, requi
     }
     currentAuthName = await getAuthResourceName(context);
     // check for migration when auth has been enabled
-    checkAuthResourceMigration(context, currentAuthName);
+    await checkAuthResourceMigration(context, currentAuthName);
     const cliState = new AuthInputState(currentAuthName);
     currentAuthParams = await cliState.loadResourceParameters(context, cliState.getCLIInputPayload());
 
@@ -496,6 +500,7 @@ async function isSMSWorkflowEnabled(context, resourceName) {
 
 module.exports = {
   externalAuthEnable,
+  migrateAuthResource,
   checkRequirements,
   add,
   migrate,
@@ -517,4 +522,5 @@ module.exports = {
   AmplifyUserPoolGroupTransform,
   transformCategoryStack,
   AmplifyAuthCognitoStackTemplate,
+
 };
