@@ -76,8 +76,6 @@ class CfnApiArtifactHandler implements ApiArtifactHandler {
 
     serviceConfig.conflictResolution = await this.createResolverResources(serviceConfig.conflictResolution);
 
-    //await writeResolverConfig(serviceConfig.conflictResolution, resourceDir);
-
     const appsyncCLIInputs = await this.generateAppsyncCLIInputs(serviceConfig, resourceDir);
 
     // Write the default custom resources stack out to disk.
@@ -117,7 +115,6 @@ class CfnApiArtifactHandler implements ApiArtifactHandler {
     }
     if (updates.conflictResolution) {
       updates.conflictResolution = await this.createResolverResources(appsyncCLIInputs.serviceConfiguration.conflictResolution);
-      //await writeResolverConfig(appsyncCLIInputs.serviceConfiguration.conflictResolution, resourceDir);
     }
     const authConfig = getAppSyncAuthConfig(stateManager.getMeta());
     const oldConfigHadApiKey = authConfigHasApiKey(authConfig);
