@@ -254,8 +254,30 @@ export class GraphQLTransform {
       reverseThroughTransformers -= 1;
     }
     this.collectResolvers(context, context.api);
+    this.applyOverride(stackManager);
     return this.synthesize(context);
   }
+
+  private applyOverride = (stackManager: StackManager) => {
+    stackManager.rootStack.node
+      .findAll()
+      .forEach(node =>
+        console.log(
+          'path = ',
+          node.node.path,
+          '\n',
+          'id =',
+          node.node.id,
+          '\n',
+          'children=',
+          node.node.children,
+          '\n',
+          'defaultChild=',
+          node.node.defaultChild,
+          '\n',
+        ),
+      );
+  };
 
   private generateGraphQlApi(stackManager: StackManager, output: TransformerOutput) {
     // Todo: Move this to its own transformer plugin to support modifying the API
