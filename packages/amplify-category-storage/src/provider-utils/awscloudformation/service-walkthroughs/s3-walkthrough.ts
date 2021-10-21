@@ -30,13 +30,13 @@ import {
   askAndOpenFunctionEditor,
   S3CLITriggerUpdateMenuOptions,
 } from './s3-questions';
-import { printErrorAlreadyCreated, printErrorNoResourcesToUpdate } from './s3-errors';
+import { printErrorAlreadyCreated, printErrorAuthResourceMigrationFailed, printErrorNoResourcesToUpdate } from './s3-errors';
 import { getAllDefaults } from '../default-values/s3-defaults';
-
+import { migrateAuthDependencyResource } from './s3-auth-api';
 module.exports = {
   addWalkthrough /* Add walkthrough for S3 resource */,
   updateWalkthrough /* Update walkthrough for S3 resource */,
-  migrate: migrateCategory /* Migrate function to migrate from non-cdk to cdk implementation */,
+  migrate: migrateStorageCategory /* Migrate function to migrate from non-cdk to cdk implementation */,
   getIAMPolicies /* Utility function to get IAM policies - cloudformation from actions */,
 };
 
@@ -52,6 +52,14 @@ module.exports = {
 export async function addWalkthrough(context: $TSContext, defaultValuesFilename: string, serviceMetadata: $TSObject, options: $TSObject) {
   const { amplify } = context;
   const amplifyMeta = stateManager.getMeta();
+
+  //Migrate auth category if required
+  try {
+    await migrateAuthDependencyResource(context)
+  } catch ( error ){
+    await printErrorAuthResourceMigrationFailed(context);
+    exitOnNextTick(0);
+  }
 
   //First ask customers to configure Auth on the S3 resource, invoke auth workflow
   await askAndInvokeAuthWorkflow(context);
@@ -109,7 +117,7 @@ export async function addWalkthrough(context: $TSContext, defaultValuesFilename:
  * @param context
  * @returns resourceName
  */
-export async function updateWalkthrough(context: $TSAny) {
+export async function updateWalkthrough(context: $TSContext) {
   const amplifyMeta = stateManager.getMeta();
   const resourceName: string | undefined = await getS3ResourceNameFromMeta(amplifyMeta);
   if (resourceName === undefined) {
@@ -127,7 +135,8 @@ export async function updateWalkthrough(context: $TSAny) {
     //Check if migration is required
     if (!cliInputsState.cliInputFileExists()) {
       if (context.exeInfo?.forcePush || (await prompter.confirmContinue('File migration required to continue. Do you want to continue?'))) {
-        cliInputsState.migrate();
+        //migrate auth and storage
+        await cliInputsState.migrate( context );
         const stackGenerator = new AmplifyS3ResourceStackTransform(resourceName, context);
         await stackGenerator.transform(CLISubCommandType.UPDATE); //generates cloudformation
       } else {
@@ -182,11 +191,11 @@ export async function updateWalkthrough(context: $TSAny) {
  * @param context
  * @param resourceName
  */
-export async function migrateCategory(context: $TSAny, resourceName: $TSAny): Promise<string | undefined> {
+export async function migrateStorageCategory(context: $TSContext, resourceName: string): Promise<string | undefined> {
   let cliInputsState = new S3InputState(resourceName, undefined);
   //Check if migration is required
   if (!cliInputsState.cliInputFileExists()) {
-    cliInputsState.migrate();
+    await cliInputsState.migrate( context );
     const stackGenerator = new AmplifyS3ResourceStackTransform(resourceName, context);
     await stackGenerator.transform(CLISubCommandType.MIGRATE);
     return stackGenerator.getCFN();
