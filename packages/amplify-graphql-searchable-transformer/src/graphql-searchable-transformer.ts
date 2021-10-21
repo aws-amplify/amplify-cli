@@ -353,7 +353,8 @@ export class SearchableModelTransformer extends TransformerPluginBase {
 
 function getTable(context: TransformerContextProvider, definition: ObjectTypeDefinitionNode): IConstruct {
   const ddbDataSource = context.dataSources.get(definition) as DynamoDbDataSource;
-  const tableName = ModelResourceIDs.ModelTableResourceID(definition.name.value);
+  const tableBaseName = context.resourceHelper.getTableBaseName(definition.name.value);
+  const tableName = ModelResourceIDs.ModelTableResourceID(tableBaseName);
   const table = ddbDataSource.ds.stack.node.findChild(tableName);
   return table;
 }
