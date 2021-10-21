@@ -51,7 +51,7 @@ export class AmplifyUserPoolGroupTransform extends AmplifyCategoryTransform {
   constructor(resourceName: string) {
     super(resourceName);
     this._authResourceName = resourceName;
-    this._resourceName = 'UserPoolGroups';
+    this._resourceName = 'userPoolGroups';
     this._synthesizer = new AuthStackSythesizer();
     this._synthesizerOutputs = new AuthStackSythesizer();
     this._app = new cdk.App();
@@ -116,6 +116,7 @@ export class AmplifyUserPoolGroupTransform extends AmplifyCategoryTransform {
     this._userPoolGroupTemplateObj.addCfnParameter(
       {
         type: 'String',
+        default: `auth${props.cognitoResourceName}UserPoolId`,
       },
       `auth${props.cognitoResourceName}UserPoolId`,
     );
@@ -124,6 +125,7 @@ export class AmplifyUserPoolGroupTransform extends AmplifyCategoryTransform {
       this._userPoolGroupTemplateObj.addCfnParameter(
         {
           type: 'String',
+          default: `auth${props.cognitoResourceName}IdentityPoolId`,
         },
         `auth${props.cognitoResourceName}IdentityPoolId`,
       );
@@ -132,6 +134,7 @@ export class AmplifyUserPoolGroupTransform extends AmplifyCategoryTransform {
     this._userPoolGroupTemplateObj.addCfnParameter(
       {
         type: 'String',
+        default: `auth${props.cognitoResourceName}AppClientID`,
       },
       `auth${props.cognitoResourceName}AppClientID`,
     );
@@ -139,6 +142,7 @@ export class AmplifyUserPoolGroupTransform extends AmplifyCategoryTransform {
     this._userPoolGroupTemplateObj.addCfnParameter(
       {
         type: 'String',
+        default: `auth${props.cognitoResourceName}AppClientIDWeb`,
       },
       `auth${props.cognitoResourceName}AppClientIDWeb`,
     );
@@ -237,5 +241,33 @@ export class AmplifyUserPoolGroupTransform extends AmplifyCategoryTransform {
     writeCFNTemplate(template, cognitostackFilePath, {
       templateFormat: CFNTemplateFormat.JSON,
     });
+    // write parameters.json file
+    this.writeBuildFiles(context);
+  };
+
+  private writeBuildFiles = async (context: $TSContext) => {
+    const parametersJSONFilePath = path.join(
+      pathManager.getBackendDirPath(),
+      this._category,
+      this._resourceName,
+      'build',
+      'parameters.json',
+    );
+
+    const roles = {
+      AuthRoleArn: {
+        'Fn::GetAtt': ['AuthRole', 'Arn'],
+      },
+      UnauthRoleArn: {
+        'Fn::GetAtt': ['UnauthRole', 'Arn'],
+      },
+    };
+
+    //save parameters
+    let parameters = {
+      ...roles,
+    };
+    //save parameters
+    JSONUtilities.writeJson(parametersJSONFilePath, parameters);
   };
 }

@@ -32,15 +32,19 @@ Object {
       "Type": "String",
     },
     "authmockResourceAppClientID": Object {
+      "Default": "authmockResourceAppClientID",
       "Type": "String",
     },
     "authmockResourceAppClientIDWeb": Object {
+      "Default": "authmockResourceAppClientIDWeb",
       "Type": "String",
     },
     "authmockResourceIdentityPoolId": Object {
+      "Default": "authmockResourceIdentityPoolId",
       "Type": "String",
     },
     "authmockResourceUserPoolId": Object {
+      "Default": "authmockResourceUserPoolId",
       "Type": "String",
     },
     "env": Object {
@@ -144,44 +148,7 @@ Object {
       },
       "Type": "AWS::IAM::Role",
     },
-    "RoleMapFunctionInput": Object {
-      "DeletionPolicy": "Delete",
-      "Properties": Object {
-        "AuthRoleArn": Object {
-          "Ref": "AuthRoleArn",
-        },
-        "ServiceToken": Object {
-          "Fn::GetAtt": Array [
-            "RoleMapLambdaFunction",
-            "Arn",
-          ],
-        },
-        "UnauthRoleArn": Object {
-          "Ref": "UnauthRoleArn",
-        },
-        "appClientID": Object {
-          "Ref": "authmockResourceAppClientID",
-        },
-        "appClientIDWeb": Object {
-          "Ref": "authmockResourceAppClientIDWeb",
-        },
-        "env": Object {
-          "Ref": "env",
-        },
-        "identityPoolId": Object {
-          "Ref": "authmockResourceIdentityPoolId",
-        },
-        "region": Object {
-          "Ref": "AWS::Region",
-        },
-        "userPoolId": Object {
-          "Ref": "authmockResourceUserPoolId",
-        },
-      },
-      "Type": "Custom::LambdaCallout",
-      "UpdateReplacePolicy": "Delete",
-    },
-    "RoleMapLambdaFunction": Object {
+    "RoleMapFunction": Object {
       "Properties": Object {
         "Code": Object {
           "ZipFile": "const response = require('cfn-response');
@@ -234,6 +201,46 @@ exports.handler = (event, context) => {
         "Timeout": 300,
       },
       "Type": "AWS::Lambda::Function",
+    },
+    "RoleMapFunctionInput": Object {
+      "DeletionPolicy": "Delete",
+      "DependsOn": Array [
+        "RoleMapFunction",
+      ],
+      "Properties": Object {
+        "AuthRoleArn": Object {
+          "Ref": "AuthRoleArn",
+        },
+        "ServiceToken": Object {
+          "Fn::GetAtt": Array [
+            "RoleMapFunction",
+            "Arn",
+          ],
+        },
+        "UnauthRoleArn": Object {
+          "Ref": "UnauthRoleArn",
+        },
+        "appClientID": Object {
+          "Ref": "authmockResourceAppClientID",
+        },
+        "appClientIDWeb": Object {
+          "Ref": "authmockResourceAppClientIDWeb",
+        },
+        "env": Object {
+          "Ref": "env",
+        },
+        "identityPoolId": Object {
+          "Ref": "authmockResourceIdentityPoolId",
+        },
+        "region": Object {
+          "Ref": "AWS::Region",
+        },
+        "userPoolId": Object {
+          "Ref": "authmockResourceUserPoolId",
+        },
+      },
+      "Type": "Custom::LambdaCallout",
+      "UpdateReplacePolicy": "Delete",
     },
     "adinGroup": Object {
       "Properties": Object {
@@ -327,15 +334,19 @@ Object {
       "Type": "String",
     },
     "authmockResourceAppClientID": Object {
+      "Default": "authmockResourceAppClientID",
       "Type": "String",
     },
     "authmockResourceAppClientIDWeb": Object {
+      "Default": "authmockResourceAppClientIDWeb",
       "Type": "String",
     },
     "authmockResourceIdentityPoolId": Object {
+      "Default": "authmockResourceIdentityPoolId",
       "Type": "String",
     },
     "authmockResourceUserPoolId": Object {
+      "Default": "authmockResourceUserPoolId",
       "Type": "String",
     },
     "env": Object {
@@ -439,44 +450,7 @@ Object {
       },
       "Type": "AWS::IAM::Role",
     },
-    "RoleMapFunctionInput": Object {
-      "DeletionPolicy": "Delete",
-      "Properties": Object {
-        "AuthRoleArn": Object {
-          "Ref": "AuthRoleArn",
-        },
-        "ServiceToken": Object {
-          "Fn::GetAtt": Array [
-            "RoleMapLambdaFunction",
-            "Arn",
-          ],
-        },
-        "UnauthRoleArn": Object {
-          "Ref": "UnauthRoleArn",
-        },
-        "appClientID": Object {
-          "Ref": "authmockResourceAppClientID",
-        },
-        "appClientIDWeb": Object {
-          "Ref": "authmockResourceAppClientIDWeb",
-        },
-        "env": Object {
-          "Ref": "env",
-        },
-        "identityPoolId": Object {
-          "Ref": "authmockResourceIdentityPoolId",
-        },
-        "region": Object {
-          "Ref": "AWS::Region",
-        },
-        "userPoolId": Object {
-          "Ref": "authmockResourceUserPoolId",
-        },
-      },
-      "Type": "Custom::LambdaCallout",
-      "UpdateReplacePolicy": "Delete",
-    },
-    "RoleMapLambdaFunction": Object {
+    "RoleMapFunction": Object {
       "Properties": Object {
         "Code": Object {
           "ZipFile": "const response = require('cfn-response');
@@ -529,6 +503,46 @@ exports.handler = (event, context) => {
         "Timeout": 300,
       },
       "Type": "AWS::Lambda::Function",
+    },
+    "RoleMapFunctionInput": Object {
+      "DeletionPolicy": "Delete",
+      "DependsOn": Array [
+        "RoleMapFunction",
+      ],
+      "Properties": Object {
+        "AuthRoleArn": Object {
+          "Ref": "AuthRoleArn",
+        },
+        "ServiceToken": Object {
+          "Fn::GetAtt": Array [
+            "RoleMapFunction",
+            "Arn",
+          ],
+        },
+        "UnauthRoleArn": Object {
+          "Ref": "UnauthRoleArn",
+        },
+        "appClientID": Object {
+          "Ref": "authmockResourceAppClientID",
+        },
+        "appClientIDWeb": Object {
+          "Ref": "authmockResourceAppClientIDWeb",
+        },
+        "env": Object {
+          "Ref": "env",
+        },
+        "identityPoolId": Object {
+          "Ref": "authmockResourceIdentityPoolId",
+        },
+        "region": Object {
+          "Ref": "AWS::Region",
+        },
+        "userPoolId": Object {
+          "Ref": "authmockResourceUserPoolId",
+        },
+      },
+      "Type": "Custom::LambdaCallout",
+      "UpdateReplacePolicy": "Delete",
     },
     "adinmockGroup": Object {
       "Properties": Object {
