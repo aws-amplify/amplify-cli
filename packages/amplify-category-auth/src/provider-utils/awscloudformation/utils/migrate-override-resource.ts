@@ -1,4 +1,4 @@
-import { $TSObject, JSONUtilities, NotInitializedError, pathManager } from 'amplify-cli-core';
+import { $TSObject, AmplifyCategories, JSONUtilities, NotInitializedError, pathManager } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import * as path from 'path';
 import uuid from 'uuid';
@@ -30,10 +30,10 @@ export const migrateResourceToSupportOverride = async (resourceName: string) => 
     // New project, hence not able to find the amplify dir
     throw new NotInitializedError();
   }
-  const authresourceDirPath = path.join(pathManager.getBackendDirPath(), 'auth', resourceName);
-  const userPoolGroupResourceDirPath = path.join(pathManager.getBackendDirPath(), 'auth', 'UserPoolGroups');
+  const authresourceDirPath = pathManager.getResourceDirectoryPath(undefined, AmplifyCategories.AUTH, resourceName);
+  const userPoolGroupResourceDirPath = pathManager.getResourceDirectoryPath(undefined, AmplifyCategories.AUTH, 'userPoolGroups');
   const backupAuthResourceFolder = backup(authresourceDirPath, projectPath, resourceName);
-  const backupUserPoolGroupResourceFolder = backup(userPoolGroupResourceDirPath, projectPath, 'UserPoolGroups');
+  const backupUserPoolGroupResourceFolder = backup(userPoolGroupResourceDirPath, projectPath, 'userPoolGroups');
 
   try {
     const parameters = JSONUtilities.readJson<$TSObject>(path.join(authresourceDirPath, 'parameters.json'), { throwIfNotExist: true });
