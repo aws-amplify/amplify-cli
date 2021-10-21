@@ -1,10 +1,12 @@
 import { S3AccessType, S3PermissionType, S3UserInputs, GroupAccessType } from '../service-walkthrough-types/s3-user-input-types';
-import { $TSObject, AmplifyCategories, AmplifySupportedService } from 'amplify-cli-core';
+import { $TSContext, $TSObject, AmplifyCategories, AmplifySupportedService } from 'amplify-cli-core';
 import { JSONUtilities, pathManager } from 'amplify-cli-core';
 import { CLIInputSchemaValidator } from 'amplify-cli-core';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import { buildShortUUID } from './s3-walkthrough';
+import { migrateAuthDependencyResource } from './s3-auth-api';
+import { printer } from "amplify-prompts";
 
 
 type ResourcRefType = {
@@ -186,7 +188,13 @@ export class S3InputState {
       }
   }
 
-  public migrate(){
+  public async migrate(context : $TSContext ){
+    try {
+      await migrateAuthDependencyResource(context);
+    } catch( error ) {
+      printer.error(`Migration for Auth resource failed with error : ${error as string}`)
+      throw error;
+    }
     const oldS3Params : MigrationParams = this.getOldS3ParamsForMigration();
     const cliInputs : S3UserInputs = this.genInputParametersForMigration( oldS3Params );
     this.saveCliInputPayload(cliInputs);
