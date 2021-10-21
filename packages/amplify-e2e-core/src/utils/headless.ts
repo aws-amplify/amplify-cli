@@ -16,8 +16,12 @@ export const addHeadlessApi = async (cwd: string, request: AddApiRequest): Promi
   return await executeHeadlessCommand(cwd, 'api', 'add', request);
 };
 
-export const updateHeadlessApi = async (cwd: string, request: UpdateApiRequest, allowDestructiveUpdates?: boolean): Promise<ExecaChildProcess<String>> => {
-  return await executeHeadlessCommand(cwd, 'api', 'update', request, allowDestructiveUpdates);
+export const updateHeadlessApi = async (
+  cwd: string,
+  request: UpdateApiRequest,
+  allowDestructiveUpdates?: boolean,
+): Promise<ExecaChildProcess<String>> => {
+  return await executeHeadlessCommand(cwd, 'api', 'update', request, undefined, allowDestructiveUpdates);
 };
 
 export const removeHeadlessApi = async (cwd: string, apiName: string): Promise<ExecaChildProcess<String>> => {
@@ -69,13 +73,14 @@ const executeHeadlessCommand = async (
   category: string,
   operation: string,
   request: AnyHeadlessRequest,
+  reject: boolean = true,
   allowDestructiveUpdates: boolean = false,
 ): Promise<ExecaChildProcess<String>> => {
   const args = [operation, category, '--headless'];
   if (allowDestructiveUpdates) {
     args.push('--allow-destructive-graphql-schema-updates');
   }
-  return await execa(getCLIPath(), args, { input: JSON.stringify(request), cwd });
+  return await execa(getCLIPath(), args, { input: JSON.stringify(request), cwd, reject });
 };
 
 type AnyHeadlessRequest =
