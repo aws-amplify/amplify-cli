@@ -60,6 +60,30 @@ const createEntries = async () => {
   await runQuery(getCreatePostsMutation('testuser', 'test title', 170, 30, 77.7, true));
   // Waiting for the ES Cluster + Streaming Lambda infra to be setup
   await cf.wait(120, () => Promise.resolve());
+  await waitForESPropagate();
+};
+
+const waitForESPropagate = async (initialWaitSeconds = 5, maxRetryCount = 5) => {
+  const expectedCount = 8;
+  let waitInMilliseconds = initialWaitSeconds * 1000;
+  let currentRetryCount = 0;
+  let searchResponse;
+
+  do {
+    await new Promise(r => setTimeout(r, waitInMilliseconds));
+    searchResponse = await GRAPHQL_CLIENT.query(
+      `query {
+        searchPosts {
+          items {
+            id
+          }
+        }
+      }`,
+      {},
+    );
+    currentRetryCount += 1;
+    waitInMilliseconds = waitInMilliseconds * 2;
+  } while (searchResponse.data.searchPosts?.items?.length < expectedCount && currentRetryCount <= maxRetryCount);
 };
 
 beforeAll(async () => {
@@ -85,6 +109,7 @@ beforeAll(async () => {
   const transformer = new GraphQLTransform({
     featureFlags,
     transformers: [new ModelTransformer(), new SearchableModelTransformer()],
+    sandboxModeEnabled: true,
   });
   try {
     await awsS3Client.createBucket({ Bucket: BUCKET_NAME }).promise();
@@ -134,7 +159,7 @@ test('query for aggregate scalar results', async () => {
       searchPosts(aggregates: [{
         name: "Minimum",
         type: min,
-        field: "ups"
+        field: ups
       }]) {
         aggregateItems {
           name
@@ -160,7 +185,7 @@ test('query for aggregate bucket results', async () => {
       searchPosts(aggregates: [{
         name: "Terms",
         type: terms,
-        field: "title"
+        field: title
       }]) {
         aggregateItems {
           name
@@ -189,7 +214,7 @@ test('query for multiple aggregates', async () => {
       searchPosts(aggregates: [{
         name: "Minimum",
         type: min,
-        field: "ups"
+        field: ups
       },
       {
         name: "Terms",

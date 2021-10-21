@@ -3,6 +3,81 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.31.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@1.31.0...amplify-cli-core@1.31.1) (2021-10-10)
+
+
+### Reverts
+
+* temporarily setup new apps with old pluralization ([#8401](https://github.com/aws-amplify/amplify-cli/issues/8401)) ([7bb57d0](https://github.com/aws-amplify/amplify-cli/commit/7bb57d093bd76adf358d5fb414ed0c5a614e6ce9))
+
+
+
+
+
+# [1.31.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@1.30.0...amplify-cli-core@1.31.0) (2021-10-06)
+
+
+### Features
+
+* Custom policies IAM Policies for Lambda and Containers ([#8068](https://github.com/aws-amplify/amplify-cli/issues/8068)) ([3e1ce0d](https://github.com/aws-amplify/amplify-cli/commit/3e1ce0de4d25ab239adcdcef778cc82f30b17a94))
+
+
+
+
+
+# [1.30.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@1.29.0...amplify-cli-core@1.30.0) (2021-09-27)
+
+
+### Bug Fixes
+
+* [#8223](https://github.com/aws-amplify/amplify-cli/issues/8223), conversion to typescript ([#8245](https://github.com/aws-amplify/amplify-cli/issues/8245)) ([096e6ca](https://github.com/aws-amplify/amplify-cli/commit/096e6ca19b94aa40ef249ea98d008380395afa16))
+* **amplify-cli-core:** add service mapping FFs ([#7024](https://github.com/aws-amplify/amplify-cli/issues/7024)) ([36fe24d](https://github.com/aws-amplify/amplify-cli/commit/36fe24db9f37a8a12d50f1e20ea44562eb44d04a))
+
+
+### Features
+
+* Flag to allow schema changes that require table replacement ([#8144](https://github.com/aws-amplify/amplify-cli/issues/8144)) ([2d4e65a](https://github.com/aws-amplify/amplify-cli/commit/2d4e65acfd034d33c6fa8ac1f5f8582e7e3bc399))
+
+
+### Reverts
+
+* Revert "feat: Flag to allow schema changes that require table replacement (#8144)" (#8268) ([422dd04](https://github.com/aws-amplify/amplify-cli/commit/422dd04425c72aa7276e086d38ce4d5f4681f9f3)), closes [#8144](https://github.com/aws-amplify/amplify-cli/issues/8144) [#8268](https://github.com/aws-amplify/amplify-cli/issues/8268)
+
+
+
+
+
+# [1.29.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@1.28.0...amplify-cli-core@1.29.0) (2021-09-18)
+
+
+### Features
+
+* **amplify-category-auth:** use usernameAttributes by default, FF for aliasAttributes ([#8188](https://github.com/aws-amplify/amplify-cli/issues/8188)) ([f3044ee](https://github.com/aws-amplify/amplify-cli/commit/f3044eeff21fa900da5aac613db87502526bc165))
+
+
+
+
+
+# [1.28.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@1.27.0...amplify-cli-core@1.28.0) (2021-09-14)
+
+
+
+# 5.6.0 (2021-09-14)
+
+
+### Features
+
+* version blocking for CLI ([#7834](https://github.com/aws-amplify/amplify-cli/issues/7834)) ([045ef3b](https://github.com/aws-amplify/amplify-cli/commit/045ef3b83598c287b7e34bb5d1487bbe026026af))
+
+
+### Reverts
+
+* Revert "feat: version blocking for CLI (#7834)" (#8170) ([f5a92e3](https://github.com/aws-amplify/amplify-cli/commit/f5a92e3fcd288ba8f5eb48db62ccf02f6bb7d03d)), closes [#7834](https://github.com/aws-amplify/amplify-cli/issues/7834) [#8170](https://github.com/aws-amplify/amplify-cli/issues/8170)
+
+
+
+
+
 # [1.27.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@1.26.2...amplify-cli-core@1.27.0) (2021-09-09)
 
 

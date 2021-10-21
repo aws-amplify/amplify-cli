@@ -108,11 +108,11 @@ export const getPostUpdateAuthMetaUpdater = (context: any) => async (resourceNam
 
 export function getFrontendConfig(authParameters: AuthParameters) {
   const verificationMechanisms = (authParameters?.autoVerifiedAttributes || []).map((att: string) => att.toUpperCase());
-  const loginMechanisms: Set<string> = new Set<string>();
+  const loginMechanisms = new Set<string>();
   (authParameters?.aliasAttributes ?? []).forEach(it => loginMechanisms.add(it.toUpperCase()));
 
   // backwards compatibility
-  if (authParameters?.usernameAttributes && authParameters?.usernameAttributes.length > 0) {
+  if (authParameters?.usernameAttributes && authParameters.usernameAttributes.length > 0) {
     authParameters.usernameAttributes[0].split(',').forEach(it => loginMechanisms.add(it.trim().toUpperCase()));
   }
 
@@ -126,7 +126,7 @@ export function getFrontendConfig(authParameters: AuthParameters) {
     });
   }
 
-  if (loginMechanisms.size == 0) {
+  if (loginMechanisms.size === 0) {
     loginMechanisms.add('PREFERRED_USERNAME');
   }
 

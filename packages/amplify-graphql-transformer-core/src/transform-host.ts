@@ -1,4 +1,4 @@
-import { TransformHostProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { DynamoDbDataSourceOptions, TransformHostProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { SearchableDataSourceOptions, MappingTemplateProvider } from '@aws-amplify/graphql-transformer-interfaces/lib/graphql-api-provider';
 import { Duration, Stack, Token } from '@aws-cdk/core';
 import { SearchableDataSource } from './cdk-compat/searchable-datasource';
@@ -26,6 +26,7 @@ export interface DefaultTransformHostOptions {
 
 export class DefaultTransformHost implements TransformHostProvider {
   private dataSources: Map<string, BaseDataSource> = new Map();
+  private resolvers: Map<string, CfnResolver> = new Map();
   private api: GraphQLApi;
 
   public constructor(options: DefaultTransformHostOptions) {
@@ -42,6 +43,16 @@ export class DefaultTransformHost implements TransformHostProvider {
   public getDataSource = (name: string): BaseDataSource | void => {
     if (this.hasDataSource(name)) {
       return this.dataSources.get(name);
+    }
+  };
+
+  public hasResolver = (typeName: string, fieldName: string) => {
+    return this.resolvers.has(`${typeName}:${fieldName}`);
+  };
+
+  public getResolver = (typeName: string, fieldName: string): CfnResolver | void => {
+    if (this.resolvers.has(`${typeName}:${fieldName}`)) {
+      return this.resolvers.get(`${typeName}:${fieldName}`);
     }
   };
 
@@ -69,7 +80,7 @@ export class DefaultTransformHost implements TransformHostProvider {
     return dataSource;
   }
 
-  public addDynamoDbDataSource(name: string, table: ITable, options?: DataSourceOptions, stack?: Stack): DynamoDbDataSource {
+  public addDynamoDbDataSource(name: string, table: ITable, options?: DynamoDbDataSourceOptions, stack?: Stack): DynamoDbDataSource {
     if (this.dataSources.has(name)) {
       throw new Error(`DataSource ${name} already exists in the API`);
     }
@@ -125,7 +136,7 @@ export class DefaultTransformHost implements TransformHostProvider {
     dataSourceName?: string,
     pipelineConfig?: string[],
     stack?: Stack,
-  ) {
+  ): CfnResolver {
     if (dataSourceName && !Token.isUnresolved(dataSourceName) && !this.dataSources.has(dataSourceName)) {
       throw new Error(`DataSource ${dataSourceName} is missing in the API`);
     }
@@ -168,6 +179,7 @@ export class DefaultTransformHost implements TransformHostProvider {
         },
       });
       this.api.addSchemaDependency(resolver);
+      this.resolvers.set(`${typeName}:${fieldName}`, resolver);
       return resolver;
     } else {
       throw new Error('Resolver needs either dataSourceName or pipelineConfig to be passed');
@@ -227,12 +239,13 @@ export class DefaultTransformHost implements TransformHostProvider {
    * @param options The optional configuration for this data source
    * @param stack  Stack to which this datasource needs to mapped to
    */
-  protected doAddDynamoDbDataSource(id: string, table: ITable, options?: DataSourceOptions, stack?: Stack): DynamoDbDataSource {
+  protected doAddDynamoDbDataSource(id: string, table: ITable, options?: DynamoDbDataSourceOptions, stack?: Stack): DynamoDbDataSource {
     return new DynamoDbDataSource(stack ?? this.api, id, {
       api: this.api,
       table,
       name: options?.name,
       description: options?.description,
+      serviceRole: options?.serviceRole,
     });
   }
 

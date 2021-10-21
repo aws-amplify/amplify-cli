@@ -3,6 +3,76 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.33.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@2.33.1...amplify-category-api@2.33.2) (2021-10-13)
+
+
+### Bug Fixes
+
+* api containers on repushing does not fail ([#8416](https://github.com/aws-amplify/amplify-cli/issues/8416)) ([eb64172](https://github.com/aws-amplify/amplify-cli/commit/eb641725febba88ebb7349c0e662d4ffc6cf7e97))
+
+
+
+
+
+## [2.33.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@2.33.0...amplify-category-api@2.33.1) (2021-10-10)
+
+
+### Bug Fixes
+
+* **amplify-category-api:** fixed api to reference stack name and deployment bucket ([#8145](https://github.com/aws-amplify/amplify-cli/issues/8145)) ([4c7493a](https://github.com/aws-amplify/amplify-cli/commit/4c7493ac34fa89cab0c80e5c674bbeb102891a64))
+
+
+
+
+
+# [2.33.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@2.32.0...amplify-category-api@2.33.0) (2021-10-06)
+
+
+### Features
+
+* Custom policies IAM Policies for Lambda and Containers ([#8068](https://github.com/aws-amplify/amplify-cli/issues/8068)) ([3e1ce0d](https://github.com/aws-amplify/amplify-cli/commit/3e1ce0de4d25ab239adcdcef778cc82f30b17a94))
+
+
+
+
+
+# [2.32.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@2.31.23...amplify-category-api@2.32.0) (2021-09-27)
+
+
+### Bug Fixes
+
+* [#8223](https://github.com/aws-amplify/amplify-cli/issues/8223), conversion to typescript ([#8245](https://github.com/aws-amplify/amplify-cli/issues/8245)) ([096e6ca](https://github.com/aws-amplify/amplify-cli/commit/096e6ca19b94aa40ef249ea98d008380395afa16))
+
+
+### Features
+
+* Flag to allow schema changes that require table replacement ([#8144](https://github.com/aws-amplify/amplify-cli/issues/8144)) ([2d4e65a](https://github.com/aws-amplify/amplify-cli/commit/2d4e65acfd034d33c6fa8ac1f5f8582e7e3bc399))
+
+
+### Reverts
+
+* Revert "feat: Flag to allow schema changes that require table replacement (#8144)" (#8268) ([422dd04](https://github.com/aws-amplify/amplify-cli/commit/422dd04425c72aa7276e086d38ce4d5f4681f9f3)), closes [#8144](https://github.com/aws-amplify/amplify-cli/issues/8144) [#8268](https://github.com/aws-amplify/amplify-cli/issues/8268)
+
+
+
+
+
+## [2.31.23](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@2.31.22...amplify-category-api@2.31.23) (2021-09-18)
+
+**Note:** Version bump only for package amplify-category-api
+
+
+
+
+
+## [2.31.22](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@2.31.21...amplify-category-api@2.31.22) (2021-09-14)
+
+**Note:** Version bump only for package amplify-category-api
+
+
+
+
+
 ## [2.31.21](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@2.31.20...amplify-category-api@2.31.21) (2021-09-09)
 
 **Note:** Version bump only for package amplify-category-api

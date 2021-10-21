@@ -15,4 +15,5 @@ module.exports = {
   FunctionCategoryName: 'function',
   // keep in sync with ServiceName in amplify-category-function, but probably it will not change
   FunctionServiceNameLambdaLayer: 'LambdaLayer',
+  destructiveUpdatesFlag: 'allow-destructive-graphql-schema-updates',
 };

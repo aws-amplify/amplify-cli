@@ -17,8 +17,12 @@ import {
   Expression,
   bool,
   methodCall,
+  isNullOrEmpty,
+  not,
 } from 'graphql-mapping-template';
 import { ResourceConstants } from 'graphql-transformer-common';
+
+const authFilter = ref('ctx.stash.authFilter');
 
 export function requestTemplate(primaryKey: string, nonKeywordFields: Expression[], includeVersion: boolean = false, type: string): string {
   return print(
@@ -53,7 +57,11 @@ export function requestTemplate(primaryKey: string, nonKeywordFields: Expression
               set(ref('sortField'), ref('util.toJson("${sortItem.field}.keyword")')),
             ),
           ),
-          set(ref('sortDirection'), ref('util.toJson({"order": $sortItem.direction})')),
+          ifElse(
+            ref('util.isNullOrEmpty($sortItem.direction)'),
+            set(ref('sortDirection'), ref('util.toJson({"order": "desc"})')),
+            set(ref('sortDirection'), ref('util.toJson({"order": $sortItem.direction})')),
+          ),
           qref('$sortValues.add("{$sortField: $sortDirection}")'),
         ]),
       ),
@@ -64,19 +72,38 @@ export function requestTemplate(primaryKey: string, nonKeywordFields: Expression
           qref('$aggregateValues.put("$aggItem.name", {"$aggItem.type": {"field": "${aggItem.field}.keyword"}})'),
         ),
       ]),
+      ifElse(
+        not(isNullOrEmpty(authFilter)),
+        compoundExpression([
+          set(ref('filter'), authFilter),
+          iff(
+            not(isNullOrEmpty(ref('ctx.args.filter'))),
+            set(
+              ref('filter'),
+              obj({
+                bool: obj({
+                  must: list([
+                    ref('ctx.stash.authFilter'),
+                    ref('util.parseJson($util.transform.toElasticsearchQueryDSL($ctx.args.filter))'),
+                  ]),
+                }),
+              }),
+            ),
+          ),
+        ]),
+        iff(
+          not(isNullOrEmpty(ref('ctx.args.filter'))),
+          set(ref('filter'), ref('util.parseJson($util.transform.toElasticsearchQueryDSL($ctx.args.filter))')),
+        ),
+      ),
+      iff(isNullOrEmpty(ref('filter')), set(ref('filter'), obj({ match_all: obj({}) }))),
       SearchableMappingTemplate.searchTemplate({
         path: str('$indexPath'),
         size: ifElse(ref('context.args.limit'), ref('context.args.limit'), int(ResourceConstants.DEFAULT_SEARCHABLE_PAGE_LIMIT), true),
         search_after: ref('util.base64Decode($context.args.nextToken)'),
         from: ref('context.args.from'),
         version: bool(includeVersion),
-        query: ifElse(
-          ref('context.args.filter'),
-          ref('util.transform.toElasticsearchQueryDSL($ctx.args.filter)'),
-          obj({
-            match_all: obj({}),
-          }),
-        ),
+        query: methodCall(ref('util.toJson'), ref('filter')),
         sort: ref('sortValues'),
         aggs: ref('util.toJson($aggregateValues)'),
       }),

@@ -30,6 +30,7 @@ import {
   saveMutableState,
   updateLayerArtifacts,
 } from './utils/storeResources';
+import { createDefaultCustomPoliciesFile } from 'amplify-cli-core';
 
 /**
  * Entry point for creating a new function
@@ -112,11 +113,15 @@ export async function addFunctionResource(
 
   await createFunctionResources(context, completeParams);
 
+  createDefaultCustomPoliciesFile(category, completeParams.resourceName);
+
   if (!completeParams.skipEdit) {
     await openEditor(context, category, completeParams.resourceName, completeParams.functionTemplate);
   }
 
   const { print } = context;
+
+  const customPoliciesPath = pathManager.getCustomPoliciesPath(category, completeParams.resourceName);
 
   print.success(`Successfully added resource ${completeParams.resourceName} locally.`);
   print.info('');
@@ -124,6 +129,7 @@ export async function addFunctionResource(
   print.info(`Check out sample function code generated in <project-dir>/amplify/backend/function/${completeParams.resourceName}/src`);
   print.info('"amplify function build" builds all of your functions currently in the project');
   print.info('"amplify mock function <functionName>" runs your function locally');
+  print.info(`To access AWS resources outside of this Amplify app, edit the ${customPoliciesPath}`);
   print.info('"amplify push" builds all of your local backend resources and provisions them in the cloud');
   print.info(
     '"amplify publish" builds all of your local backend and front-end resources (if you added hosting category) and provisions them in the cloud',

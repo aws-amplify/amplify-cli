@@ -3,6 +3,112 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.54.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.53.0...amplify-e2e-tests@2.54.0) (2021-10-13)
+
+
+### Bug Fixes
+
+* api containers on repushing does not fail ([#8416](https://github.com/aws-amplify/amplify-cli/issues/8416)) ([eb64172](https://github.com/aws-amplify/amplify-cli/commit/eb641725febba88ebb7349c0e662d4ffc6cf7e97))
+
+
+### Features
+
+* Geo category plugin - support for additional regions ([#8373](https://github.com/aws-amplify/amplify-cli/issues/8373)) ([3a0c29f](https://github.com/aws-amplify/amplify-cli/commit/3a0c29fc1cb07fb1f16ac9546148c564eee97989))
+
+
+
+
+
+# [2.53.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.52.0...amplify-e2e-tests@2.53.0) (2021-10-10)
+
+
+### Features
+
+* **amplify-provider-awscloudformation:** enable custom resolvers for v2 transformer ([#8332](https://github.com/aws-amplify/amplify-cli/issues/8332)) ([1c73042](https://github.com/aws-amplify/amplify-cli/commit/1c730423085b09b4ba681193f020c30bc2a5e3cc))
+* **amplify-provider-awscloudformation:** merge user config with transform generated resolvers ([#8262](https://github.com/aws-amplify/amplify-cli/issues/8262)) ([f25abbf](https://github.com/aws-amplify/amplify-cli/commit/f25abbf68f1e268f6e3dcb362685e7fe9ec760c8))
+
+
+### Reverts
+
+* Revert custom override resolvers (#8409) ([efbd048](https://github.com/aws-amplify/amplify-cli/commit/efbd04873815be2f0268d2ba072a022c8e699a52)), closes [#8409](https://github.com/aws-amplify/amplify-cli/issues/8409) [#8332](https://github.com/aws-amplify/amplify-cli/issues/8332) [#8262](https://github.com/aws-amplify/amplify-cli/issues/8262)
+
+
+
+
+
+# [2.52.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.51.1...amplify-e2e-tests@2.52.0) (2021-10-06)
+
+
+### Features
+
+* Custom policies IAM Policies for Lambda and Containers ([#8068](https://github.com/aws-amplify/amplify-cli/issues/8068)) ([3e1ce0d](https://github.com/aws-amplify/amplify-cli/commit/3e1ce0de4d25ab239adcdcef778cc82f30b17a94))
+
+
+
+
+
+## [2.51.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.51.0...amplify-e2e-tests@2.51.1) (2021-10-01)
+
+**Note:** Version bump only for package amplify-e2e-tests
+
+
+
+
+
+# [2.51.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.50.0...amplify-e2e-tests@2.51.0) (2021-09-27)
+
+
+### Features
+
+* Flag to allow schema changes that require table replacement ([#8144](https://github.com/aws-amplify/amplify-cli/issues/8144)) ([2d4e65a](https://github.com/aws-amplify/amplify-cli/commit/2d4e65acfd034d33c6fa8ac1f5f8582e7e3bc399))
+
+
+### Reverts
+
+* Revert "feat: Flag to allow schema changes that require table replacement (#8144)" (#8268) ([422dd04](https://github.com/aws-amplify/amplify-cli/commit/422dd04425c72aa7276e086d38ce4d5f4681f9f3)), closes [#8144](https://github.com/aws-amplify/amplify-cli/issues/8144) [#8268](https://github.com/aws-amplify/amplify-cli/issues/8268)
+
+
+
+
+
+# [2.50.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.49.0...amplify-e2e-tests@2.50.0) (2021-09-18)
+
+
+### Features
+
+* **amplify-category-auth:** use usernameAttributes by default, FF for aliasAttributes ([#8188](https://github.com/aws-amplify/amplify-cli/issues/8188)) ([f3044ee](https://github.com/aws-amplify/amplify-cli/commit/f3044eeff21fa900da5aac613db87502526bc165))
+
+
+
+
+
+# [2.49.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.48.0...amplify-e2e-tests@2.49.0) (2021-09-14)
+
+
+
+# 5.6.0 (2021-09-14)
+
+
+### Bug Fixes
+
+* remove overwrite of email-only verification when triggers are added ([#7671](https://github.com/aws-amplify/amplify-cli/issues/7671)) ([704295b](https://github.com/aws-amplify/amplify-cli/commit/704295b918701eb81fdaabb786417463672fa02c))
+
+
+### Features
+
+* **amplify-category-auth:** add auth verification mechanisms to frontend config ([#8037](https://github.com/aws-amplify/amplify-cli/issues/8037)) ([88494b3](https://github.com/aws-amplify/amplify-cli/commit/88494b3f12a9989273aa3ae3e68c629f4c4cdff9))
+* version blocking for CLI ([#7834](https://github.com/aws-amplify/amplify-cli/issues/7834)) ([045ef3b](https://github.com/aws-amplify/amplify-cli/commit/045ef3b83598c287b7e34bb5d1487bbe026026af))
+
+
+### Reverts
+
+* Revert "feat: version blocking for CLI (#7834)" (#8170) ([f5a92e3](https://github.com/aws-amplify/amplify-cli/commit/f5a92e3fcd288ba8f5eb48db62ccf02f6bb7d03d)), closes [#7834](https://github.com/aws-amplify/amplify-cli/issues/7834) [#8170](https://github.com/aws-amplify/amplify-cli/issues/8170)
+* Revert "test: fix version gating e2e test deletion (#8156)" (#8169) ([d43836f](https://github.com/aws-amplify/amplify-cli/commit/d43836fba872e741d0cbf621115f3849cd6cd6de)), closes [#8156](https://github.com/aws-amplify/amplify-cli/issues/8156) [#8169](https://github.com/aws-amplify/amplify-cli/issues/8169)
+
+
+
+
+
 # [2.48.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.47.1...amplify-e2e-tests@2.48.0) (2021-09-09)
 
 

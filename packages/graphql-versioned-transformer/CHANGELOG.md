@@ -3,6 +3,46 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.17.25](https://github.com/aws-amplify/amplify-cli/compare/graphql-versioned-transformer@4.17.24...graphql-versioned-transformer@4.17.25) (2021-10-10)
+
+**Note:** Version bump only for package graphql-versioned-transformer
+
+
+
+
+
+## [4.17.24](https://github.com/aws-amplify/amplify-cli/compare/graphql-versioned-transformer@4.17.23...graphql-versioned-transformer@4.17.24) (2021-10-06)
+
+**Note:** Version bump only for package graphql-versioned-transformer
+
+
+
+
+
+## [4.17.23](https://github.com/aws-amplify/amplify-cli/compare/graphql-versioned-transformer@4.17.22...graphql-versioned-transformer@4.17.23) (2021-09-27)
+
+**Note:** Version bump only for package graphql-versioned-transformer
+
+
+
+
+
+## [4.17.22](https://github.com/aws-amplify/amplify-cli/compare/graphql-versioned-transformer@4.17.21...graphql-versioned-transformer@4.17.22) (2021-09-18)
+
+**Note:** Version bump only for package graphql-versioned-transformer
+
+
+
+
+
+## [4.17.21](https://github.com/aws-amplify/amplify-cli/compare/graphql-versioned-transformer@4.17.20...graphql-versioned-transformer@4.17.21) (2021-09-14)
+
+**Note:** Version bump only for package graphql-versioned-transformer
+
+
+
+
+
 ## [4.17.20](https://github.com/aws-amplify/amplify-cli/compare/graphql-versioned-transformer@4.17.19...graphql-versioned-transformer@4.17.20) (2021-09-09)
 
 **Note:** Version bump only for package graphql-versioned-transformer

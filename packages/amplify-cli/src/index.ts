@@ -184,7 +184,7 @@ export async function run() {
 
     process.on('SIGINT', sigIntHandler.bind(context));
 
-    if ((await isMinimumVersionSatisfied((context as unknown) as $TSContext)) === false) {
+    if ((await isMinimumVersionSatisfied(context as unknown as $TSContext)) === false) {
       context.usageData.emitError(new Error('Version gating requirements were not passed.'));
 
       return 1;
@@ -199,7 +199,7 @@ export async function run() {
     context.usageData.emitInvoke();
 
     // For mobile hub migrated project validate project and command to be executed
-    if (!ensureMobileHubCommandCompatibility((context as unknown) as $TSContext)) {
+    if (!ensureMobileHubCommandCompatibility(context as unknown as $TSContext)) {
       // Double casting until we have properly typed context
       return 1;
     }

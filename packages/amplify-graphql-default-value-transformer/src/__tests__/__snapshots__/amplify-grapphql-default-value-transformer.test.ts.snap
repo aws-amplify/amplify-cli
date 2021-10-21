@@ -1,0 +1,235 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`DefaultValueModelTransformer:  should successfully transform simple valid schema 1`] = `
+"
+type Post {
+  id: ID!
+  stringValue: String
+  intVal: Int
+  floatValue: Float
+  booleanValue: Boolean
+  awsJsonValue: AWSJSON
+  awsDateValue: AWSDate
+  awsTimestampValue: AWSTimestamp
+  awsEmailValue: AWSEmail
+  awsURLValue: AWSURL
+  awsPhoneValue: AWSPhone
+  awsIPAddressValue1: AWSIPAddress
+  awsIPAddressValue2: AWSIPAddress
+  enumValue: Tag
+  awsTimeValue: AWSTime
+  awsDateTime: AWSDateTime
+  createdAt: AWSDateTime!
+  updatedAt: AWSDateTime!
+}
+
+enum Tag {
+  NEWS
+  RANDOM
+}
+
+input ModelStringInput {
+  ne: String
+  eq: String
+  le: String
+  lt: String
+  ge: String
+  gt: String
+  contains: String
+  notContains: String
+  between: [String]
+  beginsWith: String
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+  size: ModelSizeInput
+}
+
+input ModelIntInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+}
+
+input ModelFloatInput {
+  ne: Float
+  eq: Float
+  le: Float
+  lt: Float
+  ge: Float
+  gt: Float
+  between: [Float]
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+}
+
+input ModelBooleanInput {
+  ne: Boolean
+  eq: Boolean
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+}
+
+input ModelIDInput {
+  ne: ID
+  eq: ID
+  le: ID
+  lt: ID
+  ge: ID
+  gt: ID
+  contains: ID
+  notContains: ID
+  between: [ID]
+  beginsWith: ID
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+  size: ModelSizeInput
+}
+
+enum ModelAttributeTypes {
+  binary
+  binarySet
+  bool
+  list
+  map
+  number
+  numberSet
+  string
+  stringSet
+  _null
+}
+
+input ModelSizeInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+}
+
+enum ModelSortDirection {
+  ASC
+  DESC
+}
+
+type ModelPostConnection {
+  items: [Post]
+  nextToken: String
+}
+
+input ModelTagInput {
+  eq: Tag
+  ne: Tag
+}
+
+input ModelPostFilterInput {
+  id: ModelIDInput
+  stringValue: ModelStringInput
+  intVal: ModelIntInput
+  floatValue: ModelFloatInput
+  booleanValue: ModelBooleanInput
+  awsJsonValue: ModelStringInput
+  awsDateValue: ModelStringInput
+  awsTimestampValue: ModelIntInput
+  awsEmailValue: ModelStringInput
+  awsURLValue: ModelStringInput
+  awsPhoneValue: ModelStringInput
+  awsIPAddressValue1: ModelStringInput
+  awsIPAddressValue2: ModelStringInput
+  enumValue: ModelTagInput
+  awsTimeValue: ModelStringInput
+  awsDateTime: ModelStringInput
+  and: [ModelPostFilterInput]
+  or: [ModelPostFilterInput]
+  not: ModelPostFilterInput
+}
+
+type Query {
+  getPost(id: ID!): Post
+  listPosts(filter: ModelPostFilterInput, limit: Int, nextToken: String): ModelPostConnection
+}
+
+input ModelPostConditionInput {
+  stringValue: ModelStringInput
+  intVal: ModelIntInput
+  floatValue: ModelFloatInput
+  booleanValue: ModelBooleanInput
+  awsJsonValue: ModelStringInput
+  awsDateValue: ModelStringInput
+  awsTimestampValue: ModelIntInput
+  awsEmailValue: ModelStringInput
+  awsURLValue: ModelStringInput
+  awsPhoneValue: ModelStringInput
+  awsIPAddressValue1: ModelStringInput
+  awsIPAddressValue2: ModelStringInput
+  enumValue: ModelTagInput
+  awsTimeValue: ModelStringInput
+  awsDateTime: ModelStringInput
+  and: [ModelPostConditionInput]
+  or: [ModelPostConditionInput]
+  not: ModelPostConditionInput
+}
+
+input CreatePostInput {
+  id: ID
+  stringValue: String
+  intVal: Int
+  floatValue: Float
+  booleanValue: Boolean
+  awsJsonValue: AWSJSON
+  awsDateValue: AWSDate
+  awsTimestampValue: AWSTimestamp
+  awsEmailValue: AWSEmail
+  awsURLValue: AWSURL
+  awsPhoneValue: AWSPhone
+  awsIPAddressValue1: AWSIPAddress
+  awsIPAddressValue2: AWSIPAddress
+  enumValue: Tag
+  awsTimeValue: AWSTime
+  awsDateTime: AWSDateTime
+}
+
+input UpdatePostInput {
+  id: ID!
+  stringValue: String
+  intVal: Int
+  floatValue: Float
+  booleanValue: Boolean
+  awsJsonValue: AWSJSON
+  awsDateValue: AWSDate
+  awsTimestampValue: AWSTimestamp
+  awsEmailValue: AWSEmail
+  awsURLValue: AWSURL
+  awsPhoneValue: AWSPhone
+  awsIPAddressValue1: AWSIPAddress
+  awsIPAddressValue2: AWSIPAddress
+  enumValue: Tag
+  awsTimeValue: AWSTime
+  awsDateTime: AWSDateTime
+}
+
+input DeletePostInput {
+  id: ID!
+}
+
+type Mutation {
+  createPost(input: CreatePostInput!, condition: ModelPostConditionInput): Post
+  updatePost(input: UpdatePostInput!, condition: ModelPostConditionInput): Post
+  deletePost(input: DeletePostInput!, condition: ModelPostConditionInput): Post
+}
+
+type Subscription {
+  onCreatePost: Post @aws_subscribe(mutations: [\\"createPost\\"])
+  onUpdatePost: Post @aws_subscribe(mutations: [\\"updatePost\\"])
+  onDeletePost: Post @aws_subscribe(mutations: [\\"deletePost\\"])
+}
+
+"
+`;

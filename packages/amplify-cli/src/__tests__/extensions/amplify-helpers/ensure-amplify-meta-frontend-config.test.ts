@@ -1,4 +1,4 @@
-import { JSONUtilities, stateManager } from 'amplify-cli-core';
+import { stateManager } from 'amplify-cli-core';
 import { ensureAmplifyMetaFrontendConfig } from '../../../extensions/amplify-helpers/on-category-outputs-change';
 
 jest.mock('amplify-cli-core');
@@ -13,8 +13,7 @@ stateManager_mock.getResourceParametersJson.mockReturnValue({
   mfaTypes: ['SMS Text Message'],
 });
 
-const jsonUtilities_mock = JSONUtilities as jest.Mocked<typeof JSONUtilities>;
-jsonUtilities_mock.writeJson.mockImplementation(jest.fn());
+stateManager_mock.setMeta.mockImplementation(jest.fn());
 
 describe('ensureAmplifyMetaFrontendConfig', () => {
   const mockContext = {
@@ -26,8 +25,8 @@ describe('ensureAmplifyMetaFrontendConfig', () => {
   };
 
   it('should add front end config to amplify meta', () => {
-    ensureAmplifyMetaFrontendConfig(mockContext);
-    expect(jsonUtilities_mock.writeJson).lastCalledWith(expect.anything(), {
+    ensureAmplifyMetaFrontendConfig();
+    expect(stateManager_mock.setMeta).lastCalledWith(undefined, {
       auth: {
         authResource: {
           frontendAuthConfig: {

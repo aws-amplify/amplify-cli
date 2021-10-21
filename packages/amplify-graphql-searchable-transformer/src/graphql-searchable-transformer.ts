@@ -34,6 +34,7 @@ import {
   makeSearchableSortDirectionEnumObject,
   makeSearchableXFilterInputObject,
   makeSearchableXSortableFieldsEnumObject,
+  makeSearchableXAggregateFieldEnumObject,
   makeSearchableXSortInputObject,
   makeSearchableXAggregationInputObject,
   makeSearchableAggregateTypeEnumObject,
@@ -77,7 +78,7 @@ export class SearchableModelTransformer extends TransformerPluginBase {
       expression: Fn.conditionNot(Fn.conditionEquals(envParam, ResourceConstants.NONE)),
     });
 
-    const isProjectUsingDataStore = false;
+    const isProjectUsingDataStore = context.isProjectUsingDataStore();
 
     stack.templateOptions.description = 'An auto-generated nested stack for searchable.';
     stack.templateOptions.templateFormatVersion = '2010-09-09';
@@ -86,7 +87,7 @@ export class SearchableModelTransformer extends TransformerPluginBase {
 
     const domain = createSearchableDomain(stack, parameterMap, context.api.apiId);
 
-    const openSearchRole = createSearchableDomainRole(stack, parameterMap, context.api.apiId, envParam);
+    const openSearchRole = createSearchableDomainRole(context, stack, parameterMap);
 
     domain.grantReadWrite(openSearchRole);
 
@@ -99,7 +100,7 @@ export class SearchableModelTransformer extends TransformerPluginBase {
     );
 
     // streaming lambda role
-    const lambdaRole = createLambdaRole(stack, parameterMap);
+    const lambdaRole = createLambdaRole(context, stack, parameterMap);
     domain.grantWrite(lambdaRole);
 
     // creates streaming lambda
@@ -138,7 +139,7 @@ export class SearchableModelTransformer extends TransformerPluginBase {
         MappingTemplate.s3MappingTemplateFromString(responseTemplate(false), `${typeName}.${def.fieldName}.res.vtl`),
       );
       resolver.mapToStack(stack);
-      context.resolvers.addResolver(type, def.fieldName, resolver);
+      context.resolvers.addResolver(typeName, def.fieldName, resolver);
     }
 
     createStackOutputs(stack, domain.domainEndpoint, context.api.apiId, domain.domainArn);
@@ -339,15 +340,21 @@ export class SearchableModelTransformer extends TransformerPluginBase {
       ctx.output.addInput(searchableXSortableInputDirection);
     }
 
-    if (!ctx.output.hasType(`Searchable${definition.name.value}AggregationInput`)) {
-      const searchableXAggregationInputDirection = makeSearchableXAggregationInputObject(definition);
-      ctx.output.addInput(searchableXAggregationInputDirection);
-    }
-
     if (!ctx.output.hasType('SearchableAggregateType')) {
       const searchableAggregateTypeEnum = makeSearchableAggregateTypeEnumObject();
       ctx.output.addEnum(searchableAggregateTypeEnum);
     }
+
+    if (!ctx.output.hasType(`Searchable${definition.name.value}AggregateField`)) {
+      const searchableXAggregationField = makeSearchableXAggregateFieldEnumObject(definition);
+      ctx.output.addEnum(searchableXAggregationField);
+    }
+
+    if (!ctx.output.hasType(`Searchable${definition.name.value}AggregationInput`)) {
+      const searchableXAggregationInput = makeSearchableXAggregationInputObject(definition);
+      ctx.output.addInput(searchableXAggregationInput);
+    }
+
   }
 }
 

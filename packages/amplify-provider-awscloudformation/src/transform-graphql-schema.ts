@@ -13,10 +13,13 @@ import { FunctionTransformer } from 'graphql-function-transformer';
 import { HttpTransformer } from 'graphql-http-transformer';
 import { PredictionsTransformer } from 'graphql-predictions-transformer';
 import { KeyTransformer } from 'graphql-key-transformer';
-import { ProviderName as providerName } from './constants';
+import { destructiveUpdatesFlag, ProviderName as providerName } from './constants';
 import { AmplifyCLIFeatureFlagAdapter } from './utils/amplify-cli-feature-flag-adapter';
 import { isAmplifyAdminApp } from './utils/admin-helpers';
-import { JSONUtilities, stateManager } from 'amplify-cli-core';
+import { JSONUtilities, pathManager, stateManager } from 'amplify-cli-core';
+import { ResourceConstants } from 'graphql-transformer-common';
+import { printer } from 'amplify-prompts';
+import _ from 'lodash';
 
 import {
   collectDirectivesByTypeNames,
@@ -38,7 +41,10 @@ import {
 import { print } from 'graphql';
 import { hashDirectory } from './upload-appsync-files';
 import { exitOnNextTick, FeatureFlags } from 'amplify-cli-core';
-import { transformGraphQLSchema as transformGraphQLSchemaV6 } from './graphql-transformer/transform-graphql-schema';
+import {
+  transformGraphQLSchema as transformGraphQLSchemaV6,
+  getDirectiveDefinitions as getDirectiveDefinitionsV6,
+} from './graphql-transformer/transform-graphql-schema';
 
 const apiCategory = 'api';
 const storageCategory = 'storage';
@@ -47,6 +53,24 @@ const schemaFileName = 'schema.graphql';
 const schemaDirName = 'schema';
 const ROOT_APPSYNC_S3_KEY = 'amplify-appsync-files';
 const s3ServiceName = 'S3';
+
+export function searchablePushChecks(context, map, apiName): void {
+  const searchableModelTypes = Object.keys(map).filter(type => map[type].includes('searchable') && map[type].includes('model'));
+  if (searchableModelTypes.length) {
+    const currEnv = context.amplify.getEnvInfo().envName;
+    const teamProviderInfo = stateManager.getTeamProviderInfo();
+    const instanceType = _.get(
+      teamProviderInfo,
+      [currEnv, 'categories', 'api', apiName, ResourceConstants.PARAMETERS.ElasticsearchInstanceType],
+      't2.small.elasticsearch',
+    );
+    if (instanceType === 't2.small.elasticsearch' || instanceType === 't3.small.elasticsearch') {
+      printer.warn(
+        `Your instance type for OpenSearch is ${instanceType}, you may experience performance issues or data loss. Consider reconfiguring with the instructions here https://docs.amplify.aws/cli/graphql-transformer/searchable/`,
+      );
+    }
+  }
+}
 
 function warnOnAuth(context, map) {
   const unAuthModelTypes = Object.keys(map).filter(type => !map[type].includes('auth') && map[type].includes('model'));
@@ -75,9 +99,8 @@ function getTransformerFactory(context, resourceDir, authConfig?) {
     }
 
     const customTransformersConfig: TransformConfig = await readTransformerConfiguration(resourceDir);
-    const customTransformers = (customTransformersConfig && customTransformersConfig.transformers
-      ? customTransformersConfig.transformers
-      : []
+    const customTransformers = (
+      customTransformersConfig && customTransformersConfig.transformers ? customTransformersConfig.transformers : []
     )
       .map(transformer => {
         const fileUrlMatch = /^file:\/\/(.*)\s*$/m.exec(transformer);
@@ -150,7 +173,7 @@ function getTransformerFactory(context, resourceDir, authConfig?) {
       const res = await isAmplifyAdminApp(appId);
       amplifyAdminEnabled = res.isAdminApp;
     } catch (err) {
-      console.info('App not deployed yet.');
+      // if it is not an AmplifyAdmin app, do nothing
     }
 
     transformerList.push(new ModelAuthTransformer({ authConfig, addAwsIamAuthInOutputSchema: amplifyAdminEnabled }));
@@ -291,8 +314,8 @@ async function migrateProject(context, options) {
 }
 
 export async function transformGraphQLSchema(context, options) {
-  const useExperimentalPipelineTransformer = FeatureFlags.getBoolean('graphQLTransformer.useExperimentalPipelinedTransformer');
-  if (useExperimentalPipelineTransformer) {
+  const transformerVersion = getTransformerVersion(context);
+  if (transformerVersion === 2) {
     return transformGraphQLSchemaV6(context, options);
   }
   const backEndDir = context.amplify.pathManager.getBackendDirPath();
@@ -361,7 +384,7 @@ export async function transformGraphQLSchema(context, options) {
 
   if (!parameters && fs.existsSync(parametersFilePath)) {
     try {
-      parameters = context.amplify.readJsonFile(parametersFilePath);
+      parameters = JSONUtilities.readJson(parametersFilePath);
     } catch (e) {
       parameters = {};
     }
@@ -462,6 +485,7 @@ export async function transformGraphQLSchema(context, options) {
   // Check for common errors
   const directiveMap = collectDirectivesByTypeNames(project.schema);
   warnOnAuth(context, directiveMap.types);
+  searchablePushChecks(context, directiveMap.types, parameters[ResourceConstants.PARAMETERS.AppSyncApiName]);
 
   await transformerVersionCheck(context, resourceDir, previouslyDeployedBackendDir, resourcesToBeUpdated, directiveMap.directives);
 
@@ -474,7 +498,8 @@ export async function transformGraphQLSchema(context, options) {
   }
 
   const ff = new AmplifyCLIFeatureFlagAdapter();
-  const sanityCheckRulesList = getSanityCheckRules(isNewAppSyncAPI, ff);
+  const allowDestructiveUpdates = context?.input?.options?.[destructiveUpdatesFlag] || context?.input?.options?.force;
+  const sanityCheckRulesList = getSanityCheckRules(isNewAppSyncAPI, ff, allowDestructiveUpdates);
 
   const buildConfig = {
     ...options,
@@ -488,8 +513,10 @@ export async function transformGraphQLSchema(context, options) {
     featureFlags: ff,
     sanityCheckRules: sanityCheckRulesList,
   };
+
   const transformerOutput = await buildAPIProject(buildConfig);
-  context.print.success(`\nGraphQL schema compiled successfully.\n\nEdit your schema at ${schemaFilePath} or \
+
+  context.print.success(`GraphQL schema compiled successfully.\n\nEdit your schema at ${schemaFilePath} or \
 place .graphql files in a directory at ${schemaDirPath}`);
 
   if (!options.dryRun) {
@@ -497,6 +524,17 @@ place .graphql files in a directory at ${schemaDirPath}`);
   }
 
   return transformerOutput;
+}
+
+async function addGraphQLAuthRequirement(context, authType) {
+  return await context.amplify.invokePluginMethod(context, 'api', undefined, 'addGraphQLAuthorizationMode', [
+    context,
+    {
+      authType: authType,
+      printLeadText: true,
+      authSettings: undefined,
+    },
+  ]);
 }
 
 function getProjectBucket(context) {
@@ -535,6 +573,11 @@ async function getPreviousDeploymentRootKey(previouslyDeployedBackendDir) {
 // }
 
 export async function getDirectiveDefinitions(context, resourceDir) {
+  const transformerVersion = getTransformerVersion(context);
+  if (transformerVersion === 2) {
+    return getDirectiveDefinitionsV6(context, resourceDir);
+  }
+
   const transformList = await getTransformerFactory(context, resourceDir)(true);
   const appSynDirectives = getAppSyncServiceExtraDirectives();
   const transformDirectives = transformList
@@ -578,4 +621,36 @@ function getBucketName(context, s3ResourceName, backEndDir) {
     ? `${bucketParameters.bucketName}\${hash}-\${env}`
     : `${bucketParameters.bucketName}${s3ResourceName}-\${env}`;
   return { bucketName };
+}
+
+export function getTransformerVersion(context) {
+  migrateToTransformerVersionFeatureFlag(context);
+
+  const transformerVersion = FeatureFlags.getNumber('graphQLTransformer.transformerVersion');
+  if (transformerVersion !== 1 && transformerVersion !== 2) {
+    throw new Error(`Invalid value specified for transformerVersion: '${transformerVersion}'`);
+  }
+
+  return transformerVersion;
+}
+
+function migrateToTransformerVersionFeatureFlag(context) {
+  const projectPath = pathManager.findProjectRoot() ?? process.cwd();
+
+  let config = stateManager.getCLIJSON(projectPath, undefined, {
+    throwIfNotExist: false,
+    preserveComments: true,
+  });
+
+  const useExperimentalPipelineTransformer = FeatureFlags.getBoolean('graphQLTransformer.useExperimentalPipelinedTransformer');
+  const transformerVersion = FeatureFlags.getNumber('graphQLTransformer.transformerVersion');
+
+  if (useExperimentalPipelineTransformer && transformerVersion === 1) {
+    config.features.graphqltransformer.transformerversion = 2;
+    stateManager.setCLIJSON(projectPath, config);
+
+    context.print.warning(
+      `\nThe project is configured with 'transformerVersion': ${transformerVersion}, but 'useExperimentalPipelinedTransformer': ${useExperimentalPipelineTransformer}. Setting the 'transformerVersion': ${config.features.graphqltransformer.transformerversion}. 'useExperimentalPipelinedTransformer' is deprecated.`,
+    );
+  }
 }

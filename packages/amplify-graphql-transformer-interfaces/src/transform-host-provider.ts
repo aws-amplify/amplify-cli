@@ -18,11 +18,18 @@ import {
 } from './graphql-api-provider';
 import { IRole } from '@aws-cdk/aws-iam';
 
+export interface DynamoDbDataSourceOptions extends DataSourceOptions {
+  /**
+   * ServiceRole for the Amazon DynamoDb
+   */
+  readonly serviceRole: IRole;
+}
+
 export interface TransformHostProvider {
   setAPI(api: GraphqlApiBase): void;
 
   addHttpDataSource(name: string, endpoint: string, options?: DataSourceOptions, stack?: Stack): HttpDataSource;
-  addDynamoDbDataSource(name: string, table: ITable, options?: DataSourceOptions, stack?: Stack): DynamoDbDataSource;
+  addDynamoDbDataSource(name: string, table: ITable, options?: DynamoDbDataSourceOptions, stack?: Stack): DynamoDbDataSource;
   addNoneDataSource(name: string, options?: DataSourceOptions, stack?: Stack): NoneDataSource;
   addLambdaDataSource(name: string, lambdaFunction: IFunction, options?: DataSourceOptions, stack?: Stack): LambdaDataSource;
   addSearchableDataSource(
@@ -66,4 +73,7 @@ export interface TransformHostProvider {
 
   getDataSource: (name: string) => BaseDataSource | void;
   hasDataSource: (name: string) => boolean;
+
+  getResolver: (typeName: string, fieldName: string) => CfnResolver | void;
+  hasResolver: (typeName: string, fieldName: string) => boolean;
 }

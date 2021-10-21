@@ -14,6 +14,7 @@ import {
   AmplifyBackend,
   IAM,
   SSM,
+  Location,
 } from 'aws-sdk';
 import * as path from 'path';
 import _ from 'lodash';
@@ -200,6 +201,16 @@ export const deleteTable = async (tableName: string, region: string) => {
   return await service.deleteTable({ TableName: tableName }).promise();
 };
 
+export const putItemInTable = async (tableName: string, region: string, item: unknown) => {
+  const ddb = new DynamoDB.DocumentClient({ region });
+  return await ddb.put({ TableName: tableName, Item: item }).promise();
+};
+
+export const scanTable = async (tableName: string, region: string) => {
+  const ddb = new DynamoDB.DocumentClient({ region });
+  return await ddb.scan({ TableName: tableName }).promise();
+};
+
 export const getAppSyncApi = async (appSyncApiId: string, region: string) => {
   const service = new AppSync({ region });
   return await service.getGraphqlApi({ apiId: appSyncApiId }).promise();
@@ -339,3 +350,17 @@ export const getSSMParameters = async (region: string, appId: string, envName: s
     })
     .promise();
 };
+//Amazon location service calls
+export const getMap = async (mapName: string, region: string) => {
+  const service = new Location({region});
+  return await service.describeMap({
+    MapName: mapName
+  }).promise()
+}
+
+export const getPlaceIndex = async (placeIndexName: string, region: string) => {
+  const service = new Location({region});
+  return await service.describePlaceIndex({
+    IndexName: placeIndexName
+  }).promise()
+}

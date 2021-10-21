@@ -50,9 +50,10 @@ describe('version gating', () => {
       cliPath = resolveRealCLIPath();
       packageJsonPath = path.resolve(cliPath, '..', '..', '..', 'amplify-cli', 'package.json');
       originalPackageJsonContent = fs.readFileSync(packageJsonPath, 'utf8').toString();
-      packageJson = JSONUtilities.parse<{ version: string; 'amplify-cli': { configuration: { minimumCompatibleCLIVersion: string } } }>(
-        originalPackageJsonContent,
-      );
+      packageJson =
+        JSONUtilities.parse<{ version: string; 'amplify-cli': { configuration: { minimumCompatibleCLIVersion: string } } }>(
+          originalPackageJsonContent,
+        );
     }
   });
 

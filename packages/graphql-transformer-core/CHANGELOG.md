@@ -3,6 +3,54 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.30.2](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-core@6.30.1...graphql-transformer-core@6.30.2) (2021-10-10)
+
+**Note:** Version bump only for package graphql-transformer-core
+
+
+
+
+
+## [6.30.1](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-core@6.30.0...graphql-transformer-core@6.30.1) (2021-10-06)
+
+**Note:** Version bump only for package graphql-transformer-core
+
+
+
+
+
+# [6.30.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-core@6.29.7...graphql-transformer-core@6.30.0) (2021-09-27)
+
+
+### Features
+
+* Flag to allow schema changes that require table replacement ([#8144](https://github.com/aws-amplify/amplify-cli/issues/8144)) ([2d4e65a](https://github.com/aws-amplify/amplify-cli/commit/2d4e65acfd034d33c6fa8ac1f5f8582e7e3bc399))
+
+
+### Reverts
+
+* Revert "feat: Flag to allow schema changes that require table replacement (#8144)" (#8268) ([422dd04](https://github.com/aws-amplify/amplify-cli/commit/422dd04425c72aa7276e086d38ce4d5f4681f9f3)), closes [#8144](https://github.com/aws-amplify/amplify-cli/issues/8144) [#8268](https://github.com/aws-amplify/amplify-cli/issues/8268)
+
+
+
+
+
+## [6.29.7](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-core@6.29.6...graphql-transformer-core@6.29.7) (2021-09-18)
+
+**Note:** Version bump only for package graphql-transformer-core
+
+
+
+
+
+## [6.29.6](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-core@6.29.5...graphql-transformer-core@6.29.6) (2021-09-14)
+
+**Note:** Version bump only for package graphql-transformer-core
+
+
+
+
+
 ## [6.29.5](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-core@6.29.4...graphql-transformer-core@6.29.5) (2021-09-09)
 
 **Note:** Version bump only for package graphql-transformer-core

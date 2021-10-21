@@ -12,7 +12,7 @@ import _ from 'lodash';
 import * as path from 'path';
 import uuid from 'uuid';
 import { category } from '../../category-constants';
-import { ApiArtifactHandler } from '../api-artifact-handler';
+import { ApiArtifactHandler, ApiArtifactHandlerOptions } from '../api-artifact-handler';
 import { cfnParametersFilename, gqlSchemaFilename, provider, rootAssetDir } from './aws-constants';
 import { authConfigHasApiKey, checkIfAuthExists, getAppSyncAuthConfig, getAppSyncResourceName } from './utils/amplify-meta-utils';
 import { appSyncAuthTypeToAuthConfig } from './utils/auth-config-to-app-sync-auth-type-bi-di-mapper';
@@ -96,7 +96,7 @@ class CfnApiArtifactHandler implements ApiArtifactHandler {
 
   // TODO once the AddApiRequest contains multiple services this class should depend on an ApiArtifactHandler
   // for each service and delegate to the correct one
-  updateArtifacts = async (request: UpdateApiRequest): Promise<void> => {
+  updateArtifacts = async (request: UpdateApiRequest, opts?: ApiArtifactHandlerOptions): Promise<void> => {
     const updates = request.serviceModification;
     const apiName = getAppSyncResourceName(this.context.amplify.getProjectMeta());
     if (!apiName) {
@@ -118,11 +118,14 @@ class CfnApiArtifactHandler implements ApiArtifactHandler {
     if (updates.additionalAuthTypes) {
       authConfig.additionalAuthenticationProviders = updates.additionalAuthTypes.map(appSyncAuthTypeToAuthConfig);
     }
-    await this.context.amplify.executeProviderUtils(this.context, 'awscloudformation', 'compileSchema', {
-      resourceDir,
-      parameters: this.getCfnParameters(apiName, authConfig, resourceDir),
-      authConfig,
-    });
+
+    if (!opts?.skipCompile) {
+      await this.context.amplify.executeProviderUtils(this.context, 'awscloudformation', 'compileSchema', {
+        resourceDir,
+        parameters: this.getCfnParameters(apiName, authConfig, resourceDir),
+        authConfig,
+      });
+    }
 
     this.context.amplify.updateamplifyMetaAfterResourceUpdate(category, apiName, 'output', { authConfig });
     this.context.amplify.updateBackendConfigAfterResourceUpdate(category, apiName, 'output', { authConfig });

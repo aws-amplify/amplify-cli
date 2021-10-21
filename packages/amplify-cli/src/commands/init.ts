@@ -8,6 +8,7 @@ import { scaffoldProjectHeadless } from '../init-steps/s8-scaffoldHeadless';
 import { onFailure } from '../init-steps/s9-onFailure';
 import { onHeadlessSuccess, onSuccess } from '../init-steps/s9-onSuccess';
 import { constructInputParams } from '../amplify-service-helper';
+import { raisePostEnvAddEvent } from '../execution-manager';
 
 function constructExeInfo(context: $TSContext) {
   context.exeInfo = {
@@ -27,6 +28,9 @@ export const run = async (context: $TSContext) => {
   try {
     for (const step of steps) {
       await step(context);
+    }
+    if (context.exeInfo.sourceEnvName && context.exeInfo.localEnvInfo.envName) {
+      await raisePostEnvAddEvent(context as any, context.exeInfo.sourceEnvName, context.exeInfo.localEnvInfo.envName);
     }
   } catch (e) {
     context.usageData.emitError(e);

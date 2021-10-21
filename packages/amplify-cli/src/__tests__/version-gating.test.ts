@@ -111,7 +111,7 @@ describe('version gating', () => {
     minimumCompatibleCLIVersion: '5.3.0',
   };
 
-  const context_stub = ({
+  const context_stub = {
     print: {
       info: jest.fn(),
       warning: jest.fn(),
@@ -125,7 +125,7 @@ describe('version gating', () => {
     amplify: {
       invokePluginMethod: jest.fn().mockReturnValue(cloudFormationClient_stub),
     },
-  } as unknown) as jest.Mocked<$TSContext>;
+  } as unknown as jest.Mocked<$TSContext>;
 
   beforeEach(() => {
     jest.clearAllMocks();

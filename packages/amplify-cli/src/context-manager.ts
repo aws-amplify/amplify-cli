@@ -39,7 +39,7 @@ const getProjectSettings = (): ProjectSettings => {
     const projectConfig = stateManager.getProjectConfig();
     const frontend = projectConfig.frontend;
     projectSettings.frontend = frontend;
-    projectSettings.framework = projectConfig?.frontend?.framework;
+    projectSettings.framework = projectConfig?.[frontend]?.framework;
   }
 
   if (stateManager.localEnvInfoExists()) {

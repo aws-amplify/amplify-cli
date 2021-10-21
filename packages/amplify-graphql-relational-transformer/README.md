@@ -31,3 +31,13 @@ The `@belongsTo` directive allows you to define "belongs to" relationships betwe
 ```graphql
 directive @belongsTo(fields: [String!]) on FIELD_DEFINITION
 ```
+
+### @manyToMany
+
+The `@manyToMany` directive allows you to define "many to many" relationships between data.
+
+#### Definition
+
+```graphql
+directive @manyToMany(relationName: String!, limit: Int = 100) on FIELD_DEFINITION
+```
