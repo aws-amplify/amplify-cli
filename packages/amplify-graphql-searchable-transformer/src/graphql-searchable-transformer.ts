@@ -127,12 +127,13 @@ export class SearchableModelTransformer extends TransformerPluginBase {
 
       const { attributeName } = (table as any).keySchema.find((att: any) => att.keyType === 'HASH');
       assert(typeName);
+      const openSearchIndexName = context.resourceHelper.getTableBaseName(def.node.name.value);
       const resolver = context.resolvers.generateQueryResolver(
         typeName,
         def.fieldName,
         datasource as DataSourceProvider,
         MappingTemplate.s3MappingTemplateFromString(
-          requestTemplate(attributeName, getNonKeywordFields(def.node), false, type),
+          requestTemplate(attributeName, getNonKeywordFields(def.node), false, openSearchIndexName),
           `${typeName}.${def.fieldName}.req.vtl`,
         ),
         MappingTemplate.s3MappingTemplateFromString(responseTemplate(false), `${typeName}.${def.fieldName}.res.vtl`),

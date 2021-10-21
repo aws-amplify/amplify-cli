@@ -24,10 +24,15 @@ import { ResourceConstants } from 'graphql-transformer-common';
 
 const authFilter = ref('ctx.stash.authFilter');
 
-export function requestTemplate(primaryKey: string, nonKeywordFields: Expression[], includeVersion: boolean = false, type: string): string {
+export function requestTemplate(
+  primaryKey: string,
+  nonKeywordFields: Expression[],
+  includeVersion: boolean = false,
+  indexName: string,
+): string {
   return print(
     compoundExpression([
-      set(ref('indexPath'), str(`/${type.toLowerCase()}/doc/_search`)),
+      set(ref('indexPath'), str(`/${indexName.toLowerCase()}/doc/_search`)),
       set(ref('nonKeywordFields'), list(nonKeywordFields)),
       set(ref('sortValues'), list([])),
       set(ref('aggregateValues'), obj({})),

@@ -146,7 +146,8 @@ export const hasRelationalDirective = (field: FieldDefinitionNode): boolean => {
 export const getTable = (ctx: TransformerContextProvider, def: ObjectTypeDefinitionNode): any => {
   try {
     const dbSource = ctx.dataSources.get(def) as DynamoDbDataSource;
-    const tableName = ModelResourceIDs.ModelTableResourceID(def.name.value);
+    const tableBaseName = ctx.resourceHelper.getTableBaseName(def.name.value);
+    const tableName = ModelResourceIDs.ModelTableResourceID(tableBaseName);
     return dbSource.ds.stack.node.findChild(tableName) as any;
   } catch (err) {
     throw new TransformerContractError(`Could not load primary fields of @model: ${def.name.value}`);
