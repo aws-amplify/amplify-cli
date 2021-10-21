@@ -6361,7 +6361,7 @@ jobs:
       AMPLIFY_DIR: /home/circleci/repo/packages/amplify-cli/bin
       AMPLIFY_PATH: /home/circleci/repo/packages/amplify-cli/bin/amplify
       TEST_SUITE: src/__tests__/api_5.test.ts
-      CLI_REGION: ap-southeast-1
+      CLI_REGION: ap-southeast-2
   api_6-amplify_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -6413,7 +6413,7 @@ jobs:
       AMPLIFY_DIR: /home/circleci/repo/packages/amplify-cli/bin
       AMPLIFY_PATH: /home/circleci/repo/packages/amplify-cli/bin/amplify
       TEST_SUITE: src/__tests__/api_6.test.ts
-      CLI_REGION: ap-southeast-2
+      CLI_REGION: us-east-2
   schema-iterative-update-4-amplify_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -6465,7 +6465,7 @@ jobs:
       AMPLIFY_DIR: /home/circleci/repo/packages/amplify-cli/bin
       AMPLIFY_PATH: /home/circleci/repo/packages/amplify-cli/bin/amplify
       TEST_SUITE: src/__tests__/schema-iterative-update-4.test.ts
-      CLI_REGION: us-east-2
+      CLI_REGION: us-west-2
   api_4-amplify_e2e_tests_pkg:
     parameters:
       os:
@@ -10149,7 +10149,7 @@ jobs:
           path: packages/amplify-e2e-tests/amplify-e2e-reports
     environment:
       TEST_SUITE: src/__tests__/api_5.test.ts
-      CLI_REGION: ap-southeast-1
+      CLI_REGION: ap-southeast-2
   api_6-amplify_e2e_tests_pkg:
     parameters:
       os:
@@ -10184,7 +10184,7 @@ jobs:
           path: packages/amplify-e2e-tests/amplify-e2e-reports
     environment:
       TEST_SUITE: src/__tests__/api_6.test.ts
-      CLI_REGION: ap-southeast-2
+      CLI_REGION: us-east-2
   schema-iterative-update-4-amplify_e2e_tests_pkg:
     parameters:
       os:
@@ -10219,7 +10219,7 @@ jobs:
           path: packages/amplify-e2e-tests/amplify-e2e-reports
     environment:
       TEST_SUITE: src/__tests__/schema-iterative-update-4.test.ts
-      CLI_REGION: us-east-2
+      CLI_REGION: us-west-2
   AuthV2Transformer-e2e-graphql_e2e_tests:
     working_directory: ~/repo
     parameters:
@@ -12369,7 +12369,7 @@ workflows:
             - schema-iterative-rollback-1-amplify_e2e_tests
             - migration-api-key-migration3-amplify_e2e_tests
             - schema-auth-6-amplify_e2e_tests
-            - schema-iterative-update-4-amplify_e2e_tests
+            - api_6-amplify_e2e_tests
             - auth_6-amplify_e2e_tests
             - frontend_config_drift-amplify_e2e_tests
             - iam-permissions-boundary-amplify_e2e_tests
@@ -12386,12 +12386,12 @@ workflows:
             - function_1-amplify_e2e_tests
             - schema-iterative-update-3-amplify_e2e_tests
             - schema-iterative-update-4-amplify_e2e_tests
-            - auth_6-amplify_e2e_tests
-            - frontend_config_drift-amplify_e2e_tests
-            - iam-permissions-boundary-amplify_e2e_tests
-            - layer-3-amplify_e2e_tests
-            - resolvers-amplify_e2e_tests
-            - storage-1-amplify_e2e_tests
+            - auth_7-amplify_e2e_tests
+            - function_5-amplify_e2e_tests
+            - import_auth_3-amplify_e2e_tests
+            - layer-4-amplify_e2e_tests
+            - s3-sse-amplify_e2e_tests
+            - storage-2-amplify_e2e_tests
             - amplify-configure-amplify_e2e_tests
             - schema-predictions-amplify_e2e_tests
             - predictions-amplify_e2e_tests
@@ -12461,21 +12461,6 @@ workflows:
             - migration-api-key-migration2-amplify_e2e_tests
             - schema-connection-amplify_e2e_tests
             - api_5-amplify_e2e_tests
-            - custom_policies_container-amplify_e2e_tests
-            - function_9-amplify_e2e_tests
-            - layer-1-amplify_e2e_tests
-            - migration-node-function-amplify_e2e_tests
-            - schema-function-2-amplify_e2e_tests
-            - init-special-case-amplify_e2e_tests
-            - schema-data-access-patterns-amplify_e2e_tests
-            - schema-iterative-update-2-amplify_e2e_tests
-            - schema-auth-10-amplify_e2e_tests
-            - delete-amplify_e2e_tests
-            - schema-searchable-amplify_e2e_tests
-            - schema-iterative-rollback-1-amplify_e2e_tests
-            - migration-api-key-migration3-amplify_e2e_tests
-            - schema-auth-6-amplify_e2e_tests
-            - api_6-amplify_e2e_tests
             - api_4-amplify_e2e_tests_pkg
             - custom_policies_function-amplify_e2e_tests_pkg
             - hooks-amplify_e2e_tests_pkg
@@ -12491,7 +12476,7 @@ workflows:
             - schema-iterative-rollback-1-amplify_e2e_tests_pkg
             - migration-api-key-migration3-amplify_e2e_tests_pkg
             - schema-auth-6-amplify_e2e_tests_pkg
-            - schema-iterative-update-4-amplify_e2e_tests_pkg
+            - api_6-amplify_e2e_tests_pkg
             - auth_6-amplify_e2e_tests_pkg
             - frontend_config_drift-amplify_e2e_tests_pkg
             - iam-permissions-boundary-amplify_e2e_tests_pkg
@@ -12508,12 +12493,12 @@ workflows:
             - function_1-amplify_e2e_tests_pkg
             - schema-iterative-update-3-amplify_e2e_tests_pkg
             - schema-iterative-update-4-amplify_e2e_tests_pkg
-            - auth_6-amplify_e2e_tests_pkg
-            - frontend_config_drift-amplify_e2e_tests_pkg
-            - iam-permissions-boundary-amplify_e2e_tests_pkg
-            - layer-3-amplify_e2e_tests_pkg
-            - resolvers-amplify_e2e_tests_pkg
-            - storage-1-amplify_e2e_tests_pkg
+            - auth_7-amplify_e2e_tests_pkg
+            - function_5-amplify_e2e_tests_pkg
+            - import_auth_3-amplify_e2e_tests_pkg
+            - layer-4-amplify_e2e_tests_pkg
+            - s3-sse-amplify_e2e_tests_pkg
+            - storage-2-amplify_e2e_tests_pkg
             - amplify-configure-amplify_e2e_tests_pkg
             - schema-predictions-amplify_e2e_tests_pkg
             - predictions-amplify_e2e_tests_pkg
@@ -12583,21 +12568,6 @@ workflows:
             - migration-api-key-migration2-amplify_e2e_tests_pkg
             - schema-connection-amplify_e2e_tests_pkg
             - api_5-amplify_e2e_tests_pkg
-            - custom_policies_container-amplify_e2e_tests_pkg
-            - function_9-amplify_e2e_tests_pkg
-            - layer-1-amplify_e2e_tests_pkg
-            - migration-node-function-amplify_e2e_tests_pkg
-            - schema-function-2-amplify_e2e_tests_pkg
-            - init-special-case-amplify_e2e_tests_pkg
-            - schema-data-access-patterns-amplify_e2e_tests_pkg
-            - schema-iterative-update-2-amplify_e2e_tests_pkg
-            - schema-auth-10-amplify_e2e_tests_pkg
-            - delete-amplify_e2e_tests_pkg
-            - schema-searchable-amplify_e2e_tests_pkg
-            - schema-iterative-rollback-1-amplify_e2e_tests_pkg
-            - migration-api-key-migration3-amplify_e2e_tests_pkg
-            - schema-auth-6-amplify_e2e_tests_pkg
-            - api_6-amplify_e2e_tests_pkg
             - >-
               migration_tests-auth-deployment-migration-auth-deployment-secrets-amplify_migration_tests_v4
             - update_tests-function_migration_update-amplify_migration_tests_v4
@@ -12657,7 +12627,7 @@ workflows:
             - schema-iterative-rollback-1-amplify_e2e_tests
             - migration-api-key-migration3-amplify_e2e_tests
             - schema-auth-6-amplify_e2e_tests
-            - schema-iterative-update-4-amplify_e2e_tests
+            - api_6-amplify_e2e_tests
             - auth_6-amplify_e2e_tests
             - frontend_config_drift-amplify_e2e_tests
             - iam-permissions-boundary-amplify_e2e_tests
@@ -12674,12 +12644,12 @@ workflows:
             - function_1-amplify_e2e_tests
             - schema-iterative-update-3-amplify_e2e_tests
             - schema-iterative-update-4-amplify_e2e_tests
-            - auth_6-amplify_e2e_tests
-            - frontend_config_drift-amplify_e2e_tests
-            - iam-permissions-boundary-amplify_e2e_tests
-            - layer-3-amplify_e2e_tests
-            - resolvers-amplify_e2e_tests
-            - storage-1-amplify_e2e_tests
+            - auth_7-amplify_e2e_tests
+            - function_5-amplify_e2e_tests
+            - import_auth_3-amplify_e2e_tests
+            - layer-4-amplify_e2e_tests
+            - s3-sse-amplify_e2e_tests
+            - storage-2-amplify_e2e_tests
             - amplify-configure-amplify_e2e_tests
             - schema-predictions-amplify_e2e_tests
             - predictions-amplify_e2e_tests
@@ -12749,21 +12719,6 @@ workflows:
             - migration-api-key-migration2-amplify_e2e_tests
             - schema-connection-amplify_e2e_tests
             - api_5-amplify_e2e_tests
-            - custom_policies_container-amplify_e2e_tests
-            - function_9-amplify_e2e_tests
-            - layer-1-amplify_e2e_tests
-            - migration-node-function-amplify_e2e_tests
-            - schema-function-2-amplify_e2e_tests
-            - init-special-case-amplify_e2e_tests
-            - schema-data-access-patterns-amplify_e2e_tests
-            - schema-iterative-update-2-amplify_e2e_tests
-            - schema-auth-10-amplify_e2e_tests
-            - delete-amplify_e2e_tests
-            - schema-searchable-amplify_e2e_tests
-            - schema-iterative-rollback-1-amplify_e2e_tests
-            - migration-api-key-migration3-amplify_e2e_tests
-            - schema-auth-6-amplify_e2e_tests
-            - api_6-amplify_e2e_tests
             - api_4-amplify_e2e_tests_pkg
             - custom_policies_function-amplify_e2e_tests_pkg
             - hooks-amplify_e2e_tests_pkg
@@ -12779,7 +12734,7 @@ workflows:
             - schema-iterative-rollback-1-amplify_e2e_tests_pkg
             - migration-api-key-migration3-amplify_e2e_tests_pkg
             - schema-auth-6-amplify_e2e_tests_pkg
-            - schema-iterative-update-4-amplify_e2e_tests_pkg
+            - api_6-amplify_e2e_tests_pkg
             - auth_6-amplify_e2e_tests_pkg
             - frontend_config_drift-amplify_e2e_tests_pkg
             - iam-permissions-boundary-amplify_e2e_tests_pkg
@@ -12796,12 +12751,12 @@ workflows:
             - function_1-amplify_e2e_tests_pkg
             - schema-iterative-update-3-amplify_e2e_tests_pkg
             - schema-iterative-update-4-amplify_e2e_tests_pkg
-            - auth_6-amplify_e2e_tests_pkg
-            - frontend_config_drift-amplify_e2e_tests_pkg
-            - iam-permissions-boundary-amplify_e2e_tests_pkg
-            - layer-3-amplify_e2e_tests_pkg
-            - resolvers-amplify_e2e_tests_pkg
-            - storage-1-amplify_e2e_tests_pkg
+            - auth_7-amplify_e2e_tests_pkg
+            - function_5-amplify_e2e_tests_pkg
+            - import_auth_3-amplify_e2e_tests_pkg
+            - layer-4-amplify_e2e_tests_pkg
+            - s3-sse-amplify_e2e_tests_pkg
+            - storage-2-amplify_e2e_tests_pkg
             - amplify-configure-amplify_e2e_tests_pkg
             - schema-predictions-amplify_e2e_tests_pkg
             - predictions-amplify_e2e_tests_pkg
@@ -12871,21 +12826,6 @@ workflows:
             - migration-api-key-migration2-amplify_e2e_tests_pkg
             - schema-connection-amplify_e2e_tests_pkg
             - api_5-amplify_e2e_tests_pkg
-            - custom_policies_container-amplify_e2e_tests_pkg
-            - function_9-amplify_e2e_tests_pkg
-            - layer-1-amplify_e2e_tests_pkg
-            - migration-node-function-amplify_e2e_tests_pkg
-            - schema-function-2-amplify_e2e_tests_pkg
-            - init-special-case-amplify_e2e_tests_pkg
-            - schema-data-access-patterns-amplify_e2e_tests_pkg
-            - schema-iterative-update-2-amplify_e2e_tests_pkg
-            - schema-auth-10-amplify_e2e_tests_pkg
-            - delete-amplify_e2e_tests_pkg
-            - schema-searchable-amplify_e2e_tests_pkg
-            - schema-iterative-rollback-1-amplify_e2e_tests_pkg
-            - migration-api-key-migration3-amplify_e2e_tests_pkg
-            - schema-auth-6-amplify_e2e_tests_pkg
-            - api_6-amplify_e2e_tests_pkg
             - AuthV2Transformer-e2e-graphql_e2e_tests
             - HttpTransformerV2-e2e-graphql_e2e_tests
             - ModelConnectionTransformer-e2e-graphql_e2e_tests
@@ -13224,7 +13164,7 @@ workflows:
             parameters:
               os:
                 - linux
-      - schema-iterative-update-4-amplify_e2e_tests:
+      - schema-auth-6-amplify_e2e_tests:
           context:
             - amplify-ecr-image-pull
             - cleanup-resources
@@ -13242,25 +13182,7 @@ workflows:
             parameters:
               os:
                 - linux
-      - auth_6-amplify_e2e_tests:
-          context:
-            - amplify-ecr-image-pull
-            - cleanup-resources
-            - e2e-auth-credentials
-            - e2e-test-context
-          filters:
-            branches:
-              only:
-                - master
-                - /tagged-release\/.*/
-                - /run-e2e\/.*/
-          requires:
-            - publish_to_local_registry
-          matrix:
-            parameters:
-              os:
-                - linux
-      - schema-iterative-update-4-amplify_e2e_tests:
+      - api_6-amplify_e2e_tests:
           context:
             - amplify-ecr-image-pull
             - cleanup-resources
@@ -13531,6 +13453,24 @@ workflows:
               os:
                 - linux
       - schema-iterative-update-3-amplify_e2e_tests:
+          context:
+            - amplify-ecr-image-pull
+            - cleanup-resources
+            - e2e-auth-credentials
+            - e2e-test-context
+          filters:
+            branches:
+              only:
+                - master
+                - /tagged-release\/.*/
+                - /run-e2e\/.*/
+          requires:
+            - publish_to_local_registry
+          matrix:
+            parameters:
+              os:
+                - linux
+      - schema-iterative-update-4-amplify_e2e_tests:
           context:
             - amplify-ecr-image-pull
             - cleanup-resources
@@ -14880,7 +14820,7 @@ workflows:
             parameters:
               os:
                 - linux
-      - api_6-amplify_e2e_tests:
+      - api_5-amplify_e2e_tests:
           context:
             - amplify-ecr-image-pull
             - cleanup-resources
@@ -15155,25 +15095,7 @@ workflows:
             parameters:
               os:
                 - linux
-      - schema-iterative-update-4-amplify_e2e_tests_pkg:
-          context:
-            - amplify-ecr-image-pull
-            - cleanup-resources
-            - e2e-auth-credentials
-            - e2e-test-context
-          filters:
-            branches:
-              only:
-                - master
-                - /tagged-release\/.*/
-                - /run-e2e\/.*/
-          requires:
-            - build_pkg_binaries
-          matrix:
-            parameters:
-              os:
-                - linux
-      - auth_6-amplify_e2e_tests_pkg:
+      - schema-auth-6-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
             - cleanup-resources
@@ -15192,7 +15114,7 @@ workflows:
               os:
                 - linux
                 - windows
-      - schema-iterative-update-4-amplify_e2e_tests_pkg:
+      - api_6-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
             - cleanup-resources
@@ -15470,6 +15392,24 @@ workflows:
               os:
                 - linux
       - schema-iterative-update-3-amplify_e2e_tests_pkg:
+          context:
+            - amplify-ecr-image-pull
+            - cleanup-resources
+            - e2e-auth-credentials
+            - e2e-test-context
+          filters:
+            branches:
+              only:
+                - master
+                - /tagged-release\/.*/
+                - /run-e2e\/.*/
+          requires:
+            - build_pkg_binaries
+          matrix:
+            parameters:
+              os:
+                - linux
+      - schema-iterative-update-4-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
             - cleanup-resources
@@ -16857,7 +16797,7 @@ workflows:
               os:
                 - linux
                 - windows
-      - api_6-amplify_e2e_tests_pkg:
+      - api_5-amplify_e2e_tests_pkg:
           context:
             - amplify-ecr-image-pull
             - cleanup-resources
