@@ -57,7 +57,11 @@ export function requestTemplate(primaryKey: string, nonKeywordFields: Expression
               set(ref('sortField'), ref('util.toJson("${sortItem.field}.keyword")')),
             ),
           ),
-          set(ref('sortDirection'), ref('util.toJson({"order": $sortItem.direction})')),
+          ifElse(
+            ref('util.isNullOrEmpty($sortItem.direction)'),
+            set(ref('sortDirection'), ref('util.toJson({"order": "desc"})')),
+            set(ref('sortDirection'), ref('util.toJson({"order": $sortItem.direction})')),
+          ),
           qref('$sortValues.add("{$sortField: $sortDirection}")'),
         ]),
       ),

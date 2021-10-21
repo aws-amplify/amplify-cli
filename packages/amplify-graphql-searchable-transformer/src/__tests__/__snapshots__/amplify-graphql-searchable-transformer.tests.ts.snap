@@ -1046,7 +1046,11 @@ $util.toJson($ListRequest)
         #set( $sortField = $util.toJson(\\"\${sortItem.field}.keyword\\") )
       #end
     #end
-    #set( $sortDirection = $util.toJson({\\"order\\": $sortItem.direction}) )
+    #if( $util.isNullOrEmpty($sortItem.direction) )
+      #set( $sortDirection = $util.toJson({\\"order\\": \\"desc\\"}) )
+    #else
+      #set( $sortDirection = $util.toJson({\\"order\\": $sortItem.direction}) )
+    #end
     $util.qr($sortValues.add(\\"{$sortField: $sortDirection}\\"))
   #end
 #end
