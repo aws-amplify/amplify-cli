@@ -10,12 +10,14 @@ import {
   S3TriggerFunctionType,
   S3UserInputs,
 } from '../../../../provider-utils/awscloudformation/service-walkthrough-types/s3-user-input-types';
+import * as s3AuthAPI from '../../../../provider-utils/awscloudformation/service-walkthroughs/s3-auth-api';
 import { S3CLITriggerUpdateMenuOptions, UserPermissionTypeOptions } from '../../../../provider-utils/awscloudformation/service-walkthroughs/s3-questions';
 
 jest.mock('amplify-cli-core');
 jest.mock('amplify-prompts');
 jest.mock('../../../../provider-utils/awscloudformation/service-walkthroughs/s3-user-input-state');
 jest.mock('../../../../provider-utils/awscloudformation/cdk-stack-builder/s3-stack-transform');
+jest.mock('../../../../provider-utils/awscloudformation/service-walkthroughs/s3-auth-api');
 jest.mock('uuid');
 
 describe('add s3 walkthrough tests', () => {
@@ -61,6 +63,9 @@ describe('add s3 walkthrough tests', () => {
   it('addWalkthrough() simple-auth test', async () => {
     jest.spyOn(S3InputState.prototype, 'saveCliInputPayload').mockImplementation(() => true);
     jest.spyOn(AmplifyS3ResourceStackTransform.prototype, 'transform').mockImplementation(() => Promise.resolve());
+    jest.spyOn(s3AuthAPI, 'migrateAuthDependencyResource').mockReturnValue(new Promise((resolve, _reject)=>{
+      process.nextTick(() => resolve(undefined));
+    }));
 
     const mockDataBuilder = new S3MockDataBuilder(undefined);
     const expectedCLIInputsJSON: S3UserInputs = mockDataBuilder.getCLIInputs();
