@@ -43,7 +43,7 @@
   },
   "devDependencies": {
     "@aws-amplify/graphql-model-transformer": "0.6.4",
-    "@aws-amplify/graphql-original-transformer": "1.0.0",
+    "@aws-amplify/graphql-maps-to-transformer": "1.0.0",
     "@types/detect-port": "^1.3.0",
     "@types/lodash": "^4.14.149",
     "@types/node": "^12.12.6",

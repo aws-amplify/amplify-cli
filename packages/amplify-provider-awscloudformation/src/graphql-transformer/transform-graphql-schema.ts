@@ -33,7 +33,7 @@ import { loadProject } from 'graphql-transformer-core';
 import { Template } from '@aws-amplify/graphql-transformer-core/lib/config/project-config';
 import { AmplifyCLIFeatureFlagAdapter } from '../utils/amplify-cli-feature-flag-adapter';
 import { JSONUtilities, stateManager, $TSContext } from 'amplify-cli-core';
-import { OriginalTransformer } from '@aws-amplify/graphql-original-transformer';
+import { MapsToTransformer } from '@aws-amplify/graphql-maps-to-transformer';
 import { searchablePushChecks } from '../transform-graphql-schema';
 import { ResourceConstants } from 'graphql-transformer-common';
 import { isAmplifyAdminApp } from '../utils/admin-helpers';
@@ -94,7 +94,7 @@ function getTransformerFactory(
       indexTransformer,
       new BelongsToTransformer(),
       new HasManyTransformer(),
-      new OriginalTransformer(),
+      new MapsToTransformer(),
       hasOneTransformer,
       new ManyToManyTransformer(modelTransformer, indexTransformer, hasOneTransformer, authTransformer),
       new DefaultValueTransformer(),

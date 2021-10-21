@@ -10,6 +10,7 @@
     {"path": "../amplify-category-function"},
     {"path": "../amplify-cli-core"},
     {"path": "../amplify-graphql-model-transformer"},
+    {"path": "../amplify-graphql-maps-to-transformer"},
     {"path": "../amplify-storage-simulator"},
     {"path": "../amplify-provider-awscloudformation"},
     {"path": "../amplify-nodejs-function-runtime-provider"}

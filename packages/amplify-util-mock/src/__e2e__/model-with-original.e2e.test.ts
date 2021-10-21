@@ -1,5 +1,5 @@
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
-import { OriginalTransformer } from '@aws-amplify/graphql-original-transformer';
+import { MapsToTransformer } from '@aws-amplify/graphql-maps-to-transformer';
 import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
 import { GraphQLClient } from './utils/graphql-client';
 import { deploy, launchDDBLocal, logDebug, terminateDDB } from './utils/index';
@@ -12,7 +12,7 @@ let ddbEmulator;
 
 beforeAll(async () => {
   const validSchema = `
-    type Todo @model @original(name: "Task") {
+    type Todo @model @mapsTo(name: "Task") {
         id: ID!
         title: String!
         description: String
@@ -20,7 +20,7 @@ beforeAll(async () => {
     `;
   try {
     const transformer = new GraphQLTransform({
-      transformers: [new ModelTransformer(), new OriginalTransformer()],
+      transformers: [new ModelTransformer(), new MapsToTransformer()],
     });
     const out = transformer.transform(validSchema);
 

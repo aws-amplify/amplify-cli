@@ -1,7 +1,7 @@
 {
-  "name": "@aws-amplify/graphql-original-transformer",
+  "name": "@aws-amplify/graphql-maps-to-transformer",
   "version": "1.0.0",
-  "description": "Amplify GraphQL @original transformer",
+  "description": "Amplify GraphQL @mapsTo transformer",
   "main": "lib/index.js",
   "scripts": {
     "build": "tsc",

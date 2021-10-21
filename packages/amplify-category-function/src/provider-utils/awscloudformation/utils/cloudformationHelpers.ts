@@ -1,7 +1,7 @@
 import { appsyncTableSuffix } from './constants';
 import { getAppSyncResourceName } from './appSyncHelper';
 import * as path from 'path';
-import { pathManager, readCFNTemplate, writeCFNTemplate } from 'amplify-cli-core';
+import { $TSAny, pathManager, readCFNTemplate, writeCFNTemplate } from 'amplify-cli-core';
 import { categoryName } from '../../../constants';
 import { getTableNameForModel, readProjectConfiguration } from 'graphql-transformer-core';
 
@@ -196,7 +196,7 @@ export async function constructCFModelTableArnComponent(appsyncResourceName, res
     { Ref: 'AWS::AccountId' },
     ':table/',
     await constructCFModelTableNameComponent(appsyncResourceName, resourceName, appsyncTableSuffix),
-  ];
+  ] as $TSAny[];
 }
 
 /** CF template component of join function { "Fn::Join": ["-": THIS_PART ] } */

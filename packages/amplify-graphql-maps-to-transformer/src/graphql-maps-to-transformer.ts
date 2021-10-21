@@ -2,15 +2,15 @@ import { TransformerPluginBase, InvalidDirectiveError } from '@aws-amplify/graph
 import { TransformerPluginType, TransformerSchemaVisitStepContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { ObjectTypeDefinitionNode, DirectiveNode } from 'graphql';
 
-const directiveName = 'original';
+const directiveName = 'mapsTo';
 
 const directiveDefinition = `
   directive @${directiveName}(name: String!) on OBJECT
 `;
 
-export class OriginalTransformer extends TransformerPluginBase {
+export class MapsToTransformer extends TransformerPluginBase {
   constructor() {
-    super(`amplify-${directiveName}-transformer`, directiveDefinition, TransformerPluginType.GENERIC);
+    super(`amplify-maps-to-transformer`, directiveDefinition, TransformerPluginType.GENERIC);
   }
 
   object = (definition: ObjectTypeDefinitionNode, directive: DirectiveNode, ctx: TransformerSchemaVisitStepContextProvider) => {

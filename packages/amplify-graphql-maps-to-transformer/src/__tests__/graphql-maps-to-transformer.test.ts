@@ -1,8 +1,8 @@
 import { DirectiveNode, ObjectTypeDefinitionNode } from 'graphql';
 import { TransformerSchemaVisitStepContextProvider } from '../../../amplify-graphql-transformer-interfaces/lib';
-import { OriginalTransformer } from '../graphql-original-transformer';
+import { MapsToTransformer } from '../graphql-maps-to-transformer';
 
-describe('@original directive', () => {
+describe('@mapsTo directive', () => {
   let stubDefinition: ObjectTypeDefinitionNode;
   let stubDirective: DirectiveNode;
 
@@ -14,7 +14,7 @@ describe('@original directive', () => {
     },
   } as unknown as TransformerSchemaVisitStepContextProvider;
 
-  const origTransformer = new OriginalTransformer();
+  const origTransformer = new MapsToTransformer();
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -42,14 +42,14 @@ describe('@original directive', () => {
   it('requires a name to be specified', () => {
     (stubDirective as any).arguments = [];
     expect(() => origTransformer.object(stubDefinition, stubDirective, stubContext)).toThrowErrorMatchingInlineSnapshot(
-      `"name is required in @original directive"`,
+      `"name is required in @mapsTo directive"`,
     );
   });
 
   it('requires a string value for name', () => {
     (stubDirective as any).arguments[0].value.kind = 'OtherKind';
     expect(() => origTransformer.object(stubDefinition, stubDirective, stubContext)).toThrowErrorMatchingInlineSnapshot(
-      `"A single string must be provided for \\"name\\" in @original directive"`,
+      `"A single string must be provided for \\"name\\" in @mapsTo directive"`,
     );
   });
 
