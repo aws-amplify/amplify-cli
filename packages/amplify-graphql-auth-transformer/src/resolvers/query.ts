@@ -24,7 +24,6 @@ import { getIdentityClaimExp, getOwnerClaim, apiKeyExpression, iamExpression, la
 import {
   COGNITO_AUTH_TYPE,
   OIDC_AUTH_TYPE,
-  LAMBDA_AUTH_TYPE,
   RoleDefinition,
   splitRoles,
   ConfiguredAuthProviders,
