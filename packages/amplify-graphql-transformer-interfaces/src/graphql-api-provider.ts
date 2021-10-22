@@ -1,6 +1,51 @@
 import { CfnResource, Construct, IAsset, IConstruct } from '@aws-cdk/core';
 import { Grant, IGrantable, IRole } from '@aws-cdk/aws-iam';
-import {TransformHostProvider} from './transform-host-provider';
+import { TransformHostProvider } from './transform-host-provider';
+
+// Auth Config
+export type AppSyncAuthMode = 'API_KEY' | 'AMAZON_COGNITO_USER_POOLS' | 'AWS_IAM' | 'OPENID_CONNECT';
+export type AppSyncAuthConfiguration = {
+  defaultAuthentication: AppSyncAuthConfigurationEntry;
+  additionalAuthenticationProviders: Array<AppSyncAuthConfigurationEntry>;
+};
+
+export type AppSyncAuthConfigurationEntry =
+  | AppSyncAuthConfigurationUserPoolEntry
+  | AppSyncAuthConfigurationAPIKeyEntry
+  | AppSyncAuthConfigurationIAMEntry
+  | AppSyncAuthConfigurationOIDCEntry;
+export type AppSyncAuthConfigurationAPIKeyEntry = {
+  authenticationType: 'API_KEY';
+  apiKeyConfig?: ApiKeyConfig;
+};
+export type AppSyncAuthConfigurationUserPoolEntry = {
+  authenticationType: 'AMAZON_COGNITO_USER_POOLS';
+  userPoolConfig?: UserPoolConfig;
+};
+export type AppSyncAuthConfigurationIAMEntry = {
+  authenticationType: 'AWS_IAM';
+};
+
+export type AppSyncAuthConfigurationOIDCEntry = {
+  authenticationType: 'OPENID_CONNECT';
+  openIDConnectConfig?: OpenIDConnectConfig;
+};
+
+export interface ApiKeyConfig {
+  description?: string;
+  apiKeyExpirationDays: number;
+  apiKeyExpirationDate?: Date;
+}
+export interface UserPoolConfig {
+  userPoolId: string;
+}
+export interface OpenIDConnectConfig {
+  name: string;
+  issuerUrl: string;
+  clientId?: string;
+  iatTTL?: number;
+  authTTL?: number;
+}
 
 export interface AppSyncFunctionConfigurationProvider extends IConstruct {
   readonly arn: string;

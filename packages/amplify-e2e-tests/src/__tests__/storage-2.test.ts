@@ -1,20 +1,13 @@
-import { initJSProjectWithProfile, initFlutterProjectWithProfile, deleteProject, amplifyPushAuth } from 'amplify-e2e-core';
-import { addAuthWithDefault, addAuthWithGroupsAndAdminAPI } from 'amplify-e2e-core';
 import {
-  addSimpleDDB,
-  addDDBWithTrigger,
-  updateDDBWithTrigger,
+  addAuthWithDefault,
   addSimpleDDBwithGSI,
+  amplifyPushAuth,
+  createNewProjectDir,
+  deleteProject,
+  deleteProjectDir,
+  initJSProjectWithProfile,
   updateSimpleDDBwithGSI,
-  addS3AndAuthWithAuthOnlyAccess,
-  addS3WithGuestAccess,
-  addS3WithGroupAccess,
-  addS3WithTrigger,
-  updateS3AddTrigger,
 } from 'amplify-e2e-core';
-import { createNewProjectDir, deleteProjectDir, getProjectMeta, getDDBTable, checkIfBucketExists } from 'amplify-e2e-core';
-import * as fs from 'fs-extra';
-import * as path from 'path';
 
 describe('amplify add/update storage(DDB) with GSI', () => {
   let projRoot: string;

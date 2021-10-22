@@ -47,6 +47,10 @@ import { preProcessCFNTemplate, writeCustomPoliciesToCFNTemplate } from './pre-p
 import { AUTH_TRIGGER_STACK, AUTH_TRIGGER_TEMPLATE } from './utils/upload-auth-trigger-template';
 import { ensureValidFunctionModelDependencies } from './utils/remove-dependent-function';
 import { legacyLayerMigration, postPushLambdaLayerCleanup, prePushLambdaLayerPrompt } from './lambdaLayerInvocations';
+import {
+  postDeploymentCleanup,
+  prependDeploymentStepsToDisconnectFunctionsFromReplacedModelTables,
+} from './disconnect-dependent-resources';
 
 const logger = fileLogger('push-resources');
 
@@ -67,7 +71,7 @@ const deploymentInProgressErrorMessage = (context: $TSContext) => {
   context.print.error('"amplify push --force" to re-deploy');
 };
 
-export async function run(context: $TSContext, resourceDefinition: $TSObject) {
+export async function run(context: $TSContext, resourceDefinition: $TSObject, rebuild: boolean = false) {
   const deploymentStateManager = await DeploymentStateManager.createDeploymentStateManager(context);
   let iterativeDeploymentWasInvoked = false;
   let layerResources = [];
@@ -80,7 +84,7 @@ export async function run(context: $TSContext, resourceDefinition: $TSObject) {
       parameters: { options },
     } = context;
 
-    let resources = !!context?.exeInfo?.forcePush ? allResources : resourcesToBeCreated.concat(resourcesToBeUpdated);
+    let resources = !!context?.exeInfo?.forcePush || rebuild ? allResources : resourcesToBeCreated.concat(resourcesToBeUpdated);
     layerResources = resources.filter(r => r.service === FunctionServiceNameLambdaLayer);
 
     if (deploymentStateManager.isDeploymentInProgress() && !deploymentStateManager.isDeploymentFinished()) {
@@ -109,7 +113,7 @@ export async function run(context: $TSContext, resourceDefinition: $TSObject) {
     }
     validateCfnTemplates(context, resources);
 
-    for await (const resource of resources) {
+    for (const resource of resources) {
       if (resource.service === ApiServiceNameElasticContainer && resource.category === 'api') {
         const {
           exposedContainer,
@@ -136,9 +140,7 @@ export async function run(context: $TSContext, resourceDefinition: $TSObject) {
       }
     }
 
-    for await (const resource of resources.filter(
-      r => r.category === FunctionCategoryName && r.service === FunctionServiceNameLambdaLayer,
-    )) {
+    for (const resource of resources.filter(r => r.category === FunctionCategoryName && r.service === FunctionServiceNameLambdaLayer)) {
       await legacyLayerMigration(context, resource.resourceName);
     }
 
@@ -148,6 +150,7 @@ export async function run(context: $TSContext, resourceDefinition: $TSObject) {
     await transformGraphQLSchema(context, {
       handleMigration: opts => updateStackForAPIMigration(context, 'api', undefined, opts),
       minify: options['minify'],
+      promptApiKeyCreation: true,
     });
 
     // If there is a deployment already in progress we have to fail the push operation as another
@@ -164,11 +167,19 @@ export async function run(context: $TSContext, resourceDefinition: $TSObject) {
 
     // Check if iterative updates are enabled or not and generate the required deployment steps if needed.
     if (FeatureFlags.getBoolean('graphQLTransformer.enableIterativeGSIUpdates')) {
-      const gqlResource = getGqlUpdatedResource(resourcesToBeUpdated);
+      const gqlResource = getGqlUpdatedResource(rebuild ? resources : resourcesToBeUpdated);
 
       if (gqlResource) {
-        const gqlManager = await GraphQLResourceManager.createInstance(context, gqlResource, cloudformationMeta.StackId);
+        const gqlManager = await GraphQLResourceManager.createInstance(context, gqlResource, cloudformationMeta.StackId, rebuild);
         deploymentSteps = await gqlManager.run();
+
+        // If any models are being replaced, we prepend steps to the iterative deployment to remove references to the replaced table in functions that have a dependeny on the tables
+        const modelsBeingReplaced = gqlManager.getTablesBeingReplaced().map(meta => meta.stackName); // stackName is the same as the model name
+        deploymentSteps = await prependDeploymentStepsToDisconnectFunctionsFromReplacedModelTables(
+          context,
+          modelsBeingReplaced,
+          deploymentSteps,
+        );
         if (deploymentSteps.length > 1) {
           iterativeDeploymentWasInvoked = true;
 
@@ -203,7 +214,8 @@ export async function run(context: $TSContext, resourceDefinition: $TSObject) {
       resourcesToBeUpdated.length > 0 ||
       resourcesToBeDeleted.length > 0 ||
       tagsUpdated ||
-      context.exeInfo.forcePush
+      context.exeInfo.forcePush ||
+      rebuild
     ) {
       // If there is an API change, there will be one deployment step. But when there needs an iterative update the step count is > 1
       if (deploymentSteps.length > 1) {
@@ -248,10 +260,11 @@ export async function run(context: $TSContext, resourceDefinition: $TSObject) {
             context.print.error(`Could not delete state directory locally: ${err}`);
           }
         }
+        const s3 = await S3.getInstance(context);
         if (stateFolder.cloud) {
-          const s3 = await S3.getInstance(context);
           await s3.deleteDirectory(cloudformationMeta.DeploymentBucketName, stateFolder.cloud);
         }
+        postDeploymentCleanup(s3, cloudformationMeta.DeploymentBucketName);
       } else {
         // Non iterative update
         spinner.start();
@@ -389,13 +402,27 @@ export async function run(context: $TSContext, resourceDefinition: $TSObject) {
     if (iterativeDeploymentWasInvoked) {
       await deploymentStateManager.failDeployment();
     }
-    spinner.fail('An error occurred when pushing the resources to the cloud');
-
+    if (!(await canAutoResolveGraphQLAuthError(error.message))) {
+      spinner.fail('An error occurred when pushing the resources to the cloud');
+    }
     rollbackLambdaLayers(layerResources);
 
     logger('run', [resourceDefinition])(error);
 
     throw error;
+  }
+}
+
+async function canAutoResolveGraphQLAuthError(message: string) {
+  if (
+    message === `@auth directive with 'iam' provider found, but the project has no IAM authentication provider configured.` ||
+    message ===
+      `@auth directive with 'userPools' provider found, but the project has no Cognito User Pools authentication provider configured.` ||
+    message === `@auth directive with 'oidc' provider found, but the project has no OPENID_CONNECT authentication provider configured.` ||
+    message === `@auth directive with 'apiKey' provider found, but the project has no API Key authentication provider configured.` ||
+    message === `@auth directive with 'function' provider found, but the project has no Lambda authentication provider configured.`
+  ) {
+    return true;
   }
 }
 
@@ -827,7 +854,7 @@ async function formNestedStack(
       nestedStack.Description = 'Root Stack for AWS Amplify Console';
     }
   } catch (err) {
-    console.info('App not deployed yet.');
+    // if it is not an AmplifyAdmin app, do nothing
   }
 
   const { amplifyMeta } = projectDetails;

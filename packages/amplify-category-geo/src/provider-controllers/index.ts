@@ -11,19 +11,11 @@ import { TemplateMappings } from '../service-stacks/baseStack';
 /**
  * Entry point for creating a new Geo resource
  */
-export const addResource = async (
-  context: $TSContext,
-  service: string
-): Promise<string | undefined> => {
-  if(!projectHasAuth()) {
-    if (
-      await prompter.yesOrNo(
-        'geo category resources require auth (Amazon Cognito). Do you want to add auth now?',
-      )
-    ){
+export const addResource = async (context: $TSContext, service: string): Promise<string | undefined> => {
+  if (!projectHasAuth()) {
+    if (await prompter.yesOrNo('geo category resources require auth (Amazon Cognito). Do you want to add auth now?')) {
       await context.amplify.invokePluginMethod(context, 'auth', undefined, 'add', [context]);
-    }
-    else {
+    } else {
       printer.info('Please add auth (Amazon Cognito) to your project using "amplify add auth"');
       return;
     }
@@ -42,10 +34,7 @@ export const addResource = async (
 /**
  * Entry point for updating existing Geo resource
  */
-export const updateResource = async (
-  context: $TSContext,
-  service: string
-): Promise<string> => {
+export const updateResource = async (context: $TSContext, service: string): Promise<string> => {
   switch (service) {
     case ServiceName.Map:
       return updateMapResource(context);
@@ -59,10 +48,7 @@ export const updateResource = async (
 /**
  * Entry point for removing existing Geo resource
  */
-export const removeResource = async (
-  context: $TSContext,
-  service: string
-): Promise<string | undefined> => {
+export const removeResource = async (context: $TSContext, service: string): Promise<string | undefined> => {
   switch (service) {
     case ServiceName.Map:
       return removeMapResource(context);
@@ -73,9 +59,8 @@ export const removeResource = async (
   }
 };
 
-export const projectHasAuth = () => !!Object.values(
-  stateManager.getMeta()?.auth || {}
-).find(meta => (meta as $TSObject)?.service === 'Cognito');
+export const projectHasAuth = () =>
+  !!Object.values(stateManager.getMeta()?.auth || {}).find(meta => (meta as $TSObject)?.service === 'Cognito');
 
 export const printNextStepsSuccessMessage = (context: $TSContext) => {
   printer.blankLine();
@@ -100,10 +85,10 @@ export const openConsole = (service: string) => {
   let selection: string | undefined;
   switch (service) {
     case ServiceName.Map:
-      selection = "maps";
+      selection = 'maps';
       break;
     case ServiceName.PlaceIndex:
-      selection = "places";
+      selection = 'places';
       break;
     default:
       selection = undefined;
@@ -117,15 +102,15 @@ export const openConsole = (service: string) => {
 
 const badServiceError = (service: string) => {
   return new Error(`amplify-category-geo is not configured to provide service type ${service}`);
-}
+};
 
 export const insufficientInfoForUpdateError = (service: ServiceName) => {
   new Error(`Insufficient information to update ${getServiceFriendlyName(service)}. Please re-try and provide all inputs.`);
-}
+};
 
 export const getTemplateMappings = async (context: $TSContext): Promise<TemplateMappings> => {
   const Mappings: TemplateMappings = {
-    RegionMapping: {}
+    RegionMapping: {},
   };
   const providerPlugins = context.amplify.getProviderPlugins(context);
   const providerPlugin = await import(providerPlugins[provider]);
