@@ -661,7 +661,7 @@ async function askSyncFunctionQuestion(context) {
 async function addLambdaAuthorizerChoice(context) {
   const providerPlugin = await import(context.amplify.getProviderPlugins(context).awscloudformation);
   const transformerVersion = providerPlugin.getTransformerVersion(context);
-  if (transformerVersion === 2 && !authProviderChoices.find(choice => choice.value == 'AWS_LAMBDA')) {
+  if (transformerVersion === 2 && !authProviderChoices.some(choice => choice.value == 'AWS_LAMBDA')) {
     authProviderChoices.push({
         name: 'Lambda',
         value: 'AWS_LAMBDA',
@@ -1081,11 +1081,11 @@ async function askLambdaQuestion(context) {
 }
 
 function functionsExist(context) {
-  if (!context.amplify.getProjectDetails().amplifyMeta.function) {
+  const functionResources = context.amplify.getProjectDetails().amplifyMeta.function;
+  if (!functionResources) {
     return false;
   }
 
-  const functionResources = context.amplify.getProjectDetails().amplifyMeta.function;
   const lambdaFunctions = [];
   Object.keys(functionResources).forEach(resourceName => {
     if (functionResources[resourceName].service === FunctionServiceNameLambdaFunction) {
@@ -1093,34 +1093,22 @@ function functionsExist(context) {
     }
   });
 
-  if (lambdaFunctions.length === 0) {
-    return false;
-  }
-
-  return true;
+  return lambdaFunctions.length !== 0;
 }
 
 async function askLambdaSource(context, functionType) {
   switch (functionType) {
     case 'projectFunction':
-      return askLambdaFromProject(context);
+      return await askLambdaFromProject(context);
     case 'newFunction':
-      return newLambdaFunction(context);
+      return await newLambdaFunction(context);
     default:
-      throw new Error('Type not supported');
+      throw new Error(`Type ${functionType} not supported`);
   }
 }
 
 async function newLambdaFunction(context) {
-  // const resourceName = await context.amplify.invokePluginMethod(context, 'function', undefined, 'add', [
-  //   context,
-  //   'awscloudformation',
-  //   FunctionServiceNameLambdaFunction,
-  // ]);
   const resourceName = await createLambdaAuthorizerFunction(context);
-
-  // context.print.success('Succesfully added the Lambda function locally');
-
   return { lambdaFunction: resourceName };
 }
 

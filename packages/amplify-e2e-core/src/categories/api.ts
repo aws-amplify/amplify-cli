@@ -154,7 +154,7 @@ export function addApiWithAllAuthModesV2(cwd: string, opts: Partial<AddApiOption
       .wait(/.*After how many days from now the API key should expire.*/)
       .sendLine('300')
       .wait(/.*Configure additional auth types.*/)
-      .sendLine('y')
+      .sendConfirmYes()
       .wait(/.*Choose the additional authorization types you want to configure for the API.*/)
       .sendLine('a\r') // All items
       // Cognito
@@ -187,7 +187,7 @@ export function addApiWithAllAuthModesV2(cwd: string, opts: Partial<AddApiOption
       .sendKeyDown(2)
       .sendCarriageReturn()
       .wait('Do you want to edit the schema now?')
-      .sendLine('n')
+      .sendConfirmNo()
       .wait(
         '"amplify publish" will build all your local backend and frontend resources (if you have hosting category added) and provision it in the cloud',
       )

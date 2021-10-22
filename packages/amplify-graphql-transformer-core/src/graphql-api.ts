@@ -168,7 +168,7 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
    * Global Sandbox Mode for GraphQL API
    */
   public readonly sandboxModeEnabled?: boolean;
-  
+
   /**
    * the amplify environment name
    */
