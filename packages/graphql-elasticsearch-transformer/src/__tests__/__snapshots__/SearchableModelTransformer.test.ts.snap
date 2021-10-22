@@ -257,7 +257,7 @@ input SearchablePostSortInput {
 }
 
 type SearchablePostConnection {
-  items: [Post]
+  items: [Post!]!
   nextToken: String
   total: Int
 }
@@ -509,7 +509,7 @@ input SearchablePostSortInput {
 }
 
 type SearchablePostConnection {
-  items: [Post]
+  items: [Post!]!
   nextToken: String
   total: Int
 }
@@ -533,7 +533,7 @@ input SearchableUserSortInput {
 }
 
 type SearchableUserConnection {
-  items: [User]
+  items: [User!]!
   nextToken: String
   total: Int
 }
@@ -727,7 +727,7 @@ input SearchablePostSortInput {
 }
 
 type SearchablePostConnection {
-  items: [Post]
+  items: [Post!]!
   nextToken: String
   total: Int
 }
@@ -936,7 +936,7 @@ input SearchablePostSortInput {
 }
 
 type SearchablePostConnection {
-  items: [Post]
+  items: [Post!]!
   nextToken: String
   total: Int
 }
@@ -1145,7 +1145,7 @@ input SearchablePostSortInput {
 }
 
 type SearchablePostConnection {
-  items: [Post]
+  items: [Post!]!
   nextToken: String
   total: Int
 }
