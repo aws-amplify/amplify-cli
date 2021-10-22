@@ -72,7 +72,9 @@ def import_dynamodb_items_to_es(table_name, aws_secret, aws_access, aws_token, a
         reports.append(record)
         if partSize >= 100:
           send_to_eslambda(reports, lambda_f)
-      if 'LastEvaluatedKey' not in response:
+      if 'LastEvaluatedKey' in response:
+        logger.info('Last Evaluated Key: %s', response['LastEvaluatedKey'])
+      else:
         break
   if partSize > 0:
     send_to_eslambda(reports, lambda_f)
