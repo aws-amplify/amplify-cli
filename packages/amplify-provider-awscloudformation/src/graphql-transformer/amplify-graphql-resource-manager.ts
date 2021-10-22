@@ -287,7 +287,10 @@ export class GraphQLResourceManager {
   getTablesBeingReplaced = () => {
     const gqlDiff = getGQLDiff(this.backendApiProjectRoot, this.cloudBackendApiProjectRoot);
     const [diffs, currentState] = [gqlDiff.diff, gqlDiff.current];
-    const getTablesRequiringReplacement = () =>
+    const getTablesRequiringReplacement = () => {
+      if (!diffs) {
+        return [];
+      }
       _.uniq(
         diffs
           .filter(diff => diff.path.includes('KeySchema') || diff.path.includes('LocalSecondaryIndexes')) // filter diffs with changes that require replacement
@@ -297,7 +300,7 @@ export class GraphQLResourceManager {
             stackName: diff.path[1].split('.')[0] as string,
           })),
       ) as { tableName: string; stackName: string }[];
-
+    }
     const getAllTables = () =>
       Object.entries(currentState.stacks)
         .map(([name, template]) => ({
