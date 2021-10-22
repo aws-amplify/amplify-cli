@@ -107,7 +107,7 @@ enum ModelSortDirection {
 }
 
 type ModelTestConnection {
-  items: [Test]
+  items: [Test!]!
   nextToken: String
 }
 
@@ -162,7 +162,7 @@ type Subscription {
 }
 
 type ModelEmailConnection {
-  items: [Email]
+  items: [Email!]!
   nextToken: String
 }
 
@@ -356,7 +356,7 @@ input EntityMetadataInput {
 }
 
 type ModelPostConnection {
-  items: [Post]
+  items: [Post!]!
   nextToken: String
 }
 
@@ -463,7 +463,7 @@ type Subscription {
 }
 
 type ModelAuthorConnection {
-  items: [Author]
+  items: [Author!]!
   nextToken: String
 }
 
@@ -501,7 +501,7 @@ input DeleteAuthorInput {
 }
 
 type ModelRequireConnection {
-  items: [Require]
+  items: [Require!]!
   nextToken: String
 }
 
@@ -539,7 +539,7 @@ input DeleteRequireInput {
 }
 
 type ModelCommentConnection {
-  items: [Comment]
+  items: [Comment!]!
   nextToken: String
 }
 
@@ -12153,7 +12153,7 @@ enum ModelSortDirection {
 }
 
 type ModelPostConnection {
-  items: [Post]
+  items: [Post!]!
   nextToken: String
 }
 
@@ -12690,7 +12690,7 @@ enum ModelSortDirection {
 }
 
 type ModelPostConnection {
-  items: [Post]
+  items: [Post!]!
   nextToken: String
 }
 
@@ -13050,7 +13050,7 @@ enum ModelSortDirection {
 }
 
 type ModelPostConnection {
-  items: [Post]
+  items: [Post!]!
   nextToken: String
 }
 
@@ -13404,7 +13404,7 @@ enum ModelSortDirection {
 }
 
 type ModelPostConnection {
-  items: [Post]
+  items: [Post!]!
   nextToken: String
 }
 
