@@ -3,6 +3,33 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.32.0-ext5.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@1.29.0...amplify-cli-core@1.32.0-ext5.0) (2021-10-22)
+
+
+### Bug Fixes
+
+* [#8223](https://github.com/aws-amplify/amplify-cli/issues/8223), conversion to typescript ([#8245](https://github.com/aws-amplify/amplify-cli/issues/8245)) ([096e6ca](https://github.com/aws-amplify/amplify-cli/commit/096e6ca19b94aa40ef249ea98d008380395afa16))
+* adds typescript json dependency ([#8487](https://github.com/aws-amplify/amplify-cli/issues/8487)) ([5884c32](https://github.com/aws-amplify/amplify-cli/commit/5884c327a1e4fa7d8885d7bbff423aca005f9f4f))
+* **amplify-cli-core:** add service mapping FFs ([#7024](https://github.com/aws-amplify/amplify-cli/issues/7024)) ([36fe24d](https://github.com/aws-amplify/amplify-cli/commit/36fe24db9f37a8a12d50f1e20ea44562eb44d04a))
+
+
+### Features
+
+* Auth refactor to  use cdk, eliminate EJS, overrides functionality ([#8355](https://github.com/aws-amplify/amplify-cli/issues/8355)) ([5a2a702](https://github.com/aws-amplify/amplify-cli/commit/5a2a702d373c7f090b0a9357e1b33350ce574066))
+* ddb overrides and flow refactor ([89b4f0a](https://github.com/aws-amplify/amplify-cli/commit/89b4f0a1990217b9fdc2b0987e79d9ce02b5ed80))
+* FF for override stacks ([#8228](https://github.com/aws-amplify/amplify-cli/issues/8228)) ([49ba6a3](https://github.com/aws-amplify/amplify-cli/commit/49ba6a3bd93566ea9c653c8e77144e3dd6e52bae))
+* Flag to allow schema changes that require table replacement ([#8144](https://github.com/aws-amplify/amplify-cli/issues/8144)) ([2d4e65a](https://github.com/aws-amplify/amplify-cli/commit/2d4e65acfd034d33c6fa8ac1f5f8582e7e3bc399))
+* root stack override ([#8276](https://github.com/aws-amplify/amplify-cli/issues/8276)) ([ee1c49e](https://github.com/aws-amplify/amplify-cli/commit/ee1c49e3ec976aae42ca00b48a6be7d2bd7a4b14))
+
+
+### Reverts
+
+* Revert "feat: Flag to allow schema changes that require table replacement (#8144)" (#8268) ([422dd04](https://github.com/aws-amplify/amplify-cli/commit/422dd04425c72aa7276e086d38ce4d5f4681f9f3)), closes [#8144](https://github.com/aws-amplify/amplify-cli/issues/8144) [#8268](https://github.com/aws-amplify/amplify-cli/issues/8268)
+
+
+
+
+
 ## [1.31.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@1.31.0...amplify-cli-core@1.31.1) (2021-10-10)
 
 
