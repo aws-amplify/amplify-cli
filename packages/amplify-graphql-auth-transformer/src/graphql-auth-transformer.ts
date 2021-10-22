@@ -113,7 +113,7 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
   private authPolicyResources = new Set<string>();
   private unauthPolicyResources = new Set<string>();
 
-  constructor(config: AuthTransformerConfig) {
+  constructor(config: AuthTransformerConfig = { addAwsIamAuthInOutputSchema: false }) {
     super('amplify-auth-transformer', authDirectiveDefinition);
     this.config = config;
     this.modelDirectiveConfig = new Map();
@@ -383,9 +383,10 @@ Static group authorization should perform as expected.`,
         this.addOperationToResourceReferences(typeName, operationName, acm.getRoles());
       }
     };
-    // default model operations TODO: protect sync queries once supported
+    // default model operations
     addServiceDirective(ctx.output.getQueryTypeName()!, 'read', modelConfig?.queries?.get);
     addServiceDirective(ctx.output.getQueryTypeName()!, 'read', modelConfig?.queries?.list);
+    addServiceDirective(ctx.output.getQueryTypeName()!, 'read', modelConfig?.queries?.sync);
     addServiceDirective(ctx.output.getMutationTypeName()!, 'create', modelConfig?.mutations?.create);
     addServiceDirective(ctx.output.getMutationTypeName()!, 'update', modelConfig?.mutations?.update);
     addServiceDirective(ctx.output.getMutationTypeName()!, 'delete', modelConfig?.mutations?.delete);

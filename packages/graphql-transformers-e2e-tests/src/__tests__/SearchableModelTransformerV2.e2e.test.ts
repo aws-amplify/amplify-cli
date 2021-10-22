@@ -219,7 +219,7 @@ test('query for multiple aggregates', async () => {
       {
         name: "Terms",
         type: terms,
-        field: "title"
+        field: title
       }]) {
         aggregateItems {
           name
