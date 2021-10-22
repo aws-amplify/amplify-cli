@@ -1,5 +1,5 @@
 import { DirectiveNode, ObjectTypeDefinitionNode } from 'graphql';
-import { TransformerSchemaVisitStepContextProvider } from '../../../amplify-graphql-transformer-interfaces/lib';
+import { TransformerSchemaVisitStepContextProvider } from '../../../amplify-graphql-transformer-interfaces';
 import { MapsToTransformer } from '../graphql-maps-to-transformer';
 
 describe('@mapsTo directive', () => {
