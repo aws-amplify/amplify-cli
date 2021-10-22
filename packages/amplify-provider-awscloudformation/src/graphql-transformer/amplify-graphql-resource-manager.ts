@@ -291,7 +291,7 @@ export class GraphQLResourceManager {
       if (!diffs) {
         return [];
       }
-      _.uniq(
+      return _.uniq(
         diffs
           .filter(diff => diff.path.includes('KeySchema') || diff.path.includes('LocalSecondaryIndexes')) // filter diffs with changes that require replacement
           .map(diff => ({
