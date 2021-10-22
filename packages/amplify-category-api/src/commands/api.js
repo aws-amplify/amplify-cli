@@ -41,6 +41,11 @@ module.exports = {
         name: 'console',
         description: 'Opens the web console for the selected api service',
       },
+      {
+        name: 'rebuild',
+        description:
+          'Removes and recreates all DynamoDB tables backing a GraphQL API. Useful for resetting test data during the development phase of an app',
+      },
     ];
 
     context.amplify.showHelp(header, commands);

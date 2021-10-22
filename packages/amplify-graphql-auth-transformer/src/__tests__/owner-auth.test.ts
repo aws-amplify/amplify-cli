@@ -1,5 +1,5 @@
 import { parse } from 'graphql';
-import { AuthTransformer } from '@aws-amplify/graphql-auth-transformer';
+import { AuthTransformer } from '../graphql-auth-transformer';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
 import { ResourceConstants } from 'graphql-transformer-common';

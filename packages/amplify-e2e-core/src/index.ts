@@ -38,14 +38,12 @@ export function getCLIPath(testingWithLatestCodebase = false) {
 }
 
 export function isTestingWithLatestCodebase(scriptRunnerPath) {
-  return scriptRunnerPath === process.execPath
+  return scriptRunnerPath === process.execPath;
 }
 
 export function getScriptRunnerPath(testingWithLatestCodebase = false) {
   if (!testingWithLatestCodebase) {
-    return process.platform === 'win32'
-      ? 'node.exe'
-      : 'exec';
+    return process.platform === 'win32' ? 'node.exe' : 'exec';
   }
 
   // nodejs executable
@@ -81,9 +79,10 @@ export async function installAmplifyCLI(version: string = 'latest') {
     env: process.env,
     stdio: 'inherit',
   });
-  process.env.AMPLIFY_PATH = process.platform === 'win32'
-   ? path.join(os.homedir(), '..', '..', 'Program` Files', 'nodejs', 'node_modules', '@aws-amplify', 'cli', 'bin', 'amplify')
-   : path.join(os.homedir(), '.npm-global', 'bin', 'amplify');
+  process.env.AMPLIFY_PATH =
+    process.platform === 'win32'
+      ? path.join(os.homedir(), '..', '..', 'Program` Files', 'nodejs', 'node_modules', '@aws-amplify', 'cli', 'bin', 'amplify')
+      : path.join(os.homedir(), '.npm-global', 'bin', 'amplify');
 }
 
 export async function createNewProjectDir(

@@ -11,6 +11,7 @@ const CONCURRENCY = 25;
 // Each of these failures should be independently investigated, resolved, and removed from this list.
 // For now, this list is being used to skip creation of circleci jobs for these tasks
 const WINDOWS_TEST_FAILURES = [
+  'api_6-amplify_e2e_tests',
   'datastore-modelgen-amplify_e2e_tests',
   'delete-amplify_e2e_tests',
   'env-amplify_e2e_tests',
@@ -411,12 +412,16 @@ function loadConfig(): CircleCIConfig {
 }
 
 function saveConfig(config: CircleCIConfig): void {
-  const configFile = join(process.cwd(), '.circleci', 'config.yml');
+  const configFile = join(process.cwd(), '.circleci', 'generated_config.yml');
   const output = ['# auto generated file. Edit config.base.yaml if you want to change', yaml.dump(config, { noRefs: true })];
   fs.writeFileSync(configFile, output.join('\n'));
 }
 
 function verifyConfig() {
+  if (process.env.CIRCLECI) {
+    console.log('Skipping config verification since this is already running in a CCI environment.');
+    return;
+  }
   try {
     execa.commandSync('which circleci');
   } catch {
@@ -429,6 +434,13 @@ function verifyConfig() {
     execa.commandSync('circleci config validate');
   } catch {
     console.error(`"circleci config validate" command failed. Please check your .circleci/config.yml validity`);
+    process.exit(1);
+  }
+  try {
+    execa.commandSync('circleci config validate .circleci/generated_config.yml');
+  } catch (e) {
+    console.log(e);
+    console.error(`"circleci config validate" command failed. Please check your .circleci/generated_config.yml validity`);
     process.exit(1);
   }
 }
