@@ -21,6 +21,7 @@ def main():
   parser.add_argument('--ak', metavar='AK', help='aws access key')
   parser.add_argument('--sk', metavar='AS', help='aws secret key')
   parser.add_argument('--st', metavar='AT', help='aws session token')
+  parser.add_argument('--lek', metavar='LEK', help='last evaluated key')
   args = parser.parse_args()
   scan_limit = 300
 
@@ -31,9 +32,9 @@ def main():
     args.st = args.st or credentials.token
 
   client = boto3.client('lambda', region_name=args.rn)
-  import_dynamodb_items_to_es(args.tn, args.sk, args.ak, args.st, args.rn, args.esarn, args.lf, scan_limit)
+  import_dynamodb_items_to_es(args.tn, args.sk, args.ak, args.st, args.rn, args.esarn, args.lf, scan_limit, args.lek)
 
-def import_dynamodb_items_to_es(table_name, aws_secret, aws_access, aws_token, aws_region, event_source_arn, lambda_f, scan_limit):
+def import_dynamodb_items_to_es(table_name, aws_secret, aws_access, aws_token, aws_region, event_source_arn, lambda_f, scan_limit, last_evaluated_key):
   global reports
   global partSize
   global object_amount
@@ -51,10 +52,14 @@ def import_dynamodb_items_to_es(table_name, aws_secret, aws_access, aws_token, a
   response = None
 
   while True:
-      if not response:
+      if last_evaluated_key:
+        response = table.scan(ExclusiveStartKey={"id": last_evaluated_key}, Limit=scan_limit)
+        last_evaluated_key = None
+      elif not response:
         response = table.scan(Limit=scan_limit)
       else:
         response = table.scan(ExclusiveStartKey=response['LastEvaluatedKey'], Limit=scan_limit)
+
       for i in response["Items"]:
         ddb_keys = {k: i[k] for k in i if k in ddb_keys_name}
         ddb_data = boto3.dynamodb.types.TypeSerializer().serialize(i)["M"]
