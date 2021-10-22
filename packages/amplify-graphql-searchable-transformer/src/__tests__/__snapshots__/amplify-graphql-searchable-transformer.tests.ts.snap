@@ -122,10 +122,10 @@ input SearchableEmployeeAggregationInput {
 }
 
 type SearchableEmployeeConnection {
-  items: [Employee]
+  items: [Employee!]!
   nextToken: String
   total: Int
-  aggregateItems: [SearchableAggregateResult]
+  aggregateItems: [SearchableAggregateResult!]!
 }
 
 type SearchableAggregateResult {
@@ -246,7 +246,7 @@ enum ModelSortDirection {
 }
 
 type ModelEmployeeConnection {
-  items: [Employee]
+  items: [Employee!]!
   nextToken: String
 }
 
@@ -424,10 +424,10 @@ input SearchablePostAggregationInput {
 }
 
 type SearchablePostConnection {
-  items: [Post]
+  items: [Post!]!
   nextToken: String
   total: Int
-  aggregateItems: [SearchableAggregateResult]
+  aggregateItems: [SearchableAggregateResult!]!
 }
 
 type SearchableAggregateResult {
@@ -548,7 +548,7 @@ enum ModelSortDirection {
 }
 
 type ModelPostConnection {
-  items: [Post]
+  items: [Post!]!
   nextToken: String
 }
 
@@ -1312,10 +1312,10 @@ input SearchablePostAggregationInput {
 }
 
 type SearchablePostConnection {
-  items: [Post]
+  items: [Post!]!
   nextToken: String
   total: Int
-  aggregateItems: [SearchableAggregateResult]
+  aggregateItems: [SearchableAggregateResult!]!
 }
 
 type SearchableAggregateResult {
@@ -1377,10 +1377,10 @@ input SearchableUserAggregationInput {
 }
 
 type SearchableUserConnection {
-  items: [User]
+  items: [User!]!
   nextToken: String
   total: Int
-  aggregateItems: [SearchableAggregateResult]
+  aggregateItems: [SearchableAggregateResult!]!
 }
 
 input ModelStringInput {
@@ -1475,7 +1475,7 @@ enum ModelSortDirection {
 }
 
 type ModelPostConnection {
-  items: [Post]
+  items: [Post!]!
   nextToken: String
 }
 
@@ -1535,7 +1535,7 @@ type Subscription {
 }
 
 type ModelUserConnection {
-  items: [User]
+  items: [User!]!
   nextToken: String
 }
 
@@ -1688,10 +1688,10 @@ input SearchablePostAggregationInput {
 }
 
 type SearchablePostConnection {
-  items: [Post]
+  items: [Post!]!
   nextToken: String
   total: Int
-  aggregateItems: [SearchableAggregateResult]
+  aggregateItems: [SearchableAggregateResult!]!
 }
 
 type SearchableAggregateResult {
@@ -1812,7 +1812,7 @@ enum ModelSortDirection {
 }
 
 type ModelPostConnection {
-  items: [Post]
+  items: [Post!]!
   nextToken: String
 }
 
@@ -1970,10 +1970,10 @@ input SearchablePostAggregationInput {
 }
 
 type SearchablePostConnection {
-  items: [Post]
+  items: [Post!]!
   nextToken: String
   total: Int
-  aggregateItems: [SearchableAggregateResult]
+  aggregateItems: [SearchableAggregateResult!]!
 }
 
 type SearchableAggregateResult {
@@ -2094,7 +2094,7 @@ enum ModelSortDirection {
 }
 
 type ModelPostConnection {
-  items: [Post]
+  items: [Post!]!
   nextToken: String
 }
 
@@ -2267,10 +2267,10 @@ input SearchablePostAggregationInput {
 }
 
 type SearchablePostConnection {
-  items: [Post]
+  items: [Post!]!
   nextToken: String
   total: Int
-  aggregateItems: [SearchableAggregateResult]
+  aggregateItems: [SearchableAggregateResult!]!
 }
 
 type SearchableAggregateResult {
@@ -2391,7 +2391,7 @@ enum ModelSortDirection {
 }
 
 type ModelPostConnection {
-  items: [Post]
+  items: [Post!]!
   nextToken: String
 }
 
