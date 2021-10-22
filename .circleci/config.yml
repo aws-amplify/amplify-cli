@@ -30,9 +30,207 @@ jobs:
             yarn split-e2e-tests
       - continuation/continue:
           configuration_path: .circleci/generated_config.yml # use newly generated config to continue
+  build:
+    parameters:
+      os:
+        type: executor
+        default: linux
+    executor: << parameters.os >>
+    steps:
+      - checkout
+      - run: yarn run production-build
+      - save_cache:
+          key: >-
+            amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
+            arch }}
+          paths:
+            - ~/.cache
+      - save_cache:
+          key: amplify-cli-ssh-deps-{{ .Branch }}
+          paths:
+            - ~/.ssh
+      - when:
+          condition:
+            equal:
+              - docker:
+                  - image: >-
+                      public.ecr.aws/a6e6w2n0/amplify-cli-e2e-base-image-repo-public:latest
+                working_directory: ~/repo
+                resource_class: large
+                environment:
+                  AMPLIFY_DIR: /home/circleci/repo/out
+                  AMPLIFY_PATH: /home/circleci/repo/out/amplify-pkg-linux
+              - << parameters.os >>
+          steps:
+            - persist_to_workspace:
+                root: .
+                paths: .
+  publish_to_local_registry:
+    docker:
+      - image: public.ecr.aws/a6e6w2n0/amplify-cli-e2e-base-image-repo-public:latest
+    working_directory: ~/repo
+    resource_class: large
+    environment:
+      AMPLIFY_DIR: /home/circleci/repo/out
+      AMPLIFY_PATH: /home/circleci/repo/out/amplify-pkg-linux
+    steps:
+      - attach_workspace:
+          at: ./
+      - restore_cache:
+          key: >-
+            amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
+            arch }}
+      - run:
+          name: Publish to verdaccio
+          command: |
+            source .circleci/local_publish_helpers.sh
+            startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
+            setNpmRegistryUrlToLocal
+            loginToLocalRegistry
+            git config user.email not@used.com
+            git config user.name "Doesnt Matter"
+            yarn publish-to-verdaccio
+            unsetNpmRegistryUrl
+      - run:
+          name: Generate unified changelog
+          command: |
+            git reset --hard HEAD
+            yarn update-versions
+            yarn ts-node scripts/unified-changelog.ts
+      - run:
+          name: Save new amplify GitHub tag
+          command: node scripts/echo-current-cli-version.js > .amplify-pkg-version
+      - save_cache:
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
+          paths:
+            - ~/verdaccio-cache/
+      - save_cache:
+          key: amplify-unified-changelog-{{ .Branch }}-{{ .Revision }}
+          paths:
+            - ~/repo/UNIFIED_CHANGELOG.md
+      - save_cache:
+          key: amplfiy-pkg-tag-{{ .Branch }}-{{ .Revision }}
+          paths:
+            - ~/repo/.amplify-pkg-version
+  amplify_console_integration_tests:
+    working_directory: ~/repo
+    parameters:
+      os:
+        type: executor
+        default: linux
+    executor: << parameters.os >>
+    steps:
+      - attach_workspace:
+          at: ./
+      - restore_cache:
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
+      - run:
+          name: Start verdaccio, install node CLI and amplify-app
+          command: |
+            source .circleci/local_publish_helpers.sh
+            startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
+            setNpmRegistryUrlToLocal
+            changeNpmGlobalPath
+            npm install -g @aws-amplify/cli
+            npm install -g amplify-app
+            unsetNpmRegistryUrl
+      - run:
+          command: |
+            echo "export PATH=~/.npm-global/bin:$PATH" >> $BASH_ENV
+            source $BASH_ENV
+            source .circleci/local_publish_helpers.sh
+            amplify -v
+            cd packages/amplify-console-integration-tests
+            retry yarn run console-integration --maxWorkers=3
+          name: Run Amplify Console integration tests
+          no_output_timeout: 90m
+      - run:
+          name: Scan And Cleanup E2E Test Artifacts
+          command: |
+            if ! yarn ts-node .circleci/scan_artifacts.ts; then
+              echo "Cleaning the repository"
+              git clean -fdx
+              exit 1
+            fi
+          when: always
+      - store_test_results:
+          path: packages/amplify-console-integration-tests/
+      - store_artifacts:
+          path: >-
+            ~/repo/packages/amplify-console-integration-tests/console-integration-reports
+  cleanup_resources:
+    docker:
+      - image: public.ecr.aws/a6e6w2n0/amplify-cli-e2e-base-image-repo-public:latest
+    working_directory: ~/repo
+    resource_class: large
+    environment:
+      AMPLIFY_DIR: /home/circleci/repo/out
+      AMPLIFY_PATH: /home/circleci/repo/out/amplify-pkg-linux
+    steps:
+      - attach_workspace:
+          at: ./
+      - restore_cache:
+          key: >-
+            amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{
+            arch }}
+      - run:
+          name: Run cleanup script
+          command: |
+            cd packages/amplify-e2e-tests
+            yarn clean-e2e-resources
+          no_output_timeout: 90m
+      - run:
+          name: Scan And Cleanup E2E Test Artifacts
+          command: |
+            if ! yarn ts-node .circleci/scan_artifacts.ts; then
+              echo "Cleaning the repository"
+              git clean -fdx
+              exit 1
+            fi
+          when: always
+      - store_artifacts:
+          path: ~/repo/packages/amplify-e2e-tests/amplify-e2e-reports
 
 # our single workflow, that triggers the setup job defined above
 workflows:
   setup:
     jobs:
       - setup
+  nightly_console_integration_tests:
+    triggers:
+      - schedule:
+          cron: 0 14 * * *
+          filters:
+            branches:
+              only:
+                - master
+    jobs:
+      - build
+      - publish_to_local_registry:
+          requires:
+            - build
+      - amplify_console_integration_tests:
+          context:
+            - amplify-ecr-image-pull
+            - console-e2e-test
+            - e2e-auth-credentials
+            - e2e-test-context
+          requires:
+            - build
+            - publish_to_local_registry
+  e2e_resource_cleanup:
+    triggers:
+      - schedule:
+          cron: 45 0,12 * * *
+          filters:
+            branches:
+              only:
+                - master
+    jobs:
+      - build
+      - cleanup_resources:
+          context:
+            - cleanup-resources
+            - e2e-test-context
+          requires:
+            - build
