@@ -24,14 +24,22 @@ export  async function getAuthResourceARN( context : $TSContext ) : Promise<stri
  * @param context - used to fetch auth resources and to migrate auth resources for override-feature.
  */
 export async function migrateAuthDependencyResource( context : $TSContext ) {
-    const authResourceName = await getAuthResourceARN(context);
+    let  authResourceName = undefined ;
     try {
-      await context.amplify.invokePluginMethod(context,
-                                               AmplifyCategories.AUTH, undefined,
-                                               'migrateAuthResource',
-                                               [context, authResourceName ]);
-    } catch (error) {
-      printer.error(error as string);
-      throw error;
+      authResourceName = await getAuthResourceARN(context);
+    } catch (error){
+      //No auth resources to migrate - new project
+      return;
+    }
+    if ( authResourceName ) {
+      try {
+        await context.amplify.invokePluginMethod(context,
+                                                AmplifyCategories.AUTH, undefined,
+                                                'migrateAuthResource',
+                                                [context, authResourceName ]);
+      } catch (error) {
+        printer.error(error as string);
+        throw error;
+      }
     }
 }
