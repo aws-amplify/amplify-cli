@@ -71,11 +71,6 @@ let GRAPHQL_CLIENT_2: AWSAppSyncClient<any> = undefined;
 let GRAPHQL_CLIENT_3: AWSAppSyncClient<any> = undefined;
 
 /**
- * Client 4 is logged in and is a member of the writer group
- */
-let GRAPHQL_CLIENT_4: AWSAppSyncClient<any> = undefined;
-
-/**
  * Auth IAM Client
  */
 let GRAPHQL_IAM_AUTH_CLIENT: AWSAppSyncClient<any> = undefined;
@@ -88,7 +83,6 @@ let GRAPHQL_APIKEY_CLIENT: AWSAppSyncClient<any> = undefined;
 const USERNAME1 = 'user1@test.com';
 const USERNAME2 = 'user2@test.com';
 const USERNAME3 = 'user3@test.com';
-const USERNAME4 = 'user4@test.com';
 const TMP_PASSWORD = 'Password123!';
 const REAL_PASSWORD = 'Password1234!';
 const WRITER_GROUP_NAME = 'writer';
@@ -109,46 +103,26 @@ beforeAll(async () => {
   }
   # only users in the admin group are authorized to view entries in DynamicContent
   type Todo @model
-  @searchable
-  @auth(rules: [
-      { allow: groups, groupsField: "groups"}
-  ]) {
-      id: ID!
-      groups: String
-      content: String
-  }
+      @searchable
+      @auth(rules: [
+          { allow: groups, groupsField: "groups"}
+      ]) {
+          id: ID!
+          groups: String
+          content: String
+      }
   # users with apikey perform crud operations on Post except for secret
   # only users with auth role (iam) can view the secret
-  # only private iam roles are allowed to run aggregations
   type Post @model
-    @searchable
-    @auth(rules: [
-        { allow: public, provider: apiKey }
-        { allow: private, provider: iam }
-    ]) {
-    id: ID!
-    content: String
-    secret: String @auth(rules: [{ allow: private, provider: iam }])
-  }
-  # only allow static group and dynamic group to have access on field
-  type Blog
-  @model
-  @searchable
-  @auth(rules: [{ allow: owner }, { allow: groups, groups: ["admin"] }, { allow: groups, groupsField: "groupsField" }]) {
-    id: ID!
-    title: String
-    ups: Int
-    downs: Int
-    percentageUp: Float
-    isPublished: Boolean
-    createdAt: AWSDateTime 
-    updatedAt: AWSDateTime
-    owner: String
-    groupsField: String
-    # as a member of admin and member within groupsField I can run aggregations on secret
-    secret: String @auth(rules: [{ allow: groups, groups: ["admin"] }, { allow: groups, groupsField: "groupsField" }])
-    }
-  `;
+      @searchable
+      @auth(rules: [
+          { allow: public, provider: apiKey }
+          { allow: private, provider: iam }
+      ]) {
+      id: ID!
+      content: String
+      secret: String @auth(rules: [{ allow: private, provider: iam }])
+  }`;
   const transformer = new GraphQLTransform({
     authConfig: {
       defaultAuthentication: {
@@ -218,10 +192,8 @@ beforeAll(async () => {
     await signupUser(USER_POOL_ID, USERNAME1, TMP_PASSWORD);
     await signupUser(USER_POOL_ID, USERNAME2, TMP_PASSWORD);
     await signupUser(USER_POOL_ID, USERNAME3, TMP_PASSWORD);
-    await signupUser(USER_POOL_ID, USERNAME4, TMP_PASSWORD);
     await createGroup(USER_POOL_ID, WRITER_GROUP_NAME);
     await createGroup(USER_POOL_ID, ADMIN_GROUP_NAME);
-    await addUserToGroup(WRITER_GROUP_NAME, USERNAME4, USER_POOL_ID);
     await addUserToGroup(WRITER_GROUP_NAME, USERNAME2, USER_POOL_ID);
     await addUserToGroup(ADMIN_GROUP_NAME, USERNAME2, USER_POOL_ID);
 
@@ -261,19 +233,7 @@ beforeAll(async () => {
       },
     });
 
-    const authRes4: any = await authenticateUser(USERNAME4, TMP_PASSWORD, REAL_PASSWORD);
-    const idToken4 = authRes4.getIdToken().getJwtToken();
-    GRAPHQL_CLIENT_4 = new AWSAppSyncClient({
-      url: GRAPHQL_ENDPOINT,
-      region: AWS_REGION,
-      disableOffline: true,
-      auth: {
-        type: AUTH_TYPE.AMAZON_COGNITO_USER_POOLS,
-        jwtToken: () => idToken4,
-      },
-    });
-
-    // sign out previous cognito user
+    // clear previous signed in user
     await Auth.signOut();
     await Auth.signIn(USERNAME1, REAL_PASSWORD);
     const authCreds = await Auth.currentCredentials();
@@ -563,234 +523,6 @@ test('test post as an cognito user that is not allowed in this schema', async ()
   }
 });
 
-test('test that apikey is not allowed to query aggregations on secret for post', async () => {
-  try {
-    await GRAPHQL_APIKEY_CLIENT.query({
-      query: gql`
-        query aggSearch {
-          searchPosts(aggregates: [{ name: "Terms", type: terms, field: secret }]) {
-            aggregateItems {
-              name
-              result {
-                ... on SearchableAggregateBucketResult {
-                  buckets {
-                    doc_count
-                    key
-                  }
-                }
-              }
-            }
-          }
-        }
-      `,
-    });
-  } catch (err) {
-    expect(err.graphQLErrors[0].errorType).toEqual('Unauthorized');
-    expect(err.graphQLErrors[0].message).toEqual('Unauthorized to run aggregation on field: secret');
-  }
-});
-
-test('test that iam can run aggregations on secret field', async () => {
-  try {
-    const response: any = await GRAPHQL_IAM_AUTH_CLIENT.query({
-      query: gql`
-        query aggSearch {
-          searchPosts(aggregates: [{ name: "Terms", type: terms, field: secret }]) {
-            aggregateItems {
-              name
-              result {
-                ... on SearchableAggregateBucketResult {
-                  buckets {
-                    doc_count
-                    key
-                  }
-                }
-              }
-            }
-          }
-        }
-      `,
-    });
-    expect(response.data.searchPosts).toBeDefined();
-    expect(response.data.searchPosts.aggregateItems).toHaveLength(1);
-    const aggregateItem = response.data.searchPosts.aggregateItems[0];
-    expect(aggregateItem.name).toEqual('Terms');
-    expect(aggregateItem.result.buckets).toHaveLength(3);
-    expect(aggregateItem.result.buckets).toEqual(
-      expect.arrayContaining([
-        expect.objectContaining({
-          doc_count: 1,
-          key: 'post1secret',
-        }),
-        expect.objectContaining({
-          doc_count: 1,
-          key: 'post2secret',
-        }),
-        expect.objectContaining({
-          doc_count: 1,
-          key: 'post3secret',
-        }),
-      ]),
-    );
-  } catch (err) {
-    expect(err).not.toBeDefined();
-  }
-});
-
-test('test that admin can run aggregate query on protected field', async () => {
-  try {
-    const response: any = await GRAPHQL_CLIENT_2.query({
-      query: gql`
-        query {
-          searchBlogs(aggregates: [{ name: "Terms", type: terms, field: secret }]) {
-            aggregateItems {
-              name
-              result {
-                ... on SearchableAggregateBucketResult {
-                  buckets {
-                    doc_count
-                    key
-                  }
-                }
-              }
-            }
-          }
-        }
-      `,
-    });
-    expect(response.data.searchBlogs).toBeDefined();
-    expect(response.data.searchBlogs.aggregateItems);
-    const aggregateItem = response.data.searchBlogs.aggregateItems[0];
-    expect(aggregateItem.name).toEqual('Terms');
-    expect(aggregateItem.result.buckets).toHaveLength(2);
-    expect(aggregateItem.result.buckets).toEqual(
-      expect.arrayContaining([
-        expect.objectContaining({
-          doc_count: 2,
-          key: `${USERNAME1}secret`,
-        }),
-        expect.objectContaining({
-          doc_count: 2,
-          key: `${USERNAME4}secret`,
-        }),
-      ]),
-    );
-  } catch (err) {
-    expect(err).not.toBeDefined();
-  }
-});
-
-test('test that member in writer group has writer group auth when running aggregate query', async () => {
-  try {
-    const response: any = await GRAPHQL_CLIENT_4.query({
-      query: gql`
-        query {
-          searchBlogs(aggregates: [{ name: "Terms", type: terms, field: secret }]) {
-            aggregateItems {
-              name
-              result {
-                ... on SearchableAggregateBucketResult {
-                  buckets {
-                    doc_count
-                    key
-                  }
-                }
-              }
-            }
-          }
-        }
-      `,
-    });
-    expect(response.data.searchBlogs).toBeDefined();
-    expect(response.data.searchBlogs.aggregateItems);
-    const aggregateItem = response.data.searchBlogs.aggregateItems[0];
-    expect(aggregateItem.name).toEqual('Terms');
-    expect(aggregateItem.result.buckets).toHaveLength(2);
-    expect(aggregateItem.result.buckets).toEqual(
-      expect.arrayContaining([
-        expect.objectContaining({
-          doc_count: 2,
-          key: `${USERNAME1}secret`,
-        }),
-        expect.objectContaining({
-          doc_count: 1,
-          key: `${USERNAME4}secret`,
-        }),
-      ]),
-    );
-  } catch (err) {
-    expect(err).not.toBeDefined();
-  }
-});
-
-test('test that an owner does not get any results for the agg query on the secret field', async () => {
-  try {
-    const response: any = await GRAPHQL_CLIENT_1.query({
-      query: gql`
-        query {
-          searchBlogs(aggregates: [{ name: "Terms", type: terms, field: secret }]) {
-            aggregateItems {
-              name
-              result {
-                ... on SearchableAggregateBucketResult {
-                  buckets {
-                    doc_count
-                    key
-                  }
-                }
-              }
-            }
-          }
-        }
-      `,
-    });
-    expect(response.data.searchBlogs).toBeDefined();
-    expect(response.data.searchBlogs.aggregateItems);
-    const aggregateItem = response.data.searchBlogs.aggregateItems[0];
-    expect(aggregateItem.name).toEqual('Terms');
-    expect(aggregateItem.result.buckets).toHaveLength(0);
-  } catch (err) {
-    expect(err).not.toBeDefined();
-  }
-});
-test('test that an owner can run aggregations on records which belong to them', async () => {
-  try {
-    const response: any = await GRAPHQL_CLIENT_1.query({
-      query: gql`
-        query {
-          searchBlogs(aggregates: [{ name: "Terms", type: terms, field: title }]) {
-            aggregateItems {
-              name
-              result {
-                ... on SearchableAggregateBucketResult {
-                  buckets {
-                    doc_count
-                    key
-                  }
-                }
-              }
-            }
-          }
-        }
-      `,
-    });
-    expect(response.data.searchBlogs).toBeDefined();
-    expect(response.data.searchBlogs.aggregateItems);
-    const aggregateItem = response.data.searchBlogs.aggregateItems[0];
-    expect(aggregateItem.name).toEqual('Terms');
-    expect(aggregateItem.result.buckets).toHaveLength(1);
-    expect(aggregateItem.result.buckets).toEqual(
-      expect.arrayContaining([
-        expect.objectContaining({
-          doc_count: 2,
-          key: 'cooking',
-        }),
-      ]),
-    );
-  } catch (err) {
-    expect(err).not.toBeDefined();
-  }
-});
 /**
  * Input types
  *  */
@@ -809,14 +541,6 @@ type CreatePostInput = {
   id?: string | null;
   content?: string | null;
   secret?: string | null;
-};
-export type CreateBlogInput = {
-  id?: string;
-  title?: string;
-  ups?: number;
-  owner?: string;
-  groupsField?: string;
-  secret?: string;
 };
 
 // mutations
@@ -856,27 +580,6 @@ async function createPost(client: AWSAppSyncClient<any>, input: CreatePostInput)
   return await client.mutate({ mutation: create, variables: { input } });
 }
 
-async function createBlog(client: AWSAppSyncClient<any>, input: CreateBlogInput) {
-  const create = gql`
-    mutation CreateBlog($input: CreateBlogInput!) {
-      createBlog(input: $input) {
-        id
-        title
-        ups
-        downs
-        percentageUp
-        isPublished
-        createdAt
-        updatedAt
-        owner
-        groupsField
-        secret
-      }
-    }
-  `;
-  return await client.mutate({ mutation: create, variables: { input } });
-}
-
 const createEntries = async () => {
   await createComment(GRAPHQL_CLIENT_1, {
     content: 'ownerContent',
@@ -891,28 +594,6 @@ const createEntries = async () => {
     await createTodo(GRAPHQL_CLIENT_2, { groups: 'admin', content: `adminContent${i}` });
     await createPost(GRAPHQL_IAM_AUTH_CLIENT, { content: `post${i}`, secret: `post${i}secret` });
   }
-  await createBlog(GRAPHQL_CLIENT_2, {
-    groupsField: WRITER_GROUP_NAME,
-    owner: USERNAME1,
-    secret: `${USERNAME1}secret`,
-    ups: 10,
-    title: 'cooking',
-  });
-  await createBlog(GRAPHQL_CLIENT_2, {
-    groupsField: WRITER_GROUP_NAME,
-    owner: USERNAME1,
-    secret: `${USERNAME1}secret`,
-    ups: 10,
-    title: 'cooking',
-  });
-  await createBlog(GRAPHQL_CLIENT_2, {
-    groupsField: WRITER_GROUP_NAME,
-    owner: USERNAME4,
-    secret: `${USERNAME4}secret`,
-    ups: 25,
-    title: 'golfing',
-  });
-  await createBlog(GRAPHQL_CLIENT_2, { groupsField: 'editor', owner: USERNAME4, secret: `${USERNAME4}secret`, ups: 10, title: 'cooking' });
   // Waiting for the ES Cluster + Streaming Lambda infra to be setup
   await cf.wait(120, () => Promise.resolve());
 };

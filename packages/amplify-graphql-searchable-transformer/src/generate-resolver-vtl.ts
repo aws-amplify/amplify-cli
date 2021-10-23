@@ -28,8 +28,6 @@ export function requestTemplate(primaryKey: string, nonKeywordFields: Expression
   return print(
     compoundExpression([
       set(ref('indexPath'), str(`/${type.toLowerCase()}/doc/_search`)),
-      set(ref('allowedAggFields'), methodCall(ref('util.defaultIfNull'), ref('ctx.stash.allowedAggFields'), list([]))),
-      set(ref('aggFieldsFilterMap'), methodCall(ref('util.defaultIfNull'), ref('ctx.stash.aggFieldsFilterMap'), obj({}))),
       set(ref('nonKeywordFields'), list(nonKeywordFields)),
       set(ref('sortValues'), list([])),
       set(ref('aggregateValues'), obj({})),
@@ -68,23 +66,10 @@ export function requestTemplate(primaryKey: string, nonKeywordFields: Expression
         ]),
       ),
       forEach(ref('aggItem'), ref('context.args.aggregates'), [
-        raw(
-          '#if( $allowedAggFields.contains($aggItem.field) )\n' +
-            '    #set( $aggFilter = { "match_all": {} } )\n' +
-            '  #elseif( $aggFieldsFilterMap.containsKey($aggItem.field) )\n' +
-            '    #set( $aggFilter = { "bool": { "should": $aggFieldsFilterMap.get($aggItem.field) } } )\n' +
-            '  #else\n' +
-            '    $util.error("Unauthorized to run aggregation on field: ${aggItem.field}", "Unauthorized")\n' +
-            '  #end',
-        ),
         ifElse(
           ref('nonKeywordFields.contains($aggItem.field)'),
-          qref(
-            '$aggregateValues.put("$aggItem.name", { "filter": $aggFilter, "aggs": { "$aggItem.name": { "$aggItem.type": { "field": "$aggItem.field" }}} })',
-          ),
-          qref(
-            '$aggregateValues.put("$aggItem.name", { "filter": $aggFilter, "aggs": { "$aggItem.name": { "$aggItem.type": { "field": "${aggItem.field}.keyword" }}} })',
-          ),
+          qref('$aggregateValues.put("$aggItem.name", {"$aggItem.type": {"field": "$aggItem.field"}})'),
+          qref('$aggregateValues.put("$aggItem.name", {"$aggItem.type": {"field": "${aggItem.field}.keyword"}})'),
         ),
       ]),
       ifElse(
@@ -138,23 +123,22 @@ export function responseTemplate(includeVersion = false) {
       forEach(ref('aggItem'), ref('context.result.aggregations.keySet()'), [
         set(ref('aggResult'), obj({})),
         set(ref('aggResultValue'), obj({})),
-        set(ref('currentAggItem'), ref('ctx.result.aggregations.get($aggItem)')),
         qref('$aggResult.put("name", $aggItem)'),
         iff(
-          raw('!$util.isNullOrEmpty($currentAggItem)'),
+          raw('!$util.isNullOrEmpty($context.result.aggregations)'),
           compoundExpression([
             iff(
-              raw('!$util.isNullOrEmpty($currentAggItem.get($aggItem).buckets)'),
+              raw('!$util.isNullOrEmpty($context.result.aggregations.get($aggItem).buckets)'),
               compoundExpression([
                 qref('$aggResultValue.put("__typename", "SearchableAggregateBucketResult")'),
-                qref('$aggResultValue.put("buckets", $currentAggItem.get($aggItem).buckets)'),
+                qref('$aggResultValue.put("buckets", $context.result.aggregations.get($aggItem).buckets)'),
               ]),
             ),
             iff(
-              raw('!$util.isNullOrEmpty($currentAggItem.get($aggItem).value)'),
+              raw('!$util.isNullOrEmpty($context.result.aggregations.get($aggItem).value)'),
               compoundExpression([
                 qref('$aggResultValue.put("__typename", "SearchableAggregateScalarResult")'),
-                qref('$aggResultValue.put("value", $currentAggItem.get($aggItem).value)'),
+                qref('$aggResultValue.put("value", $context.result.aggregations.get($aggItem).value)'),
               ]),
             ),
           ]),

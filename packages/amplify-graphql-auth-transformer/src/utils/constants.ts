@@ -32,10 +32,3 @@ export const MANAGE_ROLE = '_Manage-only/CognitoIdentityCredentials';
 export const NONE_DS = 'NONE_DS';
 // relational directives
 export const RELATIONAL_DIRECTIVES = ['hasOne', 'belongsTo', 'hasMany', 'manyToMany'];
-// searchable directive
-export const SEARCHABLE_AGGREGATE_TYPES = [
-  'SearchableAggregateResult',
-  'SearchableAggregateScalarResult',
-  'SearchableAggregateBucketResult',
-  'SearchableAggregateBucketResultItem',
-];

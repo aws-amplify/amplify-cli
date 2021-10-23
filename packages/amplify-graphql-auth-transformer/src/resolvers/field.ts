@@ -20,7 +20,6 @@ import {
   qref,
   notEquals,
   obj,
-  list,
 } from 'graphql-mapping-template';
 import {
   RoleDefinition,
@@ -32,7 +31,7 @@ import {
   IS_AUTHORIZED_FLAG,
   API_KEY_AUTH_TYPE,
 } from '../utils';
-import { getOwnerClaim, generateStaticRoleExpression, apiKeyExpression, iamExpression, emptyPayload, getIdentityClaimExp } from './helpers';
+import { getOwnerClaim, generateStaticRoleExpression, apiKeyExpression, iamExpression, emptyPayload } from './helpers';
 
 // Field Read VTL Functions
 const generateDynamicAuthReadExpression = (roles: Array<RoleDefinition>, fields: ReadonlyArray<FieldDefinitionNode>) => {
@@ -67,15 +66,15 @@ const generateDynamicAuthReadExpression = (roles: Array<RoleDefinition>, fields:
           not(ref(IS_AUTHORIZED_FLAG)),
           compoundExpression([
             set(ref(`groupEntity${idx}`), methodCall(ref('util.defaultIfNull'), ref(`ctx.source.${role.entity!}`), nul())),
-            set(ref(`groupClaim${idx}`), getIdentityClaimExp(str(role.claim), list([]))),
-            entityIsList
-              ? forEach(ref('userGroup'), ref(`groupClaim${idx}`), [
-                  iff(
-                    methodCall(ref(`groupEntity${idx}.contains`), ref('userGroup')),
-                    compoundExpression([set(ref(IS_AUTHORIZED_FLAG), bool(true)), raw('#break')]),
-                  ),
-                ])
-              : iff(ref(`groupClaim${idx}.contains($groupEntity${idx})`), set(ref(IS_AUTHORIZED_FLAG), bool(true))),
+            set(ref(`groupClaim${idx}`), getOwnerClaim(role.claim!)),
+            forEach(ref('userGroup'), ref('dynamicGroupClaim'), [
+              iff(
+                entityIsList
+                  ? methodCall(ref(`groupEntity${idx}.contains`), ref('userGroup'))
+                  : equals(ref(`groupEntity${idx}`), ref('userGroup')),
+                compoundExpression([set(ref(IS_AUTHORIZED_FLAG), bool(true)), raw('#break')]),
+              ),
+            ]),
           ]),
         ),
       );

@@ -1,5 +1,4 @@
-export { generateAuthExpressionForQueries, generateAuthExpressionForRelationQuery } from './query';
-export { generateAuthExpressionForSearchQueries } from './search';
+export { generateAuthExpressionForQueries, generateAuthExpressionForSearchQueries, generateAuthExpressionForRelationQuery } from './query';
 export { generateAuthExpressionForCreate } from './mutation.create';
 export { generateAuthExpressionForUpdate } from './mutation.update';
 export { geneateAuthExpressionForDelete } from './mutation.delete';

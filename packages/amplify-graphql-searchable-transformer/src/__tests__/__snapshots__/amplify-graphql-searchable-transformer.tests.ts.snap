@@ -1032,8 +1032,6 @@ $util.toJson($ListRequest)
 #end
 ## [End] ResponseTemplate. **",
   "Query.searchPosts.req.vtl": "#set( $indexPath = \\"/post/doc/_search\\" )
-#set( $allowedAggFields = $util.defaultIfNull($ctx.stash.allowedAggFields, []) )
-#set( $aggFieldsFilterMap = $util.defaultIfNull($ctx.stash.aggFieldsFilterMap, {}) )
 #set( $nonKeywordFields = [] )
 #set( $sortValues = [] )
 #set( $aggregateValues = {} )
@@ -1070,17 +1068,10 @@ $util.toJson($ListRequest)
   #end
 #end
 #foreach( $aggItem in $context.args.aggregates )
-  #if( $allowedAggFields.contains($aggItem.field) )
-    #set( $aggFilter = { \\"match_all\\": {} } )
-  #elseif( $aggFieldsFilterMap.containsKey($aggItem.field) )
-    #set( $aggFilter = { \\"bool\\": { \\"should\\": $aggFieldsFilterMap.get($aggItem.field) } } )
-  #else
-    $util.error(\\"Unauthorized to run aggregation on field: \${aggItem.field}\\", \\"Unauthorized\\")
-  #end
   #if( $nonKeywordFields.contains($aggItem.field) )
-    $util.qr($aggregateValues.put(\\"$aggItem.name\\", { \\"filter\\": $aggFilter, \\"aggs\\": { \\"$aggItem.name\\": { \\"$aggItem.type\\": { \\"field\\": \\"$aggItem.field\\" }}} }))
+    $util.qr($aggregateValues.put(\\"$aggItem.name\\", {\\"$aggItem.type\\": {\\"field\\": \\"$aggItem.field\\"}}))
   #else
-    $util.qr($aggregateValues.put(\\"$aggItem.name\\", { \\"filter\\": $aggFilter, \\"aggs\\": { \\"$aggItem.name\\": { \\"$aggItem.type\\": { \\"field\\": \\"\${aggItem.field}.keyword\\" }}} }))
+    $util.qr($aggregateValues.put(\\"$aggItem.name\\", {\\"$aggItem.type\\": {\\"field\\": \\"\${aggItem.field}.keyword\\"}}))
   #end
 #end
 #if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
@@ -1129,16 +1120,15 @@ $util.toJson($ListRequest)
 #foreach( $aggItem in $context.result.aggregations.keySet() )
   #set( $aggResult = {} )
   #set( $aggResultValue = {} )
-  #set( $currentAggItem = $ctx.result.aggregations.get($aggItem) )
   $util.qr($aggResult.put(\\"name\\", $aggItem))
-  #if( !$util.isNullOrEmpty($currentAggItem) )
-    #if( !$util.isNullOrEmpty($currentAggItem.get($aggItem).buckets) )
+  #if( !$util.isNullOrEmpty($context.result.aggregations) )
+    #if( !$util.isNullOrEmpty($context.result.aggregations.get($aggItem).buckets) )
       $util.qr($aggResultValue.put(\\"__typename\\", \\"SearchableAggregateBucketResult\\"))
-      $util.qr($aggResultValue.put(\\"buckets\\", $currentAggItem.get($aggItem).buckets))
+      $util.qr($aggResultValue.put(\\"buckets\\", $context.result.aggregations.get($aggItem).buckets))
     #end
-    #if( !$util.isNullOrEmpty($currentAggItem.get($aggItem).value) )
+    #if( !$util.isNullOrEmpty($context.result.aggregations.get($aggItem).value) )
       $util.qr($aggResultValue.put(\\"__typename\\", \\"SearchableAggregateScalarResult\\"))
-      $util.qr($aggResultValue.put(\\"value\\", $currentAggItem.get($aggItem).value))
+      $util.qr($aggResultValue.put(\\"value\\", $context.result.aggregations.get($aggItem).value))
     #end
   #end
   $util.qr($aggResult.put(\\"result\\", $aggResultValue))

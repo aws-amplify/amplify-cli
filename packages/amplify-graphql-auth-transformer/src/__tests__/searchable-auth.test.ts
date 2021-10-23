@@ -1,29 +1,8 @@
-import { AuthTransformer, SEARCHABLE_AGGREGATE_TYPES } from '../';
+import { AuthTransformer } from '../graphql-auth-transformer';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { SearchableModelTransformer } from '@aws-amplify/graphql-searchable-transformer';
 import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
 import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-interfaces';
-import { DocumentNode, ObjectTypeDefinitionNode, Kind, FieldDefinitionNode, parse, InputValueDefinitionNode } from 'graphql';
-
-const getObjectType = (doc: DocumentNode, type: string): ObjectTypeDefinitionNode | undefined => {
-  return doc.definitions.find(def => def.kind === Kind.OBJECT_TYPE_DEFINITION && def.name.value === type) as
-    | ObjectTypeDefinitionNode
-    | undefined;
-};
-const expectMultiple = (fieldOrType: ObjectTypeDefinitionNode | FieldDefinitionNode, directiveNames: string[]) => {
-  expect(directiveNames).toBeDefined();
-  expect(directiveNames).toHaveLength(directiveNames.length);
-  expect(fieldOrType.directives.length).toEqual(directiveNames.length);
-  directiveNames.forEach(directiveName => {
-    expect(fieldOrType.directives).toEqual(
-      expect.arrayContaining([
-        expect.objectContaining({
-          name: expect.objectContaining({ value: directiveName }),
-        }),
-      ]),
-    );
-  });
-};
 
 test('auth logic is enabled on owner/static rules in es request', () => {
   const validSchema = `
@@ -68,7 +47,6 @@ test('auth logic is enabled on owner/static rules in es request', () => {
 });
 
 test('auth logic is enabled for iam/apiKey auth rules', () => {
-  const expectedDirectives = ['aws_api_key', 'aws_iam'];
   const validSchema = `
         type Post @model
             @searchable
@@ -111,14 +89,5 @@ test('auth logic is enabled for iam/apiKey auth rules', () => {
   });
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
-  expect(out.schema).toBeDefined();
-  const schemaDoc = parse(out.schema);
-  for (const aggregateType of SEARCHABLE_AGGREGATE_TYPES) {
-    expectMultiple(getObjectType(schemaDoc, aggregateType), expectedDirectives);
-  }
-  // expect the searchbable types to have the auth directives for total providers
-  // expect the allowed fields for agg to exclude secret
-  expect(out.pipelineFunctions['Query.searchPosts.auth.1.req.vtl']).toContain(
-    `#set( $allowedAggFields = ["createdAt","updatedAt","id","content"] )`,
-  );
+  expect(out.schema).toContain('SearchablePostConnection @aws_api_key @aws_iam');
 });
