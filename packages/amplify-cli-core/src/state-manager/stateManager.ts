@@ -8,7 +8,6 @@ import { SecretFileMode } from '../cliConstants';
 import { HydrateTags, ReadTags, Tag } from '../tags';
 import { CustomIAMPolicies } from '../customPoliciesUtils';
 
-
 export type GetOptions<T> = {
   throwIfNotExist?: boolean;
   preserveComments?: boolean;
@@ -78,13 +77,9 @@ export class StateManager {
     return this.getData<$TSTeamProviderInfo>(filePath, mergedOptions);
   };
 
-  getCustomPolicies = (categoryName: string, resourceName: string): CustomIAMPolicies | undefined => {
+  getCustomPolicies = (categoryName: string, resourceName: string): CustomIAMPolicies => {
     const filePath = pathManager.getCustomPoliciesPath(categoryName, resourceName);
-    try{
-      return JSONUtilities.readJson<CustomIAMPolicies>(filePath);
-    } catch(err) {
-      return undefined;
-    }
+    return JSONUtilities.readJson<CustomIAMPolicies>(filePath, { throwIfNotExist: false }) || [];
   };
 
   localEnvInfoExists = (projectPath?: string): boolean => this.doesExist(pathManager.getLocalEnvFilePath, projectPath);
@@ -379,5 +374,3 @@ export class StateManager {
 }
 
 export const stateManager = new StateManager();
-
-

@@ -1,64 +1,205 @@
-import { Fn, IAM } from 'cloudform-types';
-import { JSONUtilities, pathManager } from '.';
+import { Fn, IAM, Template } from 'cloudform-types';
+import { pathManager, stateManager } from './state-manager';
+import Ajv from 'ajv';
+import { EOL } from 'os';
+import * as _ from 'lodash';
+import { printer } from 'amplify-prompts';
+import { JSONUtilities } from './jsonUtilities';
+import { CustomPoliciesFormatError } from './errors';
 
 export type CustomIAMPolicies = CustomIAMPolicy[];
-
 export type CustomIAMPolicy = {
-    Action: string[];
-    Effect: string;
-    Resource: string[];
-}
+  Action: string[];
+  Effect?: string;
+  Resource: string[];
+};
 
 export const CustomIAMPoliciesSchema = {
-  type : 'array',
+  type: 'array',
   minItems: 1,
   items: {
     type: 'object',
     properties: {
       Action: { type: 'array', items: { type: 'string' }, minItems: 1, nullable: false },
-      Resource: { type: 'array', items: { type: 'string' }, minItems: 1, nullable: false }
+      Resource: { type: 'array', items: { type: 'string' }, minItems: 1, nullable: false },
     },
     optionalProperties: {
-      Effect: { type: 'string', enum:['Allow', 'Deny'], default: 'Allow' },
+      Effect: { type: 'string', enum: ['Allow', 'Deny'], default: 'Allow' },
     },
     required: ['Resource', 'Action'],
-    additionalProperties: true
+    additionalProperties: true,
   },
-  additionalProperties: false
-}
-
-export const customExecutionPolicyForFunction = new IAM.Policy({
-    PolicyName: 'custom-lambda-execution-policy',
-    Roles: [
-      Fn.Ref('LambdaExecutionRole')
-    ],
-    PolicyDocument: {
-      Version: '2012-10-17',
-      Statement: []
-    }
-  }).dependsOn(['LambdaExecutionRole']);
-
-export const customExecutionPolicyForContainer = new IAM.Policy({
-    PolicyDocument: {
-        Statement: [
-        ],
-        Version: '2012-10-17'
-    },
-    PolicyName: 'CustomExecutionPolicyForContainer',
-    Roles: [
-    ]
-  });
+  additionalProperties: false,
+};
 
 export function createDefaultCustomPoliciesFile(categoryName: string, resourceName: string) {
   const customPoliciesPath = pathManager.getCustomPoliciesPath(categoryName, resourceName);
   const defaultCustomPolicies = [
     {
       Action: [],
-      Resource: []
-    }
-  ]
+      Resource: [],
+    },
+  ];
   JSONUtilities.writeJson(customPoliciesPath, defaultCustomPolicies);
 }
 
+export function generateCustomPoliciesInTemplate(template: Template, resourceName: string, service: string, category: string): Template {
+  if ((category === 'api' && service === 'ElasticContainer') || (category === 'function' && service === 'Lambda')) {
+    const customPolicies = stateManager.getCustomPolicies(category, resourceName);
+    if (!resourceHasCustomPolicies(customPolicies)) {
+      if (template.Resources && template.Resources.CustomLambdaExecutionPolicy) {
+        delete template.Resources.CustomLambdaExecutionPolicy;
+      }
+      if (template.Resources && template.Resources.CustomExecutionPolicyForContainer) {
+        delete template.Resources.CustomExecutionPolicyForContainer;
+      }
+      return template;
+    }
 
+    validateCustomPolicies(customPolicies, category, resourceName);
+    return addCustomPoliciesToCFNTemplate(service, category, customPolicies, template, resourceName);
+  }
+  return template;
+}
 
+function addCustomPoliciesToCFNTemplate(
+  service: string,
+  category: string,
+  customPolicies: CustomIAMPolicies,
+  cfnTemplate: Template,
+  resourceName: string,
+): Template {
+  warnWildcardCustomPoliciesResource(customPolicies, resourceName);
+  const generatedCustomPolicies = generateCustomPolicyStatements(customPolicies);
+  if (category === 'function' && service === 'Lambda') {
+    return applyCustomPolicyToLambda(generatedCustomPolicies, cfnTemplate);
+  }
+
+  if (category === 'api' && service === 'ElasticContainer') {
+    return applyCustomPolicyToElasticContainers(generatedCustomPolicies, cfnTemplate);
+  }
+
+  return cfnTemplate;
+}
+
+function generateCustomPolicyStatements(customPolicies: CustomIAMPolicies): CustomIAMPolicies {
+  return customPolicies.map(policyStatement => ({
+    ...replaceEnvWithRef(policyStatement),
+    Effect: policyStatement.Effect || 'Allow',
+  }));
+}
+
+function replaceEnvWithRef(policy: CustomIAMPolicy): CustomIAMPolicy {
+  const resource = policy.Resource.map(resource =>
+    resource.includes('${env}') ? Fn.Sub(resource, { env: Fn.Ref('env') }) : resource,
+  ) as any[];
+  policy.Resource = resource;
+  return policy;
+}
+
+function validateCustomPolicies(data: CustomIAMPolicies, categoryName: string, resourceName: string) {
+  const ajv = new Ajv();
+  //validate if the policies match the custom IAM policies schema, if not, then not write into the CFN template
+  const validatePolicy = ajv.compile(CustomIAMPoliciesSchema);
+  const valid = validatePolicy(data);
+  if (!valid) {
+    let errorMessage = `Invalid custom IAM policies in the ${resourceName} ${categoryName}.\n
+    Edit <project-dir>/amplify/backend/function/${resourceName}/custom-policies.json to fix
+    Learn more about custom IAM policies for ${categoryName}: https://docs.amplify.aws/function/custom-policies\n`;
+    if (validatePolicy && validatePolicy.errors) {
+      errorMessage += validatePolicy.errors?.map((error: Ajv.ErrorObject) => error.message).join(EOL);
+    }
+
+    throw new CustomPoliciesFormatError(errorMessage);
+  }
+
+  for (const customPolicy of data) {
+    const resources = customPolicy.Resource;
+    const actions = customPolicy.Action;
+    const resourceRegex = new RegExp('arn:(aws[a-zA-Z0-9-]*):([a-zA-Z0-9\\-])+:([a-z]{2}(-gov)?-[a-z]+-\\d{1})?:(\\d{12})?:(.*)');
+    const actionRegex = new RegExp('[a-zA-Z0-9]+:[a-z|A-Z|0-9|*]+');
+    const wrongResourcesRegex = [];
+    const wrongActionsRegex = [];
+    let errorMessage = '';
+
+    for (const resource of resources) {
+      if (!(resourceRegex.test(resource) || resource === '*')) {
+        wrongResourcesRegex.push(resource);
+      }
+    }
+
+    for (const action of actions) {
+      if (!actionRegex.test(action)) {
+        wrongActionsRegex.push(action);
+      }
+    }
+
+    const customPoliciesPath = pathManager.getCustomPoliciesPath(categoryName, resourceName);
+
+    if (wrongResourcesRegex.length > 0) {
+      errorMessage += `Invalid custom IAM policy for ${resourceName}. Incorrect "Resource": ${wrongResourcesRegex.toString()}\n Edit ${customPoliciesPath} to fix`;
+    }
+    if (wrongActionsRegex.length > 0) {
+      errorMessage += `Invalid custom IAM policy for ${resourceName}. Incorrect "Action": ${wrongActionsRegex.toString()}\n Edit ${customPoliciesPath} to fix`;
+    }
+
+    if (errorMessage.length > 0) {
+      throw new CustomPoliciesFormatError(errorMessage);
+    }
+  }
+}
+
+function resourceHasCustomPolicies(customPolicies: CustomIAMPolicies | undefined): boolean {
+  if (!customPolicies || customPolicies.length === 0) {
+    return false;
+  }
+
+  if (customPolicies.length === 1 && customPolicies[0].Action?.length === 0 && customPolicies[0].Resource?.length === 0) {
+    return false;
+  }
+
+  return true;
+}
+
+function warnWildcardCustomPoliciesResource(customPolicies: CustomIAMPolicy[], resourceName: string) {
+  customPolicies
+    .filter(policy => policy.Resource.includes('*'))
+    .forEach(policy =>
+      printer.warn(
+        `Warning: You've specified "*" as the "Resource" in ${resourceName}'s custom IAM policy.\n This will grant ${resourceName} the ability to perform ${policy.Action} on ALL resources in this AWS Account.`,
+      ),
+    );
+}
+
+function applyCustomPolicyToLambda(generatedCustomPolicies: CustomIAMPolicies, cfnTemplate: Template): Template {
+  const policy = new IAM.Policy({
+    PolicyName: 'custom-lambda-execution-policy',
+    PolicyDocument: {
+      Version: '2012-10-17',
+      Statement: generatedCustomPolicies,
+    },
+    Roles: [Fn.Ref('LambdaExecutionRole')],
+  });
+  policy.dependsOn('LambdaExecutionRole');
+  _.set(cfnTemplate, ['Resources', 'CustomLambdaExecutionPolicy'], policy);
+
+  return cfnTemplate;
+}
+
+function applyCustomPolicyToElasticContainers(generatedCustomPolicies: CustomIAMPolicies, cfnTemplate: Template): Template {
+  const taskRoleArn = _.get(cfnTemplate, ['Resources', 'TaskDefinition', 'Properties', 'TaskRoleArn', 'Fn::GetAtt']);
+  if (!taskRoleArn) {
+    printer.warn('Cannot apply custom policies could not find Task Role');
+    return cfnTemplate;
+  }
+  const policy = new IAM.Policy({
+    PolicyDocument: {
+      Statement: generatedCustomPolicies,
+      Version: '2012-10-17',
+    },
+    PolicyName: 'CustomExecutionPolicyForContainer',
+    Roles: [Fn.Ref(taskRoleArn[0])],
+  });
+  _.set(cfnTemplate, ['Resources', 'CustomExecutionPolicyForContainer'], policy);
+  return cfnTemplate;
+}
