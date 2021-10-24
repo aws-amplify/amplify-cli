@@ -1,13 +1,13 @@
 /* eslint-disable no-new */
 import {
+  AppSyncAuthConfiguration,
   FeatureFlagProvider,
   GraphQLAPIProvider,
   TransformerPluginProvider,
   TransformHostProvider,
-  AppSyncAuthConfiguration,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { AuthorizationMode, AuthorizationType } from '@aws-cdk/aws-appsync';
-import { App, Aws, CfnOutput, Fn } from '@aws-cdk/core';
+import { App, Aws, CfnOutput, CfnResource, Fn } from '@aws-cdk/core';
 import assert from 'assert';
 import {
   EnumTypeDefinitionNode,
@@ -24,14 +24,17 @@ import {
   TypeExtensionNode,
   UnionTypeDefinitionNode,
 } from 'graphql';
-import { AppSyncAuthConfiguration, ResolverConfig, TransformConfig } from '../config/transformer-config';
+import _ from 'lodash';
+import { ResolverConfig, TransformConfig } from '../config/transformer-config';
 import { InvalidTransformerError, SchemaValidationError, UnknownDirectiveError } from '../errors';
 import { GraphQLApi } from '../graphql-api';
 import { TransformerContext } from '../transformer-context';
 import { TransformerOutput } from '../transformer-context/output';
 import { StackManager } from '../transformer-context/stack-manager';
+import { AppSyncServiceResourceStack } from '../types/amplify-api-resource-stack-types';
+import { ConstructResourceMeta } from '../types/types';
+import { getStackMeta } from '../types/utils';
 import { adoptAuthModes, IAM_AUTH_ROLE_PARAMETER, IAM_UNAUTH_ROLE_PARAMETER } from '../utils/authType';
-import { TransformConfig } from '../config';
 import * as SyncUtils from './sync-utils';
 import { MappingTemplate } from '../cdk-compat';
 
@@ -45,7 +48,7 @@ import {
   matchInputFieldDirective,
   sortTransformerPlugins,
 } from './utils';
-import { validateModelSchema, validateAuthModes } from './validation';
+import { validateAuthModes, validateModelSchema } from './validation';
 
 // eslint-disable-next-line @typescript-eslint/ban-types
 function isFunction(obj: any): obj is Function {
@@ -254,29 +257,86 @@ export class GraphQLTransform {
       reverseThroughTransformers -= 1;
     }
     this.collectResolvers(context, context.api);
-    this.applyOverride(stackManager);
+    this.applyOverride(context, stackManager);
     return this.synthesize(context);
   }
 
-  private applyOverride = (stackManager: StackManager) => {
-    stackManager.rootStack.node
-      .findAll()
-      .forEach(node =>
-        console.log(
-          'path = ',
-          node.node.path,
-          '\n',
-          'id =',
-          node.node.id,
-          '\n',
-          'children=',
-          node.node.children,
-          '\n',
-          'defaultChild=',
-          node.node.defaultChild,
-          '\n',
-        ),
-      );
+  private applyOverride = (context: TransformerContext, stackManager: StackManager) => {
+    let stacks: string[] = [];
+    let amplifyApiObj: any = {};
+    stackManager.rootStack.node.findAll().forEach(node => {
+      const resource = node as CfnResource;
+      // console.log(node.node.id)
+      // console.log(node.node.path)
+      // console.log(resource.cfnResourceType);
+
+      if (resource.cfnResourceType === 'AWS::CloudFormation::Stack') {
+        stacks.push(node.node.id.split('.')[0]);
+      }
+    });
+    console.log('stacks = ', stacks);
+    stackManager.rootStack.node.findAll().forEach(node => {
+      const resource = node as CfnResource;
+      // console.log(node.node.id)
+      // console.log(node.node.path)
+      // console.log(resource.cfnResourceType);
+
+      let pathArr = node.node.path.split('/').filter(key => key !== node.node.id);
+      let constructPathObj: ConstructResourceMeta;
+      if (resource.cfnResourceType) {
+        constructPathObj = getStackMeta(pathArr, node.node.id, stacks, resource);
+        if (!_.isEmpty(constructPathObj.rootStack)) {
+          // api scope
+          const field = constructPathObj.rootStack!.stackType;
+          const resourceName = constructPathObj.resourceName;
+          if (!amplifyApiObj[field]) {
+            amplifyApiObj[field] = {};
+          }
+          amplifyApiObj[field][resourceName] = resource;
+        } else if (!_.isEmpty(constructPathObj.nestedStack)) {
+          const fieldType = constructPathObj.nestedStack!.stackType;
+          const fieldName = constructPathObj.nestedStack!.stackName;
+          const resourceName = constructPathObj.resourceName;
+          if (constructPathObj.resourceType.includes('Resolver')) {
+            if (amplifyApiObj[fieldType][fieldName]['resolvers']) {
+              amplifyApiObj[fieldType][fieldName]['resolvers'][resourceName] = resource;
+            } else {
+              amplifyApiObj[fieldType][fieldName]['resolvers'] = {};
+              amplifyApiObj[fieldType][fieldName]['resolvers'][resourceName] = resource;
+            }
+          } else if (constructPathObj.resourceType.includes('FunctionConfiguration')) {
+            if (amplifyApiObj[fieldType][fieldName]['appsyncFunctions']) {
+              amplifyApiObj[fieldType][fieldName]['appsyncFunctions'][resourceName] = resource;
+            } else {
+              amplifyApiObj[fieldType][fieldName]['appsyncFunctions'] = {};
+              amplifyApiObj[fieldType][fieldName]['appsyncFunctions'][resourceName] = resource;
+            }
+          } else {
+            if (amplifyApiObj[fieldType]) {
+              if (amplifyApiObj[fieldType][fieldName]) {
+                amplifyApiObj[fieldType][fieldName][resourceName] = resource;
+              } else {
+                amplifyApiObj[fieldType][fieldName] = {};
+                amplifyApiObj[fieldType][fieldName][resourceName] = resource;
+              }
+            } else {
+              amplifyApiObj[fieldType] = {};
+              if (amplifyApiObj[fieldType][fieldName]) {
+                amplifyApiObj[fieldType][fieldName][resourceName] = resource;
+              } else {
+                amplifyApiObj[fieldType][fieldName] = {};
+                amplifyApiObj[fieldType][fieldName][resourceName] = resource;
+              }
+            }
+          }
+        }
+      }
+    });
+    console.log('Myobject = ', amplifyApiObj);
+    // convertToAppsyncResourceObj(amplifyApiObj);
+    const obj = amplifyApiObj as AppSyncServiceResourceStack;
+    console.log(obj.http?.httpsDataSource);
+    // ConvertToAppsyncResourceStackObj()
   };
 
   private generateGraphQlApi(stackManager: StackManager, output: TransformerOutput) {
