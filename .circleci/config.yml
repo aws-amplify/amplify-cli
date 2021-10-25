@@ -9,11 +9,11 @@ jobs:
       - run:
           name: Run scheduled workflow
           command: |
-            curl --location --request POST 'https://circleci.com/api/v2/project/github/aws-amplify/amplify-cli/pipeline' \
+            curl --location --request POST 'https://circleci.com/api/v2/project/gh/aws-amplify/amplify-cli/pipeline' \
             --header 'Content-Type: application/json' \
             -u "${CCI_CONTINUATION_TOKEN}:" \
             --data-raw '{
-              "branch": "reenable-nightly-workflows",
+              "branch": "master",
                 "parameters": {
                   "setup": false,
                   "nightly_console_integration_tests": true,
@@ -27,11 +27,11 @@ jobs:
       - run:
           name: Run scheduled workflow
           command: |
-            curl --location --request POST 'https://circleci.com/api/v2/project/github/aws-amplify/amplify-cli/pipeline' \
+            curl --location --request POST 'https://circleci.com/api/v2/project/gh/aws-amplify/amplify-cli/pipeline' \
             --header 'Content-Type: application/json' \
             -u "${CCI_CONTINUATION_TOKEN}:" \
             --data-raw '{
-              "branch": "reenable-nightly-workflows",
+              "branch": "master",
                 "parameters": {
                   "setup": false,
                   "nightly_console_integration_tests": false,
