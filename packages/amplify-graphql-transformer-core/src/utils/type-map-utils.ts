@@ -15,7 +15,7 @@ import {
 
 
 export function collectDirectives(sdl: string): DirectiveNode[] {
-  if (!sdl) {
+  if (sdl.trim() === '') {
     return [];
   }
   const doc = parse(sdl);
@@ -64,7 +64,7 @@ export function collectDirectivesByTypeNames(sdl: string) {
 }
 
 export function collectDirectivesByType(sdl: string): Record<string, DirectiveNode[]> {
-  if (!sdl) {
+  if (sdl.trim() === '') {
     return {};
   }
   const doc = parse(sdl);
