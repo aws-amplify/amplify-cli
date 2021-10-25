@@ -206,9 +206,11 @@ jobs:
 # our single workflow, that triggers the setup job defined above
 workflows:
   setup:
+    when: << pipeline.parameters.setup >>
     jobs:
       - setup
   nightly_console_integration_tests:
+    when: << pipeline.parameters.nightly_console_integration_tests >>
     triggers:
       - schedule:
           cron: 0 14 * * *
@@ -231,6 +233,7 @@ workflows:
             - build
             - publish_to_local_registry
   e2e_resource_cleanup:
+    when: << pipeline.parameters.e2e_resource_cleanup >>
     triggers:
       - schedule:
           cron: 45 0,12 * * *
