@@ -17,7 +17,7 @@ jobs:
                 "parameters": {
                   "setup": false,
                   "nightly_console_integration_tests": true,
-                  "e2e_resource_cleanup": false,
+                  "e2e_resource_cleanup": false
               }
             }'
   run-e2e_resource_cleanup:
@@ -35,7 +35,7 @@ jobs:
                 "parameters": {
                   "setup": false,
                   "nightly_console_integration_tests": false,
-                  "e2e_resource_cleanup": true,
+                  "e2e_resource_cleanup": true
               }
             }'
 
