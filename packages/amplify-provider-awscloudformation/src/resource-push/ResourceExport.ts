@@ -64,6 +64,7 @@ export class ResourceExport extends ResourceDeployer {
   async packageBuildWriteResources(deploymentResources: DeploymentResources): Promise<PackagedResourceDefinition[]> {
     this.warnForNonExportable(deploymentResources.allResources);
     const resources = await this.filterResourcesToBeDeployed(deploymentResources);
+
     const preBuiltResources = await this.preBuildResources(resources);
     const builtResources = await this.buildResources(preBuiltResources);
     const packagedResources = await this.packageResources(builtResources);
@@ -141,6 +142,7 @@ export class ResourceExport extends ResourceDeployer {
           .map(r => r.resourceName)
           .join(', ')}' cannot be exported since it is managed using SDK`,
       );
+
       printer.warn(`Please refer to documentation to reference the resource here manually <add doc link>`);
     }
   }

@@ -44,7 +44,8 @@ export function isTestingWithLatestCodebase(scriptRunnerPath) {
 
 export function getScriptRunnerPath(testingWithLatestCodebase = false) {
   if (!testingWithLatestCodebase) {
-    return process.platform === 'win32' ? 'C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe' : 'exec';
+
+    return process.platform === 'win32' ? 'node.exe' : 'exec';
   }
 
   // nodejs executable

@@ -54,6 +54,7 @@ export const run = async (context: $TSContext) => {
 };
 
 async function exportBackend(context: $TSContext, exportPath: string) {
+
   await context.amplify.showResourceTable();
   const resources = await context.amplify.getResourceStatus();
   const providerPlugin = context.amplify.getProviderPlugins(context);
@@ -96,3 +97,4 @@ async function createFrontEndConfigFile(context: $TSContext, exportPath: string)
     spinner.stop();
   }
 }
+

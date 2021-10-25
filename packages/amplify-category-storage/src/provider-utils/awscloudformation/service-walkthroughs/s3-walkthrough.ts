@@ -35,8 +35,9 @@ import { addTrigger, removeTrigger } from '../s3-trigger-helpers';
 export const addWalkthrough = async (context: $TSContext, defaultValuesFilename: string, serviceMetadata: $TSAny, options: $TSAny) => {
   while (!checkIfAuthExists()) {
     if (
-      await prompter.confirmContinue(
+      await prompter.yesOrNo(
         'You need to add auth (Amazon Cognito) to your project in order to add storage for user files. Do you want to add auth now?',
+        true,
       )
     ) {
       await context.amplify.invokePluginMethod(context, authCategoryName, undefined, 'add', [context]);
