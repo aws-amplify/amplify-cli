@@ -1,8 +1,10 @@
 import assert from 'assert';
+import { InvalidDirectiveError, TransformerContractError } from '@aws-amplify/graphql-transformer-core';
 
 type ACMConfig = {
   resources: string[];
   operations: string[];
+  name: string;
 };
 
 type SetRoleInput = {
@@ -31,12 +33,14 @@ type ResourceOperationInput = {
  * - Operations
  */
 export class AccessControlMatrix {
+  private name: string;
   private roles: Array<string>;
   private operations: Array<string>;
   private resources: Array<string>;
   private matrix: Array<Array<Array<boolean>>>;
 
   constructor(config: ACMConfig) {
+    this.name = config.name;
     this.operations = config.operations;
     this.resources = config.resources;
     this.matrix = new Array();
@@ -52,10 +56,12 @@ export class AccessControlMatrix {
       this.roles.push(input.role);
       this.matrix.push(allowedVector);
       assert(this.roles.length === this.matrix.length, 'Roles are not aligned with Roles added in Matrix');
-    } else {
+    } else if (this.roles.includes(role) && resource) {
       allowedVector = this.getResourceOperationMatrix({ operations, resource, role });
       const roleIndex = this.roles.indexOf(role);
       this.matrix[roleIndex] = allowedVector;
+    } else {
+      throw new InvalidDirectiveError(`@auth ${role} already exists for ${this.name}`);
     }
   }
 
@@ -142,14 +148,15 @@ export class AccessControlMatrix {
    */
   private validate(input: ValidateInput) {
     if (input.resource && !this.resources.includes(input.resource)) {
-      throw Error(`Resource: ${input.resource} is not configued in the ACM`);
+      throw new TransformerContractError(`Resource: ${input.resource} is not configued in the ACM`);
     }
     if (input.role && !this.roles.includes(input.role)) {
-      throw Error(`Role: ${input.role} does not exist in ACM.`);
+      throw new TransformerContractError(`Role: ${input.role} does not exist in ACM.`);
     }
     if (input.operations) {
       input.operations.forEach(operation => {
-        if (this.operations.indexOf(operation) === -1) throw Error(`Operation: ${operation} does not exist in the ACM.`);
+        if (this.operations.indexOf(operation) === -1)
+          throw new TransformerContractError(`Operation: ${operation} does not exist in the ACM.`);
       });
     }
   }
