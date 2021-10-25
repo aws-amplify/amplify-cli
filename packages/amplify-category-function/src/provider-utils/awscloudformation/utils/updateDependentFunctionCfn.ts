@@ -93,7 +93,7 @@ export function addAppSyncInvokeMethodPermission(
   const cfnFilePath = path.join(resourceDirPath, cfnFileName);
   const cfnContent = JSONUtilities.readJson<$TSAny>(cfnFilePath);
 
-  if (!cfnContent.Resources.PermissionForAppSyncToInvokeLambda) {
+  if (!cfnContent?.Resources?.PermissionForAppSyncToInvokeLambda) {
     cfnContent.Resources.PermissionForAppSyncToInvokeLambda = {
       Type: 'AWS::Lambda::Permission',
       Properties: {
