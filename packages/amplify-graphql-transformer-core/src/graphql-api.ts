@@ -314,7 +314,9 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
   }
 
   private setupLogConfig(config?: LogConfig) {
-    if (!config) return undefined;
+    if (!config) {
+      return undefined;
+    }
     const role = new Role(this, 'ApiLogsRole', {
       assumedBy: new ServicePrincipal('appsync.amazonaws.com'),
       managedPolicies: [ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSAppSyncPushToCloudWatchLogs')],
@@ -327,7 +329,9 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
   }
 
   private setupOpenIdConnectConfig(config?: OpenIdConnectConfig) {
-    if (!config) return undefined;
+    if (!config) {
+      return undefined;
+    }
     return {
       authTtl: config.tokenExpiryFromAuth,
       clientId: config.clientId,
@@ -337,7 +341,9 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
   }
 
   private setupUserPoolConfig(config?: UserPoolConfig) {
-    if (!config) return undefined;
+    if (!config) {
+      return undefined;
+    }
     return {
       userPoolId: config.userPool.userPoolId,
       awsRegion: config.userPool.stack.region,
@@ -347,7 +353,9 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
   }
 
   private setupLambdaConfig(config?: any) {
-    if (!config) return undefined;
+    if (!config) {
+      return undefined;
+    }
     return {
       authorizerUri: this.lambdaArnKey(config.lambdaFunction),
       authorizerResultTtlInSeconds: config.ttlSeconds,
@@ -356,9 +364,7 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
   }
 
   private lambdaArnKey(name: string) {
-    return this.environmentName ?
-      `arn:${cdk.Aws.PARTITION}:lambda:${cdk.Aws.REGION}:${cdk.Aws.ACCOUNT_ID}:function:${name}-${this.environmentName}`
-      : `arn:${cdk.Aws.PARTITION}:lambda:${cdk.Aws.REGION}:${cdk.Aws.ACCOUNT_ID}:function:${name}`;
+    return `arn:${cdk.Aws.PARTITION}:lambda:${cdk.Aws.REGION}:${cdk.Aws.ACCOUNT_ID}:function:${name}-${this.environmentName}`;
   }
 
   private setupAdditionalAuthorizationModes(modes?: Array<AuthorizationMode | any>) {

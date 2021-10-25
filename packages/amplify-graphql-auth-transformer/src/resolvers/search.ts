@@ -25,6 +25,7 @@ import { getIdentityClaimExp, getOwnerClaim, emptyPayload, setHasAuthExpression,
 import {
   COGNITO_AUTH_TYPE,
   OIDC_AUTH_TYPE,
+  LAMBDA_AUTH_TYPE,
   RoleDefinition,
   splitRoles,
   ConfiguredAuthProviders,
@@ -54,6 +55,21 @@ const apiKeyExpression = (roles: Array<RoleDefinition>): Expression => {
     expression.push(set(ref(IS_AUTHORIZED_FLAG), bool(true)), set(ref(allowedAggFieldsList), ref(totalFields)));
   }
   return iff(equals(ref('util.authType()'), str(API_KEY_AUTH_TYPE)), compoundExpression(expression));
+};
+
+const lambdaExpression = (roles: Array<RoleDefinition>): Expression => {
+  const expression = Array<Expression>();
+  if (roles.length === 0) {
+    expression.push(ref('util.unauthorized()'));
+  } else if (roles[0].allowedFields) {
+    expression.push(
+      set(ref(IS_AUTHORIZED_FLAG), bool(true)),
+      qref(methodCall(ref(`${allowedAggFieldsList}.addAll`), raw(JSON.stringify(roles[0].allowedFields)))),
+    );
+  } else {
+    expression.push(set(ref(IS_AUTHORIZED_FLAG), bool(true)), set(ref(allowedAggFieldsList), ref(totalFields)));
+  }
+  return iff(equals(ref('util.authType()'), str(LAMBDA_AUTH_TYPE)), compoundExpression(expression));
 };
 
 const iamExpression = (roles: Array<RoleDefinition>, adminuiEnabled: boolean = false, adminUserPoolID?: string) => {
@@ -228,7 +244,7 @@ export const generateAuthExpressionForSearchQueries = (
   fields: ReadonlyArray<FieldDefinitionNode>,
   allowedAggFields: Array<string>,
 ): string => {
-  const { cogntoStaticRoles, cognitoDynamicRoles, oidcStaticRoles, oidcDynamicRoles, apiKeyRoles, iamRoles } = splitRoles(roles);
+  const { cogntoStaticRoles, cognitoDynamicRoles, oidcStaticRoles, oidcDynamicRoles, apiKeyRoles, iamRoles, lambdaRoles } = splitRoles(roles);
   const totalAuthExpressions: Array<Expression> = [
     setHasAuthExpression,
     set(ref(IS_AUTHORIZED_FLAG), bool(false)),
@@ -237,6 +253,9 @@ export const generateAuthExpressionForSearchQueries = (
   ];
   if (providers.hasApiKey) {
     totalAuthExpressions.push(apiKeyExpression(apiKeyRoles));
+  }
+  if (providers.hasLambda) {
+    totalAuthExpressions.push(lambdaExpression(lambdaRoles));
   }
   if (providers.hasIAM) {
     totalAuthExpressions.push(iamExpression(iamRoles, providers.hasAdminUIEnabled, providers.adminUserPoolID));

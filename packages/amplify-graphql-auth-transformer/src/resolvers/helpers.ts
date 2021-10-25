@@ -107,17 +107,19 @@ export const generateStaticRoleExpression = (roles: Array<RoleDefinition>): Arra
   return staticRoleExpression;
 };
 
-export const apiKeyExpression = (roles: Array<RoleDefinition>) =>
-  iff(
+export const apiKeyExpression = (roles: Array<RoleDefinition>) => {
+  return iff(
     equals(ref('util.authType()'), str(API_KEY_AUTH_TYPE)),
     compoundExpression([...(roles.length > 0 ? [set(ref(IS_AUTHORIZED_FLAG), bool(true))] : [])]),
   );
+}
 
-export const lambdaExpression = (roles: Array<RoleDefinition>) =>
-  iff(
+export const lambdaExpression = (roles: Array<RoleDefinition>) => {
+  return iff(
     equals(ref('util.authType()'), str(LAMBDA_AUTH_TYPE)),
     compoundExpression([...(roles.length > 0 ? [set(ref(IS_AUTHORIZED_FLAG), bool(true))] : [])]),
   );
+}
 
 export const iamExpression = (roles: Array<RoleDefinition>, adminuiEnabled: boolean = false, adminUserPoolID?: string) => {
   const expression = new Array<Expression>();
