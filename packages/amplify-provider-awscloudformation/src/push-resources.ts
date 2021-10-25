@@ -156,10 +156,10 @@ export async function run(context: $TSContext, resourceDefinition: $TSObject) {
     await prePushLambdaLayerPrompt(context, resources);
     await prepareBuildableResources(context, resources);
 
-    await transformGraphQLSchema(context, {
-      handleMigration: opts => updateStackForAPIMigration(context, 'api', undefined, opts),
-      minify: options['minify'],
-    });
+    // await transformGraphQLSchema(context, {
+    //   handleMigration: opts => updateStackForAPIMigration(context, 'api', undefined, opts),
+    //   minify: options['minify'],
+    // });
 
     // If there is a deployment already in progress we have to fail the push operation as another
     // push in between could lead non-recoverable stacks and files.

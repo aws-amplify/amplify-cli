@@ -10,25 +10,19 @@ import { CfnStack } from '@aws-cdk/core';
 // Base template
 // Customer can use these params to mutate the Cloudformation for the resource
 
-// export type AppSyncServiceResourceStackMap = Record<string, >
-
-// type temmp = Record<string,AggregateTypes> |  AggregateTypes
-
-// type AggregateTypes = AppsyncApiStack & Record<string,ModelDirectiveStack> &  HttpsDirectiveStack & OpenSearchDirectiveStack & FunctionDirectiveStack & PredictionsDirectiveStack
-
 export interface AppSyncServiceResourceStack {
   // directives stack
-  api?: AppsyncApiStack;
-  models?: Record<string, ModelDirectiveStack>;
-  http?: HttpsDirectiveStack & AppsyncStackCommon;
-  opensearch?: OpenSearchDirectiveStack & AppsyncStackCommon;
-  function?: FunctionDirectiveStack & AppsyncStackCommon;
-  predictions?: PredictionsDirectiveStack & AppsyncStackCommon;
+  api?: Partial<AppsyncApiStack>;
+  models?: Partial<Record<string, ModelDirectiveStack>>;
+  http?: Partial<HttpsDirectiveStack & AppsyncStackCommon>;
+  opensearch?: Partial<OpenSearchDirectiveStack & AppsyncStackCommon>;
+  function?: Partial<FunctionDirectiveStack & AppsyncStackCommon>;
+  predictions?: Partial<PredictionsDirectiveStack & AppsyncStackCommon>;
 }
 
 export type AppsyncApiStack = {
-  rootstack?: CfnStack;
-  GraphQLAPI?: CfnGraphQLApi;
+  rootstack: CfnStack;
+  GraphQLAPI: CfnGraphQLApi;
   GraphQLAPIDefaultApiKey?: CfnApiKey;
   GraphQLAPITransformerSchema?: CfnGraphQLSchema;
   GraphQLAPINONEDS?: CfnDataSource;

@@ -48,3 +48,9 @@ export interface DeploymentResources extends ResolversFunctionsAndSchema, Nested
   // The full stack mapping for the deployment.
   stackMapping: StackMapping;
 }
+
+export type OverrideConfig = {
+  overrideFlag: boolean;
+  overrideDir: string;
+  resourceName: string;
+};

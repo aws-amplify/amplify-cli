@@ -36,6 +36,7 @@ import { AmplifyCategories, AmplifySupportedService, JSONUtilities } from 'ampli
 import { searchablePushChecks } from '../transform-graphql-schema';
 import { ResourceConstants } from 'graphql-transformer-common';
 import _ from 'lodash';
+import { OverrideConfig } from '@aws-amplify/graphql-transformer-core/src/transformation/types';
 
 const API_CATEGORY = 'api';
 const STORAGE_CATEGORY = 'storage';
@@ -392,6 +393,7 @@ type TransformerFactoryArgs = {
   addSearchableTransformer: boolean;
   storageConfig?: any;
 };
+
 export type ProjectOptions<T> = {
   buildParameters: {
     S3DeploymentBucket: string;
@@ -409,6 +411,7 @@ export type ProjectOptions<T> = {
   dryRun?: boolean;
   authConfig?: AppSyncAuthConfiguration;
   stacks: Record<string, Template>;
+  overrideConfig: OverrideConfig;
 };
 
 export async function buildAPIProject(opts: ProjectOptions<TransformerFactoryArgs>) {
@@ -444,6 +447,7 @@ async function _buildProject(opts: ProjectOptions<TransformerFactoryArgs>) {
     stacks: opts.projectConfig.stacks || {},
     featureFlags: new AmplifyCLIFeatureFlagAdapter(),
     resolverConfig: opts.resolverConfig,
+    overrideConfig: opts.overrideConfig,
   });
   return transform.transform(userProjectConfig.schema.toString());
 }

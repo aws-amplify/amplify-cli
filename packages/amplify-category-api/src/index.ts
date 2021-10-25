@@ -1,7 +1,10 @@
+import { AmplifySupportedService, buildOverrideDir, pathManager } from 'amplify-cli-core';
+import { printer } from 'amplify-prompts';
 import { validateAddApiRequest, validateUpdateApiRequest } from 'amplify-util-headless-input';
 import fs from 'fs-extra';
 import path from 'path';
 import { run } from './commands/api/console';
+import { AppsyncApiInputState } from './provider-utils/awscloudformation/api-input-manager/appsync-api-input-state';
 import { getCfnApiArtifactHandler } from './provider-utils/awscloudformation/cfn-api-artifact-handler';
 export { getAuthConfig } from './provider-utils/awscloudformation/utils/get-appsync-auth-config';
 export { getResolverConfig } from './provider-utils/awscloudformation/utils/get-appsync-resolver-config';
@@ -218,4 +221,30 @@ export const executeAmplifyHeadlessCommand = async (context, headlessPayload: st
 export async function handleAmplifyEvent(context, args) {
   context.print.info(`${category} handleAmplifyEvent to be implemented`);
   context.print.info(`Received event args ${args}`);
+}
+
+export async function transformCategoryStack(context, resource) {
+  if (resource.service === AmplifySupportedService.APPSYNC) {
+    if (canResourceBeTransformed(resource.resourceName)) {
+      const backendDir = pathManager.getBackendDirPath();
+      const overrideDir = path.join(backendDir, resource.category, resource.resourceName);
+      const isBuild = await buildOverrideDir(backendDir, overrideDir).catch(error => {
+        printer.warn(`Skipping build as ${error.message}`);
+        return false;
+      });
+      context.amplify.executeProviderUtils(context, 'awscloudformation', 'compileSchema', {
+        forceCompile: true,
+        overrideConfig: {
+          overrideFlag: isBuild,
+          overrideDir: overrideDir,
+          resourceName: resource.resourceName,
+        },
+      });
+    }
+  }
+}
+
+function canResourceBeTransformed(resourceName) {
+  const resourceInputState = new AppsyncApiInputState(resourceName);
+  return resourceInputState.cliInputFileExists();
 }
