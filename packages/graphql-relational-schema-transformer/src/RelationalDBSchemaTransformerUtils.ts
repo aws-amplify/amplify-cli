@@ -1,6 +1,5 @@
 import {
   Kind,
-  print,
   ObjectTypeDefinitionNode,
   NonNullTypeNode,
   DirectiveNode,
@@ -11,13 +10,11 @@ import {
   InputValueDefinitionNode,
   ValueNode,
   OperationTypeDefinitionNode,
-  SchemaDefinitionNode,
   ArgumentNode,
   ListValueNode,
   ListTypeNode,
   StringValueNode,
   InputObjectTypeDefinitionNode,
-  DocumentNode,
 } from 'graphql';
 
 const intTypes = [`INTEGER`, `INT`, `SMALLINT`, `TINYINT`, `MEDIUMINT`, `BIGINT`, `BIT`];

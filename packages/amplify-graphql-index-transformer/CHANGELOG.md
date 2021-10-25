@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.4.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-index-transformer@0.3.3...@aws-amplify/graphql-index-transformer@0.4.0) (2021-10-10)
+
+
+### Features
+
+* **graphql-model-transformer:** index/primarykey datastore selective sync capability ([#8240](https://github.com/aws-amplify/amplify-cli/issues/8240)) ([e108783](https://github.com/aws-amplify/amplify-cli/commit/e10878370a4785a412b561002d78b5cec9859346))
+
+
+
+
+
+## [0.3.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-index-transformer@0.3.2...@aws-amplify/graphql-index-transformer@0.3.3) (2021-09-27)
+
+**Note:** Version bump only for package @aws-amplify/graphql-index-transformer
+
+
+
+
+
 ## [0.3.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-index-transformer@0.3.1...@aws-amplify/graphql-index-transformer@0.3.2) (2021-09-14)
 
 **Note:** Version bump only for package @aws-amplify/graphql-index-transformer

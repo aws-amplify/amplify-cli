@@ -1,5 +1,7 @@
 const category = 'auth';
 
+const { JSONUtilities, stateManager } = require('amplify-cli-core');
+const { validateAddAuthRequest, validateUpdateAuthRequest, validateImportAuthRequest } = require('amplify-util-headless-input');
 const _ = require('lodash');
 const path = require('path');
 const sequential = require('promise-sequential');
@@ -16,15 +18,15 @@ const { ENV_SPECIFIC_PARAMS } = require('./provider-utils/awscloudformation/cons
 
 const { transformUserPoolGroupSchema } = require('./provider-utils/awscloudformation/utils/transform-user-pool-group');
 const { uploadFiles } = require('./provider-utils/awscloudformation/utils/trigger-file-uploader');
-const { validateAddAuthRequest, validateUpdateAuthRequest, validateImportAuthRequest } = require('amplify-util-headless-input');
 const { getAddAuthRequestAdaptor, getUpdateAuthRequestAdaptor } = require('./provider-utils/awscloudformation/utils/auth-request-adaptors');
 const { getAddAuthHandler, getUpdateAuthHandler } = require('./provider-utils/awscloudformation/handlers/resource-handlers');
 const { projectHasAuth } = require('./provider-utils/awscloudformation/utils/project-has-auth');
 const { attachPrevParamsToContext } = require('./provider-utils/awscloudformation/utils/attach-prev-params-to-context');
-const { stateManager } = require('amplify-cli-core');
-const { JSONUtilities } = require('amplify-cli-core/lib/jsonUtilities');
+const { getFrontendConfig } = require('./provider-utils/awscloudformation/utils/amplify-meta-updaters');
 const { headlessImport } = require('./provider-utils/awscloudformation/import');
+const { AuthParameters } = require('./provider-utils/awscloudformation/import/types');
 const { getSupportedServices } = require('./provider-utils/supported-services');
+
 const {
   doesConfigurationIncludeSMS,
   loadResourceParameters,
@@ -32,7 +34,7 @@ const {
 } = require('./provider-utils/awscloudformation/utils/auth-sms-workflow-helper');
 
 // this function is being kept for temporary compatability.
-async function add(context) {
+async function add(context, skipNextSteps = false) {
   const { amplify } = context;
   const servicesMetadata = getSupportedServices();
   const existingAuth = amplify.getProjectDetails().amplifyMeta.auth || {};
@@ -52,7 +54,7 @@ async function add(context) {
         context.print.error('Provider not configured for this category');
         return;
       }
-      return providerController.addResource(context, result.service);
+      return providerController.addResource(context, result.service, skipNextSteps);
     })
     .catch(err => {
       context.print.info(err.stack);
@@ -477,4 +479,6 @@ module.exports = {
   category,
   importAuth,
   isSMSWorkflowEnabled,
+  AuthParameters,
+  getFrontendConfig,
 };

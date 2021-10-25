@@ -25,9 +25,14 @@ import { generateConditionSlot } from './common';
  * Generates VTL template in update mutation
  * @param modelName Name of the model
  */
-export const generateUpdateRequestTemplate = (modelName: string): string => {
+export const generateUpdateRequestTemplate = (modelName: string, isSyncEnabled: boolean): string => {
   const objectKeyVariable = 'ctx.stash.metadata.modelObjectKey';
   const keyFields: StringNode[] = [str('id')];
+  if (isSyncEnabled) {
+    keyFields.push(str('_version'));
+    keyFields.push(str('_deleted'));
+    keyFields.push(str('_lastChangedAt'));
+  }
   const statements: Expression[] = [
     comment('Set the default values to put request'),
     set(ref('mergedValues'), methodCall(ref('util.defaultIfNull'), ref('ctx.stash.defaultValues'), obj({}))),
@@ -51,7 +56,7 @@ export const generateUpdateRequestTemplate = (modelName: string): string => {
     ifElse(
       ref(objectKeyVariable),
       compoundExpression([
-        set(ref('keyFields'), list([])),
+        set(ref('keyFields'), isSyncEnabled ? list([str('_version'), str('_deleted'), str('_lastChangedAt')]) : list([])),
         forEach(ref('entry'), ref(`${objectKeyVariable}.entrySet()`), [qref('$keyFields.add("$entry.key")')]),
       ]),
       set(ref('keyFields'), list(keyFields)),
@@ -126,6 +131,7 @@ export const generateUpdateRequestTemplate = (modelName: string): string => {
         operation: str('UpdateItem'),
         key: ref('Key'),
         update: ref('update'),
+        ...(isSyncEnabled && { _version: ref('util.defaultIfNull($ctx.args.input["_version"], "0")') }),
       }),
     ),
     iff(
@@ -146,8 +152,6 @@ export const generateUpdateRequestTemplate = (modelName: string): string => {
  */
 export const generateCreateRequestTemplate = (modelName: string): string => {
   const statements: Expression[] = [
-    // set key the condition
-    ...generateKeyConditionTemplate(false),
     // Generate conditions
     comment('Set the default values to put request'),
     set(ref('mergedValues'), methodCall(ref('util.defaultIfNull'), ref('ctx.stash.defaultValues'), obj({}))),
@@ -168,7 +172,6 @@ export const generateCreateRequestTemplate = (modelName: string): string => {
     ),
 
     // add conditions
-
     iff(ref('context.args.condition'), qref(methodCall(ref('ctx.stash.conditions.add'), ref('context.args.condition')))),
     // key conditions
     ...generateKeyConditionTemplate(false),
@@ -240,7 +243,7 @@ export const generateCreateInitSlotTemplate = (name: string, modelConfig: ModelD
  * Generates VTL template in delete mutation
  *
  */
-export const generateDeleteRequestTemplate = (): string => {
+export const generateDeleteRequestTemplate = (isSyncEnabled: boolean): string => {
   const statements: Expression[] = [
     set(
       ref('DeleteRequest'),
@@ -266,8 +269,14 @@ export const generateDeleteRequestTemplate = (): string => {
         qref(methodCall(ref('DeleteRequest.put'), str('condition'), ref('Conditions'))),
       ]),
     ),
-    toJson(ref('DeleteRequest')),
   ];
+  if (isSyncEnabled) {
+    statements.push(
+      qref(methodCall(ref('DeleteRequest.put'), str('_version'), ref('util.defaultIfNull($ctx.args.input["_version"], "0")'))),
+    );
+  }
+
+  statements.push(toJson(ref('DeleteRequest')));
 
   return printBlock('Delete Request template')(compoundExpression(statements));
 };

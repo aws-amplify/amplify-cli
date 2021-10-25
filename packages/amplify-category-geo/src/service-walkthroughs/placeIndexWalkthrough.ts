@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import uuid from 'uuid';
+import { v4 as uuid } from "uuid";
 import { merge } from '../service-utils/resourceUtils';
 import { DataSourceIntendedUse, PlaceIndexParameters } from '../service-utils/placeIndexParams';
 import { apiDocs, ServiceName } from '../service-utils/constants';

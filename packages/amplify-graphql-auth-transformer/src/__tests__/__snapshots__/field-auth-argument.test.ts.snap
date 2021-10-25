@@ -1,0 +1,40 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`per-field @auth without @model 1`] = `
+Object {
+  "Properties": Object {
+    "Description": "",
+    "Path": "/",
+    "PolicyDocument": Object {
+      "Statement": Array [
+        Object {
+          "Action": "appsync:GraphQL",
+          "Effect": "Allow",
+          "Resource": Object {
+            "Fn::Sub": Array [
+              "arn:aws:appsync:\${AWS::Region}:\${AWS::AccountId}:apis/\${apiId}/types/\${typeName}/fields/\${fieldName}",
+              Object {
+                "apiId": Object {
+                  "Fn::GetAtt": Array [
+                    "GraphQLAPI",
+                    "ApiId",
+                  ],
+                },
+                "fieldName": "listContext",
+                "typeName": "Query",
+              },
+            ],
+          },
+        },
+      ],
+      "Version": "2012-10-17",
+    },
+    "Roles": Array [
+      Object {
+        "Ref": "authRoleName",
+      },
+    ],
+  },
+  "Type": "AWS::IAM::ManagedPolicy",
+}
+`;

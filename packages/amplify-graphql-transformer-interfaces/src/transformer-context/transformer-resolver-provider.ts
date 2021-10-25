@@ -4,14 +4,20 @@ import { DataSourceProvider } from './transformer-datasource-provider';
 import { TransformerContextProvider } from './transformer-context-provider';
 
 export interface TransformerResolverProvider {
-  addToSlot: (slotName: string, requestMappingTemplate: MappingTemplateProvider, responseMappingTemplate?: MappingTemplateProvider, dataSource?: DataSourceProvider) => void;
+  addToSlot: (
+    slotName: string,
+    requestMappingTemplate: MappingTemplateProvider,
+    responseMappingTemplate?: MappingTemplateProvider,
+    dataSource?: DataSourceProvider,
+  ) => void;
   synthesize: (context: TransformerContextProvider, api: GraphQLAPIProvider) => void;
-  mapToStack:(stack: Stack) => void;
+  mapToStack: (stack: Stack) => void;
 }
 
 export interface TransformerResolversManagerProvider {
   addResolver: (typeName: string, fieldName: string, resolver: TransformerResolverProvider) => TransformerResolverProvider;
   getResolver: (typeName: string, fieldName: string) => TransformerResolverProvider | void;
+  hasResolver: (typeName: string, fieldName: string) => boolean;
   removeResolver: (typeName: string, fieldName: string) => TransformerResolverProvider;
   collectResolvers: () => Map<string, TransformerResolverProvider>;
 

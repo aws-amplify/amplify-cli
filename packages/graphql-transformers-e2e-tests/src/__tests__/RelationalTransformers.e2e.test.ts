@@ -1,7 +1,14 @@
+import { AuthTransformer } from '@aws-amplify/graphql-auth-transformer';
 import { IndexTransformer, PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
-import { BelongsToTransformer, HasManyTransformer, HasOneTransformer } from '@aws-amplify/graphql-relational-transformer';
+import {
+  BelongsToTransformer,
+  HasManyTransformer,
+  HasOneTransformer,
+  ManyToManyTransformer,
+} from '@aws-amplify/graphql-relational-transformer';
 import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
+import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-interfaces';
 import { ResourceConstants } from 'graphql-transformer-common';
 import { CloudFormationClient } from '../CloudFormationClient';
 import { Output } from 'aws-sdk/clients/cloudformation';
@@ -94,24 +101,50 @@ type Post @model {
 }
 
 type PostAuthor @model {
-    id: ID!
-    authorID: ID! @index(name: "byAuthor", sortKeyFields: ["postID"])
-    postID: ID!
-    post: Post @hasOne(fields: ["postID"])
+  id: ID!
+  authorID: ID! @index(name: "byAuthor", sortKeyFields: ["postID"])
+  postID: ID!
+  post: Post @hasOne(fields: ["postID"])
+}
+
+type Student @model {
+  id: ID!
+  name: String!
+  courses: [Course] @manyToMany(relationName: "Enrollment")
+}
+
+type Course @model {
+  id: ID!
+  title: String!
+  students: [Student] @manyToMany(relationName: "Enrollment")
 }
 `;
   let out;
   try {
+    const authConfig: AppSyncAuthConfiguration = {
+      defaultAuthentication: {
+        authenticationType: 'API_KEY',
+      },
+      additionalAuthenticationProviders: [],
+    };
+    const authTransformer = new AuthTransformer({ authConfig, addAwsIamAuthInOutputSchema: false });
+    const modelTransformer = new ModelTransformer();
+    const indexTransformer = new IndexTransformer();
+    const hasOneTransformer = new HasOneTransformer();
     const transformer = new GraphQLTransform({
+      authConfig,
       featureFlags,
       transformers: [
-        new ModelTransformer(),
+        modelTransformer,
         new PrimaryKeyTransformer(),
-        new IndexTransformer(),
-        new HasOneTransformer(),
+        indexTransformer,
+        hasOneTransformer,
         new HasManyTransformer(),
         new BelongsToTransformer(),
+        new ManyToManyTransformer(modelTransformer, indexTransformer, hasOneTransformer, authTransformer),
+        authTransformer,
       ],
+      sandboxModeEnabled: true,
     });
     out = transformer.transform(validSchema);
   } catch (e) {
@@ -606,4 +639,113 @@ test('Test User.friendship.friend query (reflexive has many).', async () => {
   expect(items.length).toEqual(1);
   expect(items[0].friend.items[0].id).toEqual('12');
   expect(items[0].friend.items[0].name).toEqual('Bobby');
+});
+
+test('Test Student and Course many to many relationship', async () => {
+  const createStudent = await GRAPHQL_CLIENT.query(
+    `mutation {
+        createStudent(input: { id: "1", name: "Peter Pluck" }) {
+          id
+          name
+        }
+    }`,
+    {},
+  );
+  expect(createStudent.data.createStudent.id).toEqual('1');
+  expect(createStudent.data.createStudent.name).toEqual('Peter Pluck');
+
+  const createCourse = await GRAPHQL_CLIENT.query(
+    `mutation {
+        createCourse(input: { id: "CS101", title: "How to Computer" }) {
+          id
+          title
+        }
+    }`,
+    {},
+  );
+  expect(createCourse.data.createCourse.id).toEqual('CS101');
+  expect(createCourse.data.createCourse.title).toEqual('How to Computer');
+
+  const createEnrollment = await GRAPHQL_CLIENT.query(
+    `mutation {
+      createEnrollment(input: { id: "CS101-1", studentID: "1", courseID: "CS101" }) {
+        id
+        studentID
+        courseID
+      }
+    }`,
+    {},
+  );
+  expect(createEnrollment.data.createEnrollment.id).toEqual('CS101-1');
+  expect(createEnrollment.data.createEnrollment.studentID).toEqual('1');
+  expect(createEnrollment.data.createEnrollment.courseID).toEqual('CS101');
+
+  const queryRelation = await GRAPHQL_CLIENT.query(
+    `query {
+      listStudents(filter: { id: { eq: "1" } }) {
+        items {
+          id
+          name
+          courses {
+            items {
+              id
+              studentID
+              courseID
+              student {
+                id
+                name
+              }
+              course {
+                id
+                title
+                students {
+                  items {
+                    id
+                    studentID
+                    courseID
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }`,
+    {},
+  );
+  expect(queryRelation.errors).toBeUndefined();
+  expect(queryRelation.data.listStudents).toEqual({
+    items: [
+      {
+        id: '1',
+        name: 'Peter Pluck',
+        courses: {
+          items: [
+            {
+              id: 'CS101-1',
+              studentID: '1',
+              courseID: 'CS101',
+              student: {
+                id: '1',
+                name: 'Peter Pluck',
+              },
+              course: {
+                id: 'CS101',
+                title: 'How to Computer',
+                students: {
+                  items: [
+                    {
+                      id: 'CS101-1',
+                      studentID: '1',
+                      courseID: 'CS101',
+                    },
+                  ],
+                },
+              },
+            },
+          ],
+        },
+      },
+    ],
+  });
 });

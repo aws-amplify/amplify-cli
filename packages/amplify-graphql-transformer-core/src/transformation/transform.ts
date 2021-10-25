@@ -1,5 +1,11 @@
 /* eslint-disable no-new */
-import { FeatureFlagProvider, GraphQLAPIProvider, TransformerPluginProvider, TransformHostProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import {
+  FeatureFlagProvider,
+  GraphQLAPIProvider,
+  TransformerPluginProvider,
+  TransformHostProvider,
+  AppSyncAuthConfiguration,
+} from '@aws-amplify/graphql-transformer-interfaces';
 import { AuthorizationMode, AuthorizationType } from '@aws-cdk/aws-appsync';
 import { App, Aws, CfnOutput, Fn } from '@aws-cdk/core';
 import assert from 'assert';
@@ -23,8 +29,10 @@ import { GraphQLApi } from '../graphql-api';
 import { TransformerContext } from '../transformer-context';
 import { TransformerOutput } from '../transformer-context/output';
 import { StackManager } from '../transformer-context/stack-manager';
-import { adoptAuthModes } from '../utils/authType';
-import { AppSyncAuthConfiguration, TransformConfig } from './transformer-config';
+import { adoptAuthModes, IAM_AUTH_ROLE_PARAMETER, IAM_UNAUTH_ROLE_PARAMETER } from '../utils/authType';
+import { TransformConfig } from '../config';
+import * as SyncUtils from './sync-utils';
+
 import Template, { DeploymentResources } from './types';
 import {
   makeSeenTransformationKey,
@@ -35,7 +43,7 @@ import {
   matchInputFieldDirective,
   sortTransformerPlugins,
 } from './utils';
-import { validateModelSchema } from './validation';
+import { validateModelSchema, validateAuthModes } from './validation';
 
 // eslint-disable-next-line @typescript-eslint/ban-types
 function isFunction(obj: any): obj is Function {
@@ -63,12 +71,14 @@ export interface GraphQLTransformOptions {
   readonly stacks?: Record<string, Template>;
   readonly featureFlags?: FeatureFlagProvider;
   readonly host?: TransformHostProvider;
+  readonly sandboxModeEnabled?: boolean;
 }
 export type StackMapping = { [resourceId: string]: string };
 export class GraphQLTransform {
   private transformers: TransformerPluginProvider[];
   private stackMappingOverrides: StackMapping;
   private app: App | undefined;
+  private transformConfig: TransformConfig;
   private readonly authConfig: AppSyncAuthConfiguration;
   private readonly buildParameters: Record<string, any>;
 
@@ -95,8 +105,11 @@ export class GraphQLTransform {
       additionalAuthenticationProviders: [],
     };
 
+    validateAuthModes(this.authConfig);
+
     this.buildParameters = options.buildParameters || {};
     this.stackMappingOverrides = options.stackMapping || {};
+    this.transformConfig = options.transformConfig || {};
   }
 
   /**
@@ -111,7 +124,14 @@ export class GraphQLTransform {
     this.seenTransformations = {};
     const parsedDocument = parse(schema);
     this.app = new App();
-    const context = new TransformerContext(this.app, parsedDocument, this.stackMappingOverrides, this.options.featureFlags);
+    const context = new TransformerContext(
+      this.app,
+      parsedDocument,
+      this.stackMappingOverrides,
+      this.authConfig,
+      this.options.featureFlags,
+      this.transformConfig.ResolverConfig,
+    );
     const validDirectiveNameMap = this.transformers.reduce(
       (acc: any, t: TransformerPluginProvider) => ({ ...acc, [t.directive.name.value]: true }),
       {
@@ -121,6 +141,7 @@ export class GraphQLTransform {
         aws_iam: true,
         aws_oidc: true,
         aws_cognito_user_pools: true,
+        allow_public_data_access_with_api_key: true,
         deprecated: true,
       },
     );
@@ -128,6 +149,7 @@ export class GraphQLTransform {
     for (const transformer of this.transformers) {
       allModelDefinitions = allModelDefinitions.concat(...transformer.typeDefinitions, transformer.directive);
     }
+
     const errors = validateModelSchema({
       kind: Kind.DOCUMENT,
       definitions: allModelDefinitions,
@@ -135,15 +157,6 @@ export class GraphQLTransform {
     if (errors && errors.length) {
       throw new SchemaValidationError(errors);
     }
-
-    // // check if the project is sync enabled
-    // if (this.transformConfig.ResolverConfig) {
-    //   this.createResourcesForSyncEnabledProject(context);
-    //   context.setResolverConfig(this.transformConfig.ResolverConfig);
-    // }
-
-    // // Transformer version is populated, store it in the transformer context, to make it accessible to transformers
-    // context.setTransformerVersion(this.transformConfig.Version!);
 
     for (const transformer of this.transformers) {
       if (isFunction(transformer.before)) {
@@ -205,16 +218,16 @@ export class GraphQLTransform {
       }
     }
 
-    // generate resolvers
-
-    // Syth the API and make it available to allow transformer plugins to manipulate the API
-
+    // Synth the API and make it available to allow transformer plugins to manipulate the API
     const stackManager = context.stackManager as StackManager;
     const output: TransformerOutput = context.output as TransformerOutput;
-
     const api = this.generateGraphQlApi(stackManager, output);
 
+    // generate resolvers
     (context as TransformerContext).bind(api);
+    if (this.transformConfig.ResolverConfig) {
+      SyncUtils.createSyncTable(context);
+    }
     for (const transformer of this.transformers) {
       if (isFunction(transformer.generateResolvers)) {
         transformer.generateResolvers(context);
@@ -241,13 +254,17 @@ export class GraphQLTransform {
 
     const rootStack = stackManager.rootStack;
     const authorizationConfig = adoptAuthModes(stackManager, this.authConfig);
-    const apiName = stackManager.addParameter('AppSyncApiName', { type: 'String' }).valueAsString;
+    const apiName = stackManager.addParameter('AppSyncApiName', {
+      default: 'AppSyncSimpleTransform',
+      type: 'String',
+    }).valueAsString;
     const envName = stackManager.getParameter('env');
     assert(envName);
     const api = new GraphQLApi(rootStack, 'GraphQLAPI', {
       name: `${apiName}-${envName.valueAsString}`,
       authorizationConfig,
-      host: this.options.host
+      host: this.options.host,
+      sandboxModeEnabled: this.options.sandboxModeEnabled,
     });
     const authModes = [authorizationConfig.defaultAuthorization, ...(authorizationConfig.additionalAuthorizationModes || [])].map(
       mode => mode?.authorizationType,
@@ -274,6 +291,11 @@ export class GraphQLTransform {
         description: 'Your GraphQL API ID.',
         exportName: Fn.join(':', [Aws.STACK_NAME, 'GraphQLApiKey']),
       });
+    }
+
+    if (authModes.includes(AuthorizationType.IAM)) {
+      stackManager.addParameter(IAM_AUTH_ROLE_PARAMETER, { type: 'String' });
+      stackManager.addParameter(IAM_UNAUTH_ROLE_PARAMETER, { type: 'String' });
     }
 
     new CfnOutput(rootStack, 'GraphQLAPIIdOutput', {

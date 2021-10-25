@@ -1,5 +1,5 @@
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
-import { GraphQLTransform, validateModelSchema } from '@aws-amplify/graphql-transformer-core';
+import { ConflictHandlerType, GraphQLTransform, SyncConfig, validateModelSchema } from '@aws-amplify/graphql-transformer-core';
 import { InputObjectTypeDefinitionNode, InputValueDefinitionNode, ListValueNode, NamedTypeNode, parse } from 'graphql';
 import { getBaseType } from 'graphql-transformer-common';
 import {
@@ -13,6 +13,7 @@ import {
   verifyInputCount,
   verifyMatchingTypes,
 } from './test-utils/helpers';
+import { expect as cdkExpect, haveResource } from '@aws-cdk/assert';
 
 const featureFlags = {
   getBoolean: jest.fn(),
@@ -312,11 +313,11 @@ describe('ModelTransformer: ', () => {
       id: Int
       str: String
     }
-  
+
     type Query {
       Custom: String
     }
-  
+
     schema {
       query: Query
     }
@@ -447,7 +448,7 @@ describe('ModelTransformer: ', () => {
           createdAt: String
           updatedAt: String
       }
-  
+
       type User @model {
           id: ID!
           name: String!
@@ -768,7 +769,7 @@ describe('ModelTransformer: ', () => {
         id: ID!
         email: Email
       }
-      
+
       type Email @model {
         id: ID!
       }
@@ -878,5 +879,181 @@ describe('ModelTransformer: ', () => {
     const out = transformer.transform(validSchema);
     expect(out).toBeDefined();
     validateModelSchema(parse(out.schema));
+  });
+
+  it('should generate sync resolver with ConflictHandlerType.Automerge', () => {
+    const validSchema = `
+      type Post @model {
+          id: ID!
+          title: String!
+      }
+    `;
+
+    const config: SyncConfig = {
+      ConflictDetection: 'VERSION',
+      ConflictHandler: ConflictHandlerType.AUTOMERGE,
+    };
+
+    const transformer = new GraphQLTransform({
+      transformers: [new ModelTransformer()],
+      featureFlags,
+      transformConfig: {
+        ResolverConfig: {
+          project: config,
+        },
+      },
+    });
+    const out = transformer.transform(validSchema);
+    expect(out).toBeDefined();
+
+    const definition = out.schema;
+    expect(definition).toBeDefined();
+    expect(out.pipelineFunctions).toMatchSnapshot();
+
+    validateModelSchema(parse(definition));
+  });
+
+  it('should generate sync resolver with ConflictHandlerType.LAMBDA', () => {
+    const validSchema = `
+      type Post @model {
+          id: ID!
+          title: String!
+          createdAt: String
+          updatedAt: String
+      }
+    `;
+
+    const config: SyncConfig = {
+      ConflictDetection: 'VERSION',
+      ConflictHandler: ConflictHandlerType.LAMBDA,
+      LambdaConflictHandler: {
+        name: 'myLambdaConflictHandler',
+      },
+    };
+
+    const transformer = new GraphQLTransform({
+      transformers: [new ModelTransformer()],
+      featureFlags,
+      transformConfig: {
+        ResolverConfig: {
+          project: config,
+        },
+      },
+    });
+    const out = transformer.transform(validSchema);
+    expect(out).toBeDefined();
+
+    const definition = out.schema;
+    expect(definition).toBeDefined();
+    expect(out.pipelineFunctions).toMatchSnapshot();
+
+    validateModelSchema(parse(definition));
+  });
+
+  it('should generate sync resolver with ConflictHandlerType.Optimistic', () => {
+    const validSchema = `
+      type Post @model {
+          id: ID!
+          title: String!
+          createdAt: String
+          updatedAt: String
+      }
+    `;
+
+    const config: SyncConfig = {
+      ConflictDetection: 'VERSION',
+      ConflictHandler: ConflictHandlerType.OPTIMISTIC,
+    };
+
+    const transformer = new GraphQLTransform({
+      transformers: [new ModelTransformer()],
+      featureFlags,
+      transformConfig: {
+        ResolverConfig: {
+          project: config,
+        },
+      },
+    });
+    const out = transformer.transform(validSchema);
+    expect(out).toBeDefined();
+
+    const definition = out.schema;
+    expect(definition).toBeDefined();
+    expect(out.pipelineFunctions).toMatchSnapshot();
+
+    validateModelSchema(parse(definition));
+  });
+
+  it('should generate iam role names under 64 chars and subscriptions under 50', () => {
+    const validSchema = `
+      type ThisIsAVeryLongNameModelThatShouldNotGenerateIAMRoleNamesOver64Characters @model {
+          id: ID!
+          title: String!
+      }
+    `;
+
+    const config: SyncConfig = {
+      ConflictDetection: 'VERSION',
+      ConflictHandler: ConflictHandlerType.AUTOMERGE,
+    };
+
+    const transformer = new GraphQLTransform({
+      transformers: [new ModelTransformer()],
+      featureFlags,
+      transformConfig: {
+        ResolverConfig: {
+          project: config,
+        },
+      },
+    });
+    const out = transformer.transform(validSchema);
+    expect(out).toBeDefined();
+
+    const definition = out.schema;
+    expect(definition).toBeDefined();
+
+    const parsed = parse(definition);
+    const subscriptionType = getObjectType(parsed, 'Subscription');
+    expect(subscriptionType).toBeDefined();
+
+    subscriptionType!.fields!.forEach(it => {
+      expect(it.name.value.length <= 50).toBeTruthy();
+    });
+
+    const iamStackResource = out.stacks.ThisIsAVeryLongNameModelThatShouldNotGenerateIAMRoleNamesOver64Characters;
+    expect(iamStackResource).toBeDefined();
+    cdkExpect(iamStackResource).to(
+      haveResource('AWS::IAM::Role', {
+        AssumeRolePolicyDocument: {
+          Statement: [
+            {
+              Action: 'sts:AssumeRole',
+              Effect: 'Allow',
+              Principal: {
+                Service: 'appsync.amazonaws.com',
+              },
+            },
+          ],
+          Version: '2012-10-17',
+        },
+        RoleName: {
+          'Fn::Join': [
+            '',
+            [
+              'ThisIsAVeryLongNameM2d9fca-',
+              {
+                Ref: 'referencetotransformerrootstackGraphQLAPI20497F53ApiId',
+              },
+              '-',
+              {
+                Ref: 'referencetotransformerrootstackenv10C5A902Ref',
+              },
+            ],
+          ],
+        },
+      }),
+    );
+
+    validateModelSchema(parsed);
   });
 });
