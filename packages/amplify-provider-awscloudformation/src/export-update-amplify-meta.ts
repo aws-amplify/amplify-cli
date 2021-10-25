@@ -24,7 +24,7 @@ export async function run(context: $TSContext, stackName: string) {
     }
 
     // if the stack is not found keep looking
-    if (!rootStack && stacks.NextToken) {
+    if (stacks.NextToken) {
       nextToken = stacks.NextToken;
       continueListing = true;
       continue;
@@ -38,7 +38,7 @@ export async function run(context: $TSContext, stackName: string) {
   }
 
   // if the stack is found and is not in valid state
-  if (rootStack && rootStack.StackStatus !== 'UPDATE_COMPLETE' && rootStack.StackStatus !== 'CREATE_COMPLETE') {
+  if (rootStack.StackStatus !== 'UPDATE_COMPLETE' && rootStack.StackStatus !== 'CREATE_COMPLETE') {
     throw new ExportedStackNotInValidStateError(`${stackName} not in UPDATE_COMPLETE or CREATE_COMPLETE state`);
   }
 

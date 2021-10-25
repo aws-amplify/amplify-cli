@@ -1,8 +1,6 @@
 import { $TSContext, stateManager, UnrecognizedFrontendError, validateExportDirectoryPath } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import chalk from 'chalk';
-import * as fs from 'fs-extra';
-import * as path from 'path';
 import { getResourceOutputs } from '../extensions/amplify-helpers/get-resource-outputs';
 import Ora from 'ora';
 
