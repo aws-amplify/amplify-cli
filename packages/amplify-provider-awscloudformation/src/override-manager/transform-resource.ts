@@ -12,17 +12,14 @@ export async function transformResourceWithOverrides(context: $TSContext, resour
     return;
   }
   try {
-    if (resource && FeatureFlags.getBoolean(`overrides.${resource.category}`)) {
-      const { transformCategoryStack } = await import(`@aws-amplify/amplify-category-${resource.category}`);
-      if (transformCategoryStack) {
-        return transformCategoryStack(context, resource);
-      } else {
-        printer.info('Overrides functionality is not impleented for this category');
-      }
+    const { transformCategoryStack } = await import(`@aws-amplify/amplify-category-${resource.category}`);
+    if (transformCategoryStack) {
+      return transformCategoryStack(context, resource);
     } else {
-      if (FeatureFlags.getBoolean('overrides.project')) {
-        await transformRootStack(context);
-      }
+      printer.info('Overrides functionality is not impleented for this category');
+    }
+    if (FeatureFlags.getBoolean('overrides.project')) {
+      await transformRootStack(context);
     }
   } catch (err) {
     return;
