@@ -12,6 +12,7 @@ export * from './init/';
 export * from './utils/';
 export * from './categories';
 export * from './utils/sdk-calls';
+export * from './export/';
 export { addFeatureFlag } from './utils/feature-flags';
 
 declare global {

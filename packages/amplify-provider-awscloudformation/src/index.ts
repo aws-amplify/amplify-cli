@@ -30,6 +30,7 @@ import { SSM } from './aws-utils/aws-ssm';
 import { Lambda } from './aws-utils/aws-lambda';
 import CloudFormation from './aws-utils/aws-cfn';
 import { $TSContext } from 'amplify-cli-core';
+import * as resourceExport from './export-resources';
 
 export { resolveAppId } from './utils/resolve-appId';
 export { loadConfigurationForEnv } from './configuration-manager';
@@ -57,8 +58,13 @@ function onInitSuccessful(context) {
   return initializer.onInitSuccessful(context);
 }
 
-function pushResources(context, resourceList, rebuild: boolean = false) {
-  return resourcePusher.run(context, resourceList, rebuild);
+
+function exportResources(context, resourceList, exportType) {
+  return resourceExport.run(context, resourceList, exportType);
+}
+
+function pushResources(context, resourceList) {
+  return resourcePusher.run(context, resourceList);
 }
 
 function storeCurrentCloudBackend(context) {
@@ -125,6 +131,7 @@ module.exports = {
   adminLoginFlow,
   console: openConsole,
   attachBackend,
+  exportResources,
   init,
   initEnv,
   isAmplifyAdminApp,
