@@ -2,10 +2,39 @@
 
 exports[`cdk stack creation for place index service creates place index policy for Authorized and Guest users access type 1`] = `
 Object {
+  "Mappings": Object {
+    "RegionMapping": Object {
+      "eu-west-2": Object {
+        "locationServiceRegion": "eu-central-1",
+      },
+    },
+  },
   "Outputs": Object {
+    "Arn": Object {
+      "Value": Object {
+        "Fn::GetAtt": Array [
+          "CustomPlaceIndex",
+          "IndexArn",
+        ],
+      },
+    },
     "Name": Object {
       "Value": Object {
-        "Ref": "PlaceIndex",
+        "Fn::GetAtt": Array [
+          "CustomPlaceIndex",
+          "IndexName",
+        ],
+      },
+    },
+    "Region": Object {
+      "Value": Object {
+        "Fn::FindInMap": Array [
+          "RegionMapping",
+          Object {
+            "Ref": "AWS::Region",
+          },
+          "locationServiceRegion",
+        ],
       },
     },
   },
@@ -36,17 +65,25 @@ Object {
     },
   },
   "Resources": Object {
-    "PlaceIndex": Object {
+    "CustomPlaceIndex": Object {
+      "DeletionPolicy": "Delete",
       "Properties": Object {
-        "DataSource": Object {
+        "ServiceToken": Object {
+          "Fn::GetAtt": Array [
+            "CustomPlaceIndexLambda79813BB9",
+            "Arn",
+          ],
+        },
+        "dataSource": Object {
           "Ref": "dataProvider",
         },
-        "DataSourceConfiguration": Object {
-          "IntendedUse": Object {
-            "Ref": "dataSourceIntendedUse",
-          },
+        "dataSourceIntendedUse": Object {
+          "Ref": "dataSourceIntendedUse",
         },
-        "IndexName": Object {
+        "env": Object {
+          "Ref": "env",
+        },
+        "indexName": Object {
           "Fn::Join": Array [
             "-",
             Array [
@@ -59,11 +96,198 @@ Object {
             ],
           ],
         },
-        "PricingPlan": Object {
+        "pricingPlan": Object {
           "Ref": "pricingPlan",
         },
+        "region": Object {
+          "Fn::FindInMap": Array [
+            "RegionMapping",
+            Object {
+              "Ref": "AWS::Region",
+            },
+            "locationServiceRegion",
+          ],
+        },
       },
-      "Type": "AWS::Location::PlaceIndex",
+      "Type": "Custom::LambdaCallout",
+      "UpdateReplacePolicy": "Delete",
+    },
+    "CustomPlaceIndexLambda79813BB9": Object {
+      "DependsOn": Array [
+        "CustomPlaceIndexLambdaServiceRoleDefaultPolicy818068B1",
+        "CustomPlaceIndexLambdaServiceRoleFD2F3C9D",
+      ],
+      "Properties": Object {
+        "Code": Object {
+          "ZipFile": "const response = require('cfn-response');
+const aws = require('aws-sdk');
+exports.handler = async (event, context) => {
+  try {
+    console.log('REQUEST RECEIVED:' + JSON.stringify(event));
+    if (event.RequestType == 'Create') {
+      const params = {
+        IndexName: event.ResourceProperties.indexName,
+        DataSource: event.ResourceProperties.dataSource,
+        PricingPlan: event.ResourceProperties.pricingPlan,
+        DataSourceConfiguration: {
+          IntendedUse: event.ResourceProperties.dataSourceIntendedUse,
+        },
+      };
+      const locationClient = new aws.Location({ apiVersion: '2020-11-19', region: event.ResourceProperties.region });
+      const res = await locationClient.createPlaceIndex(params).promise();
+      console.log('create resource response data' + JSON.stringify(res));
+      if (res.IndexName && res.IndexArn) {
+        event.PhysicalResourceId = res.IndexName;
+        await send(event, context, response.SUCCESS, res);
+      } else {
+        await send(event, context, response.FAILED, res);
+      }
+    }
+    if (event.RequestType == 'Update') {
+      const params = {
+        IndexName: event.ResourceProperties.indexName,
+        PricingPlan: event.ResourceProperties.pricingPlan,
+        DataSourceConfiguration: {
+          IntendedUse: event.ResourceProperties.dataSourceIntendedUse,
+        },
+      };
+      const locationClient = new aws.Location({ apiVersion: '2020-11-19', region: event.ResourceProperties.region });
+      const res = await locationClient.updatePlaceIndex(params).promise();
+      console.log('update resource response data' + JSON.stringify(res));
+      if (res.IndexName && res.IndexArn) {
+        event.PhysicalResourceId = res.IndexName;
+        await send(event, context, response.SUCCESS, res);
+      } else {
+        await send(event, context, response.FAILED, res);
+      }
+    }
+    if (event.RequestType == 'Delete') {
+      const params = {
+        IndexName: event.ResourceProperties.indexName,
+      };
+      const locationClient = new aws.Location({ apiVersion: '2020-11-19', region: event.ResourceProperties.region });
+      const res = await locationClient.deletePlaceIndex(params).promise();
+      event.PhysicalResourceId = event.ResourceProperties.indexName;
+      console.log('delete resource response data' + JSON.stringify(res));
+      await send(event, context, response.SUCCESS, res);
+    }
+  } catch (err) {
+    console.log(err.stack);
+    const res = { Error: err };
+    await send(event, context, response.FAILED, res);
+    throw err;
+  }
+};
+
+function send(event, context, status, data) {
+  return new Promise(() => {
+    response.send(event, context, status, data);
+  });
+}
+",
+        },
+        "Handler": "index.handler",
+        "Role": Object {
+          "Fn::GetAtt": Array [
+            "CustomPlaceIndexLambdaServiceRoleFD2F3C9D",
+            "Arn",
+          ],
+        },
+        "Runtime": "nodejs14.x",
+        "Timeout": 300,
+      },
+      "Type": "AWS::Lambda::Function",
+    },
+    "CustomPlaceIndexLambdaServiceRoleDefaultPolicy818068B1": Object {
+      "Properties": Object {
+        "PolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": "geo:CreatePlaceIndex",
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+            Object {
+              "Action": Array [
+                "geo:UpdatePlaceIndex",
+                "geo:DeletePlaceIndex",
+              ],
+              "Effect": "Allow",
+              "Resource": Object {
+                "Fn::Sub": Array [
+                  "arn:aws:geo:\${region}:\${account}:place-index/\${indexName}",
+                  Object {
+                    "account": Object {
+                      "Ref": "AWS::AccountId",
+                    },
+                    "indexName": Object {
+                      "Fn::Join": Array [
+                        "-",
+                        Array [
+                          Object {
+                            "Ref": "indexName",
+                          },
+                          Object {
+                            "Ref": "env",
+                          },
+                        ],
+                      ],
+                    },
+                    "region": Object {
+                      "Fn::FindInMap": Array [
+                        "RegionMapping",
+                        Object {
+                          "Ref": "AWS::Region",
+                        },
+                        "locationServiceRegion",
+                      ],
+                    },
+                  },
+                ],
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "CustomPlaceIndexLambdaServiceRoleDefaultPolicy818068B1",
+        "Roles": Array [
+          Object {
+            "Ref": "CustomPlaceIndexLambdaServiceRoleFD2F3C9D",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+    "CustomPlaceIndexLambdaServiceRoleFD2F3C9D": Object {
+      "Properties": Object {
+        "AssumeRolePolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": Object {
+                "Service": "lambda.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "ManagedPolicyArns": Array [
+          Object {
+            "Fn::Join": Array [
+              "",
+              Array [
+                "arn:",
+                Object {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+              ],
+            ],
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Role",
     },
     "PlaceIndexPolicy": Object {
       "Properties": Object {
@@ -77,7 +301,7 @@ Object {
               "Effect": "Allow",
               "Resource": Object {
                 "Fn::GetAtt": Array [
-                  "PlaceIndex",
+                  "CustomPlaceIndex",
                   "IndexArn",
                 ],
               },
@@ -87,13 +311,20 @@ Object {
         },
         "PolicyName": Object {
           "Fn::Join": Array [
-            "-",
+            "",
             Array [
               Object {
-                "Ref": "indexName",
-              },
-              Object {
-                "Ref": "env",
+                "Fn::Join": Array [
+                  "-",
+                  Array [
+                    Object {
+                      "Ref": "indexName",
+                    },
+                    Object {
+                      "Ref": "env",
+                    },
+                  ],
+                ],
               },
               "Policy",
             ],
@@ -116,10 +347,39 @@ Object {
 
 exports[`cdk stack creation for place index service creates place index policy for Authorized users only access type 1`] = `
 Object {
+  "Mappings": Object {
+    "RegionMapping": Object {
+      "eu-west-2": Object {
+        "locationServiceRegion": "eu-central-1",
+      },
+    },
+  },
   "Outputs": Object {
+    "Arn": Object {
+      "Value": Object {
+        "Fn::GetAtt": Array [
+          "CustomPlaceIndex",
+          "IndexArn",
+        ],
+      },
+    },
     "Name": Object {
       "Value": Object {
-        "Ref": "PlaceIndex",
+        "Fn::GetAtt": Array [
+          "CustomPlaceIndex",
+          "IndexName",
+        ],
+      },
+    },
+    "Region": Object {
+      "Value": Object {
+        "Fn::FindInMap": Array [
+          "RegionMapping",
+          Object {
+            "Ref": "AWS::Region",
+          },
+          "locationServiceRegion",
+        ],
       },
     },
   },
@@ -150,17 +410,25 @@ Object {
     },
   },
   "Resources": Object {
-    "PlaceIndex": Object {
+    "CustomPlaceIndex": Object {
+      "DeletionPolicy": "Delete",
       "Properties": Object {
-        "DataSource": Object {
+        "ServiceToken": Object {
+          "Fn::GetAtt": Array [
+            "CustomPlaceIndexLambda79813BB9",
+            "Arn",
+          ],
+        },
+        "dataSource": Object {
           "Ref": "dataProvider",
         },
-        "DataSourceConfiguration": Object {
-          "IntendedUse": Object {
-            "Ref": "dataSourceIntendedUse",
-          },
+        "dataSourceIntendedUse": Object {
+          "Ref": "dataSourceIntendedUse",
         },
-        "IndexName": Object {
+        "env": Object {
+          "Ref": "env",
+        },
+        "indexName": Object {
           "Fn::Join": Array [
             "-",
             Array [
@@ -173,11 +441,198 @@ Object {
             ],
           ],
         },
-        "PricingPlan": Object {
+        "pricingPlan": Object {
           "Ref": "pricingPlan",
         },
+        "region": Object {
+          "Fn::FindInMap": Array [
+            "RegionMapping",
+            Object {
+              "Ref": "AWS::Region",
+            },
+            "locationServiceRegion",
+          ],
+        },
       },
-      "Type": "AWS::Location::PlaceIndex",
+      "Type": "Custom::LambdaCallout",
+      "UpdateReplacePolicy": "Delete",
+    },
+    "CustomPlaceIndexLambda79813BB9": Object {
+      "DependsOn": Array [
+        "CustomPlaceIndexLambdaServiceRoleDefaultPolicy818068B1",
+        "CustomPlaceIndexLambdaServiceRoleFD2F3C9D",
+      ],
+      "Properties": Object {
+        "Code": Object {
+          "ZipFile": "const response = require('cfn-response');
+const aws = require('aws-sdk');
+exports.handler = async (event, context) => {
+  try {
+    console.log('REQUEST RECEIVED:' + JSON.stringify(event));
+    if (event.RequestType == 'Create') {
+      const params = {
+        IndexName: event.ResourceProperties.indexName,
+        DataSource: event.ResourceProperties.dataSource,
+        PricingPlan: event.ResourceProperties.pricingPlan,
+        DataSourceConfiguration: {
+          IntendedUse: event.ResourceProperties.dataSourceIntendedUse,
+        },
+      };
+      const locationClient = new aws.Location({ apiVersion: '2020-11-19', region: event.ResourceProperties.region });
+      const res = await locationClient.createPlaceIndex(params).promise();
+      console.log('create resource response data' + JSON.stringify(res));
+      if (res.IndexName && res.IndexArn) {
+        event.PhysicalResourceId = res.IndexName;
+        await send(event, context, response.SUCCESS, res);
+      } else {
+        await send(event, context, response.FAILED, res);
+      }
+    }
+    if (event.RequestType == 'Update') {
+      const params = {
+        IndexName: event.ResourceProperties.indexName,
+        PricingPlan: event.ResourceProperties.pricingPlan,
+        DataSourceConfiguration: {
+          IntendedUse: event.ResourceProperties.dataSourceIntendedUse,
+        },
+      };
+      const locationClient = new aws.Location({ apiVersion: '2020-11-19', region: event.ResourceProperties.region });
+      const res = await locationClient.updatePlaceIndex(params).promise();
+      console.log('update resource response data' + JSON.stringify(res));
+      if (res.IndexName && res.IndexArn) {
+        event.PhysicalResourceId = res.IndexName;
+        await send(event, context, response.SUCCESS, res);
+      } else {
+        await send(event, context, response.FAILED, res);
+      }
+    }
+    if (event.RequestType == 'Delete') {
+      const params = {
+        IndexName: event.ResourceProperties.indexName,
+      };
+      const locationClient = new aws.Location({ apiVersion: '2020-11-19', region: event.ResourceProperties.region });
+      const res = await locationClient.deletePlaceIndex(params).promise();
+      event.PhysicalResourceId = event.ResourceProperties.indexName;
+      console.log('delete resource response data' + JSON.stringify(res));
+      await send(event, context, response.SUCCESS, res);
+    }
+  } catch (err) {
+    console.log(err.stack);
+    const res = { Error: err };
+    await send(event, context, response.FAILED, res);
+    throw err;
+  }
+};
+
+function send(event, context, status, data) {
+  return new Promise(() => {
+    response.send(event, context, status, data);
+  });
+}
+",
+        },
+        "Handler": "index.handler",
+        "Role": Object {
+          "Fn::GetAtt": Array [
+            "CustomPlaceIndexLambdaServiceRoleFD2F3C9D",
+            "Arn",
+          ],
+        },
+        "Runtime": "nodejs14.x",
+        "Timeout": 300,
+      },
+      "Type": "AWS::Lambda::Function",
+    },
+    "CustomPlaceIndexLambdaServiceRoleDefaultPolicy818068B1": Object {
+      "Properties": Object {
+        "PolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": "geo:CreatePlaceIndex",
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+            Object {
+              "Action": Array [
+                "geo:UpdatePlaceIndex",
+                "geo:DeletePlaceIndex",
+              ],
+              "Effect": "Allow",
+              "Resource": Object {
+                "Fn::Sub": Array [
+                  "arn:aws:geo:\${region}:\${account}:place-index/\${indexName}",
+                  Object {
+                    "account": Object {
+                      "Ref": "AWS::AccountId",
+                    },
+                    "indexName": Object {
+                      "Fn::Join": Array [
+                        "-",
+                        Array [
+                          Object {
+                            "Ref": "indexName",
+                          },
+                          Object {
+                            "Ref": "env",
+                          },
+                        ],
+                      ],
+                    },
+                    "region": Object {
+                      "Fn::FindInMap": Array [
+                        "RegionMapping",
+                        Object {
+                          "Ref": "AWS::Region",
+                        },
+                        "locationServiceRegion",
+                      ],
+                    },
+                  },
+                ],
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "CustomPlaceIndexLambdaServiceRoleDefaultPolicy818068B1",
+        "Roles": Array [
+          Object {
+            "Ref": "CustomPlaceIndexLambdaServiceRoleFD2F3C9D",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+    "CustomPlaceIndexLambdaServiceRoleFD2F3C9D": Object {
+      "Properties": Object {
+        "AssumeRolePolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": Object {
+                "Service": "lambda.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "ManagedPolicyArns": Array [
+          Object {
+            "Fn::Join": Array [
+              "",
+              Array [
+                "arn:",
+                Object {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+              ],
+            ],
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Role",
     },
     "PlaceIndexPolicy": Object {
       "Properties": Object {
@@ -191,7 +646,7 @@ Object {
               "Effect": "Allow",
               "Resource": Object {
                 "Fn::GetAtt": Array [
-                  "PlaceIndex",
+                  "CustomPlaceIndex",
                   "IndexArn",
                 ],
               },
@@ -201,13 +656,20 @@ Object {
         },
         "PolicyName": Object {
           "Fn::Join": Array [
-            "-",
+            "",
             Array [
               Object {
-                "Ref": "indexName",
-              },
-              Object {
-                "Ref": "env",
+                "Fn::Join": Array [
+                  "-",
+                  Array [
+                    Object {
+                      "Ref": "indexName",
+                    },
+                    Object {
+                      "Ref": "env",
+                    },
+                  ],
+                ],
               },
               "Policy",
             ],

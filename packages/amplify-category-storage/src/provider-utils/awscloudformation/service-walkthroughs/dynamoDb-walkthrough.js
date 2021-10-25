@@ -7,7 +7,7 @@ const {
 const inquirer = require('inquirer');
 const path = require('path');
 const fs = require('fs-extra');
-const uuid = require('uuid');
+const { v4: uuid } = require('uuid');
 const { ResourceDoesNotExistError, exitOnNextTick } = require('amplify-cli-core');
 const { category } = require('../../..');
 

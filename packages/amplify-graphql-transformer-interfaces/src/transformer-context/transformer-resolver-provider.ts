@@ -17,6 +17,7 @@ export interface TransformerResolverProvider {
 export interface TransformerResolversManagerProvider {
   addResolver: (typeName: string, fieldName: string, resolver: TransformerResolverProvider) => TransformerResolverProvider;
   getResolver: (typeName: string, fieldName: string) => TransformerResolverProvider | void;
+  hasResolver: (typeName: string, fieldName: string) => boolean;
   removeResolver: (typeName: string, fieldName: string) => TransformerResolverProvider;
   collectResolvers: () => Map<string, TransformerResolverProvider>;
 

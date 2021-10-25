@@ -1,18 +1,9 @@
 {
-    "name": "api",
-    "type": "category",
-    "commands": [
-        "add-graphql-datasource",
-        "add",
-        "console",
-        "gql-compile",
-        "push",
-        "remove",
-        "update",
-        "help"
-    ],
-    "commandAliases":{
-        "configure": "update"
-    },
-    "eventHandlers": []
+  "name": "api",
+  "type": "category",
+  "commands": ["add-graphql-datasource", "add", "console", "gql-compile", "push", "rebuild", "remove", "update", "help"],
+  "commandAliases": {
+    "configure": "update"
+  },
+  "eventHandlers": []
 }

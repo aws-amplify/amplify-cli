@@ -1,12 +1,20 @@
 import { create } from '../../../velocity/util/index';
 import { GraphQLResolveInfo } from 'graphql';
+import { AmplifyAppSyncSimulatorAuthenticationType } from '../../../type-definition';
+import { AppSyncGraphQLExecutionContext } from '../../../utils/graphql-runner';
 
 const stubInfo = {} as unknown;
 export const mockInfo = stubInfo as GraphQLResolveInfo;
 var util;
 
 beforeEach(() => {
-  util = create(undefined, undefined, mockInfo);
+  const executionContext: AppSyncGraphQLExecutionContext = {
+    headers: { 'x-api-key': 'da-fake-key' },
+    requestAuthorizationMode: AmplifyAppSyncSimulatorAuthenticationType.API_KEY,
+    appsyncErrors: [],
+  };
+
+  util = create(undefined, undefined, mockInfo, executionContext);
 });
 
 describe('$utils.str.toLower', () => {
