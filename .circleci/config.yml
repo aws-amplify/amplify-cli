@@ -26,11 +26,9 @@ jobs:
       - run: # run a command
           name: Generate config
           command: |
-            rm yarn.lock
-            rm package.json
-            npm init -f
-            yarn add ts-node js-yaml fs-extra execa typescript glob @types/node @types/fs-extra @types/js-yaml @types/glob
-            yarn ts-node --transpile-only ./scripts/split-e2e-tests.ts
+            cd scripts
+            yarn
+            yarn split-e2e-tests
       - continuation/continue:
           configuration_path: .circleci/generated_config.yml # use newly generated config to continue
 

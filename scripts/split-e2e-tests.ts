@@ -407,12 +407,12 @@ function getRequiredJob(jobNames: string[], index: number, concurrency: number =
 }
 
 function loadConfig(): CircleCIConfig {
-  const configFile = join(process.cwd(), '.circleci', 'config.base.yml');
+  const configFile = join(__dirname, '..', '.circleci', 'config.base.yml');
   return <CircleCIConfig>yaml.load(fs.readFileSync(configFile, 'utf8'));
 }
 
 function saveConfig(config: CircleCIConfig): void {
-  const configFile = join(process.cwd(), '.circleci', 'generated_config.yml');
+  const configFile = join(__dirname, '..', '.circleci', 'generated_config.yml');
   const output = ['# auto generated file. Edit config.base.yaml if you want to change', yaml.dump(config, { noRefs: true })];
   fs.writeFileSync(configFile, output.join('\n'));
 }
@@ -430,14 +430,16 @@ function verifyConfig() {
     );
     process.exit(1);
   }
+  const cci_config_path = join(__dirname, '..', '.circleci', 'config.yml');
+  const cci_generated_config_path = join(__dirname, '..', '.circleci', 'generated_config.yml');
   try {
-    execa.commandSync('circleci config validate');
+    execa.commandSync(`circleci config validate ${cci_config_path}`);
   } catch {
     console.error(`"circleci config validate" command failed. Please check your .circleci/config.yml validity`);
     process.exit(1);
   }
   try {
-    execa.commandSync('circleci config validate .circleci/generated_config.yml');
+    execa.commandSync(`circleci config validate ${cci_generated_config_path}`);
   } catch (e) {
     console.log(e);
     console.error(`"circleci config validate" command failed. Please check your .circleci/generated_config.yml validity`);
@@ -451,35 +453,35 @@ function main(): void {
     config,
     'amplify_e2e_tests',
     'build_test_deploy',
-    join(process.cwd(), 'packages', 'amplify-e2e-tests'),
+    join(__dirname, '..', 'packages', 'amplify-e2e-tests'),
     CONCURRENCY,
   );
   const splitPkgTests = splitTests(
     splitNodeTests,
     'amplify_e2e_tests_pkg',
     'build_test_deploy',
-    join(process.cwd(), 'packages', 'amplify-e2e-tests'),
+    join(__dirname, '..', 'packages', 'amplify-e2e-tests'),
     CONCURRENCY,
   );
   const splitGqlTests = splitTests(
     splitPkgTests,
     'graphql_e2e_tests',
     'build_test_deploy',
-    join(process.cwd(), 'packages', 'graphql-transformers-e2e-tests'),
+    join(__dirname, '..', 'packages', 'graphql-transformers-e2e-tests'),
     CONCURRENCY,
   );
   const splitV4MigrationTests = splitTests(
     splitGqlTests,
     'amplify_migration_tests_v4',
     'build_test_deploy',
-    join(process.cwd(), 'packages', 'amplify-migration-tests'),
+    join(__dirname, '..', 'packages', 'amplify-migration-tests'),
     CONCURRENCY,
   );
   const splitLatestMigrationTests = splitTests(
     splitV4MigrationTests,
     'amplify_migration_tests_latest',
     'build_test_deploy',
-    join(process.cwd(), 'packages', 'amplify-migration-tests'),
+    join(__dirname, '..', 'packages', 'amplify-migration-tests'),
     CONCURRENCY,
   );
   saveConfig(splitLatestMigrationTests);
