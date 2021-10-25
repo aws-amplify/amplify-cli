@@ -26,6 +26,7 @@ jobs:
       - run: # run a command
           name: Generate config
           command: |
+            cd scripts
             yarn
             yarn split-e2e-tests
       - continuation/continue:
