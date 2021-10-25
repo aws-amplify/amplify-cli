@@ -1,7 +1,0 @@
-type Record @model {
-  id: ID!
-  name: String
-  owner: String
-  createdAt: AWSDateTime
-  updatedAt: AWSDateTime
-}

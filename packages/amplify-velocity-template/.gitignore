@@ -1,9 +1,0 @@
-.DS_Store
-node_modules
-npm-debug.log
-build
-*.swp
-.sw*
-.idea/*
-dist/
-coverage

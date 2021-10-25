@@ -1,9 +1,0 @@
-{
-  "name": "storage",
-  "type": "category",
-  "commands": ["add", "import", "console", "push", "remove", "update", "help"],
-  "commandAliases": {
-    "configure": "update"
-  },
-  "eventHandlers": []
-}

@@ -1,6 +1,0 @@
-type Post @model {
-  blogId: ID!
-  taskId: ID!
-  content: String
-  createdAt: String
-}

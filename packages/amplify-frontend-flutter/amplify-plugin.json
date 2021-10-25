@@ -1,6 +1,0 @@
-{
-  "name": "flutter",
-  "type": "frontend",
-  "commands": ["help"],
-  "eventHandlers": []
-}

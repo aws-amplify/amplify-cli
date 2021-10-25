@@ -1,7 +1,0 @@
-#!/usr/bin/env node
-const args = require('yargs').argv;
-const path = args.path;
-const platform = args.platform;
-const framework = args.framework;
-
-require('../src/index.js').run({ path, platform, framework });

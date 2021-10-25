@@ -1,3 +1,0 @@
-# un-ignore that, so it gets included.
-!./packages/*/package.json
-!./packages/amplify-cli/package.json

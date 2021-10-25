@@ -1,6 +1,0 @@
-**/__mocks__/**
-**/__tests__/**
-src
-streaming-lambda
-tsconfig.json
-tsconfig.tsbuildinfo

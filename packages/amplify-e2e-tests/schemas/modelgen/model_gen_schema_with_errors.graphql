@@ -1,3 +1,0 @@
-type MyType @model {
-  missingType: Missing
-}
