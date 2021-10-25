@@ -117,4 +117,23 @@ describe('Custom policies util test', () => {
       `Warning: You've specified "*" as the "Resource" in lambdaResourceName's custom IAM policy.\n This will grant lambdaResourceName the ability to perform s3:access on ALL resources in this AWS Account.`,
     );
   });
+
+  test('test generateCustomPoliciesInTemplate with lambda function default policy', () => {
+    (stateManager.getCustomPolicies as jest.Mock).mockReturnValueOnce([
+      {
+        Action: [],
+        Resource: [],
+      },
+    ]);
+    const template = generateCustomPoliciesInTemplate({}, 'lambdaResourceName', 'Lambda', 'function');
+
+    expect(template.Resources?.CustomLambdaExecutionPolicy).toBeUndefined();
+  });
+
+  test('test generateCustomPoliciesInTemplate with lambda function with empty array', () => {
+    (stateManager.getCustomPolicies as jest.Mock).mockReturnValueOnce([]);
+    const template = generateCustomPoliciesInTemplate({}, 'lambdaResourceName', 'Lambda', 'function');
+
+    expect(template.Resources?.CustomLambdaExecutionPolicy).toBeUndefined();
+  });
 });

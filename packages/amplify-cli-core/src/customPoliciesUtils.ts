@@ -149,12 +149,11 @@ function validateCustomPolicies(data: CustomIAMPolicies, categoryName: string, r
   }
 }
 
-function resourceHasCustomPolicies(customPolicies: CustomIAMPolicies | undefined): boolean {
-  if (!customPolicies || customPolicies.length === 0) {
-    return false;
-  }
+function resourceHasCustomPolicies(customPolicies: CustomIAMPolicies): boolean {
+  const customPolicy = _.first(customPolicies);
 
-  if (customPolicies.length === 1 && customPolicies[0].Action?.length === 0 && customPolicies[0].Resource?.length === 0) {
+  // if either there are no custom policies in the array or the defined policy is the default
+  if (!customPolicy || (customPolicy && customPolicy.Action.length === 0 && customPolicy.Resource.length == 0)) {
     return false;
   }
 

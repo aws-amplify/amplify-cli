@@ -204,10 +204,7 @@ export class ResourceDiff {
         if (!change) {
           return true;
         }
-        if (change.newResourceType === 'AWS::CDK::Metadata') {
-          return false;
-        }
-        if (change.oldResourceType === 'AWS::CDK::Metadata') {
+        if (this.isResourceTypeCDKMetada(change.newResourceType) || this.isResourceTypeCDKMetada(change.oldResourceType)) {
           return false;
         }
         return true;
@@ -226,6 +223,10 @@ export class ResourceDiff {
     } catch (e) {
       return '';
     }
+  }
+
+  private isResourceTypeCDKMetada(resourceType: string | undefined): boolean {
+    return resourceType === 'AWS::CDK::Metadata';
   }
 }
 
