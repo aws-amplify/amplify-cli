@@ -54,6 +54,7 @@
         "@aws-cdk/custom-resources": "~1.124.0",
         "@aws-cdk/cx-api": "~1.124.0",
         "@aws-cdk/region-info": "~1.124.0",
+        "amplify-prompts": "^1.2.0",
         "change-case": "^4.1.1",
         "constructs": "^3.3.125",
         "deep-diff": "^1.0.2",
@@ -63,7 +64,8 @@
         "graphql-transformer-common": "4.22.2",
         "lodash": "^4.17.21",
         "md5": "^2.3.0",
-        "ts-dedent": "^2.0.0"
+        "ts-dedent": "^2.0.0",
+        "vm2": "^3.9.5"
     },
     "devDependencies": {
         "@types/fs-extra": "^8.0.1",
