@@ -72,6 +72,7 @@ const conflictResolutionHanlderChoices = [
   },
 ];
 
+const blankSchemaFile = 'blank-schema.graphql';
 const schemaTemplatesV1 = [
   {
     name: 'Single object with fields (e.g., “Todo” with ID, name, description)',
@@ -87,7 +88,7 @@ const schemaTemplatesV1 = [
   },
   {
     name: 'Blank Schema',
-    value: 'blank-schema.graphql',
+    value: blankSchemaFile,
   },
 ];
 
@@ -106,7 +107,7 @@ const schemaTemplatesV2 = [
   },
   {
     name: 'Blank Schema',
-    value: 'blank-schema.graphql',
+    value: blankSchemaFile,
   },
 ];
 
@@ -418,7 +419,7 @@ export const serviceWalkthrough = async (context: $TSContext, defaultValuesFilen
 
   const { templateSelection } = await inquirer.prompt(templateSelectionQuestion);
   const schemaFilePath = path.join(graphqlSchemaDir, templateSelection);
-  schemaContent += transformerVersion === 2 && templateSelection != 'blank-schema.graphql' ? defineGlobalSandboxMode(context) : '';
+  schemaContent += transformerVersion === 2 && templateSelection !== blankSchemaFile ? defineGlobalSandboxMode(context) : '';
   schemaContent += fs.readFileSync(schemaFilePath, 'utf8');
 
   return {
