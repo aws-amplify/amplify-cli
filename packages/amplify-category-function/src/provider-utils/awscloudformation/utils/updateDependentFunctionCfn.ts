@@ -87,8 +87,7 @@ export async function updateDependentFunctionsCfn(
 export function addAppSyncInvokeMethodPermission(
   functionName: string,
 ) {
-  const backendDir = pathManager.getBackendDirPath();
-  const resourceDirPath = path.join(backendDir, categoryName, functionName);
+  const resourceDirPath = pathManager.getResourceDirectoryPath(undefined, categoryName, functionName);
   const cfnFileName = `${functionName}-cloudformation-template.json`;
   const cfnFilePath = path.join(resourceDirPath, cfnFileName);
   const cfnContent = JSONUtilities.readJson<$TSAny>(cfnFilePath);

@@ -179,6 +179,7 @@ describe('amplify add api (REST)', () => {
     const projName = 'lambdaauthmode';
     await initJSProjectWithProfile(projRoot, { name: projName, envName });
     await addFeatureFlag(projRoot, 'graphqltransformer', 'useexperimentalpipelinedtransformer', true);
+    await addFeatureFlag(projRoot, 'graphqltransformer', 'transformerversion', 2);
     await addApiWithoutSchema(projRoot);
     await addFunction(projRoot, { functionTemplate: 'Hello World' }, 'nodejs');
     await updateApiSchema(projRoot, projName, 'cognito_simple_model.graphql');

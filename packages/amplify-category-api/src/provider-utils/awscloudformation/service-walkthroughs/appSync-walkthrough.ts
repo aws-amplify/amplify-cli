@@ -151,7 +151,7 @@ export const openConsole = async (context: $TSContext) => {
 
       url = `https://console.aws.amazon.com/appsync/home?region=${Region}#/${GraphQLAPIIdOutput}/v1/queries`;
 
-      const providerPlugin = await import(context.amplify.getProviderPlugins(context).awscloudformation);
+      const providerPlugin = await import(context.amplify.getProviderPlugins(context)[provider]);
       const { isAdminApp, region } = await providerPlugin.isAmplifyAdminApp(appId);
       if (isAdminApp) {
         if (region !== Region) {
@@ -389,7 +389,7 @@ const updateApiInputWalkthrough = async (context, project, resolverConfig, model
 
 export const serviceWalkthrough = async (context: $TSContext, defaultValuesFilename, serviceMetadata) => {
   const resourceName = resourceAlreadyExists(context);
-  const providerPlugin = await import(context.amplify.getProviderPlugins(context).awscloudformation);
+  const providerPlugin = await import(context.amplify.getProviderPlugins(context)[provider]);
   const transformerVersion = providerPlugin.getTransformerVersion(context);
   await addLambdaAuthorizerChoice(context);
   if (resourceName) {
@@ -660,7 +660,7 @@ async function askSyncFunctionQuestion(context) {
 }
 
 async function addLambdaAuthorizerChoice(context) {
-  const providerPlugin = await import(context.amplify.getProviderPlugins(context).awscloudformation);
+  const providerPlugin = await import(context.amplify.getProviderPlugins(context)[provider]);
   const transformerVersion = providerPlugin.getTransformerVersion(context);
   if (transformerVersion === 2 && !authProviderChoices.some(choice => choice.value == 'AWS_LAMBDA')) {
     authProviderChoices.push({
@@ -1125,7 +1125,7 @@ async function askLambdaFromProject(context) {
   const answer = await inquirer.prompt({
     name: 'lambdaFunction',
     type: 'list',
-    message: 'Choose one of the Lambda function',
+    message: 'Choose one of the Lambda functions',
     choices: lambdaFunctions,
     default: lambdaFunctions[0],
   });
