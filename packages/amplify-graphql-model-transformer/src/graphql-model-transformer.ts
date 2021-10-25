@@ -250,8 +250,8 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
     for (let type of this.typesWithModelDirective) {
       const def = context.output.getObject(type)!;
       // This name is used by the mock functionality. Changing this can break mock.
-      const tableBaseName = context.resourceHelper.getTableBaseName(def!.name.value);
-      const tableLogicalName = `${tableBaseName}Table`;
+      const tableBaseName = context.resourceHelper.getModelNameMapping(def!.name.value);
+      const tableLogicalName = ModelResourceIDs.ModelTableResourceID(tableBaseName);
       const stack = context.stackManager.getStackFor(tableLogicalName, tableBaseName);
 
       this.createModelTable(stack, def!, context);
@@ -1015,7 +1015,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
   };
 
   private createModelTable(stack: cdk.Stack, def: ObjectTypeDefinitionNode, context: TransformerContextProvider) {
-    const tableLogicalName = `${context.resourceHelper.getTableBaseName(def!.name.value)}Table`;
+    const tableLogicalName = ModelResourceIDs.ModelTableResourceID(def!.name.value);
     const tableName = context.resourceHelper.generateTableName(def!.name.value);
 
     // Add parameters.

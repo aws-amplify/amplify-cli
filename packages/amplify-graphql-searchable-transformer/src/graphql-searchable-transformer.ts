@@ -116,7 +116,7 @@ export class SearchableModelTransformer extends TransformerPluginBase {
 
     for (const def of this.searchableObjectTypeDefinitions) {
       const type = def.node.name.value;
-      const openSearchIndexName = context.resourceHelper.getTableBaseName(type);
+      const openSearchIndexName = context.resourceHelper.getModelNameMapping(type);
       const typeName = context.output.getQueryTypeName();
       const table = getTable(context, def.node);
       const ddbTable = table as Table;
@@ -360,8 +360,7 @@ export class SearchableModelTransformer extends TransformerPluginBase {
 
 function getTable(context: TransformerContextProvider, definition: ObjectTypeDefinitionNode): IConstruct {
   const ddbDataSource = context.dataSources.get(definition) as DynamoDbDataSource;
-  const tableBaseName = context.resourceHelper.getTableBaseName(definition.name.value);
-  const tableName = ModelResourceIDs.ModelTableResourceID(tableBaseName);
+  const tableName = ModelResourceIDs.ModelTableResourceID(definition.name.value);
   const table = ddbDataSource.ds.stack.node.findChild(tableName);
   return table;
 }

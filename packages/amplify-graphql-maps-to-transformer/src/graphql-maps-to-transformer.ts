@@ -25,6 +25,6 @@ export class MapsToTransformer extends TransformerPluginBase {
     }
 
     const originalName = prevNameNode.value.value;
-    ctx.resourceHelper.registerModelToTableNameMapping(modelName, originalName);
+    ctx.resourceHelper.setModelNameMapping(modelName, originalName);
   };
 }

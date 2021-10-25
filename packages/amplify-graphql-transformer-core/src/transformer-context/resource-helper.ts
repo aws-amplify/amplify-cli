@@ -2,12 +2,15 @@ import { GraphQLAPIProvider, TransformerResourceHelperProvider } from '@aws-ampl
 import { CfnParameter } from '@aws-cdk/core';
 import { StackManager } from './stack-manager';
 import md5 from 'md5';
+import { ModelResourceIDs } from 'graphql-transformer-common';
 
 export class TransformerResourceHelper implements TransformerResourceHelperProvider {
-  private api?: GraphQLAPIProvider;
-  private modelToTableNameMap = new Map<string, string>();
+  api?: GraphQLAPIProvider;
+  readonly #modelNameMap = new Map<string, string>();
   // eslint-disable-next-line no-useless-constructor
-  constructor(private stackManager: StackManager) {}
+  constructor(private stackManager: StackManager) {
+    ModelResourceIDs.setModelNameMap(this.#modelNameMap);
+  }
   generateTableName = (modelName: string): string => {
     if (!this.api) {
       throw new Error('API not initialized');
@@ -15,7 +18,7 @@ export class TransformerResourceHelper implements TransformerResourceHelperProvi
     this.ensureEnv();
     const env = (this.stackManager.getParameter('env') as CfnParameter).valueAsString;
     const apiId = this.api!.apiId;
-    const baseName = this.modelToTableNameMap.get(modelName) ?? modelName;
+    const baseName = this.#modelNameMap.get(modelName) ?? modelName;
     return `${baseName}-${apiId}-${env}`;
   };
 
@@ -36,11 +39,11 @@ export class TransformerResourceHelper implements TransformerResourceHelperProvi
     this.api = api;
   }
 
-  registerModelToTableNameMapping = (modelName: string, tableName: string) => {
-    this.modelToTableNameMap.set(modelName, tableName);
+  setModelNameMapping = (modelName: string, mappedName: string) => {
+    this.#modelNameMap.set(modelName, mappedName);
   };
 
-  getTableBaseName = (modelName: string) => this.modelToTableNameMap.get(modelName) ?? modelName;
+  getModelNameMapping = (modelName: string) => this.#modelNameMap.get(modelName) ?? modelName;
 
   private ensureEnv = (): void => {
     if (!this.stackManager.getParameter('env')) {
