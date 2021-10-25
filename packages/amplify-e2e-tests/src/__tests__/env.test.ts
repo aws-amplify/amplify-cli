@@ -12,6 +12,10 @@ import {
   deleteProjectDir,
   getProjectMeta,
   initJSProjectWithProfile,
+  amplifyPushWithoutCodegen,
+  generateRandomShortId,
+  addMapWithDefault,
+  addPlaceIndexWithDefault
 } from 'amplify-e2e-core';
 import {
   addEnvironment,
@@ -174,6 +178,38 @@ describe('environment commands with HostedUI params', () => {
   it('init a project, add and checkout environment', async () => {
     await addEnvironmentHostedUI(projRoot, { envName: 'envb' });
     await listEnvironment(projRoot, { numEnv: 2 });
+    const meta = getProjectMeta(projRoot);
+    await validate(meta);
+  });
+
+  it('init a project, pull environment', async () => {
+    await pullEnvironment(projRoot);
+    const meta = getProjectMeta(projRoot);
+    await validate(meta);
+  });
+});
+
+describe('environment commands with geo resources', () => {
+  let projRoot: string;
+
+  beforeAll(async () => {
+    projRoot = await createNewProjectDir('env-test');
+    await initJSProjectWithProfile(projRoot, { envName: 'enva' });
+    await addAuthWithDefault(projRoot);
+    await addMapWithDefault(projRoot, { isFirstGeoResource: true });
+    await addPlaceIndexWithDefault(projRoot);
+    await amplifyPushWithoutCodegen(projRoot);
+  });
+
+  afterAll(async () => {
+    await deleteProject(projRoot);
+    deleteProjectDir(projRoot);
+  });
+
+  it('init a project, add and checkout environment', async () => {
+    await addEnvironment(projRoot, { envName: 'envb' });
+    await listEnvironment(projRoot, { numEnv: 2 });
+    await checkoutEnvironment(projRoot, { envName: 'enva' });
     const meta = getProjectMeta(projRoot);
     await validate(meta);
   });
