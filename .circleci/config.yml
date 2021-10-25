@@ -211,13 +211,6 @@ workflows:
       - setup
   nightly_console_integration_tests:
     when: << pipeline.parameters.nightly_console_integration_tests >>
-    triggers:
-      - schedule:
-          cron: 0 14 * * *
-          filters:
-            branches:
-              only:
-                - master
     jobs:
       - build
       - publish_to_local_registry:
@@ -234,13 +227,6 @@ workflows:
             - publish_to_local_registry
   e2e_resource_cleanup:
     when: << pipeline.parameters.e2e_resource_cleanup >>
-    triggers:
-      - schedule:
-          cron: 45 0,12 * * *
-          filters:
-            branches:
-              only:
-                - master
     jobs:
       - build
       - cleanup_resources:
