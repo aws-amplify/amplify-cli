@@ -60,3 +60,14 @@ workflows:
                 - nightly-jobs
     jobs:
       - run-e2e_resource_cleanup
+  run_on_push:
+    jobs:
+      - run-nightly_console_integration_tests:
+          filters:
+            branches:
+              only: nightly-jobs
+      - run-e2e_resource_cleanup:
+          filters:
+            branches:
+              only: nightly-jobs
+
