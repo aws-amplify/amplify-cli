@@ -55,7 +55,11 @@ export async function pushResources(
   // building all CFN stacks here to get the resource Changes
   await generateDependentResourcesType(context);
   const resourcesToBuild: IAmplifyResource[] = await getResources(context);
-  await context.amplify.executeProviderUtils(context, 'awscloudformation', 'buildOverrides', { resourcesToBuild, forceCompile: true });
+  context.amplify.executeProviderUtils(context, 'awscloudformation', 'buildOverrides', {
+    resourcesToBuild,
+    forceCompile: true,
+    applyOverride: true,
+  });
 
   let hasChanges: boolean = false;
   if (!rebuild) {
