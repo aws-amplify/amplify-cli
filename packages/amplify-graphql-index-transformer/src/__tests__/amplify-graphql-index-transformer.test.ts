@@ -867,10 +867,8 @@ it('should support index/primary key with sync resolvers', () => {
 
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new IndexTransformer()],
-    transformConfig: {
-      ResolverConfig: {
-        project: config,
-      },
+    resolverConfig: {
+      project: config,
     },
   });
 

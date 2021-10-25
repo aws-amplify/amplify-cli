@@ -15,6 +15,7 @@ import { run } from './commands/api/console';
 import { getAppSyncAuthConfig, getAppSyncResourceName } from './provider-utils/awscloudformation//utils/amplify-meta-utils';
 import { provider } from './provider-utils/awscloudformation/aws-constants';
 import { ApigwStackTransform } from './provider-utils/awscloudformation/cdk-stack-builder';
+import { AppsyncApiInputState } from './provider-utils/awscloudformation/api-input-manager/appsync-api-input-state';
 import { getCfnApiArtifactHandler } from './provider-utils/awscloudformation/cfn-api-artifact-handler';
 import { askAuthQuestions } from './provider-utils/awscloudformation/service-walkthroughs/appSync-walkthrough';
 import { authConfigToAppSyncAuthType } from './provider-utils/awscloudformation/utils/auth-config-to-app-sync-auth-type-bi-di-mapper';
@@ -279,6 +280,24 @@ export async function transformCategoryStack(context: $TSContext, resource: $TSO
       // Rebuild CFN
       const apigwStack = new ApigwStackTransform(context, resource.resourceName);
       apigwStack.transform();
+    }
+  }
+  if (resource.service === AmplifySupportedService.APPSYNC) {
+    if (canResourceBeTransformed(resource.resourceName)) {
+      const backendDir = pathManager.getBackendDirPath();
+      const overrideDir = path.join(backendDir, resource.category, resource.resourceName);
+      const isBuild = await buildOverrideDir(backendDir, overrideDir).catch(error => {
+        printer.warn(`Skipping build as ${error.message}`);
+        return false;
+      });
+      context.amplify.executeProviderUtils(context, 'awscloudformation', 'compileSchema', {
+        forceCompile: true,
+        overrideConfig: {
+          overrideFlag: isBuild,
+          overrideDir: overrideDir,
+          resourceName: resource.resourceName,
+        },
+      });
     }
   }
 }

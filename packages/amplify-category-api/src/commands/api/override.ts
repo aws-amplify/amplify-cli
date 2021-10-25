@@ -51,7 +51,12 @@ export const run = async (context: $TSContext) => {
 
   // Make sure to migrate first
   if (service === AmplifySupportedService.APPSYNC) {
-    throw 'To be implemented';
+    if (await checkAppsyncApiResourceMigration(context, selectedResourceName)) {
+      // fetch cli Inputs again
+      // call compile schema here
+      await context.amplify.invokePluginMethod(context, 'awscloudformation', undefined, 'compileSchema', [context, { forceCompile: true }]);
+      await generateOverrideSkeleton(context, srcPath, destPath);
+    }
   } else if (service === AmplifySupportedService.APIGW) {
     // Migration logic goes in here
     const apigwInputState = ApigwInputState.getInstance(context, selectedResourceName);
@@ -60,11 +65,10 @@ export const run = async (context: $TSContext) => {
         await apigwInputState.migrateApigwResource(selectedResourceName);
         const stackGenerator = new ApigwStackTransform(context, selectedResourceName);
         stackGenerator.transform();
+        await generateOverrideSkeleton(context, srcPath, destPath);
       } else {
         return;
       }
     }
   }
-
-  await generateOverrideSkeleton(context, srcPath, destPath);
 };

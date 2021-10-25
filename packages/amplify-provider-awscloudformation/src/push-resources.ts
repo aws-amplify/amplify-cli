@@ -159,11 +159,11 @@ export async function run(context: $TSContext, resourceDefinition: $TSObject, re
     await prePushLambdaLayerPrompt(context, resources);
     await prepareBuildableResources(context, resources);
 
-    await transformGraphQLSchema(context, {
-      handleMigration: opts => updateStackForAPIMigration(context, 'api', undefined, opts),
-      minify: options['minify'],
-      promptApiKeyCreation: true,
-    });
+    // await transformGraphQLSchema(context, {
+    //   handleMigration: opts => updateStackForAPIMigration(context, 'api', undefined, opts),
+    //   minify: options['minify'],
+    //   promptApiKeyCreation: true,
+    // });
 
     // If there is a deployment already in progress we have to fail the push operation as another
     // push in between could lead non-recoverable stacks and files.
@@ -408,9 +408,7 @@ export async function run(context: $TSContext, resourceDefinition: $TSObject, re
 
     //check for auth resources and remove deployment secret for push
     resources
-      .filter(
-        resource => resource.category === 'auth' && resource.service === 'Cognito' && resource.providerPlugin === 'awscloudformation',
-      )
+      .filter(resource => resource.category === 'auth' && resource.service === 'Cognito' && resource.providerPlugin === 'awscloudformation')
       .map(({ category, resourceName }) => context.amplify.removeDeploymentSecrets(context, category, resourceName));
 
     await adminModelgen(context, resources);
@@ -1211,4 +1209,3 @@ function rollbackLambdaLayers(layerResources: $TSAny[]) {
     stateManager.setMeta(projectRoot, meta);
   }
 }
-
