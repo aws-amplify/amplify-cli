@@ -37,10 +37,12 @@ import { searchablePushChecks } from '../transform-graphql-schema';
 import { ResourceConstants } from 'graphql-transformer-common';
 import { isAmplifyAdminApp } from '../utils/admin-helpers';
 import {
+  showGlobalSandboxModeWarning,
   showSandboxModePrompts,
   getSandboxModeEnvNameFromDirectiveSet,
   removeSandboxDirectiveFromSchema,
 } from '../utils/sandbox-mode-helpers';
+import { printer } from 'amplify-prompts';
 
 const API_CATEGORY = 'api';
 const STORAGE_CATEGORY = 'storage';
@@ -52,13 +54,17 @@ const S3_SERVICE_NAME = 'S3';
 
 const TRANSFORM_CONFIG_FILE_NAME = `transform.conf.json`;
 
-function warnOnAuth(context, map) {
+function warnOnAuth(map) {
   const a: boolean = true;
   const unAuthModelTypes = Object.keys(map).filter(type => !map[type].includes('auth') && map[type].includes('model'));
   if (unAuthModelTypes.length) {
-    context.print.warning("\nThe following types do not have '@auth' enabled. Consider using @auth with @model");
-    context.print.warning(unAuthModelTypes.map(type => `\t - ${type}`).join('\n'));
-    context.print.info('Learn more about @auth here: https://docs.amplify.aws/cli/graphql-transformer/auth\n');
+    printer.info(
+      `
+⚠️  WARNING: Some types do not have authorization rules configured. That means all create, read, update, and delete operations are denied on these types:`,
+      'yellow',
+    );
+    printer.info(unAuthModelTypes.map(type => `\t - ${type}`).join('\n'), 'yellow');
+    printer.info('Learn more about "@auth" authorization rules here: https://docs.amplify.aws/cli/graphql-transformer/auth\n', 'yellow');
   }
 }
 
@@ -297,22 +303,25 @@ export async function transformGraphQLSchema(context, options) {
     ? await loadProject(previouslyDeployedBackendDir)
     : undefined;
 
-  // Check for common errors
+  const { envName } = context.amplify._getEnvInfo();
+  const sandboxModeEnv = getSandboxModeEnvNameFromDirectiveSet(collectDirectives(project.schema));
+  const sandboxModeEnabled = envName === sandboxModeEnv;
   const directiveMap = collectDirectivesByTypeNames(project.schema);
-  warnOnAuth(context, directiveMap.types);
+  const hasApiKey =
+    authConfig.defaultAuthentication.authenticationType === 'API_KEY' ||
+    authConfig.additionalAuthenticationProviders.some(a => a.authenticationType === 'API_KEY');
+  const showSandboxModeMessage = sandboxModeEnabled && hasApiKey;
+
+  if (showSandboxModeMessage) showGlobalSandboxModeWarning();
+  else warnOnAuth(directiveMap.types);
+
   searchablePushChecks(context, directiveMap.types, parameters[ResourceConstants.PARAMETERS.AppSyncApiName]);
 
   const transformerListFactory = getTransformerFactory(context, resourceDir);
 
-  const { envName } = context.amplify._getEnvInfo();
-  const sandboxModeEnv = getSandboxModeEnvNameFromDirectiveSet(collectDirectives(project.schema));
-  const sandboxModeEnabled = envName === sandboxModeEnv;
-
   if (sandboxModeEnabled && options.promptApiKeyCreation) {
     const apiKeyConfig = await showSandboxModePrompts(context);
-    if (apiKeyConfig) {
-      authConfig.additionalAuthenticationProviders.push(apiKeyConfig);
-    }
+    if (apiKeyConfig) authConfig.additionalAuthenticationProviders.push(apiKeyConfig);
   }
 
   let searchableTransformerFlag = false;
