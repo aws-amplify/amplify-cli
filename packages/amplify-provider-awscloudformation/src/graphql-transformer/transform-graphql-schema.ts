@@ -21,6 +21,7 @@ import {
   TransformerProjectConfig,
 } from '@aws-amplify/graphql-transformer-core';
 import { Template } from '@aws-amplify/graphql-transformer-core/lib/config/project-config';
+import { OverrideConfig } from '@aws-amplify/graphql-transformer-core/src/transformation/types';
 import { AppSyncAuthConfiguration, TransformerPluginProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { $TSContext, AmplifyCategories, AmplifySupportedService, JSONUtilities, stateManager } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
@@ -459,6 +460,7 @@ type TransformerFactoryArgs = {
   authConfig: any;
   storageConfig?: any;
 };
+
 export type ProjectOptions<T> = {
   buildParameters: {
     S3DeploymentBucket: string;
@@ -478,6 +480,7 @@ export type ProjectOptions<T> = {
   stacks: Record<string, Template>;
   sandboxModeEnabled?: boolean;
   sanityCheckRules: SanityCheckRules;
+  overrideConfig: OverrideConfig;
 };
 
 export async function buildAPIProject(opts: ProjectOptions<TransformerFactoryArgs>) {
@@ -514,6 +517,7 @@ async function _buildProject(opts: ProjectOptions<TransformerFactoryArgs>) {
     featureFlags: new AmplifyCLIFeatureFlagAdapter(),
     sandboxModeEnabled: opts.sandboxModeEnabled,
     resolverConfig: opts.resolverConfig,
+    overrideConfig: opts.overrideConfig,
   });
 
   let schema = userProjectConfig.schema.toString();

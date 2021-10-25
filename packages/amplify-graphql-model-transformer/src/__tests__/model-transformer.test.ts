@@ -897,10 +897,8 @@ describe('ModelTransformer: ', () => {
     const transformer = new GraphQLTransform({
       transformers: [new ModelTransformer()],
       featureFlags,
-      transformConfig: {
-        ResolverConfig: {
-          project: config,
-        },
+      resolverConfig: {
+        project: config,
       },
     });
     const out = transformer.transform(validSchema);
@@ -934,10 +932,8 @@ describe('ModelTransformer: ', () => {
     const transformer = new GraphQLTransform({
       transformers: [new ModelTransformer()],
       featureFlags,
-      transformConfig: {
-        ResolverConfig: {
-          project: config,
-        },
+      resolverConfig: {
+        project: config,
       },
     });
     const out = transformer.transform(validSchema);
@@ -968,10 +964,8 @@ describe('ModelTransformer: ', () => {
     const transformer = new GraphQLTransform({
       transformers: [new ModelTransformer()],
       featureFlags,
-      transformConfig: {
-        ResolverConfig: {
-          project: config,
-        },
+      resolverConfig: {
+        project: config,
       },
     });
     const out = transformer.transform(validSchema);
@@ -1000,10 +994,8 @@ describe('ModelTransformer: ', () => {
     const transformer = new GraphQLTransform({
       transformers: [new ModelTransformer()],
       featureFlags,
-      transformConfig: {
-        ResolverConfig: {
-          project: config,
-        },
+      resolverConfig: {
+        project: config,
       },
     });
     const out = transformer.transform(validSchema);

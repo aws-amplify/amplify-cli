@@ -1,4 +1,4 @@
-import { $TSContext, FeatureFlags, IAmplifyResource } from 'amplify-cli-core';
+import { $TSContext, IAmplifyResource } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import { transformRootStack } from '.';
 /**
@@ -6,19 +6,21 @@ import { transformRootStack } from '.';
  * @param context
  * @returns
  */
-export async function transformResourceWithOverrides(context: $TSContext, resource?: IAmplifyResource) {
+export async function transformResourceWithOverrides(context: $TSContext, resource?: IAmplifyResource, applyOverride?: boolean) {
   const flags = context.parameters.options;
   if (flags['no-override']) {
     return;
   }
+
   try {
-    const { transformCategoryStack } = await import(`@aws-amplify/amplify-category-${resource.category}`);
-    if (transformCategoryStack) {
-      return transformCategoryStack(context, resource);
+    if (resource) {
+      const { transformCategoryStack } = await import(`@aws-amplify/amplify-category-${resource.category}`);
+      if (transformCategoryStack) {
+        return transformCategoryStack(context, resource);
+      } else {
+        printer.info('Overrides functionality is not implemented for this category');
+      }
     } else {
-      printer.info('Overrides functionality is not impleented for this category');
-    }
-    if (FeatureFlags.getBoolean('overrides.project')) {
       await transformRootStack(context);
     }
   } catch (err) {

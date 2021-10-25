@@ -13,7 +13,7 @@ import _ from 'lodash';
 import * as path from 'path';
 import uuid from 'uuid';
 import { category } from '../../category-constants';
-import { ApiArtifactHandler } from '../api-artifact-handler';
+import { ApiArtifactHandler, ApiArtifactHandlerOptions } from '../api-artifact-handler';
 import { AppsyncApiInputState } from './api-input-manager/appsync-api-input-state';
 import { cfnParametersFilename, gqlSchemaFilename, provider, rootAssetDir } from './aws-constants';
 import { AppsyncCLIInputs, AppSyncServiceConfig } from './service-walkthrough-types/appsync-user-input-types';
