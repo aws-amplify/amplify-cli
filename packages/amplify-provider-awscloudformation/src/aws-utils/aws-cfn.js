@@ -311,6 +311,15 @@ class CloudFormation {
       });
   }
 
+  async listStacks(nextToken = null, stackStatusFilter) {
+    return await this.cfn
+      .listStacks({
+        NextToken: nextToken,
+        StackStatusFilter: stackStatusFilter,
+      })
+      .promise();
+  }
+
   async updateamplifyMetaFileWithStackOutputs(parentStackName) {
     const cfnParentStackParams = {
       StackName: parentStackName,

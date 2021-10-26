@@ -3,6 +3,7 @@ export type ResourceDefinition = {
   service: string;
   build?: boolean;
   resourceName: string;
+  providerPlugin?: string;
 };
 
 export type BuiltResourceDefinition = ResourceDefinition & {

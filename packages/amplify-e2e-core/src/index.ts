@@ -44,6 +44,7 @@ export function isTestingWithLatestCodebase(scriptRunnerPath) {
 
 export function getScriptRunnerPath(testingWithLatestCodebase = false) {
   if (!testingWithLatestCodebase) {
+
     return process.platform === 'win32' ? 'node.exe' : 'exec';
   }
 

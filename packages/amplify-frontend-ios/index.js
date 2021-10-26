@@ -6,7 +6,14 @@ const initializer = require('./lib/initializer');
 const projectScanner = require('./lib/project-scanner');
 const configManager = require('./lib/configuration-manager');
 const constants = require('./lib/constants');
-const { createAmplifyConfig, createAWSConfig, deleteAmplifyConfig } = require('./lib/frontend-config-creator');
+const {
+  createAmplifyConfig,
+  getNewAWSConfigObject,
+  createAWSConfig,
+  deleteAmplifyConfig,
+  getAmplifyConfig,
+  writeToFile,
+} = require('./lib/frontend-config-creator');
 
 const pluginName = 'ios';
 
@@ -28,6 +35,24 @@ function displayFrontendDefaults(context, projectPath) {
 
 function setFrontendDefaults(context, projectPath) {
   return configManager.setFrontendDefaults(context);
+}
+
+/**
+ * This function enables export to write these files to an external path
+ * @param {TSContext} context
+ * @param {metaWithOutput} amplifyResources
+ * @param {cloudMetaWithOuput} amplifyCloudResources
+ * @param {string} exportPath path to where the files need to be written
+ */
+function createFrontendConfigsAtPath(context, amplifyResources, amplifyCloudResources, exportPath) {
+  const newOutputsForFrontend = amplifyResources.outputsForFrontend;
+  const cloudOutputsForFrontend = amplifyCloudResources.outputsForFrontend;
+
+  const amplifyConfig = getAmplifyConfig(context, newOutputsForFrontend, cloudOutputsForFrontend);
+  writeToFile(exportPath, constants.amplifyConfigFilename, amplifyConfig);
+
+  const awsConfig = getNewAWSConfigObject(context, newOutputsForFrontend, cloudOutputsForFrontend);
+  writeToFile(exportPath, constants.awsConfigFilename, awsConfig);
 }
 
 function createFrontendConfigs(context, amplifyResources, amplifyCloudResources) {
@@ -122,6 +147,7 @@ module.exports = {
   publish,
   run,
   createFrontendConfigs,
+  createFrontendConfigsAtPath,
   executeAmplifyCommand,
   handleAmplifyEvent,
   deleteConfig: deleteAmplifyConfig,

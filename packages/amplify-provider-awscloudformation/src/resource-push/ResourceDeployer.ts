@@ -46,7 +46,7 @@ export abstract class ResourceDeployer {
     resourcesToBeUpdated,
   }: DeploymentResources): ResourceDefinition[] =>
     !!this.context?.exeInfo?.forcePush || this.deployType === ResourceDeployType.Export
-      ? allResources.filter(resource => resource.category !== 'providers')
+      ? allResources.filter(resource => resource.category !== 'providers' && resource.providerPlugin === 'awscloudformation')
       : resourcesToBeCreated.concat(resourcesToBeUpdated);
 
   constructor(context: $TSContext, deployType: ResourceDeployType) {
