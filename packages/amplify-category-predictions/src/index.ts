@@ -7,14 +7,14 @@ import { ResourceDoesNotExistError, exitOnNextTick } from 'amplify-cli-core';
 
 const category = 'predictions';
 
-async function console(context) {
+async function console(context: any) {
   const { amplify } = context;
   const { amplifyMeta } = amplify.getProjectDetails();
 
   return promptConsoleSupportedCategory()
     .then(async result => {
       result = result.category;
-      const predictionsResources = [];
+      const predictionsResources: any = [];
       Object.keys(amplifyMeta[category]).forEach(resourceName => {
         if (
           result.services.includes(amplifyMeta[category][resourceName].service) &&
@@ -59,7 +59,7 @@ async function console(context) {
     });
 }
 
-async function executeAmplifyCommand(context) {
+async function executeAmplifyCommand(context: any) {
   let commandPath = path.normalize(path.join(__dirname, 'commands'));
   if (context.input.command === 'help') {
     commandPath = path.join(commandPath, category);
@@ -71,7 +71,7 @@ async function executeAmplifyCommand(context) {
   await commandModule.run(context);
 }
 
-async function handleAmplifyEvent(context, args) {
+async function handleAmplifyEvent(context: any, args: any) {
   context.print.info(`${category} handleAmplifyEvent to be implemented`);
   context.print.info(`Received event args ${args}`);
 }

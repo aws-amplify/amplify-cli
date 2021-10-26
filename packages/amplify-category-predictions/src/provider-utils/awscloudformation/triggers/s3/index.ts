@@ -1,7 +1,7 @@
 const AWS = require('aws-sdk'); //eslint-disable-line
 const querystring = require('querystring');
 
-async function deleteImageIndex(rekognition, result, externalImageID) {
+async function deleteImageIndex(rekognition: any, result: any, externalImageID: any) {
   const len = result.Faces.length;
   let resultDeleted = false;
   for (let i = 0; i < len; i++) {
@@ -27,7 +27,7 @@ async function deleteImageIndex(rekognition, result, externalImageID) {
   return resultDeleted;
 }
 
-exports.handler = async event => {
+exports.handler = async (event: any) => {
   AWS.config.update({
     region: event.Records[0].awsRegion,
   });
@@ -81,6 +81,7 @@ exports.handler = async event => {
         params = {
           CollectionId: process.env.collectionId,
           MaxResults: 1000,
+          // @ts-expect-error ts-migrate(2322) FIXME: Type '{ CollectionId: string | undefined; MaxResul... Remove this comment to see the full error message
           NextToken: result.NextToken,
         };
         result = await rekognition.listFaces(params).promise();

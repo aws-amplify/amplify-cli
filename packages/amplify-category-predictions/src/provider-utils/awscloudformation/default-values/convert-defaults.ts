@@ -1,6 +1,6 @@
 const uuid = require('uuid');
 
-export default function getAllDefaults(project) {
+export default function getAllDefaults(project: any) {
   const region = project.amplifyMeta.providers.awscloudformation.Region;
   const [shortId] = uuid().split('-');
   const authRoleName = {

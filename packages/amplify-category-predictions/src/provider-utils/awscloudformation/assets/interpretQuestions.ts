@@ -1,7 +1,7 @@
 /* eslint-disable no-multi-str */
 /* eslint-disable object-shorthand */
 
-function interpretAccess(options) {
+function interpretAccess(options: any) {
   return [
     {
       type: 'list',
@@ -38,12 +38,12 @@ const setup = {
       },
     ];
   },
-  name(defaultName) {
+  name(defaultName: any) {
     return [
       {
         name: 'resourceName',
         message: 'Provide a friendly name for your resource',
-        validate: value => {
+        validate: (value: any) => {
           const regex = new RegExp('^[a-zA-Z0-9]+$');
           return regex.test(value) ? true : 'Resource name should be alphanumeric!';
         },
@@ -54,7 +54,7 @@ const setup = {
 };
 
 const interpretText = {
-  questions(options) {
+  questions(options: any) {
     return [
       {
         type: 'list',

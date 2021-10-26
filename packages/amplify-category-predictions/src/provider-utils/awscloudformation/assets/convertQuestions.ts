@@ -87,7 +87,7 @@ const deniedCombos = {
 };
 
 const convertAccess = {
-  prompt(options) {
+  prompt(options: any) {
     return [
       {
         type: 'list',
@@ -133,12 +133,12 @@ const setup = {
       },
     ];
   },
-  name(defaultName) {
+  name(defaultName: any) {
     return [
       {
         name: 'resourceName',
         message: 'Provide a friendly name for your resource',
-        validate: value => {
+        validate: (value: any) => {
           const regex = new RegExp('^[a-zA-Z0-9]+$');
           return regex.test(value) ? true : 'Resource name should be alphanumeric!';
         },
@@ -149,7 +149,7 @@ const setup = {
 };
 
 const translateText = {
-  questions(options) {
+  questions(options: any) {
     return [
       {
         type: 'list',
@@ -160,7 +160,7 @@ const translateText = {
       },
     ];
   },
-  targetQuestion(targetOptions, options) {
+  targetQuestion(targetOptions: any, options: any) {
     return [
       {
         type: 'list',
@@ -176,7 +176,7 @@ const translateText = {
 };
 
 const speechGenerator = {
-  questions(options) {
+  questions(options: any) {
     return [
       {
         type: 'list',
@@ -187,7 +187,7 @@ const speechGenerator = {
       },
     ];
   },
-  voiceQuestion(langID, options) {
+  voiceQuestion(langID: any, options: any) {
     return [
       {
         type: 'list',
@@ -203,7 +203,7 @@ const speechGenerator = {
 };
 
 const transcription = {
-  questions(options) {
+  questions(options: any) {
     return [
       {
         type: 'list',

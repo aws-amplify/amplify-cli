@@ -1,14 +1,17 @@
+// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'path'.
 const path = require('path');
 const chalk = require('chalk');
+// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'exitOnNext... Remove this comment to see the full error message
 const { NotImplementedError, ResourceDoesNotExistError, exitOnNextTick, open } = require('amplify-cli-core');
+// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'parameters... Remove this comment to see the full error message
 const parametersFileName = 'parameters.json';
 const prefixForAdminTrigger = 'protected/predictions/index-faces/admin';
 
-function addResource(context, category, predictionsCategoryFilename, options) {
+function addResource(context: any, category: any, predictionsCategoryFilename: any, options: any) {
   const predictionCtgWalkthroughSrc = `${__dirname}/prediction-category-walkthroughs/${predictionsCategoryFilename}`;
   const { addWalkthrough } = require(predictionCtgWalkthroughSrc);
 
-  return addWalkthrough(context).then(async resources => {
+  return addWalkthrough(context).then(async (resources: any) => {
     options = Object.assign(options, resources);
     delete options.resourceName;
     context.amplify.updateamplifyMetaAfterResourceAdd(category, resources.resourceName, options);
@@ -16,7 +19,7 @@ function addResource(context, category, predictionsCategoryFilename, options) {
   });
 }
 
-function updateResource(context, predictionsCategoryFilename) {
+function updateResource(context: any, predictionsCategoryFilename: any) {
   const predictionCtgWalkthroughSrc = `${__dirname}/prediction-category-walkthroughs/${predictionsCategoryFilename}`;
   const { updateWalkthrough } = require(predictionCtgWalkthroughSrc);
 
@@ -27,11 +30,12 @@ function updateResource(context, predictionsCategoryFilename) {
     exitOnNextTick(0);
   }
 
-  return updateWalkthrough(context).then(resource => resource.resourceName);
+  return updateWalkthrough(context).then((resource: any) => resource.resourceName);
 }
 
 // currently only supports sagemaker and rekognition
-async function console(context, resourceObj, amplifyMeta) {
+// @ts-expect-error ts-migrate(2300) FIXME: Duplicate identifier 'console'.
+async function console(context: any, resourceObj: any, amplifyMeta: any) {
   const service = resourceObj.service;
   const resourceName = resourceObj.name;
   let serviceOutput = '';
@@ -47,20 +51,22 @@ async function console(context, resourceObj, amplifyMeta) {
   }
 
   if (service === 'Rekognition') {
+    // @ts-expect-error ts-migrate(2554) FIXME: Expected 4 arguments, but got 3.
     await printRekognitionUploadUrl(context, resourceName, amplifyMeta);
   }
 
   return serviceOutput;
 }
 
-async function openEndpointDetails(context, region, endpointName) {
+async function openEndpointDetails(context: any, region: any, endpointName: any) {
   const endpointConsoleUrl = `https://${region}.console.aws.amazon.com/sagemaker/home?region=${region}#/endpoints/${endpointName}`;
+  // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{ wait: boolean; }' is not assig... Remove this comment to see the full error message
   await open(endpointConsoleUrl, { wait: false });
   context.print.info('Endpoint Console:');
   context.print.success(endpointConsoleUrl);
 }
 
-function getSageMaker(amplifyMeta) {
+function getSageMaker(amplifyMeta: any) {
   let sagemakerOutput;
   const categoryMeta = amplifyMeta.predictions;
   const services = Object.keys(categoryMeta);
@@ -74,7 +80,7 @@ function getSageMaker(amplifyMeta) {
   return sagemakerOutput;
 }
 
-async function printRekognitionUploadUrl(context, resourceName, amplifyMeta, showOnAmplifyStatus) {
+async function printRekognitionUploadUrl(context: any, resourceName: any, amplifyMeta: any, showOnAmplifyStatus: any) {
   const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
   const resourceDirPath = path.join(projectBackendDirPath, 'predictions', resourceName);
   const parametersFilePath = path.join(resourceDirPath, parametersFileName);
@@ -115,12 +121,13 @@ async function printRekognitionUploadUrl(context, resourceName, amplifyMeta, sho
   }
 }
 
-async function openRekognitionUploadUrl(context, bucketName, region, folderPolicies, printOnlyURL) {
+async function openRekognitionUploadUrl(context: any, bucketName: any, region: any, folderPolicies: any, printOnlyURL: any) {
   const URL =
     folderPolicies === 'admin'
       ? `https://s3.console.aws.amazon.com/s3/buckets/${bucketName}/${prefixForAdminTrigger}/admin/?region=${region}`
       : `https://s3.console.aws.amazon.com/s3/buckets/${bucketName}/${prefixForAdminTrigger}/?region=${region}`;
   if (!printOnlyURL) {
+    // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{ wait: boolean; }' is not assig... Remove this comment to see the full error message
     await open(URL, { wait: false });
   }
   context.print.info(

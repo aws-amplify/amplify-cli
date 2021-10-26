@@ -1,6 +1,6 @@
 const os = require('os');
 
-export async function enableGuestAuth(context, resourceName, allowUnauthenticatedIdentities) {
+export async function enableGuestAuth(context: any, resourceName: any, allowUnauthenticatedIdentities: any) {
   const identifyRequirements = { authSelections: 'identityPoolAndUserPool', allowUnauthenticatedIdentities };
 
   const checkResult = await context.amplify.invokePluginMethod(context, 'auth', undefined, 'checkRequirements', [

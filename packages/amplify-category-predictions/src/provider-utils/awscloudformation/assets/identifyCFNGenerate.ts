@@ -1,4 +1,4 @@
-function generateStorageCFNForLambda(storageCFNFile, functionName, prefixForAdminTrigger) {
+function generateStorageCFNForLambda(storageCFNFile: any, functionName: any, prefixForAdminTrigger: any) {
   // Add reference for the new triggerFunction
   storageCFNFile.Parameters[`function${functionName}Arn`] = {
     Type: 'String',
@@ -145,7 +145,7 @@ function generateStorageCFNForLambda(storageCFNFile, functionName, prefixForAdmi
   return storageCFNFile;
 }
 
-function generateStorageCFNForAdditionalLambda(storageCFNFile, functionName, prefixForAdminTrigger) {
+function generateStorageCFNForAdditionalLambda(storageCFNFile: any, functionName: any, prefixForAdminTrigger: any) {
   storageCFNFile.Parameters[`function${functionName}Arn`] = {
     Type: 'String',
     Default: `function${functionName}Arn`,
@@ -174,7 +174,7 @@ function generateStorageCFNForAdditionalLambda(storageCFNFile, functionName, pre
   // Modify existing notification configuration here//
 
   const lambdaConfigurations = [];
-  storageCFNFile.Resources.S3Bucket.Properties.NotificationConfiguration.LambdaConfigurations.forEach(triggers => {
+  storageCFNFile.Resources.S3Bucket.Properties.NotificationConfiguration.LambdaConfigurations.forEach((triggers: any) => {
     if (!triggers.Filter) {
       lambdaConfigurations.push(
         addObjectKeys(triggers, {
@@ -341,7 +341,7 @@ function generateStorageCFNForAdditionalLambda(storageCFNFile, functionName, pre
   return storageCFNFile;
 }
 
-function generateLambdaAccessForRekognition(identifyCFNFile, functionName, s3ResourceName) {
+function generateLambdaAccessForRekognition(identifyCFNFile: any, functionName: any, s3ResourceName: any) {
   identifyCFNFile.Parameters[`function${functionName}Arn`] = {
     Type: 'String',
     Default: `function${functionName}Arn`,
@@ -694,7 +694,7 @@ function generateLambdaAccessForRekognition(identifyCFNFile, functionName, s3Res
   return identifyCFNFile;
 }
 
-function generateStorageAccessForRekognition(identifyCFNFile, s3ResourceName, prefixForAdminTrigger) {
+function generateStorageAccessForRekognition(identifyCFNFile: any, s3ResourceName: any, prefixForAdminTrigger: any) {
   identifyCFNFile.Parameters[`storage${s3ResourceName}BucketName`] = {
     Type: 'String',
     Default: `storage${s3ResourceName}BucketName`,
@@ -833,11 +833,11 @@ function generateStorageAccessForRekognition(identifyCFNFile, s3ResourceName, pr
   return identifyCFNFile;
 }
 
-function addObjectKeys(original, additional) {
+function addObjectKeys(original: any, additional: any) {
   return { ...original, ...additional };
 }
 
-function addTextractPolicies(identifyCFNFile) {
+function addTextractPolicies(identifyCFNFile: any) {
   identifyCFNFile.Resources.IdentifyTextPolicy.Properties.PolicyDocument.Statement[0].Action = [
     'rekognition:DetectText',
     'rekognition:DetectLabel',
@@ -849,7 +849,7 @@ function addTextractPolicies(identifyCFNFile) {
   return JSON.stringify(identifyCFNFile, null, 4);
 }
 
-function removeTextractPolicies(identifyCFNFile) {
+function removeTextractPolicies(identifyCFNFile: any) {
   identifyCFNFile.Resources.IdentifyTextPolicy.Properties.PolicyDocument.Statement[0].Action = [
     'rekognition:DetectText',
     'rekognition:DetectLabel',

@@ -14,7 +14,7 @@ const templateFilename = 'infer-template.json.ejs';
 const inferTypes = ['inferModel'];
 const service = 'SageMaker';
 
-async function addWalkthrough(context) {
+async function addWalkthrough(context: any) {
   while (!checkIfAuthExists(context)) {
     if (
       await context.amplify.confirmPrompt(
@@ -29,14 +29,15 @@ async function addWalkthrough(context) {
     }
   }
 
+  // @ts-expect-error ts-migrate(2554) FIXME: Expected 2 arguments, but got 1.
   return await configure(context);
 }
 
-async function updateWalkthrough(context) {
+async function updateWalkthrough(context: any) {
   const { amplify } = context;
   const { amplifyMeta } = amplify.getProjectDetails();
 
-  const predictionsResources = [];
+  const predictionsResources: any = [];
 
   Object.keys(amplifyMeta[category]).forEach(resourceName => {
     if (inferTypes.includes(amplifyMeta[category][resourceName].inferType)) {
@@ -67,7 +68,7 @@ async function updateWalkthrough(context) {
   return configure(context, resourceObj);
 }
 
-async function configure(context, resourceObj) {
+async function configure(context: any, resourceObj: any) {
   const { amplify } = context;
   const defaultValues = getAllDefaults(amplify.getProjectDetails());
   const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
@@ -83,14 +84,17 @@ async function configure(context, resourceObj) {
       parameters = {};
     }
     inferType = resourceObj.inferType;
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'resourceName' does not exist on type '{}... Remove this comment to see the full error message
     parameters.resourceName = resourceObj.name;
     Object.assign(defaultValues, parameters);
   }
   let answers = {};
 
+  // @ts-expect-error ts-migrate(2339) FIXME: Property 'resourceName' does not exist on type '{}... Remove this comment to see the full error message
   if (!parameters.resourceName) {
     answers = await inquirer.prompt(inferAssets.setup.type());
     // check if that type is already created
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'inferType' does not exist on type '{}'.
     const resourceType = resourceAlreadyExists(context, answers.inferType);
     if (resourceType) {
       const errMessage = `${resourceType} has already been added to this project.`;
@@ -99,25 +103,31 @@ async function configure(context, resourceObj) {
       exitOnNextTick(0);
     }
 
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'inferType' does not exist on type '{}'.
     Object.assign(answers, await inquirer.prompt(inferAssets.setup.name(`${answers.inferType}${defaultValues.resourceName}`)));
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'inferType' does not exist on type '{}'.
     inferType = answers.inferType;
     if (inferType === 'modelInfer') {
       defaultValues.region = regionMapper.getAvailableRegion(context, 'SageMaker', defaultValues.region);
     }
   }
 
+  // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
   Object.assign(answers, await followUpQuestions(context, inferAssets[inferType], inferType, defaultValues, parameters));
   answers = { ...answers, service };
   Object.assign(defaultValues, answers);
 
   // auth permissions
+  // @ts-expect-error ts-migrate(2339) FIXME: Property 'access' does not exist on type '{}'.
   if (answers.access === 'authAndGuest') {
     await enableGuestAuth(context, defaultValues.resourceName, true);
   }
 
   const { resourceName } = defaultValues;
+  // @ts-expect-error ts-migrate(2790) FIXME: The operand of a 'delete' operator must be optiona... Remove this comment to see the full error message
   delete defaultValues.service;
   delete defaultValues.region;
+  // @ts-expect-error ts-migrate(2339) FIXME: Property 'inferType' does not exist on type '{ res... Remove this comment to see the full error message
   defaultValues.inferType = inferType;
   const resourceDirPath = path.join(projectBackendDirPath, category, resourceName);
   const amplifyMetaValues = {
@@ -130,6 +140,7 @@ async function configure(context, resourceObj) {
   const parametersFilePath = path.join(resourceDirPath, parametersFileName);
   const jsonString = JSON.stringify(defaultValues, null, 4);
   fs.writeFileSync(parametersFilePath, jsonString, 'utf8');
+  // @ts-expect-error ts-migrate(2339) FIXME: Property 'resourceName' does not exist on type '{}... Remove this comment to see the full error message
   if (!parameters.resourceName) {
     await copyCfnTemplate(context, category, resourceName, defaultValues);
   }
@@ -137,7 +148,7 @@ async function configure(context, resourceObj) {
   return amplifyMetaValues;
 }
 
-function addRegionMapping(context, resourceName, inferType) {
+function addRegionMapping(context: any, resourceName: any, inferType: any) {
   const regionMapping = regionMapper.getRegionMapping(context, service, inferType);
   const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
   const identifyCFNFilePath = path.join(projectBackendDirPath, category, resourceName, `${resourceName}-template.json`);
@@ -147,7 +158,7 @@ function addRegionMapping(context, resourceName, inferType) {
   fs.writeFileSync(identifyCFNFilePath, identifyCFNJSON, 'utf8');
 }
 
-async function copyCfnTemplate(context, categoryName, resourceName, options) {
+async function copyCfnTemplate(context: any, categoryName: any, resourceName: any, options: any) {
   const { amplify } = context;
   const targetDir = amplify.pathManager.getBackendDirPath();
   const pluginDir = __dirname;
@@ -163,7 +174,7 @@ async function copyCfnTemplate(context, categoryName, resourceName, options) {
   return await context.amplify.copyBatch(context, copyJobs, options);
 }
 
-async function followUpQuestions(context, questionObj, inferType, defaultValues, parameters) {
+async function followUpQuestions(context: any, questionObj: any, inferType: any, defaultValues: any, parameters: any) {
   const answers = await inquirer.prompt(questionObj.endpointPrompt(parameters));
   if (answers.endpointConfig === 'import') {
     // attempt to get existing endpoints
@@ -180,7 +191,7 @@ async function followUpQuestions(context, questionObj, inferType, defaultValues,
   return answers;
 }
 
-function checkIfAuthExists(context) {
+function checkIfAuthExists(context: any) {
   const { amplify } = context;
   const { amplifyMeta } = amplify.getProjectDetails();
   let authExists = false;
@@ -198,7 +209,7 @@ function checkIfAuthExists(context) {
   return authExists;
 }
 
-function resourceAlreadyExists(context, inferType) {
+function resourceAlreadyExists(context: any, inferType: any) {
   const { amplify } = context;
   const { amplifyMeta } = amplify.getProjectDetails();
   let type;
@@ -214,12 +225,13 @@ function resourceAlreadyExists(context, inferType) {
   return type;
 }
 
-async function getEndpoints(context, questionObj, params) {
+async function getEndpoints(context: any, questionObj: any, params: any) {
   const sagemaker = await context.amplify.executeProviderUtils(context, 'awscloudformation', 'getEndpoints');
-  const endpoints = [];
+  const endpoints: any = [];
   const endpointMap = {};
-  sagemaker.Endpoints.forEach(endpoint => {
+  sagemaker.Endpoints.forEach((endpoint: any) => {
     endpoints.push({ name: `${endpoint.EndpointName}` });
+    // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
     endpointMap[endpoint.EndpointName] = { endpointName: endpoint.EndpointName, endpointARN: endpoint.EndpointArn };
   });
   if (endpoints.length < 1) {
@@ -229,10 +241,11 @@ async function getEndpoints(context, questionObj, params) {
     exitOnNextTick(0);
   }
   const { endpoint } = await inquirer.prompt(questionObj.importPrompt({ ...params, endpoints }));
+  // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
   return endpointMap[endpoint];
 }
 
-async function createEndpoint(context, defaultValues) {
+async function createEndpoint(context: any, defaultValues: any) {
   const endpointConsoleUrl = `https://${defaultValues.region}.console.aws.amazon.com/sagemaker/home?region=${defaultValues.region}#/endpoints/create`;
   await open(endpointConsoleUrl, { wait: false });
   context.print.info('SageMaker Console:');

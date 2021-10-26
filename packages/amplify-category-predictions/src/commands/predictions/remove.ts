@@ -1,16 +1,20 @@
+// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'path'.
 const path = require('path');
 const fs = require('fs-extra');
 
+// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'subcommand... Remove this comment to see the full error message
 const subcommand = 'remove';
 const category = 'predictions';
 const storageCategory = 'storage';
+// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'parameters... Remove this comment to see the full error message
 const parametersFileName = 'parameters.json';
 const amplifyMetaFilename = 'amplify-meta.json';
 const s3CloudFormationTemplateFile = 's3-cloudformation-template.json';
+// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'exitOnNext... Remove this comment to see the full error message
 const { ResoureNotFoundError, exitOnNextTick } = require('amplify-cli-core');
 module.exports = {
   name: subcommand,
-  run: async context => {
+  run: async (context: any) => {
     const { amplify, parameters } = context;
     const resourceName = parameters.first;
 
@@ -54,8 +58,8 @@ module.exports = {
           const amplifyMetaFilePath = path.join(projectBackendDirPath, amplifyMetaFilename);
           const amplifyMetaFile = context.amplify.readJsonFile(amplifyMetaFilePath);
           const s3DependsOnResources = amplifyMetaFile.storage[s3ResourceName].dependsOn;
-          const s3Resources = [];
-          s3DependsOnResources.forEach(resource => {
+          const s3Resources: any = [];
+          s3DependsOnResources.forEach((resource: any) => {
             if (resource.resourceName !== adminTriggerFunction) {
               s3Resources.push(resource);
             }
@@ -69,7 +73,7 @@ module.exports = {
           context.amplify.updateamplifyMetaAfterResourceUpdate(storageCategory, s3ResourceName, 'dependsOn', s3Resources);
         }
       })
-      .catch(err => {
+      .catch((err: any) => {
         context.print.info(err.stack);
         context.print.error('An error occurred when removing the predictions resource');
         context.usageData.emitError(err);

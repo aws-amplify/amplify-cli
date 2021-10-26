@@ -3,7 +3,7 @@ import chalk from 'chalk';
 
 const inquirer = require('inquirer');
 
-function categories(info) {
+function categories(info: any) {
   const questions = [
     {
       type: 'list',
@@ -41,6 +41,7 @@ Interpret allows you to analyze text for language, entities (places, people), ke
 Infer allows you to perform inference against a cloud endpoint. It’s an advanced feature using Amazon SageMaker, where you have more control over your models.\n\
 Learn More: https://docs.amplify.aws/lib/predictions/intro/q/platform/js';
     helpText = `\n${helpText.replace(new RegExp('[\\n]', 'g'), '\n\n')}\n\n`;
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'prefix' does not exist on type '{ type: ... Remove this comment to see the full error message
     questions[0].prefix = chalk.green(helpText);
   }
   return questions;

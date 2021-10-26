@@ -1,6 +1,6 @@
 const uuid = require('uuid');
 
-const getAllS3Defaults = project => {
+const getAllS3Defaults = (project: any) => {
   const name = project.projectConfig.projectName.toLowerCase();
   const [shortId] = uuid().split('-');
 

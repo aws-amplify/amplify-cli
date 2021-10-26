@@ -3,7 +3,7 @@
 
 // defaults for text, entity, and label categories
 
-function identifyAccess(options) {
+function identifyAccess(options: any) {
   return [
     {
       type: 'list',
@@ -48,12 +48,12 @@ const setup = {
       },
     ];
   },
-  name(defaultName) {
+  name(defaultName: any) {
     return [
       {
         name: 'resourceName',
         message: 'Provide a friendly name for your resource',
-        validate: value => {
+        validate: (value: any) => {
           const regex = new RegExp('^[a-zA-Z0-9]+$');
           return regex.test(value) ? true : 'Resource name should be alphanumeric!';
         },
@@ -64,7 +64,7 @@ const setup = {
 };
 
 const identifyText = {
-  questions(options) {
+  questions(options: any) {
     return [
       {
         type: 'confirm',
@@ -74,7 +74,7 @@ const identifyText = {
       },
     ];
   },
-  formatFlag(flag) {
+  formatFlag(flag: any) {
     if (flag) return { format: 'ALL' };
     return { format: 'PLAIN' };
   },
@@ -82,7 +82,7 @@ const identifyText = {
 };
 
 const identifyEntities = {
-  questions(options) {
+  questions(options: any) {
     return [
       {
         type: 'list',
@@ -104,22 +104,22 @@ const identifyEntities = {
         name: 'celebrityDetectionEnabled',
         message: 'Would you like to enable celebrity detection?',
         default: options.celebrityDetectionEnabled ? options.celebrityDetectionEnabled : true,
-        when: answers => answers.setup === 'advanced',
+        when: (answers: any) => answers.setup === 'advanced',
       },
       {
         type: 'confirm',
         name: 'adminTask',
         message: 'Would you like to identify entities from a collection of images?',
         default: options.adminTask ? options.adminTask : false,
-        when: answers => answers.setup === 'advanced',
+        when: (answers: any) => answers.setup === 'advanced',
       },
       {
         type: 'number',
         name: 'maxEntities',
         message: 'How many entities would you like to identify?',
         default: options.maxEntities ? options.maxEntities : 50,
-        when: answers => answers.setup === 'advanced' && answers.adminTask,
-        validate: value => (value > 0 && value < 101) || 'Please enter a number between 1 and 100!',
+        when: (answers: any) => answers.setup === 'advanced' && answers.adminTask,
+        validate: (value: any) => (value > 0 && value < 101) || 'Please enter a number between 1 and 100!',
       },
       {
         type: 'list',
@@ -135,7 +135,7 @@ const identifyEntities = {
             value: 'admin',
           },
         ],
-        when: answers => answers.setup === 'advanced' && answers.adminTask,
+        when: (answers: any) => answers.setup === 'advanced' && answers.adminTask,
         default: options.folderPolicies ? options.folderPolicies : 'app',
       },
     ];
@@ -147,7 +147,7 @@ const identifyEntities = {
 };
 
 const identifyLabels = {
-  questions(options) {
+  questions(options: any) {
     return [
       {
         type: 'list',
@@ -182,7 +182,7 @@ const identifyLabels = {
             value: 'ALL',
           },
         ],
-        when: answers => answers.setup === 'advanced',
+        when: (answers: any) => answers.setup === 'advanced',
         default: [options.type ? options.type : 'LABELS'],
       },
     ];
@@ -224,7 +224,7 @@ const adminTask = [
         value: 'app',
       },
     ],
-    when: answers => answers.adminTask,
+    when: (answers: any) => answers.adminTask,
     default: 'admin',
   },
 ];

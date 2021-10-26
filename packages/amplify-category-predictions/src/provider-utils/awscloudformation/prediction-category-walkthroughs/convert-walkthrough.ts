@@ -14,7 +14,7 @@ const templateFilename = 'convert-template.json.ejs';
 const convertTypes = ['translateText', 'speechGenerator', 'transcription'];
 let service = '';
 // Needs Cognito Authentication
-async function addWalkthrough(context) {
+async function addWalkthrough(context: any) {
   while (!checkIfAuthExists(context)) {
     if (
       await context.amplify.confirmPrompt(
@@ -29,14 +29,15 @@ async function addWalkthrough(context) {
     }
   }
 
+  // @ts-expect-error ts-migrate(2554) FIXME: Expected 2 arguments, but got 1.
   return await configure(context);
 }
 
-async function updateWalkthrough(context) {
+async function updateWalkthrough(context: any) {
   const { amplify } = context;
   const { amplifyMeta } = amplify.getProjectDetails();
 
-  const predictionsResources = [];
+  const predictionsResources: any = [];
 
   Object.keys(amplifyMeta[category]).forEach(resourceName => {
     if (convertTypes.includes(amplifyMeta[category][resourceName].convertType)) {
@@ -67,7 +68,7 @@ async function updateWalkthrough(context) {
   return configure(context, resourceObj);
 }
 
-async function configure(context, resourceObj) {
+async function configure(context: any, resourceObj: any) {
   const { amplify } = context;
   const defaultValues = getAllDefaults(amplify.getProjectDetails());
   let convertType = '';
@@ -84,15 +85,18 @@ async function configure(context, resourceObj) {
       parameters = {};
     }
     convertType = resourceObj.convertType;
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'resourceName' does not exist on type '{}... Remove this comment to see the full error message
     parameters.resourceName = resourceObj.name;
     Object.assign(defaultValues, parameters);
   }
   let answers = {};
 
   // only ask this for add
+  // @ts-expect-error ts-migrate(2339) FIXME: Property 'resourceName' does not exist on type '{}... Remove this comment to see the full error message
   if (!parameters.resourceName) {
     answers = await inquirer.prompt(convertAssets.setup.type());
     // check if that type is already created
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'convertType' does not exist on type '{}'... Remove this comment to see the full error message
     const resourceType = resourceAlreadyExists(context, answers.convertType);
     if (resourceType) {
       const errMessage = `${resourceType} has already been added to this project.`;
@@ -101,8 +105,11 @@ async function configure(context, resourceObj) {
       exitOnNextTick(0);
     }
 
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'convertType' does not exist on type '{}'... Remove this comment to see the full error message
     Object.assign(answers, await inquirer.prompt(convertAssets.setup.name(`${answers.convertType}${defaultValues.resourceName}`)));
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'convertType' does not exist on type '{}'... Remove this comment to see the full error message
     defaultValues.convertPolicyName = `${answers.convertType}${defaultValues.convertPolicyName}`;
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'convertType' does not exist on type '{}'... Remove this comment to see the full error message
     convertType = answers.convertType;
   }
 
@@ -110,11 +117,13 @@ async function configure(context, resourceObj) {
   Object.assign(defaultValues, answers);
 
   // auth permissions
+  // @ts-expect-error ts-migrate(2339) FIXME: Property 'access' does not exist on type '{}'.
   if (answers.access === 'authAndGuest') {
     await enableGuestAuth(context, defaultValues.resourceName, true);
   }
 
   const { resourceName } = defaultValues;
+  // @ts-expect-error ts-migrate(2339) FIXME: Property 'service' does not exist on type '{ resou... Remove this comment to see the full error message
   delete defaultValues.service;
   delete defaultValues.region;
   const resourceDirPath = path.join(projectBackendDirPath, category, resourceName);
@@ -128,6 +137,7 @@ async function configure(context, resourceObj) {
   const parametersFilePath = path.join(resourceDirPath, parametersFileName);
   const jsonString = JSON.stringify(defaultValues, null, 4);
   fs.writeFileSync(parametersFilePath, jsonString, 'utf8');
+  // @ts-expect-error ts-migrate(2339) FIXME: Property 'resourceName' does not exist on type '{}... Remove this comment to see the full error message
   if (!parameters.resourceName) {
     await copyCfnTemplate(context, category, resourceName, defaultValues);
   }
@@ -135,7 +145,7 @@ async function configure(context, resourceObj) {
   return amplifyMetaValues;
 }
 
-function addRegionMapping(context, resourceName, convertType) {
+function addRegionMapping(context: any, resourceName: any, convertType: any) {
   const regionMapping = regionMapper.getRegionMapping(context, service, convertType);
   const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
   const identifyCFNFilePath = path.join(projectBackendDirPath, category, resourceName, `${resourceName}-template.json`);
@@ -145,7 +155,7 @@ function addRegionMapping(context, resourceName, convertType) {
   fs.writeFileSync(identifyCFNFilePath, identifyCFNJSON, 'utf8');
 }
 
-async function copyCfnTemplate(context, categoryName, resourceName, options) {
+async function copyCfnTemplate(context: any, categoryName: any, resourceName: any, options: any) {
   const { amplify } = context;
   const targetDir = amplify.pathManager.getBackendDirPath();
   const pluginDir = __dirname;
@@ -161,7 +171,8 @@ async function copyCfnTemplate(context, categoryName, resourceName, options) {
   return await context.amplify.copyBatch(context, copyJobs, options);
 }
 
-async function followupQuestions(context, convertType, parameters) {
+async function followupQuestions(context: any, convertType: any, parameters: any) {
+  // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
   const typeQuestions = convertAssets.convertTypes[convertType];
   service = typeQuestions.service;
   if (convertType === 'speechGenerator') {
@@ -180,10 +191,11 @@ async function followupQuestions(context, convertType, parameters) {
   return answers;
 }
 
-function filterLang(srcLang) {
+function filterLang(srcLang: any) {
   let targetOptions = [...convertAssets.translateOptions];
   const denyCombos = Object.assign({}, convertAssets.deniedCombos);
   targetOptions = targetOptions.filter(lang => {
+    // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
     if (denyCombos[srcLang] && denyCombos[srcLang].includes(lang.value)) {
       return false;
     }
@@ -195,12 +207,13 @@ function filterLang(srcLang) {
   return targetOptions;
 }
 
-async function getVoiceOptions(context) {
+async function getVoiceOptions(context: any) {
   const polly = await context.amplify.executeProviderUtils(context, 'awscloudformation', 'getPollyVoices');
-  const speechLanguages = [];
+  const speechLanguages: any = [];
   const voiceID = {};
-  polly.Voices.forEach(voice => {
+  polly.Voices.forEach((voice: any) => {
     speechLanguages[voice.LanguageCode] = { name: `${voice.LanguageName}`, value: `${voice.LanguageCode}` };
+    // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
     (voiceID[voice.LanguageCode] = voiceID[voice.LanguageCode] || []).push({
       name: `${voice.Name} - ${voice.Gender}`,
       value: `${voice.Id}`,
@@ -209,7 +222,7 @@ async function getVoiceOptions(context) {
   return { languages: Object.values(speechLanguages), voices: voiceID };
 }
 
-function resourceAlreadyExists(context, convertType) {
+function resourceAlreadyExists(context: any, convertType: any) {
   const { amplify } = context;
   const { amplifyMeta } = amplify.getProjectDetails();
   let type;
@@ -225,7 +238,7 @@ function resourceAlreadyExists(context, convertType) {
   return type;
 }
 
-function checkIfAuthExists(context) {
+function checkIfAuthExists(context: any) {
   const { amplify } = context;
   const { amplifyMeta } = amplify.getProjectDetails();
   let authExists = false;
