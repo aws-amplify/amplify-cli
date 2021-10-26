@@ -28,7 +28,7 @@ import {
   toUpper,
 } from 'graphql-transformer-common';
 import { createParametersStack as createParametersInStack } from './cdk/create-cfnParameters';
-import { requestTemplate, responseTemplate } from './generate-resolver-vtl';
+import { requestTemplate, responseTemplate, sandboxMappingTemplate } from './generate-resolver-vtl';
 import {
   makeSearchableScalarInputObject,
   makeSearchableSortDirectionEnumObject,
@@ -116,6 +116,7 @@ export class SearchableModelTransformer extends TransformerPluginBase {
 
     for (const def of this.searchableObjectTypeDefinitions) {
       const type = def.node.name.value;
+      const fields = def.node.fields?.map(f => f.name.value) ?? [];
       const typeName = context.output.getQueryTypeName();
       const table = getTable(context, def.node);
       const ddbTable = table as Table;
@@ -137,6 +138,13 @@ export class SearchableModelTransformer extends TransformerPluginBase {
           `${typeName}.${def.fieldName}.req.vtl`,
         ),
         MappingTemplate.s3MappingTemplateFromString(responseTemplate(false), `${typeName}.${def.fieldName}.res.vtl`),
+      );
+      resolver.addToSlot(
+        'postAuth',
+        MappingTemplate.s3MappingTemplateFromString(
+          sandboxMappingTemplate((context as any).resourceHelper.api.sandboxModeEnabled, fields),
+          `${typeName}.${def.fieldName}.{slotName}.{slotIndex}.res.vtl`,
+        ),
       );
       resolver.mapToStack(stack);
       context.resolvers.addResolver(typeName, def.fieldName, resolver);

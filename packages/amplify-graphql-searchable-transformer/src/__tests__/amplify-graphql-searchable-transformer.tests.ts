@@ -251,6 +251,9 @@ test('it generates expected resources', () => {
           {
             'Fn::GetAtt': [anything(), 'FunctionId'],
           },
+          {
+            'Fn::GetAtt': [anything(), 'FunctionId'],
+          },
         ],
       },
       RequestMappingTemplate: {

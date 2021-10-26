@@ -1031,6 +1031,12 @@ $util.toJson($ListRequest)
   $util.toJson($ctx.result)
 #end
 ## [End] ResponseTemplate. **",
+  "Query.searchPosts.postAuth.1.res.vtl": "## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **",
   "Query.searchPosts.req.vtl": "#set( $indexPath = \\"/post/doc/_search\\" )
 #set( $allowedAggFields = $util.defaultIfNull($ctx.stash.allowedAggFields, []) )
 #set( $aggFieldsFilterMap = $util.defaultIfNull($ctx.stash.aggFieldsFilterMap, {}) )
