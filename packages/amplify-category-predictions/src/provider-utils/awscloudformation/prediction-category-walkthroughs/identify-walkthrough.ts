@@ -1,24 +1,13 @@
 import identifyAssets from '../assets/identifyQuestions';
 import getAllDefaults from '../default-values/identify-defaults';
 import regionMapper from '../assets/regionMapping';
-import {
-  generateStorageCFNForLambda,
-  generateStorageCFNForAdditionalLambda,
-  generateLambdaAccessForRekognition,
-  generateStorageAccessForRekognition,
-  removeTextractPolicies,
-  addTextractPolicies,
-// @ts-expect-error ts-migrate(2306) FIXME: File '/Users/sachinrp/amplify-workspace/extOverrid... Remove this comment to see the full error message
-} from '../assets/identifyCFNGenerate';
 import { enableGuestAuth } from './enable-guest-auth';
-import * as s3API from '@aws-amplify/amplify-category-storage'
-const { ResourceDoesNotExistError, ResourceAlreadyExistsError, exitOnNextTick } = require('amplify-cli-core');
-const inquirer = require('inquirer');
-const path = require('path');
-const fs = require('fs-extra');
-const os = require('os');
-const uuid = require('uuid');
-
+import { ResourceDoesNotExistError, ResourceAlreadyExistsError, exitOnNextTick, $TSAny, $TSContext } from 'amplify-cli-core';
+import inquirer from 'inquirer';
+import path from 'path';
+import fs from 'fs-extra';
+import os from 'os';
+import uuid from 'uuid';
 
 
 // keep in sync with ServiceName in amplify-category-function, but probably it will not change
@@ -93,7 +82,7 @@ async function updateWalkthrough(context: any) {
 
 async function configure(context: any, resourceObj: any) {
   const { amplify } = context;
-  const defaultValues = getAllDefaults(amplify.getProjectDetails());
+  const defaultValues : $TSAny = getAllDefaults(amplify.getProjectDetails());
   const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
   let identifyType;
 
@@ -199,8 +188,7 @@ async function configure(context: any, resourceObj: any) {
   }
 
   const { resourceName } = defaultValues;
-  // @ts-expect-error ts-migrate(2790) FIXME: The operand of a 'delete' operator must be optiona... Remove this comment to see the full error message
-  delete defaultValues.service;
+  delete (defaultValues as any).service;
   delete defaultValues.region;
   const resourceDirPath = path.join(projectBackendDirPath, category, resourceName);
   // write to file
@@ -211,12 +199,9 @@ async function configure(context: any, resourceObj: any) {
 
   const options : any = {};
   options.dependsOn = [];
-  // @ts-expect-error ts-migrate(2339) FIXME: Property 'adminTask' does not exist on type '{ res... Remove this comment to see the full error message
   defaultValues.adminTask = answers.adminTask;
   if (answers.adminTask) {
-    // @ts-expect-error ts-migrate(2339) FIXME: Property 'storageResourceName' does not exist on t... Remove this comment to see the full error message
     defaultValues.storageResourceName = s3Resource.resourceName;
-    // @ts-expect-error ts-migrate(2339) FIXME: Property 'functionName' does not exist on type '{ ... Remove this comment to see the full error message
     defaultValues.functionName = s3Resource.functionName;
     options.dependsOn.push({
       category: functionCategory,
@@ -235,7 +220,6 @@ async function configure(context: any, resourceObj: any) {
   }
   Object.assign(defaultValues, options);
 
-  // @ts-expect-error ts-migrate(2339) FIXME: Property 'dependsOn' does not exist on type '{ res... Remove this comment to see the full error message
   const { dependsOn } = defaultValues;
   const amplifyMetaValues = {
     resourceName,
@@ -254,7 +238,7 @@ async function configure(context: any, resourceObj: any) {
   return amplifyMetaValues;
 }
 
-function addRegionMapping(context: any, resourceName: any, identifyType: any) {
+function addRegionMapping(context: $TSContext, resourceName: string, identifyType: any) {
   const regionMapping = regionMapper.getRegionMapping(context, service, identifyType);
   const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
   const identifyCFNFilePath = path.join(projectBackendDirPath, category, resourceName, `${resourceName}-template.json`);
@@ -264,7 +248,7 @@ function addRegionMapping(context: any, resourceName: any, identifyType: any) {
   fs.writeFileSync(identifyCFNFilePath, identifyCFNJSON, 'utf8');
 }
 
-function updateCFN(context: any, resourceName: any, identifyType: any) {
+function updateCFN(context: $TSContext, resourceName: string, identifyType: any) {
   if (identifyType === 'identifyText') {
     const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
     const identifyCFNFilePath = path.join(projectBackendDirPath, category, resourceName, `${resourceName}-template.json`);
@@ -299,7 +283,7 @@ async function copyCfnTemplate(context: any, categoryName: any, resourceName: an
 }
 
 async function followUpQuestions(typeObj: any, identifyType: any, parameters: any) {
-  const answers = await inquirer.prompt(typeObj.questions(parameters));
+  const answers : $TSAny = await inquirer.prompt(typeObj.questions(parameters));
   Object.assign(answers, await inquirer.prompt(typeObj.auth(parameters)));
   if (answers.setup && answers.setup === 'default') {
     Object.assign(answers, typeObj.defaults);

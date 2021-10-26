@@ -1,9 +1,7 @@
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'path'.
-const path = require('path');
-const chalk = require('chalk');
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'exitOnNext... Remove this comment to see the full error message
-const { NotImplementedError, ResourceDoesNotExistError, exitOnNextTick, open } = require('amplify-cli-core');
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'parameters... Remove this comment to see the full error message
+import path from 'path';
+import chalk from 'chalk';
+import { NotImplementedError, ResourceDoesNotExistError, exitOnNextTick, open as openConsole } from 'amplify-cli-core';
+
 const parametersFileName = 'parameters.json';
 const prefixForAdminTrigger = 'protected/predictions/index-faces/admin';
 
@@ -34,8 +32,7 @@ function updateResource(context: any, predictionsCategoryFilename: any) {
 }
 
 // currently only supports sagemaker and rekognition
-// @ts-expect-error ts-migrate(2300) FIXME: Duplicate identifier 'console'.
-async function console(context: any, resourceObj: any, amplifyMeta: any) {
+async function predictionsConsole(context: any, resourceObj: any, amplifyMeta: any) {
   const service = resourceObj.service;
   const resourceName = resourceObj.name;
   let serviceOutput = '';
@@ -60,8 +57,7 @@ async function console(context: any, resourceObj: any, amplifyMeta: any) {
 
 async function openEndpointDetails(context: any, region: any, endpointName: any) {
   const endpointConsoleUrl = `https://${region}.console.aws.amazon.com/sagemaker/home?region=${region}#/endpoints/${endpointName}`;
-  // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{ wait: boolean; }' is not assig... Remove this comment to see the full error message
-  await open(endpointConsoleUrl, { wait: false });
+  await openConsole(endpointConsoleUrl, { wait: false });
   context.print.info('Endpoint Console:');
   context.print.success(endpointConsoleUrl);
 }

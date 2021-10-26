@@ -1,17 +1,14 @@
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'path'.
-const path = require('path');
-const fs = require('fs-extra');
+import path from 'path';
+import fs from 'fs-extra';
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'subcommand... Remove this comment to see the full error message
 const subcommand = 'remove';
 const category = 'predictions';
 const storageCategory = 'storage';
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'parameters... Remove this comment to see the full error message
 const parametersFileName = 'parameters.json';
 const amplifyMetaFilename = 'amplify-meta.json';
 const s3CloudFormationTemplateFile = 's3-cloudformation-template.json';
 // @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'exitOnNext... Remove this comment to see the full error message
-const { ResoureNotFoundError, exitOnNextTick } = require('amplify-cli-core');
+import { ResoureNotFoundError, exitOnNextTick } from 'amplify-cli-core';
 module.exports = {
   name: subcommand,
   run: async (context: any) => {
