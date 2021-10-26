@@ -45,6 +45,7 @@ import { createSearchableDomain, createSearchableDomainRole } from './cdk/create
 import { createSearchableDataSource } from './cdk/create-searchable-datasource';
 import { createEventSourceMapping, createLambda, createLambdaRole } from './cdk/create-streaming-lambda';
 import { createStackOutputs } from './cdk/create-cfnOutput';
+import { expressionStatement } from '@babel/types';
 
 const nonKeywordTypes = ['Int', 'Float', 'Boolean', 'AWSTimestamp', 'AWSDate', 'AWSDateTime'];
 const STACK_NAME = 'SearchableStack';
@@ -127,13 +128,15 @@ export class SearchableModelTransformer extends TransformerPluginBase {
       createEventSourceMapping(stack, type, lambda, parameterMap, ddbTable.tableStreamArn);
 
       const { attributeName } = (table as any).keySchema.find((att: any) => att.keyType === 'HASH');
+      const keyFields = getKeyFields(attributeName, table);
+
       assert(typeName);
       const resolver = context.resolvers.generateQueryResolver(
         typeName,
         def.fieldName,
         datasource as DataSourceProvider,
         MappingTemplate.s3MappingTemplateFromString(
-          requestTemplate(attributeName, getNonKeywordFields(def.node), false, type),
+          requestTemplate(attributeName, getNonKeywordFields(def.node), false, type, keyFields),
           `${typeName}.${def.fieldName}.req.vtl`,
         ),
         MappingTemplate.s3MappingTemplateFromString(responseTemplate(false), `${typeName}.${def.fieldName}.res.vtl`),
@@ -368,6 +371,22 @@ function getNonKeywordFields(def: ObjectTypeDefinitionNode): Expression[] {
   const nonKeywordTypeSet = new Set(nonKeywordTypes);
 
   return def.fields?.filter(field => nonKeywordTypeSet.has(getBaseType(field.type))).map(field => str(field.name.value)) || [];
+}
+
+/**
+ * Returns all the keys fields - primaryKey and sortKeys
+ * @param primaryKey
+ * @param table
+ * @returns Expression[] keyFields
+ */
+function getKeyFields(primaryKey: string, table: IConstruct) {
+  let keyFields = [];
+  keyFields.push(primaryKey);
+  let { attributeName } = (table as any).keySchema.find((att: any) => att.keyType === 'RANGE') || {};
+  if (attributeName) {
+    keyFields.push(...attributeName.split('#'));
+  }
+  return keyFields.map(key => str(key));
 }
 
 interface SearchableQueryMap {
