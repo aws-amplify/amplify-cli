@@ -10,12 +10,15 @@ import {
   addTextractPolicies,
 } from '../assets/identifyCFNGenerate';
 import { enableGuestAuth } from './enable-guest-auth';
+import * as s3API from '@aws-amplify/amplify-category-storage'
 const { ResourceDoesNotExistError, ResourceAlreadyExistsError, exitOnNextTick } = require('amplify-cli-core');
 const inquirer = require('inquirer');
 const path = require('path');
 const fs = require('fs-extra');
 const os = require('os');
 const uuid = require('uuid');
+
+
 
 // keep in sync with ServiceName in amplify-category-function, but probably it will not change
 const FunctionServiceNameLambdaFunction = 'Lambda';
@@ -50,8 +53,7 @@ async function addWalkthrough(context) {
       exitOnNextTick(0);
     }
   }
-
-  return await configure(context);
+  return await configure(context, undefined);
 }
 
 async function updateWalkthrough(context) {
@@ -94,7 +96,7 @@ async function configure(context, resourceObj) {
   const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
   let identifyType;
 
-  let parameters = {};
+  let parameters : any = {};
   if (resourceObj) {
     const resourceDirPath = path.join(projectBackendDirPath, category, resourceObj.name);
     const parametersFilePath = path.join(resourceDirPath, parametersFileName);
@@ -104,17 +106,17 @@ async function configure(context, resourceObj) {
       parameters = {};
     }
     identifyType = resourceObj.identifyType;
-    parameters.resourceName = resourceObj.name;
+    (parameters as any).resourceName = resourceObj.name;
     Object.assign(defaultValues, parameters);
   }
-  let answers = {};
+  let answers : any = {};
 
   // only ask this for add
-  if (!parameters.resourceName) {
+  if (!(parameters as any).resourceName) {
     answers = await inquirer.prompt(identifyAssets.setup.type());
 
     // check if that type is already created
-    const resourceType = resourceAlreadyExists(context, answers.identifyType);
+    const resourceType = resourceAlreadyExists(context, (answers as any) .identifyType);
     if (resourceType) {
       const errMessage = `${resourceType} has already been added to this project.`;
       context.print.warning(errMessage);
@@ -122,40 +124,43 @@ async function configure(context, resourceObj) {
       exitOnNextTick(0);
     }
 
-    Object.assign(answers, await inquirer.prompt(identifyAssets.setup.name(`${answers.identifyType}${defaultValues.resourceName}`)));
-    identifyType = answers.identifyType;
+    Object.assign(answers, await inquirer.prompt(identifyAssets.setup.name(`${(answers as any).identifyType}${defaultValues.resourceName}`)));
+    identifyType = (answers as any).identifyType;
   }
 
   // category specific questions
   Object.assign(answers, await followUpQuestions(identifyAssets[identifyType], identifyType, parameters));
-  delete answers.setup;
+  delete (answers as any).setup;
   Object.assign(defaultValues, answers);
 
   // auth permissions
-  if (answers.access === 'authAndGuest') {
+  if ((answers as any).access === 'authAndGuest') {
     await enableGuestAuth(context, defaultValues.resourceName, true);
   }
 
-  let s3Resource = {};
+  let s3Resource: any = {};
   let functionName;
-  if (answers.adminTask) {
+  if ((answers as any) .adminTask) {
     const s3ResourceName = s3ResourceAlreadyExists(context);
+    console.log("SACPCDEBUG: [PREDICTIONS] s3ResourceName : ", s3ResourceName );
 
     // Check is storage already exists in the project
     if (s3ResourceName) {
       const resourceDirPath = path.join(projectBackendDirPath, storageCategory, s3ResourceName);
       const parametersFilePath = path.join(resourceDirPath, parametersFileName);
       const bucketParameters = amplify.readJsonFile(parametersFilePath);
+
+
       s3Resource.bucketName = bucketParameters.bucketName;
       s3Resource.resourceName = s3ResourceName;
       // Check if any lambda triggers are already existing in the project.
       if (!bucketParameters.adminTriggerFunction) {
         if (!bucketParameters.triggerFunction || bucketParameters.triggerFunction === 'NONE') {
-          functionName = await addTrigger(context, s3Resource, undefined, parameters.resourceName);
+          functionName = await addTrigger(context, s3Resource, undefined, (parameters as any).resourceName);
           bucketParameters.adminTriggerFunction = functionName;
         } else {
           // adding additinal lambda trigger
-          functionName = await addAdditionalLambdaTrigger(context, s3Resource, parameters.resourceName);
+          functionName = await addAdditionalLambdaTrigger(context, s3Resource, (parameters as any).resourceName);
           bucketParameters.adminTriggerFunction = functionName;
         }
       } else {
@@ -201,7 +206,7 @@ async function configure(context, resourceObj) {
   const jsonString = JSON.stringify(defaultValues, null, 4);
   fs.writeFileSync(parametersFilePath, jsonString, 'utf8');
 
-  const options = {};
+  const options : any = {};
   options.dependsOn = [];
   defaultValues.adminTask = answers.adminTask;
   if (answers.adminTask) {
@@ -362,7 +367,7 @@ async function addS3ForIdentity(context, storageAccess, bucketName, predictionsR
     service: s3ServiceName,
   };
 
-  let answers = {};
+  let answers : any = {};
 
   answers = { ...answers, storageAccess, resourceName: defaultValues.resourceName };
 
@@ -548,7 +553,6 @@ function s3ResourceAlreadyExists(context) {
   const { amplify } = context;
   const { amplifyMeta } = amplify.getProjectDetails();
   let resourceName;
-
   if (amplifyMeta[storageCategory]) {
     const categoryResources = amplifyMeta[storageCategory];
     Object.keys(categoryResources).forEach(resource => {
@@ -557,7 +561,6 @@ function s3ResourceAlreadyExists(context) {
       }
     });
   }
-
   return resourceName;
 }
 
