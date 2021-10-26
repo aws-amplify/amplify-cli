@@ -2,4 +2,6 @@
 **/__tests__/**
 src
 tsconfig.json
+!resources/overrides-resource/S3/tsconfig.json
+!resources/overrides-resource/DynamoDB/tsconfig.json
 tsconfig.tsbuildinfo
