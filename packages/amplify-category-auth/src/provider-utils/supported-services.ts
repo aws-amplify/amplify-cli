@@ -1,3 +1,5 @@
+import { $TSAny, FeatureFlags } from 'amplify-cli-core';
+
 export const supportedServices = {
   Cognito: {
     inputs: [
@@ -1234,4 +1236,15 @@ export const supportedServices = {
     stringMapsFilename: 'string-maps.js',
     provider: 'awscloudformation',
   },
+};
+
+export const getSupportedServices = (): $TSAny => {
+  const keyToRemove = FeatureFlags.getBoolean('auth.forceAliasAttributes') ? 'usernameAttributes' : 'aliasAttributes';
+  const inputs = supportedServices.Cognito.inputs.filter(input => input.key !== keyToRemove);
+  return {
+    Cognito: {
+      ...supportedServices.Cognito,
+      inputs,
+    },
+  };
 };

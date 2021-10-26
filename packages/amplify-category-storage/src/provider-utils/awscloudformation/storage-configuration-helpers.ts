@@ -241,13 +241,14 @@ function constructParametersJson(parameters: $TSAny, permissions: S3Permissions,
 }
 
 async function createS3StorageArtifacts(context: $TSContext, storageRequest: AddStorageRequest) {
+  const [shortId] = uuid().split('-');
   const {
     serviceConfiguration: { permissions, lambdaTrigger },
   } = storageRequest;
   let {
     serviceConfiguration: { bucketName, resourceName },
   } = storageRequest;
-  let parameters = getAllDefaults(context.amplify.getProjectDetails());
+  let parameters = getAllDefaults(context.amplify.getProjectDetails(), shortId);
 
   if (!resourceName) {
     ({ resourceName } = parameters);
@@ -257,8 +258,8 @@ async function createS3StorageArtifacts(context: $TSContext, storageRequest: Add
     ({ bucketName } = parameters);
   }
 
-  if (isResourceNameUnique(categoryName, resourceName)) {
-    const resourceDirPath = pathManager.getResourceDirectoryPath(undefined, categoryName, resourceName);
+  if (isResourceNameUnique(categoryName, resourceName!)) {
+    const resourceDirPath = pathManager.getResourceDirectoryPath(undefined, categoryName, resourceName!);
     fs.ensureDirSync(resourceDirPath);
 
     // create parameters.json
@@ -266,14 +267,14 @@ async function createS3StorageArtifacts(context: $TSContext, storageRequest: Add
     parameters.resourceName = resourceName;
 
     parameters = constructParametersJson(parameters, permissions, lambdaTrigger);
-    stateManager.setResourceParametersJson(undefined, categoryName, resourceName, parameters);
+    stateManager.setResourceParametersJson(undefined, categoryName, resourceName!, parameters);
 
     // create storage-params.json
     const storageParamsPermissions: { [k: string]: string[] } = {};
     Object.entries(permissions.groups || {}).forEach(([cognitoUserGroupName, crudOperations]: [string, CrudOperation[]]) => {
       storageParamsPermissions[cognitoUserGroupName] = crudOperations.map(replaceAndWithSlash);
     });
-    writeToStorageParamsFile(resourceName, { groupPermissionMap: storageParamsPermissions });
+    writeToStorageParamsFile(resourceName!, { groupPermissionMap: storageParamsPermissions });
 
     // construct dependsOn array
     let dependsOn: $TSAny[] = [];
@@ -296,14 +297,14 @@ async function createS3StorageArtifacts(context: $TSContext, storageRequest: Add
 
     if (storageRequest.serviceConfiguration?.lambdaTrigger) {
       const options = { headlessTrigger: storageRequest.serviceConfiguration.lambdaTrigger, dependsOn };
-      await addTrigger(context, parameters.resourceName, undefined, undefined, options);
+      await addTrigger(context, parameters.resourceName!, undefined, undefined, options);
     }
 
     // create cfn
-    await copyCfnTemplate(context, categoryName, resourceName, { ...parameters, dependsOn }, true);
+    await copyCfnTemplate(context, categoryName, resourceName!, { ...parameters, dependsOn }, true);
 
     // update meta
-    context.amplify.updateamplifyMetaAfterResourceAdd(categoryName, resourceName, {
+    context.amplify.updateamplifyMetaAfterResourceAdd(categoryName, resourceName!, {
       service: ServiceName.S3,
       providerPlugin: providerName,
       dependsOn,
@@ -552,10 +553,6 @@ export function removeNotStoredParameters(defaults: $TSAny) {
   delete defaults.groupPolicyMap;
   delete defaults.groupList;
   delete defaults.authResourceName;
-}
-
-export async function loadDefaults(context: $TSContext) {
-  return getAllDefaults(context.amplify.getProjectDetails()) as $TSAny;
 }
 
 export function readStorageParamsFileSafe(resourceName: string) {
