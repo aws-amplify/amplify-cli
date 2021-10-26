@@ -38,9 +38,7 @@ async function updateConfigOnEnvInit(context, category, service) {
 
   const providerPlugin = context.amplify.getPluginInstance(context, provider);
   // previously selected answers
-  const currentAuthName = await getAuthResourceName(context);
-  const cliState = new AuthInputState(currentAuthName);
-  const resourceParams = await cliState.loadResourceParameters(context, cliState.getCLIInputPayload());
+  const resourceParams = providerPlugin.loadResourceParameters(context, 'auth', service);
   // ask only env specific questions
   let currentEnvSpecificValues = context.amplify.loadEnvResourceParameters(context, category, service);
 
