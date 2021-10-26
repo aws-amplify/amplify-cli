@@ -419,7 +419,7 @@ export const serviceWalkthrough = async (context: $TSContext, defaultValuesFilen
 
   const { templateSelection } = await inquirer.prompt(templateSelectionQuestion);
   const schemaFilePath = path.join(graphqlSchemaDir, templateSelection);
-  schemaContent += transformerVersion === 2 && templateSelection !== blankSchemaFile ? defineGlobalSandboxMode(context) : '';
+  schemaContent += transformerVersion === 2 ? defineGlobalSandboxMode() : '';
   schemaContent += fs.readFileSync(schemaFilePath, 'utf8');
 
   return {
@@ -664,8 +664,8 @@ async function addLambdaAuthorizerChoice(context) {
   const transformerVersion = providerPlugin.getTransformerVersion(context);
   if (transformerVersion === 2 && !authProviderChoices.some(choice => choice.value == 'AWS_LAMBDA')) {
     authProviderChoices.push({
-        name: 'Lambda',
-        value: 'AWS_LAMBDA',
+      name: 'Lambda',
+      value: 'AWS_LAMBDA',
     });
   }
 }
@@ -1073,7 +1073,7 @@ async function askLambdaQuestion(context) {
   const lambdaAuthorizerConfig = {
     lambdaFunction,
     ttlSeconds,
-  }
+  };
 
   return {
     authenticationType: 'AWS_LAMBDA',
@@ -1130,9 +1130,7 @@ async function askLambdaFromProject(context: $TSContext) {
     default: lambdaFunctions[0],
   });
 
-  await context.amplify.invokePluginMethod(context, 'function', undefined, 'addAppSyncInvokeMethodPermission', [
-    answer.lambdaFunction,
-  ]);
+  await context.amplify.invokePluginMethod(context, 'function', undefined, 'addAppSyncInvokeMethodPermission', [answer.lambdaFunction]);
 
   return { lambdaFunction: answer.lambdaFunction };
 }
@@ -1180,4 +1178,4 @@ async function createLambdaAuthorizerFunction(context: $TSContext) {
   context.print.success(`Successfully added ${functionName} function locally`);
 
   return functionName;
-};
+}
