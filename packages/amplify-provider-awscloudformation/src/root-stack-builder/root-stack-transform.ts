@@ -49,7 +49,7 @@ export class AmplifyRootStackTransform {
     const backendDir = pathManager.getBackendDirPath();
     const overrideFilePath = path.join(backendDir, this._resourceName);
     const isBuild = await buildOverrideDir(backendDir, overrideFilePath).catch(error => {
-      amplifyPrinter.printer.warn(`Skipping build as ${error.message}`);
+      amplifyPrinter.printer.debug(`Skipping build as ${error.message}`);
       return false;
     });
     // skip if packageManager or override.ts not found

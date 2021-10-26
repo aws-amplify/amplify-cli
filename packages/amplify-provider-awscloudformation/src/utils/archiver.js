@@ -25,6 +25,14 @@ function run(folder, zipFilePath, ignorePattern = DEFAULT_IGNORE_PATTERN, extraF
       cwd: folder,
       dot: true,
     });
+    zip.glob('storage/*/build/**', {
+      cwd: folder,
+      dot: true,
+    });
+    zip.glob('auth/*/build/**', {
+      cwd: folder,
+      dot: true,
+    });
     zip.glob('**', {
       cwd: folder,
       ignore: ignorePattern,
