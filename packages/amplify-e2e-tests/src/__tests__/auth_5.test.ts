@@ -9,10 +9,11 @@ import {
   headlessAuthImport,
 } from 'amplify-e2e-core';
 import { addAuthWithDefault, getBackendAmplifyMeta } from 'amplify-e2e-core';
-import { createNewProjectDir, deleteProjectDir, getProjectMeta, getUserPool } from 'amplify-e2e-core';
+import { createNewProjectDir, deleteProjectDir, getProjectMeta, getUserPool, getMFAConfiguration } from 'amplify-e2e-core';
 import {
   AddAuthRequest,
   CognitoUserPoolSigninMethod,
+  CognitoPasswordRecoveryConfiguration,
   CognitoUserProperty,
   ImportAuthRequest,
   UpdateAuthRequest,
@@ -63,6 +64,105 @@ describe('headless auth', () => {
     const meta = getProjectMeta(projRoot);
     const id = Object.keys(meta.auth).map(key => meta.auth[key])[0].output.UserPoolId;
     const userPool = await getUserPool(id, meta.providers.awscloudformation.Region);
+    expect(userPool.UserPool).toBeDefined();
+  });
+  it('adds auth resource with TOTP only', async () => {
+    const addAuthRequest: AddAuthRequest = {
+      version: 1,
+      resourceName: 'myAuthResource',
+      serviceConfiguration: {
+        serviceName: 'Cognito',
+        includeIdentityPool: false,
+        userPoolConfiguration: {
+          requiredSignupAttributes: [CognitoUserProperty.EMAIL],
+          signinMethod: CognitoUserPoolSigninMethod.PHONE_NUMBER,
+          mfa: {
+            mode: 'OPTIONAL',
+            mfaTypes: ['TOTP'],
+            smsMessage: 'The verification code is',
+          },
+        },
+      },
+    };
+
+    await initJSProjectWithProfile(projRoot, defaultsSettings);
+    await addHeadlessAuth(projRoot, addAuthRequest);
+    await amplifyPushAuth(projRoot);
+    const meta = getProjectMeta(projRoot);
+    const id = Object.keys(meta.auth).map(key => meta.auth[key])[0].output.UserPoolId;
+    const region = meta.providers.awscloudformation.Region;
+    const userPool = await getUserPool(id, meta.providers.awscloudformation.Region);
+    const mfaconfig = await getMFAConfiguration(id, region);
+    expect(mfaconfig.SoftwareTokenMfaConfiguration.Enabled).toBeTruthy();
+    expect(mfaconfig.SmsMfaConfiguration).toBeUndefined();
+    expect(userPool.UserPool).toBeDefined();
+  });
+
+  it('adds auth resource with TOTP only but enable SMS through signUp Attributes', async () => {
+    const addAuthRequest: AddAuthRequest = {
+      version: 1,
+      resourceName: 'myAuthResource',
+      serviceConfiguration: {
+        serviceName: 'Cognito',
+        includeIdentityPool: false,
+        userPoolConfiguration: {
+          requiredSignupAttributes: [CognitoUserProperty.EMAIL, CognitoUserProperty.PHONE_NUMBER],
+          signinMethod: CognitoUserPoolSigninMethod.PHONE_NUMBER,
+          mfa: {
+            mode: 'OPTIONAL',
+            mfaTypes: ['TOTP'],
+            smsMessage: 'The verification code is {####}',
+          },
+        },
+      },
+    };
+
+    await initJSProjectWithProfile(projRoot, defaultsSettings);
+    await addHeadlessAuth(projRoot, addAuthRequest);
+    await amplifyPushAuth(projRoot);
+    const meta = getProjectMeta(projRoot);
+    const id = Object.keys(meta.auth).map(key => meta.auth[key])[0].output.UserPoolId;
+    const region = meta.providers.awscloudformation.Region;
+    const userPool = await getUserPool(id, meta.providers.awscloudformation.Region);
+    const mfaconfig = await getMFAConfiguration(id, region);
+    expect(mfaconfig.SoftwareTokenMfaConfiguration.Enabled).toBeTruthy();
+    expect(mfaconfig.SmsMfaConfiguration.SmsConfiguration).toBeDefined();
+    expect(userPool.UserPool).toBeDefined();
+  });
+
+  it('adds auth resource with TOTP only but enables SMS through password recovery', async () => {
+    const addAuthRequest: AddAuthRequest = {
+      version: 1,
+      resourceName: 'myAuthResource',
+      serviceConfiguration: {
+        serviceName: 'Cognito',
+        includeIdentityPool: false,
+        userPoolConfiguration: {
+          requiredSignupAttributes: [CognitoUserProperty.EMAIL],
+          passwordRecovery: {
+            deliveryMethod: 'SMS',
+            smsMessage: 'The verification code is {####}',
+          },
+          signinMethod: CognitoUserPoolSigninMethod.PHONE_NUMBER,
+          mfa: {
+            mode: 'OPTIONAL',
+            mfaTypes: ['TOTP'],
+            smsMessage: 'The verification code is {####}',
+          },
+        },
+      },
+    };
+
+    await initJSProjectWithProfile(projRoot, defaultsSettings);
+    await addHeadlessAuth(projRoot, addAuthRequest);
+    await amplifyPushAuth(projRoot);
+    const meta = getProjectMeta(projRoot);
+    const id = Object.keys(meta.auth).map(key => meta.auth[key])[0].output.UserPoolId;
+    const region = meta.providers.awscloudformation.Region;
+    const userPool = await getUserPool(id, meta.providers.awscloudformation.Region);
+    const mfaconfig = await getMFAConfiguration(id, region);
+    expect(mfaconfig.SoftwareTokenMfaConfiguration.Enabled).toBeTruthy();
+    expect(mfaconfig.SmsMfaConfiguration.SmsConfiguration).toBeDefined();
     expect(userPool.UserPool).toBeDefined();
   });
 
