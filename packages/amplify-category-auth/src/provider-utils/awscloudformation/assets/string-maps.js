@@ -116,8 +116,7 @@ const emailRegistration = [
 
 const authSelectionMap = [
   {
-    name:
-      'User Sign-Up, Sign-In, connected with AWS IAM controls (Enables per-user Storage features for images or other content, Analytics, and more)',
+    name: 'User Sign-Up, Sign-In, connected with AWS IAM controls (Enables per-user Storage features for images or other content, Analytics, and more)',
     value: 'identityPoolAndUserPool',
   },
   {
@@ -449,18 +448,22 @@ const hostedUIProviders = [
   {
     name: 'Facebook',
     value: 'Facebook',
+    key: 'FACEBOOK',
   },
   {
     name: 'Google',
     value: 'Google',
+    key: 'GOOGLE',
   },
   {
     name: 'Login With Amazon',
     value: 'LoginWithAmazon',
+    key: 'AMAZON',
   },
   {
     name: 'Sign in with Apple',
     value: 'SignInWithApple',
+    key: 'APPLE',
   },
 ];
 

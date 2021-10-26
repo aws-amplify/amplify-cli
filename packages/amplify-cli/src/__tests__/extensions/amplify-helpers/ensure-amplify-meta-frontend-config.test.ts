@@ -6,34 +6,28 @@ jest.mock('amplify-cli-core');
 const stateManager_mock = stateManager as jest.Mocked<typeof stateManager>;
 stateManager_mock.getMeta.mockReturnValue({ auth: { authResource: { service: 'Cognito' } } });
 stateManager_mock.getResourceParametersJson.mockReturnValue({
-  aliasAttributes: ['EMAIL'],
+  usernameAttributes: ['EMAIL'],
   requiredAttributes: ['EMAIL'],
-  passwordPolicyMinLength: '10',
+  passwordPolicyMinLength: 10,
   mfaConfiguration: 'ON',
   mfaTypes: ['SMS Text Message'],
+  authProvidersUserPool: ['Google', 'Facebook', 'LoginWithAmazon', 'SignInWithApple'],
 });
 
 stateManager_mock.setMeta.mockImplementation(jest.fn());
 
 describe('ensureAmplifyMetaFrontendConfig', () => {
-  const mockContext = {
-    amplify: {
-      pathManager: {
-        getAmplifyMetaFilePath: jest.fn(() => 'amplifyDirPath'),
-      },
-    },
-  };
-
   it('should add front end config to amplify meta', () => {
     ensureAmplifyMetaFrontendConfig();
     expect(stateManager_mock.setMeta).lastCalledWith(undefined, {
       auth: {
         authResource: {
           frontendAuthConfig: {
-            loginMechanisms: ['EMAIL'],
+            usernameAttributes: ['EMAIL'],
+            socialProviders: ['GOOGLE', 'FACEBOOK', 'AMAZON', 'APPLE'],
             mfaConfiguration: 'ON',
             mfaTypes: ['SMS'],
-            passwordProtectionSettings: { passwordPolicyCharacters: [], passwordPolicyMinLength: '10' },
+            passwordProtectionSettings: { passwordPolicyCharacters: [], passwordPolicyMinLength: 10 },
             signupAttributes: ['EMAIL'],
             verificationMechanisms: [],
           },
