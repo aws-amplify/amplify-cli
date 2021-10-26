@@ -29,6 +29,9 @@ export const getAddAuthDefaultsApplier = (context: any, defaultValuesFilename: s
   if (FeatureFlags.getBoolean('auth.enableCaseInsensitivity')) {
     result.usernameCaseSensitive = false;
   }
+  // If the feature flag is enabled the MFA TOTP can only be enabled
+
+  result.useEnabledMfas = FeatureFlags.getBoolean('auth.useEnabledMfas');
 
   /* merge actual answers object into props object,
    * ensuring that manual entries override defaults */

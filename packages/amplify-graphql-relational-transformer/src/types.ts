@@ -34,6 +34,8 @@ export type BelongsToDirectiveConfiguration = {
   fields: string[];
   fieldNodes: FieldDefinitionNode[];
   relatedType: ObjectTypeDefinitionNode;
+  relatedField: FieldDefinitionNode;
+  relationType: 'hasOne' | 'hasMany';
   relatedTypeIndex: FieldDefinitionNode[];
   connectionFields: string[];
 };

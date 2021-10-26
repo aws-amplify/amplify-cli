@@ -169,11 +169,11 @@ function getAWSExportsObject(resources) {
         };
         break;
       case 'Map':
-        geoConfig.region = serviceResourceMapping[service][0].output.Region;
+        geoConfig.region = serviceResourceMapping[service][0].output.Region || projectRegion;
         geoConfig.maps = getMapConfig(serviceResourceMapping[service]);
         break;
       case 'PlaceIndex':
-        geoConfig.region = serviceResourceMapping[service][0].output.Region;
+        geoConfig.region = serviceResourceMapping[service][0].output.Region || projectRegion;
         geoConfig.search_indices = getPlaceIndexConfig(serviceResourceMapping[service]);
         break;
       default:
@@ -309,7 +309,8 @@ function getCognitoConfig(cognitoResources, projectRegion) {
 
   const frontendAuthConfig = {};
   if (cognitoResource.frontendAuthConfig) {
-    frontendAuthConfig.aws_cognito_login_mechanisms = cognitoResource.frontendAuthConfig.loginMechanisms;
+    frontendAuthConfig.aws_cognito_username_attributes = cognitoResource.frontendAuthConfig.usernameAttributes;
+    frontendAuthConfig.aws_cognito_social_providers = cognitoResource.frontendAuthConfig.socialProviders;
     frontendAuthConfig.aws_cognito_signup_attributes = cognitoResource.frontendAuthConfig.signupAttributes;
     frontendAuthConfig.aws_cognito_mfa_configuration = cognitoResource.frontendAuthConfig.mfaConfiguration;
     frontendAuthConfig.aws_cognito_mfa_types = cognitoResource.frontendAuthConfig.mfaTypes;
@@ -592,4 +593,4 @@ function getPlaceIndexConfig(placeIndexResources) {
   return placeIndexConfig;
 }
 
-module.exports = { createAWSExports, createAmplifyConfig, deleteAmplifyConfig };
+module.exports = { createAWSExports, createAmplifyConfig, deleteAmplifyConfig, getAWSExportsObject };

@@ -87,9 +87,7 @@ export function ensureAmplifyMetaFrontendConfig(amplifyMeta?) {
   amplifyMeta.auth[authResourceName].frontendAuthConfig ??= {};
   const metaFrontendAuthConfig = amplifyMeta.auth[authResourceName].frontendAuthConfig;
   Object.keys(frontendAuthConfig).forEach(key => {
-    if (!metaFrontendAuthConfig.hasOwnProperty(key)) {
-      metaFrontendAuthConfig[key] = frontendAuthConfig[key];
-    }
+    metaFrontendAuthConfig[key] = frontendAuthConfig[key];
   });
 
   stateManager.setMeta(undefined, amplifyMeta);

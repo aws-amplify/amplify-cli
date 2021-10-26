@@ -128,6 +128,14 @@ export const getUserPool = async (userpoolId, region) => {
   return res;
 };
 
+export const getMFAConfiguration = async (
+  userPoolId: string,
+  region: string,
+): Promise<CognitoIdentityServiceProvider.GetUserPoolMfaConfigResponse> => {
+  config.update({ region });
+  return await new CognitoIdentityServiceProvider().getUserPoolMfaConfig({ UserPoolId: userPoolId }).promise();
+};
+
 export const getLambdaFunction = async (functionName: string, region: string) => {
   const lambda = new Lambda({ region });
   try {
