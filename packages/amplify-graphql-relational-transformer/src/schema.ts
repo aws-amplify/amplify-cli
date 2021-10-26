@@ -145,7 +145,9 @@ export function ensureHasOneConnectionField(
 
 /**
  * If the related type is a hasOne relationship, this creates a hasOne relation going the other way
- * If the related type is a hasMany relationship, this function does nothing as the relationship will be configured by hasMany
+ *    but using the same foreign key name as the hasOne model
+ * If the related type is a hasMany relationship, this function sets the foreign key name to the name of the hasMany foreign key
+ *    but does not add additional fields as this will be handled by the hasMany directive
  */
 export function ensureBelongsToConnectionField(config: BelongsToDirectiveConfiguration, ctx: TransformerContextProvider) {
   const { relationType, relatedType, relatedField } = config;

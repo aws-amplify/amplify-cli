@@ -9,6 +9,7 @@ import * as os from 'os';
 import { cleanupStackAfterTest, deploy } from './deployNestedStacks';
 import { Output } from 'aws-sdk/clients/cloudformation';
 import { ResourceConstants } from 'graphql-transformer-common';
+import * as fs from 'fs-extra';
 
 const cf = new CloudFormationClient('us-west-2');
 const customS3Client = new S3Client('us-west-2');
@@ -20,7 +21,12 @@ export type DeploySchemaReturn = {
 };
 
 /**
- * Deploys an AppSync API using the given transformer and schema and returns a GraphQL client pointing to the deployed API
+ * Deploys an AppSync API using the given transformer and schema and returns a GraphQL client pointing to the deployed API.
+ * Also returns a function that can be used to tear down the API after the test is finished.
+ *
+ * No other tests are refactored to use this function at this point,
+ * but it would be nice to extend this function to handle spinning up and cleaning up all test GQL endpoints
+ *
  * @param testId A human readable identifier for the schema / test being provisioned. Should be alphanumeric (no dashes, underscores, etc)
  * @param transformer The transformer to run on the schema
  * @param schema The schema to transform
@@ -59,7 +65,10 @@ export const deploySchema = async (testId: string, transformer: GraphQLTransform
 
     return {
       graphqlClient: new GraphQLClient(endpoint, { 'x-api-key': apiKey }),
-      cleanUp: () => cleanupStackAfterTest(testBucketName, stackName, cf),
+      cleanUp: async () => {
+        await cleanupStackAfterTest(testBucketName, stackName, cf);
+        await fs.remove(localBuildDir);
+      },
     };
   } catch (e) {
     console.error(e);
