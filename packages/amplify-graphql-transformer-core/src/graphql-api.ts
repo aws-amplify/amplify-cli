@@ -177,7 +177,7 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
   private schemaResource: CfnGraphQLSchema;
   private api: CfnGraphQLApi;
   private apiKeyResource?: CfnApiKey;
-  private authorizationConfig?: Required<AuthorizationConfig | any>;
+  private authorizationConfig?: Required<any>;
 
   constructor(scope: Construct, id: string, props: TransformerAPIProps) {
     super(scope, id);
@@ -367,7 +367,7 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
     return `arn:${cdk.Aws.PARTITION}:lambda:${cdk.Aws.REGION}:${cdk.Aws.ACCOUNT_ID}:function:${name}-${this.environmentName}`;
   }
 
-  private setupAdditionalAuthorizationModes(modes?: Array<AuthorizationMode | any>) {
+  private setupAdditionalAuthorizationModes(modes?: Array<any>) {
     if (!modes || modes.length === 0) return undefined;
     return modes.reduce<CfnGraphQLApi.AdditionalAuthenticationProviderProperty[]>(
       (acc, mode) => [

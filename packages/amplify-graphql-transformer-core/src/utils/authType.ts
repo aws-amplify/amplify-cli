@@ -4,7 +4,7 @@ import { Duration, Expiration } from '@aws-cdk/core';
 import { StackManager } from '../transformer-context/stack-manager';
 import { AppSyncAuthConfiguration, AppSyncAuthConfigurationEntry, AppSyncAuthMode } from '@aws-amplify/graphql-transformer-interfaces';
 
-const authTypeMap: Record<AppSyncAuthMode, AuthorizationType | any> = {
+const authTypeMap: Record<AppSyncAuthMode, any> = {
   API_KEY: AuthorizationType.API_KEY,
   AMAZON_COGNITO_USER_POOLS: AuthorizationType.USER_POOL,
   AWS_IAM: AuthorizationType.IAM,
@@ -22,7 +22,7 @@ export function adoptAuthModes(stack: StackManager, authConfig: AppSyncAuthConfi
   };
 }
 
-export function adoptAuthMode(stackManager: StackManager, entry: AppSyncAuthConfigurationEntry): AuthorizationMode | any {
+export function adoptAuthMode(stackManager: StackManager, entry: AppSyncAuthConfigurationEntry): any {
   const authType = authTypeMap[entry.authenticationType];
   switch (entry.authenticationType) {
     case AuthorizationType.API_KEY:

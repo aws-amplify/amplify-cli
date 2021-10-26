@@ -42,8 +42,7 @@ const apiKeyExpression = (roles: Array<RoleDefinition>) => {
   const expression = new Array<Expression>();
   if (roles.length === 0) {
     return iff(equals(ref('util.authType()'), str(API_KEY_AUTH_TYPE)), ref('util.unauthorized()'));
-  }
-  if (roles.length > 0) {
+  } else {
     expression.push(set(ref(IS_AUTHORIZED_FLAG), bool(true)));
   }
   return iff(equals(ref('util.authType()'), str(API_KEY_AUTH_TYPE)), compoundExpression(expression));
@@ -86,8 +85,7 @@ const iamExpression = (roles: Array<RoleDefinition>, hasAdminUIEnabled: boolean 
   const expression = new Array<Expression>();
   if (roles.length === 0) {
     return iff(equals(ref('util.authType()'), str(LAMBDA_AUTH_TYPE)), ref('util.unauthorized()'));
-  }
-  if (roles.length > 0) {
+  } else {
     expression.push(set(ref(IS_AUTHORIZED_FLAG), bool(true)));
   }
   return iff(equals(ref('util.authType()'), str(LAMBDA_AUTH_TYPE)), compoundExpression(expression));

@@ -1081,7 +1081,7 @@ async function askLambdaQuestion(context) {
   };
 }
 
-function functionsExist(context) {
+function functionsExist(context: $TSContext): boolean {
   const functionResources = context.amplify.getProjectDetails().amplifyMeta.function;
   if (!functionResources) {
     return false;
@@ -1097,7 +1097,7 @@ function functionsExist(context) {
   return lambdaFunctions.length !== 0;
 }
 
-async function askLambdaSource(context, functionType) {
+async function askLambdaSource(context: $TSContext, functionType: string) {
   switch (functionType) {
     case 'projectFunction':
       return await askLambdaFromProject(context);
@@ -1108,12 +1108,12 @@ async function askLambdaSource(context, functionType) {
   }
 }
 
-async function newLambdaFunction(context) {
+async function newLambdaFunction(context: $TSContext) {
   const resourceName = await createLambdaAuthorizerFunction(context);
   return { lambdaFunction: resourceName };
 }
 
-async function askLambdaFromProject(context) {
+async function askLambdaFromProject(context: $TSContext) {
   const functionResources = context.amplify.getProjectDetails().amplifyMeta.function;
   const lambdaFunctions = [];
   Object.keys(functionResources).forEach(resourceName => {
@@ -1137,7 +1137,7 @@ async function askLambdaFromProject(context) {
   return { lambdaFunction: answer.lambdaFunction };
 }
 
-async function createLambdaAuthorizerFunction(context) {
+async function createLambdaAuthorizerFunction(context: $TSContext) {
   const targetDir = context.amplify.pathManager.getBackendDirPath();
   const assetDir = path.normalize(path.join(rootAssetDir, 'graphql-lambda-authorizer'));
   const [shortId] = uuid().split('-');
@@ -1152,7 +1152,7 @@ async function createLambdaAuthorizerFunction(context) {
   const copyJobs = [
     {
       dir: assetDir,
-      template: 'graphql-lambda-authorizer-index.js.ejs',
+      template: 'graphql-lambda-authorizer-index.js',
       target: `${targetDir}/function/${functionName}/src/index.js`,
     },
     {
