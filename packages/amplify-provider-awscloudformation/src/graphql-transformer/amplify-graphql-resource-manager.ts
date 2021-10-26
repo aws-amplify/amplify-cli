@@ -277,6 +277,13 @@ export class GraphQLResourceManager {
     this.getTablesBeingReplaced().forEach(tableMeta => {
       const ddbResource = this.getStack(tableMeta.stackName, currentState);
       this.dropTable(tableMeta.tableName, ddbResource);
+      const [placeholderResourceKey, placeholderResourceValue] = Object.entries(ddbResource.Resources).find(
+        ([key, value]) => key.startsWith('TodoIAMRole') && value.Type === 'AWS::IAM::Role',
+      );
+      ddbResource.Resources = {};
+      // CloudFormation requires at least one resource so keeping one that doesn't have any dependencies
+      ddbResource.Resources[placeholderResourceKey] = placeholderResourceValue;
+      ddbResource.Outputs = {};
       // clear any other states created by GSI updates as dropping and recreating supercedes those changes
       this.clearTemplateState(tableMeta.stackName);
       this.templateState.add(tableMeta.stackName, JSONUtilities.stringify(ddbResource));
@@ -300,7 +307,7 @@ export class GraphQLResourceManager {
             stackName: diff.path[1].split('.')[0] as string,
           })),
       ) as { tableName: string; stackName: string }[];
-    }
+    };
     const getAllTables = () =>
       Object.entries(currentState.stacks)
         .map(([name, template]) => ({
