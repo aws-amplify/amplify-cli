@@ -31,6 +31,7 @@ import { Lambda } from './aws-utils/aws-lambda';
 import CloudFormation from './aws-utils/aws-cfn';
 import { $TSContext } from 'amplify-cli-core';
 import * as resourceExport from './export-resources';
+import * as exportUpdateMeta from './export-update-amplify-meta';
 
 export { resolveAppId } from './utils/resolve-appId';
 export { loadConfigurationForEnv } from './configuration-manager';
@@ -62,6 +63,11 @@ function onInitSuccessful(context) {
 function exportResources(context, resourceList, exportType) {
   return resourceExport.run(context, resourceList, exportType);
 }
+
+function exportedStackResourcesUpdateMeta(context: $TSContext, stackName: string) {
+  return exportUpdateMeta.run(context, stackName);
+}
+
 
 function pushResources(context, resourceList) {
   return resourcePusher.run(context, resourceList);
@@ -132,6 +138,7 @@ module.exports = {
   console: openConsole,
   attachBackend,
   exportResources,
+  exportedStackResourcesUpdateMeta,
   init,
   initEnv,
   isAmplifyAdminApp,
