@@ -26,6 +26,10 @@ export async function preProcessCFNTemplate(filePath: string): Promise<string> {
 
 //get data from custom polcies file and write custom policies to CFN template
 export async function writeCustomPoliciesToCFNTemplate(resourceName: string, service: string, cfnFile: string, category: string) {
+  if ((category !== 'api' && service !== 'ElasticContainer') || (category !== 'function' && service !== 'Lambda')) {
+    return;
+  }
+
   const resourceDir = pathManager.getResourceDirectoryPath(undefined, category, resourceName);
   const cfnPath = path.join(resourceDir, cfnFile);
   const { templateFormat, cfnTemplate } = await readCFNTemplate(cfnPath);
