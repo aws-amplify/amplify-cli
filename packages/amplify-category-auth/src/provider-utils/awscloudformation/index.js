@@ -8,6 +8,7 @@ const { getAddAuthHandler, getUpdateAuthHandler } = require('./handlers/resource
 const { supportedServices } = require('../supported-services');
 const { importResource, importedAuthEnvInit } = require('./import');
 const { AuthInputState } = require('./auth-inputs-manager/auth-input-state');
+const { getSupportedServices } = require('../supported-services');
 
 function serviceQuestions(context, defaultValuesFilename, stringMapsFilename, serviceWalkthroughFilename, serviceMetadata) {
   const serviceWalkthroughSrc = `${__dirname}/service-walkthroughs/${serviceWalkthroughFilename}`;
