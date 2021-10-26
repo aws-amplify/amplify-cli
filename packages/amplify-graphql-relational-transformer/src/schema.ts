@@ -10,14 +10,18 @@ import {
   isListType,
   isNonNullType,
   isScalar,
+  makeArgument,
+  makeDirective,
   makeField,
   makeInputValueDefinition,
   makeListType,
   makeNamedType,
   makeNonNullType,
   makeScalarKeyConditionForType,
+  makeValueNode,
   ModelResourceIDs,
   toCamelCase,
+  toPascalCase,
   toUpper,
 } from 'graphql-transformer-common';
 import { HasManyDirectiveConfiguration, HasOneDirectiveConfiguration, ManyToManyDirectiveConfiguration } from './types';
@@ -143,8 +147,19 @@ export function ensureHasManyConnectionField(
     return;
   }
 
-  // Update the create and update input objects for this type.
   const connectionAttributeName = getConnectionAttributeName(object.name.value, field.name.value);
+  const typeObject = ctx.output.getType(object.name.value) as ObjectTypeDefinitionNode;
+  if (typeObject) {
+    const updated = updateObjectWithHasManyDirectiveArguments(typeObject, field);
+    ctx.output.putType(updated);
+  }
+
+  const relatedTypeObject = ctx.output.getType(relatedType.name.value) as ObjectTypeDefinitionNode;
+  if (relatedTypeObject) {
+    const updated = updateRelatedTypeWithConnectionField(relatedTypeObject, connectionAttributeName, isNonNullType(field.type));
+    ctx.output.putType(updated);
+  }
+
   const createInputName = ModelResourceIDs.ModelCreateInputObjectName(relatedType.name.value);
   const createInput = ctx.output.getType(createInputName) as InputObjectTypeDefinitionNode;
 
@@ -163,6 +178,20 @@ export function ensureHasManyConnectionField(
     ctx.output.putType(updated);
   }
 
+  const filterInputName = toPascalCase(['Model', relatedType.name.value, 'FilterInput']);
+  const filterInput = ctx.output.getType(filterInputName) as InputObjectTypeDefinitionNode;
+  if (filterInput) {
+    const updated = updateFilterConnectionInputWithConnectionField(filterInput, connectionAttributeName);
+    ctx.output.putType(updated);
+  }
+
+  const conditionInputName = toPascalCase(['Model', relatedType.name.value, 'ConditionInput']);
+  const conditionInput = ctx.output.getType(conditionInputName) as InputObjectTypeDefinitionNode;
+  if (conditionInput) {
+    const updated = updateFilterConnectionInputWithConnectionField(conditionInput, connectionAttributeName);
+    ctx.output.putType(updated);
+  }
+
   let connectionFieldName = 'id';
 
   for (const field of object.fields!) {
@@ -175,6 +204,30 @@ export function ensureHasManyConnectionField(
   }
 
   config.connectionFields.push(connectionFieldName);
+}
+
+function updateRelatedTypeWithConnectionField(
+  object: ObjectTypeDefinitionNode,
+  connectionFieldName: string,
+  nonNull: boolean = false,
+): ObjectTypeDefinitionNode {
+  const keyFieldExists = object.fields!.some(f => f.name.value === connectionFieldName);
+
+  // If the key field already exists then do not change the input.
+  if (keyFieldExists) {
+    return object;
+  }
+
+  const indexDirective = makeDirective('index', [makeArgument('name', makeValueNode(connectionFieldName))]);
+  const updatedFields = [
+    ...object.fields!,
+    makeField(connectionFieldName, [], nonNull ? makeNonNullType(makeNamedType('ID')) : makeNamedType('ID'), [indexDirective]),
+  ];
+
+  return {
+    ...object,
+    fields: updatedFields,
+  };
 }
 
 function updateCreateInputWithConnectionField(
@@ -212,6 +265,25 @@ function updateUpdateInputWithConnectionField(
   }
 
   const updatedFields = [...input.fields!, makeInputValueDefinition(connectionFieldName, makeNamedType('ID'))];
+
+  return {
+    ...input,
+    fields: updatedFields,
+  };
+}
+
+function updateFilterConnectionInputWithConnectionField(
+  input: InputObjectTypeDefinitionNode,
+  connectionFieldName: string,
+): InputObjectTypeDefinitionNode {
+  const keyFieldExists = input.fields!.some(f => f.name.value === connectionFieldName);
+
+  // If the key field already exists then do not change the input.
+  if (keyFieldExists) {
+    return input;
+  }
+
+  const updatedFields = [...input.fields!, makeInputValueDefinition(connectionFieldName, makeNamedType('ModelIDInput'))];
 
   return {
     ...input,
@@ -347,4 +419,29 @@ export function getPartitionKeyField(object: ObjectTypeDefinitionNode): FieldDef
   }
 
   return fieldMap.get(name)!;
+}
+
+function updateObjectWithHasManyDirectiveArguments(object: ObjectTypeDefinitionNode, field: FieldDefinitionNode): ObjectTypeDefinitionNode {
+  const connectionAttributeName = getConnectionAttributeName(object.name.value, field.name.value);
+  const keyFieldExists = object.fields!.some(f => f.name.value === connectionAttributeName);
+
+  // If the key field already exists then do not change the input.
+  if (keyFieldExists) {
+    return object;
+  }
+
+  // directive updated for codegen to be able to lookup by indexName
+  const hasManyDirective = makeDirective('hasMany', [
+    makeArgument('indexName', makeValueNode(connectionAttributeName)),
+    makeArgument('fields', makeValueNode(['id'])),
+  ]);
+  const updatedFields = [
+    ...object.fields!.filter(it => it.name.value !== field.name.value),
+    makeField(field.name.value, [], field.type, [hasManyDirective]),
+  ];
+
+  return {
+    ...object,
+    fields: updatedFields,
+  };
 }
