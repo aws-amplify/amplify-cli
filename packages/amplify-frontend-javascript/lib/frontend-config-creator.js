@@ -169,11 +169,11 @@ function getAWSExportsObject(resources) {
         };
         break;
       case 'Map':
-        geoConfig.region = serviceResourceMapping[service][0].output.Region;
+        geoConfig.region = serviceResourceMapping[service][0].output.Region || projectRegion;
         geoConfig.maps = getMapConfig(serviceResourceMapping[service]);
         break;
       case 'PlaceIndex':
-        geoConfig.region = serviceResourceMapping[service][0].output.Region;
+        geoConfig.region = serviceResourceMapping[service][0].output.Region || projectRegion;
         geoConfig.search_indices = getPlaceIndexConfig(serviceResourceMapping[service]);
         break;
       default:
@@ -592,4 +592,4 @@ function getPlaceIndexConfig(placeIndexResources) {
   return placeIndexConfig;
 }
 
-module.exports = { createAWSExports, createAmplifyConfig, deleteAmplifyConfig };
+module.exports = { createAWSExports, createAmplifyConfig, deleteAmplifyConfig, getAWSExportsObject };
