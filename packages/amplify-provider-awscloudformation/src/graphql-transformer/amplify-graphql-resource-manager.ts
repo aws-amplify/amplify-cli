@@ -277,13 +277,7 @@ export class GraphQLResourceManager {
     this.getTablesBeingReplaced().forEach(tableMeta => {
       const ddbResource = this.getStack(tableMeta.stackName, currentState);
       this.dropTable(tableMeta.tableName, ddbResource);
-      const [placeholderResourceKey, placeholderResourceValue] = Object.entries(ddbResource.Resources).find(
-        ([key, value]) => key.startsWith('TodoIAMRole') && value.Type === 'AWS::IAM::Role',
-      );
-      ddbResource.Resources = {};
-      // CloudFormation requires at least one resource so keeping one that doesn't have any dependencies
-      ddbResource.Resources[placeholderResourceKey] = placeholderResourceValue;
-      ddbResource.Outputs = {};
+
       // clear any other states created by GSI updates as dropping and recreating supercedes those changes
       this.clearTemplateState(tableMeta.stackName);
       this.templateState.add(tableMeta.stackName, JSONUtilities.stringify(ddbResource));
@@ -337,9 +331,14 @@ export class GraphQLResourceManager {
   };
 
   private dropTable = (tableName: string, template: Template): void => {
-    // remove table and all output refs to it
-    template.Resources[tableName] = undefined;
-    template.Outputs = _.omitBy(template.Outputs, (_, key) => key.includes(tableName));
+    // remove all resources from table stack
+    const [placeholderResourceKey, placeholderResourceValue] = Object.entries(template.Resources).find(
+      ([key, value]) => key.startsWith('TodoIAMRole') && value.Type === 'AWS::IAM::Role',
+    );
+    template.Resources = {};
+    // CloudFormation requires at least one resource so keeping one that doesn't have any dependencies
+    template.Resources[placeholderResourceKey] = placeholderResourceValue;
+    template.Outputs = {};
   };
 
   private clearTemplateState = (stackName: string) => {

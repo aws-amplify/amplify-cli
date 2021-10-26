@@ -11,7 +11,6 @@ import { ensureHasOneConnectionField } from './schema';
 import { BelongsToDirectiveConfiguration } from './types';
 import {
   ensureFieldsArray,
-  getConnectionAttributeName,
   getFieldsNodes,
   getRelatedType,
   getRelatedTypeIndex,
