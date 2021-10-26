@@ -113,7 +113,7 @@ test('test access control only on field', () => {
   expect(acm.isAllowed(studentOwnerRole, 'ssn', 'delete')).toBe(false);
 });
 
-test('that that adding the a role again without a resource is not allowed', () => {
+test('that adding a role again without a resource is not allowed', () => {
   const blogOwnerRole = 'userPools:owner';
   const blogFields = ['id', 'owner', 'name', 'content'];
   const acm = new AccessControlMatrix({
