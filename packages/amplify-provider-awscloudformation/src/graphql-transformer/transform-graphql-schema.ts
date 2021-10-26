@@ -333,7 +333,7 @@ export async function transformGraphQLSchema(context, options) {
 
   // construct sanityCheckRules
   const ff = new AmplifyCLIFeatureFlagAdapter();
-  const isNewAppSyncAPI: boolean = !!resourcesToBeCreated.find(resource => resource.service === 'AppSync');
+  const isNewAppSyncAPI: boolean = resourcesToBeCreated.some(resource => resource.service === 'AppSync');
   const allowDestructiveUpdates = context?.input?.options?.[destructiveUpdatesFlag] || context?.input?.options?.force;
   const sanityCheckRules = getSanityCheckRules(isNewAppSyncAPI, ff, allowDestructiveUpdates);
 
