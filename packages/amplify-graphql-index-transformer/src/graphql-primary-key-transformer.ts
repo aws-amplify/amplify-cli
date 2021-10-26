@@ -148,6 +148,10 @@ function validate(config: PrimaryKeyDirectiveConfiguration, ctx: TransformerCont
       );
     }
 
+    if (!isNonNullType(sortField.type)) {
+      throw new InvalidDirectiveError(`The primary key on type '${object.name.value}' must reference non-null fields.`);
+    }
+
     config.sortKey.push(sortField);
   }
 }
