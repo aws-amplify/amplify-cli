@@ -2,7 +2,7 @@ import * as fs from 'fs-extra';
 import * as path from 'path';
 import _ from 'lodash';
 import { PathConstants, pathManager } from './pathManager';
-import { $TSMeta, $TSTeamProviderInfo, $TSAny, DeploymentSecrets, HooksConfig } from '..';
+import { $TSMeta, $TSTeamProviderInfo, $TSAny, DeploymentSecrets, HooksConfig, $TSObject } from '..';
 import { JSONUtilities } from '../jsonUtilities';
 import { SecretFileMode } from '../cliConstants';
 import { HydrateTags, ReadTags, Tag } from '../tags';
@@ -147,6 +147,21 @@ export class StateManager {
     return this.getData<$TSAny>(filePath, mergedOptions);
   };
 
+  getResourceInputsJson = (
+    projectPath: string | undefined,
+    category: string,
+    resourceName: string,
+    options?: GetOptions<$TSAny>,
+  ): $TSAny => {
+    const filePath = pathManager.getResourceInputsJsonFilePath(projectPath, category, resourceName);
+    const mergedOptions = {
+      throwIfNotExist: true,
+      ...options,
+    };
+
+    return this.getData<$TSAny>(filePath, mergedOptions);
+  };
+
   getCurrentResourceParametersJson = (
     projectPath: string | undefined,
     category: string,
@@ -269,6 +284,12 @@ export class StateManager {
     const filePath = pathManager.getResourceParametersFilePath(projectPath, category, resourceName);
 
     JSONUtilities.writeJson(filePath, parameters);
+  };
+
+  setResourceInputsJson = (projectPath: string | undefined, category: string, resourceName: string, inputs: $TSObject): void => {
+    const filePath = pathManager.getResourceInputsJsonFilePath(projectPath, category, resourceName);
+
+    JSONUtilities.writeJson(filePath, inputs);
   };
 
   cliJSONFileExists = (projectPath: string, env?: string): boolean => {
