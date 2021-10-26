@@ -171,7 +171,7 @@ export class DDBStackTransform {
     const overrideFilePath = pathManager.getResourceDirectoryPath(undefined, 'storage', this._resourceName);
 
     const isBuild = await buildOverrideDir(backendDir, overrideFilePath).catch(error => {
-      printer.warn(`Skipping build as ${error.message}`);
+      printer.debug(`Skipping build as ${error.message}`);
       return false;
     });
     // skip if packageManager or override.ts not found
