@@ -165,7 +165,7 @@ export class ResourceDiff {
   //helper: wrapper around readCFNTemplate type to handle expressions.
   private safeReadCFNTemplate = async (filePath: string) => {
     const templateResult = await readCFNTemplate(filePath, { throwIfNotExist: false });
-    return templateResult ? templateResult?.cfnTemplate : {};
+    return templateResult?.cfnTemplate || {};
   };
 
   //helper: Select cloudformation file path from build folder or non build folder.
