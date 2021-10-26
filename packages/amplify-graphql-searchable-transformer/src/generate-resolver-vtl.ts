@@ -19,10 +19,14 @@ import {
   methodCall,
   isNullOrEmpty,
   not,
+  notEquals,
+  printBlock,
 } from 'graphql-mapping-template';
 import { ResourceConstants } from 'graphql-transformer-common';
 
 const authFilter = ref('ctx.stash.authFilter');
+const API_KEY = 'API Key Authorization';
+const allowedAggFieldsList = 'allowedAggFields';
 
 export function requestTemplate(primaryKey: string, nonKeywordFields: Expression[], includeVersion: boolean = false, type: string): string {
   return print(
@@ -171,6 +175,22 @@ export function responseTemplate(includeVersion = false) {
         }),
       ),
     ]),
+  );
+}
+
+export function sandboxMappingTemplate(enabled: boolean, fields: Array<string>) {
+  let sandboxExp: Expression;
+  if (enabled) {
+    sandboxExp = ifElse(
+      notEquals(methodCall(ref('util.authType')), str(API_KEY)),
+      methodCall(ref('util.unauthorized')),
+      qref(methodCall(ref('ctx.stash.put'), str(allowedAggFieldsList), raw(JSON.stringify(fields)))),
+    );
+  } else {
+    sandboxExp = methodCall(ref('util.unauthorized'));
+  }
+  return printBlock(`Sandbox Mode ${enabled ? 'Enabled' : 'Disabled'}`)(
+    compoundExpression([iff(not(ref('ctx.stash.get("hasAuth")')), sandboxExp), toJson(obj({}))]),
   );
 }
 
