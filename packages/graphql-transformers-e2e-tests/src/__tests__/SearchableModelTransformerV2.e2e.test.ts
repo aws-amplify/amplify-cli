@@ -246,6 +246,34 @@ test('query for multiple aggregates', async () => {
   expect(searchResponse.data.searchPosts.aggregateItems[1].result).toBeDefined();
 });
 
+test('query with sort return results', async () => {
+  const searchResponse = await GRAPHQL_CLIENT.query(
+    `query {
+      searchPosts(sort: [
+        {
+          direction: asc,
+          field: author
+        },
+        {
+          direction: asc,
+          field: title
+        }
+      ]) {
+        items {
+          id
+          author
+          title
+        }
+      }
+    }`,
+    {},
+  );
+  expect(searchResponse).toBeDefined();
+  expect(searchResponse.data).toBeDefined();
+  expect(searchResponse.data.searchPosts).toBeDefined();
+  expect(searchResponse.data.searchPosts.items).toBeDefined();
+});
+
 function getCreatePostsMutation(
   author: string,
   title: string,

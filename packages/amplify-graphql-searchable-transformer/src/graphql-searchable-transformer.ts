@@ -45,7 +45,6 @@ import { createSearchableDomain, createSearchableDomainRole } from './cdk/create
 import { createSearchableDataSource } from './cdk/create-searchable-datasource';
 import { createEventSourceMapping, createLambda, createLambdaRole } from './cdk/create-streaming-lambda';
 import { createStackOutputs } from './cdk/create-cfnOutput';
-import { expressionStatement } from '@babel/types';
 
 const nonKeywordTypes = ['Int', 'Float', 'Boolean', 'AWSTimestamp', 'AWSDate', 'AWSDateTime'];
 const STACK_NAME = 'SearchableStack';
