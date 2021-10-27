@@ -451,7 +451,7 @@ export type ProjectOptions<T> = {
   transformersFactory: (options: T) => Promise<TransformerPluginProvider[]>;
   transformersFactoryArgs: T;
   rootStackFileName: 'cloudformation-template.json';
-  currentCloudBackendDirectory: string;
+  currentCloudBackendDirectory?: string;
   minify: boolean;
   lastDeployedProjectConfig?: TransformerProjectConfig;
   projectConfig: TransformerProjectConfig;
@@ -472,7 +472,7 @@ export async function buildAPIProject(opts: ProjectOptions<TransformerFactoryArg
   const builtProject = await _buildProject(opts);
 
   const buildLocation = path.join(opts.projectDirectory, 'build');
-  const currCloudLocation = path.join(opts.currentCloudBackendDirectory, 'build');
+  const currCloudLocation = opts.currentCloudBackendDirectory ? path.join(opts.currentCloudBackendDirectory, 'build') : undefined;
 
   if (opts.projectDirectory && !opts.dryRun) {
     await writeDeploymentToDisk(builtProject, buildLocation, opts.rootStackFileName, opts.buildParameters, opts.minify);
