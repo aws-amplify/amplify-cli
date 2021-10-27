@@ -1,9 +1,14 @@
 import { $TSContext, ResourceTuple, pathManager, getPackageManager, JSONUtilities } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import execa from 'execa';
-import path from 'path';
+import * as path from 'path';
 import * as cdk from '@aws-cdk/core';
 import ora from 'ora';
+import { getAllResources } from './dependency-management-utils';
+import { categoryName } from './constants';
+
+const resourcesDirRoot = path.normalize(path.join(__dirname, '../../resources'));
+const amplifyDependentResourcesFilename = 'amplify-dependent-resources-ref.ejs';
 
 type ResourceMeta = ResourceTuple & {
   service: string;
@@ -29,11 +34,30 @@ export async function buildCustomResources(context: $TSContext, resourceName?: s
 }
 
 const getSelectedResources = async (context: $TSContext, resourceName?: string) => {
-  return (await context.amplify.getResourceStatus('custom', resourceName)).allResources as ResourceMeta[];
+  return (await context.amplify.getResourceStatus(categoryName, resourceName)).allResources as ResourceMeta[];
 };
 
+async function generateDependentResourcesType(context: $TSContext, resourceDirPath: string) {
+  const copyJobs = [
+    {
+      dir: resourcesDirRoot,
+      template: amplifyDependentResourcesFilename,
+      target: path.join(resourceDirPath, 'amplify-dependent-resources-ref.d.ts'),
+    },
+  ];
+
+  const allResources = getAllResources();
+
+  const params = {
+    dependentResourcesType: allResources,
+  };
+
+  await context.amplify.copyBatch(context, copyJobs, params, true);
+}
+
 async function buildResource(context: $TSContext, resource: ResourceMeta) {
-  const targetDir = path.resolve(path.join(pathManager.getBackendDirPath(), 'custom', resource.resourceName));
+  const targetDir = path.resolve(path.join(pathManager.getBackendDirPath(), categoryName, resource.resourceName));
+
   const packageManager = getPackageManager(targetDir);
 
   if (packageManager === null) {
@@ -66,13 +90,15 @@ async function buildResource(context: $TSContext, resource: ResourceMeta) {
   }
 
   await generateCloudFormationFromCDK(resource.resourceName);
+
+  await generateDependentResourcesType(context, targetDir);
 }
 
 async function generateCloudFormationFromCDK(resourceName: string) {
-  const targetDir = path.join(pathManager.getBackendDirPath(), 'custom', resourceName);
+  const targetDir = path.join(pathManager.getBackendDirPath(), categoryName, resourceName);
   const { cdkStack } = require(path.resolve(path.join(targetDir, 'build', 'cdk-stack.js')));
 
-  const customStack: cdk.Stack = new cdkStack(undefined, undefined, undefined, { category: 'custom', resourceName });
+  const customStack: cdk.Stack = new cdkStack(undefined, undefined, undefined, { category: categoryName, resourceName });
 
   // @ts-ignore
   JSONUtilities.writeJson(path.join(targetDir, 'build', 'cloudformation-template.json'), customStack._toCloudFormation());

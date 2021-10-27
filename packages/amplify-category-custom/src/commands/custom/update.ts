@@ -1,25 +1,31 @@
-import { $TSContext, stateManager } from 'amplify-cli-core';
+import { $TSContext, pathManager, stateManager } from 'amplify-cli-core';
 import { printer, prompter } from 'amplify-prompts';
 import { updateCloudFormationWalkthrough } from '../../walkthroughs/cloudformation-walkthrough';
-const categoryName = 'custom';
-const cfnServiceName = 'customCloudformation';
+import { categoryName, cdkFileName, CDK_SERVICE_NAME, CFN_SERVICE_NAME } from '../../utils/constants';
+import * as path from 'path';
 
-module.exports = {
-  name: 'update',
-  run: async (context: $TSContext) => {
-    printer.warn(
-      'Only raw CloudFormation tempaltes can be updated with this flow. For updating custom CDK rsources, update the CDK code in the resource folder directly.',
-    );
+export const name = 'update';
 
-    const amplifyMeta = stateManager.getMeta();
-    const customResources = categoryName in amplifyMeta ? Object.keys(amplifyMeta[categoryName]) : [];
-    const customCFNResources = customResources.filter(name => amplifyMeta[categoryName][name].service === cfnServiceName);
+export async function run(context: $TSContext) {
+  const amplifyMeta = stateManager.getMeta();
+  const customResources = categoryName in amplifyMeta ? Object.keys(amplifyMeta[categoryName]) : [];
+  //const customCFNResources = customResources.filter(name => amplifyMeta[categoryName][name].service === cfnServiceName);
 
-    if (customCFNResources.length > 0) {
-      const resourceName = await prompter.pick('Specify the resource that you would want to update', customCFNResources);
+  if (customResources.length > 0) {
+    const resourceName = await prompter.pick('Select the custom resource to update', customResources);
+    if (amplifyMeta[categoryName][resourceName].service === CDK_SERVICE_NAME) {
+      const resourceDirPath = path.join(pathManager.getBackendDirPath(), categoryName, resourceName);
+      const cdkFilepath = path.join(resourceDirPath, cdkFileName);
+
+      if (await prompter.yesOrNo('Do you want to edit the CDK stack now?', true)) {
+        await context.amplify.openEditor(context, cdkFilepath);
+      }
+    } else if (amplifyMeta[categoryName][resourceName].service === CFN_SERVICE_NAME) {
       await updateCloudFormationWalkthrough(context, resourceName);
     } else {
-      printer.error('No custom CloudFormation resources found.');
+      printer.error('Resource update is not currently supported');
     }
-  },
-};
+  } else {
+    printer.error('No custom resources found.');
+  }
+}
