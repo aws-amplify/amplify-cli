@@ -26,7 +26,7 @@ import {
   HasOneDirectiveConfiguration,
   ManyToManyDirectiveConfiguration,
 } from './types';
-import { getConnectionAttributeName } from './utils';
+import { getBackendConnectionAttributeName, getConnectionAttributeName } from './utils';
 
 export function extendTypeWithConnection(config: HasManyDirectiveConfiguration, ctx: TransformerContextProvider) {
   const { field, object } = config;
@@ -139,8 +139,7 @@ export function ensureHasOneConnectionField(
 
     ctx.output.putType(updated);
   }
-
-  config.connectionFields.push(connectionAttributeName);
+  config.connectionFields.push(getBackendConnectionAttributeName(ctx, object.name.value, field.name.value));
 }
 
 /**
@@ -157,9 +156,7 @@ export function ensureBelongsToConnectionField(config: BelongsToDirectiveConfigu
   // The connection field name need to be mapped to the original name specified by @mapsTo in the resolvers
   // Setting it here so it will get picked up by the resolver generation logic
   config.connectionFields.length = 0; // remove existing elements
-  config.connectionFields.push(
-    getConnectionAttributeName(ctx.resourceHelper.getModelNameMapping(relatedType.name.value), relatedField.name.value),
-  );
+  config.connectionFields.push(getBackendConnectionAttributeName(ctx, relatedType.name.value, relatedField.name.value));
 }
 
 export function ensureHasManyConnectionField(

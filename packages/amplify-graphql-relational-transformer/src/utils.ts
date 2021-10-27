@@ -170,3 +170,7 @@ function getIndexName(directive: DirectiveNode): string | undefined {
 export function getConnectionAttributeName(type: string, field: string) {
   return toCamelCase([type, field, 'id']);
 }
+
+export function getBackendConnectionAttributeName(ctx: TransformerContextProvider, type: string, field: string) {
+  return getConnectionAttributeName(ctx.resourceHelper.getModelNameMapping(type), field);
+}
