@@ -6965,6 +6965,14 @@ amplify-codegen@^2.23.1:
     semver "^7.3.5"
     slash "^3.0.0"
 
+amplify-prompts@1.1.2:
+  version "1.1.2"
+  resolved "https://registry.yarnpkg.com/amplify-prompts/-/amplify-prompts-1.1.2.tgz#b1306dad4a33c9ab207352961dc81cc98418b698"
+  integrity sha512-reSjj7RKYrqSq34lYrP+sykUBvYrnCoJen2euKDwwRdxq/heWS97aJD1DahIJvEEW/YN+WUdzhpuzjBL8W3hcA==
+  dependencies:
+    chalk "^4.1.1"
+    enquirer "^2.3.6"
+
 amplify-provider-awscloudformation@4.61.1:
   version "4.61.1"
   resolved "https://registry.yarnpkg.com/amplify-provider-awscloudformation/-/amplify-provider-awscloudformation-4.61.1.tgz#dcafdbf61bc720e0ec6953063185fd0b31402d3f"

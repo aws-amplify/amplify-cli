@@ -28,7 +28,7 @@
   },
   "dependencies": {
     "amplify-prompts": "1.1.2",
-    "amplify-provider-awscloudformation": "4.60.1",
+    "amplify-provider-awscloudformation": "4.64.0",
     "@aws-amplify/amplify-category-auth": "1.0.0"
   },
   "devDependencies": {},
