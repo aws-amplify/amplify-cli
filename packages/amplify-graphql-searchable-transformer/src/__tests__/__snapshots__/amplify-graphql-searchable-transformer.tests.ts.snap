@@ -101,6 +101,12 @@ input SearchableEmployeeSortInput {
   direction: SearchableSortDirection
 }
 
+input SearchableEmployeeAggregationInput {
+  name: String!
+  type: SearchableAggregateType!
+  field: String!
+}
+
 enum SearchableAggregateType {
   terms
   avg
@@ -109,23 +115,11 @@ enum SearchableAggregateType {
   sum
 }
 
-enum SearchableEmployeeAggregateField {
-  id
-  firstName
-  lastName
-}
-
-input SearchableEmployeeAggregationInput {
-  name: String!
-  type: SearchableAggregateType!
-  field: SearchableEmployeeAggregateField!
-}
-
 type SearchableEmployeeConnection {
-  items: [Employee!]!
+  items: [Employee]
   nextToken: String
   total: Int
-  aggregateItems: [SearchableAggregateResult!]!
+  aggregateItems: [SearchableAggregateResult]
 }
 
 type SearchableAggregateResult {
@@ -246,7 +240,7 @@ enum ModelSortDirection {
 }
 
 type ModelEmployeeConnection {
-  items: [Employee!]!
+  items: [Employee]
   nextToken: String
 }
 
@@ -402,6 +396,12 @@ input SearchablePostSortInput {
   direction: SearchableSortDirection
 }
 
+input SearchablePostAggregationInput {
+  name: String!
+  type: SearchableAggregateType!
+  field: String!
+}
+
 enum SearchableAggregateType {
   terms
   avg
@@ -410,24 +410,11 @@ enum SearchableAggregateType {
   sum
 }
 
-enum SearchablePostAggregateField {
-  id
-  title
-  createdAt
-  updatedAt
-}
-
-input SearchablePostAggregationInput {
-  name: String!
-  type: SearchableAggregateType!
-  field: SearchablePostAggregateField!
-}
-
 type SearchablePostConnection {
-  items: [Post!]!
+  items: [Post]
   nextToken: String
   total: Int
-  aggregateItems: [SearchableAggregateResult!]!
+  aggregateItems: [SearchableAggregateResult]
 }
 
 type SearchableAggregateResult {
@@ -548,7 +535,7 @@ enum ModelSortDirection {
 }
 
 type ModelPostConnection {
-  items: [Post!]!
+  items: [Post]
   nextToken: String
 }
 
@@ -617,13 +604,26 @@ $util.toJson({
   \\"payload\\": {}
 })
 ## [End] Initialization default values. **",
-  "Mutation.createPost.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
-#if( !$ctx.stash.get(\\"hasAuth\\") )
-  $util.unauthorized()
-#end
-$util.toJson({})
-## [End] Sandbox Mode Disabled. **",
   "Mutation.createPost.req.vtl": "## [Start] Create Request template. **
+## Begin - key condition **
+#if( $ctx.stash.metadata.modelObjectKey )
+  #set( $keyConditionExpr = {} )
+  #set( $keyConditionExprNames = {} )
+  #foreach( $entry in $ctx.stash.metadata.modelObjectKey.entrySet() )
+    $util.qr($keyConditionExpr.put(\\"keyCondition$velocityCount\\", {
+  \\"attributeExists\\": false
+}))
+    $util.qr($keyConditionExprNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
+  #end
+  $util.qr($ctx.stash.conditions.add($keyConditionExpr))
+#else
+  $util.qr($ctx.stash.conditions.add({
+  \\"id\\": {
+      \\"attributeExists\\": false
+  }
+}))
+#end
+## End - key condition **
 ## Set the default values to put request **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
 ## copy the values from input **
@@ -688,20 +688,13 @@ $util.qr($mergedValues.put(\\"__typename\\", \\"Post\\"))
 #end
 $util.toJson($PutObject)
 ## [End] Create Request template. **",
-  "Mutation.createPost.res.vtl": "## [Start] ResponseTemplate. **
-$util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
+  "Mutation.createPost.res.vtl": "## [Start] Get ResponseTemplate. **
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
   $util.toJson($ctx.result)
 #end
-## [End] ResponseTemplate. **",
-  "Mutation.deletePost.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
-#if( !$ctx.stash.get(\\"hasAuth\\") )
-  $util.unauthorized()
-#end
-$util.toJson({})
-## [End] Sandbox Mode Disabled. **",
+## [End] Get ResponseTemplate. **",
   "Mutation.deletePost.req.vtl": "## [Start] Delete Request template. **
 #set( $DeleteRequest = {
   \\"version\\": \\"2018-05-29\\",
@@ -759,14 +752,13 @@ $util.qr($DeleteRequest.put(\\"key\\", $Key))
 #end
 $util.toJson($DeleteRequest)
 ## [End] Delete Request template. **",
-  "Mutation.deletePost.res.vtl": "## [Start] ResponseTemplate. **
-$util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
+  "Mutation.deletePost.res.vtl": "## [Start] Get ResponseTemplate. **
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
   $util.toJson($ctx.result)
 #end
-## [End] ResponseTemplate. **",
+## [End] Get ResponseTemplate. **",
   "Mutation.updatePost.init.1.req.vtl": "## [Start] Initialization default values. **
 $util.qr($ctx.stash.put(\\"defaultValues\\", $util.defaultIfNull($ctx.stash.defaultValues, {})))
 #set( $updatedAt = $util.time.nowISO8601() )
@@ -776,12 +768,6 @@ $util.toJson({
   \\"payload\\": {}
 })
 ## [End] Initialization default values. **",
-  "Mutation.updatePost.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
-#if( !$ctx.stash.get(\\"hasAuth\\") )
-  $util.unauthorized()
-#end
-$util.toJson({})
-## [End] Sandbox Mode Disabled. **",
   "Mutation.updatePost.req.vtl": "## [Start] Mutation Update resolver. **
 ## Set the default values to put request **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
@@ -911,73 +897,35 @@ $util.qr($update.put(\\"expression\\", \\"$expression\\"))
 #end
 $util.toJson($UpdateItem)
 ## [End] Mutation Update resolver. **",
-  "Mutation.updatePost.res.vtl": "## [Start] ResponseTemplate. **
-$util.qr($ctx.result.put(\\"__operation\\", \\"Mutation\\"))
+  "Mutation.updatePost.res.vtl": "## [Start] Get ResponseTemplate. **
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
   $util.toJson($ctx.result)
 #end
-## [End] ResponseTemplate. **",
-  "Query.getPost.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
-#if( !$ctx.stash.get(\\"hasAuth\\") )
-  $util.unauthorized()
-#end
-$util.toJson({})
-## [End] Sandbox Mode Disabled. **",
+## [End] Get ResponseTemplate. **",
   "Query.getPost.req.vtl": "## [Start] Get Request template. **
 #set( $GetRequest = {
   \\"version\\": \\"2018-05-29\\",
-  \\"operation\\": \\"Query\\"
+  \\"operation\\": \\"GetItem\\"
 } )
 #if( $ctx.stash.metadata.modelObjectKey )
-  #set( $expression = \\"\\" )
-  #set( $expressionNames = {} )
-  #set( $expressionValues = {} )
-  #foreach( $item in $ctx.stash.metadata.modelObjectKey.entrySet() )
-    #set( $expression = \\"$expression#keyCount$velocityCount = :valueCount$velocityCount AND \\" )
-    $util.qr($expressionNames.put(\\"#keyCount$velocityCount\\", $item.key))
-    $util.qr($expressionValues.put(\\":valueCount$velocityCount\\", $item.value))
-  #end
-  #set( $expression = $expression.replaceAll(\\"AND $\\", \\"\\") )
-  #set( $query = {
-  \\"expression\\": $expression,
-  \\"expressionNames\\": $expressionNames,
-  \\"expressionValues\\": $expressionValues
-} )
+  #set( $key = $ctx.stash.metadata.modelObjectKey )
 #else
-  #set( $query = {
-  \\"expression\\": \\"id = :id\\",
-  \\"expressionValues\\": {
-      \\":id\\":     $util.parseJson($util.dynamodb.toDynamoDBJson($ctx.args.id))
-  }
+  #set( $key = {
+  \\"id\\":   $util.dynamodb.toDynamoDB($ctx.args.id)
 } )
 #end
-$util.qr($GetRequest.put(\\"query\\", $query))
-#if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
-  $util.qr($GetRequest.put(\\"filter\\", $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.authFilter))))
-#end
+$util.qr($GetRequest.put(\\"key\\", $key))
 $util.toJson($GetRequest)
 ## [End] Get Request template. **",
-  "Query.getPost.res.vtl": "## [Start] Get Response template. **
+  "Query.getPost.res.vtl": "## [Start] Get ResponseTemplate. **
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
-#end
-#if( !$ctx.result.items.isEmpty() && $ctx.result.scannedCount == 1 )
-  $util.toJson($ctx.result.items[0])
 #else
-  #if( $ctx.result.items.isEmpty() && $ctx.result.scannedCount == 1 )
-$util.unauthorized()
-  #end
-  $util.toJson(null)
+  $util.toJson($ctx.result)
 #end
-## [End] Get Response template. **",
-  "Query.listPosts.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
-#if( !$ctx.stash.get(\\"hasAuth\\") )
-  $util.unauthorized()
-#end
-$util.toJson({})
-## [End] Sandbox Mode Disabled. **",
+## [End] Get ResponseTemplate. **",
   "Query.listPosts.req.vtl": "## [Start] List Request. **
 #set( $limit = $util.defaultIfNull($context.args.limit, 100) )
 #set( $ListRequest = {
@@ -987,20 +935,8 @@ $util.toJson({})
 #if( $context.args.nextToken )
   #set( $ListRequest.nextToken = $context.args.nextToken )
 #end
-#if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
-  #set( $filter = $ctx.stash.authFilter )
-  #if( !$util.isNullOrEmpty($ctx.args.filter) )
-    #set( $filter = {
-  \\"and\\":   [$filter, $ctx.args.filter]
-} )
-  #end
-#else
-  #if( !$util.isNullOrEmpty($ctx.args.filter) )
-    #set( $filter = $ctx.args.filter )
-  #end
-#end
-#if( !$util.isNullOrEmpty($filter) )
-  #set( $filterExpression = $util.parseJson($util.transform.toDynamoDBFilterExpression($filter)) )
+#if( $context.args.filter )
+  #set( $filterExpression = $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.args.filter)) )
   #if( !$util.isNullOrBlank($filterExpression.expression) )
     #if( $filterEpression.expressionValues.size() == 0 )
       $util.qr($filterEpression.remove(\\"expressionValues\\"))
@@ -1024,16 +960,14 @@ $util.toJson({})
 #end
 $util.toJson($ListRequest)
 ## [End] List Request. **",
-  "Query.listPosts.res.vtl": "## [Start] ResponseTemplate. **
+  "Query.listPosts.res.vtl": "## [Start] Get ResponseTemplate. **
 #if( $ctx.error )
   $util.error($ctx.error.message, $ctx.error.type)
 #else
   $util.toJson($ctx.result)
 #end
-## [End] ResponseTemplate. **",
+## [End] Get ResponseTemplate. **",
   "Query.searchPosts.req.vtl": "#set( $indexPath = \\"/post/doc/_search\\" )
-#set( $allowedAggFields = $util.defaultIfNull($ctx.stash.allowedAggFields, []) )
-#set( $aggFieldsFilterMap = $util.defaultIfNull($ctx.stash.aggFieldsFilterMap, {}) )
 #set( $nonKeywordFields = [] )
 #set( $sortValues = [] )
 #set( $aggregateValues = {} )
@@ -1061,46 +995,16 @@ $util.toJson($ListRequest)
         #set( $sortField = $util.toJson(\\"\${sortItem.field}.keyword\\") )
       #end
     #end
-    #if( $util.isNullOrEmpty($sortItem.direction) )
-      #set( $sortDirection = $util.toJson({\\"order\\": \\"desc\\"}) )
-    #else
-      #set( $sortDirection = $util.toJson({\\"order\\": $sortItem.direction}) )
-    #end
+    #set( $sortDirection = $util.toJson({\\"order\\": $sortItem.direction}) )
     $util.qr($sortValues.add(\\"{$sortField: $sortDirection}\\"))
   #end
 #end
 #foreach( $aggItem in $context.args.aggregates )
-  #if( $allowedAggFields.contains($aggItem.field) )
-    #set( $aggFilter = { \\"match_all\\": {} } )
-  #elseif( $aggFieldsFilterMap.containsKey($aggItem.field) )
-    #set( $aggFilter = { \\"bool\\": { \\"should\\": $aggFieldsFilterMap.get($aggItem.field) } } )
-  #else
-    $util.error(\\"Unauthorized to run aggregation on field: \${aggItem.field}\\", \\"Unauthorized\\")
-  #end
   #if( $nonKeywordFields.contains($aggItem.field) )
-    $util.qr($aggregateValues.put(\\"$aggItem.name\\", { \\"filter\\": $aggFilter, \\"aggs\\": { \\"$aggItem.name\\": { \\"$aggItem.type\\": { \\"field\\": \\"$aggItem.field\\" }}} }))
+    $util.qr($aggregateValues.put(\\"$aggItem.name\\", {\\"$aggItem.type\\": {\\"field\\": \\"$aggItem.field\\"}}))
   #else
-    $util.qr($aggregateValues.put(\\"$aggItem.name\\", { \\"filter\\": $aggFilter, \\"aggs\\": { \\"$aggItem.name\\": { \\"$aggItem.type\\": { \\"field\\": \\"\${aggItem.field}.keyword\\" }}} }))
+    $util.qr($aggregateValues.put(\\"$aggItem.name\\", {\\"$aggItem.type\\": {\\"field\\": \\"\${aggItem.field}.keyword\\"}}))
   #end
-#end
-#if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
-  #set( $filter = $ctx.stash.authFilter )
-  #if( !$util.isNullOrEmpty($ctx.args.filter) )
-    #set( $filter = {
-  \\"bool\\": {
-      \\"must\\":     [$ctx.stash.authFilter, $util.parseJson($util.transform.toElasticsearchQueryDSL($ctx.args.filter))]
-  }
-} )
-  #end
-#else
-  #if( !$util.isNullOrEmpty($ctx.args.filter) )
-    #set( $filter = $util.parseJson($util.transform.toElasticsearchQueryDSL($ctx.args.filter)) )
-  #end
-#end
-#if( $util.isNullOrEmpty($filter) )
-  #set( $filter = {
-  \\"match_all\\": {}
-} )
 #end
 {
   \\"version\\": \\"2018-05-29\\",
@@ -1113,7 +1017,13 @@ $util.toJson($ListRequest)
                 \\"size\\": #if( $context.args.limit ) $context.args.limit #else 100 #end,
                 \\"sort\\": $sortValues,
                 \\"version\\": false,
-                \\"query\\": $util.toJson($filter),
+                \\"query\\": #if( $context.args.filter )
+$util.transform.toElasticsearchQueryDSL($ctx.args.filter)
+#else
+{
+      \\"match_all\\": {}
+  }
+#end,
                 \\"aggs\\": $util.toJson($aggregateValues)
                 }
   }
@@ -1129,16 +1039,15 @@ $util.toJson($ListRequest)
 #foreach( $aggItem in $context.result.aggregations.keySet() )
   #set( $aggResult = {} )
   #set( $aggResultValue = {} )
-  #set( $currentAggItem = $ctx.result.aggregations.get($aggItem) )
   $util.qr($aggResult.put(\\"name\\", $aggItem))
-  #if( !$util.isNullOrEmpty($currentAggItem) )
-    #if( !$util.isNullOrEmpty($currentAggItem.get($aggItem).buckets) )
+  #if( !$util.isNullOrEmpty($context.result.aggregations) )
+    #if( !$util.isNullOrEmpty($context.result.aggregations.get($aggItem).buckets) )
       $util.qr($aggResultValue.put(\\"__typename\\", \\"SearchableAggregateBucketResult\\"))
-      $util.qr($aggResultValue.put(\\"buckets\\", $currentAggItem.get($aggItem).buckets))
+      $util.qr($aggResultValue.put(\\"buckets\\", $context.result.aggregations.get($aggItem).buckets))
     #end
-    #if( !$util.isNullOrEmpty($currentAggItem.get($aggItem).value) )
+    #if( !$util.isNullOrEmpty($context.result.aggregations.get($aggItem).value) )
       $util.qr($aggResultValue.put(\\"__typename\\", \\"SearchableAggregateScalarResult\\"))
-      $util.qr($aggResultValue.put(\\"value\\", $currentAggItem.get($aggItem).value))
+      $util.qr($aggResultValue.put(\\"value\\", $context.result.aggregations.get($aggItem).value))
     #end
   #end
   $util.qr($aggResult.put(\\"result\\", $aggResultValue))
@@ -1150,51 +1059,6 @@ $util.toJson({
   \\"nextToken\\": $nextToken,
   \\"aggregateItems\\": $aggregateValues
 })",
-  "Subscription.onCreatePost.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
-#if( !$ctx.stash.get(\\"hasAuth\\") )
-  $util.unauthorized()
-#end
-$util.toJson({})
-## [End] Sandbox Mode Disabled. **",
-  "Subscription.onCreatePost.req.vtl": "## [Start] Subscription Request template. **
-$util.toJson({
-  \\"version\\": \\"2018-05-29\\",
-  \\"payload\\": {}
-})
-## [End] Subscription Request template. **",
-  "Subscription.onCreatePost.res.vtl": "## [Start] Subscription Response template. **
-$util.toJson(null)
-## [End] Subscription Response template. **",
-  "Subscription.onDeletePost.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
-#if( !$ctx.stash.get(\\"hasAuth\\") )
-  $util.unauthorized()
-#end
-$util.toJson({})
-## [End] Sandbox Mode Disabled. **",
-  "Subscription.onDeletePost.req.vtl": "## [Start] Subscription Request template. **
-$util.toJson({
-  \\"version\\": \\"2018-05-29\\",
-  \\"payload\\": {}
-})
-## [End] Subscription Request template. **",
-  "Subscription.onDeletePost.res.vtl": "## [Start] Subscription Response template. **
-$util.toJson(null)
-## [End] Subscription Response template. **",
-  "Subscription.onUpdatePost.postAuth.1.req.vtl": "## [Start] Sandbox Mode Disabled. **
-#if( !$ctx.stash.get(\\"hasAuth\\") )
-  $util.unauthorized()
-#end
-$util.toJson({})
-## [End] Sandbox Mode Disabled. **",
-  "Subscription.onUpdatePost.req.vtl": "## [Start] Subscription Request template. **
-$util.toJson({
-  \\"version\\": \\"2018-05-29\\",
-  \\"payload\\": {}
-})
-## [End] Subscription Request template. **",
-  "Subscription.onUpdatePost.res.vtl": "## [Start] Subscription Response template. **
-$util.toJson(null)
-## [End] Subscription Response template. **",
 }
 `;
 
@@ -1300,6 +1164,12 @@ input SearchablePostSortInput {
   direction: SearchableSortDirection
 }
 
+input SearchablePostAggregationInput {
+  name: String!
+  type: SearchableAggregateType!
+  field: String!
+}
+
 enum SearchableAggregateType {
   terms
   avg
@@ -1308,24 +1178,11 @@ enum SearchableAggregateType {
   sum
 }
 
-enum SearchablePostAggregateField {
-  id
-  title
-  createdAt
-  updatedAt
-}
-
-input SearchablePostAggregationInput {
-  name: String!
-  type: SearchableAggregateType!
-  field: SearchablePostAggregateField!
-}
-
 type SearchablePostConnection {
-  items: [Post!]!
+  items: [Post]
   nextToken: String
   total: Int
-  aggregateItems: [SearchableAggregateResult!]!
+  aggregateItems: [SearchableAggregateResult]
 }
 
 type SearchableAggregateResult {
@@ -1375,22 +1232,17 @@ input SearchableUserSortInput {
   direction: SearchableSortDirection
 }
 
-enum SearchableUserAggregateField {
-  id
-  name
-}
-
 input SearchableUserAggregationInput {
   name: String!
   type: SearchableAggregateType!
-  field: SearchableUserAggregateField!
+  field: String!
 }
 
 type SearchableUserConnection {
-  items: [User!]!
+  items: [User]
   nextToken: String
   total: Int
-  aggregateItems: [SearchableAggregateResult!]!
+  aggregateItems: [SearchableAggregateResult]
 }
 
 input ModelStringInput {
@@ -1485,7 +1337,7 @@ enum ModelSortDirection {
 }
 
 type ModelPostConnection {
-  items: [Post!]!
+  items: [Post]
   nextToken: String
 }
 
@@ -1545,7 +1397,7 @@ type Subscription {
 }
 
 type ModelUserConnection {
-  items: [User!]!
+  items: [User]
   nextToken: String
 }
 
@@ -1676,6 +1528,12 @@ input SearchablePostSortInput {
   direction: SearchableSortDirection
 }
 
+input SearchablePostAggregationInput {
+  name: String!
+  type: SearchableAggregateType!
+  field: String!
+}
+
 enum SearchableAggregateType {
   terms
   avg
@@ -1684,24 +1542,11 @@ enum SearchableAggregateType {
   sum
 }
 
-enum SearchablePostAggregateField {
-  id
-  title
-  createdAt
-  updatedAt
-}
-
-input SearchablePostAggregationInput {
-  name: String!
-  type: SearchableAggregateType!
-  field: SearchablePostAggregateField!
-}
-
 type SearchablePostConnection {
-  items: [Post!]!
+  items: [Post]
   nextToken: String
   total: Int
-  aggregateItems: [SearchableAggregateResult!]!
+  aggregateItems: [SearchableAggregateResult]
 }
 
 type SearchableAggregateResult {
@@ -1822,7 +1667,7 @@ enum ModelSortDirection {
 }
 
 type ModelPostConnection {
-  items: [Post!]!
+  items: [Post]
   nextToken: String
 }
 
@@ -1958,6 +1803,12 @@ input SearchablePostSortInput {
   direction: SearchableSortDirection
 }
 
+input SearchablePostAggregationInput {
+  name: String!
+  type: SearchableAggregateType!
+  field: String!
+}
+
 enum SearchableAggregateType {
   terms
   avg
@@ -1966,24 +1817,11 @@ enum SearchableAggregateType {
   sum
 }
 
-enum SearchablePostAggregateField {
-  id
-  title
-  createdAt
-  updatedAt
-}
-
-input SearchablePostAggregationInput {
-  name: String!
-  type: SearchableAggregateType!
-  field: SearchablePostAggregateField!
-}
-
 type SearchablePostConnection {
-  items: [Post!]!
+  items: [Post]
   nextToken: String
   total: Int
-  aggregateItems: [SearchableAggregateResult!]!
+  aggregateItems: [SearchableAggregateResult]
 }
 
 type SearchableAggregateResult {
@@ -2104,7 +1942,7 @@ enum ModelSortDirection {
 }
 
 type ModelPostConnection {
-  items: [Post!]!
+  items: [Post]
   nextToken: String
 }
 
@@ -2255,6 +2093,12 @@ input SearchablePostSortInput {
   direction: SearchableSortDirection
 }
 
+input SearchablePostAggregationInput {
+  name: String!
+  type: SearchableAggregateType!
+  field: String!
+}
+
 enum SearchableAggregateType {
   terms
   avg
@@ -2263,24 +2107,11 @@ enum SearchableAggregateType {
   sum
 }
 
-enum SearchablePostAggregateField {
-  id
-  title
-  createdAt
-  updatedAt
-}
-
-input SearchablePostAggregationInput {
-  name: String!
-  type: SearchableAggregateType!
-  field: SearchablePostAggregateField!
-}
-
 type SearchablePostConnection {
-  items: [Post!]!
+  items: [Post]
   nextToken: String
   total: Int
-  aggregateItems: [SearchableAggregateResult!]!
+  aggregateItems: [SearchableAggregateResult]
 }
 
 type SearchableAggregateResult {
@@ -2401,7 +2232,7 @@ enum ModelSortDirection {
 }
 
 type ModelPostConnection {
-  items: [Post!]!
+  items: [Post]
   nextToken: String
 }
 

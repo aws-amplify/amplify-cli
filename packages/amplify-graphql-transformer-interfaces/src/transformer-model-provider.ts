@@ -129,6 +129,4 @@ export interface TransformerModelProvider extends TransformerPluginProvider {
   ) => ObjectTypeDefinitionNode;
 }
 
-export interface TransformerAuthProvider extends TransformerPluginProvider {}
-
 export interface TransformerModelEnhancementProvider extends Partial<TransformerModelProvider> {}

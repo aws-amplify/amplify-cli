@@ -188,11 +188,14 @@ function getAWSExportsObject(resources) {
 
   // add geo config if geo resources exist
   if (Object.entries(geoConfig).length > 0) {
-    Object.assign(configOutput, {
-      geo: {
-        amazon_location_service: geoConfig,
-      },
-    });
+    Object.assign(
+      configOutput,
+      {
+        geo: {
+          amazon_location_service: geoConfig
+        }
+      }
+    );
   }
 
   return configOutput;
@@ -559,16 +562,16 @@ function getSumerianConfig(sumerianResources) {
 }
 
 function getMapConfig(mapResources) {
-  let defaultMap = '';
+  let defaultMap = "";
   const mapConfig = {
-    items: {},
+    items: {}
   };
   mapResources.forEach(mapResource => {
     const mapName = mapResource.output.Name;
     mapConfig.items[mapName] = {
-      style: mapResource.output.Style,
-    };
-    if (mapResource.isDefault) {
+      style: mapResource.output.Style
+    }
+    if(mapResource.isDefault) {
       defaultMap = mapName;
     }
   });
@@ -577,14 +580,14 @@ function getMapConfig(mapResources) {
 }
 
 function getPlaceIndexConfig(placeIndexResources) {
-  let defaultPlaceIndex = '';
+  let defaultPlaceIndex = "";
   const placeIndexConfig = {
-    items: [],
+    items: []
   };
   placeIndexResources.forEach(placeIndexResource => {
     const placeIndexName = placeIndexResource.output.Name;
     placeIndexConfig.items.push(placeIndexName);
-    if (placeIndexResource.isDefault) {
+    if(placeIndexResource.isDefault) {
       defaultPlaceIndex = placeIndexName;
     }
   });

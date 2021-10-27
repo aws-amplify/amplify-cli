@@ -34,7 +34,6 @@ import {
   makeSearchableSortDirectionEnumObject,
   makeSearchableXFilterInputObject,
   makeSearchableXSortableFieldsEnumObject,
-  makeSearchableXAggregateFieldEnumObject,
   makeSearchableXSortInputObject,
   makeSearchableXAggregationInputObject,
   makeSearchableAggregateTypeEnumObject,
@@ -139,7 +138,7 @@ export class SearchableModelTransformer extends TransformerPluginBase {
         MappingTemplate.s3MappingTemplateFromString(responseTemplate(false), `${typeName}.${def.fieldName}.res.vtl`),
       );
       resolver.mapToStack(stack);
-      context.resolvers.addResolver(typeName, def.fieldName, resolver);
+      context.resolvers.addResolver(type, def.fieldName, resolver);
     }
 
     createStackOutputs(stack, domain.domainEndpoint, context.api.apiId, domain.domainArn);
@@ -205,12 +204,12 @@ export class SearchableModelTransformer extends TransformerPluginBase {
     // Create TableXConnection type with items and nextToken
     let connectionTypeExtension = blankObjectExtension(searchableXConnectionName);
     connectionTypeExtension = extensionWithFields(connectionTypeExtension, [
-      makeField('items', [], makeNonNullType(makeListType(makeNonNullType(makeNamedType(definition.name.value))))),
+      makeField('items', [], makeListType(makeNamedType(definition.name.value))),
     ]);
     connectionTypeExtension = extensionWithFields(connectionTypeExtension, [
       makeField('nextToken', [], makeNamedType('String')),
       makeField('total', [], makeNamedType('Int')),
-      makeField('aggregateItems', [], makeNonNullType(makeListType(makeNonNullType(makeNamedType(`SearchableAggregateResult`))))),
+      makeField('aggregateItems', [], makeListType(makeNamedType(`SearchableAggregateResult`))),
     ]);
     ctx.output.addObjectExtension(connectionTypeExtension);
   }
@@ -340,19 +339,14 @@ export class SearchableModelTransformer extends TransformerPluginBase {
       ctx.output.addInput(searchableXSortableInputDirection);
     }
 
+    if (!ctx.output.hasType(`Searchable${definition.name.value}AggregationInput`)) {
+      const searchableXAggregationInputDirection = makeSearchableXAggregationInputObject(definition);
+      ctx.output.addInput(searchableXAggregationInputDirection);
+    }
+
     if (!ctx.output.hasType('SearchableAggregateType')) {
       const searchableAggregateTypeEnum = makeSearchableAggregateTypeEnumObject();
       ctx.output.addEnum(searchableAggregateTypeEnum);
-    }
-
-    if (!ctx.output.hasType(`Searchable${definition.name.value}AggregateField`)) {
-      const searchableXAggregationField = makeSearchableXAggregateFieldEnumObject(definition);
-      ctx.output.addEnum(searchableXAggregationField);
-    }
-
-    if (!ctx.output.hasType(`Searchable${definition.name.value}AggregationInput`)) {
-      const searchableXAggregationInput = makeSearchableXAggregationInputObject(definition);
-      ctx.output.addInput(searchableXAggregationInput);
     }
   }
 }

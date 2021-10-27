@@ -27,7 +27,6 @@
   },
   "dependencies": {
     "amplify-cli-core": "1.31.1",
-    "amplify-headless-interface": "1.10.0",
     "amplify-prompts": "1.2.0",
     "amplify-util-import": "1.5.15",
     "chalk": "^4.1.1",
@@ -40,7 +39,7 @@
     "inquirer": "^7.3.3",
     "lodash": "^4.17.21",
     "promise-sequential": "^1.1.1",
-    "uuid": "^8.3.2"
+    "uuid": "^3.4.0"
   },
   "devDependencies": {
     "aws-sdk": "^2.963.0",

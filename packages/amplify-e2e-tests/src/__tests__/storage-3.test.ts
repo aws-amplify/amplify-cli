@@ -1,15 +1,20 @@
+import { initJSProjectWithProfile, initFlutterProjectWithProfile, deleteProject, amplifyPushAuth } from 'amplify-e2e-core';
+import { addAuthWithDefault, addAuthWithGroupsAndAdminAPI } from 'amplify-e2e-core';
 import {
-  addDDBWithTrigger,
   addSimpleDDB,
-  amplifyPushAuth,
-  createNewProjectDir,
-  deleteProject,
-  deleteProjectDir,
-  getDDBTable,
-  getProjectMeta,
-  initJSProjectWithProfile,
+  addDDBWithTrigger,
   updateDDBWithTrigger,
+  addSimpleDDBwithGSI,
+  updateSimpleDDBwithGSI,
+  addS3AndAuthWithAuthOnlyAccess,
+  addS3WithGuestAccess,
+  addS3WithGroupAccess,
+  addS3WithTrigger,
+  updateS3AddTrigger,
 } from 'amplify-e2e-core';
+import { createNewProjectDir, deleteProjectDir, getProjectMeta, getDDBTable, checkIfBucketExists } from 'amplify-e2e-core';
+import * as fs from 'fs-extra';
+import * as path from 'path';
 
 describe('amplify add/update storage(DDB)', () => {
   let projRoot: string;
@@ -31,12 +36,9 @@ describe('amplify add/update storage(DDB)', () => {
     await amplifyPushAuth(projRoot);
 
     const meta = getProjectMeta(projRoot);
-    const {
-      Name: table1Name,
-      Arn: table1Arn,
-      Region: table1Region,
-      StreamArn: table1StreamArn,
-    } = Object.keys(meta.storage).map(key => meta.storage[key])[0].output;
+    const { Name: table1Name, Arn: table1Arn, Region: table1Region, StreamArn: table1StreamArn } = Object.keys(meta.storage).map(
+      key => meta.storage[key],
+    )[0].output;
 
     expect(table1Name).toBeDefined();
     expect(table1Arn).toBeDefined();
@@ -46,12 +48,9 @@ describe('amplify add/update storage(DDB)', () => {
 
     expect(table1Configs.Table.TableArn).toEqual(table1Arn);
 
-    const {
-      Name: table2Name,
-      Arn: table2Arn,
-      Region: table2Region,
-      StreamArn: table2StreamArn,
-    } = Object.keys(meta.storage).map(key => meta.storage[key])[1].output;
+    const { Name: table2Name, Arn: table2Arn, Region: table2Region, StreamArn: table2StreamArn } = Object.keys(meta.storage).map(
+      key => meta.storage[key],
+    )[1].output;
 
     expect(table2Name).toBeDefined();
     expect(table2Arn).toBeDefined();

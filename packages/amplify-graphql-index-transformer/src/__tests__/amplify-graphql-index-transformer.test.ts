@@ -867,20 +867,3 @@ it('should support index/primary key with sync resolvers', () => {
 
   validateModelSchema(parse(definition));
 });
-
-test('LSI creation regression test', () => {
-  const inputSchema = `
-    type Test @model {
-      id: ID! @primaryKey
-      index: ID! @index(name: "index1", sortKeyFields: ["id"])
-    }`;
-
-  const transformer = new GraphQLTransform({
-    transformers: [new ModelTransformer(), new IndexTransformer(), new PrimaryKeyTransformer()],
-  });
-
-  const out = transformer.transform(inputSchema);
-  expect(out).toBeDefined();
-  const schema = parse(out.schema);
-  validateModelSchema(schema);
-});

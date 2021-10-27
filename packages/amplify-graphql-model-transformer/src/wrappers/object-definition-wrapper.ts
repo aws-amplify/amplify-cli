@@ -295,7 +295,7 @@ export class FieldWrapper extends GenericFieldWrapper {
       field.makeNonNullable();
     }
     if (isList) {
-      field.wrapListType().makeNonNullable();
+      field.wrapListType();
     }
     return field;
   };

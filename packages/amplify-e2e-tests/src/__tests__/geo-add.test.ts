@@ -1,4 +1,4 @@
-import {
+import { 
   createNewProjectDir,
   deleteProject,
   deleteProjectDir,
@@ -11,7 +11,7 @@ import {
   getMap,
   getPlaceIndex,
   generateRandomShortId,
-  getGeoJSConfiguration,
+  getGeoJSConfiguration
 } from 'amplify-e2e-core';
 import { existsSync } from 'fs';
 import path from 'path';

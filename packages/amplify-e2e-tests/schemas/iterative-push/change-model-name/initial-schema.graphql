@@ -3,7 +3,7 @@ type Comment @model @key(name: "byTodo", fields: ["todoID"]) {
   todoID: ID!
 }
 
-type Task @model {
+type Todo @model {
   id: ID!
   name: String!
   description: String

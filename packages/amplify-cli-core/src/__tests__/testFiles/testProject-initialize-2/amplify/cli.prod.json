@@ -1,7 +1,7 @@
 {
   "features": {
     "graphQLTransformer": {
-      "customTransformerVersion": 10
+      "transformerVersion": 10
     }
   }
 }

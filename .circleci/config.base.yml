@@ -1064,11 +1064,10 @@ commands:
           steps:
             - run:
                 name: Run E2e Tests
-                shell: bash.exe
+                shell: powershell.exe
                 command: |
-                  source .circleci/local_publish_helpers.sh
                   cd packages/amplify-e2e-tests
-                  retry yarn run e2e --detectOpenHandles --maxWorkers=3 $TEST_SUITE
+                  yarn run e2e --detectOpenHandles --maxWorkers=3 $env:TEST_SUITE
                 no_output_timeout: 90m
       - when:
           condition:

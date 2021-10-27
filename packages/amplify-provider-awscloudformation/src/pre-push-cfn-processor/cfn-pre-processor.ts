@@ -134,7 +134,7 @@ async function validateCustomPolicies(data: CustomIAMPolicies, categoryName: str
   if (!validatePolicy(data)) {
     let errorMessage = `Invalid custom IAM policies in the ${resourceName} ${categoryName}.\n
     Edit <project-dir>/amplify/backend/function/${resourceName}/custom-policies.json to fix
-    Learn more about custom IAM policies for ${categoryName}: https://docs.amplify.aws/cli/function/#access-existing-aws-resource-from-lambda-function\n`;
+    Learn more about custom IAM policies for ${categoryName}: https://docs.amplify.aws/function/custom-policies\n`;
     validatePolicy.errors.forEach(error => (errorMessage += `${error.message}\n`));
     throw new CustomPoliciesFormatError(errorMessage);
   }

@@ -7,14 +7,13 @@ import {
   TransformerResolverProvider,
   TransformerResolversManagerProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
-import { AuthorizationType, CfnFunctionConfiguration } from '@aws-cdk/aws-appsync';
-import { isResolvableObject, Stack, CfnParameter } from '@aws-cdk/core';
+import { CfnFunctionConfiguration } from '@aws-cdk/aws-appsync';
+import { isResolvableObject, Stack } from '@aws-cdk/core';
 import assert from 'assert';
 import { toPascalCase } from 'graphql-transformer-common';
 import { dedent } from 'ts-dedent';
 import { MappingTemplate, S3MappingTemplate } from '../cdk-compat';
 import * as SyncUtils from '../transformation/sync-utils';
-import { IAM_AUTH_ROLE_PARAMETER, IAM_UNAUTH_ROLE_PARAMETER } from '../utils';
 import { StackManager } from './stack-manager';
 
 type Slot = {
@@ -94,11 +93,6 @@ export class ResolverManager implements TransformerResolversManagerProvider {
     if (this.resolvers.has(key)) {
       return this.resolvers.get(key) as TransformerResolverProvider;
     }
-  };
-
-  hasResolver = (typeName: string, fieldName: string): boolean => {
-    const key = `${typeName}.${fieldName}`;
-    return this.resolvers.has(key);
   };
 
   removeResolver = (typeName: string, fieldName: string): TransformerResolverProvider => {
@@ -240,38 +234,24 @@ export class TransformerResolver implements TransformerResolverProvider {
           }
           break;
         default:
-          throw new Error('Unknown DataSource type');
+          throw new Error('Unknow DataSource type');
       }
     }
-    let initResolver = dedent`
-    $util.qr($ctx.stash.put("typeName", "${this.typeName}"))
-    $util.qr($ctx.stash.put("fieldName", "${this.fieldName}"))
-    $util.qr($ctx.stash.put("conditions", []))
-    $util.qr($ctx.stash.put("metadata", {}))
-    $util.qr($ctx.stash.metadata.put("dataSourceType", "${dataSourceType}"))
-    $util.qr($ctx.stash.metadata.put("apiId", "${api.apiId}"))
-    ${dataSource}
-    `;
-    const authModes = [context.authConfig.defaultAuthentication, ...(context.authConfig.additionalAuthenticationProviders || [])].map(
-      mode => mode?.authenticationType,
-    );
-    if (authModes.includes(AuthorizationType.IAM)) {
-      const authRoleParameter = (context.stackManager.getParameter(IAM_AUTH_ROLE_PARAMETER) as CfnParameter).valueAsString;
-      const unauthRoleParameter = (context.stackManager.getParameter(IAM_UNAUTH_ROLE_PARAMETER) as CfnParameter).valueAsString;
-      initResolver += dedent`\n
-      $util.qr($ctx.stash.put("authRole", "arn:aws:sts::${
-        Stack.of(context.stackManager.rootStack).account
-      }:assumed-role/${authRoleParameter}/CognitoIdentityCredentials"))
-      $util.qr($ctx.stash.put("unauthRole", "arn:aws:sts::${
-        Stack.of(context.stackManager.rootStack).account
-      }:assumed-role/${unauthRoleParameter}/CognitoIdentityCredentials"))
-      `;
-    }
-    initResolver += '\n$util.toJson({})';
     api.host.addResolver(
       this.typeName,
       this.fieldName,
-      MappingTemplate.inlineTemplateFromString(initResolver),
+      MappingTemplate.inlineTemplateFromString(
+        dedent`
+      $util.qr($ctx.stash.put("typeName", "${this.typeName}"))
+      $util.qr($ctx.stash.put("fieldName", "${this.fieldName}"))
+      $util.qr($ctx.stash.put("conditions", []))
+      $util.qr($ctx.stash.put("metadata", {}))
+      $util.qr($ctx.stash.metadata.put("dataSourceType", "${dataSourceType}"))
+      $util.qr($ctx.stash.metadata.put("apiId", "${api.apiId}"))
+      ${dataSource}
+      $util.toJson({})
+      `,
+      ),
       MappingTemplate.inlineTemplateFromString('$util.toJson($ctx.prev.result)'),
       undefined,
       [...requestFns, dataSourceProviderFn, ...responseFns].map(fn => fn.functionId),

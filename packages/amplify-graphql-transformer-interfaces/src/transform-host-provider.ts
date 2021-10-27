@@ -73,7 +73,4 @@ export interface TransformHostProvider {
 
   getDataSource: (name: string) => BaseDataSource | void;
   hasDataSource: (name: string) => boolean;
-
-  getResolver: (typeName: string, fieldName: string) => CfnResolver | void;
-  hasResolver: (typeName: string, fieldName: string) => boolean;
 }

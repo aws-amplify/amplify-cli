@@ -1,4 +1,4 @@
-import { byValue, byValues, prompter } from '../prompter';
+import { prompter } from '../prompter';
 import { prompt } from 'enquirer';
 import * as flags from '../flags';
 
@@ -77,10 +77,9 @@ describe('input', () => {
 
   it('transforms each input part separately when "many" specified', async () => {
     prompt_mock.mockResolvedValueOnce({ result: ['10', '20'] });
-    expect(await prompter.input<'many'>('test message', { returnSize: 'many', transform: input => `${input}suffix` })).toEqual([
-      '10suffix',
-      '20suffix',
-    ]);
+    expect(
+      await prompter.input<'many'>('test message', { returnSize: 'many', transform: input => `${input}suffix` }),
+    ).toEqual(['10suffix', '20suffix']);
   });
 });
 
@@ -105,19 +104,6 @@ describe('pick', () => {
     expect(prompt_mock.mock.calls.length).toBe(0);
   });
 
-  it('computes selection index using selection function', async () => {
-    prompt_mock.mockResolvedValueOnce({ result: 'opt2' });
-    await prompter.pick('test message', ['opt1', 'opt2', 'opt3'], { initial: byValue('opt2') });
-    expect((prompt_mock.mock.calls[0][0] as any).initial).toBe(1);
-  });
-
-  it('returns initial selection using selection function when yes flag is set', async () => {
-    flags_mock.isYes = true;
-    const result = await prompter.pick('test message', ['opt1', 'opt2', 'opt3'], { initial: byValue('opt2') });
-    expect(result).toBe('opt2');
-    expect(prompt_mock.mock.calls.length).toBe(0);
-  });
-
   it('throws if no choices provided', async () => {
     expect(() => prompter.pick('test message', [])).rejects.toThrowErrorMatchingInlineSnapshot(
       `"No choices provided for prompt [test message]"`,
@@ -137,38 +123,8 @@ describe('pick', () => {
   it('returns selected items when multiSelect', async () => {
     const mockResult = ['val1', 'val3'];
     prompt_mock.mockResolvedValueOnce({ result: mockResult });
-    expect(await prompter.pick<'many'>('test message', ['val1', 'val2', 'val3'], { returnSize: 'many' })).toEqual(mockResult);
-  });
-});
-
-describe('byValue', () => {
-  it('defaults to === when no equals function specified', () => {
-    expect(byValue('fox')(['the', 'quick', 'fox', 'jumped', 'over', 'the', 'lazy', 'dog'])).toBe(2);
-  });
-
-  it('returns the index of the first match if multiple present', () => {
-    expect(byValue('the')(['the', 'quick', 'fox', 'jumped', 'over', 'the', 'lazy', 'dog'])).toBe(0);
-  });
-
-  it('returns undefined when no match found', () => {
-    expect(byValue('dne')(['the', 'quick', 'fox', 'jumped', 'over', 'the', 'lazy', 'dog'])).toBeUndefined();
-  });
-
-  it('uses the equals function if specified', () => {
-    expect(byValue('four', (a, b) => a.length === b.length)(['the', 'quick', 'fox', 'jumped', 'over', 'the', 'lazy', 'dog'])).toBe(4);
-  });
-});
-
-describe('byValues', () => {
-  it('defaults to === when no equals function specified', () => {
-    expect(byValues(['fox', 'the'])(['the', 'quick', 'fox', 'jumped', 'over', 'lazy', 'dog']).sort()).toEqual([0, 2]);
-  });
-
-  it('returns [] when no matches found', () => {
-    expect(byValues(['dne'])(['the', 'quick', 'fox', 'jumped', 'over', 'the', 'lazy', 'dog'])).toEqual([]);
-  });
-
-  it('uses the equals function if specified', () => {
-    expect(byValues(['a', 'aa'], (a, b) => a.length === b.length)(['bbbb', 'bb', 'bbb', 'b']).sort()).toEqual([1, 3]);
+    expect(
+      await prompter.pick<'many'>('test message', ['val1', 'val2', 'val3'], { returnSize: 'many' }),
+    ).toEqual(mockResult);
   });
 });

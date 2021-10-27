@@ -24,7 +24,6 @@
     "watch": "tsc --watch"
   },
   "dependencies": {
-    "@aws-amplify/graphql-auth-transformer": "0.1.0",
     "@aws-amplify/graphql-default-value-transformer": "0.2.0",
     "@aws-amplify/graphql-function-transformer": "0.4.5",
     "@aws-amplify/graphql-http-transformer": "0.5.5",
@@ -74,7 +73,6 @@
     "@aws-cdk/custom-resources": "~1.124.0",
     "@aws-cdk/region-info": "~1.124.0",
     "@octokit/rest": "^18.0.9",
-    "ajv": "^6.12.3",
     "amplify-cli-core": "1.31.1",
     "amplify-cli-logger": "1.1.0",
     "amplify-codegen": "^2.23.1",

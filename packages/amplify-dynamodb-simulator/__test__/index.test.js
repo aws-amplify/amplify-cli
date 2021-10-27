@@ -39,26 +39,19 @@ describe('emulator operations', () => {
 
   const ensureNoDbPath = () => {
     if (fs.existsSync(dbPath)) {
-      try {
-        fs.removeSync(dbPath);
-      }
-      catch(err) {
-        console.log(err);
-      }
+      fs.removeSync(dbPath);
     }
   };
 
+  beforeEach(ensureNoDbPath);
+  afterEach(ensureNoDbPath);
+
   let emulators;
-  beforeEach(async () => {
-    ensureNoDbPath();
+  beforeEach(() => {
     emulators = [];
     jest.setTimeout(40 * 1000);
   });
-
-  afterEach(async () => {
-    await Promise.all(emulators.map(emu => emu.terminate()));
-    ensureNoDbPath();
-  });
+  afterEach(async () => await Promise.all(emulators.map(emu => emu.terminate())));
 
   it('should support in memory operations', async () => {
     const emu = await ddbSimulator.launch();
@@ -80,7 +73,7 @@ describe('emulator operations', () => {
       })
       .promise();
     await emuOne.terminate();
-    emulators = [];
+
     const emuTwo = await ddbSimulator.launch({ dbPath });
     emulators.push(emuTwo);
     const dynamoTwo = await ddbSimulator.getClient(emuTwo);
@@ -88,6 +81,7 @@ describe('emulator operations', () => {
     expect(t).toEqual({
       TableNames: ['foo'],
     });
+    emuTwo.terminate();
   });
 
   it('should start on specific port', async () => {

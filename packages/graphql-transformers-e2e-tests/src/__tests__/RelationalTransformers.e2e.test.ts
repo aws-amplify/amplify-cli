@@ -1,4 +1,3 @@
-import { AuthTransformer } from '@aws-amplify/graphql-auth-transformer';
 import { IndexTransformer, PrimaryKeyTransformer } from '@aws-amplify/graphql-index-transformer';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import {
@@ -8,7 +7,6 @@ import {
   ManyToManyTransformer,
 } from '@aws-amplify/graphql-relational-transformer';
 import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
-import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-interfaces';
 import { ResourceConstants } from 'graphql-transformer-common';
 import { CloudFormationClient } from '../CloudFormationClient';
 import { Output } from 'aws-sdk/clients/cloudformation';
@@ -121,18 +119,10 @@ type Course @model {
 `;
   let out;
   try {
-    const authConfig: AppSyncAuthConfiguration = {
-      defaultAuthentication: {
-        authenticationType: 'API_KEY',
-      },
-      additionalAuthenticationProviders: [],
-    };
-    const authTransformer = new AuthTransformer({ authConfig, addAwsIamAuthInOutputSchema: false });
     const modelTransformer = new ModelTransformer();
     const indexTransformer = new IndexTransformer();
     const hasOneTransformer = new HasOneTransformer();
     const transformer = new GraphQLTransform({
-      authConfig,
       featureFlags,
       transformers: [
         modelTransformer,
@@ -141,10 +131,8 @@ type Course @model {
         hasOneTransformer,
         new HasManyTransformer(),
         new BelongsToTransformer(),
-        new ManyToManyTransformer(modelTransformer, indexTransformer, hasOneTransformer, authTransformer),
-        authTransformer,
+        new ManyToManyTransformer(modelTransformer, indexTransformer, hasOneTransformer),
       ],
-      sandboxModeEnabled: true,
     });
     out = transformer.transform(validSchema);
   } catch (e) {

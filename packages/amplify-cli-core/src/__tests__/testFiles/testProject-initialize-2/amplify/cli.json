@@ -4,7 +4,7 @@
   },
   "features": {
     "graphQLTransformer": {
-      "customTransformerVersion": 3
+      "transformerVersion": 3
     },
     "keyTransformer": {
       "defaultQuery": false

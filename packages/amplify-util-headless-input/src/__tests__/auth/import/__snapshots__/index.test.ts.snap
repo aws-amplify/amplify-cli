@@ -2,6 +2,7 @@
 
 exports[`validates import auth headless request with a resolved promise when a valid payload with identityPoolId is not supplied 1`] = `
 Object {
+  "identityPoolId": "333",
   "nativeClientId": "222",
   "userPoolId": "123",
   "version": 1,

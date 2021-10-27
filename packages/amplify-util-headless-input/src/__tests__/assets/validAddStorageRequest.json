@@ -1,12 +1,12 @@
 {
   "version": 1,
-  "serviceModification": {
-    "serviceName": "S3",
+  "serviceConfiguration": {
+    "serviceName": "s3",
     "permissions": {
-      "auth": ["READ", "CREATE_AND_UPDATE"],
+      "auth": ["READ", "CREATE", "UPDATE"],
       "guest": ["READ"],
       "groups": {
-        "myUserGroup": ["CREATE_AND_UPDATE"]
+        "myUserGroup": ["CREATE", "UPDATE"]
       }
     },
     "bucketName": "something",

@@ -2,7 +2,6 @@ import { nspawn as spawn, getCLIPath, singleSelect, addCircleCITags } from '..';
 import { KEY_DOWN_ARROW } from '../utils';
 import { amplifyRegions } from '../configure';
 import { EOL } from 'os';
-import { v4 as uuid } from 'uuid';
 
 const defaultSettings = {
   name: EOL,
@@ -45,8 +44,6 @@ export function initJSProjectWithProfile(cwd: string, settings?: Partial<typeof 
   if (s.permissionsBoundaryArn) {
     cliArgs.push('--permissions-boundary', s.permissionsBoundaryArn);
   }
-
-  if (s?.name?.length > 20) console.warn('Project names should not be longer than 20 characters. This may cause tests to break.');
 
   return new Promise((resolve, reject) => {
     const chain = spawn(getCLIPath(), cliArgs, { cwd, stripColors: true, env, disableCIDetection: s.disableCIDetection })
@@ -131,12 +128,6 @@ export function initAndroidProjectWithProfile(cwd: string, settings: Object): Pr
         }
       });
   });
-}
-
-export function createRandomName() {
-  const length = 20;
-  const regExp = new RegExp('-', 'g');
-  return uuid().replace(regExp, '').substring(0, length);
 }
 
 export function initIosProjectWithProfile(cwd: string, settings: Object): Promise<void> {

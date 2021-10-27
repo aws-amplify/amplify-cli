@@ -35,20 +35,14 @@ export class S3Service implements IS3Service {
   }
 
   public async bucketExists(bucketName: string): Promise<boolean> {
-    try {
-      const response = await this.s3
-        .headBucket({
-          Bucket: bucketName,
-        })
-        .promise();
-      // If the return object has no keys then it means successful empty object was returned.
-      return Object.keys(response).length === 0;
-    } catch (error) {
-      if (error.code === 'NotFound') {
-        return false;
-      }
-      throw error;
-    }
+    const response = await this.s3
+      .headBucket({
+        Bucket: bucketName,
+      })
+      .promise();
+
+    // If the return object has no keys then it means successful empty object was returned.
+    return Object.keys(response).length === 0;
   }
 
   public async getBucketLocation(bucketName: string): Promise<string> {
@@ -57,12 +51,14 @@ export class S3Service implements IS3Service {
         Bucket: bucketName,
       })
       .promise();
+
     // For us-east-1 buckets the LocationConstraint is always emtpy, we have to return a
     // region in every case.
     // https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetBucketLocation.html
-    if (response.LocationConstraint === undefined || response.LocationConstraint === '' || response.LocationConstraint === null) {
+    if (response.LocationConstraint === '' || response.LocationConstraint === null) {
       return 'us-east-1';
     }
+
     return response.LocationConstraint;
   }
 }

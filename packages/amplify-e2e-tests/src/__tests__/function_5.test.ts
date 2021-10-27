@@ -1,6 +1,6 @@
 import {
   addFunction,
-  addApiWithoutSchema,
+  addApiWithSchema,
   amplifyPull,
   amplifyPushAuth,
   amplifyPush,
@@ -83,13 +83,9 @@ describe('test dependency in root stack', () => {
   });
 
   it('init a project with api and function and update the @model and add function access to @model ', async () => {
+    await initJSProjectWithProfile(projRoot, {});
     const projectName = 'mytestapi';
-    await initJSProjectWithProfile(projRoot, {
-      name: projectName,
-    });
-    await addApiWithoutSchema(projRoot);
-    await updateApiSchema(projRoot, projectName, 'simple_model.graphql');
-
+    await addApiWithSchema(projRoot, 'simple_model.graphql', { apiName: projectName });
     const random = Math.floor(Math.random() * 10000);
     const fnName = `integtestfn${random}`;
     await addFunction(
@@ -117,6 +113,6 @@ describe('test dependency in root stack', () => {
       },
       'nodejs',
     );
-    await amplifyPushWithoutCodegen(projRoot, undefined, true);
+    await amplifyPushWithoutCodegen(projRoot);
   });
 });

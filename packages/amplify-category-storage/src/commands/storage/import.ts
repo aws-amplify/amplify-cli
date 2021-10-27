@@ -11,7 +11,7 @@ export const run = async (context: $TSContext) => {
   const servicesMetadata = ((await import('../../provider-utils/supported-services')) as $TSAny).supportedServices;
 
   const serviceSelection = await context.amplify.serviceSelectionPrompt(context, categoryName, servicesMetadata, undefined, nameOverrides);
-  const providerController = await import(`../../provider-utils/${serviceSelection.providerName}`);
+  const providerController = require(`../../provider-utils/${serviceSelection.providerName}`);
 
   if (!providerController) {
     printer.error('Provider not configured for this category');

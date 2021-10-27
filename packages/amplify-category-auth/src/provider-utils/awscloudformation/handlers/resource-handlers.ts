@@ -9,7 +9,7 @@ import {
 } from '../utils/synthesize-resources';
 import { getPostAddAuthMetaUpdater, getPostUpdateAuthMetaUpdater } from '../utils/amplify-meta-updaters';
 import { getPostAddAuthMessagePrinter, getPostUpdateAuthMessagePrinter, printSMSSandboxWarning } from '../utils/message-printer';
-import { getSupportedServices, supportedServices } from '../../supported-services';
+import { supportedServices } from '../../supported-services';
 import { doesConfigurationIncludeSMS } from '../utils/auth-sms-workflow-helper';
 import { AuthInputState } from '../auth-inputs-manager/auth-input-state';
 import { category, ENV_SPECIFIC_PARAMS, privateKeys } from '../constants';
@@ -25,67 +25,65 @@ import { $TSContext } from 'amplify-cli-core';
  * The consumer returns the resourceName of the generated resource.
  * @param context The amplify context
  */
-export const getAddAuthHandler =
-  (context: $TSContext, skipNextSteps: boolean = false) =>
-  async (request: ServiceQuestionHeadlessResult | CognitoConfiguration) => {
-    const serviceMetadata = getSupportedServices()[request.serviceName];
-    const { cfnFilename, defaultValuesFilename, provider } = serviceMetadata;
+export const getAddAuthHandler = (context: $TSContext) => async (request: ServiceQuestionHeadlessResult | CognitoConfiguration) => {
+  const serviceMetadata = supportedServices[request.serviceName];
+  const { defaultValuesFilename, provider } = serviceMetadata;
 
-    let projectName = context.amplify.getProjectConfig().projectName.toLowerCase();
-    const disallowedChars = /[^A-Za-z0-9]+/g;
-    projectName = projectName.replace(disallowedChars, '');
+  let projectName = context.amplify.getProjectConfig().projectName.toLowerCase();
+  const disallowedChars = /[^A-Za-z0-9]+/g;
+  projectName = projectName.replace(disallowedChars, '');
 
-    const requestWithDefaults = await getAddAuthDefaultsApplier(context, defaultValuesFilename, projectName)(request);
+  const requestWithDefaults = await getAddAuthDefaultsApplier(context, defaultValuesFilename, projectName)(request);
 
-    // replace secret keys from cli inputs to be stored in deployment secrets
+  // replace secret keys from cli inputs to be stored in deployment secrets
 
-    let sharedParams = Object.assign({}, requestWithDefaults) as any;
-    privateKeys.forEach(p => delete sharedParams[p]);
-    sharedParams = removeDeprecatedProps(sharedParams);
-    // extracting env-specific params from parameters object
-    let envSpecificParams: any = {};
-    const cliInputs = { ...sharedParams };
-    ENV_SPECIFIC_PARAMS.forEach(paramName => {
-      if (paramName in request) {
-        envSpecificParams[paramName] = cliInputs[paramName];
-        delete cliInputs[paramName];
-      }
-    });
-
-    const cognitoCLIInputs: CognitoCLIInputs = {
-      version: '1',
-      cognitoConfig: cliInputs,
-    };
-
-    context.amplify.saveEnvResourceParameters(context, category, cognitoCLIInputs.cognitoConfig.resourceName, envSpecificParams);
-
-    // move this function outside of AddHandler
-    try {
-      const cliState = new AuthInputState(cognitoCLIInputs.cognitoConfig.resourceName);
-      // saving cli-inputs except secrets
-      await cliState.saveCLIInputPayload(cognitoCLIInputs);
-      // cdk transformation in this function
-      // start auth transform here
-      await generateAuthStackTemplate(context, cognitoCLIInputs.cognitoConfig.resourceName);
-      // remoe this when api and functions transform are done
-      await getResourceSynthesizer(context, requestWithDefaults);
-
-      getPostAddAuthMetaUpdater(context, { service: cognitoCLIInputs.cognitoConfig.serviceName, providerName: provider })(
-        cliInputs.resourceName,
-      );
-      getPostAddAuthMessagePrinter(cognitoCLIInputs.cognitoConfig.resourceName);
-
-      if (doesConfigurationIncludeSMS(request)) {
-        await printSMSSandboxWarning();
-      }
-    } catch (err) {
-      printer.info(err.stack);
-      printer.error('There was an error adding the auth resource');
-      context.usageData.emitError(err);
-      process.exitCode = 1;
+  let sharedParams = Object.assign({}, requestWithDefaults) as any;
+  privateKeys.forEach(p => delete sharedParams[p]);
+  sharedParams = removeDeprecatedProps(sharedParams);
+  // extracting env-specific params from parameters object
+  let envSpecificParams: any = {};
+  const cliInputs = { ...sharedParams };
+  ENV_SPECIFIC_PARAMS.forEach(paramName => {
+    if (paramName in request) {
+      envSpecificParams[paramName] = cliInputs[paramName];
+      delete cliInputs[paramName];
     }
-    return cognitoCLIInputs.cognitoConfig.resourceName;
+  });
+
+  const cognitoCLIInputs: CognitoCLIInputs = {
+    version: '1',
+    cognitoConfig: cliInputs,
   };
+
+  context.amplify.saveEnvResourceParameters(context, category, cognitoCLIInputs.cognitoConfig.resourceName, envSpecificParams);
+
+  // move this function outside of AddHandler
+  try {
+    const cliState = new AuthInputState(cognitoCLIInputs.cognitoConfig.resourceName);
+    // saving cli-inputs except secrets
+    await cliState.saveCLIInputPayload(cognitoCLIInputs);
+    // cdk transformation in this function
+    // start auth transform here
+    await generateAuthStackTemplate(context, cognitoCLIInputs.cognitoConfig.resourceName);
+    // remoe this when api and functions transform are done
+    await getResourceSynthesizer(context, requestWithDefaults);
+
+    getPostAddAuthMetaUpdater(context, { service: cognitoCLIInputs.cognitoConfig.serviceName, providerName: provider })(
+      cliInputs.resourceName,
+    );
+    getPostAddAuthMessagePrinter(cognitoCLIInputs.cognitoConfig.resourceName);
+
+    if (doesConfigurationIncludeSMS(request)) {
+      await printSMSSandboxWarning();
+    }
+  } catch (err) {
+    printer.info(err.stack);
+    printer.error('There was an error adding the auth resource');
+    context.usageData.emitError(err);
+    process.exitCode = 1;
+  }
+  return cognitoCLIInputs.cognitoConfig.resourceName;
+};
 
 export const getUpdateAuthHandler = (context: any) => async (request: ServiceQuestionHeadlessResult | CognitoConfiguration) => {
   const { defaultValuesFilename } = supportedServices[request.serviceName];

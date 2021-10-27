@@ -1,5 +1,5 @@
 import {
-  addApiWithoutSchema,
+  addApiWithSchema,
   amplifyPush,
   amplifyPushUpdate,
   createNewProjectDir,
@@ -26,8 +26,7 @@ describe('amplify searchable migration', () => {
     const nextSchema = 'migrations_searchable/updated_searchable.graphql';
     // init, add api and push with installed cli
     await initJSProjectWithProfile(projRoot, { name: projectName });
-    await addApiWithoutSchema(projRoot);
-    await updateApiSchema(projRoot, projectName, initialSchema);
+    await addApiWithSchema(projRoot, initialSchema);
     await amplifyPush(projRoot);
     // update and push with codebase cli
     updateApiSchema(projRoot, projectName, nextSchema);

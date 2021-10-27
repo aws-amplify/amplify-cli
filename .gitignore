@@ -1,5 +1,4 @@
 **/.DS_Store
-.circleci/generated_config.yml
 build
 node_modules
 out

@@ -8,8 +8,8 @@ describe('validates import auth headless request', () => {
   test.each([
     ['identityPoolId is supplied', 'validRequest.json'],
     ['identityPoolId is not supplied', 'validRequest.identityPoolId.missing.json'],
-  ])('with a resolved promise when a valid payload with %s', async (_, fileName: string) => {
-    const rawRequest = fs.readFileSync(path.join(importAuthAssetsRoot, fileName), 'utf8');
+  ])('with a resolved promise when a valid payload with %s', async () => {
+    const rawRequest = fs.readFileSync(path.join(importAuthAssetsRoot, 'validRequest.json'), 'utf8');
     const result = await validateImportAuthRequest(rawRequest);
     expect(result).toMatchSnapshot();
   });

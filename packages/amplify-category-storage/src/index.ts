@@ -1,25 +1,14 @@
-import { $TSAny, $TSContext, AmplifyCategories, AmplifySupportedService, IAmplifyResource } from 'amplify-cli-core';
-import {
-  validateAddStorageRequest,
-  validateImportStorageRequest,
-  validateRemoveStorageRequest,
-  validateUpdateStorageRequest,
-} from 'amplify-util-headless-input';
 import * as path from 'path';
 import sequential from 'promise-sequential';
 import { printer } from 'amplify-prompts';
 import { updateConfigOnEnvInit } from './provider-utils/awscloudformation';
+import { $TSContext, AmplifyCategories, IAmplifyResource, pathManager } from 'amplify-cli-core';
 import { DDBStackTransform } from './provider-utils/awscloudformation/cdk-stack-builder/ddb-stack-transform';
-import { transformS3ResourceStack } from './provider-utils/awscloudformation/cdk-stack-builder/s3-stack-transform';
 import { DynamoDBInputState } from './provider-utils/awscloudformation/service-walkthroughs/dynamoDB-input-state';
-import {
-  headlessAddStorage,
-  headlessImportStorage,
-  headlessRemoveStorage,
-  headlessUpdateStorage,
-} from './provider-utils/awscloudformation/storage-configuration-helpers';
-export { categoryName as category } from './constants';
+import { transformS3ResourceStack } from './provider-utils/awscloudformation/cdk-stack-builder/s3-stack-transform';
+import { AmplifySupportedService } from 'amplify-cli-core';
 export { AmplifyDDBResourceTemplate } from './provider-utils/awscloudformation/cdk-stack-builder/types';
+
 
 async function add(context: any, providerName: any, service: any) {
   const options = {
@@ -75,7 +64,7 @@ async function migrateStorageCategory(context: any) {
 }
 
 async function transformCategoryStack(context: $TSContext, resource: IAmplifyResource) {
-  if (resource.service === AmplifySupportedService.DYNAMODB) {
+  if (resource.service === AmplifySupportedService.DYNAMODB ) {
     if (canResourceBeTransformed(resource.resourceName)) {
       const stackGenerator = new DDBStackTransform(resource.resourceName);
       await stackGenerator.transform();
@@ -148,26 +137,7 @@ async function executeAmplifyCommand(context: any) {
   await commandModule.run(context);
 }
 
-export const executeAmplifyHeadlessCommand = async (context: $TSContext, headlessPayload: string) => {
-  switch (context.input.command) {
-    case 'add':
-      await headlessAddStorage(context, await validateAddStorageRequest(headlessPayload));
-      break;
-    case 'update':
-      await headlessUpdateStorage(context, await validateUpdateStorageRequest(headlessPayload));
-      break;
-    case 'remove':
-      await headlessRemoveStorage(context, await validateRemoveStorageRequest(headlessPayload));
-      break;
-    case 'import':
-      await headlessImportStorage(context, await validateImportStorageRequest(headlessPayload));
-      break;
-    default:
-      printer.error(`Headless mode for ${context.input.command} storage is not implemented yet`);
-  }
-};
-
-export async function handleAmplifyEvent(context: $TSContext, args: $TSAny) {
+async function handleAmplifyEvent(context: any, args: any) {
   printer.info(`${AmplifyCategories.STORAGE} handleAmplifyEvent to be implemented`);
   printer.info(`Received event args ${args}`);
 }

@@ -93,7 +93,7 @@ export class VelocityTemplate {
     const { jwt } = requestContext;
     const { iss: issuer, sub, 'cognito:username': cognitoUserName, username } = jwt || {};
 
-    const util = createUtil([], new Date(Date.now()), info, requestContext);
+    const util = createUtil([], new Date(Date.now()), info);
     const args = convertToJavaTypes(argument);
     // Identity is null for API Key
     let identity = null;

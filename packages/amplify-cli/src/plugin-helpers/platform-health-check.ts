@@ -16,7 +16,7 @@ const indent = '    ';
 
 export async function checkPlatformHealth(pluginPlatform: PluginPlatform): Promise<boolean> {
   const activePlugins = pluginPlatform.plugins;
-  const officialPlugins = getOfficialPlugins();
+  const officialPlugins: { [key: string]: PluginDescription | Array<PluginDescription> } = getOfficialPlugins();
   const missingOfficialPlugins: Array<PluginDescription> = [];
   const mismatchedOfficialPlugins: Array<PluginDescription> = [];
 
@@ -91,7 +91,7 @@ function isMatching(pluginDescription: PluginDescription, pluginInfo: PluginInfo
   return result;
 }
 
-export function getOfficialPlugins(): { [key: string]: PluginDescription | Array<PluginDescription> } {
+export function getOfficialPlugins() {
   const packageJsonFilePath = path.normalize(path.join(__dirname, '../../package.json'));
   const packageJson = JSONUtilities.readJson<$TSAny>(packageJsonFilePath);
   const { officialPlugins } = packageJson.amplify;
@@ -99,16 +99,13 @@ export function getOfficialPlugins(): { [key: string]: PluginDescription | Array
   const dependencies: { [key: string]: string } = packageJson.dependencies;
 
   Object.keys(officialPlugins).forEach((plugin: string) => {
-    const plugins = Array.isArray(officialPlugins[plugin]) ? officialPlugins[plugin] : [officialPlugins[plugin]];
-    plugins.forEach(officialPlugin => {
-      const { packageName } = officialPlugin;
-      if (dependencies[packageName]) {
-        const version = dependencies[packageName];
-        officialPlugin.packageVersion = version;
-      } else {
-        delete officialPlugin.packageVersion;
-      }
-    });
+    const { packageName } = officialPlugins[plugin];
+    if (dependencies[packageName]) {
+      const version = dependencies[packageName];
+      officialPlugins[plugin].packageVersion = version;
+    } else {
+      delete officialPlugins[plugin].packageVersion;
+    }
   });
 
   const coreVersion = packageJson.version;

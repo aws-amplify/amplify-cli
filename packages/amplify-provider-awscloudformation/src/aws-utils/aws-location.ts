@@ -21,16 +21,16 @@ const serviceRegionMap = {
   'ap-northeast-2': 'us-west-2',
   'eu-west-2': 'eu-west-1',
   'eu-west-3': 'eu-west-1',
-  'me-south-1': 'ap-southeast-1',
+  'me-south-1': 'ap-southeast-1'
 };
 
 export const getLocationSupportedRegion = (region: string): string => {
-  if (serviceRegionMap[region]) {
+    if (serviceRegionMap[region]) {
     return serviceRegionMap[region];
-  }
-  return defaultLocationRegion;
+    }
+    return defaultLocationRegion;
 };
 
 export const getLocationRegionMapping = (): $TSObject => {
-  return serviceRegionMap;
-};
+    return serviceRegionMap;
+}

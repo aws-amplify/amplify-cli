@@ -1,9 +1,8 @@
 import { create } from '../../../velocity/util/index';
 import { JavaMap } from '../../../velocity/value-mapper/map';
 import { GraphQLResolveInfo } from 'graphql';
+import { hasUncaughtExceptionCaptureCallback } from 'process';
 import { generalUtils } from '../../../velocity/util/general-utils';
-import { AppSyncGraphQLExecutionContext } from '../../../utils/graphql-runner';
-import { AmplifyAppSyncSimulatorAuthenticationType } from '../../../type-definition';
 
 const stubInfo = {
   fieldName: 'testFieldName',
@@ -48,13 +47,7 @@ const stubJavaMap: JavaMap = new JavaMap({ field1: 'field1Value', field2: 'field
 var util;
 
 beforeEach(() => {
-  const executionContext: AppSyncGraphQLExecutionContext = {
-    headers: { 'x-api-key': 'da-fake-key' },
-    requestAuthorizationMode: AmplifyAppSyncSimulatorAuthenticationType.API_KEY,
-    appsyncErrors: [],
-  };
-
-  util = create(undefined, undefined, mockInfo, executionContext);
+  util = create(undefined, undefined, mockInfo);
 });
 
 it('error_filterDataJavaMap', () => {

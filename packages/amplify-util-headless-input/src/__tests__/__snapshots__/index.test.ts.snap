@@ -11,19 +11,20 @@ Object {
     "permissions": Object {
       "auth": Array [
         "READ",
-        "CREATE_AND_UPDATE",
+        "CREATE",
+        "UPDATE",
       ],
       "groups": Object {
         "myUserGroup": Array [
-          "CREATE_AND_UPDATE",
+          "CREATE",
+          "UPDATE",
         ],
       },
       "guest": Array [
         "READ",
       ],
     },
-    "resourceName": "something",
-    "serviceName": "S3",
+    "serviceName": "s3",
   },
   "version": 1,
 }

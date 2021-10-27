@@ -17,7 +17,7 @@ type Comment {
 }
 
 type ModelCommentConnection {
-  items: [Comment!]!
+  items: [Comment]
   nextToken: String
 }
 
@@ -144,7 +144,7 @@ enum PRODUCT_TYPE {
 }
 
 type ModelCartItemConnection {
-  items: [CartItem!]!
+  items: [CartItem]
   nextToken: String
 }
 

@@ -26,7 +26,6 @@ export type GQLResourceManagerProps = {
   resourceMeta?: ResourceMeta;
   backendDir: string;
   cloudBackendDir: string;
-  rebuildAllTables?: boolean;
 };
 
 export type ResourceMeta = {
@@ -53,9 +52,8 @@ export class GraphQLResourceManager {
   private cloudBackendApiProjectRoot: string;
   private backendApiProjectRoot: string;
   private templateState: TemplateState;
-  private rebuildAllTables: boolean = false; // indicates that all underlying model tables should be rebuilt
 
-  public static createInstance = async (context: $TSContext, gqlResource: any, StackId: string, rebuildAllTables: boolean = false) => {
+  public static createInstance = async (context: $TSContext, gqlResource: any, StackId: string) => {
     try {
       const cred = await loadConfiguration(context);
       const cfn = new CloudFormation(cred);
@@ -67,7 +65,6 @@ export class GraphQLResourceManager {
         resourceMeta: { ...gqlResource, stackId: apiStack.StackResources[0].PhysicalResourceId },
         backendDir: pathManager.getBackendDirPath(),
         cloudBackendDir: pathManager.getCurrentCloudBackendDirPath(),
-        rebuildAllTables,
       });
     } catch (err) {
       throw err;
@@ -85,7 +82,6 @@ export class GraphQLResourceManager {
     this.backendApiProjectRoot = path.join(props.backendDir, GraphQLResourceManager.categoryName, this.resourceMeta.resourceName);
     this.cloudBackendApiProjectRoot = path.join(props.cloudBackendDir, GraphQLResourceManager.categoryName, this.resourceMeta.resourceName);
     this.templateState = new TemplateState();
-    this.rebuildAllTables = props.rebuildAllTables || false;
   }
 
   run = async (): Promise<DeploymentStep[]> => {
@@ -106,10 +102,7 @@ export class GraphQLResourceManager {
         throw err;
       }
     }
-    if (!this.rebuildAllTables) {
-      this.gsiManagement(gqlDiff.diff, gqlDiff.current, gqlDiff.next);
-    }
-    this.tableRecreationManagement(gqlDiff.current, gqlDiff.next);
+    this.gsiManagement(gqlDiff.diff, gqlDiff.current, gqlDiff.next);
     return await this.getDeploymentSteps();
   };
 
@@ -224,9 +217,9 @@ export class GraphQLResourceManager {
     });
 
     const tableWithGSIChanges = _.uniqBy(gsiChanges, diff => diff.path?.slice(0, 3).join('/')).map(gsiChange => {
-      const tableName = gsiChange.path[3] as string;
+      const tableName = gsiChange.path[3];
 
-      const stackName = gsiChange.path[1].split('.')[0] as string;
+      const stackName = gsiChange.path[1].split('.')[0];
 
       const currentTable = this.getTable(gsiChange, currentState);
       const nextTable = this.getTable(gsiChange, nextState);
@@ -273,44 +266,6 @@ export class GraphQLResourceManager {
     }
   };
 
-  private tableRecreationManagement = (currentState: DiffableProject, nextState: DiffableProject) => {
-    this.getTablesBeingReplaced().forEach(tableMeta => {
-      const ddbResource = this.getStack(tableMeta.stackName, currentState);
-      this.dropTable(tableMeta.tableName, ddbResource);
-      // clear any other states created by GSI updates as dropping and recreating supercedes those changes
-      this.clearTemplateState(tableMeta.stackName);
-      this.templateState.add(tableMeta.stackName, JSONUtilities.stringify(ddbResource));
-      this.templateState.add(tableMeta.stackName, JSONUtilities.stringify(this.getStack(tableMeta.stackName, nextState)));
-    });
-  };
-
-  getTablesBeingReplaced = () => {
-    const gqlDiff = getGQLDiff(this.backendApiProjectRoot, this.cloudBackendApiProjectRoot);
-    const [diffs, currentState] = [gqlDiff.diff, gqlDiff.current];
-    const getTablesRequiringReplacement = () => {
-      if (!diffs) {
-        return [];
-      }
-      return _.uniq(
-        diffs
-          .filter(diff => diff.path.includes('KeySchema') || diff.path.includes('LocalSecondaryIndexes')) // filter diffs with changes that require replacement
-          .map(diff => ({
-            // extract table name and stack name from diff path
-            tableName: diff.path?.[3] as string,
-            stackName: diff.path[1].split('.')[0] as string,
-          })),
-      ) as { tableName: string; stackName: string }[];
-    }
-    const getAllTables = () =>
-      Object.entries(currentState.stacks)
-        .map(([name, template]) => ({
-          tableName: this.getTableNameFromTemplate(template),
-          stackName: path.basename(name, '.json'),
-        }))
-        .filter(meta => !!meta.tableName);
-    return this.rebuildAllTables ? getAllTables() : getTablesRequiringReplacement();
-  };
-
   private getTable = (gsiChange: Diff<any, any>, proj: DiffableProject): DynamoDB.Table => {
     return proj.stacks[gsiChange.path[1]].Resources[gsiChange.path[3]] as DynamoDB.Table;
   };
@@ -328,21 +283,6 @@ export class GraphQLResourceManager {
     const table = template.Resources[tableName] as DynamoDB.Table;
     template.Resources[tableName] = removeGSI(indexName, table);
   };
-
-  private dropTable = (tableName: string, template: Template): void => {
-    // remove table and all output refs to it
-    template.Resources[tableName] = undefined;
-    template.Outputs = _.omitBy(template.Outputs, (_, key) => key.includes(tableName));
-  };
-
-  private clearTemplateState = (stackName: string) => {
-    while (this.templateState.has(stackName)) {
-      this.templateState.pop(stackName);
-    }
-  };
-
-  private getTableNameFromTemplate = (template: Template): string | undefined =>
-    Object.entries(template?.Resources || {}).find(([_, resource]) => resource.Type === 'AWS::DynamoDB::Table')?.[0];
 }
 
 // https://stackoverflow.com/questions/39419170/how-do-i-check-that-a-switch-block-is-exhaustive-in-typescript

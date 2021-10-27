@@ -4,7 +4,7 @@ import {
   deleteProject,
   initFlutterProjectWithProfile,
   initJSProjectWithProfile,
-  addApiWithoutSchema,
+  addApiWithSchema,
   updateApiSchema,
   updateApiWithMultiAuth,
   createNewProjectDir,
@@ -22,7 +22,6 @@ import {
   getBackendAmplifyMeta,
   amplifyPushUpdateForDependentModel,
   amplifyPushForce,
-  createRandomName,
 } from 'amplify-e2e-core';
 import path from 'path';
 import { existsSync } from 'fs';
@@ -31,10 +30,8 @@ import _ from 'lodash';
 
 describe('amplify add api (GraphQL)', () => {
   let projRoot: string;
-  let projFolderName: string;
   beforeEach(async () => {
-    projFolderName = 'graphqlapi';
-    projRoot = await createNewProjectDir(projFolderName);
+    projRoot = await createNewProjectDir('graphql-api');
   });
 
   afterEach(async () => {
@@ -47,10 +44,8 @@ describe('amplify add api (GraphQL)', () => {
 
   it('init a project and add the simple_model api', async () => {
     const envName = 'devtest';
-    const projName = 'simplemodel';
-    await initJSProjectWithProfile(projRoot, { name: projName, envName });
-    await addApiWithoutSchema(projRoot);
-    await updateApiSchema(projRoot, projName, 'simple_model.graphql');
+    await initJSProjectWithProfile(projRoot, { name: 'simplemodel', envName });
+    await addApiWithSchema(projRoot, 'simple_model.graphql');
     await amplifyPush(projRoot);
 
     const meta = getProjectMeta(projRoot);
@@ -79,10 +74,8 @@ describe('amplify add api (GraphQL)', () => {
 
   it('init a project then add and remove api', async () => {
     const envName = 'devtest';
-    const projName = 'simplemodel';
-    await initIosProjectWithProfile(projRoot, { name: projName, envName });
-    await addApiWithoutSchema(projRoot);
-    await updateApiSchema(projRoot, projName, 'simple_model.graphql');
+    await initIosProjectWithProfile(projRoot, { name: 'simplemodel', envName });
+    await addApiWithSchema(projRoot, 'simple_model.graphql');
     await amplifyPush(projRoot);
 
     let meta = getProjectMeta(projRoot);
@@ -105,10 +98,8 @@ describe('amplify add api (GraphQL)', () => {
 
   it('init a Flutter project and add the simple_model api', async () => {
     const envName = 'devtest';
-    const projName = 'simplemodel';
-    await initFlutterProjectWithProfile(projRoot, { name: projName, envName });
-    await addApiWithoutSchema(projRoot);
-    await updateApiSchema(projRoot, projName, 'simple_model.graphql');
+    await initFlutterProjectWithProfile(projRoot, { name: 'simplemodel', envName });
+    await addApiWithSchema(projRoot, 'simple_model.graphql');
     await amplifyPushWithoutCodegen(projRoot);
 
     const meta = getProjectMeta(projRoot);
@@ -141,8 +132,7 @@ describe('amplify add api (GraphQL)', () => {
     const initialSchema = 'initial_key_blog.graphql';
     const nextSchema = 'next_key_blog.graphql';
     await initJSProjectWithProfile(projRoot, { name: projectName });
-    await addApiWithoutSchema(projRoot);
-    await updateApiSchema(projRoot, projectName, initialSchema);
+    await addApiWithSchema(projRoot, initialSchema);
     await amplifyPush(projRoot);
     updateApiSchema(projRoot, projectName, nextSchema);
     await amplifyPushUpdate(projRoot);
@@ -155,15 +145,13 @@ describe('amplify add api (GraphQL)', () => {
   });
 
   it('init a project and add the simple_model api with multiple authorization providers', async () => {
-    const appName = createRandomName();
-    await initJSProjectWithProfile(projRoot, { name: appName });
-    await addApiWithoutSchema(projRoot);
-    await updateApiSchema(projRoot, appName, 'simple_model.graphql');
+    await initJSProjectWithProfile(projRoot, { name: 'simplemodelmultiauth' });
+    await addApiWithSchema(projRoot, 'simple_model.graphql');
     await updateApiWithMultiAuth(projRoot, {});
     await amplifyPush(projRoot);
 
     const meta = getProjectMeta(projRoot);
-    const { output } = meta.api[appName];
+    const { output } = meta.api.simplemodelmultiauth;
     const { GraphQLAPIIdOutput, GraphQLAPIEndpointOutput, GraphQLAPIKeyOutput } = output;
     const { graphqlApi } = await getAppSyncApi(GraphQLAPIIdOutput, meta.providers.awscloudformation.Region);
 
@@ -201,8 +189,7 @@ describe('amplify add api (GraphQL)', () => {
   it('init a project and add the simple_model api, match transformer version to current version', async () => {
     const name = `simplemodelv${TRANSFORM_CURRENT_VERSION}`;
     await initJSProjectWithProfile(projRoot, { name });
-    await addApiWithoutSchema(projRoot);
-    await updateApiSchema(projRoot, name, 'simple_model.graphql');
+    await addApiWithSchema(projRoot, 'simple_model.graphql');
     await amplifyPush(projRoot);
 
     const meta = getProjectMeta(projRoot);
@@ -230,8 +217,7 @@ describe('amplify add api (GraphQL)', () => {
     const initialSchema = 'two-model-schema.graphql';
     const fnName = `integtestfn${random}`;
     await initJSProjectWithProfile(projRoot, { name: projectName });
-    await addApiWithoutSchema(projRoot);
-    await updateApiSchema(projRoot, projectName, initialSchema);
+    await addApiWithSchema(projRoot, initialSchema);
     await addFunction(
       projRoot,
       {
@@ -249,7 +235,7 @@ describe('amplify add api (GraphQL)', () => {
     );
     await amplifyPush(projRoot);
     updateApiSchema(projRoot, projectName, nextSchema);
-    await amplifyPushUpdateForDependentModel(projRoot, undefined, true);
+    await amplifyPushUpdateForDependentModel(projRoot);
     const meta = getProjectMeta(projRoot);
     const region = meta.providers.awscloudformation.Region;
     const { output } = meta.api.blogapp;
@@ -278,8 +264,7 @@ describe('amplify add api (GraphQL)', () => {
   it('api force push with no changes', async () => {
     const projectName = `apinochange`;
     await initJSProjectWithProfile(projRoot, { name: projectName });
-    await addApiWithoutSchema(projRoot);
-    await updateApiSchema(projRoot, projectName, 'two-model-schema.graphql');
+    await addApiWithSchema(projRoot, 'two-model-schema.graphql');
     await amplifyPush(projRoot);
     let meta = getBackendAmplifyMeta(projRoot);
     const { lastPushDirHash: beforeDirHash } = meta.api[projectName];

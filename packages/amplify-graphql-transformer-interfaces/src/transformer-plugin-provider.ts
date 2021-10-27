@@ -25,7 +25,6 @@ export enum TransformerPluginType {
   DATA_SOURCE_PROVIDER = 'DATA_SOURCE_PROVIDER',
   DATA_SOURCE_ENHANCER = 'DATA_SOURCE_ENHANCER',
   GENERIC = 'GENERIC',
-  AUTH = 'AUTH',
 }
 export interface TransformerPluginProvider {
   pluginType: TransformerPluginType;

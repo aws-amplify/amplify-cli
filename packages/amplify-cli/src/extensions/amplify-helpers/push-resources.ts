@@ -4,16 +4,15 @@ import { onCategoryOutputsChange } from './on-category-outputs-change';
 import { initializeEnv } from '../../initialize-env';
 import { getProviderPlugins } from './get-provider-plugins';
 import { getEnvInfo } from './get-env-info';
-import { EnvironmentDoesNotExistError, exitOnNextTick, stateManager, $TSAny, $TSContext, IAmplifyResource } from 'amplify-cli-core';
-import { getResources } from '../../commands/build-override';
+import { EnvironmentDoesNotExistError, exitOnNextTick, stateManager, $TSAny, $TSContext, CustomPoliciesFormatError, IAmplifyResource  } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
+import { getResources } from '../../commands/build-override';
 
 export async function pushResources(
   context: $TSContext,
   category?: string,
   resourceName?: string,
   filteredResources?: { category: string; resourceName: string }[],
-  rebuild: boolean = false,
 ) {
   if (context.parameters.options['iterative-rollback']) {
     // validate --iterative-rollback with --force
@@ -59,14 +58,13 @@ export async function pushResources(
   const hasChanges = await showResourceTable(category, resourceName, filteredResources);
 
   // no changes detected
-  if (!hasChanges && !context.exeInfo.forcePush && !rebuild) {
+  if (!hasChanges && !context.exeInfo.forcePush) {
     context.print.info('\nNo changes detected');
 
     return context;
   }
 
-  // rebuild has an upstream confirmation prompt so no need to prompt again here
-  let continueToPush = (context.exeInfo && context.exeInfo.inputParams && context.exeInfo.inputParams.yes) || rebuild;
+  let continueToPush = context.exeInfo && context.exeInfo.inputParams && context.exeInfo.inputParams.yes;
 
   if (!continueToPush) {
     if (context.exeInfo.iterativeRollback) {
@@ -75,28 +73,20 @@ export async function pushResources(
     continueToPush = await context.amplify.confirmPrompt('Are you sure you want to continue?');
   }
 
-  let retryPush;
   if (continueToPush) {
-    do {
-      retryPush = false;
-      try {
-        // Get current-cloud-backend's amplify-meta
-        const currentAmplifyMeta = stateManager.getCurrentMeta();
+    try {
+      // Get current-cloud-backend's amplify-meta
+      const currentAmplifyMeta = stateManager.getCurrentMeta();
 
-        await providersPush(context, rebuild, category, resourceName, filteredResources);
-        await onCategoryOutputsChange(context, currentAmplifyMeta);
-      } catch (err) {
-        if (await isValidGraphQLAuthError(err.message)) {
-          retryPush = await handleValidGraphQLAuthError(context, err.message);
-        }
-        if (!retryPush) {
-          // Handle the errors and print them nicely for the user.
-          printer.blankLine();
-          printer.error(err.message);
-          throw err;
-        }
+      await providersPush(context, category, resourceName, filteredResources);
+      await onCategoryOutputsChange(context, currentAmplifyMeta);
+    } catch (err) {
+      // Handle the errors and print them nicely for the user.
+      if (!(err instanceof CustomPoliciesFormatError)) {
+        printer.error(`\n${err.message}`);
       }
-    } while (retryPush);
+      throw err;
+    }
   } else {
     // there's currently no other mechanism to stop the execution of the postPush workflow in this case, so exiting here
     exitOnNextTick(1);
@@ -105,68 +95,7 @@ export async function pushResources(
   return continueToPush;
 }
 
-async function isValidGraphQLAuthError(message: string) {
-  if (
-    message === `@auth directive with 'iam' provider found, but the project has no IAM authentication provider configured.` ||
-    message ===
-      `@auth directive with 'userPools' provider found, but the project has no Cognito User Pools authentication provider configured.` ||
-    message === `@auth directive with 'oidc' provider found, but the project has no OPENID_CONNECT authentication provider configured.` ||
-    message === `@auth directive with 'apiKey' provider found, but the project has no API Key authentication provider configured.` ||
-    message === `@auth directive with 'function' provider found, but the project has no Lambda authentication provider configured.`
-  ) {
-    return true;
-  }
-}
-
-async function handleValidGraphQLAuthError(context: $TSContext, message: string) {
-  if (message === `@auth directive with 'iam' provider found, but the project has no IAM authentication provider configured.`) {
-    await addGraphQLAuthRequirement(context, 'AWS_IAM');
-    return true;
-  } else if (!context?.parameters?.options?.yes) {
-    if (
-      message ===
-      `@auth directive with 'userPools' provider found, but the project has no Cognito User Pools authentication provider configured.`
-    ) {
-      await addGraphQLAuthRequirement(context, 'AMAZON_COGNITO_USER_POOLS');
-      return true;
-    } else if (
-      message === `@auth directive with 'oidc' provider found, but the project has no OPENID_CONNECT authentication provider configured.`
-    ) {
-      await addGraphQLAuthRequirement(context, 'OPENID_CONNECT');
-      return true;
-    } else if (
-      message === `@auth directive with 'apiKey' provider found, but the project has no API Key authentication provider configured.`
-    ) {
-      await addGraphQLAuthRequirement(context, 'API_KEY');
-      return true;
-    } else if (
-      message === `@auth directive with 'function' provider found, but the project has no Lambda authentication provider configured.`
-    ) {
-      await addGraphQLAuthRequirement(context, 'AWS_LAMBDA');
-      return true;
-    }
-  }
-  return false;
-}
-
-async function addGraphQLAuthRequirement(context, authType) {
-  return await context.amplify.invokePluginMethod(context, 'api', undefined, 'addGraphQLAuthorizationMode', [
-    context,
-    {
-      authType: authType,
-      printLeadText: true,
-      authSettings: undefined,
-    },
-  ]);
-}
-
-async function providersPush(
-  context: $TSContext,
-  rebuild: boolean = false,
-  category?: string,
-  resourceName?: string,
-  filteredResources?: { category: string; resourceName: string }[],
-) {
+async function providersPush(context: $TSContext, category, resourceName, filteredResources) {
   const { providers } = getProjectConfig();
   const providerPlugins = getProviderPlugins(context);
   const providerPromises: (() => Promise<$TSAny>)[] = [];
@@ -174,7 +103,7 @@ async function providersPush(
   for (const provider of providers) {
     const providerModule = require(providerPlugins[provider]);
     const resourceDefiniton = await context.amplify.getResourceStatus(category, resourceName, provider, filteredResources);
-    providerPromises.push(providerModule.pushResources(context, resourceDefiniton, rebuild));
+    providerPromises.push(providerModule.pushResources(context, resourceDefiniton));
   }
 
   await Promise.all(providerPromises);

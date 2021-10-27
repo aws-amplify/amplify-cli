@@ -261,7 +261,8 @@ export class AmplifyToolkit {
   }
 
   get showStatusTable(): any {
-    this._showStatusTable = this._showStatusTable || require(path.join(this._amplifyHelpersDirPath, 'resource-status')).showStatusTable;
+    this._showStatusTable =
+    this._showStatusTable || require(path.join(this._amplifyHelpersDirPath, 'resource-status')).showStatusTable;
     return this._showStatusTable;
   }
 

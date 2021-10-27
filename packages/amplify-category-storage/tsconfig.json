@@ -12,7 +12,6 @@
   ],
   "references": [
     { "path": "../amplify-cli-core" },
-    { "path": "../amplify-headless-interface" },
     { "path": "../amplify-prompts" },
     { "path": "../amplify-util-import" }
   ]

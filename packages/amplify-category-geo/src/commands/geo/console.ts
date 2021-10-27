@@ -9,7 +9,7 @@ export const name = 'console';
 
 export const run = async (context: $TSContext) => {
   const { amplify } = context;
-  const result: { service: string; providerName: string } = await amplify.serviceSelectionPrompt(context, category, supportedServices);
+  const result: {service: string, providerName: string} = await amplify.serviceSelectionPrompt(context, category, supportedServices);
 
   if (result.providerName !== provider) {
     printer.error(`Provider ${result.providerName} not configured for this category`);

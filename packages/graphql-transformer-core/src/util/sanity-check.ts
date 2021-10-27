@@ -1,11 +1,11 @@
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import _ from 'lodash';
-import { Template, ResourceBase } from 'cloudform-types';
+import { Template } from 'cloudform-types';
 import { JSONUtilities } from 'amplify-cli-core';
 import { diff as getDiffs, Diff as DeepDiff } from 'deep-diff';
 import { readFromPath } from './fileUtils';
-import { InvalidMigrationError, InvalidGSIMigrationError, DestructiveMigrationError } from '../errors';
+import { InvalidMigrationError, InvalidGSIMigrationError } from '../errors';
 import { TRANSFORM_CONFIG_FILE_NAME } from '..';
 
 type Diff = DeepDiff<DiffableProject, DiffableProject>;
@@ -73,29 +73,18 @@ export const sanityCheckDiffs = (
  * @param currentBuild The last deployed build.
  * @param nextBuild The next build.
  */
-export const getCantEditKeySchemaRule = (iterativeUpdatesEnabled: boolean = false) => {
-  const cantEditKeySchemaRule = (diff: Diff): void => {
-    if (diff.kind === 'E' && diff.path.length === 8 && diff.path[5] === 'KeySchema') {
-      // diff.path = [ "stacks", "Todo.json", "Resources", "TodoTable", "Properties", "KeySchema", 0, "AttributeName"]
-      const stackName = path.basename(diff.path[1], '.json');
-      const tableName = diff.path[3];
+export const cantEditKeySchemaRule = (diff: Diff): void => {
+  if (diff.kind === 'E' && diff.path.length === 8 && diff.path[5] === 'KeySchema') {
+    // diff.path = [ "stacks", "Todo.json", "Resources", "TodoTable", "Properties", "KeySchema", 0, "AttributeName"]
+    const stackName = path.basename(diff.path[1], '.json');
+    const tableName = diff.path[3];
 
-      if (iterativeUpdatesEnabled) {
-        throw new DestructiveMigrationError(
-          'Editing the primary key of a model requires replacement of the underlying DynamoDB table.',
-          [],
-          [tableName],
-        );
-      }
-
-      throw new InvalidMigrationError(
-        `Attempting to edit the key schema of the ${tableName} table in the ${stackName} stack. `,
-        'Adding a primary @key directive to an existing @model. ',
-        'Remove the @key directive or provide a name e.g @key(name: "ByStatus", fields: ["status"]).',
-      );
-    }
-  };
-  return cantEditKeySchemaRule;
+    throw new InvalidMigrationError(
+      `Attempting to edit the key schema of the ${tableName} table in the ${stackName} stack. `,
+      'Adding a primary @key directive to an existing @model. ',
+      'Remove the @key directive or provide a name e.g @key(name: "ByStatus", fields: ["status"]).',
+    );
+  }
 };
 
 /**
@@ -105,35 +94,24 @@ export const getCantEditKeySchemaRule = (iterativeUpdatesEnabled: boolean = fals
  * @param currentBuild The last deployed build.
  * @param nextBuild The next build.
  */
-export const getCantAddLSILaterRule = (iterativeUpdatesEnabled: boolean = false) => {
-  const cantAddLSILaterRule = (diff: Diff): void => {
-    if (
-      // When adding a LSI to a table that has 0 LSIs.
-      (diff.kind === 'N' && diff.path.length === 6 && diff.path[5] === 'LocalSecondaryIndexes') ||
-      // When adding a LSI to a table that already has at least one LSI.
-      (diff.kind === 'A' && diff.path.length === 6 && diff.path[5] === 'LocalSecondaryIndexes' && diff.item.kind === 'N')
-    ) {
-      // diff.path = [ "stacks", "Todo.json", "Resources", "TodoTable", "Properties", "LocalSecondaryIndexes" ]
-      const stackName = path.basename(diff.path[1], '.json');
-      const tableName = diff.path[3];
+export const cantAddLSILaterRule = (diff: Diff): void => {
+  if (
+    // When adding a LSI to a table that has 0 LSIs.
+    (diff.kind === 'N' && diff.path.length === 6 && diff.path[5] === 'LocalSecondaryIndexes') ||
+    // When adding a LSI to a table that already has at least one LSI.
+    (diff.kind === 'A' && diff.path.length === 6 && diff.path[5] === 'LocalSecondaryIndexes' && diff.item.kind === 'N')
+  ) {
+    // diff.path = [ "stacks", "Todo.json", "Resources", "TodoTable", "Properties", "LocalSecondaryIndexes" ]
+    const stackName = path.basename(diff.path[1], '.json');
+    const tableName = diff.path[3];
 
-      if (iterativeUpdatesEnabled) {
-        throw new DestructiveMigrationError(
-          'Adding an LSI to a model requires replacement of the underlying DynamoDB table.',
-          [],
-          [tableName],
-        );
-      }
-
-      throw new InvalidMigrationError(
-        `Attempting to add a local secondary index to the ${tableName} table in the ${stackName} stack. ` +
-          'Local secondary indexes must be created when the table is created.',
-        "Adding a @key directive where the first field in 'fields' is the same as the first field in the 'fields' of the primary @key.",
-        "Change the first field in 'fields' such that a global secondary index is created or delete and recreate the model.",
-      );
-    }
-  };
-  return cantAddLSILaterRule;
+    throw new InvalidMigrationError(
+      `Attempting to add a local secondary index to the ${tableName} table in the ${stackName} stack. ` +
+        'Local secondary indexes must be created when the table is created.',
+      "Adding a @key directive where the first field in 'fields' is the same as the first field in the 'fields' of the primary @key.",
+      "Change the first field in 'fields' such that a global secondary index is created or delete and recreate the model.",
+    );
+  }
 };
 
 /**
@@ -317,78 +295,65 @@ export const cantMutateMultipleGSIAtUpdateTimeRule = (diffs: Diff[], currentBuil
  * @param currentBuild The last deployed build.
  * @param nextBuild The next build.
  */
-export const getCantEditLSIKeySchemaRule = (iterativeUpdatesEnabled: boolean = false) => {
-  const cantEditLSIKeySchemaRule = (diff: Diff, currentBuild: DiffableProject, nextBuild: DiffableProject): void => {
-    if (
-      // ["stacks","Todo.json","Resources","TodoTable","Properties","LocalSecondaryIndexes",0,"KeySchema",0,"AttributeName"]
-      diff.kind === 'E' &&
-      diff.path.length === 10 &&
-      diff.path[5] === 'LocalSecondaryIndexes' &&
-      diff.path[7] === 'KeySchema'
-    ) {
-      // This error is symptomatic of a change to the GSI array but does not necessarily imply a breaking change.
-      const pathToGSIs = diff.path.slice(0, 6);
-      const oldIndexes = _.get(currentBuild, pathToGSIs);
-      const newIndexes = _.get(nextBuild, pathToGSIs);
-      const oldIndexesDiffable = _.keyBy(oldIndexes, 'IndexName');
-      const newIndexesDiffable = _.keyBy(newIndexes, 'IndexName');
-      const innerDiffs = getDiffs(oldIndexesDiffable, newIndexesDiffable) || [];
+export const cantEditLSIKeySchemaRule = (diff: Diff, currentBuild: DiffableProject, nextBuild: DiffableProject): void => {
+  if (
+    // ["stacks","Todo.json","Resources","TodoTable","Properties","LocalSecondaryIndexes",0,"KeySchema",0,"AttributeName"]
+    diff.kind === 'E' &&
+    diff.path.length === 10 &&
+    diff.path[5] === 'LocalSecondaryIndexes' &&
+    diff.path[7] === 'KeySchema'
+  ) {
+    // This error is symptomatic of a change to the GSI array but does not necessarily imply a breaking change.
+    const pathToGSIs = diff.path.slice(0, 6);
+    const oldIndexes = _.get(currentBuild, pathToGSIs);
+    const newIndexes = _.get(nextBuild, pathToGSIs);
+    const oldIndexesDiffable = _.keyBy(oldIndexes, 'IndexName');
+    const newIndexesDiffable = _.keyBy(newIndexes, 'IndexName');
+    const innerDiffs = getDiffs(oldIndexesDiffable, newIndexesDiffable) || [];
 
-      // We must look at this inner diff or else we could confuse a situation
-      // where the user adds a LSI to the beginning of the LocalSecondaryIndex list in CFN.
-      // We re-key the indexes list so we can determine if a change occurred to an index that
-      // already exists.
-      for (const innerDiff of innerDiffs) {
-        // path: ["AGSI","KeySchema",0,"AttributeName"]
-        if (innerDiff.kind === 'E' && innerDiff.path.length > 2 && innerDiff.path[1] === 'KeySchema') {
-          const indexName = innerDiff.path[0];
-          const stackName = path.basename(diff.path[1], '.json');
-          const tableName = diff.path[3];
+    // We must look at this inner diff or else we could confuse a situation
+    // where the user adds a LSI to the beginning of the LocalSecondaryIndex list in CFN.
+    // We re-key the indexes list so we can determine if a change occurred to an index that
+    // already exists.
+    for (const innerDiff of innerDiffs) {
+      // path: ["AGSI","KeySchema",0,"AttributeName"]
+      if (innerDiff.kind === 'E' && innerDiff.path.length > 2 && innerDiff.path[1] === 'KeySchema') {
+        const indexName = innerDiff.path[0];
+        const stackName = path.basename(diff.path[1], '.json');
+        const tableName = diff.path[3];
 
-          if (iterativeUpdatesEnabled) {
-            throw new DestructiveMigrationError('Editing an LSI requires replacement of the underlying DynamoDB table.', [], [tableName]);
-          }
-
-          throw new InvalidMigrationError(
-            `Attempting to edit the local secondary index ${indexName} on the ${tableName} table in the ${stackName} stack. `,
-            'The key schema of a local secondary index cannot be changed after being deployed.',
-            'When enabling new access patterns you should: 1. Add a new @key 2. run amplify push ' +
-              '3. Verify the new access pattern and remove the old @key.',
-          );
-        }
+        throw new InvalidMigrationError(
+          `Attempting to edit the local secondary index ${indexName} on the ${tableName} table in the ${stackName} stack. `,
+          'The key schema of a local secondary index cannot be changed after being deployed.',
+          'When enabling new access patterns you should: 1. Add a new @key 2. run amplify push ' +
+            '3. Verify the new access pattern and remove the old @key.',
+        );
       }
     }
-  };
-  return cantEditLSIKeySchemaRule;
+  }
 };
 
-export const getCantRemoveLSILater = (iterativeUpdatesEnabled: boolean = false) => {
-  const cantRemoveLSILater = (diff: Diff, currentBuild: DiffableProject, nextBuild: DiffableProject) => {
-    const throwError = (stackName: string, tableName: string): void => {
-      if (iterativeUpdatesEnabled) {
-        throw new DestructiveMigrationError('Removing an LSI requires replacement of the underlying DynamoDB table.', [], [tableName]);
-      }
-      throw new InvalidMigrationError(
-        `Attempting to remove a local secondary index on the ${tableName} table in the ${stackName} stack.`,
-        'A local secondary index cannot be removed after deployment.',
-        'In order to remove the local secondary index you need to delete or rename the table.',
-      );
-    };
-    // if removing more than one lsi
-    if (diff.kind === 'D' && diff.lhs && diff.path.length === 6 && diff.path[5] === 'LocalSecondaryIndexes') {
-      const tableName = diff.path[3];
-      const stackName = path.basename(diff.path[1], '.json');
-      throwError(stackName, tableName);
-    }
-    // if removing one lsi
-    if (diff.kind === 'A' && diff.item.kind === 'D' && diff.path.length === 6 && diff.path[5] === 'LocalSecondaryIndexes') {
-      const tableName = diff.path[3];
-      const stackName = path.basename(diff.path[1], '.json');
-      throwError(stackName, tableName);
-    }
+export function cantRemoveLSILater(diff: Diff, currentBuild: DiffableProject, nextBuild: DiffableProject) {
+  const throwError = (stackName: string, tableName: string): void => {
+    throw new InvalidMigrationError(
+      `Attempting to remove a local secondary index on the ${tableName} table in the ${stackName} stack.`,
+      'A local secondary index cannot be removed after deployment.',
+      'In order to remove the local secondary index you need to delete or rename the table.',
+    );
   };
-  return cantRemoveLSILater;
-};
+  // if removing more than one lsi
+  if (diff.kind === 'D' && diff.lhs && diff.path.length === 6 && diff.path[5] === 'LocalSecondaryIndexes') {
+    const tableName = diff.path[3];
+    const stackName = path.basename(diff.path[1], '.json');
+    throwError(stackName, tableName);
+  }
+  // if removing one lsi
+  if (diff.kind === 'A' && diff.item.kind === 'D' && diff.path.length === 6 && diff.path[5] === 'LocalSecondaryIndexes') {
+    const tableName = diff.path[3];
+    const stackName = path.basename(diff.path[1], '.json');
+    throwError(stackName, tableName);
+  }
+}
 
 export const cantHaveMoreThan500ResourcesRule = (diffs: Diff[], currentBuild: DiffableProject, nextBuild: DiffableProject): void => {
   const stackKeys = Object.keys(nextBuild.stacks);
@@ -405,25 +370,6 @@ export const cantHaveMoreThan500ResourcesRule = (diffs: Diff[], currentBuild: Di
           `${TRANSFORM_CONFIG_FILE_NAME} to fine tune how resources are assigned to stacks.`,
       );
     }
-  }
-};
-
-export const cantRemoveTableAfterCreation = (_: Diff, currentBuild: DiffableProject, nextBuild: DiffableProject): void => {
-  const getNestedStackLogicalIds = (proj: DiffableProject) =>
-    Object.entries(proj.root.Resources || [])
-      .filter(([_, meta]) => meta.Type === 'AWS::CloudFormation::Stack')
-      .map(([name]) => name);
-  const currentModels = getNestedStackLogicalIds(currentBuild);
-  const nextModels = getNestedStackLogicalIds(nextBuild);
-  const removedModels = currentModels
-    .filter(currModel => !nextModels.includes(currModel))
-    .filter(stackLogicalId => stackLogicalId !== 'ConnectionStack');
-  if (removedModels.length > 0) {
-    throw new DestructiveMigrationError(
-      'Removing a model from the GraphQL schema will also remove the underlying DynamoDB table.',
-      removedModels,
-      [],
-    );
   }
 };
 

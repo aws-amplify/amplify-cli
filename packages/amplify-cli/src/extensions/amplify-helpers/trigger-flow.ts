@@ -3,7 +3,7 @@ import chalk from 'chalk';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import _ from 'lodash';
-import { exitOnNextTick, JSONUtilities, $TSAny } from 'amplify-cli-core';
+import { JSONUtilities, $TSAny } from 'amplify-cli-core';
 import Separator from 'inquirer/lib/objects/separator';
 
 // keep in sync with ServiceName in amplify-category-function, but probably it will not change
@@ -193,12 +193,10 @@ export const updateTrigger = async triggerOptions => {
 
       await cleanFunctions(key, values, category, context, targetPath);
     }
-    context.print.success('Successfully updated the Cognito trigger locally');
+    context.print.success('Successfully updated the Lambda function locally');
     return null;
-  } catch (err: $TSAny) {
-    context.print.error(`Error updating the Cognito trigger: ${err.message}`);
-    await context.usageData.emitError(err);
-    exitOnNextTick(1);
+  } catch (e) {
+    throw new Error('Unable to update lambda function');
   }
 };
 

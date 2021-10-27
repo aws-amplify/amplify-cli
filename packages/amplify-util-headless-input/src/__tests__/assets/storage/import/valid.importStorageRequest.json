@@ -1,7 +1,0 @@
-{
-  "version": 1,
-  "serviceConfiguration": {
-    "serviceName": "S3",
-    "bucketName": "import-this-bucket"
-  }
-}

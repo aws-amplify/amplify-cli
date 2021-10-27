@@ -1,15 +1,8 @@
-import {
-  DirectiveWrapper,
-  IAM_AUTH_ROLE_PARAMETER,
-  IAM_UNAUTH_ROLE_PARAMETER,
-  MappingTemplate,
-  TransformerPluginBase,
-} from '@aws-amplify/graphql-transformer-core';
+import { DirectiveWrapper, MappingTemplate, TransformerPluginBase } from '@aws-amplify/graphql-transformer-core';
 import { TransformerContextProvider, TransformerSchemaVisitStepContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import * as lambda from '@aws-cdk/aws-lambda';
-import { AuthorizationType } from '@aws-cdk/aws-appsync';
 import * as cdk from '@aws-cdk/core';
-import { obj, str, ref, printBlock, compoundExpression, qref, raw, iff, Expression } from 'graphql-mapping-template';
+import { obj, str, ref, printBlock, compoundExpression, qref, raw, iff } from 'graphql-mapping-template';
 import { FunctionResourceIDs, ResolverResourceIDs, ResourceConstants } from 'graphql-transformer-common';
 import { DirectiveNode, ObjectTypeDefinitionNode, InterfaceTypeDefinitionNode, FieldDefinitionNode } from 'graphql';
 
@@ -99,8 +92,8 @@ export class FunctionTransformer extends TransformerPluginBase {
                   version: str('2018-05-29'),
                   operation: str('Invoke'),
                   payload: obj({
-                    typeName: ref('util.toJson($ctx.stash.get("typeName"))'),
-                    fieldName: ref('util.toJson($ctx.stash.get("fieldName"))'),
+                    typeName: ref('ctx.stash.get("typeName")'),
+                    fieldName: ref('ctx.stash.get("fieldName")'),
                     arguments: ref('util.toJson($ctx.arguments)'),
                     identity: ref('util.toJson($ctx.identity)'),
                     source: ref('util.toJson($ctx.source)'),
@@ -131,37 +124,20 @@ export class FunctionTransformer extends TransformerPluginBase {
         const resolverId = ResolverResourceIDs.ResolverResourceID(config.resolverTypeName, config.resolverFieldName);
         let resolver = createdResources.get(resolverId);
 
-        const requestTemplate: Array<Expression> = [
-          qref(`$ctx.stash.put("typeName", "${config.resolverTypeName}")`),
-          qref(`$ctx.stash.put("fieldName", "${config.resolverFieldName}")`),
-        ];
-        const authModes = [context.authConfig.defaultAuthentication, ...(context.authConfig.additionalAuthenticationProviders || [])].map(
-          mode => mode?.authenticationType,
-        );
-        if (authModes.includes(AuthorizationType.IAM)) {
-          const authRoleParameter = (context.stackManager.getParameter(IAM_AUTH_ROLE_PARAMETER) as cdk.CfnParameter).valueAsString;
-          const unauthRoleParameter = (context.stackManager.getParameter(IAM_UNAUTH_ROLE_PARAMETER) as cdk.CfnParameter).valueAsString;
-          requestTemplate.push(
-            qref(
-              `$ctx.stash.put("authRole", "arn:aws:sts::${
-                cdk.Stack.of(context.stackManager.rootStack).account
-              }:assumed-role/${authRoleParameter}/CognitoIdentityCredentials")`,
-            ),
-            qref(
-              `$ctx.stash.put("unauthRole", "arn:aws:sts::${
-                cdk.Stack.of(context.stackManager.rootStack).account
-              }:assumed-role/${unauthRoleParameter}/CognitoIdentityCredentials")`,
-            ),
-          );
-        }
-        requestTemplate.push(obj({}));
-
         if (resolver === undefined) {
-          // TODO: update function to use resolver manager
           resolver = context.api.host.addResolver(
             config.resolverTypeName,
             config.resolverFieldName,
-            MappingTemplate.inlineTemplateFromString(printBlock('Stash resolver specific context.')(compoundExpression(requestTemplate))),
+            MappingTemplate.s3MappingTemplateFromString(
+              printBlock('Stash resolver specific context.')(
+                compoundExpression([
+                  qref(`$ctx.stash.put("typeName", "${config.resolverTypeName}")`),
+                  qref(`$ctx.stash.put("fieldName", "${config.resolverFieldName}")`),
+                  obj({}),
+                ]),
+              ),
+              `${config.resolverTypeName}.${config.resolverFieldName}.req.vtl`,
+            ),
             MappingTemplate.s3MappingTemplateFromString(
               '$util.toJson($ctx.prev.result)',
               `${config.resolverTypeName}.${config.resolverFieldName}.res.vtl`,
@@ -170,6 +146,7 @@ export class FunctionTransformer extends TransformerPluginBase {
             [],
             stack,
           );
+
           createdResources.set(resolverId, resolver);
         }
 
@@ -182,7 +159,7 @@ export class FunctionTransformer extends TransformerPluginBase {
 function lambdaArnResource(env: cdk.CfnParameter, name: string, region?: string): string {
   const substitutions: { [key: string]: string } = {};
   if (name.includes('${env}')) {
-    substitutions.env = env as unknown as string;
+    substitutions.env = (env as unknown) as string;
   }
   return cdk.Fn.conditionIf(
     ResourceConstants.CONDITIONS.HasEnvironmentParameter,

@@ -7,8 +7,8 @@ Object {
   \\"version\\": \\"2018-05-29\\",
   \\"operation\\": \\"Invoke\\",
   \\"payload\\": {
-      \\"typeName\\": $util.toJson($ctx.stash.get(\\"typeName\\")),
-      \\"fieldName\\": $util.toJson($ctx.stash.get(\\"fieldName\\")),
+      \\"typeName\\": $ctx.stash.get(\\"typeName\\"),
+      \\"fieldName\\": $ctx.stash.get(\\"fieldName\\"),
       \\"arguments\\": $util.toJson($ctx.arguments),
       \\"identity\\": $util.toJson($ctx.identity),
       \\"source\\": $util.toJson($ctx.source),
@@ -23,6 +23,11 @@ Object {
 #end
 $util.toJson($ctx.result)
 ## [End] Handle error or return result. **",
+  "Query.echo.req.vtl": "## [Start] Stash resolver specific context.. **
+$util.qr($ctx.stash.put(\\"typeName\\", \\"Query\\"))
+$util.qr($ctx.stash.put(\\"fieldName\\", \\"echo\\"))
+{}
+## [End] Stash resolver specific context.. **",
   "Query.echo.res.vtl": "$util.toJson($ctx.prev.result)",
 }
 `;

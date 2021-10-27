@@ -14,7 +14,11 @@ import gql from 'graphql-tag';
 const providerName = 'awscloudformation';
 
 import {
+  addApiWithSchema,
+  addApiWithSchemaAndConflictDetection,
   addRestApi,
+  updateAPIWithResolutionStrategy,
+  apiUpdateToggleDataStore,
   addFunction,
   addSimpleDDB,
   checkIfBucketExists,
@@ -60,8 +64,15 @@ describe('amplify add api (REST)', () => {
     expect(meta.function).toBeDefined();
     let seenAtLeastOneFunc = false;
     for (let key of Object.keys(meta.function)) {
-      const { service, build, lastBuildTimeStamp, lastPackageTimeStamp, distZipFilename, lastPushTimeStamp, lastPushDirHash } =
-        meta.function[key];
+      const {
+        service,
+        build,
+        lastBuildTimeStamp,
+        lastPackageTimeStamp,
+        distZipFilename,
+        lastPushTimeStamp,
+        lastPushDirHash,
+      } = meta.function[key];
       expect(service).toBe('Lambda');
       expect(build).toBeTruthy();
       expect(lastBuildTimeStamp).toBeDefined();

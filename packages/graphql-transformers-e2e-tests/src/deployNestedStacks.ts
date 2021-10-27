@@ -3,8 +3,8 @@ import { CloudFormationClient } from './CloudFormationClient';
 import * as fs from 'fs';
 import * as path from 'path';
 import { DeploymentResources } from 'graphql-transformer-core/lib/DeploymentResources';
-import { deleteUserPool, deleteIdentityPool } from './cognitoUtils';
-import { CognitoIdentityServiceProvider, CognitoIdentity } from 'aws-sdk';
+import { deleteUserPool } from './cognitoUtils';
+import CognitoIdentityServiceProvider from 'aws-sdk/clients/cognitoidentityserviceprovider';
 import emptyBucket from './emptyBucket';
 
 function deleteDirectory(directory: string) {
@@ -178,7 +178,7 @@ export async function deploy(
 }
 
 function addAPIKeys(stack: DeploymentResources) {
-  if (stack.rootStack.Parameters.CreateAPIKey && !stack.rootStack.Resources.GraphQLAPIKey) {
+  if (!stack.rootStack.Resources.GraphQLAPIKey) {
     stack.rootStack.Resources.GraphQLAPIKey = {
       Type: 'AWS::AppSync::ApiKey',
       Properties: {
@@ -189,7 +189,7 @@ function addAPIKeys(stack: DeploymentResources) {
     };
   }
 
-  if (stack.rootStack.Parameters.CreateAPIKey && !stack.rootStack.Outputs.GraphQLAPIKeyOutput) {
+  if (!stack.rootStack.Outputs.GraphQLAPIKeyOutput) {
     stack.rootStack.Outputs.GraphQLAPIKeyOutput = {
       Value: {
         'Fn::GetAtt': ['GraphQLAPIKey', 'ApiKey'],
@@ -203,14 +203,9 @@ export const cleanupStackAfterTest = async (
   stackName: string,
   cf: CloudFormationClient,
   cognitoParams?: { cognitoClient: CognitoIdentityServiceProvider; userPoolId: string },
-  identityParams?: { identityClient: CognitoIdentity; identityPoolId: string },
 ) => {
   try {
     await cf.deleteStack(stackName);
-
-    if (identityParams) {
-      await deleteIdentityPool(identityParams.identityClient, identityParams.identityPoolId);
-    }
 
     if (cognitoParams) {
       await deleteUserPool(cognitoParams.cognitoClient, cognitoParams.userPoolId);

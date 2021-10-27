@@ -1,5 +1,6 @@
 name: Feature request
 description: Suggest an idea for the CLI
+labels: feature-request
 
 body:
   - type: markdown
@@ -11,7 +12,7 @@ body:
 
   - type: dropdown
     attributes:
-      label: Is this feature request related to a new or existing Amplify category?
+      label: Is this related to a new or existing Amplify category?
       description: Which categories does this request impact?
       multiple: true
       options:

@@ -1,2 +1,21 @@
 export { TransformerProjectConfig } from './project-config';
-export * from './transformer-config';
+export {
+  TransformConfig,
+  ConflictDetectionType,
+  ConflictHandlerType,
+  ResolverConfig,
+  SyncConfig,
+  SyncConfigLambda,
+  SyncConfigOptimistic,
+  SyncConfigServer,
+  LambdaConflictHandler,
+  AppSyncAuthConfiguration,
+  AppSyncAuthConfigurationAPIKeyEntry,
+  AppSyncAuthConfigurationEntry,
+  AppSyncAuthConfigurationIAMEntry,
+  ApiKeyConfig,
+  AppSyncAuthConfigurationOIDCEntry,
+  AppSyncAuthConfigurationUserPoolEntry,
+  AppSyncAuthMode,
+  UserPoolConfig,
+} from './transformer-config';

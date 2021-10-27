@@ -37,7 +37,6 @@ export { getLocationSupportedRegion, getLocationRegionMapping } from './aws-util
 import { updateEnv } from './update-env';
 
 import { uploadHooksDirectory } from './utils/hooks-manager';
-import { getTransformerVersion } from './transform-graphql-schema';
 
 export const cfnRootStackFileName = 'root-cloudformation-stack.json';
 export { storeRootStackTemplate } from './initializer';
@@ -65,8 +64,8 @@ function onInitSuccessful(context) {
   return initializer.onInitSuccessful(context);
 }
 
-function pushResources(context, resourceList, rebuild: boolean = false) {
-  return resourcePusher.run(context, resourceList, rebuild);
+function pushResources(context, resourceList) {
+  return resourcePusher.run(context, resourceList);
 }
 
 function storeCurrentCloudBackend(context) {
@@ -172,7 +171,6 @@ module.exports = {
   uploadHooksDirectory,
   getLocationSupportedRegion,
   getLocationRegionMapping,
-  getTransformerVersion,
   transformResourceWithOverrides,
   rootStackFileName,
 };

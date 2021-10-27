@@ -4,7 +4,7 @@ import {
   initJSProjectWithProfile,
   deleteProject,
   deleteProjectDir,
-  addApiWithoutSchema,
+  addApiWithSchema,
   addFeatureFlag,
   amplifyPush,
   updateApiSchema,
@@ -16,9 +16,7 @@ describe('Schema iterative update - create update and delete', () => {
 
   beforeAll(async () => {
     projectDir = await createNewProjectDir('schemaIterative');
-    await initJSProjectWithProfile(projectDir, {
-      name: 'iterativetest1',
-    });
+    await initJSProjectWithProfile(projectDir, {});
 
     addFeatureFlag(projectDir, 'graphqltransformer', 'enableiterativegsiupdates', true);
   });
@@ -30,8 +28,7 @@ describe('Schema iterative update - create update and delete', () => {
     const apiName = 'iterativetest1';
 
     const initialSchema = path.join('iterative-push', 'add-remove-and-update-key', 'initial-schema.graphql');
-    await addApiWithoutSchema(projectDir, { apiKeyExpirationDays: 7 });
-    await updateApiSchema(projectDir, apiName, initialSchema);
+    await addApiWithSchema(projectDir, initialSchema, { apiName, apiKeyExpirationDays: 7 });
     await amplifyPush(projectDir);
 
     const finalSchema = path.join('iterative-push', 'add-remove-and-update-key', 'final-schema.graphql');

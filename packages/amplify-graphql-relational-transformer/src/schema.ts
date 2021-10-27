@@ -65,7 +65,7 @@ function generateModelXConnectionType(
   let connectionTypeExtension = blankObjectExtension(tableXConnectionName);
 
   connectionTypeExtension = extensionWithFields(connectionTypeExtension, [
-    makeField('items', [], makeNonNullType(makeListType(makeNonNullType(makeNamedType(relatedType.name.value))))),
+    makeField('items', [], makeListType(makeNamedType(tableXConnectionName))),
   ]);
   connectionTypeExtension = extensionWithFields(connectionTypeExtension, [makeField('nextToken', [], makeNamedType('String'))]);
 

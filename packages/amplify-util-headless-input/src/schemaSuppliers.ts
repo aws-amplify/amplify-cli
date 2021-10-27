@@ -4,18 +4,6 @@ export const addStorageRequestSchemaSupplier: VersionedSchemaSupplier = version 
   return getSchema('AddStorageRequest', 'storage', version);
 };
 
-export const updateStorageRequestSchemaSupplier: VersionedSchemaSupplier = version => {
-  return getSchema('UpdateStorageRequest', 'storage', version);
-};
-
-export const importStorageRequestSchemaSupplier: VersionedSchemaSupplier = version => {
-  return getSchema('ImportStorageRequest', 'storage', version);
-};
-
-export const removeStorageRequestSchemaSupplier: VersionedSchemaSupplier = version => {
-  return getSchema('RemoveStorageRequest', 'storage', version);
-};
-
 export const addAuthRequestSchemaSupplier: VersionedSchemaSupplier = version => {
   return getSchema('AddAuthRequest', 'auth', version);
 };

@@ -42,7 +42,7 @@ enum ModelSortDirection {
 }
 
 type ModelPostConnection {
-  items: [Post!]!
+  items: [Post]
   nextToken: String
   startedAt: AWSTimestamp
 }
@@ -200,7 +200,7 @@ type Subscription {
 }
 
 type ModelPostEditorConnection {
-  items: [PostEditor!]!
+  items: [PostEditor]
   nextToken: String
   startedAt: AWSTimestamp
 }
@@ -242,7 +242,7 @@ input ModelPostEditorConditionInput {
 }
 
 type ModelUserConnection {
-  items: [User!]!
+  items: [User]
   nextToken: String
   startedAt: AWSTimestamp
 }
@@ -324,7 +324,7 @@ enum ModelSortDirection {
 }
 
 type ModelPostConnection {
-  items: [Post!]!
+  items: [Post]
   nextToken: String
 }
 
@@ -499,7 +499,7 @@ input ModelPostEditorConditionInput {
 }
 
 type ModelUserConnection {
-  items: [User!]!
+  items: [User]
   nextToken: String
 }
 
@@ -543,7 +543,7 @@ input ModelIDKeyConditionInput {
 }
 
 type ModelPostEditorConnection {
-  items: [PostEditor!]!
+  items: [PostEditor]
   nextToken: String
 }
 

@@ -327,15 +327,9 @@ export class DeploymentManager {
 
     try {
       const response = await this.ddbClient.describeTable({ TableName: tableName }).promise();
-      if (response.Table?.TableStatus === 'DELETING') {
-        return false;
-      }
       const gsis = response.Table?.GlobalSecondaryIndexes;
       return gsis ? gsis.every(idx => idx.IndexStatus === 'ACTIVE') : true;
     } catch (err) {
-      if (err?.code === 'ResourceNotFoundException') {
-        return true; // in the case of an iterative update that recreates a table, non-existance means the table has been fully removed
-      }
       this.logger('getTableStatus', [{ tableName }])(err);
       throw err;
     }

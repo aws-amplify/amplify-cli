@@ -297,10 +297,10 @@ export function getProfileCredentials(profileName: string) {
 
 function validateCredentials(credentials: $TSAny, profileName: string) {
   const missingKeys = [];
-  if (!credentials?.accessKeyId && !process.env.AWS_ACCESS_KEY_ID) {
+  if (!credentials?.accessKeyId) {
     missingKeys.push('aws_access_key_id');
   }
-  if (!credentials?.secretAccessKey && !process.env.AWS_SECRET_ACCESS_KEY) {
+  if (!credentials?.secretAccessKey) {
     missingKeys.push('aws_secret_access_key');
   }
   if (missingKeys.length > 0) {

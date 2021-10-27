@@ -30,7 +30,6 @@ const authConfigToAppSyncAuthTypeMap: Record<string, (authConfig: any) => AppSyn
   API_KEY: authConfig => ({
     mode: 'API_KEY',
     expirationTime: authConfig.apiKeyConfig.apiKeyExpirationDays,
-    apiKeyExpirationDate: authConfig.apiKeyConfig?.apiKeyExpirationDate,
     keyDescription: authConfig.apiKeyConfig.description,
   }),
   AWS_IAM: () => ({
@@ -55,7 +54,6 @@ const appSyncAuthTypeToAuthConfigMap: Record<string, (authType: AppSyncAuthType)
     authenticationType: 'API_KEY',
     apiKeyConfig: {
       apiKeyExpirationDays: authType.expirationTime,
-      apiKeyExpirationDate: authType?.apiKeyExpirationDate,
       description: authType.keyDescription,
     },
   }),

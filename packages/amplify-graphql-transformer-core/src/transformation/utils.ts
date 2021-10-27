@@ -171,7 +171,6 @@ export function sortTransformerPlugins(plugins: TransformerPluginProvider[]): Tr
     TransformerPluginType.DATA_SOURCE_PROVIDER,
     TransformerPluginType.DATA_SOURCE_ENHANCER,
     TransformerPluginType.GENERIC,
-    TransformerPluginType.AUTH,
   ];
   return plugins.sort((a, b) => {
     const aIdx = SORT_ORDER.indexOf(a.pluginType);

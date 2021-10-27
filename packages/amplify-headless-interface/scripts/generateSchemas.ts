@@ -24,29 +24,14 @@ const typeDefs: TypeDef[] = [
     relativeSourcePaths: [path.join('api', 'add.ts')],
   },
   {
-    typeName: 'UpdateApiRequest',
-    category: 'api',
-    relativeSourcePaths: ['add.ts', 'update.ts'].map(file => path.join('api', file)),
-  },
-  {
     typeName: 'AddStorageRequest',
     category: 'storage',
     relativeSourcePaths: [path.join('storage', 'add.ts')],
   },
   {
-    typeName: 'UpdateStorageRequest',
-    category: 'storage',
-    relativeSourcePaths: [path.join('storage', 'update.ts')],
-  },
-  {
-    typeName: 'ImportStorageRequest',
-    category: 'storage',
-    relativeSourcePaths: [path.join('storage', 'import.ts')],
-  },
-  {
-    typeName: 'RemoveStorageRequest',
-    category: 'storage',
-    relativeSourcePaths: [path.join('storage', 'remove.ts')],
+    typeName: 'UpdateApiRequest',
+    category: 'api',
+    relativeSourcePaths: ['add.ts', 'update.ts'].map(file => path.join('api', file)),
   },
 ];
 
@@ -72,7 +57,7 @@ typeDefs.forEach(typeDef => {
     return;
   }
   fs.ensureFileSync(schemaFilePath);
-  fs.writeFileSync(schemaFilePath, JSON.stringify(typeSchema, undefined, 4) + '\n');
+  fs.writeFileSync(schemaFilePath, JSON.stringify(typeSchema, undefined, 4));
   console.log(`Schema version ${version} written for type ${typeDef.typeName}.`);
 });
 

@@ -12,7 +12,7 @@ import {
 } from 'aws-sdk/clients/cognitoidentityserviceprovider';
 import { ResourceConstants } from 'graphql-transformer-common';
 import { IAM as cfnIAM, Cognito as cfnCognito } from 'cloudform-types';
-import { CognitoIdentityServiceProvider as CognitoClient, CognitoIdentity } from 'aws-sdk';
+import { default as CognitoClient } from 'aws-sdk/clients/cognitoidentityserviceprovider';
 import TestStorage from './TestStorage';
 import DeploymentResources from 'graphql-transformer-core/lib/DeploymentResources';
 
@@ -100,37 +100,6 @@ export async function addUserToGroup(groupName: string, username: string, userPo
   });
 }
 
-export async function createIdentityPool(
-  client: CognitoIdentity,
-  identityPoolName: string,
-  params: { authRoleArn: string; unauthRoleArn: string; providerName: string; clientId: string },
-): Promise<string> {
-  const idPool = await client
-    .createIdentityPool({
-      IdentityPoolName: identityPoolName,
-      AllowUnauthenticatedIdentities: true,
-      CognitoIdentityProviders: [
-        {
-          ProviderName: params.providerName,
-          ClientId: params.clientId,
-        },
-      ],
-    })
-    .promise();
-
-  await client
-    .setIdentityPoolRoles({
-      IdentityPoolId: idPool.IdentityPoolId,
-      Roles: {
-        authenticated: params.authRoleArn,
-        unauthenticated: params.unauthRoleArn,
-      },
-    })
-    .promise();
-
-  return idPool.IdentityPoolId;
-}
-
 export async function createUserPool(client: CognitoClient, userPoolName: string): Promise<CreateUserPoolResponse> {
   return new Promise((res, rej) => {
     const params: CreateUserPoolRequest = {
@@ -164,14 +133,6 @@ export async function deleteUserPool(client: CognitoClient, userPoolId: string):
     };
     client.deleteUserPool(params, (err, data) => (err ? rej(err) : res(data)));
   });
-}
-
-export async function deleteIdentityPool(client: CognitoIdentity, identityPoolId: string) {
-  await client
-    .deleteIdentityPool({
-      IdentityPoolId: identityPoolId,
-    })
-    .promise();
 }
 
 export async function createUserPoolClient(

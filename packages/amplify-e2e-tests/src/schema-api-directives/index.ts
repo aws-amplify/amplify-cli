@@ -13,7 +13,7 @@ import { runFunctionTest } from './functionTester';
 // to deal with subscriptions in node env
 (global as any).WebSocket = require('ws');
 
-export async function testSchema(projectDir: string, directive: string, section: string, appName?: string): Promise<boolean> {
+export async function testSchema(projectDir: string, directive: string, section: string): Promise<boolean> {
   let testModule;
 
   const testFilePath = path.join(__dirname, 'tests', `${directive}-${section}.ts`);
@@ -29,7 +29,7 @@ export async function testSchema(projectDir: string, directive: string, section:
 
   try {
     if (testModule.runTest) {
-      await testModule.runTest(projectDir, testModule, appName);
+      await testModule.runTest(projectDir, testModule);
     } else {
       switch (directive) {
         case 'auth':

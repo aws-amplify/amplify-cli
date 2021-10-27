@@ -14,7 +14,7 @@ enum ModelSortDirection {
 }
 
 type ModelPostConnection {
-  items: [Post!]!
+  items: [Post]
   nextToken: String
 }
 
@@ -224,7 +224,7 @@ enum ModelSortDirection {
 }
 
 type ModelPostConnection {
-  items: [Post!]!
+  items: [Post]
   nextToken: String
 }
 
@@ -538,7 +538,7 @@ enum ModelSortDirection {
 }
 
 type ModelPostConnection {
-  items: [Post!]!
+  items: [Post]
   nextToken: String
 }
 
@@ -855,7 +855,7 @@ enum ModelSortDirection {
 }
 
 type ModelPostConnection {
-  items: [Post!]!
+  items: [Post]
   nextToken: String
 }
 
@@ -1164,7 +1164,7 @@ enum ModelSortDirection {
 }
 
 type ModelEntityConnection {
-  items: [Entity!]!
+  items: [Entity]
   nextToken: String
 }
 
@@ -1283,7 +1283,7 @@ enum ModelSortDirection {
 }
 
 type ModelPostConnection {
-  items: [Post!]!
+  items: [Post]
   nextToken: String
 }
 
@@ -1593,7 +1593,7 @@ enum ModelSortDirection {
 }
 
 type ModelPostConnection {
-  items: [Post!]!
+  items: [Post]
   nextToken: String
 }
 
@@ -1703,7 +1703,7 @@ enum ModelSortDirection {
 }
 
 type ModelPostConnection {
-  items: [Post!]!
+  items: [Post]
   nextToken: String
 }
 

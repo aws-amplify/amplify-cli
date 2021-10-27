@@ -32,7 +32,6 @@ import {
   makeValueNode,
   withNamedNodeNamed,
   isListType,
-  makeNonNullType,
 } from 'graphql-transformer-common';
 import { TransformerContext } from 'graphql-transformer-core';
 import { getCreatedAtFieldName, getUpdatedAtFieldName } from './ModelDirectiveArgs';
@@ -738,9 +737,7 @@ export function makeAttributeTypeEnum(): EnumTypeDefinitionNode {
 export function makeModelConnectionType(typeName: string, isSync: Boolean = false): ObjectTypeExtensionNode {
   const connectionName = ModelResourceIDs.ModelConnectionTypeName(typeName);
   let connectionTypeExtension = blankObjectExtension(connectionName);
-  connectionTypeExtension = extensionWithFields(connectionTypeExtension, [
-    makeField('items', [], makeNonNullType(makeListType(makeNonNullType(makeNamedType(typeName))))),
-  ]);
+  connectionTypeExtension = extensionWithFields(connectionTypeExtension, [makeField('items', [], makeListType(makeNamedType(typeName)))]);
   connectionTypeExtension = extensionWithFields(connectionTypeExtension, [makeField('nextToken', [], makeNamedType('String'))]);
   if (isSync) {
     connectionTypeExtension = extensionWithFields(connectionTypeExtension, [makeField('startedAt', [], makeNamedType('AWSTimestamp'))]);

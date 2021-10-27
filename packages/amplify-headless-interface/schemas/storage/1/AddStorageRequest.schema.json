@@ -1,5 +1,5 @@
 {
-    "description": "Service configuration for adding AWS S3 through Amplify",
+    "description": "Headless mode for add storage is not yet implemented.\nThis interface is subject to change and should not be used.",
     "type": "object",
     "properties": {
         "version": {
@@ -9,7 +9,7 @@
             ]
         },
         "serviceConfiguration": {
-            "$ref": "#/definitions/AddS3ServiceConfiguration"
+            "$ref": "#/definitions/S3ServiceConfiguration"
         }
     },
     "required": [
@@ -17,35 +17,32 @@
         "version"
     ],
     "definitions": {
-        "AddS3ServiceConfiguration": {
+        "S3ServiceConfiguration": {
             "description": "Service configuration for AWS S3 through Amplify",
             "type": "object",
             "properties": {
+                "serviceName": {
+                    "description": "Descriminant used to determine the service config type",
+                    "type": "string",
+                    "enum": [
+                        "s3"
+                    ]
+                },
                 "permissions": {
                     "$ref": "#/definitions/S3Permissions",
                     "description": "The permissions that should be applied to the bucket"
                 },
-                "resourceName": {
-                    "description": "Amplify resource name",
-                    "type": "string"
-                },
                 "bucketName": {
-                    "description": "Globally unique bucket name - bucket names must be lowercase",
+                    "description": "Globally unique bucket name",
                     "type": "string"
                 },
                 "lambdaTrigger": {
                     "$ref": "#/definitions/LambdaTriggerConfig",
                     "description": "Optional parameter specifying a lambda that should run when the bucket is modified"
-                },
-                "serviceName": {
-                    "description": "Descriminant used to determine the service config type",
-                    "type": "string",
-                    "enum": [
-                        "S3"
-                    ]
                 }
             },
             "required": [
+                "bucketName",
                 "permissions",
                 "serviceName"
             ]
@@ -59,9 +56,10 @@
                     "type": "array",
                     "items": {
                         "enum": [
-                            "CREATE_AND_UPDATE",
+                            "CREATE",
                             "DELETE",
-                            "READ"
+                            "READ",
+                            "UPDATE"
                         ],
                         "type": "string"
                     }
@@ -71,9 +69,10 @@
                     "type": "array",
                     "items": {
                         "enum": [
-                            "CREATE_AND_UPDATE",
+                            "CREATE",
                             "DELETE",
-                            "READ"
+                            "READ",
+                            "UPDATE"
                         ],
                         "type": "string"
                     }
@@ -94,9 +93,10 @@
                 "type": "array",
                 "items": {
                     "enum": [
-                        "CREATE_AND_UPDATE",
+                        "CREATE",
                         "DELETE",
-                        "READ"
+                        "READ",
+                        "UPDATE"
                     ],
                     "type": "string"
                 }

@@ -63,12 +63,12 @@ const createEntries = async () => {
   await waitForESPropagate();
 };
 
-const waitForESPropagate = async (initialWaitSeconds = 5, maxRetryCount = 5) => {
+const waitForESPropagate = async (initialWaitSeconds = 5, maxRetryCount = 5 ) => {
   const expectedCount = 8;
   let waitInMilliseconds = initialWaitSeconds * 1000;
   let currentRetryCount = 0;
   let searchResponse;
-
+  
   do {
     await new Promise(r => setTimeout(r, waitInMilliseconds));
     searchResponse = await GRAPHQL_CLIENT.query(
@@ -84,7 +84,7 @@ const waitForESPropagate = async (initialWaitSeconds = 5, maxRetryCount = 5) => 
     currentRetryCount += 1;
     waitInMilliseconds = waitInMilliseconds * 2;
   } while (searchResponse.data.searchPosts?.items?.length < expectedCount && currentRetryCount <= maxRetryCount);
-};
+}
 
 beforeAll(async () => {
   const validSchema = `
@@ -109,7 +109,6 @@ beforeAll(async () => {
   const transformer = new GraphQLTransform({
     featureFlags,
     transformers: [new ModelTransformer(), new SearchableModelTransformer()],
-    sandboxModeEnabled: true,
   });
   try {
     await awsS3Client.createBucket({ Bucket: BUCKET_NAME }).promise();
@@ -159,7 +158,7 @@ test('query for aggregate scalar results', async () => {
       searchPosts(aggregates: [{
         name: "Minimum",
         type: min,
-        field: ups
+        field: "ups"
       }]) {
         aggregateItems {
           name
@@ -185,7 +184,7 @@ test('query for aggregate bucket results', async () => {
       searchPosts(aggregates: [{
         name: "Terms",
         type: terms,
-        field: title
+        field: "title"
       }]) {
         aggregateItems {
           name
@@ -214,12 +213,12 @@ test('query for multiple aggregates', async () => {
       searchPosts(aggregates: [{
         name: "Minimum",
         type: min,
-        field: ups
+        field: "ups"
       },
       {
         name: "Terms",
         type: terms,
-        field: title
+        field: "title"
       }]) {
         aggregateItems {
           name

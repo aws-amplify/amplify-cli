@@ -130,7 +130,6 @@ export type AppSyncAuthType =
 export interface AppSyncAPIKeyAuthType {
   mode: 'API_KEY';
   expirationTime?: number;
-  apiKeyExpirationDate?: Date;
   keyDescription?: string;
 }
 

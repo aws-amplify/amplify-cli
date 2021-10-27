@@ -1,5 +1,4 @@
 import { GraphQLError } from 'graphql';
-import * as os from 'os';
 
 export class InvalidTransformerError extends Error {
   constructor(message: string) {
@@ -42,37 +41,23 @@ export class TransformerContractError extends Error {
   }
 }
 
-export class DestructiveMigrationError extends Error {
-  constructor(message: string, private removedModels: string[], private replacedModels: string[]) {
-    super(message);
-    Object.setPrototypeOf(this, new.target.prototype);
-    this.name = 'DestructiveMigrationError';
-    const prependSpace = (str: string) => ` ${str}`;
-    const removedModelsList = this.removedModels.map(prependSpace).toString().trim();
-    const replacedModelsList = this.replacedModels.map(prependSpace).toString().trim();
-    if (removedModelsList && replacedModelsList) {
-      this.message = `${this.message}${os.EOL}This update will remove table(s) [${removedModelsList}] and will replace table(s) [${replacedModelsList}]`;
-    } else if (removedModelsList) {
-      this.message = `${this.message}${os.EOL}This update will remove table(s) [${removedModelsList}]`;
-    } else if (replacedModelsList) {
-      this.message = `${this.message}${os.EOL}This update will replace table(s) [${replacedModelsList}]`;
-    }
-    this.message = `${this.message}${os.EOL}ALL EXISTING DATA IN THESE TABLES WILL BE LOST!${os.EOL}If this is intended, rerun the command with '--allow-destructive-graphql-schema-updates'.`;
-  }
-  toString = () => this.message;
-}
-
 /**
  * Thrown by the sanity checker when a user is trying to make a migration that is known to not work.
  */
 export class InvalidMigrationError extends Error {
-  constructor(message: string, public cause: string, public fix: string) {
+  fix: string;
+  cause: string;
+  constructor(message: string, cause: string, fix: string) {
     super(message);
-    Object.setPrototypeOf(this, new.target.prototype);
+    Object.setPrototypeOf(this, InvalidMigrationError.prototype);
     this.name = 'InvalidMigrationError';
+    this.fix = fix;
+    this.cause = cause;
   }
-  toString = () => `${this.message}\nCause: ${this.cause}\nHow to fix: ${this.fix}`;
 }
+InvalidMigrationError.prototype.toString = function() {
+  return `${this.message}\nCause: ${this.cause}\nHow to fix: ${this.fix}`;
+};
 
 export class InvalidGSIMigrationError extends InvalidMigrationError {
   fix: string;

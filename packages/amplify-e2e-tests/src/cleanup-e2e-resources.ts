@@ -452,13 +452,7 @@ export const cleanup = async () => {
   }
   const amplifyApps: AmplifyAppInfo[] = [];
   const stacks: StackInfo[] = [];
-  const stsRes = new aws.STS({
-    apiVersion: '2011-06-15',
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-    sessionToken: process.env.AWS_SESSION_TOKEN,
-  });
-  const parentAccountIdentity = await stsRes.getCallerIdentity().promise();
+
   const orgApi = new aws.Organizations({
     apiVersion: '2016-11-28',
     // the region where the organization exists
@@ -467,17 +461,14 @@ export const cleanup = async () => {
   let accs;
   try {
     accs = await orgApi.listAccounts().promise();
-    accs = accs.Accounts.map(async account => {
-      if (account.Id === parentAccountIdentity.Account) {
-        return {
-          accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-          secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-          sessionToken: process.env.AWS_SESSION_TOKEN,
-        };
-      }
-
+    accs = accs.map(async account => {
       const randomNumber = Math.floor(Math.random() * 100000);
-      const assumeRoleRes = await stsRes
+      const assumeRoleRes = await new aws.STS({
+        apiVersion: '2011-06-15',
+        accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+        sessionToken: process.env.AWS_SESSION_TOKEN,
+      })
         .assumeRole({
           RoleArn: `arn:aws:iam::${account.Id}:role/OrganizationAccountAccessRole`,
           RoleSessionName: `testSession${randomNumber}`,
@@ -494,7 +485,7 @@ export const cleanup = async () => {
     accs = await Promise.all(accs);
   } catch (e) {
     console.error(e);
-    console.log('Error assuming child account role. This could be because the script is already running from within a child account. Running on current AWS account only.');
+    console.log('Error assuming role in child account. Using parent AWS account.');
     accs = [
       {
         accessKeyId: process.env.AWS_ACCESS_KEY_ID,

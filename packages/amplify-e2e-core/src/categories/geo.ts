@@ -1,18 +1,18 @@
 import { getCLIPath, nspawn as spawn, KEY_DOWN_ARROW, generateRandomShortId } from '..';
 
 export type GeoConfig = {
-  isFirstGeoResource?: boolean;
-  isAdditional?: boolean;
-  isDefault?: boolean;
-  resourceName?: string;
-};
+  isFirstGeoResource?: boolean
+  isAdditional?: boolean
+  isDefault?: boolean
+  resourceName?: string
+}
 
 const defaultGeoConfig: GeoConfig = {
   isFirstGeoResource: false,
   isAdditional: false,
   isDefault: true,
-  resourceName: '\r',
-};
+  resourceName: '\r'
+}
 
 const defaultSearchIndexQuestion = `Set this search index as the default? It will be used in Amplify search index API calls if no explicit reference is provided.`;
 const defaultMapQuestion = `Set this Map as the default? It will be used in Amplify Map API calls if no explicit reference is provided.`;
@@ -33,14 +33,15 @@ export function addMapWithDefault(cwd: string, settings: GeoConfig = {}): Promis
       .sendCarriageReturn();
 
     if (config.isFirstGeoResource === true) {
-      chain.wait('Are you tracking commercial assets for your business in your app?').sendCarriageReturn();
+      chain.wait('Are you tracking commercial assets for your business in your app?')
+      .sendCarriageReturn();
       chain.wait('Successfully set RequestBasedUsage pricing plan for your Geo resources.');
     }
 
     chain.wait('Do you want to configure advanced settings?').sendConfirmNo();
 
     if (config.isAdditional === true) {
-      chain.wait(defaultMapQuestion);
+      chain.wait(defaultMapQuestion)
       if (config.isDefault === true) {
         chain.sendConfirmYes();
       } else {
@@ -53,7 +54,7 @@ export function addMapWithDefault(cwd: string, settings: GeoConfig = {}): Promis
       } else {
         reject();
       }
-    });
+    })
   });
 }
 
@@ -74,26 +75,28 @@ export function addPlaceIndexWithDefault(cwd: string, settings: GeoConfig = {}):
       .sendCarriageReturn();
 
     if (config.isFirstGeoResource === true) {
-      chain.wait('Are you tracking commercial assets for your business in your app?').sendConfirmNo();
+      chain.wait('Are you tracking commercial assets for your business in your app?')
+      .sendConfirmNo();
       chain.wait('Successfully set RequestBasedUsage pricing plan for your Geo resources.');
     }
 
-    chain.wait('Do you want to configure advanced settings?').sendConfirmNo();
-    if (config.isAdditional === true) {
-      chain.wait(defaultSearchIndexQuestion);
-      if (config.isDefault === true) {
-        chain.sendConfirmYes();
-      } else {
-        chain.sendConfirmNo();
+    chain.wait('Do you want to configure advanced settings?')
+      .sendConfirmNo();
+      if (config.isAdditional === true) {
+        chain.wait(defaultSearchIndexQuestion);
+        if (config.isDefault === true) {
+          chain.sendConfirmYes();
+        } else {
+          chain.sendConfirmNo();
+        }
       }
-    }
-    chain.run((err: Error) => {
-      if (!err) {
-        resolve();
-      } else {
-        reject();
-      }
-    });
+      chain.run((err: Error) => {
+        if (!err) {
+          resolve();
+        } else {
+          reject();
+        }
+      })
   });
 }
 
@@ -119,7 +122,7 @@ export function updateMapWithDefault(cwd: string): Promise<void> {
         } else {
           reject();
         }
-      });
+      })
   });
 }
 
@@ -145,7 +148,7 @@ export function updateSecondMapAsDefault(cwd: string): Promise<void> {
         } else {
           reject();
         }
-      });
+      })
   });
 }
 
@@ -172,7 +175,7 @@ export function updatePlaceIndexWithDefault(cwd: string): Promise<void> {
         } else {
           reject();
         }
-      });
+      })
   });
 }
 
@@ -199,7 +202,7 @@ export function updateSecondPlaceIndexAsDefault(cwd: string): Promise<void> {
         } else {
           reject();
         }
-      });
+      })
   });
 }
 
@@ -222,7 +225,7 @@ export function removeMap(cwd: string): Promise<void> {
         } else {
           reject();
         }
-      });
+      })
   });
 }
 
@@ -247,7 +250,7 @@ export function removeFirstDefaultMap(cwd: string): Promise<void> {
         } else {
           reject();
         }
-      });
+      })
   });
 }
 
@@ -271,7 +274,7 @@ export function removePlaceIndex(cwd: string): Promise<void> {
         } else {
           reject();
         }
-      });
+      })
   });
 }
 
@@ -297,7 +300,7 @@ export function removeFirstDefaultPlaceIndex(cwd: string): Promise<void> {
         } else {
           reject();
         }
-      });
+      })
   });
 }
 

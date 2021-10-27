@@ -3,7 +3,7 @@ import {
   askAdditionalAuthQuestions,
 } from '../../../../provider-utils/awscloudformation/service-walkthroughs/appSync-walkthrough';
 import { authConfigHasApiKey, getAppSyncAuthConfig } from '../../../../provider-utils/awscloudformation/utils/amplify-meta-utils';
-import { FeatureFlags } from 'amplify-cli-core';
+import { FeatureFlags, CLIEnvironmentProvider, FeatureFlagRegistration } from 'amplify-cli-core';
 jest.mock('../../../../provider-utils/awscloudformation/utils/amplify-meta-utils', () => ({
   getAppSyncAuthConfig: jest.fn(),
   authConfigHasApiKey: jest.fn(),
@@ -25,15 +25,16 @@ const context_stub = (prompt: jest.Mock) => ({
 });
 
 type IAMArtifact = {
-  attributes: string[];
-  policy: any;
+  attributes: string[],
+  policy: any,
 };
+
 
 describe('get IAM policies', () => {
   beforeEach(() => {
     jest.resetModules();
   });
-  it('does not include API key if none exists', async () => {
+it('does not include API key if none exists', async () => {
     mockGetBoolean.mockImplementationOnce(() => true);
     authConfigHasApiKey_mock.mockImplementationOnce(() => false);
     const iamArtifact: IAMArtifact = getIAMPolicies('testResourceName', ['Query'], context_stub(confirmPromptFalse_mock));
@@ -46,7 +47,7 @@ describe('get IAM policies', () => {
     expect(iamArtifact.policy.Resource[0]['Fn::Join'][1][6]).toMatch('/types/Query/*');
   });
 
-  it('includes API key if it exists', async () => {
+it('includes API key if it exists', async () => {
     mockGetBoolean.mockImplementationOnce(() => true);
     authConfigHasApiKey_mock.mockImplementationOnce(() => true);
     const iamArtifact: IAMArtifact = getIAMPolicies('testResourceName', ['Query'], context_stub(confirmPromptFalse_mock));
@@ -60,7 +61,7 @@ describe('get IAM policies', () => {
     expect(iamArtifact.policy.Resource[0]['Fn::Join'][1][6]).toMatch('/types/Query/*');
   });
 
-  it('policy path includes the new format for graphql operations', async () => {
+it('policy path includes the new format for graphql operations', async () => {
     mockGetBoolean.mockImplementationOnce(() => true);
     authConfigHasApiKey_mock.mockImplementationOnce(() => false);
     const iamArtifact: IAMArtifact = getIAMPolicies('testResourceName', ['Query', 'Mutate'], context_stub(confirmPromptFalse_mock));
@@ -84,7 +85,7 @@ describe('get IAM policies', () => {
       ]
     `);
     expect(iamArtifact.policy.Action).toHaveLength(4);
-    expect(iamArtifact.policy.Action).toEqual(['appsync:Create*', 'appsync:StartSchemaCreation', 'appsync:GraphQL', 'appsync:Update*']);
+    expect(iamArtifact.policy.Action).toEqual(["appsync:Create*", "appsync:StartSchemaCreation", "appsync:GraphQL", "appsync:Update*"]);
     expect(iamArtifact.policy.Resource).toHaveLength(2);
     expect(iamArtifact.policy.Resource[0]['Fn::Join'][1][6]).toMatch('/*');
   });

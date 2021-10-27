@@ -120,7 +120,7 @@ enum ModelSortDirection {
 }
 
 type ModelPostConnection {
-  items: [Post!]!
+  items: [Post]
   nextToken: String
 }
 

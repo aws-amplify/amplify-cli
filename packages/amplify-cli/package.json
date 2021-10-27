@@ -98,7 +98,7 @@
     "promise-sequential": "^1.1.1",
     "semver": "^7.3.5",
     "tar-fs": "^2.1.1",
-    "update-notifier": "^5.1.0",
+    "update-notifier": "^4.1.0",
     "uuid": "^3.4.0",
     "which": "^2.0.2",
     "winston": "^3.3.3"
@@ -116,7 +116,7 @@
     "@types/progress": "^2.0.3",
     "@types/promise-sequential": "^1.1.0",
     "@types/tar-fs": "^2.0.0",
-    "@types/update-notifier": "^5.1.0",
+    "@types/update-notifier": "^4.1.0",
     "amplify-function-plugin-interface": "1.9.1",
     "nock": "^12.0.3"
   },

@@ -32,24 +32,4 @@ describe('get sanity check rules', () => {
     expect(diffRulesFn).toMatchSnapshot();
     expect(projectRulesFn).toMatchSnapshot();
   });
-
-  test('sanity check rule list when destructive changes flag is present and ff enabled', () => {
-    const ff_mock = new AmplifyCLIFeatureFlagAdapter();
-    (<any>FeatureFlags.getBoolean).mockReturnValue(true);
-    const sanityCheckRules: SanityCheckRules = getSanityCheckRules(false, ff_mock, true);
-    const diffRulesFn = sanityCheckRules.diffRules.map(func => func.name);
-    const projectRulesFn = sanityCheckRules.projectRules.map(func => func.name);
-    expect(diffRulesFn).toMatchSnapshot();
-    expect(projectRulesFn).toMatchSnapshot();
-  });
-
-  test('sanity check rule list when destructive changes flag is present but ff not enabled', () => {
-    const ff_mock = new AmplifyCLIFeatureFlagAdapter();
-    (<any>FeatureFlags.getBoolean).mockReturnValue(false);
-    const sanityCheckRules: SanityCheckRules = getSanityCheckRules(false, ff_mock, true);
-    const diffRulesFn = sanityCheckRules.diffRules.map(func => func.name);
-    const projectRulesFn = sanityCheckRules.projectRules.map(func => func.name);
-    expect(diffRulesFn).toMatchSnapshot();
-    expect(projectRulesFn).toMatchSnapshot();
-  });
 });

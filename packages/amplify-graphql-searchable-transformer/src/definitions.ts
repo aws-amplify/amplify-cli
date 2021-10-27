@@ -194,28 +194,6 @@ export function makeSearchableXSortableFieldsEnumObject(obj: ObjectTypeDefinitio
   };
 }
 
-export function makeSearchableXAggregateFieldEnumObject(obj: ObjectTypeDefinitionNode): EnumTypeDefinitionNode {
-  const name = graphqlName(`Searchable${obj.name.value}AggregateField`);
-  assert(obj.fields);
-  const values: EnumValueDefinitionNode[] = obj.fields
-    .filter((field: FieldDefinitionNode) => isScalar(field.type))
-    .map((field: FieldDefinitionNode) => ({
-      kind: Kind.ENUM_VALUE_DEFINITION,
-      name: field.name,
-      directives: [],
-    }));
-
-  return {
-    kind: Kind.ENUM_TYPE_DEFINITION,
-    name: {
-      kind: 'Name',
-      value: name,
-    },
-    values,
-    directives: [],
-  };
-}
-
 export function makeSearchableXSortInputObject(obj: ObjectTypeDefinitionNode): InputObjectTypeDefinitionNode {
   const name = graphqlName(`Searchable${obj.name.value}SortInput`);
   return {
@@ -300,7 +278,7 @@ export function makeSearchableXAggregationInputObject(obj: ObjectTypeDefinitionN
       {
         kind: Kind.INPUT_VALUE_DEFINITION,
         name: { kind: 'Name', value: 'field' },
-        type: makeNonNullType(makeNamedType(`Searchable${obj.name.value}AggregateField`)),
+        type: makeNonNullType(makeNamedType('String')),
         directives: [],
       },
     ],

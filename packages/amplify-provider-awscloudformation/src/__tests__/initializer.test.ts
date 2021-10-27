@@ -37,7 +37,7 @@ describe('run', () => {
     };
     CloudFormation_mock.mockImplementation(
       () =>
-        ({
+        (({
           createResourceStack: jest.fn().mockResolvedValue({
             Stacks: [
               {
@@ -45,7 +45,7 @@ describe('run', () => {
               },
             ],
           }),
-        } as unknown as CloudFormation),
+        } as unknown) as CloudFormation),
     );
     amplifyServiceManager_mock.init.mockResolvedValueOnce({} as any);
     JSONUtilities_mock.readJson.mockReturnValueOnce({});

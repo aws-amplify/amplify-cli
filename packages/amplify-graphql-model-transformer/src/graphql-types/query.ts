@@ -13,7 +13,7 @@ export const makeListQueryFilterInput = (
 export const makeListQueryModel = (type: ObjectTypeDefinitionNode, modelName: string, isSyncEnabled: boolean): ObjectTypeDefinitionNode => {
   const outputType = ObjectDefinitionWrapper.create(modelName);
 
-  outputType.addField(FieldWrapper.create('items', type.name.value, false, true));
+  outputType.addField(FieldWrapper.create('items', type.name.value, true, true));
   outputType.addField(FieldWrapper.create('nextToken', 'String', true, false));
 
   if (isSyncEnabled) {

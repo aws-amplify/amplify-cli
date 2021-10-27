@@ -1,4 +1,3 @@
-export { ModelTransformer, ModelDirectiveConfiguration, SubscriptionLevel } from './graphql-model-transformer';
-export { OPERATION_KEY } from './definitions';
+export { ModelTransformer } from './graphql-model-transformer';
 export * from './graphql-types';
 export * from './resolvers';

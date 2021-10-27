@@ -7,15 +7,10 @@ import { printer } from 'amplify-prompts';
 
 export const name = 'update';
 
-export const run = async (context: $TSContext) => {
+export const run = async(context: $TSContext) => {
   const { amplify } = context;
   try {
-    const result: { service: string; providerName: string } = await amplify.serviceSelectionPrompt(
-      context,
-      category,
-      supportedServices,
-      chooseServiceMessageUpdate,
-    );
+    const result: {service: string, providerName: string} = await amplify.serviceSelectionPrompt(context, category, supportedServices, chooseServiceMessageUpdate);
 
     if (result.providerName !== provider) {
       printer.error(`Provider ${result.providerName} not configured for this category`);
@@ -23,7 +18,8 @@ export const run = async (context: $TSContext) => {
     }
 
     return await updateResource(context, result.service);
-  } catch (error: $TSAny) {
+
+  } catch (error:$TSAny) {
     if (error.message) {
       printer.error(error.message);
     }

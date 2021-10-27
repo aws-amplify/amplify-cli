@@ -77,15 +77,9 @@ beforeAll(async () => {
       content: String
       updatedOn: Int # No automatic generation of timestamp if its not AWSDateTime
     }
-    type Todo @model(queries: { list: "getTodoList" }, mutations: { create: "createTodoItem", delete: "removeTodo" }) {
-      id: ID!
-      title: String!
-      description: String
-    }
   `;
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer()],
-    sandboxModeEnabled: true,
   });
   const out = transformer.transform(validSchema);
 
@@ -194,7 +188,7 @@ test('Test updateComment mutation with null and empty', async () => {
   const notRequiredFieldValue = 'thisisnotrequired';
   const response = await GRAPHQL_CLIENT.query(
     /* GraphQL */ `
-      mutation ($input: CreateRequireInput!) {
+      mutation($input: CreateRequireInput!) {
         createRequire(input: $input) {
           id
           requiredField
@@ -213,7 +207,7 @@ test('Test updateComment mutation with null and empty', async () => {
   const id = response.data.createRequire.id;
   const updateResponse = await GRAPHQL_CLIENT.query(
     /* GraphQL */ `
-      mutation ($input: UpdateRequireInput!) {
+      mutation($input: UpdateRequireInput!) {
         updateRequire(input: $input) {
           id
           requiredField
@@ -231,7 +225,7 @@ test('Test updateComment mutation with null and empty', async () => {
   expect(updateResponse.data.updateRequire.notRequiredField).toEqual(notRequiredFieldValue);
   const update2Response = await GRAPHQL_CLIENT.query(
     /* GraphQL */ `
-      mutation ($input: UpdateRequireInput!) {
+      mutation($input: UpdateRequireInput!) {
         updateRequire(input: $input) {
           id
           requiredField
@@ -793,73 +787,6 @@ test('Test updatePost mutation with non-model types', async () => {
   expect(updateResponse.data.updatePost.metadata.tags.published).toEqual(true);
   expect(updateResponse.data.updatePost.metadata.tags.metadata.tags.published).toEqual(false);
   expect(updateResponse.data.updatePost.appearsIn).toEqual(['NEWHOPE', 'EMPIRE']);
-});
-
-test('Test renamed queries and mutations', async () => {
-  let response = await GRAPHQL_CLIENT.query(
-    `mutation {
-        createTodoItem(input: { title: "Hello, World!", description: "Description Text" }) {
-          id
-          title
-          createdAt
-          updatedAt
-          description
-        }
-      }`,
-    {},
-  );
-  expect(response.data.createTodoItem.id).toBeDefined();
-  expect(response.data.createTodoItem.title).toEqual('Hello, World!');
-  expect(response.data.createTodoItem.description).toEqual('Description Text');
-  expect(response.data.createTodoItem.createdAt).toBeDefined();
-  expect(response.data.createTodoItem.updatedAt).toBeDefined();
-
-  const id = response.data.createTodoItem.id;
-
-  response = await GRAPHQL_CLIENT.query(
-    `query {
-        getTodoList {
-          items {
-            id
-            title
-            createdAt
-            updatedAt
-            description
-          }
-        }
-      }`,
-    {},
-  );
-
-  expect(response.data.getTodoList.items).toBeDefined();
-  expect(response.data.getTodoList.items.length).toEqual(1);
-
-  response = await GRAPHQL_CLIENT.query(
-    `mutation {
-        removeTodo(input: {id: "${id}"}) {
-          id
-        }
-      }`,
-    {},
-  );
-
-  response = await GRAPHQL_CLIENT.query(
-    `query {
-        getTodoList {
-          items {
-            id
-            title
-            createdAt
-            updatedAt
-            description
-          }
-        }
-      }`,
-    {},
-  );
-
-  expect(response.data.getTodoList.items).toBeDefined();
-  expect(response.data.getTodoList.items.length).toEqual(0);
 });
 
 describe('Timestamp configuration', () => {

@@ -1,4 +1,4 @@
-import { v4  as  uuid } from 'uuid';
+import uuid from 'uuid';
 
 const getAllDefaults = (project: any) => {
   const name = project.projectConfig.projectName.toLowerCase();

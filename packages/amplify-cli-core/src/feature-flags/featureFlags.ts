@@ -551,12 +551,6 @@ export class FeatureFlags {
         defaultValueForExistingProjects: false,
         defaultValueForNewProjects: true,
       },
-      {
-        name: 'transformerVersion',
-        type: 'number',
-        defaultValueForExistingProjects: 1,
-        defaultValueForNewProjects: 1,
-      },
     ]);
 
     this.registerFlag('frontend-ios', [

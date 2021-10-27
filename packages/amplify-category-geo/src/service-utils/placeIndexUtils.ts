@@ -4,13 +4,7 @@ import _ from 'lodash';
 import { parametersFileName, provider, ServiceName } from './constants';
 import { category } from '../constants';
 import { PlaceIndexStack } from '../service-stacks/placeIndexStack';
-import {
-  updateParametersFile,
-  generateTemplateFile,
-  updateDefaultResource,
-  readResourceMetaParameters,
-  checkAuthConfig,
-} from './resourceUtils';
+import { updateParametersFile, generateTemplateFile, updateDefaultResource, readResourceMetaParameters, checkAuthConfig } from './resourceUtils';
 import { App } from '@aws-cdk/core';
 import { getTemplateMappings } from '../provider-controllers';
 
@@ -32,13 +26,17 @@ export const createPlaceIndexResource = async (context: $TSContext, parameters: 
     await updateDefaultResource(context, ServiceName.PlaceIndex);
   }
 
-  context.amplify.updateamplifyMetaAfterResourceAdd(category, parameters.name, placeIndexMetaParameters);
+  context.amplify.updateamplifyMetaAfterResourceAdd(
+    category,
+    parameters.name,
+    placeIndexMetaParameters
+  );
 };
 
 export const modifyPlaceIndexResource = async (
   context: $TSContext,
-  parameters: Pick<PlaceIndexParameters, 'accessType' | 'name' | 'isDefault'>,
-) => {
+  parameters: Pick<PlaceIndexParameters, 'accessType' | 'name' | 'isDefault'>
+  ) => {
   // allow unauth access for identity pool if guest access is enabled
   await checkAuthConfig(context, parameters, ServiceName.PlaceIndex);
 
@@ -49,32 +47,37 @@ export const modifyPlaceIndexResource = async (
 
   // update the default place index
   if (parameters.isDefault) {
-    await updateDefaultResource(context, ServiceName.PlaceIndex, parameters.name);
+    await updateDefaultResource(context, ServiceName.PlaceIndex , parameters.name);
   }
 
   const paramsToUpdate = ['accessType'];
   paramsToUpdate.forEach(param => {
-    context.amplify.updateamplifyMetaAfterResourceUpdate(category, parameters.name, param, (parameters as $TSObject)[param]);
+    context.amplify.updateamplifyMetaAfterResourceUpdate(
+      category,
+      parameters.name,
+      param,
+      (parameters as $TSObject)[param]
+    );
   });
 };
 
 function saveCFNParameters(
-  parameters: Pick<PlaceIndexParameters, 'name' | 'dataProvider' | 'dataSourceIntendedUse' | 'pricingPlan' | 'isDefault'>,
+  parameters: Pick<PlaceIndexParameters, 'name'  | 'dataProvider' | 'dataSourceIntendedUse' | 'pricingPlan' | 'isDefault'>
 ) {
-  const params = {
-    authRoleName: {
-      Ref: 'AuthRoleName',
-    },
-    unauthRoleName: {
-      Ref: 'UnauthRoleName',
-    },
-    indexName: parameters.name,
-    dataProvider: parameters.dataProvider,
-    dataSourceIntendedUse: parameters.dataSourceIntendedUse,
-    pricingPlan: parameters.pricingPlan,
-    isDefault: parameters.isDefault,
-  };
-  updateParametersFile(params, parameters.name, parametersFileName);
+    const params = {
+      authRoleName: {
+        "Ref": "AuthRoleName"
+      },
+      unauthRoleName: {
+        "Ref": "UnauthRoleName"
+      },
+      indexName: parameters.name,
+      dataProvider: parameters.dataProvider,
+      dataSourceIntendedUse: parameters.dataSourceIntendedUse,
+      pricingPlan: parameters.pricingPlan,
+      isDefault: parameters.isDefault
+    };
+    updateParametersFile(params, parameters.name, parametersFileName);
 }
 
 /**
@@ -88,7 +91,7 @@ export const constructPlaceIndexMetaParameters = (params: PlaceIndexParameters):
     dataProvider: params.dataProvider,
     dataSourceIntendedUse: params.dataSourceIntendedUse,
     pricingPlan: params.pricingPlan,
-    accessType: params.accessType,
+    accessType: params.accessType
   };
   return result;
 };
@@ -96,26 +99,28 @@ export const constructPlaceIndexMetaParameters = (params: PlaceIndexParameters):
 /**
  * The Meta information stored for a Place Index Resource
  */
-export type PlaceIndexMetaParameters = Pick<
-  PlaceIndexParameters,
-  'isDefault' | 'pricingPlan' | 'accessType' | 'dataSourceIntendedUse' | 'dataProvider'
-> & {
+export type PlaceIndexMetaParameters = Pick<PlaceIndexParameters,
+    'isDefault' | 'pricingPlan' | 'accessType' |
+    'dataSourceIntendedUse' | 'dataProvider'> & {
   providerPlugin: string;
   service: string;
-};
+}
 
 export const getCurrentPlaceIndexParameters = async (indexName: string): Promise<Partial<PlaceIndexParameters>> => {
-  const currentIndexMetaParameters = (await readResourceMetaParameters(ServiceName.PlaceIndex, indexName)) as PlaceIndexMetaParameters;
+  const currentIndexMetaParameters = await readResourceMetaParameters(ServiceName.PlaceIndex, indexName) as PlaceIndexMetaParameters;
   return {
     dataProvider: currentIndexMetaParameters.dataProvider,
     dataSourceIntendedUse: currentIndexMetaParameters.dataSourceIntendedUse,
     pricingPlan: currentIndexMetaParameters.pricingPlan,
     accessType: currentIndexMetaParameters.accessType,
-    isDefault: currentIndexMetaParameters.isDefault,
+    isDefault: currentIndexMetaParameters.isDefault
   };
 };
 
-export const getPlaceIndexIamPolicies = (resourceName: string, crudOptions: string[]): { policy: $TSObject[]; attributes: string[] } => {
+export const getPlaceIndexIamPolicies = (
+  resourceName: string,
+  crudOptions: string[]
+): { policy: $TSObject[], attributes: string[] } => {
   const policy = [];
   const actions = new Set<string>();
 
@@ -152,7 +157,7 @@ export const getPlaceIndexIamPolicies = (resourceName: string, crudOptions: stri
             ':place-index/',
             {
               Ref: `${category}${resourceName}Name`,
-            },
+            }
           ],
         ],
       },
@@ -162,4 +167,4 @@ export const getPlaceIndexIamPolicies = (resourceName: string, crudOptions: stri
   const attributes = ['Name'];
 
   return { policy, attributes };
-};
+}

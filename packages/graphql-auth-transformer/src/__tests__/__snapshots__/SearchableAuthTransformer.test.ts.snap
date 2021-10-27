@@ -15,7 +15,7 @@ enum ModelSortDirection {
 }
 
 type ModelPostConnection @aws_api_key @aws_iam {
-  items: [Post!]!
+  items: [Post]
   nextToken: String
 }
 
@@ -198,7 +198,7 @@ input SearchablePostSortInput {
 }
 
 type SearchablePostConnection @aws_api_key @aws_iam {
-  items: [Post!]!
+  items: [Post]
   nextToken: String
   total: Int
 }

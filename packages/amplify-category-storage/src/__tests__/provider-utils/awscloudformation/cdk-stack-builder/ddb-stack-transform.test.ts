@@ -74,6 +74,10 @@ describe('Test DDB transform generates correct CFN template', () => {
     jest.spyOn(DynamoDBInputState.prototype, 'getCliInputPayload').mockImplementation(() => cliInputsJSON);
     const ddbTransform = new DDBStackTransform(resourceName);
     await ddbTransform.transform();
+
+    console.log(ddbTransform._cfn);
+    console.log(ddbTransform._cfnInputParams);
+
     expect(ddbTransform._cfn).toMatchSnapshot();
     expect(ddbTransform._cfnInputParams).toMatchSnapshot();
   });
