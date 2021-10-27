@@ -4,8 +4,7 @@ import { hasApiKey } from './api-key-helpers';
 import { printer } from 'amplify-prompts';
 
 export async function showSandboxModePrompts(context: $TSContext): Promise<any> {
-  if (hasApiKey()) return showGlobalSandboxModeWarning();
-  else {
+  if (!hasApiKey()) {
     printer.info(
       `
 ⚠️  WARNING: Global Sandbox Mode has been enabled, which requires a valid API key. If

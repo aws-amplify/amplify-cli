@@ -25,11 +25,11 @@ import {
 } from '@aws-amplify/graphql-relational-transformer';
 import { SearchableModelTransformer } from '@aws-amplify/graphql-searchable-transformer';
 import { DefaultValueTransformer } from '@aws-amplify/graphql-default-value-transformer';
-import { ProviderName as providerName } from '../constants';
+import { destructiveUpdatesFlag, ProviderName as providerName } from '../constants';
 import { hashDirectory } from '../upload-appsync-files';
 import { mergeUserConfigWithTransformOutput, writeDeploymentToDisk } from './utils';
 import { loadProject as readTransformerConfiguration } from './transform-config';
-import { loadProject } from 'graphql-transformer-core';
+import { getSanityCheckRules, loadProject } from 'graphql-transformer-core';
 import { LogConfig } from '@aws-amplify/graphql-transformer-core';
 import { Template } from '@aws-amplify/graphql-transformer-core/lib/config/project-config';
 import { AmplifyCLIFeatureFlagAdapter } from '../utils/amplify-cli-feature-flag-adapter';
@@ -38,10 +38,13 @@ import { searchablePushChecks } from '../transform-graphql-schema';
 import { ResourceConstants } from 'graphql-transformer-common';
 import { isAmplifyAdminApp } from '../utils/admin-helpers';
 import {
+  showGlobalSandboxModeWarning,
   showSandboxModePrompts,
   getSandboxModeEnvNameFromDirectiveSet,
   removeSandboxDirectiveFromSchema,
 } from '../utils/sandbox-mode-helpers';
+import { printer } from 'amplify-prompts';
+import { GraphQLSanityCheck, SanityCheckRules } from './sanity-check';
 
 const API_CATEGORY = 'api';
 const STORAGE_CATEGORY = 'storage';
@@ -53,13 +56,17 @@ const S3_SERVICE_NAME = 'S3';
 
 const TRANSFORM_CONFIG_FILE_NAME = `transform.conf.json`;
 
-function warnOnAuth(context, map) {
+function warnOnAuth(map) {
   const a: boolean = true;
   const unAuthModelTypes = Object.keys(map).filter(type => !map[type].includes('auth') && map[type].includes('model'));
   if (unAuthModelTypes.length) {
-    context.print.warning("\nThe following types do not have '@auth' enabled. Consider using @auth with @model");
-    context.print.warning(unAuthModelTypes.map(type => `\t - ${type}`).join('\n'));
-    context.print.info('Learn more about @auth here: https://docs.amplify.aws/cli/graphql-transformer/auth\n');
+    printer.info(
+      `
+⚠️  WARNING: Some types do not have authorization rules configured. That means all create, read, update, and delete operations are denied on these types:`,
+      'yellow',
+    );
+    printer.info(unAuthModelTypes.map(type => `\t - ${type}`).join('\n'), 'yellow');
+    printer.info('Learn more about "@auth" authorization rules here: https://docs.amplify.aws/cli/graphql-transformer/auth\n', 'yellow');
   }
 }
 
@@ -300,22 +307,25 @@ export async function transformGraphQLSchema(context, options) {
     ? await loadProject(previouslyDeployedBackendDir)
     : undefined;
 
-  // Check for common errors
+  const { envName } = context.amplify._getEnvInfo();
+  const sandboxModeEnv = getSandboxModeEnvNameFromDirectiveSet(collectDirectives(project.schema));
+  const sandboxModeEnabled = envName === sandboxModeEnv;
   const directiveMap = collectDirectivesByTypeNames(project.schema);
-  warnOnAuth(context, directiveMap.types);
+  const hasApiKey =
+    authConfig.defaultAuthentication.authenticationType === 'API_KEY' ||
+    authConfig.additionalAuthenticationProviders.some(a => a.authenticationType === 'API_KEY');
+  const showSandboxModeMessage = sandboxModeEnabled && hasApiKey;
+
+  if (showSandboxModeMessage) showGlobalSandboxModeWarning();
+  else warnOnAuth(directiveMap.types);
+
   searchablePushChecks(context, directiveMap.types, parameters[ResourceConstants.PARAMETERS.AppSyncApiName]);
 
   const transformerListFactory = getTransformerFactory(context, resourceDir);
 
-  const { envName } = context.amplify._getEnvInfo();
-  const sandboxModeEnv = getSandboxModeEnvNameFromDirectiveSet(collectDirectives(project.schema));
-  const sandboxModeEnabled = envName === sandboxModeEnv;
-
   if (sandboxModeEnabled && options.promptApiKeyCreation) {
     const apiKeyConfig = await showSandboxModePrompts(context);
-    if (apiKeyConfig) {
-      authConfig.additionalAuthenticationProviders.push(apiKeyConfig);
-    }
+    if (apiKeyConfig) authConfig.additionalAuthenticationProviders.push(apiKeyConfig);
   }
 
   let searchableTransformerFlag = false;
@@ -323,6 +333,12 @@ export async function transformGraphQLSchema(context, options) {
   if (directiveMap.directives.includes('searchable')) {
     searchableTransformerFlag = true;
   }
+
+  // construct sanityCheckRules
+  const ff = new AmplifyCLIFeatureFlagAdapter();
+  const isNewAppSyncAPI: boolean = resourcesToBeCreated.some(resource => resource.service === 'AppSync');
+  const allowDestructiveUpdates = context?.input?.options?.[destructiveUpdatesFlag] || context?.input?.options?.force;
+  const sanityCheckRules = getSanityCheckRules(isNewAppSyncAPI, ff, allowDestructiveUpdates);
 
   const buildConfig: ProjectOptions<TransformerFactoryArgs> = {
     ...options,
@@ -338,6 +354,7 @@ export async function transformGraphQLSchema(context, options) {
     authConfig,
     logConfig,
     sandboxModeEnabled,
+    sanityCheckRules,
   };
 
   const transformerOutput = await buildAPIProject(buildConfig);
@@ -441,7 +458,7 @@ export type ProjectOptions<T> = {
     S3DeploymentBucket: string;
     S3DeploymentRootKey: string;
   };
-  projectDirectory?: string;
+  projectDirectory: string;
   transformersFactory: (options: T) => Promise<TransformerPluginProvider[]>;
   transformersFactoryArgs: T;
   rootStackFileName: 'cloudformation-template.json';
@@ -454,21 +471,19 @@ export type ProjectOptions<T> = {
   logConfig?: LogConfig;
   stacks: Record<string, Template>;
   sandboxModeEnabled?: boolean;
+  sanityCheckRules: SanityCheckRules;
 };
 
 export async function buildAPIProject(opts: ProjectOptions<TransformerFactoryArgs>) {
   const builtProject = await _buildProject(opts);
 
+  const buildLocation = path.join(opts.projectDirectory, 'build');
+  const currCloudLocation = path.join(opts.currentCloudBackendDirectory, 'build');
+
   if (opts.projectDirectory && !opts.dryRun) {
-    await writeDeploymentToDisk(
-      builtProject,
-      path.join(opts.projectDirectory, 'build'),
-      opts.rootStackFileName,
-      opts.buildParameters,
-      opts.minify,
-    );
-    // Todo: Move sanity check to its own package. Run sanity check
-    // await Sanity.check(lastBuildPath, thisBuildPath, opts.rootStackFileName);
+    await writeDeploymentToDisk(builtProject, buildLocation, opts.rootStackFileName, opts.buildParameters, opts.minify);
+    const sanityChecker = new GraphQLSanityCheck(opts.sanityCheckRules, opts.rootStackFileName, currCloudLocation, buildLocation);
+    await sanityChecker.validate();
   }
 
   // TODO: update local env on api compile

@@ -37,6 +37,6 @@ describe('Schema iterative update - rename @key', () => {
 
     const finalSchema = path.join('iterative-push', 'change-model-name', 'final-schema.graphql');
     await updateApiSchema(projectDir, appName, finalSchema);
-    await amplifyPushUpdate(projectDir);
+    await amplifyPushUpdate(projectDir, undefined, undefined, true);
   });
 });

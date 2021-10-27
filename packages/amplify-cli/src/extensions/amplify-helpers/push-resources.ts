@@ -4,7 +4,13 @@ import { onCategoryOutputsChange } from './on-category-outputs-change';
 import { initializeEnv } from '../../initialize-env';
 import { getProviderPlugins } from './get-provider-plugins';
 import { getEnvInfo } from './get-env-info';
-import { EnvironmentDoesNotExistError, exitOnNextTick, stateManager, $TSAny, $TSContext, CustomPoliciesFormatError } from 'amplify-cli-core';
+import {
+  EnvironmentDoesNotExistError,
+  exitOnNextTick,
+  stateManager,
+  $TSAny,
+  $TSContext,
+} from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 
 export async function pushResources(
@@ -12,6 +18,7 @@ export async function pushResources(
   category?: string,
   resourceName?: string,
   filteredResources?: { category: string; resourceName: string }[],
+  rebuild: boolean = false,
 ) {
   if (context.parameters.options['iterative-rollback']) {
     // validate --iterative-rollback with --force
@@ -50,16 +57,21 @@ export async function pushResources(
     }
   }
 
-  const hasChanges = await showResourceTable(category, resourceName, filteredResources);
+  let hasChanges = false;
+  if (!rebuild) {
+    // status table does not have a way to show resource in "rebuild" state so skipping it to avoid confusion
+    hasChanges = await showResourceTable(category, resourceName, filteredResources);
+  }
 
   // no changes detected
-  if (!hasChanges && !context.exeInfo.forcePush) {
+  if (!hasChanges && !context.exeInfo.forcePush && !rebuild) {
     context.print.info('\nNo changes detected');
 
     return context;
   }
 
-  let continueToPush = context.exeInfo && context.exeInfo.inputParams && context.exeInfo.inputParams.yes;
+  // rebuild has an upstream confirmation prompt so no need to prompt again here
+  let continueToPush = (context.exeInfo && context.exeInfo.inputParams && context.exeInfo.inputParams.yes) || rebuild;
 
   if (!continueToPush) {
     if (context.exeInfo.iterativeRollback) {
@@ -76,15 +88,16 @@ export async function pushResources(
         // Get current-cloud-backend's amplify-meta
         const currentAmplifyMeta = stateManager.getCurrentMeta();
 
-        await providersPush(context, category, resourceName, filteredResources);
+        await providersPush(context, rebuild, category, resourceName, filteredResources);
         await onCategoryOutputsChange(context, currentAmplifyMeta);
       } catch (err) {
         if (await isValidGraphQLAuthError(err.message)) {
           retryPush = await handleValidGraphQLAuthError(context, err.message);
         }
-        if(!retryPush) {
+        if (!retryPush) {
           // Handle the errors and print them nicely for the user.
-          context.print.error(`\n${err.message}`);
+          printer.blankLine();
+          printer.error(err.message);
           throw err;
         }
       }
@@ -98,11 +111,14 @@ export async function pushResources(
 }
 
 async function isValidGraphQLAuthError(message: string) {
-  if (message === `@auth directive with 'iam' provider found, but the project has no IAM authentication provider configured.`
-    || message === `@auth directive with 'userPools' provider found, but the project has no Cognito User Pools authentication provider configured.`
-    || message === `@auth directive with 'oidc' provider found, but the project has no OPENID_CONNECT authentication provider configured.`
-    || message === `@auth directive with 'apiKey' provider found, but the project has no API Key authentication provider configured.`
-    || message === `@auth directive with 'function' provider found, but the project has no Lambda authentication provider configured.`) {
+  if (
+    message === `@auth directive with 'iam' provider found, but the project has no IAM authentication provider configured.` ||
+    message ===
+      `@auth directive with 'userPools' provider found, but the project has no Cognito User Pools authentication provider configured.` ||
+    message === `@auth directive with 'oidc' provider found, but the project has no OPENID_CONNECT authentication provider configured.` ||
+    message === `@auth directive with 'apiKey' provider found, but the project has no API Key authentication provider configured.` ||
+    message === `@auth directive with 'function' provider found, but the project has no Lambda authentication provider configured.`
+  ) {
     return true;
   }
 }
@@ -112,16 +128,25 @@ async function handleValidGraphQLAuthError(context: $TSContext, message: string)
     await addGraphQLAuthRequirement(context, 'AWS_IAM');
     return true;
   } else if (!context?.parameters?.options?.yes) {
-    if (message === `@auth directive with 'userPools' provider found, but the project has no Cognito User Pools authentication provider configured.`) {
+    if (
+      message ===
+      `@auth directive with 'userPools' provider found, but the project has no Cognito User Pools authentication provider configured.`
+    ) {
       await addGraphQLAuthRequirement(context, 'AMAZON_COGNITO_USER_POOLS');
       return true;
-    } else if (message === `@auth directive with 'oidc' provider found, but the project has no OPENID_CONNECT authentication provider configured.`) {
-      await addGraphQLAuthRequirement(context, 'OPENID_CONNECT')
+    } else if (
+      message === `@auth directive with 'oidc' provider found, but the project has no OPENID_CONNECT authentication provider configured.`
+    ) {
+      await addGraphQLAuthRequirement(context, 'OPENID_CONNECT');
       return true;
-    } else if (message === `@auth directive with 'apiKey' provider found, but the project has no API Key authentication provider configured.`) {
+    } else if (
+      message === `@auth directive with 'apiKey' provider found, but the project has no API Key authentication provider configured.`
+    ) {
       await addGraphQLAuthRequirement(context, 'API_KEY');
       return true;
-    } else if (message === `@auth directive with 'function' provider found, but the project has no Lambda authentication provider configured.`) {
+    } else if (
+      message === `@auth directive with 'function' provider found, but the project has no Lambda authentication provider configured.`
+    ) {
       await addGraphQLAuthRequirement(context, 'AWS_LAMBDA');
       return true;
     }
@@ -140,7 +165,13 @@ async function addGraphQLAuthRequirement(context, authType) {
   ]);
 }
 
-async function providersPush(context: $TSContext, category, resourceName, filteredResources) {
+async function providersPush(
+  context: $TSContext,
+  rebuild: boolean = false,
+  category?: string,
+  resourceName?: string,
+  filteredResources?: { category: string; resourceName: string }[],
+) {
   const { providers } = getProjectConfig();
   const providerPlugins = getProviderPlugins(context);
   const providerPromises: (() => Promise<$TSAny>)[] = [];
@@ -148,7 +179,7 @@ async function providersPush(context: $TSContext, category, resourceName, filter
   for (const provider of providers) {
     const providerModule = require(providerPlugins[provider]);
     const resourceDefiniton = await context.amplify.getResourceStatus(category, resourceName, provider, filteredResources);
-    providerPromises.push(providerModule.pushResources(context, resourceDefiniton));
+    providerPromises.push(providerModule.pushResources(context, resourceDefiniton, rebuild));
   }
 
   await Promise.all(providerPromises);

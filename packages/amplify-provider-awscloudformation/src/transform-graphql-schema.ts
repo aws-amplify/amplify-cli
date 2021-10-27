@@ -13,7 +13,7 @@ import { FunctionTransformer } from 'graphql-function-transformer';
 import { HttpTransformer } from 'graphql-http-transformer';
 import { PredictionsTransformer } from 'graphql-predictions-transformer';
 import { KeyTransformer } from 'graphql-key-transformer';
-import { ProviderName as providerName } from './constants';
+import { destructiveUpdatesFlag, ProviderName as providerName } from './constants';
 import { AmplifyCLIFeatureFlagAdapter } from './utils/amplify-cli-feature-flag-adapter';
 import { isAmplifyAdminApp } from './utils/admin-helpers';
 import { JSONUtilities, pathManager, stateManager } from 'amplify-cli-core';
@@ -384,7 +384,7 @@ export async function transformGraphQLSchema(context, options) {
 
   if (!parameters && fs.existsSync(parametersFilePath)) {
     try {
-      parameters = context.amplify.readJsonFile(parametersFilePath);
+      parameters = JSONUtilities.readJson(parametersFilePath);
     } catch (e) {
       parameters = {};
     }
@@ -500,7 +500,8 @@ export async function transformGraphQLSchema(context, options) {
   }
 
   const ff = new AmplifyCLIFeatureFlagAdapter();
-  const sanityCheckRulesList = getSanityCheckRules(isNewAppSyncAPI, ff);
+  const allowDestructiveUpdates = context?.input?.options?.[destructiveUpdatesFlag] || context?.input?.options?.force;
+  const sanityCheckRulesList = getSanityCheckRules(isNewAppSyncAPI, ff, allowDestructiveUpdates);
 
   const buildConfig = {
     ...options,

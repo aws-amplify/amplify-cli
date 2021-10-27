@@ -1,5 +1,5 @@
 const awsRegions = require('./aws-regions');
-const Lambda = require('./aws-utils/aws-lambda');
+const { Lambda } = require('./aws-utils/aws-lambda');
 const DynamoDB = require('./aws-utils/aws-dynamodb');
 const AppSync = require('./aws-utils/aws-appsync');
 const { Lex } = require('./aws-utils/aws-lex');

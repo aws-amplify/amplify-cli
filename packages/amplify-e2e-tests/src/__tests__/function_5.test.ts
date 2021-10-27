@@ -117,6 +117,6 @@ describe('test dependency in root stack', () => {
       },
       'nodejs',
     );
-    await amplifyPushWithoutCodegen(projRoot);
+    await amplifyPushWithoutCodegen(projRoot, undefined, true);
   });
 });

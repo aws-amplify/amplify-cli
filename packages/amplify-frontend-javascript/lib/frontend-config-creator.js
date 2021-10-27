@@ -169,11 +169,11 @@ function getAWSExportsObject(resources) {
         };
         break;
       case 'Map':
-        geoConfig.region = serviceResourceMapping[service][0].output.Region;
+        geoConfig.region = serviceResourceMapping[service][0].output.Region || projectRegion;
         geoConfig.maps = getMapConfig(serviceResourceMapping[service]);
         break;
       case 'PlaceIndex':
-        geoConfig.region = serviceResourceMapping[service][0].output.Region;
+        geoConfig.region = serviceResourceMapping[service][0].output.Region || projectRegion;
         geoConfig.search_indices = getPlaceIndexConfig(serviceResourceMapping[service]);
         break;
       default:
@@ -188,14 +188,11 @@ function getAWSExportsObject(resources) {
 
   // add geo config if geo resources exist
   if (Object.entries(geoConfig).length > 0) {
-    Object.assign(
-      configOutput,
-      {
-        geo: {
-          amazon_location_service: geoConfig
-        }
-      }
-    );
+    Object.assign(configOutput, {
+      geo: {
+        amazon_location_service: geoConfig,
+      },
+    });
   }
 
   return configOutput;
@@ -312,7 +309,8 @@ function getCognitoConfig(cognitoResources, projectRegion) {
 
   const frontendAuthConfig = {};
   if (cognitoResource.frontendAuthConfig) {
-    frontendAuthConfig.aws_cognito_login_mechanisms = cognitoResource.frontendAuthConfig.loginMechanisms;
+    frontendAuthConfig.aws_cognito_username_attributes = cognitoResource.frontendAuthConfig.usernameAttributes;
+    frontendAuthConfig.aws_cognito_social_providers = cognitoResource.frontendAuthConfig.socialProviders;
     frontendAuthConfig.aws_cognito_signup_attributes = cognitoResource.frontendAuthConfig.signupAttributes;
     frontendAuthConfig.aws_cognito_mfa_configuration = cognitoResource.frontendAuthConfig.mfaConfiguration;
     frontendAuthConfig.aws_cognito_mfa_types = cognitoResource.frontendAuthConfig.mfaTypes;
@@ -562,16 +560,16 @@ function getSumerianConfig(sumerianResources) {
 }
 
 function getMapConfig(mapResources) {
-  let defaultMap = "";
+  let defaultMap = '';
   const mapConfig = {
-    items: {}
+    items: {},
   };
   mapResources.forEach(mapResource => {
     const mapName = mapResource.output.Name;
     mapConfig.items[mapName] = {
-      style: mapResource.output.Style
-    }
-    if(mapResource.isDefault) {
+      style: mapResource.output.Style,
+    };
+    if (mapResource.isDefault) {
       defaultMap = mapName;
     }
   });
@@ -580,14 +578,14 @@ function getMapConfig(mapResources) {
 }
 
 function getPlaceIndexConfig(placeIndexResources) {
-  let defaultPlaceIndex = "";
+  let defaultPlaceIndex = '';
   const placeIndexConfig = {
-    items: []
+    items: [],
   };
   placeIndexResources.forEach(placeIndexResource => {
     const placeIndexName = placeIndexResource.output.Name;
     placeIndexConfig.items.push(placeIndexName);
-    if(placeIndexResource.isDefault) {
+    if (placeIndexResource.isDefault) {
       defaultPlaceIndex = placeIndexName;
     }
   });
@@ -595,4 +593,4 @@ function getPlaceIndexConfig(placeIndexResources) {
   return placeIndexConfig;
 }
 
-module.exports = { createAWSExports, createAmplifyConfig, deleteAmplifyConfig };
+module.exports = { createAWSExports, createAmplifyConfig, deleteAmplifyConfig, getAWSExportsObject };

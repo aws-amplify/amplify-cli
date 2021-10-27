@@ -28,12 +28,13 @@ import {
   toUpper,
 } from 'graphql-transformer-common';
 import { createParametersStack as createParametersInStack } from './cdk/create-cfnParameters';
-import { requestTemplate, responseTemplate } from './generate-resolver-vtl';
+import { requestTemplate, responseTemplate, sandboxMappingTemplate } from './generate-resolver-vtl';
 import {
   makeSearchableScalarInputObject,
   makeSearchableSortDirectionEnumObject,
   makeSearchableXFilterInputObject,
   makeSearchableXSortableFieldsEnumObject,
+  makeSearchableXAggregateFieldEnumObject,
   makeSearchableXSortInputObject,
   makeSearchableXAggregationInputObject,
   makeSearchableAggregateTypeEnumObject,
@@ -115,6 +116,7 @@ export class SearchableModelTransformer extends TransformerPluginBase {
 
     for (const def of this.searchableObjectTypeDefinitions) {
       const type = def.node.name.value;
+      const fields = def.node.fields?.map(f => f.name.value) ?? [];
       const typeName = context.output.getQueryTypeName();
       const table = getTable(context, def.node);
       const ddbTable = table as Table;
@@ -136,6 +138,13 @@ export class SearchableModelTransformer extends TransformerPluginBase {
           `${typeName}.${def.fieldName}.req.vtl`,
         ),
         MappingTemplate.s3MappingTemplateFromString(responseTemplate(false), `${typeName}.${def.fieldName}.res.vtl`),
+      );
+      resolver.addToSlot(
+        'postAuth',
+        MappingTemplate.s3MappingTemplateFromString(
+          sandboxMappingTemplate((context as any).resourceHelper.api.sandboxModeEnabled, fields),
+          `${typeName}.${def.fieldName}.{slotName}.{slotIndex}.res.vtl`,
+        ),
       );
       resolver.mapToStack(stack);
       context.resolvers.addResolver(typeName, def.fieldName, resolver);
@@ -204,12 +213,12 @@ export class SearchableModelTransformer extends TransformerPluginBase {
     // Create TableXConnection type with items and nextToken
     let connectionTypeExtension = blankObjectExtension(searchableXConnectionName);
     connectionTypeExtension = extensionWithFields(connectionTypeExtension, [
-      makeField('items', [], makeListType(makeNamedType(definition.name.value))),
+      makeField('items', [], makeNonNullType(makeListType(makeNonNullType(makeNamedType(definition.name.value))))),
     ]);
     connectionTypeExtension = extensionWithFields(connectionTypeExtension, [
       makeField('nextToken', [], makeNamedType('String')),
       makeField('total', [], makeNamedType('Int')),
-      makeField('aggregateItems', [], makeListType(makeNamedType(`SearchableAggregateResult`))),
+      makeField('aggregateItems', [], makeNonNullType(makeListType(makeNonNullType(makeNamedType(`SearchableAggregateResult`))))),
     ]);
     ctx.output.addObjectExtension(connectionTypeExtension);
   }
@@ -339,14 +348,19 @@ export class SearchableModelTransformer extends TransformerPluginBase {
       ctx.output.addInput(searchableXSortableInputDirection);
     }
 
-    if (!ctx.output.hasType(`Searchable${definition.name.value}AggregationInput`)) {
-      const searchableXAggregationInputDirection = makeSearchableXAggregationInputObject(definition);
-      ctx.output.addInput(searchableXAggregationInputDirection);
-    }
-
     if (!ctx.output.hasType('SearchableAggregateType')) {
       const searchableAggregateTypeEnum = makeSearchableAggregateTypeEnumObject();
       ctx.output.addEnum(searchableAggregateTypeEnum);
+    }
+
+    if (!ctx.output.hasType(`Searchable${definition.name.value}AggregateField`)) {
+      const searchableXAggregationField = makeSearchableXAggregateFieldEnumObject(definition);
+      ctx.output.addEnum(searchableXAggregationField);
+    }
+
+    if (!ctx.output.hasType(`Searchable${definition.name.value}AggregationInput`)) {
+      const searchableXAggregationInput = makeSearchableXAggregationInputObject(definition);
+      ctx.output.addInput(searchableXAggregationInput);
     }
   }
 }

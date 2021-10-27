@@ -282,7 +282,7 @@ test('creates belongs to relationship with implicit fields', () => {
   expect(createInput.fields.find((f: any) => f.name.value === 'id')).toBeDefined();
   expect(createInput.fields.find((f: any) => f.name.value === 'friendID')).toBeDefined();
   expect(createInput.fields.find((f: any) => f.name.value === 'email')).toBeDefined();
-  expect(createInput.fields.find((f: any) => f.name.value === 'test1OtherHalf2Id')).toBeDefined();
+  expect(createInput.fields.find((f: any) => f.name.value === 'testOtherHalfId')).toBeDefined();
 
   const updateInput = schema.definitions.find((def: any) => def.name && def.name.value === 'UpdateTest1Input') as any;
   expect(updateInput).toBeDefined();
@@ -290,5 +290,5 @@ test('creates belongs to relationship with implicit fields', () => {
   expect(updateInput.fields.find((f: any) => f.name.value === 'id')).toBeDefined();
   expect(updateInput.fields.find((f: any) => f.name.value === 'friendID')).toBeDefined();
   expect(updateInput.fields.find((f: any) => f.name.value === 'email')).toBeDefined();
-  expect(createInput.fields.find((f: any) => f.name.value === 'test1OtherHalf2Id')).toBeDefined();
+  expect(createInput.fields.find((f: any) => f.name.value === 'testOtherHalfId')).toBeDefined();
 });

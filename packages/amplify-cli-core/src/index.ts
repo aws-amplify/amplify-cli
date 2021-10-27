@@ -25,7 +25,7 @@ export * from './cliRemoveResourcePrompt';
 export * from './cliViewAPI';
 export * from './hooks';
 export * from './cliViewAPI';
-export * from './customPoliciesUtils'
+export * from './customPoliciesUtils';
 
 // Temporary types until we can finish full type definition across the whole CLI
 
@@ -253,6 +253,7 @@ interface AmplifyToolkit {
     category?: string,
     resourceName?: string,
     filteredResources?: { category: string; resourceName: string }[],
+    rebuild?: boolean,
   ) => $TSAny;
   storeCurrentCloudBackend: () => $TSAny;
   readJsonFile: (fileName: string) => $TSAny;

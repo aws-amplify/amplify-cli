@@ -101,12 +101,6 @@ input SearchableEmployeeSortInput {
   direction: SearchableSortDirection
 }
 
-input SearchableEmployeeAggregationInput {
-  name: String!
-  type: SearchableAggregateType!
-  field: String!
-}
-
 enum SearchableAggregateType {
   terms
   avg
@@ -115,11 +109,23 @@ enum SearchableAggregateType {
   sum
 }
 
+enum SearchableEmployeeAggregateField {
+  id
+  firstName
+  lastName
+}
+
+input SearchableEmployeeAggregationInput {
+  name: String!
+  type: SearchableAggregateType!
+  field: SearchableEmployeeAggregateField!
+}
+
 type SearchableEmployeeConnection {
-  items: [Employee]
+  items: [Employee!]!
   nextToken: String
   total: Int
-  aggregateItems: [SearchableAggregateResult]
+  aggregateItems: [SearchableAggregateResult!]!
 }
 
 type SearchableAggregateResult {
@@ -240,7 +246,7 @@ enum ModelSortDirection {
 }
 
 type ModelEmployeeConnection {
-  items: [Employee]
+  items: [Employee!]!
   nextToken: String
 }
 
@@ -396,12 +402,6 @@ input SearchablePostSortInput {
   direction: SearchableSortDirection
 }
 
-input SearchablePostAggregationInput {
-  name: String!
-  type: SearchableAggregateType!
-  field: String!
-}
-
 enum SearchableAggregateType {
   terms
   avg
@@ -410,11 +410,24 @@ enum SearchableAggregateType {
   sum
 }
 
+enum SearchablePostAggregateField {
+  id
+  title
+  createdAt
+  updatedAt
+}
+
+input SearchablePostAggregationInput {
+  name: String!
+  type: SearchableAggregateType!
+  field: SearchablePostAggregateField!
+}
+
 type SearchablePostConnection {
-  items: [Post]
+  items: [Post!]!
   nextToken: String
   total: Int
-  aggregateItems: [SearchableAggregateResult]
+  aggregateItems: [SearchableAggregateResult!]!
 }
 
 type SearchableAggregateResult {
@@ -535,7 +548,7 @@ enum ModelSortDirection {
 }
 
 type ModelPostConnection {
-  items: [Post]
+  items: [Post!]!
   nextToken: String
 }
 
@@ -1018,7 +1031,15 @@ $util.toJson($ListRequest)
   $util.toJson($ctx.result)
 #end
 ## [End] ResponseTemplate. **",
+  "Query.searchPosts.postAuth.1.res.vtl": "## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **",
   "Query.searchPosts.req.vtl": "#set( $indexPath = \\"/post/doc/_search\\" )
+#set( $allowedAggFields = $util.defaultIfNull($ctx.stash.allowedAggFields, []) )
+#set( $aggFieldsFilterMap = $util.defaultIfNull($ctx.stash.aggFieldsFilterMap, {}) )
 #set( $nonKeywordFields = [] )
 #set( $sortValues = [] )
 #set( $aggregateValues = {} )
@@ -1046,15 +1067,26 @@ $util.toJson($ListRequest)
         #set( $sortField = $util.toJson(\\"\${sortItem.field}.keyword\\") )
       #end
     #end
-    #set( $sortDirection = $util.toJson({\\"order\\": $sortItem.direction}) )
+    #if( $util.isNullOrEmpty($sortItem.direction) )
+      #set( $sortDirection = $util.toJson({\\"order\\": \\"desc\\"}) )
+    #else
+      #set( $sortDirection = $util.toJson({\\"order\\": $sortItem.direction}) )
+    #end
     $util.qr($sortValues.add(\\"{$sortField: $sortDirection}\\"))
   #end
 #end
 #foreach( $aggItem in $context.args.aggregates )
-  #if( $nonKeywordFields.contains($aggItem.field) )
-    $util.qr($aggregateValues.put(\\"$aggItem.name\\", {\\"$aggItem.type\\": {\\"field\\": \\"$aggItem.field\\"}}))
+  #if( $allowedAggFields.contains($aggItem.field) )
+    #set( $aggFilter = { \\"match_all\\": {} } )
+  #elseif( $aggFieldsFilterMap.containsKey($aggItem.field) )
+    #set( $aggFilter = { \\"bool\\": { \\"should\\": $aggFieldsFilterMap.get($aggItem.field) } } )
   #else
-    $util.qr($aggregateValues.put(\\"$aggItem.name\\", {\\"$aggItem.type\\": {\\"field\\": \\"\${aggItem.field}.keyword\\"}}))
+    $util.error(\\"Unauthorized to run aggregation on field: \${aggItem.field}\\", \\"Unauthorized\\")
+  #end
+  #if( $nonKeywordFields.contains($aggItem.field) )
+    $util.qr($aggregateValues.put(\\"$aggItem.name\\", { \\"filter\\": $aggFilter, \\"aggs\\": { \\"$aggItem.name\\": { \\"$aggItem.type\\": { \\"field\\": \\"$aggItem.field\\" }}} }))
+  #else
+    $util.qr($aggregateValues.put(\\"$aggItem.name\\", { \\"filter\\": $aggFilter, \\"aggs\\": { \\"$aggItem.name\\": { \\"$aggItem.type\\": { \\"field\\": \\"\${aggItem.field}.keyword\\" }}} }))
   #end
 #end
 #if( !$util.isNullOrEmpty($ctx.stash.authFilter) )
@@ -1103,15 +1135,16 @@ $util.toJson($ListRequest)
 #foreach( $aggItem in $context.result.aggregations.keySet() )
   #set( $aggResult = {} )
   #set( $aggResultValue = {} )
+  #set( $currentAggItem = $ctx.result.aggregations.get($aggItem) )
   $util.qr($aggResult.put(\\"name\\", $aggItem))
-  #if( !$util.isNullOrEmpty($context.result.aggregations) )
-    #if( !$util.isNullOrEmpty($context.result.aggregations.get($aggItem).buckets) )
+  #if( !$util.isNullOrEmpty($currentAggItem) )
+    #if( !$util.isNullOrEmpty($currentAggItem.get($aggItem).buckets) )
       $util.qr($aggResultValue.put(\\"__typename\\", \\"SearchableAggregateBucketResult\\"))
-      $util.qr($aggResultValue.put(\\"buckets\\", $context.result.aggregations.get($aggItem).buckets))
+      $util.qr($aggResultValue.put(\\"buckets\\", $currentAggItem.get($aggItem).buckets))
     #end
-    #if( !$util.isNullOrEmpty($context.result.aggregations.get($aggItem).value) )
+    #if( !$util.isNullOrEmpty($currentAggItem.get($aggItem).value) )
       $util.qr($aggResultValue.put(\\"__typename\\", \\"SearchableAggregateScalarResult\\"))
-      $util.qr($aggResultValue.put(\\"value\\", $context.result.aggregations.get($aggItem).value))
+      $util.qr($aggResultValue.put(\\"value\\", $currentAggItem.get($aggItem).value))
     #end
   #end
   $util.qr($aggResult.put(\\"result\\", $aggResultValue))
@@ -1273,12 +1306,6 @@ input SearchablePostSortInput {
   direction: SearchableSortDirection
 }
 
-input SearchablePostAggregationInput {
-  name: String!
-  type: SearchableAggregateType!
-  field: String!
-}
-
 enum SearchableAggregateType {
   terms
   avg
@@ -1287,11 +1314,24 @@ enum SearchableAggregateType {
   sum
 }
 
+enum SearchablePostAggregateField {
+  id
+  title
+  createdAt
+  updatedAt
+}
+
+input SearchablePostAggregationInput {
+  name: String!
+  type: SearchableAggregateType!
+  field: SearchablePostAggregateField!
+}
+
 type SearchablePostConnection {
-  items: [Post]
+  items: [Post!]!
   nextToken: String
   total: Int
-  aggregateItems: [SearchableAggregateResult]
+  aggregateItems: [SearchableAggregateResult!]!
 }
 
 type SearchableAggregateResult {
@@ -1341,17 +1381,22 @@ input SearchableUserSortInput {
   direction: SearchableSortDirection
 }
 
+enum SearchableUserAggregateField {
+  id
+  name
+}
+
 input SearchableUserAggregationInput {
   name: String!
   type: SearchableAggregateType!
-  field: String!
+  field: SearchableUserAggregateField!
 }
 
 type SearchableUserConnection {
-  items: [User]
+  items: [User!]!
   nextToken: String
   total: Int
-  aggregateItems: [SearchableAggregateResult]
+  aggregateItems: [SearchableAggregateResult!]!
 }
 
 input ModelStringInput {
@@ -1446,7 +1491,7 @@ enum ModelSortDirection {
 }
 
 type ModelPostConnection {
-  items: [Post]
+  items: [Post!]!
   nextToken: String
 }
 
@@ -1506,7 +1551,7 @@ type Subscription {
 }
 
 type ModelUserConnection {
-  items: [User]
+  items: [User!]!
   nextToken: String
 }
 
@@ -1637,12 +1682,6 @@ input SearchablePostSortInput {
   direction: SearchableSortDirection
 }
 
-input SearchablePostAggregationInput {
-  name: String!
-  type: SearchableAggregateType!
-  field: String!
-}
-
 enum SearchableAggregateType {
   terms
   avg
@@ -1651,11 +1690,24 @@ enum SearchableAggregateType {
   sum
 }
 
+enum SearchablePostAggregateField {
+  id
+  title
+  createdAt
+  updatedAt
+}
+
+input SearchablePostAggregationInput {
+  name: String!
+  type: SearchableAggregateType!
+  field: SearchablePostAggregateField!
+}
+
 type SearchablePostConnection {
-  items: [Post]
+  items: [Post!]!
   nextToken: String
   total: Int
-  aggregateItems: [SearchableAggregateResult]
+  aggregateItems: [SearchableAggregateResult!]!
 }
 
 type SearchableAggregateResult {
@@ -1776,7 +1828,7 @@ enum ModelSortDirection {
 }
 
 type ModelPostConnection {
-  items: [Post]
+  items: [Post!]!
   nextToken: String
 }
 
@@ -1912,12 +1964,6 @@ input SearchablePostSortInput {
   direction: SearchableSortDirection
 }
 
-input SearchablePostAggregationInput {
-  name: String!
-  type: SearchableAggregateType!
-  field: String!
-}
-
 enum SearchableAggregateType {
   terms
   avg
@@ -1926,11 +1972,24 @@ enum SearchableAggregateType {
   sum
 }
 
+enum SearchablePostAggregateField {
+  id
+  title
+  createdAt
+  updatedAt
+}
+
+input SearchablePostAggregationInput {
+  name: String!
+  type: SearchableAggregateType!
+  field: SearchablePostAggregateField!
+}
+
 type SearchablePostConnection {
-  items: [Post]
+  items: [Post!]!
   nextToken: String
   total: Int
-  aggregateItems: [SearchableAggregateResult]
+  aggregateItems: [SearchableAggregateResult!]!
 }
 
 type SearchableAggregateResult {
@@ -2051,7 +2110,7 @@ enum ModelSortDirection {
 }
 
 type ModelPostConnection {
-  items: [Post]
+  items: [Post!]!
   nextToken: String
 }
 
@@ -2202,12 +2261,6 @@ input SearchablePostSortInput {
   direction: SearchableSortDirection
 }
 
-input SearchablePostAggregationInput {
-  name: String!
-  type: SearchableAggregateType!
-  field: String!
-}
-
 enum SearchableAggregateType {
   terms
   avg
@@ -2216,11 +2269,24 @@ enum SearchableAggregateType {
   sum
 }
 
+enum SearchablePostAggregateField {
+  id
+  title
+  createdAt
+  updatedAt
+}
+
+input SearchablePostAggregationInput {
+  name: String!
+  type: SearchableAggregateType!
+  field: SearchablePostAggregateField!
+}
+
 type SearchablePostConnection {
-  items: [Post]
+  items: [Post!]!
   nextToken: String
   total: Int
-  aggregateItems: [SearchableAggregateResult]
+  aggregateItems: [SearchableAggregateResult!]!
 }
 
 type SearchableAggregateResult {
@@ -2341,7 +2407,7 @@ enum ModelSortDirection {
 }
 
 type ModelPostConnection {
-  items: [Post]
+  items: [Post!]!
   nextToken: String
 }
 

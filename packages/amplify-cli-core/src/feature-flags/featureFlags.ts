@@ -593,6 +593,12 @@ export class FeatureFlags {
         defaultValueForExistingProjects: false,
         defaultValueForNewProjects: false,
       },
+      {
+        name: 'useEnabledMfas',
+        type: 'boolean',
+        defaultValueForExistingProjects: false,
+        defaultValueForNewProjects: true,
+      },
     ]);
 
     this.registerFlag('codegen', [

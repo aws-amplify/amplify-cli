@@ -20,7 +20,12 @@ import {
   toCamelCase,
   toUpper,
 } from 'graphql-transformer-common';
-import { HasManyDirectiveConfiguration, HasOneDirectiveConfiguration, ManyToManyDirectiveConfiguration } from './types';
+import {
+  BelongsToDirectiveConfiguration,
+  HasManyDirectiveConfiguration,
+  HasOneDirectiveConfiguration,
+  ManyToManyDirectiveConfiguration,
+} from './types';
 import { getConnectionAttributeName } from './utils';
 
 export function extendTypeWithConnection(config: HasManyDirectiveConfiguration, ctx: TransformerContextProvider) {
@@ -65,7 +70,7 @@ function generateModelXConnectionType(
   let connectionTypeExtension = blankObjectExtension(tableXConnectionName);
 
   connectionTypeExtension = extensionWithFields(connectionTypeExtension, [
-    makeField('items', [], makeListType(makeNamedType(relatedType.name.value))),
+    makeField('items', [], makeNonNullType(makeListType(makeNonNullType(makeNamedType(relatedType.name.value))))),
   ]);
   connectionTypeExtension = extensionWithFields(connectionTypeExtension, [makeField('nextToken', [], makeNamedType('String'))]);
 
@@ -101,7 +106,11 @@ function ensureModelSortDirectionEnum(ctx: TransformerContextProvider): void {
   }
 }
 
-export function ensureHasOneConnectionField(config: HasOneDirectiveConfiguration, ctx: TransformerContextProvider) {
+export function ensureHasOneConnectionField(
+  config: HasOneDirectiveConfiguration,
+  ctx: TransformerContextProvider,
+  connectionAttributeName?: string,
+) {
   const { field, fieldNodes, object } = config;
 
   // If fields were explicitly provided to the directive, there is nothing else to do here.
@@ -110,7 +119,9 @@ export function ensureHasOneConnectionField(config: HasOneDirectiveConfiguration
   }
 
   // Update the create and update input objects for this type.
-  const connectionAttributeName = getConnectionAttributeName(object.name.value, field.name.value);
+  if (!connectionAttributeName) {
+    connectionAttributeName = getConnectionAttributeName(object.name.value, field.name.value);
+  }
   const createInputName = ModelResourceIDs.ModelCreateInputObjectName(object.name.value);
   const createInput = ctx.output.getType(createInputName) as InputObjectTypeDefinitionNode;
 
@@ -130,6 +141,22 @@ export function ensureHasOneConnectionField(config: HasOneDirectiveConfiguration
   }
 
   config.connectionFields.push(connectionAttributeName);
+}
+
+/**
+ * If the related type is a hasOne relationship, this creates a hasOne relation going the other way
+ *    but using the same foreign key name as the hasOne model
+ * If the related type is a hasMany relationship, this function sets the foreign key name to the name of the hasMany foreign key
+ *    but does not add additional fields as this will be handled by the hasMany directive
+ */
+export function ensureBelongsToConnectionField(config: BelongsToDirectiveConfiguration, ctx: TransformerContextProvider) {
+  const { relationType, relatedType, relatedField } = config;
+  if (relationType === 'hasOne') {
+    ensureHasOneConnectionField(config, ctx, getConnectionAttributeName(relatedType.name.value, relatedField.name.value));
+  } else {
+    // hasMany
+    config.connectionFields.push(getConnectionAttributeName(relatedType.name.value, relatedField.name.value));
+  }
 }
 
 export function ensureHasManyConnectionField(

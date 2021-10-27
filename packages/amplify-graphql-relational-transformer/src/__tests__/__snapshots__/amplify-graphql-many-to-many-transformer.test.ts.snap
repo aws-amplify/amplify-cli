@@ -558,7 +558,7 @@ enum ModelSortDirection {
 }
 
 type ModelFooConnection {
-  items: [Foo]
+  items: [Foo!]!
   nextToken: String
 }
 
@@ -621,7 +621,7 @@ type Subscription {
 }
 
 type ModelBarConnection {
-  items: [Bar]
+  items: [Bar!]!
   nextToken: String
 }
 
@@ -651,7 +651,7 @@ input DeleteBarInput {
 }
 
 type ModelFooBarConnection {
-  items: [FooBar]
+  items: [FooBar!]!
   nextToken: String
 }
 

@@ -1,7 +1,7 @@
 import * as path from 'path';
 import { JSONUtilities, pathManager } from 'amplify-cli-core';
 import { transformUserPoolGroupSchema } from './transform-user-pool-group';
-import { authProviders as authProviderList } from '../assets/string-maps';
+import { hostedUIProviders } from '../assets/string-maps';
 import { AuthParameters } from '../import/types';
 
 /**
@@ -108,27 +108,20 @@ export const getPostUpdateAuthMetaUpdater = (context: any) => async (resourceNam
 
 export function getFrontendConfig(authParameters: AuthParameters) {
   const verificationMechanisms = (authParameters?.autoVerifiedAttributes || []).map((att: string) => att.toUpperCase());
-  const loginMechanisms = new Set<string>();
-  (authParameters?.aliasAttributes ?? []).forEach(it => loginMechanisms.add(it.toUpperCase()));
+  const usernameAttributes: string[] = [];
 
-  // backwards compatibility
   if (authParameters?.usernameAttributes && authParameters.usernameAttributes.length > 0) {
-    authParameters.usernameAttributes[0].split(',').forEach(it => loginMechanisms.add(it.trim().toUpperCase()));
+    authParameters.usernameAttributes[0].split(',').forEach(it => usernameAttributes.push(it.trim().toUpperCase()));
   }
 
-  if (authParameters.authProviders) {
-    authParameters.authProviders.forEach((provider: string) => {
-      let name = authProviderList.find(it => it.value === provider)?.name;
+  const socialProviders: string[] = [];
+  (authParameters?.authProvidersUserPool ?? []).forEach((provider: string) => {
+    const key = hostedUIProviders.find(it => it.value === provider)?.key;
 
-      if (name) {
-        loginMechanisms.add(name.toUpperCase());
-      }
-    });
-  }
-
-  if (loginMechanisms.size === 0) {
-    loginMechanisms.add('PREFERRED_USERNAME');
-  }
+    if (key) {
+      socialProviders.push(key);
+    }
+  });
 
   const signupAttributes = (authParameters?.requiredAttributes || []).map((att: string) => att.toUpperCase());
 
@@ -149,7 +142,8 @@ export function getFrontendConfig(authParameters: AuthParameters) {
   }
 
   return {
-    loginMechanisms: Array.from(loginMechanisms),
+    socialProviders: socialProviders,
+    usernameAttributes: usernameAttributes,
     signupAttributes: signupAttributes,
     passwordProtectionSettings: passwordProtectionSettings,
     mfaConfiguration: authParameters?.mfaConfiguration,

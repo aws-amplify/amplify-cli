@@ -10,16 +10,17 @@ import { writeConfig, TransformConfig, TransformMigrationConfig, loadProject, re
 import { FeatureFlagProvider } from '../FeatureFlags';
 import {
   cantAddAndRemoveGSIAtSameTimeRule,
-  cantAddLSILaterRule,
-  cantRemoveLSILater,
+  getCantAddLSILaterRule,
+  getCantRemoveLSILater,
   cantEditGSIKeySchemaRule,
-  cantEditKeySchemaRule,
-  cantEditLSIKeySchemaRule,
+  getCantEditKeySchemaRule,
+  getCantEditLSIKeySchemaRule,
   cantHaveMoreThan500ResourcesRule,
   DiffRule,
   sanityCheckProject,
   ProjectRule,
   cantMutateMultipleGSIAtUpdateTimeRule,
+  cantRemoveTableAfterCreation,
 } from './sanity-check';
 
 export const CLOUDFORMATION_FILE_NAME = 'cloudformation-template.json';
@@ -729,34 +730,48 @@ function getOrDefault(o: any, k: string, d: any) {
   return o[k] || d;
 }
 
-export function getSanityCheckRules(isNewAppSyncAPI: boolean, ff: FeatureFlagProvider) {
+export function getSanityCheckRules(isNewAppSyncAPI: boolean, ff: FeatureFlagProvider, allowDestructiveUpdates: boolean = false) {
   let diffRules: DiffRule[] = [];
   let projectRules: ProjectRule[] = [];
   // If we have iterative GSI upgrades enabled it means we only do sanity check on LSIs
   // as the other checks will be carried out as series of updates.
   if (!isNewAppSyncAPI) {
-    if (ff.getBoolean('enableIterativeGSIUpdates')) {
-      diffRules.push(
-        // LSI
-        cantEditKeySchemaRule,
-        cantAddLSILaterRule,
-        cantRemoveLSILater,
-        cantEditLSIKeySchemaRule,
-      );
+    const iterativeUpdatesEnabled = ff.getBoolean('enableIterativeGSIUpdates');
+    if (iterativeUpdatesEnabled) {
+      if (!allowDestructiveUpdates) {
+        diffRules.push(
+          // primary key rule
+          getCantEditKeySchemaRule(iterativeUpdatesEnabled),
 
-      // Project level rules
+          // LSI rules
+          getCantAddLSILaterRule(iterativeUpdatesEnabled),
+          getCantRemoveLSILater(iterativeUpdatesEnabled),
+          getCantEditLSIKeySchemaRule(iterativeUpdatesEnabled),
+
+          // remove table rules
+          cantRemoveTableAfterCreation,
+        );
+      }
+
+      // Project level rule
       projectRules.push(cantHaveMoreThan500ResourcesRule);
     } else {
       diffRules.push(
-        // LSI
-        cantEditKeySchemaRule,
-        cantAddLSILaterRule,
-        cantRemoveLSILater,
-        cantEditLSIKeySchemaRule,
-        // GSI
+        // primary key rule
+        getCantEditKeySchemaRule(),
+
+        // LSI rules
+        getCantAddLSILaterRule(),
+        getCantRemoveLSILater(),
+        getCantEditLSIKeySchemaRule(),
+
+        // GSI rules
         cantEditGSIKeySchemaRule,
         cantAddAndRemoveGSIAtSameTimeRule,
       );
+      if (!allowDestructiveUpdates) {
+        diffRules.push(cantRemoveTableAfterCreation);
+      }
 
       projectRules.push(cantHaveMoreThan500ResourcesRule, cantMutateMultipleGSIAtUpdateTimeRule);
     }
