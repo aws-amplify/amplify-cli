@@ -317,11 +317,21 @@ function replaceDeleteInput(config: PrimaryKeyDirectiveConfiguration, input: Inp
 }
 
 export function ensureQueryField(config: IndexDirectiveConfiguration, ctx: TransformerContextProvider): void {
-  const { object, queryField, sortKey } = config;
+  const { name, object, queryField, sortKey } = config;
 
   if (!queryField) {
     return;
   }
+  // add query field to metadata
+  const keyName = `${object.name.value}:indicies`;
+  let indicies: Set<string>;
+  if (!ctx.metadata.has(keyName)) {
+    indicies = new Set([`${name}:${queryField}`]);
+  } else {
+    indicies = ctx.metadata.get<Set<string>>(keyName)!;
+    indicies.add(`${name}:${queryField}`);
+  }
+  ctx.metadata.set(keyName, indicies);
 
   const args = [createHashField(config)];
 
@@ -353,7 +363,7 @@ function generateModelXConnectionType(config: IndexDirectiveConfiguration, ctx: 
   let connectionTypeExtension = blankObjectExtension(tableXConnectionName);
 
   connectionTypeExtension = extensionWithFields(connectionTypeExtension, [
-    makeField('items', [], makeListType(makeNamedType(tableXConnectionName))),
+    makeField('items', [], makeNonNullType(makeListType(makeNonNullType(makeNamedType(object.name.value))))),
   ]);
   connectionTypeExtension = extensionWithFields(connectionTypeExtension, [makeField('nextToken', [], makeNamedType('String'))]);
 

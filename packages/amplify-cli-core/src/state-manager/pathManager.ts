@@ -43,6 +43,7 @@ export const PathConstants = {
   HooksShellSampleFileName: 'post-push.sh.sample',
   HooksJsSampleFileName: 'pre-push.js.sample',
   HooksReadmeFileName: 'hooks-readme.md',
+  OverrideFileName: 'override.ts',
 
   LocalEnvFileName: 'local-env-info.json',
   LocalAWSInfoFileName: 'local-aws-info.json',

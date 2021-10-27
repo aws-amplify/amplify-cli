@@ -4,6 +4,7 @@ import {
   GraphQLAPIProvider,
   TransformerPluginProvider,
   TransformHostProvider,
+  AppSyncAuthConfiguration,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { AuthorizationMode, AuthorizationType } from '@aws-cdk/aws-appsync';
 import { App, Aws, CfnOutput, Fn } from '@aws-cdk/core';
@@ -23,13 +24,13 @@ import {
   TypeExtensionNode,
   UnionTypeDefinitionNode,
 } from 'graphql';
-import { AppSyncAuthConfiguration, TransformConfig } from '../config/transformer-config';
 import { InvalidTransformerError, SchemaValidationError, UnknownDirectiveError } from '../errors';
 import { GraphQLApi } from '../graphql-api';
 import { TransformerContext } from '../transformer-context';
 import { TransformerOutput } from '../transformer-context/output';
 import { StackManager } from '../transformer-context/stack-manager';
-import { adoptAuthModes } from '../utils/authType';
+import { adoptAuthModes, IAM_AUTH_ROLE_PARAMETER, IAM_UNAUTH_ROLE_PARAMETER } from '../utils/authType';
+import { TransformConfig } from '../config';
 import * as SyncUtils from './sync-utils';
 
 import Template, { DeploymentResources } from './types';
@@ -42,7 +43,7 @@ import {
   matchInputFieldDirective,
   sortTransformerPlugins,
 } from './utils';
-import { validateModelSchema } from './validation';
+import { validateModelSchema, validateAuthModes } from './validation';
 
 // eslint-disable-next-line @typescript-eslint/ban-types
 function isFunction(obj: any): obj is Function {
@@ -70,6 +71,7 @@ export interface GraphQLTransformOptions {
   readonly stacks?: Record<string, Template>;
   readonly featureFlags?: FeatureFlagProvider;
   readonly host?: TransformHostProvider;
+  readonly sandboxModeEnabled?: boolean;
 }
 export type StackMapping = { [resourceId: string]: string };
 export class GraphQLTransform {
@@ -103,6 +105,8 @@ export class GraphQLTransform {
       additionalAuthenticationProviders: [],
     };
 
+    validateAuthModes(this.authConfig);
+
     this.buildParameters = options.buildParameters || {};
     this.stackMappingOverrides = options.stackMapping || {};
     this.transformConfig = options.transformConfig || {};
@@ -124,6 +128,7 @@ export class GraphQLTransform {
       this.app,
       parsedDocument,
       this.stackMappingOverrides,
+      this.authConfig,
       this.options.featureFlags,
       this.transformConfig.ResolverConfig,
     );
@@ -136,6 +141,7 @@ export class GraphQLTransform {
         aws_iam: true,
         aws_oidc: true,
         aws_cognito_user_pools: true,
+        allow_public_data_access_with_api_key: true,
         deprecated: true,
       },
     );
@@ -143,6 +149,7 @@ export class GraphQLTransform {
     for (const transformer of this.transformers) {
       allModelDefinitions = allModelDefinitions.concat(...transformer.typeDefinitions, transformer.directive);
     }
+
     const errors = validateModelSchema({
       kind: Kind.DOCUMENT,
       definitions: allModelDefinitions,
@@ -214,7 +221,6 @@ export class GraphQLTransform {
     // Synth the API and make it available to allow transformer plugins to manipulate the API
     const stackManager = context.stackManager as StackManager;
     const output: TransformerOutput = context.output as TransformerOutput;
-
     const api = this.generateGraphQlApi(stackManager, output);
 
     // generate resolvers
@@ -258,6 +264,7 @@ export class GraphQLTransform {
       name: `${apiName}-${envName.valueAsString}`,
       authorizationConfig,
       host: this.options.host,
+      sandboxModeEnabled: this.options.sandboxModeEnabled,
     });
     const authModes = [authorizationConfig.defaultAuthorization, ...(authorizationConfig.additionalAuthorizationModes || [])].map(
       mode => mode?.authorizationType,
@@ -284,6 +291,11 @@ export class GraphQLTransform {
         description: 'Your GraphQL API ID.',
         exportName: Fn.join(':', [Aws.STACK_NAME, 'GraphQLApiKey']),
       });
+    }
+
+    if (authModes.includes(AuthorizationType.IAM)) {
+      stackManager.addParameter(IAM_AUTH_ROLE_PARAMETER, { type: 'String' });
+      stackManager.addParameter(IAM_UNAUTH_ROLE_PARAMETER, { type: 'String' });
     }
 
     new CfnOutput(rootStack, 'GraphQLAPIIdOutput', {

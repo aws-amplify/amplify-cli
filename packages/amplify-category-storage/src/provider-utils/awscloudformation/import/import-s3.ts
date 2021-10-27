@@ -4,8 +4,9 @@ import { IS3Service } from 'amplify-util-import';
 import { Bucket } from 'aws-sdk/clients/s3';
 import Enquirer from 'enquirer';
 import _ from 'lodash';
-import uuid from 'uuid';
-import { checkIfAuthExists, resourceAlreadyExists } from '../service-walkthroughs/s3-walkthrough';
+import { v4 as uuid } from 'uuid';
+import { resourceAlreadyExists } from '../service-walkthroughs/s3-walkthrough';
+import { checkIfAuthExists } from '../storage-configuration-helpers';
 import { importMessages } from './messages';
 import {
   ImportS3HeadlessParameters,
@@ -26,7 +27,7 @@ export const importS3 = async (
   providerPluginInstance?: ProviderUtils,
   printSuccessMessage: boolean = true,
 ): Promise<{ envSpecificParameters: S3EnvSpecificResourceParameters } | undefined> => {
-  let resourceName: string | undefined = resourceAlreadyExists(context);
+  let resourceName: string | undefined = resourceAlreadyExists();
 
   if (resourceName && !previousResourceParameters) {
     const errMessage = 'Amazon S3 storage was already added to your project.';
@@ -206,7 +207,7 @@ const createParameters = (providerName: string, bucketList: Bucket[]): S3ImportP
   return questionParameters;
 };
 
-const updateStateFiles = async (
+export const updateStateFiles = async (
   context: $TSContext,
   questionParameters: S3ImportParameters,
   answers: S3ImportAnswers,
@@ -391,8 +392,6 @@ const headlessImport = async (
 ): Promise<{ succeeded: boolean; envSpecificParameters: S3EnvSpecificResourceParameters }> => {
   // Validate required parameters' presence and merge into parameters
   const currentEnvSpecificParameters = ensureHeadlessParameters(resourceParameters, headlessParams);
-
-  const amplifyMeta = stateManager.getMeta();
 
   // Validate the parameters, generate the missing ones and import the resource.
   const questionParameters: S3ImportParameters = {

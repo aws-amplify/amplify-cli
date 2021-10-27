@@ -1,5 +1,5 @@
 import {
-  addApiWithSchema,
+  addApiWithoutSchema,
   addFeatureFlag,
   amplifyPush,
   amplifyPushForce,
@@ -28,7 +28,8 @@ describe('amplify key force push', () => {
     const initialSchema = 'migrations_key/simple_key.graphql';
     // init, add api and push with installed cli
     await initJSProjectWithProfile(projRoot, { name: projectName });
-    await addApiWithSchema(projRoot, initialSchema);
+    await addApiWithoutSchema(projRoot);
+    await updateApiSchema(projRoot, projectName, initialSchema);
     await amplifyPush(projRoot);
     // gql-compile and force push with codebase cli
     await apiGqlCompile(projRoot, true);

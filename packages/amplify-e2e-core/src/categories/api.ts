@@ -27,30 +27,27 @@ export function apiGqlCompile(cwd: string, testingWithLatestCodebase: boolean = 
 
 interface AddApiOptions {
   apiName: string;
+  testingWithLatestCodebase: boolean;
 }
 
 const defaultOptions: AddApiOptions = {
-  apiName: EOL,
+  apiName: '\r',
+  testingWithLatestCodebase: true,
 };
 
-export function addApiWithoutSchema(cwd: string, opts: Partial<AddApiOptions> = {}) {
+export function addApiWithoutSchema(cwd: string, opts: Partial<AddApiOptions & { apiKeyExpirationDays: number }> = {}) {
   const options = _.assign(defaultOptions, opts);
   return new Promise<void>((resolve, reject) => {
-    spawn(getCLIPath(), ['add', 'api'], { cwd, stripColors: true })
+    spawn(getCLIPath(options.testingWithLatestCodebase), ['add', 'api'], { cwd, stripColors: true })
       .wait('Select from one of the below mentioned services:')
+      .sendCarriageReturn()
+      .wait(/.*Here is the GraphQL API that we will create. Select a setting to edit or continue.*/)
+      .sendKeyUp(3)
       .sendCarriageReturn()
       .wait('Provide API name:')
       .sendLine(options.apiName)
-      .wait(/.*Choose the default authorization type for the API.*/)
+      .wait(/.*Here is the GraphQL API that we will create. Select a setting to edit or continue.*/)
       .sendCarriageReturn()
-      .wait(/.*Enter a description for the API key.*/)
-      .sendCarriageReturn()
-      .wait(/.*After how many days from now the API key should expire.*/)
-      .sendCarriageReturn()
-      .wait(/.*Do you want to configure advanced settings for the GraphQL API.*/)
-      .sendCarriageReturn()
-      .wait('Do you have an annotated GraphQL schema?')
-      .sendConfirmNo()
       .wait('Choose a schema template:')
       .sendCarriageReturn()
       .wait('Do you want to edit the schema now?')
@@ -68,30 +65,28 @@ export function addApiWithoutSchema(cwd: string, opts: Partial<AddApiOptions> = 
   });
 }
 
-export function addApiWithSchema(cwd: string, schemaFile: string, opts: Partial<AddApiOptions & { apiKeyExpirationDays: number }> = {}) {
+export function addApiWithBlankSchema(cwd: string, opts: Partial<AddApiOptions & { apiKeyExpirationDays: number }> = {}) {
   const options = _.assign(defaultOptions, opts);
-  const schemaPath = getSchemaPath(schemaFile);
   return new Promise<void>((resolve, reject) => {
-    spawn(getCLIPath(), ['add', 'api'], { cwd, stripColors: true })
+    spawn(getCLIPath(options.testingWithLatestCodebase), ['add', 'api'], { cwd, stripColors: true })
       .wait('Select from one of the below mentioned services:')
+      .sendCarriageReturn()
+      .wait(/.*Here is the GraphQL API that we will create. Select a setting to edit or continue.*/)
+      .sendKeyUp(3)
       .sendCarriageReturn()
       .wait('Provide API name:')
       .sendLine(options.apiName)
-      .wait(/.*Choose the default authorization type for the API.*/)
+      .wait(/.*Here is the GraphQL API that we will create. Select a setting to edit or continue.*/)
       .sendCarriageReturn()
-      .wait(/.*Enter a description for the API key.*/)
+      .wait('Choose a schema template:')
+      .sendKeyDown(2)
       .sendCarriageReturn()
-      .wait(/.*After how many days from now the API key should expire.*/)
-      .sendLine(opts.apiKeyExpirationDays ? opts.apiKeyExpirationDays.toString() : '1')
-      .wait(/.*Do you want to configure advanced settings for the GraphQL API.*/)
-      .sendCarriageReturn()
-      .wait('Do you have an annotated GraphQL schema?')
-      .sendConfirmYes()
-      .wait('Provide your schema file path:')
-      .sendLine(schemaPath)
+      .wait('Do you want to edit the schema now?')
+      .sendLine('n')
       .wait(
         '"amplify publish" will build all your local backend and frontend resources (if you have hosting category added) and provision it in the cloud',
       )
+      .sendEof()
       .run((err: Error) => {
         if (!err) {
           resolve();
@@ -102,32 +97,25 @@ export function addApiWithSchema(cwd: string, schemaFile: string, opts: Partial<
   });
 }
 
-export function addApiWithSchemaAndConflictDetection(cwd: string, schemaFile: string) {
-  const schemaPath = getSchemaPath(schemaFile);
+export function addApiWithBlankSchemaAndConflictDetection(cwd: string) {
   return new Promise<void>((resolve, reject) => {
-    spawn(getCLIPath(), ['add', 'api'], { cwd, stripColors: true })
+    spawn(getCLIPath(defaultOptions.testingWithLatestCodebase), ['add', 'api'], { cwd, stripColors: true })
       .wait('Select from one of the below mentioned services:')
       .sendCarriageReturn()
-      .wait('Provide API name:')
+      .wait(/.*Here is the GraphQL API that we will create. Select a setting to edit or continue.*/)
+      .sendKeyUp()
       .sendCarriageReturn()
-      .wait(/.*Choose the default authorization type for the API.*/)
-      .sendCarriageReturn()
-      .wait(/.*Enter a description for the API key.*/)
-      .sendCarriageReturn()
-      .wait(/.*After how many days from now the API key should expire.*/)
-      .sendCarriageReturn()
-      .wait(/.*Do you want to configure advanced settings for the GraphQL API.*/)
-      .sendLine(KEY_DOWN_ARROW) // Down
-      .wait(/.*Configure additional auth types.*/)
-      .sendConfirmNo()
       .wait(/.*Enable conflict detection.*/)
       .sendConfirmYes()
       .wait(/.*Select the default resolution strategy.*/)
       .sendCarriageReturn()
-      .wait(/.*Do you have an annotated GraphQL schema.*/)
-      .sendConfirmYes()
-      .wait('Provide your schema file path:')
-      .sendLine(schemaPath)
+      .wait(/.*Here is the GraphQL API that we will create. Select a setting to edit or continue.*/)
+      .sendCarriageReturn()
+      .wait('Choose a schema template:')
+      .sendKeyDown(2)
+      .sendCarriageReturn()
+      .wait('Do you want to edit the schema now?')
+      .sendLine('n')
       .wait(
         '"amplify publish" will build all your local backend and frontend resources (if you have hosting category added) and provision it in the cloud',
       )
@@ -155,7 +143,7 @@ export function updateApiWithMultiAuth(cwd: string, settings: any) {
     spawn(getCLIPath(settings.testingWithLatestCodebase), ['update', 'api'], { cwd, stripColors: true })
       .wait('Select from one of the below mentioned services:')
       .sendCarriageReturn()
-      .wait('Select from the options below')
+      .wait(/.*Select a setting to edit.*/)
       .sendCarriageReturn()
       .wait(/.*Choose the default authorization type for the API.*/)
       .sendCarriageReturn()
@@ -163,8 +151,6 @@ export function updateApiWithMultiAuth(cwd: string, settings: any) {
       .sendLine('description')
       .wait(/.*After how many days from now the API key should expire.*/)
       .sendLine('300')
-      .wait(/.*Do you want to configure advanced settings for the GraphQL API.*/)
-      .sendLine(KEY_DOWN_ARROW) // Down
       .wait(/.*Configure additional auth types.*/)
       .sendConfirmYes()
       .wait(/.*Choose the additional authorization types you want to configure for the API.*/)
@@ -187,8 +173,6 @@ export function updateApiWithMultiAuth(cwd: string, settings: any) {
       .sendLine('1000')
       .wait(/.*Enter the number of milliseconds a token is valid after being authenticated.*/)
       .sendLine('2000')
-      .wait('Enable conflict detection?')
-      .sendConfirmNo()
       .wait(/.*Successfully updated resource.*/)
       .sendEof()
       .run((err: Error) => {
@@ -201,48 +185,85 @@ export function updateApiWithMultiAuth(cwd: string, settings: any) {
   });
 }
 
-export function apiUpdateToggleDataStore(cwd: string, settings: any) {
+export function apiEnableDataStore(cwd: string, settings: any) {
   return new Promise<void>((resolve, reject) => {
     spawn(getCLIPath(settings.testingWithLatestCodebase), ['update', 'api'], { cwd, stripColors: true })
       .wait('Select from one of the below mentioned services:')
       .sendCarriageReturn()
-      .wait('Select from the options below')
-      .send(KEY_DOWN_ARROW)
-      .sendLine(KEY_DOWN_ARROW) // select enable datastore for the api
-      .wait(/.*Successfully updated resource.*/)
-      .sendEof()
-      .run((err: Error) => {
-        if (!err) {
-          resolve();
-        } else {
-          reject(err);
-        }
-      });
-  });
-}
-
-export function updateAPIWithResolutionStrategy(cwd: string, settings: any) {
-  return new Promise<void>((resolve, reject) => {
-    spawn(getCLIPath(settings.testingWithLatestCodebase), ['update', 'api'], { cwd, stripColors: true })
-      .wait('Select from one of the below mentioned services:')
+      .wait(/.*Select a setting to edit.*/)
+      .sendKeyDown()
       .sendCarriageReturn()
-      .wait('Select from the options below')
-      .sendCarriageReturn()
-      .wait(/.*Choose the default authorization type for the API.*/)
-      .sendCarriageReturn()
-      .wait(/.*Enter a description for the API key.*/)
-      .sendCarriageReturn()
-      .wait(/.*After how many days from now the API key should expire.*/)
-      .sendCarriageReturn()
-      .wait(/.*Do you want to configure advanced settings for the GraphQL API.*/)
-      .sendLine(KEY_DOWN_ARROW) // Down
-      .wait(/.*Configure additional auth types.*/)
-      .sendConfirmNo()
-      .wait(/.*Enable conflict detection.*/)
-      .sendConfirmYes()
       .wait(/.*Select the default resolution strategy.*/)
-      .sendLine(KEY_DOWN_ARROW) // Down
-      .wait(/.*Do you want to override default per model settings.*/)
+      .sendCarriageReturn()
+      .wait(/.*Do you want to override default per model settings?.*/)
+      .sendConfirmNo()
+      .wait(/.*Successfully updated resource.*/)
+      .sendEof()
+      .run((err: Error) => {
+        if (!err) {
+          resolve();
+        } else {
+          reject(err);
+        }
+      });
+  });
+}
+
+export function apiDisableDataStore(cwd: string, settings: any) {
+  return new Promise<void>((resolve, reject) => {
+    spawn(getCLIPath(settings.testingWithLatestCodebase), ['update', 'api'], { cwd, stripColors: true })
+      .wait('Select from one of the below mentioned services:')
+      .sendCarriageReturn()
+      .wait(/.*Select a setting to edit.*/)
+      .sendKeyDown(2) // Disable conflict detection
+      .sendCarriageReturn()
+      .wait(/.*Successfully updated resource.*/)
+      .sendEof()
+      .run((err: Error) => {
+        if (!err) {
+          resolve();
+        } else {
+          reject(err);
+        }
+      });
+  });
+}
+
+export function updateAPIWithResolutionStrategyWithoutModels(cwd: string, settings: any) {
+  return new Promise<void>((resolve, reject) => {
+    spawn(getCLIPath(settings.testingWithLatestCodebase), ['update', 'api'], { cwd, stripColors: true })
+      .wait('Select from one of the below mentioned services:')
+      .sendCarriageReturn()
+      .wait(/.*Select a setting to edit.*/)
+      .sendKeyDown()
+      .sendCarriageReturn()
+      .wait(/.*Select the default resolution strategy.*/)
+      .sendKeyDown()
+      .sendCarriageReturn()
+      .wait(/.*Successfully updated resource.*/)
+      .sendEof()
+      .run((err: Error) => {
+        if (!err) {
+          resolve();
+        } else {
+          reject(err);
+        }
+      });
+  });
+}
+
+export function updateAPIWithResolutionStrategyWithModels(cwd: string, settings: any) {
+  return new Promise<void>((resolve, reject) => {
+    spawn(getCLIPath(settings.testingWithLatestCodebase), ['update', 'api'], { cwd, stripColors: true })
+      .wait('Please select from one of the below mentioned services:')
+      .sendCarriageReturn()
+      .wait(/.*Select a setting to edit.*/)
+      .sendKeyDown()
+      .sendCarriageReturn()
+      .wait(/.*Select the default resolution strategy.*/)
+      .sendKeyDown()
+      .sendCarriageReturn()
+      .wait(/.*Do you want to override default per model settings?.*/)
       .sendConfirmNo()
       .wait(/.*Successfully updated resource.*/)
       .sendEof()
@@ -385,15 +406,18 @@ const allAuthTypes = ['API key', 'Amazon Cognito User Pool', 'IAM', 'OpenID Conn
 export function addApi(projectDir: string, settings?: any) {
   let authTypesToSelectFrom = allAuthTypes.slice();
   return new Promise<void>((resolve, reject) => {
-    let chain = spawn(getCLIPath(), ['add', 'api'], { cwd: projectDir, stripColors: true })
+    let chain = spawn(getCLIPath(defaultOptions.testingWithLatestCodebase), ['add', 'api'], { cwd: projectDir, stripColors: true })
       .wait('Select from one of the below mentioned services:')
-      .sendCarriageReturn()
-      .wait('Provide API name:')
       .sendCarriageReturn();
 
     if (settings && Object.keys(settings).length > 0) {
       const authTypesToAdd = Object.keys(settings);
       const defaultType = authTypesToAdd[0];
+
+      chain
+        .wait(/.*Here is the GraphQL API that we will create. Select a setting to edit or continue.*/)
+        .sendKeyUp(2)
+        .sendCarriageReturn();
 
       singleSelect(chain.wait('Choose the default authorization type for the API'), defaultType, authTypesToSelectFrom);
       setupAuthType(defaultType, chain, settings);
@@ -401,12 +425,7 @@ export function addApi(projectDir: string, settings?: any) {
       if (authTypesToAdd.length > 1) {
         authTypesToAdd.shift();
 
-        chain
-          .wait('Do you want to configure advanced settings for the GraphQL API')
-          .send(KEY_DOWN_ARROW) //yes
-          .sendCarriageReturn()
-          .wait('Configure additional auth types?')
-          .sendConfirmYes();
+        chain.wait('Configure additional auth types?').sendConfirmYes();
 
         authTypesToSelectFrom = authTypesToSelectFrom.filter(x => x !== defaultType);
 
@@ -419,21 +438,14 @@ export function addApi(projectDir: string, settings?: any) {
         authTypesToAdd.forEach(authType => {
           setupAuthType(authType, chain, settings);
         });
-
-        chain.wait('Enable conflict detection?').sendCarriageReturn(); //No
       } else {
-        chain.wait('Do you want to configure advanced settings for the GraphQL API').sendCarriageReturn(); //No
+        chain.wait('Configure additional auth types?').sendLine('n');
       }
-    } else {
-      chain.wait('Choose the default authorization type for the API').sendCarriageReturn();
-      setupAPIKey(chain);
-
-      chain.wait('Do you want to configure advanced settings for the GraphQL API').sendCarriageReturn(); //No
     }
 
     chain
-      .wait('Do you have an annotated GraphQL schema?')
-      .sendConfirmNo()
+      .wait(/.*Here is the GraphQL API that we will create. Select a setting to edit or continue.*/)
+      .sendCarriageReturn()
       .wait('Choose a schema template:')
       .sendCarriageReturn()
       .wait('Do you want to edit the schema now?')
@@ -512,18 +524,19 @@ function setupOIDC(chain: any, settings?: any) {
 
 export function addApiWithCognitoUserPoolAuthTypeWhenAuthExists(projectDir: string) {
   return new Promise<void>((resolve, reject) => {
-    spawn(getCLIPath(), ['add', 'api'], { cwd: projectDir, stripColors: true })
+    spawn(getCLIPath(defaultOptions.testingWithLatestCodebase), ['add', 'api'], { cwd: projectDir, stripColors: true })
       .wait('Select from one of the below mentioned services:')
       .sendCarriageReturn()
-      .wait('Provide API name:')
+      .wait(/.*Here is the GraphQL API that we will create. Select a setting to edit or continue.*/)
+      .sendKeyUp(2)
       .sendCarriageReturn()
-      .wait('Choose the default authorization type for the API')
-      .send(KEY_DOWN_ARROW)
+      .wait(/.*Choose the default authorization type for the API.*/)
+      .sendKeyDown(1)
       .sendCarriageReturn()
-      .wait('Do you want to configure advanced settings for the GraphQL AP')
+      .wait(/.*Configure additional auth types.*/)
+      .sendLine('n')
+      .wait(/.*Here is the GraphQL API that we will create. Select a setting to edit or continue.*/)
       .sendCarriageReturn()
-      .wait('Do you have an annotated GraphQL schema?')
-      .sendConfirmNo()
       .wait('Choose a schema template:')
       .sendCarriageReturn()
       .wait('Do you want to edit the schema now?')
@@ -567,6 +580,16 @@ export function addRestContainerApi(projectDir: string) {
           reject(err);
         }
       });
+  });
+}
+
+export function rebuildApi(projDir: string, apiName: string) {
+  return new Promise<void>((resolve, reject) => {
+    spawn(getCLIPath(), ['rebuild', 'api'], { cwd: projDir, stripColors: true })
+      .wait('Type the name of the API to confirm you want to continue')
+      .sendLine(apiName)
+      .wait('All resources are updated in the cloud')
+      .run(err => (err ? reject(err) : resolve()));
   });
 }
 

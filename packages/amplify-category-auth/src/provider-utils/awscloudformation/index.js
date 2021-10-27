@@ -5,9 +5,8 @@ const { getAuthResourceName } = require('../../utils/getAuthResourceName');
 const { copyCfnTemplate, saveResourceParameters } = require('./utils/synthesize-resources');
 const { ENV_SPECIFIC_PARAMS, AmplifyAdmin, UserPool, IdentityPool, BothPools, privateKeys } = require('./constants');
 const { getAddAuthHandler, getUpdateAuthHandler } = require('./handlers/resource-handlers');
-const { supportedServices } = require('../supported-services');
+const { getSupportedServices } = require('../supported-services');
 const { importResource, importedAuthEnvInit } = require('./import');
-const { AuthInputState } = require('./auth-inputs-manager/auth-input-state');
 
 function serviceQuestions(context, defaultValuesFilename, stringMapsFilename, serviceWalkthroughFilename, serviceMetadata) {
   const serviceWalkthroughSrc = `${__dirname}/service-walkthroughs/${serviceWalkthroughFilename}`;
@@ -15,17 +14,17 @@ function serviceQuestions(context, defaultValuesFilename, stringMapsFilename, se
   return serviceWalkthrough(context, defaultValuesFilename, stringMapsFilename, serviceMetadata);
 }
 
-async function addResource(context, service) {
-  const serviceMetadata = supportedServices[service];
+async function addResource(context, service, skipNextSteps = false) {
+  const serviceMetadata = getSupportedServices()[service];
   const { defaultValuesFilename, stringMapsFilename, serviceWalkthroughFilename } = serviceMetadata;
-  // add
-  return getAddAuthHandler(context)(
-    await serviceQuestions(context, defaultValuesFilename, stringMapsFilename, serviceWalkthroughFilename, serviceMetadata),
-  );
+  return getAddAuthHandler(
+    context,
+    skipNextSteps,
+  )(await serviceQuestions(context, defaultValuesFilename, stringMapsFilename, serviceWalkthroughFilename, serviceMetadata));
 }
 
 async function updateResource(context, { service }) {
-  const serviceMetadata = supportedServices[service];
+  const serviceMetadata = getSupportedServices()[service];
   const { defaultValuesFilename, stringMapsFilename, serviceWalkthroughFilename } = serviceMetadata;
   return getUpdateAuthHandler(context)(
     await serviceQuestions(context, defaultValuesFilename, stringMapsFilename, serviceWalkthroughFilename, serviceMetadata),
@@ -33,7 +32,7 @@ async function updateResource(context, { service }) {
 }
 
 async function updateConfigOnEnvInit(context, category, service) {
-  const srvcMetaData = supportedServices.Cognito;
+  const srvcMetaData = getSupportedServices().Cognito;
   const { defaultValuesFilename, stringMapsFilename, serviceWalkthroughFilename, provider } = srvcMetaData;
 
   const providerPlugin = context.amplify.getPluginInstance(context, provider);
@@ -182,7 +181,7 @@ async function migrate(context) {
   if (!Object.keys(existingAuth).length > 0) {
     return;
   }
-  const { provider, cfnFilename, defaultValuesFilename } = supportedServices.Cognito;
+  const { provider, cfnFilename, defaultValuesFilename } = getSupportedServices().Cognito;
   const defaultValuesSrc = `${__dirname}/assets/${defaultValuesFilename}`;
 
   const { roles } = require(defaultValuesSrc);
@@ -432,7 +431,7 @@ async function openIdentityPoolConsole(context, region, identityPoolId) {
 }
 
 function getPermissionPolicies(context, service, resourceName, crudOptions) {
-  const { serviceWalkthroughFilename } = supportedServices[service];
+  const { serviceWalkthroughFilename } = getSupportedServices()[service];
   const serviceWalkthroughSrc = `${__dirname}/service-walkthroughs/${serviceWalkthroughFilename}`;
   const { getIAMPolicies } = require(serviceWalkthroughSrc);
 

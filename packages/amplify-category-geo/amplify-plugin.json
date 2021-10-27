@@ -1,16 +1,9 @@
 {
-    "name": "geo",
-    "type": "category",
-    "commands": [
-        "add",
-        "push",
-        "remove",
-        "update",
-        "help",
-        "console"
-    ],
-    "commandAliases":{
-        "configure": "update"
-    },
-    "eventHandlers": []
+  "name": "geo",
+  "type": "category",
+  "commands": ["add", "push", "remove", "update", "help", "console"],
+  "commandAliases": {
+    "configure": "update"
+  },
+  "eventHandlers": []
 }

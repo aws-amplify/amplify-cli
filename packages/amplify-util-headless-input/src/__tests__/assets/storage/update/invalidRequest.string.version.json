@@ -1,0 +1,10 @@
+{
+  "version": "1",
+  "serviceModification": {
+    "serviceName": "S3",
+    "permissions": {
+      "auth": ["READ"]
+    },
+    "resourceName": "something"
+  }
+}

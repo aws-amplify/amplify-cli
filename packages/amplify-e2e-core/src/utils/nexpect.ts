@@ -23,7 +23,7 @@ import { join, parse } from 'path';
 import * as fs from 'fs-extra';
 import * as os from 'os';
 import { getScriptRunnerPath, isTestingWithLatestCodebase } from '..';
-
+const RETURN = process.platform === 'win32' ? '\r' : EOL;
 const DEFAULT_NO_OUTPUT_TIMEOUT = process.env.AMPLIFY_TEST_TIMEOUT_SEC
   ? Number.parseInt(process.env.AMPLIFY_TEST_TIMEOUT_SEC, 10) * 1000
   : 5 * 60 * 1000; // 5 Minutes
@@ -158,7 +158,7 @@ function chain(context: Context): ExecutionContext {
     sendLine: function (line: string): ExecutionContext {
       let _sendline: ExecutionStep = {
         fn: () => {
-          context.process.write(`${line}${EOL}`);
+          context.process.write(`${line}${RETURN}`);
           return true;
         },
         name: '_sendline',
@@ -172,7 +172,7 @@ function chain(context: Context): ExecutionContext {
     sendCarriageReturn: function (): ExecutionContext {
       let _sendline: ExecutionStep = {
         fn: () => {
-          context.process.write(EOL);
+          context.process.write(RETURN);
           return true;
         },
         name: '_sendline',
@@ -234,7 +234,7 @@ function chain(context: Context): ExecutionContext {
     sendConfirmYes: function (): ExecutionContext {
       var _send: ExecutionStep = {
         fn: () => {
-          context.process.write(`Y${EOL}`);
+          context.process.write(`Y${RETURN}`);
           return true;
         },
         name: '_send',
@@ -248,7 +248,7 @@ function chain(context: Context): ExecutionContext {
     sendConfirmNo: function (): ExecutionContext {
       var _send: ExecutionStep = {
         fn: () => {
-          context.process.write(`N${EOL}`);
+          context.process.write(`N${RETURN}`);
           return true;
         },
         name: '_send',
@@ -262,7 +262,7 @@ function chain(context: Context): ExecutionContext {
     sendCtrlC: function (): ExecutionContext {
       var _send: ExecutionStep = {
         fn: () => {
-          context.process.write(`${CONTROL_C}${EOL}`);
+          context.process.write(`${CONTROL_C}${RETURN}`);
           return true;
         },
         name: '_send',
@@ -640,9 +640,14 @@ export function nspawn(command: string | string[], params: string[] = [], option
   }
 
   const testingWithLatestCodebase = isTestingWithLatestCodebase(command);
-  if (testingWithLatestCodebase) {
+  if (testingWithLatestCodebase || (process.platform === 'win32' && !command.endsWith('.exe'))) {
     params.unshift(command);
     command = getScriptRunnerPath(testingWithLatestCodebase);
+  }
+
+  if (process.platform === 'win32' && !command.endsWith('powershell.exe')) {
+    params.unshift(command);
+    command = 'C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe';
   }
 
   let childEnv = undefined;
@@ -665,6 +670,7 @@ export function nspawn(command: string | string[], params: string[] = [], option
       ...process.env,
       ...pushEnv,
       ...options.env,
+      NODE_OPTIONS: '--max_old_space_size=4096',
     };
 
     // Undo ci-info detection, required for some tests
