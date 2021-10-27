@@ -323,11 +323,12 @@ export function updateTableForConnection(config: HasManyDirectiveConfiguration, 
   }
 
   const { field, object, relatedType } = config;
-  const connectionName = getConnectionAttributeName(object.name.value, field.name.value);
+  const mappedObjectName = ctx.resourceHelper.getModelNameMapping(object.name.value);
+  const connectionName = getConnectionAttributeName(mappedObjectName, field.name.value);
   const table = getTable(ctx, relatedType) as any;
   const gsis = table.globalSecondaryIndexes;
 
-  indexName = `gsi-${object.name.value}.${field.name.value}`;
+  indexName = `gsi-${mappedObjectName}.${field.name.value}`;
   config.indexName = indexName;
 
   // Check if the GSI already exists.

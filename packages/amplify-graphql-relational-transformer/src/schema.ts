@@ -153,10 +153,13 @@ export function ensureBelongsToConnectionField(config: BelongsToDirectiveConfigu
   const { relationType, relatedType, relatedField } = config;
   if (relationType === 'hasOne') {
     ensureHasOneConnectionField(config, ctx, getConnectionAttributeName(relatedType.name.value, relatedField.name.value));
-  } else {
-    // hasMany
-    config.connectionFields.push(getConnectionAttributeName(relatedType.name.value, relatedField.name.value));
   }
+  // The connection field name need to be mapped to the original name specified by @mapsTo in the resolvers
+  // Setting it here so it will get picked up by the resolver generation logic
+  config.connectionFields.length = 0; // remove existing elements
+  config.connectionFields.push(
+    getConnectionAttributeName(ctx.resourceHelper.getModelNameMapping(relatedType.name.value), relatedField.name.value),
+  );
 }
 
 export function ensureHasManyConnectionField(

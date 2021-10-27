@@ -294,7 +294,10 @@ export class GraphQLResourceManager {
       }
       return _.uniq(
         diffs
-          .filter(diff => diff.path.includes('KeySchema') || diff.path.includes('LocalSecondaryIndexes')) // filter diffs with changes that require replacement
+          .filter(
+            diff =>
+              (diff.kind === 'E' && diff.path.length === 8 && diff.path[5] === 'KeySchema') || diff.path.includes('LocalSecondaryIndexes'),
+          ) // filter diffs with changes that require replacement
           .map(diff => ({
             // extract table name and stack name from diff path
             tableName: diff.path?.[3] as string,
