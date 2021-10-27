@@ -1,6 +1,6 @@
 import * as path from 'path';
 import * as fs from 'fs-extra';
-import {v4 as uuid} from 'uuid';
+import { v4 as uuid } from 'uuid';
 import { printer, prompter } from 'amplify-prompts';
 import {
   exitOnNextTick,
@@ -55,8 +55,8 @@ export async function addWalkthrough(context: $TSContext, defaultValuesFilename:
 
   //Migrate auth category if required
   try {
-    await migrateAuthDependencyResource(context)
-  } catch ( error ){
+    await migrateAuthDependencyResource(context);
+  } catch (error) {
     await printErrorAuthResourceMigrationFailed(context);
     exitOnNextTick(0);
   }
@@ -136,7 +136,7 @@ export async function updateWalkthrough(context: $TSContext) {
     if (!cliInputsState.cliInputFileExists()) {
       if (context.exeInfo?.forcePush || (await prompter.confirmContinue('File migration required to continue. Do you want to continue?'))) {
         //migrate auth and storage
-        await cliInputsState.migrate( context );
+        await cliInputsState.migrate(context);
         const stackGenerator = new AmplifyS3ResourceStackTransform(resourceName, context);
         await stackGenerator.transform(CLISubCommandType.UPDATE); //generates cloudformation
       } else {
@@ -195,7 +195,7 @@ export async function migrateStorageCategory(context: $TSContext, resourceName: 
   let cliInputsState = new S3InputState(resourceName, undefined);
   //Check if migration is required
   if (!cliInputsState.cliInputFileExists()) {
-    await cliInputsState.migrate( context );
+    await cliInputsState.migrate(context);
     const stackGenerator = new AmplifyS3ResourceStackTransform(resourceName, context);
     await stackGenerator.transform(CLISubCommandType.MIGRATE);
     return stackGenerator.getCFN();
@@ -614,7 +614,7 @@ async function getLambdaFunctionList(context: $TSAny) {
       : [];
   return lambdaResources ? lambdaResources : [];
 }
-export const resourceAlreadyExists = (_context: $TSContext) => {
+export const resourceAlreadyExists = () => {
   const amplifyMeta = stateManager.getMeta();
   let resourceName;
 

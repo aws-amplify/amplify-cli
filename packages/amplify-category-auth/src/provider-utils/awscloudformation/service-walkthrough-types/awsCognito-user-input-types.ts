@@ -35,6 +35,7 @@ export interface ServiceQuestionsBaseResult {
   sharedId?: string;
   userpoolClientGenerateSecret: boolean;
   userpoolClientLambdaRole: string;
+  useEnabledMfas?: boolean;
 }
 
 export interface OAuthResult {
