@@ -20,10 +20,26 @@ test('throws if multiple primary keys are defined on an object', () => {
   }).toThrow(`You may only supply one primary key on type 'Test'.`);
 });
 
-test('throws if primary key is nullable', () => {
+test('throws if partition key is nullable', () => {
   const schema = `
     type Test @model {
       id: ID @primaryKey
+      email: String
+    }`;
+
+  const transformer = new GraphQLTransform({
+    transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
+  });
+
+  expect(() => {
+    transformer.transform(schema);
+  }).toThrow(`The primary key on type 'Test' must reference non-null fields.`);
+});
+
+test('throws if sort key is nullable', () => {
+  const schema = `
+    type Test @model {
+      id: ID @primaryKey(sortKeyFields: ["email"])
       email: String
     }`;
 
@@ -213,7 +229,7 @@ test('a primary key with a composite sort key is properly configured', () => {
     type Test @model {
       email: String! @primaryKey(sortKeyFields: ["kind", "other"])
       kind: Int!
-      other: AWSDateTime
+      other: AWSDateTime!
       yetAnother: String
       andAnother: String!
     }`;
@@ -265,7 +281,7 @@ test('a primary key with a composite sort key is properly configured', () => {
   expect(createInput).toBeDefined();
   expect(createInput.fields.find((f: any) => f.name.value === 'email' && f.type.kind === Kind.NON_NULL_TYPE)).toBeDefined();
   expect(createInput.fields.find((f: any) => f.name.value === 'kind' && f.type.kind === Kind.NON_NULL_TYPE)).toBeDefined();
-  expect(createInput.fields.find((f: any) => f.name.value === 'other' && f.type.kind === Kind.NAMED_TYPE)).toBeDefined();
+  expect(createInput.fields.find((f: any) => f.name.value === 'other' && f.type.kind === Kind.NON_NULL_TYPE)).toBeDefined();
   expect(createInput.fields.find((f: any) => f.name.value === 'yetAnother' && f.type.kind === Kind.NAMED_TYPE)).toBeDefined();
   expect(createInput.fields.find((f: any) => f.name.value === 'andAnother' && f.type.kind === Kind.NON_NULL_TYPE)).toBeDefined();
   expect(createInput.fields.find((f: any) => f.name.value === 'id')).toBeUndefined();
@@ -427,7 +443,7 @@ test('resolvers can be renamed by @model', () => {
       mutations: { create: "testCreate", delete: "testDelete", update: "testUpdate" }
     ) {
       id: ID! @primaryKey(sortKeyFields: ["email"])
-      email: String
+      email: String!
     }`;
 
   const transformer = new GraphQLTransform({
@@ -471,7 +487,7 @@ test('individual resolvers can be made null by @model', () => {
   const inputSchema = `
     type Test @model(queries: { get: "testGet", list: null }) {
       id: ID! @primaryKey(sortKeyFields: ["email"])
-      email: String
+      email: String!
     }`;
 
   const transformer = new GraphQLTransform({
