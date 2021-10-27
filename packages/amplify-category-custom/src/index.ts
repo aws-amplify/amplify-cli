@@ -1,4 +1,4 @@
-import path from 'path';
+import * as path from 'path';
 import { $TSContext, $TSAny, IAmplifyResource } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import { categoryName } from './utils/constants';

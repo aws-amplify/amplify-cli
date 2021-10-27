@@ -1,11 +1,12 @@
 import { customResourceNameQuestion } from '../utils/common-questions';
 import * as fs from 'fs-extra';
 import { printer } from 'amplify-prompts';
-import path from 'path';
+import * as path from 'path';
 import { pathManager, $TSContext } from 'amplify-cli-core';
 import { JSONUtilities } from 'amplify-cli-core';
 import { buildCustomResources } from '../utils/build-custom-resources';
-import { categoryName, DEPLOYMENT_PROVIDER_NAME, CDK_SERVICE_NAME } from '../utils/constants';
+import { categoryName, cdkFileName, DEPLOYMENT_PROVIDER_NAME, CDK_SERVICE_NAME } from '../utils/constants';
+import { prompter } from 'amplify-prompts';
 
 export async function addCDKWalkthrough(context: $TSContext) {
   const resourceName = await customResourceNameQuestion();
@@ -13,11 +14,17 @@ export async function addCDKWalkthrough(context: $TSContext) {
   await generateSkeletonDir(resourceName);
   await updateAmplifyMetaFiles(context, resourceName);
 
-  printer.success(`Successfully added resource ${resourceName} locally`);
+  printer.success(`Created skeleton CDK stack in amplify/backend/custom/${resourceName} directory`);
 
   await buildCustomResources(context, resourceName);
 
   // Open editor
+  const resourceDirPath = path.join(pathManager.getBackendDirPath(), categoryName, resourceName);
+  const cdkFilepath = path.join(resourceDirPath, cdkFileName);
+
+  if (await prompter.yesOrNo('Do you want to edit the CDK stack now?', true)) {
+    await context.amplify.openEditor(context, cdkFilepath);
+  }
 }
 
 async function updateAmplifyMetaFiles(context: $TSContext, resourceName: string) {
@@ -34,8 +41,7 @@ async function generateSkeletonDir(resourceName: string) {
   const targetDir = path.join(pathManager.getBackendDirPath(), categoryName, resourceName);
 
   if (fs.existsSync(targetDir)) {
-    printer.error(`Custom resource with ${resourceName} already exists.`);
-    return;
+    throw new Error(`Custom resource with ${resourceName} already exists.`);
   }
   fs.ensureDirSync(targetDir);
 

@@ -6,3 +6,4 @@ export const CDK_SERVICE_NAME = 'customCDK';
 export const CFN_SERVICE_NAME = 'customCloudformation';
 export const DEPLOYMENT_PROVIDER_NAME = 'awscloudformation';
 export const customResourceCFNFilename = `cloudformation-template.json`;
+export const cdkFileName = 'cdk-stack.ts';

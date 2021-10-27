@@ -1,11 +1,11 @@
+import { $TSContext } from 'amplify-cli-core';
 import { buildCustomResources } from '../../utils/build-custom-resources';
 
-module.exports = {
-  name: 'build',
-  run: async (context: any) => {
-    const { parameters } = context;
-    const resourceName = parameters.first;
+export const name = 'build';
 
-    await buildCustomResources(context, resourceName);
-  },
-};
+export async function run(context: $TSContext) {
+  const { parameters } = context;
+  const resourceName = parameters.first;
+
+  await buildCustomResources(context, resourceName);
+}

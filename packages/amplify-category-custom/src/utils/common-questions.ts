@@ -1,5 +1,6 @@
 import { customDeploymentOptions } from '../utils/constants';
 import { prompter } from 'amplify-prompts';
+import uuid from 'uuid';
 
 export async function customDeploymentOptionsQuestion(): Promise<string> {
   const deploymentOption = await prompter.pick('How do you want to define this custom resource?', customDeploymentOptions);
@@ -7,6 +8,9 @@ export async function customDeploymentOptionsQuestion(): Promise<string> {
 }
 
 export async function customResourceNameQuestion(): Promise<string> {
-  const resourceName = await prompter.input('Provide a name for your custom resource');
+  const [shortId] = uuid().split('-');
+  const defaultResourceName = `customResource${shortId}`;
+
+  const resourceName = await prompter.input('Provide a name for your custom resource', { initial: defaultResourceName });
   return resourceName;
 }

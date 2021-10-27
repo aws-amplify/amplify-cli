@@ -1,6 +1,6 @@
 import { $TSContext, pathManager, readCFNTemplate, stateManager, writeCFNTemplate } from 'amplify-cli-core';
 import { glob } from 'glob';
-import path from 'path';
+import * as path from 'path';
 import * as fs from 'fs-extra';
 import { printer } from 'amplify-prompts';
 import * as cdk from '@aws-cdk/core';
@@ -37,7 +37,9 @@ export function getResourceCfnOutputAttributes(category: string, resourceName: s
         printer.warn(`${resourceName} has more than one CloudFormation definitions in the resource folder which isn't permitted.`);
         return [];
       } else {
-        cfnFilePath = path.join(resourceBuildDir, cfnFiles[0]);
+        if (resourceBuildDir && cfnFiles[0]) {
+          cfnFilePath = path.join(resourceBuildDir, cfnFiles[0]);
+        }
       }
     }
   }
@@ -46,17 +48,60 @@ export function getResourceCfnOutputAttributes(category: string, resourceName: s
     const cfnFiles = glob.sync(cfnTemplateGlobPattern, {
       cwd: resourceDir,
     });
-
-    cfnFilePath = path.join(resourceDir, cfnFiles[0]);
+    if (resourceDir && cfnFiles[0]) {
+      cfnFilePath = path.join(resourceDir, cfnFiles[0]);
+    }
   }
-
-  const { cfnTemplate } = readCFNTemplate(cfnFilePath);
-
-  if (cfnTemplate.Outputs) {
-    return Object.keys(cfnTemplate.Outputs) as [string?];
+  if (cfnFilePath) {
+    const { cfnTemplate } = readCFNTemplate(cfnFilePath);
+    if (cfnTemplate.Outputs) {
+      return Object.keys(cfnTemplate.Outputs) as [string?];
+    }
   }
 
   return [];
+}
+
+export function getAllResources() {
+  const meta = stateManager.getMeta();
+  const categories = Object.keys(meta).filter(category => category !== 'providers');
+  const allResources: any = {};
+
+  for (const category of categories) {
+    let resourcesList = category in meta ? Object.keys(meta[category]) : [];
+
+    if (_.isEmpty(resourcesList)) {
+      continue;
+    }
+
+    for (const resourceName of resourcesList) {
+      // In case of some resources they are not in the meta file so check for resource existence as well
+      const isMobileHubImportedResource = _.get(meta, [category, resourceName, 'mobileHubMigrated'], false);
+      if (isMobileHubImportedResource) {
+        continue;
+      } else {
+        const resourceCfnOutputAttributes: [string?] = getResourceCfnOutputAttributes(category, resourceName);
+        if (resourceCfnOutputAttributes.length === 0) {
+          continue;
+        }
+
+        if (!allResources[category]) {
+          allResources[category] = {};
+        }
+        if (!allResources[category][resourceName]) {
+          allResources[category][resourceName] = {};
+        }
+
+        for (const attribute of resourceCfnOutputAttributes) {
+          if (attribute) {
+            allResources[category][resourceName][attribute] = 'string';
+          }
+        }
+      }
+    }
+  }
+
+  return allResources;
 }
 
 // helper function to add dependencies for resources to a CDK stack
@@ -123,7 +168,7 @@ export async function addCFNResourceDependency(context: $TSContext, customResour
   const selectResourcesInCategory = (
     choices: DistinctChoice<any>[],
     currentResourceDependencyMap: any,
-    category: any,
+    category: string,
   ): CheckboxQuestion => ({
     type: 'checkbox',
     name: 'resources',
@@ -263,6 +308,7 @@ function generateInputParametersForDependencies(resources: AmplifyDependentResou
     for (const attribute of resource.attributes || []) {
       parameters[`${resource.category}${resource.resourceName}${attribute}`] = {
         Type: 'String',
+        Description: `Input parameter describing ${attribute} attribute for ${resource.category}/${resource.resourceName} resource`,
       };
     }
   }
