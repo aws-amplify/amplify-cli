@@ -32,7 +32,7 @@ import {
   IS_AUTHORIZED_FLAG,
   API_KEY_AUTH_TYPE,
 } from '../utils';
-import { getOwnerClaim, generateStaticRoleExpression, apiKeyExpression, iamExpression, emptyPayload, getIdentityClaimExp } from './helpers';
+import { getOwnerClaim, generateStaticRoleExpression, apiKeyExpression, iamExpression, emptyPayload, lambdaExpression, getIdentityClaimExp } from './helpers';
 
 // Field Read VTL Functions
 const generateDynamicAuthReadExpression = (roles: Array<RoleDefinition>, fields: ReadonlyArray<FieldDefinitionNode>) => {
@@ -89,10 +89,13 @@ export const generateAuthExpressionForField = (
   roles: Array<RoleDefinition>,
   fields: ReadonlyArray<FieldDefinitionNode>,
 ): string => {
-  const { cogntoStaticRoles, cognitoDynamicRoles, oidcStaticRoles, oidcDynamicRoles, iamRoles, apiKeyRoles } = splitRoles(roles);
+  const { cogntoStaticRoles, cognitoDynamicRoles, oidcStaticRoles, oidcDynamicRoles, iamRoles, apiKeyRoles, lambdaRoles } = splitRoles(roles);
   const totalAuthExpressions: Array<Expression> = [set(ref(IS_AUTHORIZED_FLAG), bool(false))];
   if (provider.hasApiKey) {
     totalAuthExpressions.push(apiKeyExpression(apiKeyRoles));
+  }
+  if (provider.hasLambda) {
+    totalAuthExpressions.push(lambdaExpression(lambdaRoles));
   }
   if (provider.hasIAM) {
     totalAuthExpressions.push(iamExpression(iamRoles, provider.hasAdminUIEnabled, provider.adminUserPoolID));

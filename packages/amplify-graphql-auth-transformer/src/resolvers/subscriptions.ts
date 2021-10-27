@@ -18,6 +18,7 @@ import {
   getOwnerClaim,
   apiKeyExpression,
   iamExpression,
+  lambdaExpression,
   emptyPayload,
   setHasAuthExpression,
 } from './helpers';
@@ -44,10 +45,13 @@ const dynamicRoleExpression = (roles: Array<RoleDefinition>): Array<Expression> 
 };
 
 export const generateAuthExpressionForSubscriptions = (providers: ConfiguredAuthProviders, roles: Array<RoleDefinition>): string => {
-  const { cogntoStaticRoles, cognitoDynamicRoles, oidcStaticRoles, oidcDynamicRoles, iamRoles, apiKeyRoles } = splitRoles(roles);
+  const { cogntoStaticRoles, cognitoDynamicRoles, oidcStaticRoles, oidcDynamicRoles, iamRoles, apiKeyRoles, lambdaRoles } = splitRoles(roles);
   const totalAuthExpressions: Array<Expression> = [setHasAuthExpression, set(ref(IS_AUTHORIZED_FLAG), bool(false))];
   if (providers.hasApiKey) {
     totalAuthExpressions.push(apiKeyExpression(apiKeyRoles));
+  }
+  if (providers.hasLambda) {
+    totalAuthExpressions.push(lambdaExpression(lambdaRoles));
   }
   if (providers.hasIAM) {
     totalAuthExpressions.push(iamExpression(iamRoles, providers.hasAdminUIEnabled, providers.adminUserPoolID));

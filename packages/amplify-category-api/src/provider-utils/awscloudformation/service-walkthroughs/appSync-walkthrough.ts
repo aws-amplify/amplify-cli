@@ -3,7 +3,7 @@ import { dataStoreLearnMore } from '../sync-conflict-handler-assets/syncAssets';
 import inquirer from 'inquirer';
 import fs from 'fs-extra';
 import path from 'path';
-import { rootAssetDir } from '../aws-constants';
+import { rootAssetDir, provider } from '../aws-constants';
 import { collectDirectivesByTypeNames, readProjectConfiguration } from 'graphql-transformer-core';
 import { category } from '../../../category-constants';
 import { UpdateApiRequest } from '../../../../../amplify-headless-interface/lib/interface/api/update';
@@ -11,6 +11,7 @@ import { authConfigToAppSyncAuthType } from '../utils/auth-config-to-app-sync-au
 import { resolverConfigToConflictResolution } from '../utils/resolver-config-to-conflict-resolution-bi-di-mapper';
 import _ from 'lodash';
 import chalk from 'chalk';
+import uuid from 'uuid';
 import { getAppSyncAuthConfig, checkIfAuthExists, authConfigHasApiKey } from '../utils/amplify-meta-utils';
 import {
   ResourceAlreadyExistsError,
@@ -29,6 +30,9 @@ const serviceName = 'AppSync';
 const elasticContainerServiceName = 'ElasticContainer';
 const providerName = 'awscloudformation';
 const graphqlSchemaDir = path.join(rootAssetDir, 'graphql-schemas');
+
+// keep in sync with ServiceName in amplify-category-function, but probably it will not change
+const FunctionServiceNameLambdaFunction = 'Lambda';
 
 const authProviderChoices = [
   {
@@ -68,6 +72,7 @@ const conflictResolutionHanlderChoices = [
   },
 ];
 
+const blankSchemaFile = 'blank-schema.graphql';
 const schemaTemplatesV1 = [
   {
     name: 'Single object with fields (e.g., “Todo” with ID, name, description)',
@@ -83,7 +88,7 @@ const schemaTemplatesV1 = [
   },
   {
     name: 'Blank Schema',
-    value: 'blank-schema.graphql',
+    value: blankSchemaFile,
   },
 ];
 
@@ -102,7 +107,7 @@ const schemaTemplatesV2 = [
   },
   {
     name: 'Blank Schema',
-    value: 'blank-schema.graphql',
+    value: blankSchemaFile,
   },
 ];
 
@@ -146,7 +151,7 @@ export const openConsole = async (context: $TSContext) => {
 
       url = `https://console.aws.amazon.com/appsync/home?region=${Region}#/${GraphQLAPIIdOutput}/v1/queries`;
 
-      const providerPlugin = await import(context.amplify.getProviderPlugins(context).awscloudformation);
+      const providerPlugin = await import(context.amplify.getProviderPlugins(context)[provider]);
       const { isAdminApp, region } = await providerPlugin.isAmplifyAdminApp(appId);
       if (isAdminApp) {
         if (region !== Region) {
@@ -384,9 +389,9 @@ const updateApiInputWalkthrough = async (context, project, resolverConfig, model
 
 export const serviceWalkthrough = async (context: $TSContext, defaultValuesFilename, serviceMetadata) => {
   const resourceName = resourceAlreadyExists(context);
-  const providerPlugin = await import(context.amplify.getProviderPlugins(context).awscloudformation);
+  const providerPlugin = await import(context.amplify.getProviderPlugins(context)[provider]);
   const transformerVersion = providerPlugin.getTransformerVersion(context);
-
+  await addLambdaAuthorizerChoice(context);
   if (resourceName) {
     const errMessage =
       'You already have an AppSync API in your project. Use the "amplify update api" command to update your existing AppSync API.';
@@ -414,7 +419,7 @@ export const serviceWalkthrough = async (context: $TSContext, defaultValuesFilen
 
   const { templateSelection } = await inquirer.prompt(templateSelectionQuestion);
   const schemaFilePath = path.join(graphqlSchemaDir, templateSelection);
-  schemaContent += transformerVersion === 2 ? defineGlobalSandboxMode(context) : '';
+  schemaContent += transformerVersion === 2 && templateSelection !== blankSchemaFile ? defineGlobalSandboxMode(context) : '';
   schemaContent += fs.readFileSync(schemaFilePath, 'utf8');
 
   return {
@@ -432,6 +437,7 @@ export const updateWalkthrough = async (context): Promise<UpdateApiRequest> => {
   let resource;
   let authConfig;
   const resources = allResources.filter(resource => resource.service === 'AppSync');
+  await addLambdaAuthorizerChoice(context);
 
   // There can only be one appsync resource
   if (resources.length > 0) {
@@ -652,10 +658,24 @@ async function askSyncFunctionQuestion(context) {
 
   return { newFunction, lambdaFunctionName };
 }
+
+async function addLambdaAuthorizerChoice(context) {
+  const providerPlugin = await import(context.amplify.getProviderPlugins(context)[provider]);
+  const transformerVersion = providerPlugin.getTransformerVersion(context);
+  if (transformerVersion === 2 && !authProviderChoices.some(choice => choice.value == 'AWS_LAMBDA')) {
+    authProviderChoices.push({
+        name: 'Lambda',
+        value: 'AWS_LAMBDA',
+    });
+  }
+}
+
 async function askDefaultAuthQuestion(context) {
+  await addLambdaAuthorizerChoice(context);
   const currentAuthConfig = getAppSyncAuthConfig(context.amplify.getProjectMeta());
   const currentDefaultAuth =
     currentAuthConfig && currentAuthConfig.defaultAuthentication ? currentAuthConfig.defaultAuthentication.authenticationType : undefined;
+
   const defaultAuthTypeQuestion = {
     type: 'list',
     name: 'defaultAuthType',
@@ -754,6 +774,16 @@ export async function askAuthQuestions(authType, context, printLeadText = false,
     const openIDConnectConfig = await askOpenIDConnectQuestions(authSettings);
 
     return openIDConnectConfig;
+  }
+
+  if (authType === 'AWS_LAMBDA') {
+    if (printLeadText) {
+      context.print.info('Lambda Authorizer configuration');
+    }
+
+    const lambdaConfig = await askLambdaQuestion(context);
+
+    return lambdaConfig;
   }
 
   const errMessage = `Unknown authType: ${authType}`;
@@ -1005,4 +1035,149 @@ const getAuthTypes = authConfig => {
   const uniqueAuthTypes = new Set([...additionalAuthTypes, authConfig.defaultAuthentication.authenticationType]);
 
   return [...uniqueAuthTypes.keys()];
+};
+
+async function askLambdaQuestion(context) {
+  const existingFunctions = functionsExist(context);
+  const choices = [
+    {
+      name: 'Create a new Lambda function',
+      value: 'newFunction',
+    },
+  ];
+  if (existingFunctions) {
+    choices.push({
+      name: 'Use a Lambda function already added in the current Amplify project',
+      value: 'projectFunction',
+    });
+  }
+
+  let defaultFunctionType = 'newFunction';
+  const lambdaAnswer = await inquirer.prompt({
+    name: 'functionType',
+    type: 'list',
+    message: 'Choose a Lambda source',
+    choices,
+    default: defaultFunctionType,
+  });
+
+  const { lambdaFunction } = await askLambdaSource(context, lambdaAnswer.functionType);
+  const { ttlSeconds } = await inquirer.prompt({
+    type: 'input',
+    name: 'ttlSeconds',
+    message: 'How long should the authorization response be cached in seconds?',
+    validate: validateTTL,
+    default: 300,
+  });
+
+  const lambdaAuthorizerConfig = {
+    lambdaFunction,
+    ttlSeconds,
+  }
+
+  return {
+    authenticationType: 'AWS_LAMBDA',
+    lambdaAuthorizerConfig,
+  };
+}
+
+function functionsExist(context: $TSContext): boolean {
+  const functionResources = context.amplify.getProjectDetails().amplifyMeta.function;
+  if (!functionResources) {
+    return false;
+  }
+
+  const lambdaFunctions = [];
+  Object.keys(functionResources).forEach(resourceName => {
+    if (functionResources[resourceName].service === FunctionServiceNameLambdaFunction) {
+      lambdaFunctions.push(resourceName);
+    }
+  });
+
+  return lambdaFunctions.length !== 0;
+}
+
+async function askLambdaSource(context: $TSContext, functionType: string) {
+  switch (functionType) {
+    case 'projectFunction':
+      return await askLambdaFromProject(context);
+    case 'newFunction':
+      return await newLambdaFunction(context);
+    default:
+      throw new Error(`Type ${functionType} not supported`);
+  }
+}
+
+async function newLambdaFunction(context: $TSContext) {
+  const resourceName = await createLambdaAuthorizerFunction(context);
+  return { lambdaFunction: resourceName };
+}
+
+async function askLambdaFromProject(context: $TSContext) {
+  const functionResources = context.amplify.getProjectDetails().amplifyMeta.function;
+  const lambdaFunctions = [];
+  Object.keys(functionResources).forEach(resourceName => {
+    if (functionResources[resourceName].service === FunctionServiceNameLambdaFunction) {
+      lambdaFunctions.push(resourceName);
+    }
+  });
+
+  const answer = await inquirer.prompt({
+    name: 'lambdaFunction',
+    type: 'list',
+    message: 'Choose one of the Lambda functions',
+    choices: lambdaFunctions,
+    default: lambdaFunctions[0],
+  });
+
+  await context.amplify.invokePluginMethod(context, 'function', undefined, 'addAppSyncInvokeMethodPermission', [
+    answer.lambdaFunction,
+  ]);
+
+  return { lambdaFunction: answer.lambdaFunction };
+}
+
+async function createLambdaAuthorizerFunction(context: $TSContext) {
+  const targetDir = context.amplify.pathManager.getBackendDirPath();
+  const assetDir = path.normalize(path.join(rootAssetDir, 'graphql-lambda-authorizer'));
+  const [shortId] = uuid().split('-');
+
+  const functionName = `graphQlLambdaAuthorizer${shortId}`;
+
+  const functionProps = {
+    functionName: `${functionName}`,
+    roleName: `${functionName}LambdaRole`,
+  };
+
+  const copyJobs = [
+    {
+      dir: assetDir,
+      template: 'graphql-lambda-authorizer-index.js',
+      target: `${targetDir}/function/${functionName}/src/index.js`,
+    },
+    {
+      dir: assetDir,
+      template: 'graphql-lambda-authorizer-package.json.ejs',
+      target: `${targetDir}/function/${functionName}/src/package.json`,
+    },
+    {
+      dir: assetDir,
+      template: 'graphql-lambda-authorizer-template.json.ejs',
+      target: `${targetDir}/function/${functionName}/${functionName}-cloudformation-template.json`,
+    },
+  ];
+
+  // copy over the files
+  await context.amplify.copyBatch(context, copyJobs, functionProps, true);
+
+  const backendConfigs = {
+    service: FunctionServiceNameLambdaFunction,
+    providerPlugin: provider,
+    build: true,
+  };
+
+  await context.amplify.updateamplifyMetaAfterResourceAdd('function', functionName, backendConfigs);
+  context.print.success(`Successfully added ${functionName} function locally`);
+
+  return functionName;
 };

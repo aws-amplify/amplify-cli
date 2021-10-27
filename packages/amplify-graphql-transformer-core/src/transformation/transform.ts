@@ -140,6 +140,7 @@ export class GraphQLTransform {
         aws_api_key: true,
         aws_iam: true,
         aws_oidc: true,
+        aws_lambda: true,
         aws_cognito_user_pools: true,
         allow_public_data_access_with_api_key: true,
         deprecated: true,
@@ -265,6 +266,7 @@ export class GraphQLTransform {
       authorizationConfig,
       host: this.options.host,
       sandboxModeEnabled: this.options.sandboxModeEnabled,
+      environmentName: envName.valueAsString,
     });
     const authModes = [authorizationConfig.defaultAuthorization, ...(authorizationConfig.additionalAuthorizationModes || [])].map(
       mode => mode?.authorizationType,

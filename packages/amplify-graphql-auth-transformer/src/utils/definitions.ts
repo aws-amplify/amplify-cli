@@ -1,6 +1,6 @@
 import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-interfaces';
-export type AuthStrategy = 'owner' | 'groups' | 'public' | 'private';
-export type AuthProvider = 'apiKey' | 'iam' | 'oidc' | 'userPools';
+export type AuthStrategy = 'owner' | 'groups' | 'public' | 'private' | 'custom';
+export type AuthProvider = 'apiKey' | 'iam' | 'oidc' | 'userPools' | 'function';
 export type ModelQuery = 'get' | 'list';
 export type ModelMutation = 'create' | 'update' | 'delete';
 export type ModelOperation = 'create' | 'update' | 'delete' | 'read';
@@ -19,6 +19,7 @@ export interface RolesByProvider {
   oidcDynamicRoles: Array<RoleDefinition>;
   iamRoles: Array<RoleDefinition>;
   apiKeyRoles: Array<RoleDefinition>;
+  lambdaRoles: Array<RoleDefinition>;
 }
 
 export interface AuthRule {
@@ -56,6 +57,7 @@ export interface ConfiguredAuthProviders {
   hasUserPools: boolean;
   hasOIDC: boolean;
   hasIAM: boolean;
+  hasLambda: boolean;
   hasAdminUIEnabled: boolean;
   adminUserPoolID?: string;
 }
@@ -83,12 +85,14 @@ export const authDirectiveDefinition = `
     groups
     private
     public
+    custom
   }
   enum AuthProvider {
     apiKey
     iam
     oidc
     userPools
+    function
   }
   enum ModelOperation {
     create

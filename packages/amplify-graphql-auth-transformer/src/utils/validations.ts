@@ -51,6 +51,18 @@ found '${rule.provider}' assigned.`,
   }
 
   //
+  // Custom
+  //
+  if (rule.allow === 'custom') {
+    if (rule.provider !== null && rule.provider !== 'function') {
+      throw new InvalidDirectiveError(
+        `@auth directive with 'custom' strategy only supports 'function' (default) provider, but \
+found '${rule.provider}' assigned.`,
+      );
+    }
+  }
+
+  //
   // Validate provider values against project configuration.
   //
   if (rule.provider === 'apiKey' && configuredAuthProviders.hasApiKey === false) {
@@ -68,6 +80,10 @@ found '${rule.provider}' assigned.`,
   } else if (rule.provider === 'iam' && configuredAuthProviders.hasIAM === false) {
     throw new InvalidDirectiveError(
       `@auth directive with 'iam' provider found, but the project has no IAM authentication provider configured.`,
+    );
+  } else if (rule.provider === 'function' && configuredAuthProviders.hasLambda === false) {
+    throw new InvalidDirectiveError(
+      `@auth directive with 'function' provider found, but the project has no Lambda authentication provider configured.`,
     );
   }
 };
