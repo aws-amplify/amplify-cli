@@ -200,6 +200,6 @@ function printWelcomeMessage(context: $TSContext) {
   );
   context.print.info('');
   context.print.success('Pro tip:');
-  context.print.info('Try "amplify add api" to create a backend API and then "amplify publish" to deploy everything');
+  context.print.info('Try "amplify add api" to create a backend API and then "amplify push" to deploy everything');
   context.print.info('');
 }
