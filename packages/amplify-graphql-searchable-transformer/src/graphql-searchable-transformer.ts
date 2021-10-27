@@ -378,7 +378,7 @@ function getNonKeywordFields(def: ObjectTypeDefinitionNode): Expression[] {
  * @param table
  * @returns Expression[] keyFields
  */
-function getKeyFields(primaryKey: string, table: IConstruct) {
+function getKeyFields(primaryKey: string, table: IConstruct): Expression[] {
   let keyFields = [];
   keyFields.push(primaryKey);
   let { attributeName } = (table as any).keySchema.find((att: any) => att.keyType === 'RANGE') || {};
