@@ -55,9 +55,10 @@ export async function pushResources(
   const resourcesToBuild: IAmplifyResource[] = await getResources(context);
   context.amplify.executeProviderUtils(context, 'awscloudformation', 'buildOverrides', { resourcesToBuild, forceCompile: true });
 
+  let hasChanges: boolean = false;
   if (!rebuild) {
     // status table does not have a way to show resource in "rebuild" state so skipping it to avoid confusion
-    hasChanges = await showResourceTable(category, resourceName, filteredResources);
+    hasChanges = !!(await showResourceTable(category, resourceName, filteredResources));
   }
 
   // no changes detected
