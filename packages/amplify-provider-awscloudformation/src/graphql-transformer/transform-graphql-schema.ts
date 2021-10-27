@@ -90,7 +90,11 @@ function getTransformerFactory(
     const modelTransformer = new ModelTransformer();
     const indexTransformer = new IndexTransformer();
     const hasOneTransformer = new HasOneTransformer();
-    const authTransformer = new AuthTransformer({ authConfig: options?.authConfig, addAwsIamAuthInOutputSchema: false, adminUserPoolID });
+    const authTransformer = new AuthTransformer({
+      authConfig: options?.authConfig,
+      addAwsIamAuthInOutputSchema: !!adminUserPoolID,
+      adminUserPoolID,
+    });
     const transformerList: TransformerPluginProvider[] = [
       modelTransformer,
       new FunctionTransformer(),
