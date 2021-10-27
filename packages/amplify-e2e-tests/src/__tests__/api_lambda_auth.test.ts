@@ -22,7 +22,7 @@ const providerName = 'awscloudformation';
 // to deal with subscriptions in node env
 (global as any).WebSocket = require('ws');
 
-describe('amplify add api (REST)', () => {
+describe('amplify add api (GraphQL) - Lambda Authorizer', () => {
   let projRoot: string;
   beforeEach(async () => {
     projRoot = await createNewProjectDir('rest-api');
