@@ -72,7 +72,10 @@ found '${rule.provider}' assigned.`,
   }
 };
 
-export const validateRules = (rules: AuthRule[], configuredAuthProviders: ConfiguredAuthProviders) => {
+export const validateRules = (rules: AuthRule[], configuredAuthProviders: ConfiguredAuthProviders, typeName: string) => {
+  if (rules.length === 0) {
+    throw new InvalidDirectiveError(`@auth on ${typeName} does not have any auth rules.`);
+  }
   for (const rule of rules) {
     validateRuleAuthStrategy(rule, configuredAuthProviders);
     commonRuleValidation(rule);
@@ -84,7 +87,11 @@ export const validateFieldRules = (
   isParentTypeBuiltinType: boolean,
   parentHasModelDirective: boolean,
   authProviderConfig: ConfiguredAuthProviders,
+  fieldName: string,
 ) => {
+  if (rules.length === 0) {
+    throw new InvalidDirectiveError(`@auth on ${fieldName} does not have any auth rules.`);
+  }
   for (const rule of rules) {
     validateRuleAuthStrategy(rule, authProviderConfig);
 
@@ -119,5 +126,8 @@ export const commonRuleValidation = (rule: AuthRule) => {
   }
   if (groupsField && groups) {
     throw new InvalidDirectiveError('This rule has groupsField and groups, please use one or the other');
+  }
+  if (allow === 'groups' && groups && groups.length < 1) {
+    throw new InvalidDirectiveError('@auth rules using groups cannot have an empty list');
   }
 };

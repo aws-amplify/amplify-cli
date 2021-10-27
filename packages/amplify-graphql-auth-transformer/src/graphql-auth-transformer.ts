@@ -141,9 +141,10 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
     const rules: AuthRule[] = authDir.getArguments<{ rules: Array<AuthRule> }>({ rules: [] }).rules;
     ensureAuthRuleDefaults(rules);
     // validate rules
-    validateRules(rules, this.configuredAuthProviders);
+    validateRules(rules, this.configuredAuthProviders, def.name.value);
     // create access control for object
     const acm = new AccessControlMatrix({
+      name: def.name.value,
       operations: MODEL_OPERATIONS,
       resources: collectFieldNames(def),
     });
@@ -191,7 +192,7 @@ Static group authorization should perform as expected.`,
     const authDir = new DirectiveWrapper(directive);
     const rules: AuthRule[] = authDir.getArguments<{ rules: Array<AuthRule> }>({ rules: [] }).rules;
     ensureAuthRuleDefaults(rules);
-    validateFieldRules(rules, isParentTypeBuiltinType, modelDirective !== undefined, this.configuredAuthProviders);
+    validateFieldRules(rules, isParentTypeBuiltinType, modelDirective !== undefined, this.configuredAuthProviders, field.name.value);
 
     // regardless if a model directive is used we generate the policy for iam auth
     this.setAuthPolicyFlag(rules);
@@ -205,6 +206,7 @@ Static group authorization should perform as expected.`,
       if (!this.modelDirectiveConfig.has(typeName)) {
         this.modelDirectiveConfig.set(typeName, getModelConfig(modelDirective, typeName, context.isProjectUsingDataStore()));
         acm = new AccessControlMatrix({
+          name: parent.name.value,
           operations: MODEL_OPERATIONS,
           resources: collectFieldNames(parent),
         });
@@ -221,6 +223,7 @@ Static group authorization should perform as expected.`,
       const staticRules = rules.filter((rule: AuthRule) => rule.allow !== 'owner' && !rule.groupsField);
       const typeFieldName = `${typeName}:${fieldName}`;
       const acm = new AccessControlMatrix({
+        name: typeFieldName,
         operations: ['read'],
         resources: [typeFieldName],
       });
