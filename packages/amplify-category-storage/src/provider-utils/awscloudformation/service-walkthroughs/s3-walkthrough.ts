@@ -1,6 +1,6 @@
 import * as path from 'path';
 import * as fs from 'fs-extra';
-import uuid from 'uuid';
+import { v4 as uuid } from 'uuid';
 import { printer, prompter } from 'amplify-prompts';
 import {
   exitOnNextTick,

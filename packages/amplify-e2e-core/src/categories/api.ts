@@ -188,7 +188,7 @@ export function updateApiWithMultiAuth(cwd: string, settings: any) {
 export function apiEnableDataStore(cwd: string, settings: any) {
   return new Promise<void>((resolve, reject) => {
     spawn(getCLIPath(settings.testingWithLatestCodebase), ['update', 'api'], { cwd, stripColors: true })
-      .wait('Please select from one of the below mentioned services:')
+      .wait('Select from one of the below mentioned services:')
       .sendCarriageReturn()
       .wait(/.*Select a setting to edit.*/)
       .sendKeyDown()

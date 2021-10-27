@@ -2,12 +2,11 @@ import * as fs from 'fs-extra';
 import * as path from 'path';
 import _ from 'lodash';
 import { PathConstants, pathManager } from './pathManager';
-import { $TSMeta, $TSTeamProviderInfo, $TSAny, DeploymentSecrets, HooksConfig } from '..';
+import { $TSMeta, $TSTeamProviderInfo, $TSAny, DeploymentSecrets, HooksConfig, $TSObject } from '..';
 import { JSONUtilities } from '../jsonUtilities';
 import { SecretFileMode } from '../cliConstants';
 import { HydrateTags, ReadTags, Tag } from '../tags';
 import { CustomIAMPolicies } from '../customPoliciesUtils';
-
 
 export type GetOptions<T> = {
   throwIfNotExist?: boolean;
@@ -80,9 +79,9 @@ export class StateManager {
 
   getCustomPolicies = (categoryName: string, resourceName: string): CustomIAMPolicies | undefined => {
     const filePath = pathManager.getCustomPoliciesPath(categoryName, resourceName);
-    try{
+    try {
       return JSONUtilities.readJson<CustomIAMPolicies>(filePath);
-    } catch(err) {
+    } catch (err) {
       return undefined;
     }
   };
@@ -142,6 +141,21 @@ export class StateManager {
     options?: GetOptions<$TSAny>,
   ): $TSAny => {
     const filePath = pathManager.getResourceParametersFilePath(projectPath, category, resourceName);
+    const mergedOptions = {
+      throwIfNotExist: true,
+      ...options,
+    };
+
+    return this.getData<$TSAny>(filePath, mergedOptions);
+  };
+
+  getResourceInputsJson = (
+    projectPath: string | undefined,
+    category: string,
+    resourceName: string,
+    options?: GetOptions<$TSAny>,
+  ): $TSAny => {
+    const filePath = pathManager.getResourceInputsJsonFilePath(projectPath, category, resourceName);
     const mergedOptions = {
       throwIfNotExist: true,
       ...options,
@@ -274,6 +288,12 @@ export class StateManager {
     JSONUtilities.writeJson(filePath, parameters);
   };
 
+  setResourceInputsJson = (projectPath: string | undefined, category: string, resourceName: string, inputs: $TSObject): void => {
+    const filePath = pathManager.getResourceInputsJsonFilePath(projectPath, category, resourceName);
+
+    JSONUtilities.writeJson(filePath, inputs);
+  };
+
   cliJSONFileExists = (projectPath: string, env?: string): boolean => {
     try {
       return fs.existsSync(pathManager.getCLIJSONFilePath(projectPath, env));
@@ -379,5 +399,3 @@ export class StateManager {
 }
 
 export const stateManager = new StateManager();
-
-

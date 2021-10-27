@@ -891,16 +891,16 @@ export function addAuthWithGroups(cwd: string): Promise<void> {
       .sendCarriageReturn() // Manual configuration
       .wait('Select the authentication/authorization services that you want to use')
       .sendCarriageReturn() // for sign-up/-in and IAM controls
-      .wait('Please provide a friendly name for your resource that will be used')
+      .wait('Provide a friendly name for your resource that will be used')
       .sendCarriageReturn() // Default
-      .wait('Please enter a name for your identity pool')
+      .wait('Enter a name for your identity pool')
       .sendCarriageReturn() // Default
       .wait('Allow unauthenticated logins')
       .sendCarriageReturn() // No
       .wait('Do you want to enable 3rd party authentication providers')
       .sendKeyDown()
       .sendCarriageReturn() // No
-      .wait('Please provide a name for your user pool')
+      .wait('Provide a name for your user pool')
       .sendCarriageReturn() // Default
       .wait('Warning: you will not be able to edit these selections')
       .wait('How do you want users to be able to sign in')

@@ -32,7 +32,7 @@ export function addSimpleDDB(cwd: string, settings: any): Promise<void> {
       .wait('Choose the data type')
       .sendCarriageReturn()
       .wait('Would you like to add another column')
-      .sendLine('n')
+      .sendConfirmNo()
       .wait('Choose partition key for the table')
       .sendCarriageReturn()
       .wait('Do you want to add a sort key to your table')
@@ -78,7 +78,7 @@ export function addDDBWithTrigger(cwd: string, settings: { ddbResourceName?: str
       .wait('Choose the data type')
       .sendCarriageReturn()
       .wait('Would you like to add another column')
-      .sendLine('n')
+      .sendConfirmNo()
       .wait('Choose partition key for the table')
       .sendCarriageReturn()
       .wait('Do you want to add a sort key to your table')
@@ -118,7 +118,7 @@ export function updateDDBWithTrigger(cwd: string, settings: any): Promise<void> 
       .wait('Select from the following options')
       .sendLine(KEY_DOWN_ARROW)
       .wait('Do you want to edit the local')
-      .sendLine('n')
+      .sendConfirmNo()
       .sendEof()
       .run((err: Error) => {
         if (!err) {
@@ -145,11 +145,11 @@ export function updateSimpleDDBwithGSI(cwd: string, settings: any): Promise<void
       .wait('Choose the data type')
       .sendCarriageReturn()
       .wait('Would you like to add another column')
-      .sendLine('n')
+      .sendConfirmNo()
       .wait('Do you want to keep existing global seconday indexes created on your table?')
-      .sendLine('y')
+      .sendConfirmYes()
       .wait('Do you want to add global secondary indexes to your table?')
-      .sendLine('y')
+      .sendConfirmYes()
       .wait('Provide the GSI name')
       .sendLine('gsi2')
       .wait('Choose partition key for the GSI')
@@ -159,9 +159,9 @@ export function updateSimpleDDBwithGSI(cwd: string, settings: any): Promise<void
       .wait('Do you want to add a sort key to your global secondary index?')
       .sendConfirmNo()
       .wait('Do you want to add more global secondary indexes to your table?')
-      .sendLine('n')
+      .sendConfirmNo()
       .wait('Do you want to add a Lambda Trigger for your Table?')
-      .sendLine('n')
+      .sendConfirmNo()
       .sendEof()
       .run((err: Error) => {
         if (!err) {
@@ -194,13 +194,13 @@ export function addSimpleDDBwithGSI(cwd: string, settings: any): Promise<void> {
       .wait('Choose the data type')
       .sendCarriageReturn()
       .wait('Would you like to add another column')
-      .sendLine('n')
+      .sendConfirmNo()
       .wait('Choose partition key for the table')
       .sendCarriageReturn()
       .wait('Do you want to add a sort key to your table')
       .sendConfirmNo()
       .wait('Do you want to add global secondary indexes to your table?')
-      .sendLine('y')
+      .sendConfirmYes()
       .wait('Provide the GSI name')
       .sendLine('gsi1')
       .wait('Choose partition key for the GSI')
@@ -594,7 +594,6 @@ export function overrideS3(cwd: string, settings: {}) {
       });
   });
 }
-
 
 export function addS3StorageWithSettings(projectDir: string, settings: AddStorageSettings): Promise<void> {
   return new Promise((resolve, reject) => {
