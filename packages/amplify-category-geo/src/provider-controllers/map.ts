@@ -71,9 +71,6 @@ export const addMapResourceHeadless = async (
   context: $TSContext,
   config: MapConfiguration
 ): Promise<string> => {
-  if (await checkGeoResourceExists(config.name)) {
-    throw new Error(`Geo resource with name '${config.name}' already exists.`)
-  }
   // initialize the Map parameters
   let mapParams: Partial<MapParameters> = {
     providerContext: setProviderContext(context, ServiceName.Map),
@@ -91,9 +88,6 @@ export const updateMapResourceHeadless = async (
   context: $TSContext,
   config: MapModification
 ): Promise<string> => {
-  if (!await checkGeoResourceExists(config.name)) {
-    throw new Error(`Geo resource with name '${config.name}' does not exist.`)
-  }
   // initialize the Map parameters
   let mapParams: Partial<MapParameters> = {
     providerContext: setProviderContext(context, ServiceName.Map),

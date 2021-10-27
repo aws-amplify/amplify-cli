@@ -9,6 +9,7 @@ import { getServiceFriendlyName } from '../service-walkthroughs/resourceWalkthro
 import { TemplateMappings } from '../service-stacks/baseStack';
 import { validateAddGeoRequest, validateUpdateGeoRequest } from 'amplify-util-headless-input';
 import { MapConfiguration, MapModification } from 'amplify-headless-interface';
+import { checkGeoResourceExists } from '../service-utils/resourceUtils';
 
 /**
  * Entry point for creating a new Geo resource
@@ -136,7 +137,10 @@ export const addResourceHeadless = async (
     throw new Error('Please add auth (Amazon Cognito) to your project using "amplify add auth"');
   }
   const { serviceConfiguration } = await validateAddGeoRequest(headlessPayload);
-  const { serviceName } = serviceConfiguration;
+  const { serviceName,name } = serviceConfiguration;
+  if (await checkGeoResourceExists(name)) {
+    throw new Error(`Geo resource with name '${name}' already exists.`)
+  }
   switch (serviceName) {
     case ServiceName.Map:
       return addMapResourceHeadless(context, serviceConfiguration as MapConfiguration);
@@ -153,7 +157,10 @@ export const updateResourceHeadless = async (
   headlessPayload: string
 ): Promise<string | undefined> => {
   const { serviceModification } = await validateUpdateGeoRequest(headlessPayload);
-  const { serviceName } = serviceModification;
+  const { serviceName, name } = serviceModification;
+  if (!await checkGeoResourceExists(name)) {
+    throw new Error(`Geo resource with name '${name}' does not exist.`)
+  }
   switch (serviceName) {
     case ServiceName.Map:
       return updateMapResourceHeadless(context, serviceModification as MapModification);
