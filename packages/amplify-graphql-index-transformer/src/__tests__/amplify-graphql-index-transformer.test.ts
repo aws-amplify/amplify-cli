@@ -108,6 +108,22 @@ test('throws if @index uses a sort key field that is a non-scalar', () => {
   }).toThrow(`The sort key of index 'wontwork' on type 'Test.email' cannot be a non-scalar.`);
 });
 
+test('throws if @index refers to itself', () => {
+  const schema = `
+    type Test @model {
+      id: ID! @index(name: "wontwork", sortKeyFields: ["id"])
+      email: String
+    }`;
+
+  const transformer = new GraphQLTransform({
+    transformers: [new ModelTransformer(), new IndexTransformer()],
+  });
+
+  expect(() => {
+    transformer.transform(schema);
+  }).toThrow(`@index field 'id' cannot reference itself.`);
+});
+
 test('@index with multiple sort keys adds a query field and GSI correctly', () => {
   const inputSchema = `
     type Test @model {

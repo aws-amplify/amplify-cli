@@ -124,6 +124,22 @@ test('throws if @primaryKey uses a sort key field that is a non-scalar', () => {
   }).toThrow(`The primary key's sort key on type 'Test.email' cannot be a non-scalar.`);
 });
 
+test('throws if @primaryKey refers to itself', () => {
+  const schema = `
+    type Test @model {
+      id: ID! @primaryKey(sortKeyFields: ["id"])
+      email: String
+    }`;
+
+  const transformer = new GraphQLTransform({
+    transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
+  });
+
+  expect(() => {
+    transformer.transform(schema);
+  }).toThrow(`@primaryKey field 'id' cannot reference itself.`);
+});
+
 test('handles sortKeyFields being a string instead of an array', () => {
   const schema = `
     type NonScalar {

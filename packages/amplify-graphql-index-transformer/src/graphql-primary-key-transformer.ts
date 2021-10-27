@@ -24,6 +24,7 @@ import {
   updateMutationConditionInput,
 } from './schema';
 import { PrimaryKeyDirectiveConfiguration } from './types';
+import { validateNotSelfReferencing } from './utils';
 
 const directiveName = 'primaryKey';
 const directiveDefinition = `
@@ -97,6 +98,9 @@ export class PrimaryKeyTransformer extends TransformerPluginBase {
 
 function validate(config: PrimaryKeyDirectiveConfiguration, ctx: TransformerContextProvider): void {
   const { object, field, sortKeyFields } = config;
+
+  validateNotSelfReferencing(config);
+
   const modelDirective = object.directives!.find(directive => {
     return directive.name.value === 'model';
   });

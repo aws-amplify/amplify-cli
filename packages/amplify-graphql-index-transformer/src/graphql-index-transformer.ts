@@ -17,6 +17,7 @@ import { isScalarOrEnum } from 'graphql-transformer-common';
 import { appendSecondaryIndex, constructSyncVTL, updateResolversForIndex } from './resolvers';
 import { addKeyConditionInputs, ensureQueryField, updateMutationConditionInput } from './schema';
 import { IndexDirectiveConfiguration } from './types';
+import { validateNotSelfReferencing } from './utils';
 
 const directiveName = 'index';
 const directiveDefinition = `
@@ -87,6 +88,9 @@ export class IndexTransformer extends TransformerPluginBase {
 
 function validate(config: IndexDirectiveConfiguration, ctx: TransformerContextProvider): void {
   const { name, object, field, sortKeyFields } = config;
+
+  validateNotSelfReferencing(config);
+
   const modelDirective = object.directives!.find(directive => {
     return directive.name.value === 'model';
   });
