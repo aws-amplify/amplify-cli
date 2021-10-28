@@ -180,6 +180,16 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
   }
 
   generateCognitoStackResources = async (props: CognitoStackOptions) => {
+    const autoVerifiedAttributes = props.autoVerifiedAttributes
+      ? props.autoVerifiedAttributes
+          .concat(props.aliasAttributes ? props.aliasAttributes : [])
+          .filter((attr, i, aliasAttributeArray) => ['email', 'phone_number'].includes(attr) && aliasAttributeArray.indexOf(attr) === i)
+      : [];
+    const configureSMS =
+      (props.autoVerifiedAttributes && props.autoVerifiedAttributes.includes('phone_number')) ||
+      (props.mfaConfiguration != 'OFF' && props.mfaTypes && props.mfaTypes.includes('SMS Text Message')) ||
+      (props.requiredAttributes && props.requiredAttributes.includes('phone_number'));
+
     if (props.verificationBucketName) {
       this.customMessageConfirmationBucket = new s3.CfnBucket(this, 'CustomMessageConfirmationBucket', {
         bucketName: cdk.Fn.conditionIf(
@@ -203,52 +213,54 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
     }
 
     if (props.authSelections !== 'identityPoolOnly') {
-      this.snsRole = new iam.CfnRole(this, 'SNSRole', {
-        roleName: cdk.Fn.conditionIf(
-          'ShouldNotCreateEnvResources',
-          `${props.resourceNameTruncated}_sns-role`,
-          cdk.Fn.join('', [
-            'sns',
-            `${props.sharedId}`,
-            cdk.Fn.select(3, cdk.Fn.split('-', cdk.Fn.ref('AWS::StackName'))),
-            '-',
-            cdk.Fn.ref('env'),
-          ]),
-        ).toString(),
-        assumeRolePolicyDocument: {
-          Version: '2012-10-17',
-          Statement: [
-            {
-              Sid: '',
-              Effect: 'Allow',
-              Principal: {
-                Service: 'cognito-idp.amazonaws.com',
-              },
-              Action: ['sts:AssumeRole'],
-              Condition: {
-                StringEquals: {
-                  'sts:ExternalId': `${props.resourceNameTruncated}_role_external_id`,
+      if (!props.useEnabledMfas || configureSMS) {
+        this.snsRole = new iam.CfnRole(this, 'SNSRole', {
+          roleName: cdk.Fn.conditionIf(
+            'ShouldNotCreateEnvResources',
+            `${props.resourceNameTruncated}_sns-role`,
+            cdk.Fn.join('', [
+              'sns',
+              `${props.sharedId}`,
+              cdk.Fn.select(3, cdk.Fn.split('-', cdk.Fn.ref('AWS::StackName'))),
+              '-',
+              cdk.Fn.ref('env'),
+            ]),
+          ).toString(),
+          assumeRolePolicyDocument: {
+            Version: '2012-10-17',
+            Statement: [
+              {
+                Sid: '',
+                Effect: 'Allow',
+                Principal: {
+                  Service: 'cognito-idp.amazonaws.com',
                 },
+                Action: ['sts:AssumeRole'],
+                Condition: {
+                  StringEquals: {
+                    'sts:ExternalId': `${props.resourceNameTruncated}_role_external_id`,
+                  },
+                },
+              },
+            ],
+          },
+          policies: [
+            {
+              policyName: `${props.resourceNameTruncated}-sns-policy`,
+              policyDocument: {
+                Version: '2012-10-17',
+                Statement: [
+                  {
+                    Effect: 'Allow',
+                    Action: ['sns:Publish'],
+                    Resource: '*',
+                  },
+                ],
               },
             },
           ],
-        },
-        policies: [
-          {
-            policyName: `${props.resourceNameTruncated}-sns-policy`,
-            policyDocument: {
-              Version: '2012-10-17',
-              Statement: [
-                {
-                  Effect: 'Allow',
-                  Action: ['sns:Publish'],
-                  Resource: '*',
-                },
-              ],
-            },
-          },
-        ],
-      });
+        });
+      }
 
       this.userPool = new cognito.CfnUserPool(this, 'UserPool', {
         userPoolName: cdk.Fn.conditionIf(
@@ -301,11 +313,11 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
         });
       }
 
-      if (props.autoVerifiedAttributes && props.autoVerifiedAttributes.length > 0) {
-        this.userPool!.autoVerifiedAttributes = props.autoVerifiedAttributes;
+      if (autoVerifiedAttributes && autoVerifiedAttributes.length > 0) {
+        this.userPool!.autoVerifiedAttributes = autoVerifiedAttributes;
       }
 
-      if (props.autoVerifiedAttributes.includes('email')) {
+      if (autoVerifiedAttributes.includes('email')) {
         this.userPool.emailVerificationMessage = cdk.Fn.ref('emailVerificationMessage');
         this.userPool.emailVerificationSubject = cdk.Fn.ref('emailVerificationSubject');
       }
@@ -318,18 +330,28 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
       if (props.aliasAttributes && props.aliasAttributes.length > 0) {
         this.userPool.aliasAttributes = cdk.Fn.ref('aliasAttributes') as unknown as string[];
       }
+
       this.userPool.mfaConfiguration = cdk.Fn.ref('mfaConfiguration');
+      if (props.useEnabledMfas && props.mfaConfiguration != 'OFF') {
+        if (configureSMS) {
+          this.userPool.enabledMfas = ['SMS_MFA'];
+        }
+        if (!_.isEmpty(props.mfaTypes) && props.mfaTypes!.includes('TOTP')) {
+          this.userPool.enabledMfas = ['SOFTWARE_TOKEN_MFA'];
+        }
+      }
 
-      this.userPool.smsVerificationMessage = cdk.Fn.ref('smsVerificationMessage');
-      this.userPool.smsAuthenticationMessage = cdk.Fn.ref('smsAuthenticationMessage');
+      if (!props.useEnabledMfas || configureSMS) {
+        this.userPool.smsVerificationMessage = cdk.Fn.ref('smsVerificationMessage');
+        this.userPool.smsAuthenticationMessage = cdk.Fn.ref('smsAuthenticationMessage');
+        this.userPool.smsConfiguration = {
+          externalId: `${props.resourceNameTruncated}_role_external_id`,
+          snsCallerArn: cdk.Fn.getAtt('SNSRole', 'Arn').toString(),
+        };
+      }
 
-      this.userPool.smsConfiguration = {
-        externalId: `${props.resourceNameTruncated}_role_external_id`,
-        snsCallerArn: cdk.Fn.getAtt('SNSRole', 'Arn').toString(),
-      };
-
-      if (props.mfaConfiguration != 'OFF') {
-        this.userPool.addDependsOn(this.snsRole);
+      if (configureSMS) {
+        this.userPool.addDependsOn(this.snsRole!);
       }
 
       this.userPool.applyRemovalPolicy(cdk.RemovalPolicy.RETAIN, {
@@ -395,7 +417,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
       if (props.oAuthMetadata) {
         this.createOAuthCustomResource(props);
       }
-      if (props.mfaConfiguration != 'OFF') {
+      if (!props.useEnabledMfas && props.mfaConfiguration != 'OFF') {
         this.createMFACustomResource(props);
       }
     }

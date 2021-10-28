@@ -9,7 +9,7 @@ import {
 } from '../utils/synthesize-resources';
 import { getPostAddAuthMetaUpdater, getPostUpdateAuthMetaUpdater } from '../utils/amplify-meta-updaters';
 import { getPostAddAuthMessagePrinter, getPostUpdateAuthMessagePrinter, printSMSSandboxWarning } from '../utils/message-printer';
-import { supportedServices } from '../../supported-services';
+import { getSupportedServices } from '../../supported-services';
 import { doesConfigurationIncludeSMS } from '../utils/auth-sms-workflow-helper';
 import { AuthInputState } from '../auth-inputs-manager/auth-input-state';
 import { category, ENV_SPECIFIC_PARAMS, privateKeys } from '../constants';
@@ -88,7 +88,7 @@ export const getAddAuthHandler =
   };
 
 export const getUpdateAuthHandler = (context: any) => async (request: ServiceQuestionHeadlessResult | CognitoConfiguration) => {
-  const { defaultValuesFilename } = supportedServices[request.serviceName];
+  const { defaultValuesFilename } = getSupportedServices()[request.serviceName];
   // loading previous cli-inputs
   const resourceName = await getAuthResourceName(context);
   const cliState = new AuthInputState(resourceName);

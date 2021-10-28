@@ -61,10 +61,13 @@ export const immutableAttributes = [
 
 export const privateKeys = [
   'facebookAppIdUserPool',
+  'facebookAuthorizeScopes',
   'facebookAppSecretUserPool',
   'googleAppIdUserPool',
+  'googleAuthorizeScopes',
   'googleAppSecretUserPool',
   'loginwithamazonAppIdUserPool',
+  'loginwithamazonAuthorizeScopes',
   'loginwithamazonAppSecretUserPool',
   'signinwithappleClientIdUserPool',
   'signinwithappleTeamIdUserPool',
