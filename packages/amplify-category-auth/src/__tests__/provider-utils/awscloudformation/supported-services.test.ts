@@ -1,5 +1,5 @@
 import { FeatureFlags } from 'amplify-cli-core';
-import { getSupportedServices } from '../../provider-utils/supported-services';
+import { getSupportedServices } from '../../../provider-utils/supported-services';
 
 describe('auth.forceAliasAttributes feature flag works', () => {
   it('when flag is false, usernameAttributes are used instead of aliasAttributes', async () => {
