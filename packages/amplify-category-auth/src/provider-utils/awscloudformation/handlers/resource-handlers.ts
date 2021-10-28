@@ -28,7 +28,7 @@ import { $TSContext } from 'amplify-cli-core';
 export const getAddAuthHandler =
   (context: $TSContext, skipNextSteps: boolean = false) =>
   async (request: ServiceQuestionHeadlessResult | CognitoConfiguration) => {
-    const serviceMetadata = supportedServices[request.serviceName];
+    const serviceMetadata = getSupportedServices()[request.serviceName];
     const { cfnFilename, defaultValuesFilename, provider } = serviceMetadata;
 
     let projectName = context.amplify.getProjectConfig().projectName.toLowerCase();

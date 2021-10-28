@@ -19,7 +19,9 @@ import {
   updateAuthSignInSignOutUrl,
   updateAuthWithoutCustomTrigger,
   updateAuthWithoutTrigger,
+  updateHeadlessAuth,
 } from 'amplify-e2e-core';
+import { UpdateAuthRequest } from 'amplify-headless-interface';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 
@@ -85,7 +87,7 @@ describe('amplify auth migration', () => {
     await addAuthWithDefault(projRoot, {});
     await amplifyPushAuth(projRoot);
     const meta = getProjectMeta(projRoot);
-    const authResourceName = Object.keys(meta.auth).filter(resourceName => meta.auth[resourceName].service === 'Cognito');
+    const authResourceName = Object.keys(meta.auth).filter(resourceName => meta.auth[resourceName].service === 'Cognito')[0];
     // update and push with codebase
     const overridesObj: $TSAny = {
       resourceName: authResourceName,
@@ -103,8 +105,16 @@ describe('amplify auth migration', () => {
     let meta = getAwsAndroidConfig(projRoot);
     expect(meta.Auth.Default.authenticationFlowType).toBeDefined();
     expect(meta.Auth.Default.authenticationFlowType).toEqual('CUSTOM_AUTH');
+    const amplifyMeta = getProjectMeta(projRoot);
+    const authResourceName = Object.keys(amplifyMeta.auth).filter(resourceName => amplifyMeta.auth[resourceName].service === 'Cognito')[0];
+    // update and push with codebase
+    const overridesObj: $TSAny = {
+      resourceName: authResourceName,
+      category: 'auth',
+      service: 'cognito',
+    };
 
-    await updateAuthRemoveRecaptchaTrigger(projRoot, {});
+    await updateAuthRemoveRecaptchaTrigger(projRoot, { testingWithLatestCodebase: true, overrides: overridesObj });
     await amplifyPushAuth(projRoot);
     meta = getAwsAndroidConfig(projRoot);
     expect(meta.Auth.Default.authenticationFlowType).toBeDefined();
@@ -112,7 +122,7 @@ describe('amplify auth migration', () => {
   });
 
   it('...should edit signin url on update', async () => {
-    const settings = {
+    let settings = {
       signinUrl: 'http://localhost:3001/',
       signoutUrl: 'http://localhost:3002/',
       updatesigninUrl: 'http://localhost:3003/',
@@ -121,7 +131,18 @@ describe('amplify auth migration', () => {
     await initAndroidProjectWithProfile(projRoot, defaultSettings);
     await addAuthWithSignInSignOutUrl(projRoot, settings);
     // turn ON feature flag
-    await updateAuthSignInSignOutUrl(projRoot, settings);
+    const meta = getAwsAndroidConfig(projRoot);
+
+    const amplifyMeta = getProjectMeta(projRoot);
+    const authResourceName = Object.keys(amplifyMeta.auth).filter(resourceName => amplifyMeta.auth[resourceName].service === 'Cognito')[0];
+    // update and push with codebase
+    const overridesObj: $TSAny = {
+      resourceName: authResourceName,
+      category: 'auth',
+      service: 'cognito',
+    };
+    const overrideSettings = Object.assign(settings, { testingWithLatestCodebase: true, overrides: overridesObj });
+    await updateAuthSignInSignOutUrl(projRoot, overrideSettings);
   });
 
   it('...should init an android project and add customAuth flag, and remove flag when custom auth triggers are removed upon update ', async () => {
@@ -131,11 +152,50 @@ describe('amplify auth migration', () => {
     let meta = getAwsAndroidConfig(projRoot);
     expect(meta.Auth.Default.authenticationFlowType).toBeDefined();
     expect(meta.Auth.Default.authenticationFlowType).toEqual('CUSTOM_AUTH');
-
-    await updateAuthRemoveRecaptchaTrigger(projRoot, {});
+    const amplifyMeta = getProjectMeta(projRoot);
+    const authResourceName = Object.keys(amplifyMeta.auth).filter(resourceName => amplifyMeta.auth[resourceName].service === 'Cognito')[0]; // update and push with codebase
+    const overridesObj: $TSAny = {
+      resourceName: authResourceName,
+      category: 'auth',
+      service: 'cognito',
+    };
+    await updateAuthRemoveRecaptchaTrigger(projRoot, { testingWithLatestCodebase: true, overrides: overridesObj });
     await amplifyPushAuth(projRoot);
     meta = getAwsAndroidConfig(projRoot);
     expect(meta.Auth.Default.authenticationFlowType).toBeDefined();
     expect(meta.Auth.Default.authenticationFlowType).toEqual('USER_SRP_AUTH');
+  });
+
+  it('updates existing auth resource', async () => {
+    const updateAuthRequest: UpdateAuthRequest = {
+      version: 1,
+      serviceModification: {
+        serviceName: 'Cognito',
+        userPoolModification: {
+          userPoolGroups: [
+            {
+              groupName: 'group1',
+            },
+            {
+              groupName: 'group2',
+            },
+          ],
+        },
+        includeIdentityPool: true,
+        identityPoolModification: {
+          unauthenticatedLogin: true,
+        },
+      },
+    };
+
+    await initJSProjectWithProfile(projRoot, defaultSettings);
+    await addAuthWithDefault(projRoot, {});
+    await updateHeadlessAuth(projRoot, updateAuthRequest, {});
+    await amplifyPushAuth(projRoot);
+    const meta = getProjectMeta(projRoot);
+    const id = Object.keys(meta.auth).map(key => meta.auth[key])[0].output.UserPoolId;
+    const userPool = await getUserPool(id, meta.providers.awscloudformation.Region);
+    expect(userPool.UserPool).toBeDefined();
+    expect(_.get(meta, ['auth', 'userPoolGroups'])).toBeDefined();
   });
 });

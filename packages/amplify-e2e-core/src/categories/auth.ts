@@ -347,7 +347,7 @@ export function addAuthWithCustomTrigger(cwd: string, settings: any): Promise<vo
 
 export function updateAuthSignInSignOutUrl(cwd: string, settings: any): Promise<void> {
   return new Promise((resolve, reject) => {
-    const chain = spawn(getCLIPath(), ['update', 'auth'], { cwd, stripColors: true });
+    const chain = spawn(getCLIPath(settings.testingWithLatestCodebase), ['update', 'auth'], { cwd, stripColors: true });
     if (settings?.overrides?.category === 'auth') {
       chain.wait(`Do you want to migrate this ${settings.overrides.resourceName} to support overrides?`).sendConfirmYes();
     }
@@ -385,7 +385,7 @@ export function updateAuthSignInSignOutUrl(cwd: string, settings: any): Promise<
 
 export function updateAuthToRemoveFederation(cwd: string, settings: any): Promise<void> {
   return new Promise((resolve, reject) => {
-    const chain = spawn(getCLIPath(), ['update', 'auth'], { cwd, stripColors: true });
+    const chain = spawn(getCLIPath(settings.testingWithLatestCodebase), ['update', 'auth'], { cwd, stripColors: true });
     if (settings?.overrides?.category === 'auth') {
       chain.wait(`Do you want to migrate this ${settings.overrides.resourceName} to support overrides?`).sendConfirmYes();
     }
@@ -406,7 +406,7 @@ export function updateAuthToRemoveFederation(cwd: string, settings: any): Promis
 
 export function updateAuthWithoutCustomTrigger(cwd: string, settings: any): Promise<void> {
   return new Promise((resolve, reject) => {
-    const chain = spawn(getCLIPath(), ['update', 'auth'], { cwd, stripColors: true });
+    const chain = spawn(getCLIPath(settings.testingWithLatestCodebase), ['update', 'auth'], { cwd, stripColors: true });
     if (settings?.overrides?.category === 'auth') {
       chain.wait(`Do you want to migrate this ${settings.overrides.resourceName} to support overrides?`).sendConfirmYes();
     }
@@ -499,7 +499,7 @@ export function addAuthWithRecaptchaTrigger(cwd: string, settings: any): Promise
 
 export function updateAuthRemoveRecaptchaTrigger(cwd: string, settings: any): Promise<void> {
   return new Promise((resolve, reject) => {
-    const chain = spawn(getCLIPath(), ['update', 'auth'], { cwd, stripColors: true });
+    const chain = spawn(getCLIPath(settings.testingWithLatestCodebase), ['update', 'auth'], { cwd, stripColors: true });
     if (settings?.overrides?.category === 'auth') {
       chain.wait(`Do you want to migrate this ${settings.overrides.resourceName} to support overrides?`).sendConfirmYes();
     }
@@ -1256,7 +1256,7 @@ export function updateAuthAddUserGroups(projectDir: string, groupNames: string[]
   }
 
   return new Promise((resolve, reject) => {
-    const chain = spawn(getCLIPath(), ['update', 'auth'], { cwd: projectDir, stripColors: true });
+    const chain = spawn(getCLIPath(settings.testingWithLatestCodebase), ['update', 'auth'], { cwd: projectDir, stripColors: true });
     if (settings?.overrides?.category === 'auth') {
       chain.wait(`Do you want to migrate this ${settings.overrides.resourceName} to support overrides?`).sendConfirmYes();
     }
@@ -1576,7 +1576,7 @@ export function addAuthUserPoolOnlyNoOAuth(cwd: string, settings: AddAuthUserPoo
 
 export function updateAuthAddAdminQueries(projectDir: string, groupName: string = 'adminQueriesGroup', settings?: any): Promise<void> {
   return new Promise((resolve, reject) => {
-    const chain = spawn(getCLIPath(), ['update', 'auth'], { cwd: projectDir, stripColors: true });
+    const chain = spawn(getCLIPath(settings.testingWithLatestCodebase), ['update', 'auth'], { cwd: projectDir, stripColors: true });
     if (settings?.overrides?.category === 'auth') {
       chain.wait(`Do you want to migrate this ${settings.overrides.resourceName} to support overrides?`).sendConfirmYes();
     }
@@ -1607,7 +1607,7 @@ export function updateAuthAddAdminQueries(projectDir: string, groupName: string 
 
 export function updateAuthWithoutTrigger(cwd: string, settings: any): Promise<void> {
   return new Promise((resolve, reject) => {
-    const chain = spawn(getCLIPath(), ['update', 'auth'], { cwd, stripColors: true });
+    const chain = spawn(getCLIPath(settings.testingWithLatestCodebase), ['update', 'auth'], { cwd, stripColors: true });
     if (settings?.overrides?.category === 'auth') {
       chain.wait(`Do you want to migrate this ${settings.overrides.resourceName} to support overrides?`).sendConfirmYes();
     }
