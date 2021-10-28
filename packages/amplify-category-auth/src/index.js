@@ -428,6 +428,9 @@ const executeAmplifyHeadlessCommand = async (context, headlessPayload) => {
         .then(getAddAuthHandler(context));
       return;
     case 'update':
+      // migration check for headless update
+      const authResourceName = await getAuthResourceName(context);
+      await checkAuthResourceMigration(context, authResourceName);
       await attachPrevParamsToContext(context);
       await validateUpdateAuthRequest(headlessPayload)
         .then(getUpdateAuthRequestAdaptor(context.amplify.getProjectConfig().frontend, context.updatingAuth.requiredAttributes))
