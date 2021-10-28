@@ -51,7 +51,7 @@ export async function buildOverrideDir(cwd: string, destDirPath: string): Promis
     fs.ensureDirSync(tsConfigDir);
 
     const tsConfigFilePath = path.join(tsConfigDir, 'tsconfig.resource.json');
-    execa.sync('tsc', [`--project`, `${tsConfigFilePath}`], {
+    execa.sync(packageManager.executable, ['build', `--project`, `${tsConfigFilePath}`], {
       cwd: tsConfigDir,
       stdio: 'pipe',
       encoding: 'utf-8',
