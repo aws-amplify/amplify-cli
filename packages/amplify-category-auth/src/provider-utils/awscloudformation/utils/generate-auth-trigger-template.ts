@@ -6,6 +6,7 @@ import * as lambda from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
 import { prepareApp } from '@aws-cdk/core/lib/private/prepare-app';
 import { AuthTriggerConnection, CognitoStackOptions } from '../service-walkthrough-types/cognito-user-input-types';
+import { CustomResource } from '@aws-cdk/core';
 import { authTriggerAssetFilePath } from '../constants';
 
 type CustomResourceAuthStackProps = Readonly<{
@@ -47,7 +48,7 @@ export class CustomResourceAuthStack extends cdk.Stack {
       config.lambdaFunctionArn = fnArn.valueAsString;
     });
 
-    createCustomResource(this, props.authTriggerConnections, userpoolId);
+    createCustomResource(this, props.authTriggerConnections, userpoolId, userpoolArn);
   }
 
   toCloudFormation() {
@@ -83,24 +84,31 @@ async function createCustomResourceforAuthTrigger(authTriggerConnections: AuthTr
   return cfn;
 }
 
-function createCustomResource(stack: cdk.Stack, authTriggerConnections: AuthTriggerConnection[], userpoolId: cdk.CfnParameter) {
+function createCustomResource(
+  stack: cdk.Stack,
+  authTriggerConnections: AuthTriggerConnection[],
+  userpoolId: cdk.CfnParameter,
+  userpoolArn: cdk.CfnParameter,
+) {
   const triggerCode = fs.readFileSync(authTriggerAssetFilePath, 'utf-8');
   const authTriggerFn = new lambda.Function(stack, 'authTriggerFn', {
     runtime: lambda.Runtime.NODEJS_12_X,
     code: lambda.Code.fromInline(triggerCode),
     handler: 'index.handler',
   });
+  // reason to add iam::PassRole
+  //AccessDeniedException: User: arn:aws:sts::<ACCOUNT_ID>:assumed-role/amplify-emailcheck-dev-17-authTriggerFnServiceRole-1JAJZTK0HHAHP/amplify-emailcheck-dev-17374-authTriggerFn7FCFA449-SP7WeFmC9mD1 is not authorized to perform: iam:PassRole on resource: arn:aws:iam::ACCOUNT_ID:role/sns533b49c5173740-dev
   if (authTriggerFn.role) {
     authTriggerFn.role.addToPrincipalPolicy(
       new iam.PolicyStatement({
         effect: iam.Effect.ALLOW,
-        actions: ['cognito-idp:DescribeUserPoolClient', 'cognito-idp:UpdateUserPool'],
+        actions: ['cognito-idp:DescribeUserPool', 'cognito-idp:DescribeUserPoolClient', 'cognito-idp:UpdateUserPool', 'iam:PassRole'],
         resources: ['*'],
       }),
     );
   }
   // The custom resource that uses the provider to supply value
-  new cdk.CustomResource(stack, 'CustomAuthTriggerResource', {
+  new CustomResource(stack, 'CustomAuthTriggerResource', {
     serviceToken: authTriggerFn.functionArn,
     properties: { userpoolId: userpoolId.valueAsString, lambdaConfig: authTriggerConnections },
     resourceType: 'Custom::CustomAuthTriggerResourceOutputs',

@@ -1,20 +1,21 @@
-import { messages } from '../../provider-utils/awscloudformation/assets/string-maps';
-import { getAuthResourceName } from '../../utils/getAuthResourceName';
-import { category } from '../..';
-import { $TSContext, stateManager } from 'amplify-cli-core';
+import { $TSContext, BannerMessage, FeatureFlags, pathManager, stateManager } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
-import { AuthInputState } from '../../provider-utils/awscloudformation/auth-inputs-manager/auth-input-state';
+import * as fs from 'fs-extra';
 import _ from 'lodash';
-import { checkAuthResourceMigration } from '../../provider-utils/awscloudformation/utils/check-for-auth-migration';
-import { supportedServices } from '../../provider-utils/supported-services';
-
+import { category } from '../..';
+import { messages } from '../../provider-utils/awscloudformation/assets/string-maps';
+import { AuthInputState } from '../../provider-utils/awscloudformation/auth-inputs-manager/auth-input-state';
 import * as providerController from '../../provider-utils/awscloudformation/index';
+import { checkAuthResourceMigration } from '../../provider-utils/awscloudformation/utils/check-for-auth-migration';
+import { getSupportedServices } from '../../provider-utils/supported-services';
+import { getAuthResourceName } from '../../utils/getAuthResourceName';
 
 export const name = 'update';
 export const alias = ['update'];
 
 export const run = async (context: $TSContext) => {
   const { amplify } = context;
+  const servicesMetadata = getSupportedServices();
   const stateMeta = stateManager.getMeta();
   const existingAuth = stateMeta.auth ?? {};
   if (_.isEmpty(existingAuth)) {
@@ -29,6 +30,16 @@ export const run = async (context: $TSContext) => {
       } else if (serviceMeta.service === 'Cognito' && serviceMeta.serviceType === 'imported') {
         printer.error('Updating imported Auth resource is not supported.');
         return context;
+      } else if (serviceMeta.service === 'Cognito' && !FeatureFlags.getBoolean('auth.forceAliasAttributes')) {
+        const authAttributes = JSON.parse(
+          fs.readFileSync(pathManager.getResourceParametersFilePath(undefined, 'auth', service)).toString(),
+        );
+        if (authAttributes.aliasAttributes && authAttributes.aliasAttributes.length > 0) {
+          const authUpdateWarning = await BannerMessage.getMessage('AMPLIFY_UPDATE_AUTH_ALIAS_ATTRIBUTES_WARNING');
+          if (authUpdateWarning) {
+            printer.warn(authUpdateWarning);
+          }
+        }
       }
     }
   }
@@ -46,7 +57,7 @@ export const run = async (context: $TSContext) => {
   context.updatingAuth = await cliState.loadResourceParameters(context, cliState.getCLIInputPayload());
 
   try {
-    const result = await amplify.serviceSelectionPrompt(context, category, supportedServices);
+    const result = await amplify.serviceSelectionPrompt(context, category, getSupportedServices());
     const options = {
       service: result.service,
       providerPlugin: result.providerName,
