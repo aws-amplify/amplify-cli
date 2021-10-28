@@ -1,0 +1,63 @@
+{
+    "name": "@aws-amplify/graphql-transformer-migrator",
+    "version": "0.1.0",
+    "description": "A tool for converting schemas from Amplify's V1 transformer to the V2 transformer",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/aws-amplify/amplify-cli.git",
+        "directory": "packages/amplify-graphql-transformer-migrator"
+    },
+    "author": "Amazon Web Services",
+    "license": "Apache-2.0",
+    "main": "lib/index.js",
+    "types": "lib/index.d.ts",
+    "keywords": [
+        "graphql",
+        "aws",
+        "amplify"
+    ],
+    "publishConfig": {
+        "access": "public"
+    },
+    "scripts": {
+        "build": "tsc",
+        "watch": "tsc -w",
+        "clean": "rimraf ./lib"
+    },
+    "dependencies": {
+        "@aws-amplify/graphql-transformer-core": "0.9.2",
+        "@aws-amplify/graphql-transformer-interfaces": "1.9.1",
+        "amplify-cli-core": "1.30.0",
+        "amplify-prompts": "1.2.0",
+        "diff": "^5.0.0",
+        "fs-extra": "^8.1.0",
+        "glob": "^7.1.6",
+        "graphql": "^14.5.8",
+        "graphql-auth-transformer": "6.24.23",
+        "lodash": "^4.17.21",
+        "md5": "^2.3.0",
+        "ts-dedent": "^2.0.0"
+    },
+    "devDependencies": {
+        "@types/fs-extra": "^8.0.1",
+        "@types/md5": "^2.3.1",
+        "@types/node": "^12.12.6",
+        "@types/diff": "^5.0.0"
+    },
+    "jest": {
+        "transform": {
+            "^.+\\.tsx?$": "ts-jest"
+        },
+        "testURL": "http://localhost",
+        "testRegex": "(src/__tests__/.*|(\\.|/)(test|spec))\\.(jsx?|tsx?)$",
+        "moduleFileExtensions": [
+            "ts",
+            "tsx",
+            "js",
+            "jsx",
+            "json",
+            "node"
+        ],
+        "collectCoverage": true
+    }
+}
