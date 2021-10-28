@@ -92,6 +92,10 @@ export class AuthInputState extends CategoryInputState {
         triggers: parameters.triggers,
         dependsOn,
       });
+    } else {
+      if (parameters.triggers) {
+        parameters.triggers = JSON.stringify(parameters.triggers);
+      }
     }
     return parameters;
   }

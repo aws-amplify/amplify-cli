@@ -14,6 +14,9 @@ jest.mock('amplify-prompts');
 
 jest.mock('amplify-cli-core', () => ({
   ...(jest.requireActual('amplify-cli-core') as {}),
+  FeatureFlags: {
+    getBoolean: jest.fn().mockReturnValue(true),
+  },
   AmplifySupportedService: {
     COGNITO: 'Cognito',
     COGNITOUSERPOOLGROUPS: 'Cognito-UserPool-Groups',

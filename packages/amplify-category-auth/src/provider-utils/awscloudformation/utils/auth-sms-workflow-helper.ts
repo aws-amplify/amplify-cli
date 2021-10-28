@@ -1,6 +1,6 @@
 import { $TSContext } from 'amplify-cli-core';
 import { ProviderUtils } from '../import/types';
-import { supportedServices } from '../../supported-services';
+import { getSupportedServices } from '../../supported-services';
 import { ServiceQuestionHeadlessResult } from '../service-walkthrough-types/cognito-user-input-types';
 import { AuthInputState } from '../auth-inputs-manager/auth-input-state';
 import { CognitoConfiguration } from '../service-walkthrough-types/awsCognito-user-input-types';
@@ -27,7 +27,7 @@ export const doesConfigurationIncludeSMS = (request: CognitoConfiguration | Serv
 };
 
 const getProviderPlugin = (context: $TSContext): ProviderUtils => {
-  const serviceMetaData = supportedServices.Cognito;
+  const serviceMetaData = getSupportedServices().Cognito;
   const { provider } = serviceMetaData;
 
   return context.amplify.getPluginInstance(context, provider);
