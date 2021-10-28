@@ -8,7 +8,6 @@ import {
   raw,
   iff,
   and,
-  isNullOrEmpty,
   not,
   methodCall,
   qref,
@@ -133,7 +132,7 @@ const generateStaticRoleExpression = (roles: Array<RoleDefinition>): Array<Expre
   return staticRoleExpression;
 };
 
-const dynamicGroupRoleExpression = (roles: Array<RoleDefinition>, fields: ReadonlyArray<FieldDefinitionNode>): Array<Expression> => {
+const dynamicRoleExpression = (roles: Array<RoleDefinition>, fields: ReadonlyArray<FieldDefinitionNode>): Array<Expression> => {
   const ownerExpression = new Array<Expression>();
   const dynamicGroupExpression = new Array<Expression>();
   roles.forEach((role, idx) => {
@@ -143,10 +142,7 @@ const dynamicGroupRoleExpression = (roles: Array<RoleDefinition>, fields: Readon
         iff(
           not(ref(IS_AUTHORIZED_FLAG)),
           compoundExpression([
-            set(
-              ref(`ownerEntity${idx}`),
-              methodCall(ref('util.defaultIfNull'), ref(`ctx.args.input.${role.entity!}`), entityIsList ? list([]) : nul()),
-            ),
+            set(ref(`ownerEntity${idx}`), methodCall(ref('util.defaultIfNull'), ref(`ctx.args.input.${role.entity!}`), nul())),
             set(ref(`ownerClaim${idx}`), getOwnerClaim(role.claim!)),
             set(ref(`ownerAllowedFields${idx}`), raw(JSON.stringify(role.allowedFields))),
             ...(entityIsList
@@ -157,7 +153,7 @@ const dynamicGroupRoleExpression = (roles: Array<RoleDefinition>, fields: Readon
                 ]
               : [iff(equals(ref(`ownerClaim${idx}`), ref(`ownerEntity${idx}`)), addAllowedFieldsIfElse(`ownerAllowedFields${idx}`))]),
             iff(
-              and([isNullOrEmpty(ref(`ownerEntity${idx}`)), not(methodCall(ref('ctx.args.input.containsKey'), str(role.entity!)))]),
+              and([ref(`util.isNull($ownerEntity${idx})`), not(methodCall(ref('ctx.args.input.containsKey'), str(role.entity!)))]),
               compoundExpression([
                 qref(
                   methodCall(
@@ -241,7 +237,7 @@ export const generateAuthExpressionForCreate = (
         equals(ref('util.authType()'), str(COGNITO_AUTH_TYPE)),
         compoundExpression([
           ...generateStaticRoleExpression(cognitoStaticGroupRoles),
-          ...dynamicGroupRoleExpression(cognitoDynamicRoles, fields),
+          ...dynamicRoleExpression(cognitoDynamicRoles, fields),
         ]),
       ),
     );
@@ -250,10 +246,7 @@ export const generateAuthExpressionForCreate = (
     totalAuthExpressions.push(
       iff(
         equals(ref('util.authType()'), str(OIDC_AUTH_TYPE)),
-        compoundExpression([
-          ...generateStaticRoleExpression(oidcStaticGroupRoles),
-          ...dynamicGroupRoleExpression(oidcDynamicRoles, fields),
-        ]),
+        compoundExpression([...generateStaticRoleExpression(oidcStaticGroupRoles), ...dynamicRoleExpression(oidcDynamicRoles, fields)]),
       ),
     );
   }
