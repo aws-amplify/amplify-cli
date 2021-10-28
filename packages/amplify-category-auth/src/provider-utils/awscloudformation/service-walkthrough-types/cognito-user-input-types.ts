@@ -59,7 +59,6 @@ export interface ServiceQuestionsBaseResult {
   verificationBucketName?: string;
   resourceNameTruncated?: string;
   sharedId?: string;
-  useEnabledMfas?: boolean;
 }
 
 export interface OAuthResult {
