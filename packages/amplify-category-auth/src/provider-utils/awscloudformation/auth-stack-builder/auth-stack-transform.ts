@@ -271,6 +271,10 @@ export class AmplifyAuthTransform extends AmplifyCategoryTransform {
   };
 
   private generateCfnOutputs = (props: CognitoStackOptions) => {
+    const configureSMS =
+      (props.autoVerifiedAttributes && props.autoVerifiedAttributes.includes('phone_number')) ||
+      (props.mfaConfiguration != 'OFF' && props.mfaTypes && props.mfaTypes.includes('SMS Text Message')) ||
+      (props.requiredAttributes && props.requiredAttributes.includes('phone_number'));
     if (props.authSelections === 'identityPoolAndUserPool' || props.authSelections == 'identityPoolOnly') {
       this._authTemplateObj.addCfnOutput(
         {
@@ -358,7 +362,7 @@ export class AmplifyAuthTransform extends AmplifyCategoryTransform {
         'AppClientSecret',
       );
 
-      if (props.mfaConfiguration != 'OFF') {
+      if (!props.useEnabledMfas || configureSMS) {
         this._authTemplateObj.addCfnOutput(
           {
             value: cdk.Fn.getAtt('SNSRole', 'Arn').toString(),
