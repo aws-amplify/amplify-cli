@@ -1,4 +1,6 @@
-export const supportedServices = {
+import { $TSAny, FeatureFlags } from 'amplify-cli-core';
+
+const supportedServices = {
   Cognito: {
     inputs: [
       {
@@ -280,6 +282,27 @@ export const supportedServices = {
           {
             preventEdit: 'exists',
             key: 'userPoolName',
+          },
+        ],
+      },
+      {
+        key: 'usernameAttributes',
+        question: 'How do you want users to be able to sign in?',
+        required: true,
+        type: 'list',
+        map: 'signInOptions',
+        prefixColor: 'red',
+        prefix: 'Warning: you will not be able to edit these selections.',
+        learnMore:
+          "Selecting 'Email' and/or 'Phone Number' will allow end users to sign-up using these values.  Selecting 'Username' will require a unique username for users.",
+        andConditions: [
+          {
+            key: 'authSelections',
+            value: 'identityPoolOnly',
+            operator: '!=',
+          },
+          {
+            preventEdit: 'always',
           },
         ],
       },
@@ -1234,4 +1257,14 @@ export const supportedServices = {
     stringMapsFilename: 'string-maps.js',
     provider: 'awscloudformation',
   },
+};
+export const getSupportedServices = (): $TSAny => {
+  const keyToRemove = FeatureFlags.getBoolean('auth.forceAliasAttributes') ? 'usernameAttributes' : 'aliasAttributes';
+  const inputs = supportedServices.Cognito.inputs.filter(input => input.key !== keyToRemove);
+  return {
+    Cognito: {
+      ...supportedServices.Cognito,
+      inputs,
+    },
+  };
 };
