@@ -33,7 +33,7 @@
         "fs-extra": "^8.1.0",
         "glob": "^7.1.6",
         "graphql": "^14.5.8",
-        "graphql-auth-transformer": "6.24.23",
+        "graphql-transformer-common": "4.19.10",
         "lodash": "^4.17.21",
         "md5": "^2.3.0",
         "ts-dedent": "^2.0.0"

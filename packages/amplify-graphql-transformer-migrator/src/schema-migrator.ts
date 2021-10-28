@@ -15,7 +15,7 @@ import {
 import { DocumentNode } from 'graphql/language';
 import { prompter, printer } from 'amplify-prompts';
 import path from 'path';
-import { $TSContext, exitOnNextTick, FeatureFlags, pathManager, stateManager } from 'amplify-cli-core';
+import { $TSContext, exitOnNextTick } from 'amplify-cli-core';
 import { detectCustomResolvers, detectOverriddenResolvers, detectUnsupportedDirectives, graphQLUsingSQL } from './schema-inspector';
 import { validateModelSchema, SchemaValidationError } from '@aws-amplify/graphql-transformer-core';
 import { updateTransformerVersion } from './state-migrator';
