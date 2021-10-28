@@ -40,7 +40,7 @@ export function addEnvironment(cwd: string, settings: any): Promise<void> {
     spawn(getCLIPath(), ['env', 'add', '--providers', JSON.stringify(settings.providersParam)], { cwd, stripColors: true })
       .wait('Enter a name for the environment')
       .sendLine(settings.envName)
-      .wait('Try "amplify add api" to create a backend API and then "amplify publish" to deploy everything')
+      .wait('Try "amplify add api" to create a backend API and then "amplify push" to deploy everything')
       .run((err: Error) => {
         if (!err) {
           resolve();
