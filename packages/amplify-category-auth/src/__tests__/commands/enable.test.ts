@@ -1,7 +1,9 @@
-const fs = require('fs');
-const add = require('../../commands/auth/enable');
-const { messages } = require('../../provider-utils/awscloudformation/assets/string-maps');
-const providerController = require('../../provider-utils/awscloudformation');
+import { $TSContext, FeatureFlags } from 'amplify-cli-core';
+import * as fs from 'fs-extra';
+import * as add from '../../commands/auth/enable';
+import { messages } from '../../provider-utils/awscloudformation/assets/string-maps';
+
+FeatureFlags.getBoolean = () => false;
 
 jest.mock('../../provider-utils/awscloudformation', () => ({
   addResource: jest.fn(),
@@ -17,7 +19,7 @@ describe('auth enable: ', () => {
       executeProviderUtils: mockExecuteProviderUtils,
       getProjectDetails: mockGetProjectDetails,
       serviceSelectionPrompt: mockSelectionPrompt,
-      readJsonFile: jest.fn(path => JSON.parse(fs.readFileSync(path))),
+      readJsonFile: jest.fn(path => JSON.parse(fs.readFileSync(path, 'utf-8'))),
     },
     print: {
       warning: jest.fn(),
@@ -27,7 +29,7 @@ describe('auth enable: ', () => {
     usageData: {
       emitError: jest.fn(),
     },
-  };
+  } as unknown as $TSContext;
 
   it('enable run method should exist', () => {
     expect(add.run).toBeDefined();
