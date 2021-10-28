@@ -44,6 +44,15 @@ Object {
         ],
       },
     },
+    "CreatedSNSRole": Object {
+      "Description": "role arn",
+      "Value": Object {
+        "Fn::GetAtt": Array [
+          "SNSRole",
+          "Arn",
+        ],
+      },
+    },
     "IdentityPoolId": Object {
       "Description": "Id for the identity pool",
       "Value": Object {
