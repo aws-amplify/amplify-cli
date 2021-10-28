@@ -5881,6 +5881,11 @@
   resolved "https://registry.yarnpkg.com/@types/detect-port/-/detect-port-1.3.1.tgz#a1af9bb9e8e43f5a2190f876cfd4120a5fae41ab"
   integrity sha512-evutJ8HynqPgm07LaG7nj7VqFqfAYpAjpKYYjhj5rlD5ukdF0hFiqHQo94Tu1FBJQkWDQPt3f1DaXLOGEL1nAw==
 
+"@types/diff@^5.0.0":
+  version "5.0.1"
+  resolved "https://registry.yarnpkg.com/@types/diff/-/diff-5.0.1.tgz#9c9b9a331d4e41ccccff553f5d7ef964c6cf4042"
+  integrity sha512-XIpxU6Qdvp1ZE6Kr3yrkv1qgUab0fyf4mHYvW8N3Bx3PCsbN6or1q9/q72cv5jIFWolaGH08U9XyYoLLIykyKQ==
+
 "@types/eslint-visitor-keys@^1.0.0":
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/@types/eslint-visitor-keys/-/eslint-visitor-keys-1.0.0.tgz#1ee30d79544ca84d68d4b3cdb0af4f205663dd2d"
@@ -12990,6 +12995,17 @@ graphiql@^1.3.2:
     entities "^2.0.0"
     graphql-language-service "^3.1.2"
     markdown-it "^10.0.0"
+
+graphql-auth-transformer@6.24.23:
+  version "6.24.23"
+  resolved "https://registry.yarnpkg.com/graphql-auth-transformer/-/graphql-auth-transformer-6.24.23.tgz#4d060dce60dc840561dd9d6bc8b61ecf04bf614a"
+  integrity sha512-GCjxZCPpv1SHGgcMEvacj6Z+D2/6tTKPB0p+A/77fJ3EYBv+eVvGvvjc+dmWzgLY/SseD2yeKwK5ctgprI0o+A==
+  dependencies:
+    graphql "^14.5.8"
+    graphql-connection-transformer "4.21.23"
+    graphql-mapping-template "4.18.3"
+    graphql-transformer-common "4.19.10"
+    graphql-transformer-core "6.30.0"
 
 graphql-auth-transformer@6.24.24:
   version "6.24.24"
