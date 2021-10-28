@@ -337,7 +337,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
           this.userPool.enabledMfas = ['SMS_MFA'];
         }
         if (!_.isEmpty(props.mfaTypes) && props.mfaTypes!.includes('TOTP')) {
-          this.userPool.enabledMfas = ['SOFTWARE_TOKEN_MFA'];
+          this.userPool.enabledMfas!.push('SOFTWARE_TOKEN_MFA');
         }
       }
 
