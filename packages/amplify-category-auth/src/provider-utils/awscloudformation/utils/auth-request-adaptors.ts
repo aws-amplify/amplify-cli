@@ -33,6 +33,7 @@ import {
   ServiceQuestionHeadlessResult,
 } from '../service-walkthrough-types/cognito-user-input-types';
 import { pascalCase } from 'change-case';
+import { FeatureFlags } from 'amplify-cli-core';
 
 export type AddAuthRequestAdaptorFactory = (projectType: string) => AddAuthRequestAdaptor;
 
@@ -77,7 +78,9 @@ const immutableAttributeAdaptor = (userPoolConfig: CognitoUserPoolConfiguration,
   return {
     userPoolName: userPoolConfig.userPoolName,
     usernameAttributes: signinAttributeMap[userPoolConfig.signinMethod],
-    aliasAttributes: userPoolConfig.aliasAttributes?.map(attr => aliasAttributeMap[attr]) ?? [],
+    aliasAttributes: FeatureFlags.getBoolean('auth.forceAliasAttributes')
+      ? userPoolConfig.aliasAttributes?.map(attr => aliasAttributeMap[attr]) ?? []
+      : [],
     ...immutableIdentityPoolMap(identityPoolConfig),
   };
 };

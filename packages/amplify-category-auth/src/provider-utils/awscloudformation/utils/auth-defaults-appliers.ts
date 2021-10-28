@@ -25,14 +25,14 @@ export const getAddAuthDefaultsApplier =
 
     structureOAuthMetadata(result, context, getAllDefaults, context.amplify); // adds "oauthMetadata" to result
 
-  // Make the usernames for Cognito case-insensitive by default when it is created, if feature flag
-  // is enabled.
-  if (FeatureFlags.getBoolean('auth.enableCaseInsensitivity')) {
-    result.usernameCaseSensitive = false;
-  }
-  // If the feature flag is enabled the MFA TOTP can only be enabled
+    // Make the usernames for Cognito case-insensitive by default when it is created, if feature flag
+    // is enabled.
+    if (FeatureFlags.getBoolean('auth.enableCaseInsensitivity')) {
+      result.usernameCaseSensitive = false;
+    }
+    // If the feature flag is enabled the MFA TOTP can only be enabled
 
-  result.useEnabledMfas = FeatureFlags.getBoolean('auth.useEnabledMfas');
+    result.useEnabledMfas = FeatureFlags.getBoolean('auth.useEnabledMfas');
 
     /* merge actual answers object into props object,
      * ensuring that manual entries override defaults */
