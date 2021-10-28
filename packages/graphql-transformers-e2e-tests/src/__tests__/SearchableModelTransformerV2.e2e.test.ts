@@ -223,11 +223,11 @@ test('query for multiple aggregates', async () => {
   expect(searchResponse).toBeDefined();
   const result = searchResponse.data.searchTodos.aggregateItems.length;
   expect(result).toEqual(expectedValue);
-  expect(searchResponse.data.searchTodos.aggregateItems[0].result.value).toBeDefined();
-  expect(searchResponse.data.searchTodos.aggregateItems[1].result.value).toBeDefined();
-  expect(searchResponse.data.searchTodos.aggregateItems[2].result.value).toBeDefined();
-  expect(searchResponse.data.searchTodos.aggregateItems[3].result.value).toBeDefined();
-  expect(searchResponse.data.searchTodos.aggregateItems[4].result.buckets).toBeDefined();
+  expect(searchResponse.data.searchTodos.aggregateItems[0].result).toBeDefined();
+  expect(searchResponse.data.searchTodos.aggregateItems[1].result).toBeDefined();
+  expect(searchResponse.data.searchTodos.aggregateItems[2].result).toBeDefined();
+  expect(searchResponse.data.searchTodos.aggregateItems[3].result).toBeDefined();
+  expect(searchResponse.data.searchTodos.aggregateItems[4].result).toBeDefined();
 });
 
 test('query with sort return results', async () => {
@@ -256,6 +256,398 @@ test('query with sort return results', async () => {
   expect(searchResponse.data).toBeDefined();
   expect(searchResponse.data.searchTodos).toBeDefined();
   expect(searchResponse.data.searchTodos.items).toBeDefined();
+});
+
+test('query searchable with eq filter', async () => {
+  const expectedRecords = 1;
+  const searchResponse = await GRAPHQL_CLIENT.query(
+    `query {
+      searchTodos(sort: [{
+          direction: asc,
+          field: name
+        }],
+        filter: {
+          name: {
+            eq: "test1"
+          }
+        }
+      ) {
+        items {
+          id
+          name
+          description
+        }
+      }
+    }`,
+    {},
+  );
+  expect(searchResponse).toBeDefined();
+  expect(searchResponse.data).toBeDefined();
+  expect(searchResponse.data.searchTodos).toBeDefined();
+  expect(searchResponse.data.searchTodos.items).toHaveLength(expectedRecords);
+  expect(searchResponse.data.searchTodos.items).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({
+        id: expect.any(String),
+        name: 'test1',
+        description: 'test1'
+      }),
+    ]),
+  );
+});
+
+test('query searchable with ne filter', async () => {
+  const expectedRecords = 2;
+  const searchResponse = await GRAPHQL_CLIENT.query(
+    `query {
+      searchTodos(sort: [{
+          direction: asc,
+          field: name
+        }],
+        filter: {
+          name: {
+            ne: "test1"
+          }
+        }
+      ) {
+        items {
+          id
+          name
+          description
+        }
+      }
+    }`,
+    {},
+  );
+  expect(searchResponse).toBeDefined();
+  expect(searchResponse.data).toBeDefined();
+  expect(searchResponse.data.searchTodos).toBeDefined();
+  expect(searchResponse.data.searchTodos.items).toHaveLength(expectedRecords);
+  expect(searchResponse.data.searchTodos.items).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({
+        id: expect.any(String),
+        name: 'test2',
+        description: 'test2'
+      }),
+      expect.objectContaining({
+        id: expect.any(String),
+        name: 'test3',
+        description: 'test3'
+      }),
+    ]),
+  );
+});
+
+test('query searchable with gt filter', async () => {
+  const expectedRecords = 2;
+  const searchResponse = await GRAPHQL_CLIENT.query(
+    `query {
+      searchTodos(sort: [{
+          direction: asc,
+          field: name
+        }],
+        filter: {
+          count: {
+            gt: 10
+          }
+        }
+      ) {
+        items {
+          id
+          name
+          description
+        }
+      }
+    }`,
+    {},
+  );
+  expect(searchResponse).toBeDefined();
+  expect(searchResponse.data).toBeDefined();
+  expect(searchResponse.data.searchTodos).toBeDefined();
+  expect(searchResponse.data.searchTodos.items).toHaveLength(expectedRecords);
+  expect(searchResponse.data.searchTodos.items).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({
+        id: expect.any(String),
+        name: 'test2',
+        description: 'test2'
+      }),
+      expect.objectContaining({
+        id: expect.any(String),
+        name: 'test3',
+        description: 'test3'
+      }),
+    ]),
+  );
+});
+
+test('query searchable with gte filter', async () => {
+  const expectedRecords = 3;
+  const searchResponse = await GRAPHQL_CLIENT.query(
+    `query {
+      searchTodos(sort: [{
+          direction: asc,
+          field: name
+        }],
+        filter: {
+          count: {
+            gte: 10
+          }
+        }
+      ) {
+        items {
+          id
+          name
+          description
+        }
+      }
+    }`,
+    {},
+  );
+  expect(searchResponse).toBeDefined();
+  expect(searchResponse.data).toBeDefined();
+  expect(searchResponse.data.searchTodos).toBeDefined();
+  expect(searchResponse.data.searchTodos.items).toHaveLength(expectedRecords);
+  expect(searchResponse.data.searchTodos.items).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({
+        id: expect.any(String),
+        name: 'test1',
+        description: 'test1'
+      }),
+      expect.objectContaining({
+        id: expect.any(String),
+        name: 'test2',
+        description: 'test2'
+      }),
+      expect.objectContaining({
+        id: expect.any(String),
+        name: 'test3',
+        description: 'test3'
+      }),
+    ]),
+  );
+});
+
+test('query searchable with lt filter', async () => {
+  const expectedRecords = 1;
+  const searchResponse = await GRAPHQL_CLIENT.query(
+    `query {
+      searchTodos(sort: [{
+          direction: asc,
+          field: name
+        }],
+        filter: {
+          count: {
+            lt: 20
+          }
+        }
+      ) {
+        items {
+          id
+          name
+          description
+        }
+      }
+    }`,
+    {},
+  );
+  expect(searchResponse).toBeDefined();
+  expect(searchResponse.data).toBeDefined();
+  expect(searchResponse.data.searchTodos).toBeDefined();
+  expect(searchResponse.data.searchTodos.items).toHaveLength(expectedRecords);
+  expect(searchResponse.data.searchTodos.items).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({
+        id: expect.any(String),
+        name: 'test1',
+        description: 'test1'
+      }),
+    ]),
+  );
+});
+
+test('query searchable with lte filter', async () => {
+  const expectedRecords = 2;
+  const searchResponse = await GRAPHQL_CLIENT.query(
+    `query {
+      searchTodos(sort: [{
+          direction: asc,
+          field: name
+        }],
+        filter: {
+          count: {
+            lte: 20
+          }
+        }
+      ) {
+        items {
+          id
+          name
+          description
+        }
+      }
+    }`,
+    {},
+  );
+  expect(searchResponse).toBeDefined();
+  expect(searchResponse.data).toBeDefined();
+  expect(searchResponse.data.searchTodos).toBeDefined();
+  expect(searchResponse.data.searchTodos.items).toHaveLength(expectedRecords);
+  expect(searchResponse.data.searchTodos.items).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({
+        id: expect.any(String),
+        name: 'test1',
+        description: 'test1'
+      }),
+      expect.objectContaining({
+        id: expect.any(String),
+        name: 'test2',
+        description: 'test2'
+      }),
+    ]),
+  );
+});
+
+test('query searchable with eq and lt filter', async () => {
+  const expectedRecords = 1;
+  const searchResponse = await GRAPHQL_CLIENT.query(
+    `query {
+      searchTodos(sort: [{
+          direction: asc,
+          field: name
+        }],
+        filter: {
+          name: {
+            eq: "test1"
+          },
+          and: {
+            count: {
+              lt: 20
+            }
+          }
+        }
+      ) {
+        items {
+          id
+          name
+          description
+        }
+      }
+    }`,
+    {},
+  );
+  expect(searchResponse).toBeDefined();
+  expect(searchResponse.data).toBeDefined();
+  expect(searchResponse.data.searchTodos).toBeDefined();
+  expect(searchResponse.data.searchTodos.items).toHaveLength(expectedRecords);
+  expect(searchResponse.data.searchTodos.items).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({
+        id: expect.any(String),
+        name: 'test1',
+        description: 'test1'
+      }),
+    ]),
+  );
+});
+
+test('query searchable with wildcard filter', async () => {
+  const expectedRecords = 3;
+  const searchResponse = await GRAPHQL_CLIENT.query(
+    `query {
+      searchTodos(sort: [{
+          direction: asc,
+          field: name
+        }],
+        filter: {
+          name: {
+            wildcard: "test*"
+          }
+        }
+      ) {
+        items {
+          id
+          name
+          description
+        }
+      }
+    }`,
+    {},
+  );
+  expect(searchResponse).toBeDefined();
+  expect(searchResponse.data).toBeDefined();
+  expect(searchResponse.data.searchTodos).toBeDefined();
+  expect(searchResponse.data.searchTodos.items).toHaveLength(expectedRecords);
+  expect(searchResponse.data.searchTodos.items).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({
+        id: expect.any(String),
+        name: 'test1',
+        description: 'test1'
+      }),
+      expect.objectContaining({
+        id: expect.any(String),
+        name: 'test2',
+        description: 'test2'
+      }),
+      expect.objectContaining({
+        id: expect.any(String),
+        name: 'test3',
+        description: 'test3'
+      }),
+    ]),
+  );
+});
+
+test('query searchable with matchPhrasePrefix filter', async () => {
+  const expectedRecords = 3;
+  const searchResponse = await GRAPHQL_CLIENT.query(
+    `query {
+      searchTodos(sort: [{
+          direction: asc,
+          field: name
+        }],
+        filter: {
+          name: {
+            matchPhrasePrefix: "t"
+          }
+        }
+      ) {
+        items {
+          id
+          name
+          description
+        }
+      }
+    }`,
+    {},
+  );
+  expect(searchResponse).toBeDefined();
+  expect(searchResponse.data).toBeDefined();
+  expect(searchResponse.data.searchTodos).toBeDefined();
+  expect(searchResponse.data.searchTodos.items).toHaveLength(expectedRecords);
+  expect(searchResponse.data.searchTodos.items).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({
+        id: expect.any(String),
+        name: 'test1',
+        description: 'test1'
+      }),
+      expect.objectContaining({
+        id: expect.any(String),
+        name: 'test2',
+        description: 'test2'
+      }),
+      expect.objectContaining({
+        id: expect.any(String),
+        name: 'test3',
+        description: 'test3'
+      }),
+    ]),
+  );
 });
 
 function getCreateTodosMutation(
