@@ -27,8 +27,8 @@ describe('amplify add auth...', () => {
   });
 
   afterEach(async () => {
-    // await deleteProject(projRoot);
-    // deleteProjectDir(projRoot);
+    await deleteProject(projRoot);
+    deleteProjectDir(projRoot);
   });
 
   it('...should init a project and add auth with defaults', async () => {
