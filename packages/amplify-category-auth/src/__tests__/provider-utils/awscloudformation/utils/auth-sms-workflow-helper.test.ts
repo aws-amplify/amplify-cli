@@ -1,4 +1,6 @@
 import { CognitoConfiguration } from '../../../../provider-utils/awscloudformation/service-walkthrough-types/awsCognito-user-input-types';
+import { FeatureFlags } from 'amplify-cli-core';
+FeatureFlags.getBoolean = () => false;
 import { AttributeType } from '../../../../provider-utils/awscloudformation/service-walkthrough-types/cognito-user-input-types';
 import { doesConfigurationIncludeSMS } from '../../../../provider-utils/awscloudformation/utils/auth-sms-workflow-helper';
 
