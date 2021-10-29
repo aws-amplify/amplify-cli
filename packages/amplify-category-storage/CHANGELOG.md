@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.14.0-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-storage@2.12.12...amplify-category-storage@2.14.0-beta.0) (2021-10-29)
+
+
+### Bug Fixes
+
+* **amplify-category-storage:** add auth by default ([#8498](https://github.com/aws-amplify/amplify-cli/issues/8498)) ([011cb87](https://github.com/aws-amplify/amplify-cli/commit/011cb87f4e111b603b7502313c2844656c441775))
+
+
+### Features
+
+* **amplify-category-storage:** headless support for S3 ([#8423](https://github.com/aws-amplify/amplify-cli/issues/8423)) ([76b0e70](https://github.com/aws-amplify/amplify-cli/commit/76b0e700d6221292a25b384e2ecfc7a64e9916dd))
+
+
+
+
+
 ## [2.12.12](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-storage@2.12.11...amplify-category-storage@2.12.12) (2021-10-10)
 
 **Note:** Version bump only for package amplify-category-storage

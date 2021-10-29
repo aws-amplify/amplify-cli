@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.4.0-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-prompts@1.2.0...amplify-prompts@1.4.0-beta.0) (2021-10-29)
+
+
+### Features
+
+* add byValue and byValues helper functions to select pick options by value ([#8253](https://github.com/aws-amplify/amplify-cli/issues/8253)) ([2fa32e8](https://github.com/aws-amplify/amplify-cli/commit/2fa32e8c368eda408b515a04195744fb25a29a3d))
+* flag to allow destructive schema changes ([#8273](https://github.com/aws-amplify/amplify-cli/issues/8273)) ([18de856](https://github.com/aws-amplify/amplify-cli/commit/18de856fb61bf2df8f73375e4e55a58c6159a232))
+
+
+
+
+
 # [1.2.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-prompts@1.1.2...amplify-prompts@1.2.0) (2021-09-27)
 
 
