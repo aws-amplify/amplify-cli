@@ -1,0 +1,7 @@
+**/__mocks__/**
+**/__tests__/**
+**/tests/**
+src
+tsconfig.json
+!resources/tsconfig.json
+tsconfig.tsbuildinfo
