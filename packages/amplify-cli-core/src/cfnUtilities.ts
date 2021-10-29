@@ -22,7 +22,7 @@ export function readCFNTemplate(filePath: string, options: Partial<typeof defaul
     throw new Error(`No CloudFormation template found at ${filePath}`);
   }
   //TODO:  somthing wrong with this call , work fine with readFileSync()
-  const fileContent = await fs.readFile(filePath, 'utf8');
+  const fileContent = fs.readFileSync(filePath, 'utf8');
   // We use the first character to determine if the content is json or yaml because historically the CLI could
   // have emitted JSON with YML extension, so we can't rely on filename extension.
   const isJson = isJsonFileContent(fileContent);
