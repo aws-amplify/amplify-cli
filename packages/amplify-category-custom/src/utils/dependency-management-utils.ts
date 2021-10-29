@@ -1,13 +1,12 @@
-import { $TSContext, pathManager, readCFNTemplate, stateManager, writeCFNTemplate } from 'amplify-cli-core';
-import { glob } from 'glob';
-import * as path from 'path';
-import * as fs from 'fs-extra';
-import { printer } from 'amplify-prompts';
 import * as cdk from '@aws-cdk/core';
+import { $TSContext, $TSObject, pathManager, readCFNTemplate, stateManager, writeCFNTemplate } from 'amplify-cli-core';
+import { printer, prompter } from 'amplify-prompts';
+import * as fs from 'fs-extra';
+import { glob } from 'glob';
 import inquirer, { CheckboxQuestion, DistinctChoice } from 'inquirer';
 import _ from 'lodash';
+import * as path from 'path';
 import { categoryName, customResourceCFNFilename } from '../utils/constants';
-import { prompter } from 'amplify-prompts';
 
 const cfnTemplateGlobPattern = '*template*.+(yaml|yml|json)';
 interface AmplifyDependentResourceDefinition {
@@ -65,7 +64,7 @@ export function getResourceCfnOutputAttributes(category: string, resourceName: s
 export function getAllResources() {
   const meta = stateManager.getMeta();
   const categories = Object.keys(meta).filter(category => category !== 'providers');
-  const allResources: any = {};
+  const allResources: $TSObject = {};
 
   for (const category of categories) {
     let resourcesList = category in meta ? Object.keys(meta[category]) : [];
@@ -112,7 +111,7 @@ export function addCDKResourceDependency(
   dependentResources: AmplifyDependentResourceDefinition[],
 ) {
   const dependsOn: AmplifyDependentResourceDefinition[] = [];
-  const dependentParameters: any = {};
+  const dependentParameters: $TSObject = {};
 
   dependentResources.forEach(resource => {
     const attributeList = getResourceCfnOutputAttributes(resource.category, resource.resourceName);
@@ -167,7 +166,7 @@ export async function addCFNResourceDependency(context: $TSContext, customResour
 
   const selectResourcesInCategory = (
     choices: DistinctChoice<any>[],
-    currentResourceDependencyMap: any,
+    currentResourceDependencyMap: $TSObject,
     category: string,
   ): CheckboxQuestion => ({
     type: 'checkbox',
@@ -189,7 +188,7 @@ export async function addCFNResourceDependency(context: $TSContext, customResour
   });
 
   const amplifyMeta = stateManager.getMeta();
-  const existingDependentResources: any = {};
+  const existingDependentResources: $TSObject = {};
 
   if (amplifyMeta[categoryName][customResourceName].dependsOn) {
     amplifyMeta[categoryName][customResourceName].dependsOn.map((resource: AmplifyDependentResourceDefinition) => {
@@ -302,7 +301,7 @@ function showUsageInformation(resources: AmplifyDependentResourceDefinition[]) {
 }
 
 function generateInputParametersForDependencies(resources: AmplifyDependentResourceDefinition[]) {
-  let parameters: any = {};
+  let parameters: $TSObject = {};
 
   for (const resource of resources) {
     for (const attribute of resource.attributes || []) {

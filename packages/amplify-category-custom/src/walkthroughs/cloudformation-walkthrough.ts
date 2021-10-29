@@ -1,12 +1,10 @@
-import { customResourceNameQuestion } from '../utils/common-questions';
-import * as path from 'path';
-import { pathManager, $TSContext } from 'amplify-cli-core';
+import { $TSContext, pathManager } from 'amplify-cli-core';
+import { printer, prompter } from 'amplify-prompts';
 import * as fs from 'fs-extra';
-import { printer } from 'amplify-prompts';
-import _ from 'lodash';
+import * as path from 'path';
+import { customResourceNameQuestion } from '../utils/common-questions';
+import { categoryName, CFN_SERVICE_NAME, customResourceCFNFilename, DEPLOYMENT_PROVIDER_NAME } from '../utils/constants';
 import { addCFNResourceDependency } from '../utils/dependency-management-utils';
-import { categoryName, customResourceCFNFilename, CFN_SERVICE_NAME, DEPLOYMENT_PROVIDER_NAME } from '../utils/constants';
-import { prompter } from 'amplify-prompts';
 
 const cfnTemplateRoot = path.normalize(path.join(__dirname, '../../resources'));
 const cfnFilename = 'cloudformation-template-skeleton.ejs';

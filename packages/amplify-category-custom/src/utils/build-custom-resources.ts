@@ -1,11 +1,12 @@
-import { $TSContext, ResourceTuple, pathManager, getPackageManager, JSONUtilities } from 'amplify-cli-core';
+import * as cdk from '@aws-cdk/core';
+import { $TSContext, getPackageManager, JSONUtilities, pathManager, ResourceTuple } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import execa from 'execa';
-import * as path from 'path';
-import * as cdk from '@aws-cdk/core';
+import * as fs from 'fs-extra';
 import ora from 'ora';
-import { getAllResources } from './dependency-management-utils';
+import * as path from 'path';
 import { categoryName } from './constants';
+import { getAllResources } from './dependency-management-utils';
 
 const resourcesDirRoot = path.normalize(path.join(__dirname, '../../resources'));
 const amplifyDependentResourcesFilename = 'amplify-dependent-resources-ref.ejs';
@@ -78,8 +79,16 @@ async function buildResource(context: $TSContext, resource: ResourceMeta) {
     }
   }
 
+  // get locally installed tsc executable
+
+  const localTscExecutablePath = path.join(targetDir, 'node_modules', '.bin', 'tsc');
+
+  if (!fs.existsSync(localTscExecutablePath)) {
+    throw new Error('Typescript executable not found. Please add it as a dev-dependency in the package.json file for this resource.');
+  }
+
   try {
-    execa.sync('tsc', {
+    execa.sync(localTscExecutablePath, {
       cwd: targetDir,
       stdio: 'pipe',
       encoding: 'utf-8',

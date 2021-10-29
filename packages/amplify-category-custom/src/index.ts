@@ -1,8 +1,8 @@
-import * as path from 'path';
-import { $TSContext, $TSAny, IAmplifyResource } from 'amplify-cli-core';
+import { $TSAny, $TSContext, IAmplifyResource } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
-import { categoryName } from './utils/constants';
+import * as path from 'path';
 import { buildCustomResources } from './utils/build-custom-resources';
+import { categoryName } from './utils/constants';
 export { addCDKResourceDependency } from './utils/dependency-management-utils';
 
 export async function executeAmplifyCommand(context: $TSContext) {

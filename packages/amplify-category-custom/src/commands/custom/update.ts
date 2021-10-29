@@ -9,7 +9,6 @@ export const name = 'update';
 export async function run(context: $TSContext) {
   const amplifyMeta = stateManager.getMeta();
   const customResources = categoryName in amplifyMeta ? Object.keys(amplifyMeta[categoryName]) : [];
-  //const customCFNResources = customResources.filter(name => amplifyMeta[categoryName][name].service === cfnServiceName);
 
   if (customResources.length > 0) {
     const resourceName = await prompter.pick('Select the custom resource to update', customResources);

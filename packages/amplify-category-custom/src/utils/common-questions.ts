@@ -1,6 +1,6 @@
-import { customDeploymentOptions } from '../utils/constants';
 import { prompter } from 'amplify-prompts';
-import uuid from 'uuid';
+import { v4 as uuid } from 'uuid';
+import { customDeploymentOptions } from '../utils/constants';
 
 export async function customDeploymentOptionsQuestion(): Promise<string> {
   const deploymentOption = await prompter.pick('How do you want to define this custom resource?', customDeploymentOptions);

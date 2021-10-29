@@ -1,12 +1,10 @@
-import { customResourceNameQuestion } from '../utils/common-questions';
+import { $TSContext, JSONUtilities, pathManager } from 'amplify-cli-core';
+import { printer, prompter } from 'amplify-prompts';
 import * as fs from 'fs-extra';
-import { printer } from 'amplify-prompts';
 import * as path from 'path';
-import { pathManager, $TSContext } from 'amplify-cli-core';
-import { JSONUtilities } from 'amplify-cli-core';
 import { buildCustomResources } from '../utils/build-custom-resources';
-import { categoryName, cdkFileName, DEPLOYMENT_PROVIDER_NAME, CDK_SERVICE_NAME } from '../utils/constants';
-import { prompter } from 'amplify-prompts';
+import { customResourceNameQuestion } from '../utils/common-questions';
+import { categoryName, cdkFileName, CDK_SERVICE_NAME, DEPLOYMENT_PROVIDER_NAME } from '../utils/constants';
 
 export async function addCDKWalkthrough(context: $TSContext) {
   const resourceName = await customResourceNameQuestion();
