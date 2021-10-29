@@ -1,29 +1,32 @@
-import { ListQuestion, CheckboxQuestion, ListChoiceOptions } from 'inquirer';
-import { dataStoreLearnMore } from '../sync-conflict-handler-assets/syncAssets';
-import inquirer from 'inquirer';
-import fs from 'fs-extra';
-import path from 'path';
-import { rootAssetDir } from '../aws-constants';
-import { collectDirectivesByTypeNames, readProjectConfiguration } from 'graphql-transformer-core';
-import { category } from '../../../category-constants';
-import { UpdateApiRequest } from '../../../../../amplify-headless-interface/lib/interface/api/update';
-import { authConfigToAppSyncAuthType } from '../utils/auth-config-to-app-sync-auth-type-bi-di-mapper';
-import { resolverConfigToConflictResolution } from '../utils/resolver-config-to-conflict-resolution-bi-di-mapper';
-import _ from 'lodash';
-import chalk from 'chalk';
-import { getAppSyncAuthConfig, checkIfAuthExists, authConfigHasApiKey } from '../utils/amplify-meta-utils';
+import { Duration, Expiration } from '@aws-cdk/core';
 import {
+  $TSContext,
+  $TSObject,
+  exitOnNextTick,
+  FeatureFlags,
+  open,
+  pathManager,
   ResourceAlreadyExistsError,
   ResourceDoesNotExistError,
-  UnknownResourceTypeError,
-  exitOnNextTick,
   stateManager,
-  FeatureFlags,
-  $TSContext,
-  open,
+  UnknownResourceTypeError,
 } from 'amplify-cli-core';
-import { Duration, Expiration } from '@aws-cdk/core';
+import { UpdateApiRequest } from 'amplify-headless-interface';
+import { printer } from 'amplify-prompts';
+import chalk from 'chalk';
+import * as fs from 'fs-extra';
+import { collectDirectivesByTypeNames, readProjectConfiguration } from 'graphql-transformer-core';
+import inquirer, { CheckboxQuestion, ListChoiceOptions, ListQuestion } from 'inquirer';
+import _ from 'lodash';
+import * as path from 'path';
+import { category } from '../../../category-constants';
+import { rootAssetDir } from '../aws-constants';
+import { dataStoreLearnMore } from '../sync-conflict-handler-assets/syncAssets';
+import { authConfigHasApiKey, checkIfAuthExists, getAppSyncAuthConfig } from '../utils/amplify-meta-utils';
+import { authConfigToAppSyncAuthType } from '../utils/auth-config-to-app-sync-auth-type-bi-di-mapper';
 import { defineGlobalSandboxMode } from '../utils/global-sandbox-mode';
+import { resolverConfigToConflictResolution } from '../utils/resolver-config-to-conflict-resolution-bi-di-mapper';
+import { getAllDefaults } from '../default-values/appSync-defaults';
 
 const serviceName = 'AppSync';
 const elasticContainerServiceName = 'ElasticContainer';
@@ -150,7 +153,7 @@ export const openConsole = async (context: $TSContext) => {
       const { isAdminApp, region } = await providerPlugin.isAmplifyAdminApp(appId);
       if (isAdminApp) {
         if (region !== Region) {
-          context.print.warning(`Region mismatch: Amplify service returned '${region}', but found '${Region}' in amplify-meta.json.`);
+          printer.warn(`Region mismatch: Amplify service returned '${region}', but found '${Region}' in amplify-meta.json.`);
         }
         const { envName } = context.amplify.getEnvInfo();
         const baseUrl: string = providerPlugin.adminBackendMap[region].amplifyAdminUrl;
@@ -185,26 +188,24 @@ export const openConsole = async (context: $TSContext) => {
       } else if (selectedConsole === codePipeline) {
         url = `https://${Region}.console.aws.amazon.com/codesuite/codepipeline/pipelines/${PipelineName}/view`;
       } else {
-        context.print.error('Option not available');
+        printer.error('Option not available');
         return;
       }
     }
 
     open(url, { wait: false });
   } else {
-    context.print.error('AppSync API is not pushed in the cloud.');
+    printer.error('AppSync API is not pushed in the cloud.');
   }
 };
 
-const serviceApiInputWalkthrough = async (context: $TSContext, defaultValuesFilename, serviceMetadata) => {
+const serviceApiInputWalkthrough = async (context: $TSContext, serviceMetadata) => {
   let continuePrompt = false;
   let authConfig;
   let defaultAuthType;
   let resolverConfig;
   const { amplify } = context;
   const { inputs } = serviceMetadata;
-  const defaultValuesSrc = `${__dirname}/../default-values/${defaultValuesFilename}`;
-  const { getAllDefaults } = require(defaultValuesSrc);
   const allDefaultValues = getAllDefaults(amplify.getProjectDetails());
 
   let resourceAnswers = {};
@@ -330,7 +331,7 @@ const serviceApiInputWalkthrough = async (context: $TSContext, defaultValuesFile
   };
 };
 
-const updateApiInputWalkthrough = async (context, project, resolverConfig, modelTypes) => {
+const updateApiInputWalkthrough = async (context: $TSContext, project: $TSObject, resolverConfig, modelTypes) => {
   let authConfig;
   let defaultAuthType;
   const updateChoices = [
@@ -382,15 +383,14 @@ const updateApiInputWalkthrough = async (context, project, resolverConfig, model
   };
 };
 
-export const serviceWalkthrough = async (context: $TSContext, defaultValuesFilename, serviceMetadata) => {
-  const resourceName = resourceAlreadyExists(context);
-  const providerPlugin = await import(context.amplify.getProviderPlugins(context).awscloudformation);
-  const transformerVersion = providerPlugin.getTransformerVersion(context);
+export const serviceWalkthrough = async (context: $TSContext, serviceMetadata: $TSObject) => {
+  const resourceName = resourceAlreadyExists();
+  const useExperimentalPipelineTransformer = FeatureFlags.getBoolean('graphQLTransformer.useExperimentalPipelinedTransformer');
 
   if (resourceName) {
     const errMessage =
       'You already have an AppSync API in your project. Use the "amplify update api" command to update your existing AppSync API.';
-    context.print.warning(errMessage);
+    printer.warn(errMessage);
     await context.usageData.emitError(new ResourceAlreadyExistsError(errMessage));
     exitOnNextTick(0);
   }
@@ -398,12 +398,12 @@ export const serviceWalkthrough = async (context: $TSContext, defaultValuesFilen
   const { amplify } = context;
   const { inputs } = serviceMetadata;
 
-  const basicInfoAnswers = await serviceApiInputWalkthrough(context, defaultValuesFilename, serviceMetadata);
+  const basicInfoAnswers = await serviceApiInputWalkthrough(context, serviceMetadata);
   let schemaContent = '';
   let askToEdit = true;
 
   // Schema template selection
-  const schemaTemplateOptions = transformerVersion === 2 ? schemaTemplatesV2 : schemaTemplatesV1;
+  const schemaTemplateOptions = useExperimentalPipelineTransformer ? schemaTemplatesV2 : schemaTemplatesV1;
   const templateSelectionQuestion = {
     type: inputs[4].type,
     name: inputs[4].key,
@@ -414,7 +414,7 @@ export const serviceWalkthrough = async (context: $TSContext, defaultValuesFilen
 
   const { templateSelection } = await inquirer.prompt(templateSelectionQuestion);
   const schemaFilePath = path.join(graphqlSchemaDir, templateSelection);
-  schemaContent += transformerVersion === 2 ? defineGlobalSandboxMode(context) : '';
+  schemaContent += useExperimentalPipelineTransformer ? defineGlobalSandboxMode(context) : '';
   schemaContent += fs.readFileSync(schemaFilePath, 'utf8');
 
   return {
@@ -425,7 +425,7 @@ export const serviceWalkthrough = async (context: $TSContext, defaultValuesFilen
   };
 };
 
-export const updateWalkthrough = async (context): Promise<UpdateApiRequest> => {
+export const updateWalkthrough = async (context: $TSContext): Promise<UpdateApiRequest> => {
   const { allResources } = await context.amplify.getResourceStatus();
   let resourceDir;
   let resourceName;
@@ -443,11 +443,10 @@ export const updateWalkthrough = async (context): Promise<UpdateApiRequest> => {
       );
     }
     ({ resourceName } = resource);
-    const backEndDir = context.amplify.pathManager.getBackendDirPath();
-    resourceDir = path.normalize(path.join(backEndDir, category, resourceName));
+    resourceDir = pathManager.getResourceDirectoryPath(undefined, category, resourceName);
   } else {
     const errMessage = 'No AppSync resource to update. Use the "amplify add api" command to update your existing AppSync API.';
-    context.print.error(errMessage);
+    printer.error(errMessage);
     await context.usageData.emitError(new ResourceDoesNotExistError(errMessage));
     exitOnNextTick(0);
   }
@@ -486,7 +485,7 @@ export const updateWalkthrough = async (context): Promise<UpdateApiRequest> => {
   };
 };
 
-async function displayApiInformation(context, resource, project) {
+async function displayApiInformation(context: $TSContext, resource: $TSObject, project: $TSObject) {
   let authModes: string[] = [];
   authModes.push(
     `- Default: ${await displayAuthMode(context, resource, resource.output.authConfig.defaultAuthentication.authenticationType)}`,
@@ -495,35 +494,35 @@ async function displayApiInformation(context, resource, project) {
     authModes.push(`- ${await displayAuthMode(context, resource, authMode.authenticationType)}`);
   });
 
-  context.print.info('');
+  printer.info('');
 
-  context.print.success('General information');
-  context.print.info('- Name: '.concat(resource.resourceName));
+  printer.success('General information');
+  printer.info('- Name: '.concat(resource.resourceName));
   if (resource?.output?.GraphQLAPIEndpointOutput) {
-    context.print.info(`- API endpoint: ${resource?.output?.GraphQLAPIEndpointOutput}`);
+    printer.info(`- API endpoint: ${resource?.output?.GraphQLAPIEndpointOutput}`);
   }
-  context.print.info('');
+  printer.info('');
 
-  context.print.success('Authorization modes');
-  authModes.forEach(authMode => context.print.info(authMode));
-  context.print.info('');
+  printer.success('Authorization modes');
+  authModes.forEach(authMode => printer.info(authMode));
+  printer.info('');
 
-  context.print.success('Conflict detection (required for DataStore)');
+  printer.success('Conflict detection (required for DataStore)');
   if (project.config && !_.isEmpty(project.config.ResolverConfig)) {
-    context.print.info(
+    printer.info(
       `- Conflict resolution strategy: ${
         conflictResolutionHanlderChoices.find(choice => choice.value === project.config.ResolverConfig.project.ConflictHandler).name
       }`,
     );
   } else {
-    context.print.info('- Disabled');
+    printer.info('- Disabled');
   }
 
-  context.print.info('');
+  printer.info('');
 }
 
-async function displayAuthMode(context, resource, authMode) {
-  if (authMode == 'API_KEY' && resource.output.GraphQLAPIKeyOutput) {
+async function displayAuthMode(context: $TSContext, resource: $TSObject, authMode: string) {
+  if (authMode === 'API_KEY' && resource.output.GraphQLAPIKeyOutput) {
     let { apiKeys } = await context.amplify.executeProviderUtils(context, 'awscloudformation', 'getAppSyncApiKeys', {
       apiId: resource.output.GraphQLAPIIdOutput,
     });
@@ -539,13 +538,13 @@ async function displayAuthMode(context, resource, authMode) {
   return authProviderChoices.find(choice => choice.value === authMode).name;
 }
 
-async function askAdditionalQuestions(context, authConfig, defaultAuthType, modelTypes?) {
+async function askAdditionalQuestions(context: $TSContext, authConfig, defaultAuthType, modelTypes?) {
   authConfig = await askAdditionalAuthQuestions(context, authConfig, defaultAuthType);
   return { authConfig };
 }
 
-async function askResolverConflictQuestion(context, resolverConfig, modelTypes?) {
-  let resolverConfigResponse: any = {};
+async function askResolverConflictQuestion(context: $TSContext, resolverConfig, modelTypes?) {
+  let resolverConfigResponse: $TSObject = {};
 
   if (await context.prompt.confirm('Enable conflict detection?', !resolverConfig?.project)) {
     resolverConfigResponse = await askResolverConflictHandlerQuestion(context, modelTypes);
@@ -554,8 +553,8 @@ async function askResolverConflictQuestion(context, resolverConfig, modelTypes?)
   return resolverConfigResponse;
 }
 
-async function askResolverConflictHandlerQuestion(context, modelTypes?) {
-  let resolverConfig: any = {};
+async function askResolverConflictHandlerQuestion(context: $TSContext, modelTypes?) {
+  let resolverConfig: $TSObject = {};
   const askConflictResolutionStrategy = async msg => {
     let conflictResolutionStrategy;
 
@@ -573,13 +572,13 @@ async function askResolverConflictHandlerQuestion(context, modelTypes?) {
       ({ conflictResolutionStrategy } = await inquirer.prompt([conflictResolutionQuestion]));
     } while (conflictResolutionStrategy === 'Learn More');
 
-    let syncConfig: any = {
+    let syncConfig: $TSObject = {
       ConflictHandler: conflictResolutionStrategy,
       ConflictDetection: 'VERSION',
     };
 
     if (conflictResolutionStrategy === 'LAMBDA') {
-      const { newFunction, lambdaFunctionName } = await askSyncFunctionQuestion(context);
+      const { newFunction, lambdaFunctionName } = await askSyncFunctionQuestion();
       syncConfig.LambdaConflictHandler = {
         name: lambdaFunctionName,
         new: newFunction,
@@ -606,10 +605,8 @@ async function askResolverConflictHandlerQuestion(context, modelTypes?) {
 
       if (selectedModelTypes.length > 0) {
         resolverConfig.models = {};
-        for (let i = 0; i < selectedModelTypes.length; i += 1) {
-          resolverConfig.models[selectedModelTypes[i]] = await askConflictResolutionStrategy(
-            `Select the resolution strategy for ${selectedModelTypes[i]} model`,
-          );
+        for (const modelType of selectedModelTypes) {
+          resolverConfig.models[modelType] = await askConflictResolutionStrategy(`Select the resolution strategy for ${modelType} model`);
         }
       }
     }
@@ -618,7 +615,7 @@ async function askResolverConflictHandlerQuestion(context, modelTypes?) {
   return resolverConfig;
 }
 
-async function askSyncFunctionQuestion(context) {
+async function askSyncFunctionQuestion() {
   const syncLambdaQuestion = {
     type: 'list',
     name: 'syncLambdaAnswer',
@@ -652,8 +649,8 @@ async function askSyncFunctionQuestion(context) {
 
   return { newFunction, lambdaFunctionName };
 }
-async function askDefaultAuthQuestion(context) {
-  const currentAuthConfig = getAppSyncAuthConfig(context.amplify.getProjectMeta());
+async function askDefaultAuthQuestion(context: $TSContext) {
+  const currentAuthConfig = getAppSyncAuthConfig(stateManager.getMeta());
   const currentDefaultAuth =
     currentAuthConfig && currentAuthConfig.defaultAuthentication ? currentAuthConfig.defaultAuthentication.authenticationType : undefined;
   const defaultAuthTypeQuestion = {
@@ -677,8 +674,8 @@ async function askDefaultAuthQuestion(context) {
   };
 }
 
-export async function askAdditionalAuthQuestions(context, authConfig, defaultAuthType) {
-  const currentAuthConfig = getAppSyncAuthConfig(context.amplify.getProjectMeta());
+export async function askAdditionalAuthQuestions(context: $TSContext, authConfig: $TSObject, defaultAuthType) {
+  const currentAuthConfig = getAppSyncAuthConfig(stateManager.getMeta());
   authConfig.additionalAuthenticationProviders = [];
   if (await context.prompt.confirm('Configure additional auth types?')) {
     // Get additional auth configured
@@ -699,9 +696,7 @@ export async function askAdditionalAuthQuestions(context, authConfig, defaultAut
 
     const additionalProvidersAnswer = await inquirer.prompt([additionalProvidersQuestion]);
 
-    for (let i = 0; i < additionalProvidersAnswer.authType.length; i += 1) {
-      const authProvider = additionalProvidersAnswer.authType[i];
-
+    for (const authProvider of additionalProvidersAnswer.authType) {
       const config = await askAuthQuestions(
         authProvider,
         context,
@@ -719,10 +714,10 @@ export async function askAdditionalAuthQuestions(context, authConfig, defaultAut
   return authConfig;
 }
 
-export async function askAuthQuestions(authType, context, printLeadText = false, authSettings) {
+export async function askAuthQuestions(authType: string, context: $TSContext, printLeadText = false, authSettings) {
   if (authType === 'AMAZON_COGNITO_USER_POOLS') {
     if (printLeadText) {
-      context.print.info('Cognito UserPool configuration');
+      printer.info('Cognito UserPool configuration');
     }
 
     const userPoolConfig = await askUserPoolQuestions(context);
@@ -732,7 +727,7 @@ export async function askAuthQuestions(authType, context, printLeadText = false,
 
   if (authType === 'API_KEY') {
     if (printLeadText) {
-      context.print.info('API key configuration');
+      printer.info('API key configuration');
     }
 
     const apiKeyConfig = await askApiKeyQuestions(authSettings);
@@ -748,7 +743,7 @@ export async function askAuthQuestions(authType, context, printLeadText = false,
 
   if (authType === 'OPENID_CONNECT') {
     if (printLeadText) {
-      context.print.info('OpenID Connect configuration');
+      printer.info('OpenID Connect configuration');
     }
 
     const openIDConnectConfig = await askOpenIDConnectQuestions(authSettings);
@@ -757,17 +752,17 @@ export async function askAuthQuestions(authType, context, printLeadText = false,
   }
 
   const errMessage = `Unknown authType: ${authType}`;
-  context.print.error(errMessage);
+  printer.error(errMessage);
   await context.usageData.emitError(new UnknownResourceTypeError(errMessage));
   exitOnNextTick(1);
 }
 
-async function askUserPoolQuestions(context) {
-  let authResourceName = checkIfAuthExists(context);
+async function askUserPoolQuestions(context: $TSContext) {
+  let authResourceName = checkIfAuthExists();
   if (!authResourceName) {
     authResourceName = await context.amplify.invokePluginMethod(context, 'auth', undefined, 'add', [context, true]);
   } else {
-    context.print.info('Use a Cognito user pool configured as a part of this project.');
+    printer.info('Use a Cognito user pool configured as a part of this project.');
   }
 
   // Added resources are prefixed with auth
@@ -781,7 +776,7 @@ async function askUserPoolQuestions(context) {
   };
 }
 
-export async function askApiKeyQuestions(authSettings = undefined) {
+export async function askApiKeyQuestions(authSettings: $TSObject = undefined) {
   let defaultValues = {
     apiKeyExpirationDays: 7,
     description: undefined,
@@ -816,7 +811,7 @@ export async function askApiKeyQuestions(authSettings = undefined) {
   };
 }
 
-async function askOpenIDConnectQuestions(authSettings) {
+async function askOpenIDConnectQuestions(authSettings: $TSObject) {
   let defaultValues = {
     authTTL: undefined,
     clientId: undefined,
@@ -870,7 +865,7 @@ async function askOpenIDConnectQuestions(authSettings) {
   };
 }
 
-function validateDays(input) {
+function validateDays(input: string) {
   const isValid = /^\d+$/.test(input);
   const days = isValid ? parseInt(input, 10) : 0;
   if (!isValid || days < 1 || days > 365) {
@@ -880,7 +875,7 @@ function validateDays(input) {
   return true;
 }
 
-function validateIssuerUrl(input) {
+function validateIssuerUrl(input: string) {
   const isValid =
     /^(((?!http:\/\/(?!localhost))([a-zA-Z0-9.]{1,}):\/\/([a-zA-Z0-9-._~:?#@!$&'()*+,;=/]{1,})\/)|(?!http)(?!https)([a-zA-Z0-9.]{1,}):\/\/)$/.test(
       input,
@@ -893,7 +888,7 @@ function validateIssuerUrl(input) {
   return true;
 }
 
-function validateTTL(input) {
+function validateTTL(input: string) {
   const isValid = /^\d+$/.test(input);
 
   if (!isValid) {
@@ -903,32 +898,32 @@ function validateTTL(input) {
   return true;
 }
 
-function resourceAlreadyExists(context) {
-  const { amplify } = context;
-  const { amplifyMeta } = amplify.getProjectDetails();
+function resourceAlreadyExists() {
+  const meta = stateManager.getMeta();
   let resourceName;
 
-  if (amplifyMeta[category]) {
-    const categoryResources = amplifyMeta[category];
-    Object.keys(categoryResources).forEach(resource => {
+  if (meta[category]) {
+    const categoryResources = meta[category];
+    for (const resource of Object.keys(categoryResources)) {
       if (categoryResources[resource].service === serviceName) {
         resourceName = resource;
+        break;
       }
-    });
+    }
   }
 
   return resourceName;
 }
 
-export const migrate = async context => {
+export const migrate = async (context: $TSContext) => {
   await context.amplify.executeProviderUtils(context, 'awscloudformation', 'compileSchema', {
     forceCompile: true,
     migrate: true,
   });
 };
 
-export const getIAMPolicies = (resourceName: string, operations: string[], context: any) => {
-  let policy: any = {};
+export const getIAMPolicies = (resourceName: string, operations: string[]) => {
+  let policy: $TSObject = {};
   const resources = [];
   const actions = [];
   if (!FeatureFlags.getBoolean('appSync.generateGraphQLPermissions')) {
@@ -948,7 +943,7 @@ export const getIAMPolicies = (resourceName: string, operations: string[], conte
           actions.push('appsync:Delete*');
           break;
         default:
-          console.log(`${crudOption} not supported`);
+          printer.info(`${crudOption} not supported`);
       }
     });
     resources.push(buildPolicyResource(resourceName, null));
@@ -964,7 +959,7 @@ export const getIAMPolicies = (resourceName: string, operations: string[], conte
   };
 
   const attributes = ['GraphQLAPIIdOutput', 'GraphQLAPIEndpointOutput'];
-  if (authConfigHasApiKey(getAppSyncAuthConfig(context.amplify.getProjectMeta()))) {
+  if (authConfigHasApiKey(getAppSyncAuthConfig(stateManager.getMeta()))) {
     attributes.push('GraphQLAPIKeyOutput');
   }
 
