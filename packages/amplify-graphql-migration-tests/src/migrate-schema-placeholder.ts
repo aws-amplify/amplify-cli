@@ -2,7 +2,7 @@
  * TODO remove this file once the real migrator is implemented
  */
 
-export const migratePlaceholder = (_: string): string => basicV2Schema;
+export const migrateSchemaPlaceholder = (_: string): string => basicV2Schema;
 
 const basicV2Schema = /* GraphQL */ `
   type Blog @model {
