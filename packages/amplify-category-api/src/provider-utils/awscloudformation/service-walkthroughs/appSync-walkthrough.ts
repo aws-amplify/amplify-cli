@@ -1,30 +1,30 @@
-import { ListQuestion, CheckboxQuestion, ListChoiceOptions } from 'inquirer';
-import { dataStoreLearnMore } from '../sync-conflict-handler-assets/syncAssets';
-import inquirer from 'inquirer';
-import fs from 'fs-extra';
-import path from 'path';
-import { rootAssetDir, provider } from '../aws-constants';
-import { collectDirectivesByTypeNames, readProjectConfiguration } from 'graphql-transformer-core';
-import { category } from '../../../category-constants';
-import { UpdateApiRequest } from '../../../../../amplify-headless-interface/lib/interface/api/update';
-import { authConfigToAppSyncAuthType } from '../utils/auth-config-to-app-sync-auth-type-bi-di-mapper';
-import { resolverConfigToConflictResolution } from '../utils/resolver-config-to-conflict-resolution-bi-di-mapper';
-import _ from 'lodash';
-import chalk from 'chalk';
-import uuid from 'uuid';
-import { getAppSyncAuthConfig, checkIfAuthExists, authConfigHasApiKey } from '../utils/amplify-meta-utils';
+import { Duration, Expiration } from '@aws-cdk/core';
 import {
+  $TSContext,
+  exitOnNextTick,
+  FeatureFlags,
+  open,
   ResourceAlreadyExistsError,
   ResourceDoesNotExistError,
-  UnknownResourceTypeError,
-  exitOnNextTick,
   stateManager,
-  FeatureFlags,
-  $TSContext,
-  open,
+  UnknownResourceTypeError,
 } from 'amplify-cli-core';
-import { Duration, Expiration } from '@aws-cdk/core';
+import chalk from 'chalk';
+import fs from 'fs-extra';
+import { collectDirectivesByTypeNames, readProjectConfiguration } from 'graphql-transformer-core';
+import inquirer, { CheckboxQuestion, ListChoiceOptions, ListQuestion } from 'inquirer';
+import _ from 'lodash';
+import path from 'path';
+import uuid from 'uuid';
+import { UpdateApiRequest } from '../../../../../amplify-headless-interface/lib/interface/api/update';
+import { category } from '../../../category-constants';
+import { provider, rootAssetDir } from '../aws-constants';
+import { dataStoreLearnMore } from '../sync-conflict-handler-assets/syncAssets';
+import { authConfigHasApiKey, checkIfAuthExists, getAppSyncAuthConfig } from '../utils/amplify-meta-utils';
+import { authConfigToAppSyncAuthType } from '../utils/auth-config-to-app-sync-auth-type-bi-di-mapper';
+import { checkAppsyncApiResourceMigration } from '../utils/check-appsync-api-migration';
 import { defineGlobalSandboxMode } from '../utils/global-sandbox-mode';
+import { resolverConfigToConflictResolution } from '../utils/resolver-config-to-conflict-resolution-bi-di-mapper';
 
 const serviceName = 'AppSync';
 const elasticContainerServiceName = 'ElasticContainer';
@@ -456,6 +456,19 @@ export const updateWalkthrough = async (context): Promise<UpdateApiRequest> => {
     const errMessage = 'No AppSync resource to update. Use the "amplify add api" command to update your existing AppSync API.';
     context.print.error(errMessage);
     await context.usageData.emitError(new ResourceDoesNotExistError(errMessage));
+    exitOnNextTick(0);
+  }
+
+  // migrate API project
+  if (await checkAppsyncApiResourceMigration(context, resourceName)) {
+    // fetch cli Inputs again
+    // call compile schema here
+    await context.amplify.invokePluginMethod(context, 'awscloudformation', undefined, 'compileSchema', [context, { forceCompile: true }]);
+  } else {
+    const error = new Error(
+      `\nThe project is configured with Old Transformer Version. Set the TransformerVersion = 2 in cli.json to enable override functionality for api.`,
+    );
+    await context.usageData.emitError(error);
     exitOnNextTick(0);
   }
 
