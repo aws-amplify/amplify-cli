@@ -188,9 +188,7 @@ export function addApiWithAllAuthModesV2(cwd: string, opts: Partial<AddApiOption
       .sendCarriageReturn()
       .wait('Do you want to edit the schema now?')
       .sendConfirmNo()
-      .wait(
-        '"amplify publish" will build all your local backend and frontend resources (if you have hosting category added) and provision it in the cloud',
-      )
+      .wait('"amplify publish" will build all your local backend and frontend resources')
       .run((err: Error) => {
         if (!err) {
           resolve();
