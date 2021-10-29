@@ -221,10 +221,7 @@ describe('@model with @auth', () => {
         new PrimaryKeyTransformer(),
         new IndexTransformer(),
         new HasOneTransformer(),
-        new AuthTransformer({
-          authConfig,
-          addAwsIamAuthInOutputSchema: false,
-        }),
+        new AuthTransformer(),
       ],
     });
     const userPoolResponse = await createUserPool(cognitoClient, `UserPool${STACK_NAME}`);

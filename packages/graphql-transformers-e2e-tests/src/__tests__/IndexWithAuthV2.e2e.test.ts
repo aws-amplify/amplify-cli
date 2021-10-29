@@ -90,12 +90,7 @@ beforeAll(async () => {
       },
       additionalAuthenticationProviders: [],
     },
-    transformers: [
-      new ModelTransformer(),
-      new PrimaryKeyTransformer(),
-      new IndexTransformer(),
-      new AuthTransformer({ addAwsIamAuthInOutputSchema: false }),
-    ],
+    transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new IndexTransformer(), new AuthTransformer()],
   });
   const out = transformer.transform(validSchema);
   const finishedStack = await deploy(

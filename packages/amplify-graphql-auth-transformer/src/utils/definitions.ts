@@ -13,7 +13,7 @@ export interface SearchableConfig {
 }
 
 export interface RolesByProvider {
-  cogntoStaticRoles: Array<RoleDefinition>;
+  cognitoStaticRoles: Array<RoleDefinition>;
   cognitoDynamicRoles: Array<RoleDefinition>;
   oidcStaticRoles: Array<RoleDefinition>;
   oidcDynamicRoles: Array<RoleDefinition>;
@@ -58,14 +58,14 @@ export interface ConfiguredAuthProviders {
   hasOIDC: boolean;
   hasIAM: boolean;
   hasLambda: boolean;
-  hasAdminUIEnabled: boolean;
+  hasAdminRolesEnabled: boolean;
+  adminRoles: Array<string>;
   adminUserPoolID?: string;
 }
 
 export interface AuthTransformerConfig {
-  addAwsIamAuthInOutputSchema: boolean;
+  adminRoles?: Array<string>;
   authConfig?: AppSyncAuthConfiguration;
-  adminUserPoolID?: string;
 }
 
 export const authDirectiveDefinition = `

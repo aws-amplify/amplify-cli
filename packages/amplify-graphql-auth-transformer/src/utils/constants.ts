@@ -27,9 +27,6 @@ export const IS_AUTHORIZED_FLAG = 'isAuthorized';
 export const ALLOWED_FIELDS = 'allowedFields';
 export const NULL_ALLOWED_FIELDS = 'nullAllowedFields';
 export const DENIED_FIELDS = 'deniedFields';
-// Admin Roles
-export const ADMIN_ROLE = '_Full-access/CognitoIdentityCredentials';
-export const MANAGE_ROLE = '_Manage-only/CognitoIdentityCredentials';
 // resolver
 export const NONE_DS = 'NONE_DS';
 // relational directives
