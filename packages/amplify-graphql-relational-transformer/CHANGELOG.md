@@ -3,6 +3,24 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.4.0-ext7.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-relational-transformer@0.3.1...@aws-amplify/graphql-relational-transformer@0.4.0-ext7.0) (2021-10-29)
+
+
+### Bug Fixes
+
+* [@auth](https://github.com/auth) fix relational auth, authv2 e2e with utils and fixes ([#8450](https://github.com/aws-amplify/amplify-cli/issues/8450)) ([aa320cd](https://github.com/aws-amplify/amplify-cli/commit/aa320cd2414665a484438f0764cf68fd78caa26a))
+* add [@manytomany](https://github.com/manytomany) join table auth ([#8460](https://github.com/aws-amplify/amplify-cli/issues/8460)) ([424bbda](https://github.com/aws-amplify/amplify-cli/commit/424bbda410fbab100d475d37fa9ab291bfd05317))
+* reuse foreign key field in `[@belongs](https://github.com/belongs)To` transformer ([#8557](https://github.com/aws-amplify/amplify-cli/issues/8557)) ([39fbe6f](https://github.com/aws-amplify/amplify-cli/commit/39fbe6f61687a0ffbaff5914069f64a69c23e0d6))
+
+
+### Features
+
+* generate list types as non-null ([#8166](https://github.com/aws-amplify/amplify-cli/issues/8166)) ([93786c1](https://github.com/aws-amplify/amplify-cli/commit/93786c13ef04c72748ca32a1ef7878c0e6b5b129))
+
+
+
+
+
 ## [0.3.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-relational-transformer@0.3.0...@aws-amplify/graphql-relational-transformer@0.3.1) (2021-10-10)
 
 **Note:** Version bump only for package @aws-amplify/graphql-relational-transformer
