@@ -276,7 +276,7 @@ export async function transformCategoryStack(context: $TSContext, resource: $TSO
       const backendDir = pathManager.getBackendDirPath();
       const overrideDir = path.join(backendDir, resource.category, resource.resourceName);
       const isBuild = await buildOverrideDir(backendDir, overrideDir).catch(error => {
-        printer.warn(`Skipping build as ${error.message}`);
+        printer.debug(`Skipping build as ${error.message}`);
         return false;
       });
       context.amplify.executeProviderUtils(context, 'awscloudformation', 'compileSchema', {
