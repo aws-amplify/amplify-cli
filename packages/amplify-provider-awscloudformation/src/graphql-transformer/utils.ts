@@ -223,7 +223,8 @@ export async function writeDeploymentToDisk(
   minify = false,
 ) {
   // Delete the last deployments resources.
-  rimraf.sync(directory);
+  //rimraf.sync(directory);
+  emptyBuildDir(directory);
   fs.ensureDirSync(directory);
 
   // Write the schema to disk
@@ -327,3 +328,13 @@ export function throwIfNotJSONExt(stackFile: string) {
     throw new Error(`Invalid extension ${extension} for stack ${stackFile}`);
   }
 }
+
+const emptyBuildDir = (directory: string) => {
+  const files = fs.readdirSync(directory);
+  files.forEach(file => {
+    const fileDir = path.join('./', file);
+    if (!file.includes('tsconfig.resource.json')) {
+      fs.unlinkSync(fileDir);
+    }
+  });
+};
