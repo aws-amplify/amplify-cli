@@ -20,6 +20,9 @@
     "amplify",
     "aws"
   ],
+  "publishConfig": {
+    "access": "public"
+  },
   "dependencies": {
     "amplify-cli-core": "1.31.1",
     "amplify-prompts": "1.1.2",
