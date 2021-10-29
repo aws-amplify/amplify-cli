@@ -51,6 +51,18 @@ found '${rule.provider}' assigned.`,
   }
 
   //
+  // Custom
+  //
+  if (rule.allow === 'custom') {
+    if (rule.provider !== null && rule.provider !== 'function') {
+      throw new InvalidDirectiveError(
+        `@auth directive with 'custom' strategy only supports 'function' (default) provider, but \
+found '${rule.provider}' assigned.`,
+      );
+    }
+  }
+
+  //
   // Validate provider values against project configuration.
   //
   if (rule.provider === 'apiKey' && configuredAuthProviders.hasApiKey === false) {
@@ -69,10 +81,17 @@ found '${rule.provider}' assigned.`,
     throw new InvalidDirectiveError(
       `@auth directive with 'iam' provider found, but the project has no IAM authentication provider configured.`,
     );
+  } else if (rule.provider === 'function' && configuredAuthProviders.hasLambda === false) {
+    throw new InvalidDirectiveError(
+      `@auth directive with 'function' provider found, but the project has no Lambda authentication provider configured.`,
+    );
   }
 };
 
-export const validateRules = (rules: AuthRule[], configuredAuthProviders: ConfiguredAuthProviders) => {
+export const validateRules = (rules: AuthRule[], configuredAuthProviders: ConfiguredAuthProviders, typeName: string) => {
+  if (rules.length === 0) {
+    throw new InvalidDirectiveError(`@auth on ${typeName} does not have any auth rules.`);
+  }
   for (const rule of rules) {
     validateRuleAuthStrategy(rule, configuredAuthProviders);
     commonRuleValidation(rule);
@@ -84,7 +103,11 @@ export const validateFieldRules = (
   isParentTypeBuiltinType: boolean,
   parentHasModelDirective: boolean,
   authProviderConfig: ConfiguredAuthProviders,
+  fieldName: string,
 ) => {
+  if (rules.length === 0) {
+    throw new InvalidDirectiveError(`@auth on ${fieldName} does not have any auth rules.`);
+  }
   for (const rule of rules) {
     validateRuleAuthStrategy(rule, authProviderConfig);
 
@@ -119,5 +142,8 @@ export const commonRuleValidation = (rule: AuthRule) => {
   }
   if (groupsField && groups) {
     throw new InvalidDirectiveError('This rule has groupsField and groups, please use one or the other');
+  }
+  if (allow === 'groups' && groups && groups.length < 1) {
+    throw new InvalidDirectiveError('@auth rules using groups cannot have an empty list');
   }
 };

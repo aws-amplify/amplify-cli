@@ -91,7 +91,11 @@ function getTransformerFactory(
     const modelTransformer = new ModelTransformer();
     const indexTransformer = new IndexTransformer();
     const hasOneTransformer = new HasOneTransformer();
-    const authTransformer = new AuthTransformer({ authConfig: options?.authConfig, addAwsIamAuthInOutputSchema: false, adminUserPoolID });
+    const authTransformer = new AuthTransformer({
+      authConfig: options?.authConfig,
+      addAwsIamAuthInOutputSchema: !!adminUserPoolID,
+      adminUserPoolID,
+    });
     const transformerList: TransformerPluginProvider[] = [
       modelTransformer,
       new FunctionTransformer(),
@@ -369,17 +373,6 @@ place .graphql files in a directory at ${schemaDirPath}`);
   return transformerOutput;
 }
 
-async function addGraphQLAuthRequirement(context, authType) {
-  return await context.amplify.invokePluginMethod(context, 'api', undefined, 'addGraphQLAuthorizationMode', [
-    context,
-    {
-      authType: authType,
-      printLeadText: true,
-      authSettings: undefined,
-    },
-  ]);
-}
-
 function getProjectBucket(context) {
   const projectDetails = context.amplify.getProjectDetails();
   const projectBucket = projectDetails.amplifyMeta.providers ? projectDetails.amplifyMeta.providers[providerName].DeploymentBucketName : '';
@@ -462,7 +455,7 @@ export type ProjectOptions<T> = {
   transformersFactory: (options: T) => Promise<TransformerPluginProvider[]>;
   transformersFactoryArgs: T;
   rootStackFileName: 'cloudformation-template.json';
-  currentCloudBackendDirectory: string;
+  currentCloudBackendDirectory?: string;
   minify: boolean;
   lastDeployedProjectConfig?: TransformerProjectConfig;
   projectConfig: TransformerProjectConfig;
@@ -475,10 +468,16 @@ export type ProjectOptions<T> = {
 };
 
 export async function buildAPIProject(opts: ProjectOptions<TransformerFactoryArgs>) {
+  const schema = opts.projectConfig.schema.toString();
+  // Skip building the project if the schema is blank
+  if (!schema) {
+    return;
+  }
+
   const builtProject = await _buildProject(opts);
 
   const buildLocation = path.join(opts.projectDirectory, 'build');
-  const currCloudLocation = path.join(opts.currentCloudBackendDirectory, 'build');
+  const currCloudLocation = opts.currentCloudBackendDirectory ? path.join(opts.currentCloudBackendDirectory, 'build') : undefined;
 
   if (opts.projectDirectory && !opts.dryRun) {
     await writeDeploymentToDisk(builtProject, buildLocation, opts.rootStackFileName, opts.buildParameters, opts.minify);

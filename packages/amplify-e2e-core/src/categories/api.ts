@@ -129,6 +129,78 @@ export function addApiWithBlankSchemaAndConflictDetection(cwd: string) {
   });
 }
 
+/**
+ * Note: Lambda Authorizer is enabled only for Transformer V2
+ */
+export function addApiWithAllAuthModesV2(cwd: string, opts: Partial<AddApiOptions & { apiKeyExpirationDays: number }> = {}) {
+  const options = _.assign(defaultOptions, opts);
+  return new Promise<void>((resolve, reject) => {
+    spawn(getCLIPath(), ['add', 'api'], { cwd, stripColors: true })
+      .wait('Please select from one of the below mentioned services:')
+      .sendCarriageReturn()
+      .wait(/.*Here is the GraphQL API that we will create. Select a setting to edit or continue.*/)
+      .sendKeyUp(3)
+      .sendCarriageReturn()
+      .wait('Provide API name:')
+      .sendLine(options.apiName)
+      .wait(/.*Here is the GraphQL API that we will create. Select a setting to edit or continue.*/)
+      .sendKeyUp(2)
+      .sendCarriageReturn()
+      .wait(/.*Choose the default authorization type for the API.*/)
+      .sendCarriageReturn()
+      // API Key
+      .wait(/.*Enter a description for the API key.*/)
+      .sendLine('description')
+      .wait(/.*After how many days from now the API key should expire.*/)
+      .sendLine('300')
+      .wait(/.*Configure additional auth types.*/)
+      .sendConfirmYes()
+      .wait(/.*Choose the additional authorization types you want to configure for the API.*/)
+      .sendLine('a\r') // All items
+      // Cognito
+      .wait(/.*Do you want to use the default authentication and security configuration.*/)
+      .sendCarriageReturn()
+      .wait('How do you want users to be able to sign in?')
+      .sendCarriageReturn()
+      .wait('Do you want to configure advanced settings?')
+      .sendCarriageReturn()
+      // OIDC
+      .wait(/.*Enter a name for the OpenID Connect provider:.*/)
+      .sendLine('myoidcprovider')
+      .wait(/.*Enter the OpenID Connect provider domain \(Issuer URL\).*/)
+      .sendLine('https://facebook.com/')
+      .wait(/.*Enter the Client Id from your OpenID Client Connect application.*/)
+      .sendLine('clientId')
+      .wait(/.*Enter the number of milliseconds a token is valid after being issued to a user.*/)
+      .sendLine('1000')
+      .wait(/.*Enter the number of milliseconds a token is valid after being authenticated.*/)
+      .sendLine('2000')
+      // Lambda
+      .wait(/.*Choose a Lambda source*/)
+      .sendCarriageReturn()
+      .wait(/.*How long should the authorization response be cached in seconds.*/)
+      .sendLine('600')
+      .wait(/.*Here is the GraphQL API that we will create. Select a setting to edit or continue.*/)
+      .sendCarriageReturn()
+      // Schema selection
+      .wait('Choose a schema template:')
+      .sendKeyDown(2)
+      .sendCarriageReturn()
+      .wait('Do you want to edit the schema now?')
+      .sendConfirmNo()
+      .wait(
+        '"amplify publish" will build all your local backend and frontend resources (if you have hosting category added) and provision it in the cloud',
+      )
+      .run((err: Error) => {
+        if (!err) {
+          resolve();
+        } else {
+          reject(err);
+        }
+      });
+  });
+}
+
 export function updateApiSchema(cwd: string, projectName: string, schemaName: string, forceUpdate: boolean = false) {
   const testSchemaPath = getSchemaPath(schemaName);
   let schemaText = fs.readFileSync(testSchemaPath).toString();

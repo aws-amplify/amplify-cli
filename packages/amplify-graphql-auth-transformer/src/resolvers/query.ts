@@ -20,7 +20,7 @@ import {
   ifElse,
   nul,
 } from 'graphql-mapping-template';
-import { getIdentityClaimExp, getOwnerClaim, apiKeyExpression, iamExpression, emptyPayload, setHasAuthExpression } from './helpers';
+import { getIdentityClaimExp, getOwnerClaim, apiKeyExpression, iamExpression, lambdaExpression, emptyPayload, setHasAuthExpression } from './helpers';
 import {
   COGNITO_AUTH_TYPE,
   OIDC_AUTH_TYPE,
@@ -248,7 +248,7 @@ export const generateAuthExpressionForQueries = (
   primaryFields: Array<string>,
   isIndexQuery = false,
 ): string => {
-  const { cogntoStaticRoles, cognitoDynamicRoles, oidcStaticRoles, oidcDynamicRoles, apiKeyRoles, iamRoles } = splitRoles(roles);
+  const { cogntoStaticRoles, cognitoDynamicRoles, oidcStaticRoles, oidcDynamicRoles, apiKeyRoles, iamRoles, lambdaRoles } = splitRoles(roles);
   const getNonPrimaryFieldRoles = (roles: RoleDefinition[]) => roles.filter(roles => !primaryFields.includes(roles.entity));
   const totalAuthExpressions: Array<Expression> = [
     setHasAuthExpression,
@@ -257,6 +257,9 @@ export const generateAuthExpressionForQueries = (
   ];
   if (providers.hasApiKey) {
     totalAuthExpressions.push(apiKeyExpression(apiKeyRoles));
+  }
+  if (providers.hasLambda) {
+    totalAuthExpressions.push(lambdaExpression(lambdaRoles));
   }
   if (providers.hasIAM) {
     totalAuthExpressions.push(iamExpression(iamRoles, providers.hasAdminUIEnabled, providers.adminUserPoolID));
@@ -300,7 +303,7 @@ export const generateAuthExpressionForRelationQuery = (
   fields: ReadonlyArray<FieldDefinitionNode>,
   primaryFieldMap: RelationalPrimaryMapConfig,
 ) => {
-  const { cogntoStaticRoles, cognitoDynamicRoles, oidcStaticRoles, oidcDynamicRoles, apiKeyRoles, iamRoles } = splitRoles(roles);
+  const { cogntoStaticRoles, cognitoDynamicRoles, oidcStaticRoles, oidcDynamicRoles, apiKeyRoles, iamRoles, lambdaRoles } = splitRoles(roles);
   const getNonPrimaryFieldRoles = (roles: RoleDefinition[]) => roles.filter(roles => !primaryFieldMap.has(roles.entity));
   const totalAuthExpressions: Array<Expression> = [
     setHasAuthExpression,
@@ -309,6 +312,9 @@ export const generateAuthExpressionForRelationQuery = (
   ];
   if (providers.hasApiKey) {
     totalAuthExpressions.push(apiKeyExpression(apiKeyRoles));
+  }
+  if (providers.hasLambda) {
+    totalAuthExpressions.push(lambdaExpression(lambdaRoles));
   }
   if (providers.hasIAM) {
     totalAuthExpressions.push(iamExpression(iamRoles, providers.hasAdminUIEnabled, providers.adminUserPoolID));

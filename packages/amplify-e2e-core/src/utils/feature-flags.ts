@@ -25,7 +25,7 @@ export const saveFeatureFlagFile = (projectRoot: string, data: FeatureFlagData) 
  * @param name feature flag name
  * @param value value for the feature flag
  */
-export const addFeatureFlag = (projectRoot: string, section: string, name: string, value: boolean): void => {
+export const addFeatureFlag = (projectRoot: string, section: string, name: string, value: boolean | number): void => {
   const ff = loadFeatureFlags(projectRoot);
   _.set(ff, ['features', section, name], value);
   saveFeatureFlagFile(projectRoot, ff);

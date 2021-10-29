@@ -3,7 +3,7 @@ import { Grant, IGrantable, IRole } from '@aws-cdk/aws-iam';
 import { TransformHostProvider } from './transform-host-provider';
 
 // Auth Config
-export type AppSyncAuthMode = 'API_KEY' | 'AMAZON_COGNITO_USER_POOLS' | 'AWS_IAM' | 'OPENID_CONNECT';
+export type AppSyncAuthMode = 'API_KEY' | 'AMAZON_COGNITO_USER_POOLS' | 'AWS_IAM' | 'OPENID_CONNECT' | 'AWS_LAMBDA';
 export type AppSyncAuthConfiguration = {
   defaultAuthentication: AppSyncAuthConfigurationEntry;
   additionalAuthenticationProviders: Array<AppSyncAuthConfigurationEntry>;
@@ -13,7 +13,9 @@ export type AppSyncAuthConfigurationEntry =
   | AppSyncAuthConfigurationUserPoolEntry
   | AppSyncAuthConfigurationAPIKeyEntry
   | AppSyncAuthConfigurationIAMEntry
-  | AppSyncAuthConfigurationOIDCEntry;
+  | AppSyncAuthConfigurationOIDCEntry
+  | AppSyncAuthConfigurationLambdaEntry;
+
 export type AppSyncAuthConfigurationAPIKeyEntry = {
   authenticationType: 'API_KEY';
   apiKeyConfig?: ApiKeyConfig;
@@ -31,6 +33,11 @@ export type AppSyncAuthConfigurationOIDCEntry = {
   openIDConnectConfig?: OpenIDConnectConfig;
 };
 
+export type AppSyncAuthConfigurationLambdaEntry = {
+  authenticationType: 'AWS_LAMBDA';
+  lambdaAuthorizerConfig?: LambdaConfig;
+};
+
 export interface ApiKeyConfig {
   description?: string;
   apiKeyExpirationDays: number;
@@ -45,6 +52,11 @@ export interface OpenIDConnectConfig {
   clientId?: string;
   iatTTL?: number;
   authTTL?: number;
+}
+
+export interface LambdaConfig {
+  lambdaFunction: string;
+  ttlSeconds?: number;
 }
 
 export interface AppSyncFunctionConfigurationProvider extends IConstruct {
