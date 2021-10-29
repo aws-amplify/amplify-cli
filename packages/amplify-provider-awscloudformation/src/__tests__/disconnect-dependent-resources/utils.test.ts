@@ -53,7 +53,7 @@ describe('getDependentFunctions', () => {
 });
 
 describe('generateTempFuncCFNTemplates', () => {
-  readCFNTemplate_mock.mockResolvedValueOnce({
+  readCFNTemplate_mock.mockReturnValueOnce({
     cfnTemplate: {
       a: {
         b: {
