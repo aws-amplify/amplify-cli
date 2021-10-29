@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.1.1-graphql-vnext-dev-preview.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-geo@1.1.0...amplify-category-geo@1.1.1-graphql-vnext-dev-preview.4) (2021-10-29)
+
+**Note:** Version bump only for package amplify-category-geo
+
+
+
+
+
 ## [1.1.1-graphql-vnext-dev-preview.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-geo@1.1.0...amplify-category-geo@1.1.1-graphql-vnext-dev-preview.3) (2021-10-29)
 
 **Note:** Version bump only for package amplify-category-geo

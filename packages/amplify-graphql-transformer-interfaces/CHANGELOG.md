@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.10.1-graphql-vnext-dev-preview.4](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-transformer-interfaces@1.10.0...@aws-amplify/graphql-transformer-interfaces@1.10.1-graphql-vnext-dev-preview.4) (2021-10-29)
+
+**Note:** Version bump only for package @aws-amplify/graphql-transformer-interfaces
+
+
+
+
+
 ## [1.10.1-graphql-vnext-dev-preview.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-transformer-interfaces@1.10.0...@aws-amplify/graphql-transformer-interfaces@1.10.1-graphql-vnext-dev-preview.3) (2021-10-29)
 
 **Note:** Version bump only for package @aws-amplify/graphql-transformer-interfaces

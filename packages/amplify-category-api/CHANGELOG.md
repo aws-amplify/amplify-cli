@@ -3,6 +3,24 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.34.0-graphql-vnext-dev-preview.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@2.33.2...amplify-category-api@2.34.0-graphql-vnext-dev-preview.4) (2021-10-29)
+
+
+### Bug Fixes
+
+* expand region support for aurora serverless ([#8577](https://github.com/aws-amplify/amplify-cli/issues/8577)) ([ad0cd2b](https://github.com/aws-amplify/amplify-cli/commit/ad0cd2b7e0644986276aa295dd424976f5c3ab68))
+* **graphql-model-transformer:** fixed schema template options check for transformer version ([#8449](https://github.com/aws-amplify/amplify-cli/issues/8449)) ([aedcae3](https://github.com/aws-amplify/amplify-cli/commit/aedcae36f445c6e990bd94fd29d1b012e1b13787))
+
+
+### Features
+
+* **amplify-provider-awscloudformation:** change sandbox mode syntax in schema ([7ce7d8a](https://github.com/aws-amplify/amplify-cli/commit/7ce7d8acec233aa7213c25f44aad3d683b693500))
+* flag to allow destructive schema changes ([#8273](https://github.com/aws-amplify/amplify-cli/issues/8273)) ([18de856](https://github.com/aws-amplify/amplify-cli/commit/18de856fb61bf2df8f73375e4e55a58c6159a232))
+
+
+
+
+
 # [2.34.0-graphql-vnext-dev-preview.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@2.33.2...amplify-category-api@2.34.0-graphql-vnext-dev-preview.3) (2021-10-29)
 
 

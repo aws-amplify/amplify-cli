@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.5.0-graphql-vnext-dev-preview.4](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-index-transformer@0.4.0...@aws-amplify/graphql-index-transformer@0.5.0-graphql-vnext-dev-preview.4) (2021-10-29)
+
+
+### Bug Fixes
+
+* [@auth](https://github.com/auth) fix relational auth, authv2 e2e with utils and fixes ([#8450](https://github.com/aws-amplify/amplify-cli/issues/8450)) ([aa320cd](https://github.com/aws-amplify/amplify-cli/commit/aa320cd2414665a484438f0764cf68fd78caa26a))
+* loosen [@index](https://github.com/index) validation ([#8445](https://github.com/aws-amplify/amplify-cli/issues/8445)) ([c73db78](https://github.com/aws-amplify/amplify-cli/commit/c73db786ce962cf3d976866b3a0996bfbda255fa))
+* prevent @index/[@primary](https://github.com/primary)Key from referencing itself ([#8561](https://github.com/aws-amplify/amplify-cli/issues/8561)) ([fc5a134](https://github.com/aws-amplify/amplify-cli/commit/fc5a1344d48cbfa0e7a2f5301c5acec2dde6c5e0))
+* require [@primary](https://github.com/primary)Key sort fields to be non-nullable ([#8562](https://github.com/aws-amplify/amplify-cli/issues/8562)) ([bf4fb0e](https://github.com/aws-amplify/amplify-cli/commit/bf4fb0e0efc8b760e5b32663f13ffe1e33780812))
+
+
+### Features
+
+* generate list types as non-null ([#8166](https://github.com/aws-amplify/amplify-cli/issues/8166)) ([93786c1](https://github.com/aws-amplify/amplify-cli/commit/93786c13ef04c72748ca32a1ef7878c0e6b5b129))
+
+
+
+
+
 # [0.5.0-graphql-vnext-dev-preview.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-index-transformer@0.4.0...@aws-amplify/graphql-index-transformer@0.5.0-graphql-vnext-dev-preview.3) (2021-10-29)
 
 
