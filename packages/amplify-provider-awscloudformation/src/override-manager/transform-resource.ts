@@ -6,7 +6,7 @@ import { transformRootStack } from '.';
  * @param context
  * @returns
  */
-export async function transformResourceWithOverrides(context: $TSContext, resource?: IAmplifyResource, applyOverride?: boolean) {
+export async function transformResourceWithOverrides(context: $TSContext, resource?: IAmplifyResource) {
   const flags = context.parameters.options;
   if (flags['no-override']) {
     return;
