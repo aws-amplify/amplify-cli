@@ -83,7 +83,6 @@ export interface GraphQLTransformOptions {
   readonly sandboxModeEnabled?: boolean;
   readonly userDefinedSlots?: Record<string, UserDefinedSlot[]>;
   readonly resolverConfig?: ResolverConfig;
-  readonly overrideFlag?: boolean;
   readonly overrideConfig?: OverrideConfig;
 }
 export type StackMapping = { [resourceId: string]: string };
