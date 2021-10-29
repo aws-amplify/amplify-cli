@@ -35,6 +35,7 @@ packages/amplify-e2e-tests/lib
 packages/amplify-category-function/lib
 packages/amplify-category-api/lib
 packages/amplify-category-auth/lib
+packages/amplify-category-custom/lib
 packages/amplify-category-storage/lib
 packages/amplify-category-geo/lib/
 packages/amplify-e2e-tests/amplify-e2e-reports
