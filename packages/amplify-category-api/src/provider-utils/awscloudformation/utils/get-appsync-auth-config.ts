@@ -8,9 +8,11 @@ import { appSyncAuthTypeToAuthConfig } from './auth-config-to-app-sync-auth-type
  */
 export const getAuthConfig = async (resourceName: string) => {
   const cliState = new AppsyncApiInputState(resourceName);
-  const appsyncInputs = cliState.getCLIInputPayload().serviceConfiguration;
-  return {
-    defaultAuthentication: appSyncAuthTypeToAuthConfig(appsyncInputs.defaultAuthType),
-    additionalAuthenticationProviders: (appsyncInputs.additionalAuthTypes || []).map(appSyncAuthTypeToAuthConfig),
-  };
+  if (cliState.cliInputFileExists) {
+    const appsyncInputs = cliState.getCLIInputPayload().serviceConfiguration;
+    return {
+      defaultAuthentication: appSyncAuthTypeToAuthConfig(appsyncInputs.defaultAuthType),
+      additionalAuthenticationProviders: (appsyncInputs.additionalAuthTypes || []).map(appSyncAuthTypeToAuthConfig),
+    };
+  }
 };
