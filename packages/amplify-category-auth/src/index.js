@@ -89,7 +89,7 @@ async function migrateAuthResource(context, resourceName) {
 async function externalAuthEnable(context, externalCategory, resourceName, requirements) {
   const { amplify } = context;
   const serviceMetadata = getSupportedServices();
-  const existingAuthResource = _.get(amplify.getProjectDetails().amplifyMeta, ['auth', currentAuthName], undefined);
+  const authExists = amplify.getProjectDetails().amplifyMeta.auth && Object.keys(amplify.getProjectDetails().amplifyMeta.auth).length > 0; //eslint-disable-line
   let currentAuthName;
   const projectName = context.amplify
     .getProjectConfig()
@@ -100,9 +100,9 @@ async function externalAuthEnable(context, externalCategory, resourceName, requi
   const immutables = {};
 
   // if auth has already been enabled, grab the existing parameters
-  if (existingAuthResource) {
+  if (authExists) {
     // sanity check that it cannot happen
-    if (existingAuthResource.serviceType === 'imported') {
+    if (authExists.serviceType === 'imported') {
       throw new Error('Existing auth resource is imported and auth configuration update was requested.');
     }
     currentAuthName = await getAuthResourceName(context);
@@ -150,7 +150,7 @@ async function externalAuthEnable(context, externalCategory, resourceName, requi
 
   try {
     authProps = await removeDeprecatedProps(authProps);
-    await generateAuthStackTemplate(context, existingAuthResource);
+    await generateAuthStackTemplate(context, currentAuthName);
     // replace secret keys from cli inputs to be stored in deployment secrets
 
     let sharedParams = Object.assign({}, authProps);
@@ -165,10 +165,10 @@ async function externalAuthEnable(context, externalCategory, resourceName, requi
         delete cliInputs[paramName];
       }
     });
-    context.amplify.saveEnvResourceParameters(context, category, existingAuthResource, envSpecificParams);
-    const resourceDirPath = path.join(amplify.pathManager.getBackendDirPath(), 'auth', authProps.resourceName, 'parameters.json');
+    context.amplify.saveEnvResourceParameters(context, category, authExists, envSpecificParams);
+    const resourceDirPath = path.join(amplify.pathManager.getBackendDirPath(), 'auth', authProps.resourceName, 'build', 'parameters.json');
     const authParameters = await amplify.readJsonFile(resourceDirPath);
-    if (!existingAuthResource) {
+    if (!authExists) {
       const options = {
         service: 'Cognito',
         serviceType: 'managed',
@@ -200,7 +200,7 @@ async function externalAuthEnable(context, externalCategory, resourceName, requi
       await transformUserPoolGroupSchema(context);
     }
 
-    const action = existingAuthResource ? 'updated' : 'added';
+    const action = authExists ? 'updated' : 'added';
     printer.success(`Successfully ${action} auth resource locally.`);
 
     return authProps.resourceName;
@@ -346,7 +346,6 @@ async function initEnv(context) {
 
 async function console(context) {
   const { amplify } = context;
-  const supportedServices = getSupportedServices();
   const amplifyMeta = amplify.getProjectMeta();
 
   if (!amplifyMeta.auth || Object.keys(amplifyMeta.auth).length === 0) {
@@ -354,7 +353,7 @@ async function console(context) {
   }
 
   return amplify
-    .serviceSelectionPrompt(context, category, supportedServices)
+    .serviceSelectionPrompt(context, category, getSupportedServices())
     .then(result => {
       const providerController = require(`${__dirname}/provider-utils/${result.providerName}/index`);
       if (!providerController) {
