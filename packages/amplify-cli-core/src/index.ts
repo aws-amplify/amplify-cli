@@ -277,9 +277,13 @@ interface AmplifyToolkit {
     context: $TSContext,
     category: string,
     resource: string,
-    questionOptions?: $TSAny,
+    questionOptions?: {
+      headless?: boolean;
+      serviceSuffix?: { [serviceName: string]: string };
+      serviceDeletionInfo?: { [serviceName: string]: string };
+    },
     resourceNameCallback?: (resourceName: string) => Promise<void>,
-  ) => $TSAny;
+  ) => Promise<{ service: string; resourceName: string } | undefined>;
   sharedQuestions: () => $TSAny;
   showAllHelp: () => $TSAny;
   showHelp: (header: string, commands: { name: string; description: string }[]) => $TSAny;

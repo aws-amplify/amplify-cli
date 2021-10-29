@@ -11,7 +11,9 @@ export const name = subcommand;
 export const run = async (context: $TSContext) => {
   const resourceName = context.parameters.first;
 
-  const resourceValues = await context.amplify.removeResource(context, category, resourceName);
+  const resourceValues = await context.amplify.removeResource(context, category, resourceName, {
+    serviceSuffix: { AppSync: '(GraphQL API)', 'API Gateway': '(REST API)' },
+  });
   try {
     if (!resourceValues) {
       return;
