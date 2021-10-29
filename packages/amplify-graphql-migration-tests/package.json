@@ -1,7 +1,7 @@
 {
-  "name": "amplify-schema-migrator-tests",
+  "name": "amplify-graphql-migration-tests",
   "version": "1.0.0",
-  "description": "Tests for migrating graphql schemas from v1 to v2",
+  "description": "Tests migration from v1 to v2 of the Amplify GraphQL transformer",
   "main": "lib/index.js",
   "private": true,
   "scripts": {
