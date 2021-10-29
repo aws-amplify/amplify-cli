@@ -23,6 +23,7 @@ export class AuthInputState extends CategoryInputState {
 
   constructor(resourceName: string) {
     super(resourceName);
+    console.log("SACPCDEBUG: ResourceName: ", resourceName );
     this.#category = AmplifyCategories.AUTH;
     this.#service = AmplifySupportedService.COGNITO;
     this.#resourceName = resourceName;
