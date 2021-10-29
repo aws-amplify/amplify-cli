@@ -139,7 +139,7 @@ export class GraphQLTransform {
    * @param schema The model schema.
    * @param references Any cloudformation references.
    */
-  public transform(schema: string): DeploymentResources {
+  public transform(schema: string): DeploymentResources | undefined {
     this.seenTransformations = {};
     const parsedDocument = parse(schema);
     this.app = new App();
@@ -265,10 +265,15 @@ export class GraphQLTransform {
       reverseThroughTransformers -= 1;
     }
     this.collectResolvers(context, context.api);
+    // using .thrn() format here since transform is sync operation
     if (this.overrideConfig?.overrideFlag) {
-      async () => await this.applyOverride(stackManager);
+      const overrideOperation = async () => await this.applyOverride(stackManager);
+      overrideOperation().finally(() => {
+        return this.synthesize(context);
+      });
+    } else {
+      return this.synthesize(context);
     }
-    return this.synthesize(context);
   }
 
   private applyOverride = async (stackManager: StackManager) => {
