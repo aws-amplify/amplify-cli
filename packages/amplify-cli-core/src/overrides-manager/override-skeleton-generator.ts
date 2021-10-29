@@ -51,7 +51,14 @@ export async function buildOverrideDir(cwd: string, destDirPath: string): Promis
     fs.ensureDirSync(tsConfigDir);
 
     const tsConfigFilePath = path.join(tsConfigDir, 'tsconfig.resource.json');
-    execa.sync(packageManager.executable, ['build', `--project`, `${tsConfigFilePath}`], {
+    // get locally installed tsc executable
+
+    const localTscExecutablePath = path.join(cwd, 'node_modules', '.bin', 'tsc');
+
+    if (!fs.existsSync(localTscExecutablePath)) {
+      throw new Error('Typescript executable not found. Please add it as a dev-dependency in the package.json file for this resource.');
+    }
+    execa.sync(localTscExecutablePath, [`--project`, `${tsConfigFilePath}`], {
       cwd: tsConfigDir,
       stdio: 'pipe',
       encoding: 'utf-8',
