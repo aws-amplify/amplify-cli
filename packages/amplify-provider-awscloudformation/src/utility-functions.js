@@ -68,9 +68,8 @@ module.exports = {
    * Resources to build are passed with options
    */
   buildOverrides: async (context, options) => {
-    const appOverrideFlag = options.applyOverrides;
     for (const resource of options.resourcesToBuild) {
-      await transformResourceWithOverrides(context, resource, appOverrideFlag);
+      await transformResourceWithOverrides(context, resource);
     }
     await transformResourceWithOverrides(context);
   },

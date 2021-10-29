@@ -38,47 +38,25 @@ export const getStackMeta = (constructPathArr: string[], id: string, nestedStack
   if (nestedStackArr.find(val => val === constructPathArr[1])) {
     const nestedStackName = nestedStackArr.find(val => val === constructPathArr[1]);
     const resourceName = constructPathArr.filter(path => path !== nestedStackName && path !== rootStackNameInConstruct).join('');
-    if (id === 'Resource') {
-      return {
-        resourceName,
-        resourceType: resource.cfnResourceType,
-        nestedStack: {
-          stackName: nestedStackName!,
-          stackType: stacksTypes[nestedStackName!] ?? stacksTypes['MODELS'],
-        },
-      };
-    } else {
-      return {
-        resourceName: `${resourceName}`,
-        resourceType: resource.cfnResourceType,
-        nestedStack: {
-          stackName: nestedStackName!,
-          stackType: stacksTypes[nestedStackName!] ?? stacksTypes['MODELS'],
-        },
-      };
-    }
+    return {
+      resourceName,
+      resourceType: resource.cfnResourceType,
+      nestedStack: {
+        stackName: nestedStackName!,
+        stackType: stacksTypes[nestedStackName!] ?? stacksTypes['MODELS'],
+      },
+    };
   } else {
     // root stack
     const resourceName = constructPathArr.filter(path => path !== rootStackNameInConstruct).join('');
-    if (id === 'Resource') {
-      return {
-        resourceName,
-        resourceType: resource.cfnResourceType,
-        rootStack: {
-          stackName: constructPathArr[0],
-          stackType: stacksTypes.API,
-        },
-      };
-    } else {
-      return {
-        resourceName: `${resourceName}${id}`,
-        resourceType: resource.cfnResourceType,
-        rootStack: {
-          stackName: constructPathArr[0],
-          stackType: stacksTypes.API,
-        },
-      };
-    }
+    return {
+      resourceName: id === 'Resource' ? resourceName : `${resourceName}${id}`,
+      resourceType: resource.cfnResourceType,
+      rootStack: {
+        stackName: constructPathArr[0],
+        stackType: stacksTypes.API,
+      },
+    };
   }
 };
 
