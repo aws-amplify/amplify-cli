@@ -3,6 +3,114 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.55.0-graphql-vnext-dev-preview.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.54.0...amplify-e2e-tests@2.55.0-graphql-vnext-dev-preview.3) (2021-10-29)
+
+
+### Bug Fixes
+
+* **amplify-category-auth:** switching to social providers with user pools instead of identity pools ([#8308](https://github.com/aws-amplify/amplify-cli/issues/8308)) ([0c82fe3](https://github.com/aws-amplify/amplify-cli/commit/0c82fe3ef73456192e993c380bc35f01663eb0cf))
+
+
+### Features
+
+* **amplify-category-storage:** headless support for S3 ([#8423](https://github.com/aws-amplify/amplify-cli/issues/8423)) ([76b0e70](https://github.com/aws-amplify/amplify-cli/commit/76b0e700d6221292a25b384e2ecfc7a64e9916dd))
+* **amplify-provider-awscloudformation:** change sandbox mode syntax in schema ([7ce7d8a](https://github.com/aws-amplify/amplify-cli/commit/7ce7d8acec233aa7213c25f44aad3d683b693500))
+* **amplify-provider-awscloudformation:** enable custom resolvers for v2 transformer ([#8454](https://github.com/aws-amplify/amplify-cli/issues/8454)) ([934ad64](https://github.com/aws-amplify/amplify-cli/commit/934ad648e392050075f21413f8269ffe432e59dd))
+* **amplify-provider-awscloudformation:** merge user config with transform generated resolvers ([#8447](https://github.com/aws-amplify/amplify-cli/issues/8447)) ([4d553e5](https://github.com/aws-amplify/amplify-cli/commit/4d553e5602a84729e517a3716338f2235567ea82))
+* flag to allow destructive schema changes ([#8273](https://github.com/aws-amplify/amplify-cli/issues/8273)) ([18de856](https://github.com/aws-amplify/amplify-cli/commit/18de856fb61bf2df8f73375e4e55a58c6159a232))
+* version blocking for CLI ([#8512](https://github.com/aws-amplify/amplify-cli/issues/8512)) ([52edf2b](https://github.com/aws-amplify/amplify-cli/commit/52edf2b58508c96e78184aba1f77c06c021cc9b1))
+
+
+### Reverts
+
+* Revert "Revert "feat(amplify-category-auth): use EnabledMFAs to only configure TOTP (#7779)" (#7790)" (#7971) ([ff418d1](https://github.com/aws-amplify/amplify-cli/commit/ff418d151879da2c89f2aced6d67d602f7395371)), closes [#7779](https://github.com/aws-amplify/amplify-cli/issues/7779) [#7790](https://github.com/aws-amplify/amplify-cli/issues/7790) [#7971](https://github.com/aws-amplify/amplify-cli/issues/7971)
+* Revert "feat: version blocking for CLI (#8512)" (#8522) ([c48453b](https://github.com/aws-amplify/amplify-cli/commit/c48453bc261d3f424e15179d40d6a21f5b15002a)), closes [#8512](https://github.com/aws-amplify/amplify-cli/issues/8512) [#8522](https://github.com/aws-amplify/amplify-cli/issues/8522)
+
+
+
+
+
+# [2.55.0-graphql-vnext-dev-preview.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.54.0...amplify-e2e-tests@2.55.0-graphql-vnext-dev-preview.2) (2021-10-29)
+
+
+### Bug Fixes
+
+* **amplify-category-auth:** switching to social providers with user pools instead of identity pools ([#8308](https://github.com/aws-amplify/amplify-cli/issues/8308)) ([0c82fe3](https://github.com/aws-amplify/amplify-cli/commit/0c82fe3ef73456192e993c380bc35f01663eb0cf))
+
+
+### Features
+
+* **amplify-category-storage:** headless support for S3 ([#8423](https://github.com/aws-amplify/amplify-cli/issues/8423)) ([76b0e70](https://github.com/aws-amplify/amplify-cli/commit/76b0e700d6221292a25b384e2ecfc7a64e9916dd))
+* **amplify-provider-awscloudformation:** change sandbox mode syntax in schema ([7ce7d8a](https://github.com/aws-amplify/amplify-cli/commit/7ce7d8acec233aa7213c25f44aad3d683b693500))
+* **amplify-provider-awscloudformation:** enable custom resolvers for v2 transformer ([#8454](https://github.com/aws-amplify/amplify-cli/issues/8454)) ([934ad64](https://github.com/aws-amplify/amplify-cli/commit/934ad648e392050075f21413f8269ffe432e59dd))
+* **amplify-provider-awscloudformation:** merge user config with transform generated resolvers ([#8447](https://github.com/aws-amplify/amplify-cli/issues/8447)) ([4d553e5](https://github.com/aws-amplify/amplify-cli/commit/4d553e5602a84729e517a3716338f2235567ea82))
+* flag to allow destructive schema changes ([#8273](https://github.com/aws-amplify/amplify-cli/issues/8273)) ([18de856](https://github.com/aws-amplify/amplify-cli/commit/18de856fb61bf2df8f73375e4e55a58c6159a232))
+* version blocking for CLI ([#8512](https://github.com/aws-amplify/amplify-cli/issues/8512)) ([52edf2b](https://github.com/aws-amplify/amplify-cli/commit/52edf2b58508c96e78184aba1f77c06c021cc9b1))
+
+
+### Reverts
+
+* Revert "Revert "feat(amplify-category-auth): use EnabledMFAs to only configure TOTP (#7779)" (#7790)" (#7971) ([ff418d1](https://github.com/aws-amplify/amplify-cli/commit/ff418d151879da2c89f2aced6d67d602f7395371)), closes [#7779](https://github.com/aws-amplify/amplify-cli/issues/7779) [#7790](https://github.com/aws-amplify/amplify-cli/issues/7790) [#7971](https://github.com/aws-amplify/amplify-cli/issues/7971)
+* Revert "feat: version blocking for CLI (#8512)" (#8522) ([c48453b](https://github.com/aws-amplify/amplify-cli/commit/c48453bc261d3f424e15179d40d6a21f5b15002a)), closes [#8512](https://github.com/aws-amplify/amplify-cli/issues/8512) [#8522](https://github.com/aws-amplify/amplify-cli/issues/8522)
+
+
+
+
+
+# [2.55.0-graphql-vnext-dev-preview.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.54.0...amplify-e2e-tests@2.55.0-graphql-vnext-dev-preview.1) (2021-10-29)
+
+
+### Bug Fixes
+
+* **amplify-category-auth:** switching to social providers with user pools instead of identity pools ([#8308](https://github.com/aws-amplify/amplify-cli/issues/8308)) ([0c82fe3](https://github.com/aws-amplify/amplify-cli/commit/0c82fe3ef73456192e993c380bc35f01663eb0cf))
+
+
+### Features
+
+* **amplify-category-storage:** headless support for S3 ([#8423](https://github.com/aws-amplify/amplify-cli/issues/8423)) ([76b0e70](https://github.com/aws-amplify/amplify-cli/commit/76b0e700d6221292a25b384e2ecfc7a64e9916dd))
+* **amplify-provider-awscloudformation:** change sandbox mode syntax in schema ([7ce7d8a](https://github.com/aws-amplify/amplify-cli/commit/7ce7d8acec233aa7213c25f44aad3d683b693500))
+* **amplify-provider-awscloudformation:** enable custom resolvers for v2 transformer ([#8454](https://github.com/aws-amplify/amplify-cli/issues/8454)) ([934ad64](https://github.com/aws-amplify/amplify-cli/commit/934ad648e392050075f21413f8269ffe432e59dd))
+* **amplify-provider-awscloudformation:** merge user config with transform generated resolvers ([#8447](https://github.com/aws-amplify/amplify-cli/issues/8447)) ([4d553e5](https://github.com/aws-amplify/amplify-cli/commit/4d553e5602a84729e517a3716338f2235567ea82))
+* flag to allow destructive schema changes ([#8273](https://github.com/aws-amplify/amplify-cli/issues/8273)) ([18de856](https://github.com/aws-amplify/amplify-cli/commit/18de856fb61bf2df8f73375e4e55a58c6159a232))
+* version blocking for CLI ([#8512](https://github.com/aws-amplify/amplify-cli/issues/8512)) ([52edf2b](https://github.com/aws-amplify/amplify-cli/commit/52edf2b58508c96e78184aba1f77c06c021cc9b1))
+
+
+### Reverts
+
+* Revert "Revert "feat(amplify-category-auth): use EnabledMFAs to only configure TOTP (#7779)" (#7790)" (#7971) ([ff418d1](https://github.com/aws-amplify/amplify-cli/commit/ff418d151879da2c89f2aced6d67d602f7395371)), closes [#7779](https://github.com/aws-amplify/amplify-cli/issues/7779) [#7790](https://github.com/aws-amplify/amplify-cli/issues/7790) [#7971](https://github.com/aws-amplify/amplify-cli/issues/7971)
+* Revert "feat: version blocking for CLI (#8512)" (#8522) ([c48453b](https://github.com/aws-amplify/amplify-cli/commit/c48453bc261d3f424e15179d40d6a21f5b15002a)), closes [#8512](https://github.com/aws-amplify/amplify-cli/issues/8512) [#8522](https://github.com/aws-amplify/amplify-cli/issues/8522)
+
+
+
+
+
+# [2.55.0-graphql-vnext-dev-preview.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.54.0...amplify-e2e-tests@2.55.0-graphql-vnext-dev-preview.0) (2021-10-29)
+
+
+### Bug Fixes
+
+* **amplify-category-auth:** switching to social providers with user pools instead of identity pools ([#8308](https://github.com/aws-amplify/amplify-cli/issues/8308)) ([0c82fe3](https://github.com/aws-amplify/amplify-cli/commit/0c82fe3ef73456192e993c380bc35f01663eb0cf))
+
+
+### Features
+
+* **amplify-category-storage:** headless support for S3 ([#8423](https://github.com/aws-amplify/amplify-cli/issues/8423)) ([76b0e70](https://github.com/aws-amplify/amplify-cli/commit/76b0e700d6221292a25b384e2ecfc7a64e9916dd))
+* **amplify-provider-awscloudformation:** change sandbox mode syntax in schema ([7ce7d8a](https://github.com/aws-amplify/amplify-cli/commit/7ce7d8acec233aa7213c25f44aad3d683b693500))
+* **amplify-provider-awscloudformation:** enable custom resolvers for v2 transformer ([#8454](https://github.com/aws-amplify/amplify-cli/issues/8454)) ([934ad64](https://github.com/aws-amplify/amplify-cli/commit/934ad648e392050075f21413f8269ffe432e59dd))
+* **amplify-provider-awscloudformation:** merge user config with transform generated resolvers ([#8447](https://github.com/aws-amplify/amplify-cli/issues/8447)) ([4d553e5](https://github.com/aws-amplify/amplify-cli/commit/4d553e5602a84729e517a3716338f2235567ea82))
+* flag to allow destructive schema changes ([#8273](https://github.com/aws-amplify/amplify-cli/issues/8273)) ([18de856](https://github.com/aws-amplify/amplify-cli/commit/18de856fb61bf2df8f73375e4e55a58c6159a232))
+* version blocking for CLI ([#8512](https://github.com/aws-amplify/amplify-cli/issues/8512)) ([52edf2b](https://github.com/aws-amplify/amplify-cli/commit/52edf2b58508c96e78184aba1f77c06c021cc9b1))
+
+
+### Reverts
+
+* Revert "Revert "feat(amplify-category-auth): use EnabledMFAs to only configure TOTP (#7779)" (#7790)" (#7971) ([ff418d1](https://github.com/aws-amplify/amplify-cli/commit/ff418d151879da2c89f2aced6d67d602f7395371)), closes [#7779](https://github.com/aws-amplify/amplify-cli/issues/7779) [#7790](https://github.com/aws-amplify/amplify-cli/issues/7790) [#7971](https://github.com/aws-amplify/amplify-cli/issues/7971)
+* Revert "feat: version blocking for CLI (#8512)" (#8522) ([c48453b](https://github.com/aws-amplify/amplify-cli/commit/c48453bc261d3f424e15179d40d6a21f5b15002a)), closes [#8512](https://github.com/aws-amplify/amplify-cli/issues/8512) [#8522](https://github.com/aws-amplify/amplify-cli/issues/8522)
+
+
+
+
+
 # [2.54.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.53.0...amplify-e2e-tests@2.54.0) (2021-10-13)
 
 

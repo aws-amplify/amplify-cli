@@ -3,6 +3,38 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.9.16-graphql-vnext-dev-preview.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-predictions@2.9.15...amplify-category-predictions@2.9.16-graphql-vnext-dev-preview.3) (2021-10-29)
+
+**Note:** Version bump only for package amplify-category-predictions
+
+
+
+
+
+## [2.9.16-graphql-vnext-dev-preview.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-predictions@2.9.15...amplify-category-predictions@2.9.16-graphql-vnext-dev-preview.2) (2021-10-29)
+
+**Note:** Version bump only for package amplify-category-predictions
+
+
+
+
+
+## [2.9.16-graphql-vnext-dev-preview.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-predictions@2.9.15...amplify-category-predictions@2.9.16-graphql-vnext-dev-preview.1) (2021-10-29)
+
+**Note:** Version bump only for package amplify-category-predictions
+
+
+
+
+
+## [2.9.16-graphql-vnext-dev-preview.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-predictions@2.9.15...amplify-category-predictions@2.9.16-graphql-vnext-dev-preview.0) (2021-10-29)
+
+**Note:** Version bump only for package amplify-category-predictions
+
+
+
+
+
 ## [2.9.15](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-predictions@2.9.14...amplify-category-predictions@2.9.15) (2021-10-10)
 
 **Note:** Version bump only for package amplify-category-predictions

@@ -3,6 +3,38 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.18.8-graphql-vnext-dev-preview.3](https://github.com/aws-amplify/amplify-cli/compare/graphql-relational-schema-transformer@2.18.7...graphql-relational-schema-transformer@2.18.8-graphql-vnext-dev-preview.3) (2021-10-29)
+
+**Note:** Version bump only for package graphql-relational-schema-transformer
+
+
+
+
+
+## [2.18.8-graphql-vnext-dev-preview.2](https://github.com/aws-amplify/amplify-cli/compare/graphql-relational-schema-transformer@2.18.7...graphql-relational-schema-transformer@2.18.8-graphql-vnext-dev-preview.2) (2021-10-29)
+
+**Note:** Version bump only for package graphql-relational-schema-transformer
+
+
+
+
+
+## [2.18.8-graphql-vnext-dev-preview.1](https://github.com/aws-amplify/amplify-cli/compare/graphql-relational-schema-transformer@2.18.7...graphql-relational-schema-transformer@2.18.8-graphql-vnext-dev-preview.1) (2021-10-29)
+
+**Note:** Version bump only for package graphql-relational-schema-transformer
+
+
+
+
+
+## [2.18.8-graphql-vnext-dev-preview.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-relational-schema-transformer@2.18.7...graphql-relational-schema-transformer@2.18.8-graphql-vnext-dev-preview.0) (2021-10-29)
+
+**Note:** Version bump only for package graphql-relational-schema-transformer
+
+
+
+
+
 ## [2.18.7](https://github.com/aws-amplify/amplify-cli/compare/graphql-relational-schema-transformer@2.18.6...graphql-relational-schema-transformer@2.18.7) (2021-09-27)
 
 

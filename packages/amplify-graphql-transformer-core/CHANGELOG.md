@@ -3,6 +3,50 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.10.0-graphql-vnext-dev-preview.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-transformer-core@0.9.2...@aws-amplify/graphql-transformer-core@0.10.0-graphql-vnext-dev-preview.3) (2021-10-29)
+
+
+### Features
+
+* **amplify-provider-awscloudformation:** change sandbox mode syntax in schema ([7ce7d8a](https://github.com/aws-amplify/amplify-cli/commit/7ce7d8acec233aa7213c25f44aad3d683b693500))
+
+
+
+
+
+# [0.10.0-graphql-vnext-dev-preview.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-transformer-core@0.9.2...@aws-amplify/graphql-transformer-core@0.10.0-graphql-vnext-dev-preview.2) (2021-10-29)
+
+
+### Features
+
+* **amplify-provider-awscloudformation:** change sandbox mode syntax in schema ([7ce7d8a](https://github.com/aws-amplify/amplify-cli/commit/7ce7d8acec233aa7213c25f44aad3d683b693500))
+
+
+
+
+
+# [0.10.0-graphql-vnext-dev-preview.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-transformer-core@0.9.2...@aws-amplify/graphql-transformer-core@0.10.0-graphql-vnext-dev-preview.1) (2021-10-29)
+
+
+### Features
+
+* **amplify-provider-awscloudformation:** change sandbox mode syntax in schema ([7ce7d8a](https://github.com/aws-amplify/amplify-cli/commit/7ce7d8acec233aa7213c25f44aad3d683b693500))
+
+
+
+
+
+# [0.10.0-graphql-vnext-dev-preview.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-transformer-core@0.9.2...@aws-amplify/graphql-transformer-core@0.10.0-graphql-vnext-dev-preview.0) (2021-10-29)
+
+
+### Features
+
+* **amplify-provider-awscloudformation:** change sandbox mode syntax in schema ([7ce7d8a](https://github.com/aws-amplify/amplify-cli/commit/7ce7d8acec233aa7213c25f44aad3d683b693500))
+
+
+
+
+
 ## [0.9.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-transformer-core@0.9.1...@aws-amplify/graphql-transformer-core@0.9.2) (2021-10-10)
 
 **Note:** Version bump only for package @aws-amplify/graphql-transformer-core
