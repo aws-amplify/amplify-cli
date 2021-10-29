@@ -80,7 +80,6 @@ export interface GraphQLTransformOptions {
   readonly host?: TransformHostProvider;
   readonly sandboxModeEnabled?: boolean;
   readonly resolverConfig?: ResolverConfig;
-  readonly overrideFlag?: boolean;
   readonly overrideConfig?: OverrideConfig;
 }
 export type StackMapping = { [resourceId: string]: string };

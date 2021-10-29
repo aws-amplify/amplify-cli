@@ -1,31 +1,33 @@
-import path from 'path';
-import { generateOverrideSkeleton, $TSContext, stateManager, pathManager } from 'amplify-cli-core';
+import { $TSContext, AmplifySupportedService, generateOverrideSkeleton, pathManager, stateManager } from 'amplify-cli-core';
 import { printer, prompter } from 'amplify-prompts';
-//import { checkAuResourceMigration } from '../../provider-utils/awscloudformation/utils/check-for-auth-migration';
+import * as path from 'path';
+import { category as categoryName } from '../../category-constants';
+import { checkAppsyncApiResourceMigration } from '../../provider-utils/awscloudformation/utils/check-appsync-api-migration';
 
-const category = 'api';
-
-export const name = 'overrides';
-
+export const name = 'override';
 export const run = async (context: $TSContext) => {
   const amplifyMeta = stateManager.getMeta();
   const apiResources: string[] = [];
-  Object.keys(amplifyMeta[category]).forEach(resourceName => {
-    apiResources.push(resourceName);
-  });
+  if (amplifyMeta[categoryName]) {
+    Object.keys(amplifyMeta[categoryName]).forEach(resourceName => {
+      apiResources.push(resourceName);
+    });
+  }
   if (apiResources.length === 0) {
-    const errMessage = 'No api resources to override. Add auth using `amplify api auth`';
+    const errMessage = 'No resources to override. You need to add a resource.';
     printer.error(errMessage);
     return;
   }
-
-  const selectedApiResource = await prompter.pick<'one', string>(`Which resource would you like to add overrides for?`, apiResources);
-  // check if migration needed
-  //await checkAuthResourceMigration(context, selectedAuthResource);
-  const backendDir = pathManager.getBackendDirPath();
-
-  const destPath = path.normalize(path.join(backendDir, category, selectedApiResource));
-  const srcPath = path.normalize(path.join(__dirname, '..', '..', '..', 'resources', 'overrides-resource'));
-
+  let selectedResourceName: string = apiResources[0];
+  if (apiResources.length > 1) {
+    selectedResourceName = await prompter.pick('Which resource would you like to add overrides for?', apiResources);
+  }
+  const { service }: { service: string } = amplifyMeta[categoryName][selectedResourceName];
+  const destPath = pathManager.getResourceDirectoryPath(undefined, categoryName, selectedResourceName);
+  const srcPath = path.join(__dirname, '..', '..', '..', 'resources', 'awscloudformation', 'overrides-resource', service);
+  // Make sure to migrate first
+  if (service === AmplifySupportedService.APPSYNC) {
+    await checkAppsyncApiResourceMigration(context, selectedResourceName);
+  }
   await generateOverrideSkeleton(context, srcPath, destPath);
 };

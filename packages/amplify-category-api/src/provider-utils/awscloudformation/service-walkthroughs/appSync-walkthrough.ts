@@ -24,6 +24,7 @@ import {
 } from 'amplify-cli-core';
 import { Duration, Expiration } from '@aws-cdk/core';
 import { defineGlobalSandboxMode } from '../utils/global-sandbox-mode';
+import { checkAppsyncApiResourceMigration } from '../utils/check-appsync-api-migration';
 
 const serviceName = 'AppSync';
 const elasticContainerServiceName = 'ElasticContainer';
@@ -451,6 +452,9 @@ export const updateWalkthrough = async (context): Promise<UpdateApiRequest> => {
     await context.usageData.emitError(new ResourceDoesNotExistError(errMessage));
     exitOnNextTick(0);
   }
+
+  // migrate API project
+  checkAppsyncApiResourceMigration(context, resourceName);
 
   // Get models
   const project = await readProjectConfiguration(resourceDir);

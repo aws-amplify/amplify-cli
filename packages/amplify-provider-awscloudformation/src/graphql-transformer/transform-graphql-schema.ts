@@ -261,10 +261,6 @@ export async function transformGraphQLSchema(context, options) {
 
   let { authConfig }: { authConfig: AppSyncAuthConfiguration } = options;
 
-  //
-  // If we don't have an authConfig from the caller, use it from the
-  // already read resources[0], which is an AppSync API.
-  //
   if (_.isEmpty(authConfig)) {
     authConfig = await context.amplify.invokePluginMethod(
       context,
@@ -273,15 +269,25 @@ export async function transformGraphQLSchema(context, options) {
       'getAuthConfig',
       [resources[0].resourceName],
     );
+    // handle case where auth project is not migrated , if Auth not migrated above function will return empty Object
+    if (_.isEmpty(authConfig)) {
+      //
+      // If we don't have an authConfig from the caller, use it from the
+      // already read resources[0], which is an AppSync API.
+      //
+      if (resources[0].output.securityType) {
+        // Convert to multi-auth format if needed.
+        authConfig = {
+          defaultAuthentication: {
+            authenticationType: resources[0].output.securityType,
+          },
+          additionalAuthenticationProviders: [],
+        };
+      } else {
+        ({ authConfig } = resources[0].output);
+      }
+    }
   }
-
-  const resolverConfig = await context.amplify.invokePluginMethod(
-    context,
-    AmplifyCategories.API,
-    AmplifySupportedService.APPSYNC,
-    'getResolverConfig',
-    [resources[0].resourceName],
-  );
 
   // for the predictions directive get storage config
   const s3Resource = s3ResourceAlreadyExists(context);
@@ -346,6 +352,22 @@ export async function transformGraphQLSchema(context, options) {
   const isNewAppSyncAPI: boolean = resourcesToBeCreated.some(resource => resource.service === 'AppSync');
   const allowDestructiveUpdates = context?.input?.options?.[destructiveUpdatesFlag] || context?.input?.options?.force;
   const sanityCheckRules = getSanityCheckRules(isNewAppSyncAPI, ff, allowDestructiveUpdates);
+
+  let resolverConfig = await context.amplify.invokePluginMethod(
+    context,
+    AmplifyCategories.API,
+    AmplifySupportedService.APPSYNC,
+    'getResolverConfig',
+    [resources[0].resourceName],
+  );
+
+  /**
+   * if Auth is not migrated , we need to fetch resolver Config from transformer.conf.json
+   * since above function will return empt object
+   */
+  if (_.isEmpty(resolverConfig)) {
+    resolverConfig = project.config.ResolverConfig;
+  }
 
   const buildConfig: ProjectOptions<TransformerFactoryArgs> = {
     ...options,

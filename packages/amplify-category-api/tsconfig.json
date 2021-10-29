@@ -12,7 +12,7 @@
     "scripts",
     "resources/awscloudformation/lambdas",
     "resources/awscloudformation/container-templates",
-    "resources/overrides-resource",
+    "resources/awscloudformation/overrides-resource/*",
     "src/__tests__"
   ],
   "references": [
