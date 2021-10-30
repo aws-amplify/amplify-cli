@@ -189,7 +189,7 @@ export async function s3RegisterExistingLambdaTriggerAsAdmin(
     throw new Error(`Error Registering existing trigger function on storage resource ${s3ResourceName} : resource does not exist`);
   }
   let s3UserInput = cliInputsState.getUserInput();
-  if( !s3UserInput.triggerFunction || s3UserInput.triggerFunction != 'NONE'){
+  if( !s3UserInput.triggerFunction || s3UserInput.triggerFunction == 'NONE'){
     s3UserInput.triggerFunction = adminLambdaTrigger.triggerFunction;
   }
   s3UserInput.adminTriggerFunction = adminLambdaTrigger; //TBD check if function is created

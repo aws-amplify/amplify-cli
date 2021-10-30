@@ -254,7 +254,7 @@ async function configure(context, predictionsResourceObj,  configMode /*add/upda
     });
     options.dependsOn.push({
       category: storageCategory,
-      resourceName: s3Resource,
+      resourceName: s3Resource.resourceName,
       attributes: ['BucketName'],
     });
 

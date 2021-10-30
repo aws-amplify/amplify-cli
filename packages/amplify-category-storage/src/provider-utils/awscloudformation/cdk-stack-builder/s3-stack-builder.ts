@@ -163,7 +163,9 @@ export class AmplifyS3ResourceCfnStack extends AmplifyResourceCfnStack implement
     }
 
     //6. Configure Admin Trigger policies
-    if (this._props.adminTriggerFunction?.triggerFunction && this._props.adminTriggerFunction.triggerFunction != 'NONE') {
+    if (this._props.adminTriggerFunction?.triggerFunction &&
+        this._props.adminTriggerFunction.triggerFunction != 'NONE' &&
+        this._props.adminTriggerFunction.triggerFunction !== this._props.triggerFunction ) {
       this.s3TriggerPolicy = this.createTriggerPolicy( this._props.adminTriggerFunction.triggerFunction);
     }
   }
@@ -248,7 +250,9 @@ export class AmplifyS3ResourceCfnStack extends AmplifyResourceCfnStack implement
       s3CfnParams = s3CfnParams.concat(triggerFunctionCFNParams)
     }
 
-    if (this._props.adminTriggerFunction?.triggerFunction && this._props.adminTriggerFunction.triggerFunction != 'NONE'){
+    if (this._props.adminTriggerFunction?.triggerFunction &&
+        this._props.adminTriggerFunction.triggerFunction != 'NONE' &&
+        this._props.adminTriggerFunction.triggerFunction != this._props.triggerFunction){
       const adminTriggerFunctionCFNParams = this.createTriggerLambdaCFNParams( 'adminTriggerFunction', this._props.adminTriggerFunction.triggerFunction );
       s3CfnParams = s3CfnParams.concat(adminTriggerFunctionCFNParams)
     }
