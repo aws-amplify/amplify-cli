@@ -37,6 +37,37 @@ test('auth transformer validation happy case', () => {
   );
 });
 
+test('ownerfield where the field is a list', () => {
+  const authConfig: AppSyncAuthConfiguration = {
+    defaultAuthentication: {
+      authenticationType: 'AMAZON_COGNITO_USER_POOLS',
+    },
+    additionalAuthenticationProviders: [],
+  };
+  const validSchema = `
+    type Post @model @auth(rules: [{allow: owner, ownerField: "editors" }]) {
+      id: ID!
+      title: String!
+      editors: [String]
+      createdAt: String
+      updatedAt: String
+    }`;
+  const transformer = new GraphQLTransform({
+    authConfig,
+    transformers: [new ModelTransformer(), new AuthTransformer()],
+  });
+  const out = transformer.transform(validSchema);
+  expect(out).toBeDefined();
+  expect(out.rootStack.Resources[ResourceConstants.RESOURCES.GraphQLAPILogicalID].Properties.AuthenticationType).toEqual(
+    'AMAZON_COGNITO_USER_POOLS',
+  );
+  expect(out.pipelineFunctions['Mutation.createPost.auth.1.req.vtl']).toMatchSnapshot();
+  expect(out.pipelineFunctions['Mutation.updatePost.auth.1.req.vtl']).toMatchSnapshot();
+  expect(out.pipelineFunctions['Mutation.deletePost.auth.1.req.vtl']).toMatchSnapshot();
+  expect(out.pipelineFunctions['Query.getPost.auth.1.req.vtl']).toMatchSnapshot();
+  expect(out.pipelineFunctions['Query.listPosts.auth.1.req.vtl']).toMatchSnapshot();
+});
+
 test('ownerfield with subscriptions', () => {
   const authConfig: AppSyncAuthConfiguration = {
     defaultAuthentication: {
