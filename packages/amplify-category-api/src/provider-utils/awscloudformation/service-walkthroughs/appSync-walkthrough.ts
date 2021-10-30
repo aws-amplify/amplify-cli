@@ -834,7 +834,7 @@ export async function askApiKeyQuestions(authSettings = undefined) {
       validate: validateDays,
       // adding filter to ensure parsing input as int -> https://github.com/SBoudrias/Inquirer.js/issues/866
       filter: value => {
-        let val = parseInt(value, 10);
+        const val = parseInt(value, 10);
         if (isNaN(val) || val <= 0 || val > 365) {
           return value;
         }
