@@ -4,10 +4,6 @@ import { App } from '@aws-cdk/core';
 import { InlineTemplate } from '../cdk-compat/template-asset';
 import { TransformerRootStack } from '../cdk-compat/root-stack';
 
-// jest.mock('../graphql-api');
-
-// const GraphqlApi_mock = GraphQLApi as jest.MockedClass<typeof GraphQLApi>;
-
 describe('addResolver', () => {
   const app = new App();
   const stack = new TransformerRootStack(app, 'test-root-stack');
