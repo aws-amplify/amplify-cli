@@ -17,7 +17,7 @@ import { CfnFunction, Code, Function, IFunction, ILayerVersion, Runtime } from '
 import { AppSyncFunctionConfiguration } from './appsync-function';
 import { IRole } from '@aws-cdk/aws-iam';
 import { InlineTemplate, S3MappingFunctionCode } from './cdk-compat/template-asset';
-import { toCamelCase } from 'graphql-transformer-common';
+import { resourceName, toCamelCase } from 'graphql-transformer-common';
 import { GraphQLApi } from './graphql-api';
 
 export interface DefaultTransformHostOptions {
@@ -143,7 +143,8 @@ export class DefaultTransformHost implements TransformHostProvider {
 
     const requestTemplateLocation = requestMappingTemplate.bind(this.api);
     const responseTemplateLocation = responseMappingTemplate.bind(this.api);
-    const resolverName = toCamelCase([typeName, fieldName, 'Resolver']);
+    const resolverName = toCamelCase([resourceName(typeName), resourceName(fieldName), 'Resolver']);
+
     if (dataSourceName) {
       const dataSource = this.dataSources.get(dataSourceName);
 

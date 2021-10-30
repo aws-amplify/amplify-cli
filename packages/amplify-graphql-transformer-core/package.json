@@ -23,7 +23,8 @@
     "scripts": {
         "build": "tsc",
         "watch": "tsc -w",
-        "clean": "rimraf ./lib"
+        "clean": "rimraf ./lib",
+        "test": "jest"
     },
     "dependencies": {
         "@aws-amplify/graphql-transformer-interfaces": "1.10.0",
