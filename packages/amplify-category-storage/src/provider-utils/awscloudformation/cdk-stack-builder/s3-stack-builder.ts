@@ -125,7 +125,7 @@ export class AmplifyS3ResourceCfnStack extends AmplifyResourceCfnStack implement
     //Apply all Notifications configurations on S3Bucket;
     if (this.notificationConfiguration.lambdaConfigurations &&
        (this.notificationConfiguration.lambdaConfigurations as s3Cdk.CfnBucket.LambdaConfigurationProperty[]).length > 0 ) {
-        console.log("SACPCDEBUG: Add support for all notifications : ", this.notificationConfiguration);
+        console.log("SACPCDEBUG: Add support for all notifications : ", JSON.stringify( this.notificationConfiguration , null, 2 ) );
         this.s3Bucket.notificationConfiguration = this.notificationConfiguration;
     }
 
@@ -381,20 +381,23 @@ export class AmplifyS3ResourceCfnStack extends AmplifyResourceCfnStack implement
     const triggerFunctionArnRef = cdk.Fn.ref(`function${functionParams.triggerFunction}Arn`);
     if( functionParams.permissions ){
         for( const triggerEvent of functionParams.triggerEvents ){
-          lambdaConfigurations.push({
+          let lambdaConfig : $TSAny = {
             event: triggerEvent,
             function : triggerFunctionArnRef,
-            filter : {
+          };
+          if (functionParams.triggerPrefix ){
+            lambdaConfig.filter = {
               s3Key: {
                 rules : [ {
                     name : 'prefix', value : functionParams.triggerPrefix
                 } ]
               }
             }
-          });
+          }
+          lambdaConfigurations.push(lambdaConfig);
         }
     }
-    console.log("SACPCDEBUG: LambdaConfiguration: ", lambdaConfigurations);
+    console.log("SACPCDEBUG: buildLambdaConfigFromTriggerParams: LambdaConfiguration: ", lambdaConfigurations);
     return lambdaConfigurations;
   }
 

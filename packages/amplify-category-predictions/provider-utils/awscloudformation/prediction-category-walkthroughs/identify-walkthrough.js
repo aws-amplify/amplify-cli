@@ -147,7 +147,7 @@ async function configure(context, predictionsResourceObj,  configMode /*add/upda
   }
 
   let s3Resource = {};
-  let functionName;
+  let predictionsTriggerFunctionName;
   if ( answers.adminTask ) {
     //const s3ResourceName = s3ResourceAlreadyExists(context);
     const s3ResourceName =  await invokeS3GetResourceName(context);
@@ -162,7 +162,7 @@ async function configure(context, predictionsResourceObj,  configMode /*add/upda
       // Check if any lambda triggers are already existing in the project.
       if (!s3UserInputs.adminTriggerFunction) {
         if (!s3UserInputs.triggerFunction || s3UserInputs.triggerFunction === 'NONE') {
-          functionName = await addTrigger(context, s3Resource, undefined, predictionsResourceName);
+          predictionsTriggerFunctionName = await addTrigger(context, s3Resource, undefined, predictionsResourceName);
           const triggerFunctionParams   = {
             tag: 'triggerFunction',
             category : 'storage', //function is owned by storage category
@@ -181,33 +181,33 @@ async function configure(context, predictionsResourceObj,  configMode /*add/upda
           console.log("SACPCDEBUG: Created lambda and added as adminTriggerFunction ", s3UserInputs );
         } else {
           // adding additinal lambda trigger
-          functionName = await addAdditionalLambdaTrigger(context, s3Resource, predictionsResourceName);
-          s3UserInputs.adminTriggerFunction = functionName; //TBD add default-params with functionName
+          predictionsTriggerFunctionName = await addAdditionalLambdaTrigger(context, s3Resource, predictionsResourceName);
+          s3UserInputs.adminTriggerFunction = predictionsTriggerFunctionName; //TBD add default-params with functionName
         }
       } else {
-        functionName = s3UserInputs.adminTriggerFunction;
+        predictionsTriggerFunctionName = s3UserInputs.adminTriggerFunction;
       }
-      s3Resource.functionName = functionName;
+      s3Resource.functionName = predictionsTriggerFunctionName;
       console.log("SACPCDEBUG: Identity: Update : ", parametersFilePath);
 
     } else {
       s3Resource = await addS3ForIdentity(context, answers.access, undefined, predictionsResourceName);
       //create admin lambda function and generate CFN
-      const predictionsFunctionName = await createNewFunction(context, predictionsResourceName, s3Resource.resourceName);
+      predictionsTriggerFunctionName = await createNewFunction(context, predictionsResourceName, s3Resource.resourceName);
       const adminLambdaTrigger   = {
         tag: 'triggerFunction',
         category : 'storage', //function is owned by storage category
-        triggerFunction : predictionsFunctionName,
+        triggerFunction : predictionsTriggerFunctionName,
         triggerEvents : ['s3:ObjectCreated:*', 's3:ObjectRemoved:*'], //s3 events to trigger S3
         permissions : ['CREATE_AND_UPDATE', 'READ', 'DELETE'], //permissions to access S3
       };
       console.log("SACPCDEBUG: Calling invokeS3RegisterAdminTrigger ", adminLambdaTrigger);
       //updated s3UserInputs
-      const s3UserInputs = await invokeS3RegisterAdminTrigger(context, s3ResourceName, adminLambdaTrigger );
+      const s3UserInputs = await invokeS3RegisterAdminTrigger(context, s3Resource.resourceName, adminLambdaTrigger );
       console.log("SACPCDEBUG: DONE invokeS3RegisterAdminTrigger ", s3UserInputs);
     }
 
-    const functionresourceDirPath = path.join(projectBackendDirPath, functionCategory, functionName);
+    const functionresourceDirPath = path.join(projectBackendDirPath, functionCategory, predictionsTriggerFunctionName);
     const functionparametersFilePath = path.join(functionresourceDirPath, parametersFileName);
     let functionParameters;
     try {
@@ -249,7 +249,7 @@ async function configure(context, predictionsResourceObj,  configMode /*add/upda
     defaultValues.functionName = s3Resource.functionName;
     options.dependsOn.push({
       category: functionCategory,
-      resourceName: functionName,
+      resourceName: predictionsTriggerFunctionName,
       attributes: ['Name', 'Arn', 'LambdaExecutionRole'],
     });
     options.dependsOn.push({
@@ -288,8 +288,6 @@ async function configure(context, predictionsResourceObj,  configMode /*add/upda
   addRegionMapping(context, resourceName, identifyType);
   return amplifyMetaValues;
 }
-
-
 
 function addRegionMapping(context, resourceName, identifyType) {
   const regionMapping = regionMapper.getRegionMapping(context, service, identifyType);

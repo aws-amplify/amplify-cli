@@ -182,13 +182,18 @@ export async function s3RegisterExistingLambdaTriggerAsAdmin(
   s3ResourceName: string,
   adminLambdaTrigger: S3UserInputTriggerFunctionParams,
 ) {
+  console.log("s3RegisterAdminTrigger : s3ResourceName:  ", s3ResourceName , " adminLambdaTrigger: ", adminLambdaTrigger );
   let cliInputsState = new S3InputState(s3ResourceName, undefined);
   //Check if migration is required
   if (!cliInputsState.cliInputFileExists()) {
     throw new Error(`Error Registering existing trigger function on storage resource ${s3ResourceName} : resource does not exist`);
   }
   let s3UserInput = cliInputsState.getUserInput();
+  if( !s3UserInput.triggerFunction || s3UserInput.triggerFunction != 'NONE'){
+    s3UserInput.triggerFunction = adminLambdaTrigger.triggerFunction;
+  }
   s3UserInput.adminTriggerFunction = adminLambdaTrigger; //TBD check if function is created
+  console.log("SACPCDEBUG:[storage]: Registering s3UserInput : ", s3UserInput);
   await s3APIHelperTransformAndSaveState(context, s3UserInput, CLISubCommandType.UPDATE);
   return s3UserInput;
 }
@@ -240,7 +245,14 @@ export async function addLambdaTrigger(
 /** HELPERS */
 async function s3APIHelperTransformAndSaveState(context: $TSContext, storageInput: S3UserInputs, phase: CLISubCommandType) {
   //Save CLI Inputs payload
-  const cliInputsState = new S3InputState(storageInput.resourceName as string, storageInput);
+  let cliInputsState;
+  if ( phase === CLISubCommandType.ADD ){
+    cliInputsState = new S3InputState(storageInput.resourceName as string, storageInput);
+  } else {
+    cliInputsState = new S3InputState(storageInput.resourceName as string, undefined );
+  }
+  console.log("SACPCDEBUG:s3APIHelperTransformAndSaveState :  ", cliInputsState);
+
   cliInputsState.saveCliInputPayload(storageInput);
 
   //Generate Cloudformation
@@ -249,9 +261,18 @@ async function s3APIHelperTransformAndSaveState(context: $TSContext, storageInpu
   //sync amplify-meta
   const dependsOn = stackGenerator.getS3DependsOn();
   //sync amplify meta
-  context.amplify.updateamplifyMetaAfterResourceAdd(AmplifyCategories.STORAGE, storageInput.resourceName as string, {
-    service: AmplifySupportedService.S3,
-    providerPlugin: 'awscloudformation',
-    dependsOn,
-  });
+  if ( phase == CLISubCommandType.ADD ) {
+    context.amplify.updateamplifyMetaAfterResourceAdd(AmplifyCategories.STORAGE, storageInput.resourceName as string, {
+      service: AmplifySupportedService.S3,
+      providerPlugin: 'awscloudformation',
+      dependsOn,
+    });
+  } else {
+    context.amplify.updateamplifyMetaAfterResourceUpdate(
+      AmplifyCategories.STORAGE,
+      storageInput.resourceName as string,
+      'dependsOn',
+      dependsOn,
+    );
+  }
 }
