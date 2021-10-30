@@ -113,7 +113,7 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
   private authPolicyResources = new Set<string>();
   private unauthPolicyResources = new Set<string>();
 
-  constructor(config: AuthTransformerConfig = { addAwsIamAuthInOutputSchema: false }) {
+  constructor(config: AuthTransformerConfig = { adminRoles: [] }) {
     super('amplify-auth-transformer', authDirectiveDefinition);
     this.config = config;
     this.modelDirectiveConfig = new Map();
@@ -845,7 +845,7 @@ Static group authorization should perform as expected.`,
     for (let role of roles) {
       providers.add(this.roleMap.get(role)!.provider);
     }
-    if (this.configuredAuthProviders.hasAdminUIEnabled) {
+    if (this.configuredAuthProviders.hasAdminRolesEnabled) {
       providers.add('iam');
     }
     return Array.from(providers);
@@ -965,7 +965,9 @@ Static group authorization should perform as expected.`,
    * @returns boolean
    */
   private shouldAddDefaultServiceDirective(): boolean {
-    return this.configuredAuthProviders.hasAdminUIEnabled && this.config.authConfig.defaultAuthentication.authenticationType !== 'AWS_IAM';
+    return (
+      this.configuredAuthProviders.hasAdminRolesEnabled && this.config.authConfig.defaultAuthentication.authenticationType !== 'AWS_IAM'
+    );
   }
   /*
   IAM Helpers
@@ -976,7 +978,7 @@ Static group authorization should perform as expected.`,
       // Sanity check to make sure we're not generating invalid policies, where no resources are defined.
       if (this.authPolicyResources.size === 0) {
         // When AdminUI is enabled, IAM auth is added but it does not need any policies to be generated
-        if (!this.configuredAuthProviders.hasAdminUIEnabled) {
+        if (!this.configuredAuthProviders.hasAdminRolesEnabled) {
           throw new TransformerContractError('AuthRole policies should be generated, but no resources were added.');
         }
       } else {

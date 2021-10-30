@@ -166,13 +166,7 @@ const getRecursiveSchemaWithDiffModesOnParentType = (authDir1: string, authDir2:
 const getTransformer = (authConfig: AppSyncAuthConfiguration) =>
   new GraphQLTransform({
     authConfig,
-    transformers: [
-      new ModelTransformer(),
-      new AuthTransformer({
-        authConfig,
-        addAwsIamAuthInOutputSchema: false,
-      }),
-    ],
+    transformers: [new ModelTransformer(), new AuthTransformer()],
   });
 
 const getObjectType = (doc: DocumentNode, type: string): ObjectTypeDefinitionNode | undefined => {

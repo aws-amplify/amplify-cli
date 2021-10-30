@@ -22,13 +22,7 @@ test('auth transformer validation happy case', () => {
     }`;
   const transformer = new GraphQLTransform({
     authConfig,
-    transformers: [
-      new ModelTransformer(),
-      new AuthTransformer({
-        authConfig,
-        addAwsIamAuthInOutputSchema: false,
-      }),
-    ],
+    transformers: [new ModelTransformer(), new AuthTransformer()],
   });
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
@@ -85,13 +79,7 @@ test('ownerfield with subscriptions', () => {
     }`;
   const transformer = new GraphQLTransform({
     authConfig,
-    transformers: [
-      new ModelTransformer(),
-      new AuthTransformer({
-        authConfig,
-        addAwsIamAuthInOutputSchema: false,
-      }),
-    ],
+    transformers: [new ModelTransformer(), new AuthTransformer()],
   });
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
@@ -135,13 +123,7 @@ test('multiple owner rules with subscriptions', () => {
   };
   const transformer = new GraphQLTransform({
     authConfig,
-    transformers: [
-      new ModelTransformer(),
-      new AuthTransformer({
-        authConfig,
-        addAwsIamAuthInOutputSchema: false,
-      }),
-    ],
+    transformers: [new ModelTransformer(), new AuthTransformer()],
   });
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
@@ -183,13 +165,7 @@ test('implicit owner fields get added to the type', () => {
   };
   const transformer = new GraphQLTransform({
     authConfig,
-    transformers: [
-      new ModelTransformer(),
-      new AuthTransformer({
-        authConfig,
-        addAwsIamAuthInOutputSchema: false,
-      }),
-    ],
+    transformers: [new ModelTransformer(), new AuthTransformer()],
   });
   const validSchema = `
   type Post @model
@@ -237,13 +213,7 @@ test('implicit owner fields from field level auth get added to the type', () => 
   };
   const transformer = new GraphQLTransform({
     authConfig,
-    transformers: [
-      new ModelTransformer(),
-      new AuthTransformer({
-        authConfig,
-        addAwsIamAuthInOutputSchema: false,
-      }),
-    ],
+    transformers: [new ModelTransformer(), new AuthTransformer()],
   });
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();

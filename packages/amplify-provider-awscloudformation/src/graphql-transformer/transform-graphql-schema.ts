@@ -27,15 +27,14 @@ import { SearchableModelTransformer } from '@aws-amplify/graphql-searchable-tran
 import { DefaultValueTransformer } from '@aws-amplify/graphql-default-value-transformer';
 import { destructiveUpdatesFlag, ProviderName as providerName } from '../constants';
 import { hashDirectory } from '../upload-appsync-files';
-import { mergeUserConfigWithTransformOutput, writeDeploymentToDisk } from './utils';
+import { getAdminRoles, mergeUserConfigWithTransformOutput, writeDeploymentToDisk } from './utils';
 import { loadProject as readTransformerConfiguration } from './transform-config';
 import { getSanityCheckRules, loadProject } from 'graphql-transformer-core';
 import { Template } from '@aws-amplify/graphql-transformer-core/lib/config/project-config';
 import { AmplifyCLIFeatureFlagAdapter } from '../utils/amplify-cli-feature-flag-adapter';
-import { JSONUtilities, stateManager, $TSContext } from 'amplify-cli-core';
+import { JSONUtilities, $TSContext } from 'amplify-cli-core';
 import { searchablePushChecks } from '../transform-graphql-schema';
 import { ResourceConstants } from 'graphql-transformer-common';
-import { isAmplifyAdminApp } from '../utils/admin-helpers';
 import {
   showGlobalSandboxModeWarning,
   showSandboxModePrompts,
@@ -77,23 +76,11 @@ function getTransformerFactory(
     // TODO: Build dependency mechanism into transformers. Auth runs last
     // so any resolvers that need to be protected will already be created.
 
-    let adminUserPoolID: string;
-    try {
-      const amplifyMeta = stateManager.getMeta();
-      const appId = amplifyMeta?.providers?.[providerName]?.AmplifyAppId;
-      const res = await isAmplifyAdminApp(appId);
-      adminUserPoolID = res.userPoolID;
-    } catch (err) {
-      console.info('App not deployed yet.');
-    }
-
     const modelTransformer = new ModelTransformer();
     const indexTransformer = new IndexTransformer();
     const hasOneTransformer = new HasOneTransformer();
     const authTransformer = new AuthTransformer({
-      authConfig: options?.authConfig,
-      addAwsIamAuthInOutputSchema: !!adminUserPoolID,
-      adminUserPoolID,
+      adminRoles: options.authAdminIAMRoles ?? [],
     });
     const transformerList: TransformerPluginProvider[] = [
       modelTransformer,
@@ -186,6 +173,7 @@ function getTransformerFactory(
 }
 
 export async function transformGraphQLSchema(context, options) {
+  let resourceName: string;
   const backEndDir = context.amplify.pathManager.getBackendDirPath();
   const flags = context.parameters.options;
   if (flags['no-gql-override']) {
@@ -238,7 +226,8 @@ export async function transformGraphQLSchema(context, options) {
       if (resource.providerPlugin !== providerName) {
         return;
       }
-      const { category, resourceName } = resource;
+      const { category } = resource;
+      resourceName = resource.resourceName;
       const cloudBackendRootDir = context.amplify.pathManager.getCurrentCloudBackendDirPath();
       /* eslint-disable */
       previouslyDeployedBackendDir = path.normalize(path.join(cloudBackendRootDir, category, resourceName));
@@ -277,6 +266,8 @@ export async function transformGraphQLSchema(context, options) {
     }
   }
 
+  // for auth check which functions have access to the api
+  const adminRoles = await getAdminRoles(context, resourceName);
   // for the predictions directive get storage config
   const s3Resource = s3ResourceAlreadyExists(context);
   const storageConfig = s3Resource ? getBucketName(context, s3Resource, backEndDir) : undefined;
@@ -346,7 +337,12 @@ export async function transformGraphQLSchema(context, options) {
     buildParameters,
     projectDirectory: resourceDir,
     transformersFactory: transformerListFactory,
-    transformersFactoryArgs: { addSearchableTransformer: searchableTransformerFlag, storageConfig, authConfig },
+    transformersFactoryArgs: {
+      addSearchableTransformer: searchableTransformerFlag,
+      storageConfig,
+      authConfig,
+      authAdminIAMRoles: adminRoles,
+    },
     rootStackFileName: 'cloudformation-template.json',
     currentCloudBackendDirectory: previouslyDeployedBackendDir,
     minify: options.minify,
@@ -441,6 +437,7 @@ type TransformerFactoryArgs = {
   addSearchableTransformer: boolean;
   authConfig: any;
   storageConfig?: any;
+  authAdminIAMRoles?: Array<string>;
 };
 export type ProjectOptions<T> = {
   buildParameters: {

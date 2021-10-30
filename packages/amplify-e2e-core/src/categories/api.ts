@@ -8,7 +8,7 @@ import { EOL } from 'os';
 import { modifiedApi } from './resources/modified-api-index';
 
 export function getSchemaPath(schemaName: string): string {
-  return `${__dirname}/../../../amplify-e2e-tests/schemas/${schemaName}`;
+  return path.join(__dirname, '..', '..', '..', 'amplify-e2e-tests', 'schemas', schemaName);
 }
 
 export function apiGqlCompile(cwd: string, testingWithLatestCodebase: boolean = false) {

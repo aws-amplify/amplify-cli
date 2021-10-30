@@ -25,13 +25,7 @@ test('subscriptions are only generated if the respective mutation operation exis
   };
   const transformer = new GraphQLTransform({
     authConfig,
-    transformers: [
-      new ModelTransformer(),
-      new AuthTransformer({
-        authConfig,
-        addAwsIamAuthInOutputSchema: false,
-      }),
-    ],
+    transformers: [new ModelTransformer(), new AuthTransformer()],
   });
   const out = transformer.transform(validSchema);
   // expect to generate subscription resolvers for create and update only
@@ -59,13 +53,7 @@ test('per-field @auth without @model', () => {
   };
   const transformer = new GraphQLTransform({
     authConfig,
-    transformers: [
-      new ModelTransformer(),
-      new AuthTransformer({
-        authConfig,
-        addAwsIamAuthInOutputSchema: false,
-      }),
-    ],
+    transformers: [new ModelTransformer(), new AuthTransformer()],
   });
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();

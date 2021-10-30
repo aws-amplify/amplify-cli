@@ -107,13 +107,7 @@ beforeAll(async () => {
         },
       ],
     },
-    transformers: [
-      new ModelTransformer(),
-      new FunctionTransformer(),
-      new AuthTransformer({
-        addAwsIamAuthInOutputSchema: false,
-      }),
-    ],
+    transformers: [new ModelTransformer(), new FunctionTransformer(), new AuthTransformer()],
   });
   const out = transformer.transform(validSchema);
 
