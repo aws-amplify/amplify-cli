@@ -9,6 +9,12 @@ export class cdkStack extends cdk.Stack {
   constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
+    /* Do not remove - Amplify CLI automatically injects the current deployment environment in this input paramater */
+    new cdk.CfnParameter(this, 'env', {
+      type: 'String',
+      description: 'Current Amplify CLI env name',
+    });
+
     /* AWS CDK Code goes here - Learn more: https://docs.aws.amazon.com/cdk/latest/guide/home.html */
 
     /* Example 1: Set up an SQS queue with an SNS topic 

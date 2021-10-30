@@ -6,7 +6,7 @@ import { glob } from 'glob';
 import inquirer, { CheckboxQuestion, DistinctChoice } from 'inquirer';
 import _ from 'lodash';
 import * as path from 'path';
-import { categoryName, customResourceCFNFilename } from '../utils/constants';
+import { categoryName, customResourceCFNFilenameSuffix } from '../utils/constants';
 
 const cfnTemplateGlobPattern = '*template*.+(yaml|yml|json)';
 interface AmplifyDependentResourceDefinition {
@@ -262,6 +262,7 @@ export async function addCFNResourceDependency(context: $TSContext, customResour
   // Add to CFN block
 
   const resourceDir = pathManager.getResourceDirectoryPath(undefined, categoryName, customResourceName);
+  const customResourceCFNFilename = `${customResourceName}-${customResourceCFNFilenameSuffix}`;
   const customResourceCFNFilepath = path.resolve(path.join(resourceDir, customResourceCFNFilename));
 
   const customResourceCFNTemplate = readCFNTemplate(customResourceCFNFilepath);
