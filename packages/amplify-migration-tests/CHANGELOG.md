@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.2.0-ext8.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@3.1.14...amplify-migration-tests@3.2.0-ext8.0) (2021-10-30)
+
+
+### Bug Fixes
+
+* fixes dependsOn parameter and auth migration test ([#8480](https://github.com/aws-amplify/amplify-cli/issues/8480)) ([c4239fb](https://github.com/aws-amplify/amplify-cli/commit/c4239fbc23bcf5585ec41eb4a106808bd9b5aa06))
+
+
+### Features
+
+* Auth refactor to  use cdk, eliminate EJS, overrides functionality ([#8355](https://github.com/aws-amplify/amplify-cli/issues/8355)) ([efc56f0](https://github.com/aws-amplify/amplify-cli/commit/efc56f07b1ba5edff2a4f90beab59c5287dd5b53))
+* root stack override ([#8276](https://github.com/aws-amplify/amplify-cli/issues/8276)) ([6b9911a](https://github.com/aws-amplify/amplify-cli/commit/6b9911a4f20d8f7601d2da01219775106bd3a122))
+
+
+
+
+
 ## [3.1.14](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@3.1.13...amplify-migration-tests@3.1.14) (2021-10-13)
 
 **Note:** Version bump only for package amplify-migration-tests
