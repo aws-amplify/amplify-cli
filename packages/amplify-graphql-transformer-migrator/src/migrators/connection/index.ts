@@ -1,4 +1,4 @@
-import { isListType } from 'graphql';
+import { isListType } from 'graphql-transformer-common';
 
 const validConnectionDirectiveNames = new Set(["hasOne", "hasMany", "connection"]);
 
