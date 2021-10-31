@@ -273,6 +273,10 @@ export async function addCFNResourceDependency(context: $TSContext, customResour
 
   const dependencyInputParams = generateInputParametersForDependencies(resources);
 
+  if (!customResourceCFNTemplate.cfnTemplate.Parameters) {
+    customResourceCFNTemplate.cfnTemplate.Parameters = {};
+  }
+
   Object.assign(customResourceCFNTemplate.cfnTemplate.Parameters, dependencyInputParams);
 
   await writeCFNTemplate(customResourceCFNTemplate.cfnTemplate, customResourceCFNFilepath, {
@@ -281,7 +285,7 @@ export async function addCFNResourceDependency(context: $TSContext, customResour
 
   // Update meta and backend-config.json files
 
-  await context.amplify.updateamplifyMetaAfterResourceUpdate('custom', customResourceName, 'dependsOn', resources);
+  await context.amplify.updateamplifyMetaAfterResourceUpdate(categoryName, customResourceName, 'dependsOn', resources);
 
   // Show information on usage
 

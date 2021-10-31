@@ -52,9 +52,9 @@
       "node"
     ],
     "collectCoverage": true,
-    "coverageReporters": [
-      "json",
-      "html"
+    "collectCoverageFrom": [
+      "src/**/*.ts",
+      "!**/*.d.ts"
     ]
   }
 }

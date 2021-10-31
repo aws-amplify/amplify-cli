@@ -1,14 +1,26 @@
-import { $TSContext, CFNTemplateFormat, readCFNTemplate, pathManager, stateManager } from 'amplify-cli-core';
+import { $TSContext, CFNTemplateFormat, readCFNTemplate, pathManager, stateManager, writeCFNTemplate } from 'amplify-cli-core';
 import { glob } from 'glob';
+import * as inquirer from 'inquirer';
+import { prompter } from 'amplify-prompts';
 import * as fs from 'fs-extra';
-import { getResourceCfnOutputAttributes, getAllResources, addCDKResourceDependency } from '../../utils/dependency-management-utils';
+import {
+  getResourceCfnOutputAttributes,
+  getAllResources,
+  addCDKResourceDependency,
+  addCFNResourceDependency,
+} from '../../utils/dependency-management-utils';
 import * as cdk from '@aws-cdk/core';
 
 jest.mock('amplify-cli-core');
+jest.mock('amplify-prompts');
 jest.mock('glob');
 jest.mock('fs-extra');
+jest.mock('inquirer');
 
 const readCFNTemplate_mock = readCFNTemplate as jest.MockedFunction<typeof readCFNTemplate>;
+const writeCFNTemplate_mock = writeCFNTemplate as jest.MockedFunction<typeof writeCFNTemplate>;
+writeCFNTemplate_mock.mockResolvedValue();
+
 const glob_mock = glob as jest.Mocked<typeof glob>;
 const fs_mock = fs as jest.Mocked<typeof fs>;
 
@@ -177,12 +189,6 @@ describe('addCDKResourceDependency() scenarios', () => {
   });
 
   it('get depenencies for a custom CDK stack', async () => {
-    const getResourceCfnOutputAttributes_mock = getResourceCfnOutputAttributes as jest.MockedFunction<
-      typeof getResourceCfnOutputAttributes
-    >;
-
-    getResourceCfnOutputAttributes_mock.mockImplementation = jest.fn().mockReturnValueOnce(['outputkey']).mockReturnValueOnce([]);
-
     fs_mock.existsSync.mockReturnValue(false); // if build dir exists
 
     readCFNTemplate_mock.mockReturnValue({
@@ -283,5 +289,95 @@ describe('addCDKResourceDependency() scenarios', () => {
     expect(retVal).toEqual({});
     expect(stateManager.setMeta).toBeCalledTimes(2); // from the previous two successful calls - and skip the last call
     expect(stateManager.setBackendConfig).toBeCalledTimes(2); // from the previous two successful calls - and skip the last call
+  });
+});
+
+describe('addCFNResourceDependency() scenarios', () => {
+  let mockContext: $TSContext;
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+    mockContext = {
+      amplify: {
+        openEditor: jest.fn(),
+        updateamplifyMetaAfterResourceAdd: jest.fn(),
+        copyBatch: jest.fn(),
+        updateamplifyMetaAfterResourceUpdate: jest.fn(),
+        getResourceStatus: jest.fn().mockResolvedValue({
+          allResources: [
+            {
+              resourceName: 'mockresource1',
+              service: 'customCDK',
+            },
+            {
+              resourceName: 'mockresource2',
+              service: 'customCDK',
+            },
+          ],
+        }),
+      },
+    } as unknown as $TSContext;
+  });
+
+  it('add new resource dependency to custom cfn stack ', async () => {
+    prompter.yesOrNo = jest.fn().mockReturnValueOnce(true);
+    fs_mock.existsSync.mockReturnValue(false); // if build dir exists
+
+    readCFNTemplate_mock.mockReturnValue({
+      templateFormat: CFNTemplateFormat.JSON,
+      cfnTemplate: { Outputs: { mockKey: { Value: 'mockValue' } } },
+    });
+
+    glob_mock.sync.mockReturnValue(['mockFileName']);
+
+    const mockBackendConfig = {
+      mockCategory1: {
+        mockResourceName1: {},
+      },
+      mockCategory2: {
+        mockResourceName2: {},
+      },
+      mockCategory3: {
+        mockResourceName3: {},
+      },
+      custom: {
+        customResourcename: {},
+      },
+    };
+
+    stateManager.getBackendConfig = jest.fn().mockReturnValue(mockBackendConfig);
+
+    stateManager.setBackendConfig = jest.fn();
+
+    stateManager.getMeta = jest.fn().mockReturnValue(mockBackendConfig);
+
+    stateManager.setMeta = jest.fn();
+
+    // test with adding one dependency at once
+
+    const inqurer_mock = inquirer as jest.Mocked<typeof inquirer>;
+    inqurer_mock.prompt
+      .mockResolvedValueOnce({ categories: ['mockCategory1'] })
+      .mockResolvedValueOnce({ resources: ['mockResourceName1'] });
+
+    await addCFNResourceDependency(mockContext, 'customResourcename');
+
+    expect(writeCFNTemplate_mock).toBeCalledWith(
+      {
+        Outputs: { mockKey: { Value: 'mockValue' } },
+        Parameters: {
+          mockCategory1mockResourceName1mockKey: {
+            Description: 'Input parameter describing mockKey attribute for mockCategory1/mockResourceName1 resource',
+            Type: 'String',
+          },
+        },
+      },
+      expect.anything(),
+      { templateFormat: 'json' },
+    );
+
+    expect(mockContext.amplify.updateamplifyMetaAfterResourceUpdate).toBeCalledWith('custom', 'customResourcename', 'dependsOn', [
+      { attributes: ['mockKey'], category: 'mockCategory1', resourceName: 'mockResourceName1' },
+    ]);
   });
 });
