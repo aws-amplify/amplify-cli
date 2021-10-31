@@ -1,19 +1,15 @@
 import { addAuthRuleToNode, getAuthRules, hasAuthDirectives } from "."
 
-function hasFieldAuthRules(node: any) {
-  return getFieldsWithAuthRules(node).length !== 0
-}
-
 function getFieldsWithAuthRules(node: any) {
-  return node.fields.filter((f: any) => hasAuthDirectives(f))
+  return node.fields.filter((f: any) => hasAuthDirectives(f));
 }
 
 export function migrateFieldAuth(node: any) {
-  if (!hasFieldAuthRules(node)) {
+  const fieldWithAuthRules = getFieldsWithAuthRules(node);
+  if (fieldWithAuthRules.length === 0) {
     return;
   }
 
-  const fieldWithAuthRules = getFieldsWithAuthRules(node)
   fieldWithAuthRules
     .map((f: any) => getAuthRules(f))
     .flat()

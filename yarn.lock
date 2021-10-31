@@ -12996,17 +12996,6 @@ graphiql@^1.3.2:
     graphql-language-service "^3.1.2"
     markdown-it "^10.0.0"
 
-graphql-auth-transformer@6.24.23:
-  version "6.24.23"
-  resolved "https://registry.yarnpkg.com/graphql-auth-transformer/-/graphql-auth-transformer-6.24.23.tgz#4d060dce60dc840561dd9d6bc8b61ecf04bf614a"
-  integrity sha512-GCjxZCPpv1SHGgcMEvacj6Z+D2/6tTKPB0p+A/77fJ3EYBv+eVvGvvjc+dmWzgLY/SseD2yeKwK5ctgprI0o+A==
-  dependencies:
-    graphql "^14.5.8"
-    graphql-connection-transformer "4.21.23"
-    graphql-mapping-template "4.18.3"
-    graphql-transformer-common "4.19.10"
-    graphql-transformer-core "6.30.0"
-
 graphql-auth-transformer@6.24.24:
   version "6.24.24"
   resolved "https://registry.yarnpkg.com/graphql-auth-transformer/-/graphql-auth-transformer-6.24.24.tgz#b56728f2a830f16c68ff15d7371d2fdac459cbd3"

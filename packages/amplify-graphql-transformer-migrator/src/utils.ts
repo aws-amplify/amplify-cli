@@ -2,6 +2,7 @@ import * as fs from 'fs-extra';
 import { stateManager } from 'amplify-cli-core';
 import * as Diff from 'diff';
 import { Change } from 'diff';
+import * as path from 'path';
 
 export type SchemaDocument = {
   schema: string;
@@ -71,7 +72,7 @@ export async function undoAllSchemaMigration(resourceDir: string): Promise<void>
       continue;
     }
 
-    const fullPath = `${resourceDir}/${fileName}`;
+    const fullPath = path.join(resourceDir, fileName);
     const stats = await fs.lstat(fullPath);
     if (stats.isDirectory()) {
       await undoAllSchemaMigration(fullPath);
@@ -92,13 +93,9 @@ export async function getDefaultAuthFromContext(): Promise<string> {
 }
 
 export function listContainsOnlySetString(list: Array<string>, set: Set<string>): Array<string> {
-  let outputArray: Array<string> = new Array<string>();
-  for(let str of list) {
-    if (!set.has(str)) {
-      outputArray.push(str);
-    }
-  }
-  return outputArray;
+  return list.filter(str => {
+    return !set.has(str);
+  });
 }
 
 function diffPrefix(change: Change): string {

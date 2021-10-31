@@ -14,7 +14,7 @@ import {
 } from './utils';
 import { DocumentNode } from 'graphql/language';
 import { prompter, printer } from 'amplify-prompts';
-import path from 'path';
+import * as path from 'path';
 import { $TSContext, exitOnNextTick } from 'amplify-cli-core';
 import { detectCustomResolvers, detectOverriddenResolvers, detectUnsupportedDirectives, graphQLUsingSQL } from './schema-inspector';
 import { validateModelSchema, SchemaValidationError } from '@aws-amplify/graphql-transformer-core';
@@ -150,7 +150,13 @@ async function migrateToV2Transformer(resourceDir: string, context: $TSContext, 
   }
   catch (error) {
     printer.error("Encountered an error while migrating schema to V2 transformer, reverting to old schemas");
-    await undoAllSchemaMigration(resourceDir);
+    try {
+      await undoAllSchemaMigration(resourceDir);
+    }
+    catch (undoError) {
+      printer.error("Encountered error while reverting schema migration changes: ");
+      printer.error(undoError.message);
+    }
     throw error;
   }
   return true;
