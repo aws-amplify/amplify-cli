@@ -19,14 +19,14 @@ const cf = new CloudFormationClient('us-west-2');
 const customS3Client = new S3Client('us-west-2');
 const awsS3Client = new S3({ region: 'us-west-2' });
 const BUILD_TIMESTAMP = moment().format('YYYYMMDDHHmmss');
-const STACK_NAME = `FunctionTransformerTests-${BUILD_TIMESTAMP}`;
-const BUCKET_NAME = `appsync-function-transformer-test-bucket-${BUILD_TIMESTAMP}`;
-const LOCAL_FS_BUILD_DIR = '/tmp/function_transformer_tests/';
+const STACK_NAME = `FunctionTransformerTestsV2-${BUILD_TIMESTAMP}`;
+const BUCKET_NAME = `appsync-function-transformer-test-bucket-v2-${BUILD_TIMESTAMP}`;
+const LOCAL_FS_BUILD_DIR = '/tmp/function_transformer_tests_v2/';
 const S3_ROOT_DIR_KEY = 'deployments';
-const ECHO_FUNCTION_NAME = `long-prefix-e2e-test-functions-echo-dev-${BUILD_TIMESTAMP}`;
-const HELLO_FUNCTION_NAME = `long-prefix-e2e-test-functions-hello-${BUILD_TIMESTAMP}`;
-const LAMBDA_EXECUTION_ROLE_NAME = `amplify_e2e_tests_lambda_basic_${BUILD_TIMESTAMP}`;
-const LAMBDA_EXECUTION_POLICY_NAME = `amplify_e2e_tests_lambda_basic_access_${BUILD_TIMESTAMP}`;
+const ECHO_FUNCTION_NAME = `long-prefix-e2e-test-functions-echo-dev-v2-${BUILD_TIMESTAMP}`;
+const HELLO_FUNCTION_NAME = `long-prefix-e2e-test-functions-hello-v2-${BUILD_TIMESTAMP}`;
+const LAMBDA_EXECUTION_ROLE_NAME = `amplify_e2e_tests_lambda_basic_v2_${BUILD_TIMESTAMP}`;
+const LAMBDA_EXECUTION_POLICY_NAME = `amplify_e2e_tests_lambda_basic_access_v2_${BUILD_TIMESTAMP}`;
 let LAMBDA_EXECUTION_POLICY_ARN = '';
 
 let GRAPHQL_CLIENT = undefined;
@@ -45,8 +45,8 @@ beforeAll(async () => {
   const validSchema = `
     type Query {
         echo(msg: String!): Context @function(name: "${ECHO_FUNCTION_NAME}")
-        echoEnv(msg: String!): Context @function(name: "long-prefix-e2e-test-functions-echo-\${env}-${BUILD_TIMESTAMP}")
-        duplicate(msg: String!): Context @function(name: "long-prefix-e2e-test-functions-echo-dev-${BUILD_TIMESTAMP}")
+        echoEnv(msg: String!): Context @function(name: "long-prefix-e2e-test-functions-echo-\${env}-v2-${BUILD_TIMESTAMP}")
+        duplicate(msg: String!): Context @function(name: "long-prefix-e2e-test-functions-echo-dev-v2-${BUILD_TIMESTAMP}")
         pipeline(msg: String!): String
             @function(name: "${ECHO_FUNCTION_NAME}")
             @function(name: "${HELLO_FUNCTION_NAME}")
