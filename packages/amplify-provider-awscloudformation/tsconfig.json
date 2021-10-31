@@ -27,7 +27,6 @@
     {"path": "../graphql-transformer-core"},
     {"path": "../graphql-versioned-transformer"},
     { "path": "../amplify-graphql-transformer-interfaces" },
-    { "path": "../amplify-graphql-transformer-core" },
-    { "path": "../amplify-graphql-transformer-migrator" }
+    { "path": "../amplify-graphql-transformer-core" }
   ]
 }
