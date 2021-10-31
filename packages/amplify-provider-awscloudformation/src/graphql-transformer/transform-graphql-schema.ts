@@ -8,7 +8,6 @@ import {
   getAppSyncServiceExtraDirectives,
   GraphQLTransform,
   collectDirectivesByTypeNames,
-  collectDirectives,
   TransformerProjectConfig,
 } from '@aws-amplify/graphql-transformer-core';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
@@ -38,8 +37,7 @@ import { ResourceConstants } from 'graphql-transformer-common';
 import {
   showGlobalSandboxModeWarning,
   showSandboxModePrompts,
-  getSandboxModeEnvNameFromDirectiveSet,
-  removeSandboxDirectiveFromSchema,
+  schemaHasSandboxModeEnabled,
 } from '../utils/sandbox-mode-helpers';
 import { printer } from 'amplify-prompts';
 import { GraphQLSanityCheck, SanityCheckRules } from './sanity-check';
@@ -299,9 +297,7 @@ export async function transformGraphQLSchema(context, options) {
     ? await loadProject(previouslyDeployedBackendDir)
     : undefined;
 
-  const { envName } = context.amplify._getEnvInfo();
-  const sandboxModeEnv = getSandboxModeEnvNameFromDirectiveSet(collectDirectives(project.schema));
-  const sandboxModeEnabled = envName === sandboxModeEnv;
+  const sandboxModeEnabled = schemaHasSandboxModeEnabled(project.schema);
   const directiveMap = collectDirectivesByTypeNames(project.schema);
   const hasApiKey =
     authConfig.defaultAuthentication.authenticationType === 'API_KEY' ||
@@ -500,9 +496,7 @@ async function _buildProject(opts: ProjectOptions<TransformerFactoryArgs>) {
     sandboxModeEnabled: opts.sandboxModeEnabled,
   });
 
-  let schema = userProjectConfig.schema.toString();
-  if (opts.sandboxModeEnabled) schema = removeSandboxDirectiveFromSchema(schema);
-
+  const schema = userProjectConfig.schema.toString();
   const transformOutput = transform.transform(schema);
 
   return mergeUserConfigWithTransformOutput(userProjectConfig, transformOutput);

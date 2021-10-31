@@ -1,10 +1,6 @@
-import { $TSContext } from 'amplify-cli-core';
-
-export function defineGlobalSandboxMode(context: $TSContext): string {
-  const envName = context.amplify.getEnvInfo().envName;
-
-  return `# This allows public create, read, update, and delete access for a limited time to all models via API Key.
-# To configure PRODUCTION-READY authorization rules, review: https://docs.amplify.aws/cli/graphql-transformer/auth
-type AMPLIFY_GLOBAL @allow_public_data_access_with_api_key(in: \"${envName}\") # FOR TESTING ONLY!\n
+export function defineGlobalSandboxMode(): string {
+  return `# This "input" configures a global authorization rule to enable public access to
+# all models in this schema. Learn more about authorization rules here: https://docs.amplify.aws/cli/graphql-transformer/auth
+input AMPLIFY { global_auth_rule: AuthorizationRule = { allow: public } } # FOR TESTING ONLY!\n
 `;
 }
