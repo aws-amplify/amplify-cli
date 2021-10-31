@@ -384,6 +384,7 @@ function createResolver(
       ),
     ),
     undefined,
+    undefined,
     pipelineFunctions,
     stack,
   );

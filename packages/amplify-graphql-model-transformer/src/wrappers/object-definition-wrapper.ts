@@ -1,5 +1,5 @@
+import { DirectiveWrapper } from '@aws-amplify/graphql-transformer-core';
 import {
-  ArgumentNode,
   DirectiveNode,
   DocumentNode,
   EnumTypeDefinitionNode,
@@ -11,13 +11,10 @@ import {
   ListTypeNode,
   Location,
   NamedTypeNode,
-  NameNode,
   NonNullTypeNode,
   ObjectTypeDefinitionNode,
   StringValueNode,
   TypeNode,
-  valueFromASTUntyped,
-  ValueNode,
 } from 'graphql';
 import {
   DEFAULT_SCALARS,
@@ -28,53 +25,6 @@ import {
   unwrapNonNull,
   withNamedNodeNamed,
 } from 'graphql-transformer-common';
-
-// Todo: to be moved to core later. context.output.getObject would return wrapper type so its easier to manipulate
-// objects
-
-export class ArgumentWrapper {
-  public readonly name: NameNode;
-  public readonly value: ValueNode;
-  constructor(argument: ArgumentNode) {
-    this.name = argument.name;
-    this.value = argument.value;
-  }
-  serialize = (): ArgumentNode => {
-    return {
-      kind: 'Argument',
-      name: this.name,
-      value: this.value,
-    };
-  };
-}
-
-export class DirectiveWrapper {
-  private arguments: ArgumentWrapper[] = [];
-  private name: NameNode;
-  private location?: Location;
-  constructor(node: DirectiveNode) {
-    this.name = node.name;
-    this.arguments = (node.arguments || []).map(arg => new ArgumentWrapper(arg));
-    this.location = this.location;
-  }
-  public serialize = (): DirectiveNode => {
-    return {
-      kind: 'Directive',
-      name: this.name,
-      arguments: this.arguments.map(arg => arg.serialize()),
-    };
-  };
-  public getArguments = <T>(defaultValue: Required<T>): Required<T> => {
-    const argValues = this.arguments.reduce(
-      (acc: Record<string, any>, arg: ArgumentWrapper) => ({
-        ...acc,
-        [arg.name.value]: valueFromASTUntyped(arg.value),
-      }),
-      {},
-    );
-    return Object.assign(defaultValue, argValues);
-  };
-}
 
 export class GenericFieldWrapper {
   protected type: TypeNode;

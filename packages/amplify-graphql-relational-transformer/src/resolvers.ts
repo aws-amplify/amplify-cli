@@ -37,6 +37,7 @@ import {
   attributeTypeFromScalar,
   ModelResourceIDs,
   NONE_VALUE,
+  ResolverResourceIDs,
   ResourceConstants,
   toCamelCase,
 } from 'graphql-transformer-common';
@@ -86,6 +87,7 @@ export function makeGetItemConnectionWithKeyResolver(config: HasOneDirectiveConf
   const resolver = ctx.resolvers.generateQueryResolver(
     object.name.value,
     field.name.value,
+    ResolverResourceIDs.ResolverResourceID(object.name.value, field.name.value),
     dataSource as any,
     MappingTemplate.s3MappingTemplateFromString(
       print(
@@ -223,6 +225,7 @@ export function makeQueryConnectionWithKeyResolver(config: HasManyDirectiveConfi
   const resolver = ctx.resolvers.generateQueryResolver(
     object.name.value,
     field.name.value,
+    ResolverResourceIDs.ResolverResourceID(object.name.value, field.name.value),
     dataSource as any,
     MappingTemplate.s3MappingTemplateFromString(
       print(

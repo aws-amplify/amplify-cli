@@ -167,6 +167,7 @@ export class FunctionTransformer extends TransformerPluginBase {
               `${config.resolverTypeName}.${config.resolverFieldName}.res.vtl`,
             ),
             undefined,
+            undefined,
             [],
             stack,
           );

@@ -17,8 +17,6 @@ import {
   listRolePolicies,
   updateApiSchema,
   updateAuthAddAdminQueries,
-  addApiWithAllAuthModesV2,
-  amplifyPush,
 } from 'amplify-e2e-core';
 import { readdirSync, readFileSync, writeFileSync } from 'fs';
 import * as path from 'path';

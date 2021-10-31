@@ -103,6 +103,7 @@ scalar AWSPhone
 scalar AWSIPAddress
 scalar BigInt
 scalar Double
+scalar AuthorizationRule
 `);
 
 export const EXTRA_DIRECTIVES_DOCUMENT = parse(`
