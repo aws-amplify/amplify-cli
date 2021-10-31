@@ -25,7 +25,7 @@ export function getResourceCfnOutputAttributes(category: string, resourceName: s
    * This looks for a build directory and uses it if one exists.
    * Otherwise falls back to the default behavior.
    */
-  if (fs.existsSync(resourceBuildDir) && fs.lstatSync(resourceBuildDir).isDirectory()) {
+  if (fs.existsSync(resourceBuildDir)) {
     const cfnFiles = glob.sync(cfnTemplateGlobPattern, {
       cwd: resourceBuildDir,
     });
@@ -47,6 +47,10 @@ export function getResourceCfnOutputAttributes(category: string, resourceName: s
     const cfnFiles = glob.sync(cfnTemplateGlobPattern, {
       cwd: resourceDir,
     });
+    if (cfnFiles.length > 1) {
+      printer.warn(`${resourceName} has more than one CloudFormation definitions in the resource folder which isn't permitted.`);
+      return [];
+    }
     if (resourceDir && cfnFiles[0]) {
       cfnFilePath = path.join(resourceDir, cfnFiles[0]);
     }

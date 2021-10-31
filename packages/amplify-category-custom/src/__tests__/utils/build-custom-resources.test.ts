@@ -1,9 +1,5 @@
-import { $TSContext, JSONUtilities, pathManager, getPackageManager } from 'amplify-cli-core';
-import * as fs from 'fs-extra';
+import { $TSContext } from 'amplify-cli-core';
 import execa from 'execa';
-import ora from 'ora';
-import { getAllResources } from '../../utils/dependency-management-utils';
-import { generateCloudFormationFromCDK } from '../../utils/generate-cfn-from-cdk';
 import { buildCustomResources } from '../../utils/build-custom-resources';
 
 jest.mock('amplify-cli-core');
