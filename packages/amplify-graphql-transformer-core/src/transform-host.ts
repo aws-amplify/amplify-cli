@@ -17,7 +17,7 @@ import { CfnFunction, Code, Function, IFunction, ILayerVersion, Runtime } from '
 import { AppSyncFunctionConfiguration } from './appsync-function';
 import { IRole } from '@aws-cdk/aws-iam';
 import { InlineTemplate, S3MappingFunctionCode } from './cdk-compat/template-asset';
-import { toCamelCase } from 'graphql-transformer-common';
+import { ResolverResourceIDs, toCamelCase } from 'graphql-transformer-common';
 import { GraphQLApi } from './graphql-api';
 
 export interface DefaultTransformHostOptions {
@@ -133,6 +133,7 @@ export class DefaultTransformHost implements TransformHostProvider {
     fieldName: string,
     requestMappingTemplate: MappingTemplateProvider,
     responseMappingTemplate: MappingTemplateProvider,
+    resolverLogicalId?: string,
     dataSourceName?: string,
     pipelineConfig?: string[],
     stack?: Stack,
@@ -144,9 +145,10 @@ export class DefaultTransformHost implements TransformHostProvider {
     const requestTemplateLocation = requestMappingTemplate.bind(this.api);
     const responseTemplateLocation = responseMappingTemplate.bind(this.api);
     const resolverName = toCamelCase([typeName, fieldName, 'Resolver']);
+    const resourceId = resolverLogicalId ?? ResolverResourceIDs.ResolverResourceID(typeName, fieldName);
+
     if (dataSourceName) {
       const dataSource = this.dataSources.get(dataSourceName);
-
       const resolver = new CfnResolver(stack || this.api, resolverName, {
         apiId: this.api.apiId,
         fieldName: fieldName,
@@ -160,6 +162,7 @@ export class DefaultTransformHost implements TransformHostProvider {
           ? { responseMappingTemplate: responseTemplateLocation }
           : { responseMappingTemplateS3Location: responseTemplateLocation }),
       });
+      resolver.overrideLogicalId(resourceId);
       this.api.addSchemaDependency(resolver);
       return resolver;
     } else if (pipelineConfig) {
@@ -178,6 +181,7 @@ export class DefaultTransformHost implements TransformHostProvider {
           functions: pipelineConfig,
         },
       });
+      resolver.overrideLogicalId(resourceId);
       this.api.addSchemaDependency(resolver);
       this.resolvers.set(`${typeName}:${fieldName}`, resolver);
       return resolver;

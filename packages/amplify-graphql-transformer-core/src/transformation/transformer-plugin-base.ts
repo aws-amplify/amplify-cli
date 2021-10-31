@@ -60,6 +60,7 @@ export abstract class TransformerModelBase extends TransformerPluginBase impleme
     type: ObjectTypeDefinitionNode,
     typeName: string,
     fieldName: string,
+    resolverLogicalId: string,
     directive?: DirectiveDefinitionNode,
   ) => TransformerResolverProvider;
 
@@ -68,6 +69,7 @@ export abstract class TransformerModelBase extends TransformerPluginBase impleme
     type: ObjectTypeDefinitionNode,
     typeName: string,
     fieldName: string,
+    resolverLogicalId: string,
     directive?: DirectiveDefinitionNode,
   ) => TransformerResolverProvider;
 
@@ -76,6 +78,7 @@ export abstract class TransformerModelBase extends TransformerPluginBase impleme
     type: ObjectTypeDefinitionNode,
     typeName: string,
     fieldName: string,
+    resolverLogicalId: string,
     directive?: DirectiveDefinitionNode,
   ) => TransformerResolverProvider;
 
@@ -84,6 +87,7 @@ export abstract class TransformerModelBase extends TransformerPluginBase impleme
     type: ObjectTypeDefinitionNode,
     typeName: string,
     fieldName: string,
+    resolverLogicalId: string,
     directive?: DirectiveDefinitionNode,
   ) => TransformerResolverProvider;
 
@@ -92,6 +96,7 @@ export abstract class TransformerModelBase extends TransformerPluginBase impleme
     type: ObjectTypeDefinitionNode,
     typeName: string,
     fieldName: string,
+    resolverLogicalId: string,
     directive?: DirectiveDefinitionNode,
   ) => TransformerResolverProvider;
 
@@ -100,6 +105,7 @@ export abstract class TransformerModelBase extends TransformerPluginBase impleme
     type: ObjectTypeDefinitionNode,
     typeName: string,
     fieldName: string,
+    resolverLogicalId: string,
     directive?: DirectiveDefinitionNode,
   ) => TransformerResolverProvider;
 
@@ -108,6 +114,7 @@ export abstract class TransformerModelBase extends TransformerPluginBase impleme
     type: ObjectTypeDefinitionNode,
     typeName: string,
     fieldName: string,
+    resolverLogicalId: string,
     directive?: DirectiveDefinitionNode,
   ) => TransformerResolverProvider;
 
@@ -116,6 +123,7 @@ export abstract class TransformerModelBase extends TransformerPluginBase impleme
     type: ObjectTypeDefinitionNode,
     typeName: string,
     fieldName: string,
+    resolverLogicalId: string,
     directive?: DirectiveDefinitionNode,
   ) => TransformerResolverProvider;
 
@@ -124,6 +132,7 @@ export abstract class TransformerModelBase extends TransformerPluginBase impleme
     type: ObjectTypeDefinitionNode,
     typeName: string,
     fieldName: string,
+    resolverLogicalId: string,
     directive?: DirectiveDefinitionNode,
   ) => TransformerResolverProvider;
 

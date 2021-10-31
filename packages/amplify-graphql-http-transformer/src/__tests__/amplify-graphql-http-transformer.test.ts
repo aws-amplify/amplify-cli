@@ -119,7 +119,7 @@ test('it generates the expected resources', () => {
     }),
   );
   cdkExpect(stack).to(countResources('AWS::AppSync::Resolver', 5));
-  expect(stack.Resources!.commentContentResolver).toBeTruthy();
+  expect(stack.Resources!.CommentcontentResolver).toBeTruthy();
   cdkExpect(stack).to(
     haveResource('AWS::AppSync::Resolver', {
       ApiId: { Ref: anything() },
@@ -137,7 +137,7 @@ test('it generates the expected resources', () => {
       },
     }),
   );
-  expect(stack.Resources!.commentContent2Resolver).toBeTruthy();
+  expect(stack.Resources!.Commentcontent2Resolver).toBeTruthy();
   cdkExpect(stack).to(
     haveResource('AWS::AppSync::Resolver', {
       ApiId: { Ref: anything() },
@@ -155,7 +155,7 @@ test('it generates the expected resources', () => {
       },
     }),
   );
-  expect(stack.Resources!.commentMoreResolver).toBeTruthy();
+  expect(stack.Resources!.CommentmoreResolver).toBeTruthy();
   cdkExpect(stack).to(
     haveResource('AWS::AppSync::Resolver', {
       ApiId: { Ref: anything() },
@@ -173,7 +173,7 @@ test('it generates the expected resources', () => {
       },
     }),
   );
-  expect(stack.Resources!.commentEvenMoreResolver).toBeTruthy();
+  expect(stack.Resources!.CommentevenMoreResolver).toBeTruthy();
   cdkExpect(stack).to(
     haveResource('AWS::AppSync::Resolver', {
       ApiId: { Ref: anything() },
@@ -191,7 +191,7 @@ test('it generates the expected resources', () => {
       },
     }),
   );
-  expect(stack.Resources!.commentStillMoreResolver).toBeTruthy();
+  expect(stack.Resources!.CommentstillMoreResolver).toBeTruthy();
   cdkExpect(stack).to(
     haveResource('AWS::AppSync::Resolver', {
       ApiId: { Ref: anything() },
@@ -257,13 +257,13 @@ test('URL params happy path', () => {
   const stack = out.stacks.HttpDirectiveStack;
   cdkExpect(stack).to(countResources('AWS::AppSync::DataSource', 1));
   cdkExpect(stack).to(countResources('AWS::AppSync::Resolver', 7));
-  expect(stack.Resources!.commentComplexResolver).toBeTruthy();
-  expect(stack.Resources!.commentComplexAgainResolver).toBeTruthy();
-  expect(stack.Resources!.commentComplexPostResolver).toBeTruthy();
-  expect(stack.Resources!.commentComplexPutResolver).toBeTruthy();
-  expect(stack.Resources!.commentDeleterResolver).toBeTruthy();
-  expect(stack.Resources!.commentComplexGetResolver).toBeTruthy();
-  expect(stack.Resources!.commentComplexGet2Resolver).toBeTruthy();
+  expect(stack.Resources!.CommentcomplexResolver).toBeTruthy();
+  expect(stack.Resources!.CommentcomplexAgainResolver).toBeTruthy();
+  expect(stack.Resources!.CommentcomplexPostResolver).toBeTruthy();
+  expect(stack.Resources!.CommentcomplexPutResolver).toBeTruthy();
+  expect(stack.Resources!.CommentdeleterResolver).toBeTruthy();
+  expect(stack.Resources!.CommentcomplexGetResolver).toBeTruthy();
+  expect(stack.Resources!.CommentcomplexGet2Resolver).toBeTruthy();
 });
 
 test('it throws an error when missing protocol in URL argument', () => {
@@ -297,7 +297,7 @@ test('env on the URI path', () => {
   expect(out.stacks).toBeDefined();
   parse(out.schema);
   const stack = out.stacks.HttpDirectiveStack;
-  const reqTemplate = stack.Resources!.commentContentResolver.Properties.RequestMappingTemplate;
+  const reqTemplate = stack.Resources!.CommentcontentResolver.Properties.RequestMappingTemplate;
   expect(reqTemplate['Fn::Sub']).toBeTruthy();
   expect(reqTemplate['Fn::Sub'][0]).toMatch('"resourcePath": "/ping${env}"');
   expect(reqTemplate['Fn::Sub'][1].env.Ref).toBeTruthy();
@@ -412,7 +412,7 @@ test('aws_region on the URI path', () => {
   expect(out.stacks).toBeDefined();
   parse(out.schema);
   const stack = out.stacks.HttpDirectiveStack;
-  const reqTemplate = stack.Resources!.commentContentResolver.Properties.RequestMappingTemplate;
+  const reqTemplate = stack.Resources!.CommentcontentResolver.Properties.RequestMappingTemplate;
   expect(reqTemplate['Fn::Sub']).toBeTruthy();
   expect(reqTemplate['Fn::Sub'][0]).toMatch('"resourcePath": "/ping${aws_region}"');
   expect(reqTemplate['Fn::Sub'][1].aws_region.Ref).toBeTruthy();

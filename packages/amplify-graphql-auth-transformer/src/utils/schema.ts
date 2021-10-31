@@ -23,6 +23,7 @@ import {
 } from 'graphql-transformer-common';
 import { RELATIONAL_DIRECTIVES } from './constants';
 import { RelationalPrimaryMapConfig, RoleDefinition, SearchableConfig } from './definitions';
+import md5 from 'md5';
 
 export const collectFieldNames = (object: ObjectTypeDefinitionNode): Array<string> => {
   return object.fields!.map((field: FieldDefinitionNode) => field.name.value);
@@ -47,9 +48,9 @@ export const getModelConfig = (directive: DirectiveNode, typeName: string, isDat
     },
     subscriptions: {
       level: SubscriptionLevel.on,
-      onCreate: [toCamelCase(['onCreate', typeName])],
-      onDelete: [toCamelCase(['onDelete', typeName])],
-      onUpdate: [toCamelCase(['onUpdate', typeName])],
+      onCreate: [ensureValidSubscriptionName(toCamelCase(['onCreate', typeName]))],
+      onDelete: [ensureValidSubscriptionName(toCamelCase(['onDelete', typeName]))],
+      onUpdate: [ensureValidSubscriptionName(toCamelCase(['onUpdate', typeName]))],
     },
     timestamps: {
       createdAt: 'createdAt',
@@ -334,4 +335,10 @@ export const getSubscriptionFieldNames = (
   }
 
   return fields;
+};
+
+const ensureValidSubscriptionName = (name: string): string => {
+  if (name.length <= 50) return name;
+
+  return name.slice(0, 45) + md5(name).slice(0, 5);
 };
