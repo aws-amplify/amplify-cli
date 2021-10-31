@@ -308,6 +308,7 @@ const serviceApiInputWalkthrough = async (context: $TSContext, defaultValuesFile
         // API name question
         resourceAnswers = await inquirer.prompt(resourceQuestions);
         resourceAnswers[inputs[0].key] = resourceAnswers[inputs[1].key];
+        allDefaultValues[inputs[1].key] = resourceAnswers[inputs[1].key];
         break;
       case 'API_AUTH_MODE':
         // Ask additonal questions
@@ -832,7 +833,13 @@ export async function askApiKeyQuestions(authSettings = undefined) {
       default: defaultValues.apiKeyExpirationDays,
       validate: validateDays,
       // adding filter to ensure parsing input as int -> https://github.com/SBoudrias/Inquirer.js/issues/866
-      filter: value => (isNaN(parseInt(value, 10)) ? value : parseInt(value, 10)),
+      filter: value => {
+        const val = parseInt(value, 10);
+        if (isNaN(val) || val <= 0 || val > 365) {
+          return value;
+        }
+        return val;
+      },
     },
   ];
 
@@ -900,8 +907,8 @@ async function askOpenIDConnectQuestions(authSettings) {
   };
 }
 
-function validateDays(input) {
-  const isValid = /^\d+$/.test(input);
+async function validateDays(input) {
+  const isValid = /^\d{0,3}$/.test(input);
   const days = isValid ? parseInt(input, 10) : 0;
   if (!isValid || days < 1 || days > 365) {
     return 'Number of days must be between 1 and 365.';
