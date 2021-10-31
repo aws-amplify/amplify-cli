@@ -561,6 +561,18 @@ describe('schema generation directive tests', () => {
     expectMultiple(tagType, expectedDirectiveNames);
   });
 
+  test('OIDC works with private', () => {
+    const cognitoUserPoolAndOidcAuthRules =
+      '@auth(rules: [ { allow: private, provider: oidc, operations: [read] } { allow: owner, ownerField: "editors" } { allow: groups, groupsField: "groups"} ])';
+    const authConfig = withAuthModes(apiKeyDefaultConfig, ['AMAZON_COGNITO_USER_POOLS', 'OPENID_CONNECT']);
+
+    (authConfig.additionalAuthenticationProviders[1] as AppSyncAuthConfigurationOIDCEntry).openIDConnectConfig = {
+      name: 'Test Provider',
+      issuerUrl: 'https://abc.def/',
+    };
+    transformTest(cognitoUserPoolAndOidcAuthRules, authConfig, [userPoolsDirectiveName, openIdDirectiveName]);
+  });
+
   test(`Nested types without @model getting directives applied (cognito default, api key additional)`, () => {
     const schema = getSchemaWithNonModelField(privateAndPublicDirective);
     const transformer = getTransformer(withAuthModes(userPoolsDefaultConfig, ['API_KEY']));
