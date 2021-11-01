@@ -30,7 +30,8 @@
     "amplify-prompts": "1.1.2",
     "@aws-amplify/amplify-category-auth": "1.0.0",
     "@aws-amplify/amplify-category-storage": "1.0.0",
-    "@aws-amplify/amplify-category-custom": "1.0.0"
+    "@aws-amplify/amplify-category-custom": "1.0.0",
+    "amplify-cli-core": "1.31.1"
   },
   "devDependencies": {},
   "jest": {
