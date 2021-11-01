@@ -72,7 +72,7 @@ exports.handler = (event, context, callback) => {
           let providerList = result.Providers.map(provider => provider.ProviderName);
           let providerListInParameters = hostedUIProviderMeta.map(provider => provider.ProviderName);
           hostedUIProviderMeta.forEach(providerMetadata => {
-            if (providerList.indexOf(providerMetadata.ProviderName) > 1) {
+            if (providerList.indexOf(providerMetadata.ProviderName) > -1) {
               providerPromises.push(updateIdentityProvider(providerMetadata.ProviderName));
             } else {
               providerPromises.push(createIdentityProvider(providerMetadata.ProviderName));
