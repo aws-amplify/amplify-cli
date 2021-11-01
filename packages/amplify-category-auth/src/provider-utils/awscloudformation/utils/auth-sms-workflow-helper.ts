@@ -32,13 +32,9 @@ const getProviderPlugin = (context: $TSContext): ProviderUtils => {
 
   return context.amplify.getPluginInstance(context, provider);
 };
-export const loadResourceParameters = async (context: $TSContext, resourceName: string): Promise<UserPoolMessageConfiguration> => {
-  const cliState = new AuthInputState(resourceName);
-  const userPoolMessageConfig = (await cliState.loadResourceParameters(
-    context,
-    cliState.getCLIInputPayload(),
-  )) as UserPoolMessageConfiguration;
-  return userPoolMessageConfig;
+export const loadResourceParameters = (context: $TSContext, resourceName: string): UserPoolMessageConfiguration => {
+  const providerPlugin = getProviderPlugin(context);
+  return providerPlugin.loadResourceParameters(context, 'auth', resourceName) as CognitoConfiguration | ServiceQuestionHeadlessResult;
 };
 
 export const loadImportedAuthParameters = async (context: $TSContext, userPoolName: string): Promise<UserPoolMessageConfiguration> => {

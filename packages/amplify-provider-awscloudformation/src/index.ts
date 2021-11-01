@@ -49,6 +49,8 @@ import { rootStackFileName } from './push-resources';
 export { rootStackFileName } from './push-resources';
 export { AmplifyRootStackTemplate } from './root-stack-builder';
 
+import { compileSchema } from './utility-functions';
+
 function init(context) {
   return initializer.run(context);
 }
@@ -189,4 +191,5 @@ module.exports = {
   getTransformerVersion,
   transformResourceWithOverrides,
   rootStackFileName,
+  compileSchema,
 };
