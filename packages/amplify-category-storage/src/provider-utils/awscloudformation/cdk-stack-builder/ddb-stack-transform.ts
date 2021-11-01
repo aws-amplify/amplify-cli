@@ -207,7 +207,7 @@ export class DDBStackTransform {
     // store files in local-filesysten
 
     fs.ensureDirSync(this._cliInputsState.buildFilePath);
-    const cfnFilePath = path.resolve(path.join(this._cliInputsState.buildFilePath, 'cloudformation-template.json'));
+    const cfnFilePath = path.resolve(path.join(this._cliInputsState.buildFilePath, `${this._resourceName}-cloudformation-template.json`));
     try {
       JSONUtilities.writeJson(cfnFilePath, this._cfn);
     } catch (e) {
