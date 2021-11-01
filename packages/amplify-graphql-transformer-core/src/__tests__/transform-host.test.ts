@@ -16,6 +16,7 @@ describe('addResolver', () => {
       new InlineTemplate('testTemplate'),
       new InlineTemplate('testTemplate'),
       undefined,
+      undefined,
       ['testPipelineConfig'],
       stack,
     );
@@ -28,6 +29,7 @@ describe('addResolver', () => {
       'test_field',
       new InlineTemplate('testTemplate'),
       new InlineTemplate('testTemplate'),
+      undefined,
       undefined,
       ['testPipelineConfig'],
       stack,
