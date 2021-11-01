@@ -26,8 +26,8 @@ export { AmplifyDDBResourceTemplate } from './provider-utils/awscloudformation/c
 export { S3UserInputs, S3UserInputTriggerFunctionParams } from './provider-utils/awscloudformation/service-walkthrough-types/s3-user-input-types';
 //S3-Control-API used by Predictions
 export {
-  s3AddAdminLambdaTrigger, s3AddStorageLambdaTrigger, s3CreateStorageResource, s3GetResourceName,
-  s3GetUserInput, s3RegisterExistingLambdaTriggerAsAdmin,
+  s3AddStorageLambdaTrigger, s3CreateStorageResource, s3GetResourceName,
+  s3GetUserInput,
   s3RemoveAdminLambdaTrigger, s3RemoveStorageLambdaTrigger,
   s3RegisterAdminTrigger
 } from './provider-utils/awscloudformation/service-walkthroughs/s3-resource-api';

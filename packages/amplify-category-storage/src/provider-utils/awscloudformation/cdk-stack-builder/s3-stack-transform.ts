@@ -106,6 +106,9 @@ export class AmplifyS3ResourceStackTransform {
     if (userInput.triggerFunction && userInput.triggerFunction !== 'NONE') {
       this.cfnInputParams.triggerFunction = userInput.triggerFunction;
     }
+    if (userInput.adminTriggerFunction?.triggerFunction && userInput.adminTriggerFunction.triggerFunction !== 'NONE') {
+      this.cfnInputParams.adminTriggerFunction = userInput.adminTriggerFunction.triggerFunction;
+    }
     this.cfnInputParams.s3PrivatePolicy = `Private_policy_${userInput.policyUUID}`;
     this.cfnInputParams.s3ProtectedPolicy = `Protected_policy_${userInput.policyUUID}`;
     this.cfnInputParams.s3PublicPolicy = `Public_policy_${userInput.policyUUID}`;

@@ -44,35 +44,28 @@ export async function invokeS3GetAllDefaults(context, s3AccessType){
  * @param storageLambdaTrigger
  * @returns
  */
-export async function invokeS3AddStorageLambdaTrigger(context, s3ResourceName, S3UserInputTriggerFunctionParams ){
-    const s3UserInputs = await context.amplify.invokePluginMethod(context, 'storage', undefined, 's3AddStorageLambdaTrigger', [context, s3ResourceName, S3UserInputTriggerFunctionParams]);
-    return s3UserInputs;
+export async function invokeS3AddStorageLambdaTrigger(context, s3ResourceName, S3UserInputTriggerFunctionParams) {
+  const s3UserInputs = await context.amplify.invokePluginMethod(context, 'storage', undefined, 's3AddStorageLambdaTrigger', [
+    context,
+    s3ResourceName,
+    S3UserInputTriggerFunctionParams,
+  ]);
+  return s3UserInputs;
 }
 
+
 /**
- * Create new lambda and add as Admin Lambda for Predictions category (Rekognition)
+ * Remove Admin Lambda for Predictions category (Rekognition)
  * @param context
  * @param s3ResourceName
  * @param adminLambdaTrigger
  * @returns
  */
-export async function invokeS3AddAdminLambdaTrigger(context, s3ResourceName, S3UserInputTriggerFunctionParams ){
-    const s3UserInputs = await context.amplify.invokePluginMethod(context, 'storage', undefined, 's3AddAdminLambdaTrigger', [context, s3ResourceName, S3UserInputTriggerFunctionParams]);
+ export async function invokeS3RemoveAdminLambdaTrigger(context, s3ResourceName){
+    const s3UserInputs = await context.amplify.invokePluginMethod(context, 'storage', undefined, 's3RemoveAdminLambdaTrigger', [context, s3ResourceName]);
     return s3UserInputs;
 }
 
-/**
- * Add existing S3 Lambda Trigger as Admin for Predictions category (Rekognition)
- * note:- (legacy logic, should be moved to addLambdaTrigger -  to support multiple lambda triggers)
- * @param context
- * @param s3ResourceName
- * @param adminLambdaTrigger
- * @returns
- */
-export async function invokeS3RegisterExistingLambdaTriggerAsAdmin(context, s3ResourceName, adminLambdaTrigger ){
-    const s3UserInputs = await context.amplify.invokePluginMethod(context, 'storage', undefined, 's3RegisterExistingLambdaTriggerAsAdmin', [context, s3ResourceName, adminLambdaTrigger]);
-    return s3UserInputs;
-}
 
 /**
  * Add existing (Non Storage) Lambda Trigger as Admin for Predictions category (Rekognition)

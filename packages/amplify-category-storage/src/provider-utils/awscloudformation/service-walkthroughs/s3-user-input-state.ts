@@ -1,4 +1,4 @@
-import { S3AccessType, S3PermissionType, S3UserInputs, GroupAccessType, S3UserInputTriggerFunctionParams, S3TriggerEventType } from '../service-walkthrough-types/s3-user-input-types';
+import { S3AccessType, S3PermissionType, S3UserInputs, GroupAccessType, S3UserInputTriggerFunctionParams, S3TriggerEventType, S3TriggerPrefixType } from '../service-walkthrough-types/s3-user-input-types';
 import { $TSContext, $TSObject, AmplifyCategories, AmplifySupportedService } from 'amplify-cli-core';
 import { JSONUtilities, pathManager } from 'amplify-cli-core';
 import { CLIInputSchemaValidator } from 'amplify-cli-core';
@@ -209,20 +209,32 @@ export class S3InputState {
     return fs.existsSync(this._cliInputsFilePath);
   }
 
+  checkPrefixExists(triggerPrefixList: S3TriggerPrefixType[] , prefix : string ){
+      for( const triggerPrefix of triggerPrefixList ){
+        if ( triggerPrefix.prefix === prefix ){
+          return true;
+        }
+      }
+      return false;
+  }
+
   /**
    * Check if there exists a different trigger function configured on the prefix.
    * @param triggerFunctionName
-   * @param triggerPrefix
+   * @param triggerPrefixList
    * @returns true if there is no other trigger configured on this prefix. throws error if prefix used by another function
    */
-  private _confirmLambdaTriggerPrefixUnique(triggerFunctionName: string, triggerPrefix: string | undefined): boolean {
+  private _confirmLambdaTriggerPrefixUnique(triggerFunctionName: string, triggerPrefixList: S3TriggerPrefixType[]): boolean {
     if (this._inputPayload?.additionalTriggerFunctions) {
       for (const triggerParams of this._inputPayload.additionalTriggerFunctions) {
-        if (triggerParams.triggerPrefix === triggerPrefix && triggerParams.triggerFunction !== triggerFunctionName) {
-          throw new Error(
-            `Error installing additional Lambda Trigger : trigger ${triggerParams.triggerFunction} already configured on prefix ${triggerParams.triggerPrefix}`,
-          );
+        for ( const configuredTriggerPrefix of triggerParams.triggerPrefix ){
+          if ( this.checkPrefixExists( triggerPrefixList, configuredTriggerPrefix.prefix ) && triggerParams.triggerFunction !== triggerFunctionName) {
+            throw new Error(
+              `Error installing additional Lambda Trigger : trigger ${triggerParams.triggerFunction} already configured on prefix ${triggerParams.triggerPrefix}`,
+            );
+          }
         }
+
       }
     }
     return true;

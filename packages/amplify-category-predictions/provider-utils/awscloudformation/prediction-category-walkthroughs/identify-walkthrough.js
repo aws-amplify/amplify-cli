@@ -7,8 +7,8 @@ import regionMapper from '../assets/regionMapping';
 import getAllDefaults from '../default-values/identify-defaults';
 import { enableGuestAuth } from './enable-guest-auth';
 import { invokeS3GetResourceName, invokeS3GetAllDefaults,
-         invokeS3AddResource, invokeS3GetUserInputs,
-         invokeS3RegisterAdminTrigger, invokeS3AddStorageLambdaTrigger, invokeS3RegisterExistingLambdaTriggerAsAdmin} from './storage-api';
+         invokeS3AddResource, invokeS3GetUserInputs, invokeS3RemoveAdminLambdaTrigger,
+         invokeS3RegisterAdminTrigger} from './storage-api';
 const { ResourceDoesNotExistError, ResourceAlreadyExistsError, exitOnNextTick } = require('amplify-cli-core');
 const inquirer = require('inquirer');
 const path = require('path');
@@ -93,6 +93,21 @@ async function updateWalkthrough(context) {
 }
 
 
+async function createAndRegisterAdminLambdaS3Trigger( context, predictionsResourceName, s3ResourceName ){
+  let predictionsTriggerFunctionName = await createNewFunction(context, predictionsResourceName, s3ResourceName);
+  // adding additinal lambda trigger
+  const adminTriggerFunctionParams   = {
+    tag: 'adminTriggerFunction',
+    category : 'predictions', //function is owned by storage category
+    permissions : ['CREATE_AND_UPDATE', 'READ', 'DELETE'], //permissions to access S3
+    triggerFunction : predictionsTriggerFunctionName,
+    triggerEvents : ['s3:ObjectCreated:*', 's3:ObjectRemoved:*'], //s3 events to trigger S3
+    triggerPrefix : [{ prefix : prefixForAdminTrigger,  prefixTransform : 'NONE'}] //trigger only if events are seen on the p
+  };
+  const s3UserInputs = await invokeS3RegisterAdminTrigger( context, s3ResourceName, adminTriggerFunctionParams );
+  return s3UserInputs;
+}
+
 
 async function configure(context, predictionsResourceObj,  configMode /*add/update*/ ) {
   const { amplify } = context;
@@ -149,7 +164,6 @@ async function configure(context, predictionsResourceObj,  configMode /*add/upda
   let s3Resource = {};
   let predictionsTriggerFunctionName;
   if ( answers.adminTask ) {
-    //const s3ResourceName = s3ResourceAlreadyExists(context);
     const s3ResourceName =  await invokeS3GetResourceName(context);
     const predictionsResourceName = parameters.resourceName;
     console.log("SACPCDEBUG: PREDICTIONS : S3ResourceName ", s3ResourceName, "predictionsResourceName: ", parameters.resourceName );
@@ -159,54 +173,32 @@ async function configure(context, predictionsResourceObj,  configMode /*add/upda
       let s3UserInputs = await invokeS3GetUserInputs(context, s3ResourceName);
       s3Resource.bucketName = s3UserInputs.bucketName;
       s3Resource.resourceName = s3UserInputs.resourceName;
+      console.log("SACPCDEBUG:[predictions] S3Bucket exists: ", s3Resource);
       // Check if any lambda triggers are already existing in the project.
       if (!s3UserInputs.adminTriggerFunction) {
-        if (!s3UserInputs.triggerFunction || s3UserInputs.triggerFunction === 'NONE') {
-          predictionsTriggerFunctionName = await addTrigger(context, s3Resource, undefined, predictionsResourceName);
-          const triggerFunctionParams   = {
-            tag: 'triggerFunction',
-            category : 'storage', //function is owned by storage category
-            triggerFunction : predictionsResourceName,
-            triggerEvents : ['s3:ObjectCreated:*', 's3:ObjectRemoved:*'], //s3 events to trigger S3
-            permissions : ['CREATE_AND_UPDATE', 'READ', 'DELETE'], //permissions to access S3
-          };
-          console.log("SACPCDEBUG: Calling invokeS3AddStorageLambdaTrigger ", triggerFunctionParams);
-          //updated s3UserInputs
-          s3UserInputs = await invokeS3AddStorageLambdaTrigger(context, s3Resource.resourceName, triggerFunctionParams);
-
-          const adminTriggerFunctionParams   = {...triggerFunctionParams, tag : 'adminTriggerFunction'};
-          //register trigger function
-          s3UserInputs = await invokeS3RegisterExistingLambdaTriggerAsAdmin(context, s3Resource.resourceName, adminTriggerFunctionParams);
-
-          console.log("SACPCDEBUG: Created lambda and added as adminTriggerFunction ", s3UserInputs );
-        } else {
-          // adding additinal lambda trigger
-          predictionsTriggerFunctionName = await addAdditionalLambdaTrigger(context, s3Resource, predictionsResourceName);
-          s3UserInputs.adminTriggerFunction = predictionsTriggerFunctionName; //TBD add default-params with functionName
-        }
+        console.log("SACPCDEBUG:[predictions] S3Bucket: AdminTriggerFunction Does *Not* exist ", s3UserInputs );
+        s3UserInputs = await createAndRegisterAdminLambdaS3Trigger( context, predictionsResourceName, s3Resource.resourceName )
+        predictionsTriggerFunctionName = s3UserInputs.adminTriggerFunction.triggerFunction
       } else {
-        predictionsTriggerFunctionName = s3UserInputs.adminTriggerFunction;
+        predictionsTriggerFunctionName = s3UserInputs.adminTriggerFunction.triggerFunction;
       }
-      s3Resource.functionName = predictionsTriggerFunctionName;
-      console.log("SACPCDEBUG: Identity: Update : ", parametersFilePath);
-
     } else {
+      //create S3 bucket
       s3Resource = await addS3ForIdentity(context, answers.access, undefined, predictionsResourceName);
-      //create admin lambda function and generate CFN
-      predictionsTriggerFunctionName = await createNewFunction(context, predictionsResourceName, s3Resource.resourceName);
-      const adminLambdaTrigger   = {
-        tag: 'triggerFunction',
-        category : 'storage', //function is owned by storage category
-        triggerFunction : predictionsTriggerFunctionName,
-        triggerEvents : ['s3:ObjectCreated:*', 's3:ObjectRemoved:*'], //s3 events to trigger S3
-        permissions : ['CREATE_AND_UPDATE', 'READ', 'DELETE'], //permissions to access S3
-      };
-      console.log("SACPCDEBUG: Calling invokeS3RegisterAdminTrigger ", adminLambdaTrigger);
-      //updated s3UserInputs
-      const s3UserInputs = await invokeS3RegisterAdminTrigger(context, s3Resource.resourceName, adminLambdaTrigger );
+      //create admin lamda and register with s3 as trigger
+      const s3UserInputs = await createAndRegisterAdminLambdaS3Trigger( context, predictionsResourceName, s3Resource.resourceName );
+      predictionsTriggerFunctionName = s3UserInputs.adminTriggerFunction.triggerFunction
       console.log("SACPCDEBUG: DONE invokeS3RegisterAdminTrigger ", s3UserInputs);
     }
+    s3Resource.functionName = predictionsTriggerFunctionName;
+    console.log("SACPCDEBUG: Identity: Update : ", s3Resource);
 
+    /**
+     * Update function name
+     */
+    console.log("SACPCDEBUG: Updating Function resources : projectBackendDirPath: ",
+    projectBackendDirPath, " functionCategory: ", functionCategory ,
+    "predictionsTriggerFunctionName: ", predictionsTriggerFunctionName)
     const functionresourceDirPath = path.join(projectBackendDirPath, functionCategory, predictionsTriggerFunctionName);
     const functionparametersFilePath = path.join(functionresourceDirPath, parametersFileName);
     let functionParameters;
@@ -224,7 +216,13 @@ async function configure(context, predictionsResourceObj,  configMode /*add/upda
   } else if (parameters.resourceName) {
     const s3ResourceName = s3ResourceAlreadyExists(context);
     if (s3ResourceName) {
-      removeAdminLambdaTrigger(context, parameters.resourceName, s3ResourceName);
+      let s3UserInputs = await invokeS3GetUserInputs(context, s3ResourceName);
+      if ( s3UserInputs.adminLambdaTrigger &&
+           s3UserInputs.adminLambdaTrigger.triggerFunction  &&
+           s3UserInputs.adminLambdaTrigger.triggerFunction !== 'NONE'){
+        const finals3UserInputs = await invokeS3RemoveAdminLambdaTrigger(context, s3ResourceName);
+        console.log("SACPCDEBUG: Remove S3UserInputs ", finals3UserInputs);
+      }
     }
   }
 
@@ -444,19 +442,6 @@ async function addS3ForIdentity(context, storageAccess, bucketName, predictionsR
   } else {
     s3UserInputs = getAllAuthDefaultPerm(s3UserInputs);
   }
-
-  // /**
-  //  * Add adminTrigger for predictions
-  //  */
-
-  // s3UserInputs.adminTriggerFunction = {
-  //                                       category : category, //predictions owns the function
-  //                                       tag : 'adminTriggerFunction',
-  //                                       triggerFunction : predictionsResourceName,
-  //                                       triggerEvents : ['s3:ObjectCreated:*', 's3:ObjectRemoved:*'], //s3 events to trigger S3
-  //                                       permissions : ['CREATE_AND_UPDATE', 'READ', 'DELETE'], //permissions to access S3
-  //                                       triggerPrefix : prefixForAdminTrigger
-  //                                    }
   s3UserInputs.adminTriggerFunction = 'NONE';
   s3UserInputs.triggerFunction = 'NONE';
   /**
@@ -655,7 +640,12 @@ async function createNewFunction(context, predictionsResourceName, s3ResourceNam
       predictionsResourceName,
       `${predictionsResourceName}-template.json`,
     );
-    let identifyCFNFile = context.amplify.readJsonFile(identifyCFNFilePath);
+    let identifyCFNFile;
+    try {
+      identifyCFNFile = context.amplify.readJsonFile(identifyCFNFilePath);
+    } catch (fileNotFoundError ){
+      //generate template and switch to update mode ?
+    }
     identifyCFNFile = generateLambdaAccessForRekognition(identifyCFNFile, functionName, s3ResourceName);
     const identifyCFNString = JSON.stringify(identifyCFNFile, null, 4);
     fs.writeFileSync(identifyCFNFilePath, identifyCFNString, 'utf8');
@@ -677,6 +667,7 @@ async function createNewFunction(context, predictionsResourceName, s3ResourceNam
     // Update DependsOn
     context.amplify.updateamplifyMetaAfterResourceUpdate(category, predictionsResourceName, 'dependsOn', dependsOnResources);
   }
+
   // Update amplify-meta and backend-config
 
   const backendConfigs = {

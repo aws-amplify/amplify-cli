@@ -75,8 +75,8 @@ export async function s3AddStorageLambdaTrigger(
   s3UserInput.triggerFunction = storageLambdaTrigger.triggerFunction;
   cliInputsState.saveCliInputPayload(s3UserInput);
   const functionCreated = await createNewLambdaAndUpdateCFN(context, s3UserInput.triggerFunction, undefined /* generate unique uuid*/);
-  console.log('SACPCDEBUG: S3 trigger created from api call: ', functionCreated);
   await s3APIHelperTransformAndSaveState(context, s3UserInput, CLISubCommandType.UPDATE);
+  return s3UserInput;
 }
 
 /**
@@ -107,68 +107,6 @@ export async function s3RemoveStorageLambdaTrigger(context: $TSContext, s3Resour
 }
 
 /**
- * Create new lambda and add as Admin Lambda for Predictions category (Rekognition)
- * note:- (legacy logic, should be moved to addLambdaTrigger -  to support multiple lambda triggers)
- * @param context
- * @param s3ResourceName
- * @param adminLambdaTrigger
- * @returns s3UserInput
- */
-export async function s3AddAdminLambdaTrigger(
-  context: $TSContext,
-  s3ResourceName: string,
-  adminLambdaTrigger: S3UserInputTriggerFunctionParams,
-) {
-  let cliInputsState = new S3InputState(s3ResourceName, undefined);
-  //Check if migration is required
-  if (!cliInputsState.cliInputFileExists()) {
-    throw new Error(`Error Adding trigger function on storage resource ${s3ResourceName} : resource does not exist`);
-  }
-  let s3UserInput = cliInputsState.getUserInput();
-  //Check if lambda is owned by Predictions, add as additional lambda
-  s3UserInput.adminTriggerFunction = adminLambdaTrigger;
-  cliInputsState.saveCliInputPayload(s3UserInput);
-  const functionCreated = await createNewLambdaAndUpdateCFN(context, adminLambdaTrigger.triggerFunction, s3UserInput.policyUUID);
-  console.log('SACPCDEBUG: Function Created for Admin Trigger: ', functionCreated);
-  await s3APIHelperTransformAndSaveState(context, s3UserInput, CLISubCommandType.UPDATE);
-  return s3UserInput;
-}
-
-/**
- * Add existing S3 Lambda Trigger as Admin for Predictions category (Rekognition)
- * note:- (legacy logic, should be moved to addLambdaTrigger -  to support multiple lambda triggers)
- * @param context
- * @param s3ResourceName
- * @param adminLambdaTrigger
- * @returns
- */
-export async function s3RegisterExistingLambdaTriggerAsAdmin(
-  context: $TSContext,
-  s3ResourceName: string,
-  adminLambdaTrigger: S3UserInputTriggerFunctionParams,
-) {
-  let cliInputsState = new S3InputState(s3ResourceName, undefined);
-  //Check if migration is required
-  if (!cliInputsState.cliInputFileExists()) {
-    throw new Error(`Error Registering existing trigger function on storage resource ${s3ResourceName} : resource does not exist`);
-  }
-  let s3UserInput = cliInputsState.getUserInput();
-  if (s3UserInput.triggerFunction !== adminLambdaTrigger.triggerFunction) {
-    throw new Error(
-      `Error Registering Admin: ${s3ResourceName} : storage trigger ${s3UserInput.triggerFunction} does not match ${adminLambdaTrigger.triggerFunction}`,
-    );
-  }
-  if (adminLambdaTrigger.category !== AmplifyCategories.STORAGE) {
-    throw new Error(
-      `Error Registering Admin: ${s3ResourceName} : ${adminLambdaTrigger.triggerFunction} is owned by ${adminLambdaTrigger.category}`,
-    );
-  }
-  s3UserInput.adminTriggerFunction = adminLambdaTrigger;
-  await s3APIHelperTransformAndSaveState(context, s3UserInput, CLISubCommandType.UPDATE);
-  return s3UserInput;
-}
-
-/**
  * Add existing (Non Storage) Lambda as Admin for Predictions category (Rekognition)
  * The lambda should have been already created.
  * note:- (legacy logic, should be moved to addLambdaTrigger -  to support multiple lambda triggers)
@@ -189,9 +127,6 @@ export async function s3RegisterExistingLambdaTriggerAsAdmin(
     throw new Error(`Error Registering existing trigger function on storage resource ${s3ResourceName} : resource does not exist`);
   }
   let s3UserInput = cliInputsState.getUserInput();
-  if( !s3UserInput.triggerFunction || s3UserInput.triggerFunction == 'NONE'){
-    s3UserInput.triggerFunction = adminLambdaTrigger.triggerFunction;
-  }
   s3UserInput.adminTriggerFunction = adminLambdaTrigger; //TBD check if function is created
   console.log("SACPCDEBUG:[storage]: Registering s3UserInput : ", s3UserInput);
   await s3APIHelperTransformAndSaveState(context, s3UserInput, CLISubCommandType.UPDATE);
@@ -218,6 +153,7 @@ export async function s3RemoveAdminLambdaTrigger(context: $TSContext, s3Resource
 }
 
 /**
+ * (for future use)
  * Add additional trigger function to CLIInputs
  * and generate cloudformation
  * @param context - used to generate stack transform

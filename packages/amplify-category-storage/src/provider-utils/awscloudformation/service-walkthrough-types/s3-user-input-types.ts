@@ -42,13 +42,23 @@ export enum S3TriggerEventType{
 
 export type GroupAccessType = Record<string,S3PermissionType[]>;
 
+export enum S3TriggerPrefixTransform {
+    NONE  = 'NONE',
+    ATTACH_REGION =  'ATTACH_REGION',
+}
+
+export interface S3TriggerPrefixType {
+    prefix : string;
+    prefixTransform : S3TriggerPrefixTransform
+}
+
 export interface S3UserInputTriggerFunctionParams{
     category :string; //function registed by
     tag ?: string;
     triggerFunction : string;
     permissions : S3PermissionType[];
     triggerEvents : S3TriggerEventType[];
-    triggerPrefix : string;
+    triggerPrefix : S3TriggerPrefixType[];
     //note:- this can be extended to add events/filters
 }
 
