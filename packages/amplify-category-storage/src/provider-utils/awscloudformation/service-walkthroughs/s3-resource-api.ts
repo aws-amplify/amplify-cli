@@ -9,7 +9,6 @@ import { createNewLambdaAndUpdateCFN } from './s3-walkthrough';
  */
 export function s3GetResourceName(): string | undefined {
   const amplifyMeta = stateManager.getMeta();
-  console.log('SACPCDEBUG: Inside s3GetResourceName', amplifyMeta[AmplifyCategories.STORAGE]);
   let resourceName = undefined;
   if (amplifyMeta[AmplifyCategories.STORAGE]) {
     const categoryResources = amplifyMeta[AmplifyCategories.STORAGE];
@@ -19,7 +18,6 @@ export function s3GetResourceName(): string | undefined {
       }
     });
   }
-  console.log('SACPCDEBUG: Returning s3GetResourceName ', resourceName);
   return resourceName;
 }
 
@@ -46,9 +44,7 @@ export async function s3CreateStorageResource(context: $TSContext, storageInput:
   if (storageResourceName) {
     throw new Error('Add Storage Failed.. already exists');
   }
-  console.log('SACPCDEBUG: addStorageResource : storageInput provided by predictions', storageInput);
   await s3APIHelperTransformAndSaveState(context, storageInput, CLISubCommandType.ADD);
-
   return storageInput;
   //return storage name
 }
@@ -102,7 +98,6 @@ export async function s3RemoveStorageLambdaTrigger(context: $TSContext, s3Resour
   }
 
   s3UserInput.triggerFunction = undefined;
-  console.log('SACPCDEBUG: S3 trigger Removed: ');
   await s3APIHelperTransformAndSaveState(context, s3UserInput, CLISubCommandType.UPDATE);
 }
 
@@ -128,7 +123,6 @@ export async function s3RemoveStorageLambdaTrigger(context: $TSContext, s3Resour
   }
   let s3UserInput = cliInputsState.getUserInput();
   s3UserInput.adminTriggerFunction = adminLambdaTrigger; //TBD check if function is created
-  console.log("SACPCDEBUG:[storage]: Registering s3UserInput : ", s3UserInput);
   await s3APIHelperTransformAndSaveState(context, s3UserInput, CLISubCommandType.UPDATE);
   return s3UserInput;
 }
@@ -187,8 +181,6 @@ async function s3APIHelperTransformAndSaveState(context: $TSContext, storageInpu
   } else {
     cliInputsState = new S3InputState(storageInput.resourceName as string, undefined );
   }
-  console.log("SACPCDEBUG:s3APIHelperTransformAndSaveState :  ", cliInputsState);
-
   cliInputsState.saveCliInputPayload(storageInput);
 
   //Generate Cloudformation

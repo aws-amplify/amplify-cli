@@ -12,9 +12,7 @@ export async function addResource(context: $TSContext, category: string, service
   const { addWalkthrough } = await import(serviceWalkthroughSrc);
 
   return addWalkthrough(context, defaultValuesFilename, serviceMetadata, options).then(async (resourceName: string) => {
-    console.log("SACPCDEBUG: S3 Add Walkthrough: options: ", options);
     context.amplify.updateamplifyMetaAfterResourceAdd(category, resourceName, options);
-
     return resourceName;
   });
 }

@@ -131,7 +131,6 @@ export class AmplifyS3ResourceCfnStack extends AmplifyResourceCfnStack implement
                             { prefix : 'public/', prefixTransform :  S3TriggerPrefixTransform.ATTACH_REGION } ]
       }
       const newLambdaConfigurations = this.buildLambdaConfigFromTriggerParams( triggerLambdaFunctionParams );
-      console.log("SACPCDEBUG:1: Trigger Params: ", JSON.stringify(newLambdaConfigurations, null, 2));
       this._addNotificationsLambdaConfigurations(newLambdaConfigurations);
       this.triggerLambdaPermissions = this.createInvokeFunctionS3Permission('TriggerPermissions', this._props.triggerFunction);
       this.s3Bucket.addDependsOn(this.triggerLambdaPermissions as lambdaCdk.CfnPermission);
@@ -146,7 +145,6 @@ export class AmplifyS3ResourceCfnStack extends AmplifyResourceCfnStack implement
          this._props.adminTriggerFunction.triggerFunction != 'NONE' &&
          this._props.adminTriggerFunction.triggerFunction != this._props.triggerFunction) {
       const adminLambdaConfigurations = this.buildLambdaConfigFromTriggerParams( this._props.adminTriggerFunction );
-      console.log("SACPCDEBUG:2: Admin Trigger Params: ", JSON.stringify(adminLambdaConfigurations, null, 2));
       this._addNotificationsLambdaConfigurations(adminLambdaConfigurations);
       this.adminTriggerLambdaPermissions = this.createInvokeFunctionS3Permission('AdminTriggerPermissions', this._props.adminTriggerFunction.triggerFunction );
       this.s3Bucket.addDependsOn(this.adminTriggerLambdaPermissions );
@@ -161,7 +159,6 @@ export class AmplifyS3ResourceCfnStack extends AmplifyResourceCfnStack implement
     //Apply all Notifications configurations on S3Bucket;
     if (this.notificationConfiguration.lambdaConfigurations &&
        (this.notificationConfiguration.lambdaConfigurations as s3Cdk.CfnBucket.LambdaConfigurationProperty[]).length > 0 ) {
-        console.log("SACPCDEBUG: Add support for all notifications : ", JSON.stringify( this.notificationConfiguration , null, 2 ) );
         this.s3Bucket.notificationConfiguration = this.notificationConfiguration;
     }
 
@@ -456,7 +453,6 @@ export class AmplifyS3ResourceCfnStack extends AmplifyResourceCfnStack implement
           }
         }
     }
-    console.log(`SACPCDEBUG: buildLambdaConfigFromTriggerParams: ${functionParams.triggerFunction} LambdaConfiguration: `, lambdaConfigurations);
     return lambdaConfigurations;
   }
 

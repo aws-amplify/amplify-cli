@@ -4,7 +4,6 @@ import { v4 as uuid } from 'uuid';
 import { S3AccessType, S3UserInputs } from '../service-walkthrough-types/s3-user-input-types';
 
 export const getAllDefaults = (project: $TSAny, shortId : string) : S3UserInputs  => {
-  console.log("SACPCDEBUG:[storage] getAllDefaults: projectName: ", project.projectConfig.projectName.toLowerCase(), "shortId: ", shortId );
   const name = project.projectConfig.projectName.toLowerCase();
   const defaults : S3UserInputs = {
     resourceName: `s3${shortId}`,

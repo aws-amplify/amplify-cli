@@ -56,19 +56,14 @@ export class AmplifyS3ResourceStackTransform {
 
   async transform(commandType: CLISubCommandType) {
     this.generateCfnInputParameters();
-    console.log("SACPCDEBUG:1:[s3-transform] CfnInputParameters ");
-
     // Generate cloudformation stack from cli-inputs.json
     await this.generateStack(this.context);
-    console.log("SACPCDEBUG:2:[s3-transform] GenerateStack");
 
     // Modify cloudformation files based on overrides
     await this.applyOverrides();
-    console.log("SACPCDEBUG:3:[s3-transform] Apply Overrides");
 
     // Save generated cloudformation.json and parameters.json files
     this.saveBuildFiles(commandType);
-    console.log("SACPCDEBUG:4:[s3-transform] Saved-Build Files ,commandType: ", commandType);
   }
 
   /**
