@@ -4,8 +4,8 @@ import { JSONUtilities, pathManager } from 'amplify-cli-core';
 import { categoryName } from './constants';
 
 export async function generateCloudFormationFromCDK(resourceName: string) {
-  const targetDir = path.join(pathManager.getBackendDirPath(), categoryName, resourceName);
-  const { cdkStack } = require(path.resolve(path.join(targetDir, 'build', 'cdk-stack.js')));
+  const targetDir = pathManager.getResourceDirectoryPath(undefined, categoryName, resourceName);
+  const { cdkStack } = await import(path.resolve(path.join(targetDir, 'build', 'cdk-stack.js')));
 
   const customStack: cdk.Stack = new cdkStack(undefined, undefined, undefined, { category: categoryName, resourceName });
 
