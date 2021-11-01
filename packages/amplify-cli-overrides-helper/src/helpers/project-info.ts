@@ -1,7 +1,7 @@
 import { stateManager } from 'amplify-cli-core';
 import { AmplifyProjectInfo } from '../types';
 
-export function getProjectInfo(): AmplifyProjectInfo {
+export const getProjectInfo = (): AmplifyProjectInfo => {
   const localEnvInfo = stateManager.getLocalEnvInfo();
   const projectConfig = stateManager.getProjectConfig();
 
@@ -11,4 +11,4 @@ export function getProjectInfo(): AmplifyProjectInfo {
   };
 
   return projectInfo;
-}
+};
