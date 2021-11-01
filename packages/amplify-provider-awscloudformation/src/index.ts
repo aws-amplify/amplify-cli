@@ -48,6 +48,8 @@ export { transformResourceWithOverrides } from './override-manager';
 import { rootStackFileName } from './push-resources';
 export { rootStackFileName } from './push-resources';
 
+import { compileSchema } from './utility-functions';
+
 function init(context) {
   return initializer.run(context);
 }
@@ -186,4 +188,5 @@ module.exports = {
   getTransformerVersion,
   transformResourceWithOverrides,
   rootStackFileName,
+  compileSchema,
 };
