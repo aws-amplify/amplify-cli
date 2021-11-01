@@ -1,6 +1,10 @@
-import { TemplateDiff } from '@aws-cdk/cloudformation-diff';
+import { ResourceImpact, TemplateDiff } from '@aws-cdk/cloudformation-diff';
 
-export const getNestedStackDiffRules = (): NestedStackDiffRule[] => [onlyUpdatesTableNameProperty, tableNameResolvesToSameName];
+export const getNestedStackDiffRules = (): NestedStackDiffRule[] => [
+  onlyUpdatesTableNameProperty,
+  tableNameResolvesToSameName,
+  dataSourceLogicalIdsAreSame,
+];
 
 /**
  * The table name is not actually updated but the way it's defined is changed (tableNameResolvesToSameName will check the table name)
@@ -43,6 +47,14 @@ const tableNameResolvesToSameName = (stackName: string, diff: TemplateDiff) => {
   });
   const finalTableName = replacedElements.join(joinStr);
   expect(finalTableName).toEqual(`${stackName}-${apiId}-${env}`);
+};
+
+const dataSourceLogicalIdsAreSame = (_: string, diff: TemplateDiff) => {
+  const areDataSourcesReplaced = Object.values(diff.resources.changes)
+    .filter(diff => diff.resourceType === 'AWS::AppSync::DataSource')
+    .map(diff => diff.changeImpact === ResourceImpact.WILL_REPLACE)
+    .reduce((acc, it) => acc && it, true);
+  expect(areDataSourcesReplaced).toBe(true);
 };
 
 export type NestedStackDiffRule = (stackName: string, diff: TemplateDiff) => void;

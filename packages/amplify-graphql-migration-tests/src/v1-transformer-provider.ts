@@ -1,11 +1,9 @@
 import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
 import { ModelConnectionTransformer } from 'graphql-connection-transformer';
-import { SearchableModelTransformer } from 'graphql-elasticsearch-transformer';
 import { VersionedModelTransformer } from 'graphql-versioned-transformer';
-import { FunctionTransformer } from 'graphql-function-transformer';
 import { HttpTransformer } from 'graphql-http-transformer';
 import { KeyTransformer } from 'graphql-key-transformer';
-import { GraphQLTransform, ITransformer } from 'graphql-transformer-core';
+import { GraphQLTransform } from 'graphql-transformer-core';
 import { featureFlagProviderStub } from './feature-flag-stub';
 import { V1TransformerTestConfig } from './test-case-types';
 
@@ -13,11 +11,9 @@ const defaultConfig: V1TransformerTestConfig = {
   transformers: [
     new DynamoDBModelTransformer(),
     new VersionedModelTransformer(),
-    // new FunctionTransformer(),
     new HttpTransformer(),
     new KeyTransformer(),
     new ModelConnectionTransformer(),
-    // new SearchableModelTransformer(),
   ],
 };
 

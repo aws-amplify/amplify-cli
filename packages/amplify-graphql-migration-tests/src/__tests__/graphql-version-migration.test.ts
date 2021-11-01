@@ -1,7 +1,7 @@
 import { getTestCaseRegistry } from '../test-case-registry';
 import { v1transformerProvider } from '../v1-transformer-provider';
 import { v2transformerProvider } from '../v2-transformer-provider';
-import { migrateSchemaPlaceholder } from '../migrate-schema-placeholder';
+import { migrateSchema } from '../migrate-schema-wrapper';
 import { getNestedStackDiffRules } from '../nested-stack-diff-rules';
 import * as cdkDiff from '@aws-cdk/cloudformation-diff';
 import { ResourceImpact } from '@aws-cdk/cloudformation-diff';
@@ -16,8 +16,7 @@ describe('v1 to v2 migration', () => {
       const v1result = v1Transformer.transform(schema);
 
       // migrate schema from v1 to v2
-      // TODO replace this migration step with the real migration
-      const migratedSchema = migrateSchemaPlaceholder(schema);
+      const migratedSchema = await migrateSchema(schema);
 
       // run v2 transformer
       const v2transformer = v2transformerProvider(v2TransformerConfig);
