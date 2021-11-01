@@ -229,7 +229,7 @@ export function addApiWithAllAuthModesV2(cwd: string, opts: Partial<AddApiOption
       .wait(/.*Enter the number of milliseconds a token is valid after being authenticated.*/)
       .sendLine('2000')
       // Lambda
-      .wait(/.*Choose a Lambda source*/)
+      .wait(/.*Choose a Lambda authorization function*/)
       .sendCarriageReturn()
       .wait(/.*How long should the authorization response be cached in seconds.*/)
       .sendLine('600')
