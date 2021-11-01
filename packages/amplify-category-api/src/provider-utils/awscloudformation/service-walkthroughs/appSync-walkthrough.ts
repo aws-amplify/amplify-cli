@@ -454,7 +454,7 @@ export const updateWalkthrough = async (context): Promise<UpdateApiRequest> => {
   }
 
   // migrate API project
-  checkAppsyncApiResourceMigration(context, resourceName);
+  await checkAppsyncApiResourceMigration(context, resourceName);
 
   // Get models
   const project = await readProjectConfiguration(resourceDir);

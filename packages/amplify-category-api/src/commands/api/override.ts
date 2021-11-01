@@ -28,6 +28,9 @@ export const run = async (context: $TSContext) => {
   // Make sure to migrate first
   if (service === AmplifySupportedService.APPSYNC) {
     await checkAppsyncApiResourceMigration(context, selectedResourceName);
+    // fetch cli Inputs again
+    // call compile schema here
+    await context.amplify.invokePluginMethod(context, 'awscloudformation', undefined, 'compileSchema', [context, { forceCompile: true }]);
   }
   await generateOverrideSkeleton(context, srcPath, destPath);
 };
