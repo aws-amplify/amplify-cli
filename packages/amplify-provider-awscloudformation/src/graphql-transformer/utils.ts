@@ -48,7 +48,7 @@ export const getAdminRoles = async (ctx: $TSContext, apiResourceName: string): P
   // lambda functions which have access to the api
   const { allResources, resourcesToBeDeleted } = await ctx.amplify.getResourceStatus('function');
   const resources = pullAllBy(allResources, resourcesToBeDeleted, 'resourceName')
-    .filter((r: any) => r.dependsOn.some(d => d.resourceName === apiResourceName))
+    .filter((r: any) => r.dependsOn?.some((d: any) => d?.resourceName === apiResourceName))
     .map((r: any) => `${r.resourceName}-${currentEnv}`);
   adminRoles.push(...resources);
   return adminRoles;
