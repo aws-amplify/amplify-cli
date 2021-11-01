@@ -1,24 +1,24 @@
 import * as cdk from '@aws-cdk/core';
 import * as apigwCdk from '@aws-cdk/aws-apigateway';
 import * as iamCdk from '@aws-cdk/aws-iam';
+import { PermissionSetting } from '../types/apigw-types';
 
 export type ApigwInputs = {
   version: number;
   paths: Path[];
 };
 
-type Path = {
-  name: string;
+export type Path = {
   lambdaFunction: string;
-  privacy: {
-    privacySetting: 'private' | 'open';
-    auth: CrudOperation[];
+  permissions: {
+    setting: PermissionSetting;
+    auth?: CrudOperation[];
     guest?: CrudOperation[];
-    groups?: { [groupName: string]: CrudOperation[] }[];
+    groups?: { [groupName: string]: CrudOperation[] };
   };
 };
 
-enum CrudOperation {
+export enum CrudOperation {
   CREATE = 'CREATE',
   READ = 'READ',
   UPDATE = 'UPDATE',
@@ -41,8 +41,8 @@ type AmplifyCDKL1 = {
 
 export type AmplifyApigwResourceTemplate = {
   restApi: apigwCdk.CfnRestApi;
-  _deploymentResource: apigwCdk.CfnDeployment;
-  _policies: {
+  deploymentResource: apigwCdk.CfnDeployment;
+  policies?: {
     [pathName: string]: ApigwPathPolicy;
   };
 } & AmplifyCDKL1;

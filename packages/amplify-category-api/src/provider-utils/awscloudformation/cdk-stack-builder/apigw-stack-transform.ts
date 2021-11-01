@@ -1,12 +1,12 @@
 import * as cdk from '@aws-cdk/core';
 import {
-  AmplifyCategories,
-  buildOverrideDir,
   $TSAny,
   $TSContext,
+  AmplifyCategories,
+  buildOverrideDir,
   JSONUtilities,
-  pathManager,
   PathConstants,
+  pathManager,
   stateManager,
   Template,
   writeCFNTemplate,
@@ -14,9 +14,9 @@ import {
 import { formatter, printer } from 'amplify-prompts';
 import * as fs from 'fs-extra';
 import * as path from 'path';
+import { AmplifyApigwResourceStack, ApigwInputs } from '.';
 import { category } from '../../../category-constants';
 import { ApigwInputState } from '../apigw-input-state';
-import { AmplifyApigwResourceStack, ApigwInputs } from '.';
 
 export class ApigwStackTransform {
   _app: cdk.App;
@@ -24,7 +24,7 @@ export class ApigwStackTransform {
   resourceTemplateObj: AmplifyApigwResourceStack | undefined;
   cliInputsState: ApigwInputState;
   cfn!: Template;
-  cfnInputParams!: {}; // AmplifyApigwResourceInputParameters; // TODO
+  cfnInputParams!: {};
   resourceName: string;
 
   constructor(context: $TSContext, resourceName: string) {
@@ -32,7 +32,7 @@ export class ApigwStackTransform {
     this.resourceName = resourceName;
 
     // Validate the cli-inputs.json for the resource
-    this.cliInputsState = ApigwInputState.getInstance(context);
+    this.cliInputsState = ApigwInputState.getInstance(context, this.resourceName);
     this.cliInputs = this.cliInputsState.getCliInputPayload();
     this.cliInputsState.isCLIInputsValid();
   }
@@ -60,7 +60,7 @@ export class ApigwStackTransform {
     this.resourceTemplateObj = new AmplifyApigwResourceStack(this._app, 'AmplifyApigwResourceStack', this.cliInputs);
 
     // Add Parameters
-    for (const path of this.cliInputs.paths) {
+    for (const path of Object.values(this.cliInputs.paths)) {
       this.resourceTemplateObj.addCfnParameter(
         {
           type: 'String',
@@ -124,13 +124,6 @@ export class ApigwStackTransform {
       'ApiId',
     );
 
-    // this.resourceTemplateObj.addCfnOutput(
-    //   {
-    //     value: cdk.Fn.ref('AWS::Region'),
-    //   },
-    //   'Region',
-    // );
-
     // Add resources
     this.resourceTemplateObj.generateStackResources(this.resourceName);
   }
@@ -146,12 +139,12 @@ export class ApigwStackTransform {
     // skip if packageManager or override.ts not found
     if (isBuild) {
       const { overrideProps } = await import(path.join(overrideFilePath, 'build', 'override.js')).catch(error => {
-        formatter.list(['No override file found', `To override ${this.resourceName} run amplify override auth ${this.resourceName} `]);
+        formatter.list(['No override file found', `To override ${this.resourceName} run "amplify override api"`]);
         return undefined;
       });
 
       // TODO: Check Script Options
-      if (typeof overrideProps === 'function' && overrideProps) {
+      if (overrideProps && typeof overrideProps === 'function') {
         try {
           this.resourceTemplateObj = overrideProps(this.resourceTemplateObj);
 

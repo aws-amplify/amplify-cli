@@ -1,23 +1,26 @@
 import {
-  AmplifyCategories,
   $TSContext,
   $TSObject,
+  AmplifyCategories,
+  AmplifySupportedService,
   CLIInputSchemaValidator,
   isResourceNameUnique,
-  pathManager,
+  JSONUtilities,
   PathConstants,
+  pathManager,
   stateManager,
 } from 'amplify-cli-core';
+import { printer } from 'amplify-prompts';
 import * as fs from 'fs-extra';
-import * as path from 'path';
-import { ApigwPath, ApigwWalkthroughReturnPromise } from './types/apigw-types';
-import { ApigwInputs, ApigwStackTransform } from './cdk-stack-builder';
+import { join } from 'path';
+import { ApigwInputs, ApigwStackTransform, Path } from './cdk-stack-builder';
+import { ApigwWalkthroughReturnPromise, PermissionSetting } from './types/apigw-types';
 
 export class ApigwInputState {
   private static instance: ApigwInputState;
   projectRootPath: string;
   resourceName: string;
-  paths: ApigwPath[];
+  paths: { [pathName: string]: Path };
 
   private constructor(private readonly context: $TSContext, resourceName?: string) {
     this.projectRootPath = pathManager.findProjectRoot();
@@ -27,7 +30,7 @@ export class ApigwInputState {
 
   public static getInstance(context: $TSContext, resourceName?: string) {
     if (!ApigwInputState.instance) {
-      ApigwInputState.instance = new ApigwInputState(context, resourceName);
+      new ApigwInputState(context, resourceName);
     }
     return ApigwInputState.instance;
   }
@@ -61,6 +64,65 @@ export class ApigwInputState {
     return this.resourceName;
   };
 
+  public migrateApigwResource = async () => {
+    const deprecatedParametersFileName = 'api-params.json';
+    const resourceDirPath = pathManager.getResourceDirectoryPath(this.projectRootPath, AmplifyCategories.API, this.resourceName);
+    const deprecatedParametersFilePath = join(resourceDirPath, deprecatedParametersFileName);
+    let deprecatedParameters: $TSObject;
+    try {
+      deprecatedParameters = JSONUtilities.readJson<$TSObject>(deprecatedParametersFilePath);
+    } catch (e) {
+      printer.error(`Error reading ${deprecatedParametersFileName} file for ${this.resourceName} resource`);
+      throw e;
+    }
+
+    this.paths = {};
+
+    function convertDeprecatedPermissionToCRUD(deprecatedPrivacy: string) {
+      let privacyList: string[];
+      if (deprecatedPrivacy === 'r') {
+        privacyList = [CrudOperation.READ];
+      } else if (deprecatedPrivacy === 'rw') {
+        privacyList = [CrudOperation.CREATE, CrudOperation.READ, CrudOperation.UPDATE, CrudOperation.DELETE];
+      }
+      return privacyList;
+    }
+
+    deprecatedParameters.paths.forEach((path: $TSObject) => {
+      let pathPermissionSetting =
+        path.privacy.open === true
+          ? PermissionSetting.OPEN
+          : path.privacy.private === true
+          ? PermissionSetting.PRIVATE
+          : PermissionSetting.PROTECTED;
+
+      let auth;
+      let guest;
+      // convert deprecated permissions to CRUD structure
+      if (path.privacy.auth && ['r', 'rw'].includes(path.privacy.auth)) {
+        auth = convertDeprecatedPermissionToCRUD(path.privacy.auth);
+      }
+      if (path.privacy.unauth && ['r', 'rw'].includes(path.privacy.unauth)) {
+        auth = convertDeprecatedPermissionToCRUD(path.privacy.unauth);
+      }
+
+      this.paths[path.name] = {
+        permissions: {
+          setting: pathPermissionSetting,
+          auth,
+          guest,
+        },
+        lambdaFunction: path.lambdaFunction,
+      };
+    });
+
+    await this.createApigwArtifacts();
+
+    this.context.filesystem.remove(deprecatedParametersFilePath);
+    this.context.filesystem.remove(join(resourceDirPath, PathConstants.ParametersJsonFileName));
+    this.context.filesystem.remove(join(resourceDirPath, PathConstants.CfnFileName(this.resourceName)));
+  };
+
   public cliInputsFileExists() {
     const path = pathManager.getResourceInputsJsonFilePath(this.projectRootPath, AmplifyCategories.API, this.resourceName);
     return fs.existsSync(path);
@@ -70,24 +132,23 @@ export class ApigwInputState {
     return stateManager.getResourceInputsJson(this.projectRootPath, AmplifyCategories.API, this.resourceName);
   }
 
-  // TODO
   public isCLIInputsValid(cliInputs?: ApigwInputs) {
     if (!cliInputs) {
       cliInputs = this.getCliInputPayload();
     }
 
-    const schemaValidator = new CLIInputSchemaValidator('API Gateway', AmplifyCategories.API, 'ApigwInputs');
-    // schemaValidator.validateInput(JSONUtilities.stringify(cliInputs)); // TODO
+    const schemaValidator = new CLIInputSchemaValidator(AmplifySupportedService.APIGW, AmplifyCategories.API, 'APIGatewayCLIInputs');
+    schemaValidator.validateInput(JSONUtilities.stringify(cliInputs));
   }
 
   async createApigwArtifacts() {
     const resourceDirPath = pathManager.getResourceDirectoryPath(this.projectRootPath, AmplifyCategories.API, this.resourceName);
     fs.ensureDirSync(resourceDirPath);
 
-    const buildDirPath = path.join(resourceDirPath, PathConstants.BuildDirName);
+    const buildDirPath = join(resourceDirPath, PathConstants.BuildDirName);
     fs.ensureDirSync(buildDirPath);
 
-    stateManager.setResourceInputsJson(this.projectRootPath, AmplifyCategories.API, this.resourceName, { paths: this.paths });
+    stateManager.setResourceInputsJson(this.projectRootPath, AmplifyCategories.API, this.resourceName, { version: 1, paths: this.paths });
 
     stateManager.setResourceParametersJson(this.projectRootPath, AmplifyCategories.API, this.resourceName, {});
 

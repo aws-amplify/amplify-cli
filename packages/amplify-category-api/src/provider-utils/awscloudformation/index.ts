@@ -17,6 +17,14 @@ import { datasourceMetadataFor, getServiceWalkthrough, serviceMetadataFor } from
 import { editSchemaFlow } from './utils/edit-schema-flow';
 import { serviceWalkthroughResultToAddApiRequest } from './utils/service-walkthrough-result-to-add-api-request';
 
+export async function addAdminQueriesApi(context: $TSContext, apiName: string) {
+  // TODO
+}
+
+export async function updateAdminQueriesApi(context: $TSContext, apiName: string) {
+  // TODO
+}
+
 export async function console(context: $TSContext, service: string) {
   const { serviceWalkthroughFilename } = await serviceMetadataFor(service);
   const serviceWalkthroughSrc = path.join(__dirname, 'service-walkthroughs', serviceWalkthroughFilename);
@@ -64,7 +72,7 @@ async function addNonContainerResource(context: $TSContext, service: string, opt
   }
 }
 
-export async function addResource(context: $TSContext, category, service: string, options) {
+export async function addResource(context: $TSContext, service: string, options) {
   let useContainerResource = false;
   let apiType = API_TYPE.GRAPHQL;
 
@@ -291,7 +299,7 @@ async function getPermissionPoliciesContainer(context: $TSContext, service: stri
   return getContainerPermissionPolicies(context, service, resourceName, crudOptions);
 }
 
-async function getPermissionPoliciesNonContainer(service: string, resourceName: string, crudOptions) {
+async function getPermissionPoliciesNonContainer(service: string, resourceName: string, crudOptions: string[]) {
   const serviceMetadata = await serviceMetadataFor(service);
   const { serviceWalkthroughFilename } = serviceMetadata;
   const serviceWalkthroughSrc = path.join(__dirname, 'service-walkthroughs', serviceWalkthroughFilename);

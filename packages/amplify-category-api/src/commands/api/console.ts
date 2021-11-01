@@ -1,15 +1,14 @@
-import { $TSContext } from 'amplify-cli-core';
+import { $TSContext, AmplifyCategories } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import * as path from 'path';
 
 const subcommand = 'console';
-const category = 'api';
 
 export const name = subcommand;
 
 export const run = async (context: $TSContext) => {
   const servicesMetadata = (await import(path.join('..', '..', 'provider-utils', 'supported-services'))).supportedServices;
-  const result = await context.amplify.serviceSelectionPrompt(context, category, servicesMetadata);
+  const result = await context.amplify.serviceSelectionPrompt(context, AmplifyCategories.API, servicesMetadata);
   try {
     const providerController = await import(path.join('..', '..', 'provider-utils', result.providerName, 'index'));
     if (!providerController) {

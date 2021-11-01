@@ -1,15 +1,26 @@
-import { $TSContext, $TSObject, pathManager, stateManager } from 'amplify-cli-core';
+import {
+  $TSContext,
+  $TSObject,
+  AmplifyCategories,
+  AmplifySupportedService,
+  buildOverrideDir,
+  pathManager,
+  stateManager,
+} from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import { validateAddApiRequest, validateUpdateApiRequest } from 'amplify-util-headless-input';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import { run } from './commands/api/console';
+import { getAppSyncAuthConfig, getAppSyncResourceName } from './provider-utils/awscloudformation//utils/amplify-meta-utils';
+import { provider } from './provider-utils/awscloudformation/aws-constants';
+import { ApigwStackTransform } from './provider-utils/awscloudformation/cdk-stack-builder';
 import { getCfnApiArtifactHandler } from './provider-utils/awscloudformation/cfn-api-artifact-handler';
 import { askAuthQuestions } from './provider-utils/awscloudformation/service-walkthroughs/appSync-walkthrough';
-import { getAppSyncResourceName, getAppSyncAuthConfig } from './provider-utils/awscloudformation//utils/amplify-meta-utils';
 import { authConfigToAppSyncAuthType } from './provider-utils/awscloudformation/utils/auth-config-to-app-sync-auth-type-bi-di-mapper';
 
 export { NETWORK_STACK_LOGICAL_ID } from './category-constants';
+export { addAdminQueriesApi, updateAdminQueriesApi } from './provider-utils/awscloudformation/';
 export { DEPLOYMENT_MECHANISM } from './provider-utils/awscloudformation/base-api-stack';
 export { getContainers } from './provider-utils/awscloudformation/docker-compose';
 export { EcsAlbStack } from './provider-utils/awscloudformation/ecs-alb-stack';
@@ -22,7 +33,7 @@ export {
 } from './provider-utils/awscloudformation/utils/containers-artifacts';
 export { getGitHubOwnerRepoFromPath } from './provider-utils/awscloudformation/utils/github';
 
-const category = 'api';
+const category = AmplifyCategories.API;
 const categories = 'categories';
 
 export async function console(context: $TSContext) {
@@ -94,7 +105,7 @@ export async function initEnv(context: $TSContext) {
   let resourceName;
   const apis = Object.keys(backendConfig[category]);
   for (const api of apis) {
-    if (backendConfig[category][api][service] === 'AppSync') {
+    if (backendConfig[category][api][service] === AmplifySupportedService.APPSYNC) {
       resourceName = api;
       break;
     }
@@ -110,8 +121,7 @@ export async function initEnv(context: $TSContext) {
     return;
   }
 
-  // TODO, constant for awscloudformation
-  const providerController = await import(path.join('.', 'provider-utils', 'awscloudformation', 'index'));
+  const providerController = await import(path.join('.', 'provider-utils', provider, 'index'));
 
   if (!providerController) {
     printer.error('Provider not configured for this category');
@@ -203,7 +213,7 @@ export async function executeAmplifyCommand(context: $TSContext) {
     commandPath = path.join(commandPath, category, context.input.command);
   }
 
-  const commandModule = require(commandPath);
+  const commandModule = await import(commandPath);
   await commandModule.run(context);
 }
 
@@ -253,4 +263,24 @@ export async function addGraphQLAuthorizationMode(context: $TSContext, args: $TS
   );
 
   return addAuthConfig;
+}
+
+export async function transformCategoryStack(context: $TSContext, resource: $TSObject) {
+  if (resource.service === AmplifySupportedService.APIGW) {
+    if (canResourceBeTransformed(resource.resourceName)) {
+      const backendDir = pathManager.getBackendDirPath();
+      const overrideDir = pathManager.getResourceDirectoryPath(undefined, AmplifyCategories.API, resource.resourceName);
+      await buildOverrideDir(backendDir, overrideDir).catch(error => {
+        printer.debug(`Skipping build as ${error.message}`);
+        return false;
+      });
+      // Rebuild CFN
+      const apigwStack = new ApigwStackTransform(context, resource.resourceName);
+      apigwStack.transform();
+    }
+  }
+}
+
+function canResourceBeTransformed(resourceName: string) {
+  return stateManager.resourceInputsJsonExists(undefined, AmplifyCategories.API, resourceName);
 }

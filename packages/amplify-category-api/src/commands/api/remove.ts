@@ -1,9 +1,8 @@
-import { $TSContext } from 'amplify-cli-core';
+import { $TSContext, AmplifyCategories } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import * as path from 'path';
 
 const subcommand = 'remove';
-const category = 'api';
 const gqlConfigFilename = '.graphqlconfig.yml';
 
 export const name = subcommand;
@@ -11,7 +10,7 @@ export const name = subcommand;
 export const run = async (context: $TSContext) => {
   const resourceName = context.parameters.first;
 
-  const resourceValues = await context.amplify.removeResource(context, category, resourceName, {
+  const resourceValues = await context.amplify.removeResource(context, AmplifyCategories.API, resourceName, {
     serviceSuffix: { AppSync: '(GraphQL API)', 'API Gateway': '(REST API)' },
   });
   try {

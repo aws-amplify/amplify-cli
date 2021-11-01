@@ -1,37 +1,35 @@
-import { $TSContext } from 'amplify-cli-core';
+import { $TSContext, AmplifyCategories } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import * as path from 'path';
 
-const featureName = 'api';
-
-export const name = featureName;
+export const name = AmplifyCategories.API;
 
 export const run = async (context: $TSContext) => {
   if (/^win/.test(process.platform)) {
     try {
-      const { run } = await import(path.join('.', featureName, context.parameters.first));
+      const { run } = await import(path.join('.', AmplifyCategories.API, context.parameters.first));
       return run(context);
     } catch (e) {
       printer.error('Command not found');
     }
   }
-  const header = `amplify ${featureName} <subcommands>`;
+  const header = `amplify ${AmplifyCategories.API} <subcommands>`;
   const commands = [
     {
       name: 'add',
-      description: `Takes you through a CLI flow to add a ${featureName} resource to your local backend`,
+      description: `Takes you through a CLI flow to add a ${AmplifyCategories.API} resource to your local backend`,
     },
     {
       name: 'push',
-      description: `Provisions ${featureName} cloud resources and its dependencies with the latest local developments`,
+      description: `Provisions ${AmplifyCategories.API} cloud resources and its dependencies with the latest local developments`,
     },
     {
       name: 'remove',
-      description: `Removes ${featureName} resource from your local backend which would be removed from the cloud on the next push command`,
+      description: `Removes ${AmplifyCategories.API} resource from your local backend which would be removed from the cloud on the next push command`,
     },
     {
       name: 'update',
-      description: `Takes you through steps in the CLI to update an ${featureName} resource`,
+      description: `Takes you through steps in the CLI to update an ${AmplifyCategories.API} resource`,
     },
     {
       name: 'gql-compile',

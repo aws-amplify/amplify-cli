@@ -1,7 +1,7 @@
-import { $TSObject, JSONUtilities } from 'amplify-cli-core';
-import * as cdk from '@aws-cdk/core';
 import * as apigw from '@aws-cdk/aws-apigateway';
 import * as lambda from '@aws-cdk/aws-lambda';
+import * as cdk from '@aws-cdk/core';
+import { $TSObject, JSONUtilities } from 'amplify-cli-core';
 import { AmplifyApigwResourceTemplate, ApigwInputs, ApigwPathPolicy } from './types';
 
 const CFN_TEMPLATE_FORMAT_VERSION = '2010-09-09';
@@ -10,18 +10,18 @@ const ROOT_CFN_DESCRIPTION = 'API Gateway Resource for AWS Amplify CLI';
 export class AmplifyApigwResourceStack extends cdk.Stack implements AmplifyApigwResourceTemplate {
   _scope: cdk.Construct;
   restApi!: apigw.CfnRestApi;
-  _deploymentResource: apigw.CfnDeployment;
+  deploymentResource: apigw.CfnDeployment;
   _lambdaPermission: lambda.CfnPermission;
   _props: ApigwInputs;
-  _cfnPaths: $TSObject;
-  _policies: { [pathName: string]: ApigwPathPolicy };
+  paths: $TSObject;
+  policies: { [pathName: string]: ApigwPathPolicy };
   _cfnParameterMap: Map<string, cdk.CfnParameter> = new Map();
 
   constructor(scope: cdk.Construct, id: string, props: ApigwInputs) {
     super(scope, id, undefined);
     this._scope = scope;
     this._props = props;
-    this._cfnPaths = {};
+    this.paths = {};
     this.templateOptions.templateFormatVersion = CFN_TEMPLATE_FORMAT_VERSION;
     this.templateOptions.description = ROOT_CFN_DESCRIPTION;
   }
@@ -84,8 +84,8 @@ export class AmplifyApigwResourceStack extends cdk.Stack implements AmplifyApigw
   }
 
   private _constructCfnPaths(resourceName: string) {
-    for (const path of this._props.paths) {
-      this._cfnPaths[path.name] = {
+    for (const [pathName, path] of Object.entries(this._props.paths)) {
+      this.paths[pathName] = {
         options: {
           consumes: ['application/json'],
           produces: ['application/json'],
@@ -94,7 +94,7 @@ export class AmplifyApigwResourceStack extends cdk.Stack implements AmplifyApigw
           },
           'x-amazon-apigateway-integration': {
             responses: {
-              default: defaultResponseObject,
+              default: defaultCorsResponseObject,
             },
             requestTemplates: {
               'application/json': '{"statusCode": 200}',
@@ -144,7 +144,7 @@ export class AmplifyApigwResourceStack extends cdk.Stack implements AmplifyApigw
         },
       };
 
-      this._cfnPaths[`${path.name}/{proxy+}`] = {
+      this.paths[`${pathName}/{proxy+}`] = {
         options: {
           consumes: ['application/json'],
           produces: ['application/json'],
@@ -153,7 +153,7 @@ export class AmplifyApigwResourceStack extends cdk.Stack implements AmplifyApigw
           },
           'x-amazon-apigateway-integration': {
             responses: {
-              default: defaultResponseObject,
+              default: defaultCorsResponseObject,
             },
             requestTemplates: {
               'application/json': '{"statusCode": 200}',
@@ -239,7 +239,7 @@ export class AmplifyApigwResourceStack extends cdk.Stack implements AmplifyApigw
         host: cdk.Fn.join('', ['apigateway.', cdk.Fn.ref('AWS::Region'), '.amazonaws.com']),
         basePath: cdk.Fn.conditionIf('ShouldNotCreateEnvResources', '/Prod', cdk.Fn.join('', ['/', cdk.Fn.ref('env')])),
         schemes: ['https'],
-        paths: this._cfnPaths,
+        paths: this.paths,
         securityDefinitions: {
           sigv4: {
             type: 'apiKey',
@@ -273,7 +273,7 @@ export class AmplifyApigwResourceStack extends cdk.Stack implements AmplifyApigw
       },
     });
 
-    this._deploymentResource = new apigw.CfnDeployment(this, `DeploymentAPIGW${resourceName}`, {
+    this.deploymentResource = new apigw.CfnDeployment(this, `DeploymentAPIGW${resourceName}`, {
       restApiId: cdk.Fn.ref(resourceName),
       stageName: cdk.Fn.conditionIf('ShouldNotCreateEnvResources', 'Prod', cdk.Fn.ref('env')).toString(),
     });
@@ -284,7 +284,7 @@ export class AmplifyApigwResourceStack extends cdk.Stack implements AmplifyApigw
   };
 }
 
-const defaultResponseObject = {
+const defaultCorsResponseObject = {
   statusCode: '200',
   responseParameters: {
     'method.response.header.Access-Control-Allow-Methods': "'DELETE,GET,HEAD,OPTIONS,PATCH,POST,PUT'",

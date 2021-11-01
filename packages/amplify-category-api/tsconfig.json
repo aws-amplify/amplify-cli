@@ -11,6 +11,8 @@
     "lib",
     "resources/awscloudformation/lambdas",
     "resources/awscloudformation/container-templates",
+    "resources/awscloudformation/overrides-resource",
+    "scripts",
     "src/__tests__"
   ],
   "references": [

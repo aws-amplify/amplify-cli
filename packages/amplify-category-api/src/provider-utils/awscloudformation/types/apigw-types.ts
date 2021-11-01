@@ -1,18 +1,17 @@
 import { $TSObject } from 'amplify-cli-core';
+import { CrudOperation } from '../cdk-stack-builder';
 
 export type ApigwPath = {
   name: string;
   permissions: {
     setting: PermissionSetting;
-    auth: string | string[];
-    authPrivacy: string[];
-    unauth: string | string[];
-    unauthPrivacy: string[];
-    userPoolGroups: {
-      [userPoolGroupName: string]: $TSObject[]; // TODO replace $TSObject
+    auth?: CrudOperation[];
+    unauth?: CrudOperation[];
+    userPoolGroups?: {
+      [userPoolGroupName: string]: CrudOperation[];
     };
   };
-  lambdaArn: string;
+  lambdaArn?: string;
   lambdaFunction: string;
 };
 
@@ -28,4 +27,9 @@ export type ApigwWalkthroughReturnPromise = Promise<{
   answers: ApigwAnswers;
 }>;
 
-export type ApigwAnswers = { paths: ApigwPath[]; resourceName: string; functionArns?: string[]; dependsOn?: $TSObject[] };
+export type ApigwAnswers = {
+  paths: { [pathName: string]: ApigwPath };
+  resourceName: string;
+  functionArns?: string[];
+  dependsOn?: $TSObject[];
+};

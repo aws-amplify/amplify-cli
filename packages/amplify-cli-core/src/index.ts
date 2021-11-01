@@ -326,8 +326,8 @@ interface AmplifyToolkit {
   triggerFlow: () => $TSAny;
   addTrigger: () => $TSAny;
   updateTrigger: () => $TSAny;
-  deleteTrigger: () => $TSAny;
-  deleteAllTriggers: () => $TSAny;
+  deleteTrigger: (context: $TSContext, name: string, dir: string) => Promise<void>;
+  deleteAllTriggers: (previouslySaved: $TSAny, resourceName: string, targetDir: string, context: $TSContext) => Promise<void>;
   deleteDeselectedTriggers: () => $TSAny;
   dependsOnBlock: (context: $TSContext, dependsOnKeys: string[], service: string) => $TSAny;
   getTriggerMetadata: () => $TSAny;
@@ -335,7 +335,7 @@ interface AmplifyToolkit {
   getTriggerEnvVariables: () => $TSAny;
   getTriggerEnvInputs: () => $TSAny;
   getUserPoolGroupList: () => $TSAny[];
-  forceRemoveResource: () => $TSAny;
+  forceRemoveResource: (context: $TSContext, categoryName: string, name: string, dir: string) => $TSAny;
   writeObjectAsJson: () => $TSAny;
   hashDir: (dir: string, exclude: string[]) => Promise<string>;
   leaveBreadcrumbs: (category: string, resourceName: string, breadcrumbs: unknown) => void;

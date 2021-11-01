@@ -1,10 +1,9 @@
-import { $TSContext } from 'amplify-cli-core';
+import { $TSContext, $TSObject, AmplifyCategories, AmplifySupportedService } from 'amplify-cli-core';
 import { printer, prompter } from 'amplify-prompts';
 import * as path from 'path';
 
 const subcommand = 'add';
-const category = 'api';
-const apiGatewayService = 'API Gateway';
+const category = AmplifyCategories.API;
 
 export const name = subcommand;
 
@@ -27,9 +26,9 @@ export const run = async (context: $TSContext) => {
         return providerController.updateResource(context, category, result.service, { allowContainers: false });
       }
 
-      return providerController.addResource(context, category, result.service, options);
+      return providerController.addResource(context, result.service, options);
     })
-    .then(resourceName => {
+    .then((resourceName: string) => {
       printer.success(`Successfully added resource ${resourceName} locally`);
       printer.blankLine();
       printer.success('Some next steps:');
@@ -48,12 +47,14 @@ export const run = async (context: $TSContext) => {
 };
 
 async function shouldUpdateExistingRestApi(context: $TSContext, selectedService: string): Promise<boolean> {
-  if (selectedService !== apiGatewayService) {
+  if (selectedService !== AmplifySupportedService.APIGW) {
     return false;
   }
 
   const { allResources } = await context.amplify.getResourceStatus();
-  const hasRestApis = allResources.some(resource => resource.service === apiGatewayService && resource.mobileHubMigrated !== true);
+  const hasRestApis = allResources.some(
+    (resource: $TSObject) => resource.service === AmplifySupportedService.APIGW && resource.mobileHubMigrated !== true,
+  );
 
   if (!hasRestApis) {
     return false;
