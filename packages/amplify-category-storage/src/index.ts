@@ -4,7 +4,7 @@ import {
   validateAddStorageRequest,
   validateImportStorageRequest,
   validateRemoveStorageRequest,
-  validateUpdateStorageRequest
+  validateUpdateStorageRequest,
 } from 'amplify-util-headless-input';
 import * as path from 'path';
 import sequential from 'promise-sequential';
@@ -17,11 +17,10 @@ import {
   headlessAddStorage,
   headlessImportStorage,
   headlessRemoveStorage,
-  headlessUpdateStorage
+  headlessUpdateStorage,
 } from './provider-utils/awscloudformation/storage-configuration-helpers';
 export { categoryName as category } from './constants';
-export { AmplifyDDBResourceTemplate } from './provider-utils/awscloudformation/cdk-stack-builder/types';
-
+export { AmplifyDDBResourceTemplate, AmplifyS3ResourceTemplate } from './provider-utils/awscloudformation/cdk-stack-builder/types';
 
 async function add(context: any, providerName: any, service: any) {
   const options = {
@@ -77,7 +76,7 @@ async function migrateStorageCategory(context: any) {
 }
 
 async function transformCategoryStack(context: $TSContext, resource: IAmplifyResource) {
-  if (resource.service === AmplifySupportedService.DYNAMODB ) {
+  if (resource.service === AmplifySupportedService.DYNAMODB) {
     if (canResourceBeTransformed(resource.resourceName)) {
       const stackGenerator = new DDBStackTransform(resource.resourceName);
       await stackGenerator.transform();
