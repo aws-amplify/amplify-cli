@@ -1,4 +1,3 @@
-import * as cdk from '@aws-cdk/core';
 import { $TSContext, getPackageManager, JSONUtilities, pathManager, ResourceTuple } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import execa from 'execa';
@@ -7,6 +6,7 @@ import ora from 'ora';
 import * as path from 'path';
 import { categoryName } from './constants';
 import { getAllResources } from './dependency-management-utils';
+import { generateCloudFormationFromCDK } from './generate-cfn-from-cdk';
 
 const resourcesDirRoot = path.normalize(path.join(__dirname, '../../resources'));
 const amplifyDependentResourcesFilename = 'amplify-dependent-resources-ref.ejs';
@@ -101,14 +101,4 @@ async function buildResource(context: $TSContext, resource: ResourceMeta) {
   await generateCloudFormationFromCDK(resource.resourceName);
 
   await generateDependentResourcesType(context, targetDir);
-}
-
-async function generateCloudFormationFromCDK(resourceName: string) {
-  const targetDir = path.join(pathManager.getBackendDirPath(), categoryName, resourceName);
-  const { cdkStack } = require(path.resolve(path.join(targetDir, 'build', 'cdk-stack.js')));
-
-  const customStack: cdk.Stack = new cdkStack(undefined, undefined, undefined, { category: categoryName, resourceName });
-
-  // @ts-ignore
-  JSONUtilities.writeJson(path.join(targetDir, 'build', 'cloudformation-template.json'), customStack._toCloudFormation());
 }
