@@ -24,7 +24,7 @@ import * as path from 'path';
 import { printer, formatter } from 'amplify-prompts';
 import { generateNestedAuthTriggerTemplate } from '../utils/generate-auth-trigger-template';
 import { createUserPoolGroups, updateUserPoolGroups } from '../utils/synthesize-resources';
-import { CognitoCLIInputs } from '../service-walkthrough-types/awsCognito-user-input-types';
+import { AttributeType, CognitoCLIInputs } from '../service-walkthrough-types/awsCognito-user-input-types';
 import * as vm from 'vm2';
 import * as fs from 'fs-extra';
 import os from 'os';
@@ -274,7 +274,9 @@ export class AmplifyAuthTransform extends AmplifyCategoryTransform {
     const configureSMS =
       (props.autoVerifiedAttributes && props.autoVerifiedAttributes.includes('phone_number')) ||
       (props.mfaConfiguration != 'OFF' && props.mfaTypes && props.mfaTypes.includes('SMS Text Message')) ||
-      (props.requiredAttributes && props.requiredAttributes.includes('phone_number'));
+      (props.requiredAttributes && props.requiredAttributes.includes('phone_number')) ||
+      (props.usernameAttributes && props.usernameAttributes.includes(AttributeType.PHONE_NUMBER));
+
     if (props.authSelections === 'identityPoolAndUserPool' || props.authSelections == 'identityPoolOnly') {
       this._authTemplateObj.addCfnOutput(
         {
