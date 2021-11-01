@@ -17,6 +17,9 @@ import {
   forEach,
   list,
   equals,
+  or,
+  and,
+  parens,
 } from 'graphql-mapping-template';
 import { NONE_VALUE } from 'graphql-transformer-common';
 import {
@@ -51,7 +54,22 @@ export const addAllowedFieldsIfElse = (fieldKey: string, breakLoop: boolean = fa
 };
 
 // iam check
-export const iamCheck = (claim: string, exp: Expression) => iff(equals(ref('ctx.identity.userArn'), ref(`ctx.stash.${claim}`)), exp);
+export const iamCheck = (claim: string, exp: Expression, identityPoolId?: string) => {
+  let iamExp: Expression = equals(ref('ctx.identity.userArn'), ref(`ctx.stash.${claim}`));
+  // only include the additional check if we have a private rule and a provided identityPoolId
+  if (identityPoolId && claim === 'authRole') {
+    iamExp = or([
+      parens(iamExp),
+      parens(
+        and([
+          equals(ref('ctx.identity.cognitoIdentityPoolId'), str(identityPoolId)),
+          equals(ref('ctx.identity.cognitoIdentityAuthType'), str('authenticated')),
+        ]),
+      ),
+    ]);
+  }
+  return iff(iamExp, exp);
+};
 
 /**
  * Behavior of auth v1
@@ -118,7 +136,12 @@ export const lambdaExpression = (roles: Array<RoleDefinition>) => {
   );
 };
 
-export const iamExpression = (roles: Array<RoleDefinition>, adminRolesEnabled: boolean, adminRoles: Array<string> = []) => {
+export const iamExpression = (
+  roles: Array<RoleDefinition>,
+  adminRolesEnabled: boolean,
+  adminRoles: Array<string> = [],
+  identityPoolId?: string,
+) => {
   const expression = new Array<Expression>();
   // allow if using an admin role
   if (adminRolesEnabled) {
@@ -126,7 +149,7 @@ export const iamExpression = (roles: Array<RoleDefinition>, adminRolesEnabled: b
   }
   if (roles.length > 0) {
     for (let role of roles) {
-      expression.push(iff(not(ref(IS_AUTHORIZED_FLAG)), iamCheck(role.claim!, set(ref(IS_AUTHORIZED_FLAG), bool(true)))));
+      expression.push(iff(not(ref(IS_AUTHORIZED_FLAG)), iamCheck(role.claim!, set(ref(IS_AUTHORIZED_FLAG), bool(true)), identityPoolId)));
     }
   } else {
     expression.push(ref('util.unauthorized()'));

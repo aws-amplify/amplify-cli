@@ -89,7 +89,12 @@ const lambdaExpression = (roles: Array<RoleDefinition>) => {
   return iff(equals(ref('util.authType()'), str(LAMBDA_AUTH_TYPE)), compoundExpression(expression));
 };
 
-const iamExpression = (roles: Array<RoleDefinition>, hasAdminRolesEnabled: boolean = false, adminRoles: Array<string> = []) => {
+const iamExpression = (
+  roles: Array<RoleDefinition>,
+  hasAdminRolesEnabled: boolean = false,
+  adminRoles: Array<string> = [],
+  identityPoolId?: string,
+) => {
   const expression = new Array<Expression>();
   // allow if using an admin role
   if (hasAdminRolesEnabled) {
@@ -105,6 +110,7 @@ const iamExpression = (roles: Array<RoleDefinition>, hasAdminRolesEnabled: boole
               set(ref(`${ALLOWED_FIELDS}`), raw(JSON.stringify(role.allowedFields))),
               set(ref(`${NULL_ALLOWED_FIELDS}`), raw(JSON.stringify(role.nullAllowedFields))),
             ]),
+            identityPoolId,
           ),
         );
       } else {
@@ -292,7 +298,7 @@ export const generateAuthExpressionForUpdate = (
     totalAuthExpressions.push(lambdaExpression(lambdaRoles));
   }
   if (providers.hasIAM) {
-    totalAuthExpressions.push(iamExpression(iamRoles, providers.hasAdminRolesEnabled, providers.adminRoles));
+    totalAuthExpressions.push(iamExpression(iamRoles, providers.hasAdminRolesEnabled, providers.adminRoles, providers.identityPoolId));
   }
   if (providers.hasUserPools) {
     totalAuthExpressions.push(

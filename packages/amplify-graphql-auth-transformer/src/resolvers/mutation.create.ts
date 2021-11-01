@@ -66,7 +66,12 @@ const apiKeyExpression = (roles: Array<RoleDefinition>) => {
  * @param roles
  * @returns
  */
-const iamExpression = (roles: Array<RoleDefinition>, hasAdminRolesEnabled: boolean = false, adminRoles: Array<string> = []) => {
+const iamExpression = (
+  roles: Array<RoleDefinition>,
+  hasAdminRolesEnabled: boolean = false,
+  adminRoles: Array<string> = [],
+  identityPoolId?: string,
+) => {
   const expression = new Array<Expression>();
   // allow if using an admin role
   if (hasAdminRolesEnabled) {
@@ -79,7 +84,7 @@ const iamExpression = (roles: Array<RoleDefinition>, hasAdminRolesEnabled: boole
           iamCheck(role.claim!, compoundExpression([set(ref(`${ALLOWED_FIELDS}`), raw(JSON.stringify(role.allowedFields)))])),
         );
       } else {
-        expression.push(iamCheck(role.claim!, set(ref(IS_AUTHORIZED_FLAG), bool(true))));
+        expression.push(iamCheck(role.claim!, set(ref(IS_AUTHORIZED_FLAG), bool(true)), identityPoolId));
       }
     }
   } else {
@@ -232,7 +237,7 @@ export const generateAuthExpressionForCreate = (
     totalAuthExpressions.push(apiKeyExpression(apiKeyRoles));
   }
   if (providers.hasIAM) {
-    totalAuthExpressions.push(iamExpression(iamRoles, providers.hasAdminRolesEnabled, providers.adminRoles));
+    totalAuthExpressions.push(iamExpression(iamRoles, providers.hasAdminRolesEnabled, providers.adminRoles, providers.identityPoolId));
   }
   if (providers.hasLambda) {
     totalAuthExpressions.push(lambdaExpression(lambdaRoles));
@@ -241,10 +246,7 @@ export const generateAuthExpressionForCreate = (
     totalAuthExpressions.push(
       iff(
         equals(ref('util.authType()'), str(COGNITO_AUTH_TYPE)),
-        compoundExpression([
-          ...generateStaticRoleExpression(cognitoStaticRoles),
-          ...dynamicRoleExpression(cognitoDynamicRoles, fields),
-        ]),
+        compoundExpression([...generateStaticRoleExpression(cognitoStaticRoles), ...dynamicRoleExpression(cognitoDynamicRoles, fields)]),
       ),
     );
   }
