@@ -244,7 +244,7 @@ export class GraphQLTransform {
 
     // generate resolvers
     (context as TransformerContext).bind(api);
-    if (this.resolverConfig) {
+    if (!_.isEmpty(this.resolverConfig)) {
       SyncUtils.createSyncTable(context);
     }
     for (const transformer of this.transformers) {
@@ -264,18 +264,15 @@ export class GraphQLTransform {
       reverseThroughTransformers -= 1;
     }
     this.collectResolvers(context, context.api);
-    // using .thrn() format here since transform is sync operation
     if (this.overrideConfig?.overrideFlag) {
-      const overrideOperation = async () => await this.applyOverride(stackManager);
-      overrideOperation().finally(() => {
-        return this.synthesize(context);
-      });
+      this.applyOverride(stackManager);
+      return this.synthesize(context);
     } else {
       return this.synthesize(context);
     }
   }
 
-  private applyOverride = async (stackManager: StackManager) => {
+  private applyOverride = (stackManager: StackManager) => {
     let stacks: string[] = [];
     let amplifyApiObj: any = {};
     stackManager.rootStack.node.findAll().forEach(node => {
@@ -341,12 +338,7 @@ export class GraphQLTransform {
 
     let appsyncResourceObj = convertToAppsyncResourceObj(amplifyApiObj);
     if (!_.isEmpty(this.overrideConfig) && this.overrideConfig!.overrideFlag) {
-      const overrideCode: string = await fs
-        .readFile(path.join(this.overrideConfig!.overrideDir, 'build', 'override.js'), 'utf-8')
-        .catch(() => {
-          formatter.list(['No override File Found', `To override ${this.overrideConfig!.resourceName} run amplify override auth`]);
-          return '';
-        });
+      const overrideCode: string = fs.readFileSync(path.join(this.overrideConfig!.overrideDir, 'build', 'override.js'), 'utf-8');
       const sandboxNode = new vm.NodeVM({
         console: 'inherit',
         timeout: 5000,
@@ -358,7 +350,7 @@ export class GraphQLTransform {
         },
       });
       try {
-        await sandboxNode
+        sandboxNode
           .run(overrideCode, path.join(this.overrideConfig!.overrideDir, 'build', 'override.js'))
           .overrideProps(appsyncResourceObj);
       } catch (err) {

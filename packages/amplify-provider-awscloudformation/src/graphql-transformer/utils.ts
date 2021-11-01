@@ -353,8 +353,10 @@ export function throwIfNotJSONExt(stackFile: string) {
 const emptyBuildDir = (directory: string) => {
   const files = fs.readdirSync(directory);
   files.forEach(file => {
-    const fileDir = path.join('./', file);
-    if (!file.includes('tsconfig.resource.json')) {
+    const fileDir = path.join(directory, file);
+    if (fs.lstatSync(fileDir).isDirectory()) {
+      rimraf.sync(fileDir);
+    } else if (!file.includes('tsconfig.resource.json')) {
       fs.unlinkSync(fileDir);
     }
   });

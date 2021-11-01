@@ -279,14 +279,17 @@ export async function transformCategoryStack(context: $TSContext, resource: $TSO
         printer.debug(`Skipping build as ${error.message}`);
         return false;
       });
-      context.amplify.executeProviderUtils(context, 'awscloudformation', 'compileSchema', {
-        forceCompile: true,
-        overrideConfig: {
-          overrideFlag: isBuild,
-          overrideDir: overrideDir,
-          resourceName: resource.resourceName,
+      await context.amplify.invokePluginMethod(context, 'awscloudformation', undefined, 'compileSchema', [
+        context,
+        {
+          forceCompile: true,
+          overrideConfig: {
+            overrideFlag: isBuild,
+            overrideDir: overrideDir,
+            resourceName: resource.resourceName,
+          },
         },
-      });
+      ]);
     }
   }
 }
