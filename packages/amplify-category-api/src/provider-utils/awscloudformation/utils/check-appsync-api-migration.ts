@@ -12,9 +12,6 @@ export const checkAppsyncApiResourceMigration = async (context: $TSContext, apiN
     if (isMigrate) {
       // generate cli-inputs for migration from parameters.json
       await migrateResourceToSupportOverride(apiName);
-      // fetch cli Inputs again
-      // call compile schema here
-      context.amplify.executeProviderUtils(context, 'awscloudformation', 'compileSchema', { forceCompile: true });
     }
   }
 };
