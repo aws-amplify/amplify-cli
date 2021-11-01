@@ -1,7 +1,5 @@
-/* Add Amplify Helper dependencies     */
+import { AmplifyDDBResourceTemplate } from '@aws-amplify/cli-overrides-helper';
 
-/* TODO: Need to change props to Root-Stack specific props when props are ready */
-export function overrideProps(props: any) {
-  /* TODO: Add snippet of how to override in comments */
+export function overrideProps(props: AmplifyDDBResourceTemplate) {
   return props;
 }
