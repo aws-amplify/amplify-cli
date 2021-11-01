@@ -1,8 +1,5 @@
-/* This file is used to override the S3 resource configuration    */
-/* TBD: props is of type AmplifyS3ResourceTemplate                */
+import { AmplifyS3ResourceTemplate } from '@aws-amplify/cli-overrides-helper';
 
-/* TODO: Need to change props to Root-Stack specific props when props are ready */
-export function overrideProps(props: any) {
-    /* Override props (AmplifyS3ResourceTemplate) with new parameters */
-    return props;
+export function overrideProps(props: AmplifyS3ResourceTemplate) {
+  return props;
 }

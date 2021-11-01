@@ -29,7 +29,6 @@ async function updateAmplifyMetaFiles(context: $TSContext, resourceName: string)
   const backendConfigs = {
     service: CDK_SERVICE_NAME,
     providerPlugin: DEPLOYMENT_PROVIDER_NAME,
-    build: true,
   };
 
   context.amplify.updateamplifyMetaAfterResourceAdd(categoryName, resourceName, backendConfigs);

@@ -6,7 +6,7 @@ import { glob } from 'glob';
 import inquirer, { CheckboxQuestion, DistinctChoice } from 'inquirer';
 import _ from 'lodash';
 import * as path from 'path';
-import { categoryName, customResourceCFNFilename } from '../utils/constants';
+import { categoryName, customResourceCFNFilenameSuffix } from '../utils/constants';
 
 const cfnTemplateGlobPattern = '*template*.+(yaml|yml|json)';
 interface AmplifyDependentResourceDefinition {
@@ -25,7 +25,7 @@ export function getResourceCfnOutputAttributes(category: string, resourceName: s
    * This looks for a build directory and uses it if one exists.
    * Otherwise falls back to the default behavior.
    */
-  if (fs.existsSync(resourceBuildDir) && fs.lstatSync(resourceBuildDir).isDirectory()) {
+  if (fs.existsSync(resourceBuildDir)) {
     const cfnFiles = glob.sync(cfnTemplateGlobPattern, {
       cwd: resourceBuildDir,
     });
@@ -47,6 +47,10 @@ export function getResourceCfnOutputAttributes(category: string, resourceName: s
     const cfnFiles = glob.sync(cfnTemplateGlobPattern, {
       cwd: resourceDir,
     });
+    if (cfnFiles.length > 1) {
+      printer.warn(`${resourceName} has more than one CloudFormation definitions in the resource folder which isn't permitted.`);
+      return [];
+    }
     if (resourceDir && cfnFiles[0]) {
       cfnFilePath = path.join(resourceDir, cfnFiles[0]);
     }
@@ -262,11 +266,16 @@ export async function addCFNResourceDependency(context: $TSContext, customResour
   // Add to CFN block
 
   const resourceDir = pathManager.getResourceDirectoryPath(undefined, categoryName, customResourceName);
+  const customResourceCFNFilename = `${customResourceName}-${customResourceCFNFilenameSuffix}`;
   const customResourceCFNFilepath = path.resolve(path.join(resourceDir, customResourceCFNFilename));
 
   const customResourceCFNTemplate = readCFNTemplate(customResourceCFNFilepath);
 
   const dependencyInputParams = generateInputParametersForDependencies(resources);
+
+  if (!customResourceCFNTemplate.cfnTemplate.Parameters) {
+    customResourceCFNTemplate.cfnTemplate.Parameters = {};
+  }
 
   Object.assign(customResourceCFNTemplate.cfnTemplate.Parameters, dependencyInputParams);
 
@@ -276,11 +285,11 @@ export async function addCFNResourceDependency(context: $TSContext, customResour
 
   // Update meta and backend-config.json files
 
-  await context.amplify.updateamplifyMetaAfterResourceUpdate('custom', customResourceName, 'dependsOn', resources);
+  await context.amplify.updateamplifyMetaAfterResourceUpdate(categoryName, customResourceName, 'dependsOn', resources);
 
   // Show information on usage
 
-  showUsageInformation(resources);
+  // showUsageInformation(resources);
 }
 
 function showUsageInformation(resources: AmplifyDependentResourceDefinition[]) {

@@ -7,6 +7,8 @@
   "references": [
     { "path": "../amplify-provider-awscloudformation" },
     { "path": "../amplify-category-auth" },
+    { "path": "../amplify-category-storage" },
+    { "path": "../amplify-category-custom" },
     ]
 }
   
