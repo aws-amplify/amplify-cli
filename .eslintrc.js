@@ -327,7 +327,7 @@ module.exports = {
     '/packages/amplify-category-auth/resources/auth-custom-resource',
     '/packages/amplify-category-custom/lib',
     '/packages/amplify-category-custom/resources',
-    '/packages/amplify-category-custom/src/utils/build-custom-resources.ts',
+    '/packages/amplify-category-custom/src/utils/generate-cfn-from-cdk.ts',
 
     // Ignore CHANGELOG.md files
     '/packages/*/CHANGELOG.md',
