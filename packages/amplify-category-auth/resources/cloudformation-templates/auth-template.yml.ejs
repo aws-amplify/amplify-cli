@@ -1,5 +1,5 @@
 <% var autoVerifiedAttributes = props.autoVerifiedAttributes ? props.autoVerifiedAttributes.concat(props.aliasAttributes ? props.aliasAttributes : []).filter((attr, i, aliasAttributeArray) => ['email', 'phone_number'].includes(attr) && aliasAttributeArray.indexOf(attr) === i) : [] %>
-<% var configureSMS = ((props.autoVerifiedAttributes && props.autoVerifiedAttributes.includes('phone_number')) || (props.mfaConfiguration != 'OFF' && props.mfaTypes && props.mfaTypes.includes('SMS Text Message')) || (props.requiredAttributes && props.requiredAttributes.includes('phone_number'))) %> 
+<% var configureSMS = ((props.autoVerifiedAttributes && props.autoVerifiedAttributes.includes('phone_number')) || (props.mfaConfiguration != 'OFF' && props.mfaTypes && props.mfaTypes.includes('SMS Text Message')) || (props.requiredAttributes && props.requiredAttributes.includes('phone_number')) || (props.usernameAttributes && props.usernameAttributes.includes('phone_number'))) %> 
 AWSTemplateFormatVersion: 2010-09-09
 
 Parameters:
