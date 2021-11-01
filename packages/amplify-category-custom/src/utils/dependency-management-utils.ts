@@ -289,7 +289,7 @@ export async function addCFNResourceDependency(context: $TSContext, customResour
 
   // Show information on usage
 
-  showUsageInformation(resources);
+  // showUsageInformation(resources);
 }
 
 function showUsageInformation(resources: AmplifyDependentResourceDefinition[]) {
