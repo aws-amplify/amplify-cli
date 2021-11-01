@@ -1,0 +1,145 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Schema migration tests @connection has many relationship 1`] = `
+"type Post @model @auth(rules: [{allow: public}]) {
+  id: ID!
+  title: String!
+  comments: [Comment] @hasMany(indexName: \\"byPost\\", fields: [\\"id\\"])
+}
+
+type Comment @model @auth(rules: [{allow: public}]) {
+  id: ID!
+  postID: ID! @index(name: \\"byPost\\", sortKeyFields: [\\"content\\"])
+  content: String!
+}
+"
+`;
+
+exports[`Schema migration tests @connection has one relationship 1`] = `
+"type Project @model @auth(rules: [{allow: public}]) {
+  id: ID!
+  name: String
+  team: Team @hasOne
+}
+
+type Team @model @auth(rules: [{allow: public}]) {
+  id: ID!
+  name: String!
+}
+"
+`;
+
+exports[`Schema migration tests @http directive is migrated 1`] = `
+"type Comment @model @auth(rules: [{allow: public}]) {
+  id: ID!
+  title: String
+  simpleGet: CompObj @http(method: GET, url: \\"https://amazon.com/posts/1\\")
+  simpleGet2: CompObj @http(url: \\"https://amazon.com/posts/2\\")
+  complexPost(id: Int, title: String!, body: String, userId: Int): CompObj @http(method: POST, url: \\"https://amazon.com/posts\\")
+  complexPut(id: Int!, title: String, body: String, userId: Int): CompObj @http(method: PUT, url: \\"https://amazon.com/posts/\${env}/:id\\")
+  deleter: String @http(method: DELETE, url: \\"https://amazon.com/posts/4\\")
+  complexGet(data: String!, userId: Int!, _limit: Int): [CompObj] @http(url: \\"https://amazon.com:data\\")
+}
+
+type CompObj {
+  userId: Int
+  id: Int
+  title: String
+  body: String
+}
+"
+`;
+
+exports[`Schema migration tests @predictions directive is migrated 1`] = `
+"type Query {
+  translateImageText: String @predictions(actions: [identifyText])
+  translateLabels: String @predictions(actions: [identifyLabels])
+  translateThis: String @predictions(actions: [translateText])
+  speakTranslatedText: String @predictions(actions: [translateText, convertTextToSpeech])
+}
+"
+`;
+
+exports[`Schema migration tests basic @model type 1`] = `
+"type Todo @model @auth(rules: [{allow: public}]) {
+  id: ID!
+  name: String!
+  description: String
+}
+"
+`;
+
+exports[`Schema migration tests configure a primary key 1`] = `
+"type Todo @model @auth(rules: [{allow: public}]) {
+  id: ID! @primaryKey
+  name: String!
+  description: String
+}
+"
+`;
+
+exports[`Schema migration tests configure a secondary index 1`] = `
+"type Todo @model @auth(rules: [{allow: public}]) {
+  id: ID!
+  name: String! @index(name: \\"nameIndex\\")
+  description: String
+}
+"
+`;
+
+exports[`Schema migration tests configure a secondary index with queryField 1`] = `
+"type Todo @model @auth(rules: [{allow: public}]) {
+  id: ID!
+  name: String!
+  status: String! @index(name: \\"todosByStatus\\", queryField: \\"listTodosByStatus\\")
+}
+"
+`;
+
+exports[`Schema migration tests customized creation and update timestamp names 1`] = `
+"type Todo @model(timestamps: {createdAt: \\"createdOn\\", updatedAt: \\"updatedOn\\"}) @auth(rules: [{allow: public}]) {
+  id: ID!
+  str: String
+}
+"
+`;
+
+exports[`Schema migration tests explicit creation and update timestamps 1`] = `
+"type Todo @model @auth(rules: [{allow: public}]) {
+  id: ID!
+  createdAt: AWSTimestamp
+  updatedAt: AWSTimestamp
+}
+"
+`;
+
+exports[`Schema migration tests multiple @model types 1`] = `
+"type Todo @model @auth(rules: [{allow: public}]) {
+  id: ID!
+  name: String!
+  description: String
+}
+
+type Ope @model @auth(rules: [{allow: public}]) {
+  foo: ID!
+  bar: String
+}
+"
+`;
+
+exports[`Schema migration tests no amplify directives in schema 1`] = `
+"type Todo {
+  id: ID!
+  name: String!
+  description: String
+}
+"
+`;
+
+exports[`Schema migration tests renamed queries/mutations/subscriptions 1`] = `
+"type Entity @model(mutations: null, subscriptions: null, queries: {get: \\"getEntity\\"}) @auth(rules: [{allow: public}]) {
+  id: ID!
+  str: String
+}
+"
+`;

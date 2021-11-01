@@ -1,238 +1,238 @@
 import { migrateGraphQLSchema } from '../../schema-migrator';
 import { parse } from 'graphql';
 
+function migrateAndValidate(inputSchema: string, defaultAuth: string = 'apiKey'): void {
+  const docNode = parse(inputSchema);
+  const migratedSchema = migrateGraphQLSchema(inputSchema, defaultAuth, docNode);
+
+  parse(migratedSchema);
+  expect(migratedSchema).toMatchSnapshot();
+}
+
 describe('Schema migration tests', () => {
-  describe('Schema conversion tests', () => {
-    it('Should match expected output for base Todo and API key', () => {
-      const schema = /* graphql */
-      `type Todo @model {
+  it('no amplify directives in schema', () => {
+    const schema = `
+      type Todo {
         id: ID!
         name: String!
         description: String
-      }
-      `;
-      const outputSchema = /* graphql */
-`type Todo @model @auth(rules: [{allow: public}]) {
-  id: ID!
-  name: String!
-  description: String
-}
-`;
-      const docNode = parse(schema);
-      const newSchema = migrateGraphQLSchema(schema, 'apiKey', docNode);
-      expect(newSchema).toMatch(outputSchema);
-    });
+      }`;
 
-    it('Should match expected output for extended Todo and API key', async () => {
-      const schema = /* graphql */
-      `type Todo @model {
+    migrateAndValidate(schema);
+  });
+
+  it('basic @model type', () => {
+    const schema = `
+      type Todo @model {
+        id: ID!
+        name: String!
+        description: String
+      }`;
+
+    migrateAndValidate(schema);
+  });
+
+  it('multiple @model types', async () => {
+    const schema = `
+      type Todo @model {
         id: ID!
         name: String!
         description: String
       }
-      
+
       type Ope @model {
         foo: ID!
         bar: String
-      }
-`;
-      const outputSchema = /* graphql */
-`type Todo @model @auth(rules: [{allow: public}]) {
-  id: ID!
-  name: String!
-  description: String
-}
+      }`;
 
-type Ope @model @auth(rules: [{allow: public}]) {
-  foo: ID!
-  bar: String
-}
-`;
-      const docNode = parse(schema);
-      const newSchema = migrateGraphQLSchema(schema, 'apiKey', docNode);
-      expect(newSchema).toMatch(outputSchema);
-    });
+    migrateAndValidate(schema);
+  });
 
-    it('Should blow up if we try to use versioned', () => {
-      const schema = /* graphql */
-        `type Todo @model @versioned {
+  it('customized creation and update timestamp names', async () => {
+    const schema = `
+      type Todo @model(timestamps: { createdAt: "createdOn", updatedAt: "updatedOn" }) {
+        id: ID!
+        str: String
+      }`;
+
+    migrateAndValidate(schema);
+  });
+
+  it('explicit creation and update timestamps', async () => {
+    const schema = `
+      type Todo @model {
+        id: ID!
+        createdAt: AWSTimestamp
+        updatedAt: AWSTimestamp
+      }`;
+
+    migrateAndValidate(schema);
+  });
+
+  it('renamed queries/mutations/subscriptions', () => {
+    const schema = `
+      type Entity @model(mutations: null, subscriptions: null, queries: { get: "getEntity" }) {
+        id: ID!
+        str: String
+      }`;
+
+    migrateAndValidate(schema);
+  });
+
+  it('configure a primary key', () => {
+    const schema = `
+      type Todo @model
+                @key(fields: ["id"]) {
         id: ID!
         name: String!
         description: String
-      }
-      
-      type Ope @model {
-        foo: ID!
-        bar: String
-      }
-`;
+      }`;
 
-      const docNode = parse(schema);
-      expect(() => migrateGraphQLSchema(schema, 'apiKey', docNode)).toThrowError();
-    });
+    migrateAndValidate(schema);
+  });
 
-    it('Should migrate a primary key', () => {
-      const schema = /* graphql */
-        `type Todo @model
-                   @key(fields: ["id"]) {
+  it('configure a secondary index', () => {
+    const schema = `
+      type Todo @model
+                @key(name: "nameIndex", fields: ["name"]) {
         id: ID!
         name: String!
         description: String
-      }
-      
-      type Ope @model {
-        foo: ID!
-        bar: String
-      }
-`;
-      const outputSchema = /* graphql */
-        `type Todo @model @auth(rules: [{allow: public}]) {
-  id: ID! @primaryKey
-  name: String!
-  description: String
-}
+      }`;
 
-type Ope @model @auth(rules: [{allow: public}]) {
-  foo: ID!
-  bar: String
-}
-`;
-      const docNode = parse(schema);
-      const newSchema = migrateGraphQLSchema(schema, 'apiKey', docNode);
-      expect(newSchema).toMatch(outputSchema);
-    });
+    migrateAndValidate(schema);
+  });
 
-    it('Should migrate a secondary key', () => {
-      const schema = /* graphql */
-        `type Todo @model
-                   @key(name: "nameIndex", fields: ["name"]) {
-        id: ID!
-        name: String!
-        description: String
-      }
-      
-      type Ope @model {
-        foo: ID!
-        bar: String
-      }
-`;
-      const outputSchema = /* graphql */
-        `type Todo @model @auth(rules: [{allow: public}]) {
-  id: ID!
-  name: String! @index(name: "nameIndex")
-  description: String
-}
-
-type Ope @model @auth(rules: [{allow: public}]) {
-  foo: ID!
-  bar: String
-}
-`;
-      const docNode = parse(schema);
-      const newSchema = migrateGraphQLSchema(schema, 'apiKey', docNode);
-      expect(newSchema).toMatch(outputSchema);
-    });
-
-    it('Relational docs primary key', () => {
-      const schema = /* graphql */
-        `type Customer @model @key(fields: ["email"]) {
-          email: String!
-          username: String
-        }
-`;
-      const outputSchema = /* graphql */
-`type Customer @model @auth(rules: [{allow: public}]) {
-  email: String! @primaryKey
-  username: String
-}
-`;
-      const docNode = parse(schema);
-      const newSchema = migrateGraphQLSchema(schema, 'apiKey', docNode);
-      expect(newSchema).toMatch(outputSchema);
-    });
-
-    it('Relational docs secondary key', () => {
-      const schema = /* graphql */
-      `type Todo @model
+  it('configure a secondary index with queryField', () => {
+    const schema = `
+      type Todo @model
         @key(name: "todosByStatus", fields: ["status"], queryField: "listTodosByStatus") {
         id: ID!
         name: String!
         status: String!
-      }
-`;
-      const outputSchema = /* graphql */
-`type Todo @model @auth(rules: [{allow: public}]) {
-  id: ID!
-  name: String!
-  status: String! @index(name: "todosByStatus", queryField: "listTodosByStatus")
-}
-`;
-      const docNode = parse(schema);
-      const newSchema = migrateGraphQLSchema(schema, 'apiKey', docNode);
-      expect(newSchema).toMatch(outputSchema);
-    });
+      }`;
 
-    it('Relational docs has one', () => {
-      const schema = /* graphql */
-      `type Project @model {
+    migrateAndValidate(schema);
+  });
+
+  it('@connection has one relationship', () => {
+    const schema = `
+      type Project @model {
         id: ID!
         name: String
         team: Team @connection
       }
-      
+
       type Team @model {
         id: ID!
         name: String!
-      }
-`;
-      const outputSchema = /* graphql */
-`type Project @model @auth(rules: [{allow: public}]) {
-  id: ID!
-  name: String
-  team: Team @hasOne
-}
+      }`;
 
-type Team @model @auth(rules: [{allow: public}]) {
-  id: ID!
-  name: String!
-}
-`;
-      const docNode = parse(schema);
-      const newSchema = migrateGraphQLSchema(schema, 'apiKey', docNode);
-      expect(newSchema).toMatch(outputSchema);
-    });
+    migrateAndValidate(schema);
+  });
 
-    it('Relational docs has many', () => {
-      const schema = /* graphql */
-      `type Post @model {
+  it('@connection has many relationship', () => {
+    const schema = `
+      type Post @model {
         id: ID!
         title: String!
         comments: [Comment] @connection(keyName: "byPost", fields: ["id"])
       }
-      
+
       type Comment @model
         @key(name: "byPost", fields: ["postID", "content"]) {
         id: ID!
         postID: ID!
         content: String!
-      }
-`;
-      const outputSchema = /* graphql */
-`type Post @model @auth(rules: [{allow: public}]) {
-  id: ID!
-  title: String!
-  comments: [Comment] @hasMany(indexName: "byPost", fields: ["id"])
-}
+      }`;
 
-type Comment @model @auth(rules: [{allow: public}]) {
-  id: ID!
-  postID: ID! @index(name: "byPost", sortKeyFields: ["content"])
-  content: String!
-}
-`;
-      const docNode = parse(schema);
-      const newSchema = migrateGraphQLSchema(schema, 'apiKey', docNode);
-      expect(newSchema).toMatch(outputSchema);
-    });
+    migrateAndValidate(schema);
   });
+
+  it('@http directive is migrated', () => {
+    const schema = `
+      type Comment @model {
+        id: ID!
+        title: String
+        simpleGet: CompObj @http(method: GET, url: "https://amazon.com/posts/1")
+        simpleGet2: CompObj @http(url: "https://amazon.com/posts/2")
+        complexPost(
+          id: Int,
+          title: String!,
+          body: String,
+          userId: Int
+        ): CompObj @http(method: POST, url: "https://amazon.com/posts")
+        complexPut(
+          id: Int!,
+          title: String,
+          body: String,
+          userId: Int
+        ): CompObj @http(method: PUT, url: "https://amazon.com/posts/$\{env}/:id")
+        deleter: String @http(method: DELETE, url: "https://amazon.com/posts/4")
+        complexGet(
+          data: String!,
+          userId: Int!,
+          _limit: Int
+        ): [CompObj] @http(url: "https://amazon.com:data")
+      }
+      type CompObj {
+          userId: Int
+          id: Int
+          title: String
+          body: String
+      }`;
+
+    migrateAndValidate(schema);
+  });
+
+  it('@predictions directive is migrated', () => {
+    const schema = `
+      type Query {
+        translateImageText: String @predictions(actions: [identifyText])
+        translateLabels: String @predictions(actions: [identifyLabels])
+        translateThis: String @predictions(actions: [translateText])
+        speakTranslatedText: String @predictions(actions: [translateText, convertTextToSpeech])
+      }`;
+
+    migrateAndValidate(schema);
+  });
+
+  it('@versioned is not migrated', () => {
+    const schema = `
+      type Todo @model @versioned {
+        id: ID!
+        name: String!
+        description: String
+      }
+
+      type Ope @model {
+        foo: ID!
+        bar: String
+      }`;
+
+    expect(() => {
+      migrateAndValidate(schema);
+    }).toThrow('Unknown directive "versioned".');
+  });
+
+  // TODO(cjihrig): This test is currently failing.
+  // it('AppSync directives are not migrated', () => {
+  //   const schema1 = `
+  //     type Todo @model @aws_api_key {
+  //       id: ID!
+  //     }`;
+
+  //   expect(() => {
+  //     migrateAndValidate(schema1);
+  //   }).toThrow('Unknown directive "aws_api_key".');
+
+  //   const schema2 = `
+  //     type Todo @model @aws_iam {
+  //       id: ID!
+  //     }`;
+
+  //   expect(() => {
+  //     migrateAndValidate(schema2);
+  //   }).toThrow('Unknown directive "aws_iam".');
+  // });
 });
