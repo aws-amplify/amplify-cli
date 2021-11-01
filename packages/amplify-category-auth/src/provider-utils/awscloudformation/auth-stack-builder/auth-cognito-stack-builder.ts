@@ -16,6 +16,7 @@ import {
 } from '../constants';
 import * as fs from 'fs-extra';
 import { AmplifyStackTemplate } from 'amplify-cli-core';
+import { AttributeType } from '../service-walkthrough-types/awsCognito-user-input-types';
 
 const CFN_TEMPLATE_FORMAT_VERSION = '2010-09-09';
 const ROOT_CFN_DESCRIPTION = 'Amplify Cognito Stack for AWS Amplify CLI';
@@ -188,7 +189,8 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
     const configureSMS =
       (props.autoVerifiedAttributes && props.autoVerifiedAttributes.includes('phone_number')) ||
       (props.mfaConfiguration != 'OFF' && props.mfaTypes && props.mfaTypes.includes('SMS Text Message')) ||
-      (props.requiredAttributes && props.requiredAttributes.includes('phone_number'));
+      (props.requiredAttributes && props.requiredAttributes.includes('phone_number')) ||
+      (props.usernameAttributes && props.usernameAttributes.includes(AttributeType.PHONE_NUMBER));
 
     if (props.verificationBucketName) {
       this.customMessageConfirmationBucket = new s3.CfnBucket(this, 'CustomMessageConfirmationBucket', {
