@@ -3,7 +3,7 @@ import { printer, prompter } from 'amplify-prompts';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import { customResourceNameQuestion } from '../utils/common-questions';
-import { categoryName, CFN_SERVICE_NAME, customResourceCFNFilename, DEPLOYMENT_PROVIDER_NAME } from '../utils/constants';
+import { categoryName, CFN_SERVICE_NAME, customResourceCFNFilenameSuffix, DEPLOYMENT_PROVIDER_NAME } from '../utils/constants';
 import { addCFNResourceDependency } from '../utils/dependency-management-utils';
 
 const cfnTemplateRoot = path.normalize(path.join(__dirname, '../../resources'));
@@ -23,6 +23,7 @@ export async function addCloudFormationWalkthrough(context: $TSContext) {
   // Open editor
 
   const resourceDirPath = path.join(pathManager.getBackendDirPath(), categoryName, resourceName);
+  const customResourceCFNFilename = `${resourceName}-${customResourceCFNFilenameSuffix}`;
   const cfnFilepath = path.join(resourceDirPath, customResourceCFNFilename);
 
   if (await prompter.yesOrNo('Do you want to edit the CloudFormation stack now?', true)) {
@@ -36,6 +37,7 @@ export async function updateCloudFormationWalkthrough(context: $TSContext, resou
   // Open editor
 
   const resourceDirPath = path.join(pathManager.getBackendDirPath(), categoryName, resourceName);
+  const customResourceCFNFilename = `${resourceName}-${customResourceCFNFilenameSuffix}`;
   const cfnFilepath = path.join(resourceDirPath, customResourceCFNFilename);
 
   if (await prompter.yesOrNo('Do you want to edit the CloudFormation stack now?', true)) {
@@ -45,6 +47,7 @@ export async function updateCloudFormationWalkthrough(context: $TSContext, resou
 
 async function generateSkeletonDir(context: $TSContext, resourceName: string) {
   const targetDir = path.join(pathManager.getBackendDirPath(), categoryName, resourceName);
+  const customResourceCFNFilename = `${resourceName}-${customResourceCFNFilenameSuffix}`;
   if (fs.existsSync(targetDir)) {
     throw new Error(`Custom resource with ${resourceName} already exists.`);
   }

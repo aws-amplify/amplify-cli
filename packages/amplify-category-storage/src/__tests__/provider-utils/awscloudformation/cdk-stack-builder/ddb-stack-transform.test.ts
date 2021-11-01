@@ -22,9 +22,9 @@ jest.mock('amplify-cli-core', () => ({
   },
 }));
 jest.mock('fs-extra', () => ({
-  readFileSync: () => '{ "Cognito": { "provider": "aws"}}',
-  existsSync: () => true,
-  ensureDirSync: jest.fn(),
+  readFileSync: () => jest.fn().mockReturnValue('{ "Cognito": { "provider": "aws"}}'),
+  existsSync: () => jest.fn().mockReturnValue(true),
+  ensureDirSync: jest.fn().mockReturnValue(true),
 }));
 
 jest.mock('path', () => ({
