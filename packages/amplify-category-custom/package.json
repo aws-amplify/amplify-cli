@@ -13,6 +13,7 @@
   "types": "lib/index.d.ts",
   "scripts": {
     "build": "tsc",
+    "test": "jest",
     "clean": "rimraf lib tsconfig.tsbuildinfo",
     "watch": "tsc -w"
   },
@@ -51,9 +52,9 @@
       "node"
     ],
     "collectCoverage": true,
-    "coverageReporters": [
-      "json",
-      "html"
+    "collectCoverageFrom": [
+      "src/**/*.ts",
+      "!**/*.d.ts"
     ]
   }
 }
