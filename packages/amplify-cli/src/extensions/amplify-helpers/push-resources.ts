@@ -60,7 +60,6 @@ export async function pushResources(
   context.amplify.executeProviderUtils(context, 'awscloudformation', 'buildOverrides', {
     resourcesToBuild,
     forceCompile: true,
-    applyOverride: true,
   });
 
   let hasChanges: boolean = false;
