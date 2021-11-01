@@ -298,7 +298,7 @@ function createTransformer() {
     },
     additionalAuthenticationProviders: [{ authenticationType: 'AWS_IAM' }],
   };
-  const authTransformer = new AuthTransformer({ authConfig, addAwsIamAuthInOutputSchema: false });
+  const authTransformer = new AuthTransformer();
   const modelTransformer = new ModelTransformer();
   const indexTransformer = new IndexTransformer();
   const hasOneTransformer = new HasOneTransformer();

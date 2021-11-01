@@ -222,7 +222,7 @@ beforeAll(async () => {
         },
       ],
     },
-    transformers: [new ModelTransformer(), new AuthTransformer({ addAwsIamAuthInOutputSchema: false })],
+    transformers: [new ModelTransformer(), new AuthTransformer()],
   });
 
   try {

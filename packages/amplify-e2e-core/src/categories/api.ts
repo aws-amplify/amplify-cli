@@ -8,7 +8,7 @@ import { EOL } from 'os';
 import { modifiedApi } from './resources/modified-api-index';
 
 export function getSchemaPath(schemaName: string): string {
-  return `${__dirname}/../../../amplify-e2e-tests/schemas/${schemaName}`;
+  return path.join(__dirname, '..', '..', '..', 'amplify-e2e-tests', 'schemas', schemaName);
 }
 
 export function apiGqlCompile(cwd: string, testingWithLatestCodebase: boolean = false) {
@@ -55,6 +55,59 @@ export function addApiWithoutSchema(cwd: string, opts: Partial<AddApiOptions & {
       .wait(
         '"amplify publish" will build all your local backend and frontend resources (if you have hosting category added) and provision it in the cloud',
       )
+      .run((err: Error) => {
+        if (!err) {
+          resolve();
+        } else {
+          reject(err);
+        }
+      });
+  });
+}
+
+export function addApiWithOneModel(cwd: string, opts: Partial<AddApiOptions & { apiKeyExpirationDays: number }> = {}) {
+  const options = _.assign(defaultOptions, opts);
+  return new Promise<void>((resolve, reject) => {
+    spawn(getCLIPath(options.testingWithLatestCodebase), ['add', 'api'], { cwd, stripColors: true })
+      .wait('Please select from one of the below mentioned services:')
+      .sendCarriageReturn()
+      .wait(/.*Here is the GraphQL API that we will create. Select a setting to edit or continue.*/)
+      .sendCarriageReturn()
+      .wait('Choose a schema template:')
+      .sendCarriageReturn()
+      .wait('Do you want to edit the schema now?')
+      .sendConfirmNo()
+      .wait(
+        '"amplify publish" will build all your local backend and frontend resources (if you have hosting category added) and provision it in the cloud',
+      )
+      .sendEof()
+      .run((err: Error) => {
+        if (!err) {
+          resolve();
+        } else {
+          reject(err);
+        }
+      });
+  });
+}
+
+export function addApiWithThreeModels(cwd: string, opts: Partial<AddApiOptions & { apiKeyExpirationDays: number }> = {}) {
+  const options = _.assign(defaultOptions, opts);
+  return new Promise<void>((resolve, reject) => {
+    spawn(getCLIPath(options.testingWithLatestCodebase), ['add', 'api'], { cwd, stripColors: true })
+      .wait('Please select from one of the below mentioned services:')
+      .sendCarriageReturn()
+      .wait(/.*Here is the GraphQL API that we will create. Select a setting to edit or continue.*/)
+      .sendCarriageReturn()
+      .wait('Choose a schema template:')
+      .sendKeyDown(1)
+      .sendCarriageReturn()
+      .wait('Do you want to edit the schema now?')
+      .sendConfirmNo()
+      .wait(
+        '"amplify publish" will build all your local backend and frontend resources (if you have hosting category added) and provision it in the cloud',
+      )
+      .sendEof()
       .run((err: Error) => {
         if (!err) {
           resolve();

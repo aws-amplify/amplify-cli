@@ -32,6 +32,7 @@ export class ResolverManager implements TransformerResolversManagerProvider {
   generateQueryResolver = (
     typeName: string,
     fieldName: string,
+    resolverLogicalId: string,
     dataSource: DataSourceProvider,
     requestMappingTemplate: MappingTemplateProvider,
     responseMappingTemplate: MappingTemplateProvider,
@@ -39,6 +40,7 @@ export class ResolverManager implements TransformerResolversManagerProvider {
     return new TransformerResolver(
       typeName,
       fieldName,
+      resolverLogicalId,
       requestMappingTemplate,
       responseMappingTemplate,
       ['init', 'preAuth', 'auth', 'postAuth', 'preDataLoad'],
@@ -50,6 +52,7 @@ export class ResolverManager implements TransformerResolversManagerProvider {
   generateMutationResolver = (
     typeName: string,
     fieldName: string,
+    resolverLogicalId: string,
     dataSource: DataSourceProvider,
     requestMappingTemplate: MappingTemplateProvider,
     responseMappingTemplate: MappingTemplateProvider,
@@ -57,6 +60,7 @@ export class ResolverManager implements TransformerResolversManagerProvider {
     return new TransformerResolver(
       typeName,
       fieldName,
+      resolverLogicalId,
       requestMappingTemplate,
       responseMappingTemplate,
       ['init', 'preAuth', 'auth', 'postAuth', 'preUpdate'],
@@ -68,12 +72,14 @@ export class ResolverManager implements TransformerResolversManagerProvider {
   generateSubscriptionResolver = (
     typeName: string,
     fieldName: string,
+    resolverLogicalId: string,
     requestMappingTemplate: MappingTemplateProvider,
     responseMappingTemplate: MappingTemplateProvider,
   ): TransformerResolver => {
     return new TransformerResolver(
       typeName,
       fieldName,
+      resolverLogicalId,
       requestMappingTemplate,
       responseMappingTemplate,
       ['init', 'preAuth', 'auth', 'postAuth', 'preSubscribe'],
@@ -122,6 +128,7 @@ export class TransformerResolver implements TransformerResolverProvider {
   constructor(
     private typeName: string,
     private fieldName: string,
+    private resolverLogicalId: string,
     private requestMappingTemplate: MappingTemplateProvider,
     private responseMappingTemplate: MappingTemplateProvider,
     private requestSlots: string[],
@@ -130,6 +137,7 @@ export class TransformerResolver implements TransformerResolverProvider {
   ) {
     assert(typeName, 'typeName is required');
     assert(fieldName, 'fieldName is required');
+    assert(resolverLogicalId, 'resolverLogicalId is required');
     assert(requestMappingTemplate, 'requestMappingTemplate is required');
     assert(responseMappingTemplate, 'responseMappingTemplate is required');
     this.slotNames = new Set([...requestSlots, ...responseSlots]);
@@ -273,6 +281,7 @@ export class TransformerResolver implements TransformerResolverProvider {
       this.fieldName,
       MappingTemplate.inlineTemplateFromString(initResolver),
       MappingTemplate.inlineTemplateFromString('$util.toJson($ctx.prev.result)'),
+      this.resolverLogicalId,
       undefined,
       [...requestFns, dataSourceProviderFn, ...responseFns].map(fn => fn.functionId),
       stack,

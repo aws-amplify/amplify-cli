@@ -1,0 +1,19 @@
+type Post @model {
+  id: ID!
+  title: String!
+}
+
+type Customer @model @key(fields: ["email"]) @key(name: "byUsername", fields: ["username"], queryField: "byUsername") {
+  email: String!
+  username: String
+}
+
+type Test @model(timestamps: { createdAt: "createdOn", updatedAt: "updatedOn" }) {
+  id: ID!
+  title: String!
+}
+
+type Rename @model(queries: { get: "rename" }, mutations: { create: "makeRename" }, subscriptions: null) {
+  id: ID!
+  title: String!
+}

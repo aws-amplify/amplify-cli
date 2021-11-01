@@ -3,6 +3,8 @@ import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
 import _ from 'lodash';
 
+const ADMIN_UI_ROLES = ['us-fake-1_uuid_Full-access/CognitoIdentityCredentials', 'us-fake-1_uuid_Manage-only/CognitoIdentityCredentials'];
+
 test('test simple model with public auth rule and amplify admin app is present', () => {
   const validSchema = `
   type Post @model @auth(rules: [{allow: public}]) {
@@ -25,8 +27,7 @@ test('test simple model with public auth rule and amplify admin app is present',
     transformers: [
       new ModelTransformer(),
       new AuthTransformer({
-        addAwsIamAuthInOutputSchema: true,
-        adminUserPoolID: 'us-fake-1_uuid',
+        adminRoles: ADMIN_UI_ROLES,
       }),
     ],
   });
@@ -51,12 +52,7 @@ test('Test simple model with public auth rule and amplify admin app is not enabl
       },
       additionalAuthenticationProviders: [],
     },
-    transformers: [
-      new ModelTransformer(),
-      new AuthTransformer({
-        addAwsIamAuthInOutputSchema: false,
-      }),
-    ],
+    transformers: [new ModelTransformer(), new AuthTransformer()],
   });
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
@@ -86,8 +82,7 @@ test('Test model with public auth rule without all operations and amplify admin 
     transformers: [
       new ModelTransformer(),
       new AuthTransformer({
-        addAwsIamAuthInOutputSchema: true,
-        adminUserPoolID: 'us-fake-1_uuid',
+        adminRoles: ADMIN_UI_ROLES,
       }),
     ],
   });
@@ -127,8 +122,7 @@ test('Test simple model with private auth rule and amplify admin app is present'
     transformers: [
       new ModelTransformer(),
       new AuthTransformer({
-        addAwsIamAuthInOutputSchema: true,
-        adminUserPoolID: 'us-fake-1_uuid',
+        adminRoles: ADMIN_UI_ROLES,
       }),
     ],
   });
@@ -157,12 +151,7 @@ test('Test simple model with private auth rule and amplify admin app not enabled
         },
       ],
     },
-    transformers: [
-      new ModelTransformer(),
-      new AuthTransformer({
-        addAwsIamAuthInOutputSchema: false,
-      }),
-    ],
+    transformers: [new ModelTransformer(), new AuthTransformer()],
   });
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
@@ -192,18 +181,7 @@ test('Test simple model with private auth rule, few operations, and amplify admi
     transformers: [
       new ModelTransformer(),
       new AuthTransformer({
-        authConfig: {
-          defaultAuthentication: {
-            authenticationType: 'AMAZON_COGNITO_USER_POOLS',
-          },
-          additionalAuthenticationProviders: [
-            {
-              authenticationType: 'AWS_IAM',
-            },
-          ],
-        },
-        addAwsIamAuthInOutputSchema: true,
-        adminUserPoolID: 'us-fake-1_uuid',
+        adminRoles: ADMIN_UI_ROLES,
       }),
     ],
   });
@@ -245,12 +223,7 @@ test('Test simple model with private IAM auth rule, few operations, and amplify 
         },
       ],
     },
-    transformers: [
-      new ModelTransformer(),
-      new AuthTransformer({
-        addAwsIamAuthInOutputSchema: false,
-      }),
-    ],
+    transformers: [new ModelTransformer(), new AuthTransformer()],
   });
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
@@ -288,8 +261,7 @@ test('Test simple model with AdminUI enabled should add IAM policy only for fiel
     transformers: [
       new ModelTransformer(),
       new AuthTransformer({
-        addAwsIamAuthInOutputSchema: true,
-        adminUserPoolID: 'us-fake-1_uuid',
+        adminRoles: ADMIN_UI_ROLES,
       }),
     ],
   });
@@ -325,13 +297,6 @@ test('Test simple model with AdminUI enabled should add IAM policy only for fiel
   ]);
   // should throw unauthorized if it's not signed by the admin ui iam role
   ['Mutation.createPost.auth.1.req.vtl', 'Mutation.updatePost.auth.1.res.vtl', 'Mutation.deletePost.auth.1.res.vtl'].forEach(r => {
-    expect(out.pipelineFunctions[r]).toContain(
-      '#if( $util.authType() == "IAM Authorization" )\n' +
-        '  #if( $ctx.identity.userArn.contains("us-fake-1_uuid_Full-access/CognitoIdentityCredentials") || $ctx.identity.userArn.contains("us-fake-1_uuid_Manage-only/CognitoIdentityCredentials") )\n' +
-        '    #return($util.toJson({})\n' +
-        '  #end\n' +
-        '$util.unauthorized()\n' +
-        '#end',
-    );
+    expect(out.pipelineFunctions[r]).toMatchSnapshot();
   });
 });

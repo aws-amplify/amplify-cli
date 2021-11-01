@@ -1,7 +1,6 @@
 import { ArgumentNode, DirectiveNode, NameNode, valueFromASTUntyped, ValueNode, Location } from 'graphql';
-import { merge } from 'lodash';
 
-class ArgumentWrapper {
+export class ArgumentWrapper {
   public readonly name: NameNode;
   public readonly value: ValueNode;
   constructor(argument: ArgumentNode) {
@@ -41,6 +40,6 @@ export class DirectiveWrapper {
       }),
       {},
     );
-    return merge(defaultValue, argValues);
+    return Object.assign(defaultValue, argValues);
   };
 }

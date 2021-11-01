@@ -116,7 +116,7 @@ beforeAll(async () => {
     const modelTransformer = new ModelTransformer();
     const indexTransformer = new IndexTransformer();
     const hasOneTransformer = new HasOneTransformer();
-    const authTransformer = new AuthTransformer({ addAwsIamAuthInOutputSchema: false });
+    const authTransformer = new AuthTransformer();
     const transformer = new GraphQLTransform({
       authConfig: {
         defaultAuthentication: {

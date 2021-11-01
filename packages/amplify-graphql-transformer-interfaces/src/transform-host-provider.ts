@@ -53,6 +53,7 @@ export interface TransformHostProvider {
     fieldName: string,
     requestMappingTemplate: MappingTemplateProvider,
     responseMappingTemplate: MappingTemplateProvider,
+    resolverLogicalId?: string,
     dataSourceName?: string,
     pipelineConfig?: string[],
     stack?: Stack,

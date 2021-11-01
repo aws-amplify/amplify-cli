@@ -279,8 +279,8 @@ test('bidirectional has many query case', () => {
   expect(out).toBeDefined();
   const schema = parse(out.schema);
   validateModelSchema(schema);
-  expect((out.stacks as any).User.Resources.postAuthorResolver).toBeTruthy();
-  expect((out.stacks as any).Post.Resources.userPostsResolver).toBeTruthy();
+  expect((out.stacks as any).User.Resources.PostauthorResolver).toBeTruthy();
+  expect((out.stacks as any).Post.Resources.UserpostsResolver).toBeTruthy();
 
   const userType = schema.definitions.find((def: any) => def.name && def.name.value === 'User') as any;
   expect(userType).toBeDefined();
@@ -327,7 +327,7 @@ test('has many query with a composite sort key', () => {
   expect(out).toBeDefined();
   const schema = parse(out.schema);
   validateModelSchema(schema);
-  expect((out.stacks as any).Test1.Resources.testOtherPartsResolver).toBeTruthy();
+  expect((out.stacks as any).Test1.Resources.TestotherPartsResolver).toBeTruthy();
 
   const testObjType = schema.definitions.find((def: any) => def.name && def.name.value === 'Test') as any;
   expect(testObjType).toBeDefined();
@@ -509,6 +509,23 @@ test('has many with implicit index and fields and a user-defined primary key', (
   expect(commentUpdateInput.fields.find((f: any) => f.name.value === 'id')).toBeDefined();
   expect(commentUpdateInput.fields.find((f: any) => f.name.value === 'content')).toBeDefined();
   expect(commentUpdateInput.fields.find((f: any) => f.name.value === 'postCommentsId')).toBeDefined();
+
+  const commentType = schema.definitions.find((def: any) => def.name && def.name.value === 'Comment') as any;
+  expect(commentType).toBeDefined();
+
+  const postCommentsField = commentType.fields.find((f: any) => f.name.value === 'postCommentsId');
+  expect(postCommentsField).toBeDefined();
+
+  const commentFilterInput = schema.definitions.find((def: any) => def.name && def.name.value === 'ModelCommentFilterInput') as any;
+  expect(commentFilterInput).toBeDefined();
+  expect(commentFilterInput.fields.find((f: any) => f.name.value === 'id')).toBeDefined();
+  expect(commentFilterInput.fields.find((f: any) => f.name.value === 'content')).toBeDefined();
+  expect(commentFilterInput.fields.find((f: any) => f.name.value === 'postCommentsId')).toBeDefined();
+
+  const commentConditionInput = schema.definitions.find((def: any) => def.name && def.name.value === 'ModelCommentConditionInput') as any;
+  expect(commentConditionInput).toBeDefined();
+  expect(commentConditionInput.fields.find((f: any) => f.name.value === 'content')).toBeDefined();
+  expect(commentConditionInput.fields.find((f: any) => f.name.value === 'postCommentsId')).toBeDefined();
 });
 
 test('the limit of 100 is used by default', () => {

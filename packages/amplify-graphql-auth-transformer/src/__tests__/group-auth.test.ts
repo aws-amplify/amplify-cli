@@ -20,13 +20,7 @@ test('happy case with static groups', () => {
   }`;
   const transformer = new GraphQLTransform({
     authConfig,
-    transformers: [
-      new ModelTransformer(),
-      new AuthTransformer({
-        authConfig,
-        addAwsIamAuthInOutputSchema: false,
-      }),
-    ],
+    transformers: [new ModelTransformer(), new AuthTransformer()],
   });
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
@@ -53,13 +47,7 @@ test('happy case with dynamic groups', () => {
     `;
   const transformer = new GraphQLTransform({
     authConfig,
-    transformers: [
-      new ModelTransformer(),
-      new AuthTransformer({
-        authConfig,
-        addAwsIamAuthInOutputSchema: false,
-      }),
-    ],
+    transformers: [new ModelTransformer(), new AuthTransformer()],
   });
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
@@ -85,13 +73,7 @@ test('validation on @auth on a non-@model type', () => {
     }`;
   const transformer = new GraphQLTransform({
     authConfig,
-    transformers: [
-      new ModelTransformer(),
-      new AuthTransformer({
-        authConfig,
-        addAwsIamAuthInOutputSchema: false,
-      }),
-    ],
+    transformers: [new ModelTransformer(), new AuthTransformer()],
   });
   expect(() => transformer.transform(invalidSchema)).toThrowError('Types annotated with @auth must also be annotated with @model.');
 });

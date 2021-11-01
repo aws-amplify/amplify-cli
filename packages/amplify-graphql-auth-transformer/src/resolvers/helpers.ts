@@ -17,7 +17,6 @@ import {
   forEach,
   list,
   equals,
-  or,
 } from 'graphql-mapping-template';
 import { NONE_VALUE } from 'graphql-transformer-common';
 import {
@@ -27,9 +26,7 @@ import {
   ALLOWED_FIELDS,
   API_KEY_AUTH_TYPE,
   LAMBDA_AUTH_TYPE,
-  ADMIN_ROLE,
   IAM_AUTH_TYPE,
-  MANAGE_ROLE,
 } from '../utils';
 
 // note in the resolver that operation is protected by auth
@@ -112,35 +109,38 @@ export const apiKeyExpression = (roles: Array<RoleDefinition>) => {
     equals(ref('util.authType()'), str(API_KEY_AUTH_TYPE)),
     compoundExpression([...(roles.length > 0 ? [set(ref(IS_AUTHORIZED_FLAG), bool(true))] : [])]),
   );
-}
+};
 
 export const lambdaExpression = (roles: Array<RoleDefinition>) => {
   return iff(
     equals(ref('util.authType()'), str(LAMBDA_AUTH_TYPE)),
     compoundExpression([...(roles.length > 0 ? [set(ref(IS_AUTHORIZED_FLAG), bool(true))] : [])]),
   );
-}
+};
 
-export const iamExpression = (roles: Array<RoleDefinition>, adminuiEnabled: boolean = false, adminUserPoolID?: string) => {
+export const iamExpression = (roles: Array<RoleDefinition>, adminRolesEnabled: boolean, adminRoles: Array<string> = []) => {
   const expression = new Array<Expression>();
-  // allow if using admin ui
-  if (adminuiEnabled) {
-    expression.push(
-      iff(
-        or([
-          methodCall(ref('ctx.identity.userArn.contains'), str(`${adminUserPoolID}${ADMIN_ROLE}`)),
-          methodCall(ref('ctx.identity.userArn.contains'), str(`${adminUserPoolID}${MANAGE_ROLE}`)),
-        ]),
-        raw('#return($util.toJson({})'),
-      ),
-    );
+  // allow if using an admin role
+  if (adminRolesEnabled) {
+    expression.push(iamAdminRoleCheckExpression(adminRoles));
   }
   if (roles.length > 0) {
     for (let role of roles) {
       expression.push(iff(not(ref(IS_AUTHORIZED_FLAG)), iamCheck(role.claim!, set(ref(IS_AUTHORIZED_FLAG), bool(true)))));
     }
+  } else {
+    expression.push(ref('util.unauthorized()'));
   }
   return iff(equals(ref('util.authType()'), str(IAM_AUTH_TYPE)), compoundExpression(expression));
+};
+
+export const iamAdminRoleCheckExpression = (adminRoles: Array<string>): Expression => {
+  return compoundExpression([
+    set(ref('adminRoles'), raw(JSON.stringify(adminRoles))),
+    forEach(/*for */ ref('adminRole'), /* in */ ref('adminRoles'), [
+      iff(methodCall(ref('ctx.identity.userArn.contains'), ref('adminRole')), raw('#return($util.toJson({}))')),
+    ]),
+  ]);
 };
 
 // Get Request for Update and Delete

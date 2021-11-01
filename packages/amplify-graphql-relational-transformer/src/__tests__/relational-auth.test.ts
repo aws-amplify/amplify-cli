@@ -40,14 +40,7 @@ test('per-field auth on relational field', () => {
   };
   const transformer = new GraphQLTransform({
     authConfig,
-    transformers: [
-      new ModelTransformer(),
-      new HasManyTransformer(),
-      new AuthTransformer({
-        authConfig,
-        addAwsIamAuthInOutputSchema: false,
-      }),
-    ],
+    transformers: [new ModelTransformer(), new HasManyTransformer(), new AuthTransformer()],
   });
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
@@ -141,10 +134,7 @@ const getTransformer = (authConfig: AppSyncAuthConfiguration) => {
       new IndexTransformer(),
       new HasManyTransformer(),
       new BelongsToTransformer(),
-      new AuthTransformer({
-        authConfig,
-        addAwsIamAuthInOutputSchema: false,
-      }),
+      new AuthTransformer(),
     ],
   });
 };
