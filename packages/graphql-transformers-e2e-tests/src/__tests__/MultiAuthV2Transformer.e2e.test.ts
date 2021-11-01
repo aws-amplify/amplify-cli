@@ -295,9 +295,7 @@ beforeAll(async () => {
       new PrimaryKeyTransformer(),
       new HasOneTransformer(),
       new HasManyTransformer(),
-      new AuthTransformer({
-        addAwsIamAuthInOutputSchema: false,
-      }),
+      new AuthTransformer(),
     ],
   });
 

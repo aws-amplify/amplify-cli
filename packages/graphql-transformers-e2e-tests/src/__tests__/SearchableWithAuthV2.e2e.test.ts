@@ -167,7 +167,7 @@ beforeAll(async () => {
         },
       ],
     },
-    transformers: [new ModelTransformer(), new SearchableModelTransformer(), new AuthTransformer({ addAwsIamAuthInOutputSchema: false })],
+    transformers: [new ModelTransformer(), new SearchableModelTransformer(), new AuthTransformer()],
   });
   const userPoolResponse = await createUserPool(cognitoClient, `UserPool${STACK_NAME}`);
   USER_POOL_ID = userPoolResponse.UserPool.Id;

@@ -26,6 +26,7 @@ export interface TransformerModelProvider extends TransformerPluginProvider {
     type: ObjectTypeDefinitionNode,
     typeName: string,
     fieldName: string,
+    resolverLogicalId: string,
     directive?: DirectiveDefinitionNode,
   ) => TransformerResolverProvider;
   generateListResolver: (
@@ -33,6 +34,7 @@ export interface TransformerModelProvider extends TransformerPluginProvider {
     type: ObjectTypeDefinitionNode,
     typeName: string,
     fieldName: string,
+    resolverLogicalId: string,
     directive?: DirectiveDefinitionNode,
   ) => TransformerResolverProvider;
   generateCreateResolver: (
@@ -40,6 +42,7 @@ export interface TransformerModelProvider extends TransformerPluginProvider {
     type: ObjectTypeDefinitionNode,
     typeName: string,
     fieldName: string,
+    resolverLogicalId: string,
     directive?: DirectiveDefinitionNode,
   ) => TransformerResolverProvider;
   generateUpdateResolver: (
@@ -47,6 +50,7 @@ export interface TransformerModelProvider extends TransformerPluginProvider {
     type: ObjectTypeDefinitionNode,
     typeName: string,
     fieldName: string,
+    resolverLogicalId: string,
     directive?: DirectiveDefinitionNode,
   ) => TransformerResolverProvider;
   generateDeleteResolver: (
@@ -54,6 +58,7 @@ export interface TransformerModelProvider extends TransformerPluginProvider {
     type: ObjectTypeDefinitionNode,
     typeName: string,
     fieldName: string,
+    resolverLogicalId: string,
     directive?: DirectiveDefinitionNode,
   ) => TransformerResolverProvider;
   generateOnCreateResolver?: (
@@ -61,6 +66,7 @@ export interface TransformerModelProvider extends TransformerPluginProvider {
     type: ObjectTypeDefinitionNode,
     typeName: string,
     fieldName: string,
+    resolverLogicalId: string,
     directive?: DirectiveDefinitionNode,
   ) => TransformerResolverProvider;
   generateOnUpdateResolver?: (
@@ -68,6 +74,7 @@ export interface TransformerModelProvider extends TransformerPluginProvider {
     type: ObjectTypeDefinitionNode,
     typeName: string,
     fieldName: string,
+    resolverLogicalId: string,
     directive?: DirectiveDefinitionNode,
   ) => TransformerResolverProvider;
   generateOnDeleteResolver?: (
@@ -75,6 +82,7 @@ export interface TransformerModelProvider extends TransformerPluginProvider {
     type: ObjectTypeDefinitionNode,
     typeName: string,
     fieldName: string,
+    resolverLogicalId: string,
     directive?: DirectiveDefinitionNode,
   ) => TransformerResolverProvider;
   generateSyncResolver?: (
@@ -82,6 +90,7 @@ export interface TransformerModelProvider extends TransformerPluginProvider {
     type: ObjectTypeDefinitionNode,
     typeName: string,
     fieldName: string,
+    resolverLogicalId: string,
     directive?: DirectiveDefinitionNode,
   ) => TransformerResolverProvider;
 

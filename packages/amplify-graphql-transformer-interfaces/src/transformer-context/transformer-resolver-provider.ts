@@ -24,6 +24,7 @@ export interface TransformerResolversManagerProvider {
   generateQueryResolver: (
     typeName: string,
     fieldName: string,
+    resolverLogicalId: string,
     dataSource: DataSourceProvider,
     requestMappingTemplate: MappingTemplateProvider,
     responseMappingTemplate: MappingTemplateProvider,
@@ -32,6 +33,7 @@ export interface TransformerResolversManagerProvider {
   generateMutationResolver: (
     typeName: string,
     fieldName: string,
+    resolverLogicalId: string,
     dataSource: DataSourceProvider,
     requestMappingTemplate: MappingTemplateProvider,
     responseMappingTemplate: MappingTemplateProvider,
@@ -40,6 +42,7 @@ export interface TransformerResolversManagerProvider {
   generateSubscriptionResolver: (
     typeName: string,
     fieldName: string,
+    resolverLogicalId: string,
     requestMappingTemplate: MappingTemplateProvider,
     responseMappingTemplate: MappingTemplateProvider,
   ) => TransformerResolverProvider;

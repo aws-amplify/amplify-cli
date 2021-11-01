@@ -57,7 +57,7 @@ export function amplifyPushGraphQlWithCognitoPrompt(cwd: string, testingWithLate
       .wait(/.*Do you want to configure advanced settings.*/)
       .sendCarriageReturn()
       .wait('Do you want to generate code for your newly created GraphQL API')
-      .sendLine('n')
+      .sendConfirmNo()
       .wait(/.*/)
       .run((err: Error) => {
         if (!err) {
