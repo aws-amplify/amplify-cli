@@ -31,10 +31,10 @@ const WINDOWS_TEST_FAILURES = [
   'layer-2_pkg',
   'layer-3_pkg',
   'layer-4_pkg',
-  'migration-api-connection-migration_pkg',
-  'migration-api-connection-migration2_pkg',
-  'migration-api-key-migration1_pkg',
-  'migration-api-key-migration2_pkg',
+  'api-connection-migration_pkg',
+  'api-connection-migration2_pkg',
+  'api-key-migration1_pkg',
+  'api-key-migration2_pkg',
   'pull_pkg',
   'schema-iterative-rollback-1_pkg',
   'schema-iterative-rollback-2_pkg',
@@ -57,10 +57,11 @@ const WINDOWS_TEST_FAILURES = [
   'custom_policies_function_pkg',
   'storage-4_pkg',
   'resolvers_pkg',
-  'migration-api-key-migration3_pkg',
-  'migration-api-key-migration4_pkg',
-  'migration-api-key-migration5_pkg',
-  'transformer-migrations-model-migration_pkg',
+  'api-key-migration2_pkg',
+  'api-key-migration3_pkg',
+  'api-key-migration4_pkg',
+  'api-key-migration5_pkg',
+  'model-migration_pkg',
   'global_sandbox_pkg',
 
   // 👇 These fail due to ExpiredToken. 👇
@@ -86,19 +87,19 @@ const AWS_REGIONS_TO_RUN_TESTS = [
 
 // Some services (eg. amazon lex) are not available in all regions
 // Tests added to this list will always run in us-west-2
-const FORCE_US_WEST_2 = ['interactions-amplify_e2e_tests'];
+const FORCE_US_WEST_2 = ['interactions'];
 
 const USE_PARENT_ACCOUNT = [
-  'api_2-amplify_e2e_tests',
-  'api_1-amplify_e2e_tests',
-  'auth_2-amplify_e2e_tests',
-  'import_dynamodb_1-amplify_e2e_tests',
-  'import_s3_1-amplify_e2e_tests',
-  'migration-api-key-migration2-amplify_e2e_tests',
-  'migration-api-key-migration3-amplify_e2e_tests',
-  'migration-api-key-migration4-amplify_e2e_tests',
-  'migration-api-key-migration5-amplify_e2e_tests',
-  'storage-amplify_e2e_tests',
+  'api_2',
+  'api_1',
+  'auth_2',
+  'import_dynamodb_1',
+  'import_s3_1',
+  'api-key-migration2',
+  'api-key-migration3',
+  'api-key-migration4',
+  'api-key-migration5',
+  'storage',
 ];
 
 // This array needs to be update periodically when new tests suites get added
