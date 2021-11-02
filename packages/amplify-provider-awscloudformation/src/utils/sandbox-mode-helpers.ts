@@ -6,7 +6,7 @@ import { parse } from 'graphql';
 
 const AMPLIFY = 'AMPLIFY';
 const GLOBAL_AUTH_RULE = 'global_auth_rule';
-const AUTHORIZATION_RULE = 'AuthorizationRule';
+const AUTHORIZATION_RULE = 'AuthRule';
 const ALLOW = 'allow';
 const PUBLIC = 'public';
 
@@ -15,7 +15,7 @@ export async function showSandboxModePrompts(context: $TSContext): Promise<any> 
     printer.info(
       `
 ⚠️  WARNING: Global Sandbox Mode has been enabled, which requires a valid API key. If
-you'd like to disable, remove ${chalk.green('"input AMPLIFY { global_auth_rule: AuthorizationRule = { allow: public } }"')}
+you'd like to disable, remove ${chalk.green('"input AMPLIFY { global_auth_rule: AuthRule = { allow: public } }"')}
 from your GraphQL schema and run 'amplify push' again. If you'd like to proceed with
 sandbox mode disabled, do not create an API Key.
 `,

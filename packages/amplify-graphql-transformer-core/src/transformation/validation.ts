@@ -103,7 +103,6 @@ scalar AWSPhone
 scalar AWSIPAddress
 scalar BigInt
 scalar Double
-scalar AuthorizationRule
 `);
 
 export const EXTRA_DIRECTIVES_DOCUMENT = parse(`
@@ -160,7 +159,13 @@ export const validateAuthModes = (authConfig: AppSyncAuthConfiguration) => {
   for (let i = 0; i < authModes.length; i++) {
     const mode = authModes[i];
 
-    if (mode !== 'API_KEY' && mode !== 'AMAZON_COGNITO_USER_POOLS' && mode !== 'AWS_IAM' && mode !== 'OPENID_CONNECT' && mode !== 'AWS_LAMBDA') {
+    if (
+      mode !== 'API_KEY' &&
+      mode !== 'AMAZON_COGNITO_USER_POOLS' &&
+      mode !== 'AWS_IAM' &&
+      mode !== 'OPENID_CONNECT' &&
+      mode !== 'AWS_LAMBDA'
+    ) {
       throw new Error(`Invalid auth mode ${mode}`);
     }
   }
