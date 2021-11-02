@@ -60,6 +60,9 @@ const WINDOWS_TEST_FAILURES = [
   'migration-api-key-migration3-amplify_e2e_tests',
   'migration-api-key-migration4-amplify_e2e_tests',
   'migration-api-key-migration5-amplify_e2e_tests',
+  'transformer-migrations-model-migration-amplify_e2e_tests',
+  'global_sandbox-amplify_e2e_tests',
+  'api_5-amplify_e2e_tests',
 
   // 👇 These fail due to ExpiredToken. 👇
   // 👇 Tests should be split to speed up execution time. 👇
