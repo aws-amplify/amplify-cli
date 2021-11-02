@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.13.0-ext10.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-elasticsearch-transformer@4.12.5...graphql-elasticsearch-transformer@4.13.0-ext10.0) (2021-11-02)
+
+
+### Features
+
+* generate list types as non-null ([#8166](https://github.com/aws-amplify/amplify-cli/issues/8166)) ([93786c1](https://github.com/aws-amplify/amplify-cli/commit/93786c13ef04c72748ca32a1ef7878c0e6b5b129))
+
+
+
+
+
 ## [4.12.5](https://github.com/aws-amplify/amplify-cli/compare/graphql-elasticsearch-transformer@4.12.4...graphql-elasticsearch-transformer@4.12.5) (2021-10-10)
 
 **Note:** Version bump only for package graphql-elasticsearch-transformer
