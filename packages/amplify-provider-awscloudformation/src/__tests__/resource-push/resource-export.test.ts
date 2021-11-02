@@ -51,7 +51,7 @@ JSONUtilities_mock.readJson.mockImplementation((pathToJson: string) => {
   }
 });
 const readCFNTemplate_mock = readCFNTemplate as jest.MockedFunction<typeof readCFNTemplate>;
-readCFNTemplate_mock.mockImplementation(path => {
+readCFNTemplate_mock.mockImplementation(async path => {
   if (path.includes('function') && path.includes('amplifyexportestlayer5f16d693')) {
     return {
       cfnTemplate: lambdaTemplate,
