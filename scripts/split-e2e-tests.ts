@@ -44,6 +44,7 @@ const WINDOWS_TEST_FAILURES = [
   'schema-iterative-update-4_pkg',
   'schema-iterative-update-locking_pkg',
   'schema-key_pkg',
+  'api_5_pkg',
   'api_4_pkg',
   'api_3_pkg',
   'api_2_pkg',
