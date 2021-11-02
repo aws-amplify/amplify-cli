@@ -2,12 +2,9 @@ import { TransformerPluginProvider } from '@aws-amplify/graphql-transformer-inte
 import { ITransformer } from 'graphql-transformer-core';
 
 // Defines a single test input
-export type TestEntry = {
-  name: string;
-  schema: string;
-  v1TransformerConfig?: Partial<V1TransformerTestConfig>;
-  v2TransformerConfig?: Partial<V2TransformerTestConfig>;
-};
+type TestName = string;
+type Schema = string;
+export type TestEntry = [TestName, Schema, V1TransformerTestConfig?, V2TransformerTestConfig?];
 
 // If we need to vary other transformer config per test we can add additional parameters here
 export type V1TransformerTestConfig = {
