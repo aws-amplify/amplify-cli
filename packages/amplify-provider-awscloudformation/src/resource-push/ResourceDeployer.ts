@@ -298,7 +298,6 @@ export abstract class ResourceDeployer {
           }
           await writeCFNTemplate(cfnTemplate, cfnFile, { templateFormat });
         }
-
         const transformedCFNPath = await preProcessCFNTemplate(cfnFile);
         transformedCfnPaths.push(transformedCFNPath);
       }

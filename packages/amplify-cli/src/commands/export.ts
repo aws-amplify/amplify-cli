@@ -1,8 +1,9 @@
-import { $TSContext, stateManager, UnrecognizedFrontendError, validateExportDirectoryPath } from 'amplify-cli-core';
+import { $TSContext, IAmplifyResource, stateManager, UnrecognizedFrontendError, validateExportDirectoryPath } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import chalk from 'chalk';
 import { getResourceOutputs } from '../extensions/amplify-helpers/get-resource-outputs';
 import Ora from 'ora';
+import { getResources } from './build-override';
 
 export const run = async (context: $TSContext) => {
   const options = context.input.options;
@@ -54,15 +55,20 @@ export const run = async (context: $TSContext) => {
 };
 
 async function exportBackend(context: $TSContext, exportPath: string) {
-
-  await context.amplify.showResourceTable();
+  await buildAllResources(context);
   const resources = await context.amplify.getResourceStatus();
+  await context.amplify.showResourceTable();
   const providerPlugin = context.amplify.getProviderPlugins(context);
   const providers = Object.keys(providerPlugin);
   for await (const provider of providers) {
     const plugin = await import(providerPlugin[provider]);
     await plugin.exportResources(context, resources, exportPath);
   }
+}
+
+async function buildAllResources(context: $TSContext) {
+  const resourcesToBuild: IAmplifyResource[] = await getResources(context);
+  await context.amplify.executeProviderUtils(context, 'awscloudformation', 'buildOverrides', { resourcesToBuild, forceCompile: true });
 }
 
 async function createFrontEndConfigFile(context: $TSContext, exportPath: string) {
@@ -97,4 +103,3 @@ async function createFrontEndConfigFile(context: $TSContext, exportPath: string)
     spinner.stop();
   }
 }
-

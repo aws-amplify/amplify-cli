@@ -1,4 +1,12 @@
-import { $TSContext, CFNTemplateFormat, JSONUtilities, pathManager, readCFNTemplate, stateManager } from 'amplify-cli-core';
+import {
+  $TSContext,
+  CFNTemplateFormat,
+  JSONUtilities,
+  pathManager,
+  readCFNTemplate,
+  buildOverrideDir,
+  stateManager,
+} from 'amplify-cli-core';
 import { DeploymentResources, PackagedResourceDefinition, ResourceDeployType, StackParameters } from '../../resource-push/Types';
 import * as fs from 'fs-extra';
 
@@ -43,7 +51,7 @@ JSONUtilities_mock.readJson.mockImplementation((pathToJson: string) => {
   }
 });
 const readCFNTemplate_mock = readCFNTemplate as jest.MockedFunction<typeof readCFNTemplate>;
-readCFNTemplate_mock.mockImplementation(async path => {
+readCFNTemplate_mock.mockImplementation(path => {
   if (path.includes('function') && path.includes('amplifyexportestlayer5f16d693')) {
     return {
       cfnTemplate: lambdaTemplate,
@@ -62,6 +70,9 @@ readCFNTemplate_mock.mockImplementation(async path => {
     templateFormat: CFNTemplateFormat.JSON,
   };
 });
+const buildOverrideDir_mock = buildOverrideDir as jest.MockedFunction<typeof buildOverrideDir>;
+
+buildOverrideDir_mock.mockImplementation(async (cwd: string, dest: string) => false);
 
 jest.mock('fs-extra');
 const fs_mock = fs as jest.Mocked<typeof fs>;
@@ -257,6 +268,9 @@ describe('test resource export', () => {
       getEnvInfo: stateManager_mock.getLocalEnvInfo,
       getBackendDirPath: pathManager_mock.getBackendDirPath,
     },
+    input: {
+      command: 'notinit',
+    },
     parameters: { options: {} },
     exeInfo: {
       localEnvInfo: {
@@ -447,7 +461,6 @@ describe('test resource export', () => {
 
   test('resource Export generate and write Root Stack', async () => {
     const parameters = await resourceExport.generateAndWriteRootStack(exportStackParameters);
-
     expect(Object.keys(parameters).length).toBeLessThan(2);
   });
 });
