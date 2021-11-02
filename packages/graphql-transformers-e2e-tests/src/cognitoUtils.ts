@@ -79,11 +79,12 @@ export async function deleteUser(accessToken: string): Promise<{}> {
   });
 }
 
-export async function createGroup(userPoolId: string, name: string): Promise<CreateGroupResponse> {
+export async function createGroup(userPoolId: string, name: string, roleArn?: string): Promise<CreateGroupResponse> {
   return new Promise((res, rej) => {
     const params: CreateGroupRequest = {
       GroupName: name,
       UserPoolId: userPoolId,
+      ...(roleArn ? { RoleArn: roleArn } : {}),
     };
     cognitoClient.createGroup(params, (err, data) => (err ? rej(err) : res(data)));
   });
@@ -103,8 +104,9 @@ export async function addUserToGroup(groupName: string, username: string, userPo
 export async function createIdentityPool(
   client: CognitoIdentity,
   identityPoolName: string,
-  params: { authRoleArn: string; unauthRoleArn: string; providerName: string; clientId: string },
+  params: { authRoleArn: string; unauthRoleArn: string; providerName: string; clientId: string; useTokenAuth?: boolean },
 ): Promise<string> {
+  const useTokenAuth = params?.useTokenAuth ?? false;
   const idPool = await client
     .createIdentityPool({
       IdentityPoolName: identityPoolName,
@@ -125,6 +127,16 @@ export async function createIdentityPool(
         authenticated: params.authRoleArn,
         unauthenticated: params.unauthRoleArn,
       },
+      ...(useTokenAuth
+        ? {
+            RoleMappings: {
+              [`${params.providerName}:${params.clientId}`]: {
+                Type: 'Token',
+                AmbiguousRoleResolution: 'AuthenticatedRole',
+              },
+            },
+          }
+        : {}),
     })
     .promise();
 
