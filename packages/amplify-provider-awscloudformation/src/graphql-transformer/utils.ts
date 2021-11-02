@@ -41,7 +41,6 @@ export const getAdminRoles = async (ctx: $TSContext, apiResourceName: string): P
       adminRoles.push(`${res.userPoolID}${AMPLIFY_ADMIN_ROLE}`, `${res.userPoolID}${AMPLIFY_MANAGE_ROLE}`);
     }
   } catch (err) {
-    console.info('App not deployed yet.');
     // no need to error if not admin ui app
   }
 
