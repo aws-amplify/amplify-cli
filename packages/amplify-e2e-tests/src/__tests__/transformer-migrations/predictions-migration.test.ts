@@ -5,7 +5,8 @@ import {
   amplifyPushUpdate,
   addFeatureFlag,
   createRandomName,
-  addAuthWithDefault,
+  addS3AndAuthWithAuthOnlyAccess,
+  amplifyPushForce,
 } from 'amplify-e2e-core';
 import { addApiWithoutSchema, updateApiSchema, getProjectMeta } from 'amplify-e2e-core';
 import { createNewProjectDir, deleteProjectDir } from 'amplify-e2e-core';
@@ -21,7 +22,7 @@ describe('transformer predictions migration test', () => {
     projectName = createRandomName();
     projRoot = await createNewProjectDir(createRandomName());
     await initJSProjectWithProfile(projRoot, { name: projectName });
-    await addAuthWithDefault(projRoot, {});
+    await addS3AndAuthWithAuthOnlyAccess(projRoot, {});
   });
 
   afterEach(async () => {
@@ -39,14 +40,8 @@ describe('transformer predictions migration test', () => {
     let appSyncClient = getAppSyncClientFromProj(projRoot);
 
     let translateQuery = /* GraphQL */ `
-      query TranslateThis($input: TranslateThisInput!) {
-        translateThis(input: {
-          translateText: {
-            sourceLanguage: 'en',
-            targetLanguage: 'de',
-            text: 'this is a voice test',
-          }
-        )
+      query TranslateThis {
+        translateThis(input: { translateText: { sourceLanguage: "en", targetLanguage: "de", text: "This is a voice test" } })
       }
     `;
 
@@ -60,15 +55,11 @@ describe('transformer predictions migration test', () => {
     expect((translateResult.data as any).translateThis).toMatch(/((\bDies\b)|(\bdas\b)|(\bder\b)) ist ein Sprachtest/i);
 
     let speakQuery = /* GraphQL */ `
-      query SpeakTranslatedText($input: SpeakTranslatedTextInput!) {
-        speakTranslatedText(input: {
-          translateText: {
-            sourceLanguage: 'en',
-            targetLanguage: 'es',
-            text: 'this is a voice test',
-          },
-          convertTextToSpeech: {
-            voiceID: 'Conchita',
+      query SpeakTranslatedText {
+        speakTranslatedText(
+          input: {
+            translateText: { sourceLanguage: "en", targetLanguage: "es", text: "this is a voice test" }
+            convertTextToSpeech: { voiceID: "Conchita" }
           }
         )
       }
@@ -89,7 +80,7 @@ describe('transformer predictions migration test', () => {
     await addFeatureFlag(projRoot, 'graphqltransformer', 'useExperimentalPipelinedTransformer', true);
 
     await updateApiSchema(projRoot, projectName, predictionsSchema);
-    await amplifyPushUpdate(projRoot);
+    await amplifyPushForce(projRoot);
 
     appSyncClient = getAppSyncClientFromProj(projRoot);
 
@@ -101,6 +92,17 @@ describe('transformer predictions migration test', () => {
     expect(translateResult.errors).toBeUndefined();
     expect(translateResult.data).toBeDefined();
     expect((translateResult.data as any).translateThis).toMatch(/((\bDies\b)|(\bdas\b)|(\bder\b)) ist ein Sprachtest/i);
+
+    speakResult = await appSyncClient.query({
+      query: gql(speakQuery),
+      fetchPolicy: 'no-cache',
+    });
+
+    expect(speakResult.errors).toBeUndefined();
+    expect(speakResult.data).toBeDefined();
+    expect((speakResult.data as any).speakTranslatedText).toMatch(
+      /(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/,
+    );
   });
 
   const getAppSyncClientFromProj = (projRoot: string) => {
