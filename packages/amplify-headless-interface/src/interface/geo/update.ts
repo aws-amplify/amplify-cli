@@ -8,18 +8,43 @@ import { AccessType } from "./add";
    */
   version: 1;
   /**
-   * The service configuration that will be interpreted by Amplify.
+   * The service modification that will be interpreted by Amplify.
    */
   serviceModification: GeoModification;
 }
 
-export interface GeoModification {
+/**
+ * Defines AWS Location Service parameters.
+ */
+export type GeoModification = BaseGeoModification & MapModification
+/**
+ * Modification that applies to all geo service configuration.
+ */
+export interface BaseGeoModification {
+  /**
+   * The service name of the resource provider.
+   */
   serviceName: string;
+  /**
+   * The name of the map that will be updated.
+   */
   name: string;
+  /**
+   * Whether the geo resource added is set to default.
+   */
   setAsDefault: boolean;
+  /**
+   * The access policy for geo resources.
+   */
   accessType: AccessType
 }
 
-export interface MapModification extends GeoModification {
+/**
+ * Specifies modification for map.
+ */
+export interface MapModification {
+  /**
+   * The service name of the resource provider.
+   */
   serviceName: "Map";
 }

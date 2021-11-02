@@ -1,66 +1,83 @@
 {
-  "type": "object",
-  "properties": {
-      "version": {
-          "description": "The schema version.",
-          "type": "number",
-          "enum": [
-              1
-          ]
-      },
-      "serviceModification": {
-          "description": "Service modifications that will be interpreted by Amplify.",
-          "oneOf": [
-            {"$ref": "#/definitions/MapModification"}
-        ]      
-      }
-  },
-  "required": [
-      "serviceModification",
-      "version"
-  ],
-  "definitions": {
-    "MapModification": {
-      "description": "Modification exposed by Map.",
-      "type": "object",
-      "properties": {
-          "serviceName": {
-            "description": "The service name of the resource provider.",
-            "type": "string",
+    "description": "Defines the json object expected by `amplify update geo --headless`",
+    "type": "object",
+    "properties": {
+        "version": {
+            "description": "The schema version.",
+            "type": "number",
             "enum": [
-                "Map"
+                1
             ]
-          },
-          "name": {
-              "description": "The name of the map that will be modified.",
-              "type": "string"
-          },
-          "accessType": {
-              "$ref": "#/definitions/AccessType"
-          },
-          "setAsDefault": {
-              "$ref": "#/definitions/SetAsDefault"
-          }
-      },
-      "required": [
-          "serviceName",
-          "name",
-          "accessType",
-          "setAsDefault"
-      ]
-  },
-  "AccessType": {
-      "description": "The access policy for geo resources.",
-      "type": "string",
-      "enum": [
-          "AuthorizedUsers",
-          "AuthorizedAndGuestUsers"
-      ]
-  },
-  "SetAsDefault": {
-      "description": "Whether the geo resource added is set to default.",
-      "type": "boolean"
-  }
-  },
-  "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "serviceModification": {
+            "description": "The service modification that will be interpreted by Amplify.",
+            "allOf": [
+                {
+                    "$ref": "#/definitions/BaseGeoModification"
+                },
+                {
+                    "$ref": "#/definitions/MapModification"
+                }
+            ]
+        }
+    },
+    "required": [
+        "serviceModification",
+        "version"
+    ],
+    "definitions": {
+        "BaseGeoModification": {
+            "description": "Modification that applies to all geo service configuration.",
+            "type": "object",
+            "properties": {
+                "serviceName": {
+                    "description": "The service name of the resource provider.",
+                    "type": "string"
+                },
+                "name": {
+                    "description": "The name of the map that will be updated.",
+                    "type": "string"
+                },
+                "setAsDefault": {
+                    "description": "Whether the geo resource added is set to default.",
+                    "type": "boolean"
+                },
+                "accessType": {
+                    "$ref": "#/definitions/AccessType",
+                    "description": "The access policy for geo resources."
+                }
+            },
+            "required": [
+                "accessType",
+                "name",
+                "serviceName",
+                "setAsDefault"
+            ]
+        },
+        "AccessType": {
+            "description": "Definition of access type",
+            "enum": [
+                "AuthorizedAndGuestUsers",
+                "AuthorizedUsers"
+            ],
+            "type": "string"
+        },
+        "MapModification": {
+            "description": "Specifies modification for map.",
+            "type": "object",
+            "properties": {
+                "serviceName": {
+                    "description": "The service name of the resource provider.",
+                    "type": "string",
+                    "enum": [
+                        "Map"
+                    ]
+                }
+            },
+            "required": [
+                "serviceName"
+            ]
+        }
+    },
+    "$schema": "http://json-schema.org/draft-07/schema#"
 }
