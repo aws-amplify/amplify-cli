@@ -1,6 +1,15 @@
-import { $TSAny, $TSContext, $TSObject, AmplifyCategories, FeatureFlags, JSONUtilities, pathManager } from 'amplify-cli-core';
+import {
+  $TSAny,
+  $TSContext,
+  $TSObject,
+  AmplifyCategories,
+  AmplifySupportedService,
+  FeatureFlags,
+  JSONUtilities,
+  pathManager,
+} from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
-import { copySync, existsSync, outputFileSync } from 'fs-extra';
+import { copySync, ensureDirSync, existsSync } from 'fs-extra';
 import { get } from 'lodash';
 import * as path from 'path';
 import uuid from 'uuid';
@@ -8,9 +17,6 @@ import { adminAuthAssetRoot, cfnTemplateRoot, privateKeys, triggerRoot } from '.
 import { CognitoConfiguration } from '../service-walkthrough-types/awsCognito-user-input-types';
 import { AuthTriggerConfig, AuthTriggerConnection } from '../service-walkthrough-types/cognito-user-input-types';
 import { generateUserPoolGroupStackTemplate } from './generate-user-pool-group-stack-template';
-
-// keep in sync with ServiceName in amplify-category-function, but probably it will not change
-const FunctionServiceNameLambdaFunction = 'Lambda';
 
 /**
  * Factory function that returns a function that synthesizes all resources based on a CognitoCLIInputs request.
@@ -41,7 +47,7 @@ export const getResourceUpdater = async (context: $TSContext, request: Readonly<
   const resources = context.amplify.getProjectMeta();
 
   const adminQueriesFunctionName = get<{ category: string; resourceName: string }[]>(resources, ['api', 'AdminQueries', 'dependsOn'], [])
-    .filter(resource => resource.category === 'function')
+    .filter(resource => resource.category === AmplifyCategories.FUNCTION)
     .map(resource => resource.resourceName)
     .find(resourceName => resourceName.includes('AdminQueries'));
   if (adminQueriesFunctionName) {
@@ -126,7 +132,7 @@ export const removeDeprecatedProps = (props: $TSObject) => {
   return props;
 };
 
-const lambdaTriggers = async (coreAnswers: $TSObject, context: $TSContext, previouslySaved: any) => {
+const lambdaTriggers = async (coreAnswers: $TSObject, context: $TSContext, previouslySaved: $TSAny) => {
   const { handleTriggers } = await import('./trigger-flow-auth-helper');
   let triggerKeyValues = {};
   let authTriggerConnections: AuthTriggerConnection[];
@@ -149,7 +155,12 @@ const lambdaTriggers = async (coreAnswers: $TSObject, context: $TSContext, previ
     }
 
     // determine permissions needed for each trigger module
-    coreAnswers.permissions = await context.amplify.getTriggerPermissions(context, coreAnswers.triggers, 'auth', coreAnswers.resourceName);
+    coreAnswers.permissions = await context.amplify.getTriggerPermissions(
+      context,
+      coreAnswers.triggers,
+      AmplifyCategories.AUTH,
+      coreAnswers.resourceName,
+    );
   } else if (previouslySaved) {
     const targetDir = pathManager.getBackendDirPath();
     Object.keys(previouslySaved).forEach(p => {
@@ -178,9 +189,20 @@ export const createUserPoolGroups = async (context: $TSContext, resourceName: st
       });
     }
 
-    const userPoolGroupFile = path.join(pathManager.getBackendDirPath(), 'auth', 'userPoolGroups', 'user-pool-group-precedence.json');
+    const userPoolGroupFile = path.join(
+      pathManager.getBackendDirPath(),
+      AmplifyCategories.AUTH,
+      'userPoolGroups',
+      'user-pool-group-precedence.json',
+    );
 
-    const userPoolGroupParams = path.join(pathManager.getBackendDirPath(), 'auth', 'userPoolGroups', 'build', 'parameters.json');
+    const userPoolGroupParams = path.join(
+      pathManager.getBackendDirPath(),
+      AmplifyCategories.AUTH,
+      'userPoolGroups',
+      'build',
+      'parameters.json',
+    );
 
     /* eslint-disable */
     const groupParams = {
@@ -196,12 +218,12 @@ export const createUserPoolGroups = async (context: $TSContext, resourceName: st
     JSONUtilities.writeJson(userPoolGroupParams, groupParams);
     JSONUtilities.writeJson(userPoolGroupFile, userPoolGroupPrecedenceList);
 
-    context.amplify.updateamplifyMetaAfterResourceAdd('auth', 'userPoolGroups', {
+    context.amplify.updateamplifyMetaAfterResourceAdd(AmplifyCategories.AUTH, 'userPoolGroups', {
       service: 'Cognito-UserPool-Groups',
       providerPlugin: 'awscloudformation',
       dependsOn: [
         {
-          category: 'auth',
+          category: AmplifyCategories.AUTH,
           resourceName,
           attributes: ['UserPoolId', 'AppClientIDWeb', 'AppClientID', 'IdentityPoolId'],
         },
@@ -223,16 +245,16 @@ export const updateUserPoolGroups = async (context: $TSContext, resourceName: st
       });
     }
 
-    const userPoolGroupFile = path.join(pathManager.getBackendDirPath(), 'auth', 'userPoolGroups', 'user-pool-group-precedence.json');
+    const userPoolGroupFolder = path.join(pathManager.getBackendDirPath(), AmplifyCategories.AUTH, 'userPoolGroups');
+    ensureDirSync(userPoolGroupFolder);
+    JSONUtilities.writeJson(path.join(userPoolGroupFolder, 'user-pool-group-precedence.json'), userPoolGroupPrecedenceList);
 
-    outputFileSync(userPoolGroupFile, JSON.stringify(userPoolGroupPrecedenceList, null, 2));
-
-    context.amplify.updateamplifyMetaAfterResourceUpdate('auth', 'userPoolGroups', 'userPoolGroups', {
+    context.amplify.updateamplifyMetaAfterResourceUpdate(AmplifyCategories.AUTH, 'userPoolGroups', 'userPoolGroups', {
       service: 'Cognito-UserPool-Groups',
       providerPlugin: 'awscloudformation',
       dependsOn: [
         {
-          category: 'auth',
+          category: AmplifyCategories.AUTH,
           resourceName,
           attributes: ['UserPoolId', 'AppClientIDWeb', 'AppClientID', 'IdentityPoolId'],
         },
@@ -267,13 +289,13 @@ const createAdminAuthFunction = async (
   adminGroup: string,
   operation: 'update' | 'add',
 ) => {
-  const targetDir = path.join(pathManager.getBackendDirPath(), 'function', functionName);
+  const targetDir = path.join(pathManager.getBackendDirPath(), AmplifyCategories.FUNCTION, functionName);
   let lambdaGroupVar = adminGroup;
 
   const dependsOn = [];
 
   dependsOn.push({
-    category: 'auth',
+    category: AmplifyCategories.AUTH,
     resourceName: authResourceName,
     attributes: ['UserPoolId'],
   });
@@ -324,72 +346,53 @@ const createAdminAuthFunction = async (
   if (operation === 'add') {
     // add amplify-meta and backend-config
     const backendConfigs = {
-      service: FunctionServiceNameLambdaFunction,
+      service: AmplifySupportedService.LAMBDA,
       providerPlugin: 'awscloudformation',
       build: true,
       dependsOn,
     };
 
-    await context.amplify.updateamplifyMetaAfterResourceAdd('function', functionName, backendConfigs);
+    await context.amplify.updateamplifyMetaAfterResourceAdd(AmplifyCategories.FUNCTION, functionName, backendConfigs);
     printer.success(`Successfully added ${functionName} function locally`);
   } else {
     printer.success(`Successfully updated ${functionName} function locally`);
   }
 };
 
-// TODO !~!~!~!~!~!
 const createAdminAuthAPI = async (context: $TSContext, authResourceName: string, functionName: string, operation: 'update' | 'add') => {
   const apiName = 'AdminQueries';
-  const targetDir = pathManager.getResourceDirectoryPath(undefined, 'api', apiName);
-  const dependsOn = [];
-
-  dependsOn.push(
+  const dependsOn = [
     {
-      category: 'auth',
+      category: AmplifyCategories.AUTH,
       resourceName: authResourceName,
       attributes: ['UserPoolId'],
     },
     {
-      category: 'function',
+      category: AmplifyCategories.FUNCTION,
       resourceName: functionName,
       attributes: ['Arn', 'Name'],
     },
-  );
+  ];
 
   const apiProps = {
+    apiName,
     functionName,
     authResourceName,
     dependsOn,
   };
 
-  await context.amplify.invokePluginMethod(context, AmplifyCategories.API, 'API Gateway', 'addAdminQueriesApi', [context, apiName]);
-
-  // const copyJobs = [
-  //   {
-  //     dir: adminAuthAssetRoot,
-  //     template: 'admin-queries-api-template.json.ejs',
-  //     target: path.join(targetDir, 'admin-queries-cloudformation-template.json'),
-  //   },
-  //   {
-  //     dir: adminAuthAssetRoot,
-  //     template: 'admin-queries-api-params.json',
-  //     target: path.join(targetDir, 'parameters.json'),
-  //   },
-  // ];
-
-  // // copy over the files
-  // await context.amplify.copyBatch(context, copyJobs, apiProps, true);
-
   if (operation === 'add') {
+    await context.amplify.invokePluginMethod(context, AmplifyCategories.API, undefined, 'addAdminQueriesApi', [context, apiProps]);
+
     // Update amplify-meta and backend-config
     const backendConfigs = {
-      service: 'API Gateway',
+      service: AmplifySupportedService.APIGW,
       providerPlugin: 'awscloudformation',
       authorizationType: 'AMAZON_COGNITO_USER_POOLS',
       dependsOn,
     };
 
-    await context.amplify.updateamplifyMetaAfterResourceAdd('api', apiName, backendConfigs);
+    await context.amplify.updateamplifyMetaAfterResourceAdd(AmplifyCategories.API, apiName, backendConfigs);
     printer.success(`Successfully added ${apiName} API locally`);
   } else {
     printer.success(`Successfully updated ${apiName} API locally`);
@@ -397,7 +400,7 @@ const createAdminAuthAPI = async (context: $TSContext, authResourceName: string,
 };
 
 const copyS3Assets = async (request: CognitoConfiguration) => {
-  const targetDir = path.join(pathManager.getBackendDirPath(), 'auth', request.resourceName!, 'assets');
+  const targetDir = path.join(pathManager.getBackendDirPath(), AmplifyCategories.AUTH, request.resourceName!, 'assets');
   const triggers = request.triggers ? JSONUtilities.parse<$TSAny>(request.triggers) : null;
   const confirmationFileNeeded = request.triggers && triggers.CustomMessage && triggers.CustomMessage.includes('verification-link');
   if (confirmationFileNeeded) {

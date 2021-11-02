@@ -20,8 +20,6 @@ import { getAllDefaults } from '../default-values/apigw-defaults';
 import { ApigwAnswers, ApigwPath, ApigwWalkthroughReturnPromise, ApiRequirements, PermissionSetting } from '../types/apigw-types';
 import { checkForPathOverlap, formatCFNPathParamsForExpressJs, validatePathName } from '../utils/rest-api-path-utils';
 
-// keep in sync with ServiceName in amplify-category-function, but probably it will not change
-
 const category = AmplifyCategories.API;
 const serviceName = AmplifySupportedService.APIGW;
 const elasticContainerServiceName = 'ElasticContainer';
@@ -121,7 +119,7 @@ export async function updateWalkthrough(context: $TSContext) {
       break;
     }
     default: {
-      updatedResult = {};
+      throw new Error(`Unrecognized API update operation "${updateApiOperation}"`);
     }
   }
 

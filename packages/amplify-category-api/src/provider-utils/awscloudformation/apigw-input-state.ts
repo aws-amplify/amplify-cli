@@ -13,7 +13,7 @@ import {
 import { printer } from 'amplify-prompts';
 import * as fs from 'fs-extra';
 import { join } from 'path';
-import { ApigwInputs, ApigwStackTransform, Path } from './cdk-stack-builder';
+import { ApigwInputs, ApigwStackTransform, CrudOperation, Path } from './cdk-stack-builder';
 import { ApigwWalkthroughReturnPromise, PermissionSetting } from './types/apigw-types';
 
 export class ApigwInputState {
@@ -35,6 +35,22 @@ export class ApigwInputState {
     return ApigwInputState.instance;
   }
 
+  public addAdminQueriesResource = async (adminQueriesProps: AdminQueriesProps) => {
+    this.resourceName = adminQueriesProps.apiName;
+    this.paths = {
+      '/{proxy+}': {
+        lambdaFunction: adminQueriesProps.functionName,
+        permissions: {
+          setting: PermissionSetting.PRIVATE,
+          auth: [CrudOperation.CREATE, CrudOperation.READ, CrudOperation.UPDATE, CrudOperation.DELETE],
+        },
+      },
+    };
+
+    // Caller will complete amplify-meta.json updates
+    return this.createApigwArtifacts();
+  };
+
   public addApigwResource = async (serviceWalkthroughPromise: ApigwWalkthroughReturnPromise, options: $TSObject) => {
     const { answers } = await serviceWalkthroughPromise;
 
@@ -44,7 +60,6 @@ export class ApigwInputState {
 
     isResourceNameUnique(AmplifyCategories.API, this.resourceName);
 
-    // this.addPolicyResourceNameToPaths(answers.paths);
     await this.createApigwArtifacts();
 
     this.context.amplify.updateamplifyMetaAfterResourceAdd(AmplifyCategories.API, this.resourceName, options);
@@ -124,8 +139,7 @@ export class ApigwInputState {
   };
 
   public cliInputsFileExists() {
-    const path = pathManager.getResourceInputsJsonFilePath(this.projectRootPath, AmplifyCategories.API, this.resourceName);
-    return fs.existsSync(path);
+    return stateManager.resourceInputsJsonExists(this.projectRootPath, AmplifyCategories.API, this.resourceName);
   }
 
   public getCliInputPayload() {
@@ -156,18 +170,6 @@ export class ApigwInputState {
     await stack.transform();
   }
 
-  // TODO - Remove if not needed
-  // addPolicyResourceNameToPaths = () => {
-  //   if (Array.isArray(this.paths)) {
-  //     this.paths.forEach(p => {
-  //       const pathName = p.name;
-  //       if (typeof pathName === 'string') {
-  //         p.policyResourceName = pathName.replace(/{[a-zA-Z0-9\-]+}/g, '*');
-  //       }
-  //     });
-  //   }
-  // }
-
   convertCrudOperationsToPermissions(crudOps: CrudOperation[]) {
     const output = [];
     for (const op of crudOps) {
@@ -191,9 +193,9 @@ export class ApigwInputState {
   }
 }
 
-enum CrudOperation {
-  CREATE = 'CREATE',
-  READ = 'READ',
-  UPDATE = 'UPDATE',
-  DELETE = 'DELETE',
-}
+type AdminQueriesProps = {
+  apiName: string;
+  functionName: string;
+  authResourceName: string;
+  dependsOn: $TSObject[];
+};

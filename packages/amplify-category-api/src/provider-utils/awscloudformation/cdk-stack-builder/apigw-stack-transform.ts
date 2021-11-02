@@ -4,6 +4,7 @@ import {
   $TSContext,
   AmplifyCategories,
   buildOverrideDir,
+  getAmplifyResourceByCategories,
   JSONUtilities,
   PathConstants,
   pathManager,
@@ -38,8 +39,13 @@ export class ApigwStackTransform {
   }
 
   async transform() {
+    let authResourceName: string;
+    if (this.resourceName === 'AdminQueries') {
+      [authResourceName] = getAmplifyResourceByCategories(AmplifyCategories.AUTH).filter(resourceName => resourceName !== 'UserPoolGroups');
+    }
+
     // Generate cloudformation stack from cli-inputs.json
-    this.generateStack();
+    this.generateStack(authResourceName);
 
     // Generate cloudformation stack input params from cli-inputs.json
     this.generateCfnInputParameters();
@@ -56,8 +62,18 @@ export class ApigwStackTransform {
     this.cfnInputParams = {};
   }
 
-  generateStack() {
+  generateStack(authResourceName?: string) {
     this.resourceTemplateObj = new AmplifyApigwResourceStack(this._app, 'AmplifyApigwResourceStack', this.cliInputs);
+
+    if (authResourceName) {
+      this.resourceTemplateObj.addCfnParameter(
+        {
+          type: 'String',
+          default: `auth${authResourceName}UserPoolId`,
+        },
+        `auth${authResourceName}UserPoolId`,
+      );
+    }
 
     // Add Parameters
     for (const path of Object.values(this.cliInputs.paths)) {
@@ -125,7 +141,9 @@ export class ApigwStackTransform {
     );
 
     // Add resources
-    this.resourceTemplateObj.generateStackResources(this.resourceName);
+    this.resourceName === 'AdminQueries'
+      ? this.resourceTemplateObj.generateAdminQueriesStack(this.resourceName, authResourceName)
+      : this.resourceTemplateObj.generateStackResources(this.resourceName);
   }
 
   async applyOverrides() {

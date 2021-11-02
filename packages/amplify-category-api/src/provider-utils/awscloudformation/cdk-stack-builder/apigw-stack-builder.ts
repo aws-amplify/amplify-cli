@@ -83,145 +83,64 @@ export class AmplifyApigwResourceStack extends cdk.Stack implements AmplifyApigw
     this._cfnParameterMap.set(logicalId, new cdk.CfnParameter(this, logicalId, props));
   }
 
-  private _constructCfnPaths(resourceName: string) {
-    for (const [pathName, path] of Object.entries(this._props.paths)) {
-      this.paths[pathName] = {
-        options: {
-          consumes: ['application/json'],
-          produces: ['application/json'],
-          responses: {
-            '200': response200,
-          },
-          'x-amazon-apigateway-integration': {
-            responses: {
-              default: defaultCorsResponseObject,
-            },
-            requestTemplates: {
-              'application/json': '{"statusCode": 200}',
-            },
-            passthroughBehavior: 'when_no_match',
-            type: 'mock',
-          },
-        },
-        'x-amazon-apigateway-any-method': {
-          consumes: ['application/json'],
-          produces: ['application/json'],
-          parameters: [
-            {
-              in: 'body',
-              name: 'RequestSchema',
-              required: false,
-              schema: {
-                $ref: '#/definitions/RequestSchema',
-              },
-            },
-          ],
-          responses: {
-            '200': {
-              description: '200 response',
-              schema: {
-                $ref: '#/definitions/ResponseSchema',
-              },
-            },
-          },
-          'x-amazon-apigateway-integration': {
-            responses: {
-              default: {
-                statusCode: '200',
-              },
-            },
-            uri: cdk.Fn.join('', [
-              'arn:aws:apigateway:',
-              cdk.Fn.ref('AWS::Region'),
-              ':lambda:path/2015-03-31/functions/',
-              cdk.Fn.ref(`function${path.lambdaFunction}Arn`),
-              '/invocations',
-            ]),
-            passthroughBehavior: 'when_no_match',
-            httpMethod: 'POST',
-            type: 'aws_proxy',
-          },
-        },
-      };
+  renderCloudFormationTemplate = (): string => {
+    return JSONUtilities.stringify(this._toCloudFormation());
+  };
 
-      this.paths[`${pathName}/{proxy+}`] = {
-        options: {
-          consumes: ['application/json'],
-          produces: ['application/json'],
-          responses: {
-            '200': response200,
-          },
-          'x-amazon-apigateway-integration': {
-            responses: {
-              default: defaultCorsResponseObject,
-            },
-            requestTemplates: {
-              'application/json': '{"statusCode": 200}',
-            },
-            passthroughBehavior: 'when_no_match',
-            type: 'mock',
-          },
-        },
-        'x-amazon-apigateway-any-method': {
-          consumes: ['application/json'],
-          produces: ['application/json'],
-          parameters: [
-            {
-              in: 'body',
-              name: 'RequestSchema',
-              required: false,
-              schema: {
-                $ref: '#/definitions/RequestSchema',
-              },
-            },
-          ],
-          responses: {
-            '200': {
-              description: '200 response',
-              schema: {
-                $ref: '#/definitions/ResponseSchema',
-              },
-            },
-          },
-          'x-amazon-apigateway-integration': {
-            responses: {
-              default: {
-                statusCode: '200',
-              },
-            },
-            uri: cdk.Fn.join('', [
-              'arn:aws:apigateway:',
-              cdk.Fn.ref('AWS::Region'),
-              ':lambda:path/2015-03-31/functions/',
-              cdk.Fn.ref(`function${path.lambdaFunction}Arn`),
-              '/invocations',
-            ]),
-            passthroughBehavior: 'when_no_match',
-            httpMethod: 'POST',
-            type: 'aws_proxy',
-          },
-        },
-      };
+  generateAdminQueriesStack = (resourceName: string, authResourceName: string) => {
+    this._constructCfnPaths(resourceName);
 
-      this.addLambdaPermissionCfnResource(
-        {
-          functionName: cdk.Fn.ref(`function${path.lambdaFunction}Name`),
-          action: 'lambda:InvokeFunction',
-          principal: 'apigateway.amazonaws.com',
-          sourceArn: cdk.Fn.join('', [
-            'arn:aws:execute-api:',
-            cdk.Fn.ref('AWS::Region'),
-            ':',
-            cdk.Fn.ref('AWS::AccountId'),
-            ':',
-            cdk.Fn.ref(resourceName),
-            '/*/*/*',
-          ]),
+    this.restApi = new apigw.CfnRestApi(this, resourceName, {
+      description: '', // TODO - left blank in current CLI
+      name: resourceName,
+      body: {
+        swagger: '2.0',
+        info: {
+          version: '2018-05-24T17:52:00Z',
+          title: resourceName,
         },
-        `function${path.lambdaFunction}Permission${resourceName}`,
-      );
-    }
-  }
+        host: cdk.Fn.join('', ['apigateway.', cdk.Fn.ref('AWS::Region'), '.amazonaws.com']),
+        basePath: cdk.Fn.conditionIf('ShouldNotCreateEnvResources', '/Prod', cdk.Fn.join('', ['/', cdk.Fn.ref('env')])),
+        schemes: ['https'],
+        paths: this.paths,
+        securityDefinitions: {
+          Cognito: {
+            type: 'apiKey',
+            name: 'Authorization',
+            in: 'header',
+            'x-amazon-apigateway-authtype': 'cognito_user_pools',
+            'x-amazon-apigateway-authorizer': {
+              providerARNs: [
+                cdk.Fn.join('', [
+                  'arn:aws:cognito-idp:',
+                  cdk.Fn.ref('AWS::Region'),
+                  ':',
+                  cdk.Fn.ref('AWS::AccountId'),
+                  ':userpool/',
+                  cdk.Fn.ref(`auth${authResourceName}UserPoolId`),
+                ]),
+              ],
+              type: 'cognito_user_pools',
+            },
+          },
+        },
+        definitions: {
+          Empty: {
+            type: 'object',
+            title: 'Empty Schema',
+          },
+        },
+        'x-amazon-apigateway-request-validators': {
+          'Validate query string parameters and headers': {
+            validateRequestParameters: true,
+            validateRequestBody: false,
+          },
+        },
+      },
+    });
+
+    this._setDeploymentResource(resourceName);
+  };
 
   generateStackResources = (resourceName: string) => {
     this._constructCfnPaths(resourceName);
@@ -273,16 +192,189 @@ export class AmplifyApigwResourceStack extends cdk.Stack implements AmplifyApigw
       },
     });
 
+    this._setDeploymentResource(resourceName);
+  };
+
+  private _constructCfnPaths(resourceName: string) {
+    for (const [pathName, path] of Object.entries(this._props.paths)) {
+      let lambdaPermissionLogicalId: string;
+      if (resourceName === 'AdminQueries') {
+        this.paths[`/{proxy+}`] = getAdminQueriesPathObject(path.lambdaFunction);
+        lambdaPermissionLogicalId = 'AdminQueriesAPIGWPolicyForLambda';
+      } else {
+        this.paths[pathName] = getDefaultPathObject(path.lambdaFunction);
+        this.paths[`${pathName}/{proxy+}`] = getDefaultPathObject(path.lambdaFunction);
+        lambdaPermissionLogicalId = `function${path.lambdaFunction}Permission${resourceName}`;
+      }
+
+      this.addLambdaPermissionCfnResource(
+        {
+          functionName: cdk.Fn.ref(`function${path.lambdaFunction}Name`),
+          action: 'lambda:InvokeFunction',
+          principal: 'apigateway.amazonaws.com',
+          sourceArn: cdk.Fn.join('', [
+            'arn:aws:execute-api:',
+            cdk.Fn.ref('AWS::Region'),
+            ':',
+            cdk.Fn.ref('AWS::AccountId'),
+            ':',
+            cdk.Fn.ref(resourceName),
+            '/*/*/*',
+          ]),
+        },
+        lambdaPermissionLogicalId,
+      );
+    }
+  }
+
+  private _setDeploymentResource = (resourceName: string) => {
     this.deploymentResource = new apigw.CfnDeployment(this, `DeploymentAPIGW${resourceName}`, {
       restApiId: cdk.Fn.ref(resourceName),
       stageName: cdk.Fn.conditionIf('ShouldNotCreateEnvResources', 'Prod', cdk.Fn.ref('env')).toString(),
     });
   };
-
-  public renderCloudFormationTemplate = (): string => {
-    return JSONUtilities.stringify(this._toCloudFormation());
-  };
 }
+
+const getAdminQueriesPathObject = (lambdaFunctionName: string) => ({
+  options: {
+    consumes: ['application/json'],
+    produces: ['application/json'],
+    responses: {
+      '200': {
+        description: '200 response',
+        schema: {
+          $ref: '#/definitions/Empty',
+        },
+        headers: {
+          'Access-Control-Allow-Origin': {
+            type: 'string',
+          },
+          'Access-Control-Allow-Methods': {
+            type: 'string',
+          },
+          'Access-Control-Allow-Headers': {
+            type: 'string',
+          },
+        },
+      },
+    },
+    'x-amazon-apigateway-integration': {
+      responses: {
+        default: {
+          statusCode: '200',
+          responseParameters: {
+            'method.response.header.Access-Control-Allow-Methods': "'DELETE,GET,HEAD,OPTIONS,PATCH,POST,PUT'",
+            'method.response.header.Access-Control-Allow-Headers': "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
+            'method.response.header.Access-Control-Allow-Origin': "'*'",
+          },
+        },
+      },
+      passthroughBehavior: 'when_no_match',
+      requestTemplates: {
+        'application/json': '{"statusCode": 200}',
+      },
+      type: 'mock',
+    },
+  },
+  'x-amazon-apigateway-any-method': {
+    produces: ['application/json'],
+    parameters: [
+      {
+        name: 'proxy',
+        in: 'path',
+        required: true,
+        type: 'string',
+      },
+      {
+        name: 'Authorization',
+        in: 'header',
+        required: false,
+        type: 'string',
+      },
+    ],
+    responses: {},
+    security: [
+      {
+        Cognito: ['aws.cognito.signin.user.admin'],
+      },
+    ],
+    'x-amazon-apigateway-request-validator': 'Validate query string parameters and headers',
+    'x-amazon-apigateway-integration': {
+      uri: cdk.Fn.join('', [
+        'arn:aws:apigateway:',
+        cdk.Fn.ref('AWS::Region'),
+        ':lambda:path/2015-03-31/functions/',
+        cdk.Fn.ref(`function${lambdaFunctionName}Arn`),
+        '/invocations',
+      ]),
+      passthroughBehavior: 'when_no_match',
+      httpMethod: 'POST',
+      cacheNamespace: 'n40eb9',
+      cacheKeyParameters: ['method.request.path.proxy'],
+      contentHandling: 'CONVERT_TO_TEXT',
+      type: 'aws_proxy',
+    },
+  },
+});
+
+const getDefaultPathObject = (lambdaFunctionName: string) => ({
+  options: {
+    consumes: ['application/json'],
+    produces: ['application/json'],
+    responses: {
+      '200': response200,
+    },
+    'x-amazon-apigateway-integration': {
+      responses: {
+        default: defaultCorsResponseObject,
+      },
+      requestTemplates: {
+        'application/json': '{"statusCode": 200}',
+      },
+      passthroughBehavior: 'when_no_match',
+      type: 'mock',
+    },
+  },
+  'x-amazon-apigateway-any-method': {
+    consumes: ['application/json'],
+    produces: ['application/json'],
+    parameters: [
+      {
+        in: 'body',
+        name: 'RequestSchema',
+        required: false,
+        schema: {
+          $ref: '#/definitions/RequestSchema',
+        },
+      },
+    ],
+    responses: {
+      '200': {
+        description: '200 response',
+        schema: {
+          $ref: '#/definitions/ResponseSchema',
+        },
+      },
+    },
+    'x-amazon-apigateway-integration': {
+      responses: {
+        default: {
+          statusCode: '200',
+        },
+      },
+      uri: cdk.Fn.join('', [
+        'arn:aws:apigateway:',
+        cdk.Fn.ref('AWS::Region'),
+        ':lambda:path/2015-03-31/functions/',
+        cdk.Fn.ref(`function${lambdaFunctionName}Arn`),
+        '/invocations',
+      ]),
+      passthroughBehavior: 'when_no_match',
+      httpMethod: 'POST',
+      type: 'aws_proxy',
+    },
+  },
+});
 
 const defaultCorsResponseObject = {
   statusCode: '200',

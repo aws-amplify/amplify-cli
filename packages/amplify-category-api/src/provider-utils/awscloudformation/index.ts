@@ -1,4 +1,4 @@
-import { $TSAny, $TSContext, exitOnNextTick, NotImplementedError } from 'amplify-cli-core';
+import { $TSAny, $TSContext, $TSObject, AmplifySupportedService, exitOnNextTick, NotImplementedError } from 'amplify-cli-core';
 import { UpdateApiRequest } from 'amplify-headless-interface';
 import { printer } from 'amplify-prompts';
 import inquirer from 'inquirer';
@@ -17,11 +17,18 @@ import { datasourceMetadataFor, getServiceWalkthrough, serviceMetadataFor } from
 import { editSchemaFlow } from './utils/edit-schema-flow';
 import { serviceWalkthroughResultToAddApiRequest } from './utils/service-walkthrough-result-to-add-api-request';
 
-export async function addAdminQueriesApi(context: $TSContext, apiName: string) {
-  // TODO
+export async function addAdminQueriesApi(
+  context: $TSContext,
+  apiProps: { apiName: string; functionName: string; authResourceName: string; dependsOn: $TSObject[] },
+) {
+  const apigwInputState = ApigwInputState.getInstance(context, apiProps.apiName);
+  apigwInputState.addAdminQueriesResource(apiProps);
 }
 
-export async function updateAdminQueriesApi(context: $TSContext, apiName: string) {
+export async function updateAdminQueriesApi(
+  context: $TSContext,
+  apiProps: { apiName: string; functionName: string; authResourceName: string; dependsOn: $TSObject[] },
+) {
   // TODO
 }
 
@@ -56,7 +63,7 @@ async function addNonContainerResource(context: $TSContext, service: string, opt
 
   const serviceWalkthroughPromise: Promise<$TSAny> = serviceWalkthrough(context, serviceMetadata);
   switch (service) {
-    case 'AppSync':
+    case AmplifySupportedService.APPSYNC:
       const walkthroughResult = await serviceWalkthroughPromise;
       const askToEdit = walkthroughResult.askToEdit;
       const apiName = await getCfnApiArtifactHandler(context).createArtifacts(serviceWalkthroughResultToAddApiRequest(walkthroughResult));
@@ -64,7 +71,7 @@ async function addNonContainerResource(context: $TSContext, service: string, opt
         await editSchemaFlow(context, apiName);
       }
       return apiName;
-    case 'API Gateway':
+    case AmplifySupportedService.APIGW:
       const apigwInputState = ApigwInputState.getInstance(context);
       return apigwInputState.addApigwResource(serviceWalkthroughPromise, options);
     default:
@@ -78,11 +85,11 @@ export async function addResource(context: $TSContext, service: string, options)
 
   if (isContainersEnabled(context)) {
     switch (service) {
-      case 'AppSync':
+      case AmplifySupportedService.APPSYNC:
         useContainerResource = await isGraphQLContainer();
         apiType = API_TYPE.GRAPHQL;
         break;
-      case 'API Gateway':
+      case AmplifySupportedService.APIGW:
         useContainerResource = await isRestContainer();
         apiType = API_TYPE.REST;
         break;
@@ -114,7 +121,7 @@ async function isGraphQLContainer(): Promise<boolean> {
     type: 'list',
     choices: [
       {
-        name: 'AppSync',
+        name: AmplifySupportedService.APPSYNC,
         value: false,
       },
       {
@@ -156,7 +163,7 @@ export async function updateResource(context: $TSContext, category: string, serv
       await describeApiResourcesBySubCategory(context);
 
     switch (service) {
-      case 'AppSync':
+      case AmplifySupportedService.APPSYNC:
         if (hasGraphQLAppSyncResource && hasGraphqlContainerResource) {
           useContainerResource = await isGraphQLContainer();
         } else if (hasGraphqlContainerResource) {
@@ -166,7 +173,7 @@ export async function updateResource(context: $TSContext, category: string, serv
         }
         apiType = API_TYPE.GRAPHQL;
         break;
-      case 'API Gateway':
+      case AmplifySupportedService.APIGW:
         if (hasAPIGatewayContainerResource && hasAPIGatewayLambdaResource) {
           useContainerResource = await isRestContainer();
         } else if (hasAPIGatewayContainerResource) {
@@ -197,9 +204,9 @@ async function describeApiResourcesBySubCategory(context: $TSContext) {
     hasAPIGatewayContainerResource =
       hasAPIGatewayContainerResource || (resource.service === 'ElasticContainer' && resource.apiType === API_TYPE.REST);
 
-    hasAPIGatewayLambdaResource = hasAPIGatewayLambdaResource || resource.service === 'API Gateway';
+    hasAPIGatewayLambdaResource = hasAPIGatewayLambdaResource || resource.service === AmplifySupportedService.APIGW;
 
-    hasGraphQLAppSyncResource = hasGraphQLAppSyncResource || resource.service === 'AppSync';
+    hasGraphQLAppSyncResource = hasGraphQLAppSyncResource || resource.service === AmplifySupportedService.APPSYNC;
 
     hasGraphqlContainerResource =
       hasGraphqlContainerResource || (resource.service === 'ElasticContainer' && resource.apiType === API_TYPE.GRAPHQL);
@@ -246,7 +253,7 @@ async function updateNonContainerResource(context: $TSContext, service: string) 
   const updateWalkthroughPromise: Promise<UpdateApiRequest> = updateWalkthrough(context, defaultValuesFilename, serviceMetadata);
 
   switch (service) {
-    case 'AppSync':
+    case AmplifySupportedService.APPSYNC:
       return updateWalkthroughPromise.then(getCfnApiArtifactHandler(context).updateArtifacts);
     default:
       const apigwInputState = ApigwInputState.getInstance(context);
