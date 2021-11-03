@@ -44,19 +44,19 @@ export const run = async (context: $TSContext) => {
 export const getResources = async (context: $TSContext): Promise<IAmplifyResource[]> => {
   const resources: IAmplifyResource[] = [];
   const { resourcesToBeCreated, resourcesToBeUpdated } = await context.amplify.getResourceStatus();
-  resourcesToBeCreated.forEach(resourceCreated => {
+  resourcesToBeCreated.forEach((resourceCreated: IAmplifyResource) => {
     resources.push({
-      service: resourceCreated.service as string,
-      category: resourceCreated.category as string,
-      resourceName: resourceCreated.resourceName as string,
+      service: resourceCreated.service,
+      category: resourceCreated.category,
+      resourceName: resourceCreated.resourceName,
     });
   });
 
-  resourcesToBeUpdated.forEach(resourceUpdated => {
+  resourcesToBeUpdated.forEach((resourceUpdated: IAmplifyResource) => {
     resources.push({
-      service: resourceUpdated.service as string,
-      category: resourceUpdated.category as string,
-      resourceName: resourceUpdated.resourceName as string,
+      service: resourceUpdated.service,
+      category: resourceUpdated.category,
+      resourceName: resourceUpdated.resourceName,
     });
   });
   return resources;

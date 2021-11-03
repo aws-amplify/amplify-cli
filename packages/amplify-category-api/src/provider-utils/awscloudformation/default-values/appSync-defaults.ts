@@ -1,6 +1,7 @@
-const uuid = require('uuid');
+import { $TSMeta } from 'amplify-cli-core';
+import { v4 as uuid } from 'uuid';
 
-const getAllDefaults = project => {
+export const getAllDefaults = (project: { amplifyMeta: $TSMeta; projectConfig: { projectName: string } }) => {
   const name = project.projectConfig.projectName.toLowerCase();
   const region = project.amplifyMeta.providers.awscloudformation.Region;
   const [shortId] = uuid().split('-');
@@ -15,8 +16,4 @@ const getAllDefaults = project => {
   };
 
   return defaults;
-};
-
-module.exports = {
-  getAllDefaults,
 };
