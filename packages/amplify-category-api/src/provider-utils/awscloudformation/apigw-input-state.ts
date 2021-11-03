@@ -13,8 +13,8 @@ import {
 import { printer } from 'amplify-prompts';
 import * as fs from 'fs-extra';
 import { join } from 'path';
-import { ApigwInputs, ApigwStackTransform, CrudOperation, Path } from './cdk-stack-builder';
-import { ApigwWalkthroughReturnPromise, PermissionSetting } from './types/apigw-types';
+import { ApigwInputs, ApigwStackTransform, CrudOperation, Path, PermissionSetting } from './cdk-stack-builder';
+import { ApigwWalkthroughReturnPromise } from './service-walkthrough-types/apigw-types';
 
 export class ApigwInputState {
   private static instance: ApigwInputState;

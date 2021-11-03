@@ -1,7 +1,6 @@
 import * as cdk from '@aws-cdk/core';
 import * as apigwCdk from '@aws-cdk/aws-apigateway';
 import * as iamCdk from '@aws-cdk/aws-iam';
-import { PermissionSetting } from '../types/apigw-types';
 
 export type ApigwInputs = {
   version: number;
@@ -23,6 +22,12 @@ export enum CrudOperation {
   READ = 'READ',
   UPDATE = 'UPDATE',
   DELETE = 'DELETE',
+}
+
+export enum PermissionSetting {
+  PRIVATE = 'private',
+  PROTECTED = 'protected',
+  OPEN = 'open',
 }
 
 type AmplifyCDKL1 = {

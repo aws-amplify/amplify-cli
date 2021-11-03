@@ -1,5 +1,5 @@
 import { $TSObject } from 'amplify-cli-core';
-import { CrudOperation } from '../cdk-stack-builder';
+import { CrudOperation, PermissionSetting } from '../cdk-stack-builder';
 
 export type ApigwPath = {
   name: string;
@@ -13,12 +13,6 @@ export type ApigwPath = {
   };
   lambdaFunction: string;
 };
-
-export enum PermissionSetting {
-  PRIVATE = 'private',
-  PROTECTED = 'protected',
-  OPEN = 'open',
-}
 
 export type ApiRequirements = { authSelections: 'identityPoolAndUserPool'; allowUnauthenticatedIdentities?: boolean };
 

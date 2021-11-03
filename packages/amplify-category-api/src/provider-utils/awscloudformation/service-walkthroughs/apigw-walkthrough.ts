@@ -15,9 +15,9 @@ import inquirer from 'inquirer';
 import os from 'os';
 import { v4 as uuid } from 'uuid';
 import { ApigwInputState } from '../apigw-input-state';
-import { CrudOperation } from '../cdk-stack-builder';
+import { CrudOperation, PermissionSetting } from '../cdk-stack-builder';
 import { getAllDefaults } from '../default-values/apigw-defaults';
-import { ApigwAnswers, ApigwPath, ApigwWalkthroughReturnPromise, ApiRequirements, PermissionSetting } from '../types/apigw-types';
+import { ApigwAnswers, ApigwPath, ApigwWalkthroughReturnPromise, ApiRequirements } from '../service-walkthrough-types/apigw-types';
 import { checkForPathOverlap, formatCFNPathParamsForExpressJs, validatePathName } from '../utils/rest-api-path-utils';
 
 const category = AmplifyCategories.API;
