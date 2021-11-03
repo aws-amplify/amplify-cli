@@ -67,7 +67,7 @@ export const getAddAuthHandler =
       // cdk transformation in this function
       // start auth transform here
       await generateAuthStackTemplate(context, cognitoCLIInputs.cognitoConfig.resourceName);
-      // remoe this when api and functions transform are done
+      // remove this when api and functions transform are done
       await getResourceSynthesizer(context, requestWithDefaults);
 
       getPostAddAuthMetaUpdater(context, { service: cognitoCLIInputs.cognitoConfig.serviceName, providerName: provider })(
