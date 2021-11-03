@@ -463,7 +463,7 @@ export async function transformGraphQLSchema(context, options) {
 
   // for the predictions directive get storage config
   const s3ResourceName = await invokeS3GetResourceName(context);
-  const storageConfig = s3ResourceName ? await getBucketName(context, s3ResourceName ) : undefined;
+  const storageConfig = s3ResourceName ? await getBucketName(context, s3ResourceName) : undefined;
 
   const buildDir = path.normalize(path.join(resourceDir, 'build'));
   const schemaFilePath = path.normalize(path.join(resourceDir, schemaFileName));
@@ -569,7 +569,7 @@ async function getPreviousDeploymentRootKey(previouslyDeployedBackendDir) {
 // }
 
 export async function getDirectiveDefinitions(context, resourceDir) {
-  const transformerVersion = getTransformerVersion(context);
+  const transformerVersion = await getTransformerVersion(context);
   if (transformerVersion === 2) {
     return getDirectiveDefinitionsV6(context, resourceDir);
   }
@@ -611,7 +611,7 @@ function s3ResourceAlreadyExists(context) {
  *  S3API
  *  TBD: Remove this once all invoke functions are moved to a library shared across amplify
  * */
-async function invokeS3GetUserInputs(context, s3ResourceName){
+async function invokeS3GetUserInputs(context, s3ResourceName) {
   const s3UserInputs = await context.amplify.invokePluginMethod(context, 'storage', undefined, 's3GetUserInput', [context, s3ResourceName]);
   return s3UserInputs;
 }
@@ -625,14 +625,13 @@ async function invokeS3GetResourceName(context) {
   return s3ResourceName;
 }
 
-async function getBucketName( context : $TSContext , s3ResourceName : string ){
-  const s3UserInputs = await invokeS3GetUserInputs(context, s3ResourceName)
+async function getBucketName(context: $TSContext, s3ResourceName: string) {
+  const s3UserInputs = await invokeS3GetUserInputs(context, s3ResourceName);
   return s3UserInputs.bucketName;
 }
 
-
-export function getTransformerVersion(context) {
-  migrateToTransformerVersionFeatureFlag(context);
+export async function getTransformerVersion(context) {
+  await migrateToTransformerVersionFeatureFlag(context);
 
   const transformerVersion = FeatureFlags.getNumber('graphQLTransformer.transformerVersion');
   if (transformerVersion !== 1 && transformerVersion !== 2) {
@@ -642,7 +641,7 @@ export function getTransformerVersion(context) {
   return transformerVersion;
 }
 
-function migrateToTransformerVersionFeatureFlag(context) {
+async function migrateToTransformerVersionFeatureFlag(context) {
   const projectPath = pathManager.findProjectRoot() ?? process.cwd();
 
   let config = stateManager.getCLIJSON(projectPath, undefined, {
@@ -656,7 +655,7 @@ function migrateToTransformerVersionFeatureFlag(context) {
   if (useExperimentalPipelineTransformer && transformerVersion === 1) {
     config.features.graphqltransformer.transformerversion = 2;
     stateManager.setCLIJSON(projectPath, config);
-
+    await FeatureFlags.reloadValues();
     context.print.warning(
       `\nThe project is configured with 'transformerVersion': ${transformerVersion}, but 'useExperimentalPipelinedTransformer': ${useExperimentalPipelineTransformer}. Setting the 'transformerVersion': ${config.features.graphqltransformer.transformerversion}. 'useExperimentalPipelinedTransformer' is deprecated.`,
     );
