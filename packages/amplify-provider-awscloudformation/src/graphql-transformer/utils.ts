@@ -29,11 +29,11 @@ export interface GQLDiff {
   current: DiffableProject;
 }
 
-export const getIdentityPoolId = async (ctx: $TSContext): Promise<string | any> => {
+export const getIdentityPoolId = async (ctx: $TSContext): Promise<string | undefined> => {
   const { allResources, resourcesToBeDeleted } = await ctx.amplify.getResourceStatus('auth');
   const authResources = pullAllBy(allResources, resourcesToBeDeleted, 'resourceName');
   const authResource = find(authResources, { service: 'Cognito', providerPlugin: providerName }) as any;
-  return authResource.output.IdentityPoolId;
+  return authResource?.output?.IdentityPoolId;
 };
 
 export const getAdminRoles = async (ctx: $TSContext, apiResourceName: string): Promise<Array<string>> => {
