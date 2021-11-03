@@ -6,7 +6,7 @@ machine:
     PATH: '${PATH}:${HOME}/${CIRCLE_PROJECT_REPONAME}/node_modules/.bin'
 
 executors:
-  windows: &windows-e2e-executor
+  w: &windows-e2e-executor
     machine:
       image: 'windows-server-2019-vs2019:stable'
       resource_class: 'windows.large'
@@ -16,7 +16,7 @@ executors:
       AMPLIFY_DIR: C:/home/circleci/repo/out
       AMPLIFY_PATH: C:/home/circleci/repo/out/amplify.exe
 
-  linux: &linux-e2e-executor
+  l: &linux-e2e-executor
     docker:
       - image: public.ecr.aws/a6e6w2n0/amplify-cli-e2e-base-image-repo-public:latest
     working_directory: ~/repo
@@ -30,7 +30,7 @@ defaults: &defaults
   parameters:
     os:
       type: executor
-      default: linux
+      default: l
   executor: << parameters.os >>
 
 clean_e2e_resources: &clean_e2e_resources
@@ -67,7 +67,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: linux
+        default: l
     executor: << parameters.os >>
     steps:
       - checkout
@@ -261,7 +261,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.linux
+        default: l
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -704,8 +704,8 @@ workflows:
           matrix:
             parameters:
               os:
-                - linux
-                - windows
+                - l
+                - w
       - test:
           requires:
             - build
@@ -955,7 +955,7 @@ commands:
     parameters:
       os:
         type: executor
-        default: linux-e2e-executor
+        default: l
     steps:
       - when:
           condition:
@@ -998,7 +998,7 @@ commands:
     parameters:
       os:
         type: executor
-        default: linux-e2e-executor
+        default: l
     steps:
       - when:
           condition:
@@ -1016,7 +1016,7 @@ commands:
     parameters:
       os:
         type: executor
-        default: linux-e2e-executor
+        default: l
     steps:
       - when:
           condition:
@@ -1032,7 +1032,7 @@ commands:
     parameters:
       os:
         type: executor
-        default: linux-e2e-executor
+        default: l
     steps:
       - when:
           condition:
@@ -1063,7 +1063,7 @@ commands:
     parameters:
       os:
         type: executor
-        default: linux-e2e-executor
+        default: l
     steps:
       - run:
           name: Scan E2E artifacts
@@ -1079,7 +1079,7 @@ commands:
     parameters:
       os:
         type: executor
-        default: linux-e2e-executor
+        default: l
     steps:
       - run:
           name: Clean job resources
