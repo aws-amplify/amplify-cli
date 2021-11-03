@@ -16,6 +16,17 @@ export type TypeDef = {
   service: string;
 };
 
+/**
+ * Normalize Service Name for use in filepaths
+ * e.g Convert DynamoDB to dynamoDB , S3 to s3 as filename prefix
+ * @param svcName
+ * @returns normalizedSvcName
+ */
+function normalizeServiceToFilePrefix(serviceName: string): string {
+  serviceName = serviceName.replace(' ', '');
+  return `${serviceName[0].toLowerCase()}${serviceName.slice(1)}`;
+}
+
 export class CLIInputSchemaGenerator {
   // Paths are relative to the package root
   TYPES_SRC_ROOT = path.join('.', 'src', 'provider-utils', 'awscloudformation', 'service-walkthrough-types');
@@ -34,17 +45,6 @@ export class CLIInputSchemaGenerator {
 
   private getTypesSrcRootForSvc(normalizedSvcName: string): string {
     return path.join(this.TYPES_SRC_ROOT, `${normalizedSvcName}-user-input-types.ts`);
-  }
-
-  /**
-   * Normalize Service Name for use in filepaths
-   * e.g Convert DynamoDB to dynamoDB , S3 to s3 as filename prefix
-   * @param svcName
-   * @returns normalizedSvcName
-   */
-  private normalizeServiceToFilePrefix(serviceName: string): string {
-    serviceName = serviceName.replace(' ', '');
-    return `${serviceName[0].toLowerCase()}${serviceName.slice(1)}`;
   }
 
   private printWarningSchemaFileExists() {
@@ -77,7 +77,7 @@ export class CLIInputSchemaGenerator {
     };
 
     for (const typeDef of this.serviceTypeDefs) {
-      const normalizedServiceName = this.normalizeServiceToFilePrefix(typeDef.service);
+      const normalizedServiceName = normalizeServiceToFilePrefix(typeDef.service);
       //get absolute file path to the user-input types for the given service
       const svcAbsoluteFilePath = this.getSvcFileAbsolutePath(normalizedServiceName);
       this.printGeneratingSchemaMessage(svcAbsoluteFilePath, typeDef.service);
@@ -112,7 +112,7 @@ export class CLIInputSchemaValidator {
 
   constructor(service: string, category: string, schemaFileName: string) {
     this._category = category;
-    this._service = service;
+    this._service = normalizeServiceToFilePrefix(service);
     this._schemaFileName = schemaFileName;
     this._ajv = new Ajv();
   }
