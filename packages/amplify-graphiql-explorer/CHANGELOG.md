@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.7.0-ext11.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-graphiql-explorer@1.6.1...amplify-graphiql-explorer@1.7.0-ext11.0) (2021-11-03)
+
+
+### Features
+
+* amplify export ([67ecb2d](https://github.com/aws-amplify/amplify-cli/commit/67ecb2dfd9be4549700e9dc64db0f27de34d8990)), closes [#8547](https://github.com/aws-amplify/amplify-cli/issues/8547) [#8488](https://github.com/aws-amplify/amplify-cli/issues/8488) [#8486](https://github.com/aws-amplify/amplify-cli/issues/8486) [#8547](https://github.com/aws-amplify/amplify-cli/issues/8547) [#8488](https://github.com/aws-amplify/amplify-cli/issues/8488) [#8486](https://github.com/aws-amplify/amplify-cli/issues/8486)
+
+
+### Reverts
+
+* Revert "chore: upgrade yarn packages recommended by dependabot (#7670)" (#7758) ([d90edec](https://github.com/aws-amplify/amplify-cli/commit/d90edec08a9a23e7492b8e6a25bd0c04245d0157)), closes [#7670](https://github.com/aws-amplify/amplify-cli/issues/7670) [#7758](https://github.com/aws-amplify/amplify-cli/issues/7758)
+
+
+
+
+
 ## [1.6.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-graphiql-explorer@1.6.0...amplify-graphiql-explorer@1.6.1) (2021-05-18)
 
 

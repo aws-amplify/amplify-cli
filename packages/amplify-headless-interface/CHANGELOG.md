@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.11.0-ext11.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-headless-interface@1.10.0...amplify-headless-interface@1.11.0-ext11.0) (2021-11-03)
+
+
+### Features
+
+* **amplify-category-storage:** headless support for S3 ([#8423](https://github.com/aws-amplify/amplify-cli/issues/8423)) ([76b0e70](https://github.com/aws-amplify/amplify-cli/commit/76b0e700d6221292a25b384e2ecfc7a64e9916dd))
+
+
+
+
+
 # [1.10.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-headless-interface@1.9.0...amplify-headless-interface@1.10.0) (2021-08-06)
 
 

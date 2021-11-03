@@ -3,6 +3,37 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.31.0-ext11.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@1.30.0...amplify-e2e-core@1.31.0-ext11.0) (2021-11-03)
+
+
+### Bug Fixes
+
+* alias attr bug and use enabled mfa ([b51afe0](https://github.com/aws-amplify/amplify-cli/commit/b51afe0f38d5f5bdc36524dffc911e4fd9d93289))
+* fixes dependsOn parameter and auth migration test ([#8480](https://github.com/aws-amplify/amplify-cli/issues/8480)) ([c4239fb](https://github.com/aws-amplify/amplify-cli/commit/c4239fbc23bcf5585ec41eb4a106808bd9b5aa06))
+* tsc global install error ([ec1b040](https://github.com/aws-amplify/amplify-cli/commit/ec1b04026ee23bf46286c2410eb2cc9cb0f462b9))
+
+
+### Features
+
+* amplify export ([67ecb2d](https://github.com/aws-amplify/amplify-cli/commit/67ecb2dfd9be4549700e9dc64db0f27de34d8990)), closes [#8547](https://github.com/aws-amplify/amplify-cli/issues/8547) [#8488](https://github.com/aws-amplify/amplify-cli/issues/8488) [#8486](https://github.com/aws-amplify/amplify-cli/issues/8486) [#8547](https://github.com/aws-amplify/amplify-cli/issues/8547) [#8488](https://github.com/aws-amplify/amplify-cli/issues/8488) [#8486](https://github.com/aws-amplify/amplify-cli/issues/8486)
+* **amplify-category-storage:** headless support for S3 ([#8423](https://github.com/aws-amplify/amplify-cli/issues/8423)) ([76b0e70](https://github.com/aws-amplify/amplify-cli/commit/76b0e700d6221292a25b384e2ecfc7a64e9916dd))
+* **amplify-provider-awscloudformation:** enable custom resolvers for v2 transformer ([#8454](https://github.com/aws-amplify/amplify-cli/issues/8454)) ([934ad64](https://github.com/aws-amplify/amplify-cli/commit/934ad648e392050075f21413f8269ffe432e59dd))
+* **amplify-provider-awscloudformation:** merge user config with transform generated resolvers ([#8447](https://github.com/aws-amplify/amplify-cli/issues/8447)) ([4d553e5](https://github.com/aws-amplify/amplify-cli/commit/4d553e5602a84729e517a3716338f2235567ea82))
+* Auth refactor to  use cdk, eliminate EJS, overrides functionality ([#8355](https://github.com/aws-amplify/amplify-cli/issues/8355)) ([efc56f0](https://github.com/aws-amplify/amplify-cli/commit/efc56f07b1ba5edff2a4f90beab59c5287dd5b53))
+* flag to allow destructive schema changes ([#8273](https://github.com/aws-amplify/amplify-cli/issues/8273)) ([18de856](https://github.com/aws-amplify/amplify-cli/commit/18de856fb61bf2df8f73375e4e55a58c6159a232))
+* root stack override ([#8276](https://github.com/aws-amplify/amplify-cli/issues/8276)) ([6b9911a](https://github.com/aws-amplify/amplify-cli/commit/6b9911a4f20d8f7601d2da01219775106bd3a122))
+* version blocking for CLI ([#8512](https://github.com/aws-amplify/amplify-cli/issues/8512)) ([52edf2b](https://github.com/aws-amplify/amplify-cli/commit/52edf2b58508c96e78184aba1f77c06c021cc9b1))
+
+
+### Reverts
+
+* Revert "Revert "feat(amplify-category-auth): use EnabledMFAs to only configure TOTP (#7779)" (#7790)" (#7971) ([ff418d1](https://github.com/aws-amplify/amplify-cli/commit/ff418d151879da2c89f2aced6d67d602f7395371)), closes [#7779](https://github.com/aws-amplify/amplify-cli/issues/7779) [#7790](https://github.com/aws-amplify/amplify-cli/issues/7790) [#7971](https://github.com/aws-amplify/amplify-cli/issues/7971)
+* Revert "feat: version blocking for CLI (#8512)" (#8522) ([c48453b](https://github.com/aws-amplify/amplify-cli/commit/c48453bc261d3f424e15179d40d6a21f5b15002a)), closes [#8512](https://github.com/aws-amplify/amplify-cli/issues/8512) [#8522](https://github.com/aws-amplify/amplify-cli/issues/8522)
+
+
+
+
+
 # [1.30.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@1.29.0...amplify-e2e-core@1.30.0) (2021-10-13)
 
 

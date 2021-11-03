@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.1.1-ext11.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-geo@1.1.0...amplify-category-geo@1.1.1-ext11.0) (2021-11-03)
+
+**Note:** Version bump only for package amplify-category-geo
+
+
+
+
+
 # [1.1.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-geo@1.0.3...amplify-category-geo@1.1.0) (2021-10-13)
 
 
