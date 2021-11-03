@@ -40,6 +40,7 @@ jest.mock('../../../../provider-utils/awscloudformation/api-input-manager/appsyn
     AppsyncApiInputState: jest.fn().mockImplementation(() => {
       return {
         getCLIInputPayload: getCLIInputPayload_mock,
+        cliInputFileExists: jest.fn().mockReturnValue(true),
       };
     }),
   };
