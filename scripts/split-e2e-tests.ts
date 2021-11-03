@@ -10,7 +10,7 @@ const CONCURRENCY = 25;
 // (examples: sending line endings when we shouldn't, java/gradle not installed on windows host)
 // Each of these failures should be independently investigated, resolved, and removed from this list.
 // For now, this list is being used to skip creation of circleci jobs for these tasks
-const WINDOWS_TEST_WHITELIST = [
+const WINDOWS_TEST_ALLOWLIST = [
   'schema-function-1_pkg',
   'tags_pkg',
   'hosting_pkg',
@@ -316,7 +316,7 @@ function splitTests(
                 matrix: {
                   parameters: {
                     os:
-                      WINDOWS_TEST_WHITELIST.includes(newJobName)
+                      WINDOWS_TEST_ALLOWLIST.includes(newJobName)
                         ? ['l', 'w']
                         : ['l'],
                   },
