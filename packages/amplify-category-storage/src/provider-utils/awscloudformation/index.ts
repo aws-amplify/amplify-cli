@@ -13,7 +13,6 @@ export async function addResource(context: $TSContext, category: string, service
 
   return addWalkthrough(context, defaultValuesFilename, serviceMetadata, options).then(async (resourceName: string) => {
     context.amplify.updateamplifyMetaAfterResourceAdd(category, resourceName, options);
-
     return resourceName;
   });
 }
