@@ -26,7 +26,7 @@ import { SearchableModelTransformer } from '@aws-amplify/graphql-searchable-tran
 import { DefaultValueTransformer } from '@aws-amplify/graphql-default-value-transformer';
 import { destructiveUpdatesFlag, ProviderName as providerName } from '../constants';
 import { hashDirectory } from '../upload-appsync-files';
-import { getAdminRoles, mergeUserConfigWithTransformOutput, writeDeploymentToDisk } from './utils';
+import { getAdminRoles, getIdentityPoolId, mergeUserConfigWithTransformOutput, writeDeploymentToDisk } from './utils';
 import { loadProject as readTransformerConfiguration } from './transform-config';
 import { getSanityCheckRules, loadProject } from 'graphql-transformer-core';
 import { LogConfig } from '@aws-amplify/graphql-transformer-core';
@@ -35,11 +35,7 @@ import { AmplifyCLIFeatureFlagAdapter } from '../utils/amplify-cli-feature-flag-
 import { JSONUtilities, $TSContext } from 'amplify-cli-core';
 import { searchablePushChecks } from '../transform-graphql-schema';
 import { ResourceConstants } from 'graphql-transformer-common';
-import {
-  showGlobalSandboxModeWarning,
-  showSandboxModePrompts,
-  schemaHasSandboxModeEnabled,
-} from '../utils/sandbox-mode-helpers';
+import { showGlobalSandboxModeWarning, showSandboxModePrompts, schemaHasSandboxModeEnabled } from '../utils/sandbox-mode-helpers';
 import { printer } from 'amplify-prompts';
 import { GraphQLSanityCheck, SanityCheckRules } from './sanity-check';
 
@@ -72,14 +68,12 @@ function getTransformerFactory(
   resourceDir: string,
 ): (options: TransformerFactoryArgs) => Promise<TransformerPluginProvider[]> {
   return async (options?: TransformerFactoryArgs) => {
-    // TODO: Build dependency mechanism into transformers. Auth runs last
-    // so any resolvers that need to be protected will already be created.
-
     const modelTransformer = new ModelTransformer();
     const indexTransformer = new IndexTransformer();
     const hasOneTransformer = new HasOneTransformer();
     const authTransformer = new AuthTransformer({
-      adminRoles: options.authAdminIAMRoles ?? [],
+      adminRoles: options.adminRoles ?? [],
+      identityPoolId: options.identityPoolId,
     });
     const transformerList: TransformerPluginProvider[] = [
       modelTransformer,
@@ -266,10 +260,9 @@ export async function transformGraphQLSchema(context, options) {
   }
 
   let { logConfig = resources[0]?.output?.logConfig } = options;
-
-  // for auth check which functions have access to the api
+  // for auth transformer we get any admin roles and a cognito identity pool to check for potential authenticated roles outside of the provided authRole
   const adminRoles = await getAdminRoles(context, resourceName);
-
+  const identityPoolId = await getIdentityPoolId(context);
   // for the predictions directive get storage config
   const s3Resource = s3ResourceAlreadyExists(context);
   const storageConfig = s3Resource ? getBucketName(context, s3Resource, backEndDir) : undefined;
@@ -341,7 +334,8 @@ export async function transformGraphQLSchema(context, options) {
       addSearchableTransformer: searchableTransformerFlag,
       storageConfig,
       authConfig,
-      authAdminIAMRoles: adminRoles,
+      adminRoles,
+      identityPoolId,
     },
     rootStackFileName: 'cloudformation-template.json',
     currentCloudBackendDirectory: previouslyDeployedBackendDir,
@@ -438,7 +432,8 @@ type TransformerFactoryArgs = {
   addSearchableTransformer: boolean;
   authConfig: any;
   storageConfig?: any;
-  authAdminIAMRoles?: Array<string>;
+  adminRoles?: Array<string>;
+  identityPoolId?: string;
 };
 export type ProjectOptions<T> = {
   buildParameters: {

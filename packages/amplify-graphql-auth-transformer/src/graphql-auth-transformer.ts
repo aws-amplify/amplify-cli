@@ -121,7 +121,11 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
   private authPolicyResources = new Set<string>();
   private unauthPolicyResources = new Set<string>();
 
-  constructor(config: AuthTransformerConfig = { adminRoles: [] }) {
+  /**
+   *
+   * @param config settings to configure the auth transformer during transpilation
+   */
+  constructor(config: AuthTransformerConfig = {}) {
     super('amplify-auth-transformer', authDirectiveDefinition);
     this.config = config;
     this.modelDirectiveConfig = new Map();
@@ -135,7 +139,7 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
 
   before = (context: TransformerBeforeStepContextProvider): void => {
     // if there was no auth config in the props we add the authConfig from the context
-    this.config.authConfig = this.config.authConfig || context.authConfig;
+    this.config.authConfig = this.config.authConfig ?? context.authConfig;
     this.configuredAuthProviders = getConfiguredAuthProviders(this.config);
   };
 

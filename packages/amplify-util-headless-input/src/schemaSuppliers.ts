@@ -36,6 +36,14 @@ export const updateApiRequestSchemaSupplier: VersionedSchemaSupplier = version =
   return getSchema('UpdateApiRequest', 'api', version);
 };
 
+export const addGeoRequestSchemaSupplier: VersionedSchemaSupplier = version => {
+  return getSchema('AddGeoRequest', 'geo', version);
+}
+
+export const updateGeoRequestSchemaSupplier: VersionedSchemaSupplier = version => {
+  return getSchema('UpdateGeoRequest', 'geo', version);
+}
+
 const getSchema = async (type: string, category: string, version: number) => {
   try {
     return {

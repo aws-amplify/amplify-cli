@@ -11,7 +11,16 @@ import { cleanupStackAfterTest, deploy } from '../deployNestedStacks';
 import { CognitoIdentityServiceProvider as CognitoClient, S3, CognitoIdentity, IAM } from 'aws-sdk';
 import moment from 'moment';
 import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
-import { createUserPool, createIdentityPool, createUserPoolClient, configureAmplify, authenticateUser, signupUser } from '../cognitoUtils';
+import {
+  createUserPool,
+  createIdentityPool,
+  createUserPoolClient,
+  configureAmplify,
+  authenticateUser,
+  signupUser,
+  createGroup,
+  addUserToGroup,
+} from '../cognitoUtils';
 import { IAMHelper } from '../IAMHelper';
 import { ResourceConstants } from 'graphql-transformer-common';
 import gql from 'graphql-tag';
@@ -53,15 +62,19 @@ const LOCAL_FS_BUILD_DIR = '/tmp/multi_authv2_transformer_tests/';
 const S3_ROOT_DIR_KEY = 'deployments';
 const AUTH_ROLE_NAME = `${STACK_NAME}-authRole`;
 const UNAUTH_ROLE_NAME = `${STACK_NAME}-unauthRole`;
+const CUSTOM_GROUP_ROLE_NAME = `${STACK_NAME}-customGroupRole`;
 let USER_POOL_ID: string;
 let IDENTITY_POOL_ID: string;
 let GRAPHQL_ENDPOINT: string;
 let APIKEY_GRAPHQL_CLIENT: AWSAppSyncClient<any> = undefined;
 let USER_POOL_AUTH_CLIENT: AWSAppSyncClient<any> = undefined;
+let IAM_CUSTOM_GROUP_CLIENT: AWSAppSyncClient<any> = undefined;
 let IAM_UNAUTHCLIENT: AWSAppSyncClient<any> = undefined;
 let IAM_AUTHCLIENT: AWSAppSyncClient<any> = undefined;
 
+const CUSTOM_GROUP_NAME = 'customGroup';
 const USERNAME1 = 'user1@test.com';
+const USERNAME2 = 'user2@test.com';
 const TMP_PASSWORD = 'Password123!';
 const REAL_PASSWORD = 'Password1234!';
 
@@ -270,6 +283,32 @@ beforeAll(async () => {
       description: String
     }
   `;
+  // create deployment bucket
+  try {
+    await awsS3Client.createBucket({ Bucket: BUCKET_NAME }).promise();
+  } catch (e) {
+    // fail early if we can't create the bucket
+    expect(e).not.toBeDefined();
+  }
+
+  // create userpool
+  const userPoolResponse = await createUserPool(cognitoClient, `UserPool${STACK_NAME}`);
+  USER_POOL_ID = userPoolResponse.UserPool.Id;
+  const userPoolClientResponse = await createUserPoolClient(cognitoClient, USER_POOL_ID, `UserPool${STACK_NAME}`);
+  const userPoolClientId = userPoolClientResponse.UserPoolClient.ClientId;
+  // create auth and unauthroles
+  const roles = await iamHelper.createRoles(AUTH_ROLE_NAME, UNAUTH_ROLE_NAME);
+  // create admin group role
+  const customGroupRole = await iamHelper.createRoleForCognitoGroup(CUSTOM_GROUP_ROLE_NAME);
+  await createGroup(USER_POOL_ID, CUSTOM_GROUP_NAME, customGroupRole.Arn);
+  // create identitypool
+  IDENTITY_POOL_ID = await createIdentityPool(identityClient, `IdentityPool${STACK_NAME}`, {
+    authRoleArn: roles.authRole.Arn,
+    unauthRoleArn: roles.unauthRole.Arn,
+    providerName: `cognito-idp.${AWS_REGION}.amazonaws.com/${USER_POOL_ID}`,
+    clientId: userPoolClientId,
+    useTokenAuth: true
+  });
 
   const transformer = new GraphQLTransform({
     authConfig: {
@@ -295,29 +334,8 @@ beforeAll(async () => {
       new PrimaryKeyTransformer(),
       new HasOneTransformer(),
       new HasManyTransformer(),
-      new AuthTransformer(),
+      new AuthTransformer({ identityPoolId: IDENTITY_POOL_ID }),
     ],
-  });
-
-  try {
-    await awsS3Client.createBucket({ Bucket: BUCKET_NAME }).promise();
-  } catch (e) {
-    console.error(`Failed to create bucket: ${e}`);
-  }
-
-  // create userpool
-  const userPoolResponse = await createUserPool(cognitoClient, `UserPool${STACK_NAME}`);
-  USER_POOL_ID = userPoolResponse.UserPool.Id;
-  const userPoolClientResponse = await createUserPoolClient(cognitoClient, USER_POOL_ID, `UserPool${STACK_NAME}`);
-  const userPoolClientId = userPoolClientResponse.UserPoolClient.ClientId;
-  // create auth and unauthroles
-  const roles = await iamHelper.createRoles(AUTH_ROLE_NAME, UNAUTH_ROLE_NAME);
-  // create identitypool
-  IDENTITY_POOL_ID = await createIdentityPool(identityClient, `IdentityPool${STACK_NAME}`, {
-    authRoleArn: roles.authRole.Arn,
-    unauthRoleArn: roles.unauthRole.Arn,
-    providerName: `cognito-idp.${AWS_REGION}.amazonaws.com/${USER_POOL_ID}`,
-    clientId: userPoolClientId,
   });
   const out = transformer.transform(validSchema);
   const finishedStack = await deploy(
@@ -387,11 +405,23 @@ beforeAll(async () => {
     region: AWS_REGION,
     auth: {
       type: AUTH_TYPE.AWS_IAM,
-      credentials: {
-        accessKeyId: authCreds.accessKeyId,
-        secretAccessKey: authCreds.secretAccessKey,
-        sessionToken: authCreds.sessionToken,
-      },
+      credentials: authCreds,
+    },
+    disableOffline: true,
+  });
+
+  await Auth.signOut();
+  await signupUser(USER_POOL_ID, USERNAME2, TMP_PASSWORD);
+  await addUserToGroup(CUSTOM_GROUP_NAME, USERNAME2, USER_POOL_ID);
+  await authenticateUser(USERNAME2, TMP_PASSWORD, REAL_PASSWORD);
+  await Auth.signIn(USERNAME2, REAL_PASSWORD);
+  const authCreds2 = await Auth.currentCredentials();
+  IAM_CUSTOM_GROUP_CLIENT = new AWSAppSyncClient({
+    url: GRAPHQL_ENDPOINT,
+    region: AWS_REGION,
+    auth: {
+      type: AUTH_TYPE.AWS_IAM,
+      credentials: authCreds2,
     },
     disableOffline: true,
   });
@@ -415,6 +445,11 @@ afterAll(async () => {
     { cognitoClient, userPoolId: USER_POOL_ID },
     { identityClient, identityPoolId: IDENTITY_POOL_ID },
   );
+  try {
+    await iamHelper.deleteRole(CUSTOM_GROUP_ROLE_NAME);
+  } catch (e) {
+    console.warn(`Error during custom group role cleanup ${e}`);
+  }
   try {
     await iamHelper.deleteRole(AUTH_ROLE_NAME);
   } catch (e) {
@@ -587,9 +622,7 @@ test(`Test 'private' authStrategy`, async () => {
   }
 });
 
-test(`Test 'private' provider: 'iam' authStrategy`, async () => {
-  // This test reuses the unauth role, but any IAM credentials would work
-  // in real world scenarios, we've to see if provider override works.
+test(`Test only allow private iam arn`, async () => {
   try {
     const createMutation = gql`
       mutation {
@@ -643,6 +676,18 @@ test(`Test 'private' provider: 'iam' authStrategy`, async () => {
     // public iam user must fail
     await expect(
       IAM_UNAUTHCLIENT.query({
+        query: getQuery,
+        fetchPolicy: 'no-cache',
+        variables: {
+          id: postId,
+        },
+      }),
+    ).rejects.toThrow('Network error: Response not successful: Received status code 401');
+
+    // we expect the custom group client to fail even if their signed in they'll still recieve a 401
+    // because the attached role does not have a policy to access the api
+    await expect(
+      IAM_CUSTOM_GROUP_CLIENT.query({
         query: getQuery,
         fetchPolicy: 'no-cache',
         variables: {

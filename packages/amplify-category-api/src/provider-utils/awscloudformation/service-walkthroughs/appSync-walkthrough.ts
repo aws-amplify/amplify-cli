@@ -1133,7 +1133,7 @@ async function askLambdaQuestion(context) {
   const lambdaAnswer = await inquirer.prompt({
     name: 'functionType',
     type: 'list',
-    message: 'Choose a Lambda source',
+    message: 'Choose a Lambda authorization function',
     choices,
     default: defaultFunctionType,
   });
