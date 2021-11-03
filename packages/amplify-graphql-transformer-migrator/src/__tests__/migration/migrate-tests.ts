@@ -149,6 +149,48 @@ describe('Schema migration tests', () => {
     migrateAndValidate(schema);
   });
 
+  it('@function directive is migrated', () => {
+    const schema = `
+      type Query {
+        echo(msg: String!): Context @function(name: "echo")
+        echoEnv(msg: String!): Context @function(name: "long-prefix-e2e-test-functions-echo-\${env}-v2")
+        duplicate(msg: String!): Context @function(name: "long-prefix-e2e-test-functions-echo-dev-v2")
+        pipeline(msg: String!): String @function(name: "echo") @function(name: "hello")
+        echoRegion(msg: String!): Context @function(name: "echo-\${env}" region: "us-east-1")
+      }
+
+      type Context {
+        typeName: String
+        fieldName: String
+      }`;
+
+    migrateAndValidate(schema);
+  });
+
+  it('@searchable directive is migrated', () => {
+    const schema = `
+      type Book @model @key(fields: ["author", "name"]) @searchable {
+        author: String!
+        name: String!
+        genre: String!
+      }
+
+      type Todo @model @searchable {
+        id: ID
+        name: String!
+        createdAt: AWSDateTime
+        description: String
+      }
+
+      type Comment @model @key(name: "commentByVersion", fields: ["version", "id"]) @searchable {
+        id: ID!
+        version: Int!
+        content: String!
+      }`;
+
+    migrateAndValidate(schema);
+  });
+
   it('@http directive is migrated', () => {
     const schema = `
       type Comment @model {
