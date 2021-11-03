@@ -3,6 +3,66 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.11.0-graphql-vnext-dev-preview.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-headless-interface@1.10.0...amplify-headless-interface@1.11.0-graphql-vnext-dev-preview.4) (2021-11-03)
+
+
+### Features
+
+* **amplify-category-storage:** headless support for S3 ([#8423](https://github.com/aws-amplify/amplify-cli/issues/8423)) ([76b0e70](https://github.com/aws-amplify/amplify-cli/commit/76b0e700d6221292a25b384e2ecfc7a64e9916dd))
+* headless command for geo -- map ([#8403](https://github.com/aws-amplify/amplify-cli/issues/8403)) ([73793b4](https://github.com/aws-amplify/amplify-cli/commit/73793b44411d329c52bed9337c0933d7066ee4de))
+
+
+
+
+
+# [1.11.0-graphql-vnext-dev-preview.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-headless-interface@1.10.0...amplify-headless-interface@1.11.0-graphql-vnext-dev-preview.3) (2021-11-03)
+
+
+### Features
+
+* **amplify-category-storage:** headless support for S3 ([#8423](https://github.com/aws-amplify/amplify-cli/issues/8423)) ([76b0e70](https://github.com/aws-amplify/amplify-cli/commit/76b0e700d6221292a25b384e2ecfc7a64e9916dd))
+* headless command for geo -- map ([#8403](https://github.com/aws-amplify/amplify-cli/issues/8403)) ([73793b4](https://github.com/aws-amplify/amplify-cli/commit/73793b44411d329c52bed9337c0933d7066ee4de))
+
+
+
+
+
+# [1.11.0-graphql-vnext-dev-preview.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-headless-interface@1.10.0...amplify-headless-interface@1.11.0-graphql-vnext-dev-preview.2) (2021-11-03)
+
+
+### Features
+
+* **amplify-category-storage:** headless support for S3 ([#8423](https://github.com/aws-amplify/amplify-cli/issues/8423)) ([76b0e70](https://github.com/aws-amplify/amplify-cli/commit/76b0e700d6221292a25b384e2ecfc7a64e9916dd))
+* headless command for geo -- map ([#8403](https://github.com/aws-amplify/amplify-cli/issues/8403)) ([73793b4](https://github.com/aws-amplify/amplify-cli/commit/73793b44411d329c52bed9337c0933d7066ee4de))
+
+
+
+
+
+# [1.11.0-graphql-vnext-dev-preview.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-headless-interface@1.10.0...amplify-headless-interface@1.11.0-graphql-vnext-dev-preview.1) (2021-11-03)
+
+
+### Features
+
+* **amplify-category-storage:** headless support for S3 ([#8423](https://github.com/aws-amplify/amplify-cli/issues/8423)) ([76b0e70](https://github.com/aws-amplify/amplify-cli/commit/76b0e700d6221292a25b384e2ecfc7a64e9916dd))
+* headless command for geo -- map ([#8403](https://github.com/aws-amplify/amplify-cli/issues/8403)) ([73793b4](https://github.com/aws-amplify/amplify-cli/commit/73793b44411d329c52bed9337c0933d7066ee4de))
+
+
+
+
+
+# [1.11.0-graphql-vnext-dev-preview.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-headless-interface@1.10.0...amplify-headless-interface@1.11.0-graphql-vnext-dev-preview.0) (2021-11-03)
+
+
+### Features
+
+* **amplify-category-storage:** headless support for S3 ([#8423](https://github.com/aws-amplify/amplify-cli/issues/8423)) ([76b0e70](https://github.com/aws-amplify/amplify-cli/commit/76b0e700d6221292a25b384e2ecfc7a64e9916dd))
+* headless command for geo -- map ([#8403](https://github.com/aws-amplify/amplify-cli/issues/8403)) ([73793b4](https://github.com/aws-amplify/amplify-cli/commit/73793b44411d329c52bed9337c0933d7066ee4de))
+
+
+
+
+
 # [1.10.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-headless-interface@1.9.0...amplify-headless-interface@1.10.0) (2021-08-06)
 
 

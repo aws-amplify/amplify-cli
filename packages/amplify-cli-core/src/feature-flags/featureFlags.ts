@@ -531,7 +531,7 @@ export class FeatureFlags {
         name: 'useExperimentalPipelinedTransformer',
         type: 'boolean',
         defaultValueForExistingProjects: false,
-        defaultValueForNewProjects: false,
+        defaultValueForNewProjects: true,
       },
       {
         name: 'enableIterativeGSIUpdates',
@@ -555,13 +555,13 @@ export class FeatureFlags {
         name: 'transformerVersion',
         type: 'number',
         defaultValueForExistingProjects: 1,
-        defaultValueForNewProjects: 1,
+        defaultValueForNewProjects: 2,
       },
       {
         name: 'suppressSchemaMigrationPrompt',
         type: 'boolean',
         defaultValueForExistingProjects: false,
-        defaultValueForNewProjects: false
+        defaultValueForNewProjects: false,
       },
     ]);
 

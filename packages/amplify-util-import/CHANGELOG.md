@@ -3,6 +3,46 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.5.16-graphql-vnext-dev-preview.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-import@1.5.15...amplify-util-import@1.5.16-graphql-vnext-dev-preview.4) (2021-11-03)
+
+**Note:** Version bump only for package amplify-util-import
+
+
+
+
+
+## [1.5.16-graphql-vnext-dev-preview.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-import@1.5.15...amplify-util-import@1.5.16-graphql-vnext-dev-preview.3) (2021-11-03)
+
+**Note:** Version bump only for package amplify-util-import
+
+
+
+
+
+## [1.5.16-graphql-vnext-dev-preview.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-import@1.5.15...amplify-util-import@1.5.16-graphql-vnext-dev-preview.2) (2021-11-03)
+
+**Note:** Version bump only for package amplify-util-import
+
+
+
+
+
+## [1.5.16-graphql-vnext-dev-preview.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-import@1.5.15...amplify-util-import@1.5.16-graphql-vnext-dev-preview.1) (2021-11-03)
+
+**Note:** Version bump only for package amplify-util-import
+
+
+
+
+
+## [1.5.16-graphql-vnext-dev-preview.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-import@1.5.15...amplify-util-import@1.5.16-graphql-vnext-dev-preview.0) (2021-11-03)
+
+**Note:** Version bump only for package amplify-util-import
+
+
+
+
+
 ## [1.5.15](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-import@1.5.14...amplify-util-import@1.5.15) (2021-10-10)
 
 **Note:** Version bump only for package amplify-util-import
