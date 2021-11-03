@@ -143,7 +143,7 @@ export const addResourceHeadless = async (
   }
   switch (serviceName) {
     case ServiceName.Map:
-      return addMapResourceHeadless(context, serviceConfiguration as MapConfiguration);
+      return addMapResourceHeadless(context, serviceConfiguration);
     default:
       throw badHeadlessServiceError(serviceName);
   }
@@ -163,7 +163,7 @@ export const updateResourceHeadless = async (
   }
   switch (serviceName) {
     case ServiceName.Map:
-      return updateMapResourceHeadless(context, serviceModification as MapModification);
+      return updateMapResourceHeadless(context, serviceModification);
     default:
       throw badHeadlessServiceError(serviceName);
   }

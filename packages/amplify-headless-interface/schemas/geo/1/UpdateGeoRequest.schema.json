@@ -13,7 +13,7 @@
             "description": "The service modification that will be interpreted by Amplify.",
             "allOf": [
                 {
-                    "$ref": "#/definitions/BaseGeoModification"
+                    "$ref": "#/definitions/BaseGeoServiceModification"
                 },
                 {
                     "$ref": "#/definitions/MapModification"
@@ -26,7 +26,7 @@
         "version"
     ],
     "definitions": {
-        "BaseGeoModification": {
+        "BaseGeoServiceModification": {
             "description": "Modification that applies to all geo service configuration.",
             "type": "object",
             "properties": {
