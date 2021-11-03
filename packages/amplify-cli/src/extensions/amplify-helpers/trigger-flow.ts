@@ -1,10 +1,10 @@
-import * as inquirer from 'inquirer';
+import { $TSAny, $TSContext, $TSObject, exitOnNextTick, JSONUtilities } from 'amplify-cli-core';
 import chalk from 'chalk';
 import * as fs from 'fs-extra';
-import * as path from 'path';
-import _ from 'lodash';
-import { exitOnNextTick, JSONUtilities, $TSAny } from 'amplify-cli-core';
+import * as inquirer from 'inquirer';
 import Separator from 'inquirer/lib/objects/separator';
+import _ from 'lodash';
+import * as path from 'path';
 
 // keep in sync with ServiceName in amplify-category-function, but probably it will not change
 const FunctionServiceNameLambdaFunction = 'Lambda';
@@ -211,7 +211,7 @@ export const deleteDeselectedTriggers = async (currentTriggers, previousTriggers
   }
 };
 
-export const deleteTrigger = async (context, name, dir) => {
+export const deleteTrigger = async (context: $TSContext, name: string, dir: string) => {
   try {
     await context.amplify.forceRemoveResource(context, 'function', name, dir);
   } catch (e) {
@@ -219,7 +219,7 @@ export const deleteTrigger = async (context, name, dir) => {
   }
 };
 
-export const deleteAllTriggers = async (triggers, functionName, dir, context) => {
+export const deleteAllTriggers = async (triggers: $TSObject, functionName: string, dir: string, context: $TSContext) => {
   const previousKeys = Object.keys(triggers);
   for (let y = 0; y < previousKeys.length; y += 1) {
     const targetPath = `${dir}/function/${functionName}`;
