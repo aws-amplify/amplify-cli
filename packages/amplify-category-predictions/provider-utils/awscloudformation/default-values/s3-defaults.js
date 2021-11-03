@@ -49,6 +49,12 @@ const getAllAuthDefaults = () => {
 
   return authAnswers;
 };
+const getAllAuthDefaultPerm = ( userInput ) => {
+  userInput.authAccess =  ['CREATE_AND_UPDATE', 'READ', 'DELETE'];
+  userInput.guestAccess = [];
+  return userInput;
+}
+
 
 const getAllAuthAndGuestDefaults = () => {
   const [policyId] = uuid().split('-');
@@ -73,8 +79,16 @@ const getAllAuthAndGuestDefaults = () => {
   return authAndGuestAnswers;
 };
 
+const getAllAuthAndGuestDefaultPerm = ( userInput ) => {
+  userInput.authAccess =  ['CREATE_AND_UPDATE', 'READ', 'DELETE'];
+  userInput.guestAccess = ['CREATE_AND_UPDATE', 'READ', 'DELETE'];
+  return userInput;
+}
+
 module.exports = {
   getAllS3Defaults,
   getAllAuthAndGuestDefaults,
   getAllAuthDefaults,
+  getAllAuthDefaultPerm,
+  getAllAuthAndGuestDefaultPerm,
 };
