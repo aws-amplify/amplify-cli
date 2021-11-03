@@ -70,4 +70,11 @@ test.out.log
 *.tsbuildinfo
 packages/amplify-graphiql-explorer/.eslintcache
 packages/amplify-cli-extensibility-helper/lib
+packages/amplify-cli-overrides-helper/lib
+!packages/amplify-graphql-model-transformer/src/__tests__/overrides/build/override.js
+!packages/amplify-graphql-function-transformer/src/__tests__/overrides/build/override.js
+!packages/amplify-graphql-http-transformer/src/__tests__/overrides/build/override.js
+!packages/amplify-graphql-predictions-transformer/src/__tests__/overrides/build/override.js
+!packages/amplify-graphql-searchable-transformer/src/__tests__/overrides/build/override.js
+
 
