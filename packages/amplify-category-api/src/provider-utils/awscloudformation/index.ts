@@ -22,14 +22,21 @@ export async function addAdminQueriesApi(
   apiProps: { apiName: string; functionName: string; authResourceName: string; dependsOn: $TSObject[] },
 ) {
   const apigwInputState = ApigwInputState.getInstance(context, apiProps.apiName);
-  apigwInputState.addAdminQueriesResource(apiProps);
+  return apigwInputState.addAdminQueriesResource(apiProps);
 }
 
 export async function updateAdminQueriesApi(
   context: $TSContext,
   apiProps: { apiName: string; functionName: string; authResourceName: string; dependsOn: $TSObject[] },
 ) {
-  // TODO
+  const apigwInputState = ApigwInputState.getInstance(context, apiProps.apiName);
+  // Check for migration
+
+  if (!apigwInputState.cliInputsFileExists()) {
+    await apigwInputState.migrateAdminQueries(apiProps);
+  } else {
+    return apigwInputState.addAdminQueriesResource(apiProps);
+  }
 }
 
 export async function console(context: $TSContext, service: string) {

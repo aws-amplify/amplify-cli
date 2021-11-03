@@ -47,8 +47,39 @@ export class ApigwInputState {
       },
     };
 
-    // Caller will complete amplify-meta.json updates
-    return this.createApigwArtifacts();
+    await this.createApigwArtifacts();
+
+    // Update amplify-meta and backend-config
+    const backendConfigs = {
+      service: AmplifySupportedService.APIGW,
+      providerPlugin: 'awscloudformation',
+      authorizationType: 'AMAZON_COGNITO_USER_POOLS',
+      dependsOn: adminQueriesProps.dependsOn,
+    };
+
+    await this.context.amplify.updateamplifyMetaAfterResourceAdd(AmplifyCategories.API, adminQueriesProps.apiName, backendConfigs);
+  };
+
+  public updateAdminQueriesResource = async (adminQueriesProps: AdminQueriesProps) => {
+    this.resourceName = adminQueriesProps.apiName;
+    this.paths = {
+      '/{proxy+}': {
+        lambdaFunction: adminQueriesProps.functionName,
+        permissions: {
+          setting: PermissionSetting.PRIVATE,
+          auth: [CrudOperation.CREATE, CrudOperation.READ, CrudOperation.UPDATE, CrudOperation.DELETE],
+        },
+      },
+    };
+
+    await this.createApigwArtifacts();
+
+    await this.context.amplify.updateamplifyMetaAfterResourceUpdate(
+      AmplifyCategories.API,
+      adminQueriesProps.apiName,
+      'dependsOn',
+      adminQueriesProps.dependsOn,
+    );
   };
 
   public addApigwResource = async (serviceWalkthroughPromise: ApigwWalkthroughReturnPromise, options: $TSObject) => {
@@ -77,6 +108,15 @@ export class ApigwInputState {
 
     this.context.amplify.updateamplifyMetaAfterResourceUpdate(AmplifyCategories.API, this.resourceName, 'dependsOn', answers.dependsOn);
     return this.resourceName;
+  };
+
+  public migrateAdminQueries = async (adminQueriesProps: AdminQueriesProps) => {
+    const resourceDirPath = pathManager.getResourceDirectoryPath(this.projectRootPath, AmplifyCategories.API, this.resourceName);
+
+    this.context.filesystem.remove(join(resourceDirPath, PathConstants.ParametersJsonFileName));
+    this.context.filesystem.remove(join(resourceDirPath, 'admin-queries-cloudformation-template.json'));
+
+    return this.updateAdminQueriesResource(adminQueriesProps);
   };
 
   public migrateApigwResource = async () => {
@@ -155,7 +195,7 @@ export class ApigwInputState {
     schemaValidator.validateInput(JSONUtilities.stringify(cliInputs));
   }
 
-  async createApigwArtifacts() {
+  private async createApigwArtifacts() {
     const resourceDirPath = pathManager.getResourceDirectoryPath(this.projectRootPath, AmplifyCategories.API, this.resourceName);
     fs.ensureDirSync(resourceDirPath);
 

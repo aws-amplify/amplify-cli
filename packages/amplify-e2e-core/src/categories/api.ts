@@ -1,7 +1,7 @@
 import * as fs from 'fs-extra';
 import _ from 'lodash';
 import * as path from 'path';
-import { ExecutionContext, getCLIPath, KEY_DOWN_ARROW, nspawn as spawn, RETURN, updateSchema } from '..';
+import { ExecutionContext, getCLIPath, nspawn as spawn, RETURN, updateSchema } from '..';
 import { multiSelect, singleSelect } from '../utils/selectors';
 import { selectRuntime, selectTemplate } from './lambda-function';
 import { modifiedApi } from './resources/modified-api-index';

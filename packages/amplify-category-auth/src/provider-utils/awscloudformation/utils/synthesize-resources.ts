@@ -383,18 +383,9 @@ const createAdminAuthAPI = async (context: $TSContext, authResourceName: string,
 
   if (operation === 'add') {
     await context.amplify.invokePluginMethod(context, AmplifyCategories.API, undefined, 'addAdminQueriesApi', [context, apiProps]);
-
-    // Update amplify-meta and backend-config
-    const backendConfigs = {
-      service: AmplifySupportedService.APIGW,
-      providerPlugin: 'awscloudformation',
-      authorizationType: 'AMAZON_COGNITO_USER_POOLS',
-      dependsOn,
-    };
-
-    await context.amplify.updateamplifyMetaAfterResourceAdd(AmplifyCategories.API, apiName, backendConfigs);
     printer.success(`Successfully added ${apiName} API locally`);
   } else {
+    await context.amplify.invokePluginMethod(context, AmplifyCategories.API, undefined, 'updateAdminQueriesApi', [context, apiProps]);
     printer.success(`Successfully updated ${apiName} API locally`);
   }
 };
