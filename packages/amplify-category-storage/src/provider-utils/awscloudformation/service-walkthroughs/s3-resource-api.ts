@@ -33,6 +33,17 @@ export async function s3GetUserInput(context: $TSContext, s3ResourceName: string
 }
 
 /**
+ * Update the cli-inputs.json
+ * @param context
+ * @param s3ResourceName
+ * @returns
+ */
+ export async function s3UpdateUserInput(context: $TSContext, storageInput: S3UserInputs): Promise<S3UserInputs> {
+  await s3APIHelperTransformAndSaveState(context, storageInput, CLISubCommandType.UPDATE);
+  return storageInput;
+}
+
+/**
  * Allow other services to create the storage resource. (Currently used by Predictions category)
  * @param context
  * @param storageInput - Storage + Auth configurations as required by the calling category
@@ -46,7 +57,6 @@ export async function s3CreateStorageResource(context: $TSContext, storageInput:
   }
   await s3APIHelperTransformAndSaveState(context, storageInput, CLISubCommandType.ADD);
   return storageInput;
-  //return storage name
 }
 
 /**

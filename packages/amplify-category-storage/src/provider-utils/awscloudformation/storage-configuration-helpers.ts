@@ -2,37 +2,35 @@ import {
   $TSAny,
   $TSContext,
   $TSMeta,
-  $TSObject,
-  isResourceNameUnique,
-  JSONUtilities,
+  $TSObject, JSONUtilities,
   pathManager,
   readCFNTemplate,
   ResourceAlreadyExistsError,
   ResourceDoesNotExistError,
   stateManager,
-  writeCFNTemplate,
+  writeCFNTemplate
 } from 'amplify-cli-core';
 import {
   AddStorageRequest,
   CrudOperation,
-  ImportStorageRequest,
-  LambdaTriggerConfig,
-  RemoveStorageRequest,
-  S3Permissions,
-  UpdateStorageRequest,
+  ImportStorageRequest, RemoveStorageRequest, UpdateStorageRequest
 } from 'amplify-headless-interface';
 import { printer } from 'amplify-prompts';
-import * as fs from 'fs-extra';
 import _ from 'lodash';
 import * as path from 'path';
 import { v4 as uuid } from 'uuid';
-import { authCategoryName, categoryName, functionCategoryName } from '../../constants';
+import { S3UserInputTriggerFunctionParams } from '../..';
+import { authCategoryName, categoryName } from '../../constants';
 import { ProviderUtils } from '../awscloudformation/import/types';
-import { getAllDefaults } from './default-values/s3-defaults';
 import { updateStateFiles } from './import/import-s3';
-import { addTrigger, removeTrigger } from './s3-trigger-helpers';
-import { providerName, ServiceName, storageParamsFilename, templateFilenameMap } from './provider-constants';
+import { ServiceName, storageParamsFilename, templateFilenameMap } from './provider-constants';
+import { buildS3UserInputFromHeadlessStorageRequest, buildS3UserInputFromHeadlessUpdateStorageRequest, buildTriggerFunctionParams } from './s3-headless-adapter';
+import {
+  S3UserInputs
+} from './service-walkthrough-types/s3-user-input-types';
+import { s3AddStorageLambdaTrigger, s3CreateStorageResource, s3UpdateUserInput } from './service-walkthroughs/s3-resource-api';
 import { resourceAlreadyExists } from './service-walkthroughs/s3-walkthrough';
+
 
 const enum S3IamPolicy {
   GET = 's3:GetObject',
@@ -54,10 +52,6 @@ export const permissionMap: $TSObject = {
   read: ['s3:GetObject', 's3:ListBucket'],
   delete: ['s3:DeleteObject'],
 };
-
-const replaceAndWithSlash = (crudOperation: CrudOperation) => crudOperation.replace('_AND_', '/').toLowerCase();
-
-const convertHeadlessPayloadToParameters = (arr: S3IamPolicy[], op: CrudOperation) => arr.concat(headlessCrudOperationToIamPoliciesMap[op]);
 
 export async function headlessAddStorage(context: $TSContext, storageRequest: AddStorageRequest) {
   if (!checkIfAuthExists()) {
@@ -223,168 +217,33 @@ export async function headlessRemoveStorage(context: $TSContext, storageRequest:
   }
 }
 
-function constructParametersJson(parameters: $TSAny, permissions: S3Permissions, lambdaTrigger?: LambdaTriggerConfig) {
-  parameters.triggerFunction = lambdaTrigger?.name ?? 'NONE';
-
-  parameters.selectedAuthenticatedPermissions = permissions.auth.reduce(convertHeadlessPayloadToParameters, []);
-  parameters.selectedGuestPermissions = (permissions.guest || []).reduce(convertHeadlessPayloadToParameters, []);
-
-  const isGuestAllowedAccess = (permissions?.guest?.length ?? 0) > 0;
-  parameters.storageAccess = isGuestAllowedAccess ? 'authAndGuest' : authCategoryName;
-  createPermissionKeys('Authenticated', parameters, parameters.selectedAuthenticatedPermissions);
-  if (isGuestAllowedAccess) {
-    createPermissionKeys('Guest', parameters, parameters.selectedGuestPermissions);
-  }
-
-  removeNotStoredParameters(parameters);
-  return parameters;
-}
-
 async function createS3StorageArtifacts(context: $TSContext, storageRequest: AddStorageRequest) {
-  const {
-    serviceConfiguration: { permissions, lambdaTrigger },
-  } = storageRequest;
-  let {
-    serviceConfiguration: { bucketName, resourceName },
-  } = storageRequest;
-  const [shortId] = uuid().split('-');
-  let parameters = getAllDefaults(context.amplify.getProjectDetails(), shortId);
-
-  if (!resourceName) {
-    ({ resourceName } = parameters);
-  }
-
-  if (!bucketName) {
-    ({ bucketName } = parameters);
-  }
-
-  if (isResourceNameUnique(categoryName, resourceName!)) {
-    const resourceDirPath = pathManager.getResourceDirectoryPath(undefined, categoryName, resourceName!);
-    fs.ensureDirSync(resourceDirPath);
-
-    // create parameters.json
-    parameters.bucketName = bucketName;
-    parameters.resourceName = resourceName;
-
-    parameters = constructParametersJson(parameters, permissions, lambdaTrigger);
-    stateManager.setResourceParametersJson(undefined, categoryName, resourceName!, parameters);
-
-    // create storage-params.json
-    const storageParamsPermissions: { [k: string]: string[] } = {};
-    Object.entries(permissions.groups || {}).forEach(([cognitoUserGroupName, crudOperations]: [string, CrudOperation[]]) => {
-      storageParamsPermissions[cognitoUserGroupName] = crudOperations.map(replaceAndWithSlash);
-    });
-    writeToStorageParamsFile(resourceName!, { groupPermissionMap: storageParamsPermissions });
-
-    // construct dependsOn array
-    let dependsOn: $TSAny[] = [];
-
-    if (storageRequest.serviceConfiguration.permissions.groups) {
-      dependsOn.push({
-        category: authCategoryName,
-        resourceName: await getAuthResourceName(context),
-        attributes: ['UserPoolId'],
-      });
-
-      for (const group of Object.keys(storageRequest.serviceConfiguration.permissions.groups)) {
-        dependsOn.push({
-          category: authCategoryName,
-          resourceName: 'userPoolGroups',
-          attributes: [`${group}GroupRole`],
-        });
-      }
+  const storageInput: S3UserInputs  = buildS3UserInputFromHeadlessStorageRequest( context, storageRequest );
+  const result = await s3CreateStorageResource(context, storageInput);
+  const lambdaConfig = storageRequest.serviceConfiguration.lambdaTrigger;
+  if(lambdaConfig){
+    if (lambdaConfig.mode === 'new'){
+      const storageLambdaParams: S3UserInputTriggerFunctionParams = buildTriggerFunctionParams(lambdaConfig.name)
+      //create function and add as trigger
+      await s3AddStorageLambdaTrigger(context,  storageInput.resourceName as string , storageLambdaParams)
     }
-
-    if (storageRequest.serviceConfiguration?.lambdaTrigger) {
-      const options = { headlessTrigger: storageRequest.serviceConfiguration.lambdaTrigger, dependsOn };
-      await addTrigger(context, parameters.resourceName!, undefined, undefined, options);
-    }
-
-    // create cfn
-    await copyCfnTemplate(context, categoryName, resourceName!, { ...parameters, dependsOn }, true);
-
-    // update meta
-    context.amplify.updateamplifyMetaAfterResourceAdd(categoryName, resourceName!, {
-      service: ServiceName.S3,
-      providerPlugin: providerName,
-      dependsOn,
-    });
   }
 }
 
-async function updateS3StorageArtifacts(context: $TSContext, storageRequest: UpdateStorageRequest, storageResource: $TSAny) {
-  const {
-    serviceModification: { permissions, resourceName, lambdaTrigger },
-  } = storageRequest;
-
-  let { dependsOn } = storageResource;
-
-  // update parameters.json
-  let parameters = stateManager.getResourceParametersJson(undefined, categoryName, resourceName);
-  parameters = constructParametersJson(parameters, permissions, lambdaTrigger);
-  stateManager.setResourceParametersJson(undefined, categoryName, resourceName, parameters);
-
-  // update storage-params.json
-  const { groupPermissionMap } = readStorageParamsFileSafe(resourceName);
-  const storageParamsPermissions: { [k: string]: string[] } = {};
-  Object.entries(permissions.groups || {}).forEach(([cognitoUserGroupName, crudOperations]: [string, CrudOperation[]]) => {
-    storageParamsPermissions[cognitoUserGroupName] = crudOperations.map(replaceAndWithSlash);
-  });
-  writeToStorageParamsFile(resourceName, { groupPermissionMap: storageParamsPermissions });
-
-  Object.entries(storageParamsPermissions).forEach(([groupName, perms]: [string, string[]]) => {
-    storageParamsPermissions[groupName] = [];
-    for (const p of perms) {
-      storageParamsPermissions[groupName] = storageParamsPermissions[groupName].concat(permissionMap[p]);
-    }
-  });
-
-  // update cfn
-  await updateCfnTemplateWithGroups(
-    context,
-    Object.keys(groupPermissionMap || {}),
-    Object.keys(storageParamsPermissions),
-    storageParamsPermissions,
-    resourceName,
-    await getAuthResourceName(context),
-  );
-
-  const trigger: { category: string; resourceName: string; attributes: $TSAny[] } | undefined = _.first(
-    dependsOn.filter((d: $TSAny) => d.category === functionCategoryName),
-  );
-
-  if (trigger) {
-    removeTrigger(context, resourceName, trigger.resourceName);
-  }
-
-  // update dependsOn array
-  dependsOn = [];
-  if (storageRequest.serviceModification.permissions.groups) {
-    dependsOn.push({
-      category: authCategoryName,
-      resourceName: await getAuthResourceName(context),
-      attributes: ['UserPoolId'],
-    });
-
-    for (const group of Object.keys(storageRequest.serviceModification.permissions.groups)) {
-      dependsOn.push({
-        category: authCategoryName,
-        resourceName: 'userPoolGroups',
-        attributes: [`${group}GroupRole`],
-      });
+async function updateS3StorageArtifacts(context: $TSContext, updateStorageRequest: UpdateStorageRequest, _storageResource: $TSAny) {
+  const lambdaConfig = updateStorageRequest.serviceModification.lambdaTrigger;
+  const storageInput: S3UserInputs = await buildS3UserInputFromHeadlessUpdateStorageRequest(context, updateStorageRequest);
+  let s3UserInput = await s3UpdateUserInput(context, storageInput);
+  if(lambdaConfig){
+    if (lambdaConfig.mode === 'new'){
+      const storageLambdaParams: S3UserInputTriggerFunctionParams = buildTriggerFunctionParams(lambdaConfig.name)
+      //create function and add as trigger
+      s3UserInput = await s3AddStorageLambdaTrigger(context,  storageInput.resourceName as string , storageLambdaParams)
     }
   }
-
-  if (storageRequest.serviceModification?.lambdaTrigger) {
-    const options = { headlessTrigger: storageRequest.serviceModification.lambdaTrigger, dependsOn };
-    await addTrigger(context, resourceName, undefined, parameters.adminTriggerFunction, options);
-  }
-
-  // update meta
-  const meta = stateManager.getMeta();
-  meta[categoryName][resourceName].dependsOn = dependsOn;
-  stateManager.setMeta(undefined, meta);
+  return s3UserInput;
 }
+
 
 function doUserPoolGroupsExist(meta: $TSMeta) {
   const { userPoolGroups } = meta[authCategoryName];
