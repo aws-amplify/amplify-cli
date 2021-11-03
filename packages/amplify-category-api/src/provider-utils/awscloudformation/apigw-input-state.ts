@@ -129,7 +129,6 @@ export class ApigwInputState {
       return;
     }
     const deprecatedParametersFileName = 'api-params.json';
-    console.log('DEBUG', this.projectRootPath, AmplifyCategories.API, this.resourceName);
     const resourceDirPath = pathManager.getResourceDirectoryPath(this.projectRootPath, AmplifyCategories.API, this.resourceName);
     const deprecatedParametersFilePath = join(resourceDirPath, deprecatedParametersFileName);
     let deprecatedParameters: $TSObject;
