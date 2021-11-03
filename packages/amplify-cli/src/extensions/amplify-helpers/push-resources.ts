@@ -4,14 +4,7 @@ import { onCategoryOutputsChange } from './on-category-outputs-change';
 import { initializeEnv } from '../../initialize-env';
 import { getProviderPlugins } from './get-provider-plugins';
 import { getEnvInfo } from './get-env-info';
-import {
-  EnvironmentDoesNotExistError,
-  exitOnNextTick,
-  stateManager,
-  $TSAny,
-  $TSContext,
-} from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
+import { EnvironmentDoesNotExistError, exitOnNextTick, stateManager, $TSAny, $TSContext } from 'amplify-cli-core';
 
 export async function pushResources(
   context: $TSContext,
@@ -95,9 +88,6 @@ export async function pushResources(
           retryPush = await handleValidGraphQLAuthError(context, err.message);
         }
         if (!retryPush) {
-          // Handle the errors and print them nicely for the user.
-          printer.blankLine();
-          printer.error(err.message);
           throw err;
         }
       }
