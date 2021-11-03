@@ -18,9 +18,9 @@ import {
   ResourceDeployType,
   StackParameters,
   TransformedCfnResource,
-} from './Types';
+} from './types';
 import { Constants } from './constants';
-import { ResourceDeployer } from './ResourceDeployer';
+import { ResourcePackager } from './resource-packager';
 import { getNetworkResourceCfn } from '../utils/env-level-constructs';
 import _ from 'lodash';
 import { printer } from 'amplify-prompts';
@@ -54,7 +54,7 @@ const {
   NETWORK_STACK_LOGICAL_ID,
   APIGW_AUTH_STACK_LOGICAL_ID,
 } = Constants;
-export class ResourceExport extends ResourceDeployer {
+export class ResourceExport extends ResourcePackager {
   exportDirectoryPath: string;
   constructor(context: $TSContext, exportDirectoryPath: string) {
     super(context, ResourceDeployType.Export);

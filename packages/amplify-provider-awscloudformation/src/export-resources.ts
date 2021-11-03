@@ -1,6 +1,6 @@
 import { $TSAny, $TSContext, JSONUtilities, stateManager } from 'amplify-cli-core';
-import { ResourceExport } from './resource-push/ResourceExport';
-import { ResourceDefinition, StackIncludeDetails, StackParameters } from './resource-push/Types';
+import { ResourceExport } from './resource-package/resource-export';
+import { ResourceDefinition, StackIncludeDetails, StackParameters } from './resource-package/types';
 import * as path from 'path';
 import { printer, prompter } from 'amplify-prompts';
 import * as fs from 'fs-extra';

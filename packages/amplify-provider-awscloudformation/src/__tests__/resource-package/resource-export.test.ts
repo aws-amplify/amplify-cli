@@ -7,7 +7,7 @@ import {
   buildOverrideDir,
   stateManager,
 } from 'amplify-cli-core';
-import { DeploymentResources, PackagedResourceDefinition, ResourceDeployType, StackParameters } from '../../resource-push/Types';
+import { DeploymentResources, PackagedResourceDefinition, ResourceDeployType, StackParameters } from '../../resource-package/Types';
 import * as fs from 'fs-extra';
 
 const mockMeta = jest.fn(() => {
@@ -257,7 +257,7 @@ jest.mock('../../resourceParams', () => ({
   loadResourceParameters: jest.fn().mockReturnValue({}),
 }));
 import path from 'path';
-import { ResourceExport } from '../../resource-push/ResourceExport';
+import { ResourceExport } from '../../resource-package/resource-export';
 import { Template } from 'cloudform-types';
 
 describe('test resource export', () => {

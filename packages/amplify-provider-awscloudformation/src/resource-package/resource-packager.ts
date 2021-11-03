@@ -27,13 +27,13 @@ import {
   PackagerParams,
   UploadedResourceDefinition,
   TransformedCfnResource,
-} from './Types';
+} from './types';
 
 /**
  * Abstract class that holds logic for building, packaging and cfn generation
  * The motive of this class is to be extended by any furture workflows that would require this
  */
-export abstract class ResourceDeployer {
+export abstract class ResourcePackager {
   protected elasticContainerZipFiles: string[];
   protected context: $TSContext;
   protected amplifyMeta: $TSMeta;
