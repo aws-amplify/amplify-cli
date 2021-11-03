@@ -1,4 +1,4 @@
-import { S3AccessType, S3PermissionType, S3UserInputs, GroupAccessType } from '../service-walkthrough-types/s3-user-input-types';
+import { S3AccessType, S3PermissionType, S3UserInputs, GroupAccessType, S3UserInputTriggerFunctionParams, S3TriggerEventType, S3TriggerPrefixType } from '../service-walkthrough-types/s3-user-input-types';
 import { $TSContext, $TSObject, AmplifyCategories, AmplifySupportedService } from 'amplify-cli-core';
 import { JSONUtilities, pathManager } from 'amplify-cli-core';
 import { CLIInputSchemaValidator } from 'amplify-cli-core';
@@ -101,108 +101,199 @@ export class S3InputState {
     this._cliInputsFilePath = path.resolve(path.join(projectBackendDirPath, AmplifyCategories.STORAGE, resourceName, 'cli-inputs.json'));
     this._resourceName = resourceName;
     this.buildFilePath = path.resolve(path.join(projectBackendDirPath, AmplifyCategories.STORAGE, resourceName, 'build'));
-    if (userInput) { //Add flow
+    if (userInput) {
+      //Add flow
       this._inputPayload = userInput;
     } else {
-      if (this.cliInputFileExists()){
+      if (this.cliInputFileExists()) {
         this._inputPayload = this.getCliInputPayload(); //Update flow
       } else {
         return; //Migration flow
       }
     }
     //validate CLI inputs
-    this.isCLIInputsValid( this._inputPayload );
+    this.isCLIInputsValid(this._inputPayload);
   }
 
-
-  getOldS3ParamsForMigration(): MigrationParams{
+  getOldS3ParamsForMigration(): MigrationParams {
     const backendDir = pathManager.getBackendDirPath();
     const oldParametersFilepath = path.join(backendDir, AmplifyCategories.STORAGE, this._resourceName, 'parameters.json');
-    const oldCFNFilepath = path.join( backendDir, AmplifyCategories.STORAGE, this._resourceName,
-                                      `${AmplifySupportedService.S3}-cloudformation-template.json`);
+    const oldCFNFilepath = path.join(
+      backendDir,
+      AmplifyCategories.STORAGE,
+      this._resourceName,
+      `${AmplifySupportedService.S3}-cloudformation-template.json`,
+    );
     const oldStorageParamsFilepath = path.join(backendDir, AmplifyCategories.STORAGE, this._resourceName, `storage-params.json`);
     const oldParameters: any = JSONUtilities.readJson(oldParametersFilepath, { throwIfNotExist: true });
     const oldCFN: any = JSONUtilities.readJson(oldCFNFilepath, { throwIfNotExist: true });
     const oldStorageParams: any = JSONUtilities.readJson(oldStorageParamsFilepath, { throwIfNotExist: false }) || {};
-    const oldParams : MigrationParams = {
-      parametersFilepath : oldParametersFilepath,
-      cfnFilepath : oldCFNFilepath,
-      storageParamsFilepath : oldStorageParamsFilepath,
+    const oldParams: MigrationParams = {
+      parametersFilepath: oldParametersFilepath,
+      cfnFilepath: oldCFNFilepath,
+      storageParamsFilepath: oldStorageParamsFilepath,
       parameters: oldParameters,
       cfn: oldCFN,
-      storageParams: oldStorageParams
-    }
+      storageParams: oldStorageParams,
+    };
     return oldParams;
   }
 
-  genInputParametersForMigration(oldS3Params : MigrationParams) : S3UserInputs {
-      const oldParams = oldS3Params.parameters;
-      const storageParams = oldS3Params.storageParams;
-      let userInputs : S3UserInputs = {
-        resourceName: this._resourceName,
-        bucketName: oldParams.bucketName,
-        policyUUID: buildShortUUID(), //Since UUID is unique for every resource, we re-create the policy names with new UUID.
-        storageAccess: undefined,
-        guestAccess: [],
-        authAccess: [],
-        triggerFunction: "NONE",
-        groupAccess: undefined,
-      }
-      if ( oldParams.triggerFunction ){
-        userInputs.triggerFunction = oldParams.triggerFunction;
-      }
+  genInputParametersForMigration(oldS3Params: MigrationParams): S3UserInputs {
+    const oldParams = oldS3Params.parameters;
+    const storageParams = oldS3Params.storageParams;
+    let userInputs: S3UserInputs = {
+      resourceName: this._resourceName,
+      bucketName: oldParams.bucketName,
+      policyUUID: buildShortUUID(), //Since UUID is unique for every resource, we re-create the policy names with new UUID.
+      storageAccess: undefined,
+      guestAccess: [],
+      authAccess: [],
+      triggerFunction: 'NONE',
+      groupAccess: undefined,
+    };
+    if (oldParams.triggerFunction) {
+      userInputs.triggerFunction = oldParams.triggerFunction;
+    }
 
-      if (oldParams.selectedAuthenticatedPermissions ) {
-        userInputs.authAccess = S3InputState.getInputPermissionsFromCfnPermissions( oldParams.selectedAuthenticatedPermissions );
-      }
+    if (oldParams.selectedAuthenticatedPermissions) {
+      userInputs.authAccess = S3InputState.getInputPermissionsFromCfnPermissions(oldParams.selectedAuthenticatedPermissions);
+    }
 
-      if ( oldParams.selectedGuestPermissions ) {
-        userInputs.guestAccess = S3InputState.getInputPermissionsFromCfnPermissions( oldParams.selectedGuestPermissions );
-      }
+    if (oldParams.selectedGuestPermissions) {
+      userInputs.guestAccess = S3InputState.getInputPermissionsFromCfnPermissions(oldParams.selectedGuestPermissions);
+    }
 
-      if (oldParams.selectedGuestPermissions?.length ) {
-        userInputs.storageAccess = S3AccessType.AUTH_AND_GUEST;
-      } else {
-        if (oldParams.selectedAuthenticatedPermissions?.length){
-          userInputs.storageAccess = S3AccessType.AUTH_ONLY;
-        }
+    if (oldParams.selectedGuestPermissions?.length) {
+      userInputs.storageAccess = S3AccessType.AUTH_AND_GUEST;
+    } else {
+      if (oldParams.selectedAuthenticatedPermissions?.length) {
+        userInputs.storageAccess = S3AccessType.AUTH_ONLY;
       }
+    }
 
-      if (storageParams && storageParams.hasOwnProperty("groupPermissionMap")){
-        userInputs.groupAccess = S3InputState.getPolicyMapFromStorageParamPolicyMap( storageParams.groupPermissionMap );
-      }
+    if (storageParams && storageParams.hasOwnProperty('groupPermissionMap')) {
+      userInputs.groupAccess = S3InputState.getPolicyMapFromStorageParamPolicyMap(storageParams.groupPermissionMap);
+    }
 
-      return userInputs;
+    return userInputs;
   }
 
-  removeOldS3ConfigFiles( migrationParams : MigrationParams ){
-      // Remove old files
-      if (fs.existsSync(migrationParams.cfnFilepath)) {
-        fs.removeSync(migrationParams.cfnFilepath);
-      }
-      if (fs.existsSync(migrationParams.parametersFilepath)) {
-        fs.removeSync(migrationParams.parametersFilepath);
-      }
-      if (fs.existsSync(migrationParams.storageParamsFilepath)) {
-        fs.removeSync(migrationParams.storageParamsFilepath);
-      }
+  removeOldS3ConfigFiles(migrationParams: MigrationParams) {
+    // Remove old files
+    if (fs.existsSync(migrationParams.cfnFilepath)) {
+      fs.removeSync(migrationParams.cfnFilepath);
+    }
+    if (fs.existsSync(migrationParams.parametersFilepath)) {
+      fs.removeSync(migrationParams.parametersFilepath);
+    }
+    if (fs.existsSync(migrationParams.storageParamsFilepath)) {
+      fs.removeSync(migrationParams.storageParamsFilepath);
+    }
   }
 
-  public async migrate(context : $TSContext ){
+  public async migrate(context: $TSContext) {
     try {
       await migrateAuthDependencyResource(context);
-    } catch( error ) {
-      printer.error(`Migration for Auth resource failed with error : ${error as string}`)
+    } catch (error) {
+      printer.error(`Migration for Auth resource failed with error : ${error as string}`);
       throw error;
     }
-    const oldS3Params : MigrationParams = this.getOldS3ParamsForMigration();
-    const cliInputs : S3UserInputs = this.genInputParametersForMigration( oldS3Params );
+    const oldS3Params: MigrationParams = this.getOldS3ParamsForMigration();
+    const cliInputs: S3UserInputs = this.genInputParametersForMigration(oldS3Params);
     this.saveCliInputPayload(cliInputs);
-    this.removeOldS3ConfigFiles( oldS3Params );
+    this.removeOldS3ConfigFiles(oldS3Params);
   }
 
   public cliInputFileExists(): boolean {
     return fs.existsSync(this._cliInputsFilePath);
+  }
+
+  checkPrefixExists(triggerPrefixList: S3TriggerPrefixType[] , prefix : string ){
+      for( const triggerPrefix of triggerPrefixList ){
+        if ( triggerPrefix.prefix === prefix ){
+          return true;
+        }
+      }
+      return false;
+  }
+
+  /**
+   * Check if there exists a different trigger function configured on the prefix.
+   * @param triggerFunctionName
+   * @param triggerPrefixList
+   * @returns true if there is no other trigger configured on this prefix. throws error if prefix used by another function
+   */
+  private _confirmLambdaTriggerPrefixUnique(triggerFunctionName: string, triggerPrefixList: S3TriggerPrefixType[]): boolean {
+    if (this._inputPayload?.additionalTriggerFunctions) {
+      for (const triggerParams of this._inputPayload.additionalTriggerFunctions) {
+        for ( const configuredTriggerPrefix of triggerParams.triggerPrefix ){
+          if ( this.checkPrefixExists( triggerPrefixList, configuredTriggerPrefix.prefix ) && triggerParams.triggerFunction !== triggerFunctionName) {
+            throw new Error(
+              `Error installing additional Lambda Trigger : trigger ${triggerParams.triggerFunction} already configured on prefix ${triggerParams.triggerPrefix}`,
+            );
+          }
+        }
+
+      }
+    }
+    return true;
+  }
+
+  /**
+   * Add a lambda trigger for Predictions category.
+   * @param adminLambdaTrigger
+   */
+  public addAdminLambdaTrigger( adminLambdaTrigger : S3UserInputTriggerFunctionParams ){
+    if( this._inputPayload ) {
+      this._inputPayload.adminTriggerFunction  = adminLambdaTrigger;
+    } else {
+      throw  new Error("Error : Admin Lambda Trigger cannot be installed because S3 recource CLI Input is not initialized.");
+    }
+  }
+
+  public removeAdminLambdaTrigger( ){
+    if( this._inputPayload ) {
+      this._inputPayload.adminTriggerFunction  = undefined;
+    } else {
+      throw  new Error("Error : Admin Lambda Trigger cannot be installed because S3 recource CLI Input is not initialized.");
+    }
+  }
+
+  /**
+   * Insert the triggerfunction on the S3 bucket for the given prefix.
+   * Throws error if a different trigger function is already configured on the given prefix.
+   * used by categories like Predictions
+   * @param triggerFunctionParams
+   */
+  public addAdditionalLambdaTrigger(triggerFunctionParams: S3UserInputTriggerFunctionParams) {
+    let additionalTriggerFunctions: S3UserInputTriggerFunctionParams[] | undefined = [];
+    if (!this._inputPayload) {
+      throw new Error(`Error installing additional Lambda Trigger : Storage resource ${this._resourceName} not configured`);
+    }
+    this._confirmLambdaTriggerPrefixUnique(triggerFunctionParams.triggerFunction, triggerFunctionParams.triggerPrefix);
+    if ((this._inputPayload as S3UserInputs).additionalTriggerFunctions) {
+      let functionExists = false;
+      const existingTriggerFunctions = (this._inputPayload as S3UserInputs).additionalTriggerFunctions;
+      additionalTriggerFunctions = existingTriggerFunctions?.map(functionParams => {
+        if (
+          functionParams.triggerPrefix === triggerFunctionParams.triggerPrefix &&
+          functionParams.triggerFunction === triggerFunctionParams.triggerFunction
+        ) {
+          //update trigger function
+          functionExists = true;
+          return triggerFunctionParams;
+        } else {
+          return functionParams;
+        }
+      });
+      if (functionExists == false && additionalTriggerFunctions && additionalTriggerFunctions.length > 0) {
+        additionalTriggerFunctions.push(triggerFunctionParams);
+      }
+    } else {
+      additionalTriggerFunctions = [triggerFunctionParams];
+    }
+    (this._inputPayload as S3UserInputs).additionalTriggerFunctions = additionalTriggerFunctions;
   }
 
   public getUserInput() {
@@ -223,7 +314,7 @@ export class S3InputState {
     if (!cliInputs) {
       cliInputs = this.getCliInputPayload();
     }
-    const schemaValidator = new CLIInputSchemaValidator(this._service, this._category, "S3UserInputs");
+    const schemaValidator = new CLIInputSchemaValidator(this._service, this._category, 'S3UserInputs');
     return await schemaValidator.validateInput(JSON.stringify(cliInputs));
   }
 
@@ -241,16 +332,16 @@ export class S3InputState {
     }
   }
 
-  public static getPermissionTypeFromStorageParamsType( s3StorageParamsPermissionType : S3StorageParamsPermissionType ): S3PermissionType {
+  public static getPermissionTypeFromStorageParamsType(s3StorageParamsPermissionType: S3StorageParamsPermissionType): S3PermissionType {
     switch (s3StorageParamsPermissionType) {
-        case S3StorageParamsPermissionType.CREATE_AND_UPDATE:
-            return S3PermissionType.CREATE_AND_UPDATE;
-        case S3StorageParamsPermissionType.READ:
-            return S3PermissionType.READ;
-        case S3StorageParamsPermissionType.DELETE:
-            return S3PermissionType.DELETE;
-        default:
-          throw new Error(`Unknown Storage Param Type: ${s3StorageParamsPermissionType}`);
+      case S3StorageParamsPermissionType.CREATE_AND_UPDATE:
+        return S3PermissionType.CREATE_AND_UPDATE;
+      case S3StorageParamsPermissionType.READ:
+        return S3PermissionType.READ;
+      case S3StorageParamsPermissionType.DELETE:
+        return S3PermissionType.DELETE;
+      default:
+        throw new Error(`Unknown Storage Param Type: ${s3StorageParamsPermissionType}`);
     }
   }
 
@@ -272,27 +363,37 @@ export class S3InputState {
     if (selectedGuestPermissions) {
       return selectedGuestPermissions.map(S3InputState.getPermissionTypeFromCfnType);
     } else {
-      return []
+      return [];
     }
   }
 
-  public static getInputPermissionsFromStorageParamPermissions( storageParamGroupPermissions: S3StorageParamsPermissionType[] | undefined) {
+  public static getInputPermissionsFromStorageParamPermissions(storageParamGroupPermissions: S3StorageParamsPermissionType[] | undefined) {
     if (storageParamGroupPermissions) {
       return storageParamGroupPermissions.map(S3InputState.getPermissionTypeFromStorageParamsType);
     } else {
-      return []
+      return [];
     }
+  }
+
+  public static getTriggerLambdaPermissionsFromInputPermission(triggerPermissions: S3PermissionType){
+      switch(triggerPermissions){
+        case S3PermissionType.CREATE_AND_UPDATE: //PUT, POST, and COPY
+          return S3TriggerEventType.OBJ_PUT_POST_COPY;
+        case S3PermissionType.DELETE:
+          return S3TriggerEventType.OBJ_REMOVED;
+      }
+      throw new Error(`Unkown Trigger Lambda Permission Type ${triggerPermissions}`)
   }
 
   public static getCfnPermissionsFromInputPermissions(selectedPermissions: S3PermissionType[] | undefined) {
     if (selectedPermissions) {
-      let selectedCfnPermissions :S3CFNPermissionType[] = []; //S3CFNPermissionType
-      for( const selectedPermission of selectedPermissions ){
-        selectedCfnPermissions = selectedCfnPermissions.concat( S3InputState.getCfnTypesFromPermissionType(selectedPermission) )
+      let selectedCfnPermissions: S3CFNPermissionType[] = []; //S3CFNPermissionType
+      for (const selectedPermission of selectedPermissions) {
+        selectedCfnPermissions = selectedCfnPermissions.concat(S3InputState.getCfnTypesFromPermissionType(selectedPermission));
       }
       return selectedCfnPermissions;
     } else {
-      return []
+      return [];
     }
   }
 
@@ -300,7 +401,7 @@ export class S3InputState {
     if (groupCFNPolicyMap) {
       let result: GroupAccessType = {};
       for (const groupName of Object.keys(groupCFNPolicyMap)) {
-        result[groupName] =  S3InputState.getInputPermissionsFromCfnPermissions(groupCFNPolicyMap[groupName])
+        result[groupName] = S3InputState.getInputPermissionsFromCfnPermissions(groupCFNPolicyMap[groupName]);
       }
       return result;
     } else {
@@ -308,11 +409,13 @@ export class S3InputState {
     }
   }
 
-  public static getPolicyMapFromStorageParamPolicyMap(groupStorageParamsPolicyMap: GroupStorageParamsAccessType): GroupAccessType|undefined {
+  public static getPolicyMapFromStorageParamPolicyMap(
+    groupStorageParamsPolicyMap: GroupStorageParamsAccessType,
+  ): GroupAccessType | undefined {
     if (groupStorageParamsPolicyMap) {
       let result: GroupAccessType = {};
       for (const groupName of Object.keys(groupStorageParamsPolicyMap)) {
-        result[groupName] =  S3InputState.getInputPermissionsFromStorageParamPermissions(groupStorageParamsPolicyMap[groupName])
+        result[groupName] = S3InputState.getInputPermissionsFromStorageParamPermissions(groupStorageParamsPolicyMap[groupName]);
       }
       return result;
     } else {
@@ -324,7 +427,7 @@ export class S3InputState {
     if (groupStorageParamsPolicyMap) {
       let result: GroupAccessType = {};
       for (const groupName of Object.keys(groupStorageParamsPolicyMap)) {
-        result[groupName] =  S3InputState.getInputPermissionsFromStorageParamPermissions(groupStorageParamsPolicyMap[groupName])
+        result[groupName] = S3InputState.getInputPermissionsFromStorageParamPermissions(groupStorageParamsPolicyMap[groupName]);
       }
       return result;
     } else {
@@ -337,7 +440,7 @@ export class S3InputState {
     this._inputPayload = props.inputPayload;
 
     // validate cli-inputs.json
-    const schemaValidator = new CLIInputSchemaValidator(this._service, this._category, "S3UserInputs");
+    const schemaValidator = new CLIInputSchemaValidator(this._service, this._category, 'S3UserInputs');
     schemaValidator.validateInput(JSON.stringify(this._inputPayload!));
   }
 
@@ -379,6 +482,4 @@ export class S3InputState {
       throw e;
     }
   }
-
-
 }

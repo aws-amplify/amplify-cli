@@ -67,7 +67,8 @@ export interface AmplifyS3ResourceInputParameters {
     GuestAllowList? : string,
     selectedGuestPermissions? : Array<string>,
     selectedAuthenticatedPermissions? : Array<string>,
-    triggerFunction? : string
+    triggerFunction? : string,
+    adminTriggerFunction? : string,
 }
 
 //Base class for all storage resource stacks ( S3, DDB )

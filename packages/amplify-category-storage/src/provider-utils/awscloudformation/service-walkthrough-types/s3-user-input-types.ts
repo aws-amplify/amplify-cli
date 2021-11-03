@@ -34,9 +34,33 @@ export enum S3PermissionType {
     DELETE = 'DELETE',
 }
 
+export enum S3TriggerEventType{
+    OBJ_PUT_POST_COPY = 's3:ObjectCreated:*',
+    OBJ_REMOVED = 's3:ObjectRemoved:*',
+}
+
 
 export type GroupAccessType = Record<string,S3PermissionType[]>;
 
+export enum S3TriggerPrefixTransform {
+    NONE  = 'NONE',
+    ATTACH_REGION =  'ATTACH_REGION',
+}
+
+export interface S3TriggerPrefixType {
+    prefix : string;
+    prefixTransform : S3TriggerPrefixTransform
+}
+
+export interface S3UserInputTriggerFunctionParams{
+    category :string; //function registed by
+    tag ?: string;
+    triggerFunction : string;
+    permissions : S3PermissionType[];
+    triggerEvents : S3TriggerEventType[];
+    triggerPrefix : S3TriggerPrefixType[];
+    //note:- this can be extended to add events/filters
+}
 
 //User input data for S3 service
 export interface S3UserInputs {
@@ -47,6 +71,8 @@ export interface S3UserInputs {
      guestAccess: S3PermissionType[],
      authAccess : S3PermissionType[],
      triggerFunction?: string|undefined,
+     adminTriggerFunction? : S3UserInputTriggerFunctionParams|undefined,
+     additionalTriggerFunctions?: S3UserInputTriggerFunctionParams[]|undefined,
      groupAccess? : GroupAccessType|undefined, //{ "admingroup": [create, read,  delete, list], "secondgroup" :[...''...] }
 }
 
@@ -60,6 +86,7 @@ export function defaultS3UserInputs() :S3UserInputs {
         authAccess : [],
         triggerFunction:undefined,
         groupAccess: undefined,
+        additionalTriggerFunctions: undefined
     };
     return defaultS3UserInputValues;
 }
