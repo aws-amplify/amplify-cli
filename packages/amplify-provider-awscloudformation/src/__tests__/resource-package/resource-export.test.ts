@@ -7,7 +7,7 @@ import {
   buildOverrideDir,
   stateManager,
 } from 'amplify-cli-core';
-import { DeploymentResources, PackagedResourceDefinition, ResourceDeployType, StackParameters } from '../../resource-package/Types';
+import { DeploymentResources, PackagedResourceDefinition, ResourceDeployType, StackParameters } from '../../resource-package/types';
 import * as fs from 'fs-extra';
 
 const mockMeta = jest.fn(() => {
