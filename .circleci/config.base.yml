@@ -9,7 +9,7 @@ executors:
   w: &windows-e2e-executor
     machine:
       image: 'windows-server-2019-vs2019:stable'
-      resource_class: 'windows.large'
+      resource_class: 'windows.medium'
       shell: bash.exe
     working_directory: ~/repo
     environment:
@@ -20,7 +20,7 @@ executors:
     docker:
       - image: public.ecr.aws/a6e6w2n0/amplify-cli-e2e-base-image-repo-public:latest
     working_directory: ~/repo
-    resource_class: large
+    resource_class: medium
     environment:
       AMPLIFY_DIR: /home/circleci/repo/out
       AMPLIFY_PATH: /home/circleci/repo/out/amplify-pkg-linux
@@ -448,7 +448,7 @@ jobs:
 
   integration_test:
     working_directory: ~/repo
-    resource_class: large
+    resource_class: medium
     docker:
       - image: cypress/base:14.17.0
         environment:
