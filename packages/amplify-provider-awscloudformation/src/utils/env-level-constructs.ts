@@ -21,7 +21,7 @@ export async function createEnvLevelConstructs(context) {
     updatedMeta,
     await createNetworkResources(context, stackName, hasContainers),
     consolidateApiGatewayPolicies(context, stackName),
-    await uploadAuthTriggerTemplate(context)
+    await uploadAuthTriggerTemplate(context),
   );
 
   context.amplify.updateProvideramplifyMeta(providerName, updatedMeta);
@@ -40,6 +40,27 @@ async function createNetworkResources(context: any, stackName: string, needsVpc:
       NetworkStackS3Url: undefined,
     };
   }
+  const cfn = await getNetworkResourceCfn(context, stackName);
+  await prePushCfnTemplateModifier(cfn);
+
+  const cfnFile = 'networkingStackTemplate.json';
+
+  const s3 = await S3.getInstance(context);
+
+  const s3Params = {
+    Body: JSON.stringify(cfn, null, 2),
+    Key: `amplify-cfn-templates/${cfnFile}`,
+  };
+
+  const projectBucket = await s3.uploadFile(s3Params);
+  const templateURL = `https://s3.amazonaws.com/${projectBucket}/amplify-cfn-templates/${cfnFile}`;
+
+  return {
+    NetworkStackS3Url: templateURL,
+  };
+}
+
+export async function getNetworkResourceCfn(context: any, stackName: string) {
   const vpcName = 'Amplify/VPC-do-not-delete';
 
   const { vpcId, internetGatewayId, subnetCidrs } = await getEnvironmentNetworkInfo(context, {
@@ -58,24 +79,7 @@ async function createNetworkResources(context: any, stackName: string, needsVpc:
     subnetCidrs,
   });
 
-  const cfn = stack.toCloudFormation();
-  await prePushCfnTemplateModifier(cfn);
-
-  const cfnFile = 'networkingStackTemplate.json';
-
-  const s3 = await S3.getInstance(context);
-
-  const s3Params = {
-    Body: JSON.stringify(cfn, null, 2),
-    Key: `amplify-cfn-templates/${cfnFile}`,
-  };
-
-  const projectBucket = await s3.uploadFile(s3Params);
-  const templateURL = `https://s3.amazonaws.com/${projectBucket}/amplify-cfn-templates/${cfnFile}`;
-
-  return {
-    NetworkStackS3Url: templateURL,
-  };
+  return stack.toCloudFormation();
 }
 
 function envHasContainers(context: any) {

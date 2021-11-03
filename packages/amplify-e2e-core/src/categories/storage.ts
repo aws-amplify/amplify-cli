@@ -537,6 +537,43 @@ export function updateS3AddTrigger(cwd: string, settings: any): Promise<void> {
   });
 }
 
+export function addS3StorageWithIdpAuth(projectDir: string): Promise<void> {
+  return new Promise((resolve, reject) => {
+    let chain = spawn(getCLIPath(), ['add', 'storage'], { cwd: projectDir, stripColors: true });
+
+    singleSelect(chain.wait('Please select from one of the below mentioned services:'), 'Content (Images, audio, video, etc.)', [
+      'Content (Images, audio, video, etc.)',
+      'NoSQL Database',
+    ]);
+
+    chain
+      .wait('Provide a friendly name for your resource that will be used to label this category in the project:')
+      .sendCarriageReturn()
+      .wait('Provide bucket name:')
+      .sendCarriageReturn()
+      .wait('Restrict access by')
+      .sendCarriageReturn()
+      .wait('Who should have access:')
+      .sendCarriageReturn();
+
+    multiSelect(
+      chain.wait('What kind of access do you want for Authenticated users?'),
+      ['create/update', 'read', 'delete'],
+      ['create/update', 'read', 'delete'],
+    );
+
+    chain.wait('Do you want to add a Lambda Trigger for your S3 Bucket?').sendConfirmNo();
+
+    chain.run((err: Error) => {
+      if (!err) {
+        resolve();
+      } else {
+        reject(err);
+      }
+    });
+  });
+}
+
 export function addS3Storage(projectDir: string): Promise<void> {
   return new Promise((resolve, reject) => {
     let chain = spawn(getCLIPath(), ['add', 'storage'], { cwd: projectDir, stripColors: true });
@@ -594,7 +631,6 @@ export function overrideS3(cwd: string, settings: {}) {
       });
   });
 }
-
 
 export function addS3StorageWithSettings(projectDir: string, settings: AddStorageSettings): Promise<void> {
   return new Promise((resolve, reject) => {
