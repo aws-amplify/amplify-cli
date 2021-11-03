@@ -33,12 +33,7 @@ import {
 import { printErrorAlreadyCreated, printErrorAuthResourceMigrationFailed, printErrorNoResourcesToUpdate } from './s3-errors';
 import { getAllDefaults } from '../default-values/s3-defaults';
 import { migrateAuthDependencyResource } from './s3-auth-api';
-module.exports = {
-  addWalkthrough /* Add walkthrough for S3 resource */,
-  updateWalkthrough /* Update walkthrough for S3 resource */,
-  migrate: migrateStorageCategory /* Migrate function to migrate from non-cdk to cdk implementation */,
-  getIAMPolicies /* Utility function to get IAM policies - cloudformation from actions */,
-};
+import { s3GetAdminTriggerFunctionName } from './s3-resource-api';
 
 /**
  * addWalkthrough: add storage walkthrough for S3 resource
@@ -417,10 +412,10 @@ function getS3ResourcesFromAmplifyMeta(amplifyMeta: $TSMeta): Record<string, $TS
  * @param context
  * @returns Generated function name.
  */
-async function createNewLambdaAndUpdateCFN(context: $TSContext): Promise<string> {
+export async function createNewLambdaAndUpdateCFN(context: $TSContext, triggerFunctionName : string|undefined, policyUUID: string  | undefined ): Promise<string> {
   const targetDir = context.amplify.pathManager.getBackendDirPath();
-  const newShortUUID = buildShortUUID();
-  const newFunctionName = `S3Trigger${newShortUUID}`;
+  const newShortUUID = (policyUUID)?policyUUID: buildShortUUID();
+  const newFunctionName = (triggerFunctionName)?triggerFunctionName:`S3Trigger${newShortUUID}`;
   const pluginDir = __dirname;
   const defaults = {
     functionName: `${newFunctionName}`,
@@ -479,9 +474,17 @@ async function getExistingFunctionsForTrigger(
   excludeFunctionName: string | undefined,
   isInteractive: boolean,
 ): Promise<Array<string>> {
+
+  //Build the list of functions to be excluded ( existing-trigger, adminTrigger )
+  let excludeFunctionList = (excludeFunctionName)?[excludeFunctionName]:[];
+  const adminTriggerFunction = await s3GetAdminTriggerFunctionName(context);
+  if(adminTriggerFunction && adminTriggerFunction != 'NONE'){
+    excludeFunctionList.push(adminTriggerFunction)
+  }
+
   let lambdaResourceNames: Array<string> = await getLambdaFunctionList(context);
-  if (excludeFunctionName && lambdaResourceNames && lambdaResourceNames.length > 0) {
-    lambdaResourceNames = lambdaResourceNames.filter((lambdaResource: $TSAny) => lambdaResource !== excludeFunctionName);
+  if (excludeFunctionList.length > 0 && lambdaResourceNames && lambdaResourceNames.length > 0) {
+    lambdaResourceNames = lambdaResourceNames.filter((lambdaResourceName: $TSAny) => !excludeFunctionList.includes(lambdaResourceName));
   }
   if (lambdaResourceNames.length === 0 && isInteractive) {
     throw new Error("No functions were found in the project. Use 'amplify add function' to add a new function.");
@@ -544,7 +547,7 @@ function getCLITriggerStateEvent(triggerFlowType: S3CLITriggerFlow, existingTrig
  * @returns TriggerFunction name
  */
 async function interactiveCreateNewLambdaAndUpdateCFN(context: $TSContext) {
-  const newTriggerFunction = await createNewLambdaAndUpdateCFN(context);
+  const newTriggerFunction = await createNewLambdaAndUpdateCFN(context, undefined /*default function name*/, undefined /*unique shortid*/ );
   await askAndOpenFunctionEditor(context, newTriggerFunction);
   return newTriggerFunction;
 }
