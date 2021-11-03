@@ -94,7 +94,7 @@ export async function run(context: $TSContext, resourceDefinition: $TSObject, re
     const {
       parameters: { options },
     } = context;
-    let resources = !!context?.exeInfo?.forcePush ? allResources : resourcesToBeCreated.concat(resourcesToBeUpdated);
+    let resources = !!context?.exeInfo?.forcePush || rebuild ? allResources : resourcesToBeCreated.concat(resourcesToBeUpdated);
 
     layerResources = resources.filter(r => r.service === FunctionServiceNameLambdaLayer);
 
