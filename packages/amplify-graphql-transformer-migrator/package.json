@@ -22,7 +22,7 @@
     "scripts": {
         "build": "tsc",
         "watch": "tsc -w",
-        "clean": "rimraf ./lib",
+        "clean": "rimraf ./lib tsconfig.tsbuildinfo",
         "test": "jest"
     },
     "dependencies": {
