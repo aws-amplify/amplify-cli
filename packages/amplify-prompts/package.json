@@ -1,6 +1,6 @@
 {
   "name": "amplify-prompts",
-  "version": "1.3.0-graphql-vnext-dev-preview.4",
+  "version": "1.3.0-graphql-vnext-dev-preview.5",
   "description": "Utility functions for Amplify CLI terminal I/O",
   "main": "lib/index.js",
   "scripts": {

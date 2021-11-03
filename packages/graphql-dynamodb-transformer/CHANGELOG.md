@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [6.23.0-graphql-vnext-dev-preview.5](https://github.com/aws-amplify/amplify-cli/compare/graphql-dynamodb-transformer@6.22.25...graphql-dynamodb-transformer@6.23.0-graphql-vnext-dev-preview.5) (2021-11-03)
+
+
+### Features
+
+* generate list types as non-null ([#8166](https://github.com/aws-amplify/amplify-cli/issues/8166)) ([93786c1](https://github.com/aws-amplify/amplify-cli/commit/93786c13ef04c72748ca32a1ef7878c0e6b5b129))
+
+
+
+
+
 # [6.23.0-graphql-vnext-dev-preview.4](https://github.com/aws-amplify/amplify-cli/compare/graphql-dynamodb-transformer@6.22.25...graphql-dynamodb-transformer@6.23.0-graphql-vnext-dev-preview.4) (2021-11-03)
 
 

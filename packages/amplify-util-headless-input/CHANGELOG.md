@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.6.0-graphql-vnext-dev-preview.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-headless-input@1.5.4...amplify-util-headless-input@1.6.0-graphql-vnext-dev-preview.5) (2021-11-03)
+
+
+### Bug Fixes
+
+* **import-auth:** headless interface test ([#8402](https://github.com/aws-amplify/amplify-cli/issues/8402)) ([538eafc](https://github.com/aws-amplify/amplify-cli/commit/538eafc6cacdd750243ec897dfb9486f5c83daac))
+
+
+### Features
+
+* **amplify-category-storage:** headless support for S3 ([#8423](https://github.com/aws-amplify/amplify-cli/issues/8423)) ([76b0e70](https://github.com/aws-amplify/amplify-cli/commit/76b0e700d6221292a25b384e2ecfc7a64e9916dd))
+* headless command for geo -- map ([#8403](https://github.com/aws-amplify/amplify-cli/issues/8403)) ([73793b4](https://github.com/aws-amplify/amplify-cli/commit/73793b44411d329c52bed9337c0933d7066ee4de))
+
+
+
+
+
 # [1.6.0-graphql-vnext-dev-preview.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-headless-input@1.5.4...amplify-util-headless-input@1.6.0-graphql-vnext-dev-preview.4) (2021-11-03)
 
 

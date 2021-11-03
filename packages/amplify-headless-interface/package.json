@@ -1,6 +1,6 @@
 {
   "name": "amplify-headless-interface",
-  "version": "1.11.0-graphql-vnext-dev-preview.4",
+  "version": "1.11.0-graphql-vnext-dev-preview.5",
   "description": "interfaces for amplify headless mode payloads",
   "main": "lib/index.js",
   "scripts": {
