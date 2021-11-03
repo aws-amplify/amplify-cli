@@ -5,6 +5,7 @@ Object {
   "additionalAuthenticationProviders": Array [
     Object {
       "apiKeyConfig": Object {
+        "apiKeyExpirationDate": undefined,
         "apiKeyExpirationDays": 7,
         "description": "",
       },

@@ -11,7 +11,7 @@ import {
 import { AppsyncCLIInputs } from '../service-walkthrough-types/appsync-user-input-types';
 import _ from 'lodash';
 
-export class AppsyncApiInputState extends CategoryInputState {
+export class AppsyncApiInputState {
   #cliInputsFilePath: string; //cli-inputs.json (output) filepath
   #resourceName: string; //user friendly name provided by user
   #category: string; //category of the resource
@@ -19,7 +19,6 @@ export class AppsyncApiInputState extends CategoryInputState {
   #buildFilePath: string;
 
   constructor(resourceName: string) {
-    super(resourceName);
     this.#category = AmplifyCategories.API;
     this.#service = AmplifySupportedService.APPSYNC;
     this.#resourceName = resourceName;

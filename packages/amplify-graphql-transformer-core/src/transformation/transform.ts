@@ -8,7 +8,7 @@ import {
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { AuthorizationMode, AuthorizationType } from '@aws-cdk/aws-appsync';
 import { App, Aws, CfnOutput, CfnResource, Fn } from '@aws-cdk/core';
-import { formatter, printer } from 'amplify-prompts';
+import { printer } from 'amplify-prompts';
 import assert from 'assert';
 import * as fs from 'fs-extra';
 import {
@@ -138,7 +138,7 @@ export class GraphQLTransform {
    * @param schema The model schema.
    * @param references Any cloudformation references.
    */
-  public transform(schema: string): DeploymentResources | undefined {
+  public transform(schema: string): DeploymentResources {
     this.seenTransformations = {};
     const parsedDocument = parse(schema);
     this.app = new App();
@@ -267,9 +267,8 @@ export class GraphQLTransform {
     if (this.overrideConfig?.overrideFlag) {
       this.applyOverride(stackManager);
       return this.synthesize(context);
-    } else {
-      return this.synthesize(context);
     }
+    return this.synthesize(context);
   }
 
   private applyOverride = (stackManager: StackManager) => {
@@ -281,13 +280,21 @@ export class GraphQLTransform {
         stacks.push(node.node.id.split('.')[0]);
       }
     });
-    console.log('stacks = ', stacks);
+
     stackManager.rootStack.node.findAll().forEach(node => {
       const resource = node as CfnResource;
-      let pathArr = node.node.path.split('/').filter(key => key !== node.node.id);
+      let pathArr;
+      if (node.node.id === 'Resource') {
+        pathArr = node.node.path.split('/').filter(key => key !== node.node.id);
+      } else {
+        pathArr = node.node.path.split('/');
+      }
       let constructPathObj: ConstructResourceMeta;
       if (resource.cfnResourceType) {
+        // console.log('path',node.node.path);
+        // console.log('path1',pathArr);
         constructPathObj = getStackMeta(pathArr, node.node.id, stacks, resource);
+        // console.log(constructPathObj);
         if (!_.isEmpty(constructPathObj.rootStack)) {
           // api scope
           const field = constructPathObj.rootStack!.stackType;
@@ -301,6 +308,7 @@ export class GraphQLTransform {
           const fieldName = constructPathObj.nestedStack!.stackName;
           const resourceName = constructPathObj.resourceName;
           if (constructPathObj.resourceType.includes('Resolver')) {
+            // console.log("constrcut",constructPathObj);
             if (amplifyApiObj[fieldType][fieldName]['resolvers']) {
               amplifyApiObj[fieldType][fieldName]['resolvers'][resourceName] = resource;
             } else {
@@ -335,7 +343,7 @@ export class GraphQLTransform {
         }
       }
     });
-
+    // console.log(amplifyApiObj)
     let appsyncResourceObj = convertToAppsyncResourceObj(amplifyApiObj);
     if (!_.isEmpty(this.overrideConfig) && this.overrideConfig!.overrideFlag) {
       const overrideCode: string = fs.readFileSync(path.join(this.overrideConfig!.overrideDir, 'build', 'override.js'), 'utf-8');
