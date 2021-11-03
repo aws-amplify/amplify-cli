@@ -75,13 +75,14 @@ const executeHeadlessCommand = async (
   request: AnyHeadlessRequest,
   reject: boolean = true,
   allowDestructiveUpdates: boolean = false,
-  settings?: any,
-): Promise<ExecaChildProcess<String>> => {
+  settings:any = {testingWithLatestCodebase : true },
+): Promise<any> => {
   const args = [operation, category, '--headless'];
   if (allowDestructiveUpdates) {
     args.push('--allow-destructive-graphql-schema-updates');
   }
-  return await execa(getCLIPath(settings.testingWithLatestCodebase), args, { input: JSON.stringify(request), cwd, reject });
+  const cliPath = getCLIPath(settings.testingWithLatestCodebase);
+  return await execa(cliPath, args, { input: JSON.stringify(request), cwd, reject });
 };
 
 type AnyHeadlessRequest =
