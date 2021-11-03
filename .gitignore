@@ -1,6 +1,11 @@
 **/.DS_Store
 .circleci/generated_config.yml
 build
+!packages/amplify-graphql-model-transformer/src/__tests__/overrides/build/
+!packages/amplify-graphql-function-transformer/src/__tests__/overrides/build/
+!packages/amplify-graphql-predictions-transformer/src/__tests__/overrides/build/
+!packages/amplify-graphql-http-transformer/src/__tests__/overrides/build/
+!packages/amplify-graphql-searchable-transformer/src/__tests__/overrides/build/
 node_modules
 out
 pkg/node_modules
@@ -72,9 +77,5 @@ packages/amplify-graphiql-explorer/.eslintcache
 packages/amplify-cli-extensibility-helper/lib
 packages/amplify-cli-overrides-helper/lib
 !packages/amplify-graphql-model-transformer/src/__tests__/overrides/build/override.js
-!packages/amplify-graphql-function-transformer/src/__tests__/overrides/build/override.js
-!packages/amplify-graphql-http-transformer/src/__tests__/overrides/build/override.js
-!packages/amplify-graphql-predictions-transformer/src/__tests__/overrides/build/override.js
-!packages/amplify-graphql-searchable-transformer/src/__tests__/overrides/build/override.js
 
 
