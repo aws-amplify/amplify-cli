@@ -135,9 +135,6 @@
     "transform": {
       "^.+\\.tsx?$": "ts-jest"
     },
-    "transformIgnorePatterns": [
-      "node_modules/(?!@aws-amplify/graphql-transformer-migrator/)"
-    ],
     "testRegex": "(src/__tests__/.*.test.(t|j)s)$",
     "moduleFileExtensions": [
       "ts",
