@@ -190,7 +190,7 @@ describe('headless auth', () => {
 
     await initJSProjectWithProfile(projRoot, defaultsSettings);
     await addAuthWithDefault(projRoot, {});
-    await updateHeadlessAuth(projRoot, updateAuthRequest);
+    await updateHeadlessAuth(projRoot, updateAuthRequest, {});
     await amplifyPushAuth(projRoot);
     const meta = getProjectMeta(projRoot);
     const id = Object.keys(meta.auth).map(key => meta.auth[key])[0].output.UserPoolId;
