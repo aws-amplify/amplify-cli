@@ -547,9 +547,9 @@ export function addS3StorageWithIdpAuth(projectDir: string): Promise<void> {
     ]);
 
     chain
-      .wait('Please provide a friendly name for your resource that will be used to label this category in the project:')
+      .wait('Provide a friendly name for your resource that will be used to label this category in the project:')
       .sendCarriageReturn()
-      .wait('Please provide bucket name:')
+      .wait('Provide bucket name:')
       .sendCarriageReturn()
       .wait('Restrict access by')
       .sendCarriageReturn()
@@ -631,7 +631,6 @@ export function overrideS3(cwd: string, settings: {}) {
       });
   });
 }
-
 
 export function addS3StorageWithSettings(projectDir: string, settings: AddStorageSettings): Promise<void> {
   return new Promise((resolve, reject) => {
