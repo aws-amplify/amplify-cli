@@ -57,7 +57,7 @@ export const run = async (context: $TSContext) => {
     const apigwInputState = ApigwInputState.getInstance(context, selectedResourceName);
     if (!apigwInputState.cliInputsFileExists()) {
       if (await prompter.yesOrNo('File migration required to continue. Do you want to continue?', true)) {
-        await apigwInputState.migrateApigwResource();
+        await apigwInputState.migrateApigwResource(selectedResourceName);
         const stackGenerator = new ApigwStackTransform(context, selectedResourceName);
         stackGenerator.transform();
       } else {

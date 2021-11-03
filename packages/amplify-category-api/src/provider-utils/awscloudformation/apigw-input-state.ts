@@ -10,7 +10,7 @@ import {
   pathManager,
   stateManager,
 } from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
+import { printer, prompter } from 'amplify-prompts';
 import * as fs from 'fs-extra';
 import { join } from 'path';
 import { ApigwInputs, ApigwStackTransform, CrudOperation, Path, PermissionSetting } from './cdk-stack-builder';
@@ -111,6 +111,10 @@ export class ApigwInputState {
   };
 
   public migrateAdminQueries = async (adminQueriesProps: AdminQueriesProps) => {
+    this.resourceName = this.resourceName ?? adminQueriesProps.apiName;
+    if (!(await prompter.confirmContinue(`Migration for ${this.resourceName} is required. Continue?`))) {
+      return;
+    }
     const resourceDirPath = pathManager.getResourceDirectoryPath(this.projectRootPath, AmplifyCategories.API, this.resourceName);
 
     this.context.filesystem.remove(join(resourceDirPath, PathConstants.ParametersJsonFileName));
@@ -119,8 +123,13 @@ export class ApigwInputState {
     return this.updateAdminQueriesResource(adminQueriesProps);
   };
 
-  public migrateApigwResource = async () => {
+  public migrateApigwResource = async (resourceName: string) => {
+    this.resourceName = this.resourceName ?? resourceName;
+    if (!(await prompter.confirmContinue(`Migration for ${this.resourceName} is required. Continue?`))) {
+      return;
+    }
     const deprecatedParametersFileName = 'api-params.json';
+    console.log('DEBUG', this.projectRootPath, AmplifyCategories.API, this.resourceName);
     const resourceDirPath = pathManager.getResourceDirectoryPath(this.projectRootPath, AmplifyCategories.API, this.resourceName);
     const deprecatedParametersFilePath = join(resourceDirPath, deprecatedParametersFileName);
     let deprecatedParameters: $TSObject;

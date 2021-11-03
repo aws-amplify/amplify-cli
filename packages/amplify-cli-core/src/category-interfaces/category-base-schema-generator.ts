@@ -43,6 +43,7 @@ export class CLIInputSchemaGenerator {
    * @returns normalizedSvcName
    */
   private normalizeServiceToFilePrefix(serviceName: string): string {
+    serviceName = serviceName.replace(' ', '');
     return `${serviceName[0].toLowerCase()}${serviceName.slice(1)}`;
   }
 

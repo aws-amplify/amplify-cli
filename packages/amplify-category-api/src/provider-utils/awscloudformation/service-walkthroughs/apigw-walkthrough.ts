@@ -7,6 +7,7 @@ import {
   exitOnNextTick,
   isResourceNameUnique,
   open,
+  pathManager,
   ResourceDoesNotExistError,
   stateManager,
 } from 'amplify-cli-core';
@@ -72,7 +73,14 @@ export async function updateWalkthrough(context: $TSContext) {
     exitOnNextTick(0);
   }
 
-  const parameters = stateManager.getResourceInputsJson(undefined, category, selectedApiName, { throwIfNotExist: false }) ?? {};
+  const projRoot = pathManager.findProjectRoot();
+  if (!stateManager.resourceInputsJsonExists(projRoot, category, selectedApiName)) {
+    // Not yet migrated
+    console.log(selectedApiName);
+    await migrate(context, projRoot, selectedApiName);
+  }
+
+  const parameters = stateManager.getResourceInputsJson(projRoot, category, selectedApiName);
   parameters.resourceName = selectedApiName;
 
   Object.assign(allDefaultValues, parameters);
@@ -576,7 +584,7 @@ async function askLambdaArn(context: $TSContext, currentPath?: ApigwPath) {
 
 export async function migrate(context: $TSContext, projectPath: string, resourceName: string) {
   const apigwInputState = ApigwInputState.getInstance(context, resourceName);
-  apigwInputState.migrateApigwResource();
+  return apigwInputState.migrateApigwResource(resourceName);
 }
 
 export function getIAMPolicies(resourceName: string, crudOptions: string[]) {
