@@ -113,9 +113,13 @@ export const convertToAppsyncResourceObj = (amplifyObj: any) => {
       appsyncResourceObject.opensearch = {};
       const openSearchStackObj = amplifyObj.openSearch.SearchableStack;
       appsyncResourceObject.opensearch = generateOpenSearchDirectiveObject(openSearchStackObj);
-    } else if (keys === 'predictons' && !_.isEmpty(amplifyObj[keys])) {
+    } else if (keys === 'predictions' && !_.isEmpty(amplifyObj[keys])) {
       appsyncResourceObject.predictions = {};
-      appsyncResourceObject.predictions = amplifyObj.PredictionsDirectiveStack;
+      appsyncResourceObject.predictions = amplifyObj.predictions.PredictionsDirectiveStack;
+      if (!_.isEmpty(amplifyObj.predictions.PredictionsDirectiveStack['predictionsLambda.handler'])) {
+        appsyncResourceObject.predictions!.predictionsLambdaFunction =
+          amplifyObj.predictions.PredictionsDirectiveStack['predictionsLambda.handler'];
+      }
     }
   });
   return appsyncResourceObject;
@@ -178,8 +182,8 @@ const generateHttpDirectiveObject = (httpStackObj: any) => {
 const generateOpenSearchDirectiveObject = (opensearchStackObj: any) => {
   let opensearchObj: OpenSearchDirectiveStack & AppsyncStackCommon = _.pick(
     opensearchStackObj,
-    'openSearchDataSource',
-    'openSearchAccessIAMRole',
+    'OpenSearchDataSource',
+    'OpenSearchAccessIAMRole',
     'OpenSearchAccessIAMRoleDefaultPolicy',
     'OpenSearchDomain',
     'OpenSearchStreamingLambdaIAMRole',
@@ -192,13 +196,13 @@ const generateOpenSearchDirectiveObject = (opensearchStackObj: any) => {
 
   Object.keys(opensearchStackObj).forEach(key => {
     if (key !== 'resolvers' && key !== 'appsyncFunctions' && opensearchStackObj[key].cfnResourceType.includes('EventSourceMapping')) {
-      if (!opensearchObj.openSearchModelLambdaMapping) {
-        opensearchObj.openSearchModelLambdaMapping = {};
+      if (!opensearchObj.OpenSearchModelLambdaMapping) {
+        opensearchObj.OpenSearchModelLambdaMapping = {};
       }
       // filter ModelName fromm logicalID
       const name = key.substring(0, key.indexOf('LambdaMapping'));
       const modeName = key.substring('Searchable'.length, name.length);
-      opensearchObj.openSearchModelLambdaMapping[modeName] = opensearchStackObj[key];
+      opensearchObj.OpenSearchModelLambdaMapping[modeName] = opensearchStackObj[key];
     }
   });
   return opensearchObj;

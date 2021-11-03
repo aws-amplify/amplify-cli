@@ -1,0 +1,828 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`it generates resources with overrides 1`] = `
+Object {
+  "PredictionsDirectiveStack": Object {
+    "Conditions": Object {
+      "HasEnvironmentParameter": Object {
+        "Fn::Not": Array [
+          Object {
+            "Fn::Equals": Array [
+              Object {
+                "Ref": "referencetotransformerrootstackenv10C5A902Ref",
+              },
+              "NONE",
+            ],
+          },
+        ],
+      },
+    },
+    "Parameters": Object {
+      "referencetotransformerrootstackGraphQLAPI20497F53ApiId": Object {
+        "Type": "String",
+      },
+      "referencetotransformerrootstackS3DeploymentBucket7592718ARef": Object {
+        "Type": "String",
+      },
+      "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref": Object {
+        "Type": "String",
+      },
+      "referencetotransformerrootstackenv10C5A902Ref": Object {
+        "Type": "String",
+      },
+    },
+    "Resources": Object {
+      "LambdaDataSource4DD51D23": Object {
+        "Properties": Object {
+          "ApiId": Object {
+            "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
+          },
+          "LambdaConfig": Object {
+            "LambdaFunctionArn": Object {
+              "Fn::GetAtt": Array [
+                "predictionsLambdahandlerC696C27E",
+                "Arn",
+              ],
+            },
+          },
+          "Name": "LambdaDataSource",
+          "ServiceRoleArn": Object {
+            "Fn::GetAtt": Array [
+              "predictionsIAMRole5BB74A99",
+              "Arn",
+            ],
+          },
+          "Type": "AWS_LAMBDA",
+        },
+        "Type": "AWS::AppSync::DataSource",
+      },
+      "LambdaDataSourceServiceRole81BB3362": Object {
+        "Properties": Object {
+          "AssumeRolePolicyDocument": Object {
+            "Statement": Array [
+              Object {
+                "Action": "sts:AssumeRole",
+                "Effect": "Allow",
+                "Principal": Object {
+                  "Service": "appsync.amazonaws.com",
+                },
+              },
+            ],
+            "Version": "2012-10-17",
+          },
+        },
+        "Type": "AWS::IAM::Role",
+      },
+      "LambdaDataSourceServiceRoleDefaultPolicy00CC76B1": Object {
+        "Properties": Object {
+          "PolicyDocument": Object {
+            "Statement": Array [
+              Object {
+                "Action": "lambda:InvokeFunction",
+                "Effect": "Allow",
+                "Resource": Object {
+                  "Fn::GetAtt": Array [
+                    "predictionsLambdahandlerC696C27E",
+                    "Arn",
+                  ],
+                },
+              },
+            ],
+            "Version": "2012-10-17",
+          },
+          "PolicyName": "LambdaDataSourceServiceRoleDefaultPolicy00CC76B1",
+          "Roles": Array [
+            Object {
+              "Ref": "LambdaDataSourceServiceRole81BB3362",
+            },
+          ],
+        },
+        "Type": "AWS::IAM::Policy",
+      },
+      "PredictionsLambdaAccess4D9DA807": Object {
+        "Properties": Object {
+          "PolicyDocument": Object {
+            "Statement": Array [
+              Object {
+                "Action": "lambda:InvokeFunction",
+                "Effect": "Allow",
+                "Resource": Object {
+                  "Fn::GetAtt": Array [
+                    "predictionsLambdahandlerC696C27E",
+                    "Arn",
+                  ],
+                },
+              },
+            ],
+            "Version": "2012-10-17",
+          },
+          "PolicyName": "PredictionsLambdaAccess4D9DA807",
+          "Roles": Array [
+            Object {
+              "Ref": "predictionsIAMRole5BB74A99",
+            },
+          ],
+        },
+        "Type": "AWS::IAM::Policy",
+      },
+      "PredictionsStorageAccess68CD5140": Object {
+        "Properties": Object {
+          "PolicyDocument": Object {
+            "Statement": Array [
+              Object {
+                "Action": "s3:GetObject",
+                "Effect": "Allow",
+                "Resource": Object {
+                  "Fn::If": Array [
+                    "HasEnvironmentParameter",
+                    Object {
+                      "Fn::Sub": Array [
+                        "arn:aws:s3:::myStorage\${hash}-\${env}/public/*",
+                        Object {
+                          "env": Object {
+                            "Ref": "referencetotransformerrootstackenv10C5A902Ref",
+                          },
+                          "hash": Object {
+                            "Fn::Select": Array [
+                              3,
+                              Object {
+                                "Fn::Split": Array [
+                                  "-",
+                                  Object {
+                                    "Ref": "AWS::StackName",
+                                  },
+                                ],
+                              },
+                            ],
+                          },
+                        },
+                      ],
+                    },
+                    Object {
+                      "Fn::Sub": Array [
+                        "arn:aws:s3:::myStorage\${hash}/public/*",
+                        Object {
+                          "hash": Object {
+                            "Fn::Select": Array [
+                              3,
+                              Object {
+                                "Fn::Split": Array [
+                                  "-",
+                                  Object {
+                                    "Ref": "AWS::StackName",
+                                  },
+                                ],
+                              },
+                            ],
+                          },
+                        },
+                      ],
+                    },
+                  ],
+                },
+              },
+            ],
+            "Version": "2012-10-17",
+          },
+          "PolicyName": "PredictionsStorageAccess68CD5140",
+          "Roles": Array [
+            Object {
+              "Ref": "predictionsIAMRole5BB74A99",
+            },
+          ],
+        },
+        "Type": "AWS::IAM::Policy",
+      },
+      "RekognitionDataSourceC6790FED": Object {
+        "Properties": Object {
+          "ApiId": Object {
+            "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
+          },
+          "HttpConfig": Object {
+            "AuthorizationConfig": Object {
+              "AuthorizationType": "AWS_IAM",
+              "AwsIamConfig": Object {
+                "SigningRegion": Object {
+                  "Fn::Sub": "\${AWS::Region}",
+                },
+                "SigningServiceName": "rekognition",
+              },
+            },
+            "Endpoint": Object {
+              "Fn::Sub": "https://rekognition.\${AWS::Region}.amazonaws.com",
+            },
+          },
+          "Name": "RekognitionDataSource",
+          "ServiceRoleArn": Object {
+            "Fn::GetAtt": Array [
+              "predictionsIAMRole5BB74A99",
+              "Arn",
+            ],
+          },
+          "Type": "HTTP",
+        },
+        "Type": "AWS::AppSync::DataSource",
+      },
+      "RekognitionDataSourceServiceRole3628B5DB": Object {
+        "Properties": Object {
+          "AssumeRolePolicyDocument": Object {
+            "Statement": Array [
+              Object {
+                "Action": "sts:AssumeRole",
+                "Effect": "Allow",
+                "Principal": Object {
+                  "Service": "appsync.amazonaws.com",
+                },
+              },
+            ],
+            "Version": "2012-10-17",
+          },
+        },
+        "Type": "AWS::IAM::Role",
+      },
+      "TranslateDataSource2C33F90C": Object {
+        "Properties": Object {
+          "ApiId": Object {
+            "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
+          },
+          "HttpConfig": Object {
+            "AuthorizationConfig": Object {
+              "AuthorizationType": "AWS_IAM",
+              "AwsIamConfig": Object {
+                "SigningRegion": Object {
+                  "Fn::Sub": "\${AWS::Region}",
+                },
+                "SigningServiceName": "translate",
+              },
+            },
+            "Endpoint": Object {
+              "Fn::Sub": "https://translate.\${AWS::Region}.amazonaws.com",
+            },
+          },
+          "Name": "TranslateDataSource",
+          "ServiceRoleArn": "mockArn",
+          "Type": "HTTP",
+        },
+        "Type": "AWS::AppSync::DataSource",
+      },
+      "TranslateDataSourceServiceRole2FE48B83": Object {
+        "Properties": Object {
+          "AssumeRolePolicyDocument": Object {
+            "Statement": Array [
+              Object {
+                "Action": "sts:AssumeRole",
+                "Effect": "Allow",
+                "Principal": Object {
+                  "Service": "appsync.amazonaws.com",
+                },
+              },
+            ],
+            "Version": "2012-10-17",
+          },
+        },
+        "Type": "AWS::IAM::Role",
+      },
+      "convertTextToSpeechFunctionconvertTextToSpeechFunctionAppSyncFunction15BC20B8": Object {
+        "DependsOn": Array [
+          "LambdaDataSource4DD51D23",
+        ],
+        "Properties": Object {
+          "ApiId": Object {
+            "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
+          },
+          "DataSourceName": Object {
+            "Fn::GetAtt": Array [
+              "LambdaDataSource4DD51D23",
+              "Name",
+            ],
+          },
+          "FunctionVersion": "2018-05-29",
+          "Name": "convertTextToSpeechFunction",
+          "RequestMappingTemplate": "#set( $bucketName = $ctx.stash.get(\\"s3Bucket\\") )
+$util.qr($ctx.stash.put(\\"isList\\", false))
+#set( $text = $util.defaultIfNull($ctx.args.input.convertTextToSpeech.text, $ctx.prev.result) )
+{
+  \\"version\\": \\"2018-05-29\\",
+  \\"operation\\": \\"Invoke\\",
+  \\"payload\\":   $util.toJson({
+  \\"uuid\\": \\"$util.autoId()\\",
+  \\"action\\": \\"convertTextToSpeech\\",
+  \\"voiceID\\": $ctx.args.input.convertTextToSpeech.voiceID,
+  \\"text\\": $text
+})
+}",
+          "ResponseMappingTemplate": "#if( $ctx.error )
+$util.error($ctx.error.message, $ctx.error.type)
+#end
+#set( $response = $util.parseJson($ctx.result) )
+$util.toJson($ctx.result.url)",
+        },
+        "Type": "AWS::AppSync::FunctionConfiguration",
+      },
+      "identifyLabelsAccess7BFAF94B": Object {
+        "Properties": Object {
+          "PolicyDocument": Object {
+            "Statement": Array [
+              Object {
+                "Action": "rekognition:DetectLabels",
+                "Effect": "Allow",
+                "Resource": "*",
+              },
+            ],
+            "Version": "2012-10-17",
+          },
+          "PolicyName": "identifyLabelsAccess7BFAF94B",
+          "Roles": Array [
+            Object {
+              "Ref": "predictionsIAMRole5BB74A99",
+            },
+          ],
+        },
+        "Type": "AWS::IAM::Policy",
+      },
+      "identifyLabelsFunctionidentifyLabelsFunctionAppSyncFunction7C2A1E61": Object {
+        "DependsOn": Array [
+          "RekognitionDataSourceC6790FED",
+        ],
+        "Properties": Object {
+          "ApiId": Object {
+            "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
+          },
+          "DataSourceName": Object {
+            "Fn::GetAtt": Array [
+              "RekognitionDataSourceC6790FED",
+              "Name",
+            ],
+          },
+          "FunctionVersion": "2018-05-29",
+          "Name": "identifyLabelsFunction",
+          "RequestMappingTemplate": "#set( $bucketName = $ctx.stash.get(\\"s3Bucket\\") )
+#set( $identifyLabelKey = $ctx.args.input.identifyLabels.key )
+$util.qr($ctx.stash.put(\\"isList\\", true))
+#set( $identifyLabelsPayload = {
+  \\"version\\": \\"2018-05-29\\",
+  \\"method\\": \\"POST\\",
+  \\"resourcePath\\": \\"/\\",
+  \\"params\\": {
+      \\"body\\": {
+          \\"Image\\": {
+              \\"S3Object\\": {
+                  \\"Bucket\\": \\"$bucketName\\",
+                  \\"Name\\": \\"public/$identifyLabelKey\\"
+        }
+      },
+          \\"MaxLabels\\": 10,
+          \\"MinConfidence\\": 55
+    },
+      \\"headers\\": {
+          \\"Content-Type\\": \\"application/x-amz-json-1.1\\",
+          \\"X-Amz-Target\\": \\"RekognitionService.DetectLabels\\"
+    }
+  }
+} )
+$util.toJson($identifyLabelsPayload)",
+          "ResponseMappingTemplate": "#if( $ctx.error )
+$util.error($ctx.error.message)
+#end
+#if( $ctx.result.statusCode == 200 )
+  #set( $labels = \\"\\" )
+  #set( $result = $util.parseJson($ctx.result.body) )
+  #foreach( $label in $result.Labels )
+    #set( $labels = \\"$labels$label.Name, \\" )
+  #end
+  $util.toJson($labels.replaceAll(\\", $\\", \\"\\"))
+#else
+$util.error($ctx.result.body)
+#end",
+        },
+        "Type": "AWS::AppSync::FunctionConfiguration",
+      },
+      "identifyTextAccess5A2D7702": Object {
+        "Properties": Object {
+          "PolicyDocument": Object {
+            "Statement": Array [
+              Object {
+                "Action": "rekognition:DetectText",
+                "Effect": "Allow",
+                "Resource": "*",
+              },
+            ],
+            "Version": "2012-10-17",
+          },
+          "PolicyName": "identifyTextAccess5A2D7702",
+          "Roles": Array [
+            Object {
+              "Ref": "predictionsIAMRole5BB74A99",
+            },
+          ],
+        },
+        "Type": "AWS::IAM::Policy",
+      },
+      "identifyTextFunctionidentifyTextFunctionAppSyncFunction7877885A": Object {
+        "DependsOn": Array [
+          "RekognitionDataSourceC6790FED",
+        ],
+        "Properties": Object {
+          "ApiId": Object {
+            "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
+          },
+          "DataSourceName": Object {
+            "Fn::GetAtt": Array [
+              "RekognitionDataSourceC6790FED",
+              "Name",
+            ],
+          },
+          "FunctionVersion": "2018-05-29",
+          "Name": "identifyTextFunction",
+          "RequestMappingTemplate": "#set( $bucketName = $ctx.stash.get(\\"s3Bucket\\") )
+#set( $identityTextKey = $ctx.args.input.identifyText.key )
+#set( $identifyTextPayload = {
+  \\"version\\": \\"2018-05-29\\",
+  \\"method\\": \\"POST\\",
+  \\"resourcePath\\": \\"/\\",
+  \\"params\\": {
+      \\"body\\": {
+          \\"Image\\": {
+              \\"S3Object\\": {
+                  \\"Bucket\\": \\"$bucketName\\",
+                  \\"Name\\": \\"public/$identityTextKey\\"
+        }
+      }
+    },
+      \\"headers\\": {
+          \\"Content-Type\\": \\"application/x-amz-json-1.1\\",
+          \\"X-Amz-Target\\": \\"RekognitionService.DetectText\\"
+    }
+  }
+} )
+$util.toJson($identifyTextPayload)",
+          "ResponseMappingTemplate": "#if( $ctx.error )
+$util.error($ctx.error.message)
+#end
+#if( $ctx.result.statusCode == 200 )
+  #set( $results = $util.parseJson($ctx.result.body) )
+  #set( $finalResult = \\"\\" )
+  #foreach( $item in $results.TextDetections )
+    #if( $item.Type == \\"LINE\\" )
+      #set( $finalResult = \\"$finalResult$item.DetectedText \\" )
+    #end
+  #end
+$util.toJson($finalResult.trim())
+#else
+$utils.error($ctx.result.body)
+#end",
+        },
+        "Type": "AWS::AppSync::FunctionConfiguration",
+      },
+      "predictionsIAMRole5BB74A99": Object {
+        "Properties": Object {
+          "AssumeRolePolicyDocument": Object {
+            "Statement": Array [
+              Object {
+                "Action": "sts:AssumeRole",
+                "Effect": "Allow",
+                "Principal": Object {
+                  "Service": "appsync.amazonaws.com",
+                },
+              },
+            ],
+            "Version": "2012-10-17",
+          },
+          "RoleName": Object {
+            "Fn::If": Array [
+              "HasEnvironmentParameter",
+              Object {
+                "Fn::Join": Array [
+                  "-",
+                  Array [
+                    "predictionsIAMRole",
+                    Object {
+                      "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
+                    },
+                    Object {
+                      "Ref": "referencetotransformerrootstackenv10C5A902Ref",
+                    },
+                  ],
+                ],
+              },
+              Object {
+                "Fn::Join": Array [
+                  "-",
+                  Array [
+                    "predictionsIAMRole",
+                    Object {
+                      "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
+                    },
+                  ],
+                ],
+              },
+            ],
+          },
+        },
+        "Type": "AWS::IAM::Role",
+      },
+      "predictionsLambdaIAMRoleB8AC96D3": Object {
+        "Properties": Object {
+          "AssumeRolePolicyDocument": Object {
+            "Statement": Array [
+              Object {
+                "Action": "sts:AssumeRole",
+                "Effect": "Allow",
+                "Principal": Object {
+                  "Service": "lambda.amazonaws.com",
+                },
+              },
+            ],
+            "Version": "2012-10-17",
+          },
+          "Policies": Array [
+            Object {
+              "PolicyDocument": Object {
+                "Statement": Array [
+                  Object {
+                    "Action": "polly:SynthesizeSpeech",
+                    "Effect": "Allow",
+                    "Resource": "*",
+                  },
+                ],
+                "Version": "2012-10-17",
+              },
+              "PolicyName": "PollyAccess",
+            },
+          ],
+          "RoleName": Object {
+            "Fn::If": Array [
+              "HasEnvironmentParameter",
+              Object {
+                "Fn::Join": Array [
+                  "-",
+                  Array [
+                    "predictionsLambdaIAMRole",
+                    Object {
+                      "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
+                    },
+                    Object {
+                      "Ref": "referencetotransformerrootstackenv10C5A902Ref",
+                    },
+                  ],
+                ],
+              },
+              Object {
+                "Fn::Join": Array [
+                  "-",
+                  Array [
+                    "predictionsLambdaIAMRole",
+                    Object {
+                      "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
+                    },
+                  ],
+                ],
+              },
+            ],
+          },
+        },
+        "Type": "AWS::IAM::Role",
+      },
+      "predictionsLambdahandlerC696C27E": Object {
+        "DependsOn": Array [
+          "predictionsLambdaIAMRoleB8AC96D3",
+        ],
+        "Properties": Object {
+          "Code": Object {
+            "S3Bucket": Object {
+              "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
+            },
+            "S3Key": Object {
+              "Fn::Join": Array [
+                "",
+                Array [
+                  Object {
+                    "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
+                  },
+                  "/functions/predictionsLambdaFunction.zip",
+                ],
+              ],
+            },
+          },
+          "Handler": "predictionsLambda.handler",
+          "Role": Object {
+            "Fn::GetAtt": Array [
+              "predictionsLambdaIAMRoleB8AC96D3",
+              "Arn",
+            ],
+          },
+          "Runtime": "nodejs12.x",
+          "Timeout": 60,
+        },
+        "Type": "AWS::Lambda::Function",
+      },
+      "querySpeakTranslatedIdentifiedTextResolver": Object {
+        "Properties": Object {
+          "ApiId": Object {
+            "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
+          },
+          "FieldName": "speakTranslatedIdentifiedText",
+          "Kind": "PIPELINE",
+          "PipelineConfig": Object {
+            "Functions": Array [
+              Object {
+                "Fn::GetAtt": Array [
+                  "identifyTextFunctionidentifyTextFunctionAppSyncFunction7877885A",
+                  "FunctionId",
+                ],
+              },
+              Object {
+                "Fn::GetAtt": Array [
+                  "translateTextFunctiontranslateTextFunctionAppSyncFunction77C9D7A9",
+                  "FunctionId",
+                ],
+              },
+              Object {
+                "Fn::GetAtt": Array [
+                  "convertTextToSpeechFunctionconvertTextToSpeechFunctionAppSyncFunction15BC20B8",
+                  "FunctionId",
+                ],
+              },
+            ],
+          },
+          "RequestMappingTemplate": Object {
+            "Fn::Join": Array [
+              "
+",
+              Array [
+                Object {
+                  "Fn::If": Array [
+                    "HasEnvironmentParameter",
+                    Object {
+                      "Fn::Sub": Array [
+                        "$util.qr($ctx.stash.put(\\"s3Bucket\\", \\"myStorage\${hash}-\${env}\\"))",
+                        Object {
+                          "env": Object {
+                            "Ref": "referencetotransformerrootstackenv10C5A902Ref",
+                          },
+                          "hash": Object {
+                            "Fn::Select": Array [
+                              3,
+                              Object {
+                                "Fn::Split": Array [
+                                  "-",
+                                  Object {
+                                    "Ref": "AWS::StackName",
+                                  },
+                                ],
+                              },
+                            ],
+                          },
+                        },
+                      ],
+                    },
+                    Object {
+                      "Fn::Sub": Array [
+                        "$util.qr($ctx.stash.put(\\"s3Bucket\\", \\"myStorage\${hash}\\"))",
+                        Object {
+                          "hash": Object {
+                            "Fn::Select": Array [
+                              3,
+                              Object {
+                                "Fn::Split": Array [
+                                  "-",
+                                  Object {
+                                    "Ref": "AWS::StackName",
+                                  },
+                                ],
+                              },
+                            ],
+                          },
+                        },
+                      ],
+                    },
+                  ],
+                },
+                "$util.qr($ctx.stash.put(\\"isList\\", false))
+{}",
+              ],
+            ],
+          },
+          "ResponseMappingTemplate": "## If the result is a list return the result as a list **
+#if( $ctx.stash.get(\\"isList\\") )
+  #set( $result = $ctx.result.split(\\"[ ,]+\\") )
+  $util.toJson($result)
+#else
+  $util.toJson($ctx.result)
+#end",
+          "TypeName": "Query",
+        },
+        "Type": "AWS::AppSync::Resolver",
+      },
+      "querySpeakTranslatedLabelTextResolver": Object {
+        "Properties": Object {
+          "ApiId": Object {
+            "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
+          },
+          "FieldName": "speakTranslatedLabelText",
+          "Kind": "PIPELINE",
+          "PipelineConfig": Object {
+            "Functions": Array [
+              Object {
+                "Fn::GetAtt": Array [
+                  "identifyLabelsFunctionidentifyLabelsFunctionAppSyncFunction7C2A1E61",
+                  "FunctionId",
+                ],
+              },
+              Object {
+                "Fn::GetAtt": Array [
+                  "translateTextFunctiontranslateTextFunctionAppSyncFunction77C9D7A9",
+                  "FunctionId",
+                ],
+              },
+              Object {
+                "Fn::GetAtt": Array [
+                  "convertTextToSpeechFunctionconvertTextToSpeechFunctionAppSyncFunction15BC20B8",
+                  "FunctionId",
+                ],
+              },
+            ],
+          },
+          "RequestMappingTemplate": "mockTeplate",
+          "ResponseMappingTemplate": "## If the result is a list return the result as a list **
+#if( $ctx.stash.get(\\"isList\\") )
+  #set( $result = $ctx.result.split(\\"[ ,]+\\") )
+  $util.toJson($result)
+#else
+  $util.toJson($ctx.result)
+#end",
+          "TypeName": "Query",
+        },
+        "Type": "AWS::AppSync::Resolver",
+      },
+      "translateTextAccess74D3AE90": Object {
+        "Properties": Object {
+          "PolicyDocument": Object {
+            "Statement": Array [
+              Object {
+                "Action": "translate:TranslateText",
+                "Effect": "Allow",
+                "Resource": "*",
+              },
+            ],
+            "Version": "2012-10-17",
+          },
+          "PolicyName": "translateTextAccess74D3AE90",
+          "Roles": Array [
+            Object {
+              "Ref": "predictionsIAMRole5BB74A99",
+            },
+          ],
+        },
+        "Type": "AWS::IAM::Policy",
+      },
+      "translateTextFunctiontranslateTextFunctionAppSyncFunction77C9D7A9": Object {
+        "DependsOn": Array [
+          "TranslateDataSource2C33F90C",
+        ],
+        "Properties": Object {
+          "ApiId": Object {
+            "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
+          },
+          "DataSourceName": Object {
+            "Fn::GetAtt": Array [
+              "TranslateDataSource2C33F90C",
+              "Name",
+            ],
+          },
+          "FunctionVersion": "2018-05-29",
+          "Name": "translateTextFunction",
+          "RequestMappingTemplate": "#set( $text = $util.defaultIfNull($ctx.args.input.translateText.text, $ctx.prev.result) )
+#set( $translateTextPayload = {
+  \\"version\\": \\"2018-05-29\\",
+  \\"method\\": \\"POST\\",
+  \\"resourcePath\\": \\"/\\",
+  \\"params\\": {
+      \\"body\\": {
+          \\"SourceLanguageCode\\": $ctx.args.input.translateText.sourceLanguage,
+          \\"TargetLanguageCode\\": $ctx.args.input.translateText.targetLanguage,
+          \\"Text\\": $text
+    },
+      \\"headers\\": {
+          \\"Content-Type\\": \\"application/x-amz-json-1.1\\",
+          \\"X-Amz-Target\\": \\"AWSShineFrontendService_20170701.TranslateText\\"
+    }
+  }
+} )
+$util.toJson($translateTextPayload)",
+          "ResponseMappingTemplate": "#if( $ctx.error )
+$util.error($ctx.error.message)
+#end
+#if( $ctx.result.statusCode == 200 )
+  #set( $result = $util.parseJson($ctx.result.body) )
+$util.toJson($result.TranslatedText)
+#else
+$util.error($ctx.result.body)
+#end",
+        },
+        "Type": "AWS::AppSync::FunctionConfiguration",
+      },
+    },
+  },
+}
+`;
