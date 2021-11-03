@@ -18,12 +18,11 @@ test('test single auth model is enabled with conflict resolution', () => {
       },
       additionalAuthenticationProviders: [],
     },
-    transformConfig: {
-      ResolverConfig: {
-        project: {
-          ConflictDetection: 'VERSION',
-          ConflictHandler: ConflictHandlerType.AUTOMERGE,
-        },
+    transformConfig: {},
+    resolverConfig: {
+      project: {
+        ConflictDetection: 'VERSION',
+        ConflictHandler: ConflictHandlerType.AUTOMERGE,
       },
     },
     transformers: [new ModelTransformer(), new AuthTransformer()],
@@ -51,12 +50,11 @@ test('test multi auth model with conflict resolution', () => {
       },
       additionalAuthenticationProviders: [{ authenticationType: 'AWS_IAM' }],
     },
-    transformConfig: {
-      ResolverConfig: {
-        project: {
-          ConflictDetection: 'VERSION',
-          ConflictHandler: ConflictHandlerType.AUTOMERGE,
-        },
+    transformConfig: {},
+    resolverConfig: {
+      project: {
+        ConflictDetection: 'VERSION',
+        ConflictHandler: ConflictHandlerType.AUTOMERGE,
       },
     },
     transformers: [new ModelTransformer(), new AuthTransformer()],

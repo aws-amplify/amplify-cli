@@ -1,0 +1,348 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`it ovderrides the expected resources 1`] = `
+Object {
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Conditions": Object {
+    "HasEnvironmentParameter": Object {
+      "Fn::Not": Array [
+        Object {
+          "Fn::Equals": Array [
+            Object {
+              "Ref": "referencetotransformerrootstackenv10C5A902Ref",
+            },
+            "NONE",
+          ],
+        },
+      ],
+    },
+  },
+  "Description": "An auto-generated nested stack for the @function directive.",
+  "Parameters": Object {
+    "referencetotransformerrootstackGraphQLAPI20497F53ApiId": Object {
+      "Type": "String",
+    },
+    "referencetotransformerrootstackS3DeploymentBucket7592718ARef": Object {
+      "Type": "String",
+    },
+    "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref": Object {
+      "Type": "String",
+    },
+    "referencetotransformerrootstackenv10C5A902Ref": Object {
+      "Type": "String",
+    },
+  },
+  "Resources": Object {
+    "EchofunctionLambdaDataSource2B3A4FB1": Object {
+      "Properties": Object {
+        "ApiId": Object {
+          "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
+        },
+        "LambdaConfig": Object {
+          "LambdaFunctionArn": Object {
+            "Fn::If": Array [
+              "HasEnvironmentParameter",
+              Object {
+                "Fn::Sub": Array [
+                  "arn:aws:lambda:\${AWS::Region}:\${AWS::AccountId}:function:echofunction-\${env}",
+                  Object {
+                    "env": Object {
+                      "Ref": "referencetotransformerrootstackenv10C5A902Ref",
+                    },
+                  },
+                ],
+              },
+              Object {
+                "Fn::Sub": "arn:aws:lambda:\${AWS::Region}:\${AWS::AccountId}:function:echofunction",
+              },
+            ],
+          },
+        },
+        "Name": "EchofunctionLambdaDataSource",
+        "ServiceRoleArn": "mockArn",
+        "Type": "AWS_LAMBDA",
+      },
+      "Type": "AWS::AppSync::DataSource",
+    },
+    "EchofunctionLambdaDataSourceServiceRole3BE2FA57": Object {
+      "Properties": Object {
+        "AssumeRolePolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": Object {
+                "Service": "appsync.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "EchofunctionLambdaDataSourceServiceRoleDefaultPolicyCAA363A9": Object {
+      "Properties": Object {
+        "PolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": "lambda:InvokeFunction",
+              "Effect": "Allow",
+              "Resource": Object {
+                "Fn::If": Array [
+                  "HasEnvironmentParameter",
+                  Object {
+                    "Fn::Sub": Array [
+                      "arn:aws:lambda:\${AWS::Region}:\${AWS::AccountId}:function:echofunction-\${env}",
+                      Object {
+                        "env": Object {
+                          "Ref": "referencetotransformerrootstackenv10C5A902Ref",
+                        },
+                      },
+                    ],
+                  },
+                  Object {
+                    "Fn::Sub": "arn:aws:lambda:\${AWS::Region}:\${AWS::AccountId}:function:echofunction",
+                  },
+                ],
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "EchofunctionLambdaDataSourceServiceRoleDefaultPolicyCAA363A9",
+        "Roles": Array [
+          Object {
+            "Ref": "EchofunctionLambdaDataSourceServiceRole3BE2FA57",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+    "InvokeEchofunctionLambdaDataSourceInvokeEchofunctionLambdaDataSourceAppSyncFunctionCDB52C03": Object {
+      "DependsOn": Array [
+        "EchofunctionLambdaDataSource2B3A4FB1",
+      ],
+      "Properties": Object {
+        "ApiId": Object {
+          "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
+        },
+        "DataSourceName": Object {
+          "Fn::GetAtt": Array [
+            "EchofunctionLambdaDataSource2B3A4FB1",
+            "Name",
+          ],
+        },
+        "FunctionVersion": "2018-05-29",
+        "Name": "InvokeEchofunctionLambdaDataSource",
+        "RequestMappingTemplateS3Location": Object {
+          "Fn::Join": Array [
+            "",
+            Array [
+              "s3://",
+              Object {
+                "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
+              },
+              "/",
+              Object {
+                "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
+              },
+              "/pipelineFunctions/InvokeEchofunctionLambdaDataSource.req.vtl",
+            ],
+          ],
+        },
+        "ResponseMappingTemplateS3Location": Object {
+          "Fn::Join": Array [
+            "",
+            Array [
+              "s3://",
+              Object {
+                "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
+              },
+              "/",
+              Object {
+                "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
+              },
+              "/pipelineFunctions/InvokeEchofunctionLambdaDataSource.res.vtl",
+            ],
+          ],
+        },
+      },
+      "Type": "AWS::AppSync::FunctionConfiguration",
+    },
+    "InvokeOtherfunctionLambdaDataSourceInvokeOtherfunctionLambdaDataSourceAppSyncFunctionB834903D": Object {
+      "DependsOn": Array [
+        "OtherfunctionLambdaDataSource04C60016",
+      ],
+      "Properties": Object {
+        "ApiId": Object {
+          "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
+        },
+        "DataSourceName": Object {
+          "Fn::GetAtt": Array [
+            "OtherfunctionLambdaDataSource04C60016",
+            "Name",
+          ],
+        },
+        "FunctionVersion": "2018-05-29",
+        "Name": "InvokeOtherfunctionLambdaDataSource",
+        "RequestMappingTemplateS3Location": Object {
+          "Fn::Join": Array [
+            "",
+            Array [
+              "s3://",
+              Object {
+                "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
+              },
+              "/",
+              Object {
+                "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
+              },
+              "/pipelineFunctions/InvokeOtherfunctionLambdaDataSource.req.vtl",
+            ],
+          ],
+        },
+        "ResponseMappingTemplateS3Location": Object {
+          "Fn::Join": Array [
+            "",
+            Array [
+              "s3://",
+              Object {
+                "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
+              },
+              "/",
+              Object {
+                "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
+              },
+              "/pipelineFunctions/InvokeOtherfunctionLambdaDataSource.res.vtl",
+            ],
+          ],
+        },
+      },
+      "Type": "AWS::AppSync::FunctionConfiguration",
+    },
+    "OtherfunctionLambdaDataSource04C60016": Object {
+      "Properties": Object {
+        "ApiId": Object {
+          "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
+        },
+        "LambdaConfig": Object {
+          "LambdaFunctionArn": Object {
+            "Fn::If": Array [
+              "HasEnvironmentParameter",
+              Object {
+                "Fn::Sub": Array [
+                  "arn:aws:lambda:\${AWS::Region}:\${AWS::AccountId}:function:otherfunction",
+                  Object {},
+                ],
+              },
+              Object {
+                "Fn::Sub": "arn:aws:lambda:\${AWS::Region}:\${AWS::AccountId}:function:otherfunction",
+              },
+            ],
+          },
+        },
+        "Name": "OtherfunctionLambdaDataSource",
+        "ServiceRoleArn": "mockArn",
+        "Type": "AWS_LAMBDA",
+      },
+      "Type": "AWS::AppSync::DataSource",
+    },
+    "OtherfunctionLambdaDataSourceServiceRole611EC792": Object {
+      "Properties": Object {
+        "AssumeRolePolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": Object {
+                "Service": "appsync.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "OtherfunctionLambdaDataSourceServiceRoleDefaultPolicy3263A5C1": Object {
+      "Properties": Object {
+        "PolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": "lambda:InvokeFunction",
+              "Effect": "Allow",
+              "Resource": Object {
+                "Fn::If": Array [
+                  "HasEnvironmentParameter",
+                  Object {
+                    "Fn::Sub": Array [
+                      "arn:aws:lambda:\${AWS::Region}:\${AWS::AccountId}:function:otherfunction",
+                      Object {},
+                    ],
+                  },
+                  Object {
+                    "Fn::Sub": "arn:aws:lambda:\${AWS::Region}:\${AWS::AccountId}:function:otherfunction",
+                  },
+                ],
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "OtherfunctionLambdaDataSourceServiceRoleDefaultPolicy3263A5C1",
+        "Roles": Array [
+          Object {
+            "Ref": "OtherfunctionLambdaDataSourceServiceRole611EC792",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+    "queryEchoResolver": Object {
+      "Properties": Object {
+        "ApiId": Object {
+          "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
+        },
+        "FieldName": "echo",
+        "Kind": "PIPELINE",
+        "PipelineConfig": Object {
+          "Functions": Array [
+            Object {
+              "Fn::GetAtt": Array [
+                "InvokeEchofunctionLambdaDataSourceInvokeEchofunctionLambdaDataSourceAppSyncFunctionCDB52C03",
+                "FunctionId",
+              ],
+            },
+            Object {
+              "Fn::GetAtt": Array [
+                "InvokeOtherfunctionLambdaDataSourceInvokeOtherfunctionLambdaDataSourceAppSyncFunctionB834903D",
+                "FunctionId",
+              ],
+            },
+          ],
+        },
+        "RequestMappingTemplate": "mockTemplate",
+        "ResponseMappingTemplateS3Location": Object {
+          "Fn::Join": Array [
+            "",
+            Array [
+              "s3://",
+              Object {
+                "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
+              },
+              "/",
+              Object {
+                "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
+              },
+              "/pipelineFunctions/Query.echo.res.vtl",
+            ],
+          ],
+        },
+        "TypeName": "Query",
+      },
+      "Type": "AWS::AppSync::Resolver",
+    },
+  },
+}
+`;

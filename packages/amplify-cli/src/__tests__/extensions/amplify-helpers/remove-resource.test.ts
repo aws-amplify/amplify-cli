@@ -114,7 +114,7 @@ describe('remove-resource', () => {
       await expect(removeResource(context as any, 'api', 'test')).rejects.toBe('process.exit mock');
 
       expect(printer.error).toBeCalledWith('No resources added for this category');
-      expect(context.usageData.emitError).toBeCalledWith(new ResourceDoesNotExistError());
+      expect(context.usageData.emitError).toBeCalledWith(new ResourceDoesNotExistError('No resources added for this category'));
       expect(exitOnNextTick).toBeCalledWith(1);
     });
 
@@ -292,7 +292,7 @@ describe('remove-resource', () => {
       ).rejects.toBe('process.exit mock');
 
       expect(printer.error).toBeCalledWith('No resources added for this category');
-      expect(context.usageData.emitError).toBeCalledWith(new ResourceDoesNotExistError());
+      expect(context.usageData.emitError).toBeCalledWith(new ResourceDoesNotExistError('No resources added for this category'));
       expect(exitOnNextTick).toBeCalledWith(1);
     });
 
