@@ -8,6 +8,7 @@ import {
   updateApiSchema,
   apiGqlCompile,
   amplifyPush,
+  generateModels,
 } from 'amplify-e2e-core';
 import { createNewProjectDir, deleteProjectDir } from 'amplify-e2e-core';
 
@@ -29,12 +30,14 @@ describe('global sandbox mode', () => {
   it('compiles schema with one model and pushes to cloud', async () => {
     await addApiWithOneModel(projectDir);
     await apiGqlCompile(projectDir, true);
+    await generateModels(projectDir);
     await amplifyPush(projectDir, true);
   });
 
   it.skip('compiles schema with three models and pushes to cloud', async () => {
     await addApiWithThreeModels(projectDir);
     await apiGqlCompile(projectDir, true);
+    await generateModels(projectDir);
     await amplifyPush(projectDir, true);
   });
 
@@ -42,6 +45,7 @@ describe('global sandbox mode', () => {
     await addApiWithoutSchema(projectDir, { apiName });
     updateApiSchema(projectDir, apiName, 'model_with_sandbox_mode.graphql');
     await apiGqlCompile(projectDir, true);
+    await generateModels(projectDir);
     await amplifyPush(projectDir, true);
   });
 });
