@@ -1056,4 +1056,37 @@ describe('ModelTransformer: ', () => {
 
     validateModelSchema(parsed);
   });
+
+  it('should generate the ID field when not specified', () => {
+    const validSchema = `type Todo @model {
+      name: String
+    }`;
+
+    const transformer = new GraphQLTransform({
+      transformers: [new ModelTransformer()],
+    });
+
+    const out = transformer.transform(validSchema);
+    expect(out).toBeDefined();
+
+    const definition = out.schema;
+    expect(definition).toBeDefined();
+
+    const parsed = parse(definition);
+    validateModelSchema(parsed);
+
+    const createTodoInput = getInputType(parsed, 'CreateTodoInput');
+    expect(createTodoInput).toBeDefined();
+
+    expectFieldsOnInputType(createTodoInput!, ['id', 'name']);
+
+    const idField = createTodoInput!.fields!.find(f => f.name.value === 'id');
+    expect((idField!.type as NamedTypeNode).name!.value).toEqual('ID');
+    expect((idField!.type as NamedTypeNode).kind).toEqual('NamedType');
+
+    const updateTodoInput = getInputType(parsed, 'UpdateTodoInput');
+    expect(updateTodoInput).toBeDefined();
+
+    expectFieldsOnInputType(updateTodoInput!, ['name']);
+  });
 });
