@@ -33,6 +33,7 @@ import {
 import { printErrorAlreadyCreated, printErrorAuthResourceMigrationFailed, printErrorNoResourcesToUpdate } from './s3-errors';
 import { getAllDefaults } from '../default-values/s3-defaults';
 import { migrateAuthDependencyResource } from './s3-auth-api';
+import { s3GetAdminTriggerFunctionName } from './s3-resource-api';
 
 /**
  * addWalkthrough: add storage walkthrough for S3 resource
@@ -473,9 +474,17 @@ async function getExistingFunctionsForTrigger(
   excludeFunctionName: string | undefined,
   isInteractive: boolean,
 ): Promise<Array<string>> {
+
+  //Build the list of functions to be excluded ( existing-trigger, adminTrigger )
+  let excludeFunctionList = (excludeFunctionName)?[excludeFunctionName]:[];
+  const adminTriggerFunction = await s3GetAdminTriggerFunctionName(context);
+  if(adminTriggerFunction && adminTriggerFunction != 'NONE'){
+    excludeFunctionList.push(adminTriggerFunction)
+  }
+
   let lambdaResourceNames: Array<string> = await getLambdaFunctionList(context);
-  if (excludeFunctionName && lambdaResourceNames && lambdaResourceNames.length > 0) {
-    lambdaResourceNames = lambdaResourceNames.filter((lambdaResource: $TSAny) => lambdaResource !== excludeFunctionName);
+  if (excludeFunctionList.length > 0 && lambdaResourceNames && lambdaResourceNames.length > 0) {
+    lambdaResourceNames = lambdaResourceNames.filter((lambdaResourceName: $TSAny) => !excludeFunctionList.includes(lambdaResourceName));
   }
   if (lambdaResourceNames.length === 0 && isInteractive) {
     throw new Error("No functions were found in the project. Use 'amplify add function' to add a new function.");
