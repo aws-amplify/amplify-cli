@@ -560,8 +560,8 @@ export class FeatureFlags {
       {
         name: 'suppressSchemaMigrationPrompt',
         type: 'boolean',
-        defaultValueForExistingProjects: false,
-        defaultValueForNewProjects: false,
+        defaultValueForExistingProjects: true,
+        defaultValueForNewProjects: true,
       },
     ]);
 
