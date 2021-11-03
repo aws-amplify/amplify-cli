@@ -2,13 +2,9 @@ import {
   $TSAny,
   $TSContext,
   $TSMeta,
-  $TSObject, JSONUtilities,
-  pathManager,
-  readCFNTemplate,
-  ResourceAlreadyExistsError,
+  $TSObject, ResourceAlreadyExistsError,
   ResourceDoesNotExistError,
-  stateManager,
-  writeCFNTemplate
+  stateManager
 } from 'amplify-cli-core';
 import {
   AddStorageRequest,
@@ -16,14 +12,12 @@ import {
   ImportStorageRequest, RemoveStorageRequest, UpdateStorageRequest
 } from 'amplify-headless-interface';
 import { printer } from 'amplify-prompts';
-import _ from 'lodash';
-import * as path from 'path';
 import { v4 as uuid } from 'uuid';
 import { S3UserInputTriggerFunctionParams } from '../..';
 import { authCategoryName, categoryName } from '../../constants';
 import { ProviderUtils } from '../awscloudformation/import/types';
 import { updateStateFiles } from './import/import-s3';
-import { ServiceName, storageParamsFilename, templateFilenameMap } from './provider-constants';
+import { ServiceName } from './provider-constants';
 import { buildS3UserInputFromHeadlessStorageRequest, buildS3UserInputFromHeadlessUpdateStorageRequest, buildTriggerFunctionParams } from './s3-headless-adapter';
 import {
   S3UserInputs
@@ -31,19 +25,6 @@ import {
 import { s3AddStorageLambdaTrigger, s3CreateStorageResource, s3UpdateUserInput } from './service-walkthroughs/s3-resource-api';
 import { resourceAlreadyExists } from './service-walkthroughs/s3-walkthrough';
 
-
-const enum S3IamPolicy {
-  GET = 's3:GetObject',
-  PUT = 's3:PutObject',
-  LIST = 's3:ListBucket',
-  DELETE = 's3:DeleteObject',
-}
-
-const headlessCrudOperationToIamPoliciesMap = {
-  [CrudOperation.CREATE_AND_UPDATE]: [S3IamPolicy.PUT],
-  [CrudOperation.READ]: [S3IamPolicy.GET, S3IamPolicy.LIST],
-  [CrudOperation.DELETE]: [S3IamPolicy.DELETE],
-};
 
 // map of s3 actions corresponding to CRUD verbs
 // 'create/update' have been consolidated since s3 only has put concept
@@ -281,200 +262,3 @@ export async function getAuthResourceName(context: $TSContext) {
   return authResources[0].resourceName;
 }
 
-export async function updateCfnTemplateWithGroups(
-  context: $TSContext,
-  oldGroupList: $TSAny[],
-  newGroupList: $TSAny[],
-  newGroupPolicyMap: $TSObject,
-  s3ResourceName: string,
-  authResourceName: string,
-) {
-  const groupsToBeDeleted = _.difference(oldGroupList, newGroupList);
-
-  // Update Cloudformtion file
-  const projectRoot = pathManager.findProjectRoot();
-  const resourceDirPath = pathManager.getResourceDirectoryPath(projectRoot, categoryName, s3ResourceName);
-  const storageCFNFilePath = path.join(resourceDirPath, 's3-cloudformation-template.json');
-
-  const { cfnTemplate: storageCFNFile }: { cfnTemplate: $TSAny } = await readCFNTemplate(storageCFNFilePath);
-
-  const meta = stateManager.getMeta(projectRoot);
-
-  let s3DependsOnResources = meta.storage[s3ResourceName].dependsOn || [];
-
-  s3DependsOnResources = s3DependsOnResources.filter((resource: $TSAny) => resource.category !== authCategoryName);
-
-  if (newGroupList.length > 0) {
-    s3DependsOnResources.push({
-      category: authCategoryName,
-      resourceName: authResourceName,
-      attributes: ['UserPoolId'],
-    });
-  }
-
-  storageCFNFile.Parameters[`auth${authResourceName}UserPoolId`] = {
-    Type: 'String',
-    Default: `auth${authResourceName}UserPoolId`,
-  };
-
-  groupsToBeDeleted.forEach(group => {
-    delete storageCFNFile.Parameters[`authuserPoolGroups${group}GroupRole`];
-    delete storageCFNFile.Resources[`${group}GroupPolicy`];
-  });
-
-  newGroupList.forEach(group => {
-    s3DependsOnResources.push({
-      category: authCategoryName,
-      resourceName: 'userPoolGroups',
-      attributes: [`${group}GroupRole`],
-    });
-
-    storageCFNFile.Parameters[`authuserPoolGroups${group}GroupRole`] = {
-      Type: 'String',
-      Default: `authuserPoolGroups${group}GroupRole`,
-    };
-
-    storageCFNFile.Resources[`${group}GroupPolicy`] = {
-      Type: 'AWS::IAM::Policy',
-      Properties: {
-        PolicyName: `${group}-group-s3-policy`,
-        Roles: [
-          {
-            'Fn::Join': [
-              '',
-              [
-                {
-                  Ref: `auth${authResourceName}UserPoolId`,
-                },
-                `-${group}GroupRole`,
-              ],
-            ],
-          },
-        ],
-        PolicyDocument: {
-          Version: '2012-10-17',
-          Statement: [
-            {
-              Effect: 'Allow',
-              Action: newGroupPolicyMap[group],
-              Resource: [
-                {
-                  'Fn::Join': [
-                    '',
-                    [
-                      'arn:aws:s3:::',
-                      {
-                        Ref: 'S3Bucket',
-                      },
-                      '/*',
-                    ],
-                  ],
-                },
-              ],
-            },
-          ],
-        },
-      },
-    };
-  });
-
-  // added a new policy for the user group to make action on buckets
-  newGroupList.forEach(group => {
-    if (newGroupPolicyMap[group].includes('s3:ListBucket') === true) {
-      storageCFNFile.Resources[`${group}GroupPolicy`].Properties.PolicyDocument.Statement.push({
-        Effect: 'Allow',
-        Action: 's3:ListBucket',
-        Resource: [
-          {
-            'Fn::Join': [
-              '',
-              [
-                'arn:aws:s3:::',
-                {
-                  Ref: 'S3Bucket',
-                },
-              ],
-            ],
-          },
-        ],
-      });
-    }
-  });
-
-  context.amplify.updateamplifyMetaAfterResourceUpdate(categoryName, s3ResourceName, 'dependsOn', s3DependsOnResources);
-
-  await writeCFNTemplate(storageCFNFile, storageCFNFilePath);
-}
-
-export function removeNotStoredParameters(defaults: $TSAny) {
-  delete defaults.resourceName;
-  delete defaults.storageAccess;
-  delete defaults.groupPolicyMap;
-  delete defaults.groupList;
-  delete defaults.authResourceName;
-}
-
-export function readStorageParamsFileSafe(resourceName: string) {
-  return JSONUtilities.readJson<$TSObject>(getStorageParamsFilePath(resourceName), { throwIfNotExist: false }) || {};
-}
-
-export function writeToStorageParamsFile(resourceName: string, storageParams: $TSAny) {
-  JSONUtilities.writeJson(getStorageParamsFilePath(resourceName), storageParams);
-}
-
-export function createPermissionKeys(userType: string, parameters: $TSAny, selectedPermissions: string[]) {
-  const [policyId] = uuid().split('-');
-
-  // max arrays represent highest possibly privileges for particular S3 keys
-  const maxPermissions = ['s3:GetObject', 's3:PutObject', 's3:DeleteObject'];
-  const maxPublic = maxPermissions;
-  const maxUploads = ['s3:PutObject'];
-  const maxPrivate = userType === 'Authenticated' ? maxPermissions : [];
-  const maxProtected = userType === 'Authenticated' ? maxPermissions : ['s3:GetObject'];
-
-  function addPermissionKeys(key: string, possiblePermissions: string[]) {
-    const permissions = _.intersection(selectedPermissions, possiblePermissions).join();
-
-    parameters[`s3Permissions${userType}${key}`] = !permissions ? 'DISALLOW' : permissions;
-    parameters[`s3${key}Policy`] = `${key}_policy_${policyId}`;
-  }
-
-  addPermissionKeys('Public', maxPublic);
-  addPermissionKeys('Uploads', maxUploads);
-
-  if (userType !== 'Guest') {
-    addPermissionKeys('Protected', maxProtected);
-    addPermissionKeys('Private', maxPrivate);
-  }
-
-  parameters[`${userType}AllowList`] = selectedPermissions.includes('s3:GetObject') ? 'ALLOW' : 'DISALLOW';
-  parameters.s3ReadPolicy = `read_policy_${policyId}`;
-
-  // double-check to make sure guest is denied
-  if (parameters.storageAccess !== 'authAndGuest') {
-    parameters.s3PermissionsGuestPublic = 'DISALLOW';
-    parameters.s3PermissionsGuestUploads = 'DISALLOW';
-    parameters.GuestAllowList = 'DISALLOW';
-  }
-}
-
-export async function copyCfnTemplate(context: $TSContext, categoryName: string, resourceName: string, options: $TSAny, headless = false) {
-  const targetDir = pathManager.getBackendDirPath();
-  const pluginDir = __dirname;
-
-  const copyJobs = [
-    {
-      dir: pluginDir,
-      template: path.join('..', '..', '..', 'resources', 'cloudformation-templates', templateFilenameMap[ServiceName.S3]),
-      target: path.join(targetDir, categoryName, resourceName, 's3-cloudformation-template.json'),
-    },
-  ];
-
-  // copy over the files
-  return await context.amplify.copyBatch(context, copyJobs, options, headless);
-}
-
-function getStorageParamsFilePath(resourceName: string) {
-  const resourceDirPath = pathManager.getResourceDirectoryPath(undefined, categoryName, resourceName);
-  return path.join(resourceDirPath, storageParamsFilename);
-}
