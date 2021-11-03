@@ -20,8 +20,7 @@
             "type": "object",
             "properties": {
               "setting": {
-                "enum": ["open", "private"],
-                "type": "string"
+                "$ref": "#/definitions/PermissionSetting"
               },
               "auth": {
                 "type": "array",
@@ -59,5 +58,11 @@
     }
   },
   "required": ["paths", "version"],
+  "definitions": {
+    "PermissionSetting": {
+      "enum": ["open", "private", "protected"],
+      "type": "string"
+    }
+  },
   "$schema": "http://json-schema.org/draft-07/schema#"
 }

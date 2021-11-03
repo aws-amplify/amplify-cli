@@ -350,10 +350,6 @@ async function askPaths(context: $TSContext, answers: $TSObject, currentPath: Ap
     });
   }
 
-  if (currentPath) {
-    defaultFunctionType = currentPath.lambdaArn ? 'arn' : 'projectFunction';
-  }
-
   const paths = answers.paths;
 
   let addAnotherPath: boolean;
@@ -558,7 +554,7 @@ async function askLambdaArn(context: $TSContext, currentPath?: ApigwPath) {
     name: 'lambdaChoice',
     message: 'Select a Lambda function',
     choices: lambdaOptions,
-    default: currentPath && currentPath.lambdaArn ? `${currentPath.lambdaArn}` : `${lambdaOptions[0].value}`,
+    default: currentPath && currentPath.lambdaFunction ? `${currentPath.lambdaFunction}` : `${lambdaOptions[0].value}`,
   };
 
   let lambdaOption;

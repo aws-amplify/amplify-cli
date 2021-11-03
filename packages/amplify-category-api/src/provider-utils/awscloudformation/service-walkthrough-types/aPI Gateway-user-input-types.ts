@@ -16,7 +16,7 @@ export interface APIGatewayCLIInputs {
 type Path = {
   lambdaFunction: string;
   permissions: {
-    setting: 'private' | 'open';
+    setting: PermissionSetting;
     auth?: CrudOperation[];
     guest?: CrudOperation[];
     groups?: { [groupName: string]: CrudOperation[] }[];
@@ -28,4 +28,10 @@ enum CrudOperation {
   READ = 'READ',
   UPDATE = 'UPDATE',
   DELETE = 'DELETE',
+}
+
+enum PermissionSetting {
+  PRIVATE = 'private',
+  PROTECTED = 'protected',
+  OPEN = 'open',
 }

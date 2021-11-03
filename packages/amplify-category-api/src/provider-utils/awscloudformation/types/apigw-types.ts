@@ -11,7 +11,6 @@ export type ApigwPath = {
       [userPoolGroupName: string]: CrudOperation[];
     };
   };
-  lambdaArn?: string;
   lambdaFunction: string;
 };
 
