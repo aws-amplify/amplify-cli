@@ -12,6 +12,7 @@ export * from './init/';
 export * from './utils/';
 export * from './categories';
 export * from './utils/sdk-calls';
+export * from './export/';
 export { addFeatureFlag } from './utils/feature-flags';
 
 declare global {
@@ -43,6 +44,7 @@ export function isTestingWithLatestCodebase(scriptRunnerPath) {
 
 export function getScriptRunnerPath(testingWithLatestCodebase = false) {
   if (!testingWithLatestCodebase) {
+
     return process.platform === 'win32' ? 'node.exe' : 'exec';
   }
 
