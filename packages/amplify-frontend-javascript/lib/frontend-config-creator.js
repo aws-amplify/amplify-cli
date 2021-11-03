@@ -76,6 +76,12 @@ function createAmplifyConfig(context, amplifyResources) {
 }
 
 async function createAWSExports(context, amplifyResources, cloudAmplifyResources) {
+  const newAWSExports = await getAWSExports(context, amplifyResources, cloudAmplifyResources);
+  generateAWSExportsFile(context, newAWSExports);
+  return context;
+}
+
+async function getAWSExports(context, amplifyResources, cloudAmplifyResources) {
   const newAWSExports = getAWSExportsObject(amplifyResources);
   const cloudAWSExports = getAWSExportsObject(cloudAmplifyResources);
   const currentAWSExports = await getCurrentAWSExports(context);
@@ -83,8 +89,7 @@ async function createAWSExports(context, amplifyResources, cloudAmplifyResources
   const customConfigs = getCustomConfigs(cloudAWSExports, currentAWSExports);
 
   Object.assign(newAWSExports, customConfigs);
-  generateAWSExportsFile(context, newAWSExports);
-  return context;
+  return newAWSExports;
 }
 
 function getCustomConfigs(cloudAWSExports, currentAWSExports) {
@@ -227,7 +232,6 @@ async function getCurrentAWSExports(context) {
 
 async function generateAWSExportsFile(context, configOutput) {
   const { amplify } = context;
-  const pluginDir = __dirname;
   const projectPath = context.exeInfo ? context.exeInfo.localEnvInfo.projectPath : amplify.getEnvInfo().projectPath;
   const projectConfig = context.exeInfo ? context.exeInfo.projectConfig[constants.Label] : amplify.getProjectConfig()[constants.Label];
   const frontendConfig = projectConfig.config;
@@ -236,6 +240,12 @@ async function generateAWSExportsFile(context, configOutput) {
   fs.ensureDirSync(srcDirPath);
 
   const targetFilePath = path.join(srcDirPath, constants.exportsFilename);
+  await generateAwsExportsAtPath(context, targetFilePath, configOutput);
+}
+
+async function generateAwsExportsAtPath(context, targetFilePath, configOutput) {
+  const pluginDir = __dirname;
+  const { amplify } = context;
   const options = {
     configOutput,
   };
@@ -593,4 +603,4 @@ function getPlaceIndexConfig(placeIndexResources) {
   return placeIndexConfig;
 }
 
-module.exports = { createAWSExports, createAmplifyConfig, deleteAmplifyConfig, getAWSExportsObject };
+module.exports = { createAWSExports, getAWSExports, createAmplifyConfig, deleteAmplifyConfig, generateAwsExportsAtPath };
