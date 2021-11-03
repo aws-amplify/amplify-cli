@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.25.1-graphql-vnext-dev-preview.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-javascript@2.25.1-graphql-vnext-dev-preview.5...amplify-frontend-javascript@2.25.1-graphql-vnext-dev-preview.6) (2021-11-03)
+
+**Note:** Version bump only for package amplify-frontend-javascript
+
+
+
+
+
 ## [2.25.1-graphql-vnext-dev-preview.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-javascript@2.25.0...amplify-frontend-javascript@2.25.1-graphql-vnext-dev-preview.5) (2021-11-03)
 
 

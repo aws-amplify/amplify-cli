@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.5.25-graphql-vnext-dev-preview.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-dotnet-function-template-provider@1.5.25-graphql-vnext-dev-preview.5...amplify-dotnet-function-template-provider@1.5.25-graphql-vnext-dev-preview.6) (2021-11-03)
+
+**Note:** Version bump only for package amplify-dotnet-function-template-provider
+
+
+
+
+
 ## [1.5.25-graphql-vnext-dev-preview.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-dotnet-function-template-provider@1.5.24...amplify-dotnet-function-template-provider@1.5.25-graphql-vnext-dev-preview.5) (2021-11-03)
 
 **Note:** Version bump only for package amplify-dotnet-function-template-provider

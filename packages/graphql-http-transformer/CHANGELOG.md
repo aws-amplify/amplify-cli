@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.18.13-graphql-vnext-dev-preview.6](https://github.com/aws-amplify/amplify-cli/compare/graphql-http-transformer@4.18.13-graphql-vnext-dev-preview.5...graphql-http-transformer@4.18.13-graphql-vnext-dev-preview.6) (2021-11-03)
+
+**Note:** Version bump only for package graphql-http-transformer
+
+
+
+
+
 ## [4.18.13-graphql-vnext-dev-preview.5](https://github.com/aws-amplify/amplify-cli/compare/graphql-http-transformer@4.18.12...graphql-http-transformer@4.18.13-graphql-vnext-dev-preview.5) (2021-11-03)
 
 **Note:** Version bump only for package graphql-http-transformer
