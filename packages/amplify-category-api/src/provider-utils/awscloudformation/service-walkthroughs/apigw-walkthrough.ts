@@ -42,7 +42,7 @@ export async function updateWalkthrough(context: $TSContext) {
     .map(resource => resource.resourceName);
 
   if (resources.length === 0) {
-    const errMessage = 'No REST API resource to update. Please use "amplify add api" command to create a new REST API';
+    const errMessage = 'No REST API resource to update. Use "amplify add api" command to create a new REST API';
     printer.error(errMessage);
     await context.usageData.emitError(new ResourceDoesNotExistError(errMessage));
     exitOnNextTick(0);
@@ -97,7 +97,7 @@ export async function updateWalkthrough(context: $TSContext) {
     case 'remove': {
       const pathToRemove = await inquirer.prompt({
         name: 'path',
-        message: 'Please select the path you would want to remove',
+        message: 'Select the path you would want to remove',
         type: 'list',
         choices: pathNames,
       });
@@ -114,7 +114,7 @@ export async function updateWalkthrough(context: $TSContext) {
     case 'update': {
       const pathToEdit = await inquirer.prompt({
         name: 'pathName',
-        message: 'Please select the path you would want to edit',
+        message: 'Select the path you would want to edit',
         type: 'list',
         choices: pathNames,
       });
@@ -465,7 +465,7 @@ function getAuthResourceName(): string {
   const meta = stateManager.getMeta();
   const authResources = (meta?.auth || []).filter(resource => resource.service === AmplifySupportedService.COGNITO);
   if (authResources.length === 0) {
-    throw new Error('No auth resource found. Please add it using amplify add auth');
+    throw new Error('No auth resource found. Add it using amplify add auth');
   }
 
   const authResourceName = authResources[0].resourceName;

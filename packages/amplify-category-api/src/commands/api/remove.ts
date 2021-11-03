@@ -1,4 +1,4 @@
-import { $TSContext, AmplifyCategories } from 'amplify-cli-core';
+import { $TSContext, AmplifyCategories, AmplifySupportedService } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import * as path from 'path';
 
@@ -11,13 +11,13 @@ export const run = async (context: $TSContext) => {
   const resourceName = context.parameters.first;
 
   const resourceValues = await context.amplify.removeResource(context, AmplifyCategories.API, resourceName, {
-    serviceSuffix: { AppSync: '(GraphQL API)', 'API Gateway': '(REST API)' },
+    serviceSuffix: { [AmplifySupportedService.APPSYNC]: '(GraphQL API)', [AmplifySupportedService.APIGW]: '(REST API)' },
   });
   try {
     if (!resourceValues) {
       return;
     } // indicates that the customer selected "no" at the confirmation prompt
-    if (resourceValues.service === 'AppSync') {
+    if (resourceValues.service === AmplifySupportedService.APPSYNC) {
       const { projectPath } = context.amplify.getEnvInfo();
 
       const gqlConfigFile = path.normalize(path.join(projectPath, gqlConfigFilename));

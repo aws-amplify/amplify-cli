@@ -1,4 +1,4 @@
-import { $TSAny, $TSMeta, $TSObject, stateManager } from 'amplify-cli-core';
+import { $TSAny, $TSMeta, $TSObject, AmplifyCategories, AmplifySupportedService, stateManager } from 'amplify-cli-core';
 import _ from 'lodash';
 
 export const authConfigHasApiKey = (authConfig?: $TSAny) => {
@@ -17,8 +17,8 @@ export const authConfigHasApiKey = (authConfig?: $TSAny) => {
 export const checkIfAuthExists = () => {
   const amplifyMeta = stateManager.getMeta();
   let authResourceName;
-  const authServiceName = 'Cognito';
-  const authCategoryName = 'auth';
+  const authServiceName = AmplifySupportedService.COGNITO;
+  const authCategoryName = AmplifyCategories.AUTH;
 
   if (amplifyMeta[authCategoryName] && Object.keys(amplifyMeta[authCategoryName]).length > 0) {
     const categoryResources = amplifyMeta[authCategoryName];
@@ -52,5 +52,7 @@ export const getAppSyncResourceName = (projectMeta: $TSMeta): string | undefined
 // project meta is the contents of amplify-meta.json
 // typically retreived using context.amplify.getProjectMeta()
 const getAppSyncAmplifyMetaEntry = (projectMeta: $TSMeta) => {
-  return Object.entries(projectMeta.api || {}).find(([, value]) => (value as $TSObject).service === 'AppSync');
+  return Object.entries(projectMeta[AmplifyCategories.API] || {}).find(
+    ([, value]) => (value as $TSObject).service === AmplifySupportedService.APPSYNC,
+  );
 };

@@ -36,12 +36,6 @@ type AmplifyCDKL1 = {
   addCfnOutput(props: cdk.CfnOutputProps, logicalId: string): void;
   addCfnParameter(props: cdk.CfnParameterProps, logicalId: string): void;
   addCfnResource(props: cdk.CfnResourceProps, logicalId: string): void;
-
-  // getCfnCondition(logicalId: string): cdk.CfnCondition;
-  // getCfnMapping(logicalId: string): cdk.CfnMapping;
-  // getCfnOutput(logicalId: string): cdk.CfnOutput;
-  // getCfnParameter(logicalId: string): cdk.CfnParameter;
-  // getCfnResource(logicalId: string): cdk.CfnResource;
 };
 
 export type AmplifyApigwResourceTemplate = {
