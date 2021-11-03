@@ -76,6 +76,7 @@ class CfnApiArtifactHandler implements ApiArtifactHandler {
 
     serviceConfig.conflictResolution = await this.createResolverResources(serviceConfig.conflictResolution);
 
+    // check cli-inputs in unit test
     const appsyncCLIInputs = await this.generateAppsyncCLIInputs(serviceConfig, resourceDir);
 
     // Write the default custom resources stack out to disk.
@@ -293,6 +294,7 @@ class CfnApiArtifactHandler implements ApiArtifactHandler {
     cliState.saveCLIInputPayload(appsyncCLIInputs);
     return appsyncCLIInputs;
   };
+
   private updateAppsyncCLIInputs = async (updates: AppSyncServiceModification, apiName: string) => {
     const cliState = new AppsyncApiInputState(apiName);
     const prevAppsyncInputs = cliState.getCLIInputPayload();
