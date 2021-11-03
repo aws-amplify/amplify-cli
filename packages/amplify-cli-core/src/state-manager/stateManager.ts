@@ -213,11 +213,11 @@ export class StateManager {
     JSONUtilities.writeJson(filePath, localAWSInfo);
   };
 
-  getHydratedTags = (projectPath?: string | undefined): Tag[] => {
+  getHydratedTags = (projectPath?: string | undefined, skipProjEnv: boolean = false): Tag[] => {
     const tags = this.getProjectTags(projectPath);
     const { projectName } = this.getProjectConfig(projectPath);
     const { envName } = this.getLocalEnvInfo(projectPath);
-    return HydrateTags(tags, { projectName, envName });
+    return HydrateTags(tags, { projectName, envName }, skipProjEnv);
   };
 
   isTagFilePresent = (projectPath?: string | undefined): boolean => {

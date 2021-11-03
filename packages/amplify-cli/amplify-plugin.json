@@ -7,6 +7,7 @@
     "console",
     "delete",
     "env",
+    "export",
     "help",
     "init",
     "logout",
