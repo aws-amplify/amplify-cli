@@ -1,79 +1,43 @@
-const path = require('path');
-const fs = require('fs-extra');
-
+import { invokeS3GetResourceName, invokeS3GetUserInputs, invokeS3RemoveAdminLambdaTrigger } from '../../provider-utils/awscloudformation/prediction-category-walkthroughs/storage-api'
 const subcommand = 'remove';
 const category = 'predictions';
-const storageCategory = 'storage';
-const parametersFileName = 'parameters.json';
-const amplifyMetaFilename = 'amplify-meta.json';
-const s3CloudFormationTemplateFile = 's3-cloudformation-template.json';
 const { ResoureNotFoundError, exitOnNextTick } = require('amplify-cli-core');
+
+async function removePredictionsS3Resources( context ){
+  const s3ResourceName = await invokeS3GetResourceName(context);
+  if (!s3ResourceName) {
+    context.usageData.emitError(new ResoureNotFoundError('S3 Resource does not exist'));
+    exitOnNextTick(0);
+    return;
+  }
+  const s3UserInputs = await invokeS3GetUserInputs( context, s3ResourceName );
+  if (!s3UserInputs) {
+    context.usageData.emitError(new ResoureNotFoundError('S3 Resource not initialized correctly may require migration'));
+    exitOnNextTick(0);
+    return;
+  }
+  const adminTriggerFunction = (s3UserInputs.adminTriggerFunction)? s3UserInputs.adminTriggerFunction.triggerFunction:undefined;
+  if (adminTriggerFunction) {
+    await invokeS3RemoveAdminLambdaTrigger(context, s3ResourceName);
+  }
+}
+
+async function removePredictionsResources(context){
+  const { amplify, parameters } = context;
+  const resourceName = parameters.first;
+  const result = await amplify.removeResource(context, category, resourceName);
+  try {
+    await removePredictionsS3Resources(context);
+  } catch (err){
+    context.print.info(err.stack);
+    context.print.error('An error occurred when removing the predictions resource');
+    context.usageData.emitError(err);
+    process.exitCode = 1;
+  }
+  return result;
+}
+
 module.exports = {
   name: subcommand,
-  run: async context => {
-    const { amplify, parameters } = context;
-    const resourceName = parameters.first;
-
-    return amplify
-      .removeResource(context, category, resourceName)
-      .then(() => {
-        const projectDetails = context.amplify.getProjectDetails();
-        const projectStorage = projectDetails.amplifyMeta.storage;
-        if (!projectStorage) {
-          context.usageData.emitError(new ResoureNotFoundError('Project storage not found'));
-          exitOnNextTick(0);
-          return;
-        }
-        const keys = Object.keys(projectStorage);
-        let s3ResourceName = '';
-        keys.forEach(resource => {
-          if (projectStorage[resource].service === 'S3') {
-            s3ResourceName = resource;
-          }
-        });
-
-        if (s3ResourceName === '') {
-          context.usageData.emitError(new ResoureNotFoundError('S3 Resource does not exist'));
-          exitOnNextTick(0);
-          return;
-        }
-
-        const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
-        const resourceDirPath = path.join(projectBackendDirPath, storageCategory, s3ResourceName);
-        const parametersFilePath = path.join(resourceDirPath, parametersFileName);
-        const bucketParameters = context.amplify.readJsonFile(parametersFilePath);
-        const adminTriggerFunction = bucketParameters.adminTriggerFunction;
-
-        if (adminTriggerFunction) {
-          const predictionCtgWalkthroughSrc = `${__dirname}/../../provider-utils/awscloudformation/prediction-category-walkthroughs/identify-walkthrough`;
-          const { removeS3AdminLambdaTrigger } = require(predictionCtgWalkthroughSrc);
-          const storageCFNFilePath = path.join(projectBackendDirPath, storageCategory, s3ResourceName, s3CloudFormationTemplateFile);
-          let storageCFNFile = context.amplify.readJsonFile(storageCFNFilePath);
-          storageCFNFile = removeS3AdminLambdaTrigger(storageCFNFile, adminTriggerFunction);
-          delete bucketParameters.adminTriggerFunction;
-          const amplifyMetaFilePath = path.join(projectBackendDirPath, amplifyMetaFilename);
-          const amplifyMetaFile = context.amplify.readJsonFile(amplifyMetaFilePath);
-          const s3DependsOnResources = amplifyMetaFile.storage[s3ResourceName].dependsOn;
-          const s3Resources = [];
-          s3DependsOnResources.forEach(resource => {
-            if (resource.resourceName !== adminTriggerFunction) {
-              s3Resources.push(resource);
-            }
-          });
-
-          const jsonString = JSON.stringify(bucketParameters, null, 4);
-          fs.writeFileSync(parametersFilePath, jsonString, 'utf8');
-
-          const storageCFNString = JSON.stringify(storageCFNFile, null, 4);
-          fs.writeFileSync(storageCFNFilePath, storageCFNString, 'utf8');
-          context.amplify.updateamplifyMetaAfterResourceUpdate(storageCategory, s3ResourceName, 'dependsOn', s3Resources);
-        }
-      })
-      .catch(err => {
-        context.print.info(err.stack);
-        context.print.error('An error occurred when removing the predictions resource');
-        context.usageData.emitError(err);
-        process.exitCode = 1;
-      });
-  },
+  run: removePredictionsResources,
 };

@@ -16,7 +16,7 @@ import { KeyTransformer } from 'graphql-key-transformer';
 import { destructiveUpdatesFlag, ProviderName as providerName } from './constants';
 import { AmplifyCLIFeatureFlagAdapter } from './utils/amplify-cli-feature-flag-adapter';
 import { isAmplifyAdminApp } from './utils/admin-helpers';
-import { JSONUtilities, pathManager, stateManager } from 'amplify-cli-core';
+import { $TSContext, JSONUtilities, pathManager, stateManager } from 'amplify-cli-core';
 import { ResourceConstants } from 'graphql-transformer-common';
 import { printer } from 'amplify-prompts';
 import _ from 'lodash';
@@ -454,8 +454,8 @@ export async function transformGraphQLSchema(context, options) {
   }
 
   // for the predictions directive get storage config
-  const s3Resource = s3ResourceAlreadyExists(context);
-  const storageConfig = s3Resource ? getBucketName(context, s3Resource, backEndDir) : undefined;
+  const s3ResourceName = await invokeS3GetResourceName(context);
+  const storageConfig = s3ResourceName ? await getBucketName(context, s3ResourceName ) : undefined;
 
   const buildDir = path.normalize(path.join(resourceDir, 'build'));
   const schemaFilePath = path.normalize(path.join(resourceDir, schemaFileName));
@@ -599,17 +599,29 @@ function s3ResourceAlreadyExists(context) {
   }
 }
 
-function getBucketName(context, s3ResourceName, backEndDir) {
-  const { amplify } = context;
-  const { amplifyMeta } = amplify.getProjectDetails();
-  const stackName = amplifyMeta.providers.awscloudformation.StackName;
-  const parametersFilePath = path.join(backEndDir, storageCategory, s3ResourceName, parametersFileName);
-  const bucketParameters = context.amplify.readJsonFile(parametersFilePath);
-  const bucketName = stackName.startsWith('amplify-')
-    ? `${bucketParameters.bucketName}\${hash}-\${env}`
-    : `${bucketParameters.bucketName}${s3ResourceName}-\${env}`;
-  return { bucketName };
+/**
+ *  S3API
+ *  TBD: Remove this once all invoke functions are moved to a library shared across amplify
+ * */
+async function invokeS3GetUserInputs(context, s3ResourceName){
+  const s3UserInputs = await context.amplify.invokePluginMethod(context, 'storage', undefined, 's3GetUserInput', [context, s3ResourceName]);
+  return s3UserInputs;
 }
+
+/**
+ * S3API
+ * TBD: Remove this once all invoke functions are moved to a library shared across amplify
+ * */
+async function invokeS3GetResourceName(context) {
+  const s3ResourceName = await context.amplify.invokePluginMethod(context, 'storage', undefined, 's3GetResourceName', [context]);
+  return s3ResourceName;
+}
+
+async function getBucketName( context : $TSContext , s3ResourceName : string ){
+  const s3UserInputs = await invokeS3GetUserInputs(context, s3ResourceName)
+  return s3UserInputs.bucketName;
+}
+
 
 export function getTransformerVersion(context) {
   migrateToTransformerVersionFeatureFlag(context);

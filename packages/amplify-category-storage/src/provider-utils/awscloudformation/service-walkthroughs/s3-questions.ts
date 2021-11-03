@@ -68,7 +68,7 @@ export async function askAndInvokeAuthWorkflow(context: $TSContext) {
   while (!checkIfAuthExists()) {
     const shouldAddAuth = await prompter.yesOrNo(
       'You need to add auth (Amazon Cognito) to your project in order to add storage for user files. Do you want to add auth now?',
-      false,
+      true,
     );
     if (shouldAddAuth) {
       await context.amplify.invokePluginMethod(context, 'auth', undefined, 'add', [context]);
