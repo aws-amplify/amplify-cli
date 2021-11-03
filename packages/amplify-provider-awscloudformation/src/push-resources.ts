@@ -162,11 +162,7 @@ export async function run(context: $TSContext, resourceDefinition: $TSObject, re
     await prepareBuildableResources(context, resources);
     await buildOverridesEnabledResources(context);
 
-    // await transformGraphQLSchema(context, {
-    //   handleMigration: opts => updateStackForAPIMigration(context, 'api', undefined, opts),
-    //   minify: options['minify'],
-    //   promptApiKeyCreation: true,
-    // });
+    //Removed api transformation to generate resources befoe starting deploy/
 
     // If there is a deployment already in progress we have to fail the push operation as another
     // push in between could lead non-recoverable stacks and files.

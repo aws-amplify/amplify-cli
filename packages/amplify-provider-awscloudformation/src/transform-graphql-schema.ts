@@ -567,7 +567,7 @@ async function getPreviousDeploymentRootKey(previouslyDeployedBackendDir) {
 // }
 
 export async function getDirectiveDefinitions(context, resourceDir) {
-  const transformerVersion = getTransformerVersion(context);
+  const transformerVersion = await getTransformerVersion(context);
   if (transformerVersion === 2) {
     return getDirectiveDefinitionsV6(context, resourceDir);
   }
@@ -661,7 +661,6 @@ async function migrateToTransformerVersionFeatureFlag(context) {
     config.features.graphqltransformer.transformerversion = 2;
     stateManager.setCLIJSON(projectPath, config);
     await FeatureFlags.reloadValues();
-
     context.print.warning(
       `\nThe project is configured with 'transformerVersion': ${transformerVersion}, but 'useExperimentalPipelinedTransformer': ${useExperimentalPipelineTransformer}. Setting the 'transformerVersion': ${config.features.graphqltransformer.transformerversion}. 'useExperimentalPipelinedTransformer' is deprecated.`,
     );
