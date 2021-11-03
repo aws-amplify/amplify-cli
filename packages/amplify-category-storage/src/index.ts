@@ -242,18 +242,3 @@ export async function initEnv(context: any) {
   await sequential(storageTasks);
 }
 
-// module.exports = {
-//   add,
-//   console: categoryConsole,
-//   initEnv,
-//   migrate: migrateStorageCategory,
-//   getPermissionPolicies,
-//   executeAmplifyCommand,
-//   handleAmplifyEvent,
-//   transformCategoryStack,
-//   s3GetResourceName,
-//   s3AddPredictionsTrigger,
-//   s3RemovePredictionsTrigger,
-//   s3AddResource,
-//   category: AmplifyCategories.STORAGE,
-// };

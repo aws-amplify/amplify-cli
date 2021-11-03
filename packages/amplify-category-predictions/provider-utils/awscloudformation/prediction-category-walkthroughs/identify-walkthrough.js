@@ -206,7 +206,7 @@ async function configure(context, predictionsResourceObj,  configMode /*add/upda
       if ( s3UserInputs.adminLambdaTrigger &&
            s3UserInputs.adminLambdaTrigger.triggerFunction  &&
            s3UserInputs.adminLambdaTrigger.triggerFunction !== 'NONE'){
-        const finals3UserInputs = await invokeS3RemoveAdminLambdaTrigger(context, s3ResourceName);
+        await invokeS3RemoveAdminLambdaTrigger(context, s3ResourceName);
       }
     }
   }
@@ -378,11 +378,6 @@ async function addS3ForIdentity(context, storageAccess, bucketName, predictionsR
   const { getAllAuthDefaultPerm, getAllAuthAndGuestDefaultPerm } = require(defaultValuesSrc);
   let s3UserInputs = await invokeS3GetAllDefaults(context, storageAccess); //build the predictions specific s3 bucket
 
-  const options = {
-    providerPlugin: 'awscloudformation',
-    service: s3ServiceName,
-  };
-
   let answers = {};
 
   answers = { ...answers, storageAccess, resourceName: s3UserInputs.resourceName };
@@ -472,82 +467,6 @@ async function addS3ForIdentity(context, storageAccess, bucketName, predictionsR
     resourceName: resultS3UserInput.resourceName,
     functionName: resultS3UserInput.adminTriggerFunction.triggerFunction,
   };
-}
-
-async function s3CopyCfnTemplate(context, categoryName, resourceName, options) {
-  const { amplify } = context;
-  const targetDir = amplify.pathManager.getBackendDirPath();
-  const pluginDir = __dirname;
-
-  const copyJobs = [
-    {
-      dir: pluginDir,
-      template: `../cloudformation-templates/${s3TemplateFileName}`,
-      target: `${targetDir}/${categoryName}/${resourceName}/s3-cloudformation-template.json`,
-    },
-  ];
-
-  // copy over the files
-  return await context.amplify.copyBatch(context, copyJobs, options);
-}
-
-async function addTrigger(context, s3Resource, options, predictionsResourceName) {
-  const functionName = await createNewFunction(context, predictionsResourceName, s3Resource.resourceName);
-
-  if (s3Resource.bucketName) {
-    // Update Cloudformtion file
-    const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
-    const storageCFNFilePath = path.join(projectBackendDirPath, storageCategory, s3Resource.resourceName, s3CloudFormationTemplateFile);
-    let storageCFNFile = context.amplify.readJsonFile(storageCFNFilePath);
-
-    storageCFNFile = generateStorageCFNForLambda(storageCFNFile, functionName, prefixForAdminTrigger);
-
-    const storageCFNString = JSON.stringify(storageCFNFile, null, 4);
-    fs.writeFileSync(storageCFNFilePath, storageCFNString, 'utf8');
-
-    // Update DependsOn
-    context.amplify.updateamplifyMetaAfterResourceUpdate(storageCategory, s3Resource.resourceName, 'dependsOn', [
-      {
-        category: functionCategory,
-        resourceName: functionName,
-        attributes: ['Name', 'Arn', 'LambdaExecutionRole'],
-      },
-    ]);
-  } else {
-    options.dependsOn = [];
-    options.dependsOn.push({
-      category: functionCategory,
-      resourceName: functionName,
-      attributes: ['Name', 'Arn', 'LambdaExecutionRole'],
-    });
-  }
-
-  return functionName;
-}
-
-async function addAdditionalLambdaTrigger(context, s3Resource, predictionsResourceName) {
-  const functionName = await createNewFunction(context, predictionsResourceName, s3Resource.resourceName);
-
-  const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
-  const storageCFNFilePath = path.join(projectBackendDirPath, storageCategory, s3Resource.resourceName, s3CloudFormationTemplateFile);
-  let storageCFNFile = context.amplify.readJsonFile(storageCFNFilePath);
-  const amplifyMetaFilePath = path.join(projectBackendDirPath, amplifyMetaFilename);
-  const amplifyMetaFile = context.amplify.readJsonFile(amplifyMetaFilePath);
-  storageCFNFile = generateStorageCFNForAdditionalLambda(storageCFNFile, functionName, prefixForAdminTrigger);
-  const storageCFNString = JSON.stringify(storageCFNFile, null, 4);
-  fs.writeFileSync(storageCFNFilePath, storageCFNString, 'utf8');
-
-  const dependsOnResources = amplifyMetaFile.storage[s3Resource.resourceName].dependsOn;
-  dependsOnResources.push({
-    category: functionCategory,
-    resourceName: functionName,
-    attributes: ['Name', 'Arn', 'LambdaExecutionRole'],
-  });
-
-  // Update DependsOn
-  context.amplify.updateamplifyMetaAfterResourceUpdate(storageCategory, s3Resource.resourceName, 'dependsOn', dependsOnResources);
-
-  return functionName;
 }
 
 function s3ResourceAlreadyExists(context) {
@@ -666,63 +585,6 @@ function addStorageIAMResourcestoIdentifyCFNFile(context, predictionsResourceNam
   identifyCFNFile = generateStorageAccessForRekognition(identifyCFNFile, s3ResourceName, prefixForAdminTrigger);
   const identifyCFNString = JSON.stringify(identifyCFNFile, null, 4);
   fs.writeFileSync(identifyCFNFilePath, identifyCFNString, 'utf8');
-}
-
-function removeAdminLambdaTrigger(context, resourceName, s3ResourceName) {
-  // Update Cloudformtion file
-  const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
-  const resourceDirPath = path.join(projectBackendDirPath, storageCategory, s3ResourceName);
-  const parametersFilePath = path.join(resourceDirPath, parametersFileName);
-  const bucketParameters = context.amplify.readJsonFile(parametersFilePath);
-  const adminTriggerFunction = bucketParameters.adminTriggerFunction;
-  if (adminTriggerFunction) {
-    delete bucketParameters.adminTriggerFunction;
-
-    const identifyCFNFilePath = path.join(projectBackendDirPath, category, resourceName, `${resourceName}-template.json`);
-    const identifyCFNFile = context.amplify.readJsonFile(identifyCFNFilePath);
-
-    // Remove reference for old triggerFunction
-    delete identifyCFNFile.Parameters[`function${adminTriggerFunction}Arn`];
-    delete identifyCFNFile.Parameters[`function${adminTriggerFunction}Name`];
-    delete identifyCFNFile.Parameters[`function${adminTriggerFunction}LambdaExecutionRole`];
-    delete identifyCFNFile.Parameters[`storage${s3ResourceName}BucketName`];
-    delete identifyCFNFile.Resources.LambdaRekognitionAccessPolicy;
-    delete identifyCFNFile.Outputs.collectionId;
-    delete identifyCFNFile.Resources.CollectionCreationFunction;
-    delete identifyCFNFile.Resources.CollectionFunctionOutputs;
-    delete identifyCFNFile.Resources.CollectionsLambdaExecutionRole;
-    delete identifyCFNFile.Resources.S3AuthPredicitionsAdminProtectedPolicy;
-    delete identifyCFNFile.Resources.S3GuestPredicitionsAdminPublicPolicy;
-    delete identifyCFNFile.Resources.IdentifyEntitiesSearchFacesPolicy;
-
-    // Update Cloudformtion file
-    const storageCFNFilePath = path.join(projectBackendDirPath, storageCategory, s3ResourceName, s3CloudFormationTemplateFile);
-    let storageCFNFile = context.amplify.readJsonFile(storageCFNFilePath);
-    storageCFNFile = removeS3AdminLambdaTrigger(storageCFNFile, adminTriggerFunction);
-
-    const amplifyMetaFilePath = path.join(projectBackendDirPath, amplifyMetaFilename);
-    const amplifyMetaFile = context.amplify.readJsonFile(amplifyMetaFilePath);
-    const s3DependsOnResources = amplifyMetaFile.storage[s3ResourceName].dependsOn;
-    const s3Resources = [];
-    s3DependsOnResources.forEach(resource => {
-      if (resource.resourceName !== adminTriggerFunction) {
-        s3Resources.push(resource);
-      }
-    });
-
-    const jsonString = JSON.stringify(bucketParameters, null, 4);
-    fs.writeFileSync(parametersFilePath, jsonString, 'utf8');
-
-    const storageCFNString = JSON.stringify(storageCFNFile, null, 4);
-    fs.writeFileSync(storageCFNFilePath, storageCFNString, 'utf8');
-
-    const identifyCFNString = JSON.stringify(identifyCFNFile, null, 4);
-    fs.writeFileSync(identifyCFNFilePath, identifyCFNString, 'utf8');
-
-    context.amplify.updateamplifyMetaAfterResourceUpdate(category, resourceName, 'dependsOn', []);
-
-    context.amplify.updateamplifyMetaAfterResourceUpdate(storageCategory, s3ResourceName, 'dependsOn', s3Resources);
-  }
 }
 
 function removeS3AdminLambdaTrigger(storageCFNFile, adminTriggerFunction) {

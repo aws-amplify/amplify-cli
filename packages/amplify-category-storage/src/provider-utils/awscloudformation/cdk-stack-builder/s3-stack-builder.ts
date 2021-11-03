@@ -14,7 +14,6 @@ import { $TSAny, $TSContext, $TSObject, AmplifyCategories } from 'amplify-cli-co
 import { HttpMethods } from '@aws-cdk/aws-s3';
 import * as s3AuthAPI from '../service-walkthroughs/s3-auth-api';
 import { S3CFNDependsOn, S3CFNPermissionType, S3InputState } from '../service-walkthroughs/s3-user-input-state';
-import { S3KeyFilter } from 'cloudform-types/types/s3/bucket';
 
 export class AmplifyS3ResourceCfnStack extends AmplifyResourceCfnStack implements AmplifyS3ResourceTemplate {
   id: string;

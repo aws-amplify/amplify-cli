@@ -80,7 +80,7 @@ export async function s3AddStorageLambdaTrigger(
   let s3UserInput = cliInputsState.getUserInput();
   s3UserInput.triggerFunction = storageLambdaTrigger.triggerFunction;
   cliInputsState.saveCliInputPayload(s3UserInput);
-  const functionCreated = await createNewLambdaAndUpdateCFN(context, s3UserInput.triggerFunction, undefined /* generate unique uuid*/);
+  await createNewLambdaAndUpdateCFN(context, s3UserInput.triggerFunction, undefined /* generate unique uuid*/);
   await s3APIHelperTransformAndSaveState(context, s3UserInput, CLISubCommandType.UPDATE);
   return s3UserInput;
 }

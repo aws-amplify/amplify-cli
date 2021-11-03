@@ -14,7 +14,7 @@ export function buildS3UserInputFromHeadlessStorageRequest(context: $TSContext, 
   const headlessS3Permissions: S3Permissions = storageRequest.serviceConfiguration.permissions;
   const authPermissions: S3PermissionType[] = getS3PermissionFromHeadlessParams(headlessS3Permissions.auth);
   const guestPermissions: S3PermissionType[] = getS3PermissionFromHeadlessParams(headlessS3Permissions.guest);
-  const storageAccess: S3AccessType = getStorageAccessTypeFromPermissions(authPermissions, guestPermissions);
+  const storageAccess: S3AccessType = getStorageAccessTypeFromPermissions(guestPermissions);
   const groupAccess: GroupAccessType | undefined = getGroupAccessTypeFromPermissions(headlessS3Permissions.groups);
   const [shortId] = uuid().split('-');
   const defaultS3UserInput = getDefaultS3UserInput(context.amplify.getProjectDetails(), shortId);
@@ -49,7 +49,7 @@ export async function buildS3UserInputFromHeadlessUpdateStorageRequest( context 
     if( permissions ){
         s3UserInputs.authAccess = getS3PermissionFromHeadlessParams(permissions.auth);
         s3UserInputs.guestAccess = getS3PermissionFromHeadlessParams(permissions.guest);
-        s3UserInputs.storageAccess = getStorageAccessTypeFromPermissions(s3UserInputs.authAccess, s3UserInputs.guestAccess);
+        s3UserInputs.storageAccess = getStorageAccessTypeFromPermissions(s3UserInputs.guestAccess);
     }
     //update trigger if existing, else first create function and then add
     if ( lambdaTrigger ){
@@ -107,7 +107,7 @@ export function getS3PermissionFromHeadlessParams(headlessPermissionList: CrudOp
     return [];
   }
 }
-function getStorageAccessTypeFromPermissions(_authPermissions: S3PermissionType[], guestPermissions: S3PermissionType[]) {
+function getStorageAccessTypeFromPermissions(guestPermissions: S3PermissionType[]) {
   return guestPermissions && guestPermissions.length > 0 ? S3AccessType.AUTH_AND_GUEST : S3AccessType.AUTH_ONLY;
 }
 

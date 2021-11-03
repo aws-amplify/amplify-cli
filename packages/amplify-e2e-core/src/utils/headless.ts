@@ -61,7 +61,7 @@ export const removeHeadlessStorage = async (cwd: string, request: RemoveStorageR
 };
 
 export const updateHeadlessStorage = async (cwd: string, request: UpdateStorageRequest): Promise<ExecaChildProcess<String>> => {
-  return await executeHeadlessCommand(cwd, 'storage', 'update', request, );
+  return await executeHeadlessCommand(cwd, 'storage', 'update', request);
 };
 
 const headlessRemoveResource = async (cwd: string, category: string, resourceName: string): Promise<ExecaChildProcess<String>> => {
@@ -81,8 +81,7 @@ const executeHeadlessCommand = async (
   if (allowDestructiveUpdates) {
     args.push('--allow-destructive-graphql-schema-updates');
   }
-  const isCodeBaseLatest = settings.testingWithLatestCodebase;
-  const cliPath = getCLIPath(isCodeBaseLatest);
+  const cliPath = getCLIPath(settings.testingWithLatestCodebase);
   return await execa(cliPath, args, { input: JSON.stringify(request), cwd, reject });
 };
 
