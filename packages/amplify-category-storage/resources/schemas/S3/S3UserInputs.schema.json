@@ -42,6 +42,15 @@
         "triggerFunction": {
             "type": "string"
         },
+        "adminTriggerFunction": {
+            "$ref": "#/definitions/S3UserInputTriggerFunctionParams"
+        },
+        "additionalTriggerFunctions": {
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/S3UserInputTriggerFunctionParams"
+            }
+        },
         "groupAccess": {
             "$ref": "#/definitions/GroupAccessType"
         }
@@ -55,6 +64,76 @@
         "storageAccess"
     ],
     "definitions": {
+        "S3UserInputTriggerFunctionParams": {
+            "type": "object",
+            "properties": {
+                "category": {
+                    "type": "string"
+                },
+                "tag": {
+                    "type": "string"
+                },
+                "triggerFunction": {
+                    "type": "string"
+                },
+                "permissions": {
+                    "type": "array",
+                    "items": {
+                        "enum": [
+                            "CREATE_AND_UPDATE",
+                            "DELETE",
+                            "READ"
+                        ],
+                        "type": "string"
+                    }
+                },
+                "triggerEvents": {
+                    "type": "array",
+                    "items": {
+                        "enum": [
+                            "s3:ObjectCreated:*",
+                            "s3:ObjectRemoved:*"
+                        ],
+                        "type": "string"
+                    }
+                },
+                "triggerPrefix": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/S3TriggerPrefixType"
+                    }
+                }
+            },
+            "required": [
+                "category",
+                "permissions",
+                "triggerEvents",
+                "triggerFunction",
+                "triggerPrefix"
+            ]
+        },
+        "S3TriggerPrefixType": {
+            "type": "object",
+            "properties": {
+                "prefix": {
+                    "type": "string"
+                },
+                "prefixTransform": {
+                    "$ref": "#/definitions/S3TriggerPrefixTransform"
+                }
+            },
+            "required": [
+                "prefix",
+                "prefixTransform"
+            ]
+        },
+        "S3TriggerPrefixTransform": {
+            "enum": [
+                "ATTACH_REGION",
+                "NONE"
+            ],
+            "type": "string"
+        },
         "GroupAccessType": {
             "type": "object"
         }

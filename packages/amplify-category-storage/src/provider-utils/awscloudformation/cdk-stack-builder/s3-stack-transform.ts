@@ -56,7 +56,6 @@ export class AmplifyS3ResourceStackTransform {
 
   async transform(commandType: CLISubCommandType) {
     this.generateCfnInputParameters();
-
     // Generate cloudformation stack from cli-inputs.json
     await this.generateStack(this.context);
 
@@ -101,6 +100,9 @@ export class AmplifyS3ResourceStackTransform {
     };
     if (userInput.triggerFunction && userInput.triggerFunction !== 'NONE') {
       this.cfnInputParams.triggerFunction = userInput.triggerFunction;
+    }
+    if (userInput.adminTriggerFunction?.triggerFunction && userInput.adminTriggerFunction.triggerFunction !== 'NONE') {
+      this.cfnInputParams.adminTriggerFunction = userInput.adminTriggerFunction.triggerFunction;
     }
     this.cfnInputParams.s3PrivatePolicy = `Private_policy_${userInput.policyUUID}`;
     this.cfnInputParams.s3ProtectedPolicy = `Protected_policy_${userInput.policyUUID}`;
@@ -317,7 +319,7 @@ export class AmplifyS3ResourceStackTransform {
     }
   }
 
-  //Helper: Save DependsOn entries to backend-config.json
+  //Helper: Save DependsOn entries to amplify-meta
   _saveDependsOnToBackendConfig() {
     if (this.resourceTemplateObj) {
       //Get all collated resource dependencies

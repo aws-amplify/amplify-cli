@@ -21,8 +21,36 @@ import {
 } from './provider-utils/awscloudformation/storage-configuration-helpers';
 export { categoryName as category } from './constants';
 export { AmplifyDDBResourceTemplate, AmplifyS3ResourceTemplate } from './provider-utils/awscloudformation/cdk-stack-builder/types';
+import { getAllDefaults } from './provider-utils/awscloudformation/default-values/s3-defaults';
+import { S3AccessType, S3PermissionType, S3UserInputs } from './provider-utils/awscloudformation/service-walkthrough-types/s3-user-input-types';
+export { S3UserInputs, S3UserInputTriggerFunctionParams } from './provider-utils/awscloudformation/service-walkthrough-types/s3-user-input-types';
+//S3-Control-API used by Predictions
+export {
+  s3AddStorageLambdaTrigger, s3CreateStorageResource, s3GetResourceName,
+  s3GetUserInput,
+  s3RemoveAdminLambdaTrigger, s3RemoveStorageLambdaTrigger,
+  s3RegisterAdminTrigger
+} from './provider-utils/awscloudformation/service-walkthroughs/s3-resource-api';
 
-async function add(context: any, providerName: any, service: any) {
+export async function s3GetBucketUserInputDefault( project : $TSAny, shortId: string, accessType : S3AccessType): Promise<S3UserInputs>{
+  let defaultS3UserInputs = getAllDefaults( project , shortId);
+  switch( accessType ){
+    case S3AccessType.AUTH_ONLY :
+      defaultS3UserInputs.authAccess = [ S3PermissionType.CREATE_AND_UPDATE, S3PermissionType.READ, S3PermissionType.DELETE ];
+      break;
+    case S3AccessType.AUTH_AND_GUEST:
+      defaultS3UserInputs.authAccess = [ S3PermissionType.CREATE_AND_UPDATE, S3PermissionType.READ, S3PermissionType.DELETE ];
+      defaultS3UserInputs.guestAccess = [ S3PermissionType.CREATE_AND_UPDATE, S3PermissionType.READ ];
+      break;
+  }
+  return defaultS3UserInputs;
+}
+
+export async function getDefaultAuthPermissions(){
+  return [S3PermissionType.CREATE_AND_UPDATE, S3PermissionType.READ, S3PermissionType.DELETE]
+}
+
+export async function add(context: any, providerName: any, service: any) {
   const options = {
     service,
     providerPlugin: providerName,
@@ -38,11 +66,11 @@ async function add(context: any, providerName: any, service: any) {
   return providerController.addResource(context, AmplifyCategories.STORAGE, service, options);
 }
 
-async function categoryConsole(context: any) {
+export async function console(context: any) {
   printer.info(`to be implemented: ${AmplifyCategories.STORAGE} console`);
 }
 
-async function migrateStorageCategory(context: any) {
+export async function migrateStorageCategory(context: any) {
   const { projectPath, amplifyMeta } = context.migrationInfo;
   const migrateResourcePromises: any = [];
 
@@ -75,8 +103,8 @@ async function migrateStorageCategory(context: any) {
   await Promise.all(migrateResourcePromises);
 }
 
-async function transformCategoryStack(context: $TSContext, resource: IAmplifyResource) {
-  if (resource.service === AmplifySupportedService.DYNAMODB) {
+export async function transformCategoryStack(context: $TSContext, resource: IAmplifyResource) {
+  if (resource.service === AmplifySupportedService.DYNAMODB ) {
     if (canResourceBeTransformed(resource.resourceName)) {
       const stackGenerator = new DDBStackTransform(resource.resourceName);
       await stackGenerator.transform();
@@ -86,12 +114,12 @@ async function transformCategoryStack(context: $TSContext, resource: IAmplifyRes
   }
 }
 
-function canResourceBeTransformed(resourceName: string) {
+export function canResourceBeTransformed(resourceName: string) {
   const resourceInputState = new DynamoDBInputState(resourceName);
   return resourceInputState.cliInputFileExists();
 }
 
-async function getPermissionPolicies(context: any, resourceOpsMapping: any) {
+export async function getPermissionPolicies(context: any, resourceOpsMapping: any) {
   const amplifyMetaFilePath = context.amplify.pathManager.getAmplifyMetaFilePath();
   const amplifyMeta = context.amplify.readJsonFile(amplifyMetaFilePath);
   const permissionPolicies: any = [];
@@ -135,7 +163,7 @@ async function getPermissionPolicies(context: any, resourceOpsMapping: any) {
   return { permissionPolicies, resourceAttributes };
 }
 
-async function executeAmplifyCommand(context: any) {
+export async function executeAmplifyCommand(context: any) {
   let commandPath = path.normalize(path.join(__dirname, 'commands'));
 
   if (context.input.command === 'help') {
@@ -173,7 +201,7 @@ export async function handleAmplifyEvent(context: $TSContext, args: $TSAny) {
   printer.info(`Received event args ${args}`);
 }
 
-async function initEnv(context: any) {
+export async function initEnv(context: any) {
   const { resourcesToBeSynced, allResources } = await context.amplify.getResourceStatus(AmplifyCategories.STORAGE);
   const isPulling = context.input.command === 'pull' || (context.input.command === 'env' && context.input.subCommands[0] === 'pull');
   let toBeSynced = [];
@@ -214,14 +242,3 @@ async function initEnv(context: any) {
   await sequential(storageTasks);
 }
 
-module.exports = {
-  add,
-  console: categoryConsole,
-  initEnv,
-  migrate: migrateStorageCategory,
-  getPermissionPolicies,
-  executeAmplifyCommand,
-  handleAmplifyEvent,
-  transformCategoryStack,
-  category: AmplifyCategories.STORAGE,
-};
