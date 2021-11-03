@@ -137,6 +137,9 @@ function chain(context: Context): ExecutionContext {
     wait: function (expectation: string | RegExp, callback = (data: string) => {}): ExecutionContext {
       let _wait: ExecutionStep = {
         fn: data => {
+          if (process.platform === "win32" && typeof expectation === 'string') {
+            expectation = expectation.substring(0, 70);
+          }
           var val = testExpectation(data, expectation, context);
           if (val === true && typeof callback === 'function') {
             callback(data);
