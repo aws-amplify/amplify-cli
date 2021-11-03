@@ -64,6 +64,7 @@ const WINDOWS_TEST_FAILURES = [
   'api-key-migration5_pkg',
   'model-migration_pkg',
   'global_sandbox_pkg',
+  'predictions-migration',
 
   // 👇 These fail due to ExpiredToken. 👇
   // 👇 Tests should be split to speed up execution time. 👇
