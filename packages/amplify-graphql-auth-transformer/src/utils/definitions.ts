@@ -12,6 +12,15 @@ export interface SearchableConfig {
   };
 }
 
+export interface AuthTransformerConfig {
+  /** used mainly in the before step to pass the authConfig from the transformer core down to the directive */
+  authConfig?: AppSyncAuthConfiguration;
+  /** using the iam provider the resolvers checks will lets the roles in this list passthrough the acm */
+  adminRoles?: Array<string>;
+  /** when authorizing private/public @auth can also check authenticated/unauthenticated status for a given identityPoolId */
+  identityPoolId?: string;
+}
+
 export interface RolesByProvider {
   cognitoStaticRoles: Array<RoleDefinition>;
   cognitoDynamicRoles: Array<RoleDefinition>;
@@ -60,12 +69,7 @@ export interface ConfiguredAuthProviders {
   hasLambda: boolean;
   hasAdminRolesEnabled: boolean;
   adminRoles: Array<string>;
-  adminUserPoolID?: string;
-}
-
-export interface AuthTransformerConfig {
-  adminRoles?: Array<string>;
-  authConfig?: AppSyncAuthConfiguration;
+  identityPoolId?: string;
 }
 
 export const authDirectiveDefinition = `

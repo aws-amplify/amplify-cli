@@ -49,7 +49,12 @@ const apiKeyExpression = (roles: Array<RoleDefinition>) => {
  * @param roles
  * @returns
  */
-const iamExpression = (roles: Array<RoleDefinition>, hasAdminRolesEnabled: boolean = false, adminRoles: Array<string> = []) => {
+const iamExpression = (
+  roles: Array<RoleDefinition>,
+  hasAdminRolesEnabled: boolean = false,
+  adminRoles: Array<string> = [],
+  identityPoolId?: string,
+) => {
   const expression = new Array<Expression>();
   // allow if using an admin role
   if (hasAdminRolesEnabled) {
@@ -57,7 +62,7 @@ const iamExpression = (roles: Array<RoleDefinition>, hasAdminRolesEnabled: boole
   }
   if (roles.length > 0) {
     for (let role of roles) {
-      expression.push(iamCheck(role.claim!, set(ref(IS_AUTHORIZED_FLAG), bool(true))));
+      expression.push(iamCheck(role.claim!, set(ref(IS_AUTHORIZED_FLAG), bool(true)), identityPoolId));
     }
   } else {
     expression.push(ref('util.unauthorized()'));
@@ -168,7 +173,7 @@ export const geneateAuthExpressionForDelete = (
     totalAuthExpressions.push(apiKeyExpression(apiKeyRoles));
   }
   if (providers.hasIAM) {
-    totalAuthExpressions.push(iamExpression(iamRoles, providers.hasAdminRolesEnabled, providers.adminRoles));
+    totalAuthExpressions.push(iamExpression(iamRoles, providers.hasAdminRolesEnabled, providers.adminRoles, providers.identityPoolId));
   }
   if (providers.hasLambda) {
     totalAuthExpressions.push(lambdaExpression(lambdaRoles));
