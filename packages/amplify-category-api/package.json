@@ -1,6 +1,6 @@
 {
-  "name": "amplify-category-api",
-  "version": "2.33.2",
+  "name": "@aws-amplify/amplify-category-api",
+  "version": "1.0.0",
   "description": "amplify-cli api plugin",
   "repository": {
     "type": "git",
@@ -14,7 +14,8 @@
     "build": "tsc",
     "watch": "tsc -w",
     "clean": "rimraf lib tsconfig.tsbuildinfo",
-    "test": "jest"
+    "test": "jest",
+    "generateSchemas": "ts-node ./scripts/generateApiSchemas.ts"
   },
   "dependencies": {
     "@aws-cdk/assets": "~1.124.0",
@@ -78,7 +79,7 @@
     "js-yaml": "^4.0.0",
     "lodash": "^4.17.21",
     "ora": "^4.0.3",
-    "uuid": "^3.4.0"
+    "uuid": "^8.3.2"
   },
   "devDependencies": {
     "@types/js-yaml": "^4.0.0"

@@ -1,13 +1,14 @@
-import fs from 'fs-extra';
-import { $TSContext, getPackageManager } from '../index';
-import execa from 'execa';
-import * as path from 'path';
 import { printer, prompter } from 'amplify-prompts';
+import execa from 'execa';
+import * as fs from 'fs-extra';
+import { EOL } from 'os';
+import * as path from 'path';
+import { $TSAny, $TSContext, getPackageManager, pathManager } from '../index';
 import { JSONUtilities } from '../jsonUtilities';
 
 export const generateOverrideSkeleton = async (context: $TSContext, srcResourceDirPath: string, destDirPath: string): Promise<void> => {
   // 1. Create skeleton package
-  const backendDir = context.amplify.pathManager.getBackendDirPath();
+  const backendDir = pathManager.getBackendDirPath();
   const overrideFile = path.join(destDirPath, 'override.ts');
   if (fs.existsSync(overrideFile)) {
     await context.amplify.openEditor(context, overrideFile);
@@ -64,11 +65,11 @@ export async function buildOverrideDir(cwd: string, destDirPath: string): Promis
       encoding: 'utf-8',
     });
     return true;
-  } catch (error) {
-    if ((error as any).code === 'ENOENT') {
+  } catch (error: $TSAny) {
+    if (error.code === 'ENOENT') {
       throw new Error(`Packaging overrides failed. Could not find ${packageManager} executable in the PATH.`);
     } else {
-      throw new Error(`Packaging overrides failed with the error \n${error.message}`);
+      throw new Error(`Packaging overrides failed with the error:${EOL}${error.message}`);
     }
   }
 }
