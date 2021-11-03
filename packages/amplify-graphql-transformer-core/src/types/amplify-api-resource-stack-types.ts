@@ -55,15 +55,15 @@ export interface HttpsDirectiveStack {
 }
 
 export interface OpenSearchDirectiveStack {
-  openSearchDataSource?: CfnDataSource;
-  openSearchAccessIAMRole?: CfnRole;
+  OpenSearchDataSource?: CfnDataSource;
+  OpenSearchAccessIAMRole?: CfnRole;
   OpenSearchAccessIAMRoleDefaultPolicy?: CfnPolicy;
-  openSearchDomain?: CfnDomain;
-  openSearchStreamingLambdaIAMRole?: CfnRole;
-  openSearchStreamingLambdaIAMRoleDefaultPolicy?: CfnPolicy;
-  cloudwatchLogsAccess?: CfnPolicy;
-  openSearchStreamingLambdaFunction?: CfnFunction;
-  openSearchModelLambdaMapping?: Record<string, CfnEventSourceMapping>;
+  OpenSearchDomain?: CfnDomain;
+  OpenSearchStreamingLambdaIAMRole?: CfnRole;
+  OpenSearchStreamingLambdaIAMRoleDefaultPolicy?: CfnPolicy;
+  CloudwatchLogsAccess?: CfnPolicy;
+  OpenSearchStreamingLambdaFunction?: CfnFunction;
+  OpenSearchModelLambdaMapping?: Record<string, CfnEventSourceMapping>;
 }
 
 export interface FunctionDirectiveStack {
@@ -73,10 +73,19 @@ export interface FunctionDirectiveStack {
 }
 
 export interface PredictionsDirectiveStack {
-  rekognitionDataSource?: CfnDataSource;
-  TranslateDataSource?: CfnDataSource;
-  LambdaDataSource?: CfnDataSource;
-  predictionsLambdaIAMRole?: CfnRole;
-  predictionsLambdaFunction?: CfnFunction;
-  predictionsIAMRole?: CfnRole;
+  RekognitionDataSource: CfnDataSource;
+  RekognitionDataSourceServiceRole: CfnRole;
+  TranslateDataSource: CfnDataSource;
+  translateTextAccess: CfnPolicy;
+  LambdaDataSource: CfnDataSource;
+  LambdaDataSourceServiceRole: CfnRole;
+  LambdaDataSourceServiceRoleDefaultPolicy: CfnPolicy;
+  TranslateDataSourceServiceRole: CfnRole;
+  predictionsLambdaIAMRole: CfnRole;
+  predictionsLambdaFunction: CfnFunction;
+  PredictionsLambdaAccess: CfnRole;
+  predictionsIAMRole: CfnRole;
+  PredictionsStorageAccess: CfnPolicy;
+  identifyTextAccess: CfnPolicy;
+  identifyLabelsAccess: CfnPolicy;
 }

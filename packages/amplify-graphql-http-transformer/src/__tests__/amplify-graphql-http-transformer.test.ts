@@ -1,8 +1,9 @@
 'use strict';
-import { anything, countResources, expect as cdkExpect, haveResource } from '@aws-cdk/assert';
+import { anything, countResources, expect as cdkExpect, haveResource, SynthUtils } from '@aws-cdk/assert';
 import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
 import { parse } from 'graphql';
 import { HttpTransformer } from '..';
+import path from 'path';
 
 test('generates expected VTL', () => {
   const validSchema = `
@@ -27,6 +28,7 @@ test('generates expected VTL', () => {
   expect(out).toBeDefined();
   expect(out.stacks).toBeDefined();
   expect(out.resolvers).toMatchSnapshot();
+  expect(out.pipelineFunctions).toMatchSnapshot();
   parse(out.schema);
 });
 
