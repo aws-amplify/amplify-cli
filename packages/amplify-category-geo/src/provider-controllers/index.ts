@@ -8,7 +8,6 @@ import { printer, prompter } from 'amplify-prompts';
 import { getServiceFriendlyName } from '../service-walkthroughs/resourceWalkthrough';
 import { TemplateMappings } from '../service-stacks/baseStack';
 import { validateAddGeoRequest, validateUpdateGeoRequest } from 'amplify-util-headless-input';
-import { MapConfiguration, MapModification } from 'amplify-headless-interface';
 import { checkGeoResourceExists } from '../service-utils/resourceUtils';
 
 /**
