@@ -119,6 +119,26 @@ export async function askWhoHasAccessQuestion(context: $TSContext, defaultValues
   return answer as S3AccessType;
 }
 
+/**
+ * Normalize User Access Role for View
+ * @param role
+ * @param groupName
+ * @returns
+ */
+function normalizeUserRole( role : S3UserAccessRole , groupName :string | undefined){
+    switch(role){
+      case S3UserAccessRole.AUTH :{
+          return 'Authenticated';
+      }
+      case S3UserAccessRole.GUEST :{
+        return S3UserAccessRole.GUEST;
+      }
+      case S3UserAccessRole.GROUP:{
+        return groupName
+      }
+    }
+}
+
 export async function askCRUDQuestion(
   role: S3UserAccessRole,
   groupName: string | undefined = undefined,
@@ -126,7 +146,7 @@ export async function askCRUDQuestion(
   defaultValues: S3UserInputs,
 ): Promise<Array<S3PermissionType>> {
   const roleDefaultValues = getRoleAccessDefaultValues(role, groupName, defaultValues);
-  const userRole = role === S3UserAccessRole.GROUP ? groupName : role;
+  const userRole = normalizeUserRole(role, groupName);
   const message = `What kind of access do you want for ${userRole} users?`;
   const choices = possibleCRUDOperations;
   const initialIndexes = getIndexArrayByValue(possibleCRUDOperations, roleDefaultValues);
