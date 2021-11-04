@@ -404,6 +404,7 @@ export function updateAPIWithResolutionStrategyWithModels(cwd: string, settings:
 type RestApiSettings = {
   allowGuestUsers?: boolean;
   existingLambda?: boolean;
+  hasUserPoolGroups?: boolean;
   isFirstRestApi?: boolean;
   isCrud?: boolean;
   path?: string;
@@ -427,8 +428,10 @@ export function addRestApi(cwd: string, settings: RestApiSettings) {
           .sendConfirmYes()
           .wait('Select the REST API you want to update')
           .sendCarriageReturn() // Select the first REST API
+          .wait('What would you like to do?')
+          .sendCarriageReturn()
           .wait('Provide a path')
-          .sendLine(settings.path)
+          .sendLine(settings.path ?? RETURN)
           .wait('Choose a lambda source')
           .sendKeyDown()
           .sendCarriageReturn() // Existing lambda
@@ -496,22 +499,30 @@ export function addRestApi(cwd: string, settings: RestApiSettings) {
     chain.wait('Restrict API access');
 
     if (settings.restrictAccess) {
-      chain.sendConfirmYes().wait('Who should have access');
+      chain.sendConfirmYes();
+
+      if (settings.hasUserPoolGroups) {
+        chain.wait('Restrict access by?').sendCarriageReturn(); // Auth/Guest Users
+      }
+
+      chain.wait('Who should have access?');
 
       if (!settings.allowGuestUsers) {
         chain
           .sendCarriageReturn() // Authenticated users only
-          .wait('What kind of access do you want for Authenticated users')
-          .sendLine('a'); // CRUD permissions
+          .wait('What permissions do you want to grant to Authenticated')
+          .sendCtrlA()
+          .sendCarriageReturn(); // CRUD permissions
       } else {
         chain
           .sendKeyDown()
           .sendCarriageReturn() // Authenticated and Guest users
-          .wait('What kind of access do you want for Authenticated users')
-          .sendLine('a') // CRUD permissions for authenticated users
-          .wait('What kind of access do you want for Guest users')
-          .sendKeyDown()
-          .send(' '); // R permissions for guest users
+          .wait('What permissions do you want to grant to Authenticated')
+          .sendCtrlA() // CRUD permissions for Authenticated users
+          .sendCarriageReturn()
+          .wait('What permissions do you want to grant to Guest')
+          .send(' ') // C permissions for guest users
+          .sendCarriageReturn();
       }
     } else {
       chain.sendConfirmNo(); // Do not restrict access
