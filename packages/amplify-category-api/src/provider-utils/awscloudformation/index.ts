@@ -21,7 +21,7 @@ export async function addAdminQueriesApi(
   context: $TSContext,
   apiProps: { apiName: string; functionName: string; authResourceName: string; dependsOn: $TSObject[] },
 ) {
-  const apigwInputState = ApigwInputState.getInstance(context, apiProps.apiName);
+  const apigwInputState = new ApigwInputState(context, apiProps.apiName);
   return apigwInputState.addAdminQueriesResource(apiProps);
 }
 
@@ -29,13 +29,13 @@ export async function updateAdminQueriesApi(
   context: $TSContext,
   apiProps: { apiName: string; functionName: string; authResourceName: string; dependsOn: $TSObject[] },
 ) {
-  const apigwInputState = ApigwInputState.getInstance(context, apiProps.apiName);
+  const apigwInputState = new ApigwInputState(context, apiProps.apiName);
   // Check for migration
 
   if (!apigwInputState.cliInputsFileExists()) {
     await apigwInputState.migrateAdminQueries(apiProps);
   } else {
-    return apigwInputState.addAdminQueriesResource(apiProps);
+    return apigwInputState.updateAdminQueriesResource(apiProps);
   }
 }
 
@@ -79,7 +79,7 @@ async function addNonContainerResource(context: $TSContext, service: string, opt
       }
       return apiName;
     case AmplifySupportedService.APIGW:
-      const apigwInputState = ApigwInputState.getInstance(context);
+      const apigwInputState = new ApigwInputState(context);
       return apigwInputState.addApigwResource(serviceWalkthroughPromise, options);
     default:
       return legacyAddResource(serviceWalkthroughPromise, context, category, service, options);
@@ -263,7 +263,7 @@ async function updateNonContainerResource(context: $TSContext, service: string) 
     case AmplifySupportedService.APPSYNC:
       return updateWalkthroughPromise.then(getCfnApiArtifactHandler(context).updateArtifacts);
     default:
-      const apigwInputState = ApigwInputState.getInstance(context);
+      const apigwInputState = new ApigwInputState(context);
       return apigwInputState.updateApigwResource(updateWalkthroughPromise);
   }
 }
