@@ -1,9 +1,10 @@
 {
   "name": "function",
   "type": "category",
-  "commands": ["add", "build", "console", "invoke", "push", "remove", "update", "help"],
+  "commands": ["add", "build", "console", "invoke", "push", "remove", "update", "watch", "help"],
   "commandAliases": {
-    "configure": "update"
+    "configure": "update",
+    "hotswap": "watch"
   },
   "eventHandlers": ["PrePush", "PostPush", "InternalOnlyPostEnvRemove"]
 }

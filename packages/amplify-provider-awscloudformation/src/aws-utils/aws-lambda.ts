@@ -1,7 +1,13 @@
 const aws = require('./aws');
 import { $TSAny, $TSContext } from 'amplify-cli-core';
 import { Lambda as AwsSdkLambda } from 'aws-sdk';
-import { LayerVersionsListItem, ListLayerVersionsRequest, ListLayerVersionsResponse } from 'aws-sdk/clients/lambda';
+import {
+  LayerVersionsListItem,
+  ListLayerVersionsRequest,
+  ListLayerVersionsResponse,
+  UpdateFunctionCodeRequest,
+  PublishLayerVersionRequest,
+} from 'aws-sdk/clients/lambda';
 import { AwsSecrets, loadConfiguration } from '../configuration-manager';
 import { fileLogger } from '../utils/aws-logger';
 import { pagedAWSCall } from './paged-call';
@@ -58,5 +64,45 @@ export class Lambda {
       this.context.print.error(e);
       await this.context.usageData.emitError(e);
     }
+  }
+
+  async updateFunctionCode(functionName: string, zipFile: UpdateFunctionCodeRequest['ZipFile']) {
+    return this.lambda
+      .updateFunctionCode({
+        FunctionName: functionName,
+        ZipFile: zipFile,
+      })
+      .promise();
+  }
+
+  async updateLayer(
+    layerName: string,
+    runtimes: PublishLayerVersionRequest['CompatibleRuntimes'],
+    zipFile: PublishLayerVersionRequest['Content']['ZipFile'],
+  ) {
+    return this.lambda
+      .publishLayerVersion({
+        LayerName: `${layerName}-${this.context.amplify.getEnvInfo().envName}`,
+        CompatibleRuntimes: runtimes,
+        Content: {
+          ZipFile: zipFile,
+        },
+      })
+      .promise();
+  }
+
+  async updateLayerVersion(functionName: string, versionedLayerArn: string) {
+    const currentConfiguration = await this.lambda.getFunctionConfiguration({ FunctionName: functionName }).promise();
+
+    const unversionedLayerArn = versionedLayerArn.replace(/:[\d]+$/, '');
+
+    const newLayers = currentConfiguration.Layers.map(({ Arn }) => (Arn.startsWith(unversionedLayerArn) ? versionedLayerArn : Arn));
+
+    return this.lambda
+      .updateFunctionConfiguration({
+        FunctionName: functionName,
+        Layers: newLayers,
+      })
+      .promise();
   }
 }
