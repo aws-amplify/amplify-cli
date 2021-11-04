@@ -58,7 +58,7 @@ Object {
       },
       "Value": Object {
         "Fn::GetAtt": Array [
-          "PostDataSource100BC6D9",
+          "PostDataSource",
           "Name",
         ],
       },
@@ -160,6 +160,114 @@ Object {
     },
   },
   "Resources": Object {
+    "CreatePostResolver": Object {
+      "Properties": Object {
+        "ApiId": Object {
+          "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
+        },
+        "FieldName": "createPost",
+        "Kind": "PIPELINE",
+        "PipelineConfig": Object {
+          "Functions": Array [
+            Object {
+              "Fn::GetAtt": Array [
+                "MutationcreatePostinit0FunctionMutationcreatePostinit0FunctionAppSyncFunction9E444A7F",
+                "FunctionId",
+              ],
+            },
+            Object {
+              "Fn::GetAtt": Array [
+                "MutationcreatePostpostAuth0FunctionMutationcreatePostpostAuth0FunctionAppSyncFunction2C708069",
+                "FunctionId",
+              ],
+            },
+            Object {
+              "Fn::GetAtt": Array [
+                "MutationCreatePostDataResolverFnMutationCreatePostDataResolverFnAppSyncFunctionE45E2000",
+                "FunctionId",
+              ],
+            },
+          ],
+        },
+        "RequestMappingTemplate": Object {
+          "Fn::Join": Array [
+            "",
+            Array [
+              "$util.qr($ctx.stash.put(\\"typeName\\", \\"Mutation\\"))
+$util.qr($ctx.stash.put(\\"fieldName\\", \\"createPost\\"))
+$util.qr($ctx.stash.put(\\"conditions\\", []))
+$util.qr($ctx.stash.put(\\"metadata\\", {}))
+$util.qr($ctx.stash.metadata.put(\\"dataSourceType\\", \\"AMAZON_DYNAMODB\\"))
+$util.qr($ctx.stash.metadata.put(\\"apiId\\", \\"",
+              Object {
+                "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
+              },
+              "\\"))
+$util.qr($ctx.stash.put(\\"tableName\\", \\"",
+              Object {
+                "Ref": "PostTable",
+              },
+              "\\"))
+$util.toJson({})",
+            ],
+          ],
+        },
+        "ResponseMappingTemplate": "$util.toJson($ctx.prev.result)",
+        "TypeName": "Mutation",
+      },
+      "Type": "AWS::AppSync::Resolver",
+    },
+    "DeletePostResolver": Object {
+      "Properties": Object {
+        "ApiId": Object {
+          "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
+        },
+        "FieldName": "deletePost",
+        "Kind": "PIPELINE",
+        "PipelineConfig": Object {
+          "Functions": Array [
+            Object {
+              "Fn::GetAtt": Array [
+                "MutationdeletePostpostAuth0FunctionMutationdeletePostpostAuth0FunctionAppSyncFunctionFF4E884F",
+                "FunctionId",
+              ],
+            },
+            Object {
+              "Fn::GetAtt": Array [
+                "MutationDeletePostDataResolverFnMutationDeletePostDataResolverFnAppSyncFunction45B37C12",
+                "FunctionId",
+              ],
+            },
+          ],
+        },
+        "RequestMappingTemplate": Object {
+          "Fn::Join": Array [
+            "",
+            Array [
+              "$util.qr($ctx.stash.put(\\"typeName\\", \\"Mutation\\"))
+$util.qr($ctx.stash.put(\\"fieldName\\", \\"deletePost\\"))
+$util.qr($ctx.stash.put(\\"conditions\\", []))
+$util.qr($ctx.stash.put(\\"metadata\\", {}))
+$util.qr($ctx.stash.metadata.put(\\"dataSourceType\\", \\"AMAZON_DYNAMODB\\"))
+$util.qr($ctx.stash.metadata.put(\\"apiId\\", \\"",
+              Object {
+                "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
+              },
+              "\\"))
+$util.qr($ctx.stash.put(\\"tableName\\", \\"",
+              Object {
+                "Ref": "PostTable",
+              },
+              "\\"))
+$util.toJson({})",
+            ],
+          ],
+        },
+        "ResponseMappingTemplate": "$util.toJson($ctx.prev.result)",
+        "TypeName": "Mutation",
+      },
+      "Type": "AWS::AppSync::Resolver",
+    },
     "DynamoDBAccess71ABE5AE": Object {
       "Properties": Object {
         "PolicyDocument": Object {
@@ -235,9 +343,111 @@ Object {
       },
       "Type": "AWS::IAM::Policy",
     },
+    "GetPostResolver": Object {
+      "Properties": Object {
+        "ApiId": Object {
+          "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
+        },
+        "FieldName": "getPost",
+        "Kind": "PIPELINE",
+        "PipelineConfig": Object {
+          "Functions": Array [
+            Object {
+              "Fn::GetAtt": Array [
+                "QuerygetPostpostAuth0FunctionQuerygetPostpostAuth0FunctionAppSyncFunctionC72E5C0F",
+                "FunctionId",
+              ],
+            },
+            Object {
+              "Fn::GetAtt": Array [
+                "QueryGetPostDataResolverFnQueryGetPostDataResolverFnAppSyncFunction06724190",
+                "FunctionId",
+              ],
+            },
+          ],
+        },
+        "RequestMappingTemplate": Object {
+          "Fn::Join": Array [
+            "",
+            Array [
+              "$util.qr($ctx.stash.put(\\"typeName\\", \\"Query\\"))
+$util.qr($ctx.stash.put(\\"fieldName\\", \\"getPost\\"))
+$util.qr($ctx.stash.put(\\"conditions\\", []))
+$util.qr($ctx.stash.put(\\"metadata\\", {}))
+$util.qr($ctx.stash.metadata.put(\\"dataSourceType\\", \\"AMAZON_DYNAMODB\\"))
+$util.qr($ctx.stash.metadata.put(\\"apiId\\", \\"",
+              Object {
+                "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
+              },
+              "\\"))
+$util.qr($ctx.stash.put(\\"tableName\\", \\"",
+              Object {
+                "Ref": "PostTable",
+              },
+              "\\"))
+$util.toJson({})",
+            ],
+          ],
+        },
+        "ResponseMappingTemplate": "$util.toJson($ctx.prev.result)",
+        "TypeName": "Query",
+      },
+      "Type": "AWS::AppSync::Resolver",
+    },
+    "ListPostResolver": Object {
+      "Properties": Object {
+        "ApiId": Object {
+          "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
+        },
+        "FieldName": "listPosts",
+        "Kind": "PIPELINE",
+        "PipelineConfig": Object {
+          "Functions": Array [
+            Object {
+              "Fn::GetAtt": Array [
+                "QuerylistPostspostAuth0FunctionQuerylistPostspostAuth0FunctionAppSyncFunction3585C8F4",
+                "FunctionId",
+              ],
+            },
+            Object {
+              "Fn::GetAtt": Array [
+                "QueryListPostsDataResolverFnQueryListPostsDataResolverFnAppSyncFunction3D526AB7",
+                "FunctionId",
+              ],
+            },
+          ],
+        },
+        "RequestMappingTemplate": Object {
+          "Fn::Join": Array [
+            "",
+            Array [
+              "$util.qr($ctx.stash.put(\\"typeName\\", \\"Query\\"))
+$util.qr($ctx.stash.put(\\"fieldName\\", \\"listPosts\\"))
+$util.qr($ctx.stash.put(\\"conditions\\", []))
+$util.qr($ctx.stash.put(\\"metadata\\", {}))
+$util.qr($ctx.stash.metadata.put(\\"dataSourceType\\", \\"AMAZON_DYNAMODB\\"))
+$util.qr($ctx.stash.metadata.put(\\"apiId\\", \\"",
+              Object {
+                "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
+              },
+              "\\"))
+$util.qr($ctx.stash.put(\\"tableName\\", \\"",
+              Object {
+                "Ref": "PostTable",
+              },
+              "\\"))
+$util.toJson({})",
+            ],
+          ],
+        },
+        "ResponseMappingTemplate": "$util.toJson($ctx.prev.result)",
+        "TypeName": "Query",
+      },
+      "Type": "AWS::AppSync::Resolver",
+    },
     "MutationCreatePostDataResolverFnMutationCreatePostDataResolverFnAppSyncFunctionE45E2000": Object {
       "DependsOn": Array [
-        "PostDataSource100BC6D9",
+        "PostDataSource",
       ],
       "Properties": Object {
         "ApiId": Object {
@@ -245,7 +455,7 @@ Object {
         },
         "DataSourceName": Object {
           "Fn::GetAtt": Array [
-            "PostDataSource100BC6D9",
+            "PostDataSource",
             "Name",
           ],
         },
@@ -288,7 +498,7 @@ Object {
     },
     "MutationDeletePostDataResolverFnMutationDeletePostDataResolverFnAppSyncFunction45B37C12": Object {
       "DependsOn": Array [
-        "PostDataSource100BC6D9",
+        "PostDataSource",
       ],
       "Properties": Object {
         "ApiId": Object {
@@ -296,7 +506,7 @@ Object {
         },
         "DataSourceName": Object {
           "Fn::GetAtt": Array [
-            "PostDataSource100BC6D9",
+            "PostDataSource",
             "Name",
           ],
         },
@@ -339,7 +549,7 @@ Object {
     },
     "MutationUpdatePostDataResolverFnMutationUpdatePostDataResolverFnAppSyncFunctionBF7D410D": Object {
       "DependsOn": Array [
-        "PostDataSource100BC6D9",
+        "PostDataSource",
       ],
       "Properties": Object {
         "ApiId": Object {
@@ -347,7 +557,7 @@ Object {
         },
         "DataSourceName": Object {
           "Fn::GetAtt": Array [
-            "PostDataSource100BC6D9",
+            "PostDataSource",
             "Name",
           ],
         },
@@ -538,7 +748,7 @@ Object {
       },
       "Type": "AWS::AppSync::FunctionConfiguration",
     },
-    "PostDataSource100BC6D9": Object {
+    "PostDataSource": Object {
       "DependsOn": Array [
         "PostIAMRole83BF708F",
       ],
@@ -716,7 +926,7 @@ Object {
     },
     "QueryGetPostDataResolverFnQueryGetPostDataResolverFnAppSyncFunction06724190": Object {
       "DependsOn": Array [
-        "PostDataSource100BC6D9",
+        "PostDataSource",
       ],
       "Properties": Object {
         "ApiId": Object {
@@ -724,7 +934,7 @@ Object {
         },
         "DataSourceName": Object {
           "Fn::GetAtt": Array [
-            "PostDataSource100BC6D9",
+            "PostDataSource",
             "Name",
           ],
         },
@@ -767,7 +977,7 @@ Object {
     },
     "QueryListPostsDataResolverFnQueryListPostsDataResolverFnAppSyncFunction3D526AB7": Object {
       "DependsOn": Array [
-        "PostDataSource100BC6D9",
+        "PostDataSource",
       ],
       "Properties": Object {
         "ApiId": Object {
@@ -775,7 +985,7 @@ Object {
         },
         "DataSourceName": Object {
           "Fn::GetAtt": Array [
-            "PostDataSource100BC6D9",
+            "PostDataSource",
             "Name",
           ],
         },
@@ -1101,115 +1311,7 @@ Object {
       },
       "Type": "AWS::AppSync::FunctionConfiguration",
     },
-    "mutationCreatePostResolver": Object {
-      "Properties": Object {
-        "ApiId": Object {
-          "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-        },
-        "FieldName": "createPost",
-        "Kind": "PIPELINE",
-        "PipelineConfig": Object {
-          "Functions": Array [
-            Object {
-              "Fn::GetAtt": Array [
-                "MutationcreatePostinit0FunctionMutationcreatePostinit0FunctionAppSyncFunction9E444A7F",
-                "FunctionId",
-              ],
-            },
-            Object {
-              "Fn::GetAtt": Array [
-                "MutationcreatePostpostAuth0FunctionMutationcreatePostpostAuth0FunctionAppSyncFunction2C708069",
-                "FunctionId",
-              ],
-            },
-            Object {
-              "Fn::GetAtt": Array [
-                "MutationCreatePostDataResolverFnMutationCreatePostDataResolverFnAppSyncFunctionE45E2000",
-                "FunctionId",
-              ],
-            },
-          ],
-        },
-        "RequestMappingTemplate": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "$util.qr($ctx.stash.put(\\"typeName\\", \\"Mutation\\"))
-$util.qr($ctx.stash.put(\\"fieldName\\", \\"createPost\\"))
-$util.qr($ctx.stash.put(\\"conditions\\", []))
-$util.qr($ctx.stash.put(\\"metadata\\", {}))
-$util.qr($ctx.stash.metadata.put(\\"dataSourceType\\", \\"AMAZON_DYNAMODB\\"))
-$util.qr($ctx.stash.metadata.put(\\"apiId\\", \\"",
-              Object {
-                "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-              },
-              "\\"))
-$util.qr($ctx.stash.put(\\"tableName\\", \\"",
-              Object {
-                "Ref": "PostTable",
-              },
-              "\\"))
-$util.toJson({})",
-            ],
-          ],
-        },
-        "ResponseMappingTemplate": "$util.toJson($ctx.prev.result)",
-        "TypeName": "Mutation",
-      },
-      "Type": "AWS::AppSync::Resolver",
-    },
-    "mutationDeletePostResolver": Object {
-      "Properties": Object {
-        "ApiId": Object {
-          "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-        },
-        "FieldName": "deletePost",
-        "Kind": "PIPELINE",
-        "PipelineConfig": Object {
-          "Functions": Array [
-            Object {
-              "Fn::GetAtt": Array [
-                "MutationdeletePostpostAuth0FunctionMutationdeletePostpostAuth0FunctionAppSyncFunctionFF4E884F",
-                "FunctionId",
-              ],
-            },
-            Object {
-              "Fn::GetAtt": Array [
-                "MutationDeletePostDataResolverFnMutationDeletePostDataResolverFnAppSyncFunction45B37C12",
-                "FunctionId",
-              ],
-            },
-          ],
-        },
-        "RequestMappingTemplate": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "$util.qr($ctx.stash.put(\\"typeName\\", \\"Mutation\\"))
-$util.qr($ctx.stash.put(\\"fieldName\\", \\"deletePost\\"))
-$util.qr($ctx.stash.put(\\"conditions\\", []))
-$util.qr($ctx.stash.put(\\"metadata\\", {}))
-$util.qr($ctx.stash.metadata.put(\\"dataSourceType\\", \\"AMAZON_DYNAMODB\\"))
-$util.qr($ctx.stash.metadata.put(\\"apiId\\", \\"",
-              Object {
-                "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-              },
-              "\\"))
-$util.qr($ctx.stash.put(\\"tableName\\", \\"",
-              Object {
-                "Ref": "PostTable",
-              },
-              "\\"))
-$util.toJson({})",
-            ],
-          ],
-        },
-        "ResponseMappingTemplate": "$util.toJson($ctx.prev.result)",
-        "TypeName": "Mutation",
-      },
-      "Type": "AWS::AppSync::Resolver",
-    },
-    "mutationUpdatePostResolver": Object {
+    "UpdatePostResolver": Object {
       "Properties": Object {
         "ApiId": Object {
           "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
@@ -1266,109 +1368,7 @@ $util.toJson({})",
       },
       "Type": "AWS::AppSync::Resolver",
     },
-    "queryGetPostResolver": Object {
-      "Properties": Object {
-        "ApiId": Object {
-          "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-        },
-        "FieldName": "getPost",
-        "Kind": "PIPELINE",
-        "PipelineConfig": Object {
-          "Functions": Array [
-            Object {
-              "Fn::GetAtt": Array [
-                "QuerygetPostpostAuth0FunctionQuerygetPostpostAuth0FunctionAppSyncFunctionC72E5C0F",
-                "FunctionId",
-              ],
-            },
-            Object {
-              "Fn::GetAtt": Array [
-                "QueryGetPostDataResolverFnQueryGetPostDataResolverFnAppSyncFunction06724190",
-                "FunctionId",
-              ],
-            },
-          ],
-        },
-        "RequestMappingTemplate": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "$util.qr($ctx.stash.put(\\"typeName\\", \\"Query\\"))
-$util.qr($ctx.stash.put(\\"fieldName\\", \\"getPost\\"))
-$util.qr($ctx.stash.put(\\"conditions\\", []))
-$util.qr($ctx.stash.put(\\"metadata\\", {}))
-$util.qr($ctx.stash.metadata.put(\\"dataSourceType\\", \\"AMAZON_DYNAMODB\\"))
-$util.qr($ctx.stash.metadata.put(\\"apiId\\", \\"",
-              Object {
-                "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-              },
-              "\\"))
-$util.qr($ctx.stash.put(\\"tableName\\", \\"",
-              Object {
-                "Ref": "PostTable",
-              },
-              "\\"))
-$util.toJson({})",
-            ],
-          ],
-        },
-        "ResponseMappingTemplate": "$util.toJson($ctx.prev.result)",
-        "TypeName": "Query",
-      },
-      "Type": "AWS::AppSync::Resolver",
-    },
-    "queryListPostsResolver": Object {
-      "Properties": Object {
-        "ApiId": Object {
-          "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-        },
-        "FieldName": "listPosts",
-        "Kind": "PIPELINE",
-        "PipelineConfig": Object {
-          "Functions": Array [
-            Object {
-              "Fn::GetAtt": Array [
-                "QuerylistPostspostAuth0FunctionQuerylistPostspostAuth0FunctionAppSyncFunction3585C8F4",
-                "FunctionId",
-              ],
-            },
-            Object {
-              "Fn::GetAtt": Array [
-                "QueryListPostsDataResolverFnQueryListPostsDataResolverFnAppSyncFunction3D526AB7",
-                "FunctionId",
-              ],
-            },
-          ],
-        },
-        "RequestMappingTemplate": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "$util.qr($ctx.stash.put(\\"typeName\\", \\"Query\\"))
-$util.qr($ctx.stash.put(\\"fieldName\\", \\"listPosts\\"))
-$util.qr($ctx.stash.put(\\"conditions\\", []))
-$util.qr($ctx.stash.put(\\"metadata\\", {}))
-$util.qr($ctx.stash.metadata.put(\\"dataSourceType\\", \\"AMAZON_DYNAMODB\\"))
-$util.qr($ctx.stash.metadata.put(\\"apiId\\", \\"",
-              Object {
-                "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-              },
-              "\\"))
-$util.qr($ctx.stash.put(\\"tableName\\", \\"",
-              Object {
-                "Ref": "PostTable",
-              },
-              "\\"))
-$util.toJson({})",
-            ],
-          ],
-        },
-        "ResponseMappingTemplate": "$util.toJson($ctx.prev.result)",
-        "TypeName": "Query",
-      },
-      "Type": "AWS::AppSync::Resolver",
-    },
-    "subscriptionOnCreatePostResolver": Object {
+    "onCreatePost": Object {
       "Properties": Object {
         "ApiId": Object {
           "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
@@ -1415,7 +1415,7 @@ $util.toJson({})",
       },
       "Type": "AWS::AppSync::Resolver",
     },
-    "subscriptionOnDeletePostResolver": Object {
+    "onDeletePost": Object {
       "Properties": Object {
         "ApiId": Object {
           "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
@@ -1462,7 +1462,7 @@ $util.toJson({})",
       },
       "Type": "AWS::AppSync::Resolver",
     },
-    "subscriptionOnUpdatePostResolver": Object {
+    "onUpdatePost": Object {
       "Properties": Object {
         "ApiId": Object {
           "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
@@ -1553,7 +1553,7 @@ Object {
       },
       "Value": Object {
         "Fn::GetAtt": Array [
-          "CommentDataSourceB5FC53E9",
+          "CommentDataSource",
           "Name",
         ],
       },
@@ -1655,7 +1655,7 @@ Object {
     },
   },
   "Resources": Object {
-    "CommentDataSourceB5FC53E9": Object {
+    "CommentDataSource": Object {
       "DependsOn": Array [
         "CommentIAMRoleD5EC5F51",
       ],
@@ -1831,6 +1831,114 @@ Object {
       "Type": "AWS::DynamoDB::Table",
       "UpdateReplacePolicy": "Delete",
     },
+    "CreateCommentResolver": Object {
+      "Properties": Object {
+        "ApiId": Object {
+          "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
+        },
+        "FieldName": "createComment",
+        "Kind": "PIPELINE",
+        "PipelineConfig": Object {
+          "Functions": Array [
+            Object {
+              "Fn::GetAtt": Array [
+                "MutationcreateCommentinit0FunctionMutationcreateCommentinit0FunctionAppSyncFunction77870FAC",
+                "FunctionId",
+              ],
+            },
+            Object {
+              "Fn::GetAtt": Array [
+                "MutationcreateCommentpostAuth0FunctionMutationcreateCommentpostAuth0FunctionAppSyncFunction4F8AA7FF",
+                "FunctionId",
+              ],
+            },
+            Object {
+              "Fn::GetAtt": Array [
+                "MutationCreateCommentDataResolverFnMutationCreateCommentDataResolverFnAppSyncFunctionD019FFE0",
+                "FunctionId",
+              ],
+            },
+          ],
+        },
+        "RequestMappingTemplate": Object {
+          "Fn::Join": Array [
+            "",
+            Array [
+              "$util.qr($ctx.stash.put(\\"typeName\\", \\"Mutation\\"))
+$util.qr($ctx.stash.put(\\"fieldName\\", \\"createComment\\"))
+$util.qr($ctx.stash.put(\\"conditions\\", []))
+$util.qr($ctx.stash.put(\\"metadata\\", {}))
+$util.qr($ctx.stash.metadata.put(\\"dataSourceType\\", \\"AMAZON_DYNAMODB\\"))
+$util.qr($ctx.stash.metadata.put(\\"apiId\\", \\"",
+              Object {
+                "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
+              },
+              "\\"))
+$util.qr($ctx.stash.put(\\"tableName\\", \\"",
+              Object {
+                "Ref": "CommentTable",
+              },
+              "\\"))
+$util.toJson({})",
+            ],
+          ],
+        },
+        "ResponseMappingTemplate": "$util.toJson($ctx.prev.result)",
+        "TypeName": "Mutation",
+      },
+      "Type": "AWS::AppSync::Resolver",
+    },
+    "DeleteCommentResolver": Object {
+      "Properties": Object {
+        "ApiId": Object {
+          "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
+        },
+        "FieldName": "deleteComment",
+        "Kind": "PIPELINE",
+        "PipelineConfig": Object {
+          "Functions": Array [
+            Object {
+              "Fn::GetAtt": Array [
+                "MutationdeleteCommentpostAuth0FunctionMutationdeleteCommentpostAuth0FunctionAppSyncFunctionDFFD097E",
+                "FunctionId",
+              ],
+            },
+            Object {
+              "Fn::GetAtt": Array [
+                "MutationDeleteCommentDataResolverFnMutationDeleteCommentDataResolverFnAppSyncFunctionD661C8CB",
+                "FunctionId",
+              ],
+            },
+          ],
+        },
+        "RequestMappingTemplate": Object {
+          "Fn::Join": Array [
+            "",
+            Array [
+              "$util.qr($ctx.stash.put(\\"typeName\\", \\"Mutation\\"))
+$util.qr($ctx.stash.put(\\"fieldName\\", \\"deleteComment\\"))
+$util.qr($ctx.stash.put(\\"conditions\\", []))
+$util.qr($ctx.stash.put(\\"metadata\\", {}))
+$util.qr($ctx.stash.metadata.put(\\"dataSourceType\\", \\"AMAZON_DYNAMODB\\"))
+$util.qr($ctx.stash.metadata.put(\\"apiId\\", \\"",
+              Object {
+                "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
+              },
+              "\\"))
+$util.qr($ctx.stash.put(\\"tableName\\", \\"",
+              Object {
+                "Ref": "CommentTable",
+              },
+              "\\"))
+$util.toJson({})",
+            ],
+          ],
+        },
+        "ResponseMappingTemplate": "$util.toJson($ctx.prev.result)",
+        "TypeName": "Mutation",
+      },
+      "Type": "AWS::AppSync::Resolver",
+    },
     "DynamoDBAccess71ABE5AE": Object {
       "Properties": Object {
         "PolicyDocument": Object {
@@ -1906,9 +2014,111 @@ Object {
       },
       "Type": "AWS::IAM::Policy",
     },
+    "GetCommentResolver": Object {
+      "Properties": Object {
+        "ApiId": Object {
+          "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
+        },
+        "FieldName": "getComment",
+        "Kind": "PIPELINE",
+        "PipelineConfig": Object {
+          "Functions": Array [
+            Object {
+              "Fn::GetAtt": Array [
+                "QuerygetCommentpostAuth0FunctionQuerygetCommentpostAuth0FunctionAppSyncFunction27405A71",
+                "FunctionId",
+              ],
+            },
+            Object {
+              "Fn::GetAtt": Array [
+                "QueryGetCommentDataResolverFnQueryGetCommentDataResolverFnAppSyncFunction8473E2B0",
+                "FunctionId",
+              ],
+            },
+          ],
+        },
+        "RequestMappingTemplate": Object {
+          "Fn::Join": Array [
+            "",
+            Array [
+              "$util.qr($ctx.stash.put(\\"typeName\\", \\"Query\\"))
+$util.qr($ctx.stash.put(\\"fieldName\\", \\"getComment\\"))
+$util.qr($ctx.stash.put(\\"conditions\\", []))
+$util.qr($ctx.stash.put(\\"metadata\\", {}))
+$util.qr($ctx.stash.metadata.put(\\"dataSourceType\\", \\"AMAZON_DYNAMODB\\"))
+$util.qr($ctx.stash.metadata.put(\\"apiId\\", \\"",
+              Object {
+                "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
+              },
+              "\\"))
+$util.qr($ctx.stash.put(\\"tableName\\", \\"",
+              Object {
+                "Ref": "CommentTable",
+              },
+              "\\"))
+$util.toJson({})",
+            ],
+          ],
+        },
+        "ResponseMappingTemplate": "$util.toJson($ctx.prev.result)",
+        "TypeName": "Query",
+      },
+      "Type": "AWS::AppSync::Resolver",
+    },
+    "ListCommentResolver": Object {
+      "Properties": Object {
+        "ApiId": Object {
+          "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
+        },
+        "FieldName": "listComments",
+        "Kind": "PIPELINE",
+        "PipelineConfig": Object {
+          "Functions": Array [
+            Object {
+              "Fn::GetAtt": Array [
+                "QuerylistCommentspostAuth0FunctionQuerylistCommentspostAuth0FunctionAppSyncFunctionEDC68EF5",
+                "FunctionId",
+              ],
+            },
+            Object {
+              "Fn::GetAtt": Array [
+                "QueryListCommentsDataResolverFnQueryListCommentsDataResolverFnAppSyncFunction474D4A91",
+                "FunctionId",
+              ],
+            },
+          ],
+        },
+        "RequestMappingTemplate": Object {
+          "Fn::Join": Array [
+            "",
+            Array [
+              "$util.qr($ctx.stash.put(\\"typeName\\", \\"Query\\"))
+$util.qr($ctx.stash.put(\\"fieldName\\", \\"listComments\\"))
+$util.qr($ctx.stash.put(\\"conditions\\", []))
+$util.qr($ctx.stash.put(\\"metadata\\", {}))
+$util.qr($ctx.stash.metadata.put(\\"dataSourceType\\", \\"AMAZON_DYNAMODB\\"))
+$util.qr($ctx.stash.metadata.put(\\"apiId\\", \\"",
+              Object {
+                "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
+              },
+              "\\"))
+$util.qr($ctx.stash.put(\\"tableName\\", \\"",
+              Object {
+                "Ref": "CommentTable",
+              },
+              "\\"))
+$util.toJson({})",
+            ],
+          ],
+        },
+        "ResponseMappingTemplate": "$util.toJson($ctx.prev.result)",
+        "TypeName": "Query",
+      },
+      "Type": "AWS::AppSync::Resolver",
+    },
     "MutationCreateCommentDataResolverFnMutationCreateCommentDataResolverFnAppSyncFunctionD019FFE0": Object {
       "DependsOn": Array [
-        "CommentDataSourceB5FC53E9",
+        "CommentDataSource",
       ],
       "Properties": Object {
         "ApiId": Object {
@@ -1916,7 +2126,7 @@ Object {
         },
         "DataSourceName": Object {
           "Fn::GetAtt": Array [
-            "CommentDataSourceB5FC53E9",
+            "CommentDataSource",
             "Name",
           ],
         },
@@ -1959,7 +2169,7 @@ Object {
     },
     "MutationDeleteCommentDataResolverFnMutationDeleteCommentDataResolverFnAppSyncFunctionD661C8CB": Object {
       "DependsOn": Array [
-        "CommentDataSourceB5FC53E9",
+        "CommentDataSource",
       ],
       "Properties": Object {
         "ApiId": Object {
@@ -1967,7 +2177,7 @@ Object {
         },
         "DataSourceName": Object {
           "Fn::GetAtt": Array [
-            "CommentDataSourceB5FC53E9",
+            "CommentDataSource",
             "Name",
           ],
         },
@@ -2010,7 +2220,7 @@ Object {
     },
     "MutationUpdateCommentDataResolverFnMutationUpdateCommentDataResolverFnAppSyncFunctionB47372B5": Object {
       "DependsOn": Array [
-        "CommentDataSourceB5FC53E9",
+        "CommentDataSource",
       ],
       "Properties": Object {
         "ApiId": Object {
@@ -2018,7 +2228,7 @@ Object {
         },
         "DataSourceName": Object {
           "Fn::GetAtt": Array [
-            "CommentDataSourceB5FC53E9",
+            "CommentDataSource",
             "Name",
           ],
         },
@@ -2211,7 +2421,7 @@ Object {
     },
     "QueryGetCommentDataResolverFnQueryGetCommentDataResolverFnAppSyncFunction8473E2B0": Object {
       "DependsOn": Array [
-        "CommentDataSourceB5FC53E9",
+        "CommentDataSource",
       ],
       "Properties": Object {
         "ApiId": Object {
@@ -2219,7 +2429,7 @@ Object {
         },
         "DataSourceName": Object {
           "Fn::GetAtt": Array [
-            "CommentDataSourceB5FC53E9",
+            "CommentDataSource",
             "Name",
           ],
         },
@@ -2262,7 +2472,7 @@ Object {
     },
     "QueryListCommentsDataResolverFnQueryListCommentsDataResolverFnAppSyncFunction474D4A91": Object {
       "DependsOn": Array [
-        "CommentDataSourceB5FC53E9",
+        "CommentDataSource",
       ],
       "Properties": Object {
         "ApiId": Object {
@@ -2270,7 +2480,7 @@ Object {
         },
         "DataSourceName": Object {
           "Fn::GetAtt": Array [
-            "CommentDataSourceB5FC53E9",
+            "CommentDataSource",
             "Name",
           ],
         },
@@ -2596,115 +2806,7 @@ Object {
       },
       "Type": "AWS::AppSync::FunctionConfiguration",
     },
-    "mutationCreateCommentResolver": Object {
-      "Properties": Object {
-        "ApiId": Object {
-          "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-        },
-        "FieldName": "createComment",
-        "Kind": "PIPELINE",
-        "PipelineConfig": Object {
-          "Functions": Array [
-            Object {
-              "Fn::GetAtt": Array [
-                "MutationcreateCommentinit0FunctionMutationcreateCommentinit0FunctionAppSyncFunction77870FAC",
-                "FunctionId",
-              ],
-            },
-            Object {
-              "Fn::GetAtt": Array [
-                "MutationcreateCommentpostAuth0FunctionMutationcreateCommentpostAuth0FunctionAppSyncFunction4F8AA7FF",
-                "FunctionId",
-              ],
-            },
-            Object {
-              "Fn::GetAtt": Array [
-                "MutationCreateCommentDataResolverFnMutationCreateCommentDataResolverFnAppSyncFunctionD019FFE0",
-                "FunctionId",
-              ],
-            },
-          ],
-        },
-        "RequestMappingTemplate": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "$util.qr($ctx.stash.put(\\"typeName\\", \\"Mutation\\"))
-$util.qr($ctx.stash.put(\\"fieldName\\", \\"createComment\\"))
-$util.qr($ctx.stash.put(\\"conditions\\", []))
-$util.qr($ctx.stash.put(\\"metadata\\", {}))
-$util.qr($ctx.stash.metadata.put(\\"dataSourceType\\", \\"AMAZON_DYNAMODB\\"))
-$util.qr($ctx.stash.metadata.put(\\"apiId\\", \\"",
-              Object {
-                "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-              },
-              "\\"))
-$util.qr($ctx.stash.put(\\"tableName\\", \\"",
-              Object {
-                "Ref": "CommentTable",
-              },
-              "\\"))
-$util.toJson({})",
-            ],
-          ],
-        },
-        "ResponseMappingTemplate": "$util.toJson($ctx.prev.result)",
-        "TypeName": "Mutation",
-      },
-      "Type": "AWS::AppSync::Resolver",
-    },
-    "mutationDeleteCommentResolver": Object {
-      "Properties": Object {
-        "ApiId": Object {
-          "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-        },
-        "FieldName": "deleteComment",
-        "Kind": "PIPELINE",
-        "PipelineConfig": Object {
-          "Functions": Array [
-            Object {
-              "Fn::GetAtt": Array [
-                "MutationdeleteCommentpostAuth0FunctionMutationdeleteCommentpostAuth0FunctionAppSyncFunctionDFFD097E",
-                "FunctionId",
-              ],
-            },
-            Object {
-              "Fn::GetAtt": Array [
-                "MutationDeleteCommentDataResolverFnMutationDeleteCommentDataResolverFnAppSyncFunctionD661C8CB",
-                "FunctionId",
-              ],
-            },
-          ],
-        },
-        "RequestMappingTemplate": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "$util.qr($ctx.stash.put(\\"typeName\\", \\"Mutation\\"))
-$util.qr($ctx.stash.put(\\"fieldName\\", \\"deleteComment\\"))
-$util.qr($ctx.stash.put(\\"conditions\\", []))
-$util.qr($ctx.stash.put(\\"metadata\\", {}))
-$util.qr($ctx.stash.metadata.put(\\"dataSourceType\\", \\"AMAZON_DYNAMODB\\"))
-$util.qr($ctx.stash.metadata.put(\\"apiId\\", \\"",
-              Object {
-                "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-              },
-              "\\"))
-$util.qr($ctx.stash.put(\\"tableName\\", \\"",
-              Object {
-                "Ref": "CommentTable",
-              },
-              "\\"))
-$util.toJson({})",
-            ],
-          ],
-        },
-        "ResponseMappingTemplate": "$util.toJson($ctx.prev.result)",
-        "TypeName": "Mutation",
-      },
-      "Type": "AWS::AppSync::Resolver",
-    },
-    "mutationUpdateCommentResolver": Object {
+    "UpdateCommentResolver": Object {
       "Properties": Object {
         "ApiId": Object {
           "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
@@ -2761,109 +2863,7 @@ $util.toJson({})",
       },
       "Type": "AWS::AppSync::Resolver",
     },
-    "queryGetCommentResolver": Object {
-      "Properties": Object {
-        "ApiId": Object {
-          "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-        },
-        "FieldName": "getComment",
-        "Kind": "PIPELINE",
-        "PipelineConfig": Object {
-          "Functions": Array [
-            Object {
-              "Fn::GetAtt": Array [
-                "QuerygetCommentpostAuth0FunctionQuerygetCommentpostAuth0FunctionAppSyncFunction27405A71",
-                "FunctionId",
-              ],
-            },
-            Object {
-              "Fn::GetAtt": Array [
-                "QueryGetCommentDataResolverFnQueryGetCommentDataResolverFnAppSyncFunction8473E2B0",
-                "FunctionId",
-              ],
-            },
-          ],
-        },
-        "RequestMappingTemplate": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "$util.qr($ctx.stash.put(\\"typeName\\", \\"Query\\"))
-$util.qr($ctx.stash.put(\\"fieldName\\", \\"getComment\\"))
-$util.qr($ctx.stash.put(\\"conditions\\", []))
-$util.qr($ctx.stash.put(\\"metadata\\", {}))
-$util.qr($ctx.stash.metadata.put(\\"dataSourceType\\", \\"AMAZON_DYNAMODB\\"))
-$util.qr($ctx.stash.metadata.put(\\"apiId\\", \\"",
-              Object {
-                "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-              },
-              "\\"))
-$util.qr($ctx.stash.put(\\"tableName\\", \\"",
-              Object {
-                "Ref": "CommentTable",
-              },
-              "\\"))
-$util.toJson({})",
-            ],
-          ],
-        },
-        "ResponseMappingTemplate": "$util.toJson($ctx.prev.result)",
-        "TypeName": "Query",
-      },
-      "Type": "AWS::AppSync::Resolver",
-    },
-    "queryListCommentsResolver": Object {
-      "Properties": Object {
-        "ApiId": Object {
-          "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-        },
-        "FieldName": "listComments",
-        "Kind": "PIPELINE",
-        "PipelineConfig": Object {
-          "Functions": Array [
-            Object {
-              "Fn::GetAtt": Array [
-                "QuerylistCommentspostAuth0FunctionQuerylistCommentspostAuth0FunctionAppSyncFunctionEDC68EF5",
-                "FunctionId",
-              ],
-            },
-            Object {
-              "Fn::GetAtt": Array [
-                "QueryListCommentsDataResolverFnQueryListCommentsDataResolverFnAppSyncFunction474D4A91",
-                "FunctionId",
-              ],
-            },
-          ],
-        },
-        "RequestMappingTemplate": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "$util.qr($ctx.stash.put(\\"typeName\\", \\"Query\\"))
-$util.qr($ctx.stash.put(\\"fieldName\\", \\"listComments\\"))
-$util.qr($ctx.stash.put(\\"conditions\\", []))
-$util.qr($ctx.stash.put(\\"metadata\\", {}))
-$util.qr($ctx.stash.metadata.put(\\"dataSourceType\\", \\"AMAZON_DYNAMODB\\"))
-$util.qr($ctx.stash.metadata.put(\\"apiId\\", \\"",
-              Object {
-                "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-              },
-              "\\"))
-$util.qr($ctx.stash.put(\\"tableName\\", \\"",
-              Object {
-                "Ref": "CommentTable",
-              },
-              "\\"))
-$util.toJson({})",
-            ],
-          ],
-        },
-        "ResponseMappingTemplate": "$util.toJson($ctx.prev.result)",
-        "TypeName": "Query",
-      },
-      "Type": "AWS::AppSync::Resolver",
-    },
-    "subscriptionOnCreateCommentResolver": Object {
+    "onCreateComment": Object {
       "Properties": Object {
         "ApiId": Object {
           "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
@@ -2910,7 +2910,7 @@ $util.toJson({})",
       },
       "Type": "AWS::AppSync::Resolver",
     },
-    "subscriptionOnDeleteCommentResolver": Object {
+    "onDeleteComment": Object {
       "Properties": Object {
         "ApiId": Object {
           "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
@@ -2957,7 +2957,7 @@ $util.toJson({})",
       },
       "Type": "AWS::AppSync::Resolver",
     },
-    "subscriptionOnUpdateCommentResolver": Object {
+    "onUpdateComment": Object {
       "Properties": Object {
         "ApiId": Object {
           "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",

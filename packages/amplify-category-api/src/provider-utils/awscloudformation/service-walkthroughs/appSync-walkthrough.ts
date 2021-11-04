@@ -1,6 +1,7 @@
 import { Duration, Expiration } from '@aws-cdk/core';
 import {
   $TSContext,
+  $TSObject,
   exitOnNextTick,
   FeatureFlags,
   open,
@@ -807,7 +808,7 @@ export async function askAuthQuestions(authType, context, printLeadText = false,
 }
 
 async function askUserPoolQuestions(context) {
-  let authResourceName = checkIfAuthExists(context);
+  let authResourceName = checkIfAuthExists();
   if (!authResourceName) {
     authResourceName = await context.amplify.invokePluginMethod(context, 'auth', undefined, 'add', [context, true]);
   } else {

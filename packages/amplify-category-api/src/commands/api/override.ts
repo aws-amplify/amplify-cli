@@ -10,6 +10,7 @@ import { printer, prompter } from 'amplify-prompts';
 import * as path from 'path';
 import { ApigwInputState } from '../../provider-utils/awscloudformation/apigw-input-state';
 import { ApigwStackTransform } from '../../provider-utils/awscloudformation/cdk-stack-builder';
+import { checkAppsyncApiResourceMigration } from '../../provider-utils/awscloudformation/utils/check-appsync-api-migration';
 
 export const name = 'override';
 

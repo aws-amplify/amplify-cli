@@ -5,14 +5,14 @@ import { getCfnApiArtifactHandler } from '../../../provider-utils/awscloudformat
 import { AddApiRequest, UpdateApiRequest } from 'amplify-headless-interface';
 import { category } from '../../../category-constants';
 import { writeTransformerConfiguration } from 'graphql-transformer-core';
+import { ApiArtifactHandler } from '../../../provider-utils/api-artifact-handler';
+import { AppsyncApiInputState } from '../../../provider-utils/awscloudformation/api-input-manager/appsync-api-input-state';
 import { rootAssetDir } from '../../../provider-utils/awscloudformation/aws-constants';
 import {
   getAppSyncResourceName,
   getAppSyncAuthConfig,
   authConfigHasApiKey,
 } from '../../../provider-utils/awscloudformation/utils/amplify-meta-utils';
-import _ from 'lodash';
-import { AppsyncApiInputState } from '../../../provider-utils/awscloudformation/api-input-manager/appsync-api-input-state';
 
 jest.mock('fs-extra');
 
@@ -35,6 +35,9 @@ jest.mock('amplify-cli-core', () => ({
   pathManager: {
     getBackendDirPath: jest.fn().mockReturnValue('mockbackendDirPath'),
     findProjectRoot: jest.fn().mockReturnValue('mockProject'),
+  },
+  stateManager: {
+    getMeta: jest.fn().mockReturnValue({}),
   },
   AmplifyCategories: {
     API: 'api',
