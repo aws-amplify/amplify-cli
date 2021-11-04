@@ -45,7 +45,7 @@ async function addNonContainerResource(context, category, service, options) {
   const { serviceWalkthroughFilename, defaultValuesFilename } = serviceMetadata;
   const serviceWalkthrough = await getServiceWalkthrough(serviceWalkthroughFilename);
 
-  const serviceWalkthroughPromise: Promise<any> = serviceWalkthrough(context, defaultValuesFilename, serviceMetadata);
+  const serviceWalkthroughPromise: Promise<$TSAny> = serviceWalkthrough(context, defaultValuesFilename, serviceMetadata);
   switch (service) {
     case 'AppSync':
       const walkthroughResult = await serviceWalkthroughPromise;
@@ -140,12 +140,8 @@ export async function updateResource(context, category, service, options) {
   let useContainerResource = false;
   let apiType = API_TYPE.GRAPHQL;
   if (allowContainers && isContainersEnabled(context)) {
-    const {
-      hasAPIGatewayContainerResource,
-      hasAPIGatewayLambdaResource,
-      hasGraphQLAppSyncResource,
-      hasGraphqlContainerResource,
-    } = await describeApiResourcesBySubCategory(context);
+    const { hasAPIGatewayContainerResource, hasAPIGatewayLambdaResource, hasGraphQLAppSyncResource, hasGraphqlContainerResource } =
+      await describeApiResourcesBySubCategory(context);
 
     switch (service) {
       case 'AppSync':

@@ -22,7 +22,7 @@ import {
 import { Template } from '@aws-amplify/graphql-transformer-core/lib/config/project-config';
 import { OverrideConfig } from '@aws-amplify/graphql-transformer-core/src/transformation/types';
 import { AppSyncAuthConfiguration, TransformerPluginProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import { $TSContext, AmplifyCategories, AmplifySupportedService, JSONUtilities } from 'amplify-cli-core';
+import { $TSContext, AmplifyCategories, AmplifySupportedService, JSONUtilities, stateManager } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import fs from 'fs-extra';
 import { print } from 'graphql';
@@ -276,13 +276,6 @@ export async function transformGraphQLSchema(context, options) {
   // for auth transformer we get any admin roles and a cognito identity pool to check for potential authenticated roles outside of the provided authRole
   const adminRoles = await getAdminRoles(context, resourceName);
   const identityPoolId = await getIdentityPoolId(context);
-  const resolverConfig = await context.amplify.invokePluginMethod(
-    context,
-    AmplifyCategories.API,
-    AmplifySupportedService.APPSYNC,
-    'getResolverConfig',
-    [resources[0].resourceName],
-  );
 
   // for the predictions directive get storage config
   const s3Resource = s3ResourceAlreadyExists(context);
