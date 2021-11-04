@@ -90,7 +90,7 @@ export async function s3AddStorageLambdaTrigger(
   }
   let s3UserInput = cliInputsState.getUserInput();
   s3UserInput.triggerFunction = storageLambdaTrigger.triggerFunction;
-  cliInputsState.saveCliInputPayload(s3UserInput);
+  await cliInputsState.saveCliInputPayload(s3UserInput);
   await createNewLambdaAndUpdateCFN(context, s3UserInput.triggerFunction, undefined /* generate unique uuid*/);
   await s3APIHelperTransformAndSaveState(context, s3UserInput, CLISubCommandType.UPDATE);
   return s3UserInput;
@@ -136,7 +136,6 @@ export async function s3RemoveStorageLambdaTrigger(context: $TSContext, s3Resour
   s3ResourceName: string,
   adminLambdaTrigger: S3UserInputTriggerFunctionParams,
 ) {
-  console.log("s3RegisterAdminTrigger : s3ResourceName:  ", s3ResourceName , " adminLambdaTrigger: ", adminLambdaTrigger );
   let cliInputsState = new S3InputState(s3ResourceName, undefined);
   //Check if migration is required
   if (!cliInputsState.cliInputFileExists()) {
@@ -202,7 +201,7 @@ async function s3APIHelperTransformAndSaveState(context: $TSContext, storageInpu
   } else {
     cliInputsState = new S3InputState(storageInput.resourceName as string, undefined );
   }
-  cliInputsState.saveCliInputPayload(storageInput);
+  await cliInputsState.saveCliInputPayload(storageInput);
 
   //Generate Cloudformation
   const stackGenerator = new AmplifyS3ResourceStackTransform(storageInput.resourceName as string, context);

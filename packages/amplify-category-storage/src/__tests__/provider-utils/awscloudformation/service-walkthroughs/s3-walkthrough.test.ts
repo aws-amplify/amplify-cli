@@ -61,7 +61,7 @@ describe('add s3 walkthrough tests', () => {
   });
 
   it('addWalkthrough() simple-auth test', async () => {
-    jest.spyOn(S3InputState.prototype, 'saveCliInputPayload').mockImplementation(() => true);
+    jest.spyOn(S3InputState.prototype, 'saveCliInputPayload').mockImplementation( async () => {return} );
     jest.spyOn(AmplifyS3ResourceStackTransform.prototype, 'transform').mockImplementation(() => Promise.resolve());
     jest.spyOn(s3AuthAPI, 'migrateAuthDependencyResource').mockReturnValue(new Promise((resolve, _reject)=>{
       process.nextTick(() => resolve(undefined));
@@ -93,7 +93,7 @@ describe('add s3 walkthrough tests', () => {
     expect(S3InputState.prototype.saveCliInputPayload).toHaveBeenCalledWith(expectedCLIInputsJSON);
   });
   it('addWalkthrough() simple-auth+guest test', async () => {
-    jest.spyOn(S3InputState.prototype, 'saveCliInputPayload').mockImplementation(() => true);
+    jest.spyOn(S3InputState.prototype, 'saveCliInputPayload').mockImplementation(async ()=>{ return });
     jest.spyOn(AmplifyS3ResourceStackTransform.prototype, 'transform').mockImplementation(() => Promise.resolve());
 
     const mockDataBuilder = new S3MockDataBuilder(undefined);
@@ -123,7 +123,7 @@ describe('add s3 walkthrough tests', () => {
     expect(S3InputState.prototype.saveCliInputPayload).toHaveBeenCalledWith(expectedCLIInputsJSON);
   });
   it('addWalkthrough() simple-auth + trigger (new function) test', async () => {
-    jest.spyOn(S3InputState.prototype, 'saveCliInputPayload').mockImplementation(() => true);
+    jest.spyOn(S3InputState.prototype, 'saveCliInputPayload').mockImplementation(async ()=>{ return });
     jest.spyOn(AmplifyS3ResourceStackTransform.prototype, 'transform').mockImplementation(() => Promise.resolve());
 
     const mockDataBuilder = new S3MockDataBuilder(undefined);
@@ -156,7 +156,7 @@ describe('add s3 walkthrough tests', () => {
     expect(S3InputState.prototype.saveCliInputPayload).toHaveBeenCalledWith(expectedCLIInputsJSON);
   });
   it('addWalkthrough() simple-auth + trigger (existing function) test', async () => {
-    jest.spyOn(S3InputState.prototype, 'saveCliInputPayload').mockImplementation(() => true);
+    jest.spyOn(S3InputState.prototype, 'saveCliInputPayload').mockImplementation(async ()=>{ return });
     jest.spyOn(AmplifyS3ResourceStackTransform.prototype, 'transform').mockImplementation(() => Promise.resolve());
     //Add Existing Lambda functions in resource status
     mockContext.amplify.getResourceStatus = () => {
@@ -246,7 +246,7 @@ describe('update s3 permission walkthrough tests', () => {
     const currentCLIInputs = mockDataBuilder.removeMockTriggerFunction().getCLIInputs();
     jest.spyOn(S3InputState.prototype, 'cliInputFileExists').mockImplementation(() => true); //CLI Input exists
     jest.spyOn(S3InputState.prototype, 'getUserInput').mockImplementation(()=> currentCLIInputs); //simple-auth 
-    jest.spyOn(S3InputState.prototype, 'saveCliInputPayload').mockImplementation(() => true);
+    jest.spyOn(S3InputState.prototype, 'saveCliInputPayload').mockImplementation(async ()=>{ return });
     jest.spyOn(AmplifyS3ResourceStackTransform.prototype, 'transform').mockImplementation(() => Promise.resolve());
 
     //**Set Auth permissions in Expected Output (without Delete permissions)
@@ -270,7 +270,7 @@ describe('update s3 permission walkthrough tests', () => {
     const currentCLIInputs = mockDataBuilder.removeMockTriggerFunction().getCLIInputs();
     jest.spyOn(S3InputState.prototype, 'cliInputFileExists').mockImplementation(() => true); //CLI Input exists
     jest.spyOn(S3InputState.prototype, 'getUserInput').mockImplementation(()=> currentCLIInputs); //simple-auth 
-    jest.spyOn(S3InputState.prototype, 'saveCliInputPayload').mockImplementation(() => true);
+    jest.spyOn(S3InputState.prototype, 'saveCliInputPayload').mockImplementation(async ()=>{ return });
     jest.spyOn(AmplifyS3ResourceStackTransform.prototype, 'transform').mockImplementation(() => Promise.resolve());
 
     //**Set Auth permissions in Expected Output (without Delete permissions)
@@ -302,7 +302,7 @@ describe('update s3 permission walkthrough tests', () => {
                              .getCLIInputs();
     jest.spyOn(S3InputState.prototype, 'cliInputFileExists').mockImplementation(() => true); //CLI Input exists
     jest.spyOn(S3InputState.prototype, 'getUserInput').mockImplementation(()=> currentCLIInputs); //simple-auth 
-    jest.spyOn(S3InputState.prototype, 'saveCliInputPayload').mockImplementation(() => true);
+    jest.spyOn(S3InputState.prototype, 'saveCliInputPayload').mockImplementation(async ()=>{ return });
     jest.spyOn(AmplifyS3ResourceStackTransform.prototype, 'transform').mockImplementation(() => Promise.resolve());
 
     //**Set Auth permissions in Expected Output (without Delete permissions)
@@ -337,7 +337,7 @@ describe('update s3 permission walkthrough tests', () => {
 
     jest.spyOn(S3InputState.prototype, 'cliInputFileExists').mockImplementation(() => true); //CLI Input exists
     jest.spyOn(S3InputState.prototype, 'getUserInput').mockImplementation(()=> currentCLIInputs); //simple-auth 
-    jest.spyOn(S3InputState.prototype, 'saveCliInputPayload').mockImplementation(() => true);
+    jest.spyOn(S3InputState.prototype, 'saveCliInputPayload').mockImplementation(async ()=>{ return });
     jest.spyOn(AmplifyS3ResourceStackTransform.prototype, 'transform').mockImplementation(() => Promise.resolve());
 
     //**Set Auth permissions in Expected Output (without Delete permissions)
@@ -371,7 +371,7 @@ describe('update s3 permission walkthrough tests', () => {
 
     jest.spyOn(S3InputState.prototype, 'cliInputFileExists').mockImplementation(() => true); //CLI Input exists
     jest.spyOn(S3InputState.prototype, 'getUserInput').mockImplementation(()=> currentCLIInputs); //simple-auth 
-    jest.spyOn(S3InputState.prototype, 'saveCliInputPayload').mockImplementation(() => true);
+    jest.spyOn(S3InputState.prototype, 'saveCliInputPayload').mockImplementation(async ()=>{ return });
     jest.spyOn(AmplifyS3ResourceStackTransform.prototype, 'transform').mockImplementation(() => Promise.resolve());
 
     //** Add GuestAccess, GroupAccess
@@ -450,7 +450,7 @@ describe('update s3 lambda-trigger walkthrough tests', () => {
     const currentCLIInputs = mockDataBuilder.removeMockTriggerFunction().getCLIInputs();
     jest.spyOn(S3InputState.prototype, 'cliInputFileExists').mockImplementation(() => true); //CLI Input exists
     jest.spyOn(S3InputState.prototype, 'getUserInput').mockImplementation(() => currentCLIInputs); //simple-auth
-    jest.spyOn(S3InputState.prototype, 'saveCliInputPayload').mockImplementation(() => true);
+    jest.spyOn(S3InputState.prototype, 'saveCliInputPayload').mockImplementation(async ()=>{ return });
     jest.spyOn(AmplifyS3ResourceStackTransform.prototype, 'transform').mockImplementation(() => Promise.resolve());
 
     //**Set Auth permissions in Expected Output (without Delete permissions)
@@ -486,7 +486,7 @@ describe('update s3 lambda-trigger walkthrough tests', () => {
     const currentCLIInputs = existingDataBuilder.addMockTriggerFunction(undefined).getCLIInputs();
     jest.spyOn(S3InputState.prototype, 'cliInputFileExists').mockImplementation(() => true); //CLI Input exists
     jest.spyOn(S3InputState.prototype, 'getUserInput').mockImplementation(() => currentCLIInputs); //simple-auth
-    jest.spyOn(S3InputState.prototype, 'saveCliInputPayload').mockImplementation(() => true);
+    jest.spyOn(S3InputState.prototype, 'saveCliInputPayload').mockImplementation(async ()=>{ return });
     jest.spyOn(AmplifyS3ResourceStackTransform.prototype, 'transform').mockImplementation(() => Promise.resolve());
 
     //**Set simple auth and remove triggerFunction
@@ -522,7 +522,7 @@ describe('update s3 lambda-trigger walkthrough tests', () => {
 
     jest.spyOn(S3InputState.prototype, 'cliInputFileExists').mockImplementation(() => true); //CLI Input exists
     jest.spyOn(S3InputState.prototype, 'getUserInput').mockImplementation(() => currentCLIInputs); //simple-auth
-    jest.spyOn(S3InputState.prototype, 'saveCliInputPayload').mockImplementation(() => true);
+    jest.spyOn(S3InputState.prototype, 'saveCliInputPayload').mockImplementation(async ()=>{ return });
     jest.spyOn(AmplifyS3ResourceStackTransform.prototype, 'transform').mockImplementation(() => Promise.resolve());
 
     //**Set simple-auth and set mockExistingFunctionName1 as the new trigger function
@@ -563,7 +563,7 @@ describe('update s3 lambda-trigger walkthrough tests', () => {
 
     jest.spyOn(S3InputState.prototype, 'cliInputFileExists').mockImplementation(() => true); //CLI Input exists
     jest.spyOn(S3InputState.prototype, 'getUserInput').mockImplementation(() => currentCLIInputs); //simple-auth
-    jest.spyOn(S3InputState.prototype, 'saveCliInputPayload').mockImplementation(() => true);
+    jest.spyOn(S3InputState.prototype, 'saveCliInputPayload').mockImplementation((async ()=>{ return }));
     jest.spyOn(AmplifyS3ResourceStackTransform.prototype, 'transform').mockImplementation(() => Promise.resolve());
 
     //**Set simple-auth and set mockExistingFunctionName1 as the new trigger function
@@ -606,7 +606,7 @@ describe('update s3 lambda-trigger walkthrough tests', () => {
 
     jest.spyOn(S3InputState.prototype, 'cliInputFileExists').mockImplementation(() => true); //CLI Input exists
     jest.spyOn(S3InputState.prototype, 'getUserInput').mockImplementation(() => currentCLIInputs); //simple-auth
-    jest.spyOn(S3InputState.prototype, 'saveCliInputPayload').mockImplementation(() => true);
+    jest.spyOn(S3InputState.prototype, 'saveCliInputPayload').mockImplementation(async ()=>{ return });
     jest.spyOn(AmplifyS3ResourceStackTransform.prototype, 'transform').mockImplementation(() => Promise.resolve());
 
     //**Set simple-auth and set mockExistingFunctionName1 as the new trigger function
@@ -703,7 +703,7 @@ describe('migrate s3 and update s3 permission walkthrough tests', () => {
     jest.spyOn(S3InputState.prototype, 'getOldS3ParamsForMigration').mockImplementation(()=>oldParams);
     jest.spyOn(S3InputState.prototype, 'cliInputFileExists').mockImplementation(() => false); //CLI Input doesnt exist - requires migration
     jest.spyOn(S3InputState.prototype, 'getUserInput').mockImplementation(()=> currentCLIInputs); //simple-auth 
-    jest.spyOn(S3InputState.prototype, 'saveCliInputPayload').mockImplementation(() => true);
+    jest.spyOn(S3InputState.prototype, 'saveCliInputPayload').mockImplementation(async ()=>{ return });
     jest.spyOn(AmplifyS3ResourceStackTransform.prototype, 'transform').mockImplementation(() => Promise.resolve());
 
     //**Set Auth permissions in Expected Output (without Delete permissions)
