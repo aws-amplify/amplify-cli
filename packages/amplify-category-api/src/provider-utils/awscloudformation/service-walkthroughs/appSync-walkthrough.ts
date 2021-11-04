@@ -1,6 +1,7 @@
 import { Duration, Expiration } from '@aws-cdk/core';
 import {
   $TSContext,
+  $TSObject,
   exitOnNextTick,
   FeatureFlags,
   open,
@@ -388,8 +389,8 @@ const updateApiInputWalkthrough = async (context, project, resolverConfig, model
   };
 };
 
-export const serviceWalkthrough = async (context: $TSContext, serviceMetadata: $TSObject) => {
-  const resourceName = resourceAlreadyExists();
+export const serviceWalkthrough = async (context: $TSContext, defaultValuesFilename: string, serviceMetadata: $TSObject) => {
+  const resourceName = resourceAlreadyExists(context);
   const providerPlugin = await import(context.amplify.getProviderPlugins(context)[providerName]);
   const transformerVersion = await providerPlugin.getTransformerVersion(context);
   await addLambdaAuthorizerChoice(context);
@@ -808,7 +809,7 @@ export async function askAuthQuestions(authType, context, printLeadText = false,
 }
 
 async function askUserPoolQuestions(context) {
-  let authResourceName = checkIfAuthExists(context);
+  let authResourceName = checkIfAuthExists();
   if (!authResourceName) {
     authResourceName = await context.amplify.invokePluginMethod(context, 'auth', undefined, 'add', [context, true]);
   } else {

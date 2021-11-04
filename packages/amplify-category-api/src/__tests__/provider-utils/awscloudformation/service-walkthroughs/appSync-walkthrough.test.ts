@@ -45,7 +45,7 @@ describe('get IAM policies', () => {
   it('does not include API key if none exists', async () => {
     mockGetBoolean.mockImplementationOnce(() => true);
     authConfigHasApiKey_mock.mockImplementationOnce(() => false);
-    const iamArtifact: IAMArtifact = getIAMPolicies('testResourceName', ['Query']);
+    const iamArtifact: IAMArtifact = getIAMPolicies('testResourceName', ['Query'], context_stub(confirmPromptFalse_mock));
     expect(iamArtifact.attributes).toMatchInlineSnapshot(`
       Array [
         "GraphQLAPIIdOutput",
@@ -58,7 +58,7 @@ describe('get IAM policies', () => {
   it('includes API key if it exists', async () => {
     mockGetBoolean.mockImplementationOnce(() => true);
     authConfigHasApiKey_mock.mockImplementationOnce(() => true);
-    const iamArtifact: IAMArtifact = getIAMPolicies('testResourceName', ['Query']);
+    const iamArtifact: IAMArtifact = getIAMPolicies('testResourceName', ['Query'], context_stub(confirmPromptFalse_mock));
     expect(iamArtifact.attributes).toMatchInlineSnapshot(`
       Array [
         "GraphQLAPIIdOutput",
@@ -72,7 +72,7 @@ describe('get IAM policies', () => {
   it('policy path includes the new format for graphql operations', async () => {
     mockGetBoolean.mockImplementationOnce(() => true);
     authConfigHasApiKey_mock.mockImplementationOnce(() => false);
-    const iamArtifact: IAMArtifact = getIAMPolicies('testResourceName', ['Query', 'Mutate']);
+    const iamArtifact: IAMArtifact = getIAMPolicies('testResourceName', ['Query', 'Mutate'], context_stub(confirmPromptFalse_mock));
     expect(iamArtifact.attributes).toMatchInlineSnapshot(`
       Array [
         "GraphQLAPIIdOutput",
@@ -86,7 +86,7 @@ describe('get IAM policies', () => {
   it('policy path includes the old format for appsync api operations', async () => {
     mockGetBoolean.mockImplementationOnce(() => false);
     authConfigHasApiKey_mock.mockImplementationOnce(() => false);
-    const iamArtifact: IAMArtifact = getIAMPolicies('testResourceName', ['create', 'update']);
+    const iamArtifact: IAMArtifact = getIAMPolicies('testResourceName', ['create', 'update'], context_stub(confirmPromptFalse_mock));
     expect(iamArtifact.attributes).toMatchInlineSnapshot(`
       Array [
         "GraphQLAPIIdOutput",

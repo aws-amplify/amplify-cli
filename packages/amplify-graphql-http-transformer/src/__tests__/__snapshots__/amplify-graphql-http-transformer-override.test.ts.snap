@@ -16,7 +16,7 @@ Object {
     },
   },
   "Resources": Object {
-    "commentContent2Resolver": Object {
+    "Commentcontent2Resolver": Object {
       "Properties": Object {
         "ApiId": Object {
           "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
@@ -65,7 +65,7 @@ Object {
       },
       "Type": "AWS::AppSync::Resolver",
     },
-    "commentContentResolver": Object {
+    "CommentcontentResolver": Object {
       "Properties": Object {
         "ApiId": Object {
           "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
@@ -115,7 +115,7 @@ Object {
       },
       "Type": "AWS::AppSync::Resolver",
     },
-    "commentEvenMoreResolver": Object {
+    "CommentevenMoreResolver": Object {
       "Properties": Object {
         "ApiId": Object {
           "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
@@ -164,7 +164,7 @@ Object {
       },
       "Type": "AWS::AppSync::Resolver",
     },
-    "commentMoreResolver": Object {
+    "CommentmoreResolver": Object {
       "Properties": Object {
         "ApiId": Object {
           "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
@@ -213,7 +213,7 @@ Object {
       },
       "Type": "AWS::AppSync::Resolver",
     },
-    "commentStillMoreResolver": Object {
+    "CommentstillMoreResolver": Object {
       "Properties": Object {
         "ApiId": Object {
           "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",

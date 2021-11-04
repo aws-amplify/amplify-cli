@@ -316,7 +316,7 @@ async function migrateProject(context, options) {
 
 export async function transformGraphQLSchema(context, options) {
   const suppressSchemaMigrationPrompt = FeatureFlags.getBoolean('graphQLTransformer.suppressSchemaMigrationPrompt');
-  const transformerVersion = getTransformerVersion(context);
+  const transformerVersion = await getTransformerVersion(context);
   const backEndDir = context.amplify.pathManager.getBackendDirPath();
   const flags = context.parameters.options;
   if (flags['no-gql-override']) {
