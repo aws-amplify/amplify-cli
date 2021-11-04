@@ -78,7 +78,7 @@ export class AmplifyApigwResourceStack extends cdk.Stack implements AmplifyApigw
    */
   addCfnParameter(props: cdk.CfnParameterProps, logicalId: string): void {
     if (this._cfnParameterMap.has(logicalId)) {
-      throw new Error('logical id already exists');
+      throw new Error(`logical id "${logicalId}" already exists`);
     }
     this._cfnParameterMap.set(logicalId, new cdk.CfnParameter(this, logicalId, props));
   }
@@ -196,6 +196,7 @@ export class AmplifyApigwResourceStack extends cdk.Stack implements AmplifyApigw
   };
 
   private _constructCfnPaths(resourceName: string) {
+    const addedFunctionPermissions = new Set();
     for (const [pathName, path] of Object.entries(this._props.paths)) {
       let lambdaPermissionLogicalId: string;
       if (resourceName === 'AdminQueries') {
@@ -207,23 +208,26 @@ export class AmplifyApigwResourceStack extends cdk.Stack implements AmplifyApigw
         lambdaPermissionLogicalId = `function${path.lambdaFunction}Permission${resourceName}`;
       }
 
-      this.addLambdaPermissionCfnResource(
-        {
-          functionName: cdk.Fn.ref(`function${path.lambdaFunction}Name`),
-          action: 'lambda:InvokeFunction',
-          principal: 'apigateway.amazonaws.com',
-          sourceArn: cdk.Fn.join('', [
-            'arn:aws:execute-api:',
-            cdk.Fn.ref('AWS::Region'),
-            ':',
-            cdk.Fn.ref('AWS::AccountId'),
-            ':',
-            cdk.Fn.ref(resourceName),
-            '/*/*/*',
-          ]),
-        },
-        lambdaPermissionLogicalId,
-      );
+      if (addedFunctionPermissions.has(path.lambdaFunction)) {
+        addedFunctionPermissions.add(path.lambdaFunction);
+        this.addLambdaPermissionCfnResource(
+          {
+            functionName: cdk.Fn.ref(`function${path.lambdaFunction}Name`),
+            action: 'lambda:InvokeFunction',
+            principal: 'apigateway.amazonaws.com',
+            sourceArn: cdk.Fn.join('', [
+              'arn:aws:execute-api:',
+              cdk.Fn.ref('AWS::Region'),
+              ':',
+              cdk.Fn.ref('AWS::AccountId'),
+              ':',
+              cdk.Fn.ref(resourceName),
+              '/*/*/*',
+            ]),
+          },
+          lambdaPermissionLogicalId,
+        );
+      }
     }
   }
 
