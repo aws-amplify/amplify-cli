@@ -1,4 +1,5 @@
 FROM circleci/node:12
+RUN npm install -g npm@7
 WORKDIR /tmp
 RUN sudo apt-get update && sudo apt-get install -y \
   xdg-utils
