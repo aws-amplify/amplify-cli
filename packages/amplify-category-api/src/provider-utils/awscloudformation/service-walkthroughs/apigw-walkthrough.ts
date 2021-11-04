@@ -585,7 +585,7 @@ async function askLambdaArn(context: $TSContext, currentPath?: ApigwPath) {
 }
 
 export async function migrate(context: $TSContext, projectPath: string, resourceName: string) {
-  const apigwInputState = ApigwInputState.getInstance(context, resourceName);
+  const apigwInputState = new ApigwInputState(context, resourceName);
   return apigwInputState.migrateApigwResource(resourceName);
 }
 
