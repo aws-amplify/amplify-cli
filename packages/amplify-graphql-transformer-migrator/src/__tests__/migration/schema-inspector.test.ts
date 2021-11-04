@@ -21,3 +21,21 @@ test('deprecated @connection parameterization fails gracefully', async () => {
     ]
   `);
 });
+
+test('AppSync auth directives are not migrated', async () => {
+  const denylist = ['aws_api_key', 'aws_iam', 'aws_oidc', 'aws_cognito_user_pools', 'aws_auth'];
+
+  for (const directive of denylist) {
+    const schema = `
+      type Todo @model @${directive} {
+        id: ID!
+      }`;
+    const result = await detectUnsupportedDirectives(schema);
+
+    expect(result).toMatchInlineSnapshot(`
+      Array [
+        "${directive}",
+      ]
+    `);
+  }
+});
