@@ -135,7 +135,7 @@ export class SearchableModelTransformer extends TransformerPluginBase {
       const resolver = context.resolvers.generateQueryResolver(
         typeName,
         def.fieldName,
-        ResolverResourceIDs.ResolverResourceID(typeName, def.fieldName),
+        ResolverResourceIDs.ElasticsearchSearchResolverResourceID(type),
         datasource as DataSourceProvider,
         MappingTemplate.s3MappingTemplateFromString(
           requestTemplate(attributeName, getNonKeywordFields(def.node), false, type, keyFields),
@@ -151,7 +151,7 @@ export class SearchableModelTransformer extends TransformerPluginBase {
         ),
       );
       resolver.mapToStack(stack);
-      context.resolvers.addResolver(typeName, def.fieldName, resolver);
+      context.resolvers.addResolver('Search', toUpper(type), resolver);
     }
 
     createStackOutputs(stack, domain.domainEndpoint, context.api.apiId, domain.domainArn);
