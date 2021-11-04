@@ -19,7 +19,13 @@ import { DocumentNode } from 'graphql/language';
 import { prompter, printer } from 'amplify-prompts';
 import * as path from 'path';
 import { $TSContext, exitOnNextTick } from 'amplify-cli-core';
-import { detectCustomResolvers, detectOverriddenResolvers, detectUnsupportedDirectives, graphQLUsingSQL } from './schema-inspector';
+import {
+  detectCustomResolvers,
+  detectOverriddenResolvers,
+  detectUnsupportedDirectives,
+  graphQLUsingSQL,
+  isImprovedPluralizationEnabled,
+} from './schema-inspector';
 import { validateModelSchema, SchemaValidationError } from '@aws-amplify/graphql-transformer-core';
 import { updateTransformerVersion } from './state-migrator';
 import { GRAPHQL_DIRECTIVES_SCHEMA } from './constants/graphql-directives';
@@ -177,8 +183,9 @@ here: ${MIGRATION_URL}`);
   const fullSchema = combineSchemas(schemaDocs);
   const usingCustomResolvers = detectCustomResolvers(parse(fullSchema));
   const usingOverriddenResolvers = detectOverriddenResolvers(apiName);
+  const improvedPluralizationEnabled = isImprovedPluralizationEnabled();
   const unsupportedDirectives: Array<string> = await detectUnsupportedDirectives(fullSchema);
-  if (usingCustomResolvers || unsupportedDirectives.length > 0) {
+  if (usingCustomResolvers || usingOverriddenResolvers || !improvedPluralizationEnabled || unsupportedDirectives.length > 0) {
     printer.info(`We detected that your GraphQL schema can not be auto-migrated because:`);
     if (usingCustomResolvers) {
       printer.info(`- You have configured custom resolvers for your GraphQL API`);
@@ -190,6 +197,9 @@ here: ${MIGRATION_URL}`);
       printer.info(
         `- You are using the following directives not supported in the new transformer:\n\t ${unsupportedDirectives.join(', ')}`,
       );
+    }
+    if (!improvedPluralizationEnabled) {
+      printer.info('- You do not have the "improvePluralization" Feature Flag enabled');
     }
     printer.info(`To migrate to the new GraphQL API capabilities, follow the step-by-step instructions
 here: ${MIGRATION_URL}`);
