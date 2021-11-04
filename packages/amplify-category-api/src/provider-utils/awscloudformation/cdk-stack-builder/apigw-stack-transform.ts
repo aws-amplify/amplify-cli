@@ -28,12 +28,12 @@ export class ApigwStackTransform {
   cfnInputParams!: {};
   resourceName: string;
 
-  constructor(context: $TSContext, resourceName: string) {
+  constructor(context: $TSContext, resourceName: string, cliInputState?: ApigwInputState) {
     this._app = new cdk.App();
     this.resourceName = resourceName;
 
     // Validate the cli-inputs.json for the resource
-    this.cliInputsState = ApigwInputState.getInstance(context, this.resourceName);
+    this.cliInputsState = cliInputState ?? new ApigwInputState(context, resourceName);
     this.cliInputs = this.cliInputsState.getCliInputPayload();
     this.cliInputsState.isCLIInputsValid();
   }
