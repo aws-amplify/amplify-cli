@@ -37,3 +37,5 @@ export const getAppSyncServiceExtraDirectives = (): string => {
 };
 
 export { MappingTemplate } from './cdk-compat';
+
+export { AppSyncServiceResourceStack } from './types/amplify-api-resource-stack-types';

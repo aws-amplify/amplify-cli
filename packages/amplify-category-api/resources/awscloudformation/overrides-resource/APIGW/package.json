@@ -12,6 +12,7 @@
   },
   "devDependencies": {
     "@types/fs-extra": "^9.0.11",
+    "@aws-amplify/cli-overrides-helper": "1.1.0-ext12.0",
     "typescript": "^4.2.4"
   }
 }

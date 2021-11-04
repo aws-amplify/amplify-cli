@@ -7,7 +7,7 @@ import {
   TransformHostProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { AuthorizationMode, AuthorizationType } from '@aws-cdk/aws-appsync';
-import { App, Aws, CfnOutput, CfnResource, Fn } from '@aws-cdk/core';
+import { App, Aws, CfnOutput, CfnResource, Fn, CfnParameter } from '@aws-cdk/core';
 import { printer } from 'amplify-prompts';
 import assert from 'assert';
 import * as fs from 'fs-extra';
@@ -368,38 +368,38 @@ export class GraphQLTransform {
     const rootStack = stackManager.rootStack;
     const authorizationConfig = adoptAuthModes(stackManager, this.authConfig);
 
-    const readIops = stackManager.addParameter('DynamoDBModelTableReadIOPS', {
+    new CfnParameter(rootStack, 'DynamoDBModelTableReadIOPS', {
       description: 'The number of read IOPS the table should support.',
       type: 'Number',
       default: 5,
-    }).valueAsString;
+    });
 
-    const writeIops = stackManager.addParameter('DynamoDBModelTableWriteIOPS', {
+    new CfnParameter(rootStack, 'DynamoDBModelTableWriteIOPS', {
       description: 'The number of write IOPS the table should support.',
       type: 'Number',
       default: 5,
-    }).valueAsString;
+    });
 
-    const billingMode = stackManager.addParameter('DynamoDBBillingMode', {
+    new CfnParameter(rootStack, 'DynamoDBBillingMode', {
       description: 'Configure @model types to create DynamoDB tables with PAY_PER_REQUEST or PROVISIONED billing modes.',
       type: 'String',
       default: 'PAY_PER_REQUEST',
       allowedValues: ['PAY_PER_REQUEST', 'PROVISIONED'],
-    }).valueAsString;
+    });
 
-    const pointInTimeRecovery = stackManager.addParameter('DynamoDBEnablePointInTimeRecovery', {
+    new CfnParameter(rootStack, 'DynamoDBEnablePointInTimeRecovery', {
       description: 'Whether to enable Point in Time Recovery on the table.',
       type: 'String',
       default: 'false',
       allowedValues: ['true', 'false'],
-    }).valueAsString;
+    });
 
-    const enableSSE = stackManager.addParameter('DynamoDBEnableServerSideEncryption', {
+    new CfnParameter(rootStack, 'DynamoDBEnableServerSideEncryption', {
       description: 'Enable server side encryption powered by KMS.',
       type: 'String',
       default: 'true',
       allowedValues: ['true', 'false'],
-    }).valueAsString;
+    });
 
     const apiName = stackManager.addParameter('AppSyncApiName', {
       default: 'AppSyncSimpleTransform',

@@ -9,6 +9,8 @@
     { "path": "../amplify-category-auth" },
     { "path": "../amplify-category-storage" },
     { "path": "../amplify-category-custom" },
+    { "path": "../amplify-category-api" },
+    { "path": "../amplify-graphql-transformer-core" },
     { "path": "../amplify-cli-core" },
     ]
 }

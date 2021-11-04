@@ -36,6 +36,8 @@ export {
 } from './provider-utils/awscloudformation/utils/containers-artifacts';
 export { getGitHubOwnerRepoFromPath } from './provider-utils/awscloudformation/utils/github';
 
+export { AmplifyApigwResourceTemplate } from './provider-utils/awscloudformation/cdk-stack-builder/types';
+
 const category = AmplifyCategories.API;
 const categories = 'categories';
 
