@@ -122,7 +122,8 @@ export type AppSyncAuthType =
   | AppSyncAPIKeyAuthType
   | AppSyncAWSIAMAuthType
   | AppSyncCognitoUserPoolsAuthType
-  | AppSyncOpenIDConnectAuthType;
+  | AppSyncOpenIDConnectAuthType
+  | AppSyncLambdaAuthType;
 
 /**
  * Specifies that the AppSync API should be secured using an API key.
@@ -130,6 +131,7 @@ export type AppSyncAuthType =
 export interface AppSyncAPIKeyAuthType {
   mode: 'API_KEY';
   expirationTime?: number;
+  apiKeyExpirationDate?: Date;
   keyDescription?: string;
 }
 
@@ -161,4 +163,13 @@ export interface AppSyncOpenIDConnectAuthType {
   openIDClientID: string;
   openIDAuthTTL?: string;
   openIDIatTTL?: string;
+}
+
+/**
+ * Specifies that the AppSync API should be secured using Lambda.
+ */
+export interface AppSyncLambdaAuthType {
+  mode: 'AWS_LAMBDA';
+  lambdaFunction: string;
+  ttlSeconds?: string;
 }

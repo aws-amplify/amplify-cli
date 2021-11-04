@@ -41,7 +41,6 @@ async function transformUserPoolGroupSchema(context) {
       });
     }
   });
-
   await generateUserPoolGroupStackTemplate(context, authResourceName);
 }
 

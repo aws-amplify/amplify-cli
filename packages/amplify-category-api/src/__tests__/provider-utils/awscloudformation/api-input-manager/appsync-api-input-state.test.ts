@@ -9,6 +9,7 @@ jest.mock('amplify-cli-core', () => ({
     findProjectRoot: jest.fn().mockReturnValue('mockProject'),
   },
   JSONUtilities: {
+    parse: JSON.parse,
     readJson: jest
       .fn()
       .mockReturnValueOnce({
