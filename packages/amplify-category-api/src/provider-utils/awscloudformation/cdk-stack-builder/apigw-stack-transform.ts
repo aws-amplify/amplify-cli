@@ -76,21 +76,25 @@ export class ApigwStackTransform {
     }
 
     // Add Parameters
+    const addedFunctions = new Set();
     for (const path of Object.values(this.cliInputs.paths)) {
-      this.resourceTemplateObj.addCfnParameter(
-        {
-          type: 'String',
-          default: `function${path.lambdaFunction}Name`,
-        },
-        `function${path.lambdaFunction}Name`,
-      );
-      this.resourceTemplateObj.addCfnParameter(
-        {
-          type: 'String',
-          default: `function${path.lambdaFunction}Arn`,
-        },
-        `function${path.lambdaFunction}Arn`,
-      );
+      if (!addedFunctions.has(path.lambdaFunction)) {
+        addedFunctions.add(path.lambdaFunction);
+        this.resourceTemplateObj.addCfnParameter(
+          {
+            type: 'String',
+            default: `function${path.lambdaFunction}Name`,
+          },
+          `function${path.lambdaFunction}Name`,
+        );
+        this.resourceTemplateObj.addCfnParameter(
+          {
+            type: 'String',
+            default: `function${path.lambdaFunction}Arn`,
+          },
+          `function${path.lambdaFunction}Arn`,
+        );
+      }
     }
 
     this.resourceTemplateObj.addCfnParameter(
