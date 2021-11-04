@@ -541,7 +541,7 @@ export function addS3StorageWithIdpAuth(projectDir: string): Promise<void> {
   return new Promise((resolve, reject) => {
     let chain = spawn(getCLIPath(), ['add', 'storage'], { cwd: projectDir, stripColors: true });
 
-    singleSelect(chain.wait('Please select from one of the below mentioned services:'), 'Content (Images, audio, video, etc.)', [
+    singleSelect(chain.wait('Select from one of the below mentioned services:'), 'Content (Images, audio, video, etc.)', [
       'Content (Images, audio, video, etc.)',
       'NoSQL Database',
     ]);
@@ -557,7 +557,7 @@ export function addS3StorageWithIdpAuth(projectDir: string): Promise<void> {
       .sendCarriageReturn();
 
     multiSelect(
-      chain.wait('What kind of access do you want for Authenticated users?'),
+      chain.wait('What kind of access do you want for Auth users?'),
       ['create/update', 'read', 'delete'],
       ['create/update', 'read', 'delete'],
     );
@@ -592,7 +592,7 @@ export function addS3Storage(projectDir: string): Promise<void> {
     singleSelect(chain.wait('Who should have access:'), 'Auth and guest users', ['Auth users only', 'Auth and guest users']);
 
     multiSelect(
-      chain.wait('What kind of access do you want for Authenticated users?'),
+      chain.wait('What kind of access do you want for Auth users?'),
       ['create/update', 'read', 'delete'],
       ['create/update', 'read', 'delete'],
     );
@@ -650,7 +650,7 @@ export function addS3StorageWithSettings(projectDir: string, settings: AddStorag
     singleSelect(chain.wait('Who should have access:'), 'Auth and guest users', ['Auth users only', 'Auth and guest users']);
 
     multiSelect(
-      chain.wait('What kind of access do you want for Authenticated users?'),
+      chain.wait('What kind of access do you want for Auth users?'),
       ['create/update', 'read', 'delete'],
       ['create/update', 'read', 'delete'],
     );
