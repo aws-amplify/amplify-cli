@@ -338,7 +338,7 @@ async function ensureAuth(context: $TSContext, apiRequirements: ApiRequirements,
 
 async function askCRUD(userType: string, permissions: string[] = []) {
   const crudOptions = ['create', 'read', 'update', 'delete'];
-  const crudAnswers = await prompter.pick<'many', string>(`What permissions do you want to grant to ${userType}`, crudOptions, {
+  const crudAnswers = await prompter.pick<'many', string>(`What permissions do you want to grant to ${userType} users?`, crudOptions, {
     returnSize: 'many',
     initial: permissions.map(p => crudOptions.indexOf(p)),
   });
