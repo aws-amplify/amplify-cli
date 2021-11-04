@@ -367,6 +367,40 @@ export class GraphQLTransform {
 
     const rootStack = stackManager.rootStack;
     const authorizationConfig = adoptAuthModes(stackManager, this.authConfig);
+
+    const readIops = stackManager.addParameter('DynamoDBModelTableReadIOPS', {
+      description: 'The number of read IOPS the table should support.',
+      type: 'Number',
+      default: 5,
+    }).valueAsString;
+
+    const writeIops = stackManager.addParameter('DynamoDBModelTableWriteIOPS', {
+      description: 'The number of write IOPS the table should support.',
+      type: 'Number',
+      default: 5,
+    }).valueAsString;
+
+    const billingMode = stackManager.addParameter('DynamoDBBillingMode', {
+      description: 'Configure @model types to create DynamoDB tables with PAY_PER_REQUEST or PROVISIONED billing modes.',
+      type: 'String',
+      default: 'PAY_PER_REQUEST',
+      allowedValues: ['PAY_PER_REQUEST', 'PROVISIONED'],
+    }).valueAsString;
+
+    const pointInTimeRecovery = stackManager.addParameter('DynamoDBEnablePointInTimeRecovery', {
+      description: 'Whether to enable Point in Time Recovery on the table.',
+      type: 'String',
+      default: 'false',
+      allowedValues: ['true', 'false'],
+    }).valueAsString;
+
+    const enableSSE = stackManager.addParameter('DynamoDBEnableServerSideEncryption', {
+      description: 'Enable server side encryption powered by KMS.',
+      type: 'String',
+      default: 'true',
+      allowedValues: ['true', 'false'],
+    }).valueAsString;
+
     const apiName = stackManager.addParameter('AppSyncApiName', {
       default: 'AppSyncSimpleTransform',
       type: 'String',
