@@ -13,4 +13,8 @@ export class JavaInteger {
   toString() {
     return this.value;
   }
+
+  toJSON() {
+    return this.toString();
+  }
 }
