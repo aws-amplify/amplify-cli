@@ -97,7 +97,7 @@ async function updateWalkthrough(context) {
     resourceObj = resourceAnswer.resource;
   }
 
-  return await configure(context, resourceObj, PREDICTIONS_WALKTHROUGH_MODE.ADD);
+  return await configure(context, resourceObj, PREDICTIONS_WALKTHROUGH_MODE.UPDATE);
 }
 
 async function createAndRegisterAdminLambdaS3Trigger(context, predictionsResourceName, s3ResourceName, configMode) {
@@ -512,8 +512,7 @@ async function postCFNGenUpdateLambdaResourceInPredictions(context, predictionsR
   identifyCFNFile = JSONUtilities.readJson(identifyCFNFilePath);
 
   identifyCFNFile = generateLambdaAccessForRekognition(identifyCFNFile, functionName, s3ResourceName);
-  const indentifyCFNFile = JSON.stringify(identifyCFNFile, null, 4);
-  JSONUtilities.writeJson(identifyCFNFilePath, indentifyCFNFile);
+  JSONUtilities.writeJson(identifyCFNFilePath, identifyCFNFile);
 
   const amplifyMeta = stateManager.getMeta();
   const dependsOnResources = amplifyMeta.predictions[predictionsResourceName].dependsOn;
@@ -593,54 +592,10 @@ function addStorageIAMResourcestoIdentifyCFNFile(context, predictionsResourceNam
     predictionsResourceName,
     `${predictionsResourceName}-template.json`,
   );
-  let identifyCFNFile = context.amplify.readJsonFile(identifyCFNFilePath);
+  let identifyCFNFile = JSONUtilities.readJson(identifyCFNFilePath);
   identifyCFNFile = generateStorageAccessForRekognition(identifyCFNFile, s3ResourceName, prefixForAdminTrigger);
   const identifyCFNString = JSON.stringify(identifyCFNFile, null, 4);
   fs.writeFileSync(identifyCFNFilePath, identifyCFNString, 'utf8');
 }
 
-function removeS3AdminLambdaTrigger(storageCFNFile, adminTriggerFunction) {
-  let modifyOnlyFilters = false;
-  const lambdaConfigurations = [];
-  storageCFNFile.Resources.S3Bucket.Properties.NotificationConfiguration.LambdaConfigurations.forEach(triggers => {
-    if (
-      !(
-        triggers.Filter &&
-        typeof triggers.Filter.S3Key.Rules[0].Value === 'string' &&
-        triggers.Filter.S3Key.Rules[0].Value.includes('index-faces')
-      )
-    ) {
-      modifyOnlyFilters = true;
-      lambdaConfigurations.push(triggers);
-    }
-  });
-
-  storageCFNFile.Resources.S3Bucket.Properties.NotificationConfiguration.LambdaConfigurations = lambdaConfigurations;
-  delete storageCFNFile.Resources.AdminTriggerPermissions;
-  delete storageCFNFile.Parameters.adminTriggerFunction;
-  delete storageCFNFile.Parameters[`function${adminTriggerFunction}Arn`];
-  delete storageCFNFile.Parameters[`function${adminTriggerFunction}Name`];
-  delete storageCFNFile.Parameters[`function${adminTriggerFunction}LambdaExecutionRole`];
-  const index = storageCFNFile.Resources.S3Bucket.DependsOn.indexOf('AdminTriggerPermissions');
-  if (index > -1) {
-    storageCFNFile.Resources.S3Bucket.DependsOn.splice(index, 1);
-  }
-  const roles = [];
-  storageCFNFile.Resources.S3TriggerBucketPolicy.Properties.Roles.forEach(role => {
-    if (!role.Ref.includes(adminTriggerFunction)) {
-      roles.push(role);
-    }
-  });
-  storageCFNFile.Resources.S3TriggerBucketPolicy.Properties.Roles = roles;
-
-  if (!modifyOnlyFilters) {
-    // Remove reference for triggerFunction
-    delete storageCFNFile.Resources.S3Bucket.Properties.NotificationConfiguration;
-    delete storageCFNFile.Resources.S3TriggerBucketPolicy;
-    delete storageCFNFile.Resources.S3Bucket.DependsOn;
-  }
-
-  return storageCFNFile;
-}
-
-module.exports = { addWalkthrough, updateWalkthrough, removeS3AdminLambdaTrigger };
+module.exports = { addWalkthrough, updateWalkthrough };
