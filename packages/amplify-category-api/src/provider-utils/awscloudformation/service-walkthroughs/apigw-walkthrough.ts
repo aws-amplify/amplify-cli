@@ -151,6 +151,11 @@ async function askApiName(context: $TSContext, defaultResourceName: string) {
       required: true,
     })(input);
 
+    const adminQueriesName = 'AdminQueries';
+    if (input === adminQueriesName) {
+      return `${adminQueriesName} is a reserved name for REST API resources for use by the auth category. Run "amplify update auth" to create an Admin Queries API.`;
+    }
+
     let uniqueCheck = false;
     try {
       uniqueCheck = isResourceNameUnique(category, input);
