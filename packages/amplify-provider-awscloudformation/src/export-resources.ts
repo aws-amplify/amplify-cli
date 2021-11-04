@@ -1,4 +1,4 @@
-import { $TSAny, $TSContext, JSONUtilities, stateManager } from 'amplify-cli-core';
+import { $TSAny, $TSContext, JSONUtilities, PathConstants, stateManager } from 'amplify-cli-core';
 import { ResourceExport } from './resource-package/resource-export';
 import { ResourceDefinition, StackIncludeDetails, StackParameters } from './resource-package/types';
 import * as path from 'path';
@@ -9,10 +9,6 @@ const backup = 'backup';
 import _ from 'lodash';
 import rimraf from 'rimraf';
 import { validateExportDirectoryPath } from 'amplify-cli-core';
-// don't change file names ever ever
-const AMPLIFY_EXPORT_MANIFEST_JSON_FILE = 'amplify-export-manifest.json';
-const AMPLIFY_EXPORT_TAGS_JSON_FILE = 'export-tags.json';
-const AMPLIFY_EXPORT_CATEGORY_STACK_MAPPING_FILE = 'category-stack-mapping.json';
 /**
  * Walks through
  * @param context
@@ -20,10 +16,10 @@ const AMPLIFY_EXPORT_CATEGORY_STACK_MAPPING_FILE = 'category-stack-mapping.json'
  * @param exportPath is the path to export to
  */
 export async function run(context: $TSContext, resourceDefinition: $TSAny[], exportPath: string) {
-  validateExportDirectoryPath(exportPath);
+  const resolvedExportDir = validateExportDirectoryPath(exportPath, PathConstants.DefaultExportFolder);
 
   const { projectName } = stateManager.getProjectConfig();
-  const amplifyExportFolder = path.join(path.resolve(exportPath), `amplify-export-${projectName}`);
+  const amplifyExportFolder = path.join(resolvedExportDir, `amplify-export-${projectName}`);
   const proceed = await checkForExistingExport(amplifyExportFolder);
 
   if (proceed) {
@@ -54,7 +50,7 @@ export async function run(context: $TSContext, resourceDefinition: $TSAny[], exp
     const parameters = resourceExport.fixNestedStackParameters(transformedResources, extractedParameters);
 
     spinner.text = `Generating export manifest`;
-    writeExportManifest(parameters, exportPath, amplifyExportFolder);
+    writeExportManifest(parameters, resolvedExportDir, amplifyExportFolder);
 
     spinner.text = `Generating category stack mappings`;
     createCategoryStackMapping(transformedResources, amplifyExportFolder);
@@ -64,12 +60,14 @@ export async function run(context: $TSContext, resourceDefinition: $TSAny[], exp
 
     spinner.text = 'Setting permissions';
     await setPermissions(amplifyExportFolder);
-    spinner.succeed('Done Exporting');
+    spinner.succeed();
     printer.blankLine();
     printer.success('Successfully exported');
-    printer.info('Some Next steps:');
+    printer.info('Next steps:');
     printer.info('You can now integrate your Amplify Backend into your CDK App');
-    printer.info('By installing the Amplify Backend Export Construct by running npm i @aws-amplify/amplify-export-backend in your CDK app');
+    printer.info(
+      'Install the "Amplify Exported Backend" CDK Construct by running "npm i @aws-amplify/amplify-exported-backend" in your CDK app',
+    );
     printer.info('For more information: docs.amplify.aws/cli/export');
     printer.blankLine();
   } catch (ex) {
@@ -98,7 +96,7 @@ function createTagsFile(exportPath: string) {
   const hydratedTags = stateManager.getHydratedTags(undefined, true);
 
   JSONUtilities.writeJson(
-    path.join(exportPath, AMPLIFY_EXPORT_TAGS_JSON_FILE),
+    path.join(exportPath, PathConstants.ExportTagsJsonFileName),
     hydratedTags.map(tag => ({
       key: tag.Key,
       value: tag.Value,
@@ -113,7 +111,7 @@ function createTagsFile(exportPath: string) {
  */
 function createCategoryStackMapping(resources: ResourceDefinition[], amplifyExportFolder: string) {
   JSONUtilities.writeJson(
-    path.join(amplifyExportFolder, AMPLIFY_EXPORT_CATEGORY_STACK_MAPPING_FILE),
+    path.join(amplifyExportFolder, PathConstants.ExportCategoryStackMappingJsonFilename),
     resources.map(r => {
       return _.pick(r, ['category', 'resourceName', 'service']);
     }),
@@ -170,7 +168,7 @@ function writeExportManifest(stackParameters: StackParameters, exportPath: strin
     stackName: rootStackParametersKey,
     props: transformManifestParameters(stackParameters[rootStackParametersKey], exportPath),
   };
-  JSONUtilities.writeJson(path.join(amplifyExportFolder, AMPLIFY_EXPORT_MANIFEST_JSON_FILE), manifestJson);
+  JSONUtilities.writeJson(path.join(amplifyExportFolder, PathConstants.ExportManifestJsonFilename), manifestJson);
 }
 
 function transformManifestParameters(stackParameters: StackIncludeDetails, exportPath: string) {
