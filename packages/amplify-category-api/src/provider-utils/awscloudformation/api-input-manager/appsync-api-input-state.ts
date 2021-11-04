@@ -30,7 +30,7 @@ export class AppsyncApiInputState {
 
   public async isCLIInputsValid(cliInputs: AppsyncCLIInputs = this.getCLIInputPayload()): Promise<boolean> {
     const schemaValidator = new CLIInputSchemaValidator('appsync', this.#category, 'AppsyncCLIInputs');
-    return schemaValidator.validateInput(JSON.stringify(cliInputs));
+    return schemaValidator.validateInput(JSONUtilities.stringify(cliInputs));
   }
 
   public getCLIInputPayload(): AppsyncCLIInputs {
@@ -43,7 +43,7 @@ export class AppsyncApiInputState {
 
   public async saveCLIInputPayload(cliInputs: AppsyncCLIInputs): Promise<void> {
     if (await this.isCLIInputsValid(cliInputs)) {
-      fs.ensureDirSync(path.join(pathManager.getBackendDirPath(), this.#category, this.#resourceName));
+      fs.ensureDirSync(pathManager.getResourceDirectoryPath(undefined, this.#category, this.#resourceName));
       JSONUtilities.writeJson(this.#cliInputsFilePath, cliInputs);
     }
   }

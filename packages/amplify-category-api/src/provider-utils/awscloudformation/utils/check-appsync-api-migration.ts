@@ -9,16 +9,17 @@ export const checkAppsyncApiResourceMigration = async (context: $TSContext, apiN
   const transformerVersion = await context.amplify.invokePluginMethod(context, 'awscloudformation', undefined, 'getTransformerVersion', [
     context,
   ]);
-  if (!cliState.cliInputFileExists() && transformerVersion === 2) {
-    printer.debug('Cli-inputs.json doesnt exist');
-    // put spinner here
-    const isMigrate = await prompter.yesOrNo(`Do you want to migrate this ${apiName} to support overrides?`, true);
-    if (isMigrate) {
-      // generate cli-inputs for migration from parameters.json
-      await migrateResourceToSupportOverride(apiName);
-      return true;
+  if (transformerVersion === 2) {
+    if (!cliState.cliInputFileExists()) {
+      printer.debug('Cli-inputs.json doesnt exist');
+      // put spinner here
+      const isMigrate = await prompter.yesOrNo(`Do you want to migrate this ${apiName} to support overrides?`, true);
+      if (isMigrate) {
+        // generate cli-inputs for migration from parameters.json
+        await migrateResourceToSupportOverride(apiName);
+      }
     }
-    return false;
+    return true;
   } else {
     printer.warn(
       `The project is configured with 'transformerVersion': ${transformerVersion}. Set the TransformerVersion = 2 in cli.json to enable override functionality for api.`,

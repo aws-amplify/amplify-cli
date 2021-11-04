@@ -286,10 +286,7 @@ export class GraphQLTransform {
       }
       let constructPathObj: ConstructResourceMeta;
       if (resource.cfnResourceType) {
-        // console.log('path',node.node.path);
-        // console.log('path1',pathArr);
         constructPathObj = getStackMeta(pathArr, node.node.id, stacks, resource);
-        // console.log(constructPathObj);
         if (!_.isEmpty(constructPathObj.rootStack)) {
           // api scope
           const field = constructPathObj.rootStack!.stackType;
@@ -303,7 +300,6 @@ export class GraphQLTransform {
           const fieldName = constructPathObj.nestedStack!.stackName;
           const resourceName = constructPathObj.resourceName;
           if (constructPathObj.resourceType.includes('Resolver')) {
-            // console.log("constrcut",constructPathObj);
             if (amplifyApiObj[fieldType][fieldName]['resolvers']) {
               amplifyApiObj[fieldType][fieldName]['resolvers'][resourceName] = resource;
             } else {
@@ -363,9 +359,6 @@ export class GraphQLTransform {
         throw error;
       }
     }
-    // appsyncResourceObj.api!.GraphQLAPI!.xrayEnabled = true;
-    // appsyncResourceObj.models!['Todo']!.modelDDBTable!.billingMode = 'PROVISIONED';
-    // console.log(appsyncResourceObj);
   };
 
   private generateGraphQlApi(stackManager: StackManager, output: TransformerOutput) {

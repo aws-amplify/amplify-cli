@@ -10,6 +10,7 @@ import {
   stateManager,
   UnknownResourceTypeError,
 } from 'amplify-cli-core';
+import { printer } from 'amplify-prompts';
 import chalk from 'chalk';
 import fs from 'fs-extra';
 import { collectDirectivesByTypeNames, readProjectConfiguration } from 'graphql-transformer-core';
@@ -398,7 +399,7 @@ export const serviceWalkthrough = async (context: $TSContext, defaultValuesFilen
   if (resourceName) {
     const errMessage =
       'You already have an AppSync API in your project. Use the "amplify update api" command to update your existing AppSync API.';
-    context.print.warning(errMessage);
+    printer.warn(errMessage);
     await context.usageData.emitError(new ResourceAlreadyExistsError(errMessage));
     exitOnNextTick(0);
   }

@@ -66,10 +66,10 @@ export const run = async (context: $TSContext) => {
         await apigwInputState.migrateApigwResource(selectedResourceName);
         const stackGenerator = new ApigwStackTransform(context, selectedResourceName);
         stackGenerator.transform();
-        await generateOverrideSkeleton(context, srcPath, destPath);
       } else {
         return;
       }
     }
+    await generateOverrideSkeleton(context, srcPath, destPath);
   }
 };

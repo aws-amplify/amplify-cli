@@ -223,7 +223,6 @@ export async function writeDeploymentToDisk(
   minify = false,
 ) {
   // Delete the last deployments resources.
-  //rimraf.sync(directory);
   emptyBuildDir(directory);
   fs.ensureDirSync(directory);
 

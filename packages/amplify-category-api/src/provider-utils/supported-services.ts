@@ -123,6 +123,7 @@ export const supportedServices = {
     ],
     alias: 'GraphQL',
     serviceWalkthroughFilename: 'appSync-walkthrough.js',
+    defaultValuesFilename: 'appSync-defaults.js',
     cfnFilename: 'appSync-cloudformation-template-default.yml.ejs',
     provider: 'awscloudformation',
   },

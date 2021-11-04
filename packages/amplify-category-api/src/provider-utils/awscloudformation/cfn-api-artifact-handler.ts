@@ -140,8 +140,8 @@ class CfnApiArtifactHandler implements ApiArtifactHandler {
     printApiKeyWarnings(oldConfigHadApiKey, authConfigHasApiKey(authConfig));
   };
 
-  private writeSchema = (resourceDir: string, schema: string) => {
-    fs.writeFileSync(resourceDir, schema);
+  private writeSchema = (resourceDirSchemaPath: string, schema: string) => {
+    fs.writeFileSync(resourceDirSchemaPath, schema);
   };
 
   private getResourceDir = (apiName: string) => pathManager.getResourceDirectoryPath(undefined, category, apiName);

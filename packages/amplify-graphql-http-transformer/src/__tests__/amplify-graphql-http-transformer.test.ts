@@ -27,7 +27,6 @@ test('generates expected VTL', () => {
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
   expect(out.stacks).toBeDefined();
-  console.log(out.stacks);
   expect(out.pipelineFunctions).toMatchSnapshot();
   parse(out.schema);
 });
