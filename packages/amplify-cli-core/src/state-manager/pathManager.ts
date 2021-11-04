@@ -58,6 +58,12 @@ export const PathConstants = {
   CfnFileName: (resourceName: string) => `${resourceName}-awscloudformation-template.json`,
 
   CustomPoliciesFilename: 'custom-policies.json',
+
+  DefaultFrontEndExportFolder: './exported-amplify-front-end-config',
+  DefaultExportFolder: './export-amplify-stack',
+  ExportManifestJsonFilename: 'amplify-export-manifest.json',
+  ExportTagsJsonFileName: 'export-tags.json',
+  ExportCategoryStackMappingJsonFilename: 'category-stack-mapping.json',
 };
 
 export class PathManager {
