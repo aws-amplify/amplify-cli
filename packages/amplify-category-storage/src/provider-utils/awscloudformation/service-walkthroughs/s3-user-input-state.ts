@@ -201,7 +201,7 @@ export class S3InputState {
     }
     const oldS3Params: MigrationParams = this.getOldS3ParamsForMigration();
     const cliInputs: S3UserInputs = this.genInputParametersForMigration(oldS3Params);
-    this.saveCliInputPayload(cliInputs);
+    await this.saveCliInputPayload(cliInputs);
     this.removeOldS3ConfigFiles(oldS3Params);
   }
 
@@ -310,7 +310,7 @@ export class S3InputState {
     return this._inputPayload;
   }
 
-  public async isCLIInputsValid(cliInputs?: S3UserInputs) {
+  public async isCLIInputsValid(cliInputs?: S3UserInputs) : Promise<boolean> {
     if (!cliInputs) {
       cliInputs = this.getCliInputPayload();
     }
@@ -470,8 +470,8 @@ export class S3InputState {
     return undefined;
   }
 
-  public saveCliInputPayload(cliInputs: S3UserInputs): void {
-    this.isCLIInputsValid(cliInputs);
+  public async saveCliInputPayload(cliInputs: S3UserInputs): Promise<void> {
+    await this.isCLIInputsValid(cliInputs);
     this._inputPayload = cliInputs;
 
     fs.ensureDirSync(path.join(pathManager.getBackendDirPath(), this._category, this._resourceName));
