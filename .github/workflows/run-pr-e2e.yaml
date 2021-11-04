@@ -1,0 +1,14 @@
+name: run-pr-e2e
+on:
+  pull_request:
+    types: [labeled]
+
+jobs:
+  run-pr-e2e:
+    if: ${{ github.event.label.name == 'run-e2e' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: cloud-e2e
+        run: |
+          yarn cloud-e2e
