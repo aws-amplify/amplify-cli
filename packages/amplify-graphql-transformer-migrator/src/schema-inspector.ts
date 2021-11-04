@@ -42,11 +42,6 @@ export async function detectUnsupportedDirectives(schema: string): Promise<Array
     'model',
     'function',
     'predictions',
-    'aws_api_key',
-    'aws_iam',
-    'aws_oidc',
-    'aws_cognito_user_pools',
-    'aws_auth',
     'aws_subscribe',
   ]);
   const directiveMap: any = collectDirectivesByTypeNames(schema).types;
