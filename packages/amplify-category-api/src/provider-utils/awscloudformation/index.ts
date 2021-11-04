@@ -35,7 +35,7 @@ export async function updateAdminQueriesApi(
   if (!apigwInputState.cliInputsFileExists()) {
     await apigwInputState.migrateAdminQueries(apiProps);
   } else {
-    return apigwInputState.addAdminQueriesResource(apiProps);
+    return apigwInputState.updateAdminQueriesResource(apiProps);
   }
 }
 
