@@ -91,7 +91,7 @@ export async function addWalkthrough(context: $TSContext, defaultValuesFilename:
 
     //Save CLI Inputs payload
     const cliInputsState = new S3InputState(cliInputs.resourceName as string, cliInputs);
-    cliInputsState.saveCliInputPayload(cliInputs);
+    await cliInputsState.saveCliInputPayload(cliInputs);
 
     //Generate Cloudformation
     const stackGenerator = new AmplifyS3ResourceStackTransform(cliInputs.resourceName as string, context);
@@ -171,7 +171,7 @@ export async function updateWalkthrough(context: $TSContext) {
     }
 
     //Save CLI Inputs payload
-    cliInputsState.saveCliInputPayload(cliInputs);
+    await cliInputsState.saveCliInputPayload(cliInputs);
     //Generate Cloudformation
     const stackGenerator = new AmplifyS3ResourceStackTransform(cliInputs.resourceName as string, context);
     await stackGenerator.transform(CLISubCommandType.UPDATE);

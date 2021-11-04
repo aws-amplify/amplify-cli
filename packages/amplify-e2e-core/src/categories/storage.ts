@@ -541,7 +541,7 @@ export function addS3StorageWithIdpAuth(projectDir: string): Promise<void> {
   return new Promise((resolve, reject) => {
     let chain = spawn(getCLIPath(), ['add', 'storage'], { cwd: projectDir, stripColors: true });
 
-    singleSelect(chain.wait('Please select from one of the below mentioned services:'), 'Content (Images, audio, video, etc.)', [
+    singleSelect(chain.wait('Select from one of the below mentioned services:'), 'Content (Images, audio, video, etc.)', [
       'Content (Images, audio, video, etc.)',
       'NoSQL Database',
     ]);
