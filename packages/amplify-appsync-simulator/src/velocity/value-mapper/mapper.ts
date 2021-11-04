@@ -2,12 +2,16 @@ import { JavaMap, createMapProxy } from './map';
 import { JavaArray } from './array';
 import { JavaString } from './string';
 import { isPlainObject } from 'lodash';
+import { JavaInteger } from './integer';
 
 export function map(value: any) {
   if (value instanceof JavaMap) return value;
   if (value instanceof JavaArray) return value;
   if (Array.isArray(value)) {
-    return new JavaArray(value.map(x => map(x)), map);
+    return new JavaArray(
+      value.map(x => map(x)),
+      map,
+    );
   }
   if (isPlainObject(value)) {
     return createMapProxy(
@@ -18,8 +22,8 @@ export function map(value: any) {
             [k]: map(v),
           };
         }, {}),
-        map
-      )
+        map,
+      ),
     );
   }
 
@@ -29,6 +33,9 @@ export function map(value: any) {
     return new JavaString(value);
   }
 
-  // for now we don't handle number.
+  if (typeof value === 'number' && !((value as any) instanceof JavaInteger)) {
+    return new JavaInteger(value);
+  }
+
   return value;
 }
