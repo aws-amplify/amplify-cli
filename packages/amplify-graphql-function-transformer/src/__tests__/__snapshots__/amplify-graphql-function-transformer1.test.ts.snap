@@ -299,7 +299,7 @@ Object {
       },
       "Type": "AWS::IAM::Policy",
     },
-    "queryEchoResolver": Object {
+    "QueryechoResolver": Object {
       "Properties": Object {
         "ApiId": Object {
           "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
