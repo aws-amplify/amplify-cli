@@ -69,6 +69,10 @@ export class AccessControlMatrix {
     return this.roles.includes(role);
   }
 
+  public getName(): string {
+    return this.name;
+  }
+
   public getRoles(): Array<string> {
     return this.roles;
   }
