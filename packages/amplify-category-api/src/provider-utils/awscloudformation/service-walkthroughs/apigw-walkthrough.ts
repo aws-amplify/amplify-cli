@@ -463,14 +463,12 @@ async function findDependsOn(paths: $TSObject[]) {
 
 function getAuthResourceName(): string {
   const meta = stateManager.getMeta();
-  const authResources = (Object.entries(meta?.auth) || []).filter(
-    ([_, resource]: [key: string, resource: $TSObject]) => resource.service === AmplifySupportedService.COGNITO,
-  );
+  const authResources = (meta?.auth || []).filter(resource => resource.service === AmplifySupportedService.COGNITO);
   if (authResources.length === 0) {
     throw new Error('No auth resource found. Add it using amplify add auth');
   }
 
-  const [authResourceName] = authResources[0];
+  const authResourceName = authResources[0].resourceName;
   return authResourceName;
 }
 
