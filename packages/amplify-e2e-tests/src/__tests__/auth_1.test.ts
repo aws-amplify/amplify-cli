@@ -71,7 +71,7 @@ describe('amplify add auth...', () => {
     expect(clients[0].UserPoolClient.ClientSecret).toBeDefined();
   });
 
-  it.only('...should init an Android project and add default auth', async () => {
+  it('...should init an Android project and add default auth', async () => {
     await initAndroidProjectWithProfile(projRoot, defaultsSettings);
     await addAuthWithDefault(projRoot, {});
     await amplifyPushAuth(projRoot);
