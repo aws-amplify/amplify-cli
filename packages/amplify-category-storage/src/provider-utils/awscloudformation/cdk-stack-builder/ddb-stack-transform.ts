@@ -8,6 +8,8 @@ import * as fs from 'fs-extra';
 import { JSONUtilities, pathManager, buildOverrideDir, $TSAny } from 'amplify-cli-core';
 import * as path from 'path';
 import { formatter, printer } from 'amplify-prompts';
+import * as vm from 'vm2';
+import os from 'os';
 
 export class DDBStackTransform {
   app: App;
@@ -168,32 +170,43 @@ export class DDBStackTransform {
 
   async applyOverrides() {
     const backendDir = pathManager.getBackendDirPath();
-    const overrideFilePath = pathManager.getResourceDirectoryPath(undefined, 'storage', this._resourceName);
+    const resourceDirPath = pathManager.getResourceDirectoryPath(undefined, 'storage', this._resourceName);
+    const overrideJSFilePath = path.resolve(path.join(resourceDirPath, 'build', 'override.js'));
 
-    const isBuild = await buildOverrideDir(backendDir, overrideFilePath).catch(error => {
+    const isBuild = await buildOverrideDir(backendDir, resourceDirPath).catch(error => {
       printer.debug(`Skipping build as ${error.message}`);
       return false;
     });
     // skip if packageManager or override.ts not found
     if (isBuild) {
-      const { overrideProps } = await import(path.join(overrideFilePath, 'build', 'override.js')).catch(error => {
+      const { override } = await import(overrideJSFilePath).catch(error => {
         formatter.list(['No override File Found', `To override ${this._resourceName} run amplify override auth ${this._resourceName} `]);
         return undefined;
       });
 
-      // pass stack object
-      const ddbStackTemplateObj = this._resourceTemplateObj as AmplifyDDBResourceTemplate;
-      //TODO: Check Script Options
-      if (typeof overrideProps === 'function' && overrideProps) {
-        try {
-          this._resourceTemplateObj = overrideProps(this._resourceTemplateObj as AmplifyDDBResourceTemplate);
+      if (typeof override === 'function' && override) {
+        const overrideCode: string = await fs.readFile(overrideJSFilePath, 'utf-8').catch(() => {
+          formatter.list(['No override File Found', `To override ${this._resourceName} run amplify override auth`]);
+          return '';
+        });
 
-          //The vm module enables compiling and running code within V8 Virtual Machine contexts. The vm module is not a security mechanism. Do not use it to run untrusted code.
-          // const script = new vm.Script(overrideCode);
-          // script.runInContext(vm.createContext(cognitoStackTemplateObj));
-          return;
-        } catch (error: $TSAny) {
-          throw new Error(error);
+        const sandboxNode = new vm.NodeVM({
+          console: 'inherit',
+          timeout: 5000,
+          sandbox: {},
+          require: {
+            context: 'sandbox',
+            builtin: ['path'],
+            external: true,
+          },
+        });
+        try {
+          await sandboxNode.run(overrideCode, overrideJSFilePath).override(this._resourceTemplateObj as AmplifyDDBResourceTemplate);
+        } catch (err: $TSAny) {
+          const error = new Error(`Skipping override due to ${err}${os.EOL}`);
+          printer.error(`${error}`);
+          error.stack = undefined;
+          throw error;
         }
       }
     }
