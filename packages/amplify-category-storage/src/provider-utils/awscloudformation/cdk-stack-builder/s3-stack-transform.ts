@@ -13,6 +13,8 @@ import {
 import { formatter, printer } from 'amplify-prompts';
 import * as fs from 'fs-extra';
 import * as path from 'path';
+import * as vm from 'vm2';
+import os from 'os';
 import { S3PermissionType, S3UserInputs } from '../service-walkthrough-types/s3-user-input-types';
 import { canResourceBeTransformed, S3CFNDependsOn, S3CFNPermissionType, S3InputState } from '../service-walkthroughs/s3-user-input-state';
 import { AmplifyS3ResourceCfnStack } from './s3-stack-builder';
@@ -167,27 +169,43 @@ export class AmplifyS3ResourceStackTransform {
   // Modify cloudformation files based on overrides
   async applyOverrides() {
     const backendDir = pathManager.getBackendDirPath();
-    const overrideFilePath = pathManager.getResourceDirectoryPath(undefined, AmplifyCategories.STORAGE, this.resourceName);
-    const isBuild = await buildOverrideDir(backendDir, overrideFilePath).catch(error => {
+    const resourceDirPath = pathManager.getResourceDirectoryPath(undefined, AmplifyCategories.STORAGE, this.resourceName);
+    const overrideJSFilePath = path.resolve(path.join(resourceDirPath, 'build', 'override.js'));
+
+    const isBuild = await buildOverrideDir(backendDir, resourceDirPath).catch(error => {
       printer.debug(`Skipping build as ${error.message}`);
       return false;
     });
     //Skip if packageManager or override.ts not found
     if (isBuild) {
-      const { overrideProps } = await import(path.join(overrideFilePath, 'build', 'override.js')).catch(error => {
+      const { override } = await import(overrideJSFilePath).catch(error => {
         formatter.list(['No override File Found', `To override ${this.resourceName} run amplify override auth ${this.resourceName} `]);
         return undefined;
       });
       // Pass stack object
-      if (overrideProps && typeof overrideProps === 'function') {
+      if (override && typeof override === 'function') {
+        const overrideCode: string = await fs.readFile(overrideJSFilePath, 'utf-8').catch(() => {
+          formatter.list(['No override File Found', `To override ${this.resourceName} run amplify override auth`]);
+          return '';
+        });
+
+        const sandboxNode = new vm.NodeVM({
+          console: 'inherit',
+          timeout: 5000,
+          sandbox: {},
+          require: {
+            context: 'sandbox',
+            builtin: ['path'],
+            external: true,
+          },
+        });
         try {
-          this.resourceTemplateObj = overrideProps(this.resourceTemplateObj as AmplifyS3ResourceTemplate);
-          //The vm module enables compiling and running code within V8 Virtual Machine contexts. The vm module is not a security mechanism. Do not use it to run untrusted code.
-          // const script = new vm.Script(overrideCode);
-          // script.runInContext(vm.createContext(cognitoStackTemplateObj));
-          return;
-        } catch (error: $TSAny) {
-          throw new Error(error);
+          await sandboxNode.run(overrideCode, overrideJSFilePath).override(this.resourceTemplateObj as AmplifyS3ResourceTemplate);
+        } catch (err: $TSAny) {
+          const error = new Error(`Skipping override due to ${err}${os.EOL}`);
+          printer.error(`${error}`);
+          error.stack = undefined;
+          throw error;
         }
       }
     }
