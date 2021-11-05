@@ -4,7 +4,6 @@ import execa from 'execa';
 import * as path from 'path';
 import { printer, prompter } from 'amplify-prompts';
 import { JSONUtilities } from '../jsonUtilities';
-import { initial } from 'lodash';
 
 export const generateOverrideSkeleton = async (context: $TSContext, srcResourceDirPath: string, destDirPath: string): Promise<void> => {
   // 1. Create skeleton package
