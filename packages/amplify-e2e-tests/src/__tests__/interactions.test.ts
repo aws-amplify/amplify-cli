@@ -25,9 +25,11 @@ describe('amplify add interactions', () => {
     await addSampleInteraction(projRoot, {});
     await amplifyPushAuth(projRoot);
     const meta = getProjectMeta(projRoot);
-    const { FunctionArn: functionArn, BotName: botName, Region: region } = Object.keys(meta.interactions).map(
-      key => meta.interactions[key],
-    )[0].output;
+    const {
+      FunctionArn: functionArn,
+      BotName: botName,
+      Region: region,
+    } = Object.keys(meta.interactions).map(key => meta.interactions[key])[0].output;
     expect(functionArn).toBeDefined();
     expect(botName).toBeDefined();
     expect(region).toBeDefined();
