@@ -32,11 +32,6 @@ export async function showStatusTable(tableViewFilter: ViewResourceTableParams) 
     print.info('\nTag Changes Detected');
   }
 
-  //4. Display Root Stack Status
-  if (rootStackUpdated) {
-    print.info('Root Stack Changes Detected');
-  }
-
   //4. Display Detailed Diffs (Cfn/NonCfn)
   if (tableViewFilter.verbose) {
     await viewResourceDiffs({ resourcesToBeUpdated, resourcesToBeDeleted, resourcesToBeCreated });
@@ -74,9 +69,9 @@ export async function showResourceTable(category?, resourceName?, filteredResour
   }
 
   //4. Display root stack Status
-  if (rootStackUpdated) {
-    print.info('\n RootStack Changes Detected');
-  }
+  // if (rootStackUpdated) {
+  //   print.info('\n RootStack Changes Detected');
+  // }
 
   const resourceChanged =
     resourcesToBeCreated.length + resourcesToBeUpdated.length + resourcesToBeSynced.length + resourcesToBeDeleted.length > 0 ||
