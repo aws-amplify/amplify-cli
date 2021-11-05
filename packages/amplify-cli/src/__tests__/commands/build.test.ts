@@ -1,11 +1,11 @@
-import { run } from '../../commands/build-override';
+import { run } from '../../commands/build';
 import { $TSContext } from 'amplify-cli-core';
 
 jest.mock('amplify-cli-core');
 jest.mock('amplify-provider-awscloudformation');
 
-describe('run build-override command', () => {
-  it('runs override command for only a resource', async () => {
+describe('run build command', () => {
+  it('runs build command for only a resource', async () => {
     const context_stub = {
       amplify: {
         getResourceStatus: jest.fn().mockResolvedValue({
@@ -48,7 +48,7 @@ describe('run build-override command', () => {
     expect(context_stub_typed.amplify.invokePluginMethod).toBeCalledTimes(1);
   });
 
-  it('runs override command for only all resources in a category', async () => {
+  it('runs build command for only all resources in a category', async () => {
     const context_stub = {
       amplify: {
         getResourceStatus: jest.fn().mockResolvedValue({
@@ -91,7 +91,7 @@ describe('run build-override command', () => {
     expect(context_stub_typed.amplify.invokePluginMethod).toBeCalledTimes(3);
   });
 
-  it('runs override command successfully for all resources in all categories', async () => {
+  it('runs build command successfully for all resources in all categories', async () => {
     const context_stub = {
       amplify: {
         getResourceStatus: jest.fn().mockResolvedValue({
