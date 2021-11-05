@@ -10,10 +10,10 @@
           "$ref": "#/definitions/ServiceQuestionsBaseResult"
         },
         {
-          "$ref": "#/definitions/Pick<OAuthResult,\"hostedUI\"|\"hostedUIDomainName\"|\"hostedUIProviderMeta\"|\"oAuthMetadata\">"
+          "$ref": "#/definitions/OAuthResult"
         },
         {
-          "$ref": "#/definitions/Pick<SocialProviderResult,\"authProvidersUserPool\">"
+          "$ref": "#/definitions/SocialProviderResult"
         },
         {
           "$ref": "#/definitions/IdentityPoolResult"
@@ -127,21 +127,14 @@
         },
         "userpoolClientLambdaRole": {
           "type": "string"
+        },
+        "useEnabledMfas": {
+          "type": "boolean"
         }
       },
-      "required": [
-        "authSelections",
-        "requiredAttributes",
-        "resourceName",
-        "serviceName",
-        "useDefault",
-        "userpoolClientGenerateSecret",
-        "userpoolClientLambdaRole",
-        "userpoolClientReadAttributes",
-        "userpoolClientWriteAttributes"
-      ]
+      "required": ["authSelections", "resourceName", "serviceName", "useDefault"]
     },
-    "Pick<OAuthResult,\"hostedUI\"|\"hostedUIDomainName\"|\"hostedUIProviderMeta\"|\"oAuthMetadata\">": {
+    "OAuthResult": {
       "type": "object",
       "properties": {
         "hostedUI": {
@@ -151,10 +144,33 @@
           "type": "string"
         },
         "hostedUIProviderMeta": {},
+        "hostedUIProviderCreds": {},
+        "AllowedOAuthFlows": {
+          "enum": ["code", "implicit"],
+          "type": "string"
+        },
+        "AllowedOAuthScopes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "newCallbackURLs": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "newLogoutURLs": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
         "oAuthMetadata": {}
       }
     },
-    "Pick<SocialProviderResult,\"authProvidersUserPool\">": {
+    "SocialProviderResult": {
       "type": "object",
       "properties": {
         "authProvidersUserPool": {
@@ -162,6 +178,36 @@
           "items": {
             "type": "string"
           }
+        },
+        "facebookAppIdUserPool": {
+          "type": "string"
+        },
+        "facebookAppSecretUserPool": {
+          "type": "string"
+        },
+        "googleAppIdUserPool": {
+          "type": "string"
+        },
+        "googleAppSecretUserPool": {
+          "type": "string"
+        },
+        "loginwithamazonAppIdUserPool": {
+          "type": "string"
+        },
+        "loginwithamazonAppSecretUserPool": {
+          "type": "string"
+        },
+        "signinwithappleClientIdUserPool": {
+          "type": "string"
+        },
+        "signinwithappleTeamIdUserPool": {
+          "type": "string"
+        },
+        "signinwithappleKeyIdUserPool": {
+          "type": "string"
+        },
+        "signinwithapplePrivateKeyUserPool": {
+          "type": "string"
         }
       }
     },
@@ -245,8 +291,7 @@
             "type": "string"
           }
         }
-      },
-      "required": ["autoVerifiedAttributes"]
+      }
     },
     "MfaResult": {
       "type": "object",
@@ -265,8 +310,7 @@
         "smsAuthenticationMessage": {
           "type": "string"
         }
-      },
-      "required": ["mfaConfiguration"]
+      }
     },
     "AdminQueriesResult": {
       "type": "object",
