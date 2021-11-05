@@ -1,4 +1,4 @@
-import { AmplifyRootStackTemplate } from '@aws-amplify/cli-overrides-helper';
+import { AmplifyRootStackTemplate } from '@aws-amplify/cli-extensibility-helper';
 import { $TSContext, CFNTemplateFormat, Template, pathManager, writeCFNTemplate, buildOverrideDir, $TSAny } from 'amplify-cli-core';
 import { AmplifyRootStack, AmplifyRootStackOutputs } from './root-stack-builder';
 import { RootStackSythesizer } from './stack-synthesizer';

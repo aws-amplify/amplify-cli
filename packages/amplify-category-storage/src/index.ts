@@ -25,7 +25,7 @@ import {
   headlessRemoveStorage,
   headlessUpdateStorage,
 } from './provider-utils/awscloudformation/storage-configuration-helpers';
-export { AmplifyDDBResourceTemplate, AmplifyS3ResourceTemplate } from '@aws-amplify/cli-overrides-helper';
+export { AmplifyDDBResourceTemplate, AmplifyS3ResourceTemplate } from '@aws-amplify/cli-extensibility-helper';
 export { categoryName as category } from './constants';
 export { AmplifyDDBResourceTemplate, AmplifyS3ResourceTemplate } from './provider-utils/awscloudformation/cdk-stack-builder/types';
 import { getAllDefaults } from './provider-utils/awscloudformation/default-values/s3-defaults';

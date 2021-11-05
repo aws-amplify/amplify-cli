@@ -1,11 +1,11 @@
 {
-  "name": "@aws-amplify/cli-overrides-helper",
+  "name": "@aws-amplify/cli-extensibility-helper",
   "version": "1.0.0",
-  "description": "Amplify CLI Overrides Helper utility package",
+  "description": "Amplify CLI Extensibility Helper utility package",
   "repository": {
     "type": "git",
     "url": "https://github.com/aws-amplify/amplify-cli.git",
-    "directory": "packages/amplify-cli-overrides-helper"
+    "directory": "packages/amplify-cli-extensibility-helper"
   },
   "author": "Amazon Web Services",
   "license": "Apache-2.0",

@@ -1,4 +1,4 @@
-import { AmplifyCDKL1 } from '@aws-amplify/cli-overrides-helper';
+import { AmplifyCDKL1 } from '@aws-amplify/cli-extensibility-helper';
 import * as cdk from '@aws-cdk/core';
 import { $TSObject } from 'amplify-cli-core';
 

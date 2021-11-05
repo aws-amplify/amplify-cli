@@ -1,4 +1,4 @@
-import { AmplifyS3ResourceTemplate } from '@aws-amplify/cli-overrides-helper';
+import { AmplifyS3ResourceTemplate } from '@aws-amplify/cli-extensibility-helper';
 import * as iamCdk from '@aws-cdk/aws-iam';
 import * as lambdaCdk from '@aws-cdk/aws-lambda';
 import * as s3Cdk from '@aws-cdk/aws-s3';

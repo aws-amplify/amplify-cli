@@ -1,10 +1,12 @@
-import { AmplifyDDBResourceTemplate } from '@aws-amplify/cli-overrides-helper';
+import { AmplifyDDBResourceTemplate } from '@aws-amplify/cli-extensibility-helper';
 import * as cdk from '@aws-cdk/core';
 import { App } from '@aws-cdk/core';
 import { $TSAny, buildOverrideDir, JSONUtilities, pathManager } from 'amplify-cli-core';
 import { formatter, printer } from 'amplify-prompts';
 import * as fs from 'fs-extra';
+import os from 'os';
 import * as path from 'path';
+import * as vm from 'vm2';
 import { DynamoDBCLIInputs } from '../service-walkthrough-types/dynamoDB-user-input-types';
 import { DynamoDBInputState } from '../service-walkthroughs/dynamoDB-input-state';
 import { AmplifyDDBResourceStack } from './ddb-stack-builder';
