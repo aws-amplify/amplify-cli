@@ -630,7 +630,7 @@ export function getTransformerVersion(context) {
   return transformerVersion;
 }
 
-function migrateToTransformerVersionFeatureFlag(context) {
+async function migrateToTransformerVersionFeatureFlag(context) {
   const projectPath = pathManager.findProjectRoot() ?? process.cwd();
 
   let config = stateManager.getCLIJSON(projectPath, undefined, {
@@ -644,6 +644,7 @@ function migrateToTransformerVersionFeatureFlag(context) {
   if (useExperimentalPipelineTransformer && transformerVersion === 1) {
     config.features.graphqltransformer.transformerversion = 2;
     stateManager.setCLIJSON(projectPath, config);
+    await FeatureFlags.reloadValues();
 
     context.print.warning(
       `\nThe project is configured with 'transformerVersion': ${transformerVersion}, but 'useExperimentalPipelinedTransformer': ${useExperimentalPipelineTransformer}. Setting the 'transformerVersion': ${config.features.graphqltransformer.transformerversion}. 'useExperimentalPipelinedTransformer' is deprecated.`,
