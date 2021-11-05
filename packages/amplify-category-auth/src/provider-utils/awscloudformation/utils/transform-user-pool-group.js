@@ -42,16 +42,7 @@ async function transformUserPoolGroupSchema(context) {
     }
   });
 
-  // validating cli-inputs
-  const cliState = new AuthInputState(authResourceName);
-  const identityPoolName = cliState.getCLIInputPayload().identityPoolName;
-  const props = {
-    groups,
-    cognitoResourceName: authResourceName,
-    identityPoolName: identityPoolName,
-  };
-
-  await generateUserPoolGroupStackTemplate(props);
+  await generateUserPoolGroupStackTemplate(authResourceName);
 }
 
 module.exports = {
