@@ -426,7 +426,7 @@ export function addRestApi(cwd: string, settings: RestApiSettings) {
       if (settings.path) {
         chain
           .sendConfirmYes()
-          .wait('Select the REST API you want to update')
+          .wait('Select the REST API you would want to update')
           .sendCarriageReturn() // Select the first REST API
           .wait('What would you like to do?')
           .sendCarriageReturn()

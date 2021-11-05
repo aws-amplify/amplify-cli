@@ -41,7 +41,7 @@ export class ApigwStackTransform {
   async transform() {
     let authResourceName: string;
     if (this.resourceName === 'AdminQueries') {
-      [authResourceName] = getAmplifyResourceByCategories(AmplifyCategories.AUTH).filter(resourceName => resourceName !== 'userPoolGroups');
+      [authResourceName] = getAmplifyResourceByCategories(AmplifyCategories.AUTH).filter(resourceName => resourceName !== 'UserPoolGroups');
     }
 
     // Generate cloudformation stack from cli-inputs.json
