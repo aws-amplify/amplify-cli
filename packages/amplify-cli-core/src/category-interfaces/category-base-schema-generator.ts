@@ -4,11 +4,10 @@
  * can be used for run-time validation of Walkthrough/Headless structures.
  */
 import { getProgramFromFiles, buildGenerator, PartialArgs } from 'typescript-json-schema';
-import * as fs from 'fs-extra';
-import * as path from 'path';
+import fs from 'fs-extra';
+import path from 'path';
 import Ajv from 'ajv';
 import { printer } from 'amplify-prompts';
-import { $TSAny, JSONUtilities } from '..';
 
 // Interface types are expected to be exported as "typeName" in the file
 export type TypeDef = {
@@ -16,21 +15,10 @@ export type TypeDef = {
   service: string;
 };
 
-/**
- * Normalize Service Name for use in filepaths
- * e.g Convert DynamoDB to dynamoDB , S3 to s3 as filename prefix
- * @param svcName
- * @returns normalizedSvcName
- */
-function normalizeServiceToFilePrefix(serviceName: string): string {
-  serviceName = serviceName.replace(' ', '');
-  return `${serviceName[0].toLowerCase()}${serviceName.slice(1)}`;
-}
-
 export class CLIInputSchemaGenerator {
   // Paths are relative to the package root
-  TYPES_SRC_ROOT = path.join('.', 'src', 'provider-utils', 'awscloudformation', 'service-walkthrough-types');
-  SCHEMA_FILES_ROOT = path.join('.', 'resources', 'schemas');
+  TYPES_SRC_ROOT =  path.join('.','src','provider-utils','awscloudformation','service-walkthrough-types');
+  SCHEMA_FILES_ROOT = path.join('.','resources','schemas');
   OVERWRITE_SCHEMA_FLAG = '--overwrite';
 
   private serviceTypeDefs: TypeDef[];
@@ -44,9 +32,18 @@ export class CLIInputSchemaGenerator {
   }
 
   private getTypesSrcRootForSvc(normalizedSvcName: string): string {
-    return path.join(this.TYPES_SRC_ROOT, `${normalizedSvcName}-user-input-types.ts`);
+    return path.join(this.TYPES_SRC_ROOT,`${normalizedSvcName}-user-input-types.ts`);
   }
 
+  /**
+   * Normalize Service Name for use in filepaths
+   * e.g Convert DynamoDB to dynamoDB , S3 to s3 as filename prefix
+   * @param svcName
+   * @returns normalizedSvcName
+   */
+  private normalizeServiceToFilePrefix( svcName : string ): string {
+    return `${svcName[0].toLowerCase()}${svcName.slice(1)}`
+  }
   private printWarningSchemaFileExists() {
     printer.info('The interface version must be bumped after any changes.');
     printer.info(`Use the ${this.OVERWRITE_SCHEMA_FLAG} flag to overwrite existing versions`);
@@ -58,7 +55,7 @@ export class CLIInputSchemaGenerator {
     printer.info(`Output Path: ${schemaFilePath}`);
   }
 
-  private printGeneratingSchemaMessage(svcAbsoluteFilePath: string, serviceName: string) {
+  private printGeneratingSchemaMessage(svcAbsoluteFilePath: string, serviceName : string){
     printer.info(`Generating Schema for ${serviceName}`);
     printer.info(`Input Path: ${svcAbsoluteFilePath}`);
   }
@@ -77,7 +74,7 @@ export class CLIInputSchemaGenerator {
     };
 
     for (const typeDef of this.serviceTypeDefs) {
-      const normalizedServiceName = normalizeServiceToFilePrefix(typeDef.service);
+      const normalizedServiceName = this.normalizeServiceToFilePrefix( typeDef.service ) ;
       //get absolute file path to the user-input types for the given service
       const svcAbsoluteFilePath = this.getSvcFileAbsolutePath(normalizedServiceName);
       this.printGeneratingSchemaMessage(svcAbsoluteFilePath, typeDef.service);
@@ -94,7 +91,7 @@ export class CLIInputSchemaGenerator {
         return generatedFilePaths;
       }
       fs.ensureFileSync(outputSchemaFilePath);
-      JSONUtilities.writeJson(outputSchemaFilePath, typeSchema);
+      fs.writeFileSync(outputSchemaFilePath, JSON.stringify(typeSchema, undefined, 4));
       //print success status to the terminal
       this.printSuccessSchemaFileWritten(outputSchemaFilePath, typeDef.typeName);
       generatedFilePaths.push(outputSchemaFilePath);
@@ -112,7 +109,7 @@ export class CLIInputSchemaValidator {
 
   constructor(service: string, category: string, schemaFileName: string) {
     this._category = category;
-    this._service = normalizeServiceToFilePrefix(service);
+    this._service = service;
     this._schemaFileName = schemaFileName;
     this._ajv = new Ajv();
   }
@@ -128,14 +125,12 @@ export class CLIInputSchemaValidator {
   async validateInput(userInput: string): Promise<boolean> {
     const userInputSchema = await this.getUserInputSchema();
     if (userInputSchema.dependencySchemas) {
-      userInputSchema.dependencySchemas.reduce((acc: { addSchema: (arg0: $TSAny) => $TSAny }, it: $TSAny) => acc.addSchema(it), this._ajv);
+      userInputSchema.dependencySchemas.reduce((acc: { addSchema: (arg0: any) => any }, it: any) => acc.addSchema(it), this._ajv);
     }
     const validate = this._ajv.compile(userInputSchema);
-    const input = JSONUtilities.parse(userInput);
+    const input = JSON.parse(userInput);
     if (!validate(input) as boolean) {
-      throw new Error(
-        `Data did not validate against the supplied schema. Underlying errors were ${JSONUtilities.stringify(validate.errors)}`,
-      );
+      throw new Error(`Data did not validate against the supplied schema. Underlying errors were ${JSON.stringify(validate.errors)}`);
     }
     return true;
   }
