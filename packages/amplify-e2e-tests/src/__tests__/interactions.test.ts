@@ -16,8 +16,8 @@ describe('amplify add interactions', () => {
   });
 
   afterEach(async () => {
-    // await deleteProject(projRoot);
-    // deleteProjectDir(projRoot);
+    await deleteProject(projRoot);
+    deleteProjectDir(projRoot);
   });
 
   it('init a project and add  simple interaction', async () => {

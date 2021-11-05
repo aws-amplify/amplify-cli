@@ -68,11 +68,6 @@ export async function showResourceTable(category?, resourceName?, filteredResour
     print.info('\nTag Changes Detected');
   }
 
-  //4. Display root stack Status
-  // if (rootStackUpdated) {
-  //   print.info('\n RootStack Changes Detected');
-  // }
-
   const resourceChanged =
     resourcesToBeCreated.length + resourcesToBeUpdated.length + resourcesToBeSynced.length + resourcesToBeDeleted.length > 0 ||
     tagsUpdated ||
