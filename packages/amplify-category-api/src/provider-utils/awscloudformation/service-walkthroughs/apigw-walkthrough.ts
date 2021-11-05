@@ -151,11 +151,6 @@ async function askApiName(context: $TSContext, defaultResourceName: string) {
       required: true,
     })(input);
 
-    const adminQueriesName = 'AdminQueries';
-    if (input === adminQueriesName) {
-      return `${adminQueriesName} is a reserved name for REST API resources for use by the auth category. Run "amplify update auth" to create an Admin Queries API.`;
-    }
-
     let uniqueCheck = false;
     try {
       uniqueCheck = isResourceNameUnique(category, input);
@@ -590,7 +585,7 @@ async function askLambdaArn(context: $TSContext, currentPath?: ApigwPath) {
 }
 
 export async function migrate(context: $TSContext, projectPath: string, resourceName: string) {
-  const apigwInputState = new ApigwInputState(context, resourceName);
+  const apigwInputState = ApigwInputState.getInstance(context, resourceName);
   return apigwInputState.migrateApigwResource(resourceName);
 }
 

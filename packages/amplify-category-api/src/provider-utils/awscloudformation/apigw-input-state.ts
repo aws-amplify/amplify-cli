@@ -17,13 +17,22 @@ import { ApigwInputs, ApigwStackTransform, CrudOperation, Path, PermissionSettin
 import { ApigwWalkthroughReturnPromise } from './service-walkthrough-types/apigw-types';
 
 export class ApigwInputState {
+  private static instance: ApigwInputState;
   projectRootPath: string;
   resourceName: string;
   paths: { [pathName: string]: Path };
 
-  constructor(private readonly context: $TSContext, resourceName?: string) {
+  private constructor(private readonly context: $TSContext, resourceName?: string) {
     this.projectRootPath = pathManager.findProjectRoot();
     this.resourceName = resourceName;
+    ApigwInputState.instance = this;
+  }
+
+  public static getInstance(context: $TSContext, resourceName?: string) {
+    if (!ApigwInputState.instance) {
+      new ApigwInputState(context, resourceName);
+    }
+    return ApigwInputState.instance;
   }
 
   public addAdminQueriesResource = async (adminQueriesProps: AdminQueriesProps) => {
@@ -205,7 +214,7 @@ export class ApigwInputState {
 
     stateManager.setResourceParametersJson(this.projectRootPath, AmplifyCategories.API, this.resourceName, {});
 
-    const stack = new ApigwStackTransform(this.context, this.resourceName, this);
+    const stack = new ApigwStackTransform(this.context, this.resourceName);
     await stack.transform();
   }
 

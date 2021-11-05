@@ -54,7 +54,7 @@ export const run = async (context: $TSContext) => {
     throw 'To be implemented';
   } else if (service === AmplifySupportedService.APIGW) {
     // Migration logic goes in here
-    const apigwInputState = new ApigwInputState(context, selectedResourceName);
+    const apigwInputState = ApigwInputState.getInstance(context, selectedResourceName);
     if (!apigwInputState.cliInputsFileExists()) {
       if (await prompter.yesOrNo('File migration required to continue. Do you want to continue?', true)) {
         await apigwInputState.migrateApigwResource(selectedResourceName);
