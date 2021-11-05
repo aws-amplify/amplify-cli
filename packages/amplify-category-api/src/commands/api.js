@@ -42,10 +42,13 @@ module.exports = {
         description: 'Opens the web console for the selected api service',
       },
       {
+<<<<<<< HEAD
         name: 'migrate',
         description: 'Migrates GraphQL schemas to the latest GraphQL transformer version',
       },
       {
+=======
+>>>>>>> ff37463bf (Apigw revert (#8690))
         name: 'rebuild',
         description:
           'Removes and recreates all DynamoDB tables backing a GraphQL API. Useful for resetting test data during the development phase of an app',

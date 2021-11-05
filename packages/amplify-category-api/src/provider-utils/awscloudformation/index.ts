@@ -1,52 +1,28 @@
-import { $TSAny, $TSContext, $TSObject, AmplifySupportedService, exitOnNextTick, NotImplementedError } from 'amplify-cli-core';
-import { UpdateApiRequest } from 'amplify-headless-interface';
-import { printer } from 'amplify-prompts';
-import inquirer from 'inquirer';
-import * as path from 'path';
-import { category } from '../../category-constants';
-import { ApigwInputState } from './apigw-input-state';
+import { serviceWalkthroughResultToAddApiRequest } from './utils/service-walkthrough-result-to-add-api-request';
 import { getCfnApiArtifactHandler } from './cfn-api-artifact-handler';
-import { addResource as addContainer, updateResource as updateContainer } from './containers-handler';
+import { serviceMetadataFor, getServiceWalkthrough, datasourceMetadataFor } from './utils/dynamic-imports';
 import { legacyAddResource } from './legacy-add-resource';
+import { legacyUpdateResource } from './legacy-update-resource';
+import { UpdateApiRequest } from 'amplify-headless-interface';
+import { editSchemaFlow } from './utils/edit-schema-flow';
+import { NotImplementedError, exitOnNextTick } from 'amplify-cli-core';
+import { addResource as addContainer, updateResource as updateContainer } from './containers-handler';
+import inquirer from 'inquirer';
 import {
   API_TYPE,
-  getPermissionPolicies as getContainerPermissionPolicies,
   ServiceConfiguration,
+  getPermissionPolicies as getContainerPermissionPolicies,
 } from './service-walkthroughs/containers-walkthrough';
-import { datasourceMetadataFor, getServiceWalkthrough, serviceMetadataFor } from './utils/dynamic-imports';
-import { editSchemaFlow } from './utils/edit-schema-flow';
-import { serviceWalkthroughResultToAddApiRequest } from './utils/service-walkthrough-result-to-add-api-request';
+import { category } from '../../category-constants';
 
-export async function addAdminQueriesApi(
-  context: $TSContext,
-  apiProps: { apiName: string; functionName: string; authResourceName: string; dependsOn: $TSObject[] },
-) {
-  const apigwInputState = new ApigwInputState(context, apiProps.apiName);
-  return apigwInputState.addAdminQueriesResource(apiProps);
-}
-
-export async function updateAdminQueriesApi(
-  context: $TSContext,
-  apiProps: { apiName: string; functionName: string; authResourceName: string; dependsOn: $TSObject[] },
-) {
-  const apigwInputState = new ApigwInputState(context, apiProps.apiName);
-  // Check for migration
-
-  if (!apigwInputState.cliInputsFileExists()) {
-    await apigwInputState.migrateAdminQueries(apiProps);
-  } else {
-    return apigwInputState.updateAdminQueriesResource(apiProps);
-  }
-}
-
-export async function console(context: $TSContext, service: string) {
+export async function console(context, service) {
   const { serviceWalkthroughFilename } = await serviceMetadataFor(service);
-  const serviceWalkthroughSrc = path.join(__dirname, 'service-walkthroughs', serviceWalkthroughFilename);
-  const { openConsole } = await import(serviceWalkthroughSrc);
+  const serviceWalkthroughSrc = `${__dirname}/service-walkthroughs/${serviceWalkthroughFilename}`;
+  const { openConsole } = require(serviceWalkthroughSrc);
 
   if (!openConsole) {
     const errMessage = 'Opening console functionality not available for this option';
-    printer.error(errMessage);
+    context.print.error(errMessage);
     await context.usageData.emitError(new NotImplementedError(errMessage));
     exitOnNextTick(0);
   }
@@ -54,23 +30,24 @@ export async function console(context: $TSContext, service: string) {
   return openConsole(context);
 }
 
-async function addContainerResource(context: $TSContext, service: string, options, apiType: API_TYPE) {
+async function addContainerResource(context, category, service, options, apiType) {
   const serviceWalkthroughFilename = 'containers-walkthrough.js';
+  const defaultValuesFilename = 'containers-defaults.js';
 
   const serviceWalkthrough = await getServiceWalkthrough(serviceWalkthroughFilename);
-  const serviceWalkthroughPromise: Promise<$TSAny> = serviceWalkthrough(context, apiType);
+  const serviceWalkthroughPromise: Promise<any> = serviceWalkthrough(context, defaultValuesFilename, apiType);
 
   return await addContainer(serviceWalkthroughPromise, context, category, service, options, apiType);
 }
 
-async function addNonContainerResource(context: $TSContext, service: string, options) {
+async function addNonContainerResource(context, category, service, options) {
   const serviceMetadata = await serviceMetadataFor(service);
-  const { serviceWalkthroughFilename } = serviceMetadata;
+  const { serviceWalkthroughFilename, defaultValuesFilename } = serviceMetadata;
   const serviceWalkthrough = await getServiceWalkthrough(serviceWalkthroughFilename);
 
-  const serviceWalkthroughPromise: Promise<$TSAny> = serviceWalkthrough(context, serviceMetadata);
+  const serviceWalkthroughPromise: Promise<any> = serviceWalkthrough(context, defaultValuesFilename, serviceMetadata);
   switch (service) {
-    case AmplifySupportedService.APPSYNC:
+    case 'AppSync':
       const walkthroughResult = await serviceWalkthroughPromise;
       const askToEdit = walkthroughResult.askToEdit;
       const apiName = await getCfnApiArtifactHandler(context).createArtifacts(serviceWalkthroughResultToAddApiRequest(walkthroughResult));
@@ -78,26 +55,23 @@ async function addNonContainerResource(context: $TSContext, service: string, opt
         await editSchemaFlow(context, apiName);
       }
       return apiName;
-    case AmplifySupportedService.APIGW:
-      const apigwInputState = new ApigwInputState(context);
-      return apigwInputState.addApigwResource(serviceWalkthroughPromise, options);
     default:
       return legacyAddResource(serviceWalkthroughPromise, context, category, service, options);
   }
 }
 
-export async function addResource(context: $TSContext, service: string, options) {
+export async function addResource(context, category, service, options) {
   let useContainerResource = false;
   let apiType = API_TYPE.GRAPHQL;
 
   if (isContainersEnabled(context)) {
     switch (service) {
-      case AmplifySupportedService.APPSYNC:
-        useContainerResource = await isGraphQLContainer();
+      case 'AppSync':
+        useContainerResource = await isGraphQLContainer(context);
         apiType = API_TYPE.GRAPHQL;
         break;
-      case AmplifySupportedService.APIGW:
-        useContainerResource = await isRestContainer();
+      case 'API Gateway':
+        useContainerResource = await isRestContainer(context);
         apiType = API_TYPE.REST;
         break;
       default:
@@ -106,11 +80,11 @@ export async function addResource(context: $TSContext, service: string, options)
   }
 
   return useContainerResource
-    ? addContainerResource(context, service, options, apiType)
-    : addNonContainerResource(context, service, options);
+    ? addContainerResource(context, category, service, options, apiType)
+    : addNonContainerResource(context, category, service, options);
 }
 
-function isContainersEnabled(context: $TSContext) {
+function isContainersEnabled(context) {
   const { frontend } = context.amplify.getProjectConfig();
   if (frontend) {
     const { config: { ServerlessContainers = false } = {} } = context.amplify.getProjectConfig()[frontend] || {};
@@ -121,14 +95,14 @@ function isContainersEnabled(context: $TSContext) {
   return false;
 }
 
-async function isGraphQLContainer(): Promise<boolean> {
+async function isGraphQLContainer(context): Promise<boolean> {
   const { graphqlSelection } = await inquirer.prompt({
     name: 'graphqlSelection',
     message: 'Which service would you like to use',
     type: 'list',
     choices: [
       {
-        name: AmplifySupportedService.APPSYNC,
+        name: 'AppSync',
         value: false,
       },
       {
@@ -141,7 +115,7 @@ async function isGraphQLContainer(): Promise<boolean> {
   return graphqlSelection;
 }
 
-async function isRestContainer() {
+async function isRestContainer(context) {
   const { restSelection } = await inquirer.prompt({
     name: 'restSelection',
     message: 'Which service would you like to use',
@@ -161,18 +135,22 @@ async function isRestContainer() {
   return restSelection;
 }
 
-export async function updateResource(context: $TSContext, category: string, service: string, options) {
+export async function updateResource(context, category, service, options) {
   const allowContainers = options?.allowContainers ?? true;
   let useContainerResource = false;
   let apiType = API_TYPE.GRAPHQL;
   if (allowContainers && isContainersEnabled(context)) {
-    const { hasAPIGatewayContainerResource, hasAPIGatewayLambdaResource, hasGraphQLAppSyncResource, hasGraphqlContainerResource } =
-      await describeApiResourcesBySubCategory(context);
+    const {
+      hasAPIGatewayContainerResource,
+      hasAPIGatewayLambdaResource,
+      hasGraphQLAppSyncResource,
+      hasGraphqlContainerResource,
+    } = await describeApiResourcesBySubCategory(context);
 
     switch (service) {
-      case AmplifySupportedService.APPSYNC:
+      case 'AppSync':
         if (hasGraphQLAppSyncResource && hasGraphqlContainerResource) {
-          useContainerResource = await isGraphQLContainer();
+          useContainerResource = await isGraphQLContainer(context);
         } else if (hasGraphqlContainerResource) {
           useContainerResource = true;
         } else {
@@ -180,9 +158,9 @@ export async function updateResource(context: $TSContext, category: string, serv
         }
         apiType = API_TYPE.GRAPHQL;
         break;
-      case AmplifySupportedService.APIGW:
+      case 'API Gateway':
         if (hasAPIGatewayContainerResource && hasAPIGatewayLambdaResource) {
-          useContainerResource = await isRestContainer();
+          useContainerResource = await isRestContainer(context);
         } else if (hasAPIGatewayContainerResource) {
           useContainerResource = true;
         } else {
@@ -195,10 +173,12 @@ export async function updateResource(context: $TSContext, category: string, serv
     }
   }
 
-  return useContainerResource ? updateContainerResource(context, category, service, apiType) : updateNonContainerResource(context, service);
+  return useContainerResource
+    ? updateContainerResource(context, category, service, apiType)
+    : updateNonContainerResource(context, category, service);
 }
 
-async function describeApiResourcesBySubCategory(context: $TSContext) {
+async function describeApiResourcesBySubCategory(context) {
   const { allResources } = await context.amplify.getResourceStatus();
   const resources = allResources.filter(resource => resource.category === category && resource.mobileHubMigrated !== true);
 
@@ -211,9 +191,9 @@ async function describeApiResourcesBySubCategory(context: $TSContext) {
     hasAPIGatewayContainerResource =
       hasAPIGatewayContainerResource || (resource.service === 'ElasticContainer' && resource.apiType === API_TYPE.REST);
 
-    hasAPIGatewayLambdaResource = hasAPIGatewayLambdaResource || resource.service === AmplifySupportedService.APIGW;
+    hasAPIGatewayLambdaResource = hasAPIGatewayLambdaResource || resource.service === 'API Gateway';
 
-    hasGraphQLAppSyncResource = hasGraphQLAppSyncResource || resource.service === AmplifySupportedService.APPSYNC;
+    hasGraphQLAppSyncResource = hasGraphQLAppSyncResource || resource.service === 'AppSync';
 
     hasGraphqlContainerResource =
       hasGraphqlContainerResource || (resource.service === 'ElasticContainer' && resource.apiType === API_TYPE.GRAPHQL);
@@ -227,32 +207,33 @@ async function describeApiResourcesBySubCategory(context: $TSContext) {
   };
 }
 
-async function updateContainerResource(context: $TSContext, category: string, service: string, apiType: API_TYPE) {
+async function updateContainerResource(context, category, service, apiType: API_TYPE) {
   const serviceWalkthroughFilename = 'containers-walkthrough';
-  const serviceWalkthroughSrc = path.join(__dirname, 'service-walkthroughs', serviceWalkthroughFilename);
-  const { updateWalkthrough } = await import(serviceWalkthroughSrc);
+  const defaultValuesFilename = 'containers-defaults.js';
+  const serviceWalkthroughSrc = `${__dirname}/service-walkthroughs/${serviceWalkthroughFilename}`;
+  const { updateWalkthrough } = require(serviceWalkthroughSrc);
 
   if (!updateWalkthrough) {
     const errMessage = 'Update functionality not available for this option';
-    printer.error(errMessage);
+    context.print.error(errMessage);
     await context.usageData.emitError(new NotImplementedError(errMessage));
     exitOnNextTick(0);
   }
 
-  const updateWalkthroughPromise: Promise<ServiceConfiguration> = updateWalkthrough(context, apiType);
+  const updateWalkthroughPromise: Promise<ServiceConfiguration> = updateWalkthrough(context, defaultValuesFilename, apiType);
 
   updateContainer(updateWalkthroughPromise, context, category);
 }
 
-async function updateNonContainerResource(context: $TSContext, service: string) {
+async function updateNonContainerResource(context, category, service) {
   const serviceMetadata = await serviceMetadataFor(service);
   const { defaultValuesFilename, serviceWalkthroughFilename } = serviceMetadata;
-  const serviceWalkthroughSrc = path.join(__dirname, 'service-walkthroughs', serviceWalkthroughFilename);
-  const { updateWalkthrough } = await import(serviceWalkthroughSrc);
+  const serviceWalkthroughSrc = `${__dirname}/service-walkthroughs/${serviceWalkthroughFilename}`;
+  const { updateWalkthrough } = require(serviceWalkthroughSrc);
 
   if (!updateWalkthrough) {
     const errMessage = 'Update functionality not available for this option';
-    printer.error(errMessage);
+    context.print.error(errMessage);
     await context.usageData.emitError(new NotImplementedError(errMessage));
     exitOnNextTick(0);
   }
@@ -260,15 +241,14 @@ async function updateNonContainerResource(context: $TSContext, service: string) 
   const updateWalkthroughPromise: Promise<UpdateApiRequest> = updateWalkthrough(context, defaultValuesFilename, serviceMetadata);
 
   switch (service) {
-    case AmplifySupportedService.APPSYNC:
+    case 'AppSync':
       return updateWalkthroughPromise.then(getCfnApiArtifactHandler(context).updateArtifacts);
     default:
-      const apigwInputState = new ApigwInputState(context);
-      return apigwInputState.updateApigwResource(updateWalkthroughPromise);
+      return legacyUpdateResource(updateWalkthroughPromise, context, category, service);
   }
 }
 
-export async function migrateResource(context: $TSContext, projectPath: string, service: string, resourceName: string) {
+export async function migrateResource(context, projectPath, service, resourceName) {
   if (service === 'ElasticContainer') {
     return migrateResourceContainer(context, projectPath, service, resourceName);
   } else {
@@ -276,53 +256,53 @@ export async function migrateResource(context: $TSContext, projectPath: string, 
   }
 }
 
-async function migrateResourceContainer(context: $TSContext, projectPath: string, service: string, resourceName: string) {
-  printer.info(`No migration required for ${resourceName}`);
+async function migrateResourceContainer(context, projectPath, service, resourceName) {
+  context.print.info(`No migration required for ${resourceName}`);
   return;
 }
 
-async function migrateResourceNonContainer(context: $TSContext, projectPath: string, service: string, resourceName: string) {
+async function migrateResourceNonContainer(context, projectPath, service, resourceName) {
   const serviceMetadata = await serviceMetadataFor(service);
   const { serviceWalkthroughFilename } = serviceMetadata;
-  const serviceWalkthroughSrc = path.join(__dirname, 'service-walkthroughs', serviceWalkthroughFilename);
-  const { migrate } = await import(serviceWalkthroughSrc);
+  const serviceWalkthroughSrc = `${__dirname}/service-walkthroughs/${serviceWalkthroughFilename}`;
+  const { migrate } = require(serviceWalkthroughSrc);
 
   if (!migrate) {
-    printer.info(`No migration required for ${resourceName}`);
+    context.print.info(`No migration required for ${resourceName}`);
     return;
   }
 
   return await migrate(context, projectPath, resourceName);
 }
 
-export async function addDatasource(context: $TSContext, category, datasource) {
+export async function addDatasource(context, category, datasource) {
   const serviceMetadata = await datasourceMetadataFor(datasource);
-  const { serviceWalkthroughFilename } = serviceMetadata;
-  return (await getServiceWalkthrough(serviceWalkthroughFilename))(context, serviceMetadata);
+  const { defaultValuesFilename, serviceWalkthroughFilename } = serviceMetadata;
+  return (await getServiceWalkthrough(serviceWalkthroughFilename))(context, defaultValuesFilename, serviceMetadata);
 }
 
-export async function getPermissionPolicies(context: $TSContext, service: string, resourceName: string, crudOptions) {
+export async function getPermissionPolicies(context, service, resourceName, crudOptions) {
   if (service === 'ElasticContainer') {
     return getPermissionPoliciesContainer(context, service, resourceName, crudOptions);
   } else {
-    return getPermissionPoliciesNonContainer(service, resourceName, crudOptions);
+    return getPermissionPoliciesNonContainer(context, service, resourceName, crudOptions);
   }
 }
 
-async function getPermissionPoliciesContainer(context: $TSContext, service: string, resourceName: string, crudOptions) {
+async function getPermissionPoliciesContainer(context, service, resourceName, crudOptions) {
   return getContainerPermissionPolicies(context, service, resourceName, crudOptions);
 }
 
-async function getPermissionPoliciesNonContainer(service: string, resourceName: string, crudOptions: string[]) {
+async function getPermissionPoliciesNonContainer(context, service, resourceName, crudOptions) {
   const serviceMetadata = await serviceMetadataFor(service);
   const { serviceWalkthroughFilename } = serviceMetadata;
-  const serviceWalkthroughSrc = path.join(__dirname, 'service-walkthroughs', serviceWalkthroughFilename);
-  const { getIAMPolicies } = await import(serviceWalkthroughSrc);
+  const serviceWalkthroughSrc = `${__dirname}/service-walkthroughs/${serviceWalkthroughFilename}`;
+  const { getIAMPolicies } = require(serviceWalkthroughSrc);
 
   if (!getIAMPolicies) {
-    printer.info(`No policies found for ${resourceName}`);
+    context.print.info(`No policies found for ${resourceName}`);
     return;
   }
 
-  return getIAMPolicies(resourceName, crudOptions);
+  return getIAMPolicies(resourceName, crudOptions, context);
 }

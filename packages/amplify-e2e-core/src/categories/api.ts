@@ -1,9 +1,10 @@
+import { getCLIPath, updateSchema, nspawn as spawn, KEY_DOWN_ARROW } from '..';
 import * as fs from 'fs-extra';
-import _ from 'lodash';
 import * as path from 'path';
-import { ExecutionContext, getCLIPath, nspawn as spawn, RETURN, updateSchema } from '..';
-import { multiSelect, singleSelect } from '../utils/selectors';
 import { selectRuntime, selectTemplate } from './lambda-function';
+import { singleSelect, multiSelect } from '../utils/selectors';
+import _ from 'lodash';
+import { EOL } from 'os';
 import { modifiedApi } from './resources/modified-api-index';
 
 export function getSchemaPath(schemaName: string): string {
@@ -400,145 +401,126 @@ export function updateAPIWithResolutionStrategyWithModels(cwd: string, settings:
 }
 
 // Either settings.existingLambda or settings.isCrud is required
-
-type RestApiSettings = {
-  allowGuestUsers?: boolean;
-  existingLambda?: boolean;
-  hasUserPoolGroups?: boolean;
-  isFirstRestApi?: boolean;
-  isCrud?: boolean;
-  path?: string;
-  resourceName?: string;
-  restrictAccess?: boolean;
-};
-
-export function addRestApi(cwd: string, settings: RestApiSettings) {
+export function addRestApi(cwd: string, settings: any) {
   return new Promise<void>((resolve, reject) => {
-    const isFirstRestApi = settings.isFirstRestApi ?? true;
-    const chain = spawn(getCLIPath(), ['add', 'api'], { cwd, stripColors: true })
-      .wait('Select from one of the below mentioned services')
-      .sendKeyDown()
-      .sendCarriageReturn(); // REST
+    if (!('existingLambda' in settings) && !('isCrud' in settings)) {
+      reject(new Error('Missing property in settings object in addRestApi()'));
+    } else {
+      const isFirstRestApi = settings.isFirstRestApi ?? true;
+      let chain = spawn(getCLIPath(), ['add', 'api'], { cwd, stripColors: true })
+        .wait('Select from one of the below mentioned services')
+        .send(KEY_DOWN_ARROW)
+        .sendCarriageReturn(); // REST
 
-    if (!isFirstRestApi) {
-      chain.wait('Would you like to add a new path to an existing REST API');
+      if (!isFirstRestApi) {
+        chain.wait('Would you like to add a new path to an existing REST API');
 
-      if (settings.path) {
+        if (settings.path) {
+          chain
+            .sendConfirmYes()
+            .wait('Please select the REST API you would want to update')
+            .sendCarriageReturn() // Select the first REST API
+            .wait('Provide a path')
+            .sendLine(settings.path)
+            .wait('Choose a lambda source')
+            .send(KEY_DOWN_ARROW)
+            .sendCarriageReturn() // Existing lambda
+            .wait('Choose the Lambda function to invoke by this path')
+            .sendCarriageReturn() // Pick first one
+            .wait('Restrict API access')
+            .sendConfirmNo() // Do not restrict access
+            .wait('Do you want to add another path')
+            .sendConfirmNo() // Do not add another path
+            .sendEof()
+            .run((err: Error) => {
+              if (err) {
+                reject(err);
+              } else {
+                resolve();
+              }
+            });
+          return;
+        } else {
+          chain.sendConfirmNo();
+        }
+      }
+
+      chain
+        .wait('Provide a friendly name for your resource to be used as a label for this category in the project')
+        .sendCarriageReturn()
+        .wait('Provide a path')
+        .sendCarriageReturn()
+        .wait('Choose a lambda source');
+
+      if (settings.existingLambda) {
         chain
-          .sendConfirmYes()
-          .wait('Select the REST API you want to update')
-          .sendCarriageReturn() // Select the first REST API
-          .wait('What would you like to do?')
-          .sendCarriageReturn()
-          .wait('Provide a path')
-          .sendLine(settings.path ?? RETURN)
-          .wait('Choose a lambda source')
-          .sendKeyDown()
+          .send(KEY_DOWN_ARROW)
           .sendCarriageReturn() // Existing lambda
           .wait('Choose the Lambda function to invoke by this path')
-          .sendCarriageReturn() // Pick first one
-          .wait('Restrict API access')
-          .sendConfirmNo() // Do not restrict access
-          .wait('Do you want to add another path')
-          .sendConfirmNo() // Do not add another path
-          .sendEof()
-          .run((err: Error) => {
-            if (err) {
-              reject(err);
-            } else {
-              resolve();
-            }
-          });
-        return;
-      } else {
-        chain.sendConfirmNo();
-      }
-    }
-
-    chain
-      .wait('Provide a friendly name for your resource to be used as a label for this category in the project')
-      .sendLine(settings.resourceName ?? RETURN)
-      .wait('Provide a path')
-      .sendCarriageReturn()
-      .wait('Choose a lambda source');
-
-    if (settings.existingLambda) {
-      chain
-        .sendKeyDown()
-        .sendCarriageReturn() // Existing lambda
-        .wait('Choose the Lambda function to invoke by this path')
-        .sendCarriageReturn(); // Pick first one
-    } else {
-      chain
-        .sendCarriageReturn() // Create new Lambda function
-        .wait('Provide an AWS Lambda function name')
-        .sendCarriageReturn();
-
-      selectRuntime(chain, 'nodejs');
-
-      const templateName = settings.isCrud
-        ? 'CRUD function for DynamoDB (Integration with API Gateway)'
-        : 'Serverless ExpressJS function (Integration with API Gateway)';
-      selectTemplate(chain, templateName, 'nodejs');
-
-      if (settings.isCrud) {
-        chain
-          .wait('Choose a DynamoDB data source option')
-          .sendCarriageReturn() // Use DDB table configured in current project
-          .wait('Choose from one of the already configured DynamoDB tables')
-          .sendCarriageReturn(); // Use first one in the list
-      }
-
-      chain
-        .wait('Do you want to configure advanced settings?')
-        .sendConfirmNo()
-        .wait('Do you want to edit the local lambda function now')
-        .sendConfirmNo();
-    }
-
-    chain.wait('Restrict API access');
-
-    if (settings.restrictAccess) {
-      chain.sendConfirmYes();
-
-      if (settings.hasUserPoolGroups) {
-        chain.wait('Restrict access by?').sendCarriageReturn(); // Auth/Guest Users
-      }
-
-      chain.wait('Who should have access?');
-
-      if (!settings.allowGuestUsers) {
-        chain
-          .sendCarriageReturn() // Authenticated users only
-          .wait('What permissions do you want to grant to Authenticated')
-          .sendCtrlA()
-          .sendCarriageReturn(); // CRUD permissions
+          .sendCarriageReturn(); // Pick first one
       } else {
         chain
-          .sendKeyDown()
-          .sendCarriageReturn() // Authenticated and Guest users
-          .wait('What permissions do you want to grant to Authenticated')
-          .sendCtrlA() // CRUD permissions for Authenticated users
-          .sendCarriageReturn()
-          .wait('What permissions do you want to grant to Guest')
-          .send(' ') // C permissions for guest users
+          .sendCarriageReturn() // Create new Lambda function
+          .wait('Provide an AWS Lambda function name')
           .sendCarriageReturn();
-      }
-    } else {
-      chain.sendConfirmNo(); // Do not restrict access
-    }
 
-    chain
-      .wait('Do you want to add another path')
-      .sendConfirmNo()
-      .sendEof()
-      .run((err: Error) => {
-        if (!err) {
-          resolve();
-        } else {
-          reject(err);
+        selectRuntime(chain, 'nodejs');
+
+        const templateName = settings.isCrud
+          ? 'CRUD function for DynamoDB (Integration with API Gateway)'
+          : 'Serverless ExpressJS function (Integration with API Gateway)';
+        selectTemplate(chain, templateName, 'nodejs');
+
+        if (settings.isCrud) {
+          chain
+            .wait('Choose a DynamoDB data source option')
+            .sendCarriageReturn() // Use DDB table configured in current project
+            .wait('Choose from one of the already configured DynamoDB tables')
+            .sendCarriageReturn(); // Use first one in the list
         }
-      });
+
+        chain
+          .wait('Do you want to configure advanced settings?')
+          .sendConfirmNo()
+          .wait('Do you want to edit the local lambda function now')
+          .sendConfirmNo();
+      }
+
+      chain.wait('Restrict API access');
+
+      if (settings.restrictAccess) {
+        chain.sendConfirmYes().wait('Who should have access');
+
+        if (!settings.allowGuestUsers) {
+          chain
+            .sendCarriageReturn() // Authenticated users only
+            .wait('What kind of access do you want for Authenticated users')
+            .sendLine('a'); // CRUD permissions
+        } else {
+          chain
+            .sendLine(KEY_DOWN_ARROW)
+            .sendCarriageReturn() // Authenticated and Guest users
+            .wait('What kind of access do you want for Authenticated users')
+            .sendLine('a') // CRUD permissions for authenticated users
+            .wait('What kind of access do you want for Guest users')
+            .sendLine('a'); // CRUD permissions for guest users
+        }
+      } else {
+        chain.sendConfirmNo(); // Do not restrict access
+      }
+
+      chain
+        .wait('Do you want to add another path')
+        .sendConfirmNo()
+        .sendEof()
+        .run((err: Error) => {
+          if (!err) {
+            resolve();
+          } else {
+            reject(err);
+          }
+        });
+    }
   });
 }
 
@@ -602,7 +584,7 @@ export function addApi(projectDir: string, settings?: any) {
   });
 }
 
-function setupAuthType(authType: string, chain: ExecutionContext, settings?: any) {
+function setupAuthType(authType: string, chain: any, settings?: any) {
   switch (authType) {
     case 'API key':
       setupAPIKey(chain);
@@ -619,7 +601,7 @@ function setupAuthType(authType: string, chain: ExecutionContext, settings?: any
   }
 }
 
-function setupAPIKey(chain: ExecutionContext) {
+function setupAPIKey(chain: any) {
   chain
     .wait('Enter a description for the API key')
     .sendCarriageReturn()
@@ -627,7 +609,7 @@ function setupAPIKey(chain: ExecutionContext) {
     .sendCarriageReturn();
 }
 
-function setupCognitoUserPool(chain: ExecutionContext) {
+function setupCognitoUserPool(chain: any) {
   chain
     .wait('Do you want to use the default authentication and security configuration')
     .sendCarriageReturn()
@@ -641,7 +623,7 @@ function setupIAM(chain: any) {
   //no need to do anything
 }
 
-function setupOIDC(chain: ExecutionContext, settings?: any) {
+function setupOIDC(chain: any, settings?: any) {
   if (!settings || !settings['OpenID Connect']) {
     throw new Error('Must provide OIDC auth settings.');
   }
