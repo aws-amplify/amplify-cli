@@ -1,4 +1,4 @@
-import { $TSAny, $TSContext, $TSObject, isResourceNameUnique, JSONUtilities, pathManager } from 'amplify-cli-core';
+import { isResourceNameUnique, JSONUtilities } from 'amplify-cli-core';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import { cfnParametersFilename, parametersFileName, rootAssetDir } from './aws-constants';
@@ -6,15 +6,10 @@ import { serviceMetadataFor } from './utils/dynamic-imports';
 
 // this is the old logic for generating resources in the project directory
 // it is still used for adding REST APIs
-export const legacyAddResource = async (
-  serviceWalkthroughPromise: Promise<$TSAny>,
-  context: $TSContext,
-  category: string,
-  service: string,
-  options: $TSObject,
-) => {
+export const legacyAddResource = async (serviceWalkthroughPromise: Promise<any>, context, category, service, options) => {
   let answers;
   let { cfnFilename } = await serviceMetadataFor(service);
+  const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
 
   const result = await serviceWalkthroughPromise;
 
@@ -35,7 +30,7 @@ export const legacyAddResource = async (
     copyCfnTemplate(context, category, answers, cfnFilename);
 
     const parameters = { ...answers };
-    const resourceDirPath = pathManager.getResourceDirectoryPath(undefined, category, parameters.resourceName);
+    const resourceDirPath = path.join(projectBackendDirPath, category, parameters.resourceName);
 
     isResourceNameUnique(category, parameters.resourceName);
 
@@ -52,14 +47,15 @@ export const legacyAddResource = async (
 };
 
 // exported because the update flow still uses this method directly for now
-export const copyCfnTemplate = (context: $TSContext, category: string, options, cfnFilename) => {
-  const resourceDirPath = pathManager.getResourceDirectoryPath(undefined, category, options.resourceName);
+export const copyCfnTemplate = (context, category, options, cfnFilename) => {
+  const { amplify } = context;
+  const targetDir = amplify.pathManager.getBackendDirPath();
 
   const copyJobs = [
     {
       dir: path.join(rootAssetDir, 'cloudformation-templates'),
       template: cfnFilename,
-      target: path.join(resourceDirPath, `${options.resourceName}-cloudformation-template.json`),
+      target: `${targetDir}/${category}/${options.resourceName}/${options.resourceName}-cloudformation-template.json`,
     },
   ];
 

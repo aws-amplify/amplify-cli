@@ -1,10 +1,15 @@
-const { JSONUtilities, pathManager } = require('amplify-cli-core');
 const path = require('path');
+const fs = require('fs');
 const { generateUserPoolGroupStackTemplate } = require('./generate-user-pool-group-stack-template');
 const { AuthInputState } = require('../auth-inputs-manager/auth-input-state');
 
 async function transformUserPoolGroupSchema(context) {
-  const userPoolPrecedencePath = path.join(pathManager.getBackendDirPath(), 'auth', 'userPoolGroups', 'user-pool-group-precedence.json');
+  const resourceDirPath = path.join(
+    context.amplify.pathManager.getBackendDirPath(),
+    'auth',
+    'userPoolGroups',
+    'user-pool-group-precedence.json',
+  );
 
   const { allResources } = await context.amplify.getResourceStatus();
   const authResource = allResources.filter(resource => resource.service === 'Cognito');
@@ -17,7 +22,7 @@ async function transformUserPoolGroupSchema(context) {
     throw new Error('Cognito UserPool does not exists');
   }
 
-  const groups = JSONUtilities.readJson(userPoolPrecedencePath);
+  const groups = context.amplify.readJsonFile(resourceDirPath);
 
   // Replace env vars with subs
 
