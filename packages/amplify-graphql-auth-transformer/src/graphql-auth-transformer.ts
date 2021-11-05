@@ -149,6 +149,11 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
       throw new TransformerContractError('Types annotated with @auth must also be annotated with @model.');
     }
     const typeName = def.name.value;
+    let isJoinType = false;
+    // check if type is a joinedType
+    if (context.metadata.has('joinTypeList')) {
+      isJoinType = context.metadata.get<Array<string>>('joinTypeList')!.includes(typeName);
+    }
     const authDir = new DirectiveWrapper(directive);
     const rules: AuthRule[] = authDir.getArguments<{ rules: Array<AuthRule> }>({ rules: [] }).rules;
     ensureAuthRuleDefaults(rules);
@@ -166,7 +171,7 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
     // add object into policy
     this.addTypeToResourceReferences(def.name.value, rules);
     // turn rules into roles and add into acm and roleMap
-    this.convertRulesToRoles(acm, rules);
+    this.convertRulesToRoles(acm, rules, isJoinType);
     this.modelDirectiveConfig.set(typeName, getModelConfig(modelDirective, typeName, context.isProjectUsingDataStore()));
     this.authModelConfig.set(typeName, acm);
   };
@@ -226,7 +231,7 @@ Static group authorization should perform as expected.`,
         acm = this.authModelConfig.get(typeName) as AccessControlMatrix;
         acm.resetAccessForResource(fieldName);
       }
-      this.convertRulesToRoles(acm, rules, fieldName);
+      this.convertRulesToRoles(acm, rules, false, fieldName);
       this.authModelConfig.set(typeName, acm);
     } else {
       // if @auth is used without @model only generate static group rules in the resolver
@@ -239,7 +244,7 @@ Static group authorization should perform as expected.`,
         operations: ['read'],
         resources: [typeFieldName],
       });
-      this.convertRulesToRoles(acm, staticRules, typeFieldName, ['read']);
+      this.convertRulesToRoles(acm, staticRules, false, typeFieldName, ['read']);
       this.authNonModelConfig.set(typeFieldName, acm);
     }
   };
@@ -760,7 +765,13 @@ Static group authorization should perform as expected.`,
   /*
   Role Helpers
   */
-  private convertRulesToRoles(acm: AccessControlMatrix, authRules: AuthRule[], field?: string, overideOperations?: ModelOperation[]) {
+  private convertRulesToRoles(
+    acm: AccessControlMatrix,
+    authRules: AuthRule[],
+    allowRoleOverwrite: boolean,
+    field?: string,
+    overideOperations?: ModelOperation[],
+  ) {
     for (let rule of authRules) {
       let operations: ModelOperation[] = overideOperations ? overideOperations : rule.operations || MODEL_OPERATIONS;
       if (rule.groups && !rule.groupsField) {
@@ -776,7 +787,7 @@ Static group authorization should perform as expected.`,
               entity: group,
             });
           }
-          acm.setRole({ role: roleName, resource: field, operations });
+          acm.setRole({ role: roleName, resource: field, operations, allowRoleOverwrite });
         });
       } else {
         let roleName: string;
@@ -840,7 +851,7 @@ Static group authorization should perform as expected.`,
         if (!(roleName in this.roleMap)) {
           this.roleMap.set(roleName, roleDefinition);
         }
-        acm.setRole({ role: roleName, resource: field, operations });
+        acm.setRole({ role: roleName, resource: field, operations, allowRoleOverwrite });
       }
     }
   }

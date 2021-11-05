@@ -291,8 +291,48 @@ test('join table inherits auth from both tables', () => {
   expect(out.pipelineFunctions['Mutation.updateFooBar.res.vtl']).toMatchSnapshot();
 });
 
-function createTransformer() {
-  const authConfig: AppSyncAuthConfiguration = {
+test('join table inherits auth from tables with similar rules', () => {
+  const inputSchema = `
+    type Foo @model @auth(rules: [{ allow: owner }, { allow: private, provider: iam }]) {
+      id: ID!
+      bars: [Bar] @manyToMany(relationName: "FooBar")
+    }
+    type Bar @model @auth(rules: [{ allow: owner }, { allow: public, provider: apiKey }]) {
+      id: ID!
+      foos: [Foo] @manyToMany(relationName: "FooBar")
+    }`;
+  const transformer = createTransformer({
+    defaultAuthentication: {
+      authenticationType: 'API_KEY',
+    },
+    additionalAuthenticationProviders: [{ authenticationType: 'AWS_IAM' }, { authenticationType: 'AMAZON_COGNITO_USER_POOLS' }],
+  });
+  const out = transformer.transform(inputSchema);
+  expect(out).toBeDefined();
+  const schema = parse(out.schema);
+  validateModelSchema(schema);
+
+  expect(out.pipelineFunctions['Query.getFooBar.auth.1.req.vtl']).toMatchSnapshot();
+  expect(out.pipelineFunctions['Query.getFooBar.postAuth.1.req.vtl']).toMatchSnapshot();
+  expect(out.pipelineFunctions['Query.getFooBar.res.vtl']).toMatchSnapshot();
+  expect(out.pipelineFunctions['Query.listFooBars.auth.1.req.vtl']).toMatchSnapshot();
+  expect(out.pipelineFunctions['Query.listFooBars.postAuth.1.req.vtl']).toMatchSnapshot();
+  expect(out.pipelineFunctions['Mutation.createFooBar.auth.1.req.vtl']).toMatchSnapshot();
+  expect(out.pipelineFunctions['Mutation.createFooBar.postAuth.1.req.vtl']).toMatchSnapshot();
+  expect(out.pipelineFunctions['Mutation.deleteFooBar.auth.1.req.vtl']).toMatchSnapshot();
+  expect(out.pipelineFunctions['Mutation.deleteFooBar.postAuth.1.req.vtl']).toMatchSnapshot();
+  expect(out.pipelineFunctions['Mutation.deleteFooBar.auth.1.res.vtl']).toMatchSnapshot();
+  expect(out.pipelineFunctions['Mutation.deleteFooBar.req.vtl']).toMatchSnapshot();
+  expect(out.pipelineFunctions['Mutation.deleteFooBar.res.vtl']).toMatchSnapshot();
+  expect(out.pipelineFunctions['Mutation.updateFooBar.auth.1.req.vtl']).toMatchSnapshot();
+  expect(out.pipelineFunctions['Mutation.updateFooBar.postAuth.1.req.vtl']).toMatchSnapshot();
+  expect(out.pipelineFunctions['Mutation.updateFooBar.auth.1.res.vtl']).toMatchSnapshot();
+  expect(out.pipelineFunctions['Mutation.updateFooBar.req.vtl']).toMatchSnapshot();
+  expect(out.pipelineFunctions['Mutation.updateFooBar.res.vtl']).toMatchSnapshot();
+});
+
+function createTransformer(authConfig?: AppSyncAuthConfiguration) {
+  const transformerAuthConfig: AppSyncAuthConfiguration = authConfig ?? {
     defaultAuthentication: {
       authenticationType: 'API_KEY',
     },
@@ -303,7 +343,7 @@ function createTransformer() {
   const indexTransformer = new IndexTransformer();
   const hasOneTransformer = new HasOneTransformer();
   const transformer = new GraphQLTransform({
-    authConfig,
+    authConfig: transformerAuthConfig,
     transformers: [
       modelTransformer,
       indexTransformer,
