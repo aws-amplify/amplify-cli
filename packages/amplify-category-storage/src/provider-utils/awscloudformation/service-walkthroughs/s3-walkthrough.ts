@@ -226,7 +226,7 @@ async function startAddTriggerFunctionFlow(
   policyID: string,
   existingTriggerFunction: string | undefined,
 ): Promise<string | undefined> {
-  const enableLambdaTriggerOnS3: boolean = await prompter.confirmContinue('Do you want to add a Lambda Trigger for your S3 Bucket?');
+  const enableLambdaTriggerOnS3: boolean = await prompter.yesOrNo('Do you want to add a Lambda Trigger for your S3 Bucket?');
   let triggerFunction: string | undefined = undefined;
   if (enableLambdaTriggerOnS3) {
     try {
