@@ -1,14 +1,7 @@
-//import { AmplifyRootStackTemplate } from 'amplify-provider-awscloudformation';
-import { AmplifyAuthCognitoStackTemplate } from '@aws-amplify/amplify-category-auth';
+export { AmplifyRootStackTemplate } from './types/project/types';
+export { AmplifyAuthCognitoStackTemplate, AmplifyUserPoolGroupStackTemplate } from './types/auth/types';
 import { addCDKResourceDependency } from '@aws-amplify/amplify-category-custom';
-import { AmplifyDDBResourceTemplate, AmplifyS3ResourceTemplate } from '@aws-amplify/amplify-category-storage';
+export { AmplifyDDBResourceTemplate, AmplifyS3ResourceTemplate, AmplifyCDKL1 } from './types/storage/types';
 import { getProjectInfo } from './helpers/project-info';
 
-export {
-  getProjectInfo,
-  //AmplifyRootStackTemplate,
-  AmplifyAuthCognitoStackTemplate,
-  AmplifyDDBResourceTemplate,
-  AmplifyS3ResourceTemplate,
-  addCDKResourceDependency,
-};
+export { getProjectInfo, addCDKResourceDependency };

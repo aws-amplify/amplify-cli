@@ -12,6 +12,12 @@ import { categoryName } from './constants';
 import { updateConfigOnEnvInit } from './provider-utils/awscloudformation';
 import { DDBStackTransform } from './provider-utils/awscloudformation/cdk-stack-builder/ddb-stack-transform';
 import { transformS3ResourceStack } from './provider-utils/awscloudformation/cdk-stack-builder/s3-stack-transform';
+import { getAllDefaults } from './provider-utils/awscloudformation/default-values/s3-defaults';
+import {
+  S3AccessType,
+  S3PermissionType,
+  S3UserInputs,
+} from './provider-utils/awscloudformation/service-walkthrough-types/s3-user-input-types';
 import { DynamoDBInputState } from './provider-utils/awscloudformation/service-walkthroughs/dynamoDB-input-state';
 import {
   headlessAddStorage,
@@ -19,6 +25,7 @@ import {
   headlessRemoveStorage,
   headlessUpdateStorage,
 } from './provider-utils/awscloudformation/storage-configuration-helpers';
+export { AmplifyDDBResourceTemplate, AmplifyS3ResourceTemplate } from '@aws-amplify/cli-overrides-helper';
 export { categoryName as category } from './constants';
 export { AmplifyDDBResourceTemplate, AmplifyS3ResourceTemplate } from './provider-utils/awscloudformation/cdk-stack-builder/types';
 import { getAllDefaults } from './provider-utils/awscloudformation/default-values/s3-defaults';
