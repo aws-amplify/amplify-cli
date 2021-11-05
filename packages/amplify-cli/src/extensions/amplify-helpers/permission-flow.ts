@@ -1,7 +1,7 @@
 import * as inquirer from 'inquirer';
 import _ from 'lodash';
 
-export const crudFlow = async (role: string, permissionMap = {}, defaults: string[] = []) => {
+export const crudFlow = async (role, permissionMap = {}, defaults = []) => {
   if (!role) throw new Error('No role provided to permission question flow');
   const possibleOperations = Object.keys(permissionMap).map(el => ({ name: el, value: el }));
 

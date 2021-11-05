@@ -1,7 +1,8 @@
-import { $TSAny, $TSContext, AmplifyCategories, FeatureFlags, stateManager } from 'amplify-cli-core';
+import { $TSAny, $TSContext, FeatureFlags, stateManager } from 'amplify-cli-core';
 import { printer, prompter, exact } from 'amplify-prompts';
 
 const subcommand = 'rebuild';
+const category = 'api';
 
 export const name = subcommand;
 
@@ -35,5 +36,5 @@ export const run = async (context: $TSContext) => {
   const { amplify, parameters } = context;
   const resourceName = parameters.first;
   amplify.constructExeInfo(context);
-  return amplify.pushResources(context, AmplifyCategories.API, resourceName, undefined, rebuild);
+  return amplify.pushResources(context, category, resourceName, undefined, rebuild);
 };
