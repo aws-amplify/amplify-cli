@@ -18,7 +18,7 @@ export interface ServiceQuestionsBaseResult {
   resourceName: string;
   useDefault: 'default' | 'defaultSocial' | 'manual';
   updateFlow?: 'default' | 'defaultSocial' | 'manual' | 'callbacks' | 'providers' | 'updateUserPoolGroups' | 'updateAdminQueries';
-  requiredAttributes: string[];
+  requiredAttributes?: string[];
   authSelections: 'userPoolOnly' | 'identityPoolAndUserPool' | 'identityPoolOnly';
   userPoolName?: string;
   usernameAttributes?: UsernameAttributes[];
@@ -26,15 +26,15 @@ export interface ServiceQuestionsBaseResult {
   userPoolGroups?: boolean;
   userPoolGroupList?: string[];
   userpoolClientRefreshTokenValidity?: number;
-  userpoolClientReadAttributes: string[];
-  userpoolClientWriteAttributes: string[];
+  userpoolClientReadAttributes?: string[];
+  userpoolClientWriteAttributes?: string[];
   userpoolClientSetAttributes?: boolean;
   usernameCaseSensitive?: boolean;
   verificationBucketName?: string;
   resourceNameTruncated?: string;
   sharedId?: string;
-  userpoolClientGenerateSecret: boolean;
-  userpoolClientLambdaRole: string;
+  userpoolClientGenerateSecret?: boolean;
+  userpoolClientLambdaRole?: string;
   useEnabledMfas?: boolean;
 }
 
@@ -83,11 +83,11 @@ export interface PasswordRecoveryResult {
   emailVerificationMessage?: string;
   emailVerificationSubject?: string;
   smsVerificationMessage?: string;
-  autoVerifiedAttributes: string[];
+  autoVerifiedAttributes?: string[];
 }
 
 export interface MfaResult {
-  mfaConfiguration: 'OPTIONAL' | 'ON' | 'OFF';
+  mfaConfiguration?: 'OPTIONAL' | 'ON' | 'OFF';
   mfaTypes?: ('SMS Text Message' | 'TOTP')[];
   smsAuthenticationMessage?: string;
 }

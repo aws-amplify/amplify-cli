@@ -6,7 +6,6 @@ import { getCfnApiArtifactHandler } from './provider-utils/awscloudformation/cfn
 import { askAuthQuestions } from './provider-utils/awscloudformation/service-walkthroughs/appSync-walkthrough';
 import { getAppSyncResourceName, getAppSyncAuthConfig } from './provider-utils/awscloudformation//utils/amplify-meta-utils';
 import { authConfigToAppSyncAuthType } from './provider-utils/awscloudformation/utils/auth-config-to-app-sync-auth-type-bi-di-mapper';
-
 export { NETWORK_STACK_LOGICAL_ID } from './category-constants';
 export { DEPLOYMENT_MECHANISM } from './provider-utils/awscloudformation/base-api-stack';
 export { EcsStack } from './provider-utils/awscloudformation/ecs-apigw-stack';

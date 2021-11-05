@@ -138,8 +138,11 @@ async function externalAuthEnable(context, externalCategory, resourceName, requi
   const authPropsValues = authExists
     ? Object.assign(defaults.functionMap[requirements.authSelections](currentAuthName), currentAuthParams, immutables, requirements)
     : Object.assign(defaults.functionMap[requirements.authSelections](currentAuthName), requirements, {
-        resourceName: `cognito${defaults.sharedId}`,
+        resourceName: currentAuthName,
         sharedId: defaults.sharedId,
+        serviceName: 'Cognito',
+        useDefault: 'manual',
+        authSelections: requirements.authSelections,
       }); //eslint-disable-line
   /* eslint-enable */
   const { roles } = defaults;
@@ -150,7 +153,6 @@ async function externalAuthEnable(context, externalCategory, resourceName, requi
 
   try {
     authProps = await removeDeprecatedProps(authProps);
-    await generateAuthStackTemplate(context, currentAuthName);
     // replace secret keys from cli inputs to be stored in deployment secrets
 
     let sharedParams = Object.assign({}, authProps);
@@ -166,6 +168,15 @@ async function externalAuthEnable(context, externalCategory, resourceName, requi
       }
     });
     context.amplify.saveEnvResourceParameters(context, category, authExists, envSpecificParams);
+    const cognitoCLIInputs = {
+      version: '1',
+      cognitoConfig: cliInputs,
+    };
+    const cliState = new AuthInputState(cognitoCLIInputs.cognitoConfig.resourceName);
+    // saving cli-inputs except secrets
+    await cliState.saveCLIInputPayload(cognitoCLIInputs);
+    await generateAuthStackTemplate(context, currentAuthName);
+
     const resourceDirPath = path.join(amplify.pathManager.getBackendDirPath(), 'auth', authProps.resourceName, 'build', 'parameters.json');
     const authParameters = await amplify.readJsonFile(resourceDirPath);
     if (!authExists) {
