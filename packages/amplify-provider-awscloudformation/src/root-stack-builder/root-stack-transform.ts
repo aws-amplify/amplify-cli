@@ -60,14 +60,13 @@ export class AmplifyRootStackTransform {
         amplifyPrinter.formatter.list(['No override File Found', `To override ${this._resourceName} run amplify override auth`]);
         return '';
       });
-      const rootStackTemplateObj = this._rootTemplateObj as AmplifyRootStackTemplate;
       const sandboxNode = new vm.NodeVM({
         console: 'inherit',
         timeout: 5000,
         sandbox: {},
       });
       try {
-        this._rootTemplateObj = sandboxNode.run(overrideCode).overrideProps(rootStackTemplateObj);
+        sandboxNode.run(overrideCode).overrideProps(this._rootTemplateObj);
       } catch (err: $TSAny) {
         const error = new Error(`Skipping override due to ${err}${os.EOL}`);
         printer.error(`${error}`);

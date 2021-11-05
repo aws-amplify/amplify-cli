@@ -110,7 +110,7 @@ export class AmplifyAuthTransform extends AmplifyCategoryTransform {
         formatter.list(['No override File Found', `To override ${this.resourceName} run amplify override auth`]);
         return '';
       });
-      const cognitoStackTemplateObj = this._authTemplateObj as AmplifyAuthCognitoStack & AmplifyStackTemplate;
+
       const sandboxNode = new vm.NodeVM({
         console: 'inherit',
         timeout: 5000,
@@ -122,9 +122,9 @@ export class AmplifyAuthTransform extends AmplifyCategoryTransform {
         },
       });
       try {
-        this._authTemplateObj = await sandboxNode
+        await sandboxNode
           .run(overrideCode, path.join(overrideDir, 'build', 'override.js'))
-          .overrideProps(cognitoStackTemplateObj);
+          .override(this._authTemplateObj as AmplifyAuthCognitoStack & AmplifyStackTemplate);
       } catch (err: $TSAny) {
         const error = new Error(`Skipping override due to ${err}${os.EOL}`);
         printer.error(`${error}`);

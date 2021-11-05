@@ -25,7 +25,7 @@ export const generateOverrideSkeleton = async (context: $TSContext, srcResourceD
   await buildOverrideDir(backendDir, destDirPath);
 
   printer.success(`Successfully generated "override.ts" folder at ${destDirPath}`);
-  const isOpen = await prompter.confirmContinue('Do you want to edit override.ts file now?');
+  const isOpen = await prompter.yesOrNo('Do you want to edit override.ts file now?', true);
   if (isOpen) {
     await context.amplify.openEditor(context, overrideFile);
   }

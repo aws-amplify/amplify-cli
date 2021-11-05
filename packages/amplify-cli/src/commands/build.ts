@@ -3,7 +3,7 @@ import { printer } from 'amplify-prompts';
 /**
  * Command to transform CFN with overrides
  */
-const subcommand = 'build-override';
+const subcommand = 'build';
 
 export const run = async (context: $TSContext) => {
   const categoryName = context?.input?.subCommands?.[0];
