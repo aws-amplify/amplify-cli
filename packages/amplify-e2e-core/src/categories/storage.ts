@@ -244,7 +244,7 @@ export function overrideDDB(cwd: string, settings: {}) {
 export function buildOverrideStorage(cwd: string, settings: {}) {
   return new Promise((resolve, reject) => {
     // Add 'storage' as a category param once implemented
-    const args = ['build-override'];
+    const args = ['build'];
 
     spawn(getCLIPath(), args, { cwd, stripColors: true })
       .sendEof()
