@@ -1,21 +1,14 @@
-import { $TSContext } from 'amplify-cli-core';
 import { legacyUpdateResource } from '../../../provider-utils/awscloudformation/legacy-update-resource';
 import { category } from '../../../category-constants';
 
 jest.mock('fs-extra');
-jest.mock('amplify-cli-core', () => ({
-  JSONUtilities: {
-    readJson: jest.fn(),
-    writeJson: jest.fn(),
-  },
-  pathManager: {
-    getResourceDirectoryPath: jest.fn(_ => 'mock/backend/path'),
-  },
-}));
 
 describe('legacy update resource', () => {
   const contextStub = {
     amplify: {
+      pathManager: {
+        getBackendDirPath: jest.fn(_ => 'mock/backend/path'),
+      },
       updateamplifyMetaAfterResourceUpdate: jest.fn(),
       copyBatch: jest.fn(),
     },
@@ -35,7 +28,7 @@ describe('legacy update resource', () => {
         ],
       },
     });
-    await legacyUpdateResource(stubWalkthroughPromise, contextStub as unknown as $TSContext, category, 'API Gateway');
+    await legacyUpdateResource(stubWalkthroughPromise, contextStub, category, 'API Gateway');
     expect(contextStub.amplify.copyBatch.mock.calls[0][2]).toMatchSnapshot();
   });
 });
