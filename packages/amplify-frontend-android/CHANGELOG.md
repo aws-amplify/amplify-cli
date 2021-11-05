@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.16.0-ext12.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-android@2.15.4...amplify-frontend-android@2.16.0-ext12.0) (2021-11-05)
+
+
+### Features
+
+* amplify export ([fefa5c6](https://github.com/aws-amplify/amplify-cli/commit/fefa5c689355c78c8b7327e046497affb8402950)), closes [#8547](https://github.com/aws-amplify/amplify-cli/issues/8547) [#8488](https://github.com/aws-amplify/amplify-cli/issues/8488) [#8486](https://github.com/aws-amplify/amplify-cli/issues/8486) [#8547](https://github.com/aws-amplify/amplify-cli/issues/8547) [#8488](https://github.com/aws-amplify/amplify-cli/issues/8488) [#8486](https://github.com/aws-amplify/amplify-cli/issues/8486)
+
+
+
+
+
 ## [2.15.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-android@2.15.3...amplify-frontend-android@2.15.4) (2021-08-06)
 
 

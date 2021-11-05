@@ -1,6 +1,6 @@
 {
   "name": "amplify-codegen-appsync-model-plugin",
-  "version": "1.22.4",
+  "version": "1.22.5-ext12.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/aws-amplify/amplify-cli.git",

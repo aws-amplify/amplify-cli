@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.7.0-ext12.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-model-transformer@0.6.4...@aws-amplify/graphql-model-transformer@0.7.0-ext12.0) (2021-11-05)
+
+
+### Bug Fixes
+
+* **graphql-model-transformer:** fixed model transformer ID generation when ID field is not specified ([#8633](https://github.com/aws-amplify/amplify-cli/issues/8633)) ([b515d16](https://github.com/aws-amplify/amplify-cli/commit/b515d1617a98d613b2d9feb424ece12204d63402))
+* **graphql-model-transformer:** override resource logical id to fix v1 to v2 transformer migration ([#8597](https://github.com/aws-amplify/amplify-cli/issues/8597)) ([e3a2afb](https://github.com/aws-amplify/amplify-cli/commit/e3a2afbbed6e97f143fc7c83064e2193f4c91bdd))
+
+
+### Features
+
+* generate list types as non-null ([#8166](https://github.com/aws-amplify/amplify-cli/issues/8166)) ([93786c1](https://github.com/aws-amplify/amplify-cli/commit/93786c13ef04c72748ca32a1ef7878c0e6b5b129))
+
+
+
+
+
 ## [0.6.4](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-model-transformer@0.6.3...@aws-amplify/graphql-model-transformer@0.6.4) (2021-10-10)
 
 **Note:** Version bump only for package @aws-amplify/graphql-model-transformer

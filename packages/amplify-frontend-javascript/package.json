@@ -1,6 +1,6 @@
 {
   "name": "amplify-frontend-javascript",
-  "version": "2.25.0",
+  "version": "2.26.0-ext12.0",
   "description": "amplify-cli front-end plugin for JavaScript projects",
   "repository": {
     "type": "git",
@@ -16,7 +16,7 @@
     "aws"
   ],
   "dependencies": {
-    "amplify-cli-core": "1.31.1",
+    "amplify-cli-core": "1.32.0-ext12.0",
     "chalk": "^4.1.1",
     "execa": "^5.1.1",
     "fs-extra": "^8.1.0",

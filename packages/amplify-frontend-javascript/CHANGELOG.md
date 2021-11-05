@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.26.0-ext12.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-javascript@2.25.0...amplify-frontend-javascript@2.26.0-ext12.0) (2021-11-05)
+
+
+### Bug Fixes
+
+* **amplify-category-auth:** switching to social providers with user pools instead of identity pools ([#8308](https://github.com/aws-amplify/amplify-cli/issues/8308)) ([0c82fe3](https://github.com/aws-amplify/amplify-cli/commit/0c82fe3ef73456192e993c380bc35f01663eb0cf))
+* **amplify-frontend-javascript:** geo region default ([#8552](https://github.com/aws-amplify/amplify-cli/issues/8552)) ([60255ee](https://github.com/aws-amplify/amplify-cli/commit/60255ee718f8d047ee665237db61d357a24fc41c))
+
+
+### Features
+
+* amplify export ([fefa5c6](https://github.com/aws-amplify/amplify-cli/commit/fefa5c689355c78c8b7327e046497affb8402950)), closes [#8547](https://github.com/aws-amplify/amplify-cli/issues/8547) [#8488](https://github.com/aws-amplify/amplify-cli/issues/8488) [#8486](https://github.com/aws-amplify/amplify-cli/issues/8486) [#8547](https://github.com/aws-amplify/amplify-cli/issues/8547) [#8488](https://github.com/aws-amplify/amplify-cli/issues/8488) [#8486](https://github.com/aws-amplify/amplify-cli/issues/8486)
+
+
+
+
+
 # [2.25.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-javascript@2.24.4...amplify-frontend-javascript@2.25.0) (2021-10-13)
 
 
