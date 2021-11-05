@@ -142,7 +142,7 @@ describe('add s3 walkthrough tests', () => {
       .mockResolvedValueOnce([S3PermissionType.CREATE_AND_UPDATE, S3PermissionType.READ, S3PermissionType.DELETE]) // What kind of permissions (Auth)
   
 
-    prompter.confirmContinue = jest
+    prompter.yesOrNo = jest
     .fn()
     .mockReturnValueOnce(true) //Do you want to add a Lambda Trigger ?
     .mockResolvedValueOnce(false); //Do you want to edit the lamdba function now?
@@ -180,7 +180,7 @@ describe('add s3 walkthrough tests', () => {
       .mockResolvedValueOnce(S3TriggerFunctionType.EXISTING_FUNCTION)
       .mockResolvedValueOnce(S3MockDataBuilder.mockExistingFunctionName1 ); //Selected the First Existing function from the list.
 
-    prompter.confirmContinue = jest
+    prompter.yesOrNo = jest
     .fn()
     .mockReturnValueOnce(true) //Do you want to add a Lambda Trigger ?
     .mockResolvedValueOnce(false); //Do you want to edit the lamdba function now?
