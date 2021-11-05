@@ -1,5 +1,3 @@
 import { AmplifyS3ResourceTemplate } from '@aws-amplify/cli-overrides-helper';
 
-export function overrideProps(props: AmplifyS3ResourceTemplate) {
-  return props;
-}
+export function override(resources: AmplifyS3ResourceTemplate) {}
