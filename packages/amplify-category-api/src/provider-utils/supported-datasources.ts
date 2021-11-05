@@ -27,6 +27,7 @@ export const supportedDatasources = {
       },
     ],
     alias: 'Aurora Serverless',
+    defaultValuesFilename: 'appSync-rds-defaults.js',
     serviceWalkthroughFilename: 'appSync-rds-walkthrough.js',
     cfnFilename: 'appSync-rds-cloudformation-template-default.yml.ejs',
     provider: 'awscloudformation',

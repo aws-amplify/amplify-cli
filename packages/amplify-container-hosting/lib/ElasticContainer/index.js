@@ -6,7 +6,7 @@ const path = require('path');
 
 const constants = require('../constants');
 
-const { EcsAlbStack, NETWORK_STACK_LOGICAL_ID, DEPLOYMENT_MECHANISM, processDockerConfig } = require('@aws-amplify/amplify-category-api');
+const { EcsAlbStack, NETWORK_STACK_LOGICAL_ID, DEPLOYMENT_MECHANISM, processDockerConfig } = require('amplify-category-api');
 const { open } = require('amplify-cli-core');
 
 const serviceName = 'ElasticContainer';
@@ -228,7 +228,7 @@ export async function generateHostingResources(
 
   const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
 
-  /** @type {import('@aws-amplify/amplify-category-api').ApiResource & {service: string, domain: string, providerPlugin:string, hostedZoneId: string, iamAccessUnavailable: boolean}} */
+  /** @type {import('amplify-category-api').ApiResource & {service: string, domain: string, providerPlugin:string, hostedZoneId: string, iamAccessUnavailable: boolean}} */
   const resource = {
     resourceName,
     service: serviceName,

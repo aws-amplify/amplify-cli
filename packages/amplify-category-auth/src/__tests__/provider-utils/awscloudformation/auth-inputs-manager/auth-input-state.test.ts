@@ -93,7 +93,6 @@ jest.mock('amplify-cli-core', () => ({
         },
       })
       .mockReturnValueOnce({}),
-    parse: JSON.parse,
   },
 }));
 
