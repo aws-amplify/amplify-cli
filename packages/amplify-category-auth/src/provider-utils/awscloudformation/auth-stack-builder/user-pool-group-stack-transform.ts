@@ -183,14 +183,13 @@ export class AmplifyUserPoolGroupTransform extends AmplifyCategoryTransform {
         formatter.list(['No override File Found', `To override ${this._resourceName} run amplify override auth`]);
         return '';
       });
-      const cognitoStackTemplateObj = this._userPoolGroupTemplateObj as AmplifyUserPoolGroupStack & AmplifyStackTemplate;
       const sandboxNode = new vm.NodeVM({
         console: 'inherit',
         timeout: 5000,
         sandbox: {},
       });
       try {
-        this._userPoolGroupTemplateObj = sandboxNode.run(overrideCode).overrideProps(cognitoStackTemplateObj);
+        sandboxNode.run(overrideCode).override(this._userPoolGroupTemplateObj as AmplifyUserPoolGroupStack & AmplifyStackTemplate);
       } catch (err: $TSAny) {
         const error = new Error(`Skipping override due to ${err}${os.EOL}`);
         printer.error(`${error}`);
