@@ -150,7 +150,13 @@ export async function askCRUDQuestion(
   const message = `What kind of access do you want for ${userRole} users?`;
   const choices = possibleCRUDOperations;
   const initialIndexes = getIndexArrayByValue(possibleCRUDOperations, roleDefaultValues);
-  const selectedPermissions = await prompter.pick<'many', string>(message, choices, { returnSize: 'many', initial: initialIndexes });
+  let selectedPermissions;
+  do {
+    selectedPermissions = await prompter.pick<'many', string>(message, choices, { returnSize: 'many', initial: initialIndexes });
+    if( !selectedPermissions || selectedPermissions.length <= 0 ){
+      printer.warn('Select at least one option');
+    }
+  } while( !selectedPermissions || selectedPermissions.length <= 0 );
   return selectedPermissions as Array<S3PermissionType>;
 }
 
