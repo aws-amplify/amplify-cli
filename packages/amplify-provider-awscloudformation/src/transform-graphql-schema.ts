@@ -45,7 +45,6 @@ import {
   transformGraphQLSchema as transformGraphQLSchemaV6,
   getDirectiveDefinitions as getDirectiveDefinitionsV6,
 } from './graphql-transformer/transform-graphql-schema';
-import { attemptV2TransformerMigration } from '@aws-amplify/graphql-transformer-migrator';
 
 const apiCategory = 'api';
 const storageCategory = 'storage';
@@ -315,8 +314,10 @@ async function migrateProject(context, options) {
 }
 
 export async function transformGraphQLSchema(context, options) {
-  const suppressSchemaMigrationPrompt = FeatureFlags.getBoolean('graphQLTransformer.suppressSchemaMigrationPrompt');
   const transformerVersion = getTransformerVersion(context);
+  if (transformerVersion === 2) {
+    return transformGraphQLSchemaV6(context, options);
+  }
   const backEndDir = context.amplify.pathManager.getBackendDirPath();
   const flags = context.parameters.options;
   if (flags['no-gql-override']) {
@@ -387,15 +388,6 @@ export async function transformGraphQLSchema(context, options) {
     } catch (e) {
       parameters = {};
     }
-  }
-
-  // This section applies to migrating schemas from V1 to V2 format
-  let migratedResult = false;
-  if (transformerVersion === 2 && !suppressSchemaMigrationPrompt) {
-    migratedResult = await attemptV2TransformerMigration(resourceDir, parameters[ResourceConstants.PARAMETERS.AppSyncApiName], context);
-  }
-  if (migratedResult || transformerVersion === 2) {
-    return transformGraphQLSchemaV6(context, options);
   }
 
   const isCLIMigration = options.migrate;

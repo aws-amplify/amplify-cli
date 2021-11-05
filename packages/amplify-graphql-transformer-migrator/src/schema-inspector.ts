@@ -14,7 +14,7 @@ export function graphQLUsingSQL(apiName: string): boolean {
   return false;
 }
 
-export function detectCustomResolvers(schema: DocumentNode): boolean {
+export function detectCustomRootTypes(schema: DocumentNode): boolean {
   let customResolversUsed = false;
   visit(schema, {
     ObjectTypeDefinition: {
@@ -52,17 +52,19 @@ export async function detectUnsupportedDirectives(schema: string): Promise<Array
     }
   }
 
-  // check for old parameterization of @connection
+  return Array.from(unsupportedDirSet);
+}
+
+export function detectDeprecatedConnectionUsage(schema: string): boolean {
   const directives = collectDirectives(schema);
   const deprecatedConnectionArgs = ['name', 'keyField', 'sortField', 'limit'];
   const connectionDirectives = directives.filter(directive => directive.name.value === 'connection');
   for (const connDir of connectionDirectives) {
     if (connDir.arguments?.some(arg => deprecatedConnectionArgs.includes(arg.name.value))) {
-      unsupportedDirSet.add('Deprecated parameterization of @connection');
+      return true;
     }
   }
-
-  return Array.from(unsupportedDirSet);
+  return false;
 }
 
 export function isImprovedPluralizationEnabled() {

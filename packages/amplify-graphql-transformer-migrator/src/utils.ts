@@ -1,18 +1,16 @@
 import * as fs from 'fs-extra';
 import { stateManager } from 'amplify-cli-core';
-import * as Diff from 'diff';
-import { Change } from 'diff';
 import * as path from 'path';
 
 export type SchemaDocument = {
   schema: string;
   filePath: string;
-}
+};
 
 export type DiffDocument = {
   schemaDiff: string;
   filePath: string;
-}
+};
 
 /**
  * Copies the schema to the same location with extension .bkp
@@ -28,7 +26,7 @@ export async function readSingleFileSchema(schemaPath: string): Promise<SchemaDo
 }
 
 export async function replaceFile(newSchema: string, filePath: string): Promise<void> {
-  await fs.writeFile(filePath, newSchema, {encoding: 'utf-8', flag: 'w'});
+  await fs.writeFile(filePath, newSchema, { encoding: 'utf-8', flag: 'w' });
 }
 
 export function removeBkpExtension(path: string): string {
@@ -48,7 +46,7 @@ export async function readSchemaDocuments(schemaDirectoryPath: string): Promise<
   const files = await fs.readdir(schemaDirectoryPath);
   let schemaDocuments: Array<SchemaDocument> = [];
   for (const fileName of files) {
-    if (!fileName.endsWith(".graphql")) {
+    if (!fileName.endsWith('.graphql')) {
       continue;
     }
 
@@ -68,7 +66,7 @@ export async function readSchemaDocuments(schemaDirectoryPath: string): Promise<
 export async function undoAllSchemaMigration(resourceDir: string): Promise<void> {
   const files = await fs.readdir(resourceDir);
   for (const fileName of files) {
-    if (!fileName.endsWith(".bkp")) {
+    if (!fileName.endsWith('.bkp')) {
       continue;
     }
 
@@ -85,7 +83,7 @@ export async function undoAllSchemaMigration(resourceDir: string): Promise<void>
 export async function getDefaultAuthFromContext(): Promise<string> {
   const backendConfig = stateManager.getBackendConfig();
   if (Object.keys(backendConfig.api).length < 1) {
-    return "AMAZON_COGNITO_USER_POOLS"
+    return 'AMAZON_COGNITO_USER_POOLS';
   }
   // Only support one API, so grab the ID
   const firstAPIID = Object.keys(backendConfig.api)[0];
@@ -96,28 +94,4 @@ export function listContainsOnlySetString(list: Array<string>, set: Set<string>)
   return list.filter(str => {
     return !set.has(str);
   });
-}
-
-function diffPrefix(change: Change): string {
-  if (change.added) {
-    return '+';
-  }
-  else if (change.removed) {
-    return '-';
-  }
-  return ' ';
-}
-
-export function getSchemaDiffs(oldSchemas: SchemaDocument[], newSchemas: SchemaDocument[]): DiffDocument[] {
-  const diffDocs = new Array<DiffDocument>(oldSchemas.length);
-  oldSchemas.forEach((oldSchema, idx) => {
-    const lineDifferences = Diff.diffLines(oldSchemas[idx].schema, newSchemas[idx].schema);
-    const totalDiff = lineDifferences.map(change => { return `${diffPrefix(change)}${change.value}` }).join('');
-    diffDocs[idx] = {
-      schemaDiff: totalDiff,
-      filePath: oldSchema.filePath
-    };
-  });
-
-  return diffDocs;
 }
