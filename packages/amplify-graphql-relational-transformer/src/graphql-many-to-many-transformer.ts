@@ -116,9 +116,13 @@ export class ManyToManyTransformer extends TransformerPluginBase {
   prepare = (ctx: TransformerPrepareStepContextProvider): void => {
     // The @manyToMany directive creates a join table, injects it into the existing transformer, and then functions like one to many.
     const context = ctx as TransformerContextProvider;
+    if (!ctx.metadata.has('joinTypeList')) {
+      ctx.metadata.set('joinTypeList', []);
+    }
 
     this.relationMap.forEach(relation => {
       const { directive1, directive2, name } = relation;
+      ctx.metadata.get<Array<string>>('joinTypeList')!.push(name);
       const d1TypeName = directive1.object.name.value;
       const d2TypeName = directive2.object.name.value;
       const d1FieldName = d1TypeName.charAt(0).toLowerCase() + d1TypeName.slice(1);
