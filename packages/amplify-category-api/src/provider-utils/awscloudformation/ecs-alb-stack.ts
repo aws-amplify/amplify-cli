@@ -7,8 +7,8 @@ import * as elb2 from '@aws-cdk/aws-elasticloadbalancingv2';
 import * as route53 from '@aws-cdk/aws-route53';
 import * as route53targets from '@aws-cdk/aws-route53-targets';
 import * as cdk from '@aws-cdk/core';
-import { v4 as uuid } from 'uuid';
 import { ContainersStack, ContainersStackProps } from './base-api-stack';
+import { v4 as uuid } from 'uuid';
 
 type EcsStackProps = ContainersStackProps &
   Readonly<{
