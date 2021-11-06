@@ -137,6 +137,9 @@ export type FunctionParameters = {
   lambdaLayers: LambdaLayer[];
   environmentVariables?: Record<string, string>;
   secretDeltas?: SecretDeltas;
+  template?: string;
+  skipAdvancedSection?: boolean;
+  skipNextSteps?: boolean;
 };
 
 /**
@@ -164,6 +167,7 @@ export interface FunctionTriggerParameters {
   functionTemplate?: FunctionTemplate;
   cloudResourceTemplatePath?: string;
   environmentVariables?: Record<string, string>;
+  skipNextSteps?: boolean;
 }
 
 export interface ProviderContext {
