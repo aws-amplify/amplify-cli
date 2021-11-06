@@ -513,19 +513,14 @@ test('has many with implicit index and fields and a user-defined primary key', (
   const commentType = schema.definitions.find((def: any) => def.name && def.name.value === 'Comment') as any;
   expect(commentType).toBeDefined();
 
-  const postCommentsField = commentType.fields.find((f: any) => f.name.value === 'postCommentsId');
-  expect(postCommentsField).toBeDefined();
-
   const commentFilterInput = schema.definitions.find((def: any) => def.name && def.name.value === 'ModelCommentFilterInput') as any;
   expect(commentFilterInput).toBeDefined();
   expect(commentFilterInput.fields.find((f: any) => f.name.value === 'id')).toBeDefined();
   expect(commentFilterInput.fields.find((f: any) => f.name.value === 'content')).toBeDefined();
-  expect(commentFilterInput.fields.find((f: any) => f.name.value === 'postCommentsId')).toBeDefined();
 
   const commentConditionInput = schema.definitions.find((def: any) => def.name && def.name.value === 'ModelCommentConditionInput') as any;
   expect(commentConditionInput).toBeDefined();
   expect(commentConditionInput.fields.find((f: any) => f.name.value === 'content')).toBeDefined();
-  expect(commentConditionInput.fields.find((f: any) => f.name.value === 'postCommentsId')).toBeDefined();
 });
 
 test('the limit of 100 is used by default', () => {
