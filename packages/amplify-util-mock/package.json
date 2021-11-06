@@ -42,7 +42,7 @@
     "which": "^2.0.2"
   },
   "devDependencies": {
-    "@aws-amplify/graphql-auth-transformer": "0.1.0",
+    "@aws-amplify/graphql-auth-transformer": "0.2.1-beta.0",
     "@aws-amplify/graphql-default-value-transformer": "0.2.0",
     "@aws-amplify/graphql-function-transformer": "0.4.5",
     "@aws-amplify/graphql-http-transformer": "0.5.5",
