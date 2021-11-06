@@ -3,6 +3,26 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.35.0-beta.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@2.35.0-beta.0...amplify-category-api@2.35.0-beta.1) (2021-11-06)
+
+
+### Bug Fixes
+
+* **amplify-category-api:** change auth directive type and fix codegen bug ([#8639](https://github.com/aws-amplify/amplify-cli/issues/8639)) ([b8d838d](https://github.com/aws-amplify/amplify-cli/commit/b8d838ddfd332c0f6fb36ef52ab76da24b5d26ca))
+* **graphql:** lambda auth label fix ([#8623](https://github.com/aws-amplify/amplify-cli/issues/8623)) ([6b4994d](https://github.com/aws-amplify/amplify-cli/commit/6b4994dd860015dd7f72b0f162314ffd580c727e))
+* **graphql:** minor api prompt fixes ([#8603](https://github.com/aws-amplify/amplify-cli/issues/8603)) ([b9aabe2](https://github.com/aws-amplify/amplify-cli/commit/b9aabe22705cc5d418e83fc8a957f2aac59e0693))
+* remove duplicate error messages ([#8651](https://github.com/aws-amplify/amplify-cli/issues/8651)) ([aad5de7](https://github.com/aws-amplify/amplify-cli/commit/aad5de7b56b9b077b6b689c5b37d51dbfd4b262d))
+
+
+### Features
+
+* **amplify-provider-awscloudformation:** change global_auth_rule to globalAuthRule for global auth ([#8674](https://github.com/aws-amplify/amplify-cli/issues/8674)) ([7a06216](https://github.com/aws-amplify/amplify-cli/commit/7a06216c0a56d9ab886ebb16b2179394fc5e76d2))
+* **amplify-provider-awscloudformation:** change sandbox mode syntax in schema ([#8592](https://github.com/aws-amplify/amplify-cli/issues/8592)) ([a3bdd44](https://github.com/aws-amplify/amplify-cli/commit/a3bdd44fddd3414a39d561510092084a1b8e6e61))
+
+
+
+
+
 # [2.35.0-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@2.33.2...amplify-category-api@2.35.0-beta.0) (2021-10-29)
 
 

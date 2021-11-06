@@ -3,6 +3,31 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.66.0-beta.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.66.0-beta.0...amplify-provider-awscloudformation@4.66.0-beta.1) (2021-11-06)
+
+
+### Bug Fixes
+
+* add a check if the idp id exists ([#8649](https://github.com/aws-amplify/amplify-cli/issues/8649)) ([a6142b8](https://github.com/aws-amplify/amplify-cli/commit/a6142b857e546de8ba3f6d7c25bc737510eb5212))
+* **amplify-category-api:** change auth directive type and fix codegen bug ([#8639](https://github.com/aws-amplify/amplify-cli/issues/8639)) ([b8d838d](https://github.com/aws-amplify/amplify-cli/commit/b8d838ddfd332c0f6fb36ef52ab76da24b5d26ca))
+* function dep fix and auth transformer e2e fix ([#8615](https://github.com/aws-amplify/amplify-cli/issues/8615)) ([14921fe](https://github.com/aws-amplify/amplify-cli/commit/14921fe4de8607f2177d92f75060be64cc556c1c))
+* reload feature flags after gql v2 flag migration ([#8677](https://github.com/aws-amplify/amplify-cli/issues/8677)) ([cb7bca2](https://github.com/aws-amplify/amplify-cli/commit/cb7bca2cf472216bfe12699f6e529938e30155d7))
+* remove duplicate entry from admin ui backend mapping ([#8638](https://github.com/aws-amplify/amplify-cli/issues/8638)) ([0ab3745](https://github.com/aws-amplify/amplify-cli/commit/0ab3745a423c820ced4226ed438c081d825b48ac))
+* update endpoints to use custom domains in admin-helpers.ts ([#8495](https://github.com/aws-amplify/amplify-cli/issues/8495)) ([2cb2f4d](https://github.com/aws-amplify/amplify-cli/commit/2cb2f4d855d696e63392f2c356d2b3913d0537a7))
+
+
+### Features
+
+* Activate graphql migrator behind feature flag ([5a76b3a](https://github.com/aws-amplify/amplify-cli/commit/5a76b3a320012c09d2ff2f424283fafba74fa74d))
+* add admin roles which have admin control over a graphql api ([#8601](https://github.com/aws-amplify/amplify-cli/issues/8601)) ([4d50df0](https://github.com/aws-amplify/amplify-cli/commit/4d50df000c6e11165d2da766c0eaa0097d88a0c2))
+* allow optional idp arg into auth to allow provided auth role or authenticated identity ([#8609](https://github.com/aws-amplify/amplify-cli/issues/8609)) ([bf843b9](https://github.com/aws-amplify/amplify-cli/commit/bf843b90330d8ceb2ea90bc2761edd57e5d5123b))
+* **amplify-provider-awscloudformation:** change global_auth_rule to globalAuthRule for global auth ([#8674](https://github.com/aws-amplify/amplify-cli/issues/8674)) ([7a06216](https://github.com/aws-amplify/amplify-cli/commit/7a06216c0a56d9ab886ebb16b2179394fc5e76d2))
+* **amplify-provider-awscloudformation:** change sandbox mode syntax in schema ([#8592](https://github.com/aws-amplify/amplify-cli/issues/8592)) ([a3bdd44](https://github.com/aws-amplify/amplify-cli/commit/a3bdd44fddd3414a39d561510092084a1b8e6e61))
+
+
+
+
+
 # [4.66.0-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.64.0...amplify-provider-awscloudformation@4.66.0-beta.0) (2021-10-29)
 
 

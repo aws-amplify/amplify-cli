@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [6.5.0-beta.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@6.5.0-beta.0...@aws-amplify/cli@6.5.0-beta.1) (2021-11-06)
+
+
+### Bug Fixes
+
+* remove duplicate error messages ([#8651](https://github.com/aws-amplify/amplify-cli/issues/8651)) ([aad5de7](https://github.com/aws-amplify/amplify-cli/commit/aad5de7b56b9b077b6b689c5b37d51dbfd4b262d))
+
+
+
+
+
 # [6.5.0-beta.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@6.3.1...@aws-amplify/cli@6.5.0-beta.0) (2021-10-29)
 
 

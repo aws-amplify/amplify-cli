@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.12.0-beta.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-headless-interface@1.12.0-beta.0...amplify-headless-interface@1.12.0-beta.1) (2021-11-06)
+
+
+### Features
+
+* headless command for geo -- map ([#8403](https://github.com/aws-amplify/amplify-cli/issues/8403)) ([73793b4](https://github.com/aws-amplify/amplify-cli/commit/73793b44411d329c52bed9337c0933d7066ee4de))
+
+
+
+
+
 # [1.12.0-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-headless-interface@1.10.0...amplify-headless-interface@1.12.0-beta.0) (2021-10-29)
 
 

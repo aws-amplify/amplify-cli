@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.33.0-beta.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@1.33.0-beta.0...amplify-cli-core@1.33.0-beta.1) (2021-11-06)
+
+
+### Features
+
+* Activate graphql migrator behind feature flag ([5a76b3a](https://github.com/aws-amplify/amplify-cli/commit/5a76b3a320012c09d2ff2f424283fafba74fa74d))
+
+
+
+
+
 # [1.33.0-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@1.31.1...amplify-cli-core@1.33.0-beta.0) (2021-10-29)
 
 
