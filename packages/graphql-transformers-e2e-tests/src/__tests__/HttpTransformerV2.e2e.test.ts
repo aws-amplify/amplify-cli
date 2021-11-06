@@ -67,7 +67,7 @@ beforeAll(async () => {
         ): [PostComment] @http(url: "${apiUrl}:dataType/:postId/:secondType")
         configGet: ConfigResponse @http(
           method: GET,
-          url: "${apiUrl}config/\${aws_region}/\${env}",
+          url: "${apiUrl}config/\${aws_region}/\${env}/\${!ctx.source.id}",
           headers: [{ key: "x-api-key", value: "fake-api-key" }]
         )
     }
@@ -88,6 +88,7 @@ beforeAll(async () => {
       apiKey: String
       env: String
       region: String
+      commentId: String
     }
     `;
 
@@ -453,7 +454,7 @@ test('Test that POST errors when missing a non-null arg in query/body', async ()
   }
 });
 
-test('Test headers, environment, and region support', async () => {
+test('Test headers, parent data, environment, and region support', async () => {
   const response = await GRAPHQL_CLIENT.query(
     `mutation {
       createComment(input: { title: "Hello, World!" }) {
@@ -463,6 +464,7 @@ test('Test headers, environment, and region support', async () => {
           apiKey
           env
           region
+          commentId
         }
       }
     }`,
@@ -476,4 +478,5 @@ test('Test headers, environment, and region support', async () => {
   expect(response.data.createComment.configGet.apiKey).toEqual('fake-api-key');
   expect(response.data.createComment.configGet.env).toEqual('NONE');
   expect(response.data.createComment.configGet.region).toEqual(REGION);
+  expect(response.data.createComment.configGet.commentId).toEqual(response.data.createComment.id);
 });
