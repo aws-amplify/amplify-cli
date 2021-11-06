@@ -12,6 +12,7 @@ import {
   CLISubCommandType,
   AmplifySupportedService,
   $TSMeta,
+  pathManager,
 } from 'amplify-cli-core';
 import { S3InputState } from './s3-user-input-state';
 import { S3UserInputs, S3TriggerFunctionType } from '../service-walkthrough-types/s3-user-input-types';
@@ -177,6 +178,22 @@ export async function updateWalkthrough(context: $TSContext) {
     await stackGenerator.transform(CLISubCommandType.UPDATE);
     return cliInputs.resourceName;
   }
+}
+
+/**
+ * Check if Storage feature needs migration
+ * @param context
+ * @param resourceName - storage resource name
+ * @returns
+ */
+export function isMigrateStorageRequired(context : $TSContext, resourceName: string){
+    const projectBackendDirPath = pathManager.getBackendDirPath();
+    const cliInputsFilePath = path.resolve(path.join(projectBackendDirPath, AmplifyCategories.STORAGE, resourceName, 'cli-inputs.json'));
+    if ( !fs.existsSync(cliInputsFilePath) ){
+      return true;
+    }else {
+      return false;
+    }
 }
 
 /**
