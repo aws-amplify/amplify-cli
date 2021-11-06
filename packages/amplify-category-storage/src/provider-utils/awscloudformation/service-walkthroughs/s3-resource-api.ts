@@ -2,7 +2,7 @@ import { $TSContext, AmplifyCategories, AmplifySupportedService, CLISubCommandTy
 import { AmplifyS3ResourceStackTransform } from '../cdk-stack-builder/s3-stack-transform';
 import { S3UserInputTriggerFunctionParams, S3UserInputs } from '../service-walkthrough-types/s3-user-input-types';
 import { S3InputState } from './s3-user-input-state';
-import { createNewLambdaAndUpdateCFN } from './s3-walkthrough';
+import { createNewLambdaAndUpdateCFN, migrateStorageCategory, isMigrateStorageRequired } from './s3-walkthrough';
 
 /**
  * @returns Name of S3 resource or undefined
@@ -28,7 +28,11 @@ export function s3GetResourceName(): string | undefined {
  * @returns
  */
 export async function s3GetUserInput(context: $TSContext, s3ResourceName: string): Promise<S3UserInputs> {
-  const cliInputsState = new S3InputState(s3ResourceName as string, undefined);
+  //migrate storage and fetch cliInputsState
+  if ( isMigrateStorageRequired(context, s3ResourceName) ){
+    await migrateStorageCategory(context, s3ResourceName);
+  }
+  let cliInputsState = new S3InputState(s3ResourceName as string, undefined);
   return cliInputsState.getUserInput();
 }
 
@@ -37,7 +41,7 @@ export async function s3GetUserInput(context: $TSContext, s3ResourceName: string
  * @param context
  * @returns triggerFunction name or undefined
  */
-export async function s3GetAdminTriggerFunctionName(context: $TSContext){
+export async function s3GetAdminTriggerFunctionName(context: $TSContext) : Promise<string | undefined> {
   const s3ResourceName : string|undefined = await s3GetResourceName();
   const s3UserInput :S3UserInputs | undefined =  (s3ResourceName)?await s3GetUserInput(context , s3ResourceName ):undefined;
   return s3UserInput?.adminTriggerFunction?.triggerFunction;
@@ -194,8 +198,14 @@ export async function addLambdaTrigger(
 
 /** HELPERS */
 async function s3APIHelperTransformAndSaveState(context: $TSContext, storageInput: S3UserInputs, phase: CLISubCommandType) {
+  //migrate storage and fetch cliInputsState
+  if ( phase != CLISubCommandType.ADD && isMigrateStorageRequired(context, storageInput.resourceName as string) ){
+      await migrateStorageCategory(context, storageInput.resourceName as string);
+  }
+
   //Save CLI Inputs payload
   let cliInputsState;
+
   if ( phase === CLISubCommandType.ADD ){
     cliInputsState = new S3InputState(storageInput.resourceName as string, storageInput);
   } else {
