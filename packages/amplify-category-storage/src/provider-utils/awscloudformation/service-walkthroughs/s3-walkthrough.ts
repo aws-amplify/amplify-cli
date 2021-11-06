@@ -33,7 +33,7 @@ import {
 } from './s3-questions';
 import { printErrorAlreadyCreated, printErrorAuthResourceMigrationFailed, printErrorNoResourcesToUpdate } from './s3-errors';
 import { getAllDefaults } from '../default-values/s3-defaults';
-import { migrateAuthDependencyResource } from './s3-auth-api';
+import { checkStorageAuthenticationRequirements, migrateAuthDependencyResource } from './s3-auth-api';
 import { s3GetAdminTriggerFunctionName } from './s3-resource-api';
 
 /**
@@ -66,14 +66,13 @@ export async function addWalkthrough(context: $TSContext, defaultValuesFilename:
     exitOnNextTick(0);
   } else {
     //Ask S3 walkthrough questions
-
     const policyID = buildShortUUID(); //prefix/suffix for all resources.
     const defaultValues = getAllDefaults(amplify.getProjectDetails(), policyID);
-    const resourceName = await askResourceNameQuestion(context, defaultValues); //Cannot be changed once added
-    const bucketName = await askBucketNameQuestion(context, defaultValues, resourceName); //Cannot be changed once added
+    const storageResourceName = await askResourceNameQuestion(context, defaultValues); //Cannot be changed once added
+    const bucketName = await askBucketNameQuestion(context, defaultValues, storageResourceName); //Cannot be changed once added
     let cliInputs: S3UserInputs = Object.assign({}, defaultValues);
     cliInputs.policyUUID = policyID;
-    cliInputs.resourceName = resourceName;
+    cliInputs.resourceName = storageResourceName;
     cliInputs.bucketName = bucketName;
     //Check if user-pools are already created
     const userPoolGroupList = context.amplify.getUserPoolGroupList();
@@ -87,8 +86,13 @@ export async function addWalkthrough(context: $TSContext, defaultValuesFilename:
       cliInputs.authAccess = await askAuthPermissionQuestion(context, defaultValues);
       cliInputs.guestAccess = await await conditionallyAskGuestPermissionQuestion(cliInputs.storageAccess, context, defaultValues);
     }
-    const triggerFunction = await startAddTriggerFunctionFlow(context, resourceName, policyID, undefined);
+    const triggerFunction = await startAddTriggerFunctionFlow(context, storageResourceName, policyID, undefined);
     cliInputs.triggerFunction = triggerFunction ? triggerFunction : 'NONE';
+
+    //Validate Authentication requirements
+    //e.g if storage is added after import auth,
+    const allowUnauthenticatedIdentities = ( cliInputs.guestAccess && (cliInputs.guestAccess.length > 0 ) );
+    await checkStorageAuthenticationRequirements( context, storageResourceName, allowUnauthenticatedIdentities );
 
     //Save CLI Inputs payload
     const cliInputsState = new S3InputState(cliInputs.resourceName as string, cliInputs);
@@ -115,25 +119,25 @@ export async function addWalkthrough(context: $TSContext, defaultValuesFilename:
  */
 export async function updateWalkthrough(context: $TSContext) {
   const amplifyMeta = stateManager.getMeta();
-  const resourceName: string | undefined = await getS3ResourceNameFromMeta(amplifyMeta);
-  if (resourceName === undefined) {
+  const storageResourceName: string | undefined = await getS3ResourceNameFromMeta(amplifyMeta);
+  if (storageResourceName === undefined) {
     await printErrorNoResourcesToUpdate(context);
     exitOnNextTick(0);
   } else {
     // For better DX check if the storage is imported
-    if (amplifyMeta[AmplifyCategories.STORAGE][resourceName].serviceType === 'imported') {
+    if (amplifyMeta[AmplifyCategories.STORAGE][storageResourceName].serviceType === 'imported') {
       printer.error('Updating of an imported storage resource is not supported.');
       return;
     }
     //load existing cliInputs
-    let cliInputsState = new S3InputState(resourceName, undefined);
+    let cliInputsState = new S3InputState(storageResourceName, undefined);
 
     //Check if migration is required
     if (!cliInputsState.cliInputFileExists()) {
       if (context.exeInfo?.forcePush || (await prompter.confirmContinue('File migration required to continue. Do you want to continue?'))) {
         //migrate auth and storage
         await cliInputsState.migrate(context);
-        const stackGenerator = new AmplifyS3ResourceStackTransform(resourceName, context);
+        const stackGenerator = new AmplifyS3ResourceStackTransform(storageResourceName, context);
         await stackGenerator.transform(CLISubCommandType.UPDATE); //generates cloudformation
       } else {
         return;
@@ -158,18 +162,23 @@ export async function updateWalkthrough(context: $TSContext) {
     if (previousUserInput.triggerFunction && previousUserInput.triggerFunction != 'NONE') {
       cliInputs.triggerFunction = await startUpdateTriggerFunctionFlow(
         context,
-        resourceName,
+        storageResourceName,
         previousUserInput.policyUUID as string,
         previousUserInput.triggerFunction,
       );
     } else {
       cliInputs.triggerFunction = await startAddTriggerFunctionFlow(
         context,
-        resourceName,
+        storageResourceName,
         previousUserInput.policyUUID as string,
         undefined,
       );
     }
+
+    //Validate Authentication requirements
+    //e.g if storage is added after import auth,
+    const allowUnauthenticatedIdentities = ( cliInputs.guestAccess && (cliInputs.guestAccess.length > 0 ) );
+    await checkStorageAuthenticationRequirements( context, storageResourceName, allowUnauthenticatedIdentities );
 
     //Save CLI Inputs payload
     await cliInputsState.saveCliInputPayload(cliInputs);
