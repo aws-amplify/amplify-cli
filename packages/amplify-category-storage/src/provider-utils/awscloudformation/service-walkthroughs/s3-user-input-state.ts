@@ -191,8 +191,27 @@ export class S3InputState {
       fs.removeSync(migrationParams.storageParamsFilepath);
     }
   }
+  public checkNeedsMigration():boolean{
+    const backendDir = pathManager.getBackendDirPath();
+    const oldParametersFilepath = path.join(backendDir, AmplifyCategories.STORAGE, this._resourceName, 'parameters.json');
+    const oldCFNFilepath = path.join(
+      backendDir,
+      AmplifyCategories.STORAGE,
+      this._resourceName,
+      `${AmplifySupportedService.S3}-cloudformation-template.json`,
+    );
+    if ( fs.existsSync(oldParametersFilepath) && fs.existsSync(oldCFNFilepath) ){
+      return true;
+    }else {
+      return false;
+    }
+  }
 
   public async migrate(context: $TSContext) {
+    //check if migration is possible
+    if (!this.checkNeedsMigration() ){
+      return;
+    }
     try {
       await migrateAuthDependencyResource(context);
     } catch (error) {
