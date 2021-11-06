@@ -26,10 +26,10 @@
         "test": "jest"
     },
     "dependencies": {
-        "@aws-amplify/graphql-transformer-core": "0.9.2",
-        "@aws-amplify/graphql-transformer-interfaces": "1.10.0",
-        "amplify-cli-core": "1.31.1",
-        "amplify-prompts": "1.2.0",
+        "@aws-amplify/graphql-transformer-core": "0.10.1-beta.0",
+        "@aws-amplify/graphql-transformer-interfaces": "1.11.1-beta.0",
+        "amplify-cli-core": "1.33.0-beta.0",
+        "amplify-prompts": "1.4.0-beta.0",
         "diff": "^5.0.0",
         "fs-extra": "^8.1.0",
         "glob": "^7.1.6",
