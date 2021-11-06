@@ -1,4 +1,11 @@
-import { InvalidDirectiveError, MappingTemplate, SyncConfig, SyncUtils, TransformerModelBase } from '@aws-amplify/graphql-transformer-core';
+import {
+  DirectiveWrapper,
+  InvalidDirectiveError,
+  MappingTemplate,
+  SyncConfig,
+  SyncUtils,
+  TransformerModelBase,
+} from '@aws-amplify/graphql-transformer-core';
 import {
   AppSyncDataSourceType,
   DataSourceInstance,
@@ -37,6 +44,7 @@ import {
   makeValueNode,
   ModelResourceIDs,
   plurality,
+  ResolverResourceIDs,
   ResourceConstants,
   SyncResourceIDs,
   toCamelCase,
@@ -71,12 +79,7 @@ import {
   generateListRequestTemplate,
   generateSyncRequestTemplate,
 } from './resolvers/query';
-import {
-  DirectiveWrapper,
-  FieldWrapper,
-  InputObjectDefinitionWrapper,
-  ObjectDefinitionWrapper,
-} from './wrappers/object-definition-wrapper';
+import { FieldWrapper, InputObjectDefinitionWrapper, ObjectDefinitionWrapper } from './wrappers/object-definition-wrapper';
 import { CfnRole } from '@aws-cdk/aws-iam';
 import md5 from 'md5';
 
@@ -260,13 +263,13 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
         let resolver;
         switch (query.type) {
           case QueryFieldType.GET:
-            resolver = this.generateGetResolver(context, def!, query.typeName, query.fieldName);
+            resolver = this.generateGetResolver(context, def!, query.typeName, query.fieldName, query.resolverLogicalId);
             break;
           case QueryFieldType.LIST:
-            resolver = this.generateListResolver(context, def!, query.typeName, query.fieldName);
+            resolver = this.generateListResolver(context, def!, query.typeName, query.fieldName, query.resolverLogicalId);
             break;
           case QueryFieldType.SYNC:
-            resolver = this.generateSyncResolver(context, def!, query.typeName, query.fieldName);
+            resolver = this.generateSyncResolver(context, def!, query.typeName, query.fieldName, query.resolverLogicalId);
             break;
           default:
             throw new Error('Unknown query field type');
@@ -287,13 +290,13 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
         let resolver;
         switch (mutation.type) {
           case MutationFieldType.CREATE:
-            resolver = this.generateCreateResolver(context, def!, mutation.typeName, mutation.fieldName);
+            resolver = this.generateCreateResolver(context, def!, mutation.typeName, mutation.fieldName, mutation.resolverLogicalId);
             break;
           case MutationFieldType.DELETE:
-            resolver = this.generateDeleteResolver(context, def!, mutation.typeName, mutation.fieldName);
+            resolver = this.generateDeleteResolver(context, def!, mutation.typeName, mutation.fieldName, mutation.resolverLogicalId);
             break;
           case MutationFieldType.UPDATE:
-            resolver = this.generateUpdateResolver(context, def!, mutation.typeName, mutation.fieldName);
+            resolver = this.generateUpdateResolver(context, def!, mutation.typeName, mutation.fieldName, mutation.resolverLogicalId);
             break;
           default:
             throw new Error('Unknown mutation field type');
@@ -317,13 +320,31 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
           let resolver;
           switch (subscription.type) {
             case SubscriptionFieldType.ON_CREATE:
-              resolver = this.generateOnCreateResolver(context, def, subscription.typeName, subscription.fieldName);
+              resolver = this.generateOnCreateResolver(
+                context,
+                def,
+                subscription.typeName,
+                subscription.fieldName,
+                subscription.resolverLogicalId,
+              );
               break;
             case SubscriptionFieldType.ON_UPDATE:
-              resolver = this.generateOnUpdateResolver(context, def, subscription.typeName, subscription.fieldName);
+              resolver = this.generateOnUpdateResolver(
+                context,
+                def,
+                subscription.typeName,
+                subscription.fieldName,
+                subscription.resolverLogicalId,
+              );
               break;
             case SubscriptionFieldType.ON_DELETE:
-              resolver = this.generateOnDeleteResolver(context, def, subscription.typeName, subscription.fieldName);
+              resolver = this.generateOnDeleteResolver(
+                context,
+                def,
+                subscription.typeName,
+                subscription.fieldName,
+                subscription.resolverLogicalId,
+              );
               break;
             default:
               throw new Error('Unknown subscription field type');
@@ -347,6 +368,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
     type: ObjectTypeDefinitionNode,
     typeName: string,
     fieldName: string,
+    resolverLogicalId: string,
   ): TransformerResolverProvider => {
     const isSyncEnabled = ctx.isProjectUsingDataStore();
     const dataSource = this.datasourceMap[type.name.value];
@@ -355,6 +377,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
       this.resolverMap[resolverKey] = ctx.resolvers.generateQueryResolver(
         typeName,
         fieldName,
+        resolverLogicalId,
         dataSource,
         MappingTemplate.s3MappingTemplateFromString(generateGetRequestTemplate(), `${typeName}.${fieldName}.req.vtl`),
         MappingTemplate.s3MappingTemplateFromString(generateGetResponseTemplate(isSyncEnabled), `${typeName}.${fieldName}.res.vtl`),
@@ -368,6 +391,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
     type: ObjectTypeDefinitionNode,
     typeName: string,
     fieldName: string,
+    resolverLogicalId: string,
   ): TransformerResolverProvider => {
     const isSyncEnabled = ctx.isProjectUsingDataStore();
     const dataSource = this.datasourceMap[type.name.value];
@@ -376,6 +400,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
       this.resolverMap[resolverKey] = ctx.resolvers.generateQueryResolver(
         typeName,
         fieldName,
+        resolverLogicalId,
         dataSource,
         MappingTemplate.s3MappingTemplateFromString(generateListRequestTemplate(), `${typeName}.${fieldName}.req.vtl`),
         MappingTemplate.s3MappingTemplateFromString(
@@ -392,6 +417,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
     type: ObjectTypeDefinitionNode,
     typeName: string,
     fieldName: string,
+    resolverLogicalId: string,
   ): TransformerResolverProvider => {
     const isSyncEnabled = ctx.isProjectUsingDataStore();
     const dataSource = this.datasourceMap[type.name.value];
@@ -400,6 +426,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
       const resolver = ctx.resolvers.generateMutationResolver(
         typeName,
         fieldName,
+        resolverLogicalId,
         dataSource,
         MappingTemplate.s3MappingTemplateFromString(
           generateUpdateRequestTemplate(typeName, isSyncEnabled),
@@ -427,6 +454,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
     type: ObjectTypeDefinitionNode,
     typeName: string,
     fieldName: string,
+    resolverLogicalId: string,
   ): TransformerResolverProvider => {
     const isSyncEnabled = ctx.isProjectUsingDataStore();
     const dataSource = this.datasourceMap[type.name.value];
@@ -435,6 +463,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
       this.resolverMap[resolverKey] = ctx.resolvers.generateMutationResolver(
         typeName,
         fieldName,
+        resolverLogicalId,
         dataSource,
         MappingTemplate.s3MappingTemplateFromString(generateDeleteRequestTemplate(isSyncEnabled), `${typeName}.${fieldName}.req.vtl`),
         MappingTemplate.s3MappingTemplateFromString(
@@ -451,12 +480,14 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
     type: ObjectTypeDefinitionNode,
     typeName: string,
     fieldName: string,
+    resolverLogicalId: string,
   ): TransformerResolverProvider => {
     const resolverKey = `OnCreate${generateResolverKey(typeName, fieldName)}`;
     if (!this.resolverMap[resolverKey]) {
       this.resolverMap[resolverKey] = ctx.resolvers.generateSubscriptionResolver(
         typeName,
         fieldName,
+        resolverLogicalId,
         MappingTemplate.s3MappingTemplateFromString(generateSubscriptionRequestTemplate(), `${typeName}.${fieldName}.req.vtl`),
         MappingTemplate.s3MappingTemplateFromString(generateSubscriptionResponseTemplate(), `${typeName}.${fieldName}.res.vtl`),
       );
@@ -468,12 +499,14 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
     type: ObjectTypeDefinitionNode,
     typeName: string,
     fieldName: string,
+    resolverLogicalId: string,
   ): TransformerResolverProvider => {
     const resolverKey = `OnUpdate${generateResolverKey(typeName, fieldName)}`;
     if (!this.resolverMap[resolverKey]) {
       this.resolverMap[resolverKey] = ctx.resolvers.generateSubscriptionResolver(
         typeName,
         fieldName,
+        resolverLogicalId,
         MappingTemplate.s3MappingTemplateFromString(generateSubscriptionRequestTemplate(), `${typeName}.${fieldName}.req.vtl`),
         MappingTemplate.s3MappingTemplateFromString(generateSubscriptionResponseTemplate(), `${typeName}.${fieldName}.res.vtl`),
       );
@@ -485,12 +518,14 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
     type: ObjectTypeDefinitionNode,
     typeName: string,
     fieldName: string,
+    resolverLogicalId: string,
   ): TransformerResolverProvider => {
     const resolverKey = `OnDelete${generateResolverKey(typeName, fieldName)}`;
     if (!this.resolverMap[resolverKey]) {
       this.resolverMap[resolverKey] = ctx.resolvers.generateSubscriptionResolver(
         typeName,
         fieldName,
+        resolverLogicalId,
         MappingTemplate.s3MappingTemplateFromString(generateSubscriptionRequestTemplate(), `${typeName}.${fieldName}.req.vtl`),
         MappingTemplate.s3MappingTemplateFromString(generateSubscriptionResponseTemplate(), `${typeName}.${fieldName}.res.vtl`),
       );
@@ -502,6 +537,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
     type: ObjectTypeDefinitionNode,
     typeName: string,
     fieldName: string,
+    resolverLogicalId: string,
   ): TransformerResolverProvider => {
     const isSyncEnabled = ctx.isProjectUsingDataStore();
     const dataSource = this.datasourceMap[type.name.value];
@@ -510,6 +546,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
       this.resolverMap[resolverKey] = ctx.resolvers.generateQueryResolver(
         typeName,
         fieldName,
+        resolverLogicalId,
         dataSource,
         MappingTemplate.s3MappingTemplateFromString(generateSyncRequestTemplate(), `${typeName}.${fieldName}.req.vtl`),
         MappingTemplate.s3MappingTemplateFromString(
@@ -524,15 +561,16 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
   getQueryFieldNames = (
     ctx: TransformerTransformSchemaStepContextProvider,
     type: ObjectTypeDefinitionNode,
-  ): Set<{ fieldName: string; typeName: string; type: QueryFieldType }> => {
+  ): Set<{ fieldName: string; typeName: string; type: QueryFieldType; resolverLogicalId: string }> => {
     const typeName = type.name.value;
-    const fields: Set<{ fieldName: string; typeName: string; type: QueryFieldType }> = new Set();
+    const fields: Set<{ fieldName: string; typeName: string; type: QueryFieldType; resolverLogicalId: string }> = new Set();
     const modelDirectiveConfig = this.modelDirectiveConfig.get(type.name.value);
     if (modelDirectiveConfig?.queries?.get) {
       fields.add({
         typeName: 'Query',
         fieldName: modelDirectiveConfig.queries.get || toCamelCase(['get', typeName]),
         type: QueryFieldType.GET,
+        resolverLogicalId: ResolverResourceIDs.DynamoDBGetResolverResourceID(typeName),
       });
     }
 
@@ -541,6 +579,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
         typeName: 'Query',
         fieldName: modelDirectiveConfig.queries.list || toCamelCase(['list', typeName]),
         type: QueryFieldType.LIST,
+        resolverLogicalId: ResolverResourceIDs.DynamoDBListResolverResourceID(typeName),
       });
     }
 
@@ -549,6 +588,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
         typeName: 'Query',
         fieldName: modelDirectiveConfig.queries.sync || toCamelCase(['sync', typeName]),
         type: QueryFieldType.SYNC,
+        resolverLogicalId: ResolverResourceIDs.SyncResolverResourceID(typeName),
       });
     }
 
@@ -558,7 +598,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
   getMutationFieldNames = (
     ctx: TransformerTransformSchemaStepContextProvider,
     type: ObjectTypeDefinitionNode,
-  ): Set<{ fieldName: string; typeName: string; type: MutationFieldType }> => {
+  ): Set<{ fieldName: string; typeName: string; type: MutationFieldType; resolverLogicalId: string }> => {
     // Todo: get fields names from the directives
     const typeName = type.name.value;
     const modelDirectiveConfig = this.modelDirectiveConfig.get(typeName);
@@ -575,13 +615,27 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
       }
     };
 
-    const fieldNames: Set<{ fieldName: string; typeName: string; type: MutationFieldType }> = new Set();
+    const getMutationResolverLogicalId = (type: string): string => {
+      switch (type) {
+        case 'create':
+          return ResolverResourceIDs.DynamoDBCreateResolverResourceID(typeName);
+        case 'update':
+          return ResolverResourceIDs.DynamoDBUpdateResolverResourceID(typeName);
+        case 'delete':
+          return ResolverResourceIDs.DynamoDBDeleteResolverResourceID(typeName);
+        default:
+          throw new Error('Unknown mutation type');
+      }
+    };
+
+    const fieldNames: Set<{ fieldName: string; typeName: string; type: MutationFieldType; resolverLogicalId: string }> = new Set();
     for (let [mutationType, mutationName] of Object.entries(modelDirectiveConfig?.mutations || {})) {
       if (mutationName) {
         fieldNames.add({
           typeName: 'Mutation',
           fieldName: mutationName,
           type: getMutationType(mutationType),
+          resolverLogicalId: getMutationResolverLogicalId(mutationType),
         });
       }
     }
@@ -595,6 +649,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
       fieldName: string;
       typeName: string;
       type: MutationFieldType;
+      resolverLogicalId: string;
     }>,
   ): string => {
     const mutationToSubscriptionTypeMap = {
@@ -680,11 +735,13 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
     fieldName: string;
     typeName: string;
     type: SubscriptionFieldType;
+    resolverLogicalId: string;
   }> => {
     const fields: Set<{
       fieldName: string;
       typeName: string;
       type: SubscriptionFieldType;
+      resolverLogicalId: string;
     }> = new Set();
 
     const modelDirectiveConfig = this.modelDirectiveConfig.get(type.name.value);
@@ -695,6 +752,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
             typeName: 'Subscription',
             fieldName: fieldName,
             type: SubscriptionFieldType.ON_CREATE,
+            resolverLogicalId: ModelResourceIDs.ModelOnCreateSubscriptionName(type.name.value),
           });
         }
       }
@@ -705,6 +763,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
             typeName: 'Subscription',
             fieldName: fieldName,
             type: SubscriptionFieldType.ON_UPDATE,
+            resolverLogicalId: ModelResourceIDs.ModelOnUpdateSubscriptionName(type.name.value),
           });
         }
       }
@@ -715,6 +774,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
             typeName: 'Subscription',
             fieldName: fieldName,
             type: SubscriptionFieldType.ON_DELETE,
+            resolverLogicalId: ModelResourceIDs.ModelOnDeleteSubscriptionName(type.name.value),
           });
         }
       }
@@ -737,6 +797,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
     type: ObjectTypeDefinitionNode,
     typeName: string,
     fieldName: string,
+    resolverLogicalId: string,
   ): TransformerResolverProvider => {
     const isSyncEnabled = ctx.isProjectUsingDataStore();
     const dataSource = this.datasourceMap[type.name.value];
@@ -745,6 +806,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
       const resolver = ctx.resolvers.generateMutationResolver(
         typeName,
         fieldName,
+        resolverLogicalId,
         dataSource,
         MappingTemplate.s3MappingTemplateFromString(generateCreateRequestTemplate(type.name.value), `${typeName}.${fieldName}.req.vtl`),
         MappingTemplate.s3MappingTemplateFromString(
@@ -1131,6 +1193,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
 
     const cfnDataSource = dataSource.node.defaultChild as CfnDataSource;
     cfnDataSource.addDependsOn(role.node.defaultChild as CfnRole);
+    cfnDataSource.overrideLogicalId(datasourceRoleLogicalID);
 
     if (context.isProjectUsingDataStore()) {
       const datasourceDynamoDb = cfnDataSource.dynamoDbConfig as any;

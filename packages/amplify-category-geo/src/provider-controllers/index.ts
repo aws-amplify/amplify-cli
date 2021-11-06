@@ -3,10 +3,13 @@ import { ServiceName, provider } from '../service-utils/constants';
 import { $TSObject, open, stateManager } from 'amplify-cli-core';
 import { $TSContext } from 'amplify-cli-core';
 import { addPlaceIndexResource, updatePlaceIndexResource, removePlaceIndexResource } from './placeIndex';
-import { addMapResource, updateMapResource, removeMapResource } from './map';
+import { addMapResource, updateMapResource, removeMapResource, addMapResourceHeadless, updateMapResourceHeadless } from './map';
 import { printer, prompter } from 'amplify-prompts';
 import { getServiceFriendlyName } from '../service-walkthroughs/resourceWalkthrough';
 import { TemplateMappings } from '../service-stacks/baseStack';
+import { validateAddGeoRequest, validateUpdateGeoRequest } from 'amplify-util-headless-input';
+import { MapConfiguration, MapModification } from 'amplify-headless-interface';
+import { checkGeoResourceExists } from '../service-utils/resourceUtils';
 
 /**
  * Entry point for creating a new Geo resource
@@ -105,7 +108,7 @@ const badServiceError = (service: string) => {
 };
 
 export const insufficientInfoForUpdateError = (service: ServiceName) => {
-  new Error(`Insufficient information to update ${getServiceFriendlyName(service)}. Please re-try and provide all inputs.`);
+  return new Error(`Insufficient information to update ${getServiceFriendlyName(service)}. Please re-try and provide all inputs.`);
 };
 
 export const getTemplateMappings = async (context: $TSContext): Promise<TemplateMappings> => {
@@ -121,4 +124,45 @@ export const getTemplateMappings = async (context: $TSContext): Promise<Template
     };
   });
   return Mappings;
+};
+
+/**
+ * Entry point for headless command of creating a new Geo resource
+ */
+export const addResourceHeadless = async (context: $TSContext, headlessPayload: string): Promise<string | undefined> => {
+  if (!projectHasAuth()) {
+    throw new Error('Please add auth (Amazon Cognito) to your project using "amplify add auth"');
+  }
+  const { serviceConfiguration } = await validateAddGeoRequest(headlessPayload);
+  const { serviceName, name } = serviceConfiguration;
+  if (await checkGeoResourceExists(name)) {
+    throw new Error(`Geo resource with name '${name}' already exists.`);
+  }
+  switch (serviceName) {
+    case ServiceName.Map:
+      return addMapResourceHeadless(context, serviceConfiguration as MapConfiguration);
+    default:
+      throw badHeadlessServiceError(serviceName);
+  }
+};
+
+/**
+ * Entry point for headless command of updating an existing Geo resource
+ */
+export const updateResourceHeadless = async (context: $TSContext, headlessPayload: string): Promise<string | undefined> => {
+  const { serviceModification } = await validateUpdateGeoRequest(headlessPayload);
+  const { serviceName, name } = serviceModification;
+  if (!(await checkGeoResourceExists(name))) {
+    throw new Error(`Geo resource with name '${name}' does not exist.`);
+  }
+  switch (serviceName) {
+    case ServiceName.Map:
+      return updateMapResourceHeadless(context, serviceModification as MapModification);
+    default:
+      throw badHeadlessServiceError(serviceName);
+  }
+};
+
+const badHeadlessServiceError = (service: string) => {
+  return new Error(`Headless mode for service type ${service} is not supported`);
 };

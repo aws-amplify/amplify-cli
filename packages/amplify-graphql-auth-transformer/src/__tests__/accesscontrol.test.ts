@@ -129,4 +129,32 @@ test('that adding a role again without a resource is not allowed', () => {
     expect(acm.isAllowed(blogOwnerRole, field, 'delete')).toBe(true);
   }
   expect(() => acm.setRole({ role: blogOwnerRole, operations: ['read'] })).toThrow(`@auth ${blogOwnerRole} already exists for Blog`);
+  // field overwrites should still be allowed
+  acm.setRole({ role: blogOwnerRole, operations: ['read'], resource: 'name' });
+  acm.setRole({ role: blogOwnerRole, operations: ['read'], resource: 'id' });
+  expect(acm.isAllowed(blogOwnerRole, 'id', 'read')).toBe(true);
+});
+
+test('that adding a role again without a resource is allowed with overwrite flag enabled', () => {
+  const blogOwnerRole = 'userPools:owner';
+  const blogFields = ['id', 'owner', 'name', 'content'];
+  const acm = new AccessControlMatrix({
+    name: 'Blog',
+    resources: blogFields,
+    operations: MODEL_OPERATIONS,
+  });
+  acm.setRole({ role: blogOwnerRole, operations: MODEL_OPERATIONS });
+  for (let field of blogFields) {
+    expect(acm.isAllowed(blogOwnerRole, field, 'create')).toBe(true);
+    expect(acm.isAllowed(blogOwnerRole, field, 'read')).toBe(true);
+    expect(acm.isAllowed(blogOwnerRole, field, 'update')).toBe(true);
+    expect(acm.isAllowed(blogOwnerRole, field, 'delete')).toBe(true);
+  }
+  acm.setRole({ role: blogOwnerRole, operations: ['read'], allowRoleOverwrite: true });
+  for (let field of blogFields) {
+    expect(acm.isAllowed(blogOwnerRole, field, 'create')).toBe(false);
+    expect(acm.isAllowed(blogOwnerRole, field, 'read')).toBe(true);
+    expect(acm.isAllowed(blogOwnerRole, field, 'update')).toBe(false);
+    expect(acm.isAllowed(blogOwnerRole, field, 'delete')).toBe(false);
+  }
 });

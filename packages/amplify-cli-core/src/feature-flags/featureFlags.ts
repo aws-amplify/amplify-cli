@@ -557,6 +557,12 @@ export class FeatureFlags {
         defaultValueForExistingProjects: 1,
         defaultValueForNewProjects: 1,
       },
+      {
+        name: 'suppressSchemaMigrationPrompt',
+        type: 'boolean',
+        defaultValueForExistingProjects: true,
+        defaultValueForNewProjects: true,
+      },
     ]);
 
     this.registerFlag('frontend-ios', [

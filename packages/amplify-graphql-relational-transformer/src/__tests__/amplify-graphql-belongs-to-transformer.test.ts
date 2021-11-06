@@ -292,3 +292,25 @@ test('creates belongs to relationship with implicit fields', () => {
   expect(updateInput.fields.find((f: any) => f.name.value === 'email')).toBeDefined();
   expect(createInput.fields.find((f: any) => f.name.value === 'testOtherHalfId')).toBeDefined();
 });
+
+test('regression test for implicit id field on related type', () => {
+  const inputSchema = `
+    type BatteryCharger @model {
+      powerSourceID: ID
+      powerSource: PowerSource @hasOne(fields: ["powerSourceID"])
+    }
+    
+    type PowerSource @model {
+      sourceID: ID!
+      chargerID: ID
+      charger: BatteryCharger @belongsTo(fields: ["chargerID"])
+    }`;
+  const transformer = new GraphQLTransform({
+    transformers: [new ModelTransformer(), new HasOneTransformer(), new BelongsToTransformer()],
+  });
+
+  const out = transformer.transform(inputSchema);
+  expect(out).toBeDefined();
+  const schema = parse(out.schema);
+  validateModelSchema(schema);
+});

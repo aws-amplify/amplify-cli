@@ -39,6 +39,7 @@ import {
   getBaseType,
   graphqlName,
   ModelResourceIDs,
+  ResolverResourceIDs,
   ResourceConstants,
   toCamelCase,
 } from 'graphql-transformer-common';
@@ -439,6 +440,7 @@ function makeQueryResolver(config: IndexDirectiveConfiguration, ctx: Transformer
   const resolver = ctx.resolvers.generateQueryResolver(
     queryTypeName,
     queryField,
+    ResolverResourceIDs.ResolverResourceID(queryTypeName, queryField),
     dataSource as DataSourceProvider,
     MappingTemplate.s3MappingTemplateFromString(
       print(

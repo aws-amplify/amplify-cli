@@ -72,6 +72,7 @@ describe('@model with @auth', () => {
   const DEVS_ADMIN_GROUP_NAME = 'Devs-Admin';
   const PARTICIPANT_GROUP_NAME = 'Participant';
   const WATCHER_GROUP_NAME = 'Watcher';
+  const SUBSCRIBER_GROUP_NAME = 'Subscriber';
 
   function outputValueSelector(key: string) {
     return (outputs: Output[]) => {
@@ -87,6 +88,23 @@ describe('@model with @auth', () => {
         createdAt: AWSDateTime
         updatedAt: AWSDateTime
         owner: String
+      }
+      type PostImplicitOwnerField @model @auth(rules: [{ allow: owner }]) {
+        id: ID!
+        title: String!
+      }
+      type PostCustomOwnerField @model @auth(rules: [{ allow: owner, ownerField: "poster" }]) {
+        id: ID!
+        title: String!
+        poster: String
+      }
+      type PostImplicitCustomOwnerField @model @auth(rules: [{ allow: owner, ownerField: "poster" }]) {
+        id: ID!
+        title: String!
+      }
+      type PostWithoutAuth @model {
+        id: ID!
+        title: String!
       }
       type Salary
         @model
@@ -165,7 +183,7 @@ describe('@model with @auth', () => {
       }
       type OwnerReadProtected
         @model
-        @auth(rules: [{ allow: groups, groups: ["Admin"]},{ allow: owner, operations: [read] }]) {
+        @auth(rules: [{ allow: groups, groups: ["Admin"] }, { allow: owner, operations: [read] }]) {
         id: ID! @primaryKey(sortKeyFields: ["sk"])
         sk: String!
         content: String
@@ -177,6 +195,54 @@ describe('@model with @auth', () => {
         id: ID!
         content: String
         owner: String
+      }
+      type OwnerCreateDeleteProtected
+        @model
+        @auth(rules: [{ allow: owner, operations: [create, delete] }]) {
+        id: ID!
+        content: String
+        owner: String
+      }
+      type OwnerSetWithReaders
+        @model
+        @auth(
+          rules: [
+            { allow: owner }
+            { allow: owner, ownerField: "readers", operations: [read] }
+          ]
+        ) {
+          id: ID!
+          owner: String
+          content: String
+          readers: [String]
+        }
+      type GroupCreateDeleteProtected
+        @model
+        @auth(
+          rules: [
+            { allow: groups, groups: ["Admin"], operations: [create, delete] }
+            { allow: groups, groups: ["Devs-Admin"] }
+          ]
+        ) {
+        id: ID!
+        content: String
+      }
+      type OwnerGroupExplicitOps
+        @model
+        @auth(
+          rules: [
+            { allow: owner, operations: [create, read] }
+            { allow: groups, groups: ["Devs"], operations: [read, update, delete] }
+          ]
+        ) {
+          id: ID!
+          content: String
+          owner: String
+        }
+      type GroupDynamicUserPool @model @auth(rules: [{ allow: groups, groupsField: "watchers" }]) {
+        id: ID!
+        content: String
+        watchers: [String]
       }
       type Performance
         @model
@@ -221,10 +287,7 @@ describe('@model with @auth', () => {
         new PrimaryKeyTransformer(),
         new IndexTransformer(),
         new HasOneTransformer(),
-        new AuthTransformer({
-          authConfig,
-          addAwsIamAuthInOutputSchema: false,
-        }),
+        new AuthTransformer(),
       ],
     });
     const userPoolResponse = await createUserPool(cognitoClient, `UserPool${STACK_NAME}`);
@@ -272,13 +335,16 @@ describe('@model with @auth', () => {
       await createGroup(USER_POOL_ID, WATCHER_GROUP_NAME);
       await createGroup(USER_POOL_ID, DEVS_GROUP_NAME);
       await createGroup(USER_POOL_ID, DEVS_ADMIN_GROUP_NAME);
+      await createGroup(USER_POOL_ID, SUBSCRIBER_GROUP_NAME);
       await addUserToGroup(ADMIN_GROUP_NAME, USERNAME1, USER_POOL_ID);
       await addUserToGroup(PARTICIPANT_GROUP_NAME, USERNAME1, USER_POOL_ID);
       await addUserToGroup(WATCHER_GROUP_NAME, USERNAME1, USER_POOL_ID);
       await addUserToGroup(DEVS_GROUP_NAME, USERNAME2, USER_POOL_ID);
       await addUserToGroup(DEVS_ADMIN_GROUP_NAME, USERNAME3, USER_POOL_ID);
-      const authResAfterGroup: any = await authenticateUser(USERNAME1, TMP_PASSWORD, REAL_PASSWORD);
+      await addUserToGroup(SUBSCRIBER_GROUP_NAME, USERNAME2, USER_POOL_ID);
+      await addUserToGroup(SUBSCRIBER_GROUP_NAME, USERNAME3, USER_POOL_ID);
 
+      const authResAfterGroup: any = await authenticateUser(USERNAME1, TMP_PASSWORD, REAL_PASSWORD);
       const idToken = authResAfterGroup.getIdToken().getJwtToken();
       GRAPHQL_CLIENT_1 = new GraphQLClient(GRAPHQL_ENDPOINT, { Authorization: idToken });
 
@@ -3021,7 +3087,7 @@ describe('@model with @auth', () => {
     expect(response3.data.updateOwnerCreateUpdateDeleteProtected.owner).toEqual(USERNAME1);
   });
 
-  test("Test deleteOwnerCreateUpdateDeleteProtected with 'update' operation set", async () => {
+  test("Test deleteOwnerCreateUpdateDeleteProtected with 'delete' operation set", async () => {
     const response = await GRAPHQL_CLIENT_1.query(
       `mutation {
           createOwnerCreateUpdateDeleteProtected(input: { content: "Hello, World!", owner: "${USERNAME1}" }) {
@@ -3074,8 +3140,8 @@ describe('@model with @auth', () => {
 
   test('Test allow private combined with groups as Admin and non-admin users', async () => {
     const create = `mutation {
-        p1: createPerformance(input: {
-          id: "P1"
+      p1: createPerformance(input: {
+        id: "P1"
           performer: "Perf #1"
           description: "Description"
           time: "2019-11-11T00:00:00Z"
@@ -3324,6 +3390,815 @@ describe('@model with @auth', () => {
     expect(response3.data.u1.stage).toMatchObject({
       id: '003',
       name: 'stage3',
+    });
+  });
+
+  describe('default owner field', () => {
+    describe('with implicitly-defined owner field', () => {
+      test('creates owner records and retrieves owner records', async () => {
+        const response = await GRAPHQL_CLIENT_1.query(
+          `mutation {
+            createPostImplicitOwnerField(input: { title: "Hello, World!" }) {
+              id
+              title
+              owner
+            }
+          }`,
+          {},
+        );
+
+        expect(response.data.createPostImplicitOwnerField.id).toBeDefined();
+        expect(response.data.createPostImplicitOwnerField.title).toEqual('Hello, World!');
+        expect(response.data.createPostImplicitOwnerField.owner).toEqual(USERNAME1);
+
+        const response2 = await GRAPHQL_CLIENT_2.query(
+          `mutation {
+            createPostImplicitOwnerField(input: { title: "Hello, World!" }) {
+              id
+              title
+              owner
+            }
+          }`,
+          {},
+        );
+
+        expect(response2.data.createPostImplicitOwnerField.id).toBeDefined();
+        expect(response2.data.createPostImplicitOwnerField.title).toEqual('Hello, World!');
+        expect(response2.data.createPostImplicitOwnerField.owner).toEqual(USERNAME2);
+
+        const response3 = await GRAPHQL_CLIENT_1.query(
+          `query {
+            listPostImplicitOwnerFields {
+              items {
+                id
+                title
+                owner
+              }
+            }
+          }`,
+          {},
+        );
+
+        expect(response3.data.listPostImplicitOwnerFields.items).toHaveLength(1);
+
+        const response4 = await GRAPHQL_CLIENT_2.query(
+          `query {
+            listPostImplicitOwnerFields {
+              items {
+                id
+                title
+                owner
+              }
+            }
+          }`,
+          {},
+        );
+
+        expect(response4.data.listPostImplicitOwnerFields.items).toHaveLength(1);
+      });
+
+      test('returns record when retrieving owned record', async () => {
+        const response = await GRAPHQL_CLIENT_1.query(
+          `mutation {
+            createPostImplicitOwnerField(input: { title: "Hello, World!" }) {
+              id
+              title
+              owner
+            }
+          }`,
+          {},
+        );
+
+        expect(response.data.createPostImplicitOwnerField.id).toBeDefined();
+        expect(response.data.createPostImplicitOwnerField.title).toEqual('Hello, World!');
+        expect(response.data.createPostImplicitOwnerField.owner).toEqual(USERNAME1);
+
+        const getResponse = await GRAPHQL_CLIENT_1.query(
+          `query {
+            getPostImplicitOwnerField(id: "${response.data.createPostImplicitOwnerField.id}") {
+              id
+              title
+              owner
+            }
+          }`,
+          {},
+        );
+
+        expect(getResponse.data.getPostImplicitOwnerField.id).toBeDefined();
+        expect(getResponse.data.getPostImplicitOwnerField.title).toEqual('Hello, World!');
+        expect(getResponse.data.getPostImplicitOwnerField.owner).toEqual(USERNAME1);
+      });
+
+      test('returns unauthorized when retrieving non-owned record', async () => {
+        const response = await GRAPHQL_CLIENT_1.query(
+          `mutation {
+            createPostImplicitOwnerField(input: { title: "Hello, World!" }) {
+              id
+              title
+              owner
+            }
+          }`,
+          {},
+        );
+
+        expect(response.data.createPostImplicitOwnerField.id).toBeDefined();
+        expect(response.data.createPostImplicitOwnerField.title).toEqual('Hello, World!');
+        expect(response.data.createPostImplicitOwnerField.owner).toBeDefined();
+
+        const getResponse = await GRAPHQL_CLIENT_2.query(
+          `query {
+            getPostImplicitOwnerField(id: "${response.data.createPostImplicitOwnerField.id}") {
+              id
+              title
+              owner
+            }
+          }`,
+          {},
+        );
+
+        expect(getResponse.data.getPostImplicitOwnerField).toEqual(null);
+        expect(getResponse.errors.length).toEqual(1);
+        expect((getResponse.errors[0] as any).errorType).toEqual('Unauthorized');
+      });
+    });
+  });
+
+  describe('custom owner fields', () => {
+    describe('with explicitly-defined owner field', () => {
+      test('creates owner records', async () => {
+        const response = await GRAPHQL_CLIENT_1.query(
+          `mutation {
+            createPostCustomOwnerField(input: {
+              title: "Hello, World!",
+              poster: "${USERNAME1}"
+            }) {
+              id
+              title
+              poster
+            }
+          }`,
+          {},
+        );
+        expect(response.data.createPostCustomOwnerField.id).toBeDefined();
+        expect(response.data.createPostCustomOwnerField.title).toEqual('Hello, World!');
+        expect(response.data.createPostCustomOwnerField.poster).toEqual(USERNAME1);
+
+        const response2 = await GRAPHQL_CLIENT_1_ACCESS.query(
+          `mutation {
+            createPostCustomOwnerField(input: {
+              title: "Hello, World!",
+              poster: "${USERNAME1}"
+            }) {
+              id
+              title
+              poster
+            }
+          }`,
+          {},
+        );
+
+        expect(response2.data.createPostCustomOwnerField.id).toBeDefined();
+        expect(response2.data.createPostCustomOwnerField.title).toEqual('Hello, World!');
+        expect(response2.data.createPostCustomOwnerField.poster).toEqual(USERNAME1);
+      });
+
+      test('queries owned records', async () => {
+        const response = await GRAPHQL_CLIENT_1.query(
+          `mutation {
+            createPostCustomOwnerField(input: {
+              title: "Hello, World!",
+              poster: "${USERNAME1}"
+            }) {
+              id
+              title
+              poster
+            }
+          }`,
+          {},
+        );
+
+        expect(response.data.createPostCustomOwnerField.id).toBeDefined();
+        expect(response.data.createPostCustomOwnerField.title).toEqual('Hello, World!');
+        expect(response.data.createPostCustomOwnerField.poster).toEqual(USERNAME1);
+
+        const getResponse = await GRAPHQL_CLIENT_1.query(
+          `query {
+            getPostCustomOwnerField(id: "${response.data.createPostCustomOwnerField.id}") {
+              id
+              title
+              poster
+            }
+          }`,
+          {},
+        );
+
+        expect(getResponse.data.getPostCustomOwnerField.id).toBeDefined();
+        expect(getResponse.data.getPostCustomOwnerField.title).toEqual('Hello, World!');
+        expect(getResponse.data.getPostCustomOwnerField.poster).toEqual(USERNAME1);
+
+        const getResponseAccess = await GRAPHQL_CLIENT_1_ACCESS.query(
+          `query {
+            getPostCustomOwnerField(id: "${response.data.createPostCustomOwnerField.id}") {
+              id
+              title
+              poster
+            }
+          }`,
+          {},
+        );
+
+        expect(getResponseAccess.data.getPostCustomOwnerField.id).toBeDefined();
+        expect(getResponseAccess.data.getPostCustomOwnerField.title).toEqual('Hello, World!');
+        expect(getResponseAccess.data.getPostCustomOwnerField.poster).toEqual(USERNAME1);
+      });
+
+      test('queries non-owned records', async () => {
+        const response = await GRAPHQL_CLIENT_1.query(
+          `mutation {
+            createPostCustomOwnerField(input: {
+              title: "Hello, World!",
+              poster: "${USERNAME1}"
+            }) {
+              id
+              title
+              poster
+            }
+          }`,
+          {},
+        );
+
+        expect(response.data.createPostCustomOwnerField.id).toBeDefined();
+        expect(response.data.createPostCustomOwnerField.title).toEqual('Hello, World!');
+        expect(response.data.createPostCustomOwnerField.poster).toBeDefined();
+
+        const getResponse = await GRAPHQL_CLIENT_2.query(
+          `query {
+            getPostCustomOwnerField(id: "${response.data.createPostCustomOwnerField.id}") {
+              id
+              title
+              poster
+            }
+          }`,
+          {},
+        );
+
+        expect(getResponse.data.getPostCustomOwnerField).toEqual(null);
+        expect(getResponse.errors.length).toEqual(1);
+        expect((getResponse.errors[0] as any).errorType).toEqual('Unauthorized');
+      });
+    });
+
+    describe('with implicitly-defined owner field', () => {
+      test('creates a record and sets custom owner', async () => {
+        const response = await GRAPHQL_CLIENT_1.query(
+          `mutation {
+            createPostImplicitCustomOwnerField(input: { title: "Hello, World!" }) {
+              id
+              title
+              poster
+            }
+          }`,
+          {},
+        );
+
+        expect(response.data.createPostImplicitCustomOwnerField.id).toBeDefined();
+        expect(response.data.createPostImplicitCustomOwnerField.title).toEqual('Hello, World!');
+        expect(response.data.createPostImplicitCustomOwnerField.poster).toEqual(USERNAME1);
+
+        const response2 = await GRAPHQL_CLIENT_2.query(
+          `mutation {
+            createPostImplicitCustomOwnerField(input: { title: "Hello, World!" }) {
+              id
+              title
+              poster
+            }
+          }`,
+          {},
+        );
+
+        expect(response2.data.createPostImplicitCustomOwnerField.id).toBeDefined();
+        expect(response2.data.createPostImplicitCustomOwnerField.title).toEqual('Hello, World!');
+        expect(response2.data.createPostImplicitCustomOwnerField.poster).toEqual(USERNAME2);
+
+        const response3 = await GRAPHQL_CLIENT_1.query(
+          `query {
+            listPostImplicitCustomOwnerFields {
+              items {
+                id
+                title
+                poster
+              }
+            }
+          }`,
+          {},
+        );
+
+        expect(response3.data.listPostImplicitCustomOwnerFields.items).toHaveLength(1);
+
+        const response4 = await GRAPHQL_CLIENT_2.query(
+          `query {
+            listPostImplicitCustomOwnerFields {
+              items {
+                id
+                title
+                poster
+              }
+            }
+          }`,
+          {},
+        );
+
+        expect(response4.data.listPostImplicitCustomOwnerFields.items).toHaveLength(1);
+      });
+
+      test('creates and retrieves record with custom owner', async () => {
+        const response = await GRAPHQL_CLIENT_1.query(
+          `mutation {
+            createPostImplicitCustomOwnerField(input: { title: "Hello, World!" }) {
+              id
+              title
+              poster
+            }
+          }`,
+          {},
+        );
+
+        expect(response.data.createPostImplicitCustomOwnerField.id).toBeDefined();
+        expect(response.data.createPostImplicitCustomOwnerField.title).toEqual('Hello, World!');
+        expect(response.data.createPostImplicitCustomOwnerField.poster).toEqual(USERNAME1);
+
+        const getResponse = await GRAPHQL_CLIENT_1.query(
+          `query {
+            getPostImplicitCustomOwnerField(id: "${response.data.createPostImplicitCustomOwnerField.id}") {
+              id
+              title
+              poster
+            }
+          }`,
+          {},
+        );
+
+        expect(getResponse.data.getPostImplicitCustomOwnerField.id).toBeDefined();
+        expect(getResponse.data.getPostImplicitCustomOwnerField.title).toEqual('Hello, World!');
+        expect(getResponse.data.getPostImplicitCustomOwnerField.poster).toEqual(USERNAME1);
+      });
+
+      test('returns unauthorized when non-owner queries record', async () => {
+        const response = await GRAPHQL_CLIENT_1.query(
+          `mutation {
+            createPostImplicitCustomOwnerField(input: { title: "Hello, World!" }) {
+              id
+              title
+              poster
+            }
+          }`,
+          {},
+        );
+
+        expect(response.data.createPostImplicitCustomOwnerField.id).toBeDefined();
+        expect(response.data.createPostImplicitCustomOwnerField.title).toEqual('Hello, World!');
+        expect(response.data.createPostImplicitCustomOwnerField.poster).toBeDefined();
+
+        const getResponse = await GRAPHQL_CLIENT_2.query(
+          `query {
+            getPostImplicitCustomOwnerField(id: "${response.data.createPostImplicitCustomOwnerField.id}") {
+              id
+              title
+              poster
+            }
+          }`,
+          {},
+        );
+
+        expect(getResponse.data.getPostImplicitCustomOwnerField).toEqual(null);
+        expect(getResponse.errors.length).toEqual(1);
+        expect((getResponse.errors[0] as any).errorType).toEqual('Unauthorized');
+      });
+    });
+  });
+
+  describe('with @model + without @auth', () => {
+    test('querying records without auth policies defined', async () => {
+      const createResponse = await GRAPHQL_CLIENT_1.query(
+        `mutation {
+          createPost(input: { title: "Hello, World!" }) {
+            id
+            title
+            owner
+          }
+        }`,
+        {},
+      );
+
+      expect(createResponse.data.createPost.id).toBeDefined();
+      expect(createResponse.data.createPost.title).toEqual('Hello, World!');
+      expect(createResponse.data.createPost.owner).toEqual(USERNAME1);
+
+      const createResponse2 = await GRAPHQL_CLIENT_1.query(
+        `mutation {
+          createPostWithoutAuth(input: { title: "Hello, World!" }) {
+            id
+            title
+            owner
+          }
+        }`,
+        {},
+      );
+
+      expect(createResponse2.data).toEqual(null);
+      expect(createResponse2.errors.length).toEqual(1);
+      expect((createResponse2.errors[0] as any).message).toMatch(/FieldUndefined/);
+
+      const createResponse3 = await GRAPHQL_CLIENT_1.query(
+        `mutation {
+          createPostWithoutAuth(input: { title: "Hello, World!" }) {
+            id
+            title
+          }
+        }`,
+        {},
+      );
+
+      expect(createResponse3.data.createPostWithoutAuth).toEqual(null);
+      expect(createResponse3.errors.length).toEqual(1);
+      expect((createResponse3.errors[0] as any).errorType).toEqual('Unauthorized');
+    });
+  });
+
+  describe('dynamic groups', () => {
+    test("listing and deleting from user's user pools", async () => {
+      const createResponse = await GRAPHQL_CLIENT_1.query(
+        `mutation {
+          createGroupDynamicUserPool(input: { content: "Hello, World!", watchers: ["Admin"] }) {
+            id
+            content
+            watchers
+          }
+        }`,
+        {},
+      );
+
+      expect(createResponse.data.createGroupDynamicUserPool.id).toBeDefined();
+      expect(createResponse.data.createGroupDynamicUserPool.content).toEqual('Hello, World!');
+      expect(createResponse.data.createGroupDynamicUserPool.watchers).toEqual(['Admin']);
+
+      const createResponse2 = await GRAPHQL_CLIENT_2.query(
+        `mutation {
+          createGroupDynamicUserPool(input: { content: "Hello, World!", watchers: ["Subscriber"] }) {
+            id
+            content
+            watchers
+          }
+        }`,
+        {},
+      );
+
+      expect(createResponse2.data.createGroupDynamicUserPool.id).toBeDefined();
+      expect(createResponse2.data.createGroupDynamicUserPool.content).toEqual('Hello, World!');
+      expect(createResponse2.data.createGroupDynamicUserPool.watchers).toEqual(['Subscriber']);
+
+      const createResponse3 = await GRAPHQL_CLIENT_3.query(
+        `mutation {
+          createGroupDynamicUserPool(input: { content: "Hello, World!", watchers: ["Devs", "Subscriber"] }) {
+            id
+            content
+            watchers
+          }
+        }`,
+        {},
+      );
+
+      expect(createResponse3.data.createGroupDynamicUserPool.watchers).toContain('Devs');
+      expect(createResponse3.data.createGroupDynamicUserPool.watchers).toContain('Subscriber');
+
+      const listResponse = await GRAPHQL_CLIENT_3.query(
+        `query {
+          listGroupDynamicUserPools {
+            items {
+              id
+              content
+              watchers
+            }
+          }
+        }`,
+        {},
+      );
+
+      expect(listResponse.data.listGroupDynamicUserPools.items).toHaveLength(2);
+      expect(listResponse.data.listGroupDynamicUserPools.items.map(i => i.id)).toContain(
+        createResponse2.data.createGroupDynamicUserPool.id,
+      );
+      expect(listResponse.data.listGroupDynamicUserPools.items.map(i => i.id)).toContain(
+        createResponse3.data.createGroupDynamicUserPool.id,
+      );
+
+      const deleteResponse = await GRAPHQL_CLIENT_3.query(
+        `mutation {
+          delete01: deleteGroupDynamicUserPool(input: { id: "${createResponse2.data.createGroupDynamicUserPool.id}" }) {
+            id
+          }
+
+          delete02: deleteGroupDynamicUserPool(input: { id: "${createResponse3.data.createGroupDynamicUserPool.id}" }) {
+            id
+          }
+        }`,
+        {},
+      );
+
+      expect(deleteResponse.data.delete01.id).toEqual(createResponse2.data.createGroupDynamicUserPool.id);
+      expect(deleteResponse.data.delete02.id).toEqual(createResponse3.data.createGroupDynamicUserPool.id);
+
+      const listResponse2 = await GRAPHQL_CLIENT_1.query(
+        `query {
+          listGroupDynamicUserPools {
+            items {
+              id
+              content
+              watchers
+            }
+          }
+        }`,
+        {},
+      );
+
+      expect(listResponse2.data.listGroupDynamicUserPools.items).toHaveLength(1);
+      expect(listResponse2.data.listGroupDynamicUserPools.items.map(i => i.id)).toContain(
+        createResponse.data.createGroupDynamicUserPool.id,
+      );
+
+      const deleteResponse2 = await GRAPHQL_CLIENT_1.query(
+        `mutation {
+          deleteGroupDynamicUserPool(input: { id: "${createResponse.data.createGroupDynamicUserPool.id}" }) {
+            id
+          }
+        }`,
+        {},
+      );
+
+      expect(deleteResponse2.data.deleteGroupDynamicUserPool.id).toEqual(createResponse.data.createGroupDynamicUserPool.id);
+    });
+  });
+
+  describe('with explicit operations', () => {
+    describe('with owner defined auth', () => {
+      test("default owner with 'create' and 'delete' operations", async () => {
+        const createRes = await GRAPHQL_CLIENT_1.query(
+          `mutation {
+            createOwnerCreateDeleteProtected(input: { content: "Hello, World!", owner: "${USERNAME1}" }) {
+              id
+              content
+              owner
+            }
+          }`,
+          {},
+        );
+
+        expect(createRes.data.createOwnerCreateDeleteProtected.id).toBeDefined();
+        expect(createRes.data.createOwnerCreateDeleteProtected.content).toEqual('Hello, World!');
+        expect(createRes.data.createOwnerCreateDeleteProtected.owner).toEqual(USERNAME1);
+
+        const deleteRes1 = await GRAPHQL_CLIENT_2.query(
+          `mutation {
+            deleteOwnerCreateDeleteProtected(input: {
+              id: "${createRes.data.createOwnerCreateDeleteProtected.id}"
+            }) {
+              id
+              content
+              owner
+            }
+          }`,
+          {},
+        );
+
+        expect(deleteRes1.data.deleteOwnerCreateDeleteProtected).toBeNull();
+        expect((deleteRes1.errors[0] as any).errorType).toEqual('Unauthorized');
+
+        const deleteRes2 = await GRAPHQL_CLIENT_1.query(
+          `mutation {
+            deleteOwnerCreateDeleteProtected(
+              input: {
+                id: "${createRes.data.createOwnerCreateDeleteProtected.id}"
+              }
+            ) {
+              id
+              content
+              owner
+            }
+          }`,
+          {},
+        );
+
+        expect(deleteRes2.data.deleteOwnerCreateDeleteProtected.id).toBeDefined();
+        expect(deleteRes2.data.deleteOwnerCreateDeleteProtected.content).toEqual('Hello, World!');
+        expect(deleteRes2.data.deleteOwnerCreateDeleteProtected.owner).toEqual(USERNAME1);
+      });
+
+      test("default owner with implicit operations, and custom owner with 'read' operation", async () => {
+        const createRes = await GRAPHQL_CLIENT_1.query(
+          `mutation {
+            createOwnerSetWithReaders(input: {
+              content: "Hello, World!",
+              readers: ["${USERNAME2}"]
+            }) {
+              id
+              content
+              owner
+              readers
+            }
+          }`,
+          {},
+        );
+
+        expect(createRes.data.createOwnerSetWithReaders.id).toBeDefined();
+        expect(createRes.data.createOwnerSetWithReaders.content).toEqual('Hello, World!');
+        expect(createRes.data.createOwnerSetWithReaders.owner).toEqual(USERNAME1);
+        expect(createRes.data.createOwnerSetWithReaders.readers).toHaveLength(1);
+        expect(createRes.data.createOwnerSetWithReaders.readers).toContain(USERNAME2);
+
+        const ownerReadRes = await GRAPHQL_CLIENT_1.query(
+          `query {
+            getOwnerSetWithReaders(id: "${createRes.data.createOwnerSetWithReaders.id}") {
+              id
+              content
+              owner
+              readers
+            }
+          }`,
+          {},
+        );
+
+        expect(ownerReadRes.data.getOwnerSetWithReaders.id).toBeDefined();
+        expect(ownerReadRes.data.getOwnerSetWithReaders.content).toEqual('Hello, World!');
+        expect(ownerReadRes.data.getOwnerSetWithReaders.owner).toEqual(USERNAME1);
+        expect(ownerReadRes.data.getOwnerSetWithReaders.readers).toHaveLength(1);
+        expect(ownerReadRes.data.getOwnerSetWithReaders.readers).toContain(USERNAME2);
+
+        const readerReadRes = await GRAPHQL_CLIENT_2.query(
+          `query {
+            getOwnerSetWithReaders(id: "${createRes.data.createOwnerSetWithReaders.id}") {
+              id
+              content
+              owner
+              readers
+            }
+          }`,
+          {},
+        );
+
+        expect(readerReadRes.data.getOwnerSetWithReaders.id).toBeDefined();
+        expect(readerReadRes.data.getOwnerSetWithReaders.content).toEqual('Hello, World!');
+        expect(readerReadRes.data.getOwnerSetWithReaders.owner).toEqual(USERNAME1);
+        expect(readerReadRes.data.getOwnerSetWithReaders.readers).toHaveLength(1);
+        expect(readerReadRes.data.getOwnerSetWithReaders.readers).toContain(USERNAME2);
+
+        const unauthorizedReadRes = await GRAPHQL_CLIENT_3.query(
+          `query {
+            getOwnerSetWithReaders(id: "${createRes.data.createOwnerSetWithReaders.id}") {
+              id
+              content
+              owner
+              readers
+            }
+          }`,
+          {},
+        );
+
+        expect(unauthorizedReadRes.data.getOwnerSetWithReaders).toEqual(null);
+        expect((unauthorizedReadRes.errors[0] as any).errorType).toEqual('Unauthorized');
+      });
+    });
+
+    describe('with group defined auth', () => {
+      test("static group with 'create' and 'delete' operations", async () => {
+        const createRes = await GRAPHQL_CLIENT_1.query(
+          `mutation {
+            createGroupCreateDeleteProtected(input: { content: "Hello, World!" }) {
+              id
+              content
+            }
+          }`,
+          {},
+        );
+
+        expect(createRes.data.createGroupCreateDeleteProtected.id).toBeDefined();
+        expect(createRes.data.createGroupCreateDeleteProtected.content).toEqual('Hello, World!');
+
+        const updateRes = await GRAPHQL_CLIENT_3.query(
+          `mutation {
+            updateGroupCreateDeleteProtected(input: {
+              id: "${createRes.data.createGroupCreateDeleteProtected.id}",
+              content: "Bye, World!"
+            }) {
+              id
+              content
+            }
+          }`,
+          {},
+        );
+
+        expect(updateRes.data.updateGroupCreateDeleteProtected.id).toBeDefined();
+        expect(updateRes.data.updateGroupCreateDeleteProtected.content).toEqual('Bye, World!');
+
+        const getRes = await GRAPHQL_CLIENT_3.query(
+          `query {
+            listGroupCreateDeleteProtecteds {
+              items {
+                id
+                content
+              }
+            }
+          }`,
+          {},
+        );
+
+        expect(getRes.data.listGroupCreateDeleteProtecteds.items).toHaveLength(1);
+        expect(getRes.data.listGroupCreateDeleteProtecteds.items[0].id).toEqual(createRes.data.createGroupCreateDeleteProtected.id);
+        expect(getRes.data.listGroupCreateDeleteProtecteds.items[0].content).toEqual('Bye, World!');
+      });
+    });
+
+    describe('with owner and group auth', () => {
+      test("owner with 'create' and 'read' protected, group with 'read', 'update', 'delete' protected", async () => {
+        const createRes = await GRAPHQL_CLIENT_1.query(
+          `mutation {
+            createOwnerGroupExplicitOps(input: { content: "Hello, World!", owner: "${USERNAME1}" }) {
+              id
+              content
+              owner
+            }
+          }`,
+          {},
+        );
+
+        expect(createRes.data.createOwnerGroupExplicitOps.id).toBeDefined();
+        expect(createRes.data.createOwnerGroupExplicitOps.content).toEqual('Hello, World!');
+        expect(createRes.data.createOwnerGroupExplicitOps.owner).toEqual(USERNAME1);
+
+        const updateRes = await GRAPHQL_CLIENT_1.query(
+          `mutation {
+            updateOwnerGroupExplicitOps(input: {
+              id: "${createRes.data.createOwnerGroupExplicitOps.id}",
+              content: "Bye, World!"
+            }) {
+              id
+              content
+              owner
+            }
+          }`,
+          {},
+        );
+
+        expect(updateRes.data.updateOwnerGroupExplicitOps).toEqual(null);
+        expect((updateRes.errors[0] as any).errorType).toEqual('Unauthorized');
+
+        const deleteRes = await GRAPHQL_CLIENT_1.query(
+          `mutation {
+            deleteOwnerGroupExplicitOps(input: { id: "${createRes.data.createOwnerGroupExplicitOps.id}" }) {
+              id
+              content
+              owner
+            }
+          }`,
+          {},
+        );
+
+        expect(deleteRes.data.deleteOwnerGroupExplicitOps).toEqual(null);
+        expect((deleteRes.errors[0] as any).errorType).toEqual('Unauthorized');
+
+        const updateRes2 = await GRAPHQL_CLIENT_2.query(
+          `mutation {
+            updateOwnerGroupExplicitOps(input: {
+              id: "${createRes.data.createOwnerGroupExplicitOps.id}",
+              content: "Bye, World!"
+            }) {
+              id
+              content
+              owner
+            }
+          }`,
+          {},
+        );
+
+        expect(updateRes2.data.updateOwnerGroupExplicitOps.id).toBeDefined();
+        expect(updateRes2.data.updateOwnerGroupExplicitOps.content).toEqual('Bye, World!');
+        expect(updateRes2.data.updateOwnerGroupExplicitOps.owner).toEqual(USERNAME1);
+
+        const deleteRes2 = await GRAPHQL_CLIENT_2.query(
+          `mutation {
+            deleteOwnerGroupExplicitOps(input: {
+              id: "${createRes.data.createOwnerGroupExplicitOps.id}"
+            }) {
+              id
+              content
+              owner
+            }
+          }`,
+          {},
+        );
+
+        expect(deleteRes2.data.deleteOwnerGroupExplicitOps.id).toBeDefined();
+        expect(deleteRes2.data.deleteOwnerGroupExplicitOps.content).toEqual('Bye, World!');
+      });
     });
   });
 });

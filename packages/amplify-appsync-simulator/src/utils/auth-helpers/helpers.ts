@@ -9,12 +9,17 @@ import {
 export type JWTToken = {
   iss: string;
   sub: string;
-  exp: number;
   aud: string;
+  exp: number;
   iat: number;
-  nbf: number;
+  event_id?: string;
+  token_use?: string;
+  auth_time?: number;
+  nbf?: number;
   username?: string;
+  email?: string;
   'cognito:username'?: string;
+  'cognitio:groups'?: string[];
 };
 
 export function extractJwtToken(authorization: string): JWTToken {

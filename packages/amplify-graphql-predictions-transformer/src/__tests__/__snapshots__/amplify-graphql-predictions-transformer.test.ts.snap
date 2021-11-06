@@ -295,6 +295,638 @@ Object {
       },
       "Type": "AWS::IAM::Policy",
     },
+    "QueryconvertTextToSpeechResolver": Object {
+      "Properties": Object {
+        "ApiId": Object {
+          "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
+        },
+        "FieldName": "convertTextToSpeech",
+        "Kind": "PIPELINE",
+        "PipelineConfig": Object {
+          "Functions": Array [
+            Object {
+              "Fn::GetAtt": Array [
+                "convertTextToSpeechFunctionconvertTextToSpeechFunctionAppSyncFunction15BC20B8",
+                "FunctionId",
+              ],
+            },
+          ],
+        },
+        "RequestMappingTemplate": Object {
+          "Fn::Join": Array [
+            "
+",
+            Array [
+              Object {
+                "Fn::If": Array [
+                  "HasEnvironmentParameter",
+                  Object {
+                    "Fn::Sub": Array [
+                      "$util.qr($ctx.stash.put(\\"s3Bucket\\", \\"myStorage\${hash}-\${env}\\"))",
+                      Object {
+                        "env": Object {
+                          "Ref": "referencetotransformerrootstackenv10C5A902Ref",
+                        },
+                        "hash": Object {
+                          "Fn::Select": Array [
+                            3,
+                            Object {
+                              "Fn::Split": Array [
+                                "-",
+                                Object {
+                                  "Ref": "AWS::StackName",
+                                },
+                              ],
+                            },
+                          ],
+                        },
+                      },
+                    ],
+                  },
+                  Object {
+                    "Fn::Sub": Array [
+                      "$util.qr($ctx.stash.put(\\"s3Bucket\\", \\"myStorage\${hash}\\"))",
+                      Object {
+                        "hash": Object {
+                          "Fn::Select": Array [
+                            3,
+                            Object {
+                              "Fn::Split": Array [
+                                "-",
+                                Object {
+                                  "Ref": "AWS::StackName",
+                                },
+                              ],
+                            },
+                          ],
+                        },
+                      },
+                    ],
+                  },
+                ],
+              },
+              "$util.qr($ctx.stash.put(\\"isList\\", false))
+{}",
+            ],
+          ],
+        },
+        "ResponseMappingTemplate": "## If the result is a list return the result as a list **
+#if( $ctx.stash.get(\\"isList\\") )
+  #set( $result = $ctx.result.split(\\"[ ,]+\\") )
+  $util.toJson($result)
+#else
+  $util.toJson($ctx.result)
+#end",
+        "TypeName": "Query",
+      },
+      "Type": "AWS::AppSync::Resolver",
+    },
+    "QueryidentifyLabelsResolver": Object {
+      "Properties": Object {
+        "ApiId": Object {
+          "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
+        },
+        "FieldName": "identifyLabels",
+        "Kind": "PIPELINE",
+        "PipelineConfig": Object {
+          "Functions": Array [
+            Object {
+              "Fn::GetAtt": Array [
+                "identifyLabelsFunctionidentifyLabelsFunctionAppSyncFunction7C2A1E61",
+                "FunctionId",
+              ],
+            },
+          ],
+        },
+        "RequestMappingTemplate": Object {
+          "Fn::Join": Array [
+            "
+",
+            Array [
+              Object {
+                "Fn::If": Array [
+                  "HasEnvironmentParameter",
+                  Object {
+                    "Fn::Sub": Array [
+                      "$util.qr($ctx.stash.put(\\"s3Bucket\\", \\"myStorage\${hash}-\${env}\\"))",
+                      Object {
+                        "env": Object {
+                          "Ref": "referencetotransformerrootstackenv10C5A902Ref",
+                        },
+                        "hash": Object {
+                          "Fn::Select": Array [
+                            3,
+                            Object {
+                              "Fn::Split": Array [
+                                "-",
+                                Object {
+                                  "Ref": "AWS::StackName",
+                                },
+                              ],
+                            },
+                          ],
+                        },
+                      },
+                    ],
+                  },
+                  Object {
+                    "Fn::Sub": Array [
+                      "$util.qr($ctx.stash.put(\\"s3Bucket\\", \\"myStorage\${hash}\\"))",
+                      Object {
+                        "hash": Object {
+                          "Fn::Select": Array [
+                            3,
+                            Object {
+                              "Fn::Split": Array [
+                                "-",
+                                Object {
+                                  "Ref": "AWS::StackName",
+                                },
+                              ],
+                            },
+                          ],
+                        },
+                      },
+                    ],
+                  },
+                ],
+              },
+              "$util.qr($ctx.stash.put(\\"isList\\", false))
+{}",
+            ],
+          ],
+        },
+        "ResponseMappingTemplate": "## If the result is a list return the result as a list **
+#if( $ctx.stash.get(\\"isList\\") )
+  #set( $result = $ctx.result.split(\\"[ ,]+\\") )
+  $util.toJson($result)
+#else
+  $util.toJson($ctx.result)
+#end",
+        "TypeName": "Query",
+      },
+      "Type": "AWS::AppSync::Resolver",
+    },
+    "QueryidentifyTextResolver": Object {
+      "Properties": Object {
+        "ApiId": Object {
+          "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
+        },
+        "FieldName": "identifyText",
+        "Kind": "PIPELINE",
+        "PipelineConfig": Object {
+          "Functions": Array [
+            Object {
+              "Fn::GetAtt": Array [
+                "identifyTextFunctionidentifyTextFunctionAppSyncFunction7877885A",
+                "FunctionId",
+              ],
+            },
+          ],
+        },
+        "RequestMappingTemplate": Object {
+          "Fn::Join": Array [
+            "
+",
+            Array [
+              Object {
+                "Fn::If": Array [
+                  "HasEnvironmentParameter",
+                  Object {
+                    "Fn::Sub": Array [
+                      "$util.qr($ctx.stash.put(\\"s3Bucket\\", \\"myStorage\${hash}-\${env}\\"))",
+                      Object {
+                        "env": Object {
+                          "Ref": "referencetotransformerrootstackenv10C5A902Ref",
+                        },
+                        "hash": Object {
+                          "Fn::Select": Array [
+                            3,
+                            Object {
+                              "Fn::Split": Array [
+                                "-",
+                                Object {
+                                  "Ref": "AWS::StackName",
+                                },
+                              ],
+                            },
+                          ],
+                        },
+                      },
+                    ],
+                  },
+                  Object {
+                    "Fn::Sub": Array [
+                      "$util.qr($ctx.stash.put(\\"s3Bucket\\", \\"myStorage\${hash}\\"))",
+                      Object {
+                        "hash": Object {
+                          "Fn::Select": Array [
+                            3,
+                            Object {
+                              "Fn::Split": Array [
+                                "-",
+                                Object {
+                                  "Ref": "AWS::StackName",
+                                },
+                              ],
+                            },
+                          ],
+                        },
+                      },
+                    ],
+                  },
+                ],
+              },
+              "$util.qr($ctx.stash.put(\\"isList\\", false))
+{}",
+            ],
+          ],
+        },
+        "ResponseMappingTemplate": "## If the result is a list return the result as a list **
+#if( $ctx.stash.get(\\"isList\\") )
+  #set( $result = $ctx.result.split(\\"[ ,]+\\") )
+  $util.toJson($result)
+#else
+  $util.toJson($ctx.result)
+#end",
+        "TypeName": "Query",
+      },
+      "Type": "AWS::AppSync::Resolver",
+    },
+    "QueryspeakTranslatedIdentifiedTextResolver": Object {
+      "Properties": Object {
+        "ApiId": Object {
+          "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
+        },
+        "FieldName": "speakTranslatedIdentifiedText",
+        "Kind": "PIPELINE",
+        "PipelineConfig": Object {
+          "Functions": Array [
+            Object {
+              "Fn::GetAtt": Array [
+                "identifyTextFunctionidentifyTextFunctionAppSyncFunction7877885A",
+                "FunctionId",
+              ],
+            },
+            Object {
+              "Fn::GetAtt": Array [
+                "translateTextFunctiontranslateTextFunctionAppSyncFunction77C9D7A9",
+                "FunctionId",
+              ],
+            },
+            Object {
+              "Fn::GetAtt": Array [
+                "convertTextToSpeechFunctionconvertTextToSpeechFunctionAppSyncFunction15BC20B8",
+                "FunctionId",
+              ],
+            },
+          ],
+        },
+        "RequestMappingTemplate": Object {
+          "Fn::Join": Array [
+            "
+",
+            Array [
+              Object {
+                "Fn::If": Array [
+                  "HasEnvironmentParameter",
+                  Object {
+                    "Fn::Sub": Array [
+                      "$util.qr($ctx.stash.put(\\"s3Bucket\\", \\"myStorage\${hash}-\${env}\\"))",
+                      Object {
+                        "env": Object {
+                          "Ref": "referencetotransformerrootstackenv10C5A902Ref",
+                        },
+                        "hash": Object {
+                          "Fn::Select": Array [
+                            3,
+                            Object {
+                              "Fn::Split": Array [
+                                "-",
+                                Object {
+                                  "Ref": "AWS::StackName",
+                                },
+                              ],
+                            },
+                          ],
+                        },
+                      },
+                    ],
+                  },
+                  Object {
+                    "Fn::Sub": Array [
+                      "$util.qr($ctx.stash.put(\\"s3Bucket\\", \\"myStorage\${hash}\\"))",
+                      Object {
+                        "hash": Object {
+                          "Fn::Select": Array [
+                            3,
+                            Object {
+                              "Fn::Split": Array [
+                                "-",
+                                Object {
+                                  "Ref": "AWS::StackName",
+                                },
+                              ],
+                            },
+                          ],
+                        },
+                      },
+                    ],
+                  },
+                ],
+              },
+              "$util.qr($ctx.stash.put(\\"isList\\", false))
+{}",
+            ],
+          ],
+        },
+        "ResponseMappingTemplate": "## If the result is a list return the result as a list **
+#if( $ctx.stash.get(\\"isList\\") )
+  #set( $result = $ctx.result.split(\\"[ ,]+\\") )
+  $util.toJson($result)
+#else
+  $util.toJson($ctx.result)
+#end",
+        "TypeName": "Query",
+      },
+      "Type": "AWS::AppSync::Resolver",
+    },
+    "QueryspeakTranslatedLabelTextResolver": Object {
+      "Properties": Object {
+        "ApiId": Object {
+          "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
+        },
+        "FieldName": "speakTranslatedLabelText",
+        "Kind": "PIPELINE",
+        "PipelineConfig": Object {
+          "Functions": Array [
+            Object {
+              "Fn::GetAtt": Array [
+                "identifyLabelsFunctionidentifyLabelsFunctionAppSyncFunction7C2A1E61",
+                "FunctionId",
+              ],
+            },
+            Object {
+              "Fn::GetAtt": Array [
+                "translateTextFunctiontranslateTextFunctionAppSyncFunction77C9D7A9",
+                "FunctionId",
+              ],
+            },
+            Object {
+              "Fn::GetAtt": Array [
+                "convertTextToSpeechFunctionconvertTextToSpeechFunctionAppSyncFunction15BC20B8",
+                "FunctionId",
+              ],
+            },
+          ],
+        },
+        "RequestMappingTemplate": Object {
+          "Fn::Join": Array [
+            "
+",
+            Array [
+              Object {
+                "Fn::If": Array [
+                  "HasEnvironmentParameter",
+                  Object {
+                    "Fn::Sub": Array [
+                      "$util.qr($ctx.stash.put(\\"s3Bucket\\", \\"myStorage\${hash}-\${env}\\"))",
+                      Object {
+                        "env": Object {
+                          "Ref": "referencetotransformerrootstackenv10C5A902Ref",
+                        },
+                        "hash": Object {
+                          "Fn::Select": Array [
+                            3,
+                            Object {
+                              "Fn::Split": Array [
+                                "-",
+                                Object {
+                                  "Ref": "AWS::StackName",
+                                },
+                              ],
+                            },
+                          ],
+                        },
+                      },
+                    ],
+                  },
+                  Object {
+                    "Fn::Sub": Array [
+                      "$util.qr($ctx.stash.put(\\"s3Bucket\\", \\"myStorage\${hash}\\"))",
+                      Object {
+                        "hash": Object {
+                          "Fn::Select": Array [
+                            3,
+                            Object {
+                              "Fn::Split": Array [
+                                "-",
+                                Object {
+                                  "Ref": "AWS::StackName",
+                                },
+                              ],
+                            },
+                          ],
+                        },
+                      },
+                    ],
+                  },
+                ],
+              },
+              "$util.qr($ctx.stash.put(\\"isList\\", false))
+{}",
+            ],
+          ],
+        },
+        "ResponseMappingTemplate": "## If the result is a list return the result as a list **
+#if( $ctx.stash.get(\\"isList\\") )
+  #set( $result = $ctx.result.split(\\"[ ,]+\\") )
+  $util.toJson($result)
+#else
+  $util.toJson($ctx.result)
+#end",
+        "TypeName": "Query",
+      },
+      "Type": "AWS::AppSync::Resolver",
+    },
+    "QueryspeakTranslatedTextResolver": Object {
+      "Properties": Object {
+        "ApiId": Object {
+          "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
+        },
+        "FieldName": "speakTranslatedText",
+        "Kind": "PIPELINE",
+        "PipelineConfig": Object {
+          "Functions": Array [
+            Object {
+              "Fn::GetAtt": Array [
+                "translateTextFunctiontranslateTextFunctionAppSyncFunction77C9D7A9",
+                "FunctionId",
+              ],
+            },
+            Object {
+              "Fn::GetAtt": Array [
+                "convertTextToSpeechFunctionconvertTextToSpeechFunctionAppSyncFunction15BC20B8",
+                "FunctionId",
+              ],
+            },
+          ],
+        },
+        "RequestMappingTemplate": Object {
+          "Fn::Join": Array [
+            "
+",
+            Array [
+              Object {
+                "Fn::If": Array [
+                  "HasEnvironmentParameter",
+                  Object {
+                    "Fn::Sub": Array [
+                      "$util.qr($ctx.stash.put(\\"s3Bucket\\", \\"myStorage\${hash}-\${env}\\"))",
+                      Object {
+                        "env": Object {
+                          "Ref": "referencetotransformerrootstackenv10C5A902Ref",
+                        },
+                        "hash": Object {
+                          "Fn::Select": Array [
+                            3,
+                            Object {
+                              "Fn::Split": Array [
+                                "-",
+                                Object {
+                                  "Ref": "AWS::StackName",
+                                },
+                              ],
+                            },
+                          ],
+                        },
+                      },
+                    ],
+                  },
+                  Object {
+                    "Fn::Sub": Array [
+                      "$util.qr($ctx.stash.put(\\"s3Bucket\\", \\"myStorage\${hash}\\"))",
+                      Object {
+                        "hash": Object {
+                          "Fn::Select": Array [
+                            3,
+                            Object {
+                              "Fn::Split": Array [
+                                "-",
+                                Object {
+                                  "Ref": "AWS::StackName",
+                                },
+                              ],
+                            },
+                          ],
+                        },
+                      },
+                    ],
+                  },
+                ],
+              },
+              "$util.qr($ctx.stash.put(\\"isList\\", false))
+{}",
+            ],
+          ],
+        },
+        "ResponseMappingTemplate": "## If the result is a list return the result as a list **
+#if( $ctx.stash.get(\\"isList\\") )
+  #set( $result = $ctx.result.split(\\"[ ,]+\\") )
+  $util.toJson($result)
+#else
+  $util.toJson($ctx.result)
+#end",
+        "TypeName": "Query",
+      },
+      "Type": "AWS::AppSync::Resolver",
+    },
+    "QuerytranslateTextResolver": Object {
+      "Properties": Object {
+        "ApiId": Object {
+          "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
+        },
+        "FieldName": "translateText",
+        "Kind": "PIPELINE",
+        "PipelineConfig": Object {
+          "Functions": Array [
+            Object {
+              "Fn::GetAtt": Array [
+                "translateTextFunctiontranslateTextFunctionAppSyncFunction77C9D7A9",
+                "FunctionId",
+              ],
+            },
+          ],
+        },
+        "RequestMappingTemplate": Object {
+          "Fn::Join": Array [
+            "
+",
+            Array [
+              Object {
+                "Fn::If": Array [
+                  "HasEnvironmentParameter",
+                  Object {
+                    "Fn::Sub": Array [
+                      "$util.qr($ctx.stash.put(\\"s3Bucket\\", \\"myStorage\${hash}-\${env}\\"))",
+                      Object {
+                        "env": Object {
+                          "Ref": "referencetotransformerrootstackenv10C5A902Ref",
+                        },
+                        "hash": Object {
+                          "Fn::Select": Array [
+                            3,
+                            Object {
+                              "Fn::Split": Array [
+                                "-",
+                                Object {
+                                  "Ref": "AWS::StackName",
+                                },
+                              ],
+                            },
+                          ],
+                        },
+                      },
+                    ],
+                  },
+                  Object {
+                    "Fn::Sub": Array [
+                      "$util.qr($ctx.stash.put(\\"s3Bucket\\", \\"myStorage\${hash}\\"))",
+                      Object {
+                        "hash": Object {
+                          "Fn::Select": Array [
+                            3,
+                            Object {
+                              "Fn::Split": Array [
+                                "-",
+                                Object {
+                                  "Ref": "AWS::StackName",
+                                },
+                              ],
+                            },
+                          ],
+                        },
+                      },
+                    ],
+                  },
+                ],
+              },
+              "$util.qr($ctx.stash.put(\\"isList\\", false))
+{}",
+            ],
+          ],
+        },
+        "ResponseMappingTemplate": "## If the result is a list return the result as a list **
+#if( $ctx.stash.get(\\"isList\\") )
+  #set( $result = $ctx.result.split(\\"[ ,]+\\") )
+  $util.toJson($result)
+#else
+  $util.toJson($ctx.result)
+#end",
+        "TypeName": "Query",
+      },
+      "Type": "AWS::AppSync::Resolver",
+    },
     "RekognitionDataSourceC6790FED": Object {
       "Properties": Object {
         "ApiId": Object {
@@ -722,638 +1354,6 @@ $utils.error($ctx.result.body)
         "Timeout": 60,
       },
       "Type": "AWS::Lambda::Function",
-    },
-    "queryConvertTextToSpeechResolver": Object {
-      "Properties": Object {
-        "ApiId": Object {
-          "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-        },
-        "FieldName": "convertTextToSpeech",
-        "Kind": "PIPELINE",
-        "PipelineConfig": Object {
-          "Functions": Array [
-            Object {
-              "Fn::GetAtt": Array [
-                "convertTextToSpeechFunctionconvertTextToSpeechFunctionAppSyncFunction15BC20B8",
-                "FunctionId",
-              ],
-            },
-          ],
-        },
-        "RequestMappingTemplate": Object {
-          "Fn::Join": Array [
-            "
-",
-            Array [
-              Object {
-                "Fn::If": Array [
-                  "HasEnvironmentParameter",
-                  Object {
-                    "Fn::Sub": Array [
-                      "$util.qr($ctx.stash.put(\\"s3Bucket\\", \\"myStorage\${hash}-\${env}\\"))",
-                      Object {
-                        "env": Object {
-                          "Ref": "referencetotransformerrootstackenv10C5A902Ref",
-                        },
-                        "hash": Object {
-                          "Fn::Select": Array [
-                            3,
-                            Object {
-                              "Fn::Split": Array [
-                                "-",
-                                Object {
-                                  "Ref": "AWS::StackName",
-                                },
-                              ],
-                            },
-                          ],
-                        },
-                      },
-                    ],
-                  },
-                  Object {
-                    "Fn::Sub": Array [
-                      "$util.qr($ctx.stash.put(\\"s3Bucket\\", \\"myStorage\${hash}\\"))",
-                      Object {
-                        "hash": Object {
-                          "Fn::Select": Array [
-                            3,
-                            Object {
-                              "Fn::Split": Array [
-                                "-",
-                                Object {
-                                  "Ref": "AWS::StackName",
-                                },
-                              ],
-                            },
-                          ],
-                        },
-                      },
-                    ],
-                  },
-                ],
-              },
-              "$util.qr($ctx.stash.put(\\"isList\\", false))
-{}",
-            ],
-          ],
-        },
-        "ResponseMappingTemplate": "## If the result is a list return the result as a list **
-#if( $ctx.stash.get(\\"isList\\") )
-  #set( $result = $ctx.result.split(\\"[ ,]+\\") )
-  $util.toJson($result)
-#else
-  $util.toJson($ctx.result)
-#end",
-        "TypeName": "Query",
-      },
-      "Type": "AWS::AppSync::Resolver",
-    },
-    "queryIdentifyLabelsResolver": Object {
-      "Properties": Object {
-        "ApiId": Object {
-          "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-        },
-        "FieldName": "identifyLabels",
-        "Kind": "PIPELINE",
-        "PipelineConfig": Object {
-          "Functions": Array [
-            Object {
-              "Fn::GetAtt": Array [
-                "identifyLabelsFunctionidentifyLabelsFunctionAppSyncFunction7C2A1E61",
-                "FunctionId",
-              ],
-            },
-          ],
-        },
-        "RequestMappingTemplate": Object {
-          "Fn::Join": Array [
-            "
-",
-            Array [
-              Object {
-                "Fn::If": Array [
-                  "HasEnvironmentParameter",
-                  Object {
-                    "Fn::Sub": Array [
-                      "$util.qr($ctx.stash.put(\\"s3Bucket\\", \\"myStorage\${hash}-\${env}\\"))",
-                      Object {
-                        "env": Object {
-                          "Ref": "referencetotransformerrootstackenv10C5A902Ref",
-                        },
-                        "hash": Object {
-                          "Fn::Select": Array [
-                            3,
-                            Object {
-                              "Fn::Split": Array [
-                                "-",
-                                Object {
-                                  "Ref": "AWS::StackName",
-                                },
-                              ],
-                            },
-                          ],
-                        },
-                      },
-                    ],
-                  },
-                  Object {
-                    "Fn::Sub": Array [
-                      "$util.qr($ctx.stash.put(\\"s3Bucket\\", \\"myStorage\${hash}\\"))",
-                      Object {
-                        "hash": Object {
-                          "Fn::Select": Array [
-                            3,
-                            Object {
-                              "Fn::Split": Array [
-                                "-",
-                                Object {
-                                  "Ref": "AWS::StackName",
-                                },
-                              ],
-                            },
-                          ],
-                        },
-                      },
-                    ],
-                  },
-                ],
-              },
-              "$util.qr($ctx.stash.put(\\"isList\\", false))
-{}",
-            ],
-          ],
-        },
-        "ResponseMappingTemplate": "## If the result is a list return the result as a list **
-#if( $ctx.stash.get(\\"isList\\") )
-  #set( $result = $ctx.result.split(\\"[ ,]+\\") )
-  $util.toJson($result)
-#else
-  $util.toJson($ctx.result)
-#end",
-        "TypeName": "Query",
-      },
-      "Type": "AWS::AppSync::Resolver",
-    },
-    "queryIdentifyTextResolver": Object {
-      "Properties": Object {
-        "ApiId": Object {
-          "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-        },
-        "FieldName": "identifyText",
-        "Kind": "PIPELINE",
-        "PipelineConfig": Object {
-          "Functions": Array [
-            Object {
-              "Fn::GetAtt": Array [
-                "identifyTextFunctionidentifyTextFunctionAppSyncFunction7877885A",
-                "FunctionId",
-              ],
-            },
-          ],
-        },
-        "RequestMappingTemplate": Object {
-          "Fn::Join": Array [
-            "
-",
-            Array [
-              Object {
-                "Fn::If": Array [
-                  "HasEnvironmentParameter",
-                  Object {
-                    "Fn::Sub": Array [
-                      "$util.qr($ctx.stash.put(\\"s3Bucket\\", \\"myStorage\${hash}-\${env}\\"))",
-                      Object {
-                        "env": Object {
-                          "Ref": "referencetotransformerrootstackenv10C5A902Ref",
-                        },
-                        "hash": Object {
-                          "Fn::Select": Array [
-                            3,
-                            Object {
-                              "Fn::Split": Array [
-                                "-",
-                                Object {
-                                  "Ref": "AWS::StackName",
-                                },
-                              ],
-                            },
-                          ],
-                        },
-                      },
-                    ],
-                  },
-                  Object {
-                    "Fn::Sub": Array [
-                      "$util.qr($ctx.stash.put(\\"s3Bucket\\", \\"myStorage\${hash}\\"))",
-                      Object {
-                        "hash": Object {
-                          "Fn::Select": Array [
-                            3,
-                            Object {
-                              "Fn::Split": Array [
-                                "-",
-                                Object {
-                                  "Ref": "AWS::StackName",
-                                },
-                              ],
-                            },
-                          ],
-                        },
-                      },
-                    ],
-                  },
-                ],
-              },
-              "$util.qr($ctx.stash.put(\\"isList\\", false))
-{}",
-            ],
-          ],
-        },
-        "ResponseMappingTemplate": "## If the result is a list return the result as a list **
-#if( $ctx.stash.get(\\"isList\\") )
-  #set( $result = $ctx.result.split(\\"[ ,]+\\") )
-  $util.toJson($result)
-#else
-  $util.toJson($ctx.result)
-#end",
-        "TypeName": "Query",
-      },
-      "Type": "AWS::AppSync::Resolver",
-    },
-    "querySpeakTranslatedIdentifiedTextResolver": Object {
-      "Properties": Object {
-        "ApiId": Object {
-          "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-        },
-        "FieldName": "speakTranslatedIdentifiedText",
-        "Kind": "PIPELINE",
-        "PipelineConfig": Object {
-          "Functions": Array [
-            Object {
-              "Fn::GetAtt": Array [
-                "identifyTextFunctionidentifyTextFunctionAppSyncFunction7877885A",
-                "FunctionId",
-              ],
-            },
-            Object {
-              "Fn::GetAtt": Array [
-                "translateTextFunctiontranslateTextFunctionAppSyncFunction77C9D7A9",
-                "FunctionId",
-              ],
-            },
-            Object {
-              "Fn::GetAtt": Array [
-                "convertTextToSpeechFunctionconvertTextToSpeechFunctionAppSyncFunction15BC20B8",
-                "FunctionId",
-              ],
-            },
-          ],
-        },
-        "RequestMappingTemplate": Object {
-          "Fn::Join": Array [
-            "
-",
-            Array [
-              Object {
-                "Fn::If": Array [
-                  "HasEnvironmentParameter",
-                  Object {
-                    "Fn::Sub": Array [
-                      "$util.qr($ctx.stash.put(\\"s3Bucket\\", \\"myStorage\${hash}-\${env}\\"))",
-                      Object {
-                        "env": Object {
-                          "Ref": "referencetotransformerrootstackenv10C5A902Ref",
-                        },
-                        "hash": Object {
-                          "Fn::Select": Array [
-                            3,
-                            Object {
-                              "Fn::Split": Array [
-                                "-",
-                                Object {
-                                  "Ref": "AWS::StackName",
-                                },
-                              ],
-                            },
-                          ],
-                        },
-                      },
-                    ],
-                  },
-                  Object {
-                    "Fn::Sub": Array [
-                      "$util.qr($ctx.stash.put(\\"s3Bucket\\", \\"myStorage\${hash}\\"))",
-                      Object {
-                        "hash": Object {
-                          "Fn::Select": Array [
-                            3,
-                            Object {
-                              "Fn::Split": Array [
-                                "-",
-                                Object {
-                                  "Ref": "AWS::StackName",
-                                },
-                              ],
-                            },
-                          ],
-                        },
-                      },
-                    ],
-                  },
-                ],
-              },
-              "$util.qr($ctx.stash.put(\\"isList\\", false))
-{}",
-            ],
-          ],
-        },
-        "ResponseMappingTemplate": "## If the result is a list return the result as a list **
-#if( $ctx.stash.get(\\"isList\\") )
-  #set( $result = $ctx.result.split(\\"[ ,]+\\") )
-  $util.toJson($result)
-#else
-  $util.toJson($ctx.result)
-#end",
-        "TypeName": "Query",
-      },
-      "Type": "AWS::AppSync::Resolver",
-    },
-    "querySpeakTranslatedLabelTextResolver": Object {
-      "Properties": Object {
-        "ApiId": Object {
-          "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-        },
-        "FieldName": "speakTranslatedLabelText",
-        "Kind": "PIPELINE",
-        "PipelineConfig": Object {
-          "Functions": Array [
-            Object {
-              "Fn::GetAtt": Array [
-                "identifyLabelsFunctionidentifyLabelsFunctionAppSyncFunction7C2A1E61",
-                "FunctionId",
-              ],
-            },
-            Object {
-              "Fn::GetAtt": Array [
-                "translateTextFunctiontranslateTextFunctionAppSyncFunction77C9D7A9",
-                "FunctionId",
-              ],
-            },
-            Object {
-              "Fn::GetAtt": Array [
-                "convertTextToSpeechFunctionconvertTextToSpeechFunctionAppSyncFunction15BC20B8",
-                "FunctionId",
-              ],
-            },
-          ],
-        },
-        "RequestMappingTemplate": Object {
-          "Fn::Join": Array [
-            "
-",
-            Array [
-              Object {
-                "Fn::If": Array [
-                  "HasEnvironmentParameter",
-                  Object {
-                    "Fn::Sub": Array [
-                      "$util.qr($ctx.stash.put(\\"s3Bucket\\", \\"myStorage\${hash}-\${env}\\"))",
-                      Object {
-                        "env": Object {
-                          "Ref": "referencetotransformerrootstackenv10C5A902Ref",
-                        },
-                        "hash": Object {
-                          "Fn::Select": Array [
-                            3,
-                            Object {
-                              "Fn::Split": Array [
-                                "-",
-                                Object {
-                                  "Ref": "AWS::StackName",
-                                },
-                              ],
-                            },
-                          ],
-                        },
-                      },
-                    ],
-                  },
-                  Object {
-                    "Fn::Sub": Array [
-                      "$util.qr($ctx.stash.put(\\"s3Bucket\\", \\"myStorage\${hash}\\"))",
-                      Object {
-                        "hash": Object {
-                          "Fn::Select": Array [
-                            3,
-                            Object {
-                              "Fn::Split": Array [
-                                "-",
-                                Object {
-                                  "Ref": "AWS::StackName",
-                                },
-                              ],
-                            },
-                          ],
-                        },
-                      },
-                    ],
-                  },
-                ],
-              },
-              "$util.qr($ctx.stash.put(\\"isList\\", false))
-{}",
-            ],
-          ],
-        },
-        "ResponseMappingTemplate": "## If the result is a list return the result as a list **
-#if( $ctx.stash.get(\\"isList\\") )
-  #set( $result = $ctx.result.split(\\"[ ,]+\\") )
-  $util.toJson($result)
-#else
-  $util.toJson($ctx.result)
-#end",
-        "TypeName": "Query",
-      },
-      "Type": "AWS::AppSync::Resolver",
-    },
-    "querySpeakTranslatedTextResolver": Object {
-      "Properties": Object {
-        "ApiId": Object {
-          "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-        },
-        "FieldName": "speakTranslatedText",
-        "Kind": "PIPELINE",
-        "PipelineConfig": Object {
-          "Functions": Array [
-            Object {
-              "Fn::GetAtt": Array [
-                "translateTextFunctiontranslateTextFunctionAppSyncFunction77C9D7A9",
-                "FunctionId",
-              ],
-            },
-            Object {
-              "Fn::GetAtt": Array [
-                "convertTextToSpeechFunctionconvertTextToSpeechFunctionAppSyncFunction15BC20B8",
-                "FunctionId",
-              ],
-            },
-          ],
-        },
-        "RequestMappingTemplate": Object {
-          "Fn::Join": Array [
-            "
-",
-            Array [
-              Object {
-                "Fn::If": Array [
-                  "HasEnvironmentParameter",
-                  Object {
-                    "Fn::Sub": Array [
-                      "$util.qr($ctx.stash.put(\\"s3Bucket\\", \\"myStorage\${hash}-\${env}\\"))",
-                      Object {
-                        "env": Object {
-                          "Ref": "referencetotransformerrootstackenv10C5A902Ref",
-                        },
-                        "hash": Object {
-                          "Fn::Select": Array [
-                            3,
-                            Object {
-                              "Fn::Split": Array [
-                                "-",
-                                Object {
-                                  "Ref": "AWS::StackName",
-                                },
-                              ],
-                            },
-                          ],
-                        },
-                      },
-                    ],
-                  },
-                  Object {
-                    "Fn::Sub": Array [
-                      "$util.qr($ctx.stash.put(\\"s3Bucket\\", \\"myStorage\${hash}\\"))",
-                      Object {
-                        "hash": Object {
-                          "Fn::Select": Array [
-                            3,
-                            Object {
-                              "Fn::Split": Array [
-                                "-",
-                                Object {
-                                  "Ref": "AWS::StackName",
-                                },
-                              ],
-                            },
-                          ],
-                        },
-                      },
-                    ],
-                  },
-                ],
-              },
-              "$util.qr($ctx.stash.put(\\"isList\\", false))
-{}",
-            ],
-          ],
-        },
-        "ResponseMappingTemplate": "## If the result is a list return the result as a list **
-#if( $ctx.stash.get(\\"isList\\") )
-  #set( $result = $ctx.result.split(\\"[ ,]+\\") )
-  $util.toJson($result)
-#else
-  $util.toJson($ctx.result)
-#end",
-        "TypeName": "Query",
-      },
-      "Type": "AWS::AppSync::Resolver",
-    },
-    "queryTranslateTextResolver": Object {
-      "Properties": Object {
-        "ApiId": Object {
-          "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-        },
-        "FieldName": "translateText",
-        "Kind": "PIPELINE",
-        "PipelineConfig": Object {
-          "Functions": Array [
-            Object {
-              "Fn::GetAtt": Array [
-                "translateTextFunctiontranslateTextFunctionAppSyncFunction77C9D7A9",
-                "FunctionId",
-              ],
-            },
-          ],
-        },
-        "RequestMappingTemplate": Object {
-          "Fn::Join": Array [
-            "
-",
-            Array [
-              Object {
-                "Fn::If": Array [
-                  "HasEnvironmentParameter",
-                  Object {
-                    "Fn::Sub": Array [
-                      "$util.qr($ctx.stash.put(\\"s3Bucket\\", \\"myStorage\${hash}-\${env}\\"))",
-                      Object {
-                        "env": Object {
-                          "Ref": "referencetotransformerrootstackenv10C5A902Ref",
-                        },
-                        "hash": Object {
-                          "Fn::Select": Array [
-                            3,
-                            Object {
-                              "Fn::Split": Array [
-                                "-",
-                                Object {
-                                  "Ref": "AWS::StackName",
-                                },
-                              ],
-                            },
-                          ],
-                        },
-                      },
-                    ],
-                  },
-                  Object {
-                    "Fn::Sub": Array [
-                      "$util.qr($ctx.stash.put(\\"s3Bucket\\", \\"myStorage\${hash}\\"))",
-                      Object {
-                        "hash": Object {
-                          "Fn::Select": Array [
-                            3,
-                            Object {
-                              "Fn::Split": Array [
-                                "-",
-                                Object {
-                                  "Ref": "AWS::StackName",
-                                },
-                              ],
-                            },
-                          ],
-                        },
-                      },
-                    ],
-                  },
-                ],
-              },
-              "$util.qr($ctx.stash.put(\\"isList\\", false))
-{}",
-            ],
-          ],
-        },
-        "ResponseMappingTemplate": "## If the result is a list return the result as a list **
-#if( $ctx.stash.get(\\"isList\\") )
-  #set( $result = $ctx.result.split(\\"[ ,]+\\") )
-  $util.toJson($result)
-#else
-  $util.toJson($ctx.result)
-#end",
-        "TypeName": "Query",
-      },
-      "Type": "AWS::AppSync::Resolver",
     },
     "translateTextAccess74D3AE90": Object {
       "Properties": Object {

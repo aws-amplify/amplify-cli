@@ -32,7 +32,15 @@ import {
   IS_AUTHORIZED_FLAG,
   API_KEY_AUTH_TYPE,
 } from '../utils';
-import { getOwnerClaim, generateStaticRoleExpression, apiKeyExpression, iamExpression, emptyPayload, lambdaExpression, getIdentityClaimExp } from './helpers';
+import {
+  getOwnerClaim,
+  generateStaticRoleExpression,
+  apiKeyExpression,
+  iamExpression,
+  emptyPayload,
+  lambdaExpression,
+  getIdentityClaimExp,
+} from './helpers';
 
 // Field Read VTL Functions
 const generateDynamicAuthReadExpression = (roles: Array<RoleDefinition>, fields: ReadonlyArray<FieldDefinitionNode>) => {
@@ -85,33 +93,34 @@ const generateDynamicAuthReadExpression = (roles: Array<RoleDefinition>, fields:
 };
 
 export const generateAuthExpressionForField = (
-  provider: ConfiguredAuthProviders,
+  providers: ConfiguredAuthProviders,
   roles: Array<RoleDefinition>,
   fields: ReadonlyArray<FieldDefinitionNode>,
 ): string => {
-  const { cogntoStaticRoles, cognitoDynamicRoles, oidcStaticRoles, oidcDynamicRoles, iamRoles, apiKeyRoles, lambdaRoles } = splitRoles(roles);
+  const { cognitoStaticRoles, cognitoDynamicRoles, oidcStaticRoles, oidcDynamicRoles, iamRoles, apiKeyRoles, lambdaRoles } =
+    splitRoles(roles);
   const totalAuthExpressions: Array<Expression> = [set(ref(IS_AUTHORIZED_FLAG), bool(false))];
-  if (provider.hasApiKey) {
+  if (providers.hasApiKey) {
     totalAuthExpressions.push(apiKeyExpression(apiKeyRoles));
   }
-  if (provider.hasLambda) {
+  if (providers.hasLambda) {
     totalAuthExpressions.push(lambdaExpression(lambdaRoles));
   }
-  if (provider.hasIAM) {
-    totalAuthExpressions.push(iamExpression(iamRoles, provider.hasAdminUIEnabled, provider.adminUserPoolID));
+  if (providers.hasIAM) {
+    totalAuthExpressions.push(iamExpression(iamRoles, providers.hasAdminRolesEnabled, providers.adminRoles, providers.identityPoolId));
   }
-  if (provider.hasUserPools) {
+  if (providers.hasUserPools) {
     totalAuthExpressions.push(
       iff(
         equals(ref('util.authType()'), str(COGNITO_AUTH_TYPE)),
         compoundExpression([
-          ...generateStaticRoleExpression(cogntoStaticRoles),
+          ...generateStaticRoleExpression(cognitoStaticRoles),
           ...generateDynamicAuthReadExpression(cognitoDynamicRoles, fields),
         ]),
       ),
     );
   }
-  if (provider.hasOIDC) {
+  if (providers.hasOIDC) {
     totalAuthExpressions.push(
       iff(
         equals(ref('util.authType()'), str(OIDC_AUTH_TYPE)),

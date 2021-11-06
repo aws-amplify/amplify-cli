@@ -1,0 +1,6 @@
+type Todo @model @searchable {
+  id: ID!
+  name: String!
+  description: String
+  count: Int
+}

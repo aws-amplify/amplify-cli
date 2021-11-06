@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "serviceConfiguration": {
+    "serviceName": "Map",
+    "accessType": "AuthorizedUsers",
+    "setAsDefault": true,
+    "mapStyle": "VectorEsriNavigation",
+    "name": "mymapname",
+    "pricingPlan": "MobileAssetManagement"
+  }
+}

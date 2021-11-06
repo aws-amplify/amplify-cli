@@ -20,7 +20,15 @@ import {
   ifElse,
   nul,
 } from 'graphql-mapping-template';
-import { getIdentityClaimExp, getOwnerClaim, apiKeyExpression, iamExpression, lambdaExpression, emptyPayload, setHasAuthExpression } from './helpers';
+import {
+  getIdentityClaimExp,
+  getOwnerClaim,
+  apiKeyExpression,
+  iamExpression,
+  lambdaExpression,
+  emptyPayload,
+  setHasAuthExpression,
+} from './helpers';
 import {
   COGNITO_AUTH_TYPE,
   OIDC_AUTH_TYPE,
@@ -248,7 +256,8 @@ export const generateAuthExpressionForQueries = (
   primaryFields: Array<string>,
   isIndexQuery = false,
 ): string => {
-  const { cogntoStaticRoles, cognitoDynamicRoles, oidcStaticRoles, oidcDynamicRoles, apiKeyRoles, iamRoles, lambdaRoles } = splitRoles(roles);
+  const { cognitoStaticRoles, cognitoDynamicRoles, oidcStaticRoles, oidcDynamicRoles, apiKeyRoles, iamRoles, lambdaRoles } =
+    splitRoles(roles);
   const getNonPrimaryFieldRoles = (roles: RoleDefinition[]) => roles.filter(roles => !primaryFields.includes(roles.entity));
   const totalAuthExpressions: Array<Expression> = [
     setHasAuthExpression,
@@ -262,14 +271,14 @@ export const generateAuthExpressionForQueries = (
     totalAuthExpressions.push(lambdaExpression(lambdaRoles));
   }
   if (providers.hasIAM) {
-    totalAuthExpressions.push(iamExpression(iamRoles, providers.hasAdminUIEnabled, providers.adminUserPoolID));
+    totalAuthExpressions.push(iamExpression(iamRoles, providers.hasAdminRolesEnabled, providers.adminRoles, providers.identityPoolId));
   }
   if (providers.hasUserPools) {
     totalAuthExpressions.push(
       iff(
         equals(ref('util.authType()'), str(COGNITO_AUTH_TYPE)),
         compoundExpression([
-          ...generateStaticRoleExpression(cogntoStaticRoles),
+          ...generateStaticRoleExpression(cognitoStaticRoles),
           ...generateAuthFilter(getNonPrimaryFieldRoles(cognitoDynamicRoles), fields),
           ...generateAuthOnModelQueryExpression(cognitoDynamicRoles, primaryFields, isIndexQuery),
         ]),
@@ -303,7 +312,8 @@ export const generateAuthExpressionForRelationQuery = (
   fields: ReadonlyArray<FieldDefinitionNode>,
   primaryFieldMap: RelationalPrimaryMapConfig,
 ) => {
-  const { cogntoStaticRoles, cognitoDynamicRoles, oidcStaticRoles, oidcDynamicRoles, apiKeyRoles, iamRoles, lambdaRoles } = splitRoles(roles);
+  const { cognitoStaticRoles, cognitoDynamicRoles, oidcStaticRoles, oidcDynamicRoles, apiKeyRoles, iamRoles, lambdaRoles } =
+    splitRoles(roles);
   const getNonPrimaryFieldRoles = (roles: RoleDefinition[]) => roles.filter(roles => !primaryFieldMap.has(roles.entity));
   const totalAuthExpressions: Array<Expression> = [
     setHasAuthExpression,
@@ -317,14 +327,14 @@ export const generateAuthExpressionForRelationQuery = (
     totalAuthExpressions.push(lambdaExpression(lambdaRoles));
   }
   if (providers.hasIAM) {
-    totalAuthExpressions.push(iamExpression(iamRoles, providers.hasAdminUIEnabled, providers.adminUserPoolID));
+    totalAuthExpressions.push(iamExpression(iamRoles, providers.hasAdminRolesEnabled, providers.adminRoles, providers.identityPoolId));
   }
   if (providers.hasUserPools) {
     totalAuthExpressions.push(
       iff(
         equals(ref('util.authType()'), str(COGNITO_AUTH_TYPE)),
         compoundExpression([
-          ...generateStaticRoleExpression(cogntoStaticRoles),
+          ...generateStaticRoleExpression(cognitoStaticRoles),
           ...generateAuthFilter(getNonPrimaryFieldRoles(cognitoDynamicRoles), fields),
           ...generateAuthOnRelationalModelQueryExpression(cognitoDynamicRoles, primaryFieldMap),
         ]),

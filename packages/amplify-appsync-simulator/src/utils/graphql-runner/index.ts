@@ -8,3 +8,4 @@ export type AppSyncGraphQLExecutionContext = {
   appsyncErrors?: Error[];
   requestAuthorizationMode: AmplifyAppSyncSimulatorAuthenticationType;
 };
+export * from './subscriptions-filter';

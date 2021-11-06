@@ -308,6 +308,7 @@ const serviceApiInputWalkthrough = async (context: $TSContext, defaultValuesFile
         // API name question
         resourceAnswers = await inquirer.prompt(resourceQuestions);
         resourceAnswers[inputs[0].key] = resourceAnswers[inputs[1].key];
+        allDefaultValues[inputs[1].key] = resourceAnswers[inputs[1].key];
         break;
       case 'API_AUTH_MODE':
         // Ask additonal questions
@@ -419,7 +420,7 @@ export const serviceWalkthrough = async (context: $TSContext, defaultValuesFilen
 
   const { templateSelection } = await inquirer.prompt(templateSelectionQuestion);
   const schemaFilePath = path.join(graphqlSchemaDir, templateSelection);
-  schemaContent += transformerVersion === 2 && templateSelection !== blankSchemaFile ? defineGlobalSandboxMode(context) : '';
+  schemaContent += transformerVersion === 2 ? defineGlobalSandboxMode() : '';
   schemaContent += fs.readFileSync(schemaFilePath, 'utf8');
 
   return {
@@ -664,8 +665,8 @@ async function addLambdaAuthorizerChoice(context) {
   const transformerVersion = providerPlugin.getTransformerVersion(context);
   if (transformerVersion === 2 && !authProviderChoices.some(choice => choice.value == 'AWS_LAMBDA')) {
     authProviderChoices.push({
-        name: 'Lambda',
-        value: 'AWS_LAMBDA',
+      name: 'Lambda',
+      value: 'AWS_LAMBDA',
     });
   }
 }
@@ -832,7 +833,13 @@ export async function askApiKeyQuestions(authSettings = undefined) {
       default: defaultValues.apiKeyExpirationDays,
       validate: validateDays,
       // adding filter to ensure parsing input as int -> https://github.com/SBoudrias/Inquirer.js/issues/866
-      filter: value => (isNaN(parseInt(value, 10)) ? value : parseInt(value, 10)),
+      filter: value => {
+        const val = parseInt(value, 10);
+        if (isNaN(val) || val <= 0 || val > 365) {
+          return value;
+        }
+        return val;
+      },
     },
   ];
 
@@ -900,8 +907,8 @@ async function askOpenIDConnectQuestions(authSettings) {
   };
 }
 
-function validateDays(input) {
-  const isValid = /^\d+$/.test(input);
+async function validateDays(input) {
+  const isValid = /^\d{0,3}$/.test(input);
   const days = isValid ? parseInt(input, 10) : 0;
   if (!isValid || days < 1 || days > 365) {
     return 'Number of days must be between 1 and 365.';
@@ -1056,7 +1063,7 @@ async function askLambdaQuestion(context) {
   const lambdaAnswer = await inquirer.prompt({
     name: 'functionType',
     type: 'list',
-    message: 'Choose a Lambda source',
+    message: 'Choose a Lambda authorization function',
     choices,
     default: defaultFunctionType,
   });
@@ -1073,7 +1080,7 @@ async function askLambdaQuestion(context) {
   const lambdaAuthorizerConfig = {
     lambdaFunction,
     ttlSeconds,
-  }
+  };
 
   return {
     authenticationType: 'AWS_LAMBDA',
@@ -1130,9 +1137,7 @@ async function askLambdaFromProject(context: $TSContext) {
     default: lambdaFunctions[0],
   });
 
-  await context.amplify.invokePluginMethod(context, 'function', undefined, 'addAppSyncInvokeMethodPermission', [
-    answer.lambdaFunction,
-  ]);
+  await context.amplify.invokePluginMethod(context, 'function', undefined, 'addAppSyncInvokeMethodPermission', [answer.lambdaFunction]);
 
   return { lambdaFunction: answer.lambdaFunction };
 }
@@ -1180,4 +1185,4 @@ async function createLambdaAuthorizerFunction(context: $TSContext) {
   context.print.success(`Successfully added ${functionName} function locally`);
 
   return functionName;
-};
+}

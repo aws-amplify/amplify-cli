@@ -1,4 +1,4 @@
-import { showSandboxModePrompts, removeSandboxDirectiveFromSchema, showGlobalSandboxModeWarning } from '../../utils/sandbox-mode-helpers';
+import { showSandboxModePrompts, showGlobalSandboxModeWarning, schemaHasSandboxModeEnabled } from '../../utils/sandbox-mode-helpers';
 import { $TSContext } from 'amplify-cli-core';
 import chalk from 'chalk';
 import * as prompts from 'amplify-prompts';
@@ -35,9 +35,9 @@ describe('sandbox mode helpers', () => {
         expect(prompts.printer.info).toBeCalledWith(
           `
 ⚠️  WARNING: Global Sandbox Mode has been enabled, which requires a valid API key. If
-you'd like to disable, remove ${chalk.green('"type AMPLIFY_GLOBAL @allow_public_data_access_with_api_key"')}
+you'd like to disable, remove ${chalk.green('"input AMPLIFY { globalAuthRule: AuthRule = { allow: public } }"')}
 from your GraphQL schema and run 'amplify push' again. If you'd like to proceed with
-sandbox mode disabled in '${ctx.amplify.getEnvInfo().envName}', do not create an API Key.
+sandbox mode disabled, do not create an API Key.
 `,
           'yellow',
         );
@@ -59,59 +59,80 @@ sandbox mode disabled in '${ctx.amplify.getEnvInfo().envName}', do not create an
     });
   });
 
-  describe('removeSandboxDirectiveFromSchema', () => {
-    it('removes sandbox mode directive', () => {
+  describe('schemaHasSandboxModeEnabled', () => {
+    it('parses sandbox AMPLIFY input on schema', () => {
       const schema = `
-type AMPLIFY_GLOBAL @allow_public_data_access_with_api_key(in: "dev")
+        input AMPLIFY { globalAuthRule: AuthRule = { allow: public } }
       `;
 
-      expect(removeSandboxDirectiveFromSchema(schema)).toEqual(`
-
-      `);
+      expect(schemaHasSandboxModeEnabled(schema)).toEqual(true);
     });
 
-    it('does not change user schema with directive', () => {
+    it('passes through when AMPLIFY input is not present', () => {
       const schema = `
-type AMPLIFY_GLOBAL @allow_public_data_access_with_api_key(in: "dev10105") # FOR TESTING ONLY!
-
-type Todo @model {
-  id: ID!
-  name: String!
-  description: String
-}
+        type Todo @model {
+          id: ID!
+          content: String
+        }
       `;
 
-      expect(removeSandboxDirectiveFromSchema(schema)).toEqual(`
- # FOR TESTING ONLY!
-
-type Todo @model {
-  id: ID!
-  name: String!
-  description: String
-}
-      `);
+      expect(schemaHasSandboxModeEnabled(schema)).toEqual(false);
     });
 
-    it('does not change user schema with directive and single quotes', () => {
-      const schema = `
-type AMPLIFY_GLOBAL @allow_public_data_access_with_api_key(in: 'dev10105') # FOR TESTING ONLY!
+    describe('input AMPLIFY has incorrect values', () => {
+      it('checks for "globalAuthRule"', () => {
+        const schema = `
+          input AMPLIFY { auth_rule: AuthenticationRule = { allow: public } }
+        `;
 
-type Todo @model {
-  id: ID!
-  name: String!
-  description: String
-}
-      `;
+        expect(() => schemaHasSandboxModeEnabled(schema)).toThrow(
+          Error('input AMPLIFY requires "globalAuthRule" field. Learn more here: https://docs.amplify.aws/cli/graphql-transformer/auth'),
+        );
+      });
 
-      expect(removeSandboxDirectiveFromSchema(schema)).toEqual(`
- # FOR TESTING ONLY!
+      it('allows "global_auth_rule"', () => {
+        const schema = `
+          input AMPLIFY { global_auth_rule: AuthRule = { allow: public } }
+        `;
 
-type Todo @model {
-  id: ID!
-  name: String!
-  description: String
-}
-      `);
+        expect(schemaHasSandboxModeEnabled(schema)).toEqual(true);
+      });
+
+      it('guards for AuthRule', () => {
+        const schema = `
+          input AMPLIFY { globalAuthRule: AuthenticationRule = { allow: public } }
+        `;
+
+        expect(() => schemaHasSandboxModeEnabled(schema)).toThrow(
+          Error(
+            'There was a problem with your auth configuration. Learn more about auth here: https://docs.amplify.aws/cli/graphql-transformer/auth',
+          ),
+        );
+      });
+
+      it('checks for "allow" field name', () => {
+        const schema = `
+          input AMPLIFY { globalAuthRule: AuthRule = { allows: public } }
+        `;
+
+        expect(() => schemaHasSandboxModeEnabled(schema)).toThrow(
+          Error(
+            'There was a problem with your auth configuration. Learn more about auth here: https://docs.amplify.aws/cli/graphql-transformer/auth',
+          ),
+        );
+      });
+
+      it('checks for "public" value from "allow" field', () => {
+        const schema = `
+          input AMPLIFY { globalAuthRule: AuthRule = { allow: private } }
+        `;
+
+        expect(() => schemaHasSandboxModeEnabled(schema)).toThrowError(
+          Error(
+            'There was a problem with your auth configuration. Learn more about auth here: https://docs.amplify.aws/cli/graphql-transformer/auth',
+          ),
+        );
+      });
     });
   });
 });

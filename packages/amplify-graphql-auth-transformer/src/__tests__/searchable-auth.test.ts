@@ -46,14 +46,7 @@ test('auth logic is enabled on owner/static rules in es request', () => {
   };
   const transformer = new GraphQLTransform({
     authConfig,
-    transformers: [
-      new ModelTransformer(),
-      new SearchableModelTransformer(),
-      new AuthTransformer({
-        authConfig,
-        addAwsIamAuthInOutputSchema: false,
-      }),
-    ],
+    transformers: [new ModelTransformer(), new SearchableModelTransformer(), new AuthTransformer()],
   });
   const out = transformer.transform(validSchema);
   // expect response resolver to contain auth logic for owner rule
@@ -100,14 +93,7 @@ test('auth logic is enabled for iam/apiKey auth rules', () => {
   };
   const transformer = new GraphQLTransform({
     authConfig,
-    transformers: [
-      new ModelTransformer(),
-      new SearchableModelTransformer(),
-      new AuthTransformer({
-        authConfig,
-        addAwsIamAuthInOutputSchema: false,
-      }),
-    ],
+    transformers: [new ModelTransformer(), new SearchableModelTransformer(), new AuthTransformer()],
   });
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
