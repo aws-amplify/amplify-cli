@@ -1,17 +1,17 @@
 import { $TSAny, $TSContext, AmplifySupportedService, stateManager } from 'amplify-cli-core';
 import { prompter } from 'amplify-prompts';
 import * as uuid from 'uuid';
-import { MigrationParams, S3InputState } from '../../../../provider-utils/awscloudformation/service-walkthroughs/s3-user-input-state';
 import { AmplifyS3ResourceStackTransform } from '../../../../provider-utils/awscloudformation/cdk-stack-builder/s3-stack-transform';
-import { addWalkthrough, updateWalkthrough } from '../../../../provider-utils/awscloudformation/service-walkthroughs/s3-walkthrough';
 import {
   S3AccessType,
   S3PermissionType,
   S3TriggerFunctionType,
-  S3UserInputs,
+  S3UserInputs
 } from '../../../../provider-utils/awscloudformation/service-walkthrough-types/s3-user-input-types';
 import * as s3AuthAPI from '../../../../provider-utils/awscloudformation/service-walkthroughs/s3-auth-api';
 import { S3CLITriggerUpdateMenuOptions, UserPermissionTypeOptions } from '../../../../provider-utils/awscloudformation/service-walkthroughs/s3-questions';
+import { MigrationParams, S3InputState } from '../../../../provider-utils/awscloudformation/service-walkthroughs/s3-user-input-state';
+import { addWalkthrough, updateWalkthrough } from '../../../../provider-utils/awscloudformation/service-walkthroughs/s3-walkthrough';
 
 jest.mock('amplify-cli-core');
 jest.mock('amplify-prompts');
@@ -19,6 +19,8 @@ jest.mock('../../../../provider-utils/awscloudformation/service-walkthroughs/s3-
 jest.mock('../../../../provider-utils/awscloudformation/cdk-stack-builder/s3-stack-transform');
 jest.mock('../../../../provider-utils/awscloudformation/service-walkthroughs/s3-auth-api');
 jest.mock('uuid');
+jest.mock('path');
+jest.mock('fs-extra');
 
 describe('add s3 walkthrough tests', () => {
   let mockContext: $TSContext;

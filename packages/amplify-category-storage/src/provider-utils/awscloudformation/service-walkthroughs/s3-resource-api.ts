@@ -41,7 +41,7 @@ export async function s3GetUserInput(context: $TSContext, s3ResourceName: string
  * @param context
  * @returns triggerFunction name or undefined
  */
-export async function s3GetAdminTriggerFunctionName(context: $TSContext){
+export async function s3GetAdminTriggerFunctionName(context: $TSContext) : Promise<string | undefined> {
   const s3ResourceName : string|undefined = await s3GetResourceName();
   const s3UserInput :S3UserInputs | undefined =  (s3ResourceName)?await s3GetUserInput(context , s3ResourceName ):undefined;
   return s3UserInput?.adminTriggerFunction?.triggerFunction;

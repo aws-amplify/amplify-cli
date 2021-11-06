@@ -209,7 +209,7 @@ export async function askUpdateTriggerSelection(
   return triggerOperationAnswer as S3CLITriggerUpdateMenuOptions;
 }
 
-export async function askAuthPermissionQuestion(context: $TSContext, defaultValues: S3UserInputs) {
+export async function askAuthPermissionQuestion(context: $TSContext, defaultValues: S3UserInputs): Promise<S3PermissionType[]> {
   const permissions: S3PermissionType[] = await askCRUDQuestion(S3UserAccessRole.AUTH, undefined, context, defaultValues);
   return permissions;
 }
