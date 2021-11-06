@@ -1,6 +1,8 @@
 import { $TSAny, $TSContext } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import { AmplifyCategories } from 'amplify-cli-core';
+import os from 'os';
+import { S3AccessType } from '../service-walkthrough-types/s3-user-input-types';
 
 /* This file contains all functions interacting with AUTH category */
 
@@ -43,3 +45,56 @@ export async function migrateAuthDependencyResource(context: $TSContext) {
     }
   }
 }
+
+/**
+ * Check if storage authentication requirements are satisfied by the configured storage
+ * @param context
+ * @param storageResourceName
+ * @param allowUnauthenticatedIdentities
+ */
+export async function checkStorageAuthenticationRequirements(
+  context: $TSContext,
+  storageResourceName: string,
+  allowUnauthenticatedIdentities: boolean,
+) {
+  const storageRequirements = { authSelections: 'identityPoolAndUserPool', allowUnauthenticatedIdentities };
+
+  const checkResult: $TSAny = await context.amplify.invokePluginMethod(context, AmplifyCategories.AUTH, undefined, 'checkRequirements', [
+    storageRequirements,
+    context,
+    'storage',
+    storageResourceName,
+  ]);
+
+  // If auth is imported and configured, we have to throw the error instead of printing since there is no way to adjust the auth
+  // configuration.
+  if (checkResult.authImported === true && checkResult.errors && checkResult.errors.length > 0) {
+    throw new Error(checkResult.errors.join(os.EOL));
+  }
+
+  if (checkResult.errors && checkResult.errors.length > 0) {
+    printer.warn(checkResult.errors.join(os.EOL));
+  }
+
+  // If auth is not imported and there were errors, adjust or enable auth configuration
+  if (!checkResult.authEnabled || !checkResult.requirementsMet) {
+    try {
+      // If this is not set as requirement, then explicitly configure it to disabled.
+      if (storageRequirements.allowUnauthenticatedIdentities === undefined) {
+        storageRequirements.allowUnauthenticatedIdentities = false;
+      }
+
+      await context.amplify.invokePluginMethod(context, AmplifyCategories.AUTH, undefined, 'externalAuthEnable', [
+        context,
+        AmplifyCategories.STORAGE,
+        storageResourceName,
+        storageRequirements,
+      ]);
+    } catch (error) {
+      printer.error(error as string);
+      throw error;
+    }
+  }
+}
+
+
