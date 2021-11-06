@@ -13,9 +13,10 @@ import { deployJsonServer, destroyJsonServer } from '../cdkUtils';
 
 jest.setTimeout(2000000);
 
-const cf = new CloudFormationClient('us-west-2');
-const customS3Client = new S3Client('us-west-2');
-const awsS3Client = new S3({ region: 'us-west-2' });
+const REGION = 'us-west-2';
+const cf = new CloudFormationClient(REGION);
+const customS3Client = new S3Client(REGION);
+const awsS3Client = new S3({ region: REGION });
 const BUILD_TIMESTAMP = moment().format('YYYYMMDDHHmmss');
 const STACK_NAME = `HttpTransformerV2Test-${BUILD_TIMESTAMP}`;
 const BUCKET_NAME = `appsync-http-transformer-v2-test-bucket-${BUILD_TIMESTAMP}`;
@@ -64,6 +65,11 @@ beforeAll(async () => {
             secondType: String!,
             id: Int
         ): [PostComment] @http(url: "${apiUrl}:dataType/:postId/:secondType")
+        configGet: ConfigResponse @http(
+          method: GET,
+          url: "${apiUrl}config/\${aws_region}/\${env}",
+          headers: [{ key: "x-api-key", value: "fake-api-key" }]
+        )
     }
     type CompObj {
         userId: Int
@@ -77,6 +83,11 @@ beforeAll(async () => {
         name: String
         email: String
         body: String
+    }
+    type ConfigResponse {
+      apiKey: String
+      env: String
+      region: String
     }
     `;
 
@@ -440,4 +451,29 @@ test('Test that POST errors when missing a non-null arg in query/body', async ()
     // fail
     expect(e).toBeUndefined();
   }
+});
+
+test('Test headers, environment, and region support', async () => {
+  const response = await GRAPHQL_CLIENT.query(
+    `mutation {
+      createComment(input: { title: "Hello, World!" }) {
+        id
+        title
+        configGet {
+          apiKey
+          env
+          region
+        }
+      }
+    }`,
+    {},
+  );
+
+  expect(response.errors).toBeUndefined();
+  expect(response.data.createComment.id).toBeDefined();
+  expect(response.data.createComment.title).toEqual('Hello, World!');
+  expect(response.data.createComment.configGet).toBeDefined();
+  expect(response.data.createComment.configGet.apiKey).toEqual('fake-api-key');
+  expect(response.data.createComment.configGet.env).toEqual('NONE');
+  expect(response.data.createComment.configGet.region).toEqual(REGION);
 });
