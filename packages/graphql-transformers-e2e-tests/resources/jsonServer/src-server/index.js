@@ -14,11 +14,12 @@ const app = jsonServer.create();
 const router = jsonServer.router(writableDbPath);
 const middlewares = jsonServer.defaults();
 
-app.use('/config/:region/:env', (req, res) => {
+app.use('/config/:region/:env/:commentId', (req, res) => {
   res.json({
     apiKey: req.headers['x-api-key'],
     env: req.params.env,
     region: req.params.region,
+    commentId: req.params.commentId,
   });
 });
 
