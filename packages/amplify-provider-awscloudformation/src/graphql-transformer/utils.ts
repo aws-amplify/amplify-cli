@@ -49,7 +49,6 @@ export const getAdminRoles = async (ctx: $TSContext, apiResourceName: string): P
     }
   } catch (err) {
     // no need to error if not admin ui app
-    console.info('App not deployed yet.');
   }
 
   // lambda functions which have access to the api
