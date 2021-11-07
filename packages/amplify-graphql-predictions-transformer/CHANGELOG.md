@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.3.6-ext15.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-predictions-transformer@0.3.5...@aws-amplify/graphql-predictions-transformer@0.3.6-ext15.0) (2021-11-07)
+
+
+### Bug Fixes
+
+* **graphql-model-transformer:** override resource logical id to fix v1 to v2 transformer migration ([#8597](https://github.com/aws-amplify/amplify-cli/issues/8597)) ([e3a2afb](https://github.com/aws-amplify/amplify-cli/commit/e3a2afbbed6e97f143fc7c83064e2193f4c91bdd))
+
+
+
+
+
 ## [0.3.5](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-predictions-transformer@0.3.4...@aws-amplify/graphql-predictions-transformer@0.3.5) (2021-10-10)
 
 **Note:** Version bump only for package @aws-amplify/graphql-predictions-transformer
