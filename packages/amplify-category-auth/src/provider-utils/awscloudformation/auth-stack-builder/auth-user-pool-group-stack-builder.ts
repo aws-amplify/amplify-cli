@@ -2,7 +2,7 @@ import * as cdk from '@aws-cdk/core';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import { CfnUserPoolGroup } from '@aws-cdk/aws-cognito';
-import { AmplifyUserPoolGroupStackTemplate } from './types';
+import { AmplifyUserPoolGroupStackTemplate } from '@aws-amplify/cli-extensibility-helper';
 import { AmplifyUserPoolGroupStackOptions } from './user-pool-group-stack-transform';
 import { AmplifyStackTemplate } from 'amplify-cli-core';
 import * as fs from 'fs-extra';

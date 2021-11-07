@@ -12,6 +12,12 @@ import { categoryName } from './constants';
 import { updateConfigOnEnvInit } from './provider-utils/awscloudformation';
 import { DDBStackTransform } from './provider-utils/awscloudformation/cdk-stack-builder/ddb-stack-transform';
 import { transformS3ResourceStack } from './provider-utils/awscloudformation/cdk-stack-builder/s3-stack-transform';
+import { getAllDefaults } from './provider-utils/awscloudformation/default-values/s3-defaults';
+import {
+  S3AccessType,
+  S3PermissionType,
+  S3UserInputs,
+} from './provider-utils/awscloudformation/service-walkthrough-types/s3-user-input-types';
 import { DynamoDBInputState } from './provider-utils/awscloudformation/service-walkthroughs/dynamoDB-input-state';
 import {
   headlessAddStorage,
@@ -20,13 +26,6 @@ import {
   headlessUpdateStorage,
 } from './provider-utils/awscloudformation/storage-configuration-helpers';
 export { categoryName as category } from './constants';
-export { AmplifyDDBResourceTemplate, AmplifyS3ResourceTemplate } from './provider-utils/awscloudformation/cdk-stack-builder/types';
-import { getAllDefaults } from './provider-utils/awscloudformation/default-values/s3-defaults';
-import {
-  S3AccessType,
-  S3PermissionType,
-  S3UserInputs,
-} from './provider-utils/awscloudformation/service-walkthrough-types/s3-user-input-types';
 export {
   S3UserInputs,
   S3UserInputTriggerFunctionParams,
@@ -37,9 +36,9 @@ export {
   s3CreateStorageResource,
   s3GetResourceName,
   s3GetUserInput,
+  s3RegisterAdminTrigger,
   s3RemoveAdminLambdaTrigger,
   s3RemoveStorageLambdaTrigger,
-  s3RegisterAdminTrigger,
 } from './provider-utils/awscloudformation/service-walkthroughs/s3-resource-api';
 
 export async function s3GetBucketUserInputDefault(project: $TSAny, shortId: string, accessType: S3AccessType): Promise<S3UserInputs> {

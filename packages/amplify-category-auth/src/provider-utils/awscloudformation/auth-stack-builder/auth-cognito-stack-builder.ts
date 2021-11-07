@@ -3,7 +3,7 @@ import * as s3 from '@aws-cdk/aws-s3';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cognito from '@aws-cdk/aws-cognito';
 import * as lambda from '@aws-cdk/aws-lambda';
-import { AmplifyAuthCognitoStackTemplate } from './types';
+import { AmplifyAuthCognitoStackTemplate } from '@aws-amplify/cli-extensibility-helper';
 import { CognitoStackOptions } from '../service-walkthrough-types/cognito-user-input-types';
 import _ from 'lodash';
 import {
