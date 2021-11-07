@@ -47,15 +47,8 @@ export async function showResourceTable(category?, resourceName?, filteredResour
   const amplifyProjectInitStatus = getCloudInitStatus();
 
   //Prepare state for view
-  const {
-    resourcesToBeCreated,
-    resourcesToBeUpdated,
-    resourcesToBeDeleted,
-    resourcesToBeSynced,
-    allResources,
-    tagsUpdated,
-    rootStackUpdated,
-  } = await getResourceStatus(category, resourceName, undefined, filteredResources);
+  const { resourcesToBeCreated, resourcesToBeUpdated, resourcesToBeDeleted, resourcesToBeSynced, allResources, tagsUpdated } =
+    await getResourceStatus(category, resourceName, undefined, filteredResources);
 
   //1. Display Environment Info
   if (amplifyProjectInitStatus === CLOUD_INITIALIZED) {
@@ -69,9 +62,7 @@ export async function showResourceTable(category?, resourceName?, filteredResour
   }
 
   const resourceChanged =
-    resourcesToBeCreated.length + resourcesToBeUpdated.length + resourcesToBeSynced.length + resourcesToBeDeleted.length > 0 ||
-    tagsUpdated ||
-    rootStackUpdated;
+    resourcesToBeCreated.length + resourcesToBeUpdated.length + resourcesToBeSynced.length + resourcesToBeDeleted.length > 0 || tagsUpdated;
 
   return resourceChanged;
 }
