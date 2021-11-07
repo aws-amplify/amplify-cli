@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.37.0-graphql-vnext-dev-preview.7](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@2.36.1...amplify-category-function@2.37.0-graphql-vnext-dev-preview.7) (2021-11-07)
+
+
+### Bug Fixes
+
+* function comments to use os.EOL constant, ref [#8177](https://github.com/aws-amplify/amplify-cli/issues/8177) ([#8327](https://github.com/aws-amplify/amplify-cli/issues/8327)) ([c94405c](https://github.com/aws-amplify/amplify-cli/commit/c94405cd94ee3949d4be82018296b98aec20b5f6))
+* **graphql-model-transformer:** subscription resolver logical id fix ([#8712](https://github.com/aws-amplify/amplify-cli/issues/8712)) ([a380e12](https://github.com/aws-amplify/amplify-cli/commit/a380e12f674fec7cda616bdae54b49a153bbecf2))
+
+
+### Features
+
+* flag to allow destructive schema changes ([#8273](https://github.com/aws-amplify/amplify-cli/issues/8273)) ([18de856](https://github.com/aws-amplify/amplify-cli/commit/18de856fb61bf2df8f73375e4e55a58c6159a232))
+
+
+
+
+
 # [2.37.0-graphql-vnext-dev-preview.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@2.36.1...amplify-category-function@2.37.0-graphql-vnext-dev-preview.6) (2021-11-07)
 
 

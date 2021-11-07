@@ -3,6 +3,36 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [6.4.0-graphql-vnext-dev-preview.7](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@6.3.1...@aws-amplify/cli@6.4.0-graphql-vnext-dev-preview.7) (2021-11-07)
+
+
+### Bug Fixes
+
+* **amplify-category-auth:** switching to social providers with user pools instead of identity pools ([#8308](https://github.com/aws-amplify/amplify-cli/issues/8308)) ([0c82fe3](https://github.com/aws-amplify/amplify-cli/commit/0c82fe3ef73456192e993c380bc35f01663eb0cf))
+* **cli:** amplify plugin scan command print correct version of inactive hosting plugins ([#8130](https://github.com/aws-amplify/amplify-cli/issues/8130)) ([d37886f](https://github.com/aws-amplify/amplify-cli/commit/d37886f852da4e5b2dfcd3c04bcbcc9367de1284)), closes [#8127](https://github.com/aws-amplify/amplify-cli/issues/8127)
+* Custom policies works with `amplify status -v` ([#8531](https://github.com/aws-amplify/amplify-cli/issues/8531)) ([01f18e4](https://github.com/aws-amplify/amplify-cli/commit/01f18e4a8893f0a2f8833680ffae0f74ccdbdcd4))
+* **graphql-model-transformer:** subscription resolver logical id fix ([#8712](https://github.com/aws-amplify/amplify-cli/issues/8712)) ([a380e12](https://github.com/aws-amplify/amplify-cli/commit/a380e12f674fec7cda616bdae54b49a153bbecf2))
+* **graphql:** correct api key type on auto apply auth mode ([#8459](https://github.com/aws-amplify/amplify-cli/issues/8459)) ([59f2ab5](https://github.com/aws-amplify/amplify-cli/commit/59f2ab5e2b6a903176851bbcab8cbafe27d70406))
+* improve trigger update error handling, ref [#8280](https://github.com/aws-amplify/amplify-cli/issues/8280) ([#8329](https://github.com/aws-amplify/amplify-cli/issues/8329)) ([40f9cb0](https://github.com/aws-amplify/amplify-cli/commit/40f9cb0c77b730314c25b912cdb3208d981bf100))
+* prevent infinite loop ([#8540](https://github.com/aws-amplify/amplify-cli/issues/8540)) ([aeaceab](https://github.com/aws-amplify/amplify-cli/commit/aeaceabed4b06bba95f44aba31d7740a48326b5a))
+* remove duplicate error messages ([#8651](https://github.com/aws-amplify/amplify-cli/issues/8651)) ([aad5de7](https://github.com/aws-amplify/amplify-cli/commit/aad5de7b56b9b077b6b689c5b37d51dbfd4b262d))
+
+
+### Features
+
+* **amplify-category-storage:** headless support for S3 ([#8423](https://github.com/aws-amplify/amplify-cli/issues/8423)) ([76b0e70](https://github.com/aws-amplify/amplify-cli/commit/76b0e700d6221292a25b384e2ecfc7a64e9916dd))
+* flag to allow destructive schema changes ([#8273](https://github.com/aws-amplify/amplify-cli/issues/8273)) ([18de856](https://github.com/aws-amplify/amplify-cli/commit/18de856fb61bf2df8f73375e4e55a58c6159a232))
+* version blocking for CLI ([#8512](https://github.com/aws-amplify/amplify-cli/issues/8512)) ([52edf2b](https://github.com/aws-amplify/amplify-cli/commit/52edf2b58508c96e78184aba1f77c06c021cc9b1))
+
+
+### Reverts
+
+* Revert "feat: version blocking for CLI (#8512)" (#8522) ([c48453b](https://github.com/aws-amplify/amplify-cli/commit/c48453bc261d3f424e15179d40d6a21f5b15002a)), closes [#8512](https://github.com/aws-amplify/amplify-cli/issues/8512) [#8522](https://github.com/aws-amplify/amplify-cli/issues/8522)
+
+
+
+
+
 # [6.4.0-graphql-vnext-dev-preview.6](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@6.3.1...@aws-amplify/cli@6.4.0-graphql-vnext-dev-preview.6) (2021-11-07)
 
 

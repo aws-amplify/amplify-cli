@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.9.16-graphql-vnext-dev-preview.7](https://github.com/aws-amplify/amplify-cli/compare/amplify-console-hosting@1.9.15...amplify-console-hosting@1.9.16-graphql-vnext-dev-preview.7) (2021-11-07)
+
+
+### Bug Fixes
+
+* [#8254](https://github.com/aws-amplify/amplify-cli/issues/8254) invalid url is shown for branches with dash ([#8260](https://github.com/aws-amplify/amplify-cli/issues/8260)) ([e768597](https://github.com/aws-amplify/amplify-cli/commit/e768597741ad9fcc1ba80e67f30004e161585728))
+* **graphql-model-transformer:** subscription resolver logical id fix ([#8712](https://github.com/aws-amplify/amplify-cli/issues/8712)) ([a380e12](https://github.com/aws-amplify/amplify-cli/commit/a380e12f674fec7cda616bdae54b49a153bbecf2))
+
+
+
+
+
 ## [1.9.16-graphql-vnext-dev-preview.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-console-hosting@1.9.15...amplify-console-hosting@1.9.16-graphql-vnext-dev-preview.6) (2021-11-07)
 
 

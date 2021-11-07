@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.3.28-graphql-vnext-dev-preview.7](https://github.com/aws-amplify/amplify-cli/compare/amplify-container-hosting@1.3.27...amplify-container-hosting@1.3.28-graphql-vnext-dev-preview.7) (2021-11-07)
+
+
+### Bug Fixes
+
+* **graphql-model-transformer:** subscription resolver logical id fix ([#8712](https://github.com/aws-amplify/amplify-cli/issues/8712)) ([a380e12](https://github.com/aws-amplify/amplify-cli/commit/a380e12f674fec7cda616bdae54b49a153bbecf2))
+
+
+
+
+
 ## [1.3.28-graphql-vnext-dev-preview.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-container-hosting@1.3.27...amplify-container-hosting@1.3.28-graphql-vnext-dev-preview.6) (2021-11-07)
 
 

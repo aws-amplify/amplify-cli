@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.23.26-graphql-vnext-dev-preview.7](https://github.com/aws-amplify/amplify-cli/compare/graphql-key-transformer@2.23.25...graphql-key-transformer@2.23.26-graphql-vnext-dev-preview.7) (2021-11-07)
+
+
+### Bug Fixes
+
+* **graphql-model-transformer:** subscription resolver logical id fix ([#8712](https://github.com/aws-amplify/amplify-cli/issues/8712)) ([a380e12](https://github.com/aws-amplify/amplify-cli/commit/a380e12f674fec7cda616bdae54b49a153bbecf2))
+
+
+
+
+
 ## [2.23.26-graphql-vnext-dev-preview.6](https://github.com/aws-amplify/amplify-cli/compare/graphql-key-transformer@2.23.25...graphql-key-transformer@2.23.26-graphql-vnext-dev-preview.6) (2021-11-07)
 
 
