@@ -15,6 +15,6 @@
     { "path": "../amplify-headless-interface" },
     { "path": "../amplify-prompts" },
     { "path": "../amplify-util-import" },
-    { "path": "../amplify-cli-overrides-helper" }
+    { "path": "../amplify-cli-extensibility-helper" }
   ]
 }
