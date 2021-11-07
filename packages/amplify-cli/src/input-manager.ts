@@ -10,7 +10,7 @@ export function getCommandLineInput(pluginPlatform: PluginPlatform): Input {
   /* tslint:disable */
   if (result.argv && result.argv.length > 2) {
     let index = 2;
-
+    aliasArgs(result.argv);
     // pick up plugin name, allow plugin name to be in the 2nd or 3rd position
     const pluginNames = getAllPluginNames(pluginPlatform);
 
@@ -192,4 +192,10 @@ export function verifyInput(pluginPlatform: PluginPlatform, input: Input): Input
   }
 
   return result;
+}
+
+function aliasArgs(argv: string[]) {
+  if (argv.length >= 4 && argv[2] === 'override' && argv[3] === 'project') {
+    argv[3] = 'root';
+  }
 }

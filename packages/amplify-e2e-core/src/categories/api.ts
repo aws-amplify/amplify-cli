@@ -719,7 +719,7 @@ export function rebuildApi(projDir: string, apiName: string) {
 export function addRestContainerApiForCustomPolicies(projectDir: string, settings: { name: string }) {
   return new Promise<void>((resolve, reject) => {
     spawn(getCLIPath(), ['add', 'api'], { cwd: projectDir, stripColors: true })
-      .wait('Please select from one of the below mentioned services:')
+      .wait('Select from one of the below mentioned services:')
       .sendKeyDown()
       .sendCarriageReturn()
       .wait('Which service would you like to use')
