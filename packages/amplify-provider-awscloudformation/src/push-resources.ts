@@ -54,6 +54,7 @@ import {
 } from './disconnect-dependent-resources';
 import { storeRootStackTemplate } from './initializer';
 import { transformRootStack } from './override-manager';
+import { prePushTemplateDescriptionHandler } from './template-description-utils';
 
 const logger = fileLogger('push-resources');
 
@@ -218,6 +219,7 @@ export async function run(context: $TSContext, resourceDefinition: $TSObject, re
     await prePushAuthTransform(context, resources);
     await prePushGraphQLCodegen(context, resourcesToBeCreated, resourcesToBeUpdated);
     const projectDetails = context.amplify.getProjectDetails();
+    await prePushTemplateDescriptionHandler(context, resourcesToBeCreated);
     await updateS3Templates(context, resources, projectDetails.amplifyMeta);
 
     // We do not need CloudFormation update if only syncable resources are the changes.
@@ -408,9 +410,7 @@ export async function run(context: $TSContext, resourceDefinition: $TSObject, re
 
     //check for auth resources and remove deployment secret for push
     resources
-      .filter(
-        resource => resource.category === 'auth' && resource.service === 'Cognito' && resource.providerPlugin === 'awscloudformation',
-      )
+      .filter(resource => resource.category === 'auth' && resource.service === 'Cognito' && resource.providerPlugin === 'awscloudformation')
       .map(({ category, resourceName }) => context.amplify.removeDeploymentSecrets(context, category, resourceName));
 
     await adminModelgen(context, resources);
@@ -806,6 +806,7 @@ async function updateS3Templates(context: $TSContext, resourcesToBeUpdated: $TSA
     for (const cfnFile of cfnFiles) {
       await writeCustomPoliciesToCFNTemplate(resourceName, service, cfnFile, category);
       const transformedCFNPath = await preProcessCFNTemplate(path.join(resourceDir, cfnFile));
+
       promises.push(uploadTemplateToS3(context, transformedCFNPath, category, resourceName, amplifyMeta));
     }
   }
@@ -1211,4 +1212,3 @@ function rollbackLambdaLayers(layerResources: $TSAny[]) {
     stateManager.setMeta(projectRoot, meta);
   }
 }
-
