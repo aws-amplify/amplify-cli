@@ -27,6 +27,9 @@ describe('add ddb walkthrough tests', () => {
           };
         },
       },
+      input: {
+        options: {},
+      },
     } as unknown as $TSContext;
   });
 
@@ -125,6 +128,9 @@ describe('update ddb walkthrough tests', () => {
             },
           };
         },
+      },
+      input: {
+        options: {},
       },
     } as unknown as $TSContext;
   });

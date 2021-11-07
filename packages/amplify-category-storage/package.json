@@ -41,7 +41,8 @@
     "lodash": "^4.17.21",
     "promise-sequential": "^1.1.1",
     "uuid": "^8.3.2",
-    "vm2": "^3.9.3"
+    "vm2": "^3.9.3",
+    "@aws-amplify/cli-extensibility-helper": "1.0.0"
   },
   "devDependencies": {
     "aws-sdk": "^2.963.0",

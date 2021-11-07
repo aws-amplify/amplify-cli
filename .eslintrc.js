@@ -323,7 +323,7 @@ module.exports = {
     '/packages/amplify-graphql-*transformer*/lib',
     '/packages/amplify-provider-awscloudformation/lib',
     '/packages/amplify-console-integration-tests/lib',
-    '/packages/amplify-cli-overrides-helper/lib',
+    '/packages/amplify-cli-extensibility-helper/lib',
     '/packages/amplify-category-auth/resources/auth-custom-resource',
     '/packages/amplify-category-custom/lib',
     '/packages/amplify-category-custom/resources',

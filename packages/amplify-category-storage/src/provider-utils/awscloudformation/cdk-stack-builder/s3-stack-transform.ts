@@ -18,7 +18,8 @@ import os from 'os';
 import { S3PermissionType, S3UserInputs } from '../service-walkthrough-types/s3-user-input-types';
 import { canResourceBeTransformed, S3CFNDependsOn, S3CFNPermissionType, S3InputState } from '../service-walkthroughs/s3-user-input-state';
 import { AmplifyS3ResourceCfnStack } from './s3-stack-builder';
-import { AmplifyBuildParamsPermissions, AmplifyCfnParamType, AmplifyS3ResourceInputParameters, AmplifyS3ResourceTemplate } from './types';
+import { AmplifyS3ResourceTemplate } from '@aws-amplify/cli-extensibility-helper';
+import { AmplifyBuildParamsPermissions, AmplifyCfnParamType, AmplifyS3ResourceInputParameters } from './types';
 
 /**
  * Builds S3 resource stack, ingest overrides.ts and generates output-files.

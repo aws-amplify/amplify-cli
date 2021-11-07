@@ -133,8 +133,9 @@ export async function updateWalkthrough(context: $TSContext) {
     let cliInputsState = new S3InputState(storageResourceName, undefined);
 
     //Check if migration is required
+    const headlessMigrate = context.input.options?.yes || context.input.options?.forcePush || context.input.options?.headless;
     if (!cliInputsState.cliInputFileExists()) {
-      if (context.exeInfo?.forcePush || (await prompter.confirmContinue('File migration required to continue. Do you want to continue?'))) {
+      if (headlessMigrate || (await prompter.confirmContinue('File migration required to continue. Do you want to continue?'))) {
         //migrate auth and storage
         await cliInputsState.migrate(context);
         const stackGenerator = new AmplifyS3ResourceStackTransform(storageResourceName, context);
@@ -438,10 +439,14 @@ function getS3ResourcesFromAmplifyMeta(amplifyMeta: $TSMeta): Record<string, $TS
  * @param context
  * @returns Generated function name.
  */
-export async function createNewLambdaAndUpdateCFN(context: $TSContext, triggerFunctionName : string|undefined, policyUUID: string  | undefined ): Promise<string> {
+export async function createNewLambdaAndUpdateCFN(
+  context: $TSContext,
+  triggerFunctionName: string | undefined,
+  policyUUID: string | undefined,
+): Promise<string> {
   const targetDir = context.amplify.pathManager.getBackendDirPath();
-  const newShortUUID = (policyUUID)?policyUUID: buildShortUUID();
-  const newFunctionName = (triggerFunctionName)?triggerFunctionName:`S3Trigger${newShortUUID}`;
+  const newShortUUID = policyUUID ? policyUUID : buildShortUUID();
+  const newFunctionName = triggerFunctionName ? triggerFunctionName : `S3Trigger${newShortUUID}`;
   const pluginDir = __dirname;
   const defaults = {
     functionName: `${newFunctionName}`,
@@ -500,12 +505,11 @@ async function getExistingFunctionsForTrigger(
   excludeFunctionName: string | undefined,
   isInteractive: boolean,
 ): Promise<Array<string>> {
-
   //Build the list of functions to be excluded ( existing-trigger, adminTrigger )
-  let excludeFunctionList = (excludeFunctionName)?[excludeFunctionName]:[];
+  let excludeFunctionList = excludeFunctionName ? [excludeFunctionName] : [];
   const adminTriggerFunction = await s3GetAdminTriggerFunctionName(context);
-  if(adminTriggerFunction && adminTriggerFunction != 'NONE'){
-    excludeFunctionList.push(adminTriggerFunction)
+  if (adminTriggerFunction && adminTriggerFunction != 'NONE') {
+    excludeFunctionList.push(adminTriggerFunction);
   }
 
   let lambdaResourceNames: Array<string> = await getLambdaFunctionList(context);
@@ -573,7 +577,7 @@ function getCLITriggerStateEvent(triggerFlowType: S3CLITriggerFlow, existingTrig
  * @returns TriggerFunction name
  */
 async function interactiveCreateNewLambdaAndUpdateCFN(context: $TSContext) {
-  const newTriggerFunction = await createNewLambdaAndUpdateCFN(context, undefined /*default function name*/, undefined /*unique shortid*/ );
+  const newTriggerFunction = await createNewLambdaAndUpdateCFN(context, undefined /*default function name*/, undefined /*unique shortid*/);
   await askAndOpenFunctionEditor(context, newTriggerFunction);
   return newTriggerFunction;
 }
