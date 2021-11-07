@@ -21,6 +21,11 @@ describe('run', () => {
   it('transforms the root stack using the pre-push modifier', async () => {
     // setup
     const context_stub = {
+      pluginPlatform: {
+        plugins: {
+          core: [{ packageVersion: '5.2' }],
+        },
+      },
       exeInfo: {
         isNewEnv: true,
         projectConfig: {
