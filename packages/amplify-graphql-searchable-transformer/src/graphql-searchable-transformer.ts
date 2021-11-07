@@ -138,7 +138,7 @@ export class SearchableModelTransformer extends TransformerPluginBase {
         ResolverResourceIDs.ElasticsearchSearchResolverResourceID(type),
         datasource as DataSourceProvider,
         MappingTemplate.s3MappingTemplateFromString(
-          requestTemplate(attributeName, getNonKeywordFields(def.node), false, type, keyFields),
+          requestTemplate(attributeName, getNonKeywordFields(def.node), context.isProjectUsingDataStore(), type, keyFields),
           `${typeName}.${def.fieldName}.req.vtl`,
         ),
         MappingTemplate.s3MappingTemplateFromString(responseTemplate(false), `${typeName}.${def.fieldName}.res.vtl`),
