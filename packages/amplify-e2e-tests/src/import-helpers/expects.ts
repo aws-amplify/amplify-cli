@@ -1,7 +1,20 @@
 import _ from 'lodash';
 import { getProjectMeta, getBackendAmplifyMeta, getTeamProviderInfo, getBackendConfig } from 'amplify-e2e-core';
 import { AuthProjectDetails, DynamoDBProjectDetails, readRootStack, StorageProjectDetails } from '.';
-import { AuthParameters } from 'amplify-category-auth';
+import { AuthParameters } from '@aws-amplify/amplify-category-auth';
+
+const ddbAttrTypeMapping = {
+  string: 'S',
+  number: 'N',
+  binary: 'B',
+  boolean: 'BOOL',
+  list: 'L',
+  map: 'M',
+  null: 'NULL',
+  'string-set': 'SS',
+  'number-set': 'NS',
+  'binary-set': 'BS',
+};
 
 export const expectAuthProjectDetailsMatch = (projectDetails: AuthProjectDetails, ogProjectDetails: AuthProjectDetails) => {
   expect(projectDetails.parameters.authSelections).toEqual(ogProjectDetails.parameters.authSelections);
@@ -132,18 +145,18 @@ export const expectDynamoDBProjectDetailsMatch = (projectDetails: DynamoDBProjec
   expect(projectDetails.meta.Name).toEqual(ogProjectDetails.meta.Name);
   expect(projectDetails.meta.Region).toEqual(ogProjectDetails.meta.Region);
   expect(projectDetails.meta.PartitionKeyName).toEqual(ogProjectDetails.meta.PartitionKeyName);
-  expect(projectDetails.meta.PartitionKeyType).toEqual(ogProjectDetails.meta.PartitionKeyType);
+  expect(projectDetails.meta.PartitionKeyType).toEqual(ddbAttrTypeMapping[ogProjectDetails.meta.PartitionKeyType]);
   expect(projectDetails.meta.SortKeyName).toEqual(ogProjectDetails.meta.SortKeyName);
-  expect(projectDetails.meta.SortKeyType).toEqual(ogProjectDetails.meta.SortKeyType);
+  expect(projectDetails.meta.SortKeyType).toEqual(ddbAttrTypeMapping[ogProjectDetails.meta.SortKeyType]);
   expect(projectDetails.meta.Arn).toEqual(ogProjectDetails.meta.Arn);
   expect(projectDetails.meta.StreamArn).toEqual(ogProjectDetails.meta.StreamArn);
 
   expect(projectDetails.team.tableName).toEqual(ogProjectDetails.meta.Name);
   expect(projectDetails.team.region).toEqual(ogProjectDetails.meta.Region);
   expect(projectDetails.team.partitionKeyName).toEqual(ogProjectDetails.meta.PartitionKeyName);
-  expect(projectDetails.team.partitionKeyType).toEqual(ogProjectDetails.meta.PartitionKeyType);
+  expect(projectDetails.team.partitionKeyType).toEqual(ddbAttrTypeMapping[ogProjectDetails.meta.PartitionKeyType]);
   expect(projectDetails.team.sortKeyName).toEqual(ogProjectDetails.meta.SortKeyName);
-  expect(projectDetails.team.sortKeyType).toEqual(ogProjectDetails.meta.SortKeyType);
+  expect(projectDetails.team.sortKeyType).toEqual(ddbAttrTypeMapping[ogProjectDetails.meta.SortKeyType]);
   expect(projectDetails.team.arn).toEqual(ogProjectDetails.meta.Arn);
   expect(projectDetails.team.streamArn).toEqual(ogProjectDetails.meta.StreamArn);
 };
@@ -163,9 +176,9 @@ export const expectDynamoDBLocalAndOGMetaFilesOutputMatching = (projectRoot: str
   expect(storageMeta.output.Name).toEqual(ogStorageMeta.output.Name);
   expect(storageMeta.output.Region).toEqual(ogStorageMeta.output.Region);
   expect(storageMeta.output.PartitionKeyName).toEqual(ogStorageMeta.output.PartitionKeyName);
-  expect(storageMeta.output.PartitionKeyType).toEqual(ogStorageMeta.output.PartitionKeyType);
+  expect(storageMeta.output.PartitionKeyType).toEqual(ddbAttrTypeMapping[ogStorageMeta.output.PartitionKeyType]);
   expect(storageMeta.output.SortKeyName).toEqual(ogStorageMeta.output.SortKeyName);
-  expect(storageMeta.output.SortKeyType).toEqual(ogStorageMeta.output.SortKeyType);
+  expect(storageMeta.output.SortKeyType).toEqual(ddbAttrTypeMapping[ogStorageMeta.output.SortKeyType]);
   expect(storageMeta.output.Arn).toEqual(ogStorageMeta.output.Arn);
   expect(storageMeta.output.StreamArn).toEqual(ogStorageMeta.output.StreamArn);
 };

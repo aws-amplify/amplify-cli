@@ -270,18 +270,7 @@ export function addDynamoDBWithGSIWithSettings(projectDir: string, settings: Add
     const addColumn = (name, type) => {
       chain.wait('What would you like to name this column').sendLine(name);
 
-      singleSelect(chain.wait('Choose the data type'), type, [
-        'string',
-        'number',
-        'binary',
-        'boolean',
-        'list',
-        'map',
-        'null',
-        'string-set',
-        'number-set',
-        'binary-set',
-      ]);
+      chain.wait('Choose the data type').sendCarriageReturn(); // Always selects string
     };
 
     const addAnotherColumn = () => {
@@ -309,11 +298,11 @@ export function addDynamoDBWithGSIWithSettings(projectDir: string, settings: Add
 
     chain.wait('Would you like to add another column').sendConfirmNo();
 
-    singleSelect(chain.wait('Choose the data type'), 'pk', ['pk', 'sk', 'gsi-pk', 'gsi-sk', 'title', 'description']);
+    chain.wait('Choose partition key for the table').sendCarriageReturn(); // choose pk
 
     chain.wait('Do you want to add a sort key to your table').sendConfirmYes();
 
-    singleSelect(chain.wait('Choose sort key for the table'), 'sk', ['sk', 'gsi-pk', 'gsi-sk', 'title', 'description']);
+    chain.wait('Choose sort key for the table').sendCarriageReturn(); // choose sk
 
     chain
       .wait('Do you want to add global secondary indexes to your table?')
@@ -321,11 +310,11 @@ export function addDynamoDBWithGSIWithSettings(projectDir: string, settings: Add
       .wait('Provide the GSI name')
       .sendLine(settings.gsiName);
 
-    singleSelect(chain.wait('Choose partition key for the GSI'), 'gsi-pk', ['sk', 'gsi-pk', 'gsi-sk', 'title', 'description']);
+    chain.wait('Choose partition key for the GSI').send(KEY_DOWN_ARROW).send(KEY_DOWN_ARROW).sendCarriageReturn(); // choose gsi-pk
 
     chain.wait('Do you want to add a sort key to your global secondary index').sendConfirmYes();
 
-    singleSelect(chain.wait('Choose sort key for the GSI'), 'gsi-sk', ['sk', 'gsi-sk', 'title', 'description']);
+    chain.wait('Choose sort key for the GSI').send(KEY_DOWN_ARROW).send(KEY_DOWN_ARROW).sendCarriageReturn(); // choose gsi-sk
 
     chain
       .wait('Do you want to add more global secondary indexes to your table')
