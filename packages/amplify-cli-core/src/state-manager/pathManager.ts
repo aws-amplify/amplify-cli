@@ -2,6 +2,7 @@ import * as path from 'path';
 import * as fs from 'fs-extra';
 import { homedir } from 'os';
 import { NotInitializedError } from '../errors';
+import { overriddenCategories } from '..';
 
 export const PathConstants = {
   // in home directory
@@ -146,7 +147,7 @@ export class PathManager {
   getResourceParametersFilePath = (projectPath: string | undefined, category: string, resourceName: string): string => {
     let isBuildParametersjson: boolean = false;
     const resourceDirPath = this.getResourceDirectoryPath(projectPath, category, resourceName);
-    if (!fs.existsSync(path.join(resourceDirPath, PathConstants.ParametersJsonFileName))) {
+    if (!fs.existsSync(path.join(resourceDirPath, PathConstants.ParametersJsonFileName)) && overriddenCategories.includes(category)) {
       isBuildParametersjson = true;
     }
     const basePath = isBuildParametersjson ? path.join(resourceDirPath, PathConstants.BuildDirName) : resourceDirPath;
