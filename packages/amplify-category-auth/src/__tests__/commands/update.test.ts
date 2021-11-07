@@ -85,6 +85,9 @@ describe('auth update: ', () => {
     usageData: {
       emitError: jest.fn(),
     },
+    input: {
+      options: {},
+    },
   } as unknown as $TSContext;
   const dependencies = ['analytics', 'api', 'function', 'storage'];
 

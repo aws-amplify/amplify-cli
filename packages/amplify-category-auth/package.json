@@ -43,7 +43,8 @@
     "ora": "^4.0.3",
     "promise-sequential": "^1.1.1",
     "uuid": "^3.4.0",
-    "vm2": "^3.9.3"
+    "vm2": "^3.9.3",
+    "@aws-amplify/cli-extensibility-helper": "1.0.0"
   },
   "devDependencies": {
     "rimraf": "^3.0.2"
