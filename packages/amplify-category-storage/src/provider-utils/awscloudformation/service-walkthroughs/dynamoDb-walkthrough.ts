@@ -85,8 +85,9 @@ export async function updateWalkthrough(context: $TSContext) {
   // Check if we need to migrate to cli-inputs.json
   const cliInputsState = new DynamoDBInputState(resourceName);
 
+  const headlessMigrate = context.input.options?.yes || context.input.options?.forcePush || context.input.options?.headless;
   if (!cliInputsState.cliInputFileExists()) {
-    if (context.exeInfo?.forcePush || (await prompter.yesOrNo('File migration required to continue. Do you want to continue?', true))) {
+    if (headlessMigrate || (await prompter.yesOrNo('File migration required to continue. Do you want to continue?', true))) {
       cliInputsState.migrate();
       const stackGenerator = new DDBStackTransform(resourceName);
       stackGenerator.transform();
