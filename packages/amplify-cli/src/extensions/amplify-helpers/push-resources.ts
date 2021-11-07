@@ -7,6 +7,7 @@ import { getProjectConfig } from './get-project-config';
 import { getProviderPlugins } from './get-provider-plugins';
 import { onCategoryOutputsChange } from './on-category-outputs-change';
 import { showResourceTable } from './resource-status';
+import { generateDependentResourcesType } from '@aws-amplify/amplify-category-custom';
 
 export async function pushResources(
   context: $TSContext,
@@ -53,6 +54,7 @@ export async function pushResources(
   }
 
   // building all CFN stacks here to get the resource Changes
+  await generateDependentResourcesType(context);
   const resourcesToBuild: IAmplifyResource[] = await getResources(context);
   await context.amplify.executeProviderUtils(context, 'awscloudformation', 'buildOverrides', { resourcesToBuild, forceCompile: true });
 

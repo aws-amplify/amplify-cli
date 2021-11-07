@@ -1,5 +1,6 @@
 import { $TSContext, IAmplifyResource } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
+import { generateDependentResourcesType } from '@aws-amplify/amplify-category-custom';
 /**
  * Command to transform CFN with overrides
  */
@@ -14,6 +15,7 @@ export const run = async (context: $TSContext) => {
   }
 
   try {
+    await generateDependentResourcesType(context);
     const resourcesToBuild: IAmplifyResource[] = await getResources(context);
     let filteredResources: IAmplifyResource[] = resourcesToBuild;
     if (categoryName) {
