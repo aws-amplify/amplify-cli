@@ -48,7 +48,7 @@ test('it generates the expected resources', () => {
   expect(out).toBeDefined();
   expect(out.stacks).toBeDefined();
   parse(out.schema);
-  const stack = out.stacks.HttpDirectiveStack;
+  const stack = out.stacks.HttpStack;
   cdkExpect(stack).to(
     haveResource('AWS::IAM::Role', {
       AssumeRolePolicyDocument: {
@@ -254,7 +254,7 @@ test('URL params happy path', () => {
   expect(out).toBeDefined();
   expect(out.stacks).toBeDefined();
   parse(out.schema);
-  const stack = out.stacks.HttpDirectiveStack;
+  const stack = out.stacks.HttpStack;
   cdkExpect(stack).to(countResources('AWS::AppSync::DataSource', 1));
   cdkExpect(stack).to(countResources('AWS::AppSync::Resolver', 7));
   expect(stack.Resources!.CommentcomplexResolver).toBeTruthy();
@@ -296,7 +296,7 @@ test('env on the URI path', () => {
   expect(out).toBeDefined();
   expect(out.stacks).toBeDefined();
   parse(out.schema);
-  const stack = out.stacks.HttpDirectiveStack;
+  const stack = out.stacks.HttpStack;
   const reqTemplate = stack.Resources!.CommentcontentResolver.Properties.RequestMappingTemplate;
   expect(reqTemplate['Fn::Sub']).toBeTruthy();
   expect(reqTemplate['Fn::Sub'][0]).toMatch('"resourcePath": "/ping${env}"');
@@ -321,7 +321,7 @@ test('env on the hostname', () => {
   expect(out).toBeDefined();
   expect(out.stacks).toBeDefined();
   parse(out.schema);
-  const stack = out.stacks.HttpDirectiveStack;
+  const stack = out.stacks.HttpStack;
   cdkExpect(stack).to(countResources('AWS::AppSync::DataSource', 4));
   cdkExpect(stack).to(
     haveResource('AWS::AppSync::DataSource', {
@@ -411,7 +411,7 @@ test('aws_region on the URI path', () => {
   expect(out).toBeDefined();
   expect(out.stacks).toBeDefined();
   parse(out.schema);
-  const stack = out.stacks.HttpDirectiveStack;
+  const stack = out.stacks.HttpStack;
   const reqTemplate = stack.Resources!.CommentcontentResolver.Properties.RequestMappingTemplate;
   expect(reqTemplate['Fn::Sub']).toBeTruthy();
   expect(reqTemplate['Fn::Sub'][0]).toMatch('"resourcePath": "/ping${aws_region}"');
@@ -436,7 +436,7 @@ test('aws_region on the hostname', () => {
   expect(out).toBeDefined();
   expect(out.stacks).toBeDefined();
   parse(out.schema);
-  const stack = out.stacks.HttpDirectiveStack;
+  const stack = out.stacks.HttpStack;
   cdkExpect(stack).to(countResources('AWS::AppSync::DataSource', 4));
   cdkExpect(stack).to(
     haveResource('AWS::AppSync::DataSource', {
