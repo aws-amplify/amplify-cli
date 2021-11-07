@@ -1,4 +1,4 @@
-export function overrideProps(props: any): any {
+export function override(props: any): any {
   props.userPool.deviceConfiguration = {
     challengeRequiredOnNewDevice: true,
   };
