@@ -7,3 +7,5 @@ export const CFN_SERVICE_NAME = 'customCloudformation';
 export const DEPLOYMENT_PROVIDER_NAME = 'awscloudformation';
 export const customResourceCFNFilenameSuffix = `cloudformation-template.json`;
 export const cdkFileName = 'cdk-stack.ts';
+export const TYPES_DIR_NAME = 'types';
+export const AMPLIFY_RESOURCES_TYPE_DEF_FILENAME = 'amplify-dependent-resources-ref.d.ts';
