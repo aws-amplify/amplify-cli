@@ -4,7 +4,7 @@ import execa from 'execa';
 import * as fs from 'fs-extra';
 import ora from 'ora';
 import * as path from 'path';
-import { categoryName } from './constants';
+import { categoryName, TYPES_DIR_NAME, AMPLIFY_RESOURCES_TYPE_DEF_FILENAME } from './constants';
 import { getAllResources } from './dependency-management-utils';
 import { generateCloudFormationFromCDK } from './generate-cfn-from-cdk';
 
@@ -38,12 +38,14 @@ const getSelectedResources = async (context: $TSContext, resourceName?: string) 
   return (await context.amplify.getResourceStatus(categoryName, resourceName)).allResources as ResourceMeta[];
 };
 
-async function generateDependentResourcesType(context: $TSContext, resourceDirPath: string) {
+export async function generateDependentResourcesType(context: $TSContext) {
+  const resourceDirPath = path.join(pathManager.getBackendDirPath(), TYPES_DIR_NAME);
+
   const copyJobs = [
     {
       dir: resourcesDirRoot,
       template: amplifyDependentResourcesFilename,
-      target: path.join(resourceDirPath, 'amplify-dependent-resources-ref.d.ts'),
+      target: path.join(resourceDirPath, AMPLIFY_RESOURCES_TYPE_DEF_FILENAME),
     },
   ];
 
@@ -100,5 +102,5 @@ async function buildResource(context: $TSContext, resource: ResourceMeta) {
 
   await generateCloudFormationFromCDK(resource.resourceName);
 
-  await generateDependentResourcesType(context, targetDir);
+  await generateDependentResourcesType(context);
 }

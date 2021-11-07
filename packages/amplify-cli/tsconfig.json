@@ -16,6 +16,7 @@
     { "path": "../amplify-provider-awscloudformation" },
     { "path": "../amplify-util-import" },
     { "path": "../graphql-transformer-core" },
-    { "path": "../amplify-category-auth" }
+    { "path": "../amplify-category-auth" },
+    { "path": "../amplify-category-custom" }
   ]
 }
