@@ -115,7 +115,7 @@ export function addCDKResourceDependency(
   dependentResources: AmplifyDependentResourceDefinition[],
 ) {
   const dependsOn: AmplifyDependentResourceDefinition[] = [];
-  const dependentParameters: $TSObject = {};
+  const dependentParameters: any = {};
 
   dependentResources.forEach(resource => {
     const attributeList = getResourceCfnOutputAttributes(resource.category, resource.resourceName);

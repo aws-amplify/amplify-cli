@@ -4,6 +4,7 @@ import * as path from 'path';
 import { buildCustomResources } from './utils/build-custom-resources';
 import { categoryName } from './utils/constants';
 export { addCDKResourceDependency } from './utils/dependency-management-utils';
+export { generateDependentResourcesType } from './utils/build-custom-resources';
 
 export async function executeAmplifyCommand(context: $TSContext) {
   let commandPath = path.normalize(path.join(__dirname, 'commands'));
