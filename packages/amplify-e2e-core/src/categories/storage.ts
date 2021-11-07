@@ -270,7 +270,18 @@ export function addDynamoDBWithGSIWithSettings(projectDir: string, settings: Add
     const addColumn = (name, type) => {
       chain.wait('What would you like to name this column').sendLine(name);
 
-      singleSelect(chain.wait('Choose the data type'), type, ['string', 'number', 'binary', 'boolean', 'list', 'map', 'null']);
+      singleSelect(chain.wait('Choose the data type'), type, [
+        'string',
+        'number',
+        'binary',
+        'boolean',
+        'list',
+        'map',
+        'null',
+        'string-set',
+        'number-set',
+        'binary-set',
+      ]);
     };
 
     const addAnotherColumn = () => {
