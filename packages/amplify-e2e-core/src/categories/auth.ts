@@ -870,7 +870,6 @@ export function addAuthUserPoolOnly(cwd: string, settings: any): Promise<void> {
       .wait('Successfully')
       .wait('Do you want to edit your custom function now')
       .sendConfirmNo()
-      .wait('Successfully added auth resource')
       .sendEof()
       .run((err: Error) => {
         if (!err) {
