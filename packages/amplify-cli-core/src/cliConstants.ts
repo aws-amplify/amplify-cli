@@ -17,7 +17,7 @@ export enum CLISubCommandType {
   CONSOLE = 'console',
   IMPORT = 'import',
   OVERRIDE = 'override',
-  MIGRATE = 'migrate'
+  MIGRATE = 'migrate',
 }
 export const AmplifyCategories = {
   STORAGE: 'storage',
@@ -29,6 +29,7 @@ export const AmplifyCategories = {
   NOTIFICATIONS: 'notifications',
   PREDICTIONS: 'predictions',
   ANALYTICS: 'analytics',
+  CUSTOM: 'custom',
 };
 
 export const AmplifySupportedService = {
@@ -36,10 +37,10 @@ export const AmplifySupportedService = {
   DYNAMODB: 'DynamoDB',
   COGNITO: 'Cognito',
   COGNITOUSERPOOLGROUPS: 'Cognito-UserPool-Groups',
-  LAMBDA : 'Lambda'
+  LAMBDA: 'Lambda',
 };
 
-export const overriddenCategories = [AmplifyCategories.AUTH, AmplifyCategories.STORAGE];
+export const overriddenCategories = [AmplifyCategories.AUTH, AmplifyCategories.STORAGE, AmplifyCategories.CUSTOM];
 
 export type IAmplifyResource = {
   category: string;
