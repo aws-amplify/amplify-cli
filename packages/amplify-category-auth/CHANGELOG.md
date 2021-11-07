@@ -3,6 +3,131 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.38.5-graphql-vnext-dev-preview.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.38.4...amplify-category-auth@2.38.5-graphql-vnext-dev-preview.6) (2021-11-07)
+
+
+### Bug Fixes
+
+* **amplify-category-auth:** switching to social providers with user pools instead of identity pools ([#8308](https://github.com/aws-amplify/amplify-cli/issues/8308)) ([0c82fe3](https://github.com/aws-amplify/amplify-cli/commit/0c82fe3ef73456192e993c380bc35f01663eb0cf))
+* **amplify-category-auth:** update attr mapping... ([#8135](https://github.com/aws-amplify/amplify-cli/issues/8135)) ([a35352d](https://github.com/aws-amplify/amplify-cli/commit/a35352d8b202440161a9e6fe8ea780e614f81c13)), closes [#7793](https://github.com/aws-amplify/amplify-cli/issues/7793)
+* **graphql-model-transformer:** subscription resolver logical id fix ([#8712](https://github.com/aws-amplify/amplify-cli/issues/8712)) ([4d0c7d5](https://github.com/aws-amplify/amplify-cli/commit/4d0c7d5b9b9c42749858c75f1265a75efad473e4))
+
+
+### Reverts
+
+* Revert "Revert "feat(amplify-category-auth): use EnabledMFAs to only configure TOTP (#7779)" (#7790)" (#7971) ([ff418d1](https://github.com/aws-amplify/amplify-cli/commit/ff418d151879da2c89f2aced6d67d602f7395371)), closes [#7779](https://github.com/aws-amplify/amplify-cli/issues/7779) [#7790](https://github.com/aws-amplify/amplify-cli/issues/7790) [#7971](https://github.com/aws-amplify/amplify-cli/issues/7971)
+
+
+
+
+
+## [2.38.5-graphql-vnext-dev-preview.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.38.4...amplify-category-auth@2.38.5-graphql-vnext-dev-preview.5) (2021-11-07)
+
+
+### Bug Fixes
+
+* **amplify-category-auth:** switching to social providers with user pools instead of identity pools ([#8308](https://github.com/aws-amplify/amplify-cli/issues/8308)) ([0c82fe3](https://github.com/aws-amplify/amplify-cli/commit/0c82fe3ef73456192e993c380bc35f01663eb0cf))
+* **amplify-category-auth:** update attr mapping... ([#8135](https://github.com/aws-amplify/amplify-cli/issues/8135)) ([a35352d](https://github.com/aws-amplify/amplify-cli/commit/a35352d8b202440161a9e6fe8ea780e614f81c13)), closes [#7793](https://github.com/aws-amplify/amplify-cli/issues/7793)
+* **graphql-model-transformer:** subscription resolver logical id fix ([#8712](https://github.com/aws-amplify/amplify-cli/issues/8712)) ([4dcdc95](https://github.com/aws-amplify/amplify-cli/commit/4dcdc9524bb46bda5cdcfc0e835d43c64dc216a6))
+
+
+### Reverts
+
+* Revert "Revert "feat(amplify-category-auth): use EnabledMFAs to only configure TOTP (#7779)" (#7790)" (#7971) ([ff418d1](https://github.com/aws-amplify/amplify-cli/commit/ff418d151879da2c89f2aced6d67d602f7395371)), closes [#7779](https://github.com/aws-amplify/amplify-cli/issues/7779) [#7790](https://github.com/aws-amplify/amplify-cli/issues/7790) [#7971](https://github.com/aws-amplify/amplify-cli/issues/7971)
+
+
+
+
+
+## [2.38.5-graphql-vnext-dev-preview.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.38.4...amplify-category-auth@2.38.5-graphql-vnext-dev-preview.4) (2021-11-07)
+
+
+### Bug Fixes
+
+* **amplify-category-auth:** switching to social providers with user pools instead of identity pools ([#8308](https://github.com/aws-amplify/amplify-cli/issues/8308)) ([0c82fe3](https://github.com/aws-amplify/amplify-cli/commit/0c82fe3ef73456192e993c380bc35f01663eb0cf))
+* **amplify-category-auth:** update attr mapping... ([#8135](https://github.com/aws-amplify/amplify-cli/issues/8135)) ([a35352d](https://github.com/aws-amplify/amplify-cli/commit/a35352d8b202440161a9e6fe8ea780e614f81c13)), closes [#7793](https://github.com/aws-amplify/amplify-cli/issues/7793)
+* **graphql-model-transformer:** subscription resolver logical id fix ([#8712](https://github.com/aws-amplify/amplify-cli/issues/8712)) ([ff7c202](https://github.com/aws-amplify/amplify-cli/commit/ff7c202252983938c3a32c31fc4b3bd09a73734e))
+
+
+### Reverts
+
+* Revert "Revert "feat(amplify-category-auth): use EnabledMFAs to only configure TOTP (#7779)" (#7790)" (#7971) ([ff418d1](https://github.com/aws-amplify/amplify-cli/commit/ff418d151879da2c89f2aced6d67d602f7395371)), closes [#7779](https://github.com/aws-amplify/amplify-cli/issues/7779) [#7790](https://github.com/aws-amplify/amplify-cli/issues/7790) [#7971](https://github.com/aws-amplify/amplify-cli/issues/7971)
+
+
+
+
+
+## [2.38.5-graphql-vnext-dev-preview.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.38.4...amplify-category-auth@2.38.5-graphql-vnext-dev-preview.3) (2021-11-07)
+
+
+### Bug Fixes
+
+* **amplify-category-auth:** switching to social providers with user pools instead of identity pools ([#8308](https://github.com/aws-amplify/amplify-cli/issues/8308)) ([0c82fe3](https://github.com/aws-amplify/amplify-cli/commit/0c82fe3ef73456192e993c380bc35f01663eb0cf))
+* **amplify-category-auth:** update attr mapping... ([#8135](https://github.com/aws-amplify/amplify-cli/issues/8135)) ([a35352d](https://github.com/aws-amplify/amplify-cli/commit/a35352d8b202440161a9e6fe8ea780e614f81c13)), closes [#7793](https://github.com/aws-amplify/amplify-cli/issues/7793)
+* **graphql-model-transformer:** subscription resolver logical id fix ([#8712](https://github.com/aws-amplify/amplify-cli/issues/8712)) ([249a0a7](https://github.com/aws-amplify/amplify-cli/commit/249a0a75b0e918f49c1059274d9252a430ce34c6))
+
+
+### Reverts
+
+* Revert "Revert "feat(amplify-category-auth): use EnabledMFAs to only configure TOTP (#7779)" (#7790)" (#7971) ([ff418d1](https://github.com/aws-amplify/amplify-cli/commit/ff418d151879da2c89f2aced6d67d602f7395371)), closes [#7779](https://github.com/aws-amplify/amplify-cli/issues/7779) [#7790](https://github.com/aws-amplify/amplify-cli/issues/7790) [#7971](https://github.com/aws-amplify/amplify-cli/issues/7971)
+
+
+
+
+
+## [2.38.5-graphql-vnext-dev-preview.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.38.4...amplify-category-auth@2.38.5-graphql-vnext-dev-preview.2) (2021-11-07)
+
+
+### Bug Fixes
+
+* **amplify-category-auth:** switching to social providers with user pools instead of identity pools ([#8308](https://github.com/aws-amplify/amplify-cli/issues/8308)) ([0c82fe3](https://github.com/aws-amplify/amplify-cli/commit/0c82fe3ef73456192e993c380bc35f01663eb0cf))
+* **amplify-category-auth:** update attr mapping... ([#8135](https://github.com/aws-amplify/amplify-cli/issues/8135)) ([a35352d](https://github.com/aws-amplify/amplify-cli/commit/a35352d8b202440161a9e6fe8ea780e614f81c13)), closes [#7793](https://github.com/aws-amplify/amplify-cli/issues/7793)
+* **graphql-model-transformer:** subscription resolver logical id fix ([#8712](https://github.com/aws-amplify/amplify-cli/issues/8712)) ([3641fe3](https://github.com/aws-amplify/amplify-cli/commit/3641fe344396206fbc829b17916cc71df02347ce))
+
+
+### Reverts
+
+* Revert "Revert "feat(amplify-category-auth): use EnabledMFAs to only configure TOTP (#7779)" (#7790)" (#7971) ([ff418d1](https://github.com/aws-amplify/amplify-cli/commit/ff418d151879da2c89f2aced6d67d602f7395371)), closes [#7779](https://github.com/aws-amplify/amplify-cli/issues/7779) [#7790](https://github.com/aws-amplify/amplify-cli/issues/7790) [#7971](https://github.com/aws-amplify/amplify-cli/issues/7971)
+
+
+
+
+
+## [2.38.5-graphql-vnext-dev-preview.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.38.4...amplify-category-auth@2.38.5-graphql-vnext-dev-preview.1) (2021-11-07)
+
+
+### Bug Fixes
+
+* **amplify-category-auth:** switching to social providers with user pools instead of identity pools ([#8308](https://github.com/aws-amplify/amplify-cli/issues/8308)) ([0c82fe3](https://github.com/aws-amplify/amplify-cli/commit/0c82fe3ef73456192e993c380bc35f01663eb0cf))
+* **amplify-category-auth:** update attr mapping... ([#8135](https://github.com/aws-amplify/amplify-cli/issues/8135)) ([a35352d](https://github.com/aws-amplify/amplify-cli/commit/a35352d8b202440161a9e6fe8ea780e614f81c13)), closes [#7793](https://github.com/aws-amplify/amplify-cli/issues/7793)
+* **graphql-model-transformer:** subscription resolver logical id fix ([#8712](https://github.com/aws-amplify/amplify-cli/issues/8712)) ([0e1a014](https://github.com/aws-amplify/amplify-cli/commit/0e1a014286c466cb858be6f8be1fdf1778abd4af))
+
+
+### Reverts
+
+* Revert "Revert "feat(amplify-category-auth): use EnabledMFAs to only configure TOTP (#7779)" (#7790)" (#7971) ([ff418d1](https://github.com/aws-amplify/amplify-cli/commit/ff418d151879da2c89f2aced6d67d602f7395371)), closes [#7779](https://github.com/aws-amplify/amplify-cli/issues/7779) [#7790](https://github.com/aws-amplify/amplify-cli/issues/7790) [#7971](https://github.com/aws-amplify/amplify-cli/issues/7971)
+
+
+
+
+
+## [2.38.5-graphql-vnext-dev-preview.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.38.4...amplify-category-auth@2.38.5-graphql-vnext-dev-preview.0) (2021-11-07)
+
+
+### Bug Fixes
+
+* **amplify-category-auth:** switching to social providers with user pools instead of identity pools ([#8308](https://github.com/aws-amplify/amplify-cli/issues/8308)) ([0c82fe3](https://github.com/aws-amplify/amplify-cli/commit/0c82fe3ef73456192e993c380bc35f01663eb0cf))
+* **amplify-category-auth:** update attr mapping... ([#8135](https://github.com/aws-amplify/amplify-cli/issues/8135)) ([a35352d](https://github.com/aws-amplify/amplify-cli/commit/a35352d8b202440161a9e6fe8ea780e614f81c13)), closes [#7793](https://github.com/aws-amplify/amplify-cli/issues/7793)
+
+
+### Reverts
+
+* Revert "Revert "feat(amplify-category-auth): use EnabledMFAs to only configure TOTP (#7779)" (#7790)" (#7971) ([ff418d1](https://github.com/aws-amplify/amplify-cli/commit/ff418d151879da2c89f2aced6d67d602f7395371)), closes [#7779](https://github.com/aws-amplify/amplify-cli/issues/7779) [#7790](https://github.com/aws-amplify/amplify-cli/issues/7790) [#7971](https://github.com/aws-amplify/amplify-cli/issues/7971)
+
+
+
+
+
 ## [2.38.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.38.3...amplify-category-auth@2.38.4) (2021-10-10)
 
 **Note:** Version bump only for package amplify-category-auth
