@@ -22,32 +22,42 @@ import {
 export { categoryName as category } from './constants';
 export { AmplifyDDBResourceTemplate, AmplifyS3ResourceTemplate } from './provider-utils/awscloudformation/cdk-stack-builder/types';
 import { getAllDefaults } from './provider-utils/awscloudformation/default-values/s3-defaults';
-import { S3AccessType, S3PermissionType, S3UserInputs } from './provider-utils/awscloudformation/service-walkthrough-types/s3-user-input-types';
-export { S3UserInputs, S3UserInputTriggerFunctionParams } from './provider-utils/awscloudformation/service-walkthrough-types/s3-user-input-types';
+import {
+  S3AccessType,
+  S3PermissionType,
+  S3UserInputs,
+} from './provider-utils/awscloudformation/service-walkthrough-types/s3-user-input-types';
+export {
+  S3UserInputs,
+  S3UserInputTriggerFunctionParams,
+} from './provider-utils/awscloudformation/service-walkthrough-types/s3-user-input-types';
 //S3-Control-API used by Predictions
 export {
-  s3AddStorageLambdaTrigger, s3CreateStorageResource, s3GetResourceName,
+  s3AddStorageLambdaTrigger,
+  s3CreateStorageResource,
+  s3GetResourceName,
   s3GetUserInput,
-  s3RemoveAdminLambdaTrigger, s3RemoveStorageLambdaTrigger,
-  s3RegisterAdminTrigger
+  s3RemoveAdminLambdaTrigger,
+  s3RemoveStorageLambdaTrigger,
+  s3RegisterAdminTrigger,
 } from './provider-utils/awscloudformation/service-walkthroughs/s3-resource-api';
 
-export async function s3GetBucketUserInputDefault( project : $TSAny, shortId: string, accessType : S3AccessType): Promise<S3UserInputs>{
-  let defaultS3UserInputs = getAllDefaults( project , shortId);
-  switch( accessType ){
-    case S3AccessType.AUTH_ONLY :
-      defaultS3UserInputs.authAccess = [ S3PermissionType.CREATE_AND_UPDATE, S3PermissionType.READ, S3PermissionType.DELETE ];
+export async function s3GetBucketUserInputDefault(project: $TSAny, shortId: string, accessType: S3AccessType): Promise<S3UserInputs> {
+  let defaultS3UserInputs = getAllDefaults(project, shortId);
+  switch (accessType) {
+    case S3AccessType.AUTH_ONLY:
+      defaultS3UserInputs.authAccess = [S3PermissionType.CREATE_AND_UPDATE, S3PermissionType.READ, S3PermissionType.DELETE];
       break;
     case S3AccessType.AUTH_AND_GUEST:
-      defaultS3UserInputs.authAccess = [ S3PermissionType.CREATE_AND_UPDATE, S3PermissionType.READ, S3PermissionType.DELETE ];
-      defaultS3UserInputs.guestAccess = [ S3PermissionType.CREATE_AND_UPDATE, S3PermissionType.READ ];
+      defaultS3UserInputs.authAccess = [S3PermissionType.CREATE_AND_UPDATE, S3PermissionType.READ, S3PermissionType.DELETE];
+      defaultS3UserInputs.guestAccess = [S3PermissionType.CREATE_AND_UPDATE, S3PermissionType.READ];
       break;
   }
   return defaultS3UserInputs;
 }
 
-export async function getDefaultAuthPermissions(){
-  return [S3PermissionType.CREATE_AND_UPDATE, S3PermissionType.READ, S3PermissionType.DELETE]
+export async function getDefaultAuthPermissions() {
+  return [S3PermissionType.CREATE_AND_UPDATE, S3PermissionType.READ, S3PermissionType.DELETE];
 }
 
 export async function add(context: any, providerName: any, service: any) {
@@ -104,7 +114,7 @@ export async function migrateStorageCategory(context: any) {
 }
 
 export async function transformCategoryStack(context: $TSContext, resource: IAmplifyResource) {
-  if (resource.service === AmplifySupportedService.DYNAMODB ) {
+  if (resource.service === AmplifySupportedService.DYNAMODB) {
     if (canResourceBeTransformed(resource.resourceName)) {
       const stackGenerator = new DDBStackTransform(resource.resourceName);
       await stackGenerator.transform();
@@ -126,7 +136,7 @@ export async function getPermissionPolicies(context: any, resourceOpsMapping: an
   const resourceAttributes: any = [];
   const storageCategory = AmplifyCategories.STORAGE;
 
-  Object.keys(resourceOpsMapping).forEach(resourceName => {
+  for (const resourceName of Object.keys(resourceOpsMapping)) {
     try {
       const providerPlugin =
         'providerPlugin' in resourceOpsMapping[resourceName]
@@ -138,9 +148,8 @@ export async function getPermissionPolicies(context: any, resourceOpsMapping: an
           : amplifyMeta[storageCategory][resourceName].service;
 
       if (providerPlugin) {
-        const providerController = require(`./provider-utils/${providerPlugin}`);
-        const { policy, attributes } = providerController.getPermissionPolicies(
-          context,
+        const providerController = await import(`./provider-utils/${providerPlugin}`);
+        const { policy, attributes } = await providerController.getPermissionPolicies(
           service,
           resourceName,
           resourceOpsMapping[resourceName],
@@ -150,7 +159,7 @@ export async function getPermissionPolicies(context: any, resourceOpsMapping: an
         } else {
           permissionPolicies.push(policy);
         }
-        resourceAttributes.push({ resourceName, attributes, storageCategory });
+        resourceAttributes.push({ resourceName, attributes, category: storageCategory });
       } else {
         printer.error(`Provider not configured for ${storageCategory}: ${resourceName}`);
       }
@@ -158,7 +167,7 @@ export async function getPermissionPolicies(context: any, resourceOpsMapping: an
       printer.warn(`Could not get policies for ${storageCategory}: ${resourceName}`);
       throw e;
     }
-  });
+  }
 
   return { permissionPolicies, resourceAttributes };
 }
@@ -241,4 +250,3 @@ export async function initEnv(context: any) {
 
   await sequential(storageTasks);
 }
-
