@@ -3,5 +3,4 @@ export function override(props: any) {
   props.s3Bucket.versioningConfiguration = {
     status: 'Enabled',
   };
-  return props;
 }

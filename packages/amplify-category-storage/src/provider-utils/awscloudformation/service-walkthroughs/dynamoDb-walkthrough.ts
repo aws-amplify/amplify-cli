@@ -1,6 +1,6 @@
 import * as path from 'path';
 import * as fs from 'fs-extra';
-import uuid from 'uuid';
+import { v4 as uuid } from 'uuid';
 import { alphanumeric, printer, prompter, Validator } from 'amplify-prompts';
 import { $TSContext, AmplifyCategories, ResourceDoesNotExistError, exitOnNextTick, stateManager } from 'amplify-cli-core';
 import { DynamoDBInputState } from './dynamoDB-input-state';
