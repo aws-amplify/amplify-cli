@@ -262,13 +262,17 @@ export class DefaultTransformHost implements TransformHostProvider {
    * @param stack Stack to which the http datasource needs to be created in
    */
   protected doAddHttpDataSource(id: string, endpoint: string, options?: HttpDataSourceOptions, stack?: Stack): HttpDataSource {
-    return new HttpDataSource(stack ?? this.api, id, {
+    const ds = new HttpDataSource(stack ?? this.api, id, {
       api: this.api,
       endpoint,
       name: options?.name,
       description: options?.description,
       authorizationConfig: options?.authorizationConfig,
     });
+
+    (ds as any).node.defaultChild.overrideLogicalId(id);
+
+    return ds;
   }
 
   /**
