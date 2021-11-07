@@ -2,6 +2,7 @@ import { $TSContext, FeatureFlags, Template, pathManager, PathConstants, stateMa
 import _ from 'lodash';
 import { transformRootStack } from './override-manager';
 import { rootStackFileName } from './push-resources';
+import { getDefaultTemplateDescription } from './template-description-utils';
 
 const moment = require('moment');
 const path = require('path');
@@ -56,10 +57,7 @@ export async function run(context) {
 
     await prePushCfnTemplateModifier(rootStack);
 
-    // Track Amplify Console generated stacks
-    if (!!process.env.CLI_DEV_INTERNAL_DISABLE_AMPLIFY_APP_DELETION) {
-      rootStack.Description = 'Root Stack for AWS Amplify Console';
-    }
+    rootStack.Description = getDefaultTemplateDescription(context, 'root');
 
     // deploy steps
     const params = {
