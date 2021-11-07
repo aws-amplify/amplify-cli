@@ -94,6 +94,6 @@ export const generateTsConfigforProject = (backendDir: string, srcResourceDirPat
   // ensure build dir path
   fs.ensureDirSync(path.join(destDirPath, 'build'));
   const resourceTsConfigFileName = path.join(destDirPath, 'build', 'tsconfig.resource.json');
-  fs.writeFileSync(overrideFileName, fs.readFileSync(path.join(srcResourceDirPath, 'override.ts')));
+  fs.writeFileSync(overrideFileName, fs.readFileSync(path.join(srcResourceDirPath, 'override.ts.sample')));
   fs.writeFileSync(resourceTsConfigFileName, fs.readFileSync(path.join(srcResourceDirPath, 'tsconfig.resource.json')));
 };
