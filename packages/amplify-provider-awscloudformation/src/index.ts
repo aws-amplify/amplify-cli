@@ -47,7 +47,6 @@ import { transformResourceWithOverrides } from './override-manager';
 export { transformResourceWithOverrides } from './override-manager';
 import { rootStackFileName } from './push-resources';
 export { rootStackFileName } from './push-resources';
-export { AmplifyRootStackTemplate } from './root-stack-builder';
 
 function init(context) {
   return initializer.run(context);
@@ -67,7 +66,6 @@ function onInitSuccessful(context) {
   return initializer.onInitSuccessful(context);
 }
 
-
 function exportResources(context, resourceList, exportType) {
   return resourceExport.run(context, resourceList, exportType);
 }
@@ -75,7 +73,6 @@ function exportResources(context, resourceList, exportType) {
 function exportedStackResourcesUpdateMeta(context: $TSContext, stackName: string) {
   return exportUpdateMeta.run(context, stackName);
 }
-
 
 function pushResources(context, resourceList) {
   return resourcePusher.run(context, resourceList);

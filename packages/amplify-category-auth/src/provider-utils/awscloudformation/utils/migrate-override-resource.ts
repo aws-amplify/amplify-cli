@@ -18,7 +18,7 @@ import {
 } from '../service-walkthrough-types/awsCognito-user-input-types';
 
 export const migrateResourceToSupportOverride = async (resourceName: string) => {
-  printer.info('Starting Migration Process');
+  printer.debug('Starting Migration Process');
   /**
    * backup resource folder
    * get parameters.json
@@ -48,7 +48,7 @@ export const migrateResourceToSupportOverride = async (resourceName: string) => 
     const cliInputs = mapParametersJsonToCliInputs(parameters!);
     const cliInputsPath = path.join(authresourceDirPath, 'cli-inputs.json');
     JSONUtilities.writeJson(cliInputsPath, cliInputs);
-    printer.success('Migration is Successful');
+    printer.debug('Migration is Successful');
   } catch (e) {
     printer.error('There was an error migrating your project.');
     rollback(authresourceDirPath, backupAuthResourceFolder!);
