@@ -1,7 +1,7 @@
 import * as cdk from '@aws-cdk/core';
 import * as ddb from '@aws-cdk/aws-dynamodb';
 import { DynamoDBCLIInputs, DynamoDBCLIInputsKeyType, FieldType } from '../service-walkthrough-types/dynamoDB-user-input-types';
-import { AmplifyDDBResourceTemplate } from './types';
+import { AmplifyDDBResourceTemplate } from '@aws-amplify/cli-extensibility-helper';
 
 const CFN_TEMPLATE_FORMAT_VERSION = '2010-09-09';
 const ROOT_CFN_DESCRIPTION = 'DDB Resource for AWS Amplify CLI';

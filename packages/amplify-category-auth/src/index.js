@@ -24,8 +24,6 @@ const { AuthParameters } = require('./provider-utils/awscloudformation/import/ty
 const { getSupportedServices } = require('./provider-utils/supported-services');
 const { generateAuthStackTemplate } = require('./provider-utils/awscloudformation/utils/generate-auth-stack-template');
 const { AmplifyAuthTransform, AmplifyUserPoolGroupTransform } = require('./provider-utils/awscloudformation/auth-stack-builder');
-const { AmplifyAuthCognitoStackTemplate } = require('./provider-utils/awscloudformation/auth-stack-builder/types');
-
 const {
   doesConfigurationIncludeSMS,
   loadResourceParameters,
@@ -534,5 +532,4 @@ module.exports = {
   AmplifyAuthTransform,
   AmplifyUserPoolGroupTransform,
   transformCategoryStack,
-  AmplifyAuthCognitoStackTemplate,
 };
