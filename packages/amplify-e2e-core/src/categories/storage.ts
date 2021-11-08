@@ -521,9 +521,6 @@ export function updateS3AddTrigger(cwd: string, settings: any): Promise<void> {
       .sendCarriageReturn()
       .wait('Do you want to add a Lambda Trigger for your S3 Bucket')
       .sendConfirmYes()
-      .wait('Select from the following options')
-      .send(KEY_DOWN_ARROW)
-      .sendCarriageReturn() //Create a new function
       .wait('Do you want to edit the local')
       .sendConfirmNo()
       .sendCarriageReturn()
