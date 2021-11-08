@@ -1,6 +1,11 @@
-import { $TSContext, FeatureFlags, IAmplifyResource } from 'amplify-cli-core';
+import { $TSContext, FeatureFlags, IAmplifyResource, JSONUtilities, pathManager } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import { transformRootStack } from '.';
+import * as fs from 'fs-extra';
+import { prePushCfnTemplateModifier } from '../pre-push-cfn-processor/pre-push-cfn-modifier';
+import * as path from 'path';
+import { rootStackFileName } from '../push-resources';
+import { storeRootStackTemplate } from '../initializer';
 /**
  *
  * @param context
@@ -15,13 +20,13 @@ export async function transformResourceWithOverrides(context: $TSContext, resour
     if (resource) {
       const { transformCategoryStack } = await import(`@aws-amplify/amplify-category-${resource.category}`);
       if (transformCategoryStack) {
-        return transformCategoryStack(context, resource);
+        return await transformCategoryStack(context, resource);
       } else {
         printer.info('Overrides functionality is not impleented for this category');
       }
     } else {
       if (FeatureFlags.getBoolean('overrides.project')) {
-        await transformRootStack(context);
+        await storeRootStackTemplate(context);
       }
     }
   } catch (err) {
