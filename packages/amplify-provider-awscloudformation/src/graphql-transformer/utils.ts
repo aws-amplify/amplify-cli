@@ -121,18 +121,24 @@ export function mergeUserConfigWithTransformOutput(
   const userResolvers = userConfig.resolvers || {};
   const userPipelineFunctions = userConfig.pipelineFunctions || {};
   const functions = transformOutput.functions;
+  const resolvers = transformOutput.resolvers;
   const pipelineFunctions = transformOutput.pipelineFunctions;
 
   for (const userFunction of Object.keys(userFunctions)) functions[userFunction] = userFunctions[userFunction];
   for (const userPipelineFunction of Object.keys(userPipelineFunctions))
     pipelineFunctions[userPipelineFunction] = userPipelineFunctions[userPipelineFunction];
-  for (const userResolver of Object.keys(userResolvers)) pipelineFunctions[userResolver] = userResolvers[userResolver];
+  for (const userResolver of Object.keys(userResolvers)) {
+    if (userResolver !== 'README.md') {
+      resolvers[userResolver] = userResolvers[userResolver];
+    }
+  }
 
   const stacks = overrideUserDefinedStacks(userConfig, transformOutput);
 
   return {
     ...transformOutput,
     functions,
+    resolvers,
     pipelineFunctions,
     stacks,
   };
@@ -294,10 +300,6 @@ function initStacksAndResolversDirectories(directory: string) {
   const resolverRootPath = resolverDirectoryPath(directory);
   if (!fs.existsSync(resolverRootPath)) {
     fs.mkdirSync(resolverRootPath);
-  }
-  const pipelineFunctionRootPath = pipelineFunctionDirectoryPath(directory);
-  if (!fs.existsSync(pipelineFunctionRootPath)) {
-    fs.mkdirSync(pipelineFunctionRootPath);
   }
   const stackRootPath = stacksDirectoryPath(directory);
   if (!fs.existsSync(stackRootPath)) {
