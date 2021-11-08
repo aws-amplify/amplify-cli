@@ -65,7 +65,7 @@ export class AmplifyRootStackTransform {
         sandbox: {},
       });
       try {
-        sandboxNode.run(overrideCode).overrideProps(this._rootTemplateObj);
+        sandboxNode.run(overrideCode).override(this._rootTemplateObj);
       } catch (err: $TSAny) {
         const error = new Error(`Skipping override due to ${err}${os.EOL}`);
         printer.error(`${error}`);
@@ -199,7 +199,7 @@ export class AmplifyRootStackTransform {
     const rootStackFileName = `root-cloudformation-stack.json`;
     const rootstackFilePath = path.join(pathManager.getBackendDirPath(), this._resourceName, 'build', rootStackFileName);
     // write CFN template
-    writeCFNTemplate(template, rootstackFilePath, {
+    await writeCFNTemplate(template, rootstackFilePath, {
       templateFormat: CFNTemplateFormat.JSON,
     });
   };
