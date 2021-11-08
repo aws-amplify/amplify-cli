@@ -20,13 +20,13 @@ export async function transformResourceWithOverrides(context: $TSContext, resour
     if (resource) {
       const { transformCategoryStack } = await import(`@aws-amplify/amplify-category-${resource.category}`);
       if (transformCategoryStack) {
-        return transformCategoryStack(context, resource);
+        return await transformCategoryStack(context, resource);
       } else {
         printer.info('Overrides functionality is not impleented for this category');
       }
     } else {
       if (FeatureFlags.getBoolean('overrides.project')) {
-        storeRootStackTemplate(context);
+        await storeRootStackTemplate(context);
       }
     }
   } catch (err) {
