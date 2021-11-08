@@ -77,6 +77,7 @@ export async function runtimeWalkthrough(
     notFoundMessage: `No runtimes found for provider ${params.providerContext.provider} and service ${params.providerContext.service}`,
     service,
     runtimeState: runtimeLayers,
+    defaultSelection: params.defaultRuntime,
   };
   // runtime selections
   const selections = await getSelectionsFromContributors<FunctionRuntimeCondition>(context, selectionOptions);
@@ -196,8 +197,10 @@ async function getSelectionsFromContributors<T>(
 }
 
 function isDefaultDefined(selectionOptions: PluginSelectionOptions<FunctionRuntimeCondition>) {
-  if (selectionOptions.pluginType == 'functionTemplate' && selectionOptions.defaultSelection) {
-    return true;
+  if (selectionOptions.defaultSelection) {
+    if (selectionOptions.pluginType == 'functionTemplate' || selectionOptions.pluginType == 'functionRuntime') {
+      return true;
+    }
   }
   return false;
 }

@@ -1151,10 +1151,7 @@ async function createLambdaAuthorizerFunction(context: $TSContext) {
     FunctionServiceNameLambdaFunction,
     {
       functionName,
-      runtime: {
-        value: 'nodejs',
-        runtimePluginId: "amplify-nodejs-function-runtime-provider",
-      },
+      defaultRuntime: 'nodejs',
       providerContext: {
         provider: 'awscloudformation',
       },

@@ -138,6 +138,7 @@ export type FunctionParameters = {
   environmentVariables?: Record<string, string>;
   secretDeltas?: SecretDeltas;
   template?: string;
+  defaultRuntime?: string;
   skipAdvancedSection?: boolean;
   skipNextSteps?: boolean;
 };
