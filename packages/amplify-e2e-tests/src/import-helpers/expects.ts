@@ -176,9 +176,9 @@ export const expectDynamoDBLocalAndOGMetaFilesOutputMatching = (projectRoot: str
   expect(storageMeta.output.Name).toEqual(ogStorageMeta.output.Name);
   expect(storageMeta.output.Region).toEqual(ogStorageMeta.output.Region);
   expect(storageMeta.output.PartitionKeyName).toEqual(ogStorageMeta.output.PartitionKeyName);
-  expect(storageMeta.output.PartitionKeyType).toEqual(ddbAttrTypeMapping[ogStorageMeta.output.PartitionKeyType]);
+  expect(storageMeta.output.PartitionKeyType).toEqual(ogStorageMeta.output.PartitionKeyType);
   expect(storageMeta.output.SortKeyName).toEqual(ogStorageMeta.output.SortKeyName);
-  expect(storageMeta.output.SortKeyType).toEqual(ddbAttrTypeMapping[ogStorageMeta.output.SortKeyType]);
+  expect(storageMeta.output.SortKeyType).toEqual(ogStorageMeta.output.SortKeyType);
   expect(storageMeta.output.Arn).toEqual(ogStorageMeta.output.Arn);
   expect(storageMeta.output.StreamArn).toEqual(ogStorageMeta.output.StreamArn);
 };
