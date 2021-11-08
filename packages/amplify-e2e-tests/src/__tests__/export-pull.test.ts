@@ -41,11 +41,11 @@ describe('amplify export pull', () => {
   });
 
   afterEach(async () => {
-    // await deleteProject(projRoot);
-    // deleteProjectDir(projRoot);
+    await deleteProject(projRoot);
+    deleteProjectDir(projRoot);
   });
 
-  it.only('init a js project and compare with export pull', async () => {
+  it('init a js project and compare with export pull', async () => {
     await initJSProjectWithProfile(projRoot, { envName: 'dev' });
     await AddandPushCategories();
     const exportsPath = getAWSExportsPath(projRoot);
