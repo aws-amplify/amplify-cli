@@ -4,6 +4,8 @@ import { constructContext } from '../../../context-manager';
 import { getCategoryPluginInfo } from '../../../extensions/amplify-helpers/get-category-pluginInfo';
 import { $TSContext } from 'amplify-cli-core';
 
+jest.mock('../../../version-gating');
+
 test('getCategoryPluginInfo returns the first pluginInfo to match category', () => {
   const mockPluginPlatform = constructMockPluginPlatform();
   const mockProcessArgv = [

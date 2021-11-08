@@ -5,7 +5,6 @@ import {
   CLIContextEnvironmentProvider,
   exitOnNextTick,
   FeatureFlags,
-  JSONUtilities,
   JSONValidationError,
   pathManager,
   stateManager,
@@ -33,6 +32,7 @@ import { rewireDeprecatedCommands } from './rewireDeprecatedCommands';
 import { ensureMobileHubCommandCompatibility } from './utils/mobilehub-support';
 import { migrateTeamProviderInfo } from './utils/team-provider-migrate';
 import { deleteOldVersion } from './utils/win-utils';
+import { getCurrentCLIVersion, isMinimumVersionSatisfied } from './version-gating';
 import { notify } from './version-notifier';
 import { getAmplifyVersion } from './extensions/amplify-helpers/get-amplify-version';
 
@@ -135,8 +135,7 @@ export const run = async (startTime: number): Promise<number | undefined> => {
     }
 
     // Initialize Banner messages. These messages are set on the server side
-    const pkg = JSONUtilities.readJson<$TSAny>(path.join(__dirname, '..', 'package.json'));
-    BannerMessage.initialize(pkg.version);
+    BannerMessage.initialize(getCurrentCLIVersion());
 
     ensureFilePermissions(pathManager.getAWSCredentialsFilePath());
     ensureFilePermissions(pathManager.getAWSConfigFilePath());
@@ -189,6 +188,12 @@ export const run = async (startTime: number): Promise<number | undefined> => {
     errorHandler = boundErrorHandler.bind(context);
 
     process.on('SIGINT', sigIntHandler.bind(context));
+
+    if ((await isMinimumVersionSatisfied(context as unknown as $TSContext)) === false) {
+      context.usageData.emitError(new Error('Version gating requirements were not passed.'));
+
+      return 1;
+    }
 
     // Skip NodeJS version check and migrations if Amplify CLI is executed in CI/CD or
     // the command is not push

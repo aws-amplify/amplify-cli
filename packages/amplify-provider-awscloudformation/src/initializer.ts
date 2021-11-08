@@ -93,6 +93,18 @@ export async function run(context) {
     rootStack.Description = getDefaultTemplateDescription(context, 'root');
 
     // deploy steps
+    rootStack.Metadata = {
+      AmplifyCLI: {
+        DeployedByCLIVersion: context.versionInfo.currentCLIVersion,
+        MinimumCompatibleCLIVersion: context.versionInfo.minimumCompatibleCLIVersion,
+      },
+    };
+
+    Tags.push({
+      Key: 'amplify:DeployedByCLIVersion',
+      Value: context.versionInfo.currentCLIVersion,
+    });
+
     const params = {
       StackName: stackName,
       Capabilities: ['CAPABILITY_NAMED_IAM', 'CAPABILITY_AUTO_EXPAND'],

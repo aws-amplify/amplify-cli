@@ -39,7 +39,7 @@ export const attachUsageData = async (context: Context, processStartTimeStamp: n
   const accountId = getSafeAccountId();
   context.usageData.init(
     config.usageDataConfig.installationUuid,
-    getVersion(context),
+    context.versionInfo.currentCLIVersion,
     context.input,
     accountId,
     getProjectSettings(),
