@@ -408,19 +408,13 @@ export function addS3WithGuestAccess(cwd: string, settings: any): Promise<void> 
       .wait('Provide bucket name')
       .sendCarriageReturn() // Default name
       .wait('Who should have access')
-      .send(KEY_DOWN_ARROW)
+      .sendKeyDown()
       .sendCarriageReturn() // Auth and guest users
-      .wait('What kind of access do you want for')
-      .send(' ') // Create
-      .send(KEY_DOWN_ARROW)
-      .send(' ') // Read
-      .send(KEY_DOWN_ARROW)
-      .send(' ') // Delete
-      .send(KEY_DOWN_ARROW)
+      .wait('What kind of access do you want for Authenticated users?')
+      .sendCtrlA()
       .sendCarriageReturn()
-      .wait('What kind of access do you want for')
-      .send(KEY_DOWN_ARROW)
-      .send(' ') // Select read
+      .wait('What kind of access do you want for Guest users?')
+      .sendCtrlA()
       .sendCarriageReturn()
       .wait('Do you want to add a Lambda Trigger for your S3 Bucket')
       .sendConfirmNo()
