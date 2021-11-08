@@ -1,22 +1,5 @@
 import { $TSAny, JSONUtilities } from 'amplify-cli-core';
-import { initJSProjectWithProfile, initFlutterProjectWithProfile, deleteProject, amplifyPushAuth } from 'amplify-e2e-core';
-import { addAuthWithDefault, addAuthWithGroupsAndAdminAPI } from 'amplify-e2e-core';
-import {
-  addSimpleDDB,
-  overrideDDB,
-  buildOverrideStorage,
-  addDDBWithTrigger,
-  updateDDBWithTrigger,
-  addSimpleDDBwithGSI,
-  updateSimpleDDBwithGSI,
-  overrideS3,
-  addS3AndAuthWithAuthOnlyAccess,
-  addS3WithGuestAccess,
-  addS3WithGroupAccess,
-  addS3WithTrigger,
-  updateS3AddTrigger,
-} from 'amplify-e2e-core';
-import { createNewProjectDir, deleteProjectDir, getProjectMeta, getDDBTable, checkIfBucketExists } from 'amplify-e2e-core';
+import { addAuthWithDefault, addDDBWithTrigger, addS3WithGuestAccess, addSimpleDDB, addSimpleDDBwithGSI, amplifyPushAuth, buildOverrideStorage, checkIfBucketExists, createNewProjectDir, deleteProject, deleteProjectDir, getDDBTable, getProjectMeta, initJSProjectWithProfile, overrideDDB, overrideS3, updateDDBWithTrigger, updateSimpleDDBwithGSI } from 'amplify-e2e-core';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import uuid from 'uuid';
@@ -145,6 +128,7 @@ describe('amplify add/update storage(DDB)', () => {
   });
 });
 
+
 describe('ddb override tests', () => {
   let projRoot: string;
   beforeEach(async () => {
@@ -164,23 +148,18 @@ describe('ddb override tests', () => {
 
     const srcOverrideFilePath = path.join(__dirname, '..', '..', 'overrides', 'override-storage-ddb.ts');
     const destOverrideFilePath = path.join(projRoot, 'amplify', 'backend', 'storage', resourceName, 'override.ts');
-    const cfnFilePath = path.join(projRoot, 'amplify', 'backend', 'storage', resourceName, 'build', 'cloudformation-template.json');
+    const cfnFilePath = path.join(projRoot, 'amplify', 'backend', 'storage', resourceName, 'build', `${resourceName}-cloudformation-template.json`);
 
     fs.copyFileSync(srcOverrideFilePath, destOverrideFilePath);
-
     await buildOverrideStorage(projRoot, {});
-
     let ddbCFNFileJSON: any = JSONUtilities.readJson(cfnFilePath);
-
     // check if overrides are applied to the cfn file
     expect(ddbCFNFileJSON?.Resources?.DynamoDBTable?.Properties?.StreamSpecification?.StreamViewType).toEqual('NEW_AND_OLD_IMAGES');
-
     await updateDDBWithTrigger(projRoot, {});
 
     // check if override persists after an update
     ddbCFNFileJSON = JSONUtilities.readJson(cfnFilePath);
     expect(ddbCFNFileJSON?.Resources?.DynamoDBTable?.Properties?.StreamSpecification?.StreamViewType).toEqual('NEW_AND_OLD_IMAGES');
-
     await amplifyPushAuth(projRoot);
 
     const meta = getProjectMeta(projRoot);
