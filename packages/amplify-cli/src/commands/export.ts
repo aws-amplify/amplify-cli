@@ -19,7 +19,7 @@ export const run = async (context: $TSContext) => {
   const isPull = !!(subCommands && subCommands.includes('pull'));
   const frontend = getSafeInputOptionsFlag(context, 'frontend');
   const rootStackName = getSafeInputOptionsFlag(context, 'rootStackName');
-  const showPullHelp = (showHelp || frontend || rootStackName) && isPull;
+  const showPullHelp = (showHelp || !frontend || !rootStackName) && isPull;
 
   if (showHelp && !showPullHelp) {
     printer.blankLine();
