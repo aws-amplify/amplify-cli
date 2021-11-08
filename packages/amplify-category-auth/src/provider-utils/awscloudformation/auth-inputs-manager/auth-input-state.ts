@@ -46,6 +46,13 @@ export class AuthInputState extends CategoryInputState {
   }
 
   public async saveCLIInputPayload(cliInputs: CognitoCLIInputs): Promise<void> {
+    // converting stringified triggers to object
+    if (!_.isEmpty(cliInputs.cognitoConfig.triggers)) {
+      cliInputs.cognitoConfig.triggers =
+        typeof cliInputs.cognitoConfig.triggers === 'string'
+          ? JSONUtilities.parse(cliInputs.cognitoConfig.triggers)
+          : cliInputs.cognitoConfig.triggers;
+    }
     if (await this.isCLIInputsValid(cliInputs)) {
       fs.ensureDirSync(path.join(pathManager.getBackendDirPath(), this.#category, this._resourceName));
       JSONUtilities.writeJson(this.#cliInputsFilePath, cliInputs);
