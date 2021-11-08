@@ -24,7 +24,7 @@ export function combineSchemas(schemaDocs: SchemaDocument[]): string {
   return schemaList.join('\n');
 }
 
-export async function getDefaultAuthFromContext(): Promise<string> {
+export async function getDefaultAuth(): Promise<string> {
   const backendConfig = stateManager.getBackendConfig();
   if (Object.keys(backendConfig.api).length < 1) {
     return 'AMAZON_COGNITO_USER_POOLS';

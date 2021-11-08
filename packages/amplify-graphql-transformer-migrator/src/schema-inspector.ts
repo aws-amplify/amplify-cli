@@ -1,9 +1,10 @@
-import { FeatureFlags, stateManager } from 'amplify-cli-core';
+import { FeatureFlags, pathManager, stateManager } from 'amplify-cli-core';
 import { DocumentNode } from 'graphql/language';
 import { visit } from 'graphql';
 import { collectDirectives, collectDirectivesByTypeNames } from '@aws-amplify/graphql-transformer-core';
 import { listContainsOnlySetString } from './utils';
 import * as fs from 'fs-extra';
+import * as path from 'path';
 
 export function graphQLUsingSQL(apiName: string): boolean {
   const teamProviderInfo = stateManager.getTeamProviderInfo();
@@ -29,7 +30,11 @@ export function detectCustomRootTypes(schema: DocumentNode): boolean {
 }
 
 export function detectOverriddenResolvers(apiName: string): boolean {
-  const vtlFiles = fs.readdirSync(`amplify/backend/api/${apiName}/resolvers/`).filter(file => file.endsWith('.vtl'));
+  const resolversDir = path.join(pathManager.getResourceDirectoryPath(undefined, 'api', apiName), 'resolvers');
+  if (!fs.existsSync(resolversDir)) {
+    return false;
+  }
+  const vtlFiles = fs.readdirSync(resolversDir).filter(file => file.endsWith('.vtl'));
   return !!vtlFiles.length;
 }
 

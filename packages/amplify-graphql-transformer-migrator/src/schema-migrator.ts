@@ -3,7 +3,7 @@ import { Kind, parse, print, visit } from 'graphql';
 import { migrateKeys } from './migrators/key';
 import { migrateAuth } from './migrators/auth';
 import { migrateConnection } from './migrators/connection';
-import { combineSchemas, getDefaultAuthFromContext, replaceFile, SchemaDocument } from './utils';
+import { combineSchemas, getDefaultAuth, replaceFile, SchemaDocument } from './utils';
 import { DocumentNode } from 'graphql/language';
 import { printer, prompter } from 'amplify-prompts';
 import * as path from 'path';
@@ -43,7 +43,7 @@ export async function attemptV2TransformerMigration(resourceDir: string, apiName
     return;
   }
 
-  const defaultAuth = await getDefaultAuthFromContext();
+  const defaultAuth = await getDefaultAuth();
   const authMode = cliToMigratorAuthMap.get(defaultAuth);
   if (!authMode) {
     throw Error(`Unidentified authorization mode for API found: ${defaultAuth}`);

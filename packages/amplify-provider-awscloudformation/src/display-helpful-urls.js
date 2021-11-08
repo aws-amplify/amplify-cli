@@ -262,7 +262,7 @@ async function showSMSSandboxWarning(context) {
 }
 
 function showGraphQLTransformerMigrationMessage() {
-  const hasGraphqlApi = !!Object.entries(stateManager.getMeta()?.api || {})
+  const hasGraphqlApi = !!Object.entries(stateManager.getMeta().api || {})
     .filter(([_, apiResource]) => apiResource.service === 'AppSync')
     .map(([name]) => name).length;
   const suppressMessage = FeatureFlags.getBoolean('graphqltransformer.suppressschemamigrationprompt');
