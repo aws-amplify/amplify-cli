@@ -379,7 +379,11 @@ export function addS3AndAuthWithAuthOnlyAccess(cwd: string, settings: any): Prom
       .wait('Who should have access')
       .sendCarriageReturn() // Auth users only
       .wait('What kind of access do you want for')
-      .sendCtrlA() // Select all
+      .send(' ')
+      .sendKeyDown()
+      .send(' ')
+      .sendKeyDown()
+      .send(' ')
       .sendCarriageReturn()
       .wait('Do you want to add a Lambda Trigger for your S3 Bucket')
       .sendConfirmNo()
