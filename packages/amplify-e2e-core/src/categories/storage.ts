@@ -1,5 +1,5 @@
-import { nspawn as spawn, KEY_DOWN_ARROW, getCLIPath } from '..';
-import { singleSelect, multiSelect } from '../utils/selectors';
+import { getCLIPath, KEY_DOWN_ARROW, nspawn as spawn } from '..';
+import { singleSelect } from '../utils/selectors';
 
 export type AddStorageSettings = {
   resourceName: string;
@@ -245,10 +245,9 @@ export function buildOverrideStorage(cwd: string, settings: {}) {
   return new Promise((resolve, reject) => {
     // Add 'storage' as a category param once implemented
     const args = ['build'];
-
-    spawn(getCLIPath(), args, { cwd, stripColors: true })
-      .sendEof()
-      .run((err: Error) => {
+    const chain = spawn(getCLIPath(), args, { cwd, stripColors: true })
+    chain
+    .run((err: Error) => {
         if (!err) {
           resolve({});
         } else {
@@ -408,19 +407,13 @@ export function addS3WithGuestAccess(cwd: string, settings: any): Promise<void> 
       .wait('Provide bucket name')
       .sendCarriageReturn() // Default name
       .wait('Who should have access')
-      .send(KEY_DOWN_ARROW)
+      .sendKeyDown()
       .sendCarriageReturn() // Auth and guest users
-      .wait('What kind of access do you want for')
-      .send(' ') // Create
-      .send(KEY_DOWN_ARROW)
-      .send(' ') // Read
-      .send(KEY_DOWN_ARROW)
-      .send(' ') // Delete
-      .send(KEY_DOWN_ARROW)
+      .wait('What kind of access do you want for Authenticated users?')
+      .sendCtrlA()
       .sendCarriageReturn()
-      .wait('What kind of access do you want for')
-      .send(KEY_DOWN_ARROW)
-      .send(' ') // Select read
+      .wait('What kind of access do you want for Guest users?')
+      .sendCtrlA()
       .sendCarriageReturn()
       .wait('Do you want to add a Lambda Trigger for your S3 Bucket')
       .sendConfirmNo()
@@ -446,21 +439,18 @@ export function addS3WithGroupAccess(cwd: string, settings: any): Promise<void> 
       .wait('Provide bucket name')
       .sendCarriageReturn() // Default name
       .wait('Restrict access by')
-      .send(KEY_DOWN_ARROW)
+      .sendKeyDown()
       .sendCarriageReturn() // Individual groups
       .wait('Select groups')
-      .send(' ')
-      .send(KEY_DOWN_ARROW) //select Admin
-      .send(' ')
-      .send(KEY_DOWN_ARROW) //select User
+      .send(' ') //select Admin
+      .sendKeyDown()
+      .send(' ')//select User
       .sendCarriageReturn()
       .wait('What kind of access do you want') // for <UserGroup1> users?
       .sendCtrlA() // Select all permissions
       .sendCarriageReturn()
       .wait('What kind of access do you want') // for <UserGroup2> users?
-      .send(' ') // Select create/update
-      .send(KEY_DOWN_ARROW)
-      .send(' ') // Select read
+      .sendCtrlA() // Select all permissions
       .sendCarriageReturn()
       .wait('Do you want to add a Lambda Trigger for your S3 Bucket')
       .sendConfirmNo()
@@ -511,7 +501,37 @@ export function updateS3AddTrigger(cwd: string, settings: any): Promise<void> {
       .wait('Select from one of the below mentioned services')
       .sendCarriageReturn() // Content
       .wait('Restrict access by')
-      .send(KEY_DOWN_ARROW)
+      .sendKeyDown()
+      .sendCarriageReturn() // Individual groups
+      .wait('Select groups')
+      .sendCarriageReturn()
+      .wait('What kind of access do you want') // for <UserGroup1> users?
+      .sendCarriageReturn()
+      .wait('What kind of access do you want') // for <UserGroup2> users?
+      .sendCarriageReturn()
+      .wait('Do you want to add a Lambda Trigger for your S3 Bucket')
+      .sendConfirmYes()
+      .wait('Do you want to edit the local')
+      .sendConfirmNo()
+      .sendCarriageReturn()
+      .sendEof()
+      .run((err: Error) => {
+        if (!err) {
+          resolve();
+        } else {
+          reject(err);
+        }
+      });
+  });
+}
+
+export function updateS3AddTriggerWithExistingFunction(cwd: string, settings: any): Promise<void> {
+  return new Promise((resolve, reject) => {
+    spawn(getCLIPath(), ['update', 'storage'], { cwd, stripColors: true })
+      .wait('Select from one of the below mentioned services')
+      .sendCarriageReturn() // Content
+      .wait('Restrict access by')
+      .sendKeyDown()
       .sendCarriageReturn() // Individual groups
       .wait('Select groups')
       .sendCarriageReturn()
@@ -522,7 +542,7 @@ export function updateS3AddTrigger(cwd: string, settings: any): Promise<void> {
       .wait('Do you want to add a Lambda Trigger for your S3 Bucket')
       .sendConfirmYes()
       .wait('Select from the following options')
-      .send(KEY_DOWN_ARROW)
+      .sendKeyDown()
       .sendCarriageReturn() //Create a new function
       .wait('Do you want to edit the local')
       .sendConfirmNo()
@@ -554,11 +574,6 @@ export function addS3StorageWithIdpAuth(projectDir: string): Promise<void> {
       .wait('Who should have access:')
       .sendCarriageReturn();
 
-    multiSelect(
-      chain.wait('What kind of access do you want for Authenticated users?'),
-      ['create/update', 'read', 'delete'],
-      ['create/update', 'read', 'delete'],
-    );
     chain.wait('What kind of access do you want for Authenticated users?')
     .send(' ') //'create/update'
     .sendKeyDown()
