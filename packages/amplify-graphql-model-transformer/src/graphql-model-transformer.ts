@@ -1193,7 +1193,6 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
 
     const cfnDataSource = dataSource.node.defaultChild as CfnDataSource;
     cfnDataSource.addDependsOn(role.node.defaultChild as CfnRole);
-    cfnDataSource.overrideLogicalId(datasourceRoleLogicalID);
 
     if (context.isProjectUsingDataStore()) {
       const datasourceDynamoDb = cfnDataSource.dynamoDbConfig as any;

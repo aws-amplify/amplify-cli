@@ -244,13 +244,17 @@ export class DefaultTransformHost implements TransformHostProvider {
    * @param stack  Stack to which this datasource needs to mapped to
    */
   protected doAddDynamoDbDataSource(id: string, table: ITable, options?: DynamoDbDataSourceOptions, stack?: Stack): DynamoDbDataSource {
-    return new DynamoDbDataSource(stack ?? this.api, id, {
+    const ds = new DynamoDbDataSource(stack ?? this.api, id, {
       api: this.api,
       table,
       name: options?.name,
       description: options?.description,
       serviceRole: options?.serviceRole,
     });
+
+    (ds as any).node.defaultChild.overrideLogicalId(id);
+
+    return ds;
   }
 
   /**
