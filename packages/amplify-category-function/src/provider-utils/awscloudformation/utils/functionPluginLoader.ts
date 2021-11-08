@@ -197,12 +197,8 @@ async function getSelectionsFromContributors<T>(
 }
 
 function isDefaultDefined(selectionOptions: PluginSelectionOptions<FunctionRuntimeCondition>) {
-  if (selectionOptions.defaultSelection) {
-    if (selectionOptions.pluginType == 'functionTemplate' || selectionOptions.pluginType == 'functionRuntime') {
-      return true;
-    }
-  }
-  return false;
+  return selectionOptions.defaultSelection &&
+    (selectionOptions.pluginType == 'functionTemplate' || selectionOptions.pluginType == 'functionRuntime');
 }
 
 export async function loadPluginFromFactory(pluginPath: string, expectedFactoryFunction: string, context: $TSContext): Promise<$TSAny> {
