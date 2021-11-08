@@ -1,5 +1,5 @@
 import { $TSAny, $TSContext, EnvironmentDoesNotExistError, exitOnNextTick, IAmplifyResource, stateManager } from 'amplify-cli-core';
-import { getResources } from '../../commands/build-override';
+import { getResources } from '../../commands/build';
 import { initializeEnv } from '../../initialize-env';
 import { getEnvInfo } from './get-env-info';
 import { getProjectConfig } from './get-project-config';
