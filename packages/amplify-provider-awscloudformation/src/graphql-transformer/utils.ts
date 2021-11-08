@@ -9,6 +9,7 @@ import { Diff, diff as getDiffs } from 'deep-diff';
 import { ResourceConstants } from 'graphql-transformer-common';
 import { pullAllBy, find } from 'lodash';
 import { isAmplifyAdminApp } from '../utils/admin-helpers';
+import { printer } from 'amplify-prompts';
 
 const ROOT_STACK_FILE_NAME = 'cloudformation-template.json';
 const PARAMETERS_FILE_NAME = 'parameters.json';
@@ -116,6 +117,7 @@ export function readFromPath(directory: string): any {
 export function mergeUserConfigWithTransformOutput(
   userConfig: TransformerProjectConfig,
   transformOutput: DeploymentResources,
+  opts?: any,
 ): DeploymentResources {
   const userFunctions = userConfig.functions || {};
   const userResolvers = userConfig.resolvers || {};
@@ -124,12 +126,30 @@ export function mergeUserConfigWithTransformOutput(
   const resolvers = transformOutput.resolvers;
   const pipelineFunctions = transformOutput.pipelineFunctions;
 
-  for (const userFunction of Object.keys(userFunctions)) functions[userFunction] = userFunctions[userFunction];
-  for (const userPipelineFunction of Object.keys(userPipelineFunctions))
-    pipelineFunctions[userPipelineFunction] = userPipelineFunctions[userPipelineFunction];
-  for (const userResolver of Object.keys(userResolvers)) {
-    if (userResolver !== 'README.md') {
-      resolvers[userResolver] = userResolvers[userResolver];
+  if (!opts?.disableFunctionOverrides) {
+    for (const userFunction of Object.keys(userFunctions)) {
+      functions[userFunction] = userFunctions[userFunction];
+    }
+  }
+
+  if (!opts?.disablePipelineFunctionOverrides) {
+    const pipelineFunctionKeys = Object.keys(userPipelineFunctions);
+
+    if (pipelineFunctionKeys.length > 0) {
+      printer.warn(
+        ' You are using the "pipelineFunctions" directory for overridden and custom resolvers. ' +
+          'Please use the "resolvers" directory as "pipelineFunctions" will be deprecated.\n',
+      );
+    }
+
+    for (const userPipelineFunction of pipelineFunctionKeys) resolvers[userPipelineFunction] = userPipelineFunctions[userPipelineFunction];
+  }
+
+  if (!opts?.disableResolverOverrides) {
+    for (const userResolver of Object.keys(userResolvers)) {
+      if (userResolver !== 'README.md') {
+        resolvers[userResolver] = userResolvers[userResolver].toString();
+      }
     }
   }
 

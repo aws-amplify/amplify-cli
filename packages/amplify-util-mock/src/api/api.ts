@@ -297,7 +297,7 @@ export class APITest {
       interval: 100,
       ignoreInitial: true,
       followSymlinks: false,
-      ignored: ['**/build/**', '**/resolvers/**'],
+      ignored: '**/build/**',
       awaitWriteFinish: true,
     });
   }
