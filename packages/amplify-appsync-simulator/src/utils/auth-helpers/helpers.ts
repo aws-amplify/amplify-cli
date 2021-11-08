@@ -18,8 +18,19 @@ export type JWTToken = {
   nbf?: number;
   username?: string;
   email?: string;
+  groups?: string[];
   'cognito:username'?: string;
-  'cognitio:groups'?: string[];
+  'cognito:groups'?: string[];
+};
+
+export type IAMToken = {
+  accountId: string;
+  userArn: string;
+  username: string;
+  cognitoIdentityPoolId?: string;
+  cognitoIdentityId?: string;
+  cognitoIdentityAuthType?: string;
+  cognitoIdentityAuthProvider?: string;
 };
 
 export function extractJwtToken(authorization: string): JWTToken {

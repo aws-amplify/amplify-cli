@@ -11,6 +11,7 @@ type SetRoleInput = {
   role: string;
   operations: Array<string>;
   resource?: string;
+  allowRoleOverwrite?: boolean;
 };
 
 type ValidateInput = {
@@ -48,7 +49,7 @@ export class AccessControlMatrix {
   }
 
   public setRole(input: SetRoleInput): void {
-    const { role, resource, operations } = input;
+    const { role, resource, operations, allowRoleOverwrite = false } = input;
     this.validate({ resource, operations });
     let allowedVector: Array<Array<boolean>>;
     if (!this.roles.includes(role)) {
@@ -56,7 +57,7 @@ export class AccessControlMatrix {
       this.roles.push(input.role);
       this.matrix.push(allowedVector);
       assert(this.roles.length === this.matrix.length, 'Roles are not aligned with Roles added in Matrix');
-    } else if (this.roles.includes(role) && resource) {
+    } else if (this.roles.includes(role) && (resource || allowRoleOverwrite)) {
       allowedVector = this.getResourceOperationMatrix({ operations, resource, role });
       const roleIndex = this.roles.indexOf(role);
       this.matrix[roleIndex] = allowedVector;

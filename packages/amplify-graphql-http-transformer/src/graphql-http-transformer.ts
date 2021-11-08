@@ -59,7 +59,7 @@ type HttpDirectiveConfiguration = {
 const SPLIT_URL_REGEX = /(http(s)?:\/\/|www\.)|(\/.*)/g;
 const URL_REGEX = /(http(s)?:\/\/)|(\/.*)/g;
 const VALID_PROTOCOLS_REGEX = /^http(s)?:\/\//;
-const HTTP_DIRECTIVE_STACK = 'HttpDirectiveStack';
+const HTTP_DIRECTIVE_STACK = 'HttpStack';
 const RESOLVER_VERSION = '2018-05-29';
 const directiveDefinition = /* GraphQL */ `
   directive @http(method: HttpMethod = GET, url: String!, headers: [HttpHeader] = []) on FIELD_DEFINITION
