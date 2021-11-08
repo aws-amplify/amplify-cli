@@ -237,7 +237,7 @@ export class AmplifyUserPoolGroupTransform extends AmplifyCategoryTransform {
       'build',
       cognitoStackFileName,
     );
-    writeCFNTemplate(template, cognitostackFilePath, {
+    await writeCFNTemplate(template, cognitostackFilePath, {
       templateFormat: CFNTemplateFormat.JSON,
     });
     // write parameters.json file
