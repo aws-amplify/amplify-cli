@@ -1,8 +1,8 @@
 import { $TSContext, AmplifyCategories, AmplifySupportedService, CLISubCommandType, stateManager } from 'amplify-cli-core';
 import { AmplifyS3ResourceStackTransform } from '../cdk-stack-builder/s3-stack-transform';
-import { S3UserInputTriggerFunctionParams, S3UserInputs } from '../service-walkthrough-types/s3-user-input-types';
+import { S3UserInputs, S3UserInputTriggerFunctionParams } from '../service-walkthrough-types/s3-user-input-types';
 import { S3InputState } from './s3-user-input-state';
-import { createNewLambdaAndUpdateCFN, migrateStorageCategory, isMigrateStorageRequired } from './s3-walkthrough';
+import { createNewLambdaAndUpdateCFN, isMigrateStorageRequired, migrateStorageCategory } from './s3-walkthrough';
 
 /**
  * @returns Name of S3 resource or undefined
@@ -70,8 +70,21 @@ export async function s3CreateStorageResource(context: $TSContext, storageInput:
   if (storageResourceName) {
     throw new Error('Add Storage Failed.. already exists');
   }
+  //validate bucket Name
+  if( storageInput.bucketName ) {
+    s3ValidateBucketName( storageInput.bucketName );
+  }
   await s3APIHelperTransformAndSaveState(context, storageInput, CLISubCommandType.ADD);
   return storageInput;
+}
+
+export function s3ValidateBucketName( bucketName:string ){
+  const regexp = '^[a-z0-9-]{3,47}$';
+  const isValidBucketName = new RegExp(regexp, 'g').test(bucketName)
+  if( !isValidBucketName ){
+    throw new Error('Bucket name can only use the following characters: a-z 0-9 - and should have minimum 3 character and max of 47 character')
+  }
+  return true;
 }
 
 /**

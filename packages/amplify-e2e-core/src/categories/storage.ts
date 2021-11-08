@@ -487,9 +487,6 @@ export function addS3WithTrigger(cwd: string, settings: any): Promise<void> {
       .sendCarriageReturn()
       .wait('Do you want to add a Lambda Trigger for your S3 Bucket')
       .sendConfirmYes()
-      .wait('Select from the following options')
-      .send(KEY_DOWN_ARROW)
-      .sendCarriageReturn()
       .wait('Do you want to edit the local')
       .sendConfirmNo()
       .sendCarriageReturn()
@@ -541,10 +538,7 @@ export function addS3StorageWithIdpAuth(projectDir: string): Promise<void> {
   return new Promise((resolve, reject) => {
     let chain = spawn(getCLIPath(), ['add', 'storage'], { cwd: projectDir, stripColors: true });
 
-    singleSelect(chain.wait('Select from one of the below mentioned services:'), 'Content (Images, audio, video, etc.)', [
-      'Content (Images, audio, video, etc.)',
-      'NoSQL Database',
-    ]);
+    chain.wait('Select from one of the below mentioned services:').sendCarriageReturn(); //select - Content (Images, audio, video, etc.)
 
     chain
       .wait('Provide a friendly name for your resource that will be used to label this category in the project:')
@@ -561,6 +555,13 @@ export function addS3StorageWithIdpAuth(projectDir: string): Promise<void> {
       ['create/update', 'read', 'delete'],
       ['create/update', 'read', 'delete'],
     );
+    chain.wait('What kind of access do you want for Authenticated users?')
+    .send(' ') //'create/update'
+    .sendKeyDown()
+    .send(' ') //'read'
+    .sendKeyDown()
+    .send(' ') //'delete'
+    .sendCarriageReturn()
 
     chain.wait('Do you want to add a Lambda Trigger for your S3 Bucket?').sendConfirmNo();
 
@@ -577,31 +578,33 @@ export function addS3StorageWithIdpAuth(projectDir: string): Promise<void> {
 export function addS3Storage(projectDir: string): Promise<void> {
   return new Promise((resolve, reject) => {
     let chain = spawn(getCLIPath(), ['add', 'storage'], { cwd: projectDir, stripColors: true });
-
-    singleSelect(chain.wait('Select from one of the below mentioned services:'), 'Content (Images, audio, video, etc.)', [
-      'Content (Images, audio, video, etc.)',
-      'NoSQL Database',
-    ]);
-
+    chain.wait('Select from one of the below mentioned services:').sendCarriageReturn(); //'Content (Images, audio, video, etc.)'
     chain
       .wait('Provide a friendly name for your resource that will be used to label this category in the project:')
       .sendCarriageReturn()
       .wait('Provide bucket name:')
       .sendCarriageReturn();
 
-    singleSelect(chain.wait('Who should have access:'), 'Auth and guest users', ['Auth users only', 'Auth and guest users']);
+    chain.wait('Who should have access:')
+    .sendKeyDown()
+    .send(' ')
+    .sendCarriageReturn()
 
-    multiSelect(
-      chain.wait('What kind of access do you want for Authenticated users?'),
-      ['create/update', 'read', 'delete'],
-      ['create/update', 'read', 'delete'],
-    );
+    chain.wait('What kind of access do you want for Authenticated users?')
+    .send(' ') //'create/update'
+    .sendKeyDown()
+    .send(' ') //'read'
+    .sendKeyDown()
+    .send(' ') //'delete'
+    .sendCarriageReturn()
 
-    multiSelect(
-      chain.wait('What kind of access do you want for Guest users?'),
-      ['create/update', 'read', 'delete'],
-      ['create/update', 'read', 'delete'],
-    );
+    chain.wait('What kind of access do you want for Guest users?')
+    .send(' ') //'create/update'
+    .sendKeyDown()
+    .send(' ') //'read'
+    .sendKeyDown()
+    .send(' ') //'delete'
+    .sendCarriageReturn()
 
     chain.wait('Do you want to add a Lambda Trigger for your S3 Bucket?').sendConfirmNo();
 
@@ -636,10 +639,9 @@ export function addS3StorageWithSettings(projectDir: string, settings: AddStorag
   return new Promise((resolve, reject) => {
     let chain = spawn(getCLIPath(), ['add', 'storage'], { cwd: projectDir, stripColors: true });
 
-    singleSelect(chain.wait('Select from one of the below mentioned services:'), 'Content (Images, audio, video, etc.)', [
-      'Content (Images, audio, video, etc.)',
-      'NoSQL Database',
-    ]);
+    chain.wait('Select from one of the below mentioned services:')
+    .send(' ') //'Content (Images, audio, video, etc.)'
+    .sendCarriageReturn()
 
     chain
       .wait('Provide a friendly name for your resource that will be used to label this category in the project:')
@@ -647,19 +649,26 @@ export function addS3StorageWithSettings(projectDir: string, settings: AddStorag
       .wait('Provide bucket name:')
       .sendLine(settings.bucketName);
 
-    singleSelect(chain.wait('Who should have access:'), 'Auth and guest users', ['Auth users only', 'Auth and guest users']);
+    chain.wait('Who should have access:')
+    .sendKeyDown()
+    .send(' ')
+    .sendCarriageReturn()
 
-    multiSelect(
-      chain.wait('What kind of access do you want for Authenticated users?'),
-      ['create/update', 'read', 'delete'],
-      ['create/update', 'read', 'delete'],
-    );
+    chain.wait('What kind of access do you want for Authenticated users?')
+    .send(' ')      //'create/update'
+    .sendKeyDown()
+    .send(' ')      //'read'
+    .sendKeyDown()
+    .send(' ')      //'delete'
+    .sendCarriageReturn()
 
-    multiSelect(
-      chain.wait('What kind of access do you want for Guest users?'),
-      ['create/update', 'read', 'delete'],
-      ['create/update', 'read', 'delete'],
-    );
+    chain.wait('What kind of access do you want for Guest users?')
+    .send(' ')      //'create/update'
+    .sendKeyDown()
+    .send(' ')      //'read'
+    .sendKeyDown()
+    .send(' ')      //'delete'
+    .sendCarriageReturn()
 
     chain.wait('Do you want to add a Lambda Trigger for your S3 Bucket?').sendConfirmNo();
 
