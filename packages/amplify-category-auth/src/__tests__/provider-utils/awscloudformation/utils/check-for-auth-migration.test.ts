@@ -64,10 +64,13 @@ test('migration gets called when cli-inputs doesnt exist', async () => {
   });
 
   const mockContext = {
-    amplify : {
-      getImportedAuthProperties : jest.fn().mockReturnValue({ imported : false })
-    }
-  }
+    amplify: {
+      getImportedAuthProperties: jest.fn().mockReturnValue({ imported: false }),
+    },
+    input: {
+      options: {},
+    },
+  };
 
   await checkAuthResourceMigration(mockContext as unknown as $TSContext, 'mockResource');
   expect(migrateResourceToSupportOverride).toBeCalled();
@@ -79,10 +82,10 @@ test('migration doesnt called when cli-inputs exist', async () => {
   jest.spyOn(AuthInputState.prototype, 'cliInputFileExists').mockImplementation(() => true);
   jest.spyOn(AuthInputState.prototype, 'getCLIInputPayload');
   const mockContext = {
-    amplify : {
-      getImportedAuthProperties : jest.fn().mockReturnValue({ imported : false })
-    }
-  }
+    amplify: {
+      getImportedAuthProperties: jest.fn().mockReturnValue({ imported: false }),
+    },
+  };
 
   await checkAuthResourceMigration(mockContext as unknown as $TSContext, 'mockResource');
   expect(migrateResourceToSupportOverride).not.toBeCalled();
