@@ -384,7 +384,6 @@ export function addS3AndAuthWithAuthOnlyAccess(cwd: string, settings: any): Prom
       .send(' ')
       .sendKeyDown()
       .send(' ')
-      .sendKeyDown()
       .sendCarriageReturn()
       .wait('Do you want to add a Lambda Trigger for your S3 Bucket')
       .sendConfirmNo()
