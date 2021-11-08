@@ -48,7 +48,7 @@ describe('attemptV2TransformerMigration', () => {
       }
       "
     `);
-    const cliJsonFile = await fs.readJSON(cliJsonPath(tempProjectDir));
+    const cliJsonFile = await fs.readJSON(cliJsonPath(tempProjectDir), { encoding: 'utf8' });
     expect(cliJsonFile.features.graphqltransformer.useexperimentalpipelinedtransformer).toBe(true);
     expect(cliJsonFile.features.graphqltransformer.transformerversion).toBe(2);
     expect(cliJsonFile.features.graphqltransformer.suppressschemamigrationprompt).toBe(true);
@@ -60,12 +60,12 @@ describe('attemptV2TransformerMigration', () => {
     await revertV2Migration(apiResourceDir, envName);
     const projectSchema1 = await fs.readFile(path.join(apiResourceDir, 'schema', 'Mud.graphql'), 'utf8');
     const projectSchema2 = await fs.readFile(path.join(apiResourceDir, 'schema', 'nested', 'Obligation.graphql'), 'utf8');
-    const projectCliJson = await fs.readFile(cliJsonPath(tempProjectDir));
+    const projectCliJson = await fs.readJSON(cliJsonPath(tempProjectDir), { encoding: 'utf8' });
 
     const origApiResourceDir = resourceDir(testProjectPath);
     const originalSchema1 = await fs.readFile(path.join(origApiResourceDir, 'schema', 'Mud.graphql'), 'utf8');
     const originalSchema2 = await fs.readFile(path.join(origApiResourceDir, 'schema', 'nested', 'Obligation.graphql'), 'utf8');
-    const originalCliJson = await fs.readFile(cliJsonPath(testProjectPath));
+    const originalCliJson = await fs.readJSON(cliJsonPath(testProjectPath), { encoding: 'utf8' });
 
     expect(projectSchema1).toEqual(originalSchema1);
     expect(projectSchema2).toEqual(originalSchema2);
