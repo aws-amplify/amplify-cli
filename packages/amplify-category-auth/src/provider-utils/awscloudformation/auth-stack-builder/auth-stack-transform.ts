@@ -183,7 +183,7 @@ export class AmplifyAuthTransform extends AmplifyCategoryTransform {
       keys.forEach(key => {
         let config: AuthTriggerConnection = {
           triggerType: key === 'PreSignup' ? 'PreSignUp' : key,
-          lambdaFunctionName: key === 'PreSignup' ? 'PreSignUp' : `${this.resourceName}${key}`,
+          lambdaFunctionName: `${this.resourceName}${key}`,
         };
         authTriggerConnections.push(config);
       });
