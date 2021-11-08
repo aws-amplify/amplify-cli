@@ -106,8 +106,9 @@ async function externalAuthEnable(context, externalCategory, resourceName, requi
     currentAuthName = await getAuthResourceName(context);
     // check for migration when auth has been enabled
     await checkAuthResourceMigration(context, currentAuthName);
-    const cliState = new AuthInputState(currentAuthName);
-    currentAuthParams = await cliState.loadResourceParameters(context, cliState.getCLIInputPayload());
+    const { provider } = serviceMetadata.Cognito;
+    const providerPlugin = context.amplify.getPluginInstance(context, provider);
+    currentAuthParams = providerPlugin.loadResourceParameters(context, 'auth', currentAuthName);
 
     if (requirements.authSelections.includes('identityPoolOnly') && currentAuthParams.userPoolName) {
       requirements.authSelections = 'identityPoolAndUserPool';
