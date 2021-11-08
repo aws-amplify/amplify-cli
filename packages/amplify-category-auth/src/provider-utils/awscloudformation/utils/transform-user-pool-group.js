@@ -42,7 +42,7 @@ async function transformUserPoolGroupSchema(context) {
     }
   });
 
-  await generateUserPoolGroupStackTemplate(authResourceName);
+  await generateUserPoolGroupStackTemplate(context, authResourceName);
 }
 
 module.exports = {
