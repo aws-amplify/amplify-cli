@@ -32,7 +32,7 @@ export const addHeadlessAuth = async (cwd: string, request: AddAuthRequest): Pro
   return await executeHeadlessCommand(cwd, 'auth', 'add', request);
 };
 
-export const updateHeadlessAuth = async (cwd: string, request: UpdateAuthRequest, settings: any): Promise<ExecaChildProcess<String>> => {
+export const updateHeadlessAuth = async (cwd: string, request: UpdateAuthRequest, settings?: any): Promise<ExecaChildProcess<String>> => {
   return await executeHeadlessCommand(cwd, 'auth', 'update', request, settings);
 };
 
@@ -75,8 +75,8 @@ const executeHeadlessCommand = async (
   request: AnyHeadlessRequest,
   reject: boolean = true,
   allowDestructiveUpdates: boolean = false,
-  settings:any = {testingWithLatestCodebase : true },
-): Promise<any> => {
+  settings = { testingWithLatestCodebase: true },
+) => {
   const args = [operation, category, '--headless'];
   if (allowDestructiveUpdates) {
     args.push('--allow-destructive-graphql-schema-updates');

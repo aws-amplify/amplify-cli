@@ -1,12 +1,7 @@
-import * as path from 'path';
-import * as fs from 'fs-extra';
-import { $TSObject, JSONUtilities } from 'amplify-cli-core';
 import {
   addAuthWithDefault,
   AddDynamoDBSettings,
   addDynamoDBWithGSIWithSettings,
-  addFunction,
-  amplifyPull,
   amplifyPushAuth,
   amplifyStatus,
   createNewProjectDir,
@@ -16,26 +11,19 @@ import {
   getTeamProviderInfo,
   initJSProjectWithProfile,
 } from 'amplify-e2e-core';
-import { randomizedFunctionName } from '../schema-api-directives/functionTester';
 import { addEnvironmentWithImportedAuth, checkoutEnvironment, removeEnvironment } from '../environment/env';
 import {
-  expectLocalAndCloudMetaFilesMatching,
-  expectLocalAndPulledBackendConfigMatching,
-  getShortId,
-  readRootStack,
-  expectNoStorageInMeta,
-  expectLocalTeamInfoHasOnlyAuthCategoryAndNoStorage,
-  headlessPullExpectError,
-  headlessPull,
   createDynamoDBSettings,
   DynamoDBProjectDetails,
-  getOGDynamoDBProjectDetails,
-  importDynamoDBTable,
-  getDynamoDBProjectDetails,
-  expectDynamoDBProjectDetailsMatch,
-  getDynamoDBResourceName,
   expectDynamoDBLocalAndOGMetaFilesOutputMatching,
-  removeImportedDynamoDBWithDefault,
+  expectLocalAndCloudMetaFilesMatching,
+  expectLocalAndPulledBackendConfigMatching,
+  getDynamoDBProjectDetails,
+  getOGDynamoDBProjectDetails,
+  getShortId,
+  headlessPull,
+  headlessPullExpectError,
+  importDynamoDBTable,
 } from '../import-helpers';
 
 const profileName = 'amplify-integ-test-user';
