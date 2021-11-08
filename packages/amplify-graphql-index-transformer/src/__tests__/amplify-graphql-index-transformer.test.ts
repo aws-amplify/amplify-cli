@@ -177,7 +177,7 @@ test('@index with multiple sort keys adds a query field and GSI correctly', () =
     }),
   );
 
-  expect(out.pipelineFunctions).toMatchSnapshot();
+  expect(out.resolvers).toMatchSnapshot();
 
   const queryType = schema.definitions.find((def: any) => def.name && def.name.value === 'Query') as any;
   expect(queryType).toBeDefined();
@@ -245,7 +245,7 @@ test('@index with a single sort key adds a query field and GSI correctly', () =>
     }),
   );
 
-  expect(out.pipelineFunctions).toMatchSnapshot();
+  expect(out.resolvers).toMatchSnapshot();
 
   const queryType = schema.definitions.find((def: any) => def.name && def.name.value === 'Query') as any;
   expect(queryType).toBeDefined();
@@ -307,7 +307,7 @@ test('@index with no sort key field adds a query field and GSI correctly', () =>
     }),
   );
 
-  expect(out.pipelineFunctions).toMatchSnapshot();
+  expect(out.resolvers).toMatchSnapshot();
 
   const queryType = schema.definitions.find((def: any) => def.name && def.name.value === 'Query') as any;
   expect(queryType).toBeDefined();
@@ -398,7 +398,7 @@ test('creates a primary key and a secondary index', () => {
     }),
   );
 
-  expect(out.pipelineFunctions).toMatchSnapshot();
+  expect(out.resolvers).toMatchSnapshot();
 
   const queryType = schema.definitions.find((def: any) => def.name && def.name.value === 'Query') as any;
   expect(queryType).toBeDefined();
@@ -634,7 +634,7 @@ test('validate resolver code', () => {
   });
   const out = transformer.transform(inputSchema);
   expect(out).toBeDefined();
-  expect(out.pipelineFunctions).toMatchSnapshot();
+  expect(out.resolvers).toMatchSnapshot();
   validateModelSchema(parse(out.schema));
 });
 
@@ -843,8 +843,8 @@ test('GSI composite sort keys are wrapped in conditional to check presence in mu
   const schema = parse(out.schema);
 
   validateModelSchema(schema);
-  expect(out.pipelineFunctions['Mutation.createPerson.req.vtl']).toMatchSnapshot();
-  expect(out.pipelineFunctions['Mutation.updatePerson.req.vtl']).toMatchSnapshot();
+  expect(out.resolvers['Mutation.createPerson.req.vtl']).toMatchSnapshot();
+  expect(out.resolvers['Mutation.updatePerson.req.vtl']).toMatchSnapshot();
 });
 
 it('should support index/primary key with sync resolvers', () => {
@@ -879,7 +879,7 @@ it('should support index/primary key with sync resolvers', () => {
 
   const definition = out.schema;
   expect(definition).toBeDefined();
-  expect(out.pipelineFunctions).toMatchSnapshot();
+  expect(out.resolvers).toMatchSnapshot();
 
   validateModelSchema(parse(definition));
 });

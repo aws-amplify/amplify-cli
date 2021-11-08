@@ -50,7 +50,7 @@ test('Test SearchableModelTransformer vtl', () => {
 
   const out = transformer.transform(validSchema);
   expect(parse(out.schema)).toBeDefined();
-  expect(out.pipelineFunctions).toMatchSnapshot();
+  expect(out.resolvers).toMatchSnapshot();
 });
 
 test('Test SearchableModelTransformer with query overrides', () => {
@@ -329,7 +329,7 @@ test('Test SearchableModelTransformer enum type generates StringFilterInput', ()
       lastName: String!
       type: EmploymentType!
     }
-    
+
     enum EmploymentType {
       FULLTIME
       HOURLY
