@@ -61,7 +61,7 @@ describe('graphql transformer utils', () => {
       it('merges the custom resolver with transformer output', () => {
         const output = mergeUserConfigWithTransformOutput(userConfig, transformerOutput);
 
-        expect(output.pipelineFunctions['Query.listTodos.req.vtl']).toEqual('$util.unauthorized\n');
+        expect(output.resolvers['Query.listTodos.req.vtl']).toEqual('$util.unauthorized\n');
       });
     });
 

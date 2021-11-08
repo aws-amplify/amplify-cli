@@ -13303,7 +13303,7 @@ $util.toJson($UpdateItem)
 ## [End] Mutation Update resolver. **"
 `;
 
-exports[`ModelTransformer:  should support timestamp parameters when generating pipelineFunctions and output schema 1`] = `
+exports[`ModelTransformer:  should support timestamp parameters when generating resolvers and output schema 1`] = `
 "
 type Post {
   id: ID!
@@ -13457,7 +13457,7 @@ type Subscription {
 "
 `;
 
-exports[`ModelTransformer:  should support timestamp parameters when generating pipelineFunctions and output schema 2`] = `
+exports[`ModelTransformer:  should support timestamp parameters when generating resolvers and output schema 2`] = `
 "## [Start] Create Request template. **
 ## Set the default values to put request **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
@@ -13525,7 +13525,7 @@ $util.toJson($PutObject)
 ## [End] Create Request template. **"
 `;
 
-exports[`ModelTransformer:  should support timestamp parameters when generating pipelineFunctions and output schema 3`] = `
+exports[`ModelTransformer:  should support timestamp parameters when generating resolvers and output schema 3`] = `
 "## [Start] Mutation Update resolver. **
 ## Set the default values to put request **
 #set( $mergedValues = $util.defaultIfNull($ctx.stash.defaultValues, {}) )
