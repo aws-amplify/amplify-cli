@@ -43,7 +43,7 @@ module.exports = {
       },
       {
         name: 'migrate',
-        description: 'Runs a helper tool for migrating schemas to the latest GraphQL transformer version',
+        description: 'Migrates GraphQL schemas to the latest GraphQL transformer version',
       },
       {
         name: 'rebuild',

@@ -1,6 +1,5 @@
 import * as fs from 'fs-extra';
 import { stateManager } from 'amplify-cli-core';
-import * as path from 'path';
 
 export type SchemaDocument = {
   schema: string;
