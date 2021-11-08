@@ -6,14 +6,14 @@ import { migrateResourceToSupportOverride } from './migrate-override-resource';
 
 export const checkAuthResourceMigration = async (context: $TSContext, authName: string) => {
   // check if its imported auth
-  const { imported} = context.amplify.getImportedAuthProperties(context);
-  if(!imported){
+  const { imported } = context.amplify.getImportedAuthProperties(context);
+  if (!imported) {
     const cliState = new AuthInputState(authName);
     if (!cliState.cliInputFileExists()) {
       printer.debug('Cli-inputs.json doesnt exist');
       // put spinner here
-      const isMigrate = await prompter.yesOrNo(`Do you want to migrate this ${authName} to support overrides?`, true);
-      if (isMigrate) {
+      const headlessMigrate = context.input.options?.yes || context.input.options?.forcePush || context.input.options?.headless;
+      if (headlessMigrate || (await prompter.yesOrNo(`Do you want to migrate this ${authName} to support overrides?`, true))) {
         // generate cli-inputs for migration from parameters.json
         await migrateResourceToSupportOverride(authName);
         // fetch cli Inputs again
