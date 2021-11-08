@@ -6,7 +6,8 @@ export * from './transform-resource';
 export const transformRootStack = async (context: $TSContext): Promise<Template> => {
   try {
     const resourceName = 'awscloudformation';
-    return new AmplifyRootStackTransform(resourceName).transform(context);
+    const rootStack = new AmplifyRootStackTransform(resourceName);
+    return await rootStack.transform(context);
   } catch (error) {
     throw new Error(error);
   }
