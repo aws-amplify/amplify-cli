@@ -166,8 +166,13 @@ export function ensureHasOneConnectionField(
  *    but does not add additional fields as this will be handled by the hasMany directive
  */
 export function ensureBelongsToConnectionField(config: BelongsToDirectiveConfiguration, ctx: TransformerContextProvider) {
-  const { relatedType, relatedField } = config;
-  config.connectionFields.push(getConnectionAttributeName(relatedType.name.value, relatedField.name.value));
+  const { relationType, relatedType, relatedField } = config;
+  if (relationType === 'hasOne') {
+    ensureHasOneConnectionField(config, ctx, getConnectionAttributeName(relatedType.name.value, relatedField.name.value));
+  } else {
+    // hasMany
+    config.connectionFields.push(getConnectionAttributeName(relatedType.name.value, relatedField.name.value));
+  }
 }
 
 export function ensureHasManyConnectionField(

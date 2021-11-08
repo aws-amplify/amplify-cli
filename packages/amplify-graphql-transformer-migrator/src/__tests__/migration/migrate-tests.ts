@@ -238,22 +238,4 @@ describe('Schema migration tests', () => {
 
     migrateAndValidate(schema);
   });
-
-  it('@versioned is not migrated', () => {
-    const schema = `
-      type Todo @model @versioned {
-        id: ID!
-        name: String!
-        description: String
-      }
-
-      type Ope @model {
-        foo: ID!
-        bar: String
-      }`;
-
-    expect(() => {
-      migrateAndValidate(schema);
-    }).toThrow('Unknown directive "versioned".');
-  });
 });
