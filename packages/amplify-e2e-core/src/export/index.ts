@@ -22,7 +22,7 @@ export function exportPullBackend(cwd: string, settings: { exportPath: string; f
       ['export', 'pull', '--out', settings.exportPath, '--frontend', settings.frontend, '--rootStackName', settings.rootStackName],
       { cwd, stripColors: true },
     )
-      .wait('Successfully generated frontend config files')
+      // .wait('Successfully generated frontend config files')
       .sendEof()
       .run((err: Error) => {
         if (!err) {
@@ -33,4 +33,3 @@ export function exportPullBackend(cwd: string, settings: { exportPath: string; f
       });
   });
 }
-
