@@ -33,7 +33,7 @@ export function detectOverriddenResolvers(apiName: string): boolean {
   return !!vtlFiles.length;
 }
 
-export async function detectUnsupportedDirectives(schema: string): Promise<Array<string>> {
+export async function detectPassthroughDirectives(schema: string): Promise<Array<string>> {
   const supportedDirectives = new Set<string>([
     'connection',
     'key',
@@ -45,14 +45,14 @@ export async function detectUnsupportedDirectives(schema: string): Promise<Array
     'aws_subscribe',
   ]);
   const directiveMap: any = collectDirectivesByTypeNames(schema).types;
-  let unsupportedDirSet = new Set<string>();
+  let passthroughDirectiveSet = new Set<string>();
   for (let type of Object.keys(directiveMap)) {
     for (let dirName of listContainsOnlySetString(directiveMap[type], supportedDirectives)) {
-      unsupportedDirSet.add(dirName);
+      passthroughDirectiveSet.add(dirName);
     }
   }
 
-  return Array.from(unsupportedDirSet);
+  return Array.from(passthroughDirectiveSet);
 }
 
 export function detectDeprecatedConnectionUsage(schema: string): boolean {

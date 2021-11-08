@@ -11,7 +11,7 @@ import {
   detectCustomRootTypes,
   detectDeprecatedConnectionUsage,
   detectOverriddenResolvers,
-  detectUnsupportedDirectives as detectPassthroughDirectives,
+  detectPassthroughDirectives,
   graphQLUsingSQL,
   isImprovedPluralizationEnabled,
   isTransformerV2Enabled,
@@ -21,7 +21,7 @@ import { revertTransformerVersion, updateTransformerVersion } from './state-migr
 import { GRAPHQL_DIRECTIVES_SCHEMA } from './constants/graphql-directives';
 import * as os from 'os';
 import { backupLocation, backupSchemas, doesBackupExist, restoreSchemas } from './schema-backup';
-import { glob } from 'glob';
+import * as glob from 'glob';
 
 const cliToMigratorAuthMap: Map<string, string> = new Map<string, string>([
   ['API_KEY', 'apiKey'],
@@ -49,7 +49,6 @@ export async function attemptV2TransformerMigration(resourceDir: string, apiName
     throw Error(`Unidentified authorization mode for API found: ${defaultAuth}`);
   }
 
-  // backup schemas
   try {
     await backupSchemas(resourceDir);
     await runMigration(schemaDocs, authMode);
@@ -176,8 +175,8 @@ async function getPostMigrationStatusMessage(fullSchema: string, apiName: string
   const usingCustomRootTypes = detectCustomRootTypes(parse(fullSchema));
   const usingOverriddenResolvers = detectOverriddenResolvers(apiName);
   const improvedPluralizationEnabled = isImprovedPluralizationEnabled();
-  const unsupportedDirectives: Array<string> = await detectPassthroughDirectives(fullSchema);
-  if (!usingCustomRootTypes && !usingOverriddenResolvers && unsupportedDirectives.length === 0 && improvedPluralizationEnabled) {
+  const passthroughDirectives: Array<string> = await detectPassthroughDirectives(fullSchema);
+  if (!usingCustomRootTypes && !usingOverriddenResolvers && passthroughDirectives.length === 0 && improvedPluralizationEnabled) {
     return '';
   }
   const messageLines = [
@@ -189,9 +188,9 @@ async function getPostMigrationStatusMessage(fullSchema: string, apiName: string
   if (usingOverriddenResolvers) {
     messageLines.push('- You have overridden an Amplify generated resolver');
   }
-  if (unsupportedDirectives.length > 0) {
+  if (passthroughDirectives.length > 0) {
     messageLines.push(
-      `- You are using the following directives which are not handled by the transformer:${os.EOL}\t${unsupportedDirectives.join(', ')}`,
+      `- You are using the following directives which are not handled by the transformer:${os.EOL}\t${passthroughDirectives.join(', ')}`,
     );
   }
   if (!improvedPluralizationEnabled) {

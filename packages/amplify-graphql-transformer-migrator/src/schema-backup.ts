@@ -3,7 +3,7 @@ import * as fs from 'fs-extra';
 
 export const backupLocation = (resourceDir: string) => path.join(resourceDir, '.migration-backup');
 
-export async function backupSchemas(resourceDir: string): Promise<void> {
+export const backupSchemas = async (resourceDir: string): Promise<void> => {
   const schemaFilePath = path.join(resourceDir, 'schema.graphql');
   const schemaDirPath = path.join(resourceDir, 'schema');
   const schemaFileExists = fs.existsSync(schemaFilePath);
@@ -15,12 +15,12 @@ export async function backupSchemas(resourceDir: string): Promise<void> {
   if (schemaDirectoryExists) {
     await fs.copy(schemaDirPath, path.join(backupLocation(resourceDir), 'schema'), { overwrite: false, errorOnExist: true });
   }
-}
+};
 
-export async function restoreSchemas(resourceDir: string): Promise<void> {
+export const restoreSchemas = async (resourceDir: string): Promise<void> => {
   await fs.copy(backupLocation(resourceDir), resourceDir);
   await fs.remove(backupLocation(resourceDir));
-}
+};
 
 export function doesBackupExist(resourceDir: string): boolean {
   return fs.existsSync(backupLocation(resourceDir));
