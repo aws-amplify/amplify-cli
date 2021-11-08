@@ -228,11 +228,15 @@ export class DefaultTransformHost implements TransformHostProvider {
    * @param stack  Stack to which this datasource needs to mapped to
    */
   protected doAddNoneDataSource(id: string, options?: DataSourceOptions, stack?: Stack): NoneDataSource {
-    return new NoneDataSource(stack ?? this.api, id, {
+    const ds = new NoneDataSource(stack ?? this.api, id, {
       api: this.api,
       name: options?.name,
       description: options?.description,
     });
+
+    (ds as any).node.defaultChild.overrideLogicalId(id);
+
+    return ds;
   }
 
   /**
