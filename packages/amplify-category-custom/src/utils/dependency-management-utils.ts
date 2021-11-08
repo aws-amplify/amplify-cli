@@ -58,7 +58,17 @@ export function getResourceCfnOutputAttributes(category: string, resourceName: s
   if (cfnFilePath) {
     const { cfnTemplate } = readCFNTemplate(cfnFilePath);
     if (cfnTemplate.Outputs) {
-      return Object.keys(cfnTemplate.Outputs) as [string?];
+      const allOutputs: $TSObject = cfnTemplate.Outputs;
+      let outputsWithoutConditions: any = {};
+
+      for (const key in allOutputs) {
+        if (!allOutputs[key]['Condition']) {
+          // Filter out outputs which are conditional to avoid deployment failures
+          outputsWithoutConditions[key] = allOutputs[key];
+        }
+      }
+
+      return Object.keys(outputsWithoutConditions) as [string?];
     }
   }
 
