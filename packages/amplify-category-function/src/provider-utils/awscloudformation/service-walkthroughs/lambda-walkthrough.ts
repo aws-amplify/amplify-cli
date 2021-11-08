@@ -66,47 +66,49 @@ export async function createWalkthrough(
   // ask template selection questions and merge in results
   templateParameters = merge(templateParameters, await templateWalkthrough(context, templateParameters));
 
-  if(!templateParameters.skipAdvancedSection) {
-    // list out the advanced settings before asking whether to configure them
-    context.print.info('');
-    context.print.success('Available advanced settings:');
-    advancedSettingsList.forEach(setting => context.print.info('- '.concat(setting)));
-    context.print.info('');
+  if(templateParameters.skipAdvancedSection) {
+    return templateParameters;
+  }
 
-    // ask whether to configure advanced settings
-    if (await context.amplify.confirmPrompt('Do you want to configure advanced settings?', false)) {
-      if (await context.amplify.confirmPrompt('Do you want to access other resources in this project from your Lambda function?')) {
-        templateParameters = merge(
-          templateParameters,
-          await askExecRolePermissionsQuestions(context, templateParameters.functionName, undefined, templateParameters.environmentMap),
-        );
-      }
+  // list out the advanced settings before asking whether to configure them
+  context.print.info('');
+  context.print.success('Available advanced settings:');
+  advancedSettingsList.forEach(setting => context.print.info('- '.concat(setting)));
+  context.print.info('');
 
-      // ask scheduling Lambda questions and merge in results
-      templateParameters = merge(templateParameters, await scheduleWalkthrough(context, templateParameters));
-
-      // ask lambda layer questions and merge in results
-      templateParameters = merge(templateParameters, await addLayersToFunctionWalkthrough(context, templateParameters.runtime));
-
-      // ask environment variable questions and merge in results
-      if (await context.amplify.confirmPrompt('Do you want to configure environment variables for this function?', false)) {
-        templateParameters = merge(templateParameters, await askEnvironmentVariableQuestions(templateParameters.functionName));
-        //update top-level comment to be inserted into example
-        templateParameters.topLevelComment = buildTopLevelComment( templateParameters.environmentMap );
-        //show updated environment variables
-        const envVarViewString = buildShowEnvVars(templateParameters.environmentMap);
-        context.print.info(envVarViewString);
-      }
-
-      // ask function secrets questions and merge in results
+  // ask whether to configure advanced settings
+  if (await context.amplify.confirmPrompt('Do you want to configure advanced settings?', false)) {
+    if (await context.amplify.confirmPrompt('Do you want to access other resources in this project from your Lambda function?')) {
       templateParameters = merge(
         templateParameters,
-        await secretValuesWalkthrough(
-          secretNamesToSecretDeltas(getLocalFunctionSecretNames(templateParameters.functionName)),
-          Object.keys(getStoredEnvironmentVariables(templateParameters.functionName)),
-        ),
+        await askExecRolePermissionsQuestions(context, templateParameters.functionName, undefined, templateParameters.environmentMap),
       );
     }
+
+    // ask scheduling Lambda questions and merge in results
+    templateParameters = merge(templateParameters, await scheduleWalkthrough(context, templateParameters));
+
+    // ask lambda layer questions and merge in results
+    templateParameters = merge(templateParameters, await addLayersToFunctionWalkthrough(context, templateParameters.runtime));
+
+    // ask environment variable questions and merge in results
+    if (await context.amplify.confirmPrompt('Do you want to configure environment variables for this function?', false)) {
+      templateParameters = merge(templateParameters, await askEnvironmentVariableQuestions(templateParameters.functionName));
+      //update top-level comment to be inserted into example
+      templateParameters.topLevelComment = buildTopLevelComment( templateParameters.environmentMap );
+      //show updated environment variables
+      const envVarViewString = buildShowEnvVars(templateParameters.environmentMap);
+      context.print.info(envVarViewString);
+    }
+
+    // ask function secrets questions and merge in results
+    templateParameters = merge(
+      templateParameters,
+      await secretValuesWalkthrough(
+        secretNamesToSecretDeltas(getLocalFunctionSecretNames(templateParameters.functionName)),
+        Object.keys(getStoredEnvironmentVariables(templateParameters.functionName)),
+      ),
+    );
   }
 
   return templateParameters;
