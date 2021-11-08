@@ -134,7 +134,7 @@ Object {
     },
   },
   "Resources": Object {
-    "LambdaDataSource4DD51D23": Object {
+    "LambdaDataSource": Object {
       "Properties": Object {
         "ApiId": Object {
           "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
@@ -1023,7 +1023,7 @@ Object {
     },
     "convertTextToSpeechFunctionconvertTextToSpeechFunctionAppSyncFunction15BC20B8": Object {
       "DependsOn": Array [
-        "LambdaDataSource4DD51D23",
+        "LambdaDataSource",
       ],
       "Properties": Object {
         "ApiId": Object {
@@ -1031,7 +1031,7 @@ Object {
         },
         "DataSourceName": Object {
           "Fn::GetAtt": Array [
-            "LambdaDataSource4DD51D23",
+            "LambdaDataSource",
             "Name",
           ],
         },
