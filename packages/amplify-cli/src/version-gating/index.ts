@@ -2,6 +2,7 @@ import * as path from 'path';
 import _ from 'lodash';
 import semver from 'semver';
 import { $TSContext, JSONUtilities, stateManager } from 'amplify-cli-core';
+import { printer } from 'amplify-prompts';
 import * as CloudFormation from 'aws-sdk/clients/cloudformation';
 
 const packageJsonFileName = 'package.json';
@@ -177,13 +178,13 @@ export const isMinimumVersionSatisfied = async (context: $TSContext): Promise<bo
 
   const deployedCLIVersion = semver.coerce(versionGatingMetadata.DeployedByCLIVersion)!;
 
-  context.print.warning(
+  printer.warn(
     `This project was previously deployed with Amplify CLI version ${deployedCLIVersion}. The currently running Amplify CLI version is ${context.versionInfo.currentCLIVersion}.`,
   );
 
-  context.print.info('');
-  context.print.info(`Some features in this project require Amplify CLI version >=${minimumCompatibleCLIVersion} to function correctly.`);
-  context.print.info('Upgrade to the latest version of Amplify CLI, run: "amplify upgrade" or "npm install -g @aws-amplify/cli"');
+  printer.blankLine();
+  printer.info(`Some features in this project require Amplify CLI version >=${minimumCompatibleCLIVersion} to function correctly.`);
+  printer.info('Upgrade to the latest version of Amplify CLI, run: "amplify upgrade" or "npm install -g @aws-amplify/cli"');
 
   return false;
 };
