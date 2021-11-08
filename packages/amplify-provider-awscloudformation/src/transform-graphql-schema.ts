@@ -455,7 +455,9 @@ export async function transformGraphQLSchema(context, options) {
 
   // for the predictions directive get storage config
   const s3ResourceName = await invokeS3GetResourceName(context);
-  const storageConfig = s3ResourceName ? await getBucketName(context, s3ResourceName ) : undefined;
+  const storageConfig = {
+    bucketName: s3ResourceName ? await getBucketName(context, s3ResourceName) : undefined,
+  };
 
   const buildDir = path.normalize(path.join(resourceDir, 'build'));
   const schemaFilePath = path.normalize(path.join(resourceDir, schemaFileName));
