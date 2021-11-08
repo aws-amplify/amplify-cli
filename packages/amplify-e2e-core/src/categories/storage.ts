@@ -1,5 +1,5 @@
-import { getCLIPath, KEY_DOWN_ARROW, nspawn as spawn } from '..';
 import { singleSelect } from '../utils/selectors';
+import { getCLIPath, nspawn as spawn } from '..';
 
 export type AddStorageSettings = {
   resourceName: string;
@@ -16,7 +16,8 @@ export function addSimpleDDB(cwd: string, settings: any): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['add', 'storage'], { cwd, stripColors: true })
       .wait('Select from one of the below mentioned services')
-      .sendLine(KEY_DOWN_ARROW)
+      .sendKeyDown()
+      .sendCarriageReturn()
       .wait('Provide a friendly name')
       .sendLine(settings.name || '\r')
       .wait('Provide table name')
@@ -56,7 +57,8 @@ export function addDDBWithTrigger(cwd: string, settings: { ddbResourceName?: str
   return new Promise((resolve, reject) => {
     const chain = spawn(getCLIPath(), ['add', 'storage'], { cwd, stripColors: true })
       .wait('Select from one of the below mentioned services')
-      .sendLine(KEY_DOWN_ARROW)
+      .sendKeyDown()
+      .sendCarriageReturn()
       .wait('Provide a friendly name');
     if (settings.ddbResourceName) {
       chain.sendLine(settings.ddbResourceName);
@@ -88,7 +90,8 @@ export function addDDBWithTrigger(cwd: string, settings: { ddbResourceName?: str
       .wait('Do you want to add a Lambda Trigger for your Table')
       .sendConfirmYes()
       .wait('Select from the following options')
-      .sendLine(KEY_DOWN_ARROW)
+      .sendKeyDown()
+      .sendCarriageReturn()
       .wait('Do you want to edit the local')
       .sendConfirmNo()
       .sendEof()
@@ -106,7 +109,8 @@ export function updateDDBWithTrigger(cwd: string, settings: any): Promise<void> 
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['update', 'storage'], { cwd, stripColors: true })
       .wait('Select from one of the below mentioned services')
-      .sendLine(KEY_DOWN_ARROW)
+      .sendKeyDown()
+      .sendCarriageReturn()
       .wait('Specify the resource that you would want to update')
       .sendCarriageReturn()
       .wait('Would you like to add another column')
@@ -116,7 +120,8 @@ export function updateDDBWithTrigger(cwd: string, settings: any): Promise<void> 
       .wait('Do you want to add a Lambda Trigger for your Table')
       .sendConfirmYes()
       .wait('Select from the following options')
-      .sendLine(KEY_DOWN_ARROW)
+      .sendKeyDown()
+      .sendCarriageReturn()
       .wait('Do you want to edit the local')
       .sendLine('n')
       .sendEof()
@@ -134,7 +139,7 @@ export function updateSimpleDDBwithGSI(cwd: string, settings: any): Promise<void
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['update', 'storage'], { cwd, stripColors: true })
       .wait('Select from one of the below mentioned services')
-      .send(KEY_DOWN_ARROW)
+      .sendKeyDown()
       .sendCarriageReturn()
       .wait('Specify the resource that you would want to update')
       .sendCarriageReturn()
@@ -177,7 +182,7 @@ export function addSimpleDDBwithGSI(cwd: string, settings: any): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['add', 'storage'], { cwd, stripColors: true })
       .wait('Select from one of the below mentioned services')
-      .send(KEY_DOWN_ARROW)
+      .sendKeyDown()
       .sendCarriageReturn()
       .wait('Provide a friendly name')
       .sendCarriageReturn()
@@ -204,7 +209,7 @@ export function addSimpleDDBwithGSI(cwd: string, settings: any): Promise<void> {
       .wait('Provide the GSI name')
       .sendLine('gsi1')
       .wait('Choose partition key for the GSI')
-      .send(KEY_DOWN_ARROW)
+      .sendKeyDown()
       .sendCarriageReturn()
       .wait('Do you want to add a sort key to your global secondary index?')
       .sendConfirmNo()
@@ -245,15 +250,14 @@ export function buildOverrideStorage(cwd: string, settings: {}) {
   return new Promise((resolve, reject) => {
     // Add 'storage' as a category param once implemented
     const args = ['build'];
-    const chain = spawn(getCLIPath(), args, { cwd, stripColors: true })
-    chain
-    .run((err: Error) => {
-        if (!err) {
-          resolve({});
-        } else {
-          reject(err);
-        }
-      });
+    const chain = spawn(getCLIPath(), args, { cwd, stripColors: true });
+    chain.run((err: Error) => {
+      if (!err) {
+        resolve({});
+      } else {
+        reject(err);
+      }
+    });
   });
 }
 
@@ -309,11 +313,11 @@ export function addDynamoDBWithGSIWithSettings(projectDir: string, settings: Add
       .wait('Provide the GSI name')
       .sendLine(settings.gsiName);
 
-    chain.wait('Choose partition key for the GSI').send(KEY_DOWN_ARROW).send(KEY_DOWN_ARROW).sendCarriageReturn(); // choose gsi-pk
+    chain.wait('Choose partition key for the GSI').sendKeyDown(2).sendCarriageReturn(); // choose gsi-pk
 
     chain.wait('Do you want to add a sort key to your global secondary index').sendConfirmYes();
 
-    chain.wait('Choose sort key for the GSI').send(KEY_DOWN_ARROW).send(KEY_DOWN_ARROW).sendCarriageReturn(); // choose gsi-sk
+    chain.wait('Choose sort key for the GSI').sendKeyDown(2).sendCarriageReturn(); // choose gsi-sk
 
     chain
       .wait('Do you want to add more global secondary indexes to your table')
@@ -442,9 +446,9 @@ export function addS3WithGroupAccess(cwd: string, settings: any): Promise<void> 
       .sendKeyDown()
       .sendCarriageReturn() // Individual groups
       .wait('Select groups')
-      .send(' ') //select Admin
+      .send(' ') // select Admin
       .sendKeyDown()
-      .send(' ')//select User
+      .send(' ') // select User
       .sendCarriageReturn()
       .wait('What kind of access do you want') // for <UserGroup1> users?
       .sendCtrlA() // Select all permissions
@@ -574,13 +578,14 @@ export function addS3StorageWithIdpAuth(projectDir: string): Promise<void> {
       .wait('Who should have access:')
       .sendCarriageReturn();
 
-    chain.wait('What kind of access do you want for Authenticated users?')
-    .send(' ') //'create/update'
-    .sendKeyDown()
-    .send(' ') //'read'
-    .sendKeyDown()
-    .send(' ') //'delete'
-    .sendCarriageReturn()
+    chain
+      .wait('What kind of access do you want for Authenticated users?')
+      .send(' ') //'create/update'
+      .sendKeyDown()
+      .send(' ') //'read'
+      .sendKeyDown()
+      .send(' ') //'delete'
+      .sendCarriageReturn();
 
     chain.wait('Do you want to add a Lambda Trigger for your S3 Bucket?').sendConfirmNo();
 
