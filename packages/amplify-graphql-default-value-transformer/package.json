@@ -36,7 +36,7 @@
     "libphonenumber-js": "^1.7.31"
   },
   "devDependencies": {
-    "@aws-cdk/assert": "~1.130.0"
+    "@aws-cdk/assert": "~1.131.0"
   },
   "jest": {
     "transform": {

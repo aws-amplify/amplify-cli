@@ -36,7 +36,7 @@
     "uuid": "^8.3.2"
   },
   "devDependencies": {
-    "aws-sdk": "^2.1022.0",
+    "aws-sdk": "^2.1024.0",
     "rimraf": "^3.0.2"
   },
   "jest": {
