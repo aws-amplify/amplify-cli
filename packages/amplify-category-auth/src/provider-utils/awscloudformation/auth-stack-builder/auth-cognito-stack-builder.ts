@@ -1027,7 +1027,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
       ],
     });
     //TODO
-    this.mfaLambdaRole!.node.addDependency(this.userPoolClientInputs!.node!.defaultChild!);
+    this.openIdLambdaRole!.node.addDependency(this.userPoolClientInputs!.node!.defaultChild!);
     // lambda function
     /**
      *   Lambda which sets MFA config values

@@ -66,6 +66,10 @@ function getParameterPath(projRoot: string, category: string, resourceName: stri
   return path.join(projRoot, 'amplify', 'backend', category, resourceName, 'build', 'parameters.json');
 }
 
+function getCLIInputsPath(projRoot: string, category: string, resourceName: string) {
+  return path.join(projRoot, 'amplify', 'backend', category, resourceName, 'cli-inputs.json');
+}
+
 function getCategoryParameterPath(projRoot: string, category: string, resourceName: string) {
   return path.join(projRoot, 'amplify', 'backend', category, resourceName, `${category}-parameters.json`);
 }
@@ -132,6 +136,16 @@ function getParameters(projRoot: string, category: string, resourceName: string)
 
 function setParameters(projRoot: string, category: string, resourceName: string, parameters: unknown) {
   const parametersPath = getParameterPath(projRoot, category, resourceName);
+  JSONUtilities.writeJson(parametersPath, parameters);
+}
+
+export function getCLIInputs(projRoot: string, category: string, resourceName: string): any {
+  const parametersPath = getCLIInputsPath(projRoot, category, resourceName);
+  return JSONUtilities.parse(fs.readFileSync(parametersPath, 'utf8'));
+}
+
+export function setCLIInputs(projRoot: string, category: string, resourceName: string, parameters: unknown) {
+  const parametersPath = getCLIInputsPath(projRoot, category, resourceName);
   JSONUtilities.writeJson(parametersPath, parameters);
 }
 
