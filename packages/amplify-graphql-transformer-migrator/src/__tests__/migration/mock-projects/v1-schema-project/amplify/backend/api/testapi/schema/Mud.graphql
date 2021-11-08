@@ -1,0 +1,4 @@
+type Mud @model {
+  id: ID!
+  obligations: [Obligation] @connection(keyName: "byMud", fields: ["id"]) # => @hasMany(indexName: "byMud", fields: ["id"])
+}

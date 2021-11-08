@@ -82,6 +82,8 @@ export class StateManager {
     return JSONUtilities.readJson<CustomIAMPolicies>(filePath, { throwIfNotExist: false }) || [];
   };
 
+  getCurrentEnvName = (projectPath?: string): string | undefined => this.getLocalEnvInfo(projectPath, { throwIfNotExist: false })?.envName;
+
   localEnvInfoExists = (projectPath?: string): boolean => this.doesExist(pathManager.getLocalEnvFilePath, projectPath);
 
   getLocalEnvInfo = (projectPath?: string, options?: GetOptions<$TSAny>): $TSAny => {

@@ -1,4 +1,4 @@
-import { detectUnsupportedDirectives } from '../../schema-inspector';
+import { detectDeprecatedConnectionUsage, detectPassthroughDirectives } from '../../schema-inspector';
 
 test('deprecated @connection parameterization fails gracefully', async () => {
   const schema = /* GraphQL */ `
@@ -14,12 +14,8 @@ test('deprecated @connection parameterization fails gracefully', async () => {
       post: PostConnection @connection(name: "PostComments")
     }
   `;
-  const result = await detectUnsupportedDirectives(schema);
-  expect(result).toMatchInlineSnapshot(`
-    Array [
-      "Deprecated parameterization of @connection",
-    ]
-  `);
+  const result = await detectDeprecatedConnectionUsage(schema);
+  expect(result).toBe(true);
 });
 
 test('AppSync auth directives are not migrated', async () => {
@@ -30,7 +26,7 @@ test('AppSync auth directives are not migrated', async () => {
       type Todo @model @${directive} {
         id: ID!
       }`;
-    const result = await detectUnsupportedDirectives(schema);
+    const result = await detectPassthroughDirectives(schema);
 
     expect(result).toMatchInlineSnapshot(`
       Array [

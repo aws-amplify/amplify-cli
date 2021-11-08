@@ -30,7 +30,6 @@
         "@aws-amplify/graphql-transformer-interfaces": "1.10.0",
         "amplify-cli-core": "1.31.1",
         "amplify-prompts": "1.2.0",
-        "diff": "^5.0.0",
         "fs-extra": "^8.1.0",
         "glob": "^7.1.6",
         "graphql": "^14.5.8",
