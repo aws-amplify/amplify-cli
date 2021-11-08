@@ -1,6 +1,6 @@
 import { $TSAny, $TSContext, pathManager, stateManager } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
-import { attemptV2TransformerMigration } from '@aws-amplify/graphql-transformer-migrator';
+import { attemptV2TransformerMigration, revertV2Migration } from '@aws-amplify/graphql-transformer-migrator';
 import * as path from 'path';
 import { category } from '../../category-constants';
 
@@ -27,5 +27,10 @@ export const run = async (context: $TSContext) => {
   }
   const apiName = apiNames[0];
   const apiResourceDir = path.join(pathManager.getBackendDirPath(), category, apiName);
-  await attemptV2TransformerMigration(apiResourceDir, apiName, context);
+
+  if (context.parameters?.options?.revert) {
+    await revertV2Migration(apiResourceDir, stateManager.getCurrentEnvName());
+    return;
+  }
+  await attemptV2TransformerMigration(apiResourceDir, apiName, stateManager.getCurrentEnvName());
 };
