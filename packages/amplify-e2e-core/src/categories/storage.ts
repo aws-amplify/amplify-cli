@@ -525,6 +525,39 @@ export function updateS3AddTrigger(cwd: string, settings: any): Promise<void> {
   });
 }
 
+export function updateS3AddTriggerWithExistingFunction(cwd: string, settings: any): Promise<void> {
+  return new Promise((resolve, reject) => {
+    spawn(getCLIPath(), ['update', 'storage'], { cwd, stripColors: true })
+      .wait('Select from one of the below mentioned services')
+      .sendCarriageReturn() // Content
+      .wait('Restrict access by')
+      .sendKeyDown()
+      .sendCarriageReturn() // Individual groups
+      .wait('Select groups')
+      .sendCarriageReturn()
+      .wait('What kind of access do you want') // for <UserGroup1> users?
+      .sendCarriageReturn()
+      .wait('What kind of access do you want') // for <UserGroup2> users?
+      .sendCarriageReturn()
+      .wait('Do you want to add a Lambda Trigger for your S3 Bucket')
+      .sendConfirmYes()
+      .wait('Select from the following options')
+      .sendKeyDown()
+      .sendCarriageReturn() //Create a new function
+      .wait('Do you want to edit the local')
+      .sendConfirmNo()
+      .sendCarriageReturn()
+      .sendEof()
+      .run((err: Error) => {
+        if (!err) {
+          resolve();
+        } else {
+          reject(err);
+        }
+      });
+  });
+}
+
 export function addS3StorageWithIdpAuth(projectDir: string): Promise<void> {
   return new Promise((resolve, reject) => {
     let chain = spawn(getCLIPath(), ['add', 'storage'], { cwd: projectDir, stripColors: true });
