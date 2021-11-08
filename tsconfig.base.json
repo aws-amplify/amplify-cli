@@ -58,7 +58,8 @@
     "resolveJsonModule": true,
     "preserveConstEnums": true,
     "pretty": true,
-    "stripInternal": true
+    "stripInternal": true,
+    "useUnknownInCatchVariables": false
   },
   "exclude": ["**/__mocks__/**/*", "**/__tests__/**/*", "**/lib/**/*"]
 }
