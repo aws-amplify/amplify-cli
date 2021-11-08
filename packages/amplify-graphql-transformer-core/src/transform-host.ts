@@ -308,11 +308,15 @@ export class DefaultTransformHost implements TransformHostProvider {
    * @param options The optional configuration for this data source
    */
   protected doAddLambdaDataSource(id: string, lambdaFunction: IFunction, options?: DataSourceOptions, stack?: Stack): LambdaDataSource {
-    return new LambdaDataSource(stack || this.api, id, {
+    const ds = new LambdaDataSource(stack || this.api, id, {
       api: this.api,
       lambdaFunction,
       name: options?.name,
       description: options?.description,
     });
+
+    (ds as any).node.defaultChild.overrideLogicalId(id);
+
+    return ds;
   }
 }
