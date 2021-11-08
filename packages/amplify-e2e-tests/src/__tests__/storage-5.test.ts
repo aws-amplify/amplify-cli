@@ -140,7 +140,7 @@ describe('ddb override tests', () => {
     deleteProjectDir(projRoot);
   });
 
-  it.only('override DDB StreamSpecification property', async () => {
+  it('override DDB StreamSpecification property', async () => {
     const resourceName = `dynamo${uuid.v4().split('-')[0]}`;
     await initJSProjectWithProfile(projRoot, {});
     await addSimpleDDB(projRoot, { name: resourceName });

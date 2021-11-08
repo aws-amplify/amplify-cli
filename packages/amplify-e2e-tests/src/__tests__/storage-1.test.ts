@@ -89,7 +89,7 @@ describe('amplify add/update storage(S3)', () => {
     await validate(projRoot);
   });
 
-  it.only('init a project and add S3 bucket with user pool groups and then update S3 bucket to add trigger', async () => {
+  it('init a project and add S3 bucket with user pool groups and then update S3 bucket to add trigger', async () => {
     await initJSProjectWithProfile(projRoot, {});
     await addAuthWithGroupsAndAdminAPI(projRoot, {});
     await addS3WithGroupAccess(projRoot, {});
