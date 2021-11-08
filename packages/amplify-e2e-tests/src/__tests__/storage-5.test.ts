@@ -1,5 +1,24 @@
 import { $TSAny, JSONUtilities } from 'amplify-cli-core';
-import { addAuthWithDefault, addDDBWithTrigger, addS3WithGuestAccess, addSimpleDDB, addSimpleDDBwithGSI, amplifyPushAuth, buildOverrideStorage, checkIfBucketExists, createNewProjectDir, deleteProject, deleteProjectDir, getDDBTable, getProjectMeta, initJSProjectWithProfile, overrideDDB, overrideS3, updateDDBWithTrigger, updateSimpleDDBwithGSI } from 'amplify-e2e-core';
+import {
+  addAuthWithDefault,
+  addDDBWithTrigger,
+  addS3WithGuestAccess,
+  addSimpleDDB,
+  addSimpleDDBwithGSI,
+  amplifyPushAuth,
+  buildOverrideStorage,
+  checkIfBucketExists,
+  createNewProjectDir,
+  deleteProject,
+  deleteProjectDir,
+  getDDBTable,
+  getProjectMeta,
+  initJSProjectWithProfile,
+  overrideDDB,
+  overrideS3,
+  updateDDBWithTrigger,
+  updateSimpleDDBwithGSI,
+} from 'amplify-e2e-core';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import uuid from 'uuid';
@@ -128,7 +147,6 @@ describe('amplify add/update storage(DDB)', () => {
   });
 });
 
-
 describe('ddb override tests', () => {
   let projRoot: string;
   beforeEach(async () => {
@@ -148,7 +166,15 @@ describe('ddb override tests', () => {
 
     const srcOverrideFilePath = path.join(__dirname, '..', '..', 'overrides', 'override-storage-ddb.ts');
     const destOverrideFilePath = path.join(projRoot, 'amplify', 'backend', 'storage', resourceName, 'override.ts');
-    const cfnFilePath = path.join(projRoot, 'amplify', 'backend', 'storage', resourceName, 'build', `${resourceName}-cloudformation-template.json`);
+    const cfnFilePath = path.join(
+      projRoot,
+      'amplify',
+      'backend',
+      'storage',
+      resourceName,
+      'build',
+      `${resourceName}-cloudformation-template.json`,
+    );
 
     fs.copyFileSync(srcOverrideFilePath, destOverrideFilePath);
     await buildOverrideStorage(projRoot, {});
