@@ -33,7 +33,7 @@ describe('amplify init', () => {
     JSONUtilities.writeJson(cliJsonPath, modifiedCliJson);
     // override new env
     await amplifyOverrideRoot(projRoot, {});
-    const srcOverrideFilePath = path.join(__dirname, '..', '..', '..', 'amplify-e2e-tests', 'overrides', 'override-root.ts');
+    const srcOverrideFilePath = path.join(__dirname, '..', '..', '..', '..', '..', 'amplify-e2e-tests', 'overrides', 'override-root.ts');
     const destOverrideFilePath = path.join(projRoot, 'amplify', 'backend', 'awscloudformation', 'override.ts');
     fs.copyFileSync(srcOverrideFilePath, destOverrideFilePath);
     await amplifyPushOverride(projRoot);
