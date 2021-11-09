@@ -3,5 +3,6 @@ export { AmplifyAuthCognitoStackTemplate, AmplifyUserPoolGroupStackTemplate } fr
 import { addCDKResourceDependency } from '@aws-amplify/amplify-category-custom';
 export { AmplifyDDBResourceTemplate, AmplifyS3ResourceTemplate, AmplifyCDKL1 } from './types/storage/types';
 import { getProjectInfo } from './helpers/project-info';
+import { AmplifyResourceProps } from '@aws-amplify/amplify-category-custom';
 
-export { getProjectInfo, addCDKResourceDependency };
+export { getProjectInfo, addCDKResourceDependency as addResourceDependency, AmplifyResourceProps };
