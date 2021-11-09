@@ -97,7 +97,7 @@ export async function createNewProjectDir(
   } while (fs.existsSync(projectDir));
 
   fs.ensureDirSync(projectDir);
-
+  console.log(projectDir);
   return projectDir;
 }
 
