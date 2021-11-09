@@ -93,17 +93,22 @@ beforeAll(async () => {
     transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new IndexTransformer(), new AuthTransformer()],
   });
   const out = transformer.transform(validSchema);
-  const finishedStack = await deploy(
-    customS3Client,
-    cf,
-    STACK_NAME,
-    out,
-    { AuthCognitoUserPoolId: USER_POOL_ID },
-    LOCAL_FS_BUILD_DIR,
-    BUCKET_NAME,
-    S3_ROOT_DIR_KEY,
-    BUILD_TIMESTAMP,
-  );
+  let finishedStack: AWS.CloudFormation.Stack;
+  try {
+    finishedStack = await deploy(
+      customS3Client,
+      cf,
+      STACK_NAME,
+      out,
+      { AuthCognitoUserPoolId: USER_POOL_ID },
+      LOCAL_FS_BUILD_DIR,
+      BUCKET_NAME,
+      S3_ROOT_DIR_KEY,
+      BUILD_TIMESTAMP,
+    );
+  } catch (e) {
+    expect(e).not.toBeDefined();
+  }
   // Arbitrary wait to make sure everything is ready.
   await cf.wait(5, () => Promise.resolve());
   expect(finishedStack).toBeDefined();

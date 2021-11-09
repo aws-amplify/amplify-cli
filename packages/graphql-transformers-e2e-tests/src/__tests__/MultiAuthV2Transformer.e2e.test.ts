@@ -307,7 +307,7 @@ beforeAll(async () => {
     unauthRoleArn: roles.unauthRole.Arn,
     providerName: `cognito-idp.${AWS_REGION}.amazonaws.com/${USER_POOL_ID}`,
     clientId: userPoolClientId,
-    useTokenAuth: true
+    useTokenAuth: true,
   });
 
   const transformer = new GraphQLTransform({
@@ -338,17 +338,22 @@ beforeAll(async () => {
     ],
   });
   const out = transformer.transform(validSchema);
-  const finishedStack = await deploy(
-    customS3Client,
-    cf,
-    STACK_NAME,
-    out,
-    { AuthCognitoUserPoolId: USER_POOL_ID, authRoleName: roles.authRole.RoleName, unauthRoleName: roles.unauthRole.RoleName },
-    LOCAL_FS_BUILD_DIR,
-    BUCKET_NAME,
-    S3_ROOT_DIR_KEY,
-    BUILD_TIMESTAMP,
-  );
+  let finishedStack: AWS.CloudFormation.Stack;
+  try {
+    finishedStack = await deploy(
+      customS3Client,
+      cf,
+      STACK_NAME,
+      out,
+      { AuthCognitoUserPoolId: USER_POOL_ID, authRoleName: roles.authRole.RoleName, unauthRoleName: roles.unauthRole.RoleName },
+      LOCAL_FS_BUILD_DIR,
+      BUCKET_NAME,
+      S3_ROOT_DIR_KEY,
+      BUILD_TIMESTAMP,
+    );
+  } catch (e) {
+    expect(e).not.toBeDefined();
+  }
   // Wait for any propagation to avoid random
   // "The security token included in the request is invalid" errors
   await new Promise<void>(res => setTimeout(() => res(), 5000));

@@ -103,7 +103,9 @@ export class TransformerNestedStack extends TransformerRootStack {
    * @param value The value to assign
    */
   public setParameter(name: string, value: string) {
-    this.parameters[name] = value;
+    if (!name.includes('DynamoDBEnablePointInTimeRecovery')) {
+      this.parameters[name] = value;
+    }
   }
 
   /**
@@ -126,10 +128,7 @@ export class TransformerNestedStack extends TransformerRootStack {
     }
 
     const cfn = JSON.stringify((this as any)._toCloudFormation());
-    const templateHash = crypto
-      .createHash('sha256')
-      .update(cfn)
-      .digest('hex');
+    const templateHash = crypto.createHash('sha256').update(cfn).digest('hex');
 
     const templateLocation = this._rootStack.synthesizer.addFileAsset({
       packaging: FileAssetPackaging.FILE,

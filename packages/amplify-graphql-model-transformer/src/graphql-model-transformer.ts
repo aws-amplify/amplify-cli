@@ -5,6 +5,7 @@ import {
   SyncConfig,
   SyncUtils,
   TransformerModelBase,
+  TransformerNestedStack,
 } from '@aws-amplify/graphql-transformer-core';
 import {
   AppSyncDataSourceType,
@@ -1107,17 +1108,43 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
     const tableLogicalName = `${def!.name.value}Table`;
     const tableName = context.resourceHelper.generateResourceName(def!.name.value);
 
-    // Add parameters.
+    // add parameters
     const env = context.stackManager.getParameter(ResourceConstants.PARAMETERS.Env) as cdk.CfnParameter;
-    const readIops = context.stackManager.getParameter(ResourceConstants.PARAMETERS.DynamoDBModelTableReadIOPS) as cdk.CfnParameter;
-    const writeIops = context.stackManager.getParameter(ResourceConstants.PARAMETERS.DynamoDBModelTableWriteIOPS) as cdk.CfnParameter;
-    const billingMode = context.stackManager.getParameter(ResourceConstants.PARAMETERS.DynamoDBBillingMode);
-    const pointInTimeRecovery = context.stackManager.getParameter(
-      ResourceConstants.PARAMETERS.DynamoDBEnablePointInTimeRecovery,
-    ) as cdk.CfnParameter;
-    const enableSSE = context.stackManager.getParameter(
-      ResourceConstants.PARAMETERS.DynamoDBEnableServerSideEncryption,
-    ) as cdk.CfnParameter;
+    const readIops = new cdk.CfnParameter(stack, ResourceConstants.PARAMETERS.DynamoDBModelTableReadIOPS, {
+      description: 'The number of read IOPS the table should support.',
+      default: 5,
+    });
+    const writeIops = new cdk.CfnParameter(stack, ResourceConstants.PARAMETERS.DynamoDBModelTableWriteIOPS, {
+      description: 'The number of write IOPS the table should support.',
+      default: 5,
+    });
+    const billingMode = new cdk.CfnParameter(stack, ResourceConstants.PARAMETERS.DynamoDBBillingMode, {
+      description: 'Configure @model types to create DynamoDB tables with PAY_PER_REQUEST or PROVISIONED billing modes.',
+      default: 'PAY_PER_REQUEST',
+      allowedValues: ['PAY_PER_REQUEST', 'PROVISIONED'],
+    });
+    const pointInTimeRecovery = new cdk.CfnParameter(stack, ResourceConstants.PARAMETERS.DynamoDBEnablePointInTimeRecovery, {
+      description: 'Whether to enable Point in Time Recovery on the table',
+      default: 'false',
+      allowedValues: ['true', 'false'],
+    });
+    const enableSSE = new cdk.CfnParameter(stack, ResourceConstants.PARAMETERS.DynamoDBEnableServerSideEncryption, {
+      description: 'Enable service side encryption powered by KMS.',
+      default: 'true',
+      allowedValues: ['true', 'false'],
+    });
+    // adding this so we can ref the parent stack parameter when adding in the nested stack
+    (stack as TransformerNestedStack).setParameter(readIops.node.id, cdk.Fn.ref(ResourceConstants.PARAMETERS.DynamoDBModelTableReadIOPS));
+    (stack as TransformerNestedStack).setParameter(writeIops.node.id, cdk.Fn.ref(ResourceConstants.PARAMETERS.DynamoDBModelTableWriteIOPS));
+    (stack as TransformerNestedStack).setParameter(billingMode.node.id, cdk.Fn.ref(ResourceConstants.PARAMETERS.DynamoDBBillingMode));
+    (stack as TransformerNestedStack).setParameter(
+      pointInTimeRecovery.node.id,
+      cdk.Fn.ref(ResourceConstants.PARAMETERS.DynamoDBEnablePointInTimeRecovery),
+    );
+    (stack as TransformerNestedStack).setParameter(
+      enableSSE.node.id,
+      cdk.Fn.ref(ResourceConstants.PARAMETERS.DynamoDBEnableServerSideEncryption),
+    );
 
     // Add conditions.
     // eslint-disable-next-line no-new
