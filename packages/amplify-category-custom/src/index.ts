@@ -5,6 +5,7 @@ import { buildCustomResources } from './utils/build-custom-resources';
 import { categoryName } from './utils/constants';
 export { addCDKResourceDependency } from './utils/dependency-management-utils';
 export { generateDependentResourcesType } from './utils/build-custom-resources';
+export { AmplifyResourceProps } from './utils/generate-cfn-from-cdk';
 
 export async function executeAmplifyCommand(context: $TSContext) {
   let commandPath = path.normalize(path.join(__dirname, 'commands'));

@@ -13,6 +13,7 @@
     "references": [
       {"path": "../amplify-cli-core"},
       {"path": "../amplify-prompts"},
+      {"path": "../amplify-cli-extensibility-helper"}
     ]
   }
   
