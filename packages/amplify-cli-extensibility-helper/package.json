@@ -35,7 +35,7 @@
     "@aws-cdk/aws-lambda": "~1.124.0",
     "@aws-cdk/aws-iam": "~1.124.0",
     "@aws-amplify/amplify-category-custom": "1.0.0",
-    "amplify-cli-core": "~1.124.0"
+    "amplify-cli-core": "1.31.1"
   },
   "devDependencies": {},
   "jest": {
