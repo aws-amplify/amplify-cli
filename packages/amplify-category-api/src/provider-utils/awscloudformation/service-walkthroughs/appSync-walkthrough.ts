@@ -1143,46 +1143,25 @@ async function askLambdaFromProject(context: $TSContext) {
 }
 
 async function createLambdaAuthorizerFunction(context: $TSContext) {
-  const targetDir = context.amplify.pathManager.getBackendDirPath();
-  const assetDir = path.normalize(path.join(rootAssetDir, 'graphql-lambda-authorizer'));
   const [shortId] = uuid().split('-');
-
   const functionName = `graphQlLambdaAuthorizer${shortId}`;
-
-  const functionProps = {
-    functionName: `${functionName}`,
-    roleName: `${functionName}LambdaRole`,
-  };
-
-  const copyJobs = [
+  const resourceName = await context.amplify.invokePluginMethod(context, 'function', undefined, 'add', [
+    context,
+    'awscloudformation',
+    FunctionServiceNameLambdaFunction,
     {
-      dir: assetDir,
-      template: 'graphql-lambda-authorizer-index.js',
-      target: `${targetDir}/function/${functionName}/src/index.js`,
+      functionName,
+      defaultRuntime: 'nodejs',
+      providerContext: {
+        provider: 'awscloudformation',
+      },
+      template: 'lambda-auth',
+      skipAdvancedSection: true,
+      skipNextSteps: true,
     },
-    {
-      dir: assetDir,
-      template: 'graphql-lambda-authorizer-package.json.ejs',
-      target: `${targetDir}/function/${functionName}/src/package.json`,
-    },
-    {
-      dir: assetDir,
-      template: 'graphql-lambda-authorizer-template.json.ejs',
-      target: `${targetDir}/function/${functionName}/${functionName}-cloudformation-template.json`,
-    },
-  ];
+  ]);
 
-  // copy over the files
-  await context.amplify.copyBatch(context, copyJobs, functionProps, true);
-
-  const backendConfigs = {
-    service: FunctionServiceNameLambdaFunction,
-    providerPlugin: provider,
-    build: true,
-  };
-
-  await context.amplify.updateamplifyMetaAfterResourceAdd('function', functionName, backendConfigs);
-  context.print.success(`Successfully added ${functionName} function locally`);
-
-  return functionName;
+  context.print.success(`Successfully added ${resourceName} function locally`);
+  await context.amplify.invokePluginMethod(context, 'function', undefined, 'addAppSyncInvokeMethodPermission', [resourceName]);
+  return resourceName;
 }
