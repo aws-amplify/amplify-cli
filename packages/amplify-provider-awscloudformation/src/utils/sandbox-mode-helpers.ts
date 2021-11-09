@@ -11,25 +11,21 @@ const PUBLIC = 'public';
 
 export async function showSandboxModePrompts(context: $TSContext): Promise<any> {
   if (!hasApiKey()) {
-    printer.info(
-      `
-⚠️  WARNING: Global Sandbox Mode has been enabled, which requires a valid API key. If
-you'd like to disable, remove ${chalk.green('"input AMPLIFY { globalAuthRule: AuthRule = { allow: public } }"')}
-from your GraphQL schema and run 'amplify push' again. If you'd like to proceed with
-sandbox mode disabled, do not create an API Key.
-`,
-      'yellow',
+    printer.warn(
+      ` Global Sandbox Mode has been enabled, which requires a valid API key. If ` +
+        `you'd like to disable, remove ${chalk.green('"input AMPLIFY { globalAuthRule: AuthRule = { allow: public } }"')} ` +
+        `from your GraphQL schema and run 'amplify push' again. If you'd like to proceed with ` +
+        `sandbox mode disabled, do not create an API Key.\n`,
     );
     return await context.amplify.invokePluginMethod(context, 'api', undefined, 'promptToAddApiKey', [context]);
   }
 }
 
 export function showGlobalSandboxModeWarning(): void {
-  printer.info(
-    `
-⚠️  WARNING: your GraphQL API currently allows public create, read, update, and delete access to all models via an API Key. To configure PRODUCTION-READY authorization rules, review: https://docs.amplify.aws/cli/graphql-transformer/auth
-`,
-    'yellow',
+  printer.warn(
+    ` WARNING: Your GraphQL API currently allows public create, read, update, and delete ` +
+      `access to all models via an API Key. To configure PRODUCTION-READY authorization rules, ` +
+      `review: https://docs.amplify.aws/cli/graphql-transformer/auth\n`,
   );
 }
 
