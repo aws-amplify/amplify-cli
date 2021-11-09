@@ -89,11 +89,7 @@ export const getAddAuthHandler =
 
 export const getUpdateAuthHandler = (context: any) => async (request: ServiceQuestionHeadlessResult | CognitoConfiguration) => {
   const { defaultValuesFilename } = getSupportedServices()[request.serviceName];
-  // loading previous cli-inputs
-  const resourceName = await getAuthResourceName(context);
-  const cliState = new AuthInputState(resourceName);
-  let prevCliInputs: CognitoCLIInputs = cliState.getCLIInputPayload();
-  const requestWithDefaults = await getUpdateAuthDefaultsApplier(context, defaultValuesFilename, prevCliInputs!.cognitoConfig)(request);
+  const requestWithDefaults = await getUpdateAuthDefaultsApplier(context, defaultValuesFilename, context.updatingAuth)(request);
   const resources = context.amplify.getProjectDetails().amplifyMeta;
   if (resources.auth.userPoolGroups) {
     await updateUserPoolGroups(context, requestWithDefaults.resourceName!, requestWithDefaults.userPoolGroupList);
