@@ -474,7 +474,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
         });
       }
       if (props.audiences && props.audiences.length > 0) {
-        this.identityPool.openIdConnectProviderArns = cdk.Fn.getAtt('OpenIdLambdaInputs', 'providerArn') as unknown as string[];
+        this.identityPool.openIdConnectProviderArns = [cdk.Fn.getAtt('OpenIdLambdaInputs', 'providerArn').toString()];
         this.identityPool.node.addDependency(this.openIdLambdaInputs!.node!.defaultChild!);
       }
 
