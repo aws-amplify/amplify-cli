@@ -3,6 +3,8 @@ import { constructMockPluginPlatform } from './mock-plugin-platform';
 import { constructContext } from '../../../context-manager';
 import { getCategoryPluginInfo } from '../../../extensions/amplify-helpers/get-category-pluginInfo';
 
+jest.mock('../../../version-gating');
+
 test('getCategoryPluginInfo returns the first pluginInfo to match category', () => {
   const mockPluginPlatform = constructMockPluginPlatform();
   const mockProcessArgv = [
