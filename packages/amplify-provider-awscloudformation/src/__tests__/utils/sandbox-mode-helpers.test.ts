@@ -19,7 +19,7 @@ describe('sandbox mode helpers', () => {
       },
     } as unknown as $TSContext;
 
-    jest.spyOn(prompts.printer, 'warn').mockImplementation();
+    jest.spyOn(prompts.printer, 'info').mockImplementation();
     jest.spyOn(apiKeyHelpers, 'hasApiKey').mockReturnValue(apiKeyPresent);
   });
 
@@ -32,10 +32,14 @@ describe('sandbox mode helpers', () => {
       it('displays warning', async () => {
         await showSandboxModePrompts(ctx);
 
-        expect(prompts.printer.warn).toBeCalledWith(
-          ` Global Sandbox Mode has been enabled, which requires a valid API key. If you'd like to disable, remove ${chalk.green(
-            '"input AMPLIFY { globalAuthRule: AuthRule = { allow: public } }"',
-          )} from your GraphQL schema and run 'amplify push' again. If you'd like to proceed with sandbox mode disabled, do not create an API Key.\n`,
+        expect(prompts.printer.info).toBeCalledWith(
+          `
+⚠️  WARNING: Global Sandbox Mode has been enabled, which requires a valid API key. If
+you'd like to disable, remove ${chalk.green('"input AMPLIFY { globalAuthRule: AuthRule = { allow: public } }"')}
+from your GraphQL schema and run 'amplify push' again. If you'd like to proceed with
+sandbox mode disabled, do not create an API Key.
+`,
+          'yellow',
         );
         expect(ctx.amplify.invokePluginMethod).toBeCalledWith(ctx, 'api', undefined, 'promptToAddApiKey', [ctx]);
       });
@@ -46,8 +50,11 @@ describe('sandbox mode helpers', () => {
     it('prints sandbox api key message', () => {
       showGlobalSandboxModeWarning();
 
-      expect(prompts.printer.warn).toBeCalledWith(
-        ` WARNING: Your GraphQL API currently allows public create, read, update, and delete access to all models via an API Key. To configure PRODUCTION-READY authorization rules, review: https://docs.amplify.aws/cli/graphql-transformer/auth\n`,
+      expect(prompts.printer.info).toBeCalledWith(
+        `
+⚠️  WARNING: your GraphQL API currently allows public create, read, update, and delete access to all models via an API Key. To configure PRODUCTION-READY authorization rules, review: https://docs.amplify.aws/cli/graphql-transformer/auth
+`,
+        'yellow',
       );
     });
   });
