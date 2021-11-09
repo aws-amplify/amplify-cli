@@ -13,7 +13,6 @@ import {
   MutationFieldType,
   QueryFieldType,
   SubscriptionFieldType,
-  TransformerBeforeStepContextProvider,
   TransformerContextProvider,
   TransformerModelProvider,
   TransformerPrepareStepContextProvider,
@@ -167,33 +166,6 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
     super('amplify-model-transformer', directiveDefinition);
     this.options = this.getOptions(options);
   }
-
-  before = (ctx: TransformerBeforeStepContextProvider) => {
-    // add parameters to the main stack
-    ctx.stackManager.addParameter(ResourceConstants.PARAMETERS.DynamoDBModelTableReadIOPS, {
-      description: 'The number of read IOPS the table should support.',
-      default: 5,
-    });
-    ctx.stackManager.addParameter(ResourceConstants.PARAMETERS.DynamoDBModelTableWriteIOPS, {
-      description: 'The number of write IOPS the table should support.',
-      default: 5,
-    });
-    ctx.stackManager.addParameter(ResourceConstants.PARAMETERS.DynamoDBBillingMode, {
-      description: 'Configure @model types to create DynamoDB tables with PAY_PER_REQUEST or PROVISIONED billing modes.',
-      default: 'PAY_PER_REQUEST',
-      allowedValues: ['PAY_PER_REQUEST', 'PROVISIONED'],
-    });
-    ctx.stackManager.addParameter(ResourceConstants.PARAMETERS.DynamoDBEnablePointInTimeRecovery, {
-      description: 'Whether to enable Point in Time Recovery on the table',
-      default: 'false',
-      allowedValues: ['true', 'false'],
-    });
-    ctx.stackManager.addParameter(ResourceConstants.PARAMETERS.DynamoDBEnableServerSideEncryption, {
-      description: 'Enable service side encryption powered by KMS.',
-      default: 'true',
-      allowedValues: ['true', 'false'],
-    });
-  };
 
   object = (definition: ObjectTypeDefinitionNode, directive: DirectiveNode, ctx: TransformerSchemaVisitStepContextProvider): void => {
     const isTypeNameReserved =
@@ -1109,15 +1081,34 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
 
     // Add parameters.
     const env = context.stackManager.getParameter(ResourceConstants.PARAMETERS.Env) as cdk.CfnParameter;
-    const readIops = context.stackManager.getParameter(ResourceConstants.PARAMETERS.DynamoDBModelTableReadIOPS) as cdk.CfnParameter;
-    const writeIops = context.stackManager.getParameter(ResourceConstants.PARAMETERS.DynamoDBModelTableWriteIOPS) as cdk.CfnParameter;
-    const billingMode = context.stackManager.getParameter(ResourceConstants.PARAMETERS.DynamoDBBillingMode);
-    const pointInTimeRecovery = context.stackManager.getParameter(
-      ResourceConstants.PARAMETERS.DynamoDBEnablePointInTimeRecovery,
-    ) as cdk.CfnParameter;
-    const enableSSE = context.stackManager.getParameter(
-      ResourceConstants.PARAMETERS.DynamoDBEnableServerSideEncryption,
-    ) as cdk.CfnParameter;
+    const readIops = new cdk.CfnParameter(stack, ResourceConstants.PARAMETERS.DynamoDBModelTableReadIOPS, {
+      description: 'The number of read IOPS the table should support.',
+      type: 'Number',
+      default: 5,
+    }).valueAsString;
+    const writeIops = new cdk.CfnParameter(stack, ResourceConstants.PARAMETERS.DynamoDBModelTableWriteIOPS, {
+      description: 'The number of write IOPS the table should support.',
+      type: 'Number',
+      default: 5,
+    }).valueAsString;
+    const billingMode = new cdk.CfnParameter(stack, ResourceConstants.PARAMETERS.DynamoDBBillingMode, {
+      description: 'Configure @model types to create DynamoDB tables with PAY_PER_REQUEST or PROVISIONED billing modes.',
+      type: 'String',
+      default: 'PAY_PER_REQUEST',
+      allowedValues: ['PAY_PER_REQUEST', 'PROVISIONED'],
+    }).valueAsString;
+    const pointInTimeRecovery = new cdk.CfnParameter(stack, ResourceConstants.PARAMETERS.DynamoDBEnablePointInTimeRecovery, {
+      description: 'Whether to enable Point in Time Recovery on the table.',
+      type: 'String',
+      default: 'false',
+      allowedValues: ['true', 'false'],
+    }).valueAsString;
+    const enableSSE = new cdk.CfnParameter(stack, ResourceConstants.PARAMETERS.DynamoDBEnableServerSideEncryption, {
+      description: 'Enable server side encryption powered by KMS.',
+      type: 'String',
+      default: 'true',
+      allowedValues: ['true', 'false'],
+    }).valueAsString;
 
     // Add conditions.
     // eslint-disable-next-line no-new
