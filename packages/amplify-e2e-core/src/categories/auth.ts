@@ -373,7 +373,6 @@ export function updateAuthSignInSignOutUrl(cwd: string, settings: any): Promise<
       .sendCarriageReturn()
       .wait('Do you want to add redirect signout URIs?')
       .sendConfirmNo()
-      .delay(10000)
       .sendEof()
       .run((err: Error) => {
         if (!err) {
@@ -585,7 +584,6 @@ export function addAuthWithSignInSignOutUrl(cwd: string, settings: any): Promise
       .sendCarriageReturn()
       .wait('Select the social providers you want to configure for your user pool:')
       .sendCarriageReturn()
-      .delay(300000)
       .sendEof()
       .run((err: Error) => {
         if (!err) {

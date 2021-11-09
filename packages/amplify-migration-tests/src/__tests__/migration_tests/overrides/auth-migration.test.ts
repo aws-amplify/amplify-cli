@@ -9,6 +9,7 @@ import {
   deleteProject,
   deleteProjectDir,
   getAwsAndroidConfig,
+  getBackendAmplifyMeta,
   getLambdaFunction,
   getProjectMeta,
   getUserPool,
@@ -122,26 +123,25 @@ describe('amplify auth migration', () => {
     expect(meta.Auth.Default.authenticationFlowType).toEqual('USER_SRP_AUTH');
   });
 
-  // it.only('...should edit signin url on update', async () => {
-  //   let settings = {
-  //     signinUrl: 'http://localhost:3001/',
-  //     signoutUrl: 'http://localhost:3002/',
-  //     updatesigninUrl: 'http://localhost:3003/',
-  //     updatesignoutUrl: 'http://localhost:3004/',
-  //   };
-  //   await initAndroidProjectWithProfile(projRoot, defaultSettings);
-  //   await addAuthWithSignInSignOutUrl(projRoot, settings);
-  //   const amplifyMeta = getProjectMeta(projRoot);
-  //   const authResourceName = Object.keys(amplifyMeta.auth).filter(resourceName => amplifyMeta.auth[resourceName].service === 'Cognito')[0];
-  //   // update and push with codebase
-  //   const overridesObj: $TSAny = {
-  //     resourceName: authResourceName,
-  //     category: 'auth',
-  //     service: 'cognito',
-  //   };
-  //   await updateAuthSignInSignOutUrl(projRoot, { testingWithLatestCodebase: true, overrides: overridesObj });
-  //   await amplifyPushAuth(projRoot,true);
-  // });
+  it('...should edit signin url on update', async () => {
+    let settings = {
+      signinUrl: 'http://localhost:3001/',
+      signoutUrl: 'http://localhost:3002/',
+      updatesigninUrl: 'http://localhost:3003/',
+      updatesignoutUrl: 'http://localhost:3004/',
+    };
+    await initAndroidProjectWithProfile(projRoot, defaultSettings);
+    await addAuthWithSignInSignOutUrl(projRoot, settings);
+    const amplifyMeta = getBackendAmplifyMeta(projRoot);
+    const authResourceName = Object.keys(amplifyMeta.auth).filter(resourceName => amplifyMeta.auth[resourceName].service === 'Cognito')[0];
+    // update and push with codebase
+    const overridesObj: $TSAny = {
+      resourceName: authResourceName,
+      category: 'auth',
+      service: 'cognito',
+    };
+    await updateAuthSignInSignOutUrl(projRoot, { testingWithLatestCodebase: true, overrides: overridesObj });
+  });
 
   it('updates existing auth resource', async () => {
     const updateAuthRequest: UpdateAuthRequest = {
