@@ -2,3 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+
+# 0.2.0-ext17.0 (2021-11-09)
+
+
+### Bug Fixes
+
+* don't migrate AppSync auth related directives ([#8661](https://github.com/aws-amplify/amplify-cli/issues/8661)) ([903c7bf](https://github.com/aws-amplify/amplify-cli/commit/903c7bf85e0e96275267a28700364436dcaaa712))
+* exit migration if improvePluralization is false ([#8670](https://github.com/aws-amplify/amplify-cli/issues/8670)) ([cead88d](https://github.com/aws-amplify/amplify-cli/commit/cead88db132a50827ade3e08fc01ca68b5f11282))
+* gracefully exit on deprecated [@connection](https://github.com/connection) parameterization ([#8640](https://github.com/aws-amplify/amplify-cli/issues/8640)) ([4045f3a](https://github.com/aws-amplify/amplify-cli/commit/4045f3ab4aa1f3782c5a4ff5d7a1af7bd48fd00d))
+
+
+### Features
+
+* Activate graphql migrator behind feature flag ([5a76b3a](https://github.com/aws-amplify/amplify-cli/commit/5a76b3a320012c09d2ff2f424283fafba74fa74d))

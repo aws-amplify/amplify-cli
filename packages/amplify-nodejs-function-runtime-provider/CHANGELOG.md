@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.6.15-ext17.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-nodejs-function-runtime-provider@1.6.14...amplify-nodejs-function-runtime-provider@1.6.15-ext17.0) (2021-11-09)
+
+
+### Bug Fixes
+
+* **amplify-nodejs-function-runtime-provider:** catch yarn 2 error on lambda build ([#8263](https://github.com/aws-amplify/amplify-cli/issues/8263)) ([2c80057](https://github.com/aws-amplify/amplify-cli/commit/2c80057223963f238206bcdec421c9e118c10626))
+
+
+
+
+
 ## [1.6.14](https://github.com/aws-amplify/amplify-cli/compare/amplify-nodejs-function-runtime-provider@1.6.13...amplify-nodejs-function-runtime-provider@1.6.14) (2021-10-10)
 
 **Note:** Version bump only for package amplify-nodejs-function-runtime-provider

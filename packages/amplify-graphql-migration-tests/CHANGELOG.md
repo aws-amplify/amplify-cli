@@ -5,7 +5,4 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ## 1.0.1-ext17.0 (2021-11-09)
 
-
-### Bug Fixes
-
-* update custom cdk seleton tempaltes + format override skeleton file ([f19e441](https://github.com/aws-amplify/amplify-cli/commit/f19e44113c29f75d28de19ede001323697e12415))
+**Note:** Version bump only for package amplify-graphql-migration-tests
