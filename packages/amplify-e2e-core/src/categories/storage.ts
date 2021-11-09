@@ -602,40 +602,25 @@ export function addS3StorageWithIdpAuth(projectDir: string): Promise<void> {
 export function addS3Storage(projectDir: string): Promise<void> {
   return new Promise((resolve, reject) => {
     let chain = spawn(getCLIPath(), ['add', 'storage'], { cwd: projectDir, stripColors: true });
-    chain
-      .wait('Select from one of the below mentioned services:')
-      .sendCarriageReturn() //'Content (Images, audio, video, etc.)'
-      .wait('You need to add auth (Amazon Cognito) to your project in order to add storage')
-      .sendConfirmYes();
-    chain
-      .wait('Provide a friendly name for your resource that will be used to label this category in the project:')
-      .sendCarriageReturn()
-      .wait('Provide bucket name:')
-      .sendCarriageReturn();
-
-    chain.wait('Who should have access:').sendKeyDown().send(' ').sendCarriageReturn();
-
-    chain
-      .wait('What kind of access do you want for Authenticated users?')
-      .send(' ') //'create/update'
-      .sendKeyDown()
-      .send(' ') //'read'
-      .sendKeyDown()
-      .send(' ') //'delete'
-      .sendCarriageReturn();
-
-    chain
-      .wait('What kind of access do you want for Guest users?')
-      .send(' ') //'create/update'
-      .sendKeyDown()
-      .send(' ') //'read'
-      .sendKeyDown()
-      .send(' ') //'delete'
-      .sendCarriageReturn();
-
-    chain.wait('Do you want to add a Lambda Trigger for your S3 Bucket?').sendConfirmNo();
-
-    chain.run((err: Error) => {
+    chain.wait('Select from one of the below mentioned services:') //'Content (Images, audio, video, etc.)'
+    .sendCarriageReturn()
+    .wait('Provide a friendly name for your resource that will be used to label this category in the project:')
+    .sendCarriageReturn()
+    .wait('Provide bucket name:')
+    .sendCarriageReturn()
+    .wait('Who should have access:')
+    .sendKeyDown()
+    .send(' ') //Auth and guest
+    .sendCarriageReturn()
+    .wait('What kind of access do you want for Authenticated users?')//Auth
+    .sendCtrlA()
+    .sendCarriageReturn()
+    .wait('What kind of access do you want for Guest users?')//Guest
+    .sendCtrlA()
+    .sendCarriageReturn()
+    .wait('Do you want to add a Lambda Trigger for your S3 Bucket?')
+    .sendConfirmNo()
+    .run((err: Error) => {
       if (!err) {
         resolve();
       } else {
