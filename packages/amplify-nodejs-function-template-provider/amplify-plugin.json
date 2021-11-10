@@ -25,10 +25,6 @@
       {
         "name": "Lambda trigger",
         "value": "trigger"
-      },
-      {
-        "name": "GraphQL Lambda Authorizer",
-        "value": "lambda-auth"
       }
     ]
   }
