@@ -20,6 +20,7 @@ export async function buildCustomResources(context: $TSContext, resourceName?: s
   const spinner = ora('Building custom resources');
   try {
     spinner.start();
+
     const resourcesToBuild = (await getSelectedResources(context, resourceName)).filter(resource => resource.service === 'customCDK');
     for await (const resource of resourcesToBuild) {
       await buildResource(context, resource);
@@ -61,6 +62,9 @@ export async function generateDependentResourcesType(context: $TSContext) {
 async function buildResource(context: $TSContext, resource: ResourceMeta) {
   const targetDir = path.resolve(path.join(pathManager.getBackendDirPath(), categoryName, resource.resourceName));
 
+  // generate dynamic types for Amplify resources
+  await generateDependentResourcesType(context);
+
   const packageManager = getPackageManager(targetDir);
 
   if (packageManager === null) {
@@ -101,6 +105,4 @@ async function buildResource(context: $TSContext, resource: ResourceMeta) {
   }
 
   await generateCloudFormationFromCDK(resource.resourceName);
-
-  await generateDependentResourcesType(context);
 }
