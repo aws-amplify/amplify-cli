@@ -13,9 +13,6 @@ import { storeRootStackTemplate } from '../initializer';
  */
 export async function transformResourceWithOverrides(context: $TSContext, resource?: IAmplifyResource) {
   const flags = context.parameters.options;
-  if (flags['no-override']) {
-    return;
-  }
   try {
     if (resource) {
       const { transformCategoryStack } = await import(`@aws-amplify/amplify-category-${resource.category}`);
