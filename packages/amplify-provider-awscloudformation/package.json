@@ -27,7 +27,7 @@
     "@aws-amplify/graphql-auth-transformer": "0.3.0-beta.0",
     "@aws-amplify/graphql-default-value-transformer": "0.4.0-beta.1",
     "@aws-amplify/graphql-function-transformer": "0.5.1-beta.1",
-    "@aws-amplify/graphql-http-transformer": "4.19.1-beta.1",
+    "@aws-amplify/graphql-http-transformer": "0.6.1-beta.1",
     "@aws-amplify/graphql-index-transformer": "0.6.0-beta.1",
     "@aws-amplify/graphql-model-transformer": "0.8.0-beta.1",
     "@aws-amplify/graphql-predictions-transformer": "0.4.1-beta.1",
