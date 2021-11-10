@@ -1,17 +1,26 @@
-import * as path from 'path';
-import * as fs from 'fs-extra';
-import { v4 as uuid } from 'uuid';
+import {
+  $TSAny,
+  $TSContext,
+  $TSObject,
+  AmplifyCategories,
+  AmplifySupportedService,
+  exitOnNextTick,
+  pathManager,
+  ResourceDoesNotExistError,
+  stateManager,
+} from 'amplify-cli-core';
 import { alphanumeric, printer, prompter, Validator } from 'amplify-prompts';
-import { $TSContext, AmplifyCategories, ResourceDoesNotExistError, exitOnNextTick, stateManager } from 'amplify-cli-core';
-import { DynamoDBInputState } from './dynamoDB-input-state';
+import * as fs from 'fs-extra';
+import * as path from 'path';
+import { v4 as uuid } from 'uuid';
+import { DDBStackTransform } from '../cdk-stack-builder/ddb-stack-transform';
 import {
   DynamoDBAttributeDefType,
   DynamoDBCLIInputs,
   DynamoDBCLIInputsGSIType,
   DynamoDBCLIInputsKeyType,
 } from '../service-walkthrough-types/dynamoDB-user-input-types';
-import { DDBStackTransform } from '../cdk-stack-builder/ddb-stack-transform';
-import { ConfigSnapshotDeliveryProperties } from 'cloudform-types/types/config/deliveryChannel';
+import { DynamoDBInputState } from './dynamoDB-input-state';
 
 // keep in sync with ServiceName in amplify-AmplifyCategories.STORAGE-function, but probably it will not change
 const FunctionServiceNameLambdaFunction = 'Lambda';
@@ -58,7 +67,7 @@ export async function addWalkthrough(context: $TSContext, defaultValuesFilename:
 
 export async function updateWalkthrough(context: $TSContext) {
   const amplifyMeta = stateManager.getMeta();
-  const dynamoDbResources: any = {};
+  const dynamoDbResources: $TSObject = {};
 
   Object.keys(amplifyMeta[AmplifyCategories.STORAGE]).forEach(resourceName => {
     if (
@@ -519,7 +528,7 @@ async function addTrigger(context: $TSContext, resourceName: string, triggerList
     // Update amplify-meta and backend-config
 
     const backendConfigs = {
-      service: FunctionServiceNameLambdaFunction,
+      service: AmplifySupportedService.LAMBDA,
       providerPlugin: 'awscloudformation',
       build: true,
     };
@@ -599,7 +608,7 @@ async function addTrigger(context: $TSContext, resourceName: string, triggerList
 
     // Update dependsOn
 
-    const amplifyMetaFilePath = context.amplify.pathManager.getAmplifyMetaFilePath();
+    const amplifyMetaFilePath = pathManager.getAmplifyMetaFilePath();
     const amplifyMeta = context.amplify.readJsonFile(amplifyMetaFilePath);
 
     const resourceDependsOn = amplifyMeta.function[functionName].dependsOn || [];
@@ -641,13 +650,13 @@ async function addTrigger(context: $TSContext, resourceName: string, triggerList
 async function getLambdaFunctions(context: $TSContext) {
   const { allResources } = await context.amplify.getResourceStatus();
   const lambdaResources = allResources
-    .filter((resource: any) => resource.service === FunctionServiceNameLambdaFunction)
+    .filter((resource: any) => resource.service === AmplifySupportedService.LAMBDA)
     .map((resource: any) => resource.resourceName);
 
   return lambdaResources;
 }
 
-function migrateCategory(context: $TSContext, projectPath: any, resourceName: any) {
+export function migrate(context: $TSContext, projectPath: any, resourceName: any) {
   const resourceDirPath = path.join(projectPath, 'amplify', 'backend', AmplifyCategories.STORAGE, resourceName);
   const cfnFilePath = path.join(resourceDirPath, `${resourceName}-cloudformation-template.json`);
 
@@ -722,11 +731,11 @@ function migrateCategory(context: $TSContext, projectPath: any, resourceName: an
   fs.writeFileSync(cfnFilePath, jsonString, 'utf8');
 }
 
-function getIAMPolicies(resourceName: any, crudOptions: any) {
+export function getIAMPolicies(resourceName: string, crudOptions: $TSAny) {
   let policy = {};
-  const actions: any = [];
+  const actions: string[] = [];
 
-  crudOptions.forEach((crudOption: any) => {
+  crudOptions.forEach((crudOption: $TSAny) => {
     switch (crudOption) {
       case 'create':
         actions.push('dynamodb:Put*', 'dynamodb:Create*', 'dynamodb:BatchWriteItem');
@@ -770,10 +779,3 @@ function getIAMPolicies(resourceName: any, crudOptions: any) {
 
   return { policy, attributes };
 }
-
-module.exports = {
-  addWalkthrough,
-  updateWalkthrough,
-  migrate: migrateCategory,
-  getIAMPolicies,
-};
