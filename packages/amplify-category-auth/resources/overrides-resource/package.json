@@ -8,7 +8,7 @@
       "test": "echo \"Error: no test specified\" && exit 1"
     },
     "dependencies": {
-      "@aws-amplify/cli-extensibility-helper": "latest"
+      "@aws-amplify/cli-extensibility-helper": "1.0.1-ext19.0"
     },
     "devDependencies": {
       "typescript": "^4.2.4"
