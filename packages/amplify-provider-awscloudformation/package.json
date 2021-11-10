@@ -33,7 +33,7 @@
     "@aws-amplify/graphql-predictions-transformer": "0.4.1-beta.1",
     "@aws-amplify/graphql-relational-transformer": "0.5.0-beta.1",
     "@aws-amplify/graphql-searchable-transformer": "0.8.0-beta.1",
-    "@aws-amplify/graphql-transformer-core": "6.32.0-beta.1",
+    "@aws-amplify/graphql-transformer-core": "0.11.0-beta.0",
     "@aws-amplify/graphql-transformer-interfaces": "1.11.1-beta.1",
     "@aws-amplify/graphql-transformer-migrator": "0.2.0-beta.0",
     "@aws-cdk/assets": "~1.124.0",
