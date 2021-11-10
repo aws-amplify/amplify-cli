@@ -208,11 +208,7 @@ export async function updateWalkthrough(context: $TSContext) {
 export function isMigrateStorageRequired(context: $TSContext, resourceName: string) {
   const projectBackendDirPath = pathManager.getBackendDirPath();
   const cliInputsFilePath = path.resolve(path.join(projectBackendDirPath, AmplifyCategories.STORAGE, resourceName, 'cli-inputs.json'));
-  if (!fs.existsSync(cliInputsFilePath)) {
-    return true;
-  } else {
-    return false;
-  }
+ return !fs.existsSync(cliInputsFilePath);
 }
 
 /**
