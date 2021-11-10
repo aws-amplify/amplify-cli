@@ -14,6 +14,8 @@ import {
   $TSMeta,
   pathManager,
 } from 'amplify-cli-core';
+import chalk from 'chalk';
+import { EOL } from 'os';
 import { S3InputState } from './s3-user-input-state';
 import { S3UserInputs, S3TriggerFunctionType } from '../service-walkthrough-types/s3-user-input-types';
 import { AmplifyS3ResourceStackTransform } from '../cdk-stack-builder/s3-stack-transform';
@@ -91,8 +93,8 @@ export async function addWalkthrough(context: $TSContext, defaultValuesFilename:
 
     //Validate Authentication requirements
     //e.g if storage is added after import auth,
-    const allowUnauthenticatedIdentities = ( cliInputs.guestAccess && (cliInputs.guestAccess.length > 0 ) );
-    await checkStorageAuthenticationRequirements( context, storageResourceName, allowUnauthenticatedIdentities );
+    const allowUnauthenticatedIdentities = cliInputs.guestAccess && cliInputs.guestAccess.length > 0;
+    await checkStorageAuthenticationRequirements(context, storageResourceName, allowUnauthenticatedIdentities);
 
     //Save CLI Inputs payload
     const cliInputsState = new S3InputState(cliInputs.resourceName as string, cliInputs);
@@ -135,7 +137,14 @@ export async function updateWalkthrough(context: $TSContext) {
     //Check if migration is required
     const headlessMigrate = context.input.options?.yes || context.input.options?.forcePush || context.input.options?.headless;
     if (!cliInputsState.cliInputFileExists()) {
-      if (headlessMigrate || (await prompter.confirmContinue('File migration required to continue. Do you want to continue?'))) {
+      const docsLink = 'https://docs.amplify.aws/cli/migration/overrides';
+      const migrateResourceMessage = [
+        `Do you want to migrate ${AmplifyCategories.STORAGE} resource "${storageResourceName}" to support overrides?`,
+        chalk.red(`Recommended to try in a non-production environment first. Run "amplify env add" to create or clone an environment.`),
+        `Learn more about this migration: ${docsLink}`,
+      ].join(EOL);
+
+      if (headlessMigrate || (await prompter.confirmContinue(migrateResourceMessage))) {
         //migrate auth and storage
         await cliInputsState.migrate(context);
         const stackGenerator = new AmplifyS3ResourceStackTransform(storageResourceName, context);
@@ -178,8 +187,8 @@ export async function updateWalkthrough(context: $TSContext) {
 
     //Validate Authentication requirements
     //e.g if storage is added after import auth,
-    const allowUnauthenticatedIdentities = ( cliInputs.guestAccess && (cliInputs.guestAccess.length > 0 ) );
-    await checkStorageAuthenticationRequirements( context, storageResourceName, allowUnauthenticatedIdentities );
+    const allowUnauthenticatedIdentities = cliInputs.guestAccess && cliInputs.guestAccess.length > 0;
+    await checkStorageAuthenticationRequirements(context, storageResourceName, allowUnauthenticatedIdentities);
 
     //Save CLI Inputs payload
     await cliInputsState.saveCliInputPayload(cliInputs);
@@ -196,14 +205,14 @@ export async function updateWalkthrough(context: $TSContext) {
  * @param resourceName - storage resource name
  * @returns
  */
-export function isMigrateStorageRequired(context : $TSContext, resourceName: string){
-    const projectBackendDirPath = pathManager.getBackendDirPath();
-    const cliInputsFilePath = path.resolve(path.join(projectBackendDirPath, AmplifyCategories.STORAGE, resourceName, 'cli-inputs.json'));
-    if ( !fs.existsSync(cliInputsFilePath) ){
-      return true;
-    }else {
-      return false;
-    }
+export function isMigrateStorageRequired(context: $TSContext, resourceName: string) {
+  const projectBackendDirPath = pathManager.getBackendDirPath();
+  const cliInputsFilePath = path.resolve(path.join(projectBackendDirPath, AmplifyCategories.STORAGE, resourceName, 'cli-inputs.json'));
+  if (!fs.existsSync(cliInputsFilePath)) {
+    return true;
+  } else {
+    return false;
+  }
 }
 
 /**

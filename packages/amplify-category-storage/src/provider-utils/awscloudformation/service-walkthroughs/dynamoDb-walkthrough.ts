@@ -10,7 +10,9 @@ import {
   stateManager,
 } from 'amplify-cli-core';
 import { alphanumeric, printer, prompter, Validator } from 'amplify-prompts';
+import chalk from 'chalk';
 import * as fs from 'fs-extra';
+import { EOL } from 'os';
 import * as path from 'path';
 import { v4 as uuid } from 'uuid';
 import { DDBStackTransform } from '../cdk-stack-builder/ddb-stack-transform';
@@ -94,7 +96,14 @@ export async function updateWalkthrough(context: $TSContext) {
 
   const headlessMigrate = context.input.options?.yes || context.input.options?.forcePush || context.input.options?.headless;
   if (!cliInputsState.cliInputFileExists()) {
-    if (headlessMigrate || (await prompter.yesOrNo('File migration required to continue. Do you want to continue?', true))) {
+    const docsLink = 'https://docs.amplify.aws/cli/migration/overrides';
+    const migrateResourceMessage = [
+      `Do you want to migrate ${AmplifyCategories.STORAGE} resource "${resourceName}" to support overrides?`,
+      chalk.red(`Recommended to try in a non-production environment first. Run "amplify env add" to create or clone an environment.`),
+      `Learn more about this migration: ${docsLink}`,
+    ].join(EOL);
+
+    if (headlessMigrate || (await prompter.yesOrNo(migrateResourceMessage, true))) {
       cliInputsState.migrate();
       const stackGenerator = new DDBStackTransform(resourceName);
       stackGenerator.transform();
