@@ -36,4 +36,4 @@ export const getAppSyncServiceExtraDirectives = (): string => {
   return print(EXTRA_DIRECTIVES_DOCUMENT);
 };
 
-export { MappingTemplate } from './cdk-compat';
+export { MappingTemplate, TransformerNestedStack } from './cdk-compat';
