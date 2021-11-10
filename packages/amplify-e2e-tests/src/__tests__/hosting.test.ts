@@ -1,4 +1,4 @@
-import { amplifyPublishWithoutUpdate, createReactTestProject, resetBuildCommand } from 'amplify-e2e-core';
+import { amplifyPublishWithUpdate, createReactTestProject, resetBuildCommand } from 'amplify-e2e-core';
 
 import { initJSProjectWithProfile, deleteProject } from 'amplify-e2e-core';
 import { addDEVHosting, removeHosting, amplifyPushWithoutCodegen, extractHostingBucketInfo, deleteS3Bucket } from 'amplify-e2e-core';
@@ -39,7 +39,7 @@ describe('amplify add hosting', () => {
   it('publish successfully', async () => {
     let error;
     try {
-      await amplifyPublishWithoutUpdate(projRoot);
+      await amplifyPublishWithUpdate(projRoot);
     } catch (err) {
       error = err;
     }
@@ -50,7 +50,7 @@ describe('amplify add hosting', () => {
     const currentBuildCommand = resetBuildCommand(projRoot, '');
     let error;
     try {
-      await amplifyPublishWithoutUpdate(projRoot);
+      await amplifyPublishWithUpdate(projRoot);
     } catch (err) {
       error = err;
     }
