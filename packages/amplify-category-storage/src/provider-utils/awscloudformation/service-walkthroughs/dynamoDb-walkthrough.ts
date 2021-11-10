@@ -23,8 +23,6 @@ import {
 import { DynamoDBInputState } from './dynamoDB-input-state';
 
 // keep in sync with ServiceName in amplify-AmplifyCategories.STORAGE-function, but probably it will not change
-const FunctionServiceNameLambdaFunction = 'Lambda';
-const serviceName = 'DynamoDB';
 
 export async function addWalkthrough(context: $TSContext, defaultValuesFilename: string) {
   printer.blankLine();
@@ -71,7 +69,7 @@ export async function updateWalkthrough(context: $TSContext) {
 
   Object.keys(amplifyMeta[AmplifyCategories.STORAGE]).forEach(resourceName => {
     if (
-      amplifyMeta[AmplifyCategories.STORAGE][resourceName].service === serviceName &&
+      amplifyMeta[AmplifyCategories.STORAGE][resourceName].service === AmplifySupportedService.DYNAMODB &&
       amplifyMeta[AmplifyCategories.STORAGE][resourceName].mobileHubMigrated !== true &&
       amplifyMeta[AmplifyCategories.STORAGE][resourceName].serviceType !== 'imported'
     ) {
