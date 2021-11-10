@@ -183,9 +183,9 @@ export const storeRootStackTemplate = async (context: $TSContext, template?: Tem
   // generate template again as the folder structure was not created when root stack was initiaized
   if (template === undefined) {
     template = await transformRootStack(context);
-    await prePushCfnTemplateModifier(template);
   }
-
+  // apply Modifiers
+  await prePushCfnTemplateModifier(template);
   // RootStack deployed to backend/awscloudformation/build
   const projectRoot = pathManager.findProjectRoot();
   const rootStackBackendBuildDir = pathManager.getRootStackBuildDirPath(projectRoot);
