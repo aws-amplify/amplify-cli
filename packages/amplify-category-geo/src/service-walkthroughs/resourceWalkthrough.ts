@@ -4,7 +4,7 @@ import { PricingPlan } from "../service-utils/resourceParams";
 import { $TSContext, open } from "amplify-cli-core";
 import { printer, prompter } from 'amplify-prompts';
 
-export async function resourceAccessWalkthrough<T extends ResourceParameters>(
+export async function authAndGuestAccessWalkthrough<T extends ResourceParameters>(
     parameters: Partial<T>,
     service: ServiceName
 ): Promise<Partial<T>> {
@@ -27,29 +27,32 @@ export async function resourceAccessWalkthrough<T extends ResourceParameters>(
 
 export async function pricingPlanWalkthrough<T extends ResourceParameters>(
     context: $TSContext,
-    parameters: Partial<T>
+    parameters: Partial<T>,
+    extendedFlow?: boolean
 ): Promise<Partial<T>> {
     let pricingPlan: PricingPlan = parameters.pricingPlan ? parameters.pricingPlan : PricingPlan.RequestBasedUsage;
 
     printer.info(choosePricingPlan);
 
     const pricingPlanBusinessTypeChoices = [
-        { name: "No, I do not track devices or I only need to track consumers' personal devices", value: PricingPlan.RequestBasedUsage },
-        { name: 'Yes, I track commercial assets (For example, any mobile object that is tracked by a company in support of its business)', value: 'Unknown' },
+        { name: "No, I do not track or direct any assets", value: PricingPlan.RequestBasedUsage },
+        { name: "No, I only need to track or direct consumers' personal mobile devices", value: PricingPlan.RequestBasedUsage },
+        { name: 'Yes, I track or direct commercial assets (For example, any mobile object that is tracked by a company in support of its business)', value: 'Unknown' },
         { name: 'Learn More', value: 'LearnMore'}
     ];
 
-    const pricingPlanChoiceDefaultIndex = pricingPlan === PricingPlan.RequestBasedUsage ? 0 : 1;
+    const pricingPlanChoiceDefaultIndex = pricingPlan === PricingPlan.RequestBasedUsage ? 0 : 2;
+    const assetsQuestion = 'Are you tracking or directing commercial assets for your business in your app?';
 
     let pricingPlanBusinessTypeChoice = await prompter.pick<'one', string>(
-        'Are you tracking commercial assets for your business in your app?',
+        assetsQuestion,
         pricingPlanBusinessTypeChoices,
         { initial: pricingPlanChoiceDefaultIndex }
     );
     while (pricingPlanBusinessTypeChoice === 'LearnMore') {
         open(apiDocs.pricingPlan, { wait: false });
         pricingPlanBusinessTypeChoice = await prompter.pick<'one', string>(
-            'Are you tracking commercial assets for your business in your app?',
+            assetsQuestion,
             pricingPlanBusinessTypeChoices,
             { initial: pricingPlanChoiceDefaultIndex }
         );
@@ -59,11 +62,46 @@ export async function pricingPlanWalkthrough<T extends ResourceParameters>(
         pricingPlan = PricingPlan.RequestBasedUsage;
     }
     else {
-        const pricingPlanRoutingChoice = await prompter.yesOrNo(
-            'Does your app provide routing or route optimization for commercial assets?',
-            pricingPlan === PricingPlan.MobileAssetManagement ? true : false
-        );
-        pricingPlan = pricingPlanRoutingChoice ? PricingPlan.MobileAssetManagement : PricingPlan.MobileAssetTracking;
+        let mapsSearchUsability = true;
+        if (extendedFlow === true) {
+            mapsSearchUsability = await prompter.yesOrNo(
+                'Does your app need Maps, Location Search or Routing?',
+                pricingPlan !== PricingPlan.RequestBasedUsage
+            )
+        }
+        if (mapsSearchUsability === true) {
+            const pricingPlanRoutingChoice = await prompter.yesOrNo(
+                'Does your app provide routing or route optimization for commercial assets?',
+                pricingPlan === PricingPlan.MobileAssetManagement ? true : false
+            );
+            pricingPlan = pricingPlanRoutingChoice ? PricingPlan.MobileAssetManagement : PricingPlan.MobileAssetTracking;
+        }
+        else {
+            const pricingPlanChoices = [
+                { name: 'Request Based Usage', value: PricingPlan.RequestBasedUsage },
+                { name: 'Mobile Asset Tracking', value: PricingPlan.MobileAssetTracking },
+                { name: 'Mobile Asset Management', value: PricingPlan.MobileAssetManagement },
+                { name: 'Learn More', value: 'LearnMore'}
+            ];
+            const pricingPlanQuestion = "Select the pricing plan for your Geo resources. We recommend you start with 'Request Based Usage' and then consider one of the other pricing plans as your usage scales";
+        
+            let pricingPlanChoice = await prompter.pick<'one', string>(
+                pricingPlanQuestion,
+                pricingPlanChoices,
+                { initial: 0 }
+            );
+            while (pricingPlanChoice === 'LearnMore') {
+                open(apiDocs.pricingPlan, { wait: false });
+                pricingPlanChoice = await prompter.pick<'one', string>(
+                    pricingPlanQuestion,
+                    pricingPlanChoices,
+                    { initial: 0 }
+                );
+            }
+
+            pricingPlan = pricingPlanChoice as PricingPlan;
+        }
+        
     }
     parameters.pricingPlan = pricingPlan;
 
@@ -75,8 +113,12 @@ export async function dataProviderWalkthrough<T extends ResourceParameters>(
     parameters: Partial<T>,
     service: ServiceName
 ): Promise<Partial<T>> {
+    let dataProviderPrompt = `Specify the data provider of geospatial data for this ${getServiceFriendlyName(service)}:`;
+    if (service === ServiceName.GeofenceCollection) {
+        dataProviderPrompt = `Specify the data provider for ${getServiceFriendlyName(service)}. This will be only used to calculate billing.`;
+    }
     const dataProviderInput = await prompter.pick<'one', string>(
-        `Specify the data provider of geospatial data for this ${getServiceFriendlyName(service)}:`,
+        dataProviderPrompt,
         Object.values(DataProvider),
         { initial: (parameters.dataProvider === DataProvider.Here) ? 1 : 0 }
     );
@@ -89,6 +131,8 @@ export const getServiceFriendlyName = (service: ServiceName): string => {
     switch(service) {
         case ServiceName.PlaceIndex:
             return 'search index';
+        case ServiceName.GeofenceCollection:
+            return 'geofence collection';
         default:
             return service;
     }
