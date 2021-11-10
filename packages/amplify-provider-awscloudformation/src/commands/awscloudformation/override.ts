@@ -26,7 +26,7 @@ export const run = async (context: $TSContext) => {
     }
     await generateOverrideSkeleton(context, srcPath, destPath);
   } else {
-    printer.info('Project level overrides is currently not turned on. In cli.json file please include the following:');
+    printer.info('Project level overrides are disabled. To enable, include the following in cli.json:');
     printer.info(
       JSON.stringify(
         {
