@@ -43,7 +43,7 @@ export async function attachBackend(context: $TSContext, inputParams) {
 async function onSuccess(context: $TSContext) {
   const { inputParams } = context.exeInfo;
 
-  /*if (inputParams.amplify.noOverride) {
+  if (inputParams.amplify.noOverride) {
     const projectPath = process.cwd();
     const backupAmplifyDirPath = path.join(projectPath, backupAmplifyDirName);
     const backupBackendDirPath = path.join(backupAmplifyDirPath, context.amplify.constants.BackendamplifyCLISubDirName);
@@ -54,7 +54,7 @@ async function onSuccess(context: $TSContext) {
       fs.removeSync(backendDirPath);
       fs.copySync(backupBackendDirPath, backendDirPath);
     }
-  }*/
+  }
 
   await postPullCodegen(context);
 
