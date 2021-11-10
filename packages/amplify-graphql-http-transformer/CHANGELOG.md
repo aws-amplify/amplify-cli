@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.6.1-beta.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-http-transformer@0.6.1-beta.1...@aws-amplify/graphql-http-transformer@0.6.1-beta.2) (2021-11-10)
+
+
+### Bug Fixes
+
+* override http datasource logical IDs ([#8714](https://github.com/aws-amplify/amplify-cli/issues/8714)) ([81cc461](https://github.com/aws-amplify/amplify-cli/commit/81cc461ed5e02b2f296825283993ad026f1126d1))
+
+
+
+
+
 ## [0.6.1-beta.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-http-transformer@0.6.1-beta.0...@aws-amplify/graphql-http-transformer@0.6.1-beta.1) (2021-11-06)
 
 

@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.1.1-beta.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-app@3.1.1-beta.1...amplify-app@3.1.1-beta.2) (2021-11-10)
+
+**Note:** Version bump only for package amplify-app
+
+
+
+
+
 ## [3.1.1-beta.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-app@3.1.1-beta.0...amplify-app@3.1.1-beta.1) (2021-11-06)
 
 **Note:** Version bump only for package amplify-app

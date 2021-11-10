@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.23.0-beta.2](https://github.com/aws-amplify/amplify-cli/compare/graphql-connection-transformer@4.23.0-beta.1...graphql-connection-transformer@4.23.0-beta.2) (2021-11-10)
+
+
+### Bug Fixes
+
+* **graphql-relational-transformer:** fix has many without fields ([#8700](https://github.com/aws-amplify/amplify-cli/issues/8700)) ([cc21d4d](https://github.com/aws-amplify/amplify-cli/commit/cc21d4dcf827a9ef27a89dffe828f3726a03ecea))
+
+
+
+
+
 # [4.23.0-beta.1](https://github.com/aws-amplify/amplify-cli/compare/graphql-connection-transformer@4.23.0-beta.0...graphql-connection-transformer@4.23.0-beta.1) (2021-11-06)
 
 **Note:** Version bump only for package graphql-connection-transformer

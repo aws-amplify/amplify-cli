@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.2.0-beta.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-transformer-migrator@0.2.0-beta.0...@aws-amplify/graphql-transformer-migrator@0.2.0-beta.1) (2021-11-10)
+
+
+### Bug Fixes
+
+* schema migrator utility as separate command ([#8720](https://github.com/aws-amplify/amplify-cli/issues/8720)) ([46e1ee6](https://github.com/aws-amplify/amplify-cli/commit/46e1ee6a49dd86bb682b182a37626bc3f2f966ea))
+
+
+
+
+
 # 0.2.0-beta.0 (2021-11-06)
 
 

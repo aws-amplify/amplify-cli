@@ -3,6 +3,29 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.66.0-beta.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.66.0-beta.1...amplify-provider-awscloudformation@4.66.0-beta.2) (2021-11-10)
+
+
+### Bug Fixes
+
+* **amplify-provider-awscloudformation:** use amplify prompts for warnings ([#8731](https://github.com/aws-amplify/amplify-cli/issues/8731)) ([98840ec](https://github.com/aws-amplify/amplify-cli/commit/98840ec1b61e2e424c9884f055227d11c5463c26))
+* **graphql-model-transformer:** subscription resolver logical id fix ([#8712](https://github.com/aws-amplify/amplify-cli/issues/8712)) ([f562f37](https://github.com/aws-amplify/amplify-cli/commit/f562f3714b83903c71217c5901c02c9fc71ff365))
+* schema migrator utility as separate command ([#8720](https://github.com/aws-amplify/amplify-cli/issues/8720)) ([46e1ee6](https://github.com/aws-amplify/amplify-cli/commit/46e1ee6a49dd86bb682b182a37626bc3f2f966ea))
+
+
+### Features
+
+* version blocking for CLI ([#8737](https://github.com/aws-amplify/amplify-cli/issues/8737)) ([b92cd32](https://github.com/aws-amplify/amplify-cli/commit/b92cd32afc3afb75b3fd7ddcc93a5d510b4fac2e))
+
+
+### Reverts
+
+* Revert "feat: version blocking for CLI (#8737)" (#8747) ([2d5110c](https://github.com/aws-amplify/amplify-cli/commit/2d5110c22412a56027417bc691030aa1ea18121e)), closes [#8737](https://github.com/aws-amplify/amplify-cli/issues/8737) [#8747](https://github.com/aws-amplify/amplify-cli/issues/8747)
+
+
+
+
+
 # [4.66.0-beta.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.66.0-beta.0...amplify-provider-awscloudformation@4.66.0-beta.1) (2021-11-06)
 
 

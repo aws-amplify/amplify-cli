@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.35.1-beta.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@3.35.1-beta.1...amplify-util-mock@3.35.1-beta.2) (2021-11-10)
+
+
+### Bug Fixes
+
+* vtl list utils & update model test scenarios ([#8701](https://github.com/aws-amplify/amplify-cli/issues/8701)) ([402cd9b](https://github.com/aws-amplify/amplify-cli/commit/402cd9b12e1603403511b5933404b525bb0de176))
+
+
+
+
+
 ## [3.35.1-beta.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@3.35.1-beta.0...amplify-util-mock@3.35.1-beta.1) (2021-11-06)
 
 **Note:** Version bump only for package amplify-util-mock

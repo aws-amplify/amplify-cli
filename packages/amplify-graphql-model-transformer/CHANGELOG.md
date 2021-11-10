@@ -3,6 +3,20 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.8.0-beta.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-model-transformer@0.8.0-beta.1...@aws-amplify/graphql-model-transformer@0.8.0-beta.2) (2021-11-10)
+
+
+### Bug Fixes
+
+* datastore logical id ([#8761](https://github.com/aws-amplify/amplify-cli/issues/8761)) ([e86cbb9](https://github.com/aws-amplify/amplify-cli/commit/e86cbb9ebfb7ed22607ffd82f15a6b58a6ec7b3d))
+* **graphql-model-transformer:** subscription resolver logical id fix ([#8712](https://github.com/aws-amplify/amplify-cli/issues/8712)) ([f562f37](https://github.com/aws-amplify/amplify-cli/commit/f562f3714b83903c71217c5901c02c9fc71ff365))
+* move [@model](https://github.com/model) params to root stack and fix ds logical id ([#8736](https://github.com/aws-amplify/amplify-cli/issues/8736)) ([df4408c](https://github.com/aws-amplify/amplify-cli/commit/df4408c4080949ddd638778df9ae20e763dd5824))
+* override none,DDB,lambda datasource logical IDs ([#8723](https://github.com/aws-amplify/amplify-cli/issues/8723)) ([c534dc4](https://github.com/aws-amplify/amplify-cli/commit/c534dc46704cf2a1264e98d8af9b7a199c1419eb))
+
+
+
+
+
 # [0.8.0-beta.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-model-transformer@0.8.0-beta.0...@aws-amplify/graphql-model-transformer@0.8.0-beta.1) (2021-11-06)
 
 

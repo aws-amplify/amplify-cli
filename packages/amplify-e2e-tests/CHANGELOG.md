@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.56.0-beta.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.56.0-beta.1...amplify-e2e-tests@2.56.0-beta.2) (2021-11-10)
+
+
+### Features
+
+* version blocking for CLI ([#8737](https://github.com/aws-amplify/amplify-cli/issues/8737)) ([b92cd32](https://github.com/aws-amplify/amplify-cli/commit/b92cd32afc3afb75b3fd7ddcc93a5d510b4fac2e))
+
+
+### Reverts
+
+* Revert "feat: version blocking for CLI (#8737)" (#8747) ([2d5110c](https://github.com/aws-amplify/amplify-cli/commit/2d5110c22412a56027417bc691030aa1ea18121e)), closes [#8737](https://github.com/aws-amplify/amplify-cli/issues/8737) [#8747](https://github.com/aws-amplify/amplify-cli/issues/8747)
+
+
+
+
+
 # [2.56.0-beta.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.56.0-beta.0...amplify-e2e-tests@2.56.0-beta.1) (2021-11-06)
 
 
