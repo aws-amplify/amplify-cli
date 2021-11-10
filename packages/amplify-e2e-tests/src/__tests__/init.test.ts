@@ -29,8 +29,8 @@ describe('amplify init', () => {
   });
 
   afterEach(async () => {
-    // await deleteProject(projRoot);
-    // deleteProjectDir(projRoot);
+    await deleteProject(projRoot);
+    deleteProjectDir(projRoot);
   });
 
   it('should pull sandbox and download schema', async () => {
