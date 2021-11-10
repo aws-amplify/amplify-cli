@@ -6,15 +6,13 @@ import { printer } from 'amplify-prompts';
  * A factory function that returns a function that prints the "success message" after adding auth
  * @param print The amplify print object
  */
-export const getPostAddAuthMessagePrinter =
-  (print: any) =>
-  (resourceName: string, skipNextSteps: boolean = false) => {
-    print.success(`Successfully added auth resource ${resourceName} locally`);
+export const getPostAddAuthMessagePrinter = (resourceName: string, skipNextSteps: boolean = false) => {
+  printer.success(`Successfully added auth resource ${resourceName} locally`);
 
-    if (!skipNextSteps) {
-      printCommonText(print);
-    }
-  };
+  if (!skipNextSteps) {
+    printCommonText();
+  }
+};
 
 /**
  * A factory function that returns a function that prints the "success message" after updating auth
@@ -22,10 +20,10 @@ export const getPostAddAuthMessagePrinter =
  */
 export const getPostUpdateAuthMessagePrinter = (print: any) => (resourceName: string) => {
   printer.success(`Successfully updated auth resource ${resourceName} locally`);
-  printCommonText(print);
+  printCommonText();
 };
 
-const printCommonText = (print: any) => {
+const printCommonText = () => {
   printer.blankLine();
   printer.success('Some next steps:');
   printer.info('"amplify push" will build all your local backend resources and provision it in the cloud');
