@@ -143,7 +143,7 @@ describe('dynamodb import', () => {
 
     teamInfo = getTeamProviderInfo(projectRoot);
 
-    // No prod in team proovider info
+    // No prod in team provider info
     expect(teamInfo.prod).toBeUndefined();
   });
 

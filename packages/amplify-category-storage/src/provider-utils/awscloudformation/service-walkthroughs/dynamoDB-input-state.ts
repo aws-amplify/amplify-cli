@@ -1,7 +1,15 @@
-import { DynamoDBCLIInputs, DynamoDBCLIInputsGSIType } from '../service-walkthrough-types/dynamoDB-user-input-types';
-import { AmplifyCategories, AmplifySupportedService, CLIInputSchemaValidator, JSONUtilities, pathManager } from 'amplify-cli-core';
+import {
+  $TSAny,
+  $TSObject,
+  AmplifyCategories,
+  AmplifySupportedService,
+  CLIInputSchemaValidator,
+  JSONUtilities,
+  pathManager,
+} from 'amplify-cli-core';
 import * as fs from 'fs-extra';
 import * as path from 'path';
+import { DynamoDBCLIInputs, DynamoDBCLIInputsGSIType } from '../service-walkthrough-types/dynamoDB-user-input-types';
 
 /* Need to move this logic to a base class */
 
@@ -27,7 +35,7 @@ export class DynamoDBInputState {
 
     // Read cliInputs file if exists
     try {
-      cliInputs = JSONUtilities.readJson(this._cliInputsFilePath) as DynamoDBCLIInputs;
+      cliInputs = JSONUtilities.readJson<DynamoDBCLIInputs>(this._cliInputsFilePath)!;
     } catch (e) {
       throw new Error('cli-inputs.json file missing from the resource directory');
     }
@@ -51,7 +59,7 @@ export class DynamoDBInputState {
   public saveCliInputPayload(cliInputs: DynamoDBCLIInputs): void {
     this.isCLIInputsValid(cliInputs);
 
-    fs.ensureDirSync(path.join(pathManager.getBackendDirPath(), this._category, this._resourceName));
+    fs.ensureDirSync(pathManager.getResourceDirectoryPath(undefined, this._category, this._resourceName));
     try {
       JSONUtilities.writeJson(this._cliInputsFilePath, cliInputs);
     } catch (e) {
@@ -61,7 +69,7 @@ export class DynamoDBInputState {
 
   public migrate() {
     let cliInputs: DynamoDBCLIInputs;
-    const attrReverseMap: any = {
+    const attrReverseMap: $TSObject = {
       S: 'string',
       N: 'number',
       B: 'binary',
@@ -81,9 +89,9 @@ export class DynamoDBInputState {
     const oldCFNFilepath = path.join(backendDir, 'storage', this._resourceName, `${this._resourceName}-cloudformation-template.json`);
     const oldStorageParamsFilepath = path.join(backendDir, 'storage', this._resourceName, `storage-params.json`);
 
-    const oldParameters: any = JSONUtilities.readJson(oldParametersFilepath, { throwIfNotExist: true });
-    const oldCFN: any = JSONUtilities.readJson(oldCFNFilepath, { throwIfNotExist: true });
-    const oldStorageParams: any = JSONUtilities.readJson(oldStorageParamsFilepath, { throwIfNotExist: false }) || {};
+    const oldParameters = JSONUtilities.readJson<$TSAny>(oldParametersFilepath, { throwIfNotExist: true });
+    const oldCFN = JSONUtilities.readJson<$TSAny>(oldCFNFilepath, { throwIfNotExist: true });
+    const oldStorageParams = JSONUtilities.readJson<$TSAny>(oldStorageParamsFilepath, { throwIfNotExist: false }) || {};
 
     const partitionKey = {
       fieldName: oldParameters.partitionKeyName,
@@ -105,10 +113,10 @@ export class DynamoDBInputState {
       triggerFunctions = oldStorageParams.triggerFunctions;
     }
 
-    const getType = (attrList: any, attrName: string) => {
+    const getType = (attrList: $TSAny, attrName: string) => {
       let attrType;
 
-      attrList.forEach((attr: any) => {
+      attrList.forEach((attr: $TSAny) => {
         if (attr.AttributeName === attrName) {
           attrType = attrReverseMap[attr.AttributeType];
         }
@@ -120,10 +128,10 @@ export class DynamoDBInputState {
     let gsi: DynamoDBCLIInputsGSIType[] = [];
 
     if (oldCFN?.Resources?.DynamoDBTable?.Properties?.GlobalSecondaryIndexes) {
-      oldCFN.Resources.DynamoDBTable.Properties.GlobalSecondaryIndexes.forEach((cfnGSIValue: any) => {
-        let gsiValue: any = {};
+      oldCFN.Resources.DynamoDBTable.Properties.GlobalSecondaryIndexes.forEach((cfnGSIValue: $TSAny) => {
+        let gsiValue: $TSAny = {};
         (gsiValue.name = cfnGSIValue.IndexName),
-          cfnGSIValue.KeySchema.forEach((keySchema: any) => {
+          cfnGSIValue.KeySchema.forEach((keySchema: $TSObject) => {
             if (keySchema.KeyType === 'HASH') {
               gsiValue.partitionKey = {
                 fieldName: keySchema.AttributeName,
