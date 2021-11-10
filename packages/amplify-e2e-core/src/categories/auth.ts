@@ -1268,7 +1268,7 @@ export function updateAuthAddUserGroups(projectDir: string, groupNames: string[]
   if (groupNames.length == 0) {
     return;
   }
-  const testingWithLatestCodebase = settings.testingWithLatestCodebase ?? false;
+  const testingWithLatestCodebase = settings && settings.testingWithLatestCodebase ? settings.testingWithLatestCodebase : false;
   return new Promise((resolve, reject) => {
     const chain = spawn(getCLIPath(testingWithLatestCodebase), ['update', 'auth'], { cwd: projectDir, stripColors: true });
     if (settings?.overrides?.category === 'auth') {
