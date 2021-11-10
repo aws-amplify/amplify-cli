@@ -3,6 +3,35 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.34.0-ext21.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@2.33.2...amplify-category-api@2.34.0-ext21.0) (2021-11-10)
+
+
+### Bug Fixes
+
+* **amplify-category-api:** change auth directive type and fix codegen bug ([#8639](https://github.com/aws-amplify/amplify-cli/issues/8639)) ([b8d838d](https://github.com/aws-amplify/amplify-cli/commit/b8d838ddfd332c0f6fb36ef52ab76da24b5d26ca))
+* asana bug fixes ([#8692](https://github.com/aws-amplify/amplify-cli/issues/8692)) ([769e341](https://github.com/aws-amplify/amplify-cli/commit/769e3413f5e4c97d929ef1dc4ebd2ba1134fde38))
+* broken path on build-override ([37792b5](https://github.com/aws-amplify/amplify-cli/commit/37792b587cb4a7042afa6c0b58f55e59f65681a0))
+* capitalization for filter, e2e test ([#8667](https://github.com/aws-amplify/amplify-cli/issues/8667)) ([be22744](https://github.com/aws-amplify/amplify-cli/commit/be2274493ed692c299f5b58d355a41ffcca0499e))
+* expand region support for aurora serverless ([#8577](https://github.com/aws-amplify/amplify-cli/issues/8577)) ([ad0cd2b](https://github.com/aws-amplify/amplify-cli/commit/ad0cd2b7e0644986276aa295dd424976f5c3ab68))
+* **graphql-model-transformer:** fixed schema template options check for transformer version ([#8449](https://github.com/aws-amplify/amplify-cli/issues/8449)) ([aedcae3](https://github.com/aws-amplify/amplify-cli/commit/aedcae36f445c6e990bd94fd29d1b012e1b13787))
+* **graphql:** lambda auth label fix ([#8623](https://github.com/aws-amplify/amplify-cli/issues/8623)) ([6b4994d](https://github.com/aws-amplify/amplify-cli/commit/6b4994dd860015dd7f72b0f162314ffd580c727e))
+* **graphql:** minor api prompt fixes ([#8603](https://github.com/aws-amplify/amplify-cli/issues/8603)) ([b9aabe2](https://github.com/aws-amplify/amplify-cli/commit/b9aabe22705cc5d418e83fc8a957f2aac59e0693))
+* pushing multiple APIs at a time ([#8663](https://github.com/aws-amplify/amplify-cli/issues/8663)) ([119784b](https://github.com/aws-amplify/amplify-cli/commit/119784bfe5ef31c60496944a9ef3c2a6077f5bad))
+* remove duplicate error messages ([#8651](https://github.com/aws-amplify/amplify-cli/issues/8651)) ([aad5de7](https://github.com/aws-amplify/amplify-cli/commit/aad5de7b56b9b077b6b689c5b37d51dbfd4b262d))
+* stack generation logic when multiple paths ref same Lambda ([#8673](https://github.com/aws-amplify/amplify-cli/issues/8673)) ([dbf98da](https://github.com/aws-amplify/amplify-cli/commit/dbf98da3c5a7547d550be52c0e6d1c09a34b151f))
+
+
+### Features
+
+* **amplify-provider-awscloudformation:** change global_auth_rule to globalAuthRule for global auth ([#8674](https://github.com/aws-amplify/amplify-cli/issues/8674)) ([7a06216](https://github.com/aws-amplify/amplify-cli/commit/7a06216c0a56d9ab886ebb16b2179394fc5e76d2))
+* **amplify-provider-awscloudformation:** change sandbox mode syntax in schema ([#8592](https://github.com/aws-amplify/amplify-cli/issues/8592)) ([a3bdd44](https://github.com/aws-amplify/amplify-cli/commit/a3bdd44fddd3414a39d561510092084a1b8e6e61))
+* extensibility for REST APIs ([#8598](https://github.com/aws-amplify/amplify-cli/issues/8598)) ([4ea2bc5](https://github.com/aws-amplify/amplify-cli/commit/4ea2bc5d4320a4c2ee0d69f0517106fde2460d3a))
+* flag to allow destructive schema changes ([#8273](https://github.com/aws-amplify/amplify-cli/issues/8273)) ([18de856](https://github.com/aws-amplify/amplify-cli/commit/18de856fb61bf2df8f73375e4e55a58c6159a232))
+
+
+
+
+
 ## [2.33.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@2.33.1...amplify-category-api@2.33.2) (2021-10-13)
 
 
