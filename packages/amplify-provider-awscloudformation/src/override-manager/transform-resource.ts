@@ -22,9 +22,14 @@ export async function transformResourceWithOverrides(context: $TSContext, resour
         printer.info('Overrides functionality is not impleented for this category');
       }
     } else {
-      if (FeatureFlags.getBoolean('overrides.project')) {
-        await storeRootStackTemplate(context);
-      }
+      const template = await transformRootStack(context);
+      await prePushCfnTemplateModifier(template);
+      // RootStack deployed to backend/awscloudformation/build
+      const projectRoot = pathManager.findProjectRoot();
+      const rootStackBackendBuildDir = pathManager.getRootStackBuildDirPath(projectRoot);
+      fs.ensureDirSync(rootStackBackendBuildDir);
+      const rootStackBackendFilePath = path.join(rootStackBackendBuildDir, rootStackFileName);
+      JSONUtilities.writeJson(rootStackBackendFilePath, template);
     }
   } catch (err) {
     return;
