@@ -1,9 +1,18 @@
-import { JSONUtilities, stateManager, pathManager } from 'amplify-cli-core';
+import {
+  AmplifyCategories,
+  AmplifySupportedService,
+  exitOnNextTick,
+  JSONUtilities,
+  pathManager,
+  ResourceAlreadyExistsError,
+  ResourceDoesNotExistError,
+  stateManager,
+} from 'amplify-cli-core';
 import {
   addTextractPolicies,
   generateLambdaAccessForRekognition,
   generateStorageAccessForRekognition,
-  removeTextractPolicies
+  removeTextractPolicies,
 } from '../assets/identifyCFNGenerate';
 import identifyAssets from '../assets/identifyQuestions';
 import regionMapper from '../assets/regionMapping';
@@ -15,31 +24,23 @@ import {
   invokeS3GetResourceName,
   invokeS3GetUserInputs,
   invokeS3RegisterAdminTrigger,
-  invokeS3RemoveAdminLambdaTrigger
+  invokeS3RemoveAdminLambdaTrigger,
 } from './storage-api';
-const { ResourceDoesNotExistError, ResourceAlreadyExistsError, exitOnNextTick } = require('amplify-cli-core');
 const inquirer = require('inquirer');
 const path = require('path');
 const fs = require('fs-extra');
 const os = require('os');
 const uuid = require('uuid');
 
-// keep in sync with ServiceName in amplify-category-function, but probably it will not change
-const FunctionServiceNameLambdaFunction = 'Lambda';
-
 // Predictions Info
 const templateFilename = 'identify-template.json.ejs';
 const identifyTypes = ['identifyText', 'identifyEntities', 'identifyLabels'];
 let service = 'Rekognition';
-const category = 'predictions';
-const storageCategory = 'storage';
-const functionCategory = 'function';
+const category = AmplifyCategories.PREDICTIONS;
+const storageCategory = AmplifyCategories.STORAGE;
+const functionCategory = AmplifyCategories.FUNCTION;
 const parametersFileName = 'parameters.json';
-const amplifyMetaFilename = 'amplify-meta.json';
 const s3defaultValuesFilename = 's3-defaults.js';
-const s3TemplateFileName = 's3-cloudformation-template.json.ejs';
-const s3CloudFormationTemplateFile = 's3-cloudformation-template.json';
-const s3ServiceName = 'S3';
 const prefixForAdminTrigger = 'protected/predictions/index-faces/';
 // TODO support appsync
 
@@ -120,7 +121,7 @@ async function createAndRegisterAdminLambdaS3Trigger(context, predictionsResourc
 async function configure(context, predictionsResourceObj, configMode /*add/update*/) {
   const { amplify } = context;
   const defaultValues = getAllDefaults(amplify.getProjectDetails());
-  const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
+  const projectBackendDirPath = pathManager.getBackendDirPath();
   let identifyType;
 
   let parameters = {};
@@ -213,7 +214,7 @@ async function configure(context, predictionsResourceObj, configMode /*add/updat
     const functionjsonString = JSON.stringify(functionParameters, null, 4);
     fs.writeFileSync(functionparametersFilePath, functionjsonString, 'utf8');
   } else if (parameters.resourceName) {
-    const s3ResourceName = s3ResourceAlreadyExists(context);
+    const s3ResourceName = s3ResourceAlreadyExists();
     if (s3ResourceName) {
       let s3UserInputs = await invokeS3GetUserInputs(context, s3ResourceName);
       if (
@@ -253,7 +254,7 @@ async function configure(context, predictionsResourceObj, configMode /*add/updat
     });
 
     if (answers.folderPolicies === 'app' && parameters.resourceName && configMode != PREDICTIONS_WALKTHROUGH_MODE.ADD) {
-      addStorageIAMResourcestoIdentifyCFNFile(context, parameters.resourceName, s3Resource.resourceName);
+      addStorageIAMResourcestoIdentifyCFNFile(parameters.resourceName, s3Resource.resourceName);
     }
   }
 
@@ -483,15 +484,14 @@ async function addS3ForIdentity(context, storageAccess, bucketName, predictionsR
   };
 }
 
-function s3ResourceAlreadyExists(context) {
-  const { amplify } = context;
-  const { amplifyMeta } = amplify.getProjectDetails();
+function s3ResourceAlreadyExists() {
+  const amplifyMeta = stateManager.getMeta();
   let resourceName;
 
   if (amplifyMeta[storageCategory]) {
     const categoryResources = amplifyMeta[storageCategory];
     Object.keys(categoryResources).forEach(resource => {
-      if (categoryResources[resource].service === s3ServiceName) {
+      if (categoryResources[resource].service === AmplifySupportedService.S3) {
         resourceName = resource;
       }
     });
@@ -501,7 +501,7 @@ function s3ResourceAlreadyExists(context) {
 }
 
 async function postCFNGenUpdateLambdaResourceInPredictions(context, predictionsResourceName, functionName, s3ResourceName) {
-  const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
+  const projectBackendDirPath = pathManager.getBackendDirPath();
   const identifyCFNFilePath = path.join(
     projectBackendDirPath,
     category,
@@ -573,7 +573,7 @@ async function createNewFunction(context, predictionsResourceName, s3ResourceNam
   // Update amplify-meta and backend-config
 
   const backendConfigs = {
-    service: FunctionServiceNameLambdaFunction,
+    service: AmplifySupportedService.LAMBDA,
     providerPlugin: 'awscloudformation',
     build: true,
   };
@@ -584,8 +584,8 @@ async function createNewFunction(context, predictionsResourceName, s3ResourceNam
   return functionName;
 }
 
-function addStorageIAMResourcestoIdentifyCFNFile(context, predictionsResourceName, s3ResourceName) {
-  const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
+function addStorageIAMResourcestoIdentifyCFNFile(predictionsResourceName, s3ResourceName) {
+  const projectBackendDirPath = pathManager.getBackendDirPath();
   const identifyCFNFilePath = path.join(
     projectBackendDirPath,
     category,

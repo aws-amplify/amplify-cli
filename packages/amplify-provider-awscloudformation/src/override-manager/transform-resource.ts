@@ -1,11 +1,11 @@
-import { $TSContext, FeatureFlags, IAmplifyResource, JSONUtilities, pathManager } from 'amplify-cli-core';
+import { $TSContext, IAmplifyResource, JSONUtilities, pathManager } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
-import { transformRootStack } from '.';
 import * as fs from 'fs-extra';
-import { prePushCfnTemplateModifier } from '../pre-push-cfn-processor/pre-push-cfn-modifier';
 import * as path from 'path';
+import { transformRootStack } from '.';
+import { prePushCfnTemplateModifier } from '../pre-push-cfn-processor/pre-push-cfn-modifier';
 import { rootStackFileName } from '../push-resources';
-import { storeRootStackTemplate } from '../initializer';
+
 /**
  *
  * @param context

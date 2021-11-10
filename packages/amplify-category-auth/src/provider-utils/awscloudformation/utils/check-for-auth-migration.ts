@@ -16,8 +16,8 @@ export const checkAuthResourceMigration = async (context: $TSContext, authName: 
       const headlessMigrate = context.input.options?.yes || context.input.options?.forcePush || context.input.options?.headless;
       const docsLink = 'https://docs.amplify.aws/cli/migration/overrides';
       const migrateResourceMessage =
-        `Do you want to migrate ${AmplifyCategories.AUTH} resource "${authName}" to support overrides?` +
-        `${EOL}(Recommended to try in a non-production environment first: "amplify env add".) Learn more about this migration: ${docsLink}`;
+        `Do you want to migrate ${AmplifyCategories.AUTH} resource "${authName}" to support overrides?${EOL}` +
+        `(Recommended to try in a non-production environment first: "amplify env add".) Learn more about this migration: ${docsLink}`;
 
       if (headlessMigrate || (await prompter.yesOrNo(migrateResourceMessage, true))) {
         // generate cli-inputs for migration from parameters.json
