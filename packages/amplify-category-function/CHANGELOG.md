@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.37.0-ext19.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@2.36.1...amplify-category-function@2.37.0-ext19.0) (2021-11-10)
+
+
+### Bug Fixes
+
+* function comments to use os.EOL constant, ref [#8177](https://github.com/aws-amplify/amplify-cli/issues/8177) ([#8327](https://github.com/aws-amplify/amplify-cli/issues/8327)) ([c94405c](https://github.com/aws-amplify/amplify-cli/commit/c94405cd94ee3949d4be82018296b98aec20b5f6))
+
+
+### Features
+
+* amplify export ([e8e8079](https://github.com/aws-amplify/amplify-cli/commit/e8e8079b8f47bd6c3e05e62e5331bc9ba1f4661d)), closes [#8547](https://github.com/aws-amplify/amplify-cli/issues/8547) [#8488](https://github.com/aws-amplify/amplify-cli/issues/8488) [#8486](https://github.com/aws-amplify/amplify-cli/issues/8486) [#8547](https://github.com/aws-amplify/amplify-cli/issues/8547) [#8488](https://github.com/aws-amplify/amplify-cli/issues/8488) [#8486](https://github.com/aws-amplify/amplify-cli/issues/8486)
+* flag to allow destructive schema changes ([#8273](https://github.com/aws-amplify/amplify-cli/issues/8273)) ([18de856](https://github.com/aws-amplify/amplify-cli/commit/18de856fb61bf2df8f73375e4e55a58c6159a232))
+
+
+
+
+
 ## [2.36.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@2.36.0...amplify-category-function@2.36.1) (2021-10-10)
 
 **Note:** Version bump only for package amplify-category-function

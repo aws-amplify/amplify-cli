@@ -1,6 +1,6 @@
 {
   "name": "graphql-key-transformer",
-  "version": "2.23.25",
+  "version": "2.23.26-ext19.0",
   "description": "Implements the @key directive.",
   "repository": {
     "type": "git",
@@ -24,10 +24,10 @@
   "dependencies": {
     "cloudform-types": "^4.2.0",
     "graphql": "^14.5.8",
-    "graphql-dynamodb-transformer": "6.22.25",
-    "graphql-mapping-template": "4.18.3",
-    "graphql-transformer-common": "4.19.10",
-    "graphql-transformer-core": "6.30.2"
+    "graphql-dynamodb-transformer": "6.23.0-ext19.0",
+    "graphql-mapping-template": "4.18.4-ext19.0",
+    "graphql-transformer-common": "4.20.0-ext19.0",
+    "graphql-transformer-core": "6.31.0-ext19.0"
   },
   "jest": {
     "testURL": "http://localhost",
