@@ -13,7 +13,7 @@ import {
 } from 'amplify-e2e-core';
 import gql from 'graphql-tag';
 import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
-import { addEnvironment, checkoutEnvironment, listEnvironment } from '../environment/env';
+import { addEnvironment, checkoutEnvironment, listEnvironment } from '../../environment/env';
 const providerName = 'awscloudformation';
 
 

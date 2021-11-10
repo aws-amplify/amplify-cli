@@ -1,1 +1,1 @@
-export { attemptV2TransformerMigration, runMigration } from './schema-migrator';
+export { attemptV2TransformerMigration, revertV2Migration, runMigration } from './schema-migrator';

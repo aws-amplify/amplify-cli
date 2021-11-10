@@ -752,7 +752,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
             typeName: 'Subscription',
             fieldName: fieldName,
             type: SubscriptionFieldType.ON_CREATE,
-            resolverLogicalId: ModelResourceIDs.ModelOnCreateSubscriptionName(type.name.value),
+            resolverLogicalId: ResolverResourceIDs.ResolverResourceID('Subscription', fieldName),
           });
         }
       }
@@ -763,7 +763,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
             typeName: 'Subscription',
             fieldName: fieldName,
             type: SubscriptionFieldType.ON_UPDATE,
-            resolverLogicalId: ModelResourceIDs.ModelOnUpdateSubscriptionName(type.name.value),
+            resolverLogicalId: ResolverResourceIDs.ResolverResourceID('Subscription', fieldName),
           });
         }
       }
@@ -774,7 +774,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
             typeName: 'Subscription',
             fieldName: fieldName,
             type: SubscriptionFieldType.ON_DELETE,
-            resolverLogicalId: ModelResourceIDs.ModelOnDeleteSubscriptionName(type.name.value),
+            resolverLogicalId: ResolverResourceIDs.ResolverResourceID('Subscription', fieldName),
           });
         }
       }
@@ -1193,7 +1193,6 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
 
     const cfnDataSource = dataSource.node.defaultChild as CfnDataSource;
     cfnDataSource.addDependsOn(role.node.defaultChild as CfnRole);
-    cfnDataSource.overrideLogicalId(datasourceRoleLogicalID);
 
     if (context.isProjectUsingDataStore()) {
       const datasourceDynamoDb = cfnDataSource.dynamoDbConfig as any;

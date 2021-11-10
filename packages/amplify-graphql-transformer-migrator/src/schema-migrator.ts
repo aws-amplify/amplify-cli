@@ -3,32 +3,25 @@ import { Kind, parse, print, visit } from 'graphql';
 import { migrateKeys } from './migrators/key';
 import { migrateAuth } from './migrators/auth';
 import { migrateConnection } from './migrators/connection';
-import {
-  backupSchema,
-  combineSchemas,
-  DiffDocument,
-  getDefaultAuthFromContext,
-  getSchemaDiffs,
-  readSchemaDocuments,
-  readSingleFileSchema,
-  replaceFile,
-  SchemaDocument,
-  undoAllSchemaMigration,
-} from './utils';
+import { combineSchemas, getDefaultAuth, replaceFile, SchemaDocument } from './utils';
 import { DocumentNode } from 'graphql/language';
-import { prompter, printer } from 'amplify-prompts';
+import { printer, prompter } from 'amplify-prompts';
 import * as path from 'path';
-import { $TSContext, exitOnNextTick } from 'amplify-cli-core';
 import {
-  detectCustomResolvers,
+  detectCustomRootTypes,
+  detectDeprecatedConnectionUsage,
   detectOverriddenResolvers,
-  detectUnsupportedDirectives,
+  detectPassthroughDirectives,
   graphQLUsingSQL,
   isImprovedPluralizationEnabled,
+  isTransformerV2Enabled,
 } from './schema-inspector';
 import { validateModelSchema, SchemaValidationError } from '@aws-amplify/graphql-transformer-core';
-import { updateTransformerVersion } from './state-migrator';
+import { revertTransformerVersion, updateTransformerVersion } from './state-migrator';
 import { GRAPHQL_DIRECTIVES_SCHEMA } from './constants/graphql-directives';
+import * as os from 'os';
+import { backupLocation, backupSchemas, doesBackupExist, restoreSchemas } from './schema-backup';
+import * as glob from 'glob';
 
 const cliToMigratorAuthMap: Map<string, string> = new Map<string, string>([
   ['API_KEY', 'apiKey'],
@@ -37,30 +30,81 @@ const cliToMigratorAuthMap: Map<string, string> = new Map<string, string>([
   ['OPENID_CONNECT', 'oidc'],
 ]);
 
-const MIGRATION_URL = '<insert migration docs URL here>';
+const MIGRATION_DOCS_URL = '<insert migration docs URL here>';
 
-function doSchemaValidation(schema: string) {
-  const appendedSchema = schema + GRAPHQL_DIRECTIVES_SCHEMA;
-  const parsedSchema = parse(appendedSchema);
+export async function attemptV2TransformerMigration(resourceDir: string, apiName: string, envName?: string): Promise<void> {
+  const schemaDocs = await getSchemaDocs(resourceDir);
+  const fullSchema = combineSchemas(schemaDocs);
+  const autoMigrationDetectionResult = await canAutoMigrate(fullSchema, apiName, resourceDir);
+  const postMigrationStatusMessage = await getPostMigrationStatusMessage(fullSchema, apiName);
 
-  let allModelDefinitions = [...parsedSchema.definitions];
-  const errors = validateModelSchema({ kind: Kind.DOCUMENT, definitions: allModelDefinitions });
-  if (errors && errors.length) {
-    throw new SchemaValidationError(errors);
+  if (typeof autoMigrationDetectionResult === 'string') {
+    printer.info(autoMigrationDetectionResult);
+    return;
   }
+
+  const defaultAuth = await getDefaultAuth();
+  const authMode = cliToMigratorAuthMap.get(defaultAuth);
+  if (!authMode) {
+    throw Error(`Unidentified authorization mode for API found: ${defaultAuth}`);
+  }
+
+  try {
+    await backupSchemas(resourceDir);
+    await runMigration(schemaDocs, authMode);
+    await updateTransformerVersion(envName);
+  } catch (error) {
+    printer.error('Error encountered migrating schemas');
+    printer.info('Restoring original schemas');
+    try {
+      await runRevert(resourceDir, envName);
+    } catch (undoError) {
+      printer.error('Error encountered restoring original schemas:');
+      printer.info(error);
+    }
+    throw error;
+  }
+  printer.success('Automatic migration complete!');
+  printer.info(`Original schemas are backed up at ${backupLocation(resourceDir)}`);
+  printer.info(postMigrationStatusMessage);
+  printer.info(`More migration instructions can be found at ${MIGRATION_DOCS_URL}`);
+  printer.info(`To revert the migration run 'amplify migrate api --revert'`);
 }
 
-function showDiffs(diffDocs: DiffDocument[]): void {
-  printer.info('Changes made to your schemas:\n');
-  for (let doc of diffDocs) {
-    printer.info(`File: ${doc.filePath}`);
-    printer.info(doc.schemaDiff);
-    printer.info('\n');
+export async function revertV2Migration(resourceDir: string, envName: string) {
+  if (!doesBackupExist(resourceDir)) {
+    printer.error(`No backup found at ${backupLocation(resourceDir)}`);
+    return;
   }
+  printer.warn(
+    'Reverting migration will restore all schemas to their state before `amplify migrate api`. This will wipe out any schema changes you have made since migrating.',
+  );
+  if (!(await prompter.confirmContinue())) {
+    return;
+  }
+  await runRevert(resourceDir, envName);
 }
 
+export async function runMigration(schemas: SchemaDocument[], authMode: string): Promise<void> {
+  const schemaList = schemas.map(doc => doc.schema);
+
+  const fullSchema = schemaList.join('\n');
+  const fullSchemaNode = parse(fullSchema);
+  doSchemaValidation(fullSchema);
+
+  const newSchemaList: SchemaDocument[] = new Array<SchemaDocument>();
+  for (const doc of schemas) {
+    const newSchema = await migrateGraphQLSchema(doc.schema, authMode, fullSchemaNode);
+    newSchemaList.push({ schema: newSchema, filePath: doc.filePath });
+  }
+
+  await Promise.all(newSchemaList.map(doc => replaceFile(doc.schema, doc.filePath)));
+}
+
+/**
+ * Exported for testing
+ */
 export function migrateGraphQLSchema(schema: string, authMode: string, massSchema: DocumentNode): string {
-  doSchemaValidation(schema);
   let output = parse(schema);
   visit(output, {
     ObjectTypeDefinition: {
@@ -76,6 +120,22 @@ export function migrateGraphQLSchema(schema: string, authMode: string, massSchem
   return print(output);
 }
 
+async function runRevert(resourceDir: string, envName?: string) {
+  await restoreSchemas(resourceDir);
+  await revertTransformerVersion(envName);
+}
+
+function doSchemaValidation(schema: string) {
+  const appendedSchema = schema + GRAPHQL_DIRECTIVES_SCHEMA;
+  const parsedSchema = parse(appendedSchema);
+
+  let allModelDefinitions = [...parsedSchema.definitions];
+  const errors = validateModelSchema({ kind: Kind.DOCUMENT, definitions: allModelDefinitions });
+  if (errors && errors.length) {
+    throw new SchemaValidationError(errors);
+  }
+}
+
 async function getSchemaDocs(resourceDir: string): Promise<SchemaDocument[]> {
   const schemaFilePath = path.join(resourceDir, 'schema.graphql');
   const schemaDirectoryPath = path.join(resourceDir, 'schema');
@@ -86,131 +146,55 @@ async function getSchemaDocs(resourceDir: string): Promise<SchemaDocument[]> {
     return [];
   }
   if (schemaFileExists) {
-    return await readSingleFileSchema(schemaFilePath);
+    return [{ schema: await fs.readFile(schemaFilePath, 'utf8'), filePath: schemaFilePath }];
   } else if (schemaDirectoryExists) {
-    return await readSchemaDocuments(schemaDirectoryPath);
+    const schemaFiles = glob.sync('**/*.graphql', { cwd: schemaDirectoryPath }).map(fileName => path.join(schemaDirectoryPath, fileName));
+    return await Promise.all(schemaFiles.map(async fileName => ({ schema: await fs.readFile(fileName, 'utf8'), filePath: fileName })));
   }
   return [];
 }
 
-export async function runMigration(schemas: SchemaDocument[], authMode: string): Promise<boolean> {
-  let fullSchema: string;
-  let schemaList: Array<string> = new Array<string>();
-  let backupSchemaPromiseArray: Array<Promise<void>> = new Array<Promise<void>>();
-  schemas.forEach(doc => {
-    schemaList.push(doc.schema);
-    backupSchemaPromiseArray.push(backupSchema(doc.filePath));
-  });
-  await Promise.all(backupSchemaPromiseArray);
-
-  fullSchema = schemaList.join('\n');
-  let fullSchemaNode = parse(fullSchema);
-  doSchemaValidation(fullSchema);
-
-  let newSchemaList: SchemaDocument[] = new Array<SchemaDocument>();
-  for (let doc of schemas) {
-    const newSchema = await migrateGraphQLSchema(doc.schema, authMode, fullSchemaNode);
-    newSchemaList.push({ schema: newSchema, filePath: doc.filePath });
-  }
-
-  const diffs = getSchemaDiffs(schemas, newSchemaList);
-  showDiffs(diffs);
-
-  const migrationChoices: Array<string> = [
-    'Yes',
-    'Yes, but exit the CLI so I can review/edit my new schemas before compiling/pushing',
-    'No, continue my operation with my old schemas',
-  ];
-  const migrationChoice: string = await prompter.pick('Do you want to proceed with the auto-migration?', migrationChoices);
-  const migrationIndex: number = migrationChoices.findIndex(value => {
-    return value === migrationChoice;
-  });
-  if (migrationIndex === -1 || migrationIndex === 2) {
-    return false;
-  }
-
-  let writeNewPromiseArray: Promise<void>[] = [];
-  newSchemaList.forEach(doc => {
-    writeNewPromiseArray.push(replaceFile(doc.schema, doc.filePath));
-  });
-  await Promise.all(writeNewPromiseArray);
-
-  if (migrationIndex === 1) {
-    // Customer has selected to review their new schemas before compiling or pushing
-    exitOnNextTick(0);
-  }
-  printer.info(`Success! Auto-migration completed. Just in case, we've placed a back-up of your old 
-GraphQL schema file(s) at these location(s):`);
-  for (let schema of schemas) {
-    printer.info(`- ${schema.filePath}.bkp`);
-  }
-  return true;
-}
-
-async function migrateToV2Transformer(resourceDir: string, context: $TSContext, schemaDocs: SchemaDocument[]): Promise<boolean> {
-  const { envName } = context.amplify.getEnvInfo();
-  const defaultAuth = await getDefaultAuthFromContext();
-  const authMode = cliToMigratorAuthMap.get(defaultAuth);
-  if (!authMode) {
-    throw Error(`Unidentified authorization mode for API found: ${defaultAuth}`);
-  }
-
-  try {
-    await runMigration(schemaDocs, authMode);
-    await updateTransformerVersion(envName);
-  } catch (error) {
-    printer.error('Encountered an error while migrating schema to V2 transformer, reverting to old schemas');
-    try {
-      await undoAllSchemaMigration(resourceDir);
-    } catch (undoError) {
-      printer.error('Encountered error while reverting schema migration changes: ');
-      printer.error(undoError.message);
-    }
-    throw error;
-  }
-  return true;
-}
-
-export async function attemptV2TransformerMigration(resourceDir: string, apiName: string, context: $TSContext): Promise<boolean> {
+// returns true if the project can be auto-migrated to v2, or a message explaining why the project cannot be auto-migrated
+async function canAutoMigrate(fullSchema: string, apiName: string, resourceDir: string): Promise<true | string> {
   if (graphQLUsingSQL(apiName)) {
-    return false;
+    return 'GraphQL APIs using Aurora RDS cannot be migrated.';
   }
-  printer.warn(`Amplify CLI made new improvements to GraphQL APIs, such as pipeline 
-resolvers support, deny-by-default authorization, improved search and result 
-aggregations. Learn all about the new changes and the required migration process 
-here: ${MIGRATION_URL}`);
-  const schemaDocs = await getSchemaDocs(resourceDir);
-  const fullSchema = combineSchemas(schemaDocs);
-  const usingCustomResolvers = detectCustomResolvers(parse(fullSchema));
+  if (isTransformerV2Enabled()) {
+    return 'GraphQL Transformer version 2 is already enabled. No migration is necessary.';
+  }
+  if (detectDeprecatedConnectionUsage(fullSchema)) {
+    return 'You are using the deprecated parameterization of @connection which cannot be automatically migrated.';
+  }
+  if (doesBackupExist(resourceDir)) {
+    return `A schema backup already exists at ${backupLocation(resourceDir)}. Remove or copy these files to a different location.`;
+  }
+  return true;
+}
+
+async function getPostMigrationStatusMessage(fullSchema: string, apiName: string): Promise<string> {
+  const usingCustomRootTypes = detectCustomRootTypes(parse(fullSchema));
   const usingOverriddenResolvers = detectOverriddenResolvers(apiName);
   const improvedPluralizationEnabled = isImprovedPluralizationEnabled();
-  const unsupportedDirectives: Array<string> = await detectUnsupportedDirectives(fullSchema);
-  if (usingCustomResolvers || usingOverriddenResolvers || !improvedPluralizationEnabled || unsupportedDirectives.length > 0) {
-    printer.info(`We detected that your GraphQL schema can not be auto-migrated because:`);
-    if (usingCustomResolvers) {
-      printer.info(`- You have configured custom resolvers for your GraphQL API`);
-    }
-    if (usingOverriddenResolvers) {
-      printer.info(`- You have overwritten an Amplify generated resolver`);
-    }
-    if (unsupportedDirectives.length > 0) {
-      printer.info(
-        `- You are using the following directives not supported in the new transformer:\n\t ${unsupportedDirectives.join(', ')}`,
-      );
-    }
-    if (!improvedPluralizationEnabled) {
-      printer.info('- You do not have the "improvePluralization" Feature Flag enabled');
-    }
-    printer.info(`To migrate to the new GraphQL API capabilities, follow the step-by-step instructions
-here: ${MIGRATION_URL}`);
-    return false;
+  const passthroughDirectives: Array<string> = await detectPassthroughDirectives(fullSchema);
+  if (!usingCustomRootTypes && !usingOverriddenResolvers && passthroughDirectives.length === 0 && improvedPluralizationEnabled) {
+    return '';
   }
-  const chooseToRunMigration: string = await prompter.pick(
-    `We detected that your GraphQL schema can be auto-migrated! In particular, we've made 
-a number of authorization rule changes. Let's review the changes we'll apply to your
-GraphQL schema:`,
-    ['Continue', `No, I'll migrate later`],
-  );
-  const runMigration: boolean = chooseToRunMigration === 'Continue';
-  return runMigration ? migrateToV2Transformer(resourceDir, context, schemaDocs) : runMigration;
+  const messageLines = [
+    'The following project state(s) were detected which may need additional attention to ensure they continue to work as expected with the new GraphQL transformer',
+  ];
+  if (usingCustomRootTypes) {
+    messageLines.push('- You have defined custom Queries, Mutations, and/or Subscriptions in your GraphQL schema');
+  }
+  if (usingOverriddenResolvers) {
+    messageLines.push('- You have overridden an Amplify generated resolver');
+  }
+  if (passthroughDirectives.length > 0) {
+    messageLines.push(
+      `- You are using the following directives which are not handled by the transformer:${os.EOL}\t${passthroughDirectives.join(', ')}`,
+    );
+  }
+  if (!improvedPluralizationEnabled) {
+    messageLines.push('- You do not have the "improvePluralization" Feature Flag enabled');
+  }
+  return messageLines.join(os.EOL);
 }

@@ -16,17 +16,22 @@ const DEFAULT_SCHEMA = `
   }`;
 
 export interface VelocityTemplateSimulatorOptions {
-  template: string;
   authConfig: AppSyncAuthConfiguration;
 }
 export type AppSyncVTLContext = Partial<AppSyncVTLRenderContext>;
 
+export type AppSyncVTLPayload = {
+  context: Partial<AppSyncVTLRenderContext>;
+  requestParameters: AppSyncGraphQLExecutionContext;
+  info?: Partial<GraphQLResolveInfo>;
+};
+
 export class VelocityTemplateSimulator {
-  velocityTemplate: VelocityTemplate;
+  private gqlSimulator: AmplifyAppSyncSimulator;
 
   constructor(opts: VelocityTemplateSimulatorOptions) {
-    const gqlSimulator = new AmplifyAppSyncSimulator();
-    gqlSimulator.init({
+    this.gqlSimulator = new AmplifyAppSyncSimulator();
+    this.gqlSimulator.init({
       schema: {
         content: DEFAULT_SCHEMA,
       },
@@ -37,12 +42,12 @@ export class VelocityTemplateSimulator {
           .additionalAuthenticationProviders as AmplifyAppSyncAuthenticationProviderConfig[],
       },
     });
-    this.velocityTemplate = new VelocityTemplate({ content: opts.template }, gqlSimulator);
   }
-  render(context: AppSyncVTLContext, requestParameters: AppSyncGraphQLExecutionContext, info: Partial<GraphQLResolveInfo> = {}) {
-    const ctxParameters: AppSyncVTLRenderContext = { source: {}, arguments: { input: {} }, stash: {}, ...context };
-    const vtlInfo: any = { fieldNodes: [], fragments: {}, path: { key: '' }, ...info };
-    return this.velocityTemplate.render(ctxParameters, requestParameters, vtlInfo);
+  render(template: string, payload: AppSyncVTLPayload) {
+    const ctxParameters: AppSyncVTLRenderContext = { source: {}, arguments: { input: {} }, stash: {}, ...payload.context };
+    const vtlInfo: any = { fieldNodes: [], fragments: {}, path: { key: '' }, ...(payload.info ?? {}) };
+    const vtlTemplate = new VelocityTemplate({ content: template }, this.gqlSimulator);
+    return vtlTemplate.render(ctxParameters, payload.requestParameters, vtlInfo);
   }
 }
 
@@ -63,8 +68,24 @@ export const getJWTToken = (
     token_use: tokenType,
     auth_time: Math.floor(Date.now() / 1000),
     'cognito:username': username,
-    'cognitio:groups': groups,
+    'cognito:groups': groups,
     email,
   };
   return token;
+};
+
+export const getGenericToken = (username: string, email: string, groups: string[] = [], tokenType: 'id' | 'access' = 'id'): JWTToken => {
+  return {
+    iss: 'https://some-oidc-provider/auth',
+    sub: v4(),
+    aud: '75pk49boud2olipfda0ke3snic',
+    exp: Math.floor(Date.now() / 1000) + 10000,
+    iat: Math.floor(Date.now() / 1000),
+    event_id: v4(),
+    token_use: tokenType,
+    auth_time: Math.floor(Date.now() / 1000),
+    username,
+    email,
+    groups,
+  };
 };

@@ -276,19 +276,33 @@ test('creates belongs to relationship with implicit fields', () => {
   expect(relatedField).toBeDefined();
   expect(relatedField.type.kind).toEqual(Kind.NAMED_TYPE);
 
-  const createInput = schema.definitions.find((def: any) => def.name && def.name.value === 'CreateTest1Input') as any;
+  const create1Input = schema.definitions.find((def: any) => def.name && def.name.value === 'CreateTest1Input') as any;
+  expect(create1Input).toBeDefined();
+  expect(create1Input.fields.length).toEqual(4);
+  expect(create1Input.fields.find((f: any) => f.name.value === 'id')).toBeDefined();
+  expect(create1Input.fields.find((f: any) => f.name.value === 'friendID')).toBeDefined();
+  expect(create1Input.fields.find((f: any) => f.name.value === 'email')).toBeDefined();
+  expect(create1Input.fields.find((f: any) => f.name.value === 'testOtherHalfId')).toBeDefined();
+
+  const update1Input = schema.definitions.find((def: any) => def.name && def.name.value === 'UpdateTest1Input') as any;
+  expect(update1Input).toBeDefined();
+  expect(update1Input.fields.length).toEqual(4);
+  expect(update1Input.fields.find((f: any) => f.name.value === 'id')).toBeDefined();
+  expect(update1Input.fields.find((f: any) => f.name.value === 'friendID')).toBeDefined();
+  expect(update1Input.fields.find((f: any) => f.name.value === 'email')).toBeDefined();
+  expect(update1Input.fields.find((f: any) => f.name.value === 'testOtherHalfId')).toBeDefined();
+
+  const createInput = schema.definitions.find((def: any) => def.name && def.name.value === 'CreateTestInput') as any;
   expect(createInput).toBeDefined();
-  expect(createInput.fields.length).toEqual(4);
+  expect(createInput.fields.length).toEqual(3);
   expect(createInput.fields.find((f: any) => f.name.value === 'id')).toBeDefined();
-  expect(createInput.fields.find((f: any) => f.name.value === 'friendID')).toBeDefined();
   expect(createInput.fields.find((f: any) => f.name.value === 'email')).toBeDefined();
   expect(createInput.fields.find((f: any) => f.name.value === 'testOtherHalfId')).toBeDefined();
 
-  const updateInput = schema.definitions.find((def: any) => def.name && def.name.value === 'UpdateTest1Input') as any;
+  const updateInput = schema.definitions.find((def: any) => def.name && def.name.value === 'UpdateTestInput') as any;
   expect(updateInput).toBeDefined();
-  expect(updateInput.fields.length).toEqual(4);
+  expect(updateInput.fields.length).toEqual(3);
   expect(updateInput.fields.find((f: any) => f.name.value === 'id')).toBeDefined();
-  expect(updateInput.fields.find((f: any) => f.name.value === 'friendID')).toBeDefined();
   expect(updateInput.fields.find((f: any) => f.name.value === 'email')).toBeDefined();
   expect(createInput.fields.find((f: any) => f.name.value === 'testOtherHalfId')).toBeDefined();
 });
@@ -299,7 +313,7 @@ test('regression test for implicit id field on related type', () => {
       powerSourceID: ID
       powerSource: PowerSource @hasOne(fields: ["powerSourceID"])
     }
-    
+
     type PowerSource @model {
       sourceID: ID!
       chargerID: ID
