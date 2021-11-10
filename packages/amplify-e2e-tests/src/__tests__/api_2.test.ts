@@ -1,14 +1,10 @@
 import {
   addApiWithBlankSchemaAndConflictDetection,
   addApiWithoutSchema,
-  addFunction,
-  addRestApi,
-  addSimpleDDB,
   amplifyPush,
   amplifyPushUpdate,
   apiDisableDataStore,
   apiEnableDataStore,
-  checkIfBucketExists,
   createNewProjectDir,
   deleteProject,
   deleteProjectDir,
@@ -18,14 +14,11 @@ import {
   getProjectMeta,
   getTransformConfig,
   initJSProjectWithProfile,
-  listAttachedRolePolicies,
-  listRolePolicies,
   updateApiSchema,
   updateAPIWithResolutionStrategyWithModels,
-  updateAuthAddAdminQueries,
 } from 'amplify-e2e-core';
 import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
-import { existsSync, readdirSync, readFileSync, writeFileSync } from 'fs';
+import { existsSync } from 'fs';
 import gql from 'graphql-tag';
 import { TRANSFORM_CURRENT_VERSION } from 'graphql-transformer-core';
 import _ from 'lodash';
