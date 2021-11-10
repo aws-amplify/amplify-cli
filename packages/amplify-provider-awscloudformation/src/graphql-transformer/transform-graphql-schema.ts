@@ -37,6 +37,7 @@ import { ResourceConstants } from 'graphql-transformer-common';
 import { showGlobalSandboxModeWarning, showSandboxModePrompts, schemaHasSandboxModeEnabled } from '../utils/sandbox-mode-helpers';
 import { printer } from 'amplify-prompts';
 import { GraphQLSanityCheck, SanityCheckRules } from './sanity-check';
+import _ from 'lodash';
 
 const API_CATEGORY = 'api';
 const STORAGE_CATEGORY = 'storage';
@@ -350,11 +351,29 @@ export async function transformGraphQLSchema(context, options) {
   context.print.success(`GraphQL schema compiled successfully.\n\nEdit your schema at ${schemaFilePath} or \
 place .graphql files in a directory at ${schemaDirPath}`);
 
+  if (isAuthModeUpdated(options)) {
+    parameters.AuthModeLastUpdated = new Date();
+  }
   if (!options.dryRun) {
     JSONUtilities.writeJson(parametersFilePath, parameters);
   }
 
   return transformerOutput;
+}
+
+function isAuthModeUpdated(options): boolean {
+  return options.authConfig &&
+    options.previousAuthConfig &&
+    !(
+      _.isEqual(
+        options.authConfig.defaultAuthentication.authenticationType,
+        options.previousAuthConfig.defaultAuthentication.authenticationType,
+      ) &&
+      _.isEqual(
+        options.authConfig.additionalAuthenticationProviders?.map(mode => mode.authenticationType),
+        options.previousAuthConfig.additionalAuthenticationProviders?.map(mode => mode.authenticationType),
+      )
+    );
 }
 
 function getProjectBucket(context) {
