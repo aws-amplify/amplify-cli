@@ -1,4 +1,4 @@
-import { $TSContext, FeatureFlags, Template, pathManager, PathConstants, stateManager, JSONUtilities } from 'amplify-cli-core';
+import { $TSContext, JSONUtilities, PathConstants, pathManager, stateManager, Template } from 'amplify-cli-core';
 import _ from 'lodash';
 import { transformRootStack } from './override-manager';
 import { rootStackFileName } from './push-resources';

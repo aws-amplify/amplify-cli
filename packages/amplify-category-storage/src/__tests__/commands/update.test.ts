@@ -1,4 +1,4 @@
-import { $TSContext, $TSObject } from 'amplify-cli-core';
+import { $TSContext } from 'amplify-cli-core';
 import { run } from '../../commands/storage/update';
 import * as providerController from '../../provider-utils/awscloudformation/index';
 
@@ -45,7 +45,7 @@ describe('update s3 command tests', () => {
   });
 
   it('update resource workflow is invoked for S3', async () => {
-    const service = 's3';
+    const service = 'S3';
     mockContext.amplify.serviceSelectionPrompt = jest.fn().mockImplementation(async () => {
       return { service: service, providerName: provider };
     });
