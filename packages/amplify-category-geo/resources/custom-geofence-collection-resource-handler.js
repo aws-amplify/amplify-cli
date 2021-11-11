@@ -11,11 +11,11 @@ exports.handler = async (event, context) => {
       if (params.PricingPlan !== 'RequestBasedUsage') {
         params['PricingPlanDataSource'] = event.ResourceProperties.dataSource;
       }
+      event.PhysicalResourceId = params.CollectionName;
       const locationClient = new aws.Location({ apiVersion: '2020-11-19', region: event.ResourceProperties.region });
       const res = await locationClient.createGeofenceCollection(params).promise();
       console.log('create resource response data' + JSON.stringify(res));
       if (res.CollectionName && res.CollectionArn) {
-        event.PhysicalResourceId = res.CollectionName;
         await send(event, context, response.SUCCESS, res);
       } else {
         await send(event, context, response.FAILED, res);
@@ -29,11 +29,11 @@ exports.handler = async (event, context) => {
       if (params.PricingPlan !== 'RequestBasedUsage') {
         params['PricingPlanDataSource'] = event.ResourceProperties.dataSource;
       }
+      event.PhysicalResourceId = params.CollectionName;
       const locationClient = new aws.Location({ apiVersion: '2020-11-19', region: event.ResourceProperties.region });
       const res = await locationClient.updateGeofenceCollection(params).promise();
       console.log('update resource response data' + JSON.stringify(res));
-      if (res.CollectionName && res.CollectionArn) {
-        event.PhysicalResourceId = res.CollectionName;
+      if (res.CollectionName) {
         await send(event, context, response.SUCCESS, res);
       } else {
         await send(event, context, response.FAILED, res);
@@ -43,9 +43,9 @@ exports.handler = async (event, context) => {
       const params = {
         CollectionName: event.ResourceProperties.collectionName
       };
+      event.PhysicalResourceId = params.CollectionName;
       const locationClient = new aws.Location({ apiVersion: '2020-11-19', region: event.ResourceProperties.region });
       const res = await locationClient.deleteGeofenceCollection(params).promise();
-      event.PhysicalResourceId = event.ResourceProperties.CollectionName;
       console.log('delete resource response data' + JSON.stringify(res));
       await send(event, context, response.SUCCESS, res);
     }

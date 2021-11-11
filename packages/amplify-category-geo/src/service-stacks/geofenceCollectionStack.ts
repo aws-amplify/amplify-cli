@@ -51,13 +51,20 @@ export class GeofenceCollectionStack extends BaseStack {
 
   private constructOutputs() {
     new cdk.CfnOutput(this, 'Name', {
-      value: this.geofenceCollectionResource.getAtt('CollectionName').toString(),
+      value: this.geofenceCollectionResource.getAtt('CollectionName').toString()
     });
     new cdk.CfnOutput(this, 'Region', {
-      value: this.geofenceCollectionRegion,
+      value: this.geofenceCollectionRegion
+    });
+    // This is a work-around until the CollectionArn is included in the `UpdateGeofenceCollection` output
+    const outputGeofenceCollectionARN = cdk.Fn.sub('arn:aws:geo:${region}:${account}:geofence-collection/${collectionName}', {
+      region: this.geofenceCollectionRegion,
+      account: cdk.Fn.ref('AWS::AccountId'),
+      collectionName: this.geofenceCollectionResource.getAtt('CollectionName').toString()
     });
     new cdk.CfnOutput(this, 'Arn', {
-      value: this.geofenceCollectionResource.getAtt('CollectionArn').toString(),
+      // value: this.geofenceCollectionResource.getAtt('CollectionArn').toString(),
+      value: outputGeofenceCollectionARN
     });
   }
 
@@ -111,13 +118,19 @@ export class GeofenceCollectionStack extends BaseStack {
   // Grant selected access permissions for Geofence operations to chosen Cognito Groups
   private constructCollectionPolicyResources(collectionResource: cdk.CustomResource) {
     Object.keys(this.groupPermissions).forEach((group: string) => {
+      // This is a work-around until the CollectionArn is included in the `UpdateGeofenceCollection` output
+      const outputGeofenceCollectionARN = cdk.Fn.sub('arn:aws:geo:${region}:${account}:geofence-collection/${collectionName}', {
+        region: this.geofenceCollectionRegion,
+        account: cdk.Fn.ref('AWS::AccountId'),
+        collectionName: collectionResource.getAtt('CollectionName').toString()
+      });
       const crudActions: string[] = _.uniq(_.flatten(this.groupPermissions[group].map((e: string) => crudPermissionsMap[e])));
       const policyDocument = new iam.PolicyDocument({
           statements: [
             new iam.PolicyStatement({
               effect: iam.Effect.ALLOW,
               actions: crudActions,
-              resources: [collectionResource.getAtt('CollectionArn').toString()],
+              resources: [outputGeofenceCollectionARN],
             }),
           ],
       });

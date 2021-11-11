@@ -9,7 +9,8 @@ import {
   generateTemplateFile,
   updateDefaultResource,
   readResourceMetaParameters,
-  getAuthResourceName
+  getAuthResourceName,
+  updateGeoPricingPlan
 } from './resourceUtils';
 import { App } from '@aws-cdk/core';
 import { getTemplateMappings } from '../provider-controllers';
@@ -38,6 +39,11 @@ export const createGeofenceCollectionResource = async (context: $TSContext, para
     await updateDefaultResource(context, ServiceName.GeofenceCollection);
   }
 
+  // update the pricing plan for All Geo resources
+  if (parameters.pricingPlan) {
+    await updateGeoPricingPlan(context, parameters.pricingPlan);
+  }
+
   context.amplify.updateamplifyMetaAfterResourceAdd(category, parameters.name, geofenceCollectionMetaParameters);
 };
 
@@ -54,6 +60,7 @@ export const modifyGeofenceCollectionResource = async (
     { ...parameters, ...templateMappings, authResourceName }
   );
   generateTemplateFile(geofenceCollectionStack, parameters.name);
+  saveCFNParameters(parameters);
   writeGeofenceCollectionParams(parameters);
 
   // update the default Geofence collection
@@ -61,9 +68,14 @@ export const modifyGeofenceCollectionResource = async (
     await updateDefaultResource(context, ServiceName.GeofenceCollection, parameters.name);
   }
 
+  // update the pricing plan for All Geo resources
+  if (parameters.pricingPlan) {
+    await updateGeoPricingPlan(context, parameters.pricingPlan);
+  }
+
   const geofenceCollectionMetaParameters = constructGeofenceCollectionMetaParameters(parameters, authResourceName);
 
-  const paramsToUpdate = ['pricingPlan', 'accessType', 'dependsOn'];
+  const paramsToUpdate = ['pricingPlan', 'accessType', 'dependsOn', 'dataProvider'];
   paramsToUpdate.forEach(param => {
     context.amplify.updateamplifyMetaAfterResourceUpdate(category, parameters.name, param, (geofenceCollectionMetaParameters as $TSObject)[param]);
   });
