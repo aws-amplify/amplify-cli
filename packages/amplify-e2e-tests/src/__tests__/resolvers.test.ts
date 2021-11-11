@@ -36,7 +36,7 @@ describe('user created resolvers', () => {
     it('adds the overwritten resolver to the build', async () => {
       const resolverName = 'Query.listTodos.req.vtl';
       const resolver = '$util.unauthorized()';
-      const generatedResolverPath = join(projectDir, 'amplify', 'backend', 'api', apiName, 'build', 'pipelineFunctions', resolverName);
+      const generatedResolverPath = join(projectDir, 'amplify', 'backend', 'api', apiName, 'build', 'resolvers', resolverName);
 
       await addApiWithoutSchema(projectDir, { apiName });
       await updateApiSchema(projectDir, apiName, 'simple_model.graphql');
@@ -84,26 +84,8 @@ describe('user created resolvers', () => {
       const resolverReq = '$util.unauthorized()';
       const resolverRes = '$util.toJson({})';
 
-      const generatedReqResolverPath = join(
-        projectDir,
-        'amplify',
-        'backend',
-        'api',
-        apiName,
-        'build',
-        'pipelineFunctions',
-        resolverReqName,
-      );
-      const generatedResResolverPath = join(
-        projectDir,
-        'amplify',
-        'backend',
-        'api',
-        apiName,
-        'build',
-        'pipelineFunctions',
-        resolverResName,
-      );
+      const generatedReqResolverPath = join(projectDir, 'amplify', 'backend', 'api', apiName, 'build', 'resolvers', resolverReqName);
+      const generatedResResolverPath = join(projectDir, 'amplify', 'backend', 'api', apiName, 'build', 'resolvers', resolverResName);
       const stackPath = join(projectDir, 'amplify', 'backend', 'api', apiName, 'build', 'stacks', 'CustomResources.json');
 
       const Resources = {
@@ -119,7 +101,7 @@ describe('user created resolvers', () => {
               FieldName: 'commentsForTodo',
               RequestMappingTemplateS3Location: {
                 'Fn::Sub': [
-                  's3://${S3DeploymentBucket}/${S3DeploymentRootKey}/pipelineFunctions/Query.commentsForTodo.req.vtl',
+                  's3://${S3DeploymentBucket}/${S3DeploymentRootKey}/resolvers/Query.commentsForTodo.req.vtl',
                   {
                     S3DeploymentBucket: {
                       Ref: 'S3DeploymentBucket',
@@ -132,7 +114,7 @@ describe('user created resolvers', () => {
               },
               ResponseMappingTemplateS3Location: {
                 'Fn::Sub': [
-                  's3://${S3DeploymentBucket}/${S3DeploymentRootKey}/pipelineFunctions/Query.commentsForTodo.res.vtl',
+                  's3://${S3DeploymentBucket}/${S3DeploymentRootKey}/resolvers/Query.commentsForTodo.res.vtl',
                   {
                     S3DeploymentBucket: {
                       Ref: 'S3DeploymentBucket',
