@@ -231,6 +231,8 @@ export function addApiWithAllAuthModesV2(cwd: string, opts: Partial<AddApiOption
       // Lambda
       .wait(/.*Choose a Lambda authorization function*/)
       .sendCarriageReturn()
+      .wait(/.*Do you want to edit the local lambda function now*/)
+      .sendConfirmNo()
       .wait(/.*How long should the authorization response be cached in seconds.*/)
       .sendLine('600')
       .wait(/.*Here is the GraphQL API that we will create. Select a setting to edit or continue.*/)
