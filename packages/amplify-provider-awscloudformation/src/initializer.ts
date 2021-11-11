@@ -169,7 +169,7 @@ function cloneCLIJSONForNewEnvironment(context) {
 export async function onInitSuccessful(context) {
   configurationManager.onInitSuccessful(context);
   if (context.exeInfo.isNewEnv) {
-    if (FeatureFlags.getBoolean('overrides.project')) {
+    if (FeatureFlags.getBoolean('project.overrides')) {
       await storeRootStackTemplate(context);
     }
     context = await storeCurrentCloudBackend(context);

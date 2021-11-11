@@ -5,6 +5,7 @@ import {
   AmplifyCategories,
   AmplifySupportedService,
   exitOnNextTick,
+  getMigrateResourceMessageForOverride,
   pathManager,
   ResourceDoesNotExistError,
   stateManager,
@@ -23,8 +24,6 @@ import {
 import { DynamoDBInputState } from './dynamoDB-input-state';
 
 // keep in sync with ServiceName in amplify-AmplifyCategories.STORAGE-function, but probably it will not change
-const FunctionServiceNameLambdaFunction = 'Lambda';
-const serviceName = 'DynamoDB';
 
 export async function addWalkthrough(context: $TSContext, defaultValuesFilename: string) {
   printer.blankLine();
@@ -71,7 +70,7 @@ export async function updateWalkthrough(context: $TSContext) {
 
   Object.keys(amplifyMeta[AmplifyCategories.STORAGE]).forEach(resourceName => {
     if (
-      amplifyMeta[AmplifyCategories.STORAGE][resourceName].service === serviceName &&
+      amplifyMeta[AmplifyCategories.STORAGE][resourceName].service === AmplifySupportedService.DYNAMODB &&
       amplifyMeta[AmplifyCategories.STORAGE][resourceName].mobileHubMigrated !== true &&
       amplifyMeta[AmplifyCategories.STORAGE][resourceName].serviceType !== 'imported'
     ) {
@@ -96,7 +95,7 @@ export async function updateWalkthrough(context: $TSContext) {
 
   const headlessMigrate = context.input.options?.yes || context.input.options?.forcePush || context.input.options?.headless;
   if (!cliInputsState.cliInputFileExists()) {
-    if (headlessMigrate || (await prompter.yesOrNo('File migration required to continue. Do you want to continue?', true))) {
+    if (headlessMigrate || (await prompter.yesOrNo(getMigrateResourceMessageForOverride(AmplifyCategories.STORAGE, resourceName), true))) {
       cliInputsState.migrate();
       const stackGenerator = new DDBStackTransform(resourceName);
       stackGenerator.transform();
