@@ -13,7 +13,8 @@ import {
   deleteProjectDir,
   getProjectMeta,
   initFlutterProjectWithProfile,
-  initJSProjectWithProfile, updateS3AddTriggerWithExistingFunction
+  initJSProjectWithProfile, 
+  updateS3AddTriggerNewFunctionWithFunctionExisting
 } from 'amplify-e2e-core';
 import * as fs from 'fs-extra';
 import * as path from 'path';
@@ -93,7 +94,7 @@ describe('amplify add/update storage(S3)', () => {
     await initJSProjectWithProfile(projRoot, {});
     await addAuthWithGroupsAndAdminAPI(projRoot, {});
     await addS3WithGroupAccess(projRoot, {});
-    await updateS3AddTriggerWithExistingFunction(projRoot, {});
+    await updateS3AddTriggerNewFunctionWithFunctionExisting(projRoot, {});
     await amplifyPushAuth(projRoot);
     await validate(projRoot);
   });

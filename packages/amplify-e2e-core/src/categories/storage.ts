@@ -381,12 +381,8 @@ export function addS3AndAuthWithAuthOnlyAccess(cwd: string, settings: any): Prom
       .sendCarriageReturn() // Default name
       .wait('Who should have access')
       .sendCarriageReturn() // Auth users only
-      .wait('What kind of access do you want for')
-      .send(' ')
-      .sendKeyDown()
-      .send(' ')
-      .sendKeyDown()
-      .send(' ')
+      .wait('What kind of access do you want for Authenticated users?')
+      .sendCtrlA()
       .sendCarriageReturn()
       .wait('Do you want to add a Lambda Trigger for your S3 Bucket')
       .sendConfirmNo()
@@ -529,7 +525,32 @@ export function updateS3AddTrigger(cwd: string, settings: any): Promise<void> {
   });
 }
 
-export function updateS3AddTriggerWithExistingFunction(cwd: string, settings: any): Promise<void> {
+
+export function updateS3AddTriggerWithAuthOnly(cwd: string, settings: any): Promise<void> {
+  return new Promise((resolve, reject) => {
+    spawn(getCLIPath(), ['update', 'storage'], { cwd, stripColors: true })
+      .wait('Select from one of the below mentioned services')
+      .sendCarriageReturn() // Content
+      .wait('Who should have access:')
+      .sendCarriageReturn() //Auth only users
+      .wait('What kind of access do you want for Authenticated users?')
+      .sendCarriageReturn() //Select preselected permissions
+      .wait('Do you want to add a Lambda Trigger for your S3 Bucket?')
+      .sendConfirmYes()
+      .wait('Do you want to edit the local')
+      .sendConfirmNo()
+      .sendEof()
+      .run((err: Error) => {
+        if (!err) {
+          resolve();
+        } else {
+          reject(err);
+        }
+      });
+  });
+}
+
+export function updateS3AddTriggerNewFunctionWithFunctionExisting(cwd: string, settings: any): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['update', 'storage'], { cwd, stripColors: true })
       .wait('Select from one of the below mentioned services')
@@ -550,7 +571,6 @@ export function updateS3AddTriggerWithExistingFunction(cwd: string, settings: an
       .sendCarriageReturn() //Create a new function
       .wait('Do you want to edit the local')
       .sendConfirmNo()
-      .sendCarriageReturn()
       .sendEof()
       .run((err: Error) => {
         if (!err) {
@@ -617,6 +637,33 @@ export function addS3Storage(projectDir: string): Promise<void> {
       .sendCtrlA()
       .sendCarriageReturn()
       .wait('What kind of access do you want for Guest users?') //Guest
+      .sendCtrlA()
+      .sendCarriageReturn()
+      .wait('Do you want to add a Lambda Trigger for your S3 Bucket?')
+      .sendConfirmNo()
+      .run((err: Error) => {
+        if (!err) {
+          resolve();
+        } else {
+          reject(err);
+        }
+      });
+  });
+}
+
+export function addS3StorageWithAuthOnly(projectDir: string): Promise<void> {
+  return new Promise((resolve, reject) => {
+    let chain = spawn(getCLIPath(), ['add', 'storage'], { cwd: projectDir, stripColors: true });
+    chain
+      .wait('Select from one of the below mentioned services:') //'Content (Images, audio, video, etc.)'
+      .sendCarriageReturn()
+      .wait('Provide a friendly name for your resource that will be used to label this category in the project:')
+      .sendCarriageReturn()
+      .wait('Provide bucket name:')
+      .sendCarriageReturn()
+      .wait('Who should have access:')
+      .sendCarriageReturn() //Auth users only
+      .wait('What kind of access do you want for Authenticated users?') //Auth
       .sendCtrlA()
       .sendCarriageReturn()
       .wait('Do you want to add a Lambda Trigger for your S3 Bucket?')
