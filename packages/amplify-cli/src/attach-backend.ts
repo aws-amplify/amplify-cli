@@ -61,7 +61,7 @@ async function onSuccess(context: $TSContext) {
   if (!inputParams.yes) {
     const shouldKeepAmplifyDir = context.exeInfo.existingLocalEnvInfo?.noUpdateBackend
       ? !context.exeInfo.existingLocalEnvInfo.noUpdateBackend
-      : await context.amplify.confirmPrompt('Do you plan on modifying this backend?', true);
+      : !inputParams.noUpdateBackend && (await context.amplify.confirmPrompt('Do you plan on modifying this backend?', true));
 
     if (shouldKeepAmplifyDir) {
       if (stateManager.currentMetaFileExists()) {
