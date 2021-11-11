@@ -26,7 +26,7 @@ test('generates expected VTL', () => {
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
   expect(out.stacks).toBeDefined();
-  expect(out.pipelineFunctions).toMatchSnapshot();
+  expect(out.resolvers).toMatchSnapshot();
   parse(out.schema);
 });
 
@@ -130,10 +130,10 @@ test('it generates the expected resources', () => {
       },
       Kind: 'UNIT',
       RequestMappingTemplateS3Location: {
-        'Fn::Join': ['', ['s3://', { Ref: anything() }, '/', { Ref: anything() }, '/pipelineFunctions/Comment.content.req.vtl']],
+        'Fn::Join': ['', ['s3://', { Ref: anything() }, '/', { Ref: anything() }, '/resolvers/Comment.content.req.vtl']],
       },
       ResponseMappingTemplateS3Location: {
-        'Fn::Join': ['', ['s3://', { Ref: anything() }, '/', { Ref: anything() }, '/pipelineFunctions/Comment.content.res.vtl']],
+        'Fn::Join': ['', ['s3://', { Ref: anything() }, '/', { Ref: anything() }, '/resolvers/Comment.content.res.vtl']],
       },
     }),
   );
@@ -148,10 +148,10 @@ test('it generates the expected resources', () => {
       },
       Kind: 'UNIT',
       RequestMappingTemplateS3Location: {
-        'Fn::Join': ['', ['s3://', { Ref: anything() }, '/', { Ref: anything() }, '/pipelineFunctions/Comment.content2.req.vtl']],
+        'Fn::Join': ['', ['s3://', { Ref: anything() }, '/', { Ref: anything() }, '/resolvers/Comment.content2.req.vtl']],
       },
       ResponseMappingTemplateS3Location: {
-        'Fn::Join': ['', ['s3://', { Ref: anything() }, '/', { Ref: anything() }, '/pipelineFunctions/Comment.content2.res.vtl']],
+        'Fn::Join': ['', ['s3://', { Ref: anything() }, '/', { Ref: anything() }, '/resolvers/Comment.content2.res.vtl']],
       },
     }),
   );
@@ -166,10 +166,10 @@ test('it generates the expected resources', () => {
       },
       Kind: 'UNIT',
       RequestMappingTemplateS3Location: {
-        'Fn::Join': ['', ['s3://', { Ref: anything() }, '/', { Ref: anything() }, '/pipelineFunctions/Comment.more.req.vtl']],
+        'Fn::Join': ['', ['s3://', { Ref: anything() }, '/', { Ref: anything() }, '/resolvers/Comment.more.req.vtl']],
       },
       ResponseMappingTemplateS3Location: {
-        'Fn::Join': ['', ['s3://', { Ref: anything() }, '/', { Ref: anything() }, '/pipelineFunctions/Comment.more.res.vtl']],
+        'Fn::Join': ['', ['s3://', { Ref: anything() }, '/', { Ref: anything() }, '/resolvers/Comment.more.res.vtl']],
       },
     }),
   );
@@ -184,10 +184,10 @@ test('it generates the expected resources', () => {
       },
       Kind: 'UNIT',
       RequestMappingTemplateS3Location: {
-        'Fn::Join': ['', ['s3://', { Ref: anything() }, '/', { Ref: anything() }, '/pipelineFunctions/Comment.evenMore.req.vtl']],
+        'Fn::Join': ['', ['s3://', { Ref: anything() }, '/', { Ref: anything() }, '/resolvers/Comment.evenMore.req.vtl']],
       },
       ResponseMappingTemplateS3Location: {
-        'Fn::Join': ['', ['s3://', { Ref: anything() }, '/', { Ref: anything() }, '/pipelineFunctions/Comment.evenMore.res.vtl']],
+        'Fn::Join': ['', ['s3://', { Ref: anything() }, '/', { Ref: anything() }, '/resolvers/Comment.evenMore.res.vtl']],
       },
     }),
   );
@@ -202,10 +202,10 @@ test('it generates the expected resources', () => {
       },
       Kind: 'UNIT',
       RequestMappingTemplateS3Location: {
-        'Fn::Join': ['', ['s3://', { Ref: anything() }, '/', { Ref: anything() }, '/pipelineFunctions/Comment.stillMore.req.vtl']],
+        'Fn::Join': ['', ['s3://', { Ref: anything() }, '/', { Ref: anything() }, '/resolvers/Comment.stillMore.req.vtl']],
       },
       ResponseMappingTemplateS3Location: {
-        'Fn::Join': ['', ['s3://', { Ref: anything() }, '/', { Ref: anything() }, '/pipelineFunctions/Comment.stillMore.res.vtl']],
+        'Fn::Join': ['', ['s3://', { Ref: anything() }, '/', { Ref: anything() }, '/resolvers/Comment.stillMore.res.vtl']],
       },
     }),
   );

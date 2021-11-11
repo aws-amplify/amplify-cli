@@ -47,7 +47,7 @@ describe('@model owner mutation checks', () => {
     };
 
     // expect the query resolver to contain a filter for the owner
-    const queryTemplate = out.pipelineFunctions['Query.listPosts.auth.1.req.vtl'];
+    const queryTemplate = out.resolvers['Query.listPosts.auth.1.req.vtl'];
     const queryResponse = vtlTemplate.render(queryTemplate, { context: {}, requestParameters: ownerRequest });
     expect(queryResponse).toBeDefined();
     expect(queryResponse.stash.hasAuth).toEqual(true);
@@ -57,7 +57,7 @@ describe('@model owner mutation checks', () => {
       }),
     );
 
-    const createRequestTemplate = out.pipelineFunctions['Mutation.createPost.auth.1.req.vtl'];
+    const createRequestTemplate = out.resolvers['Mutation.createPost.auth.1.req.vtl'];
     const createVTLRequest = vtlTemplate.render(createRequestTemplate, { context: ownerContext, requestParameters: ownerRequest });
     expect(createVTLRequest).toBeDefined();
     expect(createVTLRequest.stash.hasAuth).toEqual(true);
@@ -66,7 +66,7 @@ describe('@model owner mutation checks', () => {
     // since we have an owner rule we expect the owner field to be defined in the argument input
     expect(createVTLRequest.args.input.owner).toEqual('user1');
 
-    const updateRequestTemplate = out.pipelineFunctions['Mutation.updatePost.auth.1.req.vtl'];
+    const updateRequestTemplate = out.resolvers['Mutation.updatePost.auth.1.req.vtl'];
     const updateVTLRequest = vtlTemplate.render(updateRequestTemplate, { context: ownerContext, requestParameters: ownerRequest });
     expect(updateVTLRequest).toBeDefined();
     // here we expect a get item payload to verify the owner making the update request is valid
@@ -79,7 +79,7 @@ describe('@model owner mutation checks', () => {
     );
     // atm there is there is nothing in the stash yet
     expect(updateVTLRequest.stash).toEqual({});
-    const updateResponseTemplate = out.pipelineFunctions['Mutation.updatePost.auth.1.res.vtl'];
+    const updateResponseTemplate = out.resolvers['Mutation.updatePost.auth.1.res.vtl'];
     // response where the owner is indeed the owner
     const updateVTLResponse = vtlTemplate.render(updateResponseTemplate, {
       context: { ...ownerContext, result: { id: '001', owner: 'user1' } },
@@ -119,7 +119,7 @@ describe('@model owner mutation checks', () => {
       arguments: { input: { id: '001', title: 'sample' } },
     };
 
-    const createRequestTemplate = out.pipelineFunctions['Mutation.createPost.auth.1.req.vtl'];
+    const createRequestTemplate = out.resolvers['Mutation.createPost.auth.1.req.vtl'];
     const createVTLRequest = vtlTemplate.render(createRequestTemplate, { context: ownerContext, requestParameters: ownerRequest });
     expect(createVTLRequest).toBeDefined();
     expect(createVTLRequest.stash.hasAuth).toEqual(true);
@@ -145,7 +145,7 @@ describe('@model owner mutation checks', () => {
       arguments: { input: { id: '001', title: 'sample' } },
     };
 
-    const createRequestTemplate = out.pipelineFunctions['Mutation.createPost.auth.1.req.vtl'];
+    const createRequestTemplate = out.resolvers['Mutation.createPost.auth.1.req.vtl'];
     const createVTLRequest = vtlTemplate.render(createRequestTemplate, { context: ownerContext, requestParameters: ownerRequest });
     expect(createVTLRequest).toBeDefined();
     expect(createVTLRequest.stash.hasAuth).toEqual(true);
@@ -171,7 +171,7 @@ describe('@model owner mutation checks', () => {
       arguments: { input: { id: '001', title: 'sample' } },
     };
 
-    const createRequestTemplate = out.pipelineFunctions['Mutation.createPost.auth.1.req.vtl'];
+    const createRequestTemplate = out.resolvers['Mutation.createPost.auth.1.req.vtl'];
     const createVTLRequest = vtlTemplate.render(createRequestTemplate, { context: ownerContext, requestParameters: ownerRequest });
     expect(createVTLRequest).toBeDefined();
     expect(createVTLRequest.stash.hasAuth).toEqual(true);
@@ -213,7 +213,7 @@ describe('@model owner mutation checks', () => {
       arguments: { input: { id: '001', title: 'sample' } },
     };
 
-    const createRequestTemplate = out.pipelineFunctions['Mutation.createPost.auth.1.req.vtl'];
+    const createRequestTemplate = out.resolvers['Mutation.createPost.auth.1.req.vtl'];
     expect(createRequestTemplate).toBeDefined();
     const createVTLRequest = vtlTemplate.render(createRequestTemplate, { context: ownerContext, requestParameters: ownerRequest });
     expect(createVTLRequest).toBeDefined();
@@ -300,10 +300,10 @@ describe('@model operations', () => {
     const out = transformer.transform(validSchema);
     expect(out).toBeDefined();
     // load vtl templates
-    const createRequestTemplate = out.pipelineFunctions['Mutation.createPost.auth.1.req.vtl'];
-    const readRequestTemplate = out.pipelineFunctions['Query.listPosts.auth.1.req.vtl'];
-    const updateResponseTemplate = out.pipelineFunctions['Mutation.updatePost.auth.1.res.vtl'];
-    const deleteResponseTemplate = out.pipelineFunctions['Mutation.deletePost.auth.1.res.vtl'];
+    const createRequestTemplate = out.resolvers['Mutation.createPost.auth.1.req.vtl'];
+    const readRequestTemplate = out.resolvers['Query.listPosts.auth.1.req.vtl'];
+    const updateResponseTemplate = out.resolvers['Mutation.updatePost.auth.1.res.vtl'];
+    const deleteResponseTemplate = out.resolvers['Mutation.deletePost.auth.1.res.vtl'];
 
     // run create request as owner and admin
     // even though they are not the owner it will still pass as they one making the request is in the admin group
@@ -379,10 +379,10 @@ describe('@model operations', () => {
     `;
     const out = transformer.transform(validSchema);
     // load vtl templates
-    const createRequestTemplate = out.pipelineFunctions['Mutation.createPost.auth.1.req.vtl'];
-    const readRequestTemplate = out.pipelineFunctions['Query.listPosts.auth.1.req.vtl'];
-    const updateResponseTemplate = out.pipelineFunctions['Mutation.updatePost.auth.1.res.vtl'];
-    const deleteResponseTemplate = out.pipelineFunctions['Mutation.deletePost.auth.1.res.vtl'];
+    const createRequestTemplate = out.resolvers['Mutation.createPost.auth.1.req.vtl'];
+    const readRequestTemplate = out.resolvers['Query.listPosts.auth.1.req.vtl'];
+    const updateResponseTemplate = out.resolvers['Mutation.updatePost.auth.1.res.vtl'];
+    const deleteResponseTemplate = out.resolvers['Mutation.deletePost.auth.1.res.vtl'];
 
     // check that a editor member can't create a post under another owner
     const createPostAsEditor = vtlTemplate.render(createRequestTemplate, {
@@ -465,7 +465,7 @@ describe('@model field auth', () => {
         ssn: String
       }`;
     const out = transformer.transform(validSchema);
-    const updateResponseTemplate = out.pipelineFunctions['Mutation.updateStudent.auth.1.res.vtl'];
+    const updateResponseTemplate = out.resolvers['Mutation.updateStudent.auth.1.res.vtl'];
     const updateContext: AppSyncVTLContext = {
       arguments: {
         input: {
@@ -526,7 +526,7 @@ describe('@model field auth', () => {
     };
     ['name', 'ssn'].forEach(field => {
       // expect owner to get denied on these fields
-      const readFieldTemplate = out.pipelineFunctions[`Student.${field}.req.vtl`];
+      const readFieldTemplate = out.resolvers[`Student.${field}.req.vtl`];
       const ownerReadResponse = vtlTemplate.render(readFieldTemplate, { context: readFieldContext, requestParameters: ownerRequest });
       expect(ownerReadResponse.hadException).toEqual(true);
       // expect admin to be allowed
@@ -536,7 +536,7 @@ describe('@model field auth', () => {
 
     ['id', 'email'].forEach(field => {
       // since the only two roles have access to these fields there are no field resolvers
-      expect(out.pipelineFunctions?.[`Student.${field}.req.vtl`]).not.toBeDefined();
+      expect(out.resolvers?.[`Student.${field}.req.vtl`]).not.toBeDefined();
     });
   });
 });

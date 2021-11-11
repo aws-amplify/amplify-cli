@@ -543,7 +543,7 @@ test('the limit of 100 is used by default', () => {
   expect(out).toBeDefined();
   const schema = parse(out.schema);
   validateModelSchema(schema);
-  expect(out.pipelineFunctions['Post.comments.req.vtl']).toContain('#set( $limit = $util.defaultIfNull($context.args.limit, 100) )');
+  expect(out.resolvers['Post.comments.req.vtl']).toContain('#set( $limit = $util.defaultIfNull($context.args.limit, 100) )');
 });
 
 test('the default limit argument can be overridden', () => {
@@ -566,7 +566,7 @@ test('the default limit argument can be overridden', () => {
   expect(out).toBeDefined();
   const schema = parse(out.schema);
   validateModelSchema(schema);
-  expect(out.pipelineFunctions['Post.comments.req.vtl']).toContain('#set( $limit = $util.defaultIfNull($context.args.limit, 50) )');
+  expect(out.resolvers['Post.comments.req.vtl']).toContain('#set( $limit = $util.defaultIfNull($context.args.limit, 50) )');
 });
 
 test('validates VTL of a complex schema', () => {
@@ -644,5 +644,5 @@ test('validates VTL of a complex schema', () => {
   expect(out).toBeDefined();
   const schema = parse(out.schema);
   validateModelSchema(schema);
-  expect(out.pipelineFunctions).toMatchSnapshot();
+  expect(out.resolvers).toMatchSnapshot();
 });
