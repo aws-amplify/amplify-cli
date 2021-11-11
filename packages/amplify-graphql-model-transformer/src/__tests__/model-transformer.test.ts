@@ -1115,8 +1115,8 @@ describe('ModelTransformer: ', () => {
     const queryObject = getObjectType(schema, 'Query');
     expectFields(queryObject!, ['syncTodos']);
     // sync resolvers
-    expect(out.pipelineFunctions['Query.syncTodos.req.vtl']).toMatchSnapshot();
-    expect(out.pipelineFunctions['Query.syncTodos.res.vtl']).toMatchSnapshot();
+    expect(out.resolvers['Query.syncTodos.req.vtl']).toMatchSnapshot();
+    expect(out.resolvers['Query.syncTodos.res.vtl']).toMatchSnapshot();
     // ds table
     cdkExpect(out.rootStack).to(
       haveResource('AWS::DynamoDB::Table', {
