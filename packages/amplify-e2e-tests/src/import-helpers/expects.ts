@@ -3,19 +3,6 @@ import { getProjectMeta, getBackendAmplifyMeta, getTeamProviderInfo, getBackendC
 import { AuthProjectDetails, DynamoDBProjectDetails, readRootStack, StorageProjectDetails } from '.';
 import { AuthParameters } from '@aws-amplify/amplify-category-auth';
 
-const ddbAttrTypeMapping = {
-  string: 'S',
-  number: 'N',
-  binary: 'B',
-  boolean: 'BOOL',
-  list: 'L',
-  map: 'M',
-  null: 'NULL',
-  'string-set': 'SS',
-  'number-set': 'NS',
-  'binary-set': 'BS',
-};
-
 export const expectAuthProjectDetailsMatch = (projectDetails: AuthProjectDetails, ogProjectDetails: AuthProjectDetails) => {
   expect(projectDetails.parameters.authSelections).toEqual(ogProjectDetails.parameters.authSelections);
 
@@ -145,18 +132,18 @@ export const expectDynamoDBProjectDetailsMatch = (projectDetails: DynamoDBProjec
   expect(projectDetails.meta.Name).toEqual(ogProjectDetails.meta.Name);
   expect(projectDetails.meta.Region).toEqual(ogProjectDetails.meta.Region);
   expect(projectDetails.meta.PartitionKeyName).toEqual(ogProjectDetails.meta.PartitionKeyName);
-  expect(projectDetails.meta.PartitionKeyType).toEqual(ddbAttrTypeMapping[ogProjectDetails.meta.PartitionKeyType]);
+  expect(projectDetails.meta.PartitionKeyType).toEqual(ogProjectDetails.meta.PartitionKeyType);
   expect(projectDetails.meta.SortKeyName).toEqual(ogProjectDetails.meta.SortKeyName);
-  expect(projectDetails.meta.SortKeyType).toEqual(ddbAttrTypeMapping[ogProjectDetails.meta.SortKeyType]);
+  expect(projectDetails.meta.SortKeyType).toEqual(ogProjectDetails.meta.SortKeyType);
   expect(projectDetails.meta.Arn).toEqual(ogProjectDetails.meta.Arn);
   expect(projectDetails.meta.StreamArn).toEqual(ogProjectDetails.meta.StreamArn);
 
   expect(projectDetails.team.tableName).toEqual(ogProjectDetails.meta.Name);
   expect(projectDetails.team.region).toEqual(ogProjectDetails.meta.Region);
   expect(projectDetails.team.partitionKeyName).toEqual(ogProjectDetails.meta.PartitionKeyName);
-  expect(projectDetails.team.partitionKeyType).toEqual(ddbAttrTypeMapping[ogProjectDetails.meta.PartitionKeyType]);
+  expect(projectDetails.team.partitionKeyType).toEqual(ogProjectDetails.meta.PartitionKeyType);
   expect(projectDetails.team.sortKeyName).toEqual(ogProjectDetails.meta.SortKeyName);
-  expect(projectDetails.team.sortKeyType).toEqual(ddbAttrTypeMapping[ogProjectDetails.meta.SortKeyType]);
+  expect(projectDetails.team.sortKeyType).toEqual(ogProjectDetails.meta.SortKeyType);
   expect(projectDetails.team.arn).toEqual(ogProjectDetails.meta.Arn);
   expect(projectDetails.team.streamArn).toEqual(ogProjectDetails.meta.StreamArn);
 };
