@@ -5,6 +5,7 @@ import * as updateCommand from './commands/geo/update';
 import * as removeCommand from './commands/geo/remove';
 import * as consoleCommand from './commands/geo/console';
 import * as helpCommand from './commands/geo/help';
+import * as fillCommand from './commands/geo/fill';
 import { getServicePermissionPolicies } from './service-utils/resourceUtils';
 import { ServiceName } from './service-utils/constants';
 import { printer } from 'amplify-prompts';
@@ -26,6 +27,9 @@ export const executeAmplifyCommand = async (context: $TSContext) => {
       break;
     case 'help':
       await helpCommand.run(context);
+      break;
+    case 'fill':
+      await fillCommand.run(context);
       break;
     default:
       printer.error(`The subcommand ${context.input.command} is not supported for ${category} category`);

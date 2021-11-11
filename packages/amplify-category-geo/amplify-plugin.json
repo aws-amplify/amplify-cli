@@ -1,7 +1,7 @@
 {
   "name": "geo",
   "type": "category",
-  "commands": ["add", "push", "remove", "update", "help", "console"],
+  "commands": ["add", "push", "remove", "update", "help", "console", "fill"],
   "commandAliases": {
     "configure": "update"
   },
