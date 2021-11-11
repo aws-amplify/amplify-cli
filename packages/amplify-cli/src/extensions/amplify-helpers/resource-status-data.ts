@@ -133,7 +133,7 @@ export async function getResourceStatus(
   const tagsUpdated = !_.isEqual(stateManager.getProjectTags(), stateManager.getCurrentProjectTags());
 
   // if not equal there is a root stack update
-  if (FeatureFlags.getBoolean('project.overrides')) {
+  if (FeatureFlags.getBoolean('overrides.project')) {
     const rootStackUpdated = await isRootStackModifiedSinceLastPush(getHashForRootStack);
 
     return {
