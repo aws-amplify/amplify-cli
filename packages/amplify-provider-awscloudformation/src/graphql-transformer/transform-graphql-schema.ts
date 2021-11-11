@@ -32,12 +32,13 @@ import { getSanityCheckRules, loadProject } from 'graphql-transformer-core';
 import { Template } from '@aws-amplify/graphql-transformer-core/lib/config/project-config';
 import { AmplifyCLIFeatureFlagAdapter } from '../utils/amplify-cli-feature-flag-adapter';
 import { JSONUtilities, $TSContext } from 'amplify-cli-core';
-import { searchablePushChecks, isAuthModeUpdated } from '../transform-graphql-schema';
+import { searchablePushChecks } from '../transform-graphql-schema';
 import { ResourceConstants } from 'graphql-transformer-common';
 import { showGlobalSandboxModeWarning, showSandboxModePrompts, schemaHasSandboxModeEnabled } from '../utils/sandbox-mode-helpers';
 import { printer } from 'amplify-prompts';
 import { GraphQLSanityCheck, SanityCheckRules } from './sanity-check';
 import _ from 'lodash';
+import { isAuthModeUpdated } from '../utils/auth-mode-compare';
 
 const API_CATEGORY = 'api';
 const STORAGE_CATEGORY = 'storage';

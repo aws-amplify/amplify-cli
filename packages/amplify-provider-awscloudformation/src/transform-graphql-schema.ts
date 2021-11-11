@@ -20,6 +20,7 @@ import { JSONUtilities, pathManager, stateManager } from 'amplify-cli-core';
 import { ResourceConstants } from 'graphql-transformer-common';
 import { printer } from 'amplify-prompts';
 import _ from 'lodash';
+import { isAuthModeUpdated } from './utils/auth-mode-compare';
 
 import {
   collectDirectivesByTypeNames,
@@ -526,21 +527,6 @@ place .graphql files in a directory at ${schemaDirPath}`);
   }
 
   return transformerOutput;
-}
-
-export function isAuthModeUpdated(options): boolean {
-  return options.authConfig &&
-    options.previousAuthConfig &&
-    !(
-      _.isEqual(
-        options.authConfig.defaultAuthentication.authenticationType,
-        options.previousAuthConfig.defaultAuthentication.authenticationType,
-      ) &&
-      _.isEqual(
-        options.authConfig.additionalAuthenticationProviders?.map(mode => mode.authenticationType),
-        options.previousAuthConfig.additionalAuthenticationProviders?.map(mode => mode.authenticationType),
-      )
-    );
 }
 
 function getProjectBucket(context) {
