@@ -297,6 +297,6 @@ test('Test simple model with AdminUI enabled should add IAM policy only for fiel
   ]);
   // should throw unauthorized if it's not signed by the admin ui iam role
   ['Mutation.createPost.auth.1.req.vtl', 'Mutation.updatePost.auth.1.res.vtl', 'Mutation.deletePost.auth.1.res.vtl'].forEach(r => {
-    expect(out.pipelineFunctions[r]).toMatchSnapshot();
+    expect(out.resolvers[r]).toMatchSnapshot();
   });
 });
