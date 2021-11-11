@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.27.8](https://github.com/aws-amplify/amplify-cli/compare/amplify-appsync-simulator@1.27.7...amplify-appsync-simulator@1.27.8) (2021-11-11)
+
+
+### Bug Fixes
+
+* **amplify-appsync-simulator:** fixed app sync simulator util auth type mock ([#8451](https://github.com/aws-amplify/amplify-cli/issues/8451)) ([2ce306f](https://github.com/aws-amplify/amplify-cli/commit/2ce306f1f8182dfed70dc15b7c45af172cc32964))
+* update appsync simulators ip address validation ([#8375](https://github.com/aws-amplify/amplify-cli/issues/8375)) ([4b494fc](https://github.com/aws-amplify/amplify-cli/commit/4b494fccfd3423ea60d305117235df1d03e73117)), closes [#8359](https://github.com/aws-amplify/amplify-cli/issues/8359)
+* vtl list utils & update model test scenarios ([#8701](https://github.com/aws-amplify/amplify-cli/issues/8701)) ([402cd9b](https://github.com/aws-amplify/amplify-cli/commit/402cd9b12e1603403511b5933404b525bb0de176))
+
+
+
+
+
 ## [1.27.7](https://github.com/aws-amplify/amplify-cli/compare/amplify-appsync-simulator@1.27.6...amplify-appsync-simulator@1.27.7) (2021-08-24)
 
 **Note:** Version bump only for package amplify-appsync-simulator
