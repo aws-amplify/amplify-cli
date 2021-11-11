@@ -6,13 +6,10 @@ import {
   S3AccessType,
   S3PermissionType,
   S3TriggerFunctionType,
-  S3UserInputs,
+  S3UserInputs
 } from '../../../../provider-utils/awscloudformation/service-walkthrough-types/s3-user-input-types';
 import * as s3AuthAPI from '../../../../provider-utils/awscloudformation/service-walkthroughs/s3-auth-api';
-import {
-  S3CLITriggerUpdateMenuOptions,
-  UserPermissionTypeOptions,
-} from '../../../../provider-utils/awscloudformation/service-walkthroughs/s3-questions';
+import { S3CLITriggerUpdateMenuOptions, UserPermissionTypeOptions } from '../../../../provider-utils/awscloudformation/service-walkthroughs/s3-questions';
 import { MigrationParams, S3InputState } from '../../../../provider-utils/awscloudformation/service-walkthroughs/s3-user-input-state';
 import { addWalkthrough, updateWalkthrough } from '../../../../provider-utils/awscloudformation/service-walkthroughs/s3-walkthrough';
 
@@ -760,7 +757,7 @@ describe('migrate s3 and update s3 permission walkthrough tests', () => {
 
     prompter.confirmContinue = jest
       .fn()
-      .mockReturnValueOnce(true) // Do you want to migrate...?
+      .mockReturnValueOnce(true) // File migration required to continue. Do you want to continue ?
       .mockReturnValueOnce(false); // Do you want to add a Lambda Trigger ?
 
     //Update CLI walkthrough (update auth permission)
