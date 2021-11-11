@@ -138,7 +138,7 @@ export async function updateWalkthrough(context: $TSContext) {
     if (!cliInputsState.cliInputFileExists()) {
       if (
         headlessMigrate ||
-        (await prompter.confirmContinue(getMigrateResourceMessageForOverride(AmplifyCategories.STORAGE, storageResourceName)))
+        (await prompter.yesOrNo(getMigrateResourceMessageForOverride(AmplifyCategories.STORAGE, storageResourceName), true))
       ) {
         //migrate auth and storage
         await cliInputsState.migrate(context);

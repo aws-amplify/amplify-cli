@@ -4,7 +4,7 @@ import { AuthInputState } from '../auth-inputs-manager/auth-input-state';
 import { generateAuthStackTemplate } from './generate-auth-stack-template';
 import { migrateResourceToSupportOverride } from './migrate-override-resource';
 
-export const checkAuthResourceMigration = async (context: $TSContext, authName: string) => {
+export const checkAuthResourceMigration = async (context: $TSContext, authName: string, isUpdate: boolean) => {
   // check if its imported auth
   const { imported } = context.amplify.getImportedAuthProperties(context);
   if (!imported) {
@@ -14,7 +14,10 @@ export const checkAuthResourceMigration = async (context: $TSContext, authName: 
       // put spinner here
       const headlessMigrate = context.input.options?.yes || context.input.options?.forcePush || context.input.options?.headless;
 
-      if (headlessMigrate || (await prompter.yesOrNo(getMigrateResourceMessageForOverride(AmplifyCategories.AUTH, authName), true))) {
+      if (
+        headlessMigrate ||
+        (await prompter.yesOrNo(getMigrateResourceMessageForOverride(AmplifyCategories.AUTH, authName, isUpdate), true))
+      ) {
         // generate cli-inputs for migration from parameters.json
         await migrateResourceToSupportOverride(authName);
         // fetch cli Inputs again

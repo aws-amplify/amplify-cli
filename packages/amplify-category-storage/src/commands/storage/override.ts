@@ -40,7 +40,7 @@ export const run = async (context: $TSContext) => {
   let selectedResourceName: string = storageResources[0];
 
   if (storageResources.length > 1) {
-    selectedResourceName = await prompter.pick('Which resource would you like to add overrides for?', storageResources);
+    selectedResourceName = await prompter.pick('Which resource would you like to override?', storageResources);
   }
 
   const destPath = pathManager.getResourceDirectoryPath(undefined, AmplifyCategories.STORAGE, selectedResourceName);
@@ -59,7 +59,7 @@ export const run = async (context: $TSContext) => {
   if (amplifyMeta[AmplifyCategories.STORAGE][selectedResourceName].service === AmplifySupportedService.DYNAMODB) {
     const resourceInputState = new DynamoDBInputState(selectedResourceName);
     if (!resourceInputState.cliInputFileExists()) {
-      if (await prompter.yesOrNo(getMigrateResourceMessageForOverride(AmplifyCategories.STORAGE, selectedResourceName), true)) {
+      if (await prompter.yesOrNo(getMigrateResourceMessageForOverride(AmplifyCategories.STORAGE, selectedResourceName, false), true)) {
         resourceInputState.migrate();
         const stackGenerator = new DDBStackTransform(selectedResourceName);
         await stackGenerator.transform();
@@ -71,7 +71,7 @@ export const run = async (context: $TSContext) => {
     // S3 migration logic goes in here
     const s3ResourceInputState = new S3InputState(selectedResourceName, undefined);
     if (!s3ResourceInputState.cliInputFileExists()) {
-      if (await prompter.yesOrNo(getMigrateResourceMessageForOverride(AmplifyCategories.STORAGE, selectedResourceName), true)) {
+      if (await prompter.yesOrNo(getMigrateResourceMessageForOverride(AmplifyCategories.STORAGE, selectedResourceName, false), true)) {
         await s3ResourceInputState.migrate(context); //migrate auth and storage config resources
         const stackGenerator = new AmplifyS3ResourceStackTransform(selectedResourceName, context);
         stackGenerator.transform(CLISubCommandType.MIGRATE);

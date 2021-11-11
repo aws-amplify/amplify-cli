@@ -19,9 +19,9 @@ export const run = async (context: $TSContext) => {
     return;
   }
 
-  const selectedAuthResource = await prompter.pick<'one', string>(`Which resource would you like to add overrides for?`, authResources);
+  const selectedAuthResource = await prompter.pick<'one', string>(`Which resource would you like to override?`, authResources);
   // check if migration needed
-  await checkAuthResourceMigration(context, selectedAuthResource);
+  await checkAuthResourceMigration(context, selectedAuthResource, false);
   const backendDir = pathManager.getBackendDirPath();
 
   const destPath = path.normalize(path.join(backendDir, category, selectedAuthResource));

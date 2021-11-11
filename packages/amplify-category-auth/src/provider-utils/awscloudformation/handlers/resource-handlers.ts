@@ -1,24 +1,23 @@
+import { $TSAny, $TSContext, $TSObject, stateManager } from 'amplify-cli-core';
+import { printer } from 'amplify-prompts';
+import { getSupportedServices } from '../../supported-services';
+import { authProviders } from '../assets/string-maps';
+import { AuthInputState } from '../auth-inputs-manager/auth-input-state';
+import { category, ENV_SPECIFIC_PARAMS, privateKeys } from '../constants';
+import { CognitoCLIInputs, CognitoConfiguration } from '../service-walkthrough-types/awsCognito-user-input-types';
 import { ServiceQuestionHeadlessResult } from '../service-walkthrough-types/cognito-user-input-types';
+import { getPostAddAuthMetaUpdater, getPostUpdateAuthMetaUpdater } from '../utils/amplify-meta-updaters';
 import { getAddAuthDefaultsApplier, getUpdateAuthDefaultsApplier } from '../utils/auth-defaults-appliers';
+import { doesConfigurationIncludeSMS } from '../utils/auth-sms-workflow-helper';
+import { generateAuthStackTemplate } from '../utils/generate-auth-stack-template';
+import { getPostAddAuthMessagePrinter, getPostUpdateAuthMessagePrinter, printSMSSandboxWarning } from '../utils/message-printer';
 import {
+  createUserPoolGroups,
   getResourceSynthesizer,
   getResourceUpdater,
   removeDeprecatedProps,
   updateUserPoolGroups,
-  createUserPoolGroups,
 } from '../utils/synthesize-resources';
-import { getPostAddAuthMetaUpdater, getPostUpdateAuthMetaUpdater } from '../utils/amplify-meta-updaters';
-import { getPostAddAuthMessagePrinter, getPostUpdateAuthMessagePrinter, printSMSSandboxWarning } from '../utils/message-printer';
-import { getSupportedServices } from '../../supported-services';
-import { doesConfigurationIncludeSMS } from '../utils/auth-sms-workflow-helper';
-import { AuthInputState } from '../auth-inputs-manager/auth-input-state';
-import { category, ENV_SPECIFIC_PARAMS, privateKeys } from '../constants';
-import { generateAuthStackTemplate } from '../utils/generate-auth-stack-template';
-import { authProviders } from '../assets/string-maps';
-import { CognitoCLIInputs, CognitoConfiguration } from '../service-walkthrough-types/awsCognito-user-input-types';
-import { getAuthResourceName } from '../../../utils/getAuthResourceName';
-import { printer } from 'amplify-prompts';
-import { $TSContext } from 'amplify-cli-core';
 
 /**
  * Factory function that returns a CognitoCLIInputs consumer that handles all of the resource generation logic.
@@ -29,7 +28,7 @@ export const getAddAuthHandler =
   (context: $TSContext, skipNextSteps: boolean = false) =>
   async (request: ServiceQuestionHeadlessResult | CognitoConfiguration) => {
     const serviceMetadata = getSupportedServices()[request.serviceName];
-    const { cfnFilename, defaultValuesFilename, provider } = serviceMetadata;
+    const { defaultValuesFilename, provider } = serviceMetadata;
 
     let projectName = context.amplify.getProjectConfig().projectName.toLowerCase();
     const disallowedChars = /[^A-Za-z0-9]+/g;
@@ -39,11 +38,11 @@ export const getAddAuthHandler =
 
     // replace secret keys from cli inputs to be stored in deployment secrets
 
-    let sharedParams = Object.assign({}, requestWithDefaults) as any;
+    let sharedParams = Object.assign({}, requestWithDefaults) as $TSAny;
     privateKeys.forEach(p => delete sharedParams[p]);
     sharedParams = removeDeprecatedProps(sharedParams);
     // extracting env-specific params from parameters object
-    let envSpecificParams: any = {};
+    let envSpecificParams: $TSObject = {};
     const cliInputs = { ...sharedParams };
     ENV_SPECIFIC_PARAMS.forEach(paramName => {
       if (paramName in request) {
@@ -78,7 +77,7 @@ export const getAddAuthHandler =
       if (doesConfigurationIncludeSMS(request)) {
         await printSMSSandboxWarning();
       }
-    } catch (err) {
+    } catch (err: $TSAny) {
       printer.info(err.stack);
       printer.error('There was an error adding the auth resource');
       context.usageData.emitError(err);
@@ -87,10 +86,10 @@ export const getAddAuthHandler =
     return cognitoCLIInputs.cognitoConfig.resourceName;
   };
 
-export const getUpdateAuthHandler = (context: any) => async (request: ServiceQuestionHeadlessResult | CognitoConfiguration) => {
+export const getUpdateAuthHandler = (context: $TSContext) => async (request: ServiceQuestionHeadlessResult | CognitoConfiguration) => {
   const { defaultValuesFilename } = getSupportedServices()[request.serviceName];
   const requestWithDefaults = await getUpdateAuthDefaultsApplier(context, defaultValuesFilename, context.updatingAuth)(request);
-  const resources = context.amplify.getProjectDetails().amplifyMeta;
+  const resources = stateManager.getMeta();
   if (resources.auth.userPoolGroups) {
     await updateUserPoolGroups(context, requestWithDefaults.resourceName!, requestWithDefaults.userPoolGroupList);
   } else {
@@ -102,7 +101,7 @@ export const getUpdateAuthHandler = (context: any) => async (request: ServiceQue
   ) {
     delete requestWithDefaults.selectedParties;
     requestWithDefaults.authProviders = [];
-    authProviders.forEach(a => delete (requestWithDefaults as any)[a.answerHashKey]);
+    authProviders.forEach(a => delete (requestWithDefaults as $TSAny)[a.answerHashKey]);
     if (requestWithDefaults.googleIos) {
       delete requestWithDefaults.googleIos;
     }
@@ -122,7 +121,7 @@ export const getUpdateAuthHandler = (context: any) => async (request: ServiceQue
     delete requestWithDefaults.authProvidersUserPool;
   }
 
-  let sharedParams = Object.assign({}, requestWithDefaults) as any;
+  let sharedParams = Object.assign({}, requestWithDefaults) as $TSAny;
   privateKeys.forEach(p => delete sharedParams[p]);
   sharedParams = removeDeprecatedProps(sharedParams);
   // extracting env-specific params from parameters object
@@ -167,7 +166,7 @@ export const getUpdateAuthHandler = (context: any) => async (request: ServiceQue
     if (doesConfigurationIncludeSMS(cliInputs)) {
       await printSMSSandboxWarning();
     }
-  } catch (err) {
+  } catch (err: $TSAny) {
     printer.info(err.stack);
     printer.error('There was an error updating the auth resource');
     context.usageData.emitError(err);
