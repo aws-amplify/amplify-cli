@@ -104,20 +104,10 @@ describe('amplify export pull', () => {
 
   async function AddandPushCategories(frontend?: string) {
     await addAuthWithMaxOptions(projRoot, { frontend });
-    await addSampleInteraction(projRoot, {});
-    await addFunction(projRoot, { functionTemplate: 'Hello World' }, 'nodejs');
     await addApiWithoutSchema(projRoot);
-
-    await addSMSNotification(projRoot, { resourceName: 'export-test' });
-    await addRestApi(projRoot, {
-      existingLambda: false,
-      isCrud: false,
-      isFirstRestApi: false,
-    });
     await addDEVHosting(projRoot);
     await addS3StorageWithIdpAuth(projRoot);
     await addConvert(projRoot, {});
-    await addInterpret(projRoot, {});
     if (frontend === 'flutter') {
       await amplifyPushWithoutCodegen(projRoot);
     } else {
