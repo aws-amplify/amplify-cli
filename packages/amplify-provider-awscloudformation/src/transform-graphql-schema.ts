@@ -528,7 +528,7 @@ place .graphql files in a directory at ${schemaDirPath}`);
   return transformerOutput;
 }
 
-function isAuthModeUpdated(options): boolean {
+export function isAuthModeUpdated(options): boolean {
   return options.authConfig &&
     options.previousAuthConfig &&
     !(

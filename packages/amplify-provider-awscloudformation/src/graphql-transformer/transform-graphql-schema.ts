@@ -32,7 +32,7 @@ import { getSanityCheckRules, loadProject } from 'graphql-transformer-core';
 import { Template } from '@aws-amplify/graphql-transformer-core/lib/config/project-config';
 import { AmplifyCLIFeatureFlagAdapter } from '../utils/amplify-cli-feature-flag-adapter';
 import { JSONUtilities, $TSContext } from 'amplify-cli-core';
-import { searchablePushChecks } from '../transform-graphql-schema';
+import { searchablePushChecks, isAuthModeUpdated } from '../transform-graphql-schema';
 import { ResourceConstants } from 'graphql-transformer-common';
 import { showGlobalSandboxModeWarning, showSandboxModePrompts, schemaHasSandboxModeEnabled } from '../utils/sandbox-mode-helpers';
 import { printer } from 'amplify-prompts';
@@ -359,21 +359,6 @@ place .graphql files in a directory at ${schemaDirPath}`);
   }
 
   return transformerOutput;
-}
-
-function isAuthModeUpdated(options): boolean {
-  return options.authConfig &&
-    options.previousAuthConfig &&
-    !(
-      _.isEqual(
-        options.authConfig.defaultAuthentication.authenticationType,
-        options.previousAuthConfig.defaultAuthentication.authenticationType,
-      ) &&
-      _.isEqual(
-        options.authConfig.additionalAuthenticationProviders?.map(mode => mode.authenticationType),
-        options.previousAuthConfig.additionalAuthenticationProviders?.map(mode => mode.authenticationType),
-      )
-    );
 }
 
 function getProjectBucket(context) {
