@@ -57,7 +57,7 @@ export function getResourceCfnOutputAttributes(category: string, resourceName: s
   }
   if (cfnFilePath) {
     const { cfnTemplate } = readCFNTemplate(cfnFilePath);
-    if (cfnTemplate.Outputs) {
+    if (cfnTemplate && cfnTemplate.Outputs) {
       const allOutputs: $TSObject = cfnTemplate.Outputs;
       let outputsWithoutConditions: any = {};
 
