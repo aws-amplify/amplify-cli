@@ -274,7 +274,7 @@ function showGraphQLTransformerMigrationMessage() {
   printer.warn(
     'Amplify CLI has made improvements to GraphQL APIs. Improvements include pipeline resolvers support, deny-by-default authorization, and improved search and result aggregations.',
   );
-  printer.info('For more information, see < docs >');
+  printer.info('For more information, see https://docs.amplify.aws/cli/migration/transformer-migration/');
   printer.info(`To get started, run 'amplify migrate api'`);
 }
 
