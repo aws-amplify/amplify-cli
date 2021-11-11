@@ -167,7 +167,7 @@ async function getSelectionsFromContributors<T>(
     }
     context.print.info(singleOptionMsg);
     selection = selections[0].value;
-  } else if(isDefaultDefined(selectionOptions)) {
+  } else if (isDefaultDefined(selectionOptions)) {
     selection = selectionOptions.defaultSelection;
   } else {
     // ask which template to use
