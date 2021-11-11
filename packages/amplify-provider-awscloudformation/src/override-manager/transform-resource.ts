@@ -43,7 +43,6 @@ export async function transformResourceWithOverrides(context: $TSContext, resour
     if (spinner) {
       spinner.stop();
     }
-    printer.error(err.stack);
     return;
   }
 }
