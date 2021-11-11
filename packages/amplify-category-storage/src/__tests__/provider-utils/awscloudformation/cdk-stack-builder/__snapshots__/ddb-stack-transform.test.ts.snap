@@ -182,9 +182,9 @@ Object {
 exports[`Test DDB transform generates correct CFN template Generated ddb template with all CLI configurations set with no overrides 2`] = `
 Object {
   "partitionKeyName": "id",
-  "partitionKeyType": "string",
+  "partitionKeyType": "S",
   "sortKeyName": "name",
-  "sortKeyType": "number",
+  "sortKeyType": "N",
   "tableName": "mocktablename",
 }
 `;

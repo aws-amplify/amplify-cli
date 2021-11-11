@@ -13,6 +13,9 @@ export enum FieldType {
   list = 'list',
   map = 'map',
   null = 'null',
+  stringSet = 'string-set',
+  numberSet = 'number-set',
+  binarySet = 'binary-set',
 }
 
 export interface DynamoDBAttributeDefType {

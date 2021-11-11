@@ -9,6 +9,7 @@ import {
 } from 'amplify-cli-core';
 import * as fs from 'fs-extra';
 import * as path from 'path';
+import { getFieldType } from '../cfn-template-utils';
 import { DynamoDBCLIInputs, DynamoDBCLIInputsGSIType } from '../service-walkthrough-types/dynamoDB-user-input-types';
 
 /* Need to move this logic to a base class */
@@ -69,18 +70,6 @@ export class DynamoDBInputState {
 
   public migrate() {
     let cliInputs: DynamoDBCLIInputs;
-    const attrReverseMap: $TSObject = {
-      S: 'string',
-      N: 'number',
-      B: 'binary',
-      BOOL: 'boolean',
-      L: 'list',
-      M: 'map',
-      NULL: null,
-      SS: 'string-set',
-      NS: 'number-set',
-      BS: 'binary-set',
-    };
 
     // migrate the resource to new directory structure if cli-inputs.json is not found for the resource
 
@@ -95,7 +84,7 @@ export class DynamoDBInputState {
 
     const partitionKey = {
       fieldName: oldParameters.partitionKeyName,
-      fieldType: attrReverseMap[oldParameters.partitionKeyType],
+      fieldType: getFieldType(oldParameters.partitionKeyType),
     };
 
     let sortKey;
@@ -103,7 +92,7 @@ export class DynamoDBInputState {
     if (oldParameters.sortKeyName) {
       sortKey = {
         fieldName: oldParameters.sortKeyName,
-        fieldType: attrReverseMap[oldParameters.sortKeyType],
+        fieldType: getFieldType(oldParameters.sortKeyType),
       };
     }
 
@@ -118,7 +107,7 @@ export class DynamoDBInputState {
 
       attrList.forEach((attr: $TSAny) => {
         if (attr.AttributeName === attrName) {
-          attrType = attrReverseMap[attr.AttributeType];
+          attrType = getFieldType(attr.AttributeType);
         }
       });
 

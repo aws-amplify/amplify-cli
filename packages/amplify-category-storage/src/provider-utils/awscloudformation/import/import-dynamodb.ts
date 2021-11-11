@@ -16,19 +16,6 @@ import {
   ProviderUtils,
 } from './types';
 
-const attrReverseMap: $TSObject = {
-  S: 'string',
-  N: 'number',
-  B: 'binary',
-  BOOL: 'boolean',
-  L: 'list',
-  M: 'map',
-  NULL: null,
-  SS: 'string-set',
-  NS: 'number-set',
-  BS: 'binary-set',
-};
-
 export const importDynamoDB = async (
   context: $TSContext,
   serviceSelection: ServiceSelection,
@@ -218,7 +205,7 @@ const createMetaOutput = (answers: DynamoDBImportAnswers, questionParameters: Dy
 
     if (attribute) {
       output.PartitionKeyName = hashKey.AttributeName;
-      output.PartitionKeyType = attrReverseMap[attribute.AttributeType];
+      output.PartitionKeyType = attribute.AttributeType;
     }
   }
 
@@ -227,7 +214,7 @@ const createMetaOutput = (answers: DynamoDBImportAnswers, questionParameters: Dy
 
     if (attribute) {
       output.SortKeyName = sortKeys[0].AttributeName;
-      output.SortKeyType = attrReverseMap[attribute.AttributeType];
+      output.SortKeyType = attribute.AttributeType;
     }
   }
 
@@ -253,7 +240,7 @@ const createEnvSpecificResourceParameters = (
 
     if (attribute) {
       envSpecificResourceParameters.partitionKeyName = hashKey.AttributeName;
-      envSpecificResourceParameters.partitionKeyType = attrReverseMap[attribute.AttributeType];
+      envSpecificResourceParameters.partitionKeyType = attribute.AttributeType;
     }
   }
 
@@ -262,7 +249,7 @@ const createEnvSpecificResourceParameters = (
 
     if (attribute) {
       envSpecificResourceParameters.sortKeyName = sortKeys[0].AttributeName;
-      envSpecificResourceParameters.sortKeyType = attrReverseMap[attribute.AttributeType];
+      envSpecificResourceParameters.sortKeyType = attribute.AttributeType;
     }
   }
 
