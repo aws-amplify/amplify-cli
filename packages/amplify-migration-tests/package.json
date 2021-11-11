@@ -18,7 +18,7 @@
   "private": true,
   "scripts": {
     "build-tests": "tsc --build tsconfig.tests.json",
-    "migration_v4.0.0": "npm run setup-profile 4.0.0 && jest --testPathIgnorePatterns=auth.deployment.secrets\\|layer-migration overrides --verbose",
+    "migration_v4.0.0": "npm run setup-profile 4.0.0 && jest --testPathIgnorePatterns=auth.deployment.secrets\\|layer-migration\\|overrides --verbose",
     "migration_v4.28.2_nonmultienv_layers": "npm run setup-profile 4.28.2 && jest src/__tests__/migration_tests/lambda-layer-migration/layer-migration.test.ts --verbose",
     "migration_v4.52.0_multienv_layers": "npm run setup-profile 4.52.0 && jest src/__tests__/migration_tests/lambda-layer-migration/layer-migration.test.ts --verbose",
     "migration_v6.0.1": "npm run setup-profile 6.0.1 && jest src/__tests__/migration_tests/overrides/auth-migration.test.ts --verbose",
