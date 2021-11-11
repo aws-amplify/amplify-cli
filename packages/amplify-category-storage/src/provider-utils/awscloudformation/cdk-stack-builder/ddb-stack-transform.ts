@@ -11,6 +11,7 @@ import { DynamoDBCLIInputs } from '../service-walkthrough-types/dynamoDB-user-in
 import { DynamoDBInputState } from '../service-walkthroughs/dynamoDB-input-state';
 import { AmplifyDDBResourceStack } from './ddb-stack-builder';
 import { AmplifyDDBResourceInputParameters } from './types';
+import { getDdbAttrType } from '../cfn-template-utils';
 
 export class DDBStackTransform {
   app: App;
@@ -49,11 +50,11 @@ export class DDBStackTransform {
     this._cfnInputParams = {
       tableName: this._cliInputs.tableName,
       partitionKeyName: this._cliInputs.partitionKey.fieldName,
-      partitionKeyType: this._cliInputs.partitionKey.fieldType,
+      partitionKeyType: getDdbAttrType(this._cliInputs.partitionKey.fieldType),
     };
     if (this._cliInputs.sortKey) {
       this._cfnInputParams.sortKeyName = this._cliInputs.sortKey.fieldName;
-      this._cfnInputParams.sortKeyType = this._cliInputs.sortKey.fieldType;
+      this._cfnInputParams.sortKeyType = getDdbAttrType(this._cliInputs.sortKey.fieldType);
     }
   }
 

@@ -1,13 +1,14 @@
 import { AmplifyCDKL1 } from '@aws-amplify/cli-extensibility-helper';
 import * as cdk from '@aws-cdk/core';
 import { $TSObject } from 'amplify-cli-core';
+import { DdbAttrType } from '../cfn-template-utils';
 
 export interface AmplifyDDBResourceInputParameters {
   tableName: string;
   partitionKeyName: string;
-  partitionKeyType: string;
+  partitionKeyType: DdbAttrType;
   sortKeyName?: string;
-  sortKeyType?: string;
+  sortKeyType?: DdbAttrType;
 }
 
 export type AmplifyCfnParamType = {

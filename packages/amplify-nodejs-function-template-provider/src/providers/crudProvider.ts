@@ -5,14 +5,15 @@ import fs from 'fs-extra';
 import { askDynamoDBQuestions, getTableParameters } from '../utils/dynamoDBWalkthrough';
 import _ from 'lodash';
 import { getDstMap } from '../utils/destFileMapper';
+import { $TSContext } from 'amplify-cli-core';
 
 const pathToTemplateFiles = path.join(templateRoot, 'lambda/crud');
 
 // copied from legacy lambda-walkthrough with slight modifications for typescript and refactored FunctionParameters object
-export async function provideCrud(context: any): Promise<FunctionTemplateParameters> {
+export async function provideCrud(context: $TSContext): Promise<FunctionTemplateParameters> {
   const dynamoResource = await askDynamoDBQuestions(context);
 
-  const tableParameters = await getTableParameters(context, dynamoResource);
+  const tableParameters = await getTableParameters(dynamoResource);
   Object.assign(dynamoResource, { category: 'storage' }, { tableDefinition: { ...tableParameters } });
   const files = fs.readdirSync(pathToTemplateFiles);
   return {
