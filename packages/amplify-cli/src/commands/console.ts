@@ -20,6 +20,13 @@ export const run = async context => {
     const { envName } = localEnvInfo;
     const { Region, AmplifyAppId } = teamProviderInfo[envName][providerName];
 
+    let adminUiName = 'Amplify admin UI';
+    const promises = context.runtime.plugins.map(async plugin => {
+      if (plugin.commands.includes('overrideAdminUiName')) {
+        adminUiName = await context.amplify.invokePluginMethod(context, plugin.name, undefined, 'overrideAdminUiName', [context]);
+      }
+    });
+    await Promise.all(promises);
     if (envName && AmplifyAppId) {
       consoleUrl = constructStatusURL(Region, AmplifyAppId, envName);
       const providerPlugin = await import(context.amplify.getProviderPlugins(context).awscloudformation);
@@ -29,8 +36,8 @@ export const run = async context => {
           name: 'choice',
           message: 'Which site do you want to open?',
           choices: [
-            { name: 'Admin', message: 'Amplify admin UI' },
-            { name: 'Console', message: 'Amplify console' },
+            { name: 'Admin', message: adminUiName },
+            { name: 'Console', message: 'AWS console' },
           ],
         });
         if (choice === 'Admin') {
