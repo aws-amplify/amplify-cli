@@ -1,11 +1,9 @@
-import { $TSContext, AmplifyCategories, JSONUtilities, stateManager } from 'amplify-cli-core';
-import * as path from 'path';
+import { $TSContext, stateManager } from 'amplify-cli-core';
 import { getSupportedServices } from '../../supported-services';
 import { AuthInputState } from '../auth-inputs-manager/auth-input-state';
 import { ProviderUtils } from '../import/types';
 import { CognitoConfiguration } from '../service-walkthrough-types/awsCognito-user-input-types';
 import { ServiceQuestionHeadlessResult } from '../service-walkthrough-types/cognito-user-input-types';
-import { existsSync } from 'fs-extra';
 
 export type UserPoolMessageConfiguration = {
   mfaConfiguration?: string;
