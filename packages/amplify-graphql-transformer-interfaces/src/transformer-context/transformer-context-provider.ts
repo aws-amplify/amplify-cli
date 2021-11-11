@@ -34,7 +34,7 @@ export interface TransformerContextProvider {
 
 export type TransformerBeforeStepContextProvider = Pick<
   TransformerContextProvider,
-  'inputDocument' | 'featureFlags' | 'isProjectUsingDataStore' | 'getResolverConfig' | 'authConfig'
+  'inputDocument' | 'featureFlags' | 'isProjectUsingDataStore' | 'getResolverConfig' | 'authConfig' | 'stackManager'
 >;
 export type TransformerSchemaVisitStepContextProvider = Pick<
   TransformerContextProvider,
