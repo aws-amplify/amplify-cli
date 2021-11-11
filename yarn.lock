@@ -6917,44 +6917,10 @@ amdefine@>=0.0.4:
   resolved "https://registry.yarnpkg.com/amdefine/-/amdefine-1.0.1.tgz#4a5282ac164729e93619bcfd3ad151f817ce91f5"
   integrity sha1-SlKCrBZHKek2Gbz9OtFR+BfOkfU=
 
-amplify-category-xr@2.8.24:
-  version "2.8.24"
-  resolved "https://registry.yarnpkg.com/amplify-category-xr/-/amplify-category-xr-2.8.24.tgz#68887d204d000e49cdfccaf72f840feaaa45aaac"
-  integrity sha512-BHDnhWkgIMu+2qkMW743QMdPE6H6/ER4G4vobTHp1d4xjku5xO0nNRutaTl8ZVpRqPoSDjoXkGs/vk4YdKr1UQ==
-  dependencies:
-    amplify-cli-core "1.31.1"
-    chalk "^4.1.1"
-    fs-extra "^8.1.0"
-    inquirer "^7.3.3"
-
 amplify-cli-core@1.30.0:
   version "1.30.0"
   resolved "https://registry.yarnpkg.com/amplify-cli-core/-/amplify-cli-core-1.30.0.tgz#dcfc7555c3194c91cfd89c7edfdf6495e9f6fd70"
   integrity sha512-G9JK8eFmuKHqflBSn+8tBGFDgf2r9UItL9hupCCe9h5wC7KVWxNFR1K0At24hsifVjt9f8j1HnFjZxmJGFmdwQ==
-  dependencies:
-    ajv "^6.12.3"
-    amplify-cli-logger "1.1.0"
-    amplify-prompts "1.2.0"
-    chalk "^4.1.1"
-    ci-info "^2.0.0"
-    cloudform-types "^4.2.0"
-    dotenv "^8.2.0"
-    execa "^5.1.1"
-    fs-extra "^8.1.0"
-    globby "^11.0.3"
-    hjson "^3.2.1"
-    js-yaml "^4.0.0"
-    lodash "^4.17.21"
-    node-fetch "^2.6.1"
-    open "^7.3.1"
-    proxy-agent "^5.0.0"
-    semver "^7.3.5"
-    which "^2.0.2"
-
-amplify-cli-core@1.31.1:
-  version "1.31.1"
-  resolved "https://registry.yarnpkg.com/amplify-cli-core/-/amplify-cli-core-1.31.1.tgz#f7bfca39b5aabc2a2b2b30754e8b6915a5ebfadf"
-  integrity sha512-0mdCN45uR/UC5h+GdOR5v60D6oWXs1foW3eaFNLp6DiZb7QMLuSgZLv4LxQ62plmanoDABkbN1zgd6s3BkplMA==
   dependencies:
     ajv "^6.12.3"
     amplify-cli-logger "1.1.0"
@@ -7003,14 +6969,6 @@ amplify-prompts@1.1.2:
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/amplify-prompts/-/amplify-prompts-1.1.2.tgz#b1306dad4a33c9ab207352961dc81cc98418b698"
   integrity sha512-reSjj7RKYrqSq34lYrP+sykUBvYrnCoJen2euKDwwRdxq/heWS97aJD1DahIJvEEW/YN+WUdzhpuzjBL8W3hcA==
-  dependencies:
-    chalk "^4.1.1"
-    enquirer "^2.3.6"
-
-amplify-prompts@1.2.0:
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/amplify-prompts/-/amplify-prompts-1.2.0.tgz#7afdec5ac045ffb2c5a8b37b8ab9c8aa94c2ef85"
-  integrity sha512-vDo7yElJDq84RTVlLY0rOpMhED3XuLiWAHNiz5xIqxq3yj+XUoRJhAn+FE9D2f0Ukk7QHHrLe4kG2yC4PpjorA==
   dependencies:
     chalk "^4.1.1"
     enquirer "^2.3.6"
@@ -13255,11 +13213,6 @@ graphql-language-service@^3.1.2:
     graphql-language-service-interface "^2.8.2"
     graphql-language-service-types "^1.8.0"
 
-graphql-mapping-template@4.18.3:
-  version "4.18.3"
-  resolved "https://registry.yarnpkg.com/graphql-mapping-template/-/graphql-mapping-template-4.18.3.tgz#2c002df699d46353a3c695422e4193ff03a983d0"
-  integrity sha512-3VoxldV/8ioVXvATiVkYXnw1YjRS+ndmWyL/tH06gVl5y3nIMycDCdiNDxel6qKkVM36H27vyTdov98JtZ+L/A==
-
 graphql-predictions-transformer@2.5.22:
   version "2.5.22"
   resolved "https://registry.yarnpkg.com/graphql-predictions-transformer/-/graphql-predictions-transformer-2.5.22.tgz#4ea2b2d5afa168916901732b017b2a7d62b9b9b6"
@@ -13323,16 +13276,6 @@ graphql-tools@^4.0.6:
     deprecated-decorator "^0.1.6"
     iterall "^1.1.3"
     uuid "^3.1.0"
-
-graphql-transformer-common@4.19.10:
-  version "4.19.10"
-  resolved "https://registry.yarnpkg.com/graphql-transformer-common/-/graphql-transformer-common-4.19.10.tgz#2a84d2d3e9ad263611f1830aed487236836ea705"
-  integrity sha512-/4BMDToXFfEPQkAIWv0zVtQBM0Q7vDbNBza18rqGscP1dWYCtSUpqyT2UnHpboXvTSVezHSzMbyDbtMVsqi9Kw==
-  dependencies:
-    graphql "^14.5.8"
-    graphql-mapping-template "4.18.3"
-    md5 "^2.2.1"
-    pluralize "8.0.0"
 
 graphql-transformer-core@6.30.0:
   version "6.30.0"

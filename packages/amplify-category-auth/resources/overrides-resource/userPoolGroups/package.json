@@ -1,5 +1,5 @@
 {
-    "name": "overrides-for-auth-resource",
+    "name": "overrides-for-UserPoolGroup-resource",
     "version": "1.0.0",
     "description": "",
     "scripts": {

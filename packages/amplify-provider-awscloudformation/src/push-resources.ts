@@ -708,8 +708,8 @@ async function updateCloudFormationNestedStack(
   const backEndDir = pathManager.getBackendDirPath();
   const projectRoot = pathManager.findProjectRoot();
   const rootStackFilePath = path.join(pathManager.getRootStackBuildDirPath(projectRoot), rootStackFileName);
-  // deploy new nested stack to disk
-  JSONUtilities.writeJson(rootStackFilePath, nestedStack);
+  // deploy preprocess nested stack to disk
+  await storeRootStackTemplate(context, nestedStack);
   const transformedStackPath = await preProcessCFNTemplate(rootStackFilePath);
   const cfnItem = await new Cloudformation(context, generateUserAgentAction(resourcesToBeCreated, resourcesToBeUpdated));
   const providerDirectory = path.normalize(path.join(backEndDir, providerName));
@@ -804,6 +804,7 @@ async function updateS3Templates(context: $TSContext, resourcesToBeUpdated: $TSA
     for (const cfnFile of cfnFiles) {
       await writeCustomPoliciesToCFNTemplate(resourceName, service, cfnFile, category);
       const transformedCFNPath = await preProcessCFNTemplate(path.join(resourceDir, cfnFile));
+
       promises.push(uploadTemplateToS3(context, transformedCFNPath, category, resourceName, amplifyMeta));
     }
   }
@@ -1182,7 +1183,7 @@ export async function generateAndUploadRootStack(context: $TSContext, destinatio
   const projectDetails = context.amplify.getProjectDetails();
   const nestedStack = await formNestedStack(context, projectDetails);
 
-  JSONUtilities.writeJson(destinationPath, nestedStack);
+  await storeRootStackTemplate(context, nestedStack);
 
   // upload the nested stack
   const s3Client = await S3.getInstance(context);
