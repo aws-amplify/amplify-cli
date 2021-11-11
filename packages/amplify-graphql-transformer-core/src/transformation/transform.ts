@@ -32,8 +32,9 @@ import { StackManager } from '../transformer-context/stack-manager';
 import { adoptAuthModes, IAM_AUTH_ROLE_PARAMETER, IAM_UNAUTH_ROLE_PARAMETER } from '../utils/authType';
 import { TransformConfig } from '../config';
 import * as SyncUtils from './sync-utils';
+import { MappingTemplate } from '../cdk-compat';
 
-import Template, { DeploymentResources } from './types';
+import Template, { DeploymentResources, UserDefinedSlot } from './types';
 import {
   makeSeenTransformationKey,
   matchArgumentDirective,
@@ -72,6 +73,7 @@ export interface GraphQLTransformOptions {
   readonly featureFlags?: FeatureFlagProvider;
   readonly host?: TransformHostProvider;
   readonly sandboxModeEnabled?: boolean;
+  readonly userDefinedSlots?: Record<string, UserDefinedSlot[]>;
 }
 export type StackMapping = { [resourceId: string]: string };
 export class GraphQLTransform {
@@ -81,6 +83,7 @@ export class GraphQLTransform {
   private transformConfig: TransformConfig;
   private readonly authConfig: AppSyncAuthConfiguration;
   private readonly buildParameters: Record<string, any>;
+  private readonly userDefinedSlots: Record<string, UserDefinedSlot[]>;
 
   // A map from `${directive}.${typename}.${fieldName?}`: true
   // that specifies we have run already run a directive at a given location.
@@ -110,6 +113,7 @@ export class GraphQLTransform {
     this.buildParameters = options.buildParameters || {};
     this.stackMappingOverrides = options.stackMapping || {};
     this.transformConfig = options.transformConfig || {};
+    this.userDefinedSlots = options.userDefinedSlots || {} as Record<string, UserDefinedSlot[]>;
   }
 
   /**
@@ -355,7 +359,16 @@ export class GraphQLTransform {
 
   private collectResolvers(context: TransformerContext, api: GraphQLAPIProvider): void {
     const resolverEntries = context.resolvers.collectResolvers();
-    for (let [, resolver] of resolverEntries) {
+
+    for (const [resolverName, resolver] of resolverEntries) {
+      const userSlots = this.userDefinedSlots[resolverName];
+
+      if (userSlots) {
+        userSlots.forEach(({ slotName, template, fileName }: UserDefinedSlot) => {
+          resolver.addToSlot(slotName, MappingTemplate.s3MappingTemplateFromString(template, fileName));
+        });
+      }
+
       resolver.synthesize(context, api);
     }
   }
