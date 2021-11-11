@@ -133,28 +133,17 @@ export async function getResourceStatus(
   const tagsUpdated = !_.isEqual(stateManager.getProjectTags(), stateManager.getCurrentProjectTags());
 
   // if not equal there is a root stack update
-  if (FeatureFlags.getBoolean('project.overrides')) {
-    const rootStackUpdated = await isRootStackModifiedSinceLastPush(getHashForRootStack);
+  const rootStackUpdated = await isRootStackModifiedSinceLastPush(getHashForRootStack);
 
-    return {
-      resourcesToBeCreated,
-      resourcesToBeUpdated,
-      resourcesToBeSynced,
-      resourcesToBeDeleted,
-      rootStackUpdated,
-      tagsUpdated,
-      allResources,
-    };
-  } else {
-    return {
-      resourcesToBeCreated,
-      resourcesToBeUpdated,
-      resourcesToBeSynced,
-      resourcesToBeDeleted,
-      tagsUpdated,
-      allResources,
-    };
-  }
+  return {
+    resourcesToBeCreated,
+    resourcesToBeUpdated,
+    resourcesToBeSynced,
+    resourcesToBeDeleted,
+    rootStackUpdated,
+    tagsUpdated,
+    allResources,
+  };
 }
 
 export function getAllResources(amplifyMeta, category, resourceName, filteredResources) {

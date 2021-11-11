@@ -169,9 +169,7 @@ function cloneCLIJSONForNewEnvironment(context) {
 export async function onInitSuccessful(context) {
   configurationManager.onInitSuccessful(context);
   if (context.exeInfo.isNewEnv) {
-    if (FeatureFlags.getBoolean('project.overrides')) {
-      await storeRootStackTemplate(context);
-    }
+    await storeRootStackTemplate(context);
     context = await storeCurrentCloudBackend(context);
     await storeArtifactsForAmplifyService(context);
     await uploadHooksDirectory(context);
