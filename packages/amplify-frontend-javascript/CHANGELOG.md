@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.26.0-ext22.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-javascript@2.25.1...amplify-frontend-javascript@2.26.0-ext22.0) (2021-11-11)
+
+
+### Features
+
+* amplify export ([2d0227c](https://github.com/aws-amplify/amplify-cli/commit/2d0227c662fca590a4c6f171808d27b585df1e03)), closes [#8547](https://github.com/aws-amplify/amplify-cli/issues/8547) [#8488](https://github.com/aws-amplify/amplify-cli/issues/8488) [#8486](https://github.com/aws-amplify/amplify-cli/issues/8486) [#8547](https://github.com/aws-amplify/amplify-cli/issues/8547) [#8488](https://github.com/aws-amplify/amplify-cli/issues/8488) [#8486](https://github.com/aws-amplify/amplify-cli/issues/8486)
+
+
+
+
+
 ## [2.25.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-javascript@2.25.0...amplify-frontend-javascript@2.25.1) (2021-11-11)
 
 

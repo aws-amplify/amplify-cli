@@ -3,6 +3,37 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [6.5.0-ext22.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@6.4.0...@aws-amplify/cli@6.5.0-ext22.0) (2021-11-11)
+
+
+### Bug Fixes
+
+* asana bug fixes ([#8692](https://github.com/aws-amplify/amplify-cli/issues/8692)) ([46a57a4](https://github.com/aws-amplify/amplify-cli/commit/46a57a4d8837f1d815ddabe073fdad402cbe2395))
+* **cli:** fixed export pull command line ([#8725](https://github.com/aws-amplify/amplify-cli/issues/8725)) ([c1a1fb3](https://github.com/aws-amplify/amplify-cli/commit/c1a1fb3da9bfcabe012413848ec8549e803b355c))
+* enable scoped packages in plugin platform ([#8492](https://github.com/aws-amplify/amplify-cli/issues/8492)) ([b87a1e6](https://github.com/aws-amplify/amplify-cli/commit/b87a1e68e473996913886bd349c7a6c2878b6364))
+* exclude amplify/backend/awscloudformation from gitignore path ([3b715ff](https://github.com/aws-amplify/amplify-cli/commit/3b715ff7496be1f1a20383f54c6166b89bbcb8d8))
+* fix configure project and custom policies api containers ([#8703](https://github.com/aws-amplify/amplify-cli/issues/8703)) ([4c744bc](https://github.com/aws-amplify/amplify-cli/commit/4c744bccdb5bb8e1e99550a59cdcd4c8ed8e87e9))
+* latest changes ([4142a12](https://github.com/aws-amplify/amplify-cli/commit/4142a12e415e6d1fe2d4b83cecfffd6ee3496195))
+* rebase conflicts ([a0ed5fd](https://github.com/aws-amplify/amplify-cli/commit/a0ed5fdfae0098c93c664a0ee4409384caa1e59c))
+* test fixes ([#8647](https://github.com/aws-amplify/amplify-cli/issues/8647)) ([b205a91](https://github.com/aws-amplify/amplify-cli/commit/b205a918d28509e2163b260f0a2747c57b7dacbd))
+
+
+### Features
+
+* amplify export ([2d0227c](https://github.com/aws-amplify/amplify-cli/commit/2d0227c662fca590a4c6f171808d27b585df1e03)), closes [#8547](https://github.com/aws-amplify/amplify-cli/issues/8547) [#8488](https://github.com/aws-amplify/amplify-cli/issues/8488) [#8486](https://github.com/aws-amplify/amplify-cli/issues/8486) [#8547](https://github.com/aws-amplify/amplify-cli/issues/8547) [#8488](https://github.com/aws-amplify/amplify-cli/issues/8488) [#8486](https://github.com/aws-amplify/amplify-cli/issues/8486)
+* Auth refactor to  use cdk, eliminate EJS, overrides functionality ([#8355](https://github.com/aws-amplify/amplify-cli/issues/8355)) ([f8a1560](https://github.com/aws-amplify/amplify-cli/commit/f8a15607faa1801c0766f5e46d2fe9e3a6c12e06))
+* consolidate dependent resource types in backend/ ([#8709](https://github.com/aws-amplify/amplify-cli/issues/8709)) ([f95b0d0](https://github.com/aws-amplify/amplify-cli/commit/f95b0d04ad4b181272edbf532ce4c4ed41287db8))
+* ddb overrides and flow refactor ([9db109f](https://github.com/aws-amplify/amplify-cli/commit/9db109fca5b8e459ea287e6fa6179aad4902e790))
+* define custom resources with CDK or CFN ([#8590](https://github.com/aws-amplify/amplify-cli/issues/8590)) ([cf42ac3](https://github.com/aws-amplify/amplify-cli/commit/cf42ac32d5126b3c47ede4b613f5c536ddbf4a7c))
+* extensibility for REST APIs ([#8598](https://github.com/aws-amplify/amplify-cli/issues/8598)) ([af7e436](https://github.com/aws-amplify/amplify-cli/commit/af7e4369eb288c6580ed8419887341fc2009d75e))
+* FF for override stacks ([#8228](https://github.com/aws-amplify/amplify-cli/issues/8228)) ([ee6c034](https://github.com/aws-amplify/amplify-cli/commit/ee6c0341e99c7b8f5c4a6502df52864415c7884a))
+* overrides uniformity accross all the categories ([#8695](https://github.com/aws-amplify/amplify-cli/issues/8695)) ([1c4449a](https://github.com/aws-amplify/amplify-cli/commit/1c4449a79f0c9aa7f423686161a21bcaec1843a1))
+* root stack override ([#8276](https://github.com/aws-amplify/amplify-cli/issues/8276)) ([4237b2f](https://github.com/aws-amplify/amplify-cli/commit/4237b2f9731eb9b44dbb5afeff505b3035a593cf))
+
+
+
+
+
 # [6.4.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@6.3.1...@aws-amplify/cli@6.4.0) (2021-11-11)
 
 

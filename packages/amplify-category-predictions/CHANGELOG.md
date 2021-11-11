@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.9.17-ext22.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-predictions@2.9.16...amplify-category-predictions@2.9.17-ext22.0) (2021-11-11)
+
+
+### Bug Fixes
+
+* ext overrides2 storage-headless and predictions ([#8622](https://github.com/aws-amplify/amplify-cli/issues/8622)) ([ce87cff](https://github.com/aws-amplify/amplify-cli/commit/ce87cffeb90e56f55333befeb7194134b479bbfa))
+
+
+
+
+
 ## [2.9.16](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-predictions@2.9.15...amplify-category-predictions@2.9.16) (2021-11-11)
 
 **Note:** Version bump only for package amplify-category-predictions

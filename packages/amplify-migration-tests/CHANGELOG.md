@@ -3,6 +3,26 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.2.0-ext22.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@3.1.15...amplify-migration-tests@3.2.0-ext22.0) (2021-11-11)
+
+
+### Bug Fixes
+
+* fixes auth migration e2e ([#8756](https://github.com/aws-amplify/amplify-cli/issues/8756)) ([3570841](https://github.com/aws-amplify/amplify-cli/commit/35708410cdf1ebdbcda75bd0325cc9eae94e92ee))
+* fixes dependsOn parameter and auth migration test ([#8480](https://github.com/aws-amplify/amplify-cli/issues/8480)) ([e8de7f5](https://github.com/aws-amplify/amplify-cli/commit/e8de7f528e1e5c4f71c4a6772ac64d7c726da985))
+* migration test fixes ([#8742](https://github.com/aws-amplify/amplify-cli/issues/8742)) ([f91b472](https://github.com/aws-amplify/amplify-cli/commit/f91b4721c16a3be901079ef9607dd27284eafb69))
+* tsc global install error ([ddf1c3a](https://github.com/aws-amplify/amplify-cli/commit/ddf1c3a1ff4b173c282558adf0cd73e6c26799bd))
+
+
+### Features
+
+* Auth refactor to  use cdk, eliminate EJS, overrides functionality ([#8355](https://github.com/aws-amplify/amplify-cli/issues/8355)) ([f8a1560](https://github.com/aws-amplify/amplify-cli/commit/f8a15607faa1801c0766f5e46d2fe9e3a6c12e06))
+* root stack override ([#8276](https://github.com/aws-amplify/amplify-cli/issues/8276)) ([4237b2f](https://github.com/aws-amplify/amplify-cli/commit/4237b2f9731eb9b44dbb5afeff505b3035a593cf))
+
+
+
+
+
 ## [3.1.15](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@3.1.14...amplify-migration-tests@3.1.15) (2021-11-11)
 
 **Note:** Version bump only for package amplify-migration-tests
