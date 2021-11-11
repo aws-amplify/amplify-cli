@@ -360,12 +360,12 @@ describe('schema generation directive tests', () => {
     // Check that resolvers containing the authMode check block
     const authStepSnippet = '## [Start] Authorization Steps. **';
 
-    expect(out.pipelineFunctions['Query.getPost.auth.1.req.vtl']).toContain(authStepSnippet);
-    expect(out.pipelineFunctions['Query.listPosts.auth.1.req.vtl']).toContain(authStepSnippet);
-    expect(out.pipelineFunctions['Mutation.createPost.auth.1.req.vtl']).toContain(authStepSnippet);
-    expect(out.pipelineFunctions['Mutation.createPost.auth.1.req.vtl']).toContain(authStepSnippet);
-    expect(out.pipelineFunctions['Mutation.updatePost.auth.1.res.vtl']).toContain(authStepSnippet);
-    expect(out.pipelineFunctions['Mutation.deletePost.auth.1.res.vtl']).toContain(authStepSnippet);
+    expect(out.resolvers['Query.getPost.auth.1.req.vtl']).toContain(authStepSnippet);
+    expect(out.resolvers['Query.listPosts.auth.1.req.vtl']).toContain(authStepSnippet);
+    expect(out.resolvers['Mutation.createPost.auth.1.req.vtl']).toContain(authStepSnippet);
+    expect(out.resolvers['Mutation.createPost.auth.1.req.vtl']).toContain(authStepSnippet);
+    expect(out.resolvers['Mutation.updatePost.auth.1.res.vtl']).toContain(authStepSnippet);
+    expect(out.resolvers['Mutation.deletePost.auth.1.res.vtl']).toContain(authStepSnippet);
   });
 
   test(`Operation fields are getting the directive added, when type has the @auth only for allowed operations`, () => {
@@ -419,10 +419,10 @@ describe('schema generation directive tests', () => {
     // Check that resolvers containing the authMode check block
     const authModeCheckSnippet = '## [Start] Field Authorization Steps. **';
     // resolvers to check is all other resolvers other than protected
-    expect(out.pipelineFunctions['Post.id.req.vtl']).toContain(authModeCheckSnippet);
-    expect(out.pipelineFunctions['Post.title.req.vtl']).toContain(authModeCheckSnippet);
-    expect(out.pipelineFunctions['Post.createdAt.req.vtl']).toContain(authModeCheckSnippet);
-    expect(out.pipelineFunctions['Post.updatedAt.req.vtl']).toContain(authModeCheckSnippet);
+    expect(out.resolvers['Post.id.req.vtl']).toContain(authModeCheckSnippet);
+    expect(out.resolvers['Post.title.req.vtl']).toContain(authModeCheckSnippet);
+    expect(out.resolvers['Post.createdAt.req.vtl']).toContain(authModeCheckSnippet);
+    expect(out.resolvers['Post.updatedAt.req.vtl']).toContain(authModeCheckSnippet);
   });
 
   test(`'groups' @auth at field level is propagated to type and the type related operations`, () => {
@@ -446,10 +446,10 @@ describe('schema generation directive tests', () => {
     const authModeCheckSnippet = '## [Start] Field Authorization Steps. **';
 
     // resolvers to check is all other resolvers other than protected
-    expect(out.pipelineFunctions['Post.id.req.vtl']).toContain(authModeCheckSnippet);
-    expect(out.pipelineFunctions['Post.title.req.vtl']).toContain(authModeCheckSnippet);
-    expect(out.pipelineFunctions['Post.createdAt.req.vtl']).toContain(authModeCheckSnippet);
-    expect(out.pipelineFunctions['Post.updatedAt.req.vtl']).toContain(authModeCheckSnippet);
+    expect(out.resolvers['Post.id.req.vtl']).toContain(authModeCheckSnippet);
+    expect(out.resolvers['Post.title.req.vtl']).toContain(authModeCheckSnippet);
+    expect(out.resolvers['Post.createdAt.req.vtl']).toContain(authModeCheckSnippet);
+    expect(out.resolvers['Post.updatedAt.req.vtl']).toContain(authModeCheckSnippet);
   });
 
   test(`'groups' @auth at field level is propagated to type and the type related operations, also default provider for read`, () => {
@@ -472,10 +472,10 @@ describe('schema generation directive tests', () => {
     const groupCheckSnippet = '#set( $staticGroupRoles = [{"claim":"cognito:groups","entity":"admin"}] )';
 
     // resolvers to check is all other resolvers other than protected by the group rule
-    expect(out.pipelineFunctions['Post.id.req.vtl']).toContain(groupCheckSnippet);
-    expect(out.pipelineFunctions['Post.title.req.vtl']).toContain(groupCheckSnippet);
-    expect(out.pipelineFunctions['Post.createdAt.req.vtl']).toContain(groupCheckSnippet);
-    expect(out.pipelineFunctions['Post.updatedAt.req.vtl']).toContain(groupCheckSnippet);
+    expect(out.resolvers['Post.id.req.vtl']).toContain(groupCheckSnippet);
+    expect(out.resolvers['Post.title.req.vtl']).toContain(groupCheckSnippet);
+    expect(out.resolvers['Post.createdAt.req.vtl']).toContain(groupCheckSnippet);
+    expect(out.resolvers['Post.updatedAt.req.vtl']).toContain(groupCheckSnippet);
   });
 
   test(`Nested types without @model not getting directives applied for iam, and no policy is generated`, () => {
@@ -618,11 +618,11 @@ describe('iam checks', () => {
     });
     const out = transformer.transform(schema);
     expect(out).toBeDefined();
-    const createResolver = out.pipelineFunctions['Mutation.createPost.auth.1.req.vtl'];
+    const createResolver = out.resolvers['Mutation.createPost.auth.1.req.vtl'];
     expect(createResolver).toContain(
       `#if( ($ctx.identity.userArn == $ctx.stash.authRole) || ($ctx.identity.cognitoIdentityPoolId == \"${identityPoolId}\" && $ctx.identity.cognitoIdentityAuthType == \"authenticated\") )`,
     );
-    const queryResolver = out.pipelineFunctions['Query.listPosts.auth.1.req.vtl'];
+    const queryResolver = out.resolvers['Query.listPosts.auth.1.req.vtl'];
     expect(queryResolver).toContain(
       `#if( ($ctx.identity.userArn == $ctx.stash.authRole) || ($ctx.identity.cognitoIdentityPoolId == \"${identityPoolId}\" && $ctx.identity.cognitoIdentityAuthType == \"authenticated\") )`,
     );
@@ -636,9 +636,9 @@ describe('iam checks', () => {
     });
     const out = transformer.transform(schema);
     expect(out).toBeDefined();
-    const createResolver = out.pipelineFunctions['Mutation.createPost.auth.1.req.vtl'];
+    const createResolver = out.resolvers['Mutation.createPost.auth.1.req.vtl'];
     expect(createResolver).toContain(`#if( $ctx.identity.userArn == $ctx.stash.unauthRole )`);
-    const queryResolver = out.pipelineFunctions['Query.listPosts.auth.1.req.vtl'];
+    const queryResolver = out.resolvers['Query.listPosts.auth.1.req.vtl'];
     expect(queryResolver).toContain(`#if( $ctx.identity.userArn == $ctx.stash.unauthRole )`);
   });
 
@@ -650,7 +650,7 @@ describe('iam checks', () => {
     });
     const out = transformer.transform(schema);
     expect(out).toBeDefined();
-    const createResolver = out.pipelineFunctions['Mutation.createPost.auth.1.req.vtl'];
+    const createResolver = out.resolvers['Mutation.createPost.auth.1.req.vtl'];
     expect(createResolver).toContain(`#set( $adminRoles = [\"helloWorldFunction\",\"echoMessageFunction\"] )`);
     expect(createResolver).toMatchSnapshot();
   });

@@ -411,7 +411,7 @@ describe('ModelTransformer: ', () => {
     expect(defaultIdField).toBeDefined();
     expect(getBaseType(defaultIdField.type)).toEqual('Int');
     // It should not add default value for ctx.arg.id as id is of type Int
-    expect(result.pipelineFunctions['Mutation.createPost.req.vtl']).toMatchSnapshot();
+    expect(result.resolvers['Mutation.createPost.req.vtl']).toMatchSnapshot();
   });
 
   it('should generate only create mutation', () => {
@@ -670,7 +670,7 @@ describe('ModelTransformer: ', () => {
     validateModelSchema(schema);
   });
 
-  it('should support timestamp parameters when generating pipelineFunctions and output schema', () => {
+  it('should support timestamp parameters when generating resolvers and output schema', () => {
     const validSchema = `
     type Post @model(timestamps: { createdAt: "createdOn", updatedAt: "updatedOn"}) {
       id: ID!
@@ -688,8 +688,8 @@ describe('ModelTransformer: ', () => {
     const schema = parse(result.schema);
     validateModelSchema(schema);
 
-    expect(result.pipelineFunctions['Mutation.createPost.req.vtl']).toMatchSnapshot();
-    expect(result.pipelineFunctions['Mutation.updatePost.req.vtl']).toMatchSnapshot();
+    expect(result.resolvers['Mutation.createPost.req.vtl']).toMatchSnapshot();
+    expect(result.resolvers['Mutation.updatePost.req.vtl']).toMatchSnapshot();
   });
 
   it('should not to auto generate createdAt and updatedAt when the type in schema is not AWSDateTime', () => {
@@ -712,8 +712,8 @@ describe('ModelTransformer: ', () => {
     const schema = parse(result.schema);
     validateModelSchema(schema);
 
-    expect(result.pipelineFunctions['Mutation.createPost.req.vtl']).toMatchSnapshot();
-    expect(result.pipelineFunctions['Mutation.updatePost.req.vtl']).toMatchSnapshot();
+    expect(result.resolvers['Mutation.createPost.req.vtl']).toMatchSnapshot();
+    expect(result.resolvers['Mutation.updatePost.req.vtl']).toMatchSnapshot();
   });
 
   it('should have timestamps as nullable fields when the type makes it non-nullable', () => {
@@ -737,8 +737,8 @@ describe('ModelTransformer: ', () => {
     const schema = parse(result.schema);
     validateModelSchema(schema);
 
-    expect(result.pipelineFunctions['Mutation.createPost.req.vtl']).toMatchSnapshot();
-    expect(result.pipelineFunctions['Mutation.updatePost.req.vtl']).toMatchSnapshot();
+    expect(result.resolvers['Mutation.createPost.req.vtl']).toMatchSnapshot();
+    expect(result.resolvers['Mutation.updatePost.req.vtl']).toMatchSnapshot();
   });
 
   it('should not to include createdAt and updatedAt field when timestamps is set to null', () => {
@@ -759,8 +759,8 @@ describe('ModelTransformer: ', () => {
     const schema = parse(result.schema);
     validateModelSchema(schema);
 
-    expect(result.pipelineFunctions['Mutation.createPost.req.vtl']).toMatchSnapshot();
-    expect(result.pipelineFunctions['Mutation.updatePost.req.vtl']).toMatchSnapshot();
+    expect(result.resolvers['Mutation.createPost.req.vtl']).toMatchSnapshot();
+    expect(result.resolvers['Mutation.updatePost.req.vtl']).toMatchSnapshot();
   });
 
   it('should filter known input types from create and update input fields', () => {
@@ -908,7 +908,7 @@ describe('ModelTransformer: ', () => {
 
     const definition = out.schema;
     expect(definition).toBeDefined();
-    expect(out.pipelineFunctions).toMatchSnapshot();
+    expect(out.resolvers).toMatchSnapshot();
 
     validateModelSchema(parse(definition));
   });
@@ -945,7 +945,7 @@ describe('ModelTransformer: ', () => {
 
     const definition = out.schema;
     expect(definition).toBeDefined();
-    expect(out.pipelineFunctions).toMatchSnapshot();
+    expect(out.resolvers).toMatchSnapshot();
 
     validateModelSchema(parse(definition));
   });
@@ -979,7 +979,7 @@ describe('ModelTransformer: ', () => {
 
     const definition = out.schema;
     expect(definition).toBeDefined();
-    expect(out.pipelineFunctions).toMatchSnapshot();
+    expect(out.resolvers).toMatchSnapshot();
 
     validateModelSchema(parse(definition));
   });
@@ -1115,8 +1115,8 @@ describe('ModelTransformer: ', () => {
     const queryObject = getObjectType(schema, 'Query');
     expectFields(queryObject!, ['syncTodos']);
     // sync resolvers
-    expect(out.pipelineFunctions['Query.syncTodos.req.vtl']).toMatchSnapshot();
-    expect(out.pipelineFunctions['Query.syncTodos.res.vtl']).toMatchSnapshot();
+    expect(out.resolvers['Query.syncTodos.req.vtl']).toMatchSnapshot();
+    expect(out.resolvers['Query.syncTodos.res.vtl']).toMatchSnapshot();
     // ds table
     cdkExpect(out.rootStack).to(
       haveResource('AWS::DynamoDB::Table', {

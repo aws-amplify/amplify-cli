@@ -45,7 +45,7 @@ test('per-field auth on relational field', () => {
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
 
-  expect(out.pipelineFunctions['Post.comments.auth.1.req.vtl']).toContain(
+  expect(out.resolvers['Post.comments.auth.1.req.vtl']).toContain(
     '#set( $staticGroupRoles = [{"claim":"cognito:groups","entity":"admin"}] )',
   );
 });
