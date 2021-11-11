@@ -1,19 +1,19 @@
 /*
-  entry code for amplify override root
+    entry code for amplify override root
 */
 
-import { $TSContext, FeatureFlags, generateOverrideSkeleton, pathManager } from 'amplify-cli-core';
+import path from 'path';
+import { generateOverrideSkeleton, $TSContext, FeatureFlags } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import * as fs from 'fs-extra';
-import * as path from 'path';
 
 const subcommand = 'override';
 
 export const name = 'overrides';
 
 export const run = async (context: $TSContext) => {
-  if (FeatureFlags.getBoolean('project.overrides')) {
-    const backendDir = pathManager.getBackendDirPath();
+  if (FeatureFlags.getBoolean('overrides.project')) {
+    const backendDir = context.amplify.pathManager.getBackendDirPath();
 
     const destPath = path.join(backendDir, 'awscloudformation');
     fs.ensureDirSync(destPath);
@@ -27,16 +27,10 @@ export const run = async (context: $TSContext) => {
     await generateOverrideSkeleton(context, srcPath, destPath);
   } else {
     printer.info('Project level overrides is currently not turned on. In cli.json file please include the following:');
-    printer.info(
-      JSON.stringify(
-        {
-          project: {
-            overrides: true,
-          },
-        },
-        undefined,
-        2,
-      ),
-    );
+    printer.info(`{
+      override: {
+         project: true
+      }
+    }`);
   }
 };

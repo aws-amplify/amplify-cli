@@ -561,7 +561,7 @@ export class FeatureFlags {
         name: 'suppressSchemaMigrationPrompt',
         type: 'boolean',
         defaultValueForExistingProjects: true,
-        defaultValueForNewProjects: true,
+        defaultValueForNewProjects: true
       },
     ]);
 
@@ -718,10 +718,22 @@ export class FeatureFlags {
       },
     ]);
 
-    // project level flags
-    this.registerFlag('project', [
+    // FF for overrides
+    this.registerFlag('overrides', [
       {
-        name: 'overrides',
+        name: 'storage',
+        type: 'boolean',
+        defaultValueForExistingProjects: false,
+        defaultValueForNewProjects: true,
+      },
+      {
+        name: 'auth',
+        type: 'boolean',
+        defaultValueForExistingProjects: false,
+        defaultValueForNewProjects: true,
+      },
+      {
+        name: 'project',
         type: 'boolean',
         defaultValueForExistingProjects: false,
         defaultValueForNewProjects: true,
