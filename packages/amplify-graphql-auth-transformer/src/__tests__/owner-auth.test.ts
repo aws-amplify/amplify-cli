@@ -55,11 +55,11 @@ test('ownerfield where the field is a list', () => {
   expect(out.rootStack.Resources[ResourceConstants.RESOURCES.GraphQLAPILogicalID].Properties.AuthenticationType).toEqual(
     'AMAZON_COGNITO_USER_POOLS',
   );
-  expect(out.pipelineFunctions['Mutation.createPost.auth.1.req.vtl']).toMatchSnapshot();
-  expect(out.pipelineFunctions['Mutation.updatePost.auth.1.req.vtl']).toMatchSnapshot();
-  expect(out.pipelineFunctions['Mutation.deletePost.auth.1.req.vtl']).toMatchSnapshot();
-  expect(out.pipelineFunctions['Query.getPost.auth.1.req.vtl']).toMatchSnapshot();
-  expect(out.pipelineFunctions['Query.listPosts.auth.1.req.vtl']).toMatchSnapshot();
+  expect(out.resolvers['Mutation.createPost.auth.1.req.vtl']).toMatchSnapshot();
+  expect(out.resolvers['Mutation.updatePost.auth.1.req.vtl']).toMatchSnapshot();
+  expect(out.resolvers['Mutation.deletePost.auth.1.req.vtl']).toMatchSnapshot();
+  expect(out.resolvers['Query.getPost.auth.1.req.vtl']).toMatchSnapshot();
+  expect(out.resolvers['Query.listPosts.auth.1.req.vtl']).toMatchSnapshot();
 });
 
 test('ownerfield with subscriptions', () => {
@@ -90,13 +90,13 @@ test('ownerfield with subscriptions', () => {
   expect(out.schema).toContain('onDeletePost(postOwner: String)');
 
   // expect logic in the resolvers to check for postOwner args as an allowed owner
-  expect(out.pipelineFunctions['Subscription.onCreatePost.auth.1.req.vtl']).toContain(
+  expect(out.resolvers['Subscription.onCreatePost.auth.1.req.vtl']).toContain(
     '#set( $ownerEntity0 = $util.defaultIfNull($ctx.args.postOwner, null) )',
   );
-  expect(out.pipelineFunctions['Subscription.onUpdatePost.auth.1.req.vtl']).toContain(
+  expect(out.resolvers['Subscription.onUpdatePost.auth.1.req.vtl']).toContain(
     '#set( $ownerEntity0 = $util.defaultIfNull($ctx.args.postOwner, null) )',
   );
-  expect(out.pipelineFunctions['Subscription.onDeletePost.auth.1.req.vtl']).toContain(
+  expect(out.resolvers['Subscription.onDeletePost.auth.1.req.vtl']).toContain(
     '#set( $ownerEntity0 = $util.defaultIfNull($ctx.args.postOwner, null) )',
   );
 });
@@ -134,24 +134,24 @@ test('multiple owner rules with subscriptions', () => {
   expect(out.schema).toContain('onDeletePost(owner: String, editor: String)');
 
   // expect logic in the resolvers to check for owner args as an allowedOwner
-  expect(out.pipelineFunctions['Subscription.onCreatePost.auth.1.req.vtl']).toContain(
+  expect(out.resolvers['Subscription.onCreatePost.auth.1.req.vtl']).toContain(
     '#set( $ownerEntity0 = $util.defaultIfNull($ctx.args.owner, null) )',
   );
-  expect(out.pipelineFunctions['Subscription.onUpdatePost.auth.1.req.vtl']).toContain(
+  expect(out.resolvers['Subscription.onUpdatePost.auth.1.req.vtl']).toContain(
     '#set( $ownerEntity0 = $util.defaultIfNull($ctx.args.owner, null) )',
   );
-  expect(out.pipelineFunctions['Subscription.onDeletePost.auth.1.req.vtl']).toContain(
+  expect(out.resolvers['Subscription.onDeletePost.auth.1.req.vtl']).toContain(
     '#set( $ownerEntity0 = $util.defaultIfNull($ctx.args.owner, null) )',
   );
 
   // expect logic in the resolvers to check for editor args as an allowedOwner
-  expect(out.pipelineFunctions['Subscription.onCreatePost.auth.1.req.vtl']).toContain(
+  expect(out.resolvers['Subscription.onCreatePost.auth.1.req.vtl']).toContain(
     '#set( $ownerEntity1 = $util.defaultIfNull($ctx.args.editor, null) )',
   );
-  expect(out.pipelineFunctions['Subscription.onUpdatePost.auth.1.req.vtl']).toContain(
+  expect(out.resolvers['Subscription.onUpdatePost.auth.1.req.vtl']).toContain(
     '#set( $ownerEntity1 = $util.defaultIfNull($ctx.args.editor, null) )',
   );
-  expect(out.pipelineFunctions['Subscription.onDeletePost.auth.1.req.vtl']).toContain(
+  expect(out.resolvers['Subscription.onDeletePost.auth.1.req.vtl']).toContain(
     '#set( $ownerEntity1 = $util.defaultIfNull($ctx.args.editor, null) )',
   );
 });
