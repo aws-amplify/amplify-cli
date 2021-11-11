@@ -480,7 +480,11 @@ export async function buildAPIProject(opts: ProjectOptions<TransformerFactoryArg
 async function _buildProject(opts: ProjectOptions<TransformerFactoryArgs>) {
   const userProjectConfig = opts.projectConfig;
   const stackMapping = userProjectConfig.config.StackMapping;
-  const userDefinedSlots = parseUserDefinedSlots(userProjectConfig.resolvers);
+  const userDefinedSlots = {
+    ...parseUserDefinedSlots(userProjectConfig.pipelineFunctions),
+    ...parseUserDefinedSlots(userProjectConfig.resolvers),
+  };
+
   // Create the transformer instances, we've to make sure we're not reusing them within the same CLI command
   // because the StackMapping feature already builds the project once.
   const transformers = await opts.transformersFactory(opts.transformersFactoryArgs);

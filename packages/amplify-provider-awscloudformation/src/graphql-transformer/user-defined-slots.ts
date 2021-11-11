@@ -1,6 +1,6 @@
 import { UserDefinedSlot } from '@aws-amplify/graphql-transformer-core';
 
-export const SLOT_NAMES = [
+export const SLOT_NAMES = new Set([
   'init',
   'preAuth',
   'auth',
@@ -11,9 +11,9 @@ export const SLOT_NAMES = [
   'postDataLoad',
   'postUpdate',
   'finish',
-];
+]);
 
-const README = 'README.md';
+const EXCLUDE_FILES = new Set(['README.md']);
 
 export function createUserDefinedSlot(fileName: string, slicedSlotName: string[], template: string): UserDefinedSlot {
   return {
@@ -30,10 +30,10 @@ export function parseUserDefinedSlots(userDefinedTemplates: any): Record<string,
   const keys = Object.keys(userDefinedTemplates);
 
   keys.forEach(key => {
-    if (key === README) return;
+    if (EXCLUDE_FILES.has(key)) return;
 
     const slicedSlotName = key.split('.');
-    const isSlot = SLOT_NAMES.includes(slicedSlotName[2]);
+    const isSlot = SLOT_NAMES.has(slicedSlotName[2]);
 
     if (isSlot) {
       const slot = createUserDefinedSlot(key, slicedSlotName, userDefinedTemplates[key]);

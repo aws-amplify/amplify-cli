@@ -3,18 +3,20 @@ import { SLOT_NAMES, createUserDefinedSlot, parseUserDefinedSlots } from '../../
 describe('user defined slots', () => {
   describe('const SLOT_NAMES', () => {
     it('has expected value', () => {
-      expect(SLOT_NAMES).toEqual([
-        'init',
-        'preAuth',
-        'auth',
-        'postAuth',
-        'preDataLoad',
-        'preUpdate',
-        'preSubscribe',
-        'postDataLoad',
-        'postUpdate',
-        'finish',
-      ]);
+      expect(SLOT_NAMES).toEqual(
+        new Set([
+          'init',
+          'preAuth',
+          'auth',
+          'postAuth',
+          'preDataLoad',
+          'preUpdate',
+          'preSubscribe',
+          'postDataLoad',
+          'postUpdate',
+          'finish',
+        ]),
+      );
     });
   });
 
