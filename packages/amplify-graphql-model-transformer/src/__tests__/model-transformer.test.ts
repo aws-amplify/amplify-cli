@@ -1089,54 +1089,6 @@ describe('ModelTransformer: ', () => {
 
     expectFieldsOnInputType(updateTodoInput!, ['name']);
   });
-
-  it('should add the model parameters at the root sack', () => {
-    const validSchema = `type Todo @model {
-      name: String
-    }`;
-
-    const transformer = new GraphQLTransform({
-      sandboxModeEnabled: true,
-      transformers: [new ModelTransformer()],
-    });
-    const out = transformer.transform(validSchema);
-    const rootStack = out.rootStack;
-    expect(rootStack).toBeDefined();
-
-    expect(rootStack.Parameters).toEqual(
-      expect.objectContaining({
-        DynamoDBModelTableReadIOPS: expect.objectContaining({
-          Type: 'String',
-          Default: 5,
-          Description: 'The number of read IOPS the table should support.',
-        }),
-        DynamoDBModelTableWriteIOPS: expect.objectContaining({
-          Type: 'String',
-          Default: 5,
-          Description: 'The number of write IOPS the table should support.',
-        }),
-        DynamoDBBillingMode: expect.objectContaining({
-          Type: 'String',
-          Default: 'PAY_PER_REQUEST',
-          AllowedValues: ['PAY_PER_REQUEST', 'PROVISIONED'],
-          Description: 'Configure @model types to create DynamoDB tables with PAY_PER_REQUEST or PROVISIONED billing modes.',
-        }),
-        DynamoDBEnablePointInTimeRecovery: expect.objectContaining({
-          Type: 'String',
-          Default: 'false',
-          AllowedValues: ['true', 'false'],
-          Description: 'Whether to enable Point in Time Recovery on the table',
-        }),
-        DynamoDBEnableServerSideEncryption: expect.objectContaining({
-          Type: 'String',
-          Default: 'true',
-          AllowedValues: ['true', 'false'],
-          Description: 'Enable service side encryption powered by KMS.',
-        }),
-      }),
-    );
-  });
-
   it('the datastore table should be configured', () => {
     const validSchema = `
     type Todo @model {
@@ -1166,7 +1118,101 @@ describe('ModelTransformer: ', () => {
     expect(out.resolvers['Query.syncTodos.req.vtl']).toMatchSnapshot();
     expect(out.resolvers['Query.syncTodos.res.vtl']).toMatchSnapshot();
     // ds table
-    expect(out.rootStack?.Resources?.DataStore).toBeDefined();
-    expect(out.rootStack?.Resources?.DataStore).toMatchSnapshot();
+    cdkExpect(out.rootStack).to(
+      haveResource('AWS::DynamoDB::Table', {
+        KeySchema: [
+          {
+            AttributeName: 'ds_pk',
+            KeyType: 'HASH',
+          },
+          {
+            AttributeName: 'ds_sk',
+            KeyType: 'RANGE',
+          },
+        ],
+        AttributeDefinitions: [
+          {
+            AttributeName: 'ds_pk',
+            AttributeType: 'S',
+          },
+          {
+            AttributeName: 'ds_sk',
+            AttributeType: 'S',
+          },
+        ],
+        BillingMode: 'PAY_PER_REQUEST',
+        StreamSpecification: {
+          StreamViewType: 'NEW_AND_OLD_IMAGES',
+        },
+        TableName: {
+          'Fn::Join': [
+            '',
+            [
+              'AmplifyDataStore-',
+              {
+                'Fn::GetAtt': ['GraphQLAPI', 'ApiId'],
+              },
+              '-',
+              {
+                Ref: 'env',
+              },
+            ],
+          ],
+        },
+        TimeToLiveSpecification: {
+          AttributeName: '_ttl',
+          Enabled: true,
+        },
+      }),
+    );
+  });
+
+  it('should add the model parameters at the root sack', () => {
+    const modelParams = {
+      DynamoDBModelTableReadIOPS: expect.objectContaining({
+        Type: 'Number',
+        Default: 5,
+        Description: 'The number of read IOPS the table should support.',
+      }),
+      DynamoDBModelTableWriteIOPS: expect.objectContaining({
+        Type: 'Number',
+        Default: 5,
+        Description: 'The number of write IOPS the table should support.',
+      }),
+      DynamoDBBillingMode: expect.objectContaining({
+        Type: 'String',
+        Default: 'PAY_PER_REQUEST',
+        AllowedValues: ['PAY_PER_REQUEST', 'PROVISIONED'],
+        Description: 'Configure @model types to create DynamoDB tables with PAY_PER_REQUEST or PROVISIONED billing modes.',
+      }),
+      DynamoDBEnablePointInTimeRecovery: expect.objectContaining({
+        Type: 'String',
+        Default: 'false',
+        AllowedValues: ['true', 'false'],
+        Description: 'Whether to enable Point in Time Recovery on the table.',
+      }),
+      DynamoDBEnableServerSideEncryption: expect.objectContaining({
+        Type: 'String',
+        Default: 'true',
+        AllowedValues: ['true', 'false'],
+        Description: 'Enable server side encryption powered by KMS.',
+      }),
+    };
+    const validSchema = `type Todo @model {
+      name: String
+    }`;
+    const transformer = new GraphQLTransform({
+      sandboxModeEnabled: true,
+      transformers: [new ModelTransformer()],
+    });
+    const out = transformer.transform(validSchema);
+
+    const rootStack = out.rootStack;
+    expect(rootStack).toBeDefined();
+    expect(rootStack.Parameters).toMatchObject(modelParams);
+
+    const todoStack = out.stacks['Todo'];
+    expect(todoStack).toBeDefined();
+    expect(todoStack.Parameters).toMatchObject(modelParams);
   });
 });

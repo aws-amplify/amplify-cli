@@ -17,7 +17,7 @@
   "license": "Apache-2.0",
   "dependencies": {
     "amplify-cli-core": "1.31.1",
-    "aws-sdk": "^2.1024.0"
+    "aws-sdk": "^2.963.0"
   },
   "devDependencies": {
     "@types/node": "^12.12.6"

@@ -9,6 +9,9 @@ import {
   apiGqlCompile,
   updateApiSchema,
   writeToCustomResourcesJson,
+  amplifyPush,
+  generateModels,
+  amplifyPushUpdate,
 } from 'amplify-e2e-core';
 import { join } from 'path';
 import * as fs from 'fs-extra';
@@ -21,6 +24,7 @@ describe('user created resolvers', () => {
     projectDir = await createNewProjectDir('overrideresolvers');
     await initJSProjectWithProfile(projectDir, {});
     addFeatureFlag(projectDir, 'graphqltransformer', 'useexperimentalpipelinedtransformer', true);
+    addFeatureFlag(projectDir, 'graphqltransformer', 'transformerVersion', 2);
   });
 
   afterEach(async () => {
@@ -44,6 +48,31 @@ describe('user created resolvers', () => {
       await apiGqlCompile(projectDir, true);
 
       expect(fs.readFileSync(generatedResolverPath).toString()).toEqual(resolver);
+    });
+  });
+
+  describe('adding user defined slots', () => {
+    it('adds the slot to the project and uploads the function to AppSync', async () => {
+      const slotName = 'Query.listTodos.postAuth.2.req.vtl';
+      const slot = '$util.unauthorized()';
+      const generatedResolverPath = join(projectDir, 'amplify', 'backend', 'api', apiName, 'build', 'resolvers', slotName);
+
+      await addApiWithoutSchema(projectDir, { apiName });
+      updateApiSchema(projectDir, apiName, 'model_with_sandbox_mode.graphql');
+      await amplifyPush(projectDir);
+
+      expect(fs.existsSync(generatedResolverPath)).toEqual(false);
+
+      addCustomResolver(projectDir, apiName, slotName, slot);
+      await generateModels(projectDir);
+      await amplifyPushUpdate(projectDir);
+
+      const todoJsonPath = join(projectDir, 'amplify', 'backend', 'api', apiName, 'build', 'stacks', 'Todo.json');
+      const todoJson = JSON.parse(fs.readFileSync(todoJsonPath).toString());
+
+      expect(fs.readFileSync(generatedResolverPath).toString()).toEqual(slot);
+      expect(todoJson.Resources.GetTodoResolver.Properties.PipelineConfig.Functions).toHaveLength(2);
+      expect(todoJson.Resources.ListTodoResolver.Properties.PipelineConfig.Functions).toHaveLength(3);
     });
   });
 

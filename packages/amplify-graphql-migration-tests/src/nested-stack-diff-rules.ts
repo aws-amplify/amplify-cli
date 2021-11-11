@@ -13,12 +13,9 @@ export const getNestedStackDiffRules = (): NestedStackDiffRule[] => [
  * @param diff The diff of the nested stack
  */
 const onlyUpdatesTableNameProperty = (stackName: string, diff: TemplateDiff) => {
-  const allowedPropertyUpdates = ['ProvisionedThroughput'];
-  const propertyUpdates = Object.keys(diff.resources.changes[`${stackName}Table`].propertyUpdates).filter(
-    prop => !allowedPropertyUpdates.includes(prop),
-  );
+  const propertyUpdates = diff.resources.changes[`${stackName}Table`].propertyUpdates;
   try {
-    expect(propertyUpdates).toEqual(['TableName']); // The table name should resolve to the same value but the way it's defined is different so it shows up here as a diff
+    expect(Object.keys(propertyUpdates)).toEqual(['TableName']); // The table name should resolve to the same value but the way it's defined is different so it shows up here as a diff
   } catch (err) {
     console.error(`Expected only TableName update for table ${stackName}Table. Instead got updates:`);
     console.log(JSON.stringify(propertyUpdates, undefined, 2));
