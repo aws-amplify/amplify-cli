@@ -51,11 +51,11 @@ test('auth logic is enabled on owner/static rules in es request', () => {
   const out = transformer.transform(validSchema);
   // expect response resolver to contain auth logic for owner rule
   expect(out).toBeDefined();
-  expect(out.pipelineFunctions['Query.searchComments.auth.1.req.vtl']).toContain(
+  expect(out.resolvers['Query.searchComments.auth.1.req.vtl']).toContain(
     '"terms":       [$util.defaultIfNull($ctx.identity.claims.get("username"), $util.defaultIfNull($ctx.identity.claims.get("cognito:username"), "___xamznone____"))],',
   );
   // expect response resolver to contain auth logic for group rule
-  expect(out.pipelineFunctions['Query.searchComments.auth.1.req.vtl']).toContain(
+  expect(out.resolvers['Query.searchComments.auth.1.req.vtl']).toContain(
     '#set( $staticGroupRoles = [{"claim":"cognito:groups","entity":"writer"}] )',
   );
 });
@@ -104,7 +104,7 @@ test('auth logic is enabled for iam/apiKey auth rules', () => {
   }
   // expect the searchbable types to have the auth directives for total providers
   // expect the allowed fields for agg to exclude secret
-  expect(out.pipelineFunctions['Query.searchPosts.auth.1.req.vtl']).toContain(
+  expect(out.resolvers['Query.searchPosts.auth.1.req.vtl']).toContain(
     `#set( $allowedAggFields = ["createdAt","updatedAt","id","content"] )`,
   );
 });

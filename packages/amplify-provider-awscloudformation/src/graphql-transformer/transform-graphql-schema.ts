@@ -503,5 +503,5 @@ async function _buildProject(opts: ProjectOptions<TransformerFactoryArgs>) {
   const schema = userProjectConfig.schema.toString();
   const transformOutput = transform.transform(schema);
 
-  return mergeUserConfigWithTransformOutput(userProjectConfig, transformOutput);
+  return mergeUserConfigWithTransformOutput(userProjectConfig, transformOutput, opts);
 }
