@@ -1,18 +1,11 @@
 import { $TSObject } from 'amplify-cli-core';
 import {
-  addDDBWithTrigger,
-  addSimpleDDB,
-  addS3,
-  amplifyPushAuth,
-  createNewProjectDir,
+  addAuthWithDefault, addDDBWithTrigger, addS3StorageWithAuthOnly, addSimpleDDB, amplifyPushAuth, checkIfBucketExists, createNewProjectDir,
   deleteProject,
   deleteProjectDir,
   getDDBTable,
   getProjectMeta,
-  updateDDBWithTrigger,
-  updateS3AddTrigger,
-  checkIfBucketExists,
-  addS3Storage
+  updateDDBWithTrigger, updateS3AddTriggerWithAuthOnlyReqMigration
 } from 'amplify-e2e-core';
 import { initJSProjectWithProfile } from '../../migration-helpers';
 
@@ -63,7 +56,6 @@ describe('amplify add/update storage(DDB)', () => {
   });
 });
 
-
 function getPluginServiceMetaFromAmplifyMeta( amplifyMeta : $TSObject, pluginServiceName : string ):$TSObject {
   for ( const resourceName of Object.keys(amplifyMeta.storage)){
     if ( amplifyMeta.storage[resourceName].service === pluginServiceName ){
@@ -89,28 +81,23 @@ describe('amplify add/update storage(S3)', () => {
   });
 
   afterEach(async () => {
-    // await deleteProject(projRoot);
-    // deleteProjectDir(projRoot);
+    await deleteProject(projRoot);
+    deleteProjectDir(projRoot);
   });
 
   it('init a project and add s3 bucket & update with new trigger', async () => {
     // init, add storage and push with local cli
     await initJSProjectWithProfile(projRoot, {});
-    await addS3Storage(projRoot);
+    await addAuthWithDefault(projRoot, {});
+    await addS3StorageWithAuthOnly(projRoot);
     await amplifyPushAuth(projRoot);
     // update and push with new codebase
-    await updateS3AddTrigger(projRoot, { testingWithLatestCodebase: true });
+    await updateS3AddTriggerWithAuthOnlyReqMigration(projRoot, { testingWithLatestCodebase: true });
     await amplifyPushAuth(projRoot, true /*latest codebase*/);
 
     const meta = getProjectMeta(projRoot);
     const s3Meta = getPluginServiceMetaFromAmplifyMeta( meta, 'S3');
     const output = s3Meta.output;
-    for ( const dependentResource of s3Meta.dependsOn ){
-      if ( dependentResource.category === "function"){
-        return dependentResource;
-      }
-    }
-
     expect(output.BucketName).toBeDefined();
     expect(output.Region).toBeDefined();
  
