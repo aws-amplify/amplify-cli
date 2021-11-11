@@ -5,6 +5,7 @@ import {
   SyncConfig,
   SyncUtils,
   TransformerModelBase,
+  TransformerNestedStack,
 } from '@aws-amplify/graphql-transformer-core';
 import {
   AppSyncDataSourceType,
@@ -20,6 +21,7 @@ import {
   TransformerSchemaVisitStepContextProvider,
   TransformerTransformSchemaStepContextProvider,
   TransformerValidationStepContextProvider,
+  TransformerBeforeStepContextProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { AttributeType, CfnTable, ITable, StreamViewType, Table, TableEncryption } from '@aws-cdk/aws-dynamodb';
 import * as iam from '@aws-cdk/aws-iam';
@@ -166,6 +168,37 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
     super('amplify-model-transformer', directiveDefinition);
     this.options = this.getOptions(options);
   }
+
+  before = (ctx: TransformerBeforeStepContextProvider) => {
+    // add model related-parameters to the root stack
+    ctx.stackManager.addParameter(ResourceConstants.PARAMETERS.DynamoDBModelTableReadIOPS, {
+      description: 'The number of read IOPS the table should support.',
+      type: 'Number',
+      default: 5,
+    });
+    ctx.stackManager.addParameter(ResourceConstants.PARAMETERS.DynamoDBModelTableWriteIOPS, {
+      description: 'The number of write IOPS the table should support.',
+      type: 'Number',
+      default: 5,
+    });
+    ctx.stackManager.addParameter(ResourceConstants.PARAMETERS.DynamoDBBillingMode, {
+      description: 'Configure @model types to create DynamoDB tables with PAY_PER_REQUEST or PROVISIONED billing modes.',
+      default: 'PAY_PER_REQUEST',
+      allowedValues: ['PAY_PER_REQUEST', 'PROVISIONED'],
+    });
+    ctx.stackManager.addParameter(ResourceConstants.PARAMETERS.DynamoDBEnablePointInTimeRecovery, {
+      description: 'Whether to enable Point in Time Recovery on the table.',
+      type: 'String',
+      default: 'false',
+      allowedValues: ['true', 'false'],
+    });
+    ctx.stackManager.addParameter(ResourceConstants.PARAMETERS.DynamoDBEnableServerSideEncryption, {
+      description: 'Enable server side encryption powered by KMS.',
+      type: 'String',
+      default: 'true',
+      allowedValues: ['true', 'false'],
+    });
+  };
 
   object = (definition: ObjectTypeDefinitionNode, directive: DirectiveNode, ctx: TransformerSchemaVisitStepContextProvider): void => {
     const isTypeNameReserved =
@@ -1085,30 +1118,42 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
       description: 'The number of read IOPS the table should support.',
       type: 'Number',
       default: 5,
-    }).valueAsString;
+    });
     const writeIops = new cdk.CfnParameter(stack, ResourceConstants.PARAMETERS.DynamoDBModelTableWriteIOPS, {
       description: 'The number of write IOPS the table should support.',
       type: 'Number',
       default: 5,
-    }).valueAsString;
+    });
     const billingMode = new cdk.CfnParameter(stack, ResourceConstants.PARAMETERS.DynamoDBBillingMode, {
       description: 'Configure @model types to create DynamoDB tables with PAY_PER_REQUEST or PROVISIONED billing modes.',
       type: 'String',
       default: 'PAY_PER_REQUEST',
       allowedValues: ['PAY_PER_REQUEST', 'PROVISIONED'],
-    }).valueAsString;
+    });
     const pointInTimeRecovery = new cdk.CfnParameter(stack, ResourceConstants.PARAMETERS.DynamoDBEnablePointInTimeRecovery, {
       description: 'Whether to enable Point in Time Recovery on the table.',
       type: 'String',
       default: 'false',
       allowedValues: ['true', 'false'],
-    }).valueAsString;
+    });
     const enableSSE = new cdk.CfnParameter(stack, ResourceConstants.PARAMETERS.DynamoDBEnableServerSideEncryption, {
       description: 'Enable server side encryption powered by KMS.',
       type: 'String',
       default: 'true',
       allowedValues: ['true', 'false'],
-    }).valueAsString;
+    });
+    // add the connection between the root and nested stack so the values can be passed down
+    (stack as TransformerNestedStack).setParameter(readIops.node.id, cdk.Fn.ref(ResourceConstants.PARAMETERS.DynamoDBModelTableReadIOPS));
+    (stack as TransformerNestedStack).setParameter(writeIops.node.id, cdk.Fn.ref(ResourceConstants.PARAMETERS.DynamoDBModelTableWriteIOPS));
+    (stack as TransformerNestedStack).setParameter(billingMode.node.id, cdk.Fn.ref(ResourceConstants.PARAMETERS.DynamoDBBillingMode));
+    (stack as TransformerNestedStack).setParameter(
+      pointInTimeRecovery.node.id,
+      cdk.Fn.ref(ResourceConstants.PARAMETERS.DynamoDBEnablePointInTimeRecovery),
+    );
+    (stack as TransformerNestedStack).setParameter(
+      enableSSE.node.id,
+      cdk.Fn.ref(ResourceConstants.PARAMETERS.DynamoDBEnableServerSideEncryption),
+    );
 
     // Add conditions.
     // eslint-disable-next-line no-new
