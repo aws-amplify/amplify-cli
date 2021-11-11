@@ -7,6 +7,7 @@ import inquirer, { CheckboxQuestion, DistinctChoice } from 'inquirer';
 import _ from 'lodash';
 import * as path from 'path';
 import { categoryName, customResourceCFNFilenameSuffix } from '../utils/constants';
+const AUTH_TRIGGER_TEMPLATE = 'auth-trigger-cloudformation-template.json';
 
 const cfnTemplateGlobPattern = '*template*.+(yaml|yml|json)';
 interface AmplifyDependentResourceDefinition {
@@ -28,6 +29,7 @@ export function getResourceCfnOutputAttributes(category: string, resourceName: s
   if (fs.existsSync(resourceBuildDir)) {
     const cfnFiles = glob.sync(cfnTemplateGlobPattern, {
       cwd: resourceBuildDir,
+      ignore: [AUTH_TRIGGER_TEMPLATE],
     });
 
     if (cfnFiles.length > 0) {
@@ -46,6 +48,7 @@ export function getResourceCfnOutputAttributes(category: string, resourceName: s
     // For categories which do not store cfn files in build/ dir
     const cfnFiles = glob.sync(cfnTemplateGlobPattern, {
       cwd: resourceDir,
+      ignore: [AUTH_TRIGGER_TEMPLATE],
     });
     if (cfnFiles.length > 1) {
       printer.warn(`${resourceName} has more than one CloudFormation definitions in the resource folder which isn't permitted.`);
