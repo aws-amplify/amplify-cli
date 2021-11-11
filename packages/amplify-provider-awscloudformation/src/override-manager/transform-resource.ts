@@ -1,11 +1,12 @@
-import { $TSContext, FeatureFlags, IAmplifyResource, JSONUtilities, pathManager } from 'amplify-cli-core';
+import { $TSContext, IAmplifyResource, JSONUtilities, pathManager } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
-import { transformRootStack } from '.';
 import * as fs from 'fs-extra';
-import { prePushCfnTemplateModifier } from '../pre-push-cfn-processor/pre-push-cfn-modifier';
 import * as path from 'path';
+import { transformRootStack } from '.';
+import { prePushCfnTemplateModifier } from '../pre-push-cfn-processor/pre-push-cfn-modifier';
 import { rootStackFileName } from '../push-resources';
-import { storeRootStackTemplate } from '../initializer';
+import ora from 'ora';
+
 /**
  *
  * @param context
@@ -13,11 +14,18 @@ import { storeRootStackTemplate } from '../initializer';
  */
 export async function transformResourceWithOverrides(context: $TSContext, resource?: IAmplifyResource) {
   const flags = context.parameters.options;
+  let spinner: ora.Ora;
+
   try {
     if (resource) {
       const { transformCategoryStack } = await import(`@aws-amplify/amplify-category-${resource.category}`);
+
       if (transformCategoryStack) {
-        return await transformCategoryStack(context, resource);
+        spinner = ora(`Building resource ${resource.category}/${resource.resourceName}`);
+        spinner.start();
+        await transformCategoryStack(context, resource);
+        spinner.stop();
+        return;
       } else {
         printer.info('Overrides functionality is not impleented for this category');
       }
@@ -32,6 +40,7 @@ export async function transformResourceWithOverrides(context: $TSContext, resour
       JSONUtilities.writeJson(rootStackBackendFilePath, template);
     }
   } catch (err) {
+    spinner.stop();
     return;
   }
 }
