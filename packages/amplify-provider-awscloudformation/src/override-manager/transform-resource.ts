@@ -27,7 +27,7 @@ export async function transformResourceWithOverrides(context: $TSContext, resour
         spinner.stop();
         return;
       } else {
-        printer.info('Overrides functionality is not impleented for this category');
+        printer.info('Overrides functionality is not implemented for this category');
       }
     } else {
       const template = await transformRootStack(context);
@@ -40,7 +40,10 @@ export async function transformResourceWithOverrides(context: $TSContext, resour
       JSONUtilities.writeJson(rootStackBackendFilePath, template);
     }
   } catch (err) {
-    spinner.stop();
+    if (spinner) {
+      spinner.stop();
+    }
+    printer.error(err.stack);
     return;
   }
 }
