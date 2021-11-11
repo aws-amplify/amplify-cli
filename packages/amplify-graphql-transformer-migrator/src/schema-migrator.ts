@@ -30,7 +30,7 @@ const cliToMigratorAuthMap: Map<string, string> = new Map<string, string>([
   ['OPENID_CONNECT', 'oidc'],
 ]);
 
-const MIGRATION_DOCS_URL = '<insert migration docs URL here>';
+const MIGRATION_DOCS_URL = 'https://docs.amplify.aws/cli/migration/transformer-migration/';
 
 export async function attemptV2TransformerMigration(resourceDir: string, apiName: string, envName?: string): Promise<void> {
   const schemaDocs = await getSchemaDocs(resourceDir);
