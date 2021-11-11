@@ -3,6 +3,94 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [6.31.0-graphql-vnext-dev-preview.7](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-core@6.30.2...graphql-transformer-core@6.31.0-graphql-vnext-dev-preview.7) (2021-11-11)
+
+
+### Features
+
+* flag to allow destructive schema changes ([#8273](https://github.com/aws-amplify/amplify-cli/issues/8273)) ([18de856](https://github.com/aws-amplify/amplify-cli/commit/18de856fb61bf2df8f73375e4e55a58c6159a232))
+
+
+
+
+
+# [6.31.0-graphql-vnext-dev-preview.6](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-core@6.30.2...graphql-transformer-core@6.31.0-graphql-vnext-dev-preview.6) (2021-11-11)
+
+
+### Features
+
+* flag to allow destructive schema changes ([#8273](https://github.com/aws-amplify/amplify-cli/issues/8273)) ([18de856](https://github.com/aws-amplify/amplify-cli/commit/18de856fb61bf2df8f73375e4e55a58c6159a232))
+
+
+
+
+
+# [6.31.0-graphql-vnext-dev-preview.5](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-core@6.30.2...graphql-transformer-core@6.31.0-graphql-vnext-dev-preview.5) (2021-11-11)
+
+
+### Features
+
+* flag to allow destructive schema changes ([#8273](https://github.com/aws-amplify/amplify-cli/issues/8273)) ([18de856](https://github.com/aws-amplify/amplify-cli/commit/18de856fb61bf2df8f73375e4e55a58c6159a232))
+
+
+
+
+
+# [6.31.0-graphql-vnext-dev-preview.4](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-core@6.30.2...graphql-transformer-core@6.31.0-graphql-vnext-dev-preview.4) (2021-11-11)
+
+
+### Features
+
+* flag to allow destructive schema changes ([#8273](https://github.com/aws-amplify/amplify-cli/issues/8273)) ([18de856](https://github.com/aws-amplify/amplify-cli/commit/18de856fb61bf2df8f73375e4e55a58c6159a232))
+
+
+
+
+
+# [6.31.0-graphql-vnext-dev-preview.3](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-core@6.30.2...graphql-transformer-core@6.31.0-graphql-vnext-dev-preview.3) (2021-11-11)
+
+
+### Features
+
+* flag to allow destructive schema changes ([#8273](https://github.com/aws-amplify/amplify-cli/issues/8273)) ([18de856](https://github.com/aws-amplify/amplify-cli/commit/18de856fb61bf2df8f73375e4e55a58c6159a232))
+
+
+
+
+
+# [6.31.0-graphql-vnext-dev-preview.2](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-core@6.30.2...graphql-transformer-core@6.31.0-graphql-vnext-dev-preview.2) (2021-11-11)
+
+
+### Features
+
+* flag to allow destructive schema changes ([#8273](https://github.com/aws-amplify/amplify-cli/issues/8273)) ([18de856](https://github.com/aws-amplify/amplify-cli/commit/18de856fb61bf2df8f73375e4e55a58c6159a232))
+
+
+
+
+
+# [6.31.0-graphql-vnext-dev-preview.1](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-core@6.30.2...graphql-transformer-core@6.31.0-graphql-vnext-dev-preview.1) (2021-11-11)
+
+
+### Features
+
+* flag to allow destructive schema changes ([#8273](https://github.com/aws-amplify/amplify-cli/issues/8273)) ([18de856](https://github.com/aws-amplify/amplify-cli/commit/18de856fb61bf2df8f73375e4e55a58c6159a232))
+
+
+
+
+
+# [6.31.0-graphql-vnext-dev-preview.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-core@6.30.2...graphql-transformer-core@6.31.0-graphql-vnext-dev-preview.0) (2021-11-11)
+
+
+### Features
+
+* flag to allow destructive schema changes ([#8273](https://github.com/aws-amplify/amplify-cli/issues/8273)) ([18de856](https://github.com/aws-amplify/amplify-cli/commit/18de856fb61bf2df8f73375e4e55a58c6159a232))
+
+
+
+
+
 ## [6.30.2](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-core@6.30.1...graphql-transformer-core@6.30.2) (2021-10-10)
 
 **Note:** Version bump only for package graphql-transformer-core

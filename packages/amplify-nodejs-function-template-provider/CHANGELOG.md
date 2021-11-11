@@ -3,6 +3,166 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.6.25-graphql-vnext-dev-preview.7](https://github.com/aws-amplify/amplify-cli/compare/amplify-nodejs-function-template-provider@1.6.24...amplify-nodejs-function-template-provider@1.6.25-graphql-vnext-dev-preview.7) (2021-11-11)
+
+
+### Bug Fixes
+
+* **graphql:** refactor lambda authorizer code to use function category to create authorizer function ([#8784](https://github.com/aws-amplify/amplify-cli/issues/8784)) ([86d84bd](https://github.com/aws-amplify/amplify-cli/commit/86d84bdbda56782f0ed4eee597d388d8fbe73e0e))
+
+
+
+# 6.4.0 (2021-11-10)
+
+
+### Reverts
+
+* Revert "Lambda auth minor fixes (#8741)" (#8762) ([aa1096c](https://github.com/aws-amplify/amplify-cli/commit/aa1096ca504bdb7e6a2dca2963c546f957116f9d)), closes [#8741](https://github.com/aws-amplify/amplify-cli/issues/8741) [#8762](https://github.com/aws-amplify/amplify-cli/issues/8762)
+
+
+
+
+
+## [1.6.25-graphql-vnext-dev-preview.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-nodejs-function-template-provider@1.6.24...amplify-nodejs-function-template-provider@1.6.25-graphql-vnext-dev-preview.6) (2021-11-11)
+
+
+### Bug Fixes
+
+* **graphql:** refactor lambda authorizer code to use function category to create authorizer function ([#8784](https://github.com/aws-amplify/amplify-cli/issues/8784)) ([86d84bd](https://github.com/aws-amplify/amplify-cli/commit/86d84bdbda56782f0ed4eee597d388d8fbe73e0e))
+
+
+
+# 6.4.0 (2021-11-10)
+
+
+### Reverts
+
+* Revert "Lambda auth minor fixes (#8741)" (#8762) ([aa1096c](https://github.com/aws-amplify/amplify-cli/commit/aa1096ca504bdb7e6a2dca2963c546f957116f9d)), closes [#8741](https://github.com/aws-amplify/amplify-cli/issues/8741) [#8762](https://github.com/aws-amplify/amplify-cli/issues/8762)
+
+
+
+
+
+## [1.6.25-graphql-vnext-dev-preview.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-nodejs-function-template-provider@1.6.24...amplify-nodejs-function-template-provider@1.6.25-graphql-vnext-dev-preview.5) (2021-11-11)
+
+
+### Bug Fixes
+
+* **graphql:** refactor lambda authorizer code to use function category to create authorizer function ([#8784](https://github.com/aws-amplify/amplify-cli/issues/8784)) ([86d84bd](https://github.com/aws-amplify/amplify-cli/commit/86d84bdbda56782f0ed4eee597d388d8fbe73e0e))
+
+
+
+# 6.4.0 (2021-11-10)
+
+
+### Reverts
+
+* Revert "Lambda auth minor fixes (#8741)" (#8762) ([aa1096c](https://github.com/aws-amplify/amplify-cli/commit/aa1096ca504bdb7e6a2dca2963c546f957116f9d)), closes [#8741](https://github.com/aws-amplify/amplify-cli/issues/8741) [#8762](https://github.com/aws-amplify/amplify-cli/issues/8762)
+
+
+
+
+
+## [1.6.25-graphql-vnext-dev-preview.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-nodejs-function-template-provider@1.6.24...amplify-nodejs-function-template-provider@1.6.25-graphql-vnext-dev-preview.4) (2021-11-11)
+
+
+### Bug Fixes
+
+* **graphql:** refactor lambda authorizer code to use function category to create authorizer function ([#8784](https://github.com/aws-amplify/amplify-cli/issues/8784)) ([86d84bd](https://github.com/aws-amplify/amplify-cli/commit/86d84bdbda56782f0ed4eee597d388d8fbe73e0e))
+
+
+
+# 6.4.0 (2021-11-10)
+
+
+### Reverts
+
+* Revert "Lambda auth minor fixes (#8741)" (#8762) ([aa1096c](https://github.com/aws-amplify/amplify-cli/commit/aa1096ca504bdb7e6a2dca2963c546f957116f9d)), closes [#8741](https://github.com/aws-amplify/amplify-cli/issues/8741) [#8762](https://github.com/aws-amplify/amplify-cli/issues/8762)
+
+
+
+
+
+## [1.6.25-graphql-vnext-dev-preview.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-nodejs-function-template-provider@1.6.24...amplify-nodejs-function-template-provider@1.6.25-graphql-vnext-dev-preview.3) (2021-11-11)
+
+
+### Bug Fixes
+
+* **graphql:** refactor lambda authorizer code to use function category to create authorizer function ([#8784](https://github.com/aws-amplify/amplify-cli/issues/8784)) ([86d84bd](https://github.com/aws-amplify/amplify-cli/commit/86d84bdbda56782f0ed4eee597d388d8fbe73e0e))
+
+
+
+# 6.4.0 (2021-11-10)
+
+
+### Reverts
+
+* Revert "Lambda auth minor fixes (#8741)" (#8762) ([aa1096c](https://github.com/aws-amplify/amplify-cli/commit/aa1096ca504bdb7e6a2dca2963c546f957116f9d)), closes [#8741](https://github.com/aws-amplify/amplify-cli/issues/8741) [#8762](https://github.com/aws-amplify/amplify-cli/issues/8762)
+
+
+
+
+
+## [1.6.25-graphql-vnext-dev-preview.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-nodejs-function-template-provider@1.6.24...amplify-nodejs-function-template-provider@1.6.25-graphql-vnext-dev-preview.2) (2021-11-11)
+
+
+### Bug Fixes
+
+* **graphql:** refactor lambda authorizer code to use function category to create authorizer function ([#8784](https://github.com/aws-amplify/amplify-cli/issues/8784)) ([86d84bd](https://github.com/aws-amplify/amplify-cli/commit/86d84bdbda56782f0ed4eee597d388d8fbe73e0e))
+
+
+
+# 6.4.0 (2021-11-10)
+
+
+### Reverts
+
+* Revert "Lambda auth minor fixes (#8741)" (#8762) ([aa1096c](https://github.com/aws-amplify/amplify-cli/commit/aa1096ca504bdb7e6a2dca2963c546f957116f9d)), closes [#8741](https://github.com/aws-amplify/amplify-cli/issues/8741) [#8762](https://github.com/aws-amplify/amplify-cli/issues/8762)
+
+
+
+
+
+## [1.6.25-graphql-vnext-dev-preview.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-nodejs-function-template-provider@1.6.24...amplify-nodejs-function-template-provider@1.6.25-graphql-vnext-dev-preview.1) (2021-11-11)
+
+
+### Bug Fixes
+
+* **graphql:** refactor lambda authorizer code to use function category to create authorizer function ([#8784](https://github.com/aws-amplify/amplify-cli/issues/8784)) ([86d84bd](https://github.com/aws-amplify/amplify-cli/commit/86d84bdbda56782f0ed4eee597d388d8fbe73e0e))
+
+
+
+# 6.4.0 (2021-11-10)
+
+
+### Reverts
+
+* Revert "Lambda auth minor fixes (#8741)" (#8762) ([aa1096c](https://github.com/aws-amplify/amplify-cli/commit/aa1096ca504bdb7e6a2dca2963c546f957116f9d)), closes [#8741](https://github.com/aws-amplify/amplify-cli/issues/8741) [#8762](https://github.com/aws-amplify/amplify-cli/issues/8762)
+
+
+
+
+
+## [1.6.25-graphql-vnext-dev-preview.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-nodejs-function-template-provider@1.6.24...amplify-nodejs-function-template-provider@1.6.25-graphql-vnext-dev-preview.0) (2021-11-11)
+
+
+### Bug Fixes
+
+* **graphql:** refactor lambda authorizer code to use function category to create authorizer function ([#8784](https://github.com/aws-amplify/amplify-cli/issues/8784)) ([86d84bd](https://github.com/aws-amplify/amplify-cli/commit/86d84bdbda56782f0ed4eee597d388d8fbe73e0e))
+
+
+
+# 6.4.0 (2021-11-10)
+
+
+### Reverts
+
+* Revert "Lambda auth minor fixes (#8741)" (#8762) ([aa1096c](https://github.com/aws-amplify/amplify-cli/commit/aa1096ca504bdb7e6a2dca2963c546f957116f9d)), closes [#8741](https://github.com/aws-amplify/amplify-cli/issues/8741) [#8762](https://github.com/aws-amplify/amplify-cli/issues/8762)
+
+
+
+
+
 ## [1.6.24](https://github.com/aws-amplify/amplify-cli/compare/amplify-nodejs-function-template-provider@1.6.23...amplify-nodejs-function-template-provider@1.6.24) (2021-10-10)
 
 **Note:** Version bump only for package amplify-nodejs-function-template-provider

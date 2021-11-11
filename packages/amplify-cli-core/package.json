@@ -1,6 +1,6 @@
 {
   "name": "amplify-cli-core",
-  "version": "1.31.1",
+  "version": "1.32.0-graphql-vnext-dev-preview.7",
   "description": "Amplify CLI Core",
   "repository": {
     "type": "git",
@@ -26,7 +26,7 @@
   "dependencies": {
     "ajv": "^6.12.3",
     "amplify-cli-logger": "1.1.0",
-    "amplify-prompts": "1.2.0",
+    "amplify-prompts": "1.3.0-graphql-vnext-dev-preview.7",
     "chalk": "^4.1.1",
     "ci-info": "^2.0.0",
     "cloudform-types": "^4.2.0",
@@ -51,7 +51,7 @@
     "@types/node": "^12.12.6",
     "@types/rimraf": "^3.0.0",
     "@types/uuid": "^8.0.0",
-    "amplify-function-plugin-interface": "1.9.1",
+    "amplify-function-plugin-interface": "1.9.2-graphql-vnext-dev-preview.7",
     "nock": "^13.0.11",
     "rimraf": "^3.0.0",
     "strip-ansi": "^6.0.0",

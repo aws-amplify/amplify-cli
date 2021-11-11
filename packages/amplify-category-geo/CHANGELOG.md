@@ -3,6 +3,94 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.2.0-graphql-vnext-dev-preview.7](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-geo@1.1.0...amplify-category-geo@1.2.0-graphql-vnext-dev-preview.7) (2021-11-11)
+
+
+### Features
+
+* headless command for geo -- map ([#8403](https://github.com/aws-amplify/amplify-cli/issues/8403)) ([73793b4](https://github.com/aws-amplify/amplify-cli/commit/73793b44411d329c52bed9337c0933d7066ee4de))
+
+
+
+
+
+# [1.2.0-graphql-vnext-dev-preview.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-geo@1.1.0...amplify-category-geo@1.2.0-graphql-vnext-dev-preview.6) (2021-11-11)
+
+
+### Features
+
+* headless command for geo -- map ([#8403](https://github.com/aws-amplify/amplify-cli/issues/8403)) ([73793b4](https://github.com/aws-amplify/amplify-cli/commit/73793b44411d329c52bed9337c0933d7066ee4de))
+
+
+
+
+
+# [1.2.0-graphql-vnext-dev-preview.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-geo@1.1.0...amplify-category-geo@1.2.0-graphql-vnext-dev-preview.5) (2021-11-11)
+
+
+### Features
+
+* headless command for geo -- map ([#8403](https://github.com/aws-amplify/amplify-cli/issues/8403)) ([73793b4](https://github.com/aws-amplify/amplify-cli/commit/73793b44411d329c52bed9337c0933d7066ee4de))
+
+
+
+
+
+# [1.2.0-graphql-vnext-dev-preview.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-geo@1.1.0...amplify-category-geo@1.2.0-graphql-vnext-dev-preview.4) (2021-11-11)
+
+
+### Features
+
+* headless command for geo -- map ([#8403](https://github.com/aws-amplify/amplify-cli/issues/8403)) ([73793b4](https://github.com/aws-amplify/amplify-cli/commit/73793b44411d329c52bed9337c0933d7066ee4de))
+
+
+
+
+
+# [1.2.0-graphql-vnext-dev-preview.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-geo@1.1.0...amplify-category-geo@1.2.0-graphql-vnext-dev-preview.3) (2021-11-11)
+
+
+### Features
+
+* headless command for geo -- map ([#8403](https://github.com/aws-amplify/amplify-cli/issues/8403)) ([73793b4](https://github.com/aws-amplify/amplify-cli/commit/73793b44411d329c52bed9337c0933d7066ee4de))
+
+
+
+
+
+# [1.2.0-graphql-vnext-dev-preview.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-geo@1.1.0...amplify-category-geo@1.2.0-graphql-vnext-dev-preview.2) (2021-11-11)
+
+
+### Features
+
+* headless command for geo -- map ([#8403](https://github.com/aws-amplify/amplify-cli/issues/8403)) ([73793b4](https://github.com/aws-amplify/amplify-cli/commit/73793b44411d329c52bed9337c0933d7066ee4de))
+
+
+
+
+
+# [1.2.0-graphql-vnext-dev-preview.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-geo@1.1.0...amplify-category-geo@1.2.0-graphql-vnext-dev-preview.1) (2021-11-11)
+
+
+### Features
+
+* headless command for geo -- map ([#8403](https://github.com/aws-amplify/amplify-cli/issues/8403)) ([73793b4](https://github.com/aws-amplify/amplify-cli/commit/73793b44411d329c52bed9337c0933d7066ee4de))
+
+
+
+
+
+# [1.2.0-graphql-vnext-dev-preview.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-geo@1.1.0...amplify-category-geo@1.2.0-graphql-vnext-dev-preview.0) (2021-11-11)
+
+
+### Features
+
+* headless command for geo -- map ([#8403](https://github.com/aws-amplify/amplify-cli/issues/8403)) ([73793b4](https://github.com/aws-amplify/amplify-cli/commit/73793b44411d329c52bed9337c0933d7066ee4de))
+
+
+
+
+
 # [1.1.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-geo@1.0.3...amplify-category-geo@1.1.0) (2021-10-13)
 
 

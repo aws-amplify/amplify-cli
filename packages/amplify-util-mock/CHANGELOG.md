@@ -3,6 +3,94 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.34.12-graphql-vnext-dev-preview.7](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@3.34.11...amplify-util-mock@3.34.12-graphql-vnext-dev-preview.7) (2021-11-11)
+
+
+### Bug Fixes
+
+* vtl list utils & update model test scenarios ([#8701](https://github.com/aws-amplify/amplify-cli/issues/8701)) ([402cd9b](https://github.com/aws-amplify/amplify-cli/commit/402cd9b12e1603403511b5933404b525bb0de176))
+
+
+
+
+
+## [3.34.12-graphql-vnext-dev-preview.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@3.34.11...amplify-util-mock@3.34.12-graphql-vnext-dev-preview.6) (2021-11-11)
+
+
+### Bug Fixes
+
+* vtl list utils & update model test scenarios ([#8701](https://github.com/aws-amplify/amplify-cli/issues/8701)) ([402cd9b](https://github.com/aws-amplify/amplify-cli/commit/402cd9b12e1603403511b5933404b525bb0de176))
+
+
+
+
+
+## [3.34.12-graphql-vnext-dev-preview.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@3.34.11...amplify-util-mock@3.34.12-graphql-vnext-dev-preview.5) (2021-11-11)
+
+
+### Bug Fixes
+
+* vtl list utils & update model test scenarios ([#8701](https://github.com/aws-amplify/amplify-cli/issues/8701)) ([402cd9b](https://github.com/aws-amplify/amplify-cli/commit/402cd9b12e1603403511b5933404b525bb0de176))
+
+
+
+
+
+## [3.34.12-graphql-vnext-dev-preview.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@3.34.11...amplify-util-mock@3.34.12-graphql-vnext-dev-preview.4) (2021-11-11)
+
+
+### Bug Fixes
+
+* vtl list utils & update model test scenarios ([#8701](https://github.com/aws-amplify/amplify-cli/issues/8701)) ([402cd9b](https://github.com/aws-amplify/amplify-cli/commit/402cd9b12e1603403511b5933404b525bb0de176))
+
+
+
+
+
+## [3.34.12-graphql-vnext-dev-preview.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@3.34.11...amplify-util-mock@3.34.12-graphql-vnext-dev-preview.3) (2021-11-11)
+
+
+### Bug Fixes
+
+* vtl list utils & update model test scenarios ([#8701](https://github.com/aws-amplify/amplify-cli/issues/8701)) ([402cd9b](https://github.com/aws-amplify/amplify-cli/commit/402cd9b12e1603403511b5933404b525bb0de176))
+
+
+
+
+
+## [3.34.12-graphql-vnext-dev-preview.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@3.34.11...amplify-util-mock@3.34.12-graphql-vnext-dev-preview.2) (2021-11-11)
+
+
+### Bug Fixes
+
+* vtl list utils & update model test scenarios ([#8701](https://github.com/aws-amplify/amplify-cli/issues/8701)) ([402cd9b](https://github.com/aws-amplify/amplify-cli/commit/402cd9b12e1603403511b5933404b525bb0de176))
+
+
+
+
+
+## [3.34.12-graphql-vnext-dev-preview.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@3.34.11...amplify-util-mock@3.34.12-graphql-vnext-dev-preview.1) (2021-11-11)
+
+
+### Bug Fixes
+
+* vtl list utils & update model test scenarios ([#8701](https://github.com/aws-amplify/amplify-cli/issues/8701)) ([402cd9b](https://github.com/aws-amplify/amplify-cli/commit/402cd9b12e1603403511b5933404b525bb0de176))
+
+
+
+
+
+## [3.34.12-graphql-vnext-dev-preview.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@3.34.11...amplify-util-mock@3.34.12-graphql-vnext-dev-preview.0) (2021-11-11)
+
+
+### Bug Fixes
+
+* vtl list utils & update model test scenarios ([#8701](https://github.com/aws-amplify/amplify-cli/issues/8701)) ([402cd9b](https://github.com/aws-amplify/amplify-cli/commit/402cd9b12e1603403511b5933404b525bb0de176))
+
+
+
+
+
 ## [3.34.11](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@3.34.10...amplify-util-mock@3.34.11) (2021-10-13)
 
 **Note:** Version bump only for package amplify-util-mock
