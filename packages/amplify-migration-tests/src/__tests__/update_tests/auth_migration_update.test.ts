@@ -1,3 +1,4 @@
+import { $TSAny } from 'amplify-cli-core';
 import {
   addAuthWithCustomTrigger,
   addAuthWithDefault,
@@ -53,7 +54,14 @@ describe('amplify auth migration', () => {
     expect(lambdaFunction.Configuration.Environment.Variables.MODULES).toEqual('email-filter-denylist,custom');
 
     // update and push with codebase
-    await updateAuthWithoutCustomTrigger(projRoot, { testingWithLatestCodebase: true });
+    const authResourceName = Object.keys(meta.auth).filter(resourceName => meta.auth[resourceName].service === 'Cognito')[0];
+    // update and push with codebase
+    const overridesObj: $TSAny = {
+      resourceName: authResourceName,
+      category: 'auth',
+      service: 'cognito',
+    };
+    await updateAuthWithoutCustomTrigger(projRoot, { testingWithLatestCodebase: true, overrides: overridesObj });
     await amplifyPushAuth(projRoot, true);
     const updatedFunction = await getLambdaFunction(functionName, meta.providers.awscloudformation.Region);
     const updatedDirContents = fs.readdirSync(`${projRoot}/amplify/backend/function/${Object.keys(meta.auth)[0]}PreSignup/src`);
@@ -67,8 +75,15 @@ describe('amplify auth migration', () => {
     await initJSProjectWithProfile(projRoot, { name: 'authMigration' });
     await addAuthWithDefault(projRoot, {});
     await amplifyPushAuth(projRoot);
+    const meta = getProjectMeta(projRoot);
+    const authResourceName = Object.keys(meta.auth).filter(resourceName => meta.auth[resourceName].service === 'Cognito')[0];
     // update and push with codebase
-    await updateAuthWithoutTrigger(projRoot, { testingWithLatestCodebase: true });
+    const overridesObj: $TSAny = {
+      resourceName: authResourceName,
+      category: 'auth',
+      service: 'cognito',
+    };
+    await updateAuthWithoutTrigger(projRoot, { testingWithLatestCodebase: true, overrides: overridesObj });
     await amplifyPushAuth(projRoot, true);
   });
 });
