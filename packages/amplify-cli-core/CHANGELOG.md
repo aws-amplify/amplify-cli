@@ -3,6 +3,44 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.34.0-ext23.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@1.32.0...amplify-cli-core@1.34.0-ext23.0) (2021-11-11)
+
+
+### Bug Fixes
+
+* adds typescript json dependency ([#8487](https://github.com/aws-amplify/amplify-cli/issues/8487)) ([2412055](https://github.com/aws-amplify/amplify-cli/commit/24120557e001de6863d7351a998644a669e1623d))
+* broken path on build-override ([f520ed4](https://github.com/aws-amplify/amplify-cli/commit/f520ed48b2c06cbee37cc92c5cf5995423e6b092))
+* broken unit tests ([635564a](https://github.com/aws-amplify/amplify-cli/commit/635564a89da3b2dabc88ec0a607a45b500854835))
+* bug fixes in external auth enable ([f32c5be](https://github.com/aws-amplify/amplify-cli/commit/f32c5bee85dfe7aaa35392c668439c7353905a0e))
+* does not create build for ll ([#8706](https://github.com/aws-amplify/amplify-cli/issues/8706)) ([aefc83d](https://github.com/aws-amplify/amplify-cli/commit/aefc83d8436f25f2eb2e40ad40cb182c9ce27776))
+* parameters file path and updates cloud backend with build ([#8564](https://github.com/aws-amplify/amplify-cli/issues/8564)) ([a84859c](https://github.com/aws-amplify/amplify-cli/commit/a84859c8de8862b29d123085892a5ded4703326d))
+* test fixes ([#8647](https://github.com/aws-amplify/amplify-cli/issues/8647)) ([b205a91](https://github.com/aws-amplify/amplify-cli/commit/b205a918d28509e2163b260f0a2747c57b7dacbd))
+* tsc global install error ([ddf1c3a](https://github.com/aws-amplify/amplify-cli/commit/ddf1c3a1ff4b173c282558adf0cd73e6c26799bd))
+* update migration msg, ddb import e2e, lgtm errors ([#8796](https://github.com/aws-amplify/amplify-cli/issues/8796)) ([749366a](https://github.com/aws-amplify/amplify-cli/commit/749366a50bbffae20d06ed6478215a7f0af9aa04))
+
+
+### Features
+
+* amplify export ([2d0227c](https://github.com/aws-amplify/amplify-cli/commit/2d0227c662fca590a4c6f171808d27b585df1e03)), closes [#8547](https://github.com/aws-amplify/amplify-cli/issues/8547) [#8488](https://github.com/aws-amplify/amplify-cli/issues/8488) [#8486](https://github.com/aws-amplify/amplify-cli/issues/8486) [#8547](https://github.com/aws-amplify/amplify-cli/issues/8547) [#8488](https://github.com/aws-amplify/amplify-cli/issues/8488) [#8486](https://github.com/aws-amplify/amplify-cli/issues/8486)
+* **amplify-cli-core:** allow * in account and region in arn for custom policies ([#8722](https://github.com/aws-amplify/amplify-cli/issues/8722)) ([49a1990](https://github.com/aws-amplify/amplify-cli/commit/49a1990b916692b7c9bad596093464b82088e434))
+* Auth refactor to  use cdk, eliminate EJS, overrides functionality ([#8355](https://github.com/aws-amplify/amplify-cli/issues/8355)) ([f8a1560](https://github.com/aws-amplify/amplify-cli/commit/f8a15607faa1801c0766f5e46d2fe9e3a6c12e06))
+* change override.ts file to override.ts.sample in resources/ for pkg CLI to work ([#8716](https://github.com/aws-amplify/amplify-cli/issues/8716)) ([04c6efa](https://github.com/aws-amplify/amplify-cli/commit/04c6efa5931123dc789e7c1893369cc840f018f3))
+* ddb overrides and flow refactor ([9db109f](https://github.com/aws-amplify/amplify-cli/commit/9db109fca5b8e459ea287e6fa6179aad4902e790))
+* define custom resources with CDK or CFN ([#8590](https://github.com/aws-amplify/amplify-cli/issues/8590)) ([cf42ac3](https://github.com/aws-amplify/amplify-cli/commit/cf42ac32d5126b3c47ede4b613f5c536ddbf4a7c))
+* extensibility for REST APIs ([#8598](https://github.com/aws-amplify/amplify-cli/issues/8598)) ([af7e436](https://github.com/aws-amplify/amplify-cli/commit/af7e4369eb288c6580ed8419887341fc2009d75e))
+* FF for override stacks ([#8228](https://github.com/aws-amplify/amplify-cli/issues/8228)) ([ee6c034](https://github.com/aws-amplify/amplify-cli/commit/ee6c0341e99c7b8f5c4a6502df52864415c7884a))
+* overrides uniformity accross all the categories ([#8695](https://github.com/aws-amplify/amplify-cli/issues/8695)) ([1c4449a](https://github.com/aws-amplify/amplify-cli/commit/1c4449a79f0c9aa7f423686161a21bcaec1843a1))
+* root stack override ([#8276](https://github.com/aws-amplify/amplify-cli/issues/8276)) ([4237b2f](https://github.com/aws-amplify/amplify-cli/commit/4237b2f9731eb9b44dbb5afeff505b3035a593cf))
+
+
+### Reverts
+
+* Revert "fix: update migration msg, ddb import e2e, lgtm errors (#8796)" (#8799) ([4e0b774](https://github.com/aws-amplify/amplify-cli/commit/4e0b774ca5575380fe2841ba2ccfd4aced290841)), closes [#8796](https://github.com/aws-amplify/amplify-cli/issues/8796) [#8799](https://github.com/aws-amplify/amplify-cli/issues/8799)
+
+
+
+
+
 # [1.32.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@1.31.1...amplify-cli-core@1.32.0) (2021-11-11)
 
 

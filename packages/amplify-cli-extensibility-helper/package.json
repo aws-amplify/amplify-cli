@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/cli-extensibility-helper",
-  "version": "1.1.0",
+  "version": "1.1.1-ext23.0",
   "description": "Amplify CLI Extensibility Helper utility package",
   "repository": {
     "type": "git",
@@ -27,7 +27,7 @@
     "clean": "rimraf ./lib"
   },
   "dependencies": {
-    "@aws-amplify/amplify-category-custom": "1.1.0",
+    "@aws-amplify/amplify-category-custom": "1.2.0-ext23.0",
     "@aws-cdk/aws-cognito": "~1.124.0",
     "@aws-cdk/aws-dynamodb": "~1.124.0",
     "@aws-cdk/aws-iam": "~1.124.0",

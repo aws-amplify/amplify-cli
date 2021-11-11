@@ -3,6 +3,26 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.35.0-ext23.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@2.34.0...amplify-category-api@2.35.0-ext23.0) (2021-11-11)
+
+
+### Bug Fixes
+
+* asana bug fixes ([#8692](https://github.com/aws-amplify/amplify-cli/issues/8692)) ([46a57a4](https://github.com/aws-amplify/amplify-cli/commit/46a57a4d8837f1d815ddabe073fdad402cbe2395))
+* broken path on build-override ([f520ed4](https://github.com/aws-amplify/amplify-cli/commit/f520ed48b2c06cbee37cc92c5cf5995423e6b092))
+* capitalization for filter, e2e test ([#8667](https://github.com/aws-amplify/amplify-cli/issues/8667)) ([7ef46f7](https://github.com/aws-amplify/amplify-cli/commit/7ef46f7b644cead9ffc38fbfbfc582f62d71bbe8))
+* pushing multiple APIs at a time ([#8663](https://github.com/aws-amplify/amplify-cli/issues/8663)) ([e19e724](https://github.com/aws-amplify/amplify-cli/commit/e19e724951861806a08eedf0a616793d312ffd15))
+* stack generation logic when multiple paths ref same Lambda ([#8673](https://github.com/aws-amplify/amplify-cli/issues/8673)) ([dfeb6a6](https://github.com/aws-amplify/amplify-cli/commit/dfeb6a69aad4cc1b6893d56e021f92f2625a6f8d))
+
+
+### Features
+
+* extensibility for REST APIs ([#8598](https://github.com/aws-amplify/amplify-cli/issues/8598)) ([af7e436](https://github.com/aws-amplify/amplify-cli/commit/af7e4369eb288c6580ed8419887341fc2009d75e))
+
+
+
+
+
 # [2.34.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@2.33.2...amplify-category-api@2.34.0) (2021-11-11)
 
 

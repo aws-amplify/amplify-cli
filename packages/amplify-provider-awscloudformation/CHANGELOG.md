@@ -3,6 +3,49 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.67.0-ext23.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.65.0...amplify-provider-awscloudformation@4.67.0-ext23.0) (2021-11-11)
+
+
+### Bug Fixes
+
+* add a check for spinner undefined and error logging ([#8795](https://github.com/aws-amplify/amplify-cli/issues/8795)) ([5a04d22](https://github.com/aws-amplify/amplify-cli/commit/5a04d22b2afa4968f028ccb58afcc4b6198c0af3))
+* add npmignore to custom resource package and update archiver ([#8596](https://github.com/aws-amplify/amplify-cli/issues/8596)) ([7b76c9f](https://github.com/aws-amplify/amplify-cli/commit/7b76c9f9299a6429ab7ef48a56dcfd7e6c588605))
+* auth e2e fixes ([08f952b](https://github.com/aws-amplify/amplify-cli/commit/08f952b67537d65ae50e8a35643c8adea8f24b17))
+* build resources on pull even with no override flag passed + update skeleton package.json ([#8771](https://github.com/aws-amplify/amplify-cli/issues/8771)) ([31a6e6b](https://github.com/aws-amplify/amplify-cli/commit/31a6e6b9ff3780599412ece089dcaabfc4cf9d71))
+* enable scoped packages in plugin platform ([#8492](https://github.com/aws-amplify/amplify-cli/issues/8492)) ([b87a1e6](https://github.com/aws-amplify/amplify-cli/commit/b87a1e68e473996913886bd349c7a6c2878b6364))
+* ext overrides2 storage-headless and predictions ([#8622](https://github.com/aws-amplify/amplify-cli/issues/8622)) ([ce87cff](https://github.com/aws-amplify/amplify-cli/commit/ce87cffeb90e56f55333befeb7194134b479bbfa))
+* fix configure project and custom policies api containers ([#8703](https://github.com/aws-amplify/amplify-cli/issues/8703)) ([4c744bc](https://github.com/aws-amplify/amplify-cli/commit/4c744bccdb5bb8e1e99550a59cdcd4c8ed8e87e9))
+* hooks + hosting e2e ([#8743](https://github.com/aws-amplify/amplify-cli/issues/8743)) ([069e43a](https://github.com/aws-amplify/amplify-cli/commit/069e43a95235003ec4f15f3275dd648c0c2aeaee))
+* init override test fix ([#8768](https://github.com/aws-amplify/amplify-cli/issues/8768)) ([6c4ce7a](https://github.com/aws-amplify/amplify-cli/commit/6c4ce7a65cb83ad50db8399026aca2583db9f3ec))
+* parameters file path and updates cloud backend with build ([#8564](https://github.com/aws-amplify/amplify-cli/issues/8564)) ([a84859c](https://github.com/aws-amplify/amplify-cli/commit/a84859c8de8862b29d123085892a5ded4703326d))
+* remove no-override check for category transformations ([#8765](https://github.com/aws-amplify/amplify-cli/issues/8765)) ([ef6615c](https://github.com/aws-amplify/amplify-cli/commit/ef6615ce09879868d3bc972254fd4248d68d959e))
+* test fixes ([#8647](https://github.com/aws-amplify/amplify-cli/issues/8647)) ([b205a91](https://github.com/aws-amplify/amplify-cli/commit/b205a918d28509e2163b260f0a2747c57b7dacbd))
+* update custom cdk seleton templates + format override skeleton file ([#8752](https://github.com/aws-amplify/amplify-cli/issues/8752)) ([e236488](https://github.com/aws-amplify/amplify-cli/commit/e23648873ed7ed4fdd12f299e352f422ebb9011b))
+* update migration msg, ddb import e2e, lgtm errors ([#8796](https://github.com/aws-amplify/amplify-cli/issues/8796)) ([749366a](https://github.com/aws-amplify/amplify-cli/commit/749366a50bbffae20d06ed6478215a7f0af9aa04))
+
+
+### Features
+
+* add default descriptions to cfn templates for metrics tracking ([#8702](https://github.com/aws-amplify/amplify-cli/issues/8702)) ([9eba474](https://github.com/aws-amplify/amplify-cli/commit/9eba474429645942927b834b0e95694e02c70a69))
+* adding rootstack types to overrides helper package ([#8298](https://github.com/aws-amplify/amplify-cli/issues/8298)) ([e187aad](https://github.com/aws-amplify/amplify-cli/commit/e187aad2f65c78741005caea190e16408be5c4a6))
+* amplify export ([2d0227c](https://github.com/aws-amplify/amplify-cli/commit/2d0227c662fca590a4c6f171808d27b585df1e03)), closes [#8547](https://github.com/aws-amplify/amplify-cli/issues/8547) [#8488](https://github.com/aws-amplify/amplify-cli/issues/8488) [#8486](https://github.com/aws-amplify/amplify-cli/issues/8486) [#8547](https://github.com/aws-amplify/amplify-cli/issues/8547) [#8488](https://github.com/aws-amplify/amplify-cli/issues/8488) [#8486](https://github.com/aws-amplify/amplify-cli/issues/8486)
+* Auth refactor to  use cdk, eliminate EJS, overrides functionality ([#8355](https://github.com/aws-amplify/amplify-cli/issues/8355)) ([f8a1560](https://github.com/aws-amplify/amplify-cli/commit/f8a15607faa1801c0766f5e46d2fe9e3a6c12e06))
+* change override.ts file to override.ts.sample in resources/ for pkg CLI to work ([#8716](https://github.com/aws-amplify/amplify-cli/issues/8716)) ([04c6efa](https://github.com/aws-amplify/amplify-cli/commit/04c6efa5931123dc789e7c1893369cc840f018f3))
+* define custom resources with CDK or CFN ([#8590](https://github.com/aws-amplify/amplify-cli/issues/8590)) ([cf42ac3](https://github.com/aws-amplify/amplify-cli/commit/cf42ac32d5126b3c47ede4b613f5c536ddbf4a7c))
+* exclude amplify/backend/awscloudformation from gitignore path ([#8794](https://github.com/aws-amplify/amplify-cli/issues/8794)) ([55ba423](https://github.com/aws-amplify/amplify-cli/commit/55ba4239a3542367a22c160932f53936c2bea385))
+* FF for override stacks ([#8228](https://github.com/aws-amplify/amplify-cli/issues/8228)) ([ee6c034](https://github.com/aws-amplify/amplify-cli/commit/ee6c0341e99c7b8f5c4a6502df52864415c7884a))
+* overrides uniformity accross all the categories ([#8695](https://github.com/aws-amplify/amplify-cli/issues/8695)) ([1c4449a](https://github.com/aws-amplify/amplify-cli/commit/1c4449a79f0c9aa7f423686161a21bcaec1843a1))
+* root stack override ([#8276](https://github.com/aws-amplify/amplify-cli/issues/8276)) ([4237b2f](https://github.com/aws-amplify/amplify-cli/commit/4237b2f9731eb9b44dbb5afeff505b3035a593cf))
+
+
+### Reverts
+
+* Revert "fix: update migration msg, ddb import e2e, lgtm errors (#8796)" (#8799) ([4e0b774](https://github.com/aws-amplify/amplify-cli/commit/4e0b774ca5575380fe2841ba2ccfd4aced290841)), closes [#8796](https://github.com/aws-amplify/amplify-cli/issues/8796) [#8799](https://github.com/aws-amplify/amplify-cli/issues/8799)
+
+
+
+
+
 # [4.65.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.64.0...amplify-provider-awscloudformation@4.65.0) (2021-11-11)
 
 

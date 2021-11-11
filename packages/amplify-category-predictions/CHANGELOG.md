@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.10.1-ext23.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-predictions@2.9.16...amplify-category-predictions@2.10.1-ext23.0) (2021-11-11)
+
+
+### Bug Fixes
+
+* ext overrides2 storage-headless and predictions ([#8622](https://github.com/aws-amplify/amplify-cli/issues/8622)) ([ce87cff](https://github.com/aws-amplify/amplify-cli/commit/ce87cffeb90e56f55333befeb7194134b479bbfa))
+* update migration msg, ddb import e2e, lgtm errors ([#8796](https://github.com/aws-amplify/amplify-cli/issues/8796)) ([749366a](https://github.com/aws-amplify/amplify-cli/commit/749366a50bbffae20d06ed6478215a7f0af9aa04))
+
+
+### Reverts
+
+* Revert "fix: update migration msg, ddb import e2e, lgtm errors (#8796)" (#8799) ([4e0b774](https://github.com/aws-amplify/amplify-cli/commit/4e0b774ca5575380fe2841ba2ccfd4aced290841)), closes [#8796](https://github.com/aws-amplify/amplify-cli/issues/8796) [#8799](https://github.com/aws-amplify/amplify-cli/issues/8799)
+
+
+
+
+
 ## [2.9.16](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-predictions@2.9.15...amplify-category-predictions@2.9.16) (2021-11-11)
 
 **Note:** Version bump only for package amplify-category-predictions

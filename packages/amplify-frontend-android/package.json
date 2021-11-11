@@ -1,6 +1,6 @@
 {
   "name": "amplify-frontend-android",
-  "version": "2.16.0",
+  "version": "2.17.0-ext23.0",
   "description": "amplify-cli front-end plugin for Android project",
   "repository": {
     "type": "git",
