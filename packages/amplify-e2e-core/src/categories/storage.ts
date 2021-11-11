@@ -526,14 +526,21 @@ export function updateS3AddTrigger(cwd: string, settings: any): Promise<void> {
 }
 
 
-export function updateS3AddTriggerWithAuthOnly(cwd: string, settings: any): Promise<void> {
+export function updateS3AddTriggerWithAuthOnlyReqMigration(cwd: string, settings: any): Promise<void> {
+  const testingWithLatestCodebase = settings.testingWithLatestCodebase;
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['update', 'storage'], { cwd, stripColors: true })
+    spawn(getCLIPath(testingWithLatestCodebase), ['update', 'storage'], { cwd, stripColors: true })
       .wait('Select from one of the below mentioned services')
       .sendCarriageReturn() // Content
+      .wait('File migration required to continue. Do you want to continue?') //Migration workflow
+      .sendConfirmYes()
+      .wait('Do you want to migrate this') //Auth Migration workflow
+      .sendConfirmYes()
       .wait('Who should have access:')
       .sendCarriageReturn() //Auth only users
       .wait('What kind of access do you want for Authenticated users?')
+      .sendCarriageReturn() //Select preselected permissions
+      .wait('What kind of access do you want for Guest users?')
       .sendCarriageReturn() //Select preselected permissions
       .wait('Do you want to add a Lambda Trigger for your S3 Bucket?')
       .sendConfirmYes()

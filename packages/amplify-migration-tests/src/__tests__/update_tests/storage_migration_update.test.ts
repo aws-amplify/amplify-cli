@@ -1,21 +1,11 @@
 import { $TSObject } from 'amplify-cli-core';
 import {
-  addDDBWithTrigger,
-  addSimpleDDB,
-  addS3,
-  amplifyPushAuth,
-  createNewProjectDir,
+  addAuthWithDefault, addDDBWithTrigger, addS3StorageWithAuthOnly, addSimpleDDB, amplifyPushAuth, checkIfBucketExists, createNewProjectDir,
   deleteProject,
   deleteProjectDir,
   getDDBTable,
   getProjectMeta,
-  updateDDBWithTrigger,
-  updateS3AddTrigger,
-  checkIfBucketExists,
-  addS3Storage,
-  addAuthWithDefault,
-  addS3StorageWithAuthOnly,
-  updateS3AddTriggerWithAuthOnly
+  updateDDBWithTrigger, updateS3AddTriggerWithAuthOnlyReqMigration
 } from 'amplify-e2e-core';
 import { initJSProjectWithProfile } from '../../migration-helpers';
 
@@ -102,7 +92,7 @@ describe('amplify add/update storage(S3)', () => {
     await addS3StorageWithAuthOnly(projRoot);
     await amplifyPushAuth(projRoot);
     // update and push with new codebase
-    await updateS3AddTriggerWithAuthOnly(projRoot, { testingWithLatestCodebase: true });
+    await updateS3AddTriggerWithAuthOnlyReqMigration(projRoot, { testingWithLatestCodebase: true });
     await amplifyPushAuth(projRoot, true /*latest codebase*/);
 
     const meta = getProjectMeta(projRoot);
