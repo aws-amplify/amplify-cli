@@ -18,14 +18,29 @@ export const run = async (context: $TSContext) => {
     printer.error(errMessage);
     return;
   }
-
-  const selectedAuthResource = await prompter.pick<'one', string>(`Which resource would you like to override?`, authResources);
+  // dont need this prompt since userPool group is handled via auth cli-inputs
+  let selectedAuthResource = await prompter.pick<'one', string>(`Which resource would you like to add overrides for?`, authResources);
   // check if migration needed
-  await checkAuthResourceMigration(context, selectedAuthResource, false);
-  const backendDir = pathManager.getBackendDirPath();
+  let userPoolGroupResource = undefined;
+  if (selectedAuthResource === 'userPoolGroups') {
+    selectedAuthResource = authResources.filter(resource => resource !== 'userPoolGroups')[0];
+    userPoolGroupResource = 'userPoolGroups';
+  }
+  await checkAuthResourceMigration(context, selectedAuthResource);
 
-  const destPath = path.normalize(path.join(backendDir, category, selectedAuthResource));
-  const srcPath = path.normalize(path.join(__dirname, '..', '..', '..', 'resources', 'overrides-resource'));
+  // override structure for auth resource
+  await generateOverrideforAuthResource(context, selectedAuthResource, 'auth');
+
+  // override structure for userPool Group resource
+  if (userPoolGroupResource) {
+    await generateOverrideforAuthResource(context, userPoolGroupResource, 'userPoolGroups');
+  }
+};
+
+const generateOverrideforAuthResource = async (context: $TSContext, resourceName: string, resourceType: string) => {
+  const backendDir = pathManager.getBackendDirPath();
+  const destPath = path.normalize(path.join(backendDir, category, resourceName));
+  const srcPath = path.normalize(path.join(__dirname, '..', '..', '..', 'resources', 'overrides-resource', resourceType));
 
   await generateOverrideSkeleton(context, srcPath, destPath);
 };

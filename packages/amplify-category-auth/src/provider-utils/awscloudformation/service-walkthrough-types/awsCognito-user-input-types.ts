@@ -25,7 +25,7 @@ export interface ServiceQuestionsBaseResult {
   aliasAttributes?: AliasAttributes[];
   userPoolGroups?: boolean;
   userPoolGroupList?: string[];
-  userpoolClientRefreshTokenValidity?: number;
+  userpoolClientRefreshTokenValidity?: string | number;
   userpoolClientReadAttributes?: string[];
   userpoolClientWriteAttributes?: string[];
   userpoolClientSetAttributes?: boolean;
