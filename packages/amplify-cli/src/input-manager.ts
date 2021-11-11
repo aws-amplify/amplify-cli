@@ -4,6 +4,8 @@ import { constants } from './domain/constants';
 import { PluginPlatform } from './domain/plugin-platform';
 import { getPluginsWithName, getAllPluginNames } from './plugin-manager';
 import { InputVerificationResult } from './domain/input-verification-result';
+import { pathManager, stateManager } from 'amplify-cli-core';
+import { insertAmplifyIgnore } from './extensions/amplify-helpers/git-manager';
 
 export function getCommandLineInput(pluginPlatform: PluginPlatform): Input {
   const result = new Input(process.argv);
@@ -197,5 +199,10 @@ export function verifyInput(pluginPlatform: PluginPlatform, input: Input): Input
 function aliasArgs(argv: string[]) {
   if (argv.length >= 4 && argv[2] === 'override' && argv[3] === 'project') {
     argv[3] = 'root';
+
+    // Also update gitignore to latest list - mainly to exclude amplify/backend/awscloudformation dir from .gitingore for older projects
+    const { projectPath } = stateManager.getLocalEnvInfo();
+    const gitIgnoreFilePath = pathManager.getGitIgnoreFilePath(projectPath);
+    insertAmplifyIgnore(gitIgnoreFilePath);
   }
 }

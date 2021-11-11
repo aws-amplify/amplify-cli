@@ -53,7 +53,6 @@ function getGitIgnoreAppendString() {
     `amplify/${LocalLogDirectory}`,
     'amplify/mock-data',
     'amplify/backend/amplify-meta.json',
-    'amplify/backend/awscloudformation',
     'amplify/backend/.temp',
     'build/',
     'dist/',
