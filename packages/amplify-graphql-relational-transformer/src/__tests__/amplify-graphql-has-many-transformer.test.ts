@@ -279,8 +279,8 @@ test('bidirectional has many query case', () => {
   expect(out).toBeDefined();
   const schema = parse(out.schema);
   validateModelSchema(schema);
-  expect((out.stacks as any).User.Resources.PostauthorResolver).toBeTruthy();
-  expect((out.stacks as any).Post.Resources.UserpostsResolver).toBeTruthy();
+  expect((out.stacks as any).ConnectionStack.Resources.PostauthorResolver).toBeTruthy();
+  expect((out.stacks as any).ConnectionStack.Resources.UserpostsResolver).toBeTruthy();
 
   const userType = schema.definitions.find((def: any) => def.name && def.name.value === 'User') as any;
   expect(userType).toBeDefined();
@@ -327,7 +327,7 @@ test('has many query with a composite sort key', () => {
   expect(out).toBeDefined();
   const schema = parse(out.schema);
   validateModelSchema(schema);
-  expect((out.stacks as any).Test1.Resources.TestotherPartsResolver).toBeTruthy();
+  expect((out.stacks as any).ConnectionStack.Resources.TestotherPartsResolver).toBeTruthy();
 
   const testObjType = schema.definitions.find((def: any) => def.name && def.name.value === 'Test') as any;
   expect(testObjType).toBeDefined();
