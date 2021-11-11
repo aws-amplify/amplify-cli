@@ -28,7 +28,7 @@ afterEach(async () => {
   deleteProjectDir(projRoot);
 });
 
-describe('amplify reset api', () => {
+describe('amplify rebuild api', () => {
   it('recreates all model tables', async () => {
     const projMeta = getProjectMeta(projRoot);
     const apiId = projMeta?.api?.[projName]?.output?.GraphQLAPIIdOutput;

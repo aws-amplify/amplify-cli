@@ -74,8 +74,8 @@ function exportedStackResourcesUpdateMeta(context: $TSContext, stackName: string
   return exportUpdateMeta.run(context, stackName);
 }
 
-function pushResources(context, resourceList) {
-  return resourcePusher.run(context, resourceList);
+function pushResources(context, resourceList, rebuild: boolean) {
+  return resourcePusher.run(context, resourceList, rebuild);
 }
 
 function storeCurrentCloudBackend(context) {
