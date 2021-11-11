@@ -1,6 +1,6 @@
 {
   "name": "amplify-category-auth",
-  "version": "2.38.5-graphql-vnext-dev-preview.7",
+  "version": "2.38.5-graphql-vnext-dev-preview.8",
   "description": "amplify-cli authentication plugin",
   "repository": {
     "type": "git",
@@ -23,10 +23,10 @@
     "test-watch": "jest --watch"
   },
   "dependencies": {
-    "amplify-cli-core": "1.32.0-graphql-vnext-dev-preview.7",
-    "amplify-headless-interface": "1.11.0-graphql-vnext-dev-preview.7",
-    "amplify-util-headless-input": "1.6.0-graphql-vnext-dev-preview.7",
-    "amplify-util-import": "1.5.16-graphql-vnext-dev-preview.7",
+    "amplify-cli-core": "1.32.0-graphql-vnext-dev-preview.8",
+    "amplify-headless-interface": "1.11.0-graphql-vnext-dev-preview.8",
+    "amplify-util-headless-input": "1.6.0-graphql-vnext-dev-preview.8",
+    "amplify-util-import": "1.5.16-graphql-vnext-dev-preview.8",
     "aws-cdk": "~1.124.0",
     "aws-sdk": "^2.963.0",
     "chalk": "^4.1.1",

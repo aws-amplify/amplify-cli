@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [6.25.0-graphql-vnext-dev-preview.8](https://github.com/aws-amplify/amplify-cli/compare/graphql-auth-transformer@6.24.26...graphql-auth-transformer@6.25.0-graphql-vnext-dev-preview.8) (2021-11-11)
+
+
+### Features
+
+* flag to allow destructive schema changes ([#8273](https://github.com/aws-amplify/amplify-cli/issues/8273)) ([18de856](https://github.com/aws-amplify/amplify-cli/commit/18de856fb61bf2df8f73375e4e55a58c6159a232))
+* generate list types as non-null ([#8166](https://github.com/aws-amplify/amplify-cli/issues/8166)) ([93786c1](https://github.com/aws-amplify/amplify-cli/commit/93786c13ef04c72748ca32a1ef7878c0e6b5b129))
+
+
+
+
+
 # [6.25.0-graphql-vnext-dev-preview.7](https://github.com/aws-amplify/amplify-cli/compare/graphql-auth-transformer@6.24.26...graphql-auth-transformer@6.25.0-graphql-vnext-dev-preview.7) (2021-11-11)
 
 

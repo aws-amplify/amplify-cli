@@ -3,6 +3,44 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.34.0-graphql-vnext-dev-preview.8](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@2.33.2...amplify-category-api@2.34.0-graphql-vnext-dev-preview.8) (2021-11-11)
+
+
+### Bug Fixes
+
+* **graphql:** refactor lambda authorizer code to use function category to create authorizer function ([#8784](https://github.com/aws-amplify/amplify-cli/issues/8784)) ([86d84bd](https://github.com/aws-amplify/amplify-cli/commit/86d84bdbda56782f0ed4eee597d388d8fbe73e0e))
+
+
+
+# 6.4.0 (2021-11-10)
+
+
+### Bug Fixes
+
+* **amplify-category-api:** change auth directive type and fix codegen bug ([#8639](https://github.com/aws-amplify/amplify-cli/issues/8639)) ([b8d838d](https://github.com/aws-amplify/amplify-cli/commit/b8d838ddfd332c0f6fb36ef52ab76da24b5d26ca))
+* expand region support for aurora serverless ([#8577](https://github.com/aws-amplify/amplify-cli/issues/8577)) ([ad0cd2b](https://github.com/aws-amplify/amplify-cli/commit/ad0cd2b7e0644986276aa295dd424976f5c3ab68))
+* **graphql-model-transformer:** fixed schema template options check for transformer version ([#8449](https://github.com/aws-amplify/amplify-cli/issues/8449)) ([aedcae3](https://github.com/aws-amplify/amplify-cli/commit/aedcae36f445c6e990bd94fd29d1b012e1b13787))
+* **graphql:** lambda auth label fix ([#8623](https://github.com/aws-amplify/amplify-cli/issues/8623)) ([6b4994d](https://github.com/aws-amplify/amplify-cli/commit/6b4994dd860015dd7f72b0f162314ffd580c727e))
+* **graphql:** minor api prompt fixes ([#8603](https://github.com/aws-amplify/amplify-cli/issues/8603)) ([b9aabe2](https://github.com/aws-amplify/amplify-cli/commit/b9aabe22705cc5d418e83fc8a957f2aac59e0693))
+* remove duplicate error messages ([#8651](https://github.com/aws-amplify/amplify-cli/issues/8651)) ([aad5de7](https://github.com/aws-amplify/amplify-cli/commit/aad5de7b56b9b077b6b689c5b37d51dbfd4b262d))
+* schema migrator utility as separate command ([#8720](https://github.com/aws-amplify/amplify-cli/issues/8720)) ([46e1ee6](https://github.com/aws-amplify/amplify-cli/commit/46e1ee6a49dd86bb682b182a37626bc3f2f966ea))
+
+
+### Features
+
+* **amplify-provider-awscloudformation:** change global_auth_rule to globalAuthRule for global auth ([#8674](https://github.com/aws-amplify/amplify-cli/issues/8674)) ([7a06216](https://github.com/aws-amplify/amplify-cli/commit/7a06216c0a56d9ab886ebb16b2179394fc5e76d2))
+* **amplify-provider-awscloudformation:** change sandbox mode syntax in schema ([#8592](https://github.com/aws-amplify/amplify-cli/issues/8592)) ([a3bdd44](https://github.com/aws-amplify/amplify-cli/commit/a3bdd44fddd3414a39d561510092084a1b8e6e61))
+* flag to allow destructive schema changes ([#8273](https://github.com/aws-amplify/amplify-cli/issues/8273)) ([18de856](https://github.com/aws-amplify/amplify-cli/commit/18de856fb61bf2df8f73375e4e55a58c6159a232))
+
+
+### Reverts
+
+* Revert "Lambda auth minor fixes (#8741)" (#8762) ([aa1096c](https://github.com/aws-amplify/amplify-cli/commit/aa1096ca504bdb7e6a2dca2963c546f957116f9d)), closes [#8741](https://github.com/aws-amplify/amplify-cli/issues/8741) [#8762](https://github.com/aws-amplify/amplify-cli/issues/8762)
+
+
+
+
+
 # [2.34.0-graphql-vnext-dev-preview.7](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@2.33.2...amplify-category-api@2.34.0-graphql-vnext-dev-preview.7) (2021-11-11)
 
 

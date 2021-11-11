@@ -3,6 +3,24 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.38.5-graphql-vnext-dev-preview.8](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.38.4...amplify-category-auth@2.38.5-graphql-vnext-dev-preview.8) (2021-11-11)
+
+
+### Bug Fixes
+
+* **amplify-category-auth:** added username attributes to configure sms ([#8624](https://github.com/aws-amplify/amplify-cli/issues/8624)) ([adb70b1](https://github.com/aws-amplify/amplify-cli/commit/adb70b1de1d84faf72e82aaf992813d52b50e3b8))
+* **amplify-category-auth:** switching to social providers with user pools instead of identity pools ([#8308](https://github.com/aws-amplify/amplify-cli/issues/8308)) ([0c82fe3](https://github.com/aws-amplify/amplify-cli/commit/0c82fe3ef73456192e993c380bc35f01663eb0cf))
+* **amplify-category-auth:** update attr mapping... ([#8135](https://github.com/aws-amplify/amplify-cli/issues/8135)) ([a35352d](https://github.com/aws-amplify/amplify-cli/commit/a35352d8b202440161a9e6fe8ea780e614f81c13)), closes [#7793](https://github.com/aws-amplify/amplify-cli/issues/7793)
+
+
+### Reverts
+
+* Revert "Revert "feat(amplify-category-auth): use EnabledMFAs to only configure TOTP (#7779)" (#7790)" (#7971) ([ff418d1](https://github.com/aws-amplify/amplify-cli/commit/ff418d151879da2c89f2aced6d67d602f7395371)), closes [#7779](https://github.com/aws-amplify/amplify-cli/issues/7779) [#7790](https://github.com/aws-amplify/amplify-cli/issues/7790) [#7971](https://github.com/aws-amplify/amplify-cli/issues/7971)
+
+
+
+
+
 ## [2.38.5-graphql-vnext-dev-preview.7](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.38.4...amplify-category-auth@2.38.5-graphql-vnext-dev-preview.7) (2021-11-11)
 
 

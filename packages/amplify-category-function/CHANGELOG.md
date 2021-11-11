@@ -3,6 +3,36 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.37.0-graphql-vnext-dev-preview.8](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@2.36.1...amplify-category-function@2.37.0-graphql-vnext-dev-preview.8) (2021-11-11)
+
+
+### Bug Fixes
+
+* **graphql:** refactor lambda authorizer code to use function category to create authorizer function ([#8784](https://github.com/aws-amplify/amplify-cli/issues/8784)) ([86d84bd](https://github.com/aws-amplify/amplify-cli/commit/86d84bdbda56782f0ed4eee597d388d8fbe73e0e))
+
+
+
+# 6.4.0 (2021-11-10)
+
+
+### Bug Fixes
+
+* function comments to use os.EOL constant, ref [#8177](https://github.com/aws-amplify/amplify-cli/issues/8177) ([#8327](https://github.com/aws-amplify/amplify-cli/issues/8327)) ([c94405c](https://github.com/aws-amplify/amplify-cli/commit/c94405cd94ee3949d4be82018296b98aec20b5f6))
+
+
+### Features
+
+* flag to allow destructive schema changes ([#8273](https://github.com/aws-amplify/amplify-cli/issues/8273)) ([18de856](https://github.com/aws-amplify/amplify-cli/commit/18de856fb61bf2df8f73375e4e55a58c6159a232))
+
+
+### Reverts
+
+* Revert "Lambda auth minor fixes (#8741)" (#8762) ([aa1096c](https://github.com/aws-amplify/amplify-cli/commit/aa1096ca504bdb7e6a2dca2963c546f957116f9d)), closes [#8741](https://github.com/aws-amplify/amplify-cli/issues/8741) [#8762](https://github.com/aws-amplify/amplify-cli/issues/8762)
+
+
+
+
+
 # [2.37.0-graphql-vnext-dev-preview.7](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@2.36.1...amplify-category-function@2.37.0-graphql-vnext-dev-preview.7) (2021-11-11)
 
 

@@ -1,6 +1,6 @@
 {
   "name": "amplify-util-import",
-  "version": "1.5.16-graphql-vnext-dev-preview.7",
+  "version": "1.5.16-graphql-vnext-dev-preview.8",
   "description": "Resource import support package",
   "main": "lib/index.js",
   "scripts": {
@@ -16,7 +16,7 @@
   "author": "Amazon Web Services",
   "license": "Apache-2.0",
   "dependencies": {
-    "amplify-cli-core": "1.32.0-graphql-vnext-dev-preview.7",
+    "amplify-cli-core": "1.32.0-graphql-vnext-dev-preview.8",
     "aws-sdk": "^2.963.0"
   },
   "devDependencies": {

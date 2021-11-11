@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.13.0-graphql-vnext-dev-preview.8](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-storage@2.12.12...amplify-category-storage@2.13.0-graphql-vnext-dev-preview.8) (2021-11-11)
+
+
+### Bug Fixes
+
+* **amplify-category-storage:** add auth by default ([#8498](https://github.com/aws-amplify/amplify-cli/issues/8498)) ([011cb87](https://github.com/aws-amplify/amplify-cli/commit/011cb87f4e111b603b7502313c2844656c441775))
+
+
+### Features
+
+* **amplify-category-storage:** headless support for S3 ([#8423](https://github.com/aws-amplify/amplify-cli/issues/8423)) ([76b0e70](https://github.com/aws-amplify/amplify-cli/commit/76b0e700d6221292a25b384e2ecfc7a64e9916dd))
+
+
+
+
+
 # [2.13.0-graphql-vnext-dev-preview.7](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-storage@2.12.12...amplify-category-storage@2.13.0-graphql-vnext-dev-preview.7) (2021-11-11)
 
 

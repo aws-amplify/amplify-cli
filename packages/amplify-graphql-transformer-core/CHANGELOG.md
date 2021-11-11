@@ -3,6 +3,32 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.10.0-graphql-vnext-dev-preview.8](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-transformer-core@0.9.2...@aws-amplify/graphql-transformer-core@0.10.0-graphql-vnext-dev-preview.8) (2021-11-11)
+
+
+### Bug Fixes
+
+* **amplify-category-api:** change auth directive type and fix codegen bug ([#8639](https://github.com/aws-amplify/amplify-cli/issues/8639)) ([b8d838d](https://github.com/aws-amplify/amplify-cli/commit/b8d838ddfd332c0f6fb36ef52ab76da24b5d26ca))
+* datastore logical id ([#8761](https://github.com/aws-amplify/amplify-cli/issues/8761)) ([e86cbb9](https://github.com/aws-amplify/amplify-cli/commit/e86cbb9ebfb7ed22607ffd82f15a6b58a6ec7b3d))
+* **graphql-model-transformer:** override resource logical id to fix v1 to v2 transformer migration ([#8597](https://github.com/aws-amplify/amplify-cli/issues/8597)) ([e3a2afb](https://github.com/aws-amplify/amplify-cli/commit/e3a2afbbed6e97f143fc7c83064e2193f4c91bdd))
+* **graphql-transformer-core:** remove the allow_public_global directive references ([#8751](https://github.com/aws-amplify/amplify-cli/issues/8751)) ([dbb41c4](https://github.com/aws-amplify/amplify-cli/commit/dbb41c488a89dd33c8b0b88474d063217adf7595))
+* move [@model](https://github.com/model) params to root stack and fix ds logical id ([#8736](https://github.com/aws-amplify/amplify-cli/issues/8736)) ([df4408c](https://github.com/aws-amplify/amplify-cli/commit/df4408c4080949ddd638778df9ae20e763dd5824))
+* override http datasource logical IDs ([#8714](https://github.com/aws-amplify/amplify-cli/issues/8714)) ([81cc461](https://github.com/aws-amplify/amplify-cli/commit/81cc461ed5e02b2f296825283993ad026f1126d1))
+* override none,DDB,lambda datasource logical IDs ([#8723](https://github.com/aws-amplify/amplify-cli/issues/8723)) ([c534dc4](https://github.com/aws-amplify/amplify-cli/commit/c534dc46704cf2a1264e98d8af9b7a199c1419eb))
+* passing ddb params from root to nested model stacks ([#8766](https://github.com/aws-amplify/amplify-cli/issues/8766)) ([a98dc32](https://github.com/aws-amplify/amplify-cli/commit/a98dc32dda586a1f4844f3bc4e138142bb2405de))
+* revert none data source logical id override ([#8734](https://github.com/aws-amplify/amplify-cli/issues/8734)) ([c83507b](https://github.com/aws-amplify/amplify-cli/commit/c83507b1efee3c8252ea2c2dd7c4d3d40b20fd8a))
+* sub "_" with hash in resource logical ID in transformer v2 ([#8600](https://github.com/aws-amplify/amplify-cli/issues/8600)) ([6bb620b](https://github.com/aws-amplify/amplify-cli/commit/6bb620bf1506749987ab0c7eead46bdcc3a7905a))
+
+
+### Features
+
+* **amplify-provider-awscloudformation:** change sandbox mode syntax in schema ([#8592](https://github.com/aws-amplify/amplify-cli/issues/8592)) ([a3bdd44](https://github.com/aws-amplify/amplify-cli/commit/a3bdd44fddd3414a39d561510092084a1b8e6e61))
+* **graphql-transformer-core:** add support for user defined slots ([#8758](https://github.com/aws-amplify/amplify-cli/issues/8758)) ([2e7e306](https://github.com/aws-amplify/amplify-cli/commit/2e7e30626a8e499069a0bfbef623f8593d70be10))
+
+
+
+
+
 # [0.10.0-graphql-vnext-dev-preview.7](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-transformer-core@0.9.2...@aws-amplify/graphql-transformer-core@0.10.0-graphql-vnext-dev-preview.7) (2021-11-11)
 
 

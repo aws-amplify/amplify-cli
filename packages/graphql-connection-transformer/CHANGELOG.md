@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.22.0-graphql-vnext-dev-preview.8](https://github.com/aws-amplify/amplify-cli/compare/graphql-connection-transformer@4.21.25...graphql-connection-transformer@4.22.0-graphql-vnext-dev-preview.8) (2021-11-11)
+
+
+### Bug Fixes
+
+* **graphql-relational-transformer:** fix has many without fields ([#8700](https://github.com/aws-amplify/amplify-cli/issues/8700)) ([cc21d4d](https://github.com/aws-amplify/amplify-cli/commit/cc21d4dcf827a9ef27a89dffe828f3726a03ecea))
+
+
+### Features
+
+* generate list types as non-null ([#8166](https://github.com/aws-amplify/amplify-cli/issues/8166)) ([93786c1](https://github.com/aws-amplify/amplify-cli/commit/93786c13ef04c72748ca32a1ef7878c0e6b5b129))
+
+
+
+
+
 # [4.22.0-graphql-vnext-dev-preview.7](https://github.com/aws-amplify/amplify-cli/compare/graphql-connection-transformer@4.21.25...graphql-connection-transformer@4.22.0-graphql-vnext-dev-preview.7) (2021-11-11)
 
 
