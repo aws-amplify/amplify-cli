@@ -111,7 +111,7 @@ class CfnApiArtifactHandler implements ApiArtifactHandler {
       await writeResolverConfig(updates.conflictResolution, resourceDir);
     }
     const authConfig = getAppSyncAuthConfig(this.context.amplify.getProjectMeta());
-    const previousAuthConfig = { ...authConfig };
+    const previousAuthConfig = _.cloneDeep(authConfig);
 
     const oldConfigHadApiKey = authConfigHasApiKey(authConfig);
     if (updates.defaultAuthType) {
