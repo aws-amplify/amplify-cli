@@ -16,13 +16,9 @@ export async function transformResourceWithOverrides(context: $TSContext, resour
   const flags = context.parameters.options;
   let spinner: ora.Ora;
 
-  console.log('im here');
-  console.log(resource);
-
   try {
     if (resource) {
       const { transformCategoryStack } = await import(`@aws-amplify/amplify-category-${resource.category}`);
-      console.log(transformCategoryStack);
 
       if (transformCategoryStack) {
         spinner = ora(`Building resource ${resource.category}/${resource.resourceName}`);
