@@ -1,40 +1,41 @@
-import * as path from 'path';
-import * as fs from 'fs-extra';
-import { v4 as uuid } from 'uuid';
-import { printer, prompter } from 'amplify-prompts';
 import {
-  exitOnNextTick,
-  stateManager,
   $TSAny,
   $TSContext,
-  AmplifyCategories,
-  $TSObject,
-  CLISubCommandType,
-  AmplifySupportedService,
   $TSMeta,
+  $TSObject,
+  AmplifyCategories,
+  AmplifySupportedService,
+  CLISubCommandType,
+  exitOnNextTick,
+  getMigrateResourceMessageForOverride,
   pathManager,
+  stateManager,
 } from 'amplify-cli-core';
-import { S3InputState } from './s3-user-input-state';
-import { S3UserInputs, S3TriggerFunctionType } from '../service-walkthrough-types/s3-user-input-types';
+import { printer, prompter } from 'amplify-prompts';
+import * as fs from 'fs-extra';
+import * as path from 'path';
+import { v4 as uuid } from 'uuid';
 import { AmplifyS3ResourceStackTransform } from '../cdk-stack-builder/s3-stack-transform';
+import { getAllDefaults } from '../default-values/s3-defaults';
+import { S3TriggerFunctionType, S3UserInputs } from '../service-walkthrough-types/s3-user-input-types';
+import { checkStorageAuthenticationRequirements, migrateAuthDependencyResource } from './s3-auth-api';
+import { printErrorAlreadyCreated, printErrorAuthResourceMigrationFailed, printErrorNoResourcesToUpdate } from './s3-errors';
 import {
   askAndInvokeAuthWorkflow,
-  askResourceNameQuestion,
-  askBucketNameQuestion,
-  askWhoHasAccessQuestion,
-  askUpdateTriggerSelection,
-  askAuthPermissionQuestion,
-  conditionallyAskGuestPermissionQuestion,
-  askGroupOrIndividualAccessFlow,
-  askTriggerFunctionTypeQuestion,
-  askSelectExistingFunctionToAddTrigger,
   askAndOpenFunctionEditor,
+  askAuthPermissionQuestion,
+  askBucketNameQuestion,
+  askGroupOrIndividualAccessFlow,
+  askResourceNameQuestion,
+  askSelectExistingFunctionToAddTrigger,
+  askTriggerFunctionTypeQuestion,
+  askUpdateTriggerSelection,
+  askWhoHasAccessQuestion,
+  conditionallyAskGuestPermissionQuestion,
   S3CLITriggerUpdateMenuOptions,
 } from './s3-questions';
-import { printErrorAlreadyCreated, printErrorAuthResourceMigrationFailed, printErrorNoResourcesToUpdate } from './s3-errors';
-import { getAllDefaults } from '../default-values/s3-defaults';
-import { checkStorageAuthenticationRequirements, migrateAuthDependencyResource } from './s3-auth-api';
 import { s3GetAdminTriggerFunctionName } from './s3-resource-api';
+import { S3InputState } from './s3-user-input-state';
 
 /**
  * addWalkthrough: add storage walkthrough for S3 resource
@@ -91,8 +92,8 @@ export async function addWalkthrough(context: $TSContext, defaultValuesFilename:
 
     //Validate Authentication requirements
     //e.g if storage is added after import auth,
-    const allowUnauthenticatedIdentities = ( cliInputs.guestAccess && (cliInputs.guestAccess.length > 0 ) );
-    await checkStorageAuthenticationRequirements( context, storageResourceName, allowUnauthenticatedIdentities );
+    const allowUnauthenticatedIdentities = cliInputs.guestAccess && cliInputs.guestAccess.length > 0;
+    await checkStorageAuthenticationRequirements(context, storageResourceName, allowUnauthenticatedIdentities);
 
     //Save CLI Inputs payload
     const cliInputsState = new S3InputState(cliInputs.resourceName as string, cliInputs);
@@ -135,7 +136,10 @@ export async function updateWalkthrough(context: $TSContext) {
     //Check if migration is required
     const headlessMigrate = context.input.options?.yes || context.input.options?.forcePush || context.input.options?.headless;
     if (!cliInputsState.cliInputFileExists()) {
-      if (headlessMigrate || (await prompter.confirmContinue('File migration required to continue. Do you want to continue?'))) {
+      if (
+        headlessMigrate ||
+        (await prompter.confirmContinue(getMigrateResourceMessageForOverride(AmplifyCategories.STORAGE, storageResourceName)))
+      ) {
         //migrate auth and storage
         await cliInputsState.migrate(context);
         const stackGenerator = new AmplifyS3ResourceStackTransform(storageResourceName, context);
@@ -178,8 +182,8 @@ export async function updateWalkthrough(context: $TSContext) {
 
     //Validate Authentication requirements
     //e.g if storage is added after import auth,
-    const allowUnauthenticatedIdentities = ( cliInputs.guestAccess && (cliInputs.guestAccess.length > 0 ) );
-    await checkStorageAuthenticationRequirements( context, storageResourceName, allowUnauthenticatedIdentities );
+    const allowUnauthenticatedIdentities = cliInputs.guestAccess && cliInputs.guestAccess.length > 0;
+    await checkStorageAuthenticationRequirements(context, storageResourceName, allowUnauthenticatedIdentities);
 
     //Save CLI Inputs payload
     await cliInputsState.saveCliInputPayload(cliInputs);
@@ -196,14 +200,14 @@ export async function updateWalkthrough(context: $TSContext) {
  * @param resourceName - storage resource name
  * @returns
  */
-export function isMigrateStorageRequired(context : $TSContext, resourceName: string){
-    const projectBackendDirPath = pathManager.getBackendDirPath();
-    const cliInputsFilePath = path.resolve(path.join(projectBackendDirPath, AmplifyCategories.STORAGE, resourceName, 'cli-inputs.json'));
-    if ( !fs.existsSync(cliInputsFilePath) ){
-      return true;
-    }else {
-      return false;
-    }
+export function isMigrateStorageRequired(context: $TSContext, resourceName: string) {
+  const projectBackendDirPath = pathManager.getBackendDirPath();
+  const cliInputsFilePath = path.resolve(path.join(projectBackendDirPath, AmplifyCategories.STORAGE, resourceName, 'cli-inputs.json'));
+  if (!fs.existsSync(cliInputsFilePath)) {
+    return true;
+  } else {
+    return false;
+  }
 }
 
 /**
