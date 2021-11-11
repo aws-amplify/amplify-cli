@@ -71,7 +71,7 @@ export async function loadProject(projectDirectory: string, opts?: ProjectOption
     }
   }
 
-  // load pipeline functions
+  // load pipeline functions - deprecated
   const pipelineFunctions = {};
   if (!(opts && opts.disablePipelineFunctionOverrides === true)) {
     const pipelineFunctionDirectory = path.join(projectDirectory, 'pipelineFunctions');
