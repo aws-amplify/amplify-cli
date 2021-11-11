@@ -25,10 +25,10 @@ describe('amplify auth migration', () => {
 
   afterEach(async () => {
     const metaFilePath = join(projRoot, 'amplify', '#current-cloud-backend', 'amplify-meta.json');
-    if (fs.existsSync(metaFilePath)) {
-      await deleteProject(projRoot);
-    }
-    deleteProjectDir(projRoot);
+    // if (fs.existsSync(metaFilePath)) {
+    //   await deleteProject(projRoot);
+    // }
+    // deleteProjectDir(projRoot);
   });
   it('...should init a project and add auth with a custom trigger, and then update to remove the custom js while leaving the other js', async () => {
     // init, add and push auth with installed cli
