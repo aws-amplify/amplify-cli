@@ -19,9 +19,9 @@ export async function isRootStackModifiedSinceLastPush(hashFunction): Promise<bo
     const projectPath = pathManager.findProjectRoot();
     const localBackendDir = pathManager.getRootStackBuildDirPath(projectPath!);
     const cloudBackendDir = pathManager.getCurrentCloudRootStackDirPath(projectPath!);
-    if (fs.existsSync(localBackendDir)) {
+    if (fs.existsSync(localBackendDir) && fs.existsSync(path.join(localBackendDir, rootStackFileName))) {
       const localCfnBuffer = fs.readFileSync(path.join(localBackendDir, rootStackFileName));
-      if (fs.existsSync(cloudBackendDir)) {
+      if (fs.existsSync(cloudBackendDir) && fs.existsSync(path.join(cloudBackendDir, rootStackFileName))) {
         const cloudCfnBuffer = fs.readFileSync(path.join(cloudBackendDir, rootStackFileName));
         return !localCfnBuffer.equals(cloudCfnBuffer);
       } else {

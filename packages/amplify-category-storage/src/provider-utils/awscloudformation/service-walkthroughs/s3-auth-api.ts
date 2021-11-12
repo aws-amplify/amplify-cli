@@ -2,7 +2,6 @@ import { $TSAny, $TSContext } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import { AmplifyCategories } from 'amplify-cli-core';
 import os from 'os';
-import { S3AccessType } from '../service-walkthrough-types/s3-user-input-types';
 
 /* This file contains all functions interacting with AUTH category */
 
@@ -24,26 +23,23 @@ export async function getAuthResourceARN(context: $TSContext): Promise<string> {
 /**
  * Migrate all Auth resources used by Storage(S3) for Override feature.
  * @param context - used to fetch auth resources and to migrate auth resources for override-feature.
+ * @return migration successful?
  */
-export async function migrateAuthDependencyResource(context: $TSContext) {
+export async function migrateAuthDependencyResource(context: $TSContext): Promise<boolean> {
   let authResourceName = undefined;
   try {
     authResourceName = await getAuthResourceARN(context);
   } catch (error) {
-    //No auth resources to migrate - new project
-    return;
+    // No auth resources to migrate - new project
+    return true;
   }
   if (authResourceName) {
-    try {
-      await context.amplify.invokePluginMethod(context, AmplifyCategories.AUTH, undefined, 'migrateAuthResource', [
-        context,
-        authResourceName,
-      ]);
-    } catch (error) {
-      printer.error(error as string);
-      throw error;
-    }
+    return context.amplify.invokePluginMethod<boolean>(context, AmplifyCategories.AUTH, undefined, 'migrateAuthResource', [
+      context,
+      authResourceName,
+    ]);
   }
+  return true;
 }
 
 /**
@@ -96,5 +92,3 @@ export async function checkStorageAuthenticationRequirements(
     }
   }
 }
-
-

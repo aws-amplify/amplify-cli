@@ -52,7 +52,10 @@ export async function addWalkthrough(context: $TSContext, defaultValuesFilename:
 
   //Migrate auth category if required
   try {
-    await migrateAuthDependencyResource(context);
+    const authMigerationAccepted = await migrateAuthDependencyResource(context);
+    if (!authMigerationAccepted) {
+      exitOnNextTick(0);
+    }
   } catch (error) {
     await printErrorAuthResourceMigrationFailed(context);
     exitOnNextTick(0);

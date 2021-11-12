@@ -81,7 +81,7 @@ function canResourceBeTransformed(resourceName) {
 }
 
 async function migrateAuthResource(context, resourceName) {
-  await checkAuthResourceMigration(context, resourceName);
+  return checkAuthResourceMigration(context, resourceName);
 }
 
 async function externalAuthEnable(context, externalCategory, resourceName, requirements) {
