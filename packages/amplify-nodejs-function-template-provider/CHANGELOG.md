@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.7.1-graphql-vnext-dev-preview.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-nodejs-function-template-provider@1.6.25...amplify-nodejs-function-template-provider@1.7.1-graphql-vnext-dev-preview.0) (2021-11-12)
+
+
+### Bug Fixes
+
+* **graphql:** refactor lambda authorizer code to use function category to create authorizer function ([#8784](https://github.com/aws-amplify/amplify-cli/issues/8784)) ([17f447e](https://github.com/aws-amplify/amplify-cli/commit/17f447e7e67fd4ce4d3898e6f0dc384dc5518fda))
+* map readable attr name to ddb name in parameters.json ([#8816](https://github.com/aws-amplify/amplify-cli/issues/8816)) ([59e5f50](https://github.com/aws-amplify/amplify-cli/commit/59e5f508254c2717c2a9b3de5253065c5f6b34a1))
+
+
+
+
+
 ## [1.6.25](https://github.com/aws-amplify/amplify-cli/compare/amplify-nodejs-function-template-provider@1.6.24...amplify-nodejs-function-template-provider@1.6.25) (2021-11-11)
 
 

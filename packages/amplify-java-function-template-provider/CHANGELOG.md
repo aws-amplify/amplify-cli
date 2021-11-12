@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.5.10-graphql-vnext-dev-preview.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-java-function-template-provider@1.5.9...amplify-java-function-template-provider@1.5.10-graphql-vnext-dev-preview.0) (2021-11-12)
+
+**Note:** Version bump only for package amplify-java-function-template-provider
+
+
+
+
+
 ## [1.5.9](https://github.com/aws-amplify/amplify-cli/compare/amplify-java-function-template-provider@1.5.8...amplify-java-function-template-provider@1.5.9) (2021-07-30)
 
 **Note:** Version bump only for package amplify-java-function-template-provider

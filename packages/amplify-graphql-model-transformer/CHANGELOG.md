@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.7.1-graphql-vnext-dev-preview.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-model-transformer@0.7.0...@aws-amplify/graphql-model-transformer@0.7.1-graphql-vnext-dev-preview.0) (2021-11-12)
+
+
+### Bug Fixes
+
+* passing ddb params from root to nested model stacks ([#8766](https://github.com/aws-amplify/amplify-cli/issues/8766)) ([3c2d97d](https://github.com/aws-amplify/amplify-cli/commit/3c2d97d99ed3255a584f32cc6d159f5005b11cb5))
+
+
+
+
+
 # [0.7.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-model-transformer@0.6.4...@aws-amplify/graphql-model-transformer@0.7.0) (2021-11-11)
 
 
