@@ -288,11 +288,9 @@ export async function run(context: $TSContext, resourceDefinition: $TSObject, re
 
         try {
           await updateCloudFormationNestedStack(context, nestedStack, resourcesToBeCreated, resourcesToBeUpdated);
-          if (FeatureFlags.getBoolean('Overrides.project')) {
-            await storeRootStackTemplate(context, nestedStack);
-            // if the only root stack updates, function is called with empty resources . this fn copies amplifyMeta and backend Config to #current-cloud-backend
-            context.amplify.updateamplifyMetaAfterPush([]);
-          }
+          await storeRootStackTemplate(context, nestedStack);
+          // if the only root stack updates, function is called with empty resources . this fn copies amplifyMeta and backend Config to #current-cloud-backend
+          context.amplify.updateamplifyMetaAfterPush([]);
         } catch (err) {
           if (err?.name === 'ValidationError' && err?.message === 'No updates are to be performed.') {
             return;

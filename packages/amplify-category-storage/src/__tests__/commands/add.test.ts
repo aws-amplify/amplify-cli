@@ -1,4 +1,4 @@
-import { $TSContext, $TSObject, AmplifySupportedService } from 'amplify-cli-core';
+import { $TSContext, AmplifySupportedService } from 'amplify-cli-core';
 import { run } from '../../commands/storage/add';
 import * as providerController from '../../provider-utils/awscloudformation/index';
 
@@ -48,7 +48,7 @@ describe('add s3 command tests', () => {
   });
 
   it('add resource workflow is invoked for S3', async () => {
-    const service =  AmplifySupportedService.S3;
+    const service = AmplifySupportedService.S3;
     mockContext.amplify.serviceSelectionPrompt = jest.fn().mockImplementation(async () => {
       return { service: service, providerName: provider };
     });

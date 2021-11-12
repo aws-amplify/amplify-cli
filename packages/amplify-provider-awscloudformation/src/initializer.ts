@@ -1,4 +1,4 @@
-import { $TSContext, FeatureFlags, Template, pathManager, PathConstants, stateManager, JSONUtilities } from 'amplify-cli-core';
+import { $TSContext, JSONUtilities, PathConstants, pathManager, stateManager, Template } from 'amplify-cli-core';
 import _ from 'lodash';
 import { transformRootStack } from './override-manager';
 import { rootStackFileName } from './push-resources';
@@ -169,9 +169,7 @@ function cloneCLIJSONForNewEnvironment(context) {
 export async function onInitSuccessful(context) {
   configurationManager.onInitSuccessful(context);
   if (context.exeInfo.isNewEnv) {
-    if (FeatureFlags.getBoolean('overrides.project')) {
-      await storeRootStackTemplate(context);
-    }
+    await storeRootStackTemplate(context);
     context = await storeCurrentCloudBackend(context);
     await storeArtifactsForAmplifyService(context);
     await uploadHooksDirectory(context);

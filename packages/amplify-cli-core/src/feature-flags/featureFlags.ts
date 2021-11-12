@@ -94,6 +94,28 @@ export class FeatureFlags {
     }
   };
 
+  /**
+   * If feature flag exists do nothing, otherwise initalize the given feature flag with the default value.
+   * If the configuration file does not exist it will be created with the default features.
+   */
+  public static ensureFeatureFlag = async (featureFlagSection: string, featureFlagName: string): Promise<void> => {
+    FeatureFlags.ensureInitialized();
+
+    let config = stateManager.getCLIJSON(FeatureFlags.instance.projectPath, undefined, {
+      throwIfNotExist: false,
+      preserveComments: true,
+    });
+
+    if (!config?.features) {
+      FeatureFlags.ensureDefaultFeatureFlags(false);
+    } else if (config.features?.[featureFlagSection]?.[featureFlagName] === undefined) {
+      const features = FeatureFlags.getExistingProjectDefaults();
+      _.set(config, ['features', featureFlagSection, featureFlagName], features[featureFlagSection][featureFlagName]);
+
+      stateManager.setCLIJSON(FeatureFlags.instance.projectPath, config);
+    }
+  };
+
   public static getBoolean = (flagName: string): boolean => {
     FeatureFlags.ensureInitialized();
 
@@ -561,7 +583,7 @@ export class FeatureFlags {
         name: 'suppressSchemaMigrationPrompt',
         type: 'boolean',
         defaultValueForExistingProjects: true,
-        defaultValueForNewProjects: true
+        defaultValueForNewProjects: true,
       },
     ]);
 
@@ -718,24 +740,11 @@ export class FeatureFlags {
       },
     ]);
 
-    // FF for overrides
-    this.registerFlag('overrides', [
+    this.registerFlag('project', [
       {
-        name: 'storage',
+        name: 'overrides',
         type: 'boolean',
-        defaultValueForExistingProjects: false,
-        defaultValueForNewProjects: true,
-      },
-      {
-        name: 'auth',
-        type: 'boolean',
-        defaultValueForExistingProjects: false,
-        defaultValueForNewProjects: true,
-      },
-      {
-        name: 'project',
-        type: 'boolean',
-        defaultValueForExistingProjects: false,
+        defaultValueForExistingProjects: true,
         defaultValueForNewProjects: true,
       },
     ]);

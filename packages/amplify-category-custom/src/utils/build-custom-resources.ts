@@ -1,4 +1,4 @@
-import { $TSContext, getPackageManager, JSONUtilities, pathManager, ResourceTuple } from 'amplify-cli-core';
+import { $TSContext, getPackageManager, pathManager, ResourceTuple } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import execa from 'execa';
 import * as fs from 'fs-extra';

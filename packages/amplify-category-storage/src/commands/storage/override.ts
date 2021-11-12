@@ -1,16 +1,23 @@
 /*
-    entry code for amplify override root
+  entry code for amplify override root
 */
 
-import { generateOverrideSkeleton, $TSContext, stateManager, pathManager, CLISubCommandType } from 'amplify-cli-core';
+import {
+  $TSContext,
+  AmplifyCategories,
+  AmplifySupportedService,
+  CLISubCommandType,
+  generateOverrideSkeleton,
+  getMigrateResourceMessageForOverride,
+  pathManager,
+  stateManager,
+} from 'amplify-cli-core';
 import { printer, prompter } from 'amplify-prompts';
-import { DynamoDBInputState } from '../../provider-utils/awscloudformation/service-walkthroughs/dynamoDB-input-state';
-import { DDBStackTransform } from '../../provider-utils/awscloudformation/cdk-stack-builder/ddb-stack-transform';
 import * as path from 'path';
-import { categoryName } from '../../constants';
-import { AmplifySupportedService } from 'amplify-cli-core';
-import { S3InputState } from '../../provider-utils/awscloudformation/service-walkthroughs/s3-user-input-state';
+import { DDBStackTransform } from '../../provider-utils/awscloudformation/cdk-stack-builder/ddb-stack-transform';
 import { AmplifyS3ResourceStackTransform } from '../../provider-utils/awscloudformation/cdk-stack-builder/s3-stack-transform';
+import { DynamoDBInputState } from '../../provider-utils/awscloudformation/service-walkthroughs/dynamoDB-input-state';
+import { S3InputState } from '../../provider-utils/awscloudformation/service-walkthroughs/s3-user-input-state';
 
 export const name = 'override';
 
@@ -18,8 +25,8 @@ export const run = async (context: $TSContext) => {
   const amplifyMeta = stateManager.getMeta();
   const storageResources: string[] = [];
 
-  if (amplifyMeta[categoryName]) {
-    Object.keys(amplifyMeta[categoryName]).forEach(resourceName => {
+  if (amplifyMeta[AmplifyCategories.STORAGE]) {
+    Object.keys(amplifyMeta[AmplifyCategories.STORAGE]).forEach(resourceName => {
       storageResources.push(resourceName);
     });
   }
@@ -33,10 +40,10 @@ export const run = async (context: $TSContext) => {
   let selectedResourceName: string = storageResources[0];
 
   if (storageResources.length > 1) {
-    selectedResourceName = await prompter.pick('Which resource would you like to add overrides for?', storageResources);
+    selectedResourceName = await prompter.pick('Which resource would you like to override?', storageResources);
   }
 
-  const destPath = pathManager.getResourceDirectoryPath(undefined, categoryName, selectedResourceName);
+  const destPath = pathManager.getResourceDirectoryPath(undefined, AmplifyCategories.STORAGE, selectedResourceName);
 
   const srcPath = path.join(
     __dirname,
@@ -45,14 +52,14 @@ export const run = async (context: $TSContext) => {
     '..',
     'resources',
     'overrides-resource',
-    amplifyMeta[categoryName][selectedResourceName].service,
+    amplifyMeta[AmplifyCategories.STORAGE][selectedResourceName].service,
   );
 
   // Make sure to migrate first
-  if (amplifyMeta[categoryName][selectedResourceName].service === AmplifySupportedService.DYNAMODB ) {
+  if (amplifyMeta[AmplifyCategories.STORAGE][selectedResourceName].service === AmplifySupportedService.DYNAMODB) {
     const resourceInputState = new DynamoDBInputState(selectedResourceName);
     if (!resourceInputState.cliInputFileExists()) {
-      if (await prompter.yesOrNo('File migration required to continue. Do you want to continue?', true)) {
+      if (await prompter.yesOrNo(getMigrateResourceMessageForOverride(AmplifyCategories.STORAGE, selectedResourceName, false), true)) {
         resourceInputState.migrate();
         const stackGenerator = new DDBStackTransform(selectedResourceName);
         await stackGenerator.transform();
@@ -60,19 +67,19 @@ export const run = async (context: $TSContext) => {
         return;
       }
     }
-  } else if (amplifyMeta[categoryName][selectedResourceName].service === AmplifySupportedService.S3 ) {
-      // S3 migration logic goes in here
-      const s3ResourceInputState = new S3InputState(selectedResourceName, undefined);
-      if (!s3ResourceInputState.cliInputFileExists()) {
-        if (await prompter.yesOrNo('File migration required to continue. Do you want to continue?', true)) {
-          await s3ResourceInputState.migrate(context); //migrate auth and storage config resources
-          const stackGenerator = new AmplifyS3ResourceStackTransform(selectedResourceName, context);
-          stackGenerator.transform( CLISubCommandType.MIGRATE );
-        } else {
-          return;
-        }
+  } else if (amplifyMeta[AmplifyCategories.STORAGE][selectedResourceName].service === AmplifySupportedService.S3) {
+    // S3 migration logic goes in here
+    const s3ResourceInputState = new S3InputState(selectedResourceName, undefined);
+    if (!s3ResourceInputState.cliInputFileExists()) {
+      if (await prompter.yesOrNo(getMigrateResourceMessageForOverride(AmplifyCategories.STORAGE, selectedResourceName, false), true)) {
+        await s3ResourceInputState.migrate(context); //migrate auth and storage config resources
+        const stackGenerator = new AmplifyS3ResourceStackTransform(selectedResourceName, context);
+        stackGenerator.transform(CLISubCommandType.MIGRATE);
+      } else {
+        return;
       }
     }
+  }
 
   await generateOverrideSkeleton(context, srcPath, destPath);
 };

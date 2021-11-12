@@ -1,4 +1,4 @@
-import { $TSAny, $TSContext, $TSObject, ServiceSelection, stateManager } from 'amplify-cli-core';
+import { $TSAny, $TSContext, $TSObject, AmplifyCategories, ServiceSelection, stateManager } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import { IDynamoDBService } from 'amplify-util-import';
 import Enquirer from 'enquirer';
@@ -76,7 +76,9 @@ const importServiceWalkthrough = async (
   let tableList = await dynamoDB.listTables();
 
   // Remove already present tables from choices
-  const storageResources = <{ service: string; output: { Name: string } }[]>Object.values(_.get(amplifyMeta, ['storage'], []));
+  const storageResources = <{ service: string; output: { Name: string } }[]>(
+    Object.values(_.get(amplifyMeta, [AmplifyCategories.STORAGE], []))
+  );
   const dynamoDBResources = storageResources.filter(r => r.service === 'DynamoDB' && !!r.output && !!r.output.Name).map(r => r.output.Name);
 
   tableList = tableList.filter(t => !dynamoDBResources.includes(t));
@@ -165,20 +167,26 @@ const updateStateFiles = async (
     serviceType: 'imported',
   };
 
-  stateManager.setResourceParametersJson(undefined, 'storage', answers.resourceName!, resourceParameters);
+  stateManager.setResourceParametersJson(undefined, AmplifyCategories.STORAGE, answers.resourceName!, resourceParameters);
 
   // Add resource data to amplify-meta file and backend-config, since backend-config requires less information
   // we have to do a separate update to it without duplicating the methods
   const metaConfiguration = _.clone(backendConfiguration) as DynamoDBMetaConfiguration;
   metaConfiguration.output = createMetaOutput(answers, questionParameters);
 
-  context.amplify.updateamplifyMetaAfterResourceAdd('storage', answers.resourceName!, metaConfiguration, backendConfiguration, true);
+  context.amplify.updateamplifyMetaAfterResourceAdd(
+    AmplifyCategories.STORAGE,
+    answers.resourceName!,
+    metaConfiguration,
+    backendConfiguration,
+    true,
+  );
 
   // Update team provider-info
   const envSpecificParameters: DynamoDBEnvSpecificResourceParameters = createEnvSpecificResourceParameters(answers, questionParameters);
 
   if (updateEnvSpecificParameters) {
-    context.amplify.saveEnvResourceParameters(context, 'storage', answers.resourceName!, envSpecificParameters);
+    context.amplify.saveEnvResourceParameters(context, AmplifyCategories.STORAGE, answers.resourceName!, envSpecificParameters);
   }
 
   return {
@@ -285,7 +293,7 @@ export const importedDynamoDBEnvInit = async (
     });
 
     if (currentMeta) {
-      const currentResource = _.get(currentMeta, ['storage', resourceName], undefined);
+      const currentResource = _.get(currentMeta, [AmplifyCategories.STORAGE, resourceName], undefined);
 
       if (currentResource && currentResource.output) {
         const { Name, Region, Arn, StreamArn, PartitionKeyName, PartitionKeyType, SortKeyName, SortKeyType } = currentResource.output;
@@ -304,7 +312,7 @@ export const importedDynamoDBEnvInit = async (
     // Check to see if we have a source environment set (in case of env add), and ask customer if the want to import the same resource
     // from the existing environment or import a different one. Check if all the values are having some value that can be validated and
     // if not fall back to full service walkthrough.
-    const sourceEnvParams = getSourceEnvParameters(context.exeInfo.sourceEnvName, 'storage', resourceName);
+    const sourceEnvParams = getSourceEnvParameters(context.exeInfo.sourceEnvName, AmplifyCategories.STORAGE, resourceName);
 
     if (sourceEnvParams) {
       const { importExisting } = await Enquirer.prompt<{ importExisting: boolean }>({

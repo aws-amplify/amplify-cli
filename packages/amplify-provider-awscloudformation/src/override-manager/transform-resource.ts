@@ -1,11 +1,11 @@
-import { $TSContext, IAmplifyResource, JSONUtilities, pathManager } from 'amplify-cli-core';
+import { $TSContext, FeatureFlags, IAmplifyResource, JSONUtilities, pathManager } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import * as fs from 'fs-extra';
+import ora from 'ora';
 import * as path from 'path';
 import { transformRootStack } from '.';
 import { prePushCfnTemplateModifier } from '../pre-push-cfn-processor/pre-push-cfn-modifier';
 import { rootStackFileName } from '../push-resources';
-import ora from 'ora';
 
 /**
  *
@@ -24,6 +24,7 @@ export async function transformResourceWithOverrides(context: $TSContext, resour
         spinner = ora(`Building resource ${resource.category}/${resource.resourceName}`);
         spinner.start();
         await transformCategoryStack(context, resource);
+        FeatureFlags.ensureFeatureFlag('project', 'overrides');
         spinner.stop();
         return;
       } else {
