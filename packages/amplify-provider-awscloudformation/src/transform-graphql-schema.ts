@@ -20,6 +20,7 @@ import { $TSContext, JSONUtilities, pathManager, stateManager } from 'amplify-cl
 import { ResourceConstants } from 'graphql-transformer-common';
 import { printer } from 'amplify-prompts';
 import _ from 'lodash';
+import { isAuthModeUpdated } from './utils/auth-mode-compare';
 
 import {
   collectDirectivesByTypeNames,
@@ -520,6 +521,9 @@ export async function transformGraphQLSchema(context, options) {
   context.print.success(`GraphQL schema compiled successfully.\n\nEdit your schema at ${schemaFilePath} or \
 place .graphql files in a directory at ${schemaDirPath}`);
 
+  if (isAuthModeUpdated(options)) {
+    parameters.AuthModeLastUpdated = new Date();
+  }
   if (!options.dryRun) {
     JSONUtilities.writeJson(parametersFilePath, parameters);
   }
