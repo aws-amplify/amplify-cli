@@ -37,10 +37,46 @@ export const fillResource = async (context: $TSContext) => {
 };
 
 const validateGeoJSONFile = (geoJSONFilePath: string) => {
-  const data = JSON.parse(readFileSync(geoJSONFilePath, 'utf-8'));
+  const data = JSON.parse(readFileSync(geoJSONFilePath, 'utf-8')) as FeatureCollection;
+  //Validate against pre-defined schema
   const ajv = new Ajv();
   const validator = ajv.compile(GeoJSONSchema);
   if (!validator(data) as boolean) {
     throw new Error(`Data did not validate against the supplied schema. Underlying errors were ${JSON.stringify(validator.errors)}`);
   };
+  const { features } = data;
+  features.forEach((feature) => {
+    const { coordinates } = feature.geometry;
+    coordinates.forEach(linearRing => {
+      validateLinearRing(linearRing);
+    })
+  });
+}
+
+const validateLinearRing = (linearRing: Array<Array<number>>) => {
+  const numPoint = linearRing.length;
+  //Check position number
+  if (numPoint < 4) {
+    throw new Error('Linear ring should have at least four positions.');
+  }
+  //Check if first position is identical to last one
+  if (linearRing[0][0] === linearRing[numPoint-1][0] && linearRing[0][1] === linearRing[numPoint-1][1]) {
+    throw new Error(`Linear ring ${linearRing} should have the identical values for first and last position.`);
+  }
+};
+
+type FeatureCollection = {
+  type: "FeatureCollection";
+  features: Feature[];
+}
+
+type Feature = {
+  type: "Feature";
+  properties: any;
+  geometry: Geometry;
+}
+
+type Geometry = {
+  type: "Polygon";
+  coordinates: Array<Array<Array<number>>>;
 }
