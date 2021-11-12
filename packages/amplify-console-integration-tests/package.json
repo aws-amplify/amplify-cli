@@ -1,6 +1,6 @@
 {
   "name": "amplify-console-integration-tests",
-  "version": "1.9.1-graphql-vnext-dev-preview.8",
+  "version": "1.9.1-graphql-vnext-dev-preview.9",
   "description": "",
   "repository": {
     "type": "git",
@@ -22,7 +22,7 @@
   },
   "dependencies": {
     "@types/ini": "^1.3.30",
-    "amplify-e2e-core": "1.33.0-graphql-vnext-dev-preview.8",
+    "amplify-e2e-core": "1.33.0-graphql-vnext-dev-preview.9",
     "aws-sdk": "^2.963.0",
     "dotenv": "^8.2.0",
     "esm": "^3.2.25",

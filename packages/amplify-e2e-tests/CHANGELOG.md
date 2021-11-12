@@ -3,6 +3,42 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.57.0-graphql-vnext-dev-preview.9](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.55.0...amplify-e2e-tests@2.57.0-graphql-vnext-dev-preview.9) (2021-11-12)
+
+
+### Bug Fixes
+
+* amplify meta output for imported ddb, type fixes ([#8767](https://github.com/aws-amplify/amplify-cli/issues/8767)) ([4f270ac](https://github.com/aws-amplify/amplify-cli/commit/4f270ac8a9b02da33aa7ff3f7f84392c633e72ff))
+* asana bug fixes ([#8692](https://github.com/aws-amplify/amplify-cli/issues/8692)) ([c41d8b6](https://github.com/aws-amplify/amplify-cli/commit/c41d8b6442c48266f3fa074c9a9d33ce086ce1b9))
+* auth e2e fixes ([3d1d3fb](https://github.com/aws-amplify/amplify-cli/commit/3d1d3fb88da568efbea0e3c57277c71dedd9d0f7))
+* auth e2e tests ([#8708](https://github.com/aws-amplify/amplify-cli/issues/8708)) ([24797e9](https://github.com/aws-amplify/amplify-cli/commit/24797e926b99be78ba337761ece9a4ad93d7651b))
+* fixed import_auth test ([#8755](https://github.com/aws-amplify/amplify-cli/issues/8755)) ([c1bffdd](https://github.com/aws-amplify/amplify-cli/commit/c1bffddc6f34b9eb3c834b127dac57b67d2c55ee))
+* hosting fix and changelog added ([#8780](https://github.com/aws-amplify/amplify-cli/issues/8780)) ([3fc4345](https://github.com/aws-amplify/amplify-cli/commit/3fc4345c7bffd214f22fcd45ca591279dd0e65b8))
+* init override test fix ([#8768](https://github.com/aws-amplify/amplify-cli/issues/8768)) ([9674a4e](https://github.com/aws-amplify/amplify-cli/commit/9674a4e344651df0a756513d034c73b822da899e))
+* latest changes ([b8fb605](https://github.com/aws-amplify/amplify-cli/commit/b8fb6053b9b12de913e9d53db621196b81622a05))
+* rebuild api bad merge ([#8818](https://github.com/aws-amplify/amplify-cli/issues/8818)) ([0e82015](https://github.com/aws-amplify/amplify-cli/commit/0e820159d56172cdba4e92a3f55cccbb471bf9a1))
+* stack generation logic when multiple paths ref same Lambda ([#8673](https://github.com/aws-amplify/amplify-cli/issues/8673)) ([d4a04e6](https://github.com/aws-amplify/amplify-cli/commit/d4a04e61db325b65737a94f33f7dba77d8a07529))
+* tsc global install error ([7d1cca8](https://github.com/aws-amplify/amplify-cli/commit/7d1cca890f138f32bac51fca085098a777aea1ae))
+* update migration msg, ddb import e2e, lgtm errors ([#8796](https://github.com/aws-amplify/amplify-cli/issues/8796)) ([a2d87ec](https://github.com/aws-amplify/amplify-cli/commit/a2d87eca889ed8b23cfe3cf145c0372b655d4ed9))
+
+
+### Features
+
+* amplify export ([fd28279](https://github.com/aws-amplify/amplify-cli/commit/fd282791167177d72a42784b5de4f2fd461d590a)), closes [#8547](https://github.com/aws-amplify/amplify-cli/issues/8547) [#8488](https://github.com/aws-amplify/amplify-cli/issues/8488) [#8486](https://github.com/aws-amplify/amplify-cli/issues/8486) [#8547](https://github.com/aws-amplify/amplify-cli/issues/8547) [#8488](https://github.com/aws-amplify/amplify-cli/issues/8488) [#8486](https://github.com/aws-amplify/amplify-cli/issues/8486)
+* Auth refactor to  use cdk, eliminate EJS, overrides functionality ([#8355](https://github.com/aws-amplify/amplify-cli/issues/8355)) ([66d885f](https://github.com/aws-amplify/amplify-cli/commit/66d885f8125f11c0ea3c23f67fec51b553445d42))
+* extensibility for REST APIs ([#8598](https://github.com/aws-amplify/amplify-cli/issues/8598)) ([de19d23](https://github.com/aws-amplify/amplify-cli/commit/de19d231465c1f16bf7d1c7ccb8dba2f36d039d8))
+* **graphql-transformer-core:** add support for user defined slots ([#8758](https://github.com/aws-amplify/amplify-cli/issues/8758)) ([66a2f99](https://github.com/aws-amplify/amplify-cli/commit/66a2f9926637ec9bd9aa19db9dd3f1748a60b200))
+* root stack override ([#8276](https://github.com/aws-amplify/amplify-cli/issues/8276)) ([887f617](https://github.com/aws-amplify/amplify-cli/commit/887f617a83d99da1cf93850dc96ff0eebda0fe5a))
+
+
+### Reverts
+
+* Revert "fix: update migration msg, ddb import e2e, lgtm errors (#8796)" (#8799) ([394a32f](https://github.com/aws-amplify/amplify-cli/commit/394a32f7a801bcf845a180bfdaa7d1d95c5962e7)), closes [#8796](https://github.com/aws-amplify/amplify-cli/issues/8796) [#8799](https://github.com/aws-amplify/amplify-cli/issues/8799)
+
+
+
+
+
 # [2.57.0-graphql-vnext-dev-preview.8](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.55.0...amplify-e2e-tests@2.57.0-graphql-vnext-dev-preview.8) (2021-11-12)
 
 

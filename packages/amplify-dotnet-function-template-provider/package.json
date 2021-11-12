@@ -1,6 +1,6 @@
 {
   "name": "amplify-dotnet-function-template-provider",
-  "version": "1.6.1-graphql-vnext-dev-preview.8",
+  "version": "1.6.1-graphql-vnext-dev-preview.9",
   "description": ".NET Core templates supplied by the Amplify Team",
   "repository": {
     "type": "git",
@@ -22,9 +22,9 @@
     "clean": "rimraf lib tsconfig.tsbuildinfo"
   },
   "dependencies": {
-    "amplify-cli-core": "1.34.0-graphql-vnext-dev-preview.8",
-    "amplify-function-plugin-interface": "1.9.2-graphql-vnext-dev-preview.8",
-    "graphql-transformer-core": "6.32.1-graphql-vnext-dev-preview.8"
+    "amplify-cli-core": "1.34.0-graphql-vnext-dev-preview.9",
+    "amplify-function-plugin-interface": "1.9.2-graphql-vnext-dev-preview.9",
+    "graphql-transformer-core": "6.32.1-graphql-vnext-dev-preview.9"
   },
   "devDependencies": {
     "@types/inquirer": "^6.5.0",

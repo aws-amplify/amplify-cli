@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.9.1-graphql-vnext-dev-preview.9](https://github.com/aws-amplify/amplify-cli/compare/amplify-java-function-runtime-provider@1.8.18...amplify-java-function-runtime-provider@1.9.1-graphql-vnext-dev-preview.9) (2021-11-12)
+
+**Note:** Version bump only for package amplify-java-function-runtime-provider
+
+
+
+
+
 ## [1.9.1-graphql-vnext-dev-preview.8](https://github.com/aws-amplify/amplify-cli/compare/amplify-java-function-runtime-provider@1.8.18...amplify-java-function-runtime-provider@1.9.1-graphql-vnext-dev-preview.8) (2021-11-12)
 
 **Note:** Version bump only for package amplify-java-function-runtime-provider
