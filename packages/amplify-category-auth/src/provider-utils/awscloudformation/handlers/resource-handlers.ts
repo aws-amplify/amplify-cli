@@ -135,6 +135,8 @@ export const getUpdateAuthHandler = (context: $TSContext) => async (request: Ser
   });
   context.amplify.saveEnvResourceParameters(context, category, requestWithDefaults.resourceName, envSpecificParams);
 
+  // handling triggers to be saved  coorectly in cli-inputs
+  await getResourceUpdater(context, cliInputs);
   // saving updated request here
   /**
    * 1) update cli-inputs manager (get cli-inputs , save cli-inputs)
@@ -155,7 +157,6 @@ export const getUpdateAuthHandler = (context: $TSContext) => async (request: Ser
     // saving cli-inputs except secrets
     await cliState.saveCLIInputPayload(cognitoCLIInputs);
     // remoe this when api and functions transform are done
-    await getResourceUpdater(context, cliInputs);
     if (request.updateFlow !== 'updateUserPoolGroups' && request.updateFlow !== 'updateAdminQueries') {
       await generateAuthStackTemplate(context, cognitoCLIInputs.cognitoConfig.resourceName);
     }

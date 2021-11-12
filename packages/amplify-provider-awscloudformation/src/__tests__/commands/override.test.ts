@@ -7,6 +7,9 @@ jest.mock('amplify-cli-core', () => ({
   FeatureFlags: {
     getBoolean: jest.fn(),
   },
+  pathManager: {
+    getBackendDirPath: jest.fn().mockReturnValue('mockPath'),
+  },
   generateOverrideSkeleton: jest.fn(),
 }));
 jest.mock('amplify-provider-awscloudformation');
@@ -33,7 +36,7 @@ describe('run override command for root stack', () => {
 
     const context_stub_typed = context_stub as unknown as $TSContext;
     await run(context_stub_typed);
-    expect(printer.info).toBeCalledTimes(2);
+    expect(printer.info).toBeCalledTimes(0);
   });
 
   it('run override command when FF is ON and awscloudformation exist', async () => {
@@ -51,7 +54,7 @@ describe('run override command for root stack', () => {
     const context_stub_typed = context_stub as unknown as $TSContext;
     await run(context_stub_typed);
     const mockSrcPath = path.join(__dirname, '..', '..', '..', 'resources', 'overrides-resource');
-    const mockDestPath = path.join('mydir', 'awscloudformation');
+    const mockDestPath = path.join('mockPath', 'awscloudformation');
     expect(generateOverrideSkeleton).toBeCalledWith(context_stub_typed, mockSrcPath, mockDestPath);
   });
 });
