@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import {
   $TSAny,
   $TSContext,
@@ -148,6 +149,33 @@ export class S3InputState {
     return oldParams;
   }
 
+  inferAuthPermissions(oldParams: $TSAny): $TSAny[] {
+    if (
+       oldParams.selectedAuthenticatedPermissions && (
+       (oldParams.s3PermissionsAuthenticatedPublic && oldParams.s3PermissionsAuthenticatedPublic != 'DISALLOW') ||
+       (oldParams.s3PermissionsAuthenticatedPrivate && oldParams.s3PermissionsAuthenticatedPrivate != 'DISALLOW') ||
+       (oldParams.s3PermissionsAuthenticatedProtected && oldParams.s3PermissionsAuthenticatedProtected != 'DISALLOW') ||
+       (oldParams.s3PermissionsAuthenticatedUploads && oldParams.s3PermissionsAuthenticatedUploads != 'DISALLOW'))
+    ) {
+      return oldParams.selectedAuthenticatedPermissions;
+    } else {
+      return [];
+    }
+  }
+  inferGuestPermissions(oldParams: $TSAny): $TSAny[] {
+    if (
+      oldParams.selectedGuestPermissions && (
+      (oldParams.s3PermissionsGuestPublic && oldParams.s3PermissionsGuestPublic != 'DISALLOW') ||
+      (oldParams.s3PermissionsGuestPrivate && oldParams.s3PermissionsGuestPrivate != 'DISALLOW') ||
+      (oldParams.s3PermissionsGuestProtected && oldParams.s3PermissionsGuestProtected != 'DISALLOW') ||
+      (oldParams.s3PermissionsGuestUploads && oldParams.s3PermissionsGuestUploads != 'DISALLOW'))
+   ) {
+     return oldParams.selectedGuestPermissions;
+   } else {
+     return [];
+   }
+  }
+
   genInputParametersForMigration(oldS3Params: MigrationParams): S3UserInputs {
     const oldParams = oldS3Params.parameters;
     const storageParams = oldS3Params.storageParams;
@@ -161,22 +189,27 @@ export class S3InputState {
       triggerFunction: 'NONE',
       groupAccess: undefined,
     };
+    const authPermissions = this.inferAuthPermissions(oldParams);
+    const guestPermissions = this.inferGuestPermissions(oldParams);
+
     if (oldParams.triggerFunction) {
       userInputs.triggerFunction = oldParams.triggerFunction;
     }
-
-    if (oldParams.selectedAuthenticatedPermissions) {
-      userInputs.authAccess = S3InputState.getInputPermissionsFromCfnPermissions(oldParams.selectedAuthenticatedPermissions);
+    if (authPermissions && authPermissions.length > 0) {
+      userInputs.authAccess = S3InputState.getInputPermissionsFromCfnPermissions(authPermissions);
+    } else {
+      userInputs.authAccess = [];
+    }
+    if (guestPermissions && guestPermissions.length > 0) {
+      userInputs.guestAccess = S3InputState.getInputPermissionsFromCfnPermissions(guestPermissions);
+    } else {
+      userInputs.guestAccess = [];
     }
 
-    if (oldParams.selectedGuestPermissions) {
-      userInputs.guestAccess = S3InputState.getInputPermissionsFromCfnPermissions(oldParams.selectedGuestPermissions);
-    }
-
-    if (oldParams.selectedGuestPermissions?.length) {
+    if (userInputs.guestAccess?.length > 0) {
       userInputs.storageAccess = S3AccessType.AUTH_AND_GUEST;
     } else {
-      if (oldParams.selectedAuthenticatedPermissions?.length) {
+      if (userInputs.authAccess?.length > 0) {
         userInputs.storageAccess = S3AccessType.AUTH_ONLY;
       }
     }
@@ -390,15 +423,16 @@ export class S3InputState {
   }
 
   public static getInputPermissionsFromCfnPermissions(selectedGuestPermissions: S3CFNPermissionType[] | undefined) {
-    if (selectedGuestPermissions) {
-      return selectedGuestPermissions.map(S3InputState.getPermissionTypeFromCfnType);
+    if (selectedGuestPermissions && selectedGuestPermissions.length > 0) {
+      const inputParams = selectedGuestPermissions.map(S3InputState.getPermissionTypeFromCfnType);
+      return _.uniq(inputParams) as Array<S3PermissionType>; //required to remove List and Read mapping to the same entity
     } else {
       return [];
     }
   }
 
   public static getInputPermissionsFromStorageParamPermissions(storageParamGroupPermissions: S3StorageParamsPermissionType[] | undefined) {
-    if (storageParamGroupPermissions) {
+    if (storageParamGroupPermissions && storageParamGroupPermissions.length > 0) {
       return storageParamGroupPermissions.map(S3InputState.getPermissionTypeFromStorageParamsType);
     } else {
       return [];
