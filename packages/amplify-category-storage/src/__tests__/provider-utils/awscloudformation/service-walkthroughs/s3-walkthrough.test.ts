@@ -72,7 +72,7 @@ describe('add s3 walkthrough tests', () => {
     jest.spyOn(AmplifyS3ResourceStackTransform.prototype, 'transform').mockImplementation(() => Promise.resolve());
     jest.spyOn(s3AuthAPI, 'migrateAuthDependencyResource').mockReturnValue(
       new Promise((resolve, _reject) => {
-        process.nextTick(() => resolve(undefined));
+        process.nextTick(() => resolve(true));
       }),
     );
 

@@ -81,7 +81,7 @@ function canResourceBeTransformed(resourceName) {
 }
 
 async function migrateAuthResource(context, resourceName) {
-  await checkAuthResourceMigration(context, resourceName);
+  return checkAuthResourceMigration(context, resourceName, true);
 }
 
 async function externalAuthEnable(context, externalCategory, resourceName, requirements) {
@@ -105,7 +105,7 @@ async function externalAuthEnable(context, externalCategory, resourceName, requi
     }
     currentAuthName = await getAuthResourceName(context);
     // check for migration when auth has been enabled
-    await checkAuthResourceMigration(context, currentAuthName);
+    await checkAuthResourceMigration(context, currentAuthName, true);
     const { provider } = serviceMetadata.Cognito;
     const providerPlugin = context.amplify.getPluginInstance(context, provider);
     currentAuthParams = providerPlugin.loadResourceParameters(context, 'auth', currentAuthName);
@@ -439,7 +439,7 @@ const executeAmplifyHeadlessCommand = async (context, headlessPayload) => {
     case 'update':
       // migration check for headless update
       const authResourceName = await getAuthResourceName(context);
-      await checkAuthResourceMigration(context, authResourceName);
+      await checkAuthResourceMigration(context, authResourceName, true);
       await attachPrevParamsToContext(context);
       await validateUpdateAuthRequest(headlessPayload)
         .then(getUpdateAuthRequestAdaptor(context.amplify.getProjectConfig().frontend, context.updatingAuth.requiredAttributes))

@@ -1,12 +1,8 @@
 import { run } from '../../commands/awscloudformation/override';
-import { $TSContext, FeatureFlags, generateOverrideSkeleton } from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
+import { $TSContext, generateOverrideSkeleton } from 'amplify-cli-core';
 import * as path from 'path';
 
 jest.mock('amplify-cli-core', () => ({
-  FeatureFlags: {
-    getBoolean: jest.fn(),
-  },
   pathManager: {
     getBackendDirPath: jest.fn().mockReturnValue('mockPath'),
   },
@@ -26,28 +22,11 @@ jest.mock('fs-extra', () => ({
 }));
 
 describe('run override command for root stack', () => {
-  it('runs override command when FF is OFF', async () => {
+  it('run override command when awscloudformation exist', async () => {
     const context_stub = {
       amplify: {
         confirmPrompt: jest.fn().mockResolvedValue(true),
         invokePluginMethod: jest.fn(),
-      },
-    };
-
-    const context_stub_typed = context_stub as unknown as $TSContext;
-    await run(context_stub_typed);
-    expect(printer.info).toBeCalledTimes(0);
-  });
-
-  it('run override command when FF is ON and awscloudformation exist', async () => {
-    FeatureFlags.getBoolean = jest.fn().mockReturnValue(true);
-    const context_stub = {
-      amplify: {
-        confirmPrompt: jest.fn().mockResolvedValue(true),
-        invokePluginMethod: jest.fn(),
-        pathManager: {
-          getBackendDirPath: jest.fn().mockReturnValue('mydir'),
-        },
       },
     };
 

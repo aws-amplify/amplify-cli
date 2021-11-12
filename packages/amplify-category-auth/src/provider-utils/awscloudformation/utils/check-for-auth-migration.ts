@@ -4,7 +4,10 @@ import { AuthInputState } from '../auth-inputs-manager/auth-input-state';
 import { generateAuthStackTemplate } from './generate-auth-stack-template';
 import { migrateResourceToSupportOverride } from './migrate-override-resource';
 
-export const checkAuthResourceMigration = async (context: $TSContext, authName: string, isUpdate: boolean) => {
+/*
+ * returns true if check goes through, false if cancelled
+ */
+export const checkAuthResourceMigration = async (context: $TSContext, authName: string, isUpdate: boolean): Promise<boolean> => {
   // check if its imported auth
   const { imported } = context.amplify.getImportedAuthProperties(context);
   if (!imported) {
@@ -23,7 +26,10 @@ export const checkAuthResourceMigration = async (context: $TSContext, authName: 
         // fetch cli Inputs again
         const cliInputs = cliState.getCLIInputPayload();
         await generateAuthStackTemplate(context, cliInputs.cognitoConfig.resourceName);
+        return true;
       }
+      return false;
     }
   }
+  return true;
 };
