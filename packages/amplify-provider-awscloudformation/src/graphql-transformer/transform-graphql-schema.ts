@@ -37,6 +37,8 @@ import { ResourceConstants } from 'graphql-transformer-common';
 import { showGlobalSandboxModeWarning, showSandboxModePrompts, schemaHasSandboxModeEnabled } from '../utils/sandbox-mode-helpers';
 import { printer } from 'amplify-prompts';
 import { GraphQLSanityCheck, SanityCheckRules } from './sanity-check';
+import _ from 'lodash';
+import { isAuthModeUpdated } from '../utils/auth-mode-compare';
 import { parseUserDefinedSlots } from './user-defined-slots';
 
 const API_CATEGORY = 'api';
@@ -351,6 +353,9 @@ export async function transformGraphQLSchema(context, options) {
   context.print.success(`GraphQL schema compiled successfully.\n\nEdit your schema at ${schemaFilePath} or \
 place .graphql files in a directory at ${schemaDirPath}`);
 
+  if (isAuthModeUpdated(options)) {
+    parameters.AuthModeLastUpdated = new Date();
+  }
   if (!options.dryRun) {
     JSONUtilities.writeJson(parametersFilePath, parameters);
   }
