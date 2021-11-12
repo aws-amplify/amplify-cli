@@ -2,6 +2,7 @@ import path from 'path';
 import { generateOverrideSkeleton, $TSContext, stateManager, pathManager } from 'amplify-cli-core';
 import { printer, prompter } from 'amplify-prompts';
 import { checkAuthResourceMigration } from '../../provider-utils/awscloudformation/utils/check-for-auth-migration';
+import { getAuthResourceName } from '../../utils/getAuthResourceName';
 
 const category = 'auth';
 
@@ -18,14 +19,28 @@ export const run = async (context: $TSContext) => {
     printer.error(errMessage);
     return;
   }
-
-  const selectedAuthResource = await prompter.pick<'one', string>(`Which resource would you like to override?`, authResources);
+  const selectedAuthResource = await prompter.pick<'one', string>(`Which resource would you like to add overrides for?`, authResources);
   // check if migration needed
-  await checkAuthResourceMigration(context, selectedAuthResource, false);
-  const backendDir = pathManager.getBackendDirPath();
+  let authResourceName;
+  if (selectedAuthResource === 'userPoolGroups') {
+    authResourceName = await getAuthResourceName(context);
+    await checkAuthResourceMigration(context, authResourceName, false);
+  } else {
+    await checkAuthResourceMigration(context, selectedAuthResource, false);
+  }
 
-  const destPath = path.normalize(path.join(backendDir, category, selectedAuthResource));
-  const srcPath = path.normalize(path.join(__dirname, '..', '..', '..', 'resources', 'overrides-resource'));
+  // override structure for auth resource
+  if (selectedAuthResource === 'userPoolGroups') {
+    await generateOverrideforAuthResource(context, selectedAuthResource, 'userPoolGroups');
+  } else {
+    await generateOverrideforAuthResource(context, selectedAuthResource, 'auth');
+  }
+};
+
+const generateOverrideforAuthResource = async (context: $TSContext, resourceName: string, resourceType: string) => {
+  const backendDir = pathManager.getBackendDirPath();
+  const destPath = path.normalize(path.join(backendDir, category, resourceName));
+  const srcPath = path.normalize(path.join(__dirname, '..', '..', '..', 'resources', 'overrides-resource', resourceType));
 
   await generateOverrideSkeleton(context, srcPath, destPath);
 };

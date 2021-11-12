@@ -93,7 +93,7 @@
           }
         },
         "userpoolClientRefreshTokenValidity": {
-          "type": "number"
+          "type": ["string", "number"]
         },
         "userpoolClientReadAttributes": {
           "type": "array",
