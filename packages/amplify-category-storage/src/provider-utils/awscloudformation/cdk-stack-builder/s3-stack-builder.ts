@@ -254,7 +254,7 @@ export class AmplifyS3ResourceCfnStack extends AmplifyResourceCfnStack implement
       {
         params: ['s3PublicPolicy', 's3PrivatePolicy', 's3ProtectedPolicy', 's3UploadsPolicy', 's3ReadPolicy'],
         paramType: 'String',
-        default: 'None',
+        default: 'NONE',
       },
       {
         params: [
@@ -273,6 +273,7 @@ export class AmplifyS3ResourceCfnStack extends AmplifyResourceCfnStack implement
       {
         params: ['selectedGuestPermissions', 'selectedAuthenticatedPermissions'],
         paramType: 'CommaDelimitedList',
+        default:'NONE'
       },
     ];
     if (this._props.triggerFunction && this._props.triggerFunction != 'NONE') {
@@ -664,7 +665,7 @@ export class AmplifyS3ResourceCfnStack extends AmplifyResourceCfnStack implement
   //S3GuestUploadPolicy
   createGuestUploadsPolicy() {
     let policyDefinition: IAmplifyPolicyDefinition = {
-      logicalId: 'S3GuestUploadsPolicy',
+      logicalId: 'S3GuestUploadPolicy',
       policyNameRef: 's3UploadsPolicy',
       roleRefs: ['unauthRoleName'],
       condition: this.conditions.CreateGuestUploads,
