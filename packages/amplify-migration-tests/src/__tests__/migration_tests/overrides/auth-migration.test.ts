@@ -26,6 +26,7 @@ import { UpdateAuthRequest } from 'amplify-headless-interface';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import * as _ from 'lodash';
+import { versionCheck } from '../../../migration-helpers';
 
 const defaultSettings = {
   name: 'authMigration',
@@ -86,6 +87,8 @@ describe('amplify auth migration', () => {
   it('...should init a project and add auth with default, and then update with latest and push', async () => {
     // init, add and push auth with installed cli
     await initJSProjectWithProfile(projRoot, defaultSettings);
+    await versionCheck(projRoot, false);
+    await versionCheck(projRoot, true);
     await addAuthWithDefault(projRoot, {});
     await amplifyPushAuth(projRoot);
     const meta = getProjectMeta(projRoot);
