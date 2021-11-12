@@ -49,8 +49,9 @@ export const getResourceUpdater = async (context: $TSAny, request: Readonly<Cogn
     await addAdminAuth(context, request.resourceName!, 'add', request.adminQueryGroup);
   }
 
-  const previouslySaved =
-    typeof context.updatingAuth.triggers === 'string' ? JSON.parse(context.updatingAuth.triggers) : context.updatingAuth.triggers;
+  const providerPlugin = context.amplify.getPluginInstance(context, 'awscloudformation');
+  const previouslySaved = JSON.parse(providerPlugin.loadResourceParameters(context, 'auth', request.resourceName)?.triggers || '{}');
+
   await lambdaTriggers(request, context, previouslySaved);
 
   await copyS3Assets(request);

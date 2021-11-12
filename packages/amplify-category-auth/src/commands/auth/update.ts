@@ -53,8 +53,8 @@ export const run = async (context: $TSContext) => {
   }
   const resourceName = await getAuthResourceName(context);
   await checkAuthResourceMigration(context, resourceName);
-  const cliState = new AuthInputState(resourceName);
-  context.updatingAuth = await cliState.loadResourceParameters(context, cliState.getCLIInputPayload());
+  const providerPlugin = context.amplify.getPluginInstance(context, servicesMetadata.Cognito.provider);
+  context.updatingAuth = providerPlugin.loadResourceParameters(context, 'auth', resourceName);
 
   try {
     const result = await amplify.serviceSelectionPrompt(context, category, getSupportedServices());
