@@ -774,7 +774,7 @@ export function getCfnFiles(category: string, resourceName: string, options?: gl
   if (fs.existsSync(resourceBuildDir) && fs.lstatSync(resourceBuildDir).isDirectory()) {
     const cfnFiles = glob.sync(cfnTemplateGlobPattern, {
       cwd: resourceBuildDir,
-      ignore: [parametersJson],
+      ignore: [parametersJson, AUTH_TRIGGER_TEMPLATE],
       ...options,
     });
 
