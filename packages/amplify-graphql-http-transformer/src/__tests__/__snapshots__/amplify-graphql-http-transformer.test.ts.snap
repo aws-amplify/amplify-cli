@@ -2,7 +2,7 @@
 
 exports[`generates expected VTL 1`] = `
 Object {
-  "Comment.complexPut.req.vtl": "## [Start] Create request. **
+  "Comment.complexPut.DataResolver.req.vtl": "## [Start] Create request. **
 ## START: Manually checking that all non-null arguments are provided either in the query or the body **
 #if( (!$ctx.args.body.userId && !$ctx.args.query.userId) )
 $util.error(\\"An argument you marked as Non-Null is not present in the query nor the body of your request.\\"))
@@ -23,7 +23,7 @@ $util.qr($headers.put(\\"X-Header\\", \\"X-Header-ValuePut\\"))
   }
 }
 ## [End] Create request. **",
-  "Comment.complexPut.res.vtl": "## [Start] Process response. **
+  "Comment.complexPut.DataResolver.res.vtl": "## [Start] Process response. **
 #if( $ctx.result.statusCode == 200 || $ctx.result.statusCode == 201 )
   #if( $ctx.result.headers.get(\\"Content-Type\\").toLowerCase().contains(\\"xml\\") )
 $utils.xml.toJsonString($ctx.result.body)
@@ -34,7 +34,8 @@ $ctx.result.body
 $util.qr($util.appendError($ctx.result.body, $ctx.result.statusCode))
 #end
 ## [End] Process response. **",
-  "Comment.content.req.vtl": "## [Start] Create request. **
+  "Comment.complexPut.res.vtl": "$util.toJson($ctx.prev.result)",
+  "Comment.content.DataResolver.req.vtl": "## [Start] Create request. **
 #set( $headers = $utils.http.copyHeaders($ctx.request.headers) )
 $util.qr($headers.put(\\"accept-encoding\\", \\"application/json\\"))
 $util.qr($headers.put(\\"X-Header\\", \\"X-Header-Value\\"))
@@ -48,7 +49,7 @@ $util.qr($headers.put(\\"X-Header\\", \\"X-Header-Value\\"))
   }
 }
 ## [End] Create request. **",
-  "Comment.content.res.vtl": "## [Start] Process response. **
+  "Comment.content.DataResolver.res.vtl": "## [Start] Process response. **
 #if( $ctx.result.statusCode == 200 )
   #if( $ctx.result.headers.get(\\"Content-Type\\").toLowerCase().contains(\\"xml\\") )
 $utils.xml.toJsonString($ctx.result.body)
@@ -59,7 +60,8 @@ $ctx.result.body
 $util.qr($util.appendError($ctx.result.body, $ctx.result.statusCode))
 #end
 ## [End] Process response. **",
-  "Comment.contentDelete.req.vtl": "## [Start] Create request. **
+  "Comment.content.res.vtl": "$util.toJson($ctx.prev.result)",
+  "Comment.contentDelete.DataResolver.req.vtl": "## [Start] Create request. **
 #set( $headers = $utils.http.copyHeaders($ctx.request.headers) )
 $util.qr($headers.put(\\"accept-encoding\\", \\"application/json\\"))
 $util.qr($headers.put(\\"X-Header\\", \\"X-Header-ValueDelete\\"))
@@ -72,7 +74,7 @@ $util.qr($headers.put(\\"X-Header\\", \\"X-Header-ValueDelete\\"))
   }
 }
 ## [End] Create request. **",
-  "Comment.contentDelete.res.vtl": "## [Start] Process response. **
+  "Comment.contentDelete.DataResolver.res.vtl": "## [Start] Process response. **
 #if( $ctx.result.statusCode == 200 )
   #if( $ctx.result.headers.get(\\"Content-Type\\").toLowerCase().contains(\\"xml\\") )
 $utils.xml.toJsonString($ctx.result.body)
@@ -83,7 +85,8 @@ $ctx.result.body
 $util.qr($util.appendError($ctx.result.body, $ctx.result.statusCode))
 #end
 ## [End] Process response. **",
-  "Comment.contentPatch.req.vtl": "## [Start] Create request. **
+  "Comment.contentDelete.res.vtl": "$util.toJson($ctx.prev.result)",
+  "Comment.contentPatch.DataResolver.req.vtl": "## [Start] Create request. **
 #set( $headers = $utils.http.copyHeaders($ctx.request.headers) )
 $util.qr($headers.put(\\"accept-encoding\\", \\"application/json\\"))
 $util.qr($headers.put(\\"Content-Type\\", \\"application/json\\"))
@@ -99,7 +102,7 @@ $util.qr($headers.put(\\"X-Header\\", \\"X-Header-ValuePatch\\"))
   }
 }
 ## [End] Create request. **",
-  "Comment.contentPatch.res.vtl": "## [Start] Process response. **
+  "Comment.contentPatch.DataResolver.res.vtl": "## [Start] Process response. **
 #if( $ctx.result.statusCode == 200 || $ctx.result.statusCode == 201 )
   #if( $ctx.result.headers.get(\\"Content-Type\\").toLowerCase().contains(\\"xml\\") )
 $utils.xml.toJsonString($ctx.result.body)
@@ -110,7 +113,8 @@ $ctx.result.body
 $util.qr($util.appendError($ctx.result.body, $ctx.result.statusCode))
 #end
 ## [End] Process response. **",
-  "Comment.contentPost.req.vtl": "## [Start] Create request. **
+  "Comment.contentPatch.res.vtl": "$util.toJson($ctx.prev.result)",
+  "Comment.contentPost.DataResolver.req.vtl": "## [Start] Create request. **
 #set( $headers = $utils.http.copyHeaders($ctx.request.headers) )
 $util.qr($headers.put(\\"accept-encoding\\", \\"application/json\\"))
 $util.qr($headers.put(\\"Content-Type\\", \\"application/json\\"))
@@ -126,7 +130,7 @@ $util.qr($headers.put(\\"X-Header\\", \\"X-Header-ValuePost\\"))
   }
 }
 ## [End] Create request. **",
-  "Comment.contentPost.res.vtl": "## [Start] Process response. **
+  "Comment.contentPost.DataResolver.res.vtl": "## [Start] Process response. **
 #if( $ctx.result.statusCode == 200 || $ctx.result.statusCode == 201 )
   #if( $ctx.result.headers.get(\\"Content-Type\\").toLowerCase().contains(\\"xml\\") )
 $utils.xml.toJsonString($ctx.result.body)
@@ -137,5 +141,6 @@ $ctx.result.body
 $util.qr($util.appendError($ctx.result.body, $ctx.result.statusCode))
 #end
 ## [End] Process response. **",
+  "Comment.contentPost.res.vtl": "$util.toJson($ctx.prev.result)",
 }
 `;
