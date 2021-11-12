@@ -15,7 +15,7 @@ import {
 } from 'amplify-e2e-core';
 import * as fs from 'fs-extra';
 import { join } from 'path';
-import { initJSProjectWithProfile } from '../../migration-helpers';
+import { initJSProjectWithProfile, versionCheck } from '../../migration-helpers';
 
 describe('amplify auth migration', () => {
   let projRoot: string;
@@ -33,6 +33,8 @@ describe('amplify auth migration', () => {
   it('...should init a project and add auth with a custom trigger, and then update to remove the custom js while leaving the other js', async () => {
     // init, add and push auth with installed cli
     await initJSProjectWithProfile(projRoot, { name: 'authMigration' });
+    await versionCheck(projRoot, false);
+    await versionCheck(projRoot, true);
     await addAuthWithCustomTrigger(projRoot, {});
     await amplifyPushAuth(projRoot);
     const meta = getProjectMeta(projRoot);
@@ -73,6 +75,8 @@ describe('amplify auth migration', () => {
   it('...should init a project and add auth with default, and then update with latest and push', async () => {
     // init, add and push auth with installed cli
     await initJSProjectWithProfile(projRoot, { name: 'authMigration' });
+    await versionCheck(projRoot, false);
+    await versionCheck(projRoot, true);
     await addAuthWithDefault(projRoot, {});
     await amplifyPushAuth(projRoot);
     const meta = getProjectMeta(projRoot);
