@@ -24,9 +24,9 @@ export const run = async (context: $TSContext) => {
   let authResourceName;
   if (selectedAuthResource === 'userPoolGroups') {
     authResourceName = await getAuthResourceName(context);
-    await checkAuthResourceMigration(context, authResourceName);
+    await checkAuthResourceMigration(context, authResourceName, false);
   } else {
-    await checkAuthResourceMigration(context, selectedAuthResource);
+    await checkAuthResourceMigration(context, selectedAuthResource, false);
   }
 
   // override structure for auth resource
