@@ -1242,18 +1242,15 @@ export function addAuthWithPreTokenGenerationTrigger(projectDir: string): Promis
       .wait('How do you want users to be able to sign in')
       .sendCarriageReturn()
       .wait('Do you want to configure advanced settings')
-      .send(KEY_DOWN_ARROW)
-      .sendCarriageReturn()
+      .sendLine(KEY_DOWN_ARROW)
       .wait('What attributes are required for signing up?')
       .sendCarriageReturn()
       .wait('Do you want to enable any of the following capabilities')
       .send(KEY_UP_ARROW) //Override ID Token Claims
-      .send(' ')
-      .sendCarriageReturn()
+      .sendLine(' ')
+      .wait('Successfully added the Lambda function locally')
       .wait('Do you want to edit your alter-claims function now')
-      .send('n')
-      .sendCarriageReturn()
-      .wait('"amplify publish" will build all your local backend and frontend resources')
+      .sendLine('n')
       .run((err: Error) => {
         if (!err) {
           resolve();
