@@ -308,7 +308,10 @@ function createResolver(stack: cdk.Stack, dataSourceId: string, context: Transfo
   const functionRequestTemplateString = replaceEnvAndRegion(env, region, printBlock('Create request')(compoundExpression(reqCompoundExpr)));
   const functionRequestMappingTemplate = cdk.Token.isUnresolved(functionRequestTemplateString)
     ? MappingTemplate.inlineTemplateFromString(functionRequestTemplateString)
-    : MappingTemplate.s3MappingTemplateFromString(functionRequestTemplateString, `${functionId}.req.vtl`);
+    : MappingTemplate.s3MappingTemplateFromString(
+        functionRequestTemplateString,
+        `${config.resolverTypeName}.${config.resolverFieldName}.DataResolver.req.vtl`,
+      );
   const appsyncFunction = context.api.host.addAppSyncFunction(
     functionId,
     functionRequestMappingTemplate,
@@ -324,7 +327,7 @@ function createResolver(stack: cdk.Stack, dataSourceId: string, context: Transfo
           ref('util.qr($util.appendError($ctx.result.body, $ctx.result.statusCode))'),
         ),
       ),
-      `${functionId}.res.vtl`,
+      `${config.resolverTypeName}.${config.resolverFieldName}.DataResolver.res.vtl`,
     ),
     dataSourceId,
     stack,
