@@ -3,6 +3,150 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.8.0-graphql-vnext-dev-preview.8](https://github.com/aws-amplify/amplify-cli/compare/amplify-graphiql-explorer@1.6.1...amplify-graphiql-explorer@1.8.0-graphql-vnext-dev-preview.8) (2021-11-12)
+
+
+### Features
+
+* amplify export ([fd28279](https://github.com/aws-amplify/amplify-cli/commit/fd282791167177d72a42784b5de4f2fd461d590a)), closes [#8547](https://github.com/aws-amplify/amplify-cli/issues/8547) [#8488](https://github.com/aws-amplify/amplify-cli/issues/8488) [#8486](https://github.com/aws-amplify/amplify-cli/issues/8486) [#8547](https://github.com/aws-amplify/amplify-cli/issues/8547) [#8488](https://github.com/aws-amplify/amplify-cli/issues/8488) [#8486](https://github.com/aws-amplify/amplify-cli/issues/8486)
+
+
+### Reverts
+
+* Revert "chore: upgrade yarn packages recommended by dependabot (#7670)" (#7758) ([d90edec](https://github.com/aws-amplify/amplify-cli/commit/d90edec08a9a23e7492b8e6a25bd0c04245d0157)), closes [#7670](https://github.com/aws-amplify/amplify-cli/issues/7670) [#7758](https://github.com/aws-amplify/amplify-cli/issues/7758)
+
+
+
+
+
+# [1.8.0-graphql-vnext-dev-preview.7](https://github.com/aws-amplify/amplify-cli/compare/amplify-graphiql-explorer@1.6.1...amplify-graphiql-explorer@1.8.0-graphql-vnext-dev-preview.7) (2021-11-12)
+
+
+### Features
+
+* amplify export ([fd28279](https://github.com/aws-amplify/amplify-cli/commit/fd282791167177d72a42784b5de4f2fd461d590a)), closes [#8547](https://github.com/aws-amplify/amplify-cli/issues/8547) [#8488](https://github.com/aws-amplify/amplify-cli/issues/8488) [#8486](https://github.com/aws-amplify/amplify-cli/issues/8486) [#8547](https://github.com/aws-amplify/amplify-cli/issues/8547) [#8488](https://github.com/aws-amplify/amplify-cli/issues/8488) [#8486](https://github.com/aws-amplify/amplify-cli/issues/8486)
+
+
+### Reverts
+
+* Revert "chore: upgrade yarn packages recommended by dependabot (#7670)" (#7758) ([d90edec](https://github.com/aws-amplify/amplify-cli/commit/d90edec08a9a23e7492b8e6a25bd0c04245d0157)), closes [#7670](https://github.com/aws-amplify/amplify-cli/issues/7670) [#7758](https://github.com/aws-amplify/amplify-cli/issues/7758)
+
+
+
+
+
+# [1.8.0-graphql-vnext-dev-preview.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-graphiql-explorer@1.6.1...amplify-graphiql-explorer@1.8.0-graphql-vnext-dev-preview.6) (2021-11-12)
+
+
+### Features
+
+* amplify export ([fd28279](https://github.com/aws-amplify/amplify-cli/commit/fd282791167177d72a42784b5de4f2fd461d590a)), closes [#8547](https://github.com/aws-amplify/amplify-cli/issues/8547) [#8488](https://github.com/aws-amplify/amplify-cli/issues/8488) [#8486](https://github.com/aws-amplify/amplify-cli/issues/8486) [#8547](https://github.com/aws-amplify/amplify-cli/issues/8547) [#8488](https://github.com/aws-amplify/amplify-cli/issues/8488) [#8486](https://github.com/aws-amplify/amplify-cli/issues/8486)
+
+
+### Reverts
+
+* Revert "chore: upgrade yarn packages recommended by dependabot (#7670)" (#7758) ([d90edec](https://github.com/aws-amplify/amplify-cli/commit/d90edec08a9a23e7492b8e6a25bd0c04245d0157)), closes [#7670](https://github.com/aws-amplify/amplify-cli/issues/7670) [#7758](https://github.com/aws-amplify/amplify-cli/issues/7758)
+
+
+
+
+
+# [1.8.0-graphql-vnext-dev-preview.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-graphiql-explorer@1.6.1...amplify-graphiql-explorer@1.8.0-graphql-vnext-dev-preview.5) (2021-11-12)
+
+
+### Features
+
+* amplify export ([fd28279](https://github.com/aws-amplify/amplify-cli/commit/fd282791167177d72a42784b5de4f2fd461d590a)), closes [#8547](https://github.com/aws-amplify/amplify-cli/issues/8547) [#8488](https://github.com/aws-amplify/amplify-cli/issues/8488) [#8486](https://github.com/aws-amplify/amplify-cli/issues/8486) [#8547](https://github.com/aws-amplify/amplify-cli/issues/8547) [#8488](https://github.com/aws-amplify/amplify-cli/issues/8488) [#8486](https://github.com/aws-amplify/amplify-cli/issues/8486)
+
+
+### Reverts
+
+* Revert "chore: upgrade yarn packages recommended by dependabot (#7670)" (#7758) ([d90edec](https://github.com/aws-amplify/amplify-cli/commit/d90edec08a9a23e7492b8e6a25bd0c04245d0157)), closes [#7670](https://github.com/aws-amplify/amplify-cli/issues/7670) [#7758](https://github.com/aws-amplify/amplify-cli/issues/7758)
+
+
+
+
+
+# [1.8.0-graphql-vnext-dev-preview.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-graphiql-explorer@1.6.1...amplify-graphiql-explorer@1.8.0-graphql-vnext-dev-preview.4) (2021-11-12)
+
+
+### Features
+
+* amplify export ([fd28279](https://github.com/aws-amplify/amplify-cli/commit/fd282791167177d72a42784b5de4f2fd461d590a)), closes [#8547](https://github.com/aws-amplify/amplify-cli/issues/8547) [#8488](https://github.com/aws-amplify/amplify-cli/issues/8488) [#8486](https://github.com/aws-amplify/amplify-cli/issues/8486) [#8547](https://github.com/aws-amplify/amplify-cli/issues/8547) [#8488](https://github.com/aws-amplify/amplify-cli/issues/8488) [#8486](https://github.com/aws-amplify/amplify-cli/issues/8486)
+
+
+### Reverts
+
+* Revert "chore: upgrade yarn packages recommended by dependabot (#7670)" (#7758) ([d90edec](https://github.com/aws-amplify/amplify-cli/commit/d90edec08a9a23e7492b8e6a25bd0c04245d0157)), closes [#7670](https://github.com/aws-amplify/amplify-cli/issues/7670) [#7758](https://github.com/aws-amplify/amplify-cli/issues/7758)
+
+
+
+
+
+# [1.8.0-graphql-vnext-dev-preview.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-graphiql-explorer@1.6.1...amplify-graphiql-explorer@1.8.0-graphql-vnext-dev-preview.3) (2021-11-12)
+
+
+### Features
+
+* amplify export ([fd28279](https://github.com/aws-amplify/amplify-cli/commit/fd282791167177d72a42784b5de4f2fd461d590a)), closes [#8547](https://github.com/aws-amplify/amplify-cli/issues/8547) [#8488](https://github.com/aws-amplify/amplify-cli/issues/8488) [#8486](https://github.com/aws-amplify/amplify-cli/issues/8486) [#8547](https://github.com/aws-amplify/amplify-cli/issues/8547) [#8488](https://github.com/aws-amplify/amplify-cli/issues/8488) [#8486](https://github.com/aws-amplify/amplify-cli/issues/8486)
+
+
+### Reverts
+
+* Revert "chore: upgrade yarn packages recommended by dependabot (#7670)" (#7758) ([d90edec](https://github.com/aws-amplify/amplify-cli/commit/d90edec08a9a23e7492b8e6a25bd0c04245d0157)), closes [#7670](https://github.com/aws-amplify/amplify-cli/issues/7670) [#7758](https://github.com/aws-amplify/amplify-cli/issues/7758)
+
+
+
+
+
+# [1.8.0-graphql-vnext-dev-preview.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-graphiql-explorer@1.6.1...amplify-graphiql-explorer@1.8.0-graphql-vnext-dev-preview.2) (2021-11-12)
+
+
+### Features
+
+* amplify export ([fd28279](https://github.com/aws-amplify/amplify-cli/commit/fd282791167177d72a42784b5de4f2fd461d590a)), closes [#8547](https://github.com/aws-amplify/amplify-cli/issues/8547) [#8488](https://github.com/aws-amplify/amplify-cli/issues/8488) [#8486](https://github.com/aws-amplify/amplify-cli/issues/8486) [#8547](https://github.com/aws-amplify/amplify-cli/issues/8547) [#8488](https://github.com/aws-amplify/amplify-cli/issues/8488) [#8486](https://github.com/aws-amplify/amplify-cli/issues/8486)
+
+
+### Reverts
+
+* Revert "chore: upgrade yarn packages recommended by dependabot (#7670)" (#7758) ([d90edec](https://github.com/aws-amplify/amplify-cli/commit/d90edec08a9a23e7492b8e6a25bd0c04245d0157)), closes [#7670](https://github.com/aws-amplify/amplify-cli/issues/7670) [#7758](https://github.com/aws-amplify/amplify-cli/issues/7758)
+
+
+
+
+
+# [1.8.0-graphql-vnext-dev-preview.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-graphiql-explorer@1.6.1...amplify-graphiql-explorer@1.8.0-graphql-vnext-dev-preview.1) (2021-11-12)
+
+
+### Features
+
+* amplify export ([fd28279](https://github.com/aws-amplify/amplify-cli/commit/fd282791167177d72a42784b5de4f2fd461d590a)), closes [#8547](https://github.com/aws-amplify/amplify-cli/issues/8547) [#8488](https://github.com/aws-amplify/amplify-cli/issues/8488) [#8486](https://github.com/aws-amplify/amplify-cli/issues/8486) [#8547](https://github.com/aws-amplify/amplify-cli/issues/8547) [#8488](https://github.com/aws-amplify/amplify-cli/issues/8488) [#8486](https://github.com/aws-amplify/amplify-cli/issues/8486)
+
+
+### Reverts
+
+* Revert "chore: upgrade yarn packages recommended by dependabot (#7670)" (#7758) ([d90edec](https://github.com/aws-amplify/amplify-cli/commit/d90edec08a9a23e7492b8e6a25bd0c04245d0157)), closes [#7670](https://github.com/aws-amplify/amplify-cli/issues/7670) [#7758](https://github.com/aws-amplify/amplify-cli/issues/7758)
+
+
+
+
+
+# [1.8.0-graphql-vnext-dev-preview.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-graphiql-explorer@1.6.1...amplify-graphiql-explorer@1.8.0-graphql-vnext-dev-preview.0) (2021-11-12)
+
+
+### Features
+
+* amplify export ([fd28279](https://github.com/aws-amplify/amplify-cli/commit/fd282791167177d72a42784b5de4f2fd461d590a)), closes [#8547](https://github.com/aws-amplify/amplify-cli/issues/8547) [#8488](https://github.com/aws-amplify/amplify-cli/issues/8488) [#8486](https://github.com/aws-amplify/amplify-cli/issues/8486) [#8547](https://github.com/aws-amplify/amplify-cli/issues/8547) [#8488](https://github.com/aws-amplify/amplify-cli/issues/8488) [#8486](https://github.com/aws-amplify/amplify-cli/issues/8486)
+
+
+### Reverts
+
+* Revert "chore: upgrade yarn packages recommended by dependabot (#7670)" (#7758) ([d90edec](https://github.com/aws-amplify/amplify-cli/commit/d90edec08a9a23e7492b8e6a25bd0c04245d0157)), closes [#7670](https://github.com/aws-amplify/amplify-cli/issues/7670) [#7758](https://github.com/aws-amplify/amplify-cli/issues/7758)
+
+
+
+
+
 ## [1.6.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-graphiql-explorer@1.6.0...amplify-graphiql-explorer@1.6.1) (2021-05-18)
 
 

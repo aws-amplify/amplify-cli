@@ -3,6 +3,384 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.33.0-graphql-vnext-dev-preview.8](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@1.31.0...amplify-e2e-core@1.33.0-graphql-vnext-dev-preview.8) (2021-11-12)
+
+
+### Bug Fixes
+
+* alias attr bug and use enabled mfa ([aed3fd3](https://github.com/aws-amplify/amplify-cli/commit/aed3fd3cd692434500e41c478eb59d44c2b6ea37))
+* auth e2e fixes ([3d1d3fb](https://github.com/aws-amplify/amplify-cli/commit/3d1d3fb88da568efbea0e3c57277c71dedd9d0f7))
+* auth e2e tests ([#8708](https://github.com/aws-amplify/amplify-cli/issues/8708)) ([24797e9](https://github.com/aws-amplify/amplify-cli/commit/24797e926b99be78ba337761ece9a4ad93d7651b))
+* auth issue in export tests ([#8710](https://github.com/aws-amplify/amplify-cli/issues/8710)) ([b21389a](https://github.com/aws-amplify/amplify-cli/commit/b21389a4e69e6d913ae0255ce5fdd19a6a30e511))
+* auth trigger params parsing and test wait lines ([#8824](https://github.com/aws-amplify/amplify-cli/issues/8824)) ([20cfbdb](https://github.com/aws-amplify/amplify-cli/commit/20cfbdb49b25a18d28f06383fb55923727180dc9))
+* capitalization for filter, e2e test ([#8667](https://github.com/aws-amplify/amplify-cli/issues/8667)) ([4c5c869](https://github.com/aws-amplify/amplify-cli/commit/4c5c8699ca9261194ba0e6a5bfb958a0d95f412c))
+* ensure FF on stack transform, revert revert ([#8810](https://github.com/aws-amplify/amplify-cli/issues/8810)) ([868952f](https://github.com/aws-amplify/amplify-cli/commit/868952f9552f09aeb2b0b8e036c59954ee3391e0)), closes [#8796](https://github.com/aws-amplify/amplify-cli/issues/8796) [#8799](https://github.com/aws-amplify/amplify-cli/issues/8799)
+* ext overrides2 storage-headless and predictions ([#8622](https://github.com/aws-amplify/amplify-cli/issues/8622)) ([59e7118](https://github.com/aws-amplify/amplify-cli/commit/59e71184e966ec735724ba501b5b318c1dbd2735))
+* fix configure project and custom policies api containers ([#8703](https://github.com/aws-amplify/amplify-cli/issues/8703)) ([a5c8775](https://github.com/aws-amplify/amplify-cli/commit/a5c8775968b3883c4dff1cd7da63f0d8fd4b2426))
+* fixed import_auth test ([#8755](https://github.com/aws-amplify/amplify-cli/issues/8755)) ([c1bffdd](https://github.com/aws-amplify/amplify-cli/commit/c1bffddc6f34b9eb3c834b127dac57b67d2c55ee))
+* fixes auth migration e2e ([#8756](https://github.com/aws-amplify/amplify-cli/issues/8756)) ([f537d7c](https://github.com/aws-amplify/amplify-cli/commit/f537d7c3a1efa2fa67fc28a6f1d27d9889bbfe72))
+* fixes dependsOn parameter and auth migration test ([#8480](https://github.com/aws-amplify/amplify-cli/issues/8480)) ([640b79e](https://github.com/aws-amplify/amplify-cli/commit/640b79ed0e40171271fa5ad9f4524f2c01d04722))
+* **graphql:** refactor lambda authorizer code to use function category to create authorizer function ([#8784](https://github.com/aws-amplify/amplify-cli/issues/8784)) ([61c4b05](https://github.com/aws-amplify/amplify-cli/commit/61c4b05cbc4497ce2f6dd43f88926a6960b23854))
+* init override test fix ([#8768](https://github.com/aws-amplify/amplify-cli/issues/8768)) ([9674a4e](https://github.com/aws-amplify/amplify-cli/commit/9674a4e344651df0a756513d034c73b822da899e))
+* migration test fixes ([#8742](https://github.com/aws-amplify/amplify-cli/issues/8742)) ([193635f](https://github.com/aws-amplify/amplify-cli/commit/193635f8355c1a18a061f6eb939eabbada07fcf9))
+* stack generation logic when multiple paths ref same Lambda ([#8673](https://github.com/aws-amplify/amplify-cli/issues/8673)) ([d4a04e6](https://github.com/aws-amplify/amplify-cli/commit/d4a04e61db325b65737a94f33f7dba77d8a07529))
+* tsc global install error ([7d1cca8](https://github.com/aws-amplify/amplify-cli/commit/7d1cca890f138f32bac51fca085098a777aea1ae))
+* update migration msg, ddb import e2e, lgtm errors ([#8796](https://github.com/aws-amplify/amplify-cli/issues/8796)) ([a2d87ec](https://github.com/aws-amplify/amplify-cli/commit/a2d87eca889ed8b23cfe3cf145c0372b655d4ed9))
+
+
+### Features
+
+* amplify export ([fd28279](https://github.com/aws-amplify/amplify-cli/commit/fd282791167177d72a42784b5de4f2fd461d590a)), closes [#8547](https://github.com/aws-amplify/amplify-cli/issues/8547) [#8488](https://github.com/aws-amplify/amplify-cli/issues/8488) [#8486](https://github.com/aws-amplify/amplify-cli/issues/8486) [#8547](https://github.com/aws-amplify/amplify-cli/issues/8547) [#8488](https://github.com/aws-amplify/amplify-cli/issues/8488) [#8486](https://github.com/aws-amplify/amplify-cli/issues/8486)
+* Auth refactor to  use cdk, eliminate EJS, overrides functionality ([#8355](https://github.com/aws-amplify/amplify-cli/issues/8355)) ([66d885f](https://github.com/aws-amplify/amplify-cli/commit/66d885f8125f11c0ea3c23f67fec51b553445d42))
+* extensibility for REST APIs ([#8598](https://github.com/aws-amplify/amplify-cli/issues/8598)) ([de19d23](https://github.com/aws-amplify/amplify-cli/commit/de19d231465c1f16bf7d1c7ccb8dba2f36d039d8))
+* overrides uniformity accross all the categories ([#8695](https://github.com/aws-amplify/amplify-cli/issues/8695)) ([2f6f0eb](https://github.com/aws-amplify/amplify-cli/commit/2f6f0eba6922a345cc549455245a712957e2f352))
+* root stack override ([#8276](https://github.com/aws-amplify/amplify-cli/issues/8276)) ([887f617](https://github.com/aws-amplify/amplify-cli/commit/887f617a83d99da1cf93850dc96ff0eebda0fe5a))
+
+
+### Reverts
+
+* Revert "fix: update migration msg, ddb import e2e, lgtm errors (#8796)" (#8799) ([394a32f](https://github.com/aws-amplify/amplify-cli/commit/394a32f7a801bcf845a180bfdaa7d1d95c5962e7)), closes [#8796](https://github.com/aws-amplify/amplify-cli/issues/8796) [#8799](https://github.com/aws-amplify/amplify-cli/issues/8799)
+
+
+
+
+
+# [1.33.0-graphql-vnext-dev-preview.7](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@1.31.0...amplify-e2e-core@1.33.0-graphql-vnext-dev-preview.7) (2021-11-12)
+
+
+### Bug Fixes
+
+* alias attr bug and use enabled mfa ([aed3fd3](https://github.com/aws-amplify/amplify-cli/commit/aed3fd3cd692434500e41c478eb59d44c2b6ea37))
+* auth e2e fixes ([3d1d3fb](https://github.com/aws-amplify/amplify-cli/commit/3d1d3fb88da568efbea0e3c57277c71dedd9d0f7))
+* auth e2e tests ([#8708](https://github.com/aws-amplify/amplify-cli/issues/8708)) ([24797e9](https://github.com/aws-amplify/amplify-cli/commit/24797e926b99be78ba337761ece9a4ad93d7651b))
+* auth issue in export tests ([#8710](https://github.com/aws-amplify/amplify-cli/issues/8710)) ([b21389a](https://github.com/aws-amplify/amplify-cli/commit/b21389a4e69e6d913ae0255ce5fdd19a6a30e511))
+* auth trigger params parsing and test wait lines ([#8824](https://github.com/aws-amplify/amplify-cli/issues/8824)) ([20cfbdb](https://github.com/aws-amplify/amplify-cli/commit/20cfbdb49b25a18d28f06383fb55923727180dc9))
+* capitalization for filter, e2e test ([#8667](https://github.com/aws-amplify/amplify-cli/issues/8667)) ([4c5c869](https://github.com/aws-amplify/amplify-cli/commit/4c5c8699ca9261194ba0e6a5bfb958a0d95f412c))
+* ensure FF on stack transform, revert revert ([#8810](https://github.com/aws-amplify/amplify-cli/issues/8810)) ([868952f](https://github.com/aws-amplify/amplify-cli/commit/868952f9552f09aeb2b0b8e036c59954ee3391e0)), closes [#8796](https://github.com/aws-amplify/amplify-cli/issues/8796) [#8799](https://github.com/aws-amplify/amplify-cli/issues/8799)
+* ext overrides2 storage-headless and predictions ([#8622](https://github.com/aws-amplify/amplify-cli/issues/8622)) ([59e7118](https://github.com/aws-amplify/amplify-cli/commit/59e71184e966ec735724ba501b5b318c1dbd2735))
+* fix configure project and custom policies api containers ([#8703](https://github.com/aws-amplify/amplify-cli/issues/8703)) ([a5c8775](https://github.com/aws-amplify/amplify-cli/commit/a5c8775968b3883c4dff1cd7da63f0d8fd4b2426))
+* fixed import_auth test ([#8755](https://github.com/aws-amplify/amplify-cli/issues/8755)) ([c1bffdd](https://github.com/aws-amplify/amplify-cli/commit/c1bffddc6f34b9eb3c834b127dac57b67d2c55ee))
+* fixes auth migration e2e ([#8756](https://github.com/aws-amplify/amplify-cli/issues/8756)) ([f537d7c](https://github.com/aws-amplify/amplify-cli/commit/f537d7c3a1efa2fa67fc28a6f1d27d9889bbfe72))
+* fixes dependsOn parameter and auth migration test ([#8480](https://github.com/aws-amplify/amplify-cli/issues/8480)) ([640b79e](https://github.com/aws-amplify/amplify-cli/commit/640b79ed0e40171271fa5ad9f4524f2c01d04722))
+* **graphql:** refactor lambda authorizer code to use function category to create authorizer function ([#8784](https://github.com/aws-amplify/amplify-cli/issues/8784)) ([61c4b05](https://github.com/aws-amplify/amplify-cli/commit/61c4b05cbc4497ce2f6dd43f88926a6960b23854))
+* init override test fix ([#8768](https://github.com/aws-amplify/amplify-cli/issues/8768)) ([9674a4e](https://github.com/aws-amplify/amplify-cli/commit/9674a4e344651df0a756513d034c73b822da899e))
+* migration test fixes ([#8742](https://github.com/aws-amplify/amplify-cli/issues/8742)) ([193635f](https://github.com/aws-amplify/amplify-cli/commit/193635f8355c1a18a061f6eb939eabbada07fcf9))
+* stack generation logic when multiple paths ref same Lambda ([#8673](https://github.com/aws-amplify/amplify-cli/issues/8673)) ([d4a04e6](https://github.com/aws-amplify/amplify-cli/commit/d4a04e61db325b65737a94f33f7dba77d8a07529))
+* tsc global install error ([7d1cca8](https://github.com/aws-amplify/amplify-cli/commit/7d1cca890f138f32bac51fca085098a777aea1ae))
+* update migration msg, ddb import e2e, lgtm errors ([#8796](https://github.com/aws-amplify/amplify-cli/issues/8796)) ([a2d87ec](https://github.com/aws-amplify/amplify-cli/commit/a2d87eca889ed8b23cfe3cf145c0372b655d4ed9))
+
+
+### Features
+
+* amplify export ([fd28279](https://github.com/aws-amplify/amplify-cli/commit/fd282791167177d72a42784b5de4f2fd461d590a)), closes [#8547](https://github.com/aws-amplify/amplify-cli/issues/8547) [#8488](https://github.com/aws-amplify/amplify-cli/issues/8488) [#8486](https://github.com/aws-amplify/amplify-cli/issues/8486) [#8547](https://github.com/aws-amplify/amplify-cli/issues/8547) [#8488](https://github.com/aws-amplify/amplify-cli/issues/8488) [#8486](https://github.com/aws-amplify/amplify-cli/issues/8486)
+* Auth refactor to  use cdk, eliminate EJS, overrides functionality ([#8355](https://github.com/aws-amplify/amplify-cli/issues/8355)) ([66d885f](https://github.com/aws-amplify/amplify-cli/commit/66d885f8125f11c0ea3c23f67fec51b553445d42))
+* extensibility for REST APIs ([#8598](https://github.com/aws-amplify/amplify-cli/issues/8598)) ([de19d23](https://github.com/aws-amplify/amplify-cli/commit/de19d231465c1f16bf7d1c7ccb8dba2f36d039d8))
+* overrides uniformity accross all the categories ([#8695](https://github.com/aws-amplify/amplify-cli/issues/8695)) ([2f6f0eb](https://github.com/aws-amplify/amplify-cli/commit/2f6f0eba6922a345cc549455245a712957e2f352))
+* root stack override ([#8276](https://github.com/aws-amplify/amplify-cli/issues/8276)) ([887f617](https://github.com/aws-amplify/amplify-cli/commit/887f617a83d99da1cf93850dc96ff0eebda0fe5a))
+
+
+### Reverts
+
+* Revert "fix: update migration msg, ddb import e2e, lgtm errors (#8796)" (#8799) ([394a32f](https://github.com/aws-amplify/amplify-cli/commit/394a32f7a801bcf845a180bfdaa7d1d95c5962e7)), closes [#8796](https://github.com/aws-amplify/amplify-cli/issues/8796) [#8799](https://github.com/aws-amplify/amplify-cli/issues/8799)
+
+
+
+
+
+# [1.33.0-graphql-vnext-dev-preview.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@1.31.0...amplify-e2e-core@1.33.0-graphql-vnext-dev-preview.6) (2021-11-12)
+
+
+### Bug Fixes
+
+* alias attr bug and use enabled mfa ([aed3fd3](https://github.com/aws-amplify/amplify-cli/commit/aed3fd3cd692434500e41c478eb59d44c2b6ea37))
+* auth e2e fixes ([3d1d3fb](https://github.com/aws-amplify/amplify-cli/commit/3d1d3fb88da568efbea0e3c57277c71dedd9d0f7))
+* auth e2e tests ([#8708](https://github.com/aws-amplify/amplify-cli/issues/8708)) ([24797e9](https://github.com/aws-amplify/amplify-cli/commit/24797e926b99be78ba337761ece9a4ad93d7651b))
+* auth issue in export tests ([#8710](https://github.com/aws-amplify/amplify-cli/issues/8710)) ([b21389a](https://github.com/aws-amplify/amplify-cli/commit/b21389a4e69e6d913ae0255ce5fdd19a6a30e511))
+* auth trigger params parsing and test wait lines ([#8824](https://github.com/aws-amplify/amplify-cli/issues/8824)) ([20cfbdb](https://github.com/aws-amplify/amplify-cli/commit/20cfbdb49b25a18d28f06383fb55923727180dc9))
+* capitalization for filter, e2e test ([#8667](https://github.com/aws-amplify/amplify-cli/issues/8667)) ([4c5c869](https://github.com/aws-amplify/amplify-cli/commit/4c5c8699ca9261194ba0e6a5bfb958a0d95f412c))
+* ensure FF on stack transform, revert revert ([#8810](https://github.com/aws-amplify/amplify-cli/issues/8810)) ([868952f](https://github.com/aws-amplify/amplify-cli/commit/868952f9552f09aeb2b0b8e036c59954ee3391e0)), closes [#8796](https://github.com/aws-amplify/amplify-cli/issues/8796) [#8799](https://github.com/aws-amplify/amplify-cli/issues/8799)
+* ext overrides2 storage-headless and predictions ([#8622](https://github.com/aws-amplify/amplify-cli/issues/8622)) ([59e7118](https://github.com/aws-amplify/amplify-cli/commit/59e71184e966ec735724ba501b5b318c1dbd2735))
+* fix configure project and custom policies api containers ([#8703](https://github.com/aws-amplify/amplify-cli/issues/8703)) ([a5c8775](https://github.com/aws-amplify/amplify-cli/commit/a5c8775968b3883c4dff1cd7da63f0d8fd4b2426))
+* fixed import_auth test ([#8755](https://github.com/aws-amplify/amplify-cli/issues/8755)) ([c1bffdd](https://github.com/aws-amplify/amplify-cli/commit/c1bffddc6f34b9eb3c834b127dac57b67d2c55ee))
+* fixes auth migration e2e ([#8756](https://github.com/aws-amplify/amplify-cli/issues/8756)) ([f537d7c](https://github.com/aws-amplify/amplify-cli/commit/f537d7c3a1efa2fa67fc28a6f1d27d9889bbfe72))
+* fixes dependsOn parameter and auth migration test ([#8480](https://github.com/aws-amplify/amplify-cli/issues/8480)) ([640b79e](https://github.com/aws-amplify/amplify-cli/commit/640b79ed0e40171271fa5ad9f4524f2c01d04722))
+* **graphql:** refactor lambda authorizer code to use function category to create authorizer function ([#8784](https://github.com/aws-amplify/amplify-cli/issues/8784)) ([61c4b05](https://github.com/aws-amplify/amplify-cli/commit/61c4b05cbc4497ce2f6dd43f88926a6960b23854))
+* init override test fix ([#8768](https://github.com/aws-amplify/amplify-cli/issues/8768)) ([9674a4e](https://github.com/aws-amplify/amplify-cli/commit/9674a4e344651df0a756513d034c73b822da899e))
+* migration test fixes ([#8742](https://github.com/aws-amplify/amplify-cli/issues/8742)) ([193635f](https://github.com/aws-amplify/amplify-cli/commit/193635f8355c1a18a061f6eb939eabbada07fcf9))
+* stack generation logic when multiple paths ref same Lambda ([#8673](https://github.com/aws-amplify/amplify-cli/issues/8673)) ([d4a04e6](https://github.com/aws-amplify/amplify-cli/commit/d4a04e61db325b65737a94f33f7dba77d8a07529))
+* tsc global install error ([7d1cca8](https://github.com/aws-amplify/amplify-cli/commit/7d1cca890f138f32bac51fca085098a777aea1ae))
+* update migration msg, ddb import e2e, lgtm errors ([#8796](https://github.com/aws-amplify/amplify-cli/issues/8796)) ([a2d87ec](https://github.com/aws-amplify/amplify-cli/commit/a2d87eca889ed8b23cfe3cf145c0372b655d4ed9))
+
+
+### Features
+
+* amplify export ([fd28279](https://github.com/aws-amplify/amplify-cli/commit/fd282791167177d72a42784b5de4f2fd461d590a)), closes [#8547](https://github.com/aws-amplify/amplify-cli/issues/8547) [#8488](https://github.com/aws-amplify/amplify-cli/issues/8488) [#8486](https://github.com/aws-amplify/amplify-cli/issues/8486) [#8547](https://github.com/aws-amplify/amplify-cli/issues/8547) [#8488](https://github.com/aws-amplify/amplify-cli/issues/8488) [#8486](https://github.com/aws-amplify/amplify-cli/issues/8486)
+* Auth refactor to  use cdk, eliminate EJS, overrides functionality ([#8355](https://github.com/aws-amplify/amplify-cli/issues/8355)) ([66d885f](https://github.com/aws-amplify/amplify-cli/commit/66d885f8125f11c0ea3c23f67fec51b553445d42))
+* extensibility for REST APIs ([#8598](https://github.com/aws-amplify/amplify-cli/issues/8598)) ([de19d23](https://github.com/aws-amplify/amplify-cli/commit/de19d231465c1f16bf7d1c7ccb8dba2f36d039d8))
+* overrides uniformity accross all the categories ([#8695](https://github.com/aws-amplify/amplify-cli/issues/8695)) ([2f6f0eb](https://github.com/aws-amplify/amplify-cli/commit/2f6f0eba6922a345cc549455245a712957e2f352))
+* root stack override ([#8276](https://github.com/aws-amplify/amplify-cli/issues/8276)) ([887f617](https://github.com/aws-amplify/amplify-cli/commit/887f617a83d99da1cf93850dc96ff0eebda0fe5a))
+
+
+### Reverts
+
+* Revert "fix: update migration msg, ddb import e2e, lgtm errors (#8796)" (#8799) ([394a32f](https://github.com/aws-amplify/amplify-cli/commit/394a32f7a801bcf845a180bfdaa7d1d95c5962e7)), closes [#8796](https://github.com/aws-amplify/amplify-cli/issues/8796) [#8799](https://github.com/aws-amplify/amplify-cli/issues/8799)
+
+
+
+
+
+# [1.33.0-graphql-vnext-dev-preview.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@1.31.0...amplify-e2e-core@1.33.0-graphql-vnext-dev-preview.5) (2021-11-12)
+
+
+### Bug Fixes
+
+* alias attr bug and use enabled mfa ([aed3fd3](https://github.com/aws-amplify/amplify-cli/commit/aed3fd3cd692434500e41c478eb59d44c2b6ea37))
+* auth e2e fixes ([3d1d3fb](https://github.com/aws-amplify/amplify-cli/commit/3d1d3fb88da568efbea0e3c57277c71dedd9d0f7))
+* auth e2e tests ([#8708](https://github.com/aws-amplify/amplify-cli/issues/8708)) ([24797e9](https://github.com/aws-amplify/amplify-cli/commit/24797e926b99be78ba337761ece9a4ad93d7651b))
+* auth issue in export tests ([#8710](https://github.com/aws-amplify/amplify-cli/issues/8710)) ([b21389a](https://github.com/aws-amplify/amplify-cli/commit/b21389a4e69e6d913ae0255ce5fdd19a6a30e511))
+* auth trigger params parsing and test wait lines ([#8824](https://github.com/aws-amplify/amplify-cli/issues/8824)) ([20cfbdb](https://github.com/aws-amplify/amplify-cli/commit/20cfbdb49b25a18d28f06383fb55923727180dc9))
+* capitalization for filter, e2e test ([#8667](https://github.com/aws-amplify/amplify-cli/issues/8667)) ([4c5c869](https://github.com/aws-amplify/amplify-cli/commit/4c5c8699ca9261194ba0e6a5bfb958a0d95f412c))
+* ensure FF on stack transform, revert revert ([#8810](https://github.com/aws-amplify/amplify-cli/issues/8810)) ([868952f](https://github.com/aws-amplify/amplify-cli/commit/868952f9552f09aeb2b0b8e036c59954ee3391e0)), closes [#8796](https://github.com/aws-amplify/amplify-cli/issues/8796) [#8799](https://github.com/aws-amplify/amplify-cli/issues/8799)
+* ext overrides2 storage-headless and predictions ([#8622](https://github.com/aws-amplify/amplify-cli/issues/8622)) ([59e7118](https://github.com/aws-amplify/amplify-cli/commit/59e71184e966ec735724ba501b5b318c1dbd2735))
+* fix configure project and custom policies api containers ([#8703](https://github.com/aws-amplify/amplify-cli/issues/8703)) ([a5c8775](https://github.com/aws-amplify/amplify-cli/commit/a5c8775968b3883c4dff1cd7da63f0d8fd4b2426))
+* fixed import_auth test ([#8755](https://github.com/aws-amplify/amplify-cli/issues/8755)) ([c1bffdd](https://github.com/aws-amplify/amplify-cli/commit/c1bffddc6f34b9eb3c834b127dac57b67d2c55ee))
+* fixes auth migration e2e ([#8756](https://github.com/aws-amplify/amplify-cli/issues/8756)) ([f537d7c](https://github.com/aws-amplify/amplify-cli/commit/f537d7c3a1efa2fa67fc28a6f1d27d9889bbfe72))
+* fixes dependsOn parameter and auth migration test ([#8480](https://github.com/aws-amplify/amplify-cli/issues/8480)) ([640b79e](https://github.com/aws-amplify/amplify-cli/commit/640b79ed0e40171271fa5ad9f4524f2c01d04722))
+* **graphql:** refactor lambda authorizer code to use function category to create authorizer function ([#8784](https://github.com/aws-amplify/amplify-cli/issues/8784)) ([61c4b05](https://github.com/aws-amplify/amplify-cli/commit/61c4b05cbc4497ce2f6dd43f88926a6960b23854))
+* init override test fix ([#8768](https://github.com/aws-amplify/amplify-cli/issues/8768)) ([9674a4e](https://github.com/aws-amplify/amplify-cli/commit/9674a4e344651df0a756513d034c73b822da899e))
+* migration test fixes ([#8742](https://github.com/aws-amplify/amplify-cli/issues/8742)) ([193635f](https://github.com/aws-amplify/amplify-cli/commit/193635f8355c1a18a061f6eb939eabbada07fcf9))
+* stack generation logic when multiple paths ref same Lambda ([#8673](https://github.com/aws-amplify/amplify-cli/issues/8673)) ([d4a04e6](https://github.com/aws-amplify/amplify-cli/commit/d4a04e61db325b65737a94f33f7dba77d8a07529))
+* tsc global install error ([7d1cca8](https://github.com/aws-amplify/amplify-cli/commit/7d1cca890f138f32bac51fca085098a777aea1ae))
+* update migration msg, ddb import e2e, lgtm errors ([#8796](https://github.com/aws-amplify/amplify-cli/issues/8796)) ([a2d87ec](https://github.com/aws-amplify/amplify-cli/commit/a2d87eca889ed8b23cfe3cf145c0372b655d4ed9))
+
+
+### Features
+
+* amplify export ([fd28279](https://github.com/aws-amplify/amplify-cli/commit/fd282791167177d72a42784b5de4f2fd461d590a)), closes [#8547](https://github.com/aws-amplify/amplify-cli/issues/8547) [#8488](https://github.com/aws-amplify/amplify-cli/issues/8488) [#8486](https://github.com/aws-amplify/amplify-cli/issues/8486) [#8547](https://github.com/aws-amplify/amplify-cli/issues/8547) [#8488](https://github.com/aws-amplify/amplify-cli/issues/8488) [#8486](https://github.com/aws-amplify/amplify-cli/issues/8486)
+* Auth refactor to  use cdk, eliminate EJS, overrides functionality ([#8355](https://github.com/aws-amplify/amplify-cli/issues/8355)) ([66d885f](https://github.com/aws-amplify/amplify-cli/commit/66d885f8125f11c0ea3c23f67fec51b553445d42))
+* extensibility for REST APIs ([#8598](https://github.com/aws-amplify/amplify-cli/issues/8598)) ([de19d23](https://github.com/aws-amplify/amplify-cli/commit/de19d231465c1f16bf7d1c7ccb8dba2f36d039d8))
+* overrides uniformity accross all the categories ([#8695](https://github.com/aws-amplify/amplify-cli/issues/8695)) ([2f6f0eb](https://github.com/aws-amplify/amplify-cli/commit/2f6f0eba6922a345cc549455245a712957e2f352))
+* root stack override ([#8276](https://github.com/aws-amplify/amplify-cli/issues/8276)) ([887f617](https://github.com/aws-amplify/amplify-cli/commit/887f617a83d99da1cf93850dc96ff0eebda0fe5a))
+
+
+### Reverts
+
+* Revert "fix: update migration msg, ddb import e2e, lgtm errors (#8796)" (#8799) ([394a32f](https://github.com/aws-amplify/amplify-cli/commit/394a32f7a801bcf845a180bfdaa7d1d95c5962e7)), closes [#8796](https://github.com/aws-amplify/amplify-cli/issues/8796) [#8799](https://github.com/aws-amplify/amplify-cli/issues/8799)
+
+
+
+
+
+# [1.33.0-graphql-vnext-dev-preview.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@1.31.0...amplify-e2e-core@1.33.0-graphql-vnext-dev-preview.4) (2021-11-12)
+
+
+### Bug Fixes
+
+* alias attr bug and use enabled mfa ([aed3fd3](https://github.com/aws-amplify/amplify-cli/commit/aed3fd3cd692434500e41c478eb59d44c2b6ea37))
+* auth e2e fixes ([3d1d3fb](https://github.com/aws-amplify/amplify-cli/commit/3d1d3fb88da568efbea0e3c57277c71dedd9d0f7))
+* auth e2e tests ([#8708](https://github.com/aws-amplify/amplify-cli/issues/8708)) ([24797e9](https://github.com/aws-amplify/amplify-cli/commit/24797e926b99be78ba337761ece9a4ad93d7651b))
+* auth issue in export tests ([#8710](https://github.com/aws-amplify/amplify-cli/issues/8710)) ([b21389a](https://github.com/aws-amplify/amplify-cli/commit/b21389a4e69e6d913ae0255ce5fdd19a6a30e511))
+* auth trigger params parsing and test wait lines ([#8824](https://github.com/aws-amplify/amplify-cli/issues/8824)) ([20cfbdb](https://github.com/aws-amplify/amplify-cli/commit/20cfbdb49b25a18d28f06383fb55923727180dc9))
+* capitalization for filter, e2e test ([#8667](https://github.com/aws-amplify/amplify-cli/issues/8667)) ([4c5c869](https://github.com/aws-amplify/amplify-cli/commit/4c5c8699ca9261194ba0e6a5bfb958a0d95f412c))
+* ensure FF on stack transform, revert revert ([#8810](https://github.com/aws-amplify/amplify-cli/issues/8810)) ([868952f](https://github.com/aws-amplify/amplify-cli/commit/868952f9552f09aeb2b0b8e036c59954ee3391e0)), closes [#8796](https://github.com/aws-amplify/amplify-cli/issues/8796) [#8799](https://github.com/aws-amplify/amplify-cli/issues/8799)
+* ext overrides2 storage-headless and predictions ([#8622](https://github.com/aws-amplify/amplify-cli/issues/8622)) ([59e7118](https://github.com/aws-amplify/amplify-cli/commit/59e71184e966ec735724ba501b5b318c1dbd2735))
+* fix configure project and custom policies api containers ([#8703](https://github.com/aws-amplify/amplify-cli/issues/8703)) ([a5c8775](https://github.com/aws-amplify/amplify-cli/commit/a5c8775968b3883c4dff1cd7da63f0d8fd4b2426))
+* fixed import_auth test ([#8755](https://github.com/aws-amplify/amplify-cli/issues/8755)) ([c1bffdd](https://github.com/aws-amplify/amplify-cli/commit/c1bffddc6f34b9eb3c834b127dac57b67d2c55ee))
+* fixes auth migration e2e ([#8756](https://github.com/aws-amplify/amplify-cli/issues/8756)) ([f537d7c](https://github.com/aws-amplify/amplify-cli/commit/f537d7c3a1efa2fa67fc28a6f1d27d9889bbfe72))
+* fixes dependsOn parameter and auth migration test ([#8480](https://github.com/aws-amplify/amplify-cli/issues/8480)) ([640b79e](https://github.com/aws-amplify/amplify-cli/commit/640b79ed0e40171271fa5ad9f4524f2c01d04722))
+* **graphql:** refactor lambda authorizer code to use function category to create authorizer function ([#8784](https://github.com/aws-amplify/amplify-cli/issues/8784)) ([61c4b05](https://github.com/aws-amplify/amplify-cli/commit/61c4b05cbc4497ce2f6dd43f88926a6960b23854))
+* init override test fix ([#8768](https://github.com/aws-amplify/amplify-cli/issues/8768)) ([9674a4e](https://github.com/aws-amplify/amplify-cli/commit/9674a4e344651df0a756513d034c73b822da899e))
+* migration test fixes ([#8742](https://github.com/aws-amplify/amplify-cli/issues/8742)) ([193635f](https://github.com/aws-amplify/amplify-cli/commit/193635f8355c1a18a061f6eb939eabbada07fcf9))
+* stack generation logic when multiple paths ref same Lambda ([#8673](https://github.com/aws-amplify/amplify-cli/issues/8673)) ([d4a04e6](https://github.com/aws-amplify/amplify-cli/commit/d4a04e61db325b65737a94f33f7dba77d8a07529))
+* tsc global install error ([7d1cca8](https://github.com/aws-amplify/amplify-cli/commit/7d1cca890f138f32bac51fca085098a777aea1ae))
+* update migration msg, ddb import e2e, lgtm errors ([#8796](https://github.com/aws-amplify/amplify-cli/issues/8796)) ([a2d87ec](https://github.com/aws-amplify/amplify-cli/commit/a2d87eca889ed8b23cfe3cf145c0372b655d4ed9))
+
+
+### Features
+
+* amplify export ([fd28279](https://github.com/aws-amplify/amplify-cli/commit/fd282791167177d72a42784b5de4f2fd461d590a)), closes [#8547](https://github.com/aws-amplify/amplify-cli/issues/8547) [#8488](https://github.com/aws-amplify/amplify-cli/issues/8488) [#8486](https://github.com/aws-amplify/amplify-cli/issues/8486) [#8547](https://github.com/aws-amplify/amplify-cli/issues/8547) [#8488](https://github.com/aws-amplify/amplify-cli/issues/8488) [#8486](https://github.com/aws-amplify/amplify-cli/issues/8486)
+* Auth refactor to  use cdk, eliminate EJS, overrides functionality ([#8355](https://github.com/aws-amplify/amplify-cli/issues/8355)) ([66d885f](https://github.com/aws-amplify/amplify-cli/commit/66d885f8125f11c0ea3c23f67fec51b553445d42))
+* extensibility for REST APIs ([#8598](https://github.com/aws-amplify/amplify-cli/issues/8598)) ([de19d23](https://github.com/aws-amplify/amplify-cli/commit/de19d231465c1f16bf7d1c7ccb8dba2f36d039d8))
+* overrides uniformity accross all the categories ([#8695](https://github.com/aws-amplify/amplify-cli/issues/8695)) ([2f6f0eb](https://github.com/aws-amplify/amplify-cli/commit/2f6f0eba6922a345cc549455245a712957e2f352))
+* root stack override ([#8276](https://github.com/aws-amplify/amplify-cli/issues/8276)) ([887f617](https://github.com/aws-amplify/amplify-cli/commit/887f617a83d99da1cf93850dc96ff0eebda0fe5a))
+
+
+### Reverts
+
+* Revert "fix: update migration msg, ddb import e2e, lgtm errors (#8796)" (#8799) ([394a32f](https://github.com/aws-amplify/amplify-cli/commit/394a32f7a801bcf845a180bfdaa7d1d95c5962e7)), closes [#8796](https://github.com/aws-amplify/amplify-cli/issues/8796) [#8799](https://github.com/aws-amplify/amplify-cli/issues/8799)
+
+
+
+
+
+# [1.33.0-graphql-vnext-dev-preview.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@1.31.0...amplify-e2e-core@1.33.0-graphql-vnext-dev-preview.3) (2021-11-12)
+
+
+### Bug Fixes
+
+* alias attr bug and use enabled mfa ([aed3fd3](https://github.com/aws-amplify/amplify-cli/commit/aed3fd3cd692434500e41c478eb59d44c2b6ea37))
+* auth e2e fixes ([3d1d3fb](https://github.com/aws-amplify/amplify-cli/commit/3d1d3fb88da568efbea0e3c57277c71dedd9d0f7))
+* auth e2e tests ([#8708](https://github.com/aws-amplify/amplify-cli/issues/8708)) ([24797e9](https://github.com/aws-amplify/amplify-cli/commit/24797e926b99be78ba337761ece9a4ad93d7651b))
+* auth issue in export tests ([#8710](https://github.com/aws-amplify/amplify-cli/issues/8710)) ([b21389a](https://github.com/aws-amplify/amplify-cli/commit/b21389a4e69e6d913ae0255ce5fdd19a6a30e511))
+* auth trigger params parsing and test wait lines ([#8824](https://github.com/aws-amplify/amplify-cli/issues/8824)) ([20cfbdb](https://github.com/aws-amplify/amplify-cli/commit/20cfbdb49b25a18d28f06383fb55923727180dc9))
+* capitalization for filter, e2e test ([#8667](https://github.com/aws-amplify/amplify-cli/issues/8667)) ([4c5c869](https://github.com/aws-amplify/amplify-cli/commit/4c5c8699ca9261194ba0e6a5bfb958a0d95f412c))
+* ensure FF on stack transform, revert revert ([#8810](https://github.com/aws-amplify/amplify-cli/issues/8810)) ([868952f](https://github.com/aws-amplify/amplify-cli/commit/868952f9552f09aeb2b0b8e036c59954ee3391e0)), closes [#8796](https://github.com/aws-amplify/amplify-cli/issues/8796) [#8799](https://github.com/aws-amplify/amplify-cli/issues/8799)
+* ext overrides2 storage-headless and predictions ([#8622](https://github.com/aws-amplify/amplify-cli/issues/8622)) ([59e7118](https://github.com/aws-amplify/amplify-cli/commit/59e71184e966ec735724ba501b5b318c1dbd2735))
+* fix configure project and custom policies api containers ([#8703](https://github.com/aws-amplify/amplify-cli/issues/8703)) ([a5c8775](https://github.com/aws-amplify/amplify-cli/commit/a5c8775968b3883c4dff1cd7da63f0d8fd4b2426))
+* fixed import_auth test ([#8755](https://github.com/aws-amplify/amplify-cli/issues/8755)) ([c1bffdd](https://github.com/aws-amplify/amplify-cli/commit/c1bffddc6f34b9eb3c834b127dac57b67d2c55ee))
+* fixes auth migration e2e ([#8756](https://github.com/aws-amplify/amplify-cli/issues/8756)) ([f537d7c](https://github.com/aws-amplify/amplify-cli/commit/f537d7c3a1efa2fa67fc28a6f1d27d9889bbfe72))
+* fixes dependsOn parameter and auth migration test ([#8480](https://github.com/aws-amplify/amplify-cli/issues/8480)) ([640b79e](https://github.com/aws-amplify/amplify-cli/commit/640b79ed0e40171271fa5ad9f4524f2c01d04722))
+* **graphql:** refactor lambda authorizer code to use function category to create authorizer function ([#8784](https://github.com/aws-amplify/amplify-cli/issues/8784)) ([61c4b05](https://github.com/aws-amplify/amplify-cli/commit/61c4b05cbc4497ce2f6dd43f88926a6960b23854))
+* init override test fix ([#8768](https://github.com/aws-amplify/amplify-cli/issues/8768)) ([9674a4e](https://github.com/aws-amplify/amplify-cli/commit/9674a4e344651df0a756513d034c73b822da899e))
+* migration test fixes ([#8742](https://github.com/aws-amplify/amplify-cli/issues/8742)) ([193635f](https://github.com/aws-amplify/amplify-cli/commit/193635f8355c1a18a061f6eb939eabbada07fcf9))
+* stack generation logic when multiple paths ref same Lambda ([#8673](https://github.com/aws-amplify/amplify-cli/issues/8673)) ([d4a04e6](https://github.com/aws-amplify/amplify-cli/commit/d4a04e61db325b65737a94f33f7dba77d8a07529))
+* tsc global install error ([7d1cca8](https://github.com/aws-amplify/amplify-cli/commit/7d1cca890f138f32bac51fca085098a777aea1ae))
+* update migration msg, ddb import e2e, lgtm errors ([#8796](https://github.com/aws-amplify/amplify-cli/issues/8796)) ([a2d87ec](https://github.com/aws-amplify/amplify-cli/commit/a2d87eca889ed8b23cfe3cf145c0372b655d4ed9))
+
+
+### Features
+
+* amplify export ([fd28279](https://github.com/aws-amplify/amplify-cli/commit/fd282791167177d72a42784b5de4f2fd461d590a)), closes [#8547](https://github.com/aws-amplify/amplify-cli/issues/8547) [#8488](https://github.com/aws-amplify/amplify-cli/issues/8488) [#8486](https://github.com/aws-amplify/amplify-cli/issues/8486) [#8547](https://github.com/aws-amplify/amplify-cli/issues/8547) [#8488](https://github.com/aws-amplify/amplify-cli/issues/8488) [#8486](https://github.com/aws-amplify/amplify-cli/issues/8486)
+* Auth refactor to  use cdk, eliminate EJS, overrides functionality ([#8355](https://github.com/aws-amplify/amplify-cli/issues/8355)) ([66d885f](https://github.com/aws-amplify/amplify-cli/commit/66d885f8125f11c0ea3c23f67fec51b553445d42))
+* extensibility for REST APIs ([#8598](https://github.com/aws-amplify/amplify-cli/issues/8598)) ([de19d23](https://github.com/aws-amplify/amplify-cli/commit/de19d231465c1f16bf7d1c7ccb8dba2f36d039d8))
+* overrides uniformity accross all the categories ([#8695](https://github.com/aws-amplify/amplify-cli/issues/8695)) ([2f6f0eb](https://github.com/aws-amplify/amplify-cli/commit/2f6f0eba6922a345cc549455245a712957e2f352))
+* root stack override ([#8276](https://github.com/aws-amplify/amplify-cli/issues/8276)) ([887f617](https://github.com/aws-amplify/amplify-cli/commit/887f617a83d99da1cf93850dc96ff0eebda0fe5a))
+
+
+### Reverts
+
+* Revert "fix: update migration msg, ddb import e2e, lgtm errors (#8796)" (#8799) ([394a32f](https://github.com/aws-amplify/amplify-cli/commit/394a32f7a801bcf845a180bfdaa7d1d95c5962e7)), closes [#8796](https://github.com/aws-amplify/amplify-cli/issues/8796) [#8799](https://github.com/aws-amplify/amplify-cli/issues/8799)
+
+
+
+
+
+# [1.33.0-graphql-vnext-dev-preview.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@1.31.0...amplify-e2e-core@1.33.0-graphql-vnext-dev-preview.2) (2021-11-12)
+
+
+### Bug Fixes
+
+* alias attr bug and use enabled mfa ([aed3fd3](https://github.com/aws-amplify/amplify-cli/commit/aed3fd3cd692434500e41c478eb59d44c2b6ea37))
+* auth e2e fixes ([3d1d3fb](https://github.com/aws-amplify/amplify-cli/commit/3d1d3fb88da568efbea0e3c57277c71dedd9d0f7))
+* auth e2e tests ([#8708](https://github.com/aws-amplify/amplify-cli/issues/8708)) ([24797e9](https://github.com/aws-amplify/amplify-cli/commit/24797e926b99be78ba337761ece9a4ad93d7651b))
+* auth issue in export tests ([#8710](https://github.com/aws-amplify/amplify-cli/issues/8710)) ([b21389a](https://github.com/aws-amplify/amplify-cli/commit/b21389a4e69e6d913ae0255ce5fdd19a6a30e511))
+* auth trigger params parsing and test wait lines ([#8824](https://github.com/aws-amplify/amplify-cli/issues/8824)) ([20cfbdb](https://github.com/aws-amplify/amplify-cli/commit/20cfbdb49b25a18d28f06383fb55923727180dc9))
+* capitalization for filter, e2e test ([#8667](https://github.com/aws-amplify/amplify-cli/issues/8667)) ([4c5c869](https://github.com/aws-amplify/amplify-cli/commit/4c5c8699ca9261194ba0e6a5bfb958a0d95f412c))
+* ensure FF on stack transform, revert revert ([#8810](https://github.com/aws-amplify/amplify-cli/issues/8810)) ([868952f](https://github.com/aws-amplify/amplify-cli/commit/868952f9552f09aeb2b0b8e036c59954ee3391e0)), closes [#8796](https://github.com/aws-amplify/amplify-cli/issues/8796) [#8799](https://github.com/aws-amplify/amplify-cli/issues/8799)
+* ext overrides2 storage-headless and predictions ([#8622](https://github.com/aws-amplify/amplify-cli/issues/8622)) ([59e7118](https://github.com/aws-amplify/amplify-cli/commit/59e71184e966ec735724ba501b5b318c1dbd2735))
+* fix configure project and custom policies api containers ([#8703](https://github.com/aws-amplify/amplify-cli/issues/8703)) ([a5c8775](https://github.com/aws-amplify/amplify-cli/commit/a5c8775968b3883c4dff1cd7da63f0d8fd4b2426))
+* fixed import_auth test ([#8755](https://github.com/aws-amplify/amplify-cli/issues/8755)) ([c1bffdd](https://github.com/aws-amplify/amplify-cli/commit/c1bffddc6f34b9eb3c834b127dac57b67d2c55ee))
+* fixes auth migration e2e ([#8756](https://github.com/aws-amplify/amplify-cli/issues/8756)) ([f537d7c](https://github.com/aws-amplify/amplify-cli/commit/f537d7c3a1efa2fa67fc28a6f1d27d9889bbfe72))
+* fixes dependsOn parameter and auth migration test ([#8480](https://github.com/aws-amplify/amplify-cli/issues/8480)) ([640b79e](https://github.com/aws-amplify/amplify-cli/commit/640b79ed0e40171271fa5ad9f4524f2c01d04722))
+* **graphql:** refactor lambda authorizer code to use function category to create authorizer function ([#8784](https://github.com/aws-amplify/amplify-cli/issues/8784)) ([61c4b05](https://github.com/aws-amplify/amplify-cli/commit/61c4b05cbc4497ce2f6dd43f88926a6960b23854))
+* init override test fix ([#8768](https://github.com/aws-amplify/amplify-cli/issues/8768)) ([9674a4e](https://github.com/aws-amplify/amplify-cli/commit/9674a4e344651df0a756513d034c73b822da899e))
+* migration test fixes ([#8742](https://github.com/aws-amplify/amplify-cli/issues/8742)) ([193635f](https://github.com/aws-amplify/amplify-cli/commit/193635f8355c1a18a061f6eb939eabbada07fcf9))
+* stack generation logic when multiple paths ref same Lambda ([#8673](https://github.com/aws-amplify/amplify-cli/issues/8673)) ([d4a04e6](https://github.com/aws-amplify/amplify-cli/commit/d4a04e61db325b65737a94f33f7dba77d8a07529))
+* tsc global install error ([7d1cca8](https://github.com/aws-amplify/amplify-cli/commit/7d1cca890f138f32bac51fca085098a777aea1ae))
+* update migration msg, ddb import e2e, lgtm errors ([#8796](https://github.com/aws-amplify/amplify-cli/issues/8796)) ([a2d87ec](https://github.com/aws-amplify/amplify-cli/commit/a2d87eca889ed8b23cfe3cf145c0372b655d4ed9))
+
+
+### Features
+
+* amplify export ([fd28279](https://github.com/aws-amplify/amplify-cli/commit/fd282791167177d72a42784b5de4f2fd461d590a)), closes [#8547](https://github.com/aws-amplify/amplify-cli/issues/8547) [#8488](https://github.com/aws-amplify/amplify-cli/issues/8488) [#8486](https://github.com/aws-amplify/amplify-cli/issues/8486) [#8547](https://github.com/aws-amplify/amplify-cli/issues/8547) [#8488](https://github.com/aws-amplify/amplify-cli/issues/8488) [#8486](https://github.com/aws-amplify/amplify-cli/issues/8486)
+* Auth refactor to  use cdk, eliminate EJS, overrides functionality ([#8355](https://github.com/aws-amplify/amplify-cli/issues/8355)) ([66d885f](https://github.com/aws-amplify/amplify-cli/commit/66d885f8125f11c0ea3c23f67fec51b553445d42))
+* extensibility for REST APIs ([#8598](https://github.com/aws-amplify/amplify-cli/issues/8598)) ([de19d23](https://github.com/aws-amplify/amplify-cli/commit/de19d231465c1f16bf7d1c7ccb8dba2f36d039d8))
+* overrides uniformity accross all the categories ([#8695](https://github.com/aws-amplify/amplify-cli/issues/8695)) ([2f6f0eb](https://github.com/aws-amplify/amplify-cli/commit/2f6f0eba6922a345cc549455245a712957e2f352))
+* root stack override ([#8276](https://github.com/aws-amplify/amplify-cli/issues/8276)) ([887f617](https://github.com/aws-amplify/amplify-cli/commit/887f617a83d99da1cf93850dc96ff0eebda0fe5a))
+
+
+### Reverts
+
+* Revert "fix: update migration msg, ddb import e2e, lgtm errors (#8796)" (#8799) ([394a32f](https://github.com/aws-amplify/amplify-cli/commit/394a32f7a801bcf845a180bfdaa7d1d95c5962e7)), closes [#8796](https://github.com/aws-amplify/amplify-cli/issues/8796) [#8799](https://github.com/aws-amplify/amplify-cli/issues/8799)
+
+
+
+
+
+# [1.33.0-graphql-vnext-dev-preview.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@1.31.0...amplify-e2e-core@1.33.0-graphql-vnext-dev-preview.1) (2021-11-12)
+
+
+### Bug Fixes
+
+* alias attr bug and use enabled mfa ([aed3fd3](https://github.com/aws-amplify/amplify-cli/commit/aed3fd3cd692434500e41c478eb59d44c2b6ea37))
+* auth e2e fixes ([3d1d3fb](https://github.com/aws-amplify/amplify-cli/commit/3d1d3fb88da568efbea0e3c57277c71dedd9d0f7))
+* auth e2e tests ([#8708](https://github.com/aws-amplify/amplify-cli/issues/8708)) ([24797e9](https://github.com/aws-amplify/amplify-cli/commit/24797e926b99be78ba337761ece9a4ad93d7651b))
+* auth issue in export tests ([#8710](https://github.com/aws-amplify/amplify-cli/issues/8710)) ([b21389a](https://github.com/aws-amplify/amplify-cli/commit/b21389a4e69e6d913ae0255ce5fdd19a6a30e511))
+* auth trigger params parsing and test wait lines ([#8824](https://github.com/aws-amplify/amplify-cli/issues/8824)) ([20cfbdb](https://github.com/aws-amplify/amplify-cli/commit/20cfbdb49b25a18d28f06383fb55923727180dc9))
+* capitalization for filter, e2e test ([#8667](https://github.com/aws-amplify/amplify-cli/issues/8667)) ([4c5c869](https://github.com/aws-amplify/amplify-cli/commit/4c5c8699ca9261194ba0e6a5bfb958a0d95f412c))
+* ensure FF on stack transform, revert revert ([#8810](https://github.com/aws-amplify/amplify-cli/issues/8810)) ([868952f](https://github.com/aws-amplify/amplify-cli/commit/868952f9552f09aeb2b0b8e036c59954ee3391e0)), closes [#8796](https://github.com/aws-amplify/amplify-cli/issues/8796) [#8799](https://github.com/aws-amplify/amplify-cli/issues/8799)
+* ext overrides2 storage-headless and predictions ([#8622](https://github.com/aws-amplify/amplify-cli/issues/8622)) ([59e7118](https://github.com/aws-amplify/amplify-cli/commit/59e71184e966ec735724ba501b5b318c1dbd2735))
+* fix configure project and custom policies api containers ([#8703](https://github.com/aws-amplify/amplify-cli/issues/8703)) ([a5c8775](https://github.com/aws-amplify/amplify-cli/commit/a5c8775968b3883c4dff1cd7da63f0d8fd4b2426))
+* fixed import_auth test ([#8755](https://github.com/aws-amplify/amplify-cli/issues/8755)) ([c1bffdd](https://github.com/aws-amplify/amplify-cli/commit/c1bffddc6f34b9eb3c834b127dac57b67d2c55ee))
+* fixes auth migration e2e ([#8756](https://github.com/aws-amplify/amplify-cli/issues/8756)) ([f537d7c](https://github.com/aws-amplify/amplify-cli/commit/f537d7c3a1efa2fa67fc28a6f1d27d9889bbfe72))
+* fixes dependsOn parameter and auth migration test ([#8480](https://github.com/aws-amplify/amplify-cli/issues/8480)) ([640b79e](https://github.com/aws-amplify/amplify-cli/commit/640b79ed0e40171271fa5ad9f4524f2c01d04722))
+* **graphql:** refactor lambda authorizer code to use function category to create authorizer function ([#8784](https://github.com/aws-amplify/amplify-cli/issues/8784)) ([61c4b05](https://github.com/aws-amplify/amplify-cli/commit/61c4b05cbc4497ce2f6dd43f88926a6960b23854))
+* init override test fix ([#8768](https://github.com/aws-amplify/amplify-cli/issues/8768)) ([9674a4e](https://github.com/aws-amplify/amplify-cli/commit/9674a4e344651df0a756513d034c73b822da899e))
+* migration test fixes ([#8742](https://github.com/aws-amplify/amplify-cli/issues/8742)) ([193635f](https://github.com/aws-amplify/amplify-cli/commit/193635f8355c1a18a061f6eb939eabbada07fcf9))
+* stack generation logic when multiple paths ref same Lambda ([#8673](https://github.com/aws-amplify/amplify-cli/issues/8673)) ([d4a04e6](https://github.com/aws-amplify/amplify-cli/commit/d4a04e61db325b65737a94f33f7dba77d8a07529))
+* tsc global install error ([7d1cca8](https://github.com/aws-amplify/amplify-cli/commit/7d1cca890f138f32bac51fca085098a777aea1ae))
+* update migration msg, ddb import e2e, lgtm errors ([#8796](https://github.com/aws-amplify/amplify-cli/issues/8796)) ([a2d87ec](https://github.com/aws-amplify/amplify-cli/commit/a2d87eca889ed8b23cfe3cf145c0372b655d4ed9))
+
+
+### Features
+
+* amplify export ([fd28279](https://github.com/aws-amplify/amplify-cli/commit/fd282791167177d72a42784b5de4f2fd461d590a)), closes [#8547](https://github.com/aws-amplify/amplify-cli/issues/8547) [#8488](https://github.com/aws-amplify/amplify-cli/issues/8488) [#8486](https://github.com/aws-amplify/amplify-cli/issues/8486) [#8547](https://github.com/aws-amplify/amplify-cli/issues/8547) [#8488](https://github.com/aws-amplify/amplify-cli/issues/8488) [#8486](https://github.com/aws-amplify/amplify-cli/issues/8486)
+* Auth refactor to  use cdk, eliminate EJS, overrides functionality ([#8355](https://github.com/aws-amplify/amplify-cli/issues/8355)) ([66d885f](https://github.com/aws-amplify/amplify-cli/commit/66d885f8125f11c0ea3c23f67fec51b553445d42))
+* extensibility for REST APIs ([#8598](https://github.com/aws-amplify/amplify-cli/issues/8598)) ([de19d23](https://github.com/aws-amplify/amplify-cli/commit/de19d231465c1f16bf7d1c7ccb8dba2f36d039d8))
+* overrides uniformity accross all the categories ([#8695](https://github.com/aws-amplify/amplify-cli/issues/8695)) ([2f6f0eb](https://github.com/aws-amplify/amplify-cli/commit/2f6f0eba6922a345cc549455245a712957e2f352))
+* root stack override ([#8276](https://github.com/aws-amplify/amplify-cli/issues/8276)) ([887f617](https://github.com/aws-amplify/amplify-cli/commit/887f617a83d99da1cf93850dc96ff0eebda0fe5a))
+
+
+### Reverts
+
+* Revert "fix: update migration msg, ddb import e2e, lgtm errors (#8796)" (#8799) ([394a32f](https://github.com/aws-amplify/amplify-cli/commit/394a32f7a801bcf845a180bfdaa7d1d95c5962e7)), closes [#8796](https://github.com/aws-amplify/amplify-cli/issues/8796) [#8799](https://github.com/aws-amplify/amplify-cli/issues/8799)
+
+
+
+
+
+# [1.33.0-graphql-vnext-dev-preview.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@1.31.0...amplify-e2e-core@1.33.0-graphql-vnext-dev-preview.0) (2021-11-12)
+
+
+### Bug Fixes
+
+* alias attr bug and use enabled mfa ([aed3fd3](https://github.com/aws-amplify/amplify-cli/commit/aed3fd3cd692434500e41c478eb59d44c2b6ea37))
+* auth e2e fixes ([3d1d3fb](https://github.com/aws-amplify/amplify-cli/commit/3d1d3fb88da568efbea0e3c57277c71dedd9d0f7))
+* auth e2e tests ([#8708](https://github.com/aws-amplify/amplify-cli/issues/8708)) ([24797e9](https://github.com/aws-amplify/amplify-cli/commit/24797e926b99be78ba337761ece9a4ad93d7651b))
+* auth issue in export tests ([#8710](https://github.com/aws-amplify/amplify-cli/issues/8710)) ([b21389a](https://github.com/aws-amplify/amplify-cli/commit/b21389a4e69e6d913ae0255ce5fdd19a6a30e511))
+* auth trigger params parsing and test wait lines ([#8824](https://github.com/aws-amplify/amplify-cli/issues/8824)) ([20cfbdb](https://github.com/aws-amplify/amplify-cli/commit/20cfbdb49b25a18d28f06383fb55923727180dc9))
+* capitalization for filter, e2e test ([#8667](https://github.com/aws-amplify/amplify-cli/issues/8667)) ([4c5c869](https://github.com/aws-amplify/amplify-cli/commit/4c5c8699ca9261194ba0e6a5bfb958a0d95f412c))
+* ensure FF on stack transform, revert revert ([#8810](https://github.com/aws-amplify/amplify-cli/issues/8810)) ([868952f](https://github.com/aws-amplify/amplify-cli/commit/868952f9552f09aeb2b0b8e036c59954ee3391e0)), closes [#8796](https://github.com/aws-amplify/amplify-cli/issues/8796) [#8799](https://github.com/aws-amplify/amplify-cli/issues/8799)
+* ext overrides2 storage-headless and predictions ([#8622](https://github.com/aws-amplify/amplify-cli/issues/8622)) ([59e7118](https://github.com/aws-amplify/amplify-cli/commit/59e71184e966ec735724ba501b5b318c1dbd2735))
+* fix configure project and custom policies api containers ([#8703](https://github.com/aws-amplify/amplify-cli/issues/8703)) ([a5c8775](https://github.com/aws-amplify/amplify-cli/commit/a5c8775968b3883c4dff1cd7da63f0d8fd4b2426))
+* fixed import_auth test ([#8755](https://github.com/aws-amplify/amplify-cli/issues/8755)) ([c1bffdd](https://github.com/aws-amplify/amplify-cli/commit/c1bffddc6f34b9eb3c834b127dac57b67d2c55ee))
+* fixes auth migration e2e ([#8756](https://github.com/aws-amplify/amplify-cli/issues/8756)) ([f537d7c](https://github.com/aws-amplify/amplify-cli/commit/f537d7c3a1efa2fa67fc28a6f1d27d9889bbfe72))
+* fixes dependsOn parameter and auth migration test ([#8480](https://github.com/aws-amplify/amplify-cli/issues/8480)) ([640b79e](https://github.com/aws-amplify/amplify-cli/commit/640b79ed0e40171271fa5ad9f4524f2c01d04722))
+* **graphql:** refactor lambda authorizer code to use function category to create authorizer function ([#8784](https://github.com/aws-amplify/amplify-cli/issues/8784)) ([61c4b05](https://github.com/aws-amplify/amplify-cli/commit/61c4b05cbc4497ce2f6dd43f88926a6960b23854))
+* init override test fix ([#8768](https://github.com/aws-amplify/amplify-cli/issues/8768)) ([9674a4e](https://github.com/aws-amplify/amplify-cli/commit/9674a4e344651df0a756513d034c73b822da899e))
+* migration test fixes ([#8742](https://github.com/aws-amplify/amplify-cli/issues/8742)) ([193635f](https://github.com/aws-amplify/amplify-cli/commit/193635f8355c1a18a061f6eb939eabbada07fcf9))
+* stack generation logic when multiple paths ref same Lambda ([#8673](https://github.com/aws-amplify/amplify-cli/issues/8673)) ([d4a04e6](https://github.com/aws-amplify/amplify-cli/commit/d4a04e61db325b65737a94f33f7dba77d8a07529))
+* tsc global install error ([7d1cca8](https://github.com/aws-amplify/amplify-cli/commit/7d1cca890f138f32bac51fca085098a777aea1ae))
+* update migration msg, ddb import e2e, lgtm errors ([#8796](https://github.com/aws-amplify/amplify-cli/issues/8796)) ([a2d87ec](https://github.com/aws-amplify/amplify-cli/commit/a2d87eca889ed8b23cfe3cf145c0372b655d4ed9))
+
+
+### Features
+
+* amplify export ([fd28279](https://github.com/aws-amplify/amplify-cli/commit/fd282791167177d72a42784b5de4f2fd461d590a)), closes [#8547](https://github.com/aws-amplify/amplify-cli/issues/8547) [#8488](https://github.com/aws-amplify/amplify-cli/issues/8488) [#8486](https://github.com/aws-amplify/amplify-cli/issues/8486) [#8547](https://github.com/aws-amplify/amplify-cli/issues/8547) [#8488](https://github.com/aws-amplify/amplify-cli/issues/8488) [#8486](https://github.com/aws-amplify/amplify-cli/issues/8486)
+* Auth refactor to  use cdk, eliminate EJS, overrides functionality ([#8355](https://github.com/aws-amplify/amplify-cli/issues/8355)) ([66d885f](https://github.com/aws-amplify/amplify-cli/commit/66d885f8125f11c0ea3c23f67fec51b553445d42))
+* extensibility for REST APIs ([#8598](https://github.com/aws-amplify/amplify-cli/issues/8598)) ([de19d23](https://github.com/aws-amplify/amplify-cli/commit/de19d231465c1f16bf7d1c7ccb8dba2f36d039d8))
+* overrides uniformity accross all the categories ([#8695](https://github.com/aws-amplify/amplify-cli/issues/8695)) ([2f6f0eb](https://github.com/aws-amplify/amplify-cli/commit/2f6f0eba6922a345cc549455245a712957e2f352))
+* root stack override ([#8276](https://github.com/aws-amplify/amplify-cli/issues/8276)) ([887f617](https://github.com/aws-amplify/amplify-cli/commit/887f617a83d99da1cf93850dc96ff0eebda0fe5a))
+
+
+### Reverts
+
+* Revert "fix: update migration msg, ddb import e2e, lgtm errors (#8796)" (#8799) ([394a32f](https://github.com/aws-amplify/amplify-cli/commit/394a32f7a801bcf845a180bfdaa7d1d95c5962e7)), closes [#8796](https://github.com/aws-amplify/amplify-cli/issues/8796) [#8799](https://github.com/aws-amplify/amplify-cli/issues/8799)
+
+
+
+
+
 # [1.31.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@1.30.0...amplify-e2e-core@1.31.0) (2021-11-11)
 
 
