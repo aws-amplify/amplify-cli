@@ -72,7 +72,7 @@ test('migration gets called when cli-inputs doesnt exist', async () => {
     },
   };
 
-  await checkAuthResourceMigration(mockContext as unknown as $TSContext, 'mockResource');
+  await checkAuthResourceMigration(mockContext as unknown as $TSContext, 'mockResource', true);
   expect(migrateResourceToSupportOverride).toBeCalled();
   expect(generateAuthStackTemplate).toBeCalled();
 });
@@ -87,7 +87,7 @@ test('migration doesnt called when cli-inputs exist', async () => {
     },
   };
 
-  await checkAuthResourceMigration(mockContext as unknown as $TSContext, 'mockResource');
+  await checkAuthResourceMigration(mockContext as unknown as $TSContext, 'mockResource', true);
   expect(migrateResourceToSupportOverride).not.toBeCalled();
   expect(generateAuthStackTemplate).not.toBeCalled();
 });
