@@ -758,7 +758,7 @@ describe('migrate s3 and update s3 permission walkthrough tests', () => {
     //**Set Auth permissions in Expected Output (without Delete permissions)
     const expectedCLIInputsJSON: S3UserInputs = mockDataBuilder.removeAuthPermission(S3PermissionType.DELETE).getCLIInputs();
 
-    prompter.confirmContinue = jest
+    prompter.yesOrNo = jest
       .fn()
       .mockReturnValueOnce(true) // Do you want to migrate...?
       .mockReturnValueOnce(false); // Do you want to add a Lambda Trigger ?
