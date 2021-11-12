@@ -79,17 +79,8 @@ export class AmplifyS3ResourceStackTransform {
 
   generateCfnInputParameters() {
     const userInput: S3UserInputs = this.cliInputsState.getUserInput();
-
-    const permissionCRUD = [S3PermissionType.CREATE_AND_UPDATE, S3PermissionType.READ, S3PermissionType.DELETE];
-    const permissionCreate = [S3PermissionType.CREATE_AND_UPDATE];
     //DEFAULT Parameters
-    const defaultS3PermissionsAuthenticatedPrivate = permissionCRUD;
-    const defaultS3PermissionsAuthenticatedProtected = permissionCRUD;
-    const defaultS3PermissionsAuthenticatedPublic = permissionCRUD;
-    const defaultS3PermissionsAuthenticatedUploads = permissionCreate;
-    const defaultS3PermissionsGuestPublic = permissionCRUD;
-    const defaultS3PermissionsGuestUploads = permissionCreate;
-
+    const defaultS3PermissionsUpload= [S3PermissionType.CREATE_AND_UPDATE];
     this.cfnInputParams = {
       bucketName: userInput.bucketName,
       selectedGuestPermissions: S3InputState.getCfnPermissionsFromInputPermissions(userInput.guestAccess),
@@ -117,28 +108,22 @@ export class AmplifyS3ResourceStackTransform {
     this.cfnInputParams.AuthenticatedAllowList = this._getAuthGuestListPermission(S3PermissionType.READ, userInput.authAccess);
     this.cfnInputParams.GuestAllowList = this._getAuthGuestListPermission(S3PermissionType.READ, userInput.guestAccess);
     this.cfnInputParams.s3PermissionsAuthenticatedPrivate = this._getPublicPrivatePermissions(
-      defaultS3PermissionsAuthenticatedPrivate,
-      userInput.authAccess,
+      userInput.authAccess, true //exclude bucketList
     );
     this.cfnInputParams.s3PermissionsAuthenticatedProtected = this._getPublicPrivatePermissions(
-      defaultS3PermissionsAuthenticatedProtected,
-      userInput.authAccess,
+      userInput.authAccess, true //exclude bucketList
     );
     this.cfnInputParams.s3PermissionsAuthenticatedPublic = this._getPublicPrivatePermissions(
-      defaultS3PermissionsAuthenticatedPublic,
-      userInput.authAccess,
+      userInput.authAccess, true //exclude bucketList
     );
-    this.cfnInputParams.s3PermissionsAuthenticatedUploads = this._getPublicPrivatePermissions(
-      defaultS3PermissionsAuthenticatedUploads,
-      userInput.authAccess,
+    this.cfnInputParams.s3PermissionsAuthenticatedUploads = this._getUploadPermissions(
+      userInput.authAccess
     );
     this.cfnInputParams.s3PermissionsGuestPublic = this._getPublicPrivatePermissions(
-      defaultS3PermissionsGuestPublic,
-      userInput.guestAccess,
+      userInput.guestAccess, true //exclude bucketList
     );
-    this.cfnInputParams.s3PermissionsGuestUploads = this._getPublicPrivatePermissions(
-      defaultS3PermissionsGuestUploads,
-      userInput.guestAccess,
+    this.cfnInputParams.s3PermissionsGuestUploads = this._getUploadPermissions(
+      userInput.guestAccess
     );
   }
 
@@ -154,14 +139,23 @@ export class AmplifyS3ResourceStackTransform {
     }
   }
 
-  _getPublicPrivatePermissions(checkOperationList: Array<S3PermissionType>, authPermissions: Array<S3PermissionType> | undefined) {
+  _getPublicPrivatePermissions(authPermissions: Array<S3PermissionType> | undefined , excludeListBuckets : boolean) {
     if (authPermissions) {
-      for (const permission of checkOperationList) {
-        if (!authPermissions.includes(permission)) {
-          return AmplifyBuildParamsPermissions.DISALLOW;
-        }
+      let cfnPermissions: Array<S3CFNPermissionType> = S3InputState.getCfnPermissionsFromInputPermissions(authPermissions);
+      if ( excludeListBuckets ) {
+        cfnPermissions = cfnPermissions.filter(permissions => permissions != S3CFNPermissionType.LIST);
       }
-      const cfnPermissions: Array<S3CFNPermissionType> = S3InputState.getCfnPermissionsFromInputPermissions(checkOperationList);
+      return (cfnPermissions && cfnPermissions.length > 0)? cfnPermissions.join() : AmplifyBuildParamsPermissions.DISALLOW;
+    }
+    return AmplifyBuildParamsPermissions.DISALLOW;
+  }
+  _getUploadPermissions(authPermissions: Array<S3PermissionType> | undefined ) {
+    if (authPermissions) {
+      if (!authPermissions.includes(S3PermissionType.CREATE_AND_UPDATE)) {
+        return AmplifyBuildParamsPermissions.DISALLOW;
+      }
+      //For uploads only set "s3:PutObject"
+      const cfnPermissions: Array<S3CFNPermissionType> = S3InputState.getCfnTypesFromPermissionType(S3PermissionType.CREATE_AND_UPDATE);
       return cfnPermissions.join();
     }
     return AmplifyBuildParamsPermissions.DISALLOW;
