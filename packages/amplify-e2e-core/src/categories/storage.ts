@@ -539,8 +539,6 @@ export function updateS3AddTriggerWithAuthOnlyReqMigration(cwd: string, settings
       .sendCarriageReturn() // Auth only users
       .wait('What kind of access do you want for Authenticated users?')
       .sendCarriageReturn() // Select preselected permissions
-      .wait('What kind of access do you want for Guest users?')
-      .sendCarriageReturn() // Select preselected permissions
       .wait('Do you want to add a Lambda Trigger for your S3 Bucket?')
       .sendConfirmYes()
       .wait('Do you want to edit the local')
