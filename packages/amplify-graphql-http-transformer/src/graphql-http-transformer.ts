@@ -1,5 +1,13 @@
-import { DirectiveWrapper, MappingTemplate, TransformerContractError, TransformerPluginBase } from '@aws-amplify/graphql-transformer-core';
+import {
+  DirectiveWrapper,
+  IAM_AUTH_ROLE_PARAMETER,
+  IAM_UNAUTH_ROLE_PARAMETER,
+  MappingTemplate,
+  TransformerContractError,
+  TransformerPluginBase,
+} from '@aws-amplify/graphql-transformer-core';
 import { TransformerContextProvider, TransformerSchemaVisitStepContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { AuthorizationType } from '@aws-cdk/aws-appsync';
 import * as cdk from '@aws-cdk/core';
 import {
   DirectiveNode,
@@ -24,6 +32,7 @@ import {
   and,
   comment,
   compoundExpression,
+  Expression,
   ifElse,
   iff,
   obj,
@@ -267,15 +276,45 @@ function createResolver(stack: cdk.Stack, dataSourceId: string, context: Transfo
     }),
   );
 
-  const requestTemplateString = replaceEnvAndRegion(env, region, printBlock('Create request')(compoundExpression(reqCompoundExpr)));
-  const requestMappingTemplate = cdk.Token.isUnresolved(requestTemplateString)
-    ? MappingTemplate.inlineTemplateFromString(requestTemplateString)
-    : MappingTemplate.s3MappingTemplateFromString(requestTemplateString, `${config.resolverTypeName}.${config.resolverFieldName}.req.vtl`);
+  const requestTemplate: Array<Expression> = [
+    qref(`$ctx.stash.put("typeName", "${config.resolverTypeName}")`),
+    qref(`$ctx.stash.put("fieldName", "${config.resolverFieldName}")`),
+  ];
+  const authModes = [context.authConfig.defaultAuthentication, ...(context.authConfig.additionalAuthenticationProviders || [])].map(
+    mode => mode?.authenticationType,
+  );
 
-  return context.api.host.addResolver(
-    config.resolverTypeName,
-    config.resolverFieldName,
-    requestMappingTemplate,
+  if (authModes.includes(AuthorizationType.IAM)) {
+    const authRoleParameter = (context.stackManager.getParameter(IAM_AUTH_ROLE_PARAMETER) as cdk.CfnParameter).valueAsString;
+    const unauthRoleParameter = (context.stackManager.getParameter(IAM_UNAUTH_ROLE_PARAMETER) as cdk.CfnParameter).valueAsString;
+
+    requestTemplate.push(
+      qref(
+        `$ctx.stash.put("authRole", "arn:aws:sts::${
+          cdk.Stack.of(context.stackManager.rootStack).account
+        }:assumed-role/${authRoleParameter}/CognitoIdentityCredentials")`,
+      ),
+      qref(
+        `$ctx.stash.put("unauthRole", "arn:aws:sts::${
+          cdk.Stack.of(context.stackManager.rootStack).account
+        }:assumed-role/${unauthRoleParameter}/CognitoIdentityCredentials")`,
+      ),
+    );
+  }
+
+  requestTemplate.push(obj({}));
+
+  const functionId = `${dataSourceId}${config.resolverTypeName}${config.resolverFieldName}Function`;
+  const functionRequestTemplateString = replaceEnvAndRegion(env, region, printBlock('Create request')(compoundExpression(reqCompoundExpr)));
+  const functionRequestMappingTemplate = cdk.Token.isUnresolved(functionRequestTemplateString)
+    ? MappingTemplate.inlineTemplateFromString(functionRequestTemplateString)
+    : MappingTemplate.s3MappingTemplateFromString(
+        functionRequestTemplateString,
+        `${config.resolverTypeName}.${config.resolverFieldName}.DataResolver.req.vtl`,
+      );
+  const appsyncFunction = context.api.host.addAppSyncFunction(
+    functionId,
+    functionRequestMappingTemplate,
     MappingTemplate.s3MappingTemplateFromString(
       printBlock('Process response')(
         ifElse(
@@ -288,11 +327,23 @@ function createResolver(stack: cdk.Stack, dataSourceId: string, context: Transfo
           ref('util.qr($util.appendError($ctx.result.body, $ctx.result.statusCode))'),
         ),
       ),
+      `${config.resolverTypeName}.${config.resolverFieldName}.DataResolver.res.vtl`,
+    ),
+    dataSourceId,
+    stack,
+  );
+
+  return context.api.host.addResolver(
+    config.resolverTypeName,
+    config.resolverFieldName,
+    MappingTemplate.inlineTemplateFromString(printBlock('Stash resolver specific context.')(compoundExpression(requestTemplate))),
+    MappingTemplate.s3MappingTemplateFromString(
+      '$util.toJson($ctx.prev.result)',
       `${config.resolverTypeName}.${config.resolverFieldName}.res.vtl`,
     ),
     undefined,
-    dataSourceId,
     undefined,
+    [appsyncFunction.functionId],
     stack,
   );
 }
