@@ -405,7 +405,7 @@ export class S3InputState {
   }
 
   public static getCfnPermissionsFromInputPermissions(selectedPermissions: S3PermissionType[] | undefined) {
-    if (selectedPermissions) {
+    if (selectedPermissions && selectedPermissions.length > 0 ) {
       let selectedCfnPermissions: S3CFNPermissionType[] = []; //S3CFNPermissionType
       for (const selectedPermission of selectedPermissions) {
         selectedCfnPermissions = selectedCfnPermissions.concat(S3InputState.getCfnTypesFromPermissionType(selectedPermission));

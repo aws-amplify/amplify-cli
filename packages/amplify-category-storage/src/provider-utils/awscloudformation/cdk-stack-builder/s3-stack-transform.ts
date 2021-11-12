@@ -141,13 +141,11 @@ export class AmplifyS3ResourceStackTransform {
 
   _getPublicPrivatePermissions(authPermissions: Array<S3PermissionType> | undefined , excludeListBuckets : boolean) {
     if (authPermissions) {
-      const cfnPermissions: Array<S3CFNPermissionType> = S3InputState.getCfnPermissionsFromInputPermissions(authPermissions);
+      let cfnPermissions: Array<S3CFNPermissionType> = S3InputState.getCfnPermissionsFromInputPermissions(authPermissions);
       if ( excludeListBuckets ) {
-        const filteredPermissions = cfnPermissions.filter(permissions => permissions != S3CFNPermissionType.LIST);
-        return filteredPermissions.join();
-      }else {
-        return cfnPermissions.join();
+        cfnPermissions = cfnPermissions.filter(permissions => permissions != S3CFNPermissionType.LIST);
       }
+      return (cfnPermissions && cfnPermissions.length > 0)? cfnPermissions.join() : AmplifyBuildParamsPermissions.DISALLOW;
     }
     return AmplifyBuildParamsPermissions.DISALLOW;
   }
