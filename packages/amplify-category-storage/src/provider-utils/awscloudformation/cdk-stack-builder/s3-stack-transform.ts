@@ -117,15 +117,13 @@ export class AmplifyS3ResourceStackTransform {
       userInput.authAccess, true //exclude bucketList
     );
     this.cfnInputParams.s3PermissionsAuthenticatedUploads = this._getUploadPermissions(
-      defaultS3PermissionsUpload, //disallow if these permissions are not present in the selected premissions
-      userInput.authAccess, true //exclude bucketList
+      userInput.authAccess
     );
     this.cfnInputParams.s3PermissionsGuestPublic = this._getPublicPrivatePermissions(
       userInput.guestAccess, true //exclude bucketList
     );
     this.cfnInputParams.s3PermissionsGuestUploads = this._getUploadPermissions(
-      defaultS3PermissionsUpload, //disallow if these permissions are not present in the selected premissions
-      userInput.guestAccess, true //exclude bucketList
+      userInput.guestAccess
     );
   }
 
@@ -153,21 +151,14 @@ export class AmplifyS3ResourceStackTransform {
     }
     return AmplifyBuildParamsPermissions.DISALLOW;
   }
-  _getUploadPermissions(checkOperationList: Array<S3PermissionType>,
-                        authPermissions: Array<S3PermissionType> | undefined, excludeListBuckets : boolean ) {
+  _getUploadPermissions(authPermissions: Array<S3PermissionType> | undefined ) {
     if (authPermissions) {
-      for (const permission of checkOperationList) {
-        if (!authPermissions.includes(permission)) {
-          return AmplifyBuildParamsPermissions.DISALLOW;
-        }
+      if (!authPermissions.includes(S3PermissionType.CREATE_AND_UPDATE)) {
+        return AmplifyBuildParamsPermissions.DISALLOW;
       }
-      const cfnPermissions: Array<S3CFNPermissionType> = S3InputState.getCfnPermissionsFromInputPermissions(authPermissions);
-      if ( excludeListBuckets ) {
-        const filteredPermissions = cfnPermissions.filter(permissions => permissions != S3CFNPermissionType.LIST);
-        return filteredPermissions.join();
-      }else {
-        return cfnPermissions.join();
-      }
+      //For uploads only set "s3:PutObject"
+      const cfnPermissions: Array<S3CFNPermissionType> = S3InputState.getCfnTypesFromPermissionType(S3PermissionType.CREATE_AND_UPDATE);
+      return cfnPermissions.join();
     }
     return AmplifyBuildParamsPermissions.DISALLOW;
   }
