@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import {
   $TSAny,
   $TSContext,
@@ -148,7 +149,7 @@ export class S3InputState {
     return oldParams;
   }
 
-  inferAuthPermissions(oldParams: $TSAny): any[] {
+  inferAuthPermissions(oldParams: $TSAny): $TSAny[] {
     if (
        oldParams.selectedAuthenticatedPermissions && (
        (oldParams.s3PermissionsAuthenticatedPublic && oldParams.s3PermissionsAuthenticatedPublic != 'DISALLOW') ||
@@ -161,7 +162,7 @@ export class S3InputState {
       return [];
     }
   }
-  inferGuestPermissions(oldParams: $TSAny) {
+  inferGuestPermissions(oldParams: $TSAny): $TSAny[] {
     if (
       oldParams.selectedGuestPermissions && (
       (oldParams.s3PermissionsGuestPublic && oldParams.s3PermissionsGuestPublic != 'DISALLOW') ||
@@ -424,7 +425,7 @@ export class S3InputState {
   public static getInputPermissionsFromCfnPermissions(selectedGuestPermissions: S3CFNPermissionType[] | undefined) {
     if (selectedGuestPermissions && selectedGuestPermissions.length > 0) {
       const inputParams = selectedGuestPermissions.map(S3InputState.getPermissionTypeFromCfnType);
-      return removeDuplicates(inputParams) as Array<S3PermissionType>; //required to remove List and Read mapping to the same entity
+      return _.uniq(inputParams) as Array<S3PermissionType>; //required to remove List and Read mapping to the same entity
     } else {
       return [];
     }
@@ -546,9 +547,3 @@ export class S3InputState {
     }
   }
 }
-
-//Helper
-function removeDuplicates(strArray : Array<string>) : string[] {
-  return strArray.splice(0, strArray.length, ...(new Set(strArray)))
-};
-
