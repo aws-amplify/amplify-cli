@@ -5,6 +5,8 @@ import { existsSync, readFileSync } from 'fs-extra';
 import { join } from 'path';
 import Ajv from 'ajv';
 import GeoJSONSchema from 'amplify-category-geo/schema/GeoJSONSchema.json';
+import { Location } from 'aws-sdk';
+import { v4 as uuid } from "uuid";
 
 
 export const fillResource = async (context: $TSContext) => {
@@ -28,10 +30,11 @@ export const fillResource = async (context: $TSContext) => {
     uniqueIdentifier = await prompter.input('Please provide the name of the property to use as a unique Geofence identifier:')
   }
   //Validate the json file against schema
-  validateGeoJSONFile(geoJSONFilePath);
+  const geoJSONObj: FeatureCollection = validateGeoJSONFile(geoJSONFilePath);
   if (await prompter.yesOrNo('Auto-assign the Geofence ID if not present?')) {
     if (await prompter.yesOrNo('Do you want to update the input GeoJSON file with Auto-assigned Geofence IDs?')) {
-      printer.success(`Successfully added/updated <count> Geofences in your "${collectionToFill}" collection`);
+      const geofenceCollectionParams = constructGeofenceCollectionParams({collectionName: collectionToFill, uniqueIdentifier, geoJSONObj});
+      await bulkUploadGeofence(geofenceCollectionParams);
     }
   }
 };
@@ -51,6 +54,7 @@ const validateGeoJSONFile = (geoJSONFilePath: string) => {
       validateLinearRing(linearRing);
     })
   });
+  return data;
 }
 
 const validateLinearRing = (linearRing: Array<Array<number>>) => {
@@ -65,6 +69,36 @@ const validateLinearRing = (linearRing: Array<Array<number>>) => {
   }
 };
 
+const constructGeofenceCollectionParams = (fillParam: FillParams): GeofenceCollectionParams => {
+  const Entries: GeofenceParams[] = [];
+  const { geoJSONObj } = fillParam;
+  geoJSONObj.features.forEach(feature => {
+    Entries.push({
+      GeofenceId: feature.id ?? uuid(),
+      Geometry: {
+        Polygon: feature.geometry.coordinates
+      }
+    })
+  })
+  return {
+    CollectionName: fillParam.collectionName,
+    Entries
+  }
+}
+
+const bulkUploadGeofence = async (params: GeofenceCollectionParams) => {
+  const service = new Location();
+  await service.batchPutGeofence(params, (err, data) => {
+    if (err) {
+      console.log(err, err.stack);
+    }
+    else {
+      printer.success(`Successfully added/updated <count> Geofences in your "${params.CollectionName}" collection`);
+      console.log(data);
+    }
+  }).promise();
+}
+
 type FeatureCollection = {
   type: "FeatureCollection";
   features: Feature[];
@@ -74,9 +108,28 @@ type Feature = {
   type: "Feature";
   properties: any;
   geometry: Geometry;
+  id: string;
 }
 
 type Geometry = {
   type: "Polygon";
   coordinates: Array<Array<Array<number>>>;
+}
+
+type GeofenceCollectionParams = {
+  CollectionName: string;
+  Entries: GeofenceParams[];
+}
+
+type GeofenceParams = {
+  GeofenceId: string;
+  Geometry: {
+    Polygon: Array<Array<Array<number>>>
+  }
+}
+
+type FillParams = {
+  collectionName: string;
+  uniqueIdentifier: string;
+  geoJSONObj: FeatureCollection;
 }
