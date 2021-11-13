@@ -166,7 +166,7 @@ function writeExportManifest(stackParameters: StackParameters, exportPath: strin
   const rootStackParametersKey = _.first(Object.keys(stackParameters));
   const manifestJson = {
     stackName: rootStackParametersKey,
-    props: transformManifestParameters(stackParameters[rootStackParametersKey], exportPath),
+    props: transformManifestParameters(stackParameters[rootStackParametersKey], amplifyExportFolder),
   };
   JSONUtilities.writeJson(path.join(amplifyExportFolder, PathConstants.ExportManifestJsonFilename), manifestJson);
 }
