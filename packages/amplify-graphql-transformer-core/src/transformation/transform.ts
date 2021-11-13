@@ -113,7 +113,7 @@ export class GraphQLTransform {
     this.buildParameters = options.buildParameters || {};
     this.stackMappingOverrides = options.stackMapping || {};
     this.transformConfig = options.transformConfig || {};
-    this.userDefinedSlots = options.userDefinedSlots || {} as Record<string, UserDefinedSlot[]>;
+    this.userDefinedSlots = options.userDefinedSlots || ({} as Record<string, UserDefinedSlot[]>);
   }
 
   /**
@@ -133,6 +133,7 @@ export class GraphQLTransform {
       parsedDocument,
       this.stackMappingOverrides,
       this.authConfig,
+      this.options.sandboxModeEnabled,
       this.options.featureFlags,
       this.transformConfig.ResolverConfig,
     );

@@ -522,7 +522,7 @@ Static group authorization should perform as expected.`,
       );
     } else {
       // if the related @model does not have auth we need to add a sandbox mode expression
-      relatedAuthExpression = generateSandboxExpressionForField((ctx as any).resourceHelper.api.sandboxModeEnabled);
+      relatedAuthExpression = generateSandboxExpressionForField(ctx.sandboxModeEnabled);
     }
     // if there is field auth on the relational query then we need to add field auth read rules first
     // in the request we then add the rules of the related type
