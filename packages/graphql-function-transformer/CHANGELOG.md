@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.6.1-graphql-vnext-dev-preview.11](https://github.com/aws-amplify/amplify-cli/compare/graphql-function-transformer@2.5.25...graphql-function-transformer@2.6.1-graphql-vnext-dev-preview.11) (2021-11-13)
+
+**Note:** Version bump only for package graphql-function-transformer
+
+
+
+
+
 ## [2.6.1-graphql-vnext-dev-preview.10](https://github.com/aws-amplify/amplify-cli/compare/graphql-function-transformer@2.5.25...graphql-function-transformer@2.6.1-graphql-vnext-dev-preview.10) (2021-11-13)
 
 **Note:** Version bump only for package graphql-function-transformer

@@ -1,6 +1,6 @@
 {
   "name": "amplify-graphiql-explorer",
-  "version": "1.8.0-graphql-vnext-dev-preview.10",
+  "version": "1.8.0-graphql-vnext-dev-preview.11",
   "private": true,
   "dependencies": {
     "@testing-library/jest-dom": "^5.11.4",

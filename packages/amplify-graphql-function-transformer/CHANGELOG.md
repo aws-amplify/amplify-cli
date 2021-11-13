@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.4.7-graphql-vnext-dev-preview.11](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-function-transformer@0.4.6...@aws-amplify/graphql-function-transformer@0.4.7-graphql-vnext-dev-preview.11) (2021-11-13)
+
+
+### Bug Fixes
+
+* create pipeline resolvers for [@http](https://github.com/http) v2 ([#8817](https://github.com/aws-amplify/amplify-cli/issues/8817)) ([cdfeaeb](https://github.com/aws-amplify/amplify-cli/commit/cdfeaebc022dac8816d7c926013b0288148ae766))
+
+
+
+
+
 ## [0.4.7-graphql-vnext-dev-preview.10](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-function-transformer@0.4.6...@aws-amplify/graphql-function-transformer@0.4.7-graphql-vnext-dev-preview.10) (2021-11-13)
 
 

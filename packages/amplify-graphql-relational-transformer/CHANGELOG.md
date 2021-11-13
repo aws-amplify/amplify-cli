@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.4.1-graphql-vnext-dev-preview.11](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-relational-transformer@0.4.0...@aws-amplify/graphql-relational-transformer@0.4.1-graphql-vnext-dev-preview.11) (2021-11-13)
+
+
+### Bug Fixes
+
+* reintroduce connection stack in transformer v2 ([#8757](https://github.com/aws-amplify/amplify-cli/issues/8757)) ([d56e666](https://github.com/aws-amplify/amplify-cli/commit/d56e6666e66f3f740f7db60e2f422a6f5a7ead57))
+
+
+
+
+
 ## [0.4.1-graphql-vnext-dev-preview.10](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-relational-transformer@0.4.0...@aws-amplify/graphql-relational-transformer@0.4.1-graphql-vnext-dev-preview.10) (2021-11-13)
 
 

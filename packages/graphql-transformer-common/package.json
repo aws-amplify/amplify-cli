@@ -1,6 +1,6 @@
 {
   "name": "graphql-transformer-common",
-  "version": "4.20.1-graphql-vnext-dev-preview.10",
+  "version": "4.20.1-graphql-vnext-dev-preview.11",
   "description": "Common code and constants for AppSync Transformers",
   "repository": {
     "type": "git",
