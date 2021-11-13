@@ -205,11 +205,11 @@ export function makeSearchableXSortableFieldsEnumObject(obj: ObjectTypeDefinitio
   };
 }
 
-export function makeSearchableXAggregateFieldEnumObject(obj: ObjectTypeDefinitionNode): EnumTypeDefinitionNode {
+export function makeSearchableXAggregateFieldEnumObject(obj: ObjectTypeDefinitionNode, document: DocumentNode): EnumTypeDefinitionNode {
   const name = graphqlName(`Searchable${obj.name.value}AggregateField`);
   assert(obj.fields);
   const values: EnumValueDefinitionNode[] = obj.fields
-    .filter((field: FieldDefinitionNode) => isScalar(field.type))
+    .filter((field: FieldDefinitionNode) => isScalar(field.type) || isEnum(field.type, document))
     .map((field: FieldDefinitionNode) => ({
       kind: Kind.ENUM_VALUE_DEFINITION,
       name: field.name,
