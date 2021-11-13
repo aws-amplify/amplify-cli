@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.0.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-geo@1.1.0...amplify-category-geo@2.0.0) (2021-11-13)
+
+
+### Features
+
+* headless command for geo -- map ([#8403](https://github.com/aws-amplify/amplify-cli/issues/8403)) ([73793b4](https://github.com/aws-amplify/amplify-cli/commit/73793b44411d329c52bed9337c0933d7066ee4de))
+
+
+
+
+
 # [1.2.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-geo@1.1.0...amplify-category-geo@1.2.0) (2021-11-11)
 
 
