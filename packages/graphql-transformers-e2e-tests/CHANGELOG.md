@@ -3,6 +3,127 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [6.31.0-graphql-vnext-dev-preview.10](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformers-e2e-tests@6.29.0...graphql-transformers-e2e-tests@6.31.0-graphql-vnext-dev-preview.10) (2021-11-13)
+
+
+### Features
+
+* **graphql-transformer-core:** add support for user defined slots ([#8758](https://github.com/aws-amplify/amplify-cli/issues/8758)) ([d55eacc](https://github.com/aws-amplify/amplify-cli/commit/d55eaccd54899c87433b33977390ad4ff04b5d90))
+
+
+
+
+
+# [6.31.0-graphql-vnext-dev-preview.9](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformers-e2e-tests@6.29.0...graphql-transformers-e2e-tests@6.31.0-graphql-vnext-dev-preview.9) (2021-11-13)
+
+
+### Features
+
+* **graphql-transformer-core:** add support for user defined slots ([#8758](https://github.com/aws-amplify/amplify-cli/issues/8758)) ([d55eacc](https://github.com/aws-amplify/amplify-cli/commit/d55eaccd54899c87433b33977390ad4ff04b5d90))
+
+
+
+
+
+# [6.31.0-graphql-vnext-dev-preview.8](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformers-e2e-tests@6.29.0...graphql-transformers-e2e-tests@6.31.0-graphql-vnext-dev-preview.8) (2021-11-13)
+
+
+### Features
+
+* **graphql-transformer-core:** add support for user defined slots ([#8758](https://github.com/aws-amplify/amplify-cli/issues/8758)) ([d55eacc](https://github.com/aws-amplify/amplify-cli/commit/d55eaccd54899c87433b33977390ad4ff04b5d90))
+
+
+
+
+
+# [6.31.0-graphql-vnext-dev-preview.7](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformers-e2e-tests@6.29.0...graphql-transformers-e2e-tests@6.31.0-graphql-vnext-dev-preview.7) (2021-11-13)
+
+
+### Features
+
+* **graphql-transformer-core:** add support for user defined slots ([#8758](https://github.com/aws-amplify/amplify-cli/issues/8758)) ([d55eacc](https://github.com/aws-amplify/amplify-cli/commit/d55eaccd54899c87433b33977390ad4ff04b5d90))
+
+
+
+
+
+# [6.31.0-graphql-vnext-dev-preview.6](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformers-e2e-tests@6.29.0...graphql-transformers-e2e-tests@6.31.0-graphql-vnext-dev-preview.6) (2021-11-13)
+
+
+### Features
+
+* **graphql-transformer-core:** add support for user defined slots ([#8758](https://github.com/aws-amplify/amplify-cli/issues/8758)) ([d55eacc](https://github.com/aws-amplify/amplify-cli/commit/d55eaccd54899c87433b33977390ad4ff04b5d90))
+
+
+
+
+
+# [6.31.0-graphql-vnext-dev-preview.5](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformers-e2e-tests@6.29.0...graphql-transformers-e2e-tests@6.31.0-graphql-vnext-dev-preview.5) (2021-11-13)
+
+
+### Features
+
+* **graphql-transformer-core:** add support for user defined slots ([#8758](https://github.com/aws-amplify/amplify-cli/issues/8758)) ([d55eacc](https://github.com/aws-amplify/amplify-cli/commit/d55eaccd54899c87433b33977390ad4ff04b5d90))
+
+
+
+
+
+# [6.31.0-graphql-vnext-dev-preview.4](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformers-e2e-tests@6.29.0...graphql-transformers-e2e-tests@6.31.0-graphql-vnext-dev-preview.4) (2021-11-13)
+
+
+### Features
+
+* **graphql-transformer-core:** add support for user defined slots ([#8758](https://github.com/aws-amplify/amplify-cli/issues/8758)) ([d55eacc](https://github.com/aws-amplify/amplify-cli/commit/d55eaccd54899c87433b33977390ad4ff04b5d90))
+
+
+
+
+
+# [6.31.0-graphql-vnext-dev-preview.3](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformers-e2e-tests@6.29.0...graphql-transformers-e2e-tests@6.31.0-graphql-vnext-dev-preview.3) (2021-11-13)
+
+
+### Features
+
+* **graphql-transformer-core:** add support for user defined slots ([#8758](https://github.com/aws-amplify/amplify-cli/issues/8758)) ([d55eacc](https://github.com/aws-amplify/amplify-cli/commit/d55eaccd54899c87433b33977390ad4ff04b5d90))
+
+
+
+
+
+# [6.31.0-graphql-vnext-dev-preview.2](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformers-e2e-tests@6.29.0...graphql-transformers-e2e-tests@6.31.0-graphql-vnext-dev-preview.2) (2021-11-13)
+
+
+### Features
+
+* **graphql-transformer-core:** add support for user defined slots ([#8758](https://github.com/aws-amplify/amplify-cli/issues/8758)) ([d55eacc](https://github.com/aws-amplify/amplify-cli/commit/d55eaccd54899c87433b33977390ad4ff04b5d90))
+
+
+
+
+
+# [6.31.0-graphql-vnext-dev-preview.1](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformers-e2e-tests@6.29.0...graphql-transformers-e2e-tests@6.31.0-graphql-vnext-dev-preview.1) (2021-11-13)
+
+
+### Features
+
+* **graphql-transformer-core:** add support for user defined slots ([#8758](https://github.com/aws-amplify/amplify-cli/issues/8758)) ([d55eacc](https://github.com/aws-amplify/amplify-cli/commit/d55eaccd54899c87433b33977390ad4ff04b5d90))
+
+
+
+
+
+# [6.31.0-graphql-vnext-dev-preview.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformers-e2e-tests@6.29.0...graphql-transformers-e2e-tests@6.31.0-graphql-vnext-dev-preview.0) (2021-11-13)
+
+
+### Features
+
+* **graphql-transformer-core:** add support for user defined slots ([#8758](https://github.com/aws-amplify/amplify-cli/issues/8758)) ([d55eacc](https://github.com/aws-amplify/amplify-cli/commit/d55eaccd54899c87433b33977390ad4ff04b5d90))
+
+
+
+
+
 # [6.29.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformers-e2e-tests@6.28.0...graphql-transformers-e2e-tests@6.29.0) (2021-11-11)
 
 
