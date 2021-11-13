@@ -20,11 +20,11 @@ const binUrl = (version: string, binName: string) =>
 const latestVersionUrl = `https://api.github.com/repos/${repoOwner}/${repoName}/releases/latest`;
 
 export const run = async (context: $TSContext) => {
-  // if (!isPackaged) {
-  //   context.print.warning('"upgrade" is not supported in this installation of Amplify.');
-  //   context.print.info(`Use ${chalk.blueBright('npm i -g @aws-amplify/cli')} instead.`);
-  //   return;
-  // }
+  if (!isPackaged) {
+    context.print.warning('"upgrade" is not supported in this installation of Amplify.');
+    context.print.info(`Use ${chalk.blueBright('npm i -g @aws-amplify/cli')} instead.`);
+    return;
+  }
   const { version: thisVersion } = require('../../package.json');
   if (typeof thisVersion !== 'string') {
     throw new Error('Cannot determine current CLI version. Try uninstalling and reinstalling the CLI.');
@@ -81,5 +81,5 @@ const getLatestVersion = async (): Promise<string> => {
   if (response.status >= 400) {
     throw new Error(`${response.status}: Request to ${latestVersionUrl} failed:\n${JSON.stringify(result, null, 2)}`);
   }
-  return (result.tag_name as string).slice(1).trim(); // strip of leading 'v' from tag to convert to semver string
+  return (result.tag_name as string).slice(1).trim(); // strip off leading 'v' from tag to convert to semver string
 };
