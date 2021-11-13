@@ -106,11 +106,12 @@ export enum AttributeType {
   EMAIL = 'email',
   PHONE_NUMBER = 'phone_number',
   PREFERRED_USERNAME = 'preferred_username',
+  EMAIL_AND_PHONE_NUMBER = 'email, phone_number',
 }
 
 export type PasswordPolicy = 'Requires Lowercase' | 'Requires Numbers' | 'Requires Symbols' | 'Requires Uppercase';
 
-export type UsernameAttributes = AttributeType.EMAIL | AttributeType.PHONE_NUMBER;
+export type UsernameAttributes = AttributeType.EMAIL | AttributeType.PHONE_NUMBER | AttributeType.EMAIL_AND_PHONE_NUMBER;
 
 export type AliasAttributes = AttributeType.EMAIL | AttributeType.PHONE_NUMBER | AttributeType.PREFERRED_USERNAME;
 

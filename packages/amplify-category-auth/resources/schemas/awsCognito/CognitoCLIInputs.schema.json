@@ -72,7 +72,7 @@
         "usernameAttributes": {
           "type": "array",
           "items": {
-            "enum": ["email", "phone_number"],
+            "enum": ["email", "email, phone_number", "phone_number"],
             "type": "string"
           }
         },
