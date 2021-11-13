@@ -132,7 +132,7 @@ export class S3InputState {
       backendDir,
       AmplifyCategories.STORAGE,
       this._resourceName,
-      `${AmplifySupportedService.S3}-cloudformation-template.json`,
+      's3-cloudformation-template.json',
     );
     const oldStorageParamsFilepath = path.join(backendDir, AmplifyCategories.STORAGE, this._resourceName, `storage-params.json`);
     const oldParameters = JSONUtilities.readJson<$TSAny>(oldParametersFilepath, { throwIfNotExist: true });
@@ -241,7 +241,7 @@ export class S3InputState {
       backendDir,
       AmplifyCategories.STORAGE,
       this._resourceName,
-      `${AmplifySupportedService.S3}-cloudformation-template.json`,
+      's3-cloudformation-template.json',
     );
     return fs.existsSync(oldParametersFilepath) && fs.existsSync(oldCFNFilepath);
   }
