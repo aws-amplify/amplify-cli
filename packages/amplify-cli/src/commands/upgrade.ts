@@ -8,6 +8,8 @@ import chalk from 'chalk';
 import gunzip from 'gunzip-maybe';
 import tar from 'tar-fs';
 import ProgressBar from 'progress';
+import { pipeline } from 'stream';
+import { promisify } from 'util';
 
 const repoOwner = 'aws-amplify';
 const repoName = 'amplify-cli';
@@ -18,11 +20,11 @@ const binUrl = (version: string, binName: string) =>
 const latestVersionUrl = `https://api.github.com/repos/${repoOwner}/${repoName}/releases/latest`;
 
 export const run = async (context: $TSContext) => {
-  if (!isPackaged) {
-    context.print.warning('"upgrade" is not supported in this installation of Amplify.');
-    context.print.info(`Use ${chalk.blueBright('npm i -g @aws-amplify/cli')} instead.`);
-    return;
-  }
+  // if (!isPackaged) {
+  //   context.print.warning('"upgrade" is not supported in this installation of Amplify.');
+  //   context.print.info(`Use ${chalk.blueBright('npm i -g @aws-amplify/cli')} instead.`);
+  //   return;
+  // }
   const { version: thisVersion } = require('../../package.json');
   if (typeof thisVersion !== 'string') {
     throw new Error('Cannot determine current CLI version. Try uninstalling and reinstalling the CLI.');
@@ -65,14 +67,9 @@ const upgradeCli = async (print, version: string) => {
     renderThrottle: 100,
   });
   print.info('Downloading latest Amplify CLI');
-  await new Promise((resolve, reject) =>
-    response.body
-      .on('data', chunk => progressBar.tick(chunk.length))
-      .pipe(gunzip())
-      .pipe(tar.extract(binDir))
-      .on('finish', resolve)
-      .on('error', reject),
-  );
+  const downloadPromise = promisify(pipeline)(response.body, gunzip(), tar.extract(binDir));
+  response.body.on('data', chunk => progressBar.tick(chunk.length));
+  await downloadPromise;
   await fs.move(extractedPath, binPath, { overwrite: true });
   await fs.chmod(binPath, '700');
 };
