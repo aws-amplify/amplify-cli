@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.9.1-graphql-vnext-dev-preview.10](https://github.com/aws-amplify/amplify-console-integration-tests/compare/amplify-console-integration-tests@1.8.15...amplify-console-integration-tests@1.9.1-graphql-vnext-dev-preview.10) (2021-11-13)
+
+**Note:** Version bump only for package amplify-console-integration-tests
+
+
+
+
+
 ## [1.9.1-graphql-vnext-dev-preview.9](https://github.com/aws-amplify/amplify-console-integration-tests/compare/amplify-console-integration-tests@1.8.15...amplify-console-integration-tests@1.9.1-graphql-vnext-dev-preview.9) (2021-11-13)
 
 **Note:** Version bump only for package amplify-console-integration-tests

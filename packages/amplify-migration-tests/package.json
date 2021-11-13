@@ -1,6 +1,6 @@
 {
   "name": "amplify-migration-tests",
-  "version": "3.3.0-graphql-vnext-dev-preview.9",
+  "version": "3.3.0-graphql-vnext-dev-preview.10",
   "description": "",
   "repository": {
     "type": "git",
@@ -26,12 +26,12 @@
     "setup-profile": "ts-node ./src/configure_tests.ts"
   },
   "dependencies": {
-    "amplify-e2e-core": "1.33.0-graphql-vnext-dev-preview.9",
+    "amplify-e2e-core": "1.33.0-graphql-vnext-dev-preview.10",
     "aws-sdk": "^2.963.0",
     "dotenv": "^8.2.0",
     "esm": "^3.2.25",
     "fs-extra": "^8.1.0",
-    "graphql-transformer-core": "6.32.1-graphql-vnext-dev-preview.9",
+    "graphql-transformer-core": "6.32.1-graphql-vnext-dev-preview.10",
     "rimraf": "^3.0.0",
     "uuid": "^8.2.0"
   },

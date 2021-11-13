@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.5.1-graphql-vnext-dev-preview.10](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-index-transformer@0.5.0...@aws-amplify/graphql-index-transformer@0.5.1-graphql-vnext-dev-preview.10) (2021-11-13)
+
+**Note:** Version bump only for package @aws-amplify/graphql-index-transformer
+
+
+
+
+
 ## [0.5.1-graphql-vnext-dev-preview.9](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-index-transformer@0.5.0...@aws-amplify/graphql-index-transformer@0.5.1-graphql-vnext-dev-preview.9) (2021-11-13)
 
 **Note:** Version bump only for package @aws-amplify/graphql-index-transformer

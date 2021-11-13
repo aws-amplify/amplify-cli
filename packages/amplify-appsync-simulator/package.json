@@ -1,6 +1,6 @@
 {
   "name": "amplify-appsync-simulator",
-  "version": "1.28.1-graphql-vnext-dev-preview.9",
+  "version": "1.28.1-graphql-vnext-dev-preview.10",
   "description": "An AppSync Simulator to test AppSync API.",
   "repository": {
     "type": "git",
@@ -64,7 +64,7 @@
     "@types/node": "^12.12.6",
     "@types/pino": "^6.3.11",
     "@types/ws": "^7.4.4",
-    "amplify-graphiql-explorer": "1.8.0-graphql-vnext-dev-preview.9"
+    "amplify-graphiql-explorer": "1.8.0-graphql-vnext-dev-preview.10"
   },
   "jest": {
     "testRunner": "jest-circus/runner",
