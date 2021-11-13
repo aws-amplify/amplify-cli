@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.0.1-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-nodejs-function-template-provider@1.6.25...amplify-nodejs-function-template-provider@2.0.1-beta.0) (2021-11-13)
+
+
+### Bug Fixes
+
+* map readable attr name to ddb name in parameters.json ([#8816](https://github.com/aws-amplify/amplify-cli/issues/8816)) ([59e5f50](https://github.com/aws-amplify/amplify-cli/commit/59e5f508254c2717c2a9b3de5253065c5f6b34a1))
+
+
+
+
+
 # [2.0.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-nodejs-function-template-provider@1.6.25...amplify-nodejs-function-template-provider@2.0.0) (2021-11-13)
 
 
