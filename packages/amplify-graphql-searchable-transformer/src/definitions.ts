@@ -8,6 +8,8 @@ import {
   DocumentNode,
   EnumTypeDefinitionNode,
   EnumValueDefinitionNode,
+  DirectiveNode,
+  NamedTypeNode,
 } from 'graphql';
 import {
   graphqlName,
@@ -18,8 +20,12 @@ import {
   makeNonNullType,
   getBaseType,
   SearchableResourceIDs,
+  blankObjectExtension,
+  extensionWithDirectives,
+  extendFieldWithDirectives,
 } from 'graphql-transformer-common';
-
+import assert from 'assert';
+import { TransformerTransformSchemaStepContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 const ID_CONDITIONS = [
   'ne',
   'gt',
@@ -40,8 +46,13 @@ const STRING_CONDITIONS = ID_CONDITIONS;
 const INT_CONDITIONS = ['ne', 'gt', 'lt', 'gte', 'lte', 'eq', 'range'];
 const FLOAT_CONDITIONS = ['ne', 'gt', 'lt', 'gte', 'lte', 'eq', 'range'];
 const BOOLEAN_CONDITIONS = ['eq', 'ne'];
-import assert from 'assert';
 
+export const AGGREGATE_TYPES = [
+  'SearchableAggregateResult',
+  'SearchableAggregateScalarResult',
+  'SearchableAggregateBucketResult',
+  'SearchableAggregateBucketResultItem',
+];
 export function makeSearchableScalarInputObject(type: string): InputObjectTypeDefinitionNode {
   const name = SearchableResourceIDs.SearchableFilterInputTypeName(type);
   const conditions = getScalarConditions(type);
@@ -335,3 +346,60 @@ function getScalarConditions(type: string): string[] {
       throw 'Valid types are String, ID, Int, Float, Boolean';
   }
 }
+export const extendTypeWithDirectives = (
+  ctx: TransformerTransformSchemaStepContextProvider,
+  typeName: string,
+  directives: Array<DirectiveNode>,
+): void => {
+  let objectTypeExtension = blankObjectExtension(typeName);
+  objectTypeExtension = extensionWithDirectives(objectTypeExtension, directives);
+  ctx.output.addObjectExtension(objectTypeExtension);
+};
+
+export const addDirectivesToField = (
+  ctx: TransformerTransformSchemaStepContextProvider,
+  typeName: string,
+  fieldName: string,
+  directives: Array<DirectiveNode>,
+) => {
+  const type = ctx.output.getType(typeName) as ObjectTypeDefinitionNode;
+  if (type) {
+    const field = type.fields?.find(f => f.name.value === fieldName);
+    if (field) {
+      const newFields = [...type.fields!.filter(f => f.name.value !== field.name.value), extendFieldWithDirectives(field, directives)];
+
+      const newType = {
+        ...type,
+        fields: newFields,
+      };
+
+      ctx.output.putType(newType);
+    }
+  }
+};
+
+export const addDirectivesToOperation = (
+  ctx: TransformerTransformSchemaStepContextProvider,
+  typeName: string,
+  operationName: string,
+  directives: Array<DirectiveNode>,
+) => {
+  // add directives to the given operation
+  addDirectivesToField(ctx, typeName, operationName, directives);
+
+  // add the directives to the result type of the operation
+  const type = ctx.output.getType(typeName) as ObjectTypeDefinitionNode;
+  if (type) {
+    const field = type.fields!.find(f => f.name.value === operationName);
+
+    if (field) {
+      const returnFieldType = field.type as NamedTypeNode;
+
+      if (returnFieldType.name) {
+        const returnTypeName = returnFieldType.name.value;
+
+        extendTypeWithDirectives(ctx, returnTypeName, directives);
+      }
+    }
+  }
+};

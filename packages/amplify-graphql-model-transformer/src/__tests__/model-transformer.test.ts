@@ -1215,4 +1215,59 @@ describe('ModelTransformer: ', () => {
     expect(todoStack).toBeDefined();
     expect(todoStack.Parameters).toMatchObject(modelParams);
   });
+
+  it('global auth enabled should add apiKey if not default mode of auth', () => {
+    const validSchema = `
+    type Post @model {
+      id: ID!
+      title: String!
+      tags: [Tag]
+    }
+
+    type Tag {
+      id: ID
+      tags: [Tag]
+    }`;
+    const transformer = new GraphQLTransform({
+      authConfig: {
+        defaultAuthentication: {
+          authenticationType: 'AMAZON_COGNITO_USER_POOLS',
+        },
+        additionalAuthenticationProviders: [
+          {
+            authenticationType: 'API_KEY',
+          },
+        ],
+      },
+      sandboxModeEnabled: true,
+      transformers: [new ModelTransformer()],
+    });
+    const out = transformer.transform(validSchema);
+    expect(out).toBeDefined();
+
+    const schema = parse(out.schema);
+    validateModelSchema(schema);
+
+    const postType = getObjectType(schema, 'Post')!;
+    expect(postType).toBeDefined();
+    expect(postType.directives).toBeDefined();
+    expect(postType.directives!.some(dir => dir.name.value === 'aws_api_key')).toEqual(true);
+
+    const tagType = getObjectType(schema, 'Tag')!;
+    expect(tagType).toBeDefined();
+    expect(tagType.directives).toBeDefined();
+    expect(tagType.directives!.some(dir => dir.name.value === 'aws_api_key')).toEqual(true);
+
+    // check operations
+    const queryType = getObjectType(schema, 'Query')!;
+    expect(queryType).toBeDefined();
+    const mutationType = getObjectType(schema, 'Mutation')!;
+    expect(mutationType).toBeDefined();
+    const subscriptionType = getObjectType(schema, 'Subscription')!;
+    expect(subscriptionType).toBeDefined();
+
+    for (const field of [...queryType.fields!, ...mutationType.fields!, ...subscriptionType.fields!]) {
+      expect(field.directives!.some(dir => dir.name.value === 'aws_api_key')).toEqual(true);
+    }
+  });
 });
