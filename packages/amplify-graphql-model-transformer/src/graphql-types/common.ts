@@ -1,14 +1,20 @@
-import { TransformerTransformSchemaStepContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { TransformerContextProvider, TransformerTransformSchemaStepContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import {
+  DirectiveNode,
   EnumTypeDefinitionNode,
   FieldDefinitionNode,
   InputObjectTypeDefinitionNode,
   Kind,
+  NamedTypeNode,
   ObjectTypeDefinitionNode,
   TypeDefinitionNode,
 } from 'graphql';
 import {
+  blankObjectExtension,
   DEFAULT_SCALARS,
+  extendFieldWithDirectives,
+  extensionWithDirectives,
+  getBaseType,
   makeArgument,
   makeDirective,
   makeField,
@@ -29,6 +35,7 @@ import {
   SIZE_CONDITIONS,
   STRING_CONDITIONS,
   STRING_FUNCTIONS,
+  API_KEY_DIRECTIVE,
 } from '../definitions';
 import {
   EnumWrapper,
@@ -245,7 +252,96 @@ export function makeEnumFilterInput(fieldWrapper: FieldWrapper): InputObjectType
   return input.serialize();
 }
 
+export const addDirectivesToField = (
+  ctx: TransformerTransformSchemaStepContextProvider,
+  typeName: string,
+  fieldName: string,
+  directives: Array<DirectiveNode>,
+) => {
+  const type = ctx.output.getType(typeName) as ObjectTypeDefinitionNode;
+  if (type) {
+    const field = type.fields?.find(f => f.name.value === fieldName);
+    if (field) {
+      const newFields = [...type.fields!.filter(f => f.name.value !== field.name.value), extendFieldWithDirectives(field, directives)];
+
+      const newType = {
+        ...type,
+        fields: newFields,
+      };
+
+      ctx.output.putType(newType);
+    }
+  }
+};
+
+export const addDirectivesToOperation = (
+  ctx: TransformerTransformSchemaStepContextProvider,
+  typeName: string,
+  operationName: string,
+  directives: Array<DirectiveNode>,
+) => {
+  // add directives to the given operation
+  addDirectivesToField(ctx, typeName, operationName, directives);
+
+  // add the directives to the result type of the operation
+  const type = ctx.output.getType(typeName) as ObjectTypeDefinitionNode;
+  if (type) {
+    const field = type.fields!.find(f => f.name.value === operationName);
+
+    if (field) {
+      const returnFieldType = field.type as NamedTypeNode;
+
+      if (returnFieldType.name) {
+        const returnTypeName = returnFieldType.name.value;
+
+        extendTypeWithDirectives(ctx, returnTypeName, directives);
+      }
+    }
+  }
+};
+
+export const extendTypeWithDirectives = (
+  ctx: TransformerTransformSchemaStepContextProvider,
+  typeName: string,
+  directives: Array<DirectiveNode>,
+): void => {
+  let objectTypeExtension = blankObjectExtension(typeName);
+  objectTypeExtension = extensionWithDirectives(objectTypeExtension, directives);
+  ctx.output.addObjectExtension(objectTypeExtension);
+};
+
 export function makeModelSortDirectionEnumObject(): EnumTypeDefinitionNode {
   const name = 'ModelSortDirection';
   return EnumWrapper.create(name, ['ASC', 'DESC']).serialize();
 }
+// the smaller version of it's @auth equivalent since we only support
+// apikey as the only global auth rule
+export const propagateApiKeyToNestedTypes = (
+  ctx: TransformerContextProvider,
+  def: ObjectTypeDefinitionNode,
+  seenNonModelTypes: Set<string>,
+) => {
+  const nonModelTypePredicate = (fieldType: TypeDefinitionNode): TypeDefinitionNode | undefined => {
+    if (fieldType) {
+      if (fieldType.kind !== 'ObjectTypeDefinition') {
+        return undefined;
+      }
+      const typeModel = fieldType.directives!.find(dir => dir.name.value === 'model');
+      return typeModel !== undefined ? undefined : fieldType;
+    }
+    return fieldType;
+  };
+  const nonModelFieldTypes = def
+    .fields!.map(f => ctx.output.getType(getBaseType(f.type)) as TypeDefinitionNode)
+    .filter(nonModelTypePredicate);
+  for (const nonModelFieldType of nonModelFieldTypes) {
+    const nonModelName = nonModelFieldType.name.value;
+    const hasSeenType = seenNonModelTypes.has(nonModelName);
+    const hasApiKey = nonModelFieldType.directives?.some(dir => dir.name.value === API_KEY_DIRECTIVE) ?? false;
+    if (!hasSeenType && !hasApiKey) {
+      seenNonModelTypes.add(nonModelName);
+      extendTypeWithDirectives(ctx, nonModelName, [makeDirective(API_KEY_DIRECTIVE, [])]);
+      propagateApiKeyToNestedTypes(ctx, nonModelFieldType as ObjectTypeDefinitionNode, seenNonModelTypes);
+    }
+  }
+};
