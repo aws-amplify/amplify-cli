@@ -49,6 +49,7 @@ export class TransformerContext implements TransformerContextProvider {
   public readonly featureFlags: FeatureFlagProvider;
   public _api?: GraphQLAPIProvider;
   public readonly authConfig: AppSyncAuthConfiguration;
+  public readonly sandboxModeEnabled: boolean;
   private resolverConfig: ResolverConfig | undefined;
 
   public metadata: TransformerContextMetadata;
@@ -57,6 +58,7 @@ export class TransformerContext implements TransformerContextProvider {
     public readonly inputDocument: DocumentNode,
     stackMapping: Record<string, string>,
     authConfig: AppSyncAuthConfiguration,
+    sandboxModeEnabled?: boolean,
     featureFlags?: FeatureFlagProvider,
     resolverConfig?: ResolverConfig,
   ) {
@@ -67,6 +69,7 @@ export class TransformerContext implements TransformerContextProvider {
     const stackManager = new StackManager(app, stackMapping);
     this.stackManager = stackManager;
     this.authConfig = authConfig;
+    this.sandboxModeEnabled = sandboxModeEnabled ?? false;
     this.resourceHelper = new TransformerResourceHelper(stackManager);
     this.featureFlags = featureFlags ?? new NoopFeatureFlagProvider();
     this.resolverConfig = resolverConfig;

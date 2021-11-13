@@ -1,7 +1,12 @@
 import { makeField, makeInputValueDefinition, makeNamedType } from './definition';
 import { ModelResourceIDs } from './ModelResourceIDs';
-import { FieldDefinitionNode, InputValueDefinitionNode } from 'graphql';
-export function makeConnectionField(fieldName: string, returnTypeName: string, args: InputValueDefinitionNode[] = []): FieldDefinitionNode {
+import { DirectiveNode, FieldDefinitionNode, InputValueDefinitionNode } from 'graphql';
+export function makeConnectionField(
+  fieldName: string,
+  returnTypeName: string,
+  args: InputValueDefinitionNode[] = [],
+  directives: DirectiveNode[] = [],
+): FieldDefinitionNode {
   return makeField(
     fieldName,
     [
@@ -10,6 +15,7 @@ export function makeConnectionField(fieldName: string, returnTypeName: string, a
       makeInputValueDefinition('limit', makeNamedType('Int')),
       makeInputValueDefinition('nextToken', makeNamedType('String')),
     ],
-    makeNamedType(ModelResourceIDs.ModelConnectionTypeName(returnTypeName))
+    makeNamedType(ModelResourceIDs.ModelConnectionTypeName(returnTypeName)),
+    directives,
   );
 }
