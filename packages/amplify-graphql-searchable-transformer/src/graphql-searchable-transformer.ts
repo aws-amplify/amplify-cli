@@ -380,7 +380,7 @@ export class SearchableModelTransformer extends TransformerPluginBase {
     }
 
     if (!ctx.output.hasType(`Searchable${definition.name.value}AggregateField`)) {
-      const searchableXAggregationField = makeSearchableXAggregateFieldEnumObject(definition);
+      const searchableXAggregationField = makeSearchableXAggregateFieldEnumObject(definition, ctx.inputDocument);
       ctx.output.addEnum(searchableXAggregationField);
     }
 
