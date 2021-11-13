@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.1.0-beta.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@2.1.0-beta.0...@aws-amplify/amplify-category-auth@2.1.0-beta.1) (2021-11-13)
+
+
+### Bug Fixes
+
+* allow both email and phone nummber type ([#8850](https://github.com/aws-amplify/amplify-cli/issues/8850)) ([aa93c3e](https://github.com/aws-amplify/amplify-cli/commit/aa93c3e0d5e1ddefc46e3087c7a10d296a769eae))
+
+
+
+
+
 # 2.1.0-beta.0 (2021-11-13)
 
 
