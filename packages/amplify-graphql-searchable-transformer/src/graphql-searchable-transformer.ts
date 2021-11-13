@@ -3,6 +3,7 @@ import {
   DataSourceProvider,
   TransformerContextProvider,
   TransformerSchemaVisitStepContextProvider,
+  TransformerTransformSchemaStepContextProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { DynamoDbDataSource } from '@aws-cdk/aws-appsync';
 import { Table } from '@aws-cdk/aws-dynamodb';
@@ -27,6 +28,7 @@ import {
   plurality,
   toUpper,
   ResolverResourceIDs,
+  makeDirective,
 } from 'graphql-transformer-common';
 import { createParametersStack as createParametersInStack } from './cdk/create-cfnParameters';
 import { requestTemplate, responseTemplate, sandboxMappingTemplate } from './generate-resolver-vtl';
@@ -39,6 +41,8 @@ import {
   makeSearchableXSortInputObject,
   makeSearchableXAggregationInputObject,
   makeSearchableAggregateTypeEnumObject,
+  AGGREGATE_TYPES,
+  extendTypeWithDirectives,
 } from './definitions';
 import assert from 'assert';
 import { setMappings } from './cdk/create-layer-cfnMapping';
@@ -146,7 +150,7 @@ export class SearchableModelTransformer extends TransformerPluginBase {
       resolver.addToSlot(
         'postAuth',
         MappingTemplate.s3MappingTemplateFromString(
-          sandboxMappingTemplate((context as any).resourceHelper.api.sandboxModeEnabled, fields),
+          sandboxMappingTemplate(context.sandboxModeEnabled, fields),
           `${typeName}.${def.fieldName}.{slotName}.{slotIndex}.res.vtl`,
         ),
       );
@@ -159,6 +163,7 @@ export class SearchableModelTransformer extends TransformerPluginBase {
 
   object = (definition: ObjectTypeDefinitionNode, directive: DirectiveNode, ctx: TransformerSchemaVisitStepContextProvider): void => {
     const modelDirective = definition?.directives?.find(dir => dir.name.value === 'model');
+    const hasAuth = definition.directives?.some(dir => dir.name.value === 'auth') ?? false;
     if (!modelDirective) {
       throw new InvalidDirectiveError('Types annotated with @searchable must also be annotated with @model.');
     }
@@ -187,6 +192,10 @@ export class SearchableModelTransformer extends TransformerPluginBase {
       this.generateSearchableInputs(ctx, definition);
       this.generateSearchableXConnectionType(ctx, definition);
       this.generateSearchableAggregateTypes(ctx);
+      const directives = [];
+      if (!hasAuth && ctx.sandboxModeEnabled && ctx.authConfig.defaultAuthentication.authenticationType !== 'API_KEY') {
+        directives.push(makeDirective('aws_api_key', []));
+      }
       const queryField = makeField(
         fieldName,
         [
@@ -198,9 +207,22 @@ export class SearchableModelTransformer extends TransformerPluginBase {
           makeInputValueDefinition('aggregates', makeListType(makeNamedType(`Searchable${definition.name.value}AggregationInput`))),
         ],
         makeNamedType(`Searchable${definition.name.value}Connection`),
+        directives,
       );
-
       ctx.output.addQueryFields([queryField]);
+    }
+  };
+
+  transformSchema = (ctx: TransformerTransformSchemaStepContextProvider) => {
+    // add api key to aggregate types if sandbox mode is enabled
+    if (ctx.sandboxModeEnabled && ctx.authConfig.defaultAuthentication.authenticationType !== 'API_KEY') {
+      for (let aggType of AGGREGATE_TYPES) {
+        const aggObject = ctx.output.getObject(aggType)!;
+        const hasApiKey = aggObject.directives?.some(dir => dir.name.value === 'aws_api_key') ?? false;
+        if (!hasApiKey) {
+          extendTypeWithDirectives(ctx, aggType, [makeDirective('aws_api_key', [])]);
+        }
+      }
     }
   };
 
