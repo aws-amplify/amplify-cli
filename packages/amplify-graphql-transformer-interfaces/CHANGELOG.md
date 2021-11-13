@@ -3,6 +3,116 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.10.2-graphql-vnext-dev-preview.9](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-transformer-interfaces@1.10.1...@aws-amplify/graphql-transformer-interfaces@1.10.2-graphql-vnext-dev-preview.9) (2021-11-13)
+
+
+### Bug Fixes
+
+* passing ddb params from root to nested model stacks ([#8766](https://github.com/aws-amplify/amplify-cli/issues/8766)) ([3c2d97d](https://github.com/aws-amplify/amplify-cli/commit/3c2d97d99ed3255a584f32cc6d159f5005b11cb5))
+
+
+
+
+
+## [1.10.2-graphql-vnext-dev-preview.8](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-transformer-interfaces@1.10.1...@aws-amplify/graphql-transformer-interfaces@1.10.2-graphql-vnext-dev-preview.8) (2021-11-13)
+
+
+### Bug Fixes
+
+* passing ddb params from root to nested model stacks ([#8766](https://github.com/aws-amplify/amplify-cli/issues/8766)) ([3c2d97d](https://github.com/aws-amplify/amplify-cli/commit/3c2d97d99ed3255a584f32cc6d159f5005b11cb5))
+
+
+
+
+
+## [1.10.2-graphql-vnext-dev-preview.7](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-transformer-interfaces@1.10.1...@aws-amplify/graphql-transformer-interfaces@1.10.2-graphql-vnext-dev-preview.7) (2021-11-13)
+
+
+### Bug Fixes
+
+* passing ddb params from root to nested model stacks ([#8766](https://github.com/aws-amplify/amplify-cli/issues/8766)) ([3c2d97d](https://github.com/aws-amplify/amplify-cli/commit/3c2d97d99ed3255a584f32cc6d159f5005b11cb5))
+
+
+
+
+
+## [1.10.2-graphql-vnext-dev-preview.6](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-transformer-interfaces@1.10.1...@aws-amplify/graphql-transformer-interfaces@1.10.2-graphql-vnext-dev-preview.6) (2021-11-13)
+
+
+### Bug Fixes
+
+* passing ddb params from root to nested model stacks ([#8766](https://github.com/aws-amplify/amplify-cli/issues/8766)) ([3c2d97d](https://github.com/aws-amplify/amplify-cli/commit/3c2d97d99ed3255a584f32cc6d159f5005b11cb5))
+
+
+
+
+
+## [1.10.2-graphql-vnext-dev-preview.5](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-transformer-interfaces@1.10.1...@aws-amplify/graphql-transformer-interfaces@1.10.2-graphql-vnext-dev-preview.5) (2021-11-13)
+
+
+### Bug Fixes
+
+* passing ddb params from root to nested model stacks ([#8766](https://github.com/aws-amplify/amplify-cli/issues/8766)) ([3c2d97d](https://github.com/aws-amplify/amplify-cli/commit/3c2d97d99ed3255a584f32cc6d159f5005b11cb5))
+
+
+
+
+
+## [1.10.2-graphql-vnext-dev-preview.4](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-transformer-interfaces@1.10.1...@aws-amplify/graphql-transformer-interfaces@1.10.2-graphql-vnext-dev-preview.4) (2021-11-13)
+
+
+### Bug Fixes
+
+* passing ddb params from root to nested model stacks ([#8766](https://github.com/aws-amplify/amplify-cli/issues/8766)) ([3c2d97d](https://github.com/aws-amplify/amplify-cli/commit/3c2d97d99ed3255a584f32cc6d159f5005b11cb5))
+
+
+
+
+
+## [1.10.2-graphql-vnext-dev-preview.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-transformer-interfaces@1.10.1...@aws-amplify/graphql-transformer-interfaces@1.10.2-graphql-vnext-dev-preview.3) (2021-11-13)
+
+
+### Bug Fixes
+
+* passing ddb params from root to nested model stacks ([#8766](https://github.com/aws-amplify/amplify-cli/issues/8766)) ([3c2d97d](https://github.com/aws-amplify/amplify-cli/commit/3c2d97d99ed3255a584f32cc6d159f5005b11cb5))
+
+
+
+
+
+## [1.10.2-graphql-vnext-dev-preview.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-transformer-interfaces@1.10.1...@aws-amplify/graphql-transformer-interfaces@1.10.2-graphql-vnext-dev-preview.2) (2021-11-13)
+
+
+### Bug Fixes
+
+* passing ddb params from root to nested model stacks ([#8766](https://github.com/aws-amplify/amplify-cli/issues/8766)) ([3c2d97d](https://github.com/aws-amplify/amplify-cli/commit/3c2d97d99ed3255a584f32cc6d159f5005b11cb5))
+
+
+
+
+
+## [1.10.2-graphql-vnext-dev-preview.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-transformer-interfaces@1.10.1...@aws-amplify/graphql-transformer-interfaces@1.10.2-graphql-vnext-dev-preview.1) (2021-11-13)
+
+
+### Bug Fixes
+
+* passing ddb params from root to nested model stacks ([#8766](https://github.com/aws-amplify/amplify-cli/issues/8766)) ([3c2d97d](https://github.com/aws-amplify/amplify-cli/commit/3c2d97d99ed3255a584f32cc6d159f5005b11cb5))
+
+
+
+
+
+## [1.10.2-graphql-vnext-dev-preview.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-transformer-interfaces@1.10.1...@aws-amplify/graphql-transformer-interfaces@1.10.2-graphql-vnext-dev-preview.0) (2021-11-13)
+
+
+### Bug Fixes
+
+* passing ddb params from root to nested model stacks ([#8766](https://github.com/aws-amplify/amplify-cli/issues/8766)) ([3c2d97d](https://github.com/aws-amplify/amplify-cli/commit/3c2d97d99ed3255a584f32cc6d159f5005b11cb5))
+
+
+
+
+
 ## [1.10.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-transformer-interfaces@1.10.0...@aws-amplify/graphql-transformer-interfaces@1.10.1) (2021-11-11)
 
 

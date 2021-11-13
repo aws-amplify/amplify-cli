@@ -3,6 +3,166 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.39.0-graphql-vnext-dev-preview.9](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@2.37.0...amplify-category-function@2.39.0-graphql-vnext-dev-preview.9) (2021-11-13)
+
+
+### Bug Fixes
+
+* **graphql:** refactor lambda authorizer code to use function category to create authorizer function ([#8784](https://github.com/aws-amplify/amplify-cli/issues/8784)) ([17f447e](https://github.com/aws-amplify/amplify-cli/commit/17f447e7e67fd4ce4d3898e6f0dc384dc5518fda))
+
+
+### Features
+
+* amplify export ([fd28279](https://github.com/aws-amplify/amplify-cli/commit/fd282791167177d72a42784b5de4f2fd461d590a)), closes [#8547](https://github.com/aws-amplify/amplify-cli/issues/8547) [#8488](https://github.com/aws-amplify/amplify-cli/issues/8488) [#8486](https://github.com/aws-amplify/amplify-cli/issues/8486) [#8547](https://github.com/aws-amplify/amplify-cli/issues/8547) [#8488](https://github.com/aws-amplify/amplify-cli/issues/8488) [#8486](https://github.com/aws-amplify/amplify-cli/issues/8486)
+
+
+
+
+
+# [2.39.0-graphql-vnext-dev-preview.8](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@2.37.0...amplify-category-function@2.39.0-graphql-vnext-dev-preview.8) (2021-11-13)
+
+
+### Bug Fixes
+
+* **graphql:** refactor lambda authorizer code to use function category to create authorizer function ([#8784](https://github.com/aws-amplify/amplify-cli/issues/8784)) ([17f447e](https://github.com/aws-amplify/amplify-cli/commit/17f447e7e67fd4ce4d3898e6f0dc384dc5518fda))
+
+
+### Features
+
+* amplify export ([fd28279](https://github.com/aws-amplify/amplify-cli/commit/fd282791167177d72a42784b5de4f2fd461d590a)), closes [#8547](https://github.com/aws-amplify/amplify-cli/issues/8547) [#8488](https://github.com/aws-amplify/amplify-cli/issues/8488) [#8486](https://github.com/aws-amplify/amplify-cli/issues/8486) [#8547](https://github.com/aws-amplify/amplify-cli/issues/8547) [#8488](https://github.com/aws-amplify/amplify-cli/issues/8488) [#8486](https://github.com/aws-amplify/amplify-cli/issues/8486)
+
+
+
+
+
+# [2.39.0-graphql-vnext-dev-preview.7](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@2.37.0...amplify-category-function@2.39.0-graphql-vnext-dev-preview.7) (2021-11-13)
+
+
+### Bug Fixes
+
+* **graphql:** refactor lambda authorizer code to use function category to create authorizer function ([#8784](https://github.com/aws-amplify/amplify-cli/issues/8784)) ([17f447e](https://github.com/aws-amplify/amplify-cli/commit/17f447e7e67fd4ce4d3898e6f0dc384dc5518fda))
+
+
+### Features
+
+* amplify export ([fd28279](https://github.com/aws-amplify/amplify-cli/commit/fd282791167177d72a42784b5de4f2fd461d590a)), closes [#8547](https://github.com/aws-amplify/amplify-cli/issues/8547) [#8488](https://github.com/aws-amplify/amplify-cli/issues/8488) [#8486](https://github.com/aws-amplify/amplify-cli/issues/8486) [#8547](https://github.com/aws-amplify/amplify-cli/issues/8547) [#8488](https://github.com/aws-amplify/amplify-cli/issues/8488) [#8486](https://github.com/aws-amplify/amplify-cli/issues/8486)
+
+
+
+
+
+# [2.39.0-graphql-vnext-dev-preview.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@2.37.0...amplify-category-function@2.39.0-graphql-vnext-dev-preview.6) (2021-11-13)
+
+
+### Bug Fixes
+
+* **graphql:** refactor lambda authorizer code to use function category to create authorizer function ([#8784](https://github.com/aws-amplify/amplify-cli/issues/8784)) ([17f447e](https://github.com/aws-amplify/amplify-cli/commit/17f447e7e67fd4ce4d3898e6f0dc384dc5518fda))
+
+
+### Features
+
+* amplify export ([fd28279](https://github.com/aws-amplify/amplify-cli/commit/fd282791167177d72a42784b5de4f2fd461d590a)), closes [#8547](https://github.com/aws-amplify/amplify-cli/issues/8547) [#8488](https://github.com/aws-amplify/amplify-cli/issues/8488) [#8486](https://github.com/aws-amplify/amplify-cli/issues/8486) [#8547](https://github.com/aws-amplify/amplify-cli/issues/8547) [#8488](https://github.com/aws-amplify/amplify-cli/issues/8488) [#8486](https://github.com/aws-amplify/amplify-cli/issues/8486)
+
+
+
+
+
+# [2.39.0-graphql-vnext-dev-preview.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@2.37.0...amplify-category-function@2.39.0-graphql-vnext-dev-preview.5) (2021-11-13)
+
+
+### Bug Fixes
+
+* **graphql:** refactor lambda authorizer code to use function category to create authorizer function ([#8784](https://github.com/aws-amplify/amplify-cli/issues/8784)) ([17f447e](https://github.com/aws-amplify/amplify-cli/commit/17f447e7e67fd4ce4d3898e6f0dc384dc5518fda))
+
+
+### Features
+
+* amplify export ([fd28279](https://github.com/aws-amplify/amplify-cli/commit/fd282791167177d72a42784b5de4f2fd461d590a)), closes [#8547](https://github.com/aws-amplify/amplify-cli/issues/8547) [#8488](https://github.com/aws-amplify/amplify-cli/issues/8488) [#8486](https://github.com/aws-amplify/amplify-cli/issues/8486) [#8547](https://github.com/aws-amplify/amplify-cli/issues/8547) [#8488](https://github.com/aws-amplify/amplify-cli/issues/8488) [#8486](https://github.com/aws-amplify/amplify-cli/issues/8486)
+
+
+
+
+
+# [2.39.0-graphql-vnext-dev-preview.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@2.37.0...amplify-category-function@2.39.0-graphql-vnext-dev-preview.4) (2021-11-13)
+
+
+### Bug Fixes
+
+* **graphql:** refactor lambda authorizer code to use function category to create authorizer function ([#8784](https://github.com/aws-amplify/amplify-cli/issues/8784)) ([17f447e](https://github.com/aws-amplify/amplify-cli/commit/17f447e7e67fd4ce4d3898e6f0dc384dc5518fda))
+
+
+### Features
+
+* amplify export ([fd28279](https://github.com/aws-amplify/amplify-cli/commit/fd282791167177d72a42784b5de4f2fd461d590a)), closes [#8547](https://github.com/aws-amplify/amplify-cli/issues/8547) [#8488](https://github.com/aws-amplify/amplify-cli/issues/8488) [#8486](https://github.com/aws-amplify/amplify-cli/issues/8486) [#8547](https://github.com/aws-amplify/amplify-cli/issues/8547) [#8488](https://github.com/aws-amplify/amplify-cli/issues/8488) [#8486](https://github.com/aws-amplify/amplify-cli/issues/8486)
+
+
+
+
+
+# [2.39.0-graphql-vnext-dev-preview.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@2.37.0...amplify-category-function@2.39.0-graphql-vnext-dev-preview.3) (2021-11-13)
+
+
+### Bug Fixes
+
+* **graphql:** refactor lambda authorizer code to use function category to create authorizer function ([#8784](https://github.com/aws-amplify/amplify-cli/issues/8784)) ([17f447e](https://github.com/aws-amplify/amplify-cli/commit/17f447e7e67fd4ce4d3898e6f0dc384dc5518fda))
+
+
+### Features
+
+* amplify export ([fd28279](https://github.com/aws-amplify/amplify-cli/commit/fd282791167177d72a42784b5de4f2fd461d590a)), closes [#8547](https://github.com/aws-amplify/amplify-cli/issues/8547) [#8488](https://github.com/aws-amplify/amplify-cli/issues/8488) [#8486](https://github.com/aws-amplify/amplify-cli/issues/8486) [#8547](https://github.com/aws-amplify/amplify-cli/issues/8547) [#8488](https://github.com/aws-amplify/amplify-cli/issues/8488) [#8486](https://github.com/aws-amplify/amplify-cli/issues/8486)
+
+
+
+
+
+# [2.39.0-graphql-vnext-dev-preview.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@2.37.0...amplify-category-function@2.39.0-graphql-vnext-dev-preview.2) (2021-11-13)
+
+
+### Bug Fixes
+
+* **graphql:** refactor lambda authorizer code to use function category to create authorizer function ([#8784](https://github.com/aws-amplify/amplify-cli/issues/8784)) ([17f447e](https://github.com/aws-amplify/amplify-cli/commit/17f447e7e67fd4ce4d3898e6f0dc384dc5518fda))
+
+
+### Features
+
+* amplify export ([fd28279](https://github.com/aws-amplify/amplify-cli/commit/fd282791167177d72a42784b5de4f2fd461d590a)), closes [#8547](https://github.com/aws-amplify/amplify-cli/issues/8547) [#8488](https://github.com/aws-amplify/amplify-cli/issues/8488) [#8486](https://github.com/aws-amplify/amplify-cli/issues/8486) [#8547](https://github.com/aws-amplify/amplify-cli/issues/8547) [#8488](https://github.com/aws-amplify/amplify-cli/issues/8488) [#8486](https://github.com/aws-amplify/amplify-cli/issues/8486)
+
+
+
+
+
+# [2.39.0-graphql-vnext-dev-preview.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@2.37.0...amplify-category-function@2.39.0-graphql-vnext-dev-preview.1) (2021-11-13)
+
+
+### Bug Fixes
+
+* **graphql:** refactor lambda authorizer code to use function category to create authorizer function ([#8784](https://github.com/aws-amplify/amplify-cli/issues/8784)) ([17f447e](https://github.com/aws-amplify/amplify-cli/commit/17f447e7e67fd4ce4d3898e6f0dc384dc5518fda))
+
+
+### Features
+
+* amplify export ([fd28279](https://github.com/aws-amplify/amplify-cli/commit/fd282791167177d72a42784b5de4f2fd461d590a)), closes [#8547](https://github.com/aws-amplify/amplify-cli/issues/8547) [#8488](https://github.com/aws-amplify/amplify-cli/issues/8488) [#8486](https://github.com/aws-amplify/amplify-cli/issues/8486) [#8547](https://github.com/aws-amplify/amplify-cli/issues/8547) [#8488](https://github.com/aws-amplify/amplify-cli/issues/8488) [#8486](https://github.com/aws-amplify/amplify-cli/issues/8486)
+
+
+
+
+
+# [2.39.0-graphql-vnext-dev-preview.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@2.37.0...amplify-category-function@2.39.0-graphql-vnext-dev-preview.0) (2021-11-13)
+
+
+### Bug Fixes
+
+* **graphql:** refactor lambda authorizer code to use function category to create authorizer function ([#8784](https://github.com/aws-amplify/amplify-cli/issues/8784)) ([17f447e](https://github.com/aws-amplify/amplify-cli/commit/17f447e7e67fd4ce4d3898e6f0dc384dc5518fda))
+
+
+### Features
+
+* amplify export ([fd28279](https://github.com/aws-amplify/amplify-cli/commit/fd282791167177d72a42784b5de4f2fd461d590a)), closes [#8547](https://github.com/aws-amplify/amplify-cli/issues/8547) [#8488](https://github.com/aws-amplify/amplify-cli/issues/8488) [#8486](https://github.com/aws-amplify/amplify-cli/issues/8486) [#8547](https://github.com/aws-amplify/amplify-cli/issues/8547) [#8488](https://github.com/aws-amplify/amplify-cli/issues/8488) [#8486](https://github.com/aws-amplify/amplify-cli/issues/8486)
+
+
+
+
+
 # [2.37.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@2.36.1...amplify-category-function@2.37.0) (2021-11-11)
 
 
