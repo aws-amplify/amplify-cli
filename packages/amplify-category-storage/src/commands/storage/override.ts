@@ -68,7 +68,6 @@ export const run = async (context: $TSContext) => {
       }
     }
   } else if (amplifyMeta[AmplifyCategories.STORAGE][selectedResourceName].service === AmplifySupportedService.S3) {
-    // S3 migration logic goes in here
     const s3ResourceInputState = new S3InputState(selectedResourceName, undefined);
     if (!s3ResourceInputState.cliInputFileExists()) {
       if (await prompter.yesOrNo(getMigrateResourceMessageForOverride(AmplifyCategories.STORAGE, selectedResourceName, false), true)) {
