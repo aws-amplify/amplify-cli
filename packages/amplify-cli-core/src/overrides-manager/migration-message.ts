@@ -2,7 +2,7 @@ import chalk from 'chalk';
 import { EOL } from 'os';
 
 export function getMigrateResourceMessageForOverride(categoryName: string, resourceName: string, isUpdate = true) {
-  const docsLink = 'https://docs.amplify.aws/cli/migration/overrides';
+  const docsLink = 'https://docs.amplify.aws/cli/migration/override';
 
   if (isUpdate) {
     return [
