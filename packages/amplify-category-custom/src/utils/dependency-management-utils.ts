@@ -177,10 +177,6 @@ function addDependsOnToResource(category: string, resourceName: string, dependsO
 }
 
 export async function addCFNResourceDependency(context: $TSContext, customResourceName: string) {
-  if (!(await prompter.yesOrNo('Do you want to access Amplify generated resources in your custom CloudFormation file?', false))) {
-    return;
-  }
-
   const selectResourcesInCategory = (
     choices: DistinctChoice<any>[],
     currentResourceDependencyMap: $TSObject,
@@ -214,6 +210,16 @@ export async function addCFNResourceDependency(context: $TSContext, customResour
       }
       existingDependentResources[resource.category].push(resource.resourceName);
     });
+  }
+
+  const hasExistingResources = Object.keys(existingDependentResources).length > 0;
+
+  if (
+    !(await prompter.yesOrNo('Do you want to access Amplify generated resources in your custom CloudFormation file?', hasExistingResources))
+  ) {
+    // Remove all dependencies for the custom resource
+    await context.amplify.updateamplifyMetaAfterResourceUpdate(categoryName, customResourceName, 'dependsOn', []);
+    return;
   }
 
   const categories = Object.keys(amplifyMeta).filter(category => category !== 'providers');
