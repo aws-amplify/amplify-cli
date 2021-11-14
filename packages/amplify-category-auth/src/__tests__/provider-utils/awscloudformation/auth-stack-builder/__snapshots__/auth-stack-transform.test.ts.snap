@@ -44,15 +44,6 @@ Object {
         ],
       },
     },
-    "CreatedSNSRole": Object {
-      "Description": "role arn",
-      "Value": Object {
-        "Fn::GetAtt": Array [
-          "SNSRole",
-          "Arn",
-        ],
-      },
-    },
     "IdentityPoolId": Object {
       "Description": "Id for the identity pool",
       "Value": Object {
@@ -164,6 +155,9 @@ Object {
     "useDefault": Object {
       "Type": "String",
     },
+    "useEnabledMfas": Object {
+      "Type": "String",
+    },
     "userPoolGroupList": Object {
       "Type": "CommaDelimitedList",
     },
@@ -247,7 +241,7 @@ Object {
               "Fn::Join": Array [
                 "",
                 Array [
-                  "authdefaultsettings2c33facd_identitypool_2c33facd-",
+                  "authdefaultsettings2c33facd_identitypool_2c33facd__",
                   Object {
                     "Ref": "env",
                   },
@@ -277,79 +271,6 @@ Object {
         },
       },
       "Type": "AWS::Cognito::IdentityPoolRoleAttachment",
-    },
-    "SNSRole": Object {
-      "Properties": Object {
-        "AssumeRolePolicyDocument": Object {
-          "Statement": Array [
-            Object {
-              "Action": Array [
-                "sts:AssumeRole",
-              ],
-              "Condition": Object {
-                "StringEquals": Object {
-                  "sts:ExternalId": "authde2c33facd_role_external_id",
-                },
-              },
-              "Effect": "Allow",
-              "Principal": Object {
-                "Service": "cognito-idp.amazonaws.com",
-              },
-              "Sid": "",
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "Policies": Array [
-          Object {
-            "PolicyDocument": Object {
-              "Statement": Array [
-                Object {
-                  "Action": Array [
-                    "sns:Publish",
-                  ],
-                  "Effect": "Allow",
-                  "Resource": "*",
-                },
-              ],
-              "Version": "2012-10-17",
-            },
-            "PolicyName": "authde2c33facd-sns-policy",
-          },
-        ],
-        "RoleName": Object {
-          "Fn::If": Array [
-            "ShouldNotCreateEnvResources",
-            "authde2c33facd_sns-role",
-            Object {
-              "Fn::Join": Array [
-                "",
-                Array [
-                  "sns2c33facd",
-                  Object {
-                    "Fn::Select": Array [
-                      3,
-                      Object {
-                        "Fn::Split": Array [
-                          "-",
-                          Object {
-                            "Ref": "AWS::StackName",
-                          },
-                        ],
-                      },
-                    ],
-                  },
-                  "-",
-                  Object {
-                    "Ref": "env",
-                  },
-                ],
-              ],
-            },
-          ],
-        },
-      },
-      "Type": "AWS::IAM::Role",
     },
     "UserPool": Object {
       "DeletionPolicy": "Retain",
@@ -387,21 +308,6 @@ Object {
             "Required": true,
           },
         ],
-        "SmsAuthenticationMessage": Object {
-          "Ref": "smsAuthenticationMessage",
-        },
-        "SmsConfiguration": Object {
-          "ExternalId": "authde2c33facd_role_external_id",
-          "SnsCallerArn": Object {
-            "Fn::GetAtt": Array [
-              "SNSRole",
-              "Arn",
-            ],
-          },
-        },
-        "SmsVerificationMessage": Object {
-          "Ref": "smsVerificationMessage",
-        },
         "UserPoolName": Object {
           "Fn::If": Array [
             "ShouldNotCreateEnvResources",
@@ -954,6 +860,9 @@ Object {
       "Type": "String",
     },
     "useDefault": Object {
+      "Type": "String",
+    },
+    "useEnabledMfas": Object {
       "Type": "String",
     },
     "userPoolGroups": Object {
@@ -1583,7 +1492,7 @@ exports.handler = (event, context, callback) => {
               "Fn::Join": Array [
                 "",
                 Array [
-                  "extauth387063394_identitypool_87063394-",
+                  "extauth387063394_identitypool_87063394__",
                   Object {
                     "Ref": "env",
                   },
@@ -1627,288 +1536,6 @@ exports.handler = (event, context, callback) => {
         },
       },
       "Type": "AWS::Cognito::IdentityPoolRoleAttachment",
-    },
-    "MFALambda": Object {
-      "DependsOn": Array [
-        "MFALambdaRole",
-      ],
-      "Properties": Object {
-        "Code": Object {
-          "ZipFile": "const response = require('cfn-response');
-const aws = require('aws-sdk');
-const identity = new aws.CognitoIdentityServiceProvider();
-exports.handler = (event, context, callback) => {
-  if (event.RequestType == 'Delete') {
-    response.send(event, context, response.SUCCESS, {});
-  }
-  if (event.RequestType == 'Update' || event.RequestType == 'Create') {
-    let totpParams = {};
-    try {
-      totpParams = {
-        UserPoolId: event.ResourceProperties.userPoolId,
-        MfaConfiguration: event.ResourceProperties.mfaConfiguration,
-        SmsMfaConfiguration: {
-          SmsAuthenticationMessage: event.ResourceProperties.smsAuthenticationMessage,
-          SmsConfiguration: {
-            SnsCallerArn: event.ResourceProperties.smsConfigCaller,
-            ExternalId: event.ResourceProperties.smsConfigExternalId,
-          },
-        },
-        SoftwareTokenMfaConfiguration: { Enabled: event.ResourceProperties.totpEnabled.toLowerCase() === true ? true : false },
-      };
-      console.log(totpParams);
-    } catch (e) {
-      response.send(event, context, response.FAILED, { e });
-    }
-    identity
-      .setUserPoolMfaConfig(totpParams)
-      .promise()
-      .then(res => {
-        response.send(event, context, response.SUCCESS, { res });
-      })
-      .catch(err => {
-        response.send(event, context, response.FAILED, { err });
-      });
-  }
-};
-",
-        },
-        "Handler": "index.handler",
-        "Role": Object {
-          "Fn::GetAtt": Array [
-            "MFALambdaRole",
-            "Arn",
-          ],
-        },
-        "Runtime": "nodejs12.x",
-        "Timeout": 300,
-      },
-      "Type": "AWS::Lambda::Function",
-    },
-    "MFALambdaInputs": Object {
-      "DeletionPolicy": "Delete",
-      "DependsOn": Array [
-        "MFALogPolicy",
-      ],
-      "Properties": Object {
-        "ServiceToken": Object {
-          "Fn::GetAtt": Array [
-            "MFALambda",
-            "Arn",
-          ],
-        },
-        "mfaConfiguration": Object {
-          "Ref": "mfaConfiguration",
-        },
-        "smsAuthenticationMessage": Object {
-          "Ref": "smsAuthenticationMessage",
-        },
-        "smsConfigCaller": Object {
-          "Fn::GetAtt": Array [
-            "SNSRole",
-            "Arn",
-          ],
-        },
-        "smsConfigExternalId": "extaut87063394_role_external_id",
-        "totpEnabled": true,
-        "userPoolId": Object {
-          "Ref": "UserPool",
-        },
-      },
-      "Type": "Custom::LambdaCallout",
-      "UpdateReplacePolicy": "Delete",
-    },
-    "MFALambdaPolicy": Object {
-      "DependsOn": Array [
-        "MFALambda",
-      ],
-      "Properties": Object {
-        "PolicyDocument": Object {
-          "Statement": Array [
-            Object {
-              "Action": Array [
-                "cognito-idp:SetUserPoolMfaConfig",
-              ],
-              "Effect": "Allow",
-              "Resource": Object {
-                "Fn::GetAtt": Array [
-                  "UserPool",
-                  "Arn",
-                ],
-              },
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "PolicyName": "extaut87063394_totp_lambda_iam_policy",
-        "Roles": Array [
-          Object {
-            "Fn::If": Array [
-              "ShouldNotCreateEnvResources",
-              "extaut87063394_totp_lambda_role",
-              Object {
-                "Fn::Join": Array [
-                  "",
-                  Array [
-                    "extaut87063394_totp_lambda_role-",
-                    Object {
-                      "Ref": "env",
-                    },
-                  ],
-                ],
-              },
-            ],
-          },
-        ],
-      },
-      "Type": "AWS::IAM::Policy",
-    },
-    "MFALambdaRole": Object {
-      "DependsOn": Array [
-        "SNSRole",
-      ],
-      "Properties": Object {
-        "AssumeRolePolicyDocument": Object {
-          "Statement": Array [
-            Object {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Principal": Object {
-                "Service": "lambda.amazonaws.com",
-              },
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "Policies": Array [
-          Object {
-            "PolicyDocument": Object {
-              "Statement": Array [
-                Object {
-                  "Action": Array [
-                    "iam:PassRole",
-                  ],
-                  "Effect": "Allow",
-                  "Resource": Object {
-                    "Fn::If": Array [
-                      "ShouldNotCreateEnvResources",
-                      "arn:aws:iam:::role/extaut87063394_totp_lambda_role",
-                      Object {
-                        "Fn::Join": Array [
-                          "",
-                          Array [
-                            "arn:aws:iam:::role/extaut87063394__totp_lambda_role-",
-                            Object {
-                              "Ref": "env",
-                            },
-                          ],
-                        ],
-                      },
-                    ],
-                  },
-                },
-              ],
-              "Version": "2012-10-17",
-            },
-            "PolicyName": "extaut87063394_totp_pass_role_policy",
-          },
-          Object {
-            "PolicyDocument": Object {
-              "Statement": Array [
-                Object {
-                  "Action": Array [
-                    "iam:PassRole",
-                  ],
-                  "Effect": "Allow",
-                  "Resource": Object {
-                    "Fn::GetAtt": Array [
-                      "SNSRole",
-                      "Arn",
-                    ],
-                  },
-                },
-              ],
-              "Version": "2012-10-17",
-            },
-            "PolicyName": "extaut87063394_sns_pass_role_policy",
-          },
-        ],
-        "RoleName": Object {
-          "Fn::If": Array [
-            "ShouldNotCreateEnvResources",
-            "extaut87063394_totp_lambda_role",
-            Object {
-              "Fn::Join": Array [
-                "",
-                Array [
-                  "extaut87063394_totp_lambda_role-",
-                  Object {
-                    "Ref": "env",
-                  },
-                ],
-              ],
-            },
-          ],
-        },
-      },
-      "Type": "AWS::IAM::Role",
-    },
-    "MFALogPolicy": Object {
-      "DependsOn": Array [
-        "MFALambdaPolicy",
-      ],
-      "Properties": Object {
-        "PolicyDocument": Object {
-          "Statement": Array [
-            Object {
-              "Action": Array [
-                "logs:CreateLogGroup",
-                "logs:CreateLogStream",
-                "logs:PutLogEvents",
-              ],
-              "Effect": "Allow",
-              "Resource": Object {
-                "Fn::Sub": Array [
-                  "arn:aws:logs:\${region}:\${account}:log-group:/aws/lambda/\${lambda}:log-stream:*",
-                  Object {
-                    "account": Object {
-                      "Ref": "AWS::AccountId",
-                    },
-                    "lambda": Object {
-                      "Ref": "MFALambda",
-                    },
-                    "region": Object {
-                      "Ref": "AWS::Region",
-                    },
-                  },
-                ],
-              },
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "PolicyName": "extaut87063394_totp_lambda_log_policy",
-        "Roles": Array [
-          Object {
-            "Fn::If": Array [
-              "ShouldNotCreateEnvResources",
-              "extaut87063394_totp_lambda_role",
-              Object {
-                "Fn::Join": Array [
-                  "",
-                  Array [
-                    "extaut87063394_totp_lambda_role-",
-                    Object {
-                      "Ref": "env",
-                    },
-                  ],
-                ],
-              },
-            ],
-          },
-        ],
-      },
-      "Type": "AWS::IAM::Policy",
     },
     "OAuthCustomResource": Object {
       "DependsOn": Array [
@@ -2188,6 +1815,10 @@ exports.handler = (event, context, callback) => {
         "EmailVerificationSubject": Object {
           "Ref": "emailVerificationSubject",
         },
+        "EnabledMfas": Array [
+          "SMS_MFA",
+          "SOFTWARE_TOKEN_MFA",
+        ],
         "MfaConfiguration": Object {
           "Ref": "mfaConfiguration",
         },

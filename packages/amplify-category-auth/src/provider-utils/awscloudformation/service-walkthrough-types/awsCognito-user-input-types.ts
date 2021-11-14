@@ -99,7 +99,7 @@ export interface AdminQueriesResult {
 
 export interface PasswordPolicyResult {
   passwordPolicyCharacters?: PasswordPolicy[];
-  passwordPolicyMinLength?: number;
+  passwordPolicyMinLength?: number | string;
 }
 
 export enum AttributeType {

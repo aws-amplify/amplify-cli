@@ -136,7 +136,7 @@ Object {
               "Fn::Join": Array [
                 "",
                 Array [
-                  "mockResource-ExecutionRole",
+                  "mockResource-ExecutionRole-",
                   Object {
                     "Ref": "env",
                   },
@@ -438,7 +438,7 @@ Object {
               "Fn::Join": Array [
                 "",
                 Array [
-                  "mockResource-ExecutionRole",
+                  "mockResource-ExecutionRole-",
                   Object {
                     "Ref": "env",
                   },
