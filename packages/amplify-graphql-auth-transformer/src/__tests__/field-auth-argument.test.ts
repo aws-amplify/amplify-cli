@@ -65,3 +65,24 @@ test('per-field @auth without @model', () => {
     '#set( $staticGroupRoles = [{"claim":"cognito:groups","entity":"Allowed"}] )',
   );
 });
+
+test('error on non null fields which need resolvers', () => {
+  const invalidSchema = `
+    type Post @model @auth(rules: [{ allow: groups, groups: ["admin"] }]) {
+      id: ID!
+      name: String!
+      ssn: String! @auth(rules: [{ allow: owner }])
+    }
+  `;
+  const authConfig: AppSyncAuthConfiguration = {
+    defaultAuthentication: {
+      authenticationType: 'AMAZON_COGNITO_USER_POOLS',
+    },
+    additionalAuthenticationProviders: [{ authenticationType: 'AWS_IAM' }],
+  };
+  const transformer = new GraphQLTransform({
+    authConfig,
+    transformers: [new ModelTransformer(), new AuthTransformer()],
+  });
+  expect(() => transformer.transform(invalidSchema)).toThrowErrorMatchingSnapshot();
+});
