@@ -1,5 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`error on non null fields which need resolvers 1`] = `"Because \\"Post\\" has a field-level authorization rule, you need to either apply field-level authorization rules to all required fields [\\"id\\",\\"name\\",\\"ssn\\"] or make those fields nullable."`;
+
 exports[`per-field @auth without @model 1`] = `
 Object {
   "Properties": Object {
