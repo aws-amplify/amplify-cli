@@ -29,7 +29,7 @@ export type IAMToken = {
   username: string;
   cognitoIdentityPoolId?: string;
   cognitoIdentityId?: string;
-  cognitoIdentityAuthType?: string;
+  cognitoIdentityAuthType?: 'authenticated' | 'unauthenticated';
   cognitoIdentityAuthProvider?: string;
 };
 
