@@ -1,3 +1,4 @@
+import { AmplifyRootStackTemplate } from '@aws-amplify/cli-extensibility-helper';
 import * as cdk from '@aws-cdk/core';
 import { App } from '@aws-cdk/core';
 import { $TSAny, $TSContext, buildOverrideDir, CFNTemplateFormat, pathManager, Template, writeCFNTemplate } from 'amplify-cli-core';
@@ -70,7 +71,7 @@ export class AmplifyRootStackTransform {
         },
       });
       try {
-        sandboxNode.run(overrideCode).override(this._rootTemplateObj);
+        sandboxNode.run(overrideCode).override(this._rootTemplateObj as AmplifyRootStackTemplate);
       } catch (err: $TSAny) {
         const error = new Error(`Skipping override due to ${err}${os.EOL}`);
         printer.error(`${error}`);
@@ -153,7 +154,7 @@ export class AmplifyRootStackTransform {
       {
         value: cdk.Fn.getAtt('UnauthRole', 'Arn').toString(),
       },
-      'UnAuthRoleArn',
+      'UnauthRoleArn',
     );
 
     await this._rootTemplateObj.generateRootStackResources();
@@ -173,14 +174,14 @@ export class AmplifyRootStackTransform {
 
     this._rootTemplateObjOutputs.addCfnOutput(
       {
-        value: cdk.Fn.ref('AuthRoleName'),
+        value: cdk.Fn.ref('AuthRole'),
       },
       'AuthRoleName',
     );
 
     this._rootTemplateObjOutputs.addCfnOutput(
       {
-        value: cdk.Fn.ref('UnauthRoleName'),
+        value: cdk.Fn.ref('UnauthRole'),
       },
       'UnauthRoleName',
     );

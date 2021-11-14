@@ -3,7 +3,6 @@ import * as s3 from '@aws-cdk/aws-s3';
 import * as iam from '@aws-cdk/aws-iam';
 
 export interface AmplifyRootStackTemplate {
-  deploymentBucket?: s3.CfnBucket;
   authRole?: iam.CfnRole;
   unauthRole?: iam.CfnRole;
 

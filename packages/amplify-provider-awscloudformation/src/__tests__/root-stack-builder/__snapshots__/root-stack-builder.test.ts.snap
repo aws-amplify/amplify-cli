@@ -46,7 +46,7 @@ Object {
         "Ref": "AWS::StackName",
       },
     },
-    "UnAuthRoleArn": Object {
+    "UnauthRoleArn": Object {
       "Value": Object {
         "Fn::GetAtt": Array [
           "UnauthRole",

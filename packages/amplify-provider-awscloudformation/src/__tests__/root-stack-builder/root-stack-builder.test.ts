@@ -191,7 +191,7 @@ describe('Check RootStack Template', () => {
       {
         value: cdk.Fn.getAtt('UnauthRole', 'Arn').toString(),
       },
-      'UnAuthRoleArn',
+      'UnauthRoleArn',
     );
 
     await stack.generateRootStackResources();
