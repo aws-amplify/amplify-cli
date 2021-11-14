@@ -241,7 +241,7 @@ Object {
               "Fn::Join": Array [
                 "",
                 Array [
-                  "authdefaultsettings2c33facd_identitypool_2c33facd-",
+                  "authdefaultsettings2c33facd_identitypool_2c33facd__",
                   Object {
                     "Ref": "env",
                   },
@@ -1492,7 +1492,7 @@ exports.handler = (event, context, callback) => {
               "Fn::Join": Array [
                 "",
                 Array [
-                  "extauth387063394_identitypool_87063394-",
+                  "extauth387063394_identitypool_87063394__",
                   Object {
                     "Ref": "env",
                   },
