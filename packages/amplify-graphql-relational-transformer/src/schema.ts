@@ -168,7 +168,7 @@ export function ensureHasOneConnectionField(
 export function ensureBelongsToConnectionField(config: BelongsToDirectiveConfiguration, ctx: TransformerContextProvider) {
   const { relationType, relatedType, relatedField } = config;
   if (relationType === 'hasOne') {
-    ensureHasOneConnectionField(config, ctx, getConnectionAttributeName(relatedType.name.value, relatedField.name.value));
+    ensureHasOneConnectionField(config, ctx);
   } else {
     // hasMany
     config.connectionFields.push(getConnectionAttributeName(relatedType.name.value, relatedField.name.value));
