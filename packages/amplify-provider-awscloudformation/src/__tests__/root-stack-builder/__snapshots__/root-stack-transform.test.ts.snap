@@ -15,7 +15,7 @@ Object {
     },
     "AuthRoleName": Object {
       "Value": Object {
-        "Ref": "AuthRoleName",
+        "Ref": "AuthRole",
       },
     },
     "DeploymentBucketName": Object {
@@ -62,7 +62,7 @@ Object {
         "Ref": "AWS::StackName",
       },
     },
-    "UnAuthRoleArn": Object {
+    "UnauthRoleArn": Object {
       "Value": Object {
         "Fn::GetAtt": Array [
           "UnauthRole",
@@ -72,7 +72,7 @@ Object {
     },
     "UnauthRoleName": Object {
       "Value": Object {
-        "Ref": "UnauthRoleName",
+        "Ref": "UnauthRole",
       },
     },
   },
