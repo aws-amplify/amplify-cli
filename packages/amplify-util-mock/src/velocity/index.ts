@@ -8,12 +8,17 @@ import {
   AppSyncVTLRenderContext,
   AppSyncGraphQLExecutionContext,
   JWTToken,
+  IAMToken,
 } from 'amplify-appsync-simulator';
 
 const DEFAULT_SCHEMA = `
   type Query {
     noop: String
   }`;
+
+type iamCognitoIdentityContext = Partial<
+  Pick<IAMToken, 'cognitoIdentityPoolId' | 'cognitoIdentityAuthProvider' | 'cognitoIdentityAuthType' | 'cognitoIdentityId'>
+>;
 
 export interface VelocityTemplateSimulatorOptions {
   authConfig: AppSyncAuthConfiguration;
@@ -87,5 +92,21 @@ export const getGenericToken = (username: string, email: string, groups: string[
     username,
     email,
     groups,
+  };
+};
+
+export const getIAMToken = (username: string, identityInfo?: iamCognitoIdentityContext): IAMToken => {
+  let iamRoleName = username;
+  if (identityInfo?.cognitoIdentityAuthType) {
+    iamRoleName = identityInfo.cognitoIdentityAuthType === 'authenticated' ? 'authRole' : 'unauthRole';
+  }
+  return {
+    username,
+    userArn: `arn:aws:sts::123456789012:assumed-role/${iamRoleName}/CognitoIdentityCredentials`,
+    accountId: '123456789012',
+    cognitoIdentityPoolId: identityInfo?.cognitoIdentityPoolId,
+    cognitoIdentityAuthProvider: identityInfo?.cognitoIdentityAuthProvider,
+    cognitoIdentityId: identityInfo?.cognitoIdentityId,
+    cognitoIdentityAuthType: identityInfo?.cognitoIdentityAuthType,
   };
 };
