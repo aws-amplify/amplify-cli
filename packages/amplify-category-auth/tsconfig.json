@@ -13,12 +13,13 @@
     "resources",
     "scripts",
     "provider-utils/awscloudformation/triggers",
-    "src/__tests__",
+    "src/__tests__"
   ],
   "references": [
-    {"path": "../amplify-cli-core"},
-    {"path": "../amplify-headless-interface"},
-    {"path": "../amplify-util-headless-input"},
-    {"path": "../amplify-util-import"},
+    { "path": "../amplify-cli-core" },
+    { "path": "../amplify-headless-interface" },
+    { "path": "../amplify-prompts" },
+    { "path": "../amplify-util-headless-input" },
+    { "path": "../amplify-util-import" }
   ]
 }
