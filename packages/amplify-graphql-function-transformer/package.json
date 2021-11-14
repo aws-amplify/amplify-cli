@@ -1,6 +1,10 @@
 {
   "name": "@aws-amplify/graphql-function-transformer",
+<<<<<<< HEAD
   "version": "0.6.1",
+=======
+  "version": "0.6.0",
+>>>>>>> chore: 2 minor version bumps (#8862)
   "description": "Amplify GraphQL @function transformer",
   "repository": {
     "type": "git",
@@ -27,14 +31,24 @@
     "test": "jest"
   },
   "dependencies": {
+<<<<<<< HEAD
     "@aws-amplify/graphql-transformer-core": "0.12.1",
     "@aws-amplify/graphql-transformer-interfaces": "1.12.1",
+=======
+    "@aws-amplify/graphql-transformer-core": "0.12.0",
+    "@aws-amplify/graphql-transformer-interfaces": "1.12.0",
+>>>>>>> chore: 2 minor version bumps (#8862)
     "@aws-cdk/aws-appsync": "~1.124.0",
     "@aws-cdk/aws-lambda": "~1.124.0",
     "@aws-cdk/core": "~1.124.0",
     "graphql": "^14.5.8",
+<<<<<<< HEAD
     "graphql-mapping-template": "4.20.1",
     "graphql-transformer-common": "4.22.1"
+=======
+    "graphql-mapping-template": "4.20.0",
+    "graphql-transformer-common": "4.22.0"
+>>>>>>> chore: 2 minor version bumps (#8862)
   },
   "devDependencies": {
     "@aws-cdk/assert": "~1.124.0"

@@ -1,6 +1,10 @@
 {
   "name": "amplify-headless-interface",
+<<<<<<< HEAD
   "version": "1.13.1",
+=======
+  "version": "1.13.0",
+>>>>>>> chore: 2 minor version bumps (#8862)
   "description": "interfaces for amplify headless mode payloads",
   "main": "lib/index.js",
   "scripts": {
