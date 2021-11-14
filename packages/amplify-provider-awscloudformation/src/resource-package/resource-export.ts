@@ -142,8 +142,6 @@ export class ResourceExport extends ResourcePackager {
           .map(r => r.resourceName)
           .join(', ')}' cannot be exported since it is managed using SDK`,
       );
-
-      printer.warn(`Please refer to documentation to reference the resource here manually <add doc link>`);
     }
   }
 
