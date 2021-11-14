@@ -431,7 +431,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
         identityPoolName: cdk.Fn.conditionIf(
           'ShouldNotCreateEnvResources',
           props.identityPoolName,
-          cdk.Fn.join('', [`${props.identityPoolName}`, '--', cdk.Fn.ref('env')]),
+          cdk.Fn.join('', [`${props.identityPoolName}`, '__', cdk.Fn.ref('env')]),
         ).toString(),
         allowUnauthenticatedIdentities: cdk.Fn.ref('allowUnauthenticatedIdentities') as unknown as boolean,
       });
