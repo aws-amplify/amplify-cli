@@ -1,5 +1,5 @@
 import { CloudFront } from 'aws-sdk';
-import { amplifyPublishWithoutUpdate, amplifyPublishWithUpdate, createReactTestProject, resetBuildCommand } from 'amplify-e2e-core';
+import { amplifyPublishWithoutUpdate, createReactTestProject, resetBuildCommand } from 'amplify-e2e-core';
 
 import { initJSProjectWithProfile, deleteProject, deleteS3Bucket } from 'amplify-e2e-core';
 import { addPRODHosting, removePRODCloudFront, removeHosting, amplifyPushWithoutCodegen } from 'amplify-e2e-core';
@@ -46,7 +46,7 @@ describe('amplify add hosting', () => {
     let error;
     try {
       // root stack updated
-      await amplifyPublishWithUpdate(projRoot);
+      await amplifyPublishWithoutUpdate(projRoot);
     } catch (err) {
       error = err;
     }
@@ -57,7 +57,7 @@ describe('amplify add hosting', () => {
     const currentBuildCommand = resetBuildCommand(projRoot, '');
     let error;
     try {
-      await amplifyPublishWithUpdate(projRoot);
+      await amplifyPublishWithoutUpdate(projRoot);
     } catch (err) {
       error = err;
     }

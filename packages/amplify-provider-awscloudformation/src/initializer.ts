@@ -191,11 +191,9 @@ export const storeRootStackTemplate = async (context: $TSContext, template?: Tem
 
   fs.ensureDirSync(rootStackBackendBuildDir);
   const rootStackBackendFilePath = path.join(rootStackBackendBuildDir, rootStackFileName);
-  const rootStackCloudBackendFilePath = path.join(rootStackCloudBackendBuildDir, rootStackFileName);
-
   JSONUtilities.writeJson(rootStackBackendFilePath, template);
   // copy the awscloudformation backend to #current-cloud-backend
-  fs.copySync(rootStackBackendFilePath, rootStackCloudBackendFilePath);
+  fs.copySync(path.join(rootStackBackendBuildDir, '..'), path.join(rootStackCloudBackendBuildDir, '..'));
 };
 
 function storeCurrentCloudBackend(context) {

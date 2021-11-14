@@ -6,6 +6,7 @@ import * as path from 'path';
 import { transformRootStack } from '.';
 import { prePushCfnTemplateModifier } from '../pre-push-cfn-processor/pre-push-cfn-modifier';
 import { rootStackFileName } from '../push-resources';
+import { isMigrateProject, isRootOverrideFileModifiedSinceLastPush } from './root-stack-utils';
 
 /**
  *
@@ -31,14 +32,31 @@ export async function transformResourceWithOverrides(context: $TSContext, resour
         printer.info('Overrides functionality is not implemented for this category');
       }
     } else {
-      const template = await transformRootStack(context);
-      await prePushCfnTemplateModifier(template);
+      // old app -> migrate project must transform -> change detected
+      // new app -> just initialized project no transform -> no change detected
+      // new app -> just pushed project {
+      //  overrides enabled : transform -> change detected
+      //  override disabled : no transform -> No change detected
+      //}
+
       // RootStack deployed to backend/awscloudformation/build
       const projectRoot = pathManager.findProjectRoot();
       const rootStackBackendBuildDir = pathManager.getRootStackBuildDirPath(projectRoot);
       fs.ensureDirSync(rootStackBackendBuildDir);
       const rootStackBackendFilePath = path.join(rootStackBackendBuildDir, rootStackFileName);
-      JSONUtilities.writeJson(rootStackBackendFilePath, template);
+      if (isMigrateProject()) {
+        //old App
+        const template = await transformRootStack(context);
+        await prePushCfnTemplateModifier(template);
+        JSONUtilities.writeJson(rootStackBackendFilePath, template);
+      } else {
+        if (isRootOverrideFileModifiedSinceLastPush()) {
+          // new App before push
+          const template = await transformRootStack(context);
+          await prePushCfnTemplateModifier(template);
+          JSONUtilities.writeJson(rootStackBackendFilePath, template);
+        }
+      }
     }
   } catch (err) {
     if (spinner) {
