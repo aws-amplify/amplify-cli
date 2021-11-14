@@ -212,10 +212,10 @@ export async function addCFNResourceDependency(context: $TSContext, customResour
     });
   }
 
-  const isExistingResources = Object.keys(existingDependentResources).length > 0;
+  const hasExistingResources = Object.keys(existingDependentResources).length > 0;
 
   if (
-    !(await prompter.yesOrNo('Do you want to access Amplify generated resources in your custom CloudFormation file?', isExistingResources))
+    !(await prompter.yesOrNo('Do you want to access Amplify generated resources in your custom CloudFormation file?', hasExistingResources))
   ) {
     // Remove all dependencies for the custom resource
     await context.amplify.updateamplifyMetaAfterResourceUpdate(categoryName, customResourceName, 'dependsOn', []);
