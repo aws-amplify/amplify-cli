@@ -63,6 +63,11 @@ export class AmplifyRootStackTransform {
         console: 'inherit',
         timeout: 5000,
         sandbox: {},
+        require: {
+          context: 'sandbox',
+          builtin: ['path'],
+          external: true,
+        },
       });
       try {
         sandboxNode.run(overrideCode).override(this._rootTemplateObj);
