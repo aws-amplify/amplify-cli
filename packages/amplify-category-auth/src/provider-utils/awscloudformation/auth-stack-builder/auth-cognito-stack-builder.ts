@@ -281,8 +281,6 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
         },
       });
 
-      this.userPool.applyRemovalPolicy(cdk.RemovalPolicy.RETAIN);
-
       if (props.requiredAttributes && props.requiredAttributes.length > 0) {
         if (props.usernameCaseSensitive !== undefined) {
           this.userPool.usernameConfiguration = {
@@ -433,7 +431,7 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
         identityPoolName: cdk.Fn.conditionIf(
           'ShouldNotCreateEnvResources',
           props.identityPoolName,
-          cdk.Fn.join('', [`${props.identityPoolName}`, '-', cdk.Fn.ref('env')]),
+          cdk.Fn.join('', [`${props.identityPoolName}`, '--', cdk.Fn.ref('env')]),
         ).toString(),
         allowUnauthenticatedIdentities: cdk.Fn.ref('allowUnauthenticatedIdentities') as unknown as boolean,
       });

@@ -269,7 +269,7 @@
           }
         },
         "passwordPolicyMinLength": {
-          "type": "number"
+          "type": ["string", "number"]
         }
       }
     },

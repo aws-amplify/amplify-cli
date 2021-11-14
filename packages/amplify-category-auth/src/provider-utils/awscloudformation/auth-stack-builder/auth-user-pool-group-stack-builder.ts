@@ -188,7 +188,7 @@ export class AmplifyUserPoolGroupStack extends cdk.Stack implements AmplifyUserP
         roleName: cdk.Fn.conditionIf(
           'ShouldNotCreateEnvResources',
           props.cognitoResourceName,
-          cdk.Fn.join('', [`${props.cognitoResourceName}-ExecutionRole`, cdk.Fn.ref('env')]).toString(),
+          cdk.Fn.join('', [`${props.cognitoResourceName}-ExecutionRole-`, cdk.Fn.ref('env')]).toString(),
         ).toString(),
         assumeRolePolicyDocument: {
           Version: '2012-10-17',

@@ -152,6 +152,7 @@ export class AmplifyAuthTransform extends AmplifyCategoryTransform {
       ...this._cliInputs.cognitoConfig,
       ...roles,
       breakCircularDependency: FeatureFlags.getBoolean('auth.breakcirculardependency'),
+      useEnabledMfas: FeatureFlags.getBoolean('auth.useenabledmfas'),
       dependsOn: [],
     };
 
@@ -242,6 +243,7 @@ export class AmplifyAuthTransform extends AmplifyCategoryTransform {
       ...this._cliInputs.cognitoConfig,
       ...roles,
       breakCircularDependency: this._cognitoStackProps.breakCircularDependency,
+      useEnabledMfas: this._cognitoStackProps.useEnabledMfas,
       dependsOn: [], // to support undefined meta in update,
     };
 
