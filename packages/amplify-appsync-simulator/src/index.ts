@@ -19,7 +19,7 @@ import {
   AppSyncSimulatorMappingTemplate,
 } from './type-definition';
 import { filterSubscriptions } from './utils';
-export { AppSyncGraphQLExecutionContext, JWTToken } from './utils';
+export { AppSyncGraphQLExecutionContext, JWTToken, IAMToken } from './utils';
 export * from './type-definition';
 export * from './velocity';
 
