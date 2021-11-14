@@ -4,7 +4,7 @@
     "outDir": "lib",
     "rootDir": "src",
     "strict": false, // because package has been converted from js
-    "allowJs": true
+    "allowJs": false
   },
   "exclude": [
     "coverage",
@@ -12,6 +12,8 @@
     "resources/awscloudformation/lambdas",
     "resources/awscloudformation/container-templates",
     "resources/awscloudformation/graphql-lambda-authorizer",
+    "resources/awscloudformation/overrides-resource",
+    "scripts",
     "src/__tests__"
   ],
   "references": [
