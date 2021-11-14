@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.2.1-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-predictions@2.9.16...amplify-category-predictions@3.2.1-beta.0) (2021-11-14)
+
+
+### Bug Fixes
+
+* **amplify-category-predictions:** fix bad import and exit ([#8852](https://github.com/aws-amplify/amplify-cli/issues/8852)) ([b4c2944](https://github.com/aws-amplify/amplify-cli/commit/b4c2944d89f9f82028f78e3d66e49cdc5a657822))
+* ensure FF on stack transform, revert revert ([#8810](https://github.com/aws-amplify/amplify-cli/issues/8810)) ([868952f](https://github.com/aws-amplify/amplify-cli/commit/868952f9552f09aeb2b0b8e036c59954ee3391e0)), closes [#8796](https://github.com/aws-amplify/amplify-cli/issues/8796) [#8799](https://github.com/aws-amplify/amplify-cli/issues/8799)
+* ext overrides2 storage-headless and predictions ([#8622](https://github.com/aws-amplify/amplify-cli/issues/8622)) ([59e7118](https://github.com/aws-amplify/amplify-cli/commit/59e71184e966ec735724ba501b5b318c1dbd2735))
+* update migration msg, ddb import e2e, lgtm errors ([#8796](https://github.com/aws-amplify/amplify-cli/issues/8796)) ([a2d87ec](https://github.com/aws-amplify/amplify-cli/commit/a2d87eca889ed8b23cfe3cf145c0372b655d4ed9))
+
+
+### Reverts
+
+* Revert "fix: update migration msg, ddb import e2e, lgtm errors (#8796)" (#8799) ([394a32f](https://github.com/aws-amplify/amplify-cli/commit/394a32f7a801bcf845a180bfdaa7d1d95c5962e7)), closes [#8796](https://github.com/aws-amplify/amplify-cli/issues/8796) [#8799](https://github.com/aws-amplify/amplify-cli/issues/8799)
+
+
+
+
+
 # [3.0.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-predictions@2.9.16...amplify-category-predictions@3.0.0) (2021-11-13)
 
 

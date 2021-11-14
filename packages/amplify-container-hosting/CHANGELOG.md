@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.3.0-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-container-hosting@1.3.28...amplify-container-hosting@2.3.0-beta.0) (2021-11-14)
+
+
+### Features
+
+* extensibility for REST APIs ([#8598](https://github.com/aws-amplify/amplify-cli/issues/8598)) ([de19d23](https://github.com/aws-amplify/amplify-cli/commit/de19d231465c1f16bf7d1c7ccb8dba2f36d039d8))
+
+
+
+
+
 # [2.0.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-container-hosting@1.3.28...amplify-container-hosting@2.0.0) (2021-11-13)
 
 
