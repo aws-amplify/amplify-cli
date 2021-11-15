@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.3.0-graphql-vnext-dev-preview.12](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@2.37.0...amplify-category-function@3.3.0-graphql-vnext-dev-preview.12) (2021-11-15)
+
+
+### Bug Fixes
+
+* **graphql:** refactor lambda authorizer code to use function category to create authorizer function ([#8784](https://github.com/aws-amplify/amplify-cli/issues/8784)) ([e6dac98](https://github.com/aws-amplify/amplify-cli/commit/e6dac98d2bf4b11d38cf3e05dc0be9e69f0987c4))
+
+
+### Features
+
+* amplify export ([fd28279](https://github.com/aws-amplify/amplify-cli/commit/fd282791167177d72a42784b5de4f2fd461d590a)), closes [#8547](https://github.com/aws-amplify/amplify-cli/issues/8547) [#8488](https://github.com/aws-amplify/amplify-cli/issues/8488) [#8486](https://github.com/aws-amplify/amplify-cli/issues/8486) [#8547](https://github.com/aws-amplify/amplify-cli/issues/8547) [#8488](https://github.com/aws-amplify/amplify-cli/issues/8488) [#8486](https://github.com/aws-amplify/amplify-cli/issues/8486)
+
+
+
+
+
 # [3.3.0-graphql-vnext-dev-preview.11](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@2.37.0...amplify-category-function@3.3.0-graphql-vnext-dev-preview.11) (2021-11-15)
 
 

@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.9.1-graphql-vnext-dev-preview.12](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-searchable-transformer@0.7.0...@aws-amplify/graphql-searchable-transformer@0.9.1-graphql-vnext-dev-preview.12) (2021-11-15)
+
+
+### Bug Fixes
+
+* append apiKey if global auth is enabled and its not default auth ([#8843](https://github.com/aws-amplify/amplify-cli/issues/8843)) ([c54070c](https://github.com/aws-amplify/amplify-cli/commit/c54070c4b940fab7ed9f172417ee2d3e5c91f602))
+* **graphql:** add enum to aggregate field type ([#8846](https://github.com/aws-amplify/amplify-cli/issues/8846)) ([f7a580f](https://github.com/aws-amplify/amplify-cli/commit/f7a580fa217a71d4dedcad22b9cb7137fd4dbba9))
+
+
+
+
+
 ## [0.9.1-graphql-vnext-dev-preview.11](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-searchable-transformer@0.7.0...@aws-amplify/graphql-searchable-transformer@0.9.1-graphql-vnext-dev-preview.11) (2021-11-15)
 
 

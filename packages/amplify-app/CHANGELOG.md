@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.2.1-graphql-vnext-dev-preview.12](https://github.com/aws-amplify/amplify-cli/compare/amplify-app@3.0.17...amplify-app@4.2.1-graphql-vnext-dev-preview.12) (2021-11-15)
+
+**Note:** Version bump only for package amplify-app
+
+
+
+
+
 ## [4.2.1-graphql-vnext-dev-preview.11](https://github.com/aws-amplify/amplify-cli/compare/amplify-app@3.0.17...amplify-app@4.2.1-graphql-vnext-dev-preview.11) (2021-11-15)
 
 **Note:** Version bump only for package amplify-app

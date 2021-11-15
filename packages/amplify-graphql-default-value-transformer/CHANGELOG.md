@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.5.1-graphql-vnext-dev-preview.12](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-default-value-transformer@0.3.0...@aws-amplify/graphql-default-value-transformer@0.5.1-graphql-vnext-dev-preview.12) (2021-11-15)
+
+
+### Bug Fixes
+
+* **graphql-default-value-transformer:** handle null same way as undefined with [@default](https://github.com/default) ([#8836](https://github.com/aws-amplify/amplify-cli/issues/8836)) ([82e45c9](https://github.com/aws-amplify/amplify-cli/commit/82e45c9e576da348a297e7743da89f5d47eb5896))
+
+
+
+
+
 ## [0.5.1-graphql-vnext-dev-preview.11](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-default-value-transformer@0.3.0...@aws-amplify/graphql-default-value-transformer@0.5.1-graphql-vnext-dev-preview.11) (2021-11-15)
 
 

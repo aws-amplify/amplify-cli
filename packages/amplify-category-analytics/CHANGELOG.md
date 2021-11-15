@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.2.1-graphql-vnext-dev-preview.12](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-analytics@2.21.25...amplify-category-analytics@3.2.1-graphql-vnext-dev-preview.12) (2021-11-15)
+
+**Note:** Version bump only for package amplify-category-analytics
+
+
+
+
+
 ## [3.2.1-graphql-vnext-dev-preview.11](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-analytics@2.21.25...amplify-category-analytics@3.2.1-graphql-vnext-dev-preview.11) (2021-11-15)
 
 **Note:** Version bump only for package amplify-category-analytics

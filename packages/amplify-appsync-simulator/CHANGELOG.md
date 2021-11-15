@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.2.1-graphql-vnext-dev-preview.12](https://github.com/aws-amplify/amplify-cli/compare/amplify-appsync-simulator@1.27.8...amplify-appsync-simulator@2.2.1-graphql-vnext-dev-preview.12) (2021-11-15)
+
+
+### Bug Fixes
+
+* allow mock to run if [@searchable](https://github.com/searchable) is used ([#8864](https://github.com/aws-amplify/amplify-cli/issues/8864)) ([a37086e](https://github.com/aws-amplify/amplify-cli/commit/a37086ef102d8ef8359c7810c4caac96af00fbc2))
+
+
+
+
+
 ## [2.2.1-graphql-vnext-dev-preview.11](https://github.com/aws-amplify/amplify-cli/compare/amplify-appsync-simulator@1.27.8...amplify-appsync-simulator@2.2.1-graphql-vnext-dev-preview.11) (2021-11-15)
 
 

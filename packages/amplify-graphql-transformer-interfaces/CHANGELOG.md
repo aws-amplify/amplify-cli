@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.12.1-graphql-vnext-dev-preview.12](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-transformer-interfaces@1.10.1...@aws-amplify/graphql-transformer-interfaces@1.12.1-graphql-vnext-dev-preview.12) (2021-11-15)
+
+
+### Bug Fixes
+
+* append apiKey if global auth is enabled and its not default auth ([#8843](https://github.com/aws-amplify/amplify-cli/issues/8843)) ([c54070c](https://github.com/aws-amplify/amplify-cli/commit/c54070c4b940fab7ed9f172417ee2d3e5c91f602))
+* passing ddb params from root to nested model stacks ([#8766](https://github.com/aws-amplify/amplify-cli/issues/8766)) ([b522995](https://github.com/aws-amplify/amplify-cli/commit/b52299557baff3fa5adc1053f7ecc1124ef3d00e))
+
+
+
+
+
 ## [1.12.1-graphql-vnext-dev-preview.11](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-transformer-interfaces@1.10.1...@aws-amplify/graphql-transformer-interfaces@1.12.1-graphql-vnext-dev-preview.11) (2021-11-15)
 
 

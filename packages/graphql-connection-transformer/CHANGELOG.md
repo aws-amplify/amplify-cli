@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.2.1-graphql-vnext-dev-preview.12](https://github.com/aws-amplify/amplify-cli/compare/graphql-connection-transformer@4.22.0...graphql-connection-transformer@5.2.1-graphql-vnext-dev-preview.12) (2021-11-15)
+
+**Note:** Version bump only for package graphql-connection-transformer
+
+
+
+
+
 ## [5.2.1-graphql-vnext-dev-preview.11](https://github.com/aws-amplify/amplify-cli/compare/graphql-connection-transformer@4.22.0...graphql-connection-transformer@5.2.1-graphql-vnext-dev-preview.11) (2021-11-15)
 
 **Note:** Version bump only for package graphql-connection-transformer

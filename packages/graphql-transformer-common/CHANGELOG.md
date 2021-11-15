@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.22.1-graphql-vnext-dev-preview.12](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-common@4.20.0...graphql-transformer-common@4.22.1-graphql-vnext-dev-preview.12) (2021-11-15)
+
+
+### Bug Fixes
+
+* append apiKey if global auth is enabled and its not default auth ([#8843](https://github.com/aws-amplify/amplify-cli/issues/8843)) ([c54070c](https://github.com/aws-amplify/amplify-cli/commit/c54070c4b940fab7ed9f172417ee2d3e5c91f602))
+
+
+
+
+
 ## [4.22.1-graphql-vnext-dev-preview.11](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-common@4.20.0...graphql-transformer-common@4.22.1-graphql-vnext-dev-preview.11) (2021-11-15)
 
 

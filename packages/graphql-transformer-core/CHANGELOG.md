@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [7.2.1-graphql-vnext-dev-preview.12](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-core@6.31.0...graphql-transformer-core@7.2.1-graphql-vnext-dev-preview.12) (2021-11-15)
+
+**Note:** Version bump only for package graphql-transformer-core
+
+
+
+
+
 ## [7.2.1-graphql-vnext-dev-preview.11](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-core@6.31.0...graphql-transformer-core@7.2.1-graphql-vnext-dev-preview.11) (2021-11-15)
 
 **Note:** Version bump only for package graphql-transformer-core
