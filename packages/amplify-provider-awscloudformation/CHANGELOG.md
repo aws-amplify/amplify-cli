@@ -3,6 +3,21 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.3.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@5.3.0...amplify-provider-awscloudformation@5.3.1) (2021-11-15)
+
+
+
+## 7.3.1 (2021-11-15)
+
+
+### Bug Fixes
+
+* fixing  deadlock issue when updating/overriding auth or unauth role names  ([#8869](https://github.com/aws-amplify/amplify-cli/issues/8869)) ([fdb9dbc](https://github.com/aws-amplify/amplify-cli/commit/fdb9dbc0f26c5bcaa7d6162203de332cb33ea104))
+
+
+
+
+
 # [5.3.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.65.0...amplify-provider-awscloudformation@5.3.0) (2021-11-15)
 
 
