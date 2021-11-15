@@ -354,11 +354,6 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
         this.userPool.addDependsOn(this.snsRole!);
       }
 
-      this.userPool.applyRemovalPolicy(cdk.RemovalPolicy.RETAIN, {
-        applyToUpdateReplacePolicy: true,
-        default: cdk.RemovalPolicy.RETAIN,
-      });
-
       // updating Lambda Config when FF is (breakcirculardependency : false)
 
       if (!props.breakCircularDependency && props.triggers && props.dependsOn) {
