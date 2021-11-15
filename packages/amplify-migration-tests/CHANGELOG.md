@@ -3,6 +3,35 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.3.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@3.1.15...amplify-migration-tests@4.3.0) (2021-11-15)
+
+
+### Bug Fixes
+
+* Auth update migration e2e fix ([#8811](https://github.com/aws-amplify/amplify-cli/issues/8811)) ([f38a366](https://github.com/aws-amplify/amplify-cli/commit/f38a366180e53a5d8a538ff71f6ec4762f42d533))
+* ci fix ([#8814](https://github.com/aws-amplify/amplify-cli/issues/8814)) ([0f6c6af](https://github.com/aws-amplify/amplify-cli/commit/0f6c6af0088188dc290b0443f6401b0645d37e49))
+* ensure FF on stack transform, revert revert ([#8810](https://github.com/aws-amplify/amplify-cli/issues/8810)) ([868952f](https://github.com/aws-amplify/amplify-cli/commit/868952f9552f09aeb2b0b8e036c59954ee3391e0)), closes [#8796](https://github.com/aws-amplify/amplify-cli/issues/8796) [#8799](https://github.com/aws-amplify/amplify-cli/issues/8799)
+* fixes auth migration e2e ([#8756](https://github.com/aws-amplify/amplify-cli/issues/8756)) ([f537d7c](https://github.com/aws-amplify/amplify-cli/commit/f537d7c3a1efa2fa67fc28a6f1d27d9889bbfe72))
+* fixes dependsOn parameter and auth migration test ([#8480](https://github.com/aws-amplify/amplify-cli/issues/8480)) ([640b79e](https://github.com/aws-amplify/amplify-cli/commit/640b79ed0e40171271fa5ad9f4524f2c01d04722))
+* migration test fixes ([#8742](https://github.com/aws-amplify/amplify-cli/issues/8742)) ([193635f](https://github.com/aws-amplify/amplify-cli/commit/193635f8355c1a18a061f6eb939eabbada07fcf9))
+* tsc global install error ([7d1cca8](https://github.com/aws-amplify/amplify-cli/commit/7d1cca890f138f32bac51fca085098a777aea1ae))
+* update migration msg, ddb import e2e, lgtm errors ([#8796](https://github.com/aws-amplify/amplify-cli/issues/8796)) ([a2d87ec](https://github.com/aws-amplify/amplify-cli/commit/a2d87eca889ed8b23cfe3cf145c0372b655d4ed9))
+
+
+### Features
+
+* Auth refactor to  use cdk, eliminate EJS, overrides functionality ([#8355](https://github.com/aws-amplify/amplify-cli/issues/8355)) ([66d885f](https://github.com/aws-amplify/amplify-cli/commit/66d885f8125f11c0ea3c23f67fec51b553445d42))
+* root stack override ([#8276](https://github.com/aws-amplify/amplify-cli/issues/8276)) ([887f617](https://github.com/aws-amplify/amplify-cli/commit/887f617a83d99da1cf93850dc96ff0eebda0fe5a))
+
+
+### Reverts
+
+* Revert "fix: update migration msg, ddb import e2e, lgtm errors (#8796)" (#8799) ([394a32f](https://github.com/aws-amplify/amplify-cli/commit/394a32f7a801bcf845a180bfdaa7d1d95c5962e7)), closes [#8796](https://github.com/aws-amplify/amplify-cli/issues/8796) [#8799](https://github.com/aws-amplify/amplify-cli/issues/8799)
+
+
+
+
+
 # [4.0.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@3.1.15...amplify-migration-tests@4.0.0) (2021-11-13)
 
 
