@@ -50,14 +50,14 @@ const validateGeoJSONFile = (geoJSONFilePath: string) => {
   const { features } = data;
   features.forEach((feature) => {
     const { coordinates } = feature.geometry;
-    coordinates.forEach(linearRing => {
-      validateLinearRing(linearRing);
+    coordinates.forEach((linearRing, index) => {
+      validateLinearRing(linearRing, index === 0);
     })
   });
   return data;
 }
 
-const validateLinearRing = (linearRing: Array<Array<number>>) => {
+const validateLinearRing = (linearRing: Array<Array<number>>, isFirstRing: boolean) => {
   const numPoint = linearRing.length;
   //Check position number
   if (numPoint < 4) {
@@ -66,6 +66,19 @@ const validateLinearRing = (linearRing: Array<Array<number>>) => {
   //Check if first position is identical to last one
   if (linearRing[0][0] === linearRing[numPoint-1][0] && linearRing[0][1] === linearRing[numPoint-1][1]) {
     throw new Error(`Linear ring ${linearRing} should have the identical values for first and last position.`);
+  }
+  //Check polygon wind direction
+  const isClockWise: boolean = isClockWiseLinearRing(linearRing);
+  if (isFirstRing) {
+    //First Ring should be counter clockwise
+    if (isClockWise) {
+      throw new Error('The first linear ring is exterior ring and should be counter-closewise.')
+    }
+  } else {
+    //Non-first should be clockwise
+    if (!isClockWise) {
+      throw new Error('The non-frist linear ring is interior and should be closewise.')
+    }
   }
 };
 
@@ -97,6 +110,16 @@ const bulkUploadGeofence = async (params: GeofenceCollectionParams) => {
       console.log(data);
     }
   }).promise();
+}
+
+//Check the wind direction of linear ring. Assume the linear ring is valid and closed
+//Refer https://stackoverflow.com/questions/1165647/how-to-determine-if-a-list-of-polygon-points-are-in-clockwise-order
+const isClockWiseLinearRing = (linearRing: Array<Array<number>>): boolean => {
+  let result = 0;
+  for (let i = 1; i < linearRing.length; i++) {
+    result += (linearRing[i][0] - linearRing[i-1][0]) * (linearRing[i][1] + linearRing[i-1][1]);
+  }
+  return result > 0;
 }
 
 type FeatureCollection = {
