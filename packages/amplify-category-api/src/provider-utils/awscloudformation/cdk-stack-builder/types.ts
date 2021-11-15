@@ -18,10 +18,10 @@ export type Path = {
 };
 
 export enum CrudOperation {
-  CREATE = 'CREATE',
-  READ = 'READ',
-  UPDATE = 'UPDATE',
-  DELETE = 'DELETE',
+  CREATE = 'create',
+  READ = 'read',
+  UPDATE = 'update',
+  DELETE = 'delete',
 }
 
 export enum PermissionSetting {
