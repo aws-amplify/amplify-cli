@@ -1,10 +1,6 @@
 {
   "name": "@aws-amplify/graphql-http-transformer",
-<<<<<<< HEAD
   "version": "0.7.1",
-=======
-  "version": "0.7.0",
->>>>>>> chore: 2 minor version bumps (#8862)
   "description": "Amplify GraphQL @http transformer",
   "repository": {
     "type": "git",

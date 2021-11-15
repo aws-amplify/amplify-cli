@@ -1,10 +1,6 @@
 {
   "name": "amplify-console-integration-tests",
-<<<<<<< HEAD
   "version": "2.2.1",
-=======
-  "version": "2.2.0",
->>>>>>> chore: 2 minor version bumps (#8862)
   "description": "",
   "repository": {
     "type": "git",
@@ -26,11 +22,7 @@
   },
   "dependencies": {
     "@types/ini": "^1.3.30",
-<<<<<<< HEAD
     "amplify-e2e-core": "2.3.0",
-=======
-    "amplify-e2e-core": "2.2.0",
->>>>>>> chore: 2 minor version bumps (#8862)
     "aws-sdk": "^2.963.0",
     "dotenv": "^8.2.0",
     "esm": "^3.2.25",

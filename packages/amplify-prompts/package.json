@@ -1,10 +1,6 @@
 {
   "name": "amplify-prompts",
-<<<<<<< HEAD
   "version": "1.5.1",
-=======
-  "version": "1.5.0",
->>>>>>> chore: 2 minor version bumps (#8862)
   "description": "Utility functions for Amplify CLI terminal I/O",
   "main": "lib/index.js",
   "scripts": {

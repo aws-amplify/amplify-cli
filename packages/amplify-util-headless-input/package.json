@@ -1,10 +1,6 @@
 {
   "name": "amplify-util-headless-input",
-<<<<<<< HEAD
   "version": "1.8.1",
-=======
-  "version": "1.8.0",
->>>>>>> chore: 2 minor version bumps (#8862)
   "description": "Logic for validating objects against JSON-schema specs and performing version upgrades when necessary / possible",
   "main": "lib/index.js",
   "scripts": {
@@ -20,11 +16,7 @@
   "license": "Apache-2.0",
   "dependencies": {
     "ajv": "^6.12.2",
-<<<<<<< HEAD
     "amplify-headless-interface": "1.13.1"
-=======
-    "amplify-headless-interface": "1.13.0"
->>>>>>> chore: 2 minor version bumps (#8862)
   },
   "devDependencies": {
     "@types/json-schema": "^7.0.5",
