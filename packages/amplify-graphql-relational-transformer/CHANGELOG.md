@@ -3,6 +3,150 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.6.1-graphql-vnext-dev-preview.11](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-relational-transformer@0.4.0...@aws-amplify/graphql-relational-transformer@0.6.1-graphql-vnext-dev-preview.11) (2021-11-15)
+
+
+### Bug Fixes
+
+* **graphql-relational-transformer:** fixes belongs to relation field name ([#8865](https://github.com/aws-amplify/amplify-cli/issues/8865)) ([c9e2491](https://github.com/aws-amplify/amplify-cli/commit/c9e24915db42415817846c87499961a957aff075))
+* reintroduce connection stack in transformer v2 ([#8757](https://github.com/aws-amplify/amplify-cli/issues/8757)) ([a3b584d](https://github.com/aws-amplify/amplify-cli/commit/a3b584de107137942769bc52360c6de5cc464a41))
+
+
+
+
+
+## [0.6.1-graphql-vnext-dev-preview.10](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-relational-transformer@0.4.0...@aws-amplify/graphql-relational-transformer@0.6.1-graphql-vnext-dev-preview.10) (2021-11-15)
+
+
+### Bug Fixes
+
+* **graphql-relational-transformer:** fixes belongs to relation field name ([#8865](https://github.com/aws-amplify/amplify-cli/issues/8865)) ([c9e2491](https://github.com/aws-amplify/amplify-cli/commit/c9e24915db42415817846c87499961a957aff075))
+* reintroduce connection stack in transformer v2 ([#8757](https://github.com/aws-amplify/amplify-cli/issues/8757)) ([a3b584d](https://github.com/aws-amplify/amplify-cli/commit/a3b584de107137942769bc52360c6de5cc464a41))
+
+
+
+
+
+## [0.6.1-graphql-vnext-dev-preview.9](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-relational-transformer@0.4.0...@aws-amplify/graphql-relational-transformer@0.6.1-graphql-vnext-dev-preview.9) (2021-11-15)
+
+
+### Bug Fixes
+
+* **graphql-relational-transformer:** fixes belongs to relation field name ([#8865](https://github.com/aws-amplify/amplify-cli/issues/8865)) ([c9e2491](https://github.com/aws-amplify/amplify-cli/commit/c9e24915db42415817846c87499961a957aff075))
+* reintroduce connection stack in transformer v2 ([#8757](https://github.com/aws-amplify/amplify-cli/issues/8757)) ([a3b584d](https://github.com/aws-amplify/amplify-cli/commit/a3b584de107137942769bc52360c6de5cc464a41))
+
+
+
+
+
+## [0.6.1-graphql-vnext-dev-preview.8](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-relational-transformer@0.4.0...@aws-amplify/graphql-relational-transformer@0.6.1-graphql-vnext-dev-preview.8) (2021-11-15)
+
+
+### Bug Fixes
+
+* **graphql-relational-transformer:** fixes belongs to relation field name ([#8865](https://github.com/aws-amplify/amplify-cli/issues/8865)) ([c9e2491](https://github.com/aws-amplify/amplify-cli/commit/c9e24915db42415817846c87499961a957aff075))
+* reintroduce connection stack in transformer v2 ([#8757](https://github.com/aws-amplify/amplify-cli/issues/8757)) ([a3b584d](https://github.com/aws-amplify/amplify-cli/commit/a3b584de107137942769bc52360c6de5cc464a41))
+
+
+
+
+
+## [0.6.1-graphql-vnext-dev-preview.7](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-relational-transformer@0.4.0...@aws-amplify/graphql-relational-transformer@0.6.1-graphql-vnext-dev-preview.7) (2021-11-15)
+
+
+### Bug Fixes
+
+* **graphql-relational-transformer:** fixes belongs to relation field name ([#8865](https://github.com/aws-amplify/amplify-cli/issues/8865)) ([c9e2491](https://github.com/aws-amplify/amplify-cli/commit/c9e24915db42415817846c87499961a957aff075))
+* reintroduce connection stack in transformer v2 ([#8757](https://github.com/aws-amplify/amplify-cli/issues/8757)) ([a3b584d](https://github.com/aws-amplify/amplify-cli/commit/a3b584de107137942769bc52360c6de5cc464a41))
+
+
+
+
+
+## [0.6.1-graphql-vnext-dev-preview.6](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-relational-transformer@0.4.0...@aws-amplify/graphql-relational-transformer@0.6.1-graphql-vnext-dev-preview.6) (2021-11-15)
+
+
+### Bug Fixes
+
+* **graphql-relational-transformer:** fixes belongs to relation field name ([#8865](https://github.com/aws-amplify/amplify-cli/issues/8865)) ([c9e2491](https://github.com/aws-amplify/amplify-cli/commit/c9e24915db42415817846c87499961a957aff075))
+* reintroduce connection stack in transformer v2 ([#8757](https://github.com/aws-amplify/amplify-cli/issues/8757)) ([a3b584d](https://github.com/aws-amplify/amplify-cli/commit/a3b584de107137942769bc52360c6de5cc464a41))
+
+
+
+
+
+## [0.6.1-graphql-vnext-dev-preview.5](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-relational-transformer@0.4.0...@aws-amplify/graphql-relational-transformer@0.6.1-graphql-vnext-dev-preview.5) (2021-11-15)
+
+
+### Bug Fixes
+
+* **graphql-relational-transformer:** fixes belongs to relation field name ([#8865](https://github.com/aws-amplify/amplify-cli/issues/8865)) ([c9e2491](https://github.com/aws-amplify/amplify-cli/commit/c9e24915db42415817846c87499961a957aff075))
+* reintroduce connection stack in transformer v2 ([#8757](https://github.com/aws-amplify/amplify-cli/issues/8757)) ([a3b584d](https://github.com/aws-amplify/amplify-cli/commit/a3b584de107137942769bc52360c6de5cc464a41))
+
+
+
+
+
+## [0.6.1-graphql-vnext-dev-preview.4](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-relational-transformer@0.4.0...@aws-amplify/graphql-relational-transformer@0.6.1-graphql-vnext-dev-preview.4) (2021-11-15)
+
+
+### Bug Fixes
+
+* **graphql-relational-transformer:** fixes belongs to relation field name ([#8865](https://github.com/aws-amplify/amplify-cli/issues/8865)) ([c9e2491](https://github.com/aws-amplify/amplify-cli/commit/c9e24915db42415817846c87499961a957aff075))
+* reintroduce connection stack in transformer v2 ([#8757](https://github.com/aws-amplify/amplify-cli/issues/8757)) ([a3b584d](https://github.com/aws-amplify/amplify-cli/commit/a3b584de107137942769bc52360c6de5cc464a41))
+
+
+
+
+
+## [0.6.1-graphql-vnext-dev-preview.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-relational-transformer@0.4.0...@aws-amplify/graphql-relational-transformer@0.6.1-graphql-vnext-dev-preview.3) (2021-11-15)
+
+
+### Bug Fixes
+
+* **graphql-relational-transformer:** fixes belongs to relation field name ([#8865](https://github.com/aws-amplify/amplify-cli/issues/8865)) ([c9e2491](https://github.com/aws-amplify/amplify-cli/commit/c9e24915db42415817846c87499961a957aff075))
+* reintroduce connection stack in transformer v2 ([#8757](https://github.com/aws-amplify/amplify-cli/issues/8757)) ([a3b584d](https://github.com/aws-amplify/amplify-cli/commit/a3b584de107137942769bc52360c6de5cc464a41))
+
+
+
+
+
+## [0.6.1-graphql-vnext-dev-preview.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-relational-transformer@0.4.0...@aws-amplify/graphql-relational-transformer@0.6.1-graphql-vnext-dev-preview.2) (2021-11-15)
+
+
+### Bug Fixes
+
+* **graphql-relational-transformer:** fixes belongs to relation field name ([#8865](https://github.com/aws-amplify/amplify-cli/issues/8865)) ([c9e2491](https://github.com/aws-amplify/amplify-cli/commit/c9e24915db42415817846c87499961a957aff075))
+* reintroduce connection stack in transformer v2 ([#8757](https://github.com/aws-amplify/amplify-cli/issues/8757)) ([a3b584d](https://github.com/aws-amplify/amplify-cli/commit/a3b584de107137942769bc52360c6de5cc464a41))
+
+
+
+
+
+## [0.6.1-graphql-vnext-dev-preview.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-relational-transformer@0.4.0...@aws-amplify/graphql-relational-transformer@0.6.1-graphql-vnext-dev-preview.1) (2021-11-15)
+
+
+### Bug Fixes
+
+* **graphql-relational-transformer:** fixes belongs to relation field name ([#8865](https://github.com/aws-amplify/amplify-cli/issues/8865)) ([c9e2491](https://github.com/aws-amplify/amplify-cli/commit/c9e24915db42415817846c87499961a957aff075))
+* reintroduce connection stack in transformer v2 ([#8757](https://github.com/aws-amplify/amplify-cli/issues/8757)) ([a3b584d](https://github.com/aws-amplify/amplify-cli/commit/a3b584de107137942769bc52360c6de5cc464a41))
+
+
+
+
+
+## [0.6.1-graphql-vnext-dev-preview.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-relational-transformer@0.4.0...@aws-amplify/graphql-relational-transformer@0.6.1-graphql-vnext-dev-preview.0) (2021-11-15)
+
+
+### Bug Fixes
+
+* **graphql-relational-transformer:** fixes belongs to relation field name ([#8865](https://github.com/aws-amplify/amplify-cli/issues/8865)) ([c9e2491](https://github.com/aws-amplify/amplify-cli/commit/c9e24915db42415817846c87499961a957aff075))
+* reintroduce connection stack in transformer v2 ([#8757](https://github.com/aws-amplify/amplify-cli/issues/8757)) ([a3b584d](https://github.com/aws-amplify/amplify-cli/commit/a3b584de107137942769bc52360c6de5cc464a41))
+
+
+
+
+
 # [0.4.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-relational-transformer@0.3.1...@aws-amplify/graphql-relational-transformer@0.4.0) (2021-11-11)
 
 

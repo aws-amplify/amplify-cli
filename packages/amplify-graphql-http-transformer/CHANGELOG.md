@@ -3,6 +3,138 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.7.1-graphql-vnext-dev-preview.11](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-http-transformer@0.5.6...@aws-amplify/graphql-http-transformer@0.7.1-graphql-vnext-dev-preview.11) (2021-11-15)
+
+
+### Bug Fixes
+
+* create pipeline resolvers for [@http](https://github.com/http) v2 ([#8817](https://github.com/aws-amplify/amplify-cli/issues/8817)) ([72b4773](https://github.com/aws-amplify/amplify-cli/commit/72b4773a60e4492079ab85d59e9a6d5539de049d))
+
+
+
+
+
+## [0.7.1-graphql-vnext-dev-preview.10](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-http-transformer@0.5.6...@aws-amplify/graphql-http-transformer@0.7.1-graphql-vnext-dev-preview.10) (2021-11-15)
+
+
+### Bug Fixes
+
+* create pipeline resolvers for [@http](https://github.com/http) v2 ([#8817](https://github.com/aws-amplify/amplify-cli/issues/8817)) ([72b4773](https://github.com/aws-amplify/amplify-cli/commit/72b4773a60e4492079ab85d59e9a6d5539de049d))
+
+
+
+
+
+## [0.7.1-graphql-vnext-dev-preview.9](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-http-transformer@0.5.6...@aws-amplify/graphql-http-transformer@0.7.1-graphql-vnext-dev-preview.9) (2021-11-15)
+
+
+### Bug Fixes
+
+* create pipeline resolvers for [@http](https://github.com/http) v2 ([#8817](https://github.com/aws-amplify/amplify-cli/issues/8817)) ([72b4773](https://github.com/aws-amplify/amplify-cli/commit/72b4773a60e4492079ab85d59e9a6d5539de049d))
+
+
+
+
+
+## [0.7.1-graphql-vnext-dev-preview.8](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-http-transformer@0.5.6...@aws-amplify/graphql-http-transformer@0.7.1-graphql-vnext-dev-preview.8) (2021-11-15)
+
+
+### Bug Fixes
+
+* create pipeline resolvers for [@http](https://github.com/http) v2 ([#8817](https://github.com/aws-amplify/amplify-cli/issues/8817)) ([72b4773](https://github.com/aws-amplify/amplify-cli/commit/72b4773a60e4492079ab85d59e9a6d5539de049d))
+
+
+
+
+
+## [0.7.1-graphql-vnext-dev-preview.7](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-http-transformer@0.5.6...@aws-amplify/graphql-http-transformer@0.7.1-graphql-vnext-dev-preview.7) (2021-11-15)
+
+
+### Bug Fixes
+
+* create pipeline resolvers for [@http](https://github.com/http) v2 ([#8817](https://github.com/aws-amplify/amplify-cli/issues/8817)) ([72b4773](https://github.com/aws-amplify/amplify-cli/commit/72b4773a60e4492079ab85d59e9a6d5539de049d))
+
+
+
+
+
+## [0.7.1-graphql-vnext-dev-preview.6](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-http-transformer@0.5.6...@aws-amplify/graphql-http-transformer@0.7.1-graphql-vnext-dev-preview.6) (2021-11-15)
+
+
+### Bug Fixes
+
+* create pipeline resolvers for [@http](https://github.com/http) v2 ([#8817](https://github.com/aws-amplify/amplify-cli/issues/8817)) ([72b4773](https://github.com/aws-amplify/amplify-cli/commit/72b4773a60e4492079ab85d59e9a6d5539de049d))
+
+
+
+
+
+## [0.7.1-graphql-vnext-dev-preview.5](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-http-transformer@0.5.6...@aws-amplify/graphql-http-transformer@0.7.1-graphql-vnext-dev-preview.5) (2021-11-15)
+
+
+### Bug Fixes
+
+* create pipeline resolvers for [@http](https://github.com/http) v2 ([#8817](https://github.com/aws-amplify/amplify-cli/issues/8817)) ([72b4773](https://github.com/aws-amplify/amplify-cli/commit/72b4773a60e4492079ab85d59e9a6d5539de049d))
+
+
+
+
+
+## [0.7.1-graphql-vnext-dev-preview.4](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-http-transformer@0.5.6...@aws-amplify/graphql-http-transformer@0.7.1-graphql-vnext-dev-preview.4) (2021-11-15)
+
+
+### Bug Fixes
+
+* create pipeline resolvers for [@http](https://github.com/http) v2 ([#8817](https://github.com/aws-amplify/amplify-cli/issues/8817)) ([72b4773](https://github.com/aws-amplify/amplify-cli/commit/72b4773a60e4492079ab85d59e9a6d5539de049d))
+
+
+
+
+
+## [0.7.1-graphql-vnext-dev-preview.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-http-transformer@0.5.6...@aws-amplify/graphql-http-transformer@0.7.1-graphql-vnext-dev-preview.3) (2021-11-15)
+
+
+### Bug Fixes
+
+* create pipeline resolvers for [@http](https://github.com/http) v2 ([#8817](https://github.com/aws-amplify/amplify-cli/issues/8817)) ([72b4773](https://github.com/aws-amplify/amplify-cli/commit/72b4773a60e4492079ab85d59e9a6d5539de049d))
+
+
+
+
+
+## [0.7.1-graphql-vnext-dev-preview.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-http-transformer@0.5.6...@aws-amplify/graphql-http-transformer@0.7.1-graphql-vnext-dev-preview.2) (2021-11-15)
+
+
+### Bug Fixes
+
+* create pipeline resolvers for [@http](https://github.com/http) v2 ([#8817](https://github.com/aws-amplify/amplify-cli/issues/8817)) ([72b4773](https://github.com/aws-amplify/amplify-cli/commit/72b4773a60e4492079ab85d59e9a6d5539de049d))
+
+
+
+
+
+## [0.7.1-graphql-vnext-dev-preview.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-http-transformer@0.5.6...@aws-amplify/graphql-http-transformer@0.7.1-graphql-vnext-dev-preview.1) (2021-11-15)
+
+
+### Bug Fixes
+
+* create pipeline resolvers for [@http](https://github.com/http) v2 ([#8817](https://github.com/aws-amplify/amplify-cli/issues/8817)) ([72b4773](https://github.com/aws-amplify/amplify-cli/commit/72b4773a60e4492079ab85d59e9a6d5539de049d))
+
+
+
+
+
+## [0.7.1-graphql-vnext-dev-preview.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-http-transformer@0.5.6...@aws-amplify/graphql-http-transformer@0.7.1-graphql-vnext-dev-preview.0) (2021-11-15)
+
+
+### Bug Fixes
+
+* create pipeline resolvers for [@http](https://github.com/http) v2 ([#8817](https://github.com/aws-amplify/amplify-cli/issues/8817)) ([72b4773](https://github.com/aws-amplify/amplify-cli/commit/72b4773a60e4492079ab85d59e9a6d5539de049d))
+
+
+
+
+
 ## [0.5.6](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-http-transformer@0.5.5...@aws-amplify/graphql-http-transformer@0.5.6) (2021-11-11)
 
 

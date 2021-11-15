@@ -3,6 +3,222 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.13.0-graphql-vnext-dev-preview.11](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-transformer-core@0.10.0...@aws-amplify/graphql-transformer-core@0.13.0-graphql-vnext-dev-preview.11) (2021-11-15)
+
+
+### Bug Fixes
+
+* append apiKey if global auth is enabled and its not default auth ([#8843](https://github.com/aws-amplify/amplify-cli/issues/8843)) ([c54070c](https://github.com/aws-amplify/amplify-cli/commit/c54070c4b940fab7ed9f172417ee2d3e5c91f602))
+* **graphql-transformer-core:** remove the allow_public_global directive references ([#8751](https://github.com/aws-amplify/amplify-cli/issues/8751)) ([c1385b8](https://github.com/aws-amplify/amplify-cli/commit/c1385b897af7d906fb11e433235e465508381c97))
+* passing ddb params from root to nested model stacks ([#8766](https://github.com/aws-amplify/amplify-cli/issues/8766)) ([b522995](https://github.com/aws-amplify/amplify-cli/commit/b52299557baff3fa5adc1053f7ecc1124ef3d00e))
+
+
+### Features
+
+* **graphql-transformer-core:** add support for user defined slots ([#8758](https://github.com/aws-amplify/amplify-cli/issues/8758)) ([93c8bfc](https://github.com/aws-amplify/amplify-cli/commit/93c8bfc4294c24659d1e03205a4a0f2262774b7d))
+
+
+
+
+
+# [0.13.0-graphql-vnext-dev-preview.10](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-transformer-core@0.10.0...@aws-amplify/graphql-transformer-core@0.13.0-graphql-vnext-dev-preview.10) (2021-11-15)
+
+
+### Bug Fixes
+
+* append apiKey if global auth is enabled and its not default auth ([#8843](https://github.com/aws-amplify/amplify-cli/issues/8843)) ([c54070c](https://github.com/aws-amplify/amplify-cli/commit/c54070c4b940fab7ed9f172417ee2d3e5c91f602))
+* **graphql-transformer-core:** remove the allow_public_global directive references ([#8751](https://github.com/aws-amplify/amplify-cli/issues/8751)) ([c1385b8](https://github.com/aws-amplify/amplify-cli/commit/c1385b897af7d906fb11e433235e465508381c97))
+* passing ddb params from root to nested model stacks ([#8766](https://github.com/aws-amplify/amplify-cli/issues/8766)) ([b522995](https://github.com/aws-amplify/amplify-cli/commit/b52299557baff3fa5adc1053f7ecc1124ef3d00e))
+
+
+### Features
+
+* **graphql-transformer-core:** add support for user defined slots ([#8758](https://github.com/aws-amplify/amplify-cli/issues/8758)) ([93c8bfc](https://github.com/aws-amplify/amplify-cli/commit/93c8bfc4294c24659d1e03205a4a0f2262774b7d))
+
+
+
+
+
+# [0.13.0-graphql-vnext-dev-preview.9](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-transformer-core@0.10.0...@aws-amplify/graphql-transformer-core@0.13.0-graphql-vnext-dev-preview.9) (2021-11-15)
+
+
+### Bug Fixes
+
+* append apiKey if global auth is enabled and its not default auth ([#8843](https://github.com/aws-amplify/amplify-cli/issues/8843)) ([c54070c](https://github.com/aws-amplify/amplify-cli/commit/c54070c4b940fab7ed9f172417ee2d3e5c91f602))
+* **graphql-transformer-core:** remove the allow_public_global directive references ([#8751](https://github.com/aws-amplify/amplify-cli/issues/8751)) ([c1385b8](https://github.com/aws-amplify/amplify-cli/commit/c1385b897af7d906fb11e433235e465508381c97))
+* passing ddb params from root to nested model stacks ([#8766](https://github.com/aws-amplify/amplify-cli/issues/8766)) ([b522995](https://github.com/aws-amplify/amplify-cli/commit/b52299557baff3fa5adc1053f7ecc1124ef3d00e))
+
+
+### Features
+
+* **graphql-transformer-core:** add support for user defined slots ([#8758](https://github.com/aws-amplify/amplify-cli/issues/8758)) ([93c8bfc](https://github.com/aws-amplify/amplify-cli/commit/93c8bfc4294c24659d1e03205a4a0f2262774b7d))
+
+
+
+
+
+# [0.13.0-graphql-vnext-dev-preview.8](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-transformer-core@0.10.0...@aws-amplify/graphql-transformer-core@0.13.0-graphql-vnext-dev-preview.8) (2021-11-15)
+
+
+### Bug Fixes
+
+* append apiKey if global auth is enabled and its not default auth ([#8843](https://github.com/aws-amplify/amplify-cli/issues/8843)) ([c54070c](https://github.com/aws-amplify/amplify-cli/commit/c54070c4b940fab7ed9f172417ee2d3e5c91f602))
+* **graphql-transformer-core:** remove the allow_public_global directive references ([#8751](https://github.com/aws-amplify/amplify-cli/issues/8751)) ([c1385b8](https://github.com/aws-amplify/amplify-cli/commit/c1385b897af7d906fb11e433235e465508381c97))
+* passing ddb params from root to nested model stacks ([#8766](https://github.com/aws-amplify/amplify-cli/issues/8766)) ([b522995](https://github.com/aws-amplify/amplify-cli/commit/b52299557baff3fa5adc1053f7ecc1124ef3d00e))
+
+
+### Features
+
+* **graphql-transformer-core:** add support for user defined slots ([#8758](https://github.com/aws-amplify/amplify-cli/issues/8758)) ([93c8bfc](https://github.com/aws-amplify/amplify-cli/commit/93c8bfc4294c24659d1e03205a4a0f2262774b7d))
+
+
+
+
+
+# [0.13.0-graphql-vnext-dev-preview.7](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-transformer-core@0.10.0...@aws-amplify/graphql-transformer-core@0.13.0-graphql-vnext-dev-preview.7) (2021-11-15)
+
+
+### Bug Fixes
+
+* append apiKey if global auth is enabled and its not default auth ([#8843](https://github.com/aws-amplify/amplify-cli/issues/8843)) ([c54070c](https://github.com/aws-amplify/amplify-cli/commit/c54070c4b940fab7ed9f172417ee2d3e5c91f602))
+* **graphql-transformer-core:** remove the allow_public_global directive references ([#8751](https://github.com/aws-amplify/amplify-cli/issues/8751)) ([c1385b8](https://github.com/aws-amplify/amplify-cli/commit/c1385b897af7d906fb11e433235e465508381c97))
+* passing ddb params from root to nested model stacks ([#8766](https://github.com/aws-amplify/amplify-cli/issues/8766)) ([b522995](https://github.com/aws-amplify/amplify-cli/commit/b52299557baff3fa5adc1053f7ecc1124ef3d00e))
+
+
+### Features
+
+* **graphql-transformer-core:** add support for user defined slots ([#8758](https://github.com/aws-amplify/amplify-cli/issues/8758)) ([93c8bfc](https://github.com/aws-amplify/amplify-cli/commit/93c8bfc4294c24659d1e03205a4a0f2262774b7d))
+
+
+
+
+
+# [0.13.0-graphql-vnext-dev-preview.6](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-transformer-core@0.10.0...@aws-amplify/graphql-transformer-core@0.13.0-graphql-vnext-dev-preview.6) (2021-11-15)
+
+
+### Bug Fixes
+
+* append apiKey if global auth is enabled and its not default auth ([#8843](https://github.com/aws-amplify/amplify-cli/issues/8843)) ([c54070c](https://github.com/aws-amplify/amplify-cli/commit/c54070c4b940fab7ed9f172417ee2d3e5c91f602))
+* **graphql-transformer-core:** remove the allow_public_global directive references ([#8751](https://github.com/aws-amplify/amplify-cli/issues/8751)) ([c1385b8](https://github.com/aws-amplify/amplify-cli/commit/c1385b897af7d906fb11e433235e465508381c97))
+* passing ddb params from root to nested model stacks ([#8766](https://github.com/aws-amplify/amplify-cli/issues/8766)) ([b522995](https://github.com/aws-amplify/amplify-cli/commit/b52299557baff3fa5adc1053f7ecc1124ef3d00e))
+
+
+### Features
+
+* **graphql-transformer-core:** add support for user defined slots ([#8758](https://github.com/aws-amplify/amplify-cli/issues/8758)) ([93c8bfc](https://github.com/aws-amplify/amplify-cli/commit/93c8bfc4294c24659d1e03205a4a0f2262774b7d))
+
+
+
+
+
+# [0.13.0-graphql-vnext-dev-preview.5](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-transformer-core@0.10.0...@aws-amplify/graphql-transformer-core@0.13.0-graphql-vnext-dev-preview.5) (2021-11-15)
+
+
+### Bug Fixes
+
+* append apiKey if global auth is enabled and its not default auth ([#8843](https://github.com/aws-amplify/amplify-cli/issues/8843)) ([c54070c](https://github.com/aws-amplify/amplify-cli/commit/c54070c4b940fab7ed9f172417ee2d3e5c91f602))
+* **graphql-transformer-core:** remove the allow_public_global directive references ([#8751](https://github.com/aws-amplify/amplify-cli/issues/8751)) ([c1385b8](https://github.com/aws-amplify/amplify-cli/commit/c1385b897af7d906fb11e433235e465508381c97))
+* passing ddb params from root to nested model stacks ([#8766](https://github.com/aws-amplify/amplify-cli/issues/8766)) ([b522995](https://github.com/aws-amplify/amplify-cli/commit/b52299557baff3fa5adc1053f7ecc1124ef3d00e))
+
+
+### Features
+
+* **graphql-transformer-core:** add support for user defined slots ([#8758](https://github.com/aws-amplify/amplify-cli/issues/8758)) ([93c8bfc](https://github.com/aws-amplify/amplify-cli/commit/93c8bfc4294c24659d1e03205a4a0f2262774b7d))
+
+
+
+
+
+# [0.13.0-graphql-vnext-dev-preview.4](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-transformer-core@0.10.0...@aws-amplify/graphql-transformer-core@0.13.0-graphql-vnext-dev-preview.4) (2021-11-15)
+
+
+### Bug Fixes
+
+* append apiKey if global auth is enabled and its not default auth ([#8843](https://github.com/aws-amplify/amplify-cli/issues/8843)) ([c54070c](https://github.com/aws-amplify/amplify-cli/commit/c54070c4b940fab7ed9f172417ee2d3e5c91f602))
+* **graphql-transformer-core:** remove the allow_public_global directive references ([#8751](https://github.com/aws-amplify/amplify-cli/issues/8751)) ([c1385b8](https://github.com/aws-amplify/amplify-cli/commit/c1385b897af7d906fb11e433235e465508381c97))
+* passing ddb params from root to nested model stacks ([#8766](https://github.com/aws-amplify/amplify-cli/issues/8766)) ([b522995](https://github.com/aws-amplify/amplify-cli/commit/b52299557baff3fa5adc1053f7ecc1124ef3d00e))
+
+
+### Features
+
+* **graphql-transformer-core:** add support for user defined slots ([#8758](https://github.com/aws-amplify/amplify-cli/issues/8758)) ([93c8bfc](https://github.com/aws-amplify/amplify-cli/commit/93c8bfc4294c24659d1e03205a4a0f2262774b7d))
+
+
+
+
+
+# [0.13.0-graphql-vnext-dev-preview.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-transformer-core@0.10.0...@aws-amplify/graphql-transformer-core@0.13.0-graphql-vnext-dev-preview.3) (2021-11-15)
+
+
+### Bug Fixes
+
+* append apiKey if global auth is enabled and its not default auth ([#8843](https://github.com/aws-amplify/amplify-cli/issues/8843)) ([c54070c](https://github.com/aws-amplify/amplify-cli/commit/c54070c4b940fab7ed9f172417ee2d3e5c91f602))
+* **graphql-transformer-core:** remove the allow_public_global directive references ([#8751](https://github.com/aws-amplify/amplify-cli/issues/8751)) ([c1385b8](https://github.com/aws-amplify/amplify-cli/commit/c1385b897af7d906fb11e433235e465508381c97))
+* passing ddb params from root to nested model stacks ([#8766](https://github.com/aws-amplify/amplify-cli/issues/8766)) ([b522995](https://github.com/aws-amplify/amplify-cli/commit/b52299557baff3fa5adc1053f7ecc1124ef3d00e))
+
+
+### Features
+
+* **graphql-transformer-core:** add support for user defined slots ([#8758](https://github.com/aws-amplify/amplify-cli/issues/8758)) ([93c8bfc](https://github.com/aws-amplify/amplify-cli/commit/93c8bfc4294c24659d1e03205a4a0f2262774b7d))
+
+
+
+
+
+# [0.13.0-graphql-vnext-dev-preview.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-transformer-core@0.10.0...@aws-amplify/graphql-transformer-core@0.13.0-graphql-vnext-dev-preview.2) (2021-11-15)
+
+
+### Bug Fixes
+
+* append apiKey if global auth is enabled and its not default auth ([#8843](https://github.com/aws-amplify/amplify-cli/issues/8843)) ([c54070c](https://github.com/aws-amplify/amplify-cli/commit/c54070c4b940fab7ed9f172417ee2d3e5c91f602))
+* **graphql-transformer-core:** remove the allow_public_global directive references ([#8751](https://github.com/aws-amplify/amplify-cli/issues/8751)) ([c1385b8](https://github.com/aws-amplify/amplify-cli/commit/c1385b897af7d906fb11e433235e465508381c97))
+* passing ddb params from root to nested model stacks ([#8766](https://github.com/aws-amplify/amplify-cli/issues/8766)) ([b522995](https://github.com/aws-amplify/amplify-cli/commit/b52299557baff3fa5adc1053f7ecc1124ef3d00e))
+
+
+### Features
+
+* **graphql-transformer-core:** add support for user defined slots ([#8758](https://github.com/aws-amplify/amplify-cli/issues/8758)) ([93c8bfc](https://github.com/aws-amplify/amplify-cli/commit/93c8bfc4294c24659d1e03205a4a0f2262774b7d))
+
+
+
+
+
+# [0.13.0-graphql-vnext-dev-preview.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-transformer-core@0.10.0...@aws-amplify/graphql-transformer-core@0.13.0-graphql-vnext-dev-preview.1) (2021-11-15)
+
+
+### Bug Fixes
+
+* append apiKey if global auth is enabled and its not default auth ([#8843](https://github.com/aws-amplify/amplify-cli/issues/8843)) ([c54070c](https://github.com/aws-amplify/amplify-cli/commit/c54070c4b940fab7ed9f172417ee2d3e5c91f602))
+* **graphql-transformer-core:** remove the allow_public_global directive references ([#8751](https://github.com/aws-amplify/amplify-cli/issues/8751)) ([c1385b8](https://github.com/aws-amplify/amplify-cli/commit/c1385b897af7d906fb11e433235e465508381c97))
+* passing ddb params from root to nested model stacks ([#8766](https://github.com/aws-amplify/amplify-cli/issues/8766)) ([b522995](https://github.com/aws-amplify/amplify-cli/commit/b52299557baff3fa5adc1053f7ecc1124ef3d00e))
+
+
+### Features
+
+* **graphql-transformer-core:** add support for user defined slots ([#8758](https://github.com/aws-amplify/amplify-cli/issues/8758)) ([93c8bfc](https://github.com/aws-amplify/amplify-cli/commit/93c8bfc4294c24659d1e03205a4a0f2262774b7d))
+
+
+
+
+
+# [0.13.0-graphql-vnext-dev-preview.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-transformer-core@0.10.0...@aws-amplify/graphql-transformer-core@0.13.0-graphql-vnext-dev-preview.0) (2021-11-15)
+
+
+### Bug Fixes
+
+* append apiKey if global auth is enabled and its not default auth ([#8843](https://github.com/aws-amplify/amplify-cli/issues/8843)) ([c54070c](https://github.com/aws-amplify/amplify-cli/commit/c54070c4b940fab7ed9f172417ee2d3e5c91f602))
+* **graphql-transformer-core:** remove the allow_public_global directive references ([#8751](https://github.com/aws-amplify/amplify-cli/issues/8751)) ([c1385b8](https://github.com/aws-amplify/amplify-cli/commit/c1385b897af7d906fb11e433235e465508381c97))
+* passing ddb params from root to nested model stacks ([#8766](https://github.com/aws-amplify/amplify-cli/issues/8766)) ([b522995](https://github.com/aws-amplify/amplify-cli/commit/b52299557baff3fa5adc1053f7ecc1124ef3d00e))
+
+
+### Features
+
+* **graphql-transformer-core:** add support for user defined slots ([#8758](https://github.com/aws-amplify/amplify-cli/issues/8758)) ([93c8bfc](https://github.com/aws-amplify/amplify-cli/commit/93c8bfc4294c24659d1e03205a4a0f2262774b7d))
+
+
+
+
+
 # [0.10.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-transformer-core@0.9.2...@aws-amplify/graphql-transformer-core@0.10.0) (2021-11-11)
 
 

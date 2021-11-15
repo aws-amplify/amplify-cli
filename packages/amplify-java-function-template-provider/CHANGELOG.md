@@ -3,6 +3,102 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.5.10-graphql-vnext-dev-preview.11](https://github.com/aws-amplify/amplify-cli/compare/amplify-java-function-template-provider@1.5.9...amplify-java-function-template-provider@1.5.10-graphql-vnext-dev-preview.11) (2021-11-15)
+
+**Note:** Version bump only for package amplify-java-function-template-provider
+
+
+
+
+
+## [1.5.10-graphql-vnext-dev-preview.10](https://github.com/aws-amplify/amplify-cli/compare/amplify-java-function-template-provider@1.5.9...amplify-java-function-template-provider@1.5.10-graphql-vnext-dev-preview.10) (2021-11-15)
+
+**Note:** Version bump only for package amplify-java-function-template-provider
+
+
+
+
+
+## [1.5.10-graphql-vnext-dev-preview.9](https://github.com/aws-amplify/amplify-cli/compare/amplify-java-function-template-provider@1.5.9...amplify-java-function-template-provider@1.5.10-graphql-vnext-dev-preview.9) (2021-11-15)
+
+**Note:** Version bump only for package amplify-java-function-template-provider
+
+
+
+
+
+## [1.5.10-graphql-vnext-dev-preview.8](https://github.com/aws-amplify/amplify-cli/compare/amplify-java-function-template-provider@1.5.9...amplify-java-function-template-provider@1.5.10-graphql-vnext-dev-preview.8) (2021-11-15)
+
+**Note:** Version bump only for package amplify-java-function-template-provider
+
+
+
+
+
+## [1.5.10-graphql-vnext-dev-preview.7](https://github.com/aws-amplify/amplify-cli/compare/amplify-java-function-template-provider@1.5.9...amplify-java-function-template-provider@1.5.10-graphql-vnext-dev-preview.7) (2021-11-15)
+
+**Note:** Version bump only for package amplify-java-function-template-provider
+
+
+
+
+
+## [1.5.10-graphql-vnext-dev-preview.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-java-function-template-provider@1.5.9...amplify-java-function-template-provider@1.5.10-graphql-vnext-dev-preview.6) (2021-11-15)
+
+**Note:** Version bump only for package amplify-java-function-template-provider
+
+
+
+
+
+## [1.5.10-graphql-vnext-dev-preview.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-java-function-template-provider@1.5.9...amplify-java-function-template-provider@1.5.10-graphql-vnext-dev-preview.5) (2021-11-15)
+
+**Note:** Version bump only for package amplify-java-function-template-provider
+
+
+
+
+
+## [1.5.10-graphql-vnext-dev-preview.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-java-function-template-provider@1.5.9...amplify-java-function-template-provider@1.5.10-graphql-vnext-dev-preview.4) (2021-11-15)
+
+**Note:** Version bump only for package amplify-java-function-template-provider
+
+
+
+
+
+## [1.5.10-graphql-vnext-dev-preview.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-java-function-template-provider@1.5.9...amplify-java-function-template-provider@1.5.10-graphql-vnext-dev-preview.3) (2021-11-15)
+
+**Note:** Version bump only for package amplify-java-function-template-provider
+
+
+
+
+
+## [1.5.10-graphql-vnext-dev-preview.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-java-function-template-provider@1.5.9...amplify-java-function-template-provider@1.5.10-graphql-vnext-dev-preview.2) (2021-11-15)
+
+**Note:** Version bump only for package amplify-java-function-template-provider
+
+
+
+
+
+## [1.5.10-graphql-vnext-dev-preview.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-java-function-template-provider@1.5.9...amplify-java-function-template-provider@1.5.10-graphql-vnext-dev-preview.1) (2021-11-15)
+
+**Note:** Version bump only for package amplify-java-function-template-provider
+
+
+
+
+
+## [1.5.10-graphql-vnext-dev-preview.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-java-function-template-provider@1.5.9...amplify-java-function-template-provider@1.5.10-graphql-vnext-dev-preview.0) (2021-11-15)
+
+**Note:** Version bump only for package amplify-java-function-template-provider
+
+
+
+
+
 ## [1.5.9](https://github.com/aws-amplify/amplify-cli/compare/amplify-java-function-template-provider@1.5.8...amplify-java-function-template-provider@1.5.9) (2021-07-30)
 
 **Note:** Version bump only for package amplify-java-function-template-provider

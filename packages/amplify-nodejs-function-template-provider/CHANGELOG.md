@@ -3,6 +3,150 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.2.1-graphql-vnext-dev-preview.11](https://github.com/aws-amplify/amplify-cli/compare/amplify-nodejs-function-template-provider@1.6.25...amplify-nodejs-function-template-provider@2.2.1-graphql-vnext-dev-preview.11) (2021-11-15)
+
+
+### Bug Fixes
+
+* **graphql:** refactor lambda authorizer code to use function category to create authorizer function ([#8784](https://github.com/aws-amplify/amplify-cli/issues/8784)) ([e6dac98](https://github.com/aws-amplify/amplify-cli/commit/e6dac98d2bf4b11d38cf3e05dc0be9e69f0987c4))
+* map readable attr name to ddb name in parameters.json ([#8816](https://github.com/aws-amplify/amplify-cli/issues/8816)) ([59e5f50](https://github.com/aws-amplify/amplify-cli/commit/59e5f508254c2717c2a9b3de5253065c5f6b34a1))
+
+
+
+
+
+## [2.2.1-graphql-vnext-dev-preview.10](https://github.com/aws-amplify/amplify-cli/compare/amplify-nodejs-function-template-provider@1.6.25...amplify-nodejs-function-template-provider@2.2.1-graphql-vnext-dev-preview.10) (2021-11-15)
+
+
+### Bug Fixes
+
+* **graphql:** refactor lambda authorizer code to use function category to create authorizer function ([#8784](https://github.com/aws-amplify/amplify-cli/issues/8784)) ([e6dac98](https://github.com/aws-amplify/amplify-cli/commit/e6dac98d2bf4b11d38cf3e05dc0be9e69f0987c4))
+* map readable attr name to ddb name in parameters.json ([#8816](https://github.com/aws-amplify/amplify-cli/issues/8816)) ([59e5f50](https://github.com/aws-amplify/amplify-cli/commit/59e5f508254c2717c2a9b3de5253065c5f6b34a1))
+
+
+
+
+
+## [2.2.1-graphql-vnext-dev-preview.9](https://github.com/aws-amplify/amplify-cli/compare/amplify-nodejs-function-template-provider@1.6.25...amplify-nodejs-function-template-provider@2.2.1-graphql-vnext-dev-preview.9) (2021-11-15)
+
+
+### Bug Fixes
+
+* **graphql:** refactor lambda authorizer code to use function category to create authorizer function ([#8784](https://github.com/aws-amplify/amplify-cli/issues/8784)) ([e6dac98](https://github.com/aws-amplify/amplify-cli/commit/e6dac98d2bf4b11d38cf3e05dc0be9e69f0987c4))
+* map readable attr name to ddb name in parameters.json ([#8816](https://github.com/aws-amplify/amplify-cli/issues/8816)) ([59e5f50](https://github.com/aws-amplify/amplify-cli/commit/59e5f508254c2717c2a9b3de5253065c5f6b34a1))
+
+
+
+
+
+## [2.2.1-graphql-vnext-dev-preview.8](https://github.com/aws-amplify/amplify-cli/compare/amplify-nodejs-function-template-provider@1.6.25...amplify-nodejs-function-template-provider@2.2.1-graphql-vnext-dev-preview.8) (2021-11-15)
+
+
+### Bug Fixes
+
+* **graphql:** refactor lambda authorizer code to use function category to create authorizer function ([#8784](https://github.com/aws-amplify/amplify-cli/issues/8784)) ([e6dac98](https://github.com/aws-amplify/amplify-cli/commit/e6dac98d2bf4b11d38cf3e05dc0be9e69f0987c4))
+* map readable attr name to ddb name in parameters.json ([#8816](https://github.com/aws-amplify/amplify-cli/issues/8816)) ([59e5f50](https://github.com/aws-amplify/amplify-cli/commit/59e5f508254c2717c2a9b3de5253065c5f6b34a1))
+
+
+
+
+
+## [2.2.1-graphql-vnext-dev-preview.7](https://github.com/aws-amplify/amplify-cli/compare/amplify-nodejs-function-template-provider@1.6.25...amplify-nodejs-function-template-provider@2.2.1-graphql-vnext-dev-preview.7) (2021-11-15)
+
+
+### Bug Fixes
+
+* **graphql:** refactor lambda authorizer code to use function category to create authorizer function ([#8784](https://github.com/aws-amplify/amplify-cli/issues/8784)) ([e6dac98](https://github.com/aws-amplify/amplify-cli/commit/e6dac98d2bf4b11d38cf3e05dc0be9e69f0987c4))
+* map readable attr name to ddb name in parameters.json ([#8816](https://github.com/aws-amplify/amplify-cli/issues/8816)) ([59e5f50](https://github.com/aws-amplify/amplify-cli/commit/59e5f508254c2717c2a9b3de5253065c5f6b34a1))
+
+
+
+
+
+## [2.2.1-graphql-vnext-dev-preview.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-nodejs-function-template-provider@1.6.25...amplify-nodejs-function-template-provider@2.2.1-graphql-vnext-dev-preview.6) (2021-11-15)
+
+
+### Bug Fixes
+
+* **graphql:** refactor lambda authorizer code to use function category to create authorizer function ([#8784](https://github.com/aws-amplify/amplify-cli/issues/8784)) ([e6dac98](https://github.com/aws-amplify/amplify-cli/commit/e6dac98d2bf4b11d38cf3e05dc0be9e69f0987c4))
+* map readable attr name to ddb name in parameters.json ([#8816](https://github.com/aws-amplify/amplify-cli/issues/8816)) ([59e5f50](https://github.com/aws-amplify/amplify-cli/commit/59e5f508254c2717c2a9b3de5253065c5f6b34a1))
+
+
+
+
+
+## [2.2.1-graphql-vnext-dev-preview.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-nodejs-function-template-provider@1.6.25...amplify-nodejs-function-template-provider@2.2.1-graphql-vnext-dev-preview.5) (2021-11-15)
+
+
+### Bug Fixes
+
+* **graphql:** refactor lambda authorizer code to use function category to create authorizer function ([#8784](https://github.com/aws-amplify/amplify-cli/issues/8784)) ([e6dac98](https://github.com/aws-amplify/amplify-cli/commit/e6dac98d2bf4b11d38cf3e05dc0be9e69f0987c4))
+* map readable attr name to ddb name in parameters.json ([#8816](https://github.com/aws-amplify/amplify-cli/issues/8816)) ([59e5f50](https://github.com/aws-amplify/amplify-cli/commit/59e5f508254c2717c2a9b3de5253065c5f6b34a1))
+
+
+
+
+
+## [2.2.1-graphql-vnext-dev-preview.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-nodejs-function-template-provider@1.6.25...amplify-nodejs-function-template-provider@2.2.1-graphql-vnext-dev-preview.4) (2021-11-15)
+
+
+### Bug Fixes
+
+* **graphql:** refactor lambda authorizer code to use function category to create authorizer function ([#8784](https://github.com/aws-amplify/amplify-cli/issues/8784)) ([e6dac98](https://github.com/aws-amplify/amplify-cli/commit/e6dac98d2bf4b11d38cf3e05dc0be9e69f0987c4))
+* map readable attr name to ddb name in parameters.json ([#8816](https://github.com/aws-amplify/amplify-cli/issues/8816)) ([59e5f50](https://github.com/aws-amplify/amplify-cli/commit/59e5f508254c2717c2a9b3de5253065c5f6b34a1))
+
+
+
+
+
+## [2.2.1-graphql-vnext-dev-preview.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-nodejs-function-template-provider@1.6.25...amplify-nodejs-function-template-provider@2.2.1-graphql-vnext-dev-preview.3) (2021-11-15)
+
+
+### Bug Fixes
+
+* **graphql:** refactor lambda authorizer code to use function category to create authorizer function ([#8784](https://github.com/aws-amplify/amplify-cli/issues/8784)) ([e6dac98](https://github.com/aws-amplify/amplify-cli/commit/e6dac98d2bf4b11d38cf3e05dc0be9e69f0987c4))
+* map readable attr name to ddb name in parameters.json ([#8816](https://github.com/aws-amplify/amplify-cli/issues/8816)) ([59e5f50](https://github.com/aws-amplify/amplify-cli/commit/59e5f508254c2717c2a9b3de5253065c5f6b34a1))
+
+
+
+
+
+## [2.2.1-graphql-vnext-dev-preview.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-nodejs-function-template-provider@1.6.25...amplify-nodejs-function-template-provider@2.2.1-graphql-vnext-dev-preview.2) (2021-11-15)
+
+
+### Bug Fixes
+
+* **graphql:** refactor lambda authorizer code to use function category to create authorizer function ([#8784](https://github.com/aws-amplify/amplify-cli/issues/8784)) ([e6dac98](https://github.com/aws-amplify/amplify-cli/commit/e6dac98d2bf4b11d38cf3e05dc0be9e69f0987c4))
+* map readable attr name to ddb name in parameters.json ([#8816](https://github.com/aws-amplify/amplify-cli/issues/8816)) ([59e5f50](https://github.com/aws-amplify/amplify-cli/commit/59e5f508254c2717c2a9b3de5253065c5f6b34a1))
+
+
+
+
+
+## [2.2.1-graphql-vnext-dev-preview.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-nodejs-function-template-provider@1.6.25...amplify-nodejs-function-template-provider@2.2.1-graphql-vnext-dev-preview.1) (2021-11-15)
+
+
+### Bug Fixes
+
+* **graphql:** refactor lambda authorizer code to use function category to create authorizer function ([#8784](https://github.com/aws-amplify/amplify-cli/issues/8784)) ([e6dac98](https://github.com/aws-amplify/amplify-cli/commit/e6dac98d2bf4b11d38cf3e05dc0be9e69f0987c4))
+* map readable attr name to ddb name in parameters.json ([#8816](https://github.com/aws-amplify/amplify-cli/issues/8816)) ([59e5f50](https://github.com/aws-amplify/amplify-cli/commit/59e5f508254c2717c2a9b3de5253065c5f6b34a1))
+
+
+
+
+
+## [2.2.1-graphql-vnext-dev-preview.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-nodejs-function-template-provider@1.6.25...amplify-nodejs-function-template-provider@2.2.1-graphql-vnext-dev-preview.0) (2021-11-15)
+
+
+### Bug Fixes
+
+* **graphql:** refactor lambda authorizer code to use function category to create authorizer function ([#8784](https://github.com/aws-amplify/amplify-cli/issues/8784)) ([e6dac98](https://github.com/aws-amplify/amplify-cli/commit/e6dac98d2bf4b11d38cf3e05dc0be9e69f0987c4))
+* map readable attr name to ddb name in parameters.json ([#8816](https://github.com/aws-amplify/amplify-cli/issues/8816)) ([59e5f50](https://github.com/aws-amplify/amplify-cli/commit/59e5f508254c2717c2a9b3de5253065c5f6b34a1))
+
+
+
+
+
 # [2.0.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-nodejs-function-template-provider@1.6.25...amplify-nodejs-function-template-provider@2.0.0) (2021-11-13)
 
 
