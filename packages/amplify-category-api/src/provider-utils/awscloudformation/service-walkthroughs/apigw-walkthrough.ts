@@ -11,7 +11,7 @@ import {
   ResourceDoesNotExistError,
   stateManager,
 } from 'amplify-cli-core';
-import { printer, prompter } from 'amplify-prompts';
+import { byValues, printer, prompter } from 'amplify-prompts';
 import inquirer from 'inquirer';
 import os from 'os';
 import { v4 as uuid } from 'uuid';
@@ -76,7 +76,6 @@ export async function updateWalkthrough(context: $TSContext) {
   const projRoot = pathManager.findProjectRoot();
   if (!stateManager.resourceInputsJsonExists(projRoot, category, selectedApiName)) {
     // Not yet migrated
-    console.log(selectedApiName);
     await migrate(context, projRoot, selectedApiName);
   }
 
@@ -136,7 +135,6 @@ export async function updateWalkthrough(context: $TSContext) {
 
 async function pathFlow(context: $TSContext, answers: ApigwAnswers, currentPath?: ApigwPath): ApigwWalkthroughReturnPromise {
   const pathsAnswer = await askPaths(context, answers, currentPath);
-
   return { answers: pathsAnswer };
 }
 
@@ -336,11 +334,11 @@ async function ensureAuth(context: $TSContext, apiRequirements: ApiRequirements,
   }
 }
 
-async function askCRUD(userType: string, permissions: string[] = []) {
-  const crudOptions = ['create', 'read', 'update', 'delete'];
+async function askCRUD(userType: string, permissions: CrudOperation[] = []) {
+  const crudOptions = [CrudOperation.CREATE, CrudOperation.READ, CrudOperation.UPDATE, CrudOperation.DELETE];
   const crudAnswers = await prompter.pick<'many', string>(`What permissions do you want to grant to ${userType} users?`, crudOptions, {
     returnSize: 'many',
-    initial: permissions.map(p => crudOptions.indexOf(p)),
+    initial: byValues(permissions), // (a, b) => a.toLowerCase() === b.toLowerCase()
   });
 
   return crudAnswers;
@@ -600,16 +598,16 @@ export function getIAMPolicies(resourceName: string, crudOptions: string[]) {
 
   crudOptions.forEach(crudOption => {
     switch (crudOption) {
-      case 'create':
+      case CrudOperation.CREATE:
         actions.push('apigateway:POST', 'apigateway:PUT');
         break;
-      case 'update':
+      case CrudOperation.UPDATE:
         actions.push('apigateway:PATCH');
         break;
-      case 'read':
+      case CrudOperation.READ:
         actions.push('apigateway:GET', 'apigateway:HEAD', 'apigateway:OPTIONS');
         break;
-      case 'delete':
+      case CrudOperation.DELETE:
         actions.push('apigateway:DELETE');
         break;
       default:

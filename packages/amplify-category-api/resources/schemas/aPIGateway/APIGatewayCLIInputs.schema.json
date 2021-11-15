@@ -25,14 +25,14 @@
               "auth": {
                 "type": "array",
                 "items": {
-                  "enum": ["CREATE", "DELETE", "READ", "UPDATE"],
+                  "enum": ["create", "delete", "read", "update"],
                   "type": "string"
                 }
               },
               "guest": {
                 "type": "array",
                 "items": {
-                  "enum": ["CREATE", "DELETE", "READ", "UPDATE"],
+                  "enum": ["create", "delete", "read", "update"],
                   "type": "string"
                 }
               },
@@ -43,7 +43,7 @@
                   "additionalProperties": {
                     "type": "array",
                     "items": {
-                      "enum": ["CREATE", "DELETE", "READ", "UPDATE"],
+                      "enum": ["create", "delete", "read", "update"],
                       "type": "string"
                     }
                   }
