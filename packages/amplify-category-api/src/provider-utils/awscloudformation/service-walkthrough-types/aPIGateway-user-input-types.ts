@@ -24,10 +24,10 @@ type Path = {
 };
 
 enum CrudOperation {
-  CREATE = 'CREATE',
-  READ = 'READ',
-  UPDATE = 'UPDATE',
-  DELETE = 'DELETE',
+  CREATE = 'create',
+  READ = 'read',
+  UPDATE = 'update',
+  DELETE = 'delete',
 }
 
 enum PermissionSetting {
