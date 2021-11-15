@@ -355,7 +355,7 @@ class CloudFormation {
         .forEach(category => {
           Object.keys(amplifyMeta[category]).forEach(key => {
             const formattedOutputs = formatOutputs(rootStackResult.Stacks[0].Outputs);
-            const updatedMeta = this.context.amplify.updateProvideramplifyMeta('awscloudformation', formattedOutputs);
+            this.context.amplify.updateProvideramplifyMeta('awscloudformation', formattedOutputs);
             /**
              * Write the new env specific datasource information into
              * the team-provider-info file
@@ -364,7 +364,7 @@ class CloudFormation {
             const projectPath = pathManager.findProjectRoot();
             const teamProviderInfo = stateManager.getTeamProviderInfo(projectPath);
             const tpiResourceParams = _.get(teamProviderInfo, [envName, 'awscloudformation'], {});
-            _.assign(tpiResourceParams, updatedMeta);
+            _.assign(tpiResourceParams, stateManager.getMeta().providers.awscloudformation);
             _.set(teamProviderInfo, [envName, 'awscloudformation'], tpiResourceParams);
             stateManager.setTeamProviderInfo(projectPath, teamProviderInfo);
           });
