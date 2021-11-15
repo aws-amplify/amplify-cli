@@ -273,7 +273,6 @@ Object {
       "Type": "AWS::Cognito::IdentityPoolRoleAttachment",
     },
     "UserPool": Object {
-      "DeletionPolicy": "Retain",
       "Properties": Object {
         "AliasAttributes": Object {
           "Ref": "aliasAttributes",
@@ -335,7 +334,6 @@ Object {
         },
       },
       "Type": "AWS::Cognito::UserPool",
-      "UpdateReplacePolicy": "Retain",
     },
     "UserPoolClient": Object {
       "DependsOn": Array [
@@ -1801,7 +1799,6 @@ exports.handler = (event, context, callback) => {
       "Type": "AWS::IAM::Role",
     },
     "UserPool": Object {
-      "DeletionPolicy": "Retain",
       "DependsOn": Array [
         "SNSRole",
       ],
@@ -1882,7 +1879,6 @@ exports.handler = (event, context, callback) => {
         },
       },
       "Type": "AWS::Cognito::UserPool",
-      "UpdateReplacePolicy": "Retain",
     },
     "UserPoolClient": Object {
       "DependsOn": Array [
