@@ -32,7 +32,7 @@ Object {
       },
     },
     "Resources": Object {
-      "LambdaDataSource4DD51D23": Object {
+      "LambdaDataSource": Object {
         "Properties": Object {
           "ApiId": Object {
             "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
@@ -332,7 +332,7 @@ Object {
         },
         "Type": "AWS::AppSync::Resolver",
       },
-      "RekognitionDataSourceC6790FED": Object {
+      "RekognitionDataSource": Object {
         "Properties": Object {
           "ApiId": Object {
             "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
@@ -379,7 +379,7 @@ Object {
         },
         "Type": "AWS::IAM::Role",
       },
-      "TranslateDataSource2C33F90C": Object {
+      "TranslateDataSource": Object {
         "Properties": Object {
           "ApiId": Object {
             "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
@@ -423,7 +423,7 @@ Object {
       },
       "convertTextToSpeechFunctionconvertTextToSpeechFunctionAppSyncFunction15BC20B8": Object {
         "DependsOn": Array [
-          "LambdaDataSource4DD51D23",
+          "LambdaDataSource",
         ],
         "Properties": Object {
           "ApiId": Object {
@@ -431,7 +431,7 @@ Object {
           },
           "DataSourceName": Object {
             "Fn::GetAtt": Array [
-              "LambdaDataSource4DD51D23",
+              "LambdaDataSource",
               "Name",
             ],
           },
@@ -481,7 +481,7 @@ $util.toJson($ctx.result.url)",
       },
       "identifyLabelsFunctionidentifyLabelsFunctionAppSyncFunction7C2A1E61": Object {
         "DependsOn": Array [
-          "RekognitionDataSourceC6790FED",
+          "RekognitionDataSource",
         ],
         "Properties": Object {
           "ApiId": Object {
@@ -489,7 +489,7 @@ $util.toJson($ctx.result.url)",
           },
           "DataSourceName": Object {
             "Fn::GetAtt": Array [
-              "RekognitionDataSourceC6790FED",
+              "RekognitionDataSource",
               "Name",
             ],
           },
@@ -559,7 +559,7 @@ $util.error($ctx.result.body)
       },
       "identifyTextFunctionidentifyTextFunctionAppSyncFunction7877885A": Object {
         "DependsOn": Array [
-          "RekognitionDataSourceC6790FED",
+          "RekognitionDataSource",
         ],
         "Properties": Object {
           "ApiId": Object {
@@ -567,7 +567,7 @@ $util.error($ctx.result.body)
           },
           "DataSourceName": Object {
             "Fn::GetAtt": Array [
-              "RekognitionDataSourceC6790FED",
+              "RekognitionDataSource",
               "Name",
             ],
           },
@@ -778,7 +778,7 @@ $utils.error($ctx.result.body)
       },
       "translateTextFunctiontranslateTextFunctionAppSyncFunction77C9D7A9": Object {
         "DependsOn": Array [
-          "TranslateDataSource2C33F90C",
+          "TranslateDataSource",
         ],
         "Properties": Object {
           "ApiId": Object {
@@ -786,7 +786,7 @@ $utils.error($ctx.result.body)
           },
           "DataSourceName": Object {
             "Fn::GetAtt": Array [
-              "TranslateDataSource2C33F90C",
+              "TranslateDataSource",
               "Name",
             ],
           },

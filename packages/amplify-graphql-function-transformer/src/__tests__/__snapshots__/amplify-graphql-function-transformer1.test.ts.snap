@@ -33,7 +33,7 @@ Object {
     },
   },
   "Resources": Object {
-    "EchofunctionLambdaDataSource2B3A4FB1": Object {
+    "EchofunctionLambdaDataSource": Object {
       "Properties": Object {
         "ApiId": Object {
           "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
@@ -121,7 +121,7 @@ Object {
     },
     "InvokeEchofunctionLambdaDataSourceInvokeEchofunctionLambdaDataSourceAppSyncFunctionCDB52C03": Object {
       "DependsOn": Array [
-        "EchofunctionLambdaDataSource2B3A4FB1",
+        "EchofunctionLambdaDataSource",
       ],
       "Properties": Object {
         "ApiId": Object {
@@ -129,7 +129,7 @@ Object {
         },
         "DataSourceName": Object {
           "Fn::GetAtt": Array [
-            "EchofunctionLambdaDataSource2B3A4FB1",
+            "EchofunctionLambdaDataSource",
             "Name",
           ],
         },
@@ -147,7 +147,7 @@ Object {
               Object {
                 "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
               },
-              "/pipelineFunctions/InvokeEchofunctionLambdaDataSource.req.vtl",
+              "/resolvers/InvokeEchofunctionLambdaDataSource.req.vtl",
             ],
           ],
         },
@@ -163,7 +163,7 @@ Object {
               Object {
                 "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
               },
-              "/pipelineFunctions/InvokeEchofunctionLambdaDataSource.res.vtl",
+              "/resolvers/InvokeEchofunctionLambdaDataSource.res.vtl",
             ],
           ],
         },
@@ -172,7 +172,7 @@ Object {
     },
     "InvokeOtherfunctionLambdaDataSourceInvokeOtherfunctionLambdaDataSourceAppSyncFunctionB834903D": Object {
       "DependsOn": Array [
-        "OtherfunctionLambdaDataSource04C60016",
+        "OtherfunctionLambdaDataSource",
       ],
       "Properties": Object {
         "ApiId": Object {
@@ -180,7 +180,7 @@ Object {
         },
         "DataSourceName": Object {
           "Fn::GetAtt": Array [
-            "OtherfunctionLambdaDataSource04C60016",
+            "OtherfunctionLambdaDataSource",
             "Name",
           ],
         },
@@ -198,7 +198,7 @@ Object {
               Object {
                 "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
               },
-              "/pipelineFunctions/InvokeOtherfunctionLambdaDataSource.req.vtl",
+              "/resolvers/InvokeOtherfunctionLambdaDataSource.req.vtl",
             ],
           ],
         },
@@ -214,14 +214,14 @@ Object {
               Object {
                 "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
               },
-              "/pipelineFunctions/InvokeOtherfunctionLambdaDataSource.res.vtl",
+              "/resolvers/InvokeOtherfunctionLambdaDataSource.res.vtl",
             ],
           ],
         },
       },
       "Type": "AWS::AppSync::FunctionConfiguration",
     },
-    "OtherfunctionLambdaDataSource04C60016": Object {
+    "OtherfunctionLambdaDataSource": Object {
       "Properties": Object {
         "ApiId": Object {
           "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
@@ -335,7 +335,7 @@ Object {
               Object {
                 "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
               },
-              "/pipelineFunctions/Query.echo.res.vtl",
+              "/resolvers/Query.echo.res.vtl",
             ],
           ],
         },

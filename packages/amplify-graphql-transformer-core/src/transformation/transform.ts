@@ -358,9 +358,7 @@ export class GraphQLTransform {
         },
       });
       try {
-        sandboxNode
-          .run(overrideCode, path.join(this.overrideConfig!.overrideDir, 'build', 'override.js'))
-          .overrideProps(appsyncResourceObj);
+        sandboxNode.run(overrideCode, path.join(this.overrideConfig!.overrideDir, 'build', 'override.js')).override(appsyncResourceObj);
       } catch (err) {
         const error = new Error(`Skipping override due to ${err}${os.EOL}`);
         printer.error(`${error}`);

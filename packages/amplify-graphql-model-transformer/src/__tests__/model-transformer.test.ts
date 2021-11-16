@@ -1088,12 +1088,11 @@ describe('ModelTransformer: ', () => {
     }`;
 
     const transformer = new GraphQLTransform({
-      transformConfig: {
-        ResolverConfig: {
-          project: {
-            ConflictDetection: 'VERSION',
-            ConflictHandler: ConflictHandlerType.AUTOMERGE,
-          },
+      transformConfig: {},
+      resolverConfig: {
+        project: {
+          ConflictDetection: 'VERSION',
+          ConflictHandler: ConflictHandlerType.AUTOMERGE,
         },
       },
       sandboxModeEnabled: true,
