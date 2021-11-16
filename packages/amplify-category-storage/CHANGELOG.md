@@ -3,6 +3,21 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.0.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-storage@3.0.1...@aws-amplify/amplify-category-storage@3.0.2) (2021-11-16)
+
+
+
+## 7.3.4 (2021-11-16)
+
+
+### Bug Fixes
+
+* s3 bucket name constructed differently in legacy amplify apps (pre 2019) ([#8900](https://github.com/aws-amplify/amplify-cli/issues/8900)) ([2ec5d50](https://github.com/aws-amplify/amplify-cli/commit/2ec5d508e0f675b8c77c893bd591a01a0a8d13b6))
+
+
+
+
+
 ## [3.0.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-storage@3.0.0...@aws-amplify/amplify-category-storage@3.0.1) (2021-11-16)
 
 
