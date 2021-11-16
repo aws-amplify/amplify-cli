@@ -12,7 +12,7 @@ import { Runtime } from '@aws-cdk/aws-lambda';
 import { $TSObject } from 'amplify-cli-core';
 import { crudPermissionsMap } from '../service-utils/geofenceCollectionUtils';
 
-type GeofenceCollectionStackProps = Pick<GeofenceCollectionParameters, 'groupPermissions'> & 
+type GeofenceCollectionStackProps = Pick<GeofenceCollectionParameters, 'groupPermissions'> &
     TemplateMappings & { authResourceName: string };
 
 export class GeofenceCollectionStack extends BaseStack {
@@ -138,10 +138,10 @@ export class GeofenceCollectionStack extends BaseStack {
       const policy = new iam.CfnPolicy(this, `${group}GeofenceCollectionPolicy`, {
           policyName: `${group}${this.geofenceCollectionName}Policy`,
           roles: [
-              cdk.Fn.join('-', 
-              [ 
-                  this.parameters.get(`auth${this.authResourceName}UserPoolId`)!.valueAsString, 
-                  `${group}GroupRole`
+              cdk.Fn.join('-',
+              [
+                this.parameters.get(`auth${this.authResourceName}UserPoolId`)!.valueAsString,
+                `${group}GroupRole`
               ])
           ],
           policyDocument: policyDocument,

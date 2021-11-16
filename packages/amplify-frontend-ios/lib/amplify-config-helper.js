@@ -191,6 +191,7 @@ function constructStorage(metadata, amplifyConfig) {
 function constructGeo(metadata, amplifyConfig) {
   const categoryName = 'geo';
   const pluginName = 'awsLocationGeoPlugin';
+  let geoRegion = metadata.providers.awscloudformation.Region;
   if (metadata[categoryName] && Object.keys(metadata[categoryName]).length > 0) {
     let defaultMap = '';
     const mapConfig = {
@@ -206,6 +207,7 @@ function constructGeo(metadata, amplifyConfig) {
       if (resourceMeta.output) {
         if (resourceMeta.service === 'Map') {
           const mapName = resourceMeta.output.Name;
+          geoRegion = resourceMeta.output.Region || geoRegion;
           mapConfig.items[mapName] = {
             style: resourceMeta.output.Style
           }
@@ -215,6 +217,7 @@ function constructGeo(metadata, amplifyConfig) {
         }
         else if (resourceMeta.service === 'PlaceIndex') {
           const placeIndexName = resourceMeta.output.Name;
+          geoRegion = resourceMeta.output.Region || geoRegion;
           placeIndexConfig.items.push(placeIndexName);
           if(resourceMeta.isDefault === true) {
             defaultPlaceIndex = placeIndexName;
@@ -230,7 +233,7 @@ function constructGeo(metadata, amplifyConfig) {
       plugins: {}
     };
     amplifyConfig[categoryName].plugins[pluginName] = {
-      region: metadata.providers.awscloudformation.Region
+      region: geoRegion
     };
     if (Object.keys(mapConfig.items).length > 0) {
       amplifyConfig[categoryName].plugins[pluginName]['maps'] = mapConfig;

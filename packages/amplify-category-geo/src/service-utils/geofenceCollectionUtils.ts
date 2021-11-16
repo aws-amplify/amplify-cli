@@ -23,8 +23,8 @@ export const createGeofenceCollectionResource = async (context: $TSContext, para
   // generate CFN files
   const templateMappings = await getTemplateMappings(context);
   const geofenceCollectionStack = new GeofenceCollectionStack(
-    new App(), 
-    'GeofenceCollectionStack', 
+    new App(),
+    'GeofenceCollectionStack',
     { ...parameters, ...templateMappings, authResourceName }
   );
   generateTemplateFile(geofenceCollectionStack, parameters.name);
@@ -55,8 +55,8 @@ export const modifyGeofenceCollectionResource = async (
   // generate CFN files
   const templateMappings = await getTemplateMappings(context);
   const geofenceCollectionStack = new GeofenceCollectionStack(
-    new App(), 
-    'GeofenceCollectionStack', 
+    new App(),
+    'GeofenceCollectionStack',
     { ...parameters, ...templateMappings, authResourceName }
   );
   generateTemplateFile(geofenceCollectionStack, parameters.name);
@@ -203,7 +203,7 @@ export const getGeofenceCollectionIamPolicies = (resourceName: string, crudOptio
 
 export const readGeofenceCollectionParams = async (resourceName: string): Promise<Pick<GeofenceCollectionParameters, 'groupPermissions'>> => {
   const groupPermissions = JSONUtilities.readJson<Pick<GeofenceCollectionParameters, 'groupPermissions'>>(
-    getGeofenceCollectionParamsFilePath(resourceName), 
+    getGeofenceCollectionParamsFilePath(resourceName),
     { throwIfNotExist: false }
   ) || { groupPermissions: {}};
   return groupPermissions;

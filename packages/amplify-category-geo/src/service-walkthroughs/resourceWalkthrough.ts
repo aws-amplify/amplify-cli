@@ -84,7 +84,7 @@ export async function pricingPlanWalkthrough<T extends ResourceParameters>(
                 { name: 'Learn More', value: 'LearnMore'}
             ];
             const pricingPlanQuestion = "Based on your use case, you may use any of the pricing plans. Select the pricing plan for your Geo resources. We recommend you start with 'Request Based Usage' and then consider one of the other pricing plans as your usage scales";
-        
+
             let pricingPlanChoice = await prompter.pick<'one', string>(
                 pricingPlanQuestion,
                 pricingPlanChoices,
@@ -101,7 +101,6 @@ export async function pricingPlanWalkthrough<T extends ResourceParameters>(
 
             pricingPlan = pricingPlanChoice as PricingPlan;
         }
-        
     }
     parameters.pricingPlan = pricingPlan;
 

@@ -93,7 +93,7 @@ export const geofenceCollectionAccessWalkthrough = async (
     }
 
     const selectedUserPoolGroups = await prompter.pick<'many', string>(
-        'Select one or more cognito groups to give access:', 
+        'Select one or more cognito groups to give access:',
         userPoolGroupList,
         { returnSize: 'many', initial: byValues(defaultSelectedGroups) }
     );
@@ -111,7 +111,7 @@ export const geofenceCollectionAccessWalkthrough = async (
         const possibleOperations = Object.keys(crudPermissionsMap).map(el => ({ name: el, value: el }));
 
         const selectedCrudPermissions = await prompter.pick<'many', string>(
-            `What kind of access do you want for ${group} users? Select ALL that apply:`, 
+            `What kind of access do you want for ${group} users? Select ALL that apply:`,
             possibleOperations,
             { returnSize: 'many', initial: byValues(defaults) }
         );
@@ -231,7 +231,7 @@ export const updateDefaultGeofenceCollectionWalkthrough = async (
  * @param parameters The configurations of the geofence collection resource
  */
 export const geofenceCollectionPricingPlanWalkthrough = async (
-    context: $TSContext, 
+    context: $TSContext,
     parameters: Partial<GeofenceCollectionParameters>
 ): Promise<Partial<GeofenceCollectionParameters>> => {
     parameters.pricingPlan = (await pricingPlanWalkthrough(context, parameters, true)).pricingPlan;
