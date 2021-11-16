@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.3.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@5.3.1...amplify-provider-awscloudformation@5.3.2) (2021-11-16)
+
+
+### Bug Fixes
+
+* trigger when break circular dependency  FF is off ([#8879](https://github.com/aws-amplify/amplify-cli/issues/8879)) ([d90d01f](https://github.com/aws-amplify/amplify-cli/commit/d90d01f8f9d7cacfb6279c1e1aff0bcc0cfeb193))
+
+
+
+
+
 ## [5.3.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@5.3.0...amplify-provider-awscloudformation@5.3.1) (2021-11-15)
 
 
