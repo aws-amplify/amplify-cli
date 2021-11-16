@@ -61,7 +61,7 @@
     "hooks": {
       "commit-msg": "commitlint -E HUSKY_GIT_PARAMS",
       "pre-push": "yarn build-tests && yarn run lint && yarn run test-changed",
-      "pre-commit": "yarn split-e2e-tests && pretty-quick --staged"
+      "pre-commit": "yarn  pretty-quick --staged"
     }
   },
   "author": "Amazon Web Services",
