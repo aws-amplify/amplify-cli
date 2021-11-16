@@ -183,7 +183,7 @@ export class S3InputState {
       resourceName: this._resourceName,
       bucketName: oldParams.bucketName,
       policyUUID: buildShortUUID(), //Since UUID is unique for every resource, we re-create the policy names with new UUID.
-      storageAccess: undefined,
+      storageAccess: S3AccessType.AUTH_ONLY,
       guestAccess: [],
       authAccess: [],
       triggerFunction: 'NONE',

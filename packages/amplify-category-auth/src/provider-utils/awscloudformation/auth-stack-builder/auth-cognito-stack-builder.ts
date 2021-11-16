@@ -298,18 +298,60 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
         });
       }
       if (!props.breakCircularDependency && props.triggers && props.dependsOn) {
-        let lambdaConfigProp: { [x: string]: string } = {};
         props.dependsOn!.forEach(trigger => {
-          LambdaTriggersKeys.forEach(key => {
-            if (trigger.resourceName.includes(key)) {
-              lambdaConfigProp[key] = cdk.Fn.ref(`${props.resourceName}${key}Arn`);
-            }
-          });
-        });
-        this.userPool.lambdaConfig = cdk.Lazy.anyValue({
-          produce: () => {
-            return lambdaConfigProp;
-          },
+          if (trigger.resourceName.includes('CreateAuthChallenge')) {
+            this.userPool!.lambdaConfig = {
+              createAuthChallenge: cdk.Fn.ref(`function${props.resourceName}${'CreateAuthChallenge'}Arn`),
+            };
+          }
+          if (trigger.resourceName.includes('CustomMessage')) {
+            this.userPool!.lambdaConfig = {
+              ...this.userPool!.lambdaConfig,
+              customMessage: cdk.Fn.ref(`function${props.resourceName}${'CustomMessage'}Arn`),
+            };
+          }
+          if (trigger.resourceName.includes('DefineAuthChallenge')) {
+            this.userPool!.lambdaConfig = {
+              ...this.userPool!.lambdaConfig,
+              defineAuthChallenge: cdk.Fn.ref(`function${props.resourceName}${'DefineAuthChallenge'}Arn`),
+            };
+          }
+          if (trigger.resourceName.includes('PostAuthentication')) {
+            this.userPool!.lambdaConfig = {
+              ...this.userPool!.lambdaConfig,
+              postAuthentication: cdk.Fn.ref(`function${props.resourceName}${'PostAuthentication'}Arn`),
+            };
+          }
+          if (trigger.resourceName.includes('PostConfirmation')) {
+            this.userPool!.lambdaConfig = {
+              ...this.userPool!.lambdaConfig,
+              postConfirmation: cdk.Fn.ref(`function${props.resourceName}${'PostConfirmation'}Arn`),
+            };
+          }
+          if (trigger.resourceName.includes('PreAuthentication')) {
+            this.userPool!.lambdaConfig = {
+              ...this.userPool!.lambdaConfig,
+              preAuthentication: cdk.Fn.ref(`function${props.resourceName}${'PreAuthentication'}Arn`),
+            };
+          }
+          if (trigger.resourceName.includes('PreSignUp')) {
+            this.userPool!.lambdaConfig = {
+              ...this.userPool!.lambdaConfig,
+              preSignUp: cdk.Fn.ref(`function${props.resourceName}${'PreSignUp'}Arn`),
+            };
+          }
+          if (trigger.resourceName.includes('PreTokenGeneration')) {
+            this.userPool!.lambdaConfig = {
+              ...this.userPool!.lambdaConfig,
+              preTokenGeneration: cdk.Fn.ref(`function${props.resourceName}${'PreTokenGeneration'}Arn`),
+            };
+          }
+          if (trigger.resourceName.includes('VerifyAuthChallengeResponse')) {
+            this.userPool!.lambdaConfig = {
+              ...this.userPool!.lambdaConfig,
+              verifyAuthChallengeResponse: cdk.Fn.ref(`function${props.resourceName}${'VerifyAuthChallengeResponse'}Arn`),
+            };
+          }
         });
       }
 
@@ -364,8 +406,8 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
               this.lambdaConfigPermissions![`${resourceKey}`] = new lambda.CfnPermission(this, `${resourceKey}`, {
                 action: 'lambda:invokeFunction',
                 principal: 'cognito-idp.amazonaws.com',
-                functionName: cdk.Fn.ref(`${props.resourceName}${key}`),
-                sourceArn: cdk.Fn.getAtt('Userpool', 'Arn').toString(),
+                functionName: cdk.Fn.ref(`function${props.resourceName}${key}Name`),
+                sourceArn: cdk.Fn.getAtt('UserPool', 'Arn').toString(),
               });
             }
           });
@@ -1126,7 +1168,17 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
   }
 
   generateIAMPolicies = (props: CognitoStackOptions): void => {
+    let resource: string;
     props.permissions?.forEach(permission => {
+      if (permission.resource.paramType === 'string') {
+        resource = permission.resource.keys as string;
+      }
+      if (permission.resource.paramType === '!GetAtt') {
+        resource = cdk.Fn.getAtt(permission.resource.keys[0], permission.resource.keys[1]).toString();
+      }
+      if (permission.resource.paramType === '!Ref') {
+        resource = cdk.Fn.ref(permission.resource.keys as string);
+      }
       const resourceKey = `${props.resourceName}${permission.trigger}${permission.policyName}`;
       this.lambdaTriggerPermissions![resourceKey] = new iam.CfnPolicy(this, resourceKey, {
         policyName: resourceKey,
@@ -1135,26 +1187,8 @@ export class AmplifyAuthCognitoStack extends cdk.Stack implements AmplifyAuthCog
           Statement: [
             {
               Effect: permission.effect,
-              Action: cdk.Lazy.anyValue({
-                produce: () => {
-                  permission.actions.forEach(action => {
-                    return action;
-                  });
-                },
-              }),
-              Resource: cdk.Lazy.stringValue({
-                produce: () => {
-                  if (permission.resource.paramType === 'string') {
-                    return permission.resource.keys as string;
-                  }
-                  if (permission.resource.paramType === '!GetAtt') {
-                    return cdk.Fn.getAtt(permission.resource.keys[0], permission.resource.keys[1]).toString();
-                  }
-                  if (permission.resource.paramType === '!Ref') {
-                    return cdk.Fn.ref(permission.resource.keys as string);
-                  }
-                },
-              }),
+              Action: permission.actions,
+              Resource: resource,
             },
           ],
         },

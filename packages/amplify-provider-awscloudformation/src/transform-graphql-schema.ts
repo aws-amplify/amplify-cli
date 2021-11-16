@@ -605,7 +605,7 @@ function s3ResourceAlreadyExists(context) {
  *  S3API
  *  TBD: Remove this once all invoke functions are moved to a library shared across amplify
  * */
-async function invokeS3GetUserInputs(context, s3ResourceName){
+async function invokeS3GetUserInputs(context, s3ResourceName) {
   const s3UserInputs = await context.amplify.invokePluginMethod(context, 'storage', undefined, 's3GetUserInput', [context, s3ResourceName]);
   return s3UserInputs;
 }
@@ -619,11 +619,17 @@ async function invokeS3GetResourceName(context) {
   return s3ResourceName;
 }
 
-async function getBucketName( context : $TSContext , s3ResourceName : string ){
-  const s3UserInputs = await invokeS3GetUserInputs(context, s3ResourceName)
-  return s3UserInputs.bucketName;
-}
+async function getBucketName(context: $TSContext, s3ResourceName: string) {
+  const { amplify } = context;
+  const { amplifyMeta } = amplify.getProjectDetails();
+  const stackName = amplifyMeta.providers.awscloudformation.StackName;
+  const bucketParameters = stateManager.getResourceParametersJson(undefined, 'storage', s3ResourceName);
 
+  const bucketName = stackName.startsWith('amplify-')
+    ? `${bucketParameters.bucketName}\${hash}-\${env}`
+    : `${bucketParameters.bucketName}${s3ResourceName}-\${env}`;
+  return bucketName;
+}
 
 export function getTransformerVersion(context) {
   migrateToTransformerVersionFeatureFlag(context);
