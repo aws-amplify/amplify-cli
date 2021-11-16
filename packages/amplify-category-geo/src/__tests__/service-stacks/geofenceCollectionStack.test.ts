@@ -18,8 +18,8 @@ describe('cdk stack creation for geofence collection service', () => {
         groupPermissions: {},
         authResourceName: 'mockAuthResource123'
     };
-    const mapStack = new GeofenceCollectionStack(new App(), 'GeofenceCollectionStack', stackProps);
-    expect(mapStack.toCloudFormation()).toMatchSnapshot();
+    const geofenceCollectionStack = new GeofenceCollectionStack(new App(), 'GeofenceCollectionStack', stackProps);
+    expect(geofenceCollectionStack.toCloudFormation()).toMatchSnapshot();
   });
 
   it('creates geofence collection policy for given group permissions', async () => {
@@ -38,7 +38,7 @@ describe('cdk stack creation for geofence collection service', () => {
         },
         authResourceName: 'mockAuthResource123'
     };
-    const mapStack = new GeofenceCollectionStack(new App(), 'GeofenceCollectionStack', stackProps);
-    expect(mapStack.toCloudFormation()).toMatchSnapshot();
+    const geofenceCollectionStack = new GeofenceCollectionStack(new App(), 'GeofenceCollectionStack', stackProps);
+    expect(geofenceCollectionStack.toCloudFormation()).toMatchSnapshot();
   });
 });
