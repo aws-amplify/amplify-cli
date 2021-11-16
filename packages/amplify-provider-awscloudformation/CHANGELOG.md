@@ -3,6 +3,21 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.3.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@5.3.2...amplify-provider-awscloudformation@5.3.3) (2021-11-16)
+
+
+
+## 7.3.3 (2021-11-16)
+
+
+### Bug Fixes
+
+* stop auto-migration of storage during api gql-compile/push ([#8891](https://github.com/aws-amplify/amplify-cli/issues/8891)) ([fdeacfe](https://github.com/aws-amplify/amplify-cli/commit/fdeacfe785dab3d3549d54cdbddea2f6dd7c9ada))
+
+
+
+
+
 ## [5.3.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@5.3.1...amplify-provider-awscloudformation@5.3.2) (2021-11-16)
 
 
