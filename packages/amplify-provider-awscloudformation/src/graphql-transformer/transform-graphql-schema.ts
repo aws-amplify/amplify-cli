@@ -36,12 +36,11 @@ import { destructiveUpdatesFlag, ProviderName as providerName } from '../constan
 import { searchablePushChecks } from '../transform-graphql-schema';
 import { hashDirectory } from '../upload-appsync-files';
 import { AmplifyCLIFeatureFlagAdapter } from '../utils/amplify-cli-feature-flag-adapter';
+import { isAuthModeUpdated } from '../utils/auth-mode-compare';
 import { schemaHasSandboxModeEnabled, showGlobalSandboxModeWarning, showSandboxModePrompts } from '../utils/sandbox-mode-helpers';
 import { GraphQLSanityCheck, SanityCheckRules } from './sanity-check';
-import _ from 'lodash';
-import { isAuthModeUpdated } from '../utils/auth-mode-compare';
-import { parseUserDefinedSlots } from './user-defined-slots';
 import { loadProject as readTransformerConfiguration } from './transform-config';
+import { parseUserDefinedSlots } from './user-defined-slots';
 import { getAdminRoles, getIdentityPoolId, mergeUserConfigWithTransformOutput, writeDeploymentToDisk } from './utils';
 
 const API_CATEGORY = 'api';

@@ -17,7 +17,7 @@ jest.mock('amplify-cli-core', () => ({
         serviceConfiguration: {
           apiName: 'authv2migration1',
           serviceName: 'AppSync',
-          gqlSchemaPath: '/Users/akz/workspace/authv2migration/authv2migration1/amplify/backend/api/authv2migration1/schema.graphql',
+          gqlSchemaPath: 'mock/schema.graphql',
           defaultAuthType: {
             mode: 'AWS_IAM',
           },

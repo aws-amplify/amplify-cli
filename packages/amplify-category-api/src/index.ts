@@ -1,30 +1,35 @@
+import {
+  $TSContext,
+  $TSObject,
+  AmplifyCategories,
+  AmplifySupportedService,
+  buildOverrideDir,
+  pathManager,
+  stateManager,
+} from 'amplify-cli-core';
+import { printer } from 'amplify-prompts';
 import { validateAddApiRequest, validateUpdateApiRequest } from 'amplify-util-headless-input';
 import fs from 'fs-extra';
 import path from 'path';
 import { run } from './commands/api/console';
 import { getAppSyncAuthConfig, getAppSyncResourceName } from './provider-utils/awscloudformation//utils/amplify-meta-utils';
-import { provider } from './provider-utils/awscloudformation/aws-constants';
-import { ApigwStackTransform } from './provider-utils/awscloudformation/cdk-stack-builder';
-import { AppsyncApiInputState } from './provider-utils/awscloudformation/api-input-manager/appsync-api-input-state';
 import { getCfnApiArtifactHandler } from './provider-utils/awscloudformation/cfn-api-artifact-handler';
 import { askAuthQuestions } from './provider-utils/awscloudformation/service-walkthroughs/appSync-walkthrough';
-import { getAppSyncResourceName, getAppSyncAuthConfig } from './provider-utils/awscloudformation//utils/amplify-meta-utils';
 import { authConfigToAppSyncAuthType } from './provider-utils/awscloudformation/utils/auth-config-to-app-sync-auth-type-bi-di-mapper';
-export { getAuthConfig } from './provider-utils/awscloudformation/utils/get-appsync-auth-config';
-export { getResolverConfig } from './provider-utils/awscloudformation/utils/get-appsync-resolver-config';
-
 export { NETWORK_STACK_LOGICAL_ID } from './category-constants';
 export { DEPLOYMENT_MECHANISM } from './provider-utils/awscloudformation/base-api-stack';
-export { EcsStack } from './provider-utils/awscloudformation/ecs-apigw-stack';
+export { getContainers } from './provider-utils/awscloudformation/docker-compose';
 export { EcsAlbStack } from './provider-utils/awscloudformation/ecs-alb-stack';
-export { getGitHubOwnerRepoFromPath } from './provider-utils/awscloudformation/utils/github';
+export { EcsStack } from './provider-utils/awscloudformation/ecs-apigw-stack';
+export { promptToAddApiKey } from './provider-utils/awscloudformation/prompt-to-add-api-key';
 export {
-  generateContainersArtifacts,
   ApiResource,
+  generateContainersArtifacts,
   processDockerConfig,
 } from './provider-utils/awscloudformation/utils/containers-artifacts';
-export { getContainers } from './provider-utils/awscloudformation/docker-compose';
-export { promptToAddApiKey } from './provider-utils/awscloudformation/prompt-to-add-api-key';
+export { getAuthConfig } from './provider-utils/awscloudformation/utils/get-appsync-auth-config';
+export { getResolverConfig } from './provider-utils/awscloudformation/utils/get-appsync-resolver-config';
+export { getGitHubOwnerRepoFromPath } from './provider-utils/awscloudformation/utils/github';
 
 const category = 'api';
 
@@ -258,25 +263,12 @@ export async function addGraphQLAuthorizationMode(context, args) {
 }
 
 export async function transformCategoryStack(context: $TSContext, resource: $TSObject) {
-  if (resource.service === AmplifySupportedService.APIGW) {
-    if (canResourceBeTransformed(resource.resourceName)) {
-      const backendDir = pathManager.getBackendDirPath();
-      const overrideDir = pathManager.getResourceDirectoryPath(undefined, AmplifyCategories.API, resource.resourceName);
-      await buildOverrideDir(backendDir, overrideDir).catch(error => {
-        printer.debug(`Skipping build as ${error.message}`);
-        return false;
-      });
-      // Rebuild CFN
-      const apigwStack = new ApigwStackTransform(context, resource.resourceName);
-      apigwStack.transform();
-    }
-  }
   if (resource.service === AmplifySupportedService.APPSYNC) {
     if (canResourceBeTransformed(resource.resourceName)) {
       const backendDir = pathManager.getBackendDirPath();
       const overrideDir = path.join(backendDir, resource.category, resource.resourceName);
       const isBuild = await buildOverrideDir(backendDir, overrideDir).catch(error => {
-        printer.debug(`Skipping build as ${error.message}`);
+        printer.debug(`Skipping build due to ${error.message}`);
         return false;
       });
       await context.amplify.invokePluginMethod(context, 'awscloudformation', undefined, 'compileSchema', [
