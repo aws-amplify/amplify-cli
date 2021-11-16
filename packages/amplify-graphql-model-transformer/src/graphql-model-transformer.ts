@@ -6,6 +6,9 @@ import {
   SyncUtils,
   TransformerModelBase,
   TransformerNestedStack,
+  FieldWrapper,
+  InputObjectDefinitionWrapper,
+  ObjectDefinitionWrapper,
 } from '@aws-amplify/graphql-transformer-core';
 import {
   AppSyncDataSourceType,
@@ -84,7 +87,6 @@ import {
   generateListRequestTemplate,
   generateSyncRequestTemplate,
 } from './resolvers/query';
-import { FieldWrapper, InputObjectDefinitionWrapper, ObjectDefinitionWrapper } from './wrappers/object-definition-wrapper';
 import { CfnRole } from '@aws-cdk/aws-iam';
 import md5 from 'md5';
 import { API_KEY_DIRECTIVE } from './definitions';
