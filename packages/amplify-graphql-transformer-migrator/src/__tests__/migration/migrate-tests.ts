@@ -115,12 +115,29 @@ describe('Schema migration tests', () => {
     migrateAndValidate(schema);
   });
 
-  it('@connection has one relationship', () => {
+  it('@connection has one relationship with no fields', () => {
     const schema = `
       type Project @model {
         id: ID!
         name: String
         team: Team @connection
+      }
+
+      type Team @model {
+        id: ID!
+        name: String!
+      }`;
+
+    migrateAndValidate(schema);
+  });
+
+  it('@connection has one relationship with fields', () => {
+    const schema = `
+      type Project @model {
+        id: ID!
+        name: String
+        teamID: ID!
+        team: Team @connection(fields: ["teamID"])
       }
 
       type Team @model {
@@ -144,6 +161,69 @@ describe('Schema migration tests', () => {
         id: ID!
         postID: ID!
         content: String!
+      }`;
+
+    migrateAndValidate(schema);
+  });
+
+  it('@connection has many relationship with limit', () => {
+    const schema = `
+      type Post @model {
+        id: ID!
+        title: String!
+        comments: [Comment] @connection(limit: 50)
+      }
+
+      type Comment @model {
+        id: ID!
+        content: String!
+      }`;
+
+    migrateAndValidate(schema);
+  });
+
+  it('@connection belongs to relationship', () => {
+    const schema = `
+      type Post @model {
+        id: ID!
+        title: String!
+        comments: [Comment] @connection(keyName: "byPost", fields: ["id"])
+      }
+
+      type Comment @model
+        @key(name: "byPost", fields: ["postID", "content"]) {
+        id: ID!
+        postID: ID!
+        content: String!
+        post: Post @connection(fields: ["postID"])
+      }`;
+
+    migrateAndValidate(schema);
+  });
+
+  it('@connection many to many relationship', () => {
+    const schema = `
+      type Post @model {
+        id: ID!
+        title: String!
+        editors: [PostEditor] @connection(keyName: "byPost", fields: ["id"])
+      }
+
+      type PostEditor
+        @model(queries: null)
+        @key(name: "byPost", fields: ["postID", "editorID"])
+        @key(name: "byEditor", fields: ["editorID", "postID"]) {
+        id: ID!
+        postID: ID!
+        editorID: ID!
+        post: Post! @connection(fields: ["postID"])
+        editor: User! @connection(fields: ["editorID"])
+      }
+
+      type User @model {
+        id: ID!
+        username: String!
+        posts: [PostEditor] @connection(keyName: "byEditor", fields: ["id"])
       }`;
 
     migrateAndValidate(schema);
@@ -235,6 +315,79 @@ describe('Schema migration tests', () => {
         translateThis: String @predictions(actions: [translateText])
         speakTranslatedText: String @predictions(actions: [translateText, convertTextToSpeech])
       }`;
+
+    migrateAndValidate(schema);
+  });
+
+  it('migrates complex schema from documentation', () => {
+    const schema = `
+      type Order @model
+        @key(name: "byCustomerByStatusByDate", fields: ["customerID", "status", "date"])
+        @key(name: "byCustomerByDate", fields: ["customerID", "date"])
+        @key(name: "byRepresentativebyDate", fields: ["accountRepresentativeID", "date"])
+        @key(name: "byProduct", fields: ["productID", "id"]) {
+      id: ID!
+      customerID: ID!
+      accountRepresentativeID: ID!
+      productID: ID!
+      status: String!
+      amount: Int!
+      date: String!
+    }
+
+    type Customer @model
+        @key(name: "byRepresentative", fields: ["accountRepresentativeID", "id"]) {
+      id: ID!
+      name: String!
+      phoneNumber: String
+      accountRepresentativeID: ID!
+      ordersByDate: [Order] @connection(keyName: "byCustomerByDate", fields: ["id"])
+      ordersByStatusDate: [Order] @connection(keyName: "byCustomerByStatusByDate", fields: ["id"])
+    }
+
+    type Employee @model
+        @key(name: "newHire", fields: ["newHire", "id"], queryField: "employeesNewHire")
+        @key(name: "newHireByStartDate", fields: ["newHire", "startDate"], queryField: "employeesNewHireByStartDate")
+        @key(name: "byName", fields: ["name", "id"], queryField: "employeeByName")
+        @key(name: "byTitle", fields: ["jobTitle", "id"], queryField: "employeesByJobTitle")
+        @key(name: "byWarehouse", fields: ["warehouseID", "id"]) {
+      id: ID!
+      name: String!
+      startDate: String!
+      phoneNumber: String!
+      warehouseID: ID!
+      jobTitle: String!
+      newHire: String! # We have to use String type, because Boolean types cannot be sort keys
+    }
+
+    type Warehouse @model {
+      id: ID!
+      employees: [Employee] @connection(keyName: "byWarehouse", fields: ["id"])
+    }
+
+    type AccountRepresentative @model
+        @key(name: "bySalesPeriodByOrderTotal", fields: ["salesPeriod", "orderTotal"], queryField: "repsByPeriodAndTotal") {
+      id: ID!
+      customers: [Customer] @connection(keyName: "byRepresentative", fields: ["id"])
+      orders: [Order] @connection(keyName: "byRepresentativebyDate", fields: ["id"])
+      orderTotal: Int
+      salesPeriod: String
+    }
+
+    type Inventory @model
+        @key(name: "byWarehouseID", fields: ["warehouseID"], queryField: "itemsByWarehouseID")
+        @key(fields: ["productID", "warehouseID"]) {
+      productID: ID!
+      warehouseID: ID!
+      inventoryAmount: Int!
+    }
+
+    type Product @model {
+      id: ID!
+      name: String!
+      orders: [Order] @connection(keyName: "byProduct", fields: ["id"])
+      inventories: [Inventory] @connection(fields: ["id"])
+    }`;
 
     migrateAndValidate(schema);
   });
