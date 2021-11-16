@@ -26,16 +26,3 @@ type AdminNote @model @auth(rules: [{ allow: groups, groups: ["Admin"], groupCla
   id: ID!
   content: String!
 }
-
-# type Performance @model @auth(rules: [{ allow: groups, groups: ["Admin"] }, { allow: private, operations: [read] }]) {
-#   id: ID
-#   performer: String!
-#   description: String!
-#   time: AWSDateTime
-#   stage: Stage @hasOne
-# }
-
-# type Stage @model @auth(rules: [{ allow: groups, groups: ["Admin"] }, { allow: private, operations: [read] }]) {
-#   id: ID!
-#   name: String!
-# }
