@@ -8,8 +8,6 @@ import {
 } from 'amplify-cli-core';
 import { printer, prompter } from 'amplify-prompts';
 import * as path from 'path';
-import { ApigwInputState } from '../../provider-utils/awscloudformation/apigw-input-state';
-import { ApigwStackTransform } from '../../provider-utils/awscloudformation/cdk-stack-builder';
 import { checkAppsyncApiResourceMigration } from '../../provider-utils/awscloudformation/utils/check-appsync-api-migration';
 
 export const name = 'override';
@@ -52,24 +50,11 @@ export const run = async (context: $TSContext) => {
 
   // Make sure to migrate first
   if (service === AmplifySupportedService.APPSYNC) {
-    if (await checkAppsyncApiResourceMigration(context, selectedResourceName)) {
+    if (await checkAppsyncApiResourceMigration(context, selectedResourceName, false)) {
       // fetch cli Inputs again
       // call compile schema here
       await context.amplify.invokePluginMethod(context, 'awscloudformation', undefined, 'compileSchema', [context, { forceCompile: true }]);
       await generateOverrideSkeleton(context, srcPath, destPath);
-    }
-  } else if (service === AmplifySupportedService.APIGW) {
-    // Migration logic goes in here
-    const apigwInputState = ApigwInputState.getInstance(context, selectedResourceName);
-    if (!apigwInputState.cliInputsFileExists()) {
-      if (await prompter.yesOrNo('File migration required to continue. Do you want to continue?', true)) {
-        await apigwInputState.migrateApigwResource(selectedResourceName);
-        const stackGenerator = new ApigwStackTransform(context, selectedResourceName);
-        stackGenerator.transform();
-        await generateOverrideSkeleton(context, srcPath, destPath);
-      } else {
-        return;
-      }
     }
   }
 };

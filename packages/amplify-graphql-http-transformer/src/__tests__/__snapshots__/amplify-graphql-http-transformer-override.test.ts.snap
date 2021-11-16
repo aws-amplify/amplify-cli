@@ -21,30 +21,23 @@ Object {
         "ApiId": Object {
           "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
         },
-        "DataSourceName": Object {
-          "Fn::GetAtt": Array [
-            "httpwwwapicomDataSource308A901F",
-            "Name",
-          ],
-        },
         "FieldName": "content2",
-        "Kind": "UNIT",
-        "RequestMappingTemplateS3Location": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "s3://",
-              Object {
-                "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
-              },
-              "/",
-              Object {
-                "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
-              },
-              "/pipelineFunctions/Comment.content2.req.vtl",
-            ],
+        "Kind": "PIPELINE",
+        "PipelineConfig": Object {
+          "Functions": Array [
+            Object {
+              "Fn::GetAtt": Array [
+                "httpwwwapicomDataSourceCommentcontent2FunctionhttpwwwapicomDataSourceCommentcontent2FunctionAppSyncFunctionA4F35A01",
+                "FunctionId",
+              ],
+            },
           ],
         },
+        "RequestMappingTemplate": "## [Start] Stash resolver specific context.. **
+$util.qr($ctx.stash.put(\\"typeName\\", \\"Comment\\"))
+$util.qr($ctx.stash.put(\\"fieldName\\", \\"content2\\"))
+{}
+## [End] Stash resolver specific context.. **",
         "ResponseMappingTemplateS3Location": Object {
           "Fn::Join": Array [
             "",
@@ -57,7 +50,7 @@ Object {
               Object {
                 "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
               },
-              "/pipelineFunctions/Comment.content2.res.vtl",
+              "/resolvers/Comment.content2.res.vtl",
             ],
           ],
         },
@@ -70,31 +63,19 @@ Object {
         "ApiId": Object {
           "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
         },
-        "DataSourceName": Object {
-          "Fn::GetAtt": Array [
-            "httpwwwapicomDataSource308A901F",
-            "Name",
-          ],
-        },
         "FieldName": "content",
-        "Kind": "UNIT",
-        "RequestMappingTemplate": "mockTemplate",
-        "RequestMappingTemplateS3Location": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "s3://",
-              Object {
-                "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
-              },
-              "/",
-              Object {
-                "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
-              },
-              "/pipelineFunctions/Comment.content.req.vtl",
-            ],
+        "Kind": "PIPELINE",
+        "PipelineConfig": Object {
+          "Functions": Array [
+            Object {
+              "Fn::GetAtt": Array [
+                "httpwwwapicomDataSourceCommentcontentFunctionhttpwwwapicomDataSourceCommentcontentFunctionAppSyncFunction685EFA2A",
+                "FunctionId",
+              ],
+            },
           ],
         },
+        "RequestMappingTemplate": "mockTemplate",
         "ResponseMappingTemplateS3Location": Object {
           "Fn::Join": Array [
             "",
@@ -107,7 +88,7 @@ Object {
               Object {
                 "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
               },
-              "/pipelineFunctions/Comment.content.res.vtl",
+              "/resolvers/Comment.content.res.vtl",
             ],
           ],
         },
@@ -120,30 +101,23 @@ Object {
         "ApiId": Object {
           "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
         },
-        "DataSourceName": Object {
-          "Fn::GetAtt": Array [
-            "httpwwwgooglecomDataSourceCC12E052",
-            "Name",
-          ],
-        },
         "FieldName": "evenMore",
-        "Kind": "UNIT",
-        "RequestMappingTemplateS3Location": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "s3://",
-              Object {
-                "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
-              },
-              "/",
-              Object {
-                "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
-              },
-              "/pipelineFunctions/Comment.evenMore.req.vtl",
-            ],
+        "Kind": "PIPELINE",
+        "PipelineConfig": Object {
+          "Functions": Array [
+            Object {
+              "Fn::GetAtt": Array [
+                "httpwwwgooglecomDataSourceCommentevenMoreFunctionhttpwwwgooglecomDataSourceCommentevenMoreFunctionAppSyncFunction47773D49",
+                "FunctionId",
+              ],
+            },
           ],
         },
+        "RequestMappingTemplate": "## [Start] Stash resolver specific context.. **
+$util.qr($ctx.stash.put(\\"typeName\\", \\"Comment\\"))
+$util.qr($ctx.stash.put(\\"fieldName\\", \\"evenMore\\"))
+{}
+## [End] Stash resolver specific context.. **",
         "ResponseMappingTemplateS3Location": Object {
           "Fn::Join": Array [
             "",
@@ -156,7 +130,7 @@ Object {
               Object {
                 "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
               },
-              "/pipelineFunctions/Comment.evenMore.res.vtl",
+              "/resolvers/Comment.evenMore.res.vtl",
             ],
           ],
         },
@@ -169,30 +143,23 @@ Object {
         "ApiId": Object {
           "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
         },
-        "DataSourceName": Object {
-          "Fn::GetAtt": Array [
-            "httpapicomDataSourceB102D3F2",
-            "Name",
-          ],
-        },
         "FieldName": "more",
-        "Kind": "UNIT",
-        "RequestMappingTemplateS3Location": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "s3://",
-              Object {
-                "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
-              },
-              "/",
-              Object {
-                "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
-              },
-              "/pipelineFunctions/Comment.more.req.vtl",
-            ],
+        "Kind": "PIPELINE",
+        "PipelineConfig": Object {
+          "Functions": Array [
+            Object {
+              "Fn::GetAtt": Array [
+                "httpapicomDataSourceCommentmoreFunctionhttpapicomDataSourceCommentmoreFunctionAppSyncFunction5BEF6F35",
+                "FunctionId",
+              ],
+            },
           ],
         },
+        "RequestMappingTemplate": "## [Start] Stash resolver specific context.. **
+$util.qr($ctx.stash.put(\\"typeName\\", \\"Comment\\"))
+$util.qr($ctx.stash.put(\\"fieldName\\", \\"more\\"))
+{}
+## [End] Stash resolver specific context.. **",
         "ResponseMappingTemplateS3Location": Object {
           "Fn::Join": Array [
             "",
@@ -205,7 +172,7 @@ Object {
               Object {
                 "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
               },
-              "/pipelineFunctions/Comment.more.res.vtl",
+              "/resolvers/Comment.more.res.vtl",
             ],
           ],
         },
@@ -218,14 +185,73 @@ Object {
         "ApiId": Object {
           "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
         },
+        "FieldName": "stillMore",
+        "Kind": "PIPELINE",
+        "PipelineConfig": Object {
+          "Functions": Array [
+            Object {
+              "Fn::GetAtt": Array [
+                "httpswwwapicomDataSourceCommentstillMoreFunctionhttpswwwapicomDataSourceCommentstillMoreFunctionAppSyncFunction51FAE1A5",
+                "FunctionId",
+              ],
+            },
+          ],
+        },
+        "RequestMappingTemplate": "## [Start] Stash resolver specific context.. **
+$util.qr($ctx.stash.put(\\"typeName\\", \\"Comment\\"))
+$util.qr($ctx.stash.put(\\"fieldName\\", \\"stillMore\\"))
+{}
+## [End] Stash resolver specific context.. **",
+        "ResponseMappingTemplateS3Location": Object {
+          "Fn::Join": Array [
+            "",
+            Array [
+              "s3://",
+              Object {
+                "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
+              },
+              "/",
+              Object {
+                "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
+              },
+              "/resolvers/Comment.stillMore.res.vtl",
+            ],
+          ],
+        },
+        "TypeName": "Comment",
+      },
+      "Type": "AWS::AppSync::Resolver",
+    },
+    "httpapicomDataSource": Object {
+      "Properties": Object {
+        "ApiId": Object {
+          "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
+        },
+        "HttpConfig": Object {
+          "Endpoint": "mockEndpoint",
+        },
+        "Name": "httpapicomDataSource",
+        "ServiceRoleArn": "mockArn",
+        "Type": "HTTP",
+      },
+      "Type": "AWS::AppSync::DataSource",
+    },
+    "httpapicomDataSourceCommentmoreFunctionhttpapicomDataSourceCommentmoreFunctionAppSyncFunction5BEF6F35": Object {
+      "DependsOn": Array [
+        "httpapicomDataSource",
+      ],
+      "Properties": Object {
+        "ApiId": Object {
+          "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
+        },
         "DataSourceName": Object {
           "Fn::GetAtt": Array [
-            "httpswwwapicomDataSourceC816F4EE",
+            "httpapicomDataSource",
             "Name",
           ],
         },
-        "FieldName": "stillMore",
-        "Kind": "UNIT",
+        "FunctionVersion": "2018-05-29",
+        "Name": "httpapicomDataSourceCommentmoreFunction",
         "RequestMappingTemplateS3Location": Object {
           "Fn::Join": Array [
             "",
@@ -238,7 +264,7 @@ Object {
               Object {
                 "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
               },
-              "/pipelineFunctions/Comment.stillMore.req.vtl",
+              "/resolvers/Comment.more.DataResolver.req.vtl",
             ],
           ],
         },
@@ -254,27 +280,12 @@ Object {
               Object {
                 "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
               },
-              "/pipelineFunctions/Comment.stillMore.res.vtl",
+              "/resolvers/Comment.more.DataResolver.res.vtl",
             ],
           ],
         },
-        "TypeName": "Comment",
       },
-      "Type": "AWS::AppSync::Resolver",
-    },
-    "httpapicomDataSourceB102D3F2": Object {
-      "Properties": Object {
-        "ApiId": Object {
-          "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
-        },
-        "HttpConfig": Object {
-          "Endpoint": "mockEndpoint",
-        },
-        "Name": "httpapicomDataSource",
-        "ServiceRoleArn": "mockArn",
-        "Type": "HTTP",
-      },
-      "Type": "AWS::AppSync::DataSource",
+      "Type": "AWS::AppSync::FunctionConfiguration",
     },
     "httpapicomDataSourceServiceRoleC12170E3": Object {
       "Properties": Object {
@@ -293,7 +304,7 @@ Object {
       },
       "Type": "AWS::IAM::Role",
     },
-    "httpswwwapicomDataSourceC816F4EE": Object {
+    "httpswwwapicomDataSource": Object {
       "Properties": Object {
         "ApiId": Object {
           "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
@@ -306,6 +317,57 @@ Object {
         "Type": "HTTP",
       },
       "Type": "AWS::AppSync::DataSource",
+    },
+    "httpswwwapicomDataSourceCommentstillMoreFunctionhttpswwwapicomDataSourceCommentstillMoreFunctionAppSyncFunction51FAE1A5": Object {
+      "DependsOn": Array [
+        "httpswwwapicomDataSource",
+      ],
+      "Properties": Object {
+        "ApiId": Object {
+          "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
+        },
+        "DataSourceName": Object {
+          "Fn::GetAtt": Array [
+            "httpswwwapicomDataSource",
+            "Name",
+          ],
+        },
+        "FunctionVersion": "2018-05-29",
+        "Name": "httpswwwapicomDataSourceCommentstillMoreFunction",
+        "RequestMappingTemplateS3Location": Object {
+          "Fn::Join": Array [
+            "",
+            Array [
+              "s3://",
+              Object {
+                "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
+              },
+              "/",
+              Object {
+                "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
+              },
+              "/resolvers/Comment.stillMore.DataResolver.req.vtl",
+            ],
+          ],
+        },
+        "ResponseMappingTemplateS3Location": Object {
+          "Fn::Join": Array [
+            "",
+            Array [
+              "s3://",
+              Object {
+                "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
+              },
+              "/",
+              Object {
+                "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
+              },
+              "/resolvers/Comment.stillMore.DataResolver.res.vtl",
+            ],
+          ],
+        },
+      },
+      "Type": "AWS::AppSync::FunctionConfiguration",
     },
     "httpswwwapicomDataSourceServiceRoleDE26F49B": Object {
       "Properties": Object {
@@ -324,7 +386,7 @@ Object {
       },
       "Type": "AWS::IAM::Role",
     },
-    "httpwwwapicomDataSource308A901F": Object {
+    "httpwwwapicomDataSource": Object {
       "Properties": Object {
         "ApiId": Object {
           "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
@@ -337,6 +399,108 @@ Object {
         "Type": "HTTP",
       },
       "Type": "AWS::AppSync::DataSource",
+    },
+    "httpwwwapicomDataSourceCommentcontent2FunctionhttpwwwapicomDataSourceCommentcontent2FunctionAppSyncFunctionA4F35A01": Object {
+      "DependsOn": Array [
+        "httpwwwapicomDataSource",
+      ],
+      "Properties": Object {
+        "ApiId": Object {
+          "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
+        },
+        "DataSourceName": Object {
+          "Fn::GetAtt": Array [
+            "httpwwwapicomDataSource",
+            "Name",
+          ],
+        },
+        "FunctionVersion": "2018-05-29",
+        "Name": "httpwwwapicomDataSourceCommentcontent2Function",
+        "RequestMappingTemplateS3Location": Object {
+          "Fn::Join": Array [
+            "",
+            Array [
+              "s3://",
+              Object {
+                "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
+              },
+              "/",
+              Object {
+                "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
+              },
+              "/resolvers/Comment.content2.DataResolver.req.vtl",
+            ],
+          ],
+        },
+        "ResponseMappingTemplateS3Location": Object {
+          "Fn::Join": Array [
+            "",
+            Array [
+              "s3://",
+              Object {
+                "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
+              },
+              "/",
+              Object {
+                "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
+              },
+              "/resolvers/Comment.content2.DataResolver.res.vtl",
+            ],
+          ],
+        },
+      },
+      "Type": "AWS::AppSync::FunctionConfiguration",
+    },
+    "httpwwwapicomDataSourceCommentcontentFunctionhttpwwwapicomDataSourceCommentcontentFunctionAppSyncFunction685EFA2A": Object {
+      "DependsOn": Array [
+        "httpwwwapicomDataSource",
+      ],
+      "Properties": Object {
+        "ApiId": Object {
+          "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
+        },
+        "DataSourceName": Object {
+          "Fn::GetAtt": Array [
+            "httpwwwapicomDataSource",
+            "Name",
+          ],
+        },
+        "FunctionVersion": "2018-05-29",
+        "Name": "httpwwwapicomDataSourceCommentcontentFunction",
+        "RequestMappingTemplateS3Location": Object {
+          "Fn::Join": Array [
+            "",
+            Array [
+              "s3://",
+              Object {
+                "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
+              },
+              "/",
+              Object {
+                "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
+              },
+              "/resolvers/Comment.content.DataResolver.req.vtl",
+            ],
+          ],
+        },
+        "ResponseMappingTemplateS3Location": Object {
+          "Fn::Join": Array [
+            "",
+            Array [
+              "s3://",
+              Object {
+                "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
+              },
+              "/",
+              Object {
+                "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
+              },
+              "/resolvers/Comment.content.DataResolver.res.vtl",
+            ],
+          ],
+        },
+      },
+      "Type": "AWS::AppSync::FunctionConfiguration",
     },
     "httpwwwapicomDataSourceServiceRole20167D8C": Object {
       "Properties": Object {
@@ -355,7 +519,7 @@ Object {
       },
       "Type": "AWS::IAM::Role",
     },
-    "httpwwwgooglecomDataSourceCC12E052": Object {
+    "httpwwwgooglecomDataSource": Object {
       "Properties": Object {
         "ApiId": Object {
           "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
@@ -368,6 +532,57 @@ Object {
         "Type": "HTTP",
       },
       "Type": "AWS::AppSync::DataSource",
+    },
+    "httpwwwgooglecomDataSourceCommentevenMoreFunctionhttpwwwgooglecomDataSourceCommentevenMoreFunctionAppSyncFunction47773D49": Object {
+      "DependsOn": Array [
+        "httpwwwgooglecomDataSource",
+      ],
+      "Properties": Object {
+        "ApiId": Object {
+          "Ref": "referencetotransformerrootstackGraphQLAPI20497F53ApiId",
+        },
+        "DataSourceName": Object {
+          "Fn::GetAtt": Array [
+            "httpwwwgooglecomDataSource",
+            "Name",
+          ],
+        },
+        "FunctionVersion": "2018-05-29",
+        "Name": "httpwwwgooglecomDataSourceCommentevenMoreFunction",
+        "RequestMappingTemplateS3Location": Object {
+          "Fn::Join": Array [
+            "",
+            Array [
+              "s3://",
+              Object {
+                "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
+              },
+              "/",
+              Object {
+                "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
+              },
+              "/resolvers/Comment.evenMore.DataResolver.req.vtl",
+            ],
+          ],
+        },
+        "ResponseMappingTemplateS3Location": Object {
+          "Fn::Join": Array [
+            "",
+            Array [
+              "s3://",
+              Object {
+                "Ref": "referencetotransformerrootstackS3DeploymentBucket7592718ARef",
+              },
+              "/",
+              Object {
+                "Ref": "referencetotransformerrootstackS3DeploymentRootKeyA71EA735Ref",
+              },
+              "/resolvers/Comment.evenMore.DataResolver.res.vtl",
+            ],
+          ],
+        },
+      },
+      "Type": "AWS::AppSync::FunctionConfiguration",
     },
     "httpwwwgooglecomDataSourceServiceRole08261832": Object {
       "Properties": Object {

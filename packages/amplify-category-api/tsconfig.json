@@ -13,6 +13,7 @@
     "resources/awscloudformation/lambdas",
     "resources/awscloudformation/container-templates",
     "resources/awscloudformation/graphql-lambda-authorizer",
+    "resources/awscloudformation/overrides-resource",
     "src/__tests__"
   ],
   "references": [

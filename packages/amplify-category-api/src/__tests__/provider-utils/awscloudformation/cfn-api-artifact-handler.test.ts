@@ -1,22 +1,21 @@
-import path from 'path';
-import fs from 'fs-extra';
-import { ApiArtifactHandler } from '../../../provider-utils/api-artifact-handler';
-import { getCfnApiArtifactHandler } from '../../../provider-utils/awscloudformation/cfn-api-artifact-handler';
 import { AddApiRequest, UpdateApiRequest } from 'amplify-headless-interface';
-import { category } from '../../../category-constants';
+import fs from 'fs-extra';
 import { writeTransformerConfiguration } from 'graphql-transformer-core';
+import path from 'path';
+import { category } from '../../../category-constants';
 import { ApiArtifactHandler } from '../../../provider-utils/api-artifact-handler';
 import { AppsyncApiInputState } from '../../../provider-utils/awscloudformation/api-input-manager/appsync-api-input-state';
 import { rootAssetDir } from '../../../provider-utils/awscloudformation/aws-constants';
+import { getCfnApiArtifactHandler } from '../../../provider-utils/awscloudformation/cfn-api-artifact-handler';
 import {
-  getAppSyncResourceName,
-  getAppSyncAuthConfig,
   authConfigHasApiKey,
+  getAppSyncAuthConfig,
+  getAppSyncResourceName,
 } from '../../../provider-utils/awscloudformation/utils/amplify-meta-utils';
 
 jest.mock('fs-extra');
 
-jest.mock('../../../provider-utils/awscloudformation/api-input-manager/appsync-api-input-state.ts');
+jest.mock('../../../provider-utils/awscloudformation/api-input-manager/appsync-api-input-state');
 
 jest.mock('graphql-transformer-core', () => ({
   readTransformerConfiguration: jest.fn(async () => ({})),
@@ -243,17 +242,6 @@ describe('update artifacts', () => {
     expect(fs_mock.writeFileSync.mock.calls.length).toBe(1);
     expect(fs_mock.writeFileSync.mock.calls[0][1]).toBe(newSchemaContents);
   });
-
-  // resolver config not needed in transformer.conf.json
-  // it('updates resolver config if not empty', async () => {
-  //   updateRequestStub.serviceModification.conflictResolution = {
-  //     defaultResolutionStrategy: {
-  //       type: 'OPTIMISTIC_CONCURRENCY',
-  //     },
-  //   };
-  //   await cfnApiArtifactHandler.updateArtifacts(updateRequestStub);
-  //   expect(writeTransformerConfiguration_mock.mock.calls.length).toBe(1);
-  // });
 
   it('updates default auth if not empty', async () => {
     updateRequestStub.serviceModification.defaultAuthType = { mode: 'AWS_IAM' };
