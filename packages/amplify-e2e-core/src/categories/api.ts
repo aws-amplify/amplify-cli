@@ -445,12 +445,13 @@ export function addRestApi(cwd: string, settings: any) {
         }
       }
 
-      chain
-        .wait('Provide a friendly name for your resource to be used as a label for this category in the project')
-        .sendCarriageReturn()
-        .wait('Provide a path')
-        .sendCarriageReturn()
-        .wait('Choose a lambda source');
+      chain.wait('Provide a friendly name for your resource to be used as a label for this category in the project');
+      if (settings.apiName) {
+        chain.sendLine(settings.apiName);
+      } else {
+        chain.sendCarriageReturn();
+      }
+      chain.wait('Provide a path').sendCarriageReturn().wait('Choose a lambda source');
 
       if (settings.existingLambda) {
         chain
@@ -522,6 +523,40 @@ export function addRestApi(cwd: string, settings: any) {
         });
     }
   });
+}
+
+const updateRestApiDefaultSettings = {
+  updateOperation: 'Add another path' as 'Add another path' | 'Update path' | 'Remove path',
+  expectMigration: false,
+  newPath: '/foo' as string | undefined,
+};
+
+export function updateRestApi(cwd: string, settings: Partial<typeof updateRestApiDefaultSettings> = {}) {
+  const completeSettings = { ...updateRestApiDefaultSettings, ...settings };
+  const chain = spawn(getCLIPath(), ['update', 'api'], { cwd, stripColors: true })
+    .wait('Select from one of the below mentioned services')
+    .sendKeyDown()
+    .sendCarriageReturn()
+    .wait('What would you like to do')
+    .sendLine(completeSettings.updateOperation);
+
+  if (completeSettings.expectMigration) {
+    chain.wait(/Migration for .* is required\. Continue/).sendYes();
+  }
+  switch (completeSettings.updateOperation) {
+    case 'Add another path':
+      chain
+        .wait('Provide a path')
+        .sendLine(completeSettings.newPath)
+        .wait('Choose a Lambda source')
+        .sendLine('Use a Lambda function already added in the current Amplify project');
+      // assumes only one function in the project. otherwise, need to update to handle function selection here
+      break;
+    default:
+      throw new Error(`updateOperation ${completeSettings.updateOperation} is not implemented`);
+  }
+  chain.wait('Restrict API access').sendNo().wait('Do you want to add another path').sendNo().wait('Successfully updated resource');
+  return chain.runAsync();
 }
 
 const allAuthTypes = ['API key', 'Amazon Cognito User Pool', 'IAM', 'OpenID Connect'];
