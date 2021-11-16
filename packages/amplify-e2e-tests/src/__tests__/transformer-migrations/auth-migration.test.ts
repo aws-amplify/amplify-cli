@@ -154,7 +154,7 @@ describe('transformer @auth migration test', () => {
     addFeatureFlag(projRoot, 'graphqltransformer', 'transformerVersion', 2);
     addFeatureFlag(projRoot, 'graphqltransformer', 'useExperimentalPipelinedTransformer', true);
 
-    updateApiSchema(projRoot, projectName, modelSchemaV2);
+    await updateApiSchema(projRoot, projectName, modelSchemaV2);
     await amplifyPushUpdate(projRoot);
 
     apiKey = getApiKey(projRoot);
