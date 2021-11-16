@@ -1,0 +1,28 @@
+type Post @model @auth(rules: [{ allow: owner }]) {
+  id: ID!
+  title: String!
+  createdAt: AWSDateTime
+  updatedAt: AWSDateTime
+  owner: String
+}
+
+type PostPublic @model @auth(rules: [{ allow: public }]) {
+  id: ID!
+  title: String
+}
+
+type PostPublicIAM @model @auth(rules: [{ allow: public, provider: iam }]) {
+  id: ID!
+  title: String
+}
+
+type Salary @model @auth(rules: [{ allow: owner }, { allow: groups, groups: ["Admin"] }]) {
+  id: ID!
+  wage: Int
+  owner: String
+}
+
+type AdminNote @model @auth(rules: [{ allow: groups, groups: ["Admin"], groupClaim: "cognito:groups" }]) {
+  id: ID!
+  content: String!
+}
