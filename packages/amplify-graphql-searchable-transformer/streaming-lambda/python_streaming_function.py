@@ -221,7 +221,7 @@ def _lambda_handler(event, context):
             if OPENSEARCH_USE_EXTERNAL_VERSIONING and '_version' in doc_fields:
                 action['index'].update([
                     ('version_type', 'external'),
-                    ('_version', doc_fields['_version'])
+                    ('version', doc_fields['_version'])
                 ])
                 doc_fields.pop('_ttl', None)
                 doc_fields.pop('_version', None)
@@ -241,7 +241,7 @@ def _lambda_handler(event, context):
             if OPENSEARCH_USE_EXTERNAL_VERSIONING and '_version' in doc_fields:
                 action['delete'].update([
                     ('version_type', 'external'),
-                    ('_version', doc_fields['_version'])
+                    ('version', doc_fields['_version'])
                 ])
             # Action line with 'delete' directive
             opensearch_actions.append(json.dumps(action))

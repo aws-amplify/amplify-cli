@@ -1031,23 +1031,28 @@ $util.toJson($ListRequest)
   $util.toJson($ctx.result)
 #end
 ## [End] ResponseTemplate. **",
+  "Query.searchPosts.postAuth.1.res.vtl": "## [Start] Sandbox Mode Disabled. **
+#if( !$ctx.stash.get(\\"hasAuth\\") )
+  $util.unauthorized()
+#end
+$util.toJson({})
+## [End] Sandbox Mode Disabled. **",
   "Query.searchPosts.req.vtl": "#set( $indexPath = \\"/post/doc/_search\\" )
 #set( $allowedAggFields = $util.defaultIfNull($ctx.stash.allowedAggFields, []) )
 #set( $aggFieldsFilterMap = $util.defaultIfNull($ctx.stash.aggFieldsFilterMap, {}) )
 #set( $nonKeywordFields = [] )
+#set( $keyFields = [\\"id\\"] )
 #set( $sortValues = [] )
+#set( $sortFields = [] )
 #set( $aggregateValues = {} )
 #set( $primaryKey = \\"id\\" )
-#if( $util.isNullOrEmpty($context.args.sort) )
-  #if( $nonKeywordFields.contains($primaryKey) )
-    #set( $sortField = $util.toJson($primaryKey) )
-  #else
-    #set( $sortField = $util.toJson(\\"\${primaryKey}.keyword\\") )
-  #end
-  #set( $sortDirection = $util.toJson({\\"order\\": \\"desc\\"}) )
-  $util.qr($sortValues.add(\\"{$sortField: $sortDirection}\\"))
-#else
+#if( !$util.isNullOrEmpty($context.args.sort) )
   #foreach( $sortItem in $context.args.sort )
+    #if( $util.isNullOrEmpty($sortItem.field) )
+      $util.qr($sortFields.add($primaryKey))
+    #else
+      $util.qr($sortFields.add($sortItem.field))
+    #end
     #if( $util.isNullOrEmpty($sortItem.field) )
       #if( $nonKeywordFields.contains($primaryKey) )
         #set( $sortField = $util.toJson($primaryKey) )
@@ -1066,6 +1071,17 @@ $util.toJson($ListRequest)
     #else
       #set( $sortDirection = $util.toJson({\\"order\\": $sortItem.direction}) )
     #end
+    $util.qr($sortValues.add(\\"{$sortField: $sortDirection}\\"))
+  #end
+#end
+#foreach( $keyItem in $keyFields )
+  #if( !$sortFields.contains($keyItem) )
+    #if( $nonKeywordFields.contains($keyItem) )
+      #set( $sortField = $util.toJson($keyItem) )
+    #else
+      #set( $sortField = $util.toJson(\\"\${keyItem}.keyword\\") )
+    #end
+    #set( $sortDirection = $util.toJson({\\"order\\": \\"desc\\"}) )
     $util.qr($sortValues.add(\\"{$sortField: $sortDirection}\\"))
   #end
 #end

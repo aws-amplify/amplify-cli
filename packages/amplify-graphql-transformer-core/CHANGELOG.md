@@ -3,6 +3,37 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.12.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-transformer-core@0.10.0...@aws-amplify/graphql-transformer-core@0.12.1) (2021-11-15)
+
+**Note:** Version bump only for package @aws-amplify/graphql-transformer-core
+
+
+
+
+
+# [0.10.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-transformer-core@0.9.2...@aws-amplify/graphql-transformer-core@0.10.0) (2021-11-11)
+
+
+### Bug Fixes
+
+* **amplify-category-api:** change auth directive type and fix codegen bug ([#8639](https://github.com/aws-amplify/amplify-cli/issues/8639)) ([b8d838d](https://github.com/aws-amplify/amplify-cli/commit/b8d838ddfd332c0f6fb36ef52ab76da24b5d26ca))
+* datastore logical id ([#8761](https://github.com/aws-amplify/amplify-cli/issues/8761)) ([e86cbb9](https://github.com/aws-amplify/amplify-cli/commit/e86cbb9ebfb7ed22607ffd82f15a6b58a6ec7b3d))
+* **graphql-model-transformer:** override resource logical id to fix v1 to v2 transformer migration ([#8597](https://github.com/aws-amplify/amplify-cli/issues/8597)) ([e3a2afb](https://github.com/aws-amplify/amplify-cli/commit/e3a2afbbed6e97f143fc7c83064e2193f4c91bdd))
+* move [@model](https://github.com/model) params to root stack and fix ds logical id ([#8736](https://github.com/aws-amplify/amplify-cli/issues/8736)) ([df4408c](https://github.com/aws-amplify/amplify-cli/commit/df4408c4080949ddd638778df9ae20e763dd5824))
+* override http datasource logical IDs ([#8714](https://github.com/aws-amplify/amplify-cli/issues/8714)) ([81cc461](https://github.com/aws-amplify/amplify-cli/commit/81cc461ed5e02b2f296825283993ad026f1126d1))
+* override none,DDB,lambda datasource logical IDs ([#8723](https://github.com/aws-amplify/amplify-cli/issues/8723)) ([c534dc4](https://github.com/aws-amplify/amplify-cli/commit/c534dc46704cf2a1264e98d8af9b7a199c1419eb))
+* revert none data source logical id override ([#8734](https://github.com/aws-amplify/amplify-cli/issues/8734)) ([c83507b](https://github.com/aws-amplify/amplify-cli/commit/c83507b1efee3c8252ea2c2dd7c4d3d40b20fd8a))
+* sub "_" with hash in resource logical ID in transformer v2 ([#8600](https://github.com/aws-amplify/amplify-cli/issues/8600)) ([6bb620b](https://github.com/aws-amplify/amplify-cli/commit/6bb620bf1506749987ab0c7eead46bdcc3a7905a))
+
+
+### Features
+
+* **amplify-provider-awscloudformation:** change sandbox mode syntax in schema ([#8592](https://github.com/aws-amplify/amplify-cli/issues/8592)) ([a3bdd44](https://github.com/aws-amplify/amplify-cli/commit/a3bdd44fddd3414a39d561510092084a1b8e6e61))
+
+
+
+
+
 ## [0.9.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-transformer-core@0.9.1...@aws-amplify/graphql-transformer-core@0.9.2) (2021-10-10)
 
 **Note:** Version bump only for package @aws-amplify/graphql-transformer-core

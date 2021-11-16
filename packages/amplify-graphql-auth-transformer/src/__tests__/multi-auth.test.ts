@@ -166,13 +166,7 @@ const getRecursiveSchemaWithDiffModesOnParentType = (authDir1: string, authDir2:
 const getTransformer = (authConfig: AppSyncAuthConfiguration) =>
   new GraphQLTransform({
     authConfig,
-    transformers: [
-      new ModelTransformer(),
-      new AuthTransformer({
-        authConfig,
-        addAwsIamAuthInOutputSchema: false,
-      }),
-    ],
+    transformers: [new ModelTransformer(), new AuthTransformer()],
   });
 
 const getObjectType = (doc: DocumentNode, type: string): ObjectTypeDefinitionNode | undefined => {
@@ -567,6 +561,18 @@ describe('schema generation directive tests', () => {
     expectMultiple(tagType, expectedDirectiveNames);
   });
 
+  test('OIDC works with private', () => {
+    const cognitoUserPoolAndOidcAuthRules =
+      '@auth(rules: [ { allow: private, provider: oidc, operations: [read] } { allow: owner, ownerField: "editors" } { allow: groups, groupsField: "groups"} ])';
+    const authConfig = withAuthModes(apiKeyDefaultConfig, ['AMAZON_COGNITO_USER_POOLS', 'OPENID_CONNECT']);
+
+    (authConfig.additionalAuthenticationProviders[1] as AppSyncAuthConfigurationOIDCEntry).openIDConnectConfig = {
+      name: 'Test Provider',
+      issuerUrl: 'https://abc.def/',
+    };
+    transformTest(cognitoUserPoolAndOidcAuthRules, authConfig, [userPoolsDirectiveName, openIdDirectiveName]);
+  });
+
   test(`Nested types without @model getting directives applied (cognito default, api key additional)`, () => {
     const schema = getSchemaWithNonModelField(privateAndPublicDirective);
     const transformer = getTransformer(withAuthModes(userPoolsDefaultConfig, ['API_KEY']));
@@ -597,5 +603,55 @@ describe('schema generation directive tests', () => {
 
       expect(expectedDireciveNameCount).toEqual(addressType.directives.length);
     }
+  });
+});
+
+describe('iam checks', () => {
+  const identityPoolId = 'us-fake-1:1234abc';
+  const adminRoles = ['helloWorldFunction', 'echoMessageFunction'];
+
+  test('identity pool check gets added when using private rule', () => {
+    const schema = getSchema(privateIAMDirective);
+    const transformer = new GraphQLTransform({
+      authConfig: iamDefaultConfig,
+      transformers: [new ModelTransformer(), new AuthTransformer({ identityPoolId })],
+    });
+    const out = transformer.transform(schema);
+    expect(out).toBeDefined();
+    const createResolver = out.pipelineFunctions['Mutation.createPost.auth.1.req.vtl'];
+    expect(createResolver).toContain(
+      `#if( ($ctx.identity.userArn == $ctx.stash.authRole) || ($ctx.identity.cognitoIdentityPoolId == \"${identityPoolId}\" && $ctx.identity.cognitoIdentityAuthType == \"authenticated\") )`,
+    );
+    const queryResolver = out.pipelineFunctions['Query.listPosts.auth.1.req.vtl'];
+    expect(queryResolver).toContain(
+      `#if( ($ctx.identity.userArn == $ctx.stash.authRole) || ($ctx.identity.cognitoIdentityPoolId == \"${identityPoolId}\" && $ctx.identity.cognitoIdentityAuthType == \"authenticated\") )`,
+    );
+  });
+
+  test('identity pool check does not get added when using public rule', () => {
+    const schema = getSchema(publicIAMAuthDirective);
+    const transformer = new GraphQLTransform({
+      authConfig: iamDefaultConfig,
+      transformers: [new ModelTransformer(), new AuthTransformer({ identityPoolId })],
+    });
+    const out = transformer.transform(schema);
+    expect(out).toBeDefined();
+    const createResolver = out.pipelineFunctions['Mutation.createPost.auth.1.req.vtl'];
+    expect(createResolver).toContain(`#if( $ctx.identity.userArn == $ctx.stash.unauthRole )`);
+    const queryResolver = out.pipelineFunctions['Query.listPosts.auth.1.req.vtl'];
+    expect(queryResolver).toContain(`#if( $ctx.identity.userArn == $ctx.stash.unauthRole )`);
+  });
+
+  test('test that admin roles are added when functions have access to the graphql api', () => {
+    const schema = getSchema(privateIAMDirective);
+    const transformer = new GraphQLTransform({
+      authConfig: iamDefaultConfig,
+      transformers: [new ModelTransformer(), new AuthTransformer({ adminRoles })],
+    });
+    const out = transformer.transform(schema);
+    expect(out).toBeDefined();
+    const createResolver = out.pipelineFunctions['Mutation.createPost.auth.1.req.vtl'];
+    expect(createResolver).toContain(`#set( $adminRoles = [\"helloWorldFunction\",\"echoMessageFunction\"] )`);
+    expect(createResolver).toMatchSnapshot();
   });
 });

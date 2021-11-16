@@ -1,5 +1,3 @@
-import * as path from 'path';
-import * as fs from 'fs-extra';
 import { $TSObject, JSONUtilities } from 'amplify-cli-core';
 import {
   addAuthWithDefault,
@@ -13,32 +11,28 @@ import {
   deleteProject,
   deleteProjectDir,
   getAppId,
-  getTeamProviderInfo,
   initJSProjectWithProfile,
 } from 'amplify-e2e-core';
-import { randomizedFunctionName } from '../schema-api-directives/functionTester';
-import { addEnvironmentWithImportedAuth, checkoutEnvironment, removeEnvironment } from '../environment/env';
+import * as fs from 'fs-extra';
+import * as path from 'path';
 import {
-  expectLocalAndCloudMetaFilesMatching,
-  expectLocalAndPulledBackendConfigMatching,
-  getShortId,
-  readRootStack,
-  expectNoStorageInMeta,
-  expectLocalTeamInfoHasOnlyAuthCategoryAndNoStorage,
-  headlessPullExpectError,
-  headlessPull,
   createDynamoDBSettings,
   DynamoDBProjectDetails,
-  getOGDynamoDBProjectDetails,
-  importDynamoDBTable,
-  getDynamoDBProjectDetails,
-  expectDynamoDBProjectDetailsMatch,
-  getDynamoDBResourceName,
   expectDynamoDBLocalAndOGMetaFilesOutputMatching,
+  expectDynamoDBProjectDetailsMatch,
+  expectLocalAndCloudMetaFilesMatching,
+  expectLocalAndPulledBackendConfigMatching,
+  expectLocalTeamInfoHasOnlyAuthCategoryAndNoStorage,
+  expectNoStorageInMeta,
+  getDynamoDBProjectDetails,
+  getDynamoDBResourceName,
+  getOGDynamoDBProjectDetails,
+  getShortId,
+  importDynamoDBTable,
+  readRootStack,
   removeImportedDynamoDBWithDefault,
 } from '../import-helpers';
-
-const profileName = 'amplify-integ-test-user';
+import { randomizedFunctionName } from '../schema-api-directives/functionTester';
 
 describe('dynamodb import', () => {
   const projectPrefix = 'ddbimp';

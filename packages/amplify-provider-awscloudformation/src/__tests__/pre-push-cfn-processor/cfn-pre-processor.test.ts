@@ -13,19 +13,12 @@ const prePushCfnTemplateModifier_mock = prePushCfnTemplateModifier as jest.Mocke
 const pathManager_mock = pathManager as jest.Mocked<typeof pathManager>;
 const stateManager_mock = stateManager as jest.Mocked<typeof stateManager>;
 
-const cfnTemplate = ({
+const cfnTemplate = {
   test: 'content',
-} as unknown) as Template;
+} as unknown as Template;
 const templateFormat = CFNTemplateFormat.JSON;
 
-const customPolicies: CustomIAMPolicies = [
-  {
-    Action : ['test:test'],
-    Effect : 'Allow',
-    Resource : ['arn:aws:s3:us-east-2:012345678910:testResource']
-  }];
-
-readCFNTemplate_mock.mockResolvedValue({
+readCFNTemplate_mock.mockReturnValue({
   templateFormat,
   cfnTemplate,
 });
@@ -39,8 +32,7 @@ const resourcePath = 'api/resourceName/cfn-template-name.json';
 
 pathManager_mock.getBackendDirPath.mockReturnValue(backendPath);
 pathManager_mock.getResourceDirectoryPath.mockReturnValue(backendPath);
-stateManager_mock.getCustomPolicies.mockReturnValue(customPolicies);
-stateManager_mock.getLocalEnvInfo.mockReturnValue({envName:'test'});
+stateManager_mock.getLocalEnvInfo.mockReturnValue({ envName: 'test' });
 
 describe('preProcessCFNTemplate', () => {
   beforeEach(jest.clearAllMocks);
@@ -65,28 +57,29 @@ describe('preProcessCFNTemplate', () => {
     expect(newPath).toMatchInlineSnapshot(`"/project/amplify/backend/awscloudformation/build/cfn-template-name.json"`);
   });
 
-  it('writes valid custom policies to cfn template', async () => {
-    const cfnTemplate = ({
-      Resources: {
-        LambdaExecutionRole: {
-          Type: 'AWS::IAM::Role'
-        }
-      },
-    } as unknown) as Template;
+  it('test writeCustonPolicies with Lambda function', () => {
+    writeCustomPoliciesToCFNTemplate('testLambdaResourceName', 'Lambda', '../dummypath', 'function');
+    expect(pathManager_mock.getResourceDirectoryPath).toBeCalledWith(undefined, 'function', 'testLambdaResourceName');
+    expect(readCFNTemplate_mock).toBeCalled();
+  });
 
-    readCFNTemplate_mock.mockResolvedValueOnce({
-      templateFormat,
-      cfnTemplate,
-    });
-    
-    await writeCustomPoliciesToCFNTemplate('test', 'Lambda', 'cfn-template.json', 'test');
-    
-    const templateWithCustomPolicies = writeCFNTemplate_mock.mock.calls[0][0] as any;
+  it('test writeCustonPolicies with LambdaLayer function', () => {
+    writeCustomPoliciesToCFNTemplate('testLambdaResourceName', 'LambdaLayer', '../dummypath', 'function');
+    expect(pathManager_mock.getResourceDirectoryPath).not.toBeCalled();
+    expect(readCFNTemplate_mock).not.toBeCalled();
+  });
 
-    expect(templateWithCustomPolicies.Resources.CustomLambdaExecutionPolicy.Properties.PolicyDocument.Statement).toEqual([{
-      Action : ['test:test'],
-      Effect : 'Allow',
-      Resource : ['arn:aws:s3:us-east-2:012345678910:testResource']
-    }]);
-  })
+  it('test writeCustonPolicies with Containers Api', () => {
+    writeCustomPoliciesToCFNTemplate('testApiResourceName', 'ElasticContainer', '../dummypath', 'api');
+    expect(pathManager_mock.getResourceDirectoryPath).toBeCalledWith(undefined, 'api', 'testApiResourceName');
+    expect(readCFNTemplate_mock).toBeCalled();
+  });
+
+  it('test writeCustonPolicies with Appsync', () => {
+    pathManager_mock.getResourceDirectoryPath.mockClear();
+    readCFNTemplate_mock.mockClear();
+    writeCustomPoliciesToCFNTemplate('testApiResourceName', 'AppSync', '../dummypath', 'api');
+    expect(pathManager_mock.getResourceDirectoryPath).not.toBeCalled();
+    expect(readCFNTemplate_mock).not.toBeCalled();
+  });
 });

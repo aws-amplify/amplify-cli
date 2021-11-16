@@ -1,11 +1,11 @@
 import * as path from 'path';
 import * as fs from 'fs-extra';
-import { $TSContext, JSONUtilities, pathManager } from 'amplify-cli-core';
+import { JSONUtilities, pathManager } from 'amplify-cli-core';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
 import { prepareApp } from '@aws-cdk/core/lib/private/prepare-app';
-import { AuthTriggerConnection, ServiceQuestionsResult } from '../service-walkthrough-types';
+import { AuthTriggerConnection, CognitoStackOptions } from '../service-walkthrough-types/cognito-user-input-types';
 import { CustomResource } from '@aws-cdk/core';
 import { authTriggerAssetFilePath } from '../constants';
 
@@ -57,13 +57,13 @@ export class CustomResourceAuthStack extends cdk.Stack {
   }
 }
 
-export async function generateNestedAuthTriggerTemplate(context: $TSContext, category: string, request: ServiceQuestionsResult) {
+export async function generateNestedAuthTriggerTemplate(category: string, resourceName: string, request: CognitoStackOptions) {
   const cfnFileName = 'auth-trigger-cloudformation-template.json';
-  const targetDir = path.join(pathManager.getBackendDirPath(), category, request.resourceName!);
+  const targetDir = path.join(pathManager.getBackendDirPath(), category, resourceName, 'build');
   const authTriggerCfnFilePath = path.join(targetDir, cfnFileName);
   const { authTriggerConnections } = request;
   if (authTriggerConnections) {
-    const cfnObject = await createCustomResourceforAuthTrigger(context, JSON.parse(authTriggerConnections));
+    const cfnObject = await createCustomResourceforAuthTrigger(authTriggerConnections);
     JSONUtilities.writeJson(authTriggerCfnFilePath, cfnObject);
   } else {
     // delete the custom stack template if the triggers arent defined
@@ -75,7 +75,7 @@ export async function generateNestedAuthTriggerTemplate(context: $TSContext, cat
   }
 }
 
-async function createCustomResourceforAuthTrigger(context: any, authTriggerConnections: AuthTriggerConnection[]) {
+async function createCustomResourceforAuthTrigger(authTriggerConnections: AuthTriggerConnection[]) {
   const stack = new CustomResourceAuthStack(undefined as any, 'Amplify', {
     description: 'Custom Resource stack for Auth Trigger created using Amplify CLI',
     authTriggerConnections: authTriggerConnections,

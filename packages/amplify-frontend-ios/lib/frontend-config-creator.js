@@ -39,20 +39,32 @@ function getSrcDir(context) {
 }
 
 function createAmplifyConfig(context, amplifyResources, cloudAmplifyResources) {
-  const { amplify } = context;
-  const projectPath = context.exeInfo ? context.exeInfo.localEnvInfo.projectPath : amplify.getEnvInfo().projectPath;
-  const srcDirPath = path.join(projectPath);
+  const srcDirPath = getSrcDir(context);
 
   if (fs.existsSync(srcDirPath)) {
     const targetFilePath = path.join(srcDirPath, constants.amplifyConfigFilename);
 
     // Native GA release requires entire awsconfiguration inside amplifyconfiguration auth plugin
-    const newAWSConfig = getNewAWSConfigObject(context, amplifyResources, cloudAmplifyResources);
-    const amplifyConfig = amplifyConfigHelper.generateConfig(context, newAWSConfig);
+    const amplifyConfig = getAmplifyConfig(context, amplifyResources, cloudAmplifyResources);
 
     const jsonString = JSON.stringify(amplifyConfig, null, 4);
     fs.writeFileSync(targetFilePath, jsonString, 'utf8');
+
+    writeToFile(srcDirPath, constants.amplifyConfigFilename, amplifyConfig);
   }
+}
+
+function writeToFile(filePath, fileName, configObject) {
+  fs.ensureDirSync(filePath);
+  const targetFilePath = path.join(filePath, fileName);
+  const jsonString = JSON.stringify(configObject, null, 4);
+  fs.writeFileSync(targetFilePath, jsonString, 'utf8');
+}
+
+function getAmplifyConfig(context, amplifyResources, cloudAmplifyResources) {
+  const newAWSConfig = getNewAWSConfigObject(context, amplifyResources, cloudAmplifyResources);
+  const amplifyConfig = amplifyConfigHelper.generateConfig(context, newAWSConfig);
+  return amplifyConfig;
 }
 
 function getNewAWSConfigObject(context, amplifyResources, cloudAmplifyResources) {
@@ -139,14 +151,9 @@ function getCustomConfigs(cloudAWSConfig, currentAWSConfig) {
 }
 
 function generateAWSConfigFile(context, configOutput) {
-  const { amplify } = context;
-  const projectPath = context.exeInfo ? context.exeInfo.localEnvInfo.projectPath : amplify.getEnvInfo().projectPath;
-  const srcDirPath = path.join(projectPath);
-
+  const srcDirPath = getSrcDir(context);
   if (fs.existsSync(srcDirPath)) {
-    const targetFilePath = path.join(srcDirPath, constants.awsConfigFilename);
-    const jsonString = JSON.stringify(configOutput, null, 4);
-    fs.writeFileSync(targetFilePath, jsonString, 'utf8');
+    writeToFile(srcDirPath, constants.awsConfigFilename, configOutput);
   }
 }
 
@@ -373,4 +380,4 @@ function getSumerianConfig(sumerianResources) {
   };
 }
 
-module.exports = { createAWSConfig, createAmplifyConfig, deleteAmplifyConfig };
+module.exports = { createAWSConfig, getNewAWSConfigObject, createAmplifyConfig, getAmplifyConfig, deleteAmplifyConfig, writeToFile };

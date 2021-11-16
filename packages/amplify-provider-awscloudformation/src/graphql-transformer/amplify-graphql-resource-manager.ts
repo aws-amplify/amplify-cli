@@ -275,11 +275,12 @@ export class GraphQLResourceManager {
 
   private tableRecreationManagement = (currentState: DiffableProject, nextState: DiffableProject) => {
     this.getTablesBeingReplaced().forEach(tableMeta => {
-      const ddbResource = this.getStack(tableMeta.stackName, currentState);
-      this.dropTable(tableMeta.tableName, ddbResource);
+      const ddbStack = this.getStack(tableMeta.stackName, currentState);
+      this.dropTemplateResources(ddbStack);
+
       // clear any other states created by GSI updates as dropping and recreating supercedes those changes
       this.clearTemplateState(tableMeta.stackName);
-      this.templateState.add(tableMeta.stackName, JSONUtilities.stringify(ddbResource));
+      this.templateState.add(tableMeta.stackName, JSONUtilities.stringify(ddbStack));
       this.templateState.add(tableMeta.stackName, JSONUtilities.stringify(this.getStack(tableMeta.stackName, nextState)));
     });
   };
@@ -293,14 +294,18 @@ export class GraphQLResourceManager {
       }
       return _.uniq(
         diffs
-          .filter(diff => diff.path.includes('KeySchema') || diff.path.includes('LocalSecondaryIndexes')) // filter diffs with changes that require replacement
+          // diff.path looks like [ "stacks", "ModelName.json", "Resources", "TableName", "Properties", "KeySchema", 0, "AttributeName"]
+          .filter(
+            diff =>
+              (diff.kind === 'E' && diff.path.length === 8 && diff.path[5] === 'KeySchema') || diff.path.includes('LocalSecondaryIndexes'),
+          ) // filter diffs with changes that require replacement
           .map(diff => ({
             // extract table name and stack name from diff path
             tableName: diff.path?.[3] as string,
             stackName: diff.path[1].split('.')[0] as string,
           })),
       ) as { tableName: string; stackName: string }[];
-    }
+    };
     const getAllTables = () =>
       Object.entries(currentState.stacks)
         .map(([name, template]) => ({
@@ -329,10 +334,13 @@ export class GraphQLResourceManager {
     template.Resources[tableName] = removeGSI(indexName, table);
   };
 
-  private dropTable = (tableName: string, template: Template): void => {
-    // remove table and all output refs to it
-    template.Resources[tableName] = undefined;
-    template.Outputs = _.omitBy(template.Outputs, (_, key) => key.includes(tableName));
+  private dropTemplateResources = (template: Template): void => {
+    // remove all resources from table stack except one placeholder resource
+    template.Resources = {};
+    // CloudFormation requires at least one resource so setting a placeholder
+    // https://stackoverflow.com/a/62991447/5283094
+    template.Resources.PlaceholderNullResource = { Type: 'AWS::CloudFormation::WaitConditionHandle' };
+    template.Outputs = {};
   };
 
   private clearTemplateState = (stackName: string) => {

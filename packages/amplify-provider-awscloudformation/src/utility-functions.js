@@ -1,11 +1,13 @@
 const awsRegions = require('./aws-regions');
-const Lambda = require('./aws-utils/aws-lambda');
+const { Lambda } = require('./aws-utils/aws-lambda');
 const DynamoDB = require('./aws-utils/aws-dynamodb');
 const AppSync = require('./aws-utils/aws-appsync');
 const { Lex } = require('./aws-utils/aws-lex');
 const Polly = require('./aws-utils/aws-polly');
 const SageMaker = require('./aws-utils/aws-sagemaker');
 const { transformGraphQLSchema, getDirectiveDefinitions } = require('./transform-graphql-schema');
+const { transformResourceWithOverrides } = require('./override-manager');
+
 const { updateStackForAPIMigration } = require('./push-resources');
 const SecretsManager = require('./aws-utils/aws-secretsmanager');
 const Route53 = require('./aws-utils/aws-route53');
@@ -60,6 +62,18 @@ module.exports = {
 
     return transformGraphQLSchema(context, optionsWithUpdateHandler);
   },
+
+  /**
+   * Utility function to build resource CFN with overrides
+   * Resources to build are passed with options
+   */
+  buildOverrides: async (context, options) => {
+    for (const resource of options.resourcesToBuild) {
+      await transformResourceWithOverrides(context, resource);
+    }
+    await transformResourceWithOverrides(context);
+  },
+
   newSecret: async (context, options) => {
     const { description, secret, name, version } = options;
     const client = await new SecretsManager(context);

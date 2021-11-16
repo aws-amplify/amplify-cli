@@ -41,7 +41,7 @@ export const directives = /* GraphQL */ `
   directive @auth(rules: [AuthRule!]!) on OBJECT | FIELD_DEFINITION
 
   input AuthRule {
-    # Specifies the auth rule's strategy. Allowed values are 'owner', 'groups', 'public', 'private'.
+    # Specifies the auth rule's strategy. Allowed values are 'owner', 'groups', 'public', 'private', 'custom'.
     allow: AuthStrategy!
 
     # Legacy name for identityClaim
@@ -90,6 +90,7 @@ export const directives = /* GraphQL */ `
     groups
     private
     public
+    custom
   }
 
   enum AuthProvider {
@@ -97,6 +98,7 @@ export const directives = /* GraphQL */ `
     iam
     oidc
     userPools
+    function
   }
 
   enum ModelOperation {

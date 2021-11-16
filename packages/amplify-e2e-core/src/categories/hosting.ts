@@ -129,6 +129,21 @@ export function amplifyPushWithUpdate(cwd: string): Promise<void> {
   });
 }
 
+export function amplifyPublishWithUpdate(cwd: string): Promise<void> {
+  return new Promise((resolve, reject) => {
+    spawn(getCLIPath(), ['publish'], { cwd, stripColors: true })
+      .wait('Are you sure you want to continue?')
+      .sendCarriageReturn()
+      .run((err: Error) => {
+        if (!err) {
+          resolve();
+        } else {
+          reject(err);
+        }
+      });
+  });
+}
+
 export function amplifyPublishWithoutUpdate(cwd: string): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['publish'], { cwd, stripColors: true }).run((err: Error) => {

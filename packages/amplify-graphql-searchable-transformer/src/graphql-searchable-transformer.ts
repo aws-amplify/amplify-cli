@@ -26,9 +26,10 @@ import {
   graphqlName,
   plurality,
   toUpper,
+  ResolverResourceIDs,
 } from 'graphql-transformer-common';
 import { createParametersStack as createParametersInStack } from './cdk/create-cfnParameters';
-import { requestTemplate, responseTemplate } from './generate-resolver-vtl';
+import { requestTemplate, responseTemplate, sandboxMappingTemplate } from './generate-resolver-vtl';
 import {
   makeSearchableScalarInputObject,
   makeSearchableSortDirectionEnumObject,
@@ -116,6 +117,7 @@ export class SearchableModelTransformer extends TransformerPluginBase {
 
     for (const def of this.searchableObjectTypeDefinitions) {
       const type = def.node.name.value;
+      const fields = def.node.fields?.map(f => f.name.value) ?? [];
       const typeName = context.output.getQueryTypeName();
       const table = getTable(context, def.node);
       const ddbTable = table as Table;
@@ -127,19 +129,29 @@ export class SearchableModelTransformer extends TransformerPluginBase {
       createEventSourceMapping(stack, type, lambda, parameterMap, ddbTable.tableStreamArn);
 
       const { attributeName } = (table as any).keySchema.find((att: any) => att.keyType === 'HASH');
+      const keyFields = getKeyFields(attributeName, table);
+
       assert(typeName);
       const resolver = context.resolvers.generateQueryResolver(
         typeName,
         def.fieldName,
+        ResolverResourceIDs.ElasticsearchSearchResolverResourceID(type),
         datasource as DataSourceProvider,
         MappingTemplate.s3MappingTemplateFromString(
-          requestTemplate(attributeName, getNonKeywordFields(def.node), false, type),
+          requestTemplate(attributeName, getNonKeywordFields(def.node), context.isProjectUsingDataStore(), type, keyFields),
           `${typeName}.${def.fieldName}.req.vtl`,
         ),
         MappingTemplate.s3MappingTemplateFromString(responseTemplate(false), `${typeName}.${def.fieldName}.res.vtl`),
       );
+      resolver.addToSlot(
+        'postAuth',
+        MappingTemplate.s3MappingTemplateFromString(
+          sandboxMappingTemplate((context as any).resourceHelper.api.sandboxModeEnabled, fields),
+          `${typeName}.${def.fieldName}.{slotName}.{slotIndex}.res.vtl`,
+        ),
+      );
       resolver.mapToStack(stack);
-      context.resolvers.addResolver(typeName, def.fieldName, resolver);
+      context.resolvers.addResolver('Search', toUpper(type), resolver);
     }
 
     createStackOutputs(stack, domain.domainEndpoint, context.api.apiId, domain.domainArn);
@@ -368,6 +380,22 @@ function getNonKeywordFields(def: ObjectTypeDefinitionNode): Expression[] {
   const nonKeywordTypeSet = new Set(nonKeywordTypes);
 
   return def.fields?.filter(field => nonKeywordTypeSet.has(getBaseType(field.type))).map(field => str(field.name.value)) || [];
+}
+
+/**
+ * Returns all the keys fields - primaryKey and sortKeys
+ * @param primaryKey
+ * @param table
+ * @returns Expression[] keyFields
+ */
+function getKeyFields(primaryKey: string, table: IConstruct): Expression[] {
+  let keyFields = [];
+  keyFields.push(primaryKey);
+  let { attributeName } = (table as any).keySchema.find((att: any) => att.keyType === 'RANGE') || {};
+  if (attributeName) {
+    keyFields.push(...attributeName.split('#'));
+  }
+  return keyFields.map(key => str(key));
 }
 
 interface SearchableQueryMap {

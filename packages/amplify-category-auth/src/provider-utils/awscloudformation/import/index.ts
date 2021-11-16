@@ -1,5 +1,6 @@
 import { $TSContext, ServiceSelection, stateManager } from 'amplify-cli-core';
 import {
+  AuthParameters,
   AuthSelections,
   BackendConfiguration,
   EnvSpecificResourceParameters,
@@ -25,6 +26,7 @@ import Enquirer from 'enquirer';
 import _ from 'lodash';
 import { importMessages } from './messages';
 import uuid from 'uuid';
+import { hostedUIProviders, coreAttributes } from '../assets/string-maps';
 
 // Currently the CLI only supports the output generation of these providers
 const supportedIdentityProviders = ['COGNITO', 'Facebook', 'Google', 'LoginWithAmazon', 'SignInWithApple'];
@@ -701,7 +703,29 @@ const updateStateFiles = async (
     region: questionParameters.region!,
   };
 
-  stateManager.setResourceParametersJson(undefined, 'auth', answers.resourceName!, resourceParameters);
+  const authResourceParameters: AuthParameters = {
+    aliasAttributes: answers.userPool?.AliasAttributes,
+    usernameAttributes: answers.userPool?.UsernameAttributes,
+    authProvidersUserPool: answers.oauthProviders?.filter(provider => !!hostedUIProviders.find(it => it.value === provider)),
+    requiredAttributes: (answers.userPool?.SchemaAttributes ?? [])
+      .filter(att => att.Required && !!coreAttributes.find(it => it.value === att.Name))
+      .map(att => att.Name!),
+    passwordPolicyMinLength: answers.userPool?.Policies?.PasswordPolicy?.MinimumLength ?? 8,
+    passwordPolicyCharacters: [
+      ...(answers.userPool?.Policies?.PasswordPolicy?.RequireLowercase ? ['Requires Lowercase'] : []),
+      ...(answers.userPool?.Policies?.PasswordPolicy?.RequireUppercase ? ['Requires Uppercase'] : []),
+      ...(answers.userPool?.Policies?.PasswordPolicy?.RequireNumbers ? ['Requires Numbers'] : []),
+      ...(answers.userPool?.Policies?.PasswordPolicy?.RequireSymbols ? ['Requires Symbols'] : []),
+    ],
+    mfaConfiguration: answers.userPool?.MfaConfiguration,
+    autoVerifiedAttributes: answers.userPool?.AutoVerifiedAttributes,
+    mfaTypes: [
+      ...(answers.mfaConfiguration?.SmsMfaConfiguration ? ['SMS Text Message'] : []),
+      ...(answers.mfaConfiguration?.SoftwareTokenMfaConfiguration ? ['TOTP'] : []),
+    ],
+  };
+
+  stateManager.setResourceParametersJson(undefined, 'auth', answers.resourceName!, { ...resourceParameters, ...authResourceParameters });
 
   // Add resource data to amplify-meta file and backend-config, since backend-config requires less information
   // we have to do a separate update to it without duplicating the methods

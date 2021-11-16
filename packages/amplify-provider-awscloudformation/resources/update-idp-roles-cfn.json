@@ -17,6 +17,7 @@
               "    let unauthRoleName = event.ResourceProperties.unauthRoleName;",
               "    let idpId = event.ResourceProperties.idpId;",
               "    let promises = [];",
+              "    let getPromises = [];",
               "    let authParamsJson = { 'Version': '2012-10-17','Statement': [{'Effect': 'Allow','Principal': {'Federated': 'cognito-identity.amazonaws.com'},'Action': 'sts:AssumeRoleWithWebIdentity','Condition': {'StringEquals': {'cognito-identity.amazonaws.com:aud': idpId},'ForAnyValue:StringLike': {'cognito-identity.amazonaws.com:amr': 'authenticated'}}}]};",
               "    let unauthParamsJson = { 'Version': '2012-10-17','Statement': [{'Effect': 'Allow','Principal': {'Federated': 'cognito-identity.amazonaws.com'},'Action': 'sts:AssumeRoleWithWebIdentity','Condition': {'StringEquals': {'cognito-identity.amazonaws.com:aud': idpId},'ForAnyValue:StringLike': {'cognito-identity.amazonaws.com:amr': 'unauthenticated'}}}]};",
               "    if (event.RequestType == 'Delete') {",
@@ -25,13 +26,24 @@
               "        let authParams = { PolicyDocument: JSON.stringify(authParamsJson),RoleName: authRoleName};",
               "        let unauthParams = {PolicyDocument: JSON.stringify(unauthParamsJson),RoleName: unauthRoleName};",
               "        const iam = new aws.IAM({ apiVersion: '2010-05-08', region: event.ResourceProperties.region});",
-              "        promises.push(iam.updateAssumeRolePolicy(authParams).promise());",
-              "        promises.push(iam.updateAssumeRolePolicy(unauthParams).promise());",
-              "        Promise.all(promises)",
+              "        getPromises.push(iam.getRole({RoleName: authParams.RoleName}).promise());",
+              "        getPromises.push(iam.getRole({RoleName: unauthParams.RoleName}).promise());",
+              "        Promise.all(getPromises)",
               "         .then((res) => {",
-              "            console.log(\"delete response data\" + JSON.stringify(res));",
-              "            response.send(event, context, response.SUCCESS, {});",
-              "         });",
+              "        console.log('in res' , res)",
+              "           promises.push(iam.updateAssumeRolePolicy(authParams).promise());",
+              "           promises.push(iam.updateAssumeRolePolicy(unauthParams).promise());",
+              "           return Promise.all(promises)",
+              "             .then((res) => {",
+              "               console.log(\"delete response data\" + JSON.stringify(res));",
+              "               response.send(event, context, response.SUCCESS, {});",
+              "             });",
+              "          })",
+              "           .catch((err) => {",
+              "             console.log(err.stack);",
+              "             responseData = {Error: err};",
+              "             response.send(event, context, response.SUCCESS, responseData);",
+              "             })",
               "    }",
               "    if (event.RequestType == 'Update' || event.RequestType == 'Create') {",
               "       const iam = new aws.IAM({ apiVersion: '2010-05-08', region: event.ResourceProperties.region});",
@@ -78,10 +90,10 @@
         "Fn::GetAtt": ["Outputs.IdentityPoolId"]
       },
       "authRoleName": {
-        "Ref": "AuthRoleName"
+        "Ref": "AuthRole"
       },
       "unauthRoleName": {
-        "Ref": "UnauthRoleName"
+        "Ref": "UnauthRole"
       }
     }
   },
@@ -93,7 +105,7 @@
           "",
           [
             {
-              "Ref": "AuthRoleName"
+              "Ref": "AuthRole"
             },
             "-idp"
           ]
@@ -124,14 +136,14 @@
               },
               {
                 "Effect": "Allow",
-                "Action": "iam:UpdateAssumeRolePolicy",
+                "Action": ["iam:UpdateAssumeRolePolicy", "iam:GetRole"],
                 "Resource": {
                   "Fn::GetAtt": ["AuthRole", "Arn"]
                 }
               },
               {
                 "Effect": "Allow",
-                "Action": "iam:UpdateAssumeRolePolicy",
+                "Action": ["iam:UpdateAssumeRolePolicy", "iam:GetRole"],
                 "Resource": {
                   "Fn::GetAtt": ["UnauthRole", "Arn"]
                 }

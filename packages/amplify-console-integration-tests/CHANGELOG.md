@@ -3,6 +3,30 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.2.1](https://github.com/aws-amplify/amplify-console-integration-tests/compare/amplify-console-integration-tests@1.8.15...amplify-console-integration-tests@2.2.1) (2021-11-15)
+
+**Note:** Version bump only for package amplify-console-integration-tests
+
+
+
+
+
+# [2.0.0](https://github.com/aws-amplify/amplify-console-integration-tests/compare/amplify-console-integration-tests@1.8.15...amplify-console-integration-tests@2.0.0) (2021-11-13)
+
+**Note:** Version bump only for package amplify-console-integration-tests
+
+
+
+
+
+## [1.8.15](https://github.com/aws-amplify/amplify-console-integration-tests/compare/amplify-console-integration-tests@1.8.14...amplify-console-integration-tests@1.8.15) (2021-11-11)
+
+**Note:** Version bump only for package amplify-console-integration-tests
+
+
+
+
+
 ## [1.8.14](https://github.com/aws-amplify/amplify-console-integration-tests/compare/amplify-console-integration-tests@1.8.13...amplify-console-integration-tests@1.8.14) (2021-10-13)
 
 **Note:** Version bump only for package amplify-console-integration-tests

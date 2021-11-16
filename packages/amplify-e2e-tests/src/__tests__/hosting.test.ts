@@ -1,4 +1,4 @@
-import { amplifyPublishWithoutUpdate, createReactTestProject, resetBuildCommand } from 'amplify-e2e-core';
+import { amplifyPublishWithoutUpdate, amplifyPublishWithUpdate, createReactTestProject, resetBuildCommand } from 'amplify-e2e-core';
 
 import { initJSProjectWithProfile, deleteProject } from 'amplify-e2e-core';
 import { addDEVHosting, removeHosting, amplifyPushWithoutCodegen, extractHostingBucketInfo, deleteS3Bucket } from 'amplify-e2e-core';

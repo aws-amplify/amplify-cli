@@ -3,7 +3,7 @@ import * as path from 'path';
 import { getResourceOutputs } from './get-resource-outputs';
 import sequential from 'promise-sequential';
 import { stateManager } from 'amplify-cli-core';
-import { AuthParameters, getFrontendConfig } from 'amplify-category-auth';
+import { AuthParameters, getFrontendConfig } from '@aws-amplify/amplify-category-auth';
 
 export async function onCategoryOutputsChange(context, cloudAmplifyMeta?, localMeta?) {
   if (!cloudAmplifyMeta) {
@@ -87,9 +87,7 @@ export function ensureAmplifyMetaFrontendConfig(amplifyMeta?) {
   amplifyMeta.auth[authResourceName].frontendAuthConfig ??= {};
   const metaFrontendAuthConfig = amplifyMeta.auth[authResourceName].frontendAuthConfig;
   Object.keys(frontendAuthConfig).forEach(key => {
-    if (!metaFrontendAuthConfig.hasOwnProperty(key)) {
-      metaFrontendAuthConfig[key] = frontendAuthConfig[key];
-    }
+    metaFrontendAuthConfig[key] = frontendAuthConfig[key];
   });
 
   stateManager.setMeta(undefined, amplifyMeta);

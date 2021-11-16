@@ -57,8 +57,9 @@ export type AuthParameters = {
   aliasAttributes?: string[];
   usernameAttributes?: string[];
   authProviders?: string[];
+  authProvidersUserPool?: string[];
   requiredAttributes?: string[];
-  passwordPolicyMinLength?: string;
+  passwordPolicyMinLength?: number;
   passwordPolicyCharacters?: string[];
   mfaConfiguration?: string;
   mfaTypes?: string[];

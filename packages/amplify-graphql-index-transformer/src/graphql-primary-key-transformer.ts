@@ -24,6 +24,7 @@ import {
   updateMutationConditionInput,
 } from './schema';
 import { PrimaryKeyDirectiveConfiguration } from './types';
+import { validateNotSelfReferencing } from './utils';
 
 const directiveName = 'primaryKey';
 const directiveDefinition = `
@@ -97,6 +98,9 @@ export class PrimaryKeyTransformer extends TransformerPluginBase {
 
 function validate(config: PrimaryKeyDirectiveConfiguration, ctx: TransformerContextProvider): void {
   const { object, field, sortKeyFields } = config;
+
+  validateNotSelfReferencing(config);
+
   const modelDirective = object.directives!.find(directive => {
     return directive.name.value === 'model';
   });
@@ -146,6 +150,10 @@ function validate(config: PrimaryKeyDirectiveConfiguration, ctx: TransformerCont
       throw new InvalidDirectiveError(
         `The primary key's sort key on type '${object.name.value}.${sortField.name.value}' cannot be a non-scalar.`,
       );
+    }
+
+    if (!isNonNullType(sortField.type)) {
+      throw new InvalidDirectiveError(`The primary key on type '${object.name.value}' must reference non-null fields.`);
     }
 
     config.sortKey.push(sortField);

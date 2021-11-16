@@ -19,7 +19,7 @@ You can run a single test while adding a new test by running
 
 ```bash
 cd <amplif-cli-root>/packages/amplify-e2e-tests/
-npm run e2e __tests__/init.test.ts
+npm run e2e src/__tests__/init.test.ts
 ```
 
 ## Writing a new integration test

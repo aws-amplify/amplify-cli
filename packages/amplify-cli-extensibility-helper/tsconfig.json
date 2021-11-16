@@ -1,0 +1,15 @@
+{
+    "extends": "../../tsconfig.base.json",
+    "compilerOptions": {
+      "outDir": "./lib",
+      "rootDir": "./src",
+    },
+  "references": [
+    { "path": "../amplify-provider-awscloudformation" },
+    { "path": "../amplify-category-auth" },
+    { "path": "../amplify-category-storage" },
+    { "path": "../amplify-category-custom" },
+    { "path": "../amplify-cli-core" },
+    ]
+}
+  

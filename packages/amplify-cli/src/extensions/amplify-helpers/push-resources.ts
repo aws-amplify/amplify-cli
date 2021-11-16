@@ -1,17 +1,12 @@
-import { getProjectConfig } from './get-project-config';
-import { showResourceTable } from './resource-status';
-import { onCategoryOutputsChange } from './on-category-outputs-change';
+import { $TSAny, $TSContext, EnvironmentDoesNotExistError, exitOnNextTick, IAmplifyResource, stateManager } from 'amplify-cli-core';
+import { getResources } from '../../commands/build';
 import { initializeEnv } from '../../initialize-env';
-import { getProviderPlugins } from './get-provider-plugins';
 import { getEnvInfo } from './get-env-info';
-import {
-  EnvironmentDoesNotExistError,
-  exitOnNextTick,
-  stateManager,
-  $TSAny,
-  $TSContext,
-} from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
+import { getProjectConfig } from './get-project-config';
+import { getProviderPlugins } from './get-provider-plugins';
+import { onCategoryOutputsChange } from './on-category-outputs-change';
+import { showResourceTable } from './resource-status';
+import { generateDependentResourcesType } from '@aws-amplify/amplify-category-custom';
 
 export async function pushResources(
   context: $TSContext,
@@ -57,10 +52,15 @@ export async function pushResources(
     }
   }
 
-  let hasChanges = false;
+  // building all CFN stacks here to get the resource Changes
+  await generateDependentResourcesType(context);
+  const resourcesToBuild: IAmplifyResource[] = await getResources(context);
+  await context.amplify.executeProviderUtils(context, 'awscloudformation', 'buildOverrides', { resourcesToBuild, forceCompile: true });
+
+  let hasChanges: boolean = false;
   if (!rebuild) {
     // status table does not have a way to show resource in "rebuild" state so skipping it to avoid confusion
-    hasChanges = await showResourceTable(category, resourceName, filteredResources);
+    hasChanges = !!(await showResourceTable(category, resourceName, filteredResources));
   }
 
   // no changes detected
@@ -95,9 +95,6 @@ export async function pushResources(
           retryPush = await handleValidGraphQLAuthError(context, err.message);
         }
         if (!retryPush) {
-          // Handle the errors and print them nicely for the user.
-          printer.blankLine();
-          printer.error(err.message);
           throw err;
         }
       }

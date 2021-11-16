@@ -9,6 +9,7 @@ const AUTH_DIRECTIVES = {
   aws_api_key: 'directive @aws_api_key on FIELD_DEFINITION | OBJECT',
   aws_iam: 'directive @aws_iam on FIELD_DEFINITION | OBJECT',
   aws_oidc: 'directive @aws_oidc on FIELD_DEFINITION | OBJECT',
+  aws_lambda: 'directive @aws_lambda on FIELD_DEFINITION | OBJECT',
   aws_cognito_user_pools: 'directive @aws_cognito_user_pools(cognito_groups: [String!]) on FIELD_DEFINITION | OBJECT',
   aws_auth: 'directive @aws_auth(cognito_groups: [String!]!) on FIELD_DEFINITION',
 };
@@ -21,6 +22,7 @@ const AUTH_TYPE_TO_DIRECTIVE_MAP: {
   aws_auth: AmplifyAppSyncSimulatorAuthenticationType.AMAZON_COGNITO_USER_POOLS,
   aws_cognito_user_pools: AmplifyAppSyncSimulatorAuthenticationType.AMAZON_COGNITO_USER_POOLS,
   aws_oidc: AmplifyAppSyncSimulatorAuthenticationType.OPENID_CONNECT,
+  aws_lambda: AmplifyAppSyncSimulatorAuthenticationType.AWS_LAMBDA,
 };
 
 export class AwsAuth extends AppSyncSimulatorDirectiveBase {

@@ -23,8 +23,10 @@ export * from './banner-message';
 export * from './cliGetCategories';
 export * from './cliRemoveResourcePrompt';
 export * from './cliViewAPI';
+export * from './overrides-manager';
 export * from './hooks';
-export * from './cliViewAPI';
+export * from './cliConstants';
+export * from './category-interfaces';
 export * from './customPoliciesUtils';
 
 // Temporary types until we can finish full type definition across the whole CLI
@@ -51,6 +53,7 @@ export type $TSContext = {
   newUserInfo?: $TSAny;
   filesystem: IContextFilesystem;
   template: IContextTemplate;
+  updatingAuth: $TSAny;
 };
 
 export type CategoryName = string;
@@ -310,9 +313,9 @@ interface AmplifyToolkit {
   deleteTrigger: () => $TSAny;
   deleteAllTriggers: () => $TSAny;
   deleteDeselectedTriggers: () => $TSAny;
-  dependsOnBlock: () => $TSAny;
+  dependsOnBlock: (context: $TSContext, dependsOnKeys: string[], service: string) => $TSAny;
   getTriggerMetadata: () => $TSAny;
-  getTriggerPermissions: () => $TSAny;
+  getTriggerPermissions: (context: $TSContext, triggers: any, category: string, resourceName: string) => $TSAny;
   getTriggerEnvVariables: () => $TSAny;
   getTriggerEnvInputs: () => $TSAny;
   getUserPoolGroupList: () => $TSAny[];

@@ -15,7 +15,7 @@ const { resolveAppId } = require('./utils/resolve-appId');
 const { adminLoginFlow } = require('./admin-login');
 const { fileLogger } = require('./utils/aws-logger');
 const logger = fileLogger('attach-backend');
-import { downloadHooks } from './utils/hooks-manager';
+const { downloadHooks } = require('./utils/hooks-manager');
 
 async function run(context) {
   let appId;

@@ -23,12 +23,11 @@ import {
   or,
 } from 'graphql-mapping-template';
 import {
-  ADMIN_ROLE,
   API_KEY_AUTH_TYPE,
   COGNITO_AUTH_TYPE,
+  LAMBDA_AUTH_TYPE,
   ConfiguredAuthProviders,
   IAM_AUTH_TYPE,
-  MANAGE_ROLE,
   OIDC_AUTH_TYPE,
   RoleDefinition,
   splitRoles,
@@ -38,7 +37,15 @@ import {
   NULL_ALLOWED_FIELDS,
   DENIED_FIELDS,
 } from '../utils';
-import { getIdentityClaimExp, responseCheckForErrors, getOwnerClaim, getInputFields, setHasAuthExpression, iamCheck } from './helpers';
+import {
+  getIdentityClaimExp,
+  responseCheckForErrors,
+  getOwnerClaim,
+  getInputFields,
+  setHasAuthExpression,
+  iamCheck,
+  iamAdminRoleCheckExpression,
+} from './helpers';
 
 /**
  * There is only one role for ApiKey we can use the first index
@@ -61,19 +68,37 @@ const apiKeyExpression = (roles: Array<RoleDefinition>) => {
   return iff(equals(ref('util.authType()'), str(API_KEY_AUTH_TYPE)), compoundExpression(expression));
 };
 
-const iamExpression = (roles: Array<RoleDefinition>, hasAdminUIEnabled: boolean = false, adminUserPoolID?: string) => {
+/**
+ * There is only one role for Lambda we can use the first index
+ * @param roles
+ * @returns Expression | null
+ */
+const lambdaExpression = (roles: Array<RoleDefinition>) => {
   const expression = new Array<Expression>();
-  // allow if using admin ui
-  if (hasAdminUIEnabled) {
+  if (roles.length === 0) {
+    return iff(equals(ref('util.authType()'), str(LAMBDA_AUTH_TYPE)), ref('util.unauthorized()'));
+  }
+  if (roles[0].allowedFields!.length > 0 || roles[0].nullAllowedFields!.length > 0) {
     expression.push(
-      iff(
-        or([
-          methodCall(ref('ctx.identity.userArn.contains'), str(`${adminUserPoolID}${ADMIN_ROLE}`)),
-          methodCall(ref('ctx.identity.userArn.contains'), str(`${adminUserPoolID}${MANAGE_ROLE}`)),
-        ]),
-        raw('#return($util.toJson({})'),
-      ),
+      set(ref(`${ALLOWED_FIELDS}`), raw(JSON.stringify(roles[0].allowedFields))),
+      set(ref(`${NULL_ALLOWED_FIELDS}`), raw(JSON.stringify(roles[0].nullAllowedFields))),
     );
+  } else {
+    expression.push(set(ref(IS_AUTHORIZED_FLAG), bool(true)));
+  }
+  return iff(equals(ref('util.authType()'), str(LAMBDA_AUTH_TYPE)), compoundExpression(expression));
+};
+
+const iamExpression = (
+  roles: Array<RoleDefinition>,
+  hasAdminRolesEnabled: boolean = false,
+  adminRoles: Array<string> = [],
+  identityPoolId?: string,
+) => {
+  const expression = new Array<Expression>();
+  // allow if using an admin role
+  if (hasAdminRolesEnabled) {
+    expression.push(iamAdminRoleCheckExpression(adminRoles));
   }
   if (roles.length > 0) {
     for (let role of roles) {
@@ -85,6 +110,7 @@ const iamExpression = (roles: Array<RoleDefinition>, hasAdminUIEnabled: boolean 
               set(ref(`${ALLOWED_FIELDS}`), raw(JSON.stringify(role.allowedFields))),
               set(ref(`${NULL_ALLOWED_FIELDS}`), raw(JSON.stringify(role.nullAllowedFields))),
             ]),
+            identityPoolId,
           ),
         );
       } else {
@@ -254,7 +280,8 @@ export const generateAuthExpressionForUpdate = (
   roles: Array<RoleDefinition>,
   fields: ReadonlyArray<FieldDefinitionNode>,
 ) => {
-  const { cogntoStaticRoles, cognitoDynamicRoles, oidcStaticRoles, oidcDynamicRoles, apiKeyRoles, iamRoles } = splitRoles(roles);
+  const { cognitoStaticRoles, cognitoDynamicRoles, oidcStaticRoles, oidcDynamicRoles, apiKeyRoles, iamRoles, lambdaRoles } =
+    splitRoles(roles);
   const totalAuthExpressions: Array<Expression> = [
     setHasAuthExpression,
     responseCheckForErrors(),
@@ -267,15 +294,18 @@ export const generateAuthExpressionForUpdate = (
   if (providers.hasApiKey) {
     totalAuthExpressions.push(apiKeyExpression(apiKeyRoles));
   }
+  if (providers.hasLambda) {
+    totalAuthExpressions.push(lambdaExpression(lambdaRoles));
+  }
   if (providers.hasIAM) {
-    totalAuthExpressions.push(iamExpression(iamRoles, providers.hasAdminUIEnabled, providers.adminUserPoolID));
+    totalAuthExpressions.push(iamExpression(iamRoles, providers.hasAdminRolesEnabled, providers.adminRoles, providers.identityPoolId));
   }
   if (providers.hasUserPools) {
     totalAuthExpressions.push(
       iff(
         equals(ref('util.authType()'), str(COGNITO_AUTH_TYPE)),
         compoundExpression([
-          ...generateStaticRoleExpression(cogntoStaticRoles),
+          ...generateStaticRoleExpression(cognitoStaticRoles),
           ...dynamicGroupRoleExpression(cognitoDynamicRoles, fields),
         ]),
       ),

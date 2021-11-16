@@ -20,13 +20,7 @@ test('happy case with static groups', () => {
   }`;
   const transformer = new GraphQLTransform({
     authConfig,
-    transformers: [
-      new ModelTransformer(),
-      new AuthTransformer({
-        authConfig,
-        addAwsIamAuthInOutputSchema: false,
-      }),
-    ],
+    transformers: [new ModelTransformer(), new AuthTransformer()],
   });
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
@@ -53,13 +47,7 @@ test('happy case with dynamic groups', () => {
     `;
   const transformer = new GraphQLTransform({
     authConfig,
-    transformers: [
-      new ModelTransformer(),
-      new AuthTransformer({
-        authConfig,
-        addAwsIamAuthInOutputSchema: false,
-      }),
-    ],
+    transformers: [new ModelTransformer(), new AuthTransformer()],
   });
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
@@ -85,13 +73,51 @@ test('validation on @auth on a non-@model type', () => {
     }`;
   const transformer = new GraphQLTransform({
     authConfig,
-    transformers: [
-      new ModelTransformer(),
-      new AuthTransformer({
-        authConfig,
-        addAwsIamAuthInOutputSchema: false,
-      }),
-    ],
+    transformers: [new ModelTransformer(), new AuthTransformer()],
   });
   expect(() => transformer.transform(invalidSchema)).toThrowError('Types annotated with @auth must also be annotated with @model.');
+});
+
+test('empty groups list', () => {
+  const authConfig: AppSyncAuthConfiguration = {
+    defaultAuthentication: {
+      authenticationType: 'AMAZON_COGNITO_USER_POOLS',
+    },
+    additionalAuthenticationProviders: [],
+  };
+  const invalidSchema = `
+    type Post @model @auth(rules: [{ allow: groups, groups: [] }]) {
+      id: ID!
+      title: String!
+      group: String
+      createdAt: String
+      updatedAt: String
+    }`;
+  const transformer = new GraphQLTransform({
+    authConfig,
+    transformers: [new ModelTransformer(), new AuthTransformer()],
+  });
+  expect(() => transformer.transform(invalidSchema)).toThrowError('@auth rules using groups cannot have an empty list');
+});
+
+test('no @auth rules list', () => {
+  const authConfig: AppSyncAuthConfiguration = {
+    defaultAuthentication: {
+      authenticationType: 'AMAZON_COGNITO_USER_POOLS',
+    },
+    additionalAuthenticationProviders: [],
+  };
+  const invalidSchema = `
+    type Post @model @auth(rules: []) {
+      id: ID!
+      title: String!
+      group: String
+      createdAt: String
+      updatedAt: String
+    }`;
+  const transformer = new GraphQLTransform({
+    authConfig,
+    transformers: [new ModelTransformer(), new AuthTransformer()],
+  });
+  expect(() => transformer.transform(invalidSchema)).toThrowError('@auth on Post does not have any auth rules.');
 });

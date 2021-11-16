@@ -2,13 +2,18 @@ import fs from 'fs-extra';
 import * as path from 'path';
 import { TransformerProjectConfig, DeploymentResources } from '@aws-amplify/graphql-transformer-core';
 import rimraf from 'rimraf';
-import { JSONUtilities } from 'amplify-cli-core';
+import { ProviderName as providerName } from '../constants';
+import { $TSContext, JSONUtilities, stateManager } from 'amplify-cli-core';
 import { CloudFormation, Template, Fn } from 'cloudform';
 import { Diff, diff as getDiffs } from 'deep-diff';
 import { ResourceConstants } from 'graphql-transformer-common';
+import { pullAllBy, find } from 'lodash';
+import { isAmplifyAdminApp } from '../utils/admin-helpers';
 
 const ROOT_STACK_FILE_NAME = 'cloudformation-template.json';
 const PARAMETERS_FILE_NAME = 'parameters.json';
+const AMPLIFY_ADMIN_ROLE = '_Full-access/CognitoIdentityCredentials';
+const AMPLIFY_MANAGE_ROLE = '_Manage-only/CognitoIdentityCredentials';
 export interface DiffableProject {
   stacks: {
     [stackName: string]: Template;
@@ -23,6 +28,37 @@ export interface GQLDiff {
   next: DiffableProject;
   current: DiffableProject;
 }
+
+export const getIdentityPoolId = async (ctx: $TSContext): Promise<string | undefined> => {
+  const { allResources, resourcesToBeDeleted } = await ctx.amplify.getResourceStatus('auth');
+  const authResources = pullAllBy(allResources, resourcesToBeDeleted, 'resourceName');
+  const authResource = find(authResources, { service: 'Cognito', providerPlugin: providerName }) as any;
+  return authResource?.output?.IdentityPoolId;
+};
+
+export const getAdminRoles = async (ctx: $TSContext, apiResourceName: string): Promise<Array<string>> => {
+  const currentEnv = ctx.amplify.getEnvInfo().envName;
+  const adminRoles = new Array<string>();
+  //admin ui roles
+  try {
+    const amplifyMeta = stateManager.getMeta();
+    const appId = amplifyMeta?.providers?.[providerName]?.AmplifyAppId;
+    const res = await isAmplifyAdminApp(appId);
+    if (res.userPoolID) {
+      adminRoles.push(`${res.userPoolID}${AMPLIFY_ADMIN_ROLE}`, `${res.userPoolID}${AMPLIFY_MANAGE_ROLE}`);
+    }
+  } catch (err) {
+    // no need to error if not admin ui app
+  }
+
+  // lambda functions which have access to the api
+  const { allResources, resourcesToBeDeleted } = await ctx.amplify.getResourceStatus('function');
+  const resources = pullAllBy(allResources, resourcesToBeDeleted, 'resourceName')
+    .filter((r: any) => r.dependsOn?.some((d: any) => d?.resourceName === apiResourceName))
+    .map((r: any) => `${r.resourceName}-${currentEnv}`);
+  adminRoles.push(...resources);
+  return adminRoles;
+};
 
 export const getGQLDiff = (currentBackendDir: string, cloudBackendDir: string): GQLDiff => {
   const currentBuildDir = path.join(currentBackendDir, 'build');

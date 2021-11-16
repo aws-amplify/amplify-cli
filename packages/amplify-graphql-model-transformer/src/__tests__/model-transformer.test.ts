@@ -1056,4 +1056,114 @@ describe('ModelTransformer: ', () => {
 
     validateModelSchema(parsed);
   });
+
+  it('should generate the ID field when not specified', () => {
+    const validSchema = `type Todo @model {
+      name: String
+    }`;
+
+    const transformer = new GraphQLTransform({
+      transformers: [new ModelTransformer()],
+    });
+
+    const out = transformer.transform(validSchema);
+    expect(out).toBeDefined();
+
+    const definition = out.schema;
+    expect(definition).toBeDefined();
+
+    const parsed = parse(definition);
+    validateModelSchema(parsed);
+
+    const createTodoInput = getInputType(parsed, 'CreateTodoInput');
+    expect(createTodoInput).toBeDefined();
+
+    expectFieldsOnInputType(createTodoInput!, ['id', 'name']);
+
+    const idField = createTodoInput!.fields!.find(f => f.name.value === 'id');
+    expect((idField!.type as NamedTypeNode).name!.value).toEqual('ID');
+    expect((idField!.type as NamedTypeNode).kind).toEqual('NamedType');
+
+    const updateTodoInput = getInputType(parsed, 'UpdateTodoInput');
+    expect(updateTodoInput).toBeDefined();
+
+    expectFieldsOnInputType(updateTodoInput!, ['name']);
+  });
+  it('the datastore table should be configured', () => {
+    const validSchema = `
+    type Todo @model {
+      name: String
+    }`;
+
+    const transformer = new GraphQLTransform({
+      transformConfig: {
+        ResolverConfig: {
+          project: {
+            ConflictDetection: 'VERSION',
+            ConflictHandler: ConflictHandlerType.AUTOMERGE,
+          },
+        },
+      },
+      sandboxModeEnabled: true,
+      transformers: [new ModelTransformer()],
+    });
+    const out = transformer.transform(validSchema);
+    expect(out).toBeDefined();
+    const schema = parse(out.schema);
+    validateModelSchema(schema);
+    // sync operation
+    const queryObject = getObjectType(schema, 'Query');
+    expectFields(queryObject!, ['syncTodos']);
+    // sync resolvers
+    expect(out.pipelineFunctions['Query.syncTodos.req.vtl']).toMatchSnapshot();
+    expect(out.pipelineFunctions['Query.syncTodos.res.vtl']).toMatchSnapshot();
+    // ds table
+    cdkExpect(out.rootStack).to(
+      haveResource('AWS::DynamoDB::Table', {
+        KeySchema: [
+          {
+            AttributeName: 'ds_pk',
+            KeyType: 'HASH',
+          },
+          {
+            AttributeName: 'ds_sk',
+            KeyType: 'RANGE',
+          },
+        ],
+        AttributeDefinitions: [
+          {
+            AttributeName: 'ds_pk',
+            AttributeType: 'S',
+          },
+          {
+            AttributeName: 'ds_sk',
+            AttributeType: 'S',
+          },
+        ],
+        BillingMode: 'PAY_PER_REQUEST',
+        StreamSpecification: {
+          StreamViewType: 'NEW_AND_OLD_IMAGES',
+        },
+        TableName: {
+          'Fn::Join': [
+            '',
+            [
+              'AmplifyDataStore-',
+              {
+                'Fn::GetAtt': ['GraphQLAPI', 'ApiId'],
+              },
+              '-',
+              {
+                Ref: 'env',
+              },
+            ],
+          ],
+        },
+        TimeToLiveSpecification: {
+          AttributeName: '_ttl',
+          Enabled: true,
+        },
+      }),
+    );
+  });
 });

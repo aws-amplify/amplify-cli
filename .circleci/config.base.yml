@@ -6,7 +6,7 @@ machine:
     PATH: '${PATH}:${HOME}/${CIRCLE_PROJECT_REPONAME}/node_modules/.bin'
 
 executors:
-  windows: &windows-e2e-executor
+  w: &windows-e2e-executor
     machine:
       image: 'windows-server-2019-vs2019:stable'
       resource_class: 'windows.large'
@@ -16,7 +16,7 @@ executors:
       AMPLIFY_DIR: C:/home/circleci/repo/out
       AMPLIFY_PATH: C:/home/circleci/repo/out/amplify.exe
 
-  linux: &linux-e2e-executor
+  l: &linux-e2e-executor
     docker:
       - image: public.ecr.aws/a6e6w2n0/amplify-cli-e2e-base-image-repo-public:latest
     working_directory: ~/repo
@@ -30,7 +30,7 @@ defaults: &defaults
   parameters:
     os:
       type: executor
-      default: linux
+      default: l
   executor: << parameters.os >>
 
 clean_e2e_resources: &clean_e2e_resources
@@ -67,7 +67,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: linux
+        default: l
     executor: << parameters.os >>
     steps:
       - checkout
@@ -261,7 +261,7 @@ jobs:
     parameters:
       os:
         type: executor
-        default: os.linux
+        default: l
     executor: << parameters.os >>
     working_directory: ~/repo
     steps:
@@ -366,35 +366,6 @@ jobs:
           path: ~/repo/packages/amplify-migration-tests/amplify-migration-reports
     working_directory: ~/repo
 
-  amplify_migration_tests_v4_30_0:
-    <<: *defaults
-    environment:
-      AMPLIFY_PATH: /home/circleci/.npm-global/lib/node_modules/@aws-amplify/cli/bin/amplify
-    steps:
-      - attach_workspace:
-          at: ./
-      - restore_cache:
-          key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}-{{ arch }}
-      - restore_cache:
-          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
-      - run:
-          name: Update OS Packages
-          command: sudo apt-get update
-      - run:
-          name: Run tests migrating from CLI v4.30.0
-          command: |
-            source .circleci/local_publish_helpers.sh
-            changeNpmGlobalPath
-            cd packages/amplify-migration-tests
-            retry yarn run migration_v4.30.0_auth --maxWorkers=3
-          no_output_timeout: 90m
-      - run: *scan_e2e_test_artifacts
-      - store_test_results:
-          path: packages/amplify-migration-tests/
-      - store_artifacts:
-          path: ~/repo/packages/amplify-migration-tests/amplify-migration-reports
-    working_directory: ~/repo
-
   amplify_migration_tests_latest:
     environment:
       AMPLIFY_PATH: /home/circleci/.npm-global/lib/node_modules/@aws-amplify/cli/bin/amplify
@@ -450,7 +421,7 @@ jobs:
     working_directory: ~/repo
     resource_class: large
     docker:
-      - image: cypress/base:12
+      - image: cypress/base:14.17.0
         environment:
           TERM: dumb
     steps:
@@ -704,8 +675,8 @@ workflows:
           matrix:
             parameters:
               os:
-                - linux
-                - windows
+                - l
+                - w
       - test:
           requires:
             - build
@@ -823,22 +794,6 @@ workflows:
             - build
           # post-steps:
           #   - run: *clean_e2e_resources
-      - amplify_migration_tests_v4_30_0:
-          context:
-            - amplify-ecr-image-pull
-            - e2e-auth-credentials
-            - cleanup-resources
-            - e2e-test-context
-          filters:
-            branches:
-              only:
-                - master
-                - /tagged-release\/.*/
-                - /run-e2e\/.*/
-          requires:
-            - build
-          # post-steps:
-          #   - run: *clean_e2e_resources
       - amplify_migration_tests_non_multi_env_layers:
           context:
             - amplify-ecr-image-pull
@@ -911,7 +866,6 @@ workflows:
             - amplify_e2e_tests_pkg
             - amplify_migration_tests_latest
             - amplify_migration_tests_v4
-            - amplify_migration_tests_v4_30_0
 
       - deploy:
           context:
@@ -928,7 +882,6 @@ workflows:
             - amplify_console_integration_tests
             - amplify_migration_tests_latest
             - amplify_migration_tests_v4
-            - amplify_migration_tests_v4_30_0
             - amplify_migration_tests_non_multi_env_layers
             - amplify_migration_tests_multi_env_layers
             - github_prerelease_install_sanity_check
@@ -955,7 +908,7 @@ commands:
     parameters:
       os:
         type: executor
-        default: linux-e2e-executor
+        default: l
     steps:
       - when:
           condition:
@@ -998,7 +951,7 @@ commands:
     parameters:
       os:
         type: executor
-        default: linux-e2e-executor
+        default: l
     steps:
       - when:
           condition:
@@ -1016,7 +969,7 @@ commands:
     parameters:
       os:
         type: executor
-        default: linux-e2e-executor
+        default: l
     steps:
       - when:
           condition:
@@ -1032,7 +985,7 @@ commands:
     parameters:
       os:
         type: executor
-        default: linux-e2e-executor
+        default: l
     steps:
       - when:
           condition:
@@ -1063,7 +1016,7 @@ commands:
     parameters:
       os:
         type: executor
-        default: linux-e2e-executor
+        default: l
     steps:
       - run:
           name: Scan E2E artifacts
@@ -1079,7 +1032,7 @@ commands:
     parameters:
       os:
         type: executor
-        default: linux-e2e-executor
+        default: l
     steps:
       - run:
           name: Clean job resources

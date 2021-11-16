@@ -1,6 +1,7 @@
+import { InvalidDirectiveError } from '@aws-amplify/graphql-transformer-core';
 import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { plurality } from 'graphql-transformer-common';
-import { PrimaryKeyDirectiveConfiguration } from './types';
+import { IndexDirectiveConfiguration, PrimaryKeyDirectiveConfiguration } from './types';
 
 export function lookupResolverName(config: PrimaryKeyDirectiveConfiguration, ctx: TransformerContextProvider, op: string): string | null {
   const { object, modelDirective } = config;
@@ -35,4 +36,15 @@ export function lookupResolverName(config: PrimaryKeyDirectiveConfiguration, ctx
   }
 
   return resolverName;
+}
+
+export function validateNotSelfReferencing(config: IndexDirectiveConfiguration | PrimaryKeyDirectiveConfiguration) {
+  const { directive, field, sortKeyFields } = config;
+  const fieldName = field.name.value;
+
+  for (const sortKeyField of sortKeyFields) {
+    if (sortKeyField === fieldName) {
+      throw new InvalidDirectiveError(`@${directive.name.value} field '${fieldName}' cannot reference itself.`);
+    }
+  }
 }

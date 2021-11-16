@@ -1,4 +1,5 @@
 import { create } from '../../../velocity/util/index';
+import { map as valueMap } from '../../../velocity/value-mapper/mapper';
 import { GraphQLResolveInfo } from 'graphql';
 import { map, random } from 'lodash';
 import { AppSyncGraphQLExecutionContext } from '../../../utils/graphql-runner';
@@ -19,16 +20,26 @@ beforeEach(() => {
 });
 
 describe('$utils.list.copyAndRetainAll', () => {
-  it('should retain', () => {
+  it('should retain numbers list', () => {
     const myList = [1, 2, 3, 4, 5];
     expect(util.list.copyAndRetainAll(myList, [2, 4])).toEqual([2, 4]);
+  });
+  it('should retain java array of java strings', () => {
+    const myList = valueMap(['foo', 'bar', 'baz', 'qux']);
+    const result = util.list.copyAndRetainAll(myList, valueMap(['foo', 'bar']));
+    expect(result.toJSON()).toEqual(['foo', 'bar']);
   });
 });
 
 describe('$utils.list.copyAndRemoveAll', () => {
-  it('should remove', () => {
+  it('should remove numbers', () => {
     const myList = [1, 2, 3, 4, 5];
     expect(util.list.copyAndRemoveAll(myList, [2, 4])).toEqual([1, 3, 5]);
+  });
+  it('should remove java array of java strings', () => {
+    const myList = valueMap(['foo', 'bar', 'baz', 'qux']);
+    const result = util.list.copyAndRemoveAll(myList, valueMap(['bar', 'qux']));
+    expect(result.toJSON()).toEqual(['foo', 'baz']);
   });
 });
 

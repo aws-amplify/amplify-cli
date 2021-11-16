@@ -132,7 +132,7 @@ const defaultOptions: AddApiOptions = {
 export function addAuthViaAPIWithTrigger(cwd: string, settings: any): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(defaultOptions.testingWithLatestCodebase), ['add', 'api'], { cwd, stripColors: true })
-      .wait('Please select from one of the below mentioned services:')
+      .wait('Select from one of the below mentioned services:')
       .sendCarriageReturn()
       .wait(/.*Here is the GraphQL API that we will create. Select a setting to edit or continue.*/)
       .sendKeyUp(2)
@@ -180,7 +180,7 @@ export function addAuthViaAPIWithTrigger(cwd: string, settings: any): Promise<vo
 export function addAuthwithUserPoolGroupsViaAPIWithTrigger(cwd: string, settings: any): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(defaultOptions.testingWithLatestCodebase), ['add', 'api'], { cwd, stripColors: true })
-      .wait('Please select from one of the below mentioned services:')
+      .wait('Select from one of the below mentioned services:')
       .sendCarriageReturn()
       .wait(/.*Here is the GraphQL API that we will create. Select a setting to edit or continue.*/)
       .sendKeyUp(2)
@@ -195,9 +195,9 @@ export function addAuthwithUserPoolGroupsViaAPIWithTrigger(cwd: string, settings
       .wait('Select the authentication/authorization services that you want to use:')
       .send(KEY_DOWN_ARROW)
       .sendCarriageReturn()
-      .wait('Please provide a friendly name for your resource that will be used to label this category in the project:')
+      .wait('Provide a friendly name for your resource that will be used to label this category in the project:')
       .sendCarriageReturn()
-      .wait('Please provide a name for your user pool:')
+      .wait('Provide a name for your user pool:')
       .sendCarriageReturn()
       .wait('How do you want users to be able to sign in')
       .sendCarriageReturn()
@@ -217,7 +217,7 @@ export function addAuthwithUserPoolGroupsViaAPIWithTrigger(cwd: string, settings
       .wait('Email based user registration/forgot password:')
       .send(KEY_DOWN_ARROW)
       .sendCarriageReturn()
-      .wait('Please specify an SMS verification message:')
+      .wait('Specify an SMS verification message:')
       .sendCarriageReturn()
       .wait('Do you want to override the default password policy for this User Pool?')
       .sendCarriageReturn()
@@ -225,7 +225,7 @@ export function addAuthwithUserPoolGroupsViaAPIWithTrigger(cwd: string, settings
       .sendCarriageReturn()
       .wait(`Specify the app's refresh token expiration period (in days):`)
       .sendCarriageReturn()
-      .wait(' Do you want to specify the user attributes this app can read and write?')
+      .wait('Do you want to specify the user attributes this app can read and write?')
       .sendCarriageReturn()
       .wait('Do you want to enable any of the following capabilities?')
       .send(KEY_DOWN_ARROW)
@@ -273,16 +273,16 @@ export function addAuthWithCustomTrigger(cwd: string, settings: any): Promise<vo
       .sendCarriageReturn()
       .wait('Select the authentication/authorization services that you want to use:')
       .sendCarriageReturn()
-      .wait('Please provide a friendly name')
+      .wait('Provide a friendly name')
       .sendCarriageReturn()
-      .wait('Please enter a name for your identity pool.')
+      .wait('Enter a name for your identity pool.')
       .sendCarriageReturn()
       .wait('Allow unauthenticated logins?')
       .sendCarriageReturn()
       .wait('Do you want to enable 3rd party authentication providers in your identity pool?')
       .send(KEY_DOWN_ARROW)
       .sendCarriageReturn()
-      .wait('Please provide a name for your user pool:')
+      .wait('Provide a name for your user pool:')
       .sendCarriageReturn()
       .wait('How do you want users to be able to sign in?')
       .sendCarriageReturn()
@@ -296,9 +296,9 @@ export function addAuthWithCustomTrigger(cwd: string, settings: any): Promise<vo
       .sendCarriageReturn()
       .wait('Email based user registration/forgot password:')
       .sendCarriageReturn()
-      .wait('Please specify an email verification subject:')
+      .wait('Specify an email verification subject:')
       .sendCarriageReturn()
-      .wait('Please specify an email verification message:')
+      .wait('Specify an email verification message:')
       .sendCarriageReturn()
       .wait('Do you want to override the default password policy for this User Pool?')
       .sendCarriageReturn()
@@ -330,11 +330,11 @@ export function addAuthWithCustomTrigger(cwd: string, settings: any): Promise<vo
       .wait('Enter a comma-delimited list of disallowed email domains')
       .send('amazon.com')
       .sendCarriageReturn()
-      .wait(`Do you want to edit your email-filter-denylist${settings.useInclusiveTerminology === false ? '-legacy' : ''} function now?`)
-      .sendConfirmNo()
-      .wait('Do you want to edit your custom function now')
-      .sendConfirmNo()
       .wait('Successfully')
+      .wait(`Do you want to edit your email-filter-denylist${settings.useInclusiveTerminology === false ? '-legacy' : ''} function now?`)
+      .sendLine('n')
+      .wait('Do you want to edit your custom function now')
+      .sendLine('n')
       .run((err: Error) => {
         if (!err) {
           resolve();
@@ -346,8 +346,13 @@ export function addAuthWithCustomTrigger(cwd: string, settings: any): Promise<vo
 }
 
 export function updateAuthSignInSignOutUrl(cwd: string, settings: any): Promise<void> {
+  const testingWithLatestCodebase = settings.testingWithLatestCodebase ?? false;
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['update', 'auth'], { cwd, stripColors: true })
+    const chain = spawn(getCLIPath(testingWithLatestCodebase), ['update', 'auth'], { cwd, stripColors: true });
+    if (settings?.overrides?.category === 'auth') {
+      chain.wait('A migration is needed to support latest updates on auth resources').sendConfirmYes();
+    }
+    chain
       .wait('What do you want to do?')
       .send(KEY_DOWN_ARROW)
       .send(KEY_DOWN_ARROW)
@@ -380,8 +385,13 @@ export function updateAuthSignInSignOutUrl(cwd: string, settings: any): Promise<
 }
 
 export function updateAuthToRemoveFederation(cwd: string, settings: any): Promise<void> {
+  const testingWithLatestCodebase = settings.testingWithLatestCodebase ?? false;
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['update', 'auth'], { cwd, stripColors: true })
+    const chain = spawn(getCLIPath(testingWithLatestCodebase), ['update', 'auth'], { cwd, stripColors: true });
+    if (settings?.overrides?.category === 'auth') {
+      chain.wait('A migration is needed to support latest updates on auth resources').sendConfirmYes();
+    }
+    chain
       .wait('What do you want to do?')
       .sendCarriageReturn()
       .wait('"amplify publish" will build all your local backend and frontend resources')
@@ -397,8 +407,13 @@ export function updateAuthToRemoveFederation(cwd: string, settings: any): Promis
 }
 
 export function updateAuthWithoutCustomTrigger(cwd: string, settings: any): Promise<void> {
+  const testingWithLatestCodebase = settings.testingWithLatestCodebase ?? false;
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['update', 'auth'], { cwd, stripColors: true })
+    const chain = spawn(getCLIPath(testingWithLatestCodebase), ['update', 'auth'], { cwd, stripColors: true });
+    if (settings?.overrides?.category === 'auth') {
+      chain.wait('A migration is needed to support latest updates on auth resources').sendConfirmYes();
+    }
+    chain
       .wait('What do you want to do?')
       .send(KEY_DOWN_ARROW)
       .send(KEY_DOWN_ARROW)
@@ -417,9 +432,9 @@ export function updateAuthWithoutCustomTrigger(cwd: string, settings: any): Prom
       .sendCarriageReturn()
       .wait('Email based user registration/forgot password:')
       .sendCarriageReturn()
-      .wait('Please specify an email verification subject:')
+      .wait('Specify an email verification subject:')
       .sendCarriageReturn()
-      .wait('Please specify an email verification message:')
+      .wait('Specify an email verification message:')
       .sendCarriageReturn()
       .wait('Do you want to override the default password policy for this User Pool?')
       .sendCarriageReturn()
@@ -486,8 +501,15 @@ export function addAuthWithRecaptchaTrigger(cwd: string, settings: any): Promise
 }
 
 export function updateAuthRemoveRecaptchaTrigger(cwd: string, settings: any): Promise<void> {
+  const testingWithLatestCodebase = settings.testingWithLatestCodebase ?? false;
+  console.log(testingWithLatestCodebase);
+  console.log(settings);
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['update', 'auth'], { cwd, stripColors: true })
+    const chain = spawn(getCLIPath(testingWithLatestCodebase), ['update', 'auth'], { cwd, stripColors: true });
+    if (settings?.overrides?.category === 'auth') {
+      chain.wait('A migration is needed to support latest updates on auth resources').sendConfirmYes();
+    }
+    chain
       .wait('What do you want to do')
       .send(KEY_DOWN_ARROW)
       .sendCarriageReturn()
@@ -508,9 +530,9 @@ export function updateAuthRemoveRecaptchaTrigger(cwd: string, settings: any): Pr
       .sendCarriageReturn()
       .wait('Email based user registration/forgot password')
       .sendCarriageReturn()
-      .wait('Please specify an email verification subject:')
+      .wait('Specify an email verification subject:')
       .sendCarriageReturn()
-      .wait('Please specify an email verification message')
+      .wait('Specify an email verification message')
       .sendCarriageReturn()
       .wait('Do you want to override the default password policy for this')
       .sendCarriageReturn()
@@ -727,9 +749,9 @@ export function addAuthUserPoolOnly(cwd: string, settings: any): Promise<void> {
       .wait('Select the authentication/authorization services that you want to use')
       .sendKeyDown()
       .sendCarriageReturn()
-      .wait('Please provide a friendly name for your resource that will be used')
+      .wait('Provide a friendly name for your resource that will be used')
       .sendCarriageReturn()
-      .wait('Please provide a name for your user pool')
+      .wait('Provide a name for your user pool')
       .sendCarriageReturn()
       .wait('How do you want users to be able to sign in')
       .sendCarriageReturn()
@@ -756,13 +778,13 @@ export function addAuthUserPoolOnly(cwd: string, settings: any): Promise<void> {
       .sendCarriageReturn()
       .wait('For user login, select the MFA types')
       .sendLine('a')
-      .wait('Please specify an SMS authentication message')
+      .wait('Specify an SMS authentication message')
       .sendCarriageReturn()
       .wait('Email based user registration/forgot password')
       .sendCarriageReturn()
-      .wait('Please specify an email verification subject')
+      .wait('Specify an email verification subject')
       .sendCarriageReturn()
-      .wait('Please specify an email verification message')
+      .wait('Specify an email verification message')
       .sendCarriageReturn()
       .wait('Do you want to override the default password policy')
       .sendConfirmYes()
@@ -854,7 +876,6 @@ export function addAuthUserPoolOnly(cwd: string, settings: any): Promise<void> {
       .wait('Successfully')
       .wait('Do you want to edit your custom function now')
       .sendConfirmNo()
-      .wait('Successfully added auth resource')
       .sendEof()
       .run((err: Error) => {
         if (!err) {
@@ -875,16 +896,16 @@ export function addAuthWithGroups(cwd: string): Promise<void> {
       .sendCarriageReturn() // Manual configuration
       .wait('Select the authentication/authorization services that you want to use')
       .sendCarriageReturn() // for sign-up/-in and IAM controls
-      .wait('Please provide a friendly name for your resource that will be used')
+      .wait('Provide a friendly name for your resource that will be used')
       .sendCarriageReturn() // Default
-      .wait('Please enter a name for your identity pool')
+      .wait('Enter a name for your identity pool')
       .sendCarriageReturn() // Default
       .wait('Allow unauthenticated logins')
       .sendCarriageReturn() // No
       .wait('Do you want to enable 3rd party authentication providers')
       .sendKeyDown()
       .sendCarriageReturn() // No
-      .wait('Please provide a name for your user pool')
+      .wait('Provide a name for your user pool')
       .sendCarriageReturn() // Default
       .wait('Warning: you will not be able to edit these selections')
       .wait('How do you want users to be able to sign in')
@@ -905,12 +926,12 @@ export function addAuthWithGroups(cwd: string): Promise<void> {
       .sendKeyDown()
       .sendCarriageReturn() // No
       .wait('Multifactor authentication (MFA) user login options')
-      .sendCarriageReturn() // OFF
+      .sendCarriageReturn() // Select Off
       .wait('Email based user registration/forgot password')
       .sendCarriageReturn() // Enabled
-      .wait('Please specify an email verification subject')
+      .wait('Specify an email verification subject')
       .sendCarriageReturn() // Your verification code
-      .wait('Please specify an email verification message')
+      .wait('Specify an email verification message')
       .sendCarriageReturn() // Your verification code is {####}
       .wait('Do you want to override the default password policy')
       .sendConfirmNo()
@@ -941,16 +962,16 @@ export function addAuthWithGroupsAndAdminAPI(cwd: string, settings: any): Promis
       .sendCarriageReturn() // Manual configuration
       .wait('Select the authentication/authorization services that you want to use')
       .sendCarriageReturn() // for sign-up/-in and IAM controls
-      .wait('Please provide a friendly name for your resource that will be used')
+      .wait('Provide a friendly name for your resource that will be used')
       .sendCarriageReturn() // Default
-      .wait('Please enter a name for your identity pool')
+      .wait('Enter a name for your identity pool')
       .sendCarriageReturn() // Default
       .wait('Allow unauthenticated logins')
       .sendCarriageReturn() // No
       .wait('Do you want to enable 3rd party authentication providers')
       .sendKeyDown()
       .sendCarriageReturn() // No
-      .wait('Please provide a name for your user pool')
+      .wait('Provide a name for your user pool')
       .sendCarriageReturn() // Default
       .wait('Warning: you will not be able to edit these selections')
       .wait('How do you want users to be able to sign in')
@@ -977,9 +998,9 @@ export function addAuthWithGroupsAndAdminAPI(cwd: string, settings: any): Promis
       .sendCarriageReturn() // OFF
       .wait('Email based user registration/forgot password')
       .sendCarriageReturn() // Enabled
-      .wait('Please specify an email verification subject')
+      .wait('Specify an email verification subject')
       .sendCarriageReturn() // Your verification code
-      .wait('Please specify an email verification message')
+      .wait('Specify an email verification message')
       .sendCarriageReturn() // Your verification code is {####}
       .wait('Do you want to override the default password policy')
       .sendConfirmNo()
@@ -1022,16 +1043,16 @@ export function addAuthWithMaxOptions(cwd: string, settings: any): Promise<void>
   } = getSocialProviders(true);
 
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['add', 'auth'], { cwd, stripColors: true })
+    const chain = spawn(getCLIPath(), ['add', 'auth'], { cwd, stripColors: true })
       .wait('Do you want to use the default authentication and security configuration?')
       .send(KEY_DOWN_ARROW)
       .send(KEY_DOWN_ARROW)
       .sendCarriageReturn()
       .wait('Select the authentication/authorization services that you want to use')
       .sendCarriageReturn()
-      .wait('Please provide a friendly name for your resource that will be used')
+      .wait('Provide a friendly name for your resource that will be used')
       .sendCarriageReturn()
-      .wait('Please enter a name for your identity pool')
+      .wait('Enter a name for your identity pool')
       .sendCarriageReturn()
       .wait('Allow unauthenticated logins')
       .sendCarriageReturn()
@@ -1045,14 +1066,21 @@ export function addAuthWithMaxOptions(cwd: string, settings: any): Promise<void>
       .sendCarriageReturn()
       .wait('Enter your Google Web Client ID for your identity pool:')
       .send('googleIDPOOL')
-      .sendCarriageReturn()
+      .sendCarriageReturn();
+    if (settings.frontend === 'ios') {
+      chain.wait('Enter your Google iOS Client ID for your identity pool').send('googleiosclientId').sendCarriageReturn();
+    }
+    if (settings.frontend === 'android') {
+      chain.wait('Enter your Google Android Client ID for your identity pool').send('googleandroidclientid').sendCarriageReturn();
+    }
+    chain
       .wait('Enter your Amazon App ID for your identity pool')
       .send('amazonIDPOOL')
       .sendCarriageReturn()
       .wait('Enter your Bundle Identifier for your identity pool')
       .send('appleIDPOOL')
       .sendCarriageReturn()
-      .wait('Please provide a name for your user pool')
+      .wait('Provide a name for your user pool')
       .sendCarriageReturn()
       .wait('How do you want users to be able to sign in')
       .sendCarriageReturn()
@@ -1083,13 +1111,13 @@ export function addAuthWithMaxOptions(cwd: string, settings: any): Promise<void>
       .wait('For user login, select the MFA types')
       .send('a')
       .sendCarriageReturn()
-      .wait('Please specify an SMS authentication message')
+      .wait('Specify an SMS authentication message')
       .sendCarriageReturn()
       .wait('Email based user registration/forgot password')
       .sendCarriageReturn()
-      .wait('Please specify an email verification subject')
+      .wait('Specify an email verification subject')
       .sendCarriageReturn()
-      .wait('Please specify an email verification message')
+      .wait('Specify an email verification message')
       .sendCarriageReturn()
       .wait('Do you want to override the default password policy')
       .sendConfirmYes()
@@ -1121,9 +1149,11 @@ export function addAuthWithMaxOptions(cwd: string, settings: any): Promise<void>
       .wait('Enter your redirect signout URI')
       .sendLine('https://signout1/')
       .wait('Do you want to add another redirect signout URI')
-      .sendConfirmNo()
-      .wait('Select the OAuth flows enabled for this project')
-      .sendCarriageReturn()
+      .sendConfirmNo();
+    if (settings.frontend !== 'ios' && settings.frontend !== 'android' && settings.frontend !== 'flutter') {
+      chain.wait('Select the OAuth flows enabled for this project').sendCarriageReturn();
+    }
+    chain
       .wait('Select the OAuth scopes enabled for this project')
       .sendCarriageReturn()
       .wait('Select the social providers you want to configure for your user pool')
@@ -1212,18 +1242,15 @@ export function addAuthWithPreTokenGenerationTrigger(projectDir: string): Promis
       .wait('How do you want users to be able to sign in')
       .sendCarriageReturn()
       .wait('Do you want to configure advanced settings')
-      .send(KEY_DOWN_ARROW)
-      .sendCarriageReturn()
+      .sendLine(KEY_DOWN_ARROW)
       .wait('What attributes are required for signing up?')
       .sendCarriageReturn()
       .wait('Do you want to enable any of the following capabilities')
       .send(KEY_UP_ARROW) //Override ID Token Claims
-      .send(' ')
-      .sendCarriageReturn()
+      .sendLine(' ')
+      .wait('Successfully added the Lambda function locally')
       .wait('Do you want to edit your alter-claims function now')
-      .send('n')
-      .sendCarriageReturn()
-      .wait('"amplify publish" will build all your local backend and frontend resources')
+      .sendLine('n')
       .run((err: Error) => {
         if (!err) {
           resolve();
@@ -1234,13 +1261,17 @@ export function addAuthWithPreTokenGenerationTrigger(projectDir: string): Promis
   });
 }
 
-export function updateAuthAddUserGroups(projectDir: string, groupNames: string[]): Promise<void> {
+export function updateAuthAddUserGroups(projectDir: string, groupNames: string[], settings?: any): Promise<void> {
   if (groupNames.length == 0) {
     return;
   }
-
+  const testingWithLatestCodebase = settings && settings.testingWithLatestCodebase ? settings.testingWithLatestCodebase : false;
   return new Promise((resolve, reject) => {
-    let chain = spawn(getCLIPath(), ['update', 'auth'], { cwd: projectDir, stripColors: true })
+    const chain = spawn(getCLIPath(testingWithLatestCodebase), ['update', 'auth'], { cwd: projectDir, stripColors: true });
+    if (settings?.overrides?.category === 'auth') {
+      chain.wait('A migration is needed to support latest updates on auth resources').sendConfirmYes();
+    }
+    chain
       .wait('What do you want to do?')
       .send(KEY_DOWN_ARROW)
       .send(KEY_DOWN_ARROW)
@@ -1286,9 +1317,9 @@ export function addAuthUserPoolOnlyWithOAuth(cwd: string, settings: AddAuthUserP
       .wait('Select the authentication/authorization services that you want to use')
       .sendKeyDown()
       .sendCarriageReturn()
-      .wait('Please provide a friendly name for your resource that will be used')
+      .wait('Provide a friendly name for your resource that will be used')
       .sendLine(settings.resourceName)
-      .wait('Please provide a name for your user pool')
+      .wait('Provide a name for your user pool')
       .sendLine(settings.userPoolName)
       .wait('How do you want users to be able to sign in')
       .sendCarriageReturn() // Username
@@ -1302,9 +1333,9 @@ export function addAuthUserPoolOnlyWithOAuth(cwd: string, settings: AddAuthUserP
       .sendCarriageReturn() // OFF
       .wait('Email based user registration/forgot password')
       .sendCarriageReturn() // Enabled
-      .wait('Please specify an email verification subject')
+      .wait('Specify an email verification subject')
       .sendCarriageReturn()
-      .wait('Please specify an email verification message')
+      .wait('Specify an email verification message')
       .sendCarriageReturn()
       .wait('Do you want to override the default password policy')
       .sendConfirmNo()
@@ -1386,9 +1417,9 @@ export function addAuthIdentityPoolAndUserPoolWithOAuth(
       .sendCarriageReturn()
       .wait('Select the authentication/authorization services that you want to use')
       .sendCarriageReturn()
-      .wait('Please provide a friendly name for your resource that will be used')
+      .wait('Provide a friendly name for your resource that will be used')
       .sendLine(settings.resourceName)
-      .wait('Please enter a name for your identity pool')
+      .wait('Enter a name for your identity pool')
       .sendLine(settings.identityPoolName)
       .wait('Allow unauthenticated logins');
 
@@ -1412,7 +1443,7 @@ export function addAuthIdentityPoolAndUserPoolWithOAuth(
       .sendLine(settings.idpAmazonAppId)
       .wait('Enter your Bundle Identifier for your identity pool')
       .sendLine(settings.idpAppleAppId)
-      .wait('Please provide a name for your user pool')
+      .wait('Provide a name for your user pool')
       .sendLine(settings.userPoolName)
       .wait('How do you want users to be able to sign in')
       .sendCarriageReturn() // Username
@@ -1426,9 +1457,9 @@ export function addAuthIdentityPoolAndUserPoolWithOAuth(
       .sendCarriageReturn() // OFF
       .wait('Email based user registration/forgot password')
       .sendCarriageReturn() // Enabled
-      .wait('Please specify an email verification subject')
+      .wait('Specify an email verification subject')
       .sendCarriageReturn()
-      .wait('Please specify an email verification message')
+      .wait('Specify an email verification message')
       .sendCarriageReturn()
       .wait('Do you want to override the default password policy')
       .sendConfirmNo()
@@ -1508,9 +1539,9 @@ export function addAuthUserPoolOnlyNoOAuth(cwd: string, settings: AddAuthUserPoo
       .wait('Select the authentication/authorization services that you want to use')
       .sendKeyDown()
       .sendCarriageReturn()
-      .wait('Please provide a friendly name for your resource that will be used')
+      .wait('Provide a friendly name for your resource that will be used')
       .sendLine(settings.resourceName)
-      .wait('Please provide a name for your user pool')
+      .wait('Provide a name for your user pool')
       .sendLine(settings.userPoolName)
       .wait('How do you want users to be able to sign in')
       .sendCarriageReturn() // Username
@@ -1524,9 +1555,9 @@ export function addAuthUserPoolOnlyNoOAuth(cwd: string, settings: AddAuthUserPoo
       .sendCarriageReturn() // OFF
       .wait('Email based user registration/forgot password')
       .sendCarriageReturn() // Enabled
-      .wait('Please specify an email verification subject')
+      .wait('Specify an email verification subject')
       .sendCarriageReturn()
-      .wait('Please specify an email verification message')
+      .wait('Specify an email verification message')
       .sendCarriageReturn()
       .wait('Do you want to override the default password policy')
       .sendConfirmNo()
@@ -1554,9 +1585,14 @@ export function addAuthUserPoolOnlyNoOAuth(cwd: string, settings: AddAuthUserPoo
   });
 }
 
-export function updateAuthAddAdminQueries(projectDir: string, groupName: string = 'adminQueriesGroup'): Promise<void> {
+export function updateAuthAddAdminQueries(projectDir: string, groupName: string = 'adminQueriesGroup', settings?: any): Promise<void> {
+  const testingWithLatestCodebase = settings.testingWithLatestCodebase ?? false;
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['update', 'auth'], { cwd: projectDir, stripColors: true })
+    const chain = spawn(getCLIPath(testingWithLatestCodebase), ['update', 'auth'], { cwd: projectDir, stripColors: true });
+    if (settings?.overrides?.category === 'auth') {
+      chain.wait('A migration is needed to support latest updates on auth resources').sendConfirmYes();
+    }
+    chain
       .wait('What do you want to do?')
       .send(KEY_DOWN_ARROW)
       .send(KEY_DOWN_ARROW)
@@ -1582,8 +1618,13 @@ export function updateAuthAddAdminQueries(projectDir: string, groupName: string 
 }
 
 export function updateAuthWithoutTrigger(cwd: string, settings: any): Promise<void> {
+  const testingWithLatestCodebase = settings.testingWithLatestCodebase ?? false;
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['update', 'auth'], { cwd, stripColors: true })
+    const chain = spawn(getCLIPath(testingWithLatestCodebase), ['update', 'auth'], { cwd, stripColors: true });
+    if (settings?.overrides?.category === 'auth') {
+      chain.wait('A migration is needed to support latest updates on auth resources').sendConfirmYes();
+    }
+    chain
       .wait('What do you want to do?')
       .send(KEY_DOWN_ARROW)
       .sendCarriageReturn()
@@ -1600,9 +1641,9 @@ export function updateAuthWithoutTrigger(cwd: string, settings: any): Promise<vo
       .sendCarriageReturn()
       .wait('Email based user registration/forgot password:')
       .sendCarriageReturn()
-      .wait('Please specify an email verification subject:')
+      .wait('Specify an email verification subject:')
       .sendCarriageReturn()
-      .wait('Please specify an email verification message:')
+      .wait('Specify an email verification message:')
       .sendCarriageReturn()
       .wait('Do you want to override the default password policy for this User Pool?')
       .sendCarriageReturn()

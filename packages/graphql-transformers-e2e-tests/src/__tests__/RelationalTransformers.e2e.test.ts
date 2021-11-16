@@ -127,7 +127,7 @@ type Course @model {
       },
       additionalAuthenticationProviders: [],
     };
-    const authTransformer = new AuthTransformer({ authConfig, addAwsIamAuthInOutputSchema: false });
+    const authTransformer = new AuthTransformer();
     const modelTransformer = new ModelTransformer();
     const indexTransformer = new IndexTransformer();
     const hasOneTransformer = new HasOneTransformer();
