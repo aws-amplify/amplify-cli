@@ -461,7 +461,7 @@ export const updateWalkthrough = async (context): Promise<UpdateApiRequest> => {
   }
 
   // migrate API project
-  if (await checkAppsyncApiResourceMigration(context, resourceName)) {
+  if (await checkAppsyncApiResourceMigration(context, resourceName, true)) {
     // fetch cli Inputs again
     // call compile schema here
     await context.amplify.invokePluginMethod(context, 'awscloudformation', undefined, 'compileSchema', [context, { forceCompile: true }]);
@@ -808,7 +808,7 @@ export async function askAuthQuestions(authType, context, printLeadText = false,
 }
 
 async function askUserPoolQuestions(context) {
-  let authResourceName = checkIfAuthExists();
+  let authResourceName = checkIfAuthExists(context);
   if (!authResourceName) {
     authResourceName = await context.amplify.invokePluginMethod(context, 'auth', undefined, 'add', [context, true]);
   } else {

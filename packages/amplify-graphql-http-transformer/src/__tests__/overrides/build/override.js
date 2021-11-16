@@ -1,27 +1,22 @@
-'use strict';
-/* Add Amplify Helper dependencies     */
-Object.defineProperty(exports, '__esModule', { value: true });
-exports.overrideProps = void 0;
-/* TODO: Need to change props to Root-Stack specific props when props are ready */
-function overrideProps(props) {
+function override(resource) {
   /* TODO: Add snippet of how to override in comments */
-  props.http.httpsDataSource['httpwwwapicom'].serviceRoleArn = 'mockArn';
-  props.http.httpsDataSource['httpwwwapicom'].httpConfig = {
+  resource.http.httpsDataSource['httpwwwapicom'].serviceRoleArn = 'mockArn';
+  resource.http.httpsDataSource['httpwwwapicom'].httpConfig = {
     endpoint: 'mockEndpoint',
   };
-  props.http.httpsDataSource['httpapicom'].serviceRoleArn = 'mockArn';
-  props.http.httpsDataSource['httpapicom'].httpConfig = {
+  resource.http.httpsDataSource['httpapicom'].serviceRoleArn = 'mockArn';
+  resource.http.httpsDataSource['httpapicom'].httpConfig = {
     endpoint: 'mockEndpoint',
   };
-  props.http.httpsDataSource['httpwwwgooglecom'].serviceRoleArn = 'mockArn';
-  props.http.httpsDataSource['httpwwwgooglecom'].httpConfig = {
+  resource.http.httpsDataSource['httpwwwgooglecom'].serviceRoleArn = 'mockArn';
+  resource.http.httpsDataSource['httpwwwgooglecom'].httpConfig = {
     endpoint: 'mockEndpoint',
   };
-  props.http.httpsDataSource['httpswwwapicom'].serviceRoleArn = 'mockArn';
-  props.http.httpsDataSource['httpswwwapicom'].httpConfig = {
+  resource.http.httpsDataSource['httpswwwapicom'].serviceRoleArn = 'mockArn';
+  resource.http.httpsDataSource['httpswwwapicom'].httpConfig = {
     endpoint: 'mockEndpoint',
   };
   // override resolver
-  props.http.resolvers['commentContentResolver'].requestMappingTemplate = 'mockTemplate';
+  resource.http.resolvers['commentContentResolver'].requestMappingTemplate = 'mockTemplate';
 }
-exports.overrideProps = overrideProps;
+exports.override = override;

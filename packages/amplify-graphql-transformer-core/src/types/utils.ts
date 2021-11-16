@@ -17,7 +17,7 @@ import _ from 'lodash';
 export const stacksTypes: Record<string, string> = {
   API: 'api',
   MODELS: 'models',
-  HttpDirectiveStack: 'http',
+  HttpStack: 'http',
   FunctionDirectiveStack: 'function',
   PredictionsDirectiveStack: 'predictions',
   SearchableStack: 'openSearch',
@@ -107,7 +107,7 @@ export const convertToAppsyncResourceObj = (amplifyObj: any) => {
       appsyncResourceObject.function = generateFunctionDirectiveObject(functionStackObj);
     } else if (keys === 'http' && !_.isEmpty(amplifyObj[keys])) {
       appsyncResourceObject.http = {};
-      const httpStackObj = amplifyObj.http.HttpDirectiveStack;
+      const httpStackObj = amplifyObj.http.HttpStack;
       appsyncResourceObject.http = generateHttpDirectiveObject(httpStackObj);
     } else if (keys === 'openSearch' && !_.isEmpty(amplifyObj[keys])) {
       appsyncResourceObject.opensearch = {};
