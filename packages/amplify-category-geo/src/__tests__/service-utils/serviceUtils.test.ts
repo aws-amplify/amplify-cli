@@ -1,4 +1,4 @@
-import { stateManager } from 'amplify-cli-core';
+import { stateManager, JSONUtilities, pathManager } from 'amplify-cli-core';
 import { provider, ServiceName } from '../../service-utils/constants';
 import { getMapStyleComponents, MapStyle } from '../../service-utils/mapParams';
 import { DataSourceIntendedUse } from '../../service-utils/placeIndexParams';
@@ -41,6 +41,14 @@ describe('Test Map resource utility functions', () => {
         pricingPlan: PricingPlan.MobileAssetManagement,
         accessType: AccessType.AuthorizedUsers
     };
+    const geofenceCollection1Params = {
+        service: ServiceName.GeofenceCollection,
+        isDefault: false,
+        providerPlugin: provider,
+        dataProvider: DataProvider.Esri,
+        pricingPlan: PricingPlan.MobileAssetManagement,
+        accessType: AccessType.CognitoGroups
+    };
 
     beforeEach(() => {
         jest.clearAllMocks();
@@ -49,7 +57,8 @@ describe('Test Map resource utility functions', () => {
                 map1: map1Params,
                 map2: map2Params,
                 placeIndex1: placeIndex1Params,
-                placeIndex2: placeIndex2Params
+                placeIndex2: placeIndex2Params,
+                geofenceCollection1: geofenceCollection1Params
             }
         });
     });
@@ -85,5 +94,25 @@ describe('Test Map resource utility functions', () => {
             accessType: placeIndex1Params.accessType,
             isDefault: placeIndex1Params.isDefault
         }).toEqual(placeIndexParams);
+    });
+
+    it('gets current geofence collection parameters from meta file', async() => {
+        const groupPermissions = {
+            mockCognitoGroup: [
+                "Read geofence",
+                "Create/Update geofence"
+            ]
+        }
+        JSONUtilities.readJson = jest.fn().mockReturnValue({groupPermissions: groupPermissions});
+        pathManager.getBackendDirPath = jest.fn().mockReturnValue('');
+        const getCurrentGeofenceCollectionParameters = require('../../service-utils/geofenceCollectionUtils').getCurrentGeofenceCollectionParameters;
+        const geofenceCollectionParams = await getCurrentGeofenceCollectionParameters('geofenceCollection1');
+        expect({
+            dataProvider: geofenceCollection1Params.dataProvider,
+            pricingPlan: geofenceCollection1Params.pricingPlan,
+            accessType: geofenceCollection1Params.accessType,
+            isDefault: geofenceCollection1Params.isDefault,
+            groupPermissions: groupPermissions
+        }).toEqual(geofenceCollectionParams);
     });
 });
