@@ -4,7 +4,7 @@ import * as lambdaCdk from '@aws-cdk/aws-lambda';
 import * as s3Cdk from '@aws-cdk/aws-s3';
 import { HttpMethods } from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
-import { $TSAny, $TSContext, $TSObject, AmplifyCategories } from 'amplify-cli-core';
+import { $TSAny, $TSContext, $TSObject, AmplifyCategories, stateManager } from 'amplify-cli-core';
 import {
   defaultS3UserInputs,
   GroupAccessType,
@@ -373,14 +373,28 @@ export class AmplifyS3ResourceCfnStack extends AmplifyResourceCfnStack implement
     };
   }
 
+  /**
+   * Legacy stack names did not start with amplify-
+   * the s3bucket was constructed without resourceName
+   * @returns boolean  (true if legacy stack (2019/18))
+   */
+  isAmplifyStackLegacy():boolean{
+    const amplifyMeta = stateManager.getMeta();
+    const stackName :string = amplifyMeta.providers.awscloudformation.StackName;
+    return !stackName.startsWith('amplify-');
+  }
+
   buildBucketName() {
-    const bucketNameSuffixRef = cdk.Fn.select(3, cdk.Fn.split('-', cdk.Fn.ref('AWS::StackName')));
     const bucketRef = cdk.Fn.ref('bucketName');
     const envRef = cdk.Fn.ref('env');
+    const bucketNameSuffixRef = cdk.Fn.select(3, cdk.Fn.split('-', cdk.Fn.ref('AWS::StackName')));
+    const bucketFinalName = this.isAmplifyStackLegacy()
+      ? cdk.Fn.join('', [bucketRef,'-' ,envRef])
+      : cdk.Fn.join('', [bucketRef, bucketNameSuffixRef, '-', envRef]);
     return cdk.Fn.conditionIf(
       'ShouldNotCreateEnvResources',
       bucketRef,
-      cdk.Fn.join('', [bucketRef, bucketNameSuffixRef, '-', envRef]),
+      bucketFinalName
     ).toString();
   }
 
