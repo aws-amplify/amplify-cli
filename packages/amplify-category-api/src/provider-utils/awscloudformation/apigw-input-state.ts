@@ -4,6 +4,7 @@ import {
   AmplifyCategories,
   AmplifySupportedService,
   CLIInputSchemaValidator,
+  getMigrateResourceMessageForOverride,
   isResourceNameUnique,
   JSONUtilities,
   PathConstants,
@@ -103,7 +104,7 @@ export class ApigwInputState {
 
   public migrateAdminQueries = async (adminQueriesProps: AdminQueriesProps) => {
     this.resourceName = this.resourceName ?? adminQueriesProps.apiName;
-    if (!(await prompter.confirmContinue(`Migration for ${this.resourceName} is required. Continue?`))) {
+    if (!(await prompter.yesOrNo(getMigrateResourceMessageForOverride(AmplifyCategories.API, this.resourceName, true), true))) {
       return;
     }
     const resourceDirPath = pathManager.getResourceDirectoryPath(this.projectRootPath, AmplifyCategories.API, this.resourceName);
@@ -116,7 +117,7 @@ export class ApigwInputState {
 
   public migrateApigwResource = async (resourceName: string) => {
     this.resourceName = this.resourceName ?? resourceName;
-    if (!(await prompter.confirmContinue(`Migration for ${this.resourceName} is required. Continue?`))) {
+    if (!(await prompter.yesOrNo(getMigrateResourceMessageForOverride(AmplifyCategories.API, this.resourceName, true), true))) {
       return;
     }
     const deprecatedParametersFileName = 'api-params.json';
@@ -170,11 +171,11 @@ export class ApigwInputState {
       };
     });
 
-    await this.createApigwArtifacts();
-
     this.context.filesystem.remove(deprecatedParametersFilePath);
     this.context.filesystem.remove(join(resourceDirPath, PathConstants.ParametersJsonFileName));
-    this.context.filesystem.remove(join(resourceDirPath, PathConstants.CfnFileName(this.resourceName)));
+    this.context.filesystem.remove(join(resourceDirPath, `${this.resourceName}-cloudformation-template.json`));
+
+    await this.createApigwArtifacts();
   };
 
   public cliInputsFileExists() {
@@ -207,28 +208,6 @@ export class ApigwInputState {
 
     const stack = new ApigwStackTransform(this.context, this.resourceName, this);
     await stack.transform();
-  }
-
-  convertCrudOperationsToPermissions(crudOps: CrudOperation[]) {
-    const output = [];
-    for (const op of crudOps) {
-      switch (op) {
-        case CrudOperation.CREATE:
-          output.push('/POST');
-          break;
-        case CrudOperation.READ:
-          output.push('/GET');
-          break;
-        case CrudOperation.UPDATE:
-          output.push('/PUT');
-          output.push('/PATCH');
-          break;
-        case CrudOperation.DELETE:
-          output.push('/DELETE');
-          break;
-      }
-    }
-    return output;
   }
 }
 
