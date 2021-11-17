@@ -110,7 +110,7 @@ jest.mock('../../utils/env-level-constructs', () => ({
 }));
 jest.mock('../../utils/consolidate-apigw-policies', () => ({
   consolidateApiGatewayPolicies: mockconsolidateApiGatewayPolicies,
-  loadApiWithPrivacyParams: jest.fn(),
+  loadApiCliInputs: jest.fn(),
 }));
 jest.mock('../../transform-graphql-schema', () => ({
   transformGraphQLSchema: mockTransformGql,

@@ -1,16 +1,17 @@
+import { $TSContext } from 'amplify-cli-core';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import { S3 } from '../aws-utils/aws-s3';
 import constants from '../constants';
-import { NetworkStack } from '../network/stack';
 import { getEnvironmentNetworkInfo } from '../network/environment-info';
+import { NetworkStack } from '../network/stack';
 import { prePushCfnTemplateModifier } from '../pre-push-cfn-processor/pre-push-cfn-modifier';
 import { consolidateApiGatewayPolicies } from './consolidate-apigw-policies';
 import { uploadAuthTriggerTemplate } from './upload-auth-trigger-template';
 
 const { ProviderName: providerName } = constants;
 
-export async function createEnvLevelConstructs(context) {
+export async function createEnvLevelConstructs(context: $TSContext) {
   const { StackName: stackName } = context.amplify.getProjectMeta().providers[constants.ProviderName];
 
   const hasContainers = envHasContainers(context);
@@ -34,7 +35,7 @@ export async function createEnvLevelConstructs(context) {
   }
 }
 
-async function createNetworkResources(context: any, stackName: string, needsVpc: boolean) {
+async function createNetworkResources(context: $TSContext, stackName: string, needsVpc: boolean) {
   if (!needsVpc) {
     return {
       NetworkStackS3Url: undefined,
@@ -60,7 +61,7 @@ async function createNetworkResources(context: any, stackName: string, needsVpc:
   };
 }
 
-export async function getNetworkResourceCfn(context: any, stackName: string) {
+export async function getNetworkResourceCfn(context: $TSContext, stackName: string) {
   const vpcName = 'Amplify/VPC-do-not-delete';
 
   const { vpcId, internetGatewayId, subnetCidrs } = await getEnvironmentNetworkInfo(context, {
@@ -82,7 +83,7 @@ export async function getNetworkResourceCfn(context: any, stackName: string) {
   return stack.toCloudFormation();
 }
 
-function envHasContainers(context: any) {
+function envHasContainers(context: $TSContext) {
   const { api: apiObj, hosting: hostingObj } = context.amplify.getProjectMeta();
 
   if (apiObj) {
@@ -114,8 +115,8 @@ function envHasContainers(context: any) {
   return false;
 }
 
-async function uploadResourceFile(context, fileName) {
-  const filePath = path.join(__dirname, '../..', 'resources', fileName);
+async function uploadResourceFile(context: $TSContext, fileName: string) {
+  const filePath = path.join(__dirname, '..', '..', 'resources', fileName);
 
   const s3 = await S3.getInstance(context);
 
