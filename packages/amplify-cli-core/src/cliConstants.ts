@@ -42,7 +42,7 @@ export const AmplifySupportedService = {
   LAMBDA: 'Lambda',
 };
 
-export const overriddenCategories = [AmplifyCategories.AUTH, AmplifyCategories.STORAGE, AmplifyCategories.CUSTOM];
+export const overriddenCategories = [AmplifyCategories.AUTH, AmplifyCategories.API, AmplifyCategories.STORAGE, AmplifyCategories.CUSTOM];
 
 export type IAmplifyResource = {
   category: string;
