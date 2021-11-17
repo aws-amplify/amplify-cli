@@ -95,7 +95,6 @@ export class ApigwInputState {
     this.resourceName = answers.resourceName;
     this.paths = answers.paths;
 
-    // this.addPolicyResourceNameToPaths(answers.paths);
     await this.createApigwArtifacts();
 
     this.context.amplify.updateamplifyMetaAfterResourceUpdate(AmplifyCategories.API, this.resourceName, 'dependsOn', answers.dependsOn);
@@ -133,7 +132,7 @@ export class ApigwInputState {
 
     this.paths = {};
 
-    function convertDeprecatedPermissionToCRUD(deprecatedPrivacy: string) {
+    function _convertDeprecatedPermissionStringToCRUD(deprecatedPrivacy: string) {
       let privacyList: string[];
       if (deprecatedPrivacy === 'r') {
         privacyList = [CrudOperation.READ];
@@ -141,6 +140,17 @@ export class ApigwInputState {
         privacyList = [CrudOperation.CREATE, CrudOperation.READ, CrudOperation.UPDATE, CrudOperation.DELETE];
       }
       return privacyList;
+    }
+
+    function _convertDeprecatedPermissionArrayToCRUD(deprecatedPrivacyArray: string[]): CrudOperation[] {
+      const opMap: Record<string, CrudOperation> = {
+        '/POST': CrudOperation.CREATE,
+        '/GET': CrudOperation.READ,
+        '/PUT': CrudOperation.UPDATE,
+        '/PATCH': CrudOperation.UPDATE,
+        '/DELETE': CrudOperation.DELETE,
+      };
+      return Array.from(new Set(deprecatedPrivacyArray.map(op => opMap[op])));
     }
 
     deprecatedParameters.paths.forEach((path: $TSObject) => {
@@ -154,11 +164,16 @@ export class ApigwInputState {
       let auth;
       let guest;
       // convert deprecated permissions to CRUD structure
-      if (path.privacy.auth && ['r', 'rw'].includes(path.privacy.auth)) {
-        auth = convertDeprecatedPermissionToCRUD(path.privacy.auth);
+      if (typeof path.privacy.auth === 'string' && ['r', 'rw'].includes(path.privacy.auth)) {
+        auth = _convertDeprecatedPermissionStringToCRUD(path.privacy.auth);
+      } else if (Array.isArray(path.privacy.auth)) {
+        auth = _convertDeprecatedPermissionArrayToCRUD(path.privacy.auth);
       }
-      if (path.privacy.unauth && ['r', 'rw'].includes(path.privacy.unauth)) {
-        auth = convertDeprecatedPermissionToCRUD(path.privacy.unauth);
+
+      if (typeof path.privacy.unauth === 'string' && ['r', 'rw'].includes(path.privacy.unauth)) {
+        guest = _convertDeprecatedPermissionStringToCRUD(path.privacy.unauth);
+      } else if (Array.isArray(path.privacy.unauth)) {
+        guest = _convertDeprecatedPermissionArrayToCRUD(path.privacy.unauth);
       }
 
       this.paths[path.name] = {
