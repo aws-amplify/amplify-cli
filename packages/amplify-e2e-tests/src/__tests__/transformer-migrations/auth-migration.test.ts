@@ -16,7 +16,6 @@ import {
   configureAmplify,
   getUserPoolId,
   getConfiguredAppsyncClientCognitoAuth,
-  authenticateUser,
   getConfiguredAppsyncClientAPIKeyAuth,
   getApiKey,
   getConfiguredAppsyncClientIAMAuth,
@@ -154,21 +153,15 @@ describe('transformer @auth migration test', () => {
     addFeatureFlag(projRoot, 'graphqltransformer', 'transformerVersion', 2);
     addFeatureFlag(projRoot, 'graphqltransformer', 'useExperimentalPipelinedTransformer', true);
 
-    updateApiSchema(projRoot, projectName, modelSchemaV2);
+    await updateApiSchema(projRoot, projectName, modelSchemaV2);
     await amplifyPushUpdate(projRoot);
 
-    apiKey = getApiKey(projRoot);
     appSyncClientViaUser = getConfiguredAppsyncClientCognitoAuth(
       awsconfig.aws_appsync_graphqlEndpoint,
       awsconfig.aws_appsync_region,
       user,
     );
-    appSyncClientViaApiKey = getConfiguredAppsyncClientAPIKeyAuth(
-      awsconfig.aws_appsync_graphqlEndpoint,
-      awsconfig.aws_appsync_region,
-      apiKey,
-    );
-
+    
     createPostMutation = /* GraphQL */ `
       mutation CreatePost {
         createPost(input: { title: "Created in V2" }) {
@@ -207,22 +200,6 @@ describe('transformer @auth migration test', () => {
 
     expect(createPostPublicResult.errors).toBeUndefined();
     expect(createPostPublicResult.data).toBeDefined();
-
-    createPostPublicIAMMutation = /* GraphQL */ `
-      mutation CreatePostPublicIAM {
-        createPostPublicIAM(input: { title: "Created in V1" }) {
-          id
-        }
-      }
-    `;
-
-    // This is expected because v2 expects 'Allow unauthenticated logins?' to be set to 'Yes' in [Auth] resource to allow IAM public rule
-    await expect(
-      appSyncClientViaIAM.mutate({
-        mutation: gql(createPostPublicIAMMutation),
-        fetchPolicy: 'no-cache',
-      }),
-    ).rejects.toThrowError('GraphQL error: Not Authorized to access createPostPublicIAM on type PostPublicIAM');
 
     createSalaryMutation = /* GraphQL */ `
       mutation CreateSalary {
