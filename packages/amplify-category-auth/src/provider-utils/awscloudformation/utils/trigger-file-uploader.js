@@ -2,6 +2,7 @@ const { readdirSync, existsSync } = require('fs');
 const { createReadStream } = require('fs-extra');
 const Ora = require('ora');
 const mime = require('mime-types');
+const { stateManager } = require('amplify-cli-core');
 const sequential = require('promise-sequential');
 const { getAuthResourceName } = require('../../../utils/getAuthResourceName');
 
@@ -25,7 +26,7 @@ async function uploadFiles(context) {
     const assetPath = `${authPath}/assets`;
     const env = context.amplify.getEnvInfo().envName;
 
-    const authParams = context.amplify.stateManager.getResourceParametersJson(undefined, 'auth', authResource);
+    const authParams = stateManager.getResourceParametersJson(undefined, 'auth', authResource);
     const bucketName = `${authParams.verificationBucketName}-${env}`;
 
     if (!existsSync(assetPath)) {
