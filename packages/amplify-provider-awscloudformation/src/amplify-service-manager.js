@@ -180,7 +180,7 @@ async function init(amplifyServiceParams) {
   }
 
   if (needToCreateNewBackendEnv) {
-    context.print.info(`Adding backend environment ${envName} to AWS Amplify Console app: ${amplifyAppId}`);
+    context.print.info(`Adding backend environment ${envName} to AWS Amplify app: ${amplifyAppId}`);
     const createEnvParams = {
       appId: amplifyAppId,
       environmentName: envName,
