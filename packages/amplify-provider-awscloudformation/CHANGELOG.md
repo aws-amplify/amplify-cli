@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.3.4-ext28.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@5.3.3...amplify-provider-awscloudformation@5.3.4-ext28.0) (2021-11-17)
+
+
+### Bug Fixes
+
+* build overrides for headless push with new env init scneario ([f56b192](https://github.com/aws-amplify/amplify-cli/commit/f56b1927b40a134b743123d46882af2376fef3c2))
+
+
+
+
+
 ## [5.3.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@5.3.2...amplify-provider-awscloudformation@5.3.3) (2021-11-16)
 
 
