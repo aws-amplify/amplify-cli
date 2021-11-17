@@ -8,7 +8,7 @@ import {
   CLIInputSchemaValidator,
   CategoryInputState,
 } from 'amplify-cli-core';
-import { AppsyncCLIInputs } from '../service-walkthrough-types/appsync-user-input-types';
+import { AppSyncCLIInputs } from '../service-walkthrough-types/appsync-user-input-types';
 import _ from 'lodash';
 
 export class AppsyncApiInputState {
@@ -28,20 +28,20 @@ export class AppsyncApiInputState {
     this.#buildFilePath = path.resolve(path.join(projectBackendDirPath, this.#category, this.#resourceName, 'build'));
   }
 
-  public async isCLIInputsValid(cliInputs: AppsyncCLIInputs = this.getCLIInputPayload()): Promise<boolean> {
-    const schemaValidator = new CLIInputSchemaValidator('appsync', this.#category, 'AppsyncCLIInputs');
+  public async isCLIInputsValid(cliInputs: AppSyncCLIInputs = this.getCLIInputPayload()): Promise<boolean> {
+    const schemaValidator = new CLIInputSchemaValidator('appsync', this.#category, 'AppSyncCLIInputs');
     return schemaValidator.validateInput(JSON.stringify(cliInputs));
   }
 
-  public getCLIInputPayload(): AppsyncCLIInputs {
-    return JSONUtilities.readJson<AppsyncCLIInputs>(this.#cliInputsFilePath, { throwIfNotExist: true })!;
+  public getCLIInputPayload(): AppSyncCLIInputs {
+    return JSONUtilities.readJson<AppSyncCLIInputs>(this.#cliInputsFilePath, { throwIfNotExist: true })!;
   }
 
   public cliInputFileExists(): boolean {
     return fs.existsSync(this.#cliInputsFilePath);
   }
 
-  public async saveCLIInputPayload(cliInputs: AppsyncCLIInputs): Promise<void> {
+  public async saveCLIInputPayload(cliInputs: AppSyncCLIInputs): Promise<void> {
     if (await this.isCLIInputsValid(cliInputs)) {
       fs.ensureDirSync(path.join(pathManager.getBackendDirPath(), this.#category, this.#resourceName));
       JSONUtilities.writeJson(this.#cliInputsFilePath, cliInputs);

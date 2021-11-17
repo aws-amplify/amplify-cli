@@ -465,9 +465,7 @@ export const updateWalkthrough = async (context): Promise<UpdateApiRequest> => {
   if (await checkAppsyncApiResourceMigration(context, resourceName, true)) {
     await context.amplify.invokePluginMethod(context, 'awscloudformation', undefined, 'compileSchema', [context, { forceCompile: true }]);
   } else {
-    printer.warn(
-      `The project is configured with Old Transformer Version. Set the TransformerVersion = 2 in cli.json to enable override functionality for api.`,
-    );
+    printer.warn(`The GraphQL API is using transformer version 1. Run 'amplify migrate api' to upgrade to transformer version 2.`);
   }
 
   // Get models

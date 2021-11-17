@@ -25,14 +25,6 @@ export const stacksTypes: Record<string, string> = {
 
 const rootStackNameInConstruct = 'transformer-root-stack';
 
-/**
- * Test Cases
-// ['rootStack' , 'Name*'] id = resource
-// ['rootStack' , 'scope'] id = Name
-// ['rootStack' , 'NestedStack' , 'Name*'] id  = resource
-// ['rootStack' , 'NestedStack'] id = Name
- */
-
 export const getStackMeta = (constructPathArr: string[], id: string, nestedStackArr: string[], node: Construct): ConstructResourceMeta => {
   const resource = node as CfnResource;
   if (nestedStackArr.find(val => val === constructPathArr[1])) {
@@ -57,36 +49,6 @@ export const getStackMeta = (constructPathArr: string[], id: string, nestedStack
         stackType: stacksTypes.API,
       },
     };
-  }
-};
-
-export const cast = (resource: CfnResource) => {
-  if (resource.cfnResourceType === 'AWS::DynamoDB::Table') {
-    return resource as CfnTable;
-  } else if (resource.cfnResourceType === 'AWS::AppSync::GraphQLApi') {
-    return resource as CfnGraphQLApi;
-  } else if (resource.cfnResourceType === 'AWS::AppSync::ApiKey') {
-    return resource as CfnApiKey;
-  } else if (resource.cfnResourceType === 'AWS::AppSync::GraphQLSchema') {
-    return resource as CfnGraphQLSchema;
-  } else if (resource.cfnResourceType === 'AWS::AppSync::DataSource') {
-    return resource as CfnDataSource;
-  } else if (resource.cfnResourceType === 'AWS::IAM::Role') {
-    return resource as CfnRole;
-  } else if (resource.cfnResourceType === 'AWS::IAM::Policy') {
-    return resource as CfnPolicy;
-  } else if (resource.cfnResourceType === 'AWS::AppSync::Resolver') {
-    return resource as CfnResolver;
-  } else if (resource.cfnResourceType === 'AWS::AppSync::FunctionConfiguration') {
-    return resource as CfnFunctionConfiguration;
-  } else if (resource.cfnResourceType === 'AWS::Lambda::Function') {
-    return resource as CfnFunction;
-  } else if (resource.cfnResourceType === 'AWS::Lambda::EventSourceMapping') {
-    return resource as CfnEventSourceMapping;
-  } else if (resource.cfnResourceType === 'AWS::Elasticsearch::Domain') {
-    return resource;
-  } else {
-    return undefined;
   }
 };
 
