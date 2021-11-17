@@ -3,6 +3,21 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.3.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@2.3.1...@aws-amplify/amplify-category-auth@2.3.2) (2021-11-17)
+
+
+
+## 7.3.5 (2021-11-17)
+
+
+### Bug Fixes
+
+* remove hardcoding for build/parameters.json file for auth resource ([#8911](https://github.com/aws-amplify/amplify-cli/issues/8911)) ([06a8988](https://github.com/aws-amplify/amplify-cli/commit/06a89888e39fa38318c7751fe002ddfab881e499))
+
+
+
+
+
 ## [2.3.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@2.3.0...@aws-amplify/amplify-category-auth@2.3.1) (2021-11-16)
 
 
