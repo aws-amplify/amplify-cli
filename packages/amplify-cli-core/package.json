@@ -1,6 +1,6 @@
 {
   "name": "amplify-cli-core",
-  "version": "2.3.1",
+  "version": "2.3.2-beta.0",
   "description": "Amplify CLI Core",
   "repository": {
     "type": "git",
@@ -52,7 +52,7 @@
     "@types/node": "^12.12.6",
     "@types/rimraf": "^3.0.0",
     "@types/uuid": "^8.0.0",
-    "amplify-function-plugin-interface": "1.9.2",
+    "amplify-function-plugin-interface": "1.9.3-beta.0",
     "nock": "^13.0.11",
     "rimraf": "^3.0.0",
     "strip-ansi": "^6.0.0",

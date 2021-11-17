@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.3.2-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@3.3.0...amplify-category-function@3.3.2-beta.0) (2021-11-17)
+
+
+### Bug Fixes
+
+* **graphql:** refactor lambda authorizer code to use function category to create authorizer function ([#8784](https://github.com/aws-amplify/amplify-cli/issues/8784)) ([f529b54](https://github.com/aws-amplify/amplify-cli/commit/f529b541e2607eb4d2dd9e27810621fca141d6e2))
+
+
+
+
+
 ## [3.3.1-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@3.3.0...amplify-category-function@3.3.1-beta.0) (2021-11-17)
 
 

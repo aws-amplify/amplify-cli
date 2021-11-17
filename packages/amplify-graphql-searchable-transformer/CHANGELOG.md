@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.9.3-beta.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-searchable-transformer@0.9.1...@aws-amplify/graphql-searchable-transformer@0.9.3-beta.0) (2021-11-17)
+
+
+### Bug Fixes
+
+* append apiKey if global auth is enabled and its not default auth ([#8843](https://github.com/aws-amplify/amplify-cli/issues/8843)) ([3aadcde](https://github.com/aws-amplify/amplify-cli/commit/3aadcde2225f0ede5c5d94c2a4cd9d1afece5288))
+* **graphql:** add enum to aggregate field type ([#8846](https://github.com/aws-amplify/amplify-cli/issues/8846)) ([4e919e7](https://github.com/aws-amplify/amplify-cli/commit/4e919e7e6ae29d1545b403b31f30e21b6aebfa26))
+
+
+
+
+
 ## [0.9.2-beta.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-searchable-transformer@0.9.1...@aws-amplify/graphql-searchable-transformer@0.9.2-beta.0) (2021-11-17)
 
 

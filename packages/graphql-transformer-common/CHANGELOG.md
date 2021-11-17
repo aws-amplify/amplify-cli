@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.22.3-beta.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-common@4.22.1...graphql-transformer-common@4.22.3-beta.0) (2021-11-17)
+
+
+### Bug Fixes
+
+* append apiKey if global auth is enabled and its not default auth ([#8843](https://github.com/aws-amplify/amplify-cli/issues/8843)) ([3aadcde](https://github.com/aws-amplify/amplify-cli/commit/3aadcde2225f0ede5c5d94c2a4cd9d1afece5288))
+
+
+
+
+
 ## [4.22.2-beta.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-common@4.22.1...graphql-transformer-common@4.22.2-beta.0) (2021-11-17)
 
 

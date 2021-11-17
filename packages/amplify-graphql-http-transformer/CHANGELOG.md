@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.7.3-beta.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-http-transformer@0.7.1...@aws-amplify/graphql-http-transformer@0.7.3-beta.0) (2021-11-17)
+
+
+### Bug Fixes
+
+* create pipeline resolvers for [@http](https://github.com/http) v2 ([#8817](https://github.com/aws-amplify/amplify-cli/issues/8817)) ([722a2fc](https://github.com/aws-amplify/amplify-cli/commit/722a2fc83e8747e44b01f6eaa9eaca262a9febf9))
+
+
+
+
+
 ## [0.7.2-beta.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-http-transformer@0.7.1...@aws-amplify/graphql-http-transformer@0.7.2-beta.0) (2021-11-17)
 
 

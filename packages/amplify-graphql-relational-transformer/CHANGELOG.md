@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.6.3-beta.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-relational-transformer@0.6.1...@aws-amplify/graphql-relational-transformer@0.6.3-beta.0) (2021-11-17)
+
+
+### Bug Fixes
+
+* **graphql-relational-transformer:** fixes belongs to relation field name ([#8865](https://github.com/aws-amplify/amplify-cli/issues/8865)) ([068b03b](https://github.com/aws-amplify/amplify-cli/commit/068b03bd4c78c840c74557b05f5d109c2c300210))
+* reintroduce connection stack in transformer v2 ([#8757](https://github.com/aws-amplify/amplify-cli/issues/8757)) ([81ffeeb](https://github.com/aws-amplify/amplify-cli/commit/81ffeeb7fecfbad1200e45291cb8052be025f761))
+
+
+
+
+
 ## [0.6.2-beta.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-relational-transformer@0.6.1...@aws-amplify/graphql-relational-transformer@0.6.2-beta.0) (2021-11-17)
 
 
