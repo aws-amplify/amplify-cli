@@ -45,6 +45,9 @@
             },
             {
               "$ref": "#/definitions/AppSyncOpenIDConnectAuthType"
+            },
+            {
+              "$ref": "#/definitions/AppSyncLambdaAuthType"
             }
           ]
         },
@@ -64,6 +67,9 @@
               },
               {
                 "$ref": "#/definitions/AppSyncOpenIDConnectAuthType"
+              },
+              {
+                "$ref": "#/definitions/AppSyncLambdaAuthType"
               }
             ]
           }
@@ -85,6 +91,10 @@
         },
         "expirationTime": {
           "type": "number"
+        },
+        "apiKeyExpirationDate": {
+          "type": "string",
+          "format": "date-time"
         },
         "keyDescription": {
           "type": "string"
@@ -143,6 +153,23 @@
         }
       },
       "required": ["mode", "openIDClientID", "openIDIssuerURL", "openIDProviderName"]
+    },
+    "AppSyncLambdaAuthType": {
+      "description": "Specifies that the AppSync API should be secured using Lambda.",
+      "type": "object",
+      "properties": {
+        "mode": {
+          "type": "string",
+          "enum": ["AWS_LAMBDA"]
+        },
+        "lambdaFunction": {
+          "type": "string"
+        },
+        "ttlSeconds": {
+          "type": "string"
+        }
+      },
+      "required": ["lambdaFunction", "mode"]
     },
     "ConflictResolution": {
       "description": "Defines a strategy for resolving API write conflicts.",

@@ -40,8 +40,12 @@ export const migrateResourceToSupportOverride = async (resourceName: string) => 
   const backupApiResourceFolder = backup(apiresourceDirPath, projectPath, resourceName);
 
   try {
-    const resolverConfig =
-      JSONUtilities.readJson<ResolverConfig>(path.join(apiresourceDirPath, 'transformer.conf.json'), { throwIfNotExist: false }) ?? {};
+    let resolverConfig = {};
+    const transformConfig =
+      JSONUtilities.readJson<any>(path.join(apiresourceDirPath, 'transform.conf.json'), { throwIfNotExist: false }) ?? {};
+    if (!_.isEmpty(transformConfig) && !_.isEmpty(transformConfig!.ResolverConfig)) {
+      resolverConfig = transformConfig!.ResolverConfig;
+    }
     const authConfig = stateManager.getMeta()[AmplifyCategories.API][resourceName].output.authConfig;
     if (_.isEmpty(authConfig)) {
       throw new ResourceDoesNotExistError(

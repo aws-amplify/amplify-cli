@@ -1,6 +1,7 @@
 import { AddApiRequest, UpdateApiRequest } from 'amplify-headless-interface';
 import fs from 'fs-extra';
 import { writeTransformerConfiguration } from 'graphql-transformer-core';
+import _ from 'lodash';
 import path from 'path';
 import { category } from '../../../category-constants';
 import { ApiArtifactHandler } from '../../../provider-utils/api-artifact-handler';
