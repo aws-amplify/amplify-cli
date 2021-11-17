@@ -8,7 +8,7 @@ import { appSyncAuthTypeToAuthConfig } from './auth-config-to-app-sync-auth-type
  */
 export const getAuthConfig = async (resourceName: string) => {
   const cliState = new AppsyncApiInputState(resourceName);
-  if (cliState.cliInputFileExists) {
+  if (cliState.cliInputFileExists()) {
     const appsyncInputs = cliState.getCLIInputPayload().serviceConfiguration;
     return {
       defaultAuthentication: appSyncAuthTypeToAuthConfig(appsyncInputs.defaultAuthType),

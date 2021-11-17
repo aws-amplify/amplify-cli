@@ -1,6 +1,6 @@
 {
-  "name": "amplify-category-api",
-  "version": "3.3.1",
+  "name": "@aws-amplify/amplify-category-api",
+  "version": "1.0.0",
   "description": "amplify-cli api plugin",
   "repository": {
     "type": "git",
@@ -14,7 +14,8 @@
     "build": "tsc",
     "watch": "tsc -w",
     "clean": "rimraf lib tsconfig.tsbuildinfo",
-    "test": "jest"
+    "test": "jest",
+    "generateSchemas": "ts-node ./scripts/generateApiSchemas.ts"
   },
   "dependencies": {
     "@aws-amplify/graphql-transformer-migrator": "1.2.2",
