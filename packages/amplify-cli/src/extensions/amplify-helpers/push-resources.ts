@@ -52,7 +52,6 @@ export async function pushResources(
     }
   }
 
-  await context.amplify.invokePluginMethod(context, 'awscloudformation', undefined, 'compileSchema', [context, { forceCompile: true }]);
   // building all CFN stacks here to get the resource Changes
   await generateDependentResourcesType(context);
   const resourcesToBuild: IAmplifyResource[] = await getResources(context);
@@ -94,7 +93,7 @@ export async function pushResources(
 
         await providersPush(context, rebuild, category, resourceName, filteredResources);
         await onCategoryOutputsChange(context, currentAmplifyMeta);
-      } catch (err) {
+      } catch (err: $TSAny) {
         if (await isValidGraphQLAuthError(err.message)) {
           retryPush = await handleValidGraphQLAuthError(context, err.message);
         }
@@ -165,7 +164,7 @@ async function addGraphQLAuthRequirement(context, authType) {
         authSettings: undefined,
       },
     ]);
-  } catch (err) {
+  } catch (err: $TSAny) {
     if (err.name !== 'InvalidDirectiveError') {
       throw err;
     }

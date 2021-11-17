@@ -10,6 +10,7 @@ import {
   stateManager,
   UnknownResourceTypeError,
 } from 'amplify-cli-core';
+import { printer } from 'amplify-prompts';
 import chalk from 'chalk';
 import fs from 'fs-extra';
 import { collectDirectivesByTypeNames, readProjectConfiguration } from 'graphql-transformer-core';
@@ -462,15 +463,11 @@ export const updateWalkthrough = async (context): Promise<UpdateApiRequest> => {
 
   // migrate API project
   if (await checkAppsyncApiResourceMigration(context, resourceName, true)) {
-    // fetch cli Inputs again
-    // call compile schema here
     await context.amplify.invokePluginMethod(context, 'awscloudformation', undefined, 'compileSchema', [context, { forceCompile: true }]);
   } else {
-    const error = new Error(
-      `\nThe project is configured with Old Transformer Version. Set the TransformerVersion = 2 in cli.json to enable override functionality for api.`,
+    printer.warn(
+      `The project is configured with Old Transformer Version. Set the TransformerVersion = 2 in cli.json to enable override functionality for api.`,
     );
-    await context.usageData.emitError(error);
-    exitOnNextTick(0);
   }
 
   // Get models
