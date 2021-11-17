@@ -24,7 +24,9 @@ async function uploadFiles(context) {
     }
     const assetPath = `${authPath}/assets`;
     const env = context.amplify.getEnvInfo().envName;
-    const bucketName = `${context.amplify.readJsonFile(`${authPath}/build/parameters.json`).verificationBucketName}-${env}`;
+
+    const authParams = context.amplify.stateManager.getResourceParametersJson(undefined, 'auth', authResource);
+    const bucketName = `${authParams.verificationBucketName}-${env}`;
 
     if (!existsSync(assetPath)) {
       return null;
