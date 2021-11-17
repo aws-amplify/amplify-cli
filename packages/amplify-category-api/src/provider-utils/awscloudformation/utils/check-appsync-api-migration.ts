@@ -22,10 +22,6 @@ export const checkAppsyncApiResourceMigration = async (context: $TSContext, apiN
       return true;
     }
     return false;
-  } else {
-    printer.warn(
-      `The project is configured with 'transformerVersion': ${transformerVersion}. Set the TransformerVersion = 2 in cli.json to enable override functionality for api.`,
-    );
-    return false;
   }
+  return true;
 };
