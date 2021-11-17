@@ -1,4 +1,4 @@
-import { externalAuthEnable } from 'amplify-category-auth';
+import { externalAuthEnable } from '@aws-amplify/amplify-category-auth';
 import { $TSAny, PathConstants, pathManager, stateManager } from 'amplify-cli-core';
 import chalk from 'chalk';
 import _ from 'lodash';

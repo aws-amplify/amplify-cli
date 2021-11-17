@@ -3,6 +3,37 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.7.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-http-transformer@0.7.1...@aws-amplify/graphql-http-transformer@0.7.2) (2021-11-17)
+
+
+### Bug Fixes
+
+* create pipeline resolvers for [@http](https://github.com/http) v2 ([#8817](https://github.com/aws-amplify/amplify-cli/issues/8817)) ([722a2fc](https://github.com/aws-amplify/amplify-cli/commit/722a2fc83e8747e44b01f6eaa9eaca262a9febf9))
+
+
+
+
+
+## [0.7.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-http-transformer@0.5.6...@aws-amplify/graphql-http-transformer@0.7.1) (2021-11-15)
+
+**Note:** Version bump only for package @aws-amplify/graphql-http-transformer
+
+
+
+
+
+## [0.5.6](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-http-transformer@0.5.5...@aws-amplify/graphql-http-transformer@0.5.6) (2021-11-11)
+
+
+### Bug Fixes
+
+* **graphql-model-transformer:** override resource logical id to fix v1 to v2 transformer migration ([#8597](https://github.com/aws-amplify/amplify-cli/issues/8597)) ([e3a2afb](https://github.com/aws-amplify/amplify-cli/commit/e3a2afbbed6e97f143fc7c83064e2193f4c91bdd))
+* override http datasource logical IDs ([#8714](https://github.com/aws-amplify/amplify-cli/issues/8714)) ([81cc461](https://github.com/aws-amplify/amplify-cli/commit/81cc461ed5e02b2f296825283993ad026f1126d1))
+
+
+
+
+
 ## [0.5.5](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-http-transformer@0.5.4...@aws-amplify/graphql-http-transformer@0.5.5) (2021-10-10)
 
 **Note:** Version bump only for package @aws-amplify/graphql-http-transformer

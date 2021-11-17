@@ -29,6 +29,22 @@ type Team @model @auth(rules: [{allow: public}]) {
 "
 `;
 
+exports[`Schema migration tests @function directive is migrated 1`] = `
+"type Query {
+  echo(msg: String!): Context @function(name: \\"echo\\")
+  echoEnv(msg: String!): Context @function(name: \\"long-prefix-e2e-test-functions-echo-\${env}-v2\\")
+  duplicate(msg: String!): Context @function(name: \\"long-prefix-e2e-test-functions-echo-dev-v2\\")
+  pipeline(msg: String!): String @function(name: \\"echo\\") @function(name: \\"hello\\")
+  echoRegion(msg: String!): Context @function(name: \\"echo-\${env}\\", region: \\"us-east-1\\")
+}
+
+type Context {
+  typeName: String
+  fieldName: String
+}
+"
+`;
+
 exports[`Schema migration tests @http directive is migrated 1`] = `
 "type Comment @model @auth(rules: [{allow: public}]) {
   id: ID!
@@ -56,6 +72,28 @@ exports[`Schema migration tests @predictions directive is migrated 1`] = `
   translateLabels: String @predictions(actions: [identifyLabels])
   translateThis: String @predictions(actions: [translateText])
   speakTranslatedText: String @predictions(actions: [translateText, convertTextToSpeech])
+}
+"
+`;
+
+exports[`Schema migration tests @searchable directive is migrated 1`] = `
+"type Book @model @searchable @auth(rules: [{allow: public}]) {
+  author: String! @primaryKey(sortKeyFields: [\\"name\\"])
+  name: String!
+  genre: String!
+}
+
+type Todo @model @searchable @auth(rules: [{allow: public}]) {
+  id: ID
+  name: String!
+  createdAt: AWSDateTime
+  description: String
+}
+
+type Comment @model @searchable @auth(rules: [{allow: public}]) {
+  id: ID!
+  version: Int! @index(name: \\"commentByVersion\\", sortKeyFields: [\\"id\\"])
+  content: String!
 }
 "
 `;

@@ -244,13 +244,17 @@ export class DefaultTransformHost implements TransformHostProvider {
    * @param stack  Stack to which this datasource needs to mapped to
    */
   protected doAddDynamoDbDataSource(id: string, table: ITable, options?: DynamoDbDataSourceOptions, stack?: Stack): DynamoDbDataSource {
-    return new DynamoDbDataSource(stack ?? this.api, id, {
+    const ds = new DynamoDbDataSource(stack ?? this.api, id, {
       api: this.api,
       table,
       name: options?.name,
       description: options?.description,
       serviceRole: options?.serviceRole,
     });
+
+    (ds as any).node.defaultChild.overrideLogicalId(id);
+
+    return ds;
   }
 
   /**
@@ -262,13 +266,17 @@ export class DefaultTransformHost implements TransformHostProvider {
    * @param stack Stack to which the http datasource needs to be created in
    */
   protected doAddHttpDataSource(id: string, endpoint: string, options?: HttpDataSourceOptions, stack?: Stack): HttpDataSource {
-    return new HttpDataSource(stack ?? this.api, id, {
+    const ds = new HttpDataSource(stack ?? this.api, id, {
       api: this.api,
       endpoint,
       name: options?.name,
       description: options?.description,
       authorizationConfig: options?.authorizationConfig,
     });
+
+    (ds as any).node.defaultChild.overrideLogicalId(id);
+
+    return ds;
   }
 
   /**
@@ -304,11 +312,15 @@ export class DefaultTransformHost implements TransformHostProvider {
    * @param options The optional configuration for this data source
    */
   protected doAddLambdaDataSource(id: string, lambdaFunction: IFunction, options?: DataSourceOptions, stack?: Stack): LambdaDataSource {
-    return new LambdaDataSource(stack || this.api, id, {
+    const ds = new LambdaDataSource(stack || this.api, id, {
       api: this.api,
       lambdaFunction,
       name: options?.name,
       description: options?.description,
     });
+
+    (ds as any).node.defaultChild.overrideLogicalId(id);
+
+    return ds;
   }
 }

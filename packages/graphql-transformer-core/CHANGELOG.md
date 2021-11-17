@@ -3,6 +3,44 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [7.2.2](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-core@7.2.1...graphql-transformer-core@7.2.2) (2021-11-17)
+
+**Note:** Version bump only for package graphql-transformer-core
+
+
+
+
+
+## [7.2.1](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-core@6.31.0...graphql-transformer-core@7.2.1) (2021-11-15)
+
+**Note:** Version bump only for package graphql-transformer-core
+
+
+
+
+
+# [7.0.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-core@6.30.2...graphql-transformer-core@7.0.0) (2021-11-13)
+
+
+### Features
+
+* flag to allow destructive schema changes ([#8273](https://github.com/aws-amplify/amplify-cli/issues/8273)) ([18de856](https://github.com/aws-amplify/amplify-cli/commit/18de856fb61bf2df8f73375e4e55a58c6159a232))
+
+
+
+
+
+# [6.31.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-core@6.30.2...graphql-transformer-core@6.31.0) (2021-11-11)
+
+
+### Features
+
+* flag to allow destructive schema changes ([#8273](https://github.com/aws-amplify/amplify-cli/issues/8273)) ([18de856](https://github.com/aws-amplify/amplify-cli/commit/18de856fb61bf2df8f73375e4e55a58c6159a232))
+
+
+
+
+
 ## [6.30.2](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-core@6.30.1...graphql-transformer-core@6.30.2) (2021-10-10)
 
 **Note:** Version bump only for package graphql-transformer-core

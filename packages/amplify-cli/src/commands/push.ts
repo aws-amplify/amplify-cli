@@ -2,6 +2,7 @@ import sequential from 'promise-sequential';
 import ora from 'ora';
 import { $TSAny, $TSContext, $TSObject, stateManager, exitOnNextTick, ConfigurationError } from 'amplify-cli-core';
 import { getProviderPlugins } from '../extensions/amplify-helpers/get-provider-plugins';
+import { printer } from 'amplify-prompts';
 
 const spinner = ora('');
 
@@ -64,7 +65,7 @@ export const run = async (context: $TSContext) => {
   } catch (e) {
     if (e.name !== 'InvalidDirectiveError') {
       const message = e.name === 'GraphQLError' ? e.toString() : e.message;
-      context.print.error(`An error occurred during the push operation: ${message}`);
+      printer.error(`An error occurred during the push operation: ${message}`);
     }
     await context.usageData.emitError(e);
     exitOnNextTick(1);

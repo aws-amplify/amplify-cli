@@ -52,7 +52,8 @@ describe('nodejs version migration tests', () => {
       'backend',
       'auth',
       authResourceName,
-      `${authResourceName}-cloudformation-template.yml`,
+      'build',
+      `${authResourceName}-cloudformation-template.json`,
     );
     let authStackContent = fs.readFileSync(authStackFileName).toString();
 

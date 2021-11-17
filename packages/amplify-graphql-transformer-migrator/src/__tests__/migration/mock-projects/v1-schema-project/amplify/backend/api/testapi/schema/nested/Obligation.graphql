@@ -1,0 +1,5 @@
+type Obligation @model @key(name: "byMud", fields: ["mudID", "content"]) {
+  id: ID!
+  mudID: ID # => @index(name: "byMud", sortKeyFields: ["content"])
+  content: String
+}

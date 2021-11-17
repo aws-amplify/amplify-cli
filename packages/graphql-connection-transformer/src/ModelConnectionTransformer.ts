@@ -35,7 +35,7 @@ import {
   makeNamedType,
 } from 'graphql-transformer-common';
 import { ResolverResourceIDs, ModelResourceIDs } from 'graphql-transformer-common';
-import { updateCreateInputWithConnectionField, updateUpdateInputWithConnectionField } from './definitions';
+import { updateInputWithConnectionField } from './definitions';
 import Table, { KeySchema, GlobalSecondaryIndex, LocalSecondaryIndex } from 'cloudform-types/types/dynamoDb/table';
 
 const CONNECTION_STACK_NAME = 'ConnectionStack';
@@ -368,13 +368,13 @@ export class ModelConnectionTransformer extends Transformer {
       const createInputName = ModelResourceIDs.ModelCreateInputObjectName(parentTypeName);
       const createInput = ctx.getType(createInputName) as InputObjectTypeDefinitionNode;
       if (createInput) {
-        const updated = updateCreateInputWithConnectionField(createInput, connectionAttributeName, leftConnectionIsNonNull);
+        const updated = updateInputWithConnectionField(createInput, connectionAttributeName, leftConnectionIsNonNull);
         ctx.putType(updated);
       }
       const updateInputName = ModelResourceIDs.ModelUpdateInputObjectName(parentTypeName);
       const updateInput = ctx.getType(updateInputName) as InputObjectTypeDefinitionNode;
       if (updateInput) {
-        const updated = updateUpdateInputWithConnectionField(updateInput, connectionAttributeName);
+        const updated = updateInputWithConnectionField(updateInput, connectionAttributeName);
         ctx.putType(updated);
       }
     } else if (leftConnectionIsList) {
@@ -415,13 +415,13 @@ export class ModelConnectionTransformer extends Transformer {
       const createInputName = ModelResourceIDs.ModelCreateInputObjectName(relatedTypeName);
       const createInput = ctx.getType(createInputName) as InputObjectTypeDefinitionNode;
       if (createInput) {
-        const updated = updateCreateInputWithConnectionField(createInput, connectionAttributeName);
+        const updated = updateInputWithConnectionField(createInput, connectionAttributeName);
         ctx.putType(updated);
       }
       const updateInputName = ModelResourceIDs.ModelUpdateInputObjectName(relatedTypeName);
       const updateInput = ctx.getType(updateInputName) as InputObjectTypeDefinitionNode;
       if (updateInput) {
-        const updated = updateUpdateInputWithConnectionField(updateInput, connectionAttributeName);
+        const updated = updateInputWithConnectionField(updateInput, connectionAttributeName);
         ctx.putType(updated);
       }
     } else {
@@ -502,13 +502,13 @@ export class ModelConnectionTransformer extends Transformer {
       const createInputName = ModelResourceIDs.ModelCreateInputObjectName(parentTypeName);
       const createInput = ctx.getType(createInputName) as InputObjectTypeDefinitionNode;
       if (createInput) {
-        const updated = updateCreateInputWithConnectionField(createInput, connectionAttributeName, leftConnectionIsNonNull);
+        const updated = updateInputWithConnectionField(createInput, connectionAttributeName, leftConnectionIsNonNull);
         ctx.putType(updated);
       }
       const updateInputName = ModelResourceIDs.ModelUpdateInputObjectName(parentTypeName);
       const updateInput = ctx.getType(updateInputName) as InputObjectTypeDefinitionNode;
       if (updateInput) {
-        const updated = updateUpdateInputWithConnectionField(updateInput, connectionAttributeName);
+        const updated = updateInputWithConnectionField(updateInput, connectionAttributeName);
         ctx.putType(updated);
       }
     }

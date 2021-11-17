@@ -67,13 +67,18 @@ export class DefaultValueTransformer extends TransformerPluginBase {
       }
 
       this.updateResolverWithDefaultValues(context, `create${typeName}`, snippets);
-      this.updateResolverWithDefaultValues(context, `update${typeName}`, snippets);
     }
   };
 
   private makeDefaultValueSnippet = (fieldName: string, defaultValue: string, isString: boolean): string => {
     return printBlock(`Setting "${fieldName}" to default value of "${defaultValue}"`)(
-      qref(methodCall(ref('ctx.stash.defaultValues.put'), str(fieldName), isString ? str(defaultValue) : raw(defaultValue))),
+      qref(
+        methodCall(
+          ref('context.args.input.put'),
+          str(fieldName),
+          methodCall(ref('util.defaultIfNull'), ref(`ctx.args.input.${fieldName}`), isString ? str(defaultValue) : raw(defaultValue)),
+        ),
+      ),
     );
   };
 

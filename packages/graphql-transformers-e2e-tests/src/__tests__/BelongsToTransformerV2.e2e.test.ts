@@ -52,7 +52,7 @@ describe('@belongsTo transformer', () => {
         createBlog(input: { id: "blog1", name: "test blog 1", blogPostId: "post1" }) {
           id
         }
-        createPost(input: { blogPostId: "blog1", id: "post1", title: "test post 1" }) {
+        createPost(input: { postBlogId: "blog1", id: "post1", title: "test post 1" }) {
           id
         }
       }

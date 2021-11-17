@@ -16,10 +16,11 @@ import { KeyTransformer } from 'graphql-key-transformer';
 import { destructiveUpdatesFlag, ProviderName as providerName } from './constants';
 import { AmplifyCLIFeatureFlagAdapter } from './utils/amplify-cli-feature-flag-adapter';
 import { isAmplifyAdminApp } from './utils/admin-helpers';
-import { JSONUtilities, pathManager, stateManager } from 'amplify-cli-core';
+import { $TSContext, JSONUtilities, pathManager, stateManager } from 'amplify-cli-core';
 import { ResourceConstants } from 'graphql-transformer-common';
 import { printer } from 'amplify-prompts';
 import _ from 'lodash';
+import { isAuthModeUpdated } from './utils/auth-mode-compare';
 
 import {
   collectDirectivesByTypeNames,
@@ -456,8 +457,10 @@ export async function transformGraphQLSchema(context, options) {
   let { logConfig = resources[0].output.logConfig } = options;
 
   // for the predictions directive get storage config
-  const s3Resource = s3ResourceAlreadyExists(context);
-  const storageConfig = s3Resource ? getBucketName(context, s3Resource, backEndDir) : undefined;
+  const s3ResourceName = await invokeS3GetResourceName(context);
+  const storageConfig = {
+    bucketName: s3ResourceName ? await getBucketName(context, s3ResourceName) : undefined,
+  };
 
   const buildDir = path.normalize(path.join(resourceDir, 'build'));
   const schemaFilePath = path.normalize(path.join(resourceDir, schemaFileName));
@@ -521,6 +524,9 @@ export async function transformGraphQLSchema(context, options) {
   context.print.success(`GraphQL schema compiled successfully.\n\nEdit your schema at ${schemaFilePath} or \
 place .graphql files in a directory at ${schemaDirPath}`);
 
+  if (isAuthModeUpdated(options)) {
+    parameters.AuthModeLastUpdated = new Date();
+  }
   if (!options.dryRun) {
     JSONUtilities.writeJson(parametersFilePath, parameters);
   }
@@ -602,16 +608,34 @@ function s3ResourceAlreadyExists(context) {
   }
 }
 
-function getBucketName(context, s3ResourceName, backEndDir) {
+/**
+ *  S3API
+ *  TBD: Remove this once all invoke functions are moved to a library shared across amplify
+ * */
+async function invokeS3GetUserInputs(context, s3ResourceName) {
+  const s3UserInputs = await context.amplify.invokePluginMethod(context, 'storage', undefined, 's3GetUserInput', [context, s3ResourceName]);
+  return s3UserInputs;
+}
+
+/**
+ * S3API
+ * TBD: Remove this once all invoke functions are moved to a library shared across amplify
+ * */
+async function invokeS3GetResourceName(context) {
+  const s3ResourceName = await context.amplify.invokePluginMethod(context, 'storage', undefined, 's3GetResourceName', [context]);
+  return s3ResourceName;
+}
+
+async function getBucketName(context: $TSContext, s3ResourceName: string) {
   const { amplify } = context;
   const { amplifyMeta } = amplify.getProjectDetails();
   const stackName = amplifyMeta.providers.awscloudformation.StackName;
-  const parametersFilePath = path.join(backEndDir, storageCategory, s3ResourceName, parametersFileName);
-  const bucketParameters = context.amplify.readJsonFile(parametersFilePath);
+  const bucketParameters = stateManager.getResourceParametersJson(undefined, 'storage', s3ResourceName);
+
   const bucketName = stackName.startsWith('amplify-')
     ? `${bucketParameters.bucketName}\${hash}-\${env}`
     : `${bucketParameters.bucketName}${s3ResourceName}-\${env}`;
-  return { bucketName };
+  return bucketName;
 }
 
 export function getTransformerVersion(context) {
@@ -625,7 +649,7 @@ export function getTransformerVersion(context) {
   return transformerVersion;
 }
 
-function migrateToTransformerVersionFeatureFlag(context) {
+async function migrateToTransformerVersionFeatureFlag(context) {
   const projectPath = pathManager.findProjectRoot() ?? process.cwd();
 
   let config = stateManager.getCLIJSON(projectPath, undefined, {
@@ -639,6 +663,7 @@ function migrateToTransformerVersionFeatureFlag(context) {
   if (useExperimentalPipelineTransformer && transformerVersion === 1) {
     config.features.graphqltransformer.transformerversion = 2;
     stateManager.setCLIJSON(projectPath, config);
+    await FeatureFlags.reloadValues();
 
     context.print.warning(
       `\nThe project is configured with 'transformerVersion': ${transformerVersion}, but 'useExperimentalPipelinedTransformer': ${useExperimentalPipelineTransformer}. Setting the 'transformerVersion': ${config.features.graphqltransformer.transformerversion}. 'useExperimentalPipelinedTransformer' is deprecated.`,

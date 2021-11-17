@@ -1,5 +1,5 @@
 input AMPLIFY {
-  global_auth_rule: AuthorizationRule = { allow: public }
+  globalAuthRule: AuthRule = { allow: public }
 }
 
 type Todo @model {

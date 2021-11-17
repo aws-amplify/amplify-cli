@@ -38,6 +38,9 @@ import { ResourceConstants } from 'graphql-transformer-common';
 import { showGlobalSandboxModeWarning, showSandboxModePrompts, schemaHasSandboxModeEnabled } from '../utils/sandbox-mode-helpers';
 import { printer } from 'amplify-prompts';
 import { GraphQLSanityCheck, SanityCheckRules } from './sanity-check';
+import _ from 'lodash';
+import { isAuthModeUpdated } from '../utils/auth-mode-compare';
+import { parseUserDefinedSlots } from './user-defined-slots';
 
 const API_CATEGORY = 'api';
 const STORAGE_CATEGORY = 'storage';
@@ -353,6 +356,9 @@ export async function transformGraphQLSchema(context, options) {
   context.print.success(`GraphQL schema compiled successfully.\n\nEdit your schema at ${schemaFilePath} or \
 place .graphql files in a directory at ${schemaDirPath}`);
 
+  if (isAuthModeUpdated(options)) {
+    parameters.AuthModeLastUpdated = new Date();
+  }
   if (!options.dryRun) {
     JSONUtilities.writeJson(parametersFilePath, parameters);
   }
@@ -483,6 +489,11 @@ export async function buildAPIProject(opts: ProjectOptions<TransformerFactoryArg
 async function _buildProject(opts: ProjectOptions<TransformerFactoryArgs>) {
   const userProjectConfig = opts.projectConfig;
   const stackMapping = userProjectConfig.config.StackMapping;
+  const userDefinedSlots = {
+    ...parseUserDefinedSlots(userProjectConfig.pipelineFunctions),
+    ...parseUserDefinedSlots(userProjectConfig.resolvers),
+  };
+
   // Create the transformer instances, we've to make sure we're not reusing them within the same CLI command
   // because the StackMapping feature already builds the project once.
   const transformers = await opts.transformersFactory(opts.transformersFactoryArgs);
@@ -496,10 +507,11 @@ async function _buildProject(opts: ProjectOptions<TransformerFactoryArgs>) {
     stacks: opts.projectConfig.stacks || {},
     featureFlags: new AmplifyCLIFeatureFlagAdapter(),
     sandboxModeEnabled: opts.sandboxModeEnabled,
+    userDefinedSlots,
   });
 
   const schema = userProjectConfig.schema.toString();
   const transformOutput = transform.transform(schema);
 
-  return mergeUserConfigWithTransformOutput(userProjectConfig, transformOutput);
+  return mergeUserConfigWithTransformOutput(userProjectConfig, transformOutput, opts);
 }

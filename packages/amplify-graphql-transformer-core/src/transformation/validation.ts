@@ -103,7 +103,6 @@ scalar AWSPhone
 scalar AWSIPAddress
 scalar BigInt
 scalar Double
-scalar AuthorizationRule
 `);
 
 export const EXTRA_DIRECTIVES_DOCUMENT = parse(`
@@ -113,7 +112,6 @@ directive @aws_api_key on FIELD_DEFINITION | OBJECT
 directive @aws_iam on FIELD_DEFINITION | OBJECT
 directive @aws_oidc on FIELD_DEFINITION | OBJECT
 directive @aws_cognito_user_pools(cognito_groups: [String!]) on FIELD_DEFINITION | OBJECT
-directive @allow_public_data_access_with_api_key(in: [String!]) on OBJECT
 
 # Allows transformer libraries to deprecate directive arguments.
 directive @deprecated(reason: String) on FIELD_DEFINITION | INPUT_FIELD_DEFINITION | ENUM | ENUM_VALUE
@@ -160,7 +158,13 @@ export const validateAuthModes = (authConfig: AppSyncAuthConfiguration) => {
   for (let i = 0; i < authModes.length; i++) {
     const mode = authModes[i];
 
-    if (mode !== 'API_KEY' && mode !== 'AMAZON_COGNITO_USER_POOLS' && mode !== 'AWS_IAM' && mode !== 'OPENID_CONNECT' && mode !== 'AWS_LAMBDA') {
+    if (
+      mode !== 'API_KEY' &&
+      mode !== 'AMAZON_COGNITO_USER_POOLS' &&
+      mode !== 'AWS_IAM' &&
+      mode !== 'OPENID_CONNECT' &&
+      mode !== 'AWS_LAMBDA'
+    ) {
       throw new Error(`Invalid auth mode ${mode}`);
     }
   }

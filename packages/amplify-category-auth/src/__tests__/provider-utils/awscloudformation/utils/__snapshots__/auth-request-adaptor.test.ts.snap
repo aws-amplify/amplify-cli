@@ -1,36 +1,5 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`get add auth request adaptor valid translations translates request with minimal user pool config only 1`] = `
-Object {
-  "adminQueries": false,
-  "adminQueryGroup": undefined,
-  "aliasAttributes": Array [],
-  "authProviders": Array [],
-  "authSelections": "userPoolOnly",
-  "autoVerifiedAttributes": Array [],
-  "identityPoolName": undefined,
-  "mfaConfiguration": "OFF",
-  "requiredAttributes": Array [
-    "email",
-  ],
-  "resourceName": "myTestAuth",
-  "serviceName": "Cognito",
-  "thirdPartyAuth": false,
-  "updateFlow": "manual",
-  "useDefault": "manual",
-  "userPoolGroupList": Array [],
-  "userPoolGroups": false,
-  "userPoolName": undefined,
-  "usernameAttributes": Array [
-    "email",
-  ],
-  "userpoolClientReadAttributes": Array [],
-  "userpoolClientRefreshTokenValidity": undefined,
-  "userpoolClientWriteAttributes": Array [],
-}
-`;
-
-
 exports[`get add auth request adaptor translates request with aliasAttributes 1`] = `
 Object {
   "adminQueries": false,
@@ -65,8 +34,41 @@ Object {
 }
 `;
 
-
 exports[`get add auth request adaptor translates request without aliasAttributes 1`] = `
+Object {
+  "adminQueries": false,
+  "adminQueryGroup": undefined,
+  "aliasAttributes": Array [
+    "email",
+    "phone_number",
+    "preferred_username",
+  ],
+  "authProviders": Array [],
+  "authSelections": "userPoolOnly",
+  "autoVerifiedAttributes": Array [],
+  "identityPoolName": undefined,
+  "mfaConfiguration": "OFF",
+  "requiredAttributes": Array [
+    "email",
+  ],
+  "resourceName": "myTestAuth",
+  "serviceName": "Cognito",
+  "thirdPartyAuth": false,
+  "updateFlow": "manual",
+  "useDefault": "manual",
+  "userPoolGroupList": Array [],
+  "userPoolGroups": false,
+  "userPoolName": undefined,
+  "usernameAttributes": Array [
+    "email",
+  ],
+  "userpoolClientReadAttributes": Array [],
+  "userpoolClientRefreshTokenValidity": undefined,
+  "userpoolClientWriteAttributes": Array [],
+}
+`;
+
+exports[`get add auth request adaptor valid translations translates request with minimal user pool config only 1`] = `
 Object {
   "adminQueries": false,
   "adminQueryGroup": undefined,

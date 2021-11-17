@@ -45,9 +45,7 @@ export const makeUpdateInputField = (
   input.fields.forEach(f => f.makeNullable());
 
   // Add id field and make it optional
-  if (!hasIdField) {
-    input.addField(InputFieldWrapper.create('id', 'ID', false));
-  } else {
+  if (hasIdField) {
     const idField = input.fields.find(f => f.name === 'id');
     if (idField) {
       idField.makeNonNullable();
@@ -127,7 +125,7 @@ export const makeCreateInputField = (
 
   // Add id field and make it optional
   if (!hasIdField) {
-    input.addField(InputFieldWrapper.create('id', 'ID'));
+    input.addField(InputFieldWrapper.create('id', 'ID', true));
   } else {
     const idField = input.fields.find(f => f.name === 'id');
     if (idField) {

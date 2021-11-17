@@ -149,6 +149,48 @@ describe('Schema migration tests', () => {
     migrateAndValidate(schema);
   });
 
+  it('@function directive is migrated', () => {
+    const schema = `
+      type Query {
+        echo(msg: String!): Context @function(name: "echo")
+        echoEnv(msg: String!): Context @function(name: "long-prefix-e2e-test-functions-echo-\${env}-v2")
+        duplicate(msg: String!): Context @function(name: "long-prefix-e2e-test-functions-echo-dev-v2")
+        pipeline(msg: String!): String @function(name: "echo") @function(name: "hello")
+        echoRegion(msg: String!): Context @function(name: "echo-\${env}" region: "us-east-1")
+      }
+
+      type Context {
+        typeName: String
+        fieldName: String
+      }`;
+
+    migrateAndValidate(schema);
+  });
+
+  it('@searchable directive is migrated', () => {
+    const schema = `
+      type Book @model @key(fields: ["author", "name"]) @searchable {
+        author: String!
+        name: String!
+        genre: String!
+      }
+
+      type Todo @model @searchable {
+        id: ID
+        name: String!
+        createdAt: AWSDateTime
+        description: String
+      }
+
+      type Comment @model @key(name: "commentByVersion", fields: ["version", "id"]) @searchable {
+        id: ID!
+        version: Int!
+        content: String!
+      }`;
+
+    migrateAndValidate(schema);
+  });
+
   it('@http directive is migrated', () => {
     const schema = `
       type Comment @model {
@@ -196,43 +238,4 @@ describe('Schema migration tests', () => {
 
     migrateAndValidate(schema);
   });
-
-  it('@versioned is not migrated', () => {
-    const schema = `
-      type Todo @model @versioned {
-        id: ID!
-        name: String!
-        description: String
-      }
-
-      type Ope @model {
-        foo: ID!
-        bar: String
-      }`;
-
-    expect(() => {
-      migrateAndValidate(schema);
-    }).toThrow('Unknown directive "versioned".');
-  });
-
-  // TODO(cjihrig): This test is currently failing.
-  // it('AppSync directives are not migrated', () => {
-  //   const schema1 = `
-  //     type Todo @model @aws_api_key {
-  //       id: ID!
-  //     }`;
-
-  //   expect(() => {
-  //     migrateAndValidate(schema1);
-  //   }).toThrow('Unknown directive "aws_api_key".');
-
-  //   const schema2 = `
-  //     type Todo @model @aws_iam {
-  //       id: ID!
-  //     }`;
-
-  //   expect(() => {
-  //     migrateAndValidate(schema2);
-  //   }).toThrow('Unknown directive "aws_iam".');
-  // });
 });

@@ -20,5 +20,6 @@
     {"path": "../amplify-prompts"},
     {"path": "../graphql-transformer-core"},
     {"path": "../amplify-util-headless-input"},
+    {"path": "../amplify-graphql-transformer-migrator"},
   ]
 }

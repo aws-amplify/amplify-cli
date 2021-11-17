@@ -9,6 +9,7 @@ import { Diff, diff as getDiffs } from 'deep-diff';
 import { ResourceConstants } from 'graphql-transformer-common';
 import { pullAllBy, find } from 'lodash';
 import { isAmplifyAdminApp } from '../utils/admin-helpers';
+import { printer } from 'amplify-prompts';
 
 const ROOT_STACK_FILE_NAME = 'cloudformation-template.json';
 const PARAMETERS_FILE_NAME = 'parameters.json';
@@ -29,11 +30,11 @@ export interface GQLDiff {
   current: DiffableProject;
 }
 
-export const getIdentityPoolId = async (ctx: $TSContext): Promise<string | any> => {
+export const getIdentityPoolId = async (ctx: $TSContext): Promise<string | undefined> => {
   const { allResources, resourcesToBeDeleted } = await ctx.amplify.getResourceStatus('auth');
   const authResources = pullAllBy(allResources, resourcesToBeDeleted, 'resourceName');
   const authResource = find(authResources, { service: 'Cognito', providerPlugin: providerName }) as any;
-  return authResource.output.IdentityPoolId;
+  return authResource?.output?.IdentityPoolId;
 };
 
 export const getAdminRoles = async (ctx: $TSContext, apiResourceName: string): Promise<Array<string>> => {
@@ -49,7 +50,6 @@ export const getAdminRoles = async (ctx: $TSContext, apiResourceName: string): P
     }
   } catch (err) {
     // no need to error if not admin ui app
-    console.info('App not deployed yet.');
   }
 
   // lambda functions which have access to the api
@@ -117,23 +117,48 @@ export function readFromPath(directory: string): any {
 export function mergeUserConfigWithTransformOutput(
   userConfig: TransformerProjectConfig,
   transformOutput: DeploymentResources,
+  opts?: any,
 ): DeploymentResources {
   const userFunctions = userConfig.functions || {};
   const userResolvers = userConfig.resolvers || {};
   const userPipelineFunctions = userConfig.pipelineFunctions || {};
   const functions = transformOutput.functions;
+  const resolvers = transformOutput.resolvers;
   const pipelineFunctions = transformOutput.pipelineFunctions;
 
-  for (const userFunction of Object.keys(userFunctions)) functions[userFunction] = userFunctions[userFunction];
-  for (const userPipelineFunction of Object.keys(userPipelineFunctions))
-    pipelineFunctions[userPipelineFunction] = userPipelineFunctions[userPipelineFunction];
-  for (const userResolver of Object.keys(userResolvers)) pipelineFunctions[userResolver] = userResolvers[userResolver];
+  if (!opts?.disableFunctionOverrides) {
+    for (const userFunction of Object.keys(userFunctions)) {
+      functions[userFunction] = userFunctions[userFunction];
+    }
+  }
+
+  if (!opts?.disablePipelineFunctionOverrides) {
+    const pipelineFunctionKeys = Object.keys(userPipelineFunctions);
+
+    if (pipelineFunctionKeys.length > 0) {
+      printer.warn(
+        ' You are using the "pipelineFunctions" directory for overridden and custom resolvers. ' +
+          'Please use the "resolvers" directory as "pipelineFunctions" will be deprecated.\n',
+      );
+    }
+
+    for (const userPipelineFunction of pipelineFunctionKeys) resolvers[userPipelineFunction] = userPipelineFunctions[userPipelineFunction];
+  }
+
+  if (!opts?.disableResolverOverrides) {
+    for (const userResolver of Object.keys(userResolvers)) {
+      if (userResolver !== 'README.md') {
+        resolvers[userResolver] = userResolvers[userResolver].toString();
+      }
+    }
+  }
 
   const stacks = overrideUserDefinedStacks(userConfig, transformOutput);
 
   return {
     ...transformOutput,
     functions,
+    resolvers,
     pipelineFunctions,
     stacks,
   };
@@ -295,10 +320,6 @@ function initStacksAndResolversDirectories(directory: string) {
   const resolverRootPath = resolverDirectoryPath(directory);
   if (!fs.existsSync(resolverRootPath)) {
     fs.mkdirSync(resolverRootPath);
-  }
-  const pipelineFunctionRootPath = pipelineFunctionDirectoryPath(directory);
-  if (!fs.existsSync(pipelineFunctionRootPath)) {
-    fs.mkdirSync(pipelineFunctionRootPath);
   }
   const stackRootPath = stacksDirectoryPath(directory);
   if (!fs.existsSync(stackRootPath)) {

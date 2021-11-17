@@ -5,8 +5,7 @@ import { printer } from 'amplify-prompts';
 import { parse } from 'graphql';
 
 const AMPLIFY = 'AMPLIFY';
-const GLOBAL_AUTH_RULE = 'global_auth_rule';
-const AUTHORIZATION_RULE = 'AuthorizationRule';
+const AUTHORIZATION_RULE = 'AuthRule';
 const ALLOW = 'allow';
 const PUBLIC = 'public';
 
@@ -15,7 +14,7 @@ export async function showSandboxModePrompts(context: $TSContext): Promise<any> 
     printer.info(
       `
 ⚠️  WARNING: Global Sandbox Mode has been enabled, which requires a valid API key. If
-you'd like to disable, remove ${chalk.green('"input AMPLIFY { global_auth_rule: AuthorizationRule = { allow: public } }"')}
+you'd like to disable, remove ${chalk.green('"input AMPLIFY { globalAuthRule: AuthRule = { allow: public } }"')}
 from your GraphQL schema and run 'amplify push' again. If you'd like to proceed with
 sandbox mode disabled, do not create an API Key.
 `,
@@ -34,6 +33,10 @@ export function showGlobalSandboxModeWarning(): void {
   );
 }
 
+function matchesGlobalAuth(field: any): boolean {
+  return ['global_auth_rule', 'globalAuthRule'].includes(field.name.value);
+}
+
 export function schemaHasSandboxModeEnabled(schema: string): boolean {
   const { definitions } = parse(schema);
   const amplifyInputType: any = definitions.find((d: any) => d.kind === 'InputObjectTypeDefinition' && d.name.value === AMPLIFY);
@@ -42,10 +45,10 @@ export function schemaHasSandboxModeEnabled(schema: string): boolean {
     return false;
   }
 
-  const authRuleField = amplifyInputType.fields.find(f => f.name.value === GLOBAL_AUTH_RULE);
+  const authRuleField = amplifyInputType.fields.find(matchesGlobalAuth);
 
   if (!authRuleField) {
-    throw Error('input AMPLIFY requires "global_auth_rule" field. Learn more here: https://docs.amplify.aws/cli/graphql-transformer/auth');
+    throw Error('input AMPLIFY requires "globalAuthRule" field. Learn more here: https://docs.amplify.aws/cli/graphql-transformer/auth');
   }
 
   const typeName = authRuleField.type.name.value;

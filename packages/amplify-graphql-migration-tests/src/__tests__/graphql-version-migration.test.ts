@@ -8,9 +8,8 @@ import { ResourceImpact } from '@aws-cdk/cloudformation-diff';
 
 describe('v1 to v2 migration', () => {
   test.concurrent.each(getTestCaseRegistry())(
-    `validate $name schema migration`,
-    async ({ name, schema, v1TransformerConfig, v2TransformerConfig }) => {
-      console.log(name); // for some reason name substitution isn't working in the test title, so printing it here
+    `validate %s schema migration`,
+    async (_, schema, v1TransformerConfig, v2TransformerConfig) => {
       // run v1 transformer
       const v1Transformer = v1transformerProvider(v1TransformerConfig);
       const v1result = v1Transformer.transform(schema);
@@ -24,12 +23,17 @@ describe('v1 to v2 migration', () => {
 
       // get initial nested stack names
       // TODO will probably have to update the logic a bit if we want to test @searchable migrations here as that will create a SearchableStack that we need to account for
-      const v1nestedStackNames = Object.keys(v1result.stacks).filter(stackName => stackName !== 'ConnectionStack'); // The v1 transformer puts all connection resolvers in a 'ConnectionStack'. This stack does not defined any data resources
+      const v1nestedStackNames = Object.keys(v1result.stacks).filter(stackName => stackName !== 'ConnectionStack'); // The v1 transformer puts all connection resolvers in a 'ConnectionStack'. This stack does not define any data resources
 
       // verify root stack diff
       const diff = cdkDiff.diffTemplate(v1result.rootStack, v2result.rootStack);
       v1nestedStackNames.forEach(stackName => {
-        expect([ResourceImpact.WILL_UPDATE, ResourceImpact.NO_CHANGE]).toContain(diff.resources.changes[stackName].changeImpact);
+        try {
+          expect([ResourceImpact.WILL_UPDATE, ResourceImpact.NO_CHANGE]).toContain(diff.resources.changes[stackName].changeImpact);
+        } catch (err) {
+          console.log(`${stackName} not in correct state`);
+          throw err;
+        }
       });
 
       // verify nested stack diffs

@@ -5,6 +5,7 @@ import {
   SyncConfig,
   SyncUtils,
   TransformerModelBase,
+  TransformerNestedStack,
 } from '@aws-amplify/graphql-transformer-core';
 import {
   AppSyncDataSourceType,
@@ -20,6 +21,7 @@ import {
   TransformerSchemaVisitStepContextProvider,
   TransformerTransformSchemaStepContextProvider,
   TransformerValidationStepContextProvider,
+  TransformerBeforeStepContextProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { AttributeType, CfnTable, ITable, StreamViewType, Table, TableEncryption } from '@aws-cdk/aws-dynamodb';
 import * as iam from '@aws-cdk/aws-iam';
@@ -51,8 +53,10 @@ import {
   toPascalCase,
 } from 'graphql-transformer-common';
 import {
+  addDirectivesToOperation,
   addModelConditionInputs,
   createEnumModelFilters,
+  extendTypeWithDirectives,
   makeCreateInputField,
   makeDeleteInputField,
   makeListQueryFilterInput,
@@ -60,6 +64,7 @@ import {
   makeModelSortDirectionEnumObject,
   makeMutationConditionInput,
   makeUpdateInputField,
+  propagateApiKeyToNestedTypes,
 } from './graphql-types';
 import {
   generateAuthExpressionForSandboxMode,
@@ -82,6 +87,7 @@ import {
 import { FieldWrapper, InputObjectDefinitionWrapper, ObjectDefinitionWrapper } from './wrappers/object-definition-wrapper';
 import { CfnRole } from '@aws-cdk/aws-iam';
 import md5 from 'md5';
+import { API_KEY_DIRECTIVE } from './definitions';
 
 export type Nullable<T> = T | null;
 export type OptionalAndNullable<T> = Partial<T>;
@@ -167,6 +173,37 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
     this.options = this.getOptions(options);
   }
 
+  before = (ctx: TransformerBeforeStepContextProvider) => {
+    // add model related-parameters to the root stack
+    ctx.stackManager.addParameter(ResourceConstants.PARAMETERS.DynamoDBModelTableReadIOPS, {
+      description: 'The number of read IOPS the table should support.',
+      type: 'Number',
+      default: 5,
+    });
+    ctx.stackManager.addParameter(ResourceConstants.PARAMETERS.DynamoDBModelTableWriteIOPS, {
+      description: 'The number of write IOPS the table should support.',
+      type: 'Number',
+      default: 5,
+    });
+    ctx.stackManager.addParameter(ResourceConstants.PARAMETERS.DynamoDBBillingMode, {
+      description: 'Configure @model types to create DynamoDB tables with PAY_PER_REQUEST or PROVISIONED billing modes.',
+      default: 'PAY_PER_REQUEST',
+      allowedValues: ['PAY_PER_REQUEST', 'PROVISIONED'],
+    });
+    ctx.stackManager.addParameter(ResourceConstants.PARAMETERS.DynamoDBEnablePointInTimeRecovery, {
+      description: 'Whether to enable Point in Time Recovery on the table.',
+      type: 'String',
+      default: 'false',
+      allowedValues: ['true', 'false'],
+    });
+    ctx.stackManager.addParameter(ResourceConstants.PARAMETERS.DynamoDBEnableServerSideEncryption, {
+      description: 'Enable server side encryption powered by KMS.',
+      type: 'String',
+      default: 'true',
+      allowedValues: ['true', 'false'],
+    });
+  };
+
   object = (definition: ObjectTypeDefinitionNode, directive: DirectiveNode, ctx: TransformerSchemaVisitStepContextProvider): void => {
     const isTypeNameReserved =
       definition.name.value === ctx.output.getQueryTypeName() ||
@@ -227,6 +264,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
     this.ensureModelSortDirectionEnum(ctx);
     for (const type of this.typesWithModelDirective) {
       const def = ctx.output.getObject(type)!;
+      const hasAuth = def.directives!.some(dir => dir.name.value === 'auth');
 
       // add Non Model type inputs
       this.createNonModelInputs(ctx, def);
@@ -245,6 +283,24 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
 
       if (ctx.isProjectUsingDataStore()) {
         this.addModelSyncFields(ctx, type);
+      }
+      // global auth check
+      if (!hasAuth && ctx.sandboxModeEnabled && ctx.authConfig.defaultAuthentication.authenticationType !== 'API_KEY') {
+        const apiKeyDirArray = [makeDirective(API_KEY_DIRECTIVE, [])];
+        extendTypeWithDirectives(ctx, def.name.value, apiKeyDirArray);
+        propagateApiKeyToNestedTypes(ctx as TransformerContextProvider, def, new Set<string>());
+        for (let operationField of queryFields) {
+          const operationName = operationField.name.value;
+          addDirectivesToOperation(ctx, ctx.output.getQueryTypeName()!, operationName, apiKeyDirArray);
+        }
+        for (let operationField of mutationFields) {
+          const operationName = operationField.name.value;
+          addDirectivesToOperation(ctx, ctx.output.getMutationTypeName()!, operationName, apiKeyDirArray);
+        }
+        for (let operationField of subscriptionsFields) {
+          const operationName = operationField.name.value;
+          addDirectivesToOperation(ctx, ctx.output.getSubscriptionTypeName()!, operationName, apiKeyDirArray);
+        }
       }
     }
   };
@@ -274,10 +330,12 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
           default:
             throw new Error('Unknown query field type');
         }
+        // TODO: add mechanism to add an auth like rule to all non auth @models
+        // this way we can just depend on auth to add the check
         resolver.addToSlot(
           'postAuth',
           MappingTemplate.s3MappingTemplateFromString(
-            generateAuthExpressionForSandboxMode(context),
+            generateAuthExpressionForSandboxMode(context.sandboxModeEnabled),
             `${query.typeName}.${query.fieldName}.{slotName}.{slotIndex}.req.vtl`,
           ),
         );
@@ -304,7 +362,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
         resolver.addToSlot(
           'postAuth',
           MappingTemplate.s3MappingTemplateFromString(
-            generateAuthExpressionForSandboxMode(context),
+            generateAuthExpressionForSandboxMode(context.sandboxModeEnabled),
             `${mutation.typeName}.${mutation.fieldName}.{slotName}.{slotIndex}.req.vtl`,
           ),
         );
@@ -352,7 +410,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
           resolver.addToSlot(
             'postAuth',
             MappingTemplate.s3MappingTemplateFromString(
-              generateAuthExpressionForSandboxMode(context),
+              generateAuthExpressionForSandboxMode(context.sandboxModeEnabled),
               `${subscription.typeName}.${subscription.fieldName}.{slotName}.{slotIndex}.req.vtl`,
             ),
           );
@@ -752,7 +810,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
             typeName: 'Subscription',
             fieldName: fieldName,
             type: SubscriptionFieldType.ON_CREATE,
-            resolverLogicalId: ModelResourceIDs.ModelOnCreateSubscriptionName(type.name.value),
+            resolverLogicalId: ResolverResourceIDs.ResolverResourceID('Subscription', fieldName),
           });
         }
       }
@@ -763,7 +821,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
             typeName: 'Subscription',
             fieldName: fieldName,
             type: SubscriptionFieldType.ON_UPDATE,
-            resolverLogicalId: ModelResourceIDs.ModelOnUpdateSubscriptionName(type.name.value),
+            resolverLogicalId: ResolverResourceIDs.ResolverResourceID('Subscription', fieldName),
           });
         }
       }
@@ -774,7 +832,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
             typeName: 'Subscription',
             fieldName: fieldName,
             type: SubscriptionFieldType.ON_DELETE,
-            resolverLogicalId: ModelResourceIDs.ModelOnDeleteSubscriptionName(type.name.value),
+            resolverLogicalId: ResolverResourceIDs.ResolverResourceID('Subscription', fieldName),
           });
         }
       }
@@ -1085,30 +1143,42 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
       description: 'The number of read IOPS the table should support.',
       type: 'Number',
       default: 5,
-    }).valueAsString;
+    });
     const writeIops = new cdk.CfnParameter(stack, ResourceConstants.PARAMETERS.DynamoDBModelTableWriteIOPS, {
       description: 'The number of write IOPS the table should support.',
       type: 'Number',
       default: 5,
-    }).valueAsString;
+    });
     const billingMode = new cdk.CfnParameter(stack, ResourceConstants.PARAMETERS.DynamoDBBillingMode, {
       description: 'Configure @model types to create DynamoDB tables with PAY_PER_REQUEST or PROVISIONED billing modes.',
       type: 'String',
       default: 'PAY_PER_REQUEST',
       allowedValues: ['PAY_PER_REQUEST', 'PROVISIONED'],
-    }).valueAsString;
+    });
     const pointInTimeRecovery = new cdk.CfnParameter(stack, ResourceConstants.PARAMETERS.DynamoDBEnablePointInTimeRecovery, {
       description: 'Whether to enable Point in Time Recovery on the table.',
       type: 'String',
       default: 'false',
       allowedValues: ['true', 'false'],
-    }).valueAsString;
+    });
     const enableSSE = new cdk.CfnParameter(stack, ResourceConstants.PARAMETERS.DynamoDBEnableServerSideEncryption, {
       description: 'Enable server side encryption powered by KMS.',
       type: 'String',
       default: 'true',
       allowedValues: ['true', 'false'],
-    }).valueAsString;
+    });
+    // add the connection between the root and nested stack so the values can be passed down
+    (stack as TransformerNestedStack).setParameter(readIops.node.id, cdk.Fn.ref(ResourceConstants.PARAMETERS.DynamoDBModelTableReadIOPS));
+    (stack as TransformerNestedStack).setParameter(writeIops.node.id, cdk.Fn.ref(ResourceConstants.PARAMETERS.DynamoDBModelTableWriteIOPS));
+    (stack as TransformerNestedStack).setParameter(billingMode.node.id, cdk.Fn.ref(ResourceConstants.PARAMETERS.DynamoDBBillingMode));
+    (stack as TransformerNestedStack).setParameter(
+      pointInTimeRecovery.node.id,
+      cdk.Fn.ref(ResourceConstants.PARAMETERS.DynamoDBEnablePointInTimeRecovery),
+    );
+    (stack as TransformerNestedStack).setParameter(
+      enableSSE.node.id,
+      cdk.Fn.ref(ResourceConstants.PARAMETERS.DynamoDBEnableServerSideEncryption),
+    );
 
     // Add conditions.
     // eslint-disable-next-line no-new
@@ -1193,7 +1263,6 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
 
     const cfnDataSource = dataSource.node.defaultChild as CfnDataSource;
     cfnDataSource.addDependsOn(role.node.defaultChild as CfnRole);
-    cfnDataSource.overrideLogicalId(datasourceRoleLogicalID);
 
     if (context.isProjectUsingDataStore()) {
       const datasourceDynamoDb = cfnDataSource.dynamoDbConfig as any;

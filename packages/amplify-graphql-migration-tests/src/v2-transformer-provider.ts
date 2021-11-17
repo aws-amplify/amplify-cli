@@ -53,5 +53,12 @@ const defaultAuthConfig: AppSyncAuthConfiguration = {
   defaultAuthentication: {
     authenticationType: 'API_KEY',
   },
-  additionalAuthenticationProviders: [],
+  additionalAuthenticationProviders: [
+    {
+      authenticationType: 'AWS_IAM',
+    },
+    {
+      authenticationType: 'AMAZON_COGNITO_USER_POOLS',
+    },
+  ],
 };

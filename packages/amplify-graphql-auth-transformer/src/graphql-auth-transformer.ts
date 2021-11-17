@@ -149,6 +149,11 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
       throw new TransformerContractError('Types annotated with @auth must also be annotated with @model.');
     }
     const typeName = def.name.value;
+    let isJoinType = false;
+    // check if type is a joinedType
+    if (context.metadata.has('joinTypeList')) {
+      isJoinType = context.metadata.get<Array<string>>('joinTypeList')!.includes(typeName);
+    }
     const authDir = new DirectiveWrapper(directive);
     const rules: AuthRule[] = authDir.getArguments<{ rules: Array<AuthRule> }>({ rules: [] }).rules;
     ensureAuthRuleDefaults(rules);
@@ -166,7 +171,7 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
     // add object into policy
     this.addTypeToResourceReferences(def.name.value, rules);
     // turn rules into roles and add into acm and roleMap
-    this.convertRulesToRoles(acm, rules);
+    this.convertRulesToRoles(acm, rules, isJoinType);
     this.modelDirectiveConfig.set(typeName, getModelConfig(modelDirective, typeName, context.isProjectUsingDataStore()));
     this.authModelConfig.set(typeName, acm);
   };
@@ -226,7 +231,7 @@ Static group authorization should perform as expected.`,
         acm = this.authModelConfig.get(typeName) as AccessControlMatrix;
         acm.resetAccessForResource(fieldName);
       }
-      this.convertRulesToRoles(acm, rules, fieldName);
+      this.convertRulesToRoles(acm, rules, false, fieldName);
       this.authModelConfig.set(typeName, acm);
     } else {
       // if @auth is used without @model only generate static group rules in the resolver
@@ -239,7 +244,7 @@ Static group authorization should perform as expected.`,
         operations: ['read'],
         resources: [typeFieldName],
       });
-      this.convertRulesToRoles(acm, staticRules, typeFieldName, ['read']);
+      this.convertRulesToRoles(acm, staticRules, false, typeFieldName, ['read']);
       this.authNonModelConfig.set(typeFieldName, acm);
     }
   };
@@ -330,18 +335,25 @@ Static group authorization should perform as expected.`,
       // or there is a relational directive on the field then we should protect that as well
       const readRoles = acm.getRolesPerOperation('read');
       const modelFields = def.fields?.filter(f => acm.hasResource(f.name.value)) ?? [];
+      const errorFields = new Array<string>();
       for (let field of modelFields) {
         const allowedRoles = readRoles.filter(r => acm.isAllowed(r, field.name.value, 'read'));
         const needsFieldResolver = allowedRoles.length < readRoles.length;
         if (needsFieldResolver && field.type.kind === Kind.NON_NULL_TYPE) {
-          throw new InvalidDirectiveError(`\nPer-field auth on the required field ${field.name.value} is not supported with subscriptions.
-  Either make the field optional, set auth on the object and not the field, or disable subscriptions for the object (setting level to off or public)\n`);
-        }
-        if (hasRelationalDirective(field)) {
+          errorFields.push(field.name.value);
+        } else if (hasRelationalDirective(field)) {
           this.protectRelationalResolver(context, def, modelName, field, needsFieldResolver ? allowedRoles : null);
         } else if (needsFieldResolver) {
           this.protectFieldResolver(context, def, modelName, field.name.value, allowedRoles);
         }
+      }
+      if (errorFields.length > 0) {
+        throw new InvalidDirectiveError(
+          `Because "${def.name.value}" has a field-level authorization rule,` +
+            ` you need to either apply field-level authorization rules to all required fields ${JSON.stringify(
+              errorFields,
+            )} or make those fields nullable.`,
+        );
       }
       const mutationFields = getMutationFieldNames(this.modelDirectiveConfig.get(modelName)!);
       for (let mutation of mutationFields.values()) {
@@ -517,7 +529,7 @@ Static group authorization should perform as expected.`,
       );
     } else {
       // if the related @model does not have auth we need to add a sandbox mode expression
-      relatedAuthExpression = generateSandboxExpressionForField((ctx as any).resourceHelper.api.sandboxModeEnabled);
+      relatedAuthExpression = generateSandboxExpressionForField(ctx.sandboxModeEnabled);
     }
     // if there is field auth on the relational query then we need to add field auth read rules first
     // in the request we then add the rules of the related type
@@ -585,10 +597,11 @@ Static group authorization should perform as expected.`,
   ): void => {
     const acmFields = acm.getResources();
     const modelFields = def.fields ?? [];
+    const name = acm.getName();
     // only add readonly fields if they exist
     const allowedAggFields = modelFields.map(f => f.name.value).filter(f => !acmFields.includes(f));
     let leastAllowedFields = acmFields;
-    const resolver = ctx.resolvers.getResolver(typeName, fieldName) as TransformerResolverProvider;
+    const resolver = ctx.resolvers.getResolver('Search', toUpper(name)) as TransformerResolverProvider;
     // to protect search and aggregation queries we need to collect all the roles which can query
     // and the allowed fields to run field auth on aggregation queries
     const readRoleDefinitions = acm.getRolesPerOperation('read').map(role => {
@@ -760,7 +773,13 @@ Static group authorization should perform as expected.`,
   /*
   Role Helpers
   */
-  private convertRulesToRoles(acm: AccessControlMatrix, authRules: AuthRule[], field?: string, overideOperations?: ModelOperation[]) {
+  private convertRulesToRoles(
+    acm: AccessControlMatrix,
+    authRules: AuthRule[],
+    allowRoleOverwrite: boolean,
+    field?: string,
+    overideOperations?: ModelOperation[],
+  ) {
     for (let rule of authRules) {
       let operations: ModelOperation[] = overideOperations ? overideOperations : rule.operations || MODEL_OPERATIONS;
       if (rule.groups && !rule.groupsField) {
@@ -776,7 +795,7 @@ Static group authorization should perform as expected.`,
               entity: group,
             });
           }
-          acm.setRole({ role: roleName, resource: field, operations });
+          acm.setRole({ role: roleName, resource: field, operations, allowRoleOverwrite });
         });
       } else {
         let roleName: string;
@@ -840,7 +859,7 @@ Static group authorization should perform as expected.`,
         if (!(roleName in this.roleMap)) {
           this.roleMap.set(roleName, roleDefinition);
         }
-        acm.setRole({ role: roleName, resource: field, operations });
+        acm.setRole({ role: roleName, resource: field, operations, allowRoleOverwrite });
       }
     }
   }

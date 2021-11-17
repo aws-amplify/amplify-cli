@@ -35,7 +35,7 @@ describe('sandbox mode helpers', () => {
         expect(prompts.printer.info).toBeCalledWith(
           `
 ⚠️  WARNING: Global Sandbox Mode has been enabled, which requires a valid API key. If
-you'd like to disable, remove ${chalk.green('"input AMPLIFY { global_auth_rule: AuthorizationRule = { allow: public } }"')}
+you'd like to disable, remove ${chalk.green('"input AMPLIFY { globalAuthRule: AuthRule = { allow: public } }"')}
 from your GraphQL schema and run 'amplify push' again. If you'd like to proceed with
 sandbox mode disabled, do not create an API Key.
 `,
@@ -62,7 +62,7 @@ sandbox mode disabled, do not create an API Key.
   describe('schemaHasSandboxModeEnabled', () => {
     it('parses sandbox AMPLIFY input on schema', () => {
       const schema = `
-        input AMPLIFY { global_auth_rule: AuthorizationRule = { allow: public } }
+        input AMPLIFY { globalAuthRule: AuthRule = { allow: public } }
       `;
 
       expect(schemaHasSandboxModeEnabled(schema)).toEqual(true);
@@ -80,19 +80,27 @@ sandbox mode disabled, do not create an API Key.
     });
 
     describe('input AMPLIFY has incorrect values', () => {
-      it('checks for "global_auth_rule"', () => {
+      it('checks for "globalAuthRule"', () => {
         const schema = `
           input AMPLIFY { auth_rule: AuthenticationRule = { allow: public } }
         `;
 
         expect(() => schemaHasSandboxModeEnabled(schema)).toThrow(
-          Error('input AMPLIFY requires "global_auth_rule" field. Learn more here: https://docs.amplify.aws/cli/graphql-transformer/auth'),
+          Error('input AMPLIFY requires "globalAuthRule" field. Learn more here: https://docs.amplify.aws/cli/graphql-transformer/auth'),
         );
       });
 
-      it('guards for AuthorizationRule', () => {
+      it('allows "global_auth_rule"', () => {
         const schema = `
-          input AMPLIFY { global_auth_rule: AuthenticationRule = { allow: public } }
+          input AMPLIFY { global_auth_rule: AuthRule = { allow: public } }
+        `;
+
+        expect(schemaHasSandboxModeEnabled(schema)).toEqual(true);
+      });
+
+      it('guards for AuthRule', () => {
+        const schema = `
+          input AMPLIFY { globalAuthRule: AuthenticationRule = { allow: public } }
         `;
 
         expect(() => schemaHasSandboxModeEnabled(schema)).toThrow(
@@ -104,7 +112,7 @@ sandbox mode disabled, do not create an API Key.
 
       it('checks for "allow" field name', () => {
         const schema = `
-          input AMPLIFY { global_auth_rule: AuthorizationRule = { allows: public } }
+          input AMPLIFY { globalAuthRule: AuthRule = { allows: public } }
         `;
 
         expect(() => schemaHasSandboxModeEnabled(schema)).toThrow(
@@ -116,7 +124,7 @@ sandbox mode disabled, do not create an API Key.
 
       it('checks for "public" value from "allow" field', () => {
         const schema = `
-          input AMPLIFY { global_auth_rule: AuthorizationRule = { allow: private } }
+          input AMPLIFY { globalAuthRule: AuthRule = { allow: private } }
         `;
 
         expect(() => schemaHasSandboxModeEnabled(schema)).toThrowError(
