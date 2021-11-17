@@ -1,6 +1,6 @@
 {
   "name": "amplify-appsync-simulator",
-  "version": "2.2.3",
+  "version": "2.2.4-beta.0",
   "description": "An AppSync Simulator to test AppSync API.",
   "repository": {
     "type": "git",

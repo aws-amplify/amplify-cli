@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.4.4-beta.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-auth-transformer@0.4.1...@aws-amplify/graphql-auth-transformer@0.4.4-beta.0) (2021-11-17)
+
+
+### Bug Fixes
+
+* append apiKey if global auth is enabled and its not default auth ([#8843](https://github.com/aws-amplify/amplify-cli/issues/8843)) ([3aadcde](https://github.com/aws-amplify/amplify-cli/commit/3aadcde2225f0ede5c5d94c2a4cd9d1afece5288))
+* update error message for auth on non null fields ([#8863](https://github.com/aws-amplify/amplify-cli/issues/8863)) ([bffb4d2](https://github.com/aws-amplify/amplify-cli/commit/bffb4d290e33dfd4362733c4344dd1a7e584234c))
+
+
+
+
+
 ## [0.4.3-beta.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-auth-transformer@0.4.1...@aws-amplify/graphql-auth-transformer@0.4.3-beta.0) (2021-11-17)
 
 
