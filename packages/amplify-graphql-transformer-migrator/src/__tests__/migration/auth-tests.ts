@@ -26,6 +26,22 @@ describe('Schema migration tests for @auth', () => {
       migrateAndValidate(schema, API_KEY);
     });
 
+    it('migrates @auth default with correctly', () => {
+      const schema = `
+        type Todo @model {
+          id: ID!
+          name: String!
+          description: String
+      }
+
+      type Comment @model @auth(rules: [{ allow: private }]) {
+          id: ID!
+          content: String!
+      }`;
+
+      migrateAndValidate(schema, API_KEY);
+    });
+
     it('migrates @auth to public @auth with api key', () => {
       const schema = `
         type Todo @model @auth(rules: [{ allow: public }]) {
