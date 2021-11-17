@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.3.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@2.3.1...amplify-e2e-core@2.3.2) (2021-11-17)
+
+
+### Bug Fixes
+
+* **amplify-e2e-core:** add lambda authorizer to lambda list for nodejs ([#8903](https://github.com/aws-amplify/amplify-cli/issues/8903)) ([f8d6ece](https://github.com/aws-amplify/amplify-cli/commit/f8d6ece2dd3477b7cf973d64ac31a2f650729d5b))
+* **graphql:** refactor lambda authorizer code to use function category to create authorizer function ([#8784](https://github.com/aws-amplify/amplify-cli/issues/8784)) ([f529b54](https://github.com/aws-amplify/amplify-cli/commit/f529b541e2607eb4d2dd9e27810621fca141d6e2))
+
+
+
+
+
 ## [2.3.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@2.3.0...amplify-e2e-core@2.3.1) (2021-11-17)
 
 **Note:** Version bump only for package amplify-e2e-core
