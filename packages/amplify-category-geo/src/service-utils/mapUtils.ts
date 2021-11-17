@@ -11,6 +11,7 @@ import {
   updateDefaultResource,
   readResourceMetaParameters,
   checkAuthConfig,
+  updateGeoPricingPlan
 } from './resourceUtils';
 import { App } from '@aws-cdk/core';
 import { getTemplateMappings } from '../provider-controllers';
@@ -33,10 +34,15 @@ export const createMapResource = async (context: $TSContext, parameters: MapPara
     await updateDefaultResource(context, ServiceName.Map);
   }
 
+  // update the pricing plan for All Geo resources
+  if (parameters.pricingPlan) {
+    await updateGeoPricingPlan(context, parameters.pricingPlan);
+  }
+
   context.amplify.updateamplifyMetaAfterResourceAdd(category, parameters.name, mapMetaParameters);
 };
 
-export const modifyMapResource = async (context: $TSContext, parameters: Pick<MapParameters, 'accessType' | 'name' | 'isDefault'>) => {
+export const modifyMapResource = async (context: $TSContext, parameters: Pick<MapParameters, 'accessType' | 'name' | 'isDefault' | 'pricingPlan'>) => {
   // allow unauth access for identity pool if guest access is enabled
   await checkAuthConfig(context, parameters, ServiceName.Map);
 
@@ -48,6 +54,11 @@ export const modifyMapResource = async (context: $TSContext, parameters: Pick<Ma
   // update the default map
   if (parameters.isDefault) {
     await updateDefaultResource(context, ServiceName.Map, parameters.name);
+  }
+
+  // update the pricing plan for All Geo resources
+  if (parameters.pricingPlan) {
+    await updateGeoPricingPlan(context, parameters.pricingPlan);
   }
 
   const paramsToUpdate = ['accessType'];

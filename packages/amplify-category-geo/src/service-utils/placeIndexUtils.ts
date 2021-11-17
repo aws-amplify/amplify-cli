@@ -10,6 +10,7 @@ import {
   updateDefaultResource,
   readResourceMetaParameters,
   checkAuthConfig,
+  updateGeoPricingPlan
 } from './resourceUtils';
 import { App } from '@aws-cdk/core';
 import { getTemplateMappings } from '../provider-controllers';
@@ -32,12 +33,17 @@ export const createPlaceIndexResource = async (context: $TSContext, parameters: 
     await updateDefaultResource(context, ServiceName.PlaceIndex);
   }
 
+  // update the pricing plan for All Geo resources
+  if (parameters.pricingPlan) {
+    await updateGeoPricingPlan(context, parameters.pricingPlan);
+  }
+
   context.amplify.updateamplifyMetaAfterResourceAdd(category, parameters.name, placeIndexMetaParameters);
 };
 
 export const modifyPlaceIndexResource = async (
   context: $TSContext,
-  parameters: Pick<PlaceIndexParameters, 'accessType' | 'name' | 'isDefault'>,
+  parameters: Pick<PlaceIndexParameters, 'accessType' | 'name' | 'isDefault' | 'pricingPlan'>,
 ) => {
   // allow unauth access for identity pool if guest access is enabled
   await checkAuthConfig(context, parameters, ServiceName.PlaceIndex);
@@ -50,6 +56,11 @@ export const modifyPlaceIndexResource = async (
   // update the default place index
   if (parameters.isDefault) {
     await updateDefaultResource(context, ServiceName.PlaceIndex, parameters.name);
+  }
+
+  // update the pricing plan for All Geo resources
+  if (parameters.pricingPlan) {
+    await updateGeoPricingPlan(context, parameters.pricingPlan);
   }
 
   const paramsToUpdate = ['accessType'];

@@ -35,11 +35,12 @@ export const updatePlaceIndexResource = async (
   // populate the parameters for the resource
   await updatePlaceIndexWalkthrough(context, placeIndexParams);
 
-  if (placeIndexParams.name && placeIndexParams.isDefault !== undefined && placeIndexParams.accessType) {
+  if (placeIndexParams.name && placeIndexParams.isDefault !== undefined && placeIndexParams.accessType && placeIndexParams.pricingPlan) {
     modifyPlaceIndexResource(context, {
       accessType: placeIndexParams.accessType,
       name: placeIndexParams.name,
-      isDefault: placeIndexParams.isDefault
+      isDefault: placeIndexParams.isDefault,
+      pricingPlan: placeIndexParams.pricingPlan
     });
   }
   else {
@@ -61,13 +62,11 @@ export const removePlaceIndexResource = async (
   const resourceParameters = await getCurrentPlaceIndexParameters(resourceToRemove);
 
   try {
-    await amplify.removeResource(context, category, resourceToRemove)
-    .then(async (resource: { service: string; resourceName: string }) => {
-      if (resource?.service === ServiceName.PlaceIndex && resourceParameters.isDefault) {
-        // choose another default if removing a default place index
-        await updateDefaultPlaceIndexWalkthrough(context, resource.resourceName);
-      }
-    });
+    const resource = await amplify.removeResource(context, category, resourceToRemove);
+    if (resource?.service === ServiceName.PlaceIndex && resourceParameters.isDefault) {
+      // choose another default if removing a default place index
+      await updateDefaultPlaceIndexWalkthrough(context, resource?.resourceName);
+    }
   } catch (err: $TSAny) {
     if (err.stack) {
       printer.error(err.stack);

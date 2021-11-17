@@ -6,8 +6,8 @@ import { apiDocs, ServiceName } from '../service-utils/constants';
 import { $TSContext } from 'amplify-cli-core';
 import { getCurrentMapParameters, getMapFriendlyNames } from '../service-utils/mapUtils';
 import { getGeoServiceMeta, updateDefaultResource, geoServiceExists, getGeoPricingPlan, checkGeoResourceExists} from '../service-utils/resourceUtils';
-import { resourceAccessWalkthrough, pricingPlanWalkthrough, defaultResourceQuestion } from './resourceWalkthrough';
-import { DataProvider } from '../service-utils/resourceParams';
+import { authAndGuestAccessWalkthrough, pricingPlanWalkthrough, defaultResourceQuestion } from './resourceWalkthrough';
+import { DataProvider, PricingPlan } from '../service-utils/resourceParams';
 import { printer, formatter, prompter, alphanumeric } from 'amplify-prompts';
 
 /**
@@ -23,15 +23,17 @@ export const createMapWalkthrough = async (
   parameters = merge(parameters, await mapNameWalkthrough(context));
 
   // get the access
-  parameters = merge(parameters, await resourceAccessWalkthrough(parameters, ServiceName.Map));
+  parameters = merge(parameters, await authAndGuestAccessWalkthrough(parameters, ServiceName.Map));
 
-  // initiate pricing plan walkthrough if this is the first Map/Place Index added
-  if (!(await geoServiceExists(ServiceName.Map)) && !(await geoServiceExists(ServiceName.PlaceIndex))) {
-    parameters = merge(parameters, await pricingPlanWalkthrough(context, parameters));
+  // initiate pricing plan walkthrough if this is the first Map added
+  let includePricingPlanInAdvancedWalkthrough = true;
+  if (!(await geoServiceExists(ServiceName.Map))) {
+    parameters = merge(parameters, await pricingPlanWalkthrough(context, parameters, false));
+    includePricingPlanInAdvancedWalkthrough = false;
   }
 
   // optional advanced walkthrough
-  parameters = merge(parameters, await mapAdvancedWalkthrough(context, parameters));
+  parameters = merge(parameters, await mapAdvancedWalkthrough(context, parameters, includePricingPlanInAdvancedWalkthrough));
 
   // ask if the map should be set as a default. Default to true if it's the only map
   const currentMapResources = await getGeoServiceMeta(ServiceName.Map);
@@ -57,17 +59,19 @@ export const mapNameWalkthrough = async (context: any): Promise<Partial<MapParam
             { validate: alphanumeric(), initial: `map${shortId}` }
         );
         if (await checkGeoResourceExists(mapNameInput)) {
-            printer.info(`Map ${mapNameInput} already exists. Choose another name.`);
+            printer.info(`Geo resource ${mapNameInput} already exists. Choose another name.`);
         }
         else mapName = mapNameInput;
     }
     return { name: mapName };
 };
 
-export const mapAdvancedWalkthrough = async (context: $TSContext, parameters: Partial<MapParameters>): Promise<Partial<MapParameters>> => {
-    // const includePricingPlan = await geoServiceExists(ServiceName.Map) || await geoServiceExists(ServiceName.PlaceIndex);
-    const includePricingPlan = false;
-    const currentPricingPlan = parameters.pricingPlan ? parameters.pricingPlan : await getGeoPricingPlan();
+export const mapAdvancedWalkthrough = async (
+    context: $TSContext,
+    parameters: Partial<MapParameters>,
+    includePricingPlan: boolean
+): Promise<Partial<MapParameters>> => {
+    const currentPricingPlan = parameters.pricingPlan || await getGeoPricingPlan() || PricingPlan.RequestBasedUsage;
     const advancedSettingOptions: string[] = ['Map style & Map data provider (default: Streets provided by Esri)'];
     if (includePricingPlan) {
         advancedSettingOptions.push(`Map pricing plan (current: ${currentPricingPlan})`);
@@ -82,7 +86,7 @@ export const mapAdvancedWalkthrough = async (context: $TSContext, parameters: Pa
 
         if (includePricingPlan) {
             // get the pricing plan
-            parameters = merge(parameters, await pricingPlanWalkthrough(context, parameters));
+            parameters = merge(parameters, await pricingPlanWalkthrough(context, parameters, false));
         }
         else {
             parameters.pricingPlan = currentPricingPlan;
@@ -153,7 +157,15 @@ export const updateMapWalkthrough = async (
     parameters = merge(parameters, await getCurrentMapParameters(resourceToUpdate));
 
     // overwrite the parameters based on user input
-    parameters.accessType = (await resourceAccessWalkthrough(parameters, ServiceName.Map)).accessType;
+    parameters.accessType = (await authAndGuestAccessWalkthrough(parameters, ServiceName.Map)).accessType;
+
+    // enable flow to update the pricing plan for Map
+    printer.info('Available advanced settings:');
+    printer.info(`- Pricing Plan (current: ${parameters.pricingPlan})`);
+    const showAdvancedSettings = await prompter.yesOrNo('Do you want to update advanced settings?', false);
+    if (showAdvancedSettings) {
+        parameters.pricingPlan = (await pricingPlanWalkthrough(context, parameters, false)).pricingPlan;
+    }
 
     const otherMapResources = mapResourceNames.filter(mapResourceName => mapResourceName != resourceToUpdate);
     // if this is the only map, default cannot be removed

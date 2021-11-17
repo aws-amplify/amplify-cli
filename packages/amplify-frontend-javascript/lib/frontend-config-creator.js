@@ -181,6 +181,10 @@ function getAWSExportsObject(resources) {
         geoConfig.region = serviceResourceMapping[service][0].output.Region || projectRegion;
         geoConfig.search_indices = getPlaceIndexConfig(serviceResourceMapping[service]);
         break;
+      case 'GeofenceCollection':
+        geoConfig.region = serviceResourceMapping[service][0].output.Region || projectRegion;
+        geoConfig.geofenceCollections = getGeofenceCollectionConfig(serviceResourceMapping[service]);
+        break;
       default:
         break;
     }
@@ -603,4 +607,20 @@ function getPlaceIndexConfig(placeIndexResources) {
   return placeIndexConfig;
 }
 
-module.exports = { createAWSExports, getAWSExports, createAmplifyConfig, deleteAmplifyConfig, generateAwsExportsAtPath };
+function getGeofenceCollectionConfig(geofenceCollectionResources) {
+  let defaultGeofenceCollection = '';
+  const geofenceCollectionConfig = {
+    items: [],
+  };
+  geofenceCollectionResources.forEach(geofenceCollectionResource => {
+    const geofenceCollectionName = geofenceCollectionResource.output.Name;
+    geofenceCollectionConfig.items.push(geofenceCollectionName);
+    if (geofenceCollectionResource.isDefault) {
+      defaultGeofenceCollection = geofenceCollectionName;
+    }
+  });
+  geofenceCollectionConfig.default = defaultGeofenceCollection;
+  return geofenceCollectionConfig;
+}
+
+module.exports = { createAWSExports, getAWSExports, createAmplifyConfig, deleteAmplifyConfig, generateAwsExportsAtPath, getAWSExportsObject };

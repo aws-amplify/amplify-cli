@@ -10,11 +10,12 @@ export const previewBanner = 'Amplify Geo category is in developer preview and n
 export const chooseServiceMessageAdd = 'Select which capability you want to add:';
 export const chooseServiceMessageUpdate = 'Select which capability you want to update:';
 export const chooseServiceMessageRemove = 'Select which capability you want to remove:';
-export const choosePricingPlan = `The following choices determine the pricing plan for Geo resources. Learn more at ${apiDocs.pricingPlan}`;
+export const choosePricingPlan = `The following choices will update the pricing plan for ALL Geo resources in the project. Learn more at ${apiDocs.pricingPlan}`;
 export const parametersFileName = 'parameters.json';
 export const provider = 'awscloudformation';
 export const customMapLambdaCodePath = path.join(__dirname, '../../resources/custom-map-resource-handler.js');
 export const customPlaceIndexLambdaCodePath = path.join(__dirname, '../../resources/custom-place-index-resource-handler.js');
+export const customGeofenceCollectionLambdaCodePath = path.join(__dirname, '../../resources/custom-geofence-collection-resource-handler.js');
 
 export enum ServiceName {
   Map = 'Map',

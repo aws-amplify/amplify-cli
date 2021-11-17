@@ -21,11 +21,13 @@ describe('Search walkthrough works as expected', () => {
     };
     const mockPlaceIndexResource = {
         resourceName: mockPlaceIndexName,
-        service: service
+        service: service,
+        pricingPlan: PricingPlan.MobileAssetTracking
     };
     const secondaryPlaceIndexResource = {
         resourceName: secondaryPlaceIndexName,
-        service: service
+        service: service,
+        pricingPlan: PricingPlan.MobileAssetTracking
     };
     const mockPlaceIndexParameters: PlaceIndexParameters = {
         providerContext: {
@@ -96,7 +98,7 @@ describe('Search walkthrough works as expected', () => {
             if (message === 'Who can access this search index?') {
                 mockUserInput = mockPlaceIndexParameters.accessType;
             }
-            else if (message === 'Are you tracking commercial assets for your business in your app?') {
+            else if (message === 'Are you tracking or directing commercial assets for your business in your app?') {
                 mockUserInput = 'Unknown';
             }
             else if (message === 'Select the search index you want to update') {
@@ -221,9 +223,8 @@ describe('Search walkthrough works as expected', () => {
 
     it('updates default place index to another place index if it is removed', async() => {
         mockContext.amplify.removeResource = jest.fn().mockReturnValue({
-            then: jest.fn().mockReturnValue(
-                await updateDefaultPlaceIndexWalkthrough(mockContext, mockPlaceIndexName)
-            )
+            service: ServiceName.PlaceIndex,
+            resourceName: mockPlaceIndexName
         });
 
         // given the place index to be removed is default
