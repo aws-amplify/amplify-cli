@@ -1,3 +1,4 @@
+# v1 Schema for Auth migration testing
 type Post @model @auth(rules: [{ allow: owner }]) {
   id: ID!
   title: String!
