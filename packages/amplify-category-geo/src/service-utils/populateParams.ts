@@ -27,7 +27,7 @@ export type GeofenceParams = {
   }
 }
 
-export type FillParams = {
+export type PopulateParams = {
   collectionName: string;
   uniqueIdentifier: string;
   geoJSONObj: FeatureCollection;

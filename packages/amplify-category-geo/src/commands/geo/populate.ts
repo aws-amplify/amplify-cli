@@ -1,14 +1,14 @@
 import { $TSAny, $TSContext } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
-import { fillResource } from '../../provider-controllers/fill';
+import { populateResource } from '../../provider-controllers/populate';
 
-export const name = 'fill';
+export const name = 'populate';
 
 export const run = async (context: $TSContext) => {
   const { amplify } = context;
   try {
-    printer.info('amplify geo fill command');
-    return await fillResource(context);
+    printer.info('amplify geo populate command');
+    return await populateResource(context);
   } catch (error: $TSAny) {
     if (error.message) {
       printer.error(error.message);

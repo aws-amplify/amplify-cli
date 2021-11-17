@@ -6,21 +6,21 @@ import { join } from 'path';
 import { Location } from 'aws-sdk';
 import { v4 as uuid } from "uuid";
 import { validateGeoJSONFile } from '../service-utils/validateGeoJSONFile';
-import { FeatureCollection, FillParams, GeofenceCollectionParams, GeofenceParams } from '../service-utils/fillParams';
+import { FeatureCollection, PopulateParams, GeofenceCollectionParams, GeofenceParams } from '../service-utils/populateParams';
 
-export const fillResource = async (context: $TSContext) => {
+export const populateResource = async (context: $TSContext) => {
   const geofenceCollectionResources = ((await context.amplify.getResourceStatus()).allResources as any[])
   .filter(resource => resource.service === ServiceName.GeofenceCollection);
   if (geofenceCollectionResources.length === 0) {
     throw new Error('Geofence collection is not found. Use `amplify geo add` to create a new geofence collection.')
   }
   const collectionNames = geofenceCollectionResources.map(collection => collection.resourceName);
-  let collectionToFill: string = collectionNames[0];
+  let collectionToPopulate: string = collectionNames[0];
   if (geofenceCollectionResources.length > 1) {
-    collectionToFill = await prompter.pick<'one', string>('Select the Geofence Collection to populate with Geofences', collectionNames)
+    collectionToPopulate = await prompter.pick<'one', string>('Select the Geofence Collection to populate with Geofences', collectionNames)
   }
   //Ask for geo json file path
-  const geoJSONFilePath = join(await prompter.input(`Provide the path to GeoJSON file containing the Geofences for ${collectionToFill} collection. Refer <link> for a sample GeoJSON:`));
+  const geoJSONFilePath = join(await prompter.input(`Provide the path to GeoJSON file containing the Geofences for ${collectionToPopulate} collection. Refer <link> for a sample GeoJSON:`));
   if (!existsSync(geoJSONFilePath)) {
     throw new Error('Cannot find GeoJSON file');
   }
@@ -32,15 +32,15 @@ export const fillResource = async (context: $TSContext) => {
   const geoJSONObj: FeatureCollection = validateGeoJSONFile(geoJSONFilePath);
   if (await prompter.yesOrNo('Auto-assign the Geofence ID if not present?')) {
     if (await prompter.yesOrNo('Do you want to update the input GeoJSON file with Auto-assigned Geofence IDs?')) {
-      const geofenceCollectionParams = constructGeofenceCollectionParams({collectionName: collectionToFill, uniqueIdentifier, geoJSONObj});
+      const geofenceCollectionParams = constructGeofenceCollectionParams({collectionName: collectionToPopulate, uniqueIdentifier, geoJSONObj});
       await bulkUploadGeofence(geofenceCollectionParams);
     }
   }
 };
 
-const constructGeofenceCollectionParams = (fillParam: FillParams): GeofenceCollectionParams => {
+const constructGeofenceCollectionParams = (populateParam: PopulateParams): GeofenceCollectionParams => {
   const Entries: GeofenceParams[] = [];
-  const { geoJSONObj } = fillParam;
+  const { geoJSONObj } = populateParam;
   geoJSONObj.features.forEach(feature => {
     Entries.push({
       GeofenceId: feature.id ?? uuid(),
@@ -50,7 +50,7 @@ const constructGeofenceCollectionParams = (fillParam: FillParams): GeofenceColle
     })
   })
   return {
-    CollectionName: fillParam.collectionName,
+    CollectionName: populateParam.collectionName,
     Entries
   }
 }

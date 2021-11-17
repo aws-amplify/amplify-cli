@@ -1,6 +1,6 @@
 import { readFileSync } from 'fs-extra';
 import Ajv from 'ajv';
-import { FeatureCollection } from './fillParams';
+import { FeatureCollection } from './populateParams';
 import GeoJSONSchema from 'amplify-category-geo/schema/GeoJSONSchema.json';
 
 
@@ -12,6 +12,7 @@ export const validateGeoJSONFile = (geoJSONFilePath: string) => {
   if (!validator(data) as boolean) {
     throw new Error(`Data did not validate against the supplied schema. Underlying errors were ${JSON.stringify(validator.errors)}`);
   };
+  //Additional validation for each linear ring
   const { features } = data;
   features.forEach((feature) => {
     const { coordinates } = feature.geometry;
