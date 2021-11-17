@@ -66,7 +66,11 @@ test('migrate resource', async () => {
           mode: 'AWS_IAM',
         },
       ],
-      conflictResolution: {},
+      conflictResolution: {
+        defaultResolutionStrategy: {
+          type: 'AUTOMERGE',
+        },
+      },
       apiName: 'apiunittests',
       gqlSchemaPath: 'mockProjectPath/schema.graphql',
     },

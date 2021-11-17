@@ -7,7 +7,7 @@ type TypeDef = SchemaGenerator.TypeDef;
 //   service: 'API Gateway',
 // };
 const AppsyncApiTypeDef: TypeDef = {
-  typeName: 'AppsyncCLIInputs',
+  typeName: 'AppSyncCLIInputs',
   service: 'appsync',
 };
 
