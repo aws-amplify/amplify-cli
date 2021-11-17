@@ -14,7 +14,7 @@ import _ from 'lodash';
 import * as path from 'path';
 import uuid from 'uuid';
 import { gqlSchemaFilename } from '../aws-constants';
-import { AppsyncCLIInputs } from '../service-walkthrough-types/appsync-user-input-types';
+import { AppSyncCLIInputs } from '../service-walkthrough-types/appsync-user-input-types';
 import { authConfigToAppSyncAuthType } from './auth-config-to-app-sync-auth-type-bi-di-mapper';
 import { resolverConfigToConflictResolution } from './resolver-config-to-conflict-resolution-bi-di-mapper';
 
@@ -102,7 +102,7 @@ function cleanUp(authresourcePath: string | undefined) {
   if (!!authresourcePath && fs.existsSync(authresourcePath)) fs.removeSync(authresourcePath);
 }
 
-const generateCliInputs = (parameters: ApiMetaData, apiResourceDir: string): AppsyncCLIInputs => {
+const generateCliInputs = (parameters: ApiMetaData, apiResourceDir: string): AppSyncCLIInputs => {
   return {
     version: 1,
     serviceConfiguration: {

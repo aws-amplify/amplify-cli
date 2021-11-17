@@ -12,10 +12,8 @@ export const checkAppsyncApiResourceMigration = async (context: $TSContext, apiN
     context,
   ]);
   if (!cliState.cliInputFileExists() && transformerVersion === 2) {
-    printer.debug('Cli-inputs.json doesnt exist');
-    // put spinner here
+    printer.debug('cli-inputs.json doesnt exist');
     const headlessMigrate = context.input.options?.yes || context.input.options?.forcePush || context.input.options?.headless;
-
     if (headlessMigrate || (await prompter.yesOrNo(getMigrateResourceMessageForOverride(AmplifyCategories.API, apiName, isUpdate), true))) {
       // generate cli-inputs for migration from parameters.json
       await migrateResourceToSupportOverride(apiName);
