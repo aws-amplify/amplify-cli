@@ -2,10 +2,6 @@ import * as SchemaGenerator from 'amplify-cli-core';
 
 type TypeDef = SchemaGenerator.TypeDef;
 
-// const ApigwTypeDef: TypeDef = {
-//   typeName: 'APIGatewayCLIInputs',
-//   service: 'API Gateway',
-// };
 const AppsyncApiTypeDef: TypeDef = {
   typeName: 'AppSyncCLIInputs',
   service: 'appsync',
