@@ -82,9 +82,11 @@ body:
         - codegen
         - configure
         - configure project
+        - custom
         - delete
         - env
         - init
+        - override
         - publish
         - pull
         - push
