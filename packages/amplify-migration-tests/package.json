@@ -1,6 +1,6 @@
 {
   "name": "amplify-migration-tests",
-  "version": "4.3.1",
+  "version": "4.3.2-beta.0",
   "description": "",
   "repository": {
     "type": "git",
@@ -26,12 +26,12 @@
     "setup-profile": "ts-node ./src/configure_tests.ts"
   },
   "dependencies": {
-    "amplify-e2e-core": "2.3.1",
+    "amplify-e2e-core": "2.3.2-beta.0",
     "aws-sdk": "^2.963.0",
     "dotenv": "^8.2.0",
     "esm": "^3.2.25",
     "fs-extra": "^8.1.0",
-    "graphql-transformer-core": "7.2.1",
+    "graphql-transformer-core": "7.2.2-beta.0",
     "rimraf": "^3.0.0",
     "uuid": "^8.2.0"
   },

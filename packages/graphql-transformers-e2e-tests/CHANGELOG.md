@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [7.3.0-beta.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformers-e2e-tests@7.2.1...graphql-transformers-e2e-tests@7.3.0-beta.0) (2021-11-17)
+
+
+### Features
+
+* **graphql-transformer-core:** add support for user defined slots ([#8758](https://github.com/aws-amplify/amplify-cli/issues/8758)) ([87b532d](https://github.com/aws-amplify/amplify-cli/commit/87b532da226c4a3cab619fee115e8b7fd0476d71))
+
+
+
+
+
 ## [7.2.1](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformers-e2e-tests@6.29.0...graphql-transformers-e2e-tests@7.2.1) (2021-11-15)
 
 **Note:** Version bump only for package graphql-transformers-e2e-tests
