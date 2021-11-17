@@ -503,7 +503,7 @@ export class AmplifyAuthTransform extends AmplifyCategoryTransform {
       this._authTemplateObj.addCfnParameter(
         {
           type: 'String',
-          default: [],
+          default: '[]',
         },
         'hostedUIProviderCreds',
       );
