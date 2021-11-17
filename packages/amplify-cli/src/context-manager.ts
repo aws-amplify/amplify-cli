@@ -24,7 +24,9 @@ export async function attachUsageData(context: Context) {
   } else {
     context.usageData = NoUsageData.Instance;
   }
-  context.usageData.init(config.usageDataConfig.installationUuid, getVersion(context), context.input, '', getProjectSettings());
+
+  const accountId = await context.amplify.executeProviderUtils(context, 'awscloudformation', 'getAccountId');
+  context.usageData.init(config.usageDataConfig.installationUuid, getVersion(context), context.input, accountId, getProjectSettings());
 }
 
 const getVersion = (context: Context) => context.pluginPlatform.plugins.core[0].packageVersion;
