@@ -74,4 +74,31 @@ describe('Schema migration tests for @auth', () => {
       migrateAndValidate(schema, IAM);
     });
   });
+
+  describe('group auth', () => {
+    it('retains dynamic groups in auth rules', () => {
+      const schema = /* GraphQL */ `
+        type Todo @model @auth(rules: [{ allow: groups, groups: ["Admins"] }]) {
+          id: ID!
+          rating: Int
+          title: String
+        }
+      `;
+
+      migrateAndValidate(schema);
+    });
+
+    it('retains groupClaims in auth rules', () => {
+      const schema = /* GraphQL */ `
+        type Todo
+          @model
+          @auth(rules: [{ allow: groups, provider: oidc, groups: ["Admins"], groupClaim: "https://myapp.com/claims/groups" }]) {
+          id: ID!
+          title: String!
+        }
+      `;
+
+      migrateAndValidate(schema);
+    });
+  });
 });
