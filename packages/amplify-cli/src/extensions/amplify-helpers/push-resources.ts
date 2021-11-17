@@ -127,8 +127,8 @@ async function providersPush(
 
   for (const provider of providers) {
     const providerModule = require(providerPlugins[provider]);
-    const resourceDefiniton = await context.amplify.getResourceStatus(category, resourceName, provider, filteredResources);
-    providerPromises.push(providerModule.pushResources(context, resourceDefiniton, rebuild));
+    const resourceDefinition = await context.amplify.getResourceStatus(category, resourceName, provider, filteredResources);
+    providerPromises.push(providerModule.pushResources(context, resourceDefinition, rebuild));
   }
 
   await Promise.all(providerPromises);

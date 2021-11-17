@@ -317,7 +317,7 @@ function createResolver(
   context: TransformerContextProvider,
   stack: cdk.Stack,
   config: PredictionsDirectiveConfiguration,
-  pipelineFunctions: any[],
+  resolvers: any[],
   bucketName: string,
 ): appsync.CfnResolver {
   const substitutions: { [key: string]: string } = {
@@ -385,7 +385,7 @@ function createResolver(
     ),
     undefined,
     undefined,
-    pipelineFunctions,
+    resolvers,
     stack,
   );
 }

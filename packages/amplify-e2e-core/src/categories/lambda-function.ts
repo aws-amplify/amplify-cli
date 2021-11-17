@@ -28,6 +28,7 @@ const javaTemplateChoices = ['Hello World'];
 
 const nodeJSTemplateChoices = [
   'CRUD function for DynamoDB (Integration with API Gateway)',
+  'GraphQL Lambda Authorizer',
   'Hello World',
   'Lambda trigger',
   'Serverless ExpressJS function (Integration with API Gateway)',
