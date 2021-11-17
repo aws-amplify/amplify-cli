@@ -401,124 +401,116 @@ export function updateAPIWithResolutionStrategyWithModels(cwd: string, settings:
 
 // Either settings.existingLambda or settings.isCrud is required
 export function addRestApi(cwd: string, settings: any) {
-  return new Promise<void>((resolve, reject) => {
-    const isFirstRestApi = settings.isFirstRestApi ?? true;
-    let chain = spawn(getCLIPath(), ['add', 'api'], { cwd, stripColors: true })
-      .wait('Select from one of the below mentioned services')
-      .sendKeyDown()
-      .sendCarriageReturn(); // REST
+  const isFirstRestApi = settings.isFirstRestApi ?? true;
+  let chain = spawn(getCLIPath(), ['add', 'api'], { cwd, stripColors: true })
+    .wait('Select from one of the below mentioned services')
+    .sendKeyDown()
+    .sendCarriageReturn(); // REST
 
-    if (!isFirstRestApi) {
-      chain.wait('Would you like to add a new path to an existing REST API');
+  if (!isFirstRestApi) {
+    chain.wait('Would you like to add a new path to an existing REST API');
 
-      if (settings.path) {
-        chain
-          .sendYes()
-          .wait('Select the REST API you want to update')
-          .sendCarriageReturn() // Select the first REST API
-          .wait('What would you like to do?')
-          .sendCarriageReturn() // Add another path
-          .wait('Provide a path')
-          .sendLine(settings.path)
-          .wait('Choose a lambda source')
-          .sendKeyDown()
-          .sendCarriageReturn() // Existing lambda
-          .wait('Choose the Lambda function to invoke by this path')
-          .sendCarriageReturn() // Pick first one
-          .wait('Restrict API access')
-          .sendNo() // Do not restrict access
-          .wait('Do you want to add another path')
-          .sendNo() // Do not add another path
-          .sendEof()
-          .run((err: Error) => {
-            if (err) {
-              reject(err);
-            } else {
-              resolve();
-            }
-          });
-        return;
-      } else {
-        chain.sendNo();
-      }
-    }
-
-    chain.wait('Provide a friendly name for your resource to be used as a label for this category in the project');
-    if (settings.apiName) {
-      chain.sendLine(settings.apiName);
-    } else {
-      chain.sendCarriageReturn();
-    }
-    chain.wait('Provide a path').sendCarriageReturn().wait('Choose a lambda source');
-
-    if (settings.existingLambda) {
+    if (settings.path) {
       chain
+        .sendYes()
+        .wait('Select the REST API you want to update')
+        .sendCarriageReturn() // Select the first REST API
+        .wait('What would you like to do?')
+        .sendCarriageReturn() // Add another path
+        .wait('Provide a path')
+        .sendLine(settings.path)
+        .wait('Choose a lambda source')
         .sendKeyDown()
         .sendCarriageReturn() // Existing lambda
-        .wait('Choose the Lambda function to invoke by this path'); // Expect only 1 Lambda is present
+        .wait('Choose the Lambda function to invoke by this path')
+        .sendCarriageReturn() // Pick first one
+        .wait('Restrict API access')
+        .sendNo() // Do not restrict access
+        .wait('Do you want to add another path')
+        .sendNo() // Do not add another path
+        .sendEof();
+
+      return chain.runAsync();
     } else {
+      chain.sendNo();
+    }
+  }
+
+  chain.wait('Provide a friendly name for your resource to be used as a label for this category in the project');
+  if (settings.apiName) {
+    chain.sendLine(settings.apiName);
+  } else {
+    chain.sendCarriageReturn();
+  }
+  chain.wait('Provide a path').sendCarriageReturn().wait('Choose a lambda source');
+
+  if (settings.existingLambda) {
+    chain
+      .sendKeyDown()
+      .sendCarriageReturn() // Existing lambda
+      .wait('Choose the Lambda function to invoke by this path'); // Expect only 1 Lambda is present
+  } else {
+    chain
+      .sendCarriageReturn() // Create new Lambda function
+      .wait('Provide an AWS Lambda function name')
+      .sendCarriageReturn();
+
+    selectRuntime(chain, 'nodejs');
+
+    const templateName = settings.isCrud
+      ? 'CRUD function for DynamoDB (Integration with API Gateway)'
+      : 'Serverless ExpressJS function (Integration with API Gateway)';
+    selectTemplate(chain, templateName, 'nodejs');
+
+    if (settings.isCrud) {
       chain
-        .sendCarriageReturn() // Create new Lambda function
-        .wait('Provide an AWS Lambda function name')
+        .wait('Choose a DynamoDB data source option')
+        .sendCarriageReturn() // Use DDB table configured in current project
+        .wait('Choose from one of the already configured DynamoDB tables')
+        .sendCarriageReturn(); // Use first one in the list
+    }
+
+    chain
+      .wait('Do you want to configure advanced settings?')
+      .sendConfirmNo()
+      .wait('Do you want to edit the local lambda function now')
+      .sendConfirmNo();
+  }
+
+  chain.wait('Restrict API access');
+  if (settings.restrictAccess) {
+    chain.sendYes();
+
+    if (settings.hasUserPoolGroups) {
+      chain.wait('Restrict access by').sendCarriageReturn(); // Auth/Guest Users
+    }
+
+    chain.wait('Who should have access');
+
+    if (settings.allowGuestUsers) {
+      chain
+        .sendKeyDown()
+        .sendCarriageReturn() // Authenticated and Guest users
+        .wait('What permissions do you want to grant to Authenticated users')
+        .sendCtrlA() // CRUD permissions for authenticated users
+        .sendCarriageReturn()
+        .wait('What permissions do you want to grant to Guest users')
+        .sendCtrlA() // CRUD permissions for guest users
         .sendCarriageReturn();
-
-      selectRuntime(chain, 'nodejs');
-
-      const templateName = settings.isCrud
-        ? 'CRUD function for DynamoDB (Integration with API Gateway)'
-        : 'Serverless ExpressJS function (Integration with API Gateway)';
-      selectTemplate(chain, templateName, 'nodejs');
-
-      if (settings.isCrud) {
-        chain
-          .wait('Choose a DynamoDB data source option')
-          .sendCarriageReturn() // Use DDB table configured in current project
-          .wait('Choose from one of the already configured DynamoDB tables')
-          .sendCarriageReturn(); // Use first one in the list
-      }
-
-      chain
-        .wait('Do you want to configure advanced settings?')
-        .sendConfirmNo()
-        .wait('Do you want to edit the local lambda function now')
-        .sendConfirmNo();
-    }
-
-    chain.wait('Restrict API access');
-    if (settings.restrictAccess) {
-      chain.sendConfirmYes();
-
-      if (settings.hasUserPoolGroups) {
-        chain.wait('Restrict access by').sendCarriageReturn(); // Auth/Guest Users
-      }
-
-      chain.wait('Who should have access');
-
-      if (settings.allowGuestUsers) {
-        chain
-          .sendKeyDown()
-          .sendCarriageReturn() // Authenticated and Guest users
-          .wait('What permissions do you want to grant to Authenticated users')
-          .sendCtrlA() // CRUD permissions for authenticated users
-          .sendCarriageReturn()
-          .wait('What permissions do you want to grant to Guest users')
-          .sendCtrlA() // CRUD permissions for guest users
-          .sendCarriageReturn();
-      } else {
-        chain
-          .sendCarriageReturn() // Authenticated users only
-          .wait('What permissions do you want to grant to Authenticated users')
-          .sendCtrlA() // CRUD permissions
-          .sendCarriageReturn();
-      }
     } else {
-      chain.sendConfirmNo(); // Do not restrict access
+      chain
+        .sendCarriageReturn() // Authenticated users only
+        .wait('What permissions do you want to grant to Authenticated users')
+        .sendCtrlA() // CRUD permissions
+        .sendCarriageReturn();
     }
+  } else {
+    chain.sendNo(); // Do not restrict access
+  }
 
-    chain.wait('Do you want to add another path').sendNo().sendEof();
+  chain.wait('Do you want to add another path').sendNo().sendEof();
 
-    return chain.runAsync();
-  });
+  return chain.runAsync();
 }
 
 const updateRestApiDefaultSettings = {
