@@ -1,9 +1,5 @@
-import { CfnApiKey, CfnDataSource, CfnFunctionConfiguration, CfnGraphQLApi, CfnGraphQLSchema, CfnResolver } from '@aws-cdk/aws-appsync';
-import { CfnTable } from '@aws-cdk/aws-dynamodb';
-import { CfnPolicy, CfnRole } from '@aws-cdk/aws-iam';
-import { CfnEventSourceMapping, CfnFunction } from '@aws-cdk/aws-lambda';
 import { CfnResource, Construct } from '@aws-cdk/core';
-import { ConstructResourceMeta } from './types';
+import _ from 'lodash';
 import {
   AppSyncServiceResourceStack,
   AppsyncStackCommon,
@@ -12,7 +8,7 @@ import {
   ModelDirectiveStack,
   OpenSearchDirectiveStack,
 } from './amplify-api-resource-stack-types';
-import _ from 'lodash';
+import { ConstructResourceMeta } from './types';
 
 export const stacksTypes: Record<string, string> = {
   API: 'api',
