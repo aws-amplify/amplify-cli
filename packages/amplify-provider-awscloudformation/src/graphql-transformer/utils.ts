@@ -247,9 +247,8 @@ export async function writeDeploymentToDisk(
   buildParameters: Object,
   minify = false,
 ) {
-  // Delete the last deployments resources.
-  //rimraf.sync(directory);
-  emptyBuildDir(directory);
+  // Delete the last deployments resources except for tsconfig if present
+  emptyBuildDirPreserveTsconfig(directory);
   fs.ensureDirSync(directory);
 
   // Write the schema to disk
@@ -350,7 +349,7 @@ export function throwIfNotJSONExt(stackFile: string) {
   }
 }
 
-const emptyBuildDir = (directory: string) => {
+const emptyBuildDirPreserveTsconfig = (directory: string) => {
   const files = fs.readdirSync(directory);
   files.forEach(file => {
     const fileDir = path.join(directory, file);

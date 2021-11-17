@@ -1,7 +1,7 @@
 /**
  * Defines the json object expected by `amplify api category
  */
-export interface AppsyncCLIInputs {
+export interface AppSyncCLIInputs {
   /**
    * The schema version.
    */
