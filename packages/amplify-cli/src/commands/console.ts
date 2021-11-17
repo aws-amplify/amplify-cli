@@ -3,6 +3,18 @@ import { stateManager, open } from 'amplify-cli-core';
 
 const providerName = 'awscloudformation';
 
+const getAdminUIName = async context => {
+  let adminUiName = 'Amplify admin UI';
+  const promises = context.runtime.plugins.map(async plugin => {
+    if (plugin.commands.includes('overrideAdminUiName')) {
+      adminUiName = await context.amplify.invokePluginMethod(context, plugin.name, undefined, 'overrideAdminUiName', [context]);
+    }
+  });
+
+  await Promise.all(promises);
+  return adminUiName;
+};
+
 export const run = async context => {
   let consoleUrl = getDefaultURL();
 
@@ -20,13 +32,7 @@ export const run = async context => {
     const { envName } = localEnvInfo;
     const { Region, AmplifyAppId } = teamProviderInfo[envName][providerName];
 
-    let adminUiName = 'Amplify admin UI';
-    const promises = context.runtime.plugins.map(async plugin => {
-      if (plugin.commands.includes('overrideAdminUiName')) {
-        adminUiName = await context.amplify.invokePluginMethod(context, plugin.name, undefined, 'overrideAdminUiName', [context]);
-      }
-    });
-    await Promise.all(promises);
+    let adminUiName = await getAdminUIName(context);
     if (envName && AmplifyAppId) {
       consoleUrl = constructStatusURL(Region, AmplifyAppId, envName);
       const providerPlugin = await import(context.amplify.getProviderPlugins(context).awscloudformation);
