@@ -35,6 +35,13 @@ describe('test attachUsageData', () => {
   mockContext.pluginPlatform = new PluginPlatform();
   mockContext.pluginPlatform.plugins['core'] = [new PluginInfo('', version, '', new PluginManifest('', ''))];
 
+  beforeEach(() => {
+    jest.clearAllMocks();
+    const amplifyToolkit = jest.createMockFromModule<any>('../domain/amplify-toolkit').AmplifyToolkit;
+    amplifyToolkit['executeProviderUtils'] = jest.fn().mockReturnValue('accountId');
+    mockContext.amplify = amplifyToolkit;
+    jest.clearAllMocks();
+  });
   afterEach(() => {});
 
   it('constructContext', () => {
@@ -60,7 +67,7 @@ describe('test attachUsageData', () => {
       returnValue.usageDataConfig.installationUuid,
       version,
       mockContext.input,
-      '',
+      'accountId',
       {},
     );
   });
@@ -80,7 +87,7 @@ describe('test attachUsageData', () => {
       returnValue.usageDataConfig.installationUuid,
       version,
       mockContext.input,
-      '',
+      'accountId',
       {},
     );
   });
