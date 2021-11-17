@@ -188,7 +188,6 @@ export function consolidateApiGatewayPolicies(context: $TSContext, stackName: st
     }
 
     const api = { ...resource, resourceName, params: cliInputs };
-    // updateExistingApiCfn(api);
     apiGateways.push(api);
   });
 
@@ -207,25 +206,13 @@ enum CrudOperation {
 }
 
 function convertCrudOperationsToPermissions(crudOps: CrudOperation[]) {
-  const output = [];
-  for (const op of crudOps) {
-    switch (op) {
-      case CrudOperation.CREATE:
-        output.push('/POST');
-        break;
-      case CrudOperation.READ:
-        output.push('/GET');
-        break;
-      case CrudOperation.UPDATE:
-        output.push('/PUT');
-        output.push('/PATCH');
-        break;
-      case CrudOperation.DELETE:
-        output.push('/DELETE');
-        break;
-    }
-  }
-  return output;
+  const opMap: Record<CrudOperation, string[]> = {
+    [CrudOperation.CREATE]: ['/POST'],
+    [CrudOperation.READ]: ['/GET'],
+    [CrudOperation.UPDATE]: ['/PUT', '/PATCH'],
+    [CrudOperation.DELETE]: ['/DELETE'],
+  };
+  return crudOps.flatMap(op => opMap[op]);
 }
 
 function createApiGatewayAuthResources(context: $TSContext, stackName: string, apiGateways: $TSAny): string | undefined {

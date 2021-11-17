@@ -1,10 +1,9 @@
-import { getCLIPath, updateSchema, nspawn as spawn, KEY_DOWN_ARROW } from '..';
 import * as fs from 'fs-extra';
-import * as path from 'path';
-import { selectRuntime, selectTemplate } from './lambda-function';
-import { singleSelect, multiSelect } from '../utils/selectors';
 import _ from 'lodash';
-import { EOL } from 'os';
+import * as path from 'path';
+import { getCLIPath, nspawn as spawn, updateSchema } from '..';
+import { multiSelect, singleSelect } from '../utils/selectors';
+import { selectRuntime, selectTemplate } from './lambda-function';
 import { modifiedApi } from './resources/modified-api-index';
 
 export function getSchemaPath(schemaName: string): string {
@@ -516,17 +515,9 @@ export function addRestApi(cwd: string, settings: any) {
       chain.sendConfirmNo(); // Do not restrict access
     }
 
-    chain
-      .wait('Do you want to add another path')
-      .sendConfirmNo()
-      .sendEof()
-      .run((err: Error) => {
-        if (!err) {
-          resolve();
-        } else {
-          reject(err);
-        }
-      });
+    chain.wait('Do you want to add another path').sendNo().sendEof();
+
+    return chain.runAsync();
   });
 }
 
