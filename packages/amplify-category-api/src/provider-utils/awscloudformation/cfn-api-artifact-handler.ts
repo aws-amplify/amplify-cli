@@ -16,7 +16,7 @@ import { category } from '../../category-constants';
 import { ApiArtifactHandler, ApiArtifactHandlerOptions } from '../api-artifact-handler';
 import { AppsyncApiInputState } from './api-input-manager/appsync-api-input-state';
 import { cfnParametersFilename, gqlSchemaFilename, provider, rootAssetDir } from './aws-constants';
-import { AppsyncCLIInputs, AppSyncServiceConfig } from './service-walkthrough-types/appsync-user-input-types';
+import { AppSyncCLIInputs, AppSyncServiceConfig } from './service-walkthrough-types/appsync-user-input-types';
 import { authConfigHasApiKey, checkIfAuthExists, getAppSyncAuthConfig, getAppSyncResourceName } from './utils/amplify-meta-utils';
 import { appSyncAuthTypeToAuthConfig } from './utils/auth-config-to-app-sync-auth-type-bi-di-mapper';
 import { printApiKeyWarnings } from './utils/print-api-key-warnings';
@@ -270,7 +270,7 @@ class CfnApiArtifactHandler implements ApiArtifactHandler {
   };
 
   private generateAppsyncCLIInputs = async (serviceConfig: AppSyncServiceConfiguration, resourceDir: string) => {
-    const appsyncCLIInputs: AppsyncCLIInputs = {
+    const appsyncCLIInputs: AppSyncCLIInputs = {
       version: 1,
       serviceConfiguration: {
         apiName: serviceConfig.apiName,
@@ -299,7 +299,7 @@ class CfnApiArtifactHandler implements ApiArtifactHandler {
     const cliState = new AppsyncApiInputState(apiName);
     const prevAppsyncInputs = cliState.getCLIInputPayload();
 
-    const appsyncInputs: AppsyncCLIInputs = prevAppsyncInputs;
+    const appsyncInputs: AppSyncCLIInputs = prevAppsyncInputs;
     if (!_.isEmpty(updates.conflictResolution)) {
       appsyncInputs.serviceConfiguration.conflictResolution = updates.conflictResolution;
     }
