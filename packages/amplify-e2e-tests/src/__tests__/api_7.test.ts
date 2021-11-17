@@ -25,11 +25,11 @@ describe('amplify add api (GraphQL)', () => {
   });
 
   afterEach(async () => {
-    // const metaFilePath = path.join(projRoot, 'amplify', '#current-cloud-backend', 'amplify-meta.json');
-    // if (fs.existsSync(metaFilePath)) {
-    //   await deleteProject(projRoot);
-    // }
-    // deleteProjectDir(projRoot);
+    const metaFilePath = path.join(projRoot, 'amplify', '#current-cloud-backend', 'amplify-meta.json');
+    if (fs.existsSync(metaFilePath)) {
+      await deleteProject(projRoot);
+    }
+    deleteProjectDir(projRoot);
   });
 
   it('init a project and add the simple_model api with transformer version 1', async () => {
