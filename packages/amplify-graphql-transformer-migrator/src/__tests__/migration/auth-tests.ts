@@ -26,7 +26,7 @@ describe('Schema migration tests for @auth', () => {
       migrateAndValidate(schema, API_KEY);
     });
 
-    it('migrates @auth default with correctly', () => {
+    it('migrates default api_key auth correctly', () => {
       const schema = `
         type Todo @model {
           id: ID!

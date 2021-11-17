@@ -9,7 +9,16 @@ exports[`Schema migration tests for @auth default auth is user pools migrates @a
 "
 `;
 
-exports[`Schema migration tests for @auth default auth uses api key migrates @auth default with correctly 1`] = `
+exports[`Schema migration tests for @auth default auth uses api key migrates @auth to public @auth with api key 1`] = `
+"type Todo @model @auth(rules: [{allow: public}]) {
+  id: ID!
+  name: String!
+  description: String
+}
+"
+`;
+
+exports[`Schema migration tests for @auth default auth uses api key migrates default api_key auth correctly 1`] = `
 "type Todo @model @auth(rules: [{allow: public}]) {
   id: ID!
   name: String!
@@ -19,15 +28,6 @@ exports[`Schema migration tests for @auth default auth uses api key migrates @au
 type Comment @model @auth(rules: [{allow: private}]) {
   id: ID!
   content: String!
-}
-"
-`;
-
-exports[`Schema migration tests for @auth default auth uses api key migrates @auth to public @auth with api key 1`] = `
-"type Todo @model @auth(rules: [{allow: public}]) {
-  id: ID!
-  name: String!
-  description: String
 }
 "
 `;
