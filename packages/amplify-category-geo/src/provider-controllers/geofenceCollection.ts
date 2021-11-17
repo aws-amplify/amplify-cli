@@ -53,13 +53,11 @@ export const removeGeofenceCollectionResource = async (
   const resourceParameters = await getCurrentGeofenceCollectionParameters(resourceToRemove);
 
   try {
-    await amplify.removeResource(context, category, resourceToRemove)
-    .then(async (resource: { service: string; resourceName: string }) => {
-      if (resource?.service === ServiceName.GeofenceCollection && resourceParameters.isDefault) {
-        // choose another default if removing a default geofence collection
-        await updateDefaultGeofenceCollectionWalkthrough(context, resource.resourceName);
-      }
-    });
+    const resource = await amplify.removeResource(context, category, resourceToRemove);
+    if (resource?.service === ServiceName.GeofenceCollection && resourceParameters.isDefault) {
+      // choose another default if removing a default geofence collection
+      await updateDefaultGeofenceCollectionWalkthrough(context, resource?.resourceName);
+    }
   } catch (err: $TSAny) {
     if (err.stack) {
       printer.error(err.stack);

@@ -1,12 +1,11 @@
 import { ResourceParameters } from './resourceParams';
 import _ from 'lodash';
-import { $TSObject } from 'amplify-cli-core';
 
 /**
  * Data structure that represents a Geofence Collection Resource
  */
 export type GeofenceCollectionParameters = ResourceParameters & {
-    groupPermissions: $TSObject
+    groupPermissions: Record<string, string[]>
 };
 
 /**

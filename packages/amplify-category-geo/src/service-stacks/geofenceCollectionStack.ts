@@ -9,14 +9,13 @@ import { customGeofenceCollectionLambdaCodePath } from '../service-utils/constan
 import * as fs from 'fs-extra';
 import _ from 'lodash';
 import { Runtime } from '@aws-cdk/aws-lambda';
-import { $TSObject } from 'amplify-cli-core';
 import { crudPermissionsMap } from '../service-utils/geofenceCollectionUtils';
 
 type GeofenceCollectionStackProps = Pick<GeofenceCollectionParameters, 'groupPermissions'> &
     TemplateMappings & { authResourceName: string };
 
 export class GeofenceCollectionStack extends BaseStack {
-  protected readonly groupPermissions: $TSObject;
+  protected readonly groupPermissions: Record<string, string[]>;
   protected readonly geofenceCollectionResource: cdk.CustomResource;
   protected readonly geofenceCollectionRegion: string;
   protected readonly geofenceCollectionName: string;
@@ -124,7 +123,7 @@ export class GeofenceCollectionStack extends BaseStack {
         account: cdk.Fn.ref('AWS::AccountId'),
         collectionName: collectionResource.getAtt('CollectionName').toString()
       });
-      const crudActions: string[] = _.uniq(_.flatten(this.groupPermissions[group].map((e: string) => crudPermissionsMap[e])));
+      const crudActions: string[] = _.uniq(_.flatten(this.groupPermissions[group].map((permission: string) => crudPermissionsMap[permission])));
       const policyDocument = new iam.PolicyDocument({
           statements: [
             new iam.PolicyStatement({

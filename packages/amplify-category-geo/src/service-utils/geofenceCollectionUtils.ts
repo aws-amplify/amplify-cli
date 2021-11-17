@@ -220,7 +220,7 @@ export const getGeofenceCollectionParamsFilePath = (resourceName: string): strin
   return path.join(pathManager.getBackendDirPath(), category, resourceName, geofenceCollectionParamsFileName);
 };
 
-export const crudPermissionsMap: $TSObject = {
+export const crudPermissionsMap: Record<string, string[]> = {
   'Read geofence': ['geo:GetGeofence'],
   'Create/Update geofence': ['geo:PutGeofence', 'geo:BatchPutGeofence'],
   'Delete geofence': ['geo:BatchDeleteGeofence'],

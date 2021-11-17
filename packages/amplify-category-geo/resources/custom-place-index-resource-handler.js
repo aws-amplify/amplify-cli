@@ -17,9 +17,9 @@ exports.handler = async (event, context) => {
       console.log('create resource response data' + JSON.stringify(res));
       if (res.IndexName && res.IndexArn) {
         event.PhysicalResourceId = res.IndexName;
-        await send(event, context, response.SUCCESS, res);
+        await send(event, context, response.SUCCESS, res, params.IndexName);
       } else {
-        await send(event, context, response.FAILED, res);
+        await send(event, context, response.FAILED, res, params.IndexName);
       }
     }
     if (event.RequestType == 'Update') {
@@ -35,9 +35,9 @@ exports.handler = async (event, context) => {
       console.log('update resource response data' + JSON.stringify(res));
       if (res.IndexName && res.IndexArn) {
         event.PhysicalResourceId = res.IndexName;
-        await send(event, context, response.SUCCESS, res);
+        await send(event, context, response.SUCCESS, res, params.IndexName);
       } else {
-        await send(event, context, response.FAILED, res);
+        await send(event, context, response.FAILED, res, params.IndexName);
       }
     }
     if (event.RequestType == 'Delete') {
@@ -48,18 +48,18 @@ exports.handler = async (event, context) => {
       const res = await locationClient.deletePlaceIndex(params).promise();
       event.PhysicalResourceId = event.ResourceProperties.indexName;
       console.log('delete resource response data' + JSON.stringify(res));
-      await send(event, context, response.SUCCESS, res);
+      await send(event, context, response.SUCCESS, res, params.IndexName);
     }
   } catch (err) {
     console.log(err.stack);
     const res = { Error: err };
-    await send(event, context, response.FAILED, res);
+    await send(event, context, response.FAILED, res, event.ResourceProperties.indexName);
     throw err;
   }
 };
 
-function send(event, context, status, data) {
+function send(event, context, status, data, physicalResourceId) {
   return new Promise(() => {
-    response.send(event, context, status, data);
+    response.send(event, context, status, data, physicalResourceId);
   });
 }

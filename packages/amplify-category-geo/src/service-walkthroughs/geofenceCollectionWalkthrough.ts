@@ -3,7 +3,7 @@ import { v4 as uuid } from "uuid";
 import { merge } from '../service-utils/resourceUtils';
 import { GeofenceCollectionParameters } from '../service-utils/geofenceCollectionParams';
 import { ServiceName } from '../service-utils/constants';
-import { $TSContext, $TSObject } from 'amplify-cli-core';
+import { $TSContext } from 'amplify-cli-core';
 import { getCurrentGeofenceCollectionParameters, crudPermissionsMap } from '../service-utils/geofenceCollectionUtils';
 import { getGeoServiceMeta, updateDefaultResource, geoServiceExists, getGeoPricingPlan, checkGeoResourceExists } from '../service-utils/resourceUtils';
 import { pricingPlanWalkthrough, dataProviderWalkthrough, getServiceFriendlyName, defaultResourceQuestion } from './resourceWalkthrough';
@@ -108,21 +108,19 @@ export const geofenceCollectionAccessWalkthrough = async (
     }
 
     const groupCrudPermissionsFlow = async (group: string, defaults: string[] = []) => {
-        const possibleOperations = Object.keys(crudPermissionsMap).map(el => ({ name: el, value: el }));
-
         const selectedCrudPermissions = await prompter.pick<'many', string>(
             `What kind of access do you want for ${group} users? Select ALL that apply:`,
-            possibleOperations,
+            Object.keys(crudPermissionsMap),
             { returnSize: 'many', initial: byValues(defaults) }
         );
 
         return selectedCrudPermissions;
     };
 
-    const selectedGroupPermissions: $TSObject = {};
+    const selectedGroupPermissions: Record<string, string[]> = {};
 
     for (const selectedUserPoolGroup of selectedUserPoolGroupsList) {
-        let defaults = [];
+        let defaults: string[] = [];
 
         if (parameters.groupPermissions) {
             defaults = parameters.groupPermissions[selectedUserPoolGroup] || [];

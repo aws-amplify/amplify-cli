@@ -17,13 +17,15 @@ describe('Map walkthrough works as expected', () => {
     const mockMapResource = {
         resourceName: mockMapName,
         service: service,
-        mapStyle: MapStyle.VectorEsriStreets
+        mapStyle: MapStyle.VectorEsriStreets,
+        pricingPlan: PricingPlan.MobileAssetTracking
     };
     const secondaryMapResource = {
         resourceName: secondaryMapName,
         service: service,
         isDefault: false,
-        mapStyle: MapStyle.VectorEsriStreets
+        mapStyle: MapStyle.VectorEsriStreets,
+        pricingPlan: PricingPlan.MobileAssetTracking
     };
     const mockPlaceIndexResource = {
         resourceName: 'placeIndex12345',
@@ -103,7 +105,7 @@ describe('Map walkthrough works as expected', () => {
             else if (message === 'Who can access this Map?') {
                 mockUserInput = mockMapParameters.accessType;
             }
-            else if (message === 'Are you tracking commercial assets for your business in your app?') {
+            else if (message === 'Are you tracking or directing commercial assets for your business in your app?') {
                 mockUserInput = 'Unknown';
             }
             else if (message === 'Select the Map you want to update') {
@@ -226,9 +228,8 @@ describe('Map walkthrough works as expected', () => {
 
     it('updates default map to another map if it is removed', async() => {
         mockContext.amplify.removeResource = jest.fn().mockReturnValue({
-            then: jest.fn().mockReturnValue(
-                await updateDefaultMapWalkthrough(mockContext, mockMapName)
-            )
+            service: ServiceName.Map,
+            resourceName: mockMapName
         });
 
         // given the map to be removed is default

@@ -9,7 +9,6 @@ import { ServiceName } from '../service-utils/constants';
 import { printer } from 'amplify-prompts';
 import { getMapStyleComponents } from '../service-utils/mapParams';
 import { MapConfiguration, MapModification } from 'amplify-headless-interface';
-import { checkAnyGeoResourceExists, checkGeoResourceExists } from '../service-utils/resourceUtils';
 
 export const addMapResource = async (
   context: $TSContext
@@ -45,13 +44,11 @@ export const removeMapResource = async (
   const resourceParameters = await getCurrentMapParameters(resourceToRemove);
 
   try {
-    await amplify.removeResource(context, category, resourceToRemove)
-    .then(async (resource: { service: string; resourceName: string }) => {
-      if (resource?.service === ServiceName.Map && resourceParameters.isDefault) {
-        // choose another default if removing a default map
-        await updateDefaultMapWalkthrough(context, resource.resourceName);
-      }
-    });
+    const resource = await amplify.removeResource(context, category, resourceToRemove);
+    if (resource?.service === ServiceName.Map && resourceParameters.isDefault) {
+      // choose another default if removing a default map
+      await updateDefaultMapWalkthrough(context, resource?.resourceName);
+    }
   } catch (err: $TSAny) {
     if (err.stack) {
       printer.error(err.stack);
@@ -113,11 +110,12 @@ export const updateMapResourceWithParams = async (
   context: $TSContext,
   mapParams: Partial<MapParameters>
 ): Promise<string> => {
-  if (mapParams.name && mapParams.isDefault !== undefined && mapParams.accessType) {
+  if (mapParams.name && mapParams.isDefault !== undefined && mapParams.accessType && mapParams.pricingPlan) {
     modifyMapResource(context, {
       accessType: mapParams.accessType,
       name: mapParams.name,
-      isDefault: mapParams.isDefault
+      isDefault: mapParams.isDefault,
+      pricingPlan: mapParams.pricingPlan
     });
   } else {
     throw insufficientInfoForUpdateError(ServiceName.Map);
