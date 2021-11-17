@@ -33,7 +33,7 @@ describe('transformer model migration test', () => {
     const modelSchemaV1 = 'transformer_migration/basic-model-v1.graphql';
     const modelSchemaV2 = 'transformer_migration/basic-model-v2.graphql';
 
-    await addApiWithoutSchema(projRoot, { apiName: projectName });
+    await addApiWithoutSchema(projRoot, { apiName: projectName, transformerVersion: 1 });
     await updateApiSchema(projRoot, projectName, modelSchemaV1);
     await amplifyPush(projRoot);
 

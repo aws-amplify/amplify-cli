@@ -48,7 +48,7 @@ describe('transformer @auth migration test', () => {
     projRoot = await createNewProjectDir(projectName);
     await initJSProjectWithProfile(projRoot, { name: projectName });
 
-    await addApiWithoutSchema(projRoot, { apiName: projectName });
+    await addApiWithoutSchema(projRoot, { apiName: projectName, transformerVersion: 1 });
     await updateApiWithMultiAuth(projRoot, {});
     updateApiSchema(projRoot, projectName, modelSchemaV1);
     await updateAuthAddUserGroups(projRoot, [GROUPNAME]);
@@ -80,10 +80,7 @@ describe('transformer @auth migration test', () => {
       awsconfig.aws_appsync_region,
       apiKey,
     );
-    let appSyncClientViaIAM = getConfiguredAppsyncClientIAMAuth(
-      awsconfig.aws_appsync_graphqlEndpoint,
-      awsconfig.aws_appsync_region,
-    );
+    let appSyncClientViaIAM = getConfiguredAppsyncClientIAMAuth(awsconfig.aws_appsync_graphqlEndpoint, awsconfig.aws_appsync_region);
 
     let createPostMutation = /* GraphQL */ `
       mutation CreatePost {
@@ -156,12 +153,8 @@ describe('transformer @auth migration test', () => {
     await updateApiSchema(projRoot, projectName, modelSchemaV2);
     await amplifyPushUpdate(projRoot);
 
-    appSyncClientViaUser = getConfiguredAppsyncClientCognitoAuth(
-      awsconfig.aws_appsync_graphqlEndpoint,
-      awsconfig.aws_appsync_region,
-      user,
-    );
-    
+    appSyncClientViaUser = getConfiguredAppsyncClientCognitoAuth(awsconfig.aws_appsync_graphqlEndpoint, awsconfig.aws_appsync_region, user);
+
     createPostMutation = /* GraphQL */ `
       mutation CreatePost {
         createPost(input: { title: "Created in V2" }) {

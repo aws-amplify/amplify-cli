@@ -19,9 +19,9 @@ describe('amplify add api', () => {
     const nextSchema1 = 'migrations_connection/cant_add_a_sort_key.graphql';
 
     await initJSProjectWithProfile(projRoot, { name: projectName });
-    addFeatureFlag(projRoot, 'graphqltransformer', 'enableiterativegsiupdates', false);
+    await addFeatureFlag(projRoot, 'graphqltransformer', 'enableiterativegsiupdates', false);
 
-    await addApiWithoutSchema(projRoot);
+    await addApiWithoutSchema(projRoot, { transformerVersion: 1 });
     await updateApiSchema(projRoot, projectName, initialSchema);
     await amplifyPush(projRoot);
     updateApiSchema(projRoot, projectName, nextSchema1);
@@ -41,7 +41,7 @@ describe('amplify add api', () => {
     await initJSProjectWithProfile(projRoot, { name: projectName });
     addFeatureFlag(projRoot, 'graphqltransformer', 'enableiterativegsiupdates', false);
 
-    await addApiWithoutSchema(projRoot);
+    await addApiWithoutSchema(projRoot, { transformerVersion: 1 });
     await updateApiSchema(projRoot, projectName, initialSchema);
     await amplifyPush(projRoot);
     updateApiSchema(projRoot, projectName, nextSchema1);

@@ -69,8 +69,9 @@ describe('amplify function migration', () => {
     expect(functionName).toBeDefined();
     expect(region).toBeDefined();
 
-    await addApiWithoutSchema(projRoot, { testingWithLatestCodebase: true });
-    updateApiSchema(projRoot, appName, 'simple_model.graphql');
+    await addApiWithoutSchema(projRoot, { testingWithLatestCodebase: true, transformerVersion: 1 });
+    await updateApiSchema(projRoot, appName, 'simple_model.graphql');
+
     await updateFunction(
       projRoot,
       {

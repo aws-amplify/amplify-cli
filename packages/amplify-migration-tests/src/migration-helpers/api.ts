@@ -1,4 +1,12 @@
-import { defaultOptions, nspawn as spawn, getCLIPath, AddApiOptions, KEY_DOWN_ARROW, getSchemaPath } from 'amplify-e2e-core';
+import {
+  defaultOptions,
+  nspawn as spawn,
+  getCLIPath,
+  AddApiOptions,
+  KEY_DOWN_ARROW,
+  getSchemaPath,
+  addFeatureFlag,
+} from 'amplify-e2e-core';
 import _ from 'lodash';
 
 /**

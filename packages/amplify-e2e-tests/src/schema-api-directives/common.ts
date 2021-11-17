@@ -19,7 +19,7 @@ const USERNAME = 'user1';
 const PASSWORD = 'user1Password';
 
 export async function runTest(projectDir: string, testModule: any) {
-  await addApi(projectDir);
+  await addApi(projectDir, { transformerVersion: 1 });
   updateSchemaInTestProject(projectDir, testModule.schema);
   await amplifyPush(projectDir);
 
@@ -34,6 +34,7 @@ export async function runTest(projectDir: string, testModule: any) {
 export async function runAuthTest(projectDir: string, testModule: any) {
   await addApi(projectDir, {
     'Amazon Cognito User Pool': {},
+    transformerVersion: 1,
   });
   updateSchemaInTestProject(projectDir, testModule.schema);
 
@@ -57,6 +58,7 @@ export async function runMultiAutTest(projectDir: string, testModule: any) {
     'API key': {},
     'Amazon Cognito User Pool': {},
     IAM: {},
+    transformerVersion: 1,
   });
   updateSchemaInTestProject(projectDir, testModule.schema);
 

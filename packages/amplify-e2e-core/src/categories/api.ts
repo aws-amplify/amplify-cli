@@ -1,10 +1,9 @@
-import { getCLIPath, updateSchema, nspawn as spawn, KEY_DOWN_ARROW } from '..';
 import * as fs from 'fs-extra';
-import * as path from 'path';
-import { selectRuntime, selectTemplate } from './lambda-function';
-import { singleSelect, multiSelect } from '../utils/selectors';
 import _ from 'lodash';
-import { EOL } from 'os';
+import * as path from 'path';
+import { addFeatureFlag, getCLIPath, KEY_DOWN_ARROW, nspawn as spawn, setTransformerVersionFlag, updateSchema } from '..';
+import { multiSelect, singleSelect } from '../utils/selectors';
+import { selectRuntime, selectTemplate } from './lambda-function';
 import { modifiedApi } from './resources/modified-api-index';
 
 export function getSchemaPath(schemaName: string): string {
@@ -28,11 +27,13 @@ export function apiGqlCompile(cwd: string, testingWithLatestCodebase: boolean = 
 export interface AddApiOptions {
   apiName: string;
   testingWithLatestCodebase: boolean;
+  transformerVersion: number;
 }
 
 export const defaultOptions: AddApiOptions = {
   apiName: '\r',
   testingWithLatestCodebase: false,
+  transformerVersion: 2,
 };
 
 export function addApiWithoutSchema(cwd: string, opts: Partial<AddApiOptions & { apiKeyExpirationDays: number }> = {}) {
@@ -62,6 +63,8 @@ export function addApiWithoutSchema(cwd: string, opts: Partial<AddApiOptions & {
           reject(err);
         }
       });
+
+    setTransformerVersionFlag(cwd, options.transformerVersion);
   });
 }
 
@@ -88,6 +91,8 @@ export function addApiWithOneModel(cwd: string, opts: Partial<AddApiOptions & { 
           reject(err);
         }
       });
+
+    setTransformerVersionFlag(cwd, options.transformerVersion);
   });
 }
 
@@ -115,6 +120,8 @@ export function addApiWithThreeModels(cwd: string, opts: Partial<AddApiOptions &
           reject(err);
         }
       });
+
+    setTransformerVersionFlag(cwd, options.transformerVersion);
   });
 }
 
@@ -147,12 +154,18 @@ export function addApiWithBlankSchema(cwd: string, opts: Partial<AddApiOptions &
           reject(err);
         }
       });
+
+    setTransformerVersionFlag(cwd, options.transformerVersion);
   });
 }
 
-export function addApiWithBlankSchemaAndConflictDetection(cwd: string) {
+export function addApiWithBlankSchemaAndConflictDetection(
+  cwd: string,
+  opts: Partial<AddApiOptions & { apiKeyExpirationDays: number }> = {},
+) {
+  const options = _.assign(defaultOptions, opts);
   return new Promise<void>((resolve, reject) => {
-    spawn(getCLIPath(defaultOptions.testingWithLatestCodebase), ['add', 'api'], { cwd, stripColors: true })
+    spawn(getCLIPath(options.testingWithLatestCodebase), ['add', 'api'], { cwd, stripColors: true })
       .wait('Select from one of the below mentioned services:')
       .sendCarriageReturn()
       .wait(/.*Here is the GraphQL API that we will create. Select a setting to edit or continue.*/)
@@ -179,13 +192,15 @@ export function addApiWithBlankSchemaAndConflictDetection(cwd: string) {
           reject(err);
         }
       });
+
+    setTransformerVersionFlag(cwd, options.transformerVersion);
   });
 }
 
 /**
  * Note: Lambda Authorizer is enabled only for Transformer V2
  */
-export function addApiWithAllAuthModesV2(cwd: string, opts: Partial<AddApiOptions & { apiKeyExpirationDays: number }> = {}) {
+export function addApiWithAllAuthModes(cwd: string, opts: Partial<AddApiOptions & { apiKeyExpirationDays: number }> = {}) {
   const options = _.assign(defaultOptions, opts);
   return new Promise<void>((resolve, reject) => {
     spawn(getCLIPath(), ['add', 'api'], { cwd, stripColors: true })
@@ -251,6 +266,8 @@ export function addApiWithAllAuthModesV2(cwd: string, opts: Partial<AddApiOption
           reject(err);
         }
       });
+
+    setTransformerVersionFlag(cwd, options.transformerVersion);
   });
 }
 
@@ -529,6 +546,9 @@ export function addRestApi(cwd: string, settings: any) {
 const allAuthTypes = ['API key', 'Amazon Cognito User Pool', 'IAM', 'OpenID Connect'];
 
 export function addApi(projectDir: string, settings?: any) {
+  const transformerVersion = settings?.transformerVersion ?? 2;
+  delete settings?.transformerVersion;
+
   let authTypesToSelectFrom = allAuthTypes.slice();
   return new Promise<void>((resolve, reject) => {
     let chain = spawn(getCLIPath(defaultOptions.testingWithLatestCodebase), ['add', 'api'], { cwd: projectDir, stripColors: true })
@@ -583,6 +603,11 @@ export function addApi(projectDir: string, settings?: any) {
           reject(err);
         }
       });
+
+    if (transformerVersion === 1) {
+      addFeatureFlag(projectDir, 'graphqltransformer', 'transformerVersion', 1);
+      addFeatureFlag(projectDir, 'graphqltransformer', 'useExperimentalPipelinedTransformer', false);
+    }
   });
 }
 
@@ -647,9 +672,13 @@ function setupOIDC(chain: any, settings?: any) {
     .sendCarriageReturn();
 }
 
-export function addApiWithCognitoUserPoolAuthTypeWhenAuthExists(projectDir: string) {
+export function addApiWithCognitoUserPoolAuthTypeWhenAuthExists(
+  projectDir: string,
+  opts: Partial<AddApiOptions & { apiKeyExpirationDays: number }> = {},
+) {
+  const options = _.assign(defaultOptions, opts);
   return new Promise<void>((resolve, reject) => {
-    spawn(getCLIPath(defaultOptions.testingWithLatestCodebase), ['add', 'api'], { cwd: projectDir, stripColors: true })
+    spawn(getCLIPath(options.testingWithLatestCodebase), ['add', 'api'], { cwd: projectDir, stripColors: true })
       .wait('Select from one of the below mentioned services:')
       .sendCarriageReturn()
       .wait(/.*Here is the GraphQL API that we will create. Select a setting to edit or continue.*/)
@@ -674,6 +703,8 @@ export function addApiWithCognitoUserPoolAuthTypeWhenAuthExists(projectDir: stri
           reject(err);
         }
       });
+
+    setTransformerVersionFlag(projectDir, options.transformerVersion);
   });
 }
 
