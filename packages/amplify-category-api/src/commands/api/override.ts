@@ -51,10 +51,12 @@ export const run = async (context: $TSContext) => {
   // Make sure to migrate first
   if (service === AmplifySupportedService.APPSYNC) {
     if (await checkAppsyncApiResourceMigration(context, selectedResourceName, false)) {
-      // fetch cli Inputs again
-      // call compile schema here
       await context.amplify.invokePluginMethod(context, 'awscloudformation', undefined, 'compileSchema', [context, { forceCompile: true }]);
       await generateOverrideSkeleton(context, srcPath, destPath);
+    } else {
+      printer.warn(
+        `The project is configured with Old Transformer Version. Set the TransformerVersion = 2 in cli.json to enable override functionality for api.`,
+      );
     }
   }
 };

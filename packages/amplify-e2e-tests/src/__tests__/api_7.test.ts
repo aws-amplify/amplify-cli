@@ -1,5 +1,6 @@
 import {
   addApiWithoutSchema,
+  addFeatureFlag,
   amplifyOverrideApi,
   amplifyPush,
   amplifyPushOverride,
@@ -31,12 +32,14 @@ describe('amplify add api (GraphQL)', () => {
     deleteProjectDir(projRoot);
   });
 
-  it('init a project and add the simple_model api', async () => {
+  it('init a project and add the simple_model api with transformer version 1', async () => {
     const envName = 'devtest';
     const projName = 'simplemodel';
+    const cliInputsFilePath = path.join(projRoot, 'amplify', 'backend', 'api', `${projName}`, 'cli-inputs.json');
     await initJSProjectWithProfile(projRoot, { name: projName, envName });
     await addApiWithoutSchema(projRoot);
     await updateApiSchema(projRoot, projName, 'simple_model.graphql');
+    expect(fs.existsSync(cliInputsFilePath)).toBe(true);
 
     await amplifyPush(projRoot);
 
@@ -63,7 +66,7 @@ describe('amplify add api (GraphQL)', () => {
     expect(error).toBeDefined();
     expect(error.message).toContain(`${tableName} not found`);
 
-    // override new env
+    // migrate project here
     await amplifyOverrideApi(projRoot, {});
     const srcOverrideFilePath = path.join(__dirname, '..', '..', 'overrides', 'override-api.ts');
     const destOverrideFilePath = path.join(projRoot, 'amplify', 'backend', 'api', `${projName}`, 'override.ts');
@@ -73,5 +76,17 @@ describe('amplify add api (GraphQL)', () => {
     const overridenAppsyncApi = await getAppSyncApi(GraphQLAPIIdOutput, region);
     expect(overridenAppsyncApi.graphqlApi).toBeDefined();
     expect(overridenAppsyncApi.graphqlApi.apiId).toEqual(GraphQLAPIIdOutput);
+    expect(overridenAppsyncApi.graphqlApi.xrayEnabled).toEqual(false);
+
+    // override with FF flag
+    await addFeatureFlag(projRoot, 'graphqltransformer', 'transformerversion', 2);
+    await addFeatureFlag(projRoot, 'graphqltransformer', 'useexperimentalpipelinedtransformer', true);
+    await updateApiSchema(projRoot, projName, 'simple_model_override.graphql');
+    await amplifyPushOverride(projRoot);
+    // check overidden config
+    const overridenAppsyncApiOverrided = await getAppSyncApi(GraphQLAPIIdOutput, region);
+    expect(overridenAppsyncApiOverrided.graphqlApi).toBeDefined();
+    expect(overridenAppsyncApiOverrided.graphqlApi.apiId).toEqual(GraphQLAPIIdOutput);
+    expect(overridenAppsyncApiOverrided.graphqlApi.xrayEnabled).toEqual(true);
   });
 });

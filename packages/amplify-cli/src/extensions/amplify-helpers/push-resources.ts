@@ -54,7 +54,6 @@ export async function pushResources(
     }
   }
 
-  await context.amplify.invokePluginMethod(context, 'awscloudformation', undefined, 'compileSchema', [context, { forceCompile: true }]);
   // building all CFN stacks here to get the resource Changes
   await generateDependentResourcesType(context);
   const resourcesToBuild: IAmplifyResource[] = await getResources(context);

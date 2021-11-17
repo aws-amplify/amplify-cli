@@ -8,7 +8,7 @@ import { conflictResolutionToResolverConfig } from './resolver-config-to-conflic
  */
 export const getResolverConfig = async (resourceName: string) => {
   const cliState = new AppsyncApiInputState(resourceName);
-  if (cliState.cliInputFileExists) {
+  if (cliState.cliInputFileExists()) {
     const appsyncInputs = cliState.getCLIInputPayload().serviceConfiguration;
     return conflictResolutionToResolverConfig(appsyncInputs.conflictResolution);
   }
