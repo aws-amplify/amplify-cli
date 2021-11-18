@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.5.0-GqlExtensibility.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-auth-transformer@0.4.2...@aws-amplify/graphql-auth-transformer@0.5.0-GqlExtensibility.0) (2021-11-18)
+
+
+### Features
+
+* add unit tests and e2e ([7daaf88](https://github.com/aws-amplify/amplify-cli/commit/7daaf8813a4be03f5c0ddf5fdee3da65e8cd03f2))
+
+
+
+
+
 ## [0.4.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-auth-transformer@0.4.1...@aws-amplify/graphql-auth-transformer@0.4.2) (2021-11-17)
 
 

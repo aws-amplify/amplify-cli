@@ -3,6 +3,20 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.3.4-GqlExtensibility.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@2.3.3...@aws-amplify/amplify-category-auth@2.3.4-GqlExtensibility.0) (2021-11-18)
+
+
+### Bug Fixes
+
+* change default to string for the 'hostedUIProviderCreds' input param ([#8929](https://github.com/aws-amplify/amplify-cli/issues/8929)) ([2539d46](https://github.com/aws-amplify/amplify-cli/commit/2539d466dadc963e98fd86f4f31feb21f555ba79))
+* merged with extOverrides3 ([7f3f468](https://github.com/aws-amplify/amplify-cli/commit/7f3f4683594ae3b63f96704387d9332222d7f79c))
+* rebase with gql release branch ([afe065a](https://github.com/aws-amplify/amplify-cli/commit/afe065a83637bb689c9a19d9b092d463c9fd35e4))
+* remove unused files ([1c1eec3](https://github.com/aws-amplify/amplify-cli/commit/1c1eec3bd59001cddf588ed9900efaa4e8c25422))
+
+
+
+
+
 ## [2.3.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@2.3.2...@aws-amplify/amplify-category-auth@2.3.3) (2021-11-17)
 
 **Note:** Version bump only for package @aws-amplify/amplify-category-auth

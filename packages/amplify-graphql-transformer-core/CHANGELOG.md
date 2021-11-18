@@ -3,6 +3,31 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.14.0-GqlExtensibility.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-transformer-core@0.13.0...@aws-amplify/graphql-transformer-core@0.14.0-GqlExtensibility.0) (2021-11-18)
+
+
+### Bug Fixes
+
+* address comments ([6ee5392](https://github.com/aws-amplify/amplify-cli/commit/6ee53926cf6719747b52976fbbd0e40198b44d4b))
+* fixed imports ([303df88](https://github.com/aws-amplify/amplify-cli/commit/303df88a2e1a51a7701a8aac6bf84ffa0ee61644))
+* rebase with gql release branch ([afe065a](https://github.com/aws-amplify/amplify-cli/commit/afe065a83637bb689c9a19d9b092d463c9fd35e4))
+
+
+### Features
+
+* add unit tests and e2e ([7daaf88](https://github.com/aws-amplify/amplify-cli/commit/7daaf8813a4be03f5c0ddf5fdee3da65e8cd03f2))
+* added cli-inputs.json in api ([87752d3](https://github.com/aws-amplify/amplify-cli/commit/87752d3b54d06e56e27b8e4623a5a45d6c6fa5f4))
+* added migration for gqlApi ([46c758a](https://github.com/aws-amplify/amplify-cli/commit/46c758a96a2570352cfa3bcfdf4aa13636bcb033))
+* added overrides ([b05b010](https://github.com/aws-amplify/amplify-cli/commit/b05b01002ae56d107b62c29e6d62b6e7180193c0))
+* added overrides rev1 ([8be73bb](https://github.com/aws-amplify/amplify-cli/commit/8be73bb0f73281c4a9034ef8b395a8575123f4b0))
+* enable overrides for api ([c8193da](https://github.com/aws-amplify/amplify-cli/commit/c8193da573fd37c712f2eab0b0d969142c802824))
+* gql api migration working ([dfc8f4e](https://github.com/aws-amplify/amplify-cli/commit/dfc8f4e851140cfa9e33824be8e54e5cb67fe4b0))
+* overrides functionality for appsync api ([c088265](https://github.com/aws-amplify/amplify-cli/commit/c088265e71f9393ef6f927671bb727a72b3232a3))
+
+
+
+
+
 # [0.13.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-transformer-core@0.12.1...@aws-amplify/graphql-transformer-core@0.13.0) (2021-11-17)
 
 

@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.3.1-GqlExtensibility.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-graphiql-explorer@2.3.0...amplify-graphiql-explorer@2.3.1-GqlExtensibility.0) (2021-11-18)
+
+
+### Bug Fixes
+
+* adds flag to suppress type errors in catch ([bb24733](https://github.com/aws-amplify/amplify-cli/commit/bb24733fd2dee59dcc2275f520afa7c73c404c6a))
+
+
+
+
+
 # [2.3.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-graphiql-explorer@1.6.1...amplify-graphiql-explorer@2.3.0) (2021-11-15)
 
 

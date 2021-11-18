@@ -3,6 +3,24 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.4.0-GqlExtensibility.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@2.3.1...amplify-cli-core@2.4.0-GqlExtensibility.0) (2021-11-18)
+
+
+### Bug Fixes
+
+* adds flag to suppress type errors in catch ([bb24733](https://github.com/aws-amplify/amplify-cli/commit/bb24733fd2dee59dcc2275f520afa7c73c404c6a))
+* rebase with gql release branch ([afe065a](https://github.com/aws-amplify/amplify-cli/commit/afe065a83637bb689c9a19d9b092d463c9fd35e4))
+* remove unused files ([1c1eec3](https://github.com/aws-amplify/amplify-cli/commit/1c1eec3bd59001cddf588ed9900efaa4e8c25422))
+
+
+### Features
+
+* added migration for gqlApi ([46c758a](https://github.com/aws-amplify/amplify-cli/commit/46c758a96a2570352cfa3bcfdf4aa13636bcb033))
+
+
+
+
+
 ## [2.3.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@2.3.0...amplify-cli-core@2.3.1) (2021-11-17)
 
 **Note:** Version bump only for package amplify-cli-core

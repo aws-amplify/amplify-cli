@@ -3,6 +3,31 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.5.0-GqlExtensibility.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@5.4.0...amplify-provider-awscloudformation@5.5.0-GqlExtensibility.0) (2021-11-18)
+
+
+### Bug Fixes
+
+* address comments ([6ee5392](https://github.com/aws-amplify/amplify-cli/commit/6ee53926cf6719747b52976fbbd0e40198b44d4b))
+* fix e2e tests ([3110a8a](https://github.com/aws-amplify/amplify-cli/commit/3110a8a709a0511176f55e4fb359fb7edd8d1cf4))
+* merged with extOverrides3 ([7f3f468](https://github.com/aws-amplify/amplify-cli/commit/7f3f4683594ae3b63f96704387d9332222d7f79c))
+* migration logic ([b40af0d](https://github.com/aws-amplify/amplify-cli/commit/b40af0dbe05db4ad2449424c569146c76661f6ec))
+* rebase with gql release branch ([afe065a](https://github.com/aws-amplify/amplify-cli/commit/afe065a83637bb689c9a19d9b092d463c9fd35e4))
+
+
+### Features
+
+* add unit tests and e2e ([7daaf88](https://github.com/aws-amplify/amplify-cli/commit/7daaf8813a4be03f5c0ddf5fdee3da65e8cd03f2))
+* added cli-inputs.json in api ([87752d3](https://github.com/aws-amplify/amplify-cli/commit/87752d3b54d06e56e27b8e4623a5a45d6c6fa5f4))
+* added migration for gqlApi ([46c758a](https://github.com/aws-amplify/amplify-cli/commit/46c758a96a2570352cfa3bcfdf4aa13636bcb033))
+* enable overrides for api ([c8193da](https://github.com/aws-amplify/amplify-cli/commit/c8193da573fd37c712f2eab0b0d969142c802824))
+* gql api migration working ([dfc8f4e](https://github.com/aws-amplify/amplify-cli/commit/dfc8f4e851140cfa9e33824be8e54e5cb67fe4b0))
+* overrides functionality for appsync api ([c088265](https://github.com/aws-amplify/amplify-cli/commit/c088265e71f9393ef6f927671bb727a72b3232a3))
+
+
+
+
+
 # [5.4.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@5.3.3...amplify-provider-awscloudformation@5.4.0) (2021-11-17)
 
 
