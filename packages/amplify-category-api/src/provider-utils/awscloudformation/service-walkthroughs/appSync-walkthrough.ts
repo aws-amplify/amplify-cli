@@ -1,7 +1,6 @@
 import { Duration, Expiration } from '@aws-cdk/core';
 import {
   $TSContext,
-  $TSObject,
   exitOnNextTick,
   FeatureFlags,
   open,
