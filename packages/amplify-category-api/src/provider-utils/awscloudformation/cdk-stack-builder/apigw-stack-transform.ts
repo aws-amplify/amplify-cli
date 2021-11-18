@@ -2,6 +2,7 @@ import * as cdk from '@aws-cdk/core';
 import {
   $TSAny,
   $TSContext,
+  $TSObject,
   AmplifyCategories,
   buildOverrideDir,
   getAmplifyResourceByCategories,
@@ -15,6 +16,7 @@ import {
 import { formatter, printer } from 'amplify-prompts';
 import * as fs from 'fs-extra';
 import * as path from 'path';
+import * as vm from 'vm2';
 import { AmplifyApigwResourceStack, ApigwInputs } from '.';
 import { category } from '../../../category-constants';
 import { ApigwInputState } from '../apigw-input-state';
@@ -25,7 +27,7 @@ export class ApigwStackTransform {
   resourceTemplateObj: AmplifyApigwResourceStack | undefined;
   cliInputsState: ApigwInputState;
   cfn!: Template;
-  cfnInputParams!: {};
+  cfnInputParams!: $TSObject;
   resourceName: string;
 
   constructor(context: $TSContext, resourceName: string, cliInputState?: ApigwInputState) {
@@ -57,7 +59,6 @@ export class ApigwStackTransform {
     await this.saveBuildFiles();
   }
 
-  // TODO generate params
   generateCfnInputParameters() {
     this.cfnInputParams = {};
   }
@@ -153,36 +154,50 @@ export class ApigwStackTransform {
   async applyOverrides() {
     const backendDir = pathManager.getBackendDirPath();
     const overrideFilePath = pathManager.getResourceDirectoryPath(undefined, AmplifyCategories.API, this.resourceName);
+    const overrideJSFilePath = path.join(overrideFilePath, 'build', 'override.js');
 
     const isBuild = await buildOverrideDir(backendDir, overrideFilePath).catch(error => {
       printer.debug(`Skipping build as ${error.message}`);
       return false;
     });
+
     // skip if packageManager or override.ts not found
     if (isBuild) {
-      const { overrideProps } = await import(path.join(overrideFilePath, 'build', 'override.js')).catch(error => {
+      const { override } = await import(overrideJSFilePath).catch(error => {
         formatter.list(['No override file found', `To override ${this.resourceName} run "amplify override api"`]);
         return undefined;
       });
 
-      // TODO: Check Script Options
-      if (overrideProps && typeof overrideProps === 'function') {
-        try {
-          this.resourceTemplateObj = overrideProps(this.resourceTemplateObj);
+      if (override && typeof override === 'function') {
+        const overrideCode: string = await fs.readFile(overrideJSFilePath, 'utf-8').catch(() => {
+          formatter.list(['No override File Found', `To override ${this.resourceName} run amplify override auth`]);
+          return '';
+        });
 
-          // The vm module enables compiling and running code within V8 Virtual Machine contexts.
-          // The vm module is not a security mechanism. Do not use it to run untrusted code.
-          // const script = new vm.Script(overrideCode);
-          // script.runInContext(vm.createContext(cognitoStackTemplateObj));
-          return;
-        } catch (error: $TSAny) {
-          throw new Error(error);
+        const sandboxNode = new vm.NodeVM({
+          console: 'inherit',
+          timeout: 5000,
+          sandbox: {},
+          require: {
+            context: 'sandbox',
+            builtin: ['path'],
+            external: true,
+          },
+        });
+
+        try {
+          await sandboxNode.run(overrideCode, overrideJSFilePath).override(this.resourceTemplateObj as AmplifyApigwResourceStack);
+        } catch (err: $TSAny) {
+          const error = new Error(`Skipping override due to ${err}.`);
+          printer.error(`${error}`);
+          error.stack = undefined;
+          throw error;
         }
       }
     }
   }
 
-  async saveBuildFiles() {
+  private async saveBuildFiles() {
     if (this.resourceTemplateObj) {
       this.cfn = JSONUtilities.parse(this.resourceTemplateObj.renderCloudFormationTemplate());
     }
