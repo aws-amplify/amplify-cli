@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/cli",
-  "version": "7.3.6",
+  "version": "7.4.0",
   "description": "Amplify CLI",
   "repository": {
     "type": "git",
@@ -33,7 +33,7 @@
     "node": ">=12.0.0"
   },
   "dependencies": {
-    "@aws-amplify/amplify-category-auth": "2.3.3",
+    "@aws-amplify/amplify-category-auth": "2.3.4",
     "@aws-amplify/amplify-category-custom": "2.3.1",
     "@aws-amplify/amplify-category-storage": "3.0.3",
     "@aws-cdk/cloudformation-diff": "~1.124.0",
@@ -65,11 +65,11 @@
     "amplify-nodejs-function-runtime-provider": "2.2.2",
     "amplify-nodejs-function-template-provider": "2.2.2",
     "amplify-prompts": "1.5.1",
-    "amplify-provider-awscloudformation": "5.4.0",
+    "amplify-provider-awscloudformation": "5.4.1",
     "amplify-python-function-runtime-provider": "2.2.2",
     "amplify-python-function-template-provider": "1.3.13",
     "amplify-util-import": "2.2.2",
-    "amplify-util-mock": "4.2.5",
+    "amplify-util-mock": "4.2.6",
     "aws-sdk": "^2.963.0",
     "chalk": "^4.1.1",
     "ci-info": "^2.0.0",
