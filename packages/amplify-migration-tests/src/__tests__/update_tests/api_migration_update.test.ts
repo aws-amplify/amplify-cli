@@ -1,6 +1,4 @@
 import {
-  addApiWithoutSchema,
-  addApiWithBlankSchemaAndConflictDetection,
   amplifyPush,
   amplifyPushUpdate,
   createNewProjectDir,
@@ -12,35 +10,45 @@ import {
   updateApiSchema,
   updateApiWithMultiAuth,
   updateAPIWithResolutionStrategyWithModels,
+  getProjectConfig,
 } from 'amplify-e2e-core';
 import { existsSync } from 'fs';
 import { TRANSFORM_CURRENT_VERSION } from 'graphql-transformer-core';
 import { join } from 'path';
-import { initJSProjectWithProfile } from '../../migration-helpers';
+import {
+  initJSProjectWithProfile,
+  versionCheck,
+  addApiWithoutSchemaOldDx,
+  addApiWithSchemaAndConflictDetectionOldDx,
+} from '../../migration-helpers';
 
 describe('api migration update test', () => {
   let projRoot: string;
   beforeEach(async () => {
     projRoot = await createNewProjectDir('graphql-api');
+    await initJSProjectWithProfile(projRoot, { name: 'apimigration' });
+    await versionCheck(projRoot, false);
+    await versionCheck(projRoot, true);
   });
 
   afterEach(async () => {
     const metaFilePath = join(projRoot, 'amplify', '#current-cloud-backend', 'amplify-meta.json');
     if (existsSync(metaFilePath)) {
-      await deleteProject(projRoot);
+      await deleteProject(projRoot, null, true);
     }
     deleteProjectDir(projRoot);
   });
 
   it('init and add api with installed CLI then migrate for update and push', async () => {
-    const projectName = 'blogapp';
     const initialSchema = 'initial_key_blog.graphql';
     const nextSchema = 'next_key_blog.graphql';
     // init the project and add api with installed cli
-    await initJSProjectWithProfile(projRoot, { name: projectName });
-    await addApiWithoutSchema(projRoot);
-    await updateApiSchema(projRoot, projectName, initialSchema);
+    const { projectName } = getProjectConfig(projRoot);
+    await addApiWithoutSchemaOldDx(projRoot);
+    updateApiSchema(projRoot, projectName, initialSchema);
     await amplifyPush(projRoot);
+
+    // toggle to latest version
     // update api and push with the CLI to be released (the codebase)
     updateApiSchema(projRoot, projectName, nextSchema);
     await amplifyPushUpdate(projRoot, undefined, true);
@@ -53,15 +61,15 @@ describe('api migration update test', () => {
 
   it('api update migration with multiauth', async () => {
     // init and add api with installed CLI
-    await initJSProjectWithProfile(projRoot, { name: 'simplemodelmultiauth' });
-    await addApiWithoutSchema(projRoot);
-    await updateApiSchema(projRoot, 'simplemodelmultiauth', 'simple_model.graphql');
+    const { projectName } = getProjectConfig(projRoot);
+    await addApiWithoutSchemaOldDx(projRoot);
+    updateApiSchema(projRoot, projectName, 'simple_model.graphql');
     // update and push with codebase
     await updateApiWithMultiAuth(projRoot, { testingWithLatestCodebase: true });
     await amplifyPush(projRoot, true);
 
     const meta = getProjectMeta(projRoot);
-    const { output } = meta.api.simplemodelmultiauth;
+    const { output } = meta.api[projectName];
     const { GraphQLAPIIdOutput, GraphQLAPIEndpointOutput, GraphQLAPIKeyOutput } = output;
     const { graphqlApi } = await getAppSyncApi(GraphQLAPIIdOutput, meta.providers.awscloudformation.Region);
 
@@ -97,11 +105,9 @@ describe('api migration update test', () => {
   });
 
   it('init a sync enabled project and update conflict resolution strategy', async () => {
-    const name = `syncenabled`;
-    // init and add api with locally installed cli
-    await initJSProjectWithProfile(projRoot, { name });
-    await addApiWithBlankSchemaAndConflictDetection(projRoot);
-    await updateApiSchema(projRoot, name, 'simple_model.graphql');
+    // add api with locally installed cli
+    const { projectName: name } = getProjectConfig(projRoot);
+    await addApiWithSchemaAndConflictDetectionOldDx(projRoot, 'simple_model.graphql');
 
     let transformConfig = getTransformConfig(projRoot, name);
     expect(transformConfig).toBeDefined();

@@ -1,5 +1,4 @@
 import {
-  addApiWithoutSchema,
   addFunction,
   addLayer,
   amplifyPush,
@@ -18,28 +17,28 @@ import {
   updateApiSchema,
   updateFunction,
   validateLayerMetadata,
-  createRandomName,
+  addApiWithoutSchema,
 } from 'amplify-e2e-core';
 import { v4 as uuid } from 'uuid';
-import { initJSProjectWithProfile } from '../../migration-helpers';
+import { initJSProjectWithProfile, versionCheck, addApiWithoutSchemaOldDX } from '../../migration-helpers';
 
 describe('amplify function migration', () => {
   let projRoot: string;
 
   beforeEach(async () => {
     projRoot = await createNewProjectDir('functions');
+    await initJSProjectWithProfile(projRoot, { name: 'functionmigration' });
+    await versionCheck(projRoot, false);
+    await versionCheck(projRoot, true);
   });
 
   afterEach(async () => {
-    await deleteProject(projRoot);
+    await deleteProject(projRoot, null, true);
     deleteProjectDir(projRoot);
   });
 
   it('existing lambda updated with additional permissions should be able to scan ddb', async () => {
-    const appName = createRandomName();
-    await initJSProjectWithProfile(projRoot, {
-      name: appName,
-    });
+    const { projectName: appName } = getProjectConfig(projRoot);
 
     const random = Math.floor(Math.random() * 10000);
     const fnName = `integtestfn${random}`;
@@ -63,8 +62,9 @@ describe('amplify function migration', () => {
     expect(functionName).toBeDefined();
     expect(region).toBeDefined();
 
-    await addApiWithoutSchema(projRoot);
-    await updateApiSchema(projRoot, appName, 'simple_model.graphql');
+    // toggle to latest
+    await addApiWithoutSchema(projRoot, { testingWithLatestCodebase: true });
+    updateApiSchema(projRoot, appName, 'simple_model.graphql');
     await updateFunction(
       projRoot,
       {
@@ -101,8 +101,6 @@ describe('amplify function migration', () => {
     const function1 = 'function1' + shortId;
     const function2 = 'function2' + shortId;
     const runtime: LayerRuntime = 'nodejs';
-
-    await initJSProjectWithProfile(projRoot, {});
     const { projectName: projName } = getProjectConfig(projRoot);
 
     await addFunction(projRoot, { name: function1, functionTemplate: 'Hello World' }, runtime, undefined);
@@ -116,6 +114,7 @@ describe('amplify function migration', () => {
       runtimes: [runtime],
     };
 
+    // toggle to latest
     await addLayer(projRoot, layerSettings, true);
     await updateFunction(
       projRoot,

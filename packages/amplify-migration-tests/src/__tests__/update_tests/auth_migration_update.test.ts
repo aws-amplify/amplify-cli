@@ -19,22 +19,23 @@ import { initJSProjectWithProfile, versionCheck } from '../../migration-helpers'
 
 describe('amplify auth migration', () => {
   let projRoot: string;
+
   beforeEach(async () => {
     projRoot = await createNewProjectDir('auth migration');
-  });
-
-  afterEach(async () => {
-    const metaFilePath = join(projRoot, 'amplify', '#current-cloud-backend', 'amplify-meta.json');
-    if (fs.existsSync(metaFilePath)) {
-      await deleteProject(projRoot);
-    }
-    deleteProjectDir(projRoot);
-  });
-  it('...should init a project and add auth with a custom trigger, and then update to remove the custom js while leaving the other js', async () => {
-    // init, add and push auth with installed cli
     await initJSProjectWithProfile(projRoot, { name: 'authMigration' });
     await versionCheck(projRoot, false);
     await versionCheck(projRoot, true);
+  });
+  afterEach(async () => {
+    const metaFilePath = join(projRoot, 'amplify', '#current-cloud-backend', 'amplify-meta.json');
+    if (fs.existsSync(metaFilePath)) {
+      await deleteProject(projRoot, null, true);
+    }
+    deleteProjectDir(projRoot);
+  });
+
+  it('...should init a project and add auth with a custom trigger, and then update to remove the custom js while leaving the other js', async () => {
+    // init, add and push auth with installed cli
     await addAuthWithCustomTrigger(projRoot, {});
     await amplifyPushAuth(projRoot);
     const meta = getProjectMeta(projRoot);
@@ -73,10 +74,7 @@ describe('amplify auth migration', () => {
   });
 
   it('...should init a project and add auth with default, and then update with latest and push', async () => {
-    // init, add and push auth with installed cli
-    await initJSProjectWithProfile(projRoot, { name: 'authMigration' });
-    await versionCheck(projRoot, false);
-    await versionCheck(projRoot, true);
+    // add and push auth with installed cli
     await addAuthWithDefault(projRoot, {});
     await amplifyPushAuth(projRoot);
     const meta = getProjectMeta(projRoot);
