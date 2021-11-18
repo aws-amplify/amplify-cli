@@ -158,6 +158,15 @@ export async function run(context: $TSContext, resourceDefinition: $TSObject, re
       await legacyLayerMigration(context, resource.resourceName);
     }
 
+    /**
+     * calling transform schema here to support old project with out overrides
+     */
+    await transformGraphQLSchema(context, {
+      handleMigration: opts => updateStackForAPIMigration(context, 'api', undefined, opts),
+      minify: options['minify'],
+      promptApiKeyCreation: true,
+    });
+
     await prePushLambdaLayerPrompt(context, resources);
     await prepareBuildableResources(context, resources);
     await buildOverridesEnabledResources(context);

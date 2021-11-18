@@ -1,15 +1,7 @@
+import { AmplifyCategories, AmplifySupportedService, CLIInputSchemaValidator, JSONUtilities, pathManager } from 'amplify-cli-core';
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import {
-  AmplifyCategories,
-  AmplifySupportedService,
-  JSONUtilities,
-  pathManager,
-  CLIInputSchemaValidator,
-  CategoryInputState,
-} from 'amplify-cli-core';
 import { AppSyncCLIInputs } from '../service-walkthrough-types/appsync-user-input-types';
-import _ from 'lodash';
 
 export class AppsyncApiInputState {
   #cliInputsFilePath: string; //cli-inputs.json (output) filepath
