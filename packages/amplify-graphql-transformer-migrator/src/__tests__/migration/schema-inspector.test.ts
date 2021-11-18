@@ -35,3 +35,33 @@ test('AppSync auth directives are not migrated', async () => {
     `);
   }
 });
+
+test('custom directives are not migrated', async () => {
+  const schema = `
+    type Restaurant @model {
+      blt: String! @sandwich
+    }
+  `;
+  const result = await detectPassthroughDirectives(schema);
+
+  expect(result).toMatchInlineSnapshot(`
+    Array [
+      "sandwich",
+    ]
+  `);
+});
+
+test('@versioned is not migrated', async () => {
+  const schema = `
+    type Restaurant @model @versioned {
+      blt: String!
+    }
+  `;
+  const result = await detectPassthroughDirectives(schema);
+
+  expect(result).toMatchInlineSnapshot(`
+    Array [
+      "versioned",
+    ]
+  `);
+});

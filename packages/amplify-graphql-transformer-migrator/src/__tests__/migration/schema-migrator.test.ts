@@ -2,7 +2,7 @@ import * as os from 'os';
 import * as path from 'path';
 import * as fs from 'fs-extra';
 import { attemptV2TransformerMigration, revertV2Migration } from '../../schema-migrator';
-import { prompter } from 'amplify-prompts';
+import { printer, prompter } from 'amplify-prompts';
 import { FeatureFlags, pathManager } from 'amplify-cli-core';
 
 jest.mock('amplify-prompts');
@@ -70,5 +70,69 @@ describe('attemptV2TransformerMigration', () => {
     expect(projectSchema1).toEqual(originalSchema1);
     expect(projectSchema2).toEqual(originalSchema2);
     expect(projectCliJson).toEqual(originalCliJson);
+  });
+
+  it('succeeds but warns when overwritten resolvers are detected', async () => {
+    const apiResourceDir = resourceDir(tempProjectDir);
+    const resolversDir = path.join(apiResourceDir, 'resolvers');
+    const overwrittenPath = path.join(resolversDir, 'Query.listTodos.postAuth.2.req.vtl');
+
+    fs.mkdirSync(resolversDir);
+    fs.writeFileSync(overwrittenPath, '{}');
+    await attemptV2TransformerMigration(apiResourceDir, apiName, envName);
+    expect(printer.info).toHaveBeenCalledWith(expect.stringMatching('You have overridden an Amplify generated resolver'));
+
+    const cliJsonFile = await fs.readJSON(cliJsonPath(tempProjectDir), { encoding: 'utf8' });
+    expect(cliJsonFile.features.graphqltransformer.useexperimentalpipelinedtransformer).toBe(true);
+    expect(cliJsonFile.features.graphqltransformer.transformerversion).toBe(2);
+    expect(cliJsonFile.features.graphqltransformer.suppressschemamigrationprompt).toBe(true);
+  });
+
+  it('succeeds but warns when custom roots/resolvers are detected', async () => {
+    const apiResourceDir = resourceDir(tempProjectDir);
+    const schemaPath = path.join(apiResourceDir, 'schema', 'schema.graphql');
+
+    fs.writeFileSync(schemaPath, 'type Query { listFoos: String }');
+    await attemptV2TransformerMigration(apiResourceDir, apiName, envName);
+    expect(printer.info).toHaveBeenCalledWith(
+      expect.stringMatching('You have defined custom Queries, Mutations, and/or Subscriptions in your GraphQL schema'),
+    );
+
+    const cliJsonFile = await fs.readJSON(cliJsonPath(tempProjectDir), { encoding: 'utf8' });
+    expect(cliJsonFile.features.graphqltransformer.useexperimentalpipelinedtransformer).toBe(true);
+    expect(cliJsonFile.features.graphqltransformer.transformerversion).toBe(2);
+    expect(cliJsonFile.features.graphqltransformer.suppressschemamigrationprompt).toBe(true);
+  });
+
+  it('succeeds but warns when improvePluralization FF is false', async () => {
+    const apiResourceDir = resourceDir(tempProjectDir);
+    let cliJsonFile = await fs.readJSON(cliJsonPath(tempProjectDir), { encoding: 'utf8' });
+
+    cliJsonFile.features.graphqltransformer.improvepluralization = false;
+    await fs.writeJSON(cliJsonPath(tempProjectDir), cliJsonFile);
+    await FeatureFlags.reloadValues();
+    await attemptV2TransformerMigration(apiResourceDir, apiName, envName);
+    expect(printer.info).toHaveBeenCalledWith(expect.stringMatching('You do not have the "improvePluralization" Feature Flag enabled'));
+
+    cliJsonFile = await fs.readJSON(cliJsonPath(tempProjectDir), { encoding: 'utf8' });
+    expect(cliJsonFile.features.graphqltransformer.useexperimentalpipelinedtransformer).toBe(true);
+    expect(cliJsonFile.features.graphqltransformer.transformerversion).toBe(2);
+    expect(cliJsonFile.features.graphqltransformer.suppressschemamigrationprompt).toBe(true);
+  });
+
+  it('fails if GQL API is configured to use SQL', async () => {
+    const apiResourceDir = resourceDir(tempProjectDir);
+    const teamProviderPath = path.join(tempProjectDir, 'amplify', 'team-provider-info.json');
+
+    await fs.writeJSON(teamProviderPath, {
+      [envName]: { categories: { api: { [apiName]: { rdsClusterIdentifier: 'foo' } } } },
+    });
+    await attemptV2TransformerMigration(apiResourceDir, apiName, envName);
+    expect(printer.info).toHaveBeenCalledWith(expect.stringMatching('GraphQL APIs using Aurora RDS cannot be migrated.'));
+
+    const cliJsonFile = await fs.readJSON(cliJsonPath(tempProjectDir), { encoding: 'utf8' });
+    expect(cliJsonFile.features.graphqltransformer.useexperimentalpipelinedtransformer).toBe(false);
+    expect(cliJsonFile.features.graphqltransformer.transformerversion).toBe(1);
+    expect(cliJsonFile.features.graphqltransformer.suppressschemamigrationprompt).toBe(false);
   });
 });
