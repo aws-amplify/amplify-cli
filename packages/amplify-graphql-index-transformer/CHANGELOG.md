@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.7.2-geo.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-index-transformer@0.7.1...@aws-amplify/graphql-index-transformer@0.7.2-geo.0) (2021-11-18)
+
+**Note:** Version bump only for package @aws-amplify/graphql-index-transformer
+
+
+
+
+
 ## [0.7.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-index-transformer@0.5.0...@aws-amplify/graphql-index-transformer@0.7.1) (2021-11-15)
 
 **Note:** Version bump only for package @aws-amplify/graphql-index-transformer

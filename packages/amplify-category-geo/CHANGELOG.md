@@ -3,6 +3,39 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.3.0-geo.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-geo@2.2.1...amplify-category-geo@2.3.0-geo.0) (2021-11-18)
+
+
+### Bug Fixes
+
+* **amplify-category-geo:** add preview banner ([e24abb1](https://github.com/aws-amplify/amplify-cli/commit/e24abb118be4431640232775af30bc7a809634af))
+* **amplify-category-geo:** disable pricing plan from advanced walkthrough ([9db7ad6](https://github.com/aws-amplify/amplify-cli/commit/9db7ad641d78e2ebacf87ae91da6df042137fb10))
+* **amplify-category-geo:** e2e test changes; remove dev preview banner ([25f640d](https://github.com/aws-amplify/amplify-cli/commit/25f640df59aa49854e07ee43f25844c074a4ed7f))
+* **amplify-category-geo:** enable unauth access for identity pool ([#7858](https://github.com/aws-amplify/amplify-cli/issues/7858))  ([7933633](https://github.com/aws-amplify/amplify-cli/commit/7933633375aced30551c8c3ac6e09ea1acbd2bb0))
+* **amplify-category-geo:** fix failing command unit test ([d35f287](https://github.com/aws-amplify/amplify-cli/commit/d35f2871dc333cfafb22cbfab81c8541c3592ab3))
+* **amplify-category-geo:** make resource names env specific ([344d977](https://github.com/aws-amplify/amplify-cli/commit/344d977146c0a4b01e0ec3a9f0359c26adba5499))
+* **amplify-category-geo:** minor changes to place index walkthrough ([ee8b00e](https://github.com/aws-amplify/amplify-cli/commit/ee8b00ec161881b7bb07db601254f8520d73def0))
+* **amplify-category-geo:** modify the pricing plan walkthrough ([b91a03f](https://github.com/aws-amplify/amplify-cli/commit/b91a03ffbb9425689fa984d7acee02541cd57abf))
+* **amplify-category-geo:** move setting default resource walktrough question to after developer confirms deletion of resource ([d1272c1](https://github.com/aws-amplify/amplify-cli/commit/d1272c108e64f44af01f7b16f2a25d7e3368ca38))
+* **amplify-category-geo:** nit - use search index term in place of place index ([20db266](https://github.com/aws-amplify/amplify-cli/commit/20db26621158c570f1277b18aea03e26611e15f3))
+* **amplify-category-geo:** nits and minor walkthrough updates ([07294ca](https://github.com/aws-amplify/amplify-cli/commit/07294ca9f2088813108b51bec0b616a01245ac00))
+* **amplify-category-geo:** pricing plan, data provider,  JS plugin name updates ([#8155](https://github.com/aws-amplify/amplify-cli/issues/8155)) ([38b962f](https://github.com/aws-amplify/amplify-cli/commit/38b962ff7dbeb97c792564ea6067417b9d7f7688))
+* **amplify-category-geo:** rebase with master and fix invokePlugin method calls ([e432ddd](https://github.com/aws-amplify/amplify-cli/commit/e432ddd5261533d66731dad2c5997b98ab9de505))
+* **amplify-category-geo:** remove YesOrNo enum and use booleans ([b2edef4](https://github.com/aws-amplify/amplify-cli/commit/b2edef42d73f346ff308b68e7c0da9bb2bf7691c))
+* **amplify-category-geo:** update dependency on cli-core ([b761889](https://github.com/aws-amplify/amplify-cli/commit/b761889f1a516b3016737e362258b8c9f5abc059))
+* **amplify-category-geo:** update dependency on cli-core ([f326d6c](https://github.com/aws-amplify/amplify-cli/commit/f326d6c43003f2aeafe1df05cad16856e6969b76))
+* **amplify-category-geo:** use amplify-prompts in place of inquirer for prompts ([#8182](https://github.com/aws-amplify/amplify-cli/issues/8182)) ([a1a14aa](https://github.com/aws-amplify/amplify-cli/commit/a1a14aa50ce9c9445978b72f8a2598b57bc6b061))
+* **amplify-codegen-geo:** update cli-core dependency ([a8e2b15](https://github.com/aws-amplify/amplify-cli/commit/a8e2b1571bed549ada2753736b2529574367b4b1))
+
+
+### Features
+
+* **amplify-fronted-ios, amplify-frontend-android:** add geo config ([#8237](https://github.com/aws-amplify/amplify-cli/issues/8237)) ([52ac164](https://github.com/aws-amplify/amplify-cli/commit/52ac1645bb157bde29e07344e36b5c3c38484b67))
+
+
+
+
+
 ## [2.2.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-geo@1.2.0...amplify-category-geo@2.2.1) (2021-11-15)
 
 **Note:** Version bump only for package amplify-category-geo

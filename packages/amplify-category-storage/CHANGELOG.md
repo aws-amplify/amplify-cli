@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.0.1-geo.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-storage@3.0.0...@aws-amplify/amplify-category-storage@3.0.1-geo.0) (2021-11-18)
+
+
+
+## 7.3.2 (2021-11-16)
+
+
+### Bug Fixes
+
+* storage migration for only-groups fails with missing storageAccess field ([4aac7c7](https://github.com/aws-amplify/amplify-cli/commit/4aac7c7531c646e0db99db3e23549d3980e012be))
+* unauthenticated flag set to flag, even if guest permissions assigned in headless ([6400ca4](https://github.com/aws-amplify/amplify-cli/commit/6400ca48b224d99f07c501561ca1df6e4f1823f5))
+
+
+
+
+
 # 3.0.0 (2021-11-15)
 
 

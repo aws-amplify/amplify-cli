@@ -1,6 +1,6 @@
 {
   "name": "amplify-headless-interface",
-  "version": "1.13.1",
+  "version": "1.13.2-geo.0",
   "description": "interfaces for amplify headless mode payloads",
   "main": "lib/index.js",
   "scripts": {

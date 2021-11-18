@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.3.1-geo.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-flutter@1.3.0...amplify-frontend-flutter@1.3.1-geo.0) (2021-11-18)
+
+**Note:** Version bump only for package amplify-frontend-flutter
+
+
+
+
+
 # [1.3.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-flutter@0.4.4...amplify-frontend-flutter@1.3.0) (2021-11-15)
 
 
