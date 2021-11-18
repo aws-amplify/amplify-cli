@@ -216,7 +216,7 @@ export class SearchableModelTransformer extends TransformerPluginBase {
   };
 
   transformSchema = (ctx: TransformerTransformSchemaStepContextProvider) => {
-    for(let name of this.searchableObjectNames) {
+    for (const name of this.searchableObjectNames) {
       const searchObject = ctx.output.getObject(name) as ObjectTypeDefinitionNode;
       this.generateSearchableInputs(ctx, searchObject);
     }
