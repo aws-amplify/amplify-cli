@@ -3,6 +3,21 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.3.5](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@2.3.4...@aws-amplify/amplify-category-auth@2.3.5) (2021-11-18)
+
+
+
+## 7.4.1 (2021-11-18)
+
+
+### Bug Fixes
+
+* auth cloudformation generation error leading to push failure ([#8941](https://github.com/aws-amplify/amplify-cli/issues/8941)) ([d166d23](https://github.com/aws-amplify/amplify-cli/commit/d166d23ddb201a8e519ce6463d1f48f8a8eddf88))
+
+
+
+
+
 ## [2.3.4](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@2.3.3...@aws-amplify/amplify-category-auth@2.3.4) (2021-11-18)
 
 
