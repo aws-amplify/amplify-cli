@@ -21,8 +21,7 @@ export interface AppSyncServiceResourceStack {
 }
 
 export type AppsyncApiStack = {
-  rootstack: CfnStack;
-  GraphQLAPI: CfnGraphQLApi;
+  GraphQLAPI?: CfnGraphQLApi;
   GraphQLAPIDefaultApiKey?: CfnApiKey;
   GraphQLAPITransformerSchema?: CfnGraphQLSchema;
   GraphQLAPINONEDS?: CfnDataSource;
@@ -67,25 +66,25 @@ export interface OpenSearchDirectiveStack {
 }
 
 export interface FunctionDirectiveStack {
-  lambdaDataSource: Record<string, CfnDataSource>;
-  lambdaDataSourceRole: Record<string, CfnRole>;
-  lambdaDataSourceServiceRoleDefaultPolicy: Record<string, CfnPolicy>;
+  lambdaDataSource?: Record<string, CfnDataSource>;
+  lambdaDataSourceRole?: Record<string, CfnRole>;
+  lambdaDataSourceServiceRoleDefaultPolicy?: Record<string, CfnPolicy>;
 }
 
 export interface PredictionsDirectiveStack {
-  RekognitionDataSource: CfnDataSource;
-  RekognitionDataSourceServiceRole: CfnRole;
-  TranslateDataSource: CfnDataSource;
-  translateTextAccess: CfnPolicy;
-  LambdaDataSource: CfnDataSource;
-  LambdaDataSourceServiceRole: CfnRole;
-  LambdaDataSourceServiceRoleDefaultPolicy: CfnPolicy;
-  TranslateDataSourceServiceRole: CfnRole;
-  predictionsLambdaIAMRole: CfnRole;
-  predictionsLambdaFunction: CfnFunction;
-  PredictionsLambdaAccess: CfnRole;
-  predictionsIAMRole: CfnRole;
-  PredictionsStorageAccess: CfnPolicy;
-  identifyTextAccess: CfnPolicy;
-  identifyLabelsAccess: CfnPolicy;
+  RekognitionDataSource?: CfnDataSource;
+  RekognitionDataSourceServiceRole?: CfnRole;
+  TranslateDataSource?: CfnDataSource;
+  translateTextAccess?: CfnPolicy;
+  LambdaDataSource?: CfnDataSource;
+  LambdaDataSourceServiceRole?: CfnRole;
+  LambdaDataSourceServiceRoleDefaultPolicy?: CfnPolicy;
+  TranslateDataSourceServiceRole?: CfnRole;
+  predictionsLambdaIAMRole?: CfnRole;
+  predictionsLambdaFunction?: CfnFunction;
+  PredictionsLambdaAccess?: CfnRole;
+  predictionsIAMRole?: CfnRole;
+  PredictionsStorageAccess?: CfnPolicy;
+  identifyTextAccess?: CfnPolicy;
+  identifyLabelsAccess?: CfnPolicy;
 }
