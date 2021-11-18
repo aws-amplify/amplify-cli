@@ -18,7 +18,7 @@ describe('amplify init', () => {
   });
 
   afterEach(async () => {
-    await deleteProject(projRoot);
+    await deleteProject(projRoot, undefined, true);
     deleteProjectDir(projRoot);
   });
 
@@ -32,11 +32,11 @@ describe('amplify init', () => {
     const modifiedCliJson = Object.assign(cliJSON, { overrides: { project: true } });
     JSONUtilities.writeJson(cliJsonPath, modifiedCliJson);
     // override new env
-    await amplifyOverrideRoot(projRoot, {});
+    await amplifyOverrideRoot(projRoot, { testingWithLatestCodebase: true });
     const srcOverrideFilePath = path.join(__dirname, '..', '..', '..', '..', '..', 'amplify-e2e-tests', 'overrides', 'override-root.ts');
     const destOverrideFilePath = path.join(projRoot, 'amplify', 'backend', 'awscloudformation', 'override.ts');
     fs.copyFileSync(srcOverrideFilePath, destOverrideFilePath);
-    await amplifyPushOverride(projRoot);
+    await amplifyPushOverride(projRoot, true);
     const newEnvMeta = getProjectMeta(projRoot).providers.awscloudformation;
     expect(newEnvMeta.AuthRoleName).toEqual('mockRole');
   });

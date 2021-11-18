@@ -40,7 +40,7 @@ describe('amplify auth migration', () => {
   afterEach(async () => {
     const metaFilePath = path.join(projRoot, 'amplify', '#current-cloud-backend', 'amplify-meta.json');
     if (fs.existsSync(metaFilePath)) {
-      await deleteProject(projRoot);
+      await deleteProject(projRoot, undefined, true);
     }
     deleteProjectDir(projRoot);
   });
@@ -149,7 +149,7 @@ describe('amplify auth migration', () => {
       category: 'auth',
       service: 'cognito',
     };
-    await updateAuthSignInSignOutUrl(projRoot, { testingWithLatestCodebase: true, overrides: overridesObj });
+    await updateAuthSignInSignOutUrl(projRoot, { ...settings, testingWithLatestCodebase: true, overrides: overridesObj });
   });
 
   it('updates existing auth resource', async () => {

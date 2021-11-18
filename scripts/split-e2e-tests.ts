@@ -250,6 +250,7 @@ function splitTests(
   workflowName: string,
   jobRootDir: string,
   concurrency: number = CONCURRENCY,
+  isMigration: boolean = false,
 ): CircleCIConfig {
   const output: CircleCIConfig = { ...config };
   const jobs = { ...config.jobs };
@@ -274,8 +275,12 @@ function splitTests(
     if (!isPkg) {
       (newJob.environment as any) = {
         ...newJob.environment,
-        AMPLIFY_DIR: '/home/circleci/repo/packages/amplify-cli/bin',
-        AMPLIFY_PATH: '/home/circleci/repo/packages/amplify-cli/bin/amplify',
+        ...(!isMigration
+          ? {
+              AMPLIFY_DIR: '/home/circleci/repo/packages/amplify-cli/bin',
+              AMPLIFY_PATH: '/home/circleci/repo/packages/amplify-cli/bin/amplify',
+            }
+          : {}),
       };
     }
     return { ...acc, [newJobName]: newJob };
@@ -475,6 +480,7 @@ function main(): void {
     'build_test_deploy',
     join(repoRoot, 'packages', 'amplify-migration-tests'),
     CONCURRENCY,
+    true,
   );
   const splitLatestMigrationTests = splitTests(
     splitV4MigrationTests,
@@ -482,6 +488,7 @@ function main(): void {
     'build_test_deploy',
     join(repoRoot, 'packages', 'amplify-migration-tests'),
     CONCURRENCY,
+    true,
   );
   saveConfig(splitLatestMigrationTests);
   verifyConfig();

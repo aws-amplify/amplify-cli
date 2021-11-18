@@ -11,7 +11,7 @@ import {
   deleteProjectDir,
   getDDBTable,
   getProjectMeta,
-  updateDDBWithTrigger,
+  updateDDBWithTriggerMigration,
   updateS3AddTriggerWithAuthOnlyReqMigration,
 } from 'amplify-e2e-core';
 import { initJSProjectWithProfile } from '../../migration-helpers';
@@ -23,7 +23,7 @@ describe('amplify add/update storage(DDB)', () => {
   });
 
   afterEach(async () => {
-    await deleteProject(projRoot);
+    await deleteProject(projRoot, undefined, true);
     deleteProjectDir(projRoot);
   });
 
@@ -35,7 +35,7 @@ describe('amplify add/update storage(DDB)', () => {
     await addDDBWithTrigger(projRoot, {});
     await amplifyPushAuth(projRoot);
     // update and push with codebase
-    await updateDDBWithTrigger(projRoot, { testingWithLatestCodebase: true });
+    await updateDDBWithTriggerMigration(projRoot, { testingWithLatestCodebase: true });
     await amplifyPushAuth(projRoot, true);
 
     const meta = getProjectMeta(projRoot);
@@ -95,7 +95,7 @@ describe('amplify add/update storage(S3)', () => {
   });
 
   afterEach(async () => {
-    await deleteProject(projRoot);
+    await deleteProject(projRoot, undefined, true);
     deleteProjectDir(projRoot);
   });
 
