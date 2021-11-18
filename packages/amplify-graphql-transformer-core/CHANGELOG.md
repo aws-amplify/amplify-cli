@@ -3,6 +3,32 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.14.0-gql-ext1.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-transformer-core@0.13.0...@aws-amplify/graphql-transformer-core@0.14.0-gql-ext1.0) (2021-11-18)
+
+
+### Bug Fixes
+
+* address comments ([cb8ed80](https://github.com/aws-amplify/amplify-cli/commit/cb8ed80ec22ed0fed8bfe29a9bf88b4637a8d5d3))
+* fixed imports ([d4971aa](https://github.com/aws-amplify/amplify-cli/commit/d4971aa12885733c0a082467139299ee95b1c688))
+* lgtm errors ([0c42f11](https://github.com/aws-amplify/amplify-cli/commit/0c42f1172abb62a0a8d2d225fad2cba861430ab0))
+* rebase with gql release branch ([d4ea92f](https://github.com/aws-amplify/amplify-cli/commit/d4ea92fa5789246866c0369a0ce040059ffb9bfc))
+
+
+### Features
+
+* add unit tests and e2e ([4b81d1b](https://github.com/aws-amplify/amplify-cli/commit/4b81d1b1abd6662908638bb102ce37411042766b))
+* added cli-inputs.json in api ([c776c4d](https://github.com/aws-amplify/amplify-cli/commit/c776c4d3064bd8b6a6f4da22a815525dd8e204c0))
+* added migration for gqlApi ([197fffc](https://github.com/aws-amplify/amplify-cli/commit/197fffc11835525bf9aa22ddd51a5e93cf00a5b7))
+* added overrides ([5df474c](https://github.com/aws-amplify/amplify-cli/commit/5df474cbec6686fc15b7f17858a15cb737b3a86a))
+* added overrides rev1 ([0e95444](https://github.com/aws-amplify/amplify-cli/commit/0e954444d547d919f33d770e4e427054abc2ae6d))
+* enable overrides for api ([0e5ffcc](https://github.com/aws-amplify/amplify-cli/commit/0e5ffccf7336f121653e7b639b12ead17bfcee35))
+* gql api migration working ([b05b4bc](https://github.com/aws-amplify/amplify-cli/commit/b05b4bc1720d0f5c8beb2e36a8292c0beb49e5d7))
+* overrides functionality for appsync api ([df63416](https://github.com/aws-amplify/amplify-cli/commit/df63416c676dfdf334e3d7ef5ef2308deeeccb0a))
+
+
+
+
+
 # [0.13.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-transformer-core@0.12.1...@aws-amplify/graphql-transformer-core@0.13.0) (2021-11-17)
 
 

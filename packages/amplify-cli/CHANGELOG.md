@@ -3,6 +3,27 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [7.5.0-gql-ext1.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@7.4.0...@aws-amplify/cli@7.5.0-gql-ext1.0) (2021-11-18)
+
+
+### Bug Fixes
+
+* api walkthough state done ([d215f4b](https://github.com/aws-amplify/amplify-cli/commit/d215f4b65ca45d87d8b4b67796cacc2a5961162f))
+* migration logic ([b451977](https://github.com/aws-amplify/amplify-cli/commit/b451977e9294e04151be1539fe6615cf3776dd82))
+* remove unused files ([113b960](https://github.com/aws-amplify/amplify-cli/commit/113b96051ea6402e60e65d906f41a4b2dc3fbb3f))
+
+
+### Features
+
+* add unit tests and e2e ([4b81d1b](https://github.com/aws-amplify/amplify-cli/commit/4b81d1b1abd6662908638bb102ce37411042766b))
+* added migration for gqlApi ([197fffc](https://github.com/aws-amplify/amplify-cli/commit/197fffc11835525bf9aa22ddd51a5e93cf00a5b7))
+* gql api migration working ([b05b4bc](https://github.com/aws-amplify/amplify-cli/commit/b05b4bc1720d0f5c8beb2e36a8292c0beb49e5d7))
+* overrides functionality for appsync api ([df63416](https://github.com/aws-amplify/amplify-cli/commit/df63416c676dfdf334e3d7ef5ef2308deeeccb0a))
+
+
+
+
+
 # [7.4.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@7.3.6...@aws-amplify/cli@7.4.0) (2021-11-18)
 
 

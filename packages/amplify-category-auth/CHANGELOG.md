@@ -3,6 +3,20 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.3.5-gql-ext1.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@2.3.4...@aws-amplify/amplify-category-auth@2.3.5-gql-ext1.0) (2021-11-18)
+
+
+### Bug Fixes
+
+* auth cloudformation generation error leading to push failure ([#8941](https://github.com/aws-amplify/amplify-cli/issues/8941)) ([e3c1f85](https://github.com/aws-amplify/amplify-cli/commit/e3c1f85f2b94151e91a91da4df9b9dfa0d5b39d5))
+* merged with extOverrides3 ([f192dff](https://github.com/aws-amplify/amplify-cli/commit/f192dff2cb816f084cece297ec90bb78dcef6177))
+* rebase with gql release branch ([d4ea92f](https://github.com/aws-amplify/amplify-cli/commit/d4ea92fa5789246866c0369a0ce040059ffb9bfc))
+* remove unused files ([113b960](https://github.com/aws-amplify/amplify-cli/commit/113b96051ea6402e60e65d906f41a4b2dc3fbb3f))
+
+
+
+
+
 ## [2.3.4](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@2.3.3...@aws-amplify/amplify-category-auth@2.3.4) (2021-11-18)
 
 

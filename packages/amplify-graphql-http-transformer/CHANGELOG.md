@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.8.0-gql-ext1.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-http-transformer@0.7.2...@aws-amplify/graphql-http-transformer@0.8.0-gql-ext1.0) (2021-11-18)
+
+
+### Bug Fixes
+
+* merged with extOverrides3 ([f192dff](https://github.com/aws-amplify/amplify-cli/commit/f192dff2cb816f084cece297ec90bb78dcef6177))
+* rebase with gql release branch ([d4ea92f](https://github.com/aws-amplify/amplify-cli/commit/d4ea92fa5789246866c0369a0ce040059ffb9bfc))
+* unit tests and removes commented code ([5be3994](https://github.com/aws-amplify/amplify-cli/commit/5be3994b6864f24a124687109fade765a4121479))
+* update gitignore to include test files ([2cc2497](https://github.com/aws-amplify/amplify-cli/commit/2cc2497025018c4370cdb42ed56b40fdb8c3015d))
+
+
+### Features
+
+* add unit tests and e2e ([4b81d1b](https://github.com/aws-amplify/amplify-cli/commit/4b81d1b1abd6662908638bb102ce37411042766b))
+
+
+
+
+
 ## [0.7.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-http-transformer@0.7.1...@aws-amplify/graphql-http-transformer@0.7.2) (2021-11-17)
 
 

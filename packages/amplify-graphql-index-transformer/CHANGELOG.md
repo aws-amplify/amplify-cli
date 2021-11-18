@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.8.0-gql-ext1.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-index-transformer@0.7.2...@aws-amplify/graphql-index-transformer@0.8.0-gql-ext1.0) (2021-11-18)
+
+
+### Features
+
+* overrides functionality for appsync api ([df63416](https://github.com/aws-amplify/amplify-cli/commit/df63416c676dfdf334e3d7ef5ef2308deeeccb0a))
+
+
+
+
+
 ## [0.7.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-index-transformer@0.7.1...@aws-amplify/graphql-index-transformer@0.7.2) (2021-11-17)
 
 
