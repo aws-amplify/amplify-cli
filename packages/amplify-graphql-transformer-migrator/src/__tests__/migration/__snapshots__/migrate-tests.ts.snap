@@ -174,6 +174,16 @@ exports[`Schema migration tests no amplify directives in schema 1`] = `
 "
 `;
 
+exports[`Schema migration tests passes built-in directives through 1`] = `
+"scalar UUID @specifiedBy(url: \\"https://tools.ietf.org/html/rfc4122\\")
+
+type Todo {
+  newField: String
+  oldField: String @deprecated(reason: \\"Use newField.\\")
+}
+"
+`;
+
 exports[`Schema migration tests renamed queries/mutations/subscriptions 1`] = `
 "type Entity @model(mutations: null, subscriptions: null, queries: {get: \\"getEntity\\"}) @auth(rules: [{allow: public}]) {
   id: ID!

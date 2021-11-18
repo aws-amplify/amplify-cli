@@ -21,6 +21,18 @@ describe('Schema migration tests', () => {
     migrateAndValidate(schema);
   });
 
+  it('passes built-in directives through', () => {
+    const schema = `
+      scalar UUID @specifiedBy(url: "https://tools.ietf.org/html/rfc4122")
+
+      type Todo {
+        newField: String
+        oldField: String @deprecated(reason: "Use newField.")
+      }`;
+
+    migrateAndValidate(schema);
+  });
+
   it('basic @model type', () => {
     const schema = `
       type Todo @model {
