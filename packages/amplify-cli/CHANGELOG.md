@@ -3,6 +3,21 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [7.4.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@7.3.6...@aws-amplify/cli@7.4.0) (2021-11-18)
+
+
+
+# 7.4.0 (2021-11-17)
+
+
+### Features
+
+* **cli:** add arbitary data and accountId to usageData ([#8754](https://github.com/aws-amplify/amplify-cli/issues/8754)) ([31f8dc6](https://github.com/aws-amplify/amplify-cli/commit/31f8dc6d417e8f702642acb2d13c05c92d22861c))
+
+
+
+
+
 ## [7.3.6](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@7.3.5...@aws-amplify/cli@7.3.6) (2021-11-17)
 
 
