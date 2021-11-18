@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.1.0-GqlExtensibility.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-api@1.1.0-GqlExtensibility.0...@aws-amplify/amplify-category-api@1.1.0-GqlExtensibility.1) (2021-11-18)
+
+
+### Bug Fixes
+
+* scoped package to public and minor fixes ([a7df3bd](https://github.com/aws-amplify/amplify-cli/commit/a7df3bd49d43fab99e8f207f445b3fd0e31ddb35))
+
+
+
+
+
 # 1.1.0-GqlExtensibility.0 (2021-11-18)
 
 

@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/cli",
-  "version": "7.4.0-GqlExtensibility.0",
+  "version": "7.4.0-GqlExtensibility.1",
   "description": "Amplify CLI",
   "repository": {
     "type": "git",
@@ -33,7 +33,7 @@
     "node": ">=12.0.0"
   },
   "dependencies": {
-    "@aws-amplify/amplify-category-api": "1.1.0-GqlExtensibility.0",
+    "@aws-amplify/amplify-category-api": "1.1.0-GqlExtensibility.1",
     "@aws-amplify/amplify-category-auth": "2.3.4-GqlExtensibility.0",
     "@aws-amplify/amplify-category-custom": "2.3.2-GqlExtensibility.0",
     "@aws-amplify/amplify-category-storage": "3.0.4-GqlExtensibility.0",
@@ -51,7 +51,7 @@
     "amplify-cli-logger": "1.1.0",
     "amplify-codegen": "^2.23.1",
     "amplify-console-hosting": "2.2.3-GqlExtensibility.0",
-    "amplify-container-hosting": "2.3.2-GqlExtensibility.0",
+    "amplify-container-hosting": "2.3.2-GqlExtensibility.1",
     "amplify-dotnet-function-runtime-provider": "1.6.4",
     "amplify-dotnet-function-template-provider": "2.2.3-GqlExtensibility.0",
     "amplify-frontend-android": "3.3.0",
