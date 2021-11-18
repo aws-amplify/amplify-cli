@@ -124,7 +124,7 @@ describe('create artifacts', () => {
 
   it('creates the transform.conf.json file', async () => {
     await cfnApiArtifactHandler.createArtifacts(addRequestStub);
-    expect(writeTransformerConfiguration_mock.mock.calls.length).toBe(1);
+    expect(writeTransformerConfiguration_mock.mock.calls.length).toBe(2);
     expect(writeTransformerConfiguration_mock.mock.calls[0]).toMatchSnapshot();
   });
 
