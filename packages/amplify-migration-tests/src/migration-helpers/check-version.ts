@@ -15,7 +15,7 @@ export function versionCheck(cwd: string, testingWithLatestCodebase = false, ver
 }
 
 /**
- * This list is used to check migration tests with the following changes. (excludes layer migrationi tests)
+ * This list is used to check migration tests with the following changes. (excludes layer migration tests)
  *
  * api add/update flow: https://github.com/aws-amplify/amplify-cli/pull/8287
  *

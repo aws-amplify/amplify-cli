@@ -57,7 +57,6 @@ describe('api migration update test', () => {
     updateApiSchema(projRoot, projectName, initialSchema);
     await amplifyPush(projRoot);
 
-    // toggle to latest version
     // update api and push with the CLI to be released (the codebase)
     updateApiSchema(projRoot, projectName, nextSchema);
     await amplifyPushUpdate(projRoot, undefined, true);

@@ -69,7 +69,6 @@ describe('amplify function migration', () => {
     expect(functionName).toBeDefined();
     expect(region).toBeDefined();
 
-    // toggle to latest
     await addApiWithoutSchema(projRoot, { testingWithLatestCodebase: true });
     updateApiSchema(projRoot, appName, 'simple_model.graphql');
     await updateFunction(
@@ -121,7 +120,6 @@ describe('amplify function migration', () => {
       runtimes: [runtime],
     };
 
-    // toggle to latest
     await addLayer(projRoot, layerSettings, true);
     await updateFunction(
       projRoot,
