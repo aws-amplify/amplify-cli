@@ -1,6 +1,6 @@
 {
   "name": "amplify-provider-awscloudformation",
-  "version": "5.4.0",
+  "version": "5.4.1",
   "description": "AWS CloudFormation Provider",
   "repository": {
     "type": "git",
