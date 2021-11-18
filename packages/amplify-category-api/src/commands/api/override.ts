@@ -50,7 +50,13 @@ export const run = async (context: $TSContext) => {
 
   // Make sure to migrate first
   if (service === AmplifySupportedService.APPSYNC) {
-    if (await checkAppsyncApiResourceMigration(context, selectedResourceName, false)) {
+    /**
+     * Below steps checks for TransformerV1 app and updates the FF { useexperimentalpipelinedtransformer , transformerversion}
+     */
+    const transformerVersion = await context.amplify.invokePluginMethod(context, 'awscloudformation', undefined, 'getTransformerVersion', [
+      context,
+    ]);
+    if (transformerVersion === 2 && (await checkAppsyncApiResourceMigration(context, selectedResourceName, false))) {
       await context.amplify.invokePluginMethod(context, 'awscloudformation', undefined, 'compileSchema', [context, { forceCompile: true }]);
       await generateOverrideSkeleton(context, srcPath, destPath);
     } else {
