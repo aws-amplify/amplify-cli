@@ -49,6 +49,14 @@ export async function attemptV2TransformerMigration(resourceDir: string, apiName
     throw Error(`Unidentified authorization mode for API found: ${defaultAuth}`);
   }
 
+  if (schemaHasComments(fullSchema)) {
+    printer.warn(
+      `Warning: The migration will not carry over any existing comments in your GraphQL schema, you'll be able to manually copy them in from the back-ups stored at ${backupLocation(
+        resourceDir,
+      )}.`,
+    );
+  }
+
   try {
     await backupSchemas(resourceDir);
     await runMigration(schemaDocs, authMode);
@@ -152,6 +160,10 @@ async function getSchemaDocs(resourceDir: string): Promise<SchemaDocument[]> {
     return await Promise.all(schemaFiles.map(async fileName => ({ schema: await fs.readFile(fileName, 'utf8'), filePath: fileName })));
   }
   return [];
+}
+
+function schemaHasComments(fullSchema: string): boolean {
+  return /#/.test(fullSchema);
 }
 
 // returns true if the project can be auto-migrated to v2, or a message explaining why the project cannot be auto-migrated
