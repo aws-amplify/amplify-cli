@@ -55,6 +55,7 @@ const nonKeywordTypes = ['Int', 'Float', 'Boolean', 'AWSTimestamp', 'AWSDate', '
 const STACK_NAME = 'SearchableStack';
 export class SearchableModelTransformer extends TransformerPluginBase {
   searchableObjectTypeDefinitions: { node: ObjectTypeDefinitionNode; fieldName: string }[];
+  searchableObjectNames: string[];
   constructor() {
     super(
       'amplify-searchable-transformer',
@@ -66,6 +67,7 @@ export class SearchableModelTransformer extends TransformerPluginBase {
       `,
     );
     this.searchableObjectTypeDefinitions = [];
+    this.searchableObjectNames = [];
   }
 
   generateResolvers = (context: TransformerContextProvider): void => {
@@ -189,7 +191,7 @@ export class SearchableModelTransformer extends TransformerPluginBase {
     });
 
     if (shouldMakeSearch) {
-      this.generateSearchableInputs(ctx, definition);
+      this.searchableObjectNames.push(definition.name.value);
       this.generateSearchableXConnectionType(ctx, definition);
       this.generateSearchableAggregateTypes(ctx);
       const directives = [];
@@ -214,6 +216,10 @@ export class SearchableModelTransformer extends TransformerPluginBase {
   };
 
   transformSchema = (ctx: TransformerTransformSchemaStepContextProvider) => {
+    for (const name of this.searchableObjectNames) {
+      const searchObject = ctx.output.getObject(name) as ObjectTypeDefinitionNode;
+      this.generateSearchableInputs(ctx, searchObject);
+    }
     // add api key to aggregate types if sandbox mode is enabled
     if (ctx.sandboxModeEnabled && ctx.authConfig.defaultAuthentication.authenticationType !== 'API_KEY') {
       for (let aggType of AGGREGATE_TYPES) {

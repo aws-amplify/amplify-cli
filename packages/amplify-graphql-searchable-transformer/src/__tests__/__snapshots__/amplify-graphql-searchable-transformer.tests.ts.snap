@@ -16,112 +16,6 @@ enum EmploymentType {
   HOURLY
 }
 
-input SearchableStringFilterInput {
-  ne: String
-  gt: String
-  lt: String
-  gte: String
-  lte: String
-  eq: String
-  match: String
-  matchPhrase: String
-  matchPhrasePrefix: String
-  multiMatch: String
-  exists: Boolean
-  wildcard: String
-  regexp: String
-  range: [String]
-}
-
-input SearchableIntFilterInput {
-  ne: Int
-  gt: Int
-  lt: Int
-  gte: Int
-  lte: Int
-  eq: Int
-  range: [Int]
-}
-
-input SearchableFloatFilterInput {
-  ne: Float
-  gt: Float
-  lt: Float
-  gte: Float
-  lte: Float
-  eq: Float
-  range: [Float]
-}
-
-input SearchableBooleanFilterInput {
-  eq: Boolean
-  ne: Boolean
-}
-
-input SearchableIDFilterInput {
-  ne: ID
-  gt: ID
-  lt: ID
-  gte: ID
-  lte: ID
-  eq: ID
-  match: ID
-  matchPhrase: ID
-  matchPhrasePrefix: ID
-  multiMatch: ID
-  exists: Boolean
-  wildcard: ID
-  regexp: ID
-  range: [ID]
-}
-
-input SearchableEmployeeFilterInput {
-  id: SearchableIDFilterInput
-  firstName: SearchableStringFilterInput
-  lastName: SearchableStringFilterInput
-  type: SearchableStringFilterInput
-  and: [SearchableEmployeeFilterInput]
-  or: [SearchableEmployeeFilterInput]
-  not: SearchableEmployeeFilterInput
-}
-
-enum SearchableSortDirection {
-  asc
-  desc
-}
-
-enum SearchableEmployeeSortableFields {
-  id
-  firstName
-  lastName
-}
-
-input SearchableEmployeeSortInput {
-  field: SearchableEmployeeSortableFields
-  direction: SearchableSortDirection
-}
-
-enum SearchableAggregateType {
-  terms
-  avg
-  min
-  max
-  sum
-}
-
-enum SearchableEmployeeAggregateField {
-  id
-  firstName
-  lastName
-  type
-}
-
-input SearchableEmployeeAggregationInput {
-  name: String!
-  type: SearchableAggregateType!
-  field: SearchableEmployeeAggregateField!
-}
-
 type SearchableEmployeeConnection {
   items: [Employee!]!
   nextToken: String
@@ -305,18 +199,6 @@ type Subscription {
   onDeleteEmployee: Employee @aws_subscribe(mutations: [\\"deleteEmployee\\"])
 }
 
-"
-`;
-
-exports[`Test SearchableModelTransformer validation happy case 1`] = `
-"
-type Post {
-  id: ID!
-  title: String!
-  createdAt: String
-  updatedAt: String
-}
-
 input SearchableStringFilterInput {
   ne: String
   gt: String
@@ -376,14 +258,16 @@ input SearchableIDFilterInput {
   range: [ID]
 }
 
-input SearchablePostFilterInput {
+input SearchableEmployeeFilterInput {
   id: SearchableIDFilterInput
-  title: SearchableStringFilterInput
+  firstName: SearchableStringFilterInput
+  lastName: SearchableStringFilterInput
   createdAt: SearchableStringFilterInput
   updatedAt: SearchableStringFilterInput
-  and: [SearchablePostFilterInput]
-  or: [SearchablePostFilterInput]
-  not: SearchablePostFilterInput
+  type: SearchableStringFilterInput
+  and: [SearchableEmployeeFilterInput]
+  or: [SearchableEmployeeFilterInput]
+  not: SearchableEmployeeFilterInput
 }
 
 enum SearchableSortDirection {
@@ -391,15 +275,16 @@ enum SearchableSortDirection {
   desc
 }
 
-enum SearchablePostSortableFields {
+enum SearchableEmployeeSortableFields {
   id
-  title
+  firstName
+  lastName
   createdAt
   updatedAt
 }
 
-input SearchablePostSortInput {
-  field: SearchablePostSortableFields
+input SearchableEmployeeSortInput {
+  field: SearchableEmployeeSortableFields
   direction: SearchableSortDirection
 }
 
@@ -411,17 +296,31 @@ enum SearchableAggregateType {
   sum
 }
 
-enum SearchablePostAggregateField {
+enum SearchableEmployeeAggregateField {
   id
-  title
+  firstName
+  lastName
+  type
   createdAt
   updatedAt
 }
 
-input SearchablePostAggregationInput {
+input SearchableEmployeeAggregationInput {
   name: String!
   type: SearchableAggregateType!
-  field: SearchablePostAggregateField!
+  field: SearchableEmployeeAggregateField!
+}
+
+"
+`;
+
+exports[`Test SearchableModelTransformer validation happy case 1`] = `
+"
+type Post {
+  id: ID!
+  title: String!
+  createdAt: String
+  updatedAt: String
 }
 
 type SearchablePostConnection {
@@ -600,6 +499,113 @@ type Subscription {
   onCreatePost: Post @aws_subscribe(mutations: [\\"createPost\\"])
   onUpdatePost: Post @aws_subscribe(mutations: [\\"updatePost\\"])
   onDeletePost: Post @aws_subscribe(mutations: [\\"deletePost\\"])
+}
+
+input SearchableStringFilterInput {
+  ne: String
+  gt: String
+  lt: String
+  gte: String
+  lte: String
+  eq: String
+  match: String
+  matchPhrase: String
+  matchPhrasePrefix: String
+  multiMatch: String
+  exists: Boolean
+  wildcard: String
+  regexp: String
+  range: [String]
+}
+
+input SearchableIntFilterInput {
+  ne: Int
+  gt: Int
+  lt: Int
+  gte: Int
+  lte: Int
+  eq: Int
+  range: [Int]
+}
+
+input SearchableFloatFilterInput {
+  ne: Float
+  gt: Float
+  lt: Float
+  gte: Float
+  lte: Float
+  eq: Float
+  range: [Float]
+}
+
+input SearchableBooleanFilterInput {
+  eq: Boolean
+  ne: Boolean
+}
+
+input SearchableIDFilterInput {
+  ne: ID
+  gt: ID
+  lt: ID
+  gte: ID
+  lte: ID
+  eq: ID
+  match: ID
+  matchPhrase: ID
+  matchPhrasePrefix: ID
+  multiMatch: ID
+  exists: Boolean
+  wildcard: ID
+  regexp: ID
+  range: [ID]
+}
+
+input SearchablePostFilterInput {
+  id: SearchableIDFilterInput
+  title: SearchableStringFilterInput
+  createdAt: SearchableStringFilterInput
+  updatedAt: SearchableStringFilterInput
+  and: [SearchablePostFilterInput]
+  or: [SearchablePostFilterInput]
+  not: SearchablePostFilterInput
+}
+
+enum SearchableSortDirection {
+  asc
+  desc
+}
+
+enum SearchablePostSortableFields {
+  id
+  title
+  createdAt
+  updatedAt
+}
+
+input SearchablePostSortInput {
+  field: SearchablePostSortableFields
+  direction: SearchableSortDirection
+}
+
+enum SearchableAggregateType {
+  terms
+  avg
+  min
+  max
+  sum
+}
+
+enum SearchablePostAggregateField {
+  id
+  title
+  createdAt
+  updatedAt
+}
+
+input SearchablePostAggregationInput {
+  name: String!
+  type: SearchableAggregateType!
+  field: SearchablePostAggregateField!
 }
 
 "
@@ -1231,113 +1237,6 @@ type User {
   updatedAt: AWSDateTime!
 }
 
-input SearchableStringFilterInput {
-  ne: String
-  gt: String
-  lt: String
-  gte: String
-  lte: String
-  eq: String
-  match: String
-  matchPhrase: String
-  matchPhrasePrefix: String
-  multiMatch: String
-  exists: Boolean
-  wildcard: String
-  regexp: String
-  range: [String]
-}
-
-input SearchableIntFilterInput {
-  ne: Int
-  gt: Int
-  lt: Int
-  gte: Int
-  lte: Int
-  eq: Int
-  range: [Int]
-}
-
-input SearchableFloatFilterInput {
-  ne: Float
-  gt: Float
-  lt: Float
-  gte: Float
-  lte: Float
-  eq: Float
-  range: [Float]
-}
-
-input SearchableBooleanFilterInput {
-  eq: Boolean
-  ne: Boolean
-}
-
-input SearchableIDFilterInput {
-  ne: ID
-  gt: ID
-  lt: ID
-  gte: ID
-  lte: ID
-  eq: ID
-  match: ID
-  matchPhrase: ID
-  matchPhrasePrefix: ID
-  multiMatch: ID
-  exists: Boolean
-  wildcard: ID
-  regexp: ID
-  range: [ID]
-}
-
-input SearchablePostFilterInput {
-  id: SearchableIDFilterInput
-  title: SearchableStringFilterInput
-  createdAt: SearchableStringFilterInput
-  updatedAt: SearchableStringFilterInput
-  and: [SearchablePostFilterInput]
-  or: [SearchablePostFilterInput]
-  not: SearchablePostFilterInput
-}
-
-enum SearchableSortDirection {
-  asc
-  desc
-}
-
-enum SearchablePostSortableFields {
-  id
-  title
-  createdAt
-  updatedAt
-}
-
-input SearchablePostSortInput {
-  field: SearchablePostSortableFields
-  direction: SearchableSortDirection
-}
-
-enum SearchableAggregateType {
-  terms
-  avg
-  min
-  max
-  sum
-}
-
-enum SearchablePostAggregateField {
-  id
-  title
-  createdAt
-  updatedAt
-}
-
-input SearchablePostAggregationInput {
-  name: String!
-  type: SearchableAggregateType!
-  field: SearchablePostAggregateField!
-}
-
 type SearchablePostConnection {
   items: [Post!]!
   nextToken: String
@@ -1372,35 +1271,6 @@ type Query {
   listPosts(filter: ModelPostFilterInput, limit: Int, nextToken: String): ModelPostConnection
   getUser(id: ID!): User
   listUsers(filter: ModelUserFilterInput, limit: Int, nextToken: String): ModelUserConnection
-}
-
-input SearchableUserFilterInput {
-  id: SearchableIDFilterInput
-  name: SearchableStringFilterInput
-  and: [SearchableUserFilterInput]
-  or: [SearchableUserFilterInput]
-  not: SearchableUserFilterInput
-}
-
-enum SearchableUserSortableFields {
-  id
-  name
-}
-
-input SearchableUserSortInput {
-  field: SearchableUserSortableFields
-  direction: SearchableSortDirection
-}
-
-enum SearchableUserAggregateField {
-  id
-  name
-}
-
-input SearchableUserAggregationInput {
-  name: String!
-  type: SearchableAggregateType!
-  field: SearchableUserAggregateField!
 }
 
 type SearchableUserConnection {
@@ -1595,18 +1465,6 @@ input DeleteUserInput {
   id: ID!
 }
 
-"
-`;
-
-exports[`Test SearchableModelTransformer with only create mutations 1`] = `
-"
-type Post {
-  id: ID!
-  title: String!
-  createdAt: String
-  updatedAt: String
-}
-
 input SearchableStringFilterInput {
   ne: String
   gt: String
@@ -1712,6 +1570,53 @@ input SearchablePostAggregationInput {
   name: String!
   type: SearchableAggregateType!
   field: SearchablePostAggregateField!
+}
+
+input SearchableUserFilterInput {
+  id: SearchableIDFilterInput
+  name: SearchableStringFilterInput
+  createdAt: SearchableStringFilterInput
+  updatedAt: SearchableStringFilterInput
+  and: [SearchableUserFilterInput]
+  or: [SearchableUserFilterInput]
+  not: SearchableUserFilterInput
+}
+
+enum SearchableUserSortableFields {
+  id
+  name
+  createdAt
+  updatedAt
+}
+
+input SearchableUserSortInput {
+  field: SearchableUserSortableFields
+  direction: SearchableSortDirection
+}
+
+enum SearchableUserAggregateField {
+  id
+  name
+  createdAt
+  updatedAt
+}
+
+input SearchableUserAggregationInput {
+  name: String!
+  type: SearchableAggregateType!
+  field: SearchableUserAggregateField!
+}
+
+"
+`;
+
+exports[`Test SearchableModelTransformer with only create mutations 1`] = `
+"
+type Post {
+  id: ID!
+  title: String!
+  createdAt: String
+  updatedAt: String
 }
 
 type SearchablePostConnection {
@@ -1877,18 +1782,6 @@ type Subscription {
   onCreatePost: Post @aws_subscribe(mutations: [\\"customCreatePost\\"])
 }
 
-"
-`;
-
-exports[`Test SearchableModelTransformer with query overrides 1`] = `
-"
-type Post {
-  id: ID!
-  title: String!
-  createdAt: String
-  updatedAt: String
-}
-
 input SearchableStringFilterInput {
   ne: String
   gt: String
@@ -1994,6 +1887,18 @@ input SearchablePostAggregationInput {
   name: String!
   type: SearchableAggregateType!
   field: SearchablePostAggregateField!
+}
+
+"
+`;
+
+exports[`Test SearchableModelTransformer with query overrides 1`] = `
+"
+type Post {
+  id: ID!
+  title: String!
+  createdAt: String
+  updatedAt: String
 }
 
 type SearchablePostConnection {
@@ -2174,18 +2079,6 @@ type Subscription {
   onDeletePost: Post @aws_subscribe(mutations: [\\"deletePost\\"])
 }
 
-"
-`;
-
-exports[`Test SearchableModelTransformer with sort fields 1`] = `
-"
-type Post {
-  id: ID!
-  title: String!
-  createdAt: String
-  updatedAt: String
-}
-
 input SearchableStringFilterInput {
   ne: String
   gt: String
@@ -2291,6 +2184,18 @@ input SearchablePostAggregationInput {
   name: String!
   type: SearchableAggregateType!
   field: SearchablePostAggregateField!
+}
+
+"
+`;
+
+exports[`Test SearchableModelTransformer with sort fields 1`] = `
+"
+type Post {
+  id: ID!
+  title: String!
+  createdAt: String
+  updatedAt: String
 }
 
 type SearchablePostConnection {
@@ -2469,6 +2374,113 @@ type Subscription {
   onCreatePost: Post @aws_subscribe(mutations: [\\"createPost\\"])
   onUpdatePost: Post @aws_subscribe(mutations: [\\"updatePost\\"])
   onDeletePost: Post @aws_subscribe(mutations: [\\"deletePost\\"])
+}
+
+input SearchableStringFilterInput {
+  ne: String
+  gt: String
+  lt: String
+  gte: String
+  lte: String
+  eq: String
+  match: String
+  matchPhrase: String
+  matchPhrasePrefix: String
+  multiMatch: String
+  exists: Boolean
+  wildcard: String
+  regexp: String
+  range: [String]
+}
+
+input SearchableIntFilterInput {
+  ne: Int
+  gt: Int
+  lt: Int
+  gte: Int
+  lte: Int
+  eq: Int
+  range: [Int]
+}
+
+input SearchableFloatFilterInput {
+  ne: Float
+  gt: Float
+  lt: Float
+  gte: Float
+  lte: Float
+  eq: Float
+  range: [Float]
+}
+
+input SearchableBooleanFilterInput {
+  eq: Boolean
+  ne: Boolean
+}
+
+input SearchableIDFilterInput {
+  ne: ID
+  gt: ID
+  lt: ID
+  gte: ID
+  lte: ID
+  eq: ID
+  match: ID
+  matchPhrase: ID
+  matchPhrasePrefix: ID
+  multiMatch: ID
+  exists: Boolean
+  wildcard: ID
+  regexp: ID
+  range: [ID]
+}
+
+input SearchablePostFilterInput {
+  id: SearchableIDFilterInput
+  title: SearchableStringFilterInput
+  createdAt: SearchableStringFilterInput
+  updatedAt: SearchableStringFilterInput
+  and: [SearchablePostFilterInput]
+  or: [SearchablePostFilterInput]
+  not: SearchablePostFilterInput
+}
+
+enum SearchableSortDirection {
+  asc
+  desc
+}
+
+enum SearchablePostSortableFields {
+  id
+  title
+  createdAt
+  updatedAt
+}
+
+input SearchablePostSortInput {
+  field: SearchablePostSortableFields
+  direction: SearchableSortDirection
+}
+
+enum SearchableAggregateType {
+  terms
+  avg
+  min
+  max
+  sum
+}
+
+enum SearchablePostAggregateField {
+  id
+  title
+  createdAt
+  updatedAt
+}
+
+input SearchablePostAggregationInput {
+  name: String!
+  type: SearchableAggregateType!
+  field: SearchablePostAggregateField!
 }
 
 "
