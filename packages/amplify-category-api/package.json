@@ -17,6 +17,9 @@
     "test": "jest",
     "generateSchemas": "ts-node ./scripts/generateApiSchemas.ts"
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "dependencies": {
     "@aws-amplify/graphql-transformer-migrator": "1.2.2",
     "@aws-cdk/assets": "~1.124.0",
