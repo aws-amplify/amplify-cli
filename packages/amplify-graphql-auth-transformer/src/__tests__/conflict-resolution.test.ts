@@ -33,7 +33,7 @@ test('test single auth model is enabled with conflict resolution', () => {
   expect(out.schema).toContain(
     `syncPosts(filter: ModelPostFilterInput, limit: Int, nextToken: String, lastSync: AWSTimestamp): ModelPostConnection`,
   );
-  expect(out.pipelineFunctions['Query.syncPosts.auth.1.req.vtl']).toMatchSnapshot();
+  expect(out.resolvers['Query.syncPosts.auth.1.req.vtl']).toMatchSnapshot();
 });
 
 test('test multi auth model with conflict resolution', () => {
@@ -66,5 +66,5 @@ test('test multi auth model with conflict resolution', () => {
   expect(out.schema).toContain(
     `syncPosts(filter: ModelPostFilterInput, limit: Int, nextToken: String, lastSync: AWSTimestamp): ModelPostConnection @aws_iam @aws_cognito_user_pools`,
   );
-  expect(out.pipelineFunctions['Query.syncPosts.auth.1.req.vtl']).toMatchSnapshot();
+  expect(out.resolvers['Query.syncPosts.auth.1.req.vtl']).toMatchSnapshot();
 });

@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.6.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-function-transformer@0.6.1...@aws-amplify/graphql-function-transformer@0.6.2) (2021-11-17)
+
+
+### Bug Fixes
+
+* create pipeline resolvers for [@http](https://github.com/http) v2 ([#8817](https://github.com/aws-amplify/amplify-cli/issues/8817)) ([722a2fc](https://github.com/aws-amplify/amplify-cli/commit/722a2fc83e8747e44b01f6eaa9eaca262a9febf9))
+
+
+
+
+
 ## [0.6.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-function-transformer@0.4.6...@aws-amplify/graphql-function-transformer@0.6.1) (2021-11-15)
 
 **Note:** Version bump only for package @aws-amplify/graphql-function-transformer

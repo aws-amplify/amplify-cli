@@ -171,7 +171,7 @@ test('valid schema', () => {
   validateModelSchema(schema);
 
   expect(out.schema).toMatchSnapshot();
-  expect(out.pipelineFunctions).toMatchSnapshot();
+  expect(out.resolvers).toMatchSnapshot();
 });
 
 test('join table inherits auth from first table', () => {
@@ -190,29 +190,23 @@ test('join table inherits auth from first table', () => {
   const schema = parse(out.schema);
   validateModelSchema(schema);
 
-  expect(out.pipelineFunctions['Query.getFooBar.auth.1.req.vtl']).toEqual(out.pipelineFunctions['Query.getFoo.auth.1.req.vtl']);
-  expect(out.pipelineFunctions['Query.getFooBar.postAuth.1.req.vtl']).toEqual(out.pipelineFunctions['Query.getFoo.postAuth.1.req.vtl']);
-  expect(out.pipelineFunctions['Query.getFooBar.res.vtl']).toEqual(out.pipelineFunctions['Query.getFoo.res.vtl']);
-  expect(out.pipelineFunctions['Query.listFooBars.auth.1.req.vtl']).toEqual(out.pipelineFunctions['Query.listFoos.auth.1.req.vtl']);
-  expect(out.pipelineFunctions['Query.listFooBars.postAuth.1.req.vtl']).toEqual(out.pipelineFunctions['Query.listFoos.postAuth.1.req.vtl']);
-  expect(out.pipelineFunctions['Mutation.createFooBar.auth.1.req.vtl']).toEqual(out.pipelineFunctions['Mutation.createFoo.auth.1.req.vtl']);
-  expect(out.pipelineFunctions['Mutation.createFooBar.postAuth.1.req.vtl']).toEqual(
-    out.pipelineFunctions['Mutation.createFoo.postAuth.1.req.vtl'],
-  );
-  expect(out.pipelineFunctions['Mutation.deleteFooBar.auth.1.req.vtl']).toEqual(out.pipelineFunctions['Mutation.deleteFoo.auth.1.req.vtl']);
-  expect(out.pipelineFunctions['Mutation.deleteFooBar.postAuth.1.req.vtl']).toEqual(
-    out.pipelineFunctions['Mutation.deleteFoo.postAuth.1.req.vtl'],
-  );
-  expect(out.pipelineFunctions['Mutation.deleteFooBar.auth.1.res.vtl']).toEqual(out.pipelineFunctions['Mutation.deleteFoo.auth.1.res.vtl']);
-  expect(out.pipelineFunctions['Mutation.deleteFooBar.req.vtl']).toEqual(out.pipelineFunctions['Mutation.deleteFoo.req.vtl']);
-  expect(out.pipelineFunctions['Mutation.deleteFooBar.res.vtl']).toEqual(out.pipelineFunctions['Mutation.deleteFoo.res.vtl']);
-  expect(out.pipelineFunctions['Mutation.updateFooBar.auth.1.req.vtl']).toEqual(out.pipelineFunctions['Mutation.updateFoo.auth.1.req.vtl']);
-  expect(out.pipelineFunctions['Mutation.updateFooBar.postAuth.1.req.vtl']).toEqual(
-    out.pipelineFunctions['Mutation.updateFoo.postAuth.1.req.vtl'],
-  );
-  expect(out.pipelineFunctions['Mutation.updateFooBar.auth.1.res.vtl']).toEqual(out.pipelineFunctions['Mutation.updateFoo.auth.1.res.vtl']);
-  expect(out.pipelineFunctions['Mutation.updateFooBar.req.vtl']).toEqual(out.pipelineFunctions['Mutation.updateFoo.req.vtl']);
-  expect(out.pipelineFunctions['Mutation.updateFooBar.res.vtl']).toEqual(out.pipelineFunctions['Mutation.updateFoo.res.vtl']);
+  expect(out.resolvers['Query.getFooBar.auth.1.req.vtl']).toEqual(out.resolvers['Query.getFoo.auth.1.req.vtl']);
+  expect(out.resolvers['Query.getFooBar.postAuth.1.req.vtl']).toEqual(out.resolvers['Query.getFoo.postAuth.1.req.vtl']);
+  expect(out.resolvers['Query.getFooBar.res.vtl']).toEqual(out.resolvers['Query.getFoo.res.vtl']);
+  expect(out.resolvers['Query.listFooBars.auth.1.req.vtl']).toEqual(out.resolvers['Query.listFoos.auth.1.req.vtl']);
+  expect(out.resolvers['Query.listFooBars.postAuth.1.req.vtl']).toEqual(out.resolvers['Query.listFoos.postAuth.1.req.vtl']);
+  expect(out.resolvers['Mutation.createFooBar.auth.1.req.vtl']).toEqual(out.resolvers['Mutation.createFoo.auth.1.req.vtl']);
+  expect(out.resolvers['Mutation.createFooBar.postAuth.1.req.vtl']).toEqual(out.resolvers['Mutation.createFoo.postAuth.1.req.vtl']);
+  expect(out.resolvers['Mutation.deleteFooBar.auth.1.req.vtl']).toEqual(out.resolvers['Mutation.deleteFoo.auth.1.req.vtl']);
+  expect(out.resolvers['Mutation.deleteFooBar.postAuth.1.req.vtl']).toEqual(out.resolvers['Mutation.deleteFoo.postAuth.1.req.vtl']);
+  expect(out.resolvers['Mutation.deleteFooBar.auth.1.res.vtl']).toEqual(out.resolvers['Mutation.deleteFoo.auth.1.res.vtl']);
+  expect(out.resolvers['Mutation.deleteFooBar.req.vtl']).toEqual(out.resolvers['Mutation.deleteFoo.req.vtl']);
+  expect(out.resolvers['Mutation.deleteFooBar.res.vtl']).toEqual(out.resolvers['Mutation.deleteFoo.res.vtl']);
+  expect(out.resolvers['Mutation.updateFooBar.auth.1.req.vtl']).toEqual(out.resolvers['Mutation.updateFoo.auth.1.req.vtl']);
+  expect(out.resolvers['Mutation.updateFooBar.postAuth.1.req.vtl']).toEqual(out.resolvers['Mutation.updateFoo.postAuth.1.req.vtl']);
+  expect(out.resolvers['Mutation.updateFooBar.auth.1.res.vtl']).toEqual(out.resolvers['Mutation.updateFoo.auth.1.res.vtl']);
+  expect(out.resolvers['Mutation.updateFooBar.req.vtl']).toEqual(out.resolvers['Mutation.updateFoo.req.vtl']);
+  expect(out.resolvers['Mutation.updateFooBar.res.vtl']).toEqual(out.resolvers['Mutation.updateFoo.res.vtl']);
 });
 
 test('join table inherits auth from second table', () => {
@@ -231,29 +225,23 @@ test('join table inherits auth from second table', () => {
   const schema = parse(out.schema);
   validateModelSchema(schema);
 
-  expect(out.pipelineFunctions['Query.getFooBar.auth.1.req.vtl']).toEqual(out.pipelineFunctions['Query.getBar.auth.1.req.vtl']);
-  expect(out.pipelineFunctions['Query.getFooBar.postAuth.1.req.vtl']).toEqual(out.pipelineFunctions['Query.getBar.postAuth.1.req.vtl']);
-  expect(out.pipelineFunctions['Query.getFooBar.res.vtl']).toEqual(out.pipelineFunctions['Query.getBar.res.vtl']);
-  expect(out.pipelineFunctions['Query.listFooBars.auth.1.req.vtl']).toEqual(out.pipelineFunctions['Query.listBars.auth.1.req.vtl']);
-  expect(out.pipelineFunctions['Query.listFooBars.postAuth.1.req.vtl']).toEqual(out.pipelineFunctions['Query.listBars.postAuth.1.req.vtl']);
-  expect(out.pipelineFunctions['Mutation.createFooBar.auth.1.req.vtl']).toEqual(out.pipelineFunctions['Mutation.createBar.auth.1.req.vtl']);
-  expect(out.pipelineFunctions['Mutation.createFooBar.postAuth.1.req.vtl']).toEqual(
-    out.pipelineFunctions['Mutation.createBar.postAuth.1.req.vtl'],
-  );
-  expect(out.pipelineFunctions['Mutation.deleteFooBar.auth.1.req.vtl']).toEqual(out.pipelineFunctions['Mutation.deleteBar.auth.1.req.vtl']);
-  expect(out.pipelineFunctions['Mutation.deleteFooBar.postAuth.1.req.vtl']).toEqual(
-    out.pipelineFunctions['Mutation.deleteBar.postAuth.1.req.vtl'],
-  );
-  expect(out.pipelineFunctions['Mutation.deleteFooBar.auth.1.res.vtl']).toEqual(out.pipelineFunctions['Mutation.deleteBar.auth.1.res.vtl']);
-  expect(out.pipelineFunctions['Mutation.deleteFooBar.req.vtl']).toEqual(out.pipelineFunctions['Mutation.deleteBar.req.vtl']);
-  expect(out.pipelineFunctions['Mutation.deleteFooBar.res.vtl']).toEqual(out.pipelineFunctions['Mutation.deleteBar.res.vtl']);
-  expect(out.pipelineFunctions['Mutation.updateFooBar.auth.1.req.vtl']).toEqual(out.pipelineFunctions['Mutation.updateBar.auth.1.req.vtl']);
-  expect(out.pipelineFunctions['Mutation.updateFooBar.postAuth.1.req.vtl']).toEqual(
-    out.pipelineFunctions['Mutation.updateBar.postAuth.1.req.vtl'],
-  );
-  expect(out.pipelineFunctions['Mutation.updateFooBar.auth.1.res.vtl']).toEqual(out.pipelineFunctions['Mutation.updateBar.auth.1.res.vtl']);
-  expect(out.pipelineFunctions['Mutation.updateFooBar.req.vtl']).toEqual(out.pipelineFunctions['Mutation.updateBar.req.vtl']);
-  expect(out.pipelineFunctions['Mutation.updateFooBar.res.vtl']).toEqual(out.pipelineFunctions['Mutation.updateBar.res.vtl']);
+  expect(out.resolvers['Query.getFooBar.auth.1.req.vtl']).toEqual(out.resolvers['Query.getBar.auth.1.req.vtl']);
+  expect(out.resolvers['Query.getFooBar.postAuth.1.req.vtl']).toEqual(out.resolvers['Query.getBar.postAuth.1.req.vtl']);
+  expect(out.resolvers['Query.getFooBar.res.vtl']).toEqual(out.resolvers['Query.getBar.res.vtl']);
+  expect(out.resolvers['Query.listFooBars.auth.1.req.vtl']).toEqual(out.resolvers['Query.listBars.auth.1.req.vtl']);
+  expect(out.resolvers['Query.listFooBars.postAuth.1.req.vtl']).toEqual(out.resolvers['Query.listBars.postAuth.1.req.vtl']);
+  expect(out.resolvers['Mutation.createFooBar.auth.1.req.vtl']).toEqual(out.resolvers['Mutation.createBar.auth.1.req.vtl']);
+  expect(out.resolvers['Mutation.createFooBar.postAuth.1.req.vtl']).toEqual(out.resolvers['Mutation.createBar.postAuth.1.req.vtl']);
+  expect(out.resolvers['Mutation.deleteFooBar.auth.1.req.vtl']).toEqual(out.resolvers['Mutation.deleteBar.auth.1.req.vtl']);
+  expect(out.resolvers['Mutation.deleteFooBar.postAuth.1.req.vtl']).toEqual(out.resolvers['Mutation.deleteBar.postAuth.1.req.vtl']);
+  expect(out.resolvers['Mutation.deleteFooBar.auth.1.res.vtl']).toEqual(out.resolvers['Mutation.deleteBar.auth.1.res.vtl']);
+  expect(out.resolvers['Mutation.deleteFooBar.req.vtl']).toEqual(out.resolvers['Mutation.deleteBar.req.vtl']);
+  expect(out.resolvers['Mutation.deleteFooBar.res.vtl']).toEqual(out.resolvers['Mutation.deleteBar.res.vtl']);
+  expect(out.resolvers['Mutation.updateFooBar.auth.1.req.vtl']).toEqual(out.resolvers['Mutation.updateBar.auth.1.req.vtl']);
+  expect(out.resolvers['Mutation.updateFooBar.postAuth.1.req.vtl']).toEqual(out.resolvers['Mutation.updateBar.postAuth.1.req.vtl']);
+  expect(out.resolvers['Mutation.updateFooBar.auth.1.res.vtl']).toEqual(out.resolvers['Mutation.updateBar.auth.1.res.vtl']);
+  expect(out.resolvers['Mutation.updateFooBar.req.vtl']).toEqual(out.resolvers['Mutation.updateBar.req.vtl']);
+  expect(out.resolvers['Mutation.updateFooBar.res.vtl']).toEqual(out.resolvers['Mutation.updateBar.res.vtl']);
 });
 
 test('join table inherits auth from both tables', () => {
@@ -272,23 +260,23 @@ test('join table inherits auth from both tables', () => {
   const schema = parse(out.schema);
   validateModelSchema(schema);
 
-  expect(out.pipelineFunctions['Query.getFooBar.auth.1.req.vtl']).toMatchSnapshot();
-  expect(out.pipelineFunctions['Query.getFooBar.postAuth.1.req.vtl']).toMatchSnapshot();
-  expect(out.pipelineFunctions['Query.getFooBar.res.vtl']).toMatchSnapshot();
-  expect(out.pipelineFunctions['Query.listFooBars.auth.1.req.vtl']).toMatchSnapshot();
-  expect(out.pipelineFunctions['Query.listFooBars.postAuth.1.req.vtl']).toMatchSnapshot();
-  expect(out.pipelineFunctions['Mutation.createFooBar.auth.1.req.vtl']).toMatchSnapshot();
-  expect(out.pipelineFunctions['Mutation.createFooBar.postAuth.1.req.vtl']).toMatchSnapshot();
-  expect(out.pipelineFunctions['Mutation.deleteFooBar.auth.1.req.vtl']).toMatchSnapshot();
-  expect(out.pipelineFunctions['Mutation.deleteFooBar.postAuth.1.req.vtl']).toMatchSnapshot();
-  expect(out.pipelineFunctions['Mutation.deleteFooBar.auth.1.res.vtl']).toMatchSnapshot();
-  expect(out.pipelineFunctions['Mutation.deleteFooBar.req.vtl']).toMatchSnapshot();
-  expect(out.pipelineFunctions['Mutation.deleteFooBar.res.vtl']).toMatchSnapshot();
-  expect(out.pipelineFunctions['Mutation.updateFooBar.auth.1.req.vtl']).toMatchSnapshot();
-  expect(out.pipelineFunctions['Mutation.updateFooBar.postAuth.1.req.vtl']).toMatchSnapshot();
-  expect(out.pipelineFunctions['Mutation.updateFooBar.auth.1.res.vtl']).toMatchSnapshot();
-  expect(out.pipelineFunctions['Mutation.updateFooBar.req.vtl']).toMatchSnapshot();
-  expect(out.pipelineFunctions['Mutation.updateFooBar.res.vtl']).toMatchSnapshot();
+  expect(out.resolvers['Query.getFooBar.auth.1.req.vtl']).toMatchSnapshot();
+  expect(out.resolvers['Query.getFooBar.postAuth.1.req.vtl']).toMatchSnapshot();
+  expect(out.resolvers['Query.getFooBar.res.vtl']).toMatchSnapshot();
+  expect(out.resolvers['Query.listFooBars.auth.1.req.vtl']).toMatchSnapshot();
+  expect(out.resolvers['Query.listFooBars.postAuth.1.req.vtl']).toMatchSnapshot();
+  expect(out.resolvers['Mutation.createFooBar.auth.1.req.vtl']).toMatchSnapshot();
+  expect(out.resolvers['Mutation.createFooBar.postAuth.1.req.vtl']).toMatchSnapshot();
+  expect(out.resolvers['Mutation.deleteFooBar.auth.1.req.vtl']).toMatchSnapshot();
+  expect(out.resolvers['Mutation.deleteFooBar.postAuth.1.req.vtl']).toMatchSnapshot();
+  expect(out.resolvers['Mutation.deleteFooBar.auth.1.res.vtl']).toMatchSnapshot();
+  expect(out.resolvers['Mutation.deleteFooBar.req.vtl']).toMatchSnapshot();
+  expect(out.resolvers['Mutation.deleteFooBar.res.vtl']).toMatchSnapshot();
+  expect(out.resolvers['Mutation.updateFooBar.auth.1.req.vtl']).toMatchSnapshot();
+  expect(out.resolvers['Mutation.updateFooBar.postAuth.1.req.vtl']).toMatchSnapshot();
+  expect(out.resolvers['Mutation.updateFooBar.auth.1.res.vtl']).toMatchSnapshot();
+  expect(out.resolvers['Mutation.updateFooBar.req.vtl']).toMatchSnapshot();
+  expect(out.resolvers['Mutation.updateFooBar.res.vtl']).toMatchSnapshot();
 });
 
 test('join table inherits auth from tables with similar rules', () => {
@@ -312,23 +300,23 @@ test('join table inherits auth from tables with similar rules', () => {
   const schema = parse(out.schema);
   validateModelSchema(schema);
 
-  expect(out.pipelineFunctions['Query.getFooBar.auth.1.req.vtl']).toMatchSnapshot();
-  expect(out.pipelineFunctions['Query.getFooBar.postAuth.1.req.vtl']).toMatchSnapshot();
-  expect(out.pipelineFunctions['Query.getFooBar.res.vtl']).toMatchSnapshot();
-  expect(out.pipelineFunctions['Query.listFooBars.auth.1.req.vtl']).toMatchSnapshot();
-  expect(out.pipelineFunctions['Query.listFooBars.postAuth.1.req.vtl']).toMatchSnapshot();
-  expect(out.pipelineFunctions['Mutation.createFooBar.auth.1.req.vtl']).toMatchSnapshot();
-  expect(out.pipelineFunctions['Mutation.createFooBar.postAuth.1.req.vtl']).toMatchSnapshot();
-  expect(out.pipelineFunctions['Mutation.deleteFooBar.auth.1.req.vtl']).toMatchSnapshot();
-  expect(out.pipelineFunctions['Mutation.deleteFooBar.postAuth.1.req.vtl']).toMatchSnapshot();
-  expect(out.pipelineFunctions['Mutation.deleteFooBar.auth.1.res.vtl']).toMatchSnapshot();
-  expect(out.pipelineFunctions['Mutation.deleteFooBar.req.vtl']).toMatchSnapshot();
-  expect(out.pipelineFunctions['Mutation.deleteFooBar.res.vtl']).toMatchSnapshot();
-  expect(out.pipelineFunctions['Mutation.updateFooBar.auth.1.req.vtl']).toMatchSnapshot();
-  expect(out.pipelineFunctions['Mutation.updateFooBar.postAuth.1.req.vtl']).toMatchSnapshot();
-  expect(out.pipelineFunctions['Mutation.updateFooBar.auth.1.res.vtl']).toMatchSnapshot();
-  expect(out.pipelineFunctions['Mutation.updateFooBar.req.vtl']).toMatchSnapshot();
-  expect(out.pipelineFunctions['Mutation.updateFooBar.res.vtl']).toMatchSnapshot();
+  expect(out.resolvers['Query.getFooBar.auth.1.req.vtl']).toMatchSnapshot();
+  expect(out.resolvers['Query.getFooBar.postAuth.1.req.vtl']).toMatchSnapshot();
+  expect(out.resolvers['Query.getFooBar.res.vtl']).toMatchSnapshot();
+  expect(out.resolvers['Query.listFooBars.auth.1.req.vtl']).toMatchSnapshot();
+  expect(out.resolvers['Query.listFooBars.postAuth.1.req.vtl']).toMatchSnapshot();
+  expect(out.resolvers['Mutation.createFooBar.auth.1.req.vtl']).toMatchSnapshot();
+  expect(out.resolvers['Mutation.createFooBar.postAuth.1.req.vtl']).toMatchSnapshot();
+  expect(out.resolvers['Mutation.deleteFooBar.auth.1.req.vtl']).toMatchSnapshot();
+  expect(out.resolvers['Mutation.deleteFooBar.postAuth.1.req.vtl']).toMatchSnapshot();
+  expect(out.resolvers['Mutation.deleteFooBar.auth.1.res.vtl']).toMatchSnapshot();
+  expect(out.resolvers['Mutation.deleteFooBar.req.vtl']).toMatchSnapshot();
+  expect(out.resolvers['Mutation.deleteFooBar.res.vtl']).toMatchSnapshot();
+  expect(out.resolvers['Mutation.updateFooBar.auth.1.req.vtl']).toMatchSnapshot();
+  expect(out.resolvers['Mutation.updateFooBar.postAuth.1.req.vtl']).toMatchSnapshot();
+  expect(out.resolvers['Mutation.updateFooBar.auth.1.res.vtl']).toMatchSnapshot();
+  expect(out.resolvers['Mutation.updateFooBar.req.vtl']).toMatchSnapshot();
+  expect(out.resolvers['Mutation.updateFooBar.res.vtl']).toMatchSnapshot();
 });
 
 function createTransformer(authConfig?: AppSyncAuthConfiguration) {

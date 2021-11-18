@@ -1,6 +1,6 @@
 // This is sample code. Please update this to suite your schema
 
-exports.handler = async (event) => {
+exports.handler = async event => {
   console.log(`event >`, JSON.stringify(event, null, 2));
   const {
     authorizationToken,
@@ -22,4 +22,3 @@ exports.handler = async (event) => {
   console.log(`response >`, JSON.stringify(response, null, 2));
   return response;
 };
-

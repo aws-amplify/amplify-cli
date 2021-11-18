@@ -19,6 +19,7 @@ import {
   makeCompositeKeyConditionInputForKey,
   makeCompositeKeyInputForKey,
   makeConnectionField,
+  makeDirective,
   makeField,
   makeInputValueDefinition,
   makeListType,
@@ -318,6 +319,8 @@ function replaceDeleteInput(config: PrimaryKeyDirectiveConfiguration, input: Inp
 
 export function ensureQueryField(config: IndexDirectiveConfiguration, ctx: TransformerContextProvider): void {
   const { name, object, queryField, sortKey } = config;
+  const hasAuth = object.directives?.some(dir => dir.name.value === 'auth');
+  const directives = [];
 
   if (!queryField) {
     return;
@@ -342,8 +345,10 @@ export function ensureQueryField(config: IndexDirectiveConfiguration, ctx: Trans
   }
 
   args.push(makeInputValueDefinition('sortDirection', makeNamedType('ModelSortDirection')));
-
-  const queryFieldObj = makeConnectionField(queryField, object.name.value, args);
+  if (!hasAuth && ctx.sandboxModeEnabled && ctx.authConfig.defaultAuthentication.authenticationType !== 'API_KEY') {
+    directives.push(makeDirective('aws_api_key', []));
+  }
+  const queryFieldObj = makeConnectionField(queryField, object.name.value, args, directives);
 
   ctx.output.addQueryFields([queryFieldObj]);
   ensureModelSortDirectionEnum(ctx);
