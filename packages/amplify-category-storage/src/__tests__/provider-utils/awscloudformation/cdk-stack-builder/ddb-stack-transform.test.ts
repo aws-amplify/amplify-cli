@@ -1,4 +1,4 @@
-/* These tests test the tranform and in run the cdk builder tool which is used within this file */
+/* These tests test the DDBStackTransform and run the cdk builder tool which is used within this file */
 
 import { DDBStackTransform } from '../../../../provider-utils/awscloudformation/cdk-stack-builder/ddb-stack-transform';
 import {
