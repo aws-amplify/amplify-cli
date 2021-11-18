@@ -8,7 +8,7 @@ export const supportedServices = {
     provider: 'awscloudformation'
   },
   GeofenceCollection: {
-    alias: 'Geofecing (visualize virtual perimeters)',
+    alias: 'Geofencing (visualize virtual perimeters)',
     provider: 'awscloudformation'
   }
 };
