@@ -29,13 +29,13 @@ export const run = async (context: $TSContext) => {
   const apiName = apiNames[0];
   const apiResourceDir = path.join(pathManager.getBackendDirPath(), category, apiName);
 
+  if (await checkAppsyncApiResourceMigration(context, apiName, true)) {
+    await context.amplify.invokePluginMethod(context, 'awscloudformation', undefined, 'compileSchema', [context, { forceCompile: true }]);
+  }
+
   if (context.parameters?.options?.revert) {
     await revertV2Migration(apiResourceDir, stateManager.getCurrentEnvName());
     return;
   }
   await attemptV2TransformerMigration(apiResourceDir, apiName, stateManager.getCurrentEnvName());
-  // migrate API project when transformers is migrated
-  if (await checkAppsyncApiResourceMigration(context, apiName, true)) {
-    await context.amplify.invokePluginMethod(context, 'awscloudformation', undefined, 'compileSchema', [context, { forceCompile: true }]);
-  }
 };
