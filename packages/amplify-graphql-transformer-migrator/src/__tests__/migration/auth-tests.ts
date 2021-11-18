@@ -65,6 +65,152 @@ describe('Schema migration tests for @auth', () => {
 
       migrateAndValidate(schema, USER_POOLS);
     });
+
+    describe('owner based auth', () => {
+      describe('implicit owner field', () => {
+        it('migrates @auth with owners correctly', () => {
+          const schema = `
+            type Todo @model @auth(rules: [{ allow: owner }]) {
+              id: ID!
+              name: String!
+              description: String
+            }`;
+
+          migrateAndValidate(schema, USER_POOLS);
+        });
+
+        it('migrates @auth with owners and field correctly', () => {
+          const schema = `
+            type Todo @model @auth(rules: [{ allow: owner, ownerField: "editor" }]) {
+              id: ID!
+              name: String!
+              description: String
+            }`;
+
+          migrateAndValidate(schema, USER_POOLS);
+        });
+      });
+
+      describe('explicit owner field', () => {
+        it('migrates @auth with owners correctly', () => {
+          const schema = `
+            type Todo @model @auth(rules: [{ allow: owner }]) {
+              id: ID!
+              name: String!
+              description: String
+              owner: String
+            }`;
+
+          migrateAndValidate(schema, USER_POOLS);
+        });
+
+        it('migrates @auth with custom owner field correctly', () => {
+          const schema = `
+            type Todo @model @auth(rules: [{ allow: owner, ownerField: "editor" }]) {
+              id: ID!
+              name: String!
+              description: String
+              editor: String
+            }`;
+
+          migrateAndValidate(schema, USER_POOLS);
+        });
+      });
+
+      describe('explicit operations', () => {
+        it('adds private update rule', () => {
+          const schema = `
+            type Todo
+              @model
+              @auth(rules: [{ allow: owner, operations: [create, read, delete] }]) {
+                id: ID!
+                rating: Int
+                title: String
+              }`;
+
+          migrateAndValidate(schema, USER_POOLS);
+        });
+
+        it('adds private delete rule', () => {
+          const schema = `
+            type Todo
+              @model
+              @auth(rules: [{ allow: owner, operations: [create, delete] }]) {
+                id: ID!
+                rating: Int
+                title: String
+              }`;
+
+          migrateAndValidate(schema, USER_POOLS);
+        });
+      });
+
+      describe('multiple owner rules', () => {
+        it('retains the owner operations', () => {
+          const schema = `
+            type Todo
+              @model
+              @auth(rules: [
+                { allow: owner, operations: [create] },
+                { allow: owner, ownerField: "admin", operations: [read, update, delete] }
+              ]) {
+                id: ID!
+                title: String!
+                admin: String
+                owner: String
+              }`;
+          migrateAndValidate(schema, USER_POOLS);
+        });
+      });
+
+      describe('array of owners', () => {
+        it('migrates owner array fields correctly', () => {
+          const schema = `
+            type Todo
+              @model
+              @auth(rules: [{ allow: owner, ownerField: "editors" }]) {
+                id: ID!
+                rating: Int
+                title: String
+                editors: [String]
+              }`;
+
+          migrateAndValidate(schema, USER_POOLS);
+        });
+      });
+    });
+
+    describe('group based auth', () => {
+      it('migrates @auth with groups correctly', () => {
+        const schema = `
+          type Todo @model @auth(rules: [{ allow: groups, groups: ["Admins"] }]) {
+            id: ID!
+            name: String!
+            description: String
+          }`;
+
+        migrateAndValidate(schema, USER_POOLS);
+      });
+    });
+
+    describe('multi-use for user groups', () => {
+      it('migrates non specified @auth correctly', () => {
+        const schema = `
+        type Todo @model @auth(rules: [{ allow: owner }]) {
+          id: ID!
+          name: String!
+          description: String
+        }
+
+        type Task @model {
+          id: ID!
+          title: String!
+          owner: String
+        }`;
+
+        migrateAndValidate(schema, USER_POOLS);
+      });
+    });
   });
 
   describe('default auth uses iam', () => {
