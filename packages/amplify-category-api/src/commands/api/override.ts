@@ -3,6 +3,7 @@ import {
   AmplifyCategories,
   AmplifySupportedService,
   generateOverrideSkeleton,
+  getMigrateResourceMessageForOverride,
   pathManager,
   stateManager,
 } from 'amplify-cli-core';
@@ -56,7 +57,7 @@ export const run = async (context: $TSContext) => {
     // Migration logic goes in here
     const apigwInputState = new ApigwInputState(context, selectedResourceName);
     if (!apigwInputState.cliInputsFileExists()) {
-      if (await prompter.yesOrNo('File migration required to continue. Do you want to continue?', true)) {
+      if (await prompter.yesOrNo(getMigrateResourceMessageForOverride(AmplifyCategories.API, selectedResourceName, false), true)) {
         await apigwInputState.migrateApigwResource(selectedResourceName);
         const stackGenerator = new ApigwStackTransform(context, selectedResourceName);
         stackGenerator.transform();
