@@ -244,7 +244,7 @@ export async function transformGraphQLSchema(context, options) {
 
   let { authConfig }: { authConfig: AppSyncAuthConfiguration } = options;
 
-  if (_.isEmpty(authConfig)) {
+  if (_.isEmpty(authConfig) && !_.isEmpty(resources)) {
     authConfig = await context.amplify.invokePluginMethod(
       context,
       AmplifyCategories.API,
@@ -337,14 +337,16 @@ export async function transformGraphQLSchema(context, options) {
   const isNewAppSyncAPI: boolean = resourcesToBeCreated.some(resource => resource.service === 'AppSync');
   const allowDestructiveUpdates = context?.input?.options?.[destructiveUpdatesFlag] || context?.input?.options?.force;
   const sanityCheckRules = getSanityCheckRules(isNewAppSyncAPI, ff, allowDestructiveUpdates);
-
-  let resolverConfig = await context.amplify.invokePluginMethod(
-    context,
-    AmplifyCategories.API,
-    AmplifySupportedService.APPSYNC,
-    'getResolverConfig',
-    [resources[0].resourceName],
-  );
+  let resolverConfig = {};
+  if (!_.isEmpty(resources)) {
+    resolverConfig = await context.amplify.invokePluginMethod(
+      context,
+      AmplifyCategories.API,
+      AmplifySupportedService.APPSYNC,
+      'getResolverConfig',
+      [resources[0].resourceName],
+    );
+  }
 
   /**
    * if Auth is not migrated , we need to fetch resolver Config from transformer.conf.json
