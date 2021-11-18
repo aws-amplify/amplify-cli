@@ -1,6 +1,6 @@
 {
   "name": "amplify-container-hosting",
-  "version": "2.3.0",
+  "version": "2.3.1",
   "description": "amplify-cli hosting plugin for containers",
   "repository": {
     "type": "git",

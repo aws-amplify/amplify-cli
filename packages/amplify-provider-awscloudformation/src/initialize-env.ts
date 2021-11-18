@@ -9,9 +9,8 @@ const { S3BackendZipFileName } = require('./constants');
 const { fileLogger } = require('./utils/aws-logger');
 const logger = fileLogger('initialize-env');
 import { JSONUtilities, PathConstants, stateManager, $TSMeta, $TSContext, IAmplifyResource } from 'amplify-cli-core';
-import { buildOverrides } from './utility-functions';
 import { pullHooks } from './utils/hooks-manager';
-import { generateDependentResourcesType } from '@aws-amplify/amplify-category-custom';
+import { buildOverridesEnabledResources } from './build-override-enabled-resources';
 
 export async function run(context: $TSContext, providerMetadata: $TSMeta) {
   if (context.exeInfo && context.exeInfo.isNewEnv) {
@@ -117,20 +116,5 @@ export async function run(context: $TSContext, providerMetadata: $TSMeta) {
     stateManager.setCurrentMeta(undefined, amplifyMeta);
   }
 
-  // Build all the cfn files for categories
-
-  const resourcesToBuild: IAmplifyResource[] = [];
-
-  const { allResources } = await context.amplify.getResourceStatus();
-
-  allResources.forEach(resourceCreated => {
-    resourcesToBuild.push({
-      service: resourceCreated.service as string,
-      category: resourceCreated.category as string,
-      resourceName: resourceCreated.resourceName as string,
-    });
-  });
-
-  await generateDependentResourcesType(context);
-  await buildOverrides(context, { resourcesToBuild, forceCompile: true });
+  await buildOverridesEnabledResources(context);
 }

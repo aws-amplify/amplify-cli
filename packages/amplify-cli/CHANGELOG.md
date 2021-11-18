@@ -3,6 +3,34 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [7.3.6](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@7.3.5...@aws-amplify/cli@7.3.6) (2021-11-17)
+
+
+### Bug Fixes
+
+* **cli:** handle multiple unconfigured auth directives on push ([#8791](https://github.com/aws-amplify/amplify-cli/issues/8791)) ([901c79f](https://github.com/aws-amplify/amplify-cli/commit/901c79f4c1df00b89de4bcc627fd5c88a8b1fc92))
+* upgrade to latest pkg to fix zlib issue ([#8841](https://github.com/aws-amplify/amplify-cli/issues/8841)) ([2d0ba78](https://github.com/aws-amplify/amplify-cli/commit/2d0ba78947fbe1850048b2c8f0fefc7438bc28af))
+
+
+
+
+
+## [7.3.5](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@7.3.4...@aws-amplify/cli@7.3.5) (2021-11-17)
+
+**Note:** Version bump only for package @aws-amplify/cli
+
+
+
+
+
+## [7.3.4](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@7.3.3...@aws-amplify/cli@7.3.4) (2021-11-16)
+
+**Note:** Version bump only for package @aws-amplify/cli
+
+
+
+
+
 ## [7.3.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@7.3.2...@aws-amplify/cli@7.3.3) (2021-11-16)
 
 **Note:** Version bump only for package @aws-amplify/cli

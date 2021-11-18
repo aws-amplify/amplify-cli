@@ -3,6 +3,27 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.4.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@5.3.3...amplify-provider-awscloudformation@5.4.0) (2021-11-17)
+
+
+
+## 7.3.6 (2021-11-17)
+
+
+### Bug Fixes
+
+* build overrides for headless push with new env init scneario ([#8913](https://github.com/aws-amplify/amplify-cli/issues/8913)) ([489d784](https://github.com/aws-amplify/amplify-cli/commit/489d7840038a775e2a1ebd3dbfb7330fef4f75cf))
+* **graphql:** detect resource update on graphql api auth mode change ([#8782](https://github.com/aws-amplify/amplify-cli/issues/8782)) ([714a122](https://github.com/aws-amplify/amplify-cli/commit/714a1221ec1ce72c88ba732172be6b8feab56a09))
+
+
+### Features
+
+* **graphql-transformer-core:** add support for user defined slots ([#8758](https://github.com/aws-amplify/amplify-cli/issues/8758)) ([87b532d](https://github.com/aws-amplify/amplify-cli/commit/87b532da226c4a3cab619fee115e8b7fd0476d71))
+
+
+
+
+
 ## [5.3.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@5.3.2...amplify-provider-awscloudformation@5.3.3) (2021-11-16)
 
 

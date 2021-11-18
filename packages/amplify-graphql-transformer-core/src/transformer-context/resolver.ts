@@ -173,8 +173,8 @@ export class TransformerResolver implements TransformerResolverProvider {
   synthesize = (context: TransformerContextProvider, api: GraphQLAPIProvider): void => {
     const stack = this.stack || (context.stackManager as StackManager).rootStack;
     this.ensureNoneDataSource(api);
-    const requestFns = this.synthesizePipelineFunctions(stack, api, this.requestSlots);
-    const responseFns = this.synthesizePipelineFunctions(stack, api, this.responseSlots);
+    const requestFns = this.synthesizeResolvers(stack, api, this.requestSlots);
+    const responseFns = this.synthesizeResolvers(stack, api, this.responseSlots);
     // substitue template name values
     [this.requestMappingTemplate, this.requestMappingTemplate].map(template => this.substitueSlotInfo(template, 'main', 0));
 
@@ -288,7 +288,7 @@ export class TransformerResolver implements TransformerResolverProvider {
     );
   };
 
-  synthesizePipelineFunctions = (stack: Stack, api: GraphQLAPIProvider, slotsNames: string[]): AppSyncFunctionConfigurationProvider[] => {
+  synthesizeResolvers = (stack: Stack, api: GraphQLAPIProvider, slotsNames: string[]): AppSyncFunctionConfigurationProvider[] => {
     const appSyncFunctions: AppSyncFunctionConfigurationProvider[] = [];
 
     for (let slotName of slotsNames) {
