@@ -18,6 +18,20 @@ exports[`Schema migration tests for @auth default auth uses api key migrates @au
 "
 `;
 
+exports[`Schema migration tests for @auth default auth uses api key migrates default api_key auth correctly 1`] = `
+"type Todo @model @auth(rules: [{allow: public}]) {
+  id: ID!
+  name: String!
+  description: String
+}
+
+type Comment @model @auth(rules: [{allow: private}]) {
+  id: ID!
+  content: String!
+}
+"
+`;
+
 exports[`Schema migration tests for @auth default auth uses api key migrates no @auth to public @auth with api key 1`] = `
 "type Todo @model @auth(rules: [{allow: public}]) {
   id: ID!
@@ -41,6 +55,23 @@ exports[`Schema migration tests for @auth default auth uses iam migrates @auth p
   id: ID!
   name: String!
   description: String
+}
+"
+`;
+
+exports[`Schema migration tests for @auth group auth retains dynamic groups in auth rules 1`] = `
+"type Todo @model @auth(rules: [{allow: groups, groups: [\\"Admins\\"]}]) {
+  id: ID!
+  rating: Int
+  title: String
+}
+"
+`;
+
+exports[`Schema migration tests for @auth group auth retains groupClaims in auth rules 1`] = `
+"type Todo @model @auth(rules: [{allow: groups, provider: oidc, groups: [\\"Admins\\"], groupClaim: \\"https://myapp.com/claims/groups\\"}]) {
+  id: ID!
+  title: String!
 }
 "
 `;
