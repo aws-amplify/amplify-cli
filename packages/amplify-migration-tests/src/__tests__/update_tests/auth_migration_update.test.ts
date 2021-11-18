@@ -15,16 +15,23 @@ import {
 } from 'amplify-e2e-core';
 import * as fs from 'fs-extra';
 import { join } from 'path';
-import { initJSProjectWithProfile, versionCheck } from '../../migration-helpers';
+import { initJSProjectWithProfile, versionCheck, allowedVersionsToMigrateFrom } from '../../migration-helpers';
 
 describe('amplify auth migration', () => {
   let projRoot: string;
 
+  beforeAll(async () => {
+    const migrateFromVersion = { v: 'unintialized' };
+    const migrateToVersion = { v: 'unintialized' };
+    await versionCheck(process.cwd(), false, migrateFromVersion);
+    await versionCheck(process.cwd(), true, migrateToVersion);
+    expect(migrateFromVersion.v).not.toEqual(migrateToVersion.v);
+    expect(allowedVersionsToMigrateFrom).toContain(migrateFromVersion.v);
+  });
+
   beforeEach(async () => {
     projRoot = await createNewProjectDir('auth migration');
     await initJSProjectWithProfile(projRoot, { name: 'authMigration' });
-    await versionCheck(projRoot, false);
-    await versionCheck(projRoot, true);
   });
   afterEach(async () => {
     const metaFilePath = join(projRoot, 'amplify', '#current-cloud-backend', 'amplify-meta.json');

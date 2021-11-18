@@ -20,15 +20,24 @@ import {
   versionCheck,
   addApiWithoutSchemaOldDx,
   addApiWithSchemaAndConflictDetectionOldDx,
+  allowedVersionsToMigrateFrom,
 } from '../../migration-helpers';
 
 describe('api migration update test', () => {
   let projRoot: string;
+
+  beforeAll(async () => {
+    const migrateFromVersion = { v: 'unintialized' };
+    const migrateToVersion = { v: 'unintialized' };
+    await versionCheck(process.cwd(), false, migrateFromVersion);
+    await versionCheck(process.cwd(), true, migrateToVersion);
+    expect(migrateFromVersion.v).not.toEqual(migrateToVersion.v);
+    expect(allowedVersionsToMigrateFrom).toContain(migrateFromVersion.v);
+  });
+
   beforeEach(async () => {
     projRoot = await createNewProjectDir('graphql-api');
     await initJSProjectWithProfile(projRoot, { name: 'apimigration' });
-    await versionCheck(projRoot, false);
-    await versionCheck(projRoot, true);
   });
 
   afterEach(async () => {

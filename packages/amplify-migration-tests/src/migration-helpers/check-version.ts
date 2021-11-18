@@ -13,3 +13,12 @@ export function versionCheck(cwd: string, testingWithLatestCodebase = false, ver
       });
   });
 }
+
+/**
+ * This list is used to check migration tests with the following changes. (excludes layer migrationi tests)
+ *
+ * api add/update flow: https://github.com/aws-amplify/amplify-cli/pull/8287
+ *
+ * ext migrate flow: https://github.com/aws-amplify/amplify-cli/pull/8806
+ */
+export const allowedVersionsToMigrateFrom = ['5.2.0', '6.0.1'];

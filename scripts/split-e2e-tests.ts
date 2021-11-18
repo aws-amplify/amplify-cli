@@ -275,12 +275,14 @@ function splitTests(
     if (!isPkg) {
       (newJob.environment as any) = {
         ...newJob.environment,
-        ...(!isMigration
+        ...(isMigration
           ? {
+              AMPLIFY_PATH: '/home/circleci/.npm-global/lib/node_modules/@aws-amplify/cli/bin/amplify',
+            }
+          : {
               AMPLIFY_DIR: '/home/circleci/repo/packages/amplify-cli/bin',
               AMPLIFY_PATH: '/home/circleci/repo/packages/amplify-cli/bin/amplify',
-            }
-          : {}),
+            }),
       };
     }
     return { ...acc, [newJobName]: newJob };
@@ -476,7 +478,7 @@ function main(): void {
   );
   const splitV4MigrationTests = splitTests(
     splitGqlTests,
-    'amplify_migration_tests_v4',
+    'amplify_migration_tests_v5',
     'build_test_deploy',
     join(repoRoot, 'packages', 'amplify-migration-tests'),
     CONCURRENCY,
@@ -484,7 +486,7 @@ function main(): void {
   );
   const splitLatestMigrationTests = splitTests(
     splitV4MigrationTests,
-    'amplify_migration_tests_latest',
+    'amplify_migration_tests_v6',
     'build_test_deploy',
     join(repoRoot, 'packages', 'amplify-migration-tests'),
     CONCURRENCY,

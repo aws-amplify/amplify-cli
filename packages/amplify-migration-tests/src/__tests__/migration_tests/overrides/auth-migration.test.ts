@@ -26,13 +26,23 @@ import { UpdateAuthRequest } from 'amplify-headless-interface';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import * as _ from 'lodash';
-import { versionCheck } from '../../../migration-helpers';
+import { versionCheck, allowedVersionsToMigrateFrom } from '../../../migration-helpers';
 
 const defaultSettings = {
   name: 'authMigration',
 };
 describe('amplify auth migration', () => {
   let projRoot: string;
+
+  beforeAll(async () => {
+    const migrateFromVersion = { v: 'unintialized' };
+    const migrateToVersion = { v: 'unintialized' };
+    await versionCheck(process.cwd(), false, migrateFromVersion);
+    await versionCheck(process.cwd(), true, migrateToVersion);
+    expect(migrateFromVersion.v).not.toEqual(migrateToVersion.v);
+    expect(allowedVersionsToMigrateFrom).toContain(migrateFromVersion.v);
+  });
+
   beforeEach(async () => {
     projRoot = await createNewProjectDir('auth_migration');
   });
@@ -47,8 +57,6 @@ describe('amplify auth migration', () => {
   it('...should init a project and add auth with a custom trigger, and then update to remove the custom js while leaving the other js', async () => {
     // init, add and push auth with installed cli
     await initJSProjectWithProfile(projRoot, defaultSettings);
-    await versionCheck(projRoot, false);
-    await versionCheck(projRoot, true);
     await addAuthWithCustomTrigger(projRoot, {});
     await amplifyPushAuth(projRoot);
     const meta = getProjectMeta(projRoot);
@@ -89,8 +97,6 @@ describe('amplify auth migration', () => {
   it('...should init a project and add auth with default, and then update with latest and push', async () => {
     // init, add and push auth with installed cli
     await initJSProjectWithProfile(projRoot, defaultSettings);
-    await versionCheck(projRoot, false);
-    await versionCheck(projRoot, true);
     await addAuthWithDefault(projRoot, {});
     await amplifyPushAuth(projRoot);
     const meta = getProjectMeta(projRoot);
@@ -107,8 +113,6 @@ describe('amplify auth migration', () => {
 
   it('...should init an android project and add customAuth flag, and remove flag when custom auth triggers are removed upon update ', async () => {
     await initAndroidProjectWithProfile(projRoot, defaultSettings);
-    await versionCheck(projRoot, false);
-    await versionCheck(projRoot, true);
     await addAuthWithRecaptchaTrigger(projRoot, {});
     await amplifyPushAuth(projRoot);
     let meta = getAwsAndroidConfig(projRoot);
@@ -138,8 +142,6 @@ describe('amplify auth migration', () => {
       updatesignoutUrl: 'http://localhost:3004/',
     };
     await initAndroidProjectWithProfile(projRoot, defaultSettings);
-    await versionCheck(projRoot, false);
-    await versionCheck(projRoot, true);
     await addAuthWithSignInSignOutUrl(projRoot, settings);
     const amplifyMeta = getBackendAmplifyMeta(projRoot);
     const authResourceName = Object.keys(amplifyMeta.auth).filter(resourceName => amplifyMeta.auth[resourceName].service === 'Cognito')[0];
@@ -175,8 +177,6 @@ describe('amplify auth migration', () => {
     };
 
     await initJSProjectWithProfile(projRoot, defaultSettings);
-    await versionCheck(projRoot, false);
-    await versionCheck(projRoot, true);
     await addAuthWithDefault(projRoot, {});
     await updateHeadlessAuth(projRoot, updateAuthRequest, {});
     await amplifyPushAuth(projRoot, true);

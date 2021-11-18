@@ -10,9 +10,20 @@ import {
   amplifyPushOverride,
 } from 'amplify-e2e-core';
 import { JSONUtilities } from 'amplify-cli-core';
+import { versionCheck, allowedVersionsToMigrateFrom } from '../../../migration-helpers';
 
 describe('amplify init', () => {
   let projRoot: string;
+
+  beforeAll(async () => {
+    const migrateFromVersion = { v: 'unintialized' };
+    const migrateToVersion = { v: 'unintialized' };
+    await versionCheck(process.cwd(), false, migrateFromVersion);
+    await versionCheck(process.cwd(), true, migrateToVersion);
+    expect(migrateFromVersion.v).not.toEqual(migrateToVersion.v);
+    expect(allowedVersionsToMigrateFrom).toContain(migrateFromVersion.v);
+  });
+
   beforeEach(async () => {
     projRoot = await createNewProjectDir('init');
   });
