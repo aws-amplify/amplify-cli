@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.3.0-geo.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-geo@2.3.0-geo.0...amplify-category-geo@2.3.0-geo.1) (2021-11-18)
+
+
+### Bug Fixes
+
+* **amplify-category-geo:** correct spell error ([#8944](https://github.com/aws-amplify/amplify-cli/issues/8944)) ([2a3ed77](https://github.com/aws-amplify/amplify-cli/commit/2a3ed77d4854aa1c27029ea0e3d1744334c7e7bc))
+
+
+
+
+
 # [2.3.0-geo.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-geo@2.2.1...amplify-category-geo@2.3.0-geo.0) (2021-11-18)
 
 
