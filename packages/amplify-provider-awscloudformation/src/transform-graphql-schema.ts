@@ -661,7 +661,6 @@ async function migrateToTransformerVersionFeatureFlag(context) {
     config.features.graphqltransformer.transformerversion = 2;
     stateManager.setCLIJSON(projectPath, config);
     await FeatureFlags.reloadValues();
-
     context.print.warning(
       `\nThe project is configured with 'transformerVersion': ${transformerVersion}, but 'useExperimentalPipelinedTransformer': ${useExperimentalPipelineTransformer}. Setting the 'transformerVersion': ${config.features.graphqltransformer.transformerversion}. 'useExperimentalPipelinedTransformer' is deprecated.`,
     );

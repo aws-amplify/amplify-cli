@@ -1,19 +1,22 @@
-import path from 'path';
-import fs from 'fs-extra';
-import { ApiArtifactHandler } from '../../../provider-utils/api-artifact-handler';
-import { getCfnApiArtifactHandler } from '../../../provider-utils/awscloudformation/cfn-api-artifact-handler';
 import { AddApiRequest, UpdateApiRequest } from 'amplify-headless-interface';
-import { category } from '../../../category-constants';
+import fs from 'fs-extra';
 import { writeTransformerConfiguration } from 'graphql-transformer-core';
-import { rootAssetDir } from '../../../provider-utils/awscloudformation/aws-constants';
-import {
-  getAppSyncResourceName,
-  getAppSyncAuthConfig,
-  authConfigHasApiKey,
-} from '../../../provider-utils/awscloudformation/utils/amplify-meta-utils';
 import _ from 'lodash';
+import path from 'path';
+import { category } from '../../../category-constants';
+import { ApiArtifactHandler } from '../../../provider-utils/api-artifact-handler';
+import { AppsyncApiInputState } from '../../../provider-utils/awscloudformation/api-input-manager/appsync-api-input-state';
+import { rootAssetDir } from '../../../provider-utils/awscloudformation/aws-constants';
+import { getCfnApiArtifactHandler } from '../../../provider-utils/awscloudformation/cfn-api-artifact-handler';
+import {
+  authConfigHasApiKey,
+  getAppSyncAuthConfig,
+  getAppSyncResourceName,
+} from '../../../provider-utils/awscloudformation/utils/amplify-meta-utils';
 
 jest.mock('fs-extra');
+
+jest.mock('../../../provider-utils/awscloudformation/api-input-manager/appsync-api-input-state');
 
 jest.mock('graphql-transformer-core', () => ({
   readTransformerConfiguration: jest.fn(async () => ({})),
@@ -28,7 +31,26 @@ jest.mock('../../../provider-utils/awscloudformation/utils/amplify-meta-utils', 
   getImportedAuthUserPoolId: jest.fn(() => undefined),
 }));
 
-jest.mock('amplify-cli-core');
+jest.mock('amplify-cli-core', () => ({
+  pathManager: {
+    getBackendDirPath: jest.fn().mockReturnValue('mockbackendDirPath'),
+    findProjectRoot: jest.fn().mockReturnValue('mockProject'),
+  },
+  stateManager: {
+    getMeta: jest.fn().mockReturnValue({}),
+  },
+  AmplifyCategories: {
+    API: 'api',
+  },
+  AmplifySupportedService: {
+    APPSYNC: 'Appsync',
+  },
+  JSONUtilities: {
+    readJson: jest.fn(),
+    writeJson: jest.fn(),
+  },
+  isResourceNameUnique: jest.fn(),
+}));
 
 const fs_mock = fs as unknown as jest.Mocked<typeof fs>;
 const writeTransformerConfiguration_mock = writeTransformerConfiguration as jest.MockedFunction<typeof writeTransformerConfiguration>;
@@ -54,7 +76,8 @@ const context_stub = {
     getProjectMeta: jest.fn(),
     readJsonFile: jest.fn(),
     pathManager: {
-      getBackendDirPath: jest.fn(() => backendDirPathStub),
+      getBackendDirPath: jest.fn().mockReturnValue(backendDirPathStub),
+      findProjectRoot: jest.fn().mockReturnValue('mockProject'),
     },
   },
 };
@@ -112,6 +135,20 @@ describe('create artifacts', () => {
       path.join(rootAssetDir, 'cloudformation-templates', 'defaultCustomResources.json'),
       path.join(backendDirPathStub, category, addRequestStub.serviceConfiguration.apiName, 'stacks', 'CustomResources.json'),
     ]);
+  });
+
+  it('creates correct cli-inputs', async () => {
+    jest.spyOn(AppsyncApiInputState.prototype, 'saveCLIInputPayload');
+    await cfnApiArtifactHandler.createArtifacts(addRequestStub);
+    expect(AppsyncApiInputState.prototype.saveCLIInputPayload).toBeCalledWith({
+      serviceConfiguration: {
+        apiName: 'testApiName',
+        defaultAuthType: { expirationTime: 10, keyDescription: 'api key description', mode: 'API_KEY' },
+        gqlSchemaPath: 'backendDirPath/api/testApiName/schema.graphql',
+        serviceName: 'AppSync',
+      },
+      version: 1,
+    });
   });
 
   it('writes the selected template schema to project', async () => {
@@ -193,30 +230,73 @@ describe('update artifacts', () => {
   it('writes new schema if specified', async () => {
     const newSchemaContents = 'a new schema';
     updateRequestStub.serviceModification.transformSchema = newSchemaContents;
+    jest.spyOn(AppsyncApiInputState.prototype, 'getCLIInputPayload').mockReturnValue({
+      serviceConfiguration: {
+        apiName: 'testApiName',
+        defaultAuthType: { expirationTime: 10, keyDescription: 'api key description', mode: 'API_KEY' },
+        gqlSchemaPath: 'backendDirPath/api/testApiName/schema.graphql',
+        serviceName: 'AppSync',
+      },
+      version: 1,
+    });
     await cfnApiArtifactHandler.updateArtifacts(updateRequestStub);
     expect(fs_mock.writeFileSync.mock.calls.length).toBe(1);
     expect(fs_mock.writeFileSync.mock.calls[0][1]).toBe(newSchemaContents);
   });
 
-  it('updates resolver config if not empty', async () => {
-    updateRequestStub.serviceModification.conflictResolution = {
-      defaultResolutionStrategy: {
-        type: 'OPTIMISTIC_CONCURRENCY',
-      },
-    };
-    await cfnApiArtifactHandler.updateArtifacts(updateRequestStub);
-    expect(writeTransformerConfiguration_mock.mock.calls.length).toBe(1);
-  });
-
   it('updates default auth if not empty', async () => {
     updateRequestStub.serviceModification.defaultAuthType = { mode: 'AWS_IAM' };
+    jest.spyOn(AppsyncApiInputState.prototype, 'getCLIInputPayload').mockReturnValue({
+      serviceConfiguration: {
+        apiName: 'testApiName',
+        defaultAuthType: { expirationTime: 10, keyDescription: 'api key description', mode: 'API_KEY' },
+        gqlSchemaPath: 'backendDirPath/api/testApiName/schema.graphql',
+        serviceName: 'AppSync',
+      },
+      version: 1,
+    });
     await cfnApiArtifactHandler.updateArtifacts(updateRequestStub);
     expect(context_stub.amplify.executeProviderUtils.mock.calls.length).toBe(1);
     expect(context_stub.amplify.executeProviderUtils.mock.calls[0][3].authConfig).toMatchSnapshot();
   });
 
+  it('updates correct cli-inputs', async () => {
+    updateRequestStub.serviceModification.additionalAuthTypes = [{ mode: 'AWS_IAM' }, { mode: 'API_KEY' }];
+    jest.spyOn(AppsyncApiInputState.prototype, 'saveCLIInputPayload');
+    jest.spyOn(AppsyncApiInputState.prototype, 'getCLIInputPayload').mockReturnValue({
+      serviceConfiguration: {
+        apiName: 'testApiName',
+        defaultAuthType: { expirationTime: 10, keyDescription: 'api key description', mode: 'API_KEY' },
+        gqlSchemaPath: 'backendDirPath/api/testApiName/schema.graphql',
+        serviceName: 'AppSync',
+      },
+      version: 1,
+    });
+    await cfnApiArtifactHandler.updateArtifacts(updateRequestStub);
+    expect(AppsyncApiInputState.prototype.saveCLIInputPayload).toBeCalledWith({
+      serviceConfiguration: {
+        additionalAuthTypes: [{ mode: 'AWS_IAM' }, { mode: 'API_KEY' }],
+        apiName: 'testApiName',
+        defaultAuthType: { expirationTime: 10, keyDescription: 'api key description', mode: 'API_KEY' },
+        gqlSchemaPath: 'backendDirPath/api/testApiName/schema.graphql',
+        serviceName: 'AppSync',
+      },
+      version: 1,
+    });
+  });
+
   it('updates additional auth if not empty', async () => {
     updateRequestStub.serviceModification.additionalAuthTypes = [{ mode: 'AWS_IAM' }, { mode: 'API_KEY' }];
+    jest.spyOn(AppsyncApiInputState.prototype, 'getCLIInputPayload').mockReturnValue({
+      serviceConfiguration: {
+        apiName: 'testApiName',
+        defaultAuthType: { expirationTime: 10, keyDescription: 'api key description', mode: 'API_KEY' },
+        gqlSchemaPath: 'backendDirPath/api/testApiName/schema.graphql',
+        serviceName: 'AppSync',
+      },
+      version: 1,
+    });
+
     await cfnApiArtifactHandler.updateArtifacts(updateRequestStub);
     expect(context_stub.amplify.executeProviderUtils.mock.calls.length).toBe(1);
     expect(context_stub.amplify.executeProviderUtils.mock.calls[0][3].authConfig).toMatchSnapshot();

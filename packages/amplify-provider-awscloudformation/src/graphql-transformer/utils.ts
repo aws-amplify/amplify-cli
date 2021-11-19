@@ -247,9 +247,9 @@ export async function writeDeploymentToDisk(
   buildParameters: Object,
   minify = false,
 ) {
-  // Delete the last deployments resources.
-  rimraf.sync(directory);
   fs.ensureDirSync(directory);
+  // Delete the last deployments resources except for tsconfig if present
+  emptyBuildDirPreserveTsconfig(directory);
 
   // Write the schema to disk
   const schema = deployment.schema;
@@ -348,3 +348,15 @@ export function throwIfNotJSONExt(stackFile: string) {
     throw new Error(`Invalid extension ${extension} for stack ${stackFile}`);
   }
 }
+
+const emptyBuildDirPreserveTsconfig = (directory: string) => {
+  const files = fs.readdirSync(directory);
+  files.forEach(file => {
+    const fileDir = path.join(directory, file);
+    if (fs.lstatSync(fileDir).isDirectory()) {
+      rimraf.sync(fileDir);
+    } else if (!file.endsWith('tsconfig.resource.json')) {
+      fs.unlinkSync(fileDir);
+    }
+  });
+};

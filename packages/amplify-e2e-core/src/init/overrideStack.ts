@@ -35,3 +35,20 @@ export function amplifyOverrideAuth(cwd: string, settings: {}) {
       });
   });
 }
+
+export function amplifyOverrideApi(cwd: string, settings: any) {
+  return new Promise((resolve, reject) => {
+    const args = ['override', 'api'];
+    const chain = spawn(getCLIPath(), args, { cwd, stripColors: true });
+    if (settings.isMigratedProject === true) {
+      chain.wait('Do you want to edit override.ts file now?').sendConfirmNo().sendEof();
+    }
+    chain.run((err: Error) => {
+      if (!err) {
+        resolve({});
+      } else {
+        reject(err);
+      }
+    });
+  });
+}
