@@ -1,10 +1,34 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`Schema migration tests for @auth default auth is user pools group based auth migrate dynamic user pool 1`] = `
+"type Todo @model @auth(rules: [{allow: groups, groupsField: \\"groups\\"}]) {
+  id: ID!
+  title: String
+  groups: [String]
+}
+
+type Task @model @auth(rules: [{allow: groups, groupsField: \\"group\\"}]) {
+  id: ID!
+  title: String
+  group: String
+}
+"
+`;
+
 exports[`Schema migration tests for @auth default auth is user pools group based auth migrates @auth with groups correctly 1`] = `
 "type Todo @model @auth(rules: [{allow: groups, groups: [\\"Admins\\"]}]) {
   id: ID!
   name: String!
   description: String
+}
+"
+`;
+
+exports[`Schema migration tests for @auth default auth is user pools group based auth with explicit operations migrates create + delete -> private read + update 1`] = `
+"type Todo @model @auth(rules: [{allow: groups, groups: [\\"Admins\\"]}, {allow: private, operations: [read, update]}]) {
+  id: ID!
+  rating: Int
+  title: String
 }
 "
 `;
@@ -39,6 +63,15 @@ exports[`Schema migration tests for @auth default auth is user pools owner based
   rating: Int
   title: String
   editors: [String]
+}
+"
+`;
+
+exports[`Schema migration tests for @auth default auth is user pools owner based auth custom identity claim migrates identity claim 1`] = `
+"type Todo @model @auth(rules: [{allow: owner, identityClaim: \\"sub\\"}]) {
+  id: ID!
+  title: String!
+  owner: String
 }
 "
 `;
@@ -159,17 +192,40 @@ exports[`Schema migration tests for @auth default auth uses iam migrates @auth p
 "
 `;
 
-exports[`Schema migration tests for @auth field level auth migrates field level auth correctly 1`] = `
-"type FieldLevelPost @model @auth(rules: [{allow: public}]) {
+exports[`Schema migration tests for @auth default auth uses oidc migrates oidc w/ groups as expected 1`] = `
+"type Todo @model @auth(rules: [{allow: groups, provider: oidc, groups: [\\"Admins\\"], groupClaim: \\"https://myapp.com/claims/groups\\"}]) {
   id: ID!
   title: String!
-  username: String
-  ssn: String @auth(rules: [{allow: owner, ownerField: \\"username\\", identityClaim: \\"username\\"}])
 }
 "
 `;
 
-exports[`Schema migration tests for @auth field level auth migrates field level correctly 1`] = `
+exports[`Schema migration tests for @auth default auth uses oidc migrates over oidc w/ owner and operations 1`] = `
+"type Todo @model @auth(rules: [{allow: owner, provider: oidc, identityClaim: \\"sub\\"}, {allow: private, provider: oidc, operations: [create, read, delete]}]) {
+  id: ID!
+  title: String!
+}
+"
+`;
+
+exports[`Schema migration tests for @auth default auth uses oidc ports over oidc w/ owner as expected 1`] = `
+"type Todo @model @auth(rules: [{allow: owner, provider: oidc, identityClaim: \\"sub\\"}]) {
+  id: ID!
+  title: String!
+}
+"
+`;
+
+exports[`Schema migration tests for @auth field level auth keeps type auth and field auth 1`] = `
+"type Todo @model @auth(rules: [{allow: public}]) {
+  id: ID!
+  title: String!
+  ssn: String @auth(rules: [{allow: owner}])
+}
+"
+`;
+
+exports[`Schema migration tests for @auth field level auth migrates field level correctly with explicit operations 1`] = `
 "type FieldLevelPost @model @auth(rules: [{allow: public}]) {
   id: ID!
   title: String!
@@ -188,6 +244,52 @@ exports[`Schema migration tests for @auth field level auth multi field auth migr
 "
 `;
 
+exports[`Schema migration tests for @auth field level auth relational auth migrates as expected 1`] = `
+"type Post @model @auth(rules: [{allow: owner}]) {
+  id: ID!
+  title: String!
+  author: User @belongsTo(fields: [\\"owner\\"])
+  owner: ID! @index(name: \\"byOwner\\", sortKeyFields: [\\"id\\"])
+}
+
+type User @model @auth(rules: [{allow: owner}]) {
+  id: ID!
+  posts: [Post] @hasMany(indexName: \\"byOwner\\", fields: [\\"id\\"])
+}
+
+type FieldProtected @model @auth(rules: [{allow: private}]) {
+  id: ID!
+  owner: String
+  ownerOnly: String @auth(rules: [{allow: owner}])
+}
+
+type OpenTopLevel @model @auth(rules: [{allow: private}]) {
+  id: ID!
+  name: String
+  owner: String
+  protected: [ConnectionProtected] @hasMany(indexName: \\"byTopLevel\\", fields: [\\"id\\"])
+}
+
+type ConnectionProtected @model(queries: null) @auth(rules: [{allow: owner}]) {
+  id: ID!
+  name: String
+  owner: String
+  topLevelID: ID! @index(name: \\"byTopLevel\\", sortKeyFields: [\\"id\\"])
+  topLevel: OpenTopLevel @belongsTo(fields: [\\"topLevelID\\"])
+}
+"
+`;
+
+exports[`Schema migration tests for @auth group auth ports over owner and group based rule 1`] = `
+"type Todo @model @auth(rules: [{allow: owner}, {allow: groups, groups: [\\"Admins\\"]}]) {
+  id: ID!
+  name: String!
+  description: String
+  owner: String
+}
+"
+`;
+
 exports[`Schema migration tests for @auth group auth retains dynamic groups in auth rules 1`] = `
 "type Todo @model @auth(rules: [{allow: groups, groups: [\\"Admins\\"]}]) {
   id: ID!
@@ -201,6 +303,42 @@ exports[`Schema migration tests for @auth group auth retains groupClaims in auth
 "type Todo @model @auth(rules: [{allow: groups, provider: oidc, groups: [\\"Admins\\"], groupClaim: \\"https://myapp.com/claims/groups\\"}]) {
   id: ID!
   title: String!
+}
+"
+`;
+
+exports[`Schema migration tests for @auth relational auth migrates as expected 1`] = `
+"type Post @model @auth(rules: [{allow: owner}]) {
+  id: ID!
+  title: String!
+  author: User @belongsTo(fields: [\\"owner\\"])
+  owner: ID! @index(name: \\"byOwner\\", sortKeyFields: [\\"id\\"])
+}
+
+type User @model @auth(rules: [{allow: owner}]) {
+  id: ID!
+  posts: [Post] @hasMany(indexName: \\"byOwner\\", fields: [\\"id\\"])
+}
+
+type FieldProtected @model @auth(rules: [{allow: private}]) {
+  id: ID!
+  owner: String
+  ownerOnly: String @auth(rules: [{allow: owner}])
+}
+
+type OpenTopLevel @model @auth(rules: [{allow: private}]) {
+  id: ID!
+  name: String
+  owner: String
+  protected: [ConnectionProtected] @hasMany(indexName: \\"byTopLevel\\", fields: [\\"id\\"])
+}
+
+type ConnectionProtected @model(queries: null) @auth(rules: [{allow: owner}]) {
+  id: ID!
+  name: String
+  owner: String
+  topLevelID: ID! @index(name: \\"byTopLevel\\", sortKeyFields: [\\"id\\"])
+  topLevel: OpenTopLevel @belongsTo(fields: [\\"topLevelID\\"])
 }
 "
 `;
