@@ -13,13 +13,16 @@ export const populateResource = async (context: $TSContext) => {
   if (geofenceCollectionResources.length === 0) {
     throw new Error('Geofence collection is not found. Use `amplify geo add` to create a new geofence collection.')
   }
+  //Get provisioned geofence collection name
   const collectionNames = geofenceCollectionResources.map(collection => {
     if (!collection.output || !collection.output.Name || !collection.output.Region) {
       throw new Error(`Geofence ${collection.resourceName} is not provisioned yet.`)
     }
     return collection.output.Name;
   });
+  //Get collection region
   const collectionRegion = geofenceCollectionResources[0].output.Region;
+  //Get the collection to populate
   let collectionToPopulate: string = collectionNames[0];
   if (geofenceCollectionResources.length > 1) {
     collectionToPopulate = await prompter.pick<'one', string>('Select the Geofence Collection to populate with Geofences', collectionNames)
@@ -29,6 +32,7 @@ export const populateResource = async (context: $TSContext) => {
   if (!existsSync(geoJSONFilePath)) {
     throw new Error('Cannot find GeoJSON file');
   }
+  //Ask for the identifier option
   let uniqueIdentifier: string = 'id';
   const identifierWalkthroughOptions = [
     {name: 'No I will use the root level "id" field on Feature type. Auto-Assign if missing (this will UPDATE the GeoJSON file)', value: IdentifierOption.RootLevelID },
@@ -40,8 +44,10 @@ export const populateResource = async (context: $TSContext) => {
   }
   //Validate the json file against schema
   const geoJSONObj: FeatureCollection = validateGeoJSONFile(geoJSONFilePath, uniqueIdentifier, identifierOption);
-  //Update the GeoJSON file
-  writeFileSync(geoJSONFilePath, JSON.stringify(geoJSONObj, null, 2));
+  //Update the GeoJSON file with auto-assigned ID
+  if (identifierOption === IdentifierOption.RootLevelID) {
+    writeFileSync(geoJSONFilePath, JSON.stringify(geoJSONObj, null, 2));
+  }
   //Construct geofence collection parameters
   const geofenceCollectionParams = constructGeofenceCollectionParams({collectionToPopulate, uniqueIdentifier, identifierOption, geoJSONObj});
   //Upload geofences to collection
