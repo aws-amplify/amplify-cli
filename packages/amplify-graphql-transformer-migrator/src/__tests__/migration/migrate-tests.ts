@@ -345,7 +345,7 @@ describe('Schema migration tests', () => {
 
     migrateAndValidate(schema);
   }); 
-  
+
   it('migrates complex schema from documentation', () => {
     const schema = `
       type Order @model
