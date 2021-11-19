@@ -195,10 +195,11 @@ export abstract class ResourcePackager {
     );
   }
 
-  protected resourcesHasApiGateways(packagedResources: PackagedResourceDefinition[]): boolean {
+  protected resourcesHasApiGatewaysButNotAdminQueries(packagedResources: PackagedResourceDefinition[]): boolean {
     const { API_CATEGORY, } = Constants;
+    const resources = packagedResources.filter(r => r.resourceName !== 'AdminQueries');
     return (
-      this.resourcesHasCategoryService(packagedResources, API_CATEGORY.NAME, API_CATEGORY.SERVICE.API_GATEWAY)
+      this.resourcesHasCategoryService(resources, API_CATEGORY.NAME, API_CATEGORY.SERVICE.API_GATEWAY)
     );
   }
 
@@ -226,7 +227,7 @@ export abstract class ResourcePackager {
    * @param resources
    */
   protected async generateCategoryCloudFormation(resources: UploadedResourceDefinition[] | PackagedResourceDefinition[]) {
-    if (this.resourcesHasApiGateways(resources)) {
+    if (this.resourcesHasApiGatewaysButNotAdminQueries(resources)) {
       const { PROVIDER, PROVIDER_NAME } = Constants;
       const { StackName: stackName } = this.amplifyMeta[PROVIDER][PROVIDER_NAME];
       consolidateApiGatewayPolicies(this.context, stackName);
