@@ -183,6 +183,22 @@ class AmplifyPrompter implements Prompter {
           // this.state is bound to a property of enquirer's prompt object, it does not reference a property of AmplifyPrompter
           return this.state.index === i ? chalk.cyan('❯') : ' ';
         },
+        validate() {
+          if (opts && ('pickAtLeast' in opts || 'pickAtMost' in opts)) {
+            // this.selected is bound to a property of enquirer's prompt object, it does not reference a property of AmplifyPrompter
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            if (this.selected.length < (opts.pickAtLeast ?? 0)) {
+              return `Select at least ${opts.pickAtLeast} items`;
+            }
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            if (this.selected.length > (opts.pickAtMost ?? Number.POSITIVE_INFINITY)) {
+              return `Select at most ${opts.pickAtMost} items`;
+            }
+          }
+          return true;
+        },
       }));
       // remove the TSTP listener
       process.removeListener('SIGTSTP', sigTstpListener);
@@ -288,6 +304,18 @@ type InitialValueOption<T> = {
   initial?: T;
 };
 
+type MultiSelectMinimun<RS extends ReturnSize> = RS extends 'one'
+  ? {}
+  : {
+      pickAtLeast?: number;
+    };
+
+type MultiSelectMaximum<RS extends ReturnSize> = RS extends 'one'
+  ? {}
+  : {
+      pickAtMost?: number;
+    };
+
 type ValidateValueOption = {
   validate?: Validator;
 };
@@ -330,7 +358,10 @@ type MaybeOptionalPickOptions<RS extends ReturnSize, T> = RS extends 'many' ? [P
 type PromptReturn<RS extends ReturnSize, T> = RS extends 'many' ? T[] : T;
 
 // the following types are the method input types
-type PickOptions<RS extends ReturnSize, T> = ReturnSizeOption<RS> & InitialSelectionOption<RS, T>;
+type PickOptions<RS extends ReturnSize, T> = ReturnSizeOption<RS> &
+  InitialSelectionOption<RS, T> &
+  MultiSelectMaximum<RS> &
+  MultiSelectMinimun<RS>;
 
 type InputOptions<RS extends ReturnSize, T> = ReturnSizeOption<RS> &
   ValidateValueOption &
