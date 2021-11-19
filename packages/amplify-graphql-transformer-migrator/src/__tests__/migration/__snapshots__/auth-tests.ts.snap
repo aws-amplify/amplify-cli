@@ -59,26 +59,6 @@ exports[`Schema migration tests for @auth default auth uses iam migrates @auth p
 "
 `;
 
-exports[`Schema migration tests for @auth field level auth migrates field level auth correctly 1`] = `
-"type FieldLevelPost @model @auth(rules: [{allow: public}]) {
-  id: ID!
-  title: String!
-  username: String
-  ssn: String @auth(rules: [{allow: owner, ownerField: \\"username\\", identityClaim: \\"username\\"}])
-}
-"
-`;
-
-exports[`Schema migration tests for @auth field level auth migrates field level correctly 1`] = `
-"type FieldLevelPost @model @auth(rules: [{allow: public}]) {
-  id: ID!
-  title: String!
-  username: String
-  ssn: String @auth(rules: [{allow: owner, ownerField: \\"username\\", identityClaim: \\"username\\", operations: [create, read, update, delete]}])
-}
-"
-`;
-
 exports[`Schema migration tests for @auth group auth retains dynamic groups in auth rules 1`] = `
 "type Todo @model @auth(rules: [{allow: groups, groups: [\\"Admins\\"]}]) {
   id: ID!
