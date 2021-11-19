@@ -81,9 +81,8 @@ const bulkUploadGeofence = async (params: GeofenceCollectionParams, region: stri
     if (err) {
       console.log(err, err.stack);
     }
-    else {
-      successCount++;
-    }
+    successCount = data.Successes.length;
+
   }).promise();
   return successCount;
 }
