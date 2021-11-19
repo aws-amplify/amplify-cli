@@ -23,6 +23,10 @@ function getOwnerAuthRules(rules: any) {
   return rules.filter((rule: any) => rule.fields.find((f: any) => f?.name?.value === 'allow')?.value?.value === 'owner');
 }
 
+function getGroupAuthRules(rules: any) {
+  return rules.filter((rule: any) => rule.fields.find((f: any) => f?.name?.value === 'allow')?.value?.value === 'groups');
+}
+
 const ops = ['create', 'read', 'update', 'delete'];
 
 export function migrateOwnerAuth(node: any, defaultAuthMode: any) {
@@ -30,11 +34,10 @@ export function migrateOwnerAuth(node: any, defaultAuthMode: any) {
 
   // check if owner-based auth exist and if operations allow everything.
   const deniedOperations: Set<string> = new Set();
-  const ownerRules = getOwnerAuthRules(authRules);
+  const userBasedRulesWithProtection = getOwnerAuthRules(authRules).concat(getGroupAuthRules(authRules));
+  if (userBasedRulesWithProtection.length === 0) return;
 
-  if (ownerRules.length === 0) return;
-
-  ownerRules.forEach((rule: any) => {
+  userBasedRulesWithProtection.forEach((rule: any) => {
     const operationsFieldIndex = rule.fields.findIndex((f: any) => f.name.value === 'operations');
 
     if (operationsFieldIndex === -1) {
@@ -43,7 +46,7 @@ export function migrateOwnerAuth(node: any, defaultAuthMode: any) {
       // remember denied operations
       rule.fields[operationsFieldIndex].value.values.forEach((op: any) => deniedOperations.add(op.value));
       // maintain full CRUD access for owners
-      if (ownerRules.length === 1) rule.fields.splice(operationsFieldIndex, 1);
+      if (userBasedRulesWithProtection.length === 1) rule.fields.splice(operationsFieldIndex, 1);
     }
   });
 
