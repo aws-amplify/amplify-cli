@@ -111,7 +111,7 @@ class CfnApiArtifactHandler implements ApiArtifactHandler {
     const resourceDir = this.getResourceDir(apiName);
     // update appsync cli-inputs
     const appsyncCLIInputs = await this.updateAppsyncCLIInputs(updates, apiName);
-    if (updates.transformSchema) {
+    if (!_.isEmpty(updates.transformSchema)) {
       this.writeSchema(appsyncCLIInputs.serviceConfiguration.gqlSchemaPath, updates.transformSchema);
     }
     if (updates.conflictResolution) {
@@ -123,11 +123,10 @@ class CfnApiArtifactHandler implements ApiArtifactHandler {
     const previousAuthConfig = _.cloneDeep(authConfig);
     const oldConfigHadApiKey = authConfigHasApiKey(authConfig);
     if (updates.defaultAuthType) {
-      authConfig.defaultAuthentication = appSyncAuthTypeToAuthConfig(appsyncCLIInputs.serviceConfiguration.defaultAuthType);
+      authConfig.defaultAuthentication = appSyncAuthTypeToAuthConfig(updates.defaultAuthType);
     }
     if (updates.additionalAuthTypes) {
-      authConfig.additionalAuthenticationProviders =
-        appsyncCLIInputs.serviceConfiguration.additionalAuthTypes.map(appSyncAuthTypeToAuthConfig);
+      authConfig.additionalAuthenticationProviders = updates.additionalAuthTypes.map(appSyncAuthTypeToAuthConfig);
     }
 
     if (!opts?.skipCompile) {
@@ -304,13 +303,13 @@ class CfnApiArtifactHandler implements ApiArtifactHandler {
     const prevAppsyncInputs = cliState.getCLIInputPayload();
 
     const appsyncInputs: AppSyncCLIInputs = prevAppsyncInputs;
-    if (!_.isEmpty(updates.conflictResolution)) {
+    if (updates.conflictResolution) {
       appsyncInputs.serviceConfiguration.conflictResolution = updates.conflictResolution;
     }
-    if (!_.isEmpty(updates.defaultAuthType)) {
+    if (updates.defaultAuthType) {
       appsyncInputs.serviceConfiguration.defaultAuthType = updates.defaultAuthType;
     }
-    if (!_.isEmpty(updates.additionalAuthTypes)) {
+    if (updates.additionalAuthTypes) {
       appsyncInputs.serviceConfiguration.additionalAuthTypes = updates.additionalAuthTypes;
     }
     cliState.saveCLIInputPayload(appsyncInputs);
