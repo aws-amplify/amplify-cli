@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.6.0-apiext2.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-prompts@1.5.1...amplify-prompts@1.6.0-apiext2.0) (2021-11-19)
+
+
+### Features
+
+* REST API extensibility ([#8958](https://github.com/aws-amplify/amplify-cli/issues/8958)) ([3b74acf](https://github.com/aws-amplify/amplify-cli/commit/3b74acf91b92095ec5ffb80cc10e91dae6dc7c24))
+
+
+
+
+
 ## [1.5.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-prompts@1.3.0...amplify-prompts@1.5.1) (2021-11-15)
 
 **Note:** Version bump only for package amplify-prompts

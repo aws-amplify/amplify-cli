@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [7.5.0-apiext2.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@7.4.1...@aws-amplify/cli@7.5.0-apiext2.0) (2021-11-19)
+
+
+### Bug Fixes
+
+* **graphql:** add warning to missing auth modes on amplify push yes flag ([#8925](https://github.com/aws-amplify/amplify-cli/issues/8925)) ([80c9147](https://github.com/aws-amplify/amplify-cli/commit/80c9147edbda68b44ccd02d0830dccd0c4dcc887))
+
+
+### Features
+
+* extensibility for Amplify API  ([#8954](https://github.com/aws-amplify/amplify-cli/issues/8954)) ([d662316](https://github.com/aws-amplify/amplify-cli/commit/d66231697abc7db86e4e6a7c66e78e88a332dd22))
+* REST API extensibility ([#8958](https://github.com/aws-amplify/amplify-cli/issues/8958)) ([3b74acf](https://github.com/aws-amplify/amplify-cli/commit/3b74acf91b92095ec5ffb80cc10e91dae6dc7c24))
+
+
+
+
+
 ## [7.4.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@7.4.0...@aws-amplify/cli@7.4.1) (2021-11-18)
 
 **Note:** Version bump only for package @aws-amplify/cli

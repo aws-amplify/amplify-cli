@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.5.0-apiext2.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@3.4.0...amplify-e2e-tests@3.5.0-apiext2.0) (2021-11-19)
+
+
+### Features
+
+* extensibility for Amplify API  ([#8954](https://github.com/aws-amplify/amplify-cli/issues/8954)) ([d662316](https://github.com/aws-amplify/amplify-cli/commit/d66231697abc7db86e4e6a7c66e78e88a332dd22))
+* REST API extensibility ([#8958](https://github.com/aws-amplify/amplify-cli/issues/8958)) ([3b74acf](https://github.com/aws-amplify/amplify-cli/commit/3b74acf91b92095ec5ffb80cc10e91dae6dc7c24))
+
+
+
+
+
 # [3.4.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@3.3.1...amplify-e2e-tests@3.4.0) (2021-11-17)
 
 

@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.5.0-apiext2.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@5.4.1...amplify-provider-awscloudformation@5.5.0-apiext2.0) (2021-11-19)
+
+
+### Bug Fixes
+
+* **amplify-provider-awscloudformation:** fixed the consolidateapigwpolicies for apigw ([#8952](https://github.com/aws-amplify/amplify-cli/issues/8952)) ([74ecd02](https://github.com/aws-amplify/amplify-cli/commit/74ecd02899c288e9f36f21197bc624badaeb15ef))
+
+
+### Features
+
+* extensibility for Amplify API  ([#8954](https://github.com/aws-amplify/amplify-cli/issues/8954)) ([d662316](https://github.com/aws-amplify/amplify-cli/commit/d66231697abc7db86e4e6a7c66e78e88a332dd22))
+* REST API extensibility ([#8958](https://github.com/aws-amplify/amplify-cli/issues/8958)) ([3b74acf](https://github.com/aws-amplify/amplify-cli/commit/3b74acf91b92095ec5ffb80cc10e91dae6dc7c24))
+
+
+
+
+
 ## [5.4.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@5.4.0...amplify-provider-awscloudformation@5.4.1) (2021-11-18)
 
 **Note:** Version bump only for package amplify-provider-awscloudformation
