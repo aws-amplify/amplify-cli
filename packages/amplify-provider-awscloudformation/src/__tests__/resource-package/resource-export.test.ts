@@ -449,7 +449,6 @@ describe('test resource export', () => {
     exportStackParameters = stackParameters;
     expect(stackParameters).toBeDefined();
     expect(transformedResources).toBeDefined();
-    expect(mockconsolidateApiGatewayPolicies).toBeCalledWith(mockContext, 'amplify-amplifyexportest-dev-172019');
 
     expect(invokePluginMethod).nthCalledWith(invokePluginCount++, mockContext, 'auth', undefined, 'prePushAuthHook', [mockContext]);
     const apiResource = packagedResources.find(r => r.service === 'ElasticContainer');

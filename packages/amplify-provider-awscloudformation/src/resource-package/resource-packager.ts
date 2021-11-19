@@ -195,6 +195,13 @@ export abstract class ResourcePackager {
     );
   }
 
+  protected resourcesHasApiGateways(packagedResources: PackagedResourceDefinition[]): boolean {
+    const { API_CATEGORY, } = Constants;
+    return (
+      this.resourcesHasCategoryService(packagedResources, API_CATEGORY.NAME, API_CATEGORY.SERVICE.API_GATEWAY)
+    );
+  }
+
   /**
    * Saves providerMetadata s3 information
    * @param packagedResource
@@ -219,7 +226,7 @@ export abstract class ResourcePackager {
    * @param resources
    */
   protected async generateCategoryCloudFormation(resources: UploadedResourceDefinition[] | PackagedResourceDefinition[]) {
-    if (this.resourcesHasContainers(resources)) {
+    if (this.resourcesHasApiGateways(resources)) {
       const { PROVIDER, PROVIDER_NAME } = Constants;
       const { StackName: stackName } = this.amplifyMeta[PROVIDER][PROVIDER_NAME];
       consolidateApiGatewayPolicies(this.context, stackName);
