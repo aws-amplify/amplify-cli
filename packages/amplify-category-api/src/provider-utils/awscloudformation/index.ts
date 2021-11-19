@@ -5,7 +5,7 @@ import { legacyAddResource } from './legacy-add-resource';
 import { legacyUpdateResource } from './legacy-update-resource';
 import { UpdateApiRequest } from 'amplify-headless-interface';
 import { editSchemaFlow } from './utils/edit-schema-flow';
-import { NotImplementedError, exitOnNextTick } from 'amplify-cli-core';
+import { NotImplementedError, exitOnNextTick, $TSAny } from 'amplify-cli-core';
 import { addResource as addContainer, updateResource as updateContainer } from './containers-handler';
 import inquirer from 'inquirer';
 import {
@@ -45,7 +45,7 @@ async function addNonContainerResource(context, category, service, options) {
   const { serviceWalkthroughFilename, defaultValuesFilename } = serviceMetadata;
   const serviceWalkthrough = await getServiceWalkthrough(serviceWalkthroughFilename);
 
-  const serviceWalkthroughPromise: Promise<any> = serviceWalkthrough(context, defaultValuesFilename, serviceMetadata);
+  const serviceWalkthroughPromise: Promise<$TSAny> = serviceWalkthrough(context, defaultValuesFilename, serviceMetadata);
   switch (service) {
     case 'AppSync':
       const walkthroughResult = await serviceWalkthroughPromise;
@@ -140,12 +140,8 @@ export async function updateResource(context, category, service, options) {
   let useContainerResource = false;
   let apiType = API_TYPE.GRAPHQL;
   if (allowContainers && isContainersEnabled(context)) {
-    const {
-      hasAPIGatewayContainerResource,
-      hasAPIGatewayLambdaResource,
-      hasGraphQLAppSyncResource,
-      hasGraphqlContainerResource,
-    } = await describeApiResourcesBySubCategory(context);
+    const { hasAPIGatewayContainerResource, hasAPIGatewayLambdaResource, hasGraphQLAppSyncResource, hasGraphqlContainerResource } =
+      await describeApiResourcesBySubCategory(context);
 
     switch (service) {
       case 'AppSync':

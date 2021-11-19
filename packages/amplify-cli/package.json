@@ -39,7 +39,7 @@
     "@aws-cdk/cloudformation-diff": "~1.124.0",
     "amplify-app": "4.2.4",
     "amplify-category-analytics": "3.2.4",
-    "amplify-category-api": "3.3.5",
+    "@aws-amplify/amplify-category-api": "1.0.0",
     "amplify-category-function": "3.3.3",
     "amplify-category-geo": "2.2.4",
     "amplify-category-hosting": "3.2.4",
@@ -160,7 +160,7 @@
       "api": {
         "name": "api",
         "type": "category",
-        "packageName": "amplify-category-api"
+        "packageName": "@aws-amplify/amplify-category-api"
       },
       "auth": [
         {
