@@ -14,6 +14,7 @@ export * from './categories';
 export * from './utils/sdk-calls';
 export * from './export/';
 export { addFeatureFlag } from './utils/feature-flags';
+export * from './cli-version-controller';
 
 declare global {
   namespace NodeJS {
@@ -44,7 +45,6 @@ export function isTestingWithLatestCodebase(scriptRunnerPath) {
 
 export function getScriptRunnerPath(testingWithLatestCodebase = false) {
   if (!testingWithLatestCodebase) {
-
     return process.platform === 'win32' ? 'node.exe' : 'exec';
   }
 

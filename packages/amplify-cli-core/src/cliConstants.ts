@@ -33,13 +33,13 @@ export const AmplifyCategories = {
 };
 
 export const AmplifySupportedService = {
+  APIGW: 'API Gateway',
+  APPSYNC: 'AppSync',
   S3: 'S3',
   DYNAMODB: 'DynamoDB',
   COGNITO: 'Cognito',
   COGNITOUSERPOOLGROUPS: 'Cognito-UserPool-Groups',
   LAMBDA: 'Lambda',
-  APPSYNC: 'AppSync',
-  APIGW: 'API gateway',
 };
 
 export const overriddenCategories = [AmplifyCategories.AUTH, AmplifyCategories.STORAGE, AmplifyCategories.CUSTOM, AmplifyCategories.API];

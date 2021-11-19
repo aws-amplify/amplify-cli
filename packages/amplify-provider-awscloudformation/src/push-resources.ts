@@ -41,7 +41,7 @@ import { Fn } from 'cloudform-types';
 import { getGqlUpdatedResource } from './graphql-transformer/utils';
 import { isAmplifyAdminApp } from './utils/admin-helpers';
 import { fileLogger } from './utils/aws-logger';
-import { APIGW_AUTH_STACK_LOGICAL_ID, loadApiWithPrivacyParams } from './utils/consolidate-apigw-policies';
+import { APIGW_AUTH_STACK_LOGICAL_ID, loadApiCliInputs } from './utils/consolidate-apigw-policies';
 import { createEnvLevelConstructs } from './utils/env-level-constructs';
 import { NETWORK_STACK_LOGICAL_ID } from './network/stack';
 import { preProcessCFNTemplate, writeCustomPoliciesToCFNTemplate } from './pre-push-cfn-processor/cfn-pre-processor';
@@ -937,7 +937,7 @@ export async function formNestedStack(
     Object.keys(apis).forEach(apiName => {
       const api = apis[apiName];
 
-      if (loadApiWithPrivacyParams(context, apiName, api)) {
+      if (loadApiCliInputs(apiName, api)) {
         stack.Properties.Parameters[apiName] = {
           'Fn::GetAtt': [api.providerMetadata.logicalId, 'Outputs.ApiId'],
         };
