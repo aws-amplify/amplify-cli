@@ -119,6 +119,9 @@ export async function addFunctionResource(
     await openEditor(context, category, completeParams.resourceName, completeParams.functionTemplate);
   }
 
+  if (completeParams.skipNextSteps) {
+    return completeParams.resourceName;
+  }
   const { print } = context;
 
   const customPoliciesPath = pathManager.getCustomPoliciesPath(category, completeParams.resourceName);
@@ -134,6 +137,7 @@ export async function addFunctionResource(
   print.info(
     '"amplify publish" builds all of your local backend and front-end resources (if you added hosting category) and provisions them in the cloud',
   );
+
   return completeParams.resourceName;
 }
 

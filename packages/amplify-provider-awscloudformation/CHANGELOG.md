@@ -3,6 +3,61 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.4.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@5.4.0...amplify-provider-awscloudformation@5.4.1) (2021-11-18)
+
+**Note:** Version bump only for package amplify-provider-awscloudformation
+
+
+
+
+
+# [5.4.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@5.3.3...amplify-provider-awscloudformation@5.4.0) (2021-11-17)
+
+
+
+## 7.3.6 (2021-11-17)
+
+
+### Bug Fixes
+
+* build overrides for headless push with new env init scneario ([#8913](https://github.com/aws-amplify/amplify-cli/issues/8913)) ([489d784](https://github.com/aws-amplify/amplify-cli/commit/489d7840038a775e2a1ebd3dbfb7330fef4f75cf))
+* **graphql:** detect resource update on graphql api auth mode change ([#8782](https://github.com/aws-amplify/amplify-cli/issues/8782)) ([714a122](https://github.com/aws-amplify/amplify-cli/commit/714a1221ec1ce72c88ba732172be6b8feab56a09))
+
+
+### Features
+
+* **graphql-transformer-core:** add support for user defined slots ([#8758](https://github.com/aws-amplify/amplify-cli/issues/8758)) ([87b532d](https://github.com/aws-amplify/amplify-cli/commit/87b532da226c4a3cab619fee115e8b7fd0476d71))
+
+
+
+
+
+## [5.3.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@5.3.2...amplify-provider-awscloudformation@5.3.3) (2021-11-16)
+
+
+
+## 7.3.3 (2021-11-16)
+
+
+### Bug Fixes
+
+* stop auto-migration of storage during api gql-compile/push ([#8891](https://github.com/aws-amplify/amplify-cli/issues/8891)) ([fdeacfe](https://github.com/aws-amplify/amplify-cli/commit/fdeacfe785dab3d3549d54cdbddea2f6dd7c9ada))
+
+
+
+
+
+## [5.3.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@5.3.1...amplify-provider-awscloudformation@5.3.2) (2021-11-16)
+
+
+### Bug Fixes
+
+* trigger when break circular dependency  FF is off ([#8879](https://github.com/aws-amplify/amplify-cli/issues/8879)) ([d90d01f](https://github.com/aws-amplify/amplify-cli/commit/d90d01f8f9d7cacfb6279c1e1aff0bcc0cfeb193))
+
+
+
+
+
 ## [5.3.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@5.3.0...amplify-provider-awscloudformation@5.3.1) (2021-11-15)
 
 

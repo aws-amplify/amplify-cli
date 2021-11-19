@@ -22,6 +22,7 @@ import { buildS3UserInputFromHeadlessStorageRequest, buildS3UserInputFromHeadles
 import {
   S3UserInputs
 } from './service-walkthrough-types/s3-user-input-types';
+import { checkStorageAuthenticationRequirements } from './service-walkthroughs/s3-auth-api';
 import { s3AddStorageLambdaTrigger, s3CreateStorageResource, s3UpdateUserInput } from './service-walkthroughs/s3-resource-api';
 import { resourceAlreadyExists } from './service-walkthroughs/s3-walkthrough';
 
@@ -200,7 +201,12 @@ export async function headlessRemoveStorage(context: $TSContext, storageRequest:
 
 async function createS3StorageArtifacts(context: $TSContext, storageRequest: AddStorageRequest) {
   const storageInput: S3UserInputs  = buildS3UserInputFromHeadlessStorageRequest( context, storageRequest );
-  const result = await s3CreateStorageResource(context, storageInput);
+  const s3UserInput = await s3CreateStorageResource(context, storageInput);
+  const allowUnauthenticatedIdentities = storageInput.guestAccess && storageInput.guestAccess.length > 0;
+  //update auth dependency
+  await checkStorageAuthenticationRequirements(context, s3UserInput.resourceName as string, allowUnauthenticatedIdentities);
+
+  //create new function if required
   const lambdaConfig = storageRequest.serviceConfiguration.lambdaTrigger;
   if(lambdaConfig){
     if (lambdaConfig.mode === 'new'){
@@ -214,7 +220,13 @@ async function createS3StorageArtifacts(context: $TSContext, storageRequest: Add
 async function updateS3StorageArtifacts(context: $TSContext, updateStorageRequest: UpdateStorageRequest, _storageResource: $TSAny) {
   const lambdaConfig = updateStorageRequest.serviceModification.lambdaTrigger;
   const storageInput: S3UserInputs = await buildS3UserInputFromHeadlessUpdateStorageRequest(context, updateStorageRequest);
+  const allowUnauthenticatedIdentities = storageInput.guestAccess && storageInput.guestAccess.length > 0;
+  //update auth dependency
+  await checkStorageAuthenticationRequirements(context, storageInput.resourceName as string, allowUnauthenticatedIdentities);
+
+  //regenerate storage resource artifacts
   let s3UserInput = await s3UpdateUserInput(context, storageInput);
+  //create new function if required
   if(lambdaConfig){
     if (lambdaConfig.mode === 'new'){
       const storageLambdaParams: S3UserInputTriggerFunctionParams = buildTriggerFunctionParams(lambdaConfig.name)

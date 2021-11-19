@@ -411,7 +411,7 @@ describe('ModelTransformer: ', () => {
     expect(defaultIdField).toBeDefined();
     expect(getBaseType(defaultIdField.type)).toEqual('Int');
     // It should not add default value for ctx.arg.id as id is of type Int
-    expect(result.pipelineFunctions['Mutation.createPost.req.vtl']).toMatchSnapshot();
+    expect(result.resolvers['Mutation.createPost.req.vtl']).toMatchSnapshot();
   });
 
   it('should generate only create mutation', () => {
@@ -670,7 +670,7 @@ describe('ModelTransformer: ', () => {
     validateModelSchema(schema);
   });
 
-  it('should support timestamp parameters when generating pipelineFunctions and output schema', () => {
+  it('should support timestamp parameters when generating resolvers and output schema', () => {
     const validSchema = `
     type Post @model(timestamps: { createdAt: "createdOn", updatedAt: "updatedOn"}) {
       id: ID!
@@ -688,8 +688,8 @@ describe('ModelTransformer: ', () => {
     const schema = parse(result.schema);
     validateModelSchema(schema);
 
-    expect(result.pipelineFunctions['Mutation.createPost.req.vtl']).toMatchSnapshot();
-    expect(result.pipelineFunctions['Mutation.updatePost.req.vtl']).toMatchSnapshot();
+    expect(result.resolvers['Mutation.createPost.req.vtl']).toMatchSnapshot();
+    expect(result.resolvers['Mutation.updatePost.req.vtl']).toMatchSnapshot();
   });
 
   it('should not to auto generate createdAt and updatedAt when the type in schema is not AWSDateTime', () => {
@@ -712,8 +712,8 @@ describe('ModelTransformer: ', () => {
     const schema = parse(result.schema);
     validateModelSchema(schema);
 
-    expect(result.pipelineFunctions['Mutation.createPost.req.vtl']).toMatchSnapshot();
-    expect(result.pipelineFunctions['Mutation.updatePost.req.vtl']).toMatchSnapshot();
+    expect(result.resolvers['Mutation.createPost.req.vtl']).toMatchSnapshot();
+    expect(result.resolvers['Mutation.updatePost.req.vtl']).toMatchSnapshot();
   });
 
   it('should have timestamps as nullable fields when the type makes it non-nullable', () => {
@@ -737,8 +737,8 @@ describe('ModelTransformer: ', () => {
     const schema = parse(result.schema);
     validateModelSchema(schema);
 
-    expect(result.pipelineFunctions['Mutation.createPost.req.vtl']).toMatchSnapshot();
-    expect(result.pipelineFunctions['Mutation.updatePost.req.vtl']).toMatchSnapshot();
+    expect(result.resolvers['Mutation.createPost.req.vtl']).toMatchSnapshot();
+    expect(result.resolvers['Mutation.updatePost.req.vtl']).toMatchSnapshot();
   });
 
   it('should not to include createdAt and updatedAt field when timestamps is set to null', () => {
@@ -759,8 +759,8 @@ describe('ModelTransformer: ', () => {
     const schema = parse(result.schema);
     validateModelSchema(schema);
 
-    expect(result.pipelineFunctions['Mutation.createPost.req.vtl']).toMatchSnapshot();
-    expect(result.pipelineFunctions['Mutation.updatePost.req.vtl']).toMatchSnapshot();
+    expect(result.resolvers['Mutation.createPost.req.vtl']).toMatchSnapshot();
+    expect(result.resolvers['Mutation.updatePost.req.vtl']).toMatchSnapshot();
   });
 
   it('should filter known input types from create and update input fields', () => {
@@ -908,7 +908,7 @@ describe('ModelTransformer: ', () => {
 
     const definition = out.schema;
     expect(definition).toBeDefined();
-    expect(out.pipelineFunctions).toMatchSnapshot();
+    expect(out.resolvers).toMatchSnapshot();
 
     validateModelSchema(parse(definition));
   });
@@ -945,7 +945,7 @@ describe('ModelTransformer: ', () => {
 
     const definition = out.schema;
     expect(definition).toBeDefined();
-    expect(out.pipelineFunctions).toMatchSnapshot();
+    expect(out.resolvers).toMatchSnapshot();
 
     validateModelSchema(parse(definition));
   });
@@ -979,7 +979,7 @@ describe('ModelTransformer: ', () => {
 
     const definition = out.schema;
     expect(definition).toBeDefined();
-    expect(out.pipelineFunctions).toMatchSnapshot();
+    expect(out.resolvers).toMatchSnapshot();
 
     validateModelSchema(parse(definition));
   });
@@ -1115,8 +1115,8 @@ describe('ModelTransformer: ', () => {
     const queryObject = getObjectType(schema, 'Query');
     expectFields(queryObject!, ['syncTodos']);
     // sync resolvers
-    expect(out.pipelineFunctions['Query.syncTodos.req.vtl']).toMatchSnapshot();
-    expect(out.pipelineFunctions['Query.syncTodos.res.vtl']).toMatchSnapshot();
+    expect(out.resolvers['Query.syncTodos.req.vtl']).toMatchSnapshot();
+    expect(out.resolvers['Query.syncTodos.res.vtl']).toMatchSnapshot();
     // ds table
     cdkExpect(out.rootStack).to(
       haveResource('AWS::DynamoDB::Table', {
@@ -1165,5 +1165,109 @@ describe('ModelTransformer: ', () => {
         },
       }),
     );
+  });
+
+  it('should add the model parameters at the root sack', () => {
+    const modelParams = {
+      DynamoDBModelTableReadIOPS: expect.objectContaining({
+        Type: 'Number',
+        Default: 5,
+        Description: 'The number of read IOPS the table should support.',
+      }),
+      DynamoDBModelTableWriteIOPS: expect.objectContaining({
+        Type: 'Number',
+        Default: 5,
+        Description: 'The number of write IOPS the table should support.',
+      }),
+      DynamoDBBillingMode: expect.objectContaining({
+        Type: 'String',
+        Default: 'PAY_PER_REQUEST',
+        AllowedValues: ['PAY_PER_REQUEST', 'PROVISIONED'],
+        Description: 'Configure @model types to create DynamoDB tables with PAY_PER_REQUEST or PROVISIONED billing modes.',
+      }),
+      DynamoDBEnablePointInTimeRecovery: expect.objectContaining({
+        Type: 'String',
+        Default: 'false',
+        AllowedValues: ['true', 'false'],
+        Description: 'Whether to enable Point in Time Recovery on the table.',
+      }),
+      DynamoDBEnableServerSideEncryption: expect.objectContaining({
+        Type: 'String',
+        Default: 'true',
+        AllowedValues: ['true', 'false'],
+        Description: 'Enable server side encryption powered by KMS.',
+      }),
+    };
+    const validSchema = `type Todo @model {
+      name: String
+    }`;
+    const transformer = new GraphQLTransform({
+      sandboxModeEnabled: true,
+      transformers: [new ModelTransformer()],
+    });
+    const out = transformer.transform(validSchema);
+
+    const rootStack = out.rootStack;
+    expect(rootStack).toBeDefined();
+    expect(rootStack.Parameters).toMatchObject(modelParams);
+
+    const todoStack = out.stacks['Todo'];
+    expect(todoStack).toBeDefined();
+    expect(todoStack.Parameters).toMatchObject(modelParams);
+  });
+
+  it('global auth enabled should add apiKey if not default mode of auth', () => {
+    const validSchema = `
+    type Post @model {
+      id: ID!
+      title: String!
+      tags: [Tag]
+    }
+
+    type Tag {
+      id: ID
+      tags: [Tag]
+    }`;
+    const transformer = new GraphQLTransform({
+      authConfig: {
+        defaultAuthentication: {
+          authenticationType: 'AMAZON_COGNITO_USER_POOLS',
+        },
+        additionalAuthenticationProviders: [
+          {
+            authenticationType: 'API_KEY',
+          },
+        ],
+      },
+      sandboxModeEnabled: true,
+      transformers: [new ModelTransformer()],
+    });
+    const out = transformer.transform(validSchema);
+    expect(out).toBeDefined();
+
+    const schema = parse(out.schema);
+    validateModelSchema(schema);
+
+    const postType = getObjectType(schema, 'Post')!;
+    expect(postType).toBeDefined();
+    expect(postType.directives).toBeDefined();
+    expect(postType.directives!.some(dir => dir.name.value === 'aws_api_key')).toEqual(true);
+
+    const tagType = getObjectType(schema, 'Tag')!;
+    expect(tagType).toBeDefined();
+    expect(tagType.directives).toBeDefined();
+    expect(tagType.directives!.some(dir => dir.name.value === 'aws_api_key')).toEqual(true);
+
+    // check operations
+    const queryType = getObjectType(schema, 'Query')!;
+    expect(queryType).toBeDefined();
+    const mutationType = getObjectType(schema, 'Mutation')!;
+    expect(mutationType).toBeDefined();
+    const subscriptionType = getObjectType(schema, 'Subscription')!;
+    expect(subscriptionType).toBeDefined();
+
+    for (const field of [...queryType.fields!, ...mutationType.fields!, ...subscriptionType.fields!]) {
+      expect(field.directives!.some(dir => dir.name.value === 'aws_api_key')).toEqual(true);
+    }
   });
 });

@@ -1,5 +1,21 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`Schema migration tests @connection belongs to relationship 1`] = `
+"type Post @model @auth(rules: [{allow: public}]) {
+  id: ID!
+  title: String!
+  comments: [Comment] @hasMany(indexName: \\"byPost\\", fields: [\\"id\\"])
+}
+
+type Comment @model @auth(rules: [{allow: public}]) {
+  id: ID!
+  postID: ID! @index(name: \\"byPost\\", sortKeyFields: [\\"content\\"])
+  content: String!
+  post: Post @belongsTo(fields: [\\"postID\\"])
+}
+"
+`;
+
 exports[`Schema migration tests @connection has many relationship 1`] = `
 "type Post @model @auth(rules: [{allow: public}]) {
   id: ID!
@@ -15,7 +31,36 @@ type Comment @model @auth(rules: [{allow: public}]) {
 "
 `;
 
-exports[`Schema migration tests @connection has one relationship 1`] = `
+exports[`Schema migration tests @connection has many relationship with limit 1`] = `
+"type Post @model @auth(rules: [{allow: public}]) {
+  id: ID!
+  title: String!
+  comments: [Comment] @hasMany(limit: 50)
+}
+
+type Comment @model @auth(rules: [{allow: public}]) {
+  id: ID!
+  content: String!
+}
+"
+`;
+
+exports[`Schema migration tests @connection has one relationship with fields 1`] = `
+"type Project @model @auth(rules: [{allow: public}]) {
+  id: ID!
+  name: String
+  teamID: ID!
+  team: Team @hasOne(fields: [\\"teamID\\"])
+}
+
+type Team @model @auth(rules: [{allow: public}]) {
+  id: ID!
+  name: String!
+}
+"
+`;
+
+exports[`Schema migration tests @connection has one relationship with no fields 1`] = `
 "type Project @model @auth(rules: [{allow: public}]) {
   id: ID!
   name: String
@@ -25,6 +70,29 @@ exports[`Schema migration tests @connection has one relationship 1`] = `
 type Team @model @auth(rules: [{allow: public}]) {
   id: ID!
   name: String!
+}
+"
+`;
+
+exports[`Schema migration tests @connection many to many relationship 1`] = `
+"type Post @model @auth(rules: [{allow: public}]) {
+  id: ID!
+  title: String!
+  editors: [PostEditor] @hasMany(indexName: \\"byPost\\", fields: [\\"id\\"])
+}
+
+type PostEditor @model(queries: null) @auth(rules: [{allow: public}]) {
+  id: ID!
+  postID: ID! @index(name: \\"byPost\\", sortKeyFields: [\\"editorID\\"])
+  editorID: ID! @index(name: \\"byEditor\\", sortKeyFields: [\\"postID\\"])
+  post: Post! @belongsTo(fields: [\\"postID\\"])
+  editor: User! @belongsTo(fields: [\\"editorID\\"])
+}
+
+type User @model @auth(rules: [{allow: public}]) {
+  id: ID!
+  username: String!
+  posts: [PostEditor] @hasMany(indexName: \\"byEditor\\", fields: [\\"id\\"])
 }
 "
 `;
@@ -164,6 +232,64 @@ exports[`Schema migration tests explicit creation and update timestamps 1`] = `
 "
 `;
 
+exports[`Schema migration tests migrates complex schema from documentation 1`] = `
+"type Order @model @auth(rules: [{allow: public}]) {
+  id: ID!
+  customerID: ID! @index(name: \\"byCustomerByStatusByDate\\", sortKeyFields: [\\"status\\", \\"date\\"]) @index(name: \\"byCustomerByDate\\", sortKeyFields: [\\"date\\"])
+  accountRepresentativeID: ID! @index(name: \\"byRepresentativebyDate\\", sortKeyFields: [\\"date\\"])
+  productID: ID! @index(name: \\"byProduct\\", sortKeyFields: [\\"id\\"])
+  status: String!
+  amount: Int!
+  date: String!
+}
+
+type Customer @model @auth(rules: [{allow: public}]) {
+  id: ID!
+  name: String!
+  phoneNumber: String
+  accountRepresentativeID: ID! @index(name: \\"byRepresentative\\", sortKeyFields: [\\"id\\"])
+  ordersByDate: [Order] @hasMany(indexName: \\"byCustomerByDate\\", fields: [\\"id\\"])
+  ordersByStatusDate: [Order] @hasMany(indexName: \\"byCustomerByStatusByDate\\", fields: [\\"id\\"])
+}
+
+type Employee @model @auth(rules: [{allow: public}]) {
+  id: ID!
+  name: String! @index(name: \\"byName\\", queryField: \\"employeeByName\\", sortKeyFields: [\\"id\\"])
+  startDate: String!
+  phoneNumber: String!
+  warehouseID: ID! @index(name: \\"byWarehouse\\", sortKeyFields: [\\"id\\"])
+  jobTitle: String! @index(name: \\"byTitle\\", queryField: \\"employeesByJobTitle\\", sortKeyFields: [\\"id\\"])
+  newHire: String! @index(name: \\"newHire\\", queryField: \\"employeesNewHire\\", sortKeyFields: [\\"id\\"]) @index(name: \\"newHireByStartDate\\", queryField: \\"employeesNewHireByStartDate\\", sortKeyFields: [\\"startDate\\"])
+}
+
+type Warehouse @model @auth(rules: [{allow: public}]) {
+  id: ID!
+  employees: [Employee] @hasMany(indexName: \\"byWarehouse\\", fields: [\\"id\\"])
+}
+
+type AccountRepresentative @model @auth(rules: [{allow: public}]) {
+  id: ID!
+  customers: [Customer] @hasMany(indexName: \\"byRepresentative\\", fields: [\\"id\\"])
+  orders: [Order] @hasMany(indexName: \\"byRepresentativebyDate\\", fields: [\\"id\\"])
+  orderTotal: Int
+  salesPeriod: String @index(name: \\"bySalesPeriodByOrderTotal\\", queryField: \\"repsByPeriodAndTotal\\", sortKeyFields: [\\"orderTotal\\"])
+}
+
+type Inventory @model @auth(rules: [{allow: public}]) {
+  productID: ID! @primaryKey(sortKeyFields: [\\"warehouseID\\"])
+  warehouseID: ID! @index(name: \\"byWarehouseID\\", queryField: \\"itemsByWarehouseID\\")
+  inventoryAmount: Int!
+}
+
+type Product @model @auth(rules: [{allow: public}]) {
+  id: ID!
+  name: String!
+  orders: [Order] @hasMany(indexName: \\"byProduct\\", fields: [\\"id\\"])
+  inventories: [Inventory] @hasMany(fields: [\\"id\\"])
+}
+"
+`;
+
 exports[`Schema migration tests multiple @model types 1`] = `
 "type Todo @model @auth(rules: [{allow: public}]) {
   id: ID!
@@ -183,6 +309,16 @@ exports[`Schema migration tests no amplify directives in schema 1`] = `
   id: ID!
   name: String!
   description: String
+}
+"
+`;
+
+exports[`Schema migration tests passes built-in directives through 1`] = `
+"scalar UUID @specifiedBy(url: \\"https://tools.ietf.org/html/rfc4122\\")
+
+type Todo {
+  newField: String
+  oldField: String @deprecated(reason: \\"Use newField.\\")
 }
 "
 `;

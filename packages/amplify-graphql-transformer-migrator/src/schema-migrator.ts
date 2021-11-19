@@ -30,7 +30,7 @@ const cliToMigratorAuthMap: Map<string, string> = new Map<string, string>([
   ['OPENID_CONNECT', 'oidc'],
 ]);
 
-const MIGRATION_DOCS_URL = '<insert migration docs URL here>';
+const MIGRATION_DOCS_URL = 'https://docs.amplify.aws/cli/migration/transformer-migration/';
 
 export async function attemptV2TransformerMigration(resourceDir: string, apiName: string, envName?: string): Promise<void> {
   const schemaDocs = await getSchemaDocs(resourceDir);
@@ -47,6 +47,14 @@ export async function attemptV2TransformerMigration(resourceDir: string, apiName
   const authMode = cliToMigratorAuthMap.get(defaultAuth);
   if (!authMode) {
     throw Error(`Unidentified authorization mode for API found: ${defaultAuth}`);
+  }
+
+  if (schemaHasComments(fullSchema)) {
+    printer.warn(
+      `Warning: The migration will not carry over any existing comments in your GraphQL schema, you'll be able to manually copy them in from the back-ups stored at ${backupLocation(
+        resourceDir,
+      )}.`,
+    );
   }
 
   try {
@@ -152,6 +160,10 @@ async function getSchemaDocs(resourceDir: string): Promise<SchemaDocument[]> {
     return await Promise.all(schemaFiles.map(async fileName => ({ schema: await fs.readFile(fileName, 'utf8'), filePath: fileName })));
   }
   return [];
+}
+
+function schemaHasComments(fullSchema: string): boolean {
+  return /#/.test(fullSchema);
 }
 
 // returns true if the project can be auto-migrated to v2, or a message explaining why the project cannot be auto-migrated

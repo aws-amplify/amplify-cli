@@ -20,6 +20,7 @@ import { $TSContext, JSONUtilities, pathManager, stateManager } from 'amplify-cl
 import { ResourceConstants } from 'graphql-transformer-common';
 import { printer } from 'amplify-prompts';
 import _ from 'lodash';
+import { isAuthModeUpdated } from './utils/auth-mode-compare';
 
 import {
   collectDirectivesByTypeNames,
@@ -520,6 +521,9 @@ export async function transformGraphQLSchema(context, options) {
   context.print.success(`GraphQL schema compiled successfully.\n\nEdit your schema at ${schemaFilePath} or \
 place .graphql files in a directory at ${schemaDirPath}`);
 
+  if (isAuthModeUpdated(options)) {
+    parameters.AuthModeLastUpdated = new Date();
+  }
   if (!options.dryRun) {
     JSONUtilities.writeJson(parametersFilePath, parameters);
   }
@@ -605,7 +609,7 @@ function s3ResourceAlreadyExists(context) {
  *  S3API
  *  TBD: Remove this once all invoke functions are moved to a library shared across amplify
  * */
-async function invokeS3GetUserInputs(context, s3ResourceName){
+async function invokeS3GetUserInputs(context, s3ResourceName) {
   const s3UserInputs = await context.amplify.invokePluginMethod(context, 'storage', undefined, 's3GetUserInput', [context, s3ResourceName]);
   return s3UserInputs;
 }
@@ -619,11 +623,17 @@ async function invokeS3GetResourceName(context) {
   return s3ResourceName;
 }
 
-async function getBucketName( context : $TSContext , s3ResourceName : string ){
-  const s3UserInputs = await invokeS3GetUserInputs(context, s3ResourceName)
-  return s3UserInputs.bucketName;
-}
+async function getBucketName(context: $TSContext, s3ResourceName: string) {
+  const { amplify } = context;
+  const { amplifyMeta } = amplify.getProjectDetails();
+  const stackName = amplifyMeta.providers.awscloudformation.StackName;
+  const bucketParameters = stateManager.getResourceParametersJson(undefined, 'storage', s3ResourceName);
 
+  const bucketName = stackName.startsWith('amplify-')
+    ? `${bucketParameters.bucketName}\${hash}-\${env}`
+    : `${bucketParameters.bucketName}${s3ResourceName}-\${env}`;
+  return bucketName;
+}
 
 export function getTransformerVersion(context) {
   migrateToTransformerVersionFeatureFlag(context);

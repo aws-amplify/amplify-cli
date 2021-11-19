@@ -21,6 +21,7 @@ describe('test version manager', () => {
       '12311232',
       { frontend: 'javascript', editor: 'vscode', framework: 'react' },
       {},
+      [],
     );
     expect(payload.payloadVersion).toEqual(getLatestPayloadVersion());
   });

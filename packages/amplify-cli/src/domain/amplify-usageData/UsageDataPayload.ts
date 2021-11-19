@@ -18,6 +18,7 @@ export class UsageDataPayload {
   isCi: boolean;
   accountId: string;
   projectSetting: ProjectSettings;
+  record: Record<string, any>[];
   constructor(
     sessionUuid: string,
     installationUuid: string,
@@ -28,6 +29,7 @@ export class UsageDataPayload {
     accountId: string,
     project: ProjectSettings,
     inputOptions: InputOptions,
+    record: Record<string, any>[],
   ) {
     this.sessionUuid = sessionUuid;
     this.installationUuid = installationUuid;
@@ -43,6 +45,7 @@ export class UsageDataPayload {
     this.isCi = ci.isCI;
     this.projectSetting = project;
     this.inputOptions = inputOptions;
+    this.record = record;
     if (error) {
       this.error = new SerializableError(error);
     }

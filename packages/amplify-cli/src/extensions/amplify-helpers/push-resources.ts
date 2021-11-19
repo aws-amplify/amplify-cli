@@ -7,6 +7,8 @@ import { getProviderPlugins } from './get-provider-plugins';
 import { onCategoryOutputsChange } from './on-category-outputs-change';
 import { showResourceTable } from './resource-status';
 import { generateDependentResourcesType } from '@aws-amplify/amplify-category-custom';
+import { isValidGraphQLAuthError, handleValidGraphQLAuthError } from './apply-auth-mode';
+import { printer } from 'amplify-prompts';
 
 export async function pushResources(
   context: $TSContext,
@@ -91,10 +93,15 @@ export async function pushResources(
         await providersPush(context, rebuild, category, resourceName, filteredResources);
         await onCategoryOutputsChange(context, currentAmplifyMeta);
       } catch (err) {
-        if (await isValidGraphQLAuthError(err.message)) {
+        const isAuthError = isValidGraphQLAuthError(err.message);
+        if (isAuthError) {
           retryPush = await handleValidGraphQLAuthError(context, err.message);
         }
         if (!retryPush) {
+          if (isAuthError) {
+            printer.warn(`You defined authorization rules (@auth) but haven't enabled their authorization providers on your GraphQL API. Run "amplify update api" to configure your GraphQL API to include the appropriate authorization providers as an authorization mode.`);
+            printer.error(err.message);
+          }
           throw err;
         }
       }
@@ -105,61 +112,6 @@ export async function pushResources(
   }
 
   return continueToPush;
-}
-
-async function isValidGraphQLAuthError(message: string) {
-  if (
-    message === `@auth directive with 'iam' provider found, but the project has no IAM authentication provider configured.` ||
-    message ===
-      `@auth directive with 'userPools' provider found, but the project has no Cognito User Pools authentication provider configured.` ||
-    message === `@auth directive with 'oidc' provider found, but the project has no OPENID_CONNECT authentication provider configured.` ||
-    message === `@auth directive with 'apiKey' provider found, but the project has no API Key authentication provider configured.` ||
-    message === `@auth directive with 'function' provider found, but the project has no Lambda authentication provider configured.`
-  ) {
-    return true;
-  }
-}
-
-async function handleValidGraphQLAuthError(context: $TSContext, message: string) {
-  if (message === `@auth directive with 'iam' provider found, but the project has no IAM authentication provider configured.`) {
-    await addGraphQLAuthRequirement(context, 'AWS_IAM');
-    return true;
-  } else if (!context?.parameters?.options?.yes) {
-    if (
-      message ===
-      `@auth directive with 'userPools' provider found, but the project has no Cognito User Pools authentication provider configured.`
-    ) {
-      await addGraphQLAuthRequirement(context, 'AMAZON_COGNITO_USER_POOLS');
-      return true;
-    } else if (
-      message === `@auth directive with 'oidc' provider found, but the project has no OPENID_CONNECT authentication provider configured.`
-    ) {
-      await addGraphQLAuthRequirement(context, 'OPENID_CONNECT');
-      return true;
-    } else if (
-      message === `@auth directive with 'apiKey' provider found, but the project has no API Key authentication provider configured.`
-    ) {
-      await addGraphQLAuthRequirement(context, 'API_KEY');
-      return true;
-    } else if (
-      message === `@auth directive with 'function' provider found, but the project has no Lambda authentication provider configured.`
-    ) {
-      await addGraphQLAuthRequirement(context, 'AWS_LAMBDA');
-      return true;
-    }
-  }
-  return false;
-}
-
-async function addGraphQLAuthRequirement(context, authType) {
-  return await context.amplify.invokePluginMethod(context, 'api', undefined, 'addGraphQLAuthorizationMode', [
-    context,
-    {
-      authType: authType,
-      printLeadText: true,
-      authSettings: undefined,
-    },
-  ]);
 }
 
 async function providersPush(
@@ -175,8 +127,8 @@ async function providersPush(
 
   for (const provider of providers) {
     const providerModule = require(providerPlugins[provider]);
-    const resourceDefiniton = await context.amplify.getResourceStatus(category, resourceName, provider, filteredResources);
-    providerPromises.push(providerModule.pushResources(context, resourceDefiniton, rebuild));
+    const resourceDefinition = await context.amplify.getResourceStatus(category, resourceName, provider, filteredResources);
+    providerPromises.push(providerModule.pushResources(context, resourceDefinition, rebuild));
   }
 
   await Promise.all(providerPromises);

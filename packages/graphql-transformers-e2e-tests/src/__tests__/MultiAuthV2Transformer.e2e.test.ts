@@ -241,45 +241,6 @@ beforeAll(async () => {
       namenamenamenamenamenamenamenamenamenamenamenamenamenamename029: String!
         @auth(rules: [{ allow: private, provider: iam }])
       namenamenamenamenamenamenamenamenamenamenamenamenamenamename030: String!
-        @auth(rules: [{ allow: private, provider: iam }])
-      namenamenamenamenamenamenamenamenamenamenamenamenamenamename031: String!
-        @auth(rules: [{ allow: private, provider: iam }])
-      namenamenamenamenamenamenamenamenamenamenamenamenamenamename032: String!
-        @auth(rules: [{ allow: private, provider: iam }])
-      namenamenamenamenamenamenamenamenamenamenamenamenamenamename033: String!
-        @auth(rules: [{ allow: private, provider: iam }])
-      namenamenamenamenamenamenamenamenamenamenamenamenamenamename034: String!
-        @auth(rules: [{ allow: private, provider: iam }])
-      namenamenamenamenamenamenamenamenamenamenamenamenamenamename035: String!
-        @auth(rules: [{ allow: private, provider: iam }])
-      namenamenamenamenamenamenamenamenamenamenamenamenamenamename036: String!
-        @auth(rules: [{ allow: private, provider: iam }])
-      namenamenamenamenamenamenamenamenamenamenamenamenamenamename037: String!
-        @auth(rules: [{ allow: private, provider: iam }])
-      namenamenamenamenamenamenamenamenamenamenamenamenamenamename038: String!
-        @auth(rules: [{ allow: private, provider: iam }])
-      namenamenamenamenamenamenamenamenamenamenamenamenamenamename039: String!
-        @auth(rules: [{ allow: private, provider: iam }])
-      namenamenamenamenamenamenamenamenamenamenamenamenamenamename040: String!
-        @auth(rules: [{ allow: private, provider: iam }])
-      namenamenamenamenamenamenamenamenamenamenamenamenamenamename041: String!
-        @auth(rules: [{ allow: private, provider: iam }])
-      namenamenamenamenamenamenamenamenamenamenamenamenamenamename042: String!
-        @auth(rules: [{ allow: private, provider: iam }])
-      namenamenamenamenamenamenamenamenamenamenamenamenamenamename043: String!
-        @auth(rules: [{ allow: private, provider: iam }])
-      namenamenamenamenamenamenamenamenamenamenamenamenamenamename044: String!
-        @auth(rules: [{ allow: private, provider: iam }])
-      namenamenamenamenamenamenamenamenamenamenamenamenamenamename045: String!
-        @auth(rules: [{ allow: private, provider: iam }])
-      namenamenamenamenamenamenamenamenamenamenamenamenamenamename046: String!
-        @auth(rules: [{ allow: private, provider: iam }])
-      namenamenamenamenamenamenamenamenamenamenamenamenamenamename047: String!
-        @auth(rules: [{ allow: private, provider: iam }])
-      namenamenamenamenamenamenamenamenamenamenamenamenamenamename048: String!
-        @auth(rules: [{ allow: private, provider: iam }])
-      namenamenamenamenamenamenamenamenamenamenamenamenamenamename049: String!
-        @auth(rules: [{ allow: private, provider: iam }])
       description: String
     }
   `;
@@ -307,7 +268,7 @@ beforeAll(async () => {
     unauthRoleArn: roles.unauthRole.Arn,
     providerName: `cognito-idp.${AWS_REGION}.amazonaws.com/${USER_POOL_ID}`,
     clientId: userPoolClientId,
-    useTokenAuth: true
+    useTokenAuth: true,
   });
 
   const transformer = new GraphQLTransform({

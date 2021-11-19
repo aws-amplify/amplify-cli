@@ -3,6 +3,66 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.3.5](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@2.3.4...@aws-amplify/amplify-category-auth@2.3.5) (2021-11-18)
+
+
+
+## 7.4.1 (2021-11-18)
+
+
+### Bug Fixes
+
+* auth cloudformation generation error leading to push failure ([#8941](https://github.com/aws-amplify/amplify-cli/issues/8941)) ([d166d23](https://github.com/aws-amplify/amplify-cli/commit/d166d23ddb201a8e519ce6463d1f48f8a8eddf88))
+
+
+
+
+
+## [2.3.4](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@2.3.3...@aws-amplify/amplify-category-auth@2.3.4) (2021-11-18)
+
+
+### Bug Fixes
+
+* change default to string for the 'hostedUIProviderCreds' input param ([#8929](https://github.com/aws-amplify/amplify-cli/issues/8929)) ([8f87b7e](https://github.com/aws-amplify/amplify-cli/commit/8f87b7ec4688f2faf7d589f8a1820389031fe069))
+
+
+
+
+
+## [2.3.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@2.3.2...@aws-amplify/amplify-category-auth@2.3.3) (2021-11-17)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-auth
+
+
+
+
+
+## [2.3.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@2.3.1...@aws-amplify/amplify-category-auth@2.3.2) (2021-11-17)
+
+
+
+## 7.3.5 (2021-11-17)
+
+
+### Bug Fixes
+
+* remove hardcoding for build/parameters.json file for auth resource ([#8911](https://github.com/aws-amplify/amplify-cli/issues/8911)) ([06a8988](https://github.com/aws-amplify/amplify-cli/commit/06a89888e39fa38318c7751fe002ddfab881e499))
+
+
+
+
+
+## [2.3.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@2.3.0...@aws-amplify/amplify-category-auth@2.3.1) (2021-11-16)
+
+
+### Bug Fixes
+
+* trigger when break circular dependency  FF is off ([#8879](https://github.com/aws-amplify/amplify-cli/issues/8879)) ([d90d01f](https://github.com/aws-amplify/amplify-cli/commit/d90d01f8f9d7cacfb6279c1e1aff0bcc0cfeb193))
+
+
+
+
+
 # 2.3.0 (2021-11-15)
 
 

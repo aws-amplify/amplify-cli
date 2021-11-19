@@ -335,18 +335,25 @@ Static group authorization should perform as expected.`,
       // or there is a relational directive on the field then we should protect that as well
       const readRoles = acm.getRolesPerOperation('read');
       const modelFields = def.fields?.filter(f => acm.hasResource(f.name.value)) ?? [];
+      const errorFields = new Array<string>();
       for (let field of modelFields) {
         const allowedRoles = readRoles.filter(r => acm.isAllowed(r, field.name.value, 'read'));
         const needsFieldResolver = allowedRoles.length < readRoles.length;
         if (needsFieldResolver && field.type.kind === Kind.NON_NULL_TYPE) {
-          throw new InvalidDirectiveError(`\nPer-field auth on the required field ${field.name.value} is not supported with subscriptions.
-  Either make the field optional, set auth on the object and not the field, or disable subscriptions for the object (setting level to off or public)\n`);
-        }
-        if (hasRelationalDirective(field)) {
+          errorFields.push(field.name.value);
+        } else if (hasRelationalDirective(field)) {
           this.protectRelationalResolver(context, def, modelName, field, needsFieldResolver ? allowedRoles : null);
         } else if (needsFieldResolver) {
           this.protectFieldResolver(context, def, modelName, field.name.value, allowedRoles);
         }
+      }
+      if (errorFields.length > 0) {
+        throw new InvalidDirectiveError(
+          `Because "${def.name.value}" has a field-level authorization rule,` +
+            ` you need to either apply field-level authorization rules to all required fields ${JSON.stringify(
+              errorFields,
+            )} or make those fields nullable.`,
+        );
       }
       const mutationFields = getMutationFieldNames(this.modelDirectiveConfig.get(modelName)!);
       for (let mutation of mutationFields.values()) {
@@ -522,7 +529,7 @@ Static group authorization should perform as expected.`,
       );
     } else {
       // if the related @model does not have auth we need to add a sandbox mode expression
-      relatedAuthExpression = generateSandboxExpressionForField((ctx as any).resourceHelper.api.sandboxModeEnabled);
+      relatedAuthExpression = generateSandboxExpressionForField(ctx.sandboxModeEnabled);
     }
     // if there is field auth on the relational query then we need to add field auth read rules first
     // in the request we then add the rules of the related type

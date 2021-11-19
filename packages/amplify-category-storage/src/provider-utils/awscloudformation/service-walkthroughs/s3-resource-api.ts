@@ -64,7 +64,7 @@ export async function s3GetAdminTriggerFunctionName(context: $TSContext) : Promi
  * @param storageInput - Storage + Auth configurations as required by the calling category
  * @returns Name of the storage resource.
  */
-export async function s3CreateStorageResource(context: $TSContext, storageInput: S3UserInputs): Promise<S3UserInputs | undefined> {
+export async function s3CreateStorageResource(context: $TSContext, storageInput: S3UserInputs): Promise<S3UserInputs> {
   //if s3 resource exists throw exception
   let storageResourceName: string | undefined = s3GetResourceName();
   if (storageResourceName) {

@@ -33,11 +33,11 @@ test('subscriptions are only generated if the respective mutation operation exis
   expect(out.rootStack.Resources[ResourceConstants.RESOURCES.GraphQLAPILogicalID].Properties.AuthenticationType).toEqual(
     'AMAZON_COGNITO_USER_POOLS',
   );
-  expect(out.pipelineFunctions['Salary.secret.res.vtl']).toContain('#if( $operation == "Mutation" )');
+  expect(out.resolvers['Salary.secret.res.vtl']).toContain('#if( $operation == "Mutation" )');
 
-  expect(out.pipelineFunctions['Mutation.createSalary.res.vtl']).toContain('$util.qr($ctx.result.put("__operation", "Mutation"))');
-  expect(out.pipelineFunctions['Mutation.updateSalary.res.vtl']).toContain('$util.qr($ctx.result.put("__operation", "Mutation"))');
-  expect(out.pipelineFunctions['Mutation.deleteSalary.res.vtl']).toContain('$util.qr($ctx.result.put("__operation", "Mutation"))');
+  expect(out.resolvers['Mutation.createSalary.res.vtl']).toContain('$util.qr($ctx.result.put("__operation", "Mutation"))');
+  expect(out.resolvers['Mutation.updateSalary.res.vtl']).toContain('$util.qr($ctx.result.put("__operation", "Mutation"))');
+  expect(out.resolvers['Mutation.deleteSalary.res.vtl']).toContain('$util.qr($ctx.result.put("__operation", "Mutation"))');
 });
 
 test('per-field @auth without @model', () => {
@@ -61,7 +61,28 @@ test('per-field @auth without @model', () => {
   const resources = out.rootStack.Resources;
   const authPolicyIdx = Object.keys(out.rootStack.Resources).find(r => r.includes('AuthRolePolicy'));
   expect(resources[authPolicyIdx]).toMatchSnapshot();
-  expect(out.pipelineFunctions['Query.listContext.req.vtl']).toContain(
+  expect(out.resolvers['Query.listContext.req.vtl']).toContain(
     '#set( $staticGroupRoles = [{"claim":"cognito:groups","entity":"Allowed"}] )',
   );
+});
+
+test('error on non null fields which need resolvers', () => {
+  const invalidSchema = `
+    type Post @model @auth(rules: [{ allow: groups, groups: ["admin"] }]) {
+      id: ID!
+      name: String!
+      ssn: String! @auth(rules: [{ allow: owner }])
+    }
+  `;
+  const authConfig: AppSyncAuthConfiguration = {
+    defaultAuthentication: {
+      authenticationType: 'AMAZON_COGNITO_USER_POOLS',
+    },
+    additionalAuthenticationProviders: [{ authenticationType: 'AWS_IAM' }],
+  };
+  const transformer = new GraphQLTransform({
+    authConfig,
+    transformers: [new ModelTransformer(), new AuthTransformer()],
+  });
+  expect(() => transformer.transform(invalidSchema)).toThrowErrorMatchingSnapshot();
 });

@@ -3,6 +3,45 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.0.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-storage@3.0.2...@aws-amplify/amplify-category-storage@3.0.3) (2021-11-17)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-storage
+
+
+
+
+
+## [3.0.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-storage@3.0.1...@aws-amplify/amplify-category-storage@3.0.2) (2021-11-16)
+
+
+
+## 7.3.4 (2021-11-16)
+
+
+### Bug Fixes
+
+* s3 bucket name constructed differently in legacy amplify apps (pre 2019) ([#8900](https://github.com/aws-amplify/amplify-cli/issues/8900)) ([2ec5d50](https://github.com/aws-amplify/amplify-cli/commit/2ec5d508e0f675b8c77c893bd591a01a0a8d13b6))
+
+
+
+
+
+## [3.0.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-storage@3.0.0...@aws-amplify/amplify-category-storage@3.0.1) (2021-11-16)
+
+
+
+## 7.3.2 (2021-11-16)
+
+
+### Bug Fixes
+
+* storage migration for only-groups fails with missing storageAccess field ([4aac7c7](https://github.com/aws-amplify/amplify-cli/commit/4aac7c7531c646e0db99db3e23549d3980e012be))
+* unauthenticated flag set to flag, even if guest permissions assigned in headless ([6400ca4](https://github.com/aws-amplify/amplify-cli/commit/6400ca48b224d99f07c501561ca1df6e4f1823f5))
+
+
+
+
+
 # 3.0.0 (2021-11-15)
 
 

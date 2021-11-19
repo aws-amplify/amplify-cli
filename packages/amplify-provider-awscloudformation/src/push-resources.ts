@@ -55,6 +55,7 @@ import {
 import { storeRootStackTemplate } from './initializer';
 import { transformRootStack } from './override-manager';
 import { prePushTemplateDescriptionHandler } from './template-description-utils';
+import { buildOverridesEnabledResources } from './build-override-enabled-resources';
 
 const logger = fileLogger('push-resources');
 
@@ -159,6 +160,7 @@ export async function run(context: $TSContext, resourceDefinition: $TSObject, re
 
     await prePushLambdaLayerPrompt(context, resources);
     await prepareBuildableResources(context, resources);
+    await buildOverridesEnabledResources(context);
 
     await transformGraphQLSchema(context, {
       handleMigration: opts => updateStackForAPIMigration(context, 'api', undefined, opts),
