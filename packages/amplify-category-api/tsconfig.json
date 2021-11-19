@@ -4,7 +4,7 @@
     "outDir": "lib",
     "rootDir": "src",
     "strict": false, // because package has been converted from js
-    "allowJs": false
+    "allowJs": true
   },
   "exclude": [
     "coverage",

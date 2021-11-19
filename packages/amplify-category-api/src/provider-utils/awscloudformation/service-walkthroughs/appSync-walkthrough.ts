@@ -462,9 +462,7 @@ export const updateWalkthrough = async (context: $TSContext): Promise<UpdateApiR
   }
 
   // migrate API project
-  if (await checkAppsyncApiResourceMigration(context, resourceName, true)) {
-    await context.amplify.invokePluginMethod(context, 'awscloudformation', undefined, 'compileSchema', [context, { forceCompile: true }]);
-  } else {
+  if (!(await checkAppsyncApiResourceMigration(context, resourceName, true))) {
     printer.error('Update operations only work on migrated projects. Run "amplify update api" and opt for migration.');
     exitOnNextTick(0);
   }
@@ -1080,7 +1078,7 @@ async function askLambdaQuestion(context) {
     name: 'ttlSeconds',
     message: 'How long should the authorization response be cached in seconds?',
     validate: validateTTL,
-    default: 300,
+    default: '300',
   });
 
   const lambdaAuthorizerConfig = {
