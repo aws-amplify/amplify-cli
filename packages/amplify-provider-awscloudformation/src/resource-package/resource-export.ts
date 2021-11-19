@@ -341,7 +341,7 @@ export class ResourceExport extends ResourcePackager {
       _.set(this.amplifyMeta, [PROVIDER, PROVIDER_NAME, NETWORK_STACK_S3_URL], this.createTemplateUrl(bucket, NETWORK_STACK_FILENAME));
     }
 
-    if(this.resourcesHasApiGateways(resources)){
+    if(this.resourcesHasApiGatewaysButNotAdminQueries(resources)){
       const apiGWAuthFile = path.join(pathManager.getBackendDirPath(), API_CATEGORY.NAME, APIGW_AUTH_STACK_FILE_NAME);
       // don't check for the api gateway rest api just check for the consolidated file
       if (fs.existsSync(apiGWAuthFile)) {
