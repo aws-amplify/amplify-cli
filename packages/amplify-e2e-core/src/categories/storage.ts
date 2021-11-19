@@ -107,12 +107,44 @@ export function addDDBWithTrigger(cwd: string, settings: { ddbResourceName?: str
 
 export function updateDDBWithTrigger(cwd: string, settings: any): Promise<void> {
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['update', 'storage'], { cwd, stripColors: true })
+    spawn(getCLIPath(settings.testingWithLatestCodebase), ['update', 'storage'], { cwd, stripColors: true })
       .wait('Select from one of the below mentioned services')
       .sendKeyDown()
       .sendCarriageReturn()
       .wait('Specify the resource that you would want to update')
       .sendCarriageReturn()
+      .wait('Would you like to add another column')
+      .sendConfirmNo()
+      .wait('Do you want to add global secondary indexes to your table')
+      .sendConfirmNo()
+      .wait('Do you want to add a Lambda Trigger for your Table')
+      .sendConfirmYes()
+      .wait('Select from the following options')
+      .sendKeyDown()
+      .sendCarriageReturn()
+      .wait('Do you want to edit the local')
+      .sendLine('n')
+      .sendEof()
+      .run((err: Error) => {
+        if (!err) {
+          resolve();
+        } else {
+          reject(err);
+        }
+      });
+  });
+}
+
+export function updateDDBWithTriggerMigration(cwd: string, settings: any): Promise<void> {
+  return new Promise((resolve, reject) => {
+    spawn(getCLIPath(settings.testingWithLatestCodebase), ['update', 'storage'], { cwd, stripColors: true })
+      .wait('Select from one of the below mentioned services')
+      .sendKeyDown()
+      .sendCarriageReturn()
+      .wait('Specify the resource that you would want to update')
+      .sendCarriageReturn()
+      .wait('Do you want to migrate storage resource')
+      .sendConfirmYes()
       .wait('Would you like to add another column')
       .sendConfirmNo()
       .wait('Do you want to add global secondary indexes to your table')

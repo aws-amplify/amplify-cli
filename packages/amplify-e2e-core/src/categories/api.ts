@@ -25,12 +25,12 @@ export function apiGqlCompile(cwd: string, testingWithLatestCodebase: boolean = 
   });
 }
 
-interface AddApiOptions {
+export interface AddApiOptions {
   apiName: string;
   testingWithLatestCodebase: boolean;
 }
 
-const defaultOptions: AddApiOptions = {
+export const defaultOptions: AddApiOptions = {
   apiName: '\r',
   testingWithLatestCodebase: false,
 };
