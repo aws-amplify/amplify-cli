@@ -1,16 +1,15 @@
 {
-    "name": "overrides-for-appsync-resource",
-    "version": "1.0.0",
-    "description": "",
-    "scripts": {
-      "build": "tsc",
-      "watch": "tsc -w"
-    },
-    "dependencies": {
-      "@aws-amplify/cli-extensibility-helper": "2.2.3-gql-ext1.0"
-    },
-    "devDependencies": {
-      "typescript": "^4.2.4"
-    }
+  "name": "overrides",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc -w"
+  },
+  "dependencies": {
+    "@aws-amplify/cli-extensibility-helper": "2.2.3-gql-ext1.0"
+  },
+  "devDependencies": {
+    "typescript": "^4.2.4"
   }
-  
+}

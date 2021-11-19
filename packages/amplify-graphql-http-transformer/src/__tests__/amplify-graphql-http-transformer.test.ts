@@ -1,9 +1,8 @@
 'use strict';
-import { anything, countResources, expect as cdkExpect, haveResource, SynthUtils } from '@aws-cdk/assert';
 import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
+import { anything, countResources, expect as cdkExpect, haveResource } from '@aws-cdk/assert';
 import { parse } from 'graphql';
 import { HttpTransformer } from '..';
-import path from 'path';
 
 test('generates expected VTL', () => {
   const validSchema = `

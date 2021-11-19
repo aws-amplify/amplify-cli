@@ -1,5 +1,4 @@
 function override(resource) {
-  /* TODO: Add snippet of how to override in comments */
   resource.http.httpsDataSource['httpwwwapicom'].serviceRoleArn = 'mockArn';
   resource.http.httpsDataSource['httpwwwapicom'].httpConfig = {
     endpoint: 'mockEndpoint',

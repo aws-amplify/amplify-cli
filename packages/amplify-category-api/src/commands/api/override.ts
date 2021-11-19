@@ -60,7 +60,9 @@ export const run = async (context: $TSContext) => {
       await context.amplify.invokePluginMethod(context, 'awscloudformation', undefined, 'compileSchema', [context, { forceCompile: true }]);
       await generateOverrideSkeleton(context, srcPath, destPath);
     } else {
-      printer.warn(`The GraphQL API is using transformer version 1. Run 'amplify migrate api' to upgrade to transformer version 2.`);
+      printer.warn(
+        'The GraphQL API is using transformer version 1. Run `amplify migrate api` to upgrade to transformer version 2 and rerun amplify override api to enable override functionality for API',
+      );
     }
   }
 };

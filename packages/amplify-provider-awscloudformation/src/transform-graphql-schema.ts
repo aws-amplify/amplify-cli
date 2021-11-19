@@ -315,7 +315,7 @@ async function migrateProject(context, options) {
 }
 
 export async function transformGraphQLSchema(context, options) {
-  const transformerVersion = await getTransformerVersion(context);
+  const transformerVersion = getTransformerVersion(context);
   if (transformerVersion === 2) {
     return transformGraphQLSchemaV6(context, options);
   }
@@ -567,7 +567,7 @@ async function getPreviousDeploymentRootKey(previouslyDeployedBackendDir) {
 // }
 
 export async function getDirectiveDefinitions(context, resourceDir) {
-  const transformerVersion = await getTransformerVersion(context);
+  const transformerVersion = getTransformerVersion(context);
   if (transformerVersion === 2) {
     return getDirectiveDefinitionsV6(context, resourceDir);
   }

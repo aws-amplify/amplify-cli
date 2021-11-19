@@ -291,59 +291,27 @@ export class GraphQLTransform {
       }
       let constructPathObj: ConstructResourceMeta;
       if (resource.cfnResourceType) {
-        // console.log('path',node.node.path);
-        // console.log('path1',pathArr);
         constructPathObj = getStackMeta(pathArr, node.node.id, stacks, resource);
-        // console.log(constructPathObj);
         if (!_.isEmpty(constructPathObj.rootStack)) {
           // api scope
           const field = constructPathObj.rootStack!.stackType;
           const resourceName = constructPathObj.resourceName;
-          if (!amplifyApiObj[field]) {
-            amplifyApiObj[field] = {};
-          }
-          amplifyApiObj[field][resourceName] = resource;
+          _.set(amplifyApiObj, [field, resourceName], resource);
         } else if (!_.isEmpty(constructPathObj.nestedStack)) {
           const fieldType = constructPathObj.nestedStack!.stackType;
           const fieldName = constructPathObj.nestedStack!.stackName;
           const resourceName = constructPathObj.resourceName;
           if (constructPathObj.resourceType.includes('Resolver')) {
-            // console.log("constrcut",constructPathObj);
-            if (amplifyApiObj[fieldType][fieldName]['resolvers']) {
-              amplifyApiObj[fieldType][fieldName]['resolvers'][resourceName] = resource;
-            } else {
-              amplifyApiObj[fieldType][fieldName]['resolvers'] = {};
-              amplifyApiObj[fieldType][fieldName]['resolvers'][resourceName] = resource;
-            }
+            _.set(amplifyApiObj, [fieldType, fieldName, 'resolvers', resourceName], resource);
           } else if (constructPathObj.resourceType.includes('FunctionConfiguration')) {
-            if (amplifyApiObj[fieldType][fieldName]['appsyncFunctions']) {
-              amplifyApiObj[fieldType][fieldName]['appsyncFunctions'][resourceName] = resource;
-            } else {
-              amplifyApiObj[fieldType][fieldName]['appsyncFunctions'] = {};
-              amplifyApiObj[fieldType][fieldName]['appsyncFunctions'][resourceName] = resource;
-            }
+            _.set(amplifyApiObj, [fieldType, fieldName, 'appsyncFunctions', resourceName], resource);
           } else {
-            if (amplifyApiObj[fieldType]) {
-              if (amplifyApiObj[fieldType][fieldName]) {
-                amplifyApiObj[fieldType][fieldName][resourceName] = resource;
-              } else {
-                amplifyApiObj[fieldType][fieldName] = {};
-                amplifyApiObj[fieldType][fieldName][resourceName] = resource;
-              }
-            } else {
-              amplifyApiObj[fieldType] = {};
-              if (amplifyApiObj[fieldType][fieldName]) {
-                amplifyApiObj[fieldType][fieldName][resourceName] = resource;
-              } else {
-                amplifyApiObj[fieldType][fieldName] = {};
-                amplifyApiObj[fieldType][fieldName][resourceName] = resource;
-              }
-            }
+            _.set(amplifyApiObj, [fieldType, fieldName, resourceName], resource);
           }
         }
       }
     });
-    // console.log(amplifyApiObj)
+
     let appsyncResourceObj = convertToAppsyncResourceObj(amplifyApiObj);
     if (!_.isEmpty(this.overrideConfig) && this.overrideConfig!.overrideFlag) {
       const overrideCode: string = fs.readFileSync(path.join(this.overrideConfig!.overrideDir, 'build', 'override.js'), 'utf-8');
@@ -366,9 +334,6 @@ export class GraphQLTransform {
         throw error;
       }
     }
-    // appsyncResourceObj.api!.GraphQLAPI!.xrayEnabled = true;
-    // appsyncResourceObj.models!['Todo']!.modelDDBTable!.billingMode = 'PROVISIONED';
-    // console.log(appsyncResourceObj);
   };
 
   private generateGraphQlApi(stackManager: StackManager, output: TransformerOutput) {

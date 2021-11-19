@@ -60,19 +60,15 @@ export const convertToAppsyncResourceObj = (amplifyObj: any) => {
         appsyncResourceObject.models![key] = generateModelDirectiveObject(amplifyObj.models[key]);
       });
     } else if (keys === 'function' && !_.isEmpty(amplifyObj[keys])) {
-      appsyncResourceObject.function = {};
       const functionStackObj = amplifyObj.function.FunctionDirectiveStack;
       appsyncResourceObject.function = generateFunctionDirectiveObject(functionStackObj);
     } else if (keys === 'http' && !_.isEmpty(amplifyObj[keys])) {
-      appsyncResourceObject.http = {};
       const httpStackObj = amplifyObj.http.HttpStack;
       appsyncResourceObject.http = generateHttpDirectiveObject(httpStackObj);
     } else if (keys === 'openSearch' && !_.isEmpty(amplifyObj[keys])) {
-      appsyncResourceObject.opensearch = {};
       const openSearchStackObj = amplifyObj.openSearch.SearchableStack;
       appsyncResourceObject.opensearch = generateOpenSearchDirectiveObject(openSearchStackObj);
     } else if (keys === 'predictions' && !_.isEmpty(amplifyObj[keys])) {
-      appsyncResourceObject.predictions = {};
       appsyncResourceObject.predictions = amplifyObj.predictions.PredictionsDirectiveStack;
       if (!_.isEmpty(amplifyObj.predictions.PredictionsDirectiveStack['predictionsLambda.handler'])) {
         appsyncResourceObject.predictions!.predictionsLambdaFunction =
@@ -86,9 +82,9 @@ export const convertToAppsyncResourceObj = (amplifyObj: any) => {
 const generateFunctionDirectiveObject = (functionStackObj: any) => {
   let functionObj: Partial<FunctionDirectiveStack & AppsyncStackCommon> = {};
   Object.keys(functionStackObj).forEach(key => {
-    if (key.includes('resolver')) {
+    if (key.endsWith('resolvers')) {
       functionObj.resolvers = functionStackObj.resolvers;
-    } else if (key.includes('appsyncFunctions')) {
+    } else if (key.endsWith('appsyncFunctions')) {
       functionObj.appsyncFunctions = functionStackObj.appsyncFunctions;
     } else if (functionStackObj[key].cfnResourceType.includes('DataSource')) {
       if (!functionObj.lambdaDataSource) {
@@ -116,9 +112,9 @@ const generateFunctionDirectiveObject = (functionStackObj: any) => {
 const generateHttpDirectiveObject = (httpStackObj: any) => {
   let httpObj: Partial<HttpsDirectiveStack & AppsyncStackCommon> = {};
   Object.keys(httpStackObj).forEach(key => {
-    if (key.includes('resolver')) {
+    if (key.endsWith('resolvers')) {
       httpObj.resolvers = httpStackObj.resolvers;
-    } else if (key.includes('appsyncFunctions')) {
+    } else if (key.endsWith('appsyncFunctions')) {
       httpObj.appsyncFunctions = httpStackObj.appsyncFunctions;
     } else if (httpStackObj[key].cfnResourceType.includes('DataSource')) {
       if (!httpObj.httpsDataSource) {
