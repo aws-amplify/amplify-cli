@@ -1,10 +1,110 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`Schema migration tests for @auth default auth is user pools group based auth migrates @auth with groups correctly 1`] = `
+"type Todo @model @auth(rules: [{allow: groups, groups: [\\"Admins\\"]}]) {
+  id: ID!
+  name: String!
+  description: String
+}
+"
+`;
+
 exports[`Schema migration tests for @auth default auth is user pools migrates @auth private with user pools correctly 1`] = `
 "type Todo @model @auth(rules: [{allow: private}]) {
   id: ID!
   name: String!
   description: String
+}
+"
+`;
+
+exports[`Schema migration tests for @auth default auth is user pools multi-use for user groups migrates non specified @auth correctly 1`] = `
+"type Todo @model @auth(rules: [{allow: owner}]) {
+  id: ID!
+  name: String!
+  description: String
+}
+
+type Task @model @auth(rules: [{allow: private}]) {
+  id: ID!
+  title: String!
+  owner: String
+}
+"
+`;
+
+exports[`Schema migration tests for @auth default auth is user pools owner based auth array of owners migrates owner array fields correctly 1`] = `
+"type Todo @model @auth(rules: [{allow: owner, ownerField: \\"editors\\"}]) {
+  id: ID!
+  rating: Int
+  title: String
+  editors: [String]
+}
+"
+`;
+
+exports[`Schema migration tests for @auth default auth is user pools owner based auth explicit operations adds private delete rule 1`] = `
+"type Todo @model @auth(rules: [{allow: owner}, {allow: private, operations: [read, update]}]) {
+  id: ID!
+  rating: Int
+  title: String
+}
+"
+`;
+
+exports[`Schema migration tests for @auth default auth is user pools owner based auth explicit operations adds private update rule 1`] = `
+"type Todo @model @auth(rules: [{allow: owner}, {allow: private, operations: [update]}]) {
+  id: ID!
+  rating: Int
+  title: String
+}
+"
+`;
+
+exports[`Schema migration tests for @auth default auth is user pools owner based auth explicit owner field migrates @auth with custom owner field correctly 1`] = `
+"type Todo @model @auth(rules: [{allow: owner, ownerField: \\"editor\\"}]) {
+  id: ID!
+  name: String!
+  description: String
+  editor: String
+}
+"
+`;
+
+exports[`Schema migration tests for @auth default auth is user pools owner based auth explicit owner field migrates @auth with owners correctly 1`] = `
+"type Todo @model @auth(rules: [{allow: owner}]) {
+  id: ID!
+  name: String!
+  description: String
+  owner: String
+}
+"
+`;
+
+exports[`Schema migration tests for @auth default auth is user pools owner based auth implicit owner field migrates @auth with owners and field correctly 1`] = `
+"type Todo @model @auth(rules: [{allow: owner, ownerField: \\"editor\\"}]) {
+  id: ID!
+  name: String!
+  description: String
+}
+"
+`;
+
+exports[`Schema migration tests for @auth default auth is user pools owner based auth implicit owner field migrates @auth with owners correctly 1`] = `
+"type Todo @model @auth(rules: [{allow: owner}]) {
+  id: ID!
+  name: String!
+  description: String
+}
+"
+`;
+
+exports[`Schema migration tests for @auth default auth is user pools owner based auth multiple owner rules retains the owner operations 1`] = `
+"type Todo @model @auth(rules: [{allow: owner, operations: [create]}, {allow: owner, ownerField: \\"admin\\", operations: [read, update, delete]}]) {
+  id: ID!
+  title: String!
+  admin: String
+  owner: String
 }
 "
 `;
