@@ -3,12 +3,15 @@ import {
   AmplifyCategories,
   AmplifySupportedService,
   generateOverrideSkeleton,
+  getMigrateResourceMessageForOverride,
   pathManager,
   stateManager,
 } from 'amplify-cli-core';
 import { printer, prompter } from 'amplify-prompts';
 import * as path from 'path';
 import { checkAppsyncApiResourceMigration } from '../../provider-utils/awscloudformation/utils/check-appsync-api-migration';
+import { ApigwInputState } from '../../provider-utils/awscloudformation/apigw-input-state';
+import { ApigwStackTransform } from '../../provider-utils/awscloudformation/cdk-stack-builder';
 
 export const name = 'override';
 
@@ -64,5 +67,19 @@ export const run = async (context: $TSContext) => {
         'The GraphQL API is using transformer version 1. Run `amplify migrate api` to upgrade to transformer version 2 and rerun amplify override api to enable override functionality for API',
       );
     }
+  } else if (service === AmplifySupportedService.APIGW) {
+    // Migration logic goes in here
+    const apigwInputState = new ApigwInputState(context, selectedResourceName);
+    if (!apigwInputState.cliInputsFileExists()) {
+      if (await prompter.yesOrNo(getMigrateResourceMessageForOverride(AmplifyCategories.API, selectedResourceName, false), true)) {
+        await apigwInputState.migrateApigwResource(selectedResourceName);
+        const stackGenerator = new ApigwStackTransform(context, selectedResourceName);
+        stackGenerator.transform();
+      } else {
+        return;
+      }
+    }
   }
+
+  await generateOverrideSkeleton(context, srcPath, destPath);
 };

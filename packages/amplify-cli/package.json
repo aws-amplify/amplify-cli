@@ -33,27 +33,17 @@
     "node": ">=12.0.0"
   },
   "dependencies": {
+    "@aws-amplify/amplify-category-api": "1.0.0",
     "@aws-amplify/amplify-category-auth": "2.3.7",
     "@aws-amplify/amplify-category-custom": "2.3.2",
     "@aws-amplify/amplify-category-storage": "3.0.4",
     "@aws-cdk/cloudformation-diff": "~1.124.0",
-<<<<<<< HEAD
     "amplify-app": "4.2.3",
     "amplify-category-analytics": "3.2.3",
-    "amplify-category-api": "3.3.4",
     "amplify-category-function": "3.3.2",
     "amplify-category-geo": "2.2.3",
     "amplify-category-hosting": "3.2.3",
     "amplify-category-interactions": "3.2.3",
-=======
-    "amplify-app": "4.2.2",
-    "amplify-category-analytics": "3.2.2",
-    "@aws-amplify/amplify-category-api": "1.0.0",
-    "amplify-category-function": "3.3.1",
-    "amplify-category-geo": "2.2.2",
-    "amplify-category-hosting": "3.2.2",
-    "amplify-category-interactions": "3.2.2",
->>>>>>> feat: extensibility for Amplify API  (#8954)
     "amplify-category-notifications": "2.19.4",
     "amplify-category-predictions": "3.2.3",
     "amplify-category-xr": "3.2.3",
