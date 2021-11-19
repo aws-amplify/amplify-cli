@@ -12,7 +12,7 @@ import * as fs from 'fs-extra';
 import { ResolverConfig } from 'graphql-transformer-core';
 import _ from 'lodash';
 import * as path from 'path';
-import uuid from 'uuid';
+import { v4 as uuid } from 'uuid';
 import { gqlSchemaFilename } from '../aws-constants';
 import { AppSyncCLIInputs } from '../service-walkthrough-types/appsync-user-input-types';
 import { authConfigToAppSyncAuthType } from './auth-config-to-app-sync-auth-type-bi-di-mapper';
@@ -109,7 +109,7 @@ const generateCliInputs = (parameters: ApiMetaData, apiResourceDir: string): App
       serviceName: 'AppSync',
       defaultAuthType: authConfigToAppSyncAuthType(parameters.authConfig ? parameters.authConfig.defaultAuthentication : undefined),
       additionalAuthTypes:
-        parameters.authConfig && parameters.authConfig.additionalAuthenticationProviders
+        !_.isEmpty(parameters.authConfig) && !_.isEmpty(parameters.authConfig.additionalAuthenticationProviders)
           ? parameters.authConfig.additionalAuthenticationProviders.map(authConfigToAppSyncAuthType)
           : undefined,
       conflictResolution: resolverConfigToConflictResolution(parameters.resolverConfig),
