@@ -68,7 +68,7 @@ async function addNonContainerResource(context: $TSContext, service: string, opt
   const { serviceWalkthroughFilename, defaultValuesFilename } = serviceMetadata;
   const serviceWalkthrough = await getServiceWalkthrough(serviceWalkthroughFilename);
 
-  const serviceWalkthroughPromise: Promise<$TSAny> = serviceWalkthrough(context, defaultValuesFilename, serviceMetadata);
+  const serviceWalkthroughPromise: Promise<$TSAny> = serviceWalkthrough(context, serviceMetadata);
   switch (service) {
     case AmplifySupportedService.APPSYNC:
       const walkthroughResult = await serviceWalkthroughPromise;
