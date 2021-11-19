@@ -117,4 +117,49 @@ describe('Schema migration tests for @auth', () => {
       migrateAndValidate(schema);
     });
   });
+
+  describe('field level auth', () => {
+    it('migrates field level correctly', () => {
+      const schema = `
+        type FieldLevelPost @model {
+          id: ID!
+          title: String!
+          username: String
+          ssn: String
+            @auth(
+              rules: [
+                {
+                  allow: owner
+                  ownerField: "username"
+                  identityClaim: "username"
+                  operations: [create, read, update, delete]
+                }
+              ]
+            )
+        }`;
+
+        migrateAndValidate(schema, API_KEY);
+    });
+
+    it('migrates field level auth correctly', () => {
+      const schema = `
+        type FieldLevelPost @model {
+          id: ID!
+          title: String!
+          username: String
+          ssn: String
+            @auth(
+              rules: [
+                {
+                  allow: owner
+                  ownerField: "username"
+                  identityClaim: "username"
+                }
+              ]
+            )
+        }`;
+
+        migrateAndValidate(schema, API_KEY);
+    });
+  });
 });
