@@ -100,7 +100,15 @@ jest.mock('../../display-helpful-urls', () => ({
 jest.mock('../../zip-util', () => ({
   downloadZip: mockdownloadZip,
 }));
+jest.mock('../../pre-push-cfn-processor/cfn-pre-processor', () => ({
+  preProcessCFNTemplate: jest.fn().mockImplementation((cfnPath) => cfnPath),
+  writeCustomPoliciesToCFNTemplate: jest.fn(),
+}))
 
+jest.mock('../../template-description-utils', () => ({
+  prePushTemplateDescriptionHandler: jest.fn(),
+  getDefaultTemplateDescription: jest.fn().mockReturnValue('mock description'),
+}))
 jest.mock('../../download-api-models', () => ({}));
 jest.mock('../../graphql-transformer', () => ({}));
 jest.mock('../../amplify-service-manager', () => ({}));
