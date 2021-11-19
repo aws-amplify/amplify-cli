@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.2.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-transformer-migrator@1.2.2...@aws-amplify/graphql-transformer-migrator@1.2.3) (2021-11-19)
+
+
+### Bug Fixes
+
+* passthrough group auth rule config ([#8928](https://github.com/aws-amplify/amplify-cli/issues/8928)) ([eb6a0f5](https://github.com/aws-amplify/amplify-cli/commit/eb6a0f52c3b499db8070dad7796a8ea4de099e09))
+
+
+
+
+
 ## [1.2.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-transformer-migrator@1.2.1...@aws-amplify/graphql-transformer-migrator@1.2.2) (2021-11-17)
 
 **Note:** Version bump only for package @aws-amplify/graphql-transformer-migrator

@@ -1,6 +1,5 @@
 import { isModelType } from '../model';
 import { migrateDefaultAuthMode } from './defaultAuth';
-import { migrateFieldAuth } from './fieldAuth';
 import { migrateOwnerAuth } from './ownerAuth';
 import { createArgumentNode, createDirectiveNode, createListValueNode } from '../generators';
 
@@ -41,8 +40,6 @@ export function migrateAuth(node: any, defaultAuthMode: any) {
   if (!isModelType(node)) {
     return;
   }
-
-  migrateFieldAuth(node);
 
   if (hasAuthDirectives(node)) {
     migrateOwnerAuth(node, defaultAuthMode);

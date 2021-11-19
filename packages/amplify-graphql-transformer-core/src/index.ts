@@ -37,3 +37,10 @@ export const getAppSyncServiceExtraDirectives = (): string => {
 };
 
 export { MappingTemplate, TransformerNestedStack } from './cdk-compat';
+export {
+  EnumWrapper,
+  FieldWrapper,
+  InputFieldWrapper,
+  InputObjectDefinitionWrapper,
+  ObjectDefinitionWrapper,
+} from './wrappers/object-definition-wrapper';

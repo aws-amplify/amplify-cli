@@ -1,4 +1,3 @@
-import { DirectiveWrapper } from '@aws-amplify/graphql-transformer-core';
 import {
   DirectiveNode,
   DocumentNode,
@@ -25,6 +24,7 @@ import {
   unwrapNonNull,
   withNamedNodeNamed,
 } from 'graphql-transformer-common';
+import { DirectiveWrapper } from '../utils/directive-wrapper';
 
 export class GenericFieldWrapper {
   protected type: TypeNode;
