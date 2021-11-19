@@ -112,7 +112,6 @@ export class ResourceExport extends ResourcePackager {
   async generateAndWriteRootStack(stackParameters: StackParameters): Promise<StackParameters> {
     const { StackName: stackName, AuthRoleName, UnauthRoleName, DeploymentBucketName } = this.amplifyMeta[PROVIDER][PROVIDER_NAME];
     const template = await this.generateRootStack();
-    await prePushCfnTemplateModifier(template);
     const parameters = this.extractParametersFromTemplateNestedStack(template);
     const modifiedTemplate = await this.modifyRootStack(template, true);
     this.writeRootStackToPath(modifiedTemplate);

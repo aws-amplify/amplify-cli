@@ -17,7 +17,7 @@ import { Constants } from './constants';
 import { consolidateApiGatewayPolicies } from '../utils/consolidate-apigw-policies';
 import { prePushAuthTransform } from '../auth-transform';
 import { Fn, Template } from 'cloudform-types';
-import { preProcessCFNTemplate } from '../pre-push-cfn-processor/cfn-pre-processor';
+import { preProcessCFNTemplate, writeCustomPoliciesToCFNTemplate } from '../pre-push-cfn-processor/cfn-pre-processor';
 import {
   DeploymentResources,
   ResourceDefinition,
@@ -309,6 +309,7 @@ export abstract class ResourcePackager {
           await writeCFNTemplate(cfnTemplate, cfnFile, { templateFormat });
         }
         const transformedCFNPath = await preProcessCFNTemplate(cfnFile);
+        await writeCustomPoliciesToCFNTemplate(resource.resourceName, resource.service, cfnFile, resource.category);
         transformedCfnPaths.push(transformedCFNPath);
       }
       transformedCfnResources.push({
