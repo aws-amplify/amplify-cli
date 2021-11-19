@@ -162,13 +162,12 @@ describe('amplify add api (REST)', () => {
     const apis = readdirSync(apisDirectory);
     const apiName = apis[0];
     const apiDirectory = path.join(apisDirectory, apiName);
-    const cfnTemplateFile = path.join(apiDirectory, `${apiName}-cloudformation-template.json`);
+    const cfnTemplateFile = path.join(apiDirectory, 'build', `${apiName}-cloudformation-template.json`);
     const cfnTemplate = JSON.parse(readFileSync(cfnTemplateFile, 'utf8'));
 
-    // The ApiId output is required, and will be added automatically if it is missing.
-    cfnTemplate.Outputs.ApiId = undefined;
+    // The ApiId output is required
+    expect(cfnTemplate.Outputs.ApiId).toBeDefined();
 
-    writeFileSync(cfnTemplateFile, JSON.stringify(cfnTemplate));
     await amplifyPushUpdate(projRoot);
   });
 

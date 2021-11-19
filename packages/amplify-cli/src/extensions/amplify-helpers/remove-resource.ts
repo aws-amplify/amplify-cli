@@ -37,7 +37,11 @@ export async function removeResource(
   context: $TSContext,
   category: string,
   resourceName?: string,
-  options: { headless?: boolean; serviceSuffix?: { [serviceName: string]: string }; serviceDeletionInfo?: {} } = { headless: false },
+  options: {
+    headless?: boolean;
+    serviceSuffix?: { [serviceName: string]: string };
+    serviceDeletionInfo?: { [serviceName: string]: string };
+  } = { headless: false },
   resourceNameCallback?: (resourceName: string) => Promise<void>,
 ) {
   const amplifyMeta = stateManager.getMeta();
@@ -135,8 +139,9 @@ const deleteResourceFiles = async (context: $TSContext, category: string, resour
       }
     });
   }
+  const serviceName: string = amplifyMeta[category][resourceName].service;
   const resourceValues = {
-    service: amplifyMeta[category][resourceName].service,
+    service: serviceName,
     resourceName,
   };
   if (amplifyMeta[category][resourceName] !== undefined) {
