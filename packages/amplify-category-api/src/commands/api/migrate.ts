@@ -3,6 +3,7 @@ import { printer } from 'amplify-prompts';
 import { attemptV2TransformerMigration, revertV2Migration } from '@aws-amplify/graphql-transformer-migrator';
 import * as path from 'path';
 import { category } from '../../category-constants';
+import { checkAppsyncApiResourceMigration } from '../../provider-utils/awscloudformation/utils/check-appsync-api-migration';
 
 const subcommand = 'migrate';
 
@@ -27,6 +28,10 @@ export const run = async (context: $TSContext) => {
   }
   const apiName = apiNames[0];
   const apiResourceDir = path.join(pathManager.getBackendDirPath(), category, apiName);
+
+  if (await checkAppsyncApiResourceMigration(context, apiName, true)) {
+    await context.amplify.invokePluginMethod(context, 'awscloudformation', undefined, 'compileSchema', [context, { forceCompile: true }]);
+  }
 
   if (context.parameters?.options?.revert) {
     await revertV2Migration(apiResourceDir, stateManager.getCurrentEnvName());

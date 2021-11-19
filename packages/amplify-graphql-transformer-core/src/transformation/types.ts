@@ -56,3 +56,9 @@ export type UserDefinedSlot = {
   slotName: string;
   template: string;
 };
+
+export type OverrideConfig = {
+  overrideFlag: boolean;
+  overrideDir: string;
+  resourceName: string;
+};
