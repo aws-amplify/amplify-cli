@@ -284,7 +284,7 @@ describe('Schema migration tests for @auth', () => {
             )
         }`;
 
-        migrateAndValidate(schema, API_KEY);
+      migrateAndValidate(schema, API_KEY);
     });
 
     it('migrates field level auth correctly', () => {
@@ -305,7 +305,33 @@ describe('Schema migration tests for @auth', () => {
             )
         }`;
 
-        migrateAndValidate(schema, API_KEY);
+      migrateAndValidate(schema, API_KEY);
+    });
+
+    describe('multi field auth', () => {
+      it('migrates correctly', () => {
+        const schema = `
+          type Employee @model (
+            subscriptions: {
+              level: public
+            }
+          ) @auth(rules: [
+            { allow: owner, ownerField: "e_mail", operations: [update] },
+            { allow: groups, groups: ["Admin"], operations: [create, update, delete] }
+          ]) {
+            e_mail: String @auth(rules: [
+              { allow: groups, groups: ["Admin"], operations: [create, update, read] }
+              { allow: owner, ownerField: "e_mail", operations: [read] }
+            ])
+            salary: Int @auth(rules: [
+              { allow: groups, groups: ["Admin"], operations: [create, update, read] }
+              { allow: owner, ownerField: "e_mail", operations: [read] }
+            ])
+            notes: String @auth(rules: [{ allow: owner, ownerField: "e_mail", operations: [delete] }])
+          }`;
+
+        migrateAndValidate(schema, USER_POOLS);
+      });
     });
   });
 });
