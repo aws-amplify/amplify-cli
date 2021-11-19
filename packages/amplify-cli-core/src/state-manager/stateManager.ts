@@ -402,14 +402,6 @@ export class StateManager {
 
     return data ?? options?.default;
   };
-
-  resourceInputsJsonExists = (projectPath: string | undefined, category: string, resourceName: string): boolean => {
-    try {
-      return fs.existsSync(pathManager.getResourceInputsJsonFilePath(projectPath, category, resourceName));
-    } catch (e) {
-      return false;
-    }
-  };
 }
 
 export const stateManager = new StateManager();
