@@ -156,7 +156,7 @@ export class AmplifyUserPoolGroupTransform extends AmplifyCategoryTransform {
     );
 
     // generate resources
-    this._userPoolGroupTemplateObj.generateUserPoolGroupResources(props);
+    await this._userPoolGroupTemplateObj.generateUserPoolGroupResources(props);
 
     // generate CFN outputs again to generate same Output Names as cdk doesnt allow resource with same logical names
     if (props.identityPoolName) {

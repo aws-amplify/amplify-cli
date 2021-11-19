@@ -217,7 +217,7 @@ export class AmplifyAuthTransform extends AmplifyCategoryTransform {
       templateFormat: CFNTemplateFormat.JSON,
     });
     // write parameters.json
-    this.writeBuildFiles(context);
+    await this.writeBuildFiles(context);
   };
 
   private writeBuildFiles = async (context: $TSContext) => {
