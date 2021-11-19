@@ -288,9 +288,7 @@ export async function processDockerConfig(context: any, resource: ApiResource, s
       secretsArns.set(secretName, secretArn);
     }
   } else {
-    const { cfnTemplate } = await readCFNTemplate(
-      path.join(pathManager.getBackendDirPath(), category, resourceName, cfnFileName(resourceName)),
-    );
+    const { cfnTemplate } = readCFNTemplate(path.join(pathManager.getBackendDirPath(), category, resourceName, cfnFileName(resourceName)));
     setExistingSecretArns(secretsArns, cfnTemplate);
   }
 

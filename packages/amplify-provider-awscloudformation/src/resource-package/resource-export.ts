@@ -240,7 +240,7 @@ export class ResourceExport extends ResourcePackager {
   }
 
   private async processAndWriteCfn(cfnFile: string, destinationPath: string, deleteParameters: boolean = true) {
-    const { cfnTemplate, templateFormat } = await readCFNTemplate(cfnFile);
+    const { cfnTemplate, templateFormat } = readCFNTemplate(cfnFile);
     return await this.processAndWriteCfnTemplate(cfnTemplate, destinationPath, templateFormat, deleteParameters);
   }
 
@@ -307,7 +307,7 @@ export class ResourceExport extends ResourcePackager {
             };
           });
         } else if (resource.category === FUNCTION_CATEGORY.NAME && resource.service === FUNCTION_CATEGORY.SERVICE.LAMBDA_LAYER) {
-          const { cfnTemplate, templateFormat } = await readCFNTemplate(cfnFile);
+          const { cfnTemplate, templateFormat } = readCFNTemplate(cfnFile);
           Object.keys(cfnTemplate.Resources)
             .filter(key => cfnTemplate.Resources[key].Type === 'AWS::Lambda::LayerVersion')
             .forEach(layerVersionResourceKey => {
@@ -343,7 +343,7 @@ export class ResourceExport extends ResourcePackager {
       _.set(this.amplifyMeta, [PROVIDER, PROVIDER_NAME, NETWORK_STACK_S3_URL], this.createTemplateUrl(bucket, NETWORK_STACK_FILENAME));
     }
 
-    if(this.resourcesHasApiGatewaysButNotAdminQueries(resources)){
+    if (this.resourcesHasApiGatewaysButNotAdminQueries(resources)) {
       const apiGWAuthFile = path.join(pathManager.getBackendDirPath(), API_CATEGORY.NAME, APIGW_AUTH_STACK_FILE_NAME);
       // don't check for the api gateway rest api just check for the consolidated file
       if (fs.existsSync(apiGWAuthFile)) {
@@ -421,7 +421,7 @@ export class ResourceExport extends ResourcePackager {
    * @param template {Template}
    * @returns {Template}
    */
-   private async modifyRootStack(template: Template, deleteParameters: boolean): Promise<Template> {
+  private async modifyRootStack(template: Template, deleteParameters: boolean): Promise<Template> {
     Object.keys(template.Resources).map(resourceKey => {
       const resource = template.Resources[resourceKey];
       if (resource.Type === AWS_CLOUDFORMATION_STACK_TYPE) {
