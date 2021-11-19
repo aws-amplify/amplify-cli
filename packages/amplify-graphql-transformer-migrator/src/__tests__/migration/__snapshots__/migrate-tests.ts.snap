@@ -317,3 +317,15 @@ exports[`Schema migration tests renamed queries/mutations/subscriptions 1`] = `
 }
 "
 `;
+
+exports[`Schema migration tests Has One @connection without fields always mapped to has one, even in bidirectional 1`] = `
+"type Coffee @model @auth(rules: [{allow: public}]) {
+  id: ID!
+  energy: Energy @hasOne
+}
+type Energy @model @auth(rules: [{allow: public}]) {
+  id: ID!
+  coffee: Coffee @hasOne
+}
+"
+`;

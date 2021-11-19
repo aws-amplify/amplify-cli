@@ -7,7 +7,7 @@ export function getFieldsWithConnection(fields: any) {
 }
 
 export function getConnectionFieldsArg(connection: any) {
-  return connection.arguments.find((a: any) => a.name.value === 'fields').value.values.map((v: any) => v.value);
+  return connection.arguments.find((a: any) => a?.name?.value === 'fields')?.value?.values?.map((v: any) => v.value);
 }
 
 export function isFieldIndex(field: any) {
@@ -52,22 +52,22 @@ export function migrateConnection(node: any, ast: any) {
       }
     } else {
       const relatedType = getRelatedType(ast, getFieldType(connectionField));
-      const isBiDirectionalRelation = relatedType.fields.some((relatedField: any) => {
+      const biDirectionalRelation = relatedType.fields.some((relatedField: any) => {
         if (getFieldType(relatedField) !== node.name.value) {
           return false;
         }
 
-        const fieldsArg = node.fields.find((f: any) => f.name.value === getConnectionFieldsArg(connectionDirective)[0]);
+        const fieldsArg = node.fields.find((f: any) => f.name.value === getConnectionFieldsArg(connectionDirective)?.[0]);
         if (fieldsArg && !isFieldIndex(fieldsArg)) {
           return false;
         }
 
-        return relatedField.directives.some((relatedDirective: any) => {
+        return relatedField?.directives?.some((relatedDirective: any) => {
           return validConnectionDirectiveNames.has(relatedDirective.name.value);
         });
       });
 
-      if (isBiDirectionalRelation) {
+      if (biDirectionalRelation && isListType(biDirectionalRelation.type)) {
         connectionDirective.name.value = 'belongsTo';
       } else {
         connectionDirective.name.value = 'hasOne';
