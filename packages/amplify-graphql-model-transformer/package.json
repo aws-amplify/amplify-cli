@@ -81,6 +81,7 @@
             "json",
             "node"
         ],
-        "collectCoverage": true
+        "collectCoverage": true,
+        "modulePathIgnorePatterns": ["overrides"]
     }
 }

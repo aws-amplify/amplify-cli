@@ -213,8 +213,8 @@ export function getStringValueNode(value: string): StringValueNode {
 export function getDirectiveNode(mutationName: string): DirectiveNode {
   return {
     kind: Kind.DIRECTIVE,
-    name: this.getNameNode('aws_subscribe'),
-    arguments: [this.getArgumentNode(mutationName)],
+    name: getNameNode('aws_subscribe'),
+    arguments: [getArgumentNode(mutationName)],
   };
 }
 
@@ -241,8 +241,8 @@ export function getOperationTypeDefinition(operationType: OperationTypeNode, ope
 export function getArgumentNode(argument: string): ArgumentNode {
   return {
     kind: Kind.ARGUMENT,
-    name: this.getNameNode('mutations'),
-    value: this.getListValueNode([this.getStringValueNode(argument)]),
+    name: getNameNode('mutations'),
+    value: getListValueNode([getStringValueNode(argument)]),
   };
 }
 

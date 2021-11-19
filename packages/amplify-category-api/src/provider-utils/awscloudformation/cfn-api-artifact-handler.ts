@@ -2,6 +2,7 @@ import { isResourceNameUnique } from 'amplify-cli-core';
 import {
   AddApiRequest,
   AppSyncServiceConfiguration,
+  AppSyncServiceModification,
   ConflictResolution,
   ResolutionStrategy,
   UpdateApiRequest,
@@ -13,7 +14,9 @@ import * as path from 'path';
 import uuid from 'uuid';
 import { category } from '../../category-constants';
 import { ApiArtifactHandler, ApiArtifactHandlerOptions } from '../api-artifact-handler';
+import { AppsyncApiInputState } from './api-input-manager/appsync-api-input-state';
 import { cfnParametersFilename, gqlSchemaFilename, provider, rootAssetDir } from './aws-constants';
+import { AppSyncCLIInputs, AppSyncServiceConfig } from './service-walkthrough-types/appsync-user-input-types';
 import { authConfigHasApiKey, checkIfAuthExists, getAppSyncAuthConfig, getAppSyncResourceName } from './utils/amplify-meta-utils';
 import { appSyncAuthTypeToAuthConfig } from './utils/auth-config-to-app-sync-auth-type-bi-di-mapper';
 import { printApiKeyWarnings } from './utils/print-api-key-warnings';
@@ -70,8 +73,9 @@ class CfnApiArtifactHandler implements ApiArtifactHandler {
     await this.updateTransformerConfigVersion(resourceDir);
 
     serviceConfig.conflictResolution = await this.createResolverResources(serviceConfig.conflictResolution);
-
     await writeResolverConfig(serviceConfig.conflictResolution, resourceDir);
+
+    const appsyncCLIInputs = await this.generateAppsyncCLIInputs(serviceConfig, resourceDir);
 
     // Write the default custom resources stack out to disk.
     fs.copyFileSync(
@@ -80,9 +84,9 @@ class CfnApiArtifactHandler implements ApiArtifactHandler {
     );
 
     // write the template buffer to the project folder
-    this.writeSchema(resourceDir, serviceConfig.transformSchema);
+    this.writeSchema(appsyncCLIInputs.serviceConfiguration.gqlSchemaPath, serviceConfig.transformSchema);
 
-    const authConfig = this.extractAuthConfig(serviceConfig);
+    const authConfig = this.extractAuthConfig(appsyncCLIInputs.serviceConfiguration);
 
     await this.context.amplify.executeProviderUtils(this.context, 'awscloudformation', 'compileSchema', {
       resourceDir,
@@ -103,11 +107,13 @@ class CfnApiArtifactHandler implements ApiArtifactHandler {
       throw new Error(`No AppSync API configured in the project. Use 'amplify add api' to create an API.`);
     }
     const resourceDir = this.getResourceDir(apiName);
+    // update appsync cli-inputs
+    const appsyncCLIInputs = await this.updateAppsyncCLIInputs(updates, apiName);
     if (updates.transformSchema) {
-      this.writeSchema(resourceDir, updates.transformSchema);
+      this.writeSchema(appsyncCLIInputs.serviceConfiguration.gqlSchemaPath, updates.transformSchema);
     }
     if (updates.conflictResolution) {
-      updates.conflictResolution = await this.createResolverResources(updates.conflictResolution);
+      updates.conflictResolution = await this.createResolverResources(appsyncCLIInputs.serviceConfiguration.conflictResolution);
       await writeResolverConfig(updates.conflictResolution, resourceDir);
     }
     const authConfig = getAppSyncAuthConfig(this.context.amplify.getProjectMeta());
@@ -115,10 +121,11 @@ class CfnApiArtifactHandler implements ApiArtifactHandler {
 
     const oldConfigHadApiKey = authConfigHasApiKey(authConfig);
     if (updates.defaultAuthType) {
-      authConfig.defaultAuthentication = appSyncAuthTypeToAuthConfig(updates.defaultAuthType);
+      authConfig.defaultAuthentication = appSyncAuthTypeToAuthConfig(appsyncCLIInputs.serviceConfiguration.defaultAuthType);
     }
     if (updates.additionalAuthTypes) {
-      authConfig.additionalAuthenticationProviders = updates.additionalAuthTypes.map(appSyncAuthTypeToAuthConfig);
+      authConfig.additionalAuthenticationProviders =
+        appsyncCLIInputs.serviceConfiguration.additionalAuthTypes.map(appSyncAuthTypeToAuthConfig);
     }
 
     if (!opts?.skipCompile) {
@@ -136,7 +143,7 @@ class CfnApiArtifactHandler implements ApiArtifactHandler {
   };
 
   private writeSchema = (resourceDir: string, schema: string) => {
-    fs.writeFileSync(path.join(resourceDir, gqlSchemaFilename), schema);
+    fs.writeFileSync(resourceDir, schema);
   };
 
   private getResourceDir = (apiName: string) => path.join(this.context.amplify.pathManager.getBackendDirPath(), category, apiName);
@@ -149,7 +156,7 @@ class CfnApiArtifactHandler implements ApiArtifactHandler {
     },
   });
 
-  private extractAuthConfig = (config: AppSyncServiceConfiguration) => ({
+  private extractAuthConfig = (config: AppSyncServiceConfig) => ({
     defaultAuthentication: appSyncAuthTypeToAuthConfig(config.defaultAuthType),
     additionalAuthenticationProviders: (config.additionalAuthTypes || []).map(appSyncAuthTypeToAuthConfig),
   });
@@ -262,6 +269,50 @@ class CfnApiArtifactHandler implements ApiArtifactHandler {
     this.context.print.success(`Successfully added ${functionName} function locally`);
 
     return functionName + '-${env}';
+  };
+
+  private generateAppsyncCLIInputs = async (serviceConfig: AppSyncServiceConfiguration, resourceDir: string) => {
+    const appsyncCLIInputs: AppSyncCLIInputs = {
+      version: 1,
+      serviceConfiguration: {
+        apiName: serviceConfig.apiName,
+        serviceName: serviceConfig.serviceName,
+        gqlSchemaPath: path.join(resourceDir, gqlSchemaFilename),
+        defaultAuthType: serviceConfig.defaultAuthType,
+      },
+    };
+    if (!_.isEmpty(serviceConfig.additionalAuthTypes)) {
+      appsyncCLIInputs.serviceConfiguration.additionalAuthTypes = serviceConfig.additionalAuthTypes;
+    }
+
+    if (!_.isEmpty(serviceConfig.conflictResolution)) {
+      appsyncCLIInputs.serviceConfiguration.conflictResolution = {
+        defaultResolutionStrategy: serviceConfig.conflictResolution.defaultResolutionStrategy,
+        perModelResolutionStrategy: serviceConfig.conflictResolution.perModelResolutionStrategy,
+      };
+    }
+    // deploy appsync inputs
+    const cliState = new AppsyncApiInputState(serviceConfig.apiName);
+    cliState.saveCLIInputPayload(appsyncCLIInputs);
+    return appsyncCLIInputs;
+  };
+
+  private updateAppsyncCLIInputs = async (updates: AppSyncServiceModification, apiName: string) => {
+    const cliState = new AppsyncApiInputState(apiName);
+    const prevAppsyncInputs = cliState.getCLIInputPayload();
+
+    const appsyncInputs: AppSyncCLIInputs = prevAppsyncInputs;
+    if (!_.isEmpty(updates.conflictResolution)) {
+      appsyncInputs.serviceConfiguration.conflictResolution = updates.conflictResolution;
+    }
+    if (!_.isEmpty(updates.defaultAuthType)) {
+      appsyncInputs.serviceConfiguration.defaultAuthType = updates.defaultAuthType;
+    }
+    if (!_.isEmpty(updates.additionalAuthTypes)) {
+      appsyncInputs.serviceConfiguration.additionalAuthTypes = updates.additionalAuthTypes;
+    }
+    cliState.saveCLIInputPayload(appsyncInputs);
+    return appsyncInputs;
   };
 }
 

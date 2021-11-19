@@ -62,9 +62,4 @@ export interface TransformConfig {
       [option: string]: any;
     };
   };
-  /**
-   * Object which states info about a resolver's configuration
-   * Such as sync configuration for appsync local support
-   */
-  ResolverConfig?: ResolverConfig;
 }

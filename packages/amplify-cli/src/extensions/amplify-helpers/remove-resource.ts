@@ -17,7 +17,7 @@ export async function forceRemoveResource(context: $TSContext, category: string,
 
   if (!amplifyMeta[category] || Object.keys(amplifyMeta[category]).length === 0) {
     printer.error('No resources added for this category');
-    await context.usageData.emitError(new ResourceDoesNotExistError());
+    await context.usageData.emitError(new ResourceDoesNotExistError('No resources added for this category'));
     exitOnNextTick(1);
   }
 
@@ -47,7 +47,7 @@ export async function removeResource(
     Object.keys(amplifyMeta[category]).filter(r => amplifyMeta[category][r].mobileHubMigrated !== true).length === 0
   ) {
     printer.error('No resources added for this category');
-    await context.usageData.emitError(new ResourceDoesNotExistError());
+    await context.usageData.emitError(new ResourceDoesNotExistError('No resources added for this category'));
     exitOnNextTick(1);
   }
 
