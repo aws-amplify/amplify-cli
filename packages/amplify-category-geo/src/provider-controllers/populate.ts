@@ -1,12 +1,11 @@
 import { $TSContext } from 'amplify-cli-core';
 import { ServiceName } from "../service-utils/constants";
 import { printer, prompter } from 'amplify-prompts';
-import { existsSync } from 'fs-extra';
+import { existsSync, writeFileSync } from 'fs-extra';
 import { join } from 'path';
 import { Location } from 'aws-sdk';
-import { v4 as uuid } from "uuid";
 import { validateGeoJSONFile } from '../service-utils/validateGeoJSONFile';
-import { FeatureCollection, PopulateParams, GeofenceCollectionParams, GeofenceParams } from '../service-utils/populateParams';
+import { FeatureCollection, PopulateParams, GeofenceCollectionParams, GeofenceParams, IdentifierOption } from '../service-utils/populateParams';
 
 export const populateResource = async (context: $TSContext) => {
   const geofenceCollectionResources = ((await context.amplify.getResourceStatus()).allResources as any[])
@@ -25,17 +24,22 @@ export const populateResource = async (context: $TSContext) => {
     throw new Error('Cannot find GeoJSON file');
   }
   let uniqueIdentifier: string = 'id';
-  if (await prompter.yesOrNo('Do you have a property on Geofences to use as a unique identifier?')) {
+  const identifierWalkthroughOptions = [
+    {name: 'No I will use the root level "id" field on Feature type. Auto-Assign if missing (this will UPDATE the GeoJSON file)', value: IdentifierOption.RootLevelID },
+    {name: 'Yes I want use one of the Geofence(Feature) properties as an identifier', value: IdentifierOption.CustomProperty}
+  ];
+  const identifierOption = await prompter.pick<'one', string>('Do you have an identifier field in the Geofence(Feature) properties?',identifierWalkthroughOptions) as IdentifierOption;
+  if (identifierOption === IdentifierOption.CustomProperty) {
     uniqueIdentifier = await prompter.input('Please provide the name of the property to use as a unique Geofence identifier:')
   }
   //Validate the json file against schema
-  const geoJSONObj: FeatureCollection = validateGeoJSONFile(geoJSONFilePath);
-  if (await prompter.yesOrNo('Auto-assign the Geofence ID if not present?')) {
-    if (await prompter.yesOrNo('Do you want to update the input GeoJSON file with Auto-assigned Geofence IDs?')) {
-      const geofenceCollectionParams = constructGeofenceCollectionParams({collectionName: collectionToPopulate, uniqueIdentifier, geoJSONObj});
-      await bulkUploadGeofence(geofenceCollectionParams);
-    }
-  }
+  const geoJSONObj: FeatureCollection = validateGeoJSONFile(geoJSONFilePath, uniqueIdentifier, identifierOption);
+  //Update the GeoJSON file
+  writeFileSync(geoJSONFilePath, JSON.stringify(geoJSONObj));
+  //Construct geofence collection parameters
+  const geofenceCollectionParams = constructGeofenceCollectionParams({collectionToPopulate, uniqueIdentifier, identifierOption, geoJSONObj});
+  //Upload geofences to collection
+  await bulkUploadGeofence(geofenceCollectionParams);
 };
 
 const constructGeofenceCollectionParams = (populateParam: PopulateParams): GeofenceCollectionParams => {
@@ -43,14 +47,16 @@ const constructGeofenceCollectionParams = (populateParam: PopulateParams): Geofe
   const { geoJSONObj } = populateParam;
   geoJSONObj.features.forEach(feature => {
     Entries.push({
-      GeofenceId: feature.id ?? uuid(),
+      GeofenceId: populateParam.identifierOption === IdentifierOption.CustomProperty
+        ? feature.properties[populateParam.uniqueIdentifier]
+        : feature.id,
       Geometry: {
         Polygon: feature.geometry.coordinates
       }
     })
   })
   return {
-    CollectionName: populateParam.collectionName,
+    CollectionName: populateParam.collectionToPopulate,
     Entries
   }
 }

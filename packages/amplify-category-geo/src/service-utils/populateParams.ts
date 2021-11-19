@@ -28,7 +28,13 @@ export type GeofenceParams = {
 }
 
 export type PopulateParams = {
-  collectionName: string;
+  collectionToPopulate: string;
   uniqueIdentifier: string;
+  identifierOption: IdentifierOption;
   geoJSONObj: FeatureCollection;
+}
+
+export enum IdentifierOption {
+  RootLevelID = "RootLevelID",
+  CustomProperty = "CustomProperty"
 }

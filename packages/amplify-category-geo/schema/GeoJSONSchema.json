@@ -33,6 +33,10 @@
                     "Feature"
                 ]
               },
+              "id": {
+                "description": "Root level id as the unique identifier. Optional field if you have custom identifier defined in properties",
+                "type": "string"
+              },
               "properties": {
                   "description": "The propeties of geofence.",
                   "type": "object",
