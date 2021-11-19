@@ -955,7 +955,7 @@ export function addAuthWithGroups(cwd: string): Promise<void> {
 }
 
 // creates 2 groups: Admins, Users
-export function addAuthWithGroupsAndAdminAPI(cwd: string, settings: any): Promise<void> {
+export function addAuthWithGroupsAndAdminAPI(cwd: string, settings?: any): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['add', 'auth'], { cwd, stripColors: true })
       .wait('Do you want to use the default authentication and security configuration')
@@ -1586,7 +1586,7 @@ export function addAuthUserPoolOnlyNoOAuth(cwd: string, settings: AddAuthUserPoo
   });
 }
 
-export function updateAuthAddAdminQueries(projectDir: string, groupName: string = 'adminQueriesGroup', settings?: any): Promise<void> {
+export function updateAuthAddAdminQueries(projectDir: string, groupName: string = 'adminQueriesGroup', settings: any = {}): Promise<void> {
   const testingWithLatestCodebase = settings.testingWithLatestCodebase ?? false;
   return new Promise((resolve, reject) => {
     const chain = spawn(getCLIPath(testingWithLatestCodebase), ['update', 'auth'], { cwd: projectDir, stripColors: true });
@@ -1595,10 +1595,7 @@ export function updateAuthAddAdminQueries(projectDir: string, groupName: string 
     }
     chain
       .wait('What do you want to do?')
-      .send(KEY_DOWN_ARROW)
-      .send(KEY_DOWN_ARROW)
-      .send(KEY_DOWN_ARROW)
-      .send(KEY_DOWN_ARROW)
+      .sendKeyUp()
       .sendCarriageReturn() // Create or update Admin queries API
       .wait('Do you want to restrict access to the admin queries API to a specific Group')
       .sendConfirmYes()
@@ -1667,4 +1664,22 @@ export function updateAuthWithoutTrigger(cwd: string, settings: any): Promise<vo
         }
       });
   });
+}
+
+export function updateAuthAdminQueriesWithExtMigration(cwd: string): Promise<void> {
+  return spawn(getCLIPath(), ['update', 'auth'], { cwd, stripColors: true })
+    .wait('Do you want to migrate auth resource')
+    .sendYes()
+    .wait('What do you want to do')
+    .sendKeyUp()
+    .sendCarriageReturn() // Create or update Admin queries API
+    .wait('Do you want to restrict access to the admin queries API to a specific Group')
+    .sendConfirmYes()
+    .wait('Select the group to restrict access with')
+    .sendCarriageReturn() // Enter a custom group
+    .wait('Provide a group name')
+    .sendLine('mycustomgroup')
+    .wait('Migration for AdminQueries is required. Continue')
+    .sendYes()
+    .runAsync();
 }

@@ -1,0 +1,6 @@
+// This file is used to override the REST API resource configuration
+import { AmplifyApigwResourceTemplate } from '@aws-amplify/cli-extensibility-helper';
+
+export function override(resource: AmplifyApigwResourceTemplate) {
+
+}

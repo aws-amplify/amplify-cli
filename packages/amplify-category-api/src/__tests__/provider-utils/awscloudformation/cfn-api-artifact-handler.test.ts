@@ -1,11 +1,13 @@
+import { AppsyncApiInputState } from '../../../provider-utils/awscloudformation/api-input-manager/appsync-api-input-state';
+import { $TSContext, pathManager, stateManager } from 'amplify-cli-core';
 import { AddApiRequest, UpdateApiRequest } from 'amplify-headless-interface';
-import fs from 'fs-extra';
+import { printer } from 'amplify-prompts';
+import * as fs from 'fs-extra';
 import { writeTransformerConfiguration } from 'graphql-transformer-core';
 import _ from 'lodash';
-import path from 'path';
+import * as path from 'path';
 import { category } from '../../../category-constants';
 import { ApiArtifactHandler } from '../../../provider-utils/api-artifact-handler';
-import { AppsyncApiInputState } from '../../../provider-utils/awscloudformation/api-input-manager/appsync-api-input-state';
 import { rootAssetDir } from '../../../provider-utils/awscloudformation/aws-constants';
 import { getCfnApiArtifactHandler } from '../../../provider-utils/awscloudformation/cfn-api-artifact-handler';
 import {
@@ -15,6 +17,8 @@ import {
 } from '../../../provider-utils/awscloudformation/utils/amplify-meta-utils';
 
 jest.mock('fs-extra');
+const printer_mock = printer as jest.Mocked<typeof printer>;
+printer_mock.warn = jest.fn();
 
 jest.mock('../../../provider-utils/awscloudformation/api-input-manager/appsync-api-input-state');
 
@@ -52,33 +56,26 @@ jest.mock('amplify-cli-core', () => ({
   isResourceNameUnique: jest.fn(),
 }));
 
+const backendDirPathStub = 'backendDirPath';
+const testApiName = 'testApiName';
+
+const pathManager_mock = pathManager as jest.Mocked<typeof pathManager>;
+pathManager_mock.getResourceDirectoryPath = jest.fn().mockReturnValue(`${backendDirPathStub}/api/${testApiName}`);
+const stateManager_mock = stateManager as jest.Mocked<typeof stateManager>;
+
 const fs_mock = fs as unknown as jest.Mocked<typeof fs>;
 const writeTransformerConfiguration_mock = writeTransformerConfiguration as jest.MockedFunction<typeof writeTransformerConfiguration>;
 const getAppSyncResourceName_mock = getAppSyncResourceName as jest.MockedFunction<typeof getAppSyncResourceName>;
 const getAppSyncAuthConfig_mock = getAppSyncAuthConfig as jest.MockedFunction<typeof getAppSyncAuthConfig>;
 const authConfigHasApiKey_mock = authConfigHasApiKey as jest.MockedFunction<typeof authConfigHasApiKey>;
 
-const backendDirPathStub = 'backendDirPath';
-
-const testApiName = 'testApiName';
-
 const context_stub = {
-  print: {
-    success: jest.fn(),
-    warning: jest.fn(),
-  },
   amplify: {
     updateamplifyMetaAfterResourceAdd: jest.fn(),
     updateamplifyMetaAfterResourceUpdate: jest.fn(),
     updateBackendConfigAfterResourceUpdate: jest.fn(),
     executeProviderUtils: jest.fn(),
     copyBatch: jest.fn(),
-    getProjectMeta: jest.fn(),
-    readJsonFile: jest.fn(),
-    pathManager: {
-      getBackendDirPath: jest.fn().mockReturnValue(backendDirPathStub),
-      findProjectRoot: jest.fn().mockReturnValue('mockProject'),
-    },
   },
 };
 
@@ -103,7 +100,7 @@ describe('create artifacts', () => {
   });
   beforeEach(() => {
     jest.clearAllMocks();
-    cfnApiArtifactHandler = getCfnApiArtifactHandler(context_stub);
+    cfnApiArtifactHandler = getCfnApiArtifactHandler(context_stub as unknown as $TSContext);
   });
 
   it('does not create a second API if one already exists', async () => {
@@ -217,7 +214,7 @@ describe('update artifacts', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     updateRequestStub = _.cloneDeep(updateRequestStubBase);
-    cfnApiArtifactHandler = getCfnApiArtifactHandler(context_stub);
+    cfnApiArtifactHandler = getCfnApiArtifactHandler(context_stub as unknown as $TSContext);
   });
 
   it('throws error if no GQL API in project', () => {
@@ -316,12 +313,12 @@ describe('update artifacts', () => {
   it('prints warning when adding API key auth', async () => {
     authConfigHasApiKey_mock.mockImplementationOnce(() => false).mockImplementationOnce(() => true);
     await cfnApiArtifactHandler.updateArtifacts(updateRequestStub);
-    expect(context_stub.print.warning.mock.calls.length).toBe(2);
+    expect(printer_mock.warn.mock.calls.length).toBe(2);
   });
 
   it('prints warning when removing API key auth', async () => {
     authConfigHasApiKey_mock.mockImplementationOnce(() => true).mockImplementationOnce(() => false);
     await cfnApiArtifactHandler.updateArtifacts(updateRequestStub);
-    expect(context_stub.print.warning.mock.calls.length).toBe(3);
+    expect(printer_mock.warn.mock.calls.length).toBe(3);
   });
 });

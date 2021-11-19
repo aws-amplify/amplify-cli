@@ -7,12 +7,12 @@
     "console",
     "gql-compile",
     "migrate",
+    "override",
     "push",
     "rebuild",
     "remove",
     "update",
-    "help",
-    "override"
+    "help"
   ],
   "commandAliases": {
     "configure": "update"
