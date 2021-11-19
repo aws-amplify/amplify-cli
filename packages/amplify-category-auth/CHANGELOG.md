@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@2.3.5...@aws-amplify/amplify-category-auth@) (2021-11-19)
+
+
+### Features
+
+* extensibility for Amplify API  ([#8954](https://github.com/aws-amplify/amplify-cli/issues/8954)) ([d662316](https://github.com/aws-amplify/amplify-cli/commit/d66231697abc7db86e4e6a7c66e78e88a332dd22))
+* REST API extensibility ([#8958](https://github.com/aws-amplify/amplify-cli/issues/8958)) ([3b74acf](https://github.com/aws-amplify/amplify-cli/commit/3b74acf91b92095ec5ffb80cc10e91dae6dc7c24))
+
+
+
+
+
 ## [2.3.5](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@2.3.4...@aws-amplify/amplify-category-auth@2.3.5) (2021-11-18)
 
 
