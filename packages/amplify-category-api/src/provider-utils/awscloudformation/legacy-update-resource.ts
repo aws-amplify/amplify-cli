@@ -1,15 +1,15 @@
-import { serviceMetadataFor } from './utils/dynamic-imports';
-import { copyCfnTemplate, addPolicyResourceNameToPaths } from './legacy-add-resource';
-import fs from 'fs-extra';
-import path from 'path';
+import { $TSAny, $TSContext, JSONUtilities, pathManager } from 'amplify-cli-core';
+import * as fs from 'fs-extra';
+import * as path from 'path';
 import { parametersFileName } from './aws-constants';
+import { addPolicyResourceNameToPaths, copyCfnTemplate } from './legacy-add-resource';
+import { serviceMetadataFor } from './utils/dynamic-imports';
 
-export const legacyUpdateResource = async (updateWalkthroughPromise: Promise<any>, context, category, service) => {
+export const legacyUpdateResource = async (updateWalkthroughPromise: Promise<$TSAny>, context: $TSContext, category: string, service) => {
   let answers;
   let { cfnFilename } = await serviceMetadataFor(service);
-  const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
   const result = await updateWalkthroughPromise;
-  const options: any = {};
+  const options: $TSAny = {};
   if (result) {
     if (result.answers) {
       ({ answers } = result);
@@ -25,11 +25,10 @@ export const legacyUpdateResource = async (updateWalkthroughPromise: Promise<any
       addPolicyResourceNameToPaths(answers.paths);
       copyCfnTemplate(context, category, answers, cfnFilename);
       const parameters = { ...answers };
-      const resourceDirPath = path.join(projectBackendDirPath, category, parameters.resourceName);
+      const resourceDirPath = pathManager.getResourceDirectoryPath(undefined, category, parameters.resourceName);
       fs.ensureDirSync(resourceDirPath);
       const parametersFilePath = path.join(resourceDirPath, parametersFileName);
-      const jsonString = JSON.stringify(parameters, null, 4);
-      fs.writeFileSync(parametersFilePath, jsonString, 'utf8');
+      JSONUtilities.writeJson(parametersFilePath, parameters);
       context.amplify.updateamplifyMetaAfterResourceUpdate(category, answers.resourceName, 'dependsOn', answers.dependsOn);
     }
   }

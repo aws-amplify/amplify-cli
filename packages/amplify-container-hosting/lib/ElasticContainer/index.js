@@ -228,7 +228,7 @@ export async function generateHostingResources(
 
   const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
 
-  /** @type {import('amplify-category-api').ApiResource & {service: string, domain: string, providerPlugin:string, hostedZoneId: string, iamAccessUnavailable: boolean}} */
+  /** @type {import('@aws-amplify/amplify-category-api').ApiResource & {service: string, domain: string, providerPlugin:string, hostedZoneId: string, iamAccessUnavailable: boolean}} */
   const resource = {
     resourceName,
     service: serviceName,
