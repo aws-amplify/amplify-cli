@@ -71,13 +71,25 @@ export type ExecutionContext = {
   send: (line: string) => ExecutionContext;
   sendKeyDown: (repeat?: number) => ExecutionContext;
   sendKeyUp: (repeat?: number) => ExecutionContext;
+  /**
+   * @deprecated If using `amplify-prompts` sending a newline after 'y' is not required and could cause problems. Use `sendYes` instead.
+   */
   sendConfirmYes: () => ExecutionContext;
+  sendYes: () => ExecutionContext;
+  /**
+   * @deprecated If using `amplify-prompts` sending a newline after 'n' is not required and could cause problems. Use `sendNo` instead.
+   */
   sendConfirmNo: () => ExecutionContext;
+  sendNo: () => ExecutionContext;
   sendCtrlC: () => ExecutionContext;
   sendCtrlA: () => ExecutionContext;
   sendEof: () => ExecutionContext;
   delay: (milliseconds: number) => ExecutionContext;
+  /**
+   * @deprecated Use runAsync
+   */
   run: (cb: (err: any, signal?: any) => void) => ExecutionContext;
+  runAsync: () => Promise<void>;
 };
 
 export type SpawnOptions = {
@@ -90,7 +102,7 @@ export type SpawnOptions = {
 };
 
 function chain(context: Context): ExecutionContext {
-  return {
+  const partialExecutionContext = {
     pauseRecording: (): ExecutionContext => {
       let _pauseRecording: ExecutionStep = {
         fn: () => {
@@ -245,6 +257,20 @@ function chain(context: Context): ExecutionContext {
       context.queue.push(_send);
       return chain(context);
     },
+    sendYes: function (): ExecutionContext {
+      var _send: ExecutionStep = {
+        fn: () => {
+          context.process.write(`Y`);
+          return true;
+        },
+        name: '_send',
+        shift: true,
+        description: `'[send] Y <CR>`,
+        requiresInput: false,
+      };
+      context.queue.push(_send);
+      return chain(context);
+    },
     sendConfirmNo: function (): ExecutionContext {
       var _send: ExecutionStep = {
         fn: () => {
@@ -254,6 +280,20 @@ function chain(context: Context): ExecutionContext {
         name: '_send',
         shift: true,
         description: `'[send] N <CR>`,
+        requiresInput: false,
+      };
+      context.queue.push(_send);
+      return chain(context);
+    },
+    sendNo: function (): ExecutionContext {
+      var _send: ExecutionStep = {
+        fn: () => {
+          context.process.write(`N`);
+          return true;
+        },
+        name: '_send',
+        shift: true,
+        description: `'[send] Y <CR>`,
         requiresInput: false,
       };
       context.queue.push(_send);
@@ -318,274 +358,279 @@ function chain(context: Context): ExecutionContext {
       context.queue.push(_delay);
       return chain(context);
     },
-    run: function (callback: (err: any, code?: number, signal?: string | number) => void): ExecutionContext {
-      let errState: any = null;
-      let responded = false;
-      let stdout: string[] = [];
-      let options;
-      let noOutputTimer;
+  };
+  const run = (callback: (err: any, code?: number, signal?: string | number) => void): ExecutionContext => {
+    let errState: any = null;
+    let responded = false;
+    let stdout: string[] = [];
+    let options;
+    let noOutputTimer;
 
-      let logDumpFile: fs.WriteStream;
+    let logDumpFile: fs.WriteStream;
 
-      if (process.env.VERBOSE_LOGGING_DO_NOT_USE_IN_CI_OR_YOU_WILL_BE_FIRED) {
-        const rand = Math.floor(Math.random() * 10000);
-        const logdir = join(os.tmpdir(), 'amplify_e2e_logs');
-        fs.ensureDirSync(logdir);
-        const filename = join(logdir, `amplify_e2e_log_${rand}`);
-        logDumpFile = fs.createWriteStream(filename);
-        console.log(`CLI test logs at [${filename}]`);
+    if (process.env.VERBOSE_LOGGING_DO_NOT_USE_IN_CI_OR_YOU_WILL_BE_FIRED) {
+      const rand = Math.floor(Math.random() * 10000);
+      const logdir = join(os.tmpdir(), 'amplify_e2e_logs');
+      fs.ensureDirSync(logdir);
+      const filename = join(logdir, `amplify_e2e_log_${rand}`);
+      logDumpFile = fs.createWriteStream(filename);
+      console.log(`CLI test logs at [${filename}]`);
+    }
+
+    const exitHandler = (code: number, signal: any) => {
+      noOutputTimer.clear();
+      context.process.removeOnExitHandlers(exitHandler);
+      if (logDumpFile) {
+        logDumpFile.close();
       }
+      if (code !== 0) {
+        if (code === EXIT_CODE_TIMEOUT) {
+          const err = new Error(
+            `Killed the process as no output receive for ${context.noOutputTimeout / 1000} Sec. The no output timeout is set to ${
+              context.noOutputTimeout / 1000
+            }`,
+          );
+          return onError(err, true);
+        } else if (code === 127) {
+          // XXX(sam) Not how node works (anymore?), 127 is what /bin/sh returns,
+          // but it appears node does not, or not in all conditions, blithely
+          // return 127 to user, it emits an 'error' from the child_process.
 
-      const exitHandler = (code: number, signal: any) => {
-        noOutputTimer.clear();
-        context.process.removeOnExitHandlers(exitHandler);
-        if (logDumpFile) {
-          logDumpFile.close();
+          //
+          // If the response code is `127` then `context.command` was not found.
+          //
+          return onError(new Error('Command not found: ' + context.command), false);
         }
-        if (code !== 0) {
-          if (code === EXIT_CODE_TIMEOUT) {
-            const err = new Error(
-              `Killed the process as no output receive for ${context.noOutputTimeout / 1000} Sec. The no output timeout is set to ${
-                context.noOutputTimeout / 1000
-              }`,
-            );
-            return onError(err, true);
-          } else if (code === 127) {
-            // XXX(sam) Not how node works (anymore?), 127 is what /bin/sh returns,
-            // but it appears node does not, or not in all conditions, blithely
-            // return 127 to user, it emits an 'error' from the child_process.
-
-            //
-            // If the response code is `127` then `context.command` was not found.
-            //
-            return onError(new Error('Command not found: ' + context.command), false);
-          }
-          return onError(new Error(`Process exited with non zero exit code ${code}`), false);
-        } else {
-          if (context.queue.length && !flushQueue()) {
-            // if flushQueue returned false, onError was called
-            return;
-          }
-          recordOutputs(code);
-          callback(null, signal || code);
-        }
-      };
-      //
-      // **onError**
-      //
-      // Helper function to respond to the callback with a
-      // specified error. Kills the child process if necessary.
-      //
-      function onError(err: any, kill: boolean, errorCode: number = EXIT_CODE_GENERIC_ERROR) {
-        if (errState || responded) {
+        return onError(new Error(`Process exited with non zero exit code ${code}`), false);
+      } else {
+        if (context.queue.length && !flushQueue()) {
+          // if flushQueue returned false, onError was called
           return;
         }
-
-        recordOutputs(errorCode);
-        errState = err;
-        responded = true;
-
-        if (kill) {
-          try {
-            context.process.kill();
-          } catch (ex) {}
-        }
-
-        callback(err, errorCode);
+        recordOutputs(code);
+        callback(null, signal || code);
+      }
+    };
+    //
+    // **onError**
+    //
+    // Helper function to respond to the callback with a
+    // specified error. Kills the child process if necessary.
+    //
+    function onError(err: any, kill: boolean, errorCode: number = EXIT_CODE_GENERIC_ERROR) {
+      if (errState || responded) {
+        return;
       }
 
-      //
-      // **validateFnType**
-      //
-      // Helper function to validate the `currentFn` in the
-      // `context.queue` for the target chain.
-      //
-      function validateFnType(step: ExecutionStep): boolean {
-        const currentFn = step.fn;
-        const currentFnName = step.name;
-        if (typeof currentFn !== 'function') {
-          //
-          // If the `currentFn` is not a function, short-circuit with an error.
-          //
-          onError(new Error('Cannot process non-function on nexpect stack.'), true);
-          return false;
-        } else if (
-          ['_expect', '_sendline', '_send', '_wait', '_sendEof', '_delay', '_pauseRecording', '_resumeRecording'].indexOf(currentFnName) ===
-          -1
-        ) {
-          //
-          // If the `currentFn` is a function, but not those set by `.sendline()` or
-          // `.expect()` then short-circuit with an error.
-          //
-          onError(new Error('Unexpected context function name: ' + currentFn.name), true);
-          return false;
-        }
+      recordOutputs(errorCode);
+      errState = err;
+      responded = true;
 
-        return true;
+      if (kill) {
+        try {
+          context.process.kill();
+        } catch (ex) {}
       }
 
-      //
-      // **evalContext**
-      //
-      // Core evaluation logic that evaluates the next function in
-      // `context.queue` against the specified `data` where the last
-      // function run had `name`.
-      //
-      function evalContext(data: string, name?: string): void {
-        var step = context.queue[0];
-        const { fn: currentFn, name: currentFnName, shift } = step;
+      callback(err, errorCode);
+    }
 
-        if (!currentFn || (name === '_expect' && currentFnName === '_expect')) {
-          //
-          // If there is nothing left on the context or we are trying to
-          // evaluate two consecutive `_expect` functions, return.
-          //
-          return;
-        }
+    //
+    // **validateFnType**
+    //
+    // Helper function to validate the `currentFn` in the
+    // `context.queue` for the target chain.
+    //
+    function validateFnType(step: ExecutionStep): boolean {
+      const currentFn = step.fn;
+      const currentFnName = step.name;
+      if (typeof currentFn !== 'function') {
+        //
+        // If the `currentFn` is not a function, short-circuit with an error.
+        //
+        onError(new Error('Cannot process non-function on nexpect stack.'), true);
+        return false;
+      } else if (
+        ['_expect', '_sendline', '_send', '_wait', '_sendEof', '_delay', '_pauseRecording', '_resumeRecording'].indexOf(currentFnName) ===
+        -1
+      ) {
+        //
+        // If the `currentFn` is a function, but not those set by `.sendline()` or
+        // `.expect()` then short-circuit with an error.
+        //
+        onError(new Error('Unexpected context function name: ' + currentFn.name), true);
+        return false;
+      }
 
-        if (shift) {
+      return true;
+    }
+
+    //
+    // **evalContext**
+    //
+    // Core evaluation logic that evaluates the next function in
+    // `context.queue` against the specified `data` where the last
+    // function run had `name`.
+    //
+    function evalContext(data: string, name?: string): void {
+      var step = context.queue[0];
+      const { fn: currentFn, name: currentFnName, shift } = step;
+
+      if (!currentFn || (name === '_expect' && currentFnName === '_expect')) {
+        //
+        // If there is nothing left on the context or we are trying to
+        // evaluate two consecutive `_expect` functions, return.
+        //
+        return;
+      }
+
+      if (shift) {
+        context.queue.shift();
+      }
+
+      if (!validateFnType(step)) {
+        return;
+      }
+
+      if (currentFnName === '_expect') {
+        //
+        // If this is an `_expect` function, then evaluate it and attempt
+        // to evaluate the next function (in case it is a `_sendline` function).
+        //
+        return currentFn(data) === true ? evalContext(data, '_expect') : onError(createExpectationError(step.expectation, data), true);
+      } else if (currentFnName === '_wait') {
+        //
+        // If this is a `_wait` function, then evaluate it and if it returns true,
+        // then evaluate the function (in case it is a `_sendline` function).
+        //
+        if (currentFn(data) === true) {
           context.queue.shift();
+          evalContext(data, '_expect');
         }
-
-        if (!validateFnType(step)) {
-          return;
+      } else {
+        //
+        // If the `currentFn` is any other function then evaluate it
+        //
+        if (currentFn(data)) {
+          // Evaluate the next function if it does not need input
+          var nextFn = context.queue[0];
+          if (nextFn && !nextFn.requiresInput) evalContext(data);
         }
+      }
+    }
 
-        if (currentFnName === '_expect') {
-          //
-          // If this is an `_expect` function, then evaluate it and attempt
-          // to evaluate the next function (in case it is a `_sendline` function).
-          //
-          return currentFn(data) === true ? evalContext(data, '_expect') : onError(createExpectationError(step.expectation, data), true);
-        } else if (currentFnName === '_wait') {
-          //
-          // If this is a `_wait` function, then evaluate it and if it returns true,
-          // then evaluate the function (in case it is a `_sendline` function).
-          //
-          if (currentFn(data) === true) {
-            context.queue.shift();
-            evalContext(data, '_expect');
-          }
-        } else {
-          //
-          // If the `currentFn` is any other function then evaluate it
-          //
-          if (currentFn(data)) {
-            // Evaluate the next function if it does not need input
-            var nextFn = context.queue[0];
-            if (nextFn && !nextFn.requiresInput) evalContext(data);
-          }
+    const spinnerRegex = new RegExp(/.*(⠋|⠙|⠹|⠸|⠼|⠴|⠦|⠧|⠇|⠏).*/);
+
+    //
+    // **onLine**
+    //
+    // Preprocesses the `data` from `context.process` on the
+    // specified `context.stream` and then evaluates the processed lines:
+    //
+    // 1. Stripping ANSI colors (if necessary)
+    // 2. Removing case sensitivity (if necessary)
+    // 3. Splitting `data` into multiple lines.
+    //
+    function onLine(data: string | Buffer) {
+      noOutputTimer.reschedule(context.noOutputTimeout);
+      data = data.toString();
+      if (logDumpFile && spinnerRegex.test(data) === false && strip(data).trim().length > 0) {
+        logDumpFile.write(data);
+      }
+
+      if (context.stripColors) {
+        data = strip(data);
+      }
+
+      var lines = data.split(EOL).filter(function (line) {
+        return line.length > 0 && line !== '\r';
+      });
+      stdout = stdout.concat(lines);
+
+      while (lines.length > 0) {
+        evalContext(lines.shift(), null);
+      }
+    }
+
+    //
+    // **flushQueue**
+    //
+    // Helper function which flushes any remaining functions from
+    // `context.queue` and responds to the `callback` accordingly.
+    //
+    function flushQueue() {
+      const remainingQueue = context.queue.slice().map(item => {
+        const description = ['_sendline', '_send'].includes(item.name) ? `[${item.name}] **redacted**` : item.description;
+        return {
+          ...item,
+          description,
+        };
+      });
+      const step = context.queue.shift();
+      const { fn: currentFn, name: currentFnName } = step;
+      const nonEmptyLines = stdout.map(line => line.replace('\r', '').trim()).filter(line => line !== '');
+
+      var lastLine = nonEmptyLines[nonEmptyLines.length - 1];
+
+      if (!lastLine) {
+        onError(createUnexpectedEndError('No data from child with non-empty queue.', remainingQueue), false);
+        return false;
+      } else if (context.queue.length > 0) {
+        onError(createUnexpectedEndError('Non-empty queue on spawn exit.', remainingQueue), true);
+        return false;
+      } else if (!validateFnType(step)) {
+        // onError was called
+        return false;
+      } else if (currentFnName === '_sendline') {
+        onError(new Error('Cannot call sendline after the process has exited'), false);
+        return false;
+      } else if (currentFnName === '_wait' || currentFnName === '_expect') {
+        if (currentFn(lastLine) !== true) {
+          onError(createExpectationError(step.expectation, lastLine), false);
+          return false;
         }
       }
 
-      const spinnerRegex = new RegExp(/.*(⠋|⠙|⠹|⠸|⠼|⠴|⠦|⠧|⠇|⠏).*/);
+      return true;
+    }
 
-      //
-      // **onLine**
-      //
-      // Preprocesses the `data` from `context.process` on the
-      // specified `context.stream` and then evaluates the processed lines:
-      //
-      // 1. Stripping ANSI colors (if necessary)
-      // 2. Removing case sensitivity (if necessary)
-      // 3. Splitting `data` into multiple lines.
-      //
-      function onLine(data: string | Buffer) {
-        noOutputTimer.reschedule(context.noOutputTimeout);
-        data = data.toString();
-        if (logDumpFile && spinnerRegex.test(data) === false && strip(data).trim().length > 0) {
-          logDumpFile.write(data);
-        }
+    options = {
+      cwd: context.cwd,
+      env: context.env,
+    };
 
-        if (context.stripColors) {
-          data = strip(data);
-        }
-
-        var lines = data.split(EOL).filter(function (line) {
-          return line.length > 0 && line !== '\r';
+    const recordOutputs = (code: number) => {
+      if (global.storeCLIExecutionLog) {
+        global.storeCLIExecutionLog({
+          cmd: context.command,
+          cwd: context.cwd,
+          exitCode: code,
+          params: context.params,
+          recording: context.getRecording(),
         });
-        stdout = stdout.concat(lines);
-
-        while (lines.length > 0) {
-          evalContext(lines.shift(), null);
-        }
       }
+    };
 
-      //
-      // **flushQueue**
-      //
-      // Helper function which flushes any remaining functions from
-      // `context.queue` and responds to the `callback` accordingly.
-      //
-      function flushQueue() {
-        const remainingQueue = context.queue.slice().map(item => {
-          const description = ['_sendline', '_send'].includes(item.name) ? `[${item.name}] **redacted**` : item.description;
-          return {
-            ...item,
-            description,
-          };
-        });
-        const step = context.queue.shift();
-        const { fn: currentFn, name: currentFnName } = step;
-        const nonEmptyLines = stdout.map(line => line.replace('\r', '').trim()).filter(line => line !== '');
+    try {
+      context.process = new Recorder(context.command, context.params, options);
 
-        var lastLine = nonEmptyLines[nonEmptyLines.length - 1];
+      context.process.addOnDataHandler(onLine);
 
-        if (!lastLine) {
-          onError(createUnexpectedEndError('No data from child with non-empty queue.', remainingQueue), false);
-          return false;
-        } else if (context.queue.length > 0) {
-          onError(createUnexpectedEndError('Non-empty queue on spawn exit.', remainingQueue), true);
-          return false;
-        } else if (!validateFnType(step)) {
-          // onError was called
-          return false;
-        } else if (currentFnName === '_sendline') {
-          onError(new Error('Cannot call sendline after the process has exited'), false);
-          return false;
-        } else if (currentFnName === '_wait' || currentFnName === '_expect') {
-          if (currentFn(lastLine) !== true) {
-            onError(createExpectationError(step.expectation, lastLine), false);
-            return false;
-          }
-        }
+      context.process.addOnExitHandlers(exitHandler);
 
-        return true;
-      }
-
-      options = {
-        cwd: context.cwd,
-        env: context.env,
-      };
-
-      const recordOutputs = (code: number) => {
-        if (global.storeCLIExecutionLog) {
-          global.storeCLIExecutionLog({
-            cmd: context.command,
-            cwd: context.cwd,
-            exitCode: code,
-            params: context.params,
-            recording: context.getRecording(),
-          });
-        }
-      };
-
-      try {
-        context.process = new Recorder(context.command, context.params, options);
-
-        context.process.addOnDataHandler(onLine);
-
-        context.process.addOnExitHandlers(exitHandler);
-
-        context.process.run();
-        noOutputTimer = retimer(() => {
-          exitHandler(EXIT_CODE_TIMEOUT, 'SIGTERM');
-        }, context.noOutputTimeout);
-        return chain(context);
-      } catch (e) {
-        onError(e, true);
-      }
-    },
+      context.process.run();
+      noOutputTimer = retimer(() => {
+        exitHandler(EXIT_CODE_TIMEOUT, 'SIGTERM');
+      }, context.noOutputTimeout);
+      return chain(context);
+    } catch (e) {
+      onError(e, true);
+    }
+  };
+  return {
+    ...partialExecutionContext,
+    run,
+    runAsync: () => new Promise<void>((resolve, reject) => run(err => (err ? reject(err) : resolve()))),
   };
 }
 

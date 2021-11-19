@@ -103,7 +103,7 @@ class AmplifyPrompter implements Prompter {
    * If the yes flag is set, the initial selection is returned. If no initial selection is specified, an error is thrown
    * @param message The prompt message
    * @param choices The selection set to choose from
-   * @param options Control prompt settings. options.multiSelect = true is required if PickType = 'many'
+   * @param options Control prompt settings
    * @returns The item(s) selected. If PickType = 'one' this is a single value. If PickType = 'many', this is an array
    *
    * Note: due to this TS issue https://github.com/microsoft/TypeScript/issues/30611 type T cannot be an enum.
