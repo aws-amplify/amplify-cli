@@ -13,7 +13,13 @@ export const populateResource = async (context: $TSContext) => {
   if (geofenceCollectionResources.length === 0) {
     throw new Error('Geofence collection is not found. Use `amplify geo add` to create a new geofence collection.')
   }
-  const collectionNames = geofenceCollectionResources.map(collection => collection.resourceName);
+  const collectionNames = geofenceCollectionResources.map(collection => {
+    if (!collection.output || !collection.output.Name || !collection.output.Region) {
+      throw new Error(`Geofence ${collection.resourceName} is not provisioned yet.`)
+    }
+    return collection.output.Name;
+  });
+  const collectionRegion = geofenceCollectionResources[0].output.Region;
   let collectionToPopulate: string = collectionNames[0];
   if (geofenceCollectionResources.length > 1) {
     collectionToPopulate = await prompter.pick<'one', string>('Select the Geofence Collection to populate with Geofences', collectionNames)
@@ -35,11 +41,12 @@ export const populateResource = async (context: $TSContext) => {
   //Validate the json file against schema
   const geoJSONObj: FeatureCollection = validateGeoJSONFile(geoJSONFilePath, uniqueIdentifier, identifierOption);
   //Update the GeoJSON file
-  writeFileSync(geoJSONFilePath, JSON.stringify(geoJSONObj));
+  writeFileSync(geoJSONFilePath, JSON.stringify(geoJSONObj, null, 2));
   //Construct geofence collection parameters
   const geofenceCollectionParams = constructGeofenceCollectionParams({collectionToPopulate, uniqueIdentifier, identifierOption, geoJSONObj});
   //Upload geofences to collection
-  await bulkUploadGeofence(geofenceCollectionParams);
+  const successCount = await bulkUploadGeofence(geofenceCollectionParams, collectionRegion);
+  printer.success(`Successfully added/updated ${successCount} Geofences in your "${collectionToPopulate}" collection`);
 };
 
 const constructGeofenceCollectionParams = (populateParam: PopulateParams): GeofenceCollectionParams => {
@@ -61,15 +68,16 @@ const constructGeofenceCollectionParams = (populateParam: PopulateParams): Geofe
   }
 }
 
-const bulkUploadGeofence = async (params: GeofenceCollectionParams) => {
-  const service = new Location();
+const bulkUploadGeofence = async (params: GeofenceCollectionParams, region: string) => {
+  let successCount = 0;
+  const service = new Location({region});
   await service.batchPutGeofence(params, (err, data) => {
     if (err) {
       console.log(err, err.stack);
     }
     else {
-      printer.success(`Successfully added/updated <count> Geofences in your "${params.CollectionName}" collection`);
-      console.log(data);
+      successCount++;
     }
   }).promise();
+  return successCount;
 }

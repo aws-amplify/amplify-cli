@@ -7,7 +7,6 @@ export const name = 'populate';
 export const run = async (context: $TSContext) => {
   const { amplify } = context;
   try {
-    printer.info('amplify geo populate command');
     return await populateResource(context);
   } catch (error: $TSAny) {
     if (error.message) {
