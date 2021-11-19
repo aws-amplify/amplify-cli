@@ -21,4 +21,4 @@ export function versionCheck(cwd: string, testingWithLatestCodebase = false, ver
  *
  * ext migrate flow: https://github.com/aws-amplify/amplify-cli/pull/8806
  */
-export const allowedVersionsToMigrateFrom = ['5.2.0', '6.0.1'];
+export const allowedVersionsToMigrateFrom = ['5.2.0', '6.1.0'];

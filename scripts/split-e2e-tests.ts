@@ -476,7 +476,7 @@ function main(): void {
     join(repoRoot, 'packages', 'graphql-transformers-e2e-tests'),
     CONCURRENCY,
   );
-  const splitV4MigrationTests = splitTests(
+  const splitV5MigrationTests = splitTests(
     splitGqlTests,
     'amplify_migration_tests_v5',
     'build_test_deploy',
@@ -484,15 +484,15 @@ function main(): void {
     CONCURRENCY,
     true,
   );
-  const splitLatestMigrationTests = splitTests(
-    splitV4MigrationTests,
+  const splitV6MigrationTests = splitTests(
+    splitV5MigrationTests,
     'amplify_migration_tests_v6',
     'build_test_deploy',
     join(repoRoot, 'packages', 'amplify-migration-tests'),
     CONCURRENCY,
     true,
   );
-  saveConfig(splitLatestMigrationTests);
+  saveConfig(splitV6MigrationTests);
   verifyConfig();
 }
 main();

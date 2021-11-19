@@ -300,7 +300,7 @@ jobs:
       - restore_cache:
           key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
-          name: Run tests migrating from CLI v5.2.1
+          name: Run tests migrating from CLI v5.2.0
           command: |
             source .circleci/local_publish_helpers.sh
             changeNpmGlobalPath
