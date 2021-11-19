@@ -1,6 +1,6 @@
 {
   "name": "amplify-category-api",
-  "version": "3.3.2",
+  "version": "3.3.3",
   "description": "amplify-cli api plugin",
   "repository": {
     "type": "git",
@@ -17,7 +17,7 @@
     "test": "jest"
   },
   "dependencies": {
-    "@aws-amplify/graphql-transformer-migrator": "1.2.3",
+    "@aws-amplify/graphql-transformer-migrator": "1.2.4",
     "@aws-cdk/assets": "~1.124.0",
     "@aws-cdk/aws-apigateway": "~1.124.0",
     "@aws-cdk/aws-apigatewayv2": "~1.124.0",

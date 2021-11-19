@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [7.4.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@7.4.1...@aws-amplify/cli@7.4.3) (2021-11-19)
+
+
+### Bug Fixes
+
+* **graphql:** add warning to missing auth modes on amplify push yes flag ([#8925](https://github.com/aws-amplify/amplify-cli/issues/8925)) ([80c9147](https://github.com/aws-amplify/amplify-cli/commit/80c9147edbda68b44ccd02d0830dccd0c4dcc887))
+
+
+
+
+
 ## [7.4.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@7.4.1...@aws-amplify/cli@7.4.2) (2021-11-19)
 
 

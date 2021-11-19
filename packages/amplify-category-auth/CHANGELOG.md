@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.3.6](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@2.3.5...@aws-amplify/amplify-category-auth@2.3.6) (2021-11-19)
+
+
+
+## 7.4.3 (2021-11-19)
+
+
+### Bug Fixes
+
+* **amplify-category-auth:** auth cloudformation corruption fixed for outputs ([#8968](https://github.com/aws-amplify/amplify-cli/issues/8968)) ([9aa8f56](https://github.com/aws-amplify/amplify-cli/commit/9aa8f5657de1fbff759ba6df73a4fc9772db61ad))
+* **amplify-category-auth:** fix async await and update unit-tests ([#8964](https://github.com/aws-amplify/amplify-cli/issues/8964)) ([3f1b821](https://github.com/aws-amplify/amplify-cli/commit/3f1b821af99429d65f00561b1a04bde91d992e05))
+
+
+
+
+
 ## [2.3.5](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@2.3.4...@aws-amplify/amplify-category-auth@2.3.5) (2021-11-18)
 
 

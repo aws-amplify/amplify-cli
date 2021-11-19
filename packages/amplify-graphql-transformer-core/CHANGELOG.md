@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.13.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-transformer-core@0.13.0...@aws-amplify/graphql-transformer-core@0.13.1) (2021-11-19)
+
+
+### Bug Fixes
+
+* **graphql-default-value-transformer:** support for [@default](https://github.com/default) directive for required fields ([#8906](https://github.com/aws-amplify/amplify-cli/issues/8906)) ([dc0179d](https://github.com/aws-amplify/amplify-cli/commit/dc0179d69433db0f838d21ebc849b595f4c60c82))
+
+
+
+
+
 # [0.13.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-transformer-core@0.12.1...@aws-amplify/graphql-transformer-core@0.13.0) (2021-11-17)
 
 
