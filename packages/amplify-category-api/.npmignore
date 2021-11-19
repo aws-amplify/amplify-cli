@@ -2,4 +2,5 @@
 **/__tests__/**
 ./src
 tsconfig.json
+!resources/awscloudformation/overrides-resource/Appsync/tsconfig.json
 tsconfig.tsbuildinfo

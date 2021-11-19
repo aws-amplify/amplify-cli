@@ -464,7 +464,7 @@ export const updateWalkthrough = async (context): Promise<UpdateApiRequest> => {
   if (await checkAppsyncApiResourceMigration(context, resourceName, true)) {
     await context.amplify.invokePluginMethod(context, 'awscloudformation', undefined, 'compileSchema', [context, { forceCompile: true }]);
   } else {
-    printer.error('Update Operations works on migrated projects. Run amplify update api and opt for migration');
+    printer.error('Update operations only work on migrated projects. Run "amplify update api" and opt for migration.');
     exitOnNextTick(0);
   }
 
