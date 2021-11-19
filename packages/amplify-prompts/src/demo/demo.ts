@@ -124,6 +124,10 @@ const demo = async () => {
   (choices2[1] as any).hint = 'definitely the best';
   (choices2[2] as any).disabled = true;
   printResult(await prompter.pick<'many', number>('Pick your favorite Skittle color', choices2, { returnSize: 'many' }));
+
+  printer.info('A minimum and / or maximum number of choices can be specified');
+  (choices2[2] as any).disabled = false;
+  printResult(await prompter.pick<'many', number>('Pick 2 to 4 colors', choices2, { returnSize: 'many', pickAtLeast: 2, pickAtMost: 4 }));
 };
 
 demo().catch(console.error);
