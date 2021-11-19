@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.10.0-gql-ext2.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-searchable-transformer@0.9.2...@aws-amplify/graphql-searchable-transformer@0.10.0-gql-ext2.0) (2021-11-19)
+
+
+### Bug Fixes
+
+* rebase with gql release branch ([d4ea92f](https://github.com/aws-amplify/amplify-cli/commit/d4ea92fa5789246866c0369a0ce040059ffb9bfc))
+* update gitignore to include test files ([2cc2497](https://github.com/aws-amplify/amplify-cli/commit/2cc2497025018c4370cdb42ed56b40fdb8c3015d))
+
+
+### Features
+
+* add unit tests and e2e ([4b81d1b](https://github.com/aws-amplify/amplify-cli/commit/4b81d1b1abd6662908638bb102ce37411042766b))
+
+
+
+
+
 ## [0.9.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-searchable-transformer@0.9.1...@aws-amplify/graphql-searchable-transformer@0.9.2) (2021-11-17)
 
 

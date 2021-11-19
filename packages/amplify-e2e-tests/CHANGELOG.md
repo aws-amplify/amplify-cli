@@ -3,6 +3,24 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.5.0-gql-ext2.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@3.4.0...amplify-e2e-tests@3.5.0-gql-ext2.0) (2021-11-19)
+
+
+### Bug Fixes
+
+* address comments ([cb8ed80](https://github.com/aws-amplify/amplify-cli/commit/cb8ed80ec22ed0fed8bfe29a9bf88b4637a8d5d3))
+* fix e2e tests ([36beea3](https://github.com/aws-amplify/amplify-cli/commit/36beea3aa98ffdf4ba4bec431c5bd8209aeb06ab))
+* remove unused files ([113b960](https://github.com/aws-amplify/amplify-cli/commit/113b96051ea6402e60e65d906f41a4b2dc3fbb3f))
+
+
+### Features
+
+* add unit tests and e2e ([4b81d1b](https://github.com/aws-amplify/amplify-cli/commit/4b81d1b1abd6662908638bb102ce37411042766b))
+
+
+
+
+
 # [3.4.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@3.3.1...amplify-e2e-tests@3.4.0) (2021-11-17)
 
 

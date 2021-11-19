@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.2.3-gql-ext2.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-extensibility-helper@2.2.2...@aws-amplify/cli-extensibility-helper@2.2.3-gql-ext2.0) (2021-11-19)
+
+
+### Bug Fixes
+
+* rebase with gql release branch ([d4ea92f](https://github.com/aws-amplify/amplify-cli/commit/d4ea92fa5789246866c0369a0ce040059ffb9bfc))
+* type name fix and overrides version fix ([a6a3c2e](https://github.com/aws-amplify/amplify-cli/commit/a6a3c2e1b89acb2a7198bb7e6be5d2a6f568b9e6))
+
+
+
+
+
 ## [2.2.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-extensibility-helper@2.2.1...@aws-amplify/cli-extensibility-helper@2.2.2) (2021-11-17)
 
 **Note:** Version bump only for package @aws-amplify/cli-extensibility-helper

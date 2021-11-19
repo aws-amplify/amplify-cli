@@ -3,6 +3,33 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.5.0-gql-ext2.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@5.4.1...amplify-provider-awscloudformation@5.5.0-gql-ext2.0) (2021-11-19)
+
+
+### Bug Fixes
+
+* address comments ([cb8ed80](https://github.com/aws-amplify/amplify-cli/commit/cb8ed80ec22ed0fed8bfe29a9bf88b4637a8d5d3))
+* e2e errors ([a87b4d1](https://github.com/aws-amplify/amplify-cli/commit/a87b4d17a3068eec665d74b60ee652a278cfd323))
+* fix e2e tests ([36beea3](https://github.com/aws-amplify/amplify-cli/commit/36beea3aa98ffdf4ba4bec431c5bd8209aeb06ab))
+* lgtm errors ([0c42f11](https://github.com/aws-amplify/amplify-cli/commit/0c42f1172abb62a0a8d2d225fad2cba861430ab0))
+* merged with extOverrides3 ([f192dff](https://github.com/aws-amplify/amplify-cli/commit/f192dff2cb816f084cece297ec90bb78dcef6177))
+* migration logic ([b451977](https://github.com/aws-amplify/amplify-cli/commit/b451977e9294e04151be1539fe6615cf3776dd82))
+* rebase with gql release branch ([d4ea92f](https://github.com/aws-amplify/amplify-cli/commit/d4ea92fa5789246866c0369a0ce040059ffb9bfc))
+
+
+### Features
+
+* add unit tests and e2e ([4b81d1b](https://github.com/aws-amplify/amplify-cli/commit/4b81d1b1abd6662908638bb102ce37411042766b))
+* added cli-inputs.json in api ([c776c4d](https://github.com/aws-amplify/amplify-cli/commit/c776c4d3064bd8b6a6f4da22a815525dd8e204c0))
+* added migration for gqlApi ([197fffc](https://github.com/aws-amplify/amplify-cli/commit/197fffc11835525bf9aa22ddd51a5e93cf00a5b7))
+* enable overrides for api ([0e5ffcc](https://github.com/aws-amplify/amplify-cli/commit/0e5ffccf7336f121653e7b639b12ead17bfcee35))
+* gql api migration working ([b05b4bc](https://github.com/aws-amplify/amplify-cli/commit/b05b4bc1720d0f5c8beb2e36a8292c0beb49e5d7))
+* overrides functionality for appsync api ([df63416](https://github.com/aws-amplify/amplify-cli/commit/df63416c676dfdf334e3d7ef5ef2308deeeccb0a))
+
+
+
+
+
 ## [5.4.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@5.4.0...amplify-provider-awscloudformation@5.4.1) (2021-11-18)
 
 **Note:** Version bump only for package amplify-provider-awscloudformation
