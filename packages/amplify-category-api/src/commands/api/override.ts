@@ -79,7 +79,6 @@ export const run = async (context: $TSContext) => {
         return;
       }
     }
+    await generateOverrideSkeleton(context, srcPath, destPath);
   }
-
-  await generateOverrideSkeleton(context, srcPath, destPath);
 };
