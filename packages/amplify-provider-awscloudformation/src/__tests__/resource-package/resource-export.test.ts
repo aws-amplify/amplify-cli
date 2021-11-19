@@ -203,10 +203,9 @@ const mockResource: DeploymentResources = {
 };
 
 jest.mock('glob', () => ({
-  sync: mockGlobSync,
+  sync: jest.fn((_, { cwd }) => [path.join(cwd, 'cfntemplate.json')]),
 }));
 
-const mockGlobSync = jest.fn((_, { cwd }) => [path.join(cwd, 'cfntemplate.json')]);
 const lambdaTemplate = {
   Resources: {
     LambdaLayerVersionb8059db0: {

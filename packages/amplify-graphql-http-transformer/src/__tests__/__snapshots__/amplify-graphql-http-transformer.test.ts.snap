@@ -144,3 +144,5 @@ $util.qr($util.appendError($ctx.result.body, $ctx.result.statusCode))
   "Comment.contentPost.res.vtl": "$util.toJson($ctx.prev.result)",
 }
 `;
+
+exports[`generates expected VTL 2`] = `Object {}`;
