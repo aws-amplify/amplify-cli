@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.9.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-searchable-transformer@0.9.2...@aws-amplify/graphql-searchable-transformer@0.9.3) (2021-11-19)
+
+
+### Bug Fixes
+
+* **graphql:** use output type definition to generate searchable filter ([#8934](https://github.com/aws-amplify/amplify-cli/issues/8934)) ([ff214be](https://github.com/aws-amplify/amplify-cli/commit/ff214befba58a1cc8ce0a0908b3b1581ae3fffe4))
+
+
+
+
+
 ## [0.9.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-searchable-transformer@0.9.1...@aws-amplify/graphql-searchable-transformer@0.9.2) (2021-11-17)
 
 
