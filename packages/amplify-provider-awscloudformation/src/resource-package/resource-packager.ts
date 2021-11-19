@@ -28,6 +28,7 @@ import {
   UploadedResourceDefinition,
   TransformedCfnResource,
 } from './types';
+import { prePushTemplateDescriptionHandler } from '../template-description-utils';
 
 /**
  * Abstract class that holds logic for building, packaging and cfn generation
@@ -277,6 +278,7 @@ export abstract class ResourcePackager {
   protected async postGenerateCategoryCloudFormation(resources: PackagedResourceDefinition[]): Promise<TransformedCfnResource[]> {
     const { API_CATEGORY, FUNCTION_CATEGORY } = Constants;
     const transformedCfnResources: TransformedCfnResource[] = [];
+    await prePushTemplateDescriptionHandler(this.context, resources);
     for await (const resource of resources) {
       const cfnFiles = this.getCfnTemplatePathsForResource(resource);
       const transformedCfnPaths: string[] = [];

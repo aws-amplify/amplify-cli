@@ -28,6 +28,8 @@ import { AUTH_TRIGGER_STACK } from '../utils/upload-auth-trigger-template';
 import { S3 } from '../aws-utils/aws-s3';
 import { downloadZip } from '../zip-util';
 import { Ref } from 'cloudform-types/types/functions';
+import { prePushCfnTemplateModifier } from '../pre-push-cfn-processor/pre-push-cfn-modifier';
+import { getDefaultTemplateDescription } from '../template-description-utils';
 const {
   API_CATEGORY,
   AUTH_CATEGORY,
@@ -110,8 +112,9 @@ export class ResourceExport extends ResourcePackager {
   async generateAndWriteRootStack(stackParameters: StackParameters): Promise<StackParameters> {
     const { StackName: stackName, AuthRoleName, UnauthRoleName, DeploymentBucketName } = this.amplifyMeta[PROVIDER][PROVIDER_NAME];
     const template = await this.generateRootStack();
+    await prePushCfnTemplateModifier(template);
     const parameters = this.extractParametersFromTemplateNestedStack(template);
-    const modifiedTemplate = this.modifyRootStack(template, true);
+    const modifiedTemplate = await this.modifyRootStack(template, true);
     this.writeRootStackToPath(modifiedTemplate);
     stackParameters[stackName].destination = path.join(this.exportDirectoryPath, 'root-stack-template.json');
 
@@ -419,7 +422,7 @@ export class ResourceExport extends ResourcePackager {
    * @param template {Template}
    * @returns {Template}
    */
-  private modifyRootStack(template: Template, deleteParameters: boolean): Template {
+   private async modifyRootStack(template: Template, deleteParameters: boolean): Promise<Template> {
     Object.keys(template.Resources).map(resourceKey => {
       const resource = template.Resources[resourceKey];
       if (resource.Type === AWS_CLOUDFORMATION_STACK_TYPE) {
@@ -442,6 +445,8 @@ export class ResourceExport extends ResourcePackager {
         }
       }
     });
+    await prePushCfnTemplateModifier(template);
+    template.Description = getDefaultTemplateDescription(this.context, 'root');
     return template;
   }
 

@@ -101,6 +101,10 @@ jest.mock('../../zip-util', () => ({
   downloadZip: mockdownloadZip,
 }));
 
+jest.mock('../../template-description-utils', () => ({
+  prePushTemplateDescriptionHandler: jest.fn(),
+  getDefaultTemplateDescription: jest.fn().mockReturnValue('mock description'),
+}))
 jest.mock('../../download-api-models', () => ({}));
 jest.mock('../../graphql-transformer', () => ({}));
 jest.mock('../../amplify-service-manager', () => ({}));
