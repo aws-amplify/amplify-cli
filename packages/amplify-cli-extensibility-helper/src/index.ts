@@ -1,9 +1,8 @@
-export { AmplifyRootStackTemplate } from './types/project/types';
-export { AmplifyAuthCognitoStackTemplate, AmplifyUserPoolGroupStackTemplate } from './types/auth/types';
-import { addCDKResourceDependency } from '@aws-amplify/amplify-category-custom';
-export { AmplifyDDBResourceTemplate, AmplifyS3ResourceTemplate, AmplifyCDKL1 } from './types/storage/types';
+import { addCDKResourceDependency, AmplifyResourceProps } from '@aws-amplify/amplify-category-custom';
 import { getProjectInfo } from './helpers/project-info';
-import { AmplifyResourceProps } from '@aws-amplify/amplify-category-custom';
 export { AppSyncServiceResourceStack } from './types/api/amplify-api-resource-stack-types';
-
+export { AmplifyApigwResourceTemplate } from './types/api/types';
+export { AmplifyAuthCognitoStackTemplate, AmplifyUserPoolGroupStackTemplate } from './types/auth/types';
+export { AmplifyRootStackTemplate } from './types/project/types';
+export { AmplifyCDKL1, AmplifyDDBResourceTemplate, AmplifyS3ResourceTemplate } from './types/storage/types';
 export { getProjectInfo, addCDKResourceDependency as addResourceDependency, AmplifyResourceProps };

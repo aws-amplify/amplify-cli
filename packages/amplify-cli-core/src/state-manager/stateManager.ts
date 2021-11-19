@@ -292,6 +292,14 @@ export class StateManager {
     JSONUtilities.writeJson(filePath, inputs);
   };
 
+  resourceInputsJsonExists = (projectPath: string | undefined, category: string, resourceName: string): boolean => {
+    try {
+      return fs.existsSync(pathManager.getResourceInputsJsonFilePath(projectPath, category, resourceName));
+    } catch (e) {
+      return false;
+    }
+  };
+
   cliJSONFileExists = (projectPath: string, env?: string): boolean => {
     try {
       return fs.existsSync(pathManager.getCLIJSONFilePath(projectPath, env));
@@ -393,14 +401,6 @@ export class StateManager {
     });
 
     return data ?? options?.default;
-  };
-
-  resourceInputsJsonExists = (projectPath: string | undefined, category: string, resourceName: string): boolean => {
-    try {
-      return fs.existsSync(pathManager.getResourceInputsJsonFilePath(projectPath, category, resourceName));
-    } catch (e) {
-      return false;
-    }
   };
 }
 

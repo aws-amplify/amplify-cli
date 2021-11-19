@@ -1,0 +1,68 @@
+{
+  "description": "Defines the json object expected by the amplify api category",
+  "type": "object",
+  "properties": {
+    "version": {
+      "description": "The schema version.",
+      "type": "number",
+      "enum": [1]
+    },
+    "paths": {
+      "description": "map of paths in the REST API.",
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "lambdaFunction": {
+            "type": "string"
+          },
+          "permissions": {
+            "type": "object",
+            "properties": {
+              "setting": {
+                "$ref": "#/definitions/PermissionSetting"
+              },
+              "auth": {
+                "type": "array",
+                "items": {
+                  "enum": ["create", "delete", "read", "update"],
+                  "type": "string"
+                }
+              },
+              "guest": {
+                "type": "array",
+                "items": {
+                  "enum": ["create", "delete", "read", "update"],
+                  "type": "string"
+                }
+              },
+              "groups": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "array",
+                    "items": {
+                      "enum": ["create", "delete", "read", "update"],
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            },
+            "required": ["setting"]
+          }
+        },
+        "required": ["lambdaFunction", "permissions"]
+      }
+    }
+  },
+  "required": ["paths", "version"],
+  "definitions": {
+    "PermissionSetting": {
+      "enum": ["open", "private", "protected"],
+      "type": "string"
+    }
+  },
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
