@@ -1,5 +1,4 @@
 import { $TSContext } from 'amplify-cli-core';
-import { printer } from 'amplify-prompts';
 
 const subcommand = 'gql-compile';
 
