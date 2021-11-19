@@ -1,7 +1,19 @@
 {
   "name": "api",
   "type": "category",
-  "commands": ["add-graphql-datasource", "add", "console", "gql-compile", "migrate", "push", "rebuild", "remove", "update", "help"],
+  "commands": [
+    "add-graphql-datasource",
+    "add",
+    "console",
+    "gql-compile",
+    "migrate",
+    "push",
+    "rebuild",
+    "remove",
+    "update",
+    "help",
+    "override"
+  ],
   "commandAliases": {
     "configure": "update"
   },
