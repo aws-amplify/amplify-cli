@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.7.0-apiext1.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-function-transformer@0.6.2...@aws-amplify/graphql-function-transformer@0.7.0-apiext1.0) (2021-11-19)
+
+
+### Features
+
+* extensibility for Amplify API  ([#8954](https://github.com/aws-amplify/amplify-cli/issues/8954)) ([d662316](https://github.com/aws-amplify/amplify-cli/commit/d66231697abc7db86e4e6a7c66e78e88a332dd22))
+
+
+
+
+
 ## [0.6.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-function-transformer@0.6.1...@aws-amplify/graphql-function-transformer@0.6.2) (2021-11-17)
 
 
