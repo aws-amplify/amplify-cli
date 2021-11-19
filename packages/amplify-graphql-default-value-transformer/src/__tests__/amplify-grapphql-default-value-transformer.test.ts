@@ -250,11 +250,11 @@ describe('DefaultValueModelTransformer: ', () => {
     }).toThrow('Default value "INVALID" is not a member of Tag enum.');
   });
 
-  it('throws if @default is used on a required field.', () => {
-    const schema = `
+  it('should be supported on a required field.', () => {
+    const inputSchema = `
       type Test @model {
         id: ID!
-        value: AWSIPAddress! @default(value: "text")
+        stringValue: String! @default(value: "hello world")
       }
     `;
 
@@ -262,9 +262,12 @@ describe('DefaultValueModelTransformer: ', () => {
       transformers: [new ModelTransformer(), new DefaultValueTransformer()],
     });
 
-    expect(() => {
-      transformer.transform(schema);
-    }).toThrow('The @default directive cannot be added to required fields.');
+    const out = transformer.transform(inputSchema);
+    expect(out).toBeDefined();
+    expect(out.schema).toMatchSnapshot();
+
+    const schema = parse(out.schema);
+    validateModelSchema(schema);
   });
 
   it('should successfully transform simple valid schema', async () => {
