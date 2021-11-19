@@ -55,6 +55,7 @@ import {
   hasRelationalDirective,
   getTable,
   getRelationalPrimaryMap,
+  getReadRolesForField,
 } from './utils';
 import {
   DirectiveNode,
@@ -299,6 +300,7 @@ Static group authorization should perform as expected.`,
     for (let [modelName, acm] of this.authModelConfig) {
       const indexKeyName = `${modelName}:indicies`;
       const def = context.output.getObject(modelName)!;
+      const modelNameConfig = this.modelDirectiveConfig.get(modelName);
       const searchableDirective = def.directives.find(dir => dir.name.value === 'searchable');
       // queries
       const queryFields = getQueryFieldNames(this.modelDirectiveConfig.get(modelName)!);
@@ -337,8 +339,9 @@ Static group authorization should perform as expected.`,
       const modelFields = def.fields?.filter(f => acm.hasResource(f.name.value)) ?? [];
       const errorFields = new Array<string>();
       for (let field of modelFields) {
-        const allowedRoles = readRoles.filter(r => acm.isAllowed(r, field.name.value, 'read'));
-        const needsFieldResolver = allowedRoles.length < readRoles.length;
+        const fieldReadRoles = getReadRolesForField(acm, readRoles, field.name.value);
+        const allowedRoles = fieldReadRoles.filter(r => acm.isAllowed(r, field.name.value, 'read'));
+        const needsFieldResolver = allowedRoles.length < fieldReadRoles.length;
         if (needsFieldResolver && field.type.kind === Kind.NON_NULL_TYPE) {
           errorFields.push(field.name.value);
         } else if (hasRelationalDirective(field)) {
@@ -347,12 +350,12 @@ Static group authorization should perform as expected.`,
           this.protectFieldResolver(context, def, modelName, field.name.value, allowedRoles);
         }
       }
-      if (errorFields.length > 0) {
+      if (errorFields.length > 0 && modelNameConfig.subscriptions.level === SubscriptionLevel.on) {
         throw new InvalidDirectiveError(
-          `Because "${def.name.value}" has a field-level authorization rule,` +
-            ` you need to either apply field-level authorization rules to all required fields ${JSON.stringify(
+          `Because "${def.name.value}" has a field-level authorization rule and subscriptions are enabled,` +
+            ` you need to either apply field-level authorization rules to all required fields where all rules have read access ${JSON.stringify(
               errorFields,
-            )} or make those fields nullable.`,
+            )}, make those fields nullable, or disable subscriptions for "${def.name.value}" (setting level to off or public).`,
         );
       }
       const mutationFields = getMutationFieldNames(this.modelDirectiveConfig.get(modelName)!);
