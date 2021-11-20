@@ -1,4 +1,5 @@
 import {
+  addApiWithoutSchema,
   addHeadlessApi,
   amplifyPush,
   amplifyPushUpdate,
@@ -65,7 +66,6 @@ describe('api migration update test', () => {
 
     // update api and push with the CLI to be released (the codebase)
     updateApiSchema(projRoot, projectName, nextSchema);
-    expect(getCLIInputs(projRoot, 'api', projectName)).not.toBeDefined();
     // cli-inputs ot defined
     await amplifyPushUpdate(projRoot, undefined, true);
     const { output } = getProjectMeta(projRoot).api[projectName];
@@ -75,16 +75,16 @@ describe('api migration update test', () => {
     expect(GraphQLAPIKeyOutput).toBeDefined();
   });
 
-  it('api update migration with multiauth', async () => {
+  it.only('api update migration with multiauth', async () => {
     // init and add api with installed CLI
-    const { projectName } = getProjectConfig(projRoot);
-    await addApiWithoutSchemaOldDx(projRoot);
-    updateApiSchema(projRoot, projectName, 'simple_model.graphql');
+    await initJSProjectWithProfile(projRoot, { name: 'simplemodelmultiauth' });
+    await addApiWithoutSchema(projRoot);
+    await updateApiSchema(projRoot, 'simplemodelmultiauth', 'simple_model.graphql');
+    await amplifyPush(projRoot);
     // update and push with codebase
     await updateApiWithMultiAuth(projRoot, { testingWithLatestCodebase: true });
     // cli-inputs should exist
     expect(getCLIInputs(projRoot, 'api', 'simplemodelmultiauth')).toBeDefined();
-    expect(getCLIInputs(projRoot, 'api', 'simplemodelmultiauth')).toMatchSnapshot();
     await amplifyPush(projRoot, true);
 
     const meta = getProjectMeta(projRoot);
@@ -137,8 +137,7 @@ describe('api migration update test', () => {
 
     //update and push with codebase
     await updateAPIWithResolutionStrategyWithModels(projRoot, { testingWithLatestCodebase: true });
-    expect(getCLIInputs(projRoot, 'api', 'simplemodelmultiauth')).toBeDefined();
-    expect(getCLIInputs(projRoot, 'api', 'simplemodelmultiauth')).toMatchSnapshot();
+    expect(getCLIInputs(projRoot, 'api', 'syncenabled')).toBeDefined();
     transformConfig = getTransformConfig(projRoot, name);
     expect(transformConfig).toBeDefined();
     expect(transformConfig.Version).toBeDefined();
@@ -194,17 +193,19 @@ describe('api migration update test', () => {
       },
     },
   };
-  it.only('updates AppSync API in headless mode', async () => {
+  it('updates AppSync API in headless mode', async () => {
     const name = `simplemodelv${TRANSFORM_BASE_VERSION}`;
-    await initJSProjectWithProfile(projRoot, { name });
-    await addHeadlessApi(projRoot, addApiRequest);
+    await initJSProjectWithProfile(projRoot, {});
+    await addHeadlessApi(projRoot, addApiRequest, {
+      allowDestructiveUpdates: false,
+      testingWithLatestCodebase: false,
+    });
     await amplifyPush(projRoot);
     await updateHeadlessApi(projRoot, updateApiRequest, true);
-    expect(getCLIInputs(projRoot, 'api', name)).toBeDefined();
-    expect(getCLIInputs(projRoot, 'api', name)).toMatchSnapshot();
+    expect(getCLIInputs(projRoot, 'api', 'myApiName')).toBeDefined();
     await amplifyPushUpdate(projRoot, undefined, undefined, true);
 
-    // verify
+    //verify
     const meta = getProjectMeta(projRoot);
     const { output } = meta.api.myApiName;
     const { GraphQLAPIIdOutput, GraphQLAPIEndpointOutput, GraphQLAPIKeyOutput } = output;

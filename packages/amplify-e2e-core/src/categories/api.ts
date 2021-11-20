@@ -267,7 +267,7 @@ export function updateApiWithMultiAuth(cwd: string, settings: any) {
     const chain = spawn(getCLIPath(settings.testingWithLatestCodebase), ['update', 'api'], { cwd, stripColors: true });
     chain.wait('Select from one of the below mentioned services:').sendCarriageReturn();
     if (settings.testingWithLatestCodebase === true) {
-      chain.wait('Do you want to migrate api resource').sendYes();
+      chain.wait('Do you want to migrate api resource').sendConfirmYes();
     }
     chain
       .wait(/.*Select a setting to edit.*/)
