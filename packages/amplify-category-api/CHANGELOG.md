@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.3.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@3.3.3...amplify-category-api@3.3.4) (2021-11-20)
+
+
+### Bug Fixes
+
+* remove await from sync read cfn calls ([#8977](https://github.com/aws-amplify/amplify-cli/issues/8977)) ([7ef6fb7](https://github.com/aws-amplify/amplify-cli/commit/7ef6fb72739d4618d02dba689a927831b53cb098))
+
+
+
+
+
 ## [3.3.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@3.3.1...amplify-category-api@3.3.3) (2021-11-19)
 
 **Note:** Version bump only for package amplify-category-api

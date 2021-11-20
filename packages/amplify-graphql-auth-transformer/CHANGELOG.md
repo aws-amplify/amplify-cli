@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.4.5](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-auth-transformer@0.4.4...@aws-amplify/graphql-auth-transformer@0.4.5) (2021-11-20)
+
+
+### Bug Fixes
+
+* update field auth check logic and error message to account for subscription level ([#8951](https://github.com/aws-amplify/amplify-cli/issues/8951)) ([acfefd4](https://github.com/aws-amplify/amplify-cli/commit/acfefd4b957d534b6d2031df22c56237d43d0261))
+
+
+
+
+
 ## [0.4.4](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-auth-transformer@0.4.2...@aws-amplify/graphql-auth-transformer@0.4.4) (2021-11-19)
 
 **Note:** Version bump only for package @aws-amplify/graphql-auth-transformer
