@@ -1,7 +1,7 @@
 import { CfnResource, Construct } from '@aws-cdk/core';
 import _ from 'lodash';
 import {
-  AppSyncServiceResourceStack,
+  AmplifyApiGraphQlResourceStackTemplate,
   AppsyncStackCommon,
   FunctionDirectiveStack,
   HttpsDirectiveStack,
@@ -49,7 +49,7 @@ export const getStackMeta = (constructPathArr: string[], id: string, nestedStack
 };
 
 export const convertToAppsyncResourceObj = (amplifyObj: any) => {
-  let appsyncResourceObject: AppSyncServiceResourceStack = {};
+  let appsyncResourceObject: AmplifyApiGraphQlResourceStackTemplate = {};
   Object.keys(amplifyObj).forEach(keys => {
     if (keys === 'api') {
       appsyncResourceObject.api = amplifyObj.api;

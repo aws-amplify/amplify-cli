@@ -111,7 +111,7 @@ class CfnApiArtifactHandler implements ApiArtifactHandler {
     const resourceDir = this.getResourceDir(apiName);
     // update appsync cli-inputs
     const appsyncCLIInputs = await this.updateAppsyncCLIInputs(updates, apiName);
-    if (!_.isEmpty(updates.transformSchema)) {
+    if (updates.transformSchema) {
       this.writeSchema(appsyncCLIInputs.serviceConfiguration.gqlSchemaPath, updates.transformSchema);
     }
     if (updates.conflictResolution) {
