@@ -265,8 +265,8 @@ async function askPermissions(
 
       let defaultSelectedGroups: string[] = [];
 
-      if (currentPath?.permissions?.userPoolGroups) {
-        defaultSelectedGroups = Object.keys(currentPath.permissions.userPoolGroups);
+      if (currentPath?.permissions?.groups) {
+        defaultSelectedGroups = Object.keys(currentPath.permissions.groups);
       }
 
       const selectedUserPoolGroupList = await prompter.pick<'many', string>('Select groups:', userPoolGroupList, {
@@ -277,13 +277,13 @@ async function askPermissions(
 
       for (const selectedUserPoolGroup of selectedUserPoolGroupList) {
         let defaults = [];
-        if (currentPath?.permissions?.userPoolGroups?.[selectedUserPoolGroup]) {
-          defaults = currentPath.permissions.userPoolGroups[selectedUserPoolGroup];
+        if (currentPath?.permissions?.groups?.[selectedUserPoolGroup]) {
+          defaults = currentPath.permissions.groups[selectedUserPoolGroup];
         }
-        if (!permissions.userPoolGroups) {
-          permissions.userPoolGroups = {};
+        if (!permissions.groups) {
+          permissions.groups = {};
         }
-        permissions.userPoolGroups[selectedUserPoolGroup] = await askCRUD(selectedUserPoolGroup, defaults);
+        permissions.groups[selectedUserPoolGroup] = await askCRUD(selectedUserPoolGroup, defaults);
       }
 
       if (!permissions.setting) {
@@ -431,8 +431,8 @@ async function findDependsOn(paths: $TSObject[]) {
       });
     }
 
-    if (path?.permissions?.userPoolGroups) {
-      const userPoolGroups = Object.keys(path.permissions.userPoolGroups);
+    if (path?.permissions?.groups) {
+      const userPoolGroups = Object.keys(path.permissions.groups);
       if (userPoolGroups.length > 0) {
         // Get auth resource name
 

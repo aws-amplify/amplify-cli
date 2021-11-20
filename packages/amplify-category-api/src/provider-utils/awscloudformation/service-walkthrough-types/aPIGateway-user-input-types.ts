@@ -19,7 +19,7 @@ type Path = {
     setting: PermissionSetting;
     auth?: CrudOperation[];
     guest?: CrudOperation[];
-    groups?: { [groupName: string]: CrudOperation[] }[];
+    groups?: { [groupName: string]: CrudOperation[] };
   };
 };
 

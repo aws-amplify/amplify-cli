@@ -17,10 +17,9 @@ import { formatter, printer } from 'amplify-prompts';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import * as vm from 'vm2';
-import { AmplifyApigwResourceStack, ApigwInputs } from '.';
+import { AmplifyApigwResourceStack, ApigwInputs, CrudOperation, Path } from '.';
 import { category } from '../../../category-constants';
 import { ApigwInputState } from '../apigw-input-state';
-
 export class ApigwStackTransform {
   _app: cdk.App;
   cliInputs: ApigwInputs;
@@ -42,12 +41,15 @@ export class ApigwStackTransform {
 
   async transform() {
     let authResourceName: string;
-    if (this.resourceName === 'AdminQueries') {
+
+    const pathsWithUserPoolGroups = Object.entries(this.cliInputs.paths).filter(([_, path]) => !!path?.permissions?.groups);
+
+    if (this.resourceName === 'AdminQueries' || pathsWithUserPoolGroups.length > 0) {
       [authResourceName] = getAmplifyResourceByCategories(AmplifyCategories.AUTH).filter(resourceName => resourceName !== 'userPoolGroups');
     }
 
     // Generate cloudformation stack from cli-inputs.json
-    this.generateStack(authResourceName);
+    this.generateStack(authResourceName, pathsWithUserPoolGroups);
 
     // Generate cloudformation stack input params from cli-inputs.json
     this.generateCfnInputParameters();
@@ -63,17 +65,41 @@ export class ApigwStackTransform {
     this.cfnInputParams = {};
   }
 
-  generateStack(authResourceName?: string) {
+  generateStack(authResourceName?: string, pathsWithUserPoolGroups: [string, Path][] = []) {
     this.resourceTemplateObj = new AmplifyApigwResourceStack(this._app, 'AmplifyApigwResourceStack', this.cliInputs);
 
     if (authResourceName) {
+      const authRoleLogicalId = `auth${authResourceName}UserPoolId`;
       this.resourceTemplateObj.addCfnParameter(
         {
           type: 'String',
-          default: `auth${authResourceName}UserPoolId`,
+          default: authRoleLogicalId,
         },
-        `auth${authResourceName}UserPoolId`,
+        authRoleLogicalId,
       );
+
+      const uniqueUserPoolGroupsList = new Set<string>();
+      for (const [pathName, path] of pathsWithUserPoolGroups) {
+        for (const [groupName, crudOps] of Object.entries(path.permissions.groups)) {
+          uniqueUserPoolGroupsList.add(groupName);
+          this.resourceTemplateObj.addIamPolicyResourceForUserPoolGroup(
+            this.resourceName,
+            authRoleLogicalId,
+            groupName,
+            pathName,
+            convertCrudOperationsToCfnPermissions(crudOps),
+          );
+        }
+      }
+      Array.from(uniqueUserPoolGroupsList).forEach(userPoolGroupName => {
+        this.resourceTemplateObj.addCfnParameter(
+          {
+            type: 'String',
+            default: `authuserPoolGroups${userPoolGroupName}GroupRole`,
+          },
+          `authuserPoolGroups${userPoolGroupName}GroupRole`,
+        );
+      });
     }
 
     // Add Parameters
@@ -213,4 +239,14 @@ export class ApigwStackTransform {
     const cfnFilePath = path.resolve(path.join(buildDirPath, `${this.resourceName}-cloudformation-template.json`));
     return writeCFNTemplate(this.cfn, cfnFilePath);
   }
+}
+
+function convertCrudOperationsToCfnPermissions(crudOps: CrudOperation[]) {
+  const opMap: Record<CrudOperation, string[]> = {
+    [CrudOperation.CREATE]: ['/POST'],
+    [CrudOperation.READ]: ['/GET'],
+    [CrudOperation.UPDATE]: ['/PUT', '/PATCH'],
+    [CrudOperation.DELETE]: ['/DELETE'],
+  };
+  return crudOps.flatMap(op => opMap[op]);
 }
