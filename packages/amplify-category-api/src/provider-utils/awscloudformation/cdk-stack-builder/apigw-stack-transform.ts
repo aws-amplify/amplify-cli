@@ -17,7 +17,7 @@ import { formatter, printer } from 'amplify-prompts';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import * as vm from 'vm2';
-import { AmplifyApigwResourceStack, ApigwInputs } from '.';
+import { AmplifyApigwResourceStack, ApigwInputs, Path } from '.';
 import { category } from '../../../category-constants';
 import { ApigwInputState } from '../apigw-input-state';
 
@@ -42,12 +42,15 @@ export class ApigwStackTransform {
 
   async transform() {
     let authResourceName: string;
-    if (this.resourceName === 'AdminQueries') {
+
+    const pathsWithUserPoolGroups = Object.values(this.cliInputs.paths).filter(path => !!path?.permissions?.groups);
+
+    if (this.resourceName === 'AdminQueries' || pathsWithUserPoolGroups.length > 0) {
       [authResourceName] = getAmplifyResourceByCategories(AmplifyCategories.AUTH).filter(resourceName => resourceName !== 'userPoolGroups');
     }
 
     // Generate cloudformation stack from cli-inputs.json
-    this.generateStack(authResourceName);
+    this.generateStack(authResourceName, pathsWithUserPoolGroups);
 
     // Generate cloudformation stack input params from cli-inputs.json
     this.generateCfnInputParameters();
@@ -63,7 +66,7 @@ export class ApigwStackTransform {
     this.cfnInputParams = {};
   }
 
-  generateStack(authResourceName?: string) {
+  generateStack(authResourceName?: string, pathsWithUserPoolGroups: Path[] = []) {
     this.resourceTemplateObj = new AmplifyApigwResourceStack(this._app, 'AmplifyApigwResourceStack', this.cliInputs);
 
     if (authResourceName) {
@@ -74,6 +77,22 @@ export class ApigwStackTransform {
         },
         `auth${authResourceName}UserPoolId`,
       );
+
+      const uniqueUserPoolGroupsList = new Set<string>();
+      for (const path of pathsWithUserPoolGroups) {
+        for (const [groupName, crudOps] of Object.entries(path.permissions.groups)) {
+          uniqueUserPoolGroupsList.add(groupName);
+        }
+      }
+      Array.from(uniqueUserPoolGroupsList).forEach(userPoolGroupName => {
+        this.resourceTemplateObj.addCfnParameter(
+          {
+            type: 'String',
+            default: `authuserPoolGroups${userPoolGroupName}GroupRole`,
+          },
+          `authuserPoolGroups${userPoolGroupName}GroupRole`,
+        );
+      });
     }
 
     // Add Parameters

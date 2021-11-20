@@ -4,7 +4,7 @@ import * as iamCdk from '@aws-cdk/aws-iam';
 
 export type ApigwInputs = {
   version: number;
-  paths: Path[];
+  paths: { [pathName: string]: Path };
 };
 
 export type Path = {

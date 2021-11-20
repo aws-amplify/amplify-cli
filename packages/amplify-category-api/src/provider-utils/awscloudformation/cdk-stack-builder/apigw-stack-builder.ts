@@ -91,7 +91,7 @@ export class AmplifyApigwResourceStack extends cdk.Stack implements AmplifyApigw
     this._constructCfnPaths(resourceName);
 
     this.restApi = new apigw.CfnRestApi(this, resourceName, {
-      description: '', // TODO - left blank in current CLI
+      description: '',
       name: resourceName,
       body: {
         swagger: '2.0',
@@ -146,7 +146,7 @@ export class AmplifyApigwResourceStack extends cdk.Stack implements AmplifyApigw
     this._constructCfnPaths(resourceName);
 
     this.restApi = new apigw.CfnRestApi(this, resourceName, {
-      description: '', // TODO - left blank in current CLI
+      description: '',
       failOnWarnings: true,
       name: resourceName,
       body: {
