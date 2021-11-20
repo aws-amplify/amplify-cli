@@ -125,15 +125,15 @@ describe('writeCFNTemplate', () => {
   it('writes json templates by default', async () => {
     await writeCFNTemplate(testTemplate, testPath);
 
-    expect(fs_mock.writeFile.mock.calls[0][0]).toEqual(testPath);
-    expect(fs_mock.writeFile.mock.calls[0][1]).toEqual(jsonContent);
+    expect(fs_mock.writeFileSync.mock.calls[0][0]).toEqual(testPath);
+    expect(fs_mock.writeFileSync.mock.calls[0][1]).toEqual(jsonContent);
   });
 
   it('writes yaml templates if specified', async () => {
     await writeCFNTemplate(testTemplate, testPath, { templateFormat: CFNTemplateFormat.YAML });
 
-    expect(fs_mock.writeFile.mock.calls[0][0]).toEqual(testPath);
-    expect(fs_mock.writeFile.mock.calls[0][1]).toEqual(yamlContent);
+    expect(fs_mock.writeFileSync.mock.calls[0][0]).toEqual(testPath);
+    expect(fs_mock.writeFileSync.mock.calls[0][1]).toEqual(yamlContent);
   });
 });
 
@@ -202,7 +202,7 @@ describe('roundtrip CFN Templates to object and back', () => {
 
     await writeCFNTemplate(result.cfnTemplate, testPath, { templateFormat: CFNTemplateFormat.YAML });
 
-    const writtenYaml = fs_mock.writeFile.mock.calls[0][1];
+    const writtenYaml = fs_mock.writeFileSync.mock.calls[0][1];
 
     (fs_mock.readFile as unknown as jest.MockedFunction<TwoArgReadFile>).mockResolvedValueOnce(writtenYaml);
 

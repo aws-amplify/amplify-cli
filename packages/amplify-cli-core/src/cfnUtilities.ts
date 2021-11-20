@@ -59,7 +59,7 @@ export async function writeCFNTemplate(template: object, filePath: string, optio
       throw new Error(`Unexpected CFN template format ${mergedOptions.templateFormat}`);
   }
   await fs.ensureDir(path.parse(filePath).dir);
-  return fs.writeFile(filePath, serializedTemplate);
+  return fs.writeFileSync(filePath, serializedTemplate);
 }
 
 // Register custom tags for yaml parser
