@@ -39,10 +39,8 @@ export const run = async (context: $TSContext) => {
       printer.blankLine();
     })
     .catch(async err => {
-      printer.info(err.stack);
       printer.error('There was an error adding the API resource');
-      await context.usageData.emitError(err);
-      process.exitCode = 1;
+      throw err;
     });
 };
 
