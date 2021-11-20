@@ -18,7 +18,7 @@ import { IAM_AUTH_ROLE_PARAMETER, IAM_UNAUTH_ROLE_PARAMETER } from '../utils';
 import { StackManager } from './stack-manager';
 
 type Slot = {
-  requestMappingTemplate: MappingTemplateProvider;
+  requestMappingTemplate?: MappingTemplateProvider;
   responseMappingTemplate?: MappingTemplateProvider;
   dataSource?: DataSourceProvider;
 };
@@ -148,7 +148,7 @@ export class TransformerResolver implements TransformerResolverProvider {
   };
   addToSlot = (
     slotName: string,
-    requestMappingTemplate: MappingTemplateProvider,
+    requestMappingTemplate?: MappingTemplateProvider,
     responseMappingTemplate?: MappingTemplateProvider,
     dataSource?: DataSourceProvider,
   ): void => {
@@ -299,12 +299,13 @@ export class TransformerResolver implements TransformerResolverProvider {
         for (let slotItem of slotEntries!) {
           const name = `${this.typeName}${this.fieldName}${slotName}${index++}Function`;
           const { requestMappingTemplate, responseMappingTemplate, dataSource } = slotItem;
-          this.substitueSlotInfo(requestMappingTemplate, slotName, index);
+          // eslint-disable-next-line no-unused-expressions
+          requestMappingTemplate && this.substitueSlotInfo(requestMappingTemplate, slotName, index);
           // eslint-disable-next-line no-unused-expressions
           responseMappingTemplate && this.substitueSlotInfo(responseMappingTemplate, slotName, index);
           const fn = api.host.addAppSyncFunction(
             name,
-            requestMappingTemplate,
+            requestMappingTemplate || MappingTemplate.inlineTemplateFromString('$util.toJson({})'),
             responseMappingTemplate || MappingTemplate.inlineTemplateFromString('$util.toJson({})'),
             dataSource?.name || NONE_DATA_SOURCE_NAME,
             stack,

@@ -1,4 +1,5 @@
-import { UserDefinedSlot } from '@aws-amplify/graphql-transformer-core';
+import { UserDefinedSlot, UserDefinedResolver } from '@aws-amplify/graphql-transformer-core';
+import _ from 'lodash';
 
 export const SLOT_NAMES = new Set([
   'init',
@@ -15,34 +16,49 @@ export const SLOT_NAMES = new Set([
 
 const EXCLUDE_FILES = new Set(['README.md']);
 
-export function createUserDefinedSlot(fileName: string, slicedSlotName: string[], template: string): UserDefinedSlot {
-  return {
-    fileName,
-    resolverTypeName: slicedSlotName[0],
-    resolverFieldName: slicedSlotName[1],
-    slotName: slicedSlotName[2],
-    template,
-  };
-}
+export function parseUserDefinedSlots(userDefinedTemplates: Record<string, string>): Record<string, UserDefinedSlot[]> {
+  type ResolverKey = string;
+  type ResolverOrder = number;
+  const groupedResolversMap: Record<ResolverKey, Record<ResolverOrder, UserDefinedSlot>> = {};
 
-export function parseUserDefinedSlots(userDefinedTemplates: any): Record<string, UserDefinedSlot[]> {
-  const slots: Record<string, UserDefinedSlot[]> = {};
-  const keys = Object.keys(userDefinedTemplates);
+  Object.entries(userDefinedTemplates)
+    // filter out non-resolver files
+    .filter(([fileName]) => !EXCLUDE_FILES.has(fileName))
+    .forEach(([fileName, template]) => {
+      const slicedSlotName = fileName.split('.');
+      const isSlot = SLOT_NAMES.has(slicedSlotName[2]);
 
-  keys.forEach(key => {
-    if (EXCLUDE_FILES.has(key)) return;
-
-    const slicedSlotName = key.split('.');
-    const isSlot = SLOT_NAMES.has(slicedSlotName[2]);
-
-    if (isSlot) {
-      const slot = createUserDefinedSlot(key, slicedSlotName, userDefinedTemplates[key]);
+      if (!isSlot) {
+        return;
+      }
+      const resolverType = slicedSlotName[slicedSlotName.length - 2] === 'res' ? 'responseResolver' : 'requestResolver';
       const resolverName = [slicedSlotName[0], slicedSlotName[1]].join('.');
+      const slotName = slicedSlotName[2];
+      const resolverOrder = Number(slicedSlotName[3]) || 0;
+      const resolver: UserDefinedResolver = {
+        fileName,
+        template,
+      };
+      // because a slot can have a request and response resolver, we need to group corresponding request and response resolvers
+      if (_.has(groupedResolversMap, [`${resolverName}#${slotName}`, resolverOrder])) {
+        _.set(groupedResolversMap, [`${resolverName}#${slotName}`, resolverOrder, resolverType], resolver);
+      } else {
+        const slot = {
+          resolverTypeName: slicedSlotName[0],
+          resolverFieldName: slicedSlotName[1],
+          slotName,
+          [resolverType]: resolver,
+        };
+        _.set(groupedResolversMap, [`${resolverName}#${slotName}`, resolverOrder], slot);
+      }
+    });
 
-      if (!slots[resolverName]) slots[resolverName] = [slot];
-      else slots[resolverName].push(slot);
-    }
-  });
-
-  return slots;
+  return Object.entries(groupedResolversMap)
+    .map(([resolverNameKey, numberedSlots]) => ({
+      orderedSlots: Object.entries(numberedSlots)
+        .sort(([i], [j]) => i.localeCompare(j))
+        .map(([_, slot]) => slot),
+      resolverName: resolverNameKey.split('#')[0],
+    }))
+    .reduce((acc, { orderedSlots, resolverName }) => ({ ...acc, [resolverName]: orderedSlots }), {} as Record<string, UserDefinedSlot[]>);
 }
