@@ -34,7 +34,7 @@ export function parseUserDefinedSlots(userDefinedTemplates: Record<string, strin
       const resolverType = slicedSlotName[slicedSlotName.length - 2] === 'res' ? 'responseResolver' : 'requestResolver';
       const resolverName = [slicedSlotName[0], slicedSlotName[1]].join('.');
       const slotName = slicedSlotName[2];
-      const resolverOrder = Number(slicedSlotName[3]) || 0;
+      const resolverOrder = `order${Number(slicedSlotName[3]) || 0}`;
       const resolver: UserDefinedResolver = {
         fileName,
         template,
@@ -60,5 +60,12 @@ export function parseUserDefinedSlots(userDefinedTemplates: Record<string, strin
         .map(([_, slot]) => slot),
       resolverName: resolverNameKey.split('#')[0],
     }))
-    .reduce((acc, { orderedSlots, resolverName }) => ({ ...acc, [resolverName]: orderedSlots }), {} as Record<string, UserDefinedSlot[]>);
+    .reduce((acc, { orderedSlots, resolverName }) => {
+      if (acc[resolverName]) {
+        acc[resolverName].push(...orderedSlots);
+      } else {
+        acc[resolverName] = orderedSlots;
+      }
+      return acc;
+    }, {} as Record<string, UserDefinedSlot[]>);
 }
