@@ -24,9 +24,7 @@ export const run = async (context: $TSContext) => {
       context.filesystem.remove(gqlConfigFile);
     }
   } catch (err) {
-    printer.info(err.stack);
     printer.error('There was an error removing the api resource');
-    await context.usageData.emitError(err);
-    process.exitCode = 1;
+    throw err;
   }
 };

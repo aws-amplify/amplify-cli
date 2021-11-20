@@ -174,7 +174,7 @@ async function askApiName(context: $TSContext, defaultResourceName: string) {
 async function askPermissions(
   context: $TSContext,
   answers: $TSObject,
-  currentPath: ApigwPath,
+  currentPath?: ApigwPath,
 ): Promise<{ setting?: PermissionSetting; auth?: CrudOperation[]; open?: boolean; userPoolGroups?: $TSObject; unauth?: CrudOperation[] }> {
   while (true) {
     const apiAccess = await prompter.yesOrNo('Restrict API access', currentPath?.permissions?.setting !== PermissionSetting.OPEN);
@@ -186,7 +186,7 @@ async function askPermissions(
     const userPoolGroupList = context.amplify.getUserPoolGroupList();
 
     let permissionSelected = 'Auth/Guest Users';
-    const permissions: $TSAny = {};
+    const permissions: $TSObject = {};
 
     if (userPoolGroupList.length > 0) {
       do {
@@ -263,27 +263,17 @@ async function askPermissions(
       const authResourceName = getAuthResourceName();
       answers.authResourceName = authResourceName;
 
-      let defaultSelectedGroups = [];
+      let defaultSelectedGroups: string[] = [];
 
       if (currentPath?.permissions?.userPoolGroups) {
         defaultSelectedGroups = Object.keys(currentPath.permissions.userPoolGroups);
       }
 
-      const userPoolGroupSelection = await inquirer.prompt({
-        name: 'userpoolGroups',
-        type: 'checkbox',
-        message: 'Select groups:',
-        choices: userPoolGroupList,
-        default: defaultSelectedGroups,
-        validate: inputs => {
-          if (inputs.length === 0) {
-            return 'Select at least one option';
-          }
-          return true;
-        },
+      const selectedUserPoolGroupList = await prompter.pick<'many', string>('Select groups:', userPoolGroupList, {
+        initial: byValues(defaultSelectedGroups)(userPoolGroupList),
+        returnSize: 'many',
+        pickAtLeast: 1,
       });
-
-      const selectedUserPoolGroupList = userPoolGroupSelection.userpoolGroups;
 
       for (const selectedUserPoolGroup of selectedUserPoolGroupList) {
         let defaults = [];
@@ -294,6 +284,10 @@ async function askPermissions(
           permissions.userPoolGroups = {};
         }
         permissions.userPoolGroups[selectedUserPoolGroup] = await askCRUD(selectedUserPoolGroup, defaults);
+      }
+
+      if (!permissions.setting) {
+        permissions.setting = PermissionSetting.PRIVATE;
       }
     }
     return permissions;
@@ -339,12 +333,13 @@ async function askCRUD(userType: string, permissions: CrudOperation[] = []) {
   const crudAnswers = await prompter.pick<'many', string>(`What permissions do you want to grant to ${userType} users?`, crudOptions, {
     returnSize: 'many',
     initial: byValues(permissions), // (a, b) => a.toLowerCase() === b.toLowerCase()
+    pickAtLeast: 1,
   });
 
   return crudAnswers;
 }
 
-async function askPaths(context: $TSContext, answers: $TSObject, currentPath: ApigwPath): Promise<ApigwAnswers> {
+async function askPaths(context: $TSContext, answers: $TSObject, currentPath?: ApigwPath): Promise<ApigwAnswers> {
   const existingFunctions = functionsExist();
 
   let defaultFunctionType = 'newFunction';
@@ -428,14 +423,16 @@ async function findDependsOn(paths: $TSObject[]) {
         });
       }
     }
+
     if (!functionArns.find(func => func.lambdaFunction === path.lambdaFunction)) {
       functionArns.push({
         lambdaFunction: path.lambdaFunction,
         lambdaArn: path.lambdaArn,
       });
     }
+
     if (path?.permissions?.userPoolGroups) {
-      const userPoolGroups = Object.keys(path.privacy.userPoolGroups);
+      const userPoolGroups = Object.keys(path.permissions.userPoolGroups);
       if (userPoolGroups.length > 0) {
         // Get auth resource name
 
@@ -498,7 +495,7 @@ function functionsExist() {
   return true;
 }
 
-async function askLambdaSource(context: $TSContext, functionType: string, path: string, currentPath: ApigwPath) {
+async function askLambdaSource(context: $TSContext, functionType: string, path: string, currentPath?: ApigwPath) {
   switch (functionType) {
     case 'arn':
       return askLambdaArn(context, currentPath);
