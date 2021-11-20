@@ -163,6 +163,7 @@ export class ApigwInputState {
 
       let auth;
       let guest;
+      let groups;
       // convert deprecated permissions to CRUD structure
       if (typeof path.privacy.auth === 'string' && ['r', 'rw'].includes(path.privacy.auth)) {
         auth = _convertDeprecatedPermissionStringToCRUD(path.privacy.auth);
@@ -176,11 +177,23 @@ export class ApigwInputState {
         guest = _convertDeprecatedPermissionArrayToCRUD(path.privacy.unauth);
       }
 
+      if (path.privacy?.userPoolGroups) {
+        groups = {};
+        for (const [userPoolGroupName, crudOperations] of Object.entries(path.privacy.userPoolGroups)) {
+          if (typeof crudOperations === 'string' && ['r', 'rw'].includes(crudOperations)) {
+            groups[userPoolGroupName] = _convertDeprecatedPermissionStringToCRUD(crudOperations);
+          } else if (Array.isArray(crudOperations)) {
+            groups[userPoolGroupName] = _convertDeprecatedPermissionArrayToCRUD(crudOperations);
+          }
+        }
+      }
+
       this.paths[path.name] = {
         permissions: {
           setting: pathPermissionSetting,
           auth,
           guest,
+          groups,
         },
         lambdaFunction: path.lambdaFunction,
       };
