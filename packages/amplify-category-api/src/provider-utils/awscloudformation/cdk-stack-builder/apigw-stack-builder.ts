@@ -128,7 +128,7 @@ export class AmplifyApigwResourceStack extends cdk.Stack implements AmplifyApigw
     const iamPolicy = new iam.CfnPolicy(this, `${groupName}Group${alphanumericPathName}Policy`, {
       policyDocument: this._craftPolicyDocument(apiResourceName, pathName, supportedOperations),
       policyName,
-      roles: [cdk.Fn.join('-', [cdk.Fn.ref(authRoleLogicalId), 'UsersGroupRole'])],
+      roles: [cdk.Fn.join('-', [cdk.Fn.ref(authRoleLogicalId), `${groupName}GroupRole`])],
     });
     this.policies[pathName] = {
       groups: {
