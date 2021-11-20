@@ -1,5 +1,6 @@
 import * as apigw from '@aws-cdk/aws-apigateway';
 import * as lambda from '@aws-cdk/aws-lambda';
+import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import { $TSObject, JSONUtilities } from 'amplify-cli-core';
 import { AmplifyApigwResourceTemplate, ApigwInputs, ApigwPathPolicy } from './types';
@@ -22,6 +23,7 @@ export class AmplifyApigwResourceStack extends cdk.Stack implements AmplifyApigw
     this._scope = scope;
     this._props = props;
     this.paths = {};
+    this.policies = {};
     this.templateOptions.templateFormatVersion = CFN_TEMPLATE_FORMAT_VERSION;
     this.templateOptions.description = ROOT_CFN_DESCRIPTION;
   }
@@ -81,6 +83,58 @@ export class AmplifyApigwResourceStack extends cdk.Stack implements AmplifyApigw
       throw new Error(`logical id "${logicalId}" already exists`);
     }
     this._cfnParameterMap.set(logicalId, new cdk.CfnParameter(this, logicalId, props));
+  }
+
+  private _craftPolicyDocument(apiResourceName: string, pathName: string, supportedOperations: string[]) {
+    const resources = [pathName, `${pathName}/*`].flatMap(path =>
+      supportedOperations.map(op =>
+        cdk.Fn.join('', [
+          'arn:aws:execute-api:',
+          cdk.Fn.ref('AWS::Region'),
+          ':',
+          cdk.Fn.ref('AWS::AccountId'),
+          ':',
+          cdk.Fn.ref(apiResourceName),
+          '/',
+          cdk.Fn.conditionIf('ShouldNotCreateEnvResources', 'Prod', cdk.Fn.ref('env')).toString(),
+          op,
+          path,
+        ]),
+      ),
+    );
+
+    return new iam.PolicyDocument({
+      statements: [
+        new iam.PolicyStatement({
+          actions: ['execute-api:Invoke'],
+          effect: iam.Effect.ALLOW,
+          resources,
+        }),
+      ],
+    });
+  }
+
+  addIamPolicyResourceForUserPoolGroup(
+    apiResourceName: string,
+    authRoleLogicalId: string,
+    groupName: string,
+    pathName: string,
+    supportedOperations: string[],
+  ): void {
+    const alphanumericPathName = pathName.replace(/[^-a-z0-9]/g, '');
+
+    const policyName = [apiResourceName, alphanumericPathName, groupName, 'group', 'policy'].join('-');
+
+    const iamPolicy = new iam.CfnPolicy(this, `${groupName}Group${alphanumericPathName}Policy`, {
+      policyDocument: this._craftPolicyDocument(apiResourceName, pathName, supportedOperations),
+      policyName,
+      roles: [cdk.Fn.join('-', [cdk.Fn.ref(authRoleLogicalId), 'UsersGroupRole'])],
+    });
+    this.policies[pathName] = {
+      groups: {
+        [groupName]: iamPolicy,
+      },
+    };
   }
 
   renderCloudFormationTemplate = (): string => {

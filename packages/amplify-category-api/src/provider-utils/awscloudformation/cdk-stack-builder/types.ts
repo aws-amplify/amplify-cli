@@ -47,7 +47,7 @@ export type AmplifyApigwResourceTemplate = {
 } & AmplifyCDKL1;
 
 export type ApigwPathPolicy = {
-  auth: iamCdk.CfnPolicy;
+  auth?: iamCdk.CfnPolicy;
   guest?: iamCdk.CfnPolicy;
   groups?: { [groupName: string]: iamCdk.CfnPolicy };
 };
