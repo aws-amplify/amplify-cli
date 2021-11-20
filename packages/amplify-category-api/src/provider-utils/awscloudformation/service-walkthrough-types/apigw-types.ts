@@ -7,7 +7,7 @@ export type ApigwPath = {
     setting: PermissionSetting;
     auth?: CrudOperation[];
     unauth?: CrudOperation[];
-    userPoolGroups?: {
+    groups?: {
       [userPoolGroupName: string]: CrudOperation[];
     };
   };

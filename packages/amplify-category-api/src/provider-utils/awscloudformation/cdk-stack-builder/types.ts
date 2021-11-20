@@ -4,7 +4,7 @@ import * as iamCdk from '@aws-cdk/aws-iam';
 
 export type ApigwInputs = {
   version: number;
-  paths: Path[];
+  paths: { [pathName: string]: Path };
 };
 
 export type Path = {
@@ -47,7 +47,7 @@ export type AmplifyApigwResourceTemplate = {
 } & AmplifyCDKL1;
 
 export type ApigwPathPolicy = {
-  auth: iamCdk.CfnPolicy;
+  auth?: iamCdk.CfnPolicy;
   guest?: iamCdk.CfnPolicy;
   groups?: { [groupName: string]: iamCdk.CfnPolicy };
 };
