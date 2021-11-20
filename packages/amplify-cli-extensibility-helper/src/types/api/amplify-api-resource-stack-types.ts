@@ -10,7 +10,7 @@ import { CfnStack } from '@aws-cdk/core';
 // Base template
 // Customer can use these params to mutate the Cloudformation for the resource
 
-export interface AppSyncServiceResourceStack {
+export interface AmplifyApiGraphQlResourceStackTemplate {
   // directives stack
   api?: Partial<AppsyncApiStack>;
   models?: Partial<Record<string, ModelDirectiveStack>>;
