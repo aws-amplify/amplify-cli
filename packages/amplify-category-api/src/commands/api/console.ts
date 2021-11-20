@@ -17,8 +17,6 @@ export const run = async (context: $TSContext) => {
     return providerController.console(context, result.service);
   } catch (err) {
     printer.error('Error opening console.');
-    printer.info(err.message);
-    await context.usageData.emitError(err);
-    process.exitCode = 1;
+    throw err;
   }
 };
