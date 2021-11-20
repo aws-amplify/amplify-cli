@@ -185,7 +185,7 @@ export async function getPermissionPolicies(context: $TSContext, resourceOpsMapp
       try {
         const providerName = amplifyMeta[category][resourceName].providerPlugin;
         if (providerName) {
-          const providerController = await import(path.join('.', 'provider-utils', providerName, 'index'));
+          const providerController = await import(path.join(__dirname, 'provider-utils', providerName, 'index'));
           const { policy, attributes } = await providerController.getPermissionPolicies(
             context,
             amplifyMeta[category][resourceName].service,
@@ -215,7 +215,18 @@ export async function executeAmplifyCommand(context: $TSContext) {
   }
 
   const commandModule = await import(commandPath);
-  await commandModule.run(context);
+  try {
+    await commandModule.run(context);
+  } catch (error) {
+    if (error) {
+      printer.error(error.message || error);
+      if (error.stack) {
+        printer.info(error.stack);
+      }
+      await context.usageData.emitError(error);
+    }
+    process.exitCode = 1;
+  }
 }
 
 export const executeAmplifyHeadlessCommand = async (context: $TSContext, headlessPayload: string) => {
