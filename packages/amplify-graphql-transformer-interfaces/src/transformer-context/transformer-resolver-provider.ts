@@ -6,7 +6,7 @@ import { TransformerContextProvider } from './transformer-context-provider';
 export interface TransformerResolverProvider {
   addToSlot: (
     slotName: string,
-    requestMappingTemplate: MappingTemplateProvider,
+    requestMappingTemplate?: MappingTemplateProvider,
     responseMappingTemplate?: MappingTemplateProvider,
     dataSource?: DataSourceProvider,
   ) => void;

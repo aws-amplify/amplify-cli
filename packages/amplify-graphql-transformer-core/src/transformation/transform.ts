@@ -362,13 +362,17 @@ export class GraphQLTransform {
     const resolverEntries = context.resolvers.collectResolvers();
 
     for (const [resolverName, resolver] of resolverEntries) {
-      const userSlots = this.userDefinedSlots[resolverName];
+      const userSlots = this.userDefinedSlots[resolverName] || [];
 
-      if (userSlots) {
-        userSlots.forEach(({ slotName, template, fileName }: UserDefinedSlot) => {
-          resolver.addToSlot(slotName, MappingTemplate.s3MappingTemplateFromString(template, fileName));
-        });
-      }
+      userSlots.forEach(slot => {
+        const requestTemplate = slot.requestResolver
+          ? MappingTemplate.s3MappingTemplateFromString(slot.requestResolver.template, slot.requestResolver.fileName)
+          : undefined;
+        const responseTemplate = slot.responseResolver
+          ? MappingTemplate.s3MappingTemplateFromString(slot.responseResolver.template, slot.responseResolver.fileName)
+          : undefined;
+        resolver.addToSlot(slot.slotName, requestTemplate, responseTemplate);
+      });
 
       resolver.synthesize(context, api);
     }
