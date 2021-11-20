@@ -1,26 +1,32 @@
 import {
+  addHeadlessApi,
   amplifyPush,
   amplifyPushUpdate,
   createNewProjectDir,
   deleteProject,
   deleteProjectDir,
   getAppSyncApi,
+  getCLIInputs,
+  getProjectConfig,
   getProjectMeta,
+  getProjectSchema,
+  getSchemaPath,
   getTransformConfig,
   updateApiSchema,
   updateApiWithMultiAuth,
   updateAPIWithResolutionStrategyWithModels,
-  getProjectConfig,
+  updateHeadlessApi,
 } from 'amplify-e2e-core';
-import { existsSync } from 'fs';
-import { TRANSFORM_CURRENT_VERSION } from 'graphql-transformer-core';
+import { AddApiRequest, UpdateApiRequest } from 'amplify-headless-interface';
+import * as fs from 'fs-extra';
+import { TRANSFORM_BASE_VERSION, TRANSFORM_CURRENT_VERSION } from 'graphql-transformer-core';
 import { join } from 'path';
 import {
-  initJSProjectWithProfile,
-  versionCheck,
   addApiWithoutSchemaOldDx,
   addApiWithSchemaAndConflictDetectionOldDx,
   allowedVersionsToMigrateFrom,
+  initJSProjectWithProfile,
+  versionCheck,
 } from '../../migration-helpers';
 
 describe('api migration update test', () => {
@@ -59,6 +65,8 @@ describe('api migration update test', () => {
 
     // update api and push with the CLI to be released (the codebase)
     updateApiSchema(projRoot, projectName, nextSchema);
+    expect(getCLIInputs(projRoot, 'api', projectName)).not.toBeDefined();
+    // cli-inputs ot defined
     await amplifyPushUpdate(projRoot, undefined, true);
     const { output } = getProjectMeta(projRoot).api[projectName];
     const { GraphQLAPIIdOutput, GraphQLAPIEndpointOutput, GraphQLAPIKeyOutput } = output;
@@ -74,6 +82,9 @@ describe('api migration update test', () => {
     updateApiSchema(projRoot, projectName, 'simple_model.graphql');
     // update and push with codebase
     await updateApiWithMultiAuth(projRoot, { testingWithLatestCodebase: true });
+    // cli-inputs should exist
+    expect(getCLIInputs(projRoot, 'api', 'simplemodelmultiauth')).toBeDefined();
+    expect(getCLIInputs(projRoot, 'api', 'simplemodelmultiauth')).toMatchSnapshot();
     await amplifyPush(projRoot, true);
 
     const meta = getProjectMeta(projRoot);
@@ -126,7 +137,8 @@ describe('api migration update test', () => {
 
     //update and push with codebase
     await updateAPIWithResolutionStrategyWithModels(projRoot, { testingWithLatestCodebase: true });
-
+    expect(getCLIInputs(projRoot, 'api', 'simplemodelmultiauth')).toBeDefined();
+    expect(getCLIInputs(projRoot, 'api', 'simplemodelmultiauth')).toMatchSnapshot();
     transformConfig = getTransformConfig(projRoot, name);
     expect(transformConfig).toBeDefined();
     expect(transformConfig.Version).toBeDefined();
@@ -148,5 +160,65 @@ describe('api migration update test', () => {
 
     expect(graphqlApi).toBeDefined();
     expect(graphqlApi.apiId).toEqual(GraphQLAPIIdOutput);
+  });
+
+  const addApiRequest: AddApiRequest = {
+    version: 1,
+    serviceConfiguration: {
+      serviceName: 'AppSync',
+      apiName: 'myApiName',
+      transformSchema: fs.readFileSync(getSchemaPath('simple_model.graphql'), 'utf8'),
+      defaultAuthType: {
+        mode: 'API_KEY',
+      },
+    },
+  };
+
+  const updateApiRequest: UpdateApiRequest = {
+    version: 1,
+    serviceModification: {
+      serviceName: 'AppSync',
+      transformSchema: fs.readFileSync(getSchemaPath('simple_model_override.graphql'), 'utf8'),
+      defaultAuthType: {
+        mode: 'AWS_IAM',
+      },
+      additionalAuthTypes: [
+        {
+          mode: 'API_KEY',
+        },
+      ],
+      conflictResolution: {
+        defaultResolutionStrategy: {
+          type: 'OPTIMISTIC_CONCURRENCY',
+        },
+      },
+    },
+  };
+  it.only('updates AppSync API in headless mode', async () => {
+    const name = `simplemodelv${TRANSFORM_BASE_VERSION}`;
+    await initJSProjectWithProfile(projRoot, { name });
+    await addHeadlessApi(projRoot, addApiRequest);
+    await amplifyPush(projRoot);
+    await updateHeadlessApi(projRoot, updateApiRequest, true);
+    expect(getCLIInputs(projRoot, 'api', name)).toBeDefined();
+    expect(getCLIInputs(projRoot, 'api', name)).toMatchSnapshot();
+    await amplifyPushUpdate(projRoot, undefined, undefined, true);
+
+    // verify
+    const meta = getProjectMeta(projRoot);
+    const { output } = meta.api.myApiName;
+    const { GraphQLAPIIdOutput, GraphQLAPIEndpointOutput, GraphQLAPIKeyOutput } = output;
+    const { graphqlApi } = await getAppSyncApi(GraphQLAPIIdOutput, meta.providers.awscloudformation.Region);
+
+    expect(GraphQLAPIIdOutput).toBeDefined();
+    expect(GraphQLAPIEndpointOutput).toBeDefined();
+    expect(GraphQLAPIKeyOutput).toBeDefined();
+
+    expect(graphqlApi).toBeDefined();
+    expect(graphqlApi.apiId).toEqual(GraphQLAPIIdOutput);
+
+    expect(getTransformConfig(projRoot, 'myApiName')).toMatchSnapshot();
+    expect(output.authConfig).toMatchSnapshot();
+    expect(getProjectSchema(projRoot, 'myApiName')).toMatchSnapshot();
   });
 });

@@ -264,9 +264,12 @@ export function updateApiSchema(cwd: string, projectName: string, schemaName: st
 
 export function updateApiWithMultiAuth(cwd: string, settings: any) {
   return new Promise<void>((resolve, reject) => {
-    spawn(getCLIPath(settings.testingWithLatestCodebase), ['update', 'api'], { cwd, stripColors: true })
-      .wait('Select from one of the below mentioned services:')
-      .sendCarriageReturn()
+    const chain = spawn(getCLIPath(settings.testingWithLatestCodebase), ['update', 'api'], { cwd, stripColors: true });
+    chain.wait('Select from one of the below mentioned services:').sendCarriageReturn();
+    if (settings.testingWithLatestCodebase === true) {
+      chain.wait('Do you want to migrate api resource').sendYes();
+    }
+    chain
       .wait(/.*Select a setting to edit.*/)
       .sendCarriageReturn()
       .wait(/.*Choose the default authorization type for the API.*/)
@@ -378,9 +381,12 @@ export function updateAPIWithResolutionStrategyWithoutModels(cwd: string, settin
 
 export function updateAPIWithResolutionStrategyWithModels(cwd: string, settings: any) {
   return new Promise<void>((resolve, reject) => {
-    spawn(getCLIPath(settings.testingWithLatestCodebase), ['update', 'api'], { cwd, stripColors: true })
-      .wait('Select from one of the below mentioned services:')
-      .sendCarriageReturn()
+    const chain = spawn(getCLIPath(settings.testingWithLatestCodebase), ['update', 'api'], { cwd, stripColors: true });
+    chain.wait('Select from one of the below mentioned services:').sendCarriageReturn();
+    if (settings.testingWithLatestCodebase === true) {
+      chain.wait('Do you want to migrate api resource').sendYes();
+    }
+    chain
       .wait(/.*Select a setting to edit.*/)
       .sendKeyDown()
       .sendCarriageReturn()
