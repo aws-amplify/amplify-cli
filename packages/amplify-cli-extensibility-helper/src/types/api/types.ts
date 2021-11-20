@@ -10,9 +10,9 @@ type AmplifyCDKL1 = {
   addCfnResource(props: cdk.CfnResourceProps, logicalId: string): void;
 };
 
-export type AmplifyApigwResourceTemplate = {
-  restApi?: apigwCdk.CfnRestApi;
-  deploymentResource?: apigwCdk.CfnDeployment;
+export type AmplifyApiRestResourceStackTemplate = {
+  restApi: apigwCdk.CfnRestApi;
+  deploymentResource: apigwCdk.CfnDeployment;
   policies?: {
     [pathName: string]: ApigwPathPolicy;
   };

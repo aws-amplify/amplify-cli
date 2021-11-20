@@ -20,11 +20,5 @@ export const run = async (context: $TSContext) => {
       }
       return providerController.updateResource(context, AmplifyCategories.API, result.service);
     })
-    .then(() => printer.success('Successfully updated resource'))
-    .catch(async err => {
-      printer.error(err.message);
-      printer.info(err.stack);
-      await context.usageData.emitError(err);
-      process.exitCode = 1;
-    });
+    .then(() => printer.success('Successfully updated resource'));
 };
