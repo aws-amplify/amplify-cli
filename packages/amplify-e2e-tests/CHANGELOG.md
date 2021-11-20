@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.5.0-apiext3.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@3.4.1...amplify-e2e-tests@3.5.0-apiext3.0) (2021-11-20)
+
+
+### Bug Fixes
+
+* migration flow and cfn params when user pool groups are present, types ([#8981](https://github.com/aws-amplify/amplify-cli/issues/8981)) ([3970416](https://github.com/aws-amplify/amplify-cli/commit/397041616c401ddb4ae2b0379be8e97c4f23db1a))
+
+
+### Features
+
+* extensibility for Amplify API  ([#8954](https://github.com/aws-amplify/amplify-cli/issues/8954)) ([4a6b11a](https://github.com/aws-amplify/amplify-cli/commit/4a6b11aa60aa7a78200c71b92a0636d4c395737c))
+* REST API extensibility ([#8958](https://github.com/aws-amplify/amplify-cli/issues/8958)) ([6180642](https://github.com/aws-amplify/amplify-cli/commit/618064241f33d083181d98fad416234238947eef))
+
+
+
+
+
 ## [3.4.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@3.4.0...amplify-e2e-tests@3.4.1) (2021-11-20)
 
 **Note:** Version bump only for package amplify-e2e-tests

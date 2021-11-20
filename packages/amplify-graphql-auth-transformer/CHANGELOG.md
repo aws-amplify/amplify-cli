@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.5.0-apiext3.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-auth-transformer@0.4.5...@aws-amplify/graphql-auth-transformer@0.5.0-apiext3.0) (2021-11-20)
+
+
+### Features
+
+* extensibility for Amplify API  ([#8954](https://github.com/aws-amplify/amplify-cli/issues/8954)) ([4a6b11a](https://github.com/aws-amplify/amplify-cli/commit/4a6b11aa60aa7a78200c71b92a0636d4c395737c))
+
+
+
+
+
 ## [0.4.5](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-auth-transformer@0.4.4...@aws-amplify/graphql-auth-transformer@0.4.5) (2021-11-20)
 
 
