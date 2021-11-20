@@ -18,9 +18,8 @@ import {
   updateApiSchema,
   updateAuthAddAdminQueries,
 } from 'amplify-e2e-core';
-import { readdirSync, readFileSync, writeFileSync } from 'fs';
+import { readdirSync, readFileSync } from 'fs';
 import * as path from 'path';
-const providerName = 'awscloudformation';
 
 // to deal with bug in cognito-identity-js
 (global as any).fetch = require('node-fetch');
@@ -34,7 +33,12 @@ describe('amplify add api (REST)', () => {
   });
 
   afterEach(async () => {
-    const meta = getProjectMeta(projRoot);
+    await deleteProject(projRoot);
+    deleteProjectDir(projRoot);
+  });
+
+  const validateMeta = async (meta?) => {
+    meta = meta ?? getProjectMeta(projRoot);
     expect(meta.providers.awscloudformation).toBeDefined();
     const {
       AuthRoleArn: authRoleArn,
@@ -64,11 +68,8 @@ describe('amplify add api (REST)', () => {
       expect(lastPushDirHash).toBeDefined();
       seenAtLeastOneFunc = true;
     }
-    expect(seenAtLeastOneFunc).toBeTruthy();
-
-    await deleteProject(projRoot);
-    deleteProjectDir(projRoot);
-  });
+    expect(seenAtLeastOneFunc).toBe(true);
+  };
 
   it('init a project, add a DDB, then add a crud rest api', async () => {
     const randomId = await global.getRandomId();
@@ -84,12 +85,14 @@ describe('amplify add api (REST)', () => {
     expect(service).toBe('DynamoDB');
     expect(lastPushTimeStamp).toBeDefined();
     expect(lastPushDirHash).toBeDefined();
+    validateMeta(meta);
   });
 
   it('init a project, then add a serverless rest api', async () => {
     await initJSProjectWithProfile(projRoot, {});
     await addRestApi(projRoot, { isCrud: false });
     await amplifyPushUpdate(projRoot);
+    validateMeta();
   });
 
   it('init a project, create lambda and attach it to an api', async () => {
@@ -97,6 +100,7 @@ describe('amplify add api (REST)', () => {
     await addFunction(projRoot, { functionTemplate: 'Hello World' }, 'nodejs');
     await addRestApi(projRoot, { existingLambda: true });
     await amplifyPushUpdate(projRoot);
+    validateMeta();
   });
 
   it('init a project, create lambda and attach multiple rest apis', async () => {
@@ -133,16 +137,18 @@ describe('amplify add api (REST)', () => {
     const authPolicies = await listAttachedRolePolicies(AuthRoleName, Region);
     expect(authPolicies.length).toBeGreaterThan(0);
 
-    for (let i = 0; i < authPolicies.length; i++) {
+    for (let i = 0; i < authPolicies.length; ++i) {
       expect(authPolicies[i].PolicyName).toMatch(/PolicyAPIGWAuth\d/);
     }
 
     const unauthPolicies = await listAttachedRolePolicies(UnauthRoleName, Region);
     expect(unauthPolicies.length).toBeGreaterThan(0);
 
-    for (let i = 0; i < unauthPolicies.length; i++) {
+    for (let i = 0; i < unauthPolicies.length; ++i) {
       expect(unauthPolicies[i].PolicyName).toMatch(/PolicyAPIGWUnauth\d/);
     }
+
+    validateMeta(amplifyMeta);
   });
 
   it('adds a rest api and then adds a path to the existing api', async () => {
@@ -151,6 +157,7 @@ describe('amplify add api (REST)', () => {
     await addRestApi(projRoot, { existingLambda: true });
     await addRestApi(projRoot, { isFirstRestApi: false, existingLambda: true, path: '/newpath' });
     await amplifyPushUpdate(projRoot);
+    validateMeta();
   });
 
   it('migrates malformed project files during push', async () => {
@@ -169,6 +176,7 @@ describe('amplify add api (REST)', () => {
     expect(cfnTemplate.Outputs.ApiId).toBeDefined();
 
     await amplifyPushUpdate(projRoot);
+    validateMeta();
   });
 
   it('amplify push prompt for cognito configuration if auth mode is missing', async () => {
@@ -194,5 +202,6 @@ describe('amplify add api (REST)', () => {
 
     expect(graphqlApi).toBeDefined();
     expect(graphqlApi.apiId).toEqual(GraphQLAPIIdOutput);
+    validateMeta(meta);
   });
 });
