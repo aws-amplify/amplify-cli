@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/cli-extensibility-helper",
-  "version": "2.3.0-apiext3.0",
+  "version": "2.3.0-apiext3.1",
   "description": "Amplify CLI Extensibility Helper utility package",
   "repository": {
     "type": "git",

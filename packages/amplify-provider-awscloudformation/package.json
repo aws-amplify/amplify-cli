@@ -1,6 +1,6 @@
 {
   "name": "amplify-provider-awscloudformation",
-  "version": "5.6.0-apiext3.0",
+  "version": "5.6.0-apiext3.1",
   "description": "AWS CloudFormation Provider",
   "repository": {
     "type": "git",
@@ -24,7 +24,7 @@
     "watch": "tsc --watch"
   },
   "dependencies": {
-    "@aws-amplify/cli-extensibility-helper": "2.3.0-apiext3.0",
+    "@aws-amplify/cli-extensibility-helper": "2.3.0-apiext3.1",
     "@aws-amplify/graphql-auth-transformer": "0.5.0-apiext3.0",
     "@aws-amplify/graphql-default-value-transformer": "0.5.4-apiext3.0",
     "@aws-amplify/graphql-function-transformer": "0.7.0-apiext3.0",

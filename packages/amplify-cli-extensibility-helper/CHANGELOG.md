@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.3.0-apiext3.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-extensibility-helper@2.3.0-apiext3.0...@aws-amplify/cli-extensibility-helper@2.3.0-apiext3.1) (2021-11-20)
+
+
+### Bug Fixes
+
+* rest iam policy roles array, bump ext helper types version ([#8983](https://github.com/aws-amplify/amplify-cli/issues/8983)) ([#8984](https://github.com/aws-amplify/amplify-cli/issues/8984)) ([fa1ac2c](https://github.com/aws-amplify/amplify-cli/commit/fa1ac2ccfd0f584e47b03a8240518f391695d454))
+
+
+
+
+
 # [2.3.0-apiext3.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-extensibility-helper@2.2.3...@aws-amplify/cli-extensibility-helper@2.3.0-apiext3.0) (2021-11-20)
 
 
