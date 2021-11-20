@@ -403,4 +403,19 @@ describe('Schema migration tests', () => {
 
     migrateAndValidate(schema);
   });
+
+  it('Has One @connection without fields always mapped to has one, even in bidirectional', () => {
+    const schema = `
+    type Coffee @model {
+      id: ID!
+      energy: Energy @connection # => @hasOne
+    }
+    
+    type Energy @model {
+      id: ID!
+      coffee: Coffee @connection # => @hasOne
+    }`;
+
+    migrateAndValidate(schema);
+  });
 });
