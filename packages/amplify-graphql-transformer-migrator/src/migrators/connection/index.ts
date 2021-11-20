@@ -67,7 +67,7 @@ export function migrateConnection(node: any, ast: any) {
         });
       });
 
-      if (biDirectionalRelation && isListType(biDirectionalRelation.type)) {
+      if (biDirectionalRelation?.type && isListType(biDirectionalRelation.type)) {
         connectionDirective.name.value = 'belongsTo';
       } else {
         connectionDirective.name.value = 'hasOne';

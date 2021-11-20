@@ -11,7 +11,7 @@ type Comment @model @auth(rules: [{allow: public}]) {
   id: ID!
   postID: ID! @index(name: \\"byPost\\", sortKeyFields: [\\"content\\"])
   content: String!
-  post: Post @belongsTo(fields: [\\"postID\\"])
+  post: Post @hasOne(fields: [\\"postID\\"])
 }
 "
 `;
@@ -85,8 +85,8 @@ type PostEditor @model(queries: null) @auth(rules: [{allow: public}]) {
   id: ID!
   postID: ID! @index(name: \\"byPost\\", sortKeyFields: [\\"editorID\\"])
   editorID: ID! @index(name: \\"byEditor\\", sortKeyFields: [\\"postID\\"])
-  post: Post! @belongsTo(fields: [\\"postID\\"])
-  editor: User! @belongsTo(fields: [\\"editorID\\"])
+  post: Post! @hasOne(fields: [\\"postID\\"])
+  editor: User! @hasOne(fields: [\\"editorID\\"])
 }
 
 type User @model @auth(rules: [{allow: public}]) {
@@ -162,6 +162,19 @@ type Comment @model @searchable @auth(rules: [{allow: public}]) {
   id: ID!
   version: Int! @index(name: \\"commentByVersion\\", sortKeyFields: [\\"id\\"])
   content: String!
+}
+"
+`;
+
+exports[`Schema migration tests Has One @connection without fields always mapped to has one, even in bidirectional 1`] = `
+"type Coffee @model @auth(rules: [{allow: public}]) {
+  id: ID!
+  energy: Energy @hasOne
+}
+
+type Energy @model @auth(rules: [{allow: public}]) {
+  id: ID!
+  coffee: Coffee @hasOne
 }
 "
 `;
@@ -314,18 +327,6 @@ exports[`Schema migration tests renamed queries/mutations/subscriptions 1`] = `
 "type Entity @model(mutations: null, subscriptions: null, queries: {get: \\"getEntity\\"}) @auth(rules: [{allow: public}]) {
   id: ID!
   str: String
-}
-"
-`;
-
-exports[`Schema migration tests Has One @connection without fields always mapped to has one, even in bidirectional 1`] = `
-"type Coffee @model @auth(rules: [{allow: public}]) {
-  id: ID!
-  energy: Energy @hasOne
-}
-type Energy @model @auth(rules: [{allow: public}]) {
-  id: ID!
-  coffee: Coffee @hasOne
 }
 "
 `;
