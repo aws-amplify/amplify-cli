@@ -11,7 +11,7 @@ export async function removeTrigger(context: $TSContext, resourceName: string, t
   const projectRoot = pathManager.findProjectRoot();
   const resourceDirPath = pathManager.getResourceDirectoryPath(projectRoot, categoryName, resourceName);
   const storageCFNFilePath = path.join(resourceDirPath, 's3-cloudformation-template.json');
-  const { cfnTemplate: storageCFNFile }: { cfnTemplate: $TSAny } = await readCFNTemplate(storageCFNFilePath);
+  const { cfnTemplate: storageCFNFile }: { cfnTemplate: $TSAny } = readCFNTemplate(storageCFNFilePath);
   const bucketParameters = stateManager.getResourceParametersJson(projectRoot, categoryName, resourceName);
   const adminTrigger = bucketParameters.adminTriggerFunction;
 
@@ -126,7 +126,7 @@ export async function addTrigger(
   );
 
   if (useExistingFunction) {
-    const { cfnTemplate: functionCFNFile }: { cfnTemplate: $TSAny } = await readCFNTemplate(functionCFNFilePath);
+    const { cfnTemplate: functionCFNFile }: { cfnTemplate: $TSAny } = readCFNTemplate(functionCFNFilePath);
 
     functionCFNFile.Outputs.LambdaExecutionRole = {
       Value: {
@@ -201,7 +201,7 @@ export async function addTrigger(
     // Update Cloudformtion file
     const projectBackendDirPath = pathManager.getBackendDirPath();
     const storageCFNFilePath = path.join(projectBackendDirPath, categoryName, resourceName, 's3-cloudformation-template.json');
-    const { cfnTemplate: storageCFNFile }: { cfnTemplate: $TSAny } = await readCFNTemplate(storageCFNFilePath);
+    const { cfnTemplate: storageCFNFile }: { cfnTemplate: $TSAny } = readCFNTemplate(storageCFNFilePath);
     const amplifyMetaFile = stateManager.getMeta();
 
     // Remove reference for old triggerFunction

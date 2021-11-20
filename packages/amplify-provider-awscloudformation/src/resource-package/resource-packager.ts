@@ -197,11 +197,9 @@ export abstract class ResourcePackager {
   }
 
   protected resourcesHasApiGatewaysButNotAdminQueries(packagedResources: PackagedResourceDefinition[]): boolean {
-    const { API_CATEGORY, } = Constants;
+    const { API_CATEGORY } = Constants;
     const resources = packagedResources.filter(r => r.resourceName !== 'AdminQueries');
-    return (
-      this.resourcesHasCategoryService(resources, API_CATEGORY.NAME, API_CATEGORY.SERVICE.API_GATEWAY)
-    );
+    return this.resourcesHasCategoryService(resources, API_CATEGORY.NAME, API_CATEGORY.SERVICE.API_GATEWAY);
   }
 
   /**
@@ -288,7 +286,7 @@ export abstract class ResourcePackager {
           resource.service !== API_CATEGORY.SERVICE.ELASTIC_CONTAINER &&
           resource.service !== FUNCTION_CATEGORY.SERVICE.LAMBDA_LAYER
         ) {
-          const { cfnTemplate, templateFormat } = await readCFNTemplate(cfnFile);
+          const { cfnTemplate, templateFormat } = readCFNTemplate(cfnFile);
           const paramType = { Type: 'String' };
           const deploymentBucketNameRef = 'deploymentBucketName';
           const s3KeyRef = 's3Key';

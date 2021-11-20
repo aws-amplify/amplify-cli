@@ -198,7 +198,7 @@ describe('roundtrip CFN Templates to object and back', () => {
 
     (fs_mock.readFile as unknown as jest.MockedFunction<TwoArgReadFile>).mockResolvedValueOnce(yamlContent);
 
-    const result = await readCFNTemplate(testPath);
+    const result = readCFNTemplate(testPath);
 
     await writeCFNTemplate(result.cfnTemplate, testPath, { templateFormat: CFNTemplateFormat.YAML });
 
@@ -206,7 +206,7 @@ describe('roundtrip CFN Templates to object and back', () => {
 
     (fs_mock.readFile as unknown as jest.MockedFunction<TwoArgReadFile>).mockResolvedValueOnce(writtenYaml);
 
-    const roundtrippedYaml = await readCFNTemplate(testPath);
+    const roundtrippedYaml = readCFNTemplate(testPath);
 
     expect(result).toMatchObject(roundtrippedYaml);
   });

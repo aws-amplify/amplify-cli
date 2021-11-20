@@ -665,7 +665,7 @@ async function prepareResource(context: $TSContext, resource: $TSAny) {
     const cfnParamsFilePath = path.normalize(path.join(resourceDir, 'parameters.json'));
     JSONUtilities.writeJson(cfnParamsFilePath, cfnParams);
   } else {
-    const { cfnTemplate } = await readCFNTemplate(cfnFilePath);
+    const { cfnTemplate } = readCFNTemplate(cfnFilePath);
     cfnTemplate.Parameters.deploymentBucketName = paramType;
     cfnTemplate.Parameters.s3Key = paramType;
     const deploymentBucketNameRef = 'deploymentBucketName';
