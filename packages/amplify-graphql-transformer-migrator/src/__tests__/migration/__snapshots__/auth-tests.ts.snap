@@ -244,42 +244,6 @@ exports[`Schema migration tests for @auth field level auth multi field auth migr
 "
 `;
 
-exports[`Schema migration tests for @auth field level auth relational auth migrates as expected 1`] = `
-"type Post @model @auth(rules: [{allow: owner}]) {
-  id: ID!
-  title: String!
-  author: User @belongsTo(fields: [\\"owner\\"])
-  owner: ID! @index(name: \\"byOwner\\", sortKeyFields: [\\"id\\"])
-}
-
-type User @model @auth(rules: [{allow: owner}]) {
-  id: ID!
-  posts: [Post] @hasMany(indexName: \\"byOwner\\", fields: [\\"id\\"])
-}
-
-type FieldProtected @model @auth(rules: [{allow: private}]) {
-  id: ID!
-  owner: String
-  ownerOnly: String @auth(rules: [{allow: owner}])
-}
-
-type OpenTopLevel @model @auth(rules: [{allow: private}]) {
-  id: ID!
-  name: String
-  owner: String
-  protected: [ConnectionProtected] @hasMany(indexName: \\"byTopLevel\\", fields: [\\"id\\"])
-}
-
-type ConnectionProtected @model(queries: null) @auth(rules: [{allow: owner}]) {
-  id: ID!
-  name: String
-  owner: String
-  topLevelID: ID! @index(name: \\"byTopLevel\\", sortKeyFields: [\\"id\\"])
-  topLevel: OpenTopLevel @belongsTo(fields: [\\"topLevelID\\"])
-}
-"
-`;
-
 exports[`Schema migration tests for @auth group auth ports over owner and group based rule 1`] = `
 "type Todo @model @auth(rules: [{allow: owner}, {allow: groups, groups: [\\"Admins\\"]}]) {
   id: ID!
