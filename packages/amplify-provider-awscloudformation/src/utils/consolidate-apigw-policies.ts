@@ -1,7 +1,16 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import { prepareApp } from '@aws-cdk/core/lib/private/prepare-app';
-import { $TSAny, $TSContext, $TSObject, AmplifyCategories, JSONUtilities, pathManager, stateManager } from 'amplify-cli-core';
+import {
+  $TSAny,
+  $TSContext,
+  $TSObject,
+  AmplifyCategories,
+  AmplifySupportedService,
+  JSONUtilities,
+  pathManager,
+  stateManager,
+} from 'amplify-cli-core';
 import * as fs from 'fs';
 import * as path from 'path';
 import { ProviderName } from '../constants';
@@ -91,8 +100,8 @@ class ApiGatewayAuthStack extends cdk.Stack {
           ({ roleCount: authRoleCount, policyDocSize: authPolicyDocSize, managedPolicy: authManagedPolicy } = state);
         }
 
-        if (Array.isArray(apiGateway?.params?.paths?.[pathName]?.permissions?.unauth)) {
-          state.methods = convertCrudOperationsToPermissions(apiGateway.params.paths[pathName].permissions.unauth);
+        if (Array.isArray(apiGateway?.params?.paths?.[pathName]?.permissions?.guest)) {
+          state.methods = convertCrudOperationsToPermissions(apiGateway.params.paths[pathName].permissions.guest);
           state.roleCount = unauthRoleCount;
           state.roleName = unauthRoleName;
           state.policyDocSize = unauthPolicyDocSize;
@@ -236,7 +245,7 @@ function createApiGatewayAuthResources(context: $TSContext, stackName: string, a
 }
 
 export function loadApiCliInputs(name: string, resource: $TSObject): $TSObject | undefined {
-  if (resource.providerPlugin !== ProviderName || resource.service !== 'API Gateway' || name === 'AdminQueries') {
+  if (resource.providerPlugin !== ProviderName || resource.service !== AmplifySupportedService.APIGW || name === 'AdminQueries') {
     return;
   }
 

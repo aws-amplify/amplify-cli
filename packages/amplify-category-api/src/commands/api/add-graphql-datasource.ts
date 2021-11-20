@@ -81,7 +81,7 @@ export const run = async (context: $TSContext) => {
 
     if (graphqlSchemaContext === null) {
       printer.warn('No importable tables were found in the selected Database.');
-      printer.info('');
+      printer.blankLine();
       return;
     }
 
@@ -105,7 +105,7 @@ export const run = async (context: $TSContext) => {
         typesToBeMerged.unshift(currGraphQLSchemaDoc);
       } else {
         printer.warn(`Graphql Schema file "${graphqlSchemaFilePath}" is empty.`);
-        printer.info('');
+        printer.blankLine();
       }
 
       const concatGraphQLSchemaDoc = mergeTypeDefs(typesToBeMerged);
@@ -154,12 +154,8 @@ export const run = async (context: $TSContext) => {
     );
     printer.blankLine();
   } catch (error) {
-    printer.info(error.stack);
     printer.error('There was an error adding the datasource');
-
-    await context.usageData.emitError(error);
-
-    process.exitCode = 1;
+    throw error;
   }
 };
 
