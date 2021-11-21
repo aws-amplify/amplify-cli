@@ -474,9 +474,7 @@ export function addS3WithGroupAccess(cwd: string, settings: any): Promise<void> 
       .sendKeyDown()
       .sendCarriageReturn() // Individual groups
       .wait('Select groups')
-      .send(' ') // select Admin
-      .sendKeyDown()
-      .send(' ') // select User
+      .sendCtrlA() // select all groups
       .sendCarriageReturn()
       .wait('What kind of access do you want') // for <UserGroup1> users?
       .sendCtrlA() // Select all permissions
