@@ -175,7 +175,7 @@ async function askPermissions(
   context: $TSContext,
   answers: $TSObject,
   currentPath?: ApigwPath,
-): Promise<{ setting?: PermissionSetting; auth?: CrudOperation[]; open?: boolean; userPoolGroups?: $TSObject; unauth?: CrudOperation[] }> {
+): Promise<{ setting?: PermissionSetting; auth?: CrudOperation[]; open?: boolean; userPoolGroups?: $TSObject; guest?: CrudOperation[] }> {
   while (true) {
     const apiAccess = await prompter.yesOrNo('Restrict API access', currentPath?.permissions?.setting !== PermissionSetting.OPEN);
 
@@ -232,8 +232,8 @@ async function askPermissions(
         permissions: { auth: authPermissions },
       } = currentPath || { permissions: { auth: [] } };
       let {
-        permissions: { unauth: unauthPermissions },
-      } = currentPath || { permissions: { unauth: [] } };
+        permissions: { guest: unauthPermissions },
+      } = currentPath || { permissions: { guest: [] } };
 
       if (permissionSetting === PermissionSetting.PRIVATE) {
         permissions.auth = await askCRUD('Authenticated', authPermissions);
@@ -245,7 +245,7 @@ async function askPermissions(
 
       if (permissionSetting === PermissionSetting.PROTECTED) {
         permissions.auth = await askCRUD('Authenticated', authPermissions);
-        permissions.unauth = await askCRUD('Guest', unauthPermissions);
+        permissions.guest = await askCRUD('Guest', unauthPermissions);
         const apiRequirements: ApiRequirements = { authSelections: 'identityPoolAndUserPool', allowUnauthenticatedIdentities: true };
 
         await ensureAuth(context, apiRequirements, answers.resourceName);

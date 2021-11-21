@@ -535,7 +535,7 @@ function chain(context: Context): ExecutionContext {
       noOutputTimer.reschedule(context.noOutputTimeout);
       data = data.toString();
       if (logDumpFile && spinnerRegex.test(data) === false && strip(data).trim().length > 0) {
-        logDumpFile.write(data);
+        logDumpFile.write(`${data}${EOL}`);
       }
 
       if (context.stripColors) {
