@@ -33,7 +33,7 @@ describe('api migration update test', () => {
   afterEach(async () => {
     const metaFilePath = join(projRoot, 'amplify', '#current-cloud-backend', 'amplify-meta.json');
     if (fs.existsSync(metaFilePath)) {
-      await deleteProject(projRoot);
+      await deleteProject(projRoot, undefined, true);
     }
     deleteProjectDir(projRoot);
   });
