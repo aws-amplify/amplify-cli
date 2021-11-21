@@ -11,7 +11,7 @@ type Comment @model @auth(rules: [{allow: public}]) {
   id: ID!
   postID: ID! @index(name: \\"byPost\\", sortKeyFields: [\\"content\\"])
   content: String!
-  post: Post @hasOne(fields: [\\"postID\\"])
+  post: Post @belongsTo(fields: [\\"postID\\"])
 }
 "
 `;
@@ -85,8 +85,8 @@ type PostEditor @model(queries: null) @auth(rules: [{allow: public}]) {
   id: ID!
   postID: ID! @index(name: \\"byPost\\", sortKeyFields: [\\"editorID\\"])
   editorID: ID! @index(name: \\"byEditor\\", sortKeyFields: [\\"postID\\"])
-  post: Post! @hasOne(fields: [\\"postID\\"])
-  editor: User! @hasOne(fields: [\\"editorID\\"])
+  post: Post! @belongsTo(fields: [\\"postID\\"])
+  editor: User! @belongsTo(fields: [\\"editorID\\"])
 }
 
 type User @model @auth(rules: [{allow: public}]) {

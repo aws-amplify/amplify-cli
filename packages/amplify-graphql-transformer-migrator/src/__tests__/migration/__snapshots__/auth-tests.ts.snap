@@ -275,7 +275,7 @@ exports[`Schema migration tests for @auth relational auth migrates as expected 1
 "type Post @model @auth(rules: [{allow: owner}]) {
   id: ID!
   title: String!
-  author: User @hasOne(fields: [\\"owner\\"])
+  author: User @belongsTo(fields: [\\"owner\\"])
   owner: ID! @index(name: \\"byOwner\\", sortKeyFields: [\\"id\\"])
 }
 
@@ -302,7 +302,7 @@ type ConnectionProtected @model(queries: null) @auth(rules: [{allow: owner}]) {
   name: String
   owner: String
   topLevelID: ID! @index(name: \\"byTopLevel\\", sortKeyFields: [\\"id\\"])
-  topLevel: OpenTopLevel @hasOne(fields: [\\"topLevelID\\"])
+  topLevel: OpenTopLevel @belongsTo(fields: [\\"topLevelID\\"])
 }
 "
 `;
