@@ -8,6 +8,7 @@ import { DocumentNode } from 'graphql/language';
 import { printer, prompter } from 'amplify-prompts';
 import * as path from 'path';
 import {
+  authRuleUsesQueriesOrMutations,
   detectCustomRootTypes,
   detectDeprecatedConnectionUsage,
   detectOverriddenResolvers,
@@ -179,6 +180,9 @@ async function canAutoMigrate(fullSchema: string, apiName: string, resourceDir: 
   }
   if (doesBackupExist(resourceDir)) {
     return `A schema backup already exists at ${backupLocation(resourceDir)}. Remove or copy these files to a different location.`;
+  }
+  if (authRuleUsesQueriesOrMutations(fullSchema)) {
+    return 'You are using queries or mutations in at least one @auth rule. These cannot be automatically migrated.';
   }
   return true;
 }
