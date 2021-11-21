@@ -303,6 +303,9 @@ class CfnApiArtifactHandler implements ApiArtifactHandler {
     const prevAppsyncInputs = cliState.getCLIInputPayload();
 
     const appsyncInputs: AppSyncCLIInputs = prevAppsyncInputs;
+    if (!_.isEmpty(appsyncInputs.serviceConfiguration)) {
+      appsyncInputs.serviceConfiguration.gqlSchemaPath = path.join(this.getResourceDir(apiName), gqlSchemaFilename);
+    }
     if (updates.conflictResolution) {
       appsyncInputs.serviceConfiguration.conflictResolution = updates.conflictResolution;
     }
