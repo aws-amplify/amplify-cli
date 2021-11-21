@@ -52,7 +52,7 @@ export function migrateConnection(node: any, ast: any) {
       }
     } else {
       const relatedType = getRelatedType(ast, getFieldType(connectionField));
-      const biDirectionalRelation = relatedType.fields.some((relatedField: any) => {
+      const biDirectionalRelation = relatedType.fields.find((relatedField: any) => {
         if (getFieldType(relatedField) !== node.name.value) {
           return false;
         }
@@ -62,7 +62,7 @@ export function migrateConnection(node: any, ast: any) {
           return false;
         }
 
-        return relatedField?.directives?.some((relatedDirective: any) => {
+        return relatedField?.directives?.find((relatedDirective: any) => {
           return validConnectionDirectiveNames.has(relatedDirective.name.value);
         });
       });
