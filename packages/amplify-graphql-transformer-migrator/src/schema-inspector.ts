@@ -79,3 +79,27 @@ export function isImprovedPluralizationEnabled() {
 export function isTransformerV2Enabled() {
   return FeatureFlags.getNumber('graphqltransformer.transformerversion') === 2;
 }
+
+export function authRuleUsesQueriesOrMutations(schema: string): boolean {
+  const authDirectives = collectDirectives(schema).filter(directive => directive.name.value === 'auth');
+
+  for (const authDir of authDirectives) {
+    const rulesArg =
+      authDir.arguments?.filter(arg => arg.name.value === 'rules' && arg.value.kind === 'ListValue').map((arg: any) => arg.value.values) ??
+      [];
+
+    for (const rules of rulesArg) {
+      for (const rule of rules) {
+        for (const field of rule.fields) {
+          const fieldName = field.name.value;
+
+          if (fieldName === 'queries' || fieldName === 'mutations') {
+            return true;
+          }
+        }
+      }
+    }
+  }
+
+  return false;
+}
