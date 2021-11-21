@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.13.3-beta.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-transformer-core@0.13.1...@aws-amplify/graphql-transformer-core@0.13.3-beta.0) (2021-11-21)
+
+
+### Bug Fixes
+
+* group response and request resolvers by slot ([#8980](https://github.com/aws-amplify/amplify-cli/issues/8980)) ([74cbcc3](https://github.com/aws-amplify/amplify-cli/commit/74cbcc3799201eea4b68c26f4e44ad6bee6704ad))
+
+
+
+
+
 ## [0.13.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-transformer-core@0.13.0...@aws-amplify/graphql-transformer-core@0.13.1) (2021-11-19)
 
 
