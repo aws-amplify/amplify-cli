@@ -137,15 +137,15 @@ describe('amplify add api (REST)', () => {
     const authPolicies = await listAttachedRolePolicies(AuthRoleName, Region);
     expect(authPolicies.length).toBeGreaterThan(0);
 
-    for (let i = 0; i < authPolicies.length; ++i) {
-      expect(authPolicies[i].PolicyName).toMatch(/PolicyAPIGWAuth\d/);
+    for (const { PolicyName } of authPolicies) {
+      expect(PolicyName).toMatch(/PolicyAPIGWAuth\d/);
     }
 
     const unauthPolicies = await listAttachedRolePolicies(UnauthRoleName, Region);
     expect(unauthPolicies.length).toBeGreaterThan(0);
 
-    for (let i = 0; i < unauthPolicies.length; ++i) {
-      expect(unauthPolicies[i].PolicyName).toMatch(/PolicyAPIGWUnauth\d/);
+    for (const { PolicyName } of unauthPolicies) {
+      expect(PolicyName).toMatch(/PolicyAPIGWUnauth\d/);
     }
 
     validateMeta(amplifyMeta);

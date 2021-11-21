@@ -225,7 +225,7 @@ interface AmplifyToolkit {
   copyBatch: (context: $TSContext, jobs: $TSCopyJob[], props: object, force?: boolean, writeParams?: boolean | object) => $TSAny;
   crudFlow: (role: string, permissionMap?: $TSObject, defaults?: string[]) => Promise<string[]>;
   deleteProject: () => $TSAny;
-  executeProviderUtils: (context: $TSContext, providerName: string, utilName: string, options?: $TSAny) => $TSAny;
+  executeProviderUtils: (context: $TSContext, providerName: string, utilName: string, options?: $TSAny) => Promise<$TSAny>;
   getAllEnvs: () => string[];
   getPlugin: () => $TSAny;
   getCategoryPluginInfo: (context: $TSContext, category?: string, service?: string) => $TSAny;
@@ -233,7 +233,7 @@ interface AmplifyToolkit {
   getFrontendPlugins: (context: $TSContext) => $TSAny;
   getEnvDetails: () => $TSAny;
   getEnvInfo: () => $TSAny;
-  getProviderPlugins: (context: $TSContext) => $TSAny;
+  getProviderPlugins: (context: $TSContext) => Record<string, string>;
   getPluginInstance: (context: $TSContext, pluginName: string) => $TSAny;
   getProjectConfig: () => $TSAny;
   getProjectDetails: () => $TSAny;
@@ -288,8 +288,8 @@ interface AmplifyToolkit {
   showAllHelp: () => $TSAny;
   showHelp: (header: string, commands: { name: string; description: string }[]) => $TSAny;
   showHelpfulProviderLinks: (context: $TSContext) => $TSAny;
-  showResourceTable: () => $TSAny;
-  showStatusTable: (resourceTableParams: ViewResourceTableParams) => $TSAny; //Enhanced Status with CFN-Diff
+  showResourceTable: (category?: $TSAny, resourceName?: $TSAny, filteredResources?: $TSAny) => Promise<$TSAny>;
+  showStatusTable: (resourceTableParams: ViewResourceTableParams) => Promise<$TSAny>; // Enhanced Status with CFN-Diff
   serviceSelectionPrompt: (
     context: $TSContext,
     category: string,
