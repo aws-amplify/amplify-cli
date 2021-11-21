@@ -106,7 +106,7 @@ test('test translate and convert text to speech', async () => {
 });
 
 test('test translate text individually', async () => {
-  const germanTranslation = /((\bDies\b)|(\bdas\b)|(\bder\b)) ist ein Sprachtest/i;
+  const germanTranslation = /((\bDies\b)|(\bdas\b)|(\bder\b)) ist ein ((\bStimmtest\b)|(\Sprachtest\b))/i;
   const response = await GRAPHQL_CLIENT.query(
     `query TranslateThis($input: TranslateThisInput!) {
       translateThis(input: $input)
