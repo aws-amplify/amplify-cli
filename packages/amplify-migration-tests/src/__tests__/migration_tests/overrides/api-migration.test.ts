@@ -1,28 +1,28 @@
 import {
-  addApiWithoutSchema,
-  addApiWithBlankSchemaAndConflictDetection,
+  addHeadlessApi,
   amplifyPush,
   amplifyPushUpdate,
   createNewProjectDir,
   deleteProject,
   deleteProjectDir,
   getAppSyncApi,
+  getCLIInputs,
+  getProjectConfig,
   getProjectMeta,
+  getProjectSchema,
+  getSchemaPath,
   getTransformConfig,
+  initJSProjectWithProfile,
   updateApiSchema,
   updateApiWithMultiAuth,
   updateAPIWithResolutionStrategyWithModels,
-  addHeadlessApi,
   updateHeadlessApi,
-  getProjectSchema,
-  getSchemaPath,
-  getCLIInputs,
-  initJSProjectWithProfile,
 } from 'amplify-e2e-core';
 import { AddApiRequest, UpdateApiRequest } from 'amplify-headless-interface';
 import * as fs from 'fs-extra';
 import { TRANSFORM_BASE_VERSION, TRANSFORM_CURRENT_VERSION } from 'graphql-transformer-core';
 import { join } from 'path';
+import { addApiWithoutSchemaOldDx, addApiWithSchemaAndConflictDetectionOldDx } from '../../../migration-helpers';
 
 describe('api migration update test', () => {
   let projRoot: string;
@@ -41,7 +41,7 @@ describe('api migration update test', () => {
   it('api update migration with multiauth', async () => {
     // init and add api with installed CLI
     await initJSProjectWithProfile(projRoot, { name: 'simplemodelmultiauth' });
-    await addApiWithoutSchema(projRoot);
+    await addApiWithoutSchemaOldDx(projRoot);
     await updateApiSchema(projRoot, 'simplemodelmultiauth', 'simple_model.graphql');
     await amplifyPush(projRoot);
     // update and push with codebase
@@ -90,8 +90,7 @@ describe('api migration update test', () => {
     const name = `syncenabled`;
     // init and add api with locally installed cli
     await initJSProjectWithProfile(projRoot, { name });
-    await addApiWithBlankSchemaAndConflictDetection(projRoot);
-    await updateApiSchema(projRoot, name, 'simple_model.graphql');
+    await addApiWithSchemaAndConflictDetectionOldDx(projRoot, 'simple_model.graphql');
     await amplifyPush(projRoot);
     let transformConfig = getTransformConfig(projRoot, name);
     expect(transformConfig).toBeDefined();
