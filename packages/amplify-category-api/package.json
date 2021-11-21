@@ -1,6 +1,6 @@
 {
   "name": "amplify-category-api",
-  "version": "3.3.6",
+  "version": "3.3.7-beta.0",
   "description": "amplify-cli api plugin",
   "repository": {
     "type": "git",
@@ -17,7 +17,7 @@
     "test": "jest"
   },
   "dependencies": {
-    "@aws-amplify/graphql-transformer-migrator": "1.2.7",
+    "@aws-amplify/graphql-transformer-migrator": "1.2.8-beta.0",
     "@aws-cdk/assets": "~1.124.0",
     "@aws-cdk/aws-apigateway": "~1.124.0",
     "@aws-cdk/aws-apigatewayv2": "~1.124.0",
@@ -64,7 +64,7 @@
     "@aws-cdk/region-info": "~1.124.0",
     "@graphql-tools/merge": "^6.0.18",
     "@octokit/rest": "^18.0.9",
-    "amplify-cli-core": "2.3.4",
+    "amplify-cli-core": "2.3.5-beta.0",
     "amplify-headless-interface": "1.13.1",
     "amplify-prompts": "1.5.1",
     "amplify-provider-awscloudformation": "4.61.1",
@@ -74,7 +74,7 @@
     "fs-extra": "^8.1.0",
     "graphql": "^14.5.8",
     "graphql-relational-schema-transformer": "2.20.2",
-    "graphql-transformer-core": "7.2.5",
+    "graphql-transformer-core": "7.2.6-beta.0",
     "inquirer": "^7.3.3",
     "js-yaml": "^4.0.0",
     "lodash": "^4.17.21",
