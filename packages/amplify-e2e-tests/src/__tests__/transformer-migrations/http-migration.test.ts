@@ -29,7 +29,7 @@ describe('transformer @http migration test', () => {
   it('migration of @http schema', async () => {
     const httpSchema = 'transformer_migration/http.graphql';
 
-    await addApiWithoutSchema(projRoot, { apiName: projectName });
+    await addApiWithoutSchema(projRoot, { apiName: projectName, transformerVersion: 1 });
     await updateApiSchema(projRoot, projectName, httpSchema);
     await amplifyPush(projRoot);
 

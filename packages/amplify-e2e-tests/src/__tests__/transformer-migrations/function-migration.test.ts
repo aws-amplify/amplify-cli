@@ -32,12 +32,12 @@ describe('api directives @function v1 to v2 migration', () => {
       schema,
       query,
       expected_result_query,
-    }
+    };
     const v1TransformerVersion = 'v1';
     const v2TransformerVersion = 'v2';
     const function1Name = await addSimpleFunction(projectDir, testModule, 'func1');
     const function2Name = await addSimpleFunction(projectDir, testModule, 'func2');
-    await addApi(projectDir);
+    await addApi(projectDir, { transformerVersion: 1 });
     updateSchemaInTestProject(projectDir, testModule.schema);
     updateFunctionNameInSchema(projectDir, '<function1-name>', function1Name);
     updateFunctionNameInSchema(projectDir, '<function2-name>', function2Name);

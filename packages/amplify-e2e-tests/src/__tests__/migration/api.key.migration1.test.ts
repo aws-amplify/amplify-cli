@@ -23,7 +23,7 @@ describe('amplify add api', () => {
     // testing this with old behavior with named lsi key
     addFeatureFlag(projRoot, 'graphqltransformer', 'secondarykeyasgsi', false);
 
-    await addApiWithoutSchema(projRoot, { apiKeyExpirationDays: 2 });
+    await addApiWithoutSchema(projRoot, { apiKeyExpirationDays: 2, transformerVersion: 1 });
     await updateApiSchema(projRoot, projectName, initialSchema);
     await amplifyPush(projRoot);
 
@@ -44,7 +44,7 @@ describe('amplify add api', () => {
     await initJSProjectWithProfile(projRoot, { name: projectName });
     addFeatureFlag(projRoot, 'graphqltransformer', 'enableiterativegsiupdates', false);
 
-    await addApiWithoutSchema(projRoot);
+    await addApiWithoutSchema(projRoot, { transformerVersion: 1 });
     await updateApiSchema(projRoot, projectName, initialSchema);
     await amplifyPush(projRoot);
 
@@ -62,7 +62,7 @@ describe('amplify add api', () => {
     await initJSProjectWithProfile(projRoot, { name: projectName });
     addFeatureFlag(projRoot, 'graphqltransformer', 'enableiterativegsiupdates', false);
 
-    await addApiWithoutSchema(projRoot);
+    await addApiWithoutSchema(projRoot, { transformerVersion: 1 });
     await updateApiSchema(projRoot, projectName, initialSchema);
     await amplifyPush(projRoot);
 
@@ -80,7 +80,7 @@ describe('amplify add api', () => {
     await initJSProjectWithProfile(projRoot, { name: projectName });
     addFeatureFlag(projRoot, 'graphqltransformer', 'enableiterativegsiupdates', false);
 
-    await addApiWithoutSchema(projRoot);
+    await addApiWithoutSchema(projRoot, { transformerVersion: 1 });
     await updateApiSchema(projRoot, projectName, initialSchema);
     await amplifyPush(projRoot);
 

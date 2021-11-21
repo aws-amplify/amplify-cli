@@ -30,7 +30,7 @@ describe('Schema iterative update - create update and delete', () => {
     const apiName = 'iterativetest1';
 
     const initialSchema = path.join('iterative-push', 'add-remove-and-update-key', 'initial-schema.graphql');
-    await addApiWithoutSchema(projectDir, { apiKeyExpirationDays: 7 });
+    await addApiWithoutSchema(projectDir, { apiKeyExpirationDays: 7, transformerVersion: 1 });
     await updateApiSchema(projectDir, apiName, initialSchema);
     await amplifyPush(projectDir);
 

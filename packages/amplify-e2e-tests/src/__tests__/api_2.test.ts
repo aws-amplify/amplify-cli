@@ -47,7 +47,7 @@ describe('amplify add api (GraphQL)', () => {
   it('init a project with conflict detection enabled and a schema with @key, test update mutation', async () => {
     const name = `keyconflictdetection`;
     await initJSProjectWithProfile(projRoot, { name });
-    await addApiWithBlankSchemaAndConflictDetection(projRoot);
+    await addApiWithBlankSchemaAndConflictDetection(projRoot, { transformerVersion: 1 });
     await updateApiSchema(projRoot, name, 'key-conflict-detection.graphql');
     await amplifyPush(projRoot);
 
@@ -132,7 +132,7 @@ describe('amplify add api (GraphQL)', () => {
   it('init a project with conflict detection enabled and toggle disable', async () => {
     const name = `conflictdetection`;
     await initJSProjectWithProfile(projRoot, { name });
-    await addApiWithBlankSchemaAndConflictDetection(projRoot);
+    await addApiWithBlankSchemaAndConflictDetection(projRoot, { transformerVersion: 1 });
     await updateApiSchema(projRoot, name, 'simple_model.graphql');
 
     await amplifyPush(projRoot);
@@ -182,7 +182,7 @@ describe('amplify add api (GraphQL)', () => {
     // setupAdminUI
     await enableAdminUI(appId, envName, region);
 
-    await addApiWithBlankSchemaAndConflictDetection(projRoot);
+    await addApiWithBlankSchemaAndConflictDetection(projRoot, { transformerVersion: 1 });
     await updateApiSchema(projRoot, name, 'simple_model.graphql');
     await amplifyPush(projRoot);
 
@@ -204,7 +204,7 @@ describe('amplify add api (GraphQL)', () => {
   it('init a sync enabled project and update conflict resolution strategy', async () => {
     const name = `syncenabled`;
     await initJSProjectWithProfile(projRoot, { name });
-    await addApiWithBlankSchemaAndConflictDetection(projRoot);
+    await addApiWithBlankSchemaAndConflictDetection(projRoot, { transformerVersion: 1 });
     await updateApiSchema(projRoot, name, 'simple_model.graphql');
 
     let transformConfig = getTransformConfig(projRoot, name);
@@ -242,7 +242,7 @@ describe('amplify add api (GraphQL)', () => {
   it('init a datastore enabled project and then remove datastore config in update', async () => {
     const name = 'withoutdatastore';
     await initJSProjectWithProfile(projRoot, { name });
-    await addApiWithoutSchema(projRoot);
+    await addApiWithoutSchema(projRoot, { transformerVersion: 1 });
     await updateApiSchema(projRoot, name, 'simple_model.graphql');
     await amplifyPush(projRoot);
 

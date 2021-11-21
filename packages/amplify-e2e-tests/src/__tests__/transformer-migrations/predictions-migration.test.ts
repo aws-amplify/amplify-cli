@@ -33,7 +33,7 @@ describe('transformer predictions migration test', () => {
   it('migration of predictions directives', async () => {
     const predictionsSchema = 'transformer_migration/predictions.graphql';
 
-    await addApiWithoutSchema(projRoot, { apiName: projectName });
+    await addApiWithoutSchema(projRoot, { apiName: projectName, transformerVersion: 1 });
     await updateApiSchema(projRoot, projectName, predictionsSchema);
     await amplifyPush(projRoot);
 

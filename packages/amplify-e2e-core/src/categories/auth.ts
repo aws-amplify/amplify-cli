@@ -1,4 +1,5 @@
-import { nspawn as spawn, KEY_UP_ARROW, KEY_DOWN_ARROW, getCLIPath, getSocialProviders } from '..';
+import _ from 'lodash';
+import { getCLIPath, getSocialProviders, KEY_DOWN_ARROW, KEY_UP_ARROW, nspawn as spawn, setTransformerVersionFlag } from '..';
 
 export type AddAuthUserPoolOnlyNoOAuthSettings = {
   resourceName: string;
@@ -122,16 +123,19 @@ export function addAuthWithGroupTrigger(cwd: string, settings: any): Promise<voi
 interface AddApiOptions {
   apiName: string;
   testingWithLatestCodebase: boolean;
+  transformerVersion: number;
 }
 
 const defaultOptions: AddApiOptions = {
   apiName: '\r',
   testingWithLatestCodebase: true,
+  transformerVersion: 2,
 };
 
-export function addAuthViaAPIWithTrigger(cwd: string, settings: any): Promise<void> {
+export function addAuthViaAPIWithTrigger(cwd: string, opts: Partial<AddApiOptions> = {}): Promise<void> {
+  const options = _.assign(defaultOptions, opts);
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(defaultOptions.testingWithLatestCodebase), ['add', 'api'], { cwd, stripColors: true })
+    spawn(getCLIPath(options.testingWithLatestCodebase), ['add', 'api'], { cwd, stripColors: true })
       .wait('Select from one of the below mentioned services:')
       .sendCarriageReturn()
       .wait(/.*Here is the GraphQL API that we will create. Select a setting to edit or continue.*/)
@@ -174,12 +178,15 @@ export function addAuthViaAPIWithTrigger(cwd: string, settings: any): Promise<vo
           reject(err);
         }
       });
+
+    setTransformerVersionFlag(cwd, options.transformerVersion);
   });
 }
 
-export function addAuthwithUserPoolGroupsViaAPIWithTrigger(cwd: string, settings: any): Promise<void> {
+export function addAuthwithUserPoolGroupsViaAPIWithTrigger(cwd: string, opts: Partial<AddApiOptions> = {}): Promise<void> {
+  const options = _.assign(defaultOptions, opts);
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(defaultOptions.testingWithLatestCodebase), ['add', 'api'], { cwd, stripColors: true })
+    spawn(getCLIPath(options.testingWithLatestCodebase), ['add', 'api'], { cwd, stripColors: true })
       .wait('Select from one of the below mentioned services:')
       .sendCarriageReturn()
       .wait(/.*Here is the GraphQL API that we will create. Select a setting to edit or continue.*/)
@@ -261,6 +268,8 @@ export function addAuthwithUserPoolGroupsViaAPIWithTrigger(cwd: string, settings
           reject(err);
         }
       });
+
+    setTransformerVersionFlag(cwd, options.transformerVersion);
   });
 }
 

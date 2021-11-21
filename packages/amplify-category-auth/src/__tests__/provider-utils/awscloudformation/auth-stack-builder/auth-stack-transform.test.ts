@@ -22,7 +22,7 @@ jest.mock('amplify-cli-core', () => ({
     getBoolean: jest.fn().mockReturnValue(true),
   },
   buildOverrideDir: jest.fn().mockResolvedValue(false),
-  writeCFNTemplate: jest.fn().mockImplementation(() => Promise.resolve())
+  writeCFNTemplate: jest.fn().mockImplementation(() => Promise.resolve()),
 }));
 
 const getCLIInputPayload_mock = jest
@@ -165,7 +165,7 @@ const mockPolicy1 =     {
   "resource": {
     "paramType": "!GetAtt",
     "keys": ["UserPool","Arn"]
-  } 
+  }
 }
 
 const context_stub = {

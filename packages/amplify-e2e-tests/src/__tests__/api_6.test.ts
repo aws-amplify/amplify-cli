@@ -20,7 +20,7 @@ let projRoot;
 beforeEach(async () => {
   projRoot = await createNewProjectDir(projName);
   await initJSProjectWithProfile(projRoot, { name: projName });
-  await addApiWithoutSchema(projRoot);
+  await addApiWithoutSchema(projRoot, { transformerVersion: 1 });
   await amplifyPush(projRoot);
 });
 afterEach(async () => {
