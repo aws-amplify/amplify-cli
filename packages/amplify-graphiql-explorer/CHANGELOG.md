@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.4.0-apiext4.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-graphiql-explorer@2.3.0...amplify-graphiql-explorer@2.4.0-apiext4.0) (2021-11-21)
+
+
+### Features
+
+* extensibility for Amplify API  ([#8954](https://github.com/aws-amplify/amplify-cli/issues/8954)) ([d8c732c](https://github.com/aws-amplify/amplify-cli/commit/d8c732c305d51066e19739c0ed315a05f8526f33))
+
+
+
+
+
 # [2.3.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-graphiql-explorer@1.6.1...amplify-graphiql-explorer@2.3.0) (2021-11-15)
 
 

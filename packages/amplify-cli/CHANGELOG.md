@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [7.5.0-apiext4.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@7.4.5...@aws-amplify/cli@7.5.0-apiext4.0) (2021-11-21)
+
+
+### Bug Fixes
+
+* headless api migration ([#8992](https://github.com/aws-amplify/amplify-cli/issues/8992)) ([5661e6e](https://github.com/aws-amplify/amplify-cli/commit/5661e6eaa7b397a0d167d8bf6b5412a65c3b7b1d))
+
+
+### Features
+
+* extensibility for Amplify API  ([#8954](https://github.com/aws-amplify/amplify-cli/issues/8954)) ([d8c732c](https://github.com/aws-amplify/amplify-cli/commit/d8c732c305d51066e19739c0ed315a05f8526f33))
+* REST API extensibility ([#8958](https://github.com/aws-amplify/amplify-cli/issues/8958)) ([4efbdc0](https://github.com/aws-amplify/amplify-cli/commit/4efbdc043e234dc012e423c3a582162a4bbb16c2))
+
+
+
+
+
 ## [7.4.5](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@7.4.4...@aws-amplify/cli@7.4.5) (2021-11-21)
 
 **Note:** Version bump only for package @aws-amplify/cli

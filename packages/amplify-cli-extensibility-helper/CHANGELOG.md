@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.3.0-apiext4.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-extensibility-helper@2.2.4...@aws-amplify/cli-extensibility-helper@2.3.0-apiext4.0) (2021-11-21)
+
+
+### Bug Fixes
+
+* error handling, various bugs ([#8976](https://github.com/aws-amplify/amplify-cli/issues/8976)) ([25ea2f1](https://github.com/aws-amplify/amplify-cli/commit/25ea2f15f0e63bb20f4670cb5411615f33ac131a))
+* rest iam policy roles array, bump ext helper types version ([#8983](https://github.com/aws-amplify/amplify-cli/issues/8983)) ([d526298](https://github.com/aws-amplify/amplify-cli/commit/d5262988e59ddb8d004e239358dd533fc05e9cc3))
+* tsconfig changes and renames ([#8975](https://github.com/aws-amplify/amplify-cli/issues/8975)) ([e7fe975](https://github.com/aws-amplify/amplify-cli/commit/e7fe975d8839545d81662fe19786b854a970e72c))
+
+
+### Features
+
+* extensibility for Amplify API  ([#8954](https://github.com/aws-amplify/amplify-cli/issues/8954)) ([d8c732c](https://github.com/aws-amplify/amplify-cli/commit/d8c732c305d51066e19739c0ed315a05f8526f33))
+* REST API extensibility ([#8958](https://github.com/aws-amplify/amplify-cli/issues/8958)) ([4efbdc0](https://github.com/aws-amplify/amplify-cli/commit/4efbdc043e234dc012e423c3a582162a4bbb16c2))
+
+
+
+
+
 ## [2.2.4](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-extensibility-helper@2.2.3...@aws-amplify/cli-extensibility-helper@2.2.4) (2021-11-21)
 
 **Note:** Version bump only for package @aws-amplify/cli-extensibility-helper

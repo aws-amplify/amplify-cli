@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.6.0-apiext4.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@5.5.1...amplify-provider-awscloudformation@5.6.0-apiext4.0) (2021-11-21)
+
+
+### Bug Fixes
+
+* error handling, various bugs ([#8976](https://github.com/aws-amplify/amplify-cli/issues/8976)) ([25ea2f1](https://github.com/aws-amplify/amplify-cli/commit/25ea2f15f0e63bb20f4670cb5411615f33ac131a))
+
+
+### Features
+
+* extensibility for Amplify API  ([#8954](https://github.com/aws-amplify/amplify-cli/issues/8954)) ([d8c732c](https://github.com/aws-amplify/amplify-cli/commit/d8c732c305d51066e19739c0ed315a05f8526f33))
+* REST API extensibility ([#8958](https://github.com/aws-amplify/amplify-cli/issues/8958)) ([4efbdc0](https://github.com/aws-amplify/amplify-cli/commit/4efbdc043e234dc012e423c3a582162a4bbb16c2))
+
+
+
+
+
 ## [5.5.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@5.5.0...amplify-provider-awscloudformation@5.5.1) (2021-11-21)
 
 

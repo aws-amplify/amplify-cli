@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.21.0-apiext4.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-relational-schema-transformer@2.20.2...graphql-relational-schema-transformer@2.21.0-apiext4.0) (2021-11-21)
+
+
+### Features
+
+* extensibility for Amplify API  ([#8954](https://github.com/aws-amplify/amplify-cli/issues/8954)) ([d8c732c](https://github.com/aws-amplify/amplify-cli/commit/d8c732c305d51066e19739c0ed315a05f8526f33))
+
+
+
+
+
 ## [2.20.2](https://github.com/aws-amplify/amplify-cli/compare/graphql-relational-schema-transformer@2.20.1...graphql-relational-schema-transformer@2.20.2) (2021-11-17)
 
 **Note:** Version bump only for package graphql-relational-schema-transformer

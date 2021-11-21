@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.10.0-apiext4.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-searchable-transformer@0.9.5...@aws-amplify/graphql-searchable-transformer@0.10.0-apiext4.0) (2021-11-21)
+
+
+### Features
+
+* extensibility for Amplify API  ([#8954](https://github.com/aws-amplify/amplify-cli/issues/8954)) ([d8c732c](https://github.com/aws-amplify/amplify-cli/commit/d8c732c305d51066e19739c0ed315a05f8526f33))
+
+
+
+
+
 ## [0.9.5](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-searchable-transformer@0.9.4...@aws-amplify/graphql-searchable-transformer@0.9.5) (2021-11-21)
 
 **Note:** Version bump only for package @aws-amplify/graphql-searchable-transformer

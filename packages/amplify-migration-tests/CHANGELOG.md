@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.3.5-apiext4.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@4.3.4...amplify-migration-tests@4.3.5-apiext4.0) (2021-11-21)
+
+
+### Bug Fixes
+
+* headless api migration ([#8992](https://github.com/aws-amplify/amplify-cli/issues/8992)) ([5661e6e](https://github.com/aws-amplify/amplify-cli/commit/5661e6eaa7b397a0d167d8bf6b5412a65c3b7b1d))
+* schema path inconsistencies, guest permissions, e2e ([f62dd02](https://github.com/aws-amplify/amplify-cli/commit/f62dd02845d83472d1b3d1e54e74ac44764a0cb1))
+
+
+
+
+
 ## [4.3.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@4.3.3...amplify-migration-tests@4.3.4) (2021-11-21)
 
 **Note:** Version bump only for package amplify-migration-tests

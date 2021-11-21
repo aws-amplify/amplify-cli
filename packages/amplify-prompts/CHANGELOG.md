@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.6.0-apiext4.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-prompts@1.5.1...amplify-prompts@1.6.0-apiext4.0) (2021-11-21)
+
+
+### Features
+
+* add min / max selection to prompter.pick ([#8971](https://github.com/aws-amplify/amplify-cli/issues/8971)) ([40ab535](https://github.com/aws-amplify/amplify-cli/commit/40ab53587a79139ea5c1aeb9040df524dbc2d89f))
+* REST API extensibility ([#8958](https://github.com/aws-amplify/amplify-cli/issues/8958)) ([4efbdc0](https://github.com/aws-amplify/amplify-cli/commit/4efbdc043e234dc012e423c3a582162a4bbb16c2))
+
+
+
+
+
 ## [1.5.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-prompts@1.3.0...amplify-prompts@1.5.1) (2021-11-15)
 
 **Note:** Version bump only for package amplify-prompts

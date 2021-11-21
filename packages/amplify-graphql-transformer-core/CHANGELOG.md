@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.14.0-apiext4.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-transformer-core@0.13.2...@aws-amplify/graphql-transformer-core@0.14.0-apiext4.0) (2021-11-21)
+
+
+### Bug Fixes
+
+* tsconfig changes and renames ([#8975](https://github.com/aws-amplify/amplify-cli/issues/8975)) ([e7fe975](https://github.com/aws-amplify/amplify-cli/commit/e7fe975d8839545d81662fe19786b854a970e72c))
+
+
+### Features
+
+* extensibility for Amplify API  ([#8954](https://github.com/aws-amplify/amplify-cli/issues/8954)) ([d8c732c](https://github.com/aws-amplify/amplify-cli/commit/d8c732c305d51066e19739c0ed315a05f8526f33))
+
+
+
+
+
 ## [0.13.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-transformer-core@0.13.1...@aws-amplify/graphql-transformer-core@0.13.2) (2021-11-21)
 
 

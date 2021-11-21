@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.1.0-apiext4.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-storage@3.0.5...@aws-amplify/amplify-category-storage@3.1.0-apiext4.0) (2021-11-21)
+
+
+### Features
+
+* REST API extensibility ([#8958](https://github.com/aws-amplify/amplify-cli/issues/8958)) ([4efbdc0](https://github.com/aws-amplify/amplify-cli/commit/4efbdc043e234dc012e423c3a582162a4bbb16c2))
+
+
+
+
+
 ## [3.0.5](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-storage@3.0.4...@aws-amplify/amplify-category-storage@3.0.5) (2021-11-21)
 
 **Note:** Version bump only for package @aws-amplify/amplify-category-storage
