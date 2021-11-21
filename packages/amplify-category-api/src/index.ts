@@ -4,6 +4,7 @@ import {
   AmplifyCategories,
   AmplifySupportedService,
   buildOverrideDir,
+  exitOnNextTick,
   pathManager,
   stateManager,
 } from 'amplify-cli-core';
@@ -18,6 +19,8 @@ import { ApigwStackTransform } from './provider-utils/awscloudformation/cdk-stac
 import { getCfnApiArtifactHandler } from './provider-utils/awscloudformation/cfn-api-artifact-handler';
 import { askAuthQuestions } from './provider-utils/awscloudformation/service-walkthroughs/appSync-walkthrough';
 import { authConfigToAppSyncAuthType } from './provider-utils/awscloudformation/utils/auth-config-to-app-sync-auth-type-bi-di-mapper';
+import { checkAppsyncApiResourceMigration } from './provider-utils/awscloudformation/utils/check-appsync-api-migration';
+import { getAppSyncApiResourceName } from './provider-utils/awscloudformation/utils/getAppSyncApiName';
 export { NETWORK_STACK_LOGICAL_ID } from './category-constants';
 export { addAdminQueriesApi, updateAdminQueriesApi } from './provider-utils/awscloudformation/';
 export { DEPLOYMENT_MECHANISM } from './provider-utils/awscloudformation/base-api-stack';
@@ -235,6 +238,11 @@ export const executeAmplifyHeadlessCommand = async (context: $TSContext, headles
       await getCfnApiArtifactHandler(context).createArtifacts(await validateAddApiRequest(headlessPayload));
       break;
     case 'update':
+      const resourceName = await getAppSyncApiResourceName(context);
+      if (!(await checkAppsyncApiResourceMigration(context, resourceName, true))) {
+        printer.error('Update operations only work on migrated projects. Run "amplify update api" and opt for migration.');
+        exitOnNextTick(0);
+      }
       await getCfnApiArtifactHandler(context).updateArtifacts(await validateUpdateApiRequest(headlessPayload));
       break;
     default:
