@@ -264,9 +264,10 @@ export function updateApiSchema(cwd: string, projectName: string, schemaName: st
 
 export function updateApiWithMultiAuth(cwd: string, settings: any) {
   return new Promise<void>((resolve, reject) => {
-    const chain = spawn(getCLIPath(settings.testingWithLatestCodebase), ['update', 'api'], { cwd, stripColors: true });
+    const testingWithLatestCodebase = settings?.testingWithLatestCodebase ?? false;
+    const chain = spawn(getCLIPath(testingWithLatestCodebase), ['update', 'api'], { cwd, stripColors: true });
     chain.wait('Select from one of the below mentioned services:').sendCarriageReturn();
-    if (settings.testingWithLatestCodebase === true) {
+    if (testingWithLatestCodebase === true) {
       chain.wait('Do you want to migrate api resource').sendConfirmYes();
     }
     chain
@@ -381,9 +382,10 @@ export function updateAPIWithResolutionStrategyWithoutModels(cwd: string, settin
 
 export function updateAPIWithResolutionStrategyWithModels(cwd: string, settings: any) {
   return new Promise<void>((resolve, reject) => {
-    const chain = spawn(getCLIPath(settings.testingWithLatestCodebase), ['update', 'api'], { cwd, stripColors: true });
+    const testingWithLatestCodebase = settings?.testingWithLatestCodebase ?? false;
+    const chain = spawn(getCLIPath(testingWithLatestCodebase), ['update', 'api'], { cwd, stripColors: true });
     chain.wait('Select from one of the below mentioned services:').sendCarriageReturn();
-    if (settings.testingWithLatestCodebase === true) {
+    if (testingWithLatestCodebase === true) {
       chain.wait('Do you want to migrate api resource').sendYes();
     }
     chain
