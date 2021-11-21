@@ -9,7 +9,7 @@ export const getAppSyncApiResourceName = async (context: $TSContext): Promise<st
     const resource = apiResource[0];
     apiResourceName = resource.resourceName;
   } else {
-    throw new Error('AppSync Api does not exists, Do add an api , use a `amplify update api`');
+    throw new Error(`${AmplifySupportedService.APPSYNC} API does not exist. To add an api, use "amplify update api".`);
   }
   return apiResourceName;
 };
