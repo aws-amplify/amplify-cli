@@ -1,8 +1,8 @@
-import { $TSContext } from 'amplify-cli-core';
+import { $TSContext, AmplifySupportedService } from 'amplify-cli-core';
 
 export const getAppSyncApiResourceName = async (context: $TSContext): Promise<string> => {
   const { allResources } = await context.amplify.getResourceStatus();
-  const apiResource = allResources.filter((resource: { service: string }) => resource.service === 'AppSync');
+  const apiResource = allResources.filter((resource: { service: string }) => resource.service === AmplifySupportedService.APPSYNC);
   let apiResourceName;
 
   if (apiResource.length > 0) {
