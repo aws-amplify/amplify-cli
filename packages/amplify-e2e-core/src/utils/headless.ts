@@ -12,8 +12,12 @@ import {
 import execa, { ExecaChildProcess } from 'execa';
 import { getCLIPath } from '..';
 
-export const addHeadlessApi = async (cwd: string, request: AddApiRequest): Promise<ExecaChildProcess<String>> => {
-  return await executeHeadlessCommand(cwd, 'api', 'add', request);
+export const addHeadlessApi = async (cwd: string, request: AddApiRequest, settings?: any): Promise<ExecaChildProcess<String>> => {
+  const allowDestructiveUpdates = settings?.allowDestructiveUpdates ?? false;
+  const testingWithLatestCodebase = settings?.testingWithLatestCodebase ?? false;
+  return executeHeadlessCommand(cwd, 'api', 'add', request, true, allowDestructiveUpdates, {
+    testingWithLatestCodebase: testingWithLatestCodebase,
+  });
 };
 
 export const updateHeadlessApi = async (

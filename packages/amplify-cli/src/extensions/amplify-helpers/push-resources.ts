@@ -57,7 +57,7 @@ export async function pushResources(
   // building all CFN stacks here to get the resource Changes
   await generateDependentResourcesType(context);
   const resourcesToBuild: IAmplifyResource[] = await getResources(context);
-  context.amplify.executeProviderUtils(context, 'awscloudformation', 'buildOverrides', {
+  await context.amplify.executeProviderUtils(context, 'awscloudformation', 'buildOverrides', {
     resourcesToBuild,
     forceCompile: true,
   });
@@ -102,7 +102,9 @@ export async function pushResources(
         }
         if (!retryPush) {
           if (isAuthError) {
-            printer.warn(`You defined authorization rules (@auth) but haven't enabled their authorization providers on your GraphQL API. Run "amplify update api" to configure your GraphQL API to include the appropriate authorization providers as an authorization mode.`);
+            printer.warn(
+              `You defined authorization rules (@auth) but haven't enabled their authorization providers on your GraphQL API. Run "amplify update api" to configure your GraphQL API to include the appropriate authorization providers as an authorization mode.`,
+            );
             printer.error(err.message);
           }
           throw err;
