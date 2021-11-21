@@ -144,7 +144,7 @@ export class ApigwStackTransform {
       {
         value: cdk.Fn.join('', [
           'https://',
-          this.cliInputsState.resourceName,
+          cdk.Fn.ref(this.cliInputsState.resourceName),
           '.execute-api.',
           cdk.Fn.ref('AWS::Region'),
           '.amazonaws.com/',
