@@ -1,11 +1,11 @@
 import { defaultOptions, nspawn as spawn, getCLIPath, AddApiOptions, KEY_DOWN_ARROW, getSchemaPath } from 'amplify-e2e-core';
-import _ from 'lodash';
+import { assign } from 'lodash';
 
 /**
  * Old Dx prior to this api workflow change https://github.com/aws-amplify/amplify-cli/pull/8153
  */
 export function addApiWithoutSchemaOldDx(cwd: string, opts: Partial<AddApiOptions> = {}) {
-  const options = _.assign(defaultOptions, opts);
+  const options = assign(defaultOptions, opts);
   return new Promise<void>((resolve, reject) => {
     spawn(getCLIPath(), ['add', 'api'], { cwd, stripColors: true })
       .wait('Please select from one of the below mentioned services:')
