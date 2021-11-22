@@ -4,6 +4,7 @@ import { category } from '../../../category-constants';
 
 jest.mock('fs-extra');
 jest.mock('amplify-cli-core', () => ({
+  AmplifyCategories: { API: 'api' },
   JSONUtilities: {
     readJson: jest.fn(),
     writeJson: jest.fn(),

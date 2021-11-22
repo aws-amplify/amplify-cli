@@ -15,6 +15,7 @@ import { byValues, printer, prompter } from 'amplify-prompts';
 import inquirer from 'inquirer';
 import os from 'os';
 import { v4 as uuid } from 'uuid';
+import { ADMIN_QUERIES_NAME } from '../../../category-constants';
 import { ApigwInputState } from '../apigw-input-state';
 import { CrudOperation, PermissionSetting } from '../cdk-stack-builder';
 import { getAllDefaults } from '../default-values/apigw-defaults';
@@ -66,7 +67,7 @@ export async function updateWalkthrough(context: $TSContext) {
     updateApiOperation = 'add';
   }
 
-  if (selectedApiName === 'AdminQueries') {
+  if (selectedApiName === ADMIN_QUERIES_NAME) {
     const errMessage = `The Admin Queries API is maintained through the Auth category and should be updated using 'amplify update auth' command`;
     printer.warn(errMessage);
     await context.usageData.emitError(new ResourceDoesNotExistError(errMessage));
@@ -276,8 +277,8 @@ async function askPermissions(
       });
 
       //if single user pool group is selected, convert to array
-      if ( selectedUserPoolGroupList &&  !Array.isArray(selectedUserPoolGroupList)){
-        selectedUserPoolGroupList = [ selectedUserPoolGroupList ];
+      if (selectedUserPoolGroupList && !Array.isArray(selectedUserPoolGroupList)) {
+        selectedUserPoolGroupList = [selectedUserPoolGroupList];
       }
 
       for (const selectedUserPoolGroup of selectedUserPoolGroupList) {

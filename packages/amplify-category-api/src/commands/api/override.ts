@@ -1,5 +1,6 @@
 import {
   $TSContext,
+  $TSObject,
   AmplifyCategories,
   AmplifySupportedService,
   generateOverrideSkeleton,
@@ -8,9 +9,10 @@ import {
 } from 'amplify-cli-core';
 import { printer, prompter } from 'amplify-prompts';
 import * as path from 'path';
-import { checkAppsyncApiResourceMigration } from '../../provider-utils/awscloudformation/utils/check-appsync-api-migration';
+import { ADMIN_QUERIES_NAME } from '../../category-constants';
 import { AdminQueriesProps, ApigwInputState } from '../../provider-utils/awscloudformation/apigw-input-state';
 import { ApigwStackTransform } from '../../provider-utils/awscloudformation/cdk-stack-builder';
+import { checkAppsyncApiResourceMigration } from '../../provider-utils/awscloudformation/utils/check-appsync-api-migration';
 
 export const name = 'override';
 
@@ -70,12 +72,19 @@ export const run = async (context: $TSContext) => {
     // Migration logic goes in here
     const apigwInputState = new ApigwInputState(context, selectedResourceName);
     if (!apigwInputState.cliInputsFileExists()) {
-      if (selectedResourceName === 'AdminQueries') {
-        const { dependsOn } = amplifyMeta[AmplifyCategories.API][selectedResourceName];
+      if (selectedResourceName === ADMIN_QUERIES_NAME) {
+        const { dependsOn }: { dependsOn: $TSObject[] } = amplifyMeta[AmplifyCategories.API][selectedResourceName];
+        if (!Array.isArray(dependsOn) || dependsOn.length === 0) {
+          throw new Error(`Invalid dependsOn entry found in amplify-meta.json for "${ADMIN_QUERIES_NAME}"`);
+        }
+
+        const getResourceNameFromDependsOn = (categoryName: string, dependsOn: $TSObject[]) =>
+          dependsOn.filter(entry => entry.category === categoryName)[0].resourceName;
+
         const props: AdminQueriesProps = {
           apiName: selectedResourceName,
-          authResourceName: dependsOn.filter(entry => entry.category === AmplifyCategories.AUTH)[0].resourceName,
-          functionName: dependsOn.filter(entry => entry.category === AmplifyCategories.FUNCTION)[0].resourceName,
+          authResourceName: getResourceNameFromDependsOn(AmplifyCategories.AUTH, dependsOn),
+          functionName: getResourceNameFromDependsOn(AmplifyCategories.FUNCTION, dependsOn),
           dependsOn: dependsOn,
         };
         await apigwInputState.migrateAdminQueries(props);

@@ -4,6 +4,7 @@ import * as lambda from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
 import { $TSObject, JSONUtilities } from 'amplify-cli-core';
 import _ from 'lodash';
+import { ADMIN_QUERIES_NAME } from '../../../category-constants';
 import { AmplifyApigwResourceTemplate, ApigwInputs, ApigwPathPolicy, Path, PermissionSetting } from './types';
 
 const CFN_TEMPLATE_FORMAT_VERSION = '2010-09-09';
@@ -250,9 +251,9 @@ export class AmplifyApigwResourceStack extends cdk.Stack implements AmplifyApigw
     const addedFunctionPermissions = new Set();
     for (const [pathName, path] of Object.entries(this._props.paths)) {
       let lambdaPermissionLogicalId: string;
-      if (resourceName === 'AdminQueries') {
+      if (resourceName === ADMIN_QUERIES_NAME) {
         this.paths[`/{proxy+}`] = getAdminQueriesPathObject(path.lambdaFunction);
-        lambdaPermissionLogicalId = 'AdminQueriesAPIGWPolicyForLambda';
+        lambdaPermissionLogicalId = `${ADMIN_QUERIES_NAME}APIGWPolicyForLambda`;
       } else {
         this.paths[pathName] = createPathObject(path);
         this.paths[`${pathName}/{proxy+}`] = createPathObject(path);
