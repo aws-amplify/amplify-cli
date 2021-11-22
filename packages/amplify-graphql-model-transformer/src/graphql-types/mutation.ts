@@ -2,7 +2,7 @@ import { TransformerTransformSchemaStepContextProvider } from '@aws-amplify/grap
 import { DocumentNode, InputObjectTypeDefinitionNode, ObjectTypeDefinitionNode } from 'graphql';
 import { ModelResourceIDs, toPascalCase } from 'graphql-transformer-common';
 import { ModelDirectiveConfiguration } from '../graphql-model-transformer';
-import { InputFieldWrapper, InputObjectDefinitionWrapper, ObjectDefinitionWrapper } from '../wrappers/object-definition-wrapper';
+import { InputFieldWrapper, InputObjectDefinitionWrapper, ObjectDefinitionWrapper } from '@aws-amplify/graphql-transformer-core';
 import { makeConditionFilterInput } from './common';
 
 /**
@@ -16,6 +16,7 @@ export const makeUpdateInputField = (
   modelDirectiveConfig: ModelDirectiveConfiguration,
   knownModelTypes: Set<string>,
   document: DocumentNode,
+  isSyncEnabled: boolean,
 ): InputObjectTypeDefinitionNode => {
   // sync related things
   const objectWrapped = new ObjectDefinitionWrapper(obj);
@@ -44,9 +45,7 @@ export const makeUpdateInputField = (
   input.fields.forEach(f => f.makeNullable());
 
   // Add id field and make it optional
-  if (!hasIdField) {
-    input.addField(InputFieldWrapper.create('id', 'ID', false));
-  } else {
+  if (hasIdField) {
     const idField = input.fields.find(f => f.name === 'id');
     if (idField) {
       idField.makeNonNullable();
@@ -62,6 +61,11 @@ export const makeUpdateInputField = (
       }
     }
   }
+
+  if (isSyncEnabled) {
+    input.addField(InputFieldWrapper.create('_version', 'Int', true));
+  }
+
   return input.serialize();
 };
 
@@ -69,11 +73,16 @@ export const makeUpdateInputField = (
  * Generate input used for delete mutation
  * @param type GraphQL type with model directive
  */
-export const makeDeleteInputField = (type: ObjectTypeDefinitionNode): InputObjectTypeDefinitionNode => {
+export const makeDeleteInputField = (type: ObjectTypeDefinitionNode, isSyncEnabled: boolean): InputObjectTypeDefinitionNode => {
   const name = toPascalCase(['Delete', type.name.value, 'input']);
   const inputField = InputObjectDefinitionWrapper.create(name);
   const idField = InputFieldWrapper.create('id', 'ID', false, false);
   inputField.addField(idField);
+
+  if (isSyncEnabled) {
+    inputField.addField(InputFieldWrapper.create('_version', 'Int', true));
+  }
+
   return inputField.serialize();
 };
 
@@ -88,6 +97,7 @@ export const makeCreateInputField = (
   modelDirectiveConfig: ModelDirectiveConfiguration,
   knownModelTypes: Set<string>,
   document: DocumentNode,
+  isSyncEnabled: boolean,
 ): InputObjectTypeDefinitionNode => {
   // sync related things
   const objectWrapped = new ObjectDefinitionWrapper(obj);
@@ -115,7 +125,7 @@ export const makeCreateInputField = (
 
   // Add id field and make it optional
   if (!hasIdField) {
-    input.addField(InputFieldWrapper.create('id', 'ID'));
+    input.addField(InputFieldWrapper.create('id', 'ID', true));
   } else {
     const idField = input.fields.find(f => f.name === 'id');
     if (idField) {
@@ -131,6 +141,11 @@ export const makeCreateInputField = (
       }
     }
   }
+
+  if (isSyncEnabled) {
+    input.addField(InputFieldWrapper.create('_version', 'Int', true));
+  }
+
   return input.serialize();
 };
 

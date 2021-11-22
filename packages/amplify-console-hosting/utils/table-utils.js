@@ -19,9 +19,10 @@ async function generateTableContentForApp(context, appId) {
         .promise();
 
       for (const branch of branches) {
-        const { branchName } = branch;
+        const { branchName, displayName } = branch;
+        const validDisplayName = displayName || branchName;
         domainMap[branchName] = [];
-        domainMap[branchName].push(`https://${branchName}.${appId}.amplifyapp.com`);
+        domainMap[branchName].push(`https://${validDisplayName}.${appId}.amplifyapp.com`);
       }
     } while (nextToken != null);
 

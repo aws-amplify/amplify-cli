@@ -3,14 +3,20 @@ import { InvalidDirectiveError } from '@aws-amplify/graphql-transformer-core';
 import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { DirectiveNode, EnumTypeDefinitionNode, FieldDefinitionNode, Kind, ObjectTypeDefinitionNode, StringValueNode } from 'graphql';
 import { getBaseType, isScalarOrEnum, toCamelCase } from 'graphql-transformer-common';
-import { BelongsToDirectiveConfiguration, HasManyDirectiveConfiguration, HasOneDirectiveConfiguration } from './types';
+import {
+  BelongsToDirectiveConfiguration,
+  HasManyDirectiveConfiguration,
+  HasOneDirectiveConfiguration,
+  ManyToManyDirectiveConfiguration,
+} from './types';
 
 export function getRelatedTypeIndex(
   config: HasOneDirectiveConfiguration,
   ctx: TransformerContextProvider,
   indexName?: string,
 ): FieldDefinitionNode[] {
-  const { directiveName, field, fieldNodes, relatedType } = config;
+  const { directiveName, field, fieldNodes } = config;
+  const relatedType = ctx.output.getType(config.relatedType.name.value) as any;
   const fieldMap = new Map<string, FieldDefinitionNode>();
   let partitionFieldName;
   let partitionField;
@@ -103,7 +109,7 @@ export function getModelDirective(objectType: ObjectTypeDefinitionNode) {
 }
 
 export function validateModelDirective(
-  config: HasManyDirectiveConfiguration | HasOneDirectiveConfiguration | BelongsToDirectiveConfiguration,
+  config: HasManyDirectiveConfiguration | HasOneDirectiveConfiguration | BelongsToDirectiveConfiguration | ManyToManyDirectiveConfiguration,
 ) {
   if (!getModelDirective(config.object)) {
     throw new InvalidDirectiveError(`@${config.directiveName} must be on an @model object type field.`);

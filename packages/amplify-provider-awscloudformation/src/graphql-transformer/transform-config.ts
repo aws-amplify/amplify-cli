@@ -16,7 +16,6 @@ export interface ProjectOptions {
   minify?: boolean;
 }
 
-
 export const TRANSFORM_CONFIG_FILE_NAME = `transform.conf.json`;
 
 /**
@@ -26,9 +25,7 @@ export const TRANSFORM_CONFIG_FILE_NAME = `transform.conf.json`;
 
 export async function loadConfig(projectDir: string): Promise<TransformConfig> {
   // Initialize the config always with the latest version, other members are optional for now.
-  let config: TransformConfig = {
-    schema: ''
-  };
+  let config: TransformConfig = {};
   try {
     const configPath = path.join(projectDir, TRANSFORM_CONFIG_FILE_NAME);
     const configExists = fs.existsSync(configPath);
@@ -53,7 +50,6 @@ export async function writeConfig(projectDir: string, config: TransformConfig): 
  * user defined configuration.
  */
 
-
 export async function loadProject(projectDirectory: string, opts?: ProjectOptions): Promise<TransformerProjectConfig> {
   // Schema
   const schema = await readSchema(projectDirectory);
@@ -75,7 +71,7 @@ export async function loadProject(projectDirectory: string, opts?: ProjectOption
     }
   }
 
-  // load pipeline functions
+  // load pipeline functions - deprecated
   const pipelineFunctions = {};
   if (!(opts && opts.disablePipelineFunctionOverrides === true)) {
     const pipelineFunctionDirectory = path.join(projectDirectory, 'pipelineFunctions');

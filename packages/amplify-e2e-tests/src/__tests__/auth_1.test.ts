@@ -12,6 +12,8 @@ import {
   initIosProjectWithProfile,
   getAwsAndroidConfig,
   initAndroidProjectWithProfile,
+  getCLIInputs,
+  setCLIInputs,
 } from 'amplify-e2e-core';
 import { addAuthWithDefault, runAmplifyAuthConsole, removeAuthWithDefault } from 'amplify-e2e-core';
 import { createNewProjectDir, deleteProjectDir, getProjectMeta, getUserPool } from 'amplify-e2e-core';
@@ -55,9 +57,9 @@ describe('amplify add auth...', () => {
     expect(clients[0].UserPoolClient.ClientSecret).toBeUndefined();
 
     //update parameter to generate client Secret
-    const parameters = getParameters(projRoot, 'auth', id);
-    parameters.userpoolClientGenerateSecret = true;
-    setParameters(projRoot, 'auth', id, parameters);
+    const parameters = getCLIInputs(projRoot, 'auth', id);
+    parameters.cognitoConfig.userpoolClientGenerateSecret = true;
+    setCLIInputs(projRoot, 'auth', id, parameters);
 
     await amplifyPushAuth(projRoot);
 
@@ -84,9 +86,9 @@ describe('amplify add auth...', () => {
     let clients = await getUserPoolClients(authMeta.output.UserPoolId, clientIds, meta.providers.awscloudformation.Region);
 
     expect(clients[0].UserPoolClient.ClientSecret).toBeUndefined();
-    const parameters = getParameters(projRoot, 'auth', id);
-    parameters.userpoolClientGenerateSecret = true;
-    setParameters(projRoot, 'auth', id, parameters);
+    const parameters = getCLIInputs(projRoot, 'auth', id);
+    parameters.cognitoConfig.userpoolClientGenerateSecret = true;
+    setCLIInputs(projRoot, 'auth', id, parameters);
 
     await amplifyPushAuth(projRoot);
 
@@ -109,34 +111,5 @@ describe('amplify add auth...', () => {
     const id = Object.keys(meta.auth).map(key => meta.auth[key])[0].output.UserPoolId;
     const userPool = await getUserPool(id, meta.providers.awscloudformation.Region);
     expect(userPool.UserPool).toBeDefined();
-  });
-
-  it('...should init a project and add auth with defaults and then remove auth and add another auth and push', async () => {
-    await initJSProjectWithProfile(projRoot, defaultsSettings);
-    await addAuthWithDefault(projRoot, {});
-    await amplifyPushAuth(projRoot);
-    await removeAuthWithDefault(projRoot);
-    await addAuthWithDefault(projRoot, {});
-    await amplifyPushAuth(projRoot);
-  });
-
-  it('...should init a Flutter project and add auth with defaults', async () => {
-    await initFlutterProjectWithProfile(projRoot, defaultsSettings);
-    await addAuthWithDefault(projRoot, {});
-    await amplifyPushAuth(projRoot);
-    const meta = getProjectMeta(projRoot);
-    const id = Object.keys(meta.auth).map(key => meta.auth[key])[0].output.UserPoolId;
-    const userPool = await getUserPool(id, meta.providers.awscloudformation.Region);
-    expect(userPool.UserPool).toBeDefined();
-    expect(fs.existsSync(path.join(projRoot, 'lib', 'amplifyconfiguration.dart'))).toBe(true);
-  });
-
-  it('...should init a project and add auth with defaults and then remove auth and add another auth and push', async () => {
-    await initFlutterProjectWithProfile(projRoot, defaultsSettings);
-    await addAuthWithDefault(projRoot, {});
-    await amplifyPushAuth(projRoot);
-    await removeAuthWithDefault(projRoot);
-    await addAuthWithDefault(projRoot, {});
-    await amplifyPushAuth(projRoot);
   });
 });

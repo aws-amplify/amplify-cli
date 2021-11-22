@@ -8,6 +8,18 @@ const providerName = 'awscloudformation';
 actions.keys.j = 'down';
 actions.keys.k = 'up';
 
+const getAdminUIName = async context => {
+  let adminUiName = 'Amplify admin UI';
+  const promises = context.runtime.plugins.map(async plugin => {
+    if (plugin.commands.includes('overrideAdminUiName')) {
+      adminUiName = await context.amplify.invokePluginMethod(context, plugin.name, undefined, 'overrideAdminUiName', [context]);
+    }
+  });
+
+  await Promise.all(promises);
+  return adminUiName;
+};
+
 export const run = async context => {
   let consoleUrl = getDefaultURL();
 
@@ -25,6 +37,7 @@ export const run = async context => {
     const { envName } = localEnvInfo;
     const { Region, AmplifyAppId } = teamProviderInfo[envName][providerName];
 
+    let adminUiName = await getAdminUIName(context);
     if (envName && AmplifyAppId) {
       consoleUrl = constructStatusURL(Region, AmplifyAppId, envName);
       const providerPlugin = await import(context.amplify.getProviderPlugins(context).awscloudformation);
@@ -34,8 +47,8 @@ export const run = async context => {
           name: 'choice',
           message: 'Which site do you want to open?',
           choices: [
-            { name: 'Admin', message: 'Amplify admin UI' },
-            { name: 'Console', message: 'Amplify console' },
+            { name: 'Admin', message: adminUiName },
+            { name: 'Console', message: 'AWS console' },
           ],
           // actions is not part of the TS interface but it's part of the JS API
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment

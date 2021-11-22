@@ -8,6 +8,68 @@ export class IAMHelper {
     });
   }
 
+  /**
+   * Creates auth and unauth roles
+   */
+  async createRoles(authRoleName: string, unauthRoleName: string): Promise<{ authRole: IAM.Role; unauthRole: IAM.Role }> {
+    const authRole = await this.client
+      .createRole({
+        RoleName: authRoleName,
+        AssumeRolePolicyDocument: `{
+        "Version": "2012-10-17",
+        "Statement": [
+          {
+            "Effect": "Allow",
+            "Principal": {
+              "Federated": "cognito-identity.amazonaws.com"
+            },
+            "Action": "sts:AssumeRoleWithWebIdentity"
+          }
+        ]
+      }`,
+      })
+      .promise();
+    const unauthRole = await this.client
+      .createRole({
+        RoleName: unauthRoleName,
+        AssumeRolePolicyDocument: `{
+        "Version": "2012-10-17",
+        "Statement": [
+          {
+            "Effect": "Allow",
+            "Principal": {
+              "Federated": "cognito-identity.amazonaws.com"
+            },
+            "Action": "sts:AssumeRoleWithWebIdentity"
+          }
+        ]
+      }`,
+      })
+      .promise();
+
+    return { authRole: authRole.Role, unauthRole: unauthRole.Role };
+  }
+  async createRoleForCognitoGroup(name: string): Promise<IAM.Role> {
+    const role = await this.client
+      .createRole({
+        RoleName: name,
+        AssumeRolePolicyDocument: `{
+        "Version": "2012-10-17",
+        "Statement": [
+          {
+            "Effect": "Allow",
+            "Principal": {
+              "Federated": "cognito-identity.amazonaws.com"
+            },
+            "Action": "sts:AssumeRoleWithWebIdentity"
+          }
+        ]
+      }`,
+      })
+      .promise();
+    return role.Role;
+  }
+
   async createLambdaExecutionRole(name: string) {
     return await this.client
       .createRole({

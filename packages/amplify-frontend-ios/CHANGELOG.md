@@ -3,6 +3,84 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.3.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-ios@3.3.2...amplify-frontend-ios@3.3.3) (2021-11-21)
+
+**Note:** Version bump only for package amplify-frontend-ios
+
+
+
+
+
+## [3.3.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-ios@3.3.1...amplify-frontend-ios@3.3.2) (2021-11-20)
+
+**Note:** Version bump only for package amplify-frontend-ios
+
+
+
+
+
+## [3.3.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-ios@3.3.0...amplify-frontend-ios@3.3.1) (2021-11-17)
+
+**Note:** Version bump only for package amplify-frontend-ios
+
+
+
+
+
+# [3.3.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-ios@2.20.18...amplify-frontend-ios@3.3.0) (2021-11-15)
+
+
+### Features
+
+* amplify export ([fd28279](https://github.com/aws-amplify/amplify-cli/commit/fd282791167177d72a42784b5de4f2fd461d590a)), closes [#8547](https://github.com/aws-amplify/amplify-cli/issues/8547) [#8488](https://github.com/aws-amplify/amplify-cli/issues/8488) [#8486](https://github.com/aws-amplify/amplify-cli/issues/8486) [#8547](https://github.com/aws-amplify/amplify-cli/issues/8547) [#8488](https://github.com/aws-amplify/amplify-cli/issues/8488) [#8486](https://github.com/aws-amplify/amplify-cli/issues/8486)
+
+
+
+
+
+# [3.0.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-ios@2.20.18...amplify-frontend-ios@3.0.0) (2021-11-13)
+
+
+### Features
+
+* amplify export ([fd28279](https://github.com/aws-amplify/amplify-cli/commit/fd282791167177d72a42784b5de4f2fd461d590a)), closes [#8547](https://github.com/aws-amplify/amplify-cli/issues/8547) [#8488](https://github.com/aws-amplify/amplify-cli/issues/8488) [#8486](https://github.com/aws-amplify/amplify-cli/issues/8486) [#8547](https://github.com/aws-amplify/amplify-cli/issues/8547) [#8488](https://github.com/aws-amplify/amplify-cli/issues/8488) [#8486](https://github.com/aws-amplify/amplify-cli/issues/8486)
+
+
+
+
+
+## [2.20.18](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-ios@2.20.17...amplify-frontend-ios@2.20.18) (2021-11-11)
+
+**Note:** Version bump only for package amplify-frontend-ios
+
+
+
+
+
+## [2.20.17](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-ios@2.20.16...amplify-frontend-ios@2.20.17) (2021-10-10)
+
+**Note:** Version bump only for package amplify-frontend-ios
+
+
+
+
+
+## [2.20.16](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-ios@2.20.15...amplify-frontend-ios@2.20.16) (2021-10-06)
+
+**Note:** Version bump only for package amplify-frontend-ios
+
+
+
+
+
+## [2.20.15](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-ios@2.20.14...amplify-frontend-ios@2.20.15) (2021-09-27)
+
+**Note:** Version bump only for package amplify-frontend-ios
+
+
+
+
+
 ## [2.20.14](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-ios@2.20.13...amplify-frontend-ios@2.20.14) (2021-09-18)
 
 **Note:** Version bump only for package amplify-frontend-ios

@@ -54,7 +54,7 @@ export async function generateContainersArtifacts(
     providers: { [cloudformationProviderName]: provider },
   } = context.amplify.getProjectMeta();
 
-  const { StackName: envName, DeploymentBucketName: deploymentBucketName } = provider;
+  const { StackName: envName } = provider;
 
   const {
     category: categoryName,
@@ -78,7 +78,6 @@ export async function generateContainersArtifacts(
     srcPath,
     askForExposedContainer,
   );
-
   const repositories = await context.amplify.executeProviderUtils(context, 'awscloudformation', 'describeEcrRepositories');
 
   const existingEcrRepositories: Set<string> = new Set(
@@ -88,7 +87,6 @@ export async function generateContainersArtifacts(
   );
 
   const stack = new EcsStack(undefined, 'ContainersStack', {
-    envName,
     categoryName,
     apiName: resourceName,
     taskPorts: containersPorts,
@@ -97,11 +95,11 @@ export async function generateContainersArtifacts(
     taskEnvironmentVariables: environmentMap,
     gitHubSourceActionInfo: gitHubInfo,
     deploymentMechanism,
-    deploymentBucketName,
     containers,
     isInitialDeploy,
     desiredCount,
     restrictAccess,
+    currentStackName: envName,
     apiType,
     exposedContainer,
     secretsArns,
@@ -290,9 +288,7 @@ export async function processDockerConfig(context: any, resource: ApiResource, s
       secretsArns.set(secretName, secretArn);
     }
   } else {
-    const { cfnTemplate } = await readCFNTemplate(
-      path.join(pathManager.getBackendDirPath(), category, resourceName, cfnFileName(resourceName)),
-    );
+    const { cfnTemplate } = readCFNTemplate(path.join(pathManager.getBackendDirPath(), category, resourceName, cfnFileName(resourceName)));
     setExistingSecretArns(secretsArns, cfnTemplate);
   }
 

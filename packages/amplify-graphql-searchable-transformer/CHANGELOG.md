@@ -3,6 +3,106 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.9.5](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-searchable-transformer@0.9.4...@aws-amplify/graphql-searchable-transformer@0.9.5) (2021-11-21)
+
+**Note:** Version bump only for package @aws-amplify/graphql-searchable-transformer
+
+
+
+
+
+## [0.9.4](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-searchable-transformer@0.9.2...@aws-amplify/graphql-searchable-transformer@0.9.4) (2021-11-19)
+
+
+### Bug Fixes
+
+* **graphql:** use output type definition to generate searchable filter ([#8934](https://github.com/aws-amplify/amplify-cli/issues/8934)) ([ff214be](https://github.com/aws-amplify/amplify-cli/commit/ff214befba58a1cc8ce0a0908b3b1581ae3fffe4))
+
+
+
+
+
+## [0.9.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-searchable-transformer@0.9.2...@aws-amplify/graphql-searchable-transformer@0.9.3) (2021-11-19)
+
+
+### Bug Fixes
+
+* **graphql:** use output type definition to generate searchable filter ([#8934](https://github.com/aws-amplify/amplify-cli/issues/8934)) ([ff214be](https://github.com/aws-amplify/amplify-cli/commit/ff214befba58a1cc8ce0a0908b3b1581ae3fffe4))
+
+
+
+
+
+## [0.9.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-searchable-transformer@0.9.1...@aws-amplify/graphql-searchable-transformer@0.9.2) (2021-11-17)
+
+
+### Bug Fixes
+
+* append apiKey if global auth is enabled and its not default auth ([#8843](https://github.com/aws-amplify/amplify-cli/issues/8843)) ([3aadcde](https://github.com/aws-amplify/amplify-cli/commit/3aadcde2225f0ede5c5d94c2a4cd9d1afece5288))
+* **graphql:** add enum to aggregate field type ([#8846](https://github.com/aws-amplify/amplify-cli/issues/8846)) ([4e919e7](https://github.com/aws-amplify/amplify-cli/commit/4e919e7e6ae29d1545b403b31f30e21b6aebfa26))
+
+
+
+
+
+## [0.9.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-searchable-transformer@0.7.0...@aws-amplify/graphql-searchable-transformer@0.9.1) (2021-11-15)
+
+**Note:** Version bump only for package @aws-amplify/graphql-searchable-transformer
+
+
+
+
+
+# [0.7.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-searchable-transformer@0.6.3...@aws-amplify/graphql-searchable-transformer@0.7.0) (2021-11-11)
+
+
+### Bug Fixes
+
+* [@auth](https://github.com/auth) fix relational auth, authv2 e2e with utils and fixes ([#8450](https://github.com/aws-amplify/amplify-cli/issues/8450)) ([aa320cd](https://github.com/aws-amplify/amplify-cli/commit/aa320cd2414665a484438f0764cf68fd78caa26a))
+* add field auth on aggregation queries ([#8508](https://github.com/aws-amplify/amplify-cli/issues/8508)) ([c0fa85a](https://github.com/aws-amplify/amplify-cli/commit/c0fa85a87230d631ffaf376f18f4fc3c4ec9a1f9))
+* **graphql-model-transformer:** override resource logical id to fix v1 to v2 transformer migration ([#8597](https://github.com/aws-amplify/amplify-cli/issues/8597)) ([e3a2afb](https://github.com/aws-amplify/amplify-cli/commit/e3a2afbbed6e97f143fc7c83064e2193f4c91bdd))
+* **graphql:** change aggregate field type to enum ([#8484](https://github.com/aws-amplify/amplify-cli/issues/8484)) ([78d1e43](https://github.com/aws-amplify/amplify-cli/commit/78d1e43fb88dcb9d4924d0acf126910a5debdfa0))
+* **graphql:** searchable default sort direction ([#8481](https://github.com/aws-amplify/amplify-cli/issues/8481)) ([12c1afa](https://github.com/aws-amplify/amplify-cli/commit/12c1afa80ca7d55337cf492c4822d4ab0f31565f))
+* searchable fix and migration e2e tests ([#8666](https://github.com/aws-amplify/amplify-cli/issues/8666)) ([d5f9397](https://github.com/aws-amplify/amplify-cli/commit/d5f9397fa860f32e748f6f880929b1e5856a68e2))
+* update searchable agg query to work in sandbox mode ([#8560](https://github.com/aws-amplify/amplify-cli/issues/8560)) ([8a12868](https://github.com/aws-amplify/amplify-cli/commit/8a1286897a2baa10fca0d011433dec218126d1a4))
+
+
+### Features
+
+* generate list types as non-null ([#8166](https://github.com/aws-amplify/amplify-cli/issues/8166)) ([93786c1](https://github.com/aws-amplify/amplify-cli/commit/93786c13ef04c72748ca32a1ef7878c0e6b5b129))
+
+
+
+
+
+## [0.6.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-searchable-transformer@0.6.2...@aws-amplify/graphql-searchable-transformer@0.6.3) (2021-10-10)
+
+**Note:** Version bump only for package @aws-amplify/graphql-searchable-transformer
+
+
+
+
+
+## [0.6.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-searchable-transformer@0.6.1...@aws-amplify/graphql-searchable-transformer@0.6.2) (2021-10-01)
+
+**Note:** Version bump only for package @aws-amplify/graphql-searchable-transformer
+
+
+
+
+
+## [0.6.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-searchable-transformer@0.6.0...@aws-amplify/graphql-searchable-transformer@0.6.1) (2021-09-27)
+
+
+### Bug Fixes
+
+* **graphql-model-transformer:** [@model](https://github.com/model) conflict resolution ([#8035](https://github.com/aws-amplify/amplify-cli/issues/8035)) ([f3bdc4a](https://github.com/aws-amplify/amplify-cli/commit/f3bdc4ac1fcf596f634d9d2e968785e76f7b138c))
+* **graphql-model-transformer:** iam role name does not exceed 64 characters ([#8244](https://github.com/aws-amplify/amplify-cli/issues/8244)) ([812a671](https://github.com/aws-amplify/amplify-cli/commit/812a67163d6dd33160bf7ace9afd538c83a7af1a))
+
+
+
+
+
 # [0.6.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-searchable-transformer@0.5.1...@aws-amplify/graphql-searchable-transformer@0.6.0) (2021-09-14)
 
 

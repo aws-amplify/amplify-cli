@@ -23,7 +23,11 @@ export * from './banner-message';
 export * from './cliGetCategories';
 export * from './cliRemoveResourcePrompt';
 export * from './cliViewAPI';
+export * from './overrides-manager';
 export * from './hooks';
+export * from './cliConstants';
+export * from './category-interfaces';
+export * from './customPoliciesUtils';
 
 // Temporary types until we can finish full type definition across the whole CLI
 
@@ -49,6 +53,7 @@ export type $TSContext = {
   newUserInfo?: $TSAny;
   filesystem: IContextFilesystem;
   template: IContextTemplate;
+  updatingAuth: $TSAny;
 };
 
 export type CategoryName = string;
@@ -56,7 +61,7 @@ export type ResourceName = string;
 
 export type IContextPrint = {
   /**
-   * @deprecated Use printer.info from amplify-prommpts instead
+   * @deprecated Use printer.info from amplify-prompts instead
    */
   info: (message: string) => void;
   /**
@@ -72,7 +77,7 @@ export type IContextPrint = {
    */
   error: (message: string) => void;
   /**
-   * @deprecated Use printer.success from amplify-prommpts instead
+   * @deprecated Use printer.success from amplify-prompts instead
    */
   success: (message: string) => void;
   /**
@@ -201,6 +206,15 @@ export interface AmplifyProjectConfig {
   providers: string[];
 }
 
+/**
+ * higher level context object that could be used in plugins
+ */
+export interface ProviderContext {
+  provider: string;
+  service: string;
+  projectName: string;
+}
+
 export type $TSCopyJob = any;
 
 // Temporary interface until Context refactor
@@ -242,9 +256,10 @@ interface AmplifyToolkit {
     category?: string,
     resourceName?: string,
     filteredResources?: { category: string; resourceName: string }[],
+    rebuild?: boolean,
   ) => $TSAny;
   storeCurrentCloudBackend: () => $TSAny;
-  readJsonFile: () => $TSAny;
+  readJsonFile: (fileName: string) => $TSAny;
   removeDeploymentSecrets: (context: $TSContext, category: string, resource: string) => void;
   removeResource: (
     context: $TSContext,
@@ -298,9 +313,9 @@ interface AmplifyToolkit {
   deleteTrigger: () => $TSAny;
   deleteAllTriggers: () => $TSAny;
   deleteDeselectedTriggers: () => $TSAny;
-  dependsOnBlock: () => $TSAny;
+  dependsOnBlock: (context: $TSContext, dependsOnKeys: string[], service: string) => $TSAny;
   getTriggerMetadata: () => $TSAny;
-  getTriggerPermissions: () => $TSAny;
+  getTriggerPermissions: (context: $TSContext, triggers: any, category: string, resourceName: string) => $TSAny;
   getTriggerEnvVariables: () => $TSAny;
   getTriggerEnvInputs: () => $TSAny;
   getUserPoolGroupList: () => $TSAny[];
@@ -310,9 +325,7 @@ interface AmplifyToolkit {
   leaveBreadcrumbs: (category: string, resourceName: string, breadcrumbs: unknown) => void;
   readBreadcrumbs: (category: string, resourceName: string) => $TSAny;
   loadRuntimePlugin: (context: $TSContext, pluginId: string) => Promise<$TSAny>;
-  getImportedAuthProperties: (
-    context: $TSContext,
-  ) => {
+  getImportedAuthProperties: (context: $TSContext) => {
     imported: boolean;
     userPoolId?: string;
     authRoleArn?: string;

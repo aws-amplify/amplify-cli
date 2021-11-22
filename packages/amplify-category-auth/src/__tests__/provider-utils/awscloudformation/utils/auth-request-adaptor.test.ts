@@ -56,6 +56,7 @@ describe('get add auth request adaptor', () => {
     expect(getAddAuthRequestAdaptor('javascript')(addAuthRequest)).toMatchSnapshot();
   });
   it('translates request without aliasAttributes', () => {
+    FeatureFlags.getBoolean = () => true;
     const addAuthRequest: AddAuthRequest = {
       version: 1,
       resourceName: 'myTestAuth',

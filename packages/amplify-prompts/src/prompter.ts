@@ -6,6 +6,7 @@ import * as actions from 'enquirer/lib/combos';
 import { isYes } from './flags';
 import { Validator } from './validators';
 import { printer } from './printer';
+import chalk from 'chalk';
 
 /**
  * Provides methods for collecting interactive customer responses from the shell
@@ -89,9 +90,9 @@ class AmplifyPrompter implements Prompter {
       if (Array.isArray(result)) {
         return (await Promise.all(result.map(async part => (opts.transform as Function)(part) as T))) as PromptReturn<RS, T>;
       }
-      return (opts.transform(result as string) as unknown) as PromptReturn<RS, T>;
+      return opts.transform(result as string) as unknown as PromptReturn<RS, T>;
     } else {
-      return (result as unknown) as PromptReturn<RS, T>;
+      return result as unknown as PromptReturn<RS, T>;
     }
   };
 
@@ -104,11 +105,14 @@ class AmplifyPrompter implements Prompter {
    * @param choices The selection set to choose from
    * @param options Control prompt settings. options.multiSelect = true is required if PickType = 'many'
    * @returns The item(s) selected. If PickType = 'one' this is a single value. If PickType = 'many', this is an array
+   *
+   * Note: due to this TS issue https://github.com/microsoft/TypeScript/issues/30611 type T cannot be an enum.
+   * If using an enum as the value type for a selection use T = string and assert the return type as the enum type.
    */
   pick = async <RS extends ReturnSize = 'one', T = string>(
     message: string,
     choices: Choices<T>,
-    ...options: MaybeOptionalPickOptions<RS>
+    ...options: MaybeOptionalPickOptions<RS, T>
   ): Promise<PromptReturn<RS, T>> => {
     // some choices must be provided
     if (choices?.length === 0) {
@@ -120,8 +124,13 @@ class AmplifyPrompter implements Prompter {
     // map string[] choices into GenericChoice<T>[]
     const genericChoices: GenericChoice<T>[] =
       typeof choices[0] === 'string'
-        ? (((choices as string[]).map(choice => ({ name: choice, value: choice })) as unknown) as GenericChoice<T>[]) // this assertion is safe because the choice array can only be a string[] if the generic type is a string
+        ? ((choices as string[]).map(choice => ({ name: choice, value: choice })) as unknown as GenericChoice<T>[]) // this assertion is safe because the choice array can only be a string[] if the generic type is a string
         : (choices as GenericChoice<T>[]);
+
+    const initialIndexes = initialOptsToIndexes(
+      genericChoices.map(choice => choice.value),
+      opts?.initial,
+    );
 
     // enquirer requires all choice values be strings, so set up a mapping of string => T
     // and format choices to conform to enquirer's interface
@@ -138,15 +147,19 @@ class AmplifyPrompter implements Prompter {
     if (choices?.length === 1) {
       this.print.info(`Only one option for [${message}]. Selecting [${result}].`);
     } else if (isYes) {
-      if (opts?.initial === undefined || (Array.isArray(opts?.initial) && opts?.initial.length === 0)) {
+      if (initialIndexes === undefined || (Array.isArray(initialIndexes) && initialIndexes.length === 0)) {
         throw new Error(`Cannot prompt for [${message}] when '--yes' flag is set`);
       }
-      if (typeof opts?.initial === 'number') {
-        result = genericChoices[opts?.initial].name;
+      if (typeof initialIndexes === 'number') {
+        result = genericChoices[initialIndexes].name;
       } else {
-        result = opts?.initial.map(idx => genericChoices[idx].name);
+        result = initialIndexes.map(idx => genericChoices[idx].name);
       }
     } else {
+      // enquirer does not clear the stdout buffer on TSTP (Ctrl + Z) so this listener maps it to process.exit() which will clear the buffer
+      // This does mean that the process can't be resumed, but enquirer errors when trying to resume the process anyway because it can't reattach to the TTY buffer
+      const sigTstpListener = () => process.exit();
+      process.once('SIGTSTP', sigTstpListener);
       ({ result } = await this.prompter<{ result: RS extends 'many' ? string[] : string }>({
         // actions is not part of the TS interface but it's part of the JS API
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -155,17 +168,24 @@ class AmplifyPrompter implements Prompter {
         // footer is not part of the TS interface but it's part of the JS API
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
-        footer: opts?.returnSize === 'many' ? '(Use <space> to select, <ctrl + a> to toggle all)' : undefined,
+        footer: opts?.returnSize === 'many' ? chalk.gray('(Use <space> to select, <ctrl + a> to toggle all)') : undefined,
         type: 'autocomplete',
         name: 'result',
         message,
-        initial: opts?.initial,
+        hint: '(Use arrow keys or type to filter)',
+        initial: initialIndexes,
         // there is a typo in the .d.ts file for this field -- muliple -> multiple
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         multiple: opts?.returnSize === 'many',
         choices: enquirerChoices,
+        pointer(_: unknown, i: number) {
+          // this.state is bound to a property of enquirer's prompt object, it does not reference a property of AmplifyPrompter
+          return this.state.index === i ? chalk.cyan('❯') : ' ';
+        },
       }));
+      // remove the TSTP listener
+      process.removeListener('SIGTSTP', sigTstpListener);
     }
 
     if (Array.isArray(result)) {
@@ -179,6 +199,30 @@ class AmplifyPrompter implements Prompter {
 
 export const prompter: Prompter = new AmplifyPrompter();
 
+/**
+ * Helper function to generate a function that will return the indices of a selection set from a list
+ * @param selection The list of values to select from a list
+ * @param equals An optional function to determine if two elements are equal. If not specified, === is used
+ * Note that choices are assumed to be unique by the equals function definition
+ */
+export const byValues =
+  <T>(selection: T[], equals: EqualsFunction<T> = defaultEquals): MultiFilterFunction<T> =>
+  (choices: T[]) =>
+    selection.map(sel => choices.findIndex(choice => equals(choice, sel))).filter(idx => idx >= 0);
+
+/**
+ * Helper function to generate a function that will return an index of a single selection from a list
+ * @param selection The single selection to find in the list
+ * @param equals An optional function to determine if two elements are equal. If not specified, === is used
+ * Note that choices are assumed to be unique by the equals function definition
+ */
+export const byValue =
+  <T>(selection: T, equals: EqualsFunction<T> = defaultEquals): SingleFilterFunction<T> =>
+  (choices: T[]) => {
+    const idx = choices.findIndex(choice => equals(choice, selection));
+    return idx < 0 ? undefined : idx;
+  };
+
 const validateEachWith = (validator?: Validator) => async (input: string[]) => {
   if (!validator) {
     return true;
@@ -190,6 +234,20 @@ const validateEachWith = (validator?: Validator) => async (input: string[]) => {
   }
   return true;
 };
+
+const initialOptsToIndexes = <RS extends ReturnSize, T>(
+  values: T[],
+  initial: InitialSelectionOption<RS, T>['initial'],
+): number | number[] | undefined => {
+  if (initial === undefined || typeof initial === 'number' || Array.isArray(initial)) {
+    return initial;
+  }
+  return initial(values);
+};
+
+type EqualsFunction<T> = (a: T, b: T) => boolean;
+
+const defaultEquals = <T>(a: T, b: T) => a === b;
 
 type Prompter = {
   confirmContinue: (message?: string) => Promise<boolean>;
@@ -203,7 +261,7 @@ type Prompter = {
     message: string,
     choices: Choices<T>,
     // options is typed using spread because it's the only way to make it required if RS is 'many' but optional if RS is 'one'
-    ...options: MaybeOptionalPickOptions<RS>
+    ...options: MaybeOptionalPickOptions<RS, T>
   ) => Promise<PromptReturn<RS, T>>;
 };
 
@@ -216,9 +274,15 @@ type MaybeAvailableHiddenInputOption<RS extends ReturnSize> = RS extends 'many'
       hidden?: boolean;
     };
 
-type InitialSelectionOption<RS extends ReturnSize> = {
-  initial?: RS extends 'one' ? number : number[];
+// The initial selection for a pick prompt can be specified either by index or a selection function that generates indexes.
+// See byValues and byValue above
+type InitialSelectionOption<RS extends ReturnSize, T> = {
+  initial?: RS extends 'one' ? number | SingleFilterFunction<T> : number[] | MultiFilterFunction<T>;
 };
+
+type SingleFilterFunction<T> = (arr: T[]) => number | undefined;
+
+type MultiFilterFunction<T> = (arr: T[]) => number[];
 
 type InitialValueOption<T> = {
   initial?: T;
@@ -261,12 +325,12 @@ type MaybeOptionalInputOptions<RS extends ReturnSize, T> = RS extends 'many'
   ? [InputOptions<RS, T>?]
   : [InputOptions<RS, T>];
 
-type MaybeOptionalPickOptions<RS extends ReturnSize> = RS extends 'many' ? [PickOptions<RS>] : [PickOptions<RS>?];
+type MaybeOptionalPickOptions<RS extends ReturnSize, T> = RS extends 'many' ? [PickOptions<RS, T>] : [PickOptions<RS, T>?];
 
 type PromptReturn<RS extends ReturnSize, T> = RS extends 'many' ? T[] : T;
 
 // the following types are the method input types
-type PickOptions<RS extends ReturnSize> = ReturnSizeOption<RS> & InitialSelectionOption<RS>;
+type PickOptions<RS extends ReturnSize, T> = ReturnSizeOption<RS> & InitialSelectionOption<RS, T>;
 
 type InputOptions<RS extends ReturnSize, T> = ReturnSizeOption<RS> &
   ValidateValueOption &

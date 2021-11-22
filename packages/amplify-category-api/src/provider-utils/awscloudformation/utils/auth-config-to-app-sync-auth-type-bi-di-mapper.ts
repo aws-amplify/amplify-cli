@@ -3,6 +3,7 @@ import {
   AppSyncAPIKeyAuthType,
   AppSyncCognitoUserPoolsAuthType,
   AppSyncOpenIDConnectAuthType,
+  AppSyncLambdaAuthType,
 } from 'amplify-headless-interface';
 import _ from 'lodash';
 
@@ -30,6 +31,7 @@ const authConfigToAppSyncAuthTypeMap: Record<string, (authConfig: any) => AppSyn
   API_KEY: authConfig => ({
     mode: 'API_KEY',
     expirationTime: authConfig.apiKeyConfig.apiKeyExpirationDays,
+    apiKeyExpirationDate: authConfig.apiKeyConfig?.apiKeyExpirationDate,
     keyDescription: authConfig.apiKeyConfig.description,
   }),
   AWS_IAM: () => ({
@@ -47,6 +49,11 @@ const authConfigToAppSyncAuthTypeMap: Record<string, (authConfig: any) => AppSyn
     openIDAuthTTL: authConfig.openIDConnectConfig.authTTL,
     openIDIatTTL: authConfig.openIDConnectConfig.iatTTL,
   }),
+  AWS_LAMBDA: authConfig => ({
+    mode: 'AWS_LAMBDA',
+    lambdaFunction: authConfig.lambdaAuthorizerConfig.lambdaFunction,
+    ttlSeconds: authConfig.lambdaAuthorizerConfig.ttlSeconds,
+  }),
 };
 
 const appSyncAuthTypeToAuthConfigMap: Record<string, (authType: AppSyncAuthType) => any> = {
@@ -54,6 +61,7 @@ const appSyncAuthTypeToAuthConfigMap: Record<string, (authType: AppSyncAuthType)
     authenticationType: 'API_KEY',
     apiKeyConfig: {
       apiKeyExpirationDays: authType.expirationTime,
+      apiKeyExpirationDate: authType?.apiKeyExpirationDate,
       description: authType.keyDescription,
     },
   }),
@@ -74,6 +82,13 @@ const appSyncAuthTypeToAuthConfigMap: Record<string, (authType: AppSyncAuthType)
       clientId: authType.openIDClientID,
       authTTL: authType.openIDAuthTTL,
       iatTTL: authType.openIDIatTTL,
+    },
+  }),
+  AWS_LAMBDA: (authType: AppSyncLambdaAuthType) => ({
+    authenticationType: 'AWS_LAMBDA',
+    lambdaAuthorizerConfig: {
+      lambdaFunction: authType.lambdaFunction,
+      ttlSeconds: authType.ttlSeconds,
     },
   }),
 };

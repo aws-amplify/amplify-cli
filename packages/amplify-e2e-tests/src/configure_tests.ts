@@ -29,4 +29,5 @@ process.nextTick(async () => {
     console.log(e.stack);
     process.exit(1);
   }
+  process.exit();
 });

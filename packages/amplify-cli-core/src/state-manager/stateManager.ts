@@ -1,11 +1,12 @@
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import _ from 'lodash';
-import { $TSAny, $TSMeta, $TSTeamProviderInfo, DeploymentSecrets, HooksConfig, PathConstants } from '..';
-import { SecretFileMode } from '../cliConstants';
+import { PathConstants, pathManager } from './pathManager';
+import { $TSMeta, $TSTeamProviderInfo, $TSAny, DeploymentSecrets, HooksConfig, $TSObject } from '..';
 import { JSONUtilities } from '../jsonUtilities';
+import { SecretFileMode } from '../cliConstants';
 import { HydrateTags, ReadTags, Tag } from '../tags';
-import { pathManager } from './pathManager';
+import { CustomIAMPolicies } from '../customPoliciesUtils';
 
 export type GetOptions<T> = {
   throwIfNotExist?: boolean;
@@ -76,6 +77,13 @@ export class StateManager {
     return this.getData<$TSTeamProviderInfo>(filePath, mergedOptions);
   };
 
+  getCustomPolicies = (categoryName: string, resourceName: string): CustomIAMPolicies => {
+    const filePath = pathManager.getCustomPoliciesPath(categoryName, resourceName);
+    return JSONUtilities.readJson<CustomIAMPolicies>(filePath, { throwIfNotExist: false }) || [];
+  };
+
+  getCurrentEnvName = (projectPath?: string): string | undefined => this.getLocalEnvInfo(projectPath, { throwIfNotExist: false })?.envName;
+
   localEnvInfoExists = (projectPath?: string): boolean => this.doesExist(pathManager.getLocalEnvFilePath, projectPath);
 
   getLocalEnvInfo = (projectPath?: string, options?: GetOptions<$TSAny>): $TSAny => {
@@ -139,6 +147,21 @@ export class StateManager {
     return this.getData<$TSAny>(filePath, mergedOptions);
   };
 
+  getResourceInputsJson = (
+    projectPath: string | undefined,
+    category: string,
+    resourceName: string,
+    options?: GetOptions<$TSAny>,
+  ): $TSAny => {
+    const filePath = pathManager.getResourceInputsJsonFilePath(projectPath, category, resourceName);
+    const mergedOptions = {
+      throwIfNotExist: true,
+      ...options,
+    };
+
+    return this.getData<$TSAny>(filePath, mergedOptions);
+  };
+
   getCurrentResourceParametersJson = (
     projectPath: string | undefined,
     category: string,
@@ -190,11 +213,11 @@ export class StateManager {
     JSONUtilities.writeJson(filePath, localAWSInfo);
   };
 
-  getHydratedTags = (projectPath?: string | undefined): Tag[] => {
+  getHydratedTags = (projectPath?: string | undefined, skipProjEnv: boolean = false): Tag[] => {
     const tags = this.getProjectTags(projectPath);
     const { projectName } = this.getProjectConfig(projectPath);
     const { envName } = this.getLocalEnvInfo(projectPath);
-    return HydrateTags(tags, { projectName, envName });
+    return HydrateTags(tags, { projectName, envName }, skipProjEnv);
   };
 
   isTagFilePresent = (projectPath?: string | undefined): boolean => {
@@ -261,6 +284,12 @@ export class StateManager {
     const filePath = pathManager.getResourceParametersFilePath(projectPath, category, resourceName);
 
     JSONUtilities.writeJson(filePath, parameters);
+  };
+
+  setResourceInputsJson = (projectPath: string | undefined, category: string, resourceName: string, inputs: $TSObject): void => {
+    const filePath = pathManager.getResourceInputsJsonFilePath(projectPath, category, resourceName);
+
+    JSONUtilities.writeJson(filePath, inputs);
   };
 
   cliJSONFileExists = (projectPath: string, env?: string): boolean => {

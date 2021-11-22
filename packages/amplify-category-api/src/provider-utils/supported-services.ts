@@ -18,8 +18,8 @@ export const supportedServices = {
         question: 'Provide API name:',
         validation: {
           operator: 'regex',
-          value: '^[a-zA-Z0-9]+$',
-          onErrorMsg: 'You can use the following characters: a-z A-Z 0-9',
+          value: '^[a-zA-Z0-9]{1,80}$',
+          onErrorMsg: 'You can use the following characters: a-z A-Z 0-9 with maximum length of 80',
         },
         required: true,
       },
@@ -51,6 +51,10 @@ export const supportedServices = {
           {
             name: 'Objects with fine-grained access control (e.g., a project management app with owner-based authorization)',
             value: 'single-object-auth-schema.graphql',
+          },
+          {
+            name: 'Blank Schema',
+            value: 'blank-schema.graphql',
           },
         ],
         required: true,

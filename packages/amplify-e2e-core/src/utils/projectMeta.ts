@@ -28,6 +28,9 @@ function getProjectMeta(projectRoot: string) {
   const metaFilePath: string = path.join(projectRoot, 'amplify', '#current-cloud-backend', 'amplify-meta.json');
   return JSON.parse(fs.readFileSync(metaFilePath, 'utf8'));
 }
+function getCustomPoliciesPath(projectRoot: string, category: string, resourceName: string): string {
+  return path.join(projectRoot, 'amplify', 'backend', category, resourceName, 'custom-policies.json');
+}
 
 function getProjectTags(projectRoot: string) {
   const projectTagsFilePath: string = path.join(projectRoot, 'amplify', '#current-cloud-backend', 'tags.json');
@@ -60,7 +63,11 @@ function getCloudBackendConfig(projectRoot: string) {
 }
 
 function getParameterPath(projRoot: string, category: string, resourceName: string) {
-  return path.join(projRoot, 'amplify', 'backend', category, resourceName, 'parameters.json');
+  return path.join(projRoot, 'amplify', 'backend', category, resourceName, 'build', 'parameters.json');
+}
+
+function getCLIInputsPath(projRoot: string, category: string, resourceName: string) {
+  return path.join(projRoot, 'amplify', 'backend', category, resourceName, 'cli-inputs.json');
 }
 
 function getCategoryParameterPath(projRoot: string, category: string, resourceName: string) {
@@ -132,6 +139,16 @@ function setParameters(projRoot: string, category: string, resourceName: string,
   JSONUtilities.writeJson(parametersPath, parameters);
 }
 
+export function getCLIInputs(projRoot: string, category: string, resourceName: string): any {
+  const parametersPath = getCLIInputsPath(projRoot, category, resourceName);
+  return JSONUtilities.parse(fs.readFileSync(parametersPath, 'utf8'));
+}
+
+export function setCLIInputs(projRoot: string, category: string, resourceName: string, parameters: unknown) {
+  const parametersPath = getCLIInputsPath(projRoot, category, resourceName);
+  JSONUtilities.writeJson(parametersPath, parameters);
+}
+
 function getCategoryParameters(projRoot: string, category: string, resourceName: string): any {
   const filepath = getCategoryParameterPath(projRoot, category, resourceName);
   return JSONUtilities.parse(fs.readFileSync(filepath, 'utf8'));
@@ -167,4 +184,5 @@ export {
   getCloudBackendConfig,
   setTeamProviderInfo,
   getLocalEnvInfo,
+  getCustomPoliciesPath,
 };

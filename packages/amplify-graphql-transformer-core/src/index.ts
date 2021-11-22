@@ -1,34 +1,34 @@
 import { print } from 'graphql';
 import { EXTRA_DIRECTIVES_DOCUMENT } from './transformation/validation';
-export {
-  GraphQLTransform,
-  GraphQLTransformOptions,
-  AppSyncAuthConfiguration,
-  AppSyncAuthConfigurationAPIKeyEntry,
-  AppSyncAuthConfigurationEntry,
-  AppSyncAuthConfigurationIAMEntry,
-  ApiKeyConfig,
-  AppSyncAuthConfigurationOIDCEntry,
-  AppSyncAuthConfigurationUserPoolEntry,
-  AppSyncAuthMode,
-  UserPoolConfig,
-} from './transformation';
-export { DeploymentResources } from './transformation/types';
+export { GraphQLTransform, GraphQLTransformOptions, SyncUtils } from './transformation';
+export { DeploymentResources, UserDefinedSlot, UserDefinedResolver } from './transformation/types';
 export { validateModelSchema } from './transformation/validation';
 export {
   ConflictDetectionType,
   ConflictHandlerType,
   ResolverConfig,
   SyncConfig,
-  SyncConfigLambda,
   SyncConfigOptimistic,
   SyncConfigServer,
+  SyncConfigLambda,
   TransformConfig,
   TransformerProjectConfig,
 } from './config/index';
-export { collectDirectives, collectDirectivesByTypeNames, DirectiveWrapper } from './utils';
+export {
+  collectDirectives,
+  collectDirectivesByTypeNames,
+  DirectiveWrapper,
+  IAM_AUTH_ROLE_PARAMETER,
+  IAM_UNAUTH_ROLE_PARAMETER,
+} from './utils';
 export * from './errors';
-export { TransformerModelBase, TransformerModelEnhancerBase, TransformerPluginBase } from './transformation/transformer-plugin-base';
+export {
+  TransformerModelBase,
+  TransformerModelEnhancerBase,
+  TransformerPluginBase,
+  TransformerAuthBase,
+} from './transformation/transformer-plugin-base';
+export { TransformerResolver } from './transformer-context';
 /**
  * Returns the extra set of directives that are supported by AppSync service
  */
@@ -36,4 +36,11 @@ export const getAppSyncServiceExtraDirectives = (): string => {
   return print(EXTRA_DIRECTIVES_DOCUMENT);
 };
 
-export { MappingTemplate } from './cdk-compat';
+export { MappingTemplate, TransformerNestedStack } from './cdk-compat';
+export {
+  EnumWrapper,
+  FieldWrapper,
+  InputFieldWrapper,
+  InputObjectDefinitionWrapper,
+  ObjectDefinitionWrapper,
+} from './wrappers/object-definition-wrapper';

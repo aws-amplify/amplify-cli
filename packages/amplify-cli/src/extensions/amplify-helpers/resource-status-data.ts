@@ -1,27 +1,28 @@
-import _ from 'lodash';
-import * as fs from 'fs-extra';
-import * as path from 'path';
-import { ServiceName as FunctionServiceName, hashLayerResource } from 'amplify-category-function';
-import { removeGetUserEndpoints } from '../amplify-helpers/remove-pinpoint-policy';
-import { pathManager, stateManager, NotInitializedError, ViewResourceTableParams } from 'amplify-cli-core';
+import { hashLayerResource, ServiceName as FunctionServiceName } from 'amplify-category-function';
+import { NotInitializedError, pathManager, stateManager, ViewResourceTableParams } from 'amplify-cli-core';
 import { hashElement, HashElementOptions } from 'folder-hash';
+import * as fs from 'fs-extra';
+import _ from 'lodash';
+import * as path from 'path';
+import { removeGetUserEndpoints } from '../amplify-helpers/remove-pinpoint-policy';
 import { CLOUD_INITIALIZED, CLOUD_NOT_INITIALIZED, getCloudInitStatus } from './get-cloud-init-status';
 import * as resourceStatus from './resource-status-diff';
-import { IResourceDiffCollection, capitalize } from './resource-status-diff';
+import { capitalize, IResourceDiffCollection } from './resource-status-diff';
+import { getHashForRootStack, isRootStackModifiedSinceLastPush } from './root-stack-status';
 
 //API: Filter resource status for the given categories
 export async function getMultiCategoryStatus(inputs: ViewResourceTableParams | undefined) {
-    let resourceStatusResults = await getResourceStatus();
-    if (inputs?.categoryList?.length) {
-      //diffs for only the required categories (amplify -v <category1>...<categoryN>)
-      //TBD: optimize search
-      resourceStatusResults.resourcesToBeCreated = filterResourceCategory(resourceStatusResults.resourcesToBeCreated, inputs.categoryList);
-      resourceStatusResults.resourcesToBeUpdated = filterResourceCategory(resourceStatusResults.resourcesToBeUpdated, inputs.categoryList);
-      resourceStatusResults.resourcesToBeSynced = filterResourceCategory(resourceStatusResults.resourcesToBeSynced, inputs.categoryList);
-      resourceStatusResults.resourcesToBeDeleted = filterResourceCategory(resourceStatusResults.resourcesToBeDeleted, inputs.categoryList);
-      resourceStatusResults.allResources = filterResourceCategory(resourceStatusResults.allResources, inputs.categoryList);
-    }
-    return resourceStatusResults;
+  let resourceStatusResults = await getResourceStatus();
+  if (inputs?.categoryList?.length) {
+    //diffs for only the required categories (amplify -v <category1>...<categoryN>)
+    //TBD: optimize search
+    resourceStatusResults.resourcesToBeCreated = filterResourceCategory(resourceStatusResults.resourcesToBeCreated, inputs.categoryList);
+    resourceStatusResults.resourcesToBeUpdated = filterResourceCategory(resourceStatusResults.resourcesToBeUpdated, inputs.categoryList);
+    resourceStatusResults.resourcesToBeSynced = filterResourceCategory(resourceStatusResults.resourcesToBeSynced, inputs.categoryList);
+    resourceStatusResults.resourcesToBeDeleted = filterResourceCategory(resourceStatusResults.resourcesToBeDeleted, inputs.categoryList);
+    resourceStatusResults.allResources = filterResourceCategory(resourceStatusResults.allResources, inputs.categoryList);
+  }
+  return resourceStatusResults;
 }
 
 export async function getResourceDiffs(resourcesToBeUpdated, resourcesToBeDeleted, resourcesToBeCreated) {
@@ -33,32 +34,27 @@ export async function getResourceDiffs(resourcesToBeUpdated, resourcesToBeDelete
   return result;
 }
 
-function resourceToTableRow( resource, operation ){
-  return [
-    capitalize(resource.category),
-    resource.resourceName,
-    operation /*syncOperationLabel*/,
-    resource.providerPlugin,
-  ]
+function resourceToTableRow(resource, operation) {
+  return [capitalize(resource.category), resource.resourceName, operation /*syncOperationLabel*/, resource.providerPlugin];
 }
 
 const ResourceOperationLabel = {
-  Create : 'Create',
-  Update : 'Update',
-  Delete : 'Delete',
-  Import : 'Import',
-  Unlink : 'Unlink',
-  NoOp : 'No Change',
-}
+  Create: 'Create',
+  Update: 'Update',
+  Delete: 'Delete',
+  Import: 'Import',
+  Unlink: 'Unlink',
+  NoOp: 'No Change',
+};
 
 const TableColumnLabels = {
   Category: 'Category',
   ResourceName: 'Resource name',
   Operation: 'Operation',
-  ProviderPlugin: 'Provider plugin'
-}
+  ProviderPlugin: 'Provider plugin',
+};
 
-function getLabelForResourceSyncOperation( syncOperationType : string ) {
+function getLabelForResourceSyncOperation(syncOperationType: string) {
   switch (syncOperationType) {
     case 'import':
       return ResourceOperationLabel.Import;
@@ -84,30 +80,29 @@ export function getSummaryTableData({
   );
   noChangeResources = noChangeResources.filter(resource => resource.category !== 'providers');
 
-  const tableOptions = [[TableColumnLabels.Category,
-                         TableColumnLabels.ResourceName,
-                         TableColumnLabels.Operation,
-                         TableColumnLabels.ProviderPlugin]];
+  const tableOptions = [
+    [TableColumnLabels.Category, TableColumnLabels.ResourceName, TableColumnLabels.Operation, TableColumnLabels.ProviderPlugin],
+  ];
 
-  for ( const resource of resourcesToBeCreated ) {
-    tableOptions.push( resourceToTableRow(resource, ResourceOperationLabel.Create) );
+  for (const resource of resourcesToBeCreated) {
+    tableOptions.push(resourceToTableRow(resource, ResourceOperationLabel.Create));
   }
 
   for (const resource of resourcesToBeUpdated) {
-    tableOptions.push( resourceToTableRow(resource, ResourceOperationLabel.Update) )
+    tableOptions.push(resourceToTableRow(resource, ResourceOperationLabel.Update));
   }
 
   for (const resource of resourcesToBeSynced) {
     const operation = getLabelForResourceSyncOperation(resource.sync);
-    tableOptions.push( resourceToTableRow( resource, operation  /*syncOperationLabel*/ ) )
+    tableOptions.push(resourceToTableRow(resource, operation /*syncOperationLabel*/));
   }
 
   for (const resource of resourcesToBeDeleted) {
     tableOptions.push(resourceToTableRow(resource, ResourceOperationLabel.Delete));
   }
 
-  for (const resource of noChangeResources ) {
-    tableOptions.push(resourceToTableRow( resource, ResourceOperationLabel.NoOp));
+  for (const resource of noChangeResources) {
+    tableOptions.push(resourceToTableRow(resource, ResourceOperationLabel.NoOp));
   }
   return tableOptions;
 }
@@ -137,11 +132,15 @@ export async function getResourceStatus(
   // if not equal there is a tag update
   const tagsUpdated = !_.isEqual(stateManager.getProjectTags(), stateManager.getCurrentProjectTags());
 
+  // if not equal there is a root stack update
+  const rootStackUpdated = await isRootStackModifiedSinceLastPush(getHashForRootStack);
+
   return {
     resourcesToBeCreated,
     resourcesToBeUpdated,
     resourcesToBeSynced,
     resourcesToBeDeleted,
+    rootStackUpdated,
     tagsUpdated,
     allResources,
   };
@@ -181,7 +180,7 @@ export function getResourcesToBeCreated(amplifyMeta, currentAmplifyMeta, categor
     const categoryItem = amplifyMeta[categoryName];
     Object.keys(categoryItem).forEach(resource => {
       if (
-        (!amplifyMeta[categoryName][resource].lastPushTimeStamp ||
+        (!amplifyMeta[categoryName][resource]?.lastPushTimeStamp ||
           !currentAmplifyMeta[categoryName] ||
           !currentAmplifyMeta[categoryName][resource]) &&
         categoryName !== 'providers' &&
@@ -215,10 +214,11 @@ export function getResourcesToBeCreated(amplifyMeta, currentAmplifyMeta, categor
         const dependsOnResourcename = resources[i].dependsOn[j].resourceName;
         if (
           amplifyMeta[dependsOnCategory] &&
-          (!amplifyMeta[dependsOnCategory][dependsOnResourcename].lastPushTimeStamp ||
+          (!amplifyMeta[dependsOnCategory][dependsOnResourcename]?.lastPushTimeStamp ||
             !currentAmplifyMeta[dependsOnCategory] ||
             !currentAmplifyMeta[dependsOnCategory][dependsOnResourcename]) &&
-          amplifyMeta[dependsOnCategory][dependsOnResourcename].serviceType !== 'imported'
+          amplifyMeta[dependsOnCategory][dependsOnResourcename].serviceType !== 'imported' &&
+          !resources.includes(amplifyMeta[dependsOnCategory][dependsOnResourcename])
         ) {
           resources.push(amplifyMeta[dependsOnCategory][dependsOnResourcename]);
         }
@@ -280,7 +280,7 @@ export async function getResourcesToBeUpdated(amplifyMeta, currentAmplifyMeta, c
           const backendModified = await isBackendDirModifiedSinceLastPush(
             resource,
             categoryName,
-            currentAmplifyMeta[categoryName][resource].lastPushTimeStamp,
+            currentAmplifyMeta[categoryName][resource]?.lastPushTimeStamp,
             hashLayerResource,
           );
 
@@ -293,7 +293,7 @@ export async function getResourcesToBeUpdated(amplifyMeta, currentAmplifyMeta, c
           const backendModified = await isBackendDirModifiedSinceLastPush(
             resource,
             categoryName,
-            currentAmplifyMeta[categoryName][resource].lastPushTimeStamp,
+            currentAmplifyMeta[categoryName][resource]?.lastPushTimeStamp,
             getHashForResourceDir,
           );
 
@@ -523,4 +523,3 @@ async function asyncForEach(array, callback) {
     await callback(array[index], index, array);
   }
 }
-

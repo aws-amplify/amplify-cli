@@ -1,7 +1,7 @@
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import * as inquirer from 'inquirer';
-import { $TSAny, stateManager, executeHooks, HooksMeta } from 'amplify-cli-core';
+import { FeatureFlags, stateManager, executeHooks, HooksMeta, overriddenCategories } from 'amplify-cli-core';
 import { twoStringSetsAreEqual, twoStringSetsAreDisjoint } from './utils/set-ops';
 import { Context } from './domain/context';
 import { constants } from './domain/constants';
@@ -19,6 +19,7 @@ import {
   AmplifyPreCodegenModelsEventData,
   AmplifyPostCodegenModelsEventData,
   AmplifyInternalOnlyPostEnvRemoveEventData,
+  AmplifyPostEnvAddEventData,
 } from './domain/amplify-event';
 import { isHeadlessCommand, readHeadlessPayload } from './utils/headless-input-utils';
 
@@ -39,6 +40,32 @@ export function isContainersEnabled(context) {
 }
 
 async function selectPluginForExecution(context: Context, pluginCandidates: PluginInfo[]): Promise<PluginInfo> {
+  const pluginCandidatesCategorySet = new Set<string>();
+
+  pluginCandidates.forEach(plugin => {
+    pluginCandidatesCategorySet.add(plugin.manifest.name);
+  });
+
+  // overrided packageName format : @aws-amplify/amplify-category-<catgoryName>
+  const pluginName = pluginCandidatesCategorySet.values().next().value;
+  if (pluginCandidatesCategorySet.size == 1 && overriddenCategories.includes(pluginName)) {
+    if (FeatureFlags.getBoolean(`overrides.${pluginName}`)) {
+      const pluginWithOverrides = pluginCandidates.find(plugin => {
+        return plugin.packageName === `@aws-amplify/amplify-category-${pluginName}`;
+      });
+      if (pluginWithOverrides !== undefined) {
+        return pluginWithOverrides;
+      }
+    } else {
+      const pluginWithOutOverrides = pluginCandidates.find(plugin => {
+        return plugin.packageName === `amplify-category-${pluginName}`;
+      });
+      if (pluginCandidates.length === 2 && pluginWithOutOverrides !== undefined) {
+        return pluginWithOutOverrides;
+      }
+    }
+  }
+
   let result = pluginCandidates[0];
 
   let promptForSelection = true;
@@ -317,6 +344,10 @@ export async function raiseIntenralOnlyPostEnvRemoveEvent(context: Context, envN
     context,
     new AmplifyEventArgs(AmplifyEvent.InternalOnlyPostEnvRemove, new AmplifyInternalOnlyPostEnvRemoveEventData(envName)),
   );
+}
+
+export async function raisePostEnvAddEvent(context: Context, prevEnvName: string, newEnvName: string) {
+  await raiseEvent(context, new AmplifyEventArgs(AmplifyEvent.PostEnvAdd, new AmplifyPostEnvAddEventData(prevEnvName, newEnvName)));
 }
 
 export async function raiseEvent(context: Context, args: AmplifyEventArgs) {

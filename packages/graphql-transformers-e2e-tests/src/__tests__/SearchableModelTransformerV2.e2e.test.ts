@@ -13,9 +13,9 @@ import { default as S3 } from 'aws-sdk/clients/s3';
 // tslint:disable: no-magic-numbers
 jest.setTimeout(60000 * 60);
 
-const cf = new CloudFormationClient('us-west-2');
-const customS3Client = new S3Client('us-west-2');
-const awsS3Client = new S3({ region: 'us-west-2' });
+const cf = new CloudFormationClient('us-east-1');
+const customS3Client = new S3Client('us-east-1');
+const awsS3Client = new S3({ region: 'us-east-1' });
 let GRAPHQL_CLIENT: GraphQLClient = undefined;
 const featureFlags = {
   getBoolean: jest.fn().mockImplementation((name, defaultValue) => {
@@ -30,12 +30,12 @@ const featureFlags = {
 };
 
 const BUILD_TIMESTAMP = moment().format('YYYYMMDDHHmmss');
-const STACK_NAME = `TestSearchableAggregates-${BUILD_TIMESTAMP}`;
-const BUCKET_NAME = `testsearchableaggregates-${BUILD_TIMESTAMP}`;
-const LOCAL_FS_BUILD_DIR = '/tmp/model_searchable_aggregates_tests/';
+const STACK_NAME = `TestSearchableAggregatesv2-${BUILD_TIMESTAMP}`;
+const BUCKET_NAME = `testsearchableaggregatesv2-${BUILD_TIMESTAMP}`;
+const LOCAL_FS_BUILD_DIR = '/tmp/model_searchable_aggregates_v2_tests/';
 const S3_ROOT_DIR_KEY = 'deployments';
 
-const fragments = [`fragment FullPost on Post { id author title ups downs percentageUp isPublished createdAt }`];
+const fragments = [`fragment FullTodo on Todo { id name description count }`];
 
 const runQuery = async (query: string) => {
   try {
@@ -49,42 +49,51 @@ const runQuery = async (query: string) => {
 };
 
 const createEntries = async () => {
-  // create posts
-  await runQuery(getCreatePostsMutation('testuser', 'test', 157, 10, 97.4, true));
-  await runQuery(getCreatePostsMutation('testuser', 'test title', 60, 30, 21.0, false));
-  await runQuery(getCreatePostsMutation('sampleuser', 'test title', 160, 30, 97.6, false));
-  await runQuery(getCreatePostsMutation('sampleuser', 'test TITLE', 170, 30, 88.8, true));
-  await runQuery(getCreatePostsMutation('testuser', 'test title', 200, 50, 11.9, false));
-  await runQuery(getCreatePostsMutation('testuser', 'test title', 170, 30, 88.8, true));
-  await runQuery(getCreatePostsMutation('testuser', 'test title', 160, 30, 97.6, false));
-  await runQuery(getCreatePostsMutation('testuser', 'test title', 170, 30, 77.7, true));
+  // create todos
+  await runQuery(getCreateTodosMutation('test1', 'test1', 10));
+  await runQuery(getCreateTodosMutation('test2', 'test2', 20));
+  await runQuery(getCreateTodosMutation('test3', 'test3', 30));
   // Waiting for the ES Cluster + Streaming Lambda infra to be setup
   await cf.wait(120, () => Promise.resolve());
+  await waitForESPropagate();
+};
+
+const waitForESPropagate = async (initialWaitSeconds = 5, maxRetryCount = 5) => {
+  const expectedCount = 3;
+  let waitInMilliseconds = initialWaitSeconds * 1000;
+  let currentRetryCount = 0;
+  let searchResponse;
+
+  do {
+    await new Promise(r => setTimeout(r, waitInMilliseconds));
+    searchResponse = await GRAPHQL_CLIENT.query(
+      `query {
+        searchTodos {
+          items {
+            id
+          }
+        }
+      }`,
+      {},
+    );
+    currentRetryCount += 1;
+    waitInMilliseconds = waitInMilliseconds * 2;
+  } while (searchResponse.data.searchTodos?.items?.length < expectedCount && currentRetryCount <= maxRetryCount);
 };
 
 beforeAll(async () => {
   const validSchema = `
-    type Post @model @searchable {
+    type Todo @model @searchable {
       id: ID!
-      author: String!
-      title: String
-      content: String
-      url: String
-      ups: Int
-      downs: Int
-      version: Int
-      postedAt: String
-      createdAt: AWSDateTime
-      comments: [String!]
-      ratings: [Int!]
-      percentageUp: Float
-      isPublished: Boolean
-      jsonField: AWSJSON
+      name: String!
+      description: String
+      count: Int
     }
     `;
   const transformer = new GraphQLTransform({
     featureFlags,
     transformers: [new ModelTransformer(), new SearchableModelTransformer()],
+    sandboxModeEnabled: true,
   });
   try {
     await awsS3Client.createBucket({ Bucket: BUCKET_NAME }).promise();
@@ -128,13 +137,13 @@ afterAll(async () => {
 });
 
 test('query for aggregate scalar results', async () => {
-  const expectedValue = 60;
+  const expectedValue = 10;
   const searchResponse = await GRAPHQL_CLIENT.query(
     `query {
-      searchPosts(aggregates: [{
+      searchTodos(aggregates: [{
         name: "Minimum",
         type: min,
-        field: "ups"
+        field: count
       }]) {
         aggregateItems {
           name
@@ -149,7 +158,7 @@ test('query for aggregate scalar results', async () => {
     {},
   );
   expect(searchResponse).toBeDefined();
-  const result = searchResponse.data.searchPosts.aggregateItems[0].result.value;
+  const result = searchResponse.data.searchTodos.aggregateItems[0].result.value;
   expect(result).toEqual(expectedValue);
 });
 
@@ -157,10 +166,10 @@ test('query for aggregate bucket results', async () => {
   const expectedValue = 3;
   const searchResponse = await GRAPHQL_CLIENT.query(
     `query {
-      searchPosts(aggregates: [{
+      searchTodos(aggregates: [{
         name: "Terms",
         type: terms,
-        field: "title"
+        field: name
       }]) {
         aggregateItems {
           name
@@ -178,24 +187,21 @@ test('query for aggregate bucket results', async () => {
     {},
   );
   expect(searchResponse).toBeDefined();
-  const result = searchResponse.data.searchPosts.aggregateItems[0].result.buckets.length;
+  const result = searchResponse.data.searchTodos.aggregateItems[0].result.buckets.length;
   expect(result).toEqual(expectedValue);
 });
 
 test('query for multiple aggregates', async () => {
-  const expectedValue = 2;
+  const expectedValue = 5;
   const searchResponse = await GRAPHQL_CLIENT.query(
     `query {
-      searchPosts(aggregates: [{
-        name: "Minimum",
-        type: min,
-        field: "ups"
-      },
-      {
-        name: "Terms",
-        type: terms,
-        field: "title"
-      }]) {
+      searchTodos(aggregates: [
+        { name: "Minimum", type: min, field: count },
+        { name: "Maximum", type: max, field: count },
+        { name: "Average", type: avg, field: count },
+        { name: "Total", type: sum, field: count },
+        { name: "Terms", type: terms, field: count }
+      ]) {
         aggregateItems {
           name
           result {
@@ -215,29 +221,446 @@ test('query for multiple aggregates', async () => {
     {},
   );
   expect(searchResponse).toBeDefined();
-  const result = searchResponse.data.searchPosts.aggregateItems.length;
+  const result = searchResponse.data.searchTodos.aggregateItems.length;
   expect(result).toEqual(expectedValue);
-  expect(searchResponse.data.searchPosts.aggregateItems[0].result).toBeDefined();
-  expect(searchResponse.data.searchPosts.aggregateItems[1].result).toBeDefined();
+  expect(searchResponse.data.searchTodos.aggregateItems[0].result).toBeDefined();
+  expect(searchResponse.data.searchTodos.aggregateItems[1].result).toBeDefined();
+  expect(searchResponse.data.searchTodos.aggregateItems[2].result).toBeDefined();
+  expect(searchResponse.data.searchTodos.aggregateItems[3].result).toBeDefined();
+  expect(searchResponse.data.searchTodos.aggregateItems[4].result).toBeDefined();
 });
 
-function getCreatePostsMutation(
-  author: string,
-  title: string,
-  ups: number,
-  downs: number,
-  percentageUp: number,
-  isPublished: boolean,
+test('query with sort return results', async () => {
+  const searchResponse = await GRAPHQL_CLIENT.query(
+    `query {
+      searchTodos(sort: [
+        {
+          direction: asc,
+          field: name
+        },
+        {
+          direction: asc,
+          field: description
+        }
+      ]) {
+        items {
+          id
+          name
+          description
+        }
+      }
+    }`,
+    {},
+  );
+  expect(searchResponse).toBeDefined();
+  expect(searchResponse.data).toBeDefined();
+  expect(searchResponse.data.searchTodos).toBeDefined();
+  expect(searchResponse.data.searchTodos.items).toBeDefined();
+});
+
+test('query searchable with eq filter', async () => {
+  const expectedRecords = 1;
+  const searchResponse = await GRAPHQL_CLIENT.query(
+    `query {
+      searchTodos(sort: [{
+          direction: asc,
+          field: name
+        }],
+        filter: {
+          name: {
+            eq: "test1"
+          }
+        }
+      ) {
+        items {
+          id
+          name
+          description
+        }
+      }
+    }`,
+    {},
+  );
+  expect(searchResponse).toBeDefined();
+  expect(searchResponse.data).toBeDefined();
+  expect(searchResponse.data.searchTodos).toBeDefined();
+  expect(searchResponse.data.searchTodos.items).toHaveLength(expectedRecords);
+  expect(searchResponse.data.searchTodos.items).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({
+        id: expect.any(String),
+        name: 'test1',
+        description: 'test1'
+      }),
+    ]),
+  );
+});
+
+test('query searchable with ne filter', async () => {
+  const expectedRecords = 2;
+  const searchResponse = await GRAPHQL_CLIENT.query(
+    `query {
+      searchTodos(sort: [{
+          direction: asc,
+          field: name
+        }],
+        filter: {
+          name: {
+            ne: "test1"
+          }
+        }
+      ) {
+        items {
+          id
+          name
+          description
+        }
+      }
+    }`,
+    {},
+  );
+  expect(searchResponse).toBeDefined();
+  expect(searchResponse.data).toBeDefined();
+  expect(searchResponse.data.searchTodos).toBeDefined();
+  expect(searchResponse.data.searchTodos.items).toHaveLength(expectedRecords);
+  expect(searchResponse.data.searchTodos.items).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({
+        id: expect.any(String),
+        name: 'test2',
+        description: 'test2'
+      }),
+      expect.objectContaining({
+        id: expect.any(String),
+        name: 'test3',
+        description: 'test3'
+      }),
+    ]),
+  );
+});
+
+test('query searchable with gt filter', async () => {
+  const expectedRecords = 2;
+  const searchResponse = await GRAPHQL_CLIENT.query(
+    `query {
+      searchTodos(sort: [{
+          direction: asc,
+          field: name
+        }],
+        filter: {
+          count: {
+            gt: 10
+          }
+        }
+      ) {
+        items {
+          id
+          name
+          description
+        }
+      }
+    }`,
+    {},
+  );
+  expect(searchResponse).toBeDefined();
+  expect(searchResponse.data).toBeDefined();
+  expect(searchResponse.data.searchTodos).toBeDefined();
+  expect(searchResponse.data.searchTodos.items).toHaveLength(expectedRecords);
+  expect(searchResponse.data.searchTodos.items).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({
+        id: expect.any(String),
+        name: 'test2',
+        description: 'test2'
+      }),
+      expect.objectContaining({
+        id: expect.any(String),
+        name: 'test3',
+        description: 'test3'
+      }),
+    ]),
+  );
+});
+
+test('query searchable with gte filter', async () => {
+  const expectedRecords = 3;
+  const searchResponse = await GRAPHQL_CLIENT.query(
+    `query {
+      searchTodos(sort: [{
+          direction: asc,
+          field: name
+        }],
+        filter: {
+          count: {
+            gte: 10
+          }
+        }
+      ) {
+        items {
+          id
+          name
+          description
+        }
+      }
+    }`,
+    {},
+  );
+  expect(searchResponse).toBeDefined();
+  expect(searchResponse.data).toBeDefined();
+  expect(searchResponse.data.searchTodos).toBeDefined();
+  expect(searchResponse.data.searchTodos.items).toHaveLength(expectedRecords);
+  expect(searchResponse.data.searchTodos.items).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({
+        id: expect.any(String),
+        name: 'test1',
+        description: 'test1'
+      }),
+      expect.objectContaining({
+        id: expect.any(String),
+        name: 'test2',
+        description: 'test2'
+      }),
+      expect.objectContaining({
+        id: expect.any(String),
+        name: 'test3',
+        description: 'test3'
+      }),
+    ]),
+  );
+});
+
+test('query searchable with lt filter', async () => {
+  const expectedRecords = 1;
+  const searchResponse = await GRAPHQL_CLIENT.query(
+    `query {
+      searchTodos(sort: [{
+          direction: asc,
+          field: name
+        }],
+        filter: {
+          count: {
+            lt: 20
+          }
+        }
+      ) {
+        items {
+          id
+          name
+          description
+        }
+      }
+    }`,
+    {},
+  );
+  expect(searchResponse).toBeDefined();
+  expect(searchResponse.data).toBeDefined();
+  expect(searchResponse.data.searchTodos).toBeDefined();
+  expect(searchResponse.data.searchTodos.items).toHaveLength(expectedRecords);
+  expect(searchResponse.data.searchTodos.items).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({
+        id: expect.any(String),
+        name: 'test1',
+        description: 'test1'
+      }),
+    ]),
+  );
+});
+
+test('query searchable with lte filter', async () => {
+  const expectedRecords = 2;
+  const searchResponse = await GRAPHQL_CLIENT.query(
+    `query {
+      searchTodos(sort: [{
+          direction: asc,
+          field: name
+        }],
+        filter: {
+          count: {
+            lte: 20
+          }
+        }
+      ) {
+        items {
+          id
+          name
+          description
+        }
+      }
+    }`,
+    {},
+  );
+  expect(searchResponse).toBeDefined();
+  expect(searchResponse.data).toBeDefined();
+  expect(searchResponse.data.searchTodos).toBeDefined();
+  expect(searchResponse.data.searchTodos.items).toHaveLength(expectedRecords);
+  expect(searchResponse.data.searchTodos.items).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({
+        id: expect.any(String),
+        name: 'test1',
+        description: 'test1'
+      }),
+      expect.objectContaining({
+        id: expect.any(String),
+        name: 'test2',
+        description: 'test2'
+      }),
+    ]),
+  );
+});
+
+test('query searchable with eq and lt filter', async () => {
+  const expectedRecords = 1;
+  const searchResponse = await GRAPHQL_CLIENT.query(
+    `query {
+      searchTodos(sort: [{
+          direction: asc,
+          field: name
+        }],
+        filter: {
+          name: {
+            eq: "test1"
+          },
+          and: {
+            count: {
+              lt: 20
+            }
+          }
+        }
+      ) {
+        items {
+          id
+          name
+          description
+        }
+      }
+    }`,
+    {},
+  );
+  expect(searchResponse).toBeDefined();
+  expect(searchResponse.data).toBeDefined();
+  expect(searchResponse.data.searchTodos).toBeDefined();
+  expect(searchResponse.data.searchTodos.items).toHaveLength(expectedRecords);
+  expect(searchResponse.data.searchTodos.items).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({
+        id: expect.any(String),
+        name: 'test1',
+        description: 'test1'
+      }),
+    ]),
+  );
+});
+
+test('query searchable with wildcard filter', async () => {
+  const expectedRecords = 3;
+  const searchResponse = await GRAPHQL_CLIENT.query(
+    `query {
+      searchTodos(sort: [{
+          direction: asc,
+          field: name
+        }],
+        filter: {
+          name: {
+            wildcard: "test*"
+          }
+        }
+      ) {
+        items {
+          id
+          name
+          description
+        }
+      }
+    }`,
+    {},
+  );
+  expect(searchResponse).toBeDefined();
+  expect(searchResponse.data).toBeDefined();
+  expect(searchResponse.data.searchTodos).toBeDefined();
+  expect(searchResponse.data.searchTodos.items).toHaveLength(expectedRecords);
+  expect(searchResponse.data.searchTodos.items).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({
+        id: expect.any(String),
+        name: 'test1',
+        description: 'test1'
+      }),
+      expect.objectContaining({
+        id: expect.any(String),
+        name: 'test2',
+        description: 'test2'
+      }),
+      expect.objectContaining({
+        id: expect.any(String),
+        name: 'test3',
+        description: 'test3'
+      }),
+    ]),
+  );
+});
+
+test('query searchable with matchPhrasePrefix filter', async () => {
+  const expectedRecords = 3;
+  const searchResponse = await GRAPHQL_CLIENT.query(
+    `query {
+      searchTodos(sort: [{
+          direction: asc,
+          field: name
+        }],
+        filter: {
+          name: {
+            matchPhrasePrefix: "t"
+          }
+        }
+      ) {
+        items {
+          id
+          name
+          description
+        }
+      }
+    }`,
+    {},
+  );
+  expect(searchResponse).toBeDefined();
+  expect(searchResponse.data).toBeDefined();
+  expect(searchResponse.data.searchTodos).toBeDefined();
+  expect(searchResponse.data.searchTodos.items).toHaveLength(expectedRecords);
+  expect(searchResponse.data.searchTodos.items).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({
+        id: expect.any(String),
+        name: 'test1',
+        description: 'test1'
+      }),
+      expect.objectContaining({
+        id: expect.any(String),
+        name: 'test2',
+        description: 'test2'
+      }),
+      expect.objectContaining({
+        id: expect.any(String),
+        name: 'test3',
+        description: 'test3'
+      }),
+    ]),
+  );
+});
+
+function getCreateTodosMutation(
+  name: string,
+  description: string,
+  count: number,
 ): string {
   return `mutation {
-        createPost(input: {
-            author: "${author}"
-            title: "${title}"
-            ups: ${ups}
-            downs: ${downs}
-            percentageUp: ${percentageUp}
-            isPublished: ${isPublished}
-        }) { ...FullPost }
+        createTodo(input: {
+            name: "${name}"
+            description: "${description}"
+            count: ${count}
+        }) { ...FullTodo }
     }`;
 }
 

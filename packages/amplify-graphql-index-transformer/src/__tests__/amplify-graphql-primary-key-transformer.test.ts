@@ -20,10 +20,26 @@ test('throws if multiple primary keys are defined on an object', () => {
   }).toThrow(`You may only supply one primary key on type 'Test'.`);
 });
 
-test('throws if primary key is nullable', () => {
+test('throws if partition key is nullable', () => {
   const schema = `
     type Test @model {
       id: ID @primaryKey
+      email: String
+    }`;
+
+  const transformer = new GraphQLTransform({
+    transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
+  });
+
+  expect(() => {
+    transformer.transform(schema);
+  }).toThrow(`The primary key on type 'Test' must reference non-null fields.`);
+});
+
+test('throws if sort key is nullable', () => {
+  const schema = `
+    type Test @model {
+      id: ID @primaryKey(sortKeyFields: ["email"])
       email: String
     }`;
 
@@ -108,6 +124,22 @@ test('throws if @primaryKey uses a sort key field that is a non-scalar', () => {
   }).toThrow(`The primary key's sort key on type 'Test.email' cannot be a non-scalar.`);
 });
 
+test('throws if @primaryKey refers to itself', () => {
+  const schema = `
+    type Test @model {
+      id: ID! @primaryKey(sortKeyFields: ["id"])
+      email: String
+    }`;
+
+  const transformer = new GraphQLTransform({
+    transformers: [new ModelTransformer(), new PrimaryKeyTransformer()],
+  });
+
+  expect(() => {
+    transformer.transform(schema);
+  }).toThrow(`@primaryKey field 'id' cannot reference itself.`);
+});
+
 test('handles sortKeyFields being a string instead of an array', () => {
   const schema = `
     type NonScalar {
@@ -149,7 +181,7 @@ test('a primary key with no sort key is properly configured', () => {
     }),
   );
 
-  expect(out.pipelineFunctions).toMatchSnapshot();
+  expect(out.resolvers).toMatchSnapshot();
 
   const queryType: any = schema.definitions.find((def: any) => def.name && def.name.value === 'Query');
   const getTestField: any = queryType.fields.find((f: any) => f.name && f.name.value === 'getTest');
@@ -199,7 +231,7 @@ test('a primary key with a single sort key field is properly configured', () => 
     }),
   );
 
-  expect(out.pipelineFunctions).toMatchSnapshot();
+  expect(out.resolvers).toMatchSnapshot();
 
   const queryType: any = schema.definitions.find((def: any) => def.name && def.name.value === 'Query');
   const getTestField: any = queryType.fields.find((f: any) => f.name && f.name.value === 'getTest');
@@ -213,7 +245,7 @@ test('a primary key with a composite sort key is properly configured', () => {
     type Test @model {
       email: String! @primaryKey(sortKeyFields: ["kind", "other"])
       kind: Int!
-      other: AWSDateTime
+      other: AWSDateTime!
       yetAnother: String
       andAnother: String!
     }`;
@@ -239,7 +271,7 @@ test('a primary key with a composite sort key is properly configured', () => {
     }),
   );
 
-  expect(out.pipelineFunctions).toMatchSnapshot();
+  expect(out.resolvers).toMatchSnapshot();
 
   const queryType: any = schema.definitions.find((def: any) => def.name && def.name.value === 'Query');
   const getTestField: any = queryType.fields.find((f: any) => f.name && f.name.value === 'getTest');
@@ -265,7 +297,7 @@ test('a primary key with a composite sort key is properly configured', () => {
   expect(createInput).toBeDefined();
   expect(createInput.fields.find((f: any) => f.name.value === 'email' && f.type.kind === Kind.NON_NULL_TYPE)).toBeDefined();
   expect(createInput.fields.find((f: any) => f.name.value === 'kind' && f.type.kind === Kind.NON_NULL_TYPE)).toBeDefined();
-  expect(createInput.fields.find((f: any) => f.name.value === 'other' && f.type.kind === Kind.NAMED_TYPE)).toBeDefined();
+  expect(createInput.fields.find((f: any) => f.name.value === 'other' && f.type.kind === Kind.NON_NULL_TYPE)).toBeDefined();
   expect(createInput.fields.find((f: any) => f.name.value === 'yetAnother' && f.type.kind === Kind.NAMED_TYPE)).toBeDefined();
   expect(createInput.fields.find((f: any) => f.name.value === 'andAnother' && f.type.kind === Kind.NON_NULL_TYPE)).toBeDefined();
   expect(createInput.fields.find((f: any) => f.name.value === 'id')).toBeUndefined();
@@ -315,7 +347,7 @@ test('enums are supported in keys', () => {
     }),
   );
 
-  expect(out.pipelineFunctions).toMatchSnapshot();
+  expect(out.resolvers).toMatchSnapshot();
 
   const queryType: any = schema.definitions.find((def: any) => def.name && def.name.value === 'Query');
   const getTestField: any = queryType.fields.find((f: any) => f.name && f.name.value === 'getTest');
@@ -427,7 +459,7 @@ test('resolvers can be renamed by @model', () => {
       mutations: { create: "testCreate", delete: "testDelete", update: "testUpdate" }
     ) {
       id: ID! @primaryKey(sortKeyFields: ["email"])
-      email: String
+      email: String!
     }`;
 
   const transformer = new GraphQLTransform({
@@ -442,7 +474,7 @@ test('resolvers can be renamed by @model', () => {
   const query: any = schema.definitions.find((d: any) => d.kind === Kind.OBJECT_TYPE_DEFINITION && d.name.value === 'Query');
   const mutation: any = schema.definitions.find((d: any) => d.kind === Kind.OBJECT_TYPE_DEFINITION && d.name.value === 'Mutation');
 
-  expect(out.pipelineFunctions).toMatchSnapshot();
+  expect(out.resolvers).toMatchSnapshot();
 
   expect(query).toBeDefined();
   expect(query.fields.length).toEqual(2);
@@ -471,7 +503,7 @@ test('individual resolvers can be made null by @model', () => {
   const inputSchema = `
     type Test @model(queries: { get: "testGet", list: null }) {
       id: ID! @primaryKey(sortKeyFields: ["email"])
-      email: String
+      email: String!
     }`;
 
   const transformer = new GraphQLTransform({
@@ -485,7 +517,7 @@ test('individual resolvers can be made null by @model', () => {
   const stack = out.stacks.Test;
   const query: any = schema.definitions.find((d: any) => d.kind === Kind.OBJECT_TYPE_DEFINITION && d.name.value === 'Query');
 
-  expect(out.pipelineFunctions).toMatchSnapshot();
+  expect(out.resolvers).toMatchSnapshot();
   expect(query).toBeDefined();
   expect(query.fields.length).toEqual(1);
   const getQuery = query.fields.find((f: any) => f.name.value === 'testGet');
@@ -644,6 +676,6 @@ test('list queries use correct pluralization', () => {
   const listQuery = query.fields.find((f: any) => f.name.value === 'listBosses');
   expect(listQuery).toBeDefined();
 
-  expect(out.pipelineFunctions['Query.listBosses.req.vtl']).toBeDefined();
-  expect(out.pipelineFunctions['Query.listBosses.res.vtl']).toBeDefined();
+  expect(out.resolvers['Query.listBosses.req.vtl']).toBeDefined();
+  expect(out.resolvers['Query.listBosses.res.vtl']).toBeDefined();
 });

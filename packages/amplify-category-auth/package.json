@@ -1,6 +1,6 @@
 {
-  "name": "amplify-category-auth",
-  "version": "2.38.0",
+  "name": "@aws-amplify/amplify-category-auth",
+  "version": "2.3.8",
   "description": "amplify-cli authentication plugin",
   "repository": {
     "type": "git",
@@ -15,19 +15,24 @@
     "amplify",
     "aws"
   ],
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "build": "tsc",
     "watch": "tsc -w",
     "clean": "rimraf lib tsconfig.tsbuildinfo",
     "test": "jest",
-    "test-watch": "jest --watch"
+    "test-watch": "jest --watch",
+    "generateSchemas": "ts-node ./scripts/generateAuthSchemas.ts"
   },
   "dependencies": {
-    "amplify-cli-core": "1.29.0",
-    "amplify-headless-interface": "1.10.0",
-    "amplify-util-headless-input": "1.5.4",
-    "amplify-util-import": "1.5.12",
-    "aws-cdk": "~1.119.0",
+    "@aws-amplify/cli-extensibility-helper": "2.2.4",
+    "amplify-cli-core": "2.3.3",
+    "amplify-headless-interface": "1.13.1",
+    "amplify-util-headless-input": "1.8.1",
+    "amplify-util-import": "2.2.4",
+    "aws-cdk": "~1.124.0",
     "aws-sdk": "^2.963.0",
     "chalk": "^4.1.1",
     "change-case": "^4.1.1",
@@ -38,7 +43,8 @@
     "mime-types": "^2.1.26",
     "ora": "^4.0.3",
     "promise-sequential": "^1.1.1",
-    "uuid": "^3.4.0"
+    "uuid": "^3.4.0",
+    "vm2": "^3.9.3"
   },
   "devDependencies": {
     "rimraf": "^3.0.2"

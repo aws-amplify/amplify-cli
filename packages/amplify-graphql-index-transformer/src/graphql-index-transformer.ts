@@ -1,6 +1,7 @@
 import { DirectiveWrapper, InvalidDirectiveError, TransformerPluginBase } from '@aws-amplify/graphql-transformer-core';
 import {
   TransformerContextProvider,
+  TransformerResolverProvider,
   TransformerSchemaVisitStepContextProvider,
   TransformerTransformSchemaStepContextProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
@@ -13,9 +14,10 @@ import {
   ObjectTypeDefinitionNode,
 } from 'graphql';
 import { isScalarOrEnum } from 'graphql-transformer-common';
-import { appendSecondaryIndex, updateResolversForIndex } from './resolvers';
+import { appendSecondaryIndex, constructSyncVTL, updateResolversForIndex } from './resolvers';
 import { addKeyConditionInputs, ensureQueryField, updateMutationConditionInput } from './schema';
 import { IndexDirectiveConfiguration } from './types';
+import { validateNotSelfReferencing } from './utils';
 
 const directiveName = 'index';
 const directiveDefinition = `
@@ -24,6 +26,7 @@ const directiveDefinition = `
 
 export class IndexTransformer extends TransformerPluginBase {
   private directiveList: IndexDirectiveConfiguration[] = [];
+  private resolverMap: Map<TransformerResolverProvider, string> = new Map();
 
   constructor() {
     super('amplify-index-transformer', directiveDefinition);
@@ -54,7 +57,16 @@ export class IndexTransformer extends TransformerPluginBase {
     this.directiveList.push(args);
   };
 
-  // TODO(cjihrig): before() and after() are needed to handle sync queries once they are supported.
+  public after = (ctx: TransformerContextProvider): void => {
+    if (!ctx.isProjectUsingDataStore()) return;
+
+    // construct sync VTL code
+    this.resolverMap.forEach((syncVTLContent, resource) => {
+      if (syncVTLContent) {
+        constructSyncVTL(syncVTLContent, resource);
+      }
+    });
+  };
 
   transformSchema = (ctx: TransformerTransformSchemaStepContextProvider): void => {
     const context = ctx as TransformerContextProvider;
@@ -69,13 +81,16 @@ export class IndexTransformer extends TransformerPluginBase {
   generateResolvers = (ctx: TransformerContextProvider): void => {
     for (const config of this.directiveList) {
       appendSecondaryIndex(config, ctx);
-      updateResolversForIndex(config, ctx);
+      updateResolversForIndex(config, ctx, this.resolverMap);
     }
   };
 }
 
 function validate(config: IndexDirectiveConfiguration, ctx: TransformerContextProvider): void {
   const { name, object, field, sortKeyFields } = config;
+
+  validateNotSelfReferencing(config);
+
   const modelDirective = object.directives!.find(directive => {
     return directive.name.value === 'model';
   });
@@ -99,7 +114,10 @@ function validate(config: IndexDirectiveConfiguration, ctx: TransformerContextPr
       if (peerDirective.name.value === 'primaryKey') {
         config.primaryKeyField = objectField;
 
-        if (!peerDirective.arguments!.some((arg: any) => arg.name.value === 'sortKeyFields')) {
+        if (
+          objectField.name.value === field.name.value &&
+          !peerDirective.arguments!.some((arg: any) => arg.name.value === 'sortKeyFields')
+        ) {
           throw new InvalidDirectiveError(
             `Invalid @index '${name}'. You may not create an index where the partition key ` +
               'is the same as that of the primary key unless the primary key has a sort field. ' +

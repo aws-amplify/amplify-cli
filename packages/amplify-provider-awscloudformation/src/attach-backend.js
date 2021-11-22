@@ -5,7 +5,7 @@ const glob = require('glob');
 const extract = require('extract-zip');
 const inquirer = require('inquirer');
 const _ = require('lodash');
-const { pathManager, PathConstants } = require('amplify-cli-core');
+const { exitOnNextTick, pathManager, PathConstants } = require('amplify-cli-core');
 const configurationManager = require('./configuration-manager');
 const { getConfiguredAmplifyClient } = require('./aws-utils/aws-amplify');
 const { checkAmplifyServiceIAMPermission } = require('./amplify-service-permission-check');
@@ -15,7 +15,7 @@ const { resolveAppId } = require('./utils/resolve-appId');
 const { adminLoginFlow } = require('./admin-login');
 const { fileLogger } = require('./utils/aws-logger');
 const logger = fileLogger('attach-backend');
-import { downloadHooks } from './utils/hooks-manager';
+const { downloadHooks } = require('./utils/hooks-manager');
 
 async function run(context) {
   let appId;
@@ -323,9 +323,14 @@ async function downloadBackend(context, backendEnv, awsConfigInfo) {
   try {
     log();
     zipObject = await s3Client.getObject(params).promise();
-  } catch (ex) {
-    log(ex);
+  } catch (err) {
+    log(err);
+    context.print.error(`Error downloading ${zipFileName} from deployment bucket: ${deploymentBucketName}, the error is: ${err.message}`);
+    await context.usageData.emitError(err);
+    exitOnNextTick(1);
+    return;
   }
+
   const buff = Buffer.from(zipObject.Body);
 
   fs.ensureDirSync(tempDirPath);

@@ -25,16 +25,28 @@ import { S3Service, createS3Service } from './aws-utils/S3Service';
 import { DynamoDBService, createDynamoDBService } from './aws-utils/DynamoDBService';
 import { resolveAppId } from './utils/resolve-appId';
 import { loadConfigurationForEnv } from './configuration-manager';
+import { getLocationSupportedRegion, getLocationRegionMapping } from './aws-utils/aws-location';
 import { SSM } from './aws-utils/aws-ssm';
 import { Lambda } from './aws-utils/aws-lambda';
 import CloudFormation from './aws-utils/aws-cfn';
 import { $TSContext } from 'amplify-cli-core';
+import * as resourceExport from './export-resources';
+import * as exportUpdateMeta from './export-update-amplify-meta';
 
 export { resolveAppId } from './utils/resolve-appId';
 export { loadConfigurationForEnv } from './configuration-manager';
+export { getLocationSupportedRegion, getLocationRegionMapping } from './aws-utils/aws-location';
 import { updateEnv } from './update-env';
 
 import { uploadHooksDirectory } from './utils/hooks-manager';
+import { getTransformerVersion } from './transform-graphql-schema';
+
+export const cfnRootStackFileName = 'root-cloudformation-stack.json';
+export { storeRootStackTemplate } from './initializer';
+import { transformResourceWithOverrides } from './override-manager';
+export { transformResourceWithOverrides } from './override-manager';
+import { rootStackFileName } from './push-resources';
+export { rootStackFileName } from './push-resources';
 
 function init(context) {
   return initializer.run(context);
@@ -54,8 +66,16 @@ function onInitSuccessful(context) {
   return initializer.onInitSuccessful(context);
 }
 
-function pushResources(context, resourceList) {
-  return resourcePusher.run(context, resourceList);
+function exportResources(context, resourceList, exportType) {
+  return resourceExport.run(context, resourceList, exportType);
+}
+
+function exportedStackResourcesUpdateMeta(context: $TSContext, stackName: string) {
+  return exportUpdateMeta.run(context, stackName);
+}
+
+function pushResources(context, resourceList, rebuild: boolean) {
+  return resourcePusher.run(context, resourceList, rebuild);
 }
 
 function storeCurrentCloudBackend(context) {
@@ -122,6 +142,8 @@ module.exports = {
   adminLoginFlow,
   console: openConsole,
   attachBackend,
+  exportResources,
+  exportedStackResourcesUpdateMeta,
   init,
   initEnv,
   isAmplifyAdminApp,
@@ -159,4 +181,9 @@ module.exports = {
   getConfiguredSSMClient,
   updateEnv,
   uploadHooksDirectory,
+  getLocationSupportedRegion,
+  getLocationRegionMapping,
+  getTransformerVersion,
+  transformResourceWithOverrides,
+  rootStackFileName,
 };

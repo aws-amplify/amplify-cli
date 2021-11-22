@@ -11,12 +11,18 @@ import {
   block,
   bool,
   compoundExpression,
+  DynamoDBMappingTemplate,
+  equals,
   Expression,
   forEach,
   ifElse,
   iff,
+  int,
+  isNullOrEmpty,
   list,
   methodCall,
+  nul,
+  not,
   obj,
   print,
   printBlock,
@@ -26,6 +32,8 @@ import {
   RESOLVER_VERSION_ID,
   set,
   str,
+  notEquals,
+  toJson,
 } from 'graphql-mapping-template';
 import {
   applyKeyExpressionForCompositeKey,
@@ -33,11 +41,13 @@ import {
   getBaseType,
   graphqlName,
   ModelResourceIDs,
+  ResolverResourceIDs,
   ResourceConstants,
   toCamelCase,
 } from 'graphql-transformer-common';
 import { IndexDirectiveConfiguration, PrimaryKeyDirectiveConfiguration } from './types';
 import { lookupResolverName } from './utils';
+const API_KEY = 'API Key Authorization';
 
 export function replaceDdbPrimaryKey(config: PrimaryKeyDirectiveConfiguration, ctx: TransformerContextProvider): void {
   // Replace the table's primary key with the value from @primaryKey.
@@ -77,13 +87,17 @@ export function replaceDdbPrimaryKey(config: PrimaryKeyDirectiveConfiguration, c
   cfnTable.attributeDefinitions = table.attributeDefinitions;
 }
 
-export function updateResolvers(config: PrimaryKeyDirectiveConfiguration, ctx: TransformerContextProvider): void {
+export function updateResolvers(
+  config: PrimaryKeyDirectiveConfiguration,
+  ctx: TransformerContextProvider,
+  resolverMap: Map<TransformerResolverProvider, string>,
+): void {
   const getResolver = getResolverObject(config, ctx, 'get');
   const listResolver = getResolverObject(config, ctx, 'list');
   const createResolver = getResolverObject(config, ctx, 'create');
   const updateResolver = getResolverObject(config, ctx, 'update');
   const deleteResolver = getResolverObject(config, ctx, 'delete');
-  // TODO(cjihrig): Sync queries need to be supported here as well.
+  const syncResolver = getResolverObject(config, ctx, 'sync');
 
   if (getResolver) {
     addIndexToResolverSlot(getResolver, [setPrimaryKeySnippet(config, false)]);
@@ -114,6 +128,10 @@ export function updateResolvers(config: PrimaryKeyDirectiveConfiguration, ctx: T
 
   if (deleteResolver) {
     addIndexToResolverSlot(deleteResolver, [mergeInputsAndDefaultsSnippet(), setPrimaryKeySnippet(config, true)]);
+  }
+
+  if (syncResolver) {
+    makeSyncResolver('dbTable', config, ctx, syncResolver, resolverMap);
   }
 }
 
@@ -169,14 +187,13 @@ function getSortKeyName(config: PrimaryKeyDirectiveConfiguration): string {
 }
 
 function getResolverObject(config: PrimaryKeyDirectiveConfiguration, ctx: TransformerContextProvider, op: string) {
-  // TODO(cjihrig): Need to handle sync queries once they are supported.
   const resolverName = lookupResolverName(config, ctx, op);
 
   if (!resolverName) {
     return null;
   }
 
-  const objectName = op === 'get' || op === 'list' ? ctx.output.getQueryTypeName() : ctx.output.getMutationTypeName();
+  const objectName = op === 'get' || op === 'list' || op === 'sync' ? ctx.output.getQueryTypeName() : ctx.output.getMutationTypeName();
 
   if (!objectName) {
     return null;
@@ -293,7 +310,7 @@ function setQuerySnippet(config: PrimaryKeyDirectiveConfiguration, ctx: Transfor
 
   expressions.push(
     set(ref(ResourceConstants.SNIPPETS.ModelQueryExpression), obj({})),
-    applyKeyExpressionForCompositeKey(keyNames, keyTypes, ResourceConstants.SNIPPETS.ModelQueryExpression),
+    applyKeyExpressionForCompositeKey(keyNames, keyTypes, ResourceConstants.SNIPPETS.ModelQueryExpression)!,
   );
 
   return block(`Set query expression for key`, expressions);
@@ -367,12 +384,16 @@ function appendIndex(list: any, newIndex: any): any[] {
   return [newIndex];
 }
 
-export function updateResolversForIndex(config: IndexDirectiveConfiguration, ctx: TransformerContextProvider): void {
+export function updateResolversForIndex(
+  config: IndexDirectiveConfiguration,
+  ctx: TransformerContextProvider,
+  resolverMap: Map<TransformerResolverProvider, string>,
+): void {
   const { queryField } = config;
   const createResolver = getResolverObject(config, ctx, 'create');
   const updateResolver = getResolverObject(config, ctx, 'update');
   const deleteResolver = getResolverObject(config, ctx, 'delete');
-  // TODO(cjihrig): Sync queries need to be supported here as well.
+  const syncResolver = getResolverObject(config, ctx, 'sync');
 
   // Ensure any composite sort key values and validate update operations to
   // protect the integrity of composite sort keys.
@@ -403,6 +424,10 @@ export function updateResolversForIndex(config: IndexDirectiveConfiguration, ctx
   if (queryField) {
     makeQueryResolver(config, ctx);
   }
+
+  if (syncResolver) {
+    makeSyncResolver(config.name, config, ctx, syncResolver, resolverMap);
+  }
 }
 
 function makeQueryResolver(config: IndexDirectiveConfiguration, ctx: TransformerContextProvider) {
@@ -410,6 +435,7 @@ function makeQueryResolver(config: IndexDirectiveConfiguration, ctx: Transformer
   const dataSource = ctx.api.host.getDataSource(`${object.name.value}Table`);
   const queryTypeName = ctx.output.getQueryTypeName() as string;
   const table = getTable(ctx, object);
+  const authFilter = ref('ctx.stash.authFilter');
   const requestVariable = 'QueryRequest';
 
   assert(dataSource);
@@ -417,6 +443,7 @@ function makeQueryResolver(config: IndexDirectiveConfiguration, ctx: Transformer
   const resolver = ctx.resolvers.generateQueryResolver(
     queryTypeName,
     queryField,
+    ResolverResourceIDs.ResolverResourceID(queryTypeName, queryField),
     dataSource as DataSourceProvider,
     MappingTemplate.s3MappingTemplateFromString(
       print(
@@ -440,10 +467,35 @@ function makeQueryResolver(config: IndexDirectiveConfiguration, ctx: Transformer
             set(ref(`${requestVariable}.scanIndexForward`), bool(true)),
           ),
           iff(ref('context.args.nextToken'), set(ref(`${requestVariable}.nextToken`), ref('context.args.nextToken')), true),
+          ifElse(
+            not(isNullOrEmpty(authFilter)),
+            compoundExpression([
+              set(ref('filter'), authFilter),
+              iff(
+                not(isNullOrEmpty(ref('ctx.args.filter'))),
+                set(ref('filter'), obj({ and: list([ref('filter'), ref('ctx.args.filter')]) })),
+              ),
+            ]),
+            iff(not(isNullOrEmpty(ref('ctx.args.filter'))), set(ref('filter'), ref('ctx.args.filter'))),
+          ),
           iff(
-            ref('context.args.filter'),
-            set(ref(`${requestVariable}.filter`), ref('util.parseJson("$util.transform.toDynamoDBFilterExpression($ctx.args.filter)")')),
-            true,
+            not(isNullOrEmpty(ref('filter'))),
+            compoundExpression([
+              set(
+                ref(`filterExpression`),
+                methodCall(ref('util.parseJson'), methodCall(ref('util.transform.toDynamoDBFilterExpression'), ref('filter'))),
+              ),
+              iff(
+                not(methodCall(ref('util.isNullOrBlank'), ref('filterExpression.expression'))),
+                compoundExpression([
+                  iff(
+                    equals(methodCall(ref('filterEpression.expressionValues.size')), int(0)),
+                    qref(methodCall(ref('filterEpression.remove'), str('expressionValues'))),
+                  ),
+                  set(ref(`${requestVariable}.filter`), ref(`filterExpression`)),
+                ]),
+              ),
+            ]),
           ),
           raw(`$util.toJson($${requestVariable})`),
         ]),
@@ -460,7 +512,13 @@ function makeQueryResolver(config: IndexDirectiveConfiguration, ctx: Transformer
       `${queryTypeName}.${queryField}.res.vtl`,
     ),
   );
-
+  resolver.addToSlot(
+    'postAuth',
+    MappingTemplate.s3MappingTemplateFromString(
+      generateAuthExpressionForSandboxMode(ctx.sandboxModeEnabled),
+      `${queryTypeName}.${queryField}.{slotName}.{slotIndex}.res.vtl`,
+    ),
+  );
   resolver.mapToStack(table.stack);
   ctx.resolvers.addResolver(object.name.value, queryField, resolver);
 }
@@ -501,14 +559,273 @@ function mergeInputsAndDefaultsSnippet() {
   return printBlock('Merge default values and inputs')(generateApplyDefaultsToInputTemplate('mergedValues'));
 }
 
-function addIndexToResolverSlot(resolver: TransformerResolverProvider, lines: string[]): void {
+function addIndexToResolverSlot(resolver: TransformerResolverProvider, lines: string[], isSync: boolean = false): void {
   const res = resolver as any;
 
   res.addToSlot(
-    'postAuth',
+    'preAuth',
     MappingTemplate.s3MappingTemplateFromString(
-      lines.join('\n') + '\n{}',
+      lines.join('\n') + '\n' + (!isSync ? '{}' : ''),
       `${res.typeName}.${res.fieldName}.{slotName}.{slotIndex}.req.vtl`,
     ),
+    undefined,
+    isSync ? res.datasource : null,
   );
 }
+
+function makeSyncResolver(
+  name: string,
+  config: PrimaryKeyDirectiveConfiguration,
+  ctx: TransformerContextProvider,
+  syncResolver: TransformerResolverProvider,
+  resolverMap: Map<TransformerResolverProvider, string>,
+) {
+  if (!ctx.isProjectUsingDataStore()) return;
+
+  if (resolverMap.has(syncResolver)) {
+    const prevSnippet = resolverMap.get(syncResolver)!;
+    resolverMap.set(syncResolver, joinSnippets([prevSnippet, print(setSyncQueryMapSnippet(name, config))]));
+  } else {
+    resolverMap.set(syncResolver, print(setSyncQueryMapSnippet(name, config)));
+  }
+}
+
+function joinSnippets(lines: string[]): string {
+  return lines.join('\n');
+}
+
+function setSyncQueryMapSnippet(name: string, config: PrimaryKeyDirectiveConfiguration) {
+  const { field, sortKeyFields } = config;
+  const expressions: Expression[] = [];
+  const keys = [field.name.value, ...(sortKeyFields ?? [])];
+  expressions.push(
+    raw(`$util.qr($QueryMap.put('${keys.join('+')}' , '${name}'))`),
+    raw(`$util.qr($PkMap.put('${field.name.value}' , '${name}'))`),
+  );
+  return block(`Set query expression for @key`, expressions);
+}
+
+export function constructSyncVTL(syncVTLContent: string, resolver: TransformerResolverProvider) {
+  const checks = [
+    print(generateSyncResolverInit()),
+    syncVTLContent,
+    print(setSyncQueryFilterSnippet()),
+    print(setSyncKeyExpressionForHashKey(ResourceConstants.SNIPPETS.ModelQueryExpression)),
+    print(setSyncKeyExpressionForRangeKey(ResourceConstants.SNIPPETS.ModelQueryExpression)),
+    print(makeSyncQueryResolver()),
+  ];
+
+  addIndexToResolverSlot(resolver, checks, true);
+}
+
+function setSyncQueryFilterSnippet() {
+  const expressions: Expression[] = [];
+  expressions.push(
+    compoundExpression([
+      set(ref('filterArgsMap'), ref('ctx.args.filter.get("and")')),
+      ifElse(
+        raw(`!$util.isNullOrEmpty($filterArgsMap) && ($util.isNull($ctx.args.lastSync) || $ctx.args.lastSync == 0)`),
+        compoundExpression([
+          set(ref('json'), raw(`$filterArgsMap`)),
+          forEach(ref('item'), ref(`json`), [
+            set(ref('ind'), ref('foreach.index')),
+            forEach(ref('entry'), ref('item.entrySet()'), [
+              iff(
+                raw(`$ind == 0 && !$util.isNullOrEmpty($entry.value.eq) && !$util.isNullOrEmpty($PkMap.get($entry.key))`),
+                compoundExpression([
+                  set(ref('pk'), ref('entry.key')),
+                  set(ref('scan'), bool(false)),
+                  raw('$util.qr($ctx.args.put($pk,$entry.value.eq))'),
+                  set(ref('index'), ref('PkMap.get($pk)')),
+                ]),
+              ),
+              ifElse(
+                raw('$ind == 1 && !$util.isNullOrEmpty($pk) && !$util.isNullOrEmpty($QueryMap.get("${pk}+$entry.key"))'),
+                compoundExpression([
+                  set(ref('sk'), ref('entry.key')),
+                  raw('$util.qr($ctx.args.put($sk,$entry.value))'),
+                  set(ref('index'), ref('QueryMap.get("${pk}+$sk")')),
+                ]),
+                iff(raw('$ind > 0'), qref('$filterMap.put($entry.key,$entry.value)')),
+              ),
+            ]),
+          ]),
+        ]),
+        set(ref(`filterMap`), raw(`$ctx.args.filter`)),
+      ),
+    ]),
+  );
+  return block(`Set query expression for @key`, expressions);
+}
+
+function setSyncKeyExpressionForHashKey(queryExprReference: string) {
+  const expressions: Expression[] = [];
+  expressions.push(
+    set(ref(ResourceConstants.SNIPPETS.ModelQueryExpression), obj({})),
+    iff(
+      raw(`!$util.isNull($pk)`),
+      compoundExpression([
+        set(ref(`${queryExprReference}.expression`), str(`#pk = :pk`)),
+        set(ref(`${queryExprReference}.expressionNames`), obj({ [`#pk`]: str('$pk') })),
+        set(
+          ref(`${queryExprReference}.expressionValues`),
+          obj({ [`:pk`]: ref('util.parseJson($util.dynamodb.toDynamoDBJson($ctx.args.get($pk)))') }),
+        ),
+      ]),
+    ),
+  );
+  return block(`Set Primary Key initialization @key`, expressions);
+}
+
+function setSyncKeyExpressionForRangeKey(queryExprReference: string) {
+  return block('Applying Key Condition', [
+    iff(
+      raw(`!$util.isNull($ctx.args.get($sk)) && !$util.isNull($ctx.args.get($sk).beginsWith)`),
+      compoundExpression([
+        set(ref(`${queryExprReference}.expression`), raw(`"$${queryExprReference}.expression AND begins_with(#sortKey, :sortKey)"`)),
+        qref(`$${queryExprReference}.expressionNames.put("#sortKey", $sk)`),
+        qref(
+          `$${queryExprReference}.expressionValues.put(":sortKey", $util.parseJson($util.dynamodb.toDynamoDBJson($ctx.args.get($sk).beginsWith)))`,
+        ),
+      ]),
+    ),
+    iff(
+      raw(`!$util.isNull($ctx.args.get($sk)) && !$util.isNull($ctx.args.get($sk).between)`),
+      compoundExpression([
+        set(
+          ref(`${queryExprReference}.expression`),
+          raw(`"$${queryExprReference}.expression AND #sortKey BETWEEN :sortKey0 AND :sortKey1"`),
+        ),
+        qref(`$${queryExprReference}.expressionNames.put("#sortKey", $sk)`),
+        qref(
+          `$${queryExprReference}.expressionValues.put(":sortKey", $util.parseJson($util.dynamodb.toDynamoDBJson($ctx.args.get($sk).between[0])))`,
+        ),
+        qref(
+          `$${queryExprReference}.expressionValues.put(":sortKey", $util.parseJson($util.dynamodb.toDynamoDBJson($ctx.args.get($sk).between[1])))`,
+        ),
+      ]),
+    ),
+    iff(
+      raw(`!$util.isNull($ctx.args.get($sk)) && !$util.isNull($ctx.args.get($sk).eq)`),
+      compoundExpression([
+        set(ref(`${queryExprReference}.expression`), raw(`"$${queryExprReference}.expression AND #sortKey = :sortKey"`)),
+        qref(`$${queryExprReference}.expressionNames.put("#sortKey", $sk)`),
+        qref(
+          `$${queryExprReference}.expressionValues.put(":sortKey", $util.parseJson($util.dynamodb.toDynamoDBJson($ctx.args.get($sk).eq)))`,
+        ),
+      ]),
+    ),
+    iff(
+      raw(`!$util.isNull($ctx.args.get($sk)) && !$util.isNull($ctx.args.get($sk).lt)`),
+      compoundExpression([
+        set(ref(`${queryExprReference}.expression`), raw(`"$${queryExprReference}.expression AND #sortKey < :sortKey"`)),
+        qref(`$${queryExprReference}.expressionNames.put("#sortKey", $sk)`),
+        qref(
+          `$${queryExprReference}.expressionValues.put(":sortKey", $util.parseJson($util.dynamodb.toDynamoDBJson($ctx.args.get($sk).lt)))`,
+        ),
+      ]),
+    ),
+    iff(
+      raw(`!$util.isNull($ctx.args.get($sk)) && !$util.isNull($ctx.args.get($sk).le)`),
+      compoundExpression([
+        set(ref(`${queryExprReference}.expression`), raw(`"$${queryExprReference}.expression AND #sortKey <= :sortKey"`)),
+        qref(`$${queryExprReference}.expressionNames.put("#sortKey", $sk)`),
+        qref(
+          `$${queryExprReference}.expressionValues.put(":sortKey", $util.parseJson($util.dynamodb.toDynamoDBJson($ctx.args.get($sk).le)))`,
+        ),
+      ]),
+    ),
+    iff(
+      raw(`!$util.isNull($ctx.args.get($sk)) && !$util.isNull($ctx.args.get($sk).gt)`),
+      compoundExpression([
+        set(ref(`${queryExprReference}.expression`), raw(`"$${queryExprReference}.expression AND #sortKey > :sortKey"`)),
+        qref(`$${queryExprReference}.expressionNames.put("#sortKey", $sk)`),
+        qref(
+          `$${queryExprReference}.expressionValues.put(":sortKey", $util.parseJson($util.dynamodb.toDynamoDBJson($ctx.args.get($sk).gt)))`,
+        ),
+      ]),
+    ),
+    iff(
+      raw(`!$util.isNull($ctx.args.get($sk)) && !$util.isNull($ctx.args.get($sk).ge)`),
+      compoundExpression([
+        set(ref(`${queryExprReference}.expression`), raw(`"$${queryExprReference}.expression AND #sortKey >= :sortKey"`)),
+        qref(`$${queryExprReference}.expressionNames.put("#sortKey", $sk)`),
+        qref(
+          `$${queryExprReference}.expressionValues.put(":sortKey", $util.parseJson($util.dynamodb.toDynamoDBJson($ctx.args.get($sk).ge)))`,
+        ),
+      ]),
+    ),
+  ]);
+}
+
+function makeSyncQueryResolver() {
+  const requestVariable = 'QueryRequest';
+  const expressions: Expression[] = [];
+  expressions.push(
+    ifElse(
+      raw('!$scan'),
+      compoundExpression([
+        set(ref('limit'), ref(`util.defaultIfNull($context.args.limit, ${ResourceConstants.DEFAULT_PAGE_LIMIT})`)),
+        set(
+          ref(requestVariable),
+          obj({
+            version: str(RESOLVER_VERSION_ID),
+            operation: str('Sync'),
+            limit: ref('limit'),
+            query: ref(ResourceConstants.SNIPPETS.ModelQueryExpression),
+          }),
+        ),
+        ifElse(
+          raw(`!$util.isNull($ctx.args.sortDirection)
+                    && $ctx.args.sortDirection == "DESC"`),
+          set(ref(`${requestVariable}.scanIndexForward`), bool(false)),
+          set(ref(`${requestVariable}.scanIndexForward`), bool(true)),
+        ),
+        iff(ref('context.args.nextToken'), set(ref(`${requestVariable}.nextToken`), ref('context.args.nextToken')), true),
+        iff(
+          raw('!$util.isNullOrEmpty($filterMap)'),
+          set(ref(`${requestVariable}.filter`), ref('util.parseJson($util.transform.toDynamoDBFilterExpression($filterMap))')),
+        ),
+        iff(raw(`$index != "dbTable"`), set(ref(`${requestVariable}.index`), ref('index'))),
+        raw(`$util.toJson($${requestVariable})`),
+      ]),
+      DynamoDBMappingTemplate.syncItem({
+        filter: ifElse(
+          raw('!$util.isNullOrEmpty($ctx.args.filter)'),
+          ref('util.transform.toDynamoDBFilterExpression($ctx.args.filter)'),
+          nul(),
+        ),
+        limit: ref(`util.defaultIfNull($ctx.args.limit, ${ResourceConstants.DEFAULT_SYNC_QUERY_PAGE_LIMIT})`),
+        lastSync: ref('util.toJson($util.defaultIfNull($ctx.args.lastSync, null))'),
+        nextToken: ref('util.toJson($util.defaultIfNull($ctx.args.nextToken, null))'),
+      }),
+    ),
+  );
+  return block(` Set query expression for @key`, expressions);
+}
+
+function generateSyncResolverInit() {
+  const expressions: Expression[] = [];
+  expressions.push(
+    set(ref('index'), str('')),
+    set(ref('scan'), bool(true)),
+    set(ref('filterMap'), obj({})),
+    set(ref('QueryMap'), obj({})),
+    set(ref('PkMap'), obj({})),
+    set(ref('filterArgsMap'), obj({})),
+  );
+  return block(`Set map initialization for @key`, expressions);
+}
+/**
+ * Util function to generate sandbox mode expression
+ */
+export const generateAuthExpressionForSandboxMode = (enabled: boolean): string => {
+  let exp;
+
+  if (enabled) exp = iff(notEquals(methodCall(ref('util.authType')), str(API_KEY)), methodCall(ref('util.unauthorized')));
+  else exp = methodCall(ref('util.unauthorized'));
+
+  return printBlock(`Sandbox Mode ${enabled ? 'Enabled' : 'Disabled'}`)(
+    compoundExpression([iff(not(ref('ctx.stash.get("hasAuth")')), exp), toJson(obj({}))]),
+  );
+};

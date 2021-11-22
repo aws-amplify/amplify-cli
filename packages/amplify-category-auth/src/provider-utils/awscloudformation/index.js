@@ -7,6 +7,7 @@ const { ENV_SPECIFIC_PARAMS, AmplifyAdmin, UserPool, IdentityPool, BothPools, pr
 const { getAddAuthHandler, getUpdateAuthHandler } = require('./handlers/resource-handlers');
 const { getSupportedServices } = require('../supported-services');
 const { importResource, importedAuthEnvInit } = require('./import');
+const { AuthInputState } = require('./auth-inputs-manager/auth-input-state');
 
 function serviceQuestions(context, defaultValuesFilename, stringMapsFilename, serviceWalkthroughFilename, serviceMetadata) {
   const serviceWalkthroughSrc = `${__dirname}/service-walkthroughs/${serviceWalkthroughFilename}`;
@@ -14,12 +15,13 @@ function serviceQuestions(context, defaultValuesFilename, stringMapsFilename, se
   return serviceWalkthrough(context, defaultValuesFilename, stringMapsFilename, serviceMetadata);
 }
 
-async function addResource(context, service) {
+async function addResource(context, service, skipNextSteps = false) {
   const serviceMetadata = getSupportedServices()[service];
   const { defaultValuesFilename, stringMapsFilename, serviceWalkthroughFilename } = serviceMetadata;
-  return getAddAuthHandler(context)(
-    await serviceQuestions(context, defaultValuesFilename, stringMapsFilename, serviceWalkthroughFilename, serviceMetadata),
-  );
+  return getAddAuthHandler(
+    context,
+    skipNextSteps,
+  )(await serviceQuestions(context, defaultValuesFilename, stringMapsFilename, serviceWalkthroughFilename, serviceMetadata));
 }
 
 async function updateResource(context, { service }) {

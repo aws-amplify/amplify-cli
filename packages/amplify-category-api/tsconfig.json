@@ -11,11 +11,15 @@
     "lib",
     "resources/awscloudformation/lambdas",
     "resources/awscloudformation/container-templates",
+    "resources/awscloudformation/graphql-lambda-authorizer",
     "src/__tests__"
   ],
   "references": [
+    {"path": "../amplify-cli-core"},
     {"path": "../amplify-headless-interface"},
+    {"path": "../amplify-prompts"},
     {"path": "../graphql-transformer-core"},
     {"path": "../amplify-util-headless-input"},
+    {"path": "../amplify-graphql-transformer-migrator"},
   ]
 }
