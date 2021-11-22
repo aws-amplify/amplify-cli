@@ -147,7 +147,7 @@ class AmplifyPrompter implements Prompter {
     if (choices.length === 1 && opts.returnSize !== 'many') {
       this.print.info(`Only one option for [${message}]. Selecting [${result}].`);
     } else if ('pickAtLeast' in opts && (opts.pickAtLeast || 0) >= choices.length) {
-      // if you have to pick at lest as many options as are available, select all of them and return without prompting
+      // if you have to pick at least as many options as are available, select all of them and return without prompting
       result = genericChoices.map(choice => choice.name);
       this.print.info(`Must pick at least ${opts.pickAtLeast} of ${choices.length} options. Selecting all options [${result}]`);
     } else if (isYes) {
