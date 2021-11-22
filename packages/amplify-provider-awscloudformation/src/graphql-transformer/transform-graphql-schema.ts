@@ -26,7 +26,7 @@ import { SearchableModelTransformer } from '@aws-amplify/graphql-searchable-tran
 import { DefaultValueTransformer } from '@aws-amplify/graphql-default-value-transformer';
 import { destructiveUpdatesFlag, ProviderName as providerName } from '../constants';
 import { hashDirectory } from '../upload-appsync-files';
-import { getAdminRoles, getIdentityPoolId, mergeUserConfigWithTransformOutput, showACM, writeDeploymentToDisk } from './utils';
+import { getAdminRoles, getIdentityPoolId, mergeUserConfigWithTransformOutput, writeDeploymentToDisk } from './utils';
 import { loadProject as readTransformerConfiguration } from './transform-config';
 import { getSanityCheckRules, loadProject } from 'graphql-transformer-core';
 import { Template } from '@aws-amplify/graphql-transformer-core/lib/config/project-config';
@@ -290,11 +290,6 @@ export async function transformGraphQLSchema(context, options) {
   }
 
   const project = await loadProject(resourceDir);
-
-  if (flags['acm']) {
-    showACM(project.schema, flags['acm']);
-    return;
-  }
 
   const lastDeployedProjectConfig = fs.existsSync(previouslyDeployedBackendDir)
     ? await loadProject(previouslyDeployedBackendDir)
