@@ -1675,20 +1675,22 @@ export function updateAuthWithoutTrigger(cwd: string, settings: any): Promise<vo
   });
 }
 
-export function updateAuthAdminQueriesWithExtMigration(cwd: string): Promise<void> {
-  return spawn(getCLIPath(), ['update', 'auth'], { cwd, stripColors: true })
+export function updateAuthAdminQueriesWithExtMigration(cwd: string, settings: { testingWithLatestCodebase: boolean }): Promise<void> {
+  return spawn(getCLIPath(settings.testingWithLatestCodebase), ['update', 'auth'], { cwd, stripColors: true })
     .wait('Do you want to migrate auth resource')
     .sendYes()
     .wait('What do you want to do')
     .sendKeyUp()
     .sendCarriageReturn() // Create or update Admin queries API
     .wait('Do you want to restrict access to the admin queries API to a specific Group')
-    .sendConfirmYes()
+    .sendYes()
+    .sendCarriageReturn()
     .wait('Select the group to restrict access with')
     .sendCarriageReturn() // Enter a custom group
     .wait('Provide a group name')
     .sendLine('mycustomgroup')
     .wait('Migration for AdminQueries is required. Continue')
     .sendYes()
+    .sendCarriageReturn()
     .runAsync();
 }

@@ -1,7 +1,6 @@
 import {
   addRestApi,
   amplifyPushAuth,
-  cliVersionController,
   createNewProjectDir,
   deleteProject,
   deleteProjectDir,
@@ -14,7 +13,7 @@ import {
   getProjectMeta,
 } from 'amplify-e2e-core';
 import { v4 as uuid } from 'uuid';
-
+jest.setTimeout(1000 * 60 * 12);
 describe('API Gateway CDK migration', () => {
   let projRoot: string;
 
@@ -22,21 +21,19 @@ describe('API Gateway CDK migration', () => {
     const [shortId] = uuid().split('-');
     const projName = `apigwmig${shortId}`;
     projRoot = await createNewProjectDir(projName);
-    await cliVersionController.useCliVersion('6.3.1');
     await initJSProjectWithProfile(projRoot, { name: projName });
   });
 
   afterEach(async () => {
-    await deleteProject(projRoot);
+    await deleteProject(projRoot, undefined, true);
     deleteProjectDir(projRoot);
   });
 
   it('migrates on api update', async () => {
     await addRestApi(projRoot, { existingLambda: false, apiName: 'restapimig' });
     await amplifyPushAuth(projRoot);
-    cliVersionController.resetCliVersion();
-    await updateRestApi(projRoot, { updateOperation: 'Add another path', newPath: '/foo', expectMigration: true });
-    await amplifyPushAuth(projRoot);
+    await updateRestApi(projRoot, { updateOperation: 'Add another path', newPath: '/foo', expectMigration: true, testingWithLatestCodebase: true });
+    await amplifyPushAuth(projRoot, true);
     const cliInputs = getCLIInputs(projRoot, 'api', 'restapimig');
     expect(cliInputs).toBeDefined();
   });
@@ -46,10 +43,9 @@ describe('API Gateway CDK migration', () => {
     await updateAuthAddAdminQueries(projRoot);
     await amplifyPushAuth(projRoot);
 
-    cliVersionController.resetCliVersion();
 
-    await updateAuthAdminQueriesWithExtMigration(projRoot);
-    await amplifyPushAuth(projRoot);
+    await updateAuthAdminQueriesWithExtMigration(projRoot, { testingWithLatestCodebase: true });
+    await amplifyPushAuth(projRoot, true);
 
     const meta = getProjectMeta(projRoot);
     const authName = Object.keys(meta.auth)[0];

@@ -454,8 +454,10 @@ export function addRestApi(cwd: string, settings: any) {
         .sendCarriageReturn() // Pick first one
         .wait('Restrict API access')
         .sendNo() // Do not restrict access
+        .sendCarriageReturn()
         .wait('Do you want to add another path')
         .sendNo() // Do not add another path
+        .sendCarriageReturn()
         .sendEof();
 
       return chain.runAsync();
@@ -533,10 +535,10 @@ export function addRestApi(cwd: string, settings: any) {
         .sendCarriageReturn();
     }
   } else {
-    chain.sendNo(); // Do not restrict access
+    chain.sendNo().sendCarriageReturn(); // Do not restrict access
   }
 
-  chain.wait('Do you want to add another path').sendNo().sendEof();
+  chain.wait('Do you want to add another path').sendNo().sendCarriageReturn().sendEof();
 
   return chain.runAsync();
 }
@@ -545,11 +547,12 @@ const updateRestApiDefaultSettings = {
   updateOperation: 'Add another path' as 'Add another path' | 'Update path' | 'Remove path',
   expectMigration: false,
   newPath: '/foo' as string | undefined,
+  testingWithLatestCodebase: false,
 };
 
 export function updateRestApi(cwd: string, settings: Partial<typeof updateRestApiDefaultSettings> = {}) {
   const completeSettings = { ...updateRestApiDefaultSettings, ...settings };
-  const chain = spawn(getCLIPath(), ['update', 'api'], { cwd, stripColors: true })
+  const chain = spawn(getCLIPath(settings.testingWithLatestCodebase), ['update', 'api'], { cwd, stripColors: true })
     .wait('Select from one of the below mentioned services')
     .sendKeyDown()
     .sendCarriageReturn()
