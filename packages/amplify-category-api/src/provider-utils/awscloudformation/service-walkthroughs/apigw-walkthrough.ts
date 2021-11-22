@@ -269,11 +269,16 @@ async function askPermissions(
         defaultSelectedGroups = Object.keys(currentPath.permissions.groups);
       }
 
-      const selectedUserPoolGroupList = await prompter.pick<'many', string>('Select groups:', userPoolGroupList, {
+      let selectedUserPoolGroupList = await prompter.pick<'many', string>('Select groups:', userPoolGroupList, {
         initial: byValues(defaultSelectedGroups)(userPoolGroupList),
         returnSize: 'many',
         pickAtLeast: 1,
       });
+
+      //if single user pool group is selected, convert to array
+      if ( selectedUserPoolGroupList &&  !Array.isArray(selectedUserPoolGroupList)){
+        selectedUserPoolGroupList = [ selectedUserPoolGroupList ];
+      }
 
       for (const selectedUserPoolGroup of selectedUserPoolGroupList) {
         let defaults = [];
