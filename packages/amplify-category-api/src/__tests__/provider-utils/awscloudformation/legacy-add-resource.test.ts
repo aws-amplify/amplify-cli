@@ -4,6 +4,7 @@ import { $TSAny, $TSContext } from 'amplify-cli-core';
 
 jest.mock('fs-extra');
 jest.mock('amplify-cli-core', () => ({
+  AmplifyCategories: { API: 'api' },
   isResourceNameUnique: jest.fn().mockReturnValue(true),
   JSONUtilities: {
     readJson: jest.fn(),

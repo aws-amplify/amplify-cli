@@ -18,8 +18,8 @@ import * as fs from 'fs-extra';
 import * as path from 'path';
 import * as vm from 'vm2';
 import { AmplifyApigwResourceStack, ApigwInputs, CrudOperation, Path } from '.';
-import { category } from '../../../category-constants';
 import { ApigwInputState } from '../apigw-input-state';
+import { ADMIN_QUERIES_NAME } from '../../../category-constants';
 export class ApigwStackTransform {
   _app: cdk.App;
   cliInputs: ApigwInputs;
@@ -44,7 +44,7 @@ export class ApigwStackTransform {
 
     const pathsWithUserPoolGroups = Object.entries(this.cliInputs.paths).filter(([_, path]) => !!path?.permissions?.groups);
 
-    if (this.resourceName === 'AdminQueries' || pathsWithUserPoolGroups.length > 0) {
+    if (this.resourceName === ADMIN_QUERIES_NAME || pathsWithUserPoolGroups.length > 0) {
       [authResourceName] = getAmplifyResourceByCategories(AmplifyCategories.AUTH).filter(resourceName => resourceName !== 'userPoolGroups');
     }
 
@@ -172,7 +172,7 @@ export class ApigwStackTransform {
     );
 
     // Add resources
-    this.resourceName === 'AdminQueries'
+    this.resourceName === ADMIN_QUERIES_NAME
       ? this.resourceTemplateObj.generateAdminQueriesStack(this.resourceName, authResourceName)
       : this.resourceTemplateObj.generateStackResources(this.resourceName);
   }
@@ -228,7 +228,7 @@ export class ApigwStackTransform {
       this.cfn = JSONUtilities.parse(this.resourceTemplateObj.renderCloudFormationTemplate());
     }
 
-    const resourceDirPath = pathManager.getResourceDirectoryPath(undefined, category, this.resourceName);
+    const resourceDirPath = pathManager.getResourceDirectoryPath(undefined, AmplifyCategories.API, this.resourceName);
     fs.ensureDirSync(resourceDirPath);
 
     const buildDirPath = path.join(resourceDirPath, PathConstants.BuildDirName);
