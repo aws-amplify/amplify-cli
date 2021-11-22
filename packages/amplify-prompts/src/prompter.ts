@@ -63,30 +63,30 @@ class AmplifyPrompter implements Prompter {
    * @returns The prompt response
    */
   input = async <RS extends ReturnSize = 'one', T = string>(message: string, ...options: MaybeOptionalInputOptions<RS, T>) => {
-    const opts = options?.[0];
+    const opts = options?.[0] || {};
     if (isYes) {
-      if (opts?.initial) {
+      if (opts.initial) {
         return opts.initial as PromptReturn<RS, T>;
       } else {
         throw new Error(`Cannot prompt for [${message}] when '--yes' flag is set`);
       }
     }
 
-    const validator = (opts?.returnSize === 'many' ? validateEachWith(opts?.validate) : opts?.validate) as ValidatorCast;
+    const validator = (opts.returnSize === 'many' ? validateEachWith(opts.validate) : opts.validate) as ValidatorCast;
 
     const { result } = await this.prompter<{ result: RS extends 'many' ? string[] : string }>({
-      type: (opts as any)?.hidden ? 'invisible' : opts?.returnSize === 'many' ? 'list' : 'input',
+      type: 'hidden' in opts && opts.hidden ? 'invisible' : opts.returnSize === 'many' ? 'list' : 'input',
       name: 'result',
       message,
       validate: validator,
-      initial: opts?.initial,
+      initial: opts.initial,
       // footer is not part of the TS interface but it's part of the JS API
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
-      footer: opts?.returnSize === 'many' ? 'Enter a comma-delimited list of values' : undefined,
+      footer: opts.returnSize === 'many' ? 'Enter a comma-delimited list of values' : undefined,
     });
 
-    if (typeof opts?.transform === 'function') {
+    if (typeof opts.transform === 'function') {
       if (Array.isArray(result)) {
         return (await Promise.all(result.map(async part => (opts.transform as Function)(part) as T))) as PromptReturn<RS, T>;
       }
@@ -115,11 +115,11 @@ class AmplifyPrompter implements Prompter {
     ...options: MaybeOptionalPickOptions<RS, T>
   ): Promise<PromptReturn<RS, T>> => {
     // some choices must be provided
-    if (choices?.length === 0) {
+    if (!choices?.length) {
       throw new Error(`No choices provided for prompt [${message}]`);
     }
 
-    const opts = options?.[0];
+    const opts = options?.[0] || {};
 
     // map string[] choices into GenericChoice<T>[]
     const genericChoices: GenericChoice<T>[] =
@@ -129,7 +129,7 @@ class AmplifyPrompter implements Prompter {
 
     const initialIndexes = initialOptsToIndexes(
       genericChoices.map(choice => choice.value),
-      opts?.initial,
+      opts.initial,
     );
 
     // enquirer requires all choice values be strings, so set up a mapping of string => T
@@ -144,8 +144,12 @@ class AmplifyPrompter implements Prompter {
 
     let result = genericChoices[0].name as string | string[];
 
-    if (choices?.length === 1) {
+    if (choices.length === 1 && opts.returnSize !== 'many') {
       this.print.info(`Only one option for [${message}]. Selecting [${result}].`);
+    } else if ('pickAtLeast' in opts && (opts.pickAtLeast || 0) >= choices.length) {
+      // if you have to pick at least as many options as are available, select all of them and return without prompting
+      result = genericChoices.map(choice => choice.name);
+      this.print.info(`Must pick at least ${opts.pickAtLeast} of ${choices.length} options. Selecting all options [${result}]`);
     } else if (isYes) {
       if (initialIndexes === undefined || (Array.isArray(initialIndexes) && initialIndexes.length === 0)) {
         throw new Error(`Cannot prompt for [${message}] when '--yes' flag is set`);
@@ -168,7 +172,7 @@ class AmplifyPrompter implements Prompter {
         // footer is not part of the TS interface but it's part of the JS API
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
-        footer: opts?.returnSize === 'many' ? chalk.gray('(Use <space> to select, <ctrl + a> to toggle all)') : undefined,
+        footer: opts.returnSize === 'many' ? chalk.gray('(Use <space> to select, <ctrl + a> to toggle all)') : undefined,
         type: 'autocomplete',
         name: 'result',
         message,
@@ -177,7 +181,7 @@ class AmplifyPrompter implements Prompter {
         // there is a typo in the .d.ts file for this field -- muliple -> multiple
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
-        multiple: opts?.returnSize === 'many',
+        multiple: opts.returnSize === 'many',
         choices: enquirerChoices,
         pointer(_: unknown, i: number) {
           // this.state is bound to a property of enquirer's prompt object, it does not reference a property of AmplifyPrompter
