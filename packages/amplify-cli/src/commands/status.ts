@@ -13,7 +13,7 @@ export const run = async (context: $TSContext) => {
   const view = new ViewResourceTableParams(cliParams);
   if (context?.input?.subCommands?.includes('help')) {
     context.print.info(view.getStyledHelp());
-  } else if (cliParams.cliOptions.api && cliParams.cliOptions.acm) {
+  } else if (cliParams.cliOptions?.api && cliParams.cliOptions?.acm) {
     try {
       await showApiAuthAcm(context);
     } catch (err) {
