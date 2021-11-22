@@ -14,9 +14,7 @@ export interface AmplifyApiGraphQlResourceStackTemplate {
   // directives stack
   api?: Partial<AppsyncApiStack>;
   models?: Partial<Record<string, ModelDirectiveStack>>;
-  http?: Partial<HttpsDirectiveStack & AppsyncStackCommon>;
   opensearch?: Partial<OpenSearchDirectiveStack & AppsyncStackCommon>;
-  function?: Partial<FunctionDirectiveStack & AppsyncStackCommon>;
   predictions?: Partial<PredictionsDirectiveStack & AppsyncStackCommon>;
 }
 
