@@ -13,7 +13,7 @@ import {
   getProjectMeta,
 } from 'amplify-e2e-core';
 import { v4 as uuid } from 'uuid';
-jest.setTimeout(1000 * 60 * 12);
+
 describe('API Gateway CDK migration', () => {
   let projRoot: string;
 
