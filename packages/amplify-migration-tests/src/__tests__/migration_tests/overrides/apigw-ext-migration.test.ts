@@ -12,6 +12,7 @@ import {
   updateAuthAdminQueriesWithExtMigration,
   getProjectMeta,
 } from 'amplify-e2e-core';
+import { addRestApiOldDx } from '../../../migration-helpers/api';
 import { v4 as uuid } from 'uuid';
 
 describe('API Gateway CDK migration', () => {
@@ -30,9 +31,14 @@ describe('API Gateway CDK migration', () => {
   });
 
   it('migrates on api update', async () => {
-    await addRestApi(projRoot, { existingLambda: false, apiName: 'restapimig' });
+    await addRestApiOldDx(projRoot, { existingLambda: false, apiName: 'restapimig' });
     await amplifyPushAuth(projRoot);
-    await updateRestApi(projRoot, { updateOperation: 'Add another path', newPath: '/foo', expectMigration: true, testingWithLatestCodebase: true });
+    await updateRestApi(projRoot, {
+      updateOperation: 'Add another path',
+      newPath: '/foo',
+      expectMigration: true,
+      testingWithLatestCodebase: true,
+    });
     await amplifyPushAuth(projRoot, true);
     const cliInputs = getCLIInputs(projRoot, 'api', 'restapimig');
     expect(cliInputs).toBeDefined();
@@ -42,7 +48,6 @@ describe('API Gateway CDK migration', () => {
     await addAuthWithDefault(projRoot);
     await updateAuthAddAdminQueries(projRoot);
     await amplifyPushAuth(projRoot);
-
 
     await updateAuthAdminQueriesWithExtMigration(projRoot, { testingWithLatestCodebase: true });
     await amplifyPushAuth(projRoot, true);

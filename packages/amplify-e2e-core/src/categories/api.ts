@@ -427,7 +427,6 @@ export function updateAPIWithResolutionStrategyWithModels(cwd: string, settings:
   });
 }
 
-// Either settings.existingLambda or settings.isCrud is required
 export function addRestApi(cwd: string, settings: any) {
   const isFirstRestApi = settings.isFirstRestApi ?? true;
   let chain = spawn(getCLIPath(), ['add', 'api'], { cwd, stripColors: true })
@@ -454,10 +453,8 @@ export function addRestApi(cwd: string, settings: any) {
         .sendCarriageReturn() // Pick first one
         .wait('Restrict API access')
         .sendNo() // Do not restrict access
-        .sendCarriageReturn()
         .wait('Do you want to add another path')
         .sendNo() // Do not add another path
-        .sendCarriageReturn()
         .sendEof();
 
       return chain.runAsync();
@@ -535,10 +532,10 @@ export function addRestApi(cwd: string, settings: any) {
         .sendCarriageReturn();
     }
   } else {
-    chain.sendNo().sendCarriageReturn(); // Do not restrict access
+    chain.sendNo(); // Do not restrict access
   }
 
-  chain.wait('Do you want to add another path').sendNo().sendCarriageReturn().sendEof();
+  chain.wait('Do you want to add another path').sendNo().sendEof();
 
   return chain.runAsync();
 }
