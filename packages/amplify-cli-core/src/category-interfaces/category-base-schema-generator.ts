@@ -121,7 +121,7 @@ export class CLIInputSchemaValidator {
     try {
       return await import(generateSchemaPath(this._category, this._service, this._schemaFileName));
     } catch (ex) {
-      throw new Error(`Schema defination doesnt exist : ${generateSchemaPath(this._category, this._service, this._schemaFileName)}`);
+      throw new Error(`Schema definition doesnt exist : ${generateSchemaPath(this._category, this._service, this._schemaFileName)}`);
     }
   }
 
