@@ -22,7 +22,7 @@ import {
 import { Template } from '@aws-amplify/graphql-transformer-core/lib/config/project-config';
 import { OverrideConfig } from '@aws-amplify/graphql-transformer-core/src/transformation/types';
 import { AppSyncAuthConfiguration, TransformerPluginProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import { $TSContext, AmplifyCategories, AmplifySupportedService, JSONUtilities, stateManager } from 'amplify-cli-core';
+import { $TSContext, AmplifyCategories, AmplifySupportedService, JSONUtilities, pathManager, stateManager } from 'amplify-cli-core';
 import { printer } from 'amplify-prompts';
 import fs from 'fs-extra';
 import { print } from 'graphql';
@@ -454,7 +454,15 @@ function getBucketName(context, s3ResourceName, backEndDir) {
   const { amplify } = context;
   const { amplifyMeta } = amplify.getProjectDetails();
   const stackName = amplifyMeta.providers.awscloudformation.StackName;
-  const bucketParameters = stateManager.getResourceParametersJson(undefined, AmplifyCategories.STORAGE, s3ResourceName);
+  const s3ResourcePath = pathManager.getResourceDirectoryPath(undefined, AmplifyCategories.STORAGE, s3ResourceName);
+  const cliInputsPath = path.join(s3ResourcePath, 'cli-inputs.json');
+  let bucketParameters;
+  // get bucketParameters 1st from cli-inputs , if not present, then parameters.json
+  if (fs.existsSync(cliInputsPath)) {
+    bucketParameters = JSONUtilities.readJson(cliInputsPath);
+  } else {
+    bucketParameters = stateManager.getResourceParametersJson(undefined, AmplifyCategories.STORAGE, s3ResourceName);
+  }
   const bucketName = stackName.startsWith('amplify-')
     ? `${bucketParameters.bucketName}\${hash}-\${env}`
     : `${bucketParameters.bucketName}${s3ResourceName}-\${env}`;

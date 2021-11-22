@@ -16,7 +16,7 @@ import { KeyTransformer } from 'graphql-key-transformer';
 import { destructiveUpdatesFlag, ProviderName as providerName } from './constants';
 import { AmplifyCLIFeatureFlagAdapter } from './utils/amplify-cli-feature-flag-adapter';
 import { isAmplifyAdminApp } from './utils/admin-helpers';
-import { $TSContext, JSONUtilities, pathManager, stateManager } from 'amplify-cli-core';
+import { $TSContext, AmplifyCategories, JSONUtilities, pathManager, stateManager } from 'amplify-cli-core';
 import { ResourceConstants } from 'graphql-transformer-common';
 import { printer } from 'amplify-prompts';
 import _ from 'lodash';
@@ -627,7 +627,17 @@ async function getBucketName(context: $TSContext, s3ResourceName: string) {
   const { amplify } = context;
   const { amplifyMeta } = amplify.getProjectDetails();
   const stackName = amplifyMeta.providers.awscloudformation.StackName;
-  const bucketParameters = stateManager.getResourceParametersJson(undefined, 'storage', s3ResourceName);
+  const s3ResourcePath = pathManager.getResourceDirectoryPath(undefined, AmplifyCategories.STORAGE, s3ResourceName);
+  const cliInputsPath = path.join(s3ResourcePath, 'cli-inputs.json');
+  let bucketParameters;
+  bucketParameters = stateManager.getResourceParametersJson(undefined, AmplifyCategories.STORAGE, s3ResourceName);
+
+  // get bucketParameters 1st from cli-inputs , if not present, then parameters.json
+  if (fs.existsSync(cliInputsPath)) {
+    bucketParameters = JSONUtilities.readJson(cliInputsPath);
+  } else {
+    bucketParameters = stateManager.getResourceParametersJson(undefined, AmplifyCategories.STORAGE, s3ResourceName);
+  }
 
   const bucketName = stackName.startsWith('amplify-')
     ? `${bucketParameters.bucketName}\${hash}-\${env}`
