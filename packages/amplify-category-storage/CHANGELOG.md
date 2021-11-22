@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.0.6-apiext6.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-storage@3.0.5...@aws-amplify/amplify-category-storage@3.0.6-apiext6.0) (2021-11-22)
+
+
+### Bug Fixes
+
+* add missing ref call during rest stack generation, path casing ([#9002](https://github.com/aws-amplify/amplify-cli/issues/9002)) ([f5bc188](https://github.com/aws-amplify/amplify-cli/commit/f5bc1888ec15baade3f24faa4a9a04c6173e1b59))
+
+
+
+
+
 ## [3.0.5](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-storage@3.0.4...@aws-amplify/amplify-category-storage@3.0.5) (2021-11-21)
 
 **Note:** Version bump only for package @aws-amplify/amplify-category-storage

@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [7.4.6-apiext6.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@7.4.5...@aws-amplify/cli@7.4.6-apiext6.0) (2021-11-22)
+
+**Note:** Version bump only for package @aws-amplify/cli
+
+
+
+
+
 ## [7.4.5](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@7.4.4...@aws-amplify/cli@7.4.5) (2021-11-21)
 
 **Note:** Version bump only for package @aws-amplify/cli

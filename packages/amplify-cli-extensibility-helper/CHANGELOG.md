@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.2.5-apiext6.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-extensibility-helper@2.2.4...@aws-amplify/cli-extensibility-helper@2.2.5-apiext6.0) (2021-11-22)
+
+
+### Bug Fixes
+
+* overriding multiple userPoolGroups, ext helper type, lambda cfn ([#9008](https://github.com/aws-amplify/amplify-cli/issues/9008)) ([cee033c](https://github.com/aws-amplify/amplify-cli/commit/cee033c6a125ffdd79b596b5249983119c402d19))
+
+
+
+
+
 ## [2.2.4](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-extensibility-helper@2.2.3...@aws-amplify/cli-extensibility-helper@2.2.4) (2021-11-21)
 
 **Note:** Version bump only for package @aws-amplify/cli-extensibility-helper

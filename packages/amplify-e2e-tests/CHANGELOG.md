@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.4.3-apiext6.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@3.4.2...amplify-e2e-tests@3.4.3-apiext6.0) (2021-11-22)
+
+
+### Bug Fixes
+
+* api7 and api-migration tests ([#9006](https://github.com/aws-amplify/amplify-cli/issues/9006)) ([7d3905f](https://github.com/aws-amplify/amplify-cli/commit/7d3905fa36c09ec446371a50f8fca6eb04223d0e))
+* prediction migration test fix ([#9015](https://github.com/aws-amplify/amplify-cli/issues/9015)) ([09a191f](https://github.com/aws-amplify/amplify-cli/commit/09a191fd755387409c5aad4ed2e4d87e1ee0c8f1))
+
+
+
+
+
 ## [3.4.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@3.4.1...amplify-e2e-tests@3.4.2) (2021-11-21)
 
 **Note:** Version bump only for package amplify-e2e-tests

@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.5.2-apiext6.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@5.5.1...amplify-provider-awscloudformation@5.5.2-apiext6.0) (2021-11-22)
+
+
+### Bug Fixes
+
+* bucket parameters fetch logic ([#9027](https://github.com/aws-amplify/amplify-cli/issues/9027)) ([30dfc4a](https://github.com/aws-amplify/amplify-cli/commit/30dfc4ab7385938809a4d6b688668cb22e0e65ec))
+* bucket parameters fetch logic ([#9028](https://github.com/aws-amplify/amplify-cli/issues/9028)) ([a894200](https://github.com/aws-amplify/amplify-cli/commit/a894200ea9a203045c0ca0f9ed692ccf22cd7ebd))
+
+
+
+
+
 ## [5.5.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@5.5.0...amplify-provider-awscloudformation@5.5.1) (2021-11-21)
 
 

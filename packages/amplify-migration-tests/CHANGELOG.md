@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.3.5-apiext6.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@4.3.4...amplify-migration-tests@4.3.5-apiext6.0) (2021-11-22)
+
+
+### Bug Fixes
+
+* api7 and api-migration tests ([#9006](https://github.com/aws-amplify/amplify-cli/issues/9006)) ([7d3905f](https://github.com/aws-amplify/amplify-cli/commit/7d3905fa36c09ec446371a50f8fca6eb04223d0e))
+
+
+
+
+
 ## [4.3.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@4.3.3...amplify-migration-tests@4.3.4) (2021-11-21)
 
 **Note:** Version bump only for package amplify-migration-tests
