@@ -1,8 +1,9 @@
 import * as apigw from '@aws-cdk/aws-apigateway';
-import * as lambda from '@aws-cdk/aws-lambda';
 import * as iam from '@aws-cdk/aws-iam';
+import * as lambda from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
 import { $TSObject, JSONUtilities } from 'amplify-cli-core';
+import _ from 'lodash';
 import { AmplifyApigwResourceTemplate, ApigwInputs, ApigwPathPolicy } from './types';
 
 const CFN_TEMPLATE_FORMAT_VERSION = '2010-09-09';
@@ -130,11 +131,7 @@ export class AmplifyApigwResourceStack extends cdk.Stack implements AmplifyApigw
       policyName,
       roles: [cdk.Fn.join('-', [cdk.Fn.ref(authRoleLogicalId), `${groupName}GroupRole`])],
     });
-    this.policies[pathName] = {
-      groups: {
-        [groupName]: iamPolicy,
-      },
-    };
+    _.set(this.policies, [pathName, 'groups', groupName], iamPolicy);
   }
 
   renderCloudFormationTemplate = (): string => {
@@ -262,7 +259,7 @@ export class AmplifyApigwResourceStack extends cdk.Stack implements AmplifyApigw
         lambdaPermissionLogicalId = `function${path.lambdaFunction}Permission${resourceName}`;
       }
 
-      if (addedFunctionPermissions.has(path.lambdaFunction)) {
+      if (!addedFunctionPermissions.has(path.lambdaFunction)) {
         addedFunctionPermissions.add(path.lambdaFunction);
         this.addLambdaPermissionCfnResource(
           {
