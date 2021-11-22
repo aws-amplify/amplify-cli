@@ -1,5 +1,4 @@
 import {
-  addRestApi,
   amplifyPushAuth,
   createNewProjectDir,
   deleteProject,

@@ -477,10 +477,10 @@ export function addRestApi(cwd: string, settings: any) {
       .sendCarriageReturn() // Existing lambda
       .wait('Choose the Lambda function to invoke by this path'); // Expect only 1 Lambda is present
   } else {
-    chain
-      .sendCarriageReturn() // Create new Lambda function
-      .wait('Provide an AWS Lambda function name')
-      .sendCarriageReturn();
+    if (settings.projectContainsFunctions) {
+      chain.sendCarriageReturn(); // Create new Lambda function
+    }
+    chain.wait('Provide an AWS Lambda function name').sendCarriageReturn();
 
     selectRuntime(chain, 'nodejs');
 
