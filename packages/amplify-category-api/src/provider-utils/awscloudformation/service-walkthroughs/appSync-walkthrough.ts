@@ -512,18 +512,18 @@ async function displayApiInformation(context: $TSContext, resource: $TSObject, p
 
   printer.info('');
 
-  printer.success('General information');
+  printer.info('General information');
   printer.info('- Name: '.concat(resource.resourceName));
   if (resource?.output?.GraphQLAPIEndpointOutput) {
     printer.info(`- API endpoint: ${resource?.output?.GraphQLAPIEndpointOutput}`);
   }
   printer.info('');
 
-  printer.success('Authorization modes');
+  printer.info('Authorization modes');
   authModes.forEach(authMode => printer.info(authMode));
   printer.info('');
 
-  printer.success('Conflict detection (required for DataStore)');
+  printer.info('Conflict detection (required for DataStore)');
   if (project.config && !_.isEmpty(project.config.ResolverConfig)) {
     printer.info(
       `- Conflict resolution strategy: ${
