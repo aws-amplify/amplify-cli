@@ -4,7 +4,7 @@ import * as lambda from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
 import { $TSObject, JSONUtilities } from 'amplify-cli-core';
 import _ from 'lodash';
-import { AmplifyApigwResourceTemplate, ApigwInputs, ApigwPathPolicy } from './types';
+import { AmplifyApigwResourceTemplate, ApigwInputs, ApigwPathPolicy, Path, PermissionSetting } from './types';
 
 const CFN_TEMPLATE_FORMAT_VERSION = '2010-09-09';
 const ROOT_CFN_DESCRIPTION = 'API Gateway Resource for AWS Amplify CLI';
@@ -254,8 +254,8 @@ export class AmplifyApigwResourceStack extends cdk.Stack implements AmplifyApigw
         this.paths[`/{proxy+}`] = getAdminQueriesPathObject(path.lambdaFunction);
         lambdaPermissionLogicalId = 'AdminQueriesAPIGWPolicyForLambda';
       } else {
-        this.paths[pathName] = getDefaultPathObject(path.lambdaFunction);
-        this.paths[`${pathName}/{proxy+}`] = getDefaultPathObject(path.lambdaFunction);
+        this.paths[pathName] = createPathObject(path);
+        this.paths[`${pathName}/{proxy+}`] = createPathObject(path);
         lambdaPermissionLogicalId = `function${path.lambdaFunction}Permission${resourceName}`;
       }
 
@@ -372,64 +372,76 @@ const getAdminQueriesPathObject = (lambdaFunctionName: string) => ({
   },
 });
 
-const getDefaultPathObject = (lambdaFunctionName: string) => ({
-  options: {
-    consumes: ['application/json'],
-    produces: ['application/json'],
-    responses: {
-      '200': response200,
-    },
-    'x-amazon-apigateway-integration': {
+const createPathObject = (path: Path) => {
+  const defaultPathObject: $TSObject = {
+    options: {
+      consumes: ['application/json'],
+      produces: ['application/json'],
       responses: {
-        default: defaultCorsResponseObject,
+        '200': response200,
       },
-      requestTemplates: {
-        'application/json': '{"statusCode": 200}',
+      'x-amazon-apigateway-integration': {
+        responses: {
+          default: defaultCorsResponseObject,
+        },
+        requestTemplates: {
+          'application/json': '{"statusCode": 200}',
+        },
+        passthroughBehavior: 'when_no_match',
+        type: 'mock',
       },
-      passthroughBehavior: 'when_no_match',
-      type: 'mock',
     },
-  },
-  'x-amazon-apigateway-any-method': {
-    consumes: ['application/json'],
-    produces: ['application/json'],
-    parameters: [
+    'x-amazon-apigateway-any-method': {
+      consumes: ['application/json'],
+      produces: ['application/json'],
+      parameters: [
+        {
+          in: 'body',
+          name: 'RequestSchema',
+          required: false,
+          schema: {
+            $ref: '#/definitions/RequestSchema',
+          },
+        },
+      ],
+      responses: {
+        '200': {
+          description: '200 response',
+          schema: {
+            $ref: '#/definitions/ResponseSchema',
+          },
+        },
+      },
+      'x-amazon-apigateway-integration': {
+        responses: {
+          default: {
+            statusCode: '200',
+          },
+        },
+        uri: cdk.Fn.join('', [
+          'arn:aws:apigateway:',
+          cdk.Fn.ref('AWS::Region'),
+          ':lambda:path/2015-03-31/functions/',
+          cdk.Fn.ref(`function${path.lambdaFunction}Arn`),
+          '/invocations',
+        ]),
+        passthroughBehavior: 'when_no_match',
+        httpMethod: 'POST',
+        type: 'aws_proxy',
+      },
+    },
+  };
+
+  if (path.permissions.setting !== PermissionSetting.OPEN) {
+    defaultPathObject['x-amazon-apigateway-any-method'].security = [
       {
-        in: 'body',
-        name: 'RequestSchema',
-        required: false,
-        schema: {
-          $ref: '#/definitions/RequestSchema',
-        },
+        sigv4: [],
       },
-    ],
-    responses: {
-      '200': {
-        description: '200 response',
-        schema: {
-          $ref: '#/definitions/ResponseSchema',
-        },
-      },
-    },
-    'x-amazon-apigateway-integration': {
-      responses: {
-        default: {
-          statusCode: '200',
-        },
-      },
-      uri: cdk.Fn.join('', [
-        'arn:aws:apigateway:',
-        cdk.Fn.ref('AWS::Region'),
-        ':lambda:path/2015-03-31/functions/',
-        cdk.Fn.ref(`function${lambdaFunctionName}Arn`),
-        '/invocations',
-      ]),
-      passthroughBehavior: 'when_no_match',
-      httpMethod: 'POST',
-      type: 'aws_proxy',
-    },
-  },
-});
+    ];
+  }
+
+  return defaultPathObject;
+};
 
 const defaultCorsResponseObject = {
   statusCode: '200',
