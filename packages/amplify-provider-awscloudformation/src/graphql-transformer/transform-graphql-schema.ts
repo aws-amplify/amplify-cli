@@ -22,7 +22,8 @@ import {
 import { Template } from '@aws-amplify/graphql-transformer-core/lib/config/project-config';
 import { OverrideConfig } from '@aws-amplify/graphql-transformer-core/src/transformation/types';
 import { AppSyncAuthConfiguration, TransformerPluginProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import { $TSContext, AmplifyCategories, AmplifySupportedService, JSONUtilities, pathManager, stateManager } from 'amplify-cli-core';
+import { $TSContext, AmplifyCategories,getGraphQLTransformerAuthDocLink, AmplifySupportedService, JSONUtilities, pathManager, stateManager } from 'amplify-cli-core';
+import { getTransformerVersion, searchablePushChecks } from '../transform-graphql-schema';
 import { printer } from 'amplify-prompts';
 import fs from 'fs-extra';
 import { print } from 'graphql';
@@ -33,7 +34,6 @@ import importGlobal from 'import-global';
 import _ from 'lodash';
 import path from 'path';
 import { destructiveUpdatesFlag, ProviderName as providerName } from '../constants';
-import { searchablePushChecks } from '../transform-graphql-schema';
 import { hashDirectory } from '../upload-appsync-files';
 import { AmplifyCLIFeatureFlagAdapter } from '../utils/amplify-cli-feature-flag-adapter';
 import { isAuthModeUpdated } from '../utils/auth-mode-compare';
@@ -53,7 +53,7 @@ const S3_SERVICE_NAME = 'S3';
 
 const TRANSFORM_CONFIG_FILE_NAME = `transform.conf.json`;
 
-function warnOnAuth(map) {
+function warnOnAuth(map, docLink) {
   const a: boolean = true;
   const unAuthModelTypes = Object.keys(map).filter(type => !map[type].includes('auth') && map[type].includes('model'));
   if (unAuthModelTypes.length) {
@@ -63,7 +63,7 @@ function warnOnAuth(map) {
       'yellow',
     );
     printer.info(unAuthModelTypes.map(type => `\t - ${type}`).join('\n'), 'yellow');
-    printer.info('Learn more about "@auth" authorization rules here: https://docs.amplify.aws/cli/graphql-transformer/auth\n', 'yellow');
+    printer.info(`Learn more about "@auth" authorization rules here: ${docLink}`, 'yellow');
   }
 }
 
@@ -306,16 +306,21 @@ export async function transformGraphQLSchema(context, options) {
   const lastDeployedProjectConfig = fs.existsSync(previouslyDeployedBackendDir)
     ? await loadProject(previouslyDeployedBackendDir)
     : undefined;
-
-  const sandboxModeEnabled = schemaHasSandboxModeEnabled(project.schema);
+  const transformerVersion = getTransformerVersion(context);
+  const docLink = getGraphQLTransformerAuthDocLink(transformerVersion);
+  const sandboxModeEnabled = schemaHasSandboxModeEnabled(project.schema, docLink);
   const directiveMap = collectDirectivesByTypeNames(project.schema);
   const hasApiKey =
     authConfig.defaultAuthentication.authenticationType === 'API_KEY' ||
     authConfig.additionalAuthenticationProviders.some(a => a.authenticationType === 'API_KEY');
   const showSandboxModeMessage = sandboxModeEnabled && hasApiKey;
 
-  if (showSandboxModeMessage) showGlobalSandboxModeWarning();
-  else warnOnAuth(directiveMap.types);
+  if (showSandboxModeMessage) {
+    const transformerVersion = getTransformerVersion(context);
+    const docLink = getGraphQLTransformerAuthDocLink(transformerVersion);
+    showGlobalSandboxModeWarning(docLink);
+  }
+  else warnOnAuth(directiveMap.types, docLink);
 
   searchablePushChecks(context, directiveMap.types, parameters[ResourceConstants.PARAMETERS.AppSyncApiName]);
 

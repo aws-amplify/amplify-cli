@@ -28,6 +28,8 @@ export * from './hooks';
 export * from './cliConstants';
 export * from './category-interfaces';
 export * from './customPoliciesUtils';
+export * from './utils/doc-links';
+export * from './utils/gql-transformer-version';
 
 // Temporary types until we can finish full type definition across the whole CLI
 
