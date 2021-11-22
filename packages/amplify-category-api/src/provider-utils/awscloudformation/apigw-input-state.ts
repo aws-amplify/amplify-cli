@@ -239,7 +239,7 @@ export class ApigwInputState {
   }
 }
 
-type AdminQueriesProps = {
+export type AdminQueriesProps = {
   apiName: string;
   functionName: string;
   authResourceName: string;

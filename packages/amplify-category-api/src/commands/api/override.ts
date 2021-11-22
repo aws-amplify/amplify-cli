@@ -3,14 +3,13 @@ import {
   AmplifyCategories,
   AmplifySupportedService,
   generateOverrideSkeleton,
-  getMigrateResourceMessageForOverride,
   pathManager,
   stateManager,
 } from 'amplify-cli-core';
 import { printer, prompter } from 'amplify-prompts';
 import * as path from 'path';
 import { checkAppsyncApiResourceMigration } from '../../provider-utils/awscloudformation/utils/check-appsync-api-migration';
-import { ApigwInputState } from '../../provider-utils/awscloudformation/apigw-input-state';
+import { AdminQueriesProps, ApigwInputState } from '../../provider-utils/awscloudformation/apigw-input-state';
 import { ApigwStackTransform } from '../../provider-utils/awscloudformation/cdk-stack-builder';
 
 export const name = 'override';
@@ -71,12 +70,19 @@ export const run = async (context: $TSContext) => {
     // Migration logic goes in here
     const apigwInputState = new ApigwInputState(context, selectedResourceName);
     if (!apigwInputState.cliInputsFileExists()) {
-      if (await prompter.yesOrNo(getMigrateResourceMessageForOverride(AmplifyCategories.API, selectedResourceName, false), true)) {
+      if (selectedResourceName === 'AdminQueries') {
+        const { dependsOn } = amplifyMeta[AmplifyCategories.API][selectedResourceName];
+        const props: AdminQueriesProps = {
+          apiName: selectedResourceName,
+          authResourceName: dependsOn.filter(entry => entry.category === AmplifyCategories.AUTH)[0].resourceName,
+          functionName: dependsOn.filter(entry => entry.category === AmplifyCategories.FUNCTION)[0].resourceName,
+          dependsOn: dependsOn,
+        };
+        await apigwInputState.migrateAdminQueries(props);
+      } else {
         await apigwInputState.migrateApigwResource(selectedResourceName);
         const stackGenerator = new ApigwStackTransform(context, selectedResourceName);
         stackGenerator.transform();
-      } else {
-        return;
       }
     }
     await generateOverrideSkeleton(context, srcPath, destPath);

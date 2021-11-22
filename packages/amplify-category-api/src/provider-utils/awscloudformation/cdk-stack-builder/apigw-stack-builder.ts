@@ -284,8 +284,9 @@ export class AmplifyApigwResourceStack extends cdk.Stack implements AmplifyApigw
 
   private _setDeploymentResource = (resourceName: string) => {
     this.deploymentResource = new apigw.CfnDeployment(this, `DeploymentAPIGW${resourceName}`, {
-      restApiId: cdk.Fn.ref(resourceName),
+      description: 'The Development stage deployment of your API.',
       stageName: cdk.Fn.conditionIf('ShouldNotCreateEnvResources', 'Prod', cdk.Fn.ref('env')).toString(),
+      restApiId: cdk.Fn.ref(resourceName),
     });
   };
 }
