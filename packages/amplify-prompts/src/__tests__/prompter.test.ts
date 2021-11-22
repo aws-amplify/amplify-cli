@@ -139,6 +139,31 @@ describe('pick', () => {
     prompt_mock.mockResolvedValueOnce({ result: mockResult });
     expect(await prompter.pick<'many'>('test message', ['val1', 'val2', 'val3'], { returnSize: 'many' })).toEqual(mockResult);
   });
+
+  it('returns array of single item if only one choice specified and must pick at least 1', async () => {
+    expect(await prompter.pick<'many'>('test message', ['hello'], { returnSize: 'many', pickAtLeast: 1 })).toEqual(['hello']);
+    expect(prompt_mock).toHaveBeenCalledTimes(0);
+  });
+
+  it('returns array of all choices if must pick at lest that many options', async () => {
+    expect(await prompter.pick<'many'>('test message', ['hello', 'hey'], { returnSize: 'many', pickAtLeast: 3 })).toEqual(['hello', 'hey']);
+    expect(prompt_mock).toHaveBeenCalledTimes(0);
+  });
+
+  it('prompts for selection when only one option with returnSize as many', async () => {
+    prompt_mock.mockResolvedValueOnce({ result: ['hello'] });
+    expect(await prompter.pick<'many'>('test message', ['hello'], { returnSize: 'many' })).toEqual(['hello']);
+    expect(prompt_mock).toHaveBeenCalled();
+  });
+
+  it('prompts for selection when pick at least is less than options length', async () => {
+    prompt_mock.mockResolvedValueOnce({ result: ['hello', 'hey'] });
+    expect(await prompter.pick<'many'>('test message', ['hello', 'hey', 'hi'], { returnSize: 'many', pickAtLeast: 2 })).toEqual([
+      'hello',
+      'hey',
+    ]);
+    expect(prompt_mock).toHaveBeenCalled();
+  });
 });
 
 describe('byValue', () => {
