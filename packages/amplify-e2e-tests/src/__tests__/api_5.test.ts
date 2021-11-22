@@ -76,7 +76,7 @@ describe('amplify add api (REST)', () => {
     const DDB_NAME = `ddb${randomId}`;
     await initJSProjectWithProfile(projRoot, {});
     await addSimpleDDB(projRoot, { name: DDB_NAME });
-    await addRestApi(projRoot, { isCrud: true });
+    await addRestApi(projRoot, { isCrud: true, projectContainsFunctions: false });
     await amplifyPushUpdate(projRoot);
 
     const meta = getProjectMeta(projRoot);
