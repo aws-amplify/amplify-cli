@@ -259,7 +259,7 @@ export class AmplifyApigwResourceStack extends cdk.Stack implements AmplifyApigw
         lambdaPermissionLogicalId = `function${path.lambdaFunction}Permission${resourceName}`;
       }
 
-      if (addedFunctionPermissions.has(path.lambdaFunction)) {
+      if (!addedFunctionPermissions.has(path.lambdaFunction)) {
         addedFunctionPermissions.add(path.lambdaFunction);
         this.addLambdaPermissionCfnResource(
           {
