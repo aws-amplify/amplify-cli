@@ -31,7 +31,13 @@ describe('API Gateway e2e tests', () => {
     await addAuthWithGroupsAndAdminAPI(projRoot); // Groups: Admins, Users
     await amplifyPushAuth(projRoot);
     await addRestApi(projRoot, { isFirstRestApi: false, path: '/foo' });
-    await addRestApi(projRoot, { isFirstRestApi: false, restrictAccess: true, allowGuestUsers: true, hasUserPoolGroups: true });
+    await addRestApi(projRoot, {
+      isFirstRestApi: false,
+      restrictAccess: true,
+      allowGuestUsers: true,
+      hasUserPoolGroups: true,
+      projectContainsFunctions: true,
+    });
     await amplifyPushAuth(projRoot); // Pushes multiple rest api updates
     const projMeta = getProjectMeta(projRoot);
     expect(projMeta).toBeDefined();
