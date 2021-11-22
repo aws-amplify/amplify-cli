@@ -630,8 +630,6 @@ async function getBucketName(context: $TSContext, s3ResourceName: string) {
   const s3ResourcePath = pathManager.getResourceDirectoryPath(undefined, AmplifyCategories.STORAGE, s3ResourceName);
   const cliInputsPath = path.join(s3ResourcePath, 'cli-inputs.json');
   let bucketParameters;
-  bucketParameters = stateManager.getResourceParametersJson(undefined, AmplifyCategories.STORAGE, s3ResourceName);
-
   // get bucketParameters 1st from cli-inputs , if not present, then parameters.json
   if (fs.existsSync(cliInputsPath)) {
     bucketParameters = JSONUtilities.readJson(cliInputsPath);
