@@ -1600,7 +1600,7 @@ export function updateAuthAddAdminQueries(projectDir: string, groupName: string 
   return new Promise((resolve, reject) => {
     const chain = spawn(getCLIPath(testingWithLatestCodebase), ['update', 'auth'], { cwd: projectDir, stripColors: true });
     if (settings?.overrides?.category === 'auth') {
-      chain.wait('A migration is needed to support latest updates on auth resources').sendConfirmYes();
+      chain.wait('A migration is needed to support latest updates on auth resources').sendYes();
     }
     chain
       .wait('What do you want to do?')
@@ -1689,8 +1689,7 @@ export function updateAuthAdminQueriesWithExtMigration(cwd: string, settings: { 
     .sendCarriageReturn() // Enter a custom group
     .wait('Provide a group name')
     .sendLine('mycustomgroup')
-    .wait('Migration for AdminQueries is required. Continue')
+    .wait('A migration is needed to support latest updates')
     .sendYes()
-    .sendCarriageReturn()
     .runAsync();
 }

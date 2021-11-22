@@ -120,8 +120,8 @@ export class CLIInputSchemaValidator {
   async getUserInputSchema() {
     try {
       return await import(generateSchemaPath(this._category, this._service, this._schemaFileName));
-    } catch (ex) {
-      throw new Error(`Schema definition doesnt exist : ${generateSchemaPath(this._category, this._service, this._schemaFileName)}`);
+    } catch {
+      throw new Error(`Schema definition doesn't exist: ${generateSchemaPath(this._category, this._service, this._schemaFileName)}`);
     }
   }
 
