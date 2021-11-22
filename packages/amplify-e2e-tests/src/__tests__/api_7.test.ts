@@ -66,19 +66,6 @@ describe('amplify add api (GraphQL)', () => {
     expect(error).toBeDefined();
     expect(error.message).toContain(`${tableName} not found`);
 
-    // dont migrate project here
-    await amplifyOverrideApi(projRoot, { isMigratedProject: false });
-    updateApiSchema(projRoot, projName, 'simple_model_override.graphql');
-    await amplifyPushOverride(projRoot);
-    // check overidden config
-    const overridenAppsyncApi = await getAppSyncApi(GraphQLAPIIdOutput, region);
-    expect(overridenAppsyncApi.graphqlApi).toBeDefined();
-    expect(overridenAppsyncApi.graphqlApi.apiId).toEqual(GraphQLAPIIdOutput);
-    expect(overridenAppsyncApi.graphqlApi.xrayEnabled).toEqual(false);
-
-    // override with FF flag
-    addFeatureFlag(projRoot, 'graphqltransformer', 'transformerversion', 2);
-    addFeatureFlag(projRoot, 'graphqltransformer', 'useexperimentalpipelinedtransformer', true);
     await amplifyOverrideApi(projRoot, { isMigratedProject: true });
     const srcOverrideFilePath = path.join(__dirname, '..', '..', 'overrides', 'override-api.ts');
     const destOverrideFilePath = path.join(projRoot, 'amplify', 'backend', 'api', `${projName}`, 'override.ts');
