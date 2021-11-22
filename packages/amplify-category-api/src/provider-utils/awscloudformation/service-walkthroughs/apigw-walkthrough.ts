@@ -97,7 +97,7 @@ export async function updateWalkthrough(context: $TSContext) {
     case 'remove': {
       const pathToRemove = await inquirer.prompt({
         name: 'path',
-        message: 'Select the path you would want to remove',
+        message: 'Select the path to remove',
         type: 'list',
         choices: pathNames,
       });
@@ -114,7 +114,7 @@ export async function updateWalkthrough(context: $TSContext) {
     case 'update': {
       const pathToEdit = await inquirer.prompt({
         name: 'pathName',
-        message: 'Select the path you would want to edit',
+        message: 'Select the path to edit',
         type: 'list',
         choices: pathNames,
       });
@@ -178,7 +178,7 @@ async function askPermissions(
   currentPath?: ApigwPath,
 ): Promise<{ setting?: PermissionSetting; auth?: CrudOperation[]; open?: boolean; userPoolGroups?: $TSObject; guest?: CrudOperation[] }> {
   while (true) {
-    const apiAccess = await prompter.yesOrNo('Restrict API access', currentPath?.permissions?.setting !== PermissionSetting.OPEN);
+    const apiAccess = await prompter.yesOrNo('Restrict API access?', currentPath?.permissions?.setting !== PermissionSetting.OPEN);
 
     if (!apiAccess) {
       return { setting: PermissionSetting.OPEN };
@@ -200,7 +200,7 @@ async function askPermissions(
           );
           printer.blankLine();
         }
-        const permissionSelection = await prompter.pick<'one', string>('Restrict access by?', [
+        const permissionSelection = await prompter.pick<'one', string>('Restrict access by:', [
           'Auth/Guest Users',
           'Individual Groups',
           'Both',
@@ -338,7 +338,7 @@ async function askCRUD(userType: string, permissions: CrudOperation[] = []) {
   const crudOptions = [CrudOperation.CREATE, CrudOperation.READ, CrudOperation.UPDATE, CrudOperation.DELETE];
   const crudAnswers = await prompter.pick<'many', string>(`What permissions do you want to grant to ${userType} users?`, crudOptions, {
     returnSize: 'many',
-    initial: byValues(permissions), // (a, b) => a.toLowerCase() === b.toLowerCase()
+    initial: byValues(permissions),
     pickAtLeast: 1,
   });
 
@@ -661,11 +661,8 @@ export const openConsole = async (context?: $TSContext) => {
 
   if (restApis) {
     let url;
-    let selectedApi = restApis[0];
 
-    if (restApis.length > 1) {
-      selectedApi = await prompter.pick<'one', string>('Select the API', restApis);
-    }
+    const selectedApi = await prompter.pick<'one', string>('Select the API', restApis);
     const selectedResource = categoryAmplifyMeta[selectedApi];
 
     if (selectedResource.service === serviceName) {
@@ -682,7 +679,7 @@ export const openConsole = async (context?: $TSContext) => {
       const codePipeline = 'CodePipeline';
       const elasticContainer = 'ElasticContainer';
 
-      const selectedConsole = await prompter.pick<'one', string>('Which console you want to open', [
+      const selectedConsole = await prompter.pick<'one', string>('Which console do you want to open?', [
         {
           name: 'Elastic Container Service (Deployed container status)',
           value: elasticContainer,

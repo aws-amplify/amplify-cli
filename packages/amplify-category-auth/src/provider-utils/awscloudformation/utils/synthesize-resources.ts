@@ -235,14 +235,10 @@ export const createUserPoolGroups = async (context: $TSContext, resourceName: st
 
 export const updateUserPoolGroups = async (context: $TSContext, resourceName: string, userPoolGroupList?: string[]) => {
   if (userPoolGroupList && userPoolGroupList.length > 0) {
-    const userPoolGroupPrecedenceList = [];
-
-    for (let i = 0; i < userPoolGroupList.length; ++i) {
-      userPoolGroupPrecedenceList.push({
-        groupName: userPoolGroupList[i],
-        precedence: i + 1,
-      });
-    }
+    const userPoolGroupPrecedenceList = userPoolGroupList.map((groupName: string, index: number) => ({
+      groupName,
+      precedence: index + 1,
+    }));
 
     const userPoolGroupFolder = path.join(pathManager.getBackendDirPath(), AmplifyCategories.AUTH, 'userPoolGroups');
     ensureDirSync(userPoolGroupFolder);
