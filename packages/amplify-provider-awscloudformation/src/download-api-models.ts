@@ -20,7 +20,7 @@ export async function downloadAPIModels(context: $TSContext, allResources: $TSOb
 
   if (resources.length > 0) {
     printer.blankLine();
-    printer.info('\nCreating API models...');
+    printer.info('Creating API models...');
   }
 
   for (const resource of resources) {
