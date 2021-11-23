@@ -3,6 +3,21 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.2.11](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.2.10...amplify-util-mock@4.2.11) (2021-11-23)
+
+
+
+# 7.5.0 (2021-11-23)
+
+
+### Bug Fixes
+
+* update mock cfn parsing to support stack outputs in intrinsic fns ([#9056](https://github.com/aws-amplify/amplify-cli/issues/9056)) ([5d60832](https://github.com/aws-amplify/amplify-cli/commit/5d6083265cd48038d2a9d7a3c66f2df5dec12ad6))
+
+
+
+
+
 ## [4.2.10](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.2.9...amplify-util-mock@4.2.10) (2021-11-21)
 
 **Note:** Version bump only for package amplify-util-mock
