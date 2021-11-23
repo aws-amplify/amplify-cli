@@ -294,7 +294,7 @@ class CfnApiArtifactHandler implements ApiArtifactHandler {
     }
     // deploy appsync inputs
     const cliState = new AppsyncApiInputState(serviceConfig.apiName);
-    cliState.saveCLIInputPayload(appsyncCLIInputs);
+    await cliState.saveCLIInputPayload(appsyncCLIInputs);
     return appsyncCLIInputs;
   };
 
@@ -315,7 +315,7 @@ class CfnApiArtifactHandler implements ApiArtifactHandler {
     if (updates.additionalAuthTypes) {
       appsyncInputs.serviceConfiguration.additionalAuthTypes = updates.additionalAuthTypes;
     }
-    cliState.saveCLIInputPayload(appsyncInputs);
+    await cliState.saveCLIInputPayload(appsyncInputs);
     return appsyncInputs;
   };
 }

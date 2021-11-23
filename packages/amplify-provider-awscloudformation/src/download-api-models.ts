@@ -19,6 +19,7 @@ export async function downloadAPIModels(context: $TSContext, allResources: $TSOb
   const promises = [];
 
   if (resources.length > 0) {
+    printer.blankLine();
     printer.info('\nCreating API models...');
   }
 

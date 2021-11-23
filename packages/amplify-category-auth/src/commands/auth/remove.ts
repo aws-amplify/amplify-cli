@@ -26,7 +26,7 @@ export const run = async (context: $TSContext) => {
       const cliState = new AuthInputState(authResourceName[0]);
       const cliInputPayload = cliState.getCLIInputPayload();
       cliInputPayload.cognitoConfig.userPoolGroupList = [];
-      cliState.saveCLIInputPayload(cliInputPayload);
+      await cliState.saveCLIInputPayload(cliInputPayload);
     }
   } catch (err) {
     printer.info(err.stack);

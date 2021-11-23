@@ -1,9 +1,7 @@
-'use strict';
-import { anything, countResources, expect as cdkExpect, haveResource } from '@aws-cdk/assert';
 import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
 import { parse } from 'graphql';
-import { FunctionTransformer } from '..';
 import * as path from 'path';
+import { FunctionTransformer } from '..';
 test('it ovderrides the expected resources', () => {
   const validSchema = `
     type Query {
