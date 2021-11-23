@@ -476,10 +476,10 @@ export function addS3WithGroupAccess(cwd: string, settings: any): Promise<void> 
       .wait('Select groups')
       .sendCtrlA() // select all groups
       .sendCarriageReturn()
-      .wait('What kind of access do you want') // for <UserGroup1> users?
+      .wait(`What kind of access do you want for ${settings?.userGroup1 ?? 'Admins'} users`) // for <UserGroup1> users?
       .sendCtrlA() // Select all permissions
       .sendCarriageReturn()
-      .wait('What kind of access do you want') // for <UserGroup2> users?
+      .wait(`What kind of access do you want for ${settings?.userGroup2 ?? 'Users'} users`) // for <UserGroup2> users?
       .sendCtrlA() // Select all permissions
       .sendCarriageReturn()
       .wait('Do you want to add a Lambda Trigger for your S3 Bucket')
