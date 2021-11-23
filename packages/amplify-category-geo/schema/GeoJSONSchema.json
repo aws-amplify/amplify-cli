@@ -49,7 +49,6 @@
           },
           "required": [
               "type",
-              "properties",
               "geometry"
           ]
       },

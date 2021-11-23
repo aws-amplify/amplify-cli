@@ -4,6 +4,7 @@
     {
       "type": "Feature",
       "properties": {},
+      "id": "notSameFirstAndLast",
       "geometry": {
         "type": "Polygon",
         "coordinates": [

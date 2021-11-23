@@ -5,7 +5,7 @@ export type FeatureCollection = {
 
 export type Feature = {
   type: "Feature";
-  properties: any;
+  properties: Record<string, any>;
   geometry: Geometry;
   id: string;
 }

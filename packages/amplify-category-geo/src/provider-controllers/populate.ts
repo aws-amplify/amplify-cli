@@ -6,6 +6,7 @@ import { join } from 'path';
 import { Location } from 'aws-sdk';
 import { validateGeoJSONFile } from '../service-utils/validateGeoJSONFile';
 import { FeatureCollection, PopulateParams, GeofenceCollectionParams, GeofenceParams, IdentifierOption } from '../service-utils/populateParams';
+import ora from "ora";
 
 export const populateResource = async (context: $TSContext) => {
   const geofenceCollectionResources = ((await context.amplify.getResourceStatus()).allResources as any[])
@@ -30,7 +31,7 @@ export const populateResource = async (context: $TSContext) => {
   //Ask for geo json file path
   const geoJSONFilePath = join(await prompter.input(`Provide the path to GeoJSON file containing the Geofences for ${collectionToPopulate} collection. Refer <link> for a sample GeoJSON:`));
   if (!existsSync(geoJSONFilePath)) {
-    throw new Error('Cannot find GeoJSON file');
+    throw new Error(`Cannot find GeoJSON file at ${geoJSONFilePath}`);
   }
   //Ask for the identifier option
   let uniqueIdentifier: string = 'id';
@@ -40,10 +41,19 @@ export const populateResource = async (context: $TSContext) => {
   ];
   const identifierOption = await prompter.pick<'one', string>('Do you have an identifier field in the Geofence(Feature) properties?',identifierWalkthroughOptions) as IdentifierOption;
   if (identifierOption === IdentifierOption.CustomProperty) {
-    uniqueIdentifier = await prompter.input('Please provide the name of the property to use as a unique Geofence identifier:')
+    uniqueIdentifier = await prompter.input('Provide the name of the property to use as a unique geofence identifier. Do not use Personal Identifiable Information such as email, username etc:')
   }
   //Validate the json file against schema
-  const geoJSONObj: FeatureCollection = validateGeoJSONFile(geoJSONFilePath, uniqueIdentifier, identifierOption);
+  let geoJSONObj: FeatureCollection;
+  const validationSpinner = ora('Validating your GeoJSON file...');
+  validationSpinner.start();
+  try {
+    geoJSONObj = validateGeoJSONFile(geoJSONFilePath, uniqueIdentifier, identifierOption);
+    validationSpinner.succeed('Successfully validated GeoJSON file.');
+  } catch (err) {
+    validationSpinner.fail('Error occurs while validating GeoJSON file.');
+    throw err;
+  }
   //Update the GeoJSON file with auto-assigned ID
   if (identifierOption === IdentifierOption.RootLevelID) {
     writeFileSync(geoJSONFilePath, JSON.stringify(geoJSONObj, null, 2));
@@ -51,8 +61,15 @@ export const populateResource = async (context: $TSContext) => {
   //Construct geofence collection parameters
   const geofenceCollectionParams = constructGeofenceCollectionParams({collectionToPopulate, uniqueIdentifier, identifierOption, geoJSONObj});
   //Upload geofences to collection
-  const successCount = await bulkUploadGeofence(geofenceCollectionParams, collectionRegion);
-  printer.success(`Successfully added/updated ${successCount} Geofences in your "${collectionToPopulate}" collection`);
+  const uploadSpinner = ora('Updating your Geofences in the collection...');
+  uploadSpinner.start();
+  try {
+    const result = await bulkUploadGeofence(geofenceCollectionParams, collectionRegion);
+    uploadSpinner.succeed(`Successfully added/updated ${result.Successes.length} Geofences in your "${collectionToPopulate}" collection`);
+  } catch (err) {
+    uploadSpinner.fail('Error occurs while uploading geofences.');
+    throw err;
+  }
 };
 
 const constructGeofenceCollectionParams = (populateParam: PopulateParams): GeofenceCollectionParams => {
@@ -75,14 +92,6 @@ const constructGeofenceCollectionParams = (populateParam: PopulateParams): Geofe
 }
 
 const bulkUploadGeofence = async (params: GeofenceCollectionParams, region: string) => {
-  let successCount = 0;
   const service = new Location({region});
-  await service.batchPutGeofence(params, (err, data) => {
-    if (err) {
-      console.log(err, err.stack);
-    }
-    successCount = data.Successes.length;
-
-  }).promise();
-  return successCount;
+  return await service.batchPutGeofence(params).promise();
 }
