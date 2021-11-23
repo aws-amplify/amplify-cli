@@ -449,8 +449,13 @@ export function addRestApi(cwd: string, settings: any) {
         .wait('Choose a lambda source')
         .sendKeyDown()
         .sendCarriageReturn() // Existing lambda
-        .wait('Choose the Lambda function to invoke by this path')
-        .sendCarriageReturn() // Pick first one
+        .wait('Choose the Lambda function to invoke by this path');
+
+      if (settings.projectContainsFunctions) {
+        chain.sendCarriageReturn(); // Pick first one
+      }
+
+      chain
         .wait('Restrict API access')
         .sendNo() // Do not restrict access
         .wait('Do you want to add another path')
