@@ -3,7 +3,7 @@ import * as path from 'path';
 import { TransformerProjectConfig, DeploymentResources } from '@aws-amplify/graphql-transformer-core';
 import rimraf from 'rimraf';
 import { ProviderName as providerName } from '../constants';
-import { $TSContext, JSONUtilities, stateManager } from 'amplify-cli-core';
+import { $TSContext, AmplifyCategories, JSONUtilities, pathManager, stateManager } from 'amplify-cli-core';
 import { CloudFormation, Template, Fn } from 'cloudform';
 import { Diff, diff as getDiffs } from 'deep-diff';
 import { ResourceConstants } from 'graphql-transformer-common';
@@ -13,8 +13,13 @@ import { printer } from 'amplify-prompts';
 
 const ROOT_STACK_FILE_NAME = 'cloudformation-template.json';
 const PARAMETERS_FILE_NAME = 'parameters.json';
+const CUSTOM_ROLES_FILE_NAME = 'custom-roles.json';
 const AMPLIFY_ADMIN_ROLE = '_Full-access/CognitoIdentityCredentials';
 const AMPLIFY_MANAGE_ROLE = '_Manage-only/CognitoIdentityCredentials';
+
+export interface CustomRolesConfig {
+  adminRoleNames?: Array<string>;
+}
 export interface DiffableProject {
   stacks: {
     [stackName: string]: Template;
@@ -37,7 +42,7 @@ export const getIdentityPoolId = async (ctx: $TSContext): Promise<string | undef
   return authResource?.output?.IdentityPoolId;
 };
 
-export const getAdminRoles = async (ctx: $TSContext, apiResourceName: string): Promise<Array<string>> => {
+export const getAdminRoles = async (ctx: $TSContext, apiResourceName: string | undefined): Promise<Array<string>> => {
   const currentEnv = ctx.amplify.getEnvInfo().envName;
   const adminRoles = new Array<string>();
   //admin ui roles
@@ -52,12 +57,27 @@ export const getAdminRoles = async (ctx: $TSContext, apiResourceName: string): P
     // no need to error if not admin ui app
   }
 
-  // lambda functions which have access to the api
-  const { allResources, resourcesToBeDeleted } = await ctx.amplify.getResourceStatus('function');
-  const resources = pullAllBy(allResources, resourcesToBeDeleted, 'resourceName')
-    .filter((r: any) => r.dependsOn?.some((d: any) => d?.resourceName === apiResourceName))
-    .map((r: any) => `${r.resourceName}-${currentEnv}`);
-  adminRoles.push(...resources);
+  // additonal admin role checks
+  if (apiResourceName) {
+    // lambda functions which have access to the api
+    const { allResources, resourcesToBeDeleted } = await ctx.amplify.getResourceStatus('function');
+    const resources = pullAllBy(allResources, resourcesToBeDeleted, 'resourceName')
+      .filter((r: any) => r.dependsOn?.some((d: any) => d?.resourceName === apiResourceName))
+      .map((r: any) => `${r.resourceName}-${currentEnv}`);
+    adminRoles.push(...resources);
+
+    // check for custom iam admin roles
+    const customRoleFile = path.join(
+      pathManager.getResourceDirectoryPath(undefined, AmplifyCategories.API, apiResourceName),
+      CUSTOM_ROLES_FILE_NAME,
+    );
+    if (fs.existsSync(customRoleFile)) {
+      const customRoleConfig = JSONUtilities.readJson<CustomRolesConfig>(customRoleFile);
+      if (customRoleConfig && customRoleConfig.adminRoleNames) {
+        adminRoles.push(...customRoleConfig.adminRoleNames);
+      }
+    }
+  }
   return adminRoles;
 };
 

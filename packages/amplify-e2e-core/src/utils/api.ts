@@ -13,6 +13,11 @@ export function updateConfig(projectDir: string, projectName: string, config: an
   fs.writeFileSync(configPath, JSON.stringify(config, null, 4));
 }
 
+export function setCustomRolesConfig(projectDir: string, apiName: string, config: any = {}) {
+  const configPath = path.join(projectDir, 'amplify', 'backend', 'api', apiName, 'custom-roles.json');
+  fs.writeFileSync(configPath, JSON.stringify(config, null, 2));
+}
+
 export function addCustomResolver(projectDir: string, apiName: string, resolverName: string, resolver: string) {
   const resolverPath = path.join(projectDir, 'amplify', 'backend', 'api', apiName, 'resolvers', resolverName);
   fs.writeFileSync(resolverPath, resolver);
