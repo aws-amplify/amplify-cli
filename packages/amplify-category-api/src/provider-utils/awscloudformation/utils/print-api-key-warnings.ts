@@ -7,13 +7,13 @@ export const printApiKeyWarnings = (oldConfigHadApiKey: boolean, newConfigHasApi
     printer.warn(
       'If other resources depend on this API, run "amplify update <category>" and reselect this API to remove the dependency on the API key.',
     );
-    printer.warn('⚠️  This must be done before running "amplify push" to prevent a push failure');
+    printer.warn('This must be done before running "amplify push" to prevent a push failure');
   }
 
   if (!oldConfigHadApiKey && newConfigHasApiKey) {
     printer.warn('The API_KEY auth type has been added to the API.');
     printer.warn(
-      '⚠️  If other resources depend on this API and need access to the API key, run "amplify update <category>" and reselect this API as a dependency to add the API key dependency.',
+      'If other resources depend on this API and need access to the API key, run "amplify update <category>" and reselect this API as a dependency to add the API key dependency.',
     );
   }
 };

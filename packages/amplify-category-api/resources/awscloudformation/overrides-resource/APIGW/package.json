@@ -4,11 +4,10 @@
   "description": "",
   "scripts": {
     "build": "tsc",
-    "watch": "tsc -w",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "watch": "tsc -w"
   },
   "dependencies": {
-    "@aws-amplify/cli-extensibility-helper": "2.3.0-apiext3.0"
+    "@aws-amplify/cli-extensibility-helper": "2.3.0"
   },
   "devDependencies": {
     "typescript": "^4.2.4"

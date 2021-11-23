@@ -216,7 +216,6 @@ export class ApigwStackTransform {
         } catch (err: $TSAny) {
           const error = new Error(`Skipping override due to ${err}.`);
           printer.error(`${error}`);
-          error.stack = undefined;
           throw error;
         }
       }
