@@ -27,12 +27,13 @@ export function combineSchemas(schemaDocs: SchemaDocument[]): string {
 
 export async function getDefaultAuth(): Promise<string> {
   const backendConfig = stateManager.getBackendConfig();
-  if (Object.keys(backendConfig.api).length < 1) {
-    return 'AMAZON_COGNITO_USER_POOLS';
-  }
 
   // Only support one GraphQL API, so grab the ID
   const [gqlAPI] = _.filter(backendConfig.api, (api: $TSObject) => api.service === AmplifySupportedService.APPSYNC);
+
+  if (!gqlAPI) {
+    return 'AMAZON_COGNITO_USER_POOLS';
+  }
   return gqlAPI.output.authConfig.defaultAuthentication.authenticationType;
 }
 
