@@ -10,6 +10,7 @@ import {
   ResourceDoesNotExistError,
   stateManager,
   UnknownResourceTypeError,
+  getGraphQLTransformerAuthDocLink,
 } from 'amplify-cli-core';
 import { UpdateApiRequest } from 'amplify-headless-interface';
 import { printer } from 'amplify-prompts';
@@ -423,7 +424,7 @@ export const serviceWalkthrough = async (context: $TSContext, serviceMetadata: $
 
   const { templateSelection } = await inquirer.prompt(templateSelectionQuestion);
   const schemaFilePath = path.join(graphqlSchemaDir, templateSelection);
-  schemaContent += transformerVersion === 2 ? defineGlobalSandboxMode() : '';
+  schemaContent += transformerVersion === 2 ? defineGlobalSandboxMode(getGraphQLTransformerAuthDocLink(transformerVersion)) : '';
   schemaContent += fs.readFileSync(schemaFilePath, 'utf8');
 
   return {

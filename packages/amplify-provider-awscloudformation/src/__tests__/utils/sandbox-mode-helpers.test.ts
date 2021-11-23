@@ -48,11 +48,11 @@ sandbox mode disabled, do not create an API Key.
 
   describe('showGlobalSandboxModeWarning', () => {
     it('prints sandbox api key message', () => {
-      showGlobalSandboxModeWarning();
+      showGlobalSandboxModeWarning('mockLink');
 
       expect(prompts.printer.info).toBeCalledWith(
         `
-⚠️  WARNING: your GraphQL API currently allows public create, read, update, and delete access to all models via an API Key. To configure PRODUCTION-READY authorization rules, review: https://docs.amplify.aws/cli/graphql-transformer/auth
+⚠️  WARNING: your GraphQL API currently allows public create, read, update, and delete access to all models via an API Key. To configure PRODUCTION-READY authorization rules, review: mockLink
 `,
         'yellow',
       );
@@ -65,7 +65,7 @@ sandbox mode disabled, do not create an API Key.
         input AMPLIFY { globalAuthRule: AuthRule = { allow: public } }
       `;
 
-      expect(schemaHasSandboxModeEnabled(schema)).toEqual(true);
+      expect(schemaHasSandboxModeEnabled(schema, 'mockDocLink')).toEqual(true);
     });
 
     it('passes through when AMPLIFY input is not present', () => {
@@ -76,7 +76,7 @@ sandbox mode disabled, do not create an API Key.
         }
       `;
 
-      expect(schemaHasSandboxModeEnabled(schema)).toEqual(false);
+      expect(schemaHasSandboxModeEnabled(schema, 'mockDocLink')).toEqual(false);
     });
 
     describe('input AMPLIFY has incorrect values', () => {
@@ -85,8 +85,8 @@ sandbox mode disabled, do not create an API Key.
           input AMPLIFY { auth_rule: AuthenticationRule = { allow: public } }
         `;
 
-        expect(() => schemaHasSandboxModeEnabled(schema)).toThrow(
-          Error('input AMPLIFY requires "globalAuthRule" field. Learn more here: https://docs.amplify.aws/cli/graphql-transformer/auth'),
+        expect(() => schemaHasSandboxModeEnabled(schema, 'mockLink')).toThrow(
+          Error('input AMPLIFY requires "globalAuthRule" field. Learn more here: mockLink'),
         );
       });
 
@@ -95,7 +95,7 @@ sandbox mode disabled, do not create an API Key.
           input AMPLIFY { global_auth_rule: AuthRule = { allow: public } }
         `;
 
-        expect(schemaHasSandboxModeEnabled(schema)).toEqual(true);
+        expect(schemaHasSandboxModeEnabled(schema, 'mockDocLink')).toEqual(true);
       });
 
       it('guards for AuthRule', () => {
@@ -103,9 +103,9 @@ sandbox mode disabled, do not create an API Key.
           input AMPLIFY { globalAuthRule: AuthenticationRule = { allow: public } }
         `;
 
-        expect(() => schemaHasSandboxModeEnabled(schema)).toThrow(
+        expect(() => schemaHasSandboxModeEnabled(schema, 'mockLink')).toThrow(
           Error(
-            'There was a problem with your auth configuration. Learn more about auth here: https://docs.amplify.aws/cli/graphql-transformer/auth',
+            'There was a problem with your auth configuration. Learn more about auth here: mockLink',
           ),
         );
       });
@@ -115,9 +115,9 @@ sandbox mode disabled, do not create an API Key.
           input AMPLIFY { globalAuthRule: AuthRule = { allows: public } }
         `;
 
-        expect(() => schemaHasSandboxModeEnabled(schema)).toThrow(
+        expect(() => schemaHasSandboxModeEnabled(schema, 'mockLink')).toThrow(
           Error(
-            'There was a problem with your auth configuration. Learn more about auth here: https://docs.amplify.aws/cli/graphql-transformer/auth',
+            'There was a problem with your auth configuration. Learn more about auth here: mockLink',
           ),
         );
       });
@@ -127,9 +127,9 @@ sandbox mode disabled, do not create an API Key.
           input AMPLIFY { globalAuthRule: AuthRule = { allow: private } }
         `;
 
-        expect(() => schemaHasSandboxModeEnabled(schema)).toThrowError(
+        expect(() => schemaHasSandboxModeEnabled(schema, 'mockLink')).toThrowError(
           Error(
-            'There was a problem with your auth configuration. Learn more about auth here: https://docs.amplify.aws/cli/graphql-transformer/auth',
+            'There was a problem with your auth configuration. Learn more about auth here: mockLink',
           ),
         );
       });
