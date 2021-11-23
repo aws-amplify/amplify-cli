@@ -28,6 +28,7 @@ import {
   UploadedResourceDefinition,
   TransformedCfnResource,
 } from './types';
+import * as path from 'path';
 import { prePushTemplateDescriptionHandler } from '../template-description-utils';
 
 /**
@@ -307,7 +308,8 @@ export abstract class ResourcePackager {
           await writeCFNTemplate(cfnTemplate, cfnFile, { templateFormat });
         }
         const transformedCFNPath = await preProcessCFNTemplate(cfnFile);
-        await writeCustomPoliciesToCFNTemplate(resource.resourceName, resource.service, cfnFile, resource.category);
+
+        await writeCustomPoliciesToCFNTemplate(resource.resourceName, resource.service, path.basename(cfnFile), resource.category);
         transformedCfnPaths.push(transformedCFNPath);
       }
       transformedCfnResources.push({
