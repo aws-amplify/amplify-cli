@@ -30,7 +30,7 @@ describe('API Gateway e2e tests', () => {
     await amplifyPushAuth(projRoot);
     await addAuthWithGroupsAndAdminAPI(projRoot); // Groups: Admins, Users
     await amplifyPushAuth(projRoot);
-    await addRestApi(projRoot, { isFirstRestApi: false, path: '/foo' });
+    await addRestApi(projRoot, { isFirstRestApi: false, path: '/foo', projectContainsFunctions: true });
     await addRestApi(projRoot, {
       isFirstRestApi: false,
       restrictAccess: true,
