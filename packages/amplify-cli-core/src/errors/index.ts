@@ -1,6 +1,5 @@
 export class NotImplementedError extends Error {}
 export class ResourceAlreadyExistsError extends Error {}
-export class ResourceDoesNotExistError extends Error {}
 export class ResourceCredentialsNotFoundError extends Error {}
 export class UnknownResourceTypeError extends Error {}
 export class UnknownArgumentError extends Error {}
@@ -33,6 +32,15 @@ export class NotInitializedError extends Error {
       - "amplify init" to initialize a new Amplify project
       - "amplify pull <app-id>" to pull your existing Amplify project. Find the <app-id> in the AWS Console or Amplify Admin UI.
         `;
+    this.stack = undefined;
+  }
+}
+
+export class ResourceDoesNotExistError extends Error {
+  public constructor(errMessage: string) {
+    super();
+    this.name = 'ResourceDoesNotExistError';
+    this.message = errMessage;
     this.stack = undefined;
   }
 }

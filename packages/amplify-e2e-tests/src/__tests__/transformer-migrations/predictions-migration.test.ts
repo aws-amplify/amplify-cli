@@ -78,9 +78,6 @@ describe('transformer predictions migration test', () => {
       /(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/,
     );
 
-    await addFeatureFlag(projRoot, 'graphqltransformer', 'transformerVersion', 2);
-    await addFeatureFlag(projRoot, 'graphqltransformer', 'useExperimentalPipelinedTransformer', true);
-
     await updateApiSchema(projRoot, projectName, predictionsSchema);
     await amplifyPushForce(projRoot);
 

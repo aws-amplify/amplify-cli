@@ -41,7 +41,7 @@ import { Fn } from 'cloudform-types';
 import { getGqlUpdatedResource } from './graphql-transformer/utils';
 import { isAmplifyAdminApp } from './utils/admin-helpers';
 import { fileLogger } from './utils/aws-logger';
-import { APIGW_AUTH_STACK_LOGICAL_ID, loadApiWithPrivacyParams } from './utils/consolidate-apigw-policies';
+import { APIGW_AUTH_STACK_LOGICAL_ID, loadApiCliInputs } from './utils/consolidate-apigw-policies';
 import { createEnvLevelConstructs } from './utils/env-level-constructs';
 import { NETWORK_STACK_LOGICAL_ID } from './network/stack';
 import { preProcessCFNTemplate, writeCustomPoliciesToCFNTemplate } from './pre-push-cfn-processor/cfn-pre-processor';
@@ -158,15 +158,20 @@ export async function run(context: $TSContext, resourceDefinition: $TSObject, re
       await legacyLayerMigration(context, resource.resourceName);
     }
 
-    await prePushLambdaLayerPrompt(context, resources);
-    await prepareBuildableResources(context, resources);
-    await buildOverridesEnabledResources(context);
-
+    /**
+     * calling transform schema here to support old project with out overrides
+     */
     await transformGraphQLSchema(context, {
       handleMigration: opts => updateStackForAPIMigration(context, 'api', undefined, opts),
       minify: options['minify'],
       promptApiKeyCreation: true,
     });
+
+    await prePushLambdaLayerPrompt(context, resources);
+    await prepareBuildableResources(context, resources);
+    await buildOverridesEnabledResources(context);
+
+    //Removed api transformation to generate resources befoe starting deploy/
 
     // If there is a deployment already in progress we have to fail the push operation as another
     // push in between could lead non-recoverable stacks and files.
@@ -932,7 +937,7 @@ export async function formNestedStack(
     Object.keys(apis).forEach(apiName => {
       const api = apis[apiName];
 
-      if (loadApiWithPrivacyParams(context, apiName, api)) {
+      if (loadApiCliInputs(apiName, api)) {
         stack.Properties.Parameters[apiName] = {
           'Fn::GetAtt': [api.providerMetadata.logicalId, 'Outputs.ApiId'],
         };

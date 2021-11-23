@@ -17,7 +17,7 @@ export async function forceRemoveResource(context: $TSContext, category: string,
 
   if (!amplifyMeta[category] || Object.keys(amplifyMeta[category]).length === 0) {
     printer.error('No resources added for this category');
-    await context.usageData.emitError(new ResourceDoesNotExistError());
+    await context.usageData.emitError(new ResourceDoesNotExistError('No resources added for this category'));
     exitOnNextTick(1);
   }
 
@@ -37,7 +37,11 @@ export async function removeResource(
   context: $TSContext,
   category: string,
   resourceName?: string,
-  options: { headless?: boolean; serviceSuffix?: { [serviceName: string]: string }; serviceDeletionInfo?: {} } = { headless: false },
+  options: {
+    headless?: boolean;
+    serviceSuffix?: { [serviceName: string]: string };
+    serviceDeletionInfo?: { [serviceName: string]: string };
+  } = { headless: false },
   resourceNameCallback?: (resourceName: string) => Promise<void>,
 ) {
   const amplifyMeta = stateManager.getMeta();
@@ -47,7 +51,7 @@ export async function removeResource(
     Object.keys(amplifyMeta[category]).filter(r => amplifyMeta[category][r].mobileHubMigrated !== true).length === 0
   ) {
     printer.error('No resources added for this category');
-    await context.usageData.emitError(new ResourceDoesNotExistError());
+    await context.usageData.emitError(new ResourceDoesNotExistError('No resources added for this category'));
     exitOnNextTick(1);
   }
 
@@ -135,8 +139,9 @@ const deleteResourceFiles = async (context: $TSContext, category: string, resour
       }
     });
   }
+  const serviceName: string = amplifyMeta[category][resourceName].service;
   const resourceValues = {
-    service: amplifyMeta[category][resourceName].service,
+    service: serviceName,
     resourceName,
   };
   if (amplifyMeta[category][resourceName] !== undefined) {
