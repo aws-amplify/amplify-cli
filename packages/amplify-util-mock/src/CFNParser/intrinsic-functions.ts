@@ -61,7 +61,16 @@ export function cfnGetAtt(valNode, { resources }: CloudFormationParseContext, pr
   }
   const selectedResource = resources[resourceName];
   const attributeName = valNode[1];
-  if (!selectedResource.result.cfnExposedAttributes) {
+  if (selectedResource.Type === 'AWS::CloudFormation::Stack') {
+    const attrSplit = attributeName.split('.');
+
+    if (attrSplit.length === 2 && attrSplit[0] === 'Outputs' && Object.keys(selectedResource.result.outputs).includes(attrSplit[1])) {
+      return selectedResource.result.outputs[attrSplit[1]];
+    } else {
+      // todo: investigate handling more cases when ref is directly the resource name etx
+      throw new Error(`Could not get attribute ${attributeName} from resource ${resourceName}`);
+    }
+  } else if (!selectedResource.result.cfnExposedAttributes) {
     throw new Error(`No attributes are exposed to Fn::GetAtt on resource type ${selectedResource.Type}`);
   }
   if (!Object.keys(selectedResource.result.cfnExposedAttributes).includes(attributeName)) {
