@@ -1,5 +1,6 @@
 import * as fs from 'fs-extra';
-import { stateManager } from 'amplify-cli-core';
+import { $TSObject, AmplifySupportedService, stateManager } from 'amplify-cli-core';
+import _ from 'lodash';
 
 export type SchemaDocument = {
   schema: string;
@@ -29,9 +30,10 @@ export async function getDefaultAuth(): Promise<string> {
   if (Object.keys(backendConfig.api).length < 1) {
     return 'AMAZON_COGNITO_USER_POOLS';
   }
-  // Only support one API, so grab the ID
-  const firstAPIID = Object.keys(backendConfig.api)[0];
-  return backendConfig.api[firstAPIID].output.authConfig.defaultAuthentication.authenticationType;
+
+  // Only support one GraphQL API, so grab the ID
+  const [gqlAPI] = _.filter(backendConfig.api, (api: $TSObject) => api.service === AmplifySupportedService.APPSYNC);
+  return gqlAPI.output.authConfig.defaultAuthentication.authenticationType;
 }
 
 export function listContainsOnlySetString(list: Array<string>, set: Set<string>): Array<string> {
