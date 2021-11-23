@@ -1,5 +1,5 @@
-import * as fs from 'fs-extra';
 import { $TSObject, AmplifySupportedService, stateManager } from 'amplify-cli-core';
+import * as fs from 'fs-extra';
 import _ from 'lodash';
 
 export type SchemaDocument = {
