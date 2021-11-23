@@ -1,4 +1,3 @@
-'use strict';
 import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
 import { parse } from 'graphql';
 import { HttpTransformer } from '..';

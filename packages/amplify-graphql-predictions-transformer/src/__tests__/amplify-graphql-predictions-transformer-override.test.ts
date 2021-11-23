@@ -1,4 +1,3 @@
-'use strict';
 import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
 import * as path from 'path';
 import { PredictionsTransformer } from '..';
