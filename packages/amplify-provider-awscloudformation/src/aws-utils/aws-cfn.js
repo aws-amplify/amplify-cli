@@ -335,7 +335,7 @@ class CloudFormation {
     do {
       const listStackResourcesParams = {
         StackName: parentStackName,
-        nextToken,
+        NextToken: nextToken,
       };
       logger('updateamplifyMetaFileWithStackOutputs.cfn.listStackResources', [listStackResourcesParams])();
       const result = await this.cfn.listStackResources(listStackResourcesParams).promise();
