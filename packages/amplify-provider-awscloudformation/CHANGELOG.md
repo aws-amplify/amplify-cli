@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.6.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@5.6.0...amplify-provider-awscloudformation@5.6.1) (2021-11-24)
+
+
+### Bug Fixes
+
+* change describeStackResources() call to listStackResources() ([#9060](https://github.com/aws-amplify/amplify-cli/issues/9060)) ([181ed31](https://github.com/aws-amplify/amplify-cli/commit/181ed31d4561b197764eb17c98392794b43fc26c))
+
+
+
+
+
 # [5.6.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@5.5.1...amplify-provider-awscloudformation@5.6.0) (2021-11-23)
 
 

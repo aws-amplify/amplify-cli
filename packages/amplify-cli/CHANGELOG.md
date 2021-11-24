@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [7.5.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@7.5.0...@aws-amplify/cli@7.5.1) (2021-11-24)
+
+
+
+## 7.5.1 (2021-11-24)
+
+
+### Bug Fixes
+
+* **cli:** fix for headless project configure ([#9064](https://github.com/aws-amplify/amplify-cli/issues/9064)) ([ae385b7](https://github.com/aws-amplify/amplify-cli/commit/ae385b748665c40ea170b0f6c8cb15e450965486))
+* **cli:** fix headless project configure ([#9057](https://github.com/aws-amplify/amplify-cli/issues/9057)) ([37669bd](https://github.com/aws-amplify/amplify-cli/commit/37669bd1d55931c4635a6c4e240dcdd4c18d0c19))
+
+
+
+
+
 # [7.5.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@7.4.5...@aws-amplify/cli@7.5.0) (2021-11-23)
 
 
