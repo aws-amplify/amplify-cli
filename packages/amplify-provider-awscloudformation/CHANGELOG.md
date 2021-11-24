@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.6.2-pagefix.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@5.6.1...amplify-provider-awscloudformation@5.6.2-pagefix.0) (2021-11-24)
+
+
+### Bug Fixes
+
+* aggreagate paginated results in cfn.listStackResources call ([#9073](https://github.com/aws-amplify/amplify-cli/issues/9073)) ([807a0be](https://github.com/aws-amplify/amplify-cli/commit/807a0bef149b0c241024654553b6cc589f08f034))
+
+
+
+
+
 ## [5.6.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@5.6.0...amplify-provider-awscloudformation@5.6.1) (2021-11-24)
 
 
