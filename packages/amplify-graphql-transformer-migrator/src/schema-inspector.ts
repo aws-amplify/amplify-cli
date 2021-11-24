@@ -39,16 +39,7 @@ export function detectOverriddenResolvers(apiName: string): boolean {
 }
 
 export async function detectPassthroughDirectives(schema: string): Promise<Array<string>> {
-  const supportedDirectives = new Set<string>([
-    'connection',
-    'key',
-    'searchable',
-    'auth',
-    'model',
-    'function',
-    'predictions',
-    'aws_subscribe',
-  ]);
+  const supportedDirectives = new Set<string>(['connection', 'key', 'auth', 'model', 'function', 'predictions', 'aws_subscribe']);
   const directiveMap: any = collectDirectivesByTypeNames(schema).types;
   let passthroughDirectiveSet = new Set<string>();
   for (let type of Object.keys(directiveMap)) {
