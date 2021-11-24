@@ -337,8 +337,8 @@ class CloudFormation {
       {
         StackName: parentStackName,
       },
-      response => response?.StackResourceSummaries,
-      async response => response?.NextToken,
+      response => response.StackResourceSummaries,
+      async response => response.NextToken,
     );
 
     const resources = stackSummaries.filter(
