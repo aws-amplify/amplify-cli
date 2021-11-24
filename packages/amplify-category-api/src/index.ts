@@ -308,12 +308,6 @@ export async function transformCategoryStack(context: $TSContext, resource: $TSO
     }
   } else if (resource.service === AmplifySupportedService.APIGW) {
     if (canResourceBeTransformed(resource.resourceName)) {
-      const backendDir = pathManager.getBackendDirPath();
-      const overrideDir = pathManager.getResourceDirectoryPath(undefined, AmplifyCategories.API, resource.resourceName);
-      await buildOverrideDir(backendDir, overrideDir).catch(error => {
-        printer.debug(`Skipping build due to ${error.message}`);
-        return false;
-      });
       // Rebuild CFN
       const apigwStack = new ApigwStackTransform(context, resource.resourceName);
       apigwStack.transform();
