@@ -328,7 +328,6 @@ class CloudFormation {
     const { amplifyMeta } = projectDetails;
     logger('updateamplifyMetaFileWithStackOutputs.cfn.listStackResources', [cfnParentStackParams])();
     const result = await this.cfn.listStackResources(cfnParentStackParams).promise();
-    console.log(result);
     const resources = result.StackResourceSummaries.filter(
       resource =>
         ![
