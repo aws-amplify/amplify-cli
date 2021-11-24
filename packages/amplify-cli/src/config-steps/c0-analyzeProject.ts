@@ -64,7 +64,7 @@ function displayContainersInfo(context) {
 }
 
 async function configureConfigurationSetting(context) {
-  if (context.exeInfo.inputParams.amplify) {
+  if (context.exeInfo.inputParams.amplify.headless) {
     return;
   }
 
