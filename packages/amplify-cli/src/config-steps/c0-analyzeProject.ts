@@ -45,17 +45,7 @@ export async function analyzeProject(context) {
   await displayContainersInfo(context);
   context.print.info('');
 
-  const configurationSetting = await getConfigurationSetting();
-
-  if (configurationSetting === 'containers') {
-    context.exeInfo.inputParams.yes = true;
-    context.exeInfo.inputParams.containerSetting = true;
-  }
-  if (configurationSetting === 'profile') {
-    context.exeInfo.inputParams.yes = true;
-    context.exeInfo.inputParams.profileSetting = true;
-  }
-
+  await configureConfigurationSetting(context);
   await configureProjectName(context);
   await configureEditor(context);
 
@@ -73,7 +63,11 @@ function displayContainersInfo(context) {
   context.print.info(`| Leverage container-based deployments: ${containerDeploymentStatus}`);
 }
 
-async function getConfigurationSetting() {
+async function configureConfigurationSetting(context) {
+  if (context.exeInfo.inputParams.amplify) {
+    return;
+  }
+
   const configureSettingQuestion: ListQuestion = {
     type: 'list',
     name: 'configurationSetting',
@@ -87,7 +81,16 @@ async function getConfigurationSetting() {
   };
 
   const { configurationSetting } = await inquirer.prompt(configureSettingQuestion);
-  return configurationSetting;
+
+  if (configurationSetting === 'containers') {
+    context.exeInfo.inputParams.yes = true;
+    context.exeInfo.inputParams.containerSetting = true;
+  }
+
+  if (configurationSetting === 'profile') {
+    context.exeInfo.inputParams.yes = true;
+    context.exeInfo.inputParams.profileSetting = true;
+  }
 }
 
 async function configureProjectName(context) {
