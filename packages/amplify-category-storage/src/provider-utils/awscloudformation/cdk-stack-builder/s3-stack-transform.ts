@@ -80,7 +80,7 @@ export class AmplifyS3ResourceStackTransform {
   generateCfnInputParameters() {
     const userInput: S3UserInputs = this.cliInputsState.getUserInput();
     //DEFAULT Parameters
-    const defaultS3PermissionsUpload= [S3PermissionType.CREATE_AND_UPDATE];
+    const defaultS3PermissionsUpload = [S3PermissionType.CREATE_AND_UPDATE];
     this.cfnInputParams = {
       bucketName: userInput.bucketName,
       selectedGuestPermissions: S3InputState.getCfnPermissionsFromInputPermissions(userInput.guestAccess),
@@ -108,23 +108,23 @@ export class AmplifyS3ResourceStackTransform {
     this.cfnInputParams.AuthenticatedAllowList = this._getAuthGuestListPermission(S3PermissionType.READ, userInput.authAccess);
     this.cfnInputParams.GuestAllowList = this._getAuthGuestListPermission(S3PermissionType.READ, userInput.guestAccess);
     this.cfnInputParams.s3PermissionsAuthenticatedPrivate = this._getPublicPrivatePermissions(
-      userInput.authAccess, true //exclude bucketList
+      userInput.authAccess,
+      true, //exclude bucketList
     );
     this.cfnInputParams.s3PermissionsAuthenticatedProtected = this._getPublicPrivatePermissions(
-      userInput.authAccess, true //exclude bucketList
+      userInput.authAccess,
+      true, //exclude bucketList
     );
     this.cfnInputParams.s3PermissionsAuthenticatedPublic = this._getPublicPrivatePermissions(
-      userInput.authAccess, true //exclude bucketList
+      userInput.authAccess,
+      true, //exclude bucketList
     );
-    this.cfnInputParams.s3PermissionsAuthenticatedUploads = this._getUploadPermissions(
-      userInput.authAccess
-    );
+    this.cfnInputParams.s3PermissionsAuthenticatedUploads = this._getUploadPermissions(userInput.authAccess);
     this.cfnInputParams.s3PermissionsGuestPublic = this._getPublicPrivatePermissions(
-      userInput.guestAccess, true //exclude bucketList
+      userInput.guestAccess,
+      true, //exclude bucketList
     );
-    this.cfnInputParams.s3PermissionsGuestUploads = this._getUploadPermissions(
-      userInput.guestAccess
-    );
+    this.cfnInputParams.s3PermissionsGuestUploads = this._getUploadPermissions(userInput.guestAccess);
   }
 
   _getAuthGuestListPermission(checkOperation: S3PermissionType, authPermissions: Array<S3PermissionType> | undefined) {
@@ -139,17 +139,17 @@ export class AmplifyS3ResourceStackTransform {
     }
   }
 
-  _getPublicPrivatePermissions(authPermissions: Array<S3PermissionType> | undefined , excludeListBuckets : boolean) {
+  _getPublicPrivatePermissions(authPermissions: Array<S3PermissionType> | undefined, excludeListBuckets: boolean) {
     if (authPermissions) {
       let cfnPermissions: Array<S3CFNPermissionType> = S3InputState.getCfnPermissionsFromInputPermissions(authPermissions);
-      if ( excludeListBuckets ) {
+      if (excludeListBuckets) {
         cfnPermissions = cfnPermissions.filter(permissions => permissions != S3CFNPermissionType.LIST);
       }
-      return (cfnPermissions && cfnPermissions.length > 0)? cfnPermissions.join() : AmplifyBuildParamsPermissions.DISALLOW;
+      return cfnPermissions && cfnPermissions.length > 0 ? cfnPermissions.join() : AmplifyBuildParamsPermissions.DISALLOW;
     }
     return AmplifyBuildParamsPermissions.DISALLOW;
   }
-  _getUploadPermissions(authPermissions: Array<S3PermissionType> | undefined ) {
+  _getUploadPermissions(authPermissions: Array<S3PermissionType> | undefined) {
     if (authPermissions) {
       if (!authPermissions.includes(S3PermissionType.CREATE_AND_UPDATE)) {
         return AmplifyBuildParamsPermissions.DISALLOW;
@@ -168,8 +168,8 @@ export class AmplifyS3ResourceStackTransform {
     const overrideJSFilePath = path.resolve(path.join(resourceDirPath, 'build', 'override.js'));
 
     const isBuild = await buildOverrideDir(backendDir, resourceDirPath).catch(error => {
-      printer.debug(`Skipping build as ${error.message}`);
-      return false;
+      printer.error(`Skipping build as ${error.message}`);
+      throw new Error(error);
     });
     //Skip if packageManager or override.ts not found
     if (isBuild) {

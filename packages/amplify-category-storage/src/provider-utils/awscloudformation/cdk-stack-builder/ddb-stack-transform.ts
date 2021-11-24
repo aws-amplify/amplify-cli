@@ -176,8 +176,8 @@ export class DDBStackTransform {
     const overrideJSFilePath = path.resolve(path.join(resourceDirPath, 'build', 'override.js'));
 
     const isBuild = await buildOverrideDir(backendDir, resourceDirPath).catch(error => {
-      printer.debug(`Skipping build as ${error.message}`);
-      return false;
+      printer.error(`Skipping build as ${error.message}`);
+      throw new Error(error);
     });
     // skip if packageManager or override.ts not found
     if (isBuild) {

@@ -19,9 +19,6 @@ export const generateOverrideSkeleton = async (context: $TSContext, srcResourceD
 
   fs.ensureDirSync(destDirPath);
 
-  // add overrde.ts and tsconfig<project> to build folder of the resource / rootstack
-  generateTsConfigforProject(backendDir, srcResourceDirPath, destDirPath);
-
   // 2. Build Override Directory
   await buildOverrideDir(backendDir, destDirPath);
 
@@ -33,6 +30,11 @@ export const generateOverrideSkeleton = async (context: $TSContext, srcResourceD
 };
 
 export async function buildOverrideDir(cwd: string, destDirPath: string): Promise<boolean> {
+  const overrideBackendPackageJson = path.join(pathManager.getBackendDirPath(), 'package.json');
+  if (!fs.existsSync(overrideBackendPackageJson)) {
+    const overrideSamplePackageJsonPath = path.join(__dirname, '..', '..', 'resources', 'overrides-resource', 'package.json');
+    fs.writeFileSync(overrideBackendPackageJson, fs.readFileSync(overrideSamplePackageJsonPath));
+  }
   const packageManager = getPackageManager(cwd);
 
   if (packageManager === null) {
@@ -50,8 +52,11 @@ export async function buildOverrideDir(cwd: string, destDirPath: string): Promis
 
     // making sure build folder exists for resource
     fs.ensureDirSync(tsConfigDir);
+    // add overrde.ts and tsconfig<project> to build folder of the resource / rootstack
+    const tsConfigDestFilePath = path.join(tsConfigDir, 'tsconfig.resource.json');
+    const tsConfigFileName = path.join(__dirname, '..', '..', 'resources', 'overrides-resource', 'tsconfig.resource.json');
+    fs.writeFileSync(tsConfigDestFilePath, fs.readFileSync(tsConfigFileName));
 
-    const tsConfigFilePath = path.join(tsConfigDir, 'tsconfig.resource.json');
     // get locally installed tsc executable
 
     const localTscExecutablePath = path.join(cwd, 'node_modules', '.bin', 'tsc');
@@ -59,7 +64,7 @@ export async function buildOverrideDir(cwd: string, destDirPath: string): Promis
     if (!fs.existsSync(localTscExecutablePath)) {
       throw new Error('Typescript executable not found. Please add it as a dev-dependency in the package.json file for this resource.');
     }
-    execa.sync(localTscExecutablePath, [`--project`, `${tsConfigFilePath}`], {
+    execa.sync(localTscExecutablePath, [`--project`, `${tsConfigDestFilePath}`], {
       cwd: tsConfigDir,
       stdio: 'pipe',
       encoding: 'utf-8',
@@ -90,7 +95,7 @@ export const generateAmplifyOverrideProjectBuildFiles = (backendDir: string, src
   }
 };
 
-export const generateTsConfigforProject = (backendDir: string, srcResourceDirPath: string, destDirPath: string) => {
+export const generateTsConfigforProject = (srcResourceDirPath: string, destDirPath: string) => {
   const overrideFileName = path.join(destDirPath, 'override.ts');
   // ensure build dir path
   fs.ensureDirSync(path.join(destDirPath, 'build'));

@@ -50,6 +50,10 @@ function moveBackendResourcesToCurrentCloudBackend(resources: $TSObject[]) {
   const amplifyCloudMetaFilePath = pathManager.getCurrentAmplifyMetaFilePath();
   const backendConfigFilePath = pathManager.getBackendConfigFilePath();
   const backendConfigCloudFilePath = pathManager.getCurrentBackendConfigFilePath();
+  const overridePackageJsonBackendFilePath = path.join(pathManager.getBackendDirPath(), 'package.json');
+  const overrideTsConfigJsonBackendFilePath = path.join(pathManager.getBackendDirPath(), 'tsconfig.json');
+  const overridePackageJsonCurrentCloudBackendFilePath = path.join(pathManager.getCurrentCloudBackendDirPath(), 'package.json');
+  const overrideTsConfigJsonCurrentCloudBackendFilePath = path.join(pathManager.getCurrentCloudBackendDirPath(), 'tsconfig.json');
 
   for (const resource of resources) {
     const sourceDir = path.normalize(path.join(pathManager.getBackendDirPath(), resource.category, resource.resourceName));
@@ -72,6 +76,10 @@ function moveBackendResourcesToCurrentCloudBackend(resources: $TSObject[]) {
 
   fs.copySync(amplifyMetaFilePath, amplifyCloudMetaFilePath, { overwrite: true });
   fs.copySync(backendConfigFilePath, backendConfigCloudFilePath, { overwrite: true });
+  console.log(overridePackageJsonBackendFilePath);
+  console.log(overridePackageJsonCurrentCloudBackendFilePath);
+  fs.copySync(overridePackageJsonBackendFilePath, overridePackageJsonCurrentCloudBackendFilePath, { overwrite: true });
+  fs.copySync(overrideTsConfigJsonBackendFilePath, overrideTsConfigJsonCurrentCloudBackendFilePath, { overwrite: true });
 }
 
 function removeNodeModulesDir(currentCloudBackendDir: string) {
