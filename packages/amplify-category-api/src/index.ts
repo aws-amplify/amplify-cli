@@ -291,7 +291,7 @@ export async function transformCategoryStack(context: $TSContext, resource: $TSO
       const backendDir = pathManager.getBackendDirPath();
       const overrideDir = path.join(backendDir, resource.category, resource.resourceName);
       const isBuild = await buildOverrideDir(backendDir, overrideDir).catch(error => {
-        printer.error(`Skipping build as ${error.message}`);
+        printer.error(`Skipping build due to ${error.message}`);
         throw new Error(error);
       });
       await context.amplify.invokePluginMethod(context, 'awscloudformation', undefined, 'compileSchema', [
@@ -311,7 +311,7 @@ export async function transformCategoryStack(context: $TSContext, resource: $TSO
       const backendDir = pathManager.getBackendDirPath();
       const overrideDir = pathManager.getResourceDirectoryPath(undefined, AmplifyCategories.API, resource.resourceName);
       await buildOverrideDir(backendDir, overrideDir).catch(error => {
-        printer.debug(`Skipping build as ${error.message}`);
+        printer.debug(`Skipping build due to ${error.message}`);
         return false;
       });
       // Rebuild CFN

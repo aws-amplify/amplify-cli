@@ -102,7 +102,7 @@ export class AmplifyAuthTransform extends AmplifyCategoryTransform {
     const backendDir = pathManager.getBackendDirPath();
     const overrideDir = path.join(backendDir, this._category, this.resourceName);
     const isBuild = await buildOverrideDir(backendDir, overrideDir).catch(error => {
-      printer.error(`Skipping build as ${error.message}`);
+      printer.error(`Skipping build due to ${error.message}`);
       throw new Error(error);
     });
     if (isBuild) {

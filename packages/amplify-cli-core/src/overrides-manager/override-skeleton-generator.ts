@@ -19,6 +19,9 @@ export const generateOverrideSkeleton = async (context: $TSContext, srcResourceD
 
   fs.ensureDirSync(destDirPath);
 
+  // add overrde.ts and tsconfig<project> to build folder of the resource / rootstack
+  generateTsConfigforProject(srcResourceDirPath, destDirPath);
+
   // 2. Build Override Directory
   await buildOverrideDir(backendDir, destDirPath);
 
@@ -30,6 +33,11 @@ export const generateOverrideSkeleton = async (context: $TSContext, srcResourceD
 };
 
 export async function buildOverrideDir(cwd: string, destDirPath: string): Promise<boolean> {
+  const overrideFileName = path.join(destDirPath, 'override.ts');
+  if (!fs.existsSync(overrideFileName)) {
+    // return when no override file found
+    return false;
+  }
   const overrideBackendPackageJson = path.join(pathManager.getBackendDirPath(), 'package.json');
   if (!fs.existsSync(overrideBackendPackageJson)) {
     const overrideSamplePackageJsonPath = path.join(__dirname, '..', '..', 'resources', 'overrides-resource', 'package.json');
@@ -54,8 +62,8 @@ export async function buildOverrideDir(cwd: string, destDirPath: string): Promis
     fs.ensureDirSync(tsConfigDir);
     // add overrde.ts and tsconfig<project> to build folder of the resource / rootstack
     const tsConfigDestFilePath = path.join(tsConfigDir, 'tsconfig.resource.json');
-    const tsConfigFileName = path.join(__dirname, '..', '..', 'resources', 'overrides-resource', 'tsconfig.resource.json');
-    fs.writeFileSync(tsConfigDestFilePath, fs.readFileSync(tsConfigFileName));
+    const tsConfigFilePath = path.join(__dirname, '..', '..', 'resources', 'overrides-resource', 'tsconfig.resource.json');
+    fs.writeFileSync(tsConfigDestFilePath, fs.readFileSync(tsConfigFilePath));
 
     // get locally installed tsc executable
 

@@ -168,7 +168,7 @@ export class AmplifyS3ResourceStackTransform {
     const overrideJSFilePath = path.resolve(path.join(resourceDirPath, 'build', 'override.js'));
 
     const isBuild = await buildOverrideDir(backendDir, resourceDirPath).catch(error => {
-      printer.error(`Skipping build as ${error.message}`);
+      printer.error(`Skipping build due to ${error.message}`);
       throw new Error(error);
     });
     //Skip if packageManager or override.ts not found
