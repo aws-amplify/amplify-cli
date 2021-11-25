@@ -29,3 +29,55 @@ export async function handleAmplifyEvent(context: $TSContext, args: $TSAny) {
 export async function transformCategoryStack(context: $TSContext, resource: IAmplifyResource) {
   await buildCustomResources(context, resource.resourceName);
 }
+
+export async function getPermissionPolicies(context: $TSContext, resourceOpsMapping: $TSAny) {
+
+  const permissionPolicies: any[] = [];
+  const resourceAttributes: any[] = [];
+
+  Object.keys(resourceOpsMapping).forEach(resourceName => {
+    const customResourceFilePath = path.join(context.amplify.pathManager.getBackendDirPath(), categoryName, resourceName, "resources.json");
+    let customResource = context.amplify.readJsonFile(customResourceFilePath);
+
+    let customResourceJSON = JSON.stringify(customResource);
+
+    customResourceJSON = customResourceJSON.replace(/\$\{categoryName\}/, categoryName);
+    customResourceJSON = customResourceJSON.replace(/\$\{resourceName\}/, resourceName);
+
+    customResource = JSON.parse(customResourceJSON);
+
+    const actions: string[] = [];
+
+    const crudOptions = resourceOpsMapping[resourceName];
+
+    crudOptions.forEach((crudOption: string) => {
+      actions.push(
+        ...customResource.policy.actions[crudOption]
+      );
+    });
+
+    const policy = {
+      Effect: 'Allow',
+      Action: actions,
+      Resource: [
+        ...customResource.policy.resources
+      ],
+    }
+
+    if (actions.length > 0) {
+      permissionPolicies.push(policy);
+    }
+
+    const attributes = customResource.attributes;
+
+    if (attributes.length > 0) {
+      resourceAttributes.push({
+        resourceName,
+        attributes,
+        category: categoryName
+      })
+    }
+  });
+
+  return { permissionPolicies, resourceAttributes };
+}
