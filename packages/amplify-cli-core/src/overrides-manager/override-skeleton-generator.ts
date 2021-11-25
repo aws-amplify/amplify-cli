@@ -43,6 +43,12 @@ export async function buildOverrideDir(cwd: string, destDirPath: string): Promis
     const overrideSamplePackageJsonPath = path.join(__dirname, '..', '..', 'resources', 'overrides-resource', 'package.json');
     fs.writeFileSync(overrideBackendPackageJson, fs.readFileSync(overrideSamplePackageJsonPath));
   }
+
+  const overrideBackendTsConfigJson = path.join(pathManager.getBackendDirPath(), 'tsconfig.json');
+  if (!fs.existsSync(overrideBackendTsConfigJson)) {
+    const overrideSampleTsconfigJsonPath = path.join(__dirname, '..', '..', 'resources', 'overrides-resource', 'tsconfig.json');
+    fs.writeFileSync(overrideBackendTsConfigJson, fs.readFileSync(overrideSampleTsconfigJsonPath));
+  }
   const packageManager = getPackageManager(cwd);
 
   if (packageManager === null) {
