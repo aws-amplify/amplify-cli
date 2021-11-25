@@ -45,8 +45,8 @@ export async function console(context: $TSContext) {
 }
 
 export async function migrate(context: $TSContext, serviceName?: string) {
-  const { projectPath } = context.migrationInfo;
-  const amplifyMeta = stateManager.getMeta();
+  const { projectPath } = context?.migrationInfo ?? { projectPath: pathManager.findProjectRoot() };
+  const amplifyMeta = stateManager.getMeta(projectPath);
   const migrateResourcePromises = [];
   for (const categoryName of Object.keys(amplifyMeta)) {
     if (categoryName === category) {
@@ -54,7 +54,7 @@ export async function migrate(context: $TSContext, serviceName?: string) {
         try {
           if (amplifyMeta[category][resourceName].providerPlugin) {
             const providerController = await import(
-              path.join('.', 'provider-utils', amplifyMeta[category][resourceName].providerPlugin, 'index')
+              path.join(__dirname, 'provider-utils', amplifyMeta[category][resourceName].providerPlugin, 'index')
             );
             if (providerController) {
               if (!serviceName || serviceName === amplifyMeta[category][resourceName].service) {
@@ -125,7 +125,7 @@ export async function initEnv(context: $TSContext) {
     return;
   }
 
-  const providerController = await import(path.join('.', 'provider-utils', provider, 'index'));
+  const providerController = await import(path.join(__dirname, 'provider-utils', provider, 'index'));
 
   if (!providerController) {
     printer.error('Provider not configured for this category');

@@ -7,11 +7,12 @@ import {
   $TSObject,
   AmplifyCategories,
   AmplifySupportedService,
+  exitOnNextTick,
   JSONUtilities,
   pathManager,
   stateManager,
 } from 'amplify-cli-core';
-import * as fs from 'fs';
+import * as fs from 'fs-extra';
 import * as path from 'path';
 import { ProviderName } from '../constants';
 
@@ -178,33 +179,30 @@ function computePolicySizeIncrease(methodLength: number, pathLength: number, nam
   return 380 + 2 * (methodLength + pathLength + nameLength);
 }
 
-export function consolidateApiGatewayPolicies(context: $TSContext, stackName: string): $TSObject {
+export async function consolidateApiGatewayPolicies(context: $TSContext, stackName: string): Promise<$TSObject> {
   const apiGateways = [];
   const meta = stateManager.getMeta();
-  const apis = meta?.api ?? {};
+  const apis: $TSObject = meta?.api ?? {};
 
   try {
     const cfnPath = path.join(pathManager.getBackendDirPath(), AmplifyCategories.API, `${APIGW_AUTH_STACK_LOGICAL_ID}.json`);
     fs.unlinkSync(cfnPath);
   } catch {}
 
-  Object.keys(apis).forEach(resourceName => {
-    const resource = apis[resourceName];
-    const cliInputs = loadApiCliInputs(resourceName, resource);
+  for (const [resourceName, resource] of Object.entries(apis)) {
+    const cliInputs = await loadApiCliInputs(context, resourceName, resource);
 
-    if (!cliInputs) {
-      return;
+    if (cliInputs) {
+      const api = { ...resource, resourceName, params: cliInputs };
+      apiGateways.push(api);
     }
-
-    const api = { ...resource, resourceName, params: cliInputs };
-    apiGateways.push(api);
-  });
+  }
 
   if (apiGateways.length === 0) {
     return { APIGatewayAuthURL: undefined };
   }
 
-  return { APIGatewayAuthURL: createApiGatewayAuthResources(context, stackName, apiGateways) };
+  return { APIGatewayAuthURL: createApiGatewayAuthResources(stackName, apiGateways) };
 }
 
 enum CrudOperation {
@@ -224,15 +222,14 @@ function convertCrudOperationsToPermissions(crudOps: CrudOperation[]) {
   return crudOps.flatMap(op => opMap[op]);
 }
 
-function createApiGatewayAuthResources(context: $TSContext, stackName: string, apiGateways: $TSAny): string | undefined {
+function createApiGatewayAuthResources(stackName: string, apiGateways: $TSAny): string | undefined {
   const stack = new ApiGatewayAuthStack(undefined, 'Amplify', {
     description: 'API Gateway policy stack created using Amplify CLI',
     stackName,
     apiGateways,
   });
   const cfn = stack.toCloudFormation();
-  const { amplify } = context;
-  const { DeploymentBucketName } = amplify.getProjectMeta()?.providers?.[ProviderName] ?? {};
+  const { DeploymentBucketName } = stateManager.getMeta()?.providers?.[ProviderName] ?? {};
   const cfnPath = path.join(pathManager.getBackendDirPath(), AmplifyCategories.API, `${APIGW_AUTH_STACK_LOGICAL_ID}.json`);
 
   if (!cfn.Resources || Object.keys(cfn.Resources).length === 0) {
@@ -244,10 +241,33 @@ function createApiGatewayAuthResources(context: $TSContext, stackName: string, a
   return `https://s3.amazonaws.com/${DeploymentBucketName}/amplify-cfn-templates/${S3_UPLOAD_PATH}`;
 }
 
-export function loadApiCliInputs(name: string, resource: $TSObject): $TSObject | undefined {
-  if (resource.providerPlugin !== ProviderName || resource.service !== AmplifySupportedService.APIGW || name === 'AdminQueries') {
+export async function loadApiCliInputs(context: $TSContext, resourceName: string, resource: $TSObject): Promise<$TSObject | undefined> {
+  if (resource.providerPlugin !== ProviderName || resource.service !== AmplifySupportedService.APIGW || resourceName === 'AdminQueries') {
     return;
   }
 
-  return stateManager.getResourceInputsJson(undefined, AmplifyCategories.API, name, { throwIfNotExist: false });
+  const projectRoot = pathManager.findProjectRoot();
+
+  if (!stateManager.resourceInputsJsonExists(projectRoot, AmplifyCategories.API, resourceName)) {
+    const legacyParamsFilePath = path.join(
+      pathManager.getResourceDirectoryPath(projectRoot, AmplifyCategories.API, resourceName),
+      'api-params.json',
+    );
+
+    if (fs.existsSync(legacyParamsFilePath)) {
+      // migration is required
+      context.migrationInfo = { projectPath: projectRoot };
+      await context.amplify.invokePluginMethod(context, AmplifyCategories.API, AmplifySupportedService.APIGW, 'migrate', [
+        resourceName,
+        AmplifySupportedService.APIGW,
+      ]);
+
+      // answered no to migration
+      if (fs.existsSync(legacyParamsFilePath)) {
+        exitOnNextTick(0);
+      }
+    }
+  }
+
+  return stateManager.getResourceInputsJson(projectRoot, AmplifyCategories.API, resourceName, { throwIfNotExist: false });
 }
