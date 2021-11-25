@@ -1,5 +1,38 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`Schema migration tests for @auth default auth is user pools group based auth migrate dynamic user pool 1`] = `
+"type Todo @model @auth(rules: [{allow: groups, groupsField: \\"groups\\"}]) {
+  id: ID!
+  title: String
+  groups: [String]
+}
+
+type Task @model @auth(rules: [{allow: groups, groupsField: \\"group\\"}]) {
+  id: ID!
+  title: String
+  group: String
+}
+"
+`;
+
+exports[`Schema migration tests for @auth default auth is user pools group based auth migrates @auth with groups correctly 1`] = `
+"type Todo @model @auth(rules: [{allow: groups, groups: [\\"Admins\\"]}]) {
+  id: ID!
+  name: String!
+  description: String
+}
+"
+`;
+
+exports[`Schema migration tests for @auth default auth is user pools group based auth with explicit operations migrates create + delete -> private read + update 1`] = `
+"type Todo @model @auth(rules: [{allow: groups, groups: [\\"Admins\\"]}, {allow: private, operations: [read, update]}]) {
+  id: ID!
+  rating: Int
+  title: String
+}
+"
+`;
+
 exports[`Schema migration tests for @auth default auth is user pools migrates @auth private with user pools correctly 1`] = `
 "type Todo @model @auth(rules: [{allow: private}]) {
   id: ID!
@@ -9,11 +42,125 @@ exports[`Schema migration tests for @auth default auth is user pools migrates @a
 "
 `;
 
+exports[`Schema migration tests for @auth default auth is user pools multi-use for user groups migrates non specified @auth correctly 1`] = `
+"type Todo @model @auth(rules: [{allow: owner}]) {
+  id: ID!
+  name: String!
+  description: String
+}
+
+type Task @model @auth(rules: [{allow: private}]) {
+  id: ID!
+  title: String!
+  owner: String
+}
+"
+`;
+
+exports[`Schema migration tests for @auth default auth is user pools owner based auth array of owners migrates owner array fields correctly 1`] = `
+"type Todo @model @auth(rules: [{allow: owner, ownerField: \\"editors\\"}]) {
+  id: ID!
+  rating: Int
+  title: String
+  editors: [String]
+}
+"
+`;
+
+exports[`Schema migration tests for @auth default auth is user pools owner based auth custom identity claim migrates identity claim 1`] = `
+"type Todo @model @auth(rules: [{allow: owner, identityClaim: \\"sub\\"}]) {
+  id: ID!
+  title: String!
+  owner: String
+}
+"
+`;
+
+exports[`Schema migration tests for @auth default auth is user pools owner based auth explicit operations adds private delete rule 1`] = `
+"type Todo @model @auth(rules: [{allow: owner}, {allow: private, operations: [read, update]}]) {
+  id: ID!
+  rating: Int
+  title: String
+}
+"
+`;
+
+exports[`Schema migration tests for @auth default auth is user pools owner based auth explicit operations adds private update rule 1`] = `
+"type Todo @model @auth(rules: [{allow: owner}, {allow: private, operations: [update]}]) {
+  id: ID!
+  rating: Int
+  title: String
+}
+"
+`;
+
+exports[`Schema migration tests for @auth default auth is user pools owner based auth explicit owner field migrates @auth with custom owner field correctly 1`] = `
+"type Todo @model @auth(rules: [{allow: owner, ownerField: \\"editor\\"}]) {
+  id: ID!
+  name: String!
+  description: String
+  editor: String
+}
+"
+`;
+
+exports[`Schema migration tests for @auth default auth is user pools owner based auth explicit owner field migrates @auth with owners correctly 1`] = `
+"type Todo @model @auth(rules: [{allow: owner}]) {
+  id: ID!
+  name: String!
+  description: String
+  owner: String
+}
+"
+`;
+
+exports[`Schema migration tests for @auth default auth is user pools owner based auth implicit owner field migrates @auth with owners and field correctly 1`] = `
+"type Todo @model @auth(rules: [{allow: owner, ownerField: \\"editor\\"}]) {
+  id: ID!
+  name: String!
+  description: String
+}
+"
+`;
+
+exports[`Schema migration tests for @auth default auth is user pools owner based auth implicit owner field migrates @auth with owners correctly 1`] = `
+"type Todo @model @auth(rules: [{allow: owner}]) {
+  id: ID!
+  name: String!
+  description: String
+}
+"
+`;
+
+exports[`Schema migration tests for @auth default auth is user pools owner based auth multiple owner rules retains the owner operations 1`] = `
+"type Todo @model @auth(rules: [{allow: owner, operations: [create]}, {allow: owner, ownerField: \\"admin\\", operations: [read, update, delete]}]) {
+  id: ID!
+  title: String!
+  admin: String
+  owner: String
+}
+"
+`;
+
 exports[`Schema migration tests for @auth default auth uses api key migrates @auth to public @auth with api key 1`] = `
 "type Todo @model @auth(rules: [{allow: public}]) {
   id: ID!
   name: String!
   description: String
+}
+"
+`;
+
+exports[`Schema migration tests for @auth default auth uses api key migrates default api_key auth correctly 1`] = `
+"type Todo @model @auth(rules: [{allow: public}]) {
+  id: ID!
+  name: String!
+  description: String
+}
+
+type Comment @model @auth(rules: [{allow: private}]) {
+  id: ID!
+  content: String!
 }
 "
 `;
@@ -41,6 +188,121 @@ exports[`Schema migration tests for @auth default auth uses iam migrates @auth p
   id: ID!
   name: String!
   description: String
+}
+"
+`;
+
+exports[`Schema migration tests for @auth default auth uses oidc migrates oidc w/ groups as expected 1`] = `
+"type Todo @model @auth(rules: [{allow: groups, provider: oidc, groups: [\\"Admins\\"], groupClaim: \\"https://myapp.com/claims/groups\\"}]) {
+  id: ID!
+  title: String!
+}
+"
+`;
+
+exports[`Schema migration tests for @auth default auth uses oidc migrates over oidc w/ owner and operations 1`] = `
+"type Todo @model @auth(rules: [{allow: owner, provider: oidc, identityClaim: \\"sub\\"}, {allow: private, provider: oidc, operations: [create, read, delete]}]) {
+  id: ID!
+  title: String!
+}
+"
+`;
+
+exports[`Schema migration tests for @auth default auth uses oidc ports over oidc w/ owner as expected 1`] = `
+"type Todo @model @auth(rules: [{allow: owner, provider: oidc, identityClaim: \\"sub\\"}]) {
+  id: ID!
+  title: String!
+}
+"
+`;
+
+exports[`Schema migration tests for @auth field level auth keeps type auth and field auth 1`] = `
+"type Todo @model @auth(rules: [{allow: public}]) {
+  id: ID!
+  title: String!
+  ssn: String @auth(rules: [{allow: owner}])
+}
+"
+`;
+
+exports[`Schema migration tests for @auth field level auth migrates field level correctly with explicit operations 1`] = `
+"type FieldLevelPost @model @auth(rules: [{allow: public}]) {
+  id: ID!
+  title: String!
+  username: String
+  ssn: String @auth(rules: [{allow: owner, ownerField: \\"username\\", identityClaim: \\"username\\", operations: [create, read, update, delete]}])
+}
+"
+`;
+
+exports[`Schema migration tests for @auth field level auth multi field auth migrates correctly 1`] = `
+"type Employee @model(subscriptions: {level: public}) @auth(rules: [{allow: owner, ownerField: \\"e_mail\\", operations: [update]}, {allow: groups, groups: [\\"Admin\\"], operations: [create, update, delete]}, {allow: private, operations: [read]}]) {
+  e_mail: String @auth(rules: [{allow: groups, groups: [\\"Admin\\"], operations: [create, update, read]}, {allow: owner, ownerField: \\"e_mail\\", operations: [read]}])
+  salary: Int @auth(rules: [{allow: groups, groups: [\\"Admin\\"], operations: [create, update, read]}, {allow: owner, ownerField: \\"e_mail\\", operations: [read]}])
+  notes: String @auth(rules: [{allow: owner, ownerField: \\"e_mail\\", operations: [delete]}])
+}
+"
+`;
+
+exports[`Schema migration tests for @auth group auth ports over owner and group based rule 1`] = `
+"type Todo @model @auth(rules: [{allow: owner}, {allow: groups, groups: [\\"Admins\\"]}]) {
+  id: ID!
+  name: String!
+  description: String
+  owner: String
+}
+"
+`;
+
+exports[`Schema migration tests for @auth group auth retains dynamic groups in auth rules 1`] = `
+"type Todo @model @auth(rules: [{allow: groups, groups: [\\"Admins\\"]}]) {
+  id: ID!
+  rating: Int
+  title: String
+}
+"
+`;
+
+exports[`Schema migration tests for @auth group auth retains groupClaims in auth rules 1`] = `
+"type Todo @model @auth(rules: [{allow: groups, provider: oidc, groups: [\\"Admins\\"], groupClaim: \\"https://myapp.com/claims/groups\\"}]) {
+  id: ID!
+  title: String!
+}
+"
+`;
+
+exports[`Schema migration tests for @auth relational auth migrates as expected 1`] = `
+"type Post @model @auth(rules: [{allow: owner}]) {
+  id: ID!
+  title: String!
+  author: User @belongsTo(fields: [\\"owner\\"])
+  owner: ID! @index(name: \\"byOwner\\", sortKeyFields: [\\"id\\"])
+}
+
+type User @model @auth(rules: [{allow: owner}]) {
+  id: ID!
+  posts: [Post] @hasMany(indexName: \\"byOwner\\", fields: [\\"id\\"])
+}
+
+type FieldProtected @model @auth(rules: [{allow: private}]) {
+  id: ID!
+  owner: String
+  ownerOnly: String @auth(rules: [{allow: owner}])
+}
+
+type OpenTopLevel @model @auth(rules: [{allow: private}]) {
+  id: ID!
+  name: String
+  owner: String
+  protected: [ConnectionProtected] @hasMany(indexName: \\"byTopLevel\\", fields: [\\"id\\"])
+}
+
+type ConnectionProtected @model(queries: null) @auth(rules: [{allow: owner}]) {
+  id: ID!
+  name: String
+  owner: String
+  topLevelID: ID! @index(name: \\"byTopLevel\\", sortKeyFields: [\\"id\\"])
+  topLevel: OpenTopLevel @belongsTo(fields: [\\"topLevelID\\"])
 }
 "
 `;

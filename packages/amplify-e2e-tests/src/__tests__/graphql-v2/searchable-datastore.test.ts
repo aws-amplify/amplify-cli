@@ -20,7 +20,7 @@ describe('transformer model searchable migration test', () => {
   beforeEach(async () => {
     projectName = createRandomName();
     projRoot = await createNewProjectDir(createRandomName());
-    await initJSProjectWithProfile(projRoot, { 
+    await initJSProjectWithProfile(projRoot, {
       name: projectName,
     });
     await addAuthWithDefault(projRoot, {});
@@ -33,14 +33,12 @@ describe('transformer model searchable migration test', () => {
 
   it('migration of searchable directive - search should return expected results', async () => {
     const v2Schema = 'transformer_migration/searchable-v2.graphql';
-    
-    await addFeatureFlag(projRoot, 'graphqltransformer', 'transformerVersion', 2);
-    await addFeatureFlag(projRoot, 'graphqltransformer', 'useExperimentalPipelinedTransformer', true);
+
     await addApiWithoutSchema(projRoot, { apiName: projectName });
     await apiEnableDataStore(projRoot, {});
     await updateApiSchema(projRoot, projectName, v2Schema);
     await amplifyPush(projRoot);
-    
+
     appSyncClient = getAppSyncClientFromProj(projRoot);
     await runAndValidateQuery('test1', 'test1', 10);
   });
@@ -97,15 +95,11 @@ describe('transformer model searchable migration test', () => {
     return await runMutation(getCreateTodosMutation(name, description, count));
   };
 
-  const searchTodos = async() => {
+  const searchTodos = async () => {
     return await runQuery(getTodos());
-  }
+  };
 
-  function getCreateTodosMutation(
-    name: string,
-    description: string,
-    count: number,
-  ): string {
+  function getCreateTodosMutation(name: string, description: string, count: number): string {
     return `mutation {
           createTodo(input: {
               name: "${name}"
@@ -134,21 +128,21 @@ describe('transformer model searchable migration test', () => {
 
     await waitForOSPropagate();
     const searchResponse = await searchTodos();
-    
+
     const expectedRows = 1;
     expect(searchResponse).toBeDefined();
     expect(searchResponse.errors).toBeUndefined();
     expect(searchResponse.data).toBeDefined();
     expect(searchResponse.data.searchTodos).toBeDefined();
     expect(searchResponse.data.searchTodos.items).toHaveLength(expectedRows);
-  }
+  };
 
   const waitForOSPropagate = async (initialWaitSeconds = 5, maxRetryCount = 5) => {
     const expectedCount = 1;
     let waitInMilliseconds = initialWaitSeconds * 1000;
     let currentRetryCount = 0;
     let searchResponse;
-  
+
     do {
       await new Promise(r => setTimeout(r, waitInMilliseconds));
       searchResponse = await searchTodos();

@@ -28,6 +28,8 @@ import { AUTH_TRIGGER_STACK } from '../utils/upload-auth-trigger-template';
 import { S3 } from '../aws-utils/aws-s3';
 import { downloadZip } from '../zip-util';
 import { Ref } from 'cloudform-types/types/functions';
+import { prePushCfnTemplateModifier } from '../pre-push-cfn-processor/pre-push-cfn-modifier';
+import { getDefaultTemplateDescription } from '../template-description-utils';
 const {
   API_CATEGORY,
   AUTH_CATEGORY,
@@ -111,7 +113,7 @@ export class ResourceExport extends ResourcePackager {
     const { StackName: stackName, AuthRoleName, UnauthRoleName, DeploymentBucketName } = this.amplifyMeta[PROVIDER][PROVIDER_NAME];
     const template = await this.generateRootStack();
     const parameters = this.extractParametersFromTemplateNestedStack(template);
-    const modifiedTemplate = this.modifyRootStack(template, true);
+    const modifiedTemplate = await this.modifyRootStack(template, true);
     this.writeRootStackToPath(modifiedTemplate);
     stackParameters[stackName].destination = path.join(this.exportDirectoryPath, 'root-stack-template.json');
 
@@ -238,7 +240,7 @@ export class ResourceExport extends ResourcePackager {
   }
 
   private async processAndWriteCfn(cfnFile: string, destinationPath: string, deleteParameters: boolean = true) {
-    const { cfnTemplate, templateFormat } = await readCFNTemplate(cfnFile);
+    const { cfnTemplate, templateFormat } = readCFNTemplate(cfnFile);
     return await this.processAndWriteCfnTemplate(cfnTemplate, destinationPath, templateFormat, deleteParameters);
   }
 
@@ -305,7 +307,7 @@ export class ResourceExport extends ResourcePackager {
             };
           });
         } else if (resource.category === FUNCTION_CATEGORY.NAME && resource.service === FUNCTION_CATEGORY.SERVICE.LAMBDA_LAYER) {
-          const { cfnTemplate, templateFormat } = await readCFNTemplate(cfnFile);
+          const { cfnTemplate, templateFormat } = readCFNTemplate(cfnFile);
           Object.keys(cfnTemplate.Resources)
             .filter(key => cfnTemplate.Resources[key].Type === 'AWS::Lambda::LayerVersion')
             .forEach(layerVersionResourceKey => {
@@ -339,7 +341,9 @@ export class ResourceExport extends ResourcePackager {
       };
       JSONUtilities.writeJson(destinationPath, template);
       _.set(this.amplifyMeta, [PROVIDER, PROVIDER_NAME, NETWORK_STACK_S3_URL], this.createTemplateUrl(bucket, NETWORK_STACK_FILENAME));
+    }
 
+    if (this.resourcesHasApiGatewaysButNotAdminQueries(resources)) {
       const apiGWAuthFile = path.join(pathManager.getBackendDirPath(), API_CATEGORY.NAME, APIGW_AUTH_STACK_FILE_NAME);
       // don't check for the api gateway rest api just check for the consolidated file
       if (fs.existsSync(apiGWAuthFile)) {
@@ -417,7 +421,7 @@ export class ResourceExport extends ResourcePackager {
    * @param template {Template}
    * @returns {Template}
    */
-  private modifyRootStack(template: Template, deleteParameters: boolean): Template {
+  private async modifyRootStack(template: Template, deleteParameters: boolean): Promise<Template> {
     Object.keys(template.Resources).map(resourceKey => {
       const resource = template.Resources[resourceKey];
       if (resource.Type === AWS_CLOUDFORMATION_STACK_TYPE) {
@@ -440,6 +444,8 @@ export class ResourceExport extends ResourcePackager {
         }
       }
     });
+    await prePushCfnTemplateModifier(template);
+    template.Description = getDefaultTemplateDescription(this.context, 'root');
     return template;
   }
 

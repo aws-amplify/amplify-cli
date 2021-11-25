@@ -1,8 +1,15 @@
-import { DirectiveWrapper, InvalidDirectiveError, MappingTemplate, TransformerPluginBase } from '@aws-amplify/graphql-transformer-core';
+import {
+  DirectiveWrapper,
+  InvalidDirectiveError,
+  MappingTemplate,
+  TransformerPluginBase,
+  InputObjectDefinitionWrapper,
+} from '@aws-amplify/graphql-transformer-core';
 import {
   TransformerContextProvider,
   TransformerResolverProvider,
   TransformerSchemaVisitStepContextProvider,
+  TransformerTransformSchemaStepContextProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import {
   DirectiveNode,
@@ -15,7 +22,7 @@ import {
   TypeNode,
 } from 'graphql';
 import { methodCall, printBlock, qref, raw, ref, str } from 'graphql-mapping-template';
-import { getBaseType, isEnum, isListType, isNonNullType, isScalarOrEnum } from 'graphql-transformer-common';
+import { getBaseType, isEnum, isListType, isScalarOrEnum, ModelResourceIDs } from 'graphql-transformer-common';
 import { DefaultValueDirectiveConfiguration } from './types';
 import { TypeValidators } from './validators';
 
@@ -27,7 +34,7 @@ const directiveDefinition = `
 const nonStringTypes = ['Int', 'Float', 'Boolean', 'AWSTimestamp', 'AWSJSON'];
 
 export class DefaultValueTransformer extends TransformerPluginBase {
-  private directiveMap = new Map<String, DefaultValueDirectiveConfiguration[]>();
+  private directiveMap = new Map<string, DefaultValueDirectiveConfiguration[]>();
 
   constructor() {
     super('amplify-default-value-transformer', directiveDefinition);
@@ -52,6 +59,17 @@ export class DefaultValueTransformer extends TransformerPluginBase {
     }
 
     this.directiveMap.get(parent.name.value)!.push(config);
+  };
+
+  transformSchema = (ctx: TransformerTransformSchemaStepContextProvider) => {
+    for (const typeName of this.directiveMap.keys()) {
+      const name = ModelResourceIDs.ModelCreateInputObjectName(typeName);
+      for (const config of this.directiveMap.get(typeName)!) {
+        const input = InputObjectDefinitionWrapper.fromObject(name, config.object, ctx.inputDocument);
+        const fieldWrapper = input.fields.find(f => f.name === config.field.name.value);
+        fieldWrapper?.makeNullable();
+      }
+    }
   };
 
   generateResolvers = (ctx: TransformerContextProvider): void => {
@@ -122,10 +140,6 @@ function validateFieldType(ctx: TransformerSchemaVisitStepContextProvider, type:
   const enums = ctx.output.getTypeDefinitionsOfKind(Kind.ENUM_TYPE_DEFINITION) as EnumTypeDefinitionNode[];
   if (isListType(type) || !isScalarOrEnum(type, enums)) {
     throw new InvalidDirectiveError('The @default directive may only be added to scalar or enum field types.');
-  }
-
-  if (isNonNullType(type)) {
-    throw new InvalidDirectiveError('The @default directive cannot be added to required fields.');
   }
 }
 

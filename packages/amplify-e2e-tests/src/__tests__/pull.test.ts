@@ -29,7 +29,7 @@ describe('amplify pull', () => {
       disableAmplifyAppCreation: false,
       name: 'testapi',
     });
-    await addApiWithoutSchema(projRoot);
+    await addApiWithoutSchema(projRoot, { transformerVersion: 1 });
     await updateApiSchema(projRoot, 'testapi', 'simple_model.graphql');
     await amplifyPush(projRoot);
     const appId = getAppId(projRoot);

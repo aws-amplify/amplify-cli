@@ -23,8 +23,6 @@ describe('user created resolvers', () => {
   beforeEach(async () => {
     projectDir = await createNewProjectDir('overrideresolvers');
     await initJSProjectWithProfile(projectDir, {});
-    addFeatureFlag(projectDir, 'graphqltransformer', 'useexperimentalpipelinedtransformer', true);
-    addFeatureFlag(projectDir, 'graphqltransformer', 'transformerVersion', 2);
   });
 
   afterEach(async () => {

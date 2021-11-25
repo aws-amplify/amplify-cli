@@ -21,7 +21,7 @@ describe('transformer model searchable migration test', () => {
   beforeEach(async () => {
     projectName = createRandomName();
     projRoot = await createNewProjectDir(createRandomName());
-    await initJSProjectWithProfile(projRoot, { 
+    await initJSProjectWithProfile(projRoot, {
       name: projectName,
     });
     await addAuthWithDefault(projRoot, {});
@@ -35,11 +35,11 @@ describe('transformer model searchable migration test', () => {
   it('migration of searchable directive - search should return expected results', async () => {
     const v1Schema = 'transformer_migration/searchable-v1.graphql';
     const v2Schema = 'transformer_migration/searchable-v2.graphql';
-    
-    await addApiWithoutSchema(projRoot, { apiName: projectName });
+
+    await addApiWithoutSchema(projRoot, { apiName: projectName, transformerVersion: 1 });
     await updateApiSchema(projRoot, projectName, v1Schema);
     await amplifyPush(projRoot);
-    
+
     appSyncClient = getAppSyncClientFromProj(projRoot);
     await runAndValidateQuery('test1', 'test1', 10);
 
@@ -91,11 +91,7 @@ describe('transformer model searchable migration test', () => {
     return await runMutation(getCreateTodosMutation(name, description, count));
   };
 
-  function getCreateTodosMutation(
-    name: string,
-    description: string,
-    count: number,
-  ): string {
+  function getCreateTodosMutation(name: string, description: string, count: number): string {
     return `mutation {
           createTodo(input: {
               name: "${name}"
@@ -111,5 +107,5 @@ describe('transformer model searchable migration test', () => {
     expect(response.errors).toBeUndefined();
     expect(response.data).toBeDefined();
     expect(response.data.createTodo).toBeDefined();
-  }
+  };
 });

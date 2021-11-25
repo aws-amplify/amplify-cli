@@ -812,6 +812,9 @@ Object {
     "passwordPolicyMinLength": Object {
       "Type": "String",
     },
+    "permissions": Object {
+      "Type": "CommaDelimitedList",
+    },
     "requiredAttributes": Object {
       "Type": "CommaDelimitedList",
     },

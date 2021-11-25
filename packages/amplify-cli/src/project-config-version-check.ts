@@ -104,7 +104,7 @@ async function checkLambdaCustomResourceNodeVersion(context: Context, projectPat
 }
 
 async function checkFileContent(filePath: string): Promise<boolean> {
-  const { cfnTemplate } = await readCFNTemplate(filePath);
+  const { cfnTemplate } = readCFNTemplate(filePath);
 
   const resources = _.get(cfnTemplate, 'Resources', {});
   const lambdaFunctions = _.filter(
@@ -117,7 +117,7 @@ async function checkFileContent(filePath: string): Promise<boolean> {
 }
 
 async function updateFileContent(filePath: string): Promise<void> {
-  const { templateFormat, cfnTemplate } = await readCFNTemplate(filePath);
+  const { templateFormat, cfnTemplate } = readCFNTemplate(filePath);
 
   const resources = _.get(cfnTemplate, 'Resources', {});
   const lambdaFunctions: Lambda.Function[] = _.filter(

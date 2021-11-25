@@ -9,7 +9,7 @@ $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #if( $util.authType() == \\"IAM Authorization\\" )
   #set( $adminRoles = [\\"us-fake-1_uuid_Full-access/CognitoIdentityCredentials\\",\\"us-fake-1_uuid_Manage-only/CognitoIdentityCredentials\\"] )
   #foreach( $adminRole in $adminRoles )
-    #if( $ctx.identity.userArn.contains($adminRole) )
+    #if( $ctx.identity.userArn.contains($adminRole) && $ctx.identity.userArn != $ctx.stash.authRole && $ctx.identity.userArn != $ctx.stash.unauthRole )
       #return($util.toJson({}))
     #end
   #end
@@ -45,7 +45,7 @@ $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #if( $util.authType() == \\"IAM Authorization\\" )
   #set( $adminRoles = [\\"us-fake-1_uuid_Full-access/CognitoIdentityCredentials\\",\\"us-fake-1_uuid_Manage-only/CognitoIdentityCredentials\\"] )
   #foreach( $adminRole in $adminRoles )
-    #if( $ctx.identity.userArn.contains($adminRole) )
+    #if( $ctx.identity.userArn.contains($adminRole) && $ctx.identity.userArn != $ctx.stash.authRole && $ctx.identity.userArn != $ctx.stash.unauthRole )
       #return($util.toJson({}))
     #end
   #end
@@ -81,7 +81,7 @@ $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #if( $util.authType() == \\"IAM Authorization\\" )
   #set( $adminRoles = [\\"us-fake-1_uuid_Full-access/CognitoIdentityCredentials\\",\\"us-fake-1_uuid_Manage-only/CognitoIdentityCredentials\\"] )
   #foreach( $adminRole in $adminRoles )
-    #if( $ctx.identity.userArn.contains($adminRole) )
+    #if( $ctx.identity.userArn.contains($adminRole) && $ctx.identity.userArn != $ctx.stash.authRole && $ctx.identity.userArn != $ctx.stash.unauthRole )
       #return($util.toJson({}))
     #end
   #end

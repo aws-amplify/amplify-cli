@@ -1,4 +1,5 @@
-import { nspawn as spawn, KEY_UP_ARROW, KEY_DOWN_ARROW, getCLIPath, getSocialProviders } from '..';
+import _ from 'lodash';
+import { getCLIPath, getSocialProviders, KEY_DOWN_ARROW, KEY_UP_ARROW, nspawn as spawn, setTransformerVersionFlag } from '..';
 
 export type AddAuthUserPoolOnlyNoOAuthSettings = {
   resourceName: string;
@@ -122,16 +123,19 @@ export function addAuthWithGroupTrigger(cwd: string, settings: any): Promise<voi
 interface AddApiOptions {
   apiName: string;
   testingWithLatestCodebase: boolean;
+  transformerVersion: number;
 }
 
 const defaultOptions: AddApiOptions = {
   apiName: '\r',
   testingWithLatestCodebase: true,
+  transformerVersion: 2,
 };
 
-export function addAuthViaAPIWithTrigger(cwd: string, settings: any): Promise<void> {
+export function addAuthViaAPIWithTrigger(cwd: string, opts: Partial<AddApiOptions> = {}): Promise<void> {
+  const options = _.assign(defaultOptions, opts);
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(defaultOptions.testingWithLatestCodebase), ['add', 'api'], { cwd, stripColors: true })
+    spawn(getCLIPath(options.testingWithLatestCodebase), ['add', 'api'], { cwd, stripColors: true })
       .wait('Select from one of the below mentioned services:')
       .sendCarriageReturn()
       .wait(/.*Here is the GraphQL API that we will create. Select a setting to edit or continue.*/)
@@ -174,12 +178,15 @@ export function addAuthViaAPIWithTrigger(cwd: string, settings: any): Promise<vo
           reject(err);
         }
       });
+
+    setTransformerVersionFlag(cwd, options.transformerVersion);
   });
 }
 
-export function addAuthwithUserPoolGroupsViaAPIWithTrigger(cwd: string, settings: any): Promise<void> {
+export function addAuthwithUserPoolGroupsViaAPIWithTrigger(cwd: string, opts: Partial<AddApiOptions> = {}): Promise<void> {
+  const options = _.assign(defaultOptions, opts);
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(defaultOptions.testingWithLatestCodebase), ['add', 'api'], { cwd, stripColors: true })
+    spawn(getCLIPath(options.testingWithLatestCodebase), ['add', 'api'], { cwd, stripColors: true })
       .wait('Select from one of the below mentioned services:')
       .sendCarriageReturn()
       .wait(/.*Here is the GraphQL API that we will create. Select a setting to edit or continue.*/)
@@ -261,6 +268,8 @@ export function addAuthwithUserPoolGroupsViaAPIWithTrigger(cwd: string, settings
           reject(err);
         }
       });
+
+    setTransformerVersionFlag(cwd, options.transformerVersion);
   });
 }
 
@@ -358,15 +367,16 @@ export function updateAuthSignInSignOutUrl(cwd: string, settings: any): Promise<
       .send(KEY_DOWN_ARROW)
       .sendCarriageReturn()
       .wait('Which redirect signin URIs do you want to edit?')
-      .send(' ')
+      .sendCtrlA()
       .sendCarriageReturn()
       .wait(`Update ${settings.signinUrl}`)
+      .sendCarriageReturn()
       .send(settings.updatesigninUrl)
       .sendCarriageReturn()
       .wait('Do you want to add redirect signin URIs?')
       .sendConfirmNo()
       .wait('Which redirect signout URIs do you want to edit?')
-      .send(' ')
+      .sendCtrlA()
       .sendCarriageReturn()
       .wait(`Update ${settings.signoutUrl}`)
       .send(settings.updatesignoutUrl)
@@ -954,7 +964,7 @@ export function addAuthWithGroups(cwd: string): Promise<void> {
 }
 
 // creates 2 groups: Admins, Users
-export function addAuthWithGroupsAndAdminAPI(cwd: string, settings: any): Promise<void> {
+export function addAuthWithGroupsAndAdminAPI(cwd: string, settings?: any): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['add', 'auth'], { cwd, stripColors: true })
       .wait('Do you want to use the default authentication and security configuration')
@@ -1585,19 +1595,16 @@ export function addAuthUserPoolOnlyNoOAuth(cwd: string, settings: AddAuthUserPoo
   });
 }
 
-export function updateAuthAddAdminQueries(projectDir: string, groupName: string = 'adminQueriesGroup', settings?: any): Promise<void> {
+export function updateAuthAddAdminQueries(projectDir: string, groupName: string = 'adminQueriesGroup', settings: any = {}): Promise<void> {
   const testingWithLatestCodebase = settings.testingWithLatestCodebase ?? false;
   return new Promise((resolve, reject) => {
     const chain = spawn(getCLIPath(testingWithLatestCodebase), ['update', 'auth'], { cwd: projectDir, stripColors: true });
     if (settings?.overrides?.category === 'auth') {
-      chain.wait('A migration is needed to support latest updates on auth resources').sendConfirmYes();
+      chain.wait('A migration is needed to support latest updates on auth resources').sendYes();
     }
     chain
       .wait('What do you want to do?')
-      .send(KEY_DOWN_ARROW)
-      .send(KEY_DOWN_ARROW)
-      .send(KEY_DOWN_ARROW)
-      .send(KEY_DOWN_ARROW)
+      .sendKeyUp()
       .sendCarriageReturn() // Create or update Admin queries API
       .wait('Do you want to restrict access to the admin queries API to a specific Group')
       .sendConfirmYes()
@@ -1666,4 +1673,23 @@ export function updateAuthWithoutTrigger(cwd: string, settings: any): Promise<vo
         }
       });
   });
+}
+
+export function updateAuthAdminQueriesWithExtMigration(cwd: string, settings: { testingWithLatestCodebase: boolean }): Promise<void> {
+  return spawn(getCLIPath(settings.testingWithLatestCodebase), ['update', 'auth'], { cwd, stripColors: true })
+    .wait('Do you want to migrate auth resource')
+    .sendYes()
+    .wait('What do you want to do')
+    .sendKeyUp()
+    .sendCarriageReturn() // Create or update Admin queries API
+    .wait('Do you want to restrict access to the admin queries API to a specific Group')
+    .sendYes()
+    .sendCarriageReturn()
+    .wait('Select the group to restrict access with')
+    .sendCarriageReturn() // Enter a custom group
+    .wait('Provide a group name')
+    .sendLine('mycustomgroup')
+    .wait('A migration is needed to support latest updates')
+    .sendYes()
+    .runAsync();
 }

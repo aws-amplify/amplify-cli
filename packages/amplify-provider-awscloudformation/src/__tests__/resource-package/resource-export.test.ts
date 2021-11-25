@@ -100,7 +100,15 @@ jest.mock('../../display-helpful-urls', () => ({
 jest.mock('../../zip-util', () => ({
   downloadZip: mockdownloadZip,
 }));
+jest.mock('../../pre-push-cfn-processor/cfn-pre-processor', () => ({
+  preProcessCFNTemplate: jest.fn().mockImplementation((cfnPath) => cfnPath),
+  writeCustomPoliciesToCFNTemplate: jest.fn(),
+}))
 
+jest.mock('../../template-description-utils', () => ({
+  prePushTemplateDescriptionHandler: jest.fn(),
+  getDefaultTemplateDescription: jest.fn().mockReturnValue('mock description'),
+}))
 jest.mock('../../download-api-models', () => ({}));
 jest.mock('../../graphql-transformer', () => ({}));
 jest.mock('../../amplify-service-manager', () => ({}));
@@ -110,7 +118,7 @@ jest.mock('../../utils/env-level-constructs', () => ({
 }));
 jest.mock('../../utils/consolidate-apigw-policies', () => ({
   consolidateApiGatewayPolicies: mockconsolidateApiGatewayPolicies,
-  loadApiWithPrivacyParams: jest.fn(),
+  loadApiCliInputs: jest.fn(),
 }));
 jest.mock('../../transform-graphql-schema', () => ({
   transformGraphQLSchema: mockTransformGql,
@@ -203,10 +211,9 @@ const mockResource: DeploymentResources = {
 };
 
 jest.mock('glob', () => ({
-  sync: mockGlobSync,
+  sync: jest.fn((_, { cwd }) => [path.join(cwd, 'cfntemplate.json')]),
 }));
 
-const mockGlobSync = jest.fn((_, { cwd }) => [path.join(cwd, 'cfntemplate.json')]);
 const lambdaTemplate = {
   Resources: {
     LambdaLayerVersionb8059db0: {
@@ -449,7 +456,6 @@ describe('test resource export', () => {
     exportStackParameters = stackParameters;
     expect(stackParameters).toBeDefined();
     expect(transformedResources).toBeDefined();
-    expect(mockconsolidateApiGatewayPolicies).toBeCalledWith(mockContext, 'amplify-amplifyexportest-dev-172019');
 
     expect(invokePluginMethod).nthCalledWith(invokePluginCount++, mockContext, 'auth', undefined, 'prePushAuthHook', [mockContext]);
     const apiResource = packagedResources.find(r => r.service === 'ElasticContainer');

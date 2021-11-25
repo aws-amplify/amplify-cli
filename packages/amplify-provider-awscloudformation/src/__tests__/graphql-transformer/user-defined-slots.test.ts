@@ -1,4 +1,4 @@
-import { SLOT_NAMES, createUserDefinedSlot, parseUserDefinedSlots } from '../../graphql-transformer';
+import { SLOT_NAMES, parseUserDefinedSlots } from '../../graphql-transformer';
 
 describe('user defined slots', () => {
   describe('const SLOT_NAMES', () => {
@@ -20,22 +20,6 @@ describe('user defined slots', () => {
     });
   });
 
-  describe('createUserDefinedSlot', () => {
-    it('creates the expected object shape', () => {
-      const fileName = 'Query.listTodos.postAuth.1.req.vtl';
-      const slicedName = ['Query', 'listTodos', 'postAuth', '2', 'req', 'vtl'];
-      const template = '$util.unauthorized()';
-
-      expect(createUserDefinedSlot(fileName, slicedName, template)).toEqual({
-        fileName,
-        resolverTypeName: slicedName[0],
-        resolverFieldName: slicedName[1],
-        slotName: slicedName[2],
-        template,
-      });
-    });
-  });
-
   describe('parseUserDefinedSlots', () => {
     it('creates the user defined slots map', () => {
       const resolvers = {
@@ -48,36 +32,142 @@ describe('user defined slots', () => {
       expect(parseUserDefinedSlots(resolvers)).toEqual({
         'Query.listTodos': [
           {
-            fileName: 'Query.listTodos.auth.2.req.vtl',
+            requestResolver: {
+              fileName: 'Query.listTodos.auth.2.req.vtl',
+              template: 'template 1',
+            },
             resolverTypeName: 'Query',
             resolverFieldName: 'listTodos',
             slotName: 'auth',
-            template: 'template 1',
           },
         ],
         'Query.getTodo': [
           {
-            fileName: 'Query.getTodo.auth.2.req.vtl',
+            requestResolver: {
+              fileName: 'Query.getTodo.auth.2.req.vtl',
+              template: 'template 2',
+            },
             resolverTypeName: 'Query',
             resolverFieldName: 'getTodo',
             slotName: 'auth',
-            template: 'template 2',
           },
           {
-            fileName: 'Query.getTodo.postAuth.2.req.vtl',
+            requestResolver: {
+              fileName: 'Query.getTodo.postAuth.2.req.vtl',
+              template: 'template 3',
+            },
             resolverTypeName: 'Query',
             resolverFieldName: 'getTodo',
             slotName: 'postAuth',
-            template: 'template 3',
           },
         ],
         'Mutation.createTodo': [
           {
-            fileName: 'Mutation.createTodo.auth.2.req.vtl',
+            requestResolver: {
+              fileName: 'Mutation.createTodo.auth.2.req.vtl',
+              template: 'template 4',
+            },
             resolverTypeName: 'Mutation',
             resolverFieldName: 'createTodo',
             slotName: 'auth',
-            template: 'template 4',
+          },
+        ],
+      });
+    });
+
+    it('groups request and response resolvers in the same slot together', () => {
+      const resolvers = {
+        'Query.getTodo.auth.1.req.vtl': 'request resolver 1',
+        'Query.getTodo.auth.1.res.vtl': 'response resolver 1',
+        'Mutation.createTodo.postAuth.2.req.vtl': 'request resolver 2',
+        'Mutation.createTodo.postAuth.2.res.vtl': 'response resolver 2',
+      };
+
+      expect(parseUserDefinedSlots(resolvers)).toEqual({
+        'Query.getTodo': [
+          {
+            requestResolver: {
+              fileName: 'Query.getTodo.auth.1.req.vtl',
+              template: 'request resolver 1',
+            },
+            responseResolver: {
+              fileName: 'Query.getTodo.auth.1.res.vtl',
+              template: 'response resolver 1',
+            },
+            resolverTypeName: 'Query',
+            resolverFieldName: 'getTodo',
+            slotName: 'auth',
+          },
+        ],
+        'Mutation.createTodo': [
+          {
+            requestResolver: {
+              fileName: 'Mutation.createTodo.postAuth.2.req.vtl',
+              template: 'request resolver 2',
+            },
+            responseResolver: {
+              fileName: 'Mutation.createTodo.postAuth.2.res.vtl',
+              template: 'response resolver 2',
+            },
+            resolverTypeName: 'Mutation',
+            resolverFieldName: 'createTodo',
+            slotName: 'postAuth',
+          },
+        ],
+      });
+    });
+
+    it('orders multiple slot resolvers correctly', () => {
+      const resolvers = {
+        'Query.getTodo.auth.3.req.vtl': 'request resolver 3',
+        'Query.getTodo.auth.3.res.vtl': 'response resolver 3',
+        'Query.getTodo.auth.1.req.vtl': 'request resolver 1',
+        'Query.getTodo.auth.1.res.vtl': 'response resolver 1',
+        'Query.getTodo.auth.2.req.vtl': 'request resolver 2',
+        'Query.getTodo.auth.2.res.vtl': 'response resolver 2',
+      };
+
+      const result = parseUserDefinedSlots(resolvers);
+      expect(result).toEqual({
+        'Query.getTodo': [
+          {
+            requestResolver: {
+              fileName: 'Query.getTodo.auth.1.req.vtl',
+              template: 'request resolver 1',
+            },
+            responseResolver: {
+              fileName: 'Query.getTodo.auth.1.res.vtl',
+              template: 'response resolver 1',
+            },
+            resolverTypeName: 'Query',
+            resolverFieldName: 'getTodo',
+            slotName: 'auth',
+          },
+          {
+            requestResolver: {
+              fileName: 'Query.getTodo.auth.2.req.vtl',
+              template: 'request resolver 2',
+            },
+            responseResolver: {
+              fileName: 'Query.getTodo.auth.2.res.vtl',
+              template: 'response resolver 2',
+            },
+            resolverTypeName: 'Query',
+            resolverFieldName: 'getTodo',
+            slotName: 'auth',
+          },
+          {
+            requestResolver: {
+              fileName: 'Query.getTodo.auth.3.req.vtl',
+              template: 'request resolver 3',
+            },
+            responseResolver: {
+              fileName: 'Query.getTodo.auth.3.res.vtl',
+              template: 'response resolver 3',
+            },
+            resolverTypeName: 'Query',
+            resolverFieldName: 'getTodo',
+            slotName: 'auth',
           },
         ],
       });

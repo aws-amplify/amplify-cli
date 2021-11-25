@@ -22,7 +22,7 @@ jest.mock('amplify-cli-core', () => ({
     getBoolean: jest.fn().mockReturnValue(true),
   },
   buildOverrideDir: jest.fn().mockResolvedValue(false),
-  writeCFNTemplate: jest.fn(),
+  writeCFNTemplate: jest.fn().mockImplementation(() => Promise.resolve()),
 }));
 
 const getCLIInputPayload_mock = jest
@@ -157,10 +157,21 @@ jest.mock('../../../../provider-utils/awscloudformation/auth-inputs-manager/auth
   };
 });
 
+const mockPolicy1 =     {
+  "policyName": "AddToGroupCognito",
+  "trigger": "PostConfirmation",
+  "effect": "Allow",
+  "actions": ["cognito-idp:AdminAddUserToGroup", "cognito-idp:GetGroup", "cognito-idp:CreateGroup"],
+  "resource": {
+    "paramType": "!GetAtt",
+    "keys": ["UserPool","Arn"]
+  }
+}
+
 const context_stub = {
   amplify: {
     loadEnvResourceParameters: jest.fn(),
-    getTriggerPermissions: jest.fn(),
+    getTriggerPermissions: jest.fn().mockImplementation(()=>[ JSON.stringify(mockPolicy1) ]),
     dependsOnBlock: jest.fn(),
     updateamplifyMetaAfterResourceAdd: jest.fn(),
   },

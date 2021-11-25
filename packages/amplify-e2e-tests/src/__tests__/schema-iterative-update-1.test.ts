@@ -31,7 +31,7 @@ describe('Schema iterative update - rename @key', () => {
   });
   it('should support changing gsi name', async () => {
     const initialSchema = path.join('iterative-push', 'change-model-name', 'initial-schema.graphql');
-    await addApiWithoutSchema(projectDir, { apiKeyExpirationDays: 7 });
+    await addApiWithoutSchema(projectDir, { apiKeyExpirationDays: 7, transformerVersion: 1 });
     await updateApiSchema(projectDir, appName, initialSchema);
     await amplifyPush(projectDir);
 

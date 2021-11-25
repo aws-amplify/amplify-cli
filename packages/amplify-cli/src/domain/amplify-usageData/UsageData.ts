@@ -18,6 +18,7 @@ export class UsageData implements IUsageData {
   url: UrlWithStringQuery;
   inputOptions: InputOptions;
   requestTimeout: number = 100;
+  record: Record<string, any>[];
   private static instance: UsageData;
 
   private constructor() {
@@ -26,6 +27,7 @@ export class UsageData implements IUsageData {
     this.input = new Input([]);
     this.projectSettings = {};
     this.inputOptions = {};
+    this.record = [];
   }
 
   init(installationUuid: string, version: string, input: Input, accountId: string, projectSettings: ProjectSettings): void {
@@ -55,6 +57,10 @@ export class UsageData implements IUsageData {
     return this.emit(null, WorkflowState.Successful);
   }
 
+  addRecord(arbitraryData: Record<string, any>) {
+    this.record.push(arbitraryData);
+  }
+
   async emit(error: Error | null, state: string): Promise<void> {
     const payload = new UsageDataPayload(
       this.sessionUuid,
@@ -66,6 +72,7 @@ export class UsageData implements IUsageData {
       this.accountId,
       this.projectSettings,
       this.inputOptions,
+      this.record,
     );
     return this.send(payload);
   }

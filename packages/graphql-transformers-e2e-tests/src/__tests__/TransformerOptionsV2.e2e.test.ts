@@ -88,11 +88,13 @@ describe('V2 transformer options', () => {
           const userDefinedSlots = {
             'Query.listPosts': [
               {
-                fileName: 'Query.listPosts.preAuth.1.req.vtl',
                 resolverTypeName: 'Query',
                 resolverFieldName: 'listPosts',
+                requestResolver: {
+                  fileName: 'Query.listPosts.preAuth.1.req.vtl',
+                  template: '$util.error("Custom error")\n$util.toJson({})\n',
+                },
                 slotName: 'preAuth',
-                template: '$util.error("Custom error")\n$util.toJson({})\n',
               },
             ],
           };

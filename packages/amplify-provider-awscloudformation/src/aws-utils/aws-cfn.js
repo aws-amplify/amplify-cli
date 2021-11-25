@@ -326,9 +326,9 @@ class CloudFormation {
     };
     const projectDetails = this.context.amplify.getProjectDetails();
     const { amplifyMeta } = projectDetails;
-    logger('updateamplifyMetaFileWithStackOutputs.cfn.describeStackResources', [cfnParentStackParams])();
-    const result = await this.cfn.describeStackResources(cfnParentStackParams).promise();
-    const resources = result.StackResources.filter(
+    logger('updateamplifyMetaFileWithStackOutputs.cfn.listStackResources', [cfnParentStackParams])();
+    const result = await this.cfn.listStackResources(cfnParentStackParams).promise();
+    const resources = result.StackResourceSummaries.filter(
       resource =>
         ![
           'DeploymentBucket',
@@ -342,7 +342,7 @@ class CloudFormation {
     /**
      * Update root stack overrides
      */
-    const rootStackResources = result.StackResources.filter(
+    const rootStackResources = result.StackResourceSummaries.filter(
       resource =>
         !['UpdateRolesWithIDPFunction', 'UpdateRolesWithIDPFunctionOutputs', 'UpdateRolesWithIDPFunctionRole'].includes(
           resource.LogicalResourceId,

@@ -2,6 +2,7 @@ import { AppSyncAuthMode } from '@aws-amplify/graphql-transformer-interfaces';
 import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { Stack } from '@aws-cdk/core';
 import { ObjectTypeDefinitionNode } from 'graphql';
+import { AccessControlMatrix } from '..';
 import { AuthProvider, AuthRule, AuthTransformerConfig, ConfiguredAuthProviders, RoleDefinition, RolesByProvider } from './definitions';
 
 export * from './constants';
@@ -110,4 +111,23 @@ export const getConfiguredAuthProviders = (config: AuthTransformerConfig): Confi
     hasIAM,
   };
   return configuredProviders;
+};
+
+/**
+ * util to get allowed roles for field
+ * if we have a rule like cognito private we can remove all other related roles from the field since it has top level
+ * access by the provider
+ */
+export const getReadRolesForField = (acm: AccessControlMatrix, readRoles: Array<string>, fieldName: string): Array<string> => {
+  const hasCognitoPrivateRole = readRoles.some(r => r === 'userPools:private') && acm.isAllowed('userPools:private', fieldName, 'read');
+  const hasOIDCPrivateRole = readRoles.some(r => r === 'oidc:private') && acm.isAllowed('oidc:private', fieldName, 'read');
+  let allowedRoles = [...readRoles];
+
+  if (hasCognitoPrivateRole) {
+    allowedRoles = allowedRoles.filter(r => !(r.startsWith('userPools:') && r !== 'userPools:private'));
+  }
+  if (hasOIDCPrivateRole) {
+    allowedRoles = allowedRoles.filter(r => !(r.startsWith('oidc:') && r !== 'oidc:private'));
+  }
+  return allowedRoles;
 };

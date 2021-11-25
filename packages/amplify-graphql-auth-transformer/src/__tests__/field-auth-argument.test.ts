@@ -86,3 +86,59 @@ test('error on non null fields which need resolvers', () => {
   });
   expect(() => transformer.transform(invalidSchema)).toThrowErrorMatchingSnapshot();
 });
+
+test('does not generate field resolvers when private rule takes precedence over provider-related rules', () => {
+  const validSchema = `
+  type Student @model @auth(rules: [{ allow: private, provider: userPools }, { allow: private, provider: iam }]) {
+    id: ID!
+    name: String!
+    ssn: String @auth(rules: [{ allow: owner }])
+  }`;
+
+  const authConfig: AppSyncAuthConfiguration = {
+    defaultAuthentication: {
+      authenticationType: 'AMAZON_COGNITO_USER_POOLS',
+    },
+    additionalAuthenticationProviders: [{ authenticationType: 'AWS_IAM' }],
+  };
+  const transformer = new GraphQLTransform({
+    authConfig,
+    transformers: [new ModelTransformer(), new AuthTransformer()],
+  });
+  const out = transformer.transform(validSchema);
+  expect(out).toBeDefined();
+  expect(out.resolvers['Student.ssn.req.vtl']).toMatchSnapshot();
+  expect(out.resolvers['Student.ssn.res.vtl']).toMatchSnapshot();
+  for (let field of ['id', 'name']) {
+    expect(out.resolvers[`Student.${field}.req.vtl`]).toBeUndefined();
+    expect(out.resolvers[`Student.${field}.res.vtl`]).toBeUndefined();
+  }
+});
+
+test('generates field resolver for other provider rules even if private removes all provided-related rules', () => {
+  const validSchema = `
+  type Student @model @auth(rules: [{ allow: private, provider: userPools }]) {
+    id: ID
+    name: String
+    ssn: String @auth(rules: [{ allow: owner }, { allow: private, provider: iam }])
+  }`;
+
+  const authConfig: AppSyncAuthConfiguration = {
+    defaultAuthentication: {
+      authenticationType: 'AMAZON_COGNITO_USER_POOLS',
+    },
+    additionalAuthenticationProviders: [{ authenticationType: 'AWS_IAM' }],
+  };
+  const transformer = new GraphQLTransform({
+    authConfig,
+    transformers: [new ModelTransformer(), new AuthTransformer()],
+  });
+  const out = transformer.transform(validSchema);
+  expect(out).toBeDefined();
+  expect(out.resolvers['Student.ssn.req.vtl']).toMatchSnapshot();
+  expect(out.resolvers['Student.ssn.res.vtl']).toMatchSnapshot();
+  for (let field of ['id', 'name']) {
+    expect(out.resolvers[`Student.${field}.req.vtl`]).toBeDefined();
+    expect(out.resolvers[`Student.${field}.res.vtl`]).toBeDefined();
+  }
+});

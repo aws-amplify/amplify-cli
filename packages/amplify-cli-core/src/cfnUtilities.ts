@@ -23,6 +23,7 @@ export function readCFNTemplate(filePath: string, options: Partial<typeof defaul
   }
   //TODO:  somthing wrong with this call , work fine with readFileSync()
   const fileContent = fs.readFileSync(filePath, 'utf8');
+
   // We use the first character to determine if the content is json or yaml because historically the CLI could
   // have emitted JSON with YML extension, so we can't rely on filename extension.
   const isJson = isJsonFileContent(fileContent);
@@ -58,7 +59,7 @@ export async function writeCFNTemplate(template: object, filePath: string, optio
       throw new Error(`Unexpected CFN template format ${mergedOptions.templateFormat}`);
   }
   await fs.ensureDir(path.parse(filePath).dir);
-  return fs.writeFile(filePath, serializedTemplate);
+  return fs.writeFileSync(filePath, serializedTemplate);
 }
 
 // Register custom tags for yaml parser

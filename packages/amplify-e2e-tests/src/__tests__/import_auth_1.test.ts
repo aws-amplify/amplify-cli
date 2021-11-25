@@ -146,7 +146,7 @@ describe('auth import userpool only', () => {
   it('imported auth with graphql api and cognito should push', async () => {
     await initJSProjectWithProfile(projectRoot, projectSettings);
     await importUserPoolOnly(projectRoot, ogSettings.userPoolName, { native: '_app_client ', web: '_app_clientWeb' }); // space at to make sure its not web client
-    await addApiWithCognitoUserPoolAuthTypeWhenAuthExists(projectRoot);
+    await addApiWithCognitoUserPoolAuthTypeWhenAuthExists(projectRoot, { transformerVersion: 1 });
     await amplifyPush(projectRoot);
 
     expectApiHasCorrectAuthConfig(projectRoot, projectPrefix, ogProjectDetails.meta.UserPoolId);
@@ -225,6 +225,7 @@ describe('auth import userpool only', () => {
     await importUserPoolOnly(projectRoot, ogSettings.userPoolName, { native: '_app_client ', web: '_app_clientWeb' });
     await addApi(projectRoot, {
       IAM: {},
+      transformerVersion: 1,
     });
     await updateApiSchema(projectRoot, projectPrefix, 'model_with_iam_auth.graphql');
     await amplifyPush(projectRoot);

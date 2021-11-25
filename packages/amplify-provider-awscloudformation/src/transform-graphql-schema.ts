@@ -16,7 +16,7 @@ import { KeyTransformer } from 'graphql-key-transformer';
 import { destructiveUpdatesFlag, ProviderName as providerName } from './constants';
 import { AmplifyCLIFeatureFlagAdapter } from './utils/amplify-cli-feature-flag-adapter';
 import { isAmplifyAdminApp } from './utils/admin-helpers';
-import { $TSContext, JSONUtilities, pathManager, stateManager } from 'amplify-cli-core';
+import { $TSContext, AmplifyCategories, getGraphQLTransformerAuthDocLink, getGraphQLTransformerAuthSubscriptionsDocLink, getGraphQLTransformerOpenSearchDocLink, getGraphQLTransformerOpenSearchProductionDocLink, JSONUtilities, pathManager, stateManager } from 'amplify-cli-core';
 import { ResourceConstants } from 'graphql-transformer-common';
 import { printer } from 'amplify-prompts';
 import _ from 'lodash';
@@ -66,8 +66,10 @@ export function searchablePushChecks(context, map, apiName): void {
       't2.small.elasticsearch',
     );
     if (instanceType === 't2.small.elasticsearch' || instanceType === 't3.small.elasticsearch') {
+      const version = getTransformerVersion(context);
+      const docLink = getGraphQLTransformerOpenSearchProductionDocLink(version)
       printer.warn(
-        `Your instance type for OpenSearch is ${instanceType}, you may experience performance issues or data loss. Consider reconfiguring with the instructions here https://docs.amplify.aws/cli/graphql-transformer/searchable/`,
+        `Your instance type for OpenSearch is ${instanceType}, you may experience performance issues or data loss. Consider reconfiguring with the instructions here ${docLink}`,
       );
     }
   }
@@ -76,9 +78,11 @@ export function searchablePushChecks(context, map, apiName): void {
 function warnOnAuth(context, map) {
   const unAuthModelTypes = Object.keys(map).filter(type => !map[type].includes('auth') && map[type].includes('model'));
   if (unAuthModelTypes.length) {
+    const transformerVersion = getTransformerVersion(context);
+    const docLink = getGraphQLTransformerAuthDocLink(transformerVersion);
     context.print.warning("\nThe following types do not have '@auth' enabled. Consider using @auth with @model");
     context.print.warning(unAuthModelTypes.map(type => `\t - ${type}`).join('\n'));
-    context.print.info('Learn more about @auth here: https://docs.amplify.aws/cli/graphql-transformer/auth\n');
+    context.print.info(`Learn more about @auth here: ${docLink}\n`);
   }
 }
 
@@ -185,10 +189,13 @@ function getTransformerFactory(context, resourceDir, authConfig?) {
  * @TODO Include a map of versions to keep track
  */
 async function transformerVersionCheck(context, resourceDir, cloudBackendDirectory, updatedResources, usedDirectives) {
+  const transformerVersion = getTransformerVersion(context);
+  const authDocLink = getGraphQLTransformerAuthSubscriptionsDocLink(transformerVersion);
+  const searchable = getGraphQLTransformerOpenSearchProductionDocLink(transformerVersion);
   const versionChangeMessage =
-    'The default behavior for @auth has changed in the latest version of Amplify\nRead here for details: https://docs.amplify.aws/cli/graphql-transformer/auth#authorizing-subscriptions';
+    `The default behavior for @auth has changed in the latest version of Amplify\nRead here for details: ${authDocLink}`;
   const warningESMessage =
-    'The behavior for @searchable has changed after version 4.14.1.\nRead here for details: https://docs.amplify.aws/cli/graphql-transformer/searchable';
+    `The behavior for @searchable has changed after version 4.14.1.\nRead here for details: ${searchable}`;
   const checkVersionExist = config => config && config.Version;
   const checkESWarningExists = config => config && config.ElasticsearchWarning;
   let writeToConfig = false;
@@ -630,7 +637,15 @@ async function getBucketName(context: $TSContext, s3ResourceName: string) {
   const { amplify } = context;
   const { amplifyMeta } = amplify.getProjectDetails();
   const stackName = amplifyMeta.providers.awscloudformation.StackName;
-  const bucketParameters = stateManager.getResourceParametersJson(undefined, 'storage', s3ResourceName);
+  const s3ResourcePath = pathManager.getResourceDirectoryPath(undefined, AmplifyCategories.STORAGE, s3ResourceName);
+  const cliInputsPath = path.join(s3ResourcePath, 'cli-inputs.json');
+  let bucketParameters;
+  // get bucketParameters 1st from cli-inputs , if not present, then parameters.json
+  if (fs.existsSync(cliInputsPath)) {
+    bucketParameters = JSONUtilities.readJson(cliInputsPath);
+  } else {
+    bucketParameters = stateManager.getResourceParametersJson(undefined, AmplifyCategories.STORAGE, s3ResourceName);
+  }
 
   const bucketName = stackName.startsWith('amplify-')
     ? `${bucketParameters.bucketName}\${hash}-\${env}`
@@ -664,7 +679,6 @@ async function migrateToTransformerVersionFeatureFlag(context) {
     config.features.graphqltransformer.transformerversion = 2;
     stateManager.setCLIJSON(projectPath, config);
     await FeatureFlags.reloadValues();
-
     context.print.warning(
       `\nThe project is configured with 'transformerVersion': ${transformerVersion}, but 'useExperimentalPipelinedTransformer': ${useExperimentalPipelineTransformer}. Setting the 'transformerVersion': ${config.features.graphqltransformer.transformerversion}. 'useExperimentalPipelinedTransformer' is deprecated.`,
     );

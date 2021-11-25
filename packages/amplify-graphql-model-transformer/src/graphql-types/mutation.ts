@@ -2,7 +2,7 @@ import { TransformerTransformSchemaStepContextProvider } from '@aws-amplify/grap
 import { DocumentNode, InputObjectTypeDefinitionNode, ObjectTypeDefinitionNode } from 'graphql';
 import { ModelResourceIDs, toPascalCase } from 'graphql-transformer-common';
 import { ModelDirectiveConfiguration } from '../graphql-model-transformer';
-import { InputFieldWrapper, InputObjectDefinitionWrapper, ObjectDefinitionWrapper } from '../wrappers/object-definition-wrapper';
+import { InputFieldWrapper, InputObjectDefinitionWrapper, ObjectDefinitionWrapper } from '@aws-amplify/graphql-transformer-core';
 import { makeConditionFilterInput } from './common';
 
 /**

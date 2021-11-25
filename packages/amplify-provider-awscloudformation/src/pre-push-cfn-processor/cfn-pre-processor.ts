@@ -13,7 +13,7 @@ const buildDir = 'build';
  * @returns The file path of the modified template
  */
 export async function preProcessCFNTemplate(filePath: string): Promise<string> {
-  const { templateFormat, cfnTemplate } = await readCFNTemplate(filePath);
+  const { templateFormat, cfnTemplate } = readCFNTemplate(filePath);
 
   await prePushCfnTemplateModifier(cfnTemplate);
   const backendDir = pathManager.getBackendDirPath();
@@ -32,7 +32,7 @@ export async function writeCustomPoliciesToCFNTemplate(resourceName: string, ser
 
   const resourceDir = pathManager.getResourceDirectoryPath(undefined, category, resourceName);
   const cfnPath = path.join(resourceDir, cfnFile);
-  const { templateFormat, cfnTemplate } = await readCFNTemplate(cfnPath);
+  const { templateFormat, cfnTemplate } = readCFNTemplate(cfnPath);
   const newCfnTemplate = generateCustomPoliciesInTemplate(cfnTemplate, resourceName, service, category);
   await writeCFNTemplate(newCfnTemplate, cfnPath, { templateFormat });
 }

@@ -1,7 +1,6 @@
 import {
   initJSProjectWithProfile,
   deleteProject,
-  addFeatureFlag,
   addApiWithoutSchema,
   addApiWithOneModel,
   addApiWithThreeModels,
@@ -19,7 +18,6 @@ describe('global sandbox mode', () => {
   beforeEach(async () => {
     projectDir = await createNewProjectDir('sandbox');
     await initJSProjectWithProfile(projectDir);
-    addFeatureFlag(projectDir, 'graphqltransformer', 'useexperimentalpipelinedtransformer', true);
   });
 
   afterEach(async () => {

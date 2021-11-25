@@ -213,11 +213,11 @@ export class AmplifyAuthTransform extends AmplifyCategoryTransform {
       cognitoStackFileName,
     );
     // write CFN template
-    writeCFNTemplate(template, cognitostackFilePath, {
+    await writeCFNTemplate(template, cognitostackFilePath, {
       templateFormat: CFNTemplateFormat.JSON,
     });
     // write parameters.json
-    this.writeBuildFiles(context);
+    await this.writeBuildFiles(context);
   };
 
   private writeBuildFiles = async (context: $TSContext) => {
@@ -503,7 +503,7 @@ export class AmplifyAuthTransform extends AmplifyCategoryTransform {
       this._authTemplateObj.addCfnParameter(
         {
           type: 'String',
-          default: [],
+          default: '[]',
         },
         'hostedUIProviderCreds',
       );

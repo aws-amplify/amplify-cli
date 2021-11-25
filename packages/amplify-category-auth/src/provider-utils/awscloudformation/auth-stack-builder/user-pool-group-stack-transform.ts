@@ -156,7 +156,7 @@ export class AmplifyUserPoolGroupTransform extends AmplifyCategoryTransform {
     );
 
     // generate resources
-    this._userPoolGroupTemplateObj.generateUserPoolGroupResources(props);
+    await this._userPoolGroupTemplateObj.generateUserPoolGroupResources(props);
 
     // generate CFN outputs again to generate same Output Names as cdk doesnt allow resource with same logical names
     if (props.identityPoolName) {
@@ -222,10 +222,11 @@ export class AmplifyUserPoolGroupTransform extends AmplifyCategoryTransform {
   public synthesizeTemplates = async (): Promise<Template> => {
     this._app.synth();
     const templates = this._synthesizer.collectStacks();
-    const cfnTemplate = templates.get('AmplifyUserPoolGroupStack')!;
-    const cfnTemplateOutputs = templates.get('AmplifyUserPoolGroupStackOutputs')!;
-    Object.assign(cfnTemplate, cfnTemplateOutputs);
-    return cfnTemplate;
+    const cfnUserPoolGroupStack: Template = templates.get('AmplifyUserPoolGroupStack')!;
+    const templatesOutput = this._synthesizerOutputs.collectStacks();
+    const cfnUserPoolGroupOutputs: Template = templatesOutput.get('AmplifyUserPoolGroupStackOutputs')!;
+    cfnUserPoolGroupStack.Outputs = cfnUserPoolGroupOutputs.Outputs;
+    return cfnUserPoolGroupStack;
   };
 
   public saveBuildFiles = async (context: $TSContext, template: Template): Promise<void> => {

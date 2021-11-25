@@ -19,7 +19,7 @@ describe('amplify add api', () => {
     const initial_schema = 'migrations_key/three_gsi_model_schema.graphql';
     const nextSchema = 'migrations_key/four_gsi_model_schema.graphql';
     await initJSProjectWithProfile(projRoot, { name: projectName });
-    await addApiWithoutSchema(projRoot);
+    await addApiWithoutSchema(projRoot, { transformerVersion: 1 });
     await updateApiSchema(projRoot, projectName, initial_schema);
     await amplifyPush(projRoot);
 
@@ -33,7 +33,7 @@ describe('amplify add api', () => {
     const nextSchema1 = 'migrations_key/cant_change_key_schema.graphql';
 
     await initJSProjectWithProfile(projRoot, { name: projectName });
-    await addApiWithoutSchema(projRoot);
+    await addApiWithoutSchema(projRoot, { transformerVersion: 1 });
     await updateApiSchema(projRoot, projectName, initialSchema);
     await amplifyPush(projRoot);
     await addEnvironment(projRoot, { envName: 'test' });

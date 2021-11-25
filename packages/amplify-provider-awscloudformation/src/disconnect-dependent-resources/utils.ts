@@ -36,7 +36,7 @@ export const getDependentFunctions = async (
 export const generateTempFuncCFNTemplates = async (dependentFunctions: string[]) => {
   const tempPaths: string[] = [];
   for (const funcName of dependentFunctions) {
-    const { cfnTemplate, templateFormat } = await readCFNTemplate(
+    const { cfnTemplate, templateFormat } = readCFNTemplate(
       path.join(pathManager.getResourceDirectoryPath(undefined, 'function', funcName), `${funcName}-cloudformation-template.json`),
     );
     replaceFnImport(cfnTemplate);

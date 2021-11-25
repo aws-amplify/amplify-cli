@@ -12,8 +12,8 @@ import {
   initJSProjectWithProfile,
   updateApiSchema,
   updateFunction,
-  getLambdaFunction,
   amplifyPushWithoutCodegen,
+  addFeatureFlag,
 } from 'amplify-e2e-core';
 import _ from 'lodash';
 
@@ -87,7 +87,7 @@ describe('test dependency in root stack', () => {
     await initJSProjectWithProfile(projRoot, {
       name: projectName,
     });
-    await addApiWithoutSchema(projRoot);
+    await addApiWithoutSchema(projRoot, { transformerVersion: 1 });
     await updateApiSchema(projRoot, projectName, 'simple_model.graphql');
 
     const random = Math.floor(Math.random() * 10000);

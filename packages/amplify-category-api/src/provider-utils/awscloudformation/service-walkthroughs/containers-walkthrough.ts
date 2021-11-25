@@ -1,8 +1,10 @@
-import { exitOnNextTick, ResourceDoesNotExistError } from 'amplify-cli-core';
+import { $TSAny, $TSContext, $TSObject, exitOnNextTick, ResourceDoesNotExistError } from 'amplify-cli-core';
+import { printer } from 'amplify-prompts';
 import inquirer from 'inquirer';
 import { category } from '../../../category-constants';
 import { DEPLOYMENT_MECHANISM } from '../base-api-stack';
 import { GitHubSourceActionInfo } from '../pipeline-with-awaiter';
+import { getAllDefaults } from '../default-values/containers-defaults';
 
 const serviceName = 'ElasticContainer';
 
@@ -44,11 +46,8 @@ export type ServiceConfiguration = {
   gitHubInfo?: GitHubSourceActionInfo;
 };
 
-export async function serviceWalkthrough(context, defaultValuesFilename, apiType: API_TYPE): Promise<Partial<ServiceConfiguration>> {
-  const { amplify } = context;
-  const defaultValuesSrc = `${__dirname}/../default-values/${defaultValuesFilename}`;
-  const { getAllDefaults } = await import(defaultValuesSrc);
-  const allDefaultValues = getAllDefaults(amplify.getProjectDetails());
+export async function serviceWalkthrough(context: $TSContext, apiType: API_TYPE): Promise<Partial<ServiceConfiguration>> {
+  const allDefaultValues = getAllDefaults();
 
   const resourceName = await askResourceName(context, allDefaultValues);
 
@@ -57,7 +56,7 @@ export async function serviceWalkthrough(context, defaultValuesFilename, apiType
   return { resourceName, ...containerInfo };
 }
 
-async function askResourceName(context, allDefaultValues) {
+async function askResourceName(context: $TSContext, allDefaultValues: $TSObject) {
   const { amplify } = context;
 
   const { resourceName } = await inquirer.prompt([
@@ -80,7 +79,7 @@ async function askResourceName(context, allDefaultValues) {
   return resourceName;
 }
 
-async function askContainerSource(context, resourceName: string, apiType: API_TYPE): Promise<Partial<ServiceConfiguration>> {
+async function askContainerSource(context: $TSContext, resourceName: string, apiType: API_TYPE): Promise<Partial<ServiceConfiguration>> {
   return newContainer(context, resourceName, apiType);
 }
 
@@ -89,7 +88,7 @@ export enum IMAGE_SOURCE_TYPE {
   CUSTOM = 'CUSTOM',
 }
 
-async function newContainer(context, resourceName: string, apiType: API_TYPE): Promise<Partial<ServiceConfiguration>> {
+async function newContainer(context: $TSContext, resourceName: string, apiType: API_TYPE): Promise<Partial<ServiceConfiguration>> {
   let imageSource: { type: IMAGE_SOURCE_TYPE; template?: string };
   let choices = [];
 
@@ -171,8 +170,8 @@ async function newContainer(context, resourceName: string, apiType: API_TYPE): P
   let gitHubToken: string;
 
   if (deploymentMechanismQuestion.deploymentMechanism === DEPLOYMENT_MECHANISM.INDENPENDENTLY_MANAGED) {
-    context.print.info('We need a Github Personal Access Token to automatically build & deploy your Fargate task on every Github commit.');
-    context.print.info(
+    printer.info('We need a Github Personal Access Token to automatically build & deploy your Fargate task on every Github commit.');
+    printer.info(
       'Learn more about Github Personal Access Token here: https://docs.github.com/en/free-pro-team@latest/github/authenticating-to-github/creating-a-personal-access-token',
     );
 
@@ -234,7 +233,7 @@ async function newContainer(context, resourceName: string, apiType: API_TYPE): P
   };
 }
 
-export async function updateWalkthrough(context, defaultValuesFilename, apiType: API_TYPE) {
+export async function updateWalkthrough(context: $TSContext, apiType: API_TYPE) {
   const { allResources } = await context.amplify.getResourceStatus();
 
   const resources = allResources
@@ -247,7 +246,7 @@ export async function updateWalkthrough(context, defaultValuesFilename, apiType:
   // There can only be one appsync resource
   if (resources.length === 0) {
     const errMessage = `No ${apiType} API resource to update. Use "amplify add api" command to create a new ${apiType} API`;
-    context.print.error(errMessage);
+    printer.error(errMessage);
     await context.usageData.emitError(new ResourceDoesNotExistError(errMessage));
     exitOnNextTick(0);
     return;
@@ -302,7 +301,7 @@ export async function updateWalkthrough(context, defaultValuesFilename, apiType:
   const hasAccessableResources = ['storage', 'function'].some(categoryName => {
     return Object.keys(meta[categoryName] ?? {}).length > 0;
   });
-  let rolePermissions: any = {};
+  let rolePermissions: $TSAny = {};
   if (
     hasAccessableResources &&
     (await context.amplify.confirmPrompt('Do you want to access other resources in this project from your api?'))

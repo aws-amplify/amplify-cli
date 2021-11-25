@@ -250,6 +250,7 @@ function splitTests(
   workflowName: string,
   jobRootDir: string,
   concurrency: number = CONCURRENCY,
+  isMigration: boolean = false,
 ): CircleCIConfig {
   const output: CircleCIConfig = { ...config };
   const jobs = { ...config.jobs };
@@ -274,8 +275,14 @@ function splitTests(
     if (!isPkg) {
       (newJob.environment as any) = {
         ...newJob.environment,
-        AMPLIFY_DIR: '/home/circleci/repo/packages/amplify-cli/bin',
-        AMPLIFY_PATH: '/home/circleci/repo/packages/amplify-cli/bin/amplify',
+        ...(isMigration
+          ? {
+              AMPLIFY_PATH: '/home/circleci/.npm-global/lib/node_modules/@aws-amplify/cli/bin/amplify',
+            }
+          : {
+              AMPLIFY_DIR: '/home/circleci/repo/packages/amplify-cli/bin',
+              AMPLIFY_PATH: '/home/circleci/repo/packages/amplify-cli/bin/amplify',
+            }),
       };
     }
     return { ...acc, [newJobName]: newJob };
@@ -469,21 +476,23 @@ function main(): void {
     join(repoRoot, 'packages', 'graphql-transformers-e2e-tests'),
     CONCURRENCY,
   );
-  const splitV4MigrationTests = splitTests(
+  const splitV5MigrationTests = splitTests(
     splitGqlTests,
-    'amplify_migration_tests_v4',
+    'amplify_migration_tests_v5',
     'build_test_deploy',
     join(repoRoot, 'packages', 'amplify-migration-tests'),
     CONCURRENCY,
+    true,
   );
-  const splitLatestMigrationTests = splitTests(
-    splitV4MigrationTests,
-    'amplify_migration_tests_latest',
+  const splitV6MigrationTests = splitTests(
+    splitV5MigrationTests,
+    'amplify_migration_tests_v6',
     'build_test_deploy',
     join(repoRoot, 'packages', 'amplify-migration-tests'),
     CONCURRENCY,
+    true,
   );
-  saveConfig(splitLatestMigrationTests);
+  saveConfig(splitV6MigrationTests);
   verifyConfig();
 }
 main();
