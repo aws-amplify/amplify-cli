@@ -251,20 +251,22 @@ export class ResourceExport extends ResourcePackager {
     deleteParameters: boolean,
   ) {
     const parameters = this.extractParametersFromTemplateNestedStack(cfnTemplate);
-    const template = this.modifyRootStack(cfnTemplate, deleteParameters);
+    const template = await this.modifyRootStack(cfnTemplate, deleteParameters);
     await writeCFNTemplate(template, destinationPath, { templateFormat });
     return parameters;
   }
 
   private async copyResource(sourcePath: string, destinationPath: string) {
     let dir = destinationPath;
+    if(!fs.existsSync(sourcePath)){
+      return;
+    }
     // if there is an extension then get the dir path
     // extension points to the fact that it's a file
     if (path.extname(destinationPath)) {
       dir = path.dirname(destinationPath);
     }
     await fs.ensureDir(dir);
-
     await fs.copy(sourcePath, destinationPath, { overwrite: true, preserveTimestamps: true, recursive: true });
   }
 
