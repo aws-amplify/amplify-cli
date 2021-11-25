@@ -76,8 +76,24 @@ function moveBackendResourcesToCurrentCloudBackend(resources: $TSObject[]) {
 
   fs.copySync(amplifyMetaFilePath, amplifyCloudMetaFilePath, { overwrite: true });
   fs.copySync(backendConfigFilePath, backendConfigCloudFilePath, { overwrite: true });
-  fs.copySync(overridePackageJsonBackendFilePath, overridePackageJsonCurrentCloudBackendFilePath, { overwrite: true });
-  fs.copySync(overrideTsConfigJsonBackendFilePath, overrideTsConfigJsonCurrentCloudBackendFilePath, { overwrite: true });
+  /**
+   * copying package.json and tsconfig.json to current cloud backend
+   */
+  try {
+    fs.writeFileSync(overridePackageJsonCurrentCloudBackendFilePath, fs.readFileSync(overridePackageJsonBackendFilePath));
+  } catch (err) {
+    if (err.code !== 'ENOENT') {
+      throw err;
+    }
+  }
+
+  try {
+    fs.writeFileSync(overrideTsConfigJsonCurrentCloudBackendFilePath, fs.readFileSync(overrideTsConfigJsonBackendFilePath));
+  } catch (err) {
+    if (err.code !== 'ENOENT') {
+      throw err;
+    }
+  }
 }
 
 function removeNodeModulesDir(currentCloudBackendDir: string) {
