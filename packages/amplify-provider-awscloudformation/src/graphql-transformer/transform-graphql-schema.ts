@@ -22,7 +22,15 @@ import {
 import { Template } from '@aws-amplify/graphql-transformer-core/lib/config/project-config';
 import { OverrideConfig } from '@aws-amplify/graphql-transformer-core/src/transformation/types';
 import { AppSyncAuthConfiguration, TransformerPluginProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import { $TSContext, AmplifyCategories,getGraphQLTransformerAuthDocLink, AmplifySupportedService, JSONUtilities, pathManager, stateManager } from 'amplify-cli-core';
+import {
+  $TSContext,
+  AmplifyCategories,
+  getGraphQLTransformerAuthDocLink,
+  AmplifySupportedService,
+  JSONUtilities,
+  pathManager,
+  stateManager,
+} from 'amplify-cli-core';
 import { getTransformerVersion, searchablePushChecks } from '../transform-graphql-schema';
 import { printer } from 'amplify-prompts';
 import fs from 'fs-extra';
@@ -306,7 +314,7 @@ export async function transformGraphQLSchema(context, options) {
   const lastDeployedProjectConfig = fs.existsSync(previouslyDeployedBackendDir)
     ? await loadProject(previouslyDeployedBackendDir)
     : undefined;
-  const transformerVersion = getTransformerVersion(context);
+  const transformerVersion = await getTransformerVersion(context);
   const docLink = getGraphQLTransformerAuthDocLink(transformerVersion);
   const sandboxModeEnabled = schemaHasSandboxModeEnabled(project.schema, docLink);
   const directiveMap = collectDirectivesByTypeNames(project.schema);
@@ -316,11 +324,10 @@ export async function transformGraphQLSchema(context, options) {
   const showSandboxModeMessage = sandboxModeEnabled && hasApiKey;
 
   if (showSandboxModeMessage) {
-    const transformerVersion = getTransformerVersion(context);
+    const transformerVersion = await getTransformerVersion(context);
     const docLink = getGraphQLTransformerAuthDocLink(transformerVersion);
     showGlobalSandboxModeWarning(docLink);
-  }
-  else warnOnAuth(directiveMap.types, docLink);
+  } else warnOnAuth(directiveMap.types, docLink);
 
   searchablePushChecks(context, directiveMap.types, parameters[ResourceConstants.PARAMETERS.AppSyncApiName]);
 
