@@ -79,11 +79,20 @@ function moveBackendResourcesToCurrentCloudBackend(resources: $TSObject[]) {
   /**
    * copying package.json and tsconfig.json to current cloud backend
    */
-  if (fs.existsSync(overridePackageJsonBackendFilePath)) {
+  try {
     fs.writeFileSync(overridePackageJsonCurrentCloudBackendFilePath, fs.readFileSync(overridePackageJsonBackendFilePath));
+  } catch (err) {
+    if (err.code !== 'ENOENT') {
+      throw err;
+    }
   }
-  if (fs.existsSync(overrideTsConfigJsonBackendFilePath)) {
+
+  try {
     fs.writeFileSync(overrideTsConfigJsonCurrentCloudBackendFilePath, fs.readFileSync(overrideTsConfigJsonBackendFilePath));
+  } catch (err) {
+    if (err.code !== 'ENOENT') {
+      throw err;
+    }
   }
 }
 
