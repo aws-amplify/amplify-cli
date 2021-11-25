@@ -62,8 +62,8 @@ export async function buildOverrideDir(cwd: string, destDirPath: string): Promis
     fs.ensureDirSync(tsConfigDir);
     // add overrde.ts and tsconfig<project> to build folder of the resource / rootstack
     const tsConfigDestFilePath = path.join(tsConfigDir, 'tsconfig.resource.json');
-    const tsConfigFilePath = path.join(__dirname, '..', '..', 'resources', 'overrides-resource', 'tsconfig.resource.json');
-    fs.writeFileSync(tsConfigDestFilePath, fs.readFileSync(tsConfigFilePath));
+    const tsConfigSampleFilePath = path.join(__dirname, '..', '..', 'resources', 'overrides-resource', 'tsconfig.resource.json');
+    fs.writeFileSync(tsConfigDestFilePath, fs.readFileSync(tsConfigSampleFilePath));
 
     // get locally installed tsc executable
 

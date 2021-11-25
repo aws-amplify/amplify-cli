@@ -52,7 +52,7 @@ export class AmplifyRootStackTransform {
     try {
       isBuild = await buildOverrideDir(backendDir, overrideFilePath);
     } catch (error) {
-      printer.error(`Skipping build due to ${error.message}`);
+      printer.error(`Build error : ${error.message}`);
       throw new Error(error);
     }
     // skip if packageManager or override.ts not found

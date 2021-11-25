@@ -175,7 +175,7 @@ export class AmplifyUserPoolGroupTransform extends AmplifyCategoryTransform {
     const backendDir = pathManager.getBackendDirPath();
     const overrideDir = path.join(backendDir, this._category, this._resourceName);
     const isBuild = await buildOverrideDir(backendDir, overrideDir).catch(error => {
-      printer.error(`Skipping build due to ${error.message}`);
+      printer.error(`Build error : ${error.message}`);
       throw new Error(error);
     });
     if (isBuild) {

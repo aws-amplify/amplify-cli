@@ -183,7 +183,7 @@ export class ApigwStackTransform {
     const overrideJSFilePath = path.join(overrideFilePath, 'build', 'override.js');
 
     const isBuild = await buildOverrideDir(backendDir, overrideFilePath).catch(error => {
-      printer.debug(`Skipping build due to ${error.message}`);
+      printer.debug(`Build error : ${error.message}`);
       return false;
     });
 
