@@ -311,7 +311,6 @@ export abstract class ResourcePackager {
 
         await writeCustomPoliciesToCFNTemplate(resource.resourceName, resource.service, path.basename(cfnFile), resource.category);
         transformedCfnPaths.push(transformedCFNPath);
-        console.log(transformedCFNPath)
       }
       transformedCfnResources.push({
         ...resource,
