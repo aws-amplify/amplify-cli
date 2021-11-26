@@ -263,7 +263,7 @@ export async function loadApiCliInputs(context: $TSContext, resourceName: string
       ]);
 
       // answered no to migration
-      if (fs.existsSync(legacyParamsFilePath)) {
+      if (!stateManager.resourceInputsJsonExists(undefined, AmplifyCategories.API, resourceName)) {
         exitOnNextTick(0);
       }
     }

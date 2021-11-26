@@ -78,6 +78,11 @@ export async function updateWalkthrough(context: $TSContext) {
   if (!stateManager.resourceInputsJsonExists(projRoot, category, selectedApiName)) {
     // Not yet migrated
     await migrate(context, projRoot, selectedApiName);
+
+    // chose not to migrate
+    if (!stateManager.resourceInputsJsonExists(projRoot, category, selectedApiName)) {
+      exitOnNextTick(0);
+    }
   }
 
   const parameters = stateManager.getResourceInputsJson(projRoot, category, selectedApiName);
