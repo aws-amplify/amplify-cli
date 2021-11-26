@@ -8,7 +8,9 @@ jest.mock('amplify-prompts');
 const printerMock = printer as jest.Mocked<typeof printer>;
 const stateManagerMock = stateManager as jest.Mocked<typeof stateManager>;
 const FeatureFlagsMock = FeatureFlags as jest.Mocked<typeof FeatureFlags>;
-const getGraphQLTransformerOpenSearchProductionDocLinkMock = getGraphQLTransformerOpenSearchProductionDocLink as jest.MockedFunction<typeof getGraphQLTransformerOpenSearchProductionDocLink>;
+const getGraphQLTransformerOpenSearchProductionDocLinkMock = getGraphQLTransformerOpenSearchProductionDocLink as jest.MockedFunction<
+  typeof getGraphQLTransformerOpenSearchProductionDocLink
+>;
 getGraphQLTransformerOpenSearchProductionDocLinkMock.mockReturnValue('mockDocsLink');
 
 FeatureFlags.getNumber = jest.fn().mockReturnValue(2);
@@ -28,7 +30,7 @@ describe('graphql schema checks', () => {
     stateManagerMock.getTeamProviderInfo.mockReturnValue({});
     contextMock.amplify.getEnvInfo.mockReturnValue({ envName: 'test' });
     const map = { Post: ['model', 'searchable'] };
-    searchablePushChecks(contextMock, map, 'test_api_name');
+    await searchablePushChecks(contextMock, map, 'test_api_name');
     expect(printerMock.warn).lastCalledWith(
       'Your instance type for OpenSearch is t2.small.elasticsearch, you may experience performance issues or data loss. Consider reconfiguring with the instructions here mockDocsLink',
     );
@@ -49,7 +51,7 @@ describe('graphql schema checks', () => {
     });
     contextMock.amplify.getEnvInfo.mockReturnValue({ envName: 'test' });
     const map = { Post: ['model', 'searchable'] };
-    searchablePushChecks(contextMock, map, 'test_api_name');
+    await searchablePushChecks(contextMock, map, 'test_api_name');
     expect(printerMock.warn).lastCalledWith(
       'Your instance type for OpenSearch is t2.small.elasticsearch, you may experience performance issues or data loss. Consider reconfiguring with the instructions here mockDocsLink',
     );
@@ -70,7 +72,7 @@ describe('graphql schema checks', () => {
     });
     contextMock.amplify.getEnvInfo.mockReturnValue({ envName: 'test' });
     const map = { Post: ['model', 'searchable'] };
-    searchablePushChecks(contextMock, map, 'test_api_name');
+    await searchablePushChecks(contextMock, map, 'test_api_name');
     expect(printerMock.warn).not.toBeCalled();
   });
 
@@ -98,7 +100,7 @@ describe('graphql schema checks', () => {
     });
     contextMock.amplify.getEnvInfo.mockReturnValue({ envName: 'prod' });
     const map = { Post: ['model', 'searchable'] };
-    searchablePushChecks(contextMock, map, 'test_api_name');
+    await searchablePushChecks(contextMock, map, 'test_api_name');
     expect(printerMock.warn).not.toBeCalled();
   });
 
@@ -107,7 +109,7 @@ describe('graphql schema checks', () => {
     stateManagerMock.getTeamProviderInfo.mockReturnValue({});
     contextMock.amplify.getEnvInfo.mockReturnValue({ envName: 'test' });
     const map = { Post: ['model'] };
-    searchablePushChecks(contextMock, map, 'test_api_name');
+    await searchablePushChecks(contextMock, map, 'test_api_name');
     expect(printerMock.warn).not.toBeCalled();
   });
 
@@ -120,7 +122,7 @@ describe('graphql schema checks', () => {
     });
     contextMock.amplify.getEnvInfo.mockReturnValue({ envName: 'test' });
     const map = { Post: ['model', 'searchable'] };
-    searchablePushChecks(contextMock, map, 'test_api_name');
+    await searchablePushChecks(contextMock, map, 'test_api_name');
     expect(printerMock.warn).lastCalledWith(
       'Your instance type for OpenSearch is t2.small.elasticsearch, you may experience performance issues or data loss. Consider reconfiguring with the instructions here mockDocsLink',
     );

@@ -42,7 +42,7 @@ async function showAmplifyConsoleHostingStatus(context) {
 
 async function showApiAuthAcm(context) {
   const providerPlugin = await import(context.amplify.getProviderPlugins(context)?.awscloudformation);
-  const transformerVersion = providerPlugin.getTransformerVersion(context);
+  const transformerVersion = await providerPlugin.getTransformerVersion(context);
 
   if (transformerVersion < 2) {
     printer.error('This command requires version two or greater of the GraphQL transformer.');
