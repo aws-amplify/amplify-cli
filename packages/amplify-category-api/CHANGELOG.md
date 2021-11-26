@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.2.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-api@1.1.1...@aws-amplify/amplify-category-api@1.2.0) (2021-11-26)
+
+
+### Bug Fixes
+
+* console override build issue ([#9078](https://github.com/aws-amplify/amplify-cli/issues/9078)) ([5c9bc5c](https://github.com/aws-amplify/amplify-cli/commit/5c9bc5c4003dd21c2897dc3c4faef9a9c19c1d99))
+* transformer version ([#9092](https://github.com/aws-amplify/amplify-cli/issues/9092)) ([acfa82c](https://github.com/aws-amplify/amplify-cli/commit/acfa82c9b275df0a7347ae0700a919dd8c03a4de))
+
+
+
+
+
 ## [1.1.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-api@1.1.0...@aws-amplify/amplify-category-api@1.1.1) (2021-11-24)
 
 **Note:** Version bump only for package @aws-amplify/amplify-category-api
