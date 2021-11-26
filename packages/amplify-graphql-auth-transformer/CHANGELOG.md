@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.6.1-beta.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-auth-transformer@0.5.0...@aws-amplify/graphql-auth-transformer@0.6.1-beta.0) (2021-11-26)
+
+
+### Bug Fixes
+
+* remove extra $ in vtl template ([#9077](https://github.com/aws-amplify/amplify-cli/issues/9077)) ([3dc4dc4](https://github.com/aws-amplify/amplify-cli/commit/3dc4dc49ce1698683251dacd85fd4433ead1688f))
+
+
+
+
+
 # [0.6.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-auth-transformer@0.5.0...@aws-amplify/graphql-auth-transformer@0.6.0) (2021-11-26)
 
 
