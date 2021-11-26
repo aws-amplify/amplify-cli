@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.3.2-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.2.13...amplify-util-mock@4.3.2-beta.0) (2021-11-26)
+
+
+### Bug Fixes
+
+* transformer version ([#9092](https://github.com/aws-amplify/amplify-cli/issues/9092)) ([acfa82c](https://github.com/aws-amplify/amplify-cli/commit/acfa82c9b275df0a7347ae0700a919dd8c03a4de))
+
+
+
+
+
 ## [4.3.1-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.2.13...amplify-util-mock@4.3.1-beta.0) (2021-11-26)
 
 
