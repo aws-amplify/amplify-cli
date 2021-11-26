@@ -37,7 +37,7 @@ type ApiGatewayPolicyCreationState = {
 export const APIGW_AUTH_STACK_LOGICAL_ID = 'APIGatewayAuthStack';
 const CFN_TEMPLATE_FORMAT_VERSION = '2010-09-09';
 const MAX_MANAGED_POLICY_SIZE = 6_144;
-const S3_UPLOAD_PATH = path.join(AmplifyCategories.API, `${APIGW_AUTH_STACK_LOGICAL_ID}.json`);
+const S3_UPLOAD_PATH = `${AmplifyCategories.API}/${APIGW_AUTH_STACK_LOGICAL_ID}.json`;
 const AUTH_ROLE_NAME = 'authRoleName';
 const UNAUTH_ROLE_NAME = 'unauthRoleName';
 
