@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.1.3-beta.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-api@1.1.2...@aws-amplify/amplify-category-api@1.1.3-beta.0) (2021-11-28)
+
+
+### Bug Fixes
+
+* use __dirname instead of '.' in import path ([#9105](https://github.com/aws-amplify/amplify-cli/issues/9105)) ([8b6c6e4](https://github.com/aws-amplify/amplify-cli/commit/8b6c6e43e86bdc067c2607df129a0aff64a7588d))
+
+
+
+
+
 ## [1.1.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-api@1.1.1...@aws-amplify/amplify-category-api@1.1.2) (2021-11-26)
 
 
