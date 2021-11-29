@@ -147,7 +147,11 @@ export class PathManager {
   getResourceParametersFilePath = (projectPath: string | undefined, category: string, resourceName: string): string => {
     let isBuildParametersjson: boolean = false;
     const resourceDirPath = this.getResourceDirectoryPath(projectPath, category, resourceName);
-    if (!fs.existsSync(path.join(resourceDirPath, PathConstants.ParametersJsonFileName)) && overriddenCategories.includes(category)) {
+    if (
+      !fs.existsSync(path.join(resourceDirPath, PathConstants.ParametersJsonFileName)) &&
+      fs.existsSync(path.join(resourceDirPath, PathConstants.CLIInputsJsonFileName)) &&
+      overriddenCategories.includes(category)
+    ) {
       isBuildParametersjson = true;
     }
     const basePath = isBuildParametersjson ? path.join(resourceDirPath, PathConstants.BuildDirName) : resourceDirPath;
