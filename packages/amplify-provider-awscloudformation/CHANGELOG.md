@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.7.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@5.7.0...amplify-provider-awscloudformation@5.7.1) (2021-11-29)
+
+
+### Bug Fixes
+
+* don't use path.join() for s3 upload path ([#9096](https://github.com/aws-amplify/amplify-cli/issues/9096)) ([c1787fb](https://github.com/aws-amplify/amplify-cli/commit/c1787fbbe029b5e53a7910877ec7b4a49822602e))
+
+
+
+
+
 # [5.7.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@5.6.2...amplify-provider-awscloudformation@5.7.0) (2021-11-26)
 
 

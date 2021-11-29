@@ -1,6 +1,6 @@
 {
   "name": "amplify-graphql-migration-tests",
-  "version": "2.2.9",
+  "version": "2.2.10",
   "description": "Tests migration from v1 to v2 of the Amplify GraphQL transformer",
   "main": "lib/index.js",
   "private": true,
@@ -44,7 +44,7 @@
     "@aws-amplify/graphql-index-transformer": "0.8.0",
     "@aws-amplify/graphql-model-transformer": "0.10.0",
     "@aws-amplify/graphql-predictions-transformer": "0.6.0",
-    "@aws-amplify/graphql-relational-transformer": "0.6.8",
+    "@aws-amplify/graphql-relational-transformer": "0.6.9",
     "@aws-amplify/graphql-searchable-transformer": "0.10.0",
     "@aws-amplify/graphql-transformer-core": "0.14.0",
     "@aws-amplify/graphql-transformer-interfaces": "1.12.3",
