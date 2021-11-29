@@ -45,8 +45,8 @@ export async function console(context: $TSContext) {
 }
 
 export async function migrate(context: $TSContext, serviceName?: string) {
-  const { projectPath } = context.migrationInfo;
-  const amplifyMeta = stateManager.getMeta();
+  const { projectPath } = context?.migrationInfo ?? { projectPath: pathManager.findProjectRoot() };
+  const amplifyMeta = stateManager.getMeta(projectPath);
   const migrateResourcePromises = [];
   for (const categoryName of Object.keys(amplifyMeta)) {
     if (categoryName === category) {

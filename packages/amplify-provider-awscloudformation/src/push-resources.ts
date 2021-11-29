@@ -932,17 +932,15 @@ export async function formNestedStack(
         },
       },
     };
-    const apis = amplifyMeta?.api ?? {};
 
-    Object.keys(apis).forEach(apiName => {
-      const api = apis[apiName];
-
-      if (loadApiCliInputs(apiName, api)) {
+    const apis: $TSObject = amplifyMeta?.api ?? {};
+    for (const [apiName, api] of Object.entries(apis)) {
+      if (await loadApiCliInputs(context, apiName, api)) {
         stack.Properties.Parameters[apiName] = {
           'Fn::GetAtt': [api.providerMetadata.logicalId, 'Outputs.ApiId'],
         };
       }
-    });
+    }
 
     rootStack.Resources[APIGW_AUTH_STACK_LOGICAL_ID] = stack;
   }

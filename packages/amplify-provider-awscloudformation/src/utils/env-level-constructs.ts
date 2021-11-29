@@ -21,7 +21,7 @@ export async function createEnvLevelConstructs(context: $TSContext) {
   Object.assign(
     updatedMeta,
     await createNetworkResources(context, stackName, hasContainers),
-    consolidateApiGatewayPolicies(context, stackName),
+    await consolidateApiGatewayPolicies(context, stackName),
     await uploadAuthTriggerTemplate(context),
   );
 
