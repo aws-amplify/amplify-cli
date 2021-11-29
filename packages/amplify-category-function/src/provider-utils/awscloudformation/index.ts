@@ -433,9 +433,9 @@ async function initTriggerEnvs(context, resourceParams, providerPlugin, envParam
     const currentTrigger = resourceParams.resourceName.replace(parentResourceParams.resourceName, '');
     if (currentTrigger && currentTrigger !== resourceParams.resourceName) {
       const currentEnvVariables = context.amplify.loadEnvResourceParameters(context, categoryName, resourceParams.resourceName);
-      const authPlugin = context.amplify.getCategoryPluginInfo(context, AmplifyCategories.AUTH, AmplifySupportedService.COGNITO);
+      const categoryPlugin = context.amplify.getCategoryPluginInfo(context, resourceParams.parentStack);
       const triggerPath = path.join(
-        authPlugin.packageLocation,
+        categoryPlugin.packageLocation,
         'provider-utils',
         `${srvcMetaData.provider}`,
         'triggers',
