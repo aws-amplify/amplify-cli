@@ -3,6 +3,55 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [7.5.4](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@7.5.3...@aws-amplify/cli@7.5.4) (2021-11-29)
+
+**Note:** Version bump only for package @aws-amplify/cli
+
+
+
+
+
+## [7.5.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@7.5.2...@aws-amplify/cli@7.5.3) (2021-11-26)
+
+
+
+## 7.5.3 (2021-11-26)
+
+
+### Bug Fixes
+
+* console override build issue ([#9078](https://github.com/aws-amplify/amplify-cli/issues/9078)) ([5c9bc5c](https://github.com/aws-amplify/amplify-cli/commit/5c9bc5c4003dd21c2897dc3c4faef9a9c19c1d99))
+* e2e fixes when updating current-cloud-backend ([#9079](https://github.com/aws-amplify/amplify-cli/issues/9079)) ([356687a](https://github.com/aws-amplify/amplify-cli/commit/356687ace1f064f5628d12eda3da1f40ddba8ded))
+* transformer version ([#9092](https://github.com/aws-amplify/amplify-cli/issues/9092)) ([acfa82c](https://github.com/aws-amplify/amplify-cli/commit/acfa82c9b275df0a7347ae0700a919dd8c03a4de))
+
+
+
+
+
+## [7.5.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@7.5.1...@aws-amplify/cli@7.5.2) (2021-11-25)
+
+**Note:** Version bump only for package @aws-amplify/cli
+
+
+
+
+
+## [7.5.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@7.5.0...@aws-amplify/cli@7.5.1) (2021-11-24)
+
+
+
+## 7.5.1 (2021-11-24)
+
+
+### Bug Fixes
+
+* **cli:** fix for headless project configure ([#9064](https://github.com/aws-amplify/amplify-cli/issues/9064)) ([ae385b7](https://github.com/aws-amplify/amplify-cli/commit/ae385b748665c40ea170b0f6c8cb15e450965486))
+* **cli:** fix headless project configure ([#9057](https://github.com/aws-amplify/amplify-cli/issues/9057)) ([37669bd](https://github.com/aws-amplify/amplify-cli/commit/37669bd1d55931c4635a6c4e240dcdd4c18d0c19))
+
+
+
+
+
 # [7.5.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@7.4.5...@aws-amplify/cli@7.5.0) (2021-11-23)
 
 

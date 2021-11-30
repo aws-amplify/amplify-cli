@@ -66,3 +66,49 @@ test('test multi auth model with conflict resolution', () => {
   );
   expect(out.resolvers['Query.syncPosts.auth.1.req.vtl']).toMatchSnapshot();
 });
+
+test('test multi auth model with field auth with conflict resolution', () => {
+  const validSchema = `
+    type Test
+      @model
+      @auth(rules: [
+        { provider: iam, allow: private },
+        { provider: userPools, allow: private, operations: [read, update] }
+      ])
+    {
+      id: ID!
+
+      writeable: String
+
+      readOnly: String
+        @auth(rules: [
+          { provider: iam, allow: private },
+          { provider: userPools, allow: private, operations: [read] }
+        ])
+
+      hidden: String
+        @auth(rules: [
+          { provider: iam, allow: private },
+        ])
+    }`;
+
+  const transformer = new GraphQLTransform({
+    authConfig: {
+      defaultAuthentication: {
+        authenticationType: 'AMAZON_COGNITO_USER_POOLS',
+      },
+      additionalAuthenticationProviders: [{ authenticationType: 'AWS_IAM' }],
+    },
+    transformConfig: {},
+    resolverConfig: {
+      project: {
+        ConflictDetection: 'VERSION',
+        ConflictHandler: ConflictHandlerType.AUTOMERGE,
+      },
+    },
+    transformers: [new ModelTransformer(), new AuthTransformer()],
+  });
+  const out = transformer.transform(validSchema);
+  expect(out).toBeDefined();
+  expect(out.resolvers['Mutation.updateTest.auth.1.res.vtl']).toMatchSnapshot();
+});

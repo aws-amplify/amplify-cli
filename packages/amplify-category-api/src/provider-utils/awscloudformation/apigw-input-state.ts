@@ -108,8 +108,8 @@ export class ApigwInputState {
     }
     const resourceDirPath = pathManager.getResourceDirectoryPath(this.projectRootPath, AmplifyCategories.API, this.resourceName);
 
-    this.context.filesystem.remove(join(resourceDirPath, PathConstants.ParametersJsonFileName));
-    this.context.filesystem.remove(join(resourceDirPath, 'admin-queries-cloudformation-template.json'));
+    fs.removeSync(join(resourceDirPath, PathConstants.ParametersJsonFileName));
+    fs.removeSync(join(resourceDirPath, 'admin-queries-cloudformation-template.json'));
 
     return this.updateAdminQueriesResource(adminQueriesProps);
   };
@@ -199,9 +199,9 @@ export class ApigwInputState {
       };
     });
 
-    this.context.filesystem.remove(deprecatedParametersFilePath);
-    this.context.filesystem.remove(join(resourceDirPath, PathConstants.ParametersJsonFileName));
-    this.context.filesystem.remove(join(resourceDirPath, `${this.resourceName}-cloudformation-template.json`));
+    fs.removeSync(deprecatedParametersFilePath);
+    fs.removeSync(join(resourceDirPath, PathConstants.ParametersJsonFileName));
+    fs.removeSync(join(resourceDirPath, `${this.resourceName}-cloudformation-template.json`));
 
     await this.createApigwArtifacts();
   };

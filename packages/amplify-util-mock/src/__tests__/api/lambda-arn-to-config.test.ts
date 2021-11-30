@@ -23,7 +23,6 @@ jest.mock('amplify-cli-core', () => ({
         },
       },
     }),
-
   },
 }));
 
@@ -65,17 +64,14 @@ describe('lambda arn to config', () => {
   });
 
   it('throws on malformed arn refs', async () => {
-    const ex = () => lambdaArnToConfig(context_stub, { 'Fn::Sub': { key: 'cant interpret this' } });
-    await expect(ex).toThrowError();
+    expect(lambdaArnToConfig(context_stub, { 'Fn::Sub': { key: 'cant interpret this' } })).rejects.toThrowError();
   });
 
   it('throws on unknown arn formats', async () => {
-    const ex = () => lambdaArnToConfig(context_stub, ['dont know', 'what this is']);
-    await expect(ex).toThrowError();
+    expect(lambdaArnToConfig(context_stub, ['dont know', 'what this is'])).rejects.toThrowError();
   });
 
   it('throws when arn is valid but no matching lambda found in the project', async () => {
-    const ex = () => lambdaArnToConfig(context_stub, 'validformat::but::no::matchinglambda');
-    await expect(ex).toThrowError();
+    expect(lambdaArnToConfig(context_stub, 'validformat::but::no::matchinglambda')).rejects.toThrowError();
   });
 });

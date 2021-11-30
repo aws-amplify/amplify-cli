@@ -3,6 +3,64 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.7.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@5.7.0...amplify-provider-awscloudformation@5.7.1) (2021-11-29)
+
+
+### Bug Fixes
+
+* don't use path.join() for s3 upload path ([#9096](https://github.com/aws-amplify/amplify-cli/issues/9096)) ([c1787fb](https://github.com/aws-amplify/amplify-cli/commit/c1787fbbe029b5e53a7910877ec7b4a49822602e))
+
+
+
+
+
+# [5.7.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@5.6.2...amplify-provider-awscloudformation@5.7.0) (2021-11-26)
+
+
+
+## 7.5.3 (2021-11-26)
+
+
+### Bug Fixes
+
+* console override build issue ([#9078](https://github.com/aws-amplify/amplify-cli/issues/9078)) ([5c9bc5c](https://github.com/aws-amplify/amplify-cli/commit/5c9bc5c4003dd21c2897dc3c4faef9a9c19c1d99))
+* transformer version ([#9092](https://github.com/aws-amplify/amplify-cli/issues/9092)) ([acfa82c](https://github.com/aws-amplify/amplify-cli/commit/acfa82c9b275df0a7347ae0700a919dd8c03a4de))
+
+
+### Features
+
+* make modifying root stack async ([#9080](https://github.com/aws-amplify/amplify-cli/issues/9080)) ([5859e93](https://github.com/aws-amplify/amplify-cli/commit/5859e9399e838824047947347d5253ebaadb629b))
+
+
+
+
+
+## [5.6.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@5.6.1...amplify-provider-awscloudformation@5.6.2) (2021-11-25)
+
+
+
+## 7.5.2 (2021-11-24)
+
+
+### Bug Fixes
+
+* aggreagate paginated results in cfn.listStackResources call ([#9073](https://github.com/aws-amplify/amplify-cli/issues/9073)) ([807a0be](https://github.com/aws-amplify/amplify-cli/commit/807a0bef149b0c241024654553b6cc589f08f034))
+
+
+
+
+
+## [5.6.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@5.6.0...amplify-provider-awscloudformation@5.6.1) (2021-11-24)
+
+
+### Bug Fixes
+
+* change describeStackResources() call to listStackResources() ([#9060](https://github.com/aws-amplify/amplify-cli/issues/9060)) ([181ed31](https://github.com/aws-amplify/amplify-cli/commit/181ed31d4561b197764eb17c98392794b43fc26c))
+
+
+
+
+
 # [5.6.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@5.5.1...amplify-provider-awscloudformation@5.6.0) (2021-11-23)
 
 

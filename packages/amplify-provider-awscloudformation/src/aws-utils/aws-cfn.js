@@ -13,6 +13,7 @@ const configurationManager = require('../configuration-manager');
 const { stateManager, pathManager } = require('amplify-cli-core');
 const { fileLogger } = require('../utils/aws-logger');
 const logger = fileLogger('aws-cfn');
+const { pagedAWSCall } = require('./paged-call');
 
 const CFN_MAX_CONCURRENT_REQUEST = 5;
 const CFN_POLL_TIME = 5 * 1000; // 5 secs wait to check if  new stacks are created by root stack
@@ -326,9 +327,21 @@ class CloudFormation {
     };
     const projectDetails = this.context.amplify.getProjectDetails();
     const { amplifyMeta } = projectDetails;
+
     logger('updateamplifyMetaFileWithStackOutputs.cfn.listStackResources', [cfnParentStackParams])();
-    const result = await this.cfn.listStackResources(cfnParentStackParams).promise();
-    const resources = result.StackResourceSummaries.filter(
+
+    const stackSummaries = await pagedAWSCall(
+      async (params, nextToken) => {
+        return await this.cfn.listStackResources({ ...params, NextToken: nextToken }).promise();
+      },
+      {
+        StackName: parentStackName,
+      },
+      response => response.StackResourceSummaries,
+      async response => response.NextToken,
+    );
+
+    const resources = stackSummaries.filter(
       resource =>
         ![
           'DeploymentBucket',
@@ -342,7 +355,7 @@ class CloudFormation {
     /**
      * Update root stack overrides
      */
-    const rootStackResources = result.StackResourceSummaries.filter(
+    const rootStackResources = stackSummaries.filter(
       resource =>
         !['UpdateRolesWithIDPFunction', 'UpdateRolesWithIDPFunctionOutputs', 'UpdateRolesWithIDPFunctionRole'].includes(
           resource.LogicalResourceId,

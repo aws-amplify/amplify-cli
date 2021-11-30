@@ -230,7 +230,7 @@ export abstract class ResourcePackager {
     if (this.resourcesHasApiGatewaysButNotAdminQueries(resources)) {
       const { PROVIDER, PROVIDER_NAME } = Constants;
       const { StackName: stackName } = this.amplifyMeta[PROVIDER][PROVIDER_NAME];
-      consolidateApiGatewayPolicies(this.context, stackName);
+      await consolidateApiGatewayPolicies(this.context, stackName);
     }
     await prePushAuthTransform(this.context, resources);
     for await (const resource of resources) {

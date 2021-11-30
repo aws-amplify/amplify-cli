@@ -411,7 +411,7 @@ const updateApiInputWalkthrough = async (context: $TSContext, project: $TSObject
 export const serviceWalkthrough = async (context: $TSContext, serviceMetadata: $TSObject) => {
   const resourceName = resourceAlreadyExists();
   const providerPlugin = await import(context.amplify.getProviderPlugins(context)[providerName]);
-  const transformerVersion = providerPlugin.getTransformerVersion(context);
+  const transformerVersion = await providerPlugin.getTransformerVersion(context);
   await addLambdaAuthorizerChoice(context);
 
   if (resourceName) {
@@ -739,7 +739,7 @@ async function askSyncFunctionQuestion() {
 
 async function addLambdaAuthorizerChoice(context: $TSContext) {
   const providerPlugin = await import(context.amplify.getProviderPlugins(context)[providerName]);
-  const transformerVersion = providerPlugin.getTransformerVersion(context);
+  const transformerVersion = await providerPlugin.getTransformerVersion(context);
   if (transformerVersion === 2 && !authProviderChoices.some(choice => choice.value == 'AWS_LAMBDA')) {
     authProviderChoices.push({
       name: 'Lambda',

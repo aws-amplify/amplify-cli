@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.2.9](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-transformer-migrator@1.2.8...@aws-amplify/graphql-transformer-migrator@1.2.9) (2021-11-26)
+
+**Note:** Version bump only for package @aws-amplify/graphql-transformer-migrator
+
+
+
+
+
+## [1.2.8](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-transformer-migrator@1.2.7...@aws-amplify/graphql-transformer-migrator@1.2.8) (2021-11-24)
+
+
+### Bug Fixes
+
+* add migration warning when [@searchable](https://github.com/searchable) is used ([#9059](https://github.com/aws-amplify/amplify-cli/issues/9059)) ([15e1a55](https://github.com/aws-amplify/amplify-cli/commit/15e1a559677e995efdadfe8d1cbfa3a35dc6b279))
+
+
+
+
+
 ## [1.2.7](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-transformer-migrator@1.2.6...@aws-amplify/graphql-transformer-migrator@1.2.7) (2021-11-23)
 
 
