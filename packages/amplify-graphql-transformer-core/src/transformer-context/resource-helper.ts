@@ -1,5 +1,5 @@
 import { GraphQLAPIProvider, TransformerResourceHelperProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import { CfnParameter } from '@aws-cdk/core';
+import { CfnParameter, Token } from '@aws-cdk/core';
 import { StackManager } from './stack-manager';
 import md5 from 'md5';
 
@@ -24,9 +24,8 @@ export class TransformerResourceHelper implements TransformerResourceHelperProvi
     this.ensureEnv();
     const env = (this.stackManager.getParameter('env') as CfnParameter).valueAsString;
     const apiId = this.api!.apiId;
-
     // 38 = 26(apiId) + 10(env) + 2(-)
-    const shortName = name.slice(0, 64 - 38 - 6) + md5(name).slice(0, 6);
+    const shortName = `${Token.isUnresolved(name) ? name : name.slice(0, 64 - 38 - 6)}${md5(name).slice(0, 6)}`;
     return `${shortName}-${apiId}-${env}`; // max of 64.
   };
 
