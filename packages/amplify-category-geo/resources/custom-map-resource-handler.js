@@ -1,6 +1,6 @@
 const response = require('cfn-response');
 const aws = require('aws-sdk');
-exports.handler = async (event, context) => {
+exports.handler = async function (event, context) {
   try {
     console.log('REQUEST RECEIVED:' + JSON.stringify(event));
     if (event.RequestType == 'Create') {
@@ -15,10 +15,9 @@ exports.handler = async (event, context) => {
       const res = await locationClient.createMap(params).promise();
       console.log('create resource response data' + JSON.stringify(res));
       if (res.MapName && res.MapArn) {
-        event.PhysicalResourceId = res.MapName;
-        await send(event, context, response.SUCCESS, res);
+        await response.send(event, context, response.SUCCESS, res, params.MapName);
       } else {
-        await send(event, context, response.FAILED, res);
+        await response.send(event, context, response.FAILED, res, params.MapName);
       }
     }
     if (event.RequestType == 'Update') {
@@ -30,10 +29,9 @@ exports.handler = async (event, context) => {
       const res = await locationClient.updateMap(params).promise();
       console.log('update resource response data' + JSON.stringify(res));
       if (res.MapName && res.MapArn) {
-        event.PhysicalResourceId = res.MapName;
-        await send(event, context, response.SUCCESS, res);
+        await response.send(event, context, response.SUCCESS, res, params.MapName);
       } else {
-        await send(event, context, response.FAILED, res);
+        await response.send(event, context, response.FAILED, res, params.MapName);
       }
     }
     if (event.RequestType == 'Delete') {
@@ -42,20 +40,13 @@ exports.handler = async (event, context) => {
       };
       const locationClient = new aws.Location({ apiVersion: '2020-11-19', region: event.ResourceProperties.region });
       const res = await locationClient.deleteMap(params).promise();
-      event.PhysicalResourceId = event.ResourceProperties.mapName;
       console.log('delete resource response data' + JSON.stringify(res));
-      await send(event, context, response.SUCCESS, res);
+      await response.send(event, context, response.SUCCESS, res, params.MapName);
     }
   } catch (err) {
     console.log(err.stack);
     const res = { Error: err };
-    await send(event, context, response.FAILED, res);
+    await response.send(event, context, response.FAILED, res, event.ResourceProperties.mapName);
     throw err;
   }
 };
-
-function send(event, context, status, data) {
-  return new Promise(() => {
-    response.send(event, context, status, data);
-  });
-}

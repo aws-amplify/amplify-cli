@@ -3,4 +3,6 @@
 **/tests/**
 src
 tsconfig.json
+!resources/overrides-resource/auth/tsconfig.json
+!resources/overrides-resource/userPoolGroups/tsconfig.json
 tsconfig.tsbuildinfo

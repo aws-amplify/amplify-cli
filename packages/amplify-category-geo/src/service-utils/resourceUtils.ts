@@ -1,13 +1,14 @@
 import { JSONUtilities, pathManager, $TSObject, stateManager, $TSContext } from 'amplify-cli-core';
-import { category, supportedRegions } from '../constants';
+import { category, authCategoryName } from '../constants';
 import path from 'path';
 import _ from 'lodash';
 import { BaseStack } from '../service-stacks/baseStack';
-import { parametersFileName, ServiceName, provider } from './constants';
+import { parametersFileName, ServiceName } from './constants';
 import { PricingPlan, ResourceParameters, AccessType } from './resourceParams';
 import os from 'os';
 import { getMapIamPolicies } from './mapUtils';
 import { getPlaceIndexIamPolicies } from './placeIndexUtils';
+import { getGeofenceCollectionIamPolicies } from './geofenceCollectionUtils';
 import { printer } from 'amplify-prompts';
 
 // Merges other with existing in a non-destructive way.
@@ -108,16 +109,14 @@ export const geoServiceExists = async (service: ServiceName): Promise<boolean> =
  * Get the pricing plan for Geo resources
  */
 export const getGeoPricingPlan = async (): Promise<PricingPlan> => {
-  // search Map resources
-  const mapServiceMeta = await getGeoServiceMeta(ServiceName.Map);
-  const placeIndexServiceMeta = await getGeoServiceMeta(ServiceName.PlaceIndex);
-  if (mapServiceMeta && Object.keys(mapServiceMeta).length > 0) {
-    return mapServiceMeta[Object.keys(mapServiceMeta)[0]].pricingPlan;
+  const geoMeta = stateManager.getMeta()?.[category];
+  let pricingPlan = PricingPlan.RequestBasedUsage;
+  if (geoMeta !== undefined) {
+    Object.keys(geoMeta).forEach(resource => {
+      pricingPlan = geoMeta[resource].pricingPlan || pricingPlan;
+    });
   }
-  else if (placeIndexServiceMeta && Object.keys(placeIndexServiceMeta).length > 0) {
-    return placeIndexServiceMeta[Object.keys(placeIndexServiceMeta)[0]].pricingPlan;
-  }
-  return PricingPlan.RequestBasedUsage; // default
+  return pricingPlan;
 }
 
 /**
@@ -210,20 +209,13 @@ export const getServicePermissionPolicies = (
       return getMapIamPolicies(resourceName, crudOptions);
     case ServiceName.PlaceIndex:
       return getPlaceIndexIamPolicies(resourceName, crudOptions);
+    case ServiceName.GeofenceCollection:
+        return getGeofenceCollectionIamPolicies(resourceName, crudOptions);
     default:
       printer.warn(`${service} not supported in category ${category}`);
   }
   return {policy: [], attributes: []};
 }
-
-export const verifySupportedRegion = (): boolean => {
-  const currentRegion = stateManager.getMeta()?.providers[provider]?.Region;
-  if(!supportedRegions.includes(currentRegion)) {
-    printer.error(`Geo category is not supported in the region: [${currentRegion}]`);
-    return false;
-  }
-  return true;
-};
 
 /**
  * Check if any Geo resource exists
@@ -231,4 +223,14 @@ export const verifySupportedRegion = (): boolean => {
  export const checkAnyGeoResourceExists = async (): Promise<boolean> => {
   const geoMeta = stateManager.getMeta()?.[category];
   return geoMeta && Object.keys(geoMeta) && Object.keys(geoMeta).length > 0;
+}
+
+export const getAuthResourceName = async (context: $TSContext): Promise<string> => {
+  let authResources = (await context.amplify.getResourceStatus(authCategoryName)).allResources;
+  authResources = authResources.filter((resource: $TSObject) => resource.service === 'Cognito');
+
+  if (authResources.length === 0) {
+    throw new Error('No auth resource found. Please add it using "amplify add auth"');
+  }
+  return authResources[0].resourceName;
 }

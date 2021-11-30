@@ -120,7 +120,7 @@ describe('amplify add api (REST)', () => {
       allowGuestUsers: false,
     });
     await addRestApi(projRoot, { isFirstRestApi: false, existingLambda: true });
-    await updateAuthAddAdminQueries(projRoot);
+    await updateAuthAddAdminQueries(projRoot, undefined, {});
     await amplifyPushUpdate(projRoot);
 
     const amplifyMeta = getProjectMeta(projRoot);

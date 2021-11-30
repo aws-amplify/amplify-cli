@@ -3,21 +3,11 @@ const { booleanOptions, oAuthScopes } = require('./string-maps');
 
 const [sharedId] = uuid().split('-');
 
-const roles = {
-  authRoleArn: {
-    'Fn::GetAtt': ['AuthRole', 'Arn'],
-  },
-  unauthRoleArn: {
-    'Fn::GetAtt': ['UnauthRole', 'Arn'],
-  },
-};
-
 const generalDefaults = projectName => ({
   sharedId,
   resourceName: `${projectName}${sharedId}`,
   resourceNameTruncated: `${projectName.substring(0, 6)}${sharedId}`,
   authSelections: 'identityPoolAndUserPool',
-  ...roles,
 });
 
 const userPoolDefaults = projectName => {
@@ -96,6 +86,5 @@ module.exports = {
   generalDefaults,
   withSocialDefaults,
   entityKeys,
-  roles,
   sharedId,
 };

@@ -1,4 +1,4 @@
-import { $TSContext, $TSObject, stateManager, exitOnNextTick, $TSAny } from 'amplify-cli-core';
+import { $TSContext, $TSObject, stateManager, $TSAny } from 'amplify-cli-core';
 import { category } from './constants';
 import * as addCommand from './commands/geo/add';
 import * as updateCommand from './commands/geo/update';

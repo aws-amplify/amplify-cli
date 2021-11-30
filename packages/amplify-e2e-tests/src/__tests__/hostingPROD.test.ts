@@ -45,6 +45,7 @@ describe('amplify add hosting', () => {
   it('publish successfully', async () => {
     let error;
     try {
+      // root stack updated
       await amplifyPublishWithoutUpdate(projRoot);
     } catch (err) {
       error = err;

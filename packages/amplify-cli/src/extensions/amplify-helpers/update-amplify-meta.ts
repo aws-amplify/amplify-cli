@@ -64,7 +64,7 @@ function moveBackendResourcesToCurrentCloudBackend(resources: $TSObject[]) {
     // in the case that the resource is being deleted, the sourceDir won't exist
     if (fs.pathExistsSync(sourceDir)) {
       fs.copySync(sourceDir, targetDir);
-      if (resource?.service === ServiceName.LambdaFunction) {
+      if (resource?.service === ServiceName.LambdaFunction || (resource?.service && resource?.service.includes('custom'))) {
         removeNodeModulesDir(targetDir);
       }
     }

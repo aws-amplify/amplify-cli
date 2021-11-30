@@ -23,7 +23,7 @@ import { join, parse } from 'path';
 import * as fs from 'fs-extra';
 import * as os from 'os';
 import { getScriptRunnerPath, isTestingWithLatestCodebase } from '..';
-const RETURN = process.platform === 'win32' ? '\r' : EOL;
+export const RETURN = process.platform === 'win32' ? '\r' : EOL;
 const DEFAULT_NO_OUTPUT_TIMEOUT = process.env.AMPLIFY_TEST_TIMEOUT_SEC
   ? Number.parseInt(process.env.AMPLIFY_TEST_TIMEOUT_SEC, 10) * 1000
   : 5 * 60 * 1000; // 5 Minutes
@@ -36,6 +36,8 @@ export const KEY_UP_ARROW = '\x1b[A';
 export const KEY_DOWN_ARROW = '\x1b[B';
 // https://donsnotes.com/tech/charsets/ascii.html
 export const CONTROL_C = '\x03';
+export const CONTROL_A = '\x01';
+export const SPACE_BAR = '\x20';
 
 type ExecutionStep = {
   fn: (data: string) => boolean;
@@ -72,6 +74,7 @@ export type ExecutionContext = {
   sendConfirmYes: () => ExecutionContext;
   sendConfirmNo: () => ExecutionContext;
   sendCtrlC: () => ExecutionContext;
+  sendCtrlA: () => ExecutionContext;
   sendEof: () => ExecutionContext;
   delay: (milliseconds: number) => ExecutionContext;
   run: (cb: (err: any, signal?: any) => void) => ExecutionContext;
@@ -265,6 +268,20 @@ function chain(context: Context): ExecutionContext {
         name: '_send',
         shift: true,
         description: '[send] Ctrl+C',
+        requiresInput: false,
+      };
+      context.queue.push(_send);
+      return chain(context);
+    },
+    sendCtrlA: function (): ExecutionContext {
+      var _send: ExecutionStep = {
+        fn: () => {
+          context.process.write(`${CONTROL_A}${EOL}`);
+          return true;
+        },
+        name: '_send',
+        shift: true,
+        description: '[send] Ctrl+A',
         requiresInput: false,
       };
       context.queue.push(_send);

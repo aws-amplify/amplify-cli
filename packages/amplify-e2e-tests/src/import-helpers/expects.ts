@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import { getProjectMeta, getBackendAmplifyMeta, getTeamProviderInfo, getBackendConfig } from 'amplify-e2e-core';
 import { AuthProjectDetails, DynamoDBProjectDetails, readRootStack, StorageProjectDetails } from '.';
-import { AuthParameters } from 'amplify-category-auth';
+import { AuthParameters } from '@aws-amplify/amplify-category-auth';
 
 export const expectAuthProjectDetailsMatch = (projectDetails: AuthProjectDetails, ogProjectDetails: AuthProjectDetails) => {
   expect(projectDetails.parameters.authSelections).toEqual(ogProjectDetails.parameters.authSelections);

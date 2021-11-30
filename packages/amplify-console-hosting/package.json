@@ -1,14 +1,14 @@
 {
   "name": "amplify-console-hosting",
-  "version": "1.9.15",
+  "version": "2.2.1",
   "description": "cli plugin for AWS Amplify Console hosting",
   "main": "index.js",
   "author": "Amazon Web Services",
   "license": "Apache-2.0",
   "dependencies": {
-    "amplify-cli-core": "1.31.1",
+    "amplify-cli-core": "2.3.0",
     "archiver": "^5.3.0",
-    "aws-sdk": "^2.1024.0",
+    "aws-sdk": "^2.963.0",
     "chalk": "^4.1.1",
     "cli-table3": "^0.6.0",
     "execa": "^5.1.1",

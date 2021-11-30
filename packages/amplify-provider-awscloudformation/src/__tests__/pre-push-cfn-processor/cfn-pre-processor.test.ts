@@ -18,7 +18,7 @@ const cfnTemplate = {
 } as unknown as Template;
 const templateFormat = CFNTemplateFormat.JSON;
 
-readCFNTemplate_mock.mockResolvedValue({
+readCFNTemplate_mock.mockReturnValue({
   templateFormat,
   cfnTemplate,
 });

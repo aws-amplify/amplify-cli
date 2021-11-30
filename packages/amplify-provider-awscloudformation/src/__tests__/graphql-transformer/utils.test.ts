@@ -7,10 +7,10 @@ describe('graphql transformer utils', () => {
 
   beforeAll(() => {
     transformerOutput = {
-      resolvers: {
+      resolvers: {},
+      pipelineFunctions: {
         'Query.listTodos.req.vtl': '## [Start] List Request. **\n' + '#set( $limit = $util.defaultIfNull($context.args.limit, 100) )\n',
       },
-      pipelineFunctions: {},
       functions: {},
       schema: '',
       stackMapping: {},
@@ -61,7 +61,7 @@ describe('graphql transformer utils', () => {
       it('merges the custom resolver with transformer output', () => {
         const output = mergeUserConfigWithTransformOutput(userConfig, transformerOutput);
 
-        expect(output.resolvers['Query.listTodos.req.vtl']).toEqual('$util.unauthorized\n');
+        expect(output.pipelineFunctions['Query.listTodos.req.vtl']).toEqual('$util.unauthorized\n');
       });
     });
 
@@ -80,9 +80,9 @@ describe('graphql transformer utils', () => {
       });
 
       it('merges custom pipeline function with transformer output', () => {
-        const { resolvers } = mergeUserConfigWithTransformOutput(userConfig, transformerOutput);
+        const { pipelineFunctions } = mergeUserConfigWithTransformOutput(userConfig, transformerOutput);
 
-        expect(resolvers['Query.listTodos.req.vtl']).toEqual('$util.unauthorized\n');
+        expect(pipelineFunctions['Query.listTodos.req.vtl']).toEqual('$util.unauthorized\n');
       });
     });
 

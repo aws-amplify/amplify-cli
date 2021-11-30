@@ -1,5 +1,3 @@
-const { printer } = require('amplify-prompts');
-
 const subcommand = 'update';
 const category = 'api';
 
@@ -15,14 +13,15 @@ module.exports = {
       .then(result => {
         const providerController = require(`../../provider-utils/${result.providerName}/index`);
         if (!providerController) {
-          printer.error('Provider not configured for this category');
+          context.print.error('Provider not configured for this category');
           return;
         }
         return providerController.updateResource(context, category, result.service);
       })
-      .then(() => printer.success('Successfully updated resource'))
+      .then(() => context.print.success('Successfully updated resource'))
       .catch(err => {
-        printer.error(err.message || err);
+        context.print.error(err.message);
+        console.log(err.stack);
         context.usageData.emitError(err);
         process.exitCode = 1;
       });

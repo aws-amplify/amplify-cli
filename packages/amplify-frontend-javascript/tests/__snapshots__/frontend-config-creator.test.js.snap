@@ -5,6 +5,13 @@ Object {
   "aws_project_region": "eu-west-2",
   "geo": Object {
     "amazon_location_service": Object {
+      "geofenceCollections": Object {
+        "default": "defaultCollection12345",
+        "items": Array [
+          "collection12345",
+          "defaultCollection12345",
+        ],
+      },
       "maps": Object {
         "default": "defaultMap12345",
         "items": Object {
@@ -34,6 +41,13 @@ Object {
   "aws_project_region": "us-west-2",
   "geo": Object {
     "amazon_location_service": Object {
+      "geofenceCollections": Object {
+        "default": "defaultCollection12345",
+        "items": Array [
+          "collection12345",
+          "defaultCollection12345",
+        ],
+      },
       "maps": Object {
         "default": "defaultMap12345",
         "items": Object {
