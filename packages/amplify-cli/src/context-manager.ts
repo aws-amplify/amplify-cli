@@ -35,7 +35,7 @@ const getSafeAccountId = () => {
     const stackId = _.get(amplifyMeta, ['providers','awscloudformation', 'StackId']) as string;
     if(stackId) {
       const splitString = stackId.split(':');
-      if(splitString.length >= 4) {
+      if(splitString.length > 4) {
         return splitString[4];
       }
     }
