@@ -100,10 +100,5 @@ test('@function directive applied to Object should throw Error', () => {
   const transformer = new GraphQLTransform({
     transformers: [new FunctionTransformer()],
   });
-  try {
-    transformer.transform(invalidSchema);
-    fail('Error is expected to be thrown');
-  } catch (error) {
-    expect(error.message).toEqual('Directive "function" may not be used on OBJECT.');
-  }
+    expect(() => transformer.transform(invalidSchema)).toThrowError(/Directive "function" may not be used on OBJECT/);
 });
