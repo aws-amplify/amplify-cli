@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.7.1-beta.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@5.7.1-beta.0...amplify-provider-awscloudformation@5.7.1-beta.1) (2021-11-30)
+
+
+### Bug Fixes
+
+* migrate rest apis with protected routes on push ([#9068](https://github.com/aws-amplify/amplify-cli/issues/9068)) ([6c01ee6](https://github.com/aws-amplify/amplify-cli/commit/6c01ee6fb5ed8a19d67c6d9e244d3d48c84bdfaa))
+
+
+
+
+
 ## [5.7.1-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@5.7.0...amplify-provider-awscloudformation@5.7.1-beta.0) (2021-11-28)
 
 

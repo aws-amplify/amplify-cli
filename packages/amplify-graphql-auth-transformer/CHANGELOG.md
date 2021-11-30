@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.5.2-beta.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-auth-transformer@0.5.1...@aws-amplify/graphql-auth-transformer@0.5.2-beta.0) (2021-11-30)
+
+
+### Bug Fixes
+
+* **graphql-auth-transformer:** fix datastore fields auth ([#9135](https://github.com/aws-amplify/amplify-cli/issues/9135)) ([0d20840](https://github.com/aws-amplify/amplify-cli/commit/0d208401b62b9486933dd776c54bfb9f41f8d590))
+
+
+
+
+
 ## [0.5.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-auth-transformer@0.5.0...@aws-amplify/graphql-auth-transformer@0.5.1) (2021-11-26)
 
 

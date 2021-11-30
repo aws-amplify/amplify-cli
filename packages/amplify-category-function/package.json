@@ -1,6 +1,6 @@
 {
   "name": "amplify-category-function",
-  "version": "3.3.5",
+  "version": "3.3.6-beta.0",
   "description": "amplify-cli function plugin",
   "repository": {
     "type": "git",
