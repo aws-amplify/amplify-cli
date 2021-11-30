@@ -26,7 +26,6 @@ export async function attachUsageData(context: Context) {
     context.usageData = NoUsageData.Instance;
   }
   const accountId = getSafeAccountId();
-  console.log(accountId);
   context.usageData.init(config.usageDataConfig.installationUuid, getVersion(context), context.input, accountId, getProjectSettings());
 }
 
