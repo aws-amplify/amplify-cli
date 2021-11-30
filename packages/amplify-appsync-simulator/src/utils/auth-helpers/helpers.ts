@@ -42,26 +42,22 @@ export function extractJwtToken(authorization: string): JWTToken {
 }
 
 export function extractIamToken(authorization: string, appSyncConfig: AmplifyAppSyncAPIConfig): IAMToken {
-  try {
-    const accessKeyId = authorization.split('Credential=')[1]?.split('/')[0];
-    if (!accessKeyId) {
-      throw new Error('Invalid accessKeyId');
-    }
-    if (accessKeyId === appSyncConfig.authAccessKeyId) {
-      return {
-        accountId: appSyncConfig.accountId,
-        userArn: `arn:aws:sts::${appSyncConfig.accountId}:${appSyncConfig.authRoleName}`,
-        username: 'auth-user',
-      };
-    } else {
-      return {
-        accountId: appSyncConfig.accountId,
-        userArn: `arn:aws:sts::${appSyncConfig.accountId}:${appSyncConfig.unAuthRoleName}`,
-        username: 'unauth-user',
-      };
-    }
-  } catch (_) {
-    throw new Error('Invalid accessKeyId');
+  const accessKeyId = authorization.includes('Credential=') ? authorization.split('Credential=')[1]?.split('/')[0] : undefined;
+  if (!accessKeyId) {
+    throw new Error('missing accessKeyId');
+  }
+  if (accessKeyId === appSyncConfig.authAccessKeyId) {
+    return {
+      accountId: appSyncConfig.accountId,
+      userArn: `arn:aws:sts::${appSyncConfig.accountId}:${appSyncConfig.authRoleName}`,
+      username: 'auth-user',
+    };
+  } else {
+    return {
+      accountId: appSyncConfig.accountId,
+      userArn: `arn:aws:sts::${appSyncConfig.accountId}:${appSyncConfig.unAuthRoleName}`,
+      username: 'unauth-user',
+    };
   }
 }
 
