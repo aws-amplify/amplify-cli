@@ -88,6 +88,7 @@
           "description": "An array of numbers with format (longitude, latitude)",
           "type": "array",
           "minItems": 2,
+          "maxItems": 2,
           "items": [
             {
               "type":"number",

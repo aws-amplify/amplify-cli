@@ -8,16 +8,19 @@ import { validateGeoJSONFile } from '../service-utils/validateGeoJSONFile';
 import { FeatureCollection, PopulateParams, GeofenceCollectionParams, GeofenceParams, IdentifierOption } from '../service-utils/populateParams';
 import ora from "ora";
 
+const MAX_ENTRIES_PER_BATCH = 10;
+const MIN_ENTRIES_PER_BATCH = 1;
+
 export const populateResource = async (context: $TSContext) => {
   const geofenceCollectionResources = ((await context.amplify.getResourceStatus()).allResources as any[])
   .filter(resource => resource.service === ServiceName.GeofenceCollection);
   if (geofenceCollectionResources.length === 0) {
-    throw new Error('Geofence collection is not found. Use `amplify geo add` to create a new geofence collection.')
+    throw new Error('Geofence collection is not found. Run `amplify geo add` to create a new geofence collection.')
   }
   //Get provisioned geofence collection name
   const collectionNames = geofenceCollectionResources.map(collection => {
     if (!collection.output || !collection.output.Name || !collection.output.Region) {
-      throw new Error(`Geofence ${collection.resourceName} is not provisioned yet.`)
+      throw new Error(`Geofence ${collection.resourceName} is not provisioned yet. Run \`amplify push\` to provision geofence collection.`)
     }
     return collection.output.Name;
   });
@@ -37,7 +40,7 @@ export const populateResource = async (context: $TSContext) => {
   let uniqueIdentifier: string = 'id';
   const identifierWalkthroughOptions = [
     {name: 'No I will use the root level "id" field on Feature type. Auto-Assign if missing (this will UPDATE the GeoJSON file)', value: IdentifierOption.RootLevelID },
-    {name: 'Yes I want use one of the Geofence(Feature) properties as an identifier', value: IdentifierOption.CustomProperty}
+    {name: 'Yes I want to use one of the Geofence(Feature) properties as an identifier', value: IdentifierOption.CustomProperty}
   ];
   const identifierOption = await prompter.pick<'one', string>('Do you have an identifier field in the Geofence(Feature) properties?',identifierWalkthroughOptions) as IdentifierOption;
   if (identifierOption === IdentifierOption.CustomProperty) {
@@ -64,8 +67,17 @@ export const populateResource = async (context: $TSContext) => {
   const uploadSpinner = ora('Updating your Geofences in the collection...');
   uploadSpinner.start();
   try {
-    const result = await bulkUploadGeofence(geofenceCollectionParams, collectionRegion);
-    uploadSpinner.succeed(`Successfully added/updated ${result.Successes.length} Geofences in your "${collectionToPopulate}" collection`);
+    let successCount = 0;
+    const totalGeofenceCount = geofenceCollectionParams.Entries.length;
+    for(let i = 0; i < totalGeofenceCount; i += MAX_ENTRIES_PER_BATCH){
+      const geofenceCollectionPerBatch : GeofenceCollectionParams = {
+        CollectionName: geofenceCollectionParams.CollectionName,
+        Entries: geofenceCollectionParams.Entries.slice(i, i + MAX_ENTRIES_PER_BATCH)
+      }
+      const result = await bulkUploadGeofence(geofenceCollectionPerBatch, collectionRegion);
+      successCount += result.Successes.length;
+    }
+    uploadSpinner.succeed(`Successfully added/updated ${successCount} Geofences in your "${collectionToPopulate}" collection`);
   } catch (err) {
     uploadSpinner.fail('Error occurs while uploading geofences.');
     throw err;
@@ -93,5 +105,12 @@ const constructGeofenceCollectionParams = (populateParam: PopulateParams): Geofe
 
 const bulkUploadGeofence = async (params: GeofenceCollectionParams, region: string) => {
   const service = new Location({region});
+  const geofenceNum = params.Entries.length;
+  if (geofenceNum < MIN_ENTRIES_PER_BATCH) {
+    throw new Error(`The uploaded geofences should have at least ${MIN_ENTRIES_PER_BATCH} item.`);
+  }
+  if (geofenceNum > MAX_ENTRIES_PER_BATCH) {
+    throw new Error(`The uploaded geofences should have at most ${MAX_ENTRIES_PER_BATCH} items per batch.`);
+  }
   return await service.batchPutGeofence(params).promise();
 }

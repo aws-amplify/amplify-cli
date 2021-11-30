@@ -5,6 +5,7 @@ import GeoJSONSchema from 'amplify-category-geo/schema/GeoJSONSchema.json';
 import { v4 as uuid } from 'uuid';
 import { printer } from 'amplify-prompts';
 
+const MAX_VERTICES_NUM_PER_POLYGON = 1000;
 
 export const validateGeoJSONFile = (geoJSONFilePath: string, uniqueIdentifier: string = 'id', identifierOption: IdentifierOption = IdentifierOption.RootLevelID) => {
   const data = JSON.parse(readFileSync(geoJSONFilePath, 'utf-8')) as FeatureCollection;
@@ -39,9 +40,14 @@ export const validateGeoJSONFile = (geoJSONFilePath: string, uniqueIdentifier: s
     identifierSet.add(identifierField);
     //Additional validation for each linear ring
     const { coordinates } = feature.geometry;
+    let vortexCount = 0;
     coordinates.forEach((linearRing, index) => {
       validateLinearRing(linearRing, index === 0, identifierField);
+      vortexCount += linearRing.length;
     })
+    if (vortexCount > MAX_VERTICES_NUM_PER_POLYGON) {
+      throw new Error(`Polygon should have at most ${MAX_VERTICES_NUM_PER_POLYGON} vertices.`)
+    }
   });
   return data;
 }
