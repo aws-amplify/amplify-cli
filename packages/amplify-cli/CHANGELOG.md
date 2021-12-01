@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [7.6.0-amplify-cli-fe-uibuilder.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@7.5.4...@aws-amplify/cli@7.6.0-amplify-cli-fe-uibuilder.0) (2021-12-01)
+
+
+### Features
+
+* add uibuilder plugin ([630d441](https://github.com/aws-amplify/amplify-cli/commit/630d4412a94814c397efd06c15443be156742e42))
+
+
+
+
+
 ## [7.5.4](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@7.5.3...@aws-amplify/cli@7.5.4) (2021-11-29)
 
 **Note:** Version bump only for package @aws-amplify/cli

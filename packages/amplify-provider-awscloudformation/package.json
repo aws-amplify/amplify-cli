@@ -1,6 +1,6 @@
 {
   "name": "amplify-provider-awscloudformation",
-  "version": "5.7.1",
+  "version": "5.8.0-amplify-cli-fe-uibuilder.0",
   "description": "AWS CloudFormation Provider",
   "repository": {
     "type": "git",
