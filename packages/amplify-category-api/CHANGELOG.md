@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.1.4](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-api@1.1.3...@aws-amplify/amplify-category-api@1.1.4) (2021-12-01)
+
+
+### Bug Fixes
+
+* migrate rest apis with protected routes on push ([#9068](https://github.com/aws-amplify/amplify-cli/issues/9068)) ([62b4436](https://github.com/aws-amplify/amplify-cli/commit/62b44365108ba3410c9023623394aa98a52db84e))
+
+
+
+
+
 ## [1.1.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-api@1.1.2...@aws-amplify/amplify-category-api@1.1.3) (2021-11-29)
 
 

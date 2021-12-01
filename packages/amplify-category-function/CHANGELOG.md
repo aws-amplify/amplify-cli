@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.3.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@3.3.5...amplify-category-function@3.3.6) (2021-12-01)
+
+
+### Bug Fixes
+
+* trigger resources path ([#9131](https://github.com/aws-amplify/amplify-cli/issues/9131)) ([ec7b03d](https://github.com/aws-amplify/amplify-cli/commit/ec7b03dc5510b002f8e3d75c09d193ee55340767))
+
+
+
+
+
 ## [3.3.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@3.3.4...amplify-category-function@3.3.5) (2021-11-26)
 
 **Note:** Version bump only for package amplify-category-function

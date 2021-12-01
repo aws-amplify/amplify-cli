@@ -3,6 +3,21 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.5.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@3.5.1...amplify-e2e-tests@3.5.2) (2021-12-01)
+
+
+
+## 7.5.5 (2021-11-30)
+
+
+### Bug Fixes
+
+* fixes import category parameters file path ([#9140](https://github.com/aws-amplify/amplify-cli/issues/9140)) ([6a7893e](https://github.com/aws-amplify/amplify-cli/commit/6a7893eb4d8932f8106cef2a311c2c945c5b8195))
+
+
+
+
+
 ## [3.5.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@3.5.0...amplify-e2e-tests@3.5.1) (2021-11-26)
 
 

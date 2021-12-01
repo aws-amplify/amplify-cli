@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.4.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@2.4.1...amplify-cli-core@2.4.2) (2021-12-01)
+
+
+### Bug Fixes
+
+* adding parameters file based on cli-inputs ([#9138](https://github.com/aws-amplify/amplify-cli/issues/9138)) ([61fd87d](https://github.com/aws-amplify/amplify-cli/commit/61fd87d69f143fd012a22ab8eff95eac74cd8df2))
+
+
+
+
+
 ## [2.4.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@2.4.0...amplify-cli-core@2.4.1) (2021-11-26)
 
 
