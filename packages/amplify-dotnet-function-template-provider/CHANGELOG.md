@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.2.8-amplify-cli-fe-uibuilder-6.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-dotnet-function-template-provider@2.2.7...amplify-dotnet-function-template-provider@2.2.8-amplify-cli-fe-uibuilder-6.0) (2021-12-01)
+
+**Note:** Version bump only for package amplify-dotnet-function-template-provider
+
+
+
+
+
 ## [2.2.7](https://github.com/aws-amplify/amplify-cli/compare/amplify-dotnet-function-template-provider@2.2.6...amplify-dotnet-function-template-provider@2.2.7) (2021-12-01)
 
 **Note:** Version bump only for package amplify-dotnet-function-template-provider

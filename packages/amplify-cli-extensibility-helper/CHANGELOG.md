@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.3.3-amplify-cli-fe-uibuilder-6.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-extensibility-helper@2.3.2...@aws-amplify/cli-extensibility-helper@2.3.3-amplify-cli-fe-uibuilder-6.0) (2021-12-01)
+
+**Note:** Version bump only for package @aws-amplify/cli-extensibility-helper
+
+
+
+
+
 ## [2.3.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli-extensibility-helper@2.3.1...@aws-amplify/cli-extensibility-helper@2.3.2) (2021-12-01)
 
 **Note:** Version bump only for package @aws-amplify/cli-extensibility-helper
