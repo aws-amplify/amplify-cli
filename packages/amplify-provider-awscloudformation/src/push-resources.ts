@@ -669,7 +669,7 @@ async function prepareResource(context: $TSContext, resource: $TSAny) {
   } else if (resource.service === ApiServiceNameElasticContainer) {
     const cfnParams = { ParamZipPath: s3Key };
     stateManager.setResourceParametersJson(undefined, category, resourceName, cfnParams);
-  } else if (resource.service === AmplifySupportedService.LAMBDA) {
+  } else {
     const { cfnTemplate } = readCFNTemplate(cfnFilePath);
     cfnTemplate.Parameters.deploymentBucketName = paramType;
     cfnTemplate.Parameters.s3Key = paramType;
