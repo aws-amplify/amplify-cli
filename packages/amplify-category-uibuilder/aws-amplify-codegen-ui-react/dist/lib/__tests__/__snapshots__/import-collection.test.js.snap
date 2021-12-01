@@ -1,0 +1,43 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ImportCollection addImport multiple identical imports 1`] = `
+"import React from \\"react\\";
+import { Text } from \\"@aws-amplify/ui-react\\";"
+`;
+
+exports[`ImportCollection addImport multiple imports 1`] = `
+"import React from \\"react\\";
+import { Text } from \\"@aws-amplify/ui-react\\";
+import { User } from \\"../models\\";"
+`;
+
+exports[`ImportCollection addImport multiple imports from the same package 1`] = `
+"import React from \\"react\\";
+import { Text, getOverrideProps } from \\"@aws-amplify/ui-react\\";"
+`;
+
+exports[`ImportCollection addImport one import 1`] = `
+"import React from \\"react\\";
+import { Text } from \\"@aws-amplify/ui-react\\";"
+`;
+
+exports[`ImportCollection addImport one relative import 1`] = `
+"import React from \\"react\\";
+import { User } from \\"../models\\";"
+`;
+
+exports[`ImportCollection buildImportStatements multiple imports 1`] = `
+"import React from \\"react\\";
+import { Button, getOverrideProps } from \\"@aws-amplify/ui-react\\";
+import { User } from \\"../models\\";"
+`;
+
+exports[`ImportCollection buildImportStatements no imports 1`] = `"import React from \\"react\\";"`;
+
+exports[`ImportCollection buildSampleSnippetImports 1`] = `"import { MyButton } from \\"./ui-components\\";"`;
+
+exports[`ImportCollection mergeCollections 1`] = `
+"import React from \\"react\\";
+import { Button, Text, getOverrideProps } from \\"@aws-amplify/ui-react\\";
+import { User } from \\"../models\\";"
+`;
