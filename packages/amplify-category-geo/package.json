@@ -38,7 +38,8 @@
     "lodash": "^4.17.19",
     "mime-types": "^2.1.26",
     "promise-sequential": "^1.1.1",
-    "uuid": "^8.3.2"
+    "uuid": "^8.3.2",
+    "ora": "^4.0.3"
   },
   "jest": {
     "collectCoverage": true,
