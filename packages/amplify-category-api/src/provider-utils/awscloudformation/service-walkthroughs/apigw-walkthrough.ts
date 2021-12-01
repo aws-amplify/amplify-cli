@@ -597,6 +597,28 @@ async function askLambdaArn(context: $TSContext, currentPath?: ApigwPath) {
 
 export async function migrate(context: $TSContext, projectPath: string, resourceName: string) {
   const apigwInputState = new ApigwInputState(context, resourceName);
+
+  if (resourceName === ADMIN_QUERIES_NAME) {
+    const meta = stateManager.getMeta();
+    const adminQueriesResource = meta?.[AmplifyCategories.API]?.[ADMIN_QUERIES_NAME];
+
+    if (!adminQueriesResource?.dependsOn) {
+      throw new Error('Failed to migrate Admin Queries API. Could not find expected information in amplify-meta.json.');
+    }
+
+    const { dependsOn } = adminQueriesResource;
+    const functionName = dependsOn.filter(dependency => dependency.category === AmplifyCategories.FUNCTION)?.[0]?.resourceName;
+
+    const adminQueriesProps = {
+      apiName: resourceName,
+      authResourceName: getAuthResourceName(),
+      functionName,
+      dependsOn,
+    };
+
+    return apigwInputState.migrateAdminQueries(adminQueriesProps);
+  }
+
   return apigwInputState.migrateApigwResource(resourceName);
 }
 
