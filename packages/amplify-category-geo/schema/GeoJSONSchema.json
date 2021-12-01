@@ -1,0 +1,109 @@
+{
+  "description": "Defines the GeoJSON object expected by `amplify geo fill`",
+  "type": "object",
+  "properties": {
+      "type": {
+          "description": "The root type for GeoJSON schema.",
+          "type": "string",
+          "enum": [
+            "FeatureCollection"
+          ]
+      },
+      "features": {
+          "description": "The collection for geofences.",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Feature"
+          }
+      }
+  },
+  "required": [
+      "features",
+      "type"
+  ],
+  "definitions": {
+      "Feature": {
+          "description": "Feature of each geofence.",
+          "type": "object",
+          "properties": {
+              "type": {
+                "description": "The type for each geofence feature.",
+                "type": "string",
+                "enum": [
+                    "Feature"
+                ]
+              },
+              "id": {
+                "description": "Root level id as the unique identifier. Optional field if you have custom identifier defined in properties",
+                "type": "string"
+              },
+              "properties": {
+                  "description": "The propeties of geofence.",
+                  "type": "object",
+                  "default": {},
+                  "additionalProperties": true
+              },
+              "geometry": {
+                "$ref": "#/definitions/Geometry"
+              }
+          },
+          "required": [
+              "type",
+              "geometry"
+          ]
+      },
+      "Geometry": {
+          "description": "The geometry object for geofence.",
+          "type": "object",
+          "properties": {
+            "type": {
+              "description": "The type for geometry object, only Polygon supported for geofence. Refer https://datatracker.ietf.org/doc/html/rfc7946#section-3.1.6",
+              "type": "string",
+              "enum": [
+                  "Polygon"
+              ]
+            },
+            "coordinates": {
+              "description": "Collection of linear rings. For Polygons with more than one of these rings, the first MUST be the exterior ring, and any others MUST be interior rings.",
+              "type":"array",
+              "items": {
+                "$ref": "#/definitions/LinearRing"
+              }
+            }
+          },
+          "required": [
+            "type",
+            "coordinates"
+          ]
+      },
+      "LinearRing": {
+          "description": "A linear ring is a closed LineString with four or more positions and first one same with last.",
+          "type": "array",
+          "minItems": 4,
+          "items": {
+            "$ref": "#/definitions/Coordinate"
+          }
+      },
+      "Coordinate": {
+          "description": "An array of numbers with format (longitude, latitude)",
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 2,
+          "items": [
+            {
+              "type":"number",
+              "description": "Value for longitude",
+              "maximum": 180,
+              "minimum": -180
+            },
+            {
+              "type":"number",
+              "description": "Value for latitude",
+              "maximum": 90,
+              "minimum": -90
+            }
+          ]
+      }
+  },
+  "$schema": "http://json-schema.org/draft-07/schema#"
+} 
