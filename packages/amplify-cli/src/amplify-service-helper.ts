@@ -37,4 +37,5 @@ export const postPullCodegen = async (context: $TSContext) => {
   if (await isDataStoreEnabled(path.join(pathManager.getBackendDirPath(), 'api', gqlApiName))) {
     await context.amplify.invokePluginMethod(context, 'codegen', undefined, 'generateModels', [context]);
   }
+  await context.amplify.invokePluginMethod(context, 'ui-builder', undefined, 'executeAmplifyCommand', [context, 'generateComponents']);
 };
