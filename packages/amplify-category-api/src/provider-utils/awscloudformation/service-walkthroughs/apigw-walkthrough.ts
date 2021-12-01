@@ -13,6 +13,7 @@ import {
 } from 'amplify-cli-core';
 import { byValues, printer, prompter } from 'amplify-prompts';
 import inquirer from 'inquirer';
+import _ from 'lodash';
 import os from 'os';
 import { v4 as uuid } from 'uuid';
 import { ADMIN_QUERIES_NAME } from '../../../category-constants';
@@ -600,20 +601,19 @@ export async function migrate(context: $TSContext, projectPath: string, resource
 
   if (resourceName === ADMIN_QUERIES_NAME) {
     const meta = stateManager.getMeta();
-    const adminQueriesResource = meta?.[AmplifyCategories.API]?.[ADMIN_QUERIES_NAME];
+    const adminQueriesDependsOn = _.get(meta, [AmplifyCategories.API, ADMIN_QUERIES_NAME, 'dependsOn'], undefined);
 
-    if (!adminQueriesResource?.dependsOn) {
+    if (adminQueriesDependsOn) {
       throw new Error('Failed to migrate Admin Queries API. Could not find expected information in amplify-meta.json.');
     }
 
-    const { dependsOn } = adminQueriesResource;
-    const functionName = dependsOn.filter(dependency => dependency.category === AmplifyCategories.FUNCTION)?.[0]?.resourceName;
+    const functionName = adminQueriesDependsOn.filter(dependency => dependency.category === AmplifyCategories.FUNCTION)?.[0]?.resourceName;
 
     const adminQueriesProps = {
       apiName: resourceName,
       authResourceName: getAuthResourceName(),
       functionName,
-      dependsOn,
+      dependsOn: adminQueriesDependsOn,
     };
 
     return apigwInputState.migrateAdminQueries(adminQueriesProps);
