@@ -32,7 +32,7 @@ export const populateResource = async (context: $TSContext) => {
     collectionToPopulate = await prompter.pick<'one', string>('Select the Geofence Collection to populate with Geofences', collectionNames)
   }
   //Ask for geo json file path
-  const geoJSONFilePath = join(await prompter.input(`Provide the path to GeoJSON file containing the Geofences for ${collectionToPopulate} collection. Refer <link> for a sample GeoJSON:`));
+  const geoJSONFilePath = join(await prompter.input(`Provide the path to GeoJSON file containing the Geofences for ${collectionToPopulate} collection. Refer https://geojson.io/ for a sample GeoJSON:`));
   if (!existsSync(geoJSONFilePath)) {
     throw new Error(`Cannot find GeoJSON file at ${geoJSONFilePath}`);
   }
@@ -48,7 +48,7 @@ export const populateResource = async (context: $TSContext) => {
   }
   //Validate the json file against schema
   let geoJSONObj: FeatureCollection;
-  const validationSpinner = ora('Validating your GeoJSON file...');
+  const validationSpinner = ora('Validating your GeoJSON file...\n');
   validationSpinner.start();
   try {
     geoJSONObj = validateGeoJSONFile(geoJSONFilePath, uniqueIdentifier, identifierOption);
