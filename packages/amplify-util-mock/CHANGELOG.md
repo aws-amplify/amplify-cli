@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.2.18-amplify-cli-fe-uibuilder-6.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.2.16...amplify-util-mock@4.2.18-amplify-cli-fe-uibuilder-6.0) (2021-12-01)
+
+**Note:** Version bump only for package amplify-util-mock
+
+
+
+
+
 ## [4.2.17-amplify-cli-fe-uibuilder-6.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@4.2.16...amplify-util-mock@4.2.17-amplify-cli-fe-uibuilder-6.0) (2021-12-01)
 
 **Note:** Version bump only for package amplify-util-mock

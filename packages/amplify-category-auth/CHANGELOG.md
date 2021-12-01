@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.4.4-amplify-cli-fe-uibuilder-6.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@2.4.2...@aws-amplify/amplify-category-auth@2.4.4-amplify-cli-fe-uibuilder-6.0) (2021-12-01)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-auth
+
+
+
+
+
 ## [2.4.3-amplify-cli-fe-uibuilder-6.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-auth@2.4.2...@aws-amplify/amplify-category-auth@2.4.3-amplify-cli-fe-uibuilder-6.0) (2021-12-01)
 
 **Note:** Version bump only for package @aws-amplify/amplify-category-auth

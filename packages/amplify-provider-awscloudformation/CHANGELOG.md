@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.9.0-amplify-cli-fe-uibuilder-6.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@5.7.2...amplify-provider-awscloudformation@5.9.0-amplify-cli-fe-uibuilder-6.0) (2021-12-01)
+
+
+### Bug Fixes
+
+* function parameters not being properly added to root stack ([#9144](https://github.com/aws-amplify/amplify-cli/issues/9144)) ([2e600ca](https://github.com/aws-amplify/amplify-cli/commit/2e600ca5f3558e4eb40fe151fb6aba859b82f9d2))
+
+
+### Features
+
+* add uibuilder plugin ([c56e78a](https://github.com/aws-amplify/amplify-cli/commit/c56e78a251e34d4a66fee4f29889568f283ac8b9))
+
+
+
+
+
 # [5.8.0-amplify-cli-fe-uibuilder-6.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@5.7.2...amplify-provider-awscloudformation@5.8.0-amplify-cli-fe-uibuilder-6.0) (2021-12-01)
 
 

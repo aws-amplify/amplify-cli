@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.2.10-amplify-cli-fe-uibuilder-6.0](https://github.com/aws-amplify/amplify-console-integration-tests/compare/amplify-console-integration-tests@2.2.8...amplify-console-integration-tests@2.2.10-amplify-cli-fe-uibuilder-6.0) (2021-12-01)
+
+**Note:** Version bump only for package amplify-console-integration-tests
+
+
+
+
+
 ## [2.2.9-amplify-cli-fe-uibuilder-6.0](https://github.com/aws-amplify/amplify-console-integration-tests/compare/amplify-console-integration-tests@2.2.8...amplify-console-integration-tests@2.2.9-amplify-cli-fe-uibuilder-6.0) (2021-12-01)
 
 **Note:** Version bump only for package amplify-console-integration-tests

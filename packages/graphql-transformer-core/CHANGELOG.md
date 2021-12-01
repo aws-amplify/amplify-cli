@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [7.2.9-amplify-cli-fe-uibuilder-6.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-core@7.2.7...graphql-transformer-core@7.2.9-amplify-cli-fe-uibuilder-6.0) (2021-12-01)
+
+**Note:** Version bump only for package graphql-transformer-core
+
+
+
+
+
 ## [7.2.8-amplify-cli-fe-uibuilder-6.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-core@7.2.7...graphql-transformer-core@7.2.8-amplify-cli-fe-uibuilder-6.0) (2021-12-01)
 
 **Note:** Version bump only for package graphql-transformer-core
