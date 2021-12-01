@@ -1,0 +1,31 @@
+{
+  "name": "@aws-amplify/amplify-category-uibuilder",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "author": "Amazon Web Services",
+  "license": "Apache-2.0",
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "@aws-amplify/codegen-ui": "./aws-amplify-codegen-ui-v0.13.1.tgz",
+    "@aws-amplify/codegen-ui-react": "./aws-amplify-codegen-ui-react-v0.13.2.tgz",
+    "aws-sdk": "./aws-sdk.tgz",
+    "body-parser": "^1.17.1",
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "fs-extra": "^8.1.0",
+    "jest": "^26.6.3",
+    "jose": "^2.0.2",
+    "lodash": "^4.17.21",
+    "node-fetch": "^2.6.1",
+    "ora": "^4.0.3"
+  },
+  "devDependencies": {
+    "amplify-cli-core": "2.4.1"
+  }
+}
