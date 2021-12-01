@@ -19,7 +19,6 @@ describe('AmplifyApigwResourceStack', () => {
     });
     amplifyApigwStack.generateStackResources('myapi');
     const template = Template.fromStack(amplifyApigwStack);
-    console.log(template.toJSON());
     template.hasResourceProperties('AWS::ApiGateway::GatewayResponse', {
       ResponseType: 'DEFAULT_4XX',
       ResponseParameters: {
