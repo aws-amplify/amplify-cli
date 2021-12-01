@@ -1,6 +1,6 @@
 import { $TSContext } from 'amplify-cli-core';
 import { ServiceName } from "../service-utils/constants";
-import { printer, prompter } from 'amplify-prompts';
+import { prompter } from 'amplify-prompts';
 import { existsSync, writeFileSync } from 'fs-extra';
 import { join } from 'path';
 import { Location } from 'aws-sdk';
