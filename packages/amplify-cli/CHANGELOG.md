@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [7.6.0-amplify-cli-fe-uibuilder-2.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@7.5.5...@aws-amplify/cli@7.6.0-amplify-cli-fe-uibuilder-2.0) (2021-12-01)
+
+
+### Features
+
+* add uibuilder plugin ([5744753](https://github.com/aws-amplify/amplify-cli/commit/57447539eb87317720ad4508d3470ad7ab79cb0e))
+
+
+### Performance Improvements
+
+* **cli:** get AccountId from meta instead of sts ([#9155](https://github.com/aws-amplify/amplify-cli/issues/9155)) ([6edfd88](https://github.com/aws-amplify/amplify-cli/commit/6edfd8879c451798b6f4d405cdca9c033396077f))
+
+
+
+
+
 ## [7.5.5](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@7.5.4...@aws-amplify/cli@7.5.5) (2021-12-01)
 
 **Note:** Version bump only for package @aws-amplify/cli
