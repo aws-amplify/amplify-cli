@@ -1,7 +1,7 @@
 import { GraphQLError, printError } from 'graphql';
 import * as os from 'os';
 
-const GRAPHQL_TRANSFORMER_V2_DIRECTIVES = ['hasOne', 'index', 'primaryKey', 'belongsTo', 'manyToMany', 'hasMany'];
+const GRAPHQL_TRANSFORMER_V2_DIRECTIVES = ['hasOne', 'index', 'primaryKey', 'belongsTo', 'manyToMany', 'hasMany', 'default'];
 export class InvalidTransformerError extends Error {
   constructor(message: string) {
     super(message);
