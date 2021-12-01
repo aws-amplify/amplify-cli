@@ -603,7 +603,7 @@ export async function migrate(context: $TSContext, projectPath: string, resource
     const meta = stateManager.getMeta();
     const adminQueriesDependsOn = _.get(meta, [AmplifyCategories.API, ADMIN_QUERIES_NAME, 'dependsOn'], undefined);
 
-    if (adminQueriesDependsOn) {
+    if (!adminQueriesDependsOn) {
       throw new Error('Failed to migrate Admin Queries API. Could not find expected information in amplify-meta.json.');
     }
 
