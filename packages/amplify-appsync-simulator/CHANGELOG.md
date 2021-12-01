@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.3.0-amplify-cli-fe-uibuilder-6.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-appsync-simulator@2.2.3...amplify-appsync-simulator@2.3.0-amplify-cli-fe-uibuilder-6.0) (2021-12-01)
+
+
+### Features
+
+* add uibuilder plugin ([52984cd](https://github.com/aws-amplify/amplify-cli/commit/52984cdedb6c07a75b5780e4590620c27a987595))
+
+
+
+
+
 ## [2.2.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-appsync-simulator@2.2.2...amplify-appsync-simulator@2.2.3) (2021-11-23)
 
 **Note:** Version bump only for package amplify-appsync-simulator
