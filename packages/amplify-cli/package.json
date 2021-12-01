@@ -37,6 +37,7 @@
     "@aws-amplify/amplify-category-auth": "2.4.2",
     "@aws-amplify/amplify-category-custom": "2.3.6",
     "@aws-amplify/amplify-category-storage": "3.1.2",
+    "@aws-amplify/amplify-util-uibuilder": "1.0.0",
     "@aws-amplify/graphql-auth-transformer": "0.5.2",
     "@aws-cdk/cloudformation-diff": "~1.124.0",
     "amplify-app": "4.2.7",
