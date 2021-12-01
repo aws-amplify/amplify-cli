@@ -1,0 +1,17 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ReactFrontendManagerTemplateRenderer renderSampleCodeSnippet component with name 1`] = `
+Object {
+  "compText": "<MyText />",
+  "importsText": "import { MyText } from \\"./ui-components\\";
+",
+}
+`;
+
+exports[`ReactFrontendManagerTemplateRenderer renderSampleCodeSnippet component without name 1`] = `
+Object {
+  "compText": "<unknown_component_name />",
+  "importsText": "import { unknown_component_name } from \\"./ui-components\\";
+",
+}
+`;

@@ -329,6 +329,9 @@ module.exports = {
     '/packages/amplify-category-custom/resources',
     '/packages/amplify-category-custom/src/utils/generate-cfn-from-cdk.ts',
 
+    // Temporary lint skip for unpackaged tarballs
+    '/packages/amplify-util-uibuilder',
+
     // Ignore CHANGELOG.md files
     '/packages/*/CHANGELOG.md',
   ],

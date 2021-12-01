@@ -1,0 +1,27 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`react-component-render-helper buildFixedJsxExpression boolean 1`] = `"{true}"`;
+
+exports[`react-component-render-helper buildFixedJsxExpression number 1`] = `"{400}"`;
+
+exports[`react-component-render-helper buildFixedJsxExpression parsed array 1`] = `"{[1, 2, 3]}"`;
+
+exports[`react-component-render-helper buildFixedJsxExpression parsed boolean 1`] = `"{true}"`;
+
+exports[`react-component-render-helper buildFixedJsxExpression parsed null 1`] = `"{null}"`;
+
+exports[`react-component-render-helper buildFixedJsxExpression parsed number 1`] = `"{400}"`;
+
+exports[`react-component-render-helper buildFixedJsxExpression parsed object 1`] = `"{{ \\"transponder\\": \\"rocinante\\" }}"`;
+
+exports[`react-component-render-helper buildFixedJsxExpression string 1`] = `"\\"some text\\""`;
+
+exports[`react-component-render-helper buildFixedJsxExpression string wrapped array 1`] = `"\\"[1,2,3]\\""`;
+
+exports[`react-component-render-helper buildFixedJsxExpression string wrapped boolean 1`] = `"\\"true\\""`;
+
+exports[`react-component-render-helper buildFixedJsxExpression string wrapped null 1`] = `"\\"null\\""`;
+
+exports[`react-component-render-helper buildFixedJsxExpression string wrapped number 1`] = `"\\"400\\""`;
+
+exports[`react-component-render-helper buildFixedJsxExpression string wrapped object 1`] = `"\\"{\\\\\\"transponder\\\\\\": \\\\\\"rocinante\\\\\\"}\\""`;

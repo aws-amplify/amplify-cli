@@ -1,0 +1,47 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`common-component-renderer constructor 1`] = `
+MockComponentRenderer {
+  "component": Object {
+    "componentType": "Button",
+    "name": "MyButton",
+    "properties": Object {
+      "value": Object {
+        "value": "Confirm",
+      },
+    },
+  },
+  "inputProps": Object {
+    "value": Object {
+      "value": "Confirm",
+    },
+  },
+  "node": FrontendManagerNode {
+    "component": Object {
+      "componentType": "Button",
+      "name": "MyButton",
+      "properties": Object {
+        "value": Object {
+          "value": "Confirm",
+        },
+      },
+    },
+    "parent": FrontendManagerNode {
+      "component": Object {
+        "componentType": "View",
+        "name": "MyView",
+        "properties": Object {},
+      },
+      "parent": undefined,
+    },
+  },
+  "parent": FrontendManagerNode {
+    "component": Object {
+      "componentType": "View",
+      "name": "MyView",
+      "properties": Object {},
+    },
+    "parent": undefined,
+  },
+}
+`;
