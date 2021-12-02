@@ -1,6 +1,6 @@
 {
   "name": "ui-builder",
   "type": "util",
-  "commands": ["version", "cloneComponentsFromEnv", "generateComponents", "overrideAdminUiName"],
+  "commands": ["version", "cloneComponentsFromEnv", "generateComponents"],
   "eventHandlers": ["PostEnvAdd"]
 }

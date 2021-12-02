@@ -9,7 +9,7 @@ export async function adminLoginFlow(context: $TSContext, appId: string, envName
   if (!region) {
     const { isAdminApp, region: _region } = await isAmplifyAdminApp(appId);
     if (!isAdminApp) {
-      throw new Error(`Admin UI not enabled for appId: ${appId}`);
+      throw new Error(`Amplify Studio not enabled for appId: ${appId}`);
     }
     region = _region;
   }
@@ -29,12 +29,12 @@ export async function adminLoginFlow(context: $TSContext, appId: string, envName
     await new Promise<void>(resolve =>
       adminLoginServer.startServer(() => {
         adminLoginServer.shutdown();
-        spinner.succeed('Successfully received Amplify Admin tokens.');
+        spinner.succeed('Successfully received Amplify Studio tokens.');
         resolve();
       }),
     );
   } catch (e) {
     spinner.stop();
-    context.print.error(`Failed to authenticate with Amplify Admin: ${e.message || e}`);
+    context.print.error(`Failed to authenticate with Amplify Studio: ${e.message || e}`);
   }
 }
