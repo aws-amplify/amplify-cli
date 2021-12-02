@@ -100,6 +100,24 @@
   dependencies:
     "@aws-amplify/core" "4.3.6"
 
+"@aws-amplify/codegen-ui-react@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.npmjs.org/@aws-amplify/codegen-ui-react/-/codegen-ui-react-1.0.0.tgz#2164f07af911650520e98a604b8b36836f3e352a"
+  integrity sha512-d8AfaOhdTfaZhb3H7fcLu1Rs6inXnjCvGiexoVNbk1sWbpYFELHcKKj8Gerp9KZmfFvvZTRIHJoxZoSGYFckVg==
+  dependencies:
+    "@aws-amplify/codegen-ui" "1.0.0"
+    "@types/temp" "^0.9.1"
+    prettier "2.3.2"
+    temp "^0.9.4"
+    typescript "~4.4.4"
+
+"@aws-amplify/codegen-ui@1.0.0", "@aws-amplify/codegen-ui@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.npmjs.org/@aws-amplify/codegen-ui/-/codegen-ui-1.0.0.tgz#28cf01f02704c046b729486843aa52e31c406a55"
+  integrity sha512-ow/Evr4ahnuwGAH8xQzDS4qc1xxPm8XcMxW/q8hmN5yaTSizfu04GkMs7xnCDQyrUNXH/9OsPArZRcnXlpn2VA==
+  dependencies:
+    yup "^0.32.11"
+
 "@aws-amplify/core@4.3.6":
   version "4.3.6"
   resolved "https://registry.yarnpkg.com/@aws-amplify/core/-/core-4.3.6.tgz#8f5ce938e3b6c26555d6a2dbb2228808b2ed4e03"
@@ -9260,6 +9278,21 @@ aws-sdk@2.518.0:
     uuid "3.3.2"
     xml2js "0.4.19"
 
+aws-sdk@^2.1042.0:
+  version "2.1042.0"
+  resolved "https://registry.npmjs.org/aws-sdk/-/aws-sdk-2.1042.0.tgz#c3385bf6cbb8f97c2cde427c0ab3d9720fa4b82a"
+  integrity sha512-JWjs6+Zhuo990WYH1iQR1njGOvoCFzaf2azX/zh3JdL7QNwzdqczoODMj0wb22831/7EoPDGaXHqp7aQwDsxwA==
+  dependencies:
+    buffer "4.9.2"
+    events "1.1.1"
+    ieee754 "1.1.13"
+    jmespath "0.15.0"
+    querystring "0.2.0"
+    sax "1.2.1"
+    url "0.10.3"
+    uuid "3.3.2"
+    xml2js "0.4.19"
+
 aws-sdk@^2.518.0, aws-sdk@^2.848.0, aws-sdk@^2.928.0, aws-sdk@^2.963.0, aws-sdk@^2.979.0:
   version "2.1030.0"
   resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.1030.0.tgz#24a856af3d2b8b37c14a8f59974993661c66fd82"
@@ -9703,7 +9736,7 @@ bn.js@^5.0.0, bn.js@^5.1.1:
   resolved "https://registry.yarnpkg.com/bn.js/-/bn.js-5.2.0.tgz#358860674396c6997771a9d051fcc1b57d4ae002"
   integrity sha512-D7iWRBvnZE8ecXiLj/9wbxH7Tk79fAh8IHaTNq1RWRixsS02W+5qS+iE9yq6RYl0asXx5tw0bLhmT5pIfbSquw==
 
-body-parser@1.19.0, body-parser@^1.17.1, body-parser@^1.19.0:
+body-parser@1.19.0, body-parser@^1.19.0:
   version "1.19.0"
   resolved "https://registry.yarnpkg.com/body-parser/-/body-parser-1.19.0.tgz#96b2709e57c9c4e09a6fd66a8fd979844f69f08a"
   integrity sha512-dhEPs72UPbDnAQJ9ZKMNTP6ptJaionhP5cBb541nXPlW60Jepo9RV/a4fX4XWW9CuFNK22krhrj1+rgzifNCsw==

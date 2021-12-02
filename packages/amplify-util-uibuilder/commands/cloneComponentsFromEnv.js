@@ -1,4 +1,4 @@
-const aws = require('../aws-sdk');
+const aws = require('aws-sdk');
 const logger = require('./utils/logger');
 const { extractArgs } = require('./utils/extractArgs');
 const { listUiBuilderComponents } = require('./utils/syncAmplifyUiBuilderComponents');
