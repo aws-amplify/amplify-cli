@@ -256,9 +256,8 @@ export async function loadApiCliInputs(context: $TSContext, resourceName: string
 
     if (fs.existsSync(legacyParamsFilePath)) {
       // migration is required
-      context.migrationInfo = { projectPath: projectRoot };
       await context.amplify.invokePluginMethod(context, AmplifyCategories.API, AmplifySupportedService.APIGW, 'migrate', [
-        resourceName,
+        context,
         AmplifySupportedService.APIGW,
       ]);
 
