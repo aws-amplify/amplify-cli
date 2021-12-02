@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.8.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@5.8.0...amplify-provider-awscloudformation@5.8.1) (2021-12-02)
+
+
+
+## 7.6.1 (2021-12-02)
+
+**Note:** Version bump only for package amplify-provider-awscloudformation
+
+
+
+
+
 # [5.8.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@5.7.3...amplify-provider-awscloudformation@5.8.0) (2021-12-02)
 
 
