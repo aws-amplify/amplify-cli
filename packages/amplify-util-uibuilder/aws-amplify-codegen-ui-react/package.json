@@ -1,0 +1,64 @@
+{
+  "name": "@aws-amplify/codegen-ui-react",
+  "version": "0.13.2",
+  "description": "Amplify UI React code generation implementation",
+  "author": "Amazon Web Services",
+  "repository": "https://github.com/aws-amplify/amplify-codegen-ui.git",
+  "homepage": "https://docs.amplify.aws/",
+  "license": "Apache-2.0",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist/**"
+  ],
+  "scripts": {
+    "test": "jest",
+    "test:update": "jest --updateSnapshot",
+    "build": "tsc -p tsconfig.build.json",
+    "build:watch": "npm run build -- --watch",
+    "iconset": "node scripts/generateBuiltInIconset.js"
+  },
+  "devDependencies": {
+    "@aws-amplify/ui-react": "^2.1.0",
+    "@types/node": "^16.3.3",
+    "@types/react": "^17.0.4",
+    "pascalcase": "1.0.0"
+  },
+  "dependencies": {
+    "@types/temp": "^0.9.1",
+    "prettier": "2.3.2",
+    "temp": "^0.9.4",
+    "typescript": "~4.4.4"
+  },
+  "peerDependencies": {
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2"
+  },
+  "jest": {
+    "verbose": false,
+    "preset": "ts-jest",
+    "transform": {
+      "^.+\\.tsx?$": "ts-jest"
+    },
+    "collectCoverage": true,
+    "collectCoverageFrom": [
+      "lib/**/*.ts"
+    ],
+    "coveragePathIgnorePatterns": [
+      "<rootDir>/lib/__tests__/__utils__/"
+    ],
+    "testRegex": "(lib/__tests__/.*.test.ts)$",
+    "testPathIgnorePatterns": [
+      "<rootDir>/lib/__tests__/__utils__/"
+    ],
+    "globals": {
+      "ts-jest": {
+        "diagnostics": false
+      }
+    },
+    "moduleFileExtensions": [
+      "ts",
+      "js"
+    ]
+  }
+}

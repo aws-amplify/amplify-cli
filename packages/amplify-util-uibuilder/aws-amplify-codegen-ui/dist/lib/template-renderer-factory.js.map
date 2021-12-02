@@ -1,0 +1,1 @@
+{"version":3,"file":"template-renderer-factory.js","sourceRoot":"","sources":["../../lib/template-renderer-factory.ts"],"names":[],"mappings":";;;AAoBA;;;GAGG;AACH,MAAa,sCAAsC;IAOjD,YAAoB,QAAwD;QAAxD,aAAQ,GAAR,QAAQ,CAAgD;IAAG,CAAC;IAEhF,aAAa,CAAC,SAA+B;QAC3C,OAAO,IAAI,CAAC,QAAQ,CAAC,SAAS,CAAC,CAAC;IAClC,CAAC;CACF;AAZD,wFAYC"}
