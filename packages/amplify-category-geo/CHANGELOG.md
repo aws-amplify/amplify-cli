@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.3.0-geo.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-geo@2.3.0-geo.1...amplify-category-geo@2.3.0-geo.2) (2021-12-02)
+
+
+### Features
+
+* **geo:** add bulk geofence upload ([#8822](https://github.com/aws-amplify/amplify-cli/issues/8822)) ([54b6bb8](https://github.com/aws-amplify/amplify-cli/commit/54b6bb876f5e5a58c2a7a82d8eccf78a626441da))
+
+
+
+
+
 # [2.3.0-geo.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-geo@2.3.0-geo.0...amplify-category-geo@2.3.0-geo.1) (2021-11-18)
 
 
