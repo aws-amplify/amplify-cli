@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [7.5.4-beta.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@7.5.4-beta.1...@aws-amplify/cli@7.5.4-beta.3) (2021-12-02)
+
+
+### Performance Improvements
+
+* **cli:** get AccountId from meta instead of sts ([#9155](https://github.com/aws-amplify/amplify-cli/issues/9155)) ([330ec35](https://github.com/aws-amplify/amplify-cli/commit/330ec35f3ffc8cfe13e5061aec45a769ad99c48f))
+
+
+
+
+
 ## [7.5.4-beta.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@7.5.4-beta.1...@aws-amplify/cli@7.5.4-beta.2) (2021-12-02)
 
 

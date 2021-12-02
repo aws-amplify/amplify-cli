@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.1.3-beta.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-api@1.1.3-beta.1...@aws-amplify/amplify-category-api@1.1.3-beta.3) (2021-12-02)
+
+
+### Bug Fixes
+
+* call the correct migration function for Admin Queries ([#9174](https://github.com/aws-amplify/amplify-cli/issues/9174)) ([89b7bcf](https://github.com/aws-amplify/amplify-cli/commit/89b7bcf8e829953a0c6a36c32144012d6c8c5ee8))
+
+
+
+
+
 ## [1.1.3-beta.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-api@1.1.3-beta.1...@aws-amplify/amplify-category-api@1.1.3-beta.2) (2021-12-02)
 
 
