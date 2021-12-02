@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.7.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@5.7.2...amplify-provider-awscloudformation@5.7.3) (2021-12-02)
+
+
+
+## 7.5.6 (2021-12-01)
+
+
+### Bug Fixes
+
+* call the correct migration function for Admin Queries ([#9174](https://github.com/aws-amplify/amplify-cli/issues/9174)) ([1ab2e66](https://github.com/aws-amplify/amplify-cli/commit/1ab2e66e1b54d09d68def7186b85644cb6d91653))
+* function parameters not being properly added to root stack ([#9144](https://github.com/aws-amplify/amplify-cli/issues/9144)) ([2e600ca](https://github.com/aws-amplify/amplify-cli/commit/2e600ca5f3558e4eb40fe151fb6aba859b82f9d2))
+
+
+
+
+
 ## [5.7.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@5.7.1...amplify-provider-awscloudformation@5.7.2) (2021-12-01)
 
 
