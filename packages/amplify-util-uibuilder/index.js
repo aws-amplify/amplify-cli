@@ -14,12 +14,7 @@ async function handleAmplifyEvent(context, args) {
   await eventHandlerModule.run(context, args);
 }
 
-function overrideAdminUiName() {
-  return 'Amplify Admin UI';
-}
-
 module.exports = {
   executeAmplifyCommand,
   handleAmplifyEvent,
-  overrideAdminUiName,
 };
