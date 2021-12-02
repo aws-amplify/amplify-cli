@@ -299,7 +299,7 @@ describe('@index transformer', () => {
   });
 
   // skipping due to non functioning queryField
-  test.skip('Test update mutation validation with three part secondary key.', async () => {
+  test('Test update mutation validation with three part secondary key.', async () => {
     const createResponseMissingLastSortKey = await createShippingUpdate({ orderId: '1sttry', itemId: 'item1', name: '42' });
     expect(createResponseMissingLastSortKey.data.createShippingUpdate).toBeNull();
     expect(createResponseMissingLastSortKey.errors).toHaveLength(1);
@@ -733,7 +733,7 @@ async function getShippingUpdates(orderId: string) {
 async function getShippingUpdatesWithNameFilter(orderId: string, name: string) {
   const result = await GRAPHQL_CLIENT.query(
     `query GetShippingUpdates($orderId: ID!, $name: String) {
-        shippingUpdate(orderId: $orderId, filter: { name: { eq: $name }}) {
+        shippingUpdates(orderId: $orderId, filter: { name: { eq: $name }}) {
             items {
                 id
                 orderId
