@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.2.7-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-interactions@3.2.6...amplify-category-interactions@3.2.7-beta.0) (2021-12-02)
+
+**Note:** Version bump only for package amplify-category-interactions
+
+
+
+
+
 ## [3.2.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-interactions@3.2.5...amplify-category-interactions@3.2.6) (2021-11-26)
 
 **Note:** Version bump only for package amplify-category-interactions
