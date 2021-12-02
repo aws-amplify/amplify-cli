@@ -56,6 +56,7 @@ import { UniqueDirectivesPerLocation } from 'graphql/validation/rules/UniqueDire
 
 // AuthMode Types
 import { AppSyncAuthConfiguration, AppSyncAuthMode } from '@aws-amplify/graphql-transformer-interfaces';
+import { validateSDL } from 'graphql/validation/validate';
 
 /**
  * This set includes all validation rules defined by the GraphQL spec.
@@ -141,8 +142,12 @@ export const validateModelSchema = (doc: DocumentNode) => {
   if (!existingQueryType) {
     fullDocument.definitions.push(...NOOP_QUERY.definitions);
   }
-
-  const schema = buildASTSchema(fullDocument);
+  let schema;
+  const errors = validateSDL(fullDocument);
+  if (errors.length > 0) {
+    return errors;
+  }
+  schema = buildASTSchema(fullDocument, { assumeValid: true });
   return validate(schema, fullDocument, specifiedRules);
 };
 
