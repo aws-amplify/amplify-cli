@@ -31,16 +31,16 @@ const schema = {
 describe('should create ui builder components', () => {
   let codegen;
   beforeEach(() => {
-    jest.mock('../../../aws-amplify-codegen-ui');
-    codegen = require('../../../aws-amplify-codegen-ui');
+    jest.mock('@aws-amplify/codegen-ui');
+    codegen = require('@aws-amplify/codegen-ui');
     const renderSchemaToTemplateMock = jest.fn();
-    codegen.FrontendManagerTemplateRendererManager.mockImplementation(() => ({
+    codegen.StudioTemplateRendererManager.mockImplementation(() => ({
       renderSchemaToTemplate: renderSchemaToTemplateMock,
     }));
   });
   it('calls the renderManager', async () => {
     const { createUiBuilderComponent } = require('../createUiBuilderComponent');
     await createUiBuilderComponent(context, schema);
-    expect(new codegen.FrontendManagerTemplateRendererManager().renderSchemaToTemplate).toBeCalled();
+    expect(new codegen.StudioTemplateRendererManager().renderSchemaToTemplate).toBeCalled();
   });
 });

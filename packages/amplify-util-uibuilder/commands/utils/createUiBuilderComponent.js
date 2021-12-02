@@ -1,12 +1,12 @@
-const { FrontendManagerTemplateRendererManager, FrontendManagerTemplateRendererFactory } = require('../../aws-amplify-codegen-ui');
+const { StudioTemplateRendererManager, StudioTemplateRendererFactory } = require('@aws-amplify/codegen-ui');
 const {
   AmplifyRenderer,
-  ReactThemeFrontendManagerTemplateRenderer,
-  ReactIndexFrontendManagerTemplateRenderer,
+  ReactThemeStudioTemplateRenderer,
+  ReactIndexStudioTemplateRenderer,
   ModuleKind,
   ScriptTarget,
   ScriptKind,
-} = require('../../aws-amplify-codegen-ui-react');
+} = require('@aws-amplify/codegen-ui-react');
 const { getUiBuilderComponentsPath } = require('./getUiBuilderComponentsPath');
 const logger = require('./logger');
 const config = process.env.USE_CODEGEN_DEFAULTS
@@ -20,14 +20,14 @@ const config = process.env.USE_CODEGEN_DEFAULTS
 
 const createUiBuilderComponent = (context, schema) => {
   const uiBuilderComponentsPath = getUiBuilderComponentsPath(context);
-  const rendererFactory = new FrontendManagerTemplateRendererFactory(component => new AmplifyRenderer(component, config));
+  const rendererFactory = new StudioTemplateRendererFactory(component => new AmplifyRenderer(component, config));
 
   const outputPathDir = uiBuilderComponentsPath;
   const outputConfig = {
     outputPathDir,
   };
 
-  const rendererManager = new FrontendManagerTemplateRendererManager(rendererFactory, outputConfig);
+  const rendererManager = new StudioTemplateRendererManager(rendererFactory, outputConfig);
 
   rendererManager.renderSchemaToTemplate(schema);
   return schema;
@@ -35,8 +35,8 @@ const createUiBuilderComponent = (context, schema) => {
 
 const createUiBuilderTheme = (context, schema) => {
   const uiBuilderComponentsPath = getUiBuilderComponentsPath(context);
-  const rendererFactory = new FrontendManagerTemplateRendererFactory(
-    component => new ReactThemeFrontendManagerTemplateRenderer(component, config),
+  const rendererFactory = new StudioTemplateRendererFactory(
+    component => new ReactThemeStudioTemplateRenderer(component, config),
   );
 
   const outputPathDir = uiBuilderComponentsPath;
@@ -44,7 +44,7 @@ const createUiBuilderTheme = (context, schema) => {
     outputPathDir,
   };
 
-  const rendererManager = new FrontendManagerTemplateRendererManager(rendererFactory, outputConfig);
+  const rendererManager = new StudioTemplateRendererManager(rendererFactory, outputConfig);
 
   try {
     rendererManager.renderSchemaToTemplate(schema);
@@ -58,8 +58,8 @@ const createUiBuilderTheme = (context, schema) => {
 
 const generateAmplifyUiBuilderIndexFile = (context, schemas) => {
   const uiBuilderComponentsPath = getUiBuilderComponentsPath(context);
-  const rendererFactory = new FrontendManagerTemplateRendererFactory(
-    component => new ReactIndexFrontendManagerTemplateRenderer(component, config),
+  const rendererFactory = new StudioTemplateRendererFactory(
+    component => new ReactIndexStudioTemplateRenderer(component, config),
   );
 
   const outputPathDir = uiBuilderComponentsPath;
@@ -67,7 +67,7 @@ const generateAmplifyUiBuilderIndexFile = (context, schemas) => {
     outputPathDir,
   };
 
-  const rendererManager = new FrontendManagerTemplateRendererManager(rendererFactory, outputConfig);
+  const rendererManager = new StudioTemplateRendererManager(rendererFactory, outputConfig);
 
   try {
     rendererManager.renderSchemaToTemplate(schemas);

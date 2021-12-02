@@ -1,4 +1,4 @@
-const aws = require('../../../aws-sdk');
+const aws = require('aws-sdk');
 const { FeatureFlags } = require('amplify-cli-core');
 FeatureFlags.getBoolean = () => false;
 FeatureFlags.getNumber = () => 0;
