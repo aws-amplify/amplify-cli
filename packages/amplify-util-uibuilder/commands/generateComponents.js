@@ -7,10 +7,10 @@ const {
   generateUiBuilderThemes,
 } = require('./utils/syncAmplifyUiBuilderComponents');
 const { generateAmplifyUiBuilderIndexFile } = require('./utils/createUiBuilderComponent');
-const logger = require('./utils/logger');
+const { printer } = require('amplify-prompts');
 const ora = require('ora');
 async function run(context) {
-  logger.info('Running generate components command in amplify-util-uibuilder');
+  printer.debug('Running generate components command in amplify-util-uibuilder');
   if (!(await shouldRenderComponents(context))) {
     return;
   }
@@ -18,7 +18,7 @@ async function run(context) {
   try {
     const [componentSchemas, themeSchemas] = await Promise.all([listUiBuilderComponents(context), listUiBuilderThemes(context)]);
     if (componentSchemas.entities.length === 0 && themeSchemas.entities.length === 0) {
-      logger.info('Skipping UI component generation since none are found.');
+      printer.debug('Skipping UI component generation since none are found.');
       return;
     }
 
@@ -42,7 +42,7 @@ async function run(context) {
       spinner.succeed('Synced UI components.');
     }
   } catch (e) {
-    logger.error(e);
+    printer.debug(e);
     spinner.fail('Failed to sync UI components');
   }
 
