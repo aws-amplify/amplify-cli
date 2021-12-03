@@ -200,7 +200,7 @@ export async function run(context: $TSContext, resourceDefinition: $TSObject, re
           modelsBeingReplaced,
           deploymentSteps,
         );
-        if (deploymentSteps.length > 1) {
+        if (deploymentSteps.length > 0) {
           iterativeDeploymentWasInvoked = true;
 
           // Initialize deployment state to signal a new iterative deployment
@@ -239,8 +239,8 @@ export async function run(context: $TSContext, resourceDefinition: $TSObject, re
       context.exeInfo.forcePush ||
       rebuild
     ) {
-      // If there is an API change, there will be one deployment step. But when there needs an iterative update the step count is > 1
-      if (deploymentSteps.length > 1) {
+      // if there are deploymentSteps, need to do an iterative update
+      if (deploymentSteps.length > 0) {
         // create deployment manager
         const deploymentManager = await DeploymentManager.createInstance(context, cloudformationMeta.DeploymentBucketName, spinner, {
           userAgent: formUserAgentParam(context, generateUserAgentAction(resourcesToBeCreated, resourcesToBeUpdated)),
