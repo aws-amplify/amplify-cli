@@ -13,7 +13,7 @@ const config = {
   module: ModuleKind.ES2020,
   target: ScriptTarget.ES2020,
   script: ScriptKind.JSX,
-  renderTypeDeclarations: true,
+  renderTypeDeclarations: false,
 };
 
 const createUiBuilderComponent = (context, schema) => {
