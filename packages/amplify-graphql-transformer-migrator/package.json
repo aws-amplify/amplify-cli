@@ -1,6 +1,6 @@
 {
     "name": "@aws-amplify/graphql-transformer-migrator",
-    "version": "1.2.11",
+    "version": "1.2.12",
     "description": "A tool for converting schemas from Amplify's V1 transformer to the V2 transformer",
     "repository": {
         "type": "git",
@@ -26,7 +26,7 @@
         "test": "jest"
     },
     "dependencies": {
-        "@aws-amplify/graphql-transformer-core": "0.14.0",
+        "@aws-amplify/graphql-transformer-core": "0.15.0",
         "@aws-amplify/graphql-transformer-interfaces": "1.12.3",
         "amplify-cli-core": "2.4.3",
         "amplify-prompts": "1.6.0",
