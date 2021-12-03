@@ -1,24 +1,25 @@
 const aws = require('aws-sdk');
+const { printer } = require('amplify-prompts');
+const { resolveAppId } = require('amplify-provider-awscloudformation');
 const { createUiBuilderComponent, createUiBuilderTheme } = require('./createUiBuilderComponent');
 const { getUiBuilderComponentsPath } = require('./getUiBuilderComponentsPath');
-const logger = require('./logger');
 const { extractArgs } = require('./extractArgs');
-const { mockUiBuilderComponents, mockUiBuilderThemes } = require('./mockUiBuilderData');
-
 const getEnvName = (context, envName) => {
   const args = extractArgs(context);
   return envName ? envName : args.environmentName ? args.environmentName : context.exeInfo.localEnvInfo.envName;
 };
 
 const getAppId = (context, environmentName) => {
-  return extractArgs(context).appId || context.exeInfo.teamProviderInfo[environmentName].awscloudformation.AmplifyAppId;
+  const appId = extractArgs(context).appId || resolveAppId(context);
+  if (!appId) {
+    throw new Error(
+      'Unable to sync Studio components since appId could not be determined. This can happen when you hit the soft limit of number of apps that you can have in Amplify console.',
+    );
+  }
+  return appId;
 };
 
 async function listUiBuilderComponents(context, envName) {
-  if (process.env.MOCK_UI_BUILDER_BACKEND) {
-    return mockUiBuilderComponents;
-  }
-
   const environmentName = getEnvName(context, envName);
   const appId = getAppId(context, environmentName);
 
@@ -30,19 +31,15 @@ async function listUiBuilderComponents(context, envName) {
         environmentName,
       })
       .promise();
-    logger.info(JSON.stringify(uiBuilderComponents, null, 2));
+    printer.debug(JSON.stringify(uiBuilderComponents, null, 2));
     return uiBuilderComponents;
   } catch (e) {
-    logger.error(e);
+    printer.debug(e);
     throw e;
   }
 }
 
 async function listUiBuilderThemes(context, envName) {
-  if (process.env.MOCK_UI_BUILDER_BACKEND) {
-    return mockUiBuilderThemes;
-  }
-
   const environmentName = getEnvName(context, envName);
   const appId = getAppId(context, environmentName);
 
@@ -54,10 +51,10 @@ async function listUiBuilderThemes(context, envName) {
         environmentName,
       })
       .promise();
-    logger.info(JSON.stringify(uiBuilderThemes, null, 2));
+    printer.debug(JSON.stringify(uiBuilderThemes, null, 2));
     return uiBuilderThemes;
   } catch (e) {
-    logger.error(e);
+    printer.debug(e);
     throw e;
   }
 }
@@ -68,13 +65,13 @@ function generateUiBuilderComponents(context, componentSchemas) {
       const component = createUiBuilderComponent(context, schema);
       return { resultType: 'SUCCESS', component };
     } catch (e) {
-      logger.error(`Failure caught processing ${schema.name}`);
-      logger.error(e);
+      printer.debug(`Failure caught processing ${schema.name}`);
+      printer.debug(e);
       return { resultType: 'FAILURE', schemaName: schema.name, error: e };
     }
   });
 
-  logger.info(
+  printer.debug(
     `Generated ${componentResults.filter(result => result.resultType === 'SUCCESS').length} components in ${getUiBuilderComponentsPath(
       context,
     )}`,
@@ -88,13 +85,13 @@ function generateUiBuilderThemes(context, themeSchemas) {
       const theme = createUiBuilderTheme(context, schema);
       return { resultType: 'SUCCESS', theme };
     } catch (e) {
-      logger.error(`Failure caught processing ${schema.name}`);
-      logger.error(e);
+      printer.debug(`Failure caught processing ${schema.name}`);
+      printer.debug(e);
       return { resultType: 'FAILURE', schemaName: schema.name, error: e };
     }
   });
 
-  logger.info(
+  printer.debug(
     `Generated ${themeResults.filter(result => result.resultType === 'SUCCESS').length} themes in ${getUiBuilderComponentsPath(context)}`,
   );
   return themeResults;

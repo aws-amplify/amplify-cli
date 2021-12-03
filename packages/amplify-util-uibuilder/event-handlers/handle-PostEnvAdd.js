@@ -1,4 +1,4 @@
-const logger = require('../commands/utils/logger');
+const { printer } = require('amplify-prompts');
 
 async function run(context) {
   try {
@@ -8,7 +8,7 @@ async function run(context) {
     ]);
   } catch (e) {
     // Swallow all errors from the uibuilder plugin
-    logger.error(e);
+    printer.debug(e);
   }
 }
 
