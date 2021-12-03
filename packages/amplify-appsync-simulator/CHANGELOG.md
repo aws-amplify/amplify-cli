@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.3.1-beta.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-appsync-simulator@2.3.0...amplify-appsync-simulator@2.3.1-beta.1) (2021-12-03)
+
+
+### Bug Fixes
+
+* pass updated args between pipeline function in mock ([#9192](https://github.com/aws-amplify/amplify-cli/issues/9192)) ([983a131](https://github.com/aws-amplify/amplify-cli/commit/983a1310730a3b1d6f447547d39e18949c2e5d77))
+
+
+
+
+
 ## [2.3.1-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-appsync-simulator@2.3.0...amplify-appsync-simulator@2.3.1-beta.0) (2021-12-03)
 
 

@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.2.9-beta.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-geo@2.2.8...amplify-category-geo@2.2.9-beta.1) (2021-12-03)
+
+
+### Bug Fixes
+
+* **amplify-category-geo:** refactor auth warnings ([#9157](https://github.com/aws-amplify/amplify-cli/issues/9157)) ([eb29012](https://github.com/aws-amplify/amplify-cli/commit/eb29012339a82bb57c67b637f3337337fdff5a0a))
+
+
+
+
+
 ## [2.2.9-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-geo@2.2.8...amplify-category-geo@2.2.9-beta.0) (2021-12-03)
 
 
