@@ -1,10 +1,39 @@
-import { showSMSSandboxWarning } from '../display-helpful-urls';
-import { BannerMessage } from 'amplify-cli-core';
+import { showGraphQLTransformerVersion, showSMSSandboxWarning } from '../display-helpful-urls';
+import { BannerMessage, stateManager } from 'amplify-cli-core';
 import { SNS } from '../aws-utils/aws-sns';
+import { getTransformerVersion } from '../transform-graphql-schema';
 import { AWSError } from 'aws-sdk';
 
 jest.mock('../aws-utils/aws-sns');
+jest.mock('../transform-graphql-schema');
 jest.mock('amplify-cli-core');
+
+describe('showGraphQLTransformerVersion', () => {
+  const context = {
+    print: {
+      info: jest.fn(),
+    },
+  };
+
+  beforeEach(() => {
+    jest.resetAllMocks();
+  });
+
+  it('returns early if there are no AppSync APIs', async () => {
+    await showGraphQLTransformerVersion(context);
+    expect(context.print.info).not.toHaveBeenCalled();
+  });
+
+  it('prints the transformer version if there are AppSync APIs', async () => {
+    (getTransformerVersion as jest.Mock).mockReturnValueOnce(2);
+    (stateManager.getMeta as jest.Mock).mockReturnValueOnce({
+      api: { testapi: { service: 'AppSync' } },
+    });
+
+    await showGraphQLTransformerVersion(context);
+    expect(context.print.info).toHaveBeenCalledWith('GraphQL transformer version: 2');
+  });
+});
 
 describe('showSMSSandBoxWarning', () => {
   const mockedGetMessage = jest.spyOn(BannerMessage, 'getMessage');
@@ -21,7 +50,7 @@ describe('showSMSSandBoxWarning', () => {
 
   beforeEach(() => {
     jest.resetAllMocks();
-    mockedSNSClass = jest.spyOn(SNS, 'getInstance').mockResolvedValue((mockedSNSClientInstance as unknown) as SNS);
+    mockedSNSClass = jest.spyOn(SNS, 'getInstance').mockResolvedValue(mockedSNSClientInstance as unknown as SNS);
   });
 
   describe('when API is missing in SDK', () => {
