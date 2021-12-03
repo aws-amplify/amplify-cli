@@ -328,7 +328,7 @@ export abstract class ResourcePackager {
   }
 
   protected async generateRootStack(): Promise<Template> {
-    return await formNestedStack(this.context, { amplifyMeta: this.amplifyMeta });
+    return await formNestedStack(this.context, { amplifyMeta: this.amplifyMeta }, undefined, undefined, undefined, undefined, true);
   }
 
   private resourcesHasCategoryService = (resources: ResourceDefinition[], category: string, service?: string): boolean =>
