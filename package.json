@@ -26,7 +26,7 @@
     "split-e2e-tests": "yarn ts-node ./scripts/split-e2e-tests.ts && git add .circleci/config.yml",
     "pkg-clean": "rimraf build out pkg/node_modules pkg/yarn.lock",
     "pkg-install": "cd pkg && cp ../yarn.lock ./ && yarn --production",
-    "pkg-prune": "cd pkg && rimraf **/*.d.ts **/*.js.map **/*.d.ts.map **/README.md **/readme.md **/Readme.md **/CHANGELOG.md **/changelog.md **/Changelog.md **/HISTORY.md **/history.md **/History.md",
+    "pkg-prune": "cd pkg && rimraf **/*.d.ts **/*.js.map **/*.d.ts.map **/README.md **/readme.md **/Readme.md **/CHANGELOG.md **/changelog.md **/Changelog.md **/HISTORY.md **/history.md **/History.md && cp ../node_modules/typescript/lib/*.d.ts node_modules/typescript/lib/",
     "pkg-transpile": "cd pkg && babel node_modules --extensions '.js,.jsx,.es6,.es,.ts' --copy-files --include-dotfiles -d ../build/node_modules",
     "pkg-build": "cp pkg/package.json build/node_modules/package.json && pkg -t node12-macos-x64,node12-linux-x64,node12-win-x64 build/node_modules --out-path out",
     "pkg-all": "yarn pkg-install && yarn pkg-prune && yarn pkg-transpile && yarn pkg-build",
