@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.15.0-beta.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-transformer-core@0.14.0...@aws-amplify/graphql-transformer-core@0.15.0-beta.0) (2021-12-03)
+
+
+### Bug Fixes
+
+* skip truncating unresolved tokens ([#9152](https://github.com/aws-amplify/amplify-cli/issues/9152)) ([f83ac70](https://github.com/aws-amplify/amplify-cli/commit/f83ac70753a4564a2b458584fd2176274771b4fb))
+
+
+### Features
+
+* provide helpful error message when GQL schema validation fails ([#9159](https://github.com/aws-amplify/amplify-cli/issues/9159)) ([308706c](https://github.com/aws-amplify/amplify-cli/commit/308706c8a67712d7625f11a625e258101790d4c7))
+
+
+
+
+
 # [0.14.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-transformer-core@0.13.2...@aws-amplify/graphql-transformer-core@0.14.0) (2021-11-23)
 
 

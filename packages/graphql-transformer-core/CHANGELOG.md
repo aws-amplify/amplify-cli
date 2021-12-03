@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [7.3.0-beta.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-core@7.2.8...graphql-transformer-core@7.3.0-beta.0) (2021-12-03)
+
+
+### Features
+
+* provide helpful error message when GQL schema validation fails ([#9159](https://github.com/aws-amplify/amplify-cli/issues/9159)) ([308706c](https://github.com/aws-amplify/amplify-cli/commit/308706c8a67712d7625f11a625e258101790d4c7))
+
+
+
+
+
 ## [7.2.8](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-core@7.2.7...graphql-transformer-core@7.2.8) (2021-12-02)
 
 **Note:** Version bump only for package graphql-transformer-core

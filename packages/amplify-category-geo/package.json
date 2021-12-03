@@ -1,6 +1,6 @@
 {
   "name": "amplify-category-geo",
-  "version": "2.2.8",
+  "version": "2.2.9-beta.0",
   "description": "Amplify CLI plugin to manage the Geo resources for the project",
   "repository": {
     "type": "git",

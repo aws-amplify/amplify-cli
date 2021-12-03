@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.10.1-beta.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-searchable-transformer@0.10.0...@aws-amplify/graphql-searchable-transformer@0.10.1-beta.0) (2021-12-03)
+
+
+### Bug Fixes
+
+* skip truncating unresolved tokens ([#9152](https://github.com/aws-amplify/amplify-cli/issues/9152)) ([f83ac70](https://github.com/aws-amplify/amplify-cli/commit/f83ac70753a4564a2b458584fd2176274771b4fb))
+
+
+
+
+
 # [0.10.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-searchable-transformer@0.9.5...@aws-amplify/graphql-searchable-transformer@0.10.0) (2021-11-23)
 
 
