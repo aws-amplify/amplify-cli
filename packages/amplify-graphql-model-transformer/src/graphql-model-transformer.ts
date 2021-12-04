@@ -1230,17 +1230,17 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
     const streamArnOutputId = `GetAtt${ModelResourceIDs.ModelTableStreamArn(def!.name.value)}`;
     // eslint-disable-next-line no-new
     new cdk.CfnOutput(stack, streamArnOutputId, {
-      value: cdk.Fn.getAtt(tableLogicalName, 'StreamArn').toString(),
+      value: cdk.Fn.getAtt(cfnTable.logicalId, 'StreamArn').toString(),
       description: 'Your DynamoDB table StreamArn.',
-      exportName: cdk.Fn.join(':', [context.api.apiId, 'GetAtt', tableLogicalName, 'StreamArn']),
+      exportName: cdk.Fn.join(':', [context.api.apiId, 'GetAtt', cfnTable.logicalId, 'StreamArn']),
     });
 
     const tableNameOutputId = `GetAtt${tableLogicalName}Name`;
     // eslint-disable-next-line no-new
     new cdk.CfnOutput(stack, tableNameOutputId, {
-      value: cdk.Fn.ref(tableLogicalName),
+      value: cdk.Fn.ref(cfnTable.logicalId),
       description: 'Your DynamoDB table name.',
-      exportName: cdk.Fn.join(':', [context.api.apiId, 'GetAtt', tableLogicalName, 'Name']),
+      exportName: cdk.Fn.join(':', [context.api.apiId, 'GetAtt', cfnTable.logicalId, 'Name']),
     });
 
     const role = this.createIAMRole(context, def, stack, tableName);
