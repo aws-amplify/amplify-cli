@@ -209,6 +209,9 @@ export abstract class ResourcePackager {
    * @param bucketName
    */
   protected storeS3BucketInfo(packagedResource: PackagedResourceDefinition, bucketName: string): void {
+    if(!packagedResource.build){
+      return;
+    }
     const s3Info = {
       deploymentBucketName: bucketName,
       s3Key: packagedResource.packagerParams.zipFilename,
@@ -219,6 +222,7 @@ export abstract class ResourcePackager {
       [this.envInfo.envName, CATEGORIES, packagedResource.category, packagedResource.resourceName],
       s3Info,
     );
+    _.set(packagedResource, ['s3Bucket'], s3Info);
     _.set(this.amplifyMeta, [packagedResource.category, packagedResource.resourceName, S3_BUCKET], s3Info);
   }
 
@@ -312,6 +316,7 @@ export abstract class ResourcePackager {
         await writeCustomPoliciesToCFNTemplate(resource.resourceName, resource.service, path.basename(cfnFile), resource.category);
         transformedCfnPaths.push(transformedCFNPath);
       }
+      this.storeS3BucketInfo(resource, 'deploymentBucketRef');
       transformedCfnResources.push({
         ...resource,
         transformedCfnPaths,
