@@ -78,7 +78,7 @@
     "ajv": "^6.12.3",
     "amplify-cli-core": "2.4.3",
     "amplify-cli-logger": "1.1.0",
-    "amplify-codegen": "^2.23.1",
+    "amplify-codegen": "2.26.19-gqlv2-fix.0",
     "amplify-util-import": "2.2.8",
     "archiver": "^5.3.0",
     "aws-sdk": "^2.963.0",
